@@ -59,7 +59,7 @@
       "damage_bonus": "3",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>On <strong>hit, </strong>inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Burn</a>&nbsp;to the target, if the target is already <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Burn</a>&nbsp;trigger its effect instead</p></li></ul>",
+      "description": "<ul><li><p>On <strong>hit, </strong>inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\">Burn</a>&nbsp;to the target, if the target is already <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\">Burn</a>&nbsp;trigger its effect instead</p></li></ul>",
       "dragon_ef": "100",
       "effect_table": {},
       "elemental_ef": "100",
@@ -93,6 +93,11 @@
       "item_mdef_bonus": "0",
       "item_quantity": "1",
       "item_rarity": "Rare",
+      "item_skill_passive": {
+        "CSayaO2mcgjutXio": {
+          "skill_description": "<p>Each target hit by this weapon suffers <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\">Burn</a>. If it already has Burn, its Burn triggers instead.</p>"
+        }
+      },
       "item_type": "weapon",
       "mimic_ef": "100",
       "monster_ef": "100",
@@ -104,6 +109,11 @@
       "recipe_kind": "",
       "refine_count": "0",
       "refine_level": "0",
+      "related_item_list": {
+        "CSayaO2mcgjutXio": {
+          "related_item_description": "<p>Each target hit by this weapon suffers <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\">Burn</a>. If it already has Burn, its Burn triggers instead.</p>"
+        }
+      },
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "MIG",

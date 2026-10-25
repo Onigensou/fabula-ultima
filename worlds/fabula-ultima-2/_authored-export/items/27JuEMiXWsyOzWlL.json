@@ -52,7 +52,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>Learned how to create&nbsp;<strong>@UUID[Item.tF74AQStp193Bpj5]{Tincture of Precision}</strong> with <strong>3 IP</strong></li></ul>",
+      "description": "<ul><li>Learned how to create&nbsp;<a class=\"content-link\" data-uuid=\"Item.tF74AQStp193Bpj5\" data-id=\"tF74AQStp193Bpj5\" data-type=\"Item\">Tincture of Precision</a> with <strong>3 IP</strong></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

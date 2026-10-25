@@ -40,7 +40,7 @@
       "category": "Spear",
       "check_bonus": "0",
       "damage_bonus": "15",
-      "description": "<ul><li><p>When you gain Zero Power, Deal 5 Light Damage to one target creature per Zero Power.</p></li></ul>",
+      "description": "<ul><li><p>When you gain Zero Power, Deal 5 <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\">Light</a> Damage to one target creature per Zero Power.</p></li></ul>",
       "hand_slots": "Two-handed",
       "isMartial": true,
       "item_cost": "2700",

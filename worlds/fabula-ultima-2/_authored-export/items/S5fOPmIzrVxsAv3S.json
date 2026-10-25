@@ -25,7 +25,7 @@
     "container": "GyArIXzGOCwQzDYY",
     "props": {
       "cost": "",
-      "description": "<p>When you hit a creature with this weapon, there is a 25% chance to inflict Envenomed on that target.</p>",
+      "description": "<p>When you hit a creature with this weapon, there is a 25% chance to inflict <a class=\"content-link\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\">Envenomed</a> on that target.</p>",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace",

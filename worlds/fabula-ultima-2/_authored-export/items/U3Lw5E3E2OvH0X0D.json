@@ -180,7 +180,7 @@
       "cost": "",
       "damage_bonus": "0",
       "defense_target_type": "def",
-      "description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <strong>Light</strong> damage.</li><li>All damage dealt by your attacks and spells becomes <strong>Light</strong>.</li></ul>",
+      "description": "<p><strong>Choose one option:</strong></p><ul><li>You gain Resistance to <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\">Light</a> damage.</li><li>All damage dealt by your attacks and spells becomes <strong>Light</strong>.</li></ul>",
       "details_roller": "Show",
       "duration": "Until the start of your next turn",
       "effect_table": {

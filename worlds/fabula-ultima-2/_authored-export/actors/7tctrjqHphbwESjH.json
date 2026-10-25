@@ -486,7 +486,7 @@
           "cost": "2200",
           "damage_bonus": "7",
           "defense_target_type": "mdef",
-          "description": "<ul><li><p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p></li><li><p>This weapon deals 200% damage to <strong>Elemental</strong> creature.</p></li></ul>",
+          "description": "<ul><li><p>This weapon deals <a class=\"content-link\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" data-id=\"XYQUsuXPU0CQjEYa\" data-type=\"JournalEntry\">Magic Damage</a></p></li><li><p>This weapon deals 200% damage to <strong>Elemental</strong> creature.</p></li></ul>",
           "flavor_text": "",
           "hand_slots": "One-handed",
           "martial": false,
@@ -799,7 +799,7 @@
           "def_bonus": "",
           "defense": "0",
           "defense_include_dex": false,
-          "description": "<ul>\n<li>Once at the start of a<strong>&nbsp;</strong><strong>Conflict</strong> scene, you may perform the <strong>【Study】</strong>action as a&nbsp;<strong>Free Action</strong></li>\n<li>Gain +1 to your <strong>【Study】</strong>check</li>\n</ul>",
+          "description": "<ul>\n<li>Once at the start of a&nbsp;<strong>Conflict</strong> scene, you may perform the <strong>【Study】</strong>action as a&nbsp;<strong>Free Action</strong></li>\n<li>Gain +1 to your <strong>【Study】</strong>check</li>\n</ul>",
           "details_roller": "Show",
           "flavor_text": "<blockquote>\n<p>\"It's over 9000....!!!!\"</p>\n</blockquote>",
           "initiative": "0",
@@ -941,7 +941,7 @@
         "container": null,
         "props": {
           "consumable_cost": "100",
-          "consumable_description": "<ul>\n<li>Deal <strong>20</strong><strong>&nbsp;Fire </strong>damage to&nbsp;<strong>all enemy&nbsp;</strong>on the scene.</li>\n<li>A character can consume&nbsp;<strong>1 Spicy Cocktail&nbsp;</strong>per&nbsp;<strong>scene</strong></li>\n</ul>",
+          "consumable_description": "<ul>\n<li>Deal <strong>20</strong><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a>damage to&nbsp;<strong>all enemy&nbsp;</strong>on the scene.</li>\n<li>A character can consume&nbsp;<strong>1 Spicy Cocktail&nbsp;</strong>per&nbsp;<strong>scene</strong></li>\n</ul>",
           "consumable_label": "",
           "name": "Spicy Cocktail"
         },
@@ -979,7 +979,7 @@
         "container": null,
         "props": {
           "consumable_cost": "20",
-          "consumable_description": "<ul><li><p>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Charm</span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span>to the target until the end of this turn.</p></li><li><p>Deal <strong>5 Fire </strong>damage to the target</p></li><li><p>Only usable on <strong>Humanoid</strong> creatures</p></li></ul>",
+          "consumable_description": "<ul><li><p>Inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\">Charm</a>&nbsp;to the target until the end of this turn.</p></li><li><p>Deal <strong>5 <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> </strong>damage to the target</p></li><li><p>Only usable on <strong>Humanoid</strong> creatures</p></li></ul>",
           "consumable_flavor": "<p>\"This is a potion that warms your body up\"</p><p>  <em>―Cheshire</em></p>",
           "consumable_label": "",
           "name": "Suspicious Potion"
@@ -1022,7 +1022,7 @@
           "check_bonus": "0",
           "cost": "1200",
           "damage_bonus": "6",
-          "description": "<ul><li><p>When you <strong>hit</strong> with this weapon, you may inflicts @UUID[JournalEntry.FV8JefaHsehzgXR7]{Grappled} to the target, if there is multiple targets, choose one.</p></li></ul>",
+          "description": "<ul><li><p>When you <strong>hit</strong> with this weapon, you may inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> to the target, if there is multiple targets, choose one.</p></li></ul>",
           "flavor_text": "<blockquote>\n<p>It's Magnet!</p>\n</blockquote>",
           "hand_slots": "One-handed",
           "martial": false,
@@ -1269,7 +1269,7 @@
           "def_bonus": "",
           "defense": "0",
           "defense_include_dex": false,
-          "description": "<ul>\n<li>At the start of your turn, You lose <strong>15 HP.</strong></li>\n<li>Your Attacks gains <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/blood_drain.png\" alt=\"\" width=\"21\" height=\"21\">@UUID[JournalEntry.CRPjA4dHUYLSAh0M]{Drain}</li>\n</ul>",
+          "description": "<ul>\n<li>At the start of your turn, You lose <strong>15 HP.</strong></li>\n<li>Your Attacks gains <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/blood_drain.png\" alt=\"\" width=\"21\" height=\"21\"><a class=\"content-link\" data-uuid=\"JournalEntry.CRPjA4dHUYLSAh0M\" data-id=\"CRPjA4dHUYLSAh0M\" data-type=\"JournalEntry\">Drain</a></li>\n</ul>",
           "details_roller": "Show",
           "initiative": "0",
           "magic_defense": "0",
@@ -1362,7 +1362,7 @@
         "container": "0JYbnACEHtI76feF",
         "props": {
           "cost": "",
-          "description": "<ul><li><p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p></li><li><p>This weapon deals 200% damage to <strong>Elemental</strong> creature.</p></li></ul>",
+          "description": "<ul><li><p>This weapon deals <a class=\"content-link\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" data-id=\"XYQUsuXPU0CQjEYa\" data-type=\"JournalEntry\">Magic Damage</a></p></li><li><p>This weapon deals 200% damage to <strong>Elemental</strong> creature.</p></li></ul>",
           "effect_table": {
             "0": {
               "damage_amount": "2",
@@ -1388,7 +1388,7 @@
               "reaction_trigger": "creature_will_deal_damage"
             }
           },
-          "skill_description": "<ul><li><p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p></li><li><p>This weapon deals 200% damage to <strong>Elemental</strong> creature.</p></li></ul>",
+          "skill_description": "<ul><li><p>This weapon deals <a class=\"content-link\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" data-id=\"XYQUsuXPU0CQjEYa\" data-type=\"JournalEntry\">Magic Damage</a></p></li><li><p>This weapon deals 200% damage to <strong>Elemental</strong> creature.</p></li></ul>",
           "skill_target": "Self",
           "skill_type": "Passive",
           "type_damage": "",
@@ -1433,7 +1433,7 @@
         "props": {
           "cost": "400",
           "def_bonus": "+2",
-          "description": "<ul>\n<li>You have Resistance to <strong>bolt</strong> damage</li>\n</ul>",
+          "description": "<ul>\n<li>You have Resistance to <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage</li>\n</ul>",
           "initiative": "0",
           "martial": false,
           "mdef_bonus": "0",
@@ -1571,7 +1571,7 @@
         "container": null,
         "props": {
           "consumable_cost": "100",
-          "consumable_description": "<ul>\n<li>Deal <strong>20</strong><strong>&nbsp;Fire </strong>damage to&nbsp;<strong>all enemy&nbsp;</strong>on the scene.</li>\n<li>A character can consume&nbsp;<strong>1 Spicy Cocktail&nbsp;</strong>per&nbsp;<strong>scene</strong></li>\n</ul>",
+          "consumable_description": "<ul>\n<li>Deal <strong>20</strong><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a>damage to&nbsp;<strong>all enemy&nbsp;</strong>on the scene.</li>\n<li>A character can consume&nbsp;<strong>1 Spicy Cocktail&nbsp;</strong>per&nbsp;<strong>scene</strong></li>\n</ul>",
           "consumable_label": "",
           "name": "Spicy Cocktail"
         },
@@ -1616,7 +1616,7 @@
           "check_bonus": "0",
           "cost": "0",
           "damage_bonus": "3",
-          "description": "<ul>\n<li>When you <strong>hit&nbsp;</strong>an <strong>aquatic</strong> creature with this weapon, inflicts <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png\" alt=\"\" width=\"21\" height=\"21\">@UUID[JournalEntry.FV8JefaHsehzgXR7]{Grappled} to the target</li>\n</ul>",
+          "description": "<ul>\n<li>When you <strong>hit&nbsp;</strong>an <strong>aquatic</strong> creature with this weapon, inflicts <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png\" alt=\"\" width=\"21\" height=\"21\"><a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> to the target</li>\n</ul>",
           "hand_slots": "One-handed",
           "martial": false,
           "name": "Old Rod",
@@ -1659,7 +1659,7 @@
         "container": null,
         "props": {
           "consumable_cost": "20",
-          "consumable_description": "<ul><li><p>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Charm</span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span>to the target until the end of this turn.</p></li><li><p>Deal <strong>5 Fire </strong>damage to the target</p></li><li><p>Only usable on <strong>Humanoid</strong> creatures</p></li></ul>",
+          "consumable_description": "<ul><li><p>Inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\">Charm</a>&nbsp;to the target until the end of this turn.</p></li><li><p>Deal <strong>5 <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> </strong>damage to the target</p></li><li><p>Only usable on <strong>Humanoid</strong> creatures</p></li></ul>",
           "consumable_flavor": "<p>\"This is a potion that warms your body up\"</p><p>  <em>―Cheshire</em></p>",
           "consumable_label": "",
           "name": "Suspicious Potion"
@@ -2067,7 +2067,7 @@
           "def_bonus": "",
           "defense": "0",
           "defense_include_dex": true,
-          "description": "<ul><li><p>At the start of the wearer's turn, if the wearer is <strong>not</strong> in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, the wearer enters <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span> and gains <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a></span></span> equal to <strong>【lost Hit Points + 5】</strong>.</p></li></ul>",
+          "description": "<ul><li><p>At the start of the wearer's turn, if the wearer is <strong>not</strong> in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, the wearer enters <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a> and gains <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a> equal to <strong>【lost Hit Points + 5】</strong>.</p></li></ul>",
           "flavor_text": "<p><em>From the moment I understood the weakness of my armor, it disgusted me.</em></p>",
           "initiative": "0",
           "magic_defense": "0",
@@ -2111,7 +2111,7 @@
         "container": null,
         "props": {
           "name": "Blue Bovine",
-          "recipe_description": "<ul><li><p><em>Gain <strong>Strong (</strong>Increase your <strong>【MIG】</strong> die by 1 stage </em>(to a maximum for D12))<em> for the rest of the scene.</em></p></li></ul>",
+          "recipe_description": "<ul><li><p><em>Gain <strong>Strong (</strong>Increase your <strong>【MIG】</strong>&nbsp;die by 1 stage&nbsp;</em>(to a maximum for D12))<em>&nbsp;for the rest of the scene.</em></p></li></ul>",
           "recipe_ip": "2",
           "recipe_label": ""
         },
@@ -2337,7 +2337,7 @@
           "class": "Weaponmaster",
           "cost": "",
           "damage_bonus": "0",
-          "description": "<p>When you hit one or more targets with a melee attack that would deal damage, you may have the attack deal no damage. If you do, choose one option:</p><ul><li><p>Inflict <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span></span> on each target hit by the attack</p></li><li><p>Inflict <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span> on each target hit by the attack</p></li><li><p>Each target hit by the attack loses <strong>【SL × 10】</strong> Mind Points. Describe your maneuver!</p></li></ul>",
+          "description": "<p>When you hit one or more targets with a melee attack that would deal damage, you may have the attack deal no damage. If you do, choose one option:</p><ul><li><p>Inflict <a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\">Dazed</a> on each target hit by the attack</p></li><li><p>Inflict <a class=\"content-link\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\">Weak</a> on each target hit by the attack</p></li><li><p>Each target hit by the attack loses <strong>【SL × 10】</strong> Mind Points. Describe your maneuver!</p></li></ul>",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -2671,7 +2671,7 @@
         "container": null,
         "props": {
           "consumable_cost": "20",
-          "consumable_description": "<ul><li><p>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Charm</span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span>to the target until the end of this turn.</p></li><li><p>Deal <strong>5 Fire </strong>damage to the target</p></li><li><p>Only usable on <strong>Humanoid</strong> creatures</p></li></ul>",
+          "consumable_description": "<ul><li><p>Inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\">Charm</a>&nbsp;to the target until the end of this turn.</p></li><li><p>Deal <strong>5 <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> </strong>damage to the target</p></li><li><p>Only usable on <strong>Humanoid</strong> creatures</p></li></ul>",
           "consumable_flavor": "<p>\"This is a potion that warms your body up\"</p><p>  <em>―Cheshire</em></p>",
           "consumable_label": "",
           "name": "Suspicious Potion"
@@ -2800,7 +2800,7 @@
         "container": "GTjRRXJ4QCY0qjpD",
         "props": {
           "cost": "",
-          "description": "<ul><li><p>At the start of the wearer's turn, if the wearer is <strong>not</strong> in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, the wearer enters <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span> and gains <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a></span></span> equal to <strong>【lost Hit Points + 5】</strong>.</p></li></ul>",
+          "description": "<ul><li><p>At the start of the wearer's turn, if the wearer is <strong>not</strong> in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, the wearer enters <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a> and gains <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a> equal to <strong>【lost Hit Points + 5】</strong>.</p></li></ul>",
           "effect_table": {
             "0": {
               "chain_steps": "rof_shield, rof_drop",
@@ -2841,7 +2841,7 @@
               "reaction_trigger": "turn_start"
             }
           },
-          "skill_description": "<ul><li><p>At the start of the wearer's turn, if the wearer is <strong>not</strong> in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, the wearer enters <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span> and gains <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a></span></span> equal to <strong>【lost Hit Points + 5】</strong>.</p></li></ul>",
+          "skill_description": "<ul><li><p>At the start of the wearer's turn, if the wearer is <strong>not</strong> in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, the wearer enters <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a> and gains <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a> equal to <strong>【lost Hit Points + 5】</strong>.</p></li></ul>",
           "skill_target": "Self",
           "skill_type": "Passive",
           "type_damage": "",
@@ -3439,7 +3439,7 @@
         "container": null,
         "props": {
           "name": "Golem Fragment",
-          "recipe_description": "<ul><li><p>Give <strong>5 </strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a></span></span><strong> </strong>to target ally, if the target already have a <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a><strong><span style=\"text-decoration: underline;\">,</span></strong></span></span> increase that shield value by 5 instead.</p></li></ul>",
+          "recipe_description": "<ul><li><p>Give <strong>5 </strong><a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a> to target ally, if the target already have a <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a>, increase that shield value by 5 instead.</p></li></ul>",
           "recipe_ip": "1",
           "recipe_label": ""
         },
@@ -3484,13 +3484,14 @@
           "def_bonus": "",
           "defense": "0",
           "defense_include_dex": false,
-          "description": "<p>You gain +1 to <strong>Checks&nbsp;</strong>which involve&nbsp;<strong>intimidating&nbsp;</strong>a&nbsp;<strong>humanoid&nbsp;</strong>creature</p>\n<hr>\n<p><strong>【Set Bonus】</strong></p>\n<ul>\n<li style=\"list-style-type: none;\">\n<p><strong>2 Piece</strong></p>\n<ul>\n<li>You deal <strong>10</strong> <strong>bonus damage&nbsp;</strong>to creature whose&nbsp;<strong>level&nbsp;</strong>is lower than you<br><hr></li>\n</ul>\n<p><strong>3 Piece</strong></p>\n<ul>\n<li>Creature whose&nbsp;<strong>level </strong>is lower than you start the&nbsp;<strong>conflict&nbsp;</strong>with <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Fear.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.TOF8epes1eGHwx5J]{Frightened} which last for&nbsp;<strong>1</strong> Round<hr></li>\n</ul>\n</li>\n</ul>",
+          "description": "<p>You gain +1 to <strong>Checks&nbsp;</strong>which involve&nbsp;<strong>intimidating&nbsp;</strong>a&nbsp;<strong>humanoid&nbsp;</strong>creature</p>",
           "details_roller": "Show",
           "initiative": "0",
           "magic_defense": "0",
           "magic_defense_include_ins": false,
           "mdef_bonus": "",
           "name": "Enforcer Hat",
+          "set_description": "<p><strong>【Set Bonus】</strong></p>\n<ul>\n<li style=\"list-style-type: none;\">\n<p><strong>2 Piece</strong></p>\n<ul>\n<li>You deal <strong>10</strong> <strong>bonus damage&nbsp;</strong>to creature whose&nbsp;<strong>level&nbsp;</strong>is lower than you<br><hr></li>\n</ul>\n<p><strong>3 Piece</strong></p>\n<ul>\n<li>Creature whose&nbsp;<strong>level </strong>is lower than you start the&nbsp;<strong>conflict&nbsp;</strong>with <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Fear.png\" width=\"21\" height=\"21\"><a class=\"content-link\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\">Frightened</a> which last for&nbsp;<strong>1</strong> Round<hr></li>\n</ul></li>\n</ul>",
           "set_name": "Arm of the Law"
         },
         "template": "r0yZpLPAK9VXhM2p",
@@ -3526,7 +3527,7 @@
         "container": null,
         "props": {
           "consumable_cost": "25",
-          "consumable_description": "<blockquote><ul><li><em>Gain <strong>Swift </strong>for the rest of the scene<strong>.(</strong>Increase your <strong>【DEX】</strong> die by 1 stage </em>(to a maximum for D12)<em> )</em></li></ul></blockquote>",
+          "consumable_description": "<blockquote><ul><li><em>Gain <strong>Swift </strong>for the rest of the scene.(Increase your <strong>【DEX】</strong> die by 1 stage </em>(to a maximum for D12)<em> )</em></li></ul></blockquote>",
           "consumable_ip": "2",
           "consumable_label": "",
           "name": "Café au Lait"
@@ -3572,7 +3573,7 @@
           "def_bonus": "",
           "defense": "0",
           "defense_include_dex": false,
-          "description": "<ul>\n<li>You are immune to <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Fear.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.TOF8epes1eGHwx5J]{Frightened}</strong></li>\n</ul>",
+          "description": "<ul>\n<li>You are immune to <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Fear.png\" alt=\"\" width=\"21\" height=\"21\"><a class=\"content-link\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\">Frightened</a></li>\n</ul>",
           "details_roller": "Show",
           "initiative": "0",
           "magic_defense": "0",
@@ -3888,7 +3889,7 @@
           "check_bonus": "0",
           "cost": "1500",
           "damage_bonus": "5",
-          "description": "<ul><li><p>When you attack with this weapon, inflicts <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.rBnvYhLfmrVZDdoW\" data-id=\"rBnvYhLfmrVZDdoW\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\"><strong>Blind</strong></a> to the target for <strong>1 Round.</strong></p></li><li><p>When a creature target you with a <strong>Melee Attack,&nbsp;</strong>inflicts <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.rBnvYhLfmrVZDdoW\" data-id=\"rBnvYhLfmrVZDdoW\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\"><strong>Blind</strong></a> to the attacker until the end of this turn before the attacks. You may use this ability even if you don't have Pocket Sand equipped.</p></li></ul>",
+          "description": "<ul><li><p>When you attack with this weapon, inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.rBnvYhLfmrVZDdoW\" data-id=\"rBnvYhLfmrVZDdoW\" data-type=\"JournalEntry\">Blind</a> to the target for <strong>1 Round.</strong></p></li><li><p>When a creature target you with a <strong>Melee Attack,&nbsp;</strong>inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.rBnvYhLfmrVZDdoW\" data-id=\"rBnvYhLfmrVZDdoW\" data-type=\"JournalEntry\">Blind</a> to the attacker until the end of this turn before the attacks. You may use this ability even if you don't have Pocket Sand equipped.</p></li></ul>",
           "hand_slots": "Two-handed",
           "martial": false,
           "name": "Pocket Sand",
@@ -3937,7 +3938,7 @@
           "def_bonus": "",
           "defense": "12",
           "defense_include_dex": false,
-          "description": "<ul><li>When you receive damage, you may choose to receive <strong>10 extra damage</strong>. If you do, your next attack or spell that require accuracy check may deals <strong>10 extra damage</strong>.</li><li>If you receive damage from a creature that you have a <strong>hatred </strong>bond with, you may receive above benefit <strong>without</strong> receiving <strong>extra damage</strong>.</li></ul><p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li>When you hit a creature with an attack, Gain <strong>10&nbsp;HP</strong></li></ul><hr contenteditable=\"false\"><p><strong>3-Piece</strong></p><ul><li>????????</li></ul><hr class=\"\" contenteditable=\"false\">",
+          "description": "<ul><li>When you receive damage, you may choose to receive <strong>10 extra damage</strong>. If you do, your next attack or spell that require accuracy check may deals <strong>10 extra damage</strong>.</li><li>If you receive damage from a creature that you have a <strong>hatred </strong>bond with, you may receive above benefit <strong>without</strong> receiving <strong>extra damage</strong>.</li></ul>",
           "flavor_text": "<p><em>When the three pieces have been gathered, the Spirit of Vengeance shall returns</em></p>",
           "initiative": "0",
           "magic_defense": "0",
@@ -3945,6 +3946,7 @@
           "martial": true,
           "mdef_bonus": "",
           "name": "Revenge Mail",
+          "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li>When you hit a creature with an attack, Gain <strong>10&nbsp;HP</strong></li></ul><hr contenteditable=\"false\"><p><strong>3-Piece</strong></p><ul><li>????????</li></ul>",
           "set_name": "Spirit of Vengence",
           "shield": false
         },
@@ -4034,7 +4036,7 @@
           "check_bonus": "0",
           "cost": "2200",
           "damage_bonus": "10",
-          "description": "<ul><li><p>When you hit one or more creatures with an offensive spell, each of them suffers <strong>@UUID[JournalEntry.JltwIqzHbBKhkD45]{Poisoned},&nbsp;</strong>if they are already poisoned, they suffer <strong>@UUID[JournalEntry.XRlyg27yLgoQUOXZ]{Envenomed}&nbsp;</strong>instead.</p></li></ul>",
+          "description": "<ul><li><p>When you hit one or more creatures with an offensive spell, each of them suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\">Poisoned</a>,&nbsp;</strong>if they are already poisoned, they suffer <a class=\"content-link\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\">Envenomed</a>&nbsp;instead.</p></li></ul>",
           "hand_slots": "Two-handed",
           "martial": false,
           "name": "Refflesia Staff",
@@ -4132,7 +4134,7 @@
           "def_bonus": "",
           "defense": "11",
           "defense_include_dex": false,
-          "description": "<ul>\n<li>You have Resistance to <strong>dark</strong> damage.</li>\n</ul>",
+          "description": "<ul>\n<li>You have Resistance to <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a> damage.</li>\n</ul>",
           "initiative": "-3",
           "magic_defense": "0",
           "magic_defense_include_ins": true,
@@ -4241,7 +4243,7 @@
           "condition_hypothermia": "",
           "cost": "2550",
           "damage_bonus": "18",
-          "description": "<ul>\n<li>You gain a +1 bonus to <strong>Defense</strong> and <strong>Magic Defense</strong></li>\n<li>You have <strong>immunity</strong> to <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/northerlies.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.QgECPH7ZhbRhag3K]{Hypothermia}&nbsp;</strong></li>\n</ul>",
+          "description": "<ul>\n<li>You gain a +1 bonus to <strong>Defense</strong> and <strong>Magic Defense</strong></li>\n<li>You have <strong>immunity</strong> to <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/northerlies.png\" alt=\"\" width=\"21\" height=\"21\"><a class=\"content-link\" data-uuid=\"JournalEntry.QgECPH7ZhbRhag3K\" data-id=\"QgECPH7ZhbRhag3K\" data-type=\"JournalEntry\">Hypothermia</a>&nbsp;</li>\n</ul>",
           "hand_slots": "Two-handed",
           "item_def_bonus": "1",
           "item_mdef_bonus": "1",
@@ -4286,7 +4288,7 @@
         "container": null,
         "props": {
           "consumable_cost": "25",
-          "consumable_description": "<blockquote>\n<ul>\n<li><em>Gain <strong>Swift </strong>for the rest of the scene<strong>.(</strong>Increase your <strong>【DEX】</strong> die by 1 stage </em>(to a maximum for D12)<em> )</em></li>\n</ul>\n</blockquote>",
+          "consumable_description": "<blockquote>\n<ul>\n<li><em>Gain <strong>Swift </strong>for the rest of the scene.(Increase your <strong>【DEX】</strong> die by 1 stage </em>(to a maximum for D12)<em> )</em></li>\n</ul>\n</blockquote>",
           "consumable_label": "",
           "name": "Café au Lait"
         },
@@ -4617,13 +4619,14 @@
           "check_bonus": "3",
           "cost": "2700",
           "damage_bonus": "12",
-          "description": "<ul>\n<li>Gain the&nbsp;<strong>Counterattack</strong> Ability. Additionally, You can Counter all basic attacks with this weapon regardless of their Accuracy Check.</li>\n<li>When you attack with this weapon, if you have a bond of&nbsp;<strong>Hatred&nbsp;</strong>towards your target, deals <strong>5</strong> bonus damage.</li>\n<li>All&nbsp;<strong>attacks</strong> against you automatically hit, ignoring Accuracy Checks.</li>\n</ul>\n<p><strong>【Set Bonus】</strong></p>\n<p><strong>2-Piece</strong></p>\n<ul>\n<li>When you hit a creature with an attack, Gain <strong>10</strong><strong>&nbsp;HP</strong></li>\n</ul>\n<hr>\n<p><strong>3-Piece</strong></p>\n<ul>\n<li>????????</li>\n</ul>\n<hr>\n<p>&nbsp;</p>",
+          "description": "<ul>\n<li>Gain the&nbsp;<strong>Counterattack</strong> Ability. Additionally, You can Counter all basic attacks with this weapon regardless of their Accuracy Check.</li>\n<li>When you attack with this weapon, if you have a bond of&nbsp;<strong>Hatred&nbsp;</strong>towards your target, deals <strong>5</strong> bonus damage.</li>\n<li>All&nbsp;<strong>attacks</strong> against you automatically hit, ignoring Accuracy Checks.</li>\n</ul>",
           "flavor_text": "<p><em>When the three pieces have been gathered, the Spirit of Vengeance shall returns</em></p>",
           "hand_slots": "One-handed",
           "martial": false,
           "name": "Revenge Sword",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
+          "set_description": "<p><strong>【Set Bonus】</strong></p>\n<p><strong>2-Piece</strong></p>\n<ul>\n<li>When you hit a creature with an attack, Gain <strong>10</strong><strong>&nbsp;HP</strong></li>\n</ul>\n<hr>\n<p><strong>3-Piece</strong></p>\n<ul>\n<li>????????</li>\n</ul>",
           "set_name": "Spirit of Vengeance",
           "type_damage": "Physical",
           "weapon_range": "Melee"
@@ -4661,7 +4664,7 @@
         "container": null,
         "props": {
           "name": "Magic Mushroom",
-          "recipe_description": "<ul><li>Inflicts a <strong>Random Status Effect </strong>to you. <em>(Randomize from all status in the game)</em></li></ul>",
+          "recipe_description": "<ul><li>Inflicts a&nbsp;<strong>Random Status Effect&nbsp;</strong>to you. <em>(Randomize from all status in the game)</em></li></ul>",
           "recipe_ip": "1",
           "recipe_label": ""
         },
@@ -4699,7 +4702,7 @@
         "container": null,
         "props": {
           "consumable_cost": "25",
-          "consumable_description": "<blockquote>\n<ul>\n<li><em>Gain <strong>Focus</strong> for the rest of the scene.<strong> (</strong>Increase your <strong>【INS】</strong> die by 1 stage </em>(to a maximum for D12))<em>&nbsp;</em></li>\n</ul>\n</blockquote>",
+          "consumable_description": "<blockquote>\n<ul>\n<li><em>Gain <strong>Focus</strong> for the rest of the scene. (Increase your <strong>【INS】</strong> die by 1 stage </em>(to a maximum for D12))<em>&nbsp;</em></li>\n</ul>\n</blockquote>",
           "consumable_flavor": "<blockquote>\n<p>Wanna be a doctor....? Drink this!</p>\n</blockquote>\n<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ―<em>Someone who is not a Doctor</em></p>",
           "consumable_ip": "",
           "consumable_label": "",
@@ -4797,7 +4800,7 @@
           "check_bonus": "0",
           "cost": "750",
           "damage_bonus": "4",
-          "description": "<ul>\n<li>You are immune to <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGIC%20ATTACK%20DOWN.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.ImFKpNNGjstom7Q9]{Shaken}</strong></li>\n</ul>",
+          "description": "<ul>\n<li>You are immune to <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGIC%20ATTACK%20DOWN.png\" alt=\"\" width=\"21\" height=\"21\"><a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\">Shaken</a></li>\n</ul>",
           "hand_slots": "One-handed",
           "martial": false,
           "name": "Dusk Star",
@@ -5009,7 +5012,7 @@
           "class": "Weaponmaster",
           "cost": "10 MP",
           "damage_bonus": "0",
-          "description": "<p>When you perform a <strong>melee attack</strong>, you may spend <strong>10 Mind Points</strong> to choose one option:</p><ul><li><p>the attack gains <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Multi</strong></a><strong>&nbsp;2</strong></p></li><li><p>Increase the attack's multi property by one, up to a maximum of <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Multi</strong></a><strong>&nbsp;3</strong></p></li></ul>",
+          "description": "<p>When you perform a <strong>melee attack</strong>, you may spend <strong>10 Mind Points</strong> to choose one option:</p><ul><li><p>the attack gains <a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\">Multi</a><strong>&nbsp;2</strong></p></li><li><p>Increase the attack's multi property by one, up to a maximum of <a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\">Multi</a><strong>&nbsp;3</strong></p></li></ul>",
           "duration": "-",
           "effect_table": {
             "0": {
@@ -5364,7 +5367,7 @@
           "def_bonus": "",
           "defense": "0",
           "defense_include_dex": false,
-          "description": "<ul>\n<li>You are immune to <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/cross_reaping.png\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[JournalEntry.GePNxftPupElcCWp]{Bleed}</strong></li>\n</ul>",
+          "description": "<ul>\n<li>You are immune to <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/cross_reaping.png\" alt=\"\" width=\"21\" height=\"21\"><a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\">Bleed</a></li>\n</ul>",
           "details_roller": "Show",
           "initiative": "0",
           "magic_defense": "0",
@@ -5536,13 +5539,14 @@
           "def_bonus": "+1",
           "defense": "0",
           "defense_include_dex": true,
-          "description": "<ul>\n<li>Your attacks with a&nbsp;<strong>Sword&nbsp;</strong>or&nbsp;<strong>Firearm&nbsp;</strong>weapon deal&nbsp;<strong>5 bonus damage</strong></li>\n</ul>\n<hr>\n<p><strong>【Set Bonus】</strong></p>\n<ul>\n<li style=\"list-style-type: none;\">\n<p><strong>2 Piece</strong></p>\n<ul>\n<li>You deal <strong>10</strong> <strong>bonus damage&nbsp;</strong>to creature whose&nbsp;<strong>level&nbsp;</strong>is lower than you<br><hr></li>\n</ul>\n<p><strong>3 Piece</strong></p>\n<ul>\n<li>Creature whose&nbsp;<strong>level </strong>is lower than you start the&nbsp;<strong>conflict&nbsp;</strong>with <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Fear.png\" width=\"21\" height=\"21\">@UUID[JournalEntry.TOF8epes1eGHwx5J]{Frightened} which last for&nbsp;<strong>1</strong> Round</li>\n</ul>\n</li>\n</ul>",
+          "description": "<ul>\n<li>Your attacks with a&nbsp;<strong>Sword&nbsp;</strong>or&nbsp;<strong>Firearm&nbsp;</strong>weapon deal&nbsp;<strong>5 bonus damage</strong></li>\n</ul>",
           "initiative": "0",
           "magic_defense": "0",
           "magic_defense_include_ins": true,
           "martial": false,
           "mdef_bonus": "+2",
           "name": "Enforcer Uniform",
+          "set_description": "<p><strong>【Set Bonus】</strong></p>\n<ul>\n<li style=\"list-style-type: none;\">\n<p><strong>2 Piece</strong></p>\n<ul>\n<li>You deal <strong>10</strong> <strong>bonus damage&nbsp;</strong>to creature whose&nbsp;<strong>level&nbsp;</strong>is lower than you<br><hr></li>\n</ul>\n<p><strong>3 Piece</strong></p>\n<ul>\n<li>Creature whose&nbsp;<strong>level </strong>is lower than you start the&nbsp;<strong>conflict&nbsp;</strong>with <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Fear.png\" width=\"21\" height=\"21\"><a class=\"content-link\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\">Frightened</a> which last for&nbsp;<strong>1</strong> Round</li>\n</ul></li>\n</ul>",
           "set_name": "Arm of the Law",
           "shield": false
         },
@@ -5696,7 +5700,7 @@
         "container": null,
         "props": {
           "consumable_cost": "20",
-          "consumable_description": "<ul><li><p>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Charm</span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span>to the target until the end of this turn.</p></li><li><p>Deal <strong>5 Fire </strong>damage to the target</p></li><li><p>Only usable on <strong>Humanoid</strong> creatures</p></li></ul>",
+          "consumable_description": "<ul><li><p>Inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\">Charm</a>&nbsp;to the target until the end of this turn.</p></li><li><p>Deal <strong>5 <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> </strong>damage to the target</p></li><li><p>Only usable on <strong>Humanoid</strong> creatures</p></li></ul>",
           "consumable_flavor": "<p>\"This is a potion that warms your body up\"</p><p>  <em>―Cheshire</em></p>",
           "consumable_label": "",
           "name": "Suspicious Potion"

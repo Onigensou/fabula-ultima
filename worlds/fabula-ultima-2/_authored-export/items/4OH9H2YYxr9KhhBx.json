@@ -78,7 +78,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>At the start of your turn, gain&nbsp;<strong>5 </strong>@UUID[JournalEntry.wrw2ENSwzCBjztvt]{Shield}</li></ul>",
+      "description": "<ul><li>At the start of your turn, gain&nbsp;<strong>5 </strong><a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

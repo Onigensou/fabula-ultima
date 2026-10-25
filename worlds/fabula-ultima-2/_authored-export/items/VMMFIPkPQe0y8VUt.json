@@ -24,7 +24,7 @@
   "system": {
     "container": "9G7GfCYAFNV1ojkx",
     "props": {
-      "description": "<p>Equipped passive: Conquer 5 — when you beat a Beast creature's Defense by 5 or more with this weapon, it suffers Frightened.</p>",
+      "description": "<p>Equipped passive: Conquer 5 — when you beat a Beast creature's Defense by 5 or more with this weapon, it suffers <a class=\"content-link\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\">Frightened</a>.</p>",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace",

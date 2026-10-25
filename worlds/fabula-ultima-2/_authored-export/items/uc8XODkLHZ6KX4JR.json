@@ -59,7 +59,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Charm</span></strong></a><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span>to the target until the end of this turn.</p></li><li><p>Deal <strong>5 Fire </strong>damage to the target</p></li><li><p>Only usable on <strong>Humanoid</strong> creatures</p></li></ul>",
+      "description": "<ul><li><p>Inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\">Charm</a>&nbsp;to the target until the end of this turn.</p></li><li><p>Deal <strong>5 <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> </strong>damage to the target</p></li><li><p>Only usable on <strong>Humanoid</strong> creatures</p></li></ul>",
       "dragon_ef": "100",
       "effect_table": {
         "0": {
@@ -115,7 +115,7 @@
           "id": "${item.id}",
           "name": "Suspicious Potion",
           "skill_cost": "-",
-          "skill_description": "<ul><li><p><em>Inflicts <strong>Charmed</strong> on the target until the end of this turn and deals <strong>5 fire damage</strong>. Only usable on Humanoid creatures.</em></p></li></ul>",
+          "skill_description": "<ul><li><p><em>Inflicts <strong>Charmed</strong> on the target until the end of this turn and deals <strong>5 <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage</strong>. Only usable on Humanoid creatures.</em></p></li></ul>",
           "skill_maxLevel": 1,
           "uuid": "Item.oPArvDPR78Doo2jl"
         }
@@ -130,7 +130,7 @@
         "oPArvDPR78Doo2jl": {
           "id": "${item.id}",
           "name": "Suspicious Potion",
-          "related_item_description": "<ul><li><p><em>Inflicts <strong>Charmed</strong> on the target until the end of this turn and deals <strong>5 fire damage</strong>. Only usable on Humanoid creatures.</em></p></li></ul>",
+          "related_item_description": "<ul><li><p><em>Inflicts <strong>Charmed</strong> on the target until the end of this turn and deals <strong>5 <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage</strong>. Only usable on Humanoid creatures.</em></p></li></ul>",
           "uuid": "Item.oPArvDPR78Doo2jl"
         }
       },

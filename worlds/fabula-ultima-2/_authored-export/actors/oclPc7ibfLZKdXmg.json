@@ -52,7 +52,7 @@
           "cost": "-",
           "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the <strong>Phobo Gorger</strong> absorbs <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;damage</p></li></ul><p>It drinks the blow down and puffs up on it, gaining <strong>1 Eaten</strong>.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\">Trigger</a>&nbsp;the <strong>Phobo Gorger</strong> absorbs <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a>&nbsp;damage</p></li></ul><p>It drinks the blow down and puffs up on it, gaining <strong>1 Eaten</strong>.</p>",
           "details_roller": "Show",
           "duration": "-",
           "effect_table": {
@@ -222,7 +222,7 @@
           "cost": "10 x T MP",
           "damage_bonus": "15",
           "defense_target_type": "mdef",
-          "description": "<p>The Gorger belches a gout of <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;at up to three creatures.</p>",
+          "description": "<p>The Gorger belches a gout of <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a>&nbsp;at up to three creatures.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {},
@@ -297,7 +297,7 @@
           "cost": "-",
           "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the <strong>Phobo Gorger</strong> is reduced to 0 HP</p></li></ul><p>It goes off. Every enemy is caught in a burst of <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;— the more it had <strong>Eaten</strong>, the worse this is, and by the third swell it is genuinely dangerous.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\">Trigger</a>&nbsp;the <strong>Phobo Gorger</strong> is reduced to 0 HP</p></li></ul><p>It goes off. Every enemy is caught in a burst of <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a>&nbsp;— the more it had <strong>Eaten</strong>, the worse this is, and by the third swell it is genuinely dangerous.</p>",
           "details_roller": "Show",
           "duration": "-",
           "effect_table": {

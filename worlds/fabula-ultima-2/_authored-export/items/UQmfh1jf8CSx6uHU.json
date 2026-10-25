@@ -36,7 +36,7 @@
       "damage_bonus": "8",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>When you attack with this weapon on an even round, the attack gains @UUID[JournalEntry.Gm3upxgpUVoLSK5u]{Multi 3} and deals 10 extra damage.</p></li></ul>",
+      "description": "<ul><li><p>When you attack with this weapon on an even round, the attack gains <a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\">Multi 3</a> and deals 10 extra damage.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -65,16 +65,26 @@
       "item_mdef_bonus": "0",
       "item_quantity": "1",
       "item_rarity": "Uncommon",
+      "item_skill_passive": {
+        "IGxIeTephfjr422G": {
+          "skill_description": "<ul><li><p>When you attack with this weapon on an even round, the attack gains <a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\">Multi 3</a> and deals 10 extra damage.</p></li></ul>"
+        }
+      },
       "item_type": "weapon",
       "mimic_ef": "100",
       "monster_ef": "100",
       "name": "Explosion Whip",
       "optional_params": {},
       "plant_ef": "100",
+      "related_item_list": {
+        "IGxIeTephfjr422G": {
+          "related_item_description": "<ul><li><p>When you attack with this weapon on an even round, the attack gains <a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\">Multi 3</a> and deals 10 extra damage.</p></li></ul>"
+        }
+      },
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "DEX",
-      "set_description": "<p><strong>【Set Bonus】</strong></p>",
+      "set_description": "",
       "set_name": "",
       "skill_target": "Up to (1 + 2 * (ROUND % 2 == 0 && ROUND > 0)) creatures",
       "soldier_ef": "100",

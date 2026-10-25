@@ -131,7 +131,7 @@
       "damage_bonus": "18",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>You gain a +1 bonus to <strong>Defense</strong> and <strong>Magic Defense</strong></li><li><p>You have <strong>immunity</strong> to <strong>@UUID[JournalEntry.QgECPH7ZhbRhag3K]{Hypothermia}&nbsp;</strong></p></li></ul>",
+      "description": "<ul><li>You gain a +1 bonus to <strong>Defense</strong> and <strong>Magic Defense</strong></li><li><p>You have <strong>immunity</strong> to <a class=\"content-link\" data-uuid=\"JournalEntry.QgECPH7ZhbRhag3K\" data-id=\"QgECPH7ZhbRhag3K\" data-type=\"JournalEntry\">Hypothermia</a>&nbsp;</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

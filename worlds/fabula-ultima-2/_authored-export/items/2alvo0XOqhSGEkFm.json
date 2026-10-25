@@ -328,7 +328,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>When an ally who is able to see you causes you to recover <strong>Hit Points</strong>, if you are in @UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}, that ally recovers <strong>5</strong> Mind Points.</p></li></ul>",
+      "description": "<ul><li><p>When an ally who is able to see you causes you to recover <strong>Hit Points</strong>, if you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, that ally recovers <strong>5</strong> Mind Points.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -358,6 +358,11 @@
       "item_mdef_bonus": "+1",
       "item_quantity": "1",
       "item_rarity": "Common",
+      "item_skill_passive": {
+        "2AO7brQmvgfkHRl6": {
+          "skill_description": "<p>When an ally restores your HP while you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, that ally recovers 5 MP.</p>"
+        }
+      },
       "item_type": "armor",
       "mimic_ef": "100",
       "monster_ef": "100",
@@ -366,6 +371,11 @@
       "plant_ef": "100",
       "refine_count": "0",
       "refine_level": "0",
+      "related_item_list": {
+        "2AO7brQmvgfkHRl6": {
+          "related_item_description": "<p>When an ally restores your HP while you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, that ally recovers 5 MP.</p>"
+        }
+      },
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "DEX",

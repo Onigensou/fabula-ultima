@@ -75,7 +75,7 @@
       "damage_bonus": "5",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>You have Immunity to<strong> Dark</strong> damage.</li><li>You deal 200% damage to <strong>Beast</strong> type monster.</li></ul>",
+      "description": "<ul><li>You have Immunity to<a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a> damage.</li><li>You deal 200% damage to <strong>Beast</strong> type monster.</li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

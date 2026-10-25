@@ -72,7 +72,7 @@
       "damage_bonus": "5",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>You gain +1 to all Checks that involve <strong>Cooking</strong></p></li><li><p><strong>Consumable </strong>you use<strong> </strong>restore 5 additional <strong>HP </strong>and <strong>MP</strong></p></li></ul>",
+      "description": "<ul><li><p>You gain +1 to all Checks that involve <strong>Cooking</strong></p></li><li><p><strong>Consumable </strong>you use restore 5 additional <strong>HP </strong>and <strong>MP</strong></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

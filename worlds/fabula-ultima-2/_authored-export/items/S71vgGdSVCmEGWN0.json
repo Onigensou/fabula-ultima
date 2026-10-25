@@ -60,7 +60,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>Summon the <strong>Companion </strong>@UUID[Actor.DMHfh4ChYzXNkMGe]{Decoy Doll}, this <strong>companion</strong> disappear at the end of this scene</p></li></ul>",
+      "description": "<ul><li><p>Summon the <strong>Companion </strong><strong>Decoy Doll</strong>, this <strong>companion</strong> disappear at the end of this scene</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

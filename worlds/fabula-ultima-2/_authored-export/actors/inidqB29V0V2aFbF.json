@@ -51,7 +51,7 @@
           "cost": "-",
           "damage_bonus": "30",
           "defense_target_type": "def",
-          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature. On hit, it suffers <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Slow</strong></a>.</p>",
+          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a>&nbsp;damage to one creature. On hit, it suffers <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\">Slow</a>.</p>",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -399,7 +399,7 @@
           "cost": "-",
           "damage_bonus": "30",
           "defense_target_type": "def",
-          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;damage to one creature. If it hits a creature suffering from <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Slow</strong></a>, one other <strong>Voidog</strong> that has not attacked this turn performs a free <strong>Attack</strong>.</p>",
+          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a>&nbsp;damage to one creature. If it hits a creature suffering from <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\">Slow</a>, one other <strong>Voidog</strong> that has not attacked this turn performs a free <strong>Attack</strong>.</p>",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {

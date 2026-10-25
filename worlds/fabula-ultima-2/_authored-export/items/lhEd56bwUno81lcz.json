@@ -63,7 +63,7 @@
       "category": "Brawling",
       "check_bonus": "1",
       "damage_bonus": "15",
-      "description": "<p>When the creature equipping this weapon receives <strong>Fire </strong>damage, they receives following benefits <strong>until the end of round</strong>:</p><ul><li><p>You may considers this weapon as <strong>Arcane</strong> weapon for the purpose of performing <strong>attacks</strong>, <strong>spells</strong> or <strong>skills</strong>.</p></li><li><p>Your attack deals <strong>5</strong> extra damage.</p></li></ul>",
+      "description": "<p>When the creature equipping this weapon receives <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a>damage, they receives following benefits <strong>until the end of round</strong>:</p><ul><li><p>You may considers this weapon as <strong>Arcane</strong> weapon for the purpose of performing <strong>attacks</strong>, <strong>spells</strong> or <strong>skills</strong>.</p></li><li><p>Your attack deals <strong>5</strong> extra damage.</p></li></ul>",
       "hand_slots": "Two-handed",
       "isMartial": false,
       "item_cost": "2550",

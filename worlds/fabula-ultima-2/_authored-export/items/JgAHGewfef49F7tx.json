@@ -38,7 +38,7 @@
   "system": {
     "container": null,
     "props": {
-      "description": "<ul><li>Inflicts a <strong>Random Status Effect </strong>to you. <em>(Randomize from all status in the game)</em></li></ul>",
+      "description": "<ul><li>Inflicts a&nbsp;<strong>Random Status Effect&nbsp;</strong>to you. <em>(Randomize from all status in the game)</em></li></ul>",
       "ip_cost": "1",
       "item_type": "recipe",
       "name": "Magic Mushroom"

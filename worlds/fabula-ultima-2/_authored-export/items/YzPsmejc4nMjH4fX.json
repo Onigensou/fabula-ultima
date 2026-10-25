@@ -167,7 +167,7 @@
       "damage_bonus": "8",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>On hit, Inflicts <strong>@UUID[JournalEntry.QgECPH7ZhbRhag3K]{Hypothermia}&nbsp;</strong>to target for <strong>1 Round.</strong></p></li></ul>",
+      "description": "<ul><li><p>On hit, Inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.QgECPH7ZhbRhag3K\" data-id=\"QgECPH7ZhbRhag3K\" data-type=\"JournalEntry\">Hypothermia</a>&nbsp;to target for <strong>1 Round.</strong></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

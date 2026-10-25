@@ -103,7 +103,7 @@
       "damage_bonus": "12",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p><strong>@UUID[JournalEntry.ljKBtlzPVvhhmdHW]{Weighted}</strong></p></li><li><p>If you roll a <strong>critical success</strong> on an Accuracy Check with this weapon, that attack deals <strong>300%</strong> damage.</p></li></ul>",
+      "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.ljKBtlzPVvhhmdHW\" data-id=\"ljKBtlzPVvhhmdHW\" data-type=\"JournalEntry\">Weighted</a></p></li><li><p>If you roll a <strong>critical success</strong> on an Accuracy Check with this weapon, that attack deals <strong>300%</strong> damage.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

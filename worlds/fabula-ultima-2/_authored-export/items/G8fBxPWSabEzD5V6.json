@@ -328,7 +328,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul>\n<li>As long as you are affected by one or more spells with a duration of &ldquo;Scene&rdquo;, you gain a <strong>+2</strong> bonus to <strong>Magic Defense</strong>.</li>\n</ul>",
+      "description": "<ul>\n<li>As long as you are affected by one or more spells with a duration of “Scene”, you gain a <strong>+2</strong> bonus to <strong>Magic Defense</strong>.</li>\n</ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

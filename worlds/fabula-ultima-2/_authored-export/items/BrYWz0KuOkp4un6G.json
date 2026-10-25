@@ -49,7 +49,7 @@
       "damage_bonus": "16",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>You <strong>Absorb poison</strong> damage. Whenever you absorb <strong>poison&nbsp;</strong>damage, your next attack this round deals <strong>10</strong> bonus damage.</li><li><p>You are immune to <strong>@UUID[JournalEntry.JltwIqzHbBKhkD45]{Poisoned}&nbsp;</strong>and <strong>@UUID[JournalEntry.XRlyg27yLgoQUOXZ]{Envenomed}</strong></p></li></ul>",
+      "description": "<ul><li>You <strong>Absorb <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\">Poison</a></strong> damage. Whenever you absorb <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\">Poison</a>damage, your next attack this round deals <strong>10</strong> bonus damage.</li><li><p>You are immune to <a class=\"content-link\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\">Poisoned</a>&nbsp;and <a class=\"content-link\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\">Envenomed</a></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

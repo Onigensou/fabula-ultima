@@ -72,7 +72,7 @@
       "damage_bonus": "10",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>You are immune to <strong>@UUID[JournalEntry.KYehgac3Pw1fKC9S]{Weak}</strong></p></li><li><p>Attack from this weapon deal <strong>5 extra damage</strong> to creature in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li></ul>",
+      "description": "<ul><li><p>You are immune to <a class=\"content-link\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\">Weak</a></p></li><li><p>Attack from this weapon deal <strong>5 extra damage</strong> to creature in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

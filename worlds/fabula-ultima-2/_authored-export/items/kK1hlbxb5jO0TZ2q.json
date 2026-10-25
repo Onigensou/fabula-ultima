@@ -52,7 +52,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>Learned how to create&nbsp;<strong>@UUID[Item.2YYYYUAxJ2DPo6Lc]{Tincture of Spirit}</strong> with <strong>3 IP</strong></li></ul>",
+      "description": "<ul><li>Learned how to create&nbsp;<a class=\"content-link\" data-uuid=\"Item.2YYYYUAxJ2DPo6Lc\" data-id=\"2YYYYUAxJ2DPo6Lc\" data-type=\"Item\">Tincture of Spirit</a> with <strong>3 IP</strong></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

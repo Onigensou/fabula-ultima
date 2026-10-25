@@ -40,7 +40,7 @@
       "category": "Brawling",
       "check_bonus": "0",
       "damage_bonus": "10",
-      "description": "<p>If you take 30 or more damage in one hit, Your next attack gain +10 damage and @UUID[JournalEntry.CRPjA4dHUYLSAh0M]{Drain}</p>",
+      "description": "<p>If you take 30 or more damage in one hit, Your next attack gain +10 damage and <a class=\"content-link\" data-uuid=\"JournalEntry.CRPjA4dHUYLSAh0M\" data-id=\"CRPjA4dHUYLSAh0M\" data-type=\"JournalEntry\">Drain</a></p>",
       "hand_slots": "One-handed",
       "isMartial": true,
       "item_cost": "0",

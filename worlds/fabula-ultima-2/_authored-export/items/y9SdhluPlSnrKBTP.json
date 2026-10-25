@@ -39,7 +39,7 @@
   "system": {
     "container": null,
     "props": {
-      "description": "<ul>\n<li>Learned how to create <strong>Caf&eacute; au Lait</strong> with <strong>2 IP</strong></li>\n</ul>",
+      "description": "<ul>\n<li>Learned how to create <strong>Café au Lait</strong> with <strong>2 IP</strong></li>\n</ul>",
       "ip_cost": "2",
       "item_cost": "450",
       "item_type": "recipe",

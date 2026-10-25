@@ -72,7 +72,7 @@
       "damage_bonus": "4",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>You are immune to <strong>@UUID[JournalEntry.ImFKpNNGjstom7Q9]{Shaken}</strong></p></li></ul>",
+      "description": "<ul><li><p>You are immune to <a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\">Shaken</a></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

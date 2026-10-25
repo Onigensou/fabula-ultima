@@ -40,7 +40,7 @@
       "category": "Sword",
       "check_bonus": "1",
       "damage_bonus": "10",
-      "description": "<ul><li><p>This weapon can target <strong>@UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying}</strong> creatures</p></li><li>If you roll a critical success on an Accuracy Check with this weapon, you may spend that <strong>opportunity</strong> deal 10 bonus damage, if you do, your damage becomes <strong>Fire.</strong></li></ul>",
+      "description": "<ul><li><p>This weapon can target <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\">Flying</a> creatures</p></li><li>If you roll a critical success on an Accuracy Check with this weapon, you may spend that <strong>opportunity</strong> deal 10 bonus damage, if you do, your damage becomes <strong>Fire.</strong></li></ul>",
       "flavor_text": "<hr>\n<blockquote>\n<p>...Not to be confused with a Gunblade</p>\n</blockquote>",
       "hand_slots": "Two-handed",
       "isMartial": true,

@@ -78,7 +78,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>When you deal damage to a creature using an <strong>elemental shard</strong>, that creature also suffers the @UUID[JournalEntry.3nmUvPei3zrOJkEt]{Dazed}&nbsp;status effect.</p></li></ul>",
+      "description": "<ul><li><p>When you deal damage to a creature using an <strong>elemental shard</strong>, that creature also suffers the <a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\">Dazed</a>&nbsp;status effect.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

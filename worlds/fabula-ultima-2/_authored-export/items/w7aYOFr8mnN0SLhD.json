@@ -73,7 +73,7 @@
       "damage_bonus": "8",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.KYehgac3Pw1fKC9S]{Weak},&nbsp;</strong>if they already suffers&nbsp;<strong>Weak,&nbsp;</strong>they suffers <strong>@UUID[JournalEntry.QgECPH7ZhbRhag3K]{Hypothermia}&nbsp;</strong>instead.</p></li></ul>",
+      "description": "<ul><li><p>Each target hit by this weapon suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\">Weak</a>,&nbsp;</strong>if they already suffers&nbsp;<strong>Weak,&nbsp;</strong>they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.QgECPH7ZhbRhag3K\" data-id=\"QgECPH7ZhbRhag3K\" data-type=\"JournalEntry\">Hypothermia</a>&nbsp;instead.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -103,6 +103,11 @@
       "item_mdef_bonus": "0",
       "item_quantity": "1",
       "item_rarity": "Uncommon",
+      "item_skill_passive": {
+        "xLdAspRazwaLWNew": {
+          "skill_description": "<ul><li><p>Each target hit by this weapon suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\">Weak</a>,&nbsp;</strong>if they already suffers&nbsp;<strong>Weak,&nbsp;</strong>they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.QgECPH7ZhbRhag3K\" data-id=\"QgECPH7ZhbRhag3K\" data-type=\"JournalEntry\">Hypothermia</a>&nbsp;instead.</p></li></ul>"
+        }
+      },
       "item_type": "weapon",
       "mimic_ef": "100",
       "monster_ef": "100",
@@ -111,6 +116,11 @@
       "plant_ef": "100",
       "refine_count": "0",
       "refine_level": "0",
+      "related_item_list": {
+        "xLdAspRazwaLWNew": {
+          "related_item_description": "<ul><li><p>Each target hit by this weapon suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\">Weak</a>,&nbsp;</strong>if they already suffers&nbsp;<strong>Weak,&nbsp;</strong>they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.QgECPH7ZhbRhag3K\" data-id=\"QgECPH7ZhbRhag3K\" data-type=\"JournalEntry\">Hypothermia</a>&nbsp;instead.</p></li></ul>"
+        }
+      },
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "INS",

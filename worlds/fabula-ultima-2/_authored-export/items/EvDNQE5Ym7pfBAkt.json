@@ -87,7 +87,7 @@
       "cost": "-",
       "damage_bonus": "0",
       "defense_target_type": "def",
-      "description": "<p>Once per round, When an enemy attack you a <strong>misses, </strong>you may immediately perform a <strong>Pass </strong>Skill<strong> </strong>as a <strong>Reaction</strong>, if this <strong>Pass </strong>would targets an enemy, it must target the enemy triggering this effect as one of its targets.</p>",
+      "description": "<p>Once per round, When an enemy attack you a <strong>misses, </strong>you may immediately perform a <strong>Pass </strong>Skill as a <strong>Reaction</strong>, if this <strong>Pass </strong>would targets an enemy, it must target the enemy triggering this effect as one of its targets.</p>",
       "details_roller": "Show",
       "duration": "-",
       "effect_table": {

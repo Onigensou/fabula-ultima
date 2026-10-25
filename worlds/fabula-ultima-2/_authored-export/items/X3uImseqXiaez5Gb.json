@@ -63,7 +63,7 @@
       "category": "Dagger",
       "check_bonus": "1",
       "damage_bonus": "4",
-      "description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.ImFKpNNGjstom7Q9]{Shaken},&nbsp;</strong>if they are already shaken, they suffers <strong>@UUID[JournalEntry.TOF8epes1eGHwx5J]{Frightened}&nbsp;</strong>instead.</p></li></ul>",
+      "description": "<ul><li><p>Each target hit by this weapon suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\">Shaken</a>,&nbsp;</strong>if they are already shaken, they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\">Frightened</a>&nbsp;instead.</p></li></ul>",
       "hand_slots": "One-handed",
       "isMartial": false,
       "item_cost": "1650",

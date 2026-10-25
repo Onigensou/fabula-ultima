@@ -310,7 +310,7 @@
           "cost": "-",
           "damage_bonus": "39",
           "defense_target_type": "def",
-          "description": "<p>Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;damage to one creature and drain <strong>20%</strong> of its maximum MP. Bonus damage increases with the MP drained.</p>",
+          "description": "<p>Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a>&nbsp;damage to one creature and drain <strong>20%</strong> of its maximum MP. Bonus damage increases with the MP drained.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
@@ -419,7 +419,7 @@
           "cost": "-",
           "damage_bonus": "0",
           "defense_target_type": "",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Flying</strong></a></p></li></ul>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\">Flying</a></p></li></ul>",
           "details_roller": "Show",
           "duration": "-",
           "effect_table": {
@@ -632,7 +632,7 @@
           "cost": "10 MP",
           "damage_bonus": "55",
           "defense_target_type": "def",
-          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to one creature and inflict <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Paralyzed</strong></a>.</p>",
+          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a>&nbsp;damage to one creature and inflict <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\">Paralyzed</a>.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {

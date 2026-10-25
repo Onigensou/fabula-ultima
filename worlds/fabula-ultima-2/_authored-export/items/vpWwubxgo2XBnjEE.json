@@ -37,7 +37,7 @@
       "damage_bonus": "8",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>Deals <strong>5</strong> extra damage to targets you have a <strong>Bond of</strong><br><strong>hatred</strong> towards, if they are in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}&nbsp;</strong>deals an additional <strong>5</strong> damage.</p></li></ul>",
+      "description": "<ul><li><p>Deals <strong>5</strong> extra damage to targets you have a <strong>Bond of</strong><br><strong>hatred</strong> towards, if they are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>&nbsp;deals an additional <strong>5</strong> damage.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

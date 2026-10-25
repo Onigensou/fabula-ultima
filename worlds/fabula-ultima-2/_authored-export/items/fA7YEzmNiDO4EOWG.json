@@ -28,7 +28,7 @@
       "class": "Revolver",
       "cost": "",
       "damage_bonus": "0",
-      "description": "<p class=\"\">When you enter a conflict scene, You may perform <strong>Reload </strong>that gains 【<strong>SL x 2</strong>】 <strong>bullets </strong>for free<strong>. </strong>This <strong>Reload </strong>spends Inventory Points <strong>equals to the amount of bullets you gained</strong>.</p><p>Also, when you perform the <strong>【Guard】 </strong>action, you may perform <strong>Reload </strong>that gains 【<strong>SL x 2</strong>】 <strong>bullets </strong>for free<strong>.</strong></p>",
+      "description": "<p class=\"\">When you enter a conflict scene, You may perform <strong>Reload </strong>that gains 【<strong>SL x 2</strong>】 <strong>bullets </strong>for free. This <strong>Reload </strong>spends Inventory Points <strong>equals to the amount of bullets you gained</strong>.</p><p>Also, when you perform the <strong>【Guard】 </strong>action, you may perform <strong>Reload </strong>that gains 【<strong>SL x 2</strong>】 <strong>bullets </strong>for free.</p>",
       "duration": "",
       "heroic_requirement": "",
       "isCheck": false,

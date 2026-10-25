@@ -59,7 +59,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul>\n    <li>\n        <p>You may cast the spell 【<strong>✨ Sleep </strong>】</p>\n        <hr>\n    </li>\n</ul>\n<details>\n    <summary><strong>✨ Sleep</strong></summary>\n    <p><strong>Cost:</strong> 15 MP</p>\n    <p><strong>Target:</strong> One Creature that can see you</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p>Inflicts @UUID[JournalEntry.rXZqaRSx0ctgqepa]{Sleep} on target creature for 1 Round, have 50% success rate</p>\n</details>",
+      "description": "<ul>\n    <li>\n        <p>You may cast the spell 【<strong>✨ Sleep </strong>】</p>\n        <hr>\n    </li>\n</ul>\n<details>\n    <summary><strong>✨ Sleep</strong></summary>\n    <p><strong>Cost:</strong> 15 MP</p>\n    <p><strong>Target:</strong> One Creature that can see you</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p>Inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.rXZqaRSx0ctgqepa\" data-id=\"rXZqaRSx0ctgqepa\" data-type=\"JournalEntry\">Sleep</a> on target creature for 1 Round, have 50% success rate</p>\n</details>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

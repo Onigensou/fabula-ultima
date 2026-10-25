@@ -37,7 +37,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<p>Learn how to create a @UUID[Item.BuOjiNzcT4CY6iue]{Apple Juice} with <strong>1 IP</strong></p>",
+      "description": "<p>Learn how to create a <a class=\"content-link\" data-uuid=\"Item.BuOjiNzcT4CY6iue\" data-id=\"BuOjiNzcT4CY6iue\" data-type=\"Item\">Apple Juice</a> with <strong>1 IP</strong></p>",
       "dragon_ef": "100",
       "effect_table": {},
       "elemental_ef": "100",

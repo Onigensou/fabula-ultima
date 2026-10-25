@@ -72,7 +72,7 @@
       "damage_bonus": "6",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>When you <strong>hit</strong> with this weapon, you may inflicts @UUID[JournalEntry.FV8JefaHsehzgXR7]{Grappled} to the target, if there is multiple targets, choose one.</p></li></ul>",
+      "description": "<ul><li><p>When you <strong>hit</strong> with this weapon, you may inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> to the target, if there is multiple targets, choose one.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

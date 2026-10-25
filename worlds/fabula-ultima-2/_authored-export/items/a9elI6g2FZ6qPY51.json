@@ -60,7 +60,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul>\n<li>Cure all <strong>Debuff </strong>from all ally.</li>\n</ul>",
+      "description": "<ul>\n<li>Cure all&nbsp;<strong>Debuff&nbsp;</strong>from all ally.</li>\n</ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -90,6 +90,11 @@
       "item_mdef_bonus": "0",
       "item_quantity": "1",
       "item_rarity": "Rare",
+      "item_skill_active": {
+        "oadRZ01kinQY8jiF": {
+          "skill_description": "<ul>\n<li>Cure all&nbsp;<strong>Debuff&nbsp;</strong>from all ally.</li>\n</ul>"
+        }
+      },
       "item_type": "consumable",
       "mimic_ef": "100",
       "monster_ef": "100",
@@ -98,6 +103,11 @@
       "plant_ef": "100",
       "refine_count": "0",
       "refine_level": "0",
+      "related_item_list": {
+        "oadRZ01kinQY8jiF": {
+          "related_item_description": "<ul>\n<li>Cure all&nbsp;<strong>Debuff&nbsp;</strong>from all ally.</li>\n</ul>"
+        }
+      },
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "DEX",

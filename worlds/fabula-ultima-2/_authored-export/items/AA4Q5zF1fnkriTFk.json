@@ -59,7 +59,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>As long as there's an <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Item\">Earth</a>&nbsp;<strong>wellspring </strong>in the scene, you gain <strong>+2 additional defense</strong> and <strong>+20 Max HP</strong></p></li></ul>",
+      "description": "<ul><li><p>As long as there's an <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\">Earth</a>&nbsp;<strong>wellspring </strong>in the scene, you gain <strong>+2 additional defense</strong> and <strong>+20 Max HP</strong></p></li></ul>",
       "dragon_ef": "100",
       "effect_table": {},
       "elemental_ef": "100",

@@ -28,7 +28,7 @@
       "class": "Revolver",
       "cost": "",
       "damage_bonus": "0",
-      "description": "<p>When you perform an 【<strong>Equipment</strong>】 action to <strong>change weapons</strong> or <strong>equip different form of transforming weapon</strong>, you may perform <strong>Reload </strong>that gains <strong>【SL x 2】 bullets </strong>for free<strong>. </strong>This <strong>Reload </strong>spends Inventory Points <strong>equals to the amount of bullets you gained</strong>.</p>",
+      "description": "<p>When you perform an 【<strong>Equipment</strong>】 action to <strong>change weapons</strong> or <strong>equip different form of transforming weapon</strong>, you may perform <strong>Reload </strong>that gains <strong>【SL x 2】 bullets </strong>for free. This <strong>Reload </strong>spends Inventory Points <strong>equals to the amount of bullets you gained</strong>.</p>",
       "duration": "",
       "heroic_requirement": "",
       "isCheck": false,

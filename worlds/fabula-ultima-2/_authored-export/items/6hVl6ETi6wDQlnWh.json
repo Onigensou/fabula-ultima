@@ -63,7 +63,7 @@
       "category": "Flail",
       "check_bonus": "0",
       "damage_bonus": "8",
-      "description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.HHmYmj7xffQMqtzT]{Slow},&nbsp;</strong>if they are already&nbsp;<strong>Slow</strong>, they suffers <strong>@UUID[JournalEntry.GePNxftPupElcCWp]{Bleed}&nbsp;</strong>instead.</p></li></ul>",
+      "description": "<ul><li><p>Each target hit by this weapon suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\">Slow</a>,&nbsp;</strong>if they are already&nbsp;<strong>Slow</strong>, they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\">Bleed</a>&nbsp;instead.</p></li></ul>",
       "hand_slots": "Two-handed",
       "isMartial": false,
       "item_cost": "1650",

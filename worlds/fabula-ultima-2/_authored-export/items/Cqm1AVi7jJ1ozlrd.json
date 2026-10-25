@@ -78,7 +78,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>You deal 5 extra damage to creatures in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li><li>You can speak and communicate with creatures belonging to the <strong>Beast</strong> species.</li></ul>",
+      "description": "<ul><li><p>You deal 5 extra damage to creatures in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a></p></li><li>You can speak and communicate with creatures belonging to the <strong>Beast</strong> species.</li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -106,12 +106,22 @@
       "item_mdef_bonus": "0",
       "item_quantity": "1",
       "item_rarity": "Uncommon",
+      "item_skill_passive": {
+        "naXTQ5YOmPSqGJ9h": {
+          "skill_description": "<ul><li><p>You deal 5 extra damage to creatures in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a></p></li><li>You can speak and communicate with creatures belonging to the <strong>Beast</strong> species.</li></ul>"
+        }
+      },
       "item_type": "accessory",
       "mimic_ef": "100",
       "monster_ef": "100",
       "name": "Wolf Officer Hat",
       "optional_params": {},
       "plant_ef": "100",
+      "related_item_list": {
+        "naXTQ5YOmPSqGJ9h": {
+          "related_item_description": "<ul><li><p>You deal 5 extra damage to creatures in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a></p></li><li>You can speak and communicate with creatures belonging to the <strong>Beast</strong> species.</li></ul>"
+        }
+      },
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "DEX",

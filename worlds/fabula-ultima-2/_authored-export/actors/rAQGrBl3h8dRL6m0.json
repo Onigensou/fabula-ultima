@@ -181,7 +181,7 @@
         "props": {
           "cost": "800",
           "def_bonus": "+2",
-          "description": "<ul>\n<li>You have Resistance to<strong> Air</strong>&nbsp;damage.</li>\n</ul>",
+          "description": "<ul>\n<li>You have Resistance to<a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\">Air</a>&nbsp;damage.</li>\n</ul>",
           "initiative": "0",
           "martial": false,
           "mdef_bonus": "0",
@@ -224,7 +224,7 @@
         "props": {
           "cost": "800",
           "def_bonus": "+2",
-          "description": "<ul>\n<li>You have Resistance to<strong> ice</strong> damage.</li>\n</ul>",
+          "description": "<ul>\n<li>You have Resistance to<a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\">Ice</a> damage.</li>\n</ul>",
           "initiative": "0",
           "martial": false,
           "mdef_bonus": "",

@@ -254,7 +254,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>You may cast the spell 【⚡<strong>@UUID[Item.E0SS6NYLKUyvisTv]{Aegis Field}</strong>】</p></li></ul>",
+      "description": "<ul><li><p>You may cast the spell <a class=\"content-link\" data-uuid=\"Item.E0SS6NYLKUyvisTv\" data-id=\"E0SS6NYLKUyvisTv\" data-type=\"Item\">Aegis Field</a></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

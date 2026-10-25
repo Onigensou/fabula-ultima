@@ -25,7 +25,7 @@
     "container": "wzwQj3HC41TFByOw",
     "props": {
       "cost": "",
-      "description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.HHmYmj7xffQMqtzT]{Slow}</strong></p></li><li><p>You may target <strong>@UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying}&nbsp;</strong>as though they didn't have Flying, When you hit a <strong>Flying</strong> target with this weapon, it immediately land.</p></li></ul>",
+      "description": "<ul><li><p>Each target hit by this weapon suffers <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\">Slow</a></p></li><li><p>You may target <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\">Flying</a>&nbsp;as though they didn't have Flying, When you hit a <strong>Flying</strong> target with this weapon, it immediately land.</p></li></ul>",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace_same_status",
@@ -66,7 +66,7 @@
           "reaction_trigger": "creature_deals_damage"
         }
       },
-      "skill_description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.HHmYmj7xffQMqtzT]{Slow}</strong></p></li><li><p>You may target <strong>@UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying}&nbsp;</strong>as though they didn't have Flying, When you hit a <strong>Flying</strong> target with this weapon, it immediately land.</p></li></ul>",
+      "skill_description": "<ul><li><p>Each target hit by this weapon suffers <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\">Slow</a></p></li><li><p>You may target <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\">Flying</a>&nbsp;as though they didn't have Flying, When you hit a <strong>Flying</strong> target with this weapon, it immediately land.</p></li></ul>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "",

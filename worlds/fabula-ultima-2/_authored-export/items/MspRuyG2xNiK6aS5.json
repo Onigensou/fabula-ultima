@@ -75,7 +75,7 @@
       "damage_bonus": "12",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.HHmYmj7xffQMqtzT]{Slow},&nbsp;</strong>if they are already <strong>Slow,&nbsp;</strong>they suffers <strong>@UUID[JournalEntry.thBevyZDOURijH8I]{Petrify}&nbsp;</strong>instead.</p></li><li><p>When attacking a <strong>@UUID[JournalEntry.thBevyZDOURijH8I]{Petrify}&nbsp;</strong>target, damage type becomes<strong> Earth</strong> instead.</p></li></ul>",
+      "description": "<ul><li><p>Each target hit by this weapon suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\">Slow</a>,&nbsp;</strong>if they are already <strong>Slow,&nbsp;</strong>they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.thBevyZDOURijH8I\" data-id=\"thBevyZDOURijH8I\" data-type=\"JournalEntry\">Petrify</a>&nbsp;instead.</p></li><li><p>When attacking a <a class=\"content-link\" data-uuid=\"JournalEntry.thBevyZDOURijH8I\" data-id=\"thBevyZDOURijH8I\" data-type=\"JournalEntry\">Petrify</a>&nbsp;target, damage type becomes<strong> Earth</strong> instead.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

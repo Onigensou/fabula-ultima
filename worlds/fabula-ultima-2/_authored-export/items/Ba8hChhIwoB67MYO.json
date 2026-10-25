@@ -24,7 +24,7 @@
   "system": {
     "container": "IPezvtbd25xqxmR8",
     "props": {
-      "description": "<p>Equipped passive: When you attack with this weapon, both you and your targets are Blind until the end of the action.</p>",
+      "description": "<p>Equipped passive: When you attack with this weapon, both you and your targets are <a class=\"content-link\" data-uuid=\"JournalEntry.rBnvYhLfmrVZDdoW\" data-id=\"rBnvYhLfmrVZDdoW\" data-type=\"JournalEntry\">Blind</a> until the end of the action.</p>",
       "effect_table": {
         "0": {
           "chain_steps": "excal_self_on, excal_tgt_on",

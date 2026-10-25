@@ -50,7 +50,7 @@
           "cost": "-",
           "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Flying</strong></a></p></li></ul>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\">Flying</a></p></li></ul>",
           "duration": "-",
           "effect_table": {
             "0": {
@@ -132,7 +132,7 @@
           "cost": "-",
           "damage_bonus": "15",
           "defense_target_type": "def",
-          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;damage to up to three creatures. Each creature hit suffers <strong>Blind</strong>.</p>",
+          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a>&nbsp;damage to up to three creatures. Each creature hit suffers <strong>Blind</strong>.</p>",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -295,7 +295,7 @@
           "cost": "10 MP",
           "damage_bonus": "25",
           "defense_target_type": "def",
-          "description": "<p>Can only target a creature in <strong>Crisis</strong> or suffering <strong>Blind</strong>. Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to it. On hit, the <strong>Banestrix</strong> recovers Hit Points equal to half the damage dealt, then performs <strong>Carrion Feast</strong> again against the same creature at no cost. It can only perform the extra <strong>Carrion Feast</strong> once per turn.</p>",
+          "description": "<p>Can only target a creature in <strong>Crisis</strong> or suffering <strong>Blind</strong>. Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a>&nbsp;damage to it. On hit, the <strong>Banestrix</strong> recovers Hit Points equal to half the damage dealt, then performs <strong>Carrion Feast</strong> again against the same creature at no cost. It can only perform the extra <strong>Carrion Feast</strong> once per turn.</p>",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
@@ -402,7 +402,7 @@
           "cost": "-",
           "damage_bonus": "35",
           "defense_target_type": "def",
-          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature. On hit, it suffers <strong>Blind</strong>.</p>",
+          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a>&nbsp;damage to one creature. On hit, it suffers <strong>Blind</strong>.</p>",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {

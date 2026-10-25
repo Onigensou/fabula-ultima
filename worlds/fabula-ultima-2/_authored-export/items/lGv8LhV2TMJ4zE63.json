@@ -25,7 +25,7 @@
     "container": "Knt8Qr5y1rgq3TSa",
     "props": {
       "cost": "",
-      "description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.3nmUvPei3zrOJkEt]{Dazed},&nbsp;</strong>if they are already&nbsp;<strong>Dazed</strong>, they suffers <strong>@UUID[JournalEntry.GqqgHkKOs0hkghdG]{Paralyzed}&nbsp;</strong>instead.</p></li></ul>",
+      "description": "<ul><li><p>Each target hit by this weapon suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\">Dazed</a>,&nbsp;</strong>if they are already&nbsp;<strong>Dazed</strong>, they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\">Paralyzed</a>&nbsp;instead.</p></li></ul>",
       "effect_table": {
         "0": {
           "chain_steps": "mjolnir_para, mjolnir_daze",
@@ -65,7 +65,7 @@
           "reaction_trigger": "creature_deals_damage"
         }
       },
-      "skill_description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.3nmUvPei3zrOJkEt]{Dazed},&nbsp;</strong>if they are already&nbsp;<strong>Dazed</strong>, they suffers <strong>@UUID[JournalEntry.GqqgHkKOs0hkghdG]{Paralyzed}&nbsp;</strong>instead.</p></li></ul>",
+      "skill_description": "<ul><li><p>Each target hit by this weapon suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\">Dazed</a>,&nbsp;</strong>if they are already&nbsp;<strong>Dazed</strong>, they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\">Paralyzed</a>&nbsp;instead.</p></li></ul>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "",

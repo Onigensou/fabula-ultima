@@ -32,7 +32,7 @@
       "cost": "20 MP",
       "damage_bonus": "25",
       "defense_target_type": "mdef",
-      "description": "<p>You tear open a jagged rift of stone beneath a single creature. The target suffers <strong>【HR + 25】</strong> <strong>earth</strong> damage. Damage dealt by this spell <strong>ignores Resistances</strong>.</p>",
+      "description": "<p>You tear open a jagged rift of stone beneath a single creature. The target suffers <strong>【HR + 25】</strong> <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\">Earth</a> damage. Damage dealt by this spell <strong>ignores Resistances</strong>.</p>",
       "duration": "Instantaneous",
       "effect_table": {},
       "heroic_requirement": "",

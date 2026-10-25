@@ -79,7 +79,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>You are immune to <strong>@UUID[JournalEntry.RZIAnKw95vY6yh2W]{Zombie}</strong></p></li><li>You can speak and communicate with creatures belonging to the <strong>Undead</strong> species.</li></ul>",
+      "description": "<ul><li><p>You are immune to <a class=\"content-link\" data-uuid=\"JournalEntry.RZIAnKw95vY6yh2W\" data-id=\"RZIAnKw95vY6yh2W\" data-type=\"JournalEntry\">Zombie</a></p></li><li>You can speak and communicate with creatures belonging to the <strong>Undead</strong> species.</li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

@@ -110,7 +110,7 @@
       "damage_bonus": "12",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>This weapon can target <strong>@UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying}</strong> creatures.</p></li><li><p>As a <strong>【Skill】</strong>action: You gain <strong>@UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying}&nbsp;</strong>for <strong>3&nbsp;Round.</strong></p></li></ul>",
+      "description": "<ul><li><p>This weapon can target <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\">Flying</a> creatures.</p></li><li><p>As a <strong>【Skill】</strong>action: You gain <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\">Flying</a>&nbsp;for <strong>3&nbsp;Round.</strong></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

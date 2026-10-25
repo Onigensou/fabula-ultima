@@ -32,7 +32,7 @@
       "cost": "6 Zero Power",
       "damage_bonus": "",
       "defense_target_type": "def",
-      "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Trigger</a>&nbsp;When <strong>Geist </strong>is reduce to <strong>0 HP</strong></p></li></ul><p><strong>Geist </strong>sacrifice part of his <strong>soul</strong> to<strong> </strong>recovers <strong>HP</strong> and<strong> MP</strong></p>",
+      "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\">Trigger</a>&nbsp;When <strong>Geist </strong>is reduce to <strong>0 HP</strong></p></li></ul><p><strong>Geist </strong>sacrifice part of his <strong>soul</strong> to recovers <strong>HP</strong> and<strong> MP</strong></p>",
       "duration": "Instantaneous",
       "effect_table": {},
       "heroic_requirement": "",

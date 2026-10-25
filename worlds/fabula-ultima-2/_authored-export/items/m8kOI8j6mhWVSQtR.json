@@ -72,7 +72,7 @@
       "damage_bonus": "4",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>Deals <strong>5 extra damage</strong> to targets who are in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li><li><p>When you hit with this weapon, there is a <strong>15% chance</strong> that, if the target is not a <strong>Villian&nbsp;</strong>or&nbsp;<strong>Boss</strong> type enemy, its&nbsp;<strong>HP&nbsp;</strong>is reduced until it is in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li></ul>",
+      "description": "<ul><li><p>Deals <strong>5 extra damage</strong> to targets who are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a></p></li><li><p>When you hit with this weapon, there is a <strong>15% chance</strong> that, if the target is not a <strong>Villian&nbsp;</strong>or&nbsp;<strong>Boss</strong> type enemy, its&nbsp;<strong>HP&nbsp;</strong>is reduced until it is in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -100,12 +100,22 @@
       "item_mdef_bonus": "0",
       "item_quantity": "1",
       "item_rarity": "Uncommon",
+      "item_skill_passive": {
+        "GmbT4IyKBC7fb9Uu": {
+          "skill_description": "<p>This weapon deals 5 extra damage to a target in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>. Each hit with this weapon has a 15% chance to reduce a target that is not a Villain or Champion to its Crisis score.</p>"
+        }
+      },
       "item_type": "weapon",
       "mimic_ef": "100",
       "monster_ef": "100",
       "name": "Assassin's Blade",
       "optional_params": {},
       "plant_ef": "100",
+      "related_item_list": {
+        "GmbT4IyKBC7fb9Uu": {
+          "related_item_description": "<p>This weapon deals 5 extra damage to a target in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>. Each hit with this weapon has a 15% chance to reduce a target that is not a Villain or Champion to its Crisis score.</p>"
+        }
+      },
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "INS",

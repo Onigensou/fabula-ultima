@@ -299,7 +299,7 @@
   "system": {
     "container": null,
     "props": {
-      "description": "<ul>\n<li>You have Resistance to<strong> Air</strong>&nbsp;damage.</li>\n</ul>",
+      "description": "<ul>\n<li>You have Resistance to<a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\">Air</a>&nbsp;damage.</li>\n</ul>",
       "isMartial": false,
       "item_cost": "800",
       "item_def_bonus": "+2",

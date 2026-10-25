@@ -55,7 +55,7 @@
           "cost": "10 MP",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p>Inflict <a class=\"content-link\" data-uuid=\"JournalEntry.MM2SvLRyVhazkNq3\" data-id=\"MM2SvLRyVhazkNq3\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Disarmed</strong></a> and <a class=\"content-link\" data-uuid=\"JournalEntry.e9wABGGGFg7b9OMD\" data-id=\"e9wABGGGFg7b9OMD\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Confused</strong></a> on one creature.</p>",
+          "description": "<p>Inflict <a class=\"content-link\" data-uuid=\"JournalEntry.MM2SvLRyVhazkNq3\" data-id=\"MM2SvLRyVhazkNq3\" data-type=\"JournalEntry\">Disarmed</a> and <a class=\"content-link\" data-uuid=\"JournalEntry.e9wABGGGFg7b9OMD\" data-id=\"e9wABGGGFg7b9OMD\" data-type=\"JournalEntry\">Confused</a> on one creature.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
@@ -670,7 +670,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Charm</span></strong></a></span></span> on the target&nbsp;<strong>Humanoid</strong> which last until the end of this round. Have no effect on Champion-Rank creature</li><li>When use outside of <strong>conflict, </strong>the effect last until the end of the <strong>scene </strong>instead</li></ul>",
+          "description": "<ul><li>Inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\">Charm</a> on the target&nbsp;<strong>Humanoid</strong> which last until the end of this round. Have no effect on Champion-Rank creature</li><li>When use outside of <strong>conflict, </strong>the effect last until the end of the <strong>scene </strong>instead</li></ul>",
           "dragon_ef": "100",
           "effect_table": {
             "0": {
@@ -812,7 +812,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li>Gain +1 Defense</li></ul><p><strong>【Male Only】</strong></p><ul><li><p>You are immune to <strong>@UUID[JournalEntry.IBN7DtvWLFDo8jNh]{Stagger}</strong></p></li></ul><p><strong>【Female Only】</strong></p><ul><li><p>When a creature targets you with an action, they suffers <strong>@UUID[JournalEntry.GePNxftPupElcCWp]{Bleed}</strong></p></li><li><strong>Villians </strong>or <strong>Stronger Beings </strong>will resist the Bleed with a DL10 <strong>【WLP】+【WLP</strong>】check, or they may be immune to it altogether.&nbsp;</li></ul>",
+          "description": "<ul><li>Gain +1 Defense</li></ul><p><strong>【Male Only】</strong></p><ul><li><p>You are immune to <a class=\"content-link\" data-uuid=\"JournalEntry.IBN7DtvWLFDo8jNh\" data-id=\"IBN7DtvWLFDo8jNh\" data-type=\"JournalEntry\">Stagger</a></p></li></ul><p><strong>【Female Only】</strong></p><ul><li><p>When a creature targets you with an action, they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\">Bleed</a></p></li><li><strong>Villians </strong>or <strong>Stronger Beings </strong>will resist the Bleed with a DL10 <strong>【WLP】+【WLP</strong>】check, or they may be immune to it altogether.&nbsp;</li></ul>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -1013,7 +1013,7 @@
           "cost": "-",
           "damage_bonus": "43",
           "defense_target_type": "def",
-          "description": "<p>Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p>",
+          "description": "<p>Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a>&nbsp;damage to one creature.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {},

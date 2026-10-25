@@ -72,7 +72,7 @@
       "damage_bonus": "6",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul>\n<li>As long as one of your <strong>spells</strong> or <strong>invocations</strong>&nbsp;deals <strong>air</strong> damage, it deals <strong>10</strong> extra damage.</li>\n</ul>",
+      "description": "<ul>\n<li>As long as one of your <strong>spells</strong> or <strong>invocations</strong>&nbsp;deals <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\">Air</a> damage, it deals <strong>10</strong> extra damage.</li>\n</ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -100,12 +100,22 @@
       "item_mdef_bonus": "0",
       "item_quantity": "1",
       "item_rarity": "Common",
+      "item_skill_passive": {
+        "WYi7CDOr9Z2y4ajc": {
+          "skill_description": "<ul>\n<li>As long as one of your <strong>spells</strong> or <strong>invocations</strong>&nbsp;deals <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\">Air</a> damage, it deals <strong>10</strong> extra damage.</li>\n</ul>"
+        }
+      },
       "item_type": "weapon",
       "mimic_ef": "100",
       "monster_ef": "100",
       "name": "Pinwheel Rod",
       "optional_params": {},
       "plant_ef": "100",
+      "related_item_list": {
+        "WYi7CDOr9Z2y4ajc": {
+          "related_item_description": "<ul>\n<li>As long as one of your <strong>spells</strong> or <strong>invocations</strong>&nbsp;deals <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\">Air</a> damage, it deals <strong>10</strong> extra damage.</li>\n</ul>"
+        }
+      },
       "reptilian_ef": "100",
       "rolled_atr1": "WLP",
       "rolled_atr2": "WLP",

@@ -25,7 +25,7 @@
     "container": "Y7JL7P9hbWipwb90",
     "props": {
       "cost": "",
-      "description": "<ul><li><p>You take 10% less damage from Dragon-type creatures.</p></li><li><p>Your Fire damage is increased by 10%.</p></li></ul>",
+      "description": "<ul><li><p>You take 10% less damage from Dragon-type creatures.</p></li><li><p>Your <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage is increased by 10%.</p></li></ul>",
       "effect_table": {
         "0": {
           "damage_amount": "0.9",
@@ -65,7 +65,7 @@
           "reaction_trigger": "creature_will_deal_damage"
         }
       },
-      "skill_description": "<ul><li><p>You take 10% less damage from Dragon-type creatures.</p></li><li><p>Your Fire damage is increased by 10%.</p></li></ul>",
+      "skill_description": "<ul><li><p>You take 10% less damage from Dragon-type creatures.</p></li><li><p>Your <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage is increased by 10%.</p></li></ul>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "",

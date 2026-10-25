@@ -84,7 +84,7 @@
   "system": {
     "props": {
       "active_effect_config_table": {},
-      "description": "<p>An absurdly enormous pudding, quivering under its own weight — four whole jellopies rendered down and set into one trembling golden dome. It jiggles. It endures. So do you.</p><p>Everyone who eats gains <strong>Physical Damage Reduction +3</strong> until the next rest.</p>",
+      "description": "<p>An absurdly enormous pudding, quivering under its own weight — four whole jellopies rendered down and set into one trembling golden dome. It jiggles. It endures. So do you.</p><p>Everyone who eats gains <strong><a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a> Damage Reduction +3</strong> until the next rest.</p>",
       "effect_table": {},
       "ingredient_taste": "",
       "ingredient_taste2": "",

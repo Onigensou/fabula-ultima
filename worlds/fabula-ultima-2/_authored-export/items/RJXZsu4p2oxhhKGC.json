@@ -79,7 +79,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>At the start of battle, inflicts @UUID[JournalEntry.x6ByoJnflDAuVn9r]{Charm} on target enemy.</p></li><li>Gain +3 to checks related to persuading someone.</li></ul>",
+      "description": "<ul><li><p>At the start of battle, inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\">Charm</a> on target enemy.</p></li><li>Gain +3 to checks related to persuading someone.</li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

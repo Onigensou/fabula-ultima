@@ -26,7 +26,7 @@
     "props": {
       "action_command": "item",
       "cost": "-",
-      "description": "<p><em>Grape Wine:</em> target ally recovers 60 MP, then is Dazed.</p>",
+      "description": "<p><em>Grape Wine:</em> target ally recovers 60 MP, then is <a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\">Dazed</a>.</p>",
       "effect_table": {
         "0": {
           "$deleted": false,

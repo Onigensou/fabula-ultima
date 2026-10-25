@@ -80,7 +80,7 @@
     "container": "CptpnDmAZDa0y12E",
     "props": {
       "cost": "",
-      "description": "<ul><li>When you receive damage, you may choose to receive <strong>10 extra damage</strong>. If you do, your next attack or spell that require accuracy check may deals <strong>10 extra damage</strong>.</li><li>If you receive damage from a creature that you have a <strong>hatred </strong>bond with, you may receive above benefit <strong>without</strong> receiving <strong>extra damage</strong>.</li></ul><p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li>When you hit a creature with an attack, Gain <strong>10&nbsp;HP</strong></li></ul><hr contenteditable=\"false\"><p><strong>3-Piece</strong></p><ul><li>????????</li></ul><hr class=\"\" contenteditable=\"false\">",
+      "description": "<ul><li>When you receive damage, you may choose to receive <strong>10 extra damage</strong>. If you do, your next attack or spell that require accuracy check may deals <strong>10 extra damage</strong>.</li><li>If you receive damage from a creature that you have a <strong>hatred </strong>bond with, you may receive above benefit <strong>without</strong> receiving <strong>extra damage</strong>.</li></ul>",
       "effect_table": {
         "0": {
           "chain_steps": "yoroi_hurt, yoroi_mark",
@@ -158,7 +158,7 @@
           "reaction_trigger": "conflict_end"
         }
       },
-      "skill_description": "<ul><li>When you receive damage, you may choose to receive <strong>10 extra damage</strong>. If you do, your next attack or spell that require accuracy check may deals <strong>10 extra damage</strong>.</li><li>If you receive damage from a creature that you have a <strong>hatred </strong>bond with, you may receive above benefit <strong>without</strong> receiving <strong>extra damage</strong>.</li></ul><p><strong>【Set Bonus】</strong></p><p><strong>2-Piece</strong></p><ul><li>When you hit a creature with an attack, Gain <strong>10&nbsp;HP</strong></li></ul><hr contenteditable=\"false\"><p><strong>3-Piece</strong></p><ul><li>????????</li></ul><hr class=\"\" contenteditable=\"false\">",
+      "skill_description": "<ul><li>When you receive damage, you may choose to receive <strong>10 extra damage</strong>. If you do, your next attack or spell that require accuracy check may deals <strong>10 extra damage</strong>.</li><li>If you receive damage from a creature that you have a <strong>hatred </strong>bond with, you may receive above benefit <strong>without</strong> receiving <strong>extra damage</strong>.</li></ul>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "",

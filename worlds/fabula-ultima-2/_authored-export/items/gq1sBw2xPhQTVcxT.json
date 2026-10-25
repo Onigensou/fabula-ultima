@@ -72,7 +72,7 @@
       "damage_bonus": "5",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p><strong>@UUID[JournalEntry.NUaxIAIPUu5Qnk8l]{Overflow}</strong></p></li><li>Attacks with this weapon gain +1 Accuracy for&nbsp;<strong>each&nbsp;</strong>enemy in the scene.</li></ul>",
+      "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\">Overflow</a></p></li><li>Attacks with this weapon gain +1 Accuracy for&nbsp;<strong>each&nbsp;</strong>enemy in the scene.</li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

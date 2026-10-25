@@ -80,7 +80,7 @@
     "container": "DeIMdUFdNlbApDVT",
     "props": {
       "cost": "",
-      "description": "<ul><li><p>You are <strong>Resistant</strong> to <strong>bolt</strong> and <strong>fire</strong> damage. If you enter @UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}, the effect of this accessory ceases until your next rest.</p></li></ul>",
+      "description": "<ul><li><p>You are <strong>Resistant</strong> to <strong>bolt</strong> and <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage. If you enter <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, the effect of this accessory ceases until your next rest.</p></li></ul>",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace",
@@ -120,7 +120,7 @@
           "reaction_trigger": "party_rested"
         }
       },
-      "skill_description": "<ul><li><p>You are <strong>Resistant</strong> to <strong>bolt</strong> and <strong>fire</strong> damage. If you enter @UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}, the effect of this accessory ceases until your next rest.</p></li></ul>",
+      "skill_description": "<ul><li><p>You are <strong>Resistant</strong> to <strong>bolt</strong> and <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage. If you enter <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, the effect of this accessory ceases until your next rest.</p></li></ul>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "",

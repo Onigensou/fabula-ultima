@@ -24,7 +24,7 @@
   "system": {
     "container": "aPVUpJ1KwspTpUTV",
     "props": {
-      "description": "<p>Equipped passive: Whenever you take Bolt damage, you recover MP equal to the damage taken.</p>",
+      "description": "<p>Equipped passive: Whenever you take <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage, you recover MP equal to the damage taken.</p>",
       "effect_table": {
         "0": {
           "effect_kind": "grant",

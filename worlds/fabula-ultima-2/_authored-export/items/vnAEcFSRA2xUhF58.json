@@ -102,7 +102,7 @@
       "cost": "10 MP",
       "damage_bonus": "0",
       "defense_target_type": "def",
-      "description": "<p>You imbue a weapon with poisonous energy. Until this spell ends, all damage dealt by the weapon becomes of the <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; cursor: pointer;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> type. If you have that weapon equipped while you cast this spell, you may perform a <strong>free attack</strong> with it as part of the same action.</p>\n<p>This spell can only be cast on a weapon equipped by a willing creature.</p>\n",
+      "description": "<p>You imbue a weapon with poisonous energy. Until this spell ends, all damage dealt by the weapon becomes of the <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\">Poison</a> type. If you have that weapon equipped while you cast this spell, you may perform a <strong>free attack</strong> with it as part of the same action.</p>\n<p>This spell can only be cast on a weapon equipped by a willing creature.</p>\n",
       "duration": "Scene",
       "effect_table": {
         "0": {

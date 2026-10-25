@@ -24,7 +24,7 @@
   "system": {
     "container": "Xl16aahsbiCGM6oW",
     "props": {
-      "description": "<p>Equipped passive: When you are hit by a Melee Attack, the attacker suffers Envenomed.</p>",
+      "description": "<p>Equipped passive: When you are hit by a Melee Attack, the attacker suffers <a class=\"content-link\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\">Envenomed</a>.</p>",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace",

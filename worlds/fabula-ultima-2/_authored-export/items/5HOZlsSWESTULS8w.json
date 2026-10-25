@@ -24,7 +24,7 @@
   "system": {
     "container": "iTT3JNZKFeIE55ge",
     "props": {
-      "description": "<p>Equipped passive: On hit, 50% chance to inflict Bleed on the target.</p>",
+      "description": "<p>Equipped passive: On hit, 50% chance to inflict <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\">Bleed</a> on the target.</p>",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace",

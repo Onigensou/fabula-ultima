@@ -25,7 +25,7 @@
     "container": "ecMYjBVVRm8TieSi",
     "props": {
       "cost": "",
-      "description": "<ul>\n<li>As long as one of your <strong>spells</strong> or <strong>invocations</strong>&nbsp;deals <strong>air</strong> damage, it deals <strong>10</strong> extra damage.</li>\n</ul>",
+      "description": "<ul>\n<li>As long as one of your <strong>spells</strong> or <strong>invocations</strong>&nbsp;deals <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\">Air</a> damage, it deals <strong>10</strong> extra damage.</li>\n</ul>",
       "effect_table": {
         "0": {
           "damage_amount": "10",
@@ -51,7 +51,7 @@
           "reaction_trigger": "creature_will_deal_damage"
         }
       },
-      "skill_description": "<ul>\n<li>As long as one of your <strong>spells</strong> or <strong>invocations</strong>&nbsp;deals <strong>air</strong> damage, it deals <strong>10</strong> extra damage.</li>\n</ul>",
+      "skill_description": "<ul>\n<li>As long as one of your <strong>spells</strong> or <strong>invocations</strong>&nbsp;deals <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\">Air</a> damage, it deals <strong>10</strong> extra damage.</li>\n</ul>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "",

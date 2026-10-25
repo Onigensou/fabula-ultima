@@ -53,7 +53,7 @@
       "damage_bonus": "16",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>You may perform the skill 【💥<strong>@UUID[Item.k2huLrX9cf2f5J7n]{Holy Crucifixion}</strong>】</p></li></ul>",
+      "description": "<ul><li><p>You may perform the skill <a class=\"content-link\" data-uuid=\"Item.k2huLrX9cf2f5J7n\" data-id=\"k2huLrX9cf2f5J7n\" data-type=\"Item\">Holy Crucifixion</a></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -84,6 +84,16 @@
       "item_mdef_bonus": "0",
       "item_quantity": "1",
       "item_rarity": "Rare",
+      "item_skill_active": {
+        "k2huLrX9cf2f5J7n": {
+          "skill_description": "<p>Perform a <strong>free attack</strong> with The Cross against the target. If it hits, the target becomes <strong>Crucified</strong> and gains <strong>Vulnerability</strong> to <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\">Light</a>&nbsp;damage until the end of the scene. <strong>Crucified</strong> cannot be dispelled.</p><p>While a creature is <strong>Crucified</strong>, The Cross cannot be equipped. When that creature dies, The Cross returns to your inventory.</p>"
+        }
+      },
+      "item_skill_passive": {
+        "pt3AvOnolAl9WrZA": {
+          "skill_description": "<ul><li><p>You may perform the skill <a class=\"content-link\" data-uuid=\"Item.k2huLrX9cf2f5J7n\" data-id=\"k2huLrX9cf2f5J7n\" data-type=\"Item\">Holy Crucifixion</a></p></li></ul>"
+        }
+      },
       "item_type": "weapon",
       "mimic_ef": "100",
       "monster_ef": "100",
@@ -92,6 +102,14 @@
       "plant_ef": "100",
       "refine_count": "0",
       "refine_level": "0",
+      "related_item_list": {
+        "k2huLrX9cf2f5J7n": {
+          "related_item_description": "<p>Perform a <strong>free attack</strong> with The Cross against the target. If it hits, the target becomes <strong>Crucified</strong> and gains <strong>Vulnerability</strong> to <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\">Light</a>&nbsp;damage until the end of the scene. <strong>Crucified</strong> cannot be dispelled.</p><p>While a creature is <strong>Crucified</strong>, The Cross cannot be equipped. When that creature dies, The Cross returns to your inventory.</p>"
+        },
+        "pt3AvOnolAl9WrZA": {
+          "related_item_description": "<ul><li><p>You may perform the skill <a class=\"content-link\" data-uuid=\"Item.k2huLrX9cf2f5J7n\" data-id=\"k2huLrX9cf2f5J7n\" data-type=\"Item\">Holy Crucifixion</a></p></li></ul>"
+        }
+      },
       "reptilian_ef": "100",
       "rolled_atr1": "MIG",
       "rolled_atr2": "DEX",

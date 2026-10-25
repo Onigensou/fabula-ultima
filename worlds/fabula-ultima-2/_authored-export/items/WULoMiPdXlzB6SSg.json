@@ -72,7 +72,7 @@
       "damage_bonus": "18",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>When you <strong>hit</strong> only one creature with this weapon, if that creature belongs to the <strong>plant</strong> Species, the attack deals <strong>10</strong> extra damage. Then, if that creature is in @UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}, you and every ally who can see you recover an amount of <strong>Mind Points</strong> equal to your <strong>High Roll</strong> in the <strong>Accuracy Check</strong></p></li></ul>",
+      "description": "<ul><li><p>When you <strong>hit</strong> only one creature with this weapon, if that creature belongs to the <strong>plant</strong> Species, the attack deals <strong>10</strong> extra damage. Then, if that creature is in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, you and every ally who can see you recover an amount of <strong>Mind Points</strong> equal to your <strong>High Roll</strong> in the <strong>Accuracy Check</strong></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

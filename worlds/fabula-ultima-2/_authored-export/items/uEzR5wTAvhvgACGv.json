@@ -157,7 +157,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>You are immune to&nbsp;<strong>Ice&nbsp;</strong>damage.</li><li><p>You are immune to <strong>@UUID[JournalEntry.HHmYmj7xffQMqtzT]{Slow}</strong>, <strong>@UUID[JournalEntry.QgECPH7ZhbRhag3K]{Hypothermia}</strong> and <strong>@UUID[JournalEntry.0RscV9vkJNM9dVKQ]{Delay}</strong></p></li></ul>",
+      "description": "<ul><li>You are immune to&nbsp;<a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\">Ice</a>damage.</li><li><p>You are immune to <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\">Slow</a>, <a class=\"content-link\" data-uuid=\"JournalEntry.QgECPH7ZhbRhag3K\" data-id=\"QgECPH7ZhbRhag3K\" data-type=\"JournalEntry\">Hypothermia</a> and <a class=\"content-link\" data-uuid=\"JournalEntry.0RscV9vkJNM9dVKQ\" data-id=\"0RscV9vkJNM9dVKQ\" data-type=\"JournalEntry\">Delay</a></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

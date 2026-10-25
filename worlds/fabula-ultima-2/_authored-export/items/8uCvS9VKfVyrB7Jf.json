@@ -241,7 +241,7 @@
   "system": {
     "container": null,
     "props": {
-      "description": "<ul>\n<li>While driving your <strong>personal vehicle</strong>, you gain <strong>Resistance</strong> to <strong>air </strong>and <strong>ice</strong> damage.</li>\n</ul>",
+      "description": "<ul>\n<li>While driving your <strong>personal vehicle</strong>, you gain <strong>Resistance</strong> to <strong>air </strong>and <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\">Ice</a> damage.</li>\n</ul>",
       "isMartial": true,
       "item_cost": "1000",
       "item_def_bonus": "+2",

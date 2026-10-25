@@ -40,7 +40,7 @@
   "system": {
     "container": null,
     "props": {
-      "description": "<ul><li>Learned how to create <strong>Blue Bovine</strong> with <strong>2 IP</strong></li></ul>",
+      "description": "<ul><li>Learned how to create&nbsp;<strong>Blue Bovine</strong> with <strong>2 IP</strong></li></ul>",
       "ip_cost": "2",
       "item_cost": "450",
       "item_type": "recipe",

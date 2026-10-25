@@ -73,7 +73,7 @@
       "damage_bonus": "8",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul>\n<li>Attacks with this weapon deal <strong>5</strong> extra damage as long as it&rsquo;s not your turn.</li>\n</ul>",
+      "description": "<ul>\n<li>Attacks with this weapon deal <strong>5</strong> extra damage as long as it’s not your turn.</li>\n</ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

@@ -49,7 +49,7 @@
       "damage_bonus": "10",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<p>You can use equipment action to deploy this turret. This action made you unarmed.</p><p>While deployed, create Turret companion with 50 HP 13 Def and 10 M.def</p><p>Every time the enemy take turn, The turret deal 15 fire damage to it.</p><p>Automatic Portable Turret return to your inventory at the end of scene.</p><p>If the turret is destroyed, You cannot use it's deploy feature until the next rest.</p><p>You cannot use it's deploy feature if you already has other companion.</p>",
+      "description": "<p>You can use equipment action to deploy this turret. This action made you unarmed.</p><p>While deployed, create Turret companion with 50 HP 13 Def and 10 M.def</p><p>Every time the enemy take turn, The turret deal 15 <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage to it.</p><p>Automatic Portable Turret return to your inventory at the end of scene.</p><p>If the turret is destroyed, You cannot use it's deploy feature until the next rest.</p><p>You cannot use it's deploy feature if you already has other companion.</p>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

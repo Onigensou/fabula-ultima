@@ -72,7 +72,7 @@
       "damage_bonus": "4",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>Using your 【<strong>Spell】&nbsp;</strong>action, spent 10 MP, target humanoid creature becomes <strong>@UUID[JournalEntry.x6ByoJnflDAuVn9r]{Charm}&nbsp;</strong>by you.</p></li><li><strong>Villians </strong>or <strong>Stronger Beings </strong>will resist the <strong>Charm</strong> with a DL10 <strong>【WLP】+【WLP</strong>】check, or they may be immune to it altogether.&nbsp;</li></ul>",
+      "description": "<ul><li><p>Using your 【<strong>Spell】&nbsp;</strong>action, spent 10 MP, target humanoid creature becomes <a class=\"content-link\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\">Charm</a>&nbsp;by you.</p></li><li><strong>Villians </strong>or <strong>Stronger Beings </strong>will resist the <strong>Charm</strong> with a DL10 <strong>【WLP】+【WLP</strong>】check, or they may be immune to it altogether.&nbsp;</li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

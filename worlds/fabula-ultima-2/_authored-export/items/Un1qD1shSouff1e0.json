@@ -90,7 +90,7 @@
   "system": {
     "props": {
       "active_effect_config_table": {},
-      "description": "<p><em>It rose. For one glorious moment it rose. What is left in the dish is dense, cracked, sunken in the middle — and, infuriatingly, delicious. You eat it fast and angry.</em></p><p><strong>+5</strong> damage dealt, but <strong>−3</strong> physical damage reduction, until the next rest.</p>",
+      "description": "<p><em>It rose. For one glorious moment it rose. What is left in the dish is dense, cracked, sunken in the middle — and, infuriatingly, delicious. You eat it fast and angry.</em></p><p><strong>+5</strong> damage dealt, but <strong>−3</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a> damage reduction, until the next rest.</p>",
       "effect_table": {},
       "id": "Un1qD1shSouff1e0",
       "img": "icons/consumables/food/berries-cream-bowl-mint-red.webp",

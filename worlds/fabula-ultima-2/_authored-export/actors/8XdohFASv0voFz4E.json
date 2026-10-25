@@ -46,7 +46,7 @@
           "class": "Spell Fencer",
           "cost": "",
           "damage_bonus": "0",
-          "description": "<p>When you cast<strong> </strong>an <strong>Offensive Spell, </strong>if you perform the 【Attack】action <em>(excluding Free Attack)  </em>during your previous turn, Gain 1 <strong>Resonance.</strong></p><p>When you cast an <strong>Offensive Spell, </strong>you may spend up to <strong>【SL】Resonance, </strong>For each Resonance you spent this way, increase the spell's <strong>Magic Check </strong>by 1 .</p><p>You may have up to <strong>【SL + 1】</strong>Resonance and you lose all Resonance at the end of each scene</p>",
+          "description": "<p>When you cast an <strong>Offensive Spell, </strong>if you perform the 【Attack】action <em>(excluding Free Attack)  </em>during your previous turn, Gain 1 <strong>Resonance.</strong></p><p>When you cast an <strong>Offensive Spell, </strong>you may spend up to <strong>【SL】Resonance, </strong>For each Resonance you spent this way, increase the spell's <strong>Magic Check </strong>by 1 .</p><p>You may have up to <strong>【SL + 1】</strong>Resonance and you lose all Resonance at the end of each scene</p>",
           "duration": "",
           "isCheck": false,
           "isHeroic": false,

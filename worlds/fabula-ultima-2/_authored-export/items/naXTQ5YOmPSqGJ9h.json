@@ -25,7 +25,7 @@
     "container": "Cqm1AVi7jJ1ozlrd",
     "props": {
       "cost": "",
-      "description": "<ul><li><p>You deal 5 extra damage to creatures in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li><li>You can speak and communicate with creatures belonging to the <strong>Beast</strong> species.</li></ul>",
+      "description": "<ul><li><p>You deal 5 extra damage to creatures in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a></p></li><li>You can speak and communicate with creatures belonging to the <strong>Beast</strong> species.</li></ul>",
       "effect_table": {
         "0": {
           "damage_amount": "5",
@@ -50,7 +50,7 @@
           "reaction_trigger": "creature_will_deal_damage"
         }
       },
-      "skill_description": "<ul><li><p>You deal 5 extra damage to creatures in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li><li>You can speak and communicate with creatures belonging to the <strong>Beast</strong> species.</li></ul>",
+      "skill_description": "<ul><li><p>You deal 5 extra damage to creatures in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a></p></li><li>You can speak and communicate with creatures belonging to the <strong>Beast</strong> species.</li></ul>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "",

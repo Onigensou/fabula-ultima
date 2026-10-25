@@ -39,7 +39,7 @@
   "system": {
     "container": null,
     "props": {
-      "description": "<ul><li>Learned how to create <strong>Golem Soulstone</strong> with <strong>2 IP</strong></li></ul>",
+      "description": "<ul><li>Learned how to create&nbsp;<strong>Golem Soulstone</strong> with <strong>2 IP</strong></li></ul>",
       "ip_cost": "2",
       "item_cost": "1500",
       "item_type": "recipe",
@@ -48,7 +48,7 @@
         "AWTMIjnZBlofs3ta": {
           "id": "${item.id}",
           "name": "Golem Soulstone",
-          "related_item_description": "<ul><li><p><em>Target creature gains <strong>10 Shield</strong>; if the target already has a Shield, increase that shield value by 10 instead.</em></p></li></ul>",
+          "related_item_description": "<ul><li><p>Target creature gain <strong>10 </strong><a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a>, if the target already have a <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a>, increase that shield value by 10 instead.</p></li></ul>",
           "uuid": "Item.AWTMIjnZBlofs3ta"
         }
       }

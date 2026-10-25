@@ -201,7 +201,7 @@
           "cost": "-",
           "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;the <strong>Life Gorger</strong> is reduced to 0 HP</p></li></ul><p>If it had <strong>Eaten</strong>, the stolen vitality snaps back to its owner. The creature that struck it down fully recovers <strong>HP</strong>.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\">Trigger</a>&nbsp;the <strong>Life Gorger</strong> is reduced to 0 HP</p></li></ul><p>If it had <strong>Eaten</strong>, the stolen vitality snaps back to its owner. The creature that struck it down fully recovers <strong>HP</strong>.</p>",
           "details_roller": "Show",
           "duration": "-",
           "effect_table": {

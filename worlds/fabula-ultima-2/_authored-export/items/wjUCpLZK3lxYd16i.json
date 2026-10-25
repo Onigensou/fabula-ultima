@@ -40,12 +40,22 @@
       "category": "Sword",
       "check_bonus": "1",
       "damage_bonus": "6",
-      "description": "<ul><li><p>&nbsp;Deals 5 extra damage if you are in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li><li><p>Deals 5 extra damage if you are inflicted with <strong>@UUID[JournalEntry.Do0VLf6wW9uCSLwD]{Doom}</strong></p></li><li>Deals 5 extra damage if you are inflicted with a <strong>debuff</strong>.</li><li>Deals 5 extra damage if your <strong>HP&nbsp;</strong>is below 10.</li></ul>",
+      "description": "<ul><li><p>&nbsp;Deals 5 extra damage if you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a></p></li><li><p>Deals 5 extra damage if you are inflicted with <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a></p></li><li>Deals 5 extra damage if you are inflicted with a <strong>debuff</strong>.</li><li>Deals 5 extra damage if your <strong>HP&nbsp;</strong>is below 10.</li></ul>",
       "hand_slots": "One-handed",
       "isMartial": true,
       "item_cost": "1500",
+      "item_skill_passive": {
+        "mUmVssoKyCteJGv1": {
+          "skill_description": "<p>This weapon deals 5 extra damage for each of these that is true: you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, you are Doomed, you have a debuff, your HP is below 10.</p>"
+        }
+      },
       "item_type": "weapon",
       "name": "Near-Death Sword",
+      "related_item_list": {
+        "mUmVssoKyCteJGv1": {
+          "related_item_description": "<p>This weapon deals 5 extra damage for each of these that is true: you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, you are Doomed, you have a debuff, your HP is below 10.</p>"
+        }
+      },
       "rolled_atr1": "DEX",
       "rolled_atr2": "MIG",
       "set_name": "",

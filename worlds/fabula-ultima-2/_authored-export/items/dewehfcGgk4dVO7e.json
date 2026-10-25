@@ -72,7 +72,7 @@
       "damage_bonus": "17",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>When you hit with this weapon, if you are not <strong>@UUID[JournalEntry.DMaL1B3Z5Y5AUrvC]{Hidden}</strong> at the beginning of this attack, Gain <strong>@UUID[JournalEntry.DMaL1B3Z5Y5AUrvC]{Hidden}&nbsp;</strong></p></li><li><p>When you attack with this weapon, if you are <strong>@UUID[JournalEntry.DMaL1B3Z5Y5AUrvC]{Hidden},&nbsp;</strong>you lose <strong>@UUID[JournalEntry.DMaL1B3Z5Y5AUrvC]{Hidden}&nbsp;</strong>, if the attack hits, it deals <strong>+10</strong> bonus damage.</p></li></ul>",
+      "description": "<ul><li><p>When you hit with this weapon, if you are not <a class=\"content-link\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\">Hidden</a> at the beginning of this attack, Gain <a class=\"content-link\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\">Hidden</a>&nbsp;</p></li><li><p>When you attack with this weapon, if you are <strong><a class=\"content-link\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\">Hidden</a>,&nbsp;</strong>you lose <a class=\"content-link\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\">Hidden</a>&nbsp;, if the attack hits, it deals <strong>+10</strong> bonus damage.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

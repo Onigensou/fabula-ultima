@@ -45,7 +45,7 @@
         "abekPFFl4fsT9ZAG": {
           "id": "${item.id}",
           "name": "Milk",
-          "related_item_description": "<ul><li><p>Target creature recovers <strong>30 HP</strong> and gains <strong>Strong</strong></p></li></ul>",
+          "related_item_description": "<ul><li><p>Target creature recovers <strong>30 HP </strong>and gain <a class=\"content-link\" data-uuid=\"Item.Gg1ot3L3XPuiGkym\" data-id=\"Gg1ot3L3XPuiGkym\" data-type=\"Item\">Strong</a> <em>(Increase MIG die by one stage)</em></p></li></ul>",
           "uuid": "Item.abekPFFl4fsT9ZAG"
         }
       },

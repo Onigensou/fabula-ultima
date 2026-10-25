@@ -39,7 +39,7 @@
   "system": {
     "container": null,
     "props": {
-      "description": "<ul><li>Learned how to create <strong>Golem Fragment</strong> with <strong>1 IP</strong></li></ul>",
+      "description": "<ul><li>Learned how to create&nbsp;<strong>Golem Fragment</strong> with <strong>1 IP</strong></li></ul>",
       "ip_cost": "1",
       "item_cost": "450",
       "item_type": "recipe",
@@ -48,7 +48,7 @@
         "yUVYbl0jMLMH730y": {
           "id": "${item.id}",
           "name": "Golem Fragment",
-          "related_item_description": "<ul><li><p><em>Give <strong>5 Shield</strong> to target ally; if the target already has a Shield, increase that shield value by 5 instead.</em></p></li></ul>",
+          "related_item_description": "<ul><li><p>Give <strong>5 </strong><a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a> to target ally, if the target already have a <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a>, increase that shield value by 5 instead.</p></li></ul>",
           "uuid": "Item.yUVYbl0jMLMH730y"
         }
       }

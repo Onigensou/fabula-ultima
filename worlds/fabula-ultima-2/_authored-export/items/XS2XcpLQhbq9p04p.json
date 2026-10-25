@@ -328,7 +328,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>You have Resistance to <strong>dark</strong> damage.</li><li>Your <strong>offensive </strong>【<strong>spell】 </strong>that deal <strong>dark </strong>damage<strong> </strong>deals <strong>5 extra damage</strong>.</li><li><p>When you perform an offensive 【<strong>spell】 </strong>that deal <strong>dark </strong>damage, you may spend <strong>15 Mind Points</strong> to ignore target <strong>dark resistance and immunity</strong>.</p></li></ul>",
+      "description": "<ul><li>You have Resistance to <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a> damage.</li><li>Your <strong>offensive </strong>【<strong>spell】 </strong>that deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a>damage deals <strong>5 extra damage</strong>.</li><li><p>When you perform an offensive 【<strong>spell】 </strong>that deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a>damage, you may spend <strong>15 Mind Points</strong> to ignore target <strong>dark resistance and immunity</strong>.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

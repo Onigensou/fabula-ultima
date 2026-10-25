@@ -56,7 +56,7 @@
           "cost": "-",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Trigger</a>&nbsp;When this creature <strong>Half-Life</strong> stack reaches <strong>0</strong></p></li></ul><p>Reduce this creature to <strong>0 HP </strong>and inflicts its <strong>debuffs </strong>to <strong>All Creature </strong>on the battlefield.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\">Trigger</a>&nbsp;When this creature <strong>Half-Life</strong> stack reaches <strong>0</strong></p></li></ul><p>Reduce this creature to <strong>0 HP </strong>and inflicts its <strong>debuffs </strong>to <strong>All Creature </strong>on the battlefield.</p>",
           "duration": "-",
           "effect_table": {
             "0": {
@@ -235,7 +235,7 @@
           "cost": "-",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p>This creature is <strong>immune to </strong><a class=\"content-link\" data-uuid=\"JournalEntry.ZunRGiMDSgAapm5G\" data-id=\"ZunRGiMDSgAapm5G\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Strike Damage</a></p>",
+          "description": "<p>This creature is <strong>immune to </strong><a class=\"content-link\" data-uuid=\"JournalEntry.ZunRGiMDSgAapm5G\" data-id=\"ZunRGiMDSgAapm5G\" data-type=\"JournalEntry\">Strike Damage</a></p>",
           "duration": "-",
           "effect_table": {},
           "heroic_requirement": "",

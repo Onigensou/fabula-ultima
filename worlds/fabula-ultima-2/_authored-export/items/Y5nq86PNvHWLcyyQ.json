@@ -73,7 +73,7 @@
       "damage_bonus": "18",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul>\n<li>When attacking with this weapon, you may spread the damage dealt among any numbers of target. If you do, this attack counts as having the <strong>multi (x)</strong> property<strong>&nbsp;</strong>where X is the number of targets.</li>\n</ul>",
+      "description": "<ul>\n<li>When attacking with this weapon, you may spread the damage dealt among any numbers of target. If you do, this attack counts as having the <strong>multi (x)</strong> property&nbsp;where X is the number of targets.</li>\n</ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

@@ -463,7 +463,7 @@
               "reaction_trigger": "creature_will_deal_damage"
             }
           },
-          "skill_description": "<ul><li><p>@UUID[JournalEntry.2hNU23YLpCcZCCmf]{Pierce}</p></li><li><p>@UUID[JournalEntry.Cz6U0ps98sYN8jMH]{Conquer 3}: inflicts @UUID[JournalEntry.GePNxftPupElcCWp]{Bleed} on the target.</p></li></ul>",
+          "skill_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\">Pierce</a></p></li><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Cz6U0ps98sYN8jMH\" data-id=\"Cz6U0ps98sYN8jMH\" data-type=\"JournalEntry\">Conquer 3</a>: inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\">Bleed</a> on the target.</p></li></ul>",
           "skill_target": "Self",
           "skill_type": "Passive",
           "type_damage": "",
@@ -503,7 +503,7 @@
         "container": "mtITyraf0q57MwAv",
         "props": {
           "cost": "",
-          "description": "<p>This weapon deals 5 extra damage for each of these that is true: you are in Crisis, you are Doomed, you have a debuff, your HP is below 10.</p>",
+          "description": "<p>This weapon deals 5 extra damage for each of these that is true: you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, you are Doomed, you have a debuff, your HP is below 10.</p>",
           "effect_table": {
             "0": {
               "$deleted": false,
@@ -531,7 +531,7 @@
               "reaction_trigger": "creature_will_deal_damage"
             }
           },
-          "skill_description": "<ul><li><p>@UUID[JournalEntry.2hNU23YLpCcZCCmf]{Pierce}</p></li><li><p>@UUID[JournalEntry.Cz6U0ps98sYN8jMH]{Conquer 3}: inflicts @UUID[JournalEntry.GePNxftPupElcCWp]{Bleed} on the target.</p></li></ul>",
+          "skill_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\">Pierce</a></p></li><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Cz6U0ps98sYN8jMH\" data-id=\"Cz6U0ps98sYN8jMH\" data-type=\"JournalEntry\">Conquer 3</a>: inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\">Bleed</a> on the target.</p></li></ul>",
           "skill_target": "Self",
           "skill_type": "Passive",
           "type_damage": "",
@@ -690,7 +690,7 @@
           "damage_bonus": "6",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li>You have Resistance to <strong>dark</strong> and <strong>poison</strong> damage</li><li><p>You have Resistance to <strong>@UUID[JournalEntry.XRlyg27yLgoQUOXZ]{Envenomed}</strong></p></li></ul>",
+          "description": "<ul><li>You have Resistance to <strong>dark</strong> and <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\">Poison</a> damage</li><li><p>You have Resistance to <a class=\"content-link\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\">Envenomed</a></p></li></ul>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -1409,7 +1409,7 @@
       "system": {
         "container": null,
         "props": {
-          "description": "<ul>\n<li>You have Resistance to<strong> Air</strong>&nbsp;damage.</li>\n</ul>",
+          "description": "<ul>\n<li>You have Resistance to<a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\">Air</a>&nbsp;damage.</li>\n</ul>",
           "isMartial": false,
           "item_cost": "800",
           "item_def_bonus": "+2",
@@ -1997,7 +1997,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li><p>When an ally who is able to see you causes you to recover <strong>Hit Points</strong>, if you are in @UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}, that ally recovers <strong>5</strong> Mind Points.</p></li></ul>",
+          "description": "<ul><li><p>When an ally who is able to see you causes you to recover <strong>Hit Points</strong>, if you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, that ally recovers <strong>5</strong> Mind Points.</p></li></ul>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -2027,6 +2027,11 @@
           "item_mdef_bonus": "+1",
           "item_quantity": "1",
           "item_rarity": "Common",
+          "item_skill_passive": {
+            "xns4hKmXNxb1vJbQ": {
+              "skill_description": "<p>When an ally restores your HP while you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, that ally recovers 5 MP.</p>"
+            }
+          },
           "item_type": "armor",
           "mimic_ef": "100",
           "monster_ef": "100",
@@ -2035,6 +2040,11 @@
           "plant_ef": "100",
           "refine_count": "0",
           "refine_level": "0",
+          "related_item_list": {
+            "xns4hKmXNxb1vJbQ": {
+              "related_item_description": "<p>When an ally restores your HP while you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, that ally recovers 5 MP.</p>"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -2251,7 +2261,7 @@
           "damage_bonus": "4",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li><p>Deals <strong>5 extra damage</strong> to targets who are in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li><li><p>When you hit with this weapon, there is a <strong>15% chance</strong> that, if the target is not a <strong>Villian&nbsp;</strong>or&nbsp;<strong>Boss</strong> type enemy, its&nbsp;<strong>HP&nbsp;</strong>is reduced until it is in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li></ul>",
+          "description": "<ul><li><p>Deals <strong>5 extra damage</strong> to targets who are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a></p></li><li><p>When you hit with this weapon, there is a <strong>15% chance</strong> that, if the target is not a <strong>Villian&nbsp;</strong>or&nbsp;<strong>Boss</strong> type enemy, its&nbsp;<strong>HP&nbsp;</strong>is reduced until it is in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a></p></li></ul>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -2279,12 +2289,22 @@
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "SrnkJUG8qujywxzY": {
+              "skill_description": "<p>This weapon deals 5 extra damage to a target in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>. Each hit with this weapon has a 15% chance to reduce a target that is not a Villain or Champion to its Crisis score.</p>"
+            }
+          },
           "item_type": "weapon",
           "mimic_ef": "100",
           "monster_ef": "100",
           "name": "Assassin's Blade",
           "optional_params": {},
           "plant_ef": "100",
+          "related_item_list": {
+            "SrnkJUG8qujywxzY": {
+              "related_item_description": "<p>This weapon deals 5 extra damage to a target in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>. Each hit with this weapon has a 15% chance to reduce a target that is not a Villain or Champion to its Crisis score.</p>"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "INS",
@@ -2346,13 +2366,23 @@
           "category": "Sword",
           "check_bonus": "1",
           "damage_bonus": "6",
-          "description": "<ul><li><p>&nbsp;Deals 5 extra damage if you are in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li><li><p>Deals 5 extra damage if you are inflicted with <strong>@UUID[JournalEntry.Do0VLf6wW9uCSLwD]{Doom}</strong></p></li><li>Deals 5 extra damage if you are inflicted with a <strong>debuff</strong>.</li><li>Deals 5 extra damage if your <strong>HP&nbsp;</strong>is below 10.</li></ul>",
+          "description": "<ul><li><p>&nbsp;Deals 5 extra damage if you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a></p></li><li><p>Deals 5 extra damage if you are inflicted with <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a></p></li><li>Deals 5 extra damage if you are inflicted with a <strong>debuff</strong>.</li><li>Deals 5 extra damage if your <strong>HP&nbsp;</strong>is below 10.</li></ul>",
           "hand_slots": "One-handed",
           "isMartial": true,
           "item_cost": "1500",
           "item_quantity": "1",
+          "item_skill_passive": {
+            "EcoXzdduUyaGu8SQ": {
+              "skill_description": "<p>This weapon deals 5 extra damage for each of these that is true: you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, you are Doomed, you have a debuff, your HP is below 10.</p>"
+            }
+          },
           "item_type": "weapon",
           "name": "Near-Death Sword",
+          "related_item_list": {
+            "EcoXzdduUyaGu8SQ": {
+              "related_item_description": "<p>This weapon deals 5 extra damage for each of these that is true: you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, you are Doomed, you have a debuff, your HP is below 10.</p>"
+            }
+          },
           "rolled_atr1": "DEX",
           "rolled_atr2": "MIG",
           "set_name": "",
@@ -2442,7 +2472,7 @@
           "damage_bonus": "18",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul>\n<li>When attacking with this weapon, you may spread the damage dealt among any numbers of target. If you do, this attack counts as having the <strong>multi (x)</strong> property<strong>&nbsp;</strong>where X is the number of targets.</li>\n</ul>",
+          "description": "<ul>\n<li>When attacking with this weapon, you may spread the damage dealt among any numbers of target. If you do, this attack counts as having the <strong>multi (x)</strong> property&nbsp;where X is the number of targets.</li>\n</ul>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -2880,7 +2910,7 @@
         "container": "mSopH9vR6TaV6LsG",
         "props": {
           "cost": "",
-          "description": "<p>This weapon deals 5 extra damage to a target in Crisis. Each hit with this weapon has a 15% chance to reduce a target that is not a Villain or Champion to its Crisis score.</p>",
+          "description": "<p>This weapon deals 5 extra damage to a target in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>. Each hit with this weapon has a 15% chance to reduce a target that is not a Villain or Champion to its Crisis score.</p>",
           "effect_table": {
             "0": {
               "$deleted": false,
@@ -2936,7 +2966,7 @@
               "reaction_trigger": "creature_deals_damage"
             }
           },
-          "skill_description": "<ul><li><p>@UUID[JournalEntry.2hNU23YLpCcZCCmf]{Pierce}</p></li><li><p>@UUID[JournalEntry.Cz6U0ps98sYN8jMH]{Conquer 3}: inflicts @UUID[JournalEntry.GePNxftPupElcCWp]{Bleed} on the target.</p></li></ul>",
+          "skill_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\">Pierce</a></p></li><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Cz6U0ps98sYN8jMH\" data-id=\"Cz6U0ps98sYN8jMH\" data-type=\"JournalEntry\">Conquer 3</a>: inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\">Bleed</a> on the target.</p></li></ul>",
           "skill_target": "Self",
           "skill_type": "Passive",
           "type_damage": "",
@@ -3217,7 +3247,7 @@
         "container": "jFf8K6iBhHdESWEM",
         "props": {
           "cost": "",
-          "description": "<p>When an ally restores your HP while you are in Crisis, that ally recovers 5 MP.</p>",
+          "description": "<p>When an ally restores your HP while you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, that ally recovers 5 MP.</p>",
           "effect_table": {
             "0": {
               "$deleted": false,
@@ -3245,7 +3275,7 @@
               "reaction_trigger": "creature_gain_resource"
             }
           },
-          "skill_description": "<ul><li><p>@UUID[JournalEntry.2hNU23YLpCcZCCmf]{Pierce}</p></li><li><p>@UUID[JournalEntry.Cz6U0ps98sYN8jMH]{Conquer 3}: inflicts @UUID[JournalEntry.GePNxftPupElcCWp]{Bleed} on the target.</p></li></ul>",
+          "skill_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\">Pierce</a></p></li><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Cz6U0ps98sYN8jMH\" data-id=\"Cz6U0ps98sYN8jMH\" data-type=\"JournalEntry\">Conquer 3</a>: inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\">Bleed</a> on the target.</p></li></ul>",
           "skill_target": "Self",
           "skill_type": "Passive",
           "type_damage": "",
@@ -3392,7 +3422,7 @@
           "damage_bonus": "18",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li>You have Immunity to <strong>Fire</strong> damage.</li></ul>",
+          "description": "<ul><li>You have Immunity to <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage.</li></ul>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -3772,7 +3802,7 @@
           "defense_target_type": "mdef",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul>\n    <li>\n        <p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p>\n    </li>\n    <li>\n        <p>You may cast the spell 【✨<strong> Regen </strong>】</p>\n        <hr>\n    </li>\n</ul>\n<details>\n    <summary><strong>✨ Regen</strong></summary>\n    <p><strong>Cost:</strong> 10 MP</p>\n    <p><strong>Target:</strong> One Creature</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p>You awaken the regeneration power in target creature, For <strong>3 rounds</strong> Target creature gain the following effects:</p>\n    <p></p>\n        <li>At the start of your turn, restore <strong>【20% of your Max HP】</strong></li>\n    <p></p>\n</details>",
+          "description": "<ul>\n    <li>\n        <p>This weapon deals <a class=\"content-link\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" data-id=\"XYQUsuXPU0CQjEYa\" data-type=\"JournalEntry\">Magic Damage</a></p>\n    </li>\n    <li>\n        <p>You may cast the spell 【✨<strong> Regen </strong>】</p>\n        <hr>\n    </li>\n</ul>\n<details>\n    <summary><strong>✨ Regen</strong></summary>\n    <p><strong>Cost:</strong> 10 MP</p>\n    <p><strong>Target:</strong> One Creature</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p>You awaken the regeneration power in target creature, For <strong>3 rounds</strong> Target creature gain the following effects:</p>\n    <p></p>\n        <li>At the start of your turn, restore <strong>【20% of your Max HP】</strong></li>\n    <p></p>\n</details>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",

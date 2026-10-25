@@ -30,7 +30,7 @@
       "cost": "10 MP",
       "damage_bonus": "0",
       "defense_target_type": "def",
-      "description": "<p>As a 【💥Skill】 action, perform a free attack against one creature with a firearm weapon you have equipped. The attack deals <strong>【SL × 2】</strong> extra damage, or <strong>【SL × 4】</strong> if you are <a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Hidden</strong></a>.</p><p>Dealing damage with this skill does not end your <strong>【Camouflage】</strong>.</p>",
+      "description": "<p>As a 【💥Skill】 action, perform a free attack against one creature with a firearm weapon you have equipped. The attack deals <strong>【SL × 2】</strong> extra damage, or <strong>【SL × 4】</strong> if you are <a class=\"content-link\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\">Hidden</a>.</p><p>Dealing damage with this skill does not end your <strong>【Camouflage】</strong>.</p>",
       "duration": "",
       "heroic_requirement": "",
       "isCheck": true,

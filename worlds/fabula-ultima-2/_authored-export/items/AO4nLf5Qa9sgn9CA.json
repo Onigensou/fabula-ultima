@@ -24,7 +24,7 @@
   "system": {
     "container": "zI5VtjavzBGg6AbY",
     "props": {
-      "description": "<p>Equipped passive: when you hit a creature with this weapon, it suffers Bleed.</p>",
+      "description": "<p>Equipped passive: when you hit a creature with this weapon, it suffers <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\">Bleed</a>.</p>",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace",

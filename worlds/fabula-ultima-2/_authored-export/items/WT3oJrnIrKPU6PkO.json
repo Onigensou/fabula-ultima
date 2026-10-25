@@ -328,7 +328,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul>\n<li>After a creature hits you with a <strong>melee attack</strong>, you deal 5<strong> fire damage</strong> to that<br>creature<em> (after the attack has been resolved).</em></li>\n</ul>",
+      "description": "<ul>\n<li>After a creature hits you with a <strong>melee attack</strong>, you deal 5<strong> <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage</strong> to that<br>creature<em> (after the attack has been resolved).</em></li>\n</ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -358,6 +358,11 @@
       "item_mdef_bonus": "0",
       "item_quantity": "1",
       "item_rarity": "Uncommon",
+      "item_skill_passive": {
+        "D14OMH5uNi2SUFz1": {
+          "skill_description": "<p>After a creature damages you with a melee attack, it takes 5 <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage.</p>"
+        }
+      },
       "item_type": "armor",
       "mimic_ef": "100",
       "monster_ef": "100",
@@ -366,6 +371,11 @@
       "plant_ef": "100",
       "refine_count": "0",
       "refine_level": "0",
+      "related_item_list": {
+        "D14OMH5uNi2SUFz1": {
+          "related_item_description": "<p>After a creature damages you with a melee attack, it takes 5 <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage.</p>"
+        }
+      },
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "DEX",

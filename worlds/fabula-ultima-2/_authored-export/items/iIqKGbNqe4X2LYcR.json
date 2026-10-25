@@ -84,7 +84,7 @@
       "cost": "15 MP",
       "damage_bonus": "0",
       "defense_target_type": "mdef",
-      "description": "<p>You cause the target to suffer a terrifying nightmare, Deal <strong>【HR + 15% of the target Max HP】</strong> dark damage to the target, this damage <strong>do not cause sleeping creature to wake up</strong>.</p>",
+      "description": "<p>You cause the target to suffer a terrifying nightmare, Deal <strong>【HR + 15% of the target Max HP】</strong> <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a> damage to the target, this damage <strong>do not cause sleeping creature to wake up</strong>.</p>",
       "duration": "Instantaneous",
       "heroic_requirement": "",
       "isCheck": true,

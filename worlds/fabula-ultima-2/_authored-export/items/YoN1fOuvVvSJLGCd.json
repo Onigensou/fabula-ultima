@@ -24,7 +24,7 @@
   "system": {
     "container": "kALWkUzVhaUPCQuG",
     "props": {
-      "description": "<p>Equipped passive: While you are in Crisis, attacks with this weapon gain Drain and deal 200% damage.</p>",
+      "description": "<p>Equipped passive: While you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, attacks with this weapon gain Drain and deal 200% damage.</p>",
       "effect_table": {
         "0": {
           "chain_steps": "bsword_dmg, bsword_drain",

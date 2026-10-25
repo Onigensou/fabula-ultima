@@ -73,7 +73,7 @@
       "damage_bonus": "8",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul>\n<li>Spells you cast that deal <strong>ice</strong> damage will deal 5 extra damage</li>\n</ul>",
+      "description": "<ul>\n<li>Spells you cast that deal <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\">Ice</a> damage will deal 5 extra damage</li>\n</ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

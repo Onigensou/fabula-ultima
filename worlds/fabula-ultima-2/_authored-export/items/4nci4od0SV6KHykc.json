@@ -78,7 +78,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>You can target @UUID[JournalEntry.DMaL1B3Z5Y5AUrvC]{Hidden}<strong>&nbsp;</strong>creature as though they are not hidden.</p></li></ul>",
+      "description": "<ul><li><p>You can target <a class=\"content-link\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\">Hidden</a>&nbsp;creature as though they are not hidden.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

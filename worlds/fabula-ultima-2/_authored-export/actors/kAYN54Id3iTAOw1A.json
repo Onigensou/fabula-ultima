@@ -51,7 +51,7 @@
           "cost": "-",
           "damage_bonus": "22",
           "defense_target_type": "def",
-          "description": "<p>Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;damage to one creature, with a <strong>50%</strong> chance to leave it <a class=\"content-link\" data-uuid=\"JournalEntry.2rh5lyMNU5yL8Btk\" data-id=\"2rh5lyMNU5yL8Btk\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Wet</strong></a>.</p>",
+          "description": "<p>Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\">Ice</a>&nbsp;damage to one creature, with a <strong>50%</strong> chance to leave it <a class=\"content-link\" data-uuid=\"JournalEntry.2rh5lyMNU5yL8Btk\" data-id=\"2rh5lyMNU5yL8Btk\" data-type=\"JournalEntry\">Wet</a>.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
@@ -404,7 +404,7 @@
           "cost": "-",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When the Ampere is struck by damage and the Result of the attacker's Accuracy Check was an <strong>even number</strong></p></li></ul><p>The Ampere discharges, dealing 10 <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to every other creature in the conflict, its own allies included.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\">Trigger</a>&nbsp;When the Ampere is struck by damage and the Result of the attacker's Accuracy Check was an <strong>even number</strong></p></li></ul><p>The Ampere discharges, dealing 10 <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a>&nbsp;damage to every other creature in the conflict, its own allies included.</p>",
           "details_roller": "Show",
           "duration": "-",
           "effect_table": {
@@ -747,7 +747,7 @@
           "cost": "30 MP",
           "damage_bonus": "40",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a></p></li></ul><p>Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;damage to all enemies. Each creature hit must pass a <strong>DL 13</strong> <strong>【DEX】+【MIG】</strong> check or be left <a class=\"content-link\" data-uuid=\"JournalEntry.2rh5lyMNU5yL8Btk\" data-id=\"2rh5lyMNU5yL8Btk\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Wet</strong></a>.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\">Overflow</a></p></li></ul><p>Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\">Ice</a>&nbsp;damage to all enemies. Each creature hit must pass a <strong>DL 13</strong> <strong>【DEX】+【MIG】</strong> check or be left <a class=\"content-link\" data-uuid=\"JournalEntry.2rh5lyMNU5yL8Btk\" data-id=\"2rh5lyMNU5yL8Btk\" data-type=\"JournalEntry\">Wet</a>.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
@@ -886,7 +886,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li><p>Whenever you take <strong>Bolt </strong>damage, you recovers <strong>MP </strong>equal to the damage taken</p><hr contenteditable=\"false\"></li></ul><ul><li><p><strong>【Set Bonus】</strong></p></li></ul><p><strong>2 Piece</strong></p><ul><li><p>At the start of your turn, deal <strong>5 Bolt </strong>damage to yourself</p><hr contenteditable=\"false\"></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Whenever a creature in the scene is targeted by an effect that deal <strong>Bolt </strong>damage, you may change its target to you instead</p></li></ul>",
+          "description": "<ul><li><p>Whenever you take <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a>damage, you recovers <strong>MP </strong>equal to the damage taken</p></li></ul>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -923,6 +923,7 @@
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
+          "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</strong></p><ul><li><p>At the start of your turn, deal <strong>5 <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> </strong>damage to yourself</p><hr contenteditable=\"false\"></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Whenever a creature in the scene is targeted by an effect that deal <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a>damage, you may change its target to you instead</p></li></ul>",
           "set_name": "Monster of Frankensteiner",
           "soldier_ef": "100",
           "spirit_ef": "100",

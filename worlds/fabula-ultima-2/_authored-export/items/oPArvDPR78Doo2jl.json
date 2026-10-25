@@ -25,7 +25,7 @@
     "container": "uc8XODkLHZ6KX4JR",
     "props": {
       "action_command": "item",
-      "description": "<ul><li><p><em>Inflicts <strong>Charmed</strong> on the target until the end of this turn and deals <strong>5 fire damage</strong>. Only usable on Humanoid creatures.</em></p></li></ul>",
+      "description": "<ul><li><p><em>Inflicts <strong>Charmed</strong> on the target until the end of this turn and deals <strong>5 <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage</strong>. Only usable on Humanoid creatures.</em></p></li></ul>",
       "effect_table": {
         "0": {
           "chain_steps": "suspot_charm,suspot_burn",
@@ -50,7 +50,7 @@
       },
       "name": "Suspicious Potion",
       "on_activate_effect_ref": "suspot_use",
-      "skill_description": "<ul><li><p><em>Inflicts <strong>Charmed</strong> on the target until the end of this turn and deals <strong>5 fire damage</strong>. Only usable on Humanoid creatures.</em></p></li></ul>",
+      "skill_description": "<ul><li><p><em>Inflicts <strong>Charmed</strong> on the target until the end of this turn and deals <strong>5 <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage</strong>. Only usable on Humanoid creatures.</em></p></li></ul>",
       "skill_target": "One Enemy",
       "skill_type": "Item",
       "target_eligibility": "SPECIES_IS_HUMANOID == 1"

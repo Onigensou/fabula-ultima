@@ -24,7 +24,7 @@
   "system": {
     "container": "1RLyAV6Hx7n1PmBb",
     "props": {
-      "description": "<p>Equipped passive: whenever Bolt damage is directed at you — whether it lands or you absorb it — you gain Strong.</p>",
+      "description": "<p>Equipped passive: whenever <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage is directed at you — whether it lands or you absorb it — you gain Strong.</p>",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace",

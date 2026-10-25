@@ -63,7 +63,7 @@
       "category": "Brawling",
       "check_bonus": "0",
       "damage_bonus": "6",
-      "description": "<ul>\n<li>You have <strong>Resistance</strong> to <strong>F</strong><strong>ire</strong> damage.</li>\n<li>When you received&nbsp;<strong>Fire&nbsp;</strong>damage, your next attack this round deals <strong>10</strong> bonus damage.</li>\n</ul>",
+      "description": "<ul>\n<li>You have <strong>Resistance</strong> to <strong>F</strong><strong>ire</strong> damage.</li>\n<li>When you received&nbsp;<a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a>damage, your next attack this round deals <strong>10</strong> bonus damage.</li>\n</ul>",
       "hand_slots": "One-handed",
       "isMartial": false,
       "item_cost": "950",

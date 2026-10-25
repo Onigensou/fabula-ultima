@@ -56,7 +56,7 @@
       "cost": "30 MP",
       "damage_bonus": "0",
       "defense_target_type": "def",
-      "description": "<p>You call upon the spirits of nature, Summon an ally 🦅<strong>@UUID[Actor.GnEmdc02BDDTmeaU] </strong>to the scene</p>",
+      "description": "<p>You call upon the spirits of nature, Summon an ally <a class=\"content-link\" data-uuid=\"Actor.GnEmdc02BDDTmeaU\" data-id=\"GnEmdc02BDDTmeaU\" data-type=\"Actor\">Spirit Hawk</a> to the scene</p>",
       "duration": "Scene",
       "heroic_requirement": "",
       "isCheck": false,

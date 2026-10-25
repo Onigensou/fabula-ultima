@@ -341,7 +341,7 @@
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "DEX",
-      "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</strong></p><ul><li><p>Your attack with&nbsp;<strong>Firearm&nbsp;</strong>may <strong>Critical&nbsp;</strong>with dice roll lower than&nbsp;<strong>6&nbsp;</strong><em>(As long as it's not a Fumble)</em></p><hr></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Your attacks with&nbsp;<strong>Firearm&nbsp;</strong>gain @UUID[JournalEntry.tQE9WGDt0bNhgxXw]{Homing}</p></li></ul>",
+      "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</strong></p><ul><li><p>Your attack with&nbsp;<strong>Firearm&nbsp;</strong>may <strong>Critical&nbsp;</strong>with dice roll lower than&nbsp;<strong>6&nbsp;</strong><em>(As long as it's not a Fumble)</em></p><hr></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Your attacks with&nbsp;<strong>Firearm&nbsp;</strong>gain <a class=\"content-link\" data-uuid=\"JournalEntry.tQE9WGDt0bNhgxXw\" data-id=\"tQE9WGDt0bNhgxXw\" data-type=\"JournalEntry\">Homing</a></p></li></ul>",
       "set_name": "Professional Hitman",
       "soldier_ef": "100",
       "spirit_ef": "100",

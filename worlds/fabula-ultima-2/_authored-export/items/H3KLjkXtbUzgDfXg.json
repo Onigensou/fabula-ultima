@@ -39,7 +39,7 @@
   "system": {
     "container": null,
     "props": {
-      "description": "<ul><li>Learned how to create <strong>Turbo Remedy</strong> with <strong>6 IP</strong></li></ul>",
+      "description": "<ul><li>Learned how to create&nbsp;<strong>Turbo Remedy</strong> with <strong>6 IP</strong></li></ul>",
       "ip_cost": "6",
       "item_cost": "2800",
       "item_type": "recipe",

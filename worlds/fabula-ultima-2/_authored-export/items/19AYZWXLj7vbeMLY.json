@@ -253,7 +253,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<p>Gain <strong>Resistance</strong> to <strong>Earth</strong> damage.</p>",
+      "description": "<p>Gain <strong>Resistance</strong> to <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\">Earth</a> damage.</p>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

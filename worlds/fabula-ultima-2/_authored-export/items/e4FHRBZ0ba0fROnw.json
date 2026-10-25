@@ -78,7 +78,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>You are immune to <strong>@UUID[JournalEntry.GePNxftPupElcCWp]{Bleed}</strong></p></li></ul>",
+      "description": "<ul><li><p>You are immune to <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\">Bleed</a></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

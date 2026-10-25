@@ -95,7 +95,7 @@
           "id": "${item.id}",
           "name": "Illusory Field",
           "skill_cost": "50 MP",
-          "skill_description": "<p>Reverse all <strong>Basic Buff </strong>on all creature<strong> </strong>into <strong>Basic Debuff</strong></p><p>Reverse all <strong>Basic Debuff </strong>on all creature<strong> </strong>into <strong>Basic Buff</strong></p>",
+          "skill_description": "<p>Reverse all <strong>Basic Buff </strong>on all creature into <strong>Basic Debuff</strong></p><p>Reverse all <strong>Basic Debuff </strong>on all creature into <strong>Basic Buff</strong></p>",
           "skill_maxLevel": 1,
           "uuid": "Item.iJy8pfQaJHPKhCjU"
         }
@@ -112,7 +112,7 @@
         "iJy8pfQaJHPKhCjU": {
           "id": "${item.id}",
           "name": "Illusory Field",
-          "related_item_description": "<p>Reverse all <strong>Basic Buff </strong>on all creature<strong> </strong>into <strong>Basic Debuff</strong></p><p>Reverse all <strong>Basic Debuff </strong>on all creature<strong> </strong>into <strong>Basic Buff</strong></p>",
+          "related_item_description": "<p>Reverse all <strong>Basic Buff </strong>on all creature into <strong>Basic Debuff</strong></p><p>Reverse all <strong>Basic Debuff </strong>on all creature into <strong>Basic Buff</strong></p>",
           "uuid": "Item.iJy8pfQaJHPKhCjU"
         }
       },

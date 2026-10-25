@@ -73,7 +73,7 @@
       "damage_bonus": "8",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul>\n<li>&nbsp;You have<strong> Resistance</strong> to<strong> Fire </strong>damage.</li>\n</ul>",
+      "description": "<ul>\n<li>&nbsp;You have<strong> Resistance</strong> to<a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a>damage.</li>\n</ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

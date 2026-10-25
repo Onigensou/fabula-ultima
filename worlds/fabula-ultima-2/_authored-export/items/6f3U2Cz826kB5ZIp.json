@@ -79,7 +79,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>Whenever you spend <strong>MP </strong>to use a <strong>Spell </strong>or <strong>Skill, </strong>you gain <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Shield</a> equal to MP spend to cast it. This effect trigger once per turn.</p></li><li><p>Shield from this effect disappear at the start of your next turn <em>(but trigger last thus can reduce turn-base DOT damage)</em></p></li></ul>",
+      "description": "<ul><li><p>Whenever you spend <strong>MP </strong>to use a <strong>Spell </strong>or <strong>Skill, </strong>you gain <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a> equal to MP spend to cast it. This effect trigger once per turn.</p></li><li><p>Shield from this effect disappear at the start of your next turn <em>(but trigger last thus can reduce turn-base DOT damage)</em></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

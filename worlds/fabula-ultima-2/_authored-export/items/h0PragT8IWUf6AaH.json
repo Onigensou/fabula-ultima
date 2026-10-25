@@ -24,7 +24,7 @@
   "system": {
     "container": "8xmL5DAYFpSozzhz",
     "props": {
-      "description": "<p>Equipped passive: When a Humanoid Non-Champion creature targets you with an Attack, they suffer Bleed. Once per target.</p>",
+      "description": "<p>Equipped passive: When a Humanoid Non-Champion creature targets you with an Attack, they suffer <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\">Bleed</a>. Once per target.</p>",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace",

@@ -328,7 +328,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>You're always afflicted with <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.RZIAnKw95vY6yh2W\" data-id=\"RZIAnKw95vY6yh2W\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Zombie</strong></a></p></li><li><p>Reducing you to 0 HP does not cause you to&nbsp;<strong>Sacrifice</strong>&nbsp;or&nbsp;<strong>Surrender.&nbsp;</strong>If all your ally are reduce to 0 HP you then Sacrifice or Surrender as normal. This effect is disable if the damage that reduce you to 0 HP is <strong>light</strong> damage.</p></li><li>You<strong> Sacrifice</strong> or <strong>Surrender</strong> as normal if you are hit by the spell <strong>【Hope】</strong>or similar Revive effects.</li></ul>",
+      "description": "<ul><li><p>You're always afflicted with <a class=\"content-link\" data-uuid=\"JournalEntry.RZIAnKw95vY6yh2W\" data-id=\"RZIAnKw95vY6yh2W\" data-type=\"JournalEntry\">Zombie</a></p></li><li><p>Reducing you to 0 HP does not cause you to&nbsp;<strong>Sacrifice</strong>&nbsp;or&nbsp;<strong>Surrender.&nbsp;</strong>If all your ally are reduce to 0 HP you then Sacrifice or Surrender as normal. This effect is disable if the damage that reduce you to 0 HP is <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\">Light</a> damage.</p></li><li>You<strong> Sacrifice</strong> or <strong>Surrender</strong> as normal if you are hit by the spell <strong>【Hope】</strong>or similar Revive effects.</li></ul>",
       "dragon_ef": "100",
       "effect_table": {},
       "elemental_ef": "100",

@@ -40,7 +40,7 @@
       "category": "Thrown",
       "check_bonus": "0",
       "damage_bonus": "5",
-      "description": "<ul>\n<li>You may perform&nbsp;<strong>Two-Weapon Fighting&nbsp;</strong>with this weapon.</li>\n<li>Transform into <strong><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/lightspeed.png\" width=\"21\" height=\"21\">@UUID[Item.k9yMxh4GMjFZSfc8]{Caelestis Oculus}</strong></li>\n</ul>",
+      "description": "<ul>\n<li>You may perform&nbsp;<strong>Two-Weapon Fighting&nbsp;</strong>with this weapon.</li>\n<li>Transform into <strong><img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/06_AST/lightspeed.png\" width=\"21\" height=\"21\"><a class=\"content-link\" data-uuid=\"Item.k9yMxh4GMjFZSfc8\" data-id=\"k9yMxh4GMjFZSfc8\" data-type=\"Item\">Caelestis Oculus</a></strong></li>\n</ul>",
       "hand_slots": "Two-handed",
       "isMartial": true,
       "item_cost": "0",

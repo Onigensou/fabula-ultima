@@ -50,7 +50,7 @@
       "damage_bonus": "16",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul>\n<li>After this weapon deals damage to one or more creatures, if at least one of those creatures is <strong>Vulnerable</strong> to <strong>bolt</strong> damage, you may deal <strong>10 bolt</strong> damage to every enemy you can see</li>\n</ul>",
+      "description": "<ul>\n<li>After this weapon deals damage to one or more creatures, if at least one of those creatures is <strong>Vulnerable</strong> to <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage, you may deal <strong>10 <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a></strong> damage to every enemy you can see</li>\n</ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

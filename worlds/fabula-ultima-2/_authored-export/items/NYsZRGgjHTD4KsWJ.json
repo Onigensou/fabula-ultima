@@ -24,7 +24,7 @@
   "system": {
     "container": "E3pWg5IWc9mGcGOx",
     "props": {
-      "description": "<p>Equipped passive: Your attacks with a Flail weapon deal 5 bonus damage and inflict Enraged on the target.</p>",
+      "description": "<p>Equipped passive: Your attacks with a Flail weapon deal 5 bonus damage and inflict <a class=\"content-link\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\">Enraged</a> on the target.</p>",
       "effect_table": {
         "0": {
           "damage_amount": "5",

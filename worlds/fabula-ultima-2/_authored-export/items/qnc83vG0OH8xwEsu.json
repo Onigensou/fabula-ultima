@@ -24,7 +24,7 @@
   "system": {
     "container": "CtVrZqnTjAHvmYLG",
     "props": {
-      "description": "<p>Equipped passive: Snipe 20 — an Accuracy Check total of 20 or more inflicts Panic. +2 to Checks made to persuade someone.</p>",
+      "description": "<p>Equipped passive: Snipe 20 — an Accuracy Check total of 20 or more inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.vf421bQSPCjLAvBW\" data-id=\"vf421bQSPCjLAvBW\" data-type=\"JournalEntry\">Panic</a>. +2 to Checks made to persuade someone.</p>",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace",

@@ -79,7 +79,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>You may begin the conflicts with the <strong>companion 🐭@UUID[Actor.UfkgFFDxTzflNEpk]</strong></p></li></ul>",
+      "description": "<ul><li><p>You may begin the conflicts with the <strong>companion <a class=\"content-link\" data-uuid=\"Actor.UfkgFFDxTzflNEpk\" data-id=\"UfkgFFDxTzflNEpk\" data-type=\"Actor\">Nibbler</a></strong></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

@@ -55,7 +55,7 @@
       "cost": "10 MP",
       "damage_bonus": "",
       "defense_target_type": "def",
-      "description": "<p>Inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Curse</a>&nbsp;to a target</p>",
+      "description": "<p>Inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\">Curse</a>&nbsp;to a target</p>",
       "details_roller": "Show",
       "duration": "3 Rounds",
       "effect_table": {},

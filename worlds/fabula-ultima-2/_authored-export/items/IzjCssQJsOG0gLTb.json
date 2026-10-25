@@ -30,7 +30,7 @@
       "cost": "",
       "damage_bonus": "0",
       "defense_target_type": "def",
-      "description": "<p>Enemies cannot use the 【❗️Objective】 action to remove <a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Hidden</strong></a> from you.</p><p>The first time in each conflict that you spend Focus on an attack while <a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Hidden</strong></a>, that attack does not end your <strong>【Camouflage】</strong>.</p>",
+      "description": "<p>Enemies cannot use the 【❗️Objective】 action to remove <a class=\"content-link\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\">Hidden</a> from you.</p><p>The first time in each conflict that you spend Focus on an attack while <a class=\"content-link\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\">Hidden</a>, that attack does not end your <strong>【Camouflage】</strong>.</p>",
       "duration": "",
       "heroic_requirement": "You must have mastered the Sniper Class.",
       "isCheck": false,

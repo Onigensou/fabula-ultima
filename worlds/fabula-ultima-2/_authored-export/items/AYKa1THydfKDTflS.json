@@ -78,7 +78,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul>\n<li>When you deal <strong>poison</strong> damage to one or more creatures during a <strong>conflict</strong>, each of those creatures who loses <strong>Hit Points</strong> this way <strong>cannot</strong> recover <strong>Hit Points</strong> until the start of your next turn.</li>\n</ul>",
+      "description": "<ul>\n<li>When you deal <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\">Poison</a> damage to one or more creatures during a <strong>conflict</strong>, each of those creatures who loses <strong>Hit Points</strong> this way <strong>cannot</strong> recover <strong>Hit Points</strong> until the start of your next turn.</li>\n</ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

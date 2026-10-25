@@ -25,7 +25,7 @@
     "container": "1bAmygPgkEEVuGph",
     "props": {
       "cost": "",
-      "description": "<ul>\n<li>You may use this item immediately when you are targeted by a spell, <strong>Negate</strong> the spell and <strong>Reflect </strong>it back to the caster.</li>\n<li>You may only hold 1 copy of this item in your inventory.</li>\n</ul>",
+      "description": "<ul>\n<li>You may use this item immediately when you are targeted by a spell, <strong>Negate</strong> the spell and <strong>Reflect&nbsp;</strong>it back to the caster.</li>\n<li>You may only hold 1 copy of this item in your inventory.</li>\n</ul>",
       "effect_table": {
         "0": {
           "chain_steps": "mirror_redirect, mirror_spend",
@@ -83,7 +83,7 @@
           "reaction_trigger": "creature_targeted_by_action"
         }
       },
-      "skill_description": "<ul>\n<li>You may use this item immediately when you are targeted by a spell, <strong>Negate</strong> the spell and <strong>Reflect </strong>it back to the caster.</li>\n<li>You may only hold 1 copy of this item in your inventory.</li>\n</ul>",
+      "skill_description": "<ul>\n<li>You may use this item immediately when you are targeted by a spell, <strong>Negate</strong> the spell and <strong>Reflect&nbsp;</strong>it back to the caster.</li>\n<li>You may only hold 1 copy of this item in your inventory.</li>\n</ul>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "",

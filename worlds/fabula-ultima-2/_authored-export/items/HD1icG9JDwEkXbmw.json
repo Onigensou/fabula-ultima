@@ -79,7 +79,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>Reduce <strong>Physical </strong>damage by 5.</li><li>You can speak and communicate with creatures belonging to the <strong>Elemental</strong> species.</li></ul>",
+      "description": "<ul><li>Reduce <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a>damage by 5.</li><li>You can speak and communicate with creatures belonging to the <strong>Elemental</strong> species.</li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

@@ -132,7 +132,7 @@
       "damage_bonus": "18",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>You have Immunity to <strong>Fire</strong> damage.</li></ul>",
+      "description": "<ul><li>You have Immunity to <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage.</li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

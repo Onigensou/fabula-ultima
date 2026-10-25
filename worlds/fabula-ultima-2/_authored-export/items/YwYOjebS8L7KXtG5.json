@@ -30,7 +30,7 @@
       "cost": "",
       "damage_bonus": "0",
       "defense_target_type": "def",
-      "description": "<p>When you perform the 【🛡️Guard】 action, you may choose not to gain its Resistances. If you do, gain <strong>1 Focus</strong>.</p><p>While you are <a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Hidden</strong></a>, you also gain <strong>1 Focus</strong> at the end of each of your turns in which you dealt no damage.</p><p>You can hold up to <strong>1 Focus</strong>. You lose all Focus at the end of the conflict.</p><p>When you perform the 【⚔️Attack】 action with a firearm weapon, you may spend all your Focus. If you do, the attack's damage is doubled, then it deals <strong>【SL × 5】</strong> extra damage.</p>",
+      "description": "<p>When you perform the 【🛡️Guard】 action, you may choose not to gain its Resistances. If you do, gain <strong>1 Focus</strong>.</p><p>While you are <a class=\"content-link\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\">Hidden</a>, you also gain <strong>1 Focus</strong> at the end of each of your turns in which you dealt no damage.</p><p>You can hold up to <strong>1 Focus</strong>. You lose all Focus at the end of the conflict.</p><p>When you perform the 【⚔️Attack】 action with a firearm weapon, you may spend all your Focus. If you do, the attack's damage is doubled, then it deals <strong>【SL × 5】</strong> extra damage.</p>",
       "details_roller": "Show",
       "duration": "",
       "effect_table": {},

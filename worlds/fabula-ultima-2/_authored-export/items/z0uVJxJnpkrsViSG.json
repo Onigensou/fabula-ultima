@@ -144,7 +144,7 @@
       "damage_bonus": "6",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>You have Resistance to <strong>dark</strong> and <strong>poison</strong> damage</li><li><p>You have Resistance to <strong>@UUID[JournalEntry.XRlyg27yLgoQUOXZ]{Envenomed}</strong></p></li></ul>",
+      "description": "<ul><li>You have Resistance to <strong>dark</strong> and <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\">Poison</a> damage</li><li><p>You have Resistance to <a class=\"content-link\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\">Envenomed</a></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

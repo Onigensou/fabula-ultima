@@ -30,7 +30,7 @@
       "cost": "25 MP",
       "damage_bonus": "0",
       "defense_target_type": "def",
-      "description": "<p>As a 【💥Skill】 action, choose one creature. Until the end of your next turn, your first attack with a firearm weapon against that creature gains <a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.qXBYN6c9FMZzmS2n\" data-id=\"qXBYN6c9FMZzmS2n\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Cripple</strong></a>.</p>",
+      "description": "<p>As a 【💥Skill】 action, choose one creature. Until the end of your next turn, your first attack with a firearm weapon against that creature gains <a class=\"content-link\" data-uuid=\"JournalEntry.qXBYN6c9FMZzmS2n\" data-id=\"qXBYN6c9FMZzmS2n\" data-type=\"JournalEntry\">Cripple</a>.</p>",
       "duration": "Until the end of your next turn",
       "heroic_requirement": "",
       "isCheck": false,

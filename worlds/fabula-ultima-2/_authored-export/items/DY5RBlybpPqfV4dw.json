@@ -40,7 +40,7 @@
       "category": "Arcane",
       "check_bonus": "0",
       "damage_bonus": "13",
-      "description": "<ul>\n    <li>\n        <p>When you <strong>hit </strong>a creature with this weapon, inflicts a random <strong>debuff </strong>on the target.</p>\n    </li>\n    <li>\n        <p>You may cast the spell 【<strong>✨ Hex </strong>】</p>\n    </li>\n</ul>\n<hr>\n<details>\n    <summary><strong>✨ Hex</strong></summary>\n    <p><strong>Cost:</strong> 10 MP</p>\n    <p><strong>Target:</strong> One Creature</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p>Deal dark damage to target creature equal to <strong>【5 x the amount of Status Effects on the target】</strong>if this is the seventh round or more, this effect deal 300% damage instead.</p>\n    <p></p>\n</details>",
+      "description": "<ul>\n    <li>\n        <p>When you <strong>hit </strong>a creature with this weapon, inflicts a random <strong>debuff </strong>on the target.</p>\n    </li>\n    <li>\n        <p>You may cast the spell 【<strong>✨ Hex </strong>】</p>\n    </li>\n</ul>\n<hr>\n<details>\n    <summary><strong>✨ Hex</strong></summary>\n    <p><strong>Cost:</strong> 10 MP</p>\n    <p><strong>Target:</strong> One Creature</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p>Deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a> damage to target creature equal to <strong>【5 x the amount of Status Effects on the target】</strong>if this is the seventh round or more, this effect deal 300% damage instead.</p>\n    <p></p>\n</details>",
       "hand_slots": "Two-handed",
       "isMartial": false,
       "item_cost": "2500",

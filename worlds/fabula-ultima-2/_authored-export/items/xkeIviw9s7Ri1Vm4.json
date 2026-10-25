@@ -59,7 +59,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>When performing <strong>Gadget:</strong> <strong>Alchemy </strong>(<strong>Tinkerer</strong>)<strong>, </strong>you may spends <strong>20</strong> Mind Points<strong> </strong>to <strong>reroll 1 </strong>of the dices.</p></li><li><p>When performing <strong>Traveling Cook </strong>(<strong>Gourmet</strong>), you may spends <strong>20</strong> Mind Points to change <strong>1 ingredient</strong> into any other type of <strong>ingredient</strong>.</p></li></ul>",
+      "description": "<ul><li><p>When performing <strong>Gadget:</strong> <strong>Alchemy </strong>(<strong>Tinkerer</strong>), you may spends <strong>20</strong> Mind Points to <strong>reroll 1 </strong>of the dices.</p></li><li><p>When performing <strong>Traveling Cook </strong>(<strong>Gourmet</strong>), you may spends <strong>20</strong> Mind Points to change <strong>1 ingredient</strong> into any other type of <strong>ingredient</strong>.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

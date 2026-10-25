@@ -25,7 +25,7 @@
     "container": "OSaOzEBWrArAvd3a",
     "props": {
       "cost": "",
-      "description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.HHmYmj7xffQMqtzT]{Slow}.</strong></p></li><li>Gain +1 to Skill Checks that require <strong>【MIG】</strong></li></ul>",
+      "description": "<ul><li><p>Each target hit by this weapon suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\">Slow</a>.</strong></p></li><li>Gain +1 to Skill Checks that require <strong>【MIG】</strong></li></ul>",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace_same_status",
@@ -51,7 +51,7 @@
           "reaction_trigger": "creature_deals_damage"
         }
       },
-      "skill_description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.HHmYmj7xffQMqtzT]{Slow}.</strong></p></li><li>Gain +1 to Skill Checks that require <strong>【MIG】</strong></li></ul>",
+      "skill_description": "<ul><li><p>Each target hit by this weapon suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\">Slow</a>.</strong></p></li><li>Gain +1 to Skill Checks that require <strong>【MIG】</strong></li></ul>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "",

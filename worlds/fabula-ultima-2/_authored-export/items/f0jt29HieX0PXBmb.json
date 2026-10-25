@@ -78,7 +78,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>When you use the <strong>Tree of Life</strong> Skill, if you are in @UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis} and choose an ally you can see who is in @UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}, you and that ally both benefit from the<strong> Hit Point</strong> recovery granted by the Skill.</p></li></ul>",
+      "description": "<ul><li><p>When you use the <strong>Tree of Life</strong> Skill, if you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a> and choose an ally you can see who is in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, you and that ally both benefit from the<strong> Hit Point</strong> recovery granted by the Skill.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

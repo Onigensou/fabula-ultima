@@ -78,7 +78,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>At the start of your turn during a <strong>conflict</strong>, if you are in @UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}&nbsp;and driving your <strong>personal vehicle</strong>, you may recover from a single status effect of your choice.</p></li></ul>",
+      "description": "<ul><li><p>At the start of your turn during a <strong>conflict</strong>, if you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>&nbsp;and driving your <strong>personal vehicle</strong>, you may recover from a single status effect of your choice.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

@@ -50,7 +50,7 @@
       "damage_bonus": "12",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>You have Resistance to <strong>ice</strong> damage.</li><li><p>If you are <strong>@UUID[JournalEntry.2rh5lyMNU5yL8Btk]{Wet},&nbsp;</strong>this weapon deals <strong>5</strong> bonus damage.</p></li></ul>",
+      "description": "<ul><li>You have Resistance to <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\">Ice</a> damage.</li><li><p>If you are <strong><a class=\"content-link\" data-uuid=\"JournalEntry.2rh5lyMNU5yL8Btk\" data-id=\"2rh5lyMNU5yL8Btk\" data-type=\"JournalEntry\">Wet</a>,&nbsp;</strong>this weapon deals <strong>5</strong> bonus damage.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

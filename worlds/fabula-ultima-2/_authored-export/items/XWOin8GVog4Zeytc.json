@@ -49,7 +49,7 @@
       "damage_bonus": "5",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>When you attack with this weapon, inflicts <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.rBnvYhLfmrVZDdoW\" data-id=\"rBnvYhLfmrVZDdoW\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\"><strong>Blind</strong></a> to the target for <strong>1 Round.</strong></p></li><li><p>When a creature target you with a <strong>Melee Attack,&nbsp;</strong>inflicts <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.rBnvYhLfmrVZDdoW\" data-id=\"rBnvYhLfmrVZDdoW\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\"><strong>Blind</strong></a> to the attacker until the end of this turn before the attacks. You may use this ability even if you don't have Pocket Sand equipped.</p></li></ul>",
+      "description": "<ul><li><p>When you attack with this weapon, inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.rBnvYhLfmrVZDdoW\" data-id=\"rBnvYhLfmrVZDdoW\" data-type=\"JournalEntry\">Blind</a> to the target for <strong>1 Round.</strong></p></li><li><p>When a creature target you with a <strong>Melee Attack,&nbsp;</strong>inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.rBnvYhLfmrVZDdoW\" data-id=\"rBnvYhLfmrVZDdoW\" data-type=\"JournalEntry\">Blind</a> to the attacker until the end of this turn before the attacks. You may use this ability even if you don't have Pocket Sand equipped.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

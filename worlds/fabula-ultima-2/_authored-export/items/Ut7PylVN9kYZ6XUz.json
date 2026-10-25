@@ -50,7 +50,7 @@
       "damage_bonus": "8",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.HHmYmj7xffQMqtzT]{Slow},&nbsp;</strong>if they already suffers&nbsp;<strong>Slow</strong>, they suffers <strong>@UUID[JournalEntry.0RscV9vkJNM9dVKQ]{Delayed}&nbsp;</strong>instead.</p></li></ul>",
+      "description": "<ul><li><p>Each target hit by this weapon suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\">Slow</a>,&nbsp;</strong>if they already suffers&nbsp;<strong>Slow</strong>, they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.0RscV9vkJNM9dVKQ\" data-id=\"0RscV9vkJNM9dVKQ\" data-type=\"JournalEntry\">Delayed</a>&nbsp;instead.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

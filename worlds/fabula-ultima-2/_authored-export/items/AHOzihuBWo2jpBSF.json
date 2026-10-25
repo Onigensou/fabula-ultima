@@ -56,7 +56,7 @@
       "cost": "50 MP",
       "damage_bonus": "",
       "defense_target_type": "def",
-      "description": "<p>Reverse all <strong>Basic Buff </strong>on all creature<strong> </strong>into <strong>Basic Debuff</strong></p><p>Reverse all <strong>Basic Debuff </strong>on all creature<strong> </strong>into <strong>Basic Buff</strong></p>",
+      "description": "<p>Reverse all <strong>Basic Buff </strong>on all creature into <strong>Basic Debuff</strong></p><p>Reverse all <strong>Basic Debuff </strong>on all creature into <strong>Basic Buff</strong></p>",
       "duration": "Instantaneous",
       "heroic_requirement": "",
       "ignore_hr": false,

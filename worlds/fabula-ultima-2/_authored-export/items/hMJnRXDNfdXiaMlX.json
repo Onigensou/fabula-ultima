@@ -78,7 +78,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>At the start of your turn, You lose <strong>15 HP.</strong></li><li><p>Your Attacks gains @UUID[JournalEntry.CRPjA4dHUYLSAh0M]{Drain}</p></li></ul>",
+      "description": "<ul><li>At the start of your turn, You lose <strong>15 HP.</strong></li><li><p>Your Attacks gains <a class=\"content-link\" data-uuid=\"JournalEntry.CRPjA4dHUYLSAh0M\" data-id=\"CRPjA4dHUYLSAh0M\" data-type=\"JournalEntry\">Drain</a></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

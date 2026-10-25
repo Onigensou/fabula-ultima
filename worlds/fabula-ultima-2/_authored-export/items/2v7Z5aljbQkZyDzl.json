@@ -72,7 +72,7 @@
       "damage_bonus": "6",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.JltwIqzHbBKhkD45]{Poisoned},&nbsp;</strong>if they already suffers <strong>Poisoned,&nbsp;</strong>they suffers <strong>@UUID[JournalEntry.XRlyg27yLgoQUOXZ]{Envenomed}</strong> instead.</p></li></ul>",
+      "description": "<ul><li><p>Each target hit by this weapon suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.JltwIqzHbBKhkD45\" data-id=\"JltwIqzHbBKhkD45\" data-type=\"JournalEntry\">Poisoned</a>,&nbsp;</strong>if they already suffers <strong>Poisoned,&nbsp;</strong>they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\">Envenomed</a> instead.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

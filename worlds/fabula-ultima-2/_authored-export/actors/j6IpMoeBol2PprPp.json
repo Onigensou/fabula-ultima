@@ -224,7 +224,7 @@
           "damage_bonus": "5",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<p>When performing <strong>Graft </strong>(<strong>Floralist</strong>)<strong>, </strong>you may <strong>fill </strong>section from your <strong>Growth Clock</strong>. If you do, you cannot use this effect again until your <strong>Growth Clock </strong>has become completely empty.</p>",
+          "description": "<p>When performing <strong>Graft </strong>(<strong>Floralist</strong>), you may <strong>fill </strong>section from your <strong>Growth Clock</strong>. If you do, you cannot use this effect again until your <strong>Growth Clock </strong>has become completely empty.</p>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -369,7 +369,7 @@
           "cost": "-",
           "damage_bonus": "40",
           "defense_target_type": "mdef",
-          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Item\">Light</a>&nbsp;damage to up to two targets. 50% chance to inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Burn</a></p>",
+          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\">Light</a>&nbsp;damage to up to two targets. 50% chance to inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\">Burn</a></p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
@@ -545,7 +545,7 @@
           "cost": "30 MP",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Overflow</a></p></li></ul><p>All enemy roll a <strong>DL 11</strong> <strong>【DEX】+【INS】check, </strong>On a failure, they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.thBevyZDOURijH8I\" data-id=\"thBevyZDOURijH8I\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Petrify</a></p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\">Overflow</a></p></li></ul><p>All enemy roll a <strong>DL 11</strong> <strong>【DEX】+【INS】check, </strong>On a failure, they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.thBevyZDOURijH8I\" data-id=\"thBevyZDOURijH8I\" data-type=\"JournalEntry\">Petrify</a></p>",
           "details_roller": "Show",
           "duration": "3 Rounds",
           "effect_table": {
@@ -785,7 +785,7 @@
           "cost": "30 MP",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<p>Reduce all creature inflicts with <a class=\"content-link\" data-uuid=\"JournalEntry.thBevyZDOURijH8I\" data-id=\"thBevyZDOURijH8I\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\">Petrify</a>&nbsp;to <strong>0 HP</strong></p>",
+          "description": "<p>Reduce all creature inflicts with <a class=\"content-link\" data-uuid=\"JournalEntry.thBevyZDOURijH8I\" data-id=\"thBevyZDOURijH8I\" data-type=\"JournalEntry\">Petrify</a>&nbsp;to <strong>0 HP</strong></p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
@@ -895,7 +895,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li><p>Target creature gain <strong>10 </strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a></span></span>, if the target already have a <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a><strong><span style=\"text-decoration: underline;\">,</span></strong></span></span> increase that shield value by 10 instead.</p></li></ul>",
+          "description": "<ul><li><p>Target creature gain <strong>10 </strong><a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a>, if the target already have a <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a>, increase that shield value by 10 instead.</p></li></ul>",
           "dragon_ef": "100",
           "effect_table": {
             "0": {

@@ -72,7 +72,7 @@
       "damage_bonus": "10",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.3nmUvPei3zrOJkEt]{Dazed},&nbsp;</strong>if they are already&nbsp;<strong>Dazed</strong>, they suffers <strong>@UUID[JournalEntry.GqqgHkKOs0hkghdG]{Paralyzed}&nbsp;</strong>instead.</p></li></ul>",
+      "description": "<ul><li><p>Each target hit by this weapon suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\">Dazed</a>,&nbsp;</strong>if they are already&nbsp;<strong>Dazed</strong>, they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\">Paralyzed</a>&nbsp;instead.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -100,12 +100,22 @@
       "item_mdef_bonus": "0",
       "item_quantity": "1",
       "item_rarity": "Uncommon",
+      "item_skill_passive": {
+        "lGv8LhV2TMJ4zE63": {
+          "skill_description": "<ul><li><p>Each target hit by this weapon suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\">Dazed</a>,&nbsp;</strong>if they are already&nbsp;<strong>Dazed</strong>, they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\">Paralyzed</a>&nbsp;instead.</p></li></ul>"
+        }
+      },
       "item_type": "weapon",
       "mimic_ef": "100",
       "monster_ef": "100",
       "name": "Mjolnir",
       "optional_params": {},
       "plant_ef": "100",
+      "related_item_list": {
+        "lGv8LhV2TMJ4zE63": {
+          "related_item_description": "<ul><li><p>Each target hit by this weapon suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\">Dazed</a>,&nbsp;</strong>if they are already&nbsp;<strong>Dazed</strong>, they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\">Paralyzed</a>&nbsp;instead.</p></li></ul>"
+        }
+      },
       "reptilian_ef": "100",
       "rolled_atr1": "MIG",
       "rolled_atr2": "MIG",

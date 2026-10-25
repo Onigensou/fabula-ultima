@@ -78,7 +78,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>Gain +1 Defense</li></ul><p><strong>【Male Only】</strong></p><ul><li><p>You are immune to <strong>@UUID[JournalEntry.IBN7DtvWLFDo8jNh]{Stagger}</strong></p></li></ul><p><strong>【Female Only】</strong></p><ul><li><p>When a creature targets you with an action, they suffers <strong>@UUID[JournalEntry.GePNxftPupElcCWp]{Bleed}</strong></p></li><li><strong>Villians </strong>or <strong>Stronger Beings </strong>will resist the Bleed with a DL10 <strong>【WLP】+【WLP</strong>】check, or they may be immune to it altogether.&nbsp;</li></ul>",
+      "description": "<ul><li>Gain +1 Defense</li></ul><p><strong>【Male Only】</strong></p><ul><li><p>You are immune to <a class=\"content-link\" data-uuid=\"JournalEntry.IBN7DtvWLFDo8jNh\" data-id=\"IBN7DtvWLFDo8jNh\" data-type=\"JournalEntry\">Stagger</a></p></li></ul><p><strong>【Female Only】</strong></p><ul><li><p>When a creature targets you with an action, they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\">Bleed</a></p></li><li><strong>Villians </strong>or <strong>Stronger Beings </strong>will resist the Bleed with a DL10 <strong>【WLP】+【WLP</strong>】check, or they may be immune to it altogether.&nbsp;</li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

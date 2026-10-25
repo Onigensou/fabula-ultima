@@ -131,7 +131,7 @@
       "cost": "",
       "damage_bonus": "",
       "defense_target_type": "def",
-      "description": "<p><strong>Ultima Action (free action).</strong> Spend 1 Ultima Point and 1 Dominance Point: until the end of the round, debuffs that prevent or restrict this Villain&#39;s actions stay applied but have no effect.</p>",
+      "description": "<p><strong>Ultima Action (free action).</strong> Spend 1 Ultima Point and 1 Dominance Point: until the end of the round, debuffs that prevent or restrict this Villain's actions stay applied but have no effect.</p>",
       "details_roller": "Show",
       "duration": "-",
       "effect_table": {

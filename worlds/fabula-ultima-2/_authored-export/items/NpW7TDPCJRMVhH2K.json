@@ -33,7 +33,7 @@
       "cost": "10 MP",
       "damage_bonus": "0",
       "defense_target_type": "def",
-      "description": "<p>When you perform a <strong>melee attack</strong>, you may spend <strong>10 Mind Points</strong> to choose one option:</p><ul><li><p>the attack gains <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Multi</strong></a><strong>&nbsp;2</strong></p></li><li><p>Increase the attack's multi property by one, up to a maximum of <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Multi</strong></a><strong>&nbsp;3</strong></p></li></ul>",
+      "description": "<p>When you perform a <strong>melee attack</strong>, you may spend <strong>10 Mind Points</strong> to choose one option:</p><ul><li><p>the attack gains <a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\">Multi</a><strong>&nbsp;2</strong></p></li><li><p>Increase the attack's multi property by one, up to a maximum of <a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\">Multi</a><strong>&nbsp;3</strong></p></li></ul>",
       "details_roller": "Show",
       "duration": "-",
       "effect_table": {

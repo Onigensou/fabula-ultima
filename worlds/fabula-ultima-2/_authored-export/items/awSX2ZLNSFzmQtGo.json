@@ -135,7 +135,7 @@
   "system": {
     "container": "KtD7PgidI510dvHa",
     "props": {
-      "description": "<p>Gain <strong>Flying</strong>. You lose this effect when you take <strong>Fire</strong> damage.</p>",
+      "description": "<p>Gain <strong>Flying</strong>. You lose this effect when you take <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage.</p>",
       "details_roller": "Show",
       "effect_table": {
         "0": {

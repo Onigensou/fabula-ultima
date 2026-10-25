@@ -30,7 +30,7 @@
       "cost": "25 MP",
       "damage_bonus": "0",
       "defense_target_type": "def",
-      "description": "<p>As a 【💥Skill】 action, become <a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Hidden</strong></a> for 3 rounds. This skill costs <strong>25 MP</strong>, reduced by <strong>【SL × 5】</strong>.</p><p>This <a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Hidden</strong></a> ends early when you deal damage, unless the damage comes from <strong>【Phantom Snipe】</strong>.</p>",
+      "description": "<p>As a 【💥Skill】 action, become <a class=\"content-link\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\">Hidden</a> for 3 rounds. This skill costs <strong>25 MP</strong>, reduced by <strong>【SL × 5】</strong>.</p><p>This <a class=\"content-link\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\">Hidden</a> ends early when you deal damage, unless the damage comes from <strong>【Phantom Snipe】</strong>.</p>",
       "duration": "3 Rounds",
       "heroic_requirement": "",
       "isCheck": false,

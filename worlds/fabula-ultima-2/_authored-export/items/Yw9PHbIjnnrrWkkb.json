@@ -135,7 +135,7 @@
   "system": {
     "container": "aTdfmfmApSbbJ2c4",
     "props": {
-      "description": "<p>Gain <strong>Flying</strong>. You lose this Flying for the rest of the scene when you take <strong>Bolt</strong> damage.</p>",
+      "description": "<p>Gain <strong>Flying</strong>. You lose this Flying for the rest of the scene when you take <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage.</p>",
       "details_roller": "Show",
       "effect_table": {
         "0": {

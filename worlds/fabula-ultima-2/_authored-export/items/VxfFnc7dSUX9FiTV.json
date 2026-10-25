@@ -328,7 +328,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>You have Resistance to <strong>physical</strong> damage.</li></ul>",
+      "description": "<ul><li>You have Resistance to <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a> damage.</li></ul>",
       "dragon_ef": "100",
       "effect_table": {},
       "elemental_ef": "100",

@@ -79,7 +79,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>At the start of <strong>Conflict&nbsp;</strong>you gain @UUID[JournalEntry.q6keqwDWUsEgSWDw]{Flying} for&nbsp;<strong>3&nbsp;</strong>round</p></li></ul>",
+      "description": "<ul><li><p>At the start of <strong>Conflict&nbsp;</strong>you gain <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\">Flying</a> for&nbsp;<strong>3&nbsp;</strong>round</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

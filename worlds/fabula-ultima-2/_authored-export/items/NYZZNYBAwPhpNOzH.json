@@ -332,7 +332,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>While you have a @UUID[JournalEntry.wrw2ENSwzCBjztvt]{Shield} active, you gain&nbsp;<strong>Immunity&nbsp;</strong>to&nbsp;<strong>Physical&nbsp;</strong>damage</p></li></ul>",
+      "description": "<ul><li><p>While you have a <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a> active, you gain&nbsp;<strong>Immunity&nbsp;</strong>to&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a>damage</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

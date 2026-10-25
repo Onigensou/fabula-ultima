@@ -24,7 +24,7 @@
   "system": {
     "container": "2Z502E09PMrRdWat",
     "props": {
-      "description": "<p><strong>Monster of Frankensteiner (2 pieces)</strong> — at the start of your turn, you take 5 Bolt damage.</p>",
+      "description": "<p><strong>Monster of Frankensteiner (2 pieces)</strong> — at the start of your turn, you take 5 <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage.</p>",
       "details_roller": "Show",
       "effect_table": {
         "0": {

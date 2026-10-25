@@ -49,7 +49,7 @@
       "damage_bonus": "10",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>&nbsp;Deals <strong>5</strong> extra damage to <strong>@UUID[JournalEntry.KYehgac3Pw1fKC9S]{Weak}</strong> targets.</p></li></ul>",
+      "description": "<ul><li><p>&nbsp;Deals <strong>5</strong> extra damage to <a class=\"content-link\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\">Weak</a> targets.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

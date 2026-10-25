@@ -25,7 +25,7 @@
     "container": "NqcG61Mir9aOQAqe",
     "props": {
       "cost": "",
-      "description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.ImFKpNNGjstom7Q9]{Shaken}</strong></p></li></ul>",
+      "description": "<ul><li><p>Each target hit by this weapon suffers <a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\">Shaken</a></p></li></ul>",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace_same_status",
@@ -51,7 +51,7 @@
           "reaction_trigger": "creature_deals_damage"
         }
       },
-      "skill_description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.ImFKpNNGjstom7Q9]{Shaken}</strong></p></li></ul>",
+      "skill_description": "<ul><li><p>Each target hit by this weapon suffers <a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\">Shaken</a></p></li></ul>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "",

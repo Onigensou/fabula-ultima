@@ -34,7 +34,7 @@
       "cost": "-",
       "damage_bonus": "0",
       "defense_target_type": "def",
-      "description": "<ul>\n<li>Cure all <strong>Debuff </strong>from all ally.</li>\n</ul>",
+      "description": "<ul>\n<li>Cure all&nbsp;<strong>Debuff&nbsp;</strong>from all ally.</li>\n</ul>",
       "duration": "Instantaneous",
       "effect_table": {
         "0": {
@@ -76,7 +76,7 @@
       "rolled_atr2": "-",
       "skill_animation_default": "",
       "skill_animation_mode": "default",
-      "skill_description": "<ul>\n<li>Cure all <strong>Debuff </strong>from all ally.</li>\n</ul>",
+      "skill_description": "<ul>\n<li>Cure all&nbsp;<strong>Debuff&nbsp;</strong>from all ally.</li>\n</ul>",
       "skill_information": "",
       "skill_range": "Any",
       "skill_tags": "",

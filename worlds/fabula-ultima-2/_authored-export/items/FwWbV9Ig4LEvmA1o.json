@@ -72,7 +72,7 @@
       "damage_bonus": "18",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>When you deal damage with this weapon, inflicts <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Doom</strong></a> to the target, if the target is already afflicted with <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Doom</strong></a><strong>,</strong> reduce its duration by 1 instead.</p></li><li><p>You are immune to <a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Doom</strong></a></p></li></ul>",
+      "description": "<ul><li><p>When you deal damage with this weapon, inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a> to the target, if the target is already afflicted with <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a>, reduce its duration by 1 instead.</p></li><li><p>You are immune to <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

@@ -24,7 +24,7 @@
   "system": {
     "container": "eCzSEIagUBh1JoRJ",
     "props": {
-      "description": "<p>Equipped passive: +2 Accuracy when attacking creatures inflicted with Bleed.</p>",
+      "description": "<p>Equipped passive: +2 Accuracy when attacking creatures inflicted with <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\">Bleed</a>.</p>",
       "effect_table": {
         "0": {
           "accuracy_amount": "2",

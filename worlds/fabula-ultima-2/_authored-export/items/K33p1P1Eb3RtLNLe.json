@@ -63,7 +63,7 @@
       "category": "Flail",
       "check_bonus": "0",
       "damage_bonus": "3",
-      "description": "<ul><li><p>When you <strong>hit&nbsp;</strong>an <strong>aquatic</strong> creature with this weapon, inflicts @UUID[JournalEntry.FV8JefaHsehzgXR7]{Grappled} to the target</p></li></ul>",
+      "description": "<ul><li><p>When you <strong>hit&nbsp;</strong>an <strong>aquatic</strong> creature with this weapon, inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.FV8JefaHsehzgXR7\" data-id=\"FV8JefaHsehzgXR7\" data-type=\"JournalEntry\">Grappled</a> to the target</p></li></ul>",
       "hand_slots": "One-handed",
       "isMartial": false,
       "item_cost": "0",

@@ -40,7 +40,7 @@
       "category": "Arcane",
       "check_bonus": "0",
       "damage_bonus": "5",
-      "description": "<p>The user can cast </p><p>@UUID[Item.fENvp5ysc5dizKxY]{Fulgur}</p><p>Spell</p>",
+      "description": "<p>The user can cast </p><p><a class=\"content-link\" data-uuid=\"Item.9NedNyPRoLHZEmMX\" data-id=\"9NedNyPRoLHZEmMX\" data-type=\"Item\">Fulgur</a></p><p>Spell</p>",
       "hand_slots": "One-handed",
       "isMartial": false,
       "item_cost": "0",

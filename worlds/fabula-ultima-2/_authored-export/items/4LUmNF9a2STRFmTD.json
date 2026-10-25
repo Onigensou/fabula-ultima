@@ -63,7 +63,7 @@
       "category": "Dagger",
       "check_bonus": "1",
       "damage_bonus": "8",
-      "description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.XkuOy0BFvKJTewGS]{Enraged},&nbsp;</strong>if they already suffers Enraged, they suffers <strong>@UUID[JournalEntry.vf421bQSPCjLAvBW]{Panic}&nbsp;</strong>instead.</p></li></ul>",
+      "description": "<ul><li><p>Each target hit by this weapon suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\">Enraged</a>,&nbsp;</strong>if they already suffers <a class=\"content-link\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\">Enraged</a>, they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.vf421bQSPCjLAvBW\" data-id=\"vf421bQSPCjLAvBW\" data-type=\"JournalEntry\">Panic</a>&nbsp;instead.</p></li></ul>",
       "hand_slots": "One-handed",
       "isMartial": false,
       "item_cost": "2450",

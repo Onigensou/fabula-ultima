@@ -78,7 +78,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul>\n<li>Decrease IP usage by 1 <em>(to a minimum of 1)</em></li>\n</ul>\n<hr>\n<p><strong>【Set Bonus】</strong></p>\n<p><strong>&nbsp; &nbsp; &nbsp; &nbsp;2 Piece</strong></p>\n<ul>\n<li style=\"list-style-type: none;\">\n<ul>\n<li>During <strong>Rest </strong>scene, you recover 50% of your maximum IP <em>(Even if you aren't in town)</em><br><hr></li>\n</ul>\n<p><strong>3 Piece</strong></p>\n<ul>\n<li>Once during your&nbsp; turn, You can perform the <strong>【item】</strong>action as a <strong>free action</strong>.<hr></li>\n</ul>\n</li>\n</ul>",
+      "description": "<ul>\n<li>Decrease IP usage by 1 <em>(to a minimum of 1)</em></li>\n</ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

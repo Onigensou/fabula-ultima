@@ -79,7 +79,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul>\n<li>When you perform a Check to examine an NPC&rsquo;s profile, treat any Result of <strong>12</strong> or lower as being <strong>13</strong>, unless it is a <strong>fumble.</strong></li>\n</ul>",
+      "description": "<ul>\n<li>When you perform a Check to examine an NPC’s profile, treat any Result of <strong>12</strong> or lower as being <strong>13</strong>, unless it is a <strong>fumble.</strong></li>\n</ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

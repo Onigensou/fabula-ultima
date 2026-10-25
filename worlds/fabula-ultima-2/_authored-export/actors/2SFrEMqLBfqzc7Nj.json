@@ -56,7 +56,7 @@
           "cost": "40 MP",
           "damage_bonus": "44",
           "defense_target_type": "mdef",
-          "description": "<p>Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;damage to all enemies.</p>",
+          "description": "<p>Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a>&nbsp;damage to all enemies.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {},
@@ -132,7 +132,7 @@
           "cost": "-",
           "damage_bonus": "70",
           "defense_target_type": "mdef",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.KHCaZjNmClkp7yfM\" data-id=\"KHCaZjNmClkp7yfM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Execute</strong></a></p></li></ul><p>Deal <strong>devastating</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.KHCaZjNmClkp7yfM\" data-id=\"KHCaZjNmClkp7yfM\" data-type=\"JournalEntry\">Execute</a></p></li></ul><p>Deal <strong>devastating</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a>&nbsp;damage to one creature.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
@@ -227,7 +227,7 @@
           "cost": "-",
           "damage_bonus": "40",
           "defense_target_type": "def",
-          "description": "<p>Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;damage to one creature. Damage increases with the target's maximum Hit Points.</p><p><strong>50%</strong> chance to inflict <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Burn</strong></a>.</p>",
+          "description": "<p>Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a>&nbsp;damage to one creature. Damage increases with the target's maximum Hit Points.</p><p><strong>50%</strong> chance to inflict <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\">Burn</a>.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
@@ -438,7 +438,7 @@
           "cost": "6 Zero Power",
           "damage_bonus": "60",
           "defense_target_type": "mdef",
-          "description": "<p>Deal <strong>devastating</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to all enemies. Damage increases the lower the target's HP.</p><p>A creature that takes the hit in another's place takes it as that creature would have.</p>",
+          "description": "<p>Deal <strong>devastating</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a>&nbsp;damage to all enemies. Damage increases the lower the target's HP.</p><p>A creature that takes the hit in another's place takes it as that creature would have.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
@@ -540,7 +540,7 @@
           "cost": "-",
           "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<p>Whenever an enemy enters <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Crisis</strong></a> or is reduced to 0 HP, Hilde-Fafnir <strong>gains 1 Zero Power</strong>. Reinslaughter does not feed it.</p>",
+          "description": "<p>Whenever an enemy enters <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a> or is reduced to 0 HP, Hilde-Fafnir <strong>gains 1 Zero Power</strong>. Reinslaughter does not feed it.</p>",
           "details_roller": "Show",
           "duration": "-",
           "effect_table": {

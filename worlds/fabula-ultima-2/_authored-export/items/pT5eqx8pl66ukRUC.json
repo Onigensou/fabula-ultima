@@ -72,7 +72,7 @@
       "damage_bonus": "10",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p><strong>Switch weapon: </strong>Can be switched to <strong>@UUID[Item.DAP4ULmSVelYFeJo]</strong></p></li><li><p>Increase <strong>DEF </strong>by <strong>2</strong>.</p></li><li><p>Increase <strong>M.DEF</strong> by <strong>2</strong>.</p></li><li><p>While equipping this weapon, you are considered as equipping a shield for the purpose of activating <strong>Skills</strong> and <strong>Passives</strong>.</p></li></ul>",
+      "description": "<ul><li><p><strong>Switch weapon: </strong>Can be switched to <a class=\"content-link\" data-uuid=\"Item.DAP4ULmSVelYFeJo\" data-id=\"DAP4ULmSVelYFeJo\" data-type=\"Item\">Star Spangled Shield (Thrown)</a></p></li><li><p>Increase <strong>DEF </strong>by <strong>2</strong>.</p></li><li><p>Increase <strong>M.DEF</strong> by <strong>2</strong>.</p></li><li><p>While equipping this weapon, you are considered as equipping a shield for the purpose of activating <strong>Skills</strong> and <strong>Passives</strong>.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

@@ -40,7 +40,7 @@
       "category": "Firearm",
       "check_bonus": "0",
       "damage_bonus": "16",
-      "description": "<ul>\n<li>When you apply an <strong>infusion</strong> to an attack made with this weapon, that attack deals extra damage equal to your Skill Level in <strong>Gadgets</strong></li>\n<li>Transform into <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hitman%20Suitcase.gif\" alt=\"\" width=\"21\" height=\"21\"><strong>@UUID[Item.9tAsz176ZSt1HVuS]{Magitech Briefcase}</strong></li>\n</ul>",
+      "description": "<ul>\n<li>When you apply an <strong>infusion</strong> to an attack made with this weapon, that attack deals extra damage equal to your Skill Level in <strong>Gadgets</strong></li>\n<li>Transform into <img src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Hitman%20Suitcase.gif\" alt=\"\" width=\"21\" height=\"21\"><a class=\"content-link\" data-uuid=\"Item.9tAsz176ZSt1HVuS\" data-id=\"9tAsz176ZSt1HVuS\" data-type=\"Item\">Magitech Briefcase</a></li>\n</ul>",
       "hand_slots": "Two-handed",
       "isMartial": false,
       "item_cost": "3000",

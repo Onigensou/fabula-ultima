@@ -38,7 +38,7 @@
   "system": {
     "container": null,
     "props": {
-      "description": "<blockquote><ul><li><em>Gain <strong>Swift </strong>for the rest of the scene<strong>.(</strong>Increase your <strong>【DEX】</strong> die by 1 stage </em>(to a maximum for D12)<em> )</em></li></ul></blockquote>",
+      "description": "<blockquote><ul><li><em>Gain <strong>Swift </strong>for the rest of the scene.(Increase your <strong>【DEX】</strong> die by 1 stage </em>(to a maximum for D12)<em> )</em></li></ul></blockquote>",
       "ip_cost": "2",
       "item_type": "recipe",
       "name": "Café au Lait"

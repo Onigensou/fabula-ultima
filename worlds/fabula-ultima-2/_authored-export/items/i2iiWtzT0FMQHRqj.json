@@ -32,6 +32,11 @@
       "element": "fire",
       "id": "i2iiWtzT0FMQHRqj",
       "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+      "item_skill_active": {
+        "exBxZ5rirKCIKQJq": {
+          "skill_description": "<p><em>As a free action, before or after your action on your turn,</em> you release the Avatar in a final blaze, dealing <strong>【30】 <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage</strong> to <strong>all enemies</strong> and ending the merge.</p><p>As you do, you may spend <strong>【6 Zero Power】</strong> to deal additional <strong><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage</strong> to each enemy equal to <strong>【10 × their Burn stacks】</strong>, then remove all <strong>Burn</strong> from those enemies.</p>"
+        }
+      },
       "name": "Avatar of Vengeance",
       "uuid": "Item.i2iiWtzT0FMQHRqj"
     },

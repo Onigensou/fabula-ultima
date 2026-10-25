@@ -25,7 +25,7 @@
     "container": "UQmfh1jf8CSx6uHU",
     "props": {
       "cost": "",
-      "description": "<ul><li><p>When you attack with this weapon on an even round, the attack gains @UUID[JournalEntry.Gm3upxgpUVoLSK5u]{Multi 3} and deals 10 extra damage.</p></li></ul>",
+      "description": "<ul><li><p>When you attack with this weapon on an even round, the attack gains <a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\">Multi 3</a> and deals 10 extra damage.</p></li></ul>",
       "effect_table": {
         "0": {
           "damage_amount": "10",
@@ -53,7 +53,7 @@
           "reaction_trigger": "creature_will_deal_damage"
         }
       },
-      "skill_description": "<ul><li><p>When you attack with this weapon on an even round, the attack gains @UUID[JournalEntry.Gm3upxgpUVoLSK5u]{Multi 3} and deals 10 extra damage.</p></li></ul>",
+      "skill_description": "<ul><li><p>When you attack with this weapon on an even round, the attack gains <a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\">Multi 3</a> and deals 10 extra damage.</p></li></ul>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "",

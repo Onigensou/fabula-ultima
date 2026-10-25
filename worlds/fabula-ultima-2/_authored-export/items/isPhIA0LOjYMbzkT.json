@@ -114,7 +114,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p><strong>【Soul Steal】SL+1</strong></p></li><li><p>You may perform the skill 【💥<strong>@UUID[Item.CWVTIIx0KgYXnQY7]{Soul Steal}</strong>】 if you do not already know it.</p></li><li><p>When you steal from a creature, up to <strong>10%</strong> of its chance to steal nothing goes to its rarest items instead.</p></li></ul>",
+      "description": "<ul><li><p><strong>【Soul Steal】SL+1</strong></p></li><li><p>You may perform the skill <a class=\"content-link\" data-uuid=\"Item.CWVTIIx0KgYXnQY7\" data-id=\"CWVTIIx0KgYXnQY7\" data-type=\"Item\">Soul Steal</a> if you do not already know it.</p></li><li><p>When you steal from a creature, up to <strong>10%</strong> of its chance to steal nothing goes to its rarest items instead.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

@@ -72,7 +72,7 @@
       "damage_bonus": "18",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>Each target hit by this weapon suffers <strong>@UUID[JournalEntry.XkuOy0BFvKJTewGS]{Enraged}</strong></p></li><li>When you reduce a target to <strong>0</strong> <strong>HP</strong> with this weapon, gain <strong>2</strong> <strong>IP</strong></li></ul>",
+      "description": "<ul><li><p>Each target hit by this weapon suffers <a class=\"content-link\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\">Enraged</a></p></li><li>When you reduce a target to <strong>0</strong> <strong>HP</strong> with this weapon, gain <strong>2</strong> <strong>IP</strong></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

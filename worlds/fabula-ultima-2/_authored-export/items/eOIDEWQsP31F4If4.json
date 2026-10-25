@@ -73,7 +73,7 @@
       "damage_bonus": "5",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<p>When performing <strong>Graft </strong>(<strong>Floralist</strong>)<strong>, </strong>you may <strong>fill </strong>section from your <strong>Growth Clock</strong>. If you do, you cannot use this effect again until your <strong>Growth Clock </strong>has become completely empty.</p>",
+      "description": "<p>When performing <strong>Graft </strong>(<strong>Floralist</strong>), you may <strong>fill </strong>section from your <strong>Growth Clock</strong>. If you do, you cannot use this effect again until your <strong>Growth Clock </strong>has become completely empty.</p>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

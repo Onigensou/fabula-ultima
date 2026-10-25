@@ -178,7 +178,7 @@
           "cost": "10 x T MP",
           "damage_bonus": "15",
           "defense_target_type": "mdef",
-          "description": "<p>A storm of dark energy turns matter into ash. Each target hit by this spell suffers <strong>【HR + 15】 dark</strong> damage.<br><strong>Opportunity</strong>: Each target hit by this spell suffers <strong>weak</strong>.</p>",
+          "description": "<p>A storm of dark energy turns matter into ash. Each target hit by this spell suffers <strong>【HR + 15】 <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a></strong> damage.<br><strong>Opportunity</strong>: Each target hit by this spell suffers <strong>weak</strong>.</p>",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {

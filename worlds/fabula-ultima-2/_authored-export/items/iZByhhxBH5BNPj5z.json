@@ -25,7 +25,7 @@
     "container": "pspJcigm3o7DVfOb",
     "props": {
       "cost": "-",
-      "description": "<p><strong>Midnight Mistress (3 pieces)</strong> — <em>Skill Action.</em> Remove Enraged from all allies; each ally who loses Enraged this way gains Clarity instead.</p>",
+      "description": "<p><strong>Midnight Mistress (3 pieces)</strong> — <em>Skill Action.</em> Remove <a class=\"content-link\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\">Enraged</a> from all allies; each ally who loses Enraged this way gains Clarity instead.</p>",
       "effect_table": {
         "0": {
           "chain_steps": "mm3_pick, mm3_clarity, mm3_unrage",

@@ -78,7 +78,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li>When you apply or re-apply a <strong>Status Conditions</strong> to a creature, it takes&nbsp;<strong>5&nbsp;Dark&nbsp;</strong>damage.</li></ul>",
+      "description": "<ul><li>When you apply or re-apply a <strong>Status Conditions</strong> to a creature, it takes&nbsp;<strong>5&nbsp;<a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a>&nbsp;</strong>damage.</li></ul>",
       "dragon_ef": "100",
       "effect_table": {},
       "elemental_ef": "100",

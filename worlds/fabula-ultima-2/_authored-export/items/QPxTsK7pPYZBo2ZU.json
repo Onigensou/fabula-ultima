@@ -24,7 +24,7 @@
   "system": {
     "container": "XxEaCUNVxCoinBLw",
     "props": {
-      "description": "<p>Equipped passive: At the end of your turn, if you are in Crisis, restore 5 HP and 5 MP.</p>",
+      "description": "<p>Equipped passive: At the end of your turn, if you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, restore 5 HP and 5 MP.</p>",
       "effect_table": {
         "0": {
           "chain_steps": "bhelm_hp, bhelm_mp",

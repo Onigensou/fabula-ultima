@@ -26,7 +26,7 @@
     "props": {
       "action_command": "item",
       "cost": "-",
-      "description": "<p><em>Spicy Cocktail:</em> deal 20 Fire damage to all enemies; 50% chance to inflict Burn.</p>",
+      "description": "<p><em>Spicy Cocktail:</em> deal 20 <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage to all enemies; 50% chance to inflict <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\">Burn</a>.</p>",
       "effect_table": {
         "0": {
           "$deleted": false,

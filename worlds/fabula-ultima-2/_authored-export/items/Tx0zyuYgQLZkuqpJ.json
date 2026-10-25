@@ -63,7 +63,7 @@
       "category": "Flail",
       "check_bonus": "0",
       "damage_bonus": "12",
-      "description": "<ul>\n<li>You have Immunity to <strong>dark</strong> and <strong>light</strong> damage.</li>\n</ul>",
+      "description": "<ul>\n<li>You have Immunity to <strong>dark</strong> and <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\">Light</a> damage.</li>\n</ul>",
       "hand_slots": "Two-handed",
       "isMartial": true,
       "item_cost": "2800",

@@ -49,7 +49,7 @@
       "damage_bonus": "6",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>You<strong> immune</strong> to <strong>@UUID[JournalEntry.XkuOy0BFvKJTewGS]{Enraged}&nbsp;</strong>and <strong>@UUID[JournalEntry.aPF9gzkqnUkcQmIC]{Berserk}</strong></p></li></ul>",
+      "description": "<ul><li><p>You<strong> immune</strong> to <a class=\"content-link\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\">Enraged</a>&nbsp;and <a class=\"content-link\" data-uuid=\"JournalEntry.aPF9gzkqnUkcQmIC\" data-id=\"aPF9gzkqnUkcQmIC\" data-type=\"JournalEntry\">Berserk</a></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

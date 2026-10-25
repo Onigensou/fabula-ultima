@@ -138,7 +138,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>You are always inflicts with <strong>@UUID[JournalEntry.rBnvYhLfmrVZDdoW]{Blind}</strong></p></li><li>Gain +5 to all Accuracy Check.</li></ul>",
+      "description": "<ul><li><p>You are always inflicts with <a class=\"content-link\" data-uuid=\"JournalEntry.rBnvYhLfmrVZDdoW\" data-id=\"rBnvYhLfmrVZDdoW\" data-type=\"JournalEntry\">Blind</a></p></li><li>Gain +5 to all Accuracy Check.</li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

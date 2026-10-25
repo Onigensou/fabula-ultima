@@ -63,7 +63,7 @@
       "category": "Flail",
       "check_bonus": "0",
       "damage_bonus": "12",
-      "description": "<ul>\n<li>You have <strong>Resistance</strong> to <strong>physical</strong> damage.</li>\n</ul>",
+      "description": "<ul>\n<li>You have <strong>Resistance</strong> to <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a> damage.</li>\n</ul>",
       "hand_slots": "Two-handed",
       "isMartial": true,
       "item_cost": "1450",

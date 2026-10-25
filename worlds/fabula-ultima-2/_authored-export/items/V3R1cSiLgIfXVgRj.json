@@ -327,7 +327,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>Your attack with&nbsp;<strong>Flail&nbsp;</strong>weapon gain +5 damage and inflicts @UUID[JournalEntry.x6ByoJnflDAuVn9r]{Charm} to the target</p></li></ul>",
+      "description": "<ul><li><p>Your attack with&nbsp;<strong>Flail&nbsp;</strong>weapon gain +5 damage and inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\">Charm</a> to the target</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

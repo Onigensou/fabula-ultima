@@ -77,7 +77,7 @@
       "defense_target_type": "mdef",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p></li><li><p>You may cast the spell 【⚡<strong>@UUID[Item.NwybPJPBLBlPECYY]{Ignis Finis}</strong>】</p></li></ul>",
+      "description": "<ul><li><p>This weapon deals <a class=\"content-link\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" data-id=\"XYQUsuXPU0CQjEYa\" data-type=\"JournalEntry\">Magic Damage</a></p></li><li><p>You may cast the spell <a class=\"content-link\" data-uuid=\"Item.NwybPJPBLBlPECYY\" data-id=\"NwybPJPBLBlPECYY\" data-type=\"Item\">Ignis Finis</a></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -107,6 +107,11 @@
       "item_mdef_bonus": "0",
       "item_quantity": "1",
       "item_rarity": "Rare",
+      "item_skill_active": {
+        "NwybPJPBLBlPECYY": {
+          "skill_description": "<p>You conjure up a great Firestorm, Each target hit by this spell suffers <strong>【HR + 35】</strong><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a>&nbsp;damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\">Burn</a></p>"
+        }
+      },
       "item_type": "weapon",
       "mimic_ef": "100",
       "monster_ef": "100",
@@ -115,6 +120,11 @@
       "plant_ef": "100",
       "refine_count": "0",
       "refine_level": "0",
+      "related_item_list": {
+        "NwybPJPBLBlPECYY": {
+          "related_item_description": "<p>You conjure up a great Firestorm, Each target hit by this spell suffers <strong>【HR + 35】</strong><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a>&nbsp;damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <a class=\"content-link\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\">Burn</a></p>"
+        }
+      },
       "reptilian_ef": "100",
       "rolled_atr1": "WLP",
       "rolled_atr2": "WLP",
