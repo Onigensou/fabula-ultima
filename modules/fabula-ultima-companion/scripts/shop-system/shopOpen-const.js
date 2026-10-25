@@ -12,11 +12,21 @@ export const SHOPOPEN = {
     BUY_RESULT:  "FU_SHOP_BUY_RESULT_V1",
     SELL_REQ:    "FU_SHOP_SELL_REQ_V1",
     SELL_RESULT: "FU_SHOP_SELL_RESULT_V1",
+    IP_RECHARGE_REQ:    "FU_SHOP_IP_RECHARGE_REQ_V1",
+    IP_RECHARGE_RESULT: "FU_SHOP_IP_RECHARGE_RESULT_V1",
 
     // Ephemeral "who's browsing what" — any client → all clients, no GM involved.
     PRESENCE_ENTER:  "FU_SHOP_PRESENCE_ENTER_V1",
     PRESENCE_LEAVE:  "FU_SHOP_PRESENCE_LEAVE_V1",
     PRESENCE_SELECT: "FU_SHOP_PRESENCE_SELECT_V1",
+  },
+
+  // Inventory Point recharge (Core p.105): a town service every shop offers
+  // unless its actor carries the opt-out flag.
+  IP_RECHARGE: {
+    PRICE_PER_IP: 10,
+    FLAG_SCOPE:   "fabula-ultima-companion",
+    OPT_OUT_FLAG: "shopNoIpRecharge",
   },
 
   // Animation

@@ -15606,12 +15606,12 @@
             "name": "Fancy Footwork"
           },
           {
-            "id": "KGCFXR53w9u6ispa",
-            "name": "Fortress"
+            "id": "3LqZxvjIcPybQTrn",
+            "name": "Forget me Nut"
           },
           {
-            "id": "4cNJLm7MxnhIToEe",
-            "name": "Frill"
+            "id": "KGCFXR53w9u6ispa",
+            "name": "Fortress"
           },
           {
             "id": "vEo4cizZIusEH80B",
@@ -15624,6 +15624,10 @@
           {
             "id": "HZP2Hs14kB0EgMSD",
             "name": "Hekat Shield"
+          },
+          {
+            "id": "P83dOfskJgWE9QVL",
+            "name": "Inner Wellspring"
           },
           {
             "id": "lBjoxCeeS0JmOVhb",
@@ -15678,6 +15682,10 @@
             "name": "Resourceful"
           },
           {
+            "id": "6hXHlBDCvbMRdDJD",
+            "name": "Ring of the Pupil"
+          },
+          {
             "id": "Uq2ImnVoeNW4gt88",
             "name": "Ripples"
           },
@@ -15712,6 +15720,22 @@
           {
             "id": "TE0t2PzHnrOZOfHJ",
             "name": "Thread the Horns"
+          },
+          {
+            "id": "h1WASq6Gh7WOjddG",
+            "name": "Tincture of Endurance"
+          },
+          {
+            "id": "Tvmjzkit2aqNxEtD",
+            "name": "Tincture of Endurance"
+          },
+          {
+            "id": "90h0hk4negRcEVjN",
+            "name": "Tincture of Spirit"
+          },
+          {
+            "id": "sAWKw7i4bgz4LGER",
+            "name": "Tincture of Spirit"
           },
           {
             "id": "ZmZelFTyII167BrS",
@@ -15776,12 +15800,72 @@
         "type": "character",
         "items": [
           {
+            "id": "sRzNkogjEcv8pL7j",
+            "name": "Animal Fang"
+          },
+          {
+            "id": "Qk8ofGZp4u8ihxtI",
+            "name": "Animal Fur"
+          },
+          {
+            "id": "sMOR0e96RVcEIDcb",
+            "name": "Animal Fur"
+          },
+          {
             "id": "mSopH9vR6TaV6LsG",
             "name": "Assassin's Blade"
           },
           {
             "id": "SrnkJUG8qujywxzY",
             "name": "Assassin's Blade (Passive)"
+          },
+          {
+            "id": "6VG3Dza5M79K0bhL",
+            "name": "Charred Bone"
+          },
+          {
+            "id": "Fvep9cZMPQgNym1F",
+            "name": "Charred Bone"
+          },
+          {
+            "id": "QuV1PSe7jTc4iXZP",
+            "name": "Charred Bone"
+          },
+          {
+            "id": "tz32efZRmX2ivMm9",
+            "name": "Flame Essence"
+          },
+          {
+            "id": "Zn0TxoMe0UbQJBlr",
+            "name": "Flame Essence"
+          },
+          {
+            "id": "5gcH11MOSLjTnKtW",
+            "name": "Frill"
+          },
+          {
+            "id": "GkKEnoLl6ua7fgDr",
+            "name": "Frill"
+          },
+          {
+            "id": "eOzdXbGsmTZVIkxa",
+            "name": "Golem Heart"
+          },
+          {
+            "id": "hocN9dp1CiZbrBpr",
+            "name": "Golem Heart"
+          },
+          {
+            "id": "ftKv1loW2ry13Jm4",
+            "name": "Insect Stinger"
+          },
+          {
+            "id": "55P5VYqGM136uTkR",
+            "name": "Jellopy"
+          },
+          {
+            "id": "k8Lh3KGzpBo1kJGw",
+            "name": "Jellopy"
           },
           {
             "id": "omiDvkfAGcvuCn3F",
@@ -17803,10 +17887,6 @@
             "name": "Combat Tunic"
           },
           {
-            "id": "C0dAFeczpsVl7LDZ",
-            "name": "Dead Branch"
-          },
-          {
             "id": "vJWs8recTv3mtfVG",
             "name": "Deadly Premonition"
           },
@@ -17845,6 +17925,14 @@
           {
             "id": "4ASHq5KXQhpibVeO",
             "name": "Enchanted Delayed Blast Remote"
+          },
+          {
+            "id": "32rTK4KOeGw5Gm8O",
+            "name": "Frozen Envy"
+          },
+          {
+            "id": "8a42vH9ANwsIa8tr",
+            "name": "Frozen Envy (gear skill)"
           },
           {
             "id": "bx8p5ji8rhvbMVPv",
@@ -17911,12 +17999,16 @@
             "name": "Lipovitan-Z"
           },
           {
-            "id": "qr1ElGHgIp9933XQ",
-            "name": "Looting Bow"
+            "id": "iCd13uFfpMBG6Gl4",
+            "name": "Liquid Hope"
           },
           {
-            "id": "rUMtX6xOMRYGvVvK",
-            "name": "Looting Bow (Passive)"
+            "id": "J4I6b8JgaFuHpSYA",
+            "name": "Liquid Hope"
+          },
+          {
+            "id": "DLuleceBlP0QrIRI",
+            "name": "Magician Necklace"
           },
           {
             "id": "30aFFXoVM2lWFe7p",
@@ -17951,10 +18043,6 @@
             "name": "Revealing Lens"
           },
           {
-            "id": "BudKDkoE0hpl94Eb",
-            "name": "Ring of the Pupil"
-          },
-          {
             "id": "vu3nuZReY0Bx2r5c",
             "name": "Ring of the Pupil"
           },
@@ -17965,6 +18053,10 @@
           {
             "id": "I39txF6Uze60y6eg",
             "name": "Rock your World"
+          },
+          {
+            "id": "NXQUxlPdkRMpuIK6",
+            "name": "Rune Blade"
           },
           {
             "id": "pB5jPDL9EJDqFCTy",
@@ -19577,6 +19669,10 @@
             "name": "+4 Shield of Rejuvenation"
           },
           {
+            "id": "SCdL3yGW9VO3LnOC",
+            "name": "+4 The Selfless"
+          },
+          {
             "id": "boDVDHvlhYwlW4hr",
             "name": "Absorb MP"
           },
@@ -19685,6 +19781,10 @@
             "name": "Dark Orbit"
           },
           {
+            "id": "ojqd6ZT7l4wzxMnd",
+            "name": "Dead Branch"
+          },
+          {
             "id": "bheVgo6iuvRRaQ5Y",
             "name": "Dispel"
           },
@@ -19769,6 +19869,10 @@
             "name": "Golden Apple"
           },
           {
+            "id": "Q0g8YFRgXjXDIq4f",
+            "name": "Golden Koi"
+          },
+          {
             "id": "ho6kGg72Gcvnx7uD",
             "name": "Golem Heart"
           },
@@ -19817,6 +19921,10 @@
             "name": "Lens of Insight (Passive)"
           },
           {
+            "id": "yGNK7JPjcW3PfqIi",
+            "name": "Life Charm"
+          },
+          {
             "id": "H7HyFkQ2cH7rzf44",
             "name": "Lift off"
           },
@@ -19841,6 +19949,10 @@
             "name": "Magical Artillery"
           },
           {
+            "id": "yijRyy3UAPcDknnP",
+            "name": "Magnificent Mahi-mahi"
+          },
+          {
             "id": "LdxJgEghJUNP6bYL",
             "name": "Mega-Remedy"
           },
@@ -19851,6 +19963,14 @@
           {
             "id": "V8AiiQ8vD4YIdMZY",
             "name": "Painful Lesson"
+          },
+          {
+            "id": "gNGNhcgcpFgDT1Cu",
+            "name": "Phoenix Feather"
+          },
+          {
+            "id": "IMWxbdIzANjFcFdA",
+            "name": "Phoenix Feather"
           },
           {
             "id": "UTKq3Ydy8bawRUBi",
@@ -19871,10 +19991,6 @@
           {
             "id": "Un5BpzDlecnnBd2z",
             "name": "Quick Summoning"
-          },
-          {
-            "id": "QZzNOaJbOtsQSiIU",
-            "name": "Regret"
           },
           {
             "id": "gMHVtSecAgiriC6S",
@@ -19941,8 +20057,12 @@
             "name": "Symptom Shift"
           },
           {
-            "id": "SCdL3yGW9VO3LnOC",
-            "name": "The Selfless"
+            "id": "oQ1WWkKHLewzai3B",
+            "name": "Tincture of Endurance"
+          },
+          {
+            "id": "PhFhfjEZqpEHFvek",
+            "name": "Tincture of Endurance"
           },
           {
             "id": "QmIFANXxx3ns597A",
@@ -19965,7 +20085,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 5
+        "effects": 4
       },
       {
         "id": "tzXbVfDYPgvu5wml",
@@ -20902,18 +21022,6 @@
             "name": "+6 Psychic Dagger"
           },
           {
-            "id": "xi7gKIguMDg3aAU3",
-            "name": "Animal Fang"
-          },
-          {
-            "id": "2dFj4PqZ98zfinr5",
-            "name": "Animal Fur"
-          },
-          {
-            "id": "IFdG44swurNul7ho",
-            "name": "Animal Fur"
-          },
-          {
             "id": "fFHKCwDndsOmUg0q",
             "name": "Beyond the Realms of Death"
           },
@@ -20936,14 +21044,6 @@
           {
             "id": "rs7BtA731yHZPcDn",
             "name": "Charm"
-          },
-          {
-            "id": "ODJDn7QixISxmC0Y",
-            "name": "Charred Bone"
-          },
-          {
-            "id": "ySL1PCPzqmDYEaMn",
-            "name": "Charred Bone"
           },
           {
             "id": "l7hj0bWidYxltnI6",
@@ -20986,40 +21086,8 @@
             "name": "Fear Is the Key"
           },
           {
-            "id": "eiDBF9ItmrzqciKH",
-            "name": "Flame Essence"
-          },
-          {
-            "id": "v6ZJ1nNx0xCp82TH",
-            "name": "Flame Essence"
-          },
-          {
             "id": "rIL03M727EEzLUNf",
             "name": "For Whom the Bell Tolls"
-          },
-          {
-            "id": "etUcU0vA0DfE0YdG",
-            "name": "Frill"
-          },
-          {
-            "id": "NyzcbeaidAPGjll3",
-            "name": "Frill"
-          },
-          {
-            "id": "ujmt7QnAEe0dWLyc",
-            "name": "Frozen Envy"
-          },
-          {
-            "id": "2RRgVUpoPoad88Go",
-            "name": "Frozen Envy (gear skill)"
-          },
-          {
-            "id": "5Og29tisnmhrTUjM",
-            "name": "Golem Heart"
-          },
-          {
-            "id": "5zZBwJJrhmnUx79o",
-            "name": "Golem Heart"
           },
           {
             "id": "aBoK1AS1nb27Wwye",
@@ -21034,20 +21102,8 @@
             "name": "Illusory Shield"
           },
           {
-            "id": "8RNjrxaNsGiiVbPU",
-            "name": "Jellopy"
-          },
-          {
-            "id": "sCu9dnBvUe1qsY4v",
-            "name": "Jellopy"
-          },
-          {
             "id": "fWSnV0BKWLOPGZnq",
             "name": "Life Transference"
-          },
-          {
-            "id": "cutyfv9C0bkBgtS2",
-            "name": "Magician Necklace"
           },
           {
             "id": "LwbHBK0twVXmekz0",
@@ -21060,14 +21116,6 @@
           {
             "id": "qS9e6cCTQBDQ2kK7",
             "name": "Phantasmal Echo"
-          },
-          {
-            "id": "ll9wkUrPJay3Ah0l",
-            "name": "Phoenix Feather"
-          },
-          {
-            "id": "xRWHb1Ox5iZ1gEEp",
-            "name": "Phoenix Feather"
           },
           {
             "id": "aRgR0Hn1ejPNmzqB",
@@ -21107,10 +21155,6 @@
           },
           {
             "id": "7wfcJjtOohmga8n0",
-            "name": "Starfruit"
-          },
-          {
-            "id": "FXVgHBYwPV3hTonM",
             "name": "Starfruit"
           },
           {
@@ -23613,10 +23657,6 @@
             "name": "Forget me Nut"
           },
           {
-            "id": "SM6f3BZeuLZ1owY4",
-            "name": "General Goods"
-          },
-          {
             "id": "Ppa4Yer0XHh7a5fj",
             "name": "Grape Juice"
           },
@@ -23841,6 +23881,10 @@
             "name": "Decoy Doll"
           },
           {
+            "id": "jkHr3wQV579vkhe0",
+            "name": "Forget me Nut"
+          },
+          {
             "id": "6rLxtobPtXV3D7rG",
             "name": "Goddess Tear"
           },
@@ -23935,14 +23979,6 @@
           {
             "id": "9Xmu4YF2yDOcr9Pp",
             "name": "Turbo Remedy Recipe"
-          },
-          {
-            "id": "LECW7qy9hVqsxWpJ",
-            "name": "Turbo Tonic"
-          },
-          {
-            "id": "ZOB7csf6j87OKcZi",
-            "name": "Turbo Tonic"
           }
         ],
         "effects": 0
@@ -24111,6 +24147,14 @@
             "name": "Crested Helm"
           },
           {
+            "id": "bbtI25RE7B7RZcm8",
+            "name": "Looting Bow"
+          },
+          {
+            "id": "X1AEkCjM0JZiVfcv",
+            "name": "Looting Bow (Passive)"
+          },
+          {
             "id": "eIKHoniMYvSLbBk8",
             "name": "Ring of Regeneration"
           },
@@ -24123,6 +24167,10 @@
             "name": "Shooting Star Fragment (Passive)"
           },
           {
+            "id": "1sd5N9F9mSqp7ezQ",
+            "name": "Shortbow"
+          },
+          {
             "id": "0YmQOxhBAjHujoXY",
             "name": "Soul Ring"
           },
@@ -24133,14 +24181,6 @@
           {
             "id": "VBzFqBbhT0FnxHNL",
             "name": "Survivor’s Crest"
-          },
-          {
-            "id": "uOQF3Sjkh1YNlEEE",
-            "name": "Vampire Cloak"
-          },
-          {
-            "id": "I9l5e2qiTHb7oF9v",
-            "name": "Vampire Cloak (Passive)"
           }
         ],
         "effects": 0
@@ -25904,6 +25944,10 @@
         "type": "character",
         "items": [
           {
+            "id": "p2ZYcT97cqBChzJS",
+            "name": "+4 Apothecary Robes"
+          },
+          {
             "id": "9eWyiZCnRhC89Fsn",
             "name": "+4 Combat Tunic"
           },
@@ -25918,10 +25962,6 @@
           {
             "id": "4HAJia1ADJ8RijE8",
             "name": "Animal Fang"
-          },
-          {
-            "id": "p2ZYcT97cqBChzJS",
-            "name": "Apothecary Robes"
           },
           {
             "id": "6ef3fWjmWMYTG9Kz",
@@ -25964,10 +26004,6 @@
             "name": "Charred Bone"
           },
           {
-            "id": "L9l5Wqh1mhLdLmmv",
-            "name": "Charred Bone"
-          },
-          {
             "id": "PS5zlTZIJ2yXog8S",
             "name": "Cheap Shot"
           },
@@ -26004,8 +26040,8 @@
             "name": "Follow my lead"
           },
           {
-            "id": "eQ8sf4Ton4JJum2G",
-            "name": "Frill"
+            "id": "wZMRHOYm2Qnwy3HB",
+            "name": "Frenetic Footwork"
           },
           {
             "id": "H663NG14lmAbBtzp",
@@ -26038,10 +26074,6 @@
           {
             "id": "KlUH81m312QcYsr1",
             "name": "High Speed"
-          },
-          {
-            "id": "FKfXfIFIWl8QPIru",
-            "name": "Insect Stinger"
           },
           {
             "id": "wx93KT48Ixf3JMCP",
@@ -26080,6 +26112,14 @@
             "name": "Maid cap (Passive)"
           },
           {
+            "id": "0BJJEon9rsm0SYKw",
+            "name": "Mega-Elixir"
+          },
+          {
+            "id": "vqWZCekMytntJIEJ",
+            "name": "Mega-Elixir"
+          },
+          {
             "id": "KL2yI8x7voinAVzf",
             "name": "Myrmidon Dance"
           },
@@ -26112,6 +26152,10 @@
             "name": "Potion Rain"
           },
           {
+            "id": "vLVyVwIOd0putHUA",
+            "name": "Powerful Shot"
+          },
+          {
             "id": "Paz1YwWMytTfowSm",
             "name": "Quick-change"
           },
@@ -26126,10 +26170,6 @@
           {
             "id": "c3zfGAqVWxIggKi1",
             "name": "See you later"
-          },
-          {
-            "id": "s1XHUjjShRMyGTCT",
-            "name": "Shortbow"
           },
           {
             "id": "quQU5EZb9TSIxJYp",
@@ -26156,12 +26196,28 @@
             "name": "Teddy Bear"
           },
           {
+            "id": "f7sYIe0TCTvWVM0O",
+            "name": "Tincture of Strength"
+          },
+          {
+            "id": "vjOfPmWevBGyOqry",
+            "name": "Tincture of Strength"
+          },
+          {
             "id": "lpl9N7ToR7d52GZB",
             "name": "Unicorn Dance"
           },
           {
             "id": "qSBSB4t6ozxwoTmR",
             "name": "Upgrade"
+          },
+          {
+            "id": "DurrKO46Vi8BcNVm",
+            "name": "Vampire Cloak"
+          },
+          {
+            "id": "D05RHsDGKRv5BR4r",
+            "name": "Vampire Cloak (Passive)"
           },
           {
             "id": "kTZD5WHGBnT9JJi1",
@@ -26176,7 +26232,7 @@
             "name": "Zero Trigger: Strategy"
           }
         ],
-        "effects": 3
+        "effects": 4
       },
       {
         "id": "eovuAdwJdbtn8rOr",

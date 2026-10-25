@@ -139,15 +139,18 @@ export const kbd = (k) => `<kbd class="pm-kbd">${esc(KEY_LABEL[k] ?? k)}</kbd>`;
  * The bar at the top of every view: Back, the path to here (each earlier step
  * clickable), and this screen's actions as buttons that carry their key.
  * `crumbs` = [{ label, up }] where `up` is "main" or how many steps back the
- * crumb is; the last crumb is where you are. `actions` = [{ key, label, icon? }]
- * — a click sends that key, so a button can never do something the key doesn't.
+ * crumb is; the last crumb is where you are. `actions` = [{ key, label, icon?,
+ * disabled?, title? }] — a click sends that key, so a button can never do
+ * something the key doesn't. A disabled action stays on show, greyed, with its
+ * `title` saying why; its key is refused by the view, not by this bar.
  */
 export function navBar(crumbs, actions = []) {
   const path = crumbs.map((c, i) => (i === crumbs.length - 1
     ? `<b class="pm-crumb is-here">${esc(c.label)}</b>`
     : `<span class="pm-crumb pm-hit" data-action="nav-crumb" data-up="${esc(c.up)}" title="Back to ${esc(c.label)}">${esc(c.label)}</span>`))
     .join(`<i class="fas fa-chevron-right pm-crumbsep"></i>`);
-  const acts = actions.map((a) => `<button type="button" class="pm-btn pm-navact pm-hit" data-action="nav-key" data-key="${esc(a.key)}">`
+  const acts = actions.map((a) => `<button type="button" class="pm-btn pm-navact pm-hit" data-action="nav-key" data-key="${esc(a.key)}"`
+    + `${a.disabled ? " disabled" : ""}${a.title ? ` title="${esc(a.title)}"` : ""}>`
     + `${a.icon ? `<i class="fas ${esc(a.icon)}"></i>` : ""}${esc(a.label)}${kbd(a.key)}</button>`).join("");
   return `<div class="pm-win pm-nav">
     <button type="button" class="pm-btn pm-navback pm-hit" data-action="nav-back" title="Back (Esc or right-click)"><i class="fas fa-chevron-left"></i>Back</button>

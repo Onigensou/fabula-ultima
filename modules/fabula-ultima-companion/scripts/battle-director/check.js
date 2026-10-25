@@ -168,9 +168,8 @@ async function resolveWeaponPairSwap({ actor, A1, A2, director = null, actionPay
     let picked = null;
     try {
       const channel = director?.intentChannel ?? null;
-      const owner = (game.users?.contents ?? [])
-        .filter((u) => !u.isGM && u.active && (() => { try { return actor.testUserPermission?.(u, "OWNER"); } catch { return false; } })())
-        .sort((a, b) => a.id.localeCompare(b.id))[0] ?? null;
+      const ownerId = globalThis.FUCompanion?.api?.Spectator?.deciderUserIdForActor?.(actor) ?? null;
+      const owner = ownerId ? game.users?.get(ownerId) ?? null : null;
       if (game.user?.isGM && owner && channel) {
         const { remotePick, REMOTE_PICK_KINDS } = await import("./remote-pick.js");
         picked = await remotePick({ channel, targetUserId: owner.id, combatId: director?.combatId ?? null,

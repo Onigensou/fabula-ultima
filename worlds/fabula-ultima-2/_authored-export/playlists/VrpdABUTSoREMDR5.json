@@ -23,7 +23,7 @@
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
-  "seed": 388,
+  "seed": 948,
   "sort": 0,
   "sorting": "a",
   "sounds": [
@@ -57,7 +57,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/Valley_of_the_Dragon.mp3",
       "repeat": true,
       "sort": 0,
-      "volume": 0.41
+      "volume": 0.16
     },
     {
       "_id": "4HnaHIwbub49z10X",

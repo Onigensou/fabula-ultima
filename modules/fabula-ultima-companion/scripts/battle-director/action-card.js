@@ -47,18 +47,22 @@ import { SimMode } from "./sim/sim-mode.js";
 import { decideReactions, bestElementForCard } from "./sim/reaction-brain.js";
 import { simInvoke } from "./sim/invoke-brain.js";
 
-// Resolve which active non-GM user owns the given actor doc. Returns
-// userId or null. Deterministic on multi-owner actors (sort by id).
+// Resolve which active player client decides for the given actor doc. Returns
+// userId or null. Delegates to the shared Spectator helper so a spectator
+// client (stream window, non-party player) is never elected just because it
+// owns the actor — see scripts/shared/spectator.js.
 //
 // Exported because the quick-action confirm (state-handlers.js) needs the same
 // answer the card uses to decide whose mirror is interactive. Re-deriving it
 // there would be a second copy of "who owns this actor" free to drift from the
 // one that decides who may press Confirm.
-export function ownerUserIdForActor(actor) {
+export function ownerUserIdForActor(actor, { requireActive = true } = {}) {
   if (!actor) return null;
+  const S = globalThis.FUCompanion?.api?.Spectator;
+  if (S?.deciderUserIdForActor) return S.deciderUserIdForActor(actor, { requireActive });
   const candidates = (game.users?.contents ?? []).filter((u) => {
     if (u.isGM) return false;
-    if (!u.active) return false;
+    if (requireActive && !u.active) return false;
     try { return actor.testUserPermission?.(u, "OWNER"); }
     catch { return false; }
   });

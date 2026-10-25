@@ -347,7 +347,8 @@
     if (assigned) return assigned.id;
     return Object.entries(actor?.ownership ?? {}).find(([id, lvl]) => {
       const user = game.users?.get(id);
-      return id !== "default" && lvl >= 3 && user && !user.isGM;
+      return id !== "default" && lvl >= 3 && user && !user.isGM
+        && !globalThis.FUCompanion?.api?.Spectator?.isSpectator?.(user);
     })?.[0] ?? null;
   }
 

@@ -290,6 +290,7 @@
       this.desiredVisible = false;
       this.state = "hidden";
       this.hideTimer = null;
+      this.showFrame = null;
       this.opening = false;
 
       const btn = document.createElement("button");
@@ -331,6 +332,7 @@
         clearTimeout(this.hideTimer);
         this.hideTimer = null;
       }
+      this._cancelShowFrame();
       this.el?.remove();
       this.el = null;
     }
@@ -397,16 +399,33 @@
       this.state = "showing";
       this.el.classList.remove("is-hiding");
 
-      requestAnimationFrame(() => {
-        if (!this.el) return;
+      // A hide can land before this frame does (a background tab holds frames
+      // back for seconds); the frame must not then turn the button back on.
+      this._cancelShowFrame();
+      this.showFrame = requestAnimationFrame(() => {
+        this.showFrame = null;
+        if (!this.el || !this.desiredVisible || this.state !== "showing") return;
         this.el.classList.add("is-visible");
         this.state = "shown";
       });
     }
 
+    _cancelShowFrame() {
+      if (this.showFrame === null) return;
+      cancelAnimationFrame(this.showFrame);
+      this.showFrame = null;
+    }
+
     _hide() {
       if (!this.el) return;
-      if (this.state === "hidden" || this.state === "hiding") return;
+      this._cancelShowFrame();
+
+      if (this.state === "hidden") {
+        // Self-heal a button left lit by an older show/hide race.
+        this.el.classList.remove("is-visible", "is-hiding");
+        return;
+      }
+      if (this.state === "hiding") return;
 
       this.state = "hiding";
       this.el.classList.remove("is-visible");
@@ -421,7 +440,7 @@
           return;
         }
 
-        this.el?.classList.remove("is-hiding");
+        this.el?.classList.remove("is-visible", "is-hiding");
         this.state = "hidden";
         this.hideTimer = null;
       }, 160);

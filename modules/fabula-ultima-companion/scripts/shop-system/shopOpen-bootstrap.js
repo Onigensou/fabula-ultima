@@ -7,6 +7,7 @@ import { ShopSoundManager }    from "./shopSound-manager.js";
 import { ShopSellHandler }     from "./shopSell-handler.js";
 import { ShopSellApp }         from "./shopSell-app.js";
 import { ShopPresence }        from "./shopPresence.js";
+import { ShopIpRechargeHandler } from "./shopIpRecharge-handler.js";
 
 Hooks.once("ready", async () => {
   const ui = new ShopOpenUI({
@@ -25,6 +26,7 @@ Hooks.once("ready", async () => {
   const sellHandler     = new ShopSellHandler();
   const soundManager    = new ShopSoundManager();
   const presence        = new ShopPresence();
+  const ipRecharge      = new ShopIpRechargeHandler();
   soundManager.preloadAll(); // warm CDN cache so first-use audio is instant
 
   // Wire purchase handler into backend (BUY_REQ/BUY_RESULT route through backend._onSocket)
@@ -32,6 +34,9 @@ Hooks.once("ready", async () => {
 
   // Wire sell handler into backend (SELL_REQ/SELL_RESULT route through backend._onSocket)
   backend._sellHandler = sellHandler;
+
+  // Wire IP recharge into backend (IP_RECHARGE_* route through backend._onSocket)
+  backend._ipRechargeHandler = ipRecharge;
 
   // Wire presence into backend (PRESENCE_* route through backend._onSocket)
   backend._presence = presence;
@@ -77,6 +82,7 @@ Hooks.once("ready", async () => {
   window.FUCompanion.shopSellApp  = ShopSellApp;
   window.FUCompanion.shopSound    = soundManager;
   window.FUCompanion.shopPresence = presence;
+  window.FUCompanion.shopIpRecharge = ipRecharge;
 
   console.debug(SHOPOPEN.TAG, "Module bootstrap loaded (ShopOpen v2 — player self-service).");
 });

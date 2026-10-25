@@ -123,8 +123,9 @@ Hooks.once("ready", () => {
 
     const result = new Set();
 
+    const S = globalThis.FUCompanion?.api?.Spectator;
     if (friendly) {
-      for (const u of ownerUsers) if (!u.isGM) result.add(u.id);
+      for (const u of ownerUsers) if (!u.isGM && !S?.isSpectator?.(u)) result.add(u.id);
       for (const u of allUsers)   if (u.isGM)  result.add(u.id);
     } else {
       for (const u of allUsers)   if (u.isGM)  result.add(u.id);

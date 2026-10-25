@@ -194,6 +194,14 @@
   background: linear-gradient(180deg, #7a2e18 0%, #5a1c08 100%);
   box-shadow: 0 0 0 2px #f0a488, 0 0 18px rgba(230,110,80,0.50), 0 2px 6px rgba(40,18,4,0.38);
 }
+/* Watcher copy: "<name> is choosing…" under the question; buttons are display only */
+#oni-tp-prompt .oni-tp-wait { display: none; }
+#oni-tp-prompt.is-watching .oni-tp-wait {
+  display: block; position: relative; margin: 6px 0 0; text-align: center;
+  font-size: 14px; font-style: italic; color: #6b4a22; opacity: .85;
+}
+#oni-tp-prompt.is-watching .oni-tp-choice { cursor: default; pointer-events: none; }
+#oni-tp-prompt.is-watching.can-override .oni-tp-choice { cursor: pointer; pointer-events: auto; }
     `;
     document.head.appendChild(s);
   }
@@ -522,31 +530,55 @@
     _tpPrompt?.finish(result);
   }
 
+  // The prompt box itself, shared by the operator's live prompt and the
+  // read-only copy every other client watches (MirrorPrompt).
+  function buildTpPromptEl(text) {
+    const el = document.createElement("div");
+    el.id = "oni-tp-prompt";
+    el.setAttribute("role", "dialog");
+    el.innerHTML = `
+      <p class="oni-tp-msg"></p>
+      <p class="oni-tp-wait"></p>
+      <div class="oni-tp-actions">
+        <button type="button" class="oni-tp-choice yes">Yes</button>
+        <button type="button" class="oni-tp-choice no">No</button>
+      </div>`;
+    const msg = el.querySelector(".oni-tp-msg");
+    if (Array.isArray(text)) {
+      const strong = document.createElement("strong");
+      strong.textContent = text[1] ?? "";
+      msg.append(text[0] ?? "", strong, text[2] ?? "");
+    } else {
+      msg.textContent = text;
+    }
+    return { el, yesBtn: el.querySelector(".yes"), noBtn: el.querySelector(".no") };
+  }
+
+  function revealTpPrompt(el, stillCurrent) {
+    document.body.appendChild(el);
+    // Two frames so the starting (hidden, offset) state is painted before the transition.
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (stillCurrent()) el.classList.add("tp-visible");
+    }));
+  }
+
+  function dismissTpPromptEl(el) {
+    el.classList.remove("tp-visible");
+    el.classList.add("tp-leaving");
+    setTimeout(() => el.remove(), TP_PROMPT_OUT_MS + 40);
+  }
+
   function showTpPrompt(text) {
     closeTpPrompt(false);
     ensureStyle();
 
     return new Promise((resolve) => {
-      const el = document.createElement("div");
-      el.id = "oni-tp-prompt";
-      el.setAttribute("role", "dialog");
-      el.innerHTML = `
-        <p class="oni-tp-msg"></p>
-        <div class="oni-tp-actions">
-          <button type="button" class="oni-tp-choice yes">Yes</button>
-          <button type="button" class="oni-tp-choice no">No</button>
-        </div>`;
-      const msg = el.querySelector(".oni-tp-msg");
-      if (Array.isArray(text)) {
-        const strong = document.createElement("strong");
-        strong.textContent = text[1] ?? "";
-        msg.append(text[0] ?? "", strong, text[2] ?? "");
-      } else {
-        msg.textContent = text;
-      }
+      const { el, yesBtn, noBtn } = buildTpPromptEl(text);
 
-      const yesBtn = el.querySelector(".yes");
-      const noBtn  = el.querySelector(".no");
+      // Everyone else watches this prompt read-only; a GM watcher may answer for us.
+      const mirror = globalThis.FUCompanion?.api?.MirrorPrompt?.open?.(TP_MIRROR_KIND, { text }, {
+        onAnswer: (value) => entry.finish(value === true),
+      }) ?? null;
 
       // The border highlight marks the picked answer: hover or ←/→ moves it, Enter takes it.
       let picked = null;
@@ -555,6 +587,7 @@
         picked?.classList.remove("is-picked");
         picked = btn;
         btn.classList.add("is-picked");
+        mirror?.patch({ picked: btn === yesBtn ? "yes" : "no" });
       };
 
       const entry = { el, finish: null };
@@ -588,9 +621,8 @@
         stopInput?.();
         runtime?.unlockMovement?.("tp-prompt");
         window.removeEventListener("keydown", onKey, true);
-        el.classList.remove("tp-visible");
-        el.classList.add("tp-leaving");
-        setTimeout(() => el.remove(), TP_PROMPT_OUT_MS + 40);
+        mirror?.close(result === true);
+        dismissTpPromptEl(el);
         resolve(result === true);
       };
 
@@ -603,14 +635,55 @@
       window.addEventListener("keydown", onKey, true);
 
       pick(yesBtn);
-      document.body.appendChild(el);
       _tpPrompt = entry;
-      // Two frames so the starting (hidden, offset) state is painted before the transition.
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        if (_tpPrompt === entry) el.classList.add("tp-visible");
-      }));
+      revealTpPrompt(el, () => _tpPrompt === entry);
     });
   }
+
+  // ── Watcher copy (MirrorPrompt) ─────────────────────────────────────────────
+  // Party players and the stream spectator see the controller's prompt with
+  // their highlight echoed; no input, no movement lock. A GM watcher can click
+  // Yes / No to answer on the controller's behalf (stuck or away player).
+  const TP_MIRROR_KIND = "teleporter.confirm";
+
+  // The same parchment Yes / No for other exploration confirms (Fast Travel,
+  // Scene Travel), mirrored to every client the same way. text is a string or
+  // [before, bold name, after]. Resolves true / false.
+  TP.askYesNo = (text) => showTpPrompt(text);
+
+  Hooks.once("ready", () => {
+    globalThis.FUCompanion?.api?.MirrorPrompt?.register?.(TP_MIRROR_KIND, {
+      show(ctx) {
+        if (_tpPrompt) return null; // never stack over our own live prompt
+        ensureStyle();
+        const { el, yesBtn, noBtn } = buildTpPromptEl(ctx.payload?.text ?? "");
+        el.classList.add("is-watching");
+        if (ctx.canOverride) el.classList.add("can-override");
+        el.querySelector(".oni-tp-wait").textContent = ctx.canOverride
+          ? `${ctx.operatorName} is choosing… (GM: click to answer)`
+          : `${ctx.operatorName} is choosing…`;
+
+        const setPicked = (which) => {
+          yesBtn.classList.toggle("is-picked", which === "yes");
+          noBtn.classList.toggle("is-picked", which === "no");
+        };
+        setPicked(ctx.state?.picked ?? "yes");
+
+        el.addEventListener("pointerdown", (ev) => ev.stopPropagation());
+        if (ctx.canOverride) {
+          yesBtn.addEventListener("click", () => ctx.answer(true));
+          noBtn.addEventListener("click",  () => ctx.answer(false));
+        }
+
+        let live = true;
+        revealTpPrompt(el, () => live);
+        return {
+          patch: (state) => { if (state?.picked) setPicked(state.picked); },
+          close: () => { live = false; dismissTpPromptEl(el); },
+        };
+      },
+    });
+  });
 
   // ── Main Controller gate (exploration button mode) ───────────────────────────
   // The ticker detects tile entry on EVERY client, so without a gate each player
@@ -619,11 +692,19 @@
   // dungeon movement, Fast Travel and Scene Travel use. Players fail closed if
   // the Movement Control API is not ready.
 
+  // A GM drives only when no online player holds the controller; otherwise the
+  // GM watches the controller's prompt (MirrorPrompt) and can answer from there,
+  // so the table never gets two live prompts for one door.
   async function canOperateTeleporter() {
-    if (game.user?.isGM) return true;
     const api = globalThis.__ONI_MOVEMENT_CONTROL_API__
       ?? globalThis.FUCompanion?.api?.MovementControl
       ?? null;
+    if (game.user?.isGM) {
+      try {
+        const c = await api?.getCurrentControllerUser?.();
+        return !(c?.userId && !c.isGM && game.users?.get(c.userId)?.active);
+      } catch { return true; }
+    }
     if (!api?.isCurrentUserMainController) return false;
     try { return !!(await api.isCurrentUserMainController()); }
     catch { return false; }

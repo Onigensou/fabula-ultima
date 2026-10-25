@@ -510,10 +510,16 @@ const LevelUpApp = {
   // means the window never observes a half-applied spend.
   _pending: [],         // [{ op:"spend"|"refund"|"heroic", classKey, skillUuid, benefit }]
   _applying: false,
+  _onClose: null,       // one-shot, set by open(); see open()
 
   get isOpen() { return Boolean(this._root?.isConnected); },
 
-  open(actorUuid) {
+  /**
+   * @param {string} [actorUuid]
+   * @param {{ onClose?: Function }} [opts] onClose runs once after the window
+   *   closes — the Party Menu uses it to step back to the page that opened it.
+   */
+  open(actorUuid, { onClose = null } = {}) {
     const uuid = actorUuid ?? this._guessActor();
     if (!uuid) return ui.notifications?.warn?.("No character selected.");
     // A uuid passed straight in skips _guessActor, so re-check the subject.
@@ -523,6 +529,7 @@ const LevelUpApp = {
     }
     injectStyles();
 
+    this._onClose = onClose;
     this._actorUuid = uuid;
     if (this.isOpen) return this.render();
 
@@ -626,6 +633,10 @@ const LevelUpApp = {
     if (this._itemHook2) Hooks.off("deleteItem", this._itemHook2);
     this._root?.remove();
     this._root = null;
+
+    const after = this._onClose;
+    this._onClose = null;
+    try { after?.(); } catch (e) { console.warn("[LevelUp] onClose failed", e); }
   },
 
   toggle(uuid) { this.isOpen ? this.close() : this.open(uuid); },
@@ -2295,7 +2306,7 @@ const LevelUpApp = {
 Hooks.once("ready", () => {
   const a = globalThis.FUCompanion?.api?.levelUp;
   if (!a) return;
-  a.open = (uuid) => LevelUpApp.open(uuid);
+  a.open = (uuid, opts) => LevelUpApp.open(uuid, opts);
   a.close = () => LevelUpApp.close();
   a.toggle = (uuid) => LevelUpApp.toggle(uuid);
   a.app = LevelUpApp;

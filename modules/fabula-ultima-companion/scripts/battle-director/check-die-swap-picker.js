@@ -232,6 +232,8 @@ export async function pickDieSwap({ director, combatId = null, label = "Die Swap
 // action-card.js / soul-steal-result.js.
 function ownerUserIdForActor(actor) {
   if (!actor) return null;
+  const S = globalThis.FUCompanion?.api?.Spectator;
+  if (S?.deciderUserIdForActor) return S.deciderUserIdForActor(actor);
   const candidates = (game.users?.contents ?? []).filter((u) => {
     if (u.isGM) return false;
     if (!u.active) return false;

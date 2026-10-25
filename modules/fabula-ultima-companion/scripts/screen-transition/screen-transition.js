@@ -13,6 +13,12 @@
   let glassBroken     = false;  // the shatter is past its cut: the scene shows through
   let blackUnderGlass = false;  // went black beneath the breaking glass
   let drawPoll = null;
+  // Bumped whenever something takes the overlay over (cover, blackout, the
+  // shatter taking it down). A fade only finishes if no one took the overlay
+  // since it began: a cancelled fade's fallback timer once marked a fresh cover
+  // IDLE while it was still black, so the next reveal returned early and the
+  // screen stayed black until reload.
+  let gen = 0;
 
   // ── Overlay — created eagerly on ready so first transition has no cold cost ──
 
@@ -45,6 +51,7 @@
   // Accepts from any state so rapid double-switches are handled correctly.
 
   function cover() {
+    gen++;
     // The battle shatter (battle-transition/shatter-transition.js) already
     // hides the scene swap behind its frozen, cracked frame: going black here
     // would cover the glass. Still announce the cover; the matching reveal
@@ -79,6 +86,7 @@
   }
 
   function blackout() {
+    gen++;
     overlay.style.transition    = "none";
     overlay.style.opacity       = "1";
     overlay.style.pointerEvents = "all";
@@ -131,6 +139,12 @@
   // rendering boundary so we never reveal a blank scene.
 
   function reveal() {
+    // Heal: marked IDLE but still black (whatever left it so) — a scene that
+    // finished drawing must never stay hidden.
+    if (state === "IDLE" && parseFloat(overlay.style.opacity || "0") > 0.01
+        && !document.body.classList.contains("fuc-shatter-active")) {
+      state = "COVERED";
+    }
     if (state !== "COVERED") return;
 
     // If the destination scene has disableTransition set, skip the animation
@@ -146,10 +160,12 @@
     }
 
     state = "FADING_OUT";
+    const mine = gen;
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         setTimeout(() => {
+          if (mine !== gen) return;   // covered again before the fade began
           overlay.style.transition = `opacity ${FADE_OUT_MS}ms ease-out`;
           overlay.style.opacity    = "0";
 
@@ -157,6 +173,7 @@
           // Fallback timer guards against transitionend not firing (e.g. if
           // opacity was already 0, or the element was briefly detached).
           const cleanup = () => {
+            if (mine !== gen) return;   // covered mid-fade: that cover owns it now
             overlay.style.pointerEvents = "none";
             state = "IDLE";
             // The scene image is now fully visible — safe to play entrances.
@@ -186,6 +203,7 @@
     Hooks.on("fuc:shatterStart", () => {
       glassBroken = blackUnderGlass = false;
       if (state !== "COVERED" && state !== "FADING_OUT") return;
+      gen++;
       overlay.style.transition    = "none";
       overlay.style.opacity       = "0";
       overlay.style.pointerEvents = "none";

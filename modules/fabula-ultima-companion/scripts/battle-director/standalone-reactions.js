@@ -99,9 +99,12 @@ const _dispatchCoordinator = new EventTarget();
 // Find the active non-GM user who owns this reactor actor (FU PCs
 // typically have a single human owner). Returns the user id, or null
 // if the reactor has no human owner online (NPC or owner-offline).
-// Mirrors the resolveActingOwnerForActor helper in state-handlers.js.
+// Mirrors the resolveActingOwnerForActor helper in state-handlers.js; the
+// shared Spectator helper keeps spectator clients out of the election.
 function resolveReactorOwnerUserId(actor) {
   if (!actor) return null;
+  const S = globalThis.FUCompanion?.api?.Spectator;
+  if (S?.deciderUserIdForActor) return S.deciderUserIdForActor(actor);
   const candidates = (game.users?.contents ?? []).filter((u) => {
     if (u.isGM) return false;
     if (!u.active) return false;

@@ -175,6 +175,16 @@
   function resolveOwnerUserId(actorUuid) {
     if (!actorUuid) return null;
     const shortId   = String(actorUuid).replace(/^Actor\./, "").replace(/^.*\.Actor\./, "");
+
+    // Spectator-aware path: party-linked participant first, never a spectator.
+    const S = globalThis.FUCompanion?.api?.Spectator;
+    if (S?.deciderUserIdForActor) {
+      const actor = game.actors?.get(shortId)
+        ?? (canvas?.tokens?.placeables ?? []).find(t => t.actor?.uuid === actorUuid || t.actor?.id === shortId)?.actor
+        ?? null;
+      return actor ? S.deciderUserIdForActor(actor, { requireActive: false }) : null;
+    }
+
     const candidates = [];
 
     const worldActor = game.actors?.get(shortId);

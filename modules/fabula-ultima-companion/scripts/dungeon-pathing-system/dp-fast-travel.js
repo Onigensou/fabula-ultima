@@ -48,6 +48,8 @@
       if (msg.type === MSG_ENTER) {
         // Non-controller: free the camera so animatePan works without ticker fighting
         DP.ScanMode?.detachTicker?.();
+        // …and watch: the same landmark cursors + who is choosing.
+        showWatcherView(msg.payload?.fromUserId ?? null).catch(() => {});
         return;
       }
       if (msg.type === MSG_PAN) {
@@ -56,6 +58,7 @@
         return;
       }
       if (msg.type === MSG_EXIT) {
+        hideWatcherView();
         // Non-controller: re-engage camera lock and snap back to party token
         DP.ScanMode?.attachTicker?.();
         DP.ScanMode?.snapCameraToToken?.();
@@ -78,7 +81,37 @@
   }
 
   function broadcastEnter() {
-    game.socket.emit(SOCKET_CH, { type: MSG_ENTER, payload: {} });
+    game.socket.emit(SOCKET_CH, { type: MSG_ENTER, payload: { fromUserId: game.user?.id ?? null } });
+  }
+
+  // ── Watcher view (everyone but the controller) ───────────────────────────────
+  // Visited landmarks are scene data, so every client resolves the same list
+  // and draws the same golden cursors; a banner names who is choosing.
+  let _watchBanner = null;
+
+  async function showWatcherView(operatorUserId) {
+    if (_active) return;
+    await showSprites(resolveEligibleNodes());
+    ensureStyles();
+    _watchBanner?.remove();
+    const name = globalThis.FUCompanion?.api?.MirrorPrompt?.displayName?.(operatorUserId)
+      ?? game.users?.get(operatorUserId)?.name ?? "The leader";
+    const el = document.createElement("div");
+    el.className = "oni-dp-ft-watch";
+    el.textContent = `${name} is choosing a destination…`;
+    document.body.appendChild(el);
+    requestAnimationFrame(() => el.classList.add("ft-visible"));
+    _watchBanner = el;
+  }
+
+  function hideWatcherView() {
+    if (_active) return;
+    hideSprites();
+    const el = _watchBanner;
+    _watchBanner = null;
+    if (!el) return;
+    el.classList.remove("ft-visible");
+    setTimeout(() => el.remove(), 280);
   }
   function broadcastPan(x, y) {
     game.socket.emit(SOCKET_CH, { type: MSG_PAN, payload: { x, y } });
@@ -499,6 +532,16 @@
 .oni-dp-ft-nav:active { filter: brightness(0.9); }
 .oni-dp-ft-nav-left  { left: 10px; }
 .oni-dp-ft-nav-right { right: 10px; }
+.oni-dp-ft-watch {
+  position: fixed; z-index: 99999; top: 14%; left: 50%; transform: translateX(-50%);
+  padding: 8px 22px; border-radius: 8px; pointer-events: none;
+  font-family: "Signika", sans-serif; font-size: 18px; font-style: italic; color: #e8c870;
+  background: radial-gradient(circle at 40% 35%, rgba(90,65,30,0.92) 0%, rgba(45,32,14,0.96) 100%);
+  border: 2px solid rgba(200,160,80,0.65); box-shadow: 0 0 14px rgba(0,0,0,0.55);
+  text-shadow: 0 0 8px rgba(0,0,0,0.9);
+  opacity: 0; transition: opacity 250ms ease;
+}
+.oni-dp-ft-watch.ft-visible { opacity: 1; }
     `;
     document.head.appendChild(s);
   }
@@ -629,10 +672,14 @@
   // ── Travel confirmation + teleport ────────────────────────────────────────────
   async function promptTravel(node) {
     const label = node.name || node.tileType || "this location";
-    const confirmed = await Dialog.confirm({
-      title: "Fast Travel",
-      content: `<p style="text-align:center;padding:8px;">Travel to <b>${label}</b>?</p>`,
-    });
+    // Parchment Yes / No that every other client watches (teleporter prompt).
+    const ask = globalThis.TeleporterSystem?.askYesNo;
+    const confirmed = ask
+      ? await ask(["Travel to ", label, "?"])
+      : await Dialog.confirm({
+          title: "Fast Travel",
+          content: `<p style="text-align:center;padding:8px;">Travel to <b>${label}</b>?</p>`,
+        });
     if (!confirmed) return;
     await teleportTo(node);
   }

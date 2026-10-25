@@ -37,6 +37,8 @@ function escapeHtml(s) {
 // is the same canonical shape used by action-card.js / state-handlers.js.
 export function ownerUserIdForActor(actor) {
   if (!actor) return null;
+  const S = globalThis.FUCompanion?.api?.Spectator;
+  if (S?.deciderUserIdForActor) return S.deciderUserIdForActor(actor);
   const candidates = (game.users?.contents ?? []).filter((u) => {
     if (u.isGM) return false;
     if (!u.active) return false;
