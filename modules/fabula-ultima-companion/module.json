@@ -30,6 +30,7 @@
     "scripts/scene-prefetch.js",
     "scripts/reload-broadcast.js",
     "scripts/reload-button.js",
+    "scripts/client-health.js",
     "scripts/db-resolver.js",
     "scripts/party-sync/party-sync-core.js",
     "scripts/party-sync/party-sync-hook.js",
