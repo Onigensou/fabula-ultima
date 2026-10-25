@@ -511,7 +511,7 @@ export class ShopSellApp {
     let skillsHTML  = "";
     if (selectedMap.size === 1) {
       const entry = [...selectedMap.values()][0];
-      previewHTML = ShopWindowApp._buildPreviewContent(entry.item);
+      previewHTML = ShopWindowApp._buildPreviewContent(entry.item, entry.item?.parent ?? null);
       skillsHTML  = ShopWindowApp._buildSkillsContent(entry.item) ?? "";
     }
 

@@ -131,7 +131,7 @@ export class ShopWindowApp {
   // Stats preview builder — called when a row is clicked
   // ──────────────────────────────────────────────────────────────
 
-  static _buildPreviewContent(item) {
+  static _buildPreviewContent(item, buyer = null) {
     const type = this._itemType(item);
     const pills = [];
 
@@ -204,6 +204,13 @@ export class ShopWindowApp {
       html += `<div class="fu-preview-desc">${descHTML}</div>`;
     } else if (!pills.length) {
       html += `<div class="fu-preview-empty">No stat data available.</div>`;
+    }
+
+    // Set pieces: tier rows lit by the buyer's equipped pieces (linked text).
+    const LT = globalThis.FULinkedText;
+    const setHTML = LT?.setBonusHTML?.(item, { actor: buyer }) ?? "";
+    if (setHTML) {
+      html += `<div class="fu-preview-set"><div class="fu-ltc-label">Set bonus</div>${LT.safeHtml(setHTML)}</div>`;
     }
 
     return html;
@@ -1072,7 +1079,7 @@ export class ShopWindowApp {
       state,
       getPreviewHTML: (uuid) => {
         const item = actor.items.find(i => i.uuid === uuid);
-        return item ? ShopWindowApp._buildPreviewContent(item) : `<div class="fu-preview-placeholder">← Click an item to see its stats</div>`;
+        return item ? ShopWindowApp._buildPreviewContent(item, buyerActor) : `<div class="fu-preview-placeholder">← Click an item to see its stats</div>`;
       },
       getSkillsHTML: (uuid) => {
         const item = actor.items.find(i => i.uuid === uuid);
