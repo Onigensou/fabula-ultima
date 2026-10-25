@@ -91,6 +91,19 @@ export function itemNumbers(doc) {
   };
 }
 
+/**
+ * A value changed from its base (by refinement, today): shown in the modified
+ * colour, and hovering it opens Foundry's tooltip with the formula.
+ * @param {string} label  final value as displayed
+ * @param {[string,string][]} parts  formula lines, e.g. [["Base","HR + 5"],["Refinement +6","+6"]]
+ * @param {string} total  the result line
+ */
+function modded(label, parts, total) {
+  const tip = `<div class="fu-iw-formula">${parts.map(([k, v]) => `<div><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join("")}`
+    + `<div class="is-total"><span>Total</span><b>${esc(total)}</b></div></div>`;
+  return `<strong class="fu-iw-mod" data-tooltip="${esc(tip)}" data-tooltip-direction="UP">${esc(label)}</strong>`;
+}
+
 // "+5 ★★★★★" — filled pips for each level reached, hollow for the rest.
 function refinePips(rf) {
   return `<strong>+${rf.level}</strong> <span class="fu-iw-pips" aria-label="Refined ${rf.level} of ${rf.max}">`
@@ -127,16 +140,25 @@ export function gridRows(term, vs = null) {
     const refineRow = showRefine ? [["Refine", refinePips(rf), null, "is-wide"]] : [];
     if (p.item_type === "weapon") {
       const acc = check(p) + (n.acc ? ` ${signed(n.acc)}` : "");
-      const fromRefine = rf?.dmg ? ` <span class="fu-iw-sub">(+${rf.dmg} refine)</span>` : "";
-      // Damage first, full width: its type, refine suffix and ▲▼ sit beside it.
-      return [["Damage", `<strong>【HR + ${n.dmg}】</strong>${dmgText(p.type_damage)}${fromRefine}`, "dmg", "is-wide"],
+      // The label shows the final value; when refinement changed it, it turns
+      // green and hovering it shows the formula.
+      const dmgLabel = rf?.dmg
+        ? modded(`【HR + ${n.dmg}】`, [["Base", `HR + ${n.dmg - rf.dmg}`], [`Refinement +${rf.level}`, `+${rf.dmg}`]], `HR + ${n.dmg}`)
+        : `<strong>【HR + ${n.dmg}】</strong>`;
+      // Damage first, full width: its type and ▲▼ sit beside it.
+      return [["Damage", `${dmgLabel}${dmgText(p.type_damage)}`, "dmg", "is-wide"],
         ["Accuracy", acc, "acc"], ["Range", esc(p.weapon_range)], ["Hands", esc(p.hand_slots)], ...refineRow];
     }
     if (p.item_type === "armor" || p.item_type === "shield") {
       const show = (v) => (n.martial ? String(v) : signed(v));
       const rows = [["DEF", show(n.def), "def"], ["M.DEF", show(n.mdef), "mdef"], ...refineRow];
-      if (showRefine && p.item_type === "armor") rows.push(["Max HP", signed(n.hp), "hp"]);
-      if (showRefine && p.item_type === "shield") rows.push(["Phys. DR", n.dr ? `−${n.dr} taken` : "0", "dr"]);
+      const per = (v, lvl) => (lvl ? v / lvl : 0);
+      if (showRefine && p.item_type === "armor") {
+        rows.push(["Max HP", n.hp ? modded(signed(n.hp), [["Base", "+0"], [`Refinement +${rf.level}`, `+${per(n.hp, rf.level)} × ${rf.level}`]], signed(n.hp)) : "+0", "hp"]);
+      }
+      if (showRefine && p.item_type === "shield") {
+        rows.push(["Phys. DR", n.dr ? modded(`−${n.dr} taken`, [["Base", "0"], [`Refinement +${rf.level}`, `−${per(n.dr, rf.level)} × ${rf.level}`]], `−${n.dr} physical damage taken`) : "0", "dr"]);
+      }
       return rows;
     }
   }
