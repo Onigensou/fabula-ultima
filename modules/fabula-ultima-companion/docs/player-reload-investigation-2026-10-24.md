@@ -81,7 +81,8 @@ The fixed ~5½–6½ min delay for Blumairwen points to memory growth from a per
 
 - **Screen transition:** add a safety timeout. Also lift the overlay below notifications, so a "lost connection" toast is visible.
   - Commit `1a330723` (co-dev, same night) already covers the **battle-shatter** path: `holdUntilDrawn` with a 90 s cap and a failed-draw poll.
-  - The plain scene-change path (`cover()` on `canvasTearDown` → `reveal()` on `canvasReady`) still has no timeout. Build the fix on that commit's `holdUntilDrawn`/`STUCK_MS`.
+  - ✅ **Done 2026-10-25:** the plain scene-change path now watches the draw too. `cover()` starts the same poll (`watchDraw`, shared with `holdUntilDrawn`). It reveals once `canvas.loading` clears without a `canvasReady`, which covers Foundry's texture-load failure, group-draw failure and blank-draw returns. On a draw that never ends, it reveals at the 90 s `STUCK_MS` cap. A healthy slow draw still stays black until `canvasReady`. This was verified in a fake-clock simulation, not in a live game yet.
+  - Still open: lifting the overlay below notifications. Several overlays are tuned against z 99999 (the area panel, the camp GM panel, and the glass "under the glass" ordering), so this needs its own pass.
 - **Assets:** upload the 6 host-served JB2A webms to Forge and repoint the tiles.
 - **World size:** shrink the payload, so each reload costs less.
 - **Memory:** if step 2 shows growth, profile which `canvasReady` tickers keep allocating.
