@@ -4249,7 +4249,7 @@
           "armor_buy": "",
           "armor_cost": 1600,
           "armor_def": 0,
-          "armor_description": "<ul><li><p>When an ally who is able to see you causes you to recover <strong>Hit Points</strong>, if you are in @UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}, that ally recovers <strong>5</strong> Mind Points.</p></li></ul>",
+          "armor_description": "<ul><li><p>When an ally who is able to see you causes you to recover <strong>Hit Points</strong>, if you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, that ally recovers <strong>5</strong> Mind Points.</p></li></ul>",
           "armor_martial": "",
           "armor_mdef": 0,
           "armor_quantity": 1,
@@ -4271,7 +4271,7 @@
           "shield_bonusmdef": 0,
           "shield_buy": "",
           "shield_cost": 800,
-          "shield_description": "<ul>\n<li>You have Resistance to<strong> Air</strong>&nbsp;damage.</li>\n</ul>",
+          "shield_description": "<ul>\n<li>You have Resistance to<a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\">Air</a>&nbsp;damage.</li>\n</ul>",
           "shield_martial": "",
           "shield_quantity": 1,
           "shield_set": "",
@@ -4288,7 +4288,7 @@
           "weapon_cost": 1250,
           "weapon_hand": "One-handed",
           "weapon_martial": "",
-          "weapon_quality": "<p><ul><li>You have Resistance to <strong>dark</strong> and <strong>poison</strong> damage</li><li><p>You have Resistance to <strong>@UUID[JournalEntry.XRlyg27yLgoQUOXZ]{Envenomed}</strong></p></li></ul></p>",
+          "weapon_quality": "<p><ul><li>You have Resistance to <strong>dark</strong> and <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\">Poison</a> damage</li><li><p>You have Resistance to <a class=\"content-link\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\">Envenomed</a></p></li></ul></p>",
           "weapon_quantity": 1,
           "weapon_range": "Melee",
           "weapon_set": ""
@@ -4302,7 +4302,7 @@
           "weapon_cost": 2050,
           "weapon_hand": "Two-handed",
           "weapon_martial": "♦️",
-          "weapon_quality": "<p><ul><li>You have Immunity to <strong>Fire</strong> damage.</li></ul></p>",
+          "weapon_quality": "<p><ul><li>You have Immunity to <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage.</li></ul></p>",
           "weapon_quantity": 1,
           "weapon_range": "Melee",
           "weapon_set": ""
@@ -4316,7 +4316,7 @@
           "weapon_cost": 1500,
           "weapon_hand": "Two-handed",
           "weapon_martial": "",
-          "weapon_quality": "<p><ul>\n    <li>\n        <p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p>\n    </li>\n    <li>\n        <p>You may cast the spell 【✨<strong> Regen </strong>】</p>\n        <hr>\n    </li>\n</ul>\n<details>\n    <summary><strong>✨ Regen</strong></summary>\n    <p><strong>Cost:</strong> 10 MP</p>\n    <p><strong>Target:</strong> One Creature</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p>You awaken the regeneration power in target creature, For <strong>3 rounds</strong> Target creature gain the following effects:</p>\n    <p></p>\n        <li>At the start of your turn, restore <strong>【20% of your Max HP】</strong></li>\n    <p></p>\n</details></p>",
+          "weapon_quality": "<p><ul>\n    <li>\n        <p>This weapon deals <a class=\"content-link\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" data-id=\"XYQUsuXPU0CQjEYa\" data-type=\"JournalEntry\">Magic Damage</a></p>\n    </li>\n    <li>\n        <p>You may cast the spell 【✨<strong> Regen </strong>】</p>\n        <hr>\n    </li>\n</ul>\n<details>\n    <summary><strong>✨ Regen</strong></summary>\n    <p><strong>Cost:</strong> 10 MP</p>\n    <p><strong>Target:</strong> One Creature</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p>You awaken the regeneration power in target creature, For <strong>3 rounds</strong> Target creature gain the following effects:</p>\n    <p></p>\n        <li>At the start of your turn, restore <strong>【20% of your Max HP】</strong></li>\n    <p></p>\n</details></p>",
           "weapon_quantity": 1,
           "weapon_range": "Melee",
           "weapon_set": ""
@@ -4330,7 +4330,7 @@
           "weapon_cost": 1500,
           "weapon_hand": "One-handed",
           "weapon_martial": "",
-          "weapon_quality": "<p><ul><li><p>Deals <strong>5 extra damage</strong> to targets who are in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li><li><p>When you hit with this weapon, there is a <strong>15% chance</strong> that, if the target is not a <strong>Villian&nbsp;</strong>or&nbsp;<strong>Boss</strong> type enemy, its&nbsp;<strong>HP&nbsp;</strong>is reduced until it is in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li></ul></p>",
+          "weapon_quality": "<p><ul><li><p>Deals <strong>5 extra damage</strong> to targets who are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a></p></li><li><p>When you hit with this weapon, there is a <strong>15% chance</strong> that, if the target is not a <strong>Villian&nbsp;</strong>or&nbsp;<strong>Boss</strong> type enemy, its&nbsp;<strong>HP&nbsp;</strong>is reduced until it is in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a></p></li></ul></p>",
           "weapon_quantity": 1,
           "weapon_range": "Melee",
           "weapon_set": ""
@@ -4344,7 +4344,7 @@
           "weapon_cost": 1500,
           "weapon_hand": "One-handed",
           "weapon_martial": "♦️",
-          "weapon_quality": "<p><ul><li><p>&nbsp;Deals 5 extra damage if you are in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li><li><p>Deals 5 extra damage if you are inflicted with <strong>@UUID[JournalEntry.Do0VLf6wW9uCSLwD]{Doom}</strong></p></li><li>Deals 5 extra damage if you are inflicted with a <strong>debuff</strong>.</li><li>Deals 5 extra damage if your <strong>HP&nbsp;</strong>is below 10.</li></ul></p>",
+          "weapon_quality": "<p><ul><li><p>&nbsp;Deals 5 extra damage if you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a></p></li><li><p>Deals 5 extra damage if you are inflicted with <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a></p></li><li>Deals 5 extra damage if you are inflicted with a <strong>debuff</strong>.</li><li>Deals 5 extra damage if your <strong>HP&nbsp;</strong>is below 10.</li></ul></p>",
           "weapon_quantity": 1,
           "weapon_range": "Melee",
           "weapon_set": ""
@@ -4358,7 +4358,7 @@
           "weapon_cost": 2550,
           "weapon_hand": "Two-handed",
           "weapon_martial": "♦️",
-          "weapon_quality": "<p><ul>\n<li>When attacking with this weapon, you may spread the damage dealt among any numbers of target. If you do, this attack counts as having the <strong>multi (x)</strong> property<strong>&nbsp;</strong>where X is the number of targets.</li>\n</ul></p>",
+          "weapon_quality": "<p><ul>\n<li>When attacking with this weapon, you may spread the damage dealt among any numbers of target. If you do, this attack counts as having the <strong>multi (x)</strong> property&nbsp;where X is the number of targets.</li>\n</ul></p>",
           "weapon_quantity": 1,
           "weapon_range": "Melee",
           "weapon_set": ""
@@ -4378,61 +4378,166 @@
       "sprite_walk": "",
       "steal_percentage_table": {},
       "stealable_loot": {
+        "55P5VYqGM136uTkR": {
+          "id": "${item.id}",
+          "loot_description": "<p>A small crystallization created by some monsters.</p>",
+          "name": "Jellopy",
+          "roll": "",
+          "uuid": "Actor.fe2OhexLAGieIBQy.Item.55P5VYqGM136uTkR"
+        },
+        "5gcH11MOSLjTnKtW": {
+          "id": "${item.id}",
+          "loot_description": "<p><em>Some skin from the neck of a lizard which lives in the desert.</em></p>",
+          "name": "Frill",
+          "roll": "",
+          "uuid": "Actor.fe2OhexLAGieIBQy.Item.5gcH11MOSLjTnKtW"
+        },
+        "6VG3Dza5M79K0bhL": {
+          "id": "${item.id}",
+          "loot_description": "<p><em>Bone blackened and brittle from searing flame, still faintly warm and carrying the acrid scent of cinders.</em></p>",
+          "name": "Charred Bone",
+          "roll": "",
+          "uuid": "Actor.fe2OhexLAGieIBQy.Item.6VG3Dza5M79K0bhL"
+        },
         "ELypj9xLd46897H9": {
           "id": "${item.id}",
-          "loot_description": "<ul><li>You have Resistance to <strong>dark</strong> and <strong>poison</strong> damage</li><li><p>You have Resistance to <strong>@UUID[JournalEntry.XRlyg27yLgoQUOXZ]{Envenomed}</strong></p></li></ul>",
+          "loot_description": "<ul><li>You have Resistance to <strong>dark</strong> and <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\">Poison</a> damage</li><li><p>You have Resistance to <a class=\"content-link\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\">Envenomed</a></p></li></ul>",
           "name": "Old Bandages",
           "roll": "",
           "uuid": "Actor.fe2OhexLAGieIBQy.Item.ELypj9xLd46897H9"
         },
+        "Fvep9cZMPQgNym1F": {
+          "id": "${item.id}",
+          "loot_description": "<p><em>Bone blackened and brittle from searing flame, still faintly warm and carrying the acrid scent of cinders.</em></p>",
+          "name": "Charred Bone",
+          "roll": "",
+          "uuid": "Actor.fe2OhexLAGieIBQy.Item.Fvep9cZMPQgNym1F"
+        },
         "GBb6Xy8rB4pJ6DzP": {
           "id": "${item.id}",
-          "loot_description": "<ul>\n<li>You have Resistance to<strong> Air</strong>&nbsp;damage.</li>\n</ul>",
+          "loot_description": "<ul>\n<li>You have Resistance to<a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\">Air</a>&nbsp;damage.</li>\n</ul>",
           "name": "Ventus Shield",
           "roll": "",
           "uuid": "Actor.fe2OhexLAGieIBQy.Item.GBb6Xy8rB4pJ6DzP"
         },
+        "GkKEnoLl6ua7fgDr": {
+          "id": "${item.id}",
+          "loot_description": "<p><em>Some skin from the neck of a lizard which lives in the desert.</em></p>",
+          "name": "Frill",
+          "roll": "",
+          "uuid": "Actor.fe2OhexLAGieIBQy.Item.GkKEnoLl6ua7fgDr"
+        },
+        "Qk8ofGZp4u8ihxtI": {
+          "id": "${item.id}",
+          "loot_description": "<p><em>A Fur of a beast-type monster, it's the core material for making winter garments</em></p>",
+          "name": "Animal Fur",
+          "roll": "",
+          "uuid": "Actor.fe2OhexLAGieIBQy.Item.Qk8ofGZp4u8ihxtI"
+        },
+        "QuV1PSe7jTc4iXZP": {
+          "id": "${item.id}",
+          "loot_description": "<p><em>Bone blackened and brittle from searing flame, still faintly warm and carrying the acrid scent of cinders.</em></p>",
+          "name": "Charred Bone",
+          "roll": "",
+          "uuid": "Actor.fe2OhexLAGieIBQy.Item.QuV1PSe7jTc4iXZP"
+        },
         "YLGNzPrZhVnx2Nff": {
           "id": "${item.id}",
-          "loot_description": "<ul><li>You have Immunity to <strong>Fire</strong> damage.</li></ul>",
+          "loot_description": "<ul><li>You have Immunity to <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage.</li></ul>",
           "name": "Wyrmwing",
           "roll": "",
           "uuid": "Actor.fe2OhexLAGieIBQy.Item.YLGNzPrZhVnx2Nff"
         },
         "ZZBoeXs5Z21l1SW4": {
           "id": "${item.id}",
-          "loot_description": "<ul>\n    <li>\n        <p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p>\n    </li>\n    <li>\n        <p>You may cast the spell 【✨<strong> Regen </strong>】</p>\n        <hr>\n    </li>\n</ul>\n<details>\n    <summary><strong>✨ Regen</strong></summary>\n    <p><strong>Cost:</strong> 10 MP</p>\n    <p><strong>Target:</strong> One Creature</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p>You awaken the regeneration power in target creature, For <strong>3 rounds</strong> Target creature gain the following effects:</p>\n    <p></p>\n        <li>At the start of your turn, restore <strong>【20% of your Max HP】</strong></li>\n    <p></p>\n</details>",
+          "loot_description": "<ul>\n    <li>\n        <p>This weapon deals <a class=\"content-link\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" data-id=\"XYQUsuXPU0CQjEYa\" data-type=\"JournalEntry\">Magic Damage</a></p>\n    </li>\n    <li>\n        <p>You may cast the spell 【✨<strong> Regen </strong>】</p>\n        <hr>\n    </li>\n</ul>\n<details>\n    <summary><strong>✨ Regen</strong></summary>\n    <p><strong>Cost:</strong> 10 MP</p>\n    <p><strong>Target:</strong> One Creature</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p>You awaken the regeneration power in target creature, For <strong>3 rounds</strong> Target creature gain the following effects:</p>\n    <p></p>\n        <li>At the start of your turn, restore <strong>【20% of your Max HP】</strong></li>\n    <p></p>\n</details>",
           "name": "Oak Staff",
           "roll": "",
           "uuid": "Actor.fe2OhexLAGieIBQy.Item.ZZBoeXs5Z21l1SW4"
         },
+        "Zn0TxoMe0UbQJBlr": {
+          "id": "${item.id}",
+          "loot_description": "<p><em>Essence that can be obtained from monsters in the flame area in the ecological environment.</em></p>",
+          "name": "Flame Essence",
+          "roll": "",
+          "uuid": "Actor.fe2OhexLAGieIBQy.Item.Zn0TxoMe0UbQJBlr"
+        },
+        "eOzdXbGsmTZVIkxa": {
+          "id": "${item.id}",
+          "loot_description": "<p>A heart made of stone, a core material in creating a golem</p>",
+          "name": "Golem Heart",
+          "roll": "",
+          "uuid": "Actor.fe2OhexLAGieIBQy.Item.eOzdXbGsmTZVIkxa"
+        },
+        "ftKv1loW2ry13Jm4": {
+          "id": "${item.id}",
+          "loot_description": "<p><em>A barbed stinger pried from a giant insect, its needle tip still beaded with a glistening drop of venom.</em></p>",
+          "name": "Insect Stinger",
+          "roll": "",
+          "uuid": "Actor.fe2OhexLAGieIBQy.Item.ftKv1loW2ry13Jm4"
+        },
+        "hocN9dp1CiZbrBpr": {
+          "id": "${item.id}",
+          "loot_description": "<p>A heart made of stone, a core material in creating a golem</p>",
+          "name": "Golem Heart",
+          "roll": "",
+          "uuid": "Actor.fe2OhexLAGieIBQy.Item.hocN9dp1CiZbrBpr"
+        },
         "jFf8K6iBhHdESWEM": {
           "id": "${item.id}",
-          "loot_description": "<ul><li><p>When an ally who is able to see you causes you to recover <strong>Hit Points</strong>, if you are in @UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}, that ally recovers <strong>5</strong> Mind Points.</p></li></ul>",
+          "loot_description": "<ul><li><p>When an ally who is able to see you causes you to recover <strong>Hit Points</strong>, if you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, that ally recovers <strong>5</strong> Mind Points.</p></li></ul>",
           "name": "Noble Dress",
           "roll": "",
           "uuid": "Actor.fe2OhexLAGieIBQy.Item.jFf8K6iBhHdESWEM"
         },
+        "k8Lh3KGzpBo1kJGw": {
+          "id": "${item.id}",
+          "loot_description": "<p>A small crystallization created by some monsters.</p>",
+          "name": "Jellopy",
+          "roll": "",
+          "uuid": "Actor.fe2OhexLAGieIBQy.Item.k8Lh3KGzpBo1kJGw"
+        },
         "mSopH9vR6TaV6LsG": {
           "id": "${item.id}",
-          "loot_description": "<ul><li><p>Deals <strong>5 extra damage</strong> to targets who are in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li><li><p>When you hit with this weapon, there is a <strong>15% chance</strong> that, if the target is not a <strong>Villian&nbsp;</strong>or&nbsp;<strong>Boss</strong> type enemy, its&nbsp;<strong>HP&nbsp;</strong>is reduced until it is in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li></ul>",
+          "loot_description": "<ul><li><p>Deals <strong>5 extra damage</strong> to targets who are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a></p></li><li><p>When you hit with this weapon, there is a <strong>15% chance</strong> that, if the target is not a <strong>Villian&nbsp;</strong>or&nbsp;<strong>Boss</strong> type enemy, its&nbsp;<strong>HP&nbsp;</strong>is reduced until it is in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a></p></li></ul>",
           "name": "Assassin's Blade",
           "roll": "",
           "uuid": "Actor.fe2OhexLAGieIBQy.Item.mSopH9vR6TaV6LsG"
         },
         "mtITyraf0q57MwAv": {
           "id": "${item.id}",
-          "loot_description": "<ul><li><p>&nbsp;Deals 5 extra damage if you are in <strong>@UUID[JournalEntry.GJevbCPM8cffm1QM]{Crisis}</strong></p></li><li><p>Deals 5 extra damage if you are inflicted with <strong>@UUID[JournalEntry.Do0VLf6wW9uCSLwD]{Doom}</strong></p></li><li>Deals 5 extra damage if you are inflicted with a <strong>debuff</strong>.</li><li>Deals 5 extra damage if your <strong>HP&nbsp;</strong>is below 10.</li></ul>",
+          "loot_description": "<ul><li><p>&nbsp;Deals 5 extra damage if you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a></p></li><li><p>Deals 5 extra damage if you are inflicted with <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a></p></li><li>Deals 5 extra damage if you are inflicted with a <strong>debuff</strong>.</li><li>Deals 5 extra damage if your <strong>HP&nbsp;</strong>is below 10.</li></ul>",
           "name": "Near-Death Sword",
           "roll": "",
           "uuid": "Actor.fe2OhexLAGieIBQy.Item.mtITyraf0q57MwAv"
         },
         "omiDvkfAGcvuCn3F": {
           "id": "${item.id}",
-          "loot_description": "<ul>\n<li>When attacking with this weapon, you may spread the damage dealt among any numbers of target. If you do, this attack counts as having the <strong>multi (x)</strong> property<strong>&nbsp;</strong>where X is the number of targets.</li>\n</ul>",
+          "loot_description": "<ul>\n<li>When attacking with this weapon, you may spread the damage dealt among any numbers of target. If you do, this attack counts as having the <strong>multi (x)</strong> property&nbsp;where X is the number of targets.</li>\n</ul>",
           "name": "Jormungand",
           "roll": "",
           "uuid": "Actor.fe2OhexLAGieIBQy.Item.omiDvkfAGcvuCn3F"
+        },
+        "sMOR0e96RVcEIDcb": {
+          "id": "${item.id}",
+          "loot_description": "<p><em>A Fur of a beast-type monster, it's the core material for making winter garments</em></p>",
+          "name": "Animal Fur",
+          "roll": "",
+          "uuid": "Actor.fe2OhexLAGieIBQy.Item.sMOR0e96RVcEIDcb"
+        },
+        "sRzNkogjEcv8pL7j": {
+          "id": "${item.id}",
+          "loot_description": "<p><em>A sharpened calcium remains of a beast type monster</em></p>",
+          "name": "Animal Fang",
+          "roll": "",
+          "uuid": "Actor.fe2OhexLAGieIBQy.Item.sRzNkogjEcv8pL7j"
+        },
+        "tz32efZRmX2ivMm9": {
+          "id": "${item.id}",
+          "loot_description": "<p><em>Essence that can be obtained from monsters in the flame area in the ecological environment.</em></p>",
+          "name": "Flame Essence",
+          "roll": "",
+          "uuid": "Actor.fe2OhexLAGieIBQy.Item.tz32efZRmX2ivMm9"
         }
       },
       "study_text": "",

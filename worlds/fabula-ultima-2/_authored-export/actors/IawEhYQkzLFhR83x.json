@@ -236,6 +236,7 @@
           "defense_include_dex": true,
           "description": "<ul>\n<li><strong>Hazards</strong> becomes 50% less effective on you.</li>\n</ul>",
           "initiative": "0",
+          "isSet": true,
           "magic_defense": "0",
           "magic_defense_include_ins": true,
           "martial": false,
