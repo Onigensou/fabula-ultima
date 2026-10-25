@@ -13893,13 +13893,6 @@
         "effects": 0
       },
       {
-        "id": "ZyLr1pP30Uzs4GNR",
-        "name": "_FabU Char Template v3.fire (Copy)",
-        "type": "_template",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "hoxC3HFCtMYGScIo",
         "name": "_FabU Classes Template",
         "type": "_template",
@@ -13909,13 +13902,6 @@
       {
         "id": "yegF6R8aaymhrvCg",
         "name": "_Fabula NPC template v.2",
-        "type": "_template",
-        "items": [],
-        "effects": 0
-      },
-      {
-        "id": "5vhesrN8g9YbDvpb",
-        "name": "_Fabula NPC template v.2 (Copy)",
         "type": "_template",
         "items": [],
         "effects": 0
@@ -19133,13 +19119,6 @@
         "effects": 0
       },
       {
-        "id": "s83oeBb3w3LJ5l1X",
-        "name": "Global_Database (Copy)",
-        "type": "_template",
-        "items": [],
-        "effects": 0
-      },
-      {
         "id": "hwfRiQQSsYK4CdhJ",
         "name": "Goblin Bandit",
         "type": "character",
@@ -20086,218 +20065,6 @@
           }
         ],
         "effects": 4
-      },
-      {
-        "id": "tzXbVfDYPgvu5wml",
-        "name": "Hina (Backup)",
-        "type": "character",
-        "items": [
-          {
-            "id": "boDVDHvlhYwlW4hr",
-            "name": "Absorb MP"
-          },
-          {
-            "id": "mNOQFKdgnyhiGTBx",
-            "name": "Acceleration"
-          },
-          {
-            "id": "TW4MHSzMcFgOQA4o",
-            "name": "Adversity"
-          },
-          {
-            "id": "frF0Jp6MkosRDglY",
-            "name": "Agony"
-          },
-          {
-            "id": "6XI1fEBsEfNZdl2y",
-            "name": "Apple Juice"
-          },
-          {
-            "id": "8ffN2PB9whUufzQi",
-            "name": "Apple Juice"
-          },
-          {
-            "id": "BGBKm7rItmmvzf31",
-            "name": "Arc Wand"
-          },
-          {
-            "id": "H0DADhpEoUIbwhex",
-            "name": "Bimagus"
-          },
-          {
-            "id": "XVCbb7lj05eYPQ3f",
-            "name": "Budding Maple Wand"
-          },
-          {
-            "id": "t9BfF2mxmREPRFuf",
-            "name": "Bunny Tail"
-          },
-          {
-            "id": "52nRuMN0X58BZCm9",
-            "name": "Cataclysm"
-          },
-          {
-            "id": "KHWUWYvTzbYyHPs7",
-            "name": "Dark Blood"
-          },
-          {
-            "id": "bheVgo6iuvRRaQ5Y",
-            "name": "Dispel"
-          },
-          {
-            "id": "FBWC6v9hhDqMlIaZ",
-            "name": "Divination"
-          },
-          {
-            "id": "5l8AnYfYh6kwrgvo",
-            "name": "Draconic Roar"
-          },
-          {
-            "id": "hxPlRSwOxHShzdRK",
-            "name": "Dragonskull Helm"
-          },
-          {
-            "id": "jb0jobWNa9rlKKjN",
-            "name": "Drain Spirit"
-          },
-          {
-            "id": "RRTO6uRQtUQ2o4Er",
-            "name": "Elemental Magic"
-          },
-          {
-            "id": "lWzQBQkKvZVg6mRL",
-            "name": "Elemental Shroud"
-          },
-          {
-            "id": "TPnGoyaq70WSBzmj",
-            "name": "Elemental Weapon"
-          },
-          {
-            "id": "IJPsdKmEyzpLjJu6",
-            "name": "Encyclopedia"
-          },
-          {
-            "id": "VHTOKHGoGDqSioQU",
-            "name": "Encyclopedia (Passive)"
-          },
-          {
-            "id": "diFrvDPn1Hxrixhj",
-            "name": "Encyclopedia Strike"
-          },
-          {
-            "id": "xmLeuCQNdswv14Zi",
-            "name": "Entropic Magic"
-          },
-          {
-            "id": "EhrhSD2uc4XZ3uGD",
-            "name": "Full Plate"
-          },
-          {
-            "id": "GLE6h2EmyLBSYgRX",
-            "name": "Ghostly Sheet"
-          },
-          {
-            "id": "yKqv5PofnFTTRRMI",
-            "name": "Glacies"
-          },
-          {
-            "id": "4GzzwpTJyf7iyOtq",
-            "name": "Golden Apple"
-          },
-          {
-            "id": "01jpe2pMh25K2kmP",
-            "name": "Grape Juice"
-          },
-          {
-            "id": "irzhS1BV9TsO7xlb",
-            "name": "Grape Juice"
-          },
-          {
-            "id": "Wtcdd42MQHwsOsSe",
-            "name": "Heal"
-          },
-          {
-            "id": "EGYilCNAGvl2BldF",
-            "name": "Heart of Darkness"
-          },
-          {
-            "id": "pcCBP65FqbsMOF0h",
-            "name": "Iceberg"
-          },
-          {
-            "id": "20QAZWYIlUg4Uj6B",
-            "name": "Love Potion"
-          },
-          {
-            "id": "KHWBKjwoiUYHWadi",
-            "name": "Love Potion"
-          },
-          {
-            "id": "v56GvN63nvIYV4iJ",
-            "name": "Lucky Seven"
-          },
-          {
-            "id": "zEo3OgMcD2P3ug1o",
-            "name": "Lunar Bow"
-          },
-          {
-            "id": "RBdT18zr2DzwwA0E",
-            "name": "Magical Artillery"
-          },
-          {
-            "id": "Pf1vhSjtOOTBXFkB",
-            "name": "Morrigan"
-          },
-          {
-            "id": "U9yDaqLSZ3OkWBhj",
-            "name": "Morrigan (Passive)"
-          },
-          {
-            "id": "qXvY2q2G2bjHFdu1",
-            "name": "Orb"
-          },
-          {
-            "id": "V8AiiQ8vD4YIdMZY",
-            "name": "Painful Lesson"
-          },
-          {
-            "id": "gm2w1NLdaEI7SzaQ",
-            "name": "PROPHETIC DEFENDER STYLE"
-          },
-          {
-            "id": "2QV4dfxKeibAejia",
-            "name": "Ritual Entropism"
-          },
-          {
-            "id": "SAMjPDBx3kmr7zU4",
-            "name": "Sage Robe"
-          },
-          {
-            "id": "xc2RDF7rdYOxG8mG",
-            "name": "Starfall"
-          },
-          {
-            "id": "z1GsqcJC8bh4TOAs",
-            "name": "Stop"
-          },
-          {
-            "id": "720wa4E0ldJEqXG4",
-            "name": "Windpiercer"
-          },
-          {
-            "id": "y4YtYwvpdzKAWLxH",
-            "name": "Windpiercer (Passive)"
-          },
-          {
-            "id": "oe3OP8VmjHJpWJ41",
-            "name": "Zero Power: A Million Possibility"
-          },
-          {
-            "id": "Jfwp8uU0Ntyqhcjj",
-            "name": "Zero Trigger: Foresight"
-          }
-        ],
-        "effects": 1
       },
       {
         "id": "YlQpjVGCJwPVIOU7",
