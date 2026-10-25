@@ -1,6 +1,8 @@
 // Party Menu — shared presentation helpers (escaping, sanitising, sound,
 // stat labels, keyboard grid stepping). No state lives here.
 
+import { renderLinkedText, plainLinkedText } from "../linked-text/lt-render.js";
+
 export const SND = {
   move: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_2.wav",
   ok: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_4.wav",
@@ -34,23 +36,17 @@ const inert = (html) => new DOMParser().parseFromString(String(html ?? ""), "tex
 // textContent glues block elements together ("Choose one:the Phantasm inflicts
 // Weakthe…"), so put a space after every block before flattening.
 export const plain = (html) => {
-  const body = inert(html);
+  const body = inert(plainLinkedText(html));
   body.querySelectorAll("p,li,div,br,h1,h2,h3,h4,h5,h6,tr,hr").forEach((el) => el.after(" "));
   return (body.textContent ?? "").replace(/\s+/g, " ").trim();
 };
 
 const DROP_TAGS = "script,style,iframe,object,embed,link,meta,base,form,input,button,textarea,select,svg,math,template";
 
-// Some descriptions keep Foundry's raw @UUID[…]{Label} syntax instead of an
-// enriched link; turn it into the same link so it reads (and hovers) like one.
-const UUID_REF = /@UUID\[([^\]]+)\](?:\{([^}]*)\})?/g;
-function linkRefs(html) {
-  return String(html ?? "").replace(UUID_REF, (m, uuid, label) => {
-    let name = label;
-    if (!name) { try { name = fromUuidSync(uuid)?.name; } catch { name = null; } }
-    return `<a class="content-link" data-uuid="${esc(uuid)}">${esc(name || uuid.split(".").pop())}</a>`;
-  });
-}
+// Linked text (scripts/linked-text): short tags, raw @UUID[…]{Label} text and
+// old-style links all become the shared link — same icon and look as the shop
+// and battle card — and open the shared peek/panel cards.
+const linkRefs = (html) => renderLinkedText(html);
 
 export function safeHtml(html) {
   const body = inert(linkRefs(html));

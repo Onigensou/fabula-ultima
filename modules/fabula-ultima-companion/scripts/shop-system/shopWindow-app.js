@@ -68,7 +68,8 @@ export class ShopWindowApp {
   static _sanitizeHTML(raw) {
     if (!raw) return "";
     const tmp = document.createElement("div");
-    tmp.innerHTML = String(raw);
+    // Linked text first: tags and raw @UUID become real links with their icon.
+    tmp.innerHTML = globalThis.FULinkedText?.renderLinkedText(String(raw)) ?? String(raw);
     const KEEP = new Set(["ul","ol","li","p","strong","em","b","i"]);
     function esc(s) { return String(s ?? "").replace(/"/g, "&quot;"); }
     function walk(node) {
@@ -80,6 +81,12 @@ export class ShopWindowApp {
       if (tag === "hr") return `<hr class="fu-hr">`;
       // Preserve content-link anchors with only data-uuid and class — CSS targets these
       if (tag === "a") {
+        // Linked-text links keep their icon, kind classes and colour variables;
+        // their inner markup is built by lt-render, never authored.
+        if (node.classList.contains("fu-lt")) {
+          const style = (node.getAttribute("style") ?? "").split(";").filter((d) => /^\s*--fu-lt-/.test(d)).join(";");
+          return `<a class="${esc(node.className)}" data-uuid="${esc(node.getAttribute("data-uuid") ?? "")}" data-fu-lt="${esc(node.dataset.fuLt ?? "")}"${style ? ` style="${esc(style)}"` : ""}>${node.innerHTML}</a>`;
+        }
         const uuid = node.getAttribute("data-uuid") ?? "";
         if (uuid) return `<a class="content-link" data-uuid="${esc(uuid)}">${inner}</a>`;
         return inner; // plain links: just text
@@ -111,7 +118,7 @@ export class ShopWindowApp {
   // Plain-text snippet for item list rows (no HTML)
   static _itemDesc(item)  {
     const raw = gp(item, "system.props.description", "") || "";
-    return this._stripHTML(String(raw));
+    return this._stripHTML(globalThis.FULinkedText?.plainLinkedText(String(raw)) ?? String(raw));
   }
 
   static _parseDamageType(raw) {

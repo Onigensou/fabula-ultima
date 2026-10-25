@@ -5412,7 +5412,9 @@ export function parseEffectDescription(html) {
   if (!html) return empty;
   try {
     const root = document.createElement("div");
-    root.innerHTML = String(html);
+    // Linked text first (scripts/linked-text): short tags and raw @UUID text
+    // become real content links, which the loop below turns into chips.
+    root.innerHTML = globalThis.FULinkedText?.renderLinkedText(String(html)) ?? String(html);
 
     const keywords = [];
     const seenKw = new Set();

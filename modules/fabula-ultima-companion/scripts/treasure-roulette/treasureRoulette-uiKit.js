@@ -139,10 +139,13 @@
    * @returns {Promise<string>} html ("" when there's nothing to show)
    */
   async function describeHTML(descriptionHtml) {
-    // Item descriptions carry Foundry content links (@UUID[JournalEntry.x]{Poisoned}).
-    // Nothing on these screens enriches them, so every card showed the raw
-    // syntax. Reduce each link to its label before parsing.
-    descriptionHtml = String(descriptionHtml ?? "").replace(/@\w+\[[^\]]*\]\{([^}]*)\}/g, "$1");
+    // Item descriptions carry Foundry content links (@UUID[JournalEntry.x]{Poisoned})
+    // and linked-text tags (@Status[Burn]). Nothing on these screens enriches
+    // them, so turn them into real links (scripts/linked-text) before parsing;
+    // without that system loaded, reduce each to its label as before.
+    descriptionHtml = globalThis.FULinkedText
+      ? globalThis.FULinkedText.renderLinkedText(String(descriptionHtml ?? ""))
+      : String(descriptionHtml ?? "").replace(/@\w+\[[^\]]*\]\{([^}]*)\}/g, "$1");
     if (!descriptionHtml) return "";
     const mod = await cardMod();
     if (!mod?.parseEffectDescription) {

@@ -15,7 +15,9 @@ import { esc, safeHtml, img } from "./party-menu-ui.js";
 
 const TIP_ID = "fud-pm-linktip";
 const STYLE_ID = "fud-pm-linktip-style";
-const LINK = "a[data-uuid]";
+// Linked-text links (a.fu-lt) open the shared peek/panel cards instead
+// (scripts/linked-text/lt-card.js); this tip only covers links it cannot read.
+const LINK = "a[data-uuid]:not(.fu-lt)";
 
 let _tip = null;
 let _anchor = null;

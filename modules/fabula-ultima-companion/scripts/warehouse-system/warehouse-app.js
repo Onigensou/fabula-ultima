@@ -586,6 +586,7 @@ export class WarehouseApp {
       const decodedHtml = WarehouseApp._decodeHtml(descEsc);
       const finalHtml = await WarehouseApp._enrichMaybe(decodedHtml);
       tipDesc.innerHTML = finalHtml || `<em>No description.</em>`;
+      globalThis.FULinkedText?.decorateLinks(tipDesc);
 
       tip.style.display = "block";
       moveTip(ev);

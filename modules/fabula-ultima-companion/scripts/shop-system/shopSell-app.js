@@ -56,7 +56,8 @@ export class ShopSellApp {
   }
 
   static _itemDesc(item) {
-    return this._stripHTML(String(gp(item, "system.props.description", "") ?? ""));
+    const raw = String(gp(item, "system.props.description", "") ?? "");
+    return this._stripHTML(globalThis.FULinkedText?.plainLinkedText(raw) ?? raw);
   }
 
   static _sellMult(actor) {
@@ -733,6 +734,7 @@ export class ShopSellApp {
         const raw = slot.dataset.itemDesc ?? "";
         try {
           tipDesc.innerHTML = (await TextEditor.enrichHTML(raw, { async: true, secrets: false })) || "<em>No description.</em>";
+          globalThis.FULinkedText?.decorateLinks(tipDesc);
         } catch { tipDesc.textContent = raw || "No description."; }
       }
       tip.style.display = "block"; moveTip(ev);
