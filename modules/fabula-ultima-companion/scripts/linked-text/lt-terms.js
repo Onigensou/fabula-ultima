@@ -101,10 +101,16 @@ function fromDoc(doc, label) {
 // the world). Fall back to a copy the viewer owns — an item on one of their
 // actors with the same id or name — so the link still shows its icon and card.
 function findItem(idOrName) {
-  const ref = String(idOrName ?? "").trim();
+  // Old grant-line labels carried their emoji inside the link ("📜Defensive Mastery").
+  const ref = String(idOrName ?? "").replace(/^[\p{Extended_Pictographic}️\s]+/u, "").trim();
   if (!ref) return null;
   const id = ref.replace(/^Item\./, "");
-  let doc = game.items?.get(id) ?? game.items?.getName?.(ref) ?? null;
+  // By name, prefer the real item over CSB's internal embedded-items copy.
+  const byName = () => {
+    const all = game.items?.filter((i) => i.name === ref) ?? [];
+    return all.find((i) => !/^CSB - Embedded Items/i.test(i.folder?.name ?? "")) ?? all[0] ?? null;
+  };
+  let doc = game.items?.get(id) ?? byName();
   if (doc) return doc;
   for (const actor of game.actors ?? []) {
     if (!actor.isOwner) continue;
