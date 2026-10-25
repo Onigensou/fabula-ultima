@@ -122,7 +122,8 @@ img.fu-ltc-badge { background: #2b1d10; padding: 0; }
 
 .fu-ltc-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 14px; font-size: 13px; }
 .fu-ltc-grid strong { white-space: nowrap; }
-.fu-ltc-grid span { display: block; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: #6b4a26; }
+/* Only the cell's label (its first span); values keep their own inline styling. */
+.fu-ltc-grid > div > span:first-child { display: block; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: #6b4a26; }
 .fu-ltc-body p { margin: 0 0 6px; }
 .fu-ltc-body p:last-child { margin-bottom: 0; }
 .fu-ltc-body ul { margin: 0; padding-left: 18px; }
@@ -209,6 +210,19 @@ img.fu-ltc-badge { background: #2b1d10; padding: 0; }
 .fu-iw-tag.is-eq { color: #efe3c4; background: #7a4e20; }
 .fu-iw-tag.is-sel { color: #3a1e06; background: rgba(201, 164, 74, .45); }
 .fu-ltc-grid > .is-wide { grid-column: 1 / -1; }
+.fu-ltc-grid.is-two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* A value with its suffixes (damage type, "(+6 refine)", ▲▼) to its right;
+   each piece stays whole, and only wraps between pieces when out of room. */
+.fu-ltc-grid span.fu-iw-line { display: block; }
+.fu-iw-line strong, .fu-iw-line .fu-lt-dmgtxt { white-space: nowrap; }
+
+/* ▲▼ bob like a classic game cursor: up nudges up, down nudges down. */
+@keyframes fu-iw-bob-up { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+@keyframes fu-iw-bob-down { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(2px); } }
+.fu-iw-dlt .fu-iw-arrow { display: inline-block; }
+.fu-iw-dlt.is-up .fu-iw-arrow { animation: fu-iw-bob-up 1.2s ease-in-out infinite; }
+.fu-iw-dlt.is-down .fu-iw-arrow { animation: fu-iw-bob-down 1.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .fu-iw-dlt .fu-iw-arrow { animation: none; } }
 .fu-ltc-grid span.fu-iw-pips, .fu-iw-pips { display: inline; letter-spacing: .5px; text-transform: none; font-size: 11.5px; color: #b8860b; white-space: nowrap; }
 .fu-iw-pips .is-empty, .fu-ltc-grid .fu-iw-pips span { display: inline; color: rgba(122, 78, 32, .35); text-transform: none; letter-spacing: .5px; font-size: inherit; }
 .fu-ltc-grid span.fu-iw-sub, .fu-iw-sub { display: inline; font-size: 11px; letter-spacing: 0; text-transform: none; color: #6b4a26; white-space: nowrap; }

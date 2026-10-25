@@ -128,8 +128,9 @@ export function gridRows(term, vs = null) {
     if (p.item_type === "weapon") {
       const acc = check(p) + (n.acc ? ` ${signed(n.acc)}` : "");
       const fromRefine = rf?.dmg ? ` <span class="fu-iw-sub">(+${rf.dmg} refine)</span>` : "";
-      return [["Accuracy", acc, "acc"], ["Damage", `<strong>【HR + ${n.dmg}】</strong>${dmgText(p.type_damage)}${fromRefine}`, "dmg"],
-        ["Range", esc(p.weapon_range)], ["Hands", esc(p.hand_slots)], ...refineRow];
+      // Damage first, full width: its type, refine suffix and ▲▼ sit beside it.
+      return [["Damage", `<strong>【HR + ${n.dmg}】</strong>${dmgText(p.type_damage)}${fromRefine}`, "dmg", "is-wide"],
+        ["Accuracy", acc, "acc"], ["Range", esc(p.weapon_range)], ["Hands", esc(p.hand_slots)], ...refineRow];
     }
     if (p.item_type === "armor" || p.item_type === "shield") {
       const show = (v) => (n.martial ? String(v) : signed(v));
@@ -200,10 +201,11 @@ export function cardHTML(term, { vs = null, actor, compact = false } = {}) {
   const delta = (key) => {
     if (!other || !mine || !key || mine[key] === undefined) return "";
     const d = mine[key] - (other[key] ?? 0);
-    return d ? `<span class="fu-iw-dlt ${d > 0 ? "is-up" : "is-down"}">${d > 0 ? "▲" : "▼"}${Math.abs(d)}</span>` : "";
+    return d ? `<span class="fu-iw-dlt ${d > 0 ? "is-up" : "is-down"}"><span class="fu-iw-arrow">${d > 0 ? "▲" : "▼"}</span>${Math.abs(d)}</span>` : "";
   };
   const grid = rows.length
-    ? `<div class="fu-ltc-grid">${rows.map(([k, v, key, cls]) => `<div${cls ? ` class="${cls}"` : ""}><span>${esc(k)}</span>${v}${delta(key)}</div>`).join("")}</div>`
+    // Weapons: two wider columns, so Accuracy / Damage keep their suffixes beside them.
+    ? `<div class="fu-ltc-grid${term.doc?.system?.props?.item_type === "weapon" ? " is-two" : ""}">${rows.map(([k, v, key, cls]) => `<div${cls ? ` class="${cls}"` : ""}><span>${esc(k)}</span><span class="fu-iw-line">${v}${delta(key)}</span></div>`).join("")}</div>`
     : "";
   const desc = descriptionOf(term);
   const body = desc
