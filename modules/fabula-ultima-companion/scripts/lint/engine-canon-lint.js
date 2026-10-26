@@ -101,6 +101,9 @@
     "scripts/battle-director/target-picker.js",
     "scripts/battle-director/turn-picker.js",
     "scripts/battle-director/turn-ui.js",
+    "scripts/battle-director/round-plate.js",
+    "scripts/battle-director/turn-glow.js",
+    "scripts/battle-director/turn-start-cue.js",
     "scripts/battle-director/weapon-mode-picker.js",
   ]);
 

@@ -54,6 +54,7 @@ import { initDirectorCutin } from "./director-cutin.js";
 import { initDirectorRoundBanner, hideRoundBanner, refreshTurnActions as bannerRefreshTurnActions, showRoundBannerForResume, showRoundBannerForResumeFromState } from "./director-round-banner.js";
 import { initDirectorBattleLoader } from "./director-battle-loader.js";
 import { initIconFocusTuner } from "./icon-focus-tuner.js";
+import { initTurnStartCue, previewTurnBanner, returnSteppedTokens } from "./turn-start-cue.js";
 import { stopBattleBgm, preloadDirectorSfx, playResourceLossVfx, playMissVfx } from "./director-vfx.js";
 import { initDirectorSfx, collapseSidebarLocal } from "./director-sfx.js";
 import { initShatterBroadcast } from "../battle-transition/shatter-broadcast.js";
@@ -322,6 +323,10 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
   // Resolve the battle scene from dCombat (the authoritative ref), falling
   // back to canvas.scene. Used for cleanupDirectorSpawnedTokens.
   const battleScene = _instance.dCombat?.scene ?? _instance.combat?.scene ?? canvas?.scene ?? null;
+
+  // A creature still on its turn spot (turn-start-cue.js short step) goes home.
+  try { await returnSteppedTokens(battleScene, { animate: false }); }
+  catch (e) { warn("stop: step home threw", e); }
 
   // Detach the director from the per-client IntentChannel singleton, but
   // KEEP it installed — players still need it to receive future MENU_OPEN
@@ -1168,6 +1173,9 @@ Hooks.once("ready", () => {
       emitUnchecked: (payload) => emitNpcHpBarUnchecked(payload),
       renderLocal: (payload) => renderNpcHpBarLocal(payload),
     },
+    // Play the turn banner on THIS client only (dev preview; same payload as
+    // the live cue: { name, side, round, activation, art, focus }).
+    previewTurnBanner: (opts) => previewTurnBanner(opts),
     // Re-broadcast the turn-action tracker from the live dCombat. Used by the
     // icon focal-point tuner to reflect a saved focus immediately mid-battle.
     refreshTurnActions: () => {
@@ -1647,6 +1655,10 @@ Hooks.once("ready", () => {
   // Director-native start-of-round banner — same all-clients registration.
   try { initDirectorRoundBanner(); }
   catch (e) { warn("initDirectorRoundBanner on ready threw", e); }
+
+  // Turn-start cue (turn banner + sound) — same all-clients registration.
+  try { initTurnStartCue(); }
+  catch (e) { warn("initTurnStartCue on ready threw", e); }
 
   // Battle-init eye-catcher loader — registered on every client so the GM can
   // broadcast the "PREPARING BATTLE…" flourish that covers the scene-activate

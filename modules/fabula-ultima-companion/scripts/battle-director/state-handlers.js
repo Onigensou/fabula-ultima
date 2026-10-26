@@ -27,6 +27,7 @@ import { pickWeaponMode, WeaponModePicker } from "./weapon-mode-picker.js";
 import { pickAttributePair, AttributePairPicker } from "./attribute-pair-picker.js";
 import { runDirectorInit } from "./director-init.js";
 import { destroyDirectorHud, publishTurnStatus } from "./director-player-hud.js";
+import { startTurnCue, returnSteppedTokens } from "./turn-start-cue.js";
 import { playStudyVfx, playActionNamecard, playMissVfx, playBlockVfx, playResourceSpendVfx } from "./director-vfx.js";
 import { playCritCutin } from "./director-cutin.js";
 import { playRoundBanner, hideRoundBanner } from "./director-round-banner.js";
@@ -1975,16 +1976,17 @@ const RoundStart = {
     log(`ROUND_START — round ${roundNo}`);
 
     // Determine which side seizes initiative THIS round (director-orchestrated,
-    // committed to dCombat before TURN_START picks) and the follow-up flash to
-    // announce it. Awaited so currentSide is authoritative before the picker.
+    // committed to dCombat before TURN_START picks) and the seal that announces
+    // it on the round plate. Awaited so currentSide is authoritative before the picker.
     let followup = null;
     if (roundNo > 0) {
       try { followup = await resolveRoundInitiative(director, roundNo); }
       catch (e) { warn("resolveRoundInitiative threw", e); }
     }
 
-    // Start-of-round cinematic banner ("ROUND N" + Critical_1 SFX), then the
-    // initiative / ambush / advantage flash (if any). Non-blocking — the banner
+    // Start-of-round cinematic: the round plate ("ROUND N" + Critical_1 SFX,
+    // with the initiative / ambush / advantage seal if any), then the round bar
+    // assembles at the top. Non-blocking — the banner
     // plays asynchronously. We hand the director its COMPLETION promise on ctx so
     // the enemy autopilot (TURN_START) can hold until the cinematic clears,
     // keeping the sequencing owned + tracked by the director rather than a loose
@@ -2173,7 +2175,7 @@ const TurnStart = {
           const wholeSideAi = aiPool.length > 0 && aiPool.length === eligible.length;
           if (wholeSideAi) {
             // Polish: hold the enemy automation until this round's opening
-            // cinematic (round banner + initiative/ambush/advantage flash) has
+            // cinematic (round plate with its initiative seal + the bar assembling) has
             // finished, so the enemy doesn't "think" or declare on top of it.
             // The banner's completion is a director-tracked signal on ctx (set in
             // ROUND_START); consume it one-shot here so only the FIRST turn of the
@@ -2394,6 +2396,13 @@ const TurnStart = {
     director.ctx.actionResult = null;
     log(`TURN_START — ${snap.name}`);
 
+    // Turn-start cue (turn-start-cue.js): sound + turn banner now; once the name
+    // lands the round bar swaps, the token glows and steps out. The effects below
+    // wait until the actor is in place, and input waits a beat more — the banner
+    // itself never blocks anything. No-op in a sim and when the cue is off.
+    const cue = await startTurnCue(director);
+    await cue.untilEffects();
+
     // Homebrew rule: AEs the current combatant applied decrement their
     // `turnsRemaining` at the start of THIS combatant's turn (the
     // "applier"); expired AEs are deleted. See [[ae-default-3-turn-duration]].
@@ -2512,6 +2521,8 @@ const TurnStart = {
     // checkpoint so a mid-prompt F5 rewinds to this TURN_START and re-offers
     // it (idempotent: a successful break already removed the AE → no re-prompt).
     await maybeRunBreakFree(director, snap);
+
+    await cue.untilInput();
 
     // Hand off to STANDALONE_REACTION_WINDOW for turn_start. Dispatched
     // across every combatant — reactions like "when ANY turn starts"
@@ -7675,6 +7686,9 @@ const TurnEnd = {
       return;
     }
     if (director.dCombat) {
+      // The actor steps back from its turn spot (turn-start-cue.js short step).
+      try { await returnSteppedTokens(director.dCombat.scene); }
+      catch (e) { warn("TURN_END: step home threw", e); }
       // Capture the "just acted" name + round + actor BEFORE nextTurn
       // (nextTurn clears currentCombatantId and may advance the round
       // on a wrap). The captured actor uuid threads into the standalone
@@ -8347,6 +8361,8 @@ const BattleEnding = {
     try { TurnPicker.despawnAll(); } catch (e) { warn("BATTLE_ENDING: TurnPicker.despawnAll threw", e); }
     try { await clearAllStandaloneMenus(); } catch (e) { warn("BATTLE_ENDING: clearAllStandaloneMenus threw", e); }
     try { hideRoundBanner(); } catch (e) { warn("BATTLE_ENDING: hideRoundBanner threw", e); }
+    try { await returnSteppedTokens(director.dCombat?.scene ?? canvas?.scene ?? null); }
+    catch (e) { warn("BATTLE_ENDING: step home threw", e); }
     try {
       const scene = director.dCombat?.scene ?? canvas?.scene ?? null;
       await destroyDirectorHud(scene);

@@ -10,10 +10,21 @@
 // preview uses the token's CURRENT texture, so tuning DURING a battle frames
 // against the same battle sprite the tracker shows. Saving refreshes the live
 // tracker so the change is visible immediately.
+//
+// A "Round bar icon / Turn banner" switch re-uses the same panel for the turn
+// banner's portrait (turn-start-cue.js): the banner shows the actor's PORTRAIT,
+// a different image from the token, so it has its own value —
+// flags.fabula-ultima-companion.bannerFocus, previewed against the portrait in
+// the banner's own frame. An actor with no portrait falls back to the token in
+// the banner, framed by the icon value, so there is nothing separate to tune.
 
 import { log, warn } from "./logger.js";
 import { isVideoSrc, applyIconFocusStyle, normalizeIconFocus, ICON_FOCUS_DEFAULT } from "./director-round-banner.js";
 import { registerDevTool, devToolsAnchorBottom, devToolsAnchorLeft } from "./dev-tools-menu.js";
+import {
+  bannerArtFor, buildBannerParts, applyBannerFocusStyle, normalizeBannerFocus,
+  BANNER_FOCUS_DEFAULT, BANNER_FOCUS_FLAG,
+} from "./turn-start-cue.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const FLAG = "iconFocus";
@@ -32,7 +43,7 @@ export function initIconFocusTuner() {
     if (!game.user?.isGM) return;
     ensureStyle();
     // Bundled under the Developer Tools launcher instead of its own button.
-    registerDevTool({ id: "icon-focus", icon: "🎯", label: "Icon Adjuster", onClick: openPanel });
+    registerDevTool({ id: "icon-focus", icon: "🎯", label: "Icon Adjuster", onClick: () => openPanel("icon") });
     _booted = true;
     log("icon-focus-tuner: registered as dev tool");
   } catch (e) {
@@ -83,6 +94,19 @@ function ensureStyle() {
 #${PANEL_ID} .ifc-btn.reset { background: rgba(255,255,255,.06); }
 #${PANEL_ID} .ifc-btn:hover { filter: brightness(1.15); }
 #${PANEL_ID} .ifc-hint { opacity: .55; font-size: 10.5px; margin-top: 8px; text-align: center; }
+#${PANEL_ID}.ifc-wide { width: 360px; }
+#${PANEL_ID} .ifc-modes { display: flex; gap: 0; margin-bottom: 10px; border: 1px solid rgba(255,255,255,.14); border-radius: 7px; overflow: hidden; }
+#${PANEL_ID} .ifc-mode { flex: 1 1 0; text-align: center; cursor: pointer; padding: 5px 0; background: rgba(255,255,255,.04); opacity: .75; }
+#${PANEL_ID} .ifc-mode + .ifc-mode { border-left: 1px solid rgba(255,255,255,.14); }
+#${PANEL_ID} .ifc-mode.on { background: rgba(255,216,102,.16); color: #ffd866; opacity: 1; box-shadow: inset 0 -2px 0 #ffd866; }
+#${PANEL_ID} .ifc-previews.ifc-stack { flex-direction: column; gap: 10px; }
+#${PANEL_ID} .ifc-art { width: 330px; height: 125px; border-radius: 4px; overflow: hidden; background: #0a0a0e; border: 2px solid #d5b67a; flex: 0 0 auto; }
+#${PANEL_ID} .ifc-art .ifc-media { width: 100%; height: 100%; object-fit: cover; display: block; }
+#${PANEL_ID} .ifc-strip { position: relative; width: 336px; overflow: hidden; flex: 0 0 auto; }
+#${PANEL_ID} .ifc-strip-stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+#${PANEL_ID} .ifc-row.off { opacity: .35; pointer-events: none; }
+#${PANEL_ID} .ifc-btn.off { opacity: .35; pointer-events: none; }
+#${PANEL_ID} .ifc-note { font-size: 11px; line-height: 1.35; color: #f1d9a6; background: rgba(255,216,102,.08); border-radius: 6px; padding: 6px 8px; margin-bottom: 8px; }
 `.trim();
   const style = document.createElement("style");
   style.id = STYLE_ID;
@@ -111,7 +135,21 @@ function buildMedia(src) {
   return media;
 }
 
-function openPanel() {
+// Static turn-banner preview: the band at rest, scaled to the panel.
+function buildBannerStrip(opts, width = 336) {
+  const BAND_LEFT = 430, BAND_TOP = 318, BAND_W = 1060, BAND_H = 128, PAD = 18;
+  const scale = width / (BAND_W + PAD * 2);
+  const strip = document.createElement("div"); strip.className = "ifc-strip";
+  strip.style.height = `${Math.round((BAND_H + PAD * 2) * scale)}px`;
+  const stage = document.createElement("div"); stage.className = "ifc-strip-stage";
+  stage.style.transform = `scale(${scale}) translate(${PAD - BAND_LEFT}px, ${PAD - BAND_TOP}px)`;
+  const parts = buildBannerParts(opts);
+  stage.appendChild(parts.mover);
+  strip.appendChild(stage);
+  return { strip, media: parts.media };
+}
+
+function openPanel(mode = "icon") {
   document.getElementById(PANEL_ID)?.remove();
 
   const tok = resolveToken();
@@ -122,11 +160,22 @@ function openPanel() {
   // tokens resolve to the same document either way.
   const baseActor = game.actors?.get?.(tok.document?.actorId) ?? tok.actor;
   if (!baseActor) { ui.notifications?.warn("Focal tuner: that token has no actor."); return; }
-  const src = tok.document?.texture?.src ?? baseActor.img ?? null;
-  const focus = normalizeIconFocus(baseActor.getFlag?.(MODULE_ID, FLAG));
+
+  const banner = mode === "banner";
+  // Banner mode tunes the PORTRAIT. With no portrait the banner shows the token
+  // framed by the icon value, so there is nothing of its own to set.
+  const art = banner ? bannerArtFor(baseActor, tok.document) : null;
+  const editable = !banner || !!art?.portrait;
+  const flagKey = banner ? BANNER_FOCUS_FLAG : FLAG;
+  const defaults = banner ? BANNER_FOCUS_DEFAULT : ICON_FOCUS_DEFAULT;
+  const src = banner ? art.src : (tok.document?.texture?.src ?? baseActor.img ?? null);
+  const focus = banner
+    ? (art.portrait ? normalizeBannerFocus(baseActor.getFlag?.(MODULE_ID, flagKey)) : art.focus)
+    : normalizeIconFocus(baseActor.getFlag?.(MODULE_ID, flagKey));
 
   const panel = document.createElement("div");
   panel.id = PANEL_ID;
+  if (banner) panel.classList.add("ifc-wide");
   // Anchor just above the Players list and to the RIGHT of the launcher column
   // so it never covers the dev-tools buttons (lets you re-tune another token
   // without closing this panel first).
@@ -140,20 +189,51 @@ function openPanel() {
   close.addEventListener("click", () => panel.remove());
   head.append(title, close);
 
-  // Previews — big (tuning) + small (actual icon size).
+  const modes = document.createElement("div"); modes.className = "ifc-modes";
+  for (const [key, label] of [["icon", "Round bar icon"], ["banner", "Turn banner"]]) {
+    const b = document.createElement("div");
+    b.className = "ifc-mode" + (key === mode ? " on" : "");
+    b.textContent = label;
+    if (key !== mode) b.addEventListener("click", () => openPanel(key));
+    modes.appendChild(b);
+  }
+
+  // Previews. Icon: big (tuning) + small (actual icon size). Banner: the
+  // portrait frame (tuning) + the banner itself at rest.
   const previews = document.createElement("div"); previews.className = "ifc-previews";
-  const big = document.createElement("div"); big.className = "ifc-circle big";
-  const small = document.createElement("div"); small.className = "ifc-circle small";
-  const bigMedia = buildMedia(src);
-  const smallMedia = buildMedia(src);
-  big.appendChild(bigMedia); small.appendChild(smallMedia);
-  previews.append(big, small);
+  const big = document.createElement("div");
+  const paint = (() => {
+    if (!banner) {
+      big.className = "ifc-circle big";
+      const small = document.createElement("div"); small.className = "ifc-circle small";
+      const bigMedia = buildMedia(src);
+      const smallMedia = buildMedia(src);
+      big.appendChild(bigMedia); small.appendChild(smallMedia);
+      previews.append(big, small);
+      return (f) => { applyIconFocusStyle(bigMedia, f); applyIconFocusStyle(smallMedia, f); };
+    }
+    previews.classList.add("ifc-stack");
+    big.className = "ifc-art";
+    const bigMedia = editable ? buildMedia(src) : null;
+    if (bigMedia) { big.appendChild(bigMedia); previews.appendChild(big); }
+    const enemy = Number(tok.document?.disposition) === -1;
+    const { strip, media } = buildBannerStrip({
+      name: tok.document?.name ?? baseActor.name ?? "", side: enemy ? "enemy" : "party",
+      round: 1, activation: 1, art: src, focus,
+    });
+    previews.appendChild(strip);
+    return (f) => {
+      if (bigMedia) applyBannerFocusStyle(bigMedia, f);
+      // The token fallback keeps the frame the banner already gave it.
+      if (media && editable) applyBannerFocusStyle(media, f, { skew: 12, flip: enemy });
+    };
+  })();
 
   const state = { ...focus };
-  const apply = () => { applyIconFocusStyle(bigMedia, state); applyIconFocusStyle(smallMedia, state); };
+  const apply = () => paint(state);
 
   const mkRow = (key, label, min, max, step) => {
-    const row = document.createElement("div"); row.className = "ifc-row";
+    const row = document.createElement("div"); row.className = "ifc-row" + (editable ? "" : " off");
     const lab = document.createElement("label"); lab.textContent = label;
     const input = document.createElement("input");
     input.type = "range"; input.min = String(min); input.max = String(max); input.step = String(step);
@@ -174,7 +254,7 @@ function openPanel() {
   // follows the cursor). Same effect as the X/Y sliders — keeps state + both
   // previews + the slider rows in sync. Delta is divided by zoom so higher
   // magnification pans proportionally finer.
-  (() => {
+  if (editable) (() => {
     let dragging = false, sx = 0, sy = 0, startX = 0, startY = 0;
     big.style.cursor = "grab";
     big.style.touchAction = "none";
@@ -215,15 +295,20 @@ function openPanel() {
   })();
 
   const btns = document.createElement("div"); btns.className = "ifc-btns";
-  const reset = document.createElement("div"); reset.className = "ifc-btn reset"; reset.textContent = "Reset";
+  const off = editable ? "" : " off";
+  const reset = document.createElement("div"); reset.className = "ifc-btn reset" + off; reset.textContent = "Reset";
   reset.addEventListener("click", () => {
-    Object.assign(state, ICON_FOCUS_DEFAULT);
+    Object.assign(state, defaults);
     rowX.__sync(); rowY.__sync(); rowZ.__sync(); apply();
   });
-  const save = document.createElement("div"); save.className = "ifc-btn save"; save.textContent = "Save";
+  const save = document.createElement("div"); save.className = "ifc-btn save" + off; save.textContent = "Save";
   save.addEventListener("click", async () => {
     try {
-      await baseActor.setFlag(MODULE_ID, FLAG, { x: Math.round(state.x), y: Math.round(state.y), zoom: Number(state.zoom) });
+      await baseActor.setFlag(MODULE_ID, flagKey, { x: Math.round(state.x), y: Math.round(state.y), zoom: Number(state.zoom) });
+      if (banner) {
+        ui.notifications?.info(`Saved turn-banner framing for ${baseActor.name} (all copies).`);
+        return;
+      }
       // Refresh the live turn-action tracker if a battle is running.
       try { globalThis.FUCompanion?.api?.experimental?.battleDirector?.refreshTurnActions?.(); } catch (_e) {}
       ui.notifications?.info(`Saved icon focal for ${baseActor.name} (all copies).`);
@@ -235,9 +320,17 @@ function openPanel() {
   btns.append(reset, save);
 
   const hint = document.createElement("div"); hint.className = "ifc-hint";
-  hint.textContent = "Drag to pan, scroll to zoom. Tune during a battle to frame the battle sprite.";
+  hint.textContent = banner
+    ? "Drag to pan, scroll to zoom. Frames the portrait in the turn banner."
+    : "Drag to pan, scroll to zoom. Tune during a battle to frame the battle sprite.";
 
-  panel.append(head, previews, rowX, rowY, rowZ, btns, hint);
+  const body = [head, modes];
+  if (!editable) {
+    const note = document.createElement("div"); note.className = "ifc-note";
+    note.textContent = "No portrait of its own, so the turn banner shows this token, framed like its round-bar icon. Set that framing on the Round bar icon tab.";
+    body.push(note);
+  }
+  panel.append(...body, previews, rowX, rowY, rowZ, btns, hint);
   document.body.appendChild(panel);
   apply();
 }
