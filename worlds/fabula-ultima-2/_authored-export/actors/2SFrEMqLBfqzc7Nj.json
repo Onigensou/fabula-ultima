@@ -17,7 +17,7 @@
     }
   },
   "folder": "334KROpobXWVeG1Z",
-  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Princess%20Hilde/Hilde_Standard.png",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fafnir/Hilde-Fafnir.png",
   "items": [
     {
       "_id": "7wOhRfCoYWhuVkLn",
@@ -804,7 +804,7 @@
         "hideFill": true
       }
     },
-    "height": 1,
+    "height": 1.5,
     "hexagonalShape": 0,
     "light": {
       "alpha": 0.5,
@@ -870,12 +870,12 @@
       "offsetX": 0,
       "offsetY": 0,
       "rotation": 0,
-      "scaleX": 1,
-      "scaleY": 1,
-      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Princess%20Hilde/Hilde_Standard.png",
+      "scaleX": 2.1,
+      "scaleY": 2.1,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fafnir/Hilde-Fafnir.png",
       "tint": "#ffffff"
     },
-    "width": 1
+    "width": 1.5
   },
   "sort": 0,
   "system": {
@@ -1054,10 +1054,10 @@
       "current_hp": "2400",
       "current_ip": "0",
       "current_mp": "500",
-      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Princess%20Hilde/Hilde_Standard.png",
-      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Princess%20Hilde/Hilde_Standard.png",
+      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fafnir/Hilde-Fafnir.png",
+      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fafnir/Hilde-Fafnir.png",
       "cut_in_offset_y": "",
-      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Princess%20Hilde/Hilde_Standard.png",
+      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fafnir/Hilde-Fafnir.png",
       "dagger_ef": "60",
       "damage_receiving_mod_air": 0,
       "damage_receiving_mod_all": 0,
@@ -1109,7 +1109,7 @@
       "icon_offset_y": "",
       "icon_scale": "",
       "id": "2SFrEMqLBfqzc7Nj",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Princess%20Hilde/Hilde_Standard.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fafnir/Hilde-Fafnir.png",
       "init": "16",
       "ins_base": "12",
       "ins_current": 12,
@@ -1225,8 +1225,8 @@
       },
       "spear_ef": "150",
       "species": "MONSTER",
-      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Princess%20Hilde/Hilde_Standard.png",
-      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Princess%20Hilde/Hilde_Standard.png",
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fafnir/Hilde-Fafnir.png",
+      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fafnir/Hilde-Fafnir.png",
       "steal_percentage_table": {},
       "stealable_loot": {},
       "study_text": "<p>She is still in there. That is the difficult part, and the palace has arranged the whole approach so that you will be certain of it by the time you arrive. It speaks with her voice, it remembers your name, and it has been waiting at the end of this hallway for longer than the hallway has existed.</p>",
