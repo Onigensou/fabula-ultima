@@ -41,6 +41,7 @@ import { log, warn } from "./logger.js";
 import { playSfx } from "./director-sfx.js";
 import { setPlateCard } from "./drawer-views.js";
 import { buildDesk, destroyDesk, deskActive, deskEnabled, deskOpenDrawer, deskHold, deskDrawerHost, deskTurnStatus, sendDeskMirror } from "./gm-desk.js";
+import { publishAllyWatch } from "./ally-watch.js";
 import { tabAlert, tabAlertClear } from "./tab-alert.js";
 
 const MODULE_ID  = "fabula-ultima-companion";
@@ -1328,7 +1329,11 @@ function resetTurnState() {
   applyPhase(true);
   _turnStatus = null; _statusActingId = null; _takeTurn = null; _costPreview = null;
   _waits.clear(); _answered = null;
+  try { Hooks.callAll("fu-hud-turn-status", null); } catch (_e) {}
 }
+
+/** The last turn status this client heard (see applyTurnStatus), or null. */
+export function hudTurnStatus() { return _turnStatus; }
 
 /** Apply a turn status (GM publish or socket). */
 function applyTurnStatus(status) {
@@ -1337,6 +1342,7 @@ function applyTurnStatus(status) {
   for (const owner of byKey.values()) paintActing(owner);
   paintAllTakes();
   try { deskTurnStatus(_turnStatus); } catch (e) { warn("[DirectorHud] desk turn status failed", e); }
+  try { Hooks.callAll("fu-hud-turn-status", _turnStatus); } catch (e) { warn("[DirectorHud] turn status hook failed", e); }
 }
 
 /**
@@ -1691,7 +1697,11 @@ function watchPlateForMirror(plate) {
     const sig = `${open}|${crumb}|${html.length}|${html.slice(0, 64)}|${html}|${card ?? ""}`;
     if (sig === last) return;
     last = sig;
-    sendDeskMirror({ actorId: plate.el.dataset.actorId, userId: game.user?.id, open, html, crumb, card });
+    const actorId = plate.el.dataset.actorId;
+    sendDeskMirror({ actorId, userId: game.user?.id, open, html, crumb, card });
+    // The same drawer, as data, for the other players (ally-watch.js).
+    const cost = _costPreview && _costPreview.actorId === actorId ? _costPreview : null;
+    publishAllyWatch({ actorId, plateEl: plate.el, drawer: plate.drawer, open, crumb, cost });
   };
   const queue = () => { if (!t) t = setTimeout(send, 140); };
   const mo = new MutationObserver(queue);
