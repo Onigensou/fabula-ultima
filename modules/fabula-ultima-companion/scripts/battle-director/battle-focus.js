@@ -13,8 +13,12 @@
 //    duration. Permanent markers (camp results, meals, passive "ready" flags…)
 //    hide. Hold Alt to see every icon. The filter wraps Token#_drawEffects:
 //    a token's FIRST draw calls _drawEffects directly, not drawEffects.
+//    Player characters draw NO icons in a battle: their statuses live in their
+//    HUD card (token status plan "G + E", 2026-10-27). NPCs and monsters keep
+//    the loud filter until their status strip replaces the icons.
 
 import { log } from "./logger.js";
+import { isNpcActor } from "./status-classifier.js";
 
 const NS = "fabula-ultima-companion";
 const STYLE_ID = "fud-battle-focus-style";
@@ -127,6 +131,11 @@ export function isLoudEffect(e) {
   return false;
 }
 
+/** Does this effect keep its token icon on THIS actor during a battle? */
+export function keepIconInBattle(actor, e) {
+  return isNpcActor(actor) && isLoudEffect(e);
+}
+
 function quietOn() { return _battle && !_alt; }
 export function iconState() { return { battle: _battle, alt: _alt, here: battleHere() }; }
 
@@ -142,7 +151,7 @@ function wrapDrawEffects() {
     if (!actor || !quietOn()) return orig.apply(this, args);
     let all;
     try { all = actor.temporaryEffects; } catch { return orig.apply(this, args); }
-    const kept = all.filter((e) => isLoudEffect(e));
+    const kept = all.filter((e) => keepIconInBattle(actor, e));
     if (kept.length === all.length) return orig.apply(this, args);
     const prev = Object.getOwnPropertyDescriptor(actor, "temporaryEffects");
     Object.defineProperty(actor, "temporaryEffects", { value: kept, configurable: true });
