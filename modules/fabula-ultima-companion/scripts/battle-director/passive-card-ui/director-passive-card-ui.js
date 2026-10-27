@@ -94,9 +94,11 @@ function ensureStyles() {
   text-shadow: 0 1px 0 rgba(0,0,0,0.65), 0 0 6px rgba(0,0,0,0.6);
 }
 .fud-passive-card .fud-pc-row.is-added { animation: fudPassiveCardLine .3s cubic-bezier(0.22,1,0.36,1) both; }
-.fud-passive-card .fud-pc-icon { font-size: 15px; line-height: 1; }
+.fud-passive-card .fud-pc-icon { flex: none; display: inline-flex; font-size: 15px; line-height: 1; }
+/* max-width: none — Foundry's global img { max-width: 100% } collapses a large
+   icon to 0 px inside this shrink-to-fit row (only tiny GIFs survived). */
 .fud-passive-card .fud-pc-img {
-  display: block; width: 20px; height: 20px; object-fit: cover; border-radius: 4px;
+  display: block; flex: none; width: 20px; height: 20px; max-width: none; object-fit: cover; border-radius: 4px;
   border: 1.5px solid #e2c27e; background: #1a140f;
 }
 .fud-passive-card.enter {
