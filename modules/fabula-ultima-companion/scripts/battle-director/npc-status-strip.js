@@ -4,7 +4,8 @@
 // Token status plan "G + E" (approved 2026-10-27, mockup
 // claude.ai/artifact/6yk4Vym4JdmTq8fP7LuGwX):
 //   - debuffs first (red frame), then buffs (green frame), turns numeral
-//   - at most 4 tiles; a fifth status turns the last slot into "+N"
+//   - EVERY buff and debuff shows, never folded (user rule 2026-10-27);
+//     the strip wraps to a second row past TILES_PER_ROW
 //   - Ready abilities as a gold square chip at the end
 //   - markers never show on an NPC
 //   - hover a tile for its tooltip (status-tip.js); hover the token for the
@@ -22,7 +23,7 @@ import { battleActive } from "./battle-focus.js";
 
 const ROOT_ID = "fu-npc-strip-root";
 const STYLE_ID = "fu-npc-strip-style";
-const MAX_TILES = 4;
+const TILES_PER_ROW = 6;          // wraps beyond this; nothing is ever folded away
 const FEET_GAP_PX = 2;            // below the token's bottom edge, clear of the NPC HP bar (offsetY −12)
 
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -45,7 +46,8 @@ function ensureStyles() {
   st.id = STYLE_ID;
   st.textContent = `
 #${ROOT_ID} { position: fixed; left: 0; top: 0; width: 0; height: 0; pointer-events: none; z-index: var(--z-index-canvas, 0); }
-.fu-nst { position: absolute; left: 0; top: 0; display: flex; gap: 3px; align-items: center; transform-origin: 50% 0; pointer-events: none; will-change: transform; }
+.fu-nst { position: absolute; left: 0; top: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 3px; align-items: center;
+  max-width: ${TILES_PER_ROW * 25}px; transform-origin: 50% 0; pointer-events: none; will-change: transform; }
 .fu-nst-t { position: relative; flex: none; width: 22px; height: 22px; box-sizing: border-box; border-radius: 5px; pointer-events: auto;
   border: 1.5px solid var(--ac, #8a8a8a); background: #0d0b09; box-shadow: 0 1px 2px rgba(0,0,0,.5); }
 .fu-nst-t img { display: block; width: 100%; height: 100%; border: none !important; border-radius: 3.5px; object-fit: cover; }
@@ -81,10 +83,13 @@ function stripRows(actor) {
 
 const stKey = (r) => esc(String(r.name ?? "").trim().toLowerCase());
 
+// NEVER fold an enemy's buffs or debuffs (user rule, 2026-10-27): a turn-based
+// battle is a planning game, so every modifier that can change the outcome
+// stays visible. The strip wraps to more rows instead (TILES_PER_ROW).
 function stripHTML(rows) {
   const status = rows.filter((r) => r.tier !== TIER.READY);
   const ready = rows.filter((r) => r.tier === TIER.READY);
-  const room = status.length > MAX_TILES ? MAX_TILES - 1 : status.length;
+  const room = status.length;
   const tile = (r) => `<span class="fu-nst-t t-${r.tier}" data-st="${stKey(r)}" data-tooltip="${esc(statusTipHTML(r, { tier: r.tier }))}" data-tooltip-direction="UP">`
     + `<img src="${esc(r.img)}" alt="">${rowTurns(r) ? `<b>${rowTurns(r)}</b>` : ""}</span>`;
   const rest = status.slice(room);
