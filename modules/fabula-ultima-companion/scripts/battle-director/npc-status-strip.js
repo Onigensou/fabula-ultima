@@ -5,7 +5,7 @@
 // claude.ai/artifact/6yk4Vym4JdmTq8fP7LuGwX). One block per unit, Octopath
 // order, docked to the RENDERED sprite's feet (unit-anchors.js):
 //
-//   [shield][debuffs…][buffs…][Ready]     status strip (wraps past 6 tiles)
+//   (12)[debuffs…][buffs…][Ready]         status strip, ONE row; (12) = shield badge
 //            Goblin Bandit A               name (replaces Foundry's nameplate)
 //
 //   - EVERY buff and debuff shows, never folded (user rule 2026-10-27: a
@@ -35,7 +35,9 @@ import { feetPoint, spriteRect } from "./unit-anchors.js";
 const NS = "fabula-ultima-companion";
 const ROOT_ID = "fu-npc-strip-root";
 const STYLE_ID = "fu-npc-strip-style";
-const TILES_PER_ROW = 6;          // wraps beyond this; nothing is ever folded away
+// One row, never folded (user, 2026-10-27): saves vertical space; a long
+// row simply runs wider. Nothing is ever hidden behind a "+N".
+const DIM_BACK_ROW = false;
 const FEET_GAP_PX = 2;            // below the sprite's feet; the NPC HP bar sits above, on the ground shadow
 const NAMES_SETTING = "npcNamesShown";
 const DIM_OPACITY = 0.5;
@@ -88,11 +90,16 @@ function ensureStyles() {
 .fu-nlab { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; align-items: center; gap: 2px;
   transform-origin: 50% 0; pointer-events: none; will-change: transform, opacity; transition: opacity 180ms ease; }
 .fu-nlab.is-dim { opacity: ${DIM_OPACITY}; }
-.fu-nst { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px; align-items: center; max-width: ${TILES_PER_ROW * 25}px; }
+.fu-nst { display: flex; flex-wrap: nowrap; justify-content: center; gap: 3px; align-items: center; }
 .fu-nst:empty { display: none; }
+/* 1 px outline drawn with text-shadow, not -webkit-text-stroke: Foundry's
+   Electron build ignores paint-order, so a stroke paints OVER the white fill
+   and the name turns dark. Eight 1 px shadows + a soft halo look the same in
+   every browser. */
 .fu-nname { font: 600 15px "Signika", sans-serif; color: #fff; letter-spacing: .03em; white-space: nowrap; line-height: 1.1;
-  -webkit-text-stroke: 2px rgba(14,10,8,.92); paint-order: stroke fill;
-  text-shadow: 0 0 1px #000, 0 1px 2px rgba(0,0,0,.95), 0 0 6px rgba(0,0,0,.6); }
+  text-shadow: 1px 0 0 #0e0a08, -1px 0 0 #0e0a08, 0 1px 0 #0e0a08, 0 -1px 0 #0e0a08,
+    1px 1px 0 #0e0a08, -1px 1px 0 #0e0a08, 1px -1px 0 #0e0a08, -1px -1px 0 #0e0a08,
+    0 1px 3px rgba(0,0,0,.9), 0 0 6px rgba(0,0,0,.6); }
 .fu-nst-t { position: relative; flex: none; width: 22px; height: 22px; box-sizing: border-box; border-radius: 5px; pointer-events: auto;
   border: 1.5px solid var(--ac, #8a8a8a); background: #0d0b09; box-shadow: 0 1px 2px rgba(0,0,0,.5); }
 .fu-nst-t img { display: block; width: 100%; height: 100%; max-width: none; border: none !important; border-radius: 3.5px; object-fit: cover; }
@@ -104,10 +111,13 @@ function ensureStyles() {
 .fu-nst-t.is-ready::after { content: ""; position: absolute; right: -4px; top: -4px; width: 7px; height: 7px; border-radius: 50%; background: #ffd45a; box-shadow: 0 0 4px #ffb800; }
 .fu-nst-t.is-spent { --ac: rgba(122,106,85,.6); box-shadow: none; filter: grayscale(1); opacity: .5; }
 .fu-nst-t.is-spent::after { display: none; }
-.fu-nst-t.is-shield { width: auto; min-width: 22px; padding: 0 5px 0 3px; display: inline-flex; align-items: center; gap: 2px;
-  --ac: #cfe3ff; background: linear-gradient(180deg, #2a3a52, #141c28); color: #eef5ff; font: 800 11px "Signika", sans-serif; }
-.fu-nst-t.is-shield.is-magic { --ac: #e2c8ff; background: linear-gradient(180deg, #3e2a56, #1c1428); }
-.fu-nst-t.is-shield svg { width: 13px; height: 13px; flex: none; }
+.fu-nst-sh { position: relative; flex: none; width: 26px; height: 30px; margin-right: 2px; pointer-events: auto;
+  --sh-rim: #dfe8f7; --sh-top: #6d86c4; --sh-bot: #2d3f78; filter: drop-shadow(0 1px 2px rgba(0,0,0,.6)); }
+.fu-nst-sh.is-magic { --sh-rim: #efdcff; --sh-top: #9a6cc8; --sh-bot: #4a2a78; }
+.fu-nst-sh svg { display: block; width: 26px; height: 30px; }
+.fu-nst-sh b { position: absolute; left: 0; right: 0; top: 6px; text-align: center; font: 800 13px/16px "Signika", sans-serif; color: #ffffff !important;
+  -webkit-text-stroke: 0; text-shadow: 0 1px 1px rgba(8,6,20,.95), 0 0 3px rgba(8,6,20,.8); pointer-events: none; }
+.fu-nst-sh.is-flash { animation: fuNstFlash .9s ease-out; border-radius: 6px; }
 .fu-nst-t.is-flash { animation: fuNstFlash .9s ease-out; }
 @keyframes fuNstFlash { 0% { box-shadow: 0 0 0 0 rgba(255,196,70,1); } 100% { box-shadow: 0 0 0 10px rgba(255,196,70,0); } }
 `;
@@ -128,7 +138,16 @@ function stripRows(actor) {
     .filter((r) => r.tier === TIER.DEBUFF || r.tier === TIER.BUFF || r.tier === TIER.READY));
 }
 
-const SHIELD_SVG = `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.2 2.6 3.1v4.1c0 3.4 2.3 6 5.4 7.6 3.1-1.6 5.4-4.2 5.4-7.6V3.1z" fill="currentColor" opacity=".9"/><path d="M8 3 4.3 4.3v2.9c0 2.3 1.5 4.2 3.7 5.5z" fill="#fff" opacity=".35"/></svg>`;
+// Octopath Traveler's shield badge: a heraldic shield, steel blue (violet for a
+// magical shield) with a light rim, the number inside it, leading the row.
+// Flat fills set through style (CSS variables do not resolve in SVG
+// presentation attributes) and no shared gradient id, so each badge keeps its
+// own physical / magical colours.
+const SHIELD_SVG = `<svg viewBox="0 0 24 28" aria-hidden="true">`
+  + `<path d="M12 1.5 2.5 4.6v8.3c0 6 4.1 10.6 9.5 13.6 5.4-3 9.5-7.6 9.5-13.6V4.6z" style="fill:var(--sh-rim)"/>`
+  + `<path d="M12 3.6 4.4 6.1v6.8c0 4.9 3.3 8.7 7.6 11.2 4.3-2.5 7.6-6.3 7.6-11.2V6.1z" style="fill:var(--sh-bot)"/>`
+  + `<path d="M12 3.6 4.4 6.1v6.8c0 4.9 3.3 8.7 7.6 11.2V3.6z" style="fill:var(--sh-top)" opacity=".55"/>`
+  + `<path d="M12 3.6 4.4 6.1v6.8c0 1.6.4 3.1 1 4.4C8 9.5 12 7 19.6 6.1z" fill="#fff" opacity=".18"/></svg>`;
 
 function shieldHTML(actor) {
   const p = actor?.system?.props ?? {};
@@ -138,7 +157,7 @@ function shieldHTML(actor) {
   const magic = /magic/i.test(type);
   const tip = `<div class="fu-st-tip t-buff"><div class="th fold"><div><strong>Shield ${v}</strong><small>${esc(type || "Shield")}</small></div></div>`
     + `<div class="tb"><div class="desc">Absorbs ${magic ? "magical" : "incoming"} damage before Hit Points are lost.</div></div></div>`;
-  return `<span class="fu-nst-t is-shield${magic ? " is-magic" : ""}" data-st="shield" data-tooltip="${esc(tip)}" data-tooltip-direction="UP">${SHIELD_SVG}${v}</span>`;
+  return `<span class="fu-nst-sh${magic ? " is-magic" : ""}" data-st="shield" data-tooltip="${esc(tip)}" data-tooltip-direction="UP">${SHIELD_SVG}<b>${v}</b></span>`;
 }
 
 function stripHTML(actor, rows) {
@@ -248,7 +267,9 @@ function layout() {
     it.s.el.style.transform = `translate(${Math.round(it.fx)}px, ${Math.round(y)}px) translateX(-50%) scale(${zoom.toFixed(3)})`;
     it.y = y;
   }
-  // Dim over a front unit, unless this unit or that one is in focus.
+  // Back-row dimming is OFF (user, 2026-10-27: keep full opacity on statuses
+  // for now). The check lives on behind DIM_BACK_ROW in case it returns.
+  if (!DIM_BACK_ROW) return;
   const focused = (t) => !!t && (t.id === S.hover || t.controlled || t.isTargeted);
   for (const it of items) {
     let dim = false;
