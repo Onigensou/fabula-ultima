@@ -84,10 +84,11 @@ function verdict(b) {
 const users = {};
 for (const e of entries) {
   const u = (users[e.user] ??= { boots: [], draws: [], stalls: [], disconnects: [], hidden: 0, hiddenMs: 0, longHides: [], sampleGaps: [], lastSample: null, peakHeapMB: 0, peakTextures: 0, machine: null, console: {}, lastPagehide: null, loads: [], waits: [] });
-  // load-indicator.js: every load over 2 s, and marks at 30 / 60 s that survive a reload
-  if (e.kind === "load-progress") u.loads.push({ at: local(e.t), scene: e.scene, s: s(e.ms), texS: s(e.texturesMs), files: e.files, left: e.left,
-    shown: e.shown, reason: e.reason, slowest: (e.slowest ?? []).slice(0, 3), pending: e.pending ?? [] });
-  if (e.kind === "load-waiting") u.waits.push({ at: local(e.t), atS: e.atS, scene: e.scene, pct: e.pct, left: e.left, pending: e.pending ?? [] });
+  // load-indicator.js: world entry, every map load over 2 s, and marks at 30 / 60 s that survive a reload.
+  // A world-entry load counts from the page's navigation start, so it includes the page and world-data download.
+  if (e.kind === "load-progress") u.loads.push({ at: local(e.t), scene: e.entry ? `${e.scene} (world entry)` : e.scene, s: s(e.ms), texS: s(e.texturesMs),
+    files: e.files, left: e.left, shown: e.shown, reason: e.reason, slowest: (e.slowest ?? []).slice(0, 3), pending: e.pending ?? [] });
+  if (e.kind === "load-waiting") u.waits.push({ at: local(e.t), atS: e.atS, scene: e.entry ? `${e.scene} (world entry)` : e.scene, pct: e.pct, left: e.left, pending: e.pending ?? [] });
   if (e.kind === "sample") {
     const p = u.lastSample;
     // both inside the once-a-minute window after the same draw

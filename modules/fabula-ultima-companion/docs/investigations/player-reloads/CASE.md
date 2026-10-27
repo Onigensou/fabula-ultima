@@ -216,12 +216,18 @@ as sessions come in. Don't delete them.
    - Also: *read out any message that pops up*, e.g. "The map image didn't load…" or "You have lost
      connection to the server…".
    - And: *say whether you see a black screen, or tokens on a black map.*
-   - **New since v1.0.473:** after 2 s the black screen shows a loading indicator. Have them read out:
+   - **New since v1.0.473:** after 2 s the black screen shows a loading indicator. World entry shows it
+     too, from the moment the game's scripts start until the world is ready. Have them read out:
      - the percentage;
-     - "1 file left · <file> (from Forge / the game host)";
+     - "1 file left · from Forge / the game host" (no file names on screen; the names are in the
+       console and in the client-health log);
      - "Preparing the map";
      - whether the timer is still counting. A stopped timer with a turning spinner means the page has hung.
-6. Replay the 10-24 sequence: Valley_Map002 → Dragonslayer Overworld → Midgard_Map001 → 002 → 003 → 006 → 007.
+6. Change maps the way 10-24 did, but **only on maps the players have already seen** (host's rule,
+   2026-10-28): Eisendrache, the Vastwind fields, The Wyrmwood.
+   - **Not** Valley of the Dragon or Fafnir Castle maps: those are content they haven't reached.
+   - No token of a monster that isn't in the bestiary (the Monster Encyclopedia).
+   - Prefer the big-background maps. The 10-24 stalls were on the map background, the largest file.
    - Stay **≥7 min** on three of them: Blumairwen's ~5½ min mode needs a scene to stay up that long.
    - On one scene, ask them to alt-tab away for 7 min (tests H3).
 7. Keep an eye on `FUCompanion.api.clientHealth.summary()`.
@@ -320,5 +326,18 @@ of RAM; it was closed as not planned.
     - The GM switch worked mid-load.
     - The records reached the GM's log file.
     - One load took 106 s, all of it downloading (`texturesMs` 106.4 s) — the H2 signature.
-  - **Commits:** `8ae307cf` + `da05f789` on `feat/zp-dishes` (another session's branch, which was
-    checked out at the time), mirrored on `main` as `e76e0873` + `da10d113`.
+  - **Commits:** `8ae307cf` + `da05f789`, made on `feat/zp-dishes` (another session's branch, which
+    was checked out at the time). `main` was moved onto that branch before the push.
+- **2026-10-28 (night, host's call): it became the game's full loading screen.**
+  - **World entry:** a black cover from `init` with the indicator at once, faded out at `ready`. Before,
+    the first draw showed Foundry's bar with the scene's name, and about 30 s of setup showed nothing.
+  - **Foundry's `#loading` bar is never drawn while a map loads.** Its label goes to the console.
+  - **No names on screen:** "1 file left · from Forge / the game host". Names stay in the console and the log.
+  - **Mascots:** Momonga always; the others only once the Monster Encyclopedia has their page. That's
+    Prickle Boar today; Slime, Sylph and Shroomy join when met.
+  - **Switch off** = Foundry's plain behaviour, world entry included.
+  - **Sandbox-tested:**
+    - entry ON and OFF;
+    - a throttled map change on Eisendrache_Map004;
+    - Foundry's bar never set on;
+    - entry records reach the log, including a "load-waiting" mark during the ~30 s setup.

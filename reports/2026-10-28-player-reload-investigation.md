@@ -63,4 +63,12 @@ pressed F5. Trinio and Silryantish had 0 reloads.
   - GM switch: "Loading indicator on the black screen".
   - For sarunphat: `client-health.js` gained `record(kind, data)`, a one-line API addition, so the
     indicator logs `load-progress` / `load-waiting`. That covers P4 in CASE.md.
-  - Commits `8ae307cf` + `da05f789` sit on `feat/zp-dishes`, mirrored on `main` as `e76e0873` + `da10d113`.
+  - Commits `8ae307cf` + `da05f789`, made on `feat/zp-dishes` and pushed to `main` together with it.
+- 2026-10-28 night (onigensou's side): **it became the game's full loading screen.**
+  - World entry is covered from `init` to `ready`.
+  - Foundry's scene load bar is never drawn while a map loads (its label goes to the console).
+  - No scene or file names on screen.
+  - Mascots are limited to Momonga plus monsters in the Monster Encyclopedia.
+  - The switch off gives Foundry's plain behaviour back.
+- **Tonight's test uses only maps the players have seen: Eisendrache, Vastwind fields, The Wyrmwood.**
+  Not Valley of the Dragon or Fafnir Castle maps, and no monsters missing from the bestiary.

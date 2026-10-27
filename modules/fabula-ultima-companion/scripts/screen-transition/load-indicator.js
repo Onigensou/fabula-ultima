@@ -1,59 +1,77 @@
 // ============================================================================
-// Load Indicator — "Now Loading" on the black scene-change cover
+// Load Indicator — the game's "Now Loading" screen
 //
-// The transition cover (screen-transition.js) stays black from canvasTearDown
-// to canvasReady, above Foundry's own load bar (#loading sits in #interface, a
-// z-30 stacking context). A slow map load looked exactly like a hung one, so
-// players reloaded (docs/investigations/player-reloads/CASE.md). This draws a
-// PS1/PS2-style indicator INSIDE the cover element: it shares the cover's layer
-// and fade, and never decides when the cover lifts.
+// Replaces Foundry's own scene load bar (#loading: "Loading <scene name> 47%",
+// a spoiler, and hidden under the scene-change cover anyway) with a PS1/PS2-
+// style indicator on black. Two places:
 //
-//   < 2 s     nothing — a normal load never shows it
+//   World entry  a black boot cover from `init` until `ready` (Foundry draws the
+//                first scene before `ready`, with no canvasTearDown), then it
+//                fades out like a scene reveal. Shows at once; its timer counts
+//                from the page's navigation start.
+//   Map change   inside screen-transition.js's cover, which stays black from
+//                canvasTearDown to canvasReady. It shares that cover's layer
+//                and fade, and never decides when the cover lifts.
+//
+//   map change < 2 s   nothing — a normal load never shows it
 //   2 s       breathing logo, a random mascot, "Now Loading...", a timer
 //   6 s       percentage and a thin bar (files done / files the draw loads)
-//   8 s       tips, and "N files left" (the last file named) when 3 or fewer remain
+//   8 s       tips, and "N files left · from Forge / the game host" when 3 or fewer remain
 //   20 s      "Still loading — no need to refresh."
-//   textures done -> "Preparing the map..." until canvasReady
+//   2 min     world entry only: "...if nothing changes, press F5."
+//   textures done -> "Preparing the map..." until the scene is drawn
+//
+// No scene or file names on screen (spoilers): they go to the console and to
+// the client-health log. Foundry's bar is not drawn while a map loads; its
+// label goes to the console. Other uses of that bar (imports) still show.
 //
 // The timer is script-driven and the spinner is CSS: a timer that stops while
 // the spinner turns means the page itself has hung.
 //
 // The mascot reacts to a click; each kind moves its own way. Purely cosmetic,
-// it gives restless hands something other than F5.
+// it gives restless hands something other than F5. Momonga always qualifies;
+// the others only once the Monster Encyclopedia has their page (no spoilers).
 //
-// While the cover is black, Foundry's toasts ("lost connection", "map image
+// While the screen is black, Foundry's toasts ("lost connection", "map image
 // didn't load") are lifted above it; they used to be hidden underneath.
 //
 // Progress comes from wrapping TextureLoader#load / #loadTexture, so it knows
-// which files the draw still waits on. Loads over 2 s go to the client-health
+// which files the draw still waits on. Slow loads go to the client-health
 // logger ("load-progress"), with "load-waiting" marks at 30 s and 60 s that
 // survive a reload.
 //
 // GM switch: Configure Settings → "Loading indicator on the black screen".
+// Off = Foundry's plain behaviour everywhere, world entry included.
 // ============================================================================
 (() => {
-  const MODULE_ID  = "fabula-ultima-companion";
-  const TAG        = "[FUCompanion][LoadIndicator]";
-  const SETTING    = "loadIndicator";
-  const OVERLAY_ID = "fu-screen-transition";   // screen-transition.js
-  const ROOT_ID    = "fu-load-indicator";
-  const STYLE_ID   = "fu-load-indicator-style";
-  const COVER_CLASS = "fu-nl-covered";   // on <body> while the cover is black: toasts go above it
+  const MODULE_ID   = "fabula-ultima-companion";
+  const TAG         = "[FUCompanion][LoadIndicator]";
+  const SETTING     = "loadIndicator";
+  const OVERLAY_ID  = "fu-screen-transition";   // screen-transition.js
+  const BOOT_ID     = "fu-load-boot";           // the world-entry cover, until `ready`
+  const ROOT_ID     = "fu-load-indicator";
+  const STYLE_ID    = "fu-load-indicator-style";
+  const COVER_CLASS = "fu-nl-covered";   // on <body> while the screen is black: toasts go above it
 
   const SHOW_MS      = 2000;
   const PCT_MS       = 6000;
   const TIP_MS       = 8000;
   const TIP_EVERY_MS = 7000;
   const CALM_MS      = 20000;
+  const LONG_MS      = 120000;   // world entry: past this, refreshing is the honest advice
   const FEW_LEFT     = 3;
   const MARKS_MS     = [30000, 60000];
   const TICK_MS      = 250;
   const FADE_MS      = 1000;   // the cover's hold + fade-out, then the indicator is cleared
+  const REVEAL_HOLD_MS = 180, REVEAL_FADE_MS = 700;   // match screen-transition.js
 
   const FORGE = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/";
   const LOGO  = FORGE + "Campaign/The%20Legend%20of%20Dragonslayer/Image/UI/DRG_LoadingLogo.webp";
+  // Momonga is the house loading mascot (it is on the Loading Screen scene). The others show only once
+  // the party has met them: a page with their name in the Monster Encyclopedia. No spoilers.
+  const ENCYCLOPEDIA_ID = "PNjdkqQx1X0Rx4Eh";
   const MASCOTS = [
-    { id: "momonga", name: "Momonga",      src: FORGE + "Beastiary/Momonga_Standard.png",        w: 64, pokeMs: 900 },
+    { id: "momonga", name: "Momonga",      src: FORGE + "Beastiary/Momonga_Standard.png",        w: 64, pokeMs: 900, always: true },
     { id: "slime",   name: "Slime",        src: FORGE + "Beastiary/Slime_Standard.png",          w: 56, pokeMs: 800 },
     { id: "sylph",   name: "Sylph",        src: FORGE + "Beastiary/Sylph_Standard.png",          w: 66, pokeMs: 900, fx: "#8fcf6a" },
     { id: "boar",    name: "Prickle Boar", src: FORGE + "Beastiary/Prickle%20Boar_Standard.png", w: 74, pokeMs: 800, fx: "#a8957a", bonk: true },
@@ -66,11 +84,14 @@
     "Use Study in battle to fill in a monster’s bestiary page.",
   ];
 
-  let draw = null;     // the draw in progress (startDraw)
+  let draw = null;        // the draw in progress (startDraw)
   let ticker = null;
   let pokeTimer = null;
   let lastMascot = null;
+  let booted = false;     // `ready` has fired
+  let bootCover = null;   // the world-entry cover, until `ready`
   const preloaded = [];   // keeps the images decoded between draws
+  const pendingRecords = [];   // logged before client-health is up (the first draw)
   const ui = {};
 
   // ── Which files is this draw waiting on? ───────────────────────────────────
@@ -102,6 +123,25 @@
     };
   }
 
+  // Foundry's own bar: not drawn while a map loads (it names the scene). Its
+  // label still goes to the console; other progress (imports) is untouched.
+  function wrapProgressBar() {
+    const SN = typeof SceneNavigation === "undefined" ? null : SceneNavigation;
+    if (!SN?.displayProgressBar || SN.displayProgressBar.fuLoadIndicator) return;
+    const displayProgressBar = SN.displayProgressBar;
+    SN.displayProgressBar = function (options = {}) {
+      if (draw && !draw.readyAt && enabled()) {
+        if (!draw.barLogged) {
+          draw.barLogged = true;
+          console.info(TAG, `${options.label ?? "Loading"} (Foundry's load bar hidden; the load indicator shows progress)`);
+        }
+        return;
+      }
+      return displayProgressBar.call(this, options);
+    };
+    SN.displayProgressBar.fuLoadIndicator = true;
+  }
+
   const fileName = src => {
     const base = String(src).split("?")[0].split("/").pop() || String(src);
     try { return decodeURIComponent(base); } catch { return base; }
@@ -125,17 +165,32 @@
 
   // ── The draw ───────────────────────────────────────────────────────────────
 
+  // read at every pick: the bestiary grows during a session. Before the journal is
+  // available (world entry) or without access to it, only the house mascot qualifies.
+  function allowedMascots() {
+    let met = new Set();
+    try {
+      const j = game.journal?.get(ENCYCLOPEDIA_ID) ?? game.journal?.getName?.("Monster Encyclopedia");
+      met = new Set((j?.pages?.map?.(p => String(p.name).trim().toLowerCase())) ?? []);
+    } catch { /* no journal yet */ }
+    return MASCOTS.filter(m => m.always || met.has(m.name.toLowerCase()));
+  }
+
   function pickMascot() {
-    const pool = MASCOTS.filter(m => m !== lastMascot);
+    const allowed = allowedMascots();
+    const pool = allowed.length > 1 ? allowed.filter(m => m !== lastMascot) : allowed;
     lastMascot = pool[Math.floor(Math.random() * pool.length)] ?? MASCOTS[0];
     return lastMascot;
   }
 
-  function startDraw() {
+  // entry: the world's first draw — times count from the page's navigation start
+  function startDraw({ entry = false } = {}) {
     if (draw && !draw.reported) report(draw, "superseded");
     hide();
-    draw = { t0: Date.now(), tp0: performance.now(), files: new Map(), texDoneAt: null, readyAt: null, fadeAt: null,
-             shown: false, calm: false, marks: new Set(), reported: false, mascot: pickMascot() };
+    const now = Date.now();
+    draw = { entry, started: now, t0: entry ? now - performance.now() : now, tp0: entry ? 0 : performance.now(),
+             files: new Map(), texDoneAt: null, readyAt: null, fadeAt: null, shown: false, calm: false,
+             sawLoading: false, marks: new Set(), reported: false, barLogged: false, loggedPending: null, mascot: pickMascot() };
     // swap the sprite while hidden, so it has painted by the time the indicator shows
     if (ui.mascot) setMascot(draw.mascot);
     ticker ??= setInterval(tick, TICK_MS);
@@ -147,47 +202,64 @@
     report(draw, "ready");
   }
 
+  // the black element the indicator lives in: the scene-change cover once it
+  // exists (`ready`), the world-entry cover before that
+  const coverEl = () => document.getElementById(OVERLAY_ID) ?? bootCover;
+
   function tick() {
     try {
       if (!draw) return stop();
       const now = Date.now();
       const e = now - draw.t0;
+      const age = now - draw.started;
 
       if (!draw.readyAt) {
         const c = counts(draw);
         if (c.total && !c.left) draw.texDoneAt ??= now;
-        // Foundry clears canvas.loading with no canvasReady on a failed or blank draw
-        if (e > 1000 && globalThis.canvas?.loading === false) {
+        // Foundry clears canvas.loading with no canvasReady on a failed or blank draw. The world-entry
+        // session starts at `init`, long before its draw, so only count it once a draw was seen.
+        if (globalThis.canvas?.loading) draw.sawLoading = true;
+        if (draw.sawLoading && age > 1000 && globalThis.canvas?.loading === false) {
           draw.readyAt = now;
           report(draw, "no-canvasReady");
         }
+        if (c.left === 1 && c.pending !== draw.loggedPending && age >= TIP_MS) {
+          draw.loggedPending = c.pending;
+          console.info(TAG, `waiting on ${fileName(c.pending)} from ${origin(c.pending)} (${Math.round(age / 1000)} s into this load)`);
+        }
         for (const at of MARKS_MS) {
-          if (e >= at && !draw.marks.has(at)) {
+          if (age >= at && !draw.marks.has(at)) {
             draw.marks.add(at);
-            record("load-waiting", { atS: at / 1000, ...sceneInfo(), pct: c.pct, files: c.total, left: c.left,
-              pending: pendingList(draw), shown: draw.shown });
+            record("load-waiting", { atS: at / 1000, entry: draw.entry, ...sceneInfo(), pct: c.pct, files: c.total,
+              left: c.left, pending: pendingList(draw), shown: draw.shown });
           }
         }
       }
 
-      const ov = document.getElementById(OVERLAY_ID);
-      const opacity = ov ? parseFloat(ov.style.opacity || "0") : 0;
+      const cover = coverEl();
+      const opacity = cover ? parseFloat(cover.style.opacity || "0") : 0;
       const shatter = document.body.classList.contains("fuc-shatter-active");
-      const black = !!ov && opacity >= 0.99 && !shatter;
-      document.body.classList.toggle(COVER_CLASS, black && !draw.readyAt && enabled());
+      const black = !!cover && opacity >= 0.99 && !shatter;
+      document.body.classList.toggle(COVER_CLASS, black && enabled() && (!draw.readyAt || (draw.entry && !booted)));
 
       if (draw.readyAt) {
+        // world entry: the scene is drawn but the game is still finishing its boot
+        if (draw.entry && black && !booted) {
+          draw.texDoneAt ??= draw.readyAt;
+          if (enabled()) render(cover, e);
+          return;
+        }
         // done: fade out with the cover, then clear
         if (!draw.shown) return finish();
         if (!black) draw.fadeAt ??= now;
         if (draw.fadeAt && now - draw.fadeAt >= FADE_MS) finish();
         return;
       }
-      if (!enabled() || !black || e < SHOW_MS) {
+      if (!enabled() || !black || (!draw.entry && e < SHOW_MS)) {
         if (draw.shown) setVisible(false);
         return;
       }
-      render(ov, e);
+      render(cover, e);
     } catch (err) {
       console.warn(TAG, "tick failed, indicator off for this draw", err);
       finish();
@@ -197,38 +269,66 @@
   function finish() { hide(); draw = null; stop(); document.body.classList.remove(COVER_CLASS); }
   function stop() { clearInterval(ticker); ticker = null; }
 
+  // ── The world-entry cover ──────────────────────────────────────────────────
+
+  function showBootCover() {
+    if (bootCover || booted) return;
+    ensureStyle();
+    bootCover = document.createElement("div");
+    bootCover.id = BOOT_ID;
+    Object.assign(bootCover.style, { position: "fixed", inset: "0", zIndex: "99999", background: "#000",
+                                     opacity: "1", pointerEvents: "all" });
+    document.body.appendChild(bootCover);
+  }
+
+  // the same reveal as a scene change: a short hold, then an ease-out fade
+  function liftBootCover() {
+    const el = bootCover;
+    if (!el) return;
+    bootCover = null;
+    el.style.pointerEvents = "none";
+    setTimeout(() => {
+      el.style.transition = `opacity ${REVEAL_FADE_MS}ms ease-out`;
+      el.style.opacity = "0";
+      setTimeout(() => el.remove(), REVEAL_FADE_MS + 200);
+    }, REVEAL_HOLD_MS);
+  }
+
   // ── Drawing ────────────────────────────────────────────────────────────────
 
-  function render(ov, e) {
-    if (!ensureDom(ov)) return;
+  function render(cover, e) {
+    if (!ensureDom(cover)) return;
     if (!draw.shown) {
       draw.shown = true;
       setMascot(draw.mascot);
     }
     setVisible(true);
 
-    const { left, pending, pct } = counts(draw);
+    const { total, left, pending, pct } = counts(draw);
     const prep = !!draw.texDoneAt;
+    const progress = total > 0 && (draw.entry || e >= PCT_MS);
     setLabel(prep ? "Preparing the map" : "Now Loading");
     setText(ui.clock, clock(e));
 
-    show(ui.pct, !prep && e >= PCT_MS);
+    show(ui.pct, !prep && progress);
     setText(ui.pct, `${pct}%`);
-    show(ui.bar, prep || e >= PCT_MS);
+    show(ui.bar, prep || progress);
     ui.bar.classList.toggle("fu-nl-prep", prep);
     if (!prep) ui.fill.style.width = `${pct}%`;
 
+    // no names on screen (spoilers): which route it comes from is the useful part
     const few = !prep && e >= TIP_MS && left > 0 && left <= FEW_LEFT;
     show(ui.left, few);
-    if (few) setText(ui.left, left === 1 && pending
-      ? `1 file left · ${fileName(pending)} (from ${origin(pending)})`
-      : `${left} files left`);
+    if (few) setText(ui.left, left === 1 && pending ? `1 file left · from ${origin(pending)}` : `${left} files left`);
 
     show(ui.tip, e >= TIP_MS);
     if (e >= TIP_MS) setText(ui.tipText, TIPS[Math.floor((e - TIP_MS) / TIP_EVERY_MS) % TIPS.length]);
 
     if (e >= CALM_MS) draw.calm = true;
     show(ui.calm, draw.calm);
+    if (draw.calm) setText(ui.calm, draw.entry && e >= LONG_MS
+      ? "This is taking much longer than usual. If nothing changes, press F5."
+      : "Still loading — no need to refresh.");
   }
 
   const MARKUP = `
@@ -250,14 +350,14 @@
     <div class="fu-nl-tip" hidden><span class="fu-nl-tiplabel">Tip</span><span class="fu-nl-tiptext"></span></div>
     <div class="fu-nl-crt"></div>`;
 
-  function ensureDom(ov) {
-    if (ui.root?.isConnected && ui.root.parentElement === ov) return ui.root;
+  function ensureDom(cover) {
+    if (ui.root?.isConnected && ui.root.parentElement === cover) return ui.root;
     ensureStyle();
     const root = document.createElement("div");
     root.id = ROOT_ID;
     root.hidden = true;
     root.innerHTML = MARKUP;
-    ov.appendChild(root);
+    cover.appendChild(root);
     const q = sel => root.querySelector(sel);
     Object.assign(ui, {
       root, calm: q(".fu-nl-calm"), mascotBtn: q(".fu-nl-mascot"), mascot: q(".fu-nl-mascot img"), fx: q(".fu-nl-fx"),
@@ -333,7 +433,12 @@
 
   // ── Logging ────────────────────────────────────────────────────────────────
 
-  const record = (kind, data) => { try { globalThis.FUCompanion?.api?.clientHealth?.record?.(kind, data); } catch { /* logger optional */ } };
+  // the world's first draw ends before client-health is up: hold those records until `ready`
+  function record(kind, data) {
+    const api = globalThis.FUCompanion?.api?.clientHealth;
+    if (!api?.record) { if (pendingRecords.length < 20) pendingRecords.push([kind, data]); return; }
+    try { api.record(kind, data); } catch { /* logger optional */ }
+  }
   const sceneInfo = () => ({ sceneId: globalThis.canvas?.scene?.id ?? null, scene: globalThis.canvas?.scene?.name ?? null });
   const pendingList = d => [...d.files].filter(([, f]) => f.end === null).slice(0, 5).map(([src]) => `${fileName(src)} (${origin(src)})`);
 
@@ -351,7 +456,7 @@
       const texturesMs = d.texDoneAt ? d.texDoneAt - d.t0
         : ends.length && ends.every(x => x !== null) ? Math.round(Math.max(...ends) - d.tp0) : null;
       record("load-progress", {
-        reason, ...sceneInfo(), ms, texturesMs,
+        reason, entry: d.entry, ...sceneInfo(), ms, texturesMs,
         files: rows.length, left: rows.filter(r => !r.done).length, shown: d.shown, calm: d.calm,
         mascot: d.mascot?.id ?? null,
         slowest: rows.filter(r => r.done).sort((a, b) => b.ms - a.ms).slice(0, 5),
@@ -374,7 +479,7 @@ ${R}[hidden],${R} [hidden]{display:none!important}
 ${R} .fu-nl-dither{position:absolute;inset:0;background-image:conic-gradient(rgba(255,255,255,.05) 25%,transparent 0 50%,rgba(255,255,255,.05) 0 75%,transparent 0);background-size:2px 2px}
 ${R} .fu-nl-crt{position:absolute;inset:0;background:repeating-linear-gradient(to bottom,transparent 0,transparent 2px,rgba(0,0,0,.32) 2px,rgba(0,0,0,.32) 3px),radial-gradient(ellipse at center,transparent 58%,rgba(0,0,0,.6) 100%)}
 ${R} .fu-nl-corner{position:absolute;right:56px;bottom:44px;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
-${R} .fu-nl-calm{font-size:15px;color:#d9d0b8;animation:fuNlIn .4s steps(4) both}
+${R} .fu-nl-calm{font-size:15px;color:#d9d0b8;max-width:520px;text-align:right;animation:fuNlIn .4s steps(4) both}
 ${R} .fu-nl-row{display:flex;align-items:flex-end;gap:14px}
 ${R} .fu-nl-mascot,${R} .fu-nl-mascot:hover,${R} .fu-nl-mascot:focus{position:relative;pointer-events:auto;width:auto;height:auto;min-width:44px;min-height:44px;margin:0;padding:0;border:0;background:none;box-shadow:none;line-height:0;cursor:pointer;display:flex;align-items:flex-end;justify-content:center}
 ${R} .fu-nl-mascot:focus-visible{outline:2px solid #c9a44a;outline-offset:2px}
@@ -439,41 +544,70 @@ ${R} .fu-nl-shroom-poke{animation:fuNlShroomPoke .7s steps(3) 1}
   }
 
   wrapTextureLoader();
-  Hooks.on("canvasTearDown", startDraw);
+  wrapProgressBar();
+  Hooks.on("canvasTearDown", () => startDraw());
+  // a draw after a failed one has no canvasTearDown (the world-entry session starts at `init`)
+  Hooks.on("canvasInit", () => {
+    if (!draw || draw.readyAt) startDraw({ entry: !booted });
+    draw.sawLoading = true;
+  });
   Hooks.on("canvasReady", finishDraw);
 
   Hooks.once("init", () => {
     try {
       game.settings.register(MODULE_ID, SETTING, {
         name: "Loading indicator on the black screen",
-        hint: "When a map takes more than 2 seconds to load, the black screen shows \"Now Loading\", progress, tips and a mascot. Turn it off for the plain black screen; nobody needs to reload.",
+        hint: "Shows the game's \"Now Loading\" screen when entering the world and when a map takes more than 2 seconds to load: progress, tips and a mascot, with no map names. Turn it off for Foundry's plain loading bar; nobody needs to reload.",
         scope: "world",
         config: true,
         type: Boolean,
         default: true,
-        onChange: on => { if (!on) hide(); },
+        onChange: on => { if (!on) { hide(); liftBootCover(); document.body.classList.remove(COVER_CLASS); } },
       });
     } catch (err) { console.warn(TAG, "setting registration failed", err); }
-  });
-
-  Hooks.once("ready", () => {
-    ensureStyle();   // the toast lift must work before the indicator ever draws
-    // screen-transition.js builds the cover on ready, before this runs (module.json order)
-    const ov = document.getElementById(OVERLAY_ID);
-    if (ov) ensureDom(ov);
-    // load the art now, so a slow map never waits on it
-    for (const src of [LOGO, ...MASCOTS.map(m => m.src)]) {
+    // load the art now, so neither world entry nor a slow map waits on it (the met mascots follow at ready)
+    for (const src of [LOGO, ...MASCOTS.filter(m => m.always).map(m => m.src)]) {
       const img = new Image();
       img.decoding = "async";
       img.src = src;
       preloaded.push(img);
     }
+    // The world setting is readable here (checked on v12.343); if a read ever fails, enabled() says
+    // yes and `setup` takes the cover back when the switch is off. The indicator starts at once —
+    // the world can set up for half a minute before its first draw, and plain black that long looks hung.
+    try {
+      if (enabled()) showBootCover();
+      if (bootCover) { startDraw({ entry: true }); tick(); }
+    } catch (err) { console.warn(TAG, "boot cover failed", err); }
+  });
+
+  Hooks.once("setup", () => { if (!enabled()) liftBootCover(); });
+
+  Hooks.once("ready", () => {
+    booted = true;
+    try {
+      ensureStyle();   // the toast lift must work before the indicator ever draws
+      // screen-transition.js builds the cover on ready, before this runs (module.json order)
+      const ov = document.getElementById(OVERLAY_ID);
+      if (ov) ensureDom(ov);
+      for (const [kind, data] of pendingRecords.splice(0)) record(kind, data);
+      for (const m of allowedMascots()) {
+        if (m.always) continue;
+        const img = new Image();
+        img.decoding = "async";
+        img.src = m.src;
+        preloaded.push(img);
+      }
+    } catch (err) { console.warn(TAG, "ready setup failed", err); }
+    liftBootCover();
     globalThis.FUCompanion ??= {};
     globalThis.FUCompanion.api ??= {};
     globalThis.FUCompanion.api.loadIndicator = {
       /** The draw in progress, for the console and the test bridge. */
-      state: () => draw && { elapsedMs: Date.now() - draw.t0, ...counts(draw), pending: pendingList(draw),
+      state: () => draw && { entry: draw.entry, elapsedMs: Date.now() - draw.t0, ...counts(draw), pending: pendingList(draw),
         texturesDone: !!draw.texDoneAt, ready: !!draw.readyAt, shown: draw.shown, mascot: draw.mascot?.id },
+      /** The mascots this client may show: the house one plus those the bestiary has met. */
+      mascots: () => allowedMascots().map(m => m.name),
     };
   });
 })();
