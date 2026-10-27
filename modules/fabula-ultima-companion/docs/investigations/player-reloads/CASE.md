@@ -160,7 +160,7 @@ as sessions come in. Don't delete them.
    just before a reload leaves no drift in `prev`. The `visible` event's `hiddenMs` and the sample gaps
    still show it.
 
-**Proposed upgrades** (none built; they need a go-ahead, and the code is the co-dev's):
+**Proposed upgrades** (P4 and the UX item are built; the rest need a go-ahead, and the code is the co-dev's):
 - **P1 reload attribution:** log F5 / Ctrl+R keys, the Esc-menu Reload click, `foundry.utils.debouncedReload`
   calls (with stack), and `beforeunload` (with visibility and time since last input), all into the heartbeat.
   Keep the worst timer drift through the pagehide beat.
@@ -169,11 +169,16 @@ as sessions come in. Don't delete them.
 - **P3 network probes:** host and Forge round-trip time every 30 s, every 5 s during a draw, plus timeouts.
 - **P4 per-draw slow resources:** the slowest assets (host, size, ms) for each draw. On a stall, the scene
   assets that haven't arrived yet.
+  - **Built 2026-10-28** inside the load indicator, through `clientHealth.record()`:
+    - `load-progress`, for every load over 2 s: total ms, `texturesMs` (download vs map build), the
+      slowest files and their origin;
+    - `load-waiting`, at 30 s and 60 s: the files still pending. These survive a reload.
 - **P5 console tail:** drop deprecations, dedupe, keep errors in their own ring.
 - **P6 WebGL context events:** log `webglcontextlost` / `webglcontextrestored` on the canvas, so a GPU
   reset becomes a logged event instead of a guess.
 - **UX (separate decision):** show load progress on the black cover, and toasts above it. This helps
   players now, but it changes the behaviour being measured.
+  - **Built 2026-10-28** (v1.0.473): `scripts/screen-transition/load-indicator.js`.
 
 ## Next test — protocol
 
@@ -211,6 +216,11 @@ as sessions come in. Don't delete them.
    - Also: *read out any message that pops up*, e.g. "The map image didn't load…" or "You have lost
      connection to the server…".
    - And: *say whether you see a black screen, or tokens on a black map.*
+   - **New since v1.0.473:** after 2 s the black screen shows a loading indicator. Have them read out:
+     - the percentage;
+     - "1 file left · <file> (from Forge / the game host)";
+     - "Preparing the map";
+     - whether the timer is still counting. A stopped timer with a turning spinner means the page has hung.
 6. Replay the 10-24 sequence: Valley_Map002 → Dragonslayer Overworld → Midgard_Map001 → 002 → 003 → 006 → 007.
    - Stay **≥7 min** on three of them: Blumairwen's ~5½ min mode needs a scene to stay up that long.
    - On one scene, ask them to alt-tab away for 7 min (tests H3).
@@ -231,6 +241,11 @@ as sessions come in. Don't delete them.
 
 **Keep comparable with 10-24:** no cache proxy for this test (`reports/2026-10-25-host-cache-proxy-setup.md`
 stays open), unless the host decides otherwise. Record it in `conditions` either way.
+
+**The load indicator IS live for this test** (v1.0.473): record `loadIndicator: true` in `conditions`.
+- If it misbehaves, the GM turns it off under Configure Settings → "Loading indicator on the black
+  screen". It takes effect at once, with no reloads.
+- Its records come out of `client-health-summary` as the "slow load" table and the "still loading" lines.
 
 ## Research (2026-10-28)
 
@@ -289,3 +304,21 @@ of RAM; it was closed as not planned.
   - Interactive mockup, not an implementation: https://claude.ai/artifact/FoNRX5xfK5UBMGQJgzk3TN
   - **Build note:** `UI/DRG_LoadingIcon.webm` is 4.2 MB, too heavy to show reliably during a slow
     load. Ship a small preloaded version, or the static logo with a CSS breathing fade.
+- **2026-10-28 (later, host changed the plan):** build it **before** the test, with guardrails.
+  - **Built:** `load-indicator.js`, v1.0.473. It is the Corner layout in Signika, with:
+    - CRT scanlines and dither on the black only;
+    - tips (three stand-ins);
+    - the stuck file named;
+    - load records sent to client-health;
+    - toasts lifted above the black.
+  - **Mascots:** a random one per load from Momonga, Slime, Sylph, Prickle Boar and Shroomy, each
+    with its own idle and poke reaction.
+  - **Logo:** the new `UI/DRG_LoadingLogo.webp` (31 KB, white Title_UI) on Forge and in the host's art folder.
+  - **Live-tested** in a sandbox Foundry: a copy of the world through `--dataPath`, port 30001, a
+    throttled network, PIXI workers off so the throttle applies.
+    - All stages were seen.
+    - The GM switch worked mid-load.
+    - The records reached the GM's log file.
+    - One load took 106 s, all of it downloading (`texturesMs` 106.4 s) — the H2 signature.
+  - **Commits:** `8ae307cf` + `da05f789` on `feat/zp-dishes` (another session's branch, which was
+    checked out at the time), mirrored on `main` as `e76e0873` + `da10d113`.

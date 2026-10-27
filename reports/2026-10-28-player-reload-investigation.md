@@ -56,3 +56,11 @@ pressed F5. Trinio and Silryantish had 0 reloads.
 
 - 2026-10-28 (onigensou's side): case opened. The 2026-10-24 baseline was re-derived with the new
   `_tools/` scripts, and the numbers match the deep-dive (13 page loads each).
+- 2026-10-28 (onigensou's side): **load indicator shipped before tonight's test** (v1.0.473,
+  `scripts/screen-transition/load-indicator.js`).
+  - It draws inside the black cover. It never decides when the cover lifts.
+  - It shows a "Now Loading" corner from 2 s and lifts toasts above the black.
+  - GM switch: "Loading indicator on the black screen".
+  - For sarunphat: `client-health.js` gained `record(kind, data)`, a one-line API addition, so the
+    indicator logs `load-progress` / `load-waiting`. That covers P4 in CASE.md.
+  - Commits `8ae307cf` + `da05f789` sit on `feat/zp-dishes`, mirrored on `main` as `e76e0873` + `da10d113`.
