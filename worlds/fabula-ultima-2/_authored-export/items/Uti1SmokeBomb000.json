@@ -39,7 +39,15 @@
       "demon_ef": "100",
       "description": "<ul><li><p>Inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.ZdBbIFKzxQQcY71T\" data-id=\"ZdBbIFKzxQQcY71T\" data-type=\"JournalEntry\">Obscure</a> on the target creature.</p></li></ul>",
       "dragon_ef": "100",
-      "effect_table": {},
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Obscure",
+          "effect_kind": "apply_ae",
+          "effect_label": "smokebomb_obscure",
+          "target_ref": "action_targets"
+        }
+      },
       "elemental_ef": "100",
       "enforcer_ef": "100",
       "fey_ef": "100",

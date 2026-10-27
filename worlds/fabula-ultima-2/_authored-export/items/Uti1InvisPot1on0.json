@@ -39,7 +39,16 @@
       "demon_ef": "100",
       "description": "<ul><li><p>Target ally gains <a class=\"content-link\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\">Hidden</a> for <strong>three turns</strong>.</p></li></ul>",
       "dragon_ef": "100",
-      "effect_table": {},
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "3",
+          "ae_template_ref": "Hidden",
+          "effect_kind": "apply_ae",
+          "effect_label": "invispotion_hidden",
+          "target_ref": "action_targets"
+        }
+      },
       "elemental_ef": "100",
       "enforcer_ef": "100",
       "fey_ef": "100",

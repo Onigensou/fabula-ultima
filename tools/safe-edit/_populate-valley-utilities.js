@@ -71,11 +71,18 @@ const DISHES = [
   { id: "Un1qD1shDragonSt", ae: "Un1qAEDragonStew", name: "Dragon Stew",
     img: "icons/consumables/food/bowl-stew-brown.webp",
     core: [{ name: "Draconic Essence" }, { name: "Moonshroom" }],
+    // Same trap as the Sashimi: Rice + Rock Salt filler would resolve as Rice Ball.
+    priority: 5,
     desc: "<p><em>Draconic essence simmered with moonshrooms until the broth runs clear and stays faintly warm no matter how long it sits.</em></p><p>Grants immunity to <strong>Paralyzed</strong> until the next rest.</p>",
     changes: [{ key: "condition_paralyzed", mode: AE_OVERRIDE, value: "IM", priority: null }] },
   { id: "Un1qD1shMantaSas", ae: "Un1qAEMantaSashi", name: "Manta Sashimi",
     img: "icons/consumables/food/plate-fish-bowl-bones-brown.webp",
     core: [{ name: "Tempest Manta" }, { name: "Rock Salt" }],
+    // Rock Salt is also Rice Ball's core (Rice + Rock Salt) and Pufferfish
+    // Sashimi's; among equal-size core matches the resolver falls back to
+    // declaration order, so without a priority a pot of Rice + Rock Salt +
+    // Tempest Manta cooks a Rice Ball. The Legendary fish must win.
+    priority: 10,
     desc: "<p><em>Tempest manta sliced thin and salted. It still crackles faintly on the tongue.</em></p><p>Grants <strong>Resistance to Bolt damage</strong> until the next rest.</p>",
     // affinity_3 = bolt (apply-damage-core index map). Same custom-mode idiom as
     // the Wet status (affinity_3 "VU", mode 0), value flipped to RS.
@@ -107,7 +114,10 @@ function makeCarrier(src, c) {
   p.skill_tags = c.tags; p.skill_target = c.target;
   p.description = c.bullet; p.flavor_text = c.flavor;
   p.isSet = false; p.set_name = "";
-  p.effect_table = {};                        // the effect lives on the ACTION (Remedy shape)
+  // The ACTION drives the effect (DECLARE resolves the linked activation skill);
+  // the carrier keeps an inert copy of the row for parity with Café au Lait /
+  // Golem Soulstone / Turbo Remedy / Mixed Juice / Blue Bovine (5 of 6 siblings).
+  p.effect_table = { "0": { effect_label: c.effectLabel, ...c.effect } };
   p.related_item_list = { [c.actionId]: { uuid: `Item.${c.actionId}`, name: c.name, id: "${item.id}", related_item_description: c.bullet } };
   p.item_skill_active = { [c.actionId]: { uuid: `Item.${c.actionId}`, name: c.name, id: "${item.id}", skill_maxLevel: 1, skill_cost: "-", skill_description: c.bullet } };
   d._stats = stats(c.id);
@@ -119,6 +129,12 @@ function makeAction(src, c) {
   d._id = c.actionId; d.name = c.name; d.img = c.img; d.folder = EMBED_FOLDER; d.effects = []; d.sort = 0;
   d.ownership = { default: 0, [GM_USER]: 3 };
   d.system.uniqueId = c.actionId;
+  // CSB resolves a carrier's item_skill_active / related_item_list LIVE from the
+  // CHILD side: every item whose `system.container` is the carrier id. The stored
+  // container props on the carrier are only a cache. A clone that keeps the
+  // source's container id shows up under Café au Lait and leaves the new carrier
+  // empty (bit us 2026-10-27).
+  d.system.container = c.id;
   const p = d.system.props;
   p.skill_type = "Item"; p.skill_target = c.target; p.cost = "-"; p.action_command = "item";
   p.on_activate_effect_ref = c.effectLabel;
@@ -253,7 +269,7 @@ const ROWS = [["Uti1RowSmokeBomb", CONSUMABLES[0], 23], ["Uti1RowInvisPotn", CON
   const t2 = clone(table); t2.results = resultIds; t2.formula = `1d${Math.max(24, resultIds.length)}`;
   tableBatch.push({ type: "put", key: `!tables!${TABLE_ID}`, value: t2 });
 
-  const RECIPES = DISHES.map((d) => ({ name: d.name, dishId: d.id, core: d.core }));
+  const RECIPES = DISHES.map((d) => ({ name: d.name, dishId: d.id, core: d.core, ...(d.priority ? { priority: d.priority } : {}) }));
 
   if (DRY) {
     console.log(`[DRY] ${CONSUMABLES.length} consumables (+${CONSUMABLES.length} actions), ${DISHES.length} dishes, ${tableBatch.length - 1} table rows → formula ${t2.formula} (${resultIds.length} results)`);

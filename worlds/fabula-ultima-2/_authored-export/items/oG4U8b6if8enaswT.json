@@ -194,7 +194,8 @@
               }
             ],
             "dishId": "Un1qD1shDragonSt",
-            "name": "Dragon Stew"
+            "name": "Dragon Stew",
+            "priority": 5
           },
           {
             "core": [
@@ -206,7 +207,8 @@
               }
             ],
             "dishId": "Un1qD1shMantaSas",
-            "name": "Manta Sashimi"
+            "name": "Manta Sashimi",
+            "priority": 10
           }
         ]
       }
