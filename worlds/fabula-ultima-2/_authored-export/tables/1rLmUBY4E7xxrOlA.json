@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "P6epyIfueydL8Bu4",
-  "formula": "1d40",
+  "formula": "1d42",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Red%20Berry.png",
   "name": "Fafnir Castle - Material",
   "ownership": {
@@ -260,6 +260,36 @@
       "text": "Eyeball",
       "type": "document",
       "weight": 3
+    },
+    {
+      "_id": "ZpRowMeadFafnir0",
+      "documentCollection": "Item",
+      "documentId": "ZpMatMead0000000",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Wuthering%20Wave/Item_Nectarwine.webp",
+      "range": [
+        42,
+        42
+      ],
+      "text": "Mead",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ZpRowPrimeStkFaf",
+      "documentCollection": "Item",
+      "documentId": "ZpMatPrimeSteak0",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Genshin/Item_Raw_Meat.webp",
+      "range": [
+        41,
+        41
+      ],
+      "text": "Prime Steak",
+      "type": "document",
+      "weight": 1
     }
   ],
   "sort": 0

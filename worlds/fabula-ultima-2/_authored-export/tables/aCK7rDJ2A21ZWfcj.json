@@ -16,7 +16,7 @@
     }
   },
   "folder": "DAg9RfuNcR9huljS",
-  "formula": "1d12",
+  "formula": "1d13",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Red%20Berry.png",
   "name": "Wyrmwood & Ancient Temple — Material",
   "ownership": {
@@ -202,6 +202,21 @@
         3
       ],
       "text": "Animal Fur",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "ZpRowDewdropWyrm",
+      "documentCollection": "Item",
+      "documentId": "ZpMatDewdrop0000",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Genshin/Item_Drop_of_Tainted_Water.webp",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Dewdrop",
       "type": "document",
       "weight": 1
     }

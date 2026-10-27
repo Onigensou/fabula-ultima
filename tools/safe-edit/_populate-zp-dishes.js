@@ -160,6 +160,9 @@ const newEmbedId = (actorId, matId) => ("Zp" + actorId.slice(0, 7) + matId.slice
 // --------------------------------------------------------------------------
 (async () => {
   assertGameClosed();
+  // Snapshot BEFORE any openCollection — our own handle holds the LevelDB lock
+  // and breaks the backup copy otherwise.
+  if (!DRY) { snapshotCollection("items"); snapshotCollection("tables"); snapshotCollection("actors"); }
   const problems = [];
   for (const x of [...MATERIALS, ...DISHES]) if (x.id.length !== 16) problems.push(`id ${x.id} is ${x.id.length} chars`);
   for (const [rid] of ROWS) if (rid.length !== 16) problems.push(`row id ${rid} is ${rid.length} chars`);
@@ -299,7 +302,6 @@ const newEmbedId = (actorId, matId) => ("Zp" + actorId.slice(0, 7) + matId.slice
   console.log(`   placed unlinked tokens with a stale steal table: ${placed.length ? placed.join("; ") : "none"}`);
   if (DRY) { await tdb.close(); await adb.close(); return; }
 
-  snapshotCollection("items"); snapshotCollection("tables"); snapshotCollection("actors");
   await tdb.batch(tableBatch); await tdb.close();
   await adb.batch(actorBatch); await adb.close();
   const w = await openCollection("items"); await w.batch(itemBatch); await w.close();

@@ -209,6 +209,49 @@
             "dishId": "Un1qD1shMantaSas",
             "name": "Manta Sashimi",
             "priority": 10
+          },
+          {
+            "core": [
+              {
+                "name": "Meat"
+              },
+              {
+                "name": "Egg"
+              },
+              {
+                "name": "Rice"
+              }
+            ],
+            "dishId": "ZpD1shKatsudon00",
+            "name": "Katsudon"
+          },
+          {
+            "core": [
+              {
+                "name": "Flour"
+              },
+              {
+                "name": "Honey"
+              },
+              {
+                "name": "Dewdrop"
+              }
+            ],
+            "dishId": "ZpD1shMannaCake0",
+            "name": "Manna Cake"
+          },
+          {
+            "core": [
+              {
+                "name": "Prime Steak"
+              },
+              {
+                "name": "Mead"
+              }
+            ],
+            "dishId": "ZpD1shSaehrimnir",
+            "name": "Sæhrímnir Feast",
+            "priority": 10
           }
         ]
       }
