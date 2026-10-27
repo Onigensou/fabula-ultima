@@ -29,7 +29,10 @@ const LAB_GAP = 2, LAB_SIDE = 6, STEP_GAP = 10, MARGIN = 16;
 export const LIFT = 0.5;  // back-row lift: 0 = straight sideways from a gap, 1 = right angle to the slant
 
 // Enemy zone + today's enemy line (director-init computeLayout, ENEMY_SPREAD applied).
-const Z = { x0: 80, x1: 660, y0: 90, y1: 776 };
+// y1 stops above the GM desk / player HUD (measured live 2026-10-28: the desk
+// covers stage y ≥ 624 at the battle camera; the screen top shows down to -139).
+export const ENEMY_ZONE = { x0: 80, x1: 660, y0: 30, y1: 620 };
+const Z = ENEMY_ZONE;
 const E0 = { x: 360.8, y: 226.2 }, E1 = { x: 249.2, y: 463.8 };
 const BACK_X = 265, FRONT_X = 478, ZIG = 22;
 const SLOPE = (E1.x - E0.x) / (E1.y - E0.y), LANE_GAP = FRONT_X - BACK_X;
@@ -85,7 +88,7 @@ function bbox(units, pos) {
 }
 function fitsClean(units, pos) {
   const b = bbox(units, pos);
-  return clashes(units, pos) === 0 && b.y1 <= REF_H && b.y0 >= 0;
+  return clashes(units, pos) === 0 && b.y1 <= Z.y1 + 1 && b.y0 >= Z.y0 - 1;
 }
 
 // ── enemy formations ─────────────────────────────────────────────────────

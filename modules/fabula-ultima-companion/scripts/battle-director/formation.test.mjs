@@ -9,7 +9,7 @@
 // (texture contain-fit into one cell × token scale), measured 2026-10-27.
 // ============================================================================
 import assert from "node:assert/strict";
-import { planEnemies, planEnemyJoin, planParty, placeSupport, clashes, partyLine, REF_H } from "./formation.js";
+import { planEnemies, planEnemyJoin, planParty, placeSupport, clashes, partyLine, REF_H, ENEMY_ZONE } from "./formation.js";
 
 const CELL = 110;
 const lab = (name, shield) => ({ lw: Math.max(name.length * 8.3 + (shield ? 22 : 0), 60), lh: 41 });
@@ -28,12 +28,13 @@ const gigas = () => unit("gigas", "Gigas", 142, 216, 2.45, { rank: "elite", shie
 
 let n = 0;
 const t = (name, fn) => { fn(); n++; };
-const onStage = (units, pos) => units.every((u) => pos[u.key].y - u.h / 2 >= 0 && pos[u.key].y + u.h / 2 + u.lh <= REF_H);
+// Visible floor: above the GM desk / player HUD, inside the enemy zone.
+const onStage = (units, pos) => units.every((u) => pos[u.key].y - u.h / 2 >= ENEMY_ZONE.y0 - 1 && pos[u.key].y + u.h / 2 + 2 + u.lh <= ENEMY_ZONE.y1 + 1);
 
-t("enemy picker: 3–4 one diagonal, 5–6 two diagonals, all clean", () => {
+t("enemy picker: 2–3 one diagonal, 4–6 two diagonals, all clean and above the HUD", () => {
   const cases = [
     [[bandit(), goblin(), mage()], "B"],
-    [[bandit(), goblin(), mage(), wolf()], "B"],
+    [[bandit(), goblin(), mage(), wolf()], "B×2"],   // one line of four runs under the HUD
     [[bandit(), goblin(), mage(), wolf(), imp()], "B×2"],
     [[bandit(), goblin(), mage(), wolf(), imp(), bandit("bandit2")], "B×2"],
   ];

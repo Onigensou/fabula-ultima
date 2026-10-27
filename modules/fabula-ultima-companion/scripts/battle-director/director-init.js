@@ -683,8 +683,12 @@ async function liveFormation(scene, disposition, { anchor = null, casterTokenId 
   if (SimMode.active) return null;
   try {
     const grid = scene.grid?.size ?? 100;
+    // Only units in the fight: director-spawned or a combatant. Scenery tokens
+    // (a test dummy left on the scene) must never be counted or moved by a re-form.
+    const inFight = (t) => !!t.flags?.[FLAG_NS]?.[FLAG_DIRECTOR_SPAWNED]
+      || !!game.combat?.combatants?.some?.((c) => c.tokenId === t.id);
     const live = (scene.tokens?.contents ?? []).filter((t) =>
-      t.disposition === disposition && !t.hidden && (t.alpha ?? 1) > 0.05 && t.actor);
+      t.disposition === disposition && !t.hidden && (t.alpha ?? 1) > 0.05 && t.actor && inFight(t));
     const placed = [], current = {};
     for (const t of live) {
       const kind = disposition === -1 ? "enemy" : (isNpcActor(t.actor) ? "summon" : "pc");
