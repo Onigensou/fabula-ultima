@@ -202,5 +202,34 @@ const a = cooking.resolve(potD, { config: CFG_C, rng: () => 0.99 });
 const b = cooking.resolve(potD, { config: CFG_C, rng: () => 0.01 });
 expect("deterministic across rng", [a.dishId, b.dishId], ["grand", "grand"]);
 
+// 31–36. Zero Power dishes (_populate-zp-dishes.js), declared AFTER the older
+// recipes exactly as in the live config, so declaration order is not on their side.
+const CFG_ZP = { ...CFG, recipes: [
+  { name: "Grilled-Hog Steak", dishId: "hog",     core: [{ name: "Meat" }, { name: "Cooking Oil" }] },
+  { name: "Moon Custard",      dishId: "custard", core: [{ name: "Egg" }, { name: "Fresh Milk" }] },
+  { name: "Herbal Tea",        dishId: "tea",     core: [{ name: "Darkroot Herb" }, { name: "Honey" }] },
+  { name: "Rice Ball",         dishId: "riceball", core: [{ name: "Rice" }, { name: "Rock Salt" }] },
+  { name: "Katsudon",          dishId: "katsudon", core: [{ name: "Meat" }, { name: "Egg" }, { name: "Rice" }] },
+  { name: "Manna Cake",        dishId: "manna",   core: [{ name: "Flour" }, { name: "Honey" }, { name: "Dewdrop" }] },
+  { name: "Sæhrímnir Feast",   dishId: "feast",   core: [{ name: "Prime Steak" }, { name: "Mead" }], priority: 10 },
+]};
+const optsZ = (extra = {}) => ({ config: CFG_ZP, rng: () => 0.0, ...extra });
+const meat = () => ing("Meat", "umami"), riceZ = () => ing("Rice", "sweet"), eggZ = () => ing("Egg", "umami");
+const salt = () => ing("Rock Salt", "salty"), oil = () => ing("Cooking Oil", "umami");
+const steak = () => ing("Prime Steak", "umami", "Rare"), mead = () => ing("Mead", "sweet", "Rare");
+
+r = cooking.resolve([meat(), eggZ(), riceZ(), salt()], optsZ());
+expect("Katsudon beats Rice Ball", [r.kind, r.dishId], ["recipe", "katsudon"]);
+r = cooking.resolve([meat(), eggZ(), riceZ(), oil()], optsZ());
+expect("Katsudon beats Grilled-Hog Steak", [r.kind, r.dishId], ["recipe", "katsudon"]);
+r = cooking.resolve([ing("Flour", "sweet"), ing("Honey", "sweet", "Uncommon"), ing("Dewdrop", "sweet"), ing("Darkroot Herb", "bitter", "Uncommon")], optsZ());
+expect("Manna Cake beats Herbal Tea", [r.kind, r.dishId], ["recipe", "manna"]);
+r = cooking.resolve([steak(), mead(), riceZ(), salt()], optsZ());
+expect("Feast beats Rice Ball (priority)", [r.kind, r.dishId], ["recipe", "feast"]);
+r = cooking.resolve([steak(), ing("A", "sour"), ing("B", "sour"), ing("C", "sour")], optsZ());
+expect("Feast 1 short → near-miss", [r.kind, r.nearMiss], ["dish", true]);
+r = cooking.resolve([meat(), eggZ(), ing("A", "sour"), ing("B", "umami")], optsZ());
+expect("Katsudon 1 short → near-miss", [r.kind, r.nearMiss], ["dish", true]);
+
 console.log(failures ? `\n${failures} FAILURES` : "\nALL PASS");
 process.exit(failures ? 1 : 0);
