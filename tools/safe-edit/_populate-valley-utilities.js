@@ -239,9 +239,16 @@ const ROWS = [["Uti1RowSmokeBomb", CONSUMABLES[0], 23], ["Uti1RowInvisPotn", CON
   await adb.close();
 
   const batch = [];
+  // Animation fields are authored separately (tools/anim-studio/smoke-bomb.js,
+  // invisibility-potion.js, pushed with `anim-studio push`), so a re-run carries
+  // the stored ones over instead of wiping them.
+  const ANIM_KEYS = ["animation_script", "animation_preload_urls", "animation_damage_timing_options", "animation_damage_timing_offset"];
   for (const c of CONSUMABLES) {
     batch.push({ type: "put", key: `!items!${c.id}`, value: makeCarrier(carrierSrc, c) });
-    batch.push({ type: "put", key: `!items!${c.actionId}`, value: makeAction(actionSrc, c) });
+    const action = makeAction(actionSrc, c);
+    const prev = await db.get(`!items!${c.actionId}`).catch(() => null);
+    for (const k of ANIM_KEYS) if (prev?.system?.props?.[k] != null && prev.system.props[k] !== "") action.system.props[k] = prev.system.props[k];
+    batch.push({ type: "put", key: `!items!${c.actionId}`, value: action });
   }
   for (const d of DISHES) {
     batch.push({ type: "put", key: `!items!${d.id}`, value: makeDish(d, tpl) });
