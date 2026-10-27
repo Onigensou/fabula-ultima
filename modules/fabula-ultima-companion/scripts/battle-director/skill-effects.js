@@ -38,6 +38,7 @@ import { SimMode } from "./sim/sim-mode.js";
 import { INTENTS } from "./intents.js";
 import { NAME as CODE_BACKED_NAME } from "../shared/code-backed-content.js";
 import { boundSummonRef } from "../shared/summon-bindings.js";
+import { classifyEffect, isStatusTier } from "./status-classifier.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -2122,6 +2123,15 @@ export async function findTargetOwnedCandidates({ skill, trigger, targetActor, p
 // apply pre-accepted candidates. Mirrors the dispatch in
 // firePassiveTriggers' main loop, minus the matcher/mode gating
 // (caller has already done both).
+// Clock triggers: the reaction fires because time passed, not because something
+// happened. On a status AE that makes it the status's own tick.
+const CLOCK_TRIGGERS = new Set(["turn_start", "turn_end", "pre_turn_end", "round_start", "round_end", "start_of_turn", "end_of_turn"]);
+function isStatusClockTick(carrier, cfg, rowKey) {
+  const row = cfg?.reaction_config_table?.[rowKey] ?? cfg?.reaction_effect_table?.[rowKey] ?? null;
+  if (!CLOCK_TRIGGERS.has(String(row?.reaction_trigger ?? "").trim())) return false;
+  try { return isStatusTier(classifyEffect(carrier)); } catch { return false; }
+}
+
 export async function firePreAcceptedCandidate({ director, casterActor, candidate, payload, remotePrompt = null }) {
   if (!candidate?.ref) return { ok: false, reason: "no-ref" };
   const { makeChainContext } = await import("./skill-targeting.js");
@@ -2245,7 +2255,17 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
   // top of it (King Gorger's Elemental Overflow: the wave IS the announcement).
   // For an AE-carried reaction the keyword is read off the ORIGIN skill.
   const hideCard = hasInherentKeyword(skillForCtx ?? carrier, "silent");
-  if (isAutoFireReactionMode(candidate.mode) && ctx.reactorToken && !hideCard) {
+  // Token status plan "G + E" (2026-10-27): a status's own clock tick (Burn
+  // at turn start, Regen…) is not a passive. No card: its pip / strip tile
+  // flashes on every client instead, and the damage number carries the amount.
+  const statusTick = candidate.carrierKind === "ae" && isStatusClockTick(carrier, aeReactionCfg, candidate.rowKey);
+  if (statusTick && ctx.reactorToken) {
+    try {
+      const { broadcastStatusTick } = await import("./passive-card-ui/director-passive-card-ui.js");
+      broadcastStatusTick({ casterToken: ctx.reactorToken, name: carrier?.name });
+    } catch (e) { warn("firePreAcceptedCandidate: status tick flash threw", e); }
+  }
+  if (isAutoFireReactionMode(candidate.mode) && ctx.reactorToken && !hideCard && !statusTick) {
     try {
       const { enqueuePassiveCard } = await import("./passive-card-ui/director-passive-card-ui.js");
       enqueuePassiveCard({
