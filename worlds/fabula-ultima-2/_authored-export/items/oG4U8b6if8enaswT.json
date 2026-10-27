@@ -183,6 +183,30 @@
             ],
             "dishId": "Un1qD1shGo1emSt0",
             "name": "Golem Stew"
+          },
+          {
+            "core": [
+              {
+                "name": "Draconic Essence"
+              },
+              {
+                "name": "Moonshroom"
+              }
+            ],
+            "dishId": "Un1qD1shDragonSt",
+            "name": "Dragon Stew"
+          },
+          {
+            "core": [
+              {
+                "name": "Tempest Manta"
+              },
+              {
+                "name": "Rock Salt"
+              }
+            ],
+            "dishId": "Un1qD1shMantaSas",
+            "name": "Manta Sashimi"
           }
         ]
       }

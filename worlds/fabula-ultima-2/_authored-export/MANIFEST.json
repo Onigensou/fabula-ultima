@@ -5123,6 +5123,12 @@
         "effects": 0
       },
       {
+        "id": "Un1qD1shDragonSt",
+        "name": "Dragon Stew",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "Y7JL7P9hbWipwb90",
         "name": "Dragonic Scalemail",
         "type": "equippableItem",
@@ -7643,6 +7649,18 @@
         "effects": 2
       },
       {
+        "id": "Uti1InvisPot1Act",
+        "name": "Invisibility Potion",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "Uti1InvisPot1on0",
+        "name": "Invisibility Potion",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "FXRrLrmoHtcMN5s6",
         "name": "Invocation",
         "type": "equippableItem",
@@ -8607,6 +8625,12 @@
         "name": "Mana Robe",
         "type": "equippableItem",
         "effects": 2
+      },
+      {
+        "id": "Un1qD1shMantaSas",
+        "name": "Manta Sashimi",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "jWg0UIBsRZp9IxAr",
@@ -11551,6 +11575,18 @@
       {
         "id": "uGTrNO3kuQNIFGrg",
         "name": "Sluglord",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "Uti1SmokeBomb000",
+        "name": "Smoke Bomb",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "Uti1SmokeBombAct",
+        "name": "Smoke Bomb",
         "type": "equippableItem",
         "effects": 0
       },
@@ -26469,7 +26505,7 @@
       {
         "id": "S4PHPxGHldBoJVxj",
         "name": "Valley of the Dragon - Consumable",
-        "results": 22
+        "results": 24
       },
       {
         "id": "Oijx8ksubxq9pc1R",

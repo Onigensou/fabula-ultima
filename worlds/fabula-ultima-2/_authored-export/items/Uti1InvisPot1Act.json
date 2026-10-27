@@ -1,0 +1,54 @@
+{
+  "_id": "Uti1InvisPot1Act",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1793072040236,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/consumables/potions/bottle-round-empty-glass.webp",
+  "name": "Invisibility Potion",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "aITJntRz2m10Rgeo",
+    "props": {
+      "action_command": "item",
+      "cost": "-",
+      "description": "<ul><li><p>Target ally gains <a class=\"content-link\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\">Hidden</a> for <strong>three turns</strong>.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_duration_rounds": "3",
+          "ae_template_ref": "Hidden",
+          "effect_kind": "apply_ae",
+          "effect_label": "invispotion_hidden",
+          "target_ref": "action_targets"
+        }
+      },
+      "isCheck": false,
+      "on_activate_effect_ref": "invispotion_hidden",
+      "skill_description": "<ul><li><p>Target ally gains <a class=\"content-link\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\">Hidden</a> for <strong>three turns</strong>.</p></li></ul>",
+      "skill_tags": "potion",
+      "skill_target": "One Ally",
+      "skill_type": "Item",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "Uti1InvisPot1Act"
+  },
+  "type": "equippableItem"
+}
