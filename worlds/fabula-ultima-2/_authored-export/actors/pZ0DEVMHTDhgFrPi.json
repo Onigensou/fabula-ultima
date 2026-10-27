@@ -82,7 +82,8 @@
           ],
           "system": {
             "tags": [
-              "buff"
+              "buff",
+              "ready"
             ]
           },
           "tint": "#ffffff",
@@ -656,7 +657,8 @@
           ],
           "system": {
             "tags": [
-              "buff"
+              "buff",
+              "ready"
             ]
           },
           "tint": "#ffffff",
@@ -1005,7 +1007,11 @@
           "statuses": [
             "fud-protect-ready"
           ],
-          "system": {},
+          "system": {
+            "tags": [
+              "ready"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"

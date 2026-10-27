@@ -502,16 +502,16 @@
             },
             "effectmacro": {
               "onCreate": {
-                "script": "await TokenMagic.addUpdateFiltersOnSelected(\"Burns\");\nnew Sequence()\n  .sound(\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Condition_Burn.ogg\")\n  .volume(0.5)\n  .play()"
+                "script": "new Sequence()\n  .sound(\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Condition_Burn.ogg\")\n  .volume(0.5)\n  .play()"
               },
               "onDelete": {
-                "script": "await TokenMagic.deleteFiltersOnSelected(\"Burns\");\nnew Sequence()\n  .sound(\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Recovery.ogg\")\n  .volume(0.5)\n  .play()"
+                "script": "new Sequence()\n  .sound(\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Recovery.ogg\")\n  .volume(0.5)\n  .play()"
               },
               "onDisable": {
-                "script": "await TokenMagic.deleteFiltersOnSelected(\"Burns\");\nnew Sequence()\n  .sound(\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Recovery.ogg\")\n  .volume(0.5)\n  .play()"
+                "script": "new Sequence()\n  .sound(\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Recovery.ogg\")\n  .volume(0.5)\n  .play()"
               },
               "onEnable": {
-                "script": "await TokenMagic.addUpdateFiltersOnSelected(\"Burns\");\nnew Sequence()\n  .sound(\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Condition_Burn.ogg\")\n  .volume(0.5)\n  .play()"
+                "script": "new Sequence()\n  .sound(\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Condition_Burn.ogg\")\n  .volume(0.5)\n  .play()"
               }
             },
             "fabula-ultima-companion": {

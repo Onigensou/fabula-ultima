@@ -85,7 +85,8 @@
       ],
       "system": {
         "tags": [
-          "buff"
+          "buff",
+          "ready"
         ]
       },
       "tint": "#ffffff",
