@@ -151,7 +151,24 @@ export function renderAll() {
 
 export function clearAll() { for (const id of [...S.strips.keys()]) drop(id); }
 
-// Feet of the token, in screen px; hidden while the token is (spawn / KO fade / hidden).
+// Live tuning (per client, remembered in localStorage):
+//   FUCompanion.api.npcStatusStrip.tune({ dy: 2, scale: 1, belowName: true })
+const TUNE_KEY = "fu-npc-strip-tune";
+const TUNE = { dy: FEET_GAP_PX, scale: 1, belowName: true };
+try { Object.assign(TUNE, JSON.parse(localStorage.getItem(TUNE_KEY) ?? "{}")); } catch { /* */ }
+export function tune(patch = null) {
+  if (patch && typeof patch === "object") {
+    for (const k of ["dy", "scale"]) if (Number.isFinite(Number(patch[k]))) TUNE[k] = Number(patch[k]);
+    if ("belowName" in patch) TUNE.belowName = !!patch.belowName;
+    try { localStorage.setItem(TUNE_KEY, JSON.stringify(TUNE)); } catch { /* */ }
+    tick();
+  }
+  return { ...TUNE };
+}
+
+// Under the token's feet, or under its nameplate when one is showing (the
+// name sits right where the feet are); hidden while the token is hidden,
+// spawning or fading out.
 function place(token, s) {
   const view = canvas?.app?.view;
   if (!view || token.destroyed) return;
@@ -160,8 +177,13 @@ function place(token, s) {
   if (s.el.style.display === "none") s.el.style.display = "";
   const rect = view.getBoundingClientRect();
   const pt = token.toGlobal(new PIXI.Point(token.w / 2, token.h));
-  const zoom = Math.min(1.25, Math.max(0.7, canvas.stage?.scale?.x ?? 1));
-  s.el.style.transform = `translate(${Math.round(rect.left + pt.x)}px, ${Math.round(rect.top + pt.y + FEET_GAP_PX)}px) translateX(-50%) scale(${zoom.toFixed(3)})`;
+  let y = pt.y;
+  const np = token.nameplate;
+  if (TUNE.belowName && np && np.visible && np.worldVisible && np.renderable !== false && String(np.text ?? "").trim()) {
+    try { y = Math.max(y, np.getBounds().bottom); } catch { /* */ }
+  }
+  const zoom = Math.min(1.25, Math.max(0.7, canvas.stage?.scale?.x ?? 1)) * TUNE.scale;
+  s.el.style.transform = `translate(${Math.round(rect.left + pt.x)}px, ${Math.round(rect.top + y + TUNE.dy)}px) translateX(-50%) scale(${zoom.toFixed(3)})`;
 }
 
 function tick() {
@@ -201,6 +223,6 @@ export function initNpcStatusStrip() {
   if (canvas?.ready) { S.ticker = tick; canvas.app.ticker.add(S.ticker); renderAll(); }
   globalThis.FUCompanion = globalThis.FUCompanion || {};
   globalThis.FUCompanion.api = globalThis.FUCompanion.api || {};
-  globalThis.FUCompanion.api.npcStatusStrip = { renderAll, clearAll, count: () => S.strips.size };
+  globalThis.FUCompanion.api.npcStatusStrip = { renderAll, clearAll, tune, count: () => S.strips.size };
   log("[NpcStrip] ready");
 }

@@ -266,8 +266,9 @@ function buildRow(title, icon) {
   // fall through to the text branch and print its whole path on the card.
   if (/^(https?:|data:|\/|[\w.-]+\/)/.test(iconStr) || /\.(png|jpe?g|webp|gif|svg|avif)(\?.*)?$/i.test(iconStr)) {
     const img = document.createElement("img");
-    img.src = iconStr;
     img.className = "fud-pc-img";
+    img.onerror = () => img.remove();   // a broken icon leaves no empty frame
+    img.src = iconStr;
     iconEl.appendChild(img);
   } else {
     iconEl.textContent = iconStr;

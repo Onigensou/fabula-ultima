@@ -44,6 +44,8 @@ import { playUiHoverSfx, playUiClickSfx, playUiOpenSfx, playUiBackSfx } from "./
 import { ensureDrawerStyles, escapeHtml as esc, pickDocked } from "./drawer-views.js";
 import { rightEdgeReserve, hudScale, readUnitInfo } from "./director-player-hud.js";
 import { tabAlert, tabAlertClear } from "./tab-alert.js";
+import { TIER } from "./status-classifier.js";
+import { rowTier, rowTurns, rowSpent, sortRows, statusTipHTML, foldTipHTML } from "./status-tip.js";
 import { setGmFocus, focusState, setFocusPart, setFocusAll, FOCUS_PARTS, FOCUS_TOOLS, toolAvailable, openTool } from "./battle-focus.js";
 
 const MODULE_ID = "fabula-ultima-companion";
@@ -330,6 +332,11 @@ function ensureStyles() {
 .gmd-ur .x2 .ipd { display: flex; gap: 2px; } .gmd-ur .x2 .ipd i { width: 6px; height: 6px; border-radius: 50%; background: rgba(58,50,40,.18); } .gmd-ur .x2 .ipd i.on { background: #e8a43a; }
 .gmd-ur .x2 .zp { color: #8a4a08; }
 .gmd-ur .x2 .clk { display: inline-flex; align-items: center; gap: 2px; } .gmd-ur .x2 .clk svg { width: 11px; height: 11px; }
+.gmd-ur .x2 { overflow: visible; }
+.gmd-ur .x2 .sx { margin-left: auto; display: flex; gap: 4px; align-items: center; height: 15px; }
+.gmd-ur .x2 .sx .dhud-st, .gmd-ur .x2 .sx .dhud-rdy { width: 15px; height: 15px; border-width: 1.5px; font-size: 7.5px; }
+.gmd-ur .x2 .sx .dhud-st b { right: -5px; bottom: -4px; min-width: 10px; height: 10px; font-size: 7px; line-height: 8px; padding: 0 2px; }
+.gmd-ur .x2 .sx .dhud-rdy::after { width: 5px; height: 5px; right: -3px; top: -3px; }
 .gmd-ur .stamp { position: absolute; left: 150px; bottom: 1px; font: 900 8.5px "Cinzel", Georgia, serif; letter-spacing: .1em; text-transform: uppercase; padding: 0 4px; line-height: 11px;
   border-radius: 3px; color: #b3261e; border: 1.5px solid rgba(179,38,30,.8); background: rgba(255,238,228,.9); transform: rotate(-4deg); display: none; }
 .gmd-ur.is-crisis .stamp, .gmd-ur.is-ko .stamp { display: block; }
@@ -1072,6 +1079,36 @@ function clockSVG(v, m) {
   const f = m > 0 ? clamp(v / m, 0, 1) : 1;
   return `<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8" fill="none" stroke="rgba(58,50,40,.2)" stroke-width="3"/><circle cx="10" cy="10" r="8" fill="none" stroke="#ff8a1e" stroke-width="3" stroke-dasharray="${(50.3 * f).toFixed(1)} 60" transform="rotate(-90 10 10)"/></svg>`;
 }
+// Party Menu rows, loaded lazily like the HUD does.
+let _rowsOf = null, _rowsLoad = null;
+const DESK_STATUS_MAX = 5;
+function deskStatusHTML(actor) {
+  if (!_rowsOf) {
+    _rowsLoad ??= import("../party-menu/party-menu-effects.js")
+      .then((m) => { _rowsOf = m.effectRowsOf; paintRows(); })
+      .catch((e) => warn("[GmDesk] Party Menu effects unavailable", e));
+    return "";
+  }
+  let rows = [];
+  try {
+    rows = sortRows(_rowsOf(actor).filter((x) => !x.inactive && x.lifetime?.kind !== "item")
+      .map((x) => Object.assign(x, { tier: rowTier(x) }))
+      .filter((x) => x.tier !== TIER.HIDDEN && x.tier !== TIER.RESOURCE));
+  } catch (e) { warn("[GmDesk] status rows failed", e); return ""; }
+  const status = rows.filter((x) => x.tier === TIER.DEBUFF || x.tier === TIER.BUFF);
+  const markers = rows.filter((x) => x.tier === TIER.MARKER);
+  const ready = rows.filter((x) => x.tier === TIER.READY);
+  if (!status.length && !markers.length && !ready.length) return "";
+  const room = status.length + (markers.length ? 1 : 0) > DESK_STATUS_MAX ? DESK_STATUS_MAX - 1 : status.length;
+  const folded = [...status.slice(room), ...markers];
+  const tip = (h) => `data-tooltip="${esc(h)}" data-tooltip-direction="UP"`;
+  return `<span class="sx">`
+    + status.slice(0, room).map((x) => `<span class="dhud-st t-${x.tier}" ${tip(statusTipHTML(x, { tier: x.tier }))}><img src="${esc(x.img)}" alt="">${rowTurns(x) ? `<b>${rowTurns(x)}</b>` : ""}</span>`).join("")
+    + (folded.length ? `<span class="dhud-st is-more${status.length > room ? " is-over" : ""}" ${tip(foldTipHTML(folded))}>${status.length > room ? "+" : "•"}${folded.length}</span>` : "")
+    + ready.map((x) => `<span class="dhud-rdy${rowSpent(x) ? " is-spent" : ""}" ${tip(statusTipHTML(x, { tier: TIER.READY }))}><img src="${esc(x.img)}" alt=""></span>`).join("")
+    + `</span>`;
+}
+
 function paintRow(r) {
   const u = r.u, actor = unitActor(u);
   const info = actor ? readUnitInfo(actor) : null;
@@ -1105,6 +1142,9 @@ function paintRow(r) {
     if (info.zp && info.zpName) x2 += `<span class="zp" title="${esc(info.zpName)}">ZP ${info.zp.v}/${info.zp.m}</span>`;
   }
   for (const c of info?.clocks ?? []) x2 += `<span class="clk" title="${esc(c.name)} ${c.v}${c.m ? ` / ${c.m}` : ""}">${clockSVG(c.v, c.m ?? 0)}${c.m ? `${c.v}/${c.m}` : `✦${c.v}`}</span>`;
+  // Statuses (token status plan "G + E"): the GM has no HUD cards, so every
+  // unit row carries the same pips and Ready chips, right-aligned.
+  if (actor) x2 += deskStatusHTML(actor);
   if (r._x2 !== x2) { r.q(".x2").innerHTML = x2; r._x2 = x2; }
   // Status slot: ▶ when this unit may take the turn now, else the dot.
   const st = r.q(".st");
