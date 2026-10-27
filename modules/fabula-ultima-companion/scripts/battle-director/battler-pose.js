@@ -79,6 +79,7 @@ function trace(token, what, extra = {}) {
 export function initBattlerPose() {
   if (_installed) return;
   _installed = true;
+  globalThis.__ONI_BATTLER_POSE__ = { afterBaseResize };
   try {
     if (typeof socketlib !== "undefined" && game.modules.get("socketlib")?.active) {
       _socket = socketlib.registerModule(MODULE_ID);
@@ -327,6 +328,7 @@ function render(token, { restart = false, fresh = false } = {}) {
   entry.shown = pose;
   entry.shownArt = art;
   try { token._refreshSize(); } catch {}
+  reapplyDepth(token);
   applySizing(token, entry);
 }
 
@@ -339,8 +341,23 @@ function showOwnImage(token, entry) {
     try { token._refreshSize(); } catch {}
     const a = baseAnchor(token);
     try { mesh.anchor.set(a.x, a.y); } catch {}
+    reapplyDepth(token);
   }
   entry.applied = null;
+}
+
+// _refreshSize() re-fits the mesh from the document and drops the battle depth
+// scale (map-system/depth-index.js, battle-stage-3d.js). Put it back; depth-index
+// then calls afterBaseResize, which re-fits the pose on top.
+function reapplyDepth(token) {
+  try { globalThis.__ONI_DEPTH_INDEX__?.reapply?.(token); } catch (e) { warn("battler-pose: depth reapply", e); }
+}
+
+// depth-index re-fitted the base scale; lay the pose's size fix on top again.
+function afterBaseResize(token) {
+  const entry = _tokens.get(token?.id);
+  if (!entry?.shown || entry.shown === "idle") return;
+  applySizing(token, entry);
 }
 
 // The anchor the idle art uses: the token's own, or the feet while the idle
@@ -363,6 +380,9 @@ function applySizing(token, entry) {
   const idle = { w: own.width, h: own.height };
   const pose = { w: tex.width, h: tex.height };
   if (idle.w === pose.w && idle.h === pose.h) { entry.applied = null; return; }
+  // Already laid on this base: a refresh can reach here twice (our refreshToken
+  // hook and depth-index's afterBaseResize), and the fix multiplies.
+  if (entry.applied && mesh.scale.x === entry.applied.sx && mesh.scale.y === entry.applied.sy) return;
   const doc = token.document;
   const { width, height } = token.getSize();
   const [kx, ky] = poseScaleFix(doc.texture?.fit, width, height, idle, pose);

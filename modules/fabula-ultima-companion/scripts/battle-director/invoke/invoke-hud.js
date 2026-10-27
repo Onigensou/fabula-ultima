@@ -440,6 +440,13 @@ const _PARTICLES = [
   { lp: 58, tp: 86, dx:   6, delay: 0.75 },
 ];
 
+// Where the battle-stage 3D camera draws this token ({cx, cy, w, h, ...}), or
+// null when it is not displacing it — then the plain 2D token is used.
+function drawn3d(token) {
+  const b = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnBox?.(token);
+  return b?.is3d ? b : null;
+}
+
 function _getTokenScreenRect(tokenUuid) {
   if (!tokenUuid) return null;
   try {
@@ -450,9 +457,11 @@ function _getTokenScreenRect(tokenUuid) {
     const scale = st.a;
     const canvasEl = document.getElementById("board") ?? canvas.app?.view ?? null;
     const bounds = canvasEl ? canvasEl.getBoundingClientRect() : { left: 0, top: 0 };
-    const cx = bounds.left + (token.x + token.w / 2) * scale + st.tx;
-    const cy = bounds.top  + (token.y + token.h / 2) * scale + st.ty;
-    return { cx, cy, w: token.w * scale, h: token.h * scale };
+    // Under the 3D camera the container is the drawn body, scaled by its depth.
+    const k = drawn3d(token)?.scale ?? 1;
+    const cx = bounds.left + (token.x + token.w * k / 2) * scale + st.tx;
+    const cy = bounds.top  + (token.y + token.h * k / 2) * scale + st.ty;
+    return { cx, cy, w: token.w * k * scale, h: token.h * k * scale };
   } catch { return null; }
 }
 

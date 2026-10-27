@@ -35,6 +35,13 @@ const STYLE_ID = "fud-hurt-reaction-style";
 
 const DUR = { normal: 300, strong: 480 };
 
+// Where the battle 3D camera draws the token ({cx, footY, scale, …}); null
+// whenever it is not displacing it, so the 2D path below stays as it was.
+function drawn3d(token) {
+  const b = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnBox?.(token);
+  return b?.is3d ? b : null;
+}
+
 let _socket = null;
 // tokenUuid -> { el, timer, origAlpha } for multi-hit debounce (one clone per
 // token; a new hit restarts it and keeps the mesh hidden across the restart).
@@ -199,8 +206,11 @@ export async function playHurtReactionLocal({ tokenUuid, intensity = "normal" } 
     const pt = worldToClient(c.x, c.y);
     const zoom = canvas.stage?.scale?.x ?? 1;
     const mesh = token.mesh;
-    const w = Math.abs(mesh?.width || (token.w ?? 100)) * zoom;
-    const h = Math.abs(mesh?.height || (token.h ?? 100)) * zoom;
+    // token.center already follows the battle 3D camera; the size has to be
+    // rescaled by hand (the mesh only carries the camera scale mid-render).
+    const k = drawn3d(token)?.scale ?? 1;
+    const w = Math.abs(mesh?.width || (token.w ?? 100)) * zoom * k;
+    const h = Math.abs(mesh?.height || (token.h ?? 100)) * zoom * k;
     const rot = Number(token.document?.rotation ?? 0) || 0;
     const mir = (Number(token.document?.texture?.scaleX ?? 1) < 0) ? -1 : 1;
     const isVideo = /\.(webm|mp4|m4v|ogv)$/i.test(String(src));

@@ -192,11 +192,13 @@ function canvasTokenFromUuid(tokenUuid) {
 
 // Anchor a little above the token center so the number floats off the head.
 function tokenAnchor(token) {
+  // token.center follows the battle 3D camera (drawn body); so does the lift.
   const c = token.center ?? {
     x: (token.x ?? 0) + (token.w ?? 100) / 2,
     y: (token.y ?? 0) + (token.h ?? 100) / 2,
   };
-  return { x: c.x, y: c.y - (token.h ?? 100) * 0.22 };
+  const k = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnBox?.(token)?.scale ?? 1;
+  return { x: c.x, y: c.y - (token.h ?? 100) * k * 0.22 };
 }
 
 // ── per-token stagger scheduler ────────────────────────────────────────────

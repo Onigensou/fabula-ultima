@@ -182,12 +182,20 @@ function ensurePipStyle() {
   document.head.appendChild(style);
 }
 
+// Where the battle-stage 3D camera draws this token ({cx, cy, w, h, ...}), or
+// null when it is not displacing it — then the plain 2D token is used.
+function drawn3d(token) {
+  const b = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnBox?.(token);
+  return b?.is3d ? b : null;
+}
+
 // Anchor a token's top-center (world coords) to page coords.
 function tokenTopClient(token) {
   try {
-    const w = token.w ?? 100;
-    const c = token.center ?? { x: (token.x ?? 0) + w / 2, y: (token.y ?? 0) + (token.h ?? 100) / 2 };
-    const topY = c.y - (token.h ?? 100) / 2 - (token.h ?? 100) * 0.12;
+    const d = drawn3d(token);
+    const w = d ? d.w : token.w ?? 100, h = d ? d.h : token.h ?? 100;
+    const c = d ? { x: d.cx, y: d.cy } : token.center ?? { x: (token.x ?? 0) + w / 2, y: (token.y ?? 0) + h / 2 };
+    const topY = c.y - h / 2 - h * 0.12;
     const wt = canvas.stage.worldTransform;
     const out = wt.apply({ x: c.x, y: topY }, new PIXI.Point());
     const rect = canvas.app.view.getBoundingClientRect();

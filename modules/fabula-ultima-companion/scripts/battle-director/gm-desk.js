@@ -695,6 +695,9 @@ export function buildDesk(partyIds = []) {
   const hooks = [
     ["updateActor", refresh], ["updateToken", refresh], ["createActiveEffect", refresh], ["updateActiveEffect", refresh], ["deleteActiveEffect", refresh],
     ["updateSetting", () => paintBar()],
+    // The 3D camera moves the drawn battlers every frame: the ring follows them
+    // then, not on the 250 ms tick.
+    ["fu-stage3d-drawn", () => { if (D.ring) positionRing(); }],
     ["userConnected", (user, connected) => { if (!connected && user?.id) D.presence.delete(user.id); scheduleRows(); render(); }],
   ];
   for (const [h, fn] of hooks) { const id = Hooks.on(h, fn); D.offFns.push(() => Hooks.off(h, id)); }
@@ -1776,7 +1779,9 @@ function positionRing(force = false) {
     const wt = canvas.stage.worldTransform, rect = canvas.app.view.getBoundingClientRect();
     const c = tok.center, p = new PIXI.Point();
     wt.apply({ x: c.x, y: c.y }, p);
-    const d = Math.max(tok.w, tok.h) * 0.92 * wt.a;
+    // Under the 3D camera token.center is already the drawn body; match its size too.
+    const drawn = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnBox?.(tok);
+    const d = Math.max(tok.w, tok.h) * (drawn?.is3d ? drawn.scale : 1) * 0.92 * wt.a;
     const key = `${Math.round(p.x)}|${Math.round(p.y)}|${Math.round(d)}|${tgt.pc ? 1 : 0}|${tgt.lit ? 1 : 0}`;
     if (!force && D.ring._k === key) return;
     D.ring._k = key;

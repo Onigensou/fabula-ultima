@@ -256,6 +256,8 @@ async function playLocal(payload, gmExtras) {
 
   const bossToken = tokenId ? canvas.tokens?.get?.(tokenId) ?? null : null;
   const unlock = installInputLock();
+  // The 3D camera holds at plain 2D for the whole cinematic (no-op elsewhere).
+  const release3d = globalThis.__ONI_BATTLE_STAGE_3D__?.hold?.("blackest-night");
   let fanfare = null;
   let tokenHide = null;
   let koWorld = null;    // world-anchored PIXI KO sprite (camera-tracking)
@@ -393,6 +395,7 @@ async function playLocal(payload, gmExtras) {
     try { document.getElementById(CUTIN_ID)?.remove(); } catch (_) {}
     try { setCrestsHiddenLocal(false); } catch (_) {}
     unlock();
+    release3d?.();
   }
 }
 

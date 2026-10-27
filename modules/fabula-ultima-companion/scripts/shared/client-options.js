@@ -36,16 +36,29 @@ export const OPTION_GROUPS = [
           { value: "off", label: "Off", hint: "Only their card's glow, as before." },
         ],
       },
+      {
+        key: "battleStage3d",
+        setting: "battleStage3d",   // keeps the setting name it had before it moved here
+        label: "Battle depth",
+        hint: "Depth on the painted battle backdrops (Training Ground, the Overworld and the Valley of the Dragon).",
+        default: "camera",
+        choices: [
+          { value: "full", label: "Full", hint: "Battlers further back are drawn smaller, and the scenery shifts gently with the camera." },
+          { value: "camera", label: "3D", hint: "Experimental: the battlefield becomes a real 3D set. Backdrops without a 3D model use Full." },
+          { value: "scale", label: "Depth only", hint: "Battlers further back are drawn smaller; the scenery stays still. Lighter on slower machines." },
+          { value: "off", label: "Off", hint: "The flat battle view, as before." },
+        ],
+      },
     ],
   },
 ];
 
 const ALL = OPTION_GROUPS.flatMap((g) => g.options);
-const settingKey = (key) => `clientOption_${key}`;
+const settingKey = (opt) => opt.setting ?? `clientOption_${opt.key}`;
 
 Hooks.once("init", () => {
   for (const opt of ALL) {
-    game.settings.register(MODULE_ID, settingKey(opt.key), {
+    game.settings.register(MODULE_ID, settingKey(opt), {
       name: opt.label,
       hint: opt.hint,
       scope: "client",
@@ -63,7 +76,7 @@ export function getClientOption(key) {
   const opt = ALL.find((o) => o.key === key);
   if (!opt) return undefined;
   let v;
-  try { v = game.settings.get(MODULE_ID, settingKey(key)); } catch { v = opt.default; }
+  try { v = game.settings.get(MODULE_ID, settingKey(opt)); } catch { v = opt.default; }
   return opt.choices.some((c) => c.value === v) ? v : opt.default;
 }
 
@@ -71,6 +84,6 @@ export function getClientOption(key) {
 export async function setClientOption(key, value) {
   const opt = ALL.find((o) => o.key === key);
   if (!opt || !opt.choices.some((c) => c.value === value)) return false;
-  await game.settings.set(MODULE_ID, settingKey(key), value);
+  await game.settings.set(MODULE_ID, settingKey(opt), value);
   return true;
 }

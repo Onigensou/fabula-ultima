@@ -83,18 +83,27 @@ function worldToClient(token, ax, ay) {
   return { x: rect.left + out.x, y: rect.top + out.y };
 }
 
+// Where the battle-stage 3D camera draws this token ({cx, cy, w, h, ...}), or
+// null when it is not displacing it — then the plain 2D token is used.
+function drawn3d(token) {
+  const b = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnBox?.(token);
+  return b?.is3d ? b : null;
+}
+
 // Match ReactionMenu.worldAnchor so the indicator sits where the owner
 // sees the menu — visually consistent across clients.
 function worldAnchor(token) {
   if (!token || token.destroyed) return { x: 0, y: 0 };
   try {
-    const c = token.center ?? token.getCenter?.() ?? {
-      x: (token.x ?? 0) + (token.w ?? 100) / 2,
-      y: (token.y ?? 0) + (token.h ?? 100) / 2,
+    const d = drawn3d(token);
+    const w = d ? d.w : token.w ?? 100, h = d ? d.h : token.h ?? 100;
+    const c = d ? { x: d.cx, y: d.cy } : token.center ?? token.getCenter?.() ?? {
+      x: (token.x ?? 0) + w / 2,
+      y: (token.y ?? 0) + h / 2,
     };
     return {
-      x: c.x + (token.w ?? 100) * 0.52,
-      y: c.y - (token.h ?? 100) * 0.10,
+      x: c.x + w * 0.52,
+      y: c.y - h * 0.10,
     };
   } catch (_e) {
     return { x: 0, y: 0 };
@@ -140,8 +149,10 @@ function spawnInternal({ token, combatId, label, trigger }) {
   const onCanvasPan = () => place();
   const hookIdUpdate = Hooks.on("updateToken", onUpdateToken);
   const hookIdPan = Hooks.on("canvasPan", onCanvasPan);
+  const hookId3d = Hooks.on("fu-stage3d-drawn", onCanvasPan);
   manualHookCleanups.push(() => { try { Hooks.off("updateToken", hookIdUpdate); } catch {} });
   manualHookCleanups.push(() => { try { Hooks.off("canvasPan", hookIdPan); } catch {} });
+  manualHookCleanups.push(() => { try { Hooks.off("fu-stage3d-drawn", hookId3d); } catch {} });
 
   function cleanup() {
     try { root.remove(); } catch {}

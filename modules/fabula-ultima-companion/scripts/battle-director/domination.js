@@ -297,6 +297,13 @@ function worldToClient(ax, ay) {
   return { x: rect.left + out.x, y: rect.top + out.y };
 }
 
+// Where the battle-stage 3D camera draws this token ({cx, cy, w, h, ...}), or
+// null when it is not displacing it — then the plain 2D token is used.
+function drawn3d(token) {
+  const b = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnBox?.(token);
+  return b?.is3d ? b : null;
+}
+
 const BURST_STYLE_ID = "fud-domination-burst-style";
 function ensureBurstStyle() {
   if (document.getElementById(BURST_STYLE_ID)) return;
@@ -335,10 +342,11 @@ export function playDominationBurstLocal({ tokenUuid } = {}) {
     if (!token || token.destroyed) { log("domination burst: token not on canvas, skipping"); return; }
     ensureBurstStyle();
 
-    const c = token.center ?? { x: (token.x ?? 0) + (token.w ?? 100) / 2, y: (token.y ?? 0) + (token.h ?? 100) / 2 };
+    const d = drawn3d(token);
+    const c = d ? { x: d.cx, y: d.cy } : token.center ?? { x: (token.x ?? 0) + (token.w ?? 100) / 2, y: (token.y ?? 0) + (token.h ?? 100) / 2 };
     const pt = worldToClient(c.x, c.y);
     const zoom = canvas.stage?.scale?.x ?? 1;
-    const radius = Math.max(60, (token.w ?? 100) * zoom * 1.1);
+    const radius = Math.max(60, (d ? d.w : token.w ?? 100) * zoom * 1.1);
 
     const layer = document.createElement("div");
     layer.className = "fud-dom-burst-layer";

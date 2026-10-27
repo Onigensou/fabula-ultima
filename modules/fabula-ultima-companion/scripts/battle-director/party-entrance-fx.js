@@ -70,7 +70,9 @@ export function playPartyEntranceLocal({ tokenId, style, outcome = null, sceneId
     if (!cfg || !BUILDERS[style] || typeof PIXI === "undefined" || !canvas?.ready) { resolve(); return; }
     if (sceneId && canvas.scene?.id !== sceneId) { resolve(); return; }
     let settled = false;
-    const finish = () => { if (!settled) { settled = true; resolve(); } };
+    // The 3D camera holds at plain 2D while the entrance plays (no-op elsewhere).
+    const release3d = globalThis.__ONI_BATTLE_STAGE_3D__?.hold?.("party-entrance");
+    const finish = () => { if (!settled) { settled = true; release3d?.(); resolve(); } };
     const total = partyTotalMs(style, outcome);
     const failsafe = setTimeout(() => {
       const t = canvas?.tokens?.get?.(tokenId);

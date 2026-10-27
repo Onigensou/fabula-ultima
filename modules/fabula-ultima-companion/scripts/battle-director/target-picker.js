@@ -198,6 +198,15 @@ function worldToClient(x, y) {
   return { x: rect.left + out.x, y: rect.top + out.y };
 }
 
+// Where the battle-stage 3D camera draws this token ({x, y, w, h, cx, cy}),
+// or null when it is not displacing it — then the plain 2D token is used.
+function drawn3d(token) {
+  const b = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnBox?.(token);
+  return b?.is3d ? b : null;
+}
+// Fired by the 3D camera whenever the drawn battlers move.
+const STAGE3D_DRAWN_HOOK = "fu-stage3d-drawn";
+
 // ─── Dim / highlight helpers ──────────────────────────────────────────────────
 // Ported from the JRPG targeting highlight system. While the ring picker is
 // open, non-eligible tokens are darkened + desaturated so the player's eye is
@@ -667,11 +676,12 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
     function positionRing(rec) {
       const t = rec.token;
       if (!t || t.destroyed) return;
-      const c = t.center ?? t.getCenter?.() ?? { x: t.x + t.w / 2, y: t.y + t.h / 2 };
+      const d = drawn3d(t);
+      const c = d ? { x: d.cx, y: d.cy } : t.center ?? t.getCenter?.() ?? { x: t.x + t.w / 2, y: t.y + t.h / 2 };
       const p = worldToClient(c.x, c.y);
       const sc = canvas.stage.scale?.x ?? 1;
-      const w = (t.w ?? 100) * sc;
-      const h = (t.h ?? 100) * sc;
+      const w = (d ? d.w : t.w ?? 100) * sc;
+      const h = (d ? d.h : t.h ?? 100) * sc;
       const size = Math.max(w, h) * 1.05;
       rec.el.style.left = `${p.x - size / 2}px`;
       rec.el.style.top = `${p.y - size / 2}px`;
@@ -1010,21 +1020,24 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       // Restore dim filter for deleted tokens so their mesh isn't left dirty.
       if (uuid) clearTokenDim(dimState, uuid);
     };
-    let hH, hP, hU, hD;
+    let hH, hP, hU, hD, h3;
     if (director?.hooks?.on) {
       hH = director.hooks.on("hoverToken", onTokenHover, { label: "tp:hoverToken" });
       hP = director.hooks.on("canvasPan", repositionAll, { label: "tp:canvasPan" });
       hU = director.hooks.on("updateToken", repositionAll, { label: "tp:updateToken" });
       hD = director.hooks.on("preDeleteToken", onPreDel, { label: "tp:preDeleteToken" });
+      h3 = director.hooks.on(STAGE3D_DRAWN_HOOK, repositionAll, { label: "tp:stage3dDrawn" });
     } else {
       const id1 = Hooks.on("hoverToken", onTokenHover);
       const id2 = Hooks.on("canvasPan", repositionAll);
       const id3 = Hooks.on("updateToken", repositionAll);
       const id4 = Hooks.on("preDeleteToken", onPreDel);
+      const id5 = Hooks.on(STAGE3D_DRAWN_HOOK, repositionAll);
       manualHooks.push(() => { try { Hooks.off("hoverToken", id1); } catch {} });
       manualHooks.push(() => { try { Hooks.off("canvasPan", id2); } catch {} });
       manualHooks.push(() => { try { Hooks.off("updateToken", id3); } catch {} });
       manualHooks.push(() => { try { Hooks.off("preDeleteToken", id4); } catch {} });
+      manualHooks.push(() => { try { Hooks.off(STAGE3D_DRAWN_HOOK, id5); } catch {} });
     }
 
     // Token click via libWrapper-style — fall back to canvas pointer event.
@@ -1045,7 +1058,8 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
           y: event.clientY - rect.top,
         });
         const hit = canvas?.tokens?.placeables?.find?.((tok) => {
-          const b = tok?.bounds;
+          const d = drawn3d(tok);
+          const b = d ? { x: d.x, y: d.y, width: d.w, height: d.h } : tok?.bounds;
           if (!b) return false;
           return local.x >= b.x && local.x <= b.x + b.width && local.y >= b.y && local.y <= b.y + b.height;
         });
@@ -1148,11 +1162,12 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       excludedOverlays.clear();
       // Hooks: director.hooks.off when registered there; manual Hooks.off
       // when the player-side fallback path registered them.
+      // HookRegistry.on returns its own unsubscribe function (off(id) wants the
+      // Foundry hook id, which on() never hands out), so call that.
       if (director?.hooks?.off) {
-        try { director.hooks.off(hH); } catch {}
-        try { director.hooks.off(hP); } catch {}
-        try { director.hooks.off(hU); } catch {}
-        try { director.hooks.off(hD); } catch {}
+        for (const h of [hH, hP, hU, hD, h3]) {
+          try { if (typeof h === "function") h(); else director.hooks.off(h); } catch {}
+        }
       }
       for (const fn of manualHooks) { try { fn(); } catch {} }
       log("Target picker resolved:", result);

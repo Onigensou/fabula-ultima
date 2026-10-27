@@ -202,7 +202,8 @@ export function readMark(actor) {
 function spriteClientBounds(token) {
   const rect = canvas.app.view.getBoundingClientRect();
   try {
-    const b = token.mesh?.getBounds?.();
+    // Under the battle 3D camera: where the body is drawn, not its 2D spot.
+    const b = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnMeshBounds?.(token) ?? token.mesh?.getBounds?.();
     if (b && b.width > 0 && b.height > 0) {
       return { left: rect.left + b.x, top: rect.top + b.y, width: b.width, height: b.height };
     }

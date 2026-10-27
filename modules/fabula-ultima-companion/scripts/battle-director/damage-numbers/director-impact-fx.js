@@ -30,6 +30,13 @@ const STYLE_ID = "fud-impact-fx-style";
 // Sequencer impact reading a touch larger than the token).
 const SIZE_FACTOR = 1.6;
 
+// Where the battle 3D camera draws the token ({cx, footY, scale, …}); null
+// whenever it is not displacing it, so the 2D path below stays as it was.
+function drawn3d(token) {
+  const b = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnBox?.(token);
+  return b?.is3d ? b : null;
+}
+
 let _socket = null;
 
 // ── boot: socket registration ───────────────────────────────────────────
@@ -111,7 +118,9 @@ export function playImpactFxLocal({ tokenUuid, file, scale = 1.0, durationMs = 1
     };
     const pt = worldToClient(c.x, c.y);
     const zoom = canvas.stage?.scale?.x ?? 1;
-    const sizePx = Math.max(40, (token.w ?? 100) * zoom * SIZE_FACTOR * scale);
+    // token.center follows the battle 3D camera; scale the burst with the body.
+    const k = drawn3d(token)?.scale ?? 1;
+    const sizePx = Math.max(40, (token.w ?? 100) * k * zoom * SIZE_FACTOR * scale);
 
     const vid = document.createElement("video");
     vid.className = "fud-impact";

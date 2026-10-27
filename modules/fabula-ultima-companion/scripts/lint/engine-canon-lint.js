@@ -105,6 +105,9 @@
     "scripts/battle-director/turn-glow.js",
     "scripts/battle-director/turn-start-cue.js",
     "scripts/battle-director/weapon-mode-picker.js",
+    "scripts/battle-director/battle-stage-3d.js",
+    "scripts/battle-director/battle-stage-3d-rules.js",
+    "scripts/battle-director/battle-stage-3d-camera.js",
   ]);
 
   // Known intentional violations. Each entry kills one issue. Use sparingly —

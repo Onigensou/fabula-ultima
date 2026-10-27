@@ -150,19 +150,33 @@ function stageView(token, b, savedView) {
   const mb = token.mesh.getBounds();
   const s0 = canvas.stage.scale.x;
   const inv = (x, y) => canvas.stage.worldTransform.applyInverse(new PIXI.Point(x, y));
-  const f = footing(token);
+  const f = footing(token, { plain: true });
   const feet = inv(f.cx, f.fy);
   const worldW = mb.width / s0, worldH = mb.height / s0;
   const maxZoom = CONFIG.Canvas?.maxZoom ?? 3;
-  let scale = Math.min(savedView.scale * ZOOM, maxZoom, (420 * b.k) / Math.max(1, worldH), (340 * b.k) / Math.max(1, worldW));
-  scale = Math.max(scale, Math.min(savedView.scale, maxZoom));
   const enemy = sideOf(token) === "enemy";
   const ax = enemy ? b.x0 + 180 * b.k : b.x1 - 210 * b.k;
   const ay = b.y1 - 82 * b.k;
+  // `m` = how much bigger the body is drawn than its 2D size (1 off the 3D camera).
+  const zoomFor = (m) => Math.max(Math.min(savedView.scale * ZOOM, maxZoom, (420 * b.k) / Math.max(1, worldH * m), (340 * b.k) / Math.max(1, worldW * m)), Math.min(savedView.scale, maxZoom));
+  const aim = (p, scale) => ({ x: p.x - (ax - b.W / 2) / scale, y: p.y - (ay - b.H / 2) / scale, scale });
+  let view = aim(feet, zoomFor(1)), m = 1;
+  // Under the 3D camera the body is drawn elsewhere once the camera has moved:
+  // aim the DRAWN feet, settling the view in a few passes (the drawn spot moves
+  // with the view, but by less than the view itself).
+  const predict = globalThis.__ONI_BATTLE_STAGE_3D__?.predictDrawn;
+  for (let i = 0; predict && i < 8; i++) {
+    const d = predict(token, feet, view);
+    if (!d) break;
+    const next = aim(d, zoomFor(d.m));
+    const moved = Math.hypot(next.x - view.x, next.y - view.y);
+    view = next; m = d.m;
+    if (moved < 0.5 && i) break;
+  }
   // The light's left/right edges once the camera arrives (the card is placed
   // from these before the pan ends).
-  const half = poolWidth(f.rawW * (scale / s0), b.k) / 2;
-  return { x: feet.x - (ax - b.W / 2) / scale, y: feet.y - (ay - b.H / 2) / scale, scale, enemy, ax, lightX: [ax - half, ax + half] };
+  const half = poolWidth(f.rawW * (view.scale / s0) * m, b.k) / 2;
+  return { ...view, enemy, ax, lightX: [ax - half, ax + half] };
 }
 
 const poolWidth = (w, k) => Math.max(110 * k, Math.min(620 * k, w));
@@ -229,9 +243,11 @@ function standingOf(tex) {
 }
 
 /** The unit's standing point and its light on screen: cx/fy, the pool's raw
- *  width (rawW), its clamped width (poolW) and the pool's edges (x0, x1). */
-function footing(token) {
-  const mesh = token.mesh, mb = mesh.getBounds(), k = hudScale();
+ *  width (rawW), its clamped width (poolW) and the pool's edges (x0, x1).
+ *  Where the 3D camera draws the body; `plain` = its 2D spot. */
+function footing(token, { plain = false } = {}) {
+  const seam = plain ? null : globalThis.__ONI_BATTLE_STAGE_3D__;
+  const mesh = token.mesh, mb = seam?.drawnMeshBounds?.(token) ?? mesh.getBounds(), k = hudScale();
   let st = null;
   try { st = standingOf(mesh.texture); } catch { /* texture not ready */ }
   let cx, fy, rawW;
@@ -240,7 +256,10 @@ function footing(token) {
   } else {
     const tex = mesh.texture;
     // SpriteMesh local space = texture px offset by the anchor (sprite-shadow-renderer.js).
-    const P = (x, y) => mesh.toGlobal(new PIXI.Point(x - tex.width * mesh.anchor.x, y - tex.height * mesh.anchor.y));
+    const P = (x, y) => {
+      const g = mesh.toGlobal(new PIXI.Point(x - tex.width * mesh.anchor.x, y - tex.height * mesh.anchor.y));
+      return seam?.drawnScreenPoint?.(token, g) ?? g;
+    };
     const c = P(st.cx, st.cy), e = P(st.cx + st.coreW, st.cy);
     cx = c.x; fy = c.y; rawW = Math.abs(e.x - c.x) * POOL_CORE;
   }
@@ -318,7 +337,7 @@ function drawLoop() {
   const token = canvas?.tokens?.get(o.tokenId);
   if (!token?.mesh || token.destroyed) { close(); return; }
   const mesh = token.mesh;
-  const b = mesh.getBounds();
+  const b = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnMeshBounds?.(token) ?? mesh.getBounds();
   const { sprite, ctx } = S.els;
   const tex = mesh.texture;
   const src = tex?.baseTexture?.resource?.source ?? null;
@@ -395,7 +414,7 @@ function drawShadow(token) {
       S.els.shadowTex = s.texture;
     } catch (e) { console.warn(TAG, "shadow copy failed", e); el.style.display = "none"; return; }
   }
-  const b = s.getBounds();
+  const b = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnMeshBounds?.(token, s) ?? s.getBounds();
   el.style.display = "";
   el.style.width = `${b.width}px`; el.style.height = `${b.height}px`;
   el.style.transform = `translate(${b.x}px, ${b.y}px)${s.scale.x < 0 ? ` translateX(${b.width}px) scaleX(-1)` : ""}`;
@@ -688,7 +707,8 @@ function showPeek(token) {
   wrap.innerHTML = renderPeek(m, hint);
   S.peekId = token.id;
   const b = band();
-  const mb = token.mesh.getBounds();
+  // Where the body is drawn (the 3D camera moves it; plain bounds elsewhere).
+  const mb = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnMeshBounds?.(token) ?? token.mesh.getBounds();
   const w = 276 * b.k, h = wrap.firstElementChild?.getBoundingClientRect().height || 180 * b.k;
   const enemy = sideOf(token) === "enemy";
   let x = enemy ? mb.x + mb.width + 14 : mb.x - w - 14;

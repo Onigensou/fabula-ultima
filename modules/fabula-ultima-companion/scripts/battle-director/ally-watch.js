@@ -483,6 +483,13 @@ function paintRings(on) {
   positionRings();
 }
 
+// Where the battle-stage 3D camera draws this token ({cx, cy, w, h, ...}), or
+// null when it is not displacing it — then the plain 2D token is used.
+function drawn3d(token) {
+  const b = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnBox?.(token);
+  return b?.is3d ? b : null;
+}
+
 function positionRings() {
   if (!W.rings.size || !canvas?.ready) return;
   let rect;
@@ -494,8 +501,10 @@ function positionRings() {
     try { t = fromUuidSync(uuid)?.object ?? null; } catch { t = null; }
     if (!t || t.destroyed) { el.style.display = "none"; continue; }
     const p = new PIXI.Point();
-    wt.apply({ x: t.x + t.w / 2, y: t.y + t.h * 0.94 }, p);
-    const w = t.w * sc * 0.95, h = w * 0.3;
+    // Under the 3D camera the container is the drawn body, scaled by its depth.
+    const k = drawn3d(t)?.scale ?? 1;
+    wt.apply({ x: t.x + t.w * k / 2, y: t.y + t.h * k * 0.94 }, p);
+    const w = t.w * k * sc * 0.95, h = w * 0.3;
     el.style.display = "";
     el.style.left = `${Math.round(rect.left + p.x - w / 2)}px`;
     el.style.top = `${Math.round(rect.top + p.y - h / 2)}px`;
@@ -703,6 +712,7 @@ Hooks.once("ready", () => {
   Hooks.on("fu-hud-turn-status", (st) => { try { onTurnStatus(st); } catch (e) { warn("[AllyWatch] turn status failed", e); } });
   Hooks.on("fuClientOptionChanged", ({ key } = {}) => { if (key === "allyWatch") render(); });
   Hooks.on("canvasPan", () => { if (W.rings.size) positionRings(); });
+  Hooks.on("fu-stage3d-drawn", () => { if (W.rings.size) positionRings(); });
   window.addEventListener("pointermove", onPointerMove, { passive: true });
   globalThis.FUCompanion = globalThis.FUCompanion || {};
   globalThis.FUCompanion.api = globalThis.FUCompanion.api || {};

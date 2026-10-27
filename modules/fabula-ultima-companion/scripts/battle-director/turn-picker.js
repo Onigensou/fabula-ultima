@@ -89,16 +89,26 @@ function worldToClient(ax, ay) {
   return { x: rect.left + out.x, y: rect.top + out.y };
 }
 
+// Where the battle-stage 3D camera draws this token ({x, y, w, h, cx, cy}),
+// or null when it is not displacing it — then the plain 2D token is used.
+function drawn3d(token) {
+  const b = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnBox?.(token);
+  return b?.is3d ? b : null;
+}
+// Fired by the 3D camera whenever the drawn battlers move.
+const STAGE3D_DRAWN_HOOK = "fu-stage3d-drawn";
+
 // Compute the anchor point in world coords for a token, given which screen
 // edge the pill should hug:
 //   side === "enemy" → pill anchors at LEFT edge of token  (token.center − w/2 − gap)
 //   side === "party" → pill anchors at RIGHT edge of token (token.center + w/2 + gap)
+// Under the 3D camera the edge is the drawn body's.
 function anchorPointWorld(token, side) {
   if (!token || token.destroyed) return { x: 0, y: 0 };
   try {
-    const w = token.w ?? 100;
-    const h = token.h ?? 100;
-    const c = token.center ?? token.getCenter?.() ?? { x: (token.x ?? 0) + w / 2, y: (token.y ?? 0) + h / 2 };
+    const d = drawn3d(token);
+    const w = d ? d.w : token.w ?? 100;
+    const c = d ? { x: d.cx, y: d.cy } : token.center ?? token.getCenter?.() ?? { x: (token.x ?? 0) + w / 2, y: (token.y ?? 0) + (token.h ?? 100) / 2 };
     const gap = w * 0.18;
     const x = side === "enemy" ? (c.x - w / 2 - gap) : (c.x + w / 2 + gap);
     return { x, y: c.y };
@@ -187,11 +197,14 @@ function spawnPicker({ director, entries, onPick, combatId }) {
   if (director?.hooks?.on) {
     director.hooks.on("canvasPan", onPan, { label: "turn-picker:canvasPan" });
     director.hooks.on("updateToken", onUpdate, { label: "turn-picker:updateToken" });
+    director.hooks.on(STAGE3D_DRAWN_HOOK, onPan, { label: "turn-picker:stage3dDrawn" });
   } else {
     const id1 = Hooks.on("canvasPan", onPan);
     const id2 = Hooks.on("updateToken", onUpdate);
+    const id3 = Hooks.on(STAGE3D_DRAWN_HOOK, onPan);
     manualHooks.push(() => { try { Hooks.off("canvasPan", id1); } catch {} });
     manualHooks.push(() => { try { Hooks.off("updateToken", id2); } catch {} });
+    manualHooks.push(() => { try { Hooks.off(STAGE3D_DRAWN_HOOK, id3); } catch {} });
   }
 
   function cleanup() {

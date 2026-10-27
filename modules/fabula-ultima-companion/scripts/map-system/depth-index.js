@@ -14,6 +14,9 @@
  *   is set. Any other exploration scene is still y-sorted by the feet (no
  *   scaling), since characters are solid only at their feet and the party
  *   can stand behind an NPC. Every other mode is untouched.
+ * - Exception: a battle scene whose backdrop has a 3D stage preset
+ *   (battle-director/battle-stage-3d.js) supplies its own curve, from the
+ *   painted camera's horizon, and is scaled + sorted the same way.
  *
  * WHY THIS IS PURELY VISUAL (read before changing anything here):
  * - We NEVER write to the token document. An earlier attempt (the world macro
@@ -143,6 +146,15 @@
   function readSceneConfig(scene) {
     if (!scene) return null;
 
+    // A battle backdrop with a 3D stage preset sizes battlers by its painted
+    // camera instead of an exploration band (battle-director/battle-stage-3d.js).
+    try {
+      const stage3d = globalThis.__ONI_BATTLE_STAGE_3D__?.tokenDepthConfig?.(scene) ?? null;
+      if (stage3d) return stage3d;
+    } catch (e) {
+      warn("battle-stage-3d config failed; using the scene's own depth settings.", e);
+    }
+
     const fab = scene.getFlag?.(MODULE_ID, FABULA_ROOT_KEY) ?? null;
     if (!fab) return null;
 
@@ -206,6 +218,7 @@
    * scale instead of inverting.
    */
   function factorForY(y, cfg) {
+    if (cfg.factorAt) return clamp(num(cfg.factorAt(y), 1), HARD_MIN_FACTOR, HARD_MAX_FACTOR);
     const span = cfg.nearY - cfg.farY;
     const t = clamp((y - cfg.farY) / span, 0, 1);
     const eased = Math.pow(t, cfg.curve);
@@ -334,11 +347,19 @@
     const effAnchorY = bounce ? 1.0 : num(anchorY, 0.5);
     if (bounce) mesh.anchor.set(num(anchorX, 0.5), 1.0);
 
-    // _refreshPosition has already reset mesh.position to token.center this
-    // frame, so this offset is applied to a clean base every time.
-    mesh.position.set(token.center.x, token.center.y + (1 - effAnchorY) * baseHeight * (1 - f));
+    // _refreshPosition has already reset mesh.position to the token's centre
+    // this frame, so this offset is applied to a clean base every time. Read
+    // the 2D centre explicitly: under the battle 3D camera token.center reports
+    // where the body is DRAWN, and the camera displaces the mesh itself.
+    const base = token.getCenterPoint();
+    mesh.position.set(base.x, base.y + (1 - effAnchorY) * baseHeight * (1 - f));
 
     if (bounce) syncBounceBase(token);
+
+    // A battle pose whose art is a different size re-fits itself on top of the
+    // new base scale (battle-director/battler-pose.js); resize() just wiped it.
+    try { globalThis.__ONI_BATTLER_POSE__?.afterBaseResize?.(token); }
+    catch (e) { warn("battler-pose afterBaseResize failed", { tokenId: token?.id, error: e?.message ?? e }); }
 
     // Depth ordering: within the TOKENS sort layer, PrimaryCanvasGroup breaks
     // elevation ties on mesh.sort, so a larger foot y draws in front. The
@@ -454,6 +475,13 @@
     factorForY,
     applyDepthToToken,
     refreshAllTokens,
+
+    /** Re-apply depth to one token after something re-fitted its mesh directly. */
+    reapply(token) {
+      const cfg = getConfig();
+      if (!cfg || cfg.sortOnly || !token) return false;
+      return applyDepthToToken(token, cfg);
+    },
 
     /** Depth factor a token would be drawn at right now (debug aid). */
     factorForToken(token) {

@@ -130,7 +130,8 @@ export const configView = {
 export const CONFIG_CSS = (ROOT_ID) => `
 #${ROOT_ID} .pm-cfrow { display: flex; flex-direction: column; gap: 4px; padding: 8px 8px 10px; border-radius: 8px; cursor: pointer; }
 #${ROOT_ID} .pm-cfrow + .pm-cfrow { border-top: 1px dashed rgba(92,66,30,.3); }
-#${ROOT_ID} .pm-cfhead { display: flex; align-items: center; gap: 12px; }
+#${ROOT_ID} .pm-cfhead { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+#${ROOT_ID} .pm-cfhead .pm-suname { white-space: nowrap; }
 #${ROOT_ID} .pm-cfvals { margin-left: auto; display: inline-flex; gap: 6px; }
 #${ROOT_ID} .pm-cfval { min-width: 72px; padding: 3px 12px; border-radius: 999px; text-align: center; font-size: 14px; font-weight: 700; cursor: pointer;
   color: var(--ink); border: 1px solid rgba(112,74,29,.45); background: rgba(255,255,255,.35); }

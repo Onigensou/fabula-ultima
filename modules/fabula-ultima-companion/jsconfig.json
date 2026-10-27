@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "checkJs": false,
+    "allowJs": true,
+    "noEmit": true
+  },
+  "include": ["scripts/**/*.js", "macros/**/*.js"],
+  "exclude": ["node_modules", "data", "Game Object", "reference"]
+}

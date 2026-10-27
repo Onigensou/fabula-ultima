@@ -84,6 +84,13 @@ const BAR_MIN_W = 40;
 const BAR_MAX_W = 400;
 const SLIDE_PX = 16; // spawn/despawn horizontal slide distance
 
+// Where the battle 3D camera draws the token ({cx, footY, scale, …}); null
+// whenever it is not displacing it, so the 2D path below stays as it was.
+function drawn3d(token) {
+  const b = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnBox?.(token);
+  return b?.is3d ? b : null;
+}
+
 // GM-tunable look config (world setting, read fresh on every spawn so a saved
 // tweak shows on the very next hit — no reload). See hp-bar-tuner.js.
 export const TUNING_SETTING = "npcHpBarTuning";
@@ -396,12 +403,15 @@ export function renderNpcHpBarLocal(payload = {}) {
     // (snapshot positioning — same accepted tradeoff as the damage numbers).
     const cfg = getBarTuning();
     const scale = canvas.stage.scale?.x ?? 1;
+    // Under the battle 3D camera the bar sits under the body as DRAWN (moved
+    // and rescaled); everywhere else d is null and this is the plain 2D token.
+    const d = drawn3d(token);
     const barW = Math.round(
-      Math.max(BAR_MIN_W, Math.min(BAR_MAX_W, (token.w ?? 100) * scale * cfg.widthScale)) * cfg.scale
+      Math.max(BAR_MIN_W, Math.min(BAR_MAX_W, (token.w ?? 100) * (d?.scale ?? 1) * scale * cfg.widthScale)) * cfg.scale
     );
     const barH = Math.max(2, Math.round(cfg.height * cfg.scale));
-    const cx = token.center?.x ?? (token.x ?? 0) + (token.w ?? 100) / 2;
-    const bottomY = (token.y ?? 0) + (token.h ?? 100);
+    const cx = d ? d.cx : token.center?.x ?? (token.x ?? 0) + (token.w ?? 100) / 2;
+    const bottomY = d ? d.footY : (token.y ?? 0) + (token.h ?? 100);
     const pt = worldToClient(cx, bottomY);
 
     const root = document.createElement("div");

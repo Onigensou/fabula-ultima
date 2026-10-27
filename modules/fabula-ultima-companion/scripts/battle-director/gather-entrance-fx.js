@@ -36,7 +36,9 @@ export function playGatherLocal({ sceneId, tokenId, style } = {}) {
     if (!cfg || typeof PIXI === "undefined" || !canvas?.ready) { resolve(); return; }
     if (sceneId && canvas.scene?.id !== sceneId) { resolve(); return; }
     let settled = false;
-    const finish = () => { if (!settled) { settled = true; resolve(); } };
+    // The 3D camera holds at plain 2D while the entrance plays (no-op elsewhere).
+    const release3d = globalThis.__ONI_BATTLE_STAGE_3D__?.hold?.("gather-entrance");
+    const finish = () => { if (!settled) { settled = true; release3d?.(); resolve(); } };
     const failsafe = setTimeout(finish, cfg.totalMs + TOKEN_WAIT_MS + FAILSAFE_MS);
     waitForToken(tokenId)
       .then((token) => (!token ? null : cfg.renderer === "giant" ? runGiant(token, cfg) : runGather(token, cfg)))
