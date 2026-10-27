@@ -25,6 +25,8 @@ import { log, warn } from "../logger.js";
 import { SimMode } from "./sim-mode.js";
 import { canAffordItem } from "./cost.js";
 import { attrDieSize, readPropNum } from "../snapshot.js";
+import { getLinkedSkillUuid } from "../item-resource.js";
+import { freeActions } from "../free-actions.js";
 
 // Strip the sim clone's " [SIM]" suffix so a directive keyed by the real actor name
 // matches the clone on the field. Mirrors profiles.js `profileFor`.
@@ -62,7 +64,12 @@ async function resolveSkillItem(actorDoc, skillRef) {
     if (byUuid) return byUuid;
   }
   const want = ref.toLowerCase();
-  return actorDoc?.items?.find?.((i) => String(i.name).trim().toLowerCase() === want) ?? null;
+  const hits = (actorDoc?.items?.contents ?? Array.from(actorDoc?.items ?? [])).filter((i) => String(i.name).trim().toLowerCase() === want);
+  if (!hits.length) return null;
+  // A consumable carrier and its linked activation copy share a name; the
+  // carrier is the top-level one (no `system.container`). Prefer it so the
+  // directive goes through the Item path and spends the item.
+  return hits.find((i) => !String(i.system?.container ?? "").trim()) ?? hits[0];
 }
 
 // ── Target resolution ───────────────────────────────────────────────────────
@@ -219,9 +226,32 @@ function expandForce(force, { dA, dB, fumbleThreshold, checkBonus, minDef }) {
 // item exactly as player-brain's castBundle does; `_name` rides along for the
 // transcript + the re-declare guard.
 function scriptedBundle(item, targetUuids) {
-  const st = String(item?.system?.props?.skill_type ?? "").trim().toLowerCase();
+  const p = item?.system?.props ?? {};
+  // A consumable CARRIER (item_type consumable with a linked activation skill) is
+  // an Item action, not a Skill: mirror player-brain's useItem bundle so DECLARE's
+  // Item branch resolves the linked skill and resolveAction spends the item. Lets a
+  // directive test a consumable ("Smoke Bomb") through the real Item path.
+  const isConsumable = String(p.item_type ?? "").trim().toLowerCase() === "consumable";
+  // A UUID STRING (what composeItem passes): DECLARE runs it through fromUuid().
+  const linked = isConsumable ? getLinkedSkillUuid(item) : null;
+  if (isConsumable && linked) {
+    return {
+      command: "Item", skillUuid: item.uuid, sourceItemUuid: item.uuid,
+      linkedSkillUuid: linked, itemMode: "use", itemKey: item.id, itemCost: 0,
+      targetUuids, _name: item.name, _scripted: true,
+    };
+  }
+  const st = String(p.skill_type ?? "").trim().toLowerCase();
   const command = st === "spell" ? "Spell" : "Skill";
   return { command, skillUuid: item.uuid, sourceItemUuid: item.uuid, targetUuids, _name: item.name, _scripted: true };
+}
+
+// The Octopath label the directive's action would occupy — what a free-action
+// grant's `enabledLabels` allow-list is matched against.
+function commandLabelFor(item) {
+  const p = item?.system?.props ?? {};
+  if (String(p.item_type ?? "").trim().toLowerCase() === "consumable") return "Item";
+  return String(p.skill_type ?? "").trim().toLowerCase() === "spell" ? "Spell" : "Skill";
 }
 
 // ── The hook ────────────────────────────────────────────────────────────────
@@ -254,6 +284,28 @@ export async function scriptedBundleFor(director, snap) {
     SimMode.note("scripted", `${baseName(actorDoc.name)} has no skill "${directive.skill}" — brain decides`);
     return null;
   }
+
+  // FREE-ACTION FRAME: a live grant restricts this DECLARE to what it permits
+  // (High Speed → Attack/Hinder; Dance → tag:dance skills). The directive must
+  // not be spent inside a frame that cannot legally host it — it fired an Item
+  // inside High Speed's window on 2026-10-27 and the FSM declared it anyway.
+  // Step aside WITHOUT exhausting the directive; the real turn comes next.
+  try {
+    const grant = freeActions.get?.(snap?.actorId) ?? null;
+    if (grant) {
+      const label = commandLabelFor(item);
+      const labels = Array.isArray(grant.enabledLabels) ? grant.enabledLabels : [];
+      // `allowedSkillRefs` narrows further ("tag:dance", a skill name or uuid).
+      const refs = Array.isArray(grant.allowedSkillRefs) ? grant.allowedSkillRefs.map((r) => String(r).trim().toLowerCase()).filter(Boolean) : [];
+      const itemTags = String(item.system?.props?.skill_tags ?? "").split(/[\s,]+/).map((t) => t.trim().toLowerCase().split("@")[0]).filter(Boolean);
+      const refAdmits = !refs.length || refs.some((r) => r === item.uuid.toLowerCase() || r === String(item.name).trim().toLowerCase()
+        || (r.startsWith("tag:") && itemTags.includes(r.slice(4))));
+      if (!refAdmits || (labels.length && !labels.includes(label))) {
+        SimMode.note("scripted", `free-action frame (${grant.sourceLabel ?? "grant"}) does not admit ${label} "${item.name}" — holding the directive for the real turn`);
+        return null;
+      }
+    }
+  } catch (e) { warn("[SIM] scripted: free-action grant check threw", e); }
 
   if (!canAffordItem(actorDoc, item).ok) {
     SimMode.note("scripted", `${baseName(actorDoc.name)} can't afford "${item.name}" — brain decides`);

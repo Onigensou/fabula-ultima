@@ -28,6 +28,7 @@ import { profileFor, mpItemPolicy, hpItemPolicy, revivePolicy, refreshFocus, TUN
 import { SimMode } from "./sim-mode.js";
 import { Journal } from "./sim-journal.js";
 import { canAffordItem, parseCost } from "./cost.js";
+import { getLinkedSkillUuid } from "../item-resource.js";
 import { protectExhausted } from "./reaction-brain.js";
 import { resolveAttackerWeapon, resolveVirtualAttacks, resolvePrimaryAttackWeapon } from "../snapshot.js";
 
@@ -346,8 +347,9 @@ async function fetchCreatables(actorDoc) {
         itemUuid: c.itemUuid,
         doc,
         // The consumable is just a carrier; its linked activation skill holds the
-        // real targeting/effect (composeItem resolves the same field).
-        linkedSkillUuid: doc.system?.props?.item_skill_active || null,
+        // real targeting/effect (composeItem resolves the same field) — as a UUID
+        // string, which is what DECLARE's fromUuid() needs.
+        linkedSkillUuid: getLinkedSkillUuid(doc),
       });
     }
     return out;
@@ -472,7 +474,11 @@ function makePolicyApi(director, snap, self, creatables = []) {
         command: "Item",
         skillUuid: item.uuid,
         sourceItemUuid: item.uuid,
-        linkedSkillUuid: item.system?.props?.item_skill_active || null,
+        // A UUID STRING, as composeItem passes it. The raw `item_skill_active`
+        // object used to ride here; DECLARE's fromUuid() rejected it, fell back to
+        // the carrier as the activation, and every sim consumable silently did
+        // nothing (found 2026-10-27 via Invisibility Potion).
+        linkedSkillUuid: getLinkedSkillUuid(item),
         itemMode: "use",
         itemKey: item.id,
         itemCost: 0,
