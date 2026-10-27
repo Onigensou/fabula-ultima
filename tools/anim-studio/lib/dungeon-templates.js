@@ -73,7 +73,7 @@ function shell({ key, name, cfg, assets = {}, inner, timeout = 15000 }) {
     "`;",
     "",
     "try {",
-    "  emitLocal('oni:animationStart', { type: ANIM_KEY, sceneId: canvas.scene?.id ?? null });",
+    "  emitLocal('oni:animationStart', { type: ANIM_KEY, sceneId: canvas.scene?.id ?? null, sourceTokenId: sourceToken?.id ?? null });",
     // Register the gate listener BEFORE broadcasting, or a fast inner script can
     // fire doneHook before anyone is listening and the sequence hangs to timeout.
     "  const waitDone = onceHook(doneHook, CFG.totalTimeoutMs || " + timeout + ");",
@@ -90,7 +90,9 @@ function shell({ key, name, cfg, assets = {}, inner, timeout = 15000 }) {
     "} catch (err) {",
     "  console.error(TAG, 'orchestration crashed', err);",
     "} finally {",
-    "  emitLocal('oni:animationEnd', { type: ANIM_KEY, timestamp: Date.now() });",
+    // sourceTokenId scopes the director's true-end watch to THIS caster, so a
+    // concurrent cinematic's end cannot cut a long tail short.
+    "  emitLocal('oni:animationEnd', { type: ANIM_KEY, timestamp: Date.now(), sourceTokenId: sourceToken?.id ?? null });",
     "}",
     "",
     "})();",

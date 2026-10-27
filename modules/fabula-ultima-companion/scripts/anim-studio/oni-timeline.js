@@ -373,7 +373,11 @@ export function createTimeline(spec = {}, env = {}) {
       else if (art && (t.document?.flags?.[MODULE_ID]?.spriteShadow || t.actor?.flags?.[MODULE_ID]?.spriteShadow)) {
         try { SHADOW[k] = bakeShadow(art, s.shadowStyle); } catch { SHADOW[k] = null; }
       }
-      const hurtUrl = s.hurt ?? actorProps(t).sprite_hurt;
+      // hurt loop: the actor's sprite_hurt, else the shot's naming convention
+      // (spec.hurtFor(name) → url) for party art that is on Forge but not yet
+      // on the sheet; a failed load simply means no hurt art.
+      let hurtUrl = s.hurt ?? actorProps(t).sprite_hurt;
+      if (!hurtUrl && typeof spec.hurtFor === "function" && s.hurt !== null) { try { hurtUrl = spec.hurtFor(t.name, t); } catch { hurtUrl = null; } }
       if (hurtUrl) { try { const c = await takeVideo(hurtUrl); if (c) { c.video.loop = true; HURT[k] = c; } } catch {} }
       for (const [p, pd] of Object.entries((spec.poses || {})[k] || {})) {
         const img = await imageOf(pd.url); if (!img) continue;
@@ -474,6 +478,18 @@ export function createTimeline(spec = {}, env = {}) {
     return () => { window.removeEventListener("resize", place); try { el.remove(); } catch {} overlay = null; octx = null; };
   }
   const view = () => { const W = app?.renderer?.screen?.width ?? window.innerWidth, H = app?.renderer?.screen?.height ?? window.innerHeight; return { W, H }; };
+
+  // Where the camera WILL be for this frame's state: the resolved view plus the
+  // world rect it shows (the mockup's camXf). Tracks that need the frame edge
+  // in world units (a projectile entering from just above the frame) use this.
+  function camView(S) {
+    const { W, H } = view();
+    let v;
+    try { v = cam?.resolveIntent ? cam.resolveIntent({ point: { x: S.cam.cx, y: S.cam.cy }, zoom: S.cam.zoom }, scene) : null; } catch { v = null; }
+    if (!v) { const st = canvas.stage; v = { x: S.cam.cx, y: S.cam.cy, scale: st.scale.x }; }
+    const sc = v.scale; const top = v.y - (H / 2 + (S.panY || 0) * H) / sc, left = v.x - W / 2 / sc;
+    return { x: v.x, y: v.y, scale: sc, W, H, top, left, bottom: top + H / sc, right: left + W / sc };
+  }
 
   // ── camera write (S.cam + panY + shake) ──
   function applyCamera(S, t) {
@@ -621,7 +637,8 @@ export function createTimeline(spec = {}, env = {}) {
     // maths + constants
     E, seg, lerp, clamp01, rng, VALLEY_HY,
     SCENE, STAGE, REST, GRID, TOK, IMG, LIB, POSE,
-    feet, JAW, tinted, view, toScreen,
+    feet, JAW, tinted, view, toScreen, camView,
+    art: (k) => ART[k] || null,
     load, mk, run, makeState,
     draw: { boltPath, screenCracks, glowCircle, speedlines, dragonEye, zoomLines, fireball, drawKeystone, drawCover, drawSkyPan, vlines, mountainscape, foregroundRocks, valleyXf, shockRing, needle, tintFrame },
   };
