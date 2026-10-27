@@ -21,6 +21,9 @@
 // The mascot reacts to a click; each kind moves its own way. Purely cosmetic,
 // it gives restless hands something other than F5.
 //
+// While the cover is black, Foundry's toasts ("lost connection", "map image
+// didn't load") are lifted above it; they used to be hidden underneath.
+//
 // Progress comes from wrapping TextureLoader#load / #loadTexture, so it knows
 // which files the draw still waits on. Loads over 2 s go to the client-health
 // logger ("load-progress"), with "load-waiting" marks at 30 s and 60 s that
@@ -35,6 +38,7 @@
   const OVERLAY_ID = "fu-screen-transition";   // screen-transition.js
   const ROOT_ID    = "fu-load-indicator";
   const STYLE_ID   = "fu-load-indicator-style";
+  const COVER_CLASS = "fu-nl-covered";   // on <body> while the cover is black: toasts go above it
 
   const SHOW_MS      = 2000;
   const PCT_MS       = 6000;
@@ -130,8 +134,10 @@
   function startDraw() {
     if (draw && !draw.reported) report(draw, "superseded");
     hide();
-    draw = { t0: Date.now(), files: new Map(), texDoneAt: null, readyAt: null, fadeAt: null,
+    draw = { t0: Date.now(), tp0: performance.now(), files: new Map(), texDoneAt: null, readyAt: null, fadeAt: null,
              shown: false, calm: false, marks: new Set(), reported: false, mascot: pickMascot() };
+    // swap the sprite while hidden, so it has painted by the time the indicator shows
+    if (ui.mascot) setMascot(draw.mascot);
     ticker ??= setInterval(tick, TICK_MS);
   }
 
@@ -168,6 +174,7 @@
       const opacity = ov ? parseFloat(ov.style.opacity || "0") : 0;
       const shatter = document.body.classList.contains("fuc-shatter-active");
       const black = !!ov && opacity >= 0.99 && !shatter;
+      document.body.classList.toggle(COVER_CLASS, black && !draw.readyAt && enabled());
 
       if (draw.readyAt) {
         // done: fade out with the cover, then clear
@@ -187,7 +194,7 @@
     }
   }
 
-  function finish() { hide(); draw = null; stop(); }
+  function finish() { hide(); draw = null; stop(); document.body.classList.remove(COVER_CLASS); }
   function stop() { clearInterval(ticker); ticker = null; }
 
   // ── Drawing ────────────────────────────────────────────────────────────────
@@ -339,8 +346,12 @@
       const now = performance.now();
       const rows = [...d.files].map(([src, f]) => ({ file: fileName(src), from: origin(src),
         ms: Math.round((f.end ?? now) - f.start), done: f.end !== null }));
+      // downloads vs building the map: when did the last file arrive? (the tick can miss it)
+      const ends = [...d.files.values()].map(f => f.end);
+      const texturesMs = d.texDoneAt ? d.texDoneAt - d.t0
+        : ends.length && ends.every(x => x !== null) ? Math.round(Math.max(...ends) - d.tp0) : null;
       record("load-progress", {
-        reason, ...sceneInfo(), ms, texturesMs: d.texDoneAt ? d.texDoneAt - d.t0 : null,
+        reason, ...sceneInfo(), ms, texturesMs,
         files: rows.length, left: rows.filter(r => !r.done).length, shown: d.shown, calm: d.calm,
         mascot: d.mascot?.id ?? null,
         slowest: rows.filter(r => r.done).sort((a, b) => b.ms - a.ms).slice(0, 5),
@@ -357,6 +368,7 @@
     const style = document.createElement("style");
     style.id = STYLE_ID;
     style.textContent = `
+body.${COVER_CLASS} #notifications{z-index:100000}
 ${R}{position:absolute;inset:0;pointer-events:none;font-family:"Signika",sans-serif;color:#f3ead2;-webkit-font-smoothing:antialiased;animation:fuNlIn .4s steps(4) both}
 ${R}[hidden],${R} [hidden]{display:none!important}
 ${R} .fu-nl-dither{position:absolute;inset:0;background-image:conic-gradient(rgba(255,255,255,.05) 25%,transparent 0 50%,rgba(255,255,255,.05) 0 75%,transparent 0);background-size:2px 2px}
@@ -445,6 +457,10 @@ ${R} .fu-nl-shroom-poke{animation:fuNlShroomPoke .7s steps(3) 1}
   });
 
   Hooks.once("ready", () => {
+    ensureStyle();   // the toast lift must work before the indicator ever draws
+    // screen-transition.js builds the cover on ready, before this runs (module.json order)
+    const ov = document.getElementById(OVERLAY_ID);
+    if (ov) ensureDom(ov);
     // load the art now, so a slow map never waits on it
     for (const src of [LOGO, ...MASCOTS.map(m => m.src)]) {
       const img = new Image();
