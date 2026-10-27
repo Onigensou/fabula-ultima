@@ -19,6 +19,7 @@
 //    (npc-status-strip.js), which listens to "fuBattleFocusChanged".
 
 import { log } from "./logger.js";
+import { isNpcActor } from "./status-classifier.js";
 
 const NS = "fabula-ultima-companion";
 const STYLE_ID = "fud-battle-focus-style";
@@ -169,8 +170,22 @@ function wrapDrawEffects() {
 
 function redrawIcons() {
   for (const t of canvas?.tokens?.placeables ?? []) {
-    try { t.renderFlags.set({ redrawEffects: true }); } catch { /* */ }
+    try { t.renderFlags.set({ redrawEffects: true, refreshBars: true, refreshNameplate: true }); } catch { /* */ }
   }
+}
+
+// ── battle token chrome ──────────────────────────────────────────────────────
+// While a battle runs (and Alt is not held) the token draws no bars and NPCs no
+// Foundry nameplate: HP / MP live in the HUD cards and the GM desk, the shield
+// and the name in our own unit label (npc-status-strip.js). Bar Brawl draws
+// into token.bars, so hiding that container covers it. Re-applied after every
+// token refresh; redrawIcons() asks for a bars + nameplate refresh whenever the
+// battle starts / ends or Alt changes, so Foundry restores them on its own.
+// Deferred (user, 2026-10-27): replacing Bar Brawl outright; see memory.
+function applyBattleChrome(t) {
+  if (!t || t.destroyed || !quietOn()) return;
+  try { if (t.bars) t.bars.visible = false; } catch { /* */ }
+  try { if (t.nameplate && isNpcActor(t.actor)) t.nameplate.visible = false; } catch { /* */ }
 }
 function syncBattle() {
   const now = battleHere();
@@ -191,6 +206,7 @@ function setAlt(on) {
 
 Hooks.once("ready", () => {
   wrapDrawEffects();
+  Hooks.on("refreshToken", applyBattleChrome);
   _battle = battleHere();
   Hooks.callAll("fuBattleFocusChanged", _battle);
   window.addEventListener("keydown", (ev) => { if (ev.key === "Alt" && !ev.repeat && !typing(ev)) setAlt(true); }, true);

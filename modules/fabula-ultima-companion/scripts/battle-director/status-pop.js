@@ -18,6 +18,7 @@
 import { log, warn } from "./logger.js";
 import { classifyEffect, TIER } from "./status-classifier.js";
 import { battleActive } from "./battle-focus.js";
+import { headPoint } from "./unit-anchors.js";
 
 const ROOT_ID = "fu-status-pop-root";
 const STYLE_ID = "fu-status-pop-style";
@@ -59,13 +60,13 @@ export function popOnToken(token, { text, img, tier = TIER.BUFF, off = false } =
   const n = (_stack.get(token.id) ?? 0) + 1;
   _stack.set(token.id, n);
   setTimeout(() => _stack.set(token.id, Math.max(0, (_stack.get(token.id) ?? 1) - 1)), 700);
-  const rect = view.getBoundingClientRect();
-  const pt = token.toGlobal(new PIXI.Point(token.w / 2, 0));
+  const pt = headPoint(token);   // the RENDERED sprite's top (unit-anchors.js)
+  if (!pt) return;
   const el = document.createElement("div");
   el.className = `fu-spop t-${tier}${off ? " is-off" : ""}`;
   el.innerHTML = `${img ? `<img src="${esc(img)}" alt="">` : ""}<span>${esc(text)}</span>`;
-  el.style.left = `${Math.round(rect.left + pt.x)}px`;
-  el.style.top = `${Math.round(rect.top + pt.y - 6 - (n - 1) * STACK_PX)}px`;
+  el.style.left = `${Math.round(pt.x)}px`;
+  el.style.top = `${Math.round(pt.y - 6 - (n - 1) * STACK_PX)}px`;
   root.appendChild(el);
   setTimeout(() => el.remove(), POP_MS + 100);
 }

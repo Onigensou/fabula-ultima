@@ -32,6 +32,7 @@ import { playSfx, preloadSfx } from "../director-sfx.js";
 import { enqueueCard, setCardDrainFn, passiveCardQueue } from "./director-passive-card-queue.js";
 import { pWait } from "../presentation-clock.js";
 import { flashStatusLocal } from "../status-pop.js";
+import { waistPoint } from "../unit-anchors.js";
 
 export { passiveCardQueue };
 
@@ -214,10 +215,10 @@ async function renderCardLocal(spec) {
   const entry = { card, tickerFn: null, runId, dy: 0, exiting: false, holdUntil: 0 };
   const updatePosition = () => {
     if (!card.isConnected || !token || token.destroyed || !canvas?.app?.view) return;
-    const rect = canvas.app.view.getBoundingClientRect();
-    const globalPos = token.toGlobal(new PIXI.Point(token.w / 2, token.h * WAIST_FRACTION));
-    card.style.left = (rect.left + globalPos.x) + "px";
-    card.style.top  = (rect.top  + globalPos.y + entry.dy) + "px";
+    const p = waistPoint(token, WAIST_FRACTION);   // the RENDERED sprite (unit-anchors.js)
+    if (!p) return;
+    card.style.left = p.x + "px";
+    card.style.top  = (p.y + entry.dy) + "px";
   };
   entry.tickerFn = updatePosition;
 
