@@ -1,11 +1,17 @@
-// Director-native start-of-round banner.
+// Director-native start-of-round banner + the docked round bar.
 //
-// Screen-fixed DOM cinematic shown at the start of each round: a centered dark
-// band fades in, gold accent lines sweep open from the center, and "ROUND N"
-// rises in — holds — then fades out. Self-contained: own socketlib channel,
-// own render surface, own SFX. No legacy dependency (the legacy "round
-// announcer" was end-of-round chat cards coupled to Lancer Initiative + the
-// chat log, which the director doesn't use).
+// Each round opens with the parchment ROUND PLATE (round-plate.js): it unrolls
+// in the middle of the screen, carrying the initiative as a seal in the winning
+// side's colour, then lifts toward the top and fades while the ROUND BAR
+// assembles there (rules sweep open, the parchment band shoots open, the
+// spotlight drops in, the creature icons fill in from the middle out, and the
+// side that won the initiative glows twice). The bar then persists as the round
+// indicator + turn tracker. Parchment theme with side colours: party frames are
+// rimmed blue, enemy frames red, the spotlight's rim says whose turn it is.
+// Approved mockup: claude.ai/artifact/AdJs3fgmJKtVqn4bWTf1sH. Self-contained:
+// own socketlib channel, own render surface, own SFX. No legacy dependency (the
+// legacy "round announcer" was end-of-round chat cards coupled to Lancer
+// Initiative + the chat log, which the director doesn't use).
 //
 // SFX: Critical_1.wav, loaded via Web Audio (fetch the FULL file →
 // decodeAudioData → play). Foundry's HTML5 AudioHelper uses Range requests,
@@ -20,6 +26,9 @@ import { log, warn } from "./logger.js";
 import { registerSurface, unregisterSurface } from "./director-surfaces.js";
 import { pWait } from "./presentation-clock.js";
 import { deskUnits } from "./gm-desk.js";
+import { setTurnGlow } from "./turn-glow.js";
+import { turnCueWillRun, isTurnCueEnabled, CUE_LANDED_HOOK } from "./turn-start-cue.js";
+import { playRoundPlateLocal, SEAL_AT_MS } from "./round-plate.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const ACTION_PLAY = "FU_DIRECTOR_ROUND_PLAY";
@@ -30,30 +39,28 @@ const STYLE_ID = "fu-dir-round-style";
 const LAYER_ID = "fu-dir-round-layer";
 const ROUND_SFX_URL =
   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Critical_1.wav";
-const ACCENT = "#ffd866";
-// ── Follow-up flash (Initiative / Ambush / Advantage) ──────────────────────
-// A transient centered banner shown AFTER the round banner docks, announcing
-// which side seized initiative this round (rolled mode) or the surprise-round
-// engagement. Its own layer/style so it overlays WITHOUT disturbing the docked
-// round HUD (turn tracker). SFX are the two Forge initiative cues.
-const FOLLOWUP_LAYER_ID = "fu-dir-initiative-layer";
-const FOLLOWUP_STYLE_ID = "fu-dir-initiative-style";
+// Parchment family (turn banner / round plate / player HUD).
+const PARCH_TOP = "#f6f1e6", PARCH_BOT = "#ebe3d0";
+const UMBER = "#7a6a55";
+const GOLD_1 = "#d5b67a";
+const WELL = "#17120c";
+const SIDE_RIM = { party: "#3f8ae0", enemy: "#d2453a" };
+const SIDE_STREAK = { party: "90,168,255", enemy: "255,80,70" };
+// ── Initiative (rolled side / advantage / ambush) ──────────────────────────
+// Carried on the round plate as a seal in the winning side's colour (with that
+// side's Forge cue as the seal opens), then the side's icons on the bar glow.
 const SFX_PLAYER_INIT_URL =
   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/player_initiative.wav";
 const SFX_ENEMY_INIT_URL =
   "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/enemy_initiative.wav";
-// Disposition base colours (match the legacy initiative tracker's border tints):
-// party/ally = blue, enemy = red. The LABEL text is always white; the
-// disposition colour lives on the framing accent lines + the wash.
-const DISP_BLUE = "#5aaaff";  // party / advantage favour
-const DISP_RED  = "#ff5050";  // enemy / ambush favour
-// Per-kind label + line colour + SFX. Text is white for every kind.
 const FOLLOWUP_SPECS = {
-  playerInitiative: { text: "Player Initiative", line: DISP_BLUE, sfx: SFX_PLAYER_INIT_URL },
-  enemyInitiative:  { text: "Enemy Initiative",  line: DISP_RED,  sfx: SFX_ENEMY_INIT_URL },
-  advantage:        { text: "ADVANTAGE!",        line: DISP_BLUE, sfx: SFX_PLAYER_INIT_URL },
-  ambush:           { text: "AMBUSH!",           line: DISP_RED,  sfx: SFX_ENEMY_INIT_URL },
+  playerInitiative: { text: "Party initiative", side: "party", sfx: SFX_PLAYER_INIT_URL },
+  enemyInitiative:  { text: "Enemy initiative", side: "enemy", sfx: SFX_ENEMY_INIT_URL },
+  advantage:        { text: "Advantage!",       side: "party", sfx: SFX_PLAYER_INIT_URL },
+  ambush:           { text: "Ambush!",          side: "enemy", sfx: SFX_ENEMY_INIT_URL },
 };
+// The winning side's icons breathe in its colour twice once the bar is back.
+const SIDE_GLOW_MS = 1700;
 // Icon dimensions (vh) — shared between the CSS and the JS that reserves equal
 // width for both sides so the ROUND text stays screen-centred with uneven
 // combatant counts.
@@ -105,12 +112,10 @@ const TX_DOCK_SHIFT_VH = 15.5;
 // How far ABOVE its resting top the spotlight starts its slide-in (fully above
 // the bar, so it reads as dropping in from the top and pushing the text down).
 const SPOT_SLIDE_VH = SPOT_H_VH + 2;
-// Single gold "ray" behind the whole bar (emulated background light). RAY_VH =
-// the tail length past each bar end where the gold fades to transparent; the
-// body runs SOLID gold straight through the centre.
+// Parchment band behind the whole bar (the "ray"). RAY_VH = the tail length
+// past each bar end where it fades out; the body runs solid straight through
+// the centre.
 const RAY_VH = 13;
-const END_GOLD = "rgba(255,216,102,.42)";
-const END_GOLD_FADE = "rgba(255,216,102,.12)";
 // Lineup icon enter/exit animation. When an activation is taken its icon is
 // REMOVED: it collapses its layout footprint (margins → -half its width) while
 // shrinking + fading, so the flex row slides the remaining icons toward the
@@ -158,14 +163,21 @@ export function initDirectorRoundBanner() {
   // style/layer exist too so the first reveal isn't stalled by DOM/style setup.
   try {
     prewarmSfx([SFX_PLAYER_INIT_URL, SFX_ENEMY_INIT_URL, ROUND_SFX_URL]);
-    ensureFollowupStyle();
+    ensureStyle();
   } catch (e) { warn("director-round-banner: sfx/style prewarm failed", e); }
   // GM drives the turn-action tracker off dCombat's state-change hook (fired
   // from director-combat.js). Registered outside the socket guard so the GM's
   // own local render still works even if socketlib is unavailable.
   try {
     // Mid-round turn changes → animate the spotlight swap + lineup enter/exit.
-    Hooks.on("fu-director-turnactions", (dCombat) => refreshTurnActions(dCombat, { animate: true }));
+    // A NEW turn-taker waits for its turn banner's name to land (turn-start-cue.js)
+    // before it swaps in — the swap and the token glow are that beat.
+    Hooks.on("fu-director-turnactions", (dCombat) => {
+      const next = dCombat?.currentCombatantId ?? null;
+      if (next && next !== _shownActiveId && turnCueWillRun()) { holdSpotlight(dCombat); return; }
+      refreshTurnActions(dCombat, { animate: true });
+    });
+    Hooks.on(CUE_LANDED_HOOK, () => releaseSpotlight());
   } catch (e) { warn("director-round-banner: turnactions hook registration failed", e); }
 
   // Live crisis / defeated tint — re-snapshot when a combatant's HP changes
@@ -199,6 +211,33 @@ function scheduleLiveRefresh() {
       }
     } catch (_e) {}
   }, 150);
+}
+
+// ── Spotlight hold (turn-start cue) ─────────────────────────────────────────
+// GM-side. While held, every tracker refresh is deferred and coalesced; the cue
+// releases it when the banner's name lands. The cap only matters if no cue ever
+// runs for that turn (it releases on every path, including "skipped").
+const SPOT_HOLD_MAX_MS = 12000;
+let _spotHold = null;          // { dCombat, timer }
+let _shownActiveId = null;     // the turn-taker the tracker last rendered
+
+function holdSpotlight(dCombat) {
+  if (_spotHold) { _spotHold.dCombat = dCombat ?? _spotHold.dCombat; return; }
+  _spotHold = { dCombat, timer: setTimeout(releaseSpotlight, SPOT_HOLD_MAX_MS) };
+}
+
+function releaseSpotlight() {
+  const hold = _spotHold;
+  if (!hold) return;
+  _spotHold = null;
+  clearTimeout(hold.timer);
+  refreshTurnActions(hold.dCombat, { animate: true });
+}
+
+function dropSpotlightHold() {
+  if (_spotHold) clearTimeout(_spotHold.timer);
+  _spotHold = null;
+  _shownActiveId = null;
 }
 
 // ── Web Audio SFX (full-file fetch → decode → play; cached per session) ───
@@ -281,46 +320,43 @@ function ensureStyle() {
 #${LAYER_ID} .fu-rb-line {
   /* Stretches to the content (all icons) — no fixed width. Hugs the icons
      vertically (band gap 0). */
-  position: relative; height: 2px; align-self: stretch; transform-origin: center;
-  background: linear-gradient(90deg, transparent, ${ACCENT} 4%, ${ACCENT} 96%, transparent);
-  box-shadow: 0 0 8px ${ACCENT};
+  /* Umber rule, as on the plates' edges. */
+  position: relative; height: 4px; align-self: stretch; transform-origin: center;
+  background: linear-gradient(90deg, transparent, ${UMBER} 4%, ${UMBER} 96%, transparent);
 }
-/* Single gold "ray" behind the whole bar — emulated band of background light.
-   Spans the full bar width PLUS a RAY_VH tail past each end, as ONE continuous
-   horizontal gradient (set inline per render): transparent tips → gold body that
-   runs UNBROKEN through the centre (behind the spotlight). Shoots open from the
-   centre once on reveal, then settles. Full bar height. */
+/* Parchment band behind the whole bar. Spans the full bar width PLUS a RAY_VH
+   tail past each end; the tails fade out through a mask (set inline per render),
+   and the body runs UNBROKEN through the centre (behind the spotlight). A gold
+   hairline runs inside each rule. Shoots open from the centre once as the bar
+   assembles, then stays. Full bar height. */
 #${LAYER_ID} .fu-rb-ray {
   position: absolute; top: -${END_OVERFLOW_VH}vh; bottom: -${END_OVERFLOW_VH}vh;
   left: -${RAY_VH}vh; right: -${RAY_VH}vh;
   pointer-events: none; opacity: 0; transform-origin: center center;
+  background: linear-gradient(180deg, ${PARCH_TOP}, ${PARCH_BOT});
+}
+#${LAYER_ID} .fu-rb-ray::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 8px; bottom: 8px;
+  border-top: 2px solid ${GOLD_1}; border-bottom: 2px solid ${GOLD_1};
 }
 #${LAYER_ID} .fu-rb-ray.lit { animation: fu-rb-ray-shoot 1.15s ease-out forwards; }
 @keyframes fu-rb-ray-shoot {
-  /* Grows from the centre with a subtle overshoot (1.02), pulsing a SYMMETRIC
-     gold glow (drop-shadow follows the gradient's alpha, not a box edge), then
-     settles to no glow at a steady resting opacity. */
-  0%   { opacity: 0;   transform: scaleX(.08);
-         filter: drop-shadow(0 0 0 rgba(255,216,102,0)) drop-shadow(0 0 0 rgba(255,255,255,0)); }
-  35%  { opacity: 1;   transform: scaleX(1.02);
-         filter: drop-shadow(0 0 13px rgba(255,216,102,.95)) drop-shadow(0 0 5px rgba(255,255,255,.85)); }
-  100% { opacity: .85; transform: scaleX(1);
-         filter: drop-shadow(0 0 0 rgba(255,216,102,0)) drop-shadow(0 0 0 rgba(255,255,255,0)); }
+  /* Grows from the centre with a subtle overshoot (1.02) and a warm flash
+     (drop-shadow follows the masked alpha, not a box edge), then settles. */
+  0%   { opacity: 0; transform: scaleX(.08); filter: drop-shadow(0 0 0 rgba(255,236,190,0)); }
+  35%  { opacity: 1; transform: scaleX(1.02); filter: drop-shadow(0 0 13px rgba(255,236,190,.9)); }
+  100% { opacity: 1; transform: scaleX(1); filter: drop-shadow(0 0 0 rgba(255,236,190,0)); }
 }
-/* The "hero" ROUND N — big + screen-centred during the entrance cinematic. It
-   lives in the absolute .fu-rb-center overlay (not the bar row), so on dock it
-   fades out while the spotlight + small ROUND N take over below the bar. */
+/* ROUND N, resting below the spotlight. It lives in the absolute .fu-rb-center
+   overlay (not the bar row) and is authored at 6.2vh, then scaled to its docked
+   size (TX_DOCK_SCALE), so the stroke + shadows are drawn ~5x and scale down.
+   Cinzel (the plates' lettering) in parchment white with an umber outline. */
 #${LAYER_ID} .fu-rb-text {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-  color: #fff; white-space: nowrap; letter-spacing: .1em;
-  font: 900 6.2vh "Pixel Operator", system-ui, sans-serif;
-  /* Subtle black outline so ROUND N stays readable on any background (incl. the
-     gold ray now running behind it). The stroke is proportional — it scales with
-     the text, so the border looks the same at the big entrance size and the
-     small docked size; paint-order keeps the stroke behind the fill so glyphs
-     stay crisp. The blurred shadows add a soft dark halo for extra contrast. */
-  -webkit-text-stroke: 0.6px rgba(0,0,0,.9); paint-order: stroke fill;
-  text-shadow: 0 0 3px rgba(0,0,0,.85), 0 2px 10px rgba(0,0,0,.6);
+  color: ${PARCH_TOP}; white-space: nowrap; letter-spacing: .12em;
+  font: 900 6.2vh "Cinzel", Georgia, serif;
+  -webkit-text-stroke: 2px rgba(31,25,18,.9); paint-order: stroke fill;
+  text-shadow: 0 0 15px rgba(31,25,18,.9), 0 10px 40px rgba(0,0,0,.6);
 }
 /* Turn-action tracker — creature icons flanking ROUND X (enemies left, party right). */
 #${LAYER_ID} .fu-rb-row {
@@ -360,13 +396,19 @@ function ensureStyle() {
 /* Left side (enemies) mirror horizontally to face the centre (trapezoid is
    symmetric, so the slant is unaffected). */
 #${LAYER_ID} .fu-rb-ta-group.left .fu-rb-ta-icon { transform: scaleX(-1); }
-/* Gold frame (the trapezoid border) — the inset .wrap leaves ~2px of it showing
-   as the rim on every edge, slants included. */
+/* Frame (the trapezoid border): an umber edge with an inner rim in the side's
+   colour (party blue, enemy red); the inset .wrap leaves both showing on every
+   edge, slants included. */
 #${LAYER_ID} .fu-rb-ta-frame {
-  position: absolute; inset: 0; background: ${ACCENT}; clip-path: ${RHOMBUS_CLIP};
+  position: absolute; inset: 0; background: ${UMBER}; clip-path: ${RHOMBUS_CLIP};
 }
+#${LAYER_ID} .fu-rb-ta-frame::before {
+  content: ""; position: absolute; inset: 2px; clip-path: ${RHOMBUS_CLIP}; background: ${GOLD_1};
+}
+#${LAYER_ID} .fu-rb-ta-group.right .fu-rb-ta-frame::before { background: ${SIDE_RIM.party}; }
+#${LAYER_ID} .fu-rb-ta-group.left .fu-rb-ta-frame::before { background: ${SIDE_RIM.enemy}; }
 #${LAYER_ID} .fu-rb-ta-wrap {
-  position: absolute; inset: 2px; background: #0a0a0e; overflow: hidden; clip-path: ${RHOMBUS_CLIP};
+  position: absolute; inset: 4px; background: ${WELL}; overflow: hidden; clip-path: ${RHOMBUS_CLIP};
 }
 #${LAYER_ID} .fu-rb-ta-icon .fu-rb-ta-media {
   /* Token sprite masked into the frame: focal point + zoom set inline per actor. */
@@ -428,6 +470,7 @@ function ensureStyle() {
   filter: none; animation: none; box-shadow: none;
 }
 #${LAYER_ID} .fu-rb-ta-icon.defeated .fu-rb-ta-frame { background: #6f6f77; }
+#${LAYER_ID} .fu-rb-ta-icon.defeated .fu-rb-ta-frame::before { display: none; }
 #${LAYER_ID} .fu-rb-ta-icon.defeated .fu-rb-ta-media { filter: grayscale(1) brightness(.45); }
 #${LAYER_ID} .fu-rb-ta-icon.defeated .fu-rb-ta-wrap::after { display: none; }
 #${LAYER_ID} .fu-rb-ta-icon.defeated::before {
@@ -447,7 +490,7 @@ function ensureStyle() {
   opacity: 0; transition: opacity .15s ease;
   background: rgba(0,0,0,.42); clip-path: ${RHOMBUS_CLIP};
 }
-#${LAYER_ID} .fu-rb-ta-book i { color: ${ACCENT}; font-size: 4vh; text-shadow: 0 1px 5px rgba(0,0,0,.95); }
+#${LAYER_ID} .fu-rb-ta-book i { color: ${GOLD_1}; font-size: 4vh; text-shadow: 0 1px 5px rgba(0,0,0,.95); }
 #${LAYER_ID} .fu-rb-ta-icon:hover .fu-rb-ta-book { opacity: 1; }
 /* Un-mirror just the glyph on the left side (book box keeps the leaning clip). */
 #${LAYER_ID} .fu-rb-ta-group.left .fu-rb-ta-book i { transform: scaleX(-1); }
@@ -458,7 +501,7 @@ function ensureStyle() {
   width: 2.6vh; height: 2.6vh; border-radius: 3px;
   background: rgba(0,0,0,.55); transition: opacity .15s ease;
 }
-#${LAYER_ID} .fu-rb-ta-book-mini i { color: ${ACCENT}; font-size: 1.5vh; }
+#${LAYER_ID} .fu-rb-ta-book-mini i { color: ${GOLD_1}; font-size: 1.5vh; }
 #${LAYER_ID} .fu-rb-ta-icon:hover .fu-rb-ta-book-mini { opacity: 0; }
 /* On the mirrored (left) side, put the badge at the visual bottom-RIGHT (local
    left) and un-mirror the glyph. */
@@ -482,19 +525,25 @@ function ensureStyle() {
 /* Resting (docked) state. The slide-in DOWN from the top is played as a WAAPI
    transform animation on dock; this just holds the final opacity + position. */
 #${LAYER_ID} .fu-rb-spotlight.shown { opacity: 1; }
-#${LAYER_ID} .fu-rb-spot-frame { position: absolute; inset: 0; background: ${ACCENT}; clip-path: ${SPOT_CLIP}; }
+/* Umber edge + an inner rim that says whose turn it is (gold while waiting). */
+#${LAYER_ID} .fu-rb-spot-frame { position: absolute; inset: 0; background: ${UMBER}; clip-path: ${SPOT_CLIP}; }
+#${LAYER_ID} .fu-rb-spot-frame::before {
+  content: ""; position: absolute; inset: 3px; clip-path: ${SPOT_CLIP}; background: ${GOLD_1};
+}
+#${LAYER_ID} .fu-rb-spotlight.party .fu-rb-spot-frame::before { background: ${SIDE_RIM.party}; }
+#${LAYER_ID} .fu-rb-spotlight.enemy .fu-rb-spot-frame::before { background: ${SIDE_RIM.enemy}; }
 /* Enemy in the spotlight faces LEFT — mirror the FRAME (not the media, which
    carries the inline focal-zoom transform), like the enemy lineup icons. The
    keystone clip is symmetric, so only the sprite visibly flips. */
 #${LAYER_ID} .fu-rb-spotlight.enemy .fu-rb-spot-frame { transform: scaleX(-1); }
-#${LAYER_ID} .fu-rb-spot-wrap { position: absolute; inset: 3px; background: #0a0a0e; overflow: hidden; clip-path: ${SPOT_CLIP}; }
+#${LAYER_ID} .fu-rb-spot-wrap { position: absolute; inset: 6px; background: ${WELL}; overflow: hidden; clip-path: ${SPOT_CLIP}; }
 #${LAYER_ID} .fu-rb-spotlight .fu-rb-ta-media {
   width: 100%; height: 100%; object-fit: cover; object-position: center top;
   transform: scale(2); transform-origin: center top; display: block;
 }
 /* Neutral "awaiting" placeholder (no one acting / between turns / post-enter). */
 #${LAYER_ID} .fu-rb-spot-ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
-#${LAYER_ID} .fu-rb-spot-ph i { color: ${ACCENT}; font-size: 6vh; opacity: .5; filter: drop-shadow(0 1px 4px rgba(0,0,0,.8)); }
+#${LAYER_ID} .fu-rb-spot-ph i { color: ${GOLD_1}; font-size: 6vh; opacity: .5; filter: drop-shadow(0 1px 4px rgba(0,0,0,.8)); }
 /* Crisis tint (≤ half HP) on the spotlight sprite — mirrors the lineup icons. */
 #${LAYER_ID} .fu-rb-spotlight.crisis .fu-rb-spot-wrap::after {
   content: ""; position: absolute; inset: 0; pointer-events: none;
@@ -502,6 +551,7 @@ function ensureStyle() {
   animation: fu-rb-icon-crisis 2.6s ease-in-out infinite;
 }
 #${LAYER_ID} .fu-rb-spotlight.defeated .fu-rb-spot-frame { background: #6f6f77; }
+#${LAYER_ID} .fu-rb-spotlight.defeated .fu-rb-spot-frame::before { display: none; }
 #${LAYER_ID} .fu-rb-spotlight.defeated .fu-rb-ta-media { filter: grayscale(1) brightness(.45); }
 #${LAYER_ID} .fu-rb-spotlight.defeated .fu-rb-spot-wrap::after { display: none; }
 #${LAYER_ID} .fu-rb-spotlight.defeated::before {
@@ -564,27 +614,88 @@ function ensureLayer() {
 // whole round-banner sequence on refocus. See presentation-clock.js.
 const sleep = pWait;
 
+// ── the docked bar: placement + assembly ────────────────────────────────────
+// Place the bar at its docked spot (top-centre, docked scale) with ROUND N at
+// its resting transform. Nothing is revealed here; callers either snap it on
+// (instant) or assemble it (assembleDockedBar).
+function placeDockedBar(fu, { round, dockTopPct, dockScale, dockBgOpacity }) {
+  const { band, bg, lt, lb, tx } = fu;
+  for (const el of [band, bg, lt, lb, tx]) el.getAnimations?.().forEach((a) => a.cancel());
+  tx.textContent = `ROUND ${round}`;
+  band.style.top = `${dockTopPct}%`;
+  band.style.transform = `translateY(0%) scale(${dockScale})`;
+  bg.style.opacity = String(dockBgOpacity);
+  tx.style.transform = TX_DOCKED;
+}
+const TX_DOCKED = `translate(-50%, calc(-50% + ${TX_DOCK_SHIFT_VH}vh)) scale(${TX_DOCK_SCALE})`;
+const TX_ABOVE = `translate(-50%, calc(-50% + ${TX_DOCK_SHIFT_VH - 6}vh)) scale(${TX_DOCK_SCALE})`;
+
+function activateLayer(layer) {
+  layer.classList.add("active");
+  if (!_bannerSurfaceId) _bannerSurfaceId = registerSurface({ kind: "round-banner" });
+}
+
+// Assemble the bar where it rests, as the round plate lifts away: the rules
+// sweep open with the parchment band, the spotlight drops in from the top with
+// ROUND N under it, then the creature icons fill in from the middle out and the
+// side that won the initiative breathes in its colour. Resolves once the frame
+// is complete (the icon wave + glow carry on by themselves).
+async function assembleDockedBar(layer, { round, side = null, dockTopPct, dockScale, dockBgOpacity }) {
+  const fu = layer.__fu;
+  placeDockedBar(fu, { round, dockTopPct, dockScale, dockBgOpacity });
+  const { lt, lb, tx, spotlight } = fu;
+  tx.style.opacity = "0";
+  lt.style.transform = "scaleX(0)";
+  lb.style.transform = "scaleX(0)";
+  activateLayer(layer);
+
+  for (const l of [lt, lb]) {
+    l.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
+      { duration: 420, easing: EASE_ENERGETIC, fill: "forwards" });
+  }
+  lightEnds();
+  spotlight?.classList.add("shown"); // opacity 1; CSS holds the resting transform
+  spotlight?.animate?.([
+    { transform: `translate(-50%, ${-SPOT_SLIDE_VH}vh)`, opacity: 0 },
+    { transform: "translate(-50%, 0)", opacity: 1 },
+  ], { duration: 360, delay: 160, easing: EASE_ENERGETIC, fill: "backwards" });
+  tx.animate([{ opacity: 0, transform: TX_ABOVE }, { opacity: 1, transform: TX_DOCKED }],
+    { duration: 360, delay: 160, easing: EASE_ENERGETIC, fill: "both" });
+
+  await sleep(420);
+  revealTurnActionIconsStaggered();
+  if (side) glowSide(fu, side);
+  await sleep(360);
+}
+
+// The winning side's icons breathe in its colour twice. On the GROUP, so it
+// never fights the icons' own reveal / enter glows. Glow only — nothing moves.
+function glowSide(fu, side) {
+  const group = side === "enemy" ? fu.leftGroup : fu.rightGroup;
+  const rgb = SIDE_STREAK[side === "enemy" ? "enemy" : "party"];
+  if (!group || !rgb) return;
+  const off = `drop-shadow(0 0 0 rgba(${rgb},0)) drop-shadow(0 0 0 rgba(${rgb},0))`;
+  const lit = `drop-shadow(0 0 6px rgba(${rgb},1)) drop-shadow(0 0 24px rgba(${rgb},1))`;
+  group.animate([{ filter: off }, { filter: lit }, { filter: off }],
+    { duration: SIDE_GLOW_MS, iterations: 2, easing: "ease-in-out" });
+}
+
 // ── exit: fade out + clear the docked banner ──────────────────────────────
-// Used both on round change (before the next banner enters) and at battle end.
+// Used both on round change (before the next round opens) and at battle end.
 // Function declaration → hoisted, so playRoundBannerLocal can call it above.
 async function exitRoundBannerLocal({ animate = true } = {}) {
   try {
     const layer = document.getElementById(LAYER_ID);
     if (!layer || !layer.__fu || !layer.classList.contains("active")) return;
-    const { band, bg, lt, lb, tx, spotlight } = layer.__fu;
+    const { band, bg, lt, lb, tx, ray, spotlight } = layer.__fu;
     if (animate) {
-      // Single-keyframe → fades from each element's CURRENT opacity to 0
-      // (the docked banner sits at reduced bg opacity, full text/lines). The
-      // spotlight fades with it so a round-change exit is clean.
-      await Promise.all([
-        bg.animate([{ opacity: 0 }], { duration: 300, easing: "ease-in", fill: "forwards" }).finished,
-        lt.animate([{ opacity: 0 }], { duration: 300, fill: "forwards" }).finished,
-        lb.animate([{ opacity: 0 }], { duration: 300, fill: "forwards" }).finished,
-        tx.animate([{ opacity: 0 }], { duration: 300, easing: "ease-in", fill: "forwards" }).finished,
-        ...(spotlight ? [spotlight.animate([{ opacity: 0 }], { duration: 300, easing: "ease-in", fill: "forwards" }).finished] : []),
-      ]);
+      // Single-keyframe → fades from each element's CURRENT opacity to 0. The
+      // spotlight + band fade with it so a round-change exit is clean.
+      await Promise.all([lt, lb, tx, ray, spotlight].filter(Boolean).map((el) =>
+        el.animate([{ opacity: 0 }], { duration: 300, easing: "ease-in", fill: "forwards" }).finished));
     }
-    for (const el of [band, bg, lt, lb, tx, spotlight]) el?.getAnimations?.().forEach((a) => a.cancel());
+    for (const el of [band, bg, lt, lb, tx, ray, spotlight]) el?.getAnimations?.().forEach((a) => a.cancel());
+    unlightEnds();
     layer.classList.remove("active");
     if (_bannerSurfaceId) { unregisterSurface(_bannerSurfaceId); _bannerSurfaceId = null; }
   } catch (e) {
@@ -592,261 +703,8 @@ async function exitRoundBannerLocal({ animate = true } = {}) {
   }
 }
 
-// ── shared enter sequence ─────────────────────────────────────────────────
-// Reset to centered start state, then play the entrance: band fades in,
-// accent lines sweep open from the center, text rises in. Resolves once the
-// text is fully in. Both the round banner (→ dock) and the battle-start
-// banner (→ exit) build on this. Returns the layer's element refs.
-async function enterBannerLocal({ text = "", sfx = true, sfxVol = 0.6 } = {}) {
-  const layer = ensureLayer();
-  const { band, bg, lt, lb, tx, spotlight } = layer.__fu;
-
-  // If a prior banner is still on screen (docked round indicator), fade it
-  // out first so the new one enters from center cleanly (no jump from top).
-  if (layer.classList.contains("active")) await exitRoundBannerLocal({ animate: true });
-
-  for (const el of [band, bg, lt, lb, tx]) el.getAnimations?.().forEach((a) => a.cancel());
-
-  tx.textContent = text;
-  // Centre starts in its "hero" state: the spotlight is hidden and the ROUND N
-  // is big + centred (it shrinks + gets pushed below the spotlight on dock).
-  spotlight?.classList.remove("shown");
-  // Clear any docked transform a prior instant/dock left inline, so the entrance
-  // animation's hero keyframes (translate(-50%,-50%)) are the start state.
-  tx.style.transform = "";
-
-  // Move + size the band to its centred start state BEFORE revealing it, so a
-  // prior docked/instant position can never flash at the top for a frame.
-  band.style.top = "50%";
-  band.style.transform = "translateY(-50%) scale(1)";
-  bg.style.opacity = "0";
-  tx.style.opacity = "0";
-  lt.style.transform = "scaleX(0)";
-  lb.style.transform = "scaleX(0)";
-
-  layer.classList.add("active");
-  if (!_bannerSurfaceId) _bannerSurfaceId = registerSurface({ kind: "round-banner" });
-  if (sfx) playRoundSfx(ROUND_SFX_URL, sfxVol);
-
-  // Enter: band fades in, accent lines sweep open, text rises in.
-  bg.animate([{ opacity: 0, transform: "scaleY(.55)" }, { opacity: 1, transform: "scaleY(1)" }],
-    { duration: 240, easing: "ease-out", fill: "forwards" });
-  await Promise.all([
-    lt.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
-      { duration: 400, easing: EASE_ENERGETIC, fill: "forwards" }).finished,
-    lb.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
-      { duration: 400, easing: EASE_ENERGETIC, fill: "forwards" }).finished,
-  ]);
-  await tx.animate([
-    { opacity: 0, transform: "translate(-50%, -50%) translateY(16px)" },
-    { opacity: 1, transform: "translate(-50%, -50%) translateY(0)" },
-  ], { duration: 300, easing: EASE_ENERGETIC, fill: "forwards" }).finished;
-
-  return layer.__fu;
-}
-
-// ── local render (runs on every client via socket) ───────────────────────
-// Enter center → hold → DOCK to middle-top and persist as a round indicator.
-async function playRoundBannerLocal(payload = {}) {
-  try {
-    const {
-      round = 0, holdMs = 800, sfx = true, sfxVol = 0.6,
-      // dockTopPct = 0 → top edge pinned to the screen top (no blank space
-      // above); dockScale bumped 20% (0.4 → 0.48), uniform so the ratio holds.
-      dockTopPct = 0, dockScale = 0.48, dockBgOpacity = 0.3,
-      instant = false,
-      // Optional follow-up flash ({ kind, side }) shown AFTER this banner docks.
-      followup = null,
-    } = payload;
-
-    // Instant mode (rewind restore) — jump straight to the docked persistent
-    // state with no entrance cinematic + no SFX. Used so a rewind doesn't
-    // replay the ~2.5s banner each time. F5 resume uses the animated path.
-    if (instant) {
-      const layer = ensureLayer();
-      const { band, bg, lt, lb, tx } = layer.__fu;
-      for (const el of [band, bg, lt, lb, tx]) el.getAnimations?.().forEach((a) => a.cancel());
-      tx.textContent = `ROUND ${round}`;
-      // Position docked BEFORE revealing so it doesn't flash at centre first.
-      band.style.top = `${dockTopPct}%`;
-      band.style.transform = `translateY(0%) scale(${dockScale})`;
-      bg.style.opacity = String(dockBgOpacity);
-      // Docked state: ROUND N is the small text resting below the spotlight.
-      tx.style.opacity = "1";
-      tx.style.transform = `translate(-50%, calc(-50% + ${TX_DOCK_SHIFT_VH}vh)) scale(${TX_DOCK_SCALE})`;
-      lt.style.transform = "scaleX(1)";
-      lb.style.transform = "scaleX(1)";
-      layer.classList.add("active");
-      if (!_bannerSurfaceId) _bannerSurfaceId = registerSurface({ kind: "round-banner" });
-      showAllTurnActionIcons(); // rewind / instant restore — no stagger
-      return;
-    }
-
-    // Icons stay hidden through the entrance + dock; revealed staggered after.
-    hideTurnActionIcons();
-
-    const fu = await enterBannerLocal({ text: `ROUND ${round}`, sfx, sfxVol });
-    const { band, bg } = fu;
-
-    await sleep(holdMs);
-
-    // ── Phase 1: the components glide to the top while ROUND N shrinks. ──
-    // Band: shrink + glide to middle-top, then STAY (persistent indicator).
-    const dockAnim = band.animate(
-      [
-        { top: "50%", transform: "translateY(-50%) scale(1)" },
-        { top: `${dockTopPct}%`, transform: `translateY(0%) scale(${dockScale})` },
-      ],
-      { duration: 520, easing: EASE_ENERGETIC, fill: "forwards" }
-    );
-    bg.animate([{ opacity: 1 }, { opacity: dockBgOpacity }],
-      { duration: 520, easing: "ease-in-out", fill: "forwards" });
-    // The big hero ROUND N shrinks to the small docked size as the band glides
-    // up — staying centred in the bar for now (Phase 2 pushes it down). Same
-    // element throughout, so it reads as one continuous "ROUND N shrinks".
-    fu.tx?.animate?.([
-      { transform: "translate(-50%, -50%) scale(1)" },
-      { transform: `translate(-50%, -50%) scale(${TX_DOCK_SCALE})` },
-    ], { duration: 520, easing: EASE_ENERGETIC, fill: "forwards" });
-
-    try { await dockAnim.finished; } catch (_e) {}
-    // BAKE the band's docked transform into inline styles and DROP only the BAND
-    // animation. A fill:forwards animation outranks inline styles in the
-    // cascade, so if it lingered, the NEXT round's centred-start reset
-    // (band.style.top = "50%" in enterBannerLocal) would be ignored and the
-    // entrance would replay from the docked top. The band is the ONLY element
-    // with no entrance animation of its own, so only it needs this. Do NOT
-    // commit/cancel the bg + text dock animations: each sits ON TOP of a
-    // still-filling ENTRANCE animation it deliberately overrides — cancelling it
-    // would let that entrance animation resurface. Those self-correct on the
-    // next round (enterBannerLocal cancels + re-animates them).
-    try { dockAnim.commitStyles(); dockAnim.cancel(); } catch (_e) {}
-
-    // ── Phase 2: the spotlight drops IN from the top (high start speed, snappy)
-    // and pushes the shrunk ROUND N down to its resting place below it. ──
-    fu.spotlight?.classList.add("shown"); // opacity 1; CSS holds the resting transform
-    fu.spotlight?.animate?.([
-      { transform: `translate(-50%, ${-SPOT_SLIDE_VH}vh)` },
-      { transform: "translate(-50%, 0)" },
-    ], { duration: 360, easing: EASE_ENERGETIC }); // no fill → CSS .shown holds the end
-    // Pushed: the text slides from the bar centre down to below the spotlight,
-    // synced with the spotlight's arrival.
-    fu.tx?.animate?.([
-      { transform: `translate(-50%, -50%) scale(${TX_DOCK_SCALE})` },
-      { transform: `translate(-50%, calc(-50% + ${TX_DOCK_SHIFT_VH}vh)) scale(${TX_DOCK_SCALE})` },
-    ], { duration: 360, easing: EASE_ENERGETIC, fill: "forwards" });
-
-    // Then populate the creature icons one-by-one from the middle out.
-    revealTurnActionIconsStaggered();
-    // Note: NO layer.classList.remove — the banner persists until the next
-    // round (exited above) or battle end (hideRoundBanner).
-
-    // ── Follow-up flash (Initiative / Ambush / Advantage) ──
-    // Sequenced AFTER the round banner has docked + icons begun revealing, so it
-    // reads as a distinct "second banner". Carried on the SAME ACTION_PLAY
-    // broadcast (payload.followup), so every client plays it in the same order
-    // with no extra socket. The instant/resume path returns early above, so a
-    // reload/rewind never replays the flash. AWAITED (not fire-and-forget) so
-    // this function's promise resolves only once the whole sequence has cleared —
-    // that promise is what the director tracks to gate the enemy autopilot.
-    if (followup?.kind) {
-      await sleep(320);
-      await playFollowupBannerLocal(followup);
-    }
-  } catch (e) {
-    warn("playRoundBannerLocal threw", e);
-  }
-}
-
-// ── local render: battle-start flash ──────────────────────────────────────
-// Same entrance as the round banner, but on hold-end it EXITS (fades out)
-// right away instead of docking to the top. Awaited by the GM so the battle
-// process kicks off only after the flash has cleared the screen.
-async function playBattleStartBannerLocal(payload = {}) {
-  try {
-    const { text = "BATTLE START", holdMs = 900, sfx = true, sfxVol = 0.6 } = payload;
-    await enterBannerLocal({ text, sfx, sfxVol });
-    await sleep(holdMs);
-    await exitRoundBannerLocal({ animate: true });
-  } catch (e) {
-    warn("playBattleStartBannerLocal threw", e);
-  }
-}
-
-// ── Follow-up flash (Initiative / Ambush / Advantage) ──────────────────────
-// A short centered banner on ITS OWN layer (so the docked round HUD is left
-// untouched): bold-italic coloured label fades + scales in, holds, fades out.
-// Reuses the module's Web-Audio SFX helper for the two Forge initiative cues.
-let _followupSurfaceId = null;
-
-// Animation timing (ms) — kept as named constants so the sequence stays precise
-// and easy to retune. Total ≈ WASH + CURTAIN + TEXT_IN + hold + TEXT_OUT + FADE.
-const FU_WASH_MS    = 200;   // panel wash fades in first
-const FU_CURTAIN_MS = 440;   // accent lines sweep open from centre (curtain)
-const FU_TEXT_IN_MS = 300;   // label slides in from the left + fades
-const FU_TEXT_OUT_MS = 300;  // label slides out to the right + fades
-const FU_FADE_MS    = 320;   // whole banner fades out
-const FU_TEXT_SHIFT = "9vw"; // horizontal slide distance for the label in/out
-
-function ensureFollowupStyle() {
-  if (document.getElementById(FOLLOWUP_STYLE_ID)) return;
-  const css = `
-#${FOLLOWUP_LAYER_ID} { position: fixed; inset: 0; z-index: 99; pointer-events: none; display: none; }
-#${FOLLOWUP_LAYER_ID}.active { display: block; }
-/* Framing panel: two disposition-coloured accent lines with a subtle wash
-   between them. Centred; --line drives the disposition colour. */
-#${FOLLOWUP_LAYER_ID} .fu-init-band {
-  position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%);
-  width: 88vw; height: 12vh;
-  display: flex; flex-direction: column; justify-content: space-between;
-  --line: ${DISP_BLUE};
-}
-#${FOLLOWUP_LAYER_ID} .fu-init-wash {
-  position: absolute; inset: 0; opacity: 0;
-  /* horizontal band of disposition light, brightest at the centre. Set inline. */
-}
-#${FOLLOWUP_LAYER_ID} .fu-init-line {
-  position: relative; width: 100%; height: 3px; transform: scaleX(0);
-  transform-origin: 50% 50%;  /* curtain opens from the centre outward */
-  background: linear-gradient(90deg, transparent 0%, var(--line) 6%, var(--line) 94%, transparent 100%);
-  box-shadow: 0 0 10px var(--line), 0 0 3px var(--line);
-}
-#${FOLLOWUP_LAYER_ID} .fu-init-text {
-  position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%);
-  white-space: nowrap; font-style: italic; font-weight: 900;
-  font-family: "Pixel Operator", system-ui, sans-serif;
-  font-size: 6.4vh; letter-spacing: .03em; opacity: 0; color: #fff;
-  /* Dark outline + halo so the white label reads on any battlefield. */
-  -webkit-text-stroke: 0.9px rgba(0,0,0,.92); paint-order: stroke fill;
-  text-shadow: 0 0 5px rgba(0,0,0,.9), 0 3px 16px rgba(0,0,0,.7);
-}
-`.trim();
-  const style = document.createElement("style");
-  style.id = FOLLOWUP_STYLE_ID;
-  style.textContent = css;
-  document.head.appendChild(style);
-}
-
-function ensureFollowupLayer() {
-  ensureFollowupStyle();
-  let layer = document.getElementById(FOLLOWUP_LAYER_ID);
-  if (layer && layer.__fu) return layer;
-  layer = document.createElement("div");
-  layer.id = FOLLOWUP_LAYER_ID;
-  const band = document.createElement("div"); band.className = "fu-init-band";
-  const wash = document.createElement("div"); wash.className = "fu-init-wash";
-  const topLine = document.createElement("div"); topLine.className = "fu-init-line top";
-  const bottomLine = document.createElement("div"); bottomLine.className = "fu-init-line bottom";
-  band.append(wash, topLine, bottomLine);
-  const tx = document.createElement("div"); tx.className = "fu-init-text";
-  layer.append(band, tx);
-  document.body.appendChild(layer);
-  layer.__fu = { band, wash, topLine, bottomLine, tx };
-  return layer;
-}
-
 // Resolve a followup descriptor to its display spec. `kind` is "initiative"
-// (side decides Player/Enemy), "ambush", or "advantage".
+// (side decides party/enemy), "ambush", or "advantage".
 function resolveFollowupSpec(followup) {
   const kind = String(followup?.kind ?? "");
   if (kind === "ambush") return FOLLOWUP_SPECS.ambush;
@@ -857,91 +715,87 @@ function resolveFollowupSpec(followup) {
   return null;
 }
 
-// Play the follow-up flash locally (runs on every client via the round-banner
-// broadcast that carries `payload.followup`). Sequence:
-//   1. panel WASH fades in,
-//   2. accent lines CURTAIN-open from the centre outward,
-//   3. white label SLIDES + fades in from the left,
-//   4. hold,
-//   5. label slides OUT to the opposite (right) side,
-//   6. the whole banner fades out.
-// SFX fires exactly at the curtain reveal (played from the pre-warmed cache so
-// there's no first-play decode lag). Guarded so a bad descriptor never throws.
-async function playFollowupBannerLocal(followup = {}, { holdMs = 850, sfx = true } = {}) {
+// "BATTLE START" → "Battle Start" (Cinzel draws the lowercase as small caps).
+const plateTitle = (s) => String(s ?? "").toLowerCase().replace(/\b\p{L}/gu, (m) => m.toUpperCase());
+
+// ── local render (runs on every client via socket) ───────────────────────
+// The round plate opens in the middle (with the initiative seal), then lifts
+// away while the bar assembles at the top and persists as the round indicator.
+async function playRoundBannerLocal(payload = {}) {
   try {
+    const {
+      round = 0, sfx = true, sfxVol = 0.6,
+      // dockTopPct = 0 → top edge pinned to the screen top (no blank space
+      // above); dockScale bumped 20% (0.4 → 0.48), uniform so the ratio holds.
+      dockTopPct = 0, dockScale = 0.48, dockBgOpacity = 0.3,
+      instant = false,
+      // Optional initiative ({ kind, side }) carried on the plate as a seal.
+      followup = null,
+    } = payload;
+    const dock = { round, dockTopPct, dockScale, dockBgOpacity };
+
+    // Instant mode (rewind restore) — jump straight to the docked persistent
+    // state with no plate + no SFX. Used so a rewind doesn't replay the round
+    // opening each time. F5 resume uses the animated path.
+    if (instant) {
+      const layer = ensureLayer();
+      placeDockedBar(layer.__fu, dock);
+      const { tx, lt, lb } = layer.__fu;
+      tx.style.opacity = "1";
+      lt.style.transform = "scaleX(1)";
+      lb.style.transform = "scaleX(1)";
+      activateLayer(layer);
+      showAllTurnActionIcons(); // rewind / instant restore — no stagger
+      return;
+    }
+
+    // Icons stay hidden until the bar assembles; revealed staggered then.
+    hideTurnActionIcons();
+    const layer = ensureLayer();
+    // The previous round's bar fades out first.
+    if (layer.classList.contains("active")) await exitRoundBannerLocal({ animate: true });
+
     const spec = resolveFollowupSpec(followup);
-    if (!spec) return;
-    const layer = ensureFollowupLayer();
-    const { band, wash, topLine, bottomLine, tx } = layer.__fu;
-    for (const el of [wash, topLine, bottomLine, tx]) el.getAnimations?.().forEach((a) => a.cancel());
+    if (sfx) playRoundSfx(ROUND_SFX_URL, sfxVol);
+    const plate = playRoundPlateLocal({ title: `Round ${round}`, seal: spec ? { side: spec.side, text: spec.text } : null });
+    // The side's initiative cue lands with the seal (cached buffer → in sync).
+    if (spec && sfx) sleep(SEAL_AT_MS).then(() => playRoundSfx(spec.sfx, 0.7));
 
-    // Disposition colour on the band (drives the line var) + the wash gradient.
-    band.style.setProperty("--line", spec.line);
-    wash.style.background =
-      `linear-gradient(90deg, transparent 0%, ${spec.line}22 24%, ${spec.line}3a 50%, ${spec.line}22 76%, transparent 100%)`;
-    tx.textContent = spec.text;
-
-    // Reset to the fully-masked start state before revealing.
-    wash.style.opacity = "0";
-    topLine.style.transform = "scaleX(0)";
-    bottomLine.style.transform = "scaleX(0)";
-    tx.style.opacity = "0";
-    tx.style.transform = `translate(-50%, -50%) translateX(-${FU_TEXT_SHIFT})`;
-
-    layer.classList.add("active");
-    if (!_followupSurfaceId) _followupSurfaceId = registerSurface({ kind: "initiative-banner" });
-
-    // 1. Panel wash in.
-    await wash.animate([{ opacity: 0 }, { opacity: 1 }],
-      { duration: FU_WASH_MS, easing: "ease-out", fill: "forwards" }).finished;
-
-    // SFX at the curtain reveal — cached buffer → instant, precise sync.
-    if (sfx && spec.sfx) playRoundSfx(spec.sfx, 0.7);
-
-    // 2. Curtain: both accent lines sweep open from the centre.
-    await Promise.all([
-      topLine.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
-        { duration: FU_CURTAIN_MS, easing: EASE_ENERGETIC, fill: "forwards" }).finished,
-      bottomLine.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
-        { duration: FU_CURTAIN_MS, easing: EASE_ENERGETIC, fill: "forwards" }).finished,
-    ]);
-
-    // 3. Label slides in from the left + fades.
-    await tx.animate([
-      { opacity: 0, transform: `translate(-50%, -50%) translateX(-${FU_TEXT_SHIFT})` },
-      { opacity: 1, transform: "translate(-50%, -50%) translateX(0)" },
-    ], { duration: FU_TEXT_IN_MS, easing: EASE_ENERGETIC, fill: "forwards" }).finished;
-
-    // 4. Hold.
-    await sleep(holdMs);
-
-    // 5. Label slides out to the opposite (right) side + fades.
-    await tx.animate([
-      { opacity: 1, transform: "translate(-50%, -50%) translateX(0)" },
-      { opacity: 0, transform: `translate(-50%, -50%) translateX(${FU_TEXT_SHIFT})` },
-    ], { duration: FU_TEXT_OUT_MS, easing: "ease-in", fill: "forwards" }).finished;
-
-    // 6. Whole banner fades out (wash + both lines together).
-    await Promise.all([
-      wash.animate([{ opacity: 1 }, { opacity: 0 }], { duration: FU_FADE_MS, easing: "ease-in", fill: "forwards" }).finished,
-      topLine.animate([{ opacity: 1 }, { opacity: 0 }], { duration: FU_FADE_MS, easing: "ease-in", fill: "forwards" }).finished,
-      bottomLine.animate([{ opacity: 1 }, { opacity: 0 }], { duration: FU_FADE_MS, easing: "ease-in", fill: "forwards" }).finished,
-    ]);
-
-    for (const el of [wash, topLine, bottomLine, tx]) el.getAnimations?.().forEach((a) => a.cancel());
-    layer.classList.remove("active");
-    if (_followupSurfaceId) { unregisterSurface(_followupSurfaceId); _followupSurfaceId = null; }
+    await plate.leaving;
+    await sleep(120);
+    // Note: NO layer.classList.remove — the bar persists until the next round
+    // (exited above) or battle end (hideRoundBanner). Awaited so this promise
+    // resolves only once the opening has settled — that promise is what the
+    // director tracks to gate the enemy autopilot and the first turn banner.
+    await assembleDockedBar(layer, { ...dock, side: spec?.side ?? null });
   } catch (e) {
-    warn("playFollowupBannerLocal threw", e);
+    warn("playRoundBannerLocal threw", e);
   }
 }
 
-// Dev/preview helper — render the follow-up initiative banner in ISOLATION on
-// its own layer (never touches the docked round HUD), for tuning + smoke tests.
-// `followup` is { kind:"initiative", side:"party"|"enemy" } | { kind:"ambush" }
-// | { kind:"advantage" }. Local-only (no broadcast). Safe to call mid-battle.
-export function previewInitiativeBanner(followup = { kind: "initiative", side: "party" }) {
-  playFollowupBannerLocal(followup);
+// ── local render: battle start ────────────────────────────────────────────
+// The same plate, which closes back to the centre instead of docking. Awaited
+// by the GM so the battle process kicks off only after it has cleared.
+async function playBattleStartBannerLocal(payload = {}) {
+  try {
+    const { text = "BATTLE START", sfx = true, sfxVol = 0.6 } = payload;
+    if (document.getElementById(LAYER_ID)?.classList.contains("active")) await exitRoundBannerLocal({ animate: true });
+    if (sfx) playRoundSfx(ROUND_SFX_URL, sfxVol);
+    await playRoundPlateLocal({ title: plateTitle(text), small: true, exit: "close" }).done;
+  } catch (e) {
+    warn("playBattleStartBannerLocal threw", e);
+  }
+}
+
+// Dev/preview helper — the round plate ALONE (never touches the docked round
+// bar), for tuning + smoke tests. `followup` is { kind:"initiative",
+// side:"party"|"enemy" } | { kind:"ambush" } | { kind:"advantage" } | null.
+// Local-only (no broadcast), sound included. Safe to call mid-battle.
+export function previewInitiativeBanner(followup = { kind: "initiative", side: "party" }, { round = 2 } = {}) {
+  const spec = resolveFollowupSpec(followup);
+  playRoundSfx(ROUND_SFX_URL, 0.6);
+  if (spec) sleep(SEAL_AT_MS).then(() => playRoundSfx(spec.sfx, 0.7));
+  return playRoundPlateLocal({ title: `Round ${round}`, seal: spec ? { side: spec.side, text: spec.text } : null }).done;
 }
 
 // ── public: fire from ROUND_START ─────────────────────────────────────────
@@ -1055,13 +909,13 @@ export async function showRoundBannerForResumeFromState(state, { animate = false
   }
 }
 
-// ── public: battle-start flash (fire at the start of battle) ──────────────
+// ── public: battle-start plate (fire at the start of battle) ──────────────
 // Broadcast to all OTHER clients, then play + AWAIT locally. Unlike
 // playRoundBanner this is awaited by the caller (runDirectorInit) so the
-// battle process only begins once the flash has entered, held, and exited.
-export async function playBattleStartBanner({ text = "BATTLE START", holdMs = 900 } = {}) {
+// battle process only begins once the plate has opened, held, and closed.
+export async function playBattleStartBanner({ text = "BATTLE START" } = {}) {
   try {
-    const payload = { text, holdMs };
+    const payload = { text };
     try { _socket?.executeForOthers?.(ACTION_BATTLE_START, payload); }
     catch (e) { warn("director-round-banner: battle-start broadcast failed", e); }
     await playBattleStartBannerLocal(payload);
@@ -1205,6 +1059,7 @@ function setSpotlight(fu, active, animate) {
   sp.classList.toggle("defeated", !!active?.defeated);
   // Enemy in the spotlight → mirror to face left + red appear-glow (vs gold).
   sp.classList.toggle("enemy", active?.side === "enemy");
+  sp.classList.toggle("party", !!active && active.side !== "enemy");
   if (fu.spotKey === key) {
     // Same subject — just re-apply focus (tuner Save) without a rebuild.
     const media = sp.querySelector(".fu-rb-ta-media");
@@ -1316,6 +1171,10 @@ function renderTurnActionsLocal(combatants = [], opts = {}) {
     // everyone else; the active one returns to its slot when its turn ends.
     const active = list.find((c) => c.active) ?? null;
     setSpotlight(layer.__fu, active, animate);
+    // The turn-taker glows on the battlefield for as long as it holds the spotlight.
+    try {
+      setTurnGlow(active && isTurnCueEnabled() ? { tokenUuid: active.tokenUuid, tokenId: active.tokenId, side: active.side } : null);
+    } catch (e) { warn("turn glow update failed", e); }
     // ONE lineup icon per PENDING activation (not per creature): a creature with
     // multiple activations (a champion) shows that many icons, and each is
     // REMOVED as its activation is taken. turnsRemaining counts a creature's
@@ -1403,6 +1262,7 @@ function renderTurnActionsLocal(combatants = [], opts = {}) {
 
 function clearTurnActionsLocal() {
   try { deskUnits(null); } catch { /* */ }
+  try { setTurnGlow(null); } catch { /* */ }
   _iconsRevealed = false;
   _revealGen++; // cancel any pending staggered reveal
   unlightEnds();
@@ -1426,21 +1286,23 @@ function _allIcons() {
   return [...(fu.leftGroup?.children ?? []), ...(fu.rightGroup?.children ?? [])];
 }
 
-// Gradient for the single full-width gold ray. The element is positioned by CSS
-// (left/right: -RAY_VH), so its rendered width is barVh + 2*RAY_VH. The gradient
-// is SYMMETRIC: transparent at both outer tips, fading up to solid gold over the
-// RAY_VH tails, then solid gold across the whole body — INCLUDING the centre,
-// where it used to be masked. barVh = the bar's content width (both groups + the
-// centre spacer).
+// Mask for the full-width parchment band. The element is positioned by CSS
+// (left/right: -RAY_VH), so its rendered width is barVh + 2*RAY_VH. The mask is
+// SYMMETRIC: transparent at both outer tips, fading up to solid over the RAY_VH
+// tails, then solid across the whole body (centre included), so the ends read
+// as a soft fade, not a cut edge. barVh = the bar's content width (both groups
+// + the centre spacer).
 function setRayGeometry(el, barVh) {
   if (!el) return;
   const total = barVh + 2 * RAY_VH;
   // Fraction of the strip (from each outer tip) that is the fading tail.
   const tailPct = total > 0 ? Math.round((RAY_VH / total) * 100) : 0;
   const midPct = Math.round(tailPct * 0.55); // soft mid-stop inside each tail
-  el.style.background =
-    `linear-gradient(90deg, transparent 0%, ${END_GOLD_FADE} ${midPct}%, ${END_GOLD} ${tailPct}%, ` +
-    `${END_GOLD} ${100 - tailPct}%, ${END_GOLD_FADE} ${100 - midPct}%, transparent 100%)`;
+  const mask =
+    `linear-gradient(90deg, transparent 0%, rgba(0,0,0,.35) ${midPct}%, #000 ${tailPct}%, ` +
+    `#000 ${100 - tailPct}%, rgba(0,0,0,.35) ${100 - midPct}%, transparent 100%)`;
+  el.style.webkitMaskImage = mask;
+  el.style.maskImage = mask;
 }
 
 // Fire the ray once (shoot open from the centre + settle, then stay static).
@@ -1506,10 +1368,6 @@ function revealTurnActionIconsStaggered() {
   }, delay);
   left.forEach((ic, i) => revealOne(ic, i * STEP_MS));
   right.forEach((ic, i) => revealOne(ic, i * STEP_MS));
-  // After the wave reaches the OUTER edge of the wider side (counting the empty
-  // gap on the shorter side), throw the ray off both bar ends once.
-  const maxN = Math.max(left.length, right.length);
-  setTimeout(() => { if (gen === _revealGen) lightEnds(); }, maxN * STEP_MS);
 }
 
 // HP read from the LIVE combatant actor (the token's synthetic actor for
@@ -1577,6 +1435,9 @@ export function refreshTurnActions(dCombat, { animate = false } = {}) {
   try {
     if (!game.user?.isGM) return;
     _lastDCombat = dCombat ?? _lastDCombat;
+    // A new turn-taker is waiting for its banner — this refresh lands with it.
+    if (_spotHold) { _spotHold.dCombat = dCombat ?? _spotHold.dCombat; return; }
+    _shownActiveId = dCombat?.currentCombatantId ?? null;
     const snap = buildTurnActionSnapshot(dCombat);
     renderTurnActionsLocal(snap, { animate });
     try { _socket?.executeForOthers?.(ACTION_TURNACTIONS, { list: snap, animate }); }
@@ -1591,6 +1452,7 @@ export function refreshTurnActions(dCombat, { animate = false } = {}) {
 // the persistent round indicator never lingers after the director stops.
 export function hideRoundBanner() {
   try {
+    dropSpotlightHold();
     exitRoundBannerLocal({ animate: true });
     clearTurnActionsLocal();
     try { _socket?.executeForOthers?.(ACTION_HIDE); }

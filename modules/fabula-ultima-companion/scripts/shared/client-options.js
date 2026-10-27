@@ -26,6 +26,16 @@ export const OPTION_GROUPS = [
           { value: "button", label: "Button", hint: "Each reaction is a row on the action card, with its own Apply and Skip." },
         ],
       },
+      {
+        key: "allyWatch",
+        label: "Ally's turn",
+        hint: "What you see while another player chooses their character's action.",
+        default: "panel",
+        choices: [
+          { value: "panel", label: "Watch", hint: "A read-only panel above their card follows their menu live, and rings on the field show who they pick." },
+          { value: "off", label: "Off", hint: "Only their card's glow, as before." },
+        ],
+      },
     ],
   },
 ];
