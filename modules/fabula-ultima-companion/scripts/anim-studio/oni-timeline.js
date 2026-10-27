@@ -398,8 +398,8 @@ export function createTimeline(spec = {}, env = {}) {
 
   // ── realtime clip (a staged copy; plays from its track start, no seeking) ──
   class Clip {
-    constructor(def) { this.def = def; this.copy = null; this.started = false; this.cache = null; this.cctx = null; this.done = false; }
-    async take() { if (this.copy || this.done) return; try { this.copy = await takeVideo(this.def.url); } catch (e) { console.warn(TAG, "clip take failed", this.def.url, e); } }
+    constructor(def) { this.def = def; this.copy = null; this.started = false; this.cache = null; this.cctx = null; this.done = false; this.taking = false; }
+    async take() { if (this.copy || this.done) return; this.taking = true; try { const c = await takeVideo(this.def.url); if (this.done) { if (c) releaseVideo(c); } else this.copy = c; } catch (e) { console.warn(TAG, "clip take failed", this.def.url, e); } }
     frame(loop) {
       const c = this.copy; if (!c) return false; const v = c.video;
       if (!this.started) { this.started = true; try { v.loop = !!loop; v.currentTime = 0; v.play?.().catch(() => {}); } catch {} }
@@ -594,10 +594,16 @@ export function createTimeline(spec = {}, env = {}) {
   //   tracks: the track list; total: ms; sfx: [{ at, url, v }]; onEnd: fn
   //   Resolves when the shot is over and everything is torn down. The caller
   //   (the inner script) awaits this so oni.dispose() cannot cut the tail.
-  async function run(tracks, { total = 0, sfx = [], onBeat = null } = {}) {
+  async function run(tracks, { total = 0, sfx = [], onBeat = null, onStart = null, lead = 1800 } = {}) {
+    const tLoad0 = performance.now();
     await load();
-    // pre-take every clip copy so frame 0 pays nothing
-    await Promise.all(tracks.filter((tr) => tr.clip).map((tr) => tr.clip.take()));
+    // Clip copies are taken LAZILY, `lead` ms before each clip's cue, so the
+    // decode cost spreads across the shot instead of stalling its start (a
+    // Fire run takes ~30 copies; taking them all up front cost seconds). Only
+    // clips cued inside the first `lead` ms are taken before frame 0.
+    const clips = tracks.filter((tr) => tr.clip);
+    await Promise.all(clips.filter((tr) => tr.t0 < lead).map((tr) => tr.clip.take()));
+    const prerollMs = Math.round(performance.now() - tLoad0);
     const restores = [];
     for (const t of canvas?.tokens?.placeables ?? []) { if (!t?.mesh) continue; try { restores.push(oni.hideToken(t)); } catch {} }
     for (const k in HURT) { try { const v = HURT[k].video; v.loop = true; v.currentTime = 0; v.play?.().catch(() => {}); } catch {} }
@@ -606,10 +612,14 @@ export function createTimeline(spec = {}, env = {}) {
     const fired = new Set();
     let t0 = performance.now();
     let S = makeState(); let keep = null;
+    const diag = { prerollMs, startedAt: Date.now(), total, finishedAt: null, frames: 0 };
+    globalThis.__oniTimelineLast = diag;
+    try { onStart?.(); } catch (e) { console.warn(TAG, "onStart threw", e); }
     return new Promise((resolve) => {
       let finished = false;
       const finish = () => {
         if (finished) return; finished = true;
+        diag.finishedAt = Date.now(); diag.ranMs = Math.round(performance.now() - t0);
         try { ticker?.remove(tick); } catch {}
         for (const tr of tracks) if (tr.clip) tr.clip.stop();
         for (const k in HURT) { try { HURT[k].video.pause(); releaseVideo(HURT[k]); } catch {} }
@@ -619,8 +629,9 @@ export function createTimeline(spec = {}, env = {}) {
       };
       const tick = () => {
         try {
-          const t = performance.now() - t0;
+          const t = performance.now() - t0; diag.frames++;
           keep = S && S._mouth; S = makeState(); S._mouth = keep; S.playing = true; S.rate = 1;
+          for (const tr of clips) { if (!tr.clip.copy && !tr.clip.taking && !tr.clip.done && tr.t0 - t < lead && t < tr.t1) { tr.clip.taking = true; tr.clip.take(); } }
           for (const tr of tracks) { if (t >= tr.t0 && t < tr.t1) tr.fn(t - tr.t0, S); else if (tr.clip && t >= tr.t1) tr.clip.stop(); }
           for (const c of sfx) { const id = c.at + "|" + (c.url || c.key); if (t >= c.at && t < c.at + 400 && !fired.has(id)) { fired.add(id); try { oni.sfx(c.url || c.key, { volume: c.v ?? 1 }); } catch {} } }
           if (onBeat && S.beat) onBeat(S.beat);

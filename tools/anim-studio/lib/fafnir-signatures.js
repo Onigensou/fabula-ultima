@@ -1119,7 +1119,7 @@ function collectUrls(o, out = new Set()) {
 }
 // A mockup-port shot: { script, timing, preload }. The build writes all three.
 function mockupShot({ key, name, inner, cfg, assets, gateMs, timeout = 45000 }) {
-  const script = shell({ key, name, cfg, assets, inner: innerFile(inner), timeout });
+  const script = shell({ key, name, cfg, assets, inner: innerFile(inner), timeout, startOnReady: true });
   return { script, timing: { mode: "offset", offset: gateMs }, preload: Array.from(collectUrls(assets)) };
 }
 

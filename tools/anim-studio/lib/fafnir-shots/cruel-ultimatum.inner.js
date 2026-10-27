@@ -9,7 +9,7 @@ const caster = ctx.casterToken;
 const targets = (ctx.targetTokens || []).filter((t) => t && t.center);
 if (!caster || !targets.length) { oni.fireDone(); return; }
 
-const tokens = { faf: { token: caster, art: A.casterArt || null, shadow: A.casterShadow || null, foot: cfg.casterFoot || 0.905, nativeDir: -1 } };
+const tokens = { faf: { token: caster, art: A.casterArt || null, shadow: A.casterShadow || null, foot: cfg.casterFoot || 0.905, nativeDir: -1, hurt: null } };
 const TG = [];
 targets.forEach((t, i) => { const k = 't' + i; TG.push(k); tokens[k] = { token: t, foot: cfg.partyFoot || 0.97 }; });
 const tl = oni.timeline({
@@ -173,5 +173,8 @@ m.hold(M0 + 4800, M0 + 6500, (tl2, S) => { S.tok.faf.pose = 'air'; }); m.hold(M0
 m.beat(M0 + 7200, 'undim');
 const TOTAL = cfg.totalMs || (M0 + 8000);
 
-await tl.run(T, { total: TOTAL, sfx: cfg.sfx || [] });
+// readyHook: the outer emits oni:animationStart only when the tracks actually
+// begin, so the director's offset gate (20.3 s) lands on the board impact and
+// not a pre-roll earlier.
+await tl.run(T, { total: TOTAL, sfx: cfg.sfx || [], onStart: () => { const h = ctx.params.readyHook; if (h) { try { Hooks.callAll(h); } catch (e) {} } } });
 oni.fireDone();
