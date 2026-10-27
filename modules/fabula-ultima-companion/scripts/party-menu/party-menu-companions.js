@@ -22,7 +22,7 @@
 // anything up to 2 below it at weights 3 / 2 / 1). See
 // actionReader-matchAndPickAction.js.
 
-import { summonSkillIds, resolvedSlotsOf, MODULE_ID } from "./party-menu-core.js";
+import { summonSkillIds, resolvedSlotsOf, getPartyRoster, MODULE_ID } from "./party-menu-core.js";
 import { resolveGuestRoster } from "../guest-roster/guest-roster-core.js";
 import { ActionReaderCore as AR } from "../action-reader/actionReader-core.js";
 import { normalizeConditionKey } from "../action-reader/actionReader-readPatternTable.js";
@@ -70,6 +70,15 @@ export async function companionsOf(roster) {
   }
   return out;
 }
+
+// For non-module scripts (the cooking pot's Zero Power dishes): the guests and
+// summons travelling with the current party.
+globalThis.FUCompanion ??= { api: {} };
+globalThis.FUCompanion.api ??= {};
+globalThis.FUCompanion.api.partyCompanions = async () => {
+  const r = await getPartyRoster();
+  return r?.db ? companionsOf(r) : [];
+};
 
 // ── Ability page sections ─────────────────────────────────────────────────────
 

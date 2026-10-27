@@ -261,13 +261,20 @@
 
     const meta = dish.getFlag(MODULE_ID, "cookingDish") ?? {};
     const srcAe = dish.effects?.contents?.[0] ?? null;
+    const zpGain = Number(meta.instant?.zp ?? 0) || 0;
+    const zp = [];
 
     for (const uuid of targetActorUuids) {
       const actor = await fromUuid(String(uuid).startsWith("Actor.") ? String(uuid) : `Actor.${uuid}`).catch(() => null);
       if (!actor) { console.warn(TAG, "applyDish: actor not found", uuid); continue; }
 
+      // Eating is eating: every dish takes the meal slot. An `instantOnly`
+      // dish (the Zero Power dishes) clears yesterday's buff and leaves none.
       const oldIds = actor.effects.filter(e => e.getFlag(MODULE_ID, "foodBuff")).map(e => e.id);
       if (oldIds.length) await actor.deleteEmbeddedDocuments("ActiveEffect", oldIds);
+
+      if (zpGain > 0) { const r = await _grantZp(actor, zpGain); if (r) zp.push(r); }
+      if (meta.instantOnly) continue;
 
       // `conflictStart.shield` rides on the AE as a flag rather than an AE
       // change: it is not a static modifier but a per-battle grant, re-applied
@@ -294,7 +301,42 @@
         await actor.update({ "system.props.shield_value": cur + shield });
       }
     }
-    return { dishId: dish.id, dishName: dish.name, targets: targetActorUuids.length };
+
+    // Guests and unique summons travelling with the party share a Zero Power
+    // dish. They never take the meal slot — only the ZP.
+    if (zpGain > 0) {
+      const seen = new Set(targetActorUuids.map(u => String(u).replace(/^Actor\./, "")));
+      let companions = [];
+      try { companions = (await globalThis.FUCompanion?.api?.partyCompanions?.()) ?? []; }
+      catch (err) { console.warn(TAG, "applyDish: companions unavailable", err); }
+      for (const c of companions) {
+        if (!c?.actor || seen.has(c.actor.id)) continue;
+        seen.add(c.actor.id);
+        const r = await _grantZp(c.actor, zpGain);
+        if (r) zp.push(r);
+      }
+    }
+    return { dishId: dish.id, dishName: dish.name, targets: targetActorUuids.length, zp };
+  }
+
+  // Raise Zero Power by `n`, stopping at the actor's max (hard cap 6); the
+  // excess is wasted. The PC template has no `max_zero` field — PCs always
+  // have the gauge, capped at 6. NPCs (guests, summons) carry `max_zero`, and
+  // "0" there means no Zero Power: they are skipped.
+  async function _grantZp(actor, n) {
+    const p = actor.system?.props ?? {};
+    const hasField = p.max_zero !== undefined && p.max_zero !== null && String(p.max_zero).trim() !== "";
+    const max = Math.min(hasField ? (Number(p.max_zero) || 0) : 6, 6);
+    if (max <= 0) return null;
+    const before = Math.max(0, Number(p.zero_power_value) || 0);
+    const after = Math.min(before + n, max);
+    if (after !== before) await actor.update({ "system.props.zero_power_value": after });
+    return { name: actor.name, before, after, max, wasted: n - (after - before) };
+  }
+
+  function _zpLines(applied) {
+    return (applied?.zp ?? []).map(z =>
+      `${z.name} ${z.before} → ${z.after}${z.wasted > 0 ? ` (full, ${z.wasted} wasted)` : ""}`);
   }
 
   // ── Async gates ────────────────────────────────────────────────────────────
@@ -413,11 +455,14 @@
       kindLabel += `<br><span style="opacity:.75;font-style:italic;font-size:.85em">${NEAR_MISS_HINT}</span>`;
     }
     const rawEffect = dishItem?.system?.props?.description ?? "";
+    const zpLines = _zpLines(applied);
+    const effectText = rawEffect.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
     // `payload` is what crosses the socket — plain data only, never a Document.
     const payload = {
       dishName, dishImg, kindLabel,
       cookerCheck,
-      dishEffect: rawEffect.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim(),
+      dishEffect: zpLines.length ? `${effectText} — Zero Power: ${zpLines.join(", ")}` : effectText,
+      zpLines,
       ingredientNames: picks.map(p => ({ actorName: p.entry.actor.name, itemName: p.item.name })),
       kind: outcome.kind,
       nearMiss: !!outcome.nearMiss,
@@ -569,6 +614,7 @@
           </div>
         </div>
         <ul style="margin:6px 0">${contribLines}</ul>
+        ${resultsPayload.zpLines.length ? `<div style="color:#b061ff;font-weight:700;margin:4px 0">Zero Power</div><ul style="margin:2px 0 6px">${resultsPayload.zpLines.map(l => `<li>${l}</li>`).join("")}</ul>` : ""}
         ${firstDiscovery ? `<div style="color:#b8860b;font-weight:700;margin:4px 0">✦ New dish discovered: ${dishName}</div>` : ""}
         ${outcome.nearMiss ? `<div style="font-style:italic;opacity:.75;margin:4px 0">${NEAR_MISS_HINT}</div>` : ""}
       </div>`,
@@ -747,6 +793,7 @@
           </div>
         </div>
         <ul style="margin:6px 0">${contribLines}</ul>
+        ${resultsPayload.zpLines.length ? `<div style="color:#b061ff;font-weight:700;margin:4px 0">Zero Power</div><ul style="margin:2px 0 6px">${resultsPayload.zpLines.map(l => `<li>${l}</li>`).join("")}</ul>` : ""}
         ${firstDiscovery ? `<div style="color:#b8860b;font-weight:700;margin:4px 0">✦ New dish discovered: ${dishName}</div>` : ""}
         ${outcome.nearMiss ? `<div style="font-style:italic;opacity:.75;margin:4px 0">${NEAR_MISS_HINT}</div>` : ""}
         ${detail}
