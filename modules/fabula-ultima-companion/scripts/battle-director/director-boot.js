@@ -72,6 +72,7 @@ import { initEntranceConfig } from "./boss-entrance-config.js";
 import { initDefeatFx } from "./defeat-fx.js";
 import { initAspectAura } from "./aspect-aura.js";
 import { initTokenTint } from "./token-tint.js";
+import { initStatusCues } from "./status-cues.js";
 import { initBrandMark } from "./brand-mark.js";
 import { initCameraAuthority } from "./camera-authority.js";
 import { initLightningRodCursor } from "../conflict-event/lightning-rod-cursor.js";
@@ -1774,6 +1775,10 @@ Hooks.once("ready", () => {
   // AE-driven token body tint (flags.<ns>.tokenTint) — same pattern again.
   try { initTokenTint(); }
   catch (e) { warn("initTokenTint on ready threw", e); }
+  // Token status cues (G + E phase 6): flames, smoke, bubbles, drips, sparks,
+  // bubble / vein / Zs on the sprite, washes through token-tint's provider.
+  try { initStatusCues(); }
+  catch (e) { warn("initStatusCues on ready threw", e); }
 
   // Brand Mark badges — same AE-replication pattern again. Keyed off the mark
   // AE itself, so a mark that is passed to an ally takes its badge along.
