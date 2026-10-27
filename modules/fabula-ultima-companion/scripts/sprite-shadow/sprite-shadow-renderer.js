@@ -71,7 +71,7 @@
 //   FUCompanion.api.spriteShadow.refresh() — resync every token on the canvas
 // ============================================================================
 
-import { tokenCastsSpriteShadow, baseActorOf } from "./sprite-shadow-config.js";
+import { tokenCastsSpriteShadow, tokenPaintedShadow, baseActorOf } from "./sprite-shadow-config.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const FLAG_PATH = `flags.${MODULE_ID}.spriteShadow`;
@@ -239,7 +239,57 @@ function removeShadow(tokenId) {
 }
 
 function wantsShadow(token) {
-  return !!(token?.mesh && !token.destroyed && token.mesh.texture?.valid && tokenCastsSpriteShadow(token));
+  return !!(token?.mesh && !token.destroyed && token.mesh.texture?.valid && (tokenCastsSpriteShadow(token) || tokenPaintedShadow(token)));
+}
+
+// ---------------------------------------------------------------------------
+// Painted shadows (actor flag spriteShadowPainted = image URL)
+// ---------------------------------------------------------------------------
+// The image is the token art's own pixel grid with only the shadow in it, so it
+// is mapped 1:1 onto the mesh's texture space (anchor, scale, mirroring and
+// fit mode all come for free through texToPrimary) and lifts like a bake.
+const _painted = new Map();   // url -> PIXI.Texture | "loading" | "failed"
+function paintedTexture(url, token) {
+  const have = _painted.get(url);
+  if (have && have !== "loading" && have !== "failed") return have;
+  if (have) return null;
+  _painted.set(url, "loading");
+  loadTexture(url).then((t) => {
+    _painted.set(url, t?.valid ? t : "failed");
+    try { if (token && !token.destroyed) syncToken(token); } catch (_) {}
+  }).catch(() => { _painted.set(url, "failed"); warn("painted shadow failed to load", url); });
+  return null;
+}
+
+function syncPainted(token, url) {
+  const mesh = token.mesh, tex = mesh.texture;
+  const pt = paintedTexture(url, token);
+  if (!pt) { removeShadow(token.id); return; }
+  let s = _shadows.get(token.id);
+  if (!s || s.destroyed || s.parent !== canvas.primary || s.texture !== pt) {
+    if (s && !s.destroyed) s.destroy({ texture: false, baseTexture: false });
+    s = new PIXI.Sprite(pt);
+    s.anchor.set(0.5, 0.5);
+    s.name = `fud-sprite-shadow:${token.id}`;
+    s.eventMode = "none";
+    canvas.primary.addChild(s);
+    _shadows.set(token.id, s);
+  }
+  const tl = texToPrimary(mesh, tex, 0, 0); const tlx = tl.x, tly = tl.y;
+  const br = texToPrimary(mesh, tex, tex.width, tex.height);
+  s.fudBase = {
+    cx: (tlx + br.x) / 2, cy: (tly + br.y) / 2, w: Math.abs(br.x - tlx), h: Math.abs(br.y - tly),
+    mirrored: br.x < tlx, bodyH: Math.abs(br.y - tly),
+    alpha: mesh.alpha * (mesh.hidden ? 0.5 : 1),
+  };
+  s.fudShadow = { cx: s.fudBase.cx, cy: s.fudBase.cy, w: s.fudBase.w, h: s.fudBase.h, painted: true };
+  s.fudToken = token;
+  applyLift(s, liftFor(token));
+  const sortChanged = s.elevation !== mesh.elevation || s.sort !== mesh.sort - 0.5 || s.sortLayer !== mesh.sortLayer || s.zIndex !== mesh.zIndex;
+  s.elevation = mesh.elevation; s.sortLayer = mesh.sortLayer; s.sort = mesh.sort - 0.5; s.zIndex = mesh.zIndex;
+  if (sortChanged) canvas.primary.sortDirty = true;
+  s.visible = token.visible && mesh.visible;
+  s.renderable = mesh.renderable;
 }
 
 const _pt = new PIXI.Point();
@@ -253,6 +303,8 @@ export function syncToken(token) {
   try {
     if (!canvas?.ready || !canvas.primary) return;
     if (!wantsShadow(token)) { removeShadow(token.id); return; }
+    const paintedUrl = tokenPaintedShadow(token);
+    if (paintedUrl) { syncPainted(token, paintedUrl); return; }
     const mesh = token.mesh, tex = mesh.texture;
     const g = bodyGeometry(tex);
     if (!g) { removeShadow(token.id); return; }
@@ -421,6 +473,8 @@ Hooks.on("canvasTearDown", clearAll);
 Hooks.on("canvasReady", () => { clearAll(); refreshAll(); });
 Hooks.on("updateActor", (actor, changes) => {
   const flagged = foundry.utils.hasProperty(changes, FLAG_PATH)
+    || foundry.utils.hasProperty(changes, `flags.${MODULE_ID}.spriteShadowPainted`)
+    || foundry.utils.hasProperty(changes, `flags.${MODULE_ID}.-=spriteShadowPainted`)
     || foundry.utils.hasProperty(changes, `flags.${MODULE_ID}.-=spriteShadow`)
     || foundry.utils.hasProperty(changes, "flags.-=" + MODULE_ID);
   if (!flagged || !canvas?.ready) return;

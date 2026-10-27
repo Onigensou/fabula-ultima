@@ -14,12 +14,16 @@
 // no art falls back as listed in FALLBACK; reaching idle means "do what the
 // game did before this system existed".
 
-export const POSES = ["idle", "hurt", "ko", "crisis", "guard", "attack", "cast"];
+//   leap    held                              (crouched to spring — a cinematic's take-off)
+//   fly     held                              (airborne — a cinematic's hover / climb / descent)
+export const POSES = ["idle", "hurt", "ko", "crisis", "guard", "attack", "cast", "leap", "fly"];
 
 // Poses that play once and then hand back to the lasting pose.
 export const ONE_SHOT = new Set(["hurt", "attack", "cast"]);
-// Poses that play once and then stay on their last frame.
-export const HOLD = new Set(["ko"]);
+// Poses that play once and then stay on their last frame (or are stills held
+// until released). leap / fly are read off the sheet by cinematics
+// (oni.timeline) and are also valid held poses for the pose system.
+export const HOLD = new Set(["ko", "leap", "fly"]);
 // Poses that loop for as long as they are shown.
 export const LOOPING = new Set(["crisis", "guard"]);
 
@@ -31,6 +35,8 @@ export const FALLBACK = {
   guard: ["guard", "idle"],
   attack: ["attack", "idle"],
   cast: ["cast", "attack", "idle"],
+  leap: ["leap", "idle"],
+  fly: ["fly", "idle"],
   idle: ["idle"],
 };
 

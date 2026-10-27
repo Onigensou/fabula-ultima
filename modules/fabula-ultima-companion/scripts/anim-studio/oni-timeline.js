@@ -388,8 +388,11 @@ export function createTimeline(spec = {}, env = {}) {
       let hurtUrl = s.hurt ?? actorProps(t).sprite_hurt;
       if (!hurtUrl && typeof spec.hurtFor === "function" && s.hurt !== null) { try { hurtUrl = spec.hurtFor(t.name, t); } catch { hurtUrl = null; } }
       if (hurtUrl) { try { const c = await takeVideo(hurtUrl); if (c) { c.video.loop = true; HURT[k] = c; } } catch {} }
+      // pose art: the actor's own sheet field first (pd.prop, e.g. sprite_fly),
+      // then the shot's bundled URL
       for (const [p, pd] of Object.entries((spec.poses || {})[k] || {})) {
-        const img = await imageOf(pd.url); if (!img) continue;
+        const sheetUrl = pd.prop ? String(actorProps(t)[pd.prop] ?? "").trim() : "";
+        const img = await imageOf(sheetUrl || pd.url); if (!img) continue;
         const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
         const artW = art?.naturalWidth || art?.width || iw;
         const scale = pd.scale ?? (TOK[k].w / artW);

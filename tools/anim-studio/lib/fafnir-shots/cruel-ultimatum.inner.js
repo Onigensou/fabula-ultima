@@ -16,7 +16,8 @@ const tl = oni.timeline({
   tokens,
   images: { sky: A.skyImg, cutin: A.cutinImg },
   clips: A.clips || {},
-  poses: { faf: { crouch: { url: A.crouchArt, foot: 0.985 }, air: { url: A.airArt, foot: 0.985 } } },
+  // her sheet's Leap / Fly sprite rows win; the bundled redraws are the fallback
+  poses: { faf: { crouch: { prop: 'sprite_leap', url: A.crouchArt, foot: 0.985 }, air: { prop: 'sprite_fly', url: A.airArt, foot: 0.985 } } },
   hurtFor: (name) => (A.hurtBase ? A.hurtBase + encodeURIComponent(name) + '/' + encodeURIComponent(name) + '_Hurt.webm' : null),
 });
 await tl.load();
