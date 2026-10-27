@@ -63,6 +63,11 @@ const LIGHTNING_NATIVE_PX = 800;
  * re-tune it to taste — it was approved live. New bosses get new entries.
  */
 export const DESCENT_STYLES = {
+  // ⭐️ Fafnir's overhauled entrance: a TIMELINE render (boss-entrance-dreadwyrm.js),
+  // the approved mockup shot — storm-sky cutaway, her cut-in art descending toward
+  // the camera through the strikes, white, hard cut to the landing, the roar.
+  // runDescent branches to it before the DOM faller is built.
+  dreadwyrm: { timeline: "dreadwyrm" },
   flame: {
     fallMs: 640,
     // cubic-bezier(0.55,0,1,0.45) — accelerating plummet.
@@ -833,6 +838,14 @@ async function runDescent({ sceneId, tokenId, src, flipX = false, style = "flame
 
   const token = tokenId ? canvas.tokens?.get?.(tokenId) : null;
   const hasToken = !!(token && !token.destroyed);
+  // Timeline styles render through oni.timeline and own their whole run,
+  // including the camera and the impact gate; nothing below applies to them.
+  if (cfg.timeline === "dreadwyrm") {
+    if (!hasToken) { done(); return; }
+    const mod = await import("./boss-entrance-dreadwyrm.js");
+    await mod.runDreadwyrmEntrance({ token, done });
+    return;
+  }
   const zoom = canvas.stage?.scale?.x ?? 1;
 
   // Screen position of the landing spot. Re-read through this closure every

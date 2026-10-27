@@ -523,7 +523,7 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
   // True-end watch, armed before the script runs (see armAnimationEndWatch).
   // Skip Animation is the GM saying "get on with it": it collapses the gate
   // AND settles this, so RESOLVE never waits on a cinematic the GM skipped.
-  const endWatch = armAnimationEndWatch(casterTokenUuid, { timeoutMs: 35000 });
+  const endWatch = armAnimationEndWatch(casterTokenUuid, { timeoutMs: 45000 });
 
   // Abort mechanism: calling abortResolve() collapses the gate Promise.race.
   let abortResolve;
@@ -587,7 +587,7 @@ export async function playSkillAnimation({ skillUuid, casterTokenUuid, targetTok
   // the reaction/round_end caller wants the WHOLE animation before advancing,
   // so it stashes endPromise on ctx and awaits it after the chain (see
   // applyPlayAnimationEffect / firePreAcceptedCandidate).
-  const endWatch = armAnimationEndWatch(casterTokenUuid, { timeoutMs: 35000 });
+  const endWatch = armAnimationEndWatch(casterTokenUuid, { timeoutMs: 45000 });
 
   const r = await executeAnimationScript({
     script: spec.script,

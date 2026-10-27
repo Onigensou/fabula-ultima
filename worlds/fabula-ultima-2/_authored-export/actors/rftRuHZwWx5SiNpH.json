@@ -853,6 +853,104 @@
         "uniqueId": "SUYqRKHBGXUhiOL1"
       },
       "type": "equippableItem"
+    },
+    {
+      "_id": "ZprftRuHZPrimeSt",
+      "_stats": {
+        "compendiumSource": "Item.ZpMatPrimeSteak0",
+        "coreVersion": "12.343",
+        "createdTime": 1793134364050,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Genshin/Item_Raw_Meat.webp",
+      "name": "Prime Steak",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><em>A thick, marbled cut from a large beast. The kind of meat a whole hall would gather around.</em></p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "ZpMatPrimeSteak0",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Genshin/Item_Raw_Meat.webp",
+          "ingredient_taste": "umami",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "300",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Rare",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Prime Steak",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.ZpMatPrimeSteak0",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "ZpMatPrimeSteak0"
+      },
+      "type": "equippableItem"
     }
   ],
   "name": "Dire Orc",
@@ -1323,14 +1421,19 @@
         "1": {
           "$deleted": false,
           "loot_id": "Animal Fang",
-          "loot_percentage": "38"
+          "loot_percentage": "33"
         },
         "2": {
+          "$deleted": false,
+          "loot_id": "Prime Steak",
+          "loot_percentage": "5"
+        },
+        "3": {
           "$deleted": false,
           "loot_id": "Tincture of Strength",
           "loot_percentage": "11"
         },
-        "3": {
+        "4": {
           "$deleted": false,
           "loot_id": "Giants Belt",
           "loot_percentage": "6"
@@ -1343,6 +1446,13 @@
           "name": "Giants Belt",
           "roll": "",
           "uuid": "Actor.rftRuHZwWx5SiNpH.Item.0N01ou8l3oX55zdZ"
+        },
+        "ZprftRuHZPrimeSt": {
+          "id": "${item.id}",
+          "loot_description": "<p><em>A thick, marbled cut from a large beast. The kind of meat a whole hall would gather around.</em></p>",
+          "name": "Prime Steak",
+          "roll": "",
+          "uuid": "Actor.rftRuHZwWx5SiNpH.Item.ZprftRuHZPrimeSt"
         },
         "fyr650NFNzC3eyZj": {
           "id": "${item.id}",

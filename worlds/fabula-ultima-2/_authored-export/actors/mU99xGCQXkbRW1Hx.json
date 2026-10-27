@@ -599,7 +599,14 @@
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
           },
-          "changes": [],
+          "changes": [
+            {
+              "key": "cannot_be_targeted_by",
+              "mode": 5,
+              "priority": 20,
+              "value": "single_target"
+            }
+          ],
           "description": "<p>Unable to be target by <strong>single target</strong> action</p>",
           "disabled": false,
           "duration": {

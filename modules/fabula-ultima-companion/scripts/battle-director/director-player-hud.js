@@ -43,6 +43,8 @@ import { setPlateCard } from "./drawer-views.js";
 import { buildDesk, destroyDesk, deskActive, deskEnabled, deskOpenDrawer, deskHold, deskDrawerHost, deskTurnStatus, sendDeskMirror } from "./gm-desk.js";
 import { publishAllyWatch } from "./ally-watch.js";
 import { tabAlert, tabAlertClear } from "./tab-alert.js";
+import { TIER } from "./status-classifier.js";
+import { rowTier, rowTurns, rowSpent, sortRows, statusTipHTML, foldTipHTML } from "./status-tip.js";
 
 const MODULE_ID  = "fabula-ultima-companion";
 const ACTION_BUILD   = "FU_DIRECTOR_HUD_BUILD";
@@ -80,9 +82,11 @@ const P_DEF   = "system.props.defense";
 const P_MDEF  = "system.props.magic_defense";
 const P_ZP_NAME = "system.props.zero_power_name";
 
-// Status icons on the plate's top line: temporary effects only (permanent gear
-// and passive effects live in the Party Menu), at most this many before "+N".
+// Status pips (token status plan "G + E"): on the plate's top line at most this
+// many, on a compact card's tab at most CARD_STATUS_MAX, before the last slot
+// folds into "+N". Gear and skill passives live in the Party Menu.
 const STATUS_MAX = 8;
+const CARD_STATUS_MAX = 4;
 
 // One-shot cue when the Take Turn handle becomes yours to press. The glow is
 // deliberately quiet, so a player looking at the map or chat would miss it.
@@ -417,22 +421,40 @@ function renderResources(card, actor) {
   if (prev) flash(host);
 }
 
-// ── Status icons (plate top line) ─────────────────────────────────────────────
+// ── Status pips + Ready chips (plate top line, compact card tab) ──────────────
 // The Party Menu's Status rows (party-menu-effects.js), so the hover text is
-// the same as on its Status page: name, how long, what it does. Temporary
-// effects only, and never a Clock (those have their own rings).
-function statusTip(r) {
-  const amounts = [...new Set([
-    ...r.totals.map(t => t.text),
-    ...r.sources.flatMap(s => s.amounts.filter(a => a.active && typeof a.add !== "number").map(a => a.text)),
-  ])];
-  const desc = clip(stripTags(r.description || r.sources.find(s => s.source?.description)?.source?.description || ""), 220);
-  return [
-    `<strong>${esc(r.name)}</strong>${r.short ? ` · ${esc(r.short)}` : ""}`,
-    r.lifetime?.label ? `<em>${esc(r.lifetime.label)}</em>` : "",
-    amounts.length ? esc(amounts.join(" · ")) : "",
-    desc ? esc(desc) : "",
-  ].filter(Boolean).join("<br>");
+// the same as on its Status page. Token status plan "G + E" (2026-10-27):
+//   - debuffs first (red ring), then buffs (green ring), turn numeral in the corner
+//   - Ready abilities are gold square chips of their own (plate: beside the
+//     Clocks; card: after a divider on the tab), greyed when spent
+//   - markers (food, camp results, standing flags) fold into one grey pip whose
+//     tooltip lists each with its full text
+//   - never a Clock (those have their own rings), never a gear/skill passive
+// Tiers come from status-classifier.js, tooltips from status-tip.js.
+function statusRowsOf(actor) {
+  return _effectRowsOf(actor)
+    .filter(r => !r.inactive && r.lifetime?.kind !== "item")
+    .map(r => Object.assign(r, { tier: rowTier(r) }))
+    .filter(r => r.tier !== TIER.HIDDEN && r.tier !== TIER.RESOURCE
+      && !r.sources.some(s => aeTags(s.eff).includes(RES_TAG)));
+}
+
+const stKey = r => esc(String(r.name ?? "").trim().toLowerCase());
+
+function pipHTML(r) {
+  const n = rowTurns(r);
+  return `<span class="dhud-st t-${r.tier}" data-st="${stKey(r)}" data-tooltip="${esc(statusTipHTML(r, { tier: r.tier }))}" data-tooltip-direction="UP">`
+    + `<img src="${esc(r.img)}" alt="">${n ? `<b>${n}</b>` : ""}</span>`;
+}
+
+function foldHTML(rows, overflow) {
+  return `<span class="dhud-st is-more${overflow ? " is-over" : ""}" data-tooltip="${esc(foldTipHTML(rows))}" data-tooltip-direction="UP">`
+    + `${overflow ? "+" : "•"}${rows.length}</span>`;
+}
+
+function readyHTML(r) {
+  return `<span class="dhud-rdy${rowSpent(r) ? " is-spent" : ""}" data-st="${stKey(r)}" data-tooltip="${esc(statusTipHTML(r, { tier: TIER.READY }))}" data-tooltip-direction="UP">`
+    + `<img src="${esc(r.img)}" alt=""></span>`;
 }
 
 // Loaded lazily: a static import would pull the Party Menu's module graph
@@ -453,17 +475,46 @@ function renderStatuses(card, actor) {
     return;
   }
   let rows = [];
-  try {
-    rows = _effectRowsOf(actor).filter(r => r.temporary && !r.inactive
-      && !r.sources.some(s => aeTags(s.eff).includes(RES_TAG)));
-  } catch (e) { warn("[DirectorHud] status rows failed", e); }
-  const sig = rows.map(r => `${r.key}:${r.short}:${r.count}`).join("|");
+  try { rows = sortRows(statusRowsOf(actor)); } catch (e) { warn("[DirectorHud] status rows failed", e); }
+  const sig = rows.map(r => `${r.key}:${r.tier}:${r.short}:${r.count}:${r.lifetime?.counter ?? ""}`).join("|");
   if (sig === host._sig) return;
   host._sig = sig;
-  const shown = rows.length > STATUS_MAX ? rows.slice(0, STATUS_MAX - 1) : rows;
-  const rest = rows.slice(shown.length);
-  host.innerHTML = shown.map(r => `<span class="dhud-st" data-tooltip="${esc(statusTip(r))}" data-tooltip-direction="UP"><img src="${esc(r.img)}" alt=""></span>`).join("")
-    + (rest.length ? `<span class="dhud-st is-more" data-tooltip="${esc(rest.map(statusTip).join("<hr>"))}" data-tooltip-direction="UP">+${rest.length}</span>` : "");
+  const max = card.kind === "plate" ? STATUS_MAX : CARD_STATUS_MAX;
+  const status = rows.filter(r => r.tier === TIER.DEBUFF || r.tier === TIER.BUFF);
+  const markers = rows.filter(r => r.tier === TIER.MARKER);
+  const ready = rows.filter(r => r.tier === TIER.READY);
+  // Overflow: the last slot becomes "+N" and holds the rest plus the markers.
+  const room = status.length + (markers.length ? 1 : 0) > max ? max - 1 : status.length;
+  const shown = status.slice(0, room);
+  const folded = [...status.slice(room), ...markers];
+  host.innerHTML = shown.map(pipHTML).join("") + (folded.length ? foldHTML(folded, status.length > room) : "");
+  if (card.readyHost) card.readyHost.innerHTML = ready.map(readyHTML).join("");
+  card.el.classList.toggle("has-statuses", !!(shown.length || folded.length || ready.length));
+  // A pip that is new since the last render flashes once (a status landed, a
+  // Ready was spent). The first render of a card is not news.
+  const now = new Set(rows.map(r => `${r.key}:${rowSpent(r)}`));
+  const before = card._stKeys;
+  card._stKeys = now;
+  if (before) {
+    rows.forEach(r => {
+      if (before.has(`${r.key}:${rowSpent(r)}`)) return;
+      card.el.querySelectorAll(`[data-st="${stKey(r)}"]`).forEach(flashEl);
+    });
+  }
+}
+
+function flashEl(el) {
+  el.classList.remove("is-flash");
+  void el.offsetWidth;
+  el.classList.add("is-flash");
+}
+
+// "fuStatusFlash" (status-pop.js): a Burn tick, a Ready spent → flash that pip.
+function onStatusFlash({ tokenUuid = null, actorId = null, name = "" } = {}) {
+  let id = actorId;
+  if (!id && tokenUuid) { try { id = fromUuidSync(tokenUuid)?.actor?.id ?? null; } catch { /* */ } }
+  if (!id || !name) return;
+  document.querySelectorAll(`[data-actor-id="${CSS.escape(id)}"] [data-st="${CSS.escape(name)}"]`).forEach(flashEl);
 }
 
 // ── CSS injection ─────────────────────────────────────────────────────────────
@@ -780,11 +831,45 @@ function injectStyles() {
 .dhud-row1 { display: flex; align-items: center; gap: 10px; min-height: 20px; }
 .dhud-statuses { display: flex; gap: 4px; min-width: 0; }
 .dhud-st {
-  width: 20px; height: 20px; flex: none; box-sizing: border-box; border-radius: 50%; overflow: hidden;
-  display: grid; place-items: center; border: 1.5px solid rgba(58,50,40,.55); background: #3a3228;
+  position: relative; width: 20px; height: 20px; flex: none; box-sizing: border-box; border-radius: 50%;
+  display: grid; place-items: center; border: 2px solid rgba(58,50,40,.55); background: #3a3228;
   font: 800 9px var(--dhud-ui); color: var(--dhud-parch-top); pointer-events: auto;
 }
-.dhud-st img { width: 100%; height: 100%; object-fit: cover; display: block; border: none !important; }
+.dhud-st img { width: 100%; height: 100%; object-fit: cover; display: block; border: none !important; border-radius: 50%; }
+.dhud-st.t-debuff { border-color: #c4473a; }
+.dhud-st.t-buff   { border-color: #2f9e6b; }
+.dhud-st.is-more  { background: #7a6a55; border-color: rgba(122,106,85,.6); font-size: 9.5px; }
+.dhud-st.is-over  { border-color: #c4473a; }
+.dhud-st b {
+  position: absolute; right: -7px; bottom: -5px; min-width: 13px; height: 13px; padding: 0 3px; box-sizing: border-box;
+  border-radius: 7px; background: var(--dhud-ink); color: var(--dhud-parch-top); border: 1px solid var(--dhud-gold-1);
+  font: 800 8.5px/11px var(--dhud-ui); text-align: center; pointer-events: none;
+}
+/* Ready abilities: gold square chips with a lit dot; grey once spent. */
+.dhud-readies { display: flex; gap: 5px; align-items: center; }
+.dhud-readies:empty { display: none; }
+.dhud-plate .dhud-readies::before { content: "Ready"; font: 900 9.5px var(--dhud-ui); letter-spacing: .08em; text-transform: uppercase; color: var(--dhud-stroke); margin-right: 2px; }
+.dhud-rdy {
+  position: relative; width: 22px; height: 22px; flex: none; box-sizing: border-box; border-radius: 5px; pointer-events: auto;
+  border: 2px solid #e2b34a; background: #3a3228;
+  box-shadow: 0 0 0 1px rgba(255,236,170,.5) inset, 0 0 7px rgba(226,179,74,.8);
+}
+.dhud-rdy img { width: 100%; height: 100%; object-fit: cover; display: block; border: none !important; border-radius: 3px; }
+.dhud-rdy::after { content: ""; position: absolute; right: -4px; top: -4px; width: 8px; height: 8px; border-radius: 50%; background: #ffd45a; box-shadow: 0 0 4px #ffb800; }
+.dhud-rdy.is-spent { border-color: rgba(122,106,85,.6); box-shadow: none; filter: grayscale(1); opacity: .5; }
+.dhud-rdy.is-spent::after { display: none; }
+/* Compact card status tab: rides on the card's top edge, right of the portrait. */
+.dhud-ctab {
+  position: absolute; left: 74px; bottom: calc(100% - 2px); z-index: 2; display: none; gap: 4px; align-items: center;
+  height: 28px; padding: 3px 8px 2px; box-sizing: border-box; border-radius: 9px 9px 0 0; pointer-events: auto;
+  background: linear-gradient(180deg, var(--dhud-parch-top), var(--dhud-parch-bot)); border: 2px solid var(--dhud-stroke); border-bottom: 0;
+}
+.dhud-card.has-statuses .dhud-ctab { display: flex; }
+.dhud-ctab .dhud-statuses { display: flex; gap: 4px; }
+.dhud-ctab .dhud-statuses:not(:empty) + .dhud-readies:not(:empty) { padding-left: 6px; border-left: 1px solid rgba(122,106,85,.5); }
+.dhud-ctab .dhud-rdy { width: 20px; height: 20px; }
+.dhud-st.is-flash, .dhud-rdy.is-flash { animation: dhudPipFlash .9s ease-out; }
+@keyframes dhudPipFlash { 0% { box-shadow: 0 0 0 0 rgba(255,196,70,1); } 100% { box-shadow: 0 0 0 10px rgba(255,196,70,0); } }
 .dhud-plate .dhud-ip { display: flex; gap: 3px; padding: 2px 3px; }
 .dhud-plate .dhud-ip i { width: 8px; height: 8px; }
 .dhud-ip i.is-cost { background: transparent; box-shadow: inset 0 0 0 2px var(--dhud-ip-on); }
@@ -915,6 +1000,7 @@ function cardHandle(el, kind) {
     nameEls: [...el.querySelectorAll(".dhud-name")],
     resHost: el.querySelector(kind === "plate" ? ".dhud-shelf" : ".dhud-resgrid"),
     statusHost: el.querySelector(".dhud-statuses"),
+    readyHost: el.querySelector(".dhud-readies"),
   };
 }
 
@@ -988,6 +1074,7 @@ function makeCompactCard(actor, token) {
   el.className = "dhud-card";
   el.dataset.actorId = actor.id;
   el.innerHTML = `
+    <div class="dhud-ctab"><div class="dhud-statuses"></div><div class="dhud-readies"></div></div>
     <div class="dhud-pcard"><div class="art"><img src="${esc(portrait)}" alt=""></div></div>
     <div class="dhud-cbody">
       <div class="dhud-top"><span class="dhud-name">${esc(token?.name || actor?.name || "—")}</span><span class="dhud-ip${ip.m > 8 ? " is-many" : ""}">${dotRow(ip.m, ip.v)}</span></div>
@@ -1007,6 +1094,7 @@ function makeCompactCard(actor, token) {
   const card = cardHandle(el, "card");
   paintStats(card, actor);
   renderResources(card, actor);
+  renderStatuses(card, actor);
   return card;
 }
 
@@ -1044,7 +1132,7 @@ function makePlate(actor, token) {
           <span class="dhud-ready">Ready</span><span class="num"><span class="dhud-zpnum">${nice(zp.v)}</span><span class="sl">/</span>${ZP_MAX}</span></div>
           <div class="dhud-bar dhud-zp"><div class="dhud-fill"></div></div></div>
       </div>
-      <div class="dhud-row3"><div class="dhud-shelf is-empty"></div>
+      <div class="dhud-row3"><div class="dhud-shelf is-empty"></div><span class="dhud-readies"></span>
         <span class="dhud-def"><span class="dhud-lbl">DEF</span><b class="dhud-defnum">–</b><span class="dhud-lbl">M.DEF</span><b class="dhud-mdefnum">–</b></span></div>
     </div>`;
   requestAnimationFrame(() => el.classList.add("dhud-appear"));
@@ -2034,6 +2122,7 @@ function previewPlate(actorId = null) {
 Hooks.once("ready", () => {
   ensureSocket();
   tryReloadRecovery("ready");
+  Hooks.on("fuStatusFlash", onStatusFlash);
 
   globalThis.FUCompanion = globalThis.FUCompanion || {};
   globalThis.FUCompanion.api = globalThis.FUCompanion.api || {};

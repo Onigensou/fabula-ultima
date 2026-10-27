@@ -61,7 +61,11 @@
       "statuses": [
         "fud-heart-of-darkness-ready"
       ],
-      "system": {},
+      "system": {
+        "tags": [
+          "ready"
+        ]
+      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"

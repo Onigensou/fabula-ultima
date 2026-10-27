@@ -46,7 +46,11 @@
       "statuses": [
         "fud-protect-ready"
       ],
-      "system": {},
+      "system": {
+        "tags": [
+          "ready"
+        ]
+      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"

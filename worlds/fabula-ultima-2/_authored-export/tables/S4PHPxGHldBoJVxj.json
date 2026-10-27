@@ -12,7 +12,7 @@
   "displayRoll": true,
   "flags": {},
   "folder": "4bqgn7jZFnmardZp",
-  "formula": "1d22",
+  "formula": "1d24",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
   "name": "Valley of the Dragon - Consumable",
   "ownership": {
@@ -348,6 +348,36 @@
         21
       ],
       "text": "Magic Mirror",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Uti1RowInvisPotn",
+      "documentCollection": "Item",
+      "documentId": "Uti1InvisPot1on0",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/consumables/potions/bottle-round-empty-glass.webp",
+      "range": [
+        24,
+        24
+      ],
+      "text": "Invisibility Potion",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "Uti1RowSmokeBomb",
+      "documentCollection": "Item",
+      "documentId": "Uti1SmokeBomb000",
+      "drawn": false,
+      "flags": {},
+      "img": "icons/commodities/tech/smoke-bomb-yellow.webp",
+      "range": [
+        23,
+        23
+      ],
+      "text": "Smoke Bomb",
       "type": "document",
       "weight": 1
     }

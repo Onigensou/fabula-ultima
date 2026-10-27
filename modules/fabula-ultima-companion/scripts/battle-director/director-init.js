@@ -54,6 +54,8 @@ import {
 import { playPartyEntranceLocal, preparePartyEntrance } from "./party-entrance-fx.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { resolveGuestRoster, ensureGuestPassive } from "../guest-roster/guest-roster-core.js";
+import { planEnemies, planEnemyJoin, planParty, placeSupport, REF_W, REF_H, GIANT_H } from "./formation.js";
+import { isNpcActor } from "./status-classifier.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const FLAG_NS = MODULE_ID;
@@ -556,6 +558,189 @@ function computeLayout({ party, enemies, scene }) {
   return { partyLayout, enemyLayout, grid };
 }
 
+// ─── Formation (size-aware) ────────────────────────────────────────────
+// formation.js plans in the 1682x788 reference stage from each unit's DRAWN
+// sprite size and its name label; computeLayout above stays as the fallback
+// (and the planner keeps its party diagonal exactly). See formation.js for the
+// enemy picker and the party Support row.
+
+const LABEL_ROW_H = 41;   // npc-status-strip label: status row + shield/name row
+const LABEL_CHAR_W = 8.3; // 15px Signika 600, .03em spacing
+
+// The battle token data for an actor: its prototype with the sprite_battle swap.
+function battleTokenData(actor) {
+  const td = actor?.prototypeToken?.toObject?.() ?? {};
+  const battleSprite = String(actor?.system?.props?.sprite_battle ?? "").trim();
+  if (battleSprite) td.texture = { ...(td.texture ?? {}), src: battleSprite };
+  return td;
+}
+
+// Drawn sprite size in canvas px: the texture fitted into the token box the
+// way Foundry fits it, times the token scale. Grid box × scale when the
+// texture can't be read.
+async function drawnSize(td, grid) {
+  const bw = (td.width ?? 1) * grid, bh = (td.height ?? 1) * grid;
+  const sx = Math.abs(Number(td.texture?.scaleX) || 1), sy = Math.abs(Number(td.texture?.scaleY) || 1);
+  let iw = 0, ih = 0;
+  try {
+    const tex = td.texture?.src ? await loadTexture(td.texture.src) : null;
+    const src = tex?.baseTexture?.resource?.source;
+    iw = Number(src?.videoWidth || tex?.width) || 0;
+    ih = Number(src?.videoHeight || tex?.height) || 0;
+  } catch { /* fall back to the grid box */ }
+  if (!(iw > 0 && ih > 0)) return { w: bw * sx, h: bh * sy };
+  const fit = td.texture?.fit ?? "contain";
+  if (fit === "fill") return { w: bw * sx, h: bh * sy };
+  const f = fit === "cover" ? Math.max(bw / iw, bh / ih)
+    : fit === "width" ? bw / iw
+      : fit === "height" ? bh / ih
+        : Math.min(bw / iw, bh / ih);
+  return { w: iw * f * sx, h: ih * f * sy };
+}
+
+// A formation unit (reference-stage px) for an actor about to spawn or a live token.
+async function formationUnit({ key, actor, td, scene, kind, caster = null }) {
+  const stage = stageOf(scene), grid = scene?.grid?.size ?? 110;
+  const kx = stage.w / REF_W, ky = stage.h / REF_H;
+  const size = await drawnSize(td, grid);
+  const props = actor?.system?.props ?? {};
+  const name = String(td.name ?? actor?.name ?? "");
+  const labelled = isNpcActor(actor);
+  const shield = Number(props.shield_value) > 0;
+  return {
+    key,
+    w: size.w / kx,
+    h: size.h / ky,
+    lw: labelled ? Math.max(name.length * LABEL_CHAR_W + (shield ? 22 : 0), 60) / kx : 0,
+    lh: labelled ? LABEL_ROW_H / ky : 0,
+    kind,
+    rank: String(props.npc_rank ?? "").trim().toLowerCase(),
+    caster,
+  };
+}
+function refToCanvas(scene, p) {
+  const s = stageOf(scene);
+  return { x: s.x + p.x * (s.w / REF_W), y: s.y + p.y * (s.h / REF_H) };
+}
+function canvasToRef(scene, p) {
+  const s = stageOf(scene);
+  return { x: (p.x - s.x) / (s.w / REF_W), y: (p.y - s.y) / (s.h / REF_H) };
+}
+
+// computeLayout, with formation.js placing the enemies (picker) and the
+// party's guests (Support row). `formation` = an encounter override
+// ("line" | "columns"); anything else lets the picker choose.
+async function computeLayoutSized({ party, enemies, scene, formation = null }) {
+  const legacy = computeLayout({ party, enemies, scene });
+  if (SimMode.active) return legacy;
+  try {
+    const out = { ...legacy };
+    if (enemies.length) {
+      const units = [];
+      for (const [i, e] of enemies.entries()) {
+        const actor = await resolveActor(e.actorUuid);
+        if (!actor) throw new Error(`enemy ${e.actorUuid} not found`);
+        units.push(await formationUnit({ key: `e${i}`, actor, td: battleTokenData(actor), scene, kind: "enemy" }));
+      }
+      if (units.some((u) => u.h > GIANT_H)) {
+        log("formation: a giant sprite is in this fight — keeping the hand-tuned enemy layout");
+      } else {
+        const mode = formation === "line" || formation === "columns" ? formation : "auto";
+        const plan = planEnemies(units, { mode });
+        log(`formation: enemies → ${plan.pick} (${plan.why})`);
+        out.enemyLayout = enemies.map((e, i) => ({ ...e, pos: refToCanvas(scene, plan.pos[`e${i}`]) }));
+      }
+    }
+    const guests = party.filter((m) => m.isGuest);
+    if (party.length && guests.length) {
+      const members = party.filter((m) => !m.isGuest);
+      const pcs = [], extras = [];
+      for (const [i, m] of party.entries()) {
+        const actor = await resolveActor(m.actorUuid);
+        if (!actor) throw new Error(`party member ${m.actorUuid} not found`);
+        const u = await formationUnit({ key: `p${i}`, actor, td: battleTokenData(actor), scene, kind: m.isGuest ? "guest" : "pc" });
+        (m.isGuest ? extras : pcs).push(u);
+      }
+      const pos = planParty(pcs, extras);
+      if (extras.some((u) => !pos[u.key])) throw new Error("no clean support-row spot for a guest");
+      out.partyLayout = party.map((m, i) => ({ ...m, pos: refToCanvas(scene, pos[`p${i}`]) }));
+      log(`formation: party → ${members.length} on the line, ${guests.length} guest(s) in the support row`);
+    }
+    return out;
+  } catch (e) {
+    warn("formation planner failed — using the legacy layout", e);
+    return legacy;
+  }
+}
+
+// A placer for creatures joining a LIVE battle on one side (formation.js).
+// Enemies: Hybrid — extend the line, else a free spot touching no one, else the
+// whole side slides into a new formation; an anchored (caster-front) summon
+// stays as near its caster as it can and never moves anyone. Party: the Support
+// row, behind the PC line, in the gap nearest the caster. place() returns a
+// canvas centre, or null so the caller keeps its grid fallback.
+async function liveFormation(scene, disposition, { anchor = null, casterTokenId = null } = {}) {
+  if (SimMode.active) return null;
+  try {
+    const grid = scene.grid?.size ?? 100;
+    // Only units in the fight: director-spawned or a combatant. Scenery tokens
+    // (a test dummy left on the scene) must never be counted or moved by a re-form.
+    const inFight = (t) => !!t.flags?.[FLAG_NS]?.[FLAG_DIRECTOR_SPAWNED]
+      || !!game.combat?.combatants?.some?.((c) => c.tokenId === t.id);
+    const live = (scene.tokens?.contents ?? []).filter((t) =>
+      t.disposition === disposition && !t.hidden && (t.alpha ?? 1) > 0.05 && t.actor && inFight(t));
+    const placed = [], current = {};
+    for (const t of live) {
+      const kind = disposition === -1 ? "enemy" : (isNpcActor(t.actor) ? "summon" : "pc");
+      const u = await formationUnit({ key: t.id, actor: t.actor, td: t.toObject(), scene, kind });
+      placed.push(u);
+      current[t.id] = canvasToRef(scene, { x: t.x + ((t.width ?? 1) * grid) / 2, y: t.y + ((t.height ?? 1) * grid) / 2 });
+    }
+    if (placed.some((u) => u.h > GIANT_H)) return null;   // hand-tuned boss fight
+    const anchorRef = anchor ? canvasToRef(scene, anchor) : null;
+    const pcs = () => placed.filter((u) => u.kind === "pc").sort((a, b) => current[a.key].y - current[b.key].y);
+    let casterKey = casterTokenId && current[casterTokenId] ? casterTokenId : null;
+    if (!casterKey && anchorRef && disposition === 1) {
+      let best = Infinity;
+      for (const u of pcs()) {
+        const d = Math.hypot(current[u.key].x - anchorRef.x, current[u.key].y - anchorRef.y);
+        if (d < best) { best = d; casterKey = u.key; }
+      }
+    }
+    let n = 0;
+    return {
+      async place(actor, td) {
+        const key = `join${n++}`;
+        const u = await formationUnit({ key, actor, td, scene, kind: disposition === -1 ? "enemy" : "summon", caster: casterKey });
+        let p = null;
+        if (disposition === -1) {
+          const j = planEnemyJoin(placed, current, u, { anchor: anchorRef });
+          if (j.reform) {
+            const updates = placed.map((v) => {
+              const t = scene.tokens.get(v.key), c = refToCanvas(scene, j.pos[v.key]);
+              return { _id: v.key, x: Math.round(c.x - ((t?.width ?? 1) * grid) / 2), y: Math.round(c.y - ((t?.height ?? 1) * grid) / 2) };
+            });
+            await scene.updateEmbeddedDocuments("Token", updates, { animation: { duration: 700 } });
+            for (const v of placed) current[v.key] = j.pos[v.key];
+          }
+          p = j.pos[key] ?? null;
+          log(`formation: enemy joins — ${j.why}`);
+        } else {
+          const line = pcs();
+          if (line.length) p = placeSupport(line, placed, current, u);
+          log(`formation: party ally joins the support row${p ? "" : " — no clean spot, grid fallback"}`);
+        }
+        if (!p) return null;
+        placed.push(u); current[key] = p;
+        return refToCanvas(scene, p);
+      },
+    };
+  } catch (e) {
+    warn("formation: live placer failed — grid fallback", e);
+    return null;
+  }
+}
+
 // ─── Token spawn (hidden) ──────────────────────────────────────────────
 // Returns the created TokenDocument array. Tokens are placed at the layout
 // positions, with alpha = 0 so the entrance animation can fade them in.
@@ -640,7 +825,10 @@ async function spawnTokensHidden({ scene, layout, disposition }) {
 // the default battle-formation corner. Used for caster-relative summons ("in
 // front of the caster"): the caller passes a point one cell toward screen centre
 // from the summoner, and the formation fans onward toward centre from there.
-export async function spawnLiveDirectorTokens({ scene, actorUuids, disposition, anchor = null }) {
+// Placement first asks formation.js (liveFormation) for a clash-free spot and
+// only falls back to the grid below when it has none. `casterTokenId` tells a
+// party-side summon which PC it belongs to.
+export async function spawnLiveDirectorTokens({ scene, actorUuids, disposition, anchor = null, casterTokenId = null }) {
   if (!scene || !Array.isArray(actorUuids) || !actorUuids.length) return [];
   const grid = scene.grid?.size ?? 100;
   const step = grid * 1.15;
@@ -684,6 +872,8 @@ export async function spawnLiveDirectorTokens({ scene, actorUuids, disposition, 
     return { x: baseX, y: Math.min(stage.y + stage.h - grid, baseY) };
   };
 
+  const placer = await liveFormation(scene, disposition, { anchor: useAnchor ? anchor : null, casterTokenId });
+
   const out = [];
   const joins = [];
   for (const uuid of actorUuids) {
@@ -705,7 +895,9 @@ export async function spawnLiveDirectorTokens({ scene, actorUuids, disposition, 
       td.texture = { ...(td.texture ?? {}), scaleX: disposition === -1 ? -baseSx : baseSx };
     }
     const width = td.width ?? 1, height = td.height ?? 1;
-    const center = freeCell();
+    let center = null;
+    if (placer) { try { center = await placer.place(actor, td); } catch (e) { warn("formation: place threw — grid fallback", e); } }
+    if (!center) center = freeCell();
     occupied.push(center);
     td.x = Math.round(center.x - (width * grid) / 2);
     td.y = Math.round(center.y - (height * grid) / 2);
@@ -1238,7 +1430,7 @@ async function runInPlaceReinforceInit(payload, battleScene) {
   let spawnedMissing = [];
   if (missingParty.length) {
     log(`in-place reinforce: ${missingParty.length} party member(s) not on scene — spawning`);
-    const { partyLayout } = computeLayout({ party: missingParty, enemies: [], scene: battleScene });
+    const { partyLayout } = await computeLayoutSized({ party: missingParty, enemies: [], scene: battleScene });
     spawnedMissing = await spawnTokensHidden({ scene: battleScene, layout: partyLayout, disposition: 1 });
     try {
       const ids = spawnedMissing.map((t) => t.id);
@@ -1251,7 +1443,7 @@ async function runInPlaceReinforceInit(payload, battleScene) {
   const partyTokens = [...adoptedPartyTokens, ...spawnedMissing];
 
   // 3. Spawn the reinforcement enemy tokens (hidden) at the enemy layout.
-  const { enemyLayout } = computeLayout({ party, enemies, scene: battleScene });
+  const { enemyLayout } = await computeLayoutSized({ party, enemies, scene: battleScene, formation: payload?.formation });
   const enemyTokens = await spawnTokensHidden({ scene: battleScene, layout: enemyLayout, disposition: -1 });
 
   // 3b. Switch BGM to the boss track. Stop the prior battle BGM first, using
@@ -1487,9 +1679,10 @@ async function runDirectorInitInner(payload) {
     } catch (e) { warn("restViewFor threw (continuing)", e); }
   }
 
-  // ── 6. Compute layout (party right, enemies left).
-  const { partyLayout, enemyLayout } = computeLayout({
-    party, enemies, scene: battleScene,
+  // ── 6. Compute layout (party right, enemies left). Size-aware: formation.js
+  // picks the enemy formation and puts guests in the party's support row.
+  const { partyLayout, enemyLayout } = await computeLayoutSized({
+    party, enemies, scene: battleScene, formation: payload?.formation,
   });
 
   // ── 7. Spawn tokens hidden (alpha=0) at layout positions.

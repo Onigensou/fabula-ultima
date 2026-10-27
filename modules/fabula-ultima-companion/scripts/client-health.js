@@ -25,6 +25,8 @@
 //
 // GM console:  FUCompanion.api.clientHealth.summary()   per-player roll-up
 //              FUCompanion.api.clientHealth.log()       raw entries
+// Other scripts add entries with FUCompanion.api.clientHealth.record(kind, data)
+// (load-indicator.js: "load-progress", "load-waiting").
 // ============================================================================
 (() => {
   const TAG       = "[FUCompanion][ClientHealth]";
@@ -270,6 +272,7 @@
       summary,
       upload: () => { dirty = true; return upload(); },
       measure,
+      record: (kind, data = {}) => push(kind, data),
     };
 
     reportBoot();

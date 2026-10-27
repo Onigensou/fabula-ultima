@@ -63,6 +63,21 @@ export function tokenCastsSpriteShadow(token) {
   return getActorSpriteShadow(baseActorOf(token));
 }
 
+// A PAINTED shadow: an image (same pixel size as the token art) drawn under the
+// sprite instead of the bake. For art whose shadow was painted by the artist
+// and split off so the body can lift away from it (⭐️ Fafnir: every generated
+// ellipse read as "floating over a disc" under her belly and claws). Actor flag
+// `spriteShadowPainted` = the image URL; empty/unset = no painted shadow.
+const FLAG_PAINTED = "spriteShadowPainted";
+export function getActorSpriteShadowPainted(actor) {
+  const a = baseActorOf(actor);
+  const v = a?.getFlag?.(MODULE_ID, FLAG_PAINTED);
+  return typeof v === "string" && v.trim() ? v.trim() : null;
+}
+export function tokenPaintedShadow(token) {
+  return getActorSpriteShadowPainted(baseActorOf(token));
+}
+
 // ---------------------------------------------------------------------------
 // Token Config injection (Appearance tab)
 // ---------------------------------------------------------------------------

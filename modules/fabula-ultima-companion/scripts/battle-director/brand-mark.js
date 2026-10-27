@@ -77,6 +77,8 @@ let _hiddenByAnimation = false;
 // Local apply — runs on every client (socket handler + GM local call).
 export function setMarksHiddenLocal(hidden) {
   _hiddenByAnimation = !!hidden;
+  // Other token overlays (status-cues.js) follow the same cinematic etiquette.
+  try { Hooks.callAll("fuBattleMarksHidden", _hiddenByAnimation); } catch {}
   for (const rec of _marks.values()) {
     try { rec.el.classList.toggle("is-anim-hidden", _hiddenByAnimation); } catch {}
   }

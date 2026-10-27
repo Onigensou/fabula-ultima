@@ -666,7 +666,11 @@
           "origin": null,
           "sort": 0,
           "statuses": [],
-          "system": {},
+          "system": {
+            "tags": [
+              "ready"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"

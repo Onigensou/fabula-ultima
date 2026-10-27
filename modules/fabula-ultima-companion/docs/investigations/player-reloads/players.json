@@ -1,0 +1,13 @@
+{
+  "_note": "Foundry user id -> name for the _tools scripts. Resolved from the world users store 2026-10-28. role: player | gm | host (an account the host uses for local test clients). A host account can log in as a player's name too: server-timeline marks those page loads 'local client seen'.",
+  "yL2PQxh3R9ddt0te": { "name": "Rinri", "role": "player" },
+  "2vy7wrEUqBy0kzsU": { "name": "Blumairwen", "role": "player" },
+  "iLeUVmwqnze8ulOI": { "name": "Trinio", "role": "player" },
+  "nSGZ1sz1rdKao0kz": { "name": "Silryantish", "role": "player" },
+  "JQGNzKpDPHJmcUIW": { "name": "GM", "role": "gm" },
+  "WQGFvLStTZeWGpak": { "name": "GM II", "role": "gm" },
+  "nXC7OD7u5Zw5UDDU": { "name": "GM III", "role": "gm" },
+  "6DmgigM5jq76r0Gd": { "name": "GM IV", "role": "gm" },
+  "7hKw8KGsimboeDif": { "name": "Onigensou", "role": "host" },
+  "FNU2oRs9BdRQk5rL": { "name": "Spectator", "role": "host" }
+}

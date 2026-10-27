@@ -1,0 +1,55 @@
+{
+  "_id": "Uti1SmokeBombAct",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1793072040236,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "icons/commodities/tech/smoke-bomb-yellow.webp",
+  "name": "Smoke Bomb",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "Uti1SmokeBomb000",
+    "props": {
+      "action_command": "item",
+      "animation_preload_urls": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/smoke_anim12.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/smoke_anim14.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/SmokeBomb.wav",
+      "animation_script": "<p>// @desc Smoke Bomb: grey smoke puffs swallow the target (Guilty Gear smoke clips, tinted), Obscure lands as the smoke closes</p><p>\"use strict\";</p><p>(async () =&gt; {</p><p>  const CFG = {</p><p>    GGS: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/\",</p><p>    puffClip: \"smoke_anim12.webm\",   // round billowing puff, 0.7 s, white mask</p><p>    plumeClip: \"smoke_anim14.webm\",  // rising plume, 0.8 s, white mask</p><p>    puffCount: 6,</p><p>    puffSizeFrac: 1.9,     // puff width as a fraction of the target token width</p><p>    puffSpread: 0.5,       // horizontal scatter as a fraction of token width</p><p>    puffStaggerMs: 220,    // delay between puffs</p><p>    puffRate: 0.4,         // video playbackRate (slower = heavier smoke)</p><p>    plumeSizeFrac: 2.6,</p><p>    plumeRate: 0.5,</p><p>    tint: 0x9a9aa0,        // grey smoke</p><p>    tintPlume: 0xb0b0b6,</p><p>    puffAlpha: 1,</p><p>    cloudSizeFrac: 3.2,    // lingering soft cloud behind the puffs</p><p>    cloudColor: 'rgba(120,120,128,0.95)',</p><p>    cloudInMs: 700,</p><p>    cloudHoldMs: 1400,</p><p>    cloudOutMs: 1800,</p><p>    cloudAlpha: 0.9,</p><p>    fireDoneAtMs: 900,     // Obscure lands as the puffs close over the target</p><p>    castSfx: \"SmokeBomb\",</p><p>    volume: 0.8,</p><p>  };</p><p></p><p>  const P = payload ?? globalThis.__PAYLOAD ?? {};</p><p>  const casterUuid = P.casterTokenUuid ?? P.sourceTokenUuid ?? null;</p><p>  const targetUuids = (P.targetTokenUuids ?? (P.targets ?? []).map((t) =&gt; t.tokenUuid) ?? []).filter(Boolean);</p><p>  const doneHook = \"oni:done:\" + foundry.utils.randomID(8);</p><p></p><p>  const onceHook = (name, ms) =&gt; new Promise((resolve) =&gt; {</p><p>    const id = Hooks.once(name, () =&gt; { clearTimeout(t); resolve(); });</p><p>    const t = setTimeout(() =&gt; { Hooks.off(name, id); resolve(); }, ms);</p><p>  });</p><p></p><p>  Hooks.callAll(\"oni:animationStart\", { local: true, world: false });</p><p></p><p>  const scriptSource = String.raw`</p><p>    const cfg = ctx.params.cfg;</p><p>    const target = oni.targets[0] || oni.caster;</p><p>    if (!target) { oni.fireDone(); return; }</p><p>    const tw = target.w || 100, th = target.h || 100;</p><p>    const cx = target.center.x, feetY = target.y + th;</p><p>    const layer = oni.layer({ zIndex: 95500 });</p><p></p><p>    // soft grey cloud that lingers after the clips are gone</p><p>    const cloud = new PIXI.Sprite(oni.radialTexture(cfg.cloudColor, 'rgba(120,120,128,0)', { size: 256 }));</p><p>    cloud.anchor.set(0.5);</p><p>    cloud.width = cloud.height = tw * cfg.cloudSizeFrac;</p><p>    cloud.position.set(cx, feetY - th * 0.45);</p><p>    cloud.alpha = 0;</p><p>    layer.addChild(cloud);</p><p></p><p>    oni.sfx(cfg.castSfx, { volume: cfg.volume });</p><p></p><p>    const tails = [];</p><p>    const puff = async (i) =&gt; {</p><p>      const side = (i % 2 === 0 ? -1 : 1) * (0.25 + Math.random() * 0.75);</p><p>      const x = cx + side * tw * cfg.puffSpread;</p><p>      const y = feetY - th * (0.25 + Math.random() * 0.5);</p><p>      const fx = await oni.vfx(cfg.GGS + cfg.puffClip, {</p><p>        x, y, size: tw * cfg.puffSizeFrac * (0.85 + Math.random() * 0.3),</p><p>        alpha: cfg.puffAlpha, angle: (Math.random() - 0.5) * 40, mirror: Math.random() &lt; 0.5,</p><p>        zIndex: 96000 + i,</p><p>      });</p><p>      if (!fx) return;</p><p>      fx.sprite.tint = cfg.tint;</p><p>      try { fx.video.playbackRate = cfg.puffRate; } catch (e) {}</p><p>      tails.push(fx.ended);</p><p>    };</p><p></p><p>    // cloud rises while the puffs arrive</p><p>    const cloudIn = oni.tween({ from: 0, to: cfg.cloudAlpha, duration: cfg.cloudInMs, ease: oni.EASE.outQuad, onUpdate: (v) =&gt; (cloud.alpha = v) });</p><p></p><p>    let fired = false;</p><p>    const gate = setTimeout(() =&gt; { if (!fired) { fired = true; oni.fireDone(); } }, cfg.fireDoneAtMs);</p><p></p><p>    for (let i = 0; i &lt; cfg.puffCount; i++) {</p><p>      await puff(i);</p><p>      await oni.wait(cfg.puffStaggerMs);</p><p>    }</p><p>    // the plume rises out of the middle once the puffs have closed in</p><p>    const plume = await oni.vfx(cfg.GGS + cfg.plumeClip, {</p><p>      x: cx, y: feetY - th * 0.9, size: tw * cfg.plumeSizeFrac, alpha: 0.85, zIndex: 95900,</p><p>    });</p><p>    if (plume) { plume.sprite.tint = cfg.tintPlume; try { plume.video.playbackRate = cfg.plumeRate; } catch (e) {} tails.push(plume.ended); }</p><p></p><p>    await cloudIn;</p><p>    if (!fired) { fired = true; clearTimeout(gate); oni.fireDone(); }</p><p>    await oni.wait(cfg.cloudHoldMs);</p><p>    await Promise.all([</p><p>      oni.tween({ from: cloud.alpha, to: 0, duration: cfg.cloudOutMs, ease: oni.EASE.inOutQuad, onUpdate: (v) =&gt; (cloud.alpha = v) }),</p><p>      Promise.all(tails),</p><p>    ]);</p><p>  `;</p><p></p><p>  game.ONI.pseudo.play({</p><p>    scriptId: \"anim-studio/smoke-bomb\",</p><p>    scriptSource,</p><p>    casterTokenUuid: casterUuid,</p><p>    targetTokenUuids: targetUuids,</p><p>    params: { doneHook, cfg: CFG },</p><p>  });</p><p></p><p>  await onceHook(doneHook, CFG.fireDoneAtMs + 6000);</p><p>  Hooks.callAll(\"oni:animationEnd\", { local: true, world: false });</p><p>})();</p><p></p>",
+      "cost": "-",
+      "description": "<ul><li><p>Inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.ZdBbIFKzxQQcY71T\" data-id=\"ZdBbIFKzxQQcY71T\" data-type=\"JournalEntry\">Obscure</a> on the target creature.</p></li></ul>",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Obscure",
+          "effect_kind": "apply_ae",
+          "effect_label": "smokebomb_obscure",
+          "target_ref": "action_targets"
+        }
+      },
+      "isCheck": false,
+      "on_activate_effect_ref": "smokebomb_obscure",
+      "skill_description": "<ul><li><p>Inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.ZdBbIFKzxQQcY71T\" data-id=\"ZdBbIFKzxQQcY71T\" data-type=\"JournalEntry\">Obscure</a> on the target creature.</p></li></ul>",
+      "skill_tags": "",
+      "skill_target": "One Enemy",
+      "skill_type": "Item",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "Uti1SmokeBombAct"
+  },
+  "type": "equippableItem"
+}

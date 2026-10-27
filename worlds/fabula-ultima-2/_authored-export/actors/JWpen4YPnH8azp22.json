@@ -2812,7 +2812,11 @@
           "statuses": [
             "fud-lucky-seven-ready"
           ],
-          "system": {},
+          "system": {
+            "tags": [
+              "ready"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"

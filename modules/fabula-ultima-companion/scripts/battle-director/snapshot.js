@@ -7,6 +7,7 @@ import { warn } from "./logger.js";
 import { getActorKind, getNpcAttackItems } from "./actor-shape.js";
 import { buildSkillResolver, evaluateFormula, isFormulaString, registerBlockedActionReader } from "./skill-formulas.js";
 import { hasIgnoreActionGating, snapshotUltimaBundle } from "./domination.js";
+import { classifyActionIntent } from "./skill-intent.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -2087,12 +2088,57 @@ export function isMultiOffensiveAction({ isAttack = false, skill = null, skillTa
 export function applyMultiOffensiveGate(eligible, opts = {}) {
   if (!Array.isArray(eligible)) return eligible;
   if (!isMultiOffensiveAction(opts)) return eligible;
+  return applyTargetingBlockToken(eligible, "multi_offensive");
+}
+
+// ── Single-target harmful block (Hidden) ─────────────────────────────────────
+// `cannot_be_targeted_by: "single_target"` — the bearer "is unable to be targeted
+// by single-target actions (AoE and multi-target actions still can)". Same token
+// family as multi_offensive and likewise NOT "any": hasUnconditionalTargetBlock
+// ignores it, so aid pools still see the bearer — an ally may still Remedy a
+// Hidden friend. User ruling 2026-10-27: Hidden refuses only HARMFUL actions,
+// which in practice means enemy attacks, offensive spells and debuff skills.
+//
+// "Single-target" is judged from the DECLARED target text (the inverse of
+// skillTargetIsMulti): blank / "One creature" / "One enemy" count as single, so a
+// weapon attack with no target text is single unless the weapon snapshot says
+// otherwise. "Harmful" = an attack, a skill flagged isOffensiveSpell, or a skill
+// whose classified intent is harmful (`intent` may be passed by a caller that has
+// already classified it; otherwise it is classified here).
+export function isSingleTargetHarmfulAction({ isAttack = false, skill = null, skillTargetText = null, intent = null } = {}) {
+  const offensiveSpell = skill?.system?.props?.isOffensiveSpell === true
+    || String(skill?.system?.props?.isOffensiveSpell ?? "").toLowerCase() === "true";
+  let harmful = !!isAttack || offensiveSpell;
+  if (!harmful) {
+    const resolved = intent != null ? String(intent) : (skill ? classifyActionIntent(skill) : "");
+    harmful = resolved.trim().toLowerCase() === "harmful";
+  }
+  if (!harmful) return false;
+  const text = skillTargetText ?? skill?.system?.props?.skill_target ?? "";
+  return !skillTargetIsMulti(text);
+}
+
+// Moves every candidate carrying a `single_target` block into `.excluded` (greyed
+// "🚫 Hidden" in the picker). No-op unless `opts` describes a single-target
+// harmful action. Applied at the same four seams as applyMultiOffensiveGate.
+export function applySingleTargetGate(eligible, opts = {}) {
+  if (!Array.isArray(eligible)) return eligible;
+  if (!isSingleTargetHarmfulAction(opts)) return eligible;
+  return applyTargetingBlockToken(eligible, "single_target");
+}
+
+// Shared body of the two action-shape gates above: drop every candidate whose
+// target-side blocks carry `token`, recording the blocking AE's name as the
+// picker reason and preserving prior exclusions exactly as applyAttackRangeGate
+// does. Returns the SAME array when nothing was excluded (callers rely on that
+// identity to detect a no-op).
+function applyTargetingBlockToken(eligible, token) {
   const out = [];
   const newlyExcluded = [];
   for (const e of eligible) {
     const blocks = Array.isArray(e?.targetingBlocks) ? e.targetingBlocks : [];
     const reasons = blocks
-      .filter((b) => (Array.isArray(b?.ranges) ? b.ranges : []).includes("multi_offensive"))
+      .filter((b) => (Array.isArray(b?.ranges) ? b.ranges : []).includes(token))
       .map((b) => b.aeName);
     if (!reasons.length) { out.push(e); continue; }
     newlyExcluded.push(Object.freeze({

@@ -52,7 +52,7 @@ import { buildUltimaMenuSpec } from "./domination.js";
 import { buildObjectiveMenuSpec } from "./objectives.js";
 import { pickFromList } from "./list-picker.js";
 import { applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, pinActionKindForSkill, snapshotEligibleTargetsFromDCombat,
-         attackRangeBlockedBy, applyMultiOffensiveGate } from "./snapshot.js";
+         attackRangeBlockedBy, applyMultiOffensiveGate, applySingleTargetGate } from "./snapshot.js";
 
 // Race-cancellation token. Returns { promise, cancel }. The promise
 // resolves with the cancellation reason when cancel() is called.
@@ -635,9 +635,11 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
   // Flying targets (RAW), and a live `can_target_flying_with` grant is honoured
   // even when the weapon snapshot predates it.
   // Shadow Mask: a multi-target attack cannot select a `multi_offensive` bearer.
-  const filtered = applyMultiOffensiveGate(
+  // Hidden: a single-target attack cannot select a `single_target` bearer.
+  const attackShape = { isAttack: true, skillTargetText: String(currentWeapon?.skillTarget ?? "") };
+  const filtered = applySingleTargetGate(applyMultiOffensiveGate(
     applyAttackRangeGate(enemies, currentWeapon, token?.actor ?? null),
-    { isAttack: true, skillTargetText: String(currentWeapon?.skillTarget ?? "") });
+    attackShape), attackShape);
   if (!filtered.length) {
     const isMelee = String(currentWeapon?.range ?? "").trim().toLowerCase() === "melee";
     ui.notifications?.warn(isMelee
@@ -830,8 +832,11 @@ async function composeAttackNpc({ director, snap, eligible, cancelSentinel, gran
   // Attacker passed so this bare `{ range }` shape still honours the Flying
   // exceptions the PC path reads off the weapon snapshot (attacker airborne, or
   // a `can_target_flying_with` grant) — it carries no `canMeleeFlying` of its own.
-  const filtered = applyMultiOffensiveGate(applyAttackRangeGate(enemies, { range }, actor),
-    { isAttack: true, skill: attackItem, skillTargetText: String(attackItem.system?.props?.skill_target ?? "") });
+  // Shadow Mask (multi_offensive) and Hidden (single_target) read the same shape.
+  const npcAttackShape = { isAttack: true, skill: attackItem, skillTargetText: String(attackItem.system?.props?.skill_target ?? "") };
+  const filtered = applySingleTargetGate(
+    applyMultiOffensiveGate(applyAttackRangeGate(enemies, { range }, actor), npcAttackShape),
+    npcAttackShape);
   if (!filtered.length) {
     const isMelee = range.trim().toLowerCase() === "melee";
     ui.notifications?.warn(isMelee
@@ -1080,6 +1085,9 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
 
   // Shadow Mask: a multi-target offensive spell cannot select a `multi_offensive` bearer.
   targetList = applyMultiOffensiveGate(targetList, { skill: source, skillTargetText });
+  // Hidden: a single-target HARMFUL skill/spell cannot select a `single_target`
+  // bearer. `intent` was classified above; aid actions pass through untouched.
+  targetList = applySingleTargetGate(targetList, { skill: source, skillTargetText, intent });
 
   if (!targetList.length) {
     ui.notifications?.warn(`No eligible ${categoryLabel} for ${source.name}.`);

@@ -147,6 +147,9 @@ ok("flame has no heralds",                         !flame.heralds);
 // OR as wing-beats; exactly one, or the renderer silently ignores half the
 // config.
 for (const [name, cfg] of Object.entries(DESCENT_STYLES)) {
+  // A timeline style owns its whole render (boss-entrance-dreadwyrm.js); none
+  // of the DOM-faller shape applies to it.
+  if (cfg.timeline) { ok(`${name}: timeline style names its renderer`, typeof cfg.timeline === "string" && cfg.timeline.length > 0); continue; }
   const hasPlummet = Number.isFinite(cfg.fallMs) && cfg.fallMs > 0;
   const hasBeats = Array.isArray(cfg.beats) && cfg.beats.length > 0;
   ok(`${name}: describes a descent`, hasPlummet || hasBeats);

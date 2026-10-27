@@ -82,6 +82,7 @@ import { affordableTargetCount, mpCapTargetCount } from "./skill-cost.js";
 import {
   applyAttackRangeGate,
   applyMultiOffensiveGate,
+  applySingleTargetGate,
   attackRangeBlockedBy,
   getMaxActionTargets,
   snapshotEligibleTargets,
@@ -553,6 +554,9 @@ export function surveyActionTargets({
   // Shadow Mask: a multi-target attack / offensive spell cannot select a bearer
   // of `cannot_be_targeted_by: "multi_offensive"`.
   eligible = applyMultiOffensiveGate(eligible, { isAttack: !!weapon, skill: action, skillTargetText: targetText });
+  // Hidden: a single-target harmful attack / skill / spell cannot select a bearer
+  // of `cannot_be_targeted_by: "single_target"` (the gate classifies intent itself).
+  eligible = applySingleTargetGate(eligible, { isAttack: !!weapon, skill: action, skillTargetText: targetText });
   if (postFilter) {
     // Fail CLOSED. A narrowing rule that throws must not resolve to "everyone is
     // targetable" — that is the permissive answer for an exclusion, and it would

@@ -96,6 +96,8 @@ const CU = {
   skyFire:   CAMP + "Map/Game%20Map/Fafnir_Map002.png",
   cutinBolt: CAMP + "VFX/Fafnir_Cutin_lightning.webp",
   cutinFire: CAMP + "VFX/Fafnir_Cutin_Fire.webp",
+  // the Fire branch now charges in RED (ChatGPT recolour of the blue-flame art, 2026-10-27)
+  cutinFireRed: CAMP + "VFX/Fafnir_Cutin_Fire_Red.webp",
 };
 
 /* ── Weapon icons for Form Shift announcements ───────────────────────────── */
@@ -729,44 +731,20 @@ const REGISTRY = {
       // She does NOT cross the board: her sprite is large enough that the
       // generic melee lunge reads as the whole dragon teleporting, and on
       // arrival she covers the victim completely. She leans in instead.
-      "Rend": () => FF.heavyClaw({
-        key: "fafnir-rend", name: "Rend",
-        cfg: {
-          color: C.physical, slashColor: 0xd9c7ff,
-          clawWebm: FX.clawRed2, clawSize: 460,
-          nudgeFrac: 0.22, windupMs: 260, nudgeMs: 200, holdMs: 220, returnMs: 520,
-          shakeMs: 480, shakeAmp: 10,
-          particles: 22, particleRadius: 140, particleSize: 12,
-          slashCount: 2, slashGapMs: 110, slashFadeMs: 320,
-          sfx: SFX.slashB, sfxVol: 0.65,
-        },
-      }),
-
-      "Summon Elemental Drake": () => FF.summonDrakes({
+      // Mockup ports (Fafnir Action Shots, revision 26): the inner scripts in
+      // tools/anim-studio/lib/fafnir-shots/ run on oni.timeline with the
+      // mockup's numbers. Each writes its own offset gate + preload list.
+      "Rend": () => FF.rendShot({ key: "fafnir-rend", name: "Rend" }),
+      "Ruinous Breath": () => FF.ruinousBreath({ key: "fafnir-ruinous-breath", name: "Ruinous Breath" }),
+      "Summon Elemental Drake": () => FF.summonShot({
         key: "fafnir-summon-drakes", name: "Summon Elemental Drake",
-        // The drakes' own sprites, flown in. Ids come from the skill's summon
-        // row (Actor.2vmogpXhRJZzAvXt / Actor.mQlh6GTyw2449hXC).
-        assets: { fireDrake: ART.flameDrake, boltDrake: ART.lightningDrake },
-        cfg: { sfx: SFX.monster1, sfxVol: 0.6 },
+        // the drakes' own sprites + actors (the skill's summon rows), so the
+        // stand-ins are sized like the tokens that replace them
+        fireDrake: ART.flameDrake, boltDrake: ART.lightningDrake,
+        fireDrakeActor: "Actor.2vmogpXhRJZzAvXt", boltDrakeActor: "Actor.mQlh6GTyw2449hXC",
       }),
-
-      "Storm Calm": () => FF.stormCalm({
-        key: "fafnir-storm-calm", name: "Storm Calm",
-        cfg: { healWebm: FX.healBlue, healMs: 1600,
-               // Ordered, not overlapped: the drop is the CUE, then the effect
-               // and its chime arrive together as the result.
-               sfxCue:  SFX.waterDrop, sfxCueVol: 0.55,
-               sfxHeal: SFX.heal3,     sfxHealVol: 0.6 },
-      }),
-
-      "Condemn": () => FF.condemn({
-        key: "fafnir-condemn", name: "Condemn",
-        cfg: { color: C.dark,
-               boomWebm: FX.explosionPurple,
-               sfxCast: "Cursor2", sfxCastVol: 0.45,
-               sfxStab: SFX.hitPiercing, sfxStabVol: 0.6,
-               sfxBoom: SFX.darkness4,   sfxBoomVol: 0.85 },
-      }),
+      "Storm Calm": () => FF.stormCalmShot({ key: "fafnir-storm-calm", name: "Storm Calm" }),
+      "Condemn": () => FF.condemnShot({ key: "fafnir-condemn", name: "Condemn" }),
 
       "Torment": () => FF.torment({
         key: "fafnir-torment", name: "Torment",
@@ -782,30 +760,8 @@ const REGISTRY = {
                sfxImpact: SFX.spook, sfxImpactVol: 0.7 },
       }),
 
-      "Searing Brand": () => FF.searingBrand({
-        key: "fafnir-searing-brand", name: "Searing Brand",
-        assets: { markIcon: ART.searingBrandSigil },
-        // Red to match the placeholder chevron the persistent badge draws, so
-        // the mark that lands and the mark that stays are the same sign.
-        cfg: { color: 0xff3b30,
-               // Both land on the VICTIM, sized off their sprite: the brand is
-               // burned onto them, so the burst belongs where they are, not at
-               // the mark's overhead seat.
-               shockWebm: FX.shockwaveFire, dustWebm: FX.dustPuff,
-               sfxCast: "Fire1", sfxCastVol: 0.45,
-               sfxImpact: "Fire2", sfxImpactVol: 0.65 },
-      }),
-
-      "Draconic Domination": () => FF.draconicDomination({
-        key: "fafnir-draconic-domination", name: "Draconic Domination",
-        // The drawn eyes moved to Torment; this one now opens a FULL-SCREEN
-        // curse plate instead. Not token-anchored on purpose: the shot has
-        // already emptied the frame down to the victim and parked the camera
-        // on them, so the plate is the frame.
-        assets: { curseFx: FX.curseRed },
-        cfg: { sfx: "Spook", sfxVol: 0.6,
-               sfxOpen: SFX.paralyze3, sfxOpenVol: 0.7 },
-      }),
+      "Searing Brand": () => FF.searingBrandShot({ key: "fafnir-searing-brand", name: "Searing Brand", brandImg: ART.searingBrandSigil }),
+      "Draconic Domination": () => FF.dominationShot({ key: "fafnir-draconic-domination", name: "Draconic Domination" }),
 
       // ── Zero Power: Cruel Ultimatum ──────────────────────────────────────
       //
@@ -820,65 +776,13 @@ const REGISTRY = {
       // the party is picking between two faces of one weapon.
       "Cruel Ultimatum: Fire": () => FF.cruelUltimatum({
         key: "fafnir-cruel-ultimatum-fire", name: "Cruel Ultimatum: Fire",
-        assets: {
-          skyImg: CU.skyFire, cutinImg: CU.cutinFire,
-          boomWebm: FX.fireballBoom,
-          ballWebm: FX.fireballLoop,
-          smokeWebm: FX.dustPuff,
-        },
-        cfg: {
-          spread: "one",
-          color: C.fire, coreColor: 0xfff0d0,
-          flashColor: "#ffd9a0",
-          // Fire does not breathe a beam: it throws one enormous fireball
-          // that swells as it comes at the camera, and the blow that lands
-          // is that SAME fireball falling in from off-frame -- not a beam
-          // wearing fire colours. The blow-out is shared with Bolt.
-          breathMode: "ball", impactStyle: "ball", silhouette: true,
-          sfxZeroCutin: SFX.overdrive, sfxZeroCutinVol: 0.9,
-          sfxJump: SFX.highJump, sfxJumpVol: 0.7,
-          sfxSky: SFX.monster1, sfxSkyVol: 0.7,
-          sfxCutin: SFX.monster4, sfxCutinVol: 0.7,
-          sfxCharge: SFX.chargingA, sfxChargeVol: 0.7,
-          sfxBreath: "Fire2", sfxBreathVol: 0.85,
-          sfxImpact: SFX.amaltheaBoom, sfxImpactVol: 0.95,
-          sfxDescend: SFX.highJump, sfxDescendVol: 0.7,
-          sfxLand: SFX.seDownC, sfxLandVol: 0.9,
-        },
+        element: "fire",
+        assets: { skyImg: CU.skyFire, cutinImg: CU.cutinFireRed },
       }),
       "Cruel Ultimatum: Bolt": () => FF.cruelUltimatum({
         key: "fafnir-cruel-ultimatum-bolt", name: "Cruel Ultimatum: Bolt",
-        assets: {
-          skyImg: CU.skyBolt, cutinImg: CU.cutinBolt,
-          boomWebm: FX.explosionBlue,
-          smokeWebm: FX.dustPuff,
-        },
-        cfg: {
-          spread: "all",
-          color: C.bolt, coreColor: 0xf0e2ff,
-          flashColor: "#cfa8ff",
-          // It catches everyone, so the hit is ONE bolt across the whole
-          // frame rather than a lane per enemy: per-enemy lanes read as
-          // several small hits instead of one blow that happens to catch
-          // the room. The blow-out (white frame, black cut-out creatures) is
-          // this branch only.
-          breathMode: "beam", impactStyle: "fullscreen", silhouette: true,
-          // The full-frame bolt is the payoff of the whole Zero Power, and it
-          // was on screen for barely a third of a second before the white took
-          // it. Fire does not need this: its blow is a fireball that arrives
-          // and bursts, which reads in its own travel time.
-          hitHoldMs: 1500,
-          shakeMs: 760,
-          sfxZeroCutin: SFX.overdrive, sfxZeroCutinVol: 0.9,
-          sfxJump: SFX.highJump, sfxJumpVol: 0.7,
-          sfxSky: SFX.monster1, sfxSkyVol: 0.7,
-          sfxCutin: SFX.monster4, sfxCutinVol: 0.7,
-          sfxCharge: SFX.laser2, sfxChargeVol: 0.7,
-          sfxBreath: "Thunder1", sfxBreathVol: 0.85,
-          sfxImpact: SFX.amaltheaBoom, sfxImpactVol: 0.95,
-          sfxDescend: SFX.highJump, sfxDescendVol: 0.7,
-          sfxLand: SFX.seDownC, sfxLandVol: 0.9,
-        },
+        element: "bolt",
+        assets: { skyImg: CU.skyBolt, cutinImg: CU.cutinBolt },
       }),
     },
   },
@@ -951,7 +855,10 @@ async function main() {
         jobs.push({ actorId, actorName: entry.actorName, itemName, stored, mode: "copy" });
         continue;
       }
-      try { src = gen(); }
+      // A generator returns the script string, or { script, timing, preload }
+      // for a shot that also owns its damage-gate timing and preload list.
+      let meta = null;
+      try { const out = gen(); if (out && typeof out === "object") { src = out.script; meta = out; } else src = out; }
       catch (e) { console.error(`✗ ${entry.actorName} / ${itemName}: generator threw — ${e.message}`); failures++; continue; }
       const r = validate(src);
       if (!r.ok) {
@@ -961,7 +868,7 @@ async function main() {
         continue;
       }
       r.warnings.forEach((w) => console.warn(`  ! ${entry.actorName} / ${itemName}: ${w}`));
-      jobs.push({ actorId, actorName: entry.actorName, itemName, stored: encode(src), mode: "gen", len: src.length });
+      jobs.push({ actorId, actorName: entry.actorName, itemName, stored: encode(src), mode: "gen", len: src.length, timing: meta?.timing ?? null, preload: meta?.preload ?? null });
     }
   }
 
@@ -1009,6 +916,13 @@ async function main() {
       // BD ignores the legacy skill_animation_* fields, but leaving "default"
       // there while a real script exists is a lie to anyone reading the sheet.
       doc.system.props.skill_animation_mode = "custom";
+      // Shots that own their gate timing (offset = the visual impact) and their
+      // preload list write those too; the others keep whatever the sheet has.
+      if (j.timing) {
+        doc.system.props.animation_damage_timing_options = j.timing.mode;
+        doc.system.props.animation_damage_timing_offset = String(j.timing.offset ?? 0);
+      }
+      if (j.preload) doc.system.props.animation_preload_urls = j.preload.join("\n");
       await db.put(key, doc);
       wrote++;
       console.log(`  ✓ ${j.actorName.padEnd(16)} ${j.itemName}`);

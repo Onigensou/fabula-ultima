@@ -13,8 +13,13 @@
 //    duration. Permanent markers (camp results, meals, passive "ready" flags…)
 //    hide. Hold Alt to see every icon. The filter wraps Token#_drawEffects:
 //    a token's FIRST draw calls _drawEffects directly, not drawEffects.
+//    Token status plan "G + E" (2026-10-27): in a battle NO token draws core
+//    effect icons. Player characters' statuses live in their HUD card;
+//    NPCs and monsters wear the status strip under their feet
+//    (npc-status-strip.js), which listens to "fuBattleFocusChanged".
 
 import { log } from "./logger.js";
+import { isNpcActor } from "./status-classifier.js";
 
 const NS = "fabula-ultima-companion";
 const STYLE_ID = "fud-battle-focus-style";
@@ -127,6 +132,16 @@ export function isLoudEffect(e) {
   return false;
 }
 
+/**
+ * Does this effect keep its core token icon during a battle? Never: PCs show
+ * statuses in their HUD card, NPCs in the status strip. Kept as a function so
+ * a future exception has one place to live.
+ */
+export function keepIconInBattle(_actor, _e) { return false; }
+
+/** Is a battle running on this scene (as Battle Focus sees it)? */
+export function battleActive() { return _battle; }
+
 function quietOn() { return _battle && !_alt; }
 export function iconState() { return { battle: _battle, alt: _alt, here: battleHere() }; }
 
@@ -142,7 +157,7 @@ function wrapDrawEffects() {
     if (!actor || !quietOn()) return orig.apply(this, args);
     let all;
     try { all = actor.temporaryEffects; } catch { return orig.apply(this, args); }
-    const kept = all.filter((e) => isLoudEffect(e));
+    const kept = all.filter((e) => keepIconInBattle(actor, e));
     if (kept.length === all.length) return orig.apply(this, args);
     const prev = Object.getOwnPropertyDescriptor(actor, "temporaryEffects");
     Object.defineProperty(actor, "temporaryEffects", { value: kept, configurable: true });
@@ -155,14 +170,29 @@ function wrapDrawEffects() {
 
 function redrawIcons() {
   for (const t of canvas?.tokens?.placeables ?? []) {
-    try { t.renderFlags.set({ redrawEffects: true }); } catch { /* */ }
+    try { t.renderFlags.set({ redrawEffects: true, refreshBars: true, refreshNameplate: true }); } catch { /* */ }
   }
+}
+
+// ── battle token chrome ──────────────────────────────────────────────────────
+// While a battle runs (and Alt is not held) the token draws no bars and NPCs no
+// Foundry nameplate: HP / MP live in the HUD cards and the GM desk, the shield
+// and the name in our own unit label (npc-status-strip.js). Bar Brawl draws
+// into token.bars, so hiding that container covers it. Re-applied after every
+// token refresh; redrawIcons() asks for a bars + nameplate refresh whenever the
+// battle starts / ends or Alt changes, so Foundry restores them on its own.
+// Deferred (user, 2026-10-27): replacing Bar Brawl outright; see memory.
+function applyBattleChrome(t) {
+  if (!t || t.destroyed || !quietOn()) return;
+  try { if (t.bars) t.bars.visible = false; } catch { /* */ }
+  try { if (t.nameplate && isNpcActor(t.actor)) t.nameplate.visible = false; } catch { /* */ }
 }
 function syncBattle() {
   const now = battleHere();
   if (now === _battle) return;
   _battle = now;
   redrawIcons();
+  Hooks.callAll("fuBattleFocusChanged", _battle);
 }
 function typing(ev) {
   const t = ev.target;
@@ -176,13 +206,19 @@ function setAlt(on) {
 
 Hooks.once("ready", () => {
   wrapDrawEffects();
+  Hooks.on("refreshToken", applyBattleChrome);
   _battle = battleHere();
+  Hooks.callAll("fuBattleFocusChanged", _battle);
   window.addEventListener("keydown", (ev) => { if (ev.key === "Alt" && !ev.repeat && !typing(ev)) setAlt(true); }, true);
   window.addEventListener("keyup", (ev) => { if (ev.key === "Alt") setAlt(false); }, true);
   window.addEventListener("blur", () => setAlt(false));
   // The scene's tokens drew BEFORE canvasReady fires, with the previous scene's
   // battle state: a battle scene must redraw them quiet.
-  Hooks.on("canvasReady", () => { _statusIds = null; _battle = battleHere(); if (_battle) redrawIcons(); });
+  Hooks.on("canvasReady", () => {
+    _statusIds = null; _battle = battleHere();
+    if (_battle) redrawIcons();
+    Hooks.callAll("fuBattleFocusChanged", _battle);
+  });
   Hooks.on("updateScene", (scene, change) => { if (scene?.id === canvas?.scene?.id && change?.flags?.[NS] !== undefined) syncBattle(); });
   Hooks.on("fu-director-started", () => syncBattle());
   Hooks.on("fu-director-stopped", () => syncBattle());

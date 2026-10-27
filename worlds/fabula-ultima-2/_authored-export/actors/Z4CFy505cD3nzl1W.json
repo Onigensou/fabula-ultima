@@ -68,7 +68,11 @@
       "statuses": [
         "fud-emergency-item-ready"
       ],
-      "system": {},
+      "system": {
+        "tags": [
+          "ready"
+        ]
+      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -7286,7 +7290,11 @@
           "statuses": [
             "fud-emergency-item-ready"
           ],
-          "system": {},
+          "system": {
+            "tags": [
+              "ready"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"

@@ -4985,6 +4985,12 @@
         "effects": 0
       },
       {
+        "id": "ZpMatDewdrop0000",
+        "name": "Dewdrop",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "VIPHiDpYC69MDFiO",
         "name": "Diamond Pendant",
         "type": "equippableItem",
@@ -5121,6 +5127,12 @@
         "name": "Draconic Roar",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "Un1qD1shDragonSt",
+        "name": "Dragon Stew",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "Y7JL7P9hbWipwb90",
@@ -7643,6 +7655,18 @@
         "effects": 2
       },
       {
+        "id": "Uti1InvisPot1Act",
+        "name": "Invisibility Potion",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "Uti1InvisPot1on0",
+        "name": "Invisibility Potion",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "FXRrLrmoHtcMN5s6",
         "name": "Invocation",
         "type": "equippableItem",
@@ -7867,6 +7891,12 @@
       {
         "id": "EBh802k6FWm0Lb8o",
         "name": "Katana",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "ZpD1shKatsudon00",
+        "name": "Katsudon",
         "type": "equippableItem",
         "effects": 0
       },
@@ -8609,6 +8639,18 @@
         "effects": 2
       },
       {
+        "id": "ZpD1shMannaCake0",
+        "name": "Manna Cake",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "Un1qD1shMantaSas",
+        "name": "Manta Sashimi",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "jWg0UIBsRZp9IxAr",
         "name": "MARI",
         "type": "equippableItem",
@@ -8647,6 +8689,12 @@
       {
         "id": "v1yNcrBsksMO1nPU",
         "name": "Maverick Helmet",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "ZpMatMead0000000",
+        "name": "Mead",
         "type": "equippableItem",
         "effects": 0
       },
@@ -10133,6 +10181,12 @@
         "effects": 1
       },
       {
+        "id": "ZpMatPrimeSteak0",
+        "name": "Prime Steak",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "wOiDH5AooBXaKX5c",
         "name": "Private Stock",
         "type": "equippableItem",
@@ -11033,6 +11087,12 @@
         "effects": 0
       },
       {
+        "id": "ZpD1shSaehrimnir",
+        "name": "Sæhrímnir Feast",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "Un1qD1shConge000",
         "name": "Sage Congee",
         "type": "equippableItem",
@@ -11551,6 +11611,18 @@
       {
         "id": "uGTrNO3kuQNIFGrg",
         "name": "Sluglord",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "Uti1SmokeBomb000",
+        "name": "Smoke Bomb",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "Uti1SmokeBombAct",
+        "name": "Smoke Bomb",
         "type": "equippableItem",
         "effects": 0
       },
@@ -17171,6 +17243,10 @@
             "name": "Giants Belt"
           },
           {
+            "id": "ZprftRuHZPrimeSt",
+            "name": "Prime Steak"
+          },
+          {
             "id": "gxnIJRcVBVP8M73A",
             "name": "Skull Splitter"
           },
@@ -17284,6 +17360,10 @@
             "name": "Polymorph Potion: Drakoza"
           },
           {
+            "id": "ZpH6Ubup6PrimeSt",
+            "name": "Prime Steak"
+          },
+          {
             "id": "h6YfA3CbD5IBMeXs",
             "name": "Tail Swipe"
           },
@@ -17310,6 +17390,10 @@
           {
             "id": "ZCN8sP4uCDOx71xY",
             "name": "Dead Branch"
+          },
+          {
+            "id": "ZpRJECgM6Dewdrop",
+            "name": "Dewdrop"
           },
           {
             "id": "ah2fzhk6PBxDmiPH",
@@ -17588,6 +17672,10 @@
           {
             "id": "hNXQO6S5RoLDvfNJ",
             "name": "Intimidating Presence"
+          },
+          {
+            "id": "ZpqkogIO0Mead000",
+            "name": "Mead"
           },
           {
             "id": "YVnF9bMknm3AZeXQ",
@@ -23252,6 +23340,10 @@
             "name": "Karma"
           },
           {
+            "id": "ZpVwClo60Mead000",
+            "name": "Mead"
+          },
+          {
             "id": "ZLbuZgjs8h1qICAj",
             "name": "Torned Fabric"
           },
@@ -26239,7 +26331,7 @@
       {
         "id": "1rLmUBY4E7xxrOlA",
         "name": "Fafnir Castle - Material",
-        "results": 16
+        "results": 18
       },
       {
         "id": "XoRNxlbL74vXicu5",
@@ -26469,7 +26561,7 @@
       {
         "id": "S4PHPxGHldBoJVxj",
         "name": "Valley of the Dragon - Consumable",
-        "results": 22
+        "results": 24
       },
       {
         "id": "Oijx8ksubxq9pc1R",
@@ -26499,7 +26591,7 @@
       {
         "id": "QailcoOmaoZW0v6b",
         "name": "Valley of the Dragon - Material",
-        "results": 12
+        "results": 13
       },
       {
         "id": "6wpUcG8RjL8A05Kd",
@@ -26609,7 +26701,7 @@
       {
         "id": "aCK7rDJ2A21ZWfcj",
         "name": "Wyrmwood & Ancient Temple — Material",
-        "results": 12
+        "results": 13
       }
     ],
     "playlists": [

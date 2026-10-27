@@ -1,0 +1,66 @@
+{
+  "case": "player-reloads",
+  "schemaVersion": 1,
+  "howToAdd": "Append one object to sessions[] per game session or test. Fill server.* from _tools/server-timeline.js --json, clientHealth.* from _tools/client-health-summary.js --json, tcpWatch.* by reading the tcp-watch log. Keep metric names identical; put anything new in notes or a new optional field. Masked /16 routes only — no full IPs in git.",
+  "metrics": {
+    "pageLoads": "world-data vends in the window (server log) = page loads",
+    "reloads": "pageLoads - 1",
+    "logins": "/join logins; more than 1 = the player went back through the join screen",
+    "reloadSecAfterDraw": "per reload: vend time minus the later of (last scene activation, own previous page load). The page load began ~10-50 s before the vend.",
+    "modes": "reloadSecAfterDraw buckets: quick <=120 s, mid 121-299, sixMin 300-420, long >420",
+    "pairedReloads": "reloads with another watched player's reload <=60 s away",
+    "pageLoadSec": "first new TCP connection -> vend (tcp-watch), when captured"
+  },
+  "sessions": [
+    {
+      "id": "2026-10-24",
+      "kind": "game-session",
+      "window": { "from": "2026-10-24 20:40", "to": "2026-10-25 02:30", "tz": "+07:00" },
+      "build": { "foundry": "12.343", "module": "1.0.448" },
+      "conditions": {
+        "clientHealthLogger": false,
+        "coverWatchdog": "battle-shatter path only (1a330723 landed mid-session); plain scene-change cover had no timeout",
+        "textureRepair": false,
+        "cacheProxy": false,
+        "worldPayloadMB": 145.4,
+        "compressSocket": true,
+        "compressStatic": true,
+        "tcpWatch": "partial — 22:39 to 01:22, oldest-connection + state-count variants"
+      },
+      "server": {
+        "activations": 32,
+        "vendMsRange": [3740, 4971],
+        "errors": "Token <id> does not exist at 22:14 and 22:18 (deleted battle tokens) — unrelated",
+        "players": {
+          "Rinri": {
+            "route": "171.100.x.x", "pageLoads": 13, "reloads": 12, "logins": 2,
+            "modes": { "quick": 10, "mid": 1, "sixMin": 1 },
+            "reloadSecAfterDraw": [31, 35, 29, 93, 43, 97, 345, 21, 258, 66, 51, 74],
+            "pairedReloads": 5
+          },
+          "Blumairwen": {
+            "route": "27.145.x.x", "pageLoads": 13, "reloads": 12, "logins": 1,
+            "modes": { "quick": 5, "sixMin": 6, "long": 1 },
+            "reloadSecAfterDraw": [352, 37, 36, 362, 367, 338, 594, 335, 58, 37, 325, 11],
+            "pairedReloads": 3
+          },
+          "Trinio": { "route": "223.204.x.x", "pageLoads": 1, "reloads": 0, "logins": 1 },
+          "Silryantish": { "route": "27.130.x.x", "pageLoads": 1, "reloads": 0, "logins": 1 }
+        }
+      },
+      "tcpWatch": {
+        "reloadsObserved": 9,
+        "pattern": "new page's first connection opened while the old game socket was still up; old socket closed <=1 s later; no DROP gap in any of them",
+        "oldSocketAgeMin": [22, 27, 34, 5, 39, 4, 75, 84],
+        "pageLoadSec": { "Rinri": [11, 10, 11, 10, 11], "Blumairwen": [53, 27, 25, 9] }
+      },
+      "clientHealth": null,
+      "notes": [
+        "Both players reloaded within 60 s of each other after the same scene change 3 times: Valley_Map002 (21:03), Midgard_Map002 (23:13/23:14), Midgard_Map007 (new page loads 23:52:53 and 23:52:55, 10-12 s after activation).",
+        "Rinri reload loop after Valley_Map002 (has a host-served video tile): page loads 21:03:22, 21:03:57, 21:04:26, back through /join 21:05:48, 21:05:59 - then stable until 22:46.",
+        "Blumairwen sixMin reloads sit at 325-367 s after a draw (6 of 12); one was 352 s after joining with no scene change.",
+        "Trinio and Silryantish: one connection all night, 0 reloads. GM II (remote GM) reloaded once, 226 s after joining."
+      ]
+    }
+  ]
+}

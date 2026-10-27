@@ -438,7 +438,11 @@
       "statuses": [
         "fud-heart-of-darkness-ready"
       ],
-      "system": {},
+      "system": {
+        "tags": [
+          "ready"
+        ]
+      },
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
@@ -2633,7 +2637,11 @@
           "statuses": [
             "fud-protect-ready"
           ],
-          "system": {},
+          "system": {
+            "tags": [
+              "ready"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -3688,7 +3696,11 @@
           "statuses": [
             "fud-heart-of-darkness-ready"
           ],
-          "system": {},
+          "system": {
+            "tags": [
+              "ready"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -14265,7 +14277,11 @@
           "statuses": [
             "fud-lucky-seven-ready"
           ],
-          "system": {},
+          "system": {
+            "tags": [
+              "ready"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"

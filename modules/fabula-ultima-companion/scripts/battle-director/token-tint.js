@@ -152,10 +152,23 @@ function* candidateBearers() {
   }
 }
 
+// Status washes (token status plan "G + E", status-cues.js): a provider that
+// returns a tint spec for a status like Poisoned or Wet. Consulted only when no
+// AE carries its own tokenTint flag, so authored tints always win.
+let _statusTintProvider = null;
+export function setStatusTintProvider(fn) { _statusTintProvider = typeof fn === "function" ? fn : null; }
+
 // Desired tint spec for an actor ({ color, strength, mode } or null): its own
-// bearer-mode AEs first, else any applier-mode AE anywhere that names it. First
-// match wins (replace_family keeps one anyway).
+// bearer-mode AEs first, else any applier-mode AE anywhere that names it, else
+// the status wash. First match wins (replace_family keeps one anyway).
 export function readTokenTint(actor) {
+  return readFlagTint(actor) ?? statusWashOf(actor);
+}
+function statusWashOf(actor) {
+  if (!_statusTintProvider || !actor) return null;
+  try { return _statusTintProvider(actor) ?? null; } catch { return null; }
+}
+function readFlagTint(actor) {
   if (!actor) return null;
   try {
     for (const e of actor.effects ?? []) {

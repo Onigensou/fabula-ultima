@@ -64,12 +64,15 @@ import { initImpactFx } from "./damage-numbers/director-impact-fx.js";
 import { initHurtReaction, emitHurtReaction, playHurtReactionLocal } from "./damage-numbers/director-hurt-reaction.js";
 import { initBattlerPose, emitBattlerPose, playBattlerPoseLocal, describeToken as describeBattlerPose } from "./battler-pose.js";
 import { initNpcHpBar, emitNpcHpBar, emitNpcHpBarUnchecked, renderNpcHpBarLocal } from "./damage-numbers/director-hp-bar.js";
+import { initNpcStatusStrip } from "./npc-status-strip.js";
+import { initStatusPop } from "./status-pop.js";
 import { initDominationFx } from "./domination.js";
 import { initDominationCrest } from "./domination-crest.js";
 import { initEntranceConfig } from "./boss-entrance-config.js";
 import { initDefeatFx } from "./defeat-fx.js";
 import { initAspectAura } from "./aspect-aura.js";
 import { initTokenTint } from "./token-tint.js";
+import { initStatusCues } from "./status-cues.js";
 import { initBrandMark } from "./brand-mark.js";
 import { initCameraAuthority } from "./camera-authority.js";
 import { initBattleStage3d } from "./battle-stage-3d.js";
@@ -1746,6 +1749,15 @@ Hooks.once("ready", () => {
   try { initNpcHpBar(); }
   catch (e) { warn("initNpcHpBar on ready threw", e); }
 
+  // NPC status strip (token status plan "G + E"): Format A tiles under the feet
+  // of every actor without a HUD card, in battle, on every client.
+  try { initNpcStatusStrip(); }
+  catch (e) { warn("initNpcStatusStrip on ready threw", e); }
+  // Status pop text in battle (icon + name, tinted by tier; markers skipped)
+  // and the pip flash bus shared by the HUD and the strip.
+  try { initStatusPop(); }
+  catch (e) { warn("initStatusPop on ready threw", e); }
+
   // HP Bar Tuner (damage-numbers/hp-bar-tuner.js) is intentionally NOT loaded
   // at startup — the GM-tuned values are baked into TUNING_DEFAULTS. To re-tune,
   // load it on demand from the console:
@@ -1769,6 +1781,10 @@ Hooks.once("ready", () => {
   // AE-driven token body tint (flags.<ns>.tokenTint) — same pattern again.
   try { initTokenTint(); }
   catch (e) { warn("initTokenTint on ready threw", e); }
+  // Token status cues (G + E phase 6): flames, smoke, bubbles, drips, sparks,
+  // bubble / vein / Zs on the sprite, washes through token-tint's provider.
+  try { initStatusCues(); }
+  catch (e) { warn("initStatusCues on ready threw", e); }
 
   // Brand Mark badges — same AE-replication pattern again. Keyed off the mark
   // AE itself, so a mark that is passed to an ally takes its badge along.

@@ -53,6 +53,7 @@
 import { log, warn } from "../logger.js";
 import { registerAnimation } from "../director-surfaces.js";
 import { isBattlefieldObject } from "../battlefield-object.js";
+import { feetPoint } from "../unit-anchors.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const ACTION_PLAY = "FU_DIRECTOR_HPBAR_PLAY";
@@ -410,9 +411,13 @@ export function renderNpcHpBarLocal(payload = {}) {
       Math.max(BAR_MIN_W, Math.min(BAR_MAX_W, (token.w ?? 100) * (d?.scale ?? 1) * scale * cfg.widthScale)) * cfg.scale
     );
     const barH = Math.max(2, Math.round(cfg.height * cfg.scale));
-    const cx = d ? d.cx : token.center?.x ?? (token.x ?? 0) + (token.w ?? 100) / 2;
+    // Feet of the RENDERED sprite (unit-anchors.js), not the grid box: on a
+    // scaled monster the box bottom sits inside the body. offsetY −12 then
+    // lands the bar on the painted ground shadow, just above the unit label.
+    // Under the battle 3D camera unit-anchors reads the body where it is drawn.
+    const cx = token.center?.x ?? (token.x ?? 0) + (token.w ?? 100) / 2;
     const bottomY = d ? d.footY : (token.y ?? 0) + (token.h ?? 100);
-    const pt = worldToClient(cx, bottomY);
+    const pt = feetPoint(token) ?? worldToClient(cx, bottomY);
 
     const root = document.createElement("div");
     root.className = "fud-hpbar" + (isGain ? " fud-hpbar--gain" : "");

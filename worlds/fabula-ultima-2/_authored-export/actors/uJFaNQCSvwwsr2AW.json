@@ -319,7 +319,11 @@
           "statuses": [
             "fud-protect-ready"
           ],
-          "system": {},
+          "system": {
+            "tags": [
+              "ready"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
@@ -4928,7 +4932,11 @@
           "statuses": [
             "fud-counter-pass-ready"
           ],
-          "system": {},
+          "system": {
+            "tags": [
+              "ready"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": false,
           "type": "base"
