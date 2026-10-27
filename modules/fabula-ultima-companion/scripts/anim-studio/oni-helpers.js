@@ -20,6 +20,7 @@
 // ============================================================================
 
 import { takeVideo, releaseVideo } from "../action-animation/animation-stage.js";
+import { createTimeline } from "./oni-timeline.js";
 
 // ── Easing ──────────────────────────────────────────────────────────────────
 export const EASE = {
@@ -835,7 +836,10 @@ export function buildOni(ctx, env) {
     };
   }
 
-  return {
+  const api = {
+    // the mockup engine: timed tracks over one per-frame state, painted on a
+    // screen overlay with the real camera driven underneath (oni-timeline.js)
+    timeline: (spec) => createTimeline(spec, { canvas, PIXI, loadTexture, oni: api, scene: canvas?.scene ?? null }),
     // context conveniences
     ctx,
     caster: ctx?.casterToken ?? null,
@@ -858,4 +862,5 @@ export function buildOni(ctx, env) {
     // gate + lifecycle
     fireDone, dispose,
   };
+  return api;
 }
