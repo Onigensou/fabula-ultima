@@ -19,7 +19,10 @@ const stage = (globalThis.FUCompanion?.api?.camera?.stageOf?.(sceneDoc)) || { x:
 const cd = caster.document;
 const casterCx = cd.x + (cd.width ?? 1) * grid / 2, casterCy = cd.y + (cd.height ?? 1) * grid / 2;
 const towardCenter = (stage.x + stage.w / 2) >= casterCx ? 1 : -1;
-const anchor = { x: casterCx + towardCenter * grid * 1.15, y: casterCy };
+// the engine clears the caster's RENDERED sprite (skill-effects.js summon anchor)
+const meshW = Number(caster.mesh?.width) || (cd.width ?? 1) * grid;
+const clear = Math.max(grid * 1.15, meshW / 2 + grid * 0.65);
+const anchor = { x: casterCx + towardCenter * clear, y: casterCy };
 const step = grid * 1.15;
 const fanDir = anchor.x <= stage.x + stage.w / 2 ? 1 : -1;
 const occupied = (sceneDoc?.tokens?.contents ?? []).map((t) => ({ x: t.x + ((t.width ?? 1) * grid) / 2, y: t.y + ((t.height ?? 1) * grid) / 2 }));

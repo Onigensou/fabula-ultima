@@ -11187,7 +11187,14 @@ async function applySummonEffect(row, ctx) {
     // canvas is wider than the play area, so its midpoint sits off the stage.
     const stage = stageOf(scene);
     const towardCenter = (stage.x + stage.w / 2) >= casterCx ? 1 : -1;
-    spawnAnchor = { x: casterCx + towardCenter * grid * 1.15, y: casterCy };
+    // Clear the caster's RENDERED sprite, not just its grid box: a boss drawn
+    // at 825 px on a 1.5-cell token would otherwise get its summons created
+    // under its own art (Fafnir's drakes vanished behind her). Ordinary tokens
+    // are unchanged — their sprite half-width plus the margin stays under the
+    // 1.15-cell step.
+    const meshW = Number(casterTok?.object?.mesh?.width) || cw;
+    const clear = Math.max(grid * 1.15, meshW / 2 + grid * 0.65);
+    spawnAnchor = { x: casterCx + towardCenter * clear, y: casterCy };
   }
 
   // Robust ref resolver — full uuid, bare actor id, or NAME. spawnLiveDirectorTokens'
