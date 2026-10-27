@@ -282,3 +282,10 @@ of RAM; it was closed as not planned.
   - `client-health-summary` now flags sample gaps (>150 s) and long hides.
   - Showing load progress on the black cover (option 5) is being written up as a proposal for the
     host to review.
+- **2026-10-28 (host decision):** option 5 is approved in principle, to be **built after** the
+  2026-10-28 test, so that test stays comparable.
+  - It must feel like a PS1/PS2 console JRPG, built on the house Loading Screen convention:
+    black, with the breathing title logo and Momonga bottom-right.
+  - Interactive mockup, not an implementation: https://claude.ai/artifact/FoNRX5xfK5UBMGQJgzk3TN
+  - **Build note:** `UI/DRG_LoadingIcon.webm` is 4.2 MB, too heavy to show reliably during a slow
+    load. Ship a small preloaded version, or the static logo with a CSS breathing fade.
