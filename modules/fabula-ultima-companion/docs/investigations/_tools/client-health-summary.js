@@ -83,7 +83,11 @@ function verdict(b) {
 // ── per user ─────────────────────────────────────────────────────────────────
 const users = {};
 for (const e of entries) {
-  const u = (users[e.user] ??= { boots: [], draws: [], stalls: [], disconnects: [], hidden: 0, hiddenMs: 0, longHides: [], sampleGaps: [], lastSample: null, peakHeapMB: 0, peakTextures: 0, machine: null, console: {}, lastPagehide: null });
+  const u = (users[e.user] ??= { boots: [], draws: [], stalls: [], disconnects: [], hidden: 0, hiddenMs: 0, longHides: [], sampleGaps: [], lastSample: null, peakHeapMB: 0, peakTextures: 0, machine: null, console: {}, lastPagehide: null, loads: [], waits: [] });
+  // load-indicator.js: every load over 2 s, and marks at 30 / 60 s that survive a reload
+  if (e.kind === "load-progress") u.loads.push({ at: local(e.t), scene: e.scene, s: s(e.ms), texS: s(e.texturesMs), files: e.files, left: e.left,
+    shown: e.shown, reason: e.reason, slowest: (e.slowest ?? []).slice(0, 3), pending: e.pending ?? [] });
+  if (e.kind === "load-waiting") u.waits.push({ at: local(e.t), atS: e.atS, scene: e.scene, pct: e.pct, left: e.left, pending: e.pending ?? [] });
   if (e.kind === "sample") {
     const p = u.lastSample;
     // both inside the once-a-minute window after the same draw
@@ -130,7 +134,7 @@ for (const [name, u] of Object.entries(users)) {
     browser: browserOf(m.ua), deviceMemoryGB: m.deviceMemoryGB ?? null, cores: m.cores ?? null, gpu, softwareGL: SOFTWARE_GL.test(gpu), screen: m.screen ?? null,
     boots: u.boots, draws: u.draws.length, drawMedianS: draws[Math.floor(draws.length / 2)] ?? null, drawMaxS: draws.at(-1) ?? null,
     stalls: u.stalls, disconnects: u.disconnects.map(({ t, ...d }) => d), hides: u.hidden, hiddenMinutes: Math.round(u.hiddenMs / 6e4),
-    longHides: u.longHides, sampleGaps: u.sampleGaps,
+    longHides: u.longHides, sampleGaps: u.sampleGaps, loads: u.loads, waits: u.waits,
     peakHeapMB: u.peakHeapMB, peakTextures: u.peakTextures, console: u.console,
   };
   const o = out[name];
@@ -146,6 +150,16 @@ for (const [name, u] of Object.entries(users)) {
   for (const h of o.longHides) console.log(`- tab hidden ${h.hiddenS} s, back at ${h.at}`);
   for (const b of o.boots.filter(b => (b.prevDriftMs ?? 0) > 60000)) console.log(`- boot ${b.at}: previous page's timers ran ${s(b.prevDriftMs)} s late (frozen / throttled)`);
   for (const st of o.stalls) console.log(`- draw stall ${st.at} (canvas.loading ${st.loading})`);
+  if (o.loads.length) {
+    console.log("\n| slow load | scene | total s | textures s | files (left) | indicator | slowest files / still pending |");
+    console.log("|---|---|---|---|---|---|---|");
+    for (const l of o.loads) {
+      const files = l.pending.length ? "PENDING " + l.pending.map(p => `${p.file} (${p.from})`).join(", ")
+                                     : l.slowest.map(r => `${r.file} ${s(r.ms)} s (${r.from})`).join(", ");
+      console.log(`| ${l.at} | ${l.scene ?? "—"} | ${l.s} | ${l.texS ?? "–"} | ${l.files} (${l.left}) | ${l.shown ? "shown" : "—"}${l.reason !== "ready" ? " · " + l.reason : ""} | ${files} |`);
+    }
+  }
+  for (const w of o.waits) console.log(`- still loading ${w.atS} s into ${w.scene ?? "—"} at ${w.at}: ${w.pct}%, ${w.left} left — ${w.pending.join(", ")}`);
   const con = Object.entries(o.console).sort((a, b) => b[1] - a[1]).slice(0, 8);
   if (con.length) console.log(`console before reloads (deprecations dropped):\n${con.map(([k, n]) => `  ${n}× ${k}`).join("\n")}`);
   console.log("");

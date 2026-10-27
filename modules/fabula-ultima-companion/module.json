@@ -2,7 +2,7 @@
   "id": "fabula-ultima-companion",
   "title": "FabulaUltimaCompanion",
   "description": "Adds custom hooks and cool functionality.",
-  "version": "1.0.472",
+  "version": "1.0.473",
   "compatibility": {
     "minimum": "12",
     "verified": "12"
@@ -49,6 +49,7 @@
     "scripts/dialog-system/dialog-examineUI.js",
     "scripts/command-system/command-itemCreate.js",
     "scripts/screen-transition/screen-transition.js",
+    "scripts/screen-transition/load-indicator.js",
     "scripts/free-action-state.js",
     "scripts/turn-ui-manager.js",
     "scripts/action-animation/animation-asset-cache.js",
