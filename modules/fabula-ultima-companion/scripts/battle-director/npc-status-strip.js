@@ -90,6 +90,7 @@ function ensureStyles() {
 .fu-nlab { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; align-items: center; gap: 2px;
   transform-origin: 50% 0; pointer-events: none; will-change: transform, opacity; transition: opacity 180ms ease; }
 .fu-nlab.is-dim { opacity: ${DIM_OPACITY}; }
+.fu-nlab.is-yield { opacity: .18; }
 .fu-nst { display: flex; flex-wrap: nowrap; justify-content: center; gap: 3px; align-items: center; }
 .fu-nst:empty { display: none; }
 /* 1 px outline drawn with text-shadow, not -webkit-text-stroke: Foundry's
@@ -266,6 +267,21 @@ function layout() {
     placed.push({ x, y, w: it.w, h: it.h, id: it.id });
     it.s.el.style.transform = `translate(${Math.round(it.fx)}px, ${Math.round(y)}px) translateX(-50%) scale(${zoom.toFixed(3)})`;
     it.y = y;
+  }
+  // Hover brings a unit to the front (user, 2026-10-27, a bandaid for stacked
+  // formations): its own label rises above every other, and any other label
+  // lying over its sprite steps aside (fades) until the cursor leaves.
+  const hoverT = S.hover ? canvas.tokens.get(S.hover) : null;
+  const hr = hoverT && shown(hoverT) ? spriteRect(hoverT) : null;
+  for (const it of items) {
+    const isHover = it.id === S.hover;
+    it.s.el.style.zIndex = isHover ? "2" : "";
+    let yieldIt = false;
+    if (hr && !isHover) {
+      const x = it.fx - it.w / 2;
+      yieldIt = x < hr.left + hr.width && x + it.w > hr.left && it.y < hr.bottom && it.y + it.h > hr.top;
+    }
+    it.s.el.classList.toggle("is-yield", yieldIt);
   }
   // Back-row dimming is OFF (user, 2026-10-27: keep full opacity on statuses
   // for now). The check lives on behind DIM_BACK_ROW in case it returns.
