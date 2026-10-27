@@ -91,7 +91,8 @@ function ensureStyles() {
   transform-origin: 50% 0; pointer-events: none; will-change: transform, opacity; transition: opacity 180ms ease; }
 .fu-nlab.is-dim { opacity: ${DIM_OPACITY}; }
 .fu-nlab.is-yield { opacity: .18; }
-.fu-nst { display: flex; flex-wrap: nowrap; justify-content: center; gap: 3px; align-items: center; }
+.fu-nst { display: flex; flex-wrap: nowrap; justify-content: center; gap: 2px; align-items: center; }
+.fu-nrow { display: flex; align-items: center; gap: 4px; }
 .fu-nst:empty { display: none; }
 /* 1 px outline drawn with text-shadow, not -webkit-text-stroke: Foundry's
    Electron build ignores paint-order, so a stroke paints OVER the white fill
@@ -101,22 +102,22 @@ function ensureStyles() {
   text-shadow: 1px 0 0 #0e0a08, -1px 0 0 #0e0a08, 0 1px 0 #0e0a08, 0 -1px 0 #0e0a08,
     1px 1px 0 #0e0a08, -1px 1px 0 #0e0a08, 1px -1px 0 #0e0a08, -1px -1px 0 #0e0a08,
     0 1px 3px rgba(0,0,0,.9), 0 0 6px rgba(0,0,0,.6); }
-.fu-nst-t { position: relative; flex: none; width: 22px; height: 22px; box-sizing: border-box; border-radius: 5px; pointer-events: auto;
+.fu-nst-t { position: relative; flex: none; width: 18px; height: 18px; box-sizing: border-box; border-radius: 5px; pointer-events: auto;
   border: 1.5px solid var(--ac, #8a8a8a); background: #0d0b09; box-shadow: 0 1px 2px rgba(0,0,0,.5); }
 .fu-nst-t img { display: block; width: 100%; height: 100%; max-width: none; border: none !important; border-radius: 3.5px; object-fit: cover; }
-.fu-nst-t b { position: absolute; right: -2px; bottom: -2px; min-width: 11px; height: 11px; padding: 0 2px; box-sizing: border-box;
-  border-radius: 4px 0 3px 0; background: #000; color: #fff; font: 700 8px/11px "Signika", sans-serif; text-align: center; pointer-events: none; }
+.fu-nst-t b { position: absolute; right: -2px; bottom: -2px; min-width: 9px; height: 9px; padding: 0 2px; box-sizing: border-box;
+  border-radius: 4px 0 3px 0; background: #000; color: #fff; font: 700 7px/9px "Signika", sans-serif; text-align: center; pointer-events: none; }
 .fu-nst-t.t-debuff { --ac: #e05050; }
 .fu-nst-t.t-buff { --ac: #3fb67c; }
 .fu-nst-t.is-ready { --ac: #e2b34a; border-width: 2px; box-shadow: 0 0 0 1px rgba(255,236,170,.5) inset, 0 0 7px rgba(226,179,74,.8); }
-.fu-nst-t.is-ready::after { content: ""; position: absolute; right: -4px; top: -4px; width: 7px; height: 7px; border-radius: 50%; background: #ffd45a; box-shadow: 0 0 4px #ffb800; }
+.fu-nst-t.is-ready::after { content: ""; position: absolute; right: -3px; top: -3px; width: 5px; height: 5px; border-radius: 50%; background: #ffd45a; box-shadow: 0 0 4px #ffb800; }
 .fu-nst-t.is-spent { --ac: rgba(122,106,85,.6); box-shadow: none; filter: grayscale(1); opacity: .5; }
 .fu-nst-t.is-spent::after { display: none; }
-.fu-nst-sh { position: relative; flex: none; width: 26px; height: 30px; margin-right: 2px; pointer-events: auto;
+.fu-nst-sh { position: relative; flex: none; width: 18px; height: 21px; margin: 0; pointer-events: auto;
   --sh-rim: #dfe8f7; --sh-top: #6d86c4; --sh-bot: #2d3f78; filter: drop-shadow(0 1px 2px rgba(0,0,0,.6)); }
 .fu-nst-sh.is-magic { --sh-rim: #efdcff; --sh-top: #9a6cc8; --sh-bot: #4a2a78; }
-.fu-nst-sh svg { display: block; width: 26px; height: 30px; }
-.fu-nst-sh b { position: absolute; left: 0; right: 0; top: 6px; text-align: center; font: 800 13px/16px "Signika", sans-serif; color: #ffffff !important;
+.fu-nst-sh svg { display: block; width: 18px; height: 21px; }
+.fu-nst-sh b { position: absolute; left: 0; right: 0; top: 4px; text-align: center; font: 800 10px/12px "Signika", sans-serif; color: #ffffff !important;
   -webkit-text-stroke: 0; text-shadow: 0 1px 1px rgba(8,6,20,.95), 0 0 3px rgba(8,6,20,.8); pointer-events: none; }
 .fu-nst-sh.is-flash { animation: fuNstFlash .9s ease-out; border-radius: 6px; }
 .fu-nst-t.is-flash { animation: fuNstFlash .9s ease-out; }
@@ -166,8 +167,7 @@ function stripHTML(actor, rows) {
   const ready = rows.filter((r) => r.tier === TIER.READY);
   const tile = (r) => `<span class="fu-nst-t t-${r.tier}" data-st="${stKey(r)}" data-tooltip="${esc(statusTipHTML(r, { tier: r.tier }))}" data-tooltip-direction="UP">`
     + `<img src="${esc(r.img)}" alt="">${rowTurns(r) ? `<b>${rowTurns(r)}</b>` : ""}</span>`;
-  return shieldHTML(actor)
-    + status.map(tile).join("")
+  return status.map(tile).join("")
     + ready.map((r) => `<span class="fu-nst-t is-ready${rowSpent(r) ? " is-spent" : ""}" data-st="${stKey(r)}" data-tooltip="${esc(statusTipHTML(r, { tier: TIER.READY }))}" data-tooltip-direction="UP"><img src="${esc(r.img)}" alt=""></span>`).join("");
 }
 
@@ -188,9 +188,13 @@ export function renderStrip(token) {
   let rows = [];
   try { rows = stripRows(token.actor); } catch (e) { warn("[NpcStrip] rows failed", e); }
   const strip = stripHTML(token.actor, rows);
-  const name = namesOn() ? `<div class="fu-nname">${esc(token.document?.name ?? token.name ?? "")}</div>` : "";
-  if (!strip && !name) { drop(token.id); return; }
-  const html = `<div class="fu-nst">${strip}</div>${name}`;
+  // Name row: the shield badge leads the name (user, 2026-10-27). With names
+  // toggled off the shield still shows on its own.
+  const shield = shieldHTML(token.actor);
+  const nameTxt = namesOn() ? `<span class="fu-nname">${esc(token.document?.name ?? token.name ?? "")}</span>` : "";
+  const nameRow = shield || nameTxt ? `<div class="fu-nrow">${shield}${nameTxt}</div>` : "";
+  if (!strip && !nameRow) { drop(token.id); return; }
+  const html = `<div class="fu-nst">${strip}</div>${nameRow}`;
   let s = S.blocks.get(token.id);
   if (!s) {
     const el = document.createElement("div");
