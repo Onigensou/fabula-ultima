@@ -64,6 +64,7 @@ import { initImpactFx } from "./damage-numbers/director-impact-fx.js";
 import { initHurtReaction, emitHurtReaction, playHurtReactionLocal } from "./damage-numbers/director-hurt-reaction.js";
 import { initBattlerPose, emitBattlerPose, playBattlerPoseLocal, describeToken as describeBattlerPose } from "./battler-pose.js";
 import { initNpcHpBar, emitNpcHpBar, emitNpcHpBarUnchecked, renderNpcHpBarLocal } from "./damage-numbers/director-hp-bar.js";
+import { initNpcStatusStrip } from "./npc-status-strip.js";
 import { initDominationFx } from "./domination.js";
 import { initDominationCrest } from "./domination-crest.js";
 import { initEntranceConfig } from "./boss-entrance-config.js";
@@ -1739,6 +1740,11 @@ Hooks.once("ready", () => {
   // hostile NPC's token on all screens.
   try { initNpcHpBar(); }
   catch (e) { warn("initNpcHpBar on ready threw", e); }
+
+  // NPC status strip (token status plan "G + E"): Format A tiles under the feet
+  // of every actor without a HUD card, in battle, on every client.
+  try { initNpcStatusStrip(); }
+  catch (e) { warn("initNpcStatusStrip on ready threw", e); }
 
   // HP Bar Tuner (damage-numbers/hp-bar-tuner.js) is intentionally NOT loaded
   // at startup — the GM-tuned values are baked into TUNING_DEFAULTS. To re-tune,

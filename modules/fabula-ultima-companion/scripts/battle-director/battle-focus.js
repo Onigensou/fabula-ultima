@@ -13,12 +13,12 @@
 //    duration. Permanent markers (camp results, meals, passive "ready" flags…)
 //    hide. Hold Alt to see every icon. The filter wraps Token#_drawEffects:
 //    a token's FIRST draw calls _drawEffects directly, not drawEffects.
-//    Player characters draw NO icons in a battle: their statuses live in their
-//    HUD card (token status plan "G + E", 2026-10-27). NPCs and monsters keep
-//    the loud filter until their status strip replaces the icons.
+//    Token status plan "G + E" (2026-10-27): in a battle NO token draws core
+//    effect icons. Player characters' statuses live in their HUD card;
+//    NPCs and monsters wear the status strip under their feet
+//    (npc-status-strip.js), which listens to "fuBattleFocusChanged".
 
 import { log } from "./logger.js";
-import { isNpcActor } from "./status-classifier.js";
 
 const NS = "fabula-ultima-companion";
 const STYLE_ID = "fud-battle-focus-style";
@@ -131,10 +131,15 @@ export function isLoudEffect(e) {
   return false;
 }
 
-/** Does this effect keep its token icon on THIS actor during a battle? */
-export function keepIconInBattle(actor, e) {
-  return isNpcActor(actor) && isLoudEffect(e);
-}
+/**
+ * Does this effect keep its core token icon during a battle? Never: PCs show
+ * statuses in their HUD card, NPCs in the status strip. Kept as a function so
+ * a future exception has one place to live.
+ */
+export function keepIconInBattle(_actor, _e) { return false; }
+
+/** Is a battle running on this scene (as Battle Focus sees it)? */
+export function battleActive() { return _battle; }
 
 function quietOn() { return _battle && !_alt; }
 export function iconState() { return { battle: _battle, alt: _alt, here: battleHere() }; }
@@ -172,6 +177,7 @@ function syncBattle() {
   if (now === _battle) return;
   _battle = now;
   redrawIcons();
+  Hooks.callAll("fuBattleFocusChanged", _battle);
 }
 function typing(ev) {
   const t = ev.target;
@@ -186,12 +192,17 @@ function setAlt(on) {
 Hooks.once("ready", () => {
   wrapDrawEffects();
   _battle = battleHere();
+  Hooks.callAll("fuBattleFocusChanged", _battle);
   window.addEventListener("keydown", (ev) => { if (ev.key === "Alt" && !ev.repeat && !typing(ev)) setAlt(true); }, true);
   window.addEventListener("keyup", (ev) => { if (ev.key === "Alt") setAlt(false); }, true);
   window.addEventListener("blur", () => setAlt(false));
   // The scene's tokens drew BEFORE canvasReady fires, with the previous scene's
   // battle state: a battle scene must redraw them quiet.
-  Hooks.on("canvasReady", () => { _statusIds = null; _battle = battleHere(); if (_battle) redrawIcons(); });
+  Hooks.on("canvasReady", () => {
+    _statusIds = null; _battle = battleHere();
+    if (_battle) redrawIcons();
+    Hooks.callAll("fuBattleFocusChanged", _battle);
+  });
   Hooks.on("updateScene", (scene, change) => { if (scene?.id === canvas?.scene?.id && change?.flags?.[NS] !== undefined) syncBattle(); });
   Hooks.on("fu-director-started", () => syncBattle());
   Hooks.on("fu-director-stopped", () => syncBattle());
