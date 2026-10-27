@@ -361,6 +361,15 @@ export function createTimeline(spec = {}, env = {}) {
         all.push(["x" + (n++), { token: t }]);
       }
     }
+    // virtual tokens: stand-ins for creatures not on the board yet (a summon's
+    // drakes) — { virtual: true, art, x, y, w, h, foot?, flip?, hidden? }
+    for (const [k, s] of Object.entries(spec.tokens || {})) {
+      if (!s?.virtual) continue;
+      const art = await imageOf(s.art); ART[k] = art;
+      const iw = art?.naturalWidth || art?.width || 1, ih = art?.naturalHeight || art?.height || 1;
+      const w = s.w ?? (s.h ? s.h * iw / ih : iw), h = s.h ?? w * ih / iw;
+      TOK[k] = { token: null, x: s.x, y: s.y, w, h, flip: s.flip ?? 1, dir: (s.flip ?? 1) * (s.nativeDir ?? -1), foot: s.foot ?? (art ? footOf(art) : null) ?? 0.95, name: s.name || k, hidden: s.hidden !== false };
+    }
     for (const [k, s] of all) {
       const t = s.token, mesh = t.mesh;
       const art = await imageOf(s.art) || mesh?.texture?.baseTexture?.resource?.source || null;

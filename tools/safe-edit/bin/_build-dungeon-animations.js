@@ -731,44 +731,20 @@ const REGISTRY = {
       // She does NOT cross the board: her sprite is large enough that the
       // generic melee lunge reads as the whole dragon teleporting, and on
       // arrival she covers the victim completely. She leans in instead.
-      "Rend": () => FF.heavyClaw({
-        key: "fafnir-rend", name: "Rend",
-        cfg: {
-          color: C.physical, slashColor: 0xd9c7ff,
-          clawWebm: FX.clawRed2, clawSize: 460,
-          nudgeFrac: 0.22, windupMs: 260, nudgeMs: 200, holdMs: 220, returnMs: 520,
-          shakeMs: 480, shakeAmp: 10,
-          particles: 22, particleRadius: 140, particleSize: 12,
-          slashCount: 2, slashGapMs: 110, slashFadeMs: 320,
-          sfx: SFX.slashB, sfxVol: 0.65,
-        },
-      }),
-
-      "Summon Elemental Drake": () => FF.summonDrakes({
+      // Mockup ports (Fafnir Action Shots, revision 26): the inner scripts in
+      // tools/anim-studio/lib/fafnir-shots/ run on oni.timeline with the
+      // mockup's numbers. Each writes its own offset gate + preload list.
+      "Rend": () => FF.rendShot({ key: "fafnir-rend", name: "Rend" }),
+      "Ruinous Breath": () => FF.ruinousBreath({ key: "fafnir-ruinous-breath", name: "Ruinous Breath" }),
+      "Summon Elemental Drake": () => FF.summonShot({
         key: "fafnir-summon-drakes", name: "Summon Elemental Drake",
-        // The drakes' own sprites, flown in. Ids come from the skill's summon
-        // row (Actor.2vmogpXhRJZzAvXt / Actor.mQlh6GTyw2449hXC).
-        assets: { fireDrake: ART.flameDrake, boltDrake: ART.lightningDrake },
-        cfg: { sfx: SFX.monster1, sfxVol: 0.6 },
+        // the drakes' own sprites + actors (the skill's summon rows), so the
+        // stand-ins are sized like the tokens that replace them
+        fireDrake: ART.flameDrake, boltDrake: ART.lightningDrake,
+        fireDrakeActor: "Actor.2vmogpXhRJZzAvXt", boltDrakeActor: "Actor.mQlh6GTyw2449hXC",
       }),
-
-      "Storm Calm": () => FF.stormCalm({
-        key: "fafnir-storm-calm", name: "Storm Calm",
-        cfg: { healWebm: FX.healBlue, healMs: 1600,
-               // Ordered, not overlapped: the drop is the CUE, then the effect
-               // and its chime arrive together as the result.
-               sfxCue:  SFX.waterDrop, sfxCueVol: 0.55,
-               sfxHeal: SFX.heal3,     sfxHealVol: 0.6 },
-      }),
-
-      "Condemn": () => FF.condemn({
-        key: "fafnir-condemn", name: "Condemn",
-        cfg: { color: C.dark,
-               boomWebm: FX.explosionPurple,
-               sfxCast: "Cursor2", sfxCastVol: 0.45,
-               sfxStab: SFX.hitPiercing, sfxStabVol: 0.6,
-               sfxBoom: SFX.darkness4,   sfxBoomVol: 0.85 },
-      }),
+      "Storm Calm": () => FF.stormCalmShot({ key: "fafnir-storm-calm", name: "Storm Calm" }),
+      "Condemn": () => FF.condemnShot({ key: "fafnir-condemn", name: "Condemn" }),
 
       "Torment": () => FF.torment({
         key: "fafnir-torment", name: "Torment",
@@ -784,30 +760,8 @@ const REGISTRY = {
                sfxImpact: SFX.spook, sfxImpactVol: 0.7 },
       }),
 
-      "Searing Brand": () => FF.searingBrand({
-        key: "fafnir-searing-brand", name: "Searing Brand",
-        assets: { markIcon: ART.searingBrandSigil },
-        // Red to match the placeholder chevron the persistent badge draws, so
-        // the mark that lands and the mark that stays are the same sign.
-        cfg: { color: 0xff3b30,
-               // Both land on the VICTIM, sized off their sprite: the brand is
-               // burned onto them, so the burst belongs where they are, not at
-               // the mark's overhead seat.
-               shockWebm: FX.shockwaveFire, dustWebm: FX.dustPuff,
-               sfxCast: "Fire1", sfxCastVol: 0.45,
-               sfxImpact: "Fire2", sfxImpactVol: 0.65 },
-      }),
-
-      "Draconic Domination": () => FF.draconicDomination({
-        key: "fafnir-draconic-domination", name: "Draconic Domination",
-        // The drawn eyes moved to Torment; this one now opens a FULL-SCREEN
-        // curse plate instead. Not token-anchored on purpose: the shot has
-        // already emptied the frame down to the victim and parked the camera
-        // on them, so the plate is the frame.
-        assets: { curseFx: FX.curseRed },
-        cfg: { sfx: "Spook", sfxVol: 0.6,
-               sfxOpen: SFX.paralyze3, sfxOpenVol: 0.7 },
-      }),
+      "Searing Brand": () => FF.searingBrandShot({ key: "fafnir-searing-brand", name: "Searing Brand", brandImg: ART.searingBrandSigil }),
+      "Draconic Domination": () => FF.dominationShot({ key: "fafnir-draconic-domination", name: "Draconic Domination" }),
 
       // ── Zero Power: Cruel Ultimatum ──────────────────────────────────────
       //

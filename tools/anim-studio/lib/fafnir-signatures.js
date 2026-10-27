@@ -1136,6 +1136,48 @@ function cruelUltimatum(opts = {}) {
   return mockupShot({ key: opts.key, name: opts.name, inner: "cruel-ultimatum.inner.js", cfg, assets, gateMs: cfg.gateMs });
 }
 
+
+/* ── The other mockup shots (same engine, same numbers) ──────────────────── */
+//
+// Each is its inner file + the clip subset it draws + the mockup's cue list.
+// gateMs = the beat the mockup labels 'damage gate'; the director lands damage
+// there (offset timing) and awaits the true end for the rest.
+
+function portShot(opts, { inner, clips, images = {}, sfx, gateMs, totalMs, cfg = {} }) {
+  const cfgAll = Object.assign({ gateMs, totalMs, totalTimeoutMs: Math.max(15000, totalMs + 10000), casterFoot: 0.905, partyFoot: 0.97, sfx: cues(sfx) }, cfg, opts.cfg || {});
+  const assets = Object.assign({}, FAFNIR_ART, images, { clips: pickClips(clips) }, opts.assets || {});
+  return mockupShot({ key: opts.key, name: opts.name, inner, cfg: cfgAll, assets, gateMs, timeout: cfgAll.totalTimeoutMs });
+}
+const D5 = ANIM + 'Disgaea%205/Weapons/Spear/';
+
+function ruinousBreath(opts = {}) {
+  return portShot(opts, { inner: 'ruinous-breath.inner.js', clips: ['chaincast', 'sparkring', 'thunderball', 'thunder1'], gateMs: 2600, totalMs: 8600,
+    sfx: [[0, 'charge', 0.7], [300, 'magic', 0.5], [2300, 'thunder1', 0.8], [2400, 'laser', 0.6], [2600, 'hitbolt', 0.8], [2650, 'boom', 0.5], [3400, 'thunder9', 0.55], [4200, 'thunder10', 0.55], [4800, 'thunder5', 0.5], [5100, 'explode', 0.7]] });
+}
+function dominationShot(opts = {}) {
+  return portShot(opts, { inner: 'draconic-domination.inner.js', clips: ['circle', 'vortex', 'devil'], gateMs: 4100, totalMs: 6800,
+    sfx: [[0, 'spook', 0.6], [1600, 'dark', 0.55], [2400, 'paralyze', 0.6], [4100, 'dark', 0.8]] });
+}
+function condemnShot(opts = {}) {
+  return portShot(opts, { inner: 'condemn.inner.js', clips: ['pburst', 'lion'], images: { spearHead: D5 + '03274_00.png', spearShaft: D5 + '03270_01.png' }, gateMs: 3700, totalMs: 6800,
+    sfx: [[200, 'dark', 0.45], [1900, 'pierce', 0.5], [2200, 'pierce', 0.5], [2500, 'pierce', 0.5], [2800, 'pierce', 0.5], [3700, 'boom', 0.85]] });
+}
+function rendShot(opts = {}) {
+  return portShot(opts, { inner: 'rend.inner.js', clips: ['claw'], gateMs: 527, totalMs: 2400, sfx: [[460, 'slash', 0.65]] });
+}
+function searingBrandShot(opts = {}) {
+  return portShot(opts, { inner: 'searing-brand.inner.js', clips: ['gate'], images: { brandImg: opts.brandImg }, gateMs: 1400, totalMs: 3800,
+    sfx: [[200, 'fire', 0.45], [1400, 'fire', 0.7], [1400, 'pierce', 0.5]] });
+}
+function stormCalmShot(opts = {}) {
+  return portShot(opts, { inner: 'storm-calm.inner.js', clips: ['pramen', 'magical', 'energycoat'], gateMs: 3300, totalMs: 5600,
+    sfx: [[1900, 'drop', 0.55], [2520, 'magic', 0.45], [3300, 'heal', 0.6]] });
+}
+function summonShot(opts = {}) {
+  return portShot(opts, { inner: 'summon-drakes.inner.js', clips: ['firepillar', 'comet'], images: { fireDrake: opts.fireDrake, boltDrake: opts.boltDrake }, gateMs: 2400, totalMs: 3800,
+    sfx: [[0, 'roar', 0.6], [950, 'thunder9', 0.5]], cfg: { fireDrakeActor: opts.fireDrakeActor, boltDrakeActor: opts.boltDrakeActor } });
+}
+
 module.exports = {
   summonDrakes,
   heavyClaw,
@@ -1145,4 +1187,5 @@ module.exports = {
   searingBrand,
   draconicDomination,
   cruelUltimatum,
+  ruinousBreath, dominationShot, condemnShot, rendShot, searingBrandShot, stormCalmShot, summonShot,
 };
