@@ -23,6 +23,8 @@
 // and no two sprites pile more than a tenth onto each other.
 
 export const REF_W = 1682, REF_H = 788;
+// A sprite taller than this (Fafnir at ×5 is ~825) has hand-tuned placement; callers skip the planner.
+export const GIANT_H = 400;
 const LAB_GAP = 2, LAB_SIDE = 6, STEP_GAP = 10, MARGIN = 16;
 export const LIFT = 0.5;  // back-row lift: 0 = straight sideways from a gap, 1 = right angle to the slant
 
@@ -208,8 +210,9 @@ function cleanSpot(placed, pos, u, ideal) {
  */
 export function planEnemyJoin(placed, current, u, { anchor = null } = {}) {
   if (anchor) {
+    // No clean spot → pos null, and the caller keeps its own caster-front fan.
     const p = cleanSpot(placed, current, u, anchor);
-    return { pos: { [u.key]: p ?? anchor }, reform: false, why: p ? "nearest clean spot to its caster" : "no clean spot; at its caster" };
+    return { pos: { [u.key]: p }, reform: false, why: p ? "nearest clean spot to its caster" : "no clean spot near its caster" };
   }
   const base = planEnemies(placed);
   if (base.pick === "B") {

@@ -11435,7 +11435,7 @@ async function applySummonEffect(row, ctx) {
       }
       let tokenDoc = null;
       try {
-        const out = await spawnLiveDirectorTokens({ scene, actorUuids: [actor.uuid], disposition, anchor: spawnAnchor });
+        const out = await spawnLiveDirectorTokens({ scene, actorUuids: [actor.uuid], disposition, anchor: spawnAnchor, casterTokenId: casterTok?.id ?? null });
         tokenDoc = out?.[0] ?? null;
       } catch (e) { warn(`skill-effects.summon: spawn threw for ${actor.name}`, e); }
       // No orphan cleanup here on purpose. The post-loop sweep below already
