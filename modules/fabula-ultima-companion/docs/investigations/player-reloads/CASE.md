@@ -53,8 +53,14 @@ as sessions come in. Don't delete them.
 - **Against:**
   - The players say they never pressed F5. The toolbar button or the Esc menu may not count as "F5" to them.
   - It doesn't explain Blumairwen's tight 325–367 s cluster on its own.
-- **Since 2026-10-25:** the cover lifts once a draw fails, or at a 90 s cap (`ee07bc2f`). Failed scene
-  backgrounds retry in place (`bd4a273f`). A healthy *slow* draw still shows black with no progress.
+- **H1b, a black map rather than a black screen:** Foundry 12 retries a failed map image twice, then
+  finishes the draw *without* it, leaving tokens on a black map. From the player's chair this looks
+  the same.
+- **Since 2026-10-25:**
+  - The cover lifts once a draw fails, or at a 90 s cap (`ee07bc2f`).
+  - Failed scene backgrounds retry in place (`bd4a273f`), with a toast: *"The map image didn't load.
+    Retrying automatically — no need to reload."*
+  - A healthy *slow* draw still shows black with no progress.
 - **Confirm:**
   - Logger verdict `RELOAD DURING DRAW`, or a `boot gap` (a first draw stuck before `ready`).
   - A player saying "I refreshed because it was black".
@@ -165,6 +171,9 @@ as sessions come in. Don't delete them.
 **During:**
 5. Tell them: *if it goes black or freezes, don't reload. Say so on voice, note the time, wait 2 minutes.
    If it's still stuck, take a screenshot of F12 → Console, then reload.*
+   - Also: *read out any message that pops up*, e.g. "The map image didn't load…" or "You have lost
+     connection to the server…".
+   - And: *say whether you see a black screen, or tokens on a black map.*
 6. Replay the 10-24 sequence: Valley_Map002 → Dragonslayer Overworld → Midgard_Map001 → 002 → 003 → 006 → 007.
    - Stay **≥7 min** on three of them: Blumairwen's ~5½ min mode needs a scene to stay up that long.
    - On one scene, ask them to alt-tab away for 7 min (tests H3).
