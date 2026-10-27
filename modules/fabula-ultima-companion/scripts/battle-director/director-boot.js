@@ -65,6 +65,7 @@ import { initHurtReaction, emitHurtReaction, playHurtReactionLocal } from "./dam
 import { initBattlerPose, emitBattlerPose, playBattlerPoseLocal, describeToken as describeBattlerPose } from "./battler-pose.js";
 import { initNpcHpBar, emitNpcHpBar, emitNpcHpBarUnchecked, renderNpcHpBarLocal } from "./damage-numbers/director-hp-bar.js";
 import { initNpcStatusStrip } from "./npc-status-strip.js";
+import { initStatusPop } from "./status-pop.js";
 import { initDominationFx } from "./domination.js";
 import { initDominationCrest } from "./domination-crest.js";
 import { initEntranceConfig } from "./boss-entrance-config.js";
@@ -1745,6 +1746,10 @@ Hooks.once("ready", () => {
   // of every actor without a HUD card, in battle, on every client.
   try { initNpcStatusStrip(); }
   catch (e) { warn("initNpcStatusStrip on ready threw", e); }
+  // Status pop text in battle (icon + name, tinted by tier; markers skipped)
+  // and the pip flash bus shared by the HUD and the strip.
+  try { initStatusPop(); }
+  catch (e) { warn("initStatusPop on ready threw", e); }
 
   // HP Bar Tuner (damage-numbers/hp-bar-tuner.js) is intentionally NOT loaded
   // at startup — the GM-tuned values are baked into TUNING_DEFAULTS. To re-tune,

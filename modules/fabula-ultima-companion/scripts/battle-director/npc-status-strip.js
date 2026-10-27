@@ -59,6 +59,8 @@ function ensureStyles() {
 .fu-nst-t.is-ready::after { content: ""; position: absolute; right: -4px; top: -4px; width: 7px; height: 7px; border-radius: 50%; background: #ffd45a; box-shadow: 0 0 4px #ffb800; }
 .fu-nst-t.is-spent { --ac: rgba(122,106,85,.6); box-shadow: none; filter: grayscale(1); opacity: .5; }
 .fu-nst-t.is-spent::after { display: none; }
+.fu-nst-t.is-flash { animation: fuNstFlash .9s ease-out; }
+@keyframes fuNstFlash { 0% { box-shadow: 0 0 0 0 rgba(255,196,70,1); } 100% { box-shadow: 0 0 0 10px rgba(255,196,70,0); } }
 `;
   document.head.appendChild(st);
 }
@@ -77,16 +79,18 @@ function stripRows(actor) {
     .filter((r) => r.tier === TIER.DEBUFF || r.tier === TIER.BUFF || r.tier === TIER.READY));
 }
 
+const stKey = (r) => esc(String(r.name ?? "").trim().toLowerCase());
+
 function stripHTML(rows) {
   const status = rows.filter((r) => r.tier !== TIER.READY);
   const ready = rows.filter((r) => r.tier === TIER.READY);
   const room = status.length > MAX_TILES ? MAX_TILES - 1 : status.length;
-  const tile = (r) => `<span class="fu-nst-t t-${r.tier}" data-tooltip="${esc(statusTipHTML(r, { tier: r.tier }))}" data-tooltip-direction="UP">`
+  const tile = (r) => `<span class="fu-nst-t t-${r.tier}" data-st="${stKey(r)}" data-tooltip="${esc(statusTipHTML(r, { tier: r.tier }))}" data-tooltip-direction="UP">`
     + `<img src="${esc(r.img)}" alt="">${rowTurns(r) ? `<b>${rowTurns(r)}</b>` : ""}</span>`;
   const rest = status.slice(room);
   return status.slice(0, room).map(tile).join("")
     + (rest.length ? `<span class="fu-nst-t is-more" data-tooltip="${esc(foldTipHTML(rest))}" data-tooltip-direction="UP">+${rest.length}</span>` : "")
-    + ready.map((r) => `<span class="fu-nst-t is-ready${rowSpent(r) ? " is-spent" : ""}" data-tooltip="${esc(statusTipHTML(r, { tier: TIER.READY }))}" data-tooltip-direction="UP"><img src="${esc(r.img)}" alt=""></span>`).join("");
+    + ready.map((r) => `<span class="fu-nst-t is-ready${rowSpent(r) ? " is-spent" : ""}" data-st="${stKey(r)}" data-tooltip="${esc(statusTipHTML(r, { tier: TIER.READY }))}" data-tooltip-direction="UP"><img src="${esc(r.img)}" alt=""></span>`).join("");
 }
 
 function wants(token) {
@@ -115,8 +119,27 @@ export function renderStrip(token) {
     s = { el, sig: "" };
     S.strips.set(token.id, s);
   }
-  if (s.sig !== html) { s.el.innerHTML = html; s.sig = html; }
+  if (s.sig !== html) {
+    s.el.innerHTML = html; s.sig = html;
+    // New since the last render → flash once (not on the first render).
+    const keys = new Set(rows.map((r) => `${r.key}:${rowSpent(r)}`));
+    if (s.keys) rows.forEach((r) => { if (!s.keys.has(`${r.key}:${rowSpent(r)}`)) s.el.querySelectorAll(`[data-st="${stKey(r)}"]`).forEach(flashEl); });
+    s.keys = keys;
+  }
   place(token, s);
+}
+
+function flashEl(el) { el.classList.remove("is-flash"); void el.offsetWidth; el.classList.add("is-flash"); }
+
+// "fuStatusFlash" (status-pop.js): a Burn tick, a Ready spent → flash that tile.
+function onStatusFlash({ tokenUuid = null, actorId = null, name = "" } = {}) {
+  if (!name) return;
+  for (const [id, s] of S.strips) {
+    const t = canvas?.tokens?.get(id);
+    if (!t) continue;
+    if (tokenUuid ? t.document?.uuid !== tokenUuid : t.actor?.id !== actorId) continue;
+    s.el.querySelectorAll(`[data-st="${CSS.escape(name)}"]`).forEach(flashEl);
+  }
 }
 
 export function renderAll() {
@@ -174,6 +197,7 @@ export function initNpcStatusStrip() {
     renderAll();
   });
   Hooks.on("fuBattleFocusChanged", () => renderAll());
+  Hooks.on("fuStatusFlash", onStatusFlash);
   if (canvas?.ready) { S.ticker = tick; canvas.app.ticker.add(S.ticker); renderAll(); }
   globalThis.FUCompanion = globalThis.FUCompanion || {};
   globalThis.FUCompanion.api = globalThis.FUCompanion.api || {};

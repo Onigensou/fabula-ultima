@@ -439,9 +439,11 @@ function statusRowsOf(actor) {
       && !r.sources.some(s => aeTags(s.eff).includes(RES_TAG)));
 }
 
+const stKey = r => esc(String(r.name ?? "").trim().toLowerCase());
+
 function pipHTML(r) {
   const n = rowTurns(r);
-  return `<span class="dhud-st t-${r.tier}" data-tooltip="${esc(statusTipHTML(r, { tier: r.tier }))}" data-tooltip-direction="UP">`
+  return `<span class="dhud-st t-${r.tier}" data-st="${stKey(r)}" data-tooltip="${esc(statusTipHTML(r, { tier: r.tier }))}" data-tooltip-direction="UP">`
     + `<img src="${esc(r.img)}" alt="">${n ? `<b>${n}</b>` : ""}</span>`;
 }
 
@@ -451,7 +453,7 @@ function foldHTML(rows, overflow) {
 }
 
 function readyHTML(r) {
-  return `<span class="dhud-rdy${rowSpent(r) ? " is-spent" : ""}" data-tooltip="${esc(statusTipHTML(r, { tier: TIER.READY }))}" data-tooltip-direction="UP">`
+  return `<span class="dhud-rdy${rowSpent(r) ? " is-spent" : ""}" data-st="${stKey(r)}" data-tooltip="${esc(statusTipHTML(r, { tier: TIER.READY }))}" data-tooltip-direction="UP">`
     + `<img src="${esc(r.img)}" alt=""></span>`;
 }
 
@@ -488,6 +490,31 @@ function renderStatuses(card, actor) {
   host.innerHTML = shown.map(pipHTML).join("") + (folded.length ? foldHTML(folded, status.length > room) : "");
   if (card.readyHost) card.readyHost.innerHTML = ready.map(readyHTML).join("");
   card.el.classList.toggle("has-statuses", !!(shown.length || folded.length || ready.length));
+  // A pip that is new since the last render flashes once (a status landed, a
+  // Ready was spent). The first render of a card is not news.
+  const now = new Set(rows.map(r => `${r.key}:${rowSpent(r)}`));
+  const before = card._stKeys;
+  card._stKeys = now;
+  if (before) {
+    rows.forEach(r => {
+      if (before.has(`${r.key}:${rowSpent(r)}`)) return;
+      card.el.querySelectorAll(`[data-st="${stKey(r)}"]`).forEach(flashEl);
+    });
+  }
+}
+
+function flashEl(el) {
+  el.classList.remove("is-flash");
+  void el.offsetWidth;
+  el.classList.add("is-flash");
+}
+
+// "fuStatusFlash" (status-pop.js): a Burn tick, a Ready spent → flash that pip.
+function onStatusFlash({ tokenUuid = null, actorId = null, name = "" } = {}) {
+  let id = actorId;
+  if (!id && tokenUuid) { try { id = fromUuidSync(tokenUuid)?.actor?.id ?? null; } catch { /* */ } }
+  if (!id || !name) return;
+  document.querySelectorAll(`[data-actor-id="${CSS.escape(id)}"] [data-st="${CSS.escape(name)}"]`).forEach(flashEl);
 }
 
 // ── CSS injection ─────────────────────────────────────────────────────────────
@@ -841,6 +868,8 @@ function injectStyles() {
 .dhud-ctab .dhud-statuses { display: flex; gap: 4px; }
 .dhud-ctab .dhud-statuses:not(:empty) + .dhud-readies:not(:empty) { padding-left: 6px; border-left: 1px solid rgba(122,106,85,.5); }
 .dhud-ctab .dhud-rdy { width: 20px; height: 20px; }
+.dhud-st.is-flash, .dhud-rdy.is-flash { animation: dhudPipFlash .9s ease-out; }
+@keyframes dhudPipFlash { 0% { box-shadow: 0 0 0 0 rgba(255,196,70,1); } 100% { box-shadow: 0 0 0 10px rgba(255,196,70,0); } }
 .dhud-plate .dhud-ip { display: flex; gap: 3px; padding: 2px 3px; }
 .dhud-plate .dhud-ip i { width: 8px; height: 8px; }
 .dhud-ip i.is-cost { background: transparent; box-shadow: inset 0 0 0 2px var(--dhud-ip-on); }
@@ -2093,6 +2122,7 @@ function previewPlate(actorId = null) {
 Hooks.once("ready", () => {
   ensureSocket();
   tryReloadRecovery("ready");
+  Hooks.on("fuStatusFlash", onStatusFlash);
 
   globalThis.FUCompanion = globalThis.FUCompanion || {};
   globalThis.FUCompanion.api = globalThis.FUCompanion.api || {};
