@@ -29,7 +29,7 @@ pressed F5. Trinio and Silryantish had 0 reloads.
 | Network cut / dropped socket | In all 9 reloads the TCP watch caught, the old game socket stayed open until the new page's first connection opened. It closed ≤1 s later, with no DROP gap |
 | Foundry's reconnect→reload path (reload after a ≥5 s disconnect) | That path leaves a seconds-old reconnected socket. The sockets that closed at reload had lived **4–84 min** |
 | Renderer crash, then a "Reload" click | The socket would close at the crash, then a gap until the click. Never seen |
-| Tab discard, then the player refocuses the tab | The discard kills the socket first and the reload comes later. Never seen. The logger also reads `document.wasDiscarded` directly |
+| Any automatic browser reload: tab discard, Memory Saver, memory-pressure discard, crashed-tab reload | Each kills the page first and reloads later, and the TCP watch never saw that. Also:<br>• Memory Saver only discards tabs hidden **2–6 h**, and never a window's active tab, even a minimized one<br>• memory-pressure discards spare tabs hidden <10 min<br>• desktop browsers don't auto-reload crashed tabs<br>Sources S2, S4, S5, S15 in Research below. The logger also reads `document.wasDiscarded` directly |
 | A broadcast reload | Would reload *every* client, and Trinio and Silryantish never reloaded. Covers: core `"reload"` socket, the "Reload All Clients" macro, world-setting `onChange` reloads in cursor-hider / theatre / gm-screen / LockView / tokenmagic |
 | Any code path that silently reloads one client | Checked 2026-10-28:<br>• Foundry 12.343 `foundry.js` has exactly 5 reload sites: reconnect ≥5 s, session-id mismatch, `"reload"` broadcast, Esc-menu Reload, settings prompt<br>• all 58 active modules<br>• 643 world macros (only "Reload All Clients")<br>• 6,852 scene records (none)<br>Monk's Player Settings asks the player first ("Reload the browser?") |
 | Heavy maps | The reload-linked maps are 1254² to 2739×2515, with Forge backgrounds and only PNG tokens. Midgard_Map002/003 serve nothing from the host |
@@ -86,28 +86,51 @@ as sessions come in. Don't delete them.
 - **Refute:** stalls while host and Forge both answer fast. Or the same stalls on a better route
   (mobile hotspot test).
 
-### H3 — A browser feature reloads a live page *(Blumairwen's ~5½ min mode)*
+### H3 — A 5-minute tab freeze, then a manual reload *(Blumairwen's ~5½ min mode)*
 
 - **For:**
   - 6 of her 12 reloads came 325–367 s after a draw: a 42 s spread over four hours. That's too
-    regular for patience.
-  - 5 minutes is a common threshold in browser power-saving features.
-- **Against:** in Chrome's tab discard, the page dies first. The TCP watch says the page was alive
-  until the new navigation.
-- **Research (2026-10-28):** pending, filled in from sources below.
+    regular for patience alone.
+  - Two power features **freeze** a hidden tab after 5 min:
+    - Chrome Energy Saver freezes CPU-heavy tabs when it's on, e.g. on battery [S14].
+    - Edge Sleeping Tabs at maximum efficiency [S7, S8]. Edge's own pages disagree on the default
+      timeout (15 min vs 2 h).
+  - A frozen page keeps its socket open. Foundry's server waits 600 s for a ping reply, and that
+    matches the TCP evidence.
+  - Suppose she tabs away while a map loads, and comes back to a page that's still thawing. "5 min
+    + 25–67 s to come back" is exactly 325–367 s, and the reload would be hers.
+- **Ruled out inside H3:** an automatic browser reload. See the table above: each of those kills the
+  page first.
+- **Open:** Opera GX's RAM limiter in hard-limit mode "drops non-active tabs" from memory. Users report
+  tabs reloading or going black [S18, S19]. How it works isn't documented.
 - **Confirm:**
-  - The logger's `hidden` events just before these reloads.
-  - `wasDiscarded`, or verdict `PAGE DIED`.
-  - The player's browser and its power settings.
-  - An alt-tab-away test (protocol step 6).
+  - A `visible` event with ≥5 min hidden just before the reload. `client-health-summary` prints
+    "tab hidden N s".
+  - A SAMPLE GAP > 150 s after a draw, meaning the page ran no timers: frozen.
+  - Her answers: laptop on battery? Energy Saver, Efficiency mode or the GX limiter on? Does she
+    alt-tab while maps load?
+  - Protocol step 6: alt-tab away for 7 min.
+- **Refute:** sixMin reloads with the tab visible the whole time and no sample gap.
 
-### H4 — Weak client hardware
+### H4 — Weak client hardware, or a GPU reset
 
 - **For:** "weaker PCs" was the 2026-10-24 suspicion.
+- **GPU reset path:**
+  - A driver reset (TDR) or GPU-process crash loses every WebGL context.
+  - If a site loses its context twice within 2 min, Chrome blocks WebGL for it. The canvas stays
+    dead (a "sad canvas") until a **user** reload; a script's `location.reload()` doesn't clear the
+    block [S28, S29].
+  - To the player that reads as "it went black, so I reloaded".
+- **Dual-GPU laptops:** Windows can run the browser on the integrated GPU. A Forge forum thread traced
+  lost scene assets to this. The fix was setting the browser to "High performance" in Windows
+  graphics settings [S39].
 - **Confirm:**
-  - The logger's `machine.gpu` shows software WebGL (SwiftShader / Basic Render Driver).
-  - Low `deviceMemory`.
-  - Long draw times, or heap and texture growth after a draw.
+  - The logger's `machine.gpu` shows software WebGL, or an integrated GPU (Intel UHD etc.).
+  - `CONTEXT_LOST_WEBGL` in the console lines before a reload.
+  - On the player's PC: Event Viewer → System → **Event ID 4101** (display driver reset) at a reload
+    time [S46].
+  - `chrome://gpu` log lines such as "The GPU process crashed". Same browser session only [S27, S48].
+  - Low `deviceMemory`, long draw times, or heap and texture growth after a draw.
 
 ## What the logger can and can't see
 
@@ -115,7 +138,9 @@ as sessions come in. Don't delete them.
 
 **Verified 2026-10-27** with a local Edge 156 test client (logged in as Trinio):
 - Boots, heartbeats, hide/show events and disconnects reached the GM across reloads.
-- `performance.memory` moves minute to minute in Edge 156 and Electron 29.
+- `performance.memory` moves minute to minute in Edge 156 and Electron 29. It's precise on desktop
+  (site-isolated renderers), but it covers the **JS heap only**, not GPU memory; `textures` is the
+  GPU proxy [S21, S26].
 
 **Gaps:**
 1. **It can't tell who reloaded.** A player's F5 and a script reload both read "clean exit, reload".
@@ -131,16 +156,22 @@ as sessions come in. Don't delete them.
 6. **Some "disconnects" are the page's own unload.** A disconnect ≤3 s before a clean pagehide is
    that, not a network event. The summary tool marks these.
 7. **A GM "died" verdict on the Foundry desktop app** is the app closing (no pagehide), e.g. 10-26 12:16.
+8. **Timer drift is lost at reload.** The pagehide beat resets `driftMs` to 0, so a freeze that ended
+   just before a reload leaves no drift in `prev`. The `visible` event's `hiddenMs` and the sample gaps
+   still show it.
 
 **Proposed upgrades** (none built; they need a go-ahead, and the code is the co-dev's):
 - **P1 reload attribution:** log F5 / Ctrl+R keys, the Esc-menu Reload click, `foundry.utils.debouncedReload`
   calls (with stack), and `beforeunload` (with visibility and time since last input), all into the heartbeat.
+  Keep the worst timer drift through the pagehide beat.
 - **P2 boot phases:** mark `init` → `setup` → first draw → `ready`, so the next boot reports a page that
   never got there, and how far it got.
 - **P3 network probes:** host and Forge round-trip time every 30 s, every 5 s during a draw, plus timeouts.
 - **P4 per-draw slow resources:** the slowest assets (host, size, ms) for each draw. On a stall, the scene
   assets that haven't arrived yet.
 - **P5 console tail:** drop deprecations, dedupe, keep errors in their own ring.
+- **P6 WebGL context events:** log `webglcontextlost` / `webglcontextrestored` on the canvas, so a GPU
+  reset becomes a logged event instead of a guess.
 - **UX (separate decision):** show load progress on the black cover, and toasts above it. This helps
   players now, but it changes the behaviour being measured.
 
@@ -160,6 +191,12 @@ as sessions come in. Don't delete them.
   - Edge: Settings → System and performance → Sleeping tabs / Efficiency mode.
 - Hardware acceleration: does `chrome://gpu` or `edge://gpu` say "Hardware accelerated"?
 - RAM; Wi-Fi or cable.
+- Laptop or desktop? On battery while playing? Two GPUs? (Windows Settings → Display → Graphics: is
+  the browser set to "High performance"?)
+- Opera GX: is the RAM limiter on, with "Hard limit"?
+- Free disk space. Foundry's KB says under 4 GB free breaks image loading [S34].
+- **Before joining:** turn on crash reporting, so `chrome://crashes` lists crashes. In Chrome:
+  Settings → Privacy → "Help improve Chrome's features and performance" [S43].
 - Is Foundry the only tab in its window? Do they alt-tab to Discord during play?
 - **Last time, how did the page reload?**
   - F5?
@@ -183,6 +220,9 @@ as sessions come in. Don't delete them.
 8. Players:
    - Screenshot `chrome://discards` or `edge://discards` (the Foundry tab's Discard count).
    - Screenshot `chrome://crashes`.
+   - Screenshot the `chrome://gpu` / `edge://gpu` log section, *before* closing the browser.
+   - Windows Event Viewer → Windows Logs → System → filter **Event ID 4101** (display driver resets)
+     for the session window [S46].
 9. Host:
    - Run both tools on the window.
    - Write `sessions/2026-10-28-test.md`.
@@ -191,6 +231,32 @@ as sessions come in. Don't delete them.
 
 **Keep comparable with 10-24:** no cache proxy for this test (`reports/2026-10-25-host-cache-proxy-setup.md`
 stays open), unless the host decides otherwise. Record it in `conditions` either way.
+
+## Research (2026-10-28)
+
+Web research by a Claude subagent. Each claim came tagged as stated by a source or inferred; only
+sourced claims are used above.
+
+| ref | source | used for |
+|---|---|---|
+| S2 | [chromium: memory_saver_mode_policy.cc](https://github.com/chromium/chromium/blob/main/chrome/browser/performance_manager/policies/memory_saver_mode_policy.cc) | Memory Saver discards only tabs hidden 6 h / 4 h / 2 h (Moderate / Balanced / Maximum) |
+| S4 | [chromium: discard_eligibility_policy.cc](https://github.com/chromium/chromium/blob/main/chrome/browser/performance_manager/policies/discard_eligibility_policy.cc) | Never discarded: visible tabs, a window's active tab ("even if the window is not visible"), tabs audible in the last minute, pinned tabs, tabs with DevTools open |
+| S5 | [chromium: urgent_page_discarding_policy.cc](https://github.com/chromium/chromium/blob/main/chrome/browser/performance_manager/policies/urgent_page_discarding_policy.cc) | Memory-pressure discards spare tabs hidden <10 min |
+| S7, S8 | [Edge performance features](https://support.microsoft.com/en-us/topic/learn-about-performance-features-in-microsoft-edge-7b36f363-2119-448a-8de6-375cfd88ab25) · [SleepingTabsTimeout policy](https://learn.microsoft.com/en-us/deployedge/microsoft-edge-browser-policies/sleepingtabstimeout) | Sleeping Tabs *freeze* the page and don't reload it; 5 min at maximum efficiency |
+| S12 | [Page Lifecycle API](https://developer.chrome.com/docs/web-platform/page-lifecycle-api) | `document.wasDiscarded`; no handlers run at discard |
+| S14 | [Freezing on Energy Saver](https://developer.chrome.com/blog/freezing-on-energy-saver) | Chrome freezes CPU-heavy tabs hidden >5 min while Energy Saver is on; never reloads them |
+| S15 | [chromium: content/common/features.cc](https://github.com/chromium/chromium/blob/main/content/common/features.cc) | The crashed-frame reload exists only for hidden tabs, and is on by default only on Android |
+| S18, S19 | [Opera GX Control](https://www.opera.com/gx/features/gx-control) · [Opera forum](https://forums.opera.com/post/208170) | The GX hard limit drops non-active tabs; users report reloading or black tabs |
+| S21, S26 | [chromium: memory_info.cc](https://github.com/chromium/chromium/blob/main/third_party/blink/renderer/core/timing/memory_info.cc) · [web.dev](https://web.dev/articles/monitor-total-page-memory-usage) | `performance.memory` is precise for site-locked renderers (all of desktop); JS heap only |
+| S27, S28, S29 | [chromium: gpu_process_host.cc](https://github.com/chromium/chromium/blob/main/content/browser/gpu/gpu_process_host.cc) · [gpu_data_manager_impl_private.cc](https://github.com/chromium/chromium/blob/main/content/browser/gpu/gpu_data_manager_impl_private.cc) · [webgl_rendering_context_base.cc](https://github.com/chromium/chromium/blob/main/third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.cc) | GPU resets lose all contexts; a second loss within 2 min blocks WebGL for the site until a user reload |
+| S34 | [Foundry KB: scene loading](https://foundryvtt.com/article/ts-scene-loading) | Black screens come mostly from modules or huge images; hardware acceleration is required; <4 GB free disk breaks image loading |
+| S38, S39 | [Forge: maps won't load](https://forums.forge-vtt.com/t/maps-wont-load/18124) · [Forge: lost scene assets](https://forums.forge-vtt.com/t/screen-flickers-then-i-lose-all-scene-assets-maps-tokens-etc/14999) | Black maps fixed by turning off Memory Saver (huge maps); integrated-GPU browsers fixed via "High performance" |
+| S43 | [chromium: crash_strings.grdp](https://chromium.googlesource.com/chromium/src/+/HEAD/components/crash_strings.grdp) | `chrome://crashes` doesn't list crashes from while crash reporting was off |
+| S46 | [Event ID 4101](https://learn.microsoft.com/en-us/archive/technet-wiki/1462.event-id-4101-display-driver-timeout-detection-and-recovery) | Display driver resets are logged in Windows' System log |
+
+No 2023–26 Foundry community report matches "player tabs reload on scene change". The closest,
+[foundryvtt#11069](https://github.com/foundryvtt/foundryvtt/issues/11069), is a v12 client using 25+ GB
+of RAM; it was closed as not planned.
 
 ## Notes (append-only)
 
@@ -209,3 +275,10 @@ stays open), unless the host decides otherwise. Record it in `conditions` either
     - "Nothing from the host" on Midgard_Map007 was wrong: its King Gorger token PNG is host-served.
   - **No real-player data in the logger yet.** Rinri's and Blumairwen's logins since 10-25 were host
     test clients (`::1`).
+- **2026-10-28 (later):** web research folded in (see the table above).
+  - H3 is now "a 5-minute freeze, then a manual reload".
+  - Memory Saver, memory-pressure discards and crashed-tab auto-reload moved to Ruled out.
+  - H4 gained the GPU-reset path.
+  - `client-health-summary` now flags sample gaps (>150 s) and long hides.
+  - Showing load progress on the black cover (option 5) is being written up as a proposal for the
+    host to review.

@@ -15,6 +15,10 @@
 //                         a page in between never reached `ready` (stuck on its first draw —
 //                         Foundry fires ready only after it), so it left no heartbeat.
 //
+// Also flags SAMPLE GAPS: in the 10 min after a draw the logger samples once a minute, so
+// a gap > 150 s there means the page ran no timers that long (a throttled hidden tab still wakes once a minute, so up to ~120 s is normal) — a frozen tab (Chrome Energy
+// Saver / Edge Sleeping Tabs freeze hidden tabs after ~5 min) or a blocked main thread.
+//
 //   node client-health-summary.js --from "2026-10-28 19:00" --to "2026-10-29 03:00" [--tz +07:00]
 //        [--users Rinri,Blumairwen] [--json out.json] [--dir <client-health-logs>]
 //
@@ -79,7 +83,17 @@ function verdict(b) {
 // ── per user ─────────────────────────────────────────────────────────────────
 const users = {};
 for (const e of entries) {
-  const u = (users[e.user] ??= { boots: [], draws: [], stalls: [], disconnects: [], hidden: 0, hiddenMs: 0, peakHeapMB: 0, peakTextures: 0, machine: null, console: {}, lastPagehide: null });
+  const u = (users[e.user] ??= { boots: [], draws: [], stalls: [], disconnects: [], hidden: 0, hiddenMs: 0, longHides: [], sampleGaps: [], lastSample: null, peakHeapMB: 0, peakTextures: 0, machine: null, console: {}, lastPagehide: null });
+  if (e.kind === "sample") {
+    const p = u.lastSample;
+    // both inside the once-a-minute window after the same draw
+    if (p && e.sinceDrawMs < 600000 && e.sinceDrawMs > p.sinceDrawMs && e.t - p.t > 150000) {
+      u.sampleGaps.push({ at: local(p.t), gapS: s(e.t - p.t), scene: e.scene, hiddenAfter: e.hidden });
+    }
+    u.lastSample = e;
+  }
+  if (e.kind === "visible" && (e.hiddenMs ?? 0) >= 240000) u.longHides.push({ at: local(e.t), hiddenS: s(e.hiddenMs) });
+  if (e.kind === "boot") u.lastSample = null;
   if (e.kind === "boot") {
     u.machine ??= e.machine;
     if (e.machine) u.machine = e.machine;
@@ -116,6 +130,7 @@ for (const [name, u] of Object.entries(users)) {
     browser: browserOf(m.ua), deviceMemoryGB: m.deviceMemoryGB ?? null, cores: m.cores ?? null, gpu, softwareGL: SOFTWARE_GL.test(gpu), screen: m.screen ?? null,
     boots: u.boots, draws: u.draws.length, drawMedianS: draws[Math.floor(draws.length / 2)] ?? null, drawMaxS: draws.at(-1) ?? null,
     stalls: u.stalls, disconnects: u.disconnects.map(({ t, ...d }) => d), hides: u.hidden, hiddenMinutes: Math.round(u.hiddenMs / 6e4),
+    longHides: u.longHides, sampleGaps: u.sampleGaps,
     peakHeapMB: u.peakHeapMB, peakTextures: u.peakTextures, console: u.console,
   };
   const o = out[name];
@@ -127,6 +142,9 @@ for (const [name, u] of Object.entries(users)) {
     for (const b of o.boots) console.log(`| ${b.at} | ${b.verdict} | ${b.loadS} | ${b.prevScene ?? "—"} · ${b.prevSinceDrawS ?? "–"} s · ${b.prevDrawing ?? "–"} · ${b.prevHeapMB ?? "–"} MB · ${b.prevTextures ?? "–"} |`);
   }
   for (const d of o.disconnects.filter(d => !d.unload)) console.log(`- disconnect ${d.at}: ${d.reason} (${d.scene ?? "—"})`);
+  for (const g of o.sampleGaps) console.log(`- SAMPLE GAP ${g.at}: no timers for ${g.gapS} s after a draw on ${g.scene ?? "—"} (frozen tab or blocked main thread)`);
+  for (const h of o.longHides) console.log(`- tab hidden ${h.hiddenS} s, back at ${h.at}`);
+  for (const b of o.boots.filter(b => (b.prevDriftMs ?? 0) > 60000)) console.log(`- boot ${b.at}: previous page's timers ran ${s(b.prevDriftMs)} s late (frozen / throttled)`);
   for (const st of o.stalls) console.log(`- draw stall ${st.at} (canvas.loading ${st.loading})`);
   const con = Object.entries(o.console).sort((a, b) => b[1] - a[1]).slice(0, 8);
   if (con.length) console.log(`console before reloads (deprecations dropped):\n${con.map(([k, n]) => `  ${n}× ${k}`).join("\n")}`);
