@@ -997,6 +997,9 @@
       return;
     }
 
+    // Seated or asleep on a pose spot: a click stands the character up first.
+    await standUpIfPosed(token);
+
     // Start from where the token is drawn, so a click made mid-walk is tested
     // along the line the token will actually travel.
     const origin = drawnCenter(token);
@@ -1033,6 +1036,15 @@
     if (!slideSpot || walkSeq !== state.walkSeq) return;
 
     scheduleSlide(walkSeq, token.id, firstCenter, slideSpot, Math.max(0, duration - SLIDE_LEAD_MS));
+  }
+
+  // A character on a pose spot (event-system/pose-spots) stands up before any
+  // walk, at the spot's exit. True when they were posed.
+  async function standUpIfPosed(token) {
+    const poses = window.oni?.PoseSpots;
+    if (!poses?.isPosed?.(token)) return false;
+    await poses.standUp(token);
+    return true;
   }
 
   function walkDuration(distance, speed = WALK_SPEED) {
@@ -1201,7 +1213,9 @@
     let fromStandstill = false;
     if (pressed) {
       if (game.paused || !canCurrentUserMovePartyToken()) return true;
-      fromStandstill = state.heldKeys.size === 0 && isAtRest(getFollowToken());
+      // Seated or asleep: no tap-to-turn; any arrow stands up and walks.
+      const posed = !!window.oni?.PoseSpots?.isPosed?.(getFollowToken());
+      fromStandstill = !posed && state.heldKeys.size === 0 && isAtRest(getFollowToken());
       state.heldKeys.add(direction);
     } else if (!state.heldKeys.delete(direction)) {
       // Dropped already (a click or a lock took over); nothing to release.
@@ -1350,6 +1364,9 @@
 
     const token = getFollowToken();
     if (!token?.document?.isOwner) return;
+
+    // Seated or asleep on a pose spot: a move stands the character up first.
+    if (await standUpIfPosed(token) && seq !== state.keySeq) return;
 
     // The keys take over from a click walk and its pending slide.
     clearPendingMove();

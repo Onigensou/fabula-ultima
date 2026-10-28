@@ -98,6 +98,8 @@
       const facingDir = home.facingDir ?? "downLeft";
       if (t.getFlag(MOD, "facing") !== facing) u[`flags.${MOD}.facing`] = facing;
       if (t.getFlag(MOD, "facingDir") !== facingDir) u[`flags.${MOD}.facingDir`] = facingDir;
+      // Off any seat or bedroll they were resting on (event-system/pose-spots).
+      if (t.getFlag(MOD, "pose")) u[`flags.${MOD}.-=pose`] = null;
       if (Object.keys(u).length > 1) updates.push(u);
     }
     if (!updates.length) return;

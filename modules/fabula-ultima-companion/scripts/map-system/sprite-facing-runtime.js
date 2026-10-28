@@ -145,6 +145,12 @@
 
   const DIR_FLAG = "facingDir"; // token: the drawn direction a walk ended on, saved at rest
 
+  // Pose spots (event-system/pose-spots): a token resting on a seat or a
+  // bedroll carries flags.<module>.pose = { spotId, pose, mirror, scale }, and
+  // wears its character's pose art instead of walking or standing art.
+  const POSE_FLAG = "pose";
+  const POSE_FIELDS = { sit: "sprite_sit", sleep: "sprite_sleep" };
+
   const state = {
     installed: true,
     enabled: ENABLED,
@@ -158,6 +164,9 @@
 
     // tokenId -> the walk of one walking token (see newWalker)
     walkers: new Map(),
+
+    // tokenId -> { src, art, applied } for a token holding a pose
+    poses: new Map(),
 
     // tokenId -> { facing, turnFrom, turnStart, baseAbs, lastApplied }
     tokens: new Map(),
@@ -405,6 +414,8 @@
   // sign from the token's own texture.scaleX, every time it refreshes the
   // token; a facing other than the drawn one flips that sign.
   function applyFacing(token) {
+    // A pose sets its own mirror (holdPose).
+    if (state.poses.has(token?.id)) return;
     const mesh = token?.mesh;
     const entry = state.tokens.get(token?.id);
     if (!mesh || mesh.destroyed || !entry) return;
@@ -792,6 +803,180 @@
     if (own) setMeshTexture(token, own);
   }
 
+  // ------------------------------------------------------------
+  // Poses: seated or asleep on a pose spot
+  // ------------------------------------------------------------
+  function poseOf(token) {
+    const p = token?.document?.getFlag?.(MODULE_ID, POSE_FLAG);
+    return p && POSE_FIELDS[p.pose] ? p : null;
+  }
+
+  function poseSrcFor(token, pose) {
+    return cleanString(sourceActorFor(token)?.system?.props?.[POSE_FIELDS[pose]]);
+  }
+
+  // Pose art: a still image, or a looping clip (a sleeper breathing) on a
+  // <video> of its own, so walk art sharing the file is not stopped by it.
+  function loadPoseArt(src) {
+    const key = "pose:" + src;
+    dropIfDead(key);
+    let art = state.walkArt.get(key);
+    if (art) return art;
+
+    art = { kind: null, texture: null, frames: null, video: null, failed: false, ready: false };
+    state.walkArt.set(key, art);
+
+    if (isVideoSrc(src)) {
+      art.kind = "video";
+      const video = document.createElement("video");
+      video.crossOrigin = "anonymous";
+      video.muted = true;
+      video.loop = true;
+      video.playsInline = true;
+      video.preload = "auto";
+      video.addEventListener("loadeddata", () => {
+        try {
+          art.texture = PIXI.Texture.from(video, { resourceOptions: { autoPlay: false } });
+          art.video = video;
+          art.ready = true;
+        } catch (err) {
+          art.failed = true;
+          console.warn("[SpriteFacing] Could not use pose art", src, err);
+        }
+      }, { once: true });
+      video.addEventListener("error", () => {
+        art.failed = true;
+        console.warn("[SpriteFacing] Could not load pose art", src);
+      }, { once: true });
+      video.src = src;
+      return art;
+    }
+
+    art.kind = "still";
+    Promise.resolve(loadTexture(src)).then((texture) => {
+      if (!texture?.valid) throw new Error("texture not valid");
+      art.texture = texture;
+      art.ready = true;
+    }).catch((err) => {
+      art.failed = true;
+      console.warn("[SpriteFacing] Could not load pose art", src, err);
+    });
+    return art;
+  }
+
+  // How Foundry fits a texture into the token box (Token#_refreshMesh).
+  function fitScale(fit, boxW, boxH, w, h) {
+    const sx = boxW / w, sy = boxH / h;
+    switch (fit) {
+      case "fill": return [sx, sy];
+      case "cover": { const s = Math.max(sx, sy); return [s, s]; }
+      case "width": return [sx, sx];
+      case "height": return [sy, sy];
+      default: { const s = Math.min(sx, sy); return [s, s]; }   // contain
+    }
+  }
+
+  /**
+   * Lay the token's pose art on its mesh, the way battler-pose.js lays battle
+   * poses: at the idle art's pixel size (a wide sleeper is not shrunk into the
+   * token box), its bottom-centre where the idle art's is, mirrored when the
+   * spot says. Foundry re-fits the mesh on every refresh; a scale that is not
+   * the one written here last is Foundry's, and the fix is laid on it again.
+   * Returns false when the token has no pose to show (no flag, no art).
+   */
+  function holdPose(token) {
+    const p = poseOf(token);
+    const mesh = token?.mesh;
+    if (!p || !mesh || mesh.destroyed) return false;
+    const src = poseSrcFor(token, p.pose);
+    if (!src) return false;
+
+    let rec = state.poses.get(token.id);
+    if (!rec || rec.src !== src) {
+      if (rec) releasePoseArt(rec);
+      rec = { src, art: loadPoseArt(src), applied: null };
+      state.poses.set(token.id, rec);
+      const w = state.walkers.get(token.id);
+      if (w) { hideWalk(w); clearStandArt(w); w.walking = false; }
+    }
+
+    const art = rec.art;
+    if (art.failed) return false;
+    if (isArtDead(art)) { state.walkArt.delete("pose:" + src); rec.art = loadPoseArt(src); return true; }
+    if (!art.ready || !art.texture?.valid) return true;   // loading: keep what is on show
+
+    const tex = art.texture;
+    if (mesh.texture !== tex) {
+      mesh.texture = tex;
+      try { token._refreshSize(); } catch (_) {}
+      rec.applied = null;
+      if (art.video?.paused && !game.paused) {
+        try { const playing = art.video.play(); if (playing?.catch) playing.catch(() => {}); } catch (_) {}
+      }
+    }
+
+    const own = token.texture;
+    if (!own?.valid) return true;
+    if (rec.applied && mesh.scale.x === rec.applied.sx && mesh.scale.y === rec.applied.sy) return true;
+
+    const { width, height } = token.getSize();
+    const fit = token.document?.texture?.fit;
+    const [ix, iy] = fitScale(fit, width, height, own.width, own.height);
+    const [px, py] = fitScale(fit, width, height, tex.width, tex.height);
+    const k = Number(p.scale) > 0 ? Number(p.scale) : 1;
+    const sx = Math.abs(mesh.scale.x) * (ix / px) * k;
+    const sy = Math.abs(mesh.scale.y) * (iy / py) * k;
+    mesh.scale.set(p.mirror ? -sx : sx, sy);
+
+    const t = token.document?.texture ?? {};
+    const base = { x: Number(t.anchorX ?? 0.5), y: Number(t.anchorY ?? 0.5) };
+    mesh.anchor.set(
+      0.5 - ((0.5 - base.x) * own.width / tex.width),
+      1 - ((1 - base.y) * own.height / tex.height)
+    );
+    rec.applied = { sx: mesh.scale.x, sy: mesh.scale.y };
+    return true;
+  }
+
+  function releasePoseArt(rec) {
+    try { rec?.art?.video?.pause(); } catch (_) {}
+  }
+
+  // The pose ended (or its token left): the token's own image, sized and
+  // faced by Foundry and applyFacing again, standing the way it was placed.
+  function dropPose(tokenId) {
+    const rec = state.poses.get(tokenId);
+    if (!rec) return;
+    state.poses.delete(tokenId);
+    releasePoseArt(rec);
+
+    const token = canvas?.tokens?.get(tokenId);
+    const mesh = token?.mesh;
+    if (!mesh || mesh.destroyed) return;
+    const own = ownTexture(token);
+    if (own) mesh.texture = own;
+    try { token._refreshSize(); } catch (_) {}
+    const t = token.document?.texture ?? {};
+    try { mesh.anchor.set(Number(t.anchorX ?? 0.5), Number(t.anchorY ?? 0.5)); } catch (_) {}
+    const entry = state.tokens.get(tokenId);
+    if (entry) { entry.lastApplied = null; entry.shownSlot = null; }
+    applyFacing(token);
+    const w = state.walkers.get(tokenId);
+    if (w) { w.standDirty = true; w.lastX = null; w.lastY = null; }
+  }
+
+  // Every frame: hold each pose, drop the ones that ended.
+  function tickPoses() {
+    for (const token of canvas.tokens?.placeables ?? []) {
+      if (poseOf(token)) {
+        if (!holdPose(token) && state.poses.has(token.id)) dropPose(token.id);
+      } else if (state.poses.has(token.id)) {
+        dropPose(token.id);
+      }
+    }
+    for (const id of [...state.poses.keys()]) if (!canvas.tokens?.get(id)) state.poses.delete(id);
+  }
+
   // Which of the eight slices a step falls in, kept on the current one until
   // the movement is clearly inside the next.
   function updateDirection(token, dx, dy) {
@@ -1157,6 +1342,7 @@
     if (!state.enabled || !state.active || !canvas?.ready) return;
 
     const now = performance.now();
+    if (!state.dungeon) tickPoses();
     const walkers = walkerTokens();
 
     // A walker that left (its token is gone, or no longer the party token).
@@ -1166,6 +1352,8 @@
     }
 
     for (const token of walkers) {
+      // Seated or asleep: the pose is on show, not walking or standing art.
+      if (state.poses.has(token.id)) continue;
       // A dungeon step is a jump of the token; reading it as a walk would flash
       // the walk art on the token. The steps come from dp-movement.js instead.
       if (!state.dungeon) tickWalker(token, now);
@@ -1207,6 +1395,7 @@
   }
 
   function reset() {
+    for (const id of [...state.poses.keys()]) dropPose(id);
     for (const id of [...state.walkers.keys()]) dropWalker(id);
     state.tokens.clear();
     state.talks.clear();
@@ -1279,6 +1468,12 @@
 
     // Dungeon steps (dp-movement.js): the walk art for a step of dx, dy.
     dungeonStepBegin(token, dx, dy) { return state.active && state.dungeon ? dungeonStepBegin(token, dx, dy) : null; },
+
+    // Pose spots (event-system/pose-spots): the pose art a token's character
+    // has for "sit" or "sleep" ("" when none), and whether a pose is on show.
+    poseArtSrc(token, pose) { return token && POSE_FIELDS[pose] ? poseSrcFor(token, pose) : ""; },
+    isPosed(token) { return !!poseOf(token); },
+    POSE_FLAG,
 
     // Testing: play this walk art for the party token on this client,
     // whatever the character sheet says. Pass nothing to clear it.
@@ -1353,6 +1548,8 @@
     state.tokens.delete(doc.id);
     state.talks.delete(doc.id);
     // The token is gone: forget its walk without touching its (destroyed) mesh.
+    const rec = state.poses.get(doc.id);
+    if (rec) { releasePoseArt(rec); state.poses.delete(doc.id); }
     const w = state.walkers.get(doc.id);
     if (w?.saveTimer) clearTimeout(w.saveTimer);
     state.walkers.delete(doc.id);
@@ -1360,6 +1557,8 @@
 
   Hooks.on("refreshToken", (token) => {
     if (!state.active) return;
+    // A refresh re-fits the mesh; lay the pose back on at once (no frame at the wrong size).
+    if (state.poses.has(token.id)) { holdPose(token); return; }
     if (state.tokens.has(token.id)) applyFacing(token);
   });
 
