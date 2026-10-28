@@ -438,6 +438,67 @@
         }
       },
       "notes": ["No reloads for either player all night: both waited out stalls of up to 8 min 40 s under the load indicator.", "Every slow load waited on one Forge-hosted map background; every other file was already cached. The host fetched the same files from Forge in ~3 s (cf-cache-status MISS).", "Direct-link test (~23:03): a never-loaded Forge map image opened in a plain browser tab filled in slowly top-to-bottom for BOTH players, so the slow path is True -> Forge, not Foundry.", "Incognito re-open (~23:10): instant for Blumairwen (her Cloudflare node had kept the copy), still slow for Rinri (first load possibly never completed; he is on IPv6).", "Preloading the next map ~6-8 min ahead made both switches take ~1.4 s instead of 223-520 s.", "Forge edge copies stay fresh ~500 s (Cache-Control max-age=500) and less-used images get evicted soon after: re-requests 12-60 min later were MISS or REVALIDATED.", "Routes host -> both players' ISP edges: 0 loss all night (median 10-11 ms). Host line: 0-1 loss per 448 pings.", "Blumairwen's tab was hidden 9.7 min and 20.7 min with samples continuing: no freeze (H3 not shown on this browser).", "Not test-related: Vastwind_Field009 was turned into a camp room at the host's request (sceneMode camp, 4 member spots, campArrival); camp members spawned and walked; tokens cleared at cleanup."]
+    },
+    {
+      "id": "2026-10-28-mirror-trial",
+      "kind": "fix-trial",
+      "window": {
+        "from": "2026-10-28 23:47",
+        "to": "2026-10-29 00:08",
+        "tz": "+07:00"
+      },
+      "build": {
+        "foundry": "12.343",
+        "module": "1.0.478"
+      },
+      "fix": "option 3: serve map images from the host instead of Forge (backgrounds copied to Data/forge-mirror/<forge path>, two scenes repointed, reverted afterwards)",
+      "conditions": {
+        "players": "Rinri, Blumairwen",
+        "loadIndicator": true,
+        "scenePrefetch": true,
+        "mirrored": ["Eisendrache Castle", "Eisendrache Colosseum"],
+        "notMirrored": "status icons, tokens, everything else"
+      },
+      "sideBySidePage": {
+        "image": "Eisendrache_Battlemap001.png (1.8 MB)",
+        "Rinri": {
+          "hostS": [3.1, 0.4],
+          "forgeS": "unfinished at report time (twice)"
+        },
+        "Blumairwen": "not reported"
+      },
+      "results": {
+        "loginToWorldDataS": {
+          "Blumairwen": 9,
+          "Rinri": 25
+        },
+        "worldEntryS": {
+          "Blumairwen": 137.2,
+          "Rinri": 181.6,
+          "heldUpBy": "Forge status icons (self-destruct.png 110.4 s, enshroud.png 112.5 s); the mirrored background was not slow"
+        },
+        "mapSwitchS": {
+          "scene": "Eisendrache Colosseum (mirrored, never loaded before)",
+          "Blumairwen": 1.2,
+          "Rinri": 1.2,
+          "clientDrawS": {
+            "Blumairwen": 0.5,
+            "Rinri": 0.4
+          }
+        }
+      },
+      "capacity": {
+        "hostUploadMBps": 6.1,
+        "backgroundMB": {
+          "median": 2.14,
+          "max": 4.99,
+          "sampled": 20
+        },
+        "perMapChange5RemoteClients": "about 11 MB, about 2 s (largest map about 4-5 s)",
+        "diskFreeGB": 47.8,
+        "forgeUrlsInWorldData": 3271
+      },
+      "notes": ["A first-time map switch dropped from 223-520 s (Forge, earlier the same night) to 1.2 s with the background served by the host.", "World entry stays slow until every Forge file clients load (status icons first) is served by the host too.", "Cleanup at 00:08: both scenes reverted to their Forge URLs, mirror and test page deleted, Foundry closed."]
     }
   ]
 }

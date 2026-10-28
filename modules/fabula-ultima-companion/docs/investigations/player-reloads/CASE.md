@@ -201,6 +201,12 @@ The host decides; nothing here is built yet. Cheapest first.
    - A host-side mirror keeps Forge as the source of truth: players fetch Forge images through the host, which gets
      them from Forge in ~3 s.
    - Bigger change; plan first.
+   - **Tried at small scale, 2026-10-28 23:47–00:08: it works. The host chose this option.**
+     - A first-time switch to a host-served map took **1.2 s for both players**, against 223–520 s from Forge.
+     - World entry stayed slow (137–182 s) because the status icons still came from Forge, so the mirror must cover
+       every Forge file the clients load.
+     - Capacity: host upload ≈ 49 Mbps → ≈ 2 s per map change for 5 remote clients. Disk and CPU are no concern.
+     - Details are in the session addendum.
 4. **Report it to Forge.**
    - First fetches of their assets through Cloudflare BKK crawl for True (AS17552) customers, while AIS gets them in
      ~3 s (cf-cache-status MISS, first byte ~1.1–1.5 s).
@@ -470,3 +476,8 @@ of RAM; it was closed as not planned.
   - H1 confirmed, H2 reframed to True ↔ Forge, H3 weakened, H4 unlikely. Fix options added above.
   - Not part of the test: Vastwind_Field009 became a camp room at the host's request (camp mode, 4 member spots,
     arrival point). Members spawned and walked; tokens cleared at cleanup.
+- **2026-10-29 00:08: option 3 trial** (session addendum). It works.
+  - Host-served map images: a first-time switch took 1.2 s.
+  - World entry is still held up by Forge status icons.
+  - The host and sarunphat chose option 3. The next step is a migration plan: the assets already exist in the
+    host's local art folders.
