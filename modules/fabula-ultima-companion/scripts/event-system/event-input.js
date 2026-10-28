@@ -179,7 +179,7 @@
       for (const [action, name, direction, key] of WALK_KEYS) {
         game.keybindings.register(MODULE_ID, action, {
           name,
-          hint: "Walk the party on exploration maps while held. Elsewhere the key does what it normally does.",
+          hint: "Walk the party on exploration maps (your own character in camp) while held. Elsewhere the key does what it normally does.",
           editable: [{ key }],
           onDown: () => {
             setMode("key");
@@ -196,7 +196,7 @@
       // takes reaches the walker (as direction "run").
       game.keybindings.register(MODULE_ID, "oniRun", {
         name: "Run (hold)",
-        hint: "Hold while walking on an exploration map to run. Menus and dialogue still take it as Cancel.",
+        hint: "Hold while walking on an exploration map or in camp to run. Menus and dialogue still take it as Cancel.",
         editable: [{ key: "KeyX" }],
         onDown: () => {
           setMode("key");

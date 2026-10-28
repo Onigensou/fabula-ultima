@@ -31,6 +31,7 @@
 
   const FLAG_MEMBER = "campMember";
   const FLAG_SPOTS  = "campMemberSpots";
+  const FLAG_HOME   = "campHome";
 
   const isPrimaryGM = () => globalThis.FUCompanion?.isPrimaryGM?.() ?? false;
   const isCampScene = (scene) => scene?.flags?.[MOD]?.oniFabula?.general?.sceneMode === "camp";
@@ -72,13 +73,15 @@
     d.displayBars = CONST.TOKEN_DISPLAY_MODES.NONE;
     d.bar1 = { attribute: null };
     d.bar2 = { attribute: null };
-    d.flags[MOD] = { ...(d.flags[MOD] ?? {}), [FLAG_MEMBER]: true };
+    const x = Math.round(centre.x - (d.width ?? 1) * g / 2);
+    const y = Math.round(centre.y - (d.height ?? 1) * g / 2);
+    // campHome: where (and which way facing) the member was placed, so
+    // camp-walk.js can put a member who walked off back on their spot at bedtime.
+    const modFlags = d.flags[MOD] ?? {};
+    const home = { x, y, facing: modFlags.facing ?? null, facingDir: modFlags.facingDir ?? null };
+    d.flags[MOD] = { ...modFlags, [FLAG_MEMBER]: true, [FLAG_HOME]: home };
 
-    Object.assign(d, {
-      actorId: actor.id, actorLink: true, hidden: false,
-      x: Math.round(centre.x - (d.width ?? 1) * g / 2),
-      y: Math.round(centre.y - (d.height ?? 1) * g / 2),
-    });
+    Object.assign(d, { actorId: actor.id, actorLink: true, hidden: false, x, y });
     return d;
   }
 
@@ -127,7 +130,7 @@
   }
 
   CAMP.Members = {
-    FLAG_MEMBER, FLAG_SPOTS,
+    FLAG_MEMBER, FLAG_SPOTS, FLAG_HOME,
 
     /** Make the camp scene's member tokens match the active party. */
     ensure(scene) {
@@ -165,6 +168,7 @@
         const tScale = t.texture?.scaleX ?? 1;
         const flags = foundry.utils.deepClone(t.flags ?? {});
         delete flags[MOD]?.[FLAG_MEMBER];
+        delete flags[MOD]?.[FLAG_HOME];
         return {
           x: Math.round(t.x + (t.width ?? 1) * g / 2),
           y: Math.round(t.y + (t.height ?? 1) * g / 2),

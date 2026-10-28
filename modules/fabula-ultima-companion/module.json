@@ -376,6 +376,7 @@
     "scripts/camp-system/camp-ui-rest-save.js",
     "scripts/camp-system/camp-rest-save-flow.js",
     "scripts/camp-system/camp-members.js",
+    "scripts/camp-system/camp-walk.js",
     "scripts/camp-system/camp-set-out.js",
     "scripts/camp-system/camp-ui-gm-panel.js",
     "scripts/camp-system/camp-ui-hider.js",
