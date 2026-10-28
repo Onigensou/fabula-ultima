@@ -77,7 +77,9 @@
   // Reading spots
   // ------------------------------------------------------------
   function spotOf(tileDoc) {
-    const raw = tileDoc?.getFlag?.(ES_SCOPE, SPOT_KEY);
+    // Read the flags directly: getFlag only accepts registered scopes, and the
+    // Event System's own scope is not one (it reads doc.flags the same way).
+    const raw = tileDoc?.flags?.[ES_SCOPE]?.[SPOT_KEY];
     if (!raw?.enabled || !POSES[raw.pose]) return null;
     const pt = (p) => (Number.isFinite(p?.x) && Number.isFinite(p?.y)) ? { x: p.x, y: p.y } : null;
     return {
@@ -176,8 +178,18 @@
   }
 
   // Primary GM: the spot goes to the first asker, if it is still free and the
-  // asker owns the character.
-  async function gmTake({ sceneId, tileId, tokenId, userId }) {
+  // asker owns the character. Requests are settled one at a time, and a spot
+  // counts as taken from the moment it is given, not when the write lands:
+  // two players asking in the same instant both got it before (seen live).
+  let gmQueue = Promise.resolve();
+  const gmClaims = new Map();   // tileId -> tokenId, given but not yet written
+
+  function gmTake(req) {
+    gmQueue = gmQueue.then(() => gmTakeNow(req)).catch((e) => console.warn(INSTALL_TAG, "Taking a spot failed.", e));
+    return gmQueue;
+  }
+
+  async function gmTakeNow({ sceneId, tileId, tokenId, userId }) {
     if (!isPrimaryGM()) return;
     const scene = game.scenes.get(sceneId);
     const tileDoc = scene?.tiles?.get(tileId);
@@ -186,15 +198,20 @@
     const spot = spotOf(tileDoc);
     if (!scene || !tileDoc || !tokenDoc || !user || !spot?.place || tileDoc.hidden) return;
     if (!user.isGM && !tokenDoc.testUserPermission(user, "OWNER")) return;
-    const taken = occupantOf(tileId, scene);
-    if (taken && taken.id !== tokenId) return;
+    const taken = occupantOf(tileId, scene)?.id ?? gmClaims.get(tileId) ?? null;
+    if (taken && taken !== tokenId) return;
     if (poseOf(tokenDoc)) return;
 
-    const at = centreToTopLeft(spot.place, tokenDoc);
-    await tokenDoc.update({
-      x: at.x, y: at.y,
-      [`flags.${MODULE_ID}.${POSE_FLAG}`]: { spotId: tileId, pose: spot.pose, mirror: spot.mirror, scale: spot.scale }
-    }, { animate: false, oniBypassGate: true });
+    gmClaims.set(tileId, tokenId);
+    try {
+      const at = centreToTopLeft(spot.place, tokenDoc);
+      await tokenDoc.update({
+        x: at.x, y: at.y,
+        [`flags.${MODULE_ID}.${POSE_FLAG}`]: { spotId: tileId, pose: spot.pose, mirror: spot.mirror, scale: spot.scale }
+      }, { animate: false, oniBypassGate: true });
+    } finally {
+      gmClaims.delete(tileId);
+    }
   }
 
   /**
@@ -314,7 +331,12 @@
       for (const id of [...state.buttons.keys()]) if (!keep.has(id)) removeButton(id);
     } catch (e) {
       // A ticker callback that throws stops PIXI's frame loop: never let it.
-      console.warn(INSTALL_TAG, "Button update failed.", e);
+      // Said at most once every few seconds, not every frame.
+      const now = Date.now();
+      if (now - (state.lastWarnAt ?? 0) > 5000) {
+        state.lastWarnAt = now;
+        console.warn(INSTALL_TAG, "Button update failed.", e);
+      }
     }
   }
 

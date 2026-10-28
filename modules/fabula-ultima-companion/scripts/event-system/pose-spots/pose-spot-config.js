@@ -58,7 +58,7 @@
     const wrap = root.querySelector(".oni-event-wrap");
     if (!wrap || wrap.querySelector(".oni-pose-spot")) return;
 
-    const spot = doc.getFlag(ES_SCOPE, KEY) ?? {};
+    const spot = doc.flags?.[ES_SCOPE]?.[KEY] ?? {};
     const section = document.createElement("fieldset");
     section.className = "oni-pose-spot";
     section.style.cssText = "margin: 10px 0; padding: 6px 10px 10px; border: 1px solid rgba(0,0,0,0.25); border-radius: 6px;";
@@ -104,7 +104,7 @@
 
     const status = section.querySelector(".oni-pose-spot-status");
     const refreshStatus = () => {
-      const s = doc.getFlag(ES_SCOPE, KEY) ?? {};
+      const s = doc.flags?.[ES_SCOPE]?.[KEY] ?? {};
       status.textContent = `Seat: ${fmt(s.place)}  ·  Exit: ${fmt(s.exit)}`;
     };
 
