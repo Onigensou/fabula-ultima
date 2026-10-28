@@ -11,6 +11,7 @@
 import { registerOrbmentApi, openWindow } from "./orbment-api.js";
 import { itemKindOf } from "./orbment-const.js";
 import { attune, installAttuneSocket } from "./orbment-attune.js";
+import { initAlchemist, setAlchemist, openAlchemist, isAlchemistActor } from "./alchemist-open.js";
 import "./orbment-dr.js";   // registers globalThis.FUOrbment for the classic damage path
 
 const TAG = "[Orbment]";
@@ -68,6 +69,11 @@ export function initOrbment() {
   // player gets its result back; only the primary GM executes requests.
   api.attune = attune;
   installAttuneSocket();
+  // The Alchemist NPC (proximity button → Attunement window).
+  api.setAlchemist = setAlchemist;
+  api.openAlchemist = openAlchemist;
+  api.isAlchemist = isAlchemistActor;
+  try { initAlchemist(); } catch (e) { console.warn(TAG, "initAlchemist failed", e); }
   // Cover both classic + V2 sheet hooks; CSB's item sheet may fire either.
   Hooks.on("getItemSheetHeaderButtons", onGetItemHeaderButtons);
   Hooks.on("renderItemSheet",   onRenderItemSheet);
