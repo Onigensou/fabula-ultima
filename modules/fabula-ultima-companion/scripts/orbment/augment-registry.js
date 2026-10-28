@@ -40,6 +40,10 @@ const OVERRIDE = 5;  // CONST.ACTIVE_EFFECT_MODES.OVERRIDE
 // works and the reader just sees a number.
 const equipGated = (n) => `\${isEquipped ? ${n} : 0}$`;
 
+// Attribute Up: one die size (+2), equip-gated, never past d12 — see attr_up.
+const dieUpToD12 = (attr) =>
+  `\${isEquipped ? max(0, min(2, 12 - (ref('target.${attr}_base', 0) + ref('target.bonus_${attr}', 0)))) : 0}$`;
+
 // Value for AE-SCANNED keys — keys with NO template column, which the engine
 // reads straight off the AE change (heal_receiving_flat_all, spell_restore_mod;
 // see skill-formulas sumAeChangeKey). Those readers do `Number(change.value)`
@@ -386,10 +390,9 @@ export const AUGMENTS = [
       ae: { name: "Spirit Up (Orbment)", changes: [{ key: "mp_receiving_flat_all", mode: ADD, value: aeScanned(n) }] } }),
   },
   {
-    // PENDING the live check of what +1 on bonus_<attr> does (a real die step,
-    // not a flat +1). Pending = shown, never rolled, install blocked. No
-    // per-character limit (user): two on different items stack, d12 caps.
-    id: "attr_up", label: "Attribute Up", icon: "🎲", cost: 0, category: "enhancement", tier: 3, house: true, pending: true,
+    // No per-character limit (user): two on different items stack, d12 caps
+    // (the game's die ceiling — user 2026-10-28). Live-checked 2026-10-28.
+    id: "attr_up", label: "Attribute Up", icon: "🎲", cost: 0, category: "enhancement", tier: 3, house: true,
     appliesTo: ["armor", "shield"],
     summary: "One attribute die grows one size (up to d12).", ruleText: "One attribute die grows one size, up to d12.",
     param: { prompt: "Choose an attribute", options: ATTRS.map((a) => ({ value: a.id, label: a.label, icon: "🎲" })) },
@@ -397,10 +400,13 @@ export const AUGMENTS = [
       const a = ATTRS.find((x) => x.id === v);
       // bonus_<attr> moves the die VALUE: the sheet computes <attr>_current =
       // clamp(<attr>_base + bonus_<attr>, 4, 14), so ONE size is +2 (Slow is -2,
-      // Supercharge +2). Live-checked 2026-10-28. The sheet's ceiling is d14, not
-      // d12 — still pending until that cap is decided.
+      // Supercharge +2). The sheet allows d14, so the d12 cap lives here: each
+      // Attribute Up adds only the room left to d12 over the base plus any raise
+      // applied before it. Priority 15 runs it before the status changes (20),
+      // so a second one on a d10 adds nothing and Slow / Dazed still shrink the
+      // raised die. (CSB scopes item-AE formulas to the item, actor as target.)
       return a ? { label: `Attribute Up: ${a.label}`, summary: `Your ${a.label} die grows one size (up to d12).`,
-        ae: { name: `${a.label} Up (Orbment)`, changes: [{ key: `bonus_${a.id}`, mode: ADD, value: equipGated(2) }] } } : {};
+        ae: { name: `${a.label} Up (Orbment)`, changes: [{ key: `bonus_${a.id}`, mode: ADD, priority: 15, value: dieUpToD12(a.id) }] } } : {};
     },
   },
 

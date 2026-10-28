@@ -84,8 +84,18 @@ Branch: `feat/orbment-v3-alchemist`. Code: `scripts/orbment/`.
   and quantity on items, the same as for Refinement, but it restores actor
   Zenit. So save → Attune → load refunds the Zenit and keeps the roll. Only
   the primary GM can load.
-- **Attribute Up stays pending.** `bonus_<attr>` moves the die value, and the
-  sheet clamps it to 4–14, so one size is +2 and the ceiling is d14, not the
-  planned d12. Choose the cap before it becomes rollable.
+- **Token pop-ups.** Foundry shows "+(…)" / "−(…)" over the token whenever an
+  Orbment effect is created or deleted. A re-attune rebuilds every Orbment
+  effect on the item, so untouched sockets flash "−" then "+" as well.
 - Names such as Guard, Ward, Bastion, Aegis, Fury, Spirit Up and Antistatus+
   are still placeholders.
+
+## Attribute Up (Jackpot tier)
+
+One die size (+2 on `bonus_<attr>`), never past d12, which is the game's die
+ceiling. The sheet itself allows d14, so the cap lives in the effect formula,
+at priority 15, ahead of statuses. Live-checked in the sandbox: d6 → d8;
+d12 stays d12; two on a d10 → d12; d12 + Up + Dazed → d10; unequipped → no
+change.
+- [ ] At the table: a rolled Attribute Up raises the die on the sheet and in
+      checks, and drops when the item is unequipped.

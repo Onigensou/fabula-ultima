@@ -123,7 +123,7 @@ function buildProjection(installedAugments, itemType) {
         img: augment.ae.icon ?? "icons/svg/upgrade.svg",
         transfer: true,
         disabled: false,
-        changes: (augment.ae.changes ?? []).map((c) => ({ key: c.key, mode: c.mode, value: String(c.value) })),
+        changes: (augment.ae.changes ?? []).map((c) => ({ key: c.key, mode: c.mode, value: String(c.value), ...(c.priority != null ? { priority: c.priority } : {}) })),
         system: { tags: [ORBMENT_TAG] },
         flags: { [FLAG_NS]: { orbment: true } },
       });
