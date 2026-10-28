@@ -50,6 +50,7 @@
   display: flex; flex-direction: column; align-items: stretch; gap: 8px;
 }
 .oni-refine-fb-card {
+  pointer-events: auto;
   width: 100%; padding: 13px 28px; border-radius: 10px;
   background: linear-gradient(180deg, #f6ebd3 0%, #efdfc3 100%);
   border: 2px solid #8d5f38; box-shadow: 0 0 0 1px #6f4526, 0 8px 24px rgba(0,0,0,0.45);
@@ -68,6 +69,10 @@
 .oni-refine-fb-card.break   { border-color: #9a2a1a; box-shadow: 0 0 0 1px #7a1f12, 0 8px 24px rgba(0,0,0,0.45); }
 .oni-refine-fb-card.break   .oni-rfb-to { font-weight: 800; color: #9a2a1a; }
 .oni-refine-fb-card.fail    .oni-rfb-to { font-style: italic; color: #7a5c38; opacity: .8; }
+/* Item name → click opens the Item Window for this viewer (same as the Orbment banner). */
+.oni-rfb-link { font: inherit; font-weight: 700; color: inherit; background: none; border: 0; padding: 0 2px; border-radius: 4px; cursor: pointer;
+  text-decoration: underline dotted; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+.oni-rfb-link:hover, .oni-rfb-link:focus-visible { background: rgba(201,164,74,.28); outline: none; }
 .oni-refine-fb-tag {
   font-size: 11px; font-weight: 800; letter-spacing: 0.05em;
   margin-left: 8px; padding: 1px 7px; border-radius: 10px;
@@ -80,7 +85,18 @@
 
   function ensureContainer() {
     let el = document.getElementById("oni-refine-feedback");
-    if (!el) { el = document.createElement("div"); el.id = "oni-refine-feedback"; document.body.appendChild(el); }
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "oni-refine-feedback";
+      document.body.appendChild(el);
+      // Item links: open the Item Window (FULinkedText) for this viewer only.
+      el.addEventListener("click", (ev) => {
+        const link = ev.target.closest?.(".oni-rfb-link");
+        if (!link?.dataset.uuid) return;
+        ev.preventDefault();
+        try { globalThis.FULinkedText?.openItem?.(link.dataset.uuid, { x: ev.clientX - 160, y: ev.clientY + 24 }); } catch {}
+      });
+    }
     return el;
   }
 
@@ -95,8 +111,15 @@
   // (from → to / "broke" / "no change") with the actor prefixed.
   function cardHtml(data) {
     const who    = `<b>${escapeHtml(data.playerName ?? "Someone")}</b>`;
-    const oldNm  = `<b class="oni-rfb-from">${escapeHtml(data.oldName ?? "")}</b>`;
-    const newNm  = `<b class="oni-rfb-to">${escapeHtml(data.newName ?? "")}</b>`;
+    // The item as it is NOW is the link: the new name on success/break, the
+    // (unchanged) old name on a fail. Payloads without itemUuid render plain.
+    const link   = (cls, name) => data.itemUuid
+      ? `<button type="button" class="oni-rfb-link ${cls}" data-uuid="${escapeHtml(data.itemUuid)}">${escapeHtml(name ?? "")}</button>`
+      : `<b class="${cls}">${escapeHtml(name ?? "")}</b>`;
+    const oldNm  = data.outcome === "success" || data.outcome === "break"
+      ? `<b class="oni-rfb-from">${escapeHtml(data.oldName ?? "")}</b>`
+      : link("oni-rfb-from", data.oldName);
+    const newNm  = link("oni-rfb-to", data.newName);
     if (data.outcome === "success") {
       return `<span class="oni-rfb-icon">⚒️</span>${who} refined ${oldNm} → ${newNm}`;
     }
@@ -135,11 +158,18 @@
     playSpawnSfx(outcome);
 
     requestAnimationFrame(() => card.classList.add("in"));
-    setTimeout(() => {
+    // Linger, then leave — unless the pointer is on the card: hovering holds it
+    // so there's time to click the item name.
+    let timer = null;
+    const leave = () => {
       card.classList.remove("in");
       card.classList.add("out");
       setTimeout(() => { card.remove(); showNext(); }, ANIM_MS);
-    }, LINGER_MS + ANIM_MS);
+    };
+    const arm = (ms) => { clearTimeout(timer); timer = setTimeout(leave, ms); };
+    card.addEventListener("mouseenter", () => clearTimeout(timer));
+    card.addEventListener("mouseleave", () => arm(LINGER_MS));
+    arm(LINGER_MS + ANIM_MS);
   }
 
   const RefinementFeedback = {

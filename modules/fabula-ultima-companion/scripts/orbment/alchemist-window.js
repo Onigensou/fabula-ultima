@@ -402,7 +402,7 @@ export class AlchemistWindow {
     this._render();
     this._sfx("spin");
     const feedback = api.feedback ?? null;
-    try { feedback?.attuning?.({ actorName: this._actor?.name, itemName: item.name, itemUuid: item.uuid, grades: slots.map((s) => s.grade) }); } catch {}
+    try { feedback?.attuning?.({ actorName: this._actor?.name, itemName: item.name, itemUuid: item.uuid, itemRarity: item.system?.props?.item_rarity, grades: slots.map((s) => s.grade) }); } catch {}
 
     const [res] = await Promise.all([api.attune({ itemUuid: item.uuid, slots, mode: "shop" }), wait(MIN_SPIN_MS)]);
     this._busy = false;

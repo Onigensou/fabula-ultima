@@ -127,7 +127,7 @@ export async function executeAttune({ itemUuid, slots, mode = "shop", requesterU
     await recompileOrbment(item);
 
     const out = {
-      ok: true, mode, itemUuid: item.uuid, itemName: item.name, itemImg: item.img,
+      ok: true, mode, itemUuid: item.uuid, itemName: item.name, itemImg: item.img, itemRarity: String(rarity ?? ""),
       actorUuid: actor.uuid, actorName: actor.name, cost, zenitAfter: readZenit(actor),
       results, lead: leadVerdict(results.map((r) => r.verdict)),
     };
