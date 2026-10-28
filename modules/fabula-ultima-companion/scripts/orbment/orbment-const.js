@@ -56,17 +56,30 @@ export function slotCountOf(item) {
   return slotCountForRarity(item?.system?.props?.item_rarity);
 }
 
-// Normalize a stored slot to { id, param } | null. Legacy slots were bare id
-// strings (param-less) — coerce them so both shapes read the same.
+// How an installed augment got there (v3). Pre-v3 installs have none and read
+// as "craft" (a GM / Upgrade install at the rulebook value).
+export const SLOT_SOURCES = Object.freeze(["roll", "field", "craft"]);
+
+// Normalize a stored slot to { id, param, value, source } | null. Legacy slots
+// were bare id strings (param-less) — coerce them so every shape reads the same.
+// `value` null = the augment's rulebook value (registry resolveValue).
 export function normalizeSlot(s) {
   if (!s) return null;
-  if (typeof s === "string") return { id: s, param: null };
-  if (typeof s === "object" && s.id) return { id: String(s.id), param: s.param ?? null };
+  if (typeof s === "string") return { id: s, param: null, value: null, source: "craft" };
+  if (typeof s === "object" && s.id) {
+    const v = Number(s.value);
+    return {
+      id: String(s.id),
+      param: s.param ?? null,
+      value: s.value == null || !Number.isFinite(v) ? null : v,
+      source: SLOT_SOURCES.includes(s.source) ? s.source : "craft",
+    };
+  }
   return null;
 }
 
 // Read the raw orbment record off an item's flags (never null — normalized).
-// `slots` is an array of { id, param } | null.
+// `slots` is an array of { id, param, value, source } | null.
 export function readOrbment(item) {
   const raw = item?.flags?.[FLAG_NS]?.[ORBMENT_FLAG] ?? null;
   const count = slotCountOf(item);

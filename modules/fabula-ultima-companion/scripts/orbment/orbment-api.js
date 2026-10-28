@@ -75,7 +75,11 @@ export async function install(itemOrUuid, slotIndex, augmentId, options = {}) {
   } else {
     param = null; // ignore any stray param on a non-parameterized augment
   }
-  const view = resolveAugment(augmentId, param);
+  // v3: an optional rolled value (must be one of the augment's steps; anything
+  // else → the rulebook value) and how the install happened.
+  const view = resolveAugment(augmentId, param, options.value ?? null);
+  const value = options.value != null && view.vals?.includes(Number(options.value)) ? Number(options.value) : null;
+  const source = ["roll", "field", "craft"].includes(options.source) ? options.source : "craft";
 
   const orb = readOrbment(item);
   // Disallow the exact same augment+choice in two slots (RAW: an item can't gain
@@ -96,7 +100,7 @@ export async function install(itemOrUuid, slotIndex, augmentId, options = {}) {
   }
 
   const slots = orb.slots.slice();
-  slots[idx] = { id: augmentId, param };
+  slots[idx] = { id: augmentId, param, value, source };
   const res = await setSlotsAndCompile(item, slots);
 
   // Charge AFTER a successful compile so a failed install never bills the actor.
@@ -128,7 +132,7 @@ export async function remove(itemOrUuid, slotIndex) {
   slots[idx] = null;
   const res = await setSlotsAndCompile(item, slots);
   try {
-    const v = prev ? resolveAugment(prev.id, prev.param) : null;
+    const v = prev ? resolveAugment(prev.id, prev.param, prev.value) : null;
     if (v) ui.notifications?.info(`Removed ${v.label} from ${item.name} (slot ${idx + 1}).`);
   } catch {}
   return res;
@@ -159,8 +163,9 @@ export async function list(itemOrUuid) {
     slotCount: slotCountOf(item),
     slots: orb.slots.map((slot) => {
       if (!slot) return null;
-      const v = resolveAugment(slot.id, slot.param);
-      return v ? { id: v.id, param: v.param, label: v.label, icon: v.icon, summary: v.summary, cost: v.cost } : null;
+      const v = resolveAugment(slot.id, slot.param, slot.value);
+      return v ? { id: v.id, param: v.param, value: v.value, vals: v.vals, unit: v.unit, source: slot.source,
+        tier: v.tier, category: v.category, label: v.label, icon: v.icon, summary: v.summary, cost: v.cost } : null;
     }),
     linkGroup: orb.linkGroup ?? [item.id],
     available: augmentsForItemType(kind).map((a) => ({

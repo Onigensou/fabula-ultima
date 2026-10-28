@@ -171,7 +171,7 @@ async function applyToItem(item, slots, linkGroup) {
   const itemType = itemKindOf(item);
 
   const installed = slots
-    .map((slot, slotIndex) => (slot ? { slotIndex, augment: resolveAugment(slot.id, slot.param) } : null))
+    .map((slot, slotIndex) => (slot ? { slotIndex, augment: resolveAugment(slot.id, slot.param, slot.value) } : null))
     .filter((x) => x && x.augment);
 
   const proj = buildProjection(installed, itemType);
@@ -206,7 +206,7 @@ async function applyToItem(item, slots, linkGroup) {
 
   // ---- flags record (arrays only → clean wholesale replace on setFlag) ----
   const record = {
-    version: 1,
+    version: 3,   // v3: slots carry { id, param, value, source }
     slots: slots.slice(0, slotCountOf(item)),
     baseProps: newBase,
     linkGroup,
