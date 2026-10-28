@@ -36,7 +36,11 @@ Branch: `feat/orbment-v3-alchemist`. Code: `scripts/orbment/`.
 - Max HP +15 raises max HP and reverts on removal; an unequipped item's
   Orbment effects start disabled.
 - Item card Orbment footer (rolled-value bar, Upgrade wrench, socket strip),
-  party-menu gem pips, and stripping of the old "🔮 Orbment" description block.
+  and stripping of the old "🔮 Orbment" description block.
+- Party menu: the item detail lists each socket and its effect; the list
+  shows socket gems only after O toggles them on (off by default).
+- Banners stay on one row, sized to their content, beside the open sidebar.
+  The Alchemist window drags without jumping.
 
 ## Still to check at the table
 

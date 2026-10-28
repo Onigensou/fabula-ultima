@@ -64,11 +64,14 @@ function injectStyles() {
   s.id = STYLE_ID;
   s.textContent = `
 #${CONTAINER_ID} { position: fixed; top: 56px; left: 0; width: 100%; z-index: 2147483600; pointer-events: none;
-  display: flex; flex-direction: column; align-items: stretch; gap: 8px; }
-.oni-ofb-card { position: relative; pointer-events: auto; width: 100%; box-sizing: border-box; padding: 12px 26px; border-radius: 10px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px; }
+/* One row: the card grows with its content (refinement-banner width at least),
+   up to the play area; it only wraps when the row cannot fit at all. */
+.oni-ofb-card { position: relative; pointer-events: auto; width: auto; min-width: min(760px, calc(100% - 40px)); max-width: calc(100% - 40px);
+  box-sizing: border-box; padding: 12px 26px; border-radius: 10px;
   background: linear-gradient(180deg, #f6ebd3 0%, #efdfc3 100%); border: 2px solid #8d5f38;
   box-shadow: 0 0 0 1px #6f4526, 0 8px 24px rgba(0,0,0,0.45); color: #3b2a19; font: 300 18px/1.3 "Signika", sans-serif;
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  display: flex; flex-direction: row; align-items: center; justify-content: center;
   opacity: 0; transform: translateX(-44px);
   transition: opacity ${ANIM_MS}ms ease, transform ${ANIM_MS}ms cubic-bezier(.22,.8,.3,1), border-color .6s ease, box-shadow .6s ease; }
 .oni-ofb-card.in  { opacity: 1; transform: none; }
@@ -78,13 +81,17 @@ function injectStyles() {
 .oni-ofb-line img { width: 26px; height: 26px; image-rendering: pixelated; border: none; }
 .oni-ofb-stone { width: 26px; height: 26px; image-rendering: pixelated; border: none; animation: oni-ofb-spin 1.4s cubic-bezier(.4,0,.2,1) infinite; }
 .oni-ofb-old { color: #8a6a4a; text-decoration: line-through; }
-.oni-ofb-rows { display: flex; flex-direction: column; align-items: center; gap: 2px; animation: oni-ofb-fadeup .5s .08s cubic-bezier(.22,.8,.3,1) both; }
+.oni-ofb-rows { display: inline-flex; align-items: center; justify-content: center; gap: 10px 12px; flex-wrap: wrap; animation: oni-ofb-fadeup .5s .08s cubic-bezier(.22,.8,.3,1) both; }
+.oni-ofb-row { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.oni-ofb-sep { color: #b08a5c; }
 .oni-ofb-link { font: inherit; font-weight: 600; background: none; border: 0; padding: 0 2px; border-radius: 4px; cursor: pointer;
   display: inline; width: auto; height: auto; line-height: inherit; /* undo Foundry's global button sizing */
   color: var(--c, #3b2a19); text-decoration: underline dotted; text-underline-offset: 4px; text-decoration-thickness: 1px; }
 .oni-ofb-link:hover, .oni-ofb-link:focus-visible { background: rgba(201,164,74,.28); outline: none; }
 .oni-ofb-card.morph { animation: oni-ofb-morph .6s cubic-bezier(.22,.8,.3,1) both; }
-.oni-ofb-card.jack { background: linear-gradient(100deg,#fff3c4 0%,#f1d77e 40%,#fff9e0 50%,#f1d77e 60%,#e8c766 100%); background-size: 250% 100%;
+/* Seamless sheen: the gradient repeats as it slides, so it starts and ends on
+   the same gold — a light-to-dark ramp showed a hard band at the tile seam. */
+.oni-ofb-card.jack { background: linear-gradient(100deg,#f1d77e 0%,#fff3c4 20%,#f1d77e 40%,#fff9e0 50%,#f1d77e 60%,#e8c766 80%,#f1d77e 100%); background-size: 250% 100%;
   animation: oni-ofb-sheen 2.2s linear infinite; border-color: #b8860b; box-shadow: 0 0 0 1px #8a6408, 0 0 26px rgba(255,205,90,.85); }
 .oni-ofb-card.jack.morph { animation: oni-ofb-morph .6s cubic-bezier(.22,.8,.3,1) both, oni-ofb-sheen 2.2s linear infinite; }
 .oni-ofb-fx { position: absolute; left: 50%; top: 50%; width: 0; height: 0; overflow: visible; pointer-events: none; }
@@ -101,8 +108,8 @@ function injectStyles() {
   document.head.appendChild(s);
 }
 
-// Centre a fixed-fraction banner over the play area, clear of the sidebar —
-// the same placement as the refinement / healing banners.
+// Centre the banners over the play area, clear of the sidebar; each card sizes
+// to its own row within it (at least the refinement banner's width).
 function ensureContainer() {
   injectStyles();
   let el = document.getElementById(CONTAINER_ID);
@@ -122,9 +129,8 @@ function ensureContainer() {
   const sidebar = document.getElementById("sidebar");
   const r = sidebar?.getBoundingClientRect?.();
   const right = (r && r.width > 0 && r.left > 100) ? r.left : window.innerWidth;
-  const width = Math.max(280, Math.min(760, right * 0.6));
-  el.style.left = `${Math.round((right - width) / 2)}px`;
-  el.style.width = `${Math.round(width)}px`;
+  el.style.left = "0px";
+  el.style.width = `${Math.round(Math.max(320, right))}px`;
   return el;
 }
 
@@ -145,11 +151,12 @@ function attuningHtml(p) {
 }
 function resultHtml(p) {
   const verb = p.kind === "upgrade" ? `worked through the night on ${esc(p.ownerName ? `${p.ownerName}'s` : "")}` : "attuned";
-  const rows = (p.rows ?? []).map((r) => `<div class="oni-ofb-line">
+  const rows = (p.rows ?? []).map((r) => `<span class="oni-ofb-row">
       <span class="oni-ofb-old">${esc(r.old ?? "Empty slot")}</span><span aria-hidden="true">→</span>
-      ${r.cat ? `<img src="${ORB_IMG[r.cat] ?? ORB_IMG.enhancement}" alt="">` : ""}<b>${esc(r.now ?? "")}</b></div>`).join("");
-  return `<div class="oni-ofb-line"><span><b>${esc(p.actorName)}</b> ${verb} ${itemLink(p)}</span></div>
-    <div class="oni-ofb-rows">${rows}</div>`;
+      ${r.cat ? `<img src="${ORB_IMG[r.cat] ?? ORB_IMG.enhancement}" alt="">` : ""}<b>${esc(r.now ?? "")}</b></span>`)
+    .join(`<span class="oni-ofb-sep" aria-hidden="true">·</span>`);
+  return `<div class="oni-ofb-line"><span><b>${esc(p.actorName)}</b> ${verb} ${itemLink(p)}</span>
+    <span class="oni-ofb-rows">${rows}</span></div>`;
 }
 function applyTint(card, lead) {
   card.classList.toggle("jack", lead === "jackpot");

@@ -482,9 +482,16 @@ export class AlchemistWindow {
     handle.addEventListener("mousedown", (e) => {
       if (e.target.closest(".fu-aw-close")) return;
       e.preventDefault();
+      // Pin the window where it stands BEFORE moving: drop the centring
+      // transform with its transition off. Left on, the transform animated
+      // away under the cursor and the window lunged to the top-left first.
       const r = win.getBoundingClientRect();
+      win.style.transition = "opacity .28s ease";
+      win.style.transform = "none";
+      win.style.left = `${r.left}px`;
+      win.style.top = `${r.top}px`;
       const ox = r.left, oy = r.top, mx = e.clientX, my = e.clientY;
-      const move = (ev) => { win.style.left = `${ox + ev.clientX - mx}px`; win.style.top = `${oy + ev.clientY - my}px`; win.style.transform = "none"; };
+      const move = (ev) => { win.style.left = `${ox + ev.clientX - mx}px`; win.style.top = `${oy + ev.clientY - my}px`; };
       const up = () => { window.removeEventListener("mousemove", move); window.removeEventListener("mouseup", up); };
       window.addEventListener("mousemove", move);
       window.addEventListener("mouseup", up);

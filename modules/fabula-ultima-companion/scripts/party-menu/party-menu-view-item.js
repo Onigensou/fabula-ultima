@@ -36,7 +36,10 @@ const REASONS = {
 };
 export const moveReason = (r) => REASONS[r] ?? `Could not move it (${r}).`;
 
-// Orbment sockets as small gems (category colour; outlined = empty).
+// Orbment sockets as small gems (category colour; outlined = empty). The list
+// hides them by default — they crowd it fast; O toggles a quick view of every
+// item's sockets. The detail pane always lists them.
+let _orbPips = false;
 function orbPips(orb) {
   if (!orb?.length) return "";
   return `<span class="pm-orbpips">${orb.map((o, i) => `<i class="pm-gem ${o ? `is-${esc(o.category)}` : "is-empty"}" title="${esc(`Slot ${i + 1}: ${o ? o.label : "empty"}`)}"></i>`).join("")}</span>`;
@@ -90,6 +93,7 @@ export const itemView = {
       if (itemType(it) === "consumable" && !useRefusal({ item: it, roster: ctx.roster() })) actions.push({ key: "u", label: "Use", icon: "fa-hand-sparkles" });
       if (destinations(ctx, it).some((d) => !d.refusal)) actions.push({ key: "Enter", label: "Move to…", icon: "fa-right-left" });
     }
+    if (v.focus === "list") actions.push({ key: "o", label: _orbPips ? "Hide Orbment" : "Show Orbment", icon: "fa-gem" });
     return { crumbs, actions };
   },
 
@@ -121,7 +125,7 @@ export const itemView = {
       return `${head}
         <div class="pm-skill pm-hit ${cursor ? "is-cursor" : ""} ${held ? "is-held" : ""}" data-action="it-row" data-index="${i}">
           ${img(it.img || "icons/svg/item-bag.svg")}
-          <span class="pm-skill-name">${esc(it.name)}${worn ? `<i class="pm-badge pm-worn" title="Equipped">E</i>` : ""}${orbPips(orbmentOf(it))}</span>
+          <span class="pm-skill-name">${esc(it.name)}${worn ? `<i class="pm-badge pm-worn" title="Equipped">E</i>` : ""}${_orbPips ? orbPips(orbmentOf(it)) : ""}</span>
           <span class="pm-skill-cost pm-qty">${qty > 1 || t === "consumable" ? `×${qty}` : ""}</span>
         </div>`;
     }).join("") || `<div class="pm-empty">Nothing under this filter.</div>`;
@@ -179,8 +183,9 @@ export const itemView = {
       <dl class="pm-facts">${s.facts.map(([k, val]) => `<dt>${esc(k)}</dt><dd>${esc(val)}</dd>`).join("")}</dl>
       <div class="pm-desc">${safeHtml(s.description) || "<p><em>No description.</em></p>"}
       ${s.setDescription ? `<div class="pm-label">Set bonus</div>${safeHtml(setBonusHTML(item) || s.setDescription)}` : ""}
-      ${s.orbment?.length ? `<div class="pm-label">Orbment</div><div class="pm-orbs">${s.orbment.map((o, i) => `
-        <div class="pm-orb" title="${esc(o ? `Slot ${i + 1} · ${o.summary}` : `Slot ${i + 1}`)}"><i class="pm-gem ${o ? `is-${esc(o.category)}` : "is-empty"}"></i><span>${esc(o ? o.label : "Empty")}</span></div>`).join("")}</div>` : ""}</div>`;
+      ${s.orbment?.length ? `<div class="pm-label">Orbment · ${s.orbment.filter(Boolean).length}/${s.orbment.length}</div><div class="pm-orbs">${s.orbment.map((o, i) => `
+        <div class="pm-orb" title="Slot ${i + 1}"><i class="pm-gem ${o ? `is-${esc(o.category)}` : "is-empty"}"></i>
+          <span class="pm-orb-txt"><b>${esc(o ? o.label : "Empty")}</b>${o?.summary ? `<small>${esc(o.summary)}</small>` : ""}</span></div>`).join("")}</div>` : ""}</div>`;
   },
 
   renderDest(ctx, item) {
@@ -350,6 +355,7 @@ export const itemView = {
       return this.setFilter(ctx, ITEM_FILTERS[(i + (ev.shiftKey ? -1 : 1) + ITEM_FILTERS.length) % ITEM_FILTERS.length].id);
     }
     if (k === "Escape") return ctx.back();
+    if (k === "o" || k === "O") { _orbPips = !_orbPips; play(SND.ok, 0.45); ctx.render(); return; }
     const n = list(ctx).length;
     if (!n) return;
     if (k.startsWith("Arrow")) {
