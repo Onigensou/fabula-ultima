@@ -79,6 +79,10 @@
 !/tools/anim-studio/**
 !/tools/skill-regression/
 !/tools/skill-regression/**
+# forge-mirror: the sync tool is shared; the mirror itself (/forge-mirror/, ~1.2 GB of
+# Forge files plus manifest/config) is per machine and stays ignored by the /* rule above.
+!/tools/forge-mirror/
+!/tools/forge-mirror/**
 # runtime marker written by the regression Stop-hook gate — local only
 /tools/skill-regression/.state/
 # The 2026-07 skill-regression expansion is now SHARED with the co-dev
