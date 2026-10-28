@@ -1,6 +1,7 @@
 # Case: player-reloads — Rinri's and Blumairwen's pages reload mid-session
 
-**Status:** open, investigating. **Next:** a dedicated test with Rinri and Blumairwen, 2026-10-28 evening.
+**Status:** open, investigating. **Next:** a dedicated test with Rinri and Blumairwen, 2026-10-28 evening,
+in two halves (protocol step 6).
 **Tracking report:** `reports/2026-10-28-player-reload-investigation.md`
 **Sessions:** [2026-10-24 game session](sessions/2026-10-24-game-session.md) (the baseline)
 **Data:** [sessions.json](sessions.json) · **Tools:** [../_tools/](../_tools/) · **Deep-dive from that night:** [../../player-reload-investigation-2026-10-24.md](../../player-reload-investigation-2026-10-24.md)
@@ -230,6 +231,28 @@ as sessions come in. Don't delete them.
    - Prefer the big-background maps. The 10-24 stalls were on the map background, the largest file.
    - Stay **≥7 min** on three of them: Blumairwen's ~5½ min mode needs a scene to stay up that long.
    - On one scene, ask them to alt-tab away for 7 min (tests H3).
+   - **Run it in two halves** (agreed 2026-10-28), so one night can show both the cause and the cure:
+     - **First half, as-is:** no preloading, and scene pre-fetch on (the default). Include the *video
+       maps*. Each has a video tile served from the host, as Valley_Map002 did on 10-24:
+       - the Fumes steam webm (699 KB): Eisendrache Kingdom, Eisendrache Burning, Vastwind_Field009,
+         Wyrmwood_Map012;
+       - the Wind Lines webm (271 KB): Eisendrache Highroad, Vastwind_Field002.
+     - **Halftime (GM):** Configure Settings → FabulaUltimaCompanion → turn off **"Pre-fetch scene
+       videos"**. It applies from the next map change, with no reloads. **Write down the time:** it's the
+       line between the halves in the logs. On video maps each client's console then logs
+       `[FUCompanion][ScenePrefetch] off (world setting); skipped N video asset(s)`.
+     - **Second half, with mitigations:** before each map change, right-click the next map in the top
+       navigation bar → **Preload Scene**. It's GM-only and goes out to every client. Wait about 30 s, or
+       until both players say Foundry's thin top bar has gone, then switch. Revisit the same video maps.
+       - A map that isn't in the navigation bar can be preloaded from the GM console:
+         `game.scenes.preload(game.scenes.getName("Eisendrache Kingdom").id, true)`.
+       - While it preloads, players see Foundry's own top bar over the current map; the load indicator
+         only covers map changes. The bar reads "Loading <the map's navigation name>" if they have at
+         least Limited permission on that map, otherwise "Loading ...". Fine for tonight's safe maps.
+     - **Compare the halves:** reloads, `load-progress` times, `load-waiting` lines and what the players
+       read out. Problems in the first half that stop in the second give the cause and the cure in one
+       night. Both mitigations change together, so if the second half is clean, a later test separates
+       them: preload alone, pre-fetch off alone.
 7. Keep an eye on `FUCompanion.api.clientHealth.summary()`.
 
 **After:**
@@ -252,6 +275,10 @@ stays open), unless the host decides otherwise. Record it in `conditions` either
 - If it misbehaves, the GM turns it off under Configure Settings → "Loading indicator on the black
   screen". It takes effect at once, with no reloads.
 - Its records come out of `client-health-summary` as the "slow load" table and the "still loading" lines.
+
+**Scene pre-fetch has a switch for the halves** (v1.0.475): world setting `scenePrefetch`, default on, under
+Configure Settings → "Pre-fetch scene videos". Record both halves in `conditions`, with the halftime, e.g.
+`scenePrefetch: "on; off from 21:40"` and `preloadScene: "second half, from 21:40"`.
 
 ## Research (2026-10-28)
 
@@ -341,3 +368,17 @@ of RAM; it was closed as not planned.
     - a throttled map change on Eisendrache_Map004;
     - Foundry's bar never set on;
     - entry records reach the log, including a "load-waiting" mark during the ~30 s setup.
+- **2026-10-28 (evening, before the test):** reviewed the older preload scripts.
+  - `animation-asset-cache.js` (Apr 2026) is active: the Battle Director's pre-battle preload sits on it.
+    The GM waits only 8 s (`combatPrepareTimeoutMs`) for each client's "preload done", so on a slow route
+    a battle can start while that client is still downloading up to 250 files. The likely cost is slower
+    battle starts, not reloads; the 10-24 battle had no reloads around it.
+  - The `[BattleEnd: Transition]` macro (Dec 2025) is superseded by the Battle Director. The
+    `[SAMPLE] Preload Image` macros (Oct 2025) are samples.
+  - `scene-prefetch.js` (May 2026) targets "stuck at 99%". Fix or retire it after the test, because:
+    - its world-entry warm-up waits for `ready`, which comes after the first draw;
+    - its map-change fetch races PIXI's own download, so on a slow route it may fetch the same video
+      twice at once (not verified).
+  - **Plan:** observe first, in two halves (protocol step 6). The pre-fetch got an on/off switch,
+    `scenePrefetch` (default on, v1.0.475), so the second half can run without it. Checked in a Node
+    harness with stubbed Foundry globals (14 checks), not in a live Foundry.

@@ -27,11 +27,25 @@
  * Concurrency:
  *   Fetches are issued in batches of MAX_CONCURRENT rather than all at once to
  *   avoid saturating the local server's file I/O on scenes with many video tiles.
+ *
+ * On/off switch (world setting `scenePrefetch`, default on):
+ *   Read at every hook and between batches, so turning it off takes effect at
+ *   the next map load (and stops a warm-up in progress) without a reload.
+ *   Added 2026-10-28 for the player-reload case
+ *   (docs/investigations/player-reloads): the canvasInit fetch runs alongside
+ *   PIXI's own load and may download the same video twice on a slow route, so a
+ *   test can compare maps loaded with and without it.
  */
 (() => {
   const TAG = "[FUCompanion][ScenePrefetch]";
+  const MODULE_ID = "fabula-ultima-companion";
+  const SETTING = "scenePrefetch";
   const VIDEO_EXT = /\.(webm|mp4|ogg)$/i;
   const MAX_CONCURRENT = 2;
+
+  function enabled() {
+    try { return game.settings.get(MODULE_ID, SETTING) !== false; } catch { return true; }
+  }
 
   function collectVideoSrcs(scene) {
     const srcs = new Set();
@@ -54,6 +68,10 @@
     let ok = 0;
     const fail = [];
     for (let i = 0; i < srcList.length; i += MAX_CONCURRENT) {
+      if (!enabled()) {
+        console.info(`${TAG} turned off (world setting); stopped after ${i} of ${srcList.length} for ${label}`);
+        break;
+      }
       const chunk = srcList.slice(i, i + MAX_CONCURRENT);
       const results = await Promise.allSettled(
         chunk.map(src =>
@@ -70,7 +88,26 @@
     }
   }
 
+  Hooks.once("init", () => {
+    try {
+      game.settings.register(MODULE_ID, SETTING, {
+        name: "Pre-fetch scene videos",
+        hint: "Downloads a map's video files with a separate request as the map starts loading, and the active map's at world entry (the GM also warms every navigation map). Turn it off to let Foundry load videos on its own; it takes effect at the next map change and nobody needs to reload.",
+        scope: "world",
+        config: true,
+        type: Boolean,
+        default: true,
+      });
+    } catch (e) {
+      console.warn(`${TAG} setting registration failed (pre-fetch stays on)`, e);
+    }
+  });
+
   Hooks.once("ready", async () => {
+    if (!enabled()) {
+      console.info(`${TAG} off (world setting); skipped the world-entry pre-fetch`);
+      return;
+    }
     try {
       const activeScene = game.scenes.active;
 
@@ -103,6 +140,10 @@
       const scene = canvas.scene;
       if (!scene) return;
       const srcs = collectVideoSrcs(scene);
+      if (!enabled()) {
+        if (srcs.size) console.info(`${TAG} off (world setting); skipped ${srcs.size} video asset(s) for scene "${scene.name}"`);
+        return;
+      }
       await prefetchUrls(srcs, `scene "${scene.name}"`);
     } catch (e) {
       console.warn(`${TAG} canvasInit pre-fetch failed (non-fatal)`, e);
