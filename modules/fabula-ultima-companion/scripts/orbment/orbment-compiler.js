@@ -12,11 +12,12 @@
 //            flags…orbment.baseProps for exact restore on removal.
 //   rider  → orbment-prefixed rows in reaction_config_table + effect_table.
 //   ae     → embedded ActiveEffect(s) tagged ORBMENT_TAG (transfer:true).
-//   +  a human-readable summary fenced into item.system.props.description.
+// The item card's Orbment footer shows the installs (v3); the compiler only
+// strips the summary block v1/v2 appended to item.system.props.description.
 
 import {
   FLAG_NS, ORBMENT_FLAG, ORBMENT_TAG, ORBMENT_ROW_PREFIX,
-  DESC_SENTINEL, slotCountOf, itemKindOf, readOrbment, nameStem,
+  stripOrbmentDescBlock, slotCountOf, itemKindOf, readOrbment, nameStem,
 } from "./orbment-const.js";
 import { resolveAugment } from "./augment-registry.js";
 import { lookupTerm } from "../battle-director/keyword-registry.js";
@@ -122,7 +123,7 @@ function buildProjection(installedAugments, itemType) {
         img: augment.ae.icon ?? "icons/svg/upgrade.svg",
         transfer: true,
         disabled: false,
-        changes: (augment.ae.changes ?? []).map((c) => ({ key: c.key, mode: c.mode, value: String(c.value) })),
+        changes: (augment.ae.changes ?? []).map((c) => ({ key: c.key, mode: c.mode, value: String(c.value), ...(c.priority != null ? { priority: c.priority } : {}) })),
         system: { tags: [ORBMENT_TAG] },
         flags: { [FLAG_NS]: { orbment: true } },
       });
@@ -131,47 +132,12 @@ function buildProjection(installedAugments, itemType) {
   return { propOverrides, reactionRows, effectRows, aeDocs, summary };
 }
 
-// ── Description summary block (fenced, author-safe) ────────────────────────────
-function stripDescBlock(html) {
-  // Strip the orbment block by its VISIBLE sentinel ("🔮 Orbment"), NOT by HTML
-  // comment markers — CSB/ProseMirror strips comments on re-serialization, which
-  // orphaned the old block and caused duplicates. The block is always appended
-  // LAST, so cut from the FIRST sentinel to end (removes any accumulated dupes),
-  // backing up over immediately-preceding wrapper tags (<hr>/<p>/<strong>).
-  const s = String(html ?? "");
-  const idx = s.indexOf(DESC_SENTINEL);
-  if (idx === -1) return s.replace(/\n{3,}/g, "\n\n").trimEnd();
-  const before = s.slice(0, idx);
-  // Back up over the block's OPENING wrapper run (whitespace, <hr>, and opening
-  // p/strong/b/em/span tags — covers both the old <b> and new <strong> block
-  // formats). Only opening tags, so we stop at any author close-tag.
-  const lead = before.match(/(?:\s|<hr\s*\/?>|<(?:p|strong|b|em|span)\b[^>]*>)*$/i);
-  const cut = lead ? idx - lead[0].length : idx;
-  return s.slice(0, cut).replace(/\n{3,}/g, "\n\n").trimEnd();
-}
-function buildDescBlock(item, summary) {
-  const count = slotCountOf(item);
-  const rows = [];
-  for (let i = 0; i < count; i++) {
-    const hit = summary.find((s) => s.slotIndex === i);
-    if (!hit) { rows.push(`<li><b>Slot ${i + 1}:</b> <span style="opacity:.6">(empty)</span></li>`); continue; }
-    // A keyword augment renders its label as a content-link so BD's keyword
-    // registry surfaces it as a clickable chip (Multi/Pierce/status…).
-    const labelHtml = hit.kwUuid
-      ? `<a class="content-link" data-uuid="${hit.kwUuid}">${hit.label}</a>`
-      : hit.label;
-    rows.push(`<li><b>Slot ${i + 1}:</b> ${labelHtml} — <i>${hit.detail}</i></li>`);
-  }
-  // Heading carries the sentinel; no HTML-comment fence (ProseMirror eats those).
-  return `<hr><p><strong>${DESC_SENTINEL}</strong></p><ul style="margin:.2em 0">${rows.join("")}</ul>`;
-}
-
 // ── Apply the projection to ONE item ──────────────────────────────────────────
 async function applyToItem(item, slots, linkGroup) {
   const itemType = itemKindOf(item);
 
   const installed = slots
-    .map((slot, slotIndex) => (slot ? { slotIndex, augment: resolveAugment(slot.id, slot.param) } : null))
+    .map((slot, slotIndex) => (slot ? { slotIndex, augment: resolveAugment(slot.id, slot.param, slot.value) } : null))
     .filter((x) => x && x.augment);
 
   const proj = buildProjection(installed, itemType);
@@ -200,13 +166,12 @@ async function applyToItem(item, slots, linkGroup) {
   const newReact = arrayToTable([...curReact, ...proj.reactionRows]);
   const newEff   = arrayToTable([...curEff, ...proj.effectRows]);
 
-  // ---- description summary ----
-  const baseDesc = stripDescBlock(curProps.description);
-  const newDesc = installed.length ? `${baseDesc}\n${buildDescBlock(item, proj.summary)}` : baseDesc;
+  // ---- description: clear any v1/v2 summary block (the card footer shows installs) ----
+  const newDesc = stripOrbmentDescBlock(curProps.description);
 
   // ---- flags record (arrays only → clean wholesale replace on setFlag) ----
   const record = {
-    version: 1,
+    version: 3,   // v3: slots carry { id, param, value, source }
     slots: slots.slice(0, slotCountOf(item)),
     baseProps: newBase,
     linkGroup,
@@ -233,11 +198,14 @@ async function applyToItem(item, slots, linkGroup) {
   await item.update(phase2);
 
   // ---- embedded stat AEs: delete prior orbment-tagged, create fresh ----
+  // `animate: false` mutes Foundry's "+(…)" / "−(…)" token text (user call): the
+  // rebuild re-creates EVERY socket's effect, so untouched ones flashed − then
+  // +, and the Attune window / party banner already announce the change.
   const staleAe = (item.effects?.contents ?? [])
     .filter((fx) => (fx.system?.tags ?? []).includes(ORBMENT_TAG) || fx.flags?.[FLAG_NS]?.orbment)
     .map((fx) => fx.id);
   if (staleAe.length) {
-    try { await item.deleteEmbeddedDocuments("ActiveEffect", staleAe); }
+    try { await item.deleteEmbeddedDocuments("ActiveEffect", staleAe, { animate: false }); }
     catch (e) { warn(`AE delete failed on ${item.name}`, e); }
   }
   if (proj.aeDocs.length) {
@@ -246,7 +214,7 @@ async function applyToItem(item, slots, linkGroup) {
     // don't apply off-body. equipment-swap's AE sync maintains this on swaps.
     const worn = !!item.system?.props?.isEquipped;
     const docs = proj.aeDocs.map((d) => ({ ...d, disabled: !worn }));
-    try { await item.createEmbeddedDocuments("ActiveEffect", docs); }
+    try { await item.createEmbeddedDocuments("ActiveEffect", docs, { animate: false }); }
     catch (e) { warn(`AE create failed on ${item.name}`, e); }
   }
 

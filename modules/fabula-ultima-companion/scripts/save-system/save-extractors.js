@@ -202,6 +202,16 @@
   // below. Refinement itself lives in the name and the stat props.)
   const ITEM_STATE_PROPS = ["isEquipped", "item_quantity"];
 
+  // Orbment sockets are STATE too (user, 2026-10-28: a save records them, "like
+  // a console game"). They are rolled, paid for, upgraded: campaign progress,
+  // not authoring. But they live in a flag that the Orbment compiler projects
+  // INTO definition fields (props, rider rows, item AEs), so they are restored
+  // by handing the saved socket record back to that compiler
+  // (api.orbment.restoreSockets), never by copying fields. An item whose save
+  // predates an install gets that socket back EMPTY — which is what loading an
+  // older save means. Refinement, by contrast, is still treated as definition
+  // (see `name` above).
+
   // "Is this copy still the master's content?" — compared by DENYLIST, never by a
   // list of props to check. A checked-list fails PERMISSIVE: any prop not on it
   // differs unnoticed, the copy reads as a pure instance, and it gets deleted.
@@ -429,6 +439,10 @@
 
     const toCreate = [], toUpdate = [], toDelete = [], toUnequip = [];
     let skip = 0;
+    // Orbment sockets (state, see ITEM_STATE_PROPS). Absent API = nothing to restore.
+    const orbApi = globalThis.FUCompanion?.api?.orbment;
+    const socketsDiffer = (live, saved) => !!orbApi?.socketState && orbApi.socketState(live) !== orbApi.socketState(saved);
+    let sockets = 0;
     const nested = { update: 0, create: 0, delete: 0 }; // effect ops on updated items
     const keptUnique = [];
 
@@ -641,7 +655,7 @@
         const needsEquipSync = Object.prototype.hasOwnProperty.call(sp, "isEquipped") &&
           [...live.getEmbeddedCollection("ActiveEffect").values()]
             .some(e => isEquipLinked(e) && !!e.disabled === (sp.isEquipped === true));
-        if (stateDiffers || needsEquipSync) toUpdate.push(saved); else skip++;
+        if (stateDiffers || needsEquipSync || socketsDiffer(live, saved)) toUpdate.push(saved); else skip++;
         continue;
       }
       if (foundry.utils.objectsEqual(canonicalizeEmbed(live.toObject()), canonicalizeEmbed(saved))) skip++;
@@ -683,6 +697,12 @@
         for (const saved of toUpdate) {
           const item = owner.getEmbeddedCollection("Item").get(saved._id);
           if (!item) continue;
+          // Sockets first: the compiler builds the Orbment AEs disabled or not
+          // from the isEquipped just written, and the equip sync below agrees.
+          if (socketsDiffer(item, saved)) {
+            try { await orbApi.restoreSockets(item, saved); sockets++; }
+            catch (e) { console.warn(TAG, "Orbment socket restore failed", item.name, e); }
+          }
           // An Item's AEs are part of its DEFINITION (a transfer:true gear AE, a
           // reactionConfig bridge), so they are never created or deleted from a
           // snapshot. But `disabled` carries the EQUIP toggle, and the update
@@ -736,7 +756,7 @@
       // What the guard held back. Counted ALWAYS, not only under DEBUG_LOAD: a
       // load that protected 90 unique documents and one that had nothing to
       // protect must not look identical in the log.
-      keptUnique: keptUnique.length, unequipped: toUnequip.length, renamed, supersededCreates,
+      keptUnique: keptUnique.length, unequipped: toUnequip.length, renamed, supersededCreates, sockets,
       keptNames: keptUnique,
       repaired,
       updated: debug ? toUpdate.map(d => d.name) : [],

@@ -1010,7 +1010,7 @@ function onKey(ev) {
   const k = ev.key;
   const nav = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter", "Escape", "Tab", "Backspace", "Delete"];
   if (typing && !["ArrowUp", "ArrowDown", "Enter", "Escape"].includes(k)) return;
-  if (!nav.includes(k) && !["q", "e", "Q", "E", "u", "U", "t", "T", "PageUp", "PageDown"].includes(k)) {
+  if (!nav.includes(k) && !["q", "e", "Q", "E", "u", "U", "t", "T", "o", "O", "PageUp", "PageDown"].includes(k)) {
     // Swallow everything else too while the menu is up, so WASD / hotkeys do
     // not drive the canvas behind it. Typing in the search box returned above.
     ev.stopPropagation();
@@ -1423,6 +1423,19 @@ function ensureStyles() {
 #${ROOT_ID} .pm-skill-list.pm-onecol { grid-template-columns: minmax(0, 1fr); }
 #${ROOT_ID} .pm-qty { color: var(--ink-soft); }
 #${ROOT_ID} .pm-worn { font-weight: 700; font-size: 11px; padding: 0 5px; border-radius: 4px; color: #fff; background: var(--accent); text-shadow: none; }
+/* Orbment sockets: gems in the orb icons' colours (red / blue / gold), outlined = empty. */
+#${ROOT_ID} .pm-orbpips { display: inline-flex; gap: 5px; margin-left: 8px; vertical-align: middle; }
+#${ROOT_ID} .pm-gem { display: inline-block; width: 8px; height: 8px; transform: rotate(45deg); border-radius: 2px; font-style: normal;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.85), transparent 45%), var(--pm-gem, #888); box-shadow: 0 0 0 1.5px #3a2410, 0 0 5px var(--pm-gem, #888); }
+#${ROOT_ID} .pm-gem.is-offensive { --pm-gem: #b8432c; }
+#${ROOT_ID} .pm-gem.is-defensive { --pm-gem: #3d5fb0; }
+#${ROOT_ID} .pm-gem.is-enhancement { --pm-gem: #d39a1e; }
+#${ROOT_ID} .pm-gem.is-empty { background: rgba(255,255,255,.06); box-shadow: inset 0 0 0 1.5px rgba(200,160,80,.55); }
+#${ROOT_ID} .pm-orbs { display: grid; gap: 6px; }
+#${ROOT_ID} .pm-orb { display: flex; align-items: flex-start; gap: 10px; }
+#${ROOT_ID} .pm-orb .pm-gem { margin: 5px 2px 0; flex-shrink: 0; }
+#${ROOT_ID} .pm-orb-txt { display: flex; flex-direction: column; line-height: 1.3; }
+#${ROOT_ID} .pm-orb-txt small { font-size: .85em; color: var(--ink-soft); }
 #${ROOT_ID} .pm-bagicon { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; font-size: 26px; color: var(--gold-3); }
 #${ROOT_ID} .pm-portrait.xs .pm-bagicon { font-size: 18px; }
 #${ROOT_ID} .pm-actions { display: flex; gap: 8px; margin: 0 0 10px; }

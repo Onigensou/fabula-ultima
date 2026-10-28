@@ -7,7 +7,7 @@
 // require a GM. Read paths (list/listAugments) are open. The compiler does the
 // heavy lifting; this layer is validation + a thin ergonomic surface for the UI.
 
-import { FLAG_NS, ORBMENT_FLAG, readOrbment, slotCountOf, itemKindOf } from "./orbment-const.js";
+import { FLAG_NS, ORBMENT_FLAG, SLOT_SOURCES, readOrbment, slotCountOf, itemKindOf } from "./orbment-const.js";
 import { getAugment, augmentsForItemType, resolveAugment, canonicalizeParam, validateParam } from "./augment-registry.js";
 import { recompileOrbment } from "./orbment-compiler.js";
 
@@ -75,7 +75,11 @@ export async function install(itemOrUuid, slotIndex, augmentId, options = {}) {
   } else {
     param = null; // ignore any stray param on a non-parameterized augment
   }
-  const view = resolveAugment(augmentId, param);
+  // v3: an optional rolled value (must be one of the augment's steps; anything
+  // else → the rulebook value) and how the install happened.
+  const view = resolveAugment(augmentId, param, options.value ?? null);
+  const value = options.value != null && view.vals?.includes(Number(options.value)) ? Number(options.value) : null;
+  const source = SLOT_SOURCES.includes(options.source) ? options.source : "craft";
 
   const orb = readOrbment(item);
   // Disallow the exact same augment+choice in two slots (RAW: an item can't gain
@@ -96,7 +100,7 @@ export async function install(itemOrUuid, slotIndex, augmentId, options = {}) {
   }
 
   const slots = orb.slots.slice();
-  slots[idx] = { id: augmentId, param };
+  slots[idx] = { id: augmentId, param, value, source };
   const res = await setSlotsAndCompile(item, slots);
 
   // Charge AFTER a successful compile so a failed install never bills the actor.
@@ -105,7 +109,8 @@ export async function install(itemOrUuid, slotIndex, augmentId, options = {}) {
     catch (e) { console.warn(TAG, "zenit deduct failed", e); }
   }
 
-  try {
+  // `quiet`: a system install (Upgrade at dawn) announces itself; no GM toast.
+  if (!options.quiet) try {
     const note = deductZenit && cost > 0 ? ` (−${cost} z)` : " (no charge)";
     ui.notifications?.info(`Installed ${view.label} into ${item.name}, slot ${idx + 1}${note}.`);
   } catch {}
@@ -128,7 +133,7 @@ export async function remove(itemOrUuid, slotIndex) {
   slots[idx] = null;
   const res = await setSlotsAndCompile(item, slots);
   try {
-    const v = prev ? resolveAugment(prev.id, prev.param) : null;
+    const v = prev ? resolveAugment(prev.id, prev.param, prev.value) : null;
     if (v) ui.notifications?.info(`Removed ${v.label} from ${item.name} (slot ${idx + 1}).`);
   } catch {}
   return res;
@@ -159,8 +164,9 @@ export async function list(itemOrUuid) {
     slotCount: slotCountOf(item),
     slots: orb.slots.map((slot) => {
       if (!slot) return null;
-      const v = resolveAugment(slot.id, slot.param);
-      return v ? { id: v.id, param: v.param, label: v.label, icon: v.icon, summary: v.summary, cost: v.cost } : null;
+      const v = resolveAugment(slot.id, slot.param, slot.value);
+      return v ? { id: v.id, param: v.param, value: v.value, vals: v.vals, unit: v.unit, source: slot.source,
+        tier: v.tier, category: v.category, label: v.label, icon: v.icon, summary: v.summary, cost: v.cost } : null;
     }),
     linkGroup: orb.linkGroup ?? [item.id],
     available: augmentsForItemType(kind).map((a) => ({
@@ -180,6 +186,24 @@ export function listAugments(itemType) {
   }));
 }
 
+// ── Save / Load (save-system) ─────────────────────────────────────────────────
+// Sockets are campaign STATE (user: saving records them, "like a console game"),
+// but they live in a flag the compiler projects INTO definition fields (props,
+// rider rows, item AEs). So a load hands the saved socket record back to the
+// compiler instead of copying fields. Both helpers take a live Item or a saved
+// plain object; a missing record reads as empty sockets.
+export function socketState(itemOrData) {
+  return JSON.stringify(readOrbment(itemOrData).slots);
+}
+
+export async function restoreSockets(item, savedData) {
+  assertGM();
+  const n = slotCountOf(item);
+  const slots = readOrbment(savedData).slots.slice(0, n);
+  while (slots.length < n) slots.push(null);
+  return setSlotsAndCompile(item, slots);
+}
+
 // ── openWindow(itemOrUuid) — lazy-load the UI ─────────────────────────────────
 export async function openWindow(itemOrUuid) {
   const item = await resolveItem(itemOrUuid);
@@ -192,7 +216,7 @@ export async function openWindow(itemOrUuid) {
 export function registerOrbmentApi() {
   const root = (globalThis.FUCompanion = globalThis.FUCompanion ?? {});
   const api = (root.api = root.api ?? {});
-  api.orbment = { install, remove, recompile, list, listAugments, openWindow };
+  api.orbment = { install, remove, recompile, list, listAugments, openWindow, socketState, restoreSockets };
   console.debug(TAG, "API registered at FUCompanion.api.orbment");
   return api.orbment;
 }
