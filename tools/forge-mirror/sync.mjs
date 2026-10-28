@@ -27,7 +27,10 @@
 //
 // Writes (all under Data/forge-mirror/, which git ignores):
 //   <account>/<path>   the files
-//   manifest.json      { version, generated, files: { "<account>/<path>": { size, md5, q } } }
+//   manifest.json      { version, generated, files: { "<account>/<path>": { size, md5, qs, file? } } }
+//                      qs = every ?v= the world uses for that file (null = no ?v). A ?v the mirror
+//                      hasn't seen means the file may have been re-uploaded: clients load it from Forge
+//                      until the next sync re-checks it and adds that ?v.
 //   broken.json        wanted URLs whose Forge file no longer exists (404)
 // ============================================================================
 import fs from "node:fs";
@@ -53,6 +56,8 @@ const MIRROR = path.join(DATA, "forge-mirror");
 const MODULE_SCRIPTS = path.join(DATA, "modules", "fabula-ultima-companion", "scripts");
 const CONCURRENCY = Number(args.concurrency ?? 12);
 
+// version tags recorded for a manifest entry (older manifests stored a single q)
+const qsOf = e => (Array.isArray(e?.qs) ? e.qs : [e?.q ?? null]);
 const readJson = (file, fallback) => { try { return JSON.parse(fs.readFileSync(file, "utf8")); } catch { return fallback; } };
 const writeJsonAtomic = (file, value) => { fs.writeFileSync(file + ".part", JSON.stringify(value, null, 1)); fs.renameSync(file + ".part", file); };
 const md5File = file => crypto.createHash("md5").update(fs.readFileSync(file)).digest("hex");
@@ -99,19 +104,19 @@ function urlsFromScripts(dir) {
 }
 
 function collectWanted(manifest) {
-  const wanted = new Map();   // key -> { url, q, from:Set }
+  const wanted = new Map();   // key -> { url, qs:Set, from:Set }
   const add = (raw, from) => {
     const p = parseForgeUrl(raw);
     if (!p) return;
     const cur = wanted.get(p.key);
-    if (cur) { cur.from.add(from); if (p.q && !cur.q) cur.q = p.q; }
-    else wanted.set(p.key, { url: p.url, q: p.q, from: new Set([from]) });
+    if (cur) { cur.from.add(from); cur.qs.add(p.q ?? null); }
+    else wanted.set(p.key, { url: p.url, qs: new Set([p.q ?? null]), from: new Set([from]) });
   };
   const w = readJson(path.join(MIRROR, "wanted.json"), {});
   for (const u of w.world ?? []) add(typeof u === "string" ? u : u.url, "world");
   for (const u of w.runtime ?? []) add(typeof u === "string" ? u : u.url, "runtime");
   for (const u of urlsFromScripts(MODULE_SCRIPTS)) add(u, "code");
-  if (!args.prune) for (const key of Object.keys(manifest.files ?? {})) if (!wanted.has(key)) wanted.set(key, { url: FORGE_HOST + key.split("/").map(encodeURIComponent).join("/"), q: manifest.files[key].q ?? null, from: new Set(["kept"]) });
+  if (!args.prune) for (const key of Object.keys(manifest.files ?? {})) if (!wanted.has(key)) wanted.set(key, { url: FORGE_HOST + key.split("/").map(encodeURIComponent).join("/"), qs: new Set(qsOf(manifest.files[key])), from: new Set(["kept"]) });
   return { wanted, wantedFileAge: w.generated ?? null };
 }
 
@@ -167,13 +172,17 @@ const config = readJson(path.join(MIRROR, "config.json"), {});
 const localRoots = [...args.local, ...(config.localRoots ?? [])];
 const { wanted, wantedFileAge } = collectWanted(manifest);
 log(`data ${DATA}`);
-log(`wanted ${wanted.size} files (wanted.json from ${wantedFileAge ?? "nowhere — run a GM session first"}), mirrored ${Object.keys(manifest.files).length}`);
+log(`wanted ${wanted.size} files (wanted.json from ${wantedFileAge ?? "nowhere - run a GM session first"}), mirrored ${Object.keys(manifest.files).length}`);
 
 // Forge paths are case-sensitive, Windows paths are not: keys that differ only by case
 // (Item Icon/boot.png vs Boot.png — different pictures) can't share a folder. The first
 // key of each group keeps its natural path; the others live under _case/ and the
-// manifest records that file so the client loads the right one.
+// manifest records that file so the client loads the right one. Names Windows tools
+// can't handle (ending in a dot or space, CON/NUL/...) go to _case/ as well.
 const altFile = new Map();   // key -> "_case/<hash>.<ext>"
+const ALT = key => `_case/${crypto.createHash("md5").update(key).digest("hex").slice(0, 16)}${path.extname(key).toLowerCase()}`;
+const UNFRIENDLY = seg => /[. ]$/.test(seg) || /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(\..*)?$/i.test(seg);
+for (const key of wanted.keys()) if (key.split("/").some(UNFRIENDLY)) altFile.set(key, ALT(key));
 {
   const groups = new Map();
   for (const key of wanted.keys()) {
@@ -184,12 +193,12 @@ const altFile = new Map();   // key -> "_case/<hash>.<ext>"
   for (const keys of groups.values()) {
     if (keys.length < 2) continue;
     keys.sort();
-    for (const key of keys.slice(1)) altFile.set(key, `_case/${crypto.createHash("md5").update(key).digest("hex").slice(0, 16)}${path.extname(key).toLowerCase()}`);
+    for (const key of keys.slice(1)) if (!altFile.has(key)) altFile.set(key, ALT(key));
   }
 }
 const relFileOf = key => altFile.get(key) ?? key;
-const setEntry = (key, size, md5, q) => {
-  manifest.files[key] = { size, md5, q: q ?? null, ...(altFile.has(key) ? { file: altFile.get(key) } : {}) };
+const setEntry = (key, size, md5, qs) => {
+  manifest.files[key] = { size, md5, qs: [...qs].sort(), ...(altFile.has(key) ? { file: altFile.get(key) } : {}) };
 };
 
 // references already known to be gone from Forge are re-checked only with --verify
@@ -201,11 +210,11 @@ for (const [key, w] of wanted) {
   const have = manifest.files[key];
   const rel = relFileOf(key);
   const file = path.join(MIRROR, ...rel.split("/"));
-  const fresh = have && (have.file ?? key) === rel && (have.q ?? null) === (w.q ?? null) && fs.existsSync(file) && fs.statSync(file).size === have.size;
+  const fresh = have && (have.file ?? key) === rel && [...w.qs].every(q => qsOf(have).includes(q)) && fs.existsSync(file) && fs.statSync(file).size === have.size;
   if (args.verify || !fresh) todo.push([key, w, file]);
 }
 log(`to check: ${todo.length}${args.verify ? " (verify all)" : ""}`);
-if (args["dry-run"]) { log("dry run — nothing written"); process.exit(0); }
+if (args["dry-run"]) { log("dry run - nothing written"); process.exit(0); }
 
 const byName = todo.length && localRoots.length ? indexLocal(localRoots) : new Map();
 if (localRoots.length) log(`local originals from: ${localRoots.join(" | ")}`);
@@ -216,13 +225,13 @@ let done = 0;
 async function handle([key, w, file]) {
   try {
     if (key.split("/").some(seg => BAD_WIN_CHARS.test(seg))) { stats.skipped++; return; }
-    const head = await headForge(w.url + (w.q ? `?v=${w.q}` : ""));
+    const head = await headForge(w.url);   // Forge ignores ?v: the file at this path is the current one
     if (head.status === 404 || head.status === 403) { stats.broken++; broken.push({ url: w.url, from: [...w.from] }); return; }
     if (head.status >= 400) throw new Error(`HEAD ${head.status}`);
     fs.mkdirSync(path.dirname(file), { recursive: true });
     // already here and identical?
     if (head.md5 && fs.existsSync(file) && md5File(file) === head.md5) {
-      setEntry(key, fs.statSync(file).size, head.md5, w.q);
+      setEntry(key, fs.statSync(file).size, head.md5, w.qs);
       stats.unchanged++; return;
     }
     // a local original with the same name and the same MD5?
@@ -231,15 +240,15 @@ async function handle([key, w, file]) {
         if (md5File(cand) === head.md5) {
           fs.copyFileSync(cand, file + ".part"); fs.renameSync(file + ".part", file);
           const size = fs.statSync(file).size;
-          setEntry(key, size, head.md5, w.q);
+          setEntry(key, size, head.md5, w.qs);
           stats.copied++; stats.bytes += size; return;
         }
       }
     }
     // otherwise download
-    const got = await download(w.url + (w.q ? `?v=${w.q}` : ""), file);
+    const got = await download(w.url, file);
     if (head.md5 && got.md5 !== head.md5) stats.md5Mismatch++;   // e.g. the CDN re-encoded it; still the bytes players get
-    setEntry(key, got.size, got.md5, w.q);
+    setEntry(key, got.size, got.md5, w.qs);
     stats.downloaded++; stats.bytes += got.size;
   } catch (e) {
     stats.failed++;
@@ -259,5 +268,5 @@ writeJsonAtomic(manifestFile, manifest);
 writeJsonAtomic(path.join(MIRROR, "broken.json"), { generated: manifest.generated, count: broken.length, broken });
 
 const total = Object.values(manifest.files).reduce((a, f) => a + f.size, 0);
-log(`done in ${Math.round((Date.now() - t0) / 1000)} s — ${JSON.stringify(stats)}`);
+log(`done in ${Math.round((Date.now() - t0) / 1000)} s - ${JSON.stringify(stats)}`);
 log(`mirror: ${Object.keys(manifest.files).length} files, ${(total / 1048576).toFixed(0)} MB; broken references: ${broken.length} (forge-mirror/broken.json)`);
