@@ -72,3 +72,18 @@ pressed F5. Trinio and Silryantish had 0 reloads.
   - The switch off gives Foundry's plain behaviour back.
 - **Tonight's test uses only maps the players have seen: Eisendrache, Vastwind fields, The Wyrmwood.**
   Not Valley of the Dragon or Fafnir Castle maps, and no monsters missing from the bestiary.
+- **2026-10-28 22:06–23:36: the dedicated test** with Blumairwen and Rinri. Record:
+  `modules/fabula-ultima-companion/docs/investigations/player-reloads/sessions/2026-10-28-test.md`.
+  - **Cause located.** Map changes stall 3.7–8.7 min on the first download of each Forge-hosted map background over
+    the players' provider (True). The host (AIS) fetches the same files in ~3 s.
+    - Foundry then draws the map without its background: tokens on black. That's when players reload.
+    - Rinri on a 447 Mbps, 0%-loss cable line stalled just as long. A Forge image opened in a plain browser tab
+      filled in just as slowly. So it isn't Foundry or the host.
+  - **Nobody reloaded tonight.** Both players waited under the load indicator after being asked not to reload.
+  - **Preloading the next map a few minutes ahead made the switch ~1.4 s** (2 of 2).
+  - **For sarunphat:** the host cache proxy won't fix this, because Forge images never pass through the host. The fix
+    options are in CASE.md ("Fix options"):
+    - preload as GM practice;
+    - automatic preloading;
+    - serving or mirroring map images from the host;
+    - a report to Forge.

@@ -61,6 +61,383 @@
         "Blumairwen sixMin reloads sit at 325-367 s after a draw (6 of 12); one was 352 s after joining with no scene change.",
         "Trinio and Silryantish: one connection all night, 0 reloads. GM II (remote GM) reloaded once, 226 s after joining."
       ]
+    },
+    {
+      "id": "2026-10-28-test",
+      "kind": "dedicated-test",
+      "window": {
+        "from": "2026-10-28 21:45",
+        "to": "2026-10-28 23:36",
+        "tz": "+07:00"
+      },
+      "build": {
+        "foundry": "12.343",
+        "module": "1.0.478"
+      },
+      "conditions": {
+        "clientHealthLogger": true,
+        "loadIndicator": true,
+        "scenePrefetch": "on; off from 23:07:49 (back on at 23:32)",
+        "preloadScene": "second half: Eisendrache Burning (sent 23:07:49, switched 23:13:50) and Vastwind_Field009 (sent 23:14:32, switched 23:22:35)",
+        "coverWatchdog": true,
+        "textureRepair": true,
+        "cacheProxy": false,
+        "compressSocket": true,
+        "compressStatic": true,
+        "tcpWatch": "full window (tcp-watch.ps1, 500 ms)",
+        "pingWatch": "host -> player every 2 s (both players' routers drop ICMP); controls 192.168.1.1 + 1.1.1.1; far-hop pings 171.102.249.x (Blumairwen) + 58.97.83.x (Rinri)",
+        "players": "Blumairwen from 22:06, Rinri from 22:33; Trinio/Silryantish absent",
+        "driving": "map activations driven over CDP from the GM page; per-player time = activation -> the player's viewedScene update (end of their draw)",
+        "stream": "not running",
+        "testBridge": "active on the GM client"
+      },
+      "server": {
+        "activations": 6,
+        "vendMsRange": [3828, 4364],
+        "errors": 0,
+        "players": {
+          "Rinri": {
+            "route": "171.100.x.x",
+            "pageLoads": 1,
+            "reloads": 0,
+            "logins": 1,
+            "modes": {},
+            "reloadSecAfterDraw": [],
+            "pairedReloads": 0
+          },
+          "Blumairwen": {
+            "route": "27.145.x.x",
+            "pageLoads": 1,
+            "reloads": 0,
+            "logins": 1,
+            "modes": {},
+            "reloadSecAfterDraw": [],
+            "pairedReloads": 0
+          }
+        },
+        "loginToWorldDataS": {
+          "Blumairwen": 28,
+          "Rinri": 12
+        }
+      },
+      "tcpWatch": {
+        "reloadsObserved": 0,
+        "drops": 0,
+        "pattern": "only page-load churn (OLDEST within the first minute of each join: HTTP keep-alives closing); no DROP/BACK for either player all night"
+      },
+      "clientHealth": {
+        "Rinri": {
+          "browser": "Chrome 156",
+          "cores": 8,
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce GTX 1660 (0x00002184) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "softwareGL": false,
+          "screen": "1920x1080@1",
+          "boots": [
+            {
+              "at": "10-28 22:34:35",
+              "verdict": "FIRST LOAD",
+              "loadS": 80,
+              "wasDiscarded": false
+            }
+          ],
+          "draws": 5,
+          "drawMedianS": 0.6,
+          "drawMaxS": 519.7,
+          "stalls": 2,
+          "disconnects": 0,
+          "hides": 2,
+          "hiddenMinutes": 0,
+          "longHides": [],
+          "sampleGaps": [],
+          "loads": [
+            {
+              "at": "10-28 22:34:35",
+              "scene": "Dragonslayer Title (world entry)",
+              "entry": false,
+              "totalS": null,
+              "slowest": [
+                {
+                  "file": "alpine_draft.png",
+                  "from": "Forge",
+                  "ms": 17502,
+                  "done": true
+                },
+                {
+                  "file": "Bludgeon.png",
+                  "from": "Forge",
+                  "ms": 13412,
+                  "done": true
+                },
+                {
+                  "file": "condensed_libra.png",
+                  "from": "Forge",
+                  "ms": 13397,
+                  "done": true
+                }
+              ]
+            },
+            {
+              "at": "10-28 22:55:02",
+              "scene": "Eisendrache Kingdom",
+              "entry": false,
+              "totalS": null,
+              "slowest": [
+                {
+                  "file": "Eisendrache_Scene001.png",
+                  "from": "Forge",
+                  "ms": 222963,
+                  "done": true
+                },
+                {
+                  "file": "Fumes_02_Steam_White_400x400.webm",
+                  "from": "the game host",
+                  "ms": 1253,
+                  "done": true
+                },
+                {
+                  "file": "self-destruct.png",
+                  "from": "Forge",
+                  "ms": 7,
+                  "done": true
+                }
+              ]
+            },
+            {
+              "at": "10-28 23:06:44",
+              "scene": "Vastwind_Field002",
+              "entry": false,
+              "totalS": null,
+              "slowest": [
+                {
+                  "file": "Vastwind_Map002.png",
+                  "from": "Forge",
+                  "ms": 519477,
+                  "done": true
+                },
+                {
+                  "file": "ArrowLeft_Tile.png",
+                  "from": "Forge",
+                  "ms": 10164,
+                  "done": true
+                },
+                {
+                  "file": "Accessory_Tile.png",
+                  "from": "Forge",
+                  "ms": 7332,
+                  "done": true
+                }
+              ]
+            }
+          ]
+        },
+        "Blumairwen": {
+          "browser": "Chrome 156",
+          "cores": 12,
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5060 (0x00002D05) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "softwareGL": false,
+          "screen": "2170x1221@1.1799999475479126",
+          "boots": [
+            {
+              "at": "10-28 22:11:57",
+              "verdict": "FIRST LOAD",
+              "loadS": 317,
+              "wasDiscarded": false
+            }
+          ],
+          "draws": 5,
+          "drawMedianS": 0.5,
+          "drawMaxS": 519.9,
+          "stalls": 2,
+          "disconnects": 0,
+          "hides": 24,
+          "hiddenMinutes": 53,
+          "longHides": [
+            {
+              "at": "10-28 22:29:41",
+              "hiddenS": 582
+            },
+            {
+              "at": "10-28 22:51:32",
+              "hiddenS": 1240
+            },
+            {
+              "at": "10-28 23:29:13",
+              "hiddenS": 270
+            }
+          ],
+          "sampleGaps": [],
+          "loads": [
+            {
+              "at": "10-28 22:11:57",
+              "scene": "Dragonslayer Title (world entry)",
+              "entry": false,
+              "totalS": null,
+              "slowest": [
+                {
+                  "file": "Title.png",
+                  "from": "Forge",
+                  "ms": 235064,
+                  "done": true
+                },
+                {
+                  "file": "Zombie.png",
+                  "from": "Forge",
+                  "ms": 104835,
+                  "done": true
+                },
+                {
+                  "file": "feculent_flood.png",
+                  "from": "Forge",
+                  "ms": 104835,
+                  "done": true
+                }
+              ]
+            },
+            {
+              "at": "10-28 22:57:02",
+              "scene": "Eisendrache Kingdom",
+              "entry": false,
+              "totalS": null,
+              "slowest": [
+                {
+                  "file": "Eisendrache_Scene001.png",
+                  "from": "Forge",
+                  "ms": 344548,
+                  "done": true
+                },
+                {
+                  "file": "Fumes_02_Steam_White_400x400.webm",
+                  "from": "the game host",
+                  "ms": 2886,
+                  "done": true
+                },
+                {
+                  "file": "rings-steel.json",
+                  "from": "the game host",
+                  "ms": 1,
+                  "done": true
+                }
+              ]
+            },
+            {
+              "at": "10-28 23:06:43",
+              "scene": "Vastwind_Field002",
+              "entry": false,
+              "totalS": null,
+              "slowest": [
+                {
+                  "file": "Vastwind_Map002.png",
+                  "from": "Forge",
+                  "ms": 519806,
+                  "done": true
+                },
+                {
+                  "file": "ArrowLeft_Tile.png",
+                  "from": "Forge",
+                  "ms": 10163,
+                  "done": true
+                },
+                {
+                  "file": "Accessory_Tile.png",
+                  "from": "Forge",
+                  "ms": 7457,
+                  "done": true
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "mapLoads": [
+        {
+          "map": "Dragonslayer Title (world entry)",
+          "preloaded": false,
+          "RinriS": 79.6,
+          "BlumairwenS": 316.9,
+          "stuckOn": "Forge: Title.png + status icons (Blumairwen), status icons (Rinri)"
+        },
+        {
+          "map": "Eisendrache Kingdom",
+          "at": "22:51:15",
+          "preloaded": false,
+          "RinriS": 223.5,
+          "BlumairwenS": 345.7,
+          "stuckOn": "Forge: Eisendrache_Scene001.png (2.7 MB)"
+        },
+        {
+          "map": "Vastwind_Field002",
+          "at": "22:58:01",
+          "preloaded": false,
+          "RinriS": 520.5,
+          "BlumairwenS": 520.5,
+          "stuckOn": "Forge: Vastwind_Map002.png (2.9 MB); both finished in the same second"
+        },
+        {
+          "map": "Eisendrache Burning",
+          "at": "23:13:50",
+          "preloaded": true,
+          "RinriS": 1.4,
+          "BlumairwenS": 1.4,
+          "stuckOn": null
+        },
+        {
+          "map": "Vastwind_Field009",
+          "at": "23:22:35",
+          "preloaded": true,
+          "RinriS": 1.3,
+          "BlumairwenS": 1.3,
+          "stuckOn": null
+        }
+      ],
+      "playerNetwork": {
+        "Blumairwen": {
+          "link": "Wi-Fi 4 (802.11n) 2.4 GHz ch 8, link 52/57 Mbps, shared per-floor AP (3 users), adapter Intel AX200",
+          "speedtest": {
+            "at": "22:22",
+            "downMbps": 9.7,
+            "upMbps": 5.57,
+            "latencyMs": 13.7,
+            "loadedMs": [131, 191],
+            "jitterMs": 58.7,
+            "lossPct": 0.6,
+            "server": "BKK",
+            "ip": "IPv4",
+            "isp": "TRUE BROADBAND AS17552"
+          },
+          "forgeTrace": {
+            "colo": "BKK",
+            "http": "http/2",
+            "ip": "IPv4"
+          }
+        },
+        "Rinri": {
+          "link": "cable",
+          "speedtest": {
+            "at": "22:39",
+            "downMbps": 447,
+            "upMbps": 399,
+            "latencyMs": 43,
+            "loadedMs": [40, 46.9],
+            "jitterMs": 3.77,
+            "lossPct": 0,
+            "server": "SIN",
+            "ip": "IPv6",
+            "isp": "True Internet AS17552"
+          },
+          "forgeTrace": {
+            "colo": "BKK",
+            "http": "http/2",
+            "ip": "IPv6"
+          }
+        },
+        "host": {
+          "cloudflareDownMbps": 128,
+          "forgeColo": "BKK",
+          "forgeBackgroundFetchS": [2.8, 3.1],
+          "forgeFirstByteS": [1.1, 1.5]
+        }
+      },
+      "notes": ["No reloads for either player all night: both waited out stalls of up to 8 min 40 s under the load indicator.", "Every slow load waited on one Forge-hosted map background; every other file was already cached. The host fetched the same files from Forge in ~3 s (cf-cache-status MISS).", "Direct-link test (~23:03): a never-loaded Forge map image opened in a plain browser tab filled in slowly top-to-bottom for BOTH players, so the slow path is True -> Forge, not Foundry.", "Incognito re-open (~23:10): instant for Blumairwen (her Cloudflare node had kept the copy), still slow for Rinri (first load possibly never completed; he is on IPv6).", "Preloading the next map ~6-8 min ahead made both switches take ~1.4 s instead of 223-520 s.", "Forge edge copies stay fresh ~500 s (Cache-Control max-age=500) and less-used images get evicted soon after: re-requests 12-60 min later were MISS or REVALIDATED.", "Routes host -> both players' ISP edges: 0 loss all night (median 10-11 ms). Host line: 0-1 loss per 448 pings.", "Blumairwen's tab was hidden 9.7 min and 20.7 min with samples continuing: no freeze (H3 not shown on this browser).", "Not test-related: Vastwind_Field009 was turned into a camp room at the host's request (sceneMode camp, 4 member spots, campArrival); camp members spawned and walked; tokens cleared at cleanup."]
     }
   ]
 }

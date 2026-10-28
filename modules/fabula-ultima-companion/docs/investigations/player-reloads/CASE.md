@@ -1,9 +1,13 @@
 # Case: player-reloads — Rinri's and Blumairwen's pages reload mid-session
 
-**Status:** open, investigating. **Next:** a dedicated test with Rinri and Blumairwen, 2026-10-28 evening,
-in two halves (protocol step 6).
+**Status:** open, **cause located** (2026-10-28 test). **Next:**
+- the host picks a fix (see [Fix options](#fix-options-2026-10-28));
+- the players take ~21:00 measurements on another evening.
+
 **Tracking report:** `reports/2026-10-28-player-reload-investigation.md`
-**Sessions:** [2026-10-24 game session](sessions/2026-10-24-game-session.md) (the baseline)
+**Sessions:**
+- [2026-10-24 game session](sessions/2026-10-24-game-session.md) (the baseline)
+- [2026-10-28 test](sessions/2026-10-28-test.md) (Blumairwen + Rinri)
 **Data:** [sessions.json](sessions.json) · **Tools:** [../_tools/](../_tools/) · **Deep-dive from that night:** [../../player-reload-investigation-2026-10-24.md](../../player-reload-investigation-2026-10-24.md)
 
 ## Symptom
@@ -12,7 +16,25 @@ Two of four players, Rinri and Blumairwen, get a long black screen or a load bar
 changes, and their page reloads. On 2026-10-24 that happened 12 times each in 5½ hours. They say they never
 pressed F5. Trinio and Silryantish had 0 reloads.
 
-## Current verdict (2026-10-28)
+## Current verdict (2026-10-28, after the test)
+
+**The players reload because map changes stall for minutes. The stall is the first download of each map
+background from Forge over their provider, True.**
+
+- **The download:** every slow load tonight waited on one Forge-hosted map background, with all other files done.
+  - The host fetched the same files from Forge in ~3 s. Rinri and Blumairwen needed 3.7–8.7 min, even Rinri on a
+    447 Mbps, 0%-loss cable line.
+  - A Forge image opened in a plain browser tab filled in just as slowly, so it isn't Foundry.
+- **What the player sees:** Foundry gives up after two attempts and draws the map without its background: UI and
+  tokens on black. The picture arrives minutes later (`scene-texture-repair.js`). On 10-24 that was the moment to
+  press F5.
+- **First fetch only:** once Forge's Cloudflare node near the players has a copy, it's instant (Blumairwen's
+  Incognito re-open). Copies only stay fresh ~500 s, so most map changes pay it again.
+- **Preloading** the next map a few minutes ahead made the switch ~1.4 s. With a "don't reload" instruction,
+  nobody reloaded all night.
+- **Rinri says it's worst around 21:00**, so peak-hour load upstream probably makes it worse. Not measured yet.
+
+*Earlier verdict (before the test), still true:*
 
 **The reload happens on a live page.** Something navigates it.
 
@@ -40,7 +62,13 @@ pressed F5. Trinio and Silryantish had 0 reloads.
 Each hypothesis lists what would confirm or refute it. Move them between *open / weakened / ruled out*
 as sessions come in. Don't delete them.
 
-### H1 — A slow or stuck draw, then the player reloads *(leading)*
+### H1 — A slow or stuck draw, then the player reloads *(leading → confirmed as the mechanism, 2026-10-28)*
+
+**2026-10-28 test: confirmed.**
+- Every map change that wasn't preloaded stalled 3.7–8.7 min on one Forge background. Foundry then drew the map
+  without it: UI and tokens on black (H1b).
+- With the load indicator up and a "don't reload" instruction, nobody reloaded.
+- See [the session](sessions/2026-10-28-test.md).
 
 - **For:**
   - The transition cover (`screen-transition.js`, z 99999, `pointer-events: all`) hides Foundry's
@@ -68,7 +96,15 @@ as sessions come in. Don't delete them.
 - **Refute:** reloads with `drawing: false`, long after `canvasReady`, with the player at the keyboard
   and not touching anything.
 
-### H2 — The two players' shared route makes their draws slow *(why it's only them)*
+### H2 — The two players' shared route makes their draws slow *(why it's only them)* — reframed 2026-10-28
+
+**2026-10-28 test: reframed. It's True ↔ Forge, not the host's route.**
+- **The host → player route was clean all night:** 0 loss to both players' ISP edges, login → world data 12 s / 28 s.
+- **The slow part is the first fetch of each Forge image.** Most likely that's the Cloudflare node serving True
+  customers pulling it from Forge's origin. Both players are on True (AS17552); the host is on AIS and gets the same
+  files in ~3 s.
+- **Blumairwen's shared 2.4 GHz Wi-Fi 4 adds to it but isn't the cause:** 9.7 Mbps, 58.7 ms jitter, 0.6% loss.
+  Rinri, on 447 Mbps cable, stalled just as long.
 
 - **For:**
   - The 2026-10-24 deep-dive found both on an inter-ISP route from the host
@@ -88,6 +124,11 @@ as sessions come in. Don't delete them.
   (mobile hotspot test).
 
 ### H3 — A 5-minute tab freeze, then a manual reload *(Blumairwen's ~5½ min mode)*
+
+**2026-10-28 test: weakened.**
+- Blumairwen's tab was hidden 9.7 and 20.7 min (Chrome 156) and the logger samples kept coming. No freeze.
+- Her 10-24 "sixMin" cluster (325–367 s) matches tonight's natural stall length: 345.7 s on Eisendrache Kingdom.
+  Stalled loads are the likelier explanation. **To check:** the 10-24 reload times against that night's activations.
 
 - **For:**
   - 6 of her 12 reloads came 325–367 s after a draw: a 42 s spread over four hours. That's too
@@ -115,6 +156,10 @@ as sessions come in. Don't delete them.
 
 ### H4 — Weak client hardware, or a GPU reset
 
+**2026-10-28 test: unlikely.**
+- Blumairwen: RTX 5060, 12 cores. Rinri: GTX 1660, 8 cores. Both run hardware WebGL.
+- No disconnects, no sample gaps; heap peaked ~800 MB.
+
 - **For:** "weaker PCs" was the 2026-10-24 suspicion.
 - **GPU reset path:**
   - A driver reset (TDR) or GPU-process crash loses every WebGL context.
@@ -132,6 +177,42 @@ as sessions come in. Don't delete them.
     time [S46].
   - `chrome://gpu` log lines such as "The GPU process crashed". Same browser session only [S27, S48].
   - Low `deviceMemory`, long draw times, or heap and texture growth after a draw.
+
+## Fix options (2026-10-28)
+
+The host decides; nothing here is built yet. Cheapest first.
+
+1. **Preload as GM practice. Works today, no code.**
+   - Preload the next map, wait until the players' top bar clears (5–8 min tonight), then switch. The switch took
+     ~1.4 s.
+   - A preloaded map stays in each client's memory until Foundry evicts it, so preloading well ahead is fine.
+   - Maps outside the navigation bar have no right-click entry; use the console instead:
+     `game.scenes.preload("<sceneId>", true)`.
+   - During a preload, players see Foundry's own top bar: "Loading <map>" if they have permission on the map,
+     otherwise "Loading ...".
+2. **Automatic preload. Module code; needs a design.**
+   - For example: every client quietly preloads the maps linked from the current one (Scene Network, exits), or the
+     next map the GM queues.
+   - This would also replace `scene-prefetch.js`, which warms the wrong files (host-served videos) at the wrong time
+     (after the first draw).
+3. **Serve map images from the host instead of Forge.**
+   - The players' route to the host was clean all night.
+   - Costs: host upload (2–3 MB per map per player), and moving or mirroring the backgrounds of ~150 scenes.
+   - A host-side mirror keeps Forge as the source of truth: players fetch Forge images through the host, which gets
+     them from Forge in ~3 s.
+   - Bigger change; plan first.
+4. **Report it to Forge.**
+   - First fetches of their assets through Cloudflare BKK crawl for True (AS17552) customers, while AIS gets them in
+     ~3 s (cf-cache-status MISS, first byte ~1.1–1.5 s).
+   - Cheap to ask; outside our control.
+5. **Loading-screen follow-ups (ours):**
+   - At world entry the indicator says "press F5" after 2 minutes. Stalls run 4–9 min, so that hint now does harm:
+     drop it or push it much later.
+   - When a map draws without its background, show "the map picture is still downloading" until
+     `scene-texture-repair.js` restores it. Its toast only appears after a *failed* retry, so tonight's players saw
+     nothing.
+   - The host cache proxy (`reports/2026-10-25-host-cache-proxy-setup.md`) does **not** help here: it only
+     re-headers files the host serves.
 
 ## What the logger can and can't see
 
@@ -382,3 +463,10 @@ of RAM; it was closed as not planned.
   - **Plan:** observe first, in two halves (protocol step 6). The pre-fetch got an on/off switch,
     `scenePrefetch` (default on, v1.0.475), so the second half can run without it. Checked in a Node
     harness with stubbed Foundry globals (14 checks), not in a live Foundry.
+- **2026-10-28 (night): the dedicated test.** Blumairwen joined at 22:06, Rinri at 22:33.
+  - Record: [sessions/2026-10-28-test.md](sessions/2026-10-28-test.md). Data: `sessions.json` → `2026-10-28-test`.
+  - Maps were switched over CDP from the GM page. New host tool: `_tools/ping-watch.js`.
+  - **Cause located** (see Current verdict). No reloads. Preloading works.
+  - H1 confirmed, H2 reframed to True ↔ Forge, H3 weakened, H4 unlikely. Fix options added above.
+  - Not part of the test: Vastwind_Field009 became a camp room at the host's request (camp mode, 4 member spots,
+    arrival point). Members spawned and walked; tokens cleared at cleanup.
