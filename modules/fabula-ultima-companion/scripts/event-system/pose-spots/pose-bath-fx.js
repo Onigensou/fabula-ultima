@@ -135,14 +135,19 @@
     return RippleGraphics;
   }
 
+  // Two layers per bather: the far half of every ellipse is drawn just behind
+  // them (their body hides it), the near half just in front (it crosses the
+  // body), as a ring around someone standing in water does.
   function graphicsFor(token) {
     let rec = state.gfx.get(token.id);
-    if (rec && !rec.g.destroyed) return rec;
+    if (rec && !rec.back.destroyed && !rec.front.destroyed) return rec;
+    if (rec) dropGraphics(token.id);
     const Cls = rippleClass();
     if (!Cls) return null;
-    const g = new Cls();
-    canvas.primary.addChild(g);
-    rec = { g, lastX: token.x, lastY: token.y, movingUntil: 0 };
+    const back = new Cls(), front = new Cls();
+    canvas.primary.addChild(back);
+    canvas.primary.addChild(front);
+    rec = { back, front, lastX: token.x, lastY: token.y, movingUntil: 0 };
     state.gfx.set(token.id, rec);
     return rec;
   }
@@ -151,7 +156,25 @@
     const rec = state.gfx.get(tokenId);
     if (!rec) return;
     state.gfx.delete(tokenId);
-    try { rec.g.destroy(); } catch (_) {}
+    try { rec.back.destroy(); } catch (_) {}
+    try { rec.front.destroy(); } catch (_) {}
+  }
+
+  // Half an ellipse as a polygon: the near half (below the centre, toward the
+  // viewer) or the far half. Closed along the diameter when filled.
+  function halfEllipse(cx, cy, rx, ry, near, steps = 18) {
+    const pts = [];
+    for (let i = 0; i <= steps; i++) {
+      const a = near ? (Math.PI * i / steps) : (Math.PI + (Math.PI * i / steps));
+      pts.push(cx + (Math.cos(a) * rx), cy + (Math.sin(a) * ry));
+    }
+    return pts;
+  }
+
+  function strokeHalf(g, cx, cy, rx, ry, near, width, color, alpha) {
+    const pts = halfEllipse(cx, cy, rx, ry, near);
+    g.lineStyle(width, color, alpha).moveTo(pts[0], pts[1]);
+    for (let i = 2; i < pts.length; i += 2) g.lineTo(pts[i], pts[i + 1]);
   }
 
   function draw(token, now) {
@@ -173,17 +196,22 @@
     const wy = mesh.y + ((1 - mesh.anchor.y) * h);
     const rx = w * 0.42, ry = Math.max(4, w * 0.13);
 
-    const g = rec.g;
-    g.elevation = token.document.elevation ?? 0;
-    g.sortLayer = mesh.sortLayer;
-    g.sort = (mesh.sort ?? 0) + 0.5;   // just in front of the bather, behind anyone nearer
-    g.clear();
-    g.beginFill(base, SURFACE_ALPHA).drawEllipse(cx, wy, rx, ry).endFill();
-    g.lineStyle(1.5, ring, 0.85).drawEllipse(cx, wy, rx, ry);
     const ringAlpha = wading ? RING_ALPHA_WADING : RING_ALPHA_STILL;
-    for (let k = 0; k < 2; k++) {
-      const t = ((now / RING_MS) + (k / 2)) % 1;
-      g.lineStyle(1, ring, (1 - t) * ringAlpha).drawEllipse(cx, wy, rx * (1 + (t * 0.7)), ry * (1 + (t * 0.7)));
+    const sort = mesh.sort ?? 0;
+    for (const [g, near] of [[rec.back, false], [rec.front, true]]) {
+      g.elevation = token.document.elevation ?? 0;
+      g.sortLayer = mesh.sortLayer;
+      // Far half just behind the bather, near half just in front; both still
+      // behind anyone standing nearer the viewer.
+      g.sort = near ? sort + 0.5 : sort - 0.5;
+      g.clear();
+      g.beginFill(base, SURFACE_ALPHA).drawPolygon(halfEllipse(cx, wy, rx, ry, near)).endFill();
+      strokeHalf(g, cx, wy, rx, ry, near, 1.5, ring, 0.85);
+      for (let k = 0; k < 2; k++) {
+        const t = ((now / RING_MS) + (k / 2)) % 1;
+        const grow = 1 + (t * 0.7);
+        strokeHalf(g, cx, wy, rx * grow, ry * grow, near, 1, ring, (1 - t) * ringAlpha);
+      }
     }
   }
 

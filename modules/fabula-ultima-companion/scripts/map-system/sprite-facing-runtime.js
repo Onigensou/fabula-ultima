@@ -159,8 +159,12 @@
   const BATH_BOB_PX = 1.5;
   const BATH_BOB_MS = 2200;
   // The part under the water stays visible, faint and tinted the water's
-  // colour (pose-bath-fx.js samples it), as a body seen through water.
+  // colour (pose-bath-fx.js samples it), as a body seen through water. It
+  // fades out going down, gone before the feet: bathers have no walk
+  // animation, and feet gliding over the floor read as sliding.
   const BATH_UNDER_ALPHA = 0.35;
+  const BATH_UNDER_BANDS = 8;          // fade steps (PS1-style banding)
+  const BATH_UNDER_FADE_SHARE = 0.65;  // share of the submerged height the fade takes; below it, nothing
 
   const state = {
     installed: true,
@@ -976,19 +980,33 @@
     const f = crop.full.frame, top = crop.tex.height, below = f.height - top;
     if (below < 1) return;
 
+    // A container of horizontal bands of the art below the cut, each fainter
+    // than the one above, down to nothing.
     let s = rec.under;
     if (!s || s.destroyed || s.parent !== mesh || rec.underFor !== crop.tex) {
       dropUnderwater(rec);
-      s = new PIXI.Sprite(new PIXI.Texture(crop.full.baseTexture, new PIXI.Rectangle(f.x, f.y + top, f.width, below)));
-      s.alpha = BATH_UNDER_ALPHA;
+      s = new PIXI.Container();
+      const fadeH = Math.max(1, Math.round(below * BATH_UNDER_FADE_SHARE));
+      const bandH = Math.max(1, Math.ceil(fadeH / BATH_UNDER_BANDS));
+      for (let i = 0, y = 0; y < fadeH; i++, y += bandH) {
+        const h = Math.min(bandH, fadeH - y);
+        const band = new PIXI.Sprite(new PIXI.Texture(crop.full.baseTexture, new PIXI.Rectangle(f.x, f.y + top + y, f.width, h)));
+        band.y = y;
+        band.alpha = BATH_UNDER_ALPHA * (1 - (i / BATH_UNDER_BANDS));
+        s.addChild(band);
+      }
       mesh.addChild(s);
       rec.under = s;
       rec.underFor = crop.tex;
+      rec.underTint = null;
     }
     s.x = -mesh.anchor.x * crop.tex.width;
     s.y = (1 - mesh.anchor.y) * crop.tex.height;
     const c = window.oni?.PoseBathFx?.colorsFor?.(p.regionId)?.base;
-    if (Number.isFinite(c) && s.tint !== c) s.tint = c;
+    if (Number.isFinite(c) && rec.underTint !== c) {
+      for (const band of s.children) band.tint = c;
+      rec.underTint = c;
+    }
   }
 
   function dropUnderwater(rec) {
@@ -996,7 +1014,7 @@
     if (!s) return;
     rec.under = null;
     rec.underFor = null;
-    try { s.parent?.removeChild(s); s.destroy({ texture: false }); } catch (_) {}
+    try { s.parent?.removeChild(s); s.destroy({ children: true, texture: false }); } catch (_) {}
   }
 
   function releasePoseArt(rec) {
