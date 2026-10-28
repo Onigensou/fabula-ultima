@@ -7,7 +7,7 @@
 // require a GM. Read paths (list/listAugments) are open. The compiler does the
 // heavy lifting; this layer is validation + a thin ergonomic surface for the UI.
 
-import { FLAG_NS, ORBMENT_FLAG, readOrbment, slotCountOf, itemKindOf } from "./orbment-const.js";
+import { FLAG_NS, ORBMENT_FLAG, SLOT_SOURCES, readOrbment, slotCountOf, itemKindOf } from "./orbment-const.js";
 import { getAugment, augmentsForItemType, resolveAugment, canonicalizeParam, validateParam } from "./augment-registry.js";
 import { recompileOrbment } from "./orbment-compiler.js";
 
@@ -79,7 +79,7 @@ export async function install(itemOrUuid, slotIndex, augmentId, options = {}) {
   // else → the rulebook value) and how the install happened.
   const view = resolveAugment(augmentId, param, options.value ?? null);
   const value = options.value != null && view.vals?.includes(Number(options.value)) ? Number(options.value) : null;
-  const source = ["roll", "field", "craft"].includes(options.source) ? options.source : "craft";
+  const source = SLOT_SOURCES.includes(options.source) ? options.source : "craft";
 
   const orb = readOrbment(item);
   // Disallow the exact same augment+choice in two slots (RAW: an item can't gain

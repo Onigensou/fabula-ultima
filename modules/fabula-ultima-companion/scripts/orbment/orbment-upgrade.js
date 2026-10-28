@@ -153,7 +153,7 @@ async function installQueued(actors = []) {
       const plan = item ? planUpgrade({ item, slot: q.slot, id: q.id, param: q.param }) : fail("item_not_found");
       if (!plan.ok) { reason = upgradeFailText(plan); throw new Error(plan.reason); }
       const was = plan.was ? resolveAugment(plan.was.id, plan.was.param, plan.was.value) : null;
-      await install(item, q.slot, q.id, { param: plan.param, deductZenit: false, source: "craft", quiet: true });
+      await install(item, q.slot, q.id, { param: plan.param, deductZenit: false, source: "upgrade", quiet: true });
       _toAnnounce.push({
         kind: "upgrade", actorName: holder.name, ownerName: item.parent.id !== holder.id ? item.parent.name : "",
         itemName: item.name, itemUuid: item.uuid, itemRarity: String(item.system?.props?.item_rarity ?? ""),
