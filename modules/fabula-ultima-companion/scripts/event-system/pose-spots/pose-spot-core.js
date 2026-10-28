@@ -252,7 +252,16 @@
   const BATH_STEP_IN_GRID = 0.6;       // how far past the edge they land in the water
   const BATH_STEP_OUT_GRID = 0.45;     // and past the edge on the way out
 
+  // Water is flags.<module>.water = { depth, bathable, ... } (map-system/
+  // water-wade.js sinks anyone walking in it); the "!" bath is offered where
+  // it is bathable. The first build's flags.<module>.bath = { enabled, depth }
+  // still counts.
   function bathOf(regionDoc) {
+    const w = regionDoc?.getFlag?.(MODULE_ID, "water");
+    if (w) {
+      const depth = Number(w.depth);
+      return w.bathable && depth > 0 ? { depth } : null;
+    }
     const b = regionDoc?.getFlag?.(MODULE_ID, BATH_FLAG);
     if (!b?.enabled) return null;
     const depth = Number(b.depth);

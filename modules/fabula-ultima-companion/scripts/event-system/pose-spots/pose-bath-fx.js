@@ -108,7 +108,7 @@
     let c = state.colors.get(regionId);
     if (c) return c;
     const region = canvas.regions?.get(regionId);
-    const flag = region?.document?.getFlag?.(MODULE_ID, BATH_FLAG) ?? {};
+    const flag = region?.document?.getFlag?.(MODULE_ID, "water") ?? region?.document?.getFlag?.(MODULE_ID, BATH_FLAG) ?? {};
     let base = FALLBACK_COLOR;
     if (flag.autoColor === false && typeof flag.color === "string" && /^#?[0-9a-f]{6}$/i.test(flag.color)) {
       base = parseInt(flag.color.replace("#", ""), 16);
@@ -177,26 +177,46 @@
     for (let i = 2; i < pts.length; i += 2) g.lineTo(pts[i], pts[i + 1]);
   }
 
-  function draw(token, now) {
-    const pose = token.document?.getFlag?.(MODULE_ID, POSE_FLAG);
+  // Where a token meets the water, or null: a bather (the bottom edge of their
+  // cut art, without the bob) or anyone wading (map-system/water-wade.js).
+  // size: ripple scale for shallow water; fade: the ease in / out of a wade.
+  function waterlineOf(token) {
     const mesh = token.mesh;
-    if (pose?.pose !== "bath" || !mesh || mesh.destroyed || !token.visible) { dropGraphics(token.id); return; }
+    if (!mesh || mesh.destroyed || !token.visible) return null;
+    const pose = token.document?.getFlag?.(MODULE_ID, POSE_FLAG);
+    if (pose?.pose === "bath") {
+      const w = Math.abs(mesh.width), h = Math.abs(mesh.height);
+      return {
+        cx: mesh.x + ((0.5 - mesh.anchor.x) * w * Math.sign(mesh.scale.x || 1)),
+        wy: mesh.y + ((1 - mesh.anchor.y) * h),
+        w, regionId: pose.regionId, size: 1, fade: 1
+      };
+    }
+    if (pose) return null;
+    const line = window.oni?.WaterWade?.waterlineOf?.(token.id);
+    if (!line) return null;
+    const full = line.full || line.depth || 0.5;
+    return {
+      cx: line.cx, wy: line.wy, w: line.w, regionId: line.regionId,
+      size: 0.55 + (0.45 * Math.min(1, full / 0.5)),
+      fade: Math.min(1, line.depth / full)
+    };
+  }
+
+  function draw(token, now, line) {
+    const mesh = token.mesh;
     const rec = graphicsFor(token);
     if (!rec) return;
-    const { base, ring } = colorsFor(pose.regionId);
+    const { base, ring } = colorsFor(line.regionId);
 
     if (Math.hypot(token.x - rec.lastX, token.y - rec.lastY) > 0.5) rec.movingUntil = now + 300;
     rec.lastX = token.x; rec.lastY = token.y;
     const wading = now < rec.movingUntil;
 
-    // The waterline: the bottom edge of the cut art, without the bob.
-    const w = Math.abs(mesh.width);
-    const h = Math.abs(mesh.height);
-    const cx = mesh.x + ((0.5 - mesh.anchor.x) * w * Math.sign(mesh.scale.x || 1));
-    const wy = mesh.y + ((1 - mesh.anchor.y) * h);
-    const rx = w * 0.42, ry = Math.max(4, w * 0.13);
+    const { cx, wy, w } = line;
+    const rx = w * 0.42 * line.size, ry = Math.max(4, w * 0.13 * line.size);
 
-    const ringAlpha = wading ? RING_ALPHA_WADING : RING_ALPHA_STILL;
+    const ringAlpha = (wading ? RING_ALPHA_WADING : RING_ALPHA_STILL) * line.fade;
     const sort = mesh.sort ?? 0;
     for (const [g, near] of [[rec.back, false], [rec.front, true]]) {
       g.elevation = token.document.elevation ?? 0;
@@ -205,8 +225,8 @@
       // behind anyone standing nearer the viewer.
       g.sort = near ? sort + 0.5 : sort - 0.5;
       g.clear();
-      g.beginFill(base, SURFACE_ALPHA).drawPolygon(halfEllipse(cx, wy, rx, ry, near)).endFill();
-      strokeHalf(g, cx, wy, rx, ry, near, 1.5, ring, 0.85);
+      g.beginFill(base, SURFACE_ALPHA * line.fade).drawPolygon(halfEllipse(cx, wy, rx, ry, near)).endFill();
+      strokeHalf(g, cx, wy, rx, ry, near, 1.5, ring, 0.85 * line.fade);
       for (let k = 0; k < 2; k++) {
         const t = ((now / RING_MS) + (k / 2)) % 1;
         const grow = 1 + (t * 0.7);
@@ -221,7 +241,8 @@
       const now = performance.now();
       const seen = new Set();
       for (const token of canvas.tokens?.placeables ?? []) {
-        if (token.document?.getFlag?.(MODULE_ID, POSE_FLAG)?.pose === "bath") { seen.add(token.id); draw(token, now); }
+        const line = waterlineOf(token);
+        if (line) { seen.add(token.id); draw(token, now, line); }
       }
       for (const id of [...state.gfx.keys()]) if (!seen.has(id)) dropGraphics(id);
     } catch (e) {
@@ -233,8 +254,8 @@
   function attach() {
     if (state.tickerFn || !canvas?.app?.ticker) return;
     state.tickerFn = tick;
-    // After Foundry's refresh and the pose hold, before the frame is drawn.
-    canvas.app.ticker.add(state.tickerFn, null, PIXI.UPDATE_PRIORITY.LOW - 1);
+    // After Foundry's refresh, the pose hold and the wade (LOW - 1), before the frame is drawn.
+    canvas.app.ticker.add(state.tickerFn, null, PIXI.UPDATE_PRIORITY.LOW - 2);
   }
 
   function detach() {

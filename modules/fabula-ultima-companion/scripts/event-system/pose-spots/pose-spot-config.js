@@ -149,47 +149,52 @@
   });
 
   // ------------------------------------------------------------
-  // Region Config: Bathing (a water Region the party can bathe in)
+  // Region Config: Water (anyone walking in sinks; optionally bathable)
   // ------------------------------------------------------------
-  // flags.fabula-ultima-companion.bath = { enabled, depth, autoColor, color },
+  // flags.fabula-ultima-companion.water = { depth, bathable, autoColor, color },
   // next to the footstep Surface picker on the Identity tab.
-  const BATH = `flags.${MODULE_ID}.bath`;
-  const DEPTHS = [[0.38, "Waist"], [0.5, "Chest"], [0.62, "Shoulders"]];
+  // map-system/water-wade.js sinks anyone in it by `depth`; the "!" bath of
+  // pose-spot-core.js is offered where it is bathable. The first build's
+  // flags...bath = { enabled, depth, ... } is read once to fill the form.
+  const WATER = `flags.${MODULE_ID}.water`;
+  const DEPTH_PRESETS = [[0.12, "Ankle"], [0.25, "Knee"], [0.38, "Waist"], [0.5, "Chest"]];
 
-  function buildBath(app, root) {
+  function buildWater(app, root) {
     const doc = app?.document;
-    if (!doc || root.querySelector(".oni-pose-bath")) return;
+    if (!doc || root.querySelector(".oni-water")) return;
     const host = root.querySelector('section[data-tab="identity"]') ?? root.querySelector("form") ?? root;
-    const b = doc.getFlag(MODULE_ID, "bath") ?? {};
-    const depth = Number(b.depth) > 0 ? Number(b.depth) : 0.5;
-    const auto = b.autoColor !== false;
-    const color = (typeof b.color === "string" && /^#[0-9a-f]{6}$/i.test(b.color)) ? b.color : "#6fb8e8";
+    const old = doc.getFlag(MODULE_ID, "bath") ?? {};
+    const w = doc.getFlag(MODULE_ID, "water") ?? (old.enabled ? { depth: old.depth, bathable: true, autoColor: old.autoColor, color: old.color } : {});
+    const depth = Number(w.depth) > 0 ? Number(w.depth) : 0;
+    const auto = w.autoColor !== false;
+    const color = (typeof w.color === "string" && /^#[0-9a-f]{6}$/i.test(w.color)) ? w.color : "#6fb8e8";
+    const listId = `oni-water-depths-${doc.id}`;
 
     const wrap = document.createElement("fieldset");
-    wrap.className = "oni-pose-bath";
+    wrap.className = "oni-water";
     wrap.innerHTML = `
-      <legend>Bathing</legend>
-      <div class="form-group">
-        <label>Bathable</label>
-        <div class="form-fields"><input type="checkbox" name="${BATH}.enabled" ${b.enabled ? "checked" : ""}></div>
-        <p class="hint">At the water's edge the party gets the "!" and can step in to bathe (onsen art, or their own art when they have none). They wade freely and leave by walking out.</p>
-      </div>
+      <legend>Water</legend>
       <div class="form-group">
         <label>Depth</label>
         <div class="form-fields">
-          <select name="${BATH}.depth" data-dtype="Number">
-            ${DEPTHS.map(([v, l]) => `<option value="${v}" ${Math.abs(v - depth) < 0.01 ? "selected" : ""}>${l}</option>`).join("")}
-          </select>
+          <input type="number" name="${WATER}.depth" data-dtype="Number" min="0" max="0.85" step="0.01" value="${depth}" list="${listId}">
+          <datalist id="${listId}">${DEPTH_PRESETS.map(([v, l]) => `<option value="${v}" label="${l}"></option>`).join("")}</datalist>
         </div>
+        <p class="hint">How deep anyone walking in here sinks, as a share of their sprite's height: Ankle 0.12, Knee 0.25, Waist 0.38, Chest 0.5. 0 = no sinking (footstep sound only). Their walk art keeps playing.</p>
+      </div>
+      <div class="form-group">
+        <label>Bathable</label>
+        <div class="form-fields"><input type="checkbox" name="${WATER}.bathable" ${w.bathable ? "checked" : ""}></div>
+        <p class="hint">At the edge the party gets the "!" and can step in to bathe in their onsen art (or their own). They leave by walking out. Needs a depth above 0.</p>
       </div>
       <div class="form-group">
         <label>Ripple colour from the map</label>
-        <div class="form-fields"><input type="checkbox" name="${BATH}.autoColor" ${auto ? "checked" : ""}></div>
+        <div class="form-fields"><input type="checkbox" name="${WATER}.autoColor" ${auto ? "checked" : ""}></div>
         <p class="hint">On: sampled from the water painted inside this Region (red springs get red ripples). Off: the colour below.</p>
       </div>
       <div class="form-group">
         <label>Ripple colour</label>
-        <div class="form-fields"><input type="color" name="${BATH}.color" value="${color}"></div>
+        <div class="form-fields"><input type="color" name="${WATER}.color" value="${color}"></div>
       </div>
     `;
     host.appendChild(wrap);
@@ -199,7 +204,7 @@
   Hooks.on("renderRegionConfig", (app, html) => {
     if (!game.user?.isGM) return;
     const root = html instanceof HTMLElement ? html : html?.[0];
-    if (root) buildBath(app, root);
+    if (root) buildWater(app, root);
   });
 
   window.oni.PoseSpotConfig = { installed: true };

@@ -156,6 +156,7 @@
     "scripts/map-system/movementControl-bootstrap.js",
     "scripts/map-system/footstep-runtime.js",
     "scripts/map-system/sprite-facing-runtime.js",
+    "scripts/map-system/water-wade.js",
     "scripts/map-system/depth-index.js",
     "scripts/map-system/foreground-occluder.js",
     "scripts/check-requester/cr-api.js",
