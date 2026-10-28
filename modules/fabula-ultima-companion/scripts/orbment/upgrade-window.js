@@ -11,7 +11,7 @@
 import { readOrbment, itemKindOf } from "./orbment-const.js";
 import { upgradeAugments, resolveAugment, topValue, paramPickCount } from "./augment-registry.js";
 import { rarityKey } from "./orbment-roll-tables.js";
-import { injectAttuneStyles } from "./alchemist-window.js";
+import { injectAttuneStyles, spriteSrc, spriteHTML } from "./alchemist-window.js";
 import { hasUpgradeHeroic, queuedUpgrade, upgradeOpen, planUpgrade, upgradeFailText, requestUpgrade } from "./orbment-upgrade.js";
 
 const TAG = "[Orbment][UpgradeUI]";
@@ -129,7 +129,7 @@ export class UpgradeWindow {
     el.id = WIN_ID;
     el.innerHTML = `
       <div class="fu-up-titlebar">
-        <img class="fu-up-tb-sprite" src="${esc(this.sprite())}" alt="">
+        ${spriteHTML(this.sprite(), "fu-up-tb-sprite")}
         <div class="fu-up-tb-text"><span class="fu-up-title">Upgrade</span>
           <span class="fu-up-sub">${esc(this.holder.name)} · Tinkerer heroic skill · once per rest · ready when the party wakes</span></div>
         <span class="fu-up-zenit"></span>
@@ -150,7 +150,7 @@ export class UpgradeWindow {
     sfx("open");
   }
 
-  sprite() { return this.holder?.prototypeToken?.texture?.src ?? this.holder?.img ?? "icons/svg/mystery-man.svg"; }
+  sprite() { return spriteSrc(this.holder); }
 
   render() {
     if (!this.el) return;
@@ -403,7 +403,7 @@ function injectUpgradeStyles() {
 .fu-up-body { flex: 1; display: grid; grid-template-columns: 250px minmax(0,1fr) 360px; min-height: 0; }
 .fu-up-left { display: flex; flex-direction: column; gap: 10px; padding: 14px 12px 14px 16px; border-right: 1px solid rgba(122,78,32,.25); min-height: 0; overflow-y: auto; }
 .fu-up-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.fu-up-chip { font: inherit; font-size: 13px; font-weight: 600; padding: 6px 12px; min-height: 36px; border-radius: 999px; border: 1px solid #b8865a; background: #faf6ee; color: #3a1e06; cursor: pointer; }
+.fu-up-chip { font: inherit; width: auto; height: auto; line-height: 1.3; font-size: 13px; font-weight: 600; padding: 6px 12px; min-height: 36px; border-radius: 999px; border: 1px solid #b8865a; background: #faf6ee; color: #3a1e06; cursor: pointer; }
 .fu-up-chip.is-on { background: #7a4e20; color: #fff6dd; border-color: #5c3818; }
 .fu-up-chip:disabled:not(.is-on) { opacity: .5; cursor: not-allowed; }
 .fu-up-grid { border-radius: 10px; max-height: none; }
@@ -425,7 +425,7 @@ function injectUpgradeStyles() {
 .fu-up-plan-note { font-size: 12px; color: #6b4a26; }
 .fu-up-queued { width: 100%; box-sizing: border-box; border-radius: 12px; border: 2px solid #2f7a2a; background: #f0f7e6; padding: 12px 14px; display: flex; align-items: center; gap: 12px; }
 .fu-up-queued > span { flex: 1; font-size: 14px; line-height: 1.35; }
-.fu-up-cancel { font: inherit; font-size: 13px; min-height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid #a3321c; background: transparent; color: #7d2412; cursor: pointer; white-space: nowrap; }
+.fu-up-cancel { font: inherit; width: auto; height: auto; line-height: 1.3; flex: none; font-size: 13px; min-height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid #a3321c; background: transparent; color: #7d2412; cursor: pointer; white-space: nowrap; }
 .fu-up-cancel:hover:not(:disabled) { background: rgba(163,50,28,.08); }
 .fu-up-cancel:disabled { opacity: .5; cursor: wait; }
 .fu-up-right { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px 16px; border-left: 1px solid rgba(122,78,32,.25); min-height: 0; }
@@ -443,7 +443,7 @@ function injectUpgradeStyles() {
 .fu-up-opts { display: flex; flex-direction: column; gap: 5px; border-top: 1px solid rgba(122,78,32,.25); padding-top: 8px; }
 .fu-up-prompt { font-size: 12px; font-weight: 600; color: #6b4a26; }
 .fu-up-optrow { display: flex; flex-wrap: wrap; gap: 5px; }
-.fu-up-opt { font: inherit; font-size: 12.5px; padding: 4px 10px; min-height: 32px; border-radius: 999px; border: 1px solid #b8865a; background: #faf6ee; color: #3a1e06; cursor: pointer; }
+.fu-up-opt { font: inherit; width: auto; height: auto; line-height: 1.3; font-size: 12.5px; padding: 4px 10px; min-height: 32px; border-radius: 999px; border: 1px solid #b8865a; background: #faf6ee; color: #3a1e06; cursor: pointer; }
 .fu-up-opt.is-on { background: #2f6fa8; color: #fff; border-color: #1f4f7a; }
 .fu-up-opt:disabled:not(.is-on) { opacity: .5; cursor: not-allowed; }
 .fu-up-hint { font-size: 11.5px; color: #6b4a26; }

@@ -80,6 +80,7 @@ function injectStyles() {
 .oni-ofb-old { color: #8a6a4a; text-decoration: line-through; }
 .oni-ofb-rows { display: flex; flex-direction: column; align-items: center; gap: 2px; animation: oni-ofb-fadeup .5s .08s cubic-bezier(.22,.8,.3,1) both; }
 .oni-ofb-link { font: inherit; font-weight: 600; background: none; border: 0; padding: 0 2px; border-radius: 4px; cursor: pointer;
+  display: inline; width: auto; height: auto; line-height: inherit; /* undo Foundry's global button sizing */
   color: var(--c, #3b2a19); text-decoration: underline dotted; text-underline-offset: 4px; text-decoration-thickness: 1px; }
 .oni-ofb-link:hover, .oni-ofb-link:focus-visible { background: rgba(201,164,74,.28); outline: none; }
 .oni-ofb-card.morph { animation: oni-ofb-morph .6s cubic-bezier(.22,.8,.3,1) both; }

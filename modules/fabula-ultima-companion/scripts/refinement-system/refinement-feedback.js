@@ -71,6 +71,7 @@
 .oni-refine-fb-card.fail    .oni-rfb-to { font-style: italic; color: #7a5c38; opacity: .8; }
 /* Item name → click opens the Item Window for this viewer (same as the Orbment banner). */
 .oni-rfb-link { font: inherit; font-weight: 700; color: inherit; background: none; border: 0; padding: 0 2px; border-radius: 4px; cursor: pointer;
+  display: inline; width: auto; height: auto; line-height: inherit; /* undo Foundry's global button sizing */
   text-decoration: underline dotted; text-underline-offset: 4px; text-decoration-thickness: 1px; }
 .oni-rfb-link:hover, .oni-rfb-link:focus-visible { background: rgba(201,164,74,.28); outline: none; }
 .oni-refine-fb-tag {

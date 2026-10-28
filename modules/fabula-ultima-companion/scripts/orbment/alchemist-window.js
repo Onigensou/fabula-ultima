@@ -89,6 +89,21 @@ let _instance = null;
 // star-burst / expression styles, and the burst itself.
 export function injectAttuneStyles() { AlchemistWindow.prototype._injectStyles(); }
 
+// An actor's sprite for a portrait panel (also used by Camp Forge / Upgrade).
+// Token art can be a wildcard ("…/*", Foundry's random token image), which no
+// <img> can load — skip it; a placed token's own art comes first. A video
+// battler (.webm) plays muted in a <video>.
+const VIDEO_RE = /\.(webm|mp4|m4v|ogv)(\?.*)?$/i;
+export function spriteSrc(actor) {
+  const ok = (s) => typeof s === "string" && s.length > 0 && !s.includes("*");
+  return [actor?.token?.texture?.src, actor?.prototypeToken?.texture?.src, actor?.img].find(ok) ?? "icons/svg/mystery-man.svg";
+}
+export function spriteHTML(src, cls = "", alt = "") {
+  return VIDEO_RE.test(src)
+    ? `<video class="${cls}" src="${esc(src)}" autoplay loop muted playsinline aria-label="${esc(alt)}"></video>`
+    : `<img class="${cls}" src="${esc(src)}" alt="${esc(alt)}">`;
+}
+
 // A ring flash + a burst of stars from one socket (`wrap` = .fu-aw-sock-wrap);
 // `jack` = this socket hit a Jackpot (bigger, multicolour shower).
 export function burstAtSocket(wrap, jack, anyJackpot = jack) {
@@ -156,7 +171,7 @@ export class AlchemistWindow {
     if (!src) return;
     try { (foundry.audio?.AudioHelper ?? AudioHelper).play({ src, volume, autoplay: true, loop: false }, false); } catch {}
   }
-  _npcImg() { return this._alchemist?.prototypeToken?.texture?.src ?? this._alchemist?.img ?? "icons/svg/mystery-man.svg"; }
+  _npcImg() { return spriteSrc(this._alchemist); }
   _npcName() { return this._alchemist?.name ?? "Alchemist"; }
 
   // The acting character: the user's own; a GM falls back to a controlled token's.
@@ -253,7 +268,7 @@ export class AlchemistWindow {
       <div class="fu-aw-grid">${grid}</div>
       <div class="fu-aw-grow"></div>
       <div class="fu-aw-npc">
-        <span class="fu-aw-npc-fig"><img class="fu-aw-npc-img ${pose}" src="${esc(this._npcImg())}" alt="${esc(this._npcName())}"><span class="fu-aw-emote" aria-hidden="true">${emote}</span></span>
+        <span class="fu-aw-npc-fig">${spriteHTML(this._npcImg(), `fu-aw-npc-img ${pose}`, this._npcName())}<span class="fu-aw-emote" aria-hidden="true">${emote}</span></span>
         <p class="fu-aw-line${lead === "jackpot" ? " is-jack" : ""}">“${esc(this._busy ? SPIN_LINE : this._line)}”</p>
       </div>`;
     root.querySelectorAll(".fu-aw-tab").forEach((b) => b.addEventListener("click", () => {
@@ -508,7 +523,7 @@ export class AlchemistWindow {
 .fu-aw-left { display: flex; flex-direction: column; padding: 12px 12px 12px 14px; border-right: 1px solid rgba(122,78,32,.25); min-height: 0; }
 .fu-aw-label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #6b4a26; }
 .fu-aw-tabs { display: flex; gap: 4px; margin-top: 8px; }
-.fu-aw-tab { font: inherit; font-size: 12.5px; font-weight: 600; padding: 6px 10px; border-radius: 8px 8px 0 0; border: 1px solid #b8865a; border-bottom: 0; background: #e4d3ac; color: #6b4a26; cursor: pointer; }
+.fu-aw-tab { font: inherit; width: auto; height: auto; line-height: 1.3; font-size: 12.5px; font-weight: 600; padding: 6px 10px; border-radius: 8px 8px 0 0; border: 1px solid #b8865a; border-bottom: 0; background: #e4d3ac; color: #6b4a26; cursor: pointer; }
 .fu-aw-tab.is-on { background: #faf6ee; color: #3a1e06; }
 .fu-aw-grid { background: #faf6ee; border: 1px solid #b8865a; border-radius: 0 10px 10px 10px; padding: 9px; display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; align-content: start; max-height: 42%; overflow-y: auto; }
 .fu-aw-tile { position: relative; aspect-ratio: 1; border-radius: 10px; border: 2px solid #c9b48a; background: #2b1d10; display: grid; place-items: center; cursor: pointer; padding: 0; }
@@ -526,7 +541,7 @@ export class AlchemistWindow {
 .fu-aw-emote { position: absolute; inset: 0; pointer-events: none; }
 .fu-aw-line { margin: 0; font-size: 13px; line-height: 1.4; font-style: italic; }
 .fu-aw-line.is-jack { font-weight: 700; font-style: normal; color: #8a5a00; font-size: 14px; }
-.fu-aw-center { position: relative; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 16px 20px; min-height: 0; overflow-y: auto;
+.fu-aw-center { position: relative; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 16px 20px; min-height: 0; overflow-y: auto; overflow-x: hidden;
   background: radial-gradient(ellipse at 50% 30%, rgba(255,250,235,.85), rgba(228,211,172,0) 70%); }
 .fu-aw-item-name { font-size: 21px; font-weight: 700; text-align: center; }
 .fu-aw-item-sub { font-size: 12.5px; color: #6b4a26; margin-top: -8px; text-transform: capitalize; }
@@ -568,7 +583,7 @@ export class AlchemistWindow {
 .fu-aw-res-text { font-size: 13px; line-height: 1.35; }
 .fu-aw-right { display: flex; flex-direction: column; gap: 9px; padding: 12px 14px 14px; border-left: 1px solid rgba(122,78,32,.25); min-height: 0; }
 .fu-aw-row { display: flex; justify-content: space-between; align-items: baseline; }
-.fu-aw-mini { font: inherit; font-size: 12.5px; padding: 3px 12px; border-radius: 9px; border: 1px solid #b8865a; background: transparent; color: #6b4a26; cursor: pointer; }
+.fu-aw-mini { font: inherit; width: auto; height: auto; line-height: 1.3; font-size: 12.5px; padding: 3px 12px; border-radius: 9px; border: 1px solid #b8865a; background: transparent; color: #6b4a26; cursor: pointer; }
 .fu-aw-mini:hover { background: rgba(255,255,255,.5); }
 .fu-aw-stone { font: inherit; text-align: left; display: grid; grid-template-columns: 46px minmax(0,1fr) auto; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 12px;
   border: 2px solid #d6c49c; background: #faf6ee; cursor: grab; color: #3a1e06; width: 100%; }

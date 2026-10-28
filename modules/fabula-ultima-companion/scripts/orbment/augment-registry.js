@@ -395,8 +395,12 @@ export const AUGMENTS = [
     param: { prompt: "Choose an attribute", options: ATTRS.map((a) => ({ value: a.id, label: a.label, icon: "🎲" })) },
     build: (v) => {
       const a = ATTRS.find((x) => x.id === v);
+      // bonus_<attr> moves the die VALUE: the sheet computes <attr>_current =
+      // clamp(<attr>_base + bonus_<attr>, 4, 14), so ONE size is +2 (Slow is -2,
+      // Supercharge +2). Live-checked 2026-10-28. The sheet's ceiling is d14, not
+      // d12 — still pending until that cap is decided.
       return a ? { label: `Attribute Up: ${a.label}`, summary: `Your ${a.label} die grows one size (up to d12).`,
-        ae: { name: `${a.label} Up (Orbment)`, changes: [{ key: `bonus_${a.id}`, mode: ADD, value: equipGated(1) }] } } : {};
+        ae: { name: `${a.label} Up (Orbment)`, changes: [{ key: `bonus_${a.id}`, mode: ADD, value: equipGated(2) }] } } : {};
     },
   },
 

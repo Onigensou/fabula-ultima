@@ -31,7 +31,7 @@ import { readOrbment, itemKindOf } from "./orbment-const.js";
 import { resolveAugment } from "./augment-registry.js";
 import { rarityKey } from "./orbment-roll-tables.js";
 import { executeAttune, attuneFailText } from "./orbment-attune.js";
-import { injectAttuneStyles, burstAtSocket } from "./alchemist-window.js";
+import { injectAttuneStyles, burstAtSocket, spriteSrc, spriteHTML } from "./alchemist-window.js";
 
 const TAG = "[Orbment][CampForge]";
 const CHANNEL = "module.fabula-ultima-companion";
@@ -247,7 +247,7 @@ class CampForgeWindow {
     return arr;
   }
   markCount() { const it = this.item(); return it ? this.marksFor(it).filter(Boolean).length : 0; }
-  sprite() { return this.actor?.prototypeToken?.texture?.src ?? this.actor?.img ?? "icons/svg/mystery-man.svg"; }
+  sprite() { return spriteSrc(this.actor); }
 
   build() {
     injectAttuneStyles();
@@ -300,7 +300,7 @@ class CampForgeWindow {
       ${opts}
       <div class="fu-aw-grow"></div>
       <div class="fu-aw-npc">
-        <span class="fu-aw-npc-fig"><img class="fu-aw-npc-img ${pose}" src="${esc(this.sprite())}" alt="${esc(this.op.actorName)}"><span class="fu-aw-emote" aria-hidden="true">${emote}</span></span>
+        <span class="fu-aw-npc-fig">${spriteHTML(this.sprite(), `fu-aw-npc-img ${pose}`, this.op.actorName)}<span class="fu-aw-emote" aria-hidden="true">${emote}</span></span>
         <p class="fu-aw-line${lead === "jackpot" ? " is-jack" : ""}">“${esc(line)}”</p>
       </div>`;
   }
@@ -468,8 +468,10 @@ class CampForgeWindow {
     this.itemId = this.actor?.items?.find((i) => i.uuid === res.itemUuid)?.id ?? this.itemId;
     this.results = res.results;
     this.lead = res.lead;
+    // Same line on every screen: seed the pick with the operation id.
     const pool = LINES[res.lead] ?? LINES.sidegrade;
-    this.line = pool[Math.floor(Math.random() * pool.length)];
+    const seed = [...String(this.op.opId)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+    this.line = pool[seed % pool.length];
     this.render();
     sfx(res.lead === "jackpot" ? "jackpot" : "done");
     for (const r of res.results) {
@@ -519,7 +521,7 @@ function injectCampForgeStyles() {
 .fu-cf-opt-head b { font-size: 15px; }
 .fu-cf-tag { font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 1px 7px; border-radius: 999px; background: #2f7a2a; color: #fff8e4; }
 .fu-cf-tag.is-soon { background: #8a8178; }
-.fu-cf-main { display: flex; flex-direction: column; gap: 14px; padding: 18px 24px; min-height: 0; overflow-y: auto; }
+.fu-cf-main { display: flex; flex-direction: column; gap: 14px; padding: 18px 24px; min-height: 0; overflow-y: auto; overflow-x: hidden; }
 .fu-cf-head { display: flex; flex-direction: column; gap: 4px; font-size: 14px; line-height: 1.45; }
 .fu-cf-head b { font-size: 22px; }
 .fu-cf-tiles { display: flex; flex-wrap: wrap; gap: 10px; max-height: 164px; overflow-y: auto; padding: 2px; }
@@ -543,7 +545,7 @@ function injectCampForgeStyles() {
 #${WIN_ID} .fu-aw-res b { font-size: 17px; }
 #${WIN_ID} .fu-aw-old { font-size: 14px; }
 #${WIN_ID}.is-spectator .fu-aw-tile, #${WIN_ID}.is-spectator .fu-aw-sock { cursor: default; }
-.fu-cf-skip { font: inherit; font-size: 12.5px; align-self: center; margin-top: -6px; padding: 4px 12px; border: none; background: transparent; color: #6b4a26;
+.fu-cf-skip { font: inherit; width: auto; height: auto; line-height: 1.3; font-size: 12.5px; align-self: center; margin-top: -6px; padding: 4px 12px; border: none; background: transparent; color: #6b4a26;
   text-decoration: underline dotted; text-underline-offset: 3px; cursor: pointer; }
 .fu-cf-skip:hover:not(:disabled) { color: #3a1e06; }
 .fu-cf-skip:disabled { opacity: .45; cursor: not-allowed; }
