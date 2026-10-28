@@ -148,7 +148,8 @@
   };
   const origin = src => {
     if (!/^https?:\/\//i.test(src)) return "the game host";
-    if (/forge-vtt\.com/i.test(src)) return "Forge";
+    // a Forge file the host mirrors (scripts/forge-mirror) actually comes from the host
+    if (/forge-vtt\.com/i.test(src)) return globalThis.FUCompanion?.api?.forgeMirror?.has?.(src) ? "the game host" : "Forge";
     try { return new URL(src).hostname; } catch { return "the web"; }
   };
   const clock = ms => {

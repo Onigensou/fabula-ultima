@@ -1,7 +1,8 @@
 # Case: player-reloads — Rinri's and Blumairwen's pages reload mid-session
 
-**Status:** open, **cause located** (2026-10-28 test). **Next:**
-- the host picks a fix (see [Fix options](#fix-options-2026-10-28));
+**Status:** open, **cause located** (2026-10-28 test); **fix built** 2026-10-29 (the forge mirror,
+`tools/forge-mirror/README.md`), tested in the sandbox only. **Next:**
+- a real-player test of the mirror: world entry plus map switches without preloading, compared with 10-28;
 - the players take ~21:00 measurements on another evening.
 
 **Tracking report:** `reports/2026-10-28-player-reload-investigation.md`
@@ -207,6 +208,8 @@ The host decides; nothing here is built yet. Cheapest first.
        every Forge file the clients load.
      - Capacity: host upload ≈ 49 Mbps → ≈ 2 s per map change for 5 remote clients. Disk and CPU are no concern.
      - Details are in the session addendum.
+   - **Built 2026-10-29** as "keep Forge, mirror on the host": `tools/forge-mirror/README.md`. Sound is included;
+     images inside sheets, journals and chat are not yet.
 4. **Report it to Forge.**
    - First fetches of their assets through Cloudflare BKK crawl for True (AS17552) customers, while AIS gets them in
      ~3 s (cf-cache-status MISS, first byte ~1.1–1.5 s).
@@ -481,3 +484,28 @@ of RAM; it was closed as not planned.
   - World entry is still held up by Forge status icons.
   - The host and sarunphat chose option 3. The next step is a migration plan: the assets already exist in the
     host's local art folders.
+- **2026-10-29 (night): the forge mirror was built and sandbox-tested.** Keep Forge, mirror on the host; full
+  design in `tools/forge-mirror/README.md`.
+  - **Sync:** 3,120 files, 1,198 MB, every one MD5-identical to Forge's stored file.
+    - 375 were copied from the host's local originals (name + MD5 match).
+    - A deep scan found byte-identical originals locally for 86% of the Forge files in use.
+    - A repeat run takes ~1 s. The session launcher runs it at start, capped at 3 min.
+  - **Client:** `scripts/forge-mirror/forge-mirror.js` (v1.0.479).
+    - Redirect points: PIXI aliases, `fetch`, and media element `src`.
+    - Fallback to Forge; world-setting switch; client-health records; the GM writes `wanted.json`.
+  - **Sandbox results:**
+    - a 10/10 test suite: textures, map change, unload/reload, fetch, game.audio, elements, misses, cors-retry
+      passthrough, the switch, the GM export;
+    - 3/3 fallbacks with missing mirror files;
+    - a 400 s music track via an `<audio>` element;
+    - the full loop: GM export → sync → the newly mirrored Castle background drawn from the mirror.
+  - **Findings along the way:**
+    - **Forge's CDN never caches audio** (`cf-cache-status: DYNAMIC`). Every sound came straight from Forge's
+      storage, i.e. the slow path for True players, on every play.
+    - **The Forge module turns off Foundry's cache-bust retry for Forge URLs** (`getCacheBustURL` returns false).
+      A Forge texture that fails is never retried by Foundry; only `scene-texture-repair.js` retries, and only scene
+      backgrounds. The mirror client does its own fallback.
+    - Three pairs of Forge paths differ only by case and are different pictures (`boot.png`/`Boot.png`, …); one
+      folder name ends in a dot. Both go to `_case/` in the mirror.
+    - **203 references point at files no longer on Forge** (broken today, e.g. `Fabula Stuffs/Sprites` ×76),
+      listed in `forge-mirror/broken.json`. Noted at the host's request; no action.

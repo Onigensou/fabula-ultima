@@ -83,7 +83,12 @@ function verdict(b) {
 // ── per user ─────────────────────────────────────────────────────────────────
 const users = {};
 for (const e of entries) {
-  const u = (users[e.user] ??= { boots: [], draws: [], stalls: [], disconnects: [], hidden: 0, hiddenMs: 0, longHides: [], sampleGaps: [], lastSample: null, peakHeapMB: 0, peakTextures: 0, machine: null, console: {}, lastPagehide: null, loads: [], waits: [] });
+  const u = (users[e.user] ??= { boots: [], draws: [], stalls: [], disconnects: [], hidden: 0, hiddenMs: 0, longHides: [], sampleGaps: [], lastSample: null, peakHeapMB: 0, peakTextures: 0, machine: null, console: {}, lastPagehide: null, loads: [], waits: [], mirror: { hits: 0, misses: 0, fallbacks: 0, records: 0, on: null } });
+  // forge-mirror.js: Forge files loaded from the host's mirror. "forge-mirror" = world entry, "forge-mirror-draw" = per draw (deltas).
+  if (e.kind === "forge-mirror" || e.kind === "forge-mirror-draw") {
+    u.mirror.hits += e.hits ?? 0; u.mirror.misses += e.misses ?? 0; u.mirror.fallbacks += e.fallbacks ?? 0; u.mirror.records++;
+    if (e.kind === "forge-mirror") u.mirror.on = e.on;
+  }
   // load-indicator.js: world entry, every map load over 2 s, and marks at 30 / 60 s that survive a reload.
   // A world-entry load counts from the page's navigation start, so it includes the page and world-data download.
   if (e.kind === "load-progress") u.loads.push({ at: local(e.t), scene: e.entry ? `${e.scene} (world entry)` : e.scene, s: s(e.ms), texS: s(e.texturesMs),
@@ -136,11 +141,12 @@ for (const [name, u] of Object.entries(users)) {
     boots: u.boots, draws: u.draws.length, drawMedianS: draws[Math.floor(draws.length / 2)] ?? null, drawMaxS: draws.at(-1) ?? null,
     stalls: u.stalls, disconnects: u.disconnects.map(({ t, ...d }) => d), hides: u.hidden, hiddenMinutes: Math.round(u.hiddenMs / 6e4),
     longHides: u.longHides, sampleGaps: u.sampleGaps, loads: u.loads, waits: u.waits,
-    peakHeapMB: u.peakHeapMB, peakTextures: u.peakTextures, console: u.console,
+    peakHeapMB: u.peakHeapMB, peakTextures: u.peakTextures, console: u.console, mirror: u.mirror,
   };
   const o = out[name];
   console.log(`## ${name} — ${o.browser} · ${o.deviceMemoryGB ?? "?"} GB · ${o.cores ?? "?"} cores · ${o.softwareGL ? "⚠ SOFTWARE WebGL: " : ""}${gpu}`);
   console.log(`draws ${o.draws} (median ${o.drawMedianS ?? "–"} s, max ${o.drawMaxS ?? "–"} s) · stalls ${o.stalls.length} · disconnects ${o.disconnects.length} (${o.disconnects.filter(d => d.unload).length} = own unload) · hidden ${o.hides}× / ${o.hiddenMinutes} min · peak heap ${o.peakHeapMB} MB · peak textures ${o.peakTextures}\n`);
+  if (o.mirror.records) console.log(`forge mirror: ${o.mirror.on === false ? "SWITCHED OFF · " : ""}${o.mirror.hits} files from the host · ${o.mirror.misses} not mirrored · ${o.mirror.fallbacks} fell back to Forge\n`);
   if (o.boots.length) {
     console.log("| boot | verdict | load s | previous page: scene · since draw · drawing · heap · textures |");
     console.log("|---|---|---|---|");
