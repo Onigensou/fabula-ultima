@@ -14,6 +14,10 @@
  * - A Region carries its surface in flags.fabula-ultima-companion.footstepSurface
  *   (ground | grass | wood | water). footstepMuted keeps a region silent.
  * - A scene with no surface Region makes no footsteps.
+ * - Camp scenes: every party member walks. A player hears their own member
+ *   at full volume and the others softer (client setting footstepsOthers:
+ *   Normal / Quiet / Off), faded by distance and capped to one step per
+ *   150 ms, nearest first. The GM and a spectator hear everyone as "others".
  *
  * Replaces the per-surface Footstep macros that Regions used to run on every
  * move. Those played two steps per move however long the move was, so a
@@ -66,27 +70,62 @@
   const VOLUME_VARIATION = 0.12;
   const PITCH_VARIATION = 0.06;
 
+  // Camp scenes: every party member walks at once. As in an MMO, a player
+  // hears their own steps as on a walk map and everyone else's much softer,
+  // fading with distance, and never more than one of theirs per OTHERS_GAP_MS
+  // (the nearest wins), so four people walking is a light shuffle, not a drum
+  // line. Each player picks how loud the others are (client setting).
+  const OTHERS_SETTING = "footstepsOthers";
+  const OTHERS_LEVELS = Object.freeze({ normal: 0.5, quiet: 0.25, off: 0 });
+  const OTHERS_DEFAULT = "quiet";
+  const OTHERS_GAP_MS = 150;
+  // Others at most this far (grid squares) are heard at their full level;
+  // beyond, they fade linearly down to OTHERS_FAR_GAIN at OTHERS_FAR_GRIDS.
+  const OTHERS_NEAR_GRIDS = 2;
+  const OTHERS_FAR_GRIDS = 10;
+  const OTHERS_FAR_GAIN = 0.3;
+
   const state = {
     installed: true,
     enabled: ENABLED,
 
     partyActorId: null,
-    tokenId: null,
+    tokenId: null,          // the party token (walk maps)
+    camp: false,            // a camp scene: every party member is a walker
+    campWalkerIds: null,    // worked out again when tokens come or go
 
-    lastX: null,
-    lastY: null,
-    travelled: 0,
-    lastMoveAt: 0,
-    lastStepAt: 0,
-    walking: false,
-    skipNextMove: false,
+    // tokenId -> the stride of one walking token (see newWalker)
+    walkers: new Map(),
+    lastOtherStepAt: 0,
 
-    nextFile: 0,
     stepsPlayed: 0,
+    stepsCapped: 0,         // others' steps left silent by the cap
     lastSurface: null,
 
     tickerFn: null
   };
+
+  function newWalker() {
+    return {
+      lastX: null,
+      lastY: null,
+      travelled: 0,
+      lastMoveAt: 0,
+      lastStepAt: 0,
+      walking: false,
+      skipNextMove: false,
+      nextFile: 0
+    };
+  }
+
+  function walkerFor(tokenId) {
+    let w = state.walkers.get(tokenId);
+    if (!w) {
+      w = newWalker();
+      state.walkers.set(tokenId, w);
+    }
+    return w;
+  }
 
   function cleanString(value) {
     return value == null ? "" : String(value).trim();
@@ -123,6 +162,66 @@
     return token;
   }
 
+  function walkRuntime() {
+    return globalThis.FUCompanion?.api?.MovementControlCameraRuntime ?? null;
+  }
+
+  function sceneIsCamp(scene) {
+    return scene?.flags?.[MODULE_ID]?.oniFabula?.general?.sceneMode === "camp";
+  }
+
+  // Every token whose steps are heard: the party token on a walk map, each
+  // party member in a camp.
+  function walkerTokens() {
+    if (!state.camp) {
+      const party = findPartyToken();
+      return party ? [party] : [];
+    }
+    if (!state.campWalkerIds) {
+      const isMember = walkRuntime()?.isCampMemberToken
+        ?? ((t) => !!t.document?.getFlag?.(MODULE_ID, "campMember"));
+      state.campWalkerIds = (canvas.tokens?.placeables ?? []).filter(t => isMember(t)).map(t => t.id);
+    }
+    const out = [];
+    for (const id of state.campWalkerIds) {
+      const token = canvas.tokens?.get(id);
+      if (token) out.push(token);
+    }
+    return out;
+  }
+
+  // The token this client walks, in a camp (null for the GM or a spectator).
+  // On a walk map the party token belongs to everyone.
+  function ownTokenId() {
+    if (!state.camp) return state.tokenId;
+    const rt = walkRuntime();
+    return rt?.isCampWalk?.() ? (rt.getFollowToken?.()?.id ?? null) : null;
+  }
+
+  function othersLevel() {
+    let key = OTHERS_DEFAULT;
+    try { key = game.settings.get(MODULE_ID, OTHERS_SETTING) ?? OTHERS_DEFAULT; } catch (_) {}
+    return OTHERS_LEVELS[key] ?? OTHERS_LEVELS[OTHERS_DEFAULT];
+  }
+
+  function centreOf(token) {
+    return { x: token.x + (token.w / 2), y: token.y + (token.h / 2) };
+  }
+
+  // How loud another member's step is: the player's level, faded by the
+  // distance to the player's own member (no fade without one).
+  function othersGain(token, listener) {
+    const level = othersLevel();
+    if (!level || !listener) return level;
+    const grid = canvas.dimensions?.size || 100;
+    const a = centreOf(token);
+    const b = centreOf(listener);
+    const d = Math.hypot(a.x - b.x, a.y - b.y) / grid;
+    if (d <= OTHERS_NEAR_GRIDS) return level;
+    const t = Math.min(1, (d - OTHERS_NEAR_GRIDS) / (OTHERS_FAR_GRIDS - OTHERS_NEAR_GRIDS));
+    return level * (1 - (t * (1 - OTHERS_FAR_GAIN)));
+  }
+
   // The surface under a point: the highest-priority unmuted surface Region
   // that contains it, or null.
   function resolveSurfaceAt(point, elevation = 0) {
@@ -156,14 +255,14 @@
     }
   }
 
-  function playStep(surface) {
+  function playStep(surface, w, gain = 1) {
     const def = SURFACES[surface];
     if (!def) return;
 
-    const file = def.files[state.nextFile % def.files.length];
-    state.nextFile++;
+    const file = def.files[w.nextFile % def.files.length];
+    w.nextFile++;
 
-    const volume = Math.max(0, VOLUME * (1 + ((Math.random() * 2) - 1) * VOLUME_VARIATION));
+    const volume = Math.max(0, gain * VOLUME * (1 + ((Math.random() * 2) - 1) * VOLUME_VARIATION));
     const rate = 1 + ((Math.random() * 2) - 1) * PITCH_VARIATION;
 
     try {
@@ -184,78 +283,106 @@
     state.lastSurface = surface;
   }
 
-  function step(token, now) {
-    if ((now - state.lastStepAt) < MIN_STEP_GAP_MS) return false;
+  // A step is due: start the next stride. False when too soon after the last.
+  function step(w, now) {
+    if ((now - w.lastStepAt) < MIN_STEP_GAP_MS) return false;
 
-    state.lastStepAt = now;
-    state.travelled = 0;
-
-    if (isSuppressed()) return true;
-    if (token.document?.hidden || token.visible === false) return true;
-
-    const surface = resolveSurfaceAt(
-      { x: token.x + (token.w / 2), y: token.y + (token.h / 2) },
-      token.document?.elevation ?? 0
-    );
-    if (surface) playStep(surface);
-
+    w.lastStepAt = now;
+    w.travelled = 0;
     return true;
   }
 
-  function tick() {
-    if (!state.enabled || !canvas?.ready) return;
+  function sound(token, w, gain) {
+    if (gain <= 0) return;
+    if (isSuppressed()) return;
+    if (token.document?.hidden || token.visible === false) return;
 
-    const token = findPartyToken();
-    if (!token) {
-      state.lastX = null;
-      state.lastY = null;
-      state.walking = false;
-      return;
-    }
+    const surface = resolveSurfaceAt(centreOf(token), token.document?.elevation ?? 0);
+    if (surface) playStep(surface, w, gain);
+  }
+
+  // Follow one walker's drawn travel this frame. True when it takes a step.
+  function trackStride(token, now) {
+    const w = walkerFor(token.id);
 
     // token.x/y is the drawn position; the document can read the destination
     // for an instant while Foundry prepares a move.
     const x = token.x;
     const y = token.y;
-    const now = performance.now();
 
-    if (state.lastX === null || state.skipNextMove) {
-      state.lastX = x;
-      state.lastY = y;
-      state.skipNextMove = false;
-      return;
+    if (w.lastX === null || w.skipNextMove) {
+      w.lastX = x;
+      w.lastY = y;
+      w.skipNextMove = false;
+      return false;
     }
 
-    const moved = Math.hypot(x - state.lastX, y - state.lastY);
-    state.lastX = x;
-    state.lastY = y;
+    const moved = Math.hypot(x - w.lastX, y - w.lastY);
+    w.lastX = x;
+    w.lastY = y;
 
     if (moved < 0.01) {
-      if (state.walking && (now - state.lastMoveAt) > IDLE_RESET_MS) {
-        state.walking = false;
-        state.travelled = 0;
+      if (w.walking && (now - w.lastMoveAt) > IDLE_RESET_MS) {
+        w.walking = false;
+        w.travelled = 0;
       }
-      return;
+      return false;
     }
 
     const grid = canvas.dimensions?.size || 100;
     if (moved > (grid * JUMP_GRIDS)) {
-      state.walking = false;
-      state.travelled = 0;
-      return;
+      w.walking = false;
+      w.travelled = 0;
+      return false;
     }
 
-    state.lastMoveAt = now;
+    w.lastMoveAt = now;
 
-    if (!state.walking) {
-      state.walking = true;
-      state.travelled = 0;
-      step(token, now);
-      return;
+    if (!w.walking) {
+      w.walking = true;
+      w.travelled = 0;
+      return step(w, now);
     }
 
-    state.travelled += moved;
-    if (state.travelled >= (grid * STRIDE_GRIDS)) step(token, now);
+    w.travelled += moved;
+    return w.travelled >= (grid * STRIDE_GRIDS) && step(w, now);
+  }
+
+  function tick() {
+    if (!state.enabled || !canvas?.ready) return;
+
+    const now = performance.now();
+    const walkers = walkerTokens();
+
+    // A walker that left: forget its stride.
+    if (state.walkers.size > walkers.length) {
+      const live = new Set(walkers.map(t => t.id));
+      for (const id of [...state.walkers.keys()]) if (!live.has(id)) state.walkers.delete(id);
+    }
+
+    const own = ownTokenId();
+    const others = [];
+    for (const token of walkers) {
+      if (!trackStride(token, now)) continue;
+      if (!state.camp || token.id === own) sound(token, walkerFor(token.id), 1);
+      else others.push(token);
+    }
+    if (!others.length) return;
+
+    // Others' steps: the nearest one, and only one per OTHERS_GAP_MS.
+    if ((now - state.lastOtherStepAt) < OTHERS_GAP_MS || !othersLevel()) {
+      state.stepsCapped += others.length;
+      return;
+    }
+    const listener = own ? canvas.tokens?.get(own) : null;
+    if (listener && others.length > 1) {
+      const here = centreOf(listener);
+      const dist = (t) => { const c = centreOf(t); return Math.hypot(c.x - here.x, c.y - here.y); };
+      others.sort((a, b) => dist(a) - dist(b));
+    }
+    state.lastOtherStepAt = now;
+    state.stepsCapped += others.length - 1;
+    sound(others[0], walkerFor(others[0].id), othersGain(others[0], listener));
   }
 
   function attachTicker() {
@@ -271,10 +398,9 @@
 
   function resetTracking() {
     state.tokenId = null;
-    state.lastX = null;
-    state.lastY = null;
-    state.travelled = 0;
-    state.walking = false;
+    state.campWalkerIds = null;
+    state.camp = sceneIsCamp(canvas?.scene);
+    state.walkers.clear();
   }
 
   function preloadSceneSounds() {
@@ -372,19 +498,37 @@
     resetTracking();
   });
 
-  Hooks.on("createToken", () => { state.tokenId = null; });
-  Hooks.on("deleteToken", () => { state.tokenId = null; });
+  Hooks.on("createToken", () => { state.tokenId = null; state.campWalkerIds = null; });
+  Hooks.on("deleteToken", () => { state.tokenId = null; state.campWalkerIds = null; });
+
+  Hooks.on("updateScene", (scene) => {
+    if (!canvas?.scene || scene.id !== canvas.scene.id) return;
+    if (sceneIsCamp(scene) !== state.camp) resetTracking();
+  });
 
   // A move applied without animation (door warp, teleport, GM placement) puts
   // the token somewhere new in one frame; it is not a walk.
   Hooks.on("updateToken", (doc, change, options) => {
-    if (doc.id !== state.tokenId) return;
+    const w = state.walkers.get(doc.id);
+    if (!w) return;
     if (!("x" in change) && !("y" in change)) return;
     if (options?.animate === false || options?.teleport === true) {
-      state.skipNextMove = true;
-      state.walking = false;
-      state.travelled = 0;
+      w.skipNextMove = true;
+      w.walking = false;
+      w.travelled = 0;
     }
+  });
+
+  Hooks.once("init", () => {
+    game.settings.register(MODULE_ID, OTHERS_SETTING, {
+      name: "Other party members' footsteps",
+      hint: "In camp, everyone walks at once. How loud the other members' steps are, against your own.",
+      scope: "client",
+      config: true,
+      type: String,
+      choices: { normal: "Normal", quiet: "Quiet", off: "Off" },
+      default: OTHERS_DEFAULT
+    });
   });
 
   Hooks.once("ready", async () => {
@@ -397,6 +541,7 @@
     }
 
     if (canvas?.ready) {
+      resetTracking();
       await refreshPartyActor();
       attachTicker();
       preloadSceneSounds();

@@ -159,6 +159,8 @@
     if (!fab) return null;
 
     const mode = safeGet(fab, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
+    // A camp: every member walks, so they are drawn by their feet too.
+    if (mode === "camp") return { sortOnly: true, sort: true };
     if (mode !== "exploration") return null;
 
     // Without depth scaling, an exploration map still draws tokens by their
