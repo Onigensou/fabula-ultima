@@ -198,11 +198,14 @@ async function applyToItem(item, slots, linkGroup) {
   await item.update(phase2);
 
   // ---- embedded stat AEs: delete prior orbment-tagged, create fresh ----
+  // `animate: false` mutes Foundry's "+(…)" / "−(…)" token text (user call): the
+  // rebuild re-creates EVERY socket's effect, so untouched ones flashed − then
+  // +, and the Attune window / party banner already announce the change.
   const staleAe = (item.effects?.contents ?? [])
     .filter((fx) => (fx.system?.tags ?? []).includes(ORBMENT_TAG) || fx.flags?.[FLAG_NS]?.orbment)
     .map((fx) => fx.id);
   if (staleAe.length) {
-    try { await item.deleteEmbeddedDocuments("ActiveEffect", staleAe); }
+    try { await item.deleteEmbeddedDocuments("ActiveEffect", staleAe, { animate: false }); }
     catch (e) { warn(`AE delete failed on ${item.name}`, e); }
   }
   if (proj.aeDocs.length) {
@@ -211,7 +214,7 @@ async function applyToItem(item, slots, linkGroup) {
     // don't apply off-body. equipment-swap's AE sync maintains this on swaps.
     const worn = !!item.system?.props?.isEquipped;
     const docs = proj.aeDocs.map((d) => ({ ...d, disabled: !worn }));
-    try { await item.createEmbeddedDocuments("ActiveEffect", docs); }
+    try { await item.createEmbeddedDocuments("ActiveEffect", docs, { animate: false }); }
     catch (e) { warn(`AE create failed on ${item.name}`, e); }
   }
 

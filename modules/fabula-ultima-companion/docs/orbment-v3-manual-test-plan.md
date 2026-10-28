@@ -84,9 +84,10 @@ Branch: `feat/orbment-v3-alchemist`. Code: `scripts/orbment/`.
   and quantity on items, the same as for Refinement, but it restores actor
   Zenit. So save → Attune → load refunds the Zenit and keeps the roll. Only
   the primary GM can load.
-- **Token pop-ups.** Foundry shows "+(…)" / "−(…)" over the token whenever an
-  Orbment effect is created or deleted. A re-attune rebuilds every Orbment
-  effect on the item, so untouched sockets flash "−" then "+" as well.
+- **Token pop-ups are muted for Orbments.** Foundry's "+(…)" / "−(…)" token
+  text no longer fires when sockets are installed, attuned or upgraded (the
+  compiler rebuilds every socket's effect, so untouched ones used to flash).
+  Equipping or unequipping gear still shows it, as for any gear effect.
 - Names such as Guard, Ward, Bastion, Aegis, Fury, Spirit Up and Antistatus+
   are still placeholders.
 
