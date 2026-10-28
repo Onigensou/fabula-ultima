@@ -249,19 +249,25 @@
     if (document.getElementById(STYLE_ID)) return;
     const style = document.createElement("style");
     style.id = STYLE_ID;
+    // The same "!" as every interactable in the game (the examine button of
+    // event-runtimeUI.js, whose CSS this button also carries the class of).
+    // These rules repeat it in case that sheet is not on the page yet.
     style.textContent = `
 #${UI_LAYER_ID} { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 90; }
 .oni-pose-btn {
   position: absolute; pointer-events: auto; width: 34px; height: 34px; display: grid; place-items: center;
   background: rgba(255,255,255,0.95); border: 2px solid rgba(0,0,0,0.75); border-radius: 999px;
   box-shadow: 0 6px 10px rgba(0,0,0,0.35); cursor: pointer; user-select: none;
-  color: rgba(20,16,10,0.95); font-size: 15px;
-  transform: translate(-50%, -100%) scale(0.75); transform-origin: 50% 100%; opacity: 0;
+  transform: translate(-50%, -50%) scale(0.75); transform-origin: 50% 100%; opacity: 0;
   transition: transform 160ms ease-out, opacity 160ms ease-out;
 }
-.oni-pose-btn.is-visible { transform: translate(-50%, -100%) scale(1); opacity: 1; }
-.oni-pose-btn.is-visible:hover { transform: translate(-50%, -100%) scale(1.06); }
-.oni-pose-btn.is-visible:active { transform: translate(-50%, -100%) scale(0.98); }
+.oni-pose-btn .mark {
+  font-family: "Cinzel","Signika",var(--font-primary,"Signika"),system-ui,sans-serif;
+  font-weight: 900; font-size: 20px; line-height: 1; color: rgba(20,16,10,0.95); transform: translateY(-1px);
+}
+.oni-pose-btn.is-visible { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+.oni-pose-btn.is-visible:hover { transform: translate(-50%, -50%) scale(1.06); }
+.oni-pose-btn.is-visible:active { transform: translate(-50%, -50%) scale(0.98); }
 `;
     document.head.appendChild(style);
   }
@@ -286,18 +292,19 @@
     if (!el) {
       ensureStyle();
       el = document.createElement("div");
-      el.className = "oni-pose-btn";
+      el.className = `${window.oni.EventSystem.Constants?.INTERACT_BUTTON_CLASS ?? "oni-event-btn"} oni-pose-btn`;
       el.dataset.tileId = tileId;
+      el.innerHTML = `<div class="mark">!</div>`;
       el.addEventListener("pointerdown", (ev) => { ev.preventDefault(); ev.stopPropagation(); take(tileId); });
       layer().appendChild(el);
       state.buttons.set(tileId, el);
       requestAnimationFrame(() => el.classList.add("is-visible"));
     }
-    const p = POSES[spot.pose];
+    // One symbol for everything you can interact with: "!". What it does
+    // (Sit / Sleep) is only named on hover and in the keyboard menu.
     if (el.dataset.pose !== spot.pose) {
       el.dataset.pose = spot.pose;
-      el.title = p.label;
-      el.innerHTML = `<i class="${p.icon}"></i>`;
+      el.title = POSES[spot.pose].label;
     }
     return el;
   }
@@ -323,8 +330,10 @@
       for (const { doc, spot } of offered) {
         keep.add(doc.id);
         const el = buttonFor(doc.id, spot);
+        // Centred on left/top (translate -50%, as the examine "!" is).
         const s = worldToScreen(doc.x + (doc.width / 2), doc.y);
-        const left = `${Math.round(s.x)}px`, top = `${Math.round(s.y - BUTTON_LIFT_PX)}px`;
+        const half = (el.offsetHeight || 34) / 2;
+        const left = `${Math.round(s.x)}px`, top = `${Math.round(s.y - BUTTON_LIFT_PX - half)}px`;
         if (el.style.left !== left) el.style.left = left;
         if (el.style.top !== top) el.style.top = top;
       }
