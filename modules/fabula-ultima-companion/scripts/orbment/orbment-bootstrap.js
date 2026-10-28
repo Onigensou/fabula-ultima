@@ -14,6 +14,8 @@ import { attune, installAttuneSocket } from "./orbment-attune.js";
 import { initAlchemist, setAlchemist, openAlchemist, isAlchemistActor } from "./alchemist-open.js";
 import { feedback, installFeedback } from "./orbment-feedback.js";
 import { runCampForge, installCampForgeSocket } from "./camp-forge.js";
+import { installUpgrade, requestUpgrade } from "./orbment-upgrade.js";
+import { UpgradeWindow, initUpgradeButton } from "./upgrade-window.js";
 import "./orbment-dr.js";   // registers globalThis.FUOrbment for the classic damage path
 
 const TAG = "[Orbment]";
@@ -82,6 +84,11 @@ export function initOrbment() {
   // every client listens to open the operator / spectator window).
   api.campForge = runCampForge;
   installCampForgeSocket();
+  // Upgrade (Tinkerer heroic): 🔧 camp button + window; the primary GM queues,
+  // refunds, installs at rest end and announces at wake.
+  api.upgrade = { open: (holder) => UpgradeWindow.open(holder), request: requestUpgrade };
+  installUpgrade();
+  try { initUpgradeButton(); } catch (e) { console.warn(TAG, "initUpgradeButton failed", e); }
   try { initAlchemist(); } catch (e) { console.warn(TAG, "initAlchemist failed", e); }
   // Cover both classic + V2 sheet hooks; CSB's item sheet may fire either.
   Hooks.on("getItemSheetHeaderButtons", onGetItemHeaderButtons);

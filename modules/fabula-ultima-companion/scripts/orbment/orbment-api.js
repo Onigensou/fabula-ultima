@@ -109,7 +109,8 @@ export async function install(itemOrUuid, slotIndex, augmentId, options = {}) {
     catch (e) { console.warn(TAG, "zenit deduct failed", e); }
   }
 
-  try {
+  // `quiet`: a system install (Upgrade at dawn) announces itself; no GM toast.
+  if (!options.quiet) try {
     const note = deductZenit && cost > 0 ? ` (−${cost} z)` : " (no charge)";
     ui.notifications?.info(`Installed ${view.label} into ${item.name}, slot ${idx + 1}${note}.`);
   } catch {}
