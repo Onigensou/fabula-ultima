@@ -10,6 +10,8 @@
 
 import { registerOrbmentApi, openWindow } from "./orbment-api.js";
 import { itemKindOf } from "./orbment-const.js";
+import { attune, installAttuneSocket } from "./orbment-attune.js";
+import "./orbment-dr.js";   // registers globalThis.FUOrbment for the classic damage path
 
 const TAG = "[Orbment]";
 const BTN_CLASS = "fu-orbment-btn";
@@ -61,7 +63,11 @@ function onRenderItemSheet(sheet, html) {
 export function initOrbment() {
   if (_installed) return;
   _installed = true;
-  registerOrbmentApi();
+  const api = registerOrbmentApi();
+  // v3: random Attunement (Alchemist / Camp Forge). Every client listens so a
+  // player gets its result back; only the primary GM executes requests.
+  api.attune = attune;
+  installAttuneSocket();
   // Cover both classic + V2 sheet hooks; CSB's item sheet may fire either.
   Hooks.on("getItemSheetHeaderButtons", onGetItemHeaderButtons);
   Hooks.on("renderItemSheet",   onRenderItemSheet);
