@@ -318,6 +318,7 @@
     "scripts/event-system/event-bootstrap.js",
     "scripts/event-system/pose-spots/pose-spot-core.js",
     "scripts/event-system/pose-spots/pose-spot-config.js",
+    "scripts/event-system/pose-spots/pose-bath-fx.js",
     "scripts/exp-awarder/expAwarder-ui-listener.js",
     "scripts/exp-awarder/expAwarder-ui.js",
     "scripts/bond-system/bond-updater-core.js",

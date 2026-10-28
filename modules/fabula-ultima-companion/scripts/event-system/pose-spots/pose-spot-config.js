@@ -148,6 +148,60 @@
     attempt();
   });
 
+  // ------------------------------------------------------------
+  // Region Config: Bathing (a water Region the party can bathe in)
+  // ------------------------------------------------------------
+  // flags.fabula-ultima-companion.bath = { enabled, depth, autoColor, color },
+  // next to the footstep Surface picker on the Identity tab.
+  const BATH = `flags.${MODULE_ID}.bath`;
+  const DEPTHS = [[0.38, "Waist"], [0.5, "Chest"], [0.62, "Shoulders"]];
+
+  function buildBath(app, root) {
+    const doc = app?.document;
+    if (!doc || root.querySelector(".oni-pose-bath")) return;
+    const host = root.querySelector('section[data-tab="identity"]') ?? root.querySelector("form") ?? root;
+    const b = doc.getFlag(MODULE_ID, "bath") ?? {};
+    const depth = Number(b.depth) > 0 ? Number(b.depth) : 0.5;
+    const auto = b.autoColor !== false;
+    const color = (typeof b.color === "string" && /^#[0-9a-f]{6}$/i.test(b.color)) ? b.color : "#6fb8e8";
+
+    const wrap = document.createElement("fieldset");
+    wrap.className = "oni-pose-bath";
+    wrap.innerHTML = `
+      <legend>Bathing</legend>
+      <div class="form-group">
+        <label>Bathable</label>
+        <div class="form-fields"><input type="checkbox" name="${BATH}.enabled" ${b.enabled ? "checked" : ""}></div>
+        <p class="hint">At the water's edge the party gets the "!" and can step in to bathe (onsen art, or their own art when they have none). They wade freely and leave by walking out.</p>
+      </div>
+      <div class="form-group">
+        <label>Depth</label>
+        <div class="form-fields">
+          <select name="${BATH}.depth" data-dtype="Number">
+            ${DEPTHS.map(([v, l]) => `<option value="${v}" ${Math.abs(v - depth) < 0.01 ? "selected" : ""}>${l}</option>`).join("")}
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Ripple colour from the map</label>
+        <div class="form-fields"><input type="checkbox" name="${BATH}.autoColor" ${auto ? "checked" : ""}></div>
+        <p class="hint">On: sampled from the water painted inside this Region (red springs get red ripples). Off: the colour below.</p>
+      </div>
+      <div class="form-group">
+        <label>Ripple colour</label>
+        <div class="form-fields"><input type="color" name="${BATH}.color" value="${color}"></div>
+      </div>
+    `;
+    host.appendChild(wrap);
+    app.setPosition?.({ height: "auto" });
+  }
+
+  Hooks.on("renderRegionConfig", (app, html) => {
+    if (!game.user?.isGM) return;
+    const root = html instanceof HTMLElement ? html : html?.[0];
+    if (root) buildBath(app, root);
+  });
+
   window.oni.PoseSpotConfig = { installed: true };
   console.debug(INSTALL_TAG, "Installed.");
 })();

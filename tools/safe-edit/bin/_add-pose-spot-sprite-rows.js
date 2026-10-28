@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Add the pose-spot sprite rows (Sit, Sleep; event-system/pose-spots)
+// Add the pose-spot sprite rows (Sit, Sleep, Onsen; event-system/pose-spots)
 // to the "Sprite" table of the PC and NPC sheet templates AND of every actor
 // built from them.
 //
@@ -26,6 +26,7 @@ const TEMPLATE_IDS = new Set([
 const ROWS = [
   ["Sit", "sprite_sit"],
   ["Sleep", "sprite_sleep"],
+  ["Onsen", "sprite_onsen"],
 ];
 
 const APPLY = process.argv.includes("--apply");

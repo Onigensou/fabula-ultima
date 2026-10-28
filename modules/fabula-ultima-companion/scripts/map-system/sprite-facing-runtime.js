@@ -149,7 +149,15 @@
   // bedroll carries flags.<module>.pose = { spotId, pose, mirror, scale }, and
   // wears its character's pose art instead of walking or standing art.
   const POSE_FLAG = "pose";
-  const POSE_FIELDS = { sit: "sprite_sit", sleep: "sprite_sleep" };
+  const POSE_FIELDS = { sit: "sprite_sit", sleep: "sprite_sleep", bath: "sprite_onsen" };
+
+  // Bathing: the character stands in the water up to `depth` (share of the art's
+  // height hidden, from the bottom), wearing onsen art or, with none, their own
+  // standing art. The cut edge sits where their feet were, so they sink into
+  // the water; they bob gently and face the way they wade.
+  const BATH_DEPTH_DEFAULT = 0.5;
+  const BATH_BOB_PX = 1.5;
+  const BATH_BOB_MS = 2200;
 
   const state = {
     installed: true,
@@ -888,13 +896,15 @@
     const p = poseOf(token);
     const mesh = token?.mesh;
     if (!p || !mesh || mesh.destroyed) return false;
-    const src = poseSrcFor(token, p.pose);
+    const bath = p.pose === "bath";
+    // A bather with no onsen art bathes in their own standing art.
+    const src = poseSrcFor(token, p.pose) || (bath ? cleanString(token.document?.texture?.src) : "");
     if (!src) return false;
 
     let rec = state.poses.get(token.id);
     if (!rec || rec.src !== src) {
       if (rec) releasePoseArt(rec);
-      rec = { src, art: loadPoseArt(src), applied: null };
+      rec = { src, art: loadPoseArt(src), applied: null, crop: null, faceRight: !!p.mirror, lastX: null };
       state.poses.set(token.id, rec);
       const w = state.walkers.get(token.id);
       if (w) { hideWalk(w); clearStandArt(w); w.walking = false; }
@@ -902,10 +912,10 @@
 
     const art = rec.art;
     if (art.failed) return false;
-    if (isArtDead(art)) { state.walkArt.delete("pose:" + src); rec.art = loadPoseArt(src); return true; }
+    if (isArtDead(art)) { state.walkArt.delete("pose:" + src); rec.art = loadPoseArt(src); rec.crop = null; return true; }
     if (!art.ready || !art.texture?.valid) return true;   // loading: keep what is on show
 
-    const tex = art.texture;
+    const tex = bath ? bathTexture(rec, art.texture, p) : art.texture;
     if (mesh.texture !== tex) {
       mesh.texture = tex;
       try { token._refreshSize(); } catch (_) {}
@@ -926,7 +936,9 @@
     const k = Number(p.scale) > 0 ? Number(p.scale) : 1;
     const sx = Math.abs(mesh.scale.x) * (ix / px) * k;
     const sy = Math.abs(mesh.scale.y) * (iy / py) * k;
-    mesh.scale.set(p.mirror ? -sx : sx, sy);
+    // Art faces left; a bather faces the way they last waded.
+    const mirror = bath ? rec.faceRight : p.mirror;
+    mesh.scale.set(mirror ? -sx : sx, sy);
 
     const t = token.document?.texture ?? {};
     const base = { x: Number(t.anchorX ?? 0.5), y: Number(t.anchorY ?? 0.5) };
@@ -936,6 +948,20 @@
     );
     rec.applied = { sx: mesh.scale.x, sy: mesh.scale.y };
     return true;
+  }
+
+  // The part of the art above the waterline: the same image, its frame cut
+  // short from the bottom. Its bottom edge is then laid where the feet were
+  // (holdPose's anchor), which sinks the character into the water.
+  function bathTexture(rec, full, p) {
+    const depth = Number.isFinite(Number(p.depth)) ? Math.min(0.85, Math.max(0.1, Number(p.depth))) : BATH_DEPTH_DEFAULT;
+    if (rec.crop && rec.crop.full === full && rec.crop.depth === depth && rec.crop.tex.valid) return rec.crop.tex;
+    const f = full.frame;
+    const h = Math.max(1, Math.round(f.height * (1 - depth)));
+    const tex = new PIXI.Texture(full.baseTexture, new PIXI.Rectangle(f.x, f.y, f.width, h));
+    rec.crop = { full, depth, tex };
+    rec.applied = null;
+    return tex;
   }
 
   function releasePoseArt(rec) {
@@ -953,6 +979,7 @@
     const token = canvas?.tokens?.get(tokenId);
     const mesh = token?.mesh;
     if (!mesh || mesh.destroyed) return;
+    try { mesh.pivot.set(0, 0); } catch (_) {}   // a bather's bob
     const own = ownTexture(token);
     if (own) mesh.texture = own;
     try { token._refreshSize(); } catch (_) {}
@@ -965,11 +992,38 @@
     if (w) { w.standDirty = true; w.lastX = null; w.lastY = null; }
   }
 
+  // A bather: faces the way they wade (re-laid on the next hold), and bobs on
+  // the mesh pivot, which Foundry never sets.
+  function tickBather(token, now) {
+    const rec = state.poses.get(token.id);
+    const mesh = token.mesh;
+    if (!rec || !mesh || mesh.destroyed) return;
+    if (rec.lastX !== null) {
+      const dx = token.x - rec.lastX;
+      if (Math.abs(dx) > 0.5 && (dx > 0) !== rec.faceRight) {
+        rec.faceRight = dx > 0;
+        // Only the sign turns: the size fix is already on this scale, and
+        // laying it again would multiply it.
+        if (rec.applied && mesh.scale.x === rec.applied.sx) {
+          const sx = Math.abs(mesh.scale.x);
+          mesh.scale.x = rec.faceRight ? -sx : sx;
+          rec.applied = { sx: mesh.scale.x, sy: mesh.scale.y };
+        }
+      }
+    }
+    rec.lastX = token.x;
+    const sy = Math.abs(mesh.scale.y) || 1;
+    mesh.pivot.y = (Math.sin((now / BATH_BOB_MS) * Math.PI * 2) * BATH_BOB_PX) / sy;
+  }
+
   // Every frame: hold each pose, drop the ones that ended.
   function tickPoses() {
+    const now = performance.now();
     for (const token of canvas.tokens?.placeables ?? []) {
-      if (poseOf(token)) {
+      const p = poseOf(token);
+      if (p) {
         if (!holdPose(token) && state.poses.has(token.id)) dropPose(token.id);
+        else if (p.pose === "bath") tickBather(token, now);
       } else if (state.poses.has(token.id)) {
         dropPose(token.id);
       }

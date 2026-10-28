@@ -48,7 +48,8 @@
 
   const POSES = Object.freeze({
     sit:   { label: "Sit",   icon: "fas fa-chair" },
-    sleep: { label: "Sleep", icon: "fas fa-bed" }
+    sleep: { label: "Sleep", icon: "fas fa-bed" },
+    bath:  { label: "Bathe", icon: "fas fa-water" }   // a water Region, not a spot (see Bathing)
   });
 
   // The button shows when the character's feet are this close to the spot's
@@ -237,6 +238,165 @@
     return state.standing;
   }
 
+  // ------------------------------------------------------------
+  // Bathing: water Regions marked bathable
+  // ------------------------------------------------------------
+  // flags.fabula-ultima-companion.bath = { enabled, depth, autoColor, color }
+  // on a Region (usually the scene's footstep "water" Region). A character at
+  // its edge gets the "!"; pressing it steps them into the water, in their
+  // onsen art, sunk to the depth. They wade freely inside (the pool's walls
+  // keep them in) and leave by walking toward land: they step out over the
+  // edge and the bath ends. Any number can bathe in one pool.
+  const BATH_FLAG = "bath";
+  const BATH_ENTER_RANGE_GRID = 0.7;   // how near the edge the "!" shows
+  const BATH_STEP_IN_GRID = 0.6;       // how far past the edge they land in the water
+  const BATH_STEP_OUT_GRID = 0.45;     // and past the edge on the way out
+
+  function bathOf(regionDoc) {
+    const b = regionDoc?.getFlag?.(MODULE_ID, BATH_FLAG);
+    if (!b?.enabled) return null;
+    const depth = Number(b.depth);
+    return { depth: Number.isFinite(depth) && depth > 0 ? depth : 0.5 };
+  }
+
+  function bathRegions() {
+    return (canvas?.regions?.placeables ?? []).filter(r => !!bathOf(r.document));
+  }
+
+  function inRegion(region, pt) {
+    try { return !!region?.testPoint?.(pt, 0); } catch (_) { return false; }
+  }
+
+  // The nearest point on the region's outline (polygons and rectangles).
+  function nearestEdge(regionDoc, p) {
+    let best = null;
+    const seg = (a, b) => {
+      const dx = b.x - a.x, dy = b.y - a.y, l2 = (dx * dx) + (dy * dy);
+      const t = l2 ? Math.min(1, Math.max(0, (((p.x - a.x) * dx) + ((p.y - a.y) * dy)) / l2)) : 0;
+      const q = { x: a.x + (t * dx), y: a.y + (t * dy) }, d = Math.hypot(q.x - p.x, q.y - p.y);
+      if (!best || d < best.dist) best = { point: q, dist: d };
+    };
+    for (const s of regionDoc?.shapes ?? []) {
+      if (s.hole) continue;
+      let pts = null;
+      if (s.type === "polygon" && s.points?.length >= 6) {
+        pts = [];
+        for (let i = 0; i < s.points.length; i += 2) pts.push({ x: s.points[i], y: s.points[i + 1] });
+      } else if (s.type === "rectangle") {
+        pts = [{ x: s.x, y: s.y }, { x: s.x + s.width, y: s.y }, { x: s.x + s.width, y: s.y + s.height }, { x: s.x, y: s.y + s.height }];
+      }
+      if (!pts) continue;
+      for (let i = 0; i < pts.length; i++) seg(pts[i], pts[(i + 1) % pts.length]);
+    }
+    return best;
+  }
+
+  // Feet are the bottom of the token square (feetOf); a token centre sits this far above them.
+  function feetOffset(token) { return token.h * 0.35; }
+
+  function bathOffers() {
+    const walker = myWalker();
+    if (!walker || poseOf(walker.document) || game.paused) return [];
+    const feet = feetOf(walker), g = canvas.dimensions?.size || 100, out = [];
+    for (const region of bathRegions()) {
+      if (inRegion(region, feet)) { out.push({ region, edge: feet, inside: true }); continue; }
+      const e = nearestEdge(region.document, feet);
+      if (e && e.dist <= g * BATH_ENTER_RANGE_GRID) out.push({ region, edge: e.point, inside: false });
+    }
+    return out;
+  }
+
+  // Into the water: past the edge, along the way from the feet to it, until well inside.
+  async function enterBath(regionId) {
+    const walker = myWalker();
+    const region = canvas.regions?.get(regionId);
+    const bath = bathOf(region?.document);
+    if (!walker || !bath) return false;
+    runtime()?.haltWalk?.();
+
+    const g = canvas.dimensions?.size || 100;
+    const feet = feetOf(walker);
+    let land = feet, dirX = 0;
+    if (!inRegion(region, feet)) {
+      const e = nearestEdge(region.document, feet);
+      if (!e) return false;
+      const len = Math.hypot(e.point.x - feet.x, e.point.y - feet.y) || 1;
+      const u = { x: (e.point.x - feet.x) / len, y: (e.point.y - feet.y) / len };
+      dirX = u.x;
+      land = null;
+      for (let d = BATH_STEP_IN_GRID; d <= 2; d += 0.2) {
+        const q = { x: e.point.x + (u.x * g * d), y: e.point.y + (u.y * g * d) };
+        if (inRegion(region, q)) { land = q; break; }
+      }
+      if (!land) return false;
+    }
+
+    const doc = walker.document;
+    const at = centreToTopLeft({ x: land.x, y: land.y - feetOffset(walker) }, doc);
+    await doc.update({
+      x: at.x, y: at.y,
+      [`flags.${MODULE_ID}.${POSE_FLAG}`]: { pose: "bath", regionId, depth: bath.depth, mirror: dirX > 0 }
+    }, { animate: false, oniBypassGate: true });
+    return true;
+  }
+
+  // Out of the water, toward `target` (a token centre the walk is heading for).
+  function leaveBath(token, target) {
+    const doc = token?.document;
+    const pose = poseOf(doc);
+    if (pose?.pose !== "bath" || !doc?.isOwner) return Promise.resolve(false);
+    if (state.standing) return state.standing;
+
+    const region = canvas.regions?.get(pose.regionId);
+    const g = canvas.dimensions?.size || 100;
+    const feet = feetOf(token);
+    const goal = { x: target.x, y: target.y + feetOffset(token) };
+    const len = Math.hypot(goal.x - feet.x, goal.y - feet.y) || 1;
+    const u = { x: (goal.x - feet.x) / len, y: (goal.y - feet.y) / len };
+    let out = null;
+    for (let d = 4; d <= g * 3; d += 4) {
+      const q = { x: feet.x + (u.x * d), y: feet.y + (u.y * d) };
+      if (!inRegion(region, q)) { out = { x: q.x + (u.x * g * BATH_STEP_OUT_GRID), y: q.y + (u.y * g * BATH_STEP_OUT_GRID) }; break; }
+    }
+    const update = { [`flags.${MODULE_ID}.-=${POSE_FLAG}`]: null };
+    if (out) Object.assign(update, centreToTopLeft({ x: out.x, y: out.y - feetOffset(token) }, doc));
+
+    state.standing = doc.update(update, { animate: false, oniBypassGate: true })
+      .then(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))))
+      .then(() => true)
+      .catch((e) => { console.warn(INSTALL_TAG, "Leaving the bath failed.", e); return false; })
+      .finally(() => { state.standing = null; });
+    return state.standing;
+  }
+
+  /**
+   * Called by the walk before it moves a character who holds a pose. `target`
+   * is the token centre the walk heads for. Seated or asleep: they stand up.
+   * Bathing: they wade on, unless the target is out of the water, when they
+   * step out first. True when something was done (the walk re-plans).
+   */
+  async function beforeWalk(token, target) {
+    const pose = poseOf(token?.document);
+    if (!pose) return false;
+    if (pose.pose !== "bath") return standUp(token);
+    if (!target) return false;
+    const region = canvas.regions?.get(pose.regionId);
+    if (region && inRegion(region, { x: target.x, y: target.y + feetOffset(token) })) return false;
+    return leaveBath(token, target);
+  }
+
+  // A bather this client walks who is no longer in the water (the GM moved
+  // them, a teleport): the bath ends where they are.
+  function checkOwnBather() {
+    const walker = myWalker();
+    const pose = poseOf(walker?.document);
+    if (pose?.pose !== "bath" || state.standing) return;
+    const region = canvas.regions?.get(pose.regionId);
+    if (region && inRegion(region, feetOf(walker))) return;
+    state.standing = walker.document.update({ [`flags.${MODULE_ID}.-=${POSE_FLAG}`]: null }, { oniBypassGate: true })
+      .catch(() => {}).finally(() => { state.standing = null; });
+  }
+
   function onSocket(msg) {
     if (msg?.type !== MSG) return;
     if (msg.action === "take") gmTake(msg);
@@ -287,25 +447,49 @@
     return wt ? { x: (x * wt.a) + wt.tx, y: (y * wt.d) + wt.ty } : { x, y };
   }
 
-  function buttonFor(tileId, spot) {
-    let el = state.buttons.get(tileId);
+  // Everything this client could do right now: seats and bedrolls (spot
+  // tiles) and baths (water Regions), as
+  // { key, label, icon, world (button point), centre (Interact anchor), run }.
+  function allOffers() {
+    const out = [];
+    for (const { doc, spot } of offeredSpots()) {
+      const p = POSES[spot.pose];
+      out.push({
+        key: doc.id, label: p.label, icon: p.icon,
+        world: { x: doc.x + (doc.width / 2), y: doc.y },
+        centre: { x: doc.x + (doc.width / 2), y: doc.y + (doc.height / 2) },
+        run: () => take(doc.id)
+      });
+    }
+    const g = canvas.dimensions?.size || 100;
+    for (const { region, edge } of bathOffers()) {
+      out.push({
+        key: `bath:${region.id}`, label: POSES.bath.label, icon: POSES.bath.icon,
+        world: { x: edge.x, y: edge.y - (g * 0.25) },
+        centre: edge,
+        run: () => enterBath(region.id)
+      });
+    }
+    return out;
+  }
+
+  function buttonFor(offer) {
+    let el = state.buttons.get(offer.key);
     if (!el) {
       ensureStyle();
       el = document.createElement("div");
       el.className = `${window.oni.EventSystem.Constants?.INTERACT_BUTTON_CLASS ?? "oni-event-btn"} oni-pose-btn`;
-      el.dataset.tileId = tileId;
+      el.dataset.key = offer.key;
       el.innerHTML = `<div class="mark">!</div>`;
-      el.addEventListener("pointerdown", (ev) => { ev.preventDefault(); ev.stopPropagation(); take(tileId); });
+      el.addEventListener("pointerdown", (ev) => { ev.preventDefault(); ev.stopPropagation(); el._run?.(); });
       layer().appendChild(el);
-      state.buttons.set(tileId, el);
+      state.buttons.set(offer.key, el);
       requestAnimationFrame(() => el.classList.add("is-visible"));
     }
     // One symbol for everything you can interact with: "!". What it does
-    // (Sit / Sleep) is only named on hover and in the keyboard menu.
-    if (el.dataset.pose !== spot.pose) {
-      el.dataset.pose = spot.pose;
-      el.title = POSES[spot.pose].label;
-    }
+    // (Sit / Sleep / Bathe) is only named on hover and in the keyboard menu.
+    el._run = offer.run;
+    if (el.title !== offer.label) el.title = offer.label;
     return el;
   }
 
@@ -325,13 +509,13 @@
   function tick() {
     if (!canvas?.ready) return;
     try {
-      const offered = offeredSpots();
+      checkOwnBather();
       const keep = new Set();
-      for (const { doc, spot } of offered) {
-        keep.add(doc.id);
-        const el = buttonFor(doc.id, spot);
+      for (const offer of allOffers()) {
+        keep.add(offer.key);
+        const el = buttonFor(offer);
         // Centred on left/top (translate -50%, as the examine "!" is).
-        const s = worldToScreen(doc.x + (doc.width / 2), doc.y);
+        const s = worldToScreen(offer.world.x, offer.world.y);
         const half = (el.offsetHeight || 34) / 2;
         const left = `${Math.round(s.x)}px`, top = `${Math.round(s.y - BUTTON_LIFT_PX - half)}px`;
         if (el.style.left !== left) el.style.left = left;
@@ -363,20 +547,15 @@
 
   // Keyboard players: the same buttons through Interact (Confirm on the one faced).
   function interactProvider() {
-    const out = [];
-    for (const { doc, spot } of offeredSpots()) {
-      const p = POSES[spot.pose];
-      out.push({
-        target: `poseSpot:${doc.id}`,
-        label: p.label,
-        icon: p.icon,
-        order: 30,
-        anchor: { x: doc.x + (doc.width / 2), y: doc.y + (doc.height / 2) },
-        el: state.buttons.get(doc.id) ?? null,
-        run: () => take(doc.id)
-      });
-    }
-    return out;
+    return allOffers().map((offer) => ({
+      target: `poseSpot:${offer.key}`,
+      label: offer.label,
+      icon: offer.icon,
+      order: 30,
+      anchor: offer.centre,
+      el: state.buttons.get(offer.key) ?? null,
+      run: offer.run
+    }));
   }
 
   // ------------------------------------------------------------
@@ -402,7 +581,8 @@
     POSES, SPOT_KEY, POSE_FLAG, ES_SCOPE,
     spotOf, sceneSpots, occupantOf, offeredSpots,
     isPosed: (token) => !!poseOf(token?.document ?? token),
-    take, standUp,
+    take, standUp, beforeWalk,
+    bathOf, bathRegions, enterBath, leaveBath, BATH_FLAG,
     state
   };
 

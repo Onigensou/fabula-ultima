@@ -997,8 +997,9 @@
       return;
     }
 
-    // Seated or asleep on a pose spot: a click stands the character up first.
-    await standUpIfPosed(token);
+    // Holding a pose: a click stands a seated / sleeping character up, and
+    // takes a bather out of the water when it lands on dry ground.
+    await standUpIfPosed(token, destCanvasPoint);
 
     // Start from where the token is drawn, so a click made mid-walk is tested
     // along the line the token will actually travel.
@@ -1038,13 +1039,14 @@
     scheduleSlide(walkSeq, token.id, firstCenter, slideSpot, Math.max(0, duration - SLIDE_LEAD_MS));
   }
 
-  // A character on a pose spot (event-system/pose-spots) stands up before any
-  // walk, at the spot's exit. True when they were posed.
-  async function standUpIfPosed(token) {
+  // A character holding a pose (event-system/pose-spots) before a walk toward
+  // `target` (a token centre): seated or asleep, they stand up at the spot's
+  // exit; bathing, they wade on, or step out of the water when the target is
+  // on land. True when they were moved (the walk plans from where they are now).
+  async function standUpIfPosed(token, target) {
     const poses = window.oni?.PoseSpots;
     if (!poses?.isPosed?.(token)) return false;
-    await poses.standUp(token);
-    return true;
+    return !!(await poses.beforeWalk(token, target));
   }
 
   function walkDuration(distance, speed = WALK_SPEED) {
@@ -1365,8 +1367,13 @@
     const token = getFollowToken();
     if (!token?.document?.isOwner) return;
 
-    // Seated or asleep on a pose spot: a move stands the character up first.
-    if (await standUpIfPosed(token) && seq !== state.keySeq) return;
+    // Holding a pose: seated / asleep stand up first; a bather pushing toward
+    // land (a square ahead out of the water) steps out first.
+    {
+      const here = drawnCenter(token), grid = canvas.dimensions?.size || 100;
+      const ahead = { x: here.x + (dir.x * grid), y: here.y + (dir.y * grid) };
+      if (await standUpIfPosed(token, ahead) && seq !== state.keySeq) return;
+    }
 
     // The keys take over from a click walk and its pending slide.
     clearPendingMove();
