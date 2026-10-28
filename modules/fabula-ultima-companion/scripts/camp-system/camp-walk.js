@@ -88,8 +88,13 @@
 
       const u = { _id: t.id };
       if (t._source.x !== home.x || t._source.y !== home.y) Object.assign(u, { x: home.x, y: home.y });
-      // Facing as placed. A spot authored without one faces the drawn way.
-      const facing = home.facing ?? (t.getFlag(MOD, "spriteFacesRight") ? "right" : "left");
+      // Facing as placed. A spot authored without one faces the way it was
+      // set on the map: the drawn way, the other way when the token is
+      // flipped (texture.scaleX < 0; sprite-facing-runtime.js restFacing).
+      const drawnRight = t.getFlag(MOD, "spriteFacesRight")
+        ?? game.actors.get(t.actorId)?.prototypeToken?.flags?.[MOD]?.spriteFacesRight;
+      const flipped = (Number(t.texture?.scaleX) || 1) < 0;
+      const facing = home.facing ?? ((!!drawnRight !== flipped) ? "right" : "left");
       const facingDir = home.facingDir ?? "downLeft";
       if (t.getFlag(MOD, "facing") !== facing) u[`flags.${MOD}.facing`] = facing;
       if (t.getFlag(MOD, "facingDir") !== facingDir) u[`flags.${MOD}.facingDir`] = facingDir;

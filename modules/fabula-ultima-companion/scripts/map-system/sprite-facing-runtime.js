@@ -290,6 +290,20 @@
     return isDrawnFacingRight(token) ? "right" : "left";
   }
 
+  // A token flipped on the map (a negative texture.scaleX: Foundry's mirror,
+  // or a module's flip hotkey) is set to look the other way. Facing here is
+  // absolute, left is left on screen, so a flipped token simply starts out
+  // facing the other way; it does not turn every facing round.
+  function isDocFlipped(token) {
+    return (Number(token?.document?.texture?.scaleX) || 1) < 0;
+  }
+
+  function restFacing(token) {
+    const drawn = drawnFacing(token);
+    if (!isDocFlipped(token)) return drawn;
+    return drawn === "left" ? "right" : "left";
+  }
+
   // ------------------------------------------------------------
   // Facing
   // ------------------------------------------------------------
@@ -300,7 +314,7 @@
       const saved = state.dungeon ? null : token.document?.getFlag?.(MODULE_ID, FACING_FLAG);
       const savedDir = state.dungeon ? null : token.document?.getFlag?.(MODULE_ID, DIR_FLAG);
       entry = {
-        facing: (saved === "left" || saved === "right") ? saved : drawnFacing(token),
+        facing: (saved === "left" || saved === "right") ? saved : restFacing(token),
         dir: DIR_FIELDS[savedDir] ? savedDir : "downLeft",
         shownSlot: null, // the drawn direction whose art is on the mesh (null = the token's own art)
         turnFrom: null,
@@ -408,15 +422,16 @@
     const turning = entry.turnFrom !== null && (now - entry.turnStart) < TURN_MS;
     if (!turning) entry.turnFrom = null;
 
-    const docSign = (Number(token.document?.texture?.scaleX) || 1) < 0 ? -1 : 1;
+    // Absolute: the sign that shows this facing on screen, whatever the
+    // token's own flip (see restFacing).
     const drawn = drawnFacing(token);
-    const signFor = (facing) => docSign * (facing === drawn ? 1 : -1);
+    const signFor = (facing) => (facing === drawn ? 1 : -1);
 
     let width = entry.baseAbs;
     let sign = signFor(entry.facing);
 
     // Straight down or up art is shown as drawn, whichever side the token faces.
-    if (entry.shownSlot && NEVER_MIRRORED.has(entry.shownSlot)) sign = docSign;
+    if (entry.shownSlot && NEVER_MIRRORED.has(entry.shownSlot)) sign = 1;
 
     if (turning) {
       const t = (now - entry.turnStart) / TURN_MS;
@@ -1053,10 +1068,11 @@
     const pick = pickSlot(token, "walk", dir);
     const art = pick ? loadWalkArt(pick.src, token.mesh.texture) : null;
 
-    const docSign = (Number(token.document?.texture?.scaleX) || 1) < 0 ? -1 : 1;
+    // Absolute, like applyFacing: a token flipped on the map still steps the
+    // way it moves. Straight up or down art is shown as drawn.
     const sign = (pick && NEVER_MIRRORED.has(pick.slot))
-      ? docSign
-      : docSign * (facing === drawn ? 1 : -1);
+      ? 1
+      : (facing === drawn ? 1 : -1);
 
     return {
       art: (art?.ready && !art.failed) ? art : null,
@@ -1175,7 +1191,7 @@
         state.tokens.delete(tokenId);
         continue;
       }
-      if (entry.facing !== drawnFacing(token) || entry.turnFrom !== null || entry.shownSlot) applyFacing(token);
+      if (entry.facing !== drawnFacing(token) || isDocFlipped(token) || entry.turnFrom !== null || entry.shownSlot) applyFacing(token);
     }
   }
 
