@@ -80,10 +80,11 @@ Branch: `feat/orbment-v3-alchemist`. Code: `scripts/orbment/`.
 
 ## Known caveats (decisions pending)
 
-- **Save / Load keeps sockets live.** The save system restores only equip state
-  and quantity on items, the same as for Refinement, but it restores actor
-  Zenit. So save → Attune → load refunds the Zenit and keeps the roll. Only
-  the primary GM can load.
+- **Save / Load restores sockets, like a console game.** A load puts every
+  item's sockets back as they were saved (rebuilt by the Orbment compiler)
+  along with Zenit, so save → Attune → load undoes both. Verified in the
+  sandbox. Refinement is still kept live by a load (the save system treats it
+  as definition); that is a separate call.
 - **Token pop-ups are muted for Orbments.** Foundry's "+(…)" / "−(…)" token
   text no longer fires when sockets are installed, attuned or upgraded (the
   compiler rebuilds every socket's effect, so untouched ones used to flash).

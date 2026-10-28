@@ -186,6 +186,24 @@ export function listAugments(itemType) {
   }));
 }
 
+// ── Save / Load (save-system) ─────────────────────────────────────────────────
+// Sockets are campaign STATE (user: saving records them, "like a console game"),
+// but they live in a flag the compiler projects INTO definition fields (props,
+// rider rows, item AEs). So a load hands the saved socket record back to the
+// compiler instead of copying fields. Both helpers take a live Item or a saved
+// plain object; a missing record reads as empty sockets.
+export function socketState(itemOrData) {
+  return JSON.stringify(readOrbment(itemOrData).slots);
+}
+
+export async function restoreSockets(item, savedData) {
+  assertGM();
+  const n = slotCountOf(item);
+  const slots = readOrbment(savedData).slots.slice(0, n);
+  while (slots.length < n) slots.push(null);
+  return setSlotsAndCompile(item, slots);
+}
+
 // ── openWindow(itemOrUuid) — lazy-load the UI ─────────────────────────────────
 export async function openWindow(itemOrUuid) {
   const item = await resolveItem(itemOrUuid);
@@ -198,7 +216,7 @@ export async function openWindow(itemOrUuid) {
 export function registerOrbmentApi() {
   const root = (globalThis.FUCompanion = globalThis.FUCompanion ?? {});
   const api = (root.api = root.api ?? {});
-  api.orbment = { install, remove, recompile, list, listAugments, openWindow };
+  api.orbment = { install, remove, recompile, list, listAugments, openWindow, socketState, restoreSockets };
   console.debug(TAG, "API registered at FUCompanion.api.orbment");
   return api.orbment;
 }
