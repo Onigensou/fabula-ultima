@@ -158,6 +158,9 @@
   const BATH_DEPTH_DEFAULT = 0.5;
   const BATH_BOB_PX = 1.5;
   const BATH_BOB_MS = 2200;
+  // The part under the water stays visible, faint and tinted the water's
+  // colour (pose-bath-fx.js samples it), as a body seen through water.
+  const BATH_UNDER_ALPHA = 0.35;
 
   const state = {
     installed: true,
@@ -964,7 +967,40 @@
     return tex;
   }
 
+  // The submerged part: the rest of the art below the cut, as a child of the
+  // mesh (so it follows its size, mirror and bob), hanging from the waterline.
+  function holdUnderwater(token, rec, p) {
+    const mesh = token.mesh;
+    const crop = rec.crop;
+    if (!mesh || mesh.destroyed || !crop?.tex?.valid) return;
+    const f = crop.full.frame, top = crop.tex.height, below = f.height - top;
+    if (below < 1) return;
+
+    let s = rec.under;
+    if (!s || s.destroyed || s.parent !== mesh || rec.underFor !== crop.tex) {
+      dropUnderwater(rec);
+      s = new PIXI.Sprite(new PIXI.Texture(crop.full.baseTexture, new PIXI.Rectangle(f.x, f.y + top, f.width, below)));
+      s.alpha = BATH_UNDER_ALPHA;
+      mesh.addChild(s);
+      rec.under = s;
+      rec.underFor = crop.tex;
+    }
+    s.x = -mesh.anchor.x * crop.tex.width;
+    s.y = (1 - mesh.anchor.y) * crop.tex.height;
+    const c = window.oni?.PoseBathFx?.colorsFor?.(p.regionId)?.base;
+    if (Number.isFinite(c) && s.tint !== c) s.tint = c;
+  }
+
+  function dropUnderwater(rec) {
+    const s = rec?.under;
+    if (!s) return;
+    rec.under = null;
+    rec.underFor = null;
+    try { s.parent?.removeChild(s); s.destroy({ texture: false }); } catch (_) {}
+  }
+
   function releasePoseArt(rec) {
+    dropUnderwater(rec);
     try { rec?.art?.video?.pause(); } catch (_) {}
   }
 
@@ -1014,6 +1050,7 @@
     rec.lastX = token.x;
     const sy = Math.abs(mesh.scale.y) || 1;
     mesh.pivot.y = (Math.sin((now / BATH_BOB_MS) * Math.PI * 2) * BATH_BOB_PX) / sy;
+    holdUnderwater(token, rec, poseOf(token));
   }
 
   // Every frame: hold each pose, drop the ones that ended.

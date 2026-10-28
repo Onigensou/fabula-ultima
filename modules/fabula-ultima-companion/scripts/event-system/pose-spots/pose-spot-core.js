@@ -389,10 +389,15 @@
   // them, a teleport): the bath ends where they are.
   function checkOwnBather() {
     const walker = myWalker();
-    const pose = poseOf(walker?.document);
+    const doc = walker?.document;
+    const pose = poseOf(doc);
     if (pose?.pose !== "bath" || state.standing) return;
     const region = canvas.regions?.get(pose.regionId);
-    if (region && inRegion(region, feetOf(walker))) return;
+    // Where the token IS (its stored position, the end of any wade), not where
+    // it is drawn: right after stepping in, the drawing is still on the shore
+    // for a frame, and that read as "left the water" (seen live).
+    const feet = { x: doc._source.x + (walker.w / 2), y: doc._source.y + (walker.h * 0.85) };
+    if (region && inRegion(region, feet)) return;
     state.standing = walker.document.update({ [`flags.${MODULE_ID}.-=${POSE_FLAG}`]: null }, { oniBypassGate: true })
       .catch(() => {}).finally(() => { state.standing = null; });
   }

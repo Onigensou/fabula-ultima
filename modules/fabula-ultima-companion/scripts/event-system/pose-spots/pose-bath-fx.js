@@ -31,7 +31,7 @@
 
   const FALLBACK_COLOR = 0x6fb8e8;   // when nothing can be sampled
   const RING_MS = 2400;              // one ring's life
-  const SURFACE_ALPHA = 0.55;
+  const SURFACE_ALPHA = 0.3;   // light: the faint body under the water shows through
   const RING_ALPHA_STILL = 0.45;
   const RING_ALPHA_WADING = 0.75;
   const SAMPLE_STEP_PX = 10;
@@ -123,10 +123,22 @@
   // ------------------------------------------------------------
   // Drawing
   // ------------------------------------------------------------
+  // A Graphics that sorts among the tokens of the primary canvas group (by
+  // elevation, sort layer and sort). Foundry 12.343 exports the mixin, not a
+  // ready PrimaryGraphics class.
+  let RippleGraphics = null;
+  function rippleClass() {
+    if (RippleGraphics) return RippleGraphics;
+    const Mixin = globalThis.PrimaryCanvasObjectMixin;
+    const Ready = globalThis.PrimaryGraphics ?? foundry.canvas?.primary?.PrimaryGraphics;
+    RippleGraphics = Ready ?? (Mixin ? class extends Mixin(PIXI.Graphics) {} : null);
+    return RippleGraphics;
+  }
+
   function graphicsFor(token) {
     let rec = state.gfx.get(token.id);
     if (rec && !rec.g.destroyed) return rec;
-    const Cls = globalThis.PrimaryGraphics ?? foundry.canvas?.primary?.PrimaryGraphics;
+    const Cls = rippleClass();
     if (!Cls) return null;
     const g = new Cls();
     canvas.primary.addChild(g);
