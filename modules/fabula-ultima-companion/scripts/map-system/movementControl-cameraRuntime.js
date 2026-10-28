@@ -156,6 +156,8 @@
     // Whose token this client walks: "party" (walk maps: the shared party
     // token, by the main controller) or "camp" (the player's own member).
     walkKind: "party",
+    // The active party's actor ids (camp: who counts as a member).
+    partyMemberIds: new Set(),
 
     followTokenId: null,
     followTokenActorId: null,
@@ -291,14 +293,28 @@
     return safeGet(scene?.flags?.[MODULE_ID]?.[FABULA_ROOT_KEY], `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null) === "camp";
   }
 
-  // A party member standing in a camp: a spawned member, or a player's
-  // character placed there by hand.
+  // A party member standing in a camp: a spawned member, or one of the
+  // active party (database member_id_1..4) placed there by hand. Not "any
+  // user's character": players of other campaigns own characters that stand
+  // in towns as NPCs.
   function isCampMemberToken(token) {
     const doc = token?.document ?? token;
     if (!doc) return false;
     if (doc.getFlag?.(MODULE_ID, CAMP_MEMBER_FLAG)) return true;
-    const actorId = doc.actorId;
-    return !!actorId && !!game.users?.some(u => !u.isGM && u.character?.id === actorId);
+    return !!doc.actorId && state.partyMemberIds.has(doc.actorId);
+  }
+
+  async function refreshPartyMemberIds() {
+    const ids = new Set();
+    try {
+      const props = (await globalThis.FUCompanion?.api?.getCurrentGameDb?.())?.db?.system?.props ?? {};
+      for (let i = 1; i <= 4; i++) {
+        // member_id_1 holds a bare id, the others an "Actor.<id>" uuid.
+        const raw = cleanString(props[`member_id_${i}`]);
+        if (raw) ids.add(raw.replace(/^Actor\./, ""));
+      }
+    } catch (_) {}
+    state.partyMemberIds = ids;
   }
 
   // The member this client walks in a camp: its own character's token, or
@@ -860,6 +876,7 @@
       // Camp: no shared party token and no controller. This client walks its
       // own member, if it has one here (the GM and a spectator have none).
       if (state.walkKind === "camp") {
+        await refreshPartyMemberIds();
         const token = findOwnCampMember();
         const follow = !!token && campRoomNeedsFollow();
         const newToken = state.followTokenId !== (token?.id ?? null);
@@ -1829,6 +1846,11 @@
     } catch (err) {
       console.warn("[MovementControl:CameraRuntime] Failed to attach API to FUCompanion.api", err);
     }
+
+    // Every client, the GM too, needs the party roster to tell camp members
+    // from NPCs (sprite facing, footsteps and the camp fade ask here).
+    refreshPartyMemberIds();
+    Hooks.on("canvasReady", () => { refreshPartyMemberIds(); });
 
     if (game.user?.isGM) {
       DBG.verbose("CameraRuntime", "GM client detected; camera runtime remains inactive");
