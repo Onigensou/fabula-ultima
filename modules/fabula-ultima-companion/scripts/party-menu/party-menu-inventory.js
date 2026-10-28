@@ -27,6 +27,8 @@ import {
 import {
   gatherEquipmentSlots, canEquip, applyEquipmentSwap, syncItemEffectsToEquip,
 } from "../battle-director/equipment-swap.js";
+import { DESC_SENTINEL, stripOrbmentDescBlock, readOrbment, itemKindOf } from "../orbment/orbment-const.js";
+import { resolveAugment } from "../orbment/augment-registry.js";
 
 const TAG = "[PartyMenu]";
 const log = (...a) => console.log(TAG, ...a);
@@ -131,6 +133,16 @@ export function isWorn(item, roster) {
   return wornIds(item.parent).has(item.id);
 }
 
+/** An item's Orbment sockets ([{ label, summary, category } | null]), or null for gear without any. */
+const ORB_KINDS = new Set(["weapon", "armor", "shield"]);
+export function orbmentOf(item) {
+  if (!ORB_KINDS.has(itemKindOf(item))) return null;
+  return readOrbment(item).slots.map((s) => {
+    const v = s ? resolveAugment(s.id, s.param, s.value) : null;
+    return v ? { label: v.label, summary: v.summary, category: v.category } : null;
+  });
+}
+
 export function itemSummary(item) {
   const p = item?.system?.props ?? {};
   const t = itemType(item);
@@ -157,8 +169,10 @@ export function itemSummary(item) {
     img: item.img || "icons/svg/item-bag.svg",
     type: t,
     qty: quantityOf(item),
-    description: str(p.description),
+    // A v1/v2 Orbment summary block may trail the text; `orbment` carries it now.
+    description: str(p.description).includes(DESC_SENTINEL) ? stripOrbmentDescBlock(str(p.description)) : str(p.description),
     setDescription: str(p.set_description),
+    orbment: orbmentOf(item),
     // "<Set Name>" is the template's placeholder, not a value.
     facts: facts.filter(([, v]) => v !== "" && v !== "-" && v != null && !/^<[^>]*>$/.test(String(v))),
   };

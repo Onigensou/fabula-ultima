@@ -10,6 +10,13 @@
 
 import { registerOrbmentApi, openWindow } from "./orbment-api.js";
 import { itemKindOf } from "./orbment-const.js";
+import { attune, installAttuneSocket } from "./orbment-attune.js";
+import { initAlchemist, setAlchemist, openAlchemist, isAlchemistActor } from "./alchemist-open.js";
+import { feedback, installFeedback } from "./orbment-feedback.js";
+import { runCampForge, installCampForgeSocket } from "./camp-forge.js";
+import { installUpgrade, requestUpgrade } from "./orbment-upgrade.js";
+import { UpgradeWindow, initUpgradeButton } from "./upgrade-window.js";
+import "./orbment-dr.js";   // registers globalThis.FUOrbment for the classic damage path
 
 const TAG = "[Orbment]";
 const BTN_CLASS = "fu-orbment-btn";
@@ -61,7 +68,28 @@ function onRenderItemSheet(sheet, html) {
 export function initOrbment() {
   if (_installed) return;
   _installed = true;
-  registerOrbmentApi();
+  const api = registerOrbmentApi();
+  // v3: random Attunement (Alchemist / Camp Forge). Every client listens so a
+  // player gets its result back; only the primary GM executes requests.
+  api.attune = attune;
+  installAttuneSocket();
+  // The Alchemist NPC (proximity button → Attunement window).
+  api.setAlchemist = setAlchemist;
+  api.openAlchemist = openAlchemist;
+  api.isAlchemist = isAlchemistActor;
+  // Party announcement banner (every client listens; the operator sends).
+  api.feedback = feedback;
+  installFeedback();
+  // Camp Forge → Field Attune (the camp activity calls api.campForge on the GM;
+  // every client listens to open the operator / spectator window).
+  api.campForge = runCampForge;
+  installCampForgeSocket();
+  // Upgrade (Tinkerer heroic): 🔧 camp button + window; the primary GM queues,
+  // refunds, installs at rest end and announces at wake.
+  api.upgrade = { open: (holder) => UpgradeWindow.open(holder), request: requestUpgrade };
+  installUpgrade();
+  try { initUpgradeButton(); } catch (e) { console.warn(TAG, "initUpgradeButton failed", e); }
+  try { initAlchemist(); } catch (e) { console.warn(TAG, "initAlchemist failed", e); }
   // Cover both classic + V2 sheet hooks; CSB's item sheet may fire either.
   Hooks.on("getItemSheetHeaderButtons", onGetItemHeaderButtons);
   Hooks.on("renderItemSheet",   onRenderItemSheet);

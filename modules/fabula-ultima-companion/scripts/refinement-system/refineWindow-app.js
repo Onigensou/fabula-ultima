@@ -469,6 +469,7 @@ export class RefineWindowApp {
           oldName:    api.buildDisplayName?.(r.baseName, r.oldRefineLevel) ?? r.itemName,
           newName:    r.displayName,
           itemType:   r.itemType,
+          itemUuid,   // the banner's item name opens the Item Window for each viewer
         });
       }
 

@@ -8,14 +8,16 @@
 //   effect   the description, linked text
 //   skills   granted skills as small cards (for gear)
 //   set      tier rows lit by the owner's equipped pieces (projected when comparing)
-//   flavor   last
+//   flavor
+//   orbment  last, Ragnarok-style: one box per installed Orbment + the socket strip
 //
-// Compare helpers live here too: which equipped item an item would replace, and
-// the notes numbers cannot show (set breaks, two-handed swaps, damage type).
+// Compare helpers live here too: which equipped item an item would replace.
 
 import { resolveUuid, DAMAGE } from "./lt-terms.js";
 import { renderLinkedText, safeHtml, minimalLinkHTML } from "./lt-render.js";
-import { setBonusHTML, parseSetTiers, equippedPieceNames } from "./lt-setbonus.js";
+import { setBonusHTML } from "./lt-setbonus.js";
+import { DESC_SENTINEL, stripOrbmentDescBlock, readOrbment, itemKindOf } from "../orbment/orbment-const.js";
+import { resolveAugment } from "../orbment/augment-registry.js";
 
 const ZENIT_ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/GP.png";
 
@@ -170,7 +172,9 @@ export function descriptionOf(term) {
   if (term.kind === "dmg") return DAMAGE_DESC;
   if (term.descHtml) return term.descHtml;
   const p = term.doc?.system?.props ?? {};
-  return p.description || p.consumable_description || p.skill_description || "";
+  // A v1/v2 Orbment summary block may still trail the text; the footer shows it now.
+  const desc = String(p.description ?? "").includes(DESC_SENTINEL) ? stripOrbmentDescBlock(p.description) : p.description;
+  return desc || p.consumable_description || p.skill_description || "";
 }
 
 export function flavorOf(term) {
@@ -207,6 +211,31 @@ function grantedSkillsHTML(term) {
     rows.push(`<div class="fu-iw-mini"><div class="fu-iw-mini-head">${link}${cost ? `<span class="fu-ltc-pill">${esc(cost)}</span>` : ""}</div>${desc ? `<div class="fu-iw-mini-body">${desc}</div>` : ""}</div>`);
   }
   return rows.length ? `<div class="fu-ltc-label">Grants</div>${rows.join("")}` : "";
+}
+
+// Orbment footer, Ragnarok-style: it closes the card. One box per installed
+// Orbment holding its effect line (gem = category; bar = the rolled value against
+// the rulebook max; a wrench for an Upgrade install), then the socket strip,
+// filled and empty sockets alike. Accessories hold no Orbments: nothing.
+const ORB_KINDS = new Set(["weapon", "armor", "shield"]);
+function orbmentHTML(term) {
+  const doc = term.doc;
+  if (term.kind !== "item" || !doc || !ORB_KINDS.has(itemKindOf(doc))) return "";
+  const slots = readOrbment(doc).slots;
+  if (!slots.length) return "";
+  const views = slots.map((s) => (s ? resolveAugment(s.id, s.param, s.value) : null));
+  const boxes = views.map((v, i) => {
+    if (!v) return "";
+    const top = v.vals?.length ? v.vals[v.vals.length - 1] : null;
+    const tag = slots[i].source === "upgrade"
+      ? `<span class="fu-iw-orb-up" data-tooltip="Installed with the Upgrade heroic skill"><i class="fa-solid fa-screwdriver-wrench"></i></span>`
+      : top != null && v.value != null
+        ? `<span class="fu-iw-orb-roll" data-tooltip="${esc(`${v.label} · +${v.value}${v.unit} of a possible +${top}${v.unit}`)}"><span class="fu-iw-orb-bar"><i style="width:${Math.round((v.value / top) * 100)}%"></i></span>${v.value}/${top}</span>`
+        : "";
+    return `<div class="fu-iw-orb-box" data-tooltip="${esc(`Slot ${i + 1} · ${v.label}`)}"><span class="fu-iw-gem is-${esc(v.category)}"></span><span>${esc(v.summary)}</span>${tag}</div>`;
+  }).join("");
+  const strip = views.map((v, i) => `<span class="fu-iw-gem ${v ? `is-${esc(v.category)}` : "is-empty"}" data-tooltip="${esc(`Slot ${i + 1}: ${v ? v.label : "empty"}`)}"></span>`).join("");
+  return `<div class="fu-iw-orb">${boxes}<div class="fu-iw-orb-strip">${strip}<span class="fu-iw-orb-count">${views.filter(Boolean).length}/${views.length} Orbment</span></div></div>`;
 }
 
 /**
@@ -252,6 +281,7 @@ export function cardHTML(term, { vs = null, actor, compact = false } = {}) {
     ${compact ? "" : grantedSkillsHTML(term)}
     ${set ? `<div class="fu-ltc-label">Set bonus</div>${safeHtml(set)}` : ""}
     ${flavor ? `<div class="fu-ltc-flavor">${safeHtml(flavor)}</div>` : ""}
+    ${orbmentHTML(term)}
   </div>`;
 }
 
@@ -272,31 +302,6 @@ export function equippedFor(doc, actor) {
   return actor.items.filter((it) => it.id !== doc.id && it.system?.props?.isEquipped && it.system.props.item_type === p.item_type);
 }
 
-/** What the numbers cannot say: damage type, two-handed swaps, broken set tiers. */
-export function swapNotesHTML(doc, vs, actor) {
-  const a = doc.system?.props ?? {}, b = vs.system?.props ?? {};
-  const rows = [];
-  if (a.item_type === "weapon" && a.type_damage && b.type_damage && a.type_damage !== b.type_damage) {
-    rows.push(`<div class="fu-iw-note"><span>Damage type</span><span>${dmgText(b.type_damage)} →${dmgText(a.type_damage)}</span></div>`);
-  }
-  if (a.item_type === "weapon" && /two/i.test(a.hand_slots ?? "")) {
-    const offhand = actor?.items.find((it) => it.system?.props?.isEquipped && it.system.props.item_type === "shield");
-    if (offhand) rows.push(`<div class="fu-iw-note is-warn"><span>Two-handed</span><span>also unequips ${esc(offhand.name)}</span></div>`);
-  }
-  const vsSet = String(b.set_name ?? "").trim();
-  if (b.isSet && vsSet && vsSet !== "<Set Name>" && vsSet !== String(a.set_name ?? "").trim() && actor) {
-    const worn = equippedPieceNames(actor, vsSet).size;
-    const tiers = parseSetTiers(renderLinkedText(b.set_description ?? ""))?.tiers ?? [];
-    for (const t of tiers.filter((t) => worn >= t.pieces && worn - 1 < t.pieces)) {
-      // One line in the note: drop the tier's list/paragraph wrappers, keep its links.
-      const inline = t.html.replace(/<\/?(ul|ol|li|p)\b[^>]*>/gi, " ").replace(/\s+/g, " ").trim();
-      rows.push(`<div class="fu-iw-note is-warn"><span>Breaks ${esc(vsSet)} ${t.pieces}-Piece</span><span>${inline}</span></div>`);
-    }
-  }
-  if (!rows.length) return "";
-  return `<div class="fu-iw-notes"><div class="fu-ltc-label">Equipping this instead of ${esc(vs.name)}</div>${rows.join("")}</div>`;
-}
-
 /** Everything a compare view needs, or null when there is nothing worn to compare with. */
 export function compareFor(doc) {
   const actor = compareActor(doc);
@@ -306,6 +311,5 @@ export function compareFor(doc) {
     actor,
     vs: worn[0],
     left: worn.map((w) => `<div class="fu-iw-col"><span class="fu-iw-tag is-eq">Equipped</span>${cardHTML(resolveUuid(w.uuid, w.name), { compact: true, actor })}</div>`).join(""),
-    notes: worn.map((w) => swapNotesHTML(doc, w, actor)).join(""),
   };
 }

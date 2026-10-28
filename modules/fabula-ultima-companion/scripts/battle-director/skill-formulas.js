@@ -31,6 +31,7 @@ export const SKILL_FORMULAS_SCHEMA = 11;
 // No `eval` / `new Function`. Tokenizer + recursive-descent parser.
 
 import { log, warn } from "./logger.js";
+import { orbmentReduction } from "../orbment/orbment-dr.js";
 
 // snapshot.getBlockedActionLabels, registered by snapshot.js at load (it already
 // imports this module, so a static import back would be a cycle). Read by the
@@ -4045,6 +4046,11 @@ export function resolveIncomingReduction({ actor = null, props = null, elementTy
   if (r === "ranged") addFlat("damage_receiving_mod_range", "Reduction (Ranged)");
   if (el && !isNullElement(el)) addFlat(`damage_receiving_mod_${el}`, `Reduction (${_capWord(el)})`);
 
+  // Orbment armor DR (Guard / Ward / Bastion / Aegis): its own keys, already
+  // capped per character (orbment-dr.js), on top of the sheet's columns.
+  const orb = orbmentReduction(actor, isNullElement(el) ? null : el);
+  if (orb.flat) { flat += orb.flat; parts.push({ source: "Orbment", amount: -orb.flat }); }
+
   let v = base - flat;
 
   // % reduction (sum the family, then 1 − pct/100).
@@ -4053,6 +4059,7 @@ export function resolveIncomingReduction({ actor = null, props = null, elementTy
   if (r === "melee")  pct += _mnum(p.damage_receiving_percentage_melee);
   if (r === "ranged") pct += _mnum(p.damage_receiving_percentage_range);
   if (el && !isNullElement(el)) pct += _mnum(p[`damage_receiving_percentage_${el}`]);
+  pct += orb.pct;
   if (pct !== 0) {
     const mult = Math.max(0, 1 - pct / 100);
     const before = Math.ceil(Math.max(0, v));

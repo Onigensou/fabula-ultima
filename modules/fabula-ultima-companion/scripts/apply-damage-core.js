@@ -360,6 +360,9 @@
     isCrit             = false,
     attackerProps      = null,
     targetProps        = null,
+    // Optional: the target Actor, for Orbment armor DR (AE-scanned keys that
+    // never reach targetProps). Callers passing only props skip it.
+    targetActor        = null,
     ignoreDR           = false,
     actionBonusFlat    = 0,
     actionOutgoingMult = 1,
@@ -383,11 +386,18 @@
     x *= outgoingMult;
     log.push({ step: 2, label: "Outgoing %", mult: outgoingMult, value: x });
 
-    const targetFlat = ignoreDR ? 0 : getTargetFlatReduction(targetProps, ctx) + _num(actionReductionFlat);
-    x -= targetFlat;
-    log.push({ step: 3, label: "Target Flat Reduction", sub: targetFlat, value: x });
+    // Orbment armor DR (Guard / Ward / Bastion / Aegis), already capped per
+    // character by scripts/orbment/orbment-dr.js — the same helper the Battle
+    // Director uses (published on globalThis because this file can't import).
+    const orbDr = (!ignoreDR && targetActor && globalThis.FUOrbment?.orbmentReduction)
+      ? globalThis.FUOrbment.orbmentReduction(targetActor, elementType === "elementless" ? null : elementType)
+      : { flat: 0, pct: 0 };
 
-    const targetPctMult = ignoreDR ? 1 : getTargetPctMultiplier(targetProps, ctx);
+    const targetFlat = ignoreDR ? 0 : getTargetFlatReduction(targetProps, ctx) + _num(actionReductionFlat) + orbDr.flat;
+    x -= targetFlat;
+    log.push({ step: 3, label: "Target Flat Reduction", sub: targetFlat, orbment: orbDr.flat, value: x });
+
+    const targetPctMult = ignoreDR ? 1 : getTargetPctMultiplier(targetProps, ctx) * Math.max(0, 1 - orbDr.pct / 100);
     x *= targetPctMult;
     log.push({ step: 4, label: "Target % Mod", mult: targetPctMult, value: x });
 
@@ -524,7 +534,7 @@
       const { finalPreAffinity, breakdown } = computeDamage({
         baseDamage: resolvedBase,
         elementType, attackRange, isSpellish, isItem, weaponType, damageClass, isCrit,
-        attackerProps: resolvedAttackerProps, targetProps: props, ignoreDR,
+        attackerProps: resolvedAttackerProps, targetProps: props, targetActor, ignoreDR,
         actionBonusFlat, actionOutgoingMult, actionReductionFlat,
       });
       finalValue           = finalPreAffinity;
