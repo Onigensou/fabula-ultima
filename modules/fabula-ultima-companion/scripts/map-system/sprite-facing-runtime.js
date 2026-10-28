@@ -32,7 +32,12 @@
  *   side view, then the other half. So a character with only sprite_walk
  *   behaves exactly as before. Straight down and up art is never mirrored.
  *
- * Runs on walk maps and dungeon maps. On a dungeon map the party token steps
+ * Camp scenes: every party member walks at once (each player walks their
+ * own, movementControl-cameraRuntime.js), so each member token is a walker
+ * with its own walk, walk art and standing art, exactly as the party token
+ * is on a walk map.
+ *
+ * Runs on walk maps, camps and dungeon maps. On a dungeon map the party token steps
  * from tile to tile: dp-movement.js slides a copy of the sprite and asks here
  * for the step's walk art. Only the copy walks; the token itself never turns
  * there and always stands in its own idle art, facing the camera. Battle
@@ -145,17 +150,14 @@
     enabled: ENABLED,
     active: false,
     dungeon: false, // a dungeon map: steps come from dp-movement.js, not from watching the token
+    camp: false,    // a camp: every party member is a walker
 
     partyActorId: null,
     partyTokenId: null,
+    campWalkerIds: null, // camp member token ids, worked out again when tokens come or go
 
-    lastX: null,
-    lastY: null,
-    lastMoveAt: 0,
-    walking: false,
-    walkDistance: 0,
-    lastMoverIsMe: false,
-    saveTimer: null,
+    // tokenId -> the walk of one walking token (see newWalker)
+    walkers: new Map(),
 
     // tokenId -> { facing, turnFrom, turnStart, baseAbs, lastApplied }
     tokens: new Map(),
@@ -166,16 +168,40 @@
     walkArt: new Map(),
     walkOverrideSrc: null,
     sourceBySrc: new Map(), // texture src -> actor id
-    sway: null, // { tokenId, dx, dy, lastX, lastY }
-    walkShown: null, // { tokenId, src, slot, art, idleTexture }
-    standShown: null, // { tokenId, src, slot, art, idleTexture }
-    standDirty: false, // the party token's standing art needs choosing again
-    walkIntent: null,  // the keyboard direction of the last move, { x, y }, or null
-    walkRate: 1,       // walk-art playback speed for the last move (a run plays faster)
-    dirSector: null, // the movement slice the current walk is in
 
     tickerFn: null
   };
+
+  // The walk of one walking token: the party token on a walk map, each
+  // party member in a camp.
+  function newWalker(tokenId) {
+    return {
+      tokenId,
+      lastX: null,
+      lastY: null,
+      lastMoveAt: 0,
+      walking: false,
+      walkDistance: 0,
+      lastMoverIsMe: false,
+      saveTimer: null,
+      sway: null,       // { tokenId, dx, dy, lastX, lastY }
+      walkShown: null,  // { tokenId, src, slot, art, idleTexture }
+      standShown: null, // { tokenId, src, slot, art, idleTexture }
+      standDirty: true, // its standing art needs choosing (again); a new walker stands the way its last walk ended
+      walkIntent: null, // the keyboard direction of the last move, { x, y }, or null
+      walkRate: 1,      // walk-art playback speed for the last move (a run plays faster)
+      dirSector: null   // the movement slice the current walk is in
+    };
+  }
+
+  function walkerFor(token) {
+    let w = state.walkers.get(token.id);
+    if (!w) {
+      w = newWalker(token.id);
+      state.walkers.set(token.id, w);
+    }
+    return w;
+  }
 
   function cleanString(value) {
     return value == null ? "" : String(value).trim();
@@ -196,6 +222,19 @@
     return scene?.flags?.[MODULE_ID]?.[FABULA_ROOT_KEY]?.general?.sceneMode === "dungeon";
   }
 
+  function sceneIsCamp(scene) {
+    return scene?.flags?.[MODULE_ID]?.[FABULA_ROOT_KEY]?.general?.sceneMode === "camp";
+  }
+
+  // A party member standing in a camp (the same rule the walk uses).
+  function isCampMember(token) {
+    const rt = globalThis.FUCompanion?.api?.MovementControlCameraRuntime;
+    if (rt?.isCampMemberToken) return rt.isCampMemberToken(token);
+    const doc = token?.document;
+    return !!doc?.getFlag?.(MODULE_ID, "campMember")
+      || (!!doc?.actorId && !!game.users?.some(u => !u.isGM && u.character?.id === doc.actorId));
+  }
+
   // ------------------------------------------------------------
   // Whose art is this token wearing
   // ------------------------------------------------------------
@@ -203,6 +242,9 @@
   // and the "drawn facing right" mark belong to that character, found by the
   // image the token is showing.
   function sourceActorFor(token) {
+    // A camp member is its own character (a linked token), not a stand-in.
+    if (state.camp && token?.actor && isCampMember(token)) return token.actor;
+
     const src = cleanString(token?.document?.texture?.src);
     if (!src) return token?.actor ?? null;
 
@@ -320,13 +362,14 @@
     const { dir, side } = SECTORS[sector];
     const entry = entryFor(token);
 
+    const w = walkerFor(token);
     if (side) setFacing(token, side, { instant: true });
     if (entry.dir !== dir) {
       entry.dir = dir;
-      if (token.id === state.partyTokenId && !state.walking) state.standDirty = true;
+      if (!w.walking) w.standDirty = true;
     }
 
-    state.lastMoverIsMe = true;
+    w.lastMoverIsMe = true;
     scheduleSaveFacing(token);
   }
 
@@ -336,9 +379,10 @@
 
     // Turning to talk or examine: a party token that stood with its back to
     // the camera turns round to its usual front view first.
-    if (token.id === state.partyTokenId) {
+    const w = state.walkers.get(token.id);
+    if (w) {
       entryFor(token).dir = "downLeft";
-      clearStandArt();
+      clearStandArt(w);
     }
     setFacing(token, dx > 0 ? "right" : "left");
   }
@@ -517,14 +561,15 @@
     const src = pick?.src;
     if (!src) return;
 
-    const shown = state.walkShown;
-    if (shown && shown.tokenId === token.id && shown.src === src && !isArtDead(shown.art)) {
+    const w = walkerFor(token);
+    const shown = w.walkShown;
+    if (shown && shown.src === src && !isArtDead(shown.art)) {
       advanceWalkArt(token);
       return;
     }
     // A change of direction mid-walk, or the art on show was destroyed: put
     // the standing art back, then take the new (or reloaded) walk.
-    if (shown) hideWalkArt();
+    if (shown) hideWalkArt(w);
 
     const idleTexture = mesh.texture;
     const art = loadWalkArt(src, idleTexture);
@@ -533,7 +578,7 @@
     const frame = art.kind === "strip" ? art.frames[0] : art.texture;
     if (!frame?.valid) return;
 
-    state.walkShown = { tokenId: token.id, src, slot: pick.slot, art, idleTexture };
+    w.walkShown = { tokenId: token.id, src, slot: pick.slot, art, idleTexture };
     entryFor(token).shownSlot = pick.slot;
     setMeshTexture(token, frame);
 
@@ -547,27 +592,28 @@
   }
 
   function advanceWalkArt(token) {
-    const shown = state.walkShown;
+    const w = state.walkers.get(token?.id);
+    const shown = w?.walkShown;
     const mesh = token?.mesh;
     if (!shown || !mesh || mesh.destroyed) return;
 
     if (shown.art.kind === "strip") {
       const frames = shown.art.frames;
       const cycle = (canvas.dimensions?.size || 100) * WALK_CYCLE_GRIDS;
-      const index = Math.floor(((state.walkDistance % cycle) / cycle) * frames.length) % frames.length;
+      const index = Math.floor(((w.walkDistance % cycle) / cycle) * frames.length) % frames.length;
       setMeshTexture(token, frames[index]);
     } else {
       // If Foundry put the standing art back (a redraw), take the walk art again.
       setMeshTexture(token, shown.art.texture);
       const video = shown.art.video;
-      if (video && video.playbackRate !== state.walkRate) video.playbackRate = state.walkRate;
+      if (video && video.playbackRate !== w.walkRate) video.playbackRate = w.walkRate;
     }
   }
 
-  function hideWalkArt() {
-    const shown = state.walkShown;
+  function hideWalkArt(w) {
+    const shown = w?.walkShown;
     if (!shown) return;
-    state.walkShown = null;
+    w.walkShown = null;
 
     if (shown.art.kind === "video" && shown.art.video) {
       try {
@@ -635,7 +681,8 @@
   // for it. Any other direction is laid on the mesh locally, like walk art.
   function showStandArt(token) {
     if (!token?.mesh || token.mesh.destroyed || isFacingLocked(token)) return;
-    clearStandArt();
+    const w = walkerFor(token);
+    clearStandArt(w);
 
     const entry = entryFor(token);
 
@@ -645,7 +692,7 @@
       : "";
     const idleArt = idleSrc ? loadIdleWalk(idleSrc, token.mesh.texture) : null;
     if (idleArt && !idleArt.failed) {
-      state.standShown = {
+      w.standShown = {
         tokenId: token.id, src: idleSrc, slot: "downLeft", art: idleArt, idle: true,
         idleTexture: token.mesh.texture, ownSrc: cleanString(token.document?.texture?.src)
       };
@@ -665,30 +712,31 @@
     const idleTexture = token.mesh.texture;
     const art = loadWalkArt(pick.src, idleTexture);
     const ownSrc = cleanString(token.document?.texture?.src);
-    state.standShown = { tokenId: token.id, src: pick.src, slot: pick.slot, art, idleTexture, ownSrc };
+    w.standShown = { tokenId: token.id, src: pick.src, slot: pick.slot, art, idleTexture, ownSrc };
     holdStandArt(token);
   }
 
   // Put the standing art on (again): once it has loaded, and after Foundry
   // redraws the token with its own image.
   function holdStandArt(token) {
-    const shown = state.standShown;
-    if (!shown || shown.tokenId !== token?.id || !token.mesh || token.mesh.destroyed) return;
+    const w = state.walkers.get(token?.id);
+    const shown = w?.standShown;
+    if (!shown || !token.mesh || token.mesh.destroyed) return;
     // Control passed to another player after this art was chosen (the token's
     // image can change more than once in a hand-over): choose for the new character.
     if (shown.ownSrc !== cleanString(token.document?.texture?.src)) {
-      clearStandArt();
-      state.standDirty = true;
+      clearStandArt(w);
+      w.standDirty = true;
       return;
     }
     if (shown.art.failed) {
-      clearStandArt();
-      state.standDirty = true; // choose again: the next direction on the list
+      clearStandArt(w);
+      w.standDirty = true; // choose again: the next direction on the list
       return;
     }
     if (isArtDead(shown.art)) {
-      clearStandArt();
-      state.standDirty = true; // choose again, which loads the image afresh
+      clearStandArt(w);
+      w.standDirty = true; // choose again, which loads the image afresh
       return;
     }
     if (!shown.art.ready) return;
@@ -711,10 +759,10 @@
     if (token.mesh.texture !== frame) setMeshTexture(token, frame);
   }
 
-  function clearStandArt() {
-    const shown = state.standShown;
+  function clearStandArt(w) {
+    const shown = w?.standShown;
     if (!shown) return;
-    state.standShown = null;
+    w.standShown = null;
 
     if (shown.art.kind === "video" && shown.art.video) {
       try { shown.art.video.pause(); } catch (_) {}
@@ -736,12 +784,13 @@
     const angle = Math.atan2(dy, dx);
     let sector = ((Math.round(angle / step) % 8) + 8) % 8;
 
-    const current = state.dirSector;
+    const w = walkerFor(token);
+    const current = w.dirSector;
     if (current !== null && current !== sector) {
       const fromCentre = Math.atan2(Math.sin(angle - current * step), Math.cos(angle - current * step));
       if (Math.abs(fromCentre) < (step / 2) + SECTOR_STICKY_RADIANS) sector = current;
     }
-    state.dirSector = sector;
+    w.dirSector = sector;
 
     const { dir, side } = SECTORS[sector];
     entryFor(token).dir = dir;
@@ -758,10 +807,10 @@
     const mesh = token?.mesh;
     if (!mesh || mesh.destroyed) return;
 
-    let sway = state.sway;
-    if (!sway || sway.tokenId !== token.id) {
-      clearSway();
-      sway = state.sway = { tokenId: token.id, dx: 0, dy: 0, lastX: null, lastY: null };
+    const w = walkerFor(token);
+    let sway = w.sway;
+    if (!sway) {
+      sway = w.sway = { tokenId: token.id, dx: 0, dy: 0, lastX: null, lastY: null };
     }
 
     const ours = sway.lastX !== null
@@ -771,7 +820,7 @@
     const baseY = ours ? mesh.position.y - sway.dy : mesh.position.y;
 
     const cycle = (canvas.dimensions?.size || 100) * WALK_CYCLE_GRIDS;
-    const phase = (state.walkDistance / cycle) * Math.PI * 2;
+    const phase = (w.walkDistance / cycle) * Math.PI * 2;
     const height = Math.abs(mesh.height) || token.h;
 
     const lean = Math.sin(phase) * SWAY_LEAN_RADIANS;
@@ -789,10 +838,10 @@
     mesh.position.set(sway.lastX, sway.lastY);
   }
 
-  function clearSway() {
-    const sway = state.sway;
+  function clearSway(w) {
+    const sway = w?.sway;
     if (!sway) return;
-    state.sway = null;
+    w.sway = null;
 
     const mesh = canvas?.tokens?.get(sway.tokenId)?.mesh;
     if (!mesh || mesh.destroyed) return;
@@ -815,13 +864,13 @@
     // takes to load; only art that failed to load falls back to the sway.
     const src = walkSrcFor(token);
     const hasArt = !!src && !state.walkArt.get(src)?.failed;
-    if (hasArt) clearSway();
+    if (hasArt) clearSway(walkerFor(token));
     else applySway(token);
   }
 
-  function hideWalk() {
-    hideWalkArt();
-    clearSway();
+  function hideWalk(w) {
+    hideWalkArt(w);
+    clearSway(w);
   }
 
   // ------------------------------------------------------------
@@ -853,14 +902,39 @@
     return token;
   }
 
+  // Every token that walks here: the party token on a walk map, each party
+  // member in a camp.
+  function walkerTokens() {
+    if (!state.camp) {
+      const party = findPartyToken();
+      return party ? [party] : [];
+    }
+    if (!state.campWalkerIds) {
+      state.campWalkerIds = (canvas.tokens?.placeables ?? []).filter(isCampMember).map(t => t.id);
+    }
+    const out = [];
+    for (const id of state.campWalkerIds) {
+      const token = canvas.tokens?.get(id);
+      if (token) out.push(token);
+    }
+    return out;
+  }
+
+  function isWalkerTokenId(tokenId) {
+    if (!tokenId) return false;
+    if (!state.camp) return tokenId === state.partyTokenId;
+    return walkerTokens().some(t => t.id === tokenId);
+  }
+
   function scheduleSaveFacing(token) {
-    if (state.saveTimer) clearTimeout(state.saveTimer);
-    if (!state.lastMoverIsMe) return;
+    const w = walkerFor(token);
+    if (w.saveTimer) clearTimeout(w.saveTimer);
+    if (!w.lastMoverIsMe) return;
 
     const tokenId = token.id;
-    state.saveTimer = setTimeout(() => {
-      state.saveTimer = null;
-      if (state.walking) return;
+    w.saveTimer = setTimeout(() => {
+      w.saveTimer = null;
+      if (w.walking) return;
 
       const live = canvas?.tokens?.get(tokenId);
       const doc = live?.document;
@@ -883,57 +957,61 @@
     }, SAVE_FACING_AFTER_MS);
   }
 
-  function tickParty(now) {
-    const token = findPartyToken();
-    if (!token) {
-      state.lastX = null;
-      state.lastY = null;
-      state.walking = false;
-      return;
-    }
+  function tickWalker(token, now) {
+    const w = walkerFor(token);
 
     // token.x/y is the drawn position; the document can read the destination
     // for an instant while Foundry prepares a move.
     const x = token.x;
     const y = token.y;
 
-    if (state.lastX === null) {
-      state.lastX = x;
-      state.lastY = y;
+    if (w.lastX === null) {
+      w.lastX = x;
+      w.lastY = y;
       entryFor(token);
       return;
     }
 
-    const dx = x - state.lastX;
-    const dy = y - state.lastY;
+    const dx = x - w.lastX;
+    const dy = y - w.lastY;
     const moved = Math.hypot(dx, dy);
-    state.lastX = x;
-    state.lastY = y;
+    w.lastX = x;
+    w.lastY = y;
 
     const grid = canvas.dimensions?.size || 100;
 
     if (moved < 0.01 || moved > (grid * 2)) {
-      if (state.walking && (now - state.lastMoveAt) > WALK_END_MS) {
-        state.walking = false;
-        state.walkDistance = 0;
-        state.dirSector = null;
-        hideWalk();
+      if (w.walking && (now - w.lastMoveAt) > WALK_END_MS) {
+        w.walking = false;
+        w.walkDistance = 0;
+        w.dirSector = null;
+        hideWalk(w);
         showStandArt(token);
         scheduleSaveFacing(token);
       }
       return;
     }
 
-    state.lastMoveAt = now;
-    if (!state.walking) clearStandArt(); // walk art is laid over the token's own image
-    state.walking = true;
-    state.walkDistance += moved;
+    w.lastMoveAt = now;
+    if (!w.walking) clearStandArt(w); // walk art is laid over the token's own image
+    w.walking = true;
+    w.walkDistance += moved;
 
-    const intent = state.walkIntent;
+    const intent = w.walkIntent;
     if (intent) updateDirection(token, intent.x, intent.y);
     else updateDirection(token, dx, dy);
 
     showWalk(token);
+  }
+
+  // Forget a walker: its art comes off, its pending save is dropped.
+  function dropWalker(tokenId) {
+    const w = state.walkers.get(tokenId);
+    if (!w) return;
+    if (w.saveTimer) clearTimeout(w.saveTimer);
+    hideWalk(w);
+    clearStandArt(w);
+    state.walkers.delete(tokenId);
   }
 
   // ------------------------------------------------------------
@@ -1063,24 +1141,31 @@
     if (!state.enabled || !state.active || !canvas?.ready) return;
 
     const now = performance.now();
-    // A dungeon step is a jump of the token; reading it as a walk would flash
-    // the walk art on the token. The steps come from dp-movement.js instead.
-    if (!state.dungeon) tickParty(now);
-    tickTalks(now);
+    const walkers = walkerTokens();
 
-    // At rest, the party token wears the standing art of its direction.
-    if (!state.walking) {
-      const party = findPartyToken();
-      if (party) {
-        if (state.standDirty) {
-          state.standDirty = false;
-          if (state.dungeon) preloadArt(party);
-          showStandArt(party);
-        } else {
-          holdStandArt(party);
-        }
+    // A walker that left (its token is gone, or no longer the party token).
+    if (state.walkers.size > walkers.length) {
+      const live = new Set(walkers.map(t => t.id));
+      for (const id of [...state.walkers.keys()]) if (!live.has(id)) dropWalker(id);
+    }
+
+    for (const token of walkers) {
+      // A dungeon step is a jump of the token; reading it as a walk would flash
+      // the walk art on the token. The steps come from dp-movement.js instead.
+      if (!state.dungeon) tickWalker(token, now);
+
+      // At rest, a walker wears the standing art of its direction.
+      const w = walkerFor(token);
+      if (w.walking) continue;
+      if (w.standDirty) {
+        w.standDirty = false;
+        if (state.dungeon) preloadArt(token);
+        showStandArt(token);
+      } else {
+        holdStandArt(token);
       }
     }
+    tickTalks(now);
 
     // Hold every tracked sprite on its facing. Foundry rewrites the mesh
     // scale whenever it refreshes a token, which would undo a mirror.
@@ -1106,22 +1191,12 @@
   }
 
   function reset() {
-    if (state.saveTimer) clearTimeout(state.saveTimer);
-    state.saveTimer = null;
-
-    hideWalk();
-    clearStandArt();
+    for (const id of [...state.walkers.keys()]) dropWalker(id);
     state.tokens.clear();
     state.talks.clear();
 
     state.partyTokenId = null;
-    state.lastX = null;
-    state.lastY = null;
-    state.walking = false;
-    state.walkDistance = 0;
-    state.dirSector = null;
-    state.standDirty = false;
-    state.lastMoverIsMe = false;
+    state.campWalkerIds = null;
   }
 
   // ------------------------------------------------------------
@@ -1194,7 +1269,7 @@
     sourceActorFor(token) { return token ? sourceActorFor(token) : null; },
 
     setWalkOverride(src) {
-      hideWalk();
+      for (const w of state.walkers.values()) hideWalk(w);
       state.walkOverrideSrc = cleanString(src) || null;
     },
 
@@ -1209,7 +1284,8 @@
   async function start() {
     reset();
     state.dungeon = sceneIsDungeon(canvas?.scene);
-    state.active = state.dungeon || sceneIsWalkMap(canvas?.scene);
+    state.camp = sceneIsCamp(canvas?.scene);
+    state.active = state.dungeon || state.camp || sceneIsWalkMap(canvas?.scene);
     if (!state.active) {
       detachTicker();
       return;
@@ -1226,8 +1302,8 @@
       }
     }
 
-    // The party token stands the way its last walk ended.
-    state.standDirty = true;
+    // Walkers stand the way their last walk ended: a new walker record
+    // starts with its standing art to choose (newWalker).
 
     attachTicker();
   }
@@ -1245,19 +1321,25 @@
   Hooks.on("updateScene", (scene) => {
     if (!canvas?.scene || scene.id !== canvas.scene.id) return;
     const dungeon = sceneIsDungeon(scene);
-    const active = dungeon || sceneIsWalkMap(scene);
-    if (active !== state.active || dungeon !== state.dungeon) start();
+    const camp = sceneIsCamp(scene);
+    const active = dungeon || camp || sceneIsWalkMap(scene);
+    if (active !== state.active || dungeon !== state.dungeon || camp !== state.camp) start();
   });
 
-  Hooks.on("createToken", () => { state.partyTokenId = null; });
+  Hooks.on("createToken", () => {
+    state.partyTokenId = null;
+    state.campWalkerIds = null;
+  });
 
   Hooks.on("deleteToken", (doc) => {
     state.partyTokenId = null;
+    state.campWalkerIds = null;
     state.tokens.delete(doc.id);
     state.talks.delete(doc.id);
-    if (state.walkShown?.tokenId === doc.id) state.walkShown = null;
-    if (state.standShown?.tokenId === doc.id) state.standShown = null;
-    if (state.sway?.tokenId === doc.id) state.sway = null;
+    // The token is gone: forget its walk without touching its (destroyed) mesh.
+    const w = state.walkers.get(doc.id);
+    if (w?.saveTimer) clearTimeout(w.saveTimer);
+    state.walkers.delete(doc.id);
   });
 
   Hooks.on("refreshToken", (token) => {
@@ -1268,47 +1350,52 @@
   Hooks.on("updateToken", (doc, change, options, userId) => {
     if (!state.active || doc.parent?.id !== canvas?.scene?.id) return;
 
-    if (doc.id === state.partyTokenId && (("x" in change) || ("y" in change))) {
-      state.lastMoverIsMe = userId === game.user?.id;
+    const walker = isWalkerTokenId(doc.id) && doc.object ? walkerFor(doc.object) : null;
+
+    if (walker && (("x" in change) || ("y" in change))) {
+      walker.lastMoverIsMe = userId === game.user?.id;
 
       // A keyboard walk says which way the key points. Sliding along a wall
       // or stepping round a corner, the party still faces that way, as in a
       // JRPG. It rides on the update, so every client faces the same way.
       const intent = options?.oniWalkFacing;
-      state.walkIntent = (intent && Number.isFinite(intent.x) && Number.isFinite(intent.y))
+      walker.walkIntent = (intent && Number.isFinite(intent.x) && Number.isFinite(intent.y))
         ? { x: intent.x, y: intent.y }
         : null;
 
       // Walk art plays faster on a run and slower on a steep slide.
       const rate = Number(options?.oniWalkRate);
-      state.walkRate = Number.isFinite(rate) ? Math.min(2, Math.max(0.5, rate)) : 1;
+      walker.walkRate = Number.isFinite(rate) ? Math.min(2, Math.max(0.5, rate)) : 1;
 
       // Placed, not walked: do not read a facing out of the jump.
       if (options?.animate === false || options?.teleport === true) {
-        state.lastX = null;
-        state.lastY = null;
+        walker.lastX = null;
+        walker.lastY = null;
       }
     }
 
     // The standing art changed (control passed to another player): the new
     // character's art is chosen again for the same direction.
     if (change?.texture && ("src" in change.texture)) {
-      if (state.walkShown?.tokenId === doc.id) state.walkShown = null;
-      if (state.standShown?.tokenId === doc.id) state.standShown = null;
+      const w = state.walkers.get(doc.id);
+      if (w) {
+        w.walkShown = null;
+        w.standShown = null;
+      }
       const entry = state.tokens.get(doc.id);
       if (entry) entry.shownSlot = null;
-      if (doc.id === state.partyTokenId) state.standDirty = true;
+      if (walker) walker.standDirty = true;
     }
 
     // Another client saved the facing and direction its walk ended on.
     const saved = change?.flags?.[MODULE_ID]?.[FACING_FLAG];
     const savedDir = change?.flags?.[MODULE_ID]?.[DIR_FLAG];
-    if (!state.dungeon && !(doc.id === state.partyTokenId && state.walking)) {
+    if (!state.dungeon && !walker?.walking) {
       const token = doc.object;
       if (token && (saved === "left" || saved === "right")) setFacing(token, saved);
       if (token && DIR_FIELDS[savedDir] && entryFor(token).dir !== savedDir) {
         entryFor(token).dir = savedDir;
-        if (doc.id === state.partyTokenId) state.standDirty = true;
+        if (walker) walker.standDirty = true;
       }
     }
   });
