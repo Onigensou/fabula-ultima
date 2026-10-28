@@ -72,7 +72,10 @@ export const DEFAULTS = Object.freeze({
   swayPeriod: 26,       // seconds
 });
 
-// Per backdrop, keyed by the image's file name without extension. Horizons
+// Per backdrop, keyed by the image's file name without extension. A `stage3d`
+// block enables the 3D camera: either a floor + back wall (`wallRow`, an
+// enclosed arena) or `relief: true` (the depth map pushed out into 3D, for
+// open scenery). Its colours are optional; the camera samples the painting. Horizons
 // come from tools/battle-depth/encode.py (floor fit of the depth model);
 // the Training Ground one agrees with the earlier hand solve (row ~85).
 // `strength` is set so the back row (feet ~row 217) lands near 0.72.
@@ -86,9 +89,10 @@ export const PRESETS = Object.freeze({
   },
   // Overworld random battles (legacy scene, no bleed). Low camera, so the raw
   // perspective is steep; a gentle exponent keeps the back row readable.
-  Eisendrache_Battlemap002: { horizon: 175.3, strength: 0.178, orbitX: 8, orbitY: 2 },
+  // Open country: a relief model (the depth map pushed out into 3D), not a wall.
+  Eisendrache_Battlemap002: { horizon: 175.3, strength: 0.178, orbitX: 8, orbitY: 2, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
   // Valley of the Dragon - Battle (v2)
-  Valley_Battlemap001: { horizon: 52.0, strength: 0.386 },
+  Valley_Battlemap001: { horizon: 52.0, strength: 0.386, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
 });
 
 const finite = (v) => typeof v === "number" && Number.isFinite(v);
@@ -237,6 +241,10 @@ export function parallaxUniforms({ view, rest, t = 0, cfg, cam, sceneRect, orbit
  * pixel for pixel.
  *
  * World: metres, X right, Y up, Z toward the viewer (the floor runs to -Z).
+ * Geometry is either a floor + back wall (`wallRow`) or a relief: every
+ * painting pixel pushed out along the projector's ray to its depth-map
+ * distance (reliefDepth). Any geometry along those rays reproduces the
+ * painting exactly at rest; they differ only once the camera moves.
  * The projector sits at (0, Hp, 0) looking down -Z, level.
  *
  * Canvas tokens stay where Foundry puts them; each frame they are displaced to
@@ -248,7 +256,7 @@ export function parallaxUniforms({ view, rest, t = 0, cfg, cam, sceneRect, orbit
  * Which treatment a scene gets, given the client setting and the backdrop's
  * resolved preset (null = no preset). Every scene degrades to what its
  * backdrop supports, ending at plain 2D:
- *   "camera" needs a `stage3d` floor/wall model, else falls back to "full";
+ *   "camera" needs a `stage3d` model (floor + wall, or relief), else "full";
  *   "full" (parallax) and "scale" need a preset; no preset = "off" (plain 2D).
  */
 export function stageModeFor(setting, cfg) {
@@ -271,16 +279,54 @@ export function buildProjector(cfg, cam, stage) {
   const R = Math.pow((front - cam.hz) / (back - cam.hz), s);
   const hz = s >= 0.999 || Math.abs(R - 1) < 1e-6 ? cam.hz : (front - R * back) / (1 - R);
   const Hp = (cam.refY - hz) / cam.ppmRef;
-  return {
+  const P = {
     hz, Hp, f: cam.f, cx: cam.cx,
     stageW: stage.w,
-    wallY: row(g.wallRow),
+    relief: !!g.relief,
+    wallY: g.wallRow == null ? null : row(g.wallRow),
     bottomY: cam.bottomY,
     bandY: cam.band,
-    floorAvg: g.floorAvg ?? [0.3, 0.25, 0.2],
-    wallAvg: g.wallAvg ?? [0.25, 0.22, 0.2],
+    // Relief: the painted horizon (depth-map disparity 0) and how far it lies
+    // once compressed; with no compression it is infinitely far, so it is
+    // capped a sliver below the horizon instead.
+    trueHz: cam.hz,
+    blendPx: RELIEF_BLEND * ky,
+    floorAvg: g.floorAvg ?? null,
+    wallAvg: g.wallAvg ?? null,
     void: g.void ?? [0.05, 0.05, 0.05],
   };
+  P.farZ = hz < cam.hz - 1e-6 ? floorDepth(cam.hz, P) : floorDepth(cam.hz + 0.03 * (cam.bottomY - cam.hz), P);
+  return P;
+}
+
+// Stage rows over which the relief eases into the rigid floor of the battle band.
+const RELIEF_BLEND = 40;
+
+/**
+ * Relief model: how far (m, along -Z) the projector ray through canvas row `y`
+ * travels before it meets the scenery, given the depth map's disparity D there
+ * (0 = the painted horizon, 1 = the stage's bottom row; see the header).
+ *
+ * The depth map is read through the painted camera, so a pixel of disparity D
+ * sits as far away as the floor row where the PAINTED floor has that
+ * disparity, then measured through the compressed projector. The floor plane
+ * wins wherever it is nearer (the model never sinks below the ground), the
+ * horizon caps it, and inside the battle band it IS the floor, so nobody's
+ * feet move; the band's edges blend over RELIEF_BLEND rows.
+ */
+export function reliefDepth(y, D, P) {
+  const zf = y > P.hz ? floorDepth(y, P) : Infinity;
+  const yEq = P.trueHz + Math.max(0, Number(D) || 0) * (P.bottomY - P.trueHz);
+  const zd = yEq > P.hz ? floorDepth(yEq, P) : Infinity;
+  const z = Math.min(zf, zd, P.farZ);
+  const [b0, b1] = P.bandY, bl = Math.max(1e-3, P.blendPx);
+  const w = clamp(Math.min((y - (b0 - bl)) / bl, (b1 + bl - y) / bl), 0, 1);
+  return w > 0 ? z + (Math.min(zf, P.farZ) - z) * w : z;
+}
+
+/** Canvas point pushed out to distance Z (m) along the projector's ray -> world {X, Y, Z}. */
+export function reliefPoint({ x, y }, Z, P) {
+  return { X: ((x - P.cx) * Z) / P.f, Y: P.Hp - ((y - P.hz) * Z) / P.f, Z: -Z };
 }
 
 /** Distance (m) to the floor at a canvas row, as the projector sees it. */

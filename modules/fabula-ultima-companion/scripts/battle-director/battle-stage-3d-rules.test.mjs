@@ -12,6 +12,7 @@ import {
   PRESETS, backdropKey, resolvePreset, buildCamera, physicalRatio, tokenScaleAt,
   floorDisparityAt, floorToWorld, worldToCanvas, parallaxUniforms, shiftUV,
   buildProjector, restPxPerMetre, rigCamera, liveBattler, stageModeFor,
+  reliefDepth, reliefPoint, floorDepth, projectLive,
 } from "./battle-stage-3d-rules.js";
 
 let pass = 0, fail = 0;
@@ -111,7 +112,9 @@ for (const [key, stage] of [["Eisendrache_Battlemap001_v2", V2_STAGE], ["Eisendr
   const cfg = resolvePreset("Eisendrache_Battlemap001_v2.webp");
   const cam = buildCamera(cfg, V2_STAGE, 110);
   const P = buildProjector(cfg, cam, V2_STAGE);
-  ok("projector only where a stage3d model exists", P && buildProjector(resolvePreset("Valley_Battlemap001.webp"), cam, V2_STAGE) === null);
+  ok("projector only where a stage3d model exists", P && buildProjector(resolvePreset("Hideout_Battlemap001.png"), cam, V2_STAGE) === null
+    && buildProjector({ ...resolvePreset("Valley_Battlemap001.webp"), stage3d: undefined }, cam, V2_STAGE) === null);
+  ok("Training Ground keeps its floor + wall model", P.relief === false && P.wallY > V2_STAGE.y);
   ok("compressed horizon sits above the painted one", P.hz < cam.hz);
   const ratio = restPxPerMetre(V2_STAGE.y + 222, P) / restPxPerMetre(V2_STAGE.y + 547, P);
   near("back/front size ratio = painted ratio ^ strength", ratio,
@@ -163,13 +166,44 @@ for (const [key, stage] of [["Eisendrache_Battlemap001_v2", V2_STAGE], ["Eisendr
   ok("neutral is clamped", rigCamera({ ...busy, neutral: 3 }, P, cfg).yaw === 0 && rigCamera({ ...busy, neutral: -1 }, P, cfg).yaw === free.yaw);
 }
 
+// ── Relief model (open scenery) ───────────────────────────────────────────
+for (const [file, stage] of [["Eisendrache_Battlemap002.png", LEGACY_STAGE], ["Valley_Battlemap001.webp", V2_STAGE]]) {
+  const cfg = resolvePreset(file);
+  const cam = buildCamera(cfg, stage, 100);
+  const P = buildProjector(cfg, cam, stage);
+  const tag = cfg.key;
+  const row = (r) => stage.y + r * (stage.h / 788);
+  const Dfloor = (y) => floorDisparityAt(y, cam);
+  ok(`${tag}: relief model`, P.relief === true && P.wallY === null);
+  ok(`${tag}: horizon is a finite distance once compressed`, Number.isFinite(P.farZ) && P.farZ > floorDepth(row(222), P));
+  const rows = [row(120), row(170), row(300), row(500), row(700), row(780)].filter((y) => y > cam.hz + 2);
+  ok(`${tag}: plain floor stays the floor`, rows.every((y) => Math.abs(reliefDepth(y, Dfloor(y), P) - floorDepth(y, P)) < 1e-6 * floorDepth(y, P)));
+  const band = [row(200), row(400), row(590)];
+  ok(`${tag}: battle band is rigid floor whatever the depth map says`, band.every((y) => [0, 0.2, 2].every((D) => Math.abs(reliefDepth(y, D, P) - floorDepth(y, P)) < 1e-9)));
+  const yb = row(110);
+  const stand = reliefDepth(yb, Dfloor(row(260)), P);
+  ok(`${tag}: something standing above the band comes forward of the floor`, stand < Math.min(floorDepth(yb, P), P.farZ) && reliefPoint({ x: 800, y: yb }, stand, P).Y > 0);
+  ok(`${tag}: never sinks below the ground`, Math.abs(reliefDepth(row(700), 0, P) - floorDepth(row(700), P)) < 1e-9);
+  ok(`${tag}: sky sits at the horizon distance, above the ground`, Math.abs(reliefDepth(stage.y + 5, 0, P) - P.farZ) < 1e-9 && reliefPoint({ x: 800, y: stage.y + 5 }, P.farZ, P).Y > 0);
+  const zs = []; for (let y = row(120); y <= row(200); y += 2) zs.push(reliefDepth(y, 0, P));
+  ok(`${tag}: no step into the band (eased)`, zs.every((z, i) => i === 0 || Math.abs(z - zs[i - 1]) < 0.08 * P.farZ), JSON.stringify(zs.slice(0, 5)));
+  const rest = { x: stage.x + stage.w / 2, y: row(420), scale: 1 };
+  const still = rigCamera({ view: rest, rest, sway: false }, P, cfg);
+  const pts = [{ x: stage.x + 100, y: stage.y + 10 }, { x: stage.x + 900, y: row(130) }, { x: stage.x + 1500, y: row(700) }];
+  ok(`${tag}: at rest the relief reproduces the painting`, pts.every((p) => {
+    const q = projectLive(reliefPoint(p, reliefDepth(p.y, 0.3, P), P), still);
+    return Math.abs(q.x - p.x) < 1e-6 && Math.abs(q.y - p.y) < 1e-6;
+  }));
+}
+
 // ── Fallback ladder: 3D -> parallax -> 2D ─────────────────────────────────
 {
   const tgCfg = resolvePreset("Eisendrache_Battlemap001_v2.webp");
   const valley = resolvePreset("Valley_Battlemap001.webp");
   const plain = resolvePreset("Hideout_Battlemap001.png");
   ok("3D camera where the backdrop has a 3D model", stageModeFor("camera", tgCfg) === "camera");
-  ok("3D camera falls back to parallax without a 3D model", stageModeFor("camera", valley) === "full");
+  ok("3D camera falls back to parallax without a 3D model", stageModeFor("camera", { ...valley, stage3d: undefined }) === "full");
+  ok("Valley + Overworld battles get the 3D camera", stageModeFor("camera", valley) === "camera" && stageModeFor("camera", resolvePreset("Eisendrache_Battlemap002.png")) === "camera");
   ok("3D camera on a plain 2D backdrop = untouched 2D", stageModeFor("camera", plain) === "off");
   ok("parallax / scale on a plain backdrop = untouched 2D", stageModeFor("full", null) === "off" && stageModeFor("scale", null) === "off");
   ok("Off is off everywhere", stageModeFor("off", tgCfg) === "off");
