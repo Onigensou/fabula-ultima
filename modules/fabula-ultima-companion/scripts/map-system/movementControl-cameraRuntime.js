@@ -10,6 +10,11 @@
  * - Allow only the current Main Controller to right-click move the party token,
  *   or walk it by holding the arrow keys
  * - Keep other players in observer mode (their arrow keys do nothing here)
+ * - Camp scenes (sceneMode "camp"): every player walks their OWN camp member
+ *   token the same way, all at once. Members pass through one another; NPCs
+ *   and walls stop them as on a walk map. The camera stays where the room
+ *   puts it, and follows the player's member only in a room bigger than the
+ *   screen. Players cannot drag member tokens; the GM still can.
  *
  * Notes:
  * - GM client is never affected
@@ -37,6 +42,13 @@
 
   const WORLD_LOCK_SCOPE = "world";
   const WORLD_LOCK_KEY = "oniMovementControlCameraLocked";
+
+  // Camp scenes: spawned party members carry this flag (camp-members.js).
+  const CAMP_MEMBER_FLAG = "campMember";
+
+  // A camp room this much larger than the screen (either way) has the camera
+  // follow the player's member; a smaller one keeps the room's own framing.
+  const CAMP_FOLLOW_OVERSIZE = 1.1;
 
   const SMOOTHING = 0.18;
 
@@ -139,7 +151,11 @@
     activeSceneId: null,
     followEnabledForScene: false,
 
-    mode: "inactive", // inactive | waiting | follow
+    mode: "inactive", // inactive | waiting | follow | free (camp: walk, camera left alone)
+
+    // Whose token this client walks: "party" (walk maps: the shared party
+    // token, by the main controller) or "camp" (the player's own member).
+    walkKind: "party",
 
     followTokenId: null,
     followTokenActorId: null,
@@ -263,11 +279,52 @@
     if (sceneMode === "dungeon")     return false;
       if (sceneMode === "stealth")     return false;  // stealth owns its own movement + HUD
     if (sceneMode === "exploration") return true;
+    if (sceneMode === "camp")        return true;   // each player walks their own member
     if (sceneMode === "none")        return false;
 
     // Legacy fallback: read the old boolean flag directly.
     const raw = safeGet(fab, `${GENERAL_KEY}.${CAMERA_FOLLOW_KEY}`, false);
     return normalizeBoolean(raw, false);
+  }
+
+  function isCampScene(scene) {
+    return safeGet(scene?.flags?.[MODULE_ID]?.[FABULA_ROOT_KEY], `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null) === "camp";
+  }
+
+  // A party member standing in a camp: a spawned member, or a player's
+  // character placed there by hand.
+  function isCampMemberToken(token) {
+    const doc = token?.document ?? token;
+    if (!doc) return false;
+    if (doc.getFlag?.(MODULE_ID, CAMP_MEMBER_FLAG)) return true;
+    const actorId = doc.actorId;
+    return !!actorId && !!game.users?.some(u => !u.isGM && u.character?.id === actorId);
+  }
+
+  // The member this client walks in a camp: its own character's token, or
+  // the one member it owns when no character is set. Never a guess between two.
+  function findOwnCampMember() {
+    const mine = (canvas.tokens?.placeables ?? []).filter(t =>
+      isCampMemberToken(t) && t.document?.isOwner && !t.document.hidden);
+    const characterId = game.user?.character?.id ?? null;
+    return mine.find(t => characterId && t.actor?.id === characterId)
+      ?? (mine.length === 1 ? mine[0] : null);
+  }
+
+  // Most camp rooms fit on one screen and keep their own framing.
+  function campRoomNeedsFollow() {
+    const rect = canvas.dimensions?.sceneRect;
+    const [w, h] = canvas.screenDimensions ?? [window.innerWidth, window.innerHeight];
+    const scale = canvas.stage?.scale?.x || 1;
+    if (!rect || !w || !h) return false;
+    return (rect.width * scale) > (w * CAMP_FOLLOW_OVERSIZE)
+      || (rect.height * scale) > (h * CAMP_FOLLOW_OVERSIZE);
+  }
+
+  // This client is the one that walks the token it follows.
+  function isWalker() {
+    if (state.walkKind === "camp") return !!getFollowToken()?.document?.isOwner;
+    return !!state.cachedIsMainController;
   }
 
   function smoothingAlpha(deltaFrames) {
@@ -380,7 +437,7 @@
   // Where the follow would put the camera right now: { x, y, scale }, or null
   // when this client's camera is not being driven (the GM, a dungeon scene).
   function getFollowTarget() {
-    if (!canvas?.ready || state.mode === "inactive") return null;
+    if (!canvas?.ready || state.mode === "inactive" || state.mode === "free") return null;
 
     const scale = state.lockedScale ?? canvas.stage.scale.x;
 
@@ -500,11 +557,15 @@
     // The party's feet, relative to its centre.
     const own = footprintOf({ left: -hw, top: -hh, right: hw, bottom: hh }, token);
 
+    const camp = state.walkKind === "camp";
     for (const other of canvas.tokens?.placeables ?? []) {
       if (other.id === token.id) continue;
       const doc = other.document;
       if (!doc || doc.hidden) continue;
       if (doc.getFlag?.(MODULE_ID, "walkThrough")) continue;
+      // Party members walk through one another in a camp, as in an MMO:
+      // nobody can block a doorway or a bedroll.
+      if (camp && isCampMemberToken(other)) continue;
 
       const feet = footprintOf({ left: doc.x, top: doc.y, right: doc.x + other.w, bottom: doc.y + other.h }, other);
       const left = feet.left - own.right;
@@ -708,7 +769,7 @@
     if (game.user?.isGM) return true;
     if (!state.followEnabledForScene) return false;
     if (isMovementLocked()) return false;
-    return !!state.cachedIsMainController;
+    return isWalker();
   }
 
   async function refreshAuthorityFromApi() {
@@ -790,6 +851,35 @@
           reason,
           sceneId: scene.id,
           sceneName: scene.name ?? null
+        });
+        return;
+      }
+
+      state.walkKind = isCampScene(scene) ? "camp" : "party";
+
+      // Camp: no shared party token and no controller. This client walks its
+      // own member, if it has one here (the GM and a spectator have none).
+      if (state.walkKind === "camp") {
+        const token = findOwnCampMember();
+        const follow = !!token && campRoomNeedsFollow();
+        const newToken = state.followTokenId !== (token?.id ?? null);
+
+        state.followTokenId = token?.id ?? null;
+        state.followTokenActorId = token?.actor?.id ?? null;
+        state.followTokenActorName = null;
+
+        if (follow && (newToken || state.mode !== "follow")) {
+          state.lockedScale = canvas.stage.scale.x;
+          state.curX = canvas.stage.pivot.x;
+          state.curY = canvas.stage.pivot.y;
+        }
+        state.mode = follow ? "follow" : "free";
+
+        DBG.verbose("CameraRuntime", "Camp walk applied", {
+          reason,
+          tokenId: state.followTokenId,
+          tokenName: token?.name ?? null,
+          cameraFollows: follow
         });
         return;
       }
@@ -944,7 +1034,9 @@
 
     const options = {
       animate: true,
-      animation: { duration, movementSpeed: speed }
+      animation: { duration, movementSpeed: speed },
+      // Marks the move as a walk: in a camp, the only way a player's member moves.
+      oniWalk: true
     };
     if (facing) {
       options.oniWalkFacing = { x: facing.x, y: facing.y };
@@ -1006,7 +1098,7 @@
   async function haltWalk() {
     clearPendingMove();
 
-    if (game.user?.isGM || !state.cachedIsMainController) return;
+    if (game.user?.isGM || !isWalker()) return;
 
     const token = getFollowToken();
     const doc = token?.document;
@@ -1302,7 +1394,7 @@
    */
   async function stopKeyWalk() {
     cancelKeyLeg();
-    if (game.user?.isGM || !state.cachedIsMainController) return;
+    if (game.user?.isGM || !isWalker()) return;
 
     const token = getFollowToken();
     const doc = token?.document;
@@ -1372,7 +1464,7 @@
     state.inputInstalled = true;
 
     const onWheel = (ev) => {
-      if (state.mode === "inactive") return;
+      if (state.mode === "inactive" || state.mode === "free") return; // a camp room keeps its own zoom
       ev.preventDefault();
       ev.stopPropagation();
     };
@@ -1418,8 +1510,8 @@
         return;
       }
 
-      // Middle-click pan
-      if (ev.button === 1) {
+      // Middle-click pan (a camp room keeps the camera it had)
+      if (ev.button === 1 && state.mode !== "free") {
         ev.preventDefault();
         ev.stopPropagation();
       }
@@ -1460,7 +1552,7 @@
     state.tickerFn = (delta) => {
       if (!state.enabled) return;
       if (!canvas?.ready) return;
-      if (state.mode === "inactive") return;
+      if (state.mode === "inactive" || state.mode === "free") return;
       if (state.cameraHolds.size > 0) return;
 
       const scale = state.lockedScale ?? canvas.stage.scale.x;
@@ -1539,6 +1631,16 @@
         if (!hasXYChange(change)) return;
         if (!state.followEnabledForScene) return;
         if (!canvas?.scene || doc.parent?.id !== canvas.scene.id) return;
+
+        // Camp: a player moves a member only by walking it (no drag and drop),
+        // and only their own. haltWalk / stopKeyWalk pass oniBypassGate above.
+        if (state.walkKind === "camp") {
+          if (!isCampMemberToken(doc)) return;
+          if (options?.oniWalk && doc.id === state.followTokenId && canCurrentUserMovePartyToken()) return;
+          if ("x" in change) delete change.x;
+          if ("y" in change) delete change.y;
+          return;
+        }
 
         const matchesByTokenId =
           !!state.followTokenId &&
@@ -1700,6 +1802,11 @@
     getFollowToken,
     getFollowTokenDocument,
     canCurrentUserMovePartyToken,
+
+    // Camp walking: is this client walking its own member, and is a token a
+    // party member standing in a camp.
+    isCampWalk: () => state.walkKind === "camp" && !!state.followEnabledForScene,
+    isCampMemberToken,
 
     holdCamera,
     releaseCamera,
