@@ -253,7 +253,7 @@
       target:        "Yourself",
       icon:          "fas fa-hammer",
       requiredClass: ["Merchant", "Tinkerer", "Pilot"],
-      desc:          "Repair a damaged item; or create a basic weapon, armor, or shield without paying its cost; or destroy equipment to obtain a material of equal value.",
+      desc:          "Attune any number of sockets on one piece of your own gear, free. Each marked socket gets a new random Orbment.",
     },
     {
       key:           "cartography",

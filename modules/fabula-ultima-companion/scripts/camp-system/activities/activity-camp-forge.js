@@ -1,19 +1,25 @@
 // ============================================================================
 // Camp Activity — Camp Forge
 // Target: Yourself
-// Effect: Repair a damaged item; or create a basic weapon/armor/shield without
-//         paying its cost; or destroy equipment to obtain a material of equal value.
+// Effect: Field Attune — attune any number of sockets on one piece of your own
+//         gear, free, one attempt (Orbment v3: scripts/orbment/camp-forge.js).
+//         The rulebook's Repair / Craft basic gear / Salvage options show as
+//         locked placeholders in the same window until they're built.
 // ============================================================================
 (() => {
   const CAMP = globalThis.CampSystem ??= {};
+  const TAG  = "[CampSystem][CampForge]";
   Hooks.once("ready", () => {
     CAMP.ActivityRegistry?.register("camp_forge", {
       async execute(actor, _scene) {
-        // TODO: Implement Camp Forge mini-game
-        // Possible approach: dialog prompting repair / create / destroy choice,
-        // then updating actor inventory accordingly.
-        ui.notifications?.info(`${actor?.name ?? "?"}: Camp Forge — placeholder (to be implemented).`);
-        await new Promise(r => setTimeout(r, 1000));
+        const run = globalThis.FUCompanion?.api?.orbment?.campForge;
+        if (typeof run !== "function") {
+          console.warn(TAG, "Orbment Camp Forge not loaded; skipping for", actor?.name);
+          ui.notifications?.warn(`${actor?.name ?? "?"}: Camp Forge isn't available right now.`);
+          await new Promise(r => setTimeout(r, 1000));
+          return;
+        }
+        await run(actor);
       },
     });
   });

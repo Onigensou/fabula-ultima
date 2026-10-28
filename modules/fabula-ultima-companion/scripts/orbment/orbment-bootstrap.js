@@ -13,6 +13,7 @@ import { itemKindOf } from "./orbment-const.js";
 import { attune, installAttuneSocket } from "./orbment-attune.js";
 import { initAlchemist, setAlchemist, openAlchemist, isAlchemistActor } from "./alchemist-open.js";
 import { feedback, installFeedback } from "./orbment-feedback.js";
+import { runCampForge, installCampForgeSocket } from "./camp-forge.js";
 import "./orbment-dr.js";   // registers globalThis.FUOrbment for the classic damage path
 
 const TAG = "[Orbment]";
@@ -77,6 +78,10 @@ export function initOrbment() {
   // Party announcement banner (every client listens; the operator sends).
   api.feedback = feedback;
   installFeedback();
+  // Camp Forge → Field Attune (the camp activity calls api.campForge on the GM;
+  // every client listens to open the operator / spectator window).
+  api.campForge = runCampForge;
+  installCampForgeSocket();
   try { initAlchemist(); } catch (e) { console.warn(TAG, "initAlchemist failed", e); }
   // Cover both classic + V2 sheet hooks; CSB's item sheet may fire either.
   Hooks.on("getItemSheetHeaderButtons", onGetItemHeaderButtons);

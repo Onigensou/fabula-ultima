@@ -85,6 +85,37 @@ const pickLine = (lead) => { const pool = LINES[lead] ?? LINES.sidegrade; return
 
 let _instance = null;
 
+// Shared with the Camp Forge window (camp-forge.js): the socket / result /
+// star-burst / expression styles, and the burst itself.
+export function injectAttuneStyles() { AlchemistWindow.prototype._injectStyles(); }
+
+// A ring flash + a burst of stars from one socket (`wrap` = .fu-aw-sock-wrap);
+// `jack` = this socket hit a Jackpot (bigger, multicolour shower).
+export function burstAtSocket(wrap, jack, anyJackpot = jack) {
+  const GLYPH = ["✦", "★", "✧", "⋆"];
+  const COL = anyJackpot ? ["#ffd36e", "#fff3b0", "#ff9ecb", "#9ad7ff", "#c6a2ff"] : ["#ffd36e", "#fff3b0", "#ffe9a8"];
+  const layer = document.createElement("span");
+  layer.className = "fu-aw-fx";
+  const ring = document.createElement("span");
+  ring.className = "fu-aw-ring";
+  if (jack) ring.style.borderColor = "#ffd36e";
+  layer.appendChild(ring);
+  const n = jack ? 34 : 14;
+  for (let k = 0; k < n; k++) {
+    const s = document.createElement("span");
+    s.className = "fu-aw-spark";
+    const ang = Math.random() * Math.PI * 2;
+    const dist = (jack ? 70 : 45) + Math.random() * (jack ? 140 : 70);
+    s.textContent = GLYPH[k % GLYPH.length];
+    s.style.cssText = `font-size:${((jack ? 12 : 10) + Math.random() * (jack ? 18 : 10)).toFixed(0)}px;color:${COL[k % COL.length]};`
+      + `--dx:${(Math.cos(ang) * dist).toFixed(0)}px;--dy:${(Math.sin(ang) * dist - (jack ? 30 : 10)).toFixed(0)}px;--rot:${(Math.random() * 360 - 180).toFixed(0)}deg;`
+      + `animation-duration:${(900 + Math.random() * (jack ? 1100 : 500)).toFixed(0)}ms;animation-delay:${(Math.random() * (jack ? 400 : 160)).toFixed(0)}ms`;
+    layer.appendChild(s);
+  }
+  wrap.appendChild(layer);
+  setTimeout(() => layer.remove(), jack ? 2900 : 1800);
+}
+
 export class AlchemistWindow {
   static open(alchemistUuid) {
     if (_instance) { _instance.setAlchemist(alchemistUuid); return _instance; }
@@ -425,31 +456,9 @@ export class AlchemistWindow {
 
   // Stars and sparkles from every attuned socket; a shower on a Jackpot.
   _burst(list, jackpot) {
-    const GLYPH = ["✦", "★", "✧", "⋆"];
-    const COL = jackpot ? ["#ffd36e", "#fff3b0", "#ff9ecb", "#9ad7ff", "#c6a2ff"] : ["#ffd36e", "#fff3b0", "#ffe9a8"];
     for (const { index, jack } of list) {
       const wrap = this._el?.querySelector(`.fu-aw-sock-wrap[data-i="${index}"]`);
-      if (!wrap) continue;
-      const layer = document.createElement("span");
-      layer.className = "fu-aw-fx";
-      const ring = document.createElement("span");
-      ring.className = "fu-aw-ring";
-      if (jack) ring.style.borderColor = "#ffd36e";
-      layer.appendChild(ring);
-      const n = jack ? 34 : 14;
-      for (let k = 0; k < n; k++) {
-        const s = document.createElement("span");
-        s.className = "fu-aw-spark";
-        const ang = Math.random() * Math.PI * 2;
-        const dist = (jack ? 70 : 45) + Math.random() * (jack ? 140 : 70);
-        s.textContent = GLYPH[k % GLYPH.length];
-        s.style.cssText = `font-size:${((jack ? 12 : 10) + Math.random() * (jack ? 18 : 10)).toFixed(0)}px;color:${COL[k % COL.length]};`
-          + `--dx:${(Math.cos(ang) * dist).toFixed(0)}px;--dy:${(Math.sin(ang) * dist - (jack ? 30 : 10)).toFixed(0)}px;--rot:${(Math.random() * 360 - 180).toFixed(0)}deg;`
-          + `animation-duration:${(900 + Math.random() * (jack ? 1100 : 500)).toFixed(0)}ms;animation-delay:${(Math.random() * (jack ? 400 : 160)).toFixed(0)}ms`;
-        layer.appendChild(s);
-      }
-      wrap.appendChild(layer);
-      setTimeout(() => layer.remove(), jack ? 2900 : 1800);
+      if (wrap) burstAtSocket(wrap, jack, jackpot);
     }
   }
 
