@@ -107,7 +107,18 @@ export async function runBattleEndRank(endCtx) {
 
   // Parse battle_log_table
   const table = dbActor?.system?.props?.battle_log_table ?? {};
-  const rows  = Object.values(table).filter(r => r && r.$deleted !== true);
+  const rawRows = Object.values(table);
+  // A Chain action logs ONE row per target for all its strikes; the strike
+  // counts ride the matching JSON entry (`battle_log`, appended in lockstep and
+  // capped together, so index i ↔ row i). Read them so a Chain counts per strike.
+  let chainEntries = null;
+  try {
+    const parsed = JSON.parse(String(dbActor?.system?.props?.battle_log ?? "[]"));
+    if (Array.isArray(parsed) && parsed.length === rawRows.length) chainEntries = parsed;
+  } catch (_) { chainEntries = null; }
+  const rows = rawRows
+    .map((r, i) => (r && chainEntries?.[i]?.chain ? { ...r, _chain: chainEntries[i].chain } : r))
+    .filter(r => r && r.$deleted !== true);
 
   let partyHits = 0, partyMiss = 0;
   let weakHits = 0, resistHits = 0, absorbHits = 0, immuneHits = 0;
@@ -129,11 +140,16 @@ export async function runBattleEndRank(endCtx) {
     const effPct        = parseEffPct(r?.efficiency);
     const attackerIsParty = isPartyName(attacker);
     const targetIsParty   = isPartyName(target);
+    // Chain row: its strikes, not 1 (a row that landed nothing is all misses).
+    const ch = r._chain ?? null;
+    const rowHits   = ch ? Math.max(1, Number(ch.landed) || 0) : 1;
+    const rowMisses = ch ? Math.max(0, Number(ch.missed) || 0) : 0;
 
     if (attackerIsParty) {
-      if (modeIsMiss(applyMode)) partyMiss += 1;
+      if (modeIsMiss(applyMode)) partyMiss += ch ? Math.max(1, rowMisses) : 1;
       if (modeIsDamage(applyMode) && valueType === "hp") {
-        partyHits += 1;
+        partyHits += rowHits;
+        partyMiss += rowMisses;
         if (affinity.includes("vulner")) weakHits   += 1;
         if (affinity.includes("resist")) resistHits += 1;
         if (affinity.includes("absorb")) absorbHits += 1;
@@ -152,8 +168,9 @@ export async function runBattleEndRank(endCtx) {
     }
     if (!attackerIsParty && targetIsParty) {
       if (modeIsDamage(applyMode) || modeIsMiss(applyMode)) {
-        enemyAttacksOnParty += 1;
-        if (modeIsMiss(applyMode)) enemyMissOnParty += 1;
+        enemyAttacksOnParty += ch ? Math.max(1, Number(ch.strikes) || 0) : 1;
+        if (ch) enemyMissOnParty += modeIsMiss(applyMode) ? Math.max(1, rowMisses) : rowMisses;
+        else if (modeIsMiss(applyMode)) enemyMissOnParty += 1;
       }
     }
   }

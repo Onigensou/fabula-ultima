@@ -13,7 +13,7 @@
 // ============================================================================
 
 const {
-  parseChainKeyword, assignStrikeTargets, planStrikes, applyStrikeToState,
+  parseChainKeyword, assignStrikeTargets, planStrikes, createStrikeWalker, applyStrikeToState,
   breakdownForTarget, summarizeTarget, splitTicks, fallbackBeatMs, makeRng,
 } = await import("./chain-strikes.js");
 
@@ -134,6 +134,40 @@ const roll = (o = {}) => ({ total: 12, hr: 6, isCrit: false, isFumble: false, ..
   });
   eq("tally: prior hits seen per strike", seen, [0, 1, 1]);
   eq("tally: grows by landed strikes only", states.get("G").priorHits, 2);
+}
+
+{ // Pierce half-hit: lands (deals damage) but is not a hit for the tally.
+  const states = new Map([["P", { hp: 100, maxHp: 100, shield: 0, priorHits: 0 }]]);
+  const plan = planStrikes({
+    strikes: [1, 2].map((i) => ({ index: i, roll: roll(), targets: ["P"] })),
+    states,
+    evaluate: (s) => (s.index === 1 ? { hit: true, kind: "hit", amount: 8, pierce: true } : { hit: true, kind: "hit", amount: 16 }),
+  });
+  const t = plan.perTarget.get("P");
+  eq("pierce: both land", t.landed, 2);
+  eq("pierce: only the real hit counts", [t.hitsLanded, states.get("P").priorHits], [1, 1]);
+}
+
+{ // MP damage: 0 MP is not a KO, so later strikes still land.
+  const states = new Map([["M", { hp: 10, maxHp: 50, shield: 0, noKo: true }]]);
+  const plan = planStrikes({
+    strikes: [1, 2].map((i) => ({ index: i, roll: roll(), targets: ["M"] })),
+    states,
+    evaluate: () => ({ hit: true, kind: "hit", amount: 10 }),
+  });
+  eq("mp: no lost strikes", [plan.perTarget.get("M").landed, plan.perTarget.get("M").lost, plan.perTarget.get("M").defeated], [2, 0, false]);
+}
+
+{ // Incremental walker = planStrikes, step by step.
+  const states = new Map([["W", { hp: 25, maxHp: 25, shield: 0 }]]);
+  const w = createStrikeWalker(states);
+  w.step({ index: 1, roll: roll(), targets: ["W"] }, () => ({ hit: true, kind: "hit", amount: 20 }));
+  eq("walker: still standing after strike 1", w.standing("W"), true);
+  w.step({ index: 2, roll: roll(), targets: ["W"] }, () => ({ hit: true, kind: "hit", amount: 20 }));
+  eq("walker: down after strike 2", w.standing("W"), false);
+  w.step({ index: 3, roll: roll(), targets: ["W"] }, () => { throw new Error("evaluate must not run for a downed target"); });
+  const plan = w.finish();
+  eq("walker: third strike lost", plan.perTarget.get("W").lost, 1);
 }
 
 { // AoE + Chain: same mode hits every target with every strike.

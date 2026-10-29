@@ -60,6 +60,7 @@ import { initDirectorSfx, collapseSidebarLocal } from "./director-sfx.js";
 import { initShatterBroadcast } from "../battle-transition/shatter-broadcast.js";
 import { initSfxAudition } from "./sfx-audition.js";
 import { initDamageNumbers, emitDamageNumber, renderDamageNumberLocal } from "./damage-numbers/director-damage-numbers.js";
+import { initHitCounter } from "./hit-counter.js";
 import { initImpactFx } from "./damage-numbers/director-impact-fx.js";
 import { initHurtReaction, emitHurtReaction, playHurtReactionLocal } from "./damage-numbers/director-hurt-reaction.js";
 import { initBattlerPose, emitBattlerPose, playBattlerPoseLocal, describeToken as describeBattlerPose } from "./battler-pose.js";
@@ -1720,6 +1721,10 @@ Hooks.once("ready", () => {
   // call sites still fire the legacy Sequencer VFX until Phase 1 repoints them.)
   try { initDamageNumbers(); }
   catch (e) { warn("initDamageNumbers on ready threw", e); }
+  // Live "N HIT / X DAMAGE" counter (Chain strikes + AoE) — counts the damage
+  // numbers each client shows, inside the acting GM's action window.
+  try { initHitCounter(); }
+  catch (e) { warn("initHitCounter on ready threw", e); }
 
   // BD-native impact VFX (DOM <video> overlay) — registers its socketlib handler
   // on every client so the GM-side hit/heal/absorb impact bursts render on all

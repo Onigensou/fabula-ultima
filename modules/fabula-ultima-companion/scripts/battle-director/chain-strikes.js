@@ -108,22 +108,25 @@ export function applyStrikeToState(state, outcome) {
 // Walk the strikes in order.
 //
 //   strikes:  [{ index, roll: { total, hr, isCrit, isFumble, dice }, targets: [uuid] }]
-//   states:   Map(uuid → { hp, maxHp, shield, blockers, priorHits })
+//   states:   Map(uuid → { hp, maxHp, shield, blockers, priorHits, noKo })
 //             blockers  = one-shot negations still available (Ninja Log);
-//             priorHits = hits this attacker already landed on it this turn.
-//   evaluate: (strike, uuid, state) → { hit, kind, amount, affinity, element, isCrit, pierce, blockedBy? }
+//             priorHits = hits this attacker already landed on it this turn;
+//             noKo      = the pool is not HP (MP damage), so 0 is not a KO.
+//   evaluate: (strike, uuid, state) → { hit, kind, amount, affinity, element, isCrit, pierce, blockedBy?, defense? }
 //             The engine's per-target accuracy + damage for this strike's roll.
 //             It reads state.priorHits (Champion Gloves) and state.blockers.
 //             A miss returns { hit:false, kind:"miss" }; a blocker that
 //             stopped the strike returns { hit:true, kind:"block", blockedBy }.
+//             kind is "hit" | "absorb" | "immune" for a strike that connected.
 //
-// Returns the plan: per-strike outcomes plus per-target totals.
-export function planStrikes({ strikes = [], states = new Map(), evaluate } = {}) {
+// planStrikes walks everything at once. The engine uses createStrikeWalker
+// instead, because it recomputes each strike's damage (async) between steps.
+export function createStrikeWalker(states = new Map()) {
   const outStrikes = [];
   const perTarget = new Map();
   const touch = (uuid) => {
     if (!perTarget.has(uuid)) perTarget.set(uuid, {
-      tokenUuid: uuid, strikes: 0, landed: 0, missed: 0, crits: 0, blocked: 0, lost: 0,
+      tokenUuid: uuid, strikes: 0, landed: 0, hitsLanded: 0, missed: 0, crits: 0, blocked: 0, lost: 0,
       damage: 0, hpLoss: 0, shieldLoss: 0, hpGain: 0, defeated: false, defeatedOnStrike: null,
     });
     return perTarget.get(uuid);
@@ -132,7 +135,14 @@ export function planStrikes({ strikes = [], states = new Map(), evaluate } = {})
   let firstFumbleStrike = null;
   let landedTotal = 0;
 
-  for (const strike of strikes) {
+  // Whether a target is still standing — the engine skips the recompute for a
+  // downed target, since its strike is lost either way.
+  const standing = (uuid) => {
+    const st = states.get(uuid);
+    return !!st && (st.noKo || st.hp > 0);
+  };
+
+  function step(strike, evaluate) {
     const roll = strike.roll ?? {};
     if (roll.isCrit && firstCritStrike == null) firstCritStrike = strike.index;
     if (roll.isFumble && firstFumbleStrike == null) firstFumbleStrike = strike.index;
@@ -142,7 +152,7 @@ export function planStrikes({ strikes = [], states = new Map(), evaluate } = {})
       tally.strikes++;
       const state = states.get(uuid);
       if (!state) { outcomes.push({ tokenUuid: uuid, kind: "skip" }); continue; }
-      if (state.hp <= 0) {
+      if (!state.noKo && state.hp <= 0) {
         // Downed earlier in this sequence: the strike is lost, not missed.
         tally.lost++;
         outcomes.push({ tokenUuid: uuid, kind: "lost" });
@@ -151,47 +161,64 @@ export function planStrikes({ strikes = [], states = new Map(), evaluate } = {})
       const ev = evaluate(strike, uuid, state) ?? { hit: false, kind: "miss" };
       if (!ev.hit) {
         tally.missed++;
-        outcomes.push({ tokenUuid: uuid, kind: "miss" });
+        outcomes.push({ tokenUuid: uuid, kind: "miss", defense: ev.defense ?? null });
         continue;
       }
       if (ev.kind === "block") {
         if (state.blockers > 0) state.blockers--;
         tally.blocked++;
-        outcomes.push({ tokenUuid: uuid, kind: "block", blockedBy: ev.blockedBy ?? null });
+        outcomes.push({ tokenUuid: uuid, kind: "block", blockedBy: ev.blockedBy ?? null, defense: ev.defense ?? null });
         continue;
       }
       const applied = applyStrikeToState(state, ev);
       tally.landed++;
       landedTotal++;
-      state.priorHits = (state.priorHits ?? 0) + 1;
+      // A pierce half-hit is a miss that still deals damage: it lands, but it
+      // never counts toward the hits-this-turn tally (Champion Gloves).
+      if (!ev.pierce) {
+        tally.hitsLanded++;
+        state.priorHits = (state.priorHits ?? 0) + 1;
+      }
       if (ev.isCrit) tally.crits++;
       tally.damage += Math.max(0, Math.floor(Number(ev.amount) || 0));
       tally.hpLoss += applied.hpLoss;
       tally.shieldLoss += applied.shieldLoss;
       tally.hpGain += applied.hpGain;
-      if (state.hp <= 0 && !tally.defeated) {
+      const downedNow = !state.noKo && state.hp <= 0 && !tally.defeated;
+      if (downedNow) {
         tally.defeated = true;
         tally.defeatedOnStrike = strike.index;
       }
       outcomes.push({
         tokenUuid: uuid, kind: ev.kind ?? "hit", amount: Math.max(0, Math.floor(Number(ev.amount) || 0)),
         affinity: ev.affinity ?? "NE", element: ev.element ?? "", isCrit: !!ev.isCrit, pierce: !!ev.pierce,
-        ...applied, killing: tally.defeatedOnStrike === strike.index && state.hp <= 0,
+        defense: ev.defense ?? null,
+        ...applied, killing: downedNow,
       });
     }
     outStrikes.push({ index: strike.index, roll, outcomes });
   }
 
-  return {
-    strikes: outStrikes,
-    perTarget,
-    landed: landedTotal,
-    firstCritStrike,
-    firstFumbleStrike,
-    // One Opportunity per side per sequence, whichever strike earned it.
-    attackerOpportunity: firstCritStrike != null,
-    defenderOpportunity: firstFumbleStrike != null,
-  };
+  function finish() {
+    return {
+      strikes: outStrikes,
+      perTarget,
+      landed: landedTotal,
+      firstCritStrike,
+      firstFumbleStrike,
+      // One Opportunity per side per sequence, whichever strike earned it.
+      attackerOpportunity: firstCritStrike != null,
+      defenderOpportunity: firstFumbleStrike != null,
+    };
+  }
+
+  return { step, finish, standing, states };
+}
+
+export function planStrikes({ strikes = [], states = new Map(), evaluate } = {}) {
+  const walker = createStrikeWalker(states);
+  for (const strike of strikes) walker.step(strike, evaluate);
+  return walker.finish();
 }
 
 // Strike count + totals, for logs, the battle-log row and the counter.

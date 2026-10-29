@@ -294,9 +294,13 @@ function ownerUserIdForDamageTarget(actor) {
   return candidates[0].id;
 }
 
-export async function resolveDamageReactions({ target, curHp, rawDamage, sourceActor = null, element = null } = {}) {
+export async function resolveDamageReactions({ target, curHp, rawDamage, sourceActor = null, element = null, skipAeNames = null } = {}) {
   const result = { newHp: Math.max(0, curHp - rawDamage), dealtDamage: Math.max(0, rawDamage), consumedAeIds: [], fired: [], followUp: [] };
   if (!target || rawDamage <= 0) return result;
+  // AE names to leave out of this write — a Chain whose card already spent a
+  // one-shot blocker (Ninja Log) on one strike must not let the same blocker
+  // fire again on the remaining strikes' summed write.
+  const _skipAe = skipAeNames?.size ? skipAeNames : null;
 
   // What the hit looked like on arrival, before any row below touched it.
   // `element` feeds TRIGGER_DAMAGE_IS_<EL> (a row can gate on the element — Earthen
@@ -333,6 +337,7 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
   // excludes disabled, but keep the guard for the rare direct-disabled case.
   for (const ae of (target.appliedEffects ?? target.effects?.contents ?? Array.from(target.effects ?? []))) {
     if (ae.disabled) continue;
+    if (_skipAe && _skipAe.has(String(ae.name ?? "").trim().toLowerCase())) continue;
     const cfg = ae.flags?.[FLAG_NS]?.reactionConfig;
     if (!cfg || typeof cfg !== "object") continue;
     const triggerRows = Object.values(cfg.reaction_config_table ?? {});
@@ -625,9 +630,20 @@ export async function applyDamageToTarget({
   // Who landed it — only steers the direction of a defeat style that starts on
   // the hit ("launched": he flies away from the attacker). Optional.
   sourceTokenUuid = null,
+  // Write, log and react, but float nothing: a Chain's strikes were already
+  // shown one by one by the presenter, and this is their single commit.
+  silent = false,
+  // Incoming-damage AE reactions to leave out (lowercase names) — see
+  // resolveDamageReactions. A Chain passes the blocker its card already spent.
+  skipIncomingAeNames = null,
 } = {}) {
   const empty = { resource, finalValue: 0, valueDirection: "none", fired: [] };
   if (!target) return empty;
+  // Every presentation call below goes through these, so `silent` is one switch.
+  const vfx = silent ? null : {
+    loss: fireResourceLossVfx, absorb: fireAbsorbVfx, bar: fireNpcHpBar,
+    block: fireBlockVfx, immune: fireImmuneVfx,
+  };
   const prefix = logPrefix ? `${logPrefix} ` : "";
   // Floating-number enrichment: the BD damage-number subsystem colors the
   // numeral by element and raises the gold CRITICAL banner on a crit. Both come
@@ -658,7 +674,7 @@ export async function applyDamageToTarget({
     const mpLost = curMp - newMp;
     await target.update({ "system.props.current_mp": newMp });
     log(`${prefix}applied ${mpLost} MP damage to ${targetName}: ${curMp} → ${newMp}${logSuffix}`);
-    fireResourceLossVfx({ tokenUuid, resource: "mp", amount: mpLost });
+    vfx?.loss({ tokenUuid, resource: "mp", amount: mpLost });
     _pushLog({ resource: "mp", affinity: "NE", value: mpLost, valueDirection: "loss", bands: { mp: { from: curMp, to: newMp } } });
     return { resource: "mp", finalValue: mpLost, valueDirection: "loss", fired: [] };
   }
@@ -675,9 +691,9 @@ export async function applyDamageToTarget({
       newHp = Math.min(maxHp, curHp + healed);
       await target.update({ "system.props.current_hp": newHp });
       log(`${prefix}absorbed ${healed} on ${targetName}: ${curHp} → ${newHp} (heal)${logSuffix}`);
-      fireAbsorbVfx({ tokenUuid, amount: newHp - curHp });
+      vfx?.absorb({ tokenUuid, amount: newHp - curHp });
       const _sh = readPropNum(target, ["shield_value"], 0);
-      fireNpcHpBar({ tokenUuid, actor: target, hpBefore: curHp, hpAfter: newHp, maxHp, shieldBefore: _sh, shieldAfter: _sh });
+      vfx?.bar({ tokenUuid, actor: target, hpBefore: curHp, hpAfter: newHp, maxHp, shieldBefore: _sh, shieldAfter: _sh });
       _pushLog({ resource: "hp", affinity: "AB", value: healed, valueDirection: "recover", bands: { hp: { from: curHp, to: newHp } } });
     } else {
       log(`${prefix}no HP change for ${targetName} [AB]${logSuffix} (damage was ${damage})`);
@@ -700,14 +716,14 @@ export async function applyDamageToTarget({
       newShield = curShield - absorbed;
       toHp = damage - absorbed;
       log(`${prefix}shield absorbed ${absorbed} on ${targetName}: shield ${curShield} → ${newShield}${logSuffix}`);
-      fireResourceLossVfx({ tokenUuid, resource: "shield", amount: absorbed, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce });
+      vfx?.loss({ tokenUuid, resource: "shield", amount: absorbed, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce });
     }
 
     // Fully absorbed — only the shield changed; HP untouched. The HP bar still
     // shows: its white shield segment takes the hit (emit self-gates otherwise).
     if (toHp <= 0) {
       await target.update({ "system.props.shield_value": newShield });
-      fireNpcHpBar({ tokenUuid, actor: target, hpBefore: curHp, hpAfter: curHp, maxHp, shieldBefore: curShield, shieldAfter: newShield });
+      vfx?.bar({ tokenUuid, actor: target, hpBefore: curHp, hpAfter: curHp, maxHp, shieldBefore: curShield, shieldAfter: newShield });
       _pushLog({ resource: "shield", affinity, value: damage, valueDirection: "loss", bands: { shield: { from: curShield, to: newShield }, hp: { from: curHp, to: curHp } } });
       return { resource: "hp", finalValue: damage, valueDirection: "loss", fired: [], shieldAbsorbed: absorbed };
     }
@@ -717,6 +733,9 @@ export async function applyDamageToTarget({
       target, curHp, rawDamage: toHp,
       // "elementless" is the log's display default, not an element.
       element: (_vfxElement && _vfxElement !== "elementless") ? _vfxElement : null,
+      skipAeNames: Array.isArray(skipIncomingAeNames) && skipIncomingAeNames.length
+        ? new Set(skipIncomingAeNames.map((n) => String(n ?? "").trim().toLowerCase()).filter(Boolean))
+        : null,
     });
     const update = { "system.props.current_hp": newHp };
     if (absorbed > 0) update["system.props.shield_value"] = newShield;
@@ -760,19 +779,20 @@ export async function applyDamageToTarget({
     const blockedByReaction = dealtDamage <= 0
       && fired.some((f) => Number(f.to) <= 0 && Number(f.from) > 0);
     if (blockedByReaction) {
-      fireBlockVfx({ tokenUuid });
+      vfx?.block({ tokenUuid });
     } else {
       // A killing blow on a creature whose defeat style starts on the hit:
       // begin it right after its damage number pops, not when the action
       // settles. The removal still happens in the settle (defeat-reactor).
+      // (A silent Chain commit started it already, on the killing strike.)
       const killing = newHp === 0 && dealtDamage > 0;
-      fireResourceLossVfx({ tokenUuid, resource: "hp", amount: dealtDamage, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce },
+      vfx?.loss({ tokenUuid, resource: "hp", amount: dealtDamage, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce },
         killing ? () => fireDefeatOnHit({ tokenUuid, actor: target, hpAfter: newHp, causeTokenUuid: sourceTokenUuid }) : null);
     }
     // Transient HP bar (studied hostile NPCs only — gated inside). Carries the
     // shield band so a partially-soaked hit shows white + green shrinking in
     // one sweep. No-ops when nothing changed (reaction clamp to 0).
-    fireNpcHpBar({ tokenUuid, actor: target, hpBefore: curHp, hpAfter: newHp, maxHp, shieldBefore: curShield, shieldAfter: newShield });
+    vfx?.bar({ tokenUuid, actor: target, hpBefore: curHp, hpAfter: newHp, maxHp, shieldBefore: curShield, shieldAfter: newShield });
     _pushLog({ resource: "hp", affinity, value: damage, valueDirection: "loss", bands: { hp: { from: curHp, to: newHp }, shield: { from: curShield, to: newShield } } });
     return {
       resource: "hp",
@@ -786,7 +806,7 @@ export async function applyDamageToTarget({
   // Immune (IM) zeroed the damage — fire the immune cue so the hit isn't silent
   // (other 0-damage cases, e.g. a 0 roll, stay quiet).
   if (affinity === "IM") {
-    fireImmuneVfx({ tokenUuid });
+    vfx?.immune({ tokenUuid });
     _pushLog({ resource: "hp", affinity: "IM", value: 0, valueDirection: "none", noEffectReason: "Immune", bands: { hp: { from: curHp, to: curHp } } });
   }
   log(`${prefix}no HP change for ${targetName} [${affinity}]${logSuffix} (damage was ${damage})`);
@@ -2801,7 +2821,7 @@ function isTruthyRowFlag(v) {
   return v === true || String(v ?? "").trim().toLowerCase() === "true";
 }
 
-export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource, direction, amount, cause, source = {}, element = null, originLabel = null, originUuid = null, weaponType = null, weaponRange = null, actionKind = null, actionIntent = null, isCrit = null, isFumble = null, accuracyTotal = null, highRoll = null, pierce = null, appliedEffectTags = [] }) {
+export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource, direction, amount, cause, source = {}, element = null, originLabel = null, originUuid = null, weaponType = null, weaponRange = null, actionKind = null, actionIntent = null, isCrit = null, isFumble = null, accuracyTotal = null, highRoll = null, pierce = null, appliedEffectTags = [], chainStrike = null, chainStrikes = null, chainRepeat = false }) {
   if (!director?.ctx || !actor || !resource || !(amount > 0)) return;
   if (direction !== "loss" && direction !== "recover") return;
   if (!Array.isArray(director.ctx._postResolveTriggers)) director.ctx._postResolveTriggers = [];
@@ -2858,6 +2878,10 @@ export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource
       // generic AFFECTED_BY_<TAG> reaction identifier: "react when the damage
       // was amplified by a <tag> effect." Empty for tick/heal/unhexed lines.
       appliedEffectTags: Array.isArray(appliedEffectTags) ? appliedEffectTags : [],
+      // A Chain action emits one ledger line per landed strike. A target's
+      // repeat lines (`chainRepeat`) fire automatic reactions only
+      // (dispatchReactionMenu).
+      ...(chainStrike ? { chainStrike, chainStrikes: chainStrikes ?? null, chainRepeat: !!chainRepeat } : {}),
     },
   });
 }
@@ -9860,6 +9884,13 @@ async function applyFreeActionEffect(row, ctx) {
   if (!reactor) {
     warn(`skill-effects.free_action: no reactorActor on ctx`);
     return { ok: false, kind: "free_action", reason: "no-reactor" };
+  }
+  // A Chain re-fires automatic reactions on every strike, but a free action is
+  // granted once per target per action — on that target's first event; the
+  // repeats carry `chainRepeat` (see dispatchReactionMenu). User rule, 2026-10-29.
+  if (ctx?.payload?.chainRepeat) {
+    log(`skill-effects.free_action: skipped on a repeat Chain event (strike ${ctx.payload.chainStrike ?? "?"}) — once per action`);
+    return { ok: true, kind: "free_action", skipped: "chain-repeat" };
   }
 
   // performer_ref — the ACTOR that performs the granted free action. Default =

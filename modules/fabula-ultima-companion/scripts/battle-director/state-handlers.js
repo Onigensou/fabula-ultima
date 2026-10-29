@@ -110,6 +110,9 @@ import { isAutopilotEnabled, isAiControlledTurn, isAiControlledCombatant, autopi
 import { isSummonAutopilotEnabled, isAutomatedSummon, isAutomatedSummonTurn, summonVetoMs, isGuestActor } from "./summon-autopilot.js";
 import { isBattlefieldObject } from "./battlefield-object.js";
 import { resolveAnimationSpec, playDirectorAnimation, prestageAnimation } from "./director-animation.js";
+import { chainSpecFor, drawChainTargets, narrowToTargets, buildChainPlan, chainTargetOf, chainHitsView } from "./chain-plan.js";
+import { wasPresented, presentChainWithoutAnimation } from "./chain-presenter.js";
+import { beginHitCounter, endHitCounter } from "./hit-counter.js";
 import { emitBattlerPose } from "./battler-pose.js";
 import { actionPose } from "./battler-pose-rules.js";
 import { witnessNpcAbility, witnessFiredCandidate, witnessAffinityHits } from "./encyclopedia-witness.js";
@@ -643,6 +646,14 @@ async function resolveAction(director, ar, opts = {}) {
   const battleLogSink = [];
   ctx.battleLogSink = battleLogSink;
 
+  // 2c. Chain N whose strikes were not shown during ANIMATION (no animation
+  //     script, or one played from a chain step at RESOLVE): reveal them now on
+  //     the beat — before any status lands or any HP is written.
+  if (ar.chainPlan && !wasPresented(ar.chainPlan)) {
+    try { await presentChainWithoutAnimation(ar.chainPlan, { causeTokenUuid: ar.attacker?.tokenUuid ?? null }); }
+    catch (e) { warn("Skill resolve: Chain presentation threw", e); }
+  }
+
   // 3. Fire on_activate effect (pre-damage, no damage payload).
   //    Menu-picked invocations whose flat damage was LIFTED into the primary at
   //    COMPUTE (ar._damageViaProfile) apply that damage via the perTargetResults loop
@@ -720,7 +731,12 @@ async function resolveAction(director, ar, opts = {}) {
   //    The post_damage payload's `valueType` is set per-branch so
   //    HP_DEALT vs MP_DEALT resolve correctly in formulas.
   const dmgResource = ar.damageResource ?? "hp";
-  const hits = (ar.perTargetResults ?? []);
+  // Chain N (chain-plan.js): every strike is already decided and was shown one
+  // by one. From here a target is HIT when any strike genuinely landed, its
+  // damage is the strikes' total, and each target takes ONE silent write; the
+  // per-strike side (post_damage, ledger, deals_damage) fires per landed strike.
+  const chainPlan = ar.chainPlan ?? null;
+  const hits = chainPlan ? chainHitsView(chainPlan, ar.perTargetResults ?? []) : (ar.perTargetResults ?? []);
   // ── Card-normalized "is this a damaging attack?" — decided ONCE, never
   // re-derived from a weapon item at apply time. The Action Card is the
   // source of truth post-creation: an action is an Attack if its action
@@ -754,10 +770,30 @@ async function resolveAction(director, ar, opts = {}) {
     // Multi-pass label (Attack two-weapon / virtual): "(pass 2/2)".
     const passLabel = (ar.totalPasses ?? 1) > 1 ? ` (pass ${ar.passIndex}/${ar.totalPasses})` : "";
     for (const r of hits) {
+      // Chain: this target's strikes, already shown. A target no strike landed
+      // on (all missed / blocked / lost) logs its whiff once and is done.
+      const ct = chainPlan ? chainTargetOf(chainPlan, r.tokenUuid) : null;
+      if (chainPlan) {
+        if (!ct || !(ct.landed > 0)) {
+          if (ct && ct.missed > 0) {
+            battleLogSink.push(buildMissRow({
+              attackerName: casterActor.name,
+              targetName: r.name,
+              element: ar.damageType ?? ar.damage?.element ?? "elementless",
+              accuracy: ar.roll?.total ?? null,
+              weaponType: ar.weapon?.weaponType ?? null,
+              range: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
+              sourceType: isAttackAction ? "Attack" : (view.kind ?? "Skill"),
+              chain: chainLogOf(chainPlan, ct),
+            }));
+          }
+          continue;
+        }
+      }
       // Pierce keyword (action-agnostic): a pierce-miss still deals its
       // (COMPUTE-reduced) damage; only a plain miss whiffs. r.pierceMiss is set
       // in COMPUTE for ANY action carrying Pierce — not just Attack.
-      if (!r.hit && !r.pierceMiss) {
+      if (!chainPlan && !r.hit && !r.pierceMiss) {
         playMissVfx({ tokenUuid: r.tokenUuid });
         // Whiff → a Miss row (no commit, so logged here, not at the seam).
         battleLogSink.push(buildMissRow({
@@ -777,7 +813,9 @@ async function resolveAction(director, ar, opts = {}) {
       // so on-hit riders (queued from `struck` below) still apply; we just skip
       // the no-op damage write + loss-trigger path. Gated on the damageOverride
       // the adjust_damage card-mutation stamped reducing >0 to 0.
-      if (r.hit && r.damageOverride
+      // (A Chain's block stopped one strike and was shown with it; its view rows
+      // carry no override.)
+      if (!chainPlan && r.hit && r.damageOverride
           && Number(r.damageOverride.to) <= 0 && Number(r.damageOverride.from) > 0) {
         playBlockVfx({ tokenUuid: r.tokenUuid });
         continue;
@@ -814,7 +852,12 @@ async function resolveAction(director, ar, opts = {}) {
           tokenUuid: r.tokenUuid,
           sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
           logPrefix: `${view.kind} ${ar.skillName ?? skill?.name ?? ""}:`,
-          logSuffix: passLabel + (r.pierceMiss ? " [Pierce]" : ""),
+          logSuffix: passLabel + (r.pierceMiss ? " [Pierce]" : "") + (ct ? ` [Chain ${chainPlan.count}: ${ct.breakdown}]` : ""),
+          // Chain: one write for all strikes, nothing floated (each strike was
+          // shown on its cue), and a blocker the card spent on one strike must
+          // not fire again on the rest.
+          silent: !!ct,
+          skipIncomingAeNames: ct ? chainSpentBlockers(ar, r.tokenUuid, ct) : null,
           // Battle Log: hit row, pushed to this action's shared sink (flushed
           // once at the end). Rich attacker context from the action result.
           // (`efficiency` is omitted → the row shows 100%. The BD does NOT apply
@@ -828,10 +871,11 @@ async function resolveAction(director, ar, opts = {}) {
             weaponType: ar.weapon?.weaponType ?? null,
             range: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
             accuracy: ar.roll?.total ?? null,
-            isCrit: !!ar.roll?.isCrit,
+            isCrit: ct ? ct.crits > 0 : !!ar.roll?.isCrit,
             pierce: !!r.pierceMiss,
             sourceType: isAttackAction ? "Attack" : (view.kind ?? "Skill"),
             sink: battleLogSink,
+            ...(ct ? { chain: chainLogOf(chainPlan, ct) } : {}),
           },
         });
         const finalValue = dmgRes.finalValue;
@@ -847,6 +891,17 @@ async function resolveAction(director, ar, opts = {}) {
           totalDamageDealt += finalValue;
         }
 
+        // One line per damage instance: the single hit — or, for a Chain, each
+        // landed strike with its own roll and amount (rescaled to what the one
+        // write actually took, should an incoming reducer have capped it).
+        const _lines = ct
+          ? chainStrikeLines(ct, { finalValue, valueDirection, shieldAbsorbed: Number(dmgRes.shieldAbsorbed) || 0 })
+          : [{
+              finalValue, valueDirection, shieldAbsorbed: Number(dmgRes.shieldAbsorbed) || 0,
+              hr: ar.roll?.hr ?? 0, isCrit: !!ar.roll?.isCrit, isFumble: !!ar.roll?.isFumble,
+              total: ar.roll?.total ?? 0, pierce: !!r.pierceMiss, chainStrike: null, chainRepeat: false,
+            }];
+        for (const _ln of _lines) {
         // Per-target post_damage payload — HP_DEALT / MP_DEALT resolve
         // here. Roll-derived identifiers (HR / CRIT / FUMBLE / TOTAL)
         // carry through too so post_damage formulas can reference both
@@ -857,18 +912,19 @@ async function resolveAction(director, ar, opts = {}) {
           targetTokenUuid: r.tokenUuid,
           sourceTokenUuid: ar.attacker?.tokenUuid,
           sourceActorUuid: ar.attackerActorRef,
-          finalValue,
+          finalValue: _ln.finalValue,
           valueType,
-          valueDirection,
+          valueDirection: _ln.valueDirection,
           // How much of finalValue a Shield buffer soaked (HP untouched by it).
           // HP_LOST subtracts it (HP_DEALT keeps it: soaked damage was dealt).
-          shieldAbsorbed: Number(dmgRes.shieldAbsorbed) || 0,
-          damageType: damageTypeForPayload,
+          shieldAbsorbed: _ln.shieldAbsorbed,
+          damageType: _ln.valueDirection === "recover" ? "healing" : ar.damageType,
           actionIntent: ar.actionIntent,
-          hr: ar.roll?.hr ?? 0,
-          isCrit: !!ar.roll?.isCrit,
-          isFumble: !!ar.roll?.isFumble,
-          total: ar.roll?.total ?? 0,
+          hr: _ln.hr,
+          isCrit: _ln.isCrit,
+          isFumble: _ln.isFumble,
+          total: _ln.total,
+          ...(_ln.chainStrike ? { chainStrike: _ln.chainStrike, chainStrikes: chainPlan.count, chainRepeat: _ln.chainRepeat } : {}),
         };
         try { await SE().firePostDamageEffect(skill, ctx, damagePayload); }
         catch (e) { warn("Skill resolve: firePostDamageEffect threw", e); }
@@ -879,7 +935,8 @@ async function resolveAction(director, ar, opts = {}) {
         // listens here (resource=hp); any "when my <resource> changes" skill too.
         SE().fireResourceChangeTrigger({
           director, actor: targetActor, tokenUuid: r.tokenUuid,
-          resource: valueType, direction: valueDirection, amount: finalValue,
+          resource: valueType, direction: _ln.valueDirection, amount: _ln.finalValue,
+          chainStrike: _ln.chainStrike, chainStrikes: _ln.chainStrike ? chainPlan.count : null, chainRepeat: _ln.chainRepeat,
           cause: "damage",
           source: { actorUuid: ar.attackerActorRef, tokenUuid: ar.attacker?.tokenUuid ?? null },
           // Itemized identity + "how it changed" context (the attack site has the
@@ -907,19 +964,20 @@ async function resolveAction(director, ar, opts = {}) {
           weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
           actionKind: view?.kind ?? null,
           actionIntent: ar.actionIntent ?? null,
-          isCrit: !!ar.roll?.isCrit,
-          isFumble: !!ar.roll?.isFumble,
-          accuracyTotal: ar.roll?.total ?? null,
-          highRoll: ar.roll?.hr ?? null,
-          pierce: !!r.pierceMiss,
+          isCrit: _ln.isCrit,
+          isFumble: _ln.isFumble,
+          accuracyTotal: _ln.total ?? null,
+          highRoll: _ln.hr ?? null,
+          pierce: _ln.pierce,
           // Tag-provenance of any AE damage-increase actually applied to THIS
           // hit's element (element-gated) — backs AFFECTED_BY_<TAG>. The
           // effective element is the per-hit reaction override if any, else the
           // action element. Only on an HP loss; heals never carry a hex bump.
-          appliedEffectTags: valueDirection === "loss"
+          appliedEffectTags: _ln.valueDirection === "loss"
             ? SE().collectAppliedIncreaseTags(targetActor, r.element ?? ar.damageType)
             : [],
         });
+        }
 
         // Drain keyword (Tinkerer Vampire infusion / Keyword Repository): the
         // ATTACKER recovers HP equal to HALF the HP damage this hit dealt. Only
@@ -960,6 +1018,11 @@ async function resolveAction(director, ar, opts = {}) {
       }
     }
   }
+
+  // The action's own damage is out — close the hit counter's window, so a
+  // counter, a reaction or a free action that follows counts on its own.
+  try { if (isDamagingAction) endHitCounter({ id: ar._instanceId ?? null }); }
+  catch (e) { warn("Skill resolve: hit counter end threw", e); }
 
   // 5b. Miss VFX for can-miss actions with no damage (e.g. Zarg's Soul Steal
   //     Check). These skip the damage loop above (gated on isDamagingAction),
@@ -1149,7 +1212,10 @@ async function resolveAction(director, ar, opts = {}) {
     // that landed before this attack" — see hitsOnTargetThisTurn.
     if (director.dCombat && ar.attacker?.actorId) {
       for (const r of hits) {
-        if (r.hit && r.tokenUuid) director.dCombat.addHitOnTarget(ar.attacker.actorId, r.tokenUuid);
+        if (!(r.hit && r.tokenUuid)) continue;
+        // A Chain records every strike that genuinely landed, not just one.
+        const n = chainPlan ? (chainTargetOf(chainPlan, r.tokenUuid)?.hitsLanded ?? 0) : 1;
+        for (let i = 0; i < n; i++) director.dCombat.addHitOnTarget(ar.attacker.actorId, r.tokenUuid);
       }
     }
     if (struck.length) {
@@ -1182,10 +1248,21 @@ async function resolveAction(director, ar, opts = {}) {
       }
 
       for (const r of struck) {
+        // A Chain fires this once per landed strike, each with ITS roll —
+        // on-hit keywords and riders apply every strike (user rule 2026-10-29);
+        // strike 2+ events fire automatic reactions only (dispatchReactionMenu).
+        const _strikeRolls = chainPlan
+          ? (chainTargetOf(chainPlan, r.tokenUuid)?.landedStrikes ?? []).map((s, i) => ({
+              total: s.total ?? 0, hr: s.hr ?? 0, isCrit: !!s.isCrit, isFumble: !!s.isFumble,
+              defense: s.defense ?? r.defense, chainStrike: s.index, chainRepeat: i > 0,
+            }))
+          : [{ total: ar.roll?.total ?? 0, hr: ar.roll?.hr ?? 0, isCrit: !!ar.roll?.isCrit, isFumble: !!ar.roll?.isFumble, defense: r.defense, chainStrike: null, chainRepeat: false }];
+        for (const _sr of _strikeRolls) {
         queuePostResolveTrigger(director, {
           casterActor,
           trigger: "creature_deals_damage",
           payload: {
+            ...(_sr.chainStrike ? { chainStrike: _sr.chainStrike, chainStrikes: chainPlan.count, chainRepeat: _sr.chainRepeat } : {}),
             targets: allTargetUuids,
             targetTokenUuids: allTargetUuids,
             hitTargets: struckTokenUuids,
@@ -1212,22 +1289,23 @@ async function resolveAction(director, ar, opts = {}) {
             weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
             sourceActorUuid: ar.attackerActorRef,
             sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
-            total: ar.roll?.total ?? 0,
-            hr: ar.roll?.hr ?? 0,
-            isCrit: !!ar.roll?.isCrit,
-            isFumble: !!ar.roll?.isFumble,
+            total: _sr.total,
+            hr: _sr.hr,
+            isCrit: _sr.isCrit,
+            isFumble: _sr.isFumble,
             // HIT_MARGIN = accuracy total − THIS target's defense (r.defense
             // already encodes DEF vs MDEF). Drives "Conquer N".
-            hitMargin: (Number(ar.roll?.total ?? 0) || 0) - (Number(r.defense ?? 0) || 0),
+            hitMargin: (Number(_sr.total) || 0) - (Number(_sr.defense ?? 0) || 0),
             // Canonical spelling of the Accuracy Check total. `total` above is
             // the legacy key; ATTACK_CHECK_RESULT reads `checkTotal`, which was
             // only ever stamped on the DEFENDER-side creature_targeted_by_action
             // payload — so an attacker-side "my check result was N or more" gate
             // silently read 0 here. Drives "Snipe N" (Persuader, Man Catcher),
             // the check-total twin of HIT_MARGIN's "Conquer N".
-            checkTotal: Number(ar.roll?.total ?? 0) || 0,
+            checkTotal: Number(_sr.total) || 0,
           },
         });
+        }
       }
     }
     // One-shot post-attack trigger — fires after all per-target
@@ -1448,7 +1526,14 @@ async function resolveAction(director, ar, opts = {}) {
     const isMelee       = weaponRange ? /melee/i.test(String(weaponRange)) : false;
     const seenMissActors = new Set();
     for (const r of hits) {
-      if (!r || r.hit || r.pierceMiss) continue;            // only genuine misses
+      if (!r) continue;
+      // A Chain reports each strike that MISSED this target, with that strike's
+      // own roll — even when other strikes landed. Its first miss is a full
+      // event; later ones are repeats (automatic reactions only).
+      const _misses = chainPlan
+        ? chainMissesOf(chainPlan, r)
+        : ((r.hit || r.pierceMiss) ? [] : [{ total: accuracyTotal, isCrit: !!ar.roll?.isCrit, isFumble: !!ar.roll?.isFumble, defense: Number(r.defense ?? 0) || 0, chainStrike: null }]);
+      if (!_misses.length) continue;                         // only genuine misses
       const dedupKey = r.actorUuid ?? r.tokenUuid;
       if (dedupKey && seenMissActors.has(dedupKey)) continue; // one event per target actor per action
       if (dedupKey) seenMissActors.add(dedupKey);
@@ -1456,7 +1541,9 @@ async function resolveAction(director, ar, opts = {}) {
       // the reaction to IT (not the attacker).
       const missedActor = (await fromUuid(r.tokenUuid))?.actor ?? null;
       if (!missedActor) continue;
-      const defense = Number(r.defense ?? 0) || 0;
+      for (const [_mi, _m] of _misses.entries()) {
+      const defense = Number(_m.defense ?? 0) || 0;
+      const _missTotal = Number(_m.total) || 0;
       queuePostResolveTrigger(director, {
         casterActor: missedActor,
         trigger: "creature_miss_action",
@@ -1496,15 +1583,17 @@ async function resolveAction(director, ar, opts = {}) {
           isRanged,
           // accuracy + margin for Fancy Footwork's `missMargin >= 6 - SL` gate.
           // missMargin = defender DEF − attacker accuracy total (how far short).
-          total:        accuracyTotal,
-          accuracyTotal,
+          total:        _missTotal,
+          accuracyTotal: _missTotal,
           defense,
-          missMargin:   defense - accuracyTotal,
-          isCrit:       !!ar.roll?.isCrit,
-          isFumble:     !!ar.roll?.isFumble,
-          checkTotal:   accuracyTotal,   // ATTACK_CHECK_RESULT reads this key only
+          missMargin:   defense - _missTotal,
+          isCrit:       _m.isCrit,
+          isFumble:     _m.isFumble,
+          checkTotal:   _missTotal,   // ATTACK_CHECK_RESULT reads this key only
+          ...(_m.chainStrike ? { chainStrike: _m.chainStrike, chainStrikes: chainPlan.count, chainRepeat: _mi > 0 } : {}),
         },
       });
+      }
     }
 
     // ── Attacker-side twin: "I missed." ────────────────────────────────────
@@ -1640,6 +1729,80 @@ function queuePostResolveTrigger(director, config) {
     director.ctx._postResolveTriggers = [];
   }
   director.ctx._postResolveTriggers.push(config);
+}
+
+// ── Chain N helpers for resolveAction (plan = ar.chainPlan, ct = one target) ──
+
+// What one Chain target's battle-log row carries: strike counts + breakdown,
+// and every strike's check total in the accuracy column ("14 / 7 / 12").
+function chainLogOf(plan, ct) {
+  const totals = [];
+  for (const s of plan?.strikes ?? []) {
+    const o = (s.outcomes ?? []).find((x) => x.tokenUuid === ct?.tokenUuid);
+    if (!o || o.kind === "lost" || o.kind === "skip") continue;
+    totals.push(s.roll?.total ?? "—");
+  }
+  return {
+    strikes: ct?.strikes ?? 0, landed: ct?.landed ?? 0, missed: ct?.missed ?? 0, blocked: ct?.blocked ?? 0,
+    breakdown: ct?.breakdown ?? "", accuracies: totals.join(" / "),
+  };
+}
+
+// A one-shot blocker (Ninja Log) the card spent on one of this target's strikes
+// lives on the target as an incoming-damage AE too; leave it out of the summed
+// write so it cannot stop the remaining strikes as well.
+function chainSpentBlockers(ar, tokenUuid, ct) {
+  if (!(ct?.blocked > 0)) return null;
+  const row = (ar.perTargetResults ?? []).find((r) => r?.tokenUuid === tokenUuid);
+  const via = row?.damageOverride?.via ?? row?.damageOverride?.reactorName ?? null;
+  return via ? [via] : null;
+}
+
+// One post_damage / ledger line per landed strike. Losses are rescaled to what
+// the single write actually took (an incoming reducer can cap the total), by
+// cumulative rounding so they still add up exactly.
+function chainStrikeLines(ct, { finalValue = 0, valueDirection = "loss", shieldAbsorbed = 0 } = {}) {
+  const strikes = Array.isArray(ct?.landedStrikes) ? ct.landedStrikes : [];
+  const planned = strikes.map((s) => (s.kind === "absorb" ? (s.hpGain ?? 0) : (s.hpLoss ?? 0) + (s.shieldLoss ?? 0)));
+  let amounts = planned;
+  if (valueDirection === "loss") {
+    const sum = planned.reduce((a, b) => a + b, 0);
+    if (sum > 0 && sum !== finalValue) {
+      let acc = 0, prev = 0;
+      amounts = planned.map((p) => {
+        acc += p;
+        const cur = Math.round((Math.max(0, finalValue) * acc) / sum);
+        const v = cur - prev; prev = cur; return v;
+      });
+    }
+  }
+  let shieldLeft = Math.max(0, shieldAbsorbed);
+  return strikes.map((s, i) => {
+    const sh = Math.min(shieldLeft, s.shieldLoss ?? 0);
+    shieldLeft -= sh;
+    return {
+      finalValue: Math.max(0, amounts[i] ?? 0),
+      valueDirection: s.kind === "absorb" ? "recover" : valueDirection,
+      shieldAbsorbed: sh,
+      hr: s.hr ?? 0, isCrit: !!s.isCrit, isFumble: !!s.isFumble, total: s.total ?? 0,
+      pierce: !!s.pierce, chainStrike: s.index, chainRepeat: i > 0,
+    };
+  });
+}
+
+// Each strike that MISSED this target, with its own roll — a Chain reports
+// misses per strike (its first is a full event, the rest are repeats).
+function chainMissesOf(plan, row) {
+  const out = [];
+  for (const s of plan?.strikes ?? []) {
+    const o = (s.outcomes ?? []).find((x) => x.tokenUuid === row?.tokenUuid);
+    if (!o || o.kind !== "miss") continue;
+    out.push({
+      total: Number(s.roll?.total ?? 0) || 0, isCrit: !!s.roll?.isCrit, isFumble: !!s.roll?.isFumble,
+      defense: o.defense ?? row?.defense ?? 0, chainStrike: s.index,
+    });
+  }
+  return out;
 }
 
 // `extractTargetCountFromText` and `resolveTargetPlan` now live in
@@ -4939,10 +5102,22 @@ const Compute = {
         }
         if (parts.length) descriptionHtml = parts.join("");
       }
+      // Chain N (`chain N` in action_keywords): one card, N strikes, each with
+      // its own Check and damage — planned when the card is confirmed
+      // (chain-plan.js). Random mode draws each strike's target NOW, so the
+      // card already names who gets hit and targeting reactions see them.
+      const _chainSpec = chainSpecFor({ kind: "Skill", skillItem: skill, isCheck: !!skillProj?.roll, hasDamage: !!skillProj?.hasDamage });
+      const _chainDraw = _chainSpec ? drawChainTargets(_chainSpec, allTargets.map((t) => t?.tokenUuid).filter(Boolean)) : null;
+      const _chainNarrow = _chainDraw?.keep
+        ? narrowToTargets({ targets: allTargets, perTargetResults: skillProj.perTargetResults ?? [], hitTokenUuids: skillProj.hitTokenUuids ?? null }, _chainDraw.keep)
+        : null;
+      if (_chainDraw) log(`COMPUTE: Chain ${_chainDraw.spec.count}${_chainDraw.spec.mode !== "same" ? ` (${_chainDraw.spec.mode})` : ""} on ${ar.skillName ?? skill?.name ?? "?"}`);
       director.ctx.actionResult = freezeActionResult({
         ...arForProfile,
         ...skillProj,
         targets: allTargets,
+        ...(_chainNarrow ? { targets: _chainNarrow.targets, perTargetResults: _chainNarrow.perTargetResults, hitTokenUuids: _chainNarrow.hitTokenUuids } : {}),
+        ...(_chainDraw ? { chain: _chainDraw.spec } : {}),
         descriptionHtml,
         // Persist the captured pre_activate picks so RESOLVE replays them.
         preActivateVars, preActivateMenuPicks, preActivateTargets, preActivateDone: true,
@@ -5045,10 +5220,21 @@ const Compute = {
             attackRawCost = printedCost;   // the card's cost bullet, as for a Skill
           }
         }
+        // Chain N on the weapon (`chain N` in its action_keywords): one card, N
+        // strikes — see the Skill branch. A two-weapon pass keeps its own pass
+        // loop, so it never chains on top of it.
+        const _chainSpec = String(director.ctx.attackMode ?? "").startsWith("two-weapon")
+          ? null : chainSpecFor({ kind: "Attack", weapon, isCheck: true, hasDamage: true });
+        const _chainDraw = _chainSpec ? drawChainTargets(_chainSpec, targetSnapshots.map((t) => t?.tokenUuid).filter(Boolean)) : null;
+        const _chainNarrow = _chainDraw?.keep
+          ? narrowToTargets({ targets: targetSnapshots, perTargetResults: delta.perTargetResults ?? [], hitTokenUuids: delta.hitTokenUuids ?? null }, _chainDraw.keep)
+          : null;
+        if (_chainDraw) log(`COMPUTE: Chain ${_chainDraw.spec.count}${_chainDraw.spec.mode !== "same" ? ` (${_chainDraw.spec.mode})` : ""} on ${weapon?.name ?? "attack"}`);
         director.ctx.actionResult = freezeActionResult({
           kind: "Attack",
           costSerialized: attackCostSerialized,
           ...(attackRawCost ? { rawCost: attackRawCost } : {}),
+          ...(_chainDraw ? { chain: _chainDraw.spec } : {}),
           attacker,
           attackerActorRef: attacker.actorUuid,
           weapon,
@@ -5060,10 +5246,10 @@ const Compute = {
           attackMode: director.ctx.attackMode ?? "main",
           passIndex: director.ctx.passIndex,
           totalPasses: director.ctx.totalPasses,
-          targets: targetSnapshots,
+          targets: _chainNarrow ? _chainNarrow.targets : targetSnapshots,
           roll: c.dieSwap ? { ...delta.roll, dieSwap: c.dieSwap } : delta.roll,
           damage: delta.damage,
-          perTargetResults: delta.perTargetResults,
+          perTargetResults: _chainNarrow ? _chainNarrow.perTargetResults : delta.perTargetResults,
           // The HIT-target token list — drives `hit_action_targets` reactions
           // (Warning Shot's Shaken/Slow, Vanish, …) at RESOLVE. The Skill COMPUTE
           // path keeps this by spreading the projection; the Attack path enumerates
@@ -5072,7 +5258,7 @@ const Compute = {
           // ...added]`) collapses the hit list to ONLY the added target — the AE
           // then skips the primary. (Also stops a MISSED target getting hit-gated
           // AEs via the resolve-time all-targets fallback.)
-          hitTokenUuids: delta.hitTokenUuids,
+          hitTokenUuids: _chainNarrow ? _chainNarrow.hitTokenUuids : delta.hitTokenUuids,
           ...(attackGrant ? { freeActionGrant: { sourceLabel: attackGrant.sourceLabel, checkBonus: attackGrant.checkBonus ?? 0, damageBonus: attackGrant.damageBonus ?? 0,
             // Rider metadata for on-hit effect refs (Ripples ends hexes) — needs to
             // survive to RESOLVE. elementOverride already baked into the profile at
@@ -7461,6 +7647,9 @@ const Resolve = {
     // (crisis), so attack/effect-damage HP changes fold into the crisis cascade
     // — not just Start-of-Turn ticks. Authored-reaction behavior is unchanged
     // (settleInstance drains each event via the same firePassiveTriggers call).
+    // An action that left resolveAction early (negated, aborted chain) still
+    // closes the hit counter's window before its reactions settle.
+    try { endHitCounter({ id: ar._instanceId ?? null }); } catch (e) { warn("RESOLVE: hit counter end threw", e); }
     try {
       const { settleInstance } = await import("./instance-settle.js");
       // recordForReoffer: capture this action's reaction group (+ used-set) so
@@ -7477,11 +7666,16 @@ const Resolve = {
     // Crit → stamp opportunity payload so the RESOLVE transition branches to
     // OPPORTUNITY_WINDOW. Stamped after the persistence checkpoint so an F5
     // during the picker gracefully skips the opportunity (action already committed).
-    if (ar.roll?.opportunities && !anyTargetDeniesCritOpportunity(ar) && !attackerDeniesOwnCritOpportunity(ar)) {
+    // A Chain grants ONE Opportunity for the whole sequence — whichever strike
+    // crit first (user rule 2026-10-29); strike 1 being the card changes nothing.
+    const _critOpportunity = ar.chainPlan ? !!ar.chainPlan.attackerOpportunity : !!ar.roll?.opportunities;
+    if (_critOpportunity && !anyTargetDeniesCritOpportunity(ar) && !attackerDeniesOwnCritOpportunity(ar)) {
       director.ctx.hasPendingOpportunity = {
         actorUuid:    ar.attackerActorRef ?? ar.attacker?.actorUuid ?? null,
         actorName:    ar.attacker?.name ?? "?",
         actionCardId: ar.cardId ?? null,
+        // The crit came from a hidden strike: its cut-in plays before the wheel.
+        ...(ar.chainPlan && !ar.roll?.isCrit ? { chainCritCutin: true } : {}),
       };
     }
 
@@ -7535,6 +7729,21 @@ const OpportunityWindow = {
       warn("OPPORTUNITY_WINDOW: OpportunitySystem not available — skipping");
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;
+    }
+
+    // A Chain whose crit came from a hidden strike (strike 1 on the card did
+    // not crit): its crit cut-in plays here, once, right before the wheel —
+    // never mid-sequence, where it would stop the strikes cold.
+    if (opp.chainCritCutin) {
+      try {
+        const car = director.ctx.actionResult;
+        const tok = car?.attacker?.tokenUuid ? fromUuidSync(car.attacker.tokenUuid) : null;
+        const hasArt = !!(tok?.actor ?? null)?.system?.props?.cut_in_critical;
+        if (car?.roll && hasArt) {
+          playCritCutin({ ...car, roll: { ...car.roll, isCrit: true, isFumble: false } });
+          await new Promise((r) => setTimeout(r, 1800));   // the cinematic is ~2 s
+        }
+      } catch (e) { warn("OPPORTUNITY_WINDOW: Chain crit cut-in threw", e); }
     }
 
     log(`OPPORTUNITY_WINDOW — offering to ${opp.actorName}`);
@@ -8280,7 +8489,28 @@ const Stopped = {
 // ─── ANIMATION ─────────────────────────────────────────────────────────
 const Animation = {
   async onEnter(director) {
-    const ar = director.ctx.actionResult;
+    let ar = director.ctx.actionResult;
+    // Chain N: the card is final, so strikes 2..N are rolled and planned NOW —
+    // before the animation, whose hit cues reveal them one by one. The plan
+    // rides the action result; its hit list is every target a strike landed on.
+    if (ar?.chain && !ar.chainPlan) {
+      try {
+        const plan = await buildChainPlan(director, ar);
+        if (plan) {
+          ar = freezeActionResult({ ...ar, chainPlan: plan, hitTokenUuids: plan.hitTokenUuids });
+          director.ctx.actionResult = ar;
+        }
+      } catch (e) { warn("ANIMATION: Chain plan failed — the action resolves as its card's single strike", e); }
+    }
+    // The hit counter's window opens for any damaging action (Chain or AoE);
+    // RESOLVE closes it once the action's own damage is out.
+    try {
+      if (ar && (ar.kind === "Attack" || ar.hasDamage)) {
+        const tok = ar.attacker?.tokenUuid ? fromUuidSync(ar.attacker.tokenUuid) : null;
+        const disp = Number(tok?.disposition ?? ar.attacker?.disposition ?? 1);
+        beginHitCounter({ id: ar._instanceId ?? null, side: disp === -1 ? "enemy" : "party" });
+      }
+    } catch (e) { warn("ANIMATION: hit counter begin threw", e); }
     const spec = await resolveAnimationSpec(ar);
 
     // Attack / cast pose on the actor, on every client — also for actions with

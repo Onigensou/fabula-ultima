@@ -430,13 +430,14 @@ function resolveLossAv(resource, affinity) {
 //   resource  : "hp" | "mp"
 //   amount    : the value lost (already post-clamp / post-affinity)
 //   affinity  : "NE" | "VU" | "RS" | ... (HP only; ignored for MP)
-export function playResourceLossVfx({ tokenUuid, resource = "hp", amount = 0, affinity = "NE", element = "elementless", isCrit = false, pierce = false } = {}) {
+export function playResourceLossVfx({ tokenUuid, resource = "hp", amount = 0, affinity = "NE", element = "elementless", isCrit = false, pierce = false, cascade = 0 } = {}) {
   try {
     if (!(amount > 0)) return;
     // Floating NUMBER → BD-native damage-number subsystem (DOM screen-space).
     // Carries the affinity (WEAK!/RESIST tag), element (numeral color), and crit
-    // (gold CRITICAL banner). Renders + broadcasts on its own.
-    emitDamageNumber({ kind: "loss", tokenUuid, resource, amount, affinity, element, isCrit, pierce });
+    // (gold CRITICAL banner). Renders + broadcasts on its own. `cascade` is a
+    // Chain strike's index — it places the number on the strike cascade.
+    emitDamageNumber({ kind: "loss", tokenUuid, resource, amount, affinity, element, isCrit, pierce, ...(cascade ? { cascade } : {}) });
     // Token hurt flinch — only for a real physical-ish hit (HP / shield), not an
     // MP drain. Strong tier on WEAK/crit.
     if (resource === "hp" || resource === "shield") fireHurt(tokenUuid, affinity, isCrit);
@@ -563,12 +564,12 @@ const MISS_SFX_URL = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Soun
 
 // Float the "MISS" word (BD-native) + whiff sound.
 //   tokenUuid : the token that dodged / was missed ("Scene.X.Token.Y")
-export function playMissVfx({ tokenUuid } = {}) {
+export function playMissVfx({ tokenUuid, cascade = 0 } = {}) {
   try {
     // Big "MISS" word → BD-native subsystem. The whiff SOUND stays; the legacy
     // Sequencer visual (jb2a.ui.miss) is ITSELF a "MISS" text effect, so it would
     // double our word — dropped now that we own the miss feedback.
-    emitDamageNumber({ kind: "miss", tokenUuid });
+    emitDamageNumber({ kind: "miss", tokenUuid, ...(cascade ? { cascade } : {}) });
     throttledSfx(MISS_SFX_URL, 0.4);
   } catch (e) {
     warn("playMissVfx threw", e);
@@ -583,9 +584,9 @@ export function playMissVfx({ tokenUuid } = {}) {
 // no battlefield feedback. Float a steel "BLOCK" shield word + reuse the warmed
 // parry/resist cue. Same broadcasts-to-all-clients + graceful no-op rules.
 const BLOCK_SFX_URL = RESOURCE_VFX_SFX.resist;
-export function playBlockVfx({ tokenUuid } = {}) {
+export function playBlockVfx({ tokenUuid, cascade = 0 } = {}) {
   try {
-    emitDamageNumber({ kind: "block", tokenUuid });
+    emitDamageNumber({ kind: "block", tokenUuid, ...(cascade ? { cascade } : {}) });
     throttledSfx(BLOCK_SFX_URL, 0.5);
   } catch (e) {
     warn("playBlockVfx threw", e);
@@ -600,10 +601,10 @@ export function playBlockVfx({ tokenUuid } = {}) {
 // robust without depending on any extra effect asset. Reuses the already-warmed
 // Parry sound. Same broadcasts-to-all-clients + graceful no-op rules.
 const IMMUNE_SFX_URL = RESOURCE_VFX_SFX.resist;
-export function playImmuneVfx({ tokenUuid } = {}) {
+export function playImmuneVfx({ tokenUuid, cascade = 0 } = {}) {
   try {
     // "IMMUNE" tag → BD-native subsystem (number-only event); keep the cue.
-    emitDamageNumber({ kind: "immune", tokenUuid });
+    emitDamageNumber({ kind: "immune", tokenUuid, ...(cascade ? { cascade } : {}) });
     throttledSfx(IMMUNE_SFX_URL, 0.5);
   } catch (e) {
     warn("playImmuneVfx threw", e);

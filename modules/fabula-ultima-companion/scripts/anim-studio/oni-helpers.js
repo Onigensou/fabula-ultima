@@ -330,6 +330,37 @@ export function buildOni(ctx, env) {
     if (hook) { try { Hooks.callAll(hook); } catch (e) { console.warn("[oni] fireDone threw", e); } }
   }
 
+  // ── Chain strikes ─────────────────────────────────────────────────────────
+
+  // A contact frame. In a Chain action each call reveals the NEXT strike — its
+  // number, flinch and HP bar land on this frame (the acting GM's own run of the
+  // script drives it; chain-presenter.js). Call it once per hit, in order. A
+  // non-Chain action ignores it, so a shared script can always cue its hits.
+  function hit(info = {}) {
+    try {
+      Hooks.callAll("oni:hit", {
+        casterTokenUuid: ctx?.casterToken?.document?.uuid ?? null,
+        runId: ctx?.runId ?? null,
+        ...info,
+      });
+    } catch (e) { console.warn("[oni] hit threw", e); }
+  }
+
+  // Impact pause: hold the script a beat on a heavy hit so it reads — the
+  // classic hitstop. Await it right after a hit(): `oni.hit(); await oni.hitstop(80);`
+  function hitstop(ms = 80) {
+    const d = Math.max(0, Number(ms) || 0);
+    return typeof wait === "function" ? wait(d) : new Promise((r) => setTimeout(r, d));
+  }
+
+  // The planned strikes of a Chain action, in order — forward the outer
+  // script's `payload.strikes` into pseudo.play params as `strikes`. Each entry
+  // is { index, roll, outcomes:[{ tokenUuid, kind: "hit"|"miss"|"block"|
+  // "immune"|"absorb"|"lost", amount, isCrit, … }] }, so a script can whiff on a
+  // miss, flash gold on a crit, or skip a finisher on a downed target. [] when
+  // the action is not a Chain.
+  const strikes = Array.isArray(ctx?.params?.strikes) ? ctx.params.strikes : [];
+
   // Tear down everything created via this helper (idempotent). The listener
   // calls this in a finally after the inner script resolves, so even a script
   // that forgets to clean up leaves the stage at baseline.
@@ -859,6 +890,8 @@ export function buildOni(ctx, env) {
     particles, camera: makeCamera(),
     // audio
     sfx, sfxUrl,
+    // Chain strikes: contact cue, impact pause, the planned strikes
+    hit, hitstop, strikes,
     // gate + lifecycle
     fireDone, dispose,
   };

@@ -38,6 +38,9 @@ const STYLE_ID = "fud-damage-number-style";
 const STAGGER_MS = 120;
 // Total on-screen life — must match the longest CSS animation below.
 const LIFETIME_MS = 1150;
+// Chain strikes: a descending diagonal, [dx, dy] px from the anchor, so each
+// new strike lands below-right of the last and the older one rises clear.
+const CASCADE_STEPS = Object.freeze([[-42, -54], [-14, -36], [14, -18], [42, 0]]);
 
 let _socket = null;
 
@@ -225,13 +228,21 @@ export function renderDamageNumberLocal(payload = {}) {
 
     const spec = resolveDamageNumberStyle(payload);
 
+    // The hit counter counts what THIS client shows (hit-counter.js).
+    try { Hooks.callAll("fuDamageNumber", payload); } catch (e) { warn("damage-numbers: fuDamageNumber hook threw", e); }
+
     // Stagger same-token floats so a multi-hit cascades instead of stacking.
     const now = performance.now();
     const slot = Math.max(now, _nextSlot.get(tokenUuid) ?? 0);
     const delay = slot - now;
     _nextSlot.set(tokenUuid, slot + STAGGER_MS);
-    // Small horizontal jitter so even simultaneous-ish floats don't perfectly overlap.
-    const jitterX = Math.round((Math.random() - 0.5) * 26);
+    // A Chain strike (payload.cascade = its index) steps down-right from the one
+    // before, so the older number rises clear of the newer; anything else gets a
+    // small horizontal jitter so simultaneous-ish floats don't perfectly overlap.
+    const cascade = Number(payload?.cascade) || 0;
+    const step = cascade > 0 ? CASCADE_STEPS[(cascade - 1) % CASCADE_STEPS.length] : null;
+    const jitterX = step ? step[0] : Math.round((Math.random() - 0.5) * 26);
+    const offsetY = step ? step[1] : 0;
 
     const spawn = () => {
       const token = canvasTokenFromUuid(tokenUuid);
@@ -244,7 +255,7 @@ export function renderDamageNumberLocal(payload = {}) {
         (spec.crit ? " fud-dn--crit" : "") +
         (spec.shake ? " fud-dn--shake" : "");
       root.style.left = `${pt.x + jitterX}px`;
-      root.style.top = `${pt.y}px`;
+      root.style.top = `${pt.y + offsetY}px`;
 
       const riser = document.createElement("div");
       riser.className = "fud-dn-riser";

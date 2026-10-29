@@ -34,6 +34,14 @@ function _cap(s) {
   return v ? v.charAt(0).toUpperCase() + v.slice(1) : v;
 }
 function _affLabel(code) { return AFFINITY_LABEL[code] ?? "Normal"; }
+// The counts a Chain row carries in its JSON entry (battle-end-rank reads them).
+function _chainCounts(c) {
+  return {
+    strikes: Number(c?.strikes) || 0, landed: Number(c?.landed) || 0,
+    missed: Number(c?.missed) || 0, blocked: Number(c?.blocked) || 0,
+    breakdown: String(c?.breakdown ?? ""),
+  };
+}
 
 // ── DB-actor resolution (ported from BattleLog: Append) ────────────────────
 // Preferred: the module's DB resolver; fallback: the fixed "Current Game" actor
@@ -139,6 +147,11 @@ export function buildDamageRow({
   isCrit = false,
   sourceType = "None",
   noEffectReason = null,
+  // A Chain action logs ONE row per target for all its strikes:
+  // { strikes, landed, missed, blocked, breakdown: "53 / MISS / 54★", accuracies: "14 / 7 / 12" }.
+  // The counts ride the JSON entry (the rank reads them there), the breakdown
+  // the summary, the per-strike totals the accuracy column.
+  chain = null,
 } = {}) {
   const isHeal = valueDirection === "recover";
   const displayAmt = Math.abs(Number(value) || 0);
@@ -150,10 +163,12 @@ export function buildDamageRow({
   if (isHeal) summary = `${attackerName} heals ${targetName} for ${displayAmt} ${valueTypeLbl}`;
   else if (resource === "hp") summary = `${attackerName} deals ${displayAmt} ${displayElement(element)} damage to ${targetName} [${effLabel}]`;
   else summary = `${attackerName} deals ${displayAmt} damage to ${targetName}'s ${valueTypeLbl}`;
+  if (chain) summary += ` — Chain ${chain.strikes}: ${chain.breakdown || "—"}`;
+  const accuracyText = chain?.accuracies ? String(chain.accuracies) : (accuracy != null ? String(accuracy) : "-");
 
   const entry = {
     ts: new Date().toISOString(),
-    accuracy: accuracy != null ? String(accuracy) : "-",
+    accuracy: accuracyText,
     dealer: { name: attackerName, disposition: "neutral", range: range ?? "None", sourceType },
     target: { name: targetName, disposition: tgtDisp },
     inputs: { isRecovery: isHeal, element, valueType: resource, weaponType, isCrit },
@@ -163,6 +178,7 @@ export function buildDamageRow({
       affected: !noEffectReason, noEffectReason: noEffectReason ?? null,
     },
     summary,
+    ...(chain ? { chain: _chainCounts(chain) } : {}),
   };
 
   const row = {
@@ -204,17 +220,21 @@ export function buildMissRow({
   sourceType = "None",
   applyMode = "Miss",
   summary = null,
+  // A Chain whose strikes all missed this target (see buildDamageRow).
+  chain = null,
 } = {}) {
   const tgtDisp = targetDisposition === 1 ? "ally" : targetDisposition === -1 ? "enemy" : "neutral";
+  const baseSummary = summary ?? `${attackerName} misses ${targetName}`;
   const entry = {
     ts: new Date().toISOString(),
-    accuracy: accuracy != null ? String(accuracy) : "-",
+    accuracy: chain?.accuracies ? String(chain.accuracies) : (accuracy != null ? String(accuracy) : "-"),
     dealer: { name: attackerName, disposition: "neutral", range: range ?? "None", sourceType },
     target: { name: targetName, disposition: tgtDisp },
     inputs: { element, weaponType },
     // `miss` drives the log RENDERER's styling; a non-Miss mode is not a whiff.
     miss: applyMode === "Miss",
-    summary: summary ?? `${attackerName} misses ${targetName}`,
+    summary: chain ? `${baseSummary} — Chain ${chain.strikes}: ${chain.breakdown || "—"}` : baseSummary,
+    ...(chain ? { chain: _chainCounts(chain) } : {}),
   };
   const row = {
     $deleted: false,

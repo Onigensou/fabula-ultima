@@ -453,6 +453,14 @@ export async function dispatchReactionMenu({
   if (skipSet.size) {
     candidates = candidates.filter((c) => !skipSet.has(`${c.rowKey}:${c.carrierUuid}`));
   }
+  // A Chain (one action, many strikes — chain-plan.js) emits one event per
+  // strike. Automatic reactions fire on every one, but a reaction that ASKS is
+  // offered once per target per action — on that target's first event; the
+  // repeats carry `chainRepeat`. Free actions are capped the same way where
+  // they are enqueued (free_action effect). User rule, 2026-10-29.
+  if (payload?.chainRepeat) {
+    candidates = candidates.filter((c) => c?.mode !== "ask");
+  }
   // Sim diagnostic. A candidate that fails its CONDITION is dropped silently a few
   // lines below (by design — surfacing it to a player is noise), which means an AI that
   // "just never uses" a reaction gives you nothing to go on. Acceleration's free-action

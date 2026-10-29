@@ -18,6 +18,7 @@ import { isBackgroundedFor, hasOtherViewers } from "./presentation-clock.js";
 import { emitBattlerPose } from "./battler-pose.js";
 import { skillPose } from "./battler-pose-rules.js";
 import { stageScript, waitStaged, frameMeter } from "../action-animation/animation-stage.js";
+import { createChainPresenter } from "./chain-presenter.js";
 
 // How long the window must be continuously hidden before we start discarding
 // animations. On Windows `document.hidden` flips true for an ordinary alt-tab
@@ -288,6 +289,7 @@ async function executeAnimationScript({
   abortPromise = null,
   timeoutMs = 35000,
   stageJob = undefined,
+  strikes = null,
 }) {
   // Backgrounded window with nobody else connected: don't run the script at
   // all. Sequencer would only queue effects that burst-replay on refocus — the
@@ -330,6 +332,12 @@ async function executeAnimationScript({
     // combat. `null` means "unknown" — a branching script should assume a hit,
     // which is what every script did before this field existed.
     outcomes: outcomes ?? null,
+    // Chain N: the planned strikes, [{ index, roll, outcomes:[{ tokenUuid, kind,
+    // amount, isCrit, … }] }], in order. Each `oni.hit()` reveals the next one.
+    // Forward it into pseudo.play params (`params.strikes`) and the inner script
+    // reads it as `oni.strikes` — e.g. whiff on a miss, gold flash on a crit.
+    // null when the action is not a Chain.
+    strikes: strikes ?? null,
   };
 
   const fn = compileScript(script);
@@ -477,13 +485,19 @@ function armAnimationEndWatch(casterTokenUuid, { timeoutMs = 35000 } = {}) {
 // to report, so "unknown" stays distinguishable from "everything missed".
 function outcomesFromDirector(director) {
   try {
-    const rows = director?.ctx?.actionResult?.perTargetResults;
+    const ar = director?.ctx?.actionResult;
+    const rows = ar?.perTargetResults;
     if (!Array.isArray(rows) || !rows.length) return null;
-    return rows.map((r) => ({
-      tokenUuid: r?.tokenUuid ?? null,
-      hit: !!r?.hit,
-      crit: !!r?.crit,
-    }));
+    // A Chain hits a target when ANY of its strikes landed — not just strike 1.
+    const chain = ar?.chainPlan?.perTarget ?? null;
+    return rows.map((r) => {
+      const t = chain ? chain[r?.tokenUuid] : null;
+      return {
+        tokenUuid: r?.tokenUuid ?? null,
+        hit: t ? t.landed > 0 : !!r?.hit,
+        crit: t ? t.crits > 0 : !!r?.crit,
+      };
+    });
   } catch (e) {
     warn("[BD Anim] could not read per-target outcomes", e);
     return null;
@@ -525,10 +539,17 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
   // AND settles this, so RESOLVE never waits on a cinematic the GM skipped.
   const endWatch = armAnimationEndWatch(casterTokenUuid, { timeoutMs: 45000 });
 
+  // Chain N: the strikes are revealed one by one on the script's `oni.hit()`
+  // cues, so the presenter listens from before the script starts. A script
+  // without cues falls back to a beat from the damage moment (chain-presenter).
+  const chainPlan = director.ctx.actionResult?.chainPlan ?? null;
+  const presenter = chainPlan ? createChainPresenter(chainPlan, { causeTokenUuid: casterTokenUuid }) : null;
+  presenter?.arm();
+
   // Abort mechanism: calling abortResolve() collapses the gate Promise.race.
   let abortResolve;
   const abortPromise = new Promise((res) => { abortResolve = res; });
-  const abort = () => { endWatch.settle(); abortResolve(); };
+  const abort = () => { endWatch.settle(); presenter?.flush(); abortResolve(); };
 
   director.ctx.animationController = { playing: true, abort };
 
@@ -540,6 +561,7 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
       outcomes: outcomesFromDirector(director),
       abortPromise, timeoutMs: 35000,
       stageJob: takePrestaged(director, script),
+      strikes: chainPlan?.strikes ?? null,
     });
     ran = !!r?.ran;
     log("[BD Anim] gate resolved — advancing to RESOLVE");
@@ -547,6 +569,28 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
     warn("[BD Anim] playDirectorAnimation threw", e);
   } finally {
     director.ctx.animationController = null;
+  }
+
+  // Chain N: the damage moment has come. Strikes the cues have not revealed yet
+  // go out on the beat; the TRUE end flushes whatever is still hidden; nobody
+  // watching (hidden window, no viewers) means nothing is shown at all. RESOLVE
+  // writes HP only after the last strike is out, so the HUD never runs ahead.
+  if (presenter) {
+    try {
+      if (!ran && canFastForwardAnimation()) {
+        presenter.skip();
+      } else {
+        const endAlreadyPassed = endWatch.settled();
+        presenter.startFallback();
+        if (!endAlreadyPassed) endWatch.promise.then(() => presenter.flush()).catch(() => {});
+      }
+      const cap = (chainPlan.strikes?.length ?? 1) * ((Number(chainPlan.beatMs) || 550) + 200) + 8000;
+      await Promise.race([presenter.done, new Promise((r) => setTimeout(r, cap))]);
+      if (!presenter.finished) {
+        presenter.flush();
+        await Promise.race([presenter.done, new Promise((r) => setTimeout(r, 2000))]);
+      }
+    } catch (e) { warn("[BD Anim] Chain presenter threw", e); }
   }
 
   // Hand the tail to the FSM. RESOLVE applies damage at the gate moment (as
