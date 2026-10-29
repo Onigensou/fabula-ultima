@@ -747,6 +747,8 @@ async function resolveAction(director, ar, opts = {}) {
             }
           }
         }
+        // The re-runs' stacked charges land now, one write per actor.
+        await SE().flushChainAeCoalesce?.(ar._instanceId ?? null);
       }
     } catch (e) { warn("Skill resolve: Chain on-hit statuses threw", e); }
   }
@@ -7434,6 +7436,12 @@ const Resolve = {
     // (Critical-hit cut-in now fires in CONFIRM, as the action card with the
     // roll result appears — see Confirm.onEnter. Not replayed here.)
 
+    // Chain N: the status writes strikes 2..N cause fold into one write per
+    // stack per apply phase (skill-effects beginChainAeCoalesce) — committed
+    // after the on-hit re-runs and after each settle pass, closed below once
+    // this action's reactions have settled.
+    if (ar.chainPlan) SE().beginChainAeCoalesce?.(ar._instanceId ?? null);
+
     if (ar.kind === "Attack") {
       // ── Unified path (Phase 7 — bespoke Attack branch retired) ──
       // ALL attacks resolve through resolveAction. A backing weapon Item (PC
@@ -7683,6 +7691,12 @@ const Resolve = {
       ? ` (Pass ${ar.passIndex}/${ar.totalPasses})`
       : "";
     const rvPhase = rewindPhaseLabel(director.ctx, rvDc?.round);
+    // A Chain's merged status writes from the resolve body (post_damage riders
+    // per strike) land before the snapshot, so the checkpoint holds the stacks.
+    if (ar.chainPlan) {
+      try { await SE().flushChainAeCoalesce?.(ar._instanceId ?? null); }
+      catch (e) { warn("RESOLVE: Chain status write flush threw", e); }
+    }
     // deferWrites: the rewind snapshot (the only step that must read actor state
     // BEFORE settleInstance mutates it, just below) is captured synchronously
     // inside saveDirectorState before it returns; the two DB writes then run in
@@ -7719,9 +7733,17 @@ const Resolve = {
       // Skip for free actions — a free action's OWN reaction group is offered
       // here but its re-offer loop is owned by the parent's REACTION_WINDOW
       // (whose resolveDetour frame snapshots these fields across the drain).
-      await settleInstance(director, { reason: "resolve", recordForReoffer: !topIsFreeAction(director.ctx) });
+      await settleInstance(director, {
+        reason: "resolve",
+        recordForReoffer: !topIsFreeAction(director.ctx),
+        onPassEnd: ar.chainPlan ? () => SE().flushChainAeCoalesce?.(ar._instanceId ?? null) : null,
+      });
     } catch (e) {
       warn("RESOLVE: settleInstance threw", e);
+    }
+    if (ar.chainPlan) {
+      try { await SE().endChainAeCoalesce?.(ar._instanceId ?? null); }
+      catch (e) { warn("RESOLVE: Chain status write flush threw", e); }
     }
 
     // Crit → stamp opportunity payload so the RESOLVE transition branches to

@@ -15,6 +15,7 @@
 const {
   parseChainKeyword, assignStrikeTargets, planStrikes, createStrikeWalker, applyStrikeToState,
   breakdownForTarget, summarizeTarget, splitTicks, fallbackBeatMs, makeRng,
+  foldChargeSteps, aeRefreshIsNoop,
 } = await import("./chain-strikes.js");
 
 let failed = 0, passed = 0;
@@ -208,6 +209,24 @@ eq("ticks: no ratios = one tick", splitTicks(50, []), [50]);
 eq("beat: short chain keeps 550", fallbackBeatMs(3), 550);
 eq("beat: long chain shrinks", fallbackBeatMs(10), 288);
 eq("beat: floor at 140", fallbackBeatMs(40), 140);
+
+// ── folding a Chain's repeat status writes ───────────────────────────────────
+eq("fold: plain sum", foldChargeSteps(1, [{ add: 1, max: 99 }, { add: 1, max: 99 }]), 3);
+eq("fold: capped like strike-by-strike", foldChargeSteps(2, [{ add: 2, max: 5 }, { add: 2, max: 5 }]), 5);
+eq("fold: per-step caps apply in order", foldChargeSteps(0, [{ add: 3, max: 3 }, { add: 3, max: 4 }]), 4);
+eq("fold: no steps keeps the stack", foldChargeSteps(4, []), 4);
+eq("fold: missing max = uncapped", foldChargeSteps(0, [{ add: 2 }, { add: 2 }]), 4);
+{
+  const NS = "fabula-ultima-companion";
+  const by = { skillUuid: "Item.s", reactorActorUuid: "Actor.a", reactorTokenUuid: "T.a", effectLabel: "slow_on_hit", appliedAtRound: 2 };
+  const ae = { name: "Slow", origin: "Item.s", changes: [{ key: "bonus_dex", mode: 2, value: "-2", priority: null }], statuses: new Set(["slow"]), disabled: false, flags: { [NS]: { charges: 3, directorAppliedBy: by } } };
+  const same = JSON.parse(JSON.stringify({ ...ae, statuses: ["slow"] }));
+  eq("noop: identical refresh", aeRefreshIsNoop(ae, same, NS), true);
+  eq("noop: a reset counter is a change", aeRefreshIsNoop(ae, { ...same, flags: { [NS]: { charges: 2, directorAppliedBy: by } } }, NS), false);
+  eq("noop: another applier is a change", aeRefreshIsNoop(ae, { ...same, flags: { [NS]: { charges: 3, directorAppliedBy: { ...by, reactorActorUuid: "Actor.b" } } } }, NS), false);
+  eq("noop: different changes", aeRefreshIsNoop(ae, { ...same, changes: [{ key: "bonus_dex", mode: 2, value: "-4" }] }, NS), false);
+  eq("noop: core duration is not compared", aeRefreshIsNoop({ ...ae, duration: { startRound: 3 } }, { ...same, duration: { startRound: null } }, NS), true);
+}
 
 console.log(`chain-strikes: ${passed} passed, ${failed} failed`);
 if (failed) process.exitCode = 1;

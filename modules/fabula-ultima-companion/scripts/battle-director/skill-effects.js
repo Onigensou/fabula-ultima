@@ -28,6 +28,7 @@ import { promptNumberDialog } from "./number-picker.js";
 import { resolveTargetRef } from "./skill-targeting.js";
 import { RESOURCE_REGISTRY } from "./resources.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor, isPersistentCounter } from "./skill-charges.js";
+import { foldChargeSteps, aeRefreshIsNoop } from "./chain-strikes.js";
 import { readPropNum, resolveAffinity, skillDeclaresVersatile, resolvesVsMagicDefense, actorLiveRuleValues } from "./snapshot.js";
 import { isActorDefeated } from "./defeat-reactor.js";
 import { computeIncomingDamage, aeOutgoingActionKeywords } from "./damage-ruleset.js";
@@ -6645,6 +6646,82 @@ async function flushAeBatch(batch) {
   }
 }
 
+// ── Chain N: one status write per target per apply phase ─────────────────
+// A Chain action fires its on-hit statuses on every landed strike (user rule
+// 2026-10-29), and every AE write re-derives the whole CSB actor on every
+// client (~300-600 ms on a PC — project_scorched_tile_lag_rootcause). So while
+// a Chain resolves, the writes its REPEAT strikes cause (payload.chainRepeat)
+// are folded:
+//   - add_charges onto an existing stack: the extra strikes' charges queue
+//     here (each with its own RS clamp and cap) and land as ONE update per
+//     actor at the end of the apply phase — after the on-hit re-runs, and after
+//     each settle pass. A status event raised in a pass is read in the next
+//     one, so every later reader sees the same totals as strike-by-strike.
+//   - replace (refresh in place) that would rewrite exactly what is already
+//     there: skipped.
+// Results, stack totals and creature_status_applied events are unchanged;
+// only the number of writes drops. Not folded: once-per-event rows, persistent
+// counters (Grave Points-style pools), creates, deletes. Keyed by the action's
+// instance id, so a nested action (a free action) never folds into it.
+// On globalThis, not module scope: reaction effects run in a cache-busted copy
+// of this module (standalone-reactions imports "./skill-effects.js?cb=…"), and
+// every copy must see the same open coalescer.
+const _chainAeCoalescers = (globalThis.__FU_CHAIN_AE_COALESCE__ ??= new Map());   // instanceId → { pending: Map<aeUuid, { doc, steps:[{ add, max }] }> }
+
+export function beginChainAeCoalesce(instanceId) {
+  if (!instanceId) return;
+  // An action that threw before its end leaves an entry behind; lookups are by
+  // instance id, so a stale one never matches — just keep the map small.
+  while (_chainAeCoalescers.size >= 8) _chainAeCoalescers.delete(_chainAeCoalescers.keys().next().value);
+  _chainAeCoalescers.set(instanceId, { pending: new Map() });
+}
+
+// The coalescer for a REPEAT strike's apply_ae, or null (strike 1, other actions).
+function chainCoalescerFor(ctx) {
+  if (!ctx?.payload?.chainRepeat || !_chainAeCoalescers.size) return null;
+  const director = ctx.director ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.() ?? null;
+  const id = director?.ctx?.actionResult?._instanceId ?? null;
+  return id ? (_chainAeCoalescers.get(id) ?? null) : null;
+}
+
+const foldCharges = foldChargeSteps;
+
+// Commit the queued charges: one updateEmbeddedDocuments per actor. Re-reads
+// each stack at flush time, so a write that landed meanwhile is built on.
+export async function flushChainAeCoalesce(instanceId) {
+  const co = instanceId ? _chainAeCoalescers.get(instanceId) : null;
+  if (!co?.pending?.size) return 0;
+  const slots = Array.from(co.pending.values());
+  co.pending = new Map();
+  const byActor = new Map();
+  let steps = 0;
+  for (const { doc, steps: st } of slots) {
+    const actor = doc?.parent ?? null;
+    const live = actor?.effects?.get?.(doc?.id) ?? null;
+    if (!live) continue;                // cleansed or gone since it was queued
+    steps += st.length;
+    const cur = Number(live.flags?.[FLAG_NS]?.charges ?? 0) || 0;
+    if (!byActor.has(actor)) byActor.set(actor, []);
+    byActor.get(actor).push({ _id: live.id, [`flags.${FLAG_NS}.charges`]: foldCharges(cur, st) });
+  }
+  let writes = 0;
+  for (const [actor, updates] of byActor) {
+    try { await actor.updateEmbeddedDocuments("ActiveEffect", updates); writes++; }
+    catch (e) { warn(`skill-effects.apply_ae: Chain merged charge write failed on ${actor?.name}`, e); }
+  }
+  log(`skill-effects.apply_ae: Chain — ${steps} strike charge step(s) merged into ${writes} write(s)`);
+  return writes;
+}
+
+export async function endChainAeCoalesce(instanceId) {
+  if (!instanceId || !_chainAeCoalescers.has(instanceId)) return;
+  try { await flushChainAeCoalesce(instanceId); }
+  finally { _chainAeCoalescers.delete(instanceId); }
+}
+
+// A refresh that would rewrite what is already there (chain-strikes.js).
+const refreshIsNoop = (existing, data) => aeRefreshIsNoop(existing, data, FLAG_NS);
+
 async function applyApplyAeEffect(row, ctx) {
   let aeRef = String(row.ae_template_ref ?? "").trim();
   // Dynamic ref: resolve the debuff name from the action's picked status
@@ -6929,6 +7006,17 @@ async function applyApplyAeEffect(row, ctx) {
         const maxCharges = (rowChargesMax != null && Number.isFinite(rowChargesMax))
           ? rowChargesMax
           : (Number(existing.flags?.[FLAG_NS]?.chargesMax ?? template.flags?.[FLAG_NS]?.chargesMax ?? 99999) || 99999);
+        // A Chain's repeat strike: queue the charges for the phase-end write.
+        const co = !onceEventId && !isPersistentCounter(existing) ? chainCoalescerFor(ctx) : null;
+        if (co) {
+          const slot = co.pending.get(existing.uuid) ?? { doc: existing, steps: [] };
+          slot.steps.push({ add: addCharges, max: maxCharges });
+          co.pending.set(existing.uuid, slot);
+          const projected = foldCharges(curCharges, slot.steps);
+          log(`skill-effects.apply_ae add_charges: "${template.name}" on ${actor.name} +${addCharges} queued (Chain strike) — ${curCharges} → ${projected} at phase end`);
+          applied.push({ actorUuid: actor.uuid, aeId: existing.id, name: existing.name, chargesAdded: addCharges, newCharges: projected, deferred: true });
+          continue;
+        }
         const newCharges = Math.min(maxCharges, curCharges + addCharges);
         const chargeUpd = { [`flags.${FLAG_NS}.charges`]: newCharges };
         if (onceEventId) chargeUpd[`flags.${FLAG_NS}.lastEventId`] = onceEventId;
@@ -7383,6 +7471,13 @@ async function applyApplyAeEffect(row, ctx) {
       // then the Anomaly spell) would otherwise keep the old counter and expire.
       if (sceneLong && replaceTarget.flags?.[FLAG_NS]?.charges != null) {
         data.flags[FLAG_NS]["-=charges"] = null;
+      }
+      // A Chain's repeat strike re-inflicting what an earlier strike just put
+      // there writes nothing; it still counts as applied (status events).
+      if (chainCoalescerFor(ctx) && refreshIsNoop(replaceTarget, data)) {
+        log(`skill-effects.apply_ae: "${data.name}" on ${actor.name} already current (Chain strike) — refresh skipped`);
+        applied.push({ actorUuid: actor.uuid, aeId: replaceTarget.id, name: data.name, refreshedInPlace: true, unchanged: true });
+        continue;
       }
       try {
         await replaceTarget.update(data);

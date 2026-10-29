@@ -278,3 +278,35 @@ export function fallbackBeatMs(count) {
   const gaps = Math.max(1, (Number(count) || 1) - 1);
   return Math.max(CHAIN_MIN_BEAT_MS, Math.min(CHAIN_BEAT_MS, Math.floor(CHAIN_FALLBACK_SPAN_MS / gaps)));
 }
+
+// ── Folding a Chain's repeat status writes (skill-effects coalescer) ─────────
+// The charges strikes 2..N add to one stack land as ONE write: each strike's
+// step applies in order with its own cap, so the total matches writing them
+// strike by strike.
+export function foldChargeSteps(charges, steps) {
+  return (steps ?? []).reduce(
+    (c, s) => Math.min(Number.isFinite(Number(s?.max)) ? Number(s.max) : Infinity, c + (Number(s?.add) || 0)),
+    Number(charges) || 0,
+  );
+}
+
+// True when refreshing the AE `existing` with `data` would change nothing a
+// reader can see: name, origin, changes, statuses, disabled, charges (the
+// Battle Director's duration counter — apply_ae nulls core duration fields on
+// every write) and who applied it. `ns` = the module's flag namespace.
+export function aeRefreshIsNoop(existing, data, ns) {
+  const view = (d) => {
+    const f = d?.flags?.[ns] ?? {};
+    const by = f.directorAppliedBy ?? {};
+    return JSON.stringify({
+      name: d?.name ?? null,
+      origin: d?.origin ?? null,
+      changes: Array.from(d?.changes ?? []).map((c) => [c?.key ?? null, Number(c?.mode ?? 0), String(c?.value ?? ""), c?.priority ?? null]),
+      statuses: Array.from(d?.statuses ?? []).map(String).sort(),
+      disabled: !!d?.disabled,
+      charges: f.charges ?? null,
+      by: [by.skillUuid ?? null, by.reactorActorUuid ?? null, by.reactorTokenUuid ?? null, by.effectLabel ?? null, by.appliedAtRound ?? null],
+    });
+  };
+  return view(existing) === view(data);
+}

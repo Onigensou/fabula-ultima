@@ -67,7 +67,10 @@ export function clearBuiltinReactors() {
   BUILTIN_REACTORS.length = 0;
 }
 
-export async function settleInstance(director, { reason = "", maxIters = 8, recordForReoffer = false } = {}) {
+// `onPassEnd` (optional) runs after each pass's events have drained and before
+// the next pass starts — a Chain commits its merged status writes there
+// (skill-effects flushChainAeCoalesce), so the next pass reads them.
+export async function settleInstance(director, { reason = "", maxIters = 8, recordForReoffer = false, onPassEnd = null } = {}) {
   const ctx = director?.ctx;
   if (!ctx) return { reason, iters: 0, fired: 0 };
   if (!Array.isArray(ctx._postResolveTriggers)) ctx._postResolveTriggers = [];
@@ -173,6 +176,10 @@ export async function settleInstance(director, { reason = "", maxIters = 8, reco
       } catch (e) {
         warn(`settleInstance(${reason}): drain threw for ${cfg?.trigger}`, e);
       }
+    }
+    if (onPassEnd) {
+      try { await onPassEnd(); }
+      catch (e) { warn(`settleInstance(${reason}): onPassEnd threw`, e); }
     }
 
     // Promote this pass's authored firings so the NEXT pass skips them (the
