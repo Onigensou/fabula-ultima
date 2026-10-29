@@ -109,7 +109,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>If this is your turn, This weapon gain <a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Chain</a><strong><span style=\"text-decoration: underline;\"> 3</span></strong></p></li><li><p>Each time you hit the same target this turn, your next attack on that target gains <strong data-start=\"508\" data-end=\"540\">+1 Accuracy </strong>per previous hit on the the target.</p></li></ul>",
+      "description": "<ul><li><p>If this is your turn, This weapon gain <a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Combo</a><strong><span style=\"text-decoration: underline;\"> 3</span></strong></p></li><li><p>Each time you hit the same target this turn, your next attack on that target gains <strong data-start=\"508\" data-end=\"540\">+1 Accuracy </strong>per previous hit on the the target.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -139,7 +139,7 @@
       "item_rarity": "Uncommon",
       "item_skill_passive": {
         "v1FBABLgBO8NFFrM": {
-          "skill_description": "<ul><li><p>If this is your turn, This weapon gain <a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Chain</a><strong><span style=\"text-decoration: underline;\"> 3</span></strong></p></li><li><p>Each time you hit the same target this turn, your next attack on that target gains <strong data-start=\"508\" data-end=\"540\">+1 Accuracy </strong>per previous hit on the the target.</p></li></ul>"
+          "skill_description": "<ul><li><p>If this is your turn, This weapon gain <a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Combo</a><strong><span style=\"text-decoration: underline;\"> 3</span></strong></p></li><li><p>Each time you hit the same target this turn, your next attack on that target gains <strong data-start=\"508\" data-end=\"540\">+1 Accuracy </strong>per previous hit on the the target.</p></li></ul>"
         }
       },
       "item_type": "weapon",
@@ -150,7 +150,7 @@
       "plant_ef": "100",
       "related_item_list": {
         "v1FBABLgBO8NFFrM": {
-          "related_item_description": "<ul><li><p>If this is your turn, This weapon gain <a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Chain</a><strong><span style=\"text-decoration: underline;\"> 3</span></strong></p></li><li><p>Each time you hit the same target this turn, your next attack on that target gains <strong data-start=\"508\" data-end=\"540\">+1 Accuracy </strong>per previous hit on the the target.</p></li></ul>"
+          "related_item_description": "<ul><li><p>If this is your turn, This weapon gain <a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Combo</a><strong><span style=\"text-decoration: underline;\"> 3</span></strong></p></li><li><p>Each time you hit the same target this turn, your next attack on that target gains <strong data-start=\"508\" data-end=\"540\">+1 Accuracy </strong>per previous hit on the the target.</p></li></ul>"
         }
       },
       "reptilian_ef": "100",

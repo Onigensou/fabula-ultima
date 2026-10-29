@@ -49,7 +49,7 @@
       "damage_bonus": "15",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p><strong>Switch weapon: </strong>Can be switched to <a class=\"content-link\" data-uuid=\"Item.pT5eqx8pl66ukRUC\" data-id=\"pT5eqx8pl66ukRUC\" data-type=\"Item\">Star Spangled Shield (Brawling)</a></p></li><li><p>You may spend an action to perform an <strong>【Attack】</strong> that send this weapon <strong>Bouncing</strong>: The attack gains <a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Chain</a><strong> 3; however</strong>, you <strong>cannot</strong> perform attacks against the same target <strong>consecutively. </strong>Once you use this attack, you must unequip this weapon and you cannot equip it again <strong>until the end of next round.</strong></p></li></ul>",
+      "description": "<ul><li><p><strong>Switch weapon: </strong>Can be switched to <a class=\"content-link\" data-uuid=\"Item.pT5eqx8pl66ukRUC\" data-id=\"pT5eqx8pl66ukRUC\" data-type=\"Item\">Star Spangled Shield (Brawling)</a></p></li><li><p>You may spend an action to perform an <strong>【Attack】</strong> that send this weapon <strong>Bouncing</strong>: The attack gains <a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Combo</a><strong> 3; however</strong>, you <strong>cannot</strong> perform attacks against the same target <strong>consecutively. </strong>Once you use this attack, you must unequip this weapon and you cannot equip it again <strong>until the end of next round.</strong></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

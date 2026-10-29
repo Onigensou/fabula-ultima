@@ -484,7 +484,7 @@
         },
         "1": {
           "$deleted": false,
-          "details": "<p>All basic attack gain @UUID[JournalEntry.noUOPxPoZq65yYxV]{Chain}3 and @UUID[JournalEntry.vBUBQbu92bWBozgN]{Blitz}</p>",
+          "details": "<p>All basic attack gain @UUID[JournalEntry.noUOPxPoZq65yYxV]{Combo}3 and @UUID[JournalEntry.vBUBQbu92bWBozgN]{Blitz}</p>",
           "icon": "",
           "macro_name": "",
           "roll": "",

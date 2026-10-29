@@ -49,7 +49,7 @@
       "damage_bonus": "2",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.1TyH5hsRlBx4xYDs\" data-id=\"1TyH5hsRlBx4xYDs\" data-type=\"JournalEntry\">Roulette</a>&nbsp;Enemy</p></li><li><p>During your turn this weapon gain, <a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Chain</a><strong><span style=\"text-decoration: underline;\">&nbsp;5</span></strong></p></li></ul>",
+      "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.1TyH5hsRlBx4xYDs\" data-id=\"1TyH5hsRlBx4xYDs\" data-type=\"JournalEntry\">Roulette</a>&nbsp;Enemy</p></li><li><p>During your turn this weapon gain, <a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Combo</a><strong><span style=\"text-decoration: underline;\">&nbsp;5</span></strong></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

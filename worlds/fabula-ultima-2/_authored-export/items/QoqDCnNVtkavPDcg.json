@@ -35,7 +35,7 @@
       "cost": "4 Adoration",
       "damage_bonus": "0",
       "defense_target_type": "def",
-      "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Chain</a><strong><span style=\"text-decoration: underline;\">&nbsp;3</span></strong></p></li></ul><p>Perform a <strong>Free Attack </strong>on the target with a <a class=\"content-link\" data-uuid=\"JournalEntry.10LjF01NAYNKpRvn\" data-id=\"10LjF01NAYNKpRvn\" data-type=\"JournalEntry\">Melee</a>&nbsp;Weapon you have equipped 3 times, these attack do not include <strong>HR </strong>in its damage and must target the same creature</p>",
+      "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Combo</a><strong><span style=\"text-decoration: underline;\">&nbsp;3</span></strong></p></li></ul><p>Perform a <strong>Free Attack </strong>on the target with a <a class=\"content-link\" data-uuid=\"JournalEntry.10LjF01NAYNKpRvn\" data-id=\"10LjF01NAYNKpRvn\" data-type=\"JournalEntry\">Melee</a>&nbsp;Weapon you have equipped 3 times, these attack do not include <strong>HR </strong>in its damage and must target the same creature</p>",
       "details_roller": "Show",
       "duration": "Instantaneous",
       "effect_table": {

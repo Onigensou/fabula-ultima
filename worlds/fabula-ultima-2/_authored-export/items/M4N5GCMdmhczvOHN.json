@@ -31,7 +31,7 @@
       "cost": "20 MP",
       "damage_bonus": "10",
       "defense_target_type": "mdef",
-      "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Chain</a><strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></p></li></ul><p>Hurl two fireball at the enemies, deals <strong>【HR + 10】</strong><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a>&nbsp;damage</p>",
+      "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Combo</a><strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></p></li></ul><p>Hurl two fireball at the enemies, deals <strong>【HR + 10】</strong><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a>&nbsp;damage</p>",
       "duration": "Instantaneous",
       "heroic_requirement": "",
       "isCheck": true,

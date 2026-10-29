@@ -132,7 +132,7 @@
     "container": "Qvpvcl0RlEtn4sSd",
     "props": {
       "cost": "",
-      "description": "<ul><li><p>If you didn't made any attack since last round, Your next attack with this weapon gain <strong>+3 accuracy check</strong> and <a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Chain</a><strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></p></li></ul>",
+      "description": "<ul><li><p>If you didn't made any attack since last round, Your next attack with this weapon gain <strong>+3 accuracy check</strong> and <a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Combo</a><strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></p></li></ul>",
       "effect_table": {
         "0": {
           "ae_duplicate_mode": "replace",
@@ -211,7 +211,7 @@
           "reaction_trigger": "turn_end"
         }
       },
-      "skill_description": "<ul><li><p>If you didn't made any attack since last round, Your next attack with this weapon gain <strong>+3 accuracy check</strong> and <a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Chain</a><strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></p></li></ul>",
+      "skill_description": "<ul><li><p>If you didn't made any attack since last round, Your next attack with this weapon gain <strong>+3 accuracy check</strong> and <a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Combo</a><strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></p></li></ul>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "",
