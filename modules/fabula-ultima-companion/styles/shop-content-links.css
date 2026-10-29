@@ -39,9 +39,14 @@
   background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/10_SAM/way_of_the_samurai.png") center/contain no-repeat;
 }
 .fu-preview-desc a.content-link[data-uuid="JournalEntry.noUOPxPoZq65yYxV"]::before,
-.fu-skill-desc   a.content-link[data-uuid="JournalEntry.noUOPxPoZq65yYxV"]::before { /* Chain */
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.noUOPxPoZq65yYxV"]::before { /* Combo (the original "Chain") */
   content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
   background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/14_SMN/gouge.png") center/contain no-repeat;
+}
+.fu-preview-desc a.content-link[data-uuid="JournalEntry.ChnStrikeKeyw0rd"]::before,
+.fu-skill-desc   a.content-link[data-uuid="JournalEntry.ChnStrikeKeyw0rd"]::before { /* Chain (one card, N strikes) */
+  content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 3px;
+  background: url("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill Icon/FFXIVIcons Battle(PvE)/09_NIN/dream_within_a_dream.png") center/contain no-repeat;
 }
 .fu-preview-desc a.content-link[data-uuid="JournalEntry.YojfVwJv8ABa45c6"]::before,
 .fu-skill-desc   a.content-link[data-uuid="JournalEntry.YojfVwJv8ABa45c6"]::before { /* Exploit */

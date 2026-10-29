@@ -419,6 +419,15 @@ export function ensureStyles() {
       white-space: nowrap;
     }
     .fud-bf-card .fud-bf-subtitle i.fa-solid { margin-right: 4px; }
+    /* Chain N — strikes that follow the one this card shows. */
+    .fud-bf-card .fud-bf-chain-badge {
+      display: inline-flex; align-items: center; gap: 4px; margin-left: 8px;
+      padding: 1px 8px 2px; border-radius: 999px; white-space: nowrap;
+      font-size: 12px; font-weight: 700; letter-spacing: .4px; color: #3a2a12;
+      background: linear-gradient(180deg, #e9cf8f, #c9a45e);
+      box-shadow: inset 0 0 0 1px rgba(90, 60, 20, .55), 0 1px 0 rgba(0, 0, 0, .25);
+      cursor: help; vertical-align: middle;
+    }
 
     .fud-bf-card fieldset.fud-bf-section {
       border: 1px solid var(--fud-stroke, #7a6a55);
@@ -5670,6 +5679,8 @@ export function composeActionCardObject({ kind, payload }) {
 const ACTION_CARD_RENDER_KEYS = [
   "attacker", "weapon", "targets", "roll", "damage", "perTargetResults",
   "attackMode", "passIndex", "totalPasses",
+  // Chain N (chain-plan.js): { count, mode, strikeTargets? } — the header badge.
+  "chain",
   // Guard / Study / Hinder / Item:
   "coverTarget", "target", "tier", "previousBest", "improved", "dl", "success",
   "itemCandidates", "ip",
@@ -7314,6 +7325,24 @@ function buildAutoConfirmVetoHTML(autoConfirm) {
   `;
 }
 
+// Chain N badge beside the card title: the card shows strike 1; the badge says
+// how many strikes follow. Random mode lists who each strike was drawn onto.
+function chainBadgeHTML(chain, targets) {
+  try {
+    const n = Number(chain?.count) || 0;
+    if (n < 2) return "";
+    let tip = `Chain ${n}: ${n} strikes on one card — each makes its own Accuracy Check and deals its own damage.`;
+    if (Array.isArray(chain.strikeTargets) && chain.strikeTargets.length) {
+      const nameOf = new Map((Array.isArray(targets) ? targets : []).map((t) => [t?.tokenUuid, t?.name ?? "?"]));
+      const counts = new Map();
+      for (const list of chain.strikeTargets) for (const u of list ?? []) counts.set(u, (counts.get(u) ?? 0) + 1);
+      tip += ` Strikes: ${[...counts].map(([u, c]) => `${nameOf.get(u) ?? "?"} ×${c}`).join(", ")}.`;
+    }
+    const mode = chain.mode === "random" ? " · Random" : chain.mode === "pick" ? " · Pick" : "";
+    return `<span class="fud-bf-chain-badge" title="${escapeHtml(tip)}"><i class="fa-solid fa-burst" aria-hidden="true"></i>Chain ×${n}${mode}</span>`;
+  } catch { return ""; }
+}
+
 function assembleActionCardRoot({ card, cardReactions, rootId, payload = null, kind = null }) {
   const list = Array.isArray(cardReactions) ? cardReactions : [];
   const askPassives = list.filter((p) => p?.mode === "ask" && p?.available !== false);
@@ -7347,6 +7376,7 @@ function assembleActionCardRoot({ card, cardReactions, rootId, payload = null, k
         <div class="fud-bf-title-row">
           ${card.titleIcon ?? ""}
           <span class="fud-bf-title">${escapeHtml(card.titleText)}</span>
+          ${chainBadgeHTML(payload?.chain ?? null, payload?.targets ?? null)}
         </div>
         <div class="fud-bf-portrait-slot right">${card.portraits?.right ?? ""}</div>
         <!-- Inside the HEADER so it can dock on that element's bottom rule.
