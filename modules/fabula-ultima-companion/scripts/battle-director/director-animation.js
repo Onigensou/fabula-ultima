@@ -764,8 +764,9 @@ export async function previewChainAnimation({
     instanceId: `anim-studio-${foundry.utils.randomID()}`,
     count,
     beatMs: fallbackBeatMs(count),
-    strikes: Array.from({ length: count }, (_, index) => ({
-      index,
+    // 1-based, as in a real plan: strike 1 is index 1 (and its cascade slot).
+    strikes: Array.from({ length: count }, (_, i) => ({
+      index: i + 1,
       roll: null,
       outcomes: tokens.map((tokenUuid) => (miss ? { tokenUuid, kind: "miss" } : { tokenUuid, kind: "hit", ...hit })),
     })),
