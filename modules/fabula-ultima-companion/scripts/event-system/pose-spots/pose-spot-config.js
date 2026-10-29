@@ -6,8 +6,9 @@
  * scripts/event-system/pose-spots/pose-spot-config.js
  *
  * Adds a "Pose spot" section to a tile's Event Config tab:
- * - On / off, Sit or Sleep, Mirror, Size. Saved with the tile like the rest
- *   of the tab: flags.oni-event-system.poseSpot.{enabled, pose, mirror, scale}.
+ * - On / off, Sit or Sleep, Mirror, Size, and for a camp bed the member spot
+ *   it belongs to at bedtime. Saved with the tile like the rest of the tab:
+ *   flags.oni-event-system.poseSpot.{enabled, pose, mirror, scale, slot}.
  * - Placing it, by eye, with a token standing in for the character:
  *     Test pose on selected token  - the token shows the pose (with the Sit /
  *                                    Sleep, Mirror and Size in the form now),
@@ -87,6 +88,16 @@
         <label>Size</label>
         <div class="form-fields"><input type="number" name="${FIELD}.scale" data-dtype="Number" min="0.3" max="3" step="0.05" value="${Number(spot.scale) > 0 ? Number(spot.scale) : 1}"></div>
         <p class="notes">1 = the character's own size on this map. Nudge it when the seat was painted small or large.</p>
+      </div>
+      <div class="form-group">
+        <label>Bedtime: bed of</label>
+        <div class="form-fields">
+          <select name="${FIELD}.slot">
+            <option value="" ${!spot.slot ? "selected" : ""}>Nearest member</option>
+            ${[1, 2, 3, 4].map(n => `<option value="${n}" ${Number(spot.slot) === n ? "selected" : ""}>Member spot ${n}</option>`).join("")}
+          </select>
+        </div>
+        <p class="notes">Sleep only, in camp scenes. At bedtime the member who was placed on this member spot is laid here (spots in the order the room's member spots were set). A camp needs 4 sleep spots.</p>
       </div>
       <div class="form-group">
         <label>Seat / exit</label>

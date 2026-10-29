@@ -12,6 +12,7 @@ const CHECKS = [
   require("./checks/tiles"),
   require("./checks/tables"),
   require("./checks/automation"),
+  require("./checks/camp"),
 ];
 
 module.exports = { CHECKS };

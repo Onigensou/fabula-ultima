@@ -8,9 +8,13 @@
 //   Phase lock   Walking is for the roaming phases (Free Roam and the two
 //                ready lobbies). Activities, bonds, sleep, the rest-save
 //                ceremony and setting out lock it; a walk under way stops.
-//   Bedtime      When the camp goes to sleep, the primary GM puts every
-//                spawned member back on the spot they were placed on, facing
-//                the way they were placed (flags.<module>.campHome).
+//   Bedtime      When the camp goes to sleep, the primary GM lays every
+//                spawned member on their bed: the sleep pose spot paired with
+//                their member spot (event-system/pose-spots, poseSpot.slot;
+//                unpaired = the nearest free bed). They wake lying there and
+//                stand up at the bed's exit on their first move. A member with
+//                no bed goes back to the spot they were placed on, facing the
+//                way they were placed (flags.<module>.campHome).
 //   Pass-through Members walk through one another. Where two overlap, the one
 //                drawn in front fades, so the one behind stays visible.
 //                Drawn locally on every client; nothing is written.
@@ -75,10 +79,53 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Bedtime: members back on their spots (primary GM)
+  // Bedtime: members to bed, or back on their spots (primary GM)
   // ---------------------------------------------------------------------------
+  const dist2 = (a, b) => ((a.x - b.x) ** 2) + ((a.y - b.y) ** 2);
+
+  // tokenId -> { doc, spot } of the bed each member sleeps in. Bed N is member
+  // spot N's (poseSpot.slot); a member spot with no paired bed, or a member
+  // standing on no spot, takes the free bed nearest where they were placed.
+  function assignBeds(scene, members) {
+    const beds = window.oni?.PoseSpots?.sleepSpotsOf?.(scene) ?? [];
+    const out = new Map();
+    if (!beds.length) return out;
+    const g = scene.grid?.size ?? 100;
+    const spots = (scene.getFlag(MOD, CAMP.Members?.FLAG_SPOTS ?? "campMemberSpots") ?? [])
+      .filter(s => Number.isFinite(s?.x) && Number.isFinite(s?.y));
+    const free = new Set(beds);
+    const homeCentre = (t, home) => ({ x: home.x + ((t.width ?? 1) * g) / 2, y: home.y + ((t.height ?? 1) * g) / 2 });
+
+    const rest = [];
+    for (const { t, home } of members) {
+      const c = homeCentre(t, home);
+      let slot = 0, best = Infinity;
+      spots.forEach((s, i) => { const d = dist2(s, c); if (d < best) { best = d; slot = i + 1; } });
+      // Placed on the spot itself (spawned there), not just nearest to it.
+      const bed = (best <= (g / 2) ** 2) ? [...free].find(b => b.spot.slot === slot) : null;
+      if (bed) { free.delete(bed); out.set(t.id, bed); } else rest.push({ t, c });
+    }
+    for (const { t, c } of rest) {
+      let pick = null, best = Infinity;
+      for (const b of free) { const d = dist2(b.spot.exit ?? b.spot.place, c); if (d < best) { best = d; pick = b; } }
+      if (!pick) break;
+      free.delete(pick);
+      out.set(t.id, pick);
+    }
+    return out;
+  }
+
   async function sendMembersHome(scene) {
     if (!isPrimaryGM() || !scene || !isCampScene(scene)) return;
+
+    const members = [];
+    for (const t of scene.tokens) {
+      const home = t.getFlag(MOD, CAMP.Members?.FLAG_HOME ?? "campHome");
+      if (!t.getFlag(MOD, CAMP.Members?.FLAG_MEMBER ?? "campMember")) continue;
+      if (!Number.isFinite(home?.x) || !Number.isFinite(home?.y)) continue;
+      members.push({ t, home });
+    }
+    const beds = assignBeds(scene, members);
 
     const updates = [];
     for (const t of scene.tokens) {
@@ -98,15 +145,25 @@
       const facingDir = home.facingDir ?? "downLeft";
       if (t.getFlag(MOD, "facing") !== facing) u[`flags.${MOD}.facing`] = facing;
       if (t.getFlag(MOD, "facingDir") !== facingDir) u[`flags.${MOD}.facingDir`] = facingDir;
-      // Off any seat or bedroll they were resting on (event-system/pose-spots).
-      if (t.getFlag(MOD, "pose")) u[`flags.${MOD}.-=pose`] = null;
+      const bed = beds.get(t.id);
+      if (bed) {
+        // Into bed. Facing above is kept for when they get up.
+        const lie = window.oni.PoseSpots.poseUpdate(t, bed.doc, bed.spot);
+        delete u.x; delete u.y;
+        const pose = t.getFlag(MOD, "pose");
+        if (t._source.x !== lie.x || t._source.y !== lie.y) Object.assign(u, { x: lie.x, y: lie.y });
+        if (pose?.spotId !== bed.doc.id || pose?.pose !== "sleep") u[`flags.${MOD}.pose`] = lie[`flags.${MOD}.pose`];
+      } else if (t.getFlag(MOD, "pose")) {
+        // Off any seat or bedroll they were resting on (event-system/pose-spots).
+        u[`flags.${MOD}.-=pose`] = null;
+      }
       if (Object.keys(u).length > 1) updates.push(u);
     }
     if (!updates.length) return;
 
     try {
       await scene.updateEmbeddedDocuments("Token", updates, { animate: false, oniBypassGate: true });
-      console.debug(TAG, `${updates.length} member(s) back on their spots.`);
+      console.debug(TAG, `${updates.length} member(s) put to bed / back on their spots (${beds.size} in bed).`);
     } catch (e) {
       console.error(TAG, "Could not send members home:", e);
     }

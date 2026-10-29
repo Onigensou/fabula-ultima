@@ -9,7 +9,9 @@
  * - A pose spot is an event tile with flags.oni-event-system.poseSpot:
  *     { enabled, pose: "sit" | "sleep", mirror, scale,
  *       place: { x, y },   token CENTRE the character takes on the spot
- *       exit:  { x, y } }  token CENTRE they stand up at (optional)
+ *       exit:  { x, y },   token CENTRE they stand up at (optional)
+ *       slot }             sleep only: the camp member spot (1-4) whose member
+ *                          camp-walk.js lays here at bedtime (unset = nearest)
  *   A seat (log, bench, crate) or a bedroll, on a camp or a walk map.
  * - Walk up to it and a button appears over it ("Sit" / "Sleep"); keyboard
  *   Confirm works too (window.oni.Interact). The character takes the spot and
@@ -83,12 +85,38 @@
     const raw = tileDoc?.flags?.[ES_SCOPE]?.[SPOT_KEY];
     if (!raw?.enabled || !POSES[raw.pose]) return null;
     const pt = (p) => (Number.isFinite(p?.x) && Number.isFinite(p?.y)) ? { x: p.x, y: p.y } : null;
+    const slot = Number(raw.slot);
     return {
       pose: raw.pose,
       mirror: !!raw.mirror,
       scale: Number(raw.scale) > 0 ? Number(raw.scale) : 1,
       place: pt(raw.place),
-      exit: pt(raw.exit)
+      exit: pt(raw.exit),
+      // Sleep spots only: which camp member spot's member it is the bed of
+      // (1-4, the room's member spots in order). null = the nearest member.
+      slot: (raw.pose === "sleep" && Number.isInteger(slot) && slot >= 1 && slot <= 4) ? slot : null
+    };
+  }
+
+  // A scene's sleep spots, from the documents (bedtime runs on the primary
+  // GM, who may not be looking at the camp).
+  function sleepSpotsOf(scene) {
+    const out = [];
+    for (const doc of scene?.tiles ?? []) {
+      if (doc.hidden) continue;
+      const spot = spotOf(doc);
+      if (spot?.pose === "sleep" && spot.place) out.push({ doc, spot });
+    }
+    return out;
+  }
+
+  // The token update that puts a character on a spot in its pose.
+  function poseUpdate(tokenDoc, tileDoc, spot) {
+    const g = tokenDoc.parent?.grid?.size || canvas.dimensions?.size || 100;
+    return {
+      x: Math.round(spot.place.x - ((tokenDoc.width ?? 1) * g) / 2),
+      y: Math.round(spot.place.y - ((tokenDoc.height ?? 1) * g) / 2),
+      [`flags.${MODULE_ID}.${POSE_FLAG}`]: { spotId: tileDoc.id, pose: spot.pose, mirror: spot.mirror, scale: spot.scale }
     };
   }
 
@@ -593,7 +621,7 @@
   window.oni.PoseSpots = {
     installed: true,
     POSES, SPOT_KEY, POSE_FLAG, ES_SCOPE,
-    spotOf, sceneSpots, occupantOf, offeredSpots,
+    spotOf, sceneSpots, sleepSpotsOf, poseUpdate, occupantOf, offeredSpots,
     isPosed: (token) => !!poseOf(token?.document ?? token),
     take, standUp, beforeWalk,
     bathOf, bathRegions, enterBath, leaveBath, BATH_FLAG,
