@@ -2286,7 +2286,8 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
       broadcastStatusTick({ casterToken: ctx.reactorToken, name: carrier?.name });
     } catch (e) { warn("firePreAcceptedCandidate: status tick flash threw", e); }
   }
-  if (isAutoFireReactionMode(candidate.mode) && ctx.reactorToken && !hideCard && !statusTick) {
+  if (isAutoFireReactionMode(candidate.mode) && ctx.reactorToken && !hideCard && !statusTick
+      && chainShowsPassiveCard(director, ctx.reactorToken?.document?.uuid ?? ctx.reactorToken?.uuid ?? null, candidate)) {
     try {
       const { enqueuePassiveCard } = await import("./passive-card-ui/director-passive-card-ui.js");
       enqueuePassiveCard({
@@ -6673,7 +6674,28 @@ export function beginChainAeCoalesce(instanceId) {
   // An action that threw before its end leaves an entry behind; lookups are by
   // instance id, so a stale one never matches — just keep the map small.
   while (_chainAeCoalescers.size >= 8) _chainAeCoalescers.delete(_chainAeCoalescers.keys().next().value);
-  _chainAeCoalescers.set(instanceId, { pending: new Map() });
+  _chainAeCoalescers.set(instanceId, { pending: new Map(), cards: new Set() });
+}
+
+// The open Chain of the action resolving now, strike 1 included — or null.
+function chainCoalescerOfAction(director) {
+  if (!_chainAeCoalescers.size) return null;
+  const d = director ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.() ?? null;
+  const id = d?.ctx?.actionResult?._instanceId ?? null;
+  return id ? (_chainAeCoalescers.get(id) ?? null) : null;
+}
+
+// A passive that fires on every strike of a Chain shows its card ONCE per
+// token for the action: the first firing tells the table, and N identical
+// cards would only queue up behind it (~0.3 s each, stacked on the token).
+// The effect itself still applies every time. True = show it.
+function chainShowsPassiveCard(director, tokenUuid, candidate) {
+  const co = chainCoalescerOfAction(director);
+  if (!co?.cards) return true;
+  const key = `${tokenUuid ?? ""}|${candidate?.carrierUuid ?? candidate?.carrierName ?? ""}|${candidate?.rowKey ?? ""}`;
+  if (co.cards.has(key)) return false;
+  co.cards.add(key);
+  return true;
 }
 
 // The coalescer for a REPEAT strike's apply_ae, or null (strike 1, other actions).
