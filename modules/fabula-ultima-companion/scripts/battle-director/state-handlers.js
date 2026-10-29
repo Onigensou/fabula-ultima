@@ -646,14 +646,6 @@ async function resolveAction(director, ar, opts = {}) {
   const battleLogSink = [];
   ctx.battleLogSink = battleLogSink;
 
-  // 2c. Chain N whose strikes were not shown during ANIMATION (no animation
-  //     script, or one played from a chain step at RESOLVE): reveal them now on
-  //     the beat — before any status lands or any HP is written.
-  if (ar.chainPlan && !wasPresented(ar.chainPlan)) {
-    try { await presentChainWithoutAnimation(ar.chainPlan, { causeTokenUuid: ar.attacker?.tokenUuid ?? null }); }
-    catch (e) { warn("Skill resolve: Chain presentation threw", e); }
-  }
-
   // 3. Fire on_activate effect (pre-damage, no damage payload).
   //    Menu-picked invocations whose flat damage was LIFTED into the primary at
   //    COMPUTE (ar._damageViaProfile) apply that damage via the perTargetResults loop
@@ -720,6 +712,44 @@ async function resolveAction(director, ar, opts = {}) {
     } catch (e) { warn("Skill resolve: cost settlement threw", e); }
   }
   if (_chainAborted) return;
+
+  // 3c. Chain N whose strikes were not shown during ANIMATION (no animation
+  //     script, or one a chain step played at RESOLVE — which has reached its
+  //     damage moment by now): reveal them on the beat before any HP is written.
+  if (ar.chainPlan && !wasPresented(ar.chainPlan)) {
+    try { await presentChainWithoutAnimation(ar.chainPlan, { causeTokenUuid: ar.attacker?.tokenUuid ?? null }); }
+    catch (e) { warn("Skill resolve: Chain presentation threw", e); }
+  }
+
+  // 3d. Chain N: on-hit statuses apply on EVERY strike that lands (user rule
+  //     2026-10-29 — a % status gets N tries, a stacking one stacks). The
+  //     on_activate chain above ran once, against every target a strike hit;
+  //     its status-on-hit rows run again for each further landed strike, aimed
+  //     at that one target. Each row keeps its own chance roll and stacking mode.
+  if (ar.chainPlan) {
+    try {
+      const rows = chainOnHitStatusRows(ctx, skill);
+      if (rows.length) {
+        for (const [tok, t] of Object.entries(ar.chainPlan.perTarget ?? {})) {
+          const extra = Math.max(0, (t?.hitsLanded ?? 0) - 1);
+          const hitStrikes = (t?.landedStrikes ?? []).filter((s) => !s.pierce);
+          for (let i = 1; i <= extra; i++) {
+            const strike = hitStrikes[i]?.index ?? (i + 1);
+            const subCtx = {
+              ...ctx,
+              hitActionTargetUuids: [tok],
+              resolvedTargets: new Map(),
+              payload: { ...(ctx.payload ?? {}), hitTargets: [tok], chainStrike: strike, chainStrikes: ar.chainPlan.count, chainRepeat: true },
+            };
+            for (const row of rows) {
+              try { await SE().applyEffectByLabel(String(row.effect_label).trim(), subCtx); }
+              catch (e) { warn(`Skill resolve: Chain on-hit status "${row.effect_label}" threw`, e); }
+            }
+          }
+        }
+      }
+    } catch (e) { warn("Skill resolve: Chain on-hit statuses threw", e); }
+  }
 
   // 4. Apply damage per target (mirrors Attack RESOLVE) + fire
   //    post_damage_effect_ref with per-target payload so HP_DEALT etc.
@@ -1788,6 +1818,37 @@ function chainStrikeLines(ct, { finalValue = 0, valueDirection = "loss", shieldA
       pierce: !!s.pierce, chainStrike: s.index, chainRepeat: i > 0,
     };
   });
+}
+
+// The status-on-hit rows of an action's on_activate chain: `apply_ae` rows aimed
+// at `hit_action_targets`, reached from the entry through `chain` steps. A Chain
+// re-runs these per extra landed strike. Conservative: a chain step with its
+// own condition (or a `chance` step) is not walked, so a status that was gated
+// off on the first pass is never forced on by a re-run.
+function chainOnHitStatusRows(ctx, skill) {
+  const table = ctx?.runtimeEffectTable ?? skill?.system?.props?.effect_table ?? {};
+  const rows = Object.values(table ?? {}).filter((r) => r && !r.$deleted);
+  const byLabel = new Map(rows.map((r) => [String(r.effect_label ?? "").trim(), r]));
+  const entry = String(ctx?.firePoints?.on_activate_effect_ref ?? skill?.system?.props?.on_activate_effect_ref ?? "").trim();
+  const out = [];
+  const seen = new Set();
+  const stack = entry ? [entry] : [];
+  while (stack.length) {
+    const label = stack.pop();
+    if (!label || seen.has(label)) continue;
+    seen.add(label);
+    const row = byLabel.get(label);
+    if (!row) continue;
+    const kind = String(row.effect_kind ?? "").trim();
+    if (kind === "chain") {
+      if (String(row.condition_formula ?? "").trim()) continue;
+      const steps = String(row.chain_steps ?? "").split(/[,\n]/).map((s) => s.trim()).filter(Boolean);
+      for (let i = steps.length - 1; i >= 0; i--) stack.push(steps[i]);
+    } else if (kind === "apply_ae" && String(row.target_ref ?? "").trim() === "hit_action_targets") {
+      out.push(row);
+    }
+  }
+  return out;
 }
 
 // Each strike that MISSED this target, with its own roll — a Chain reports
