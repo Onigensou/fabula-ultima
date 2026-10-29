@@ -28,8 +28,8 @@ const DATA = [
   // The ORIGINAL "Chain" (perform the action N times, any targets) was renamed
   // "Combo" on 2026-10-29 — a placeholder name; its journal + content links keep
   // the old uuid. "Chain" now names the engine's one-card multi-strike keyword
-  // (`chain N` in action_keywords, chain-plan.js). Its uuid has no journal yet:
-  // create JournalEntry "Chain" with this _id (keepId) to make it linkable.
+  // (`chain N` in action_keywords, chain-plan.js); its journal is created by
+  // tools/safe-edit/bin/_create-chain-keyword-journal.js.
   ["Combo",            "noUOPxPoZq65yYxV", SK + "14_SMN/gouge.png",              "keyword"],
   ["Chain",            "ChnStrikeKeyw0rd", SK + "09_NIN/dream_within_a_dream.png", "keyword"],
   ["Overflow",         "NUaxIAIPUu5Qnk8l", SK + "15_RDM/verflare.png",           "keyword"],
