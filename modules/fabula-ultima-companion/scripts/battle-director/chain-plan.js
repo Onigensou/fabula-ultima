@@ -401,4 +401,51 @@ export function chainHitsView(plan, rows = []) {
   });
 }
 
+// Each strike that MISSED this target, with its own roll — a Chain reports
+// misses per strike (its first is a full event, the rest are repeats).
+export function chainMissesOf(plan, row) {
+  const out = [];
+  for (const s of plan?.strikes ?? []) {
+    const o = (s.outcomes ?? []).find((x) => x.tokenUuid === row?.tokenUuid);
+    if (!o || o.kind !== "miss") continue;
+    out.push({
+      total: Number(s.roll?.total ?? 0) || 0, isCrit: !!s.roll?.isCrit, isFumble: !!s.roll?.isFumble,
+      defense: o.defense ?? row?.defense ?? 0, chainStrike: s.index,
+    });
+  }
+  return out;
+}
+
+// ── Separate Chain: everyone else sees ONE action (user rule, 2026-10-29) ────
+// The move's own effects follow its strikes; every other creature's passives
+// (Absorb MP, counters, gear, statuses' reactions) see one combined result per
+// target: HIT if any strike landed, a MISS only if every strike missed, the
+// strikes' total as the damage, a crit if any strike crit.
+
+// A target's one ledger / roll line: the total as the single write took it,
+// the best landed roll, crit if any strike crit.
+export function chainCombinedLine(ct, { finalValue = 0, valueDirection = "loss", shieldAbsorbed = 0 } = {}, ar = null) {
+  const landed = Array.isArray(ct?.landedStrikes) ? ct.landedStrikes : [];
+  const best = (k) => (landed.length ? Math.max(...landed.map((s) => Number(s?.[k]) || 0)) : (Number(ar?.roll?.[k]) || 0));
+  return {
+    finalValue, valueDirection, shieldAbsorbed,
+    hr: best("hr"), total: best("total"),
+    isCrit: (ct?.crits ?? 0) > 0, isFumble: false,
+    pierce: (ct?.landed ?? 0) > 0 && (ct?.hitsLanded ?? 0) === 0,
+    chainStrike: null, chainRepeat: false,
+  };
+}
+
+// A target is MISSED by a separate Chain only when every strike aimed at it
+// missed — then it is one miss, carrying the strike that came closest. A strike
+// that landed or was blocked (Ninja Log: the attack hit for 0) means it was hit.
+export function chainCombinedMissOf(plan, row) {
+  const t = plan?.perTarget?.[row?.tokenUuid];
+  if (!t || t.landed > 0 || t.blocked > 0 || !(t.missed > 0)) return [];
+  const misses = chainMissesOf(plan, row);
+  if (!misses.length) return [];
+  const closest = misses.reduce((a, b) => ((Number(b.total) || 0) > (Number(a.total) || 0) ? b : a));
+  return [{ ...closest, chainStrike: null, strikesMissed: t.missed }];
+}
+
 export const _test = { zeroingOps, withoutZeroingOps, evaluateRow, planOneRoll };

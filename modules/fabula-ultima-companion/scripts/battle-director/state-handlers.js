@@ -110,7 +110,7 @@ import { isAutopilotEnabled, isAiControlledTurn, isAiControlledCombatant, autopi
 import { isSummonAutopilotEnabled, isAutomatedSummon, isAutomatedSummonTurn, summonVetoMs, isGuestActor } from "./summon-autopilot.js";
 import { isBattlefieldObject } from "./battlefield-object.js";
 import { resolveAnimationSpec, playDirectorAnimation, prestageAnimation } from "./director-animation.js";
-import { chainSpecFor, drawChainTargets, narrowToTargets, buildChainPlan, chainTargetOf, chainHitsView } from "./chain-plan.js";
+import { chainSpecFor, drawChainTargets, narrowToTargets, buildChainPlan, chainTargetOf, chainHitsView, chainMissesOf, chainCombinedLine, chainCombinedMissOf } from "./chain-plan.js";
 import { wasPresented, presentChainWithoutAnimation } from "./chain-presenter.js";
 import { beginHitCounter, endHitCounter } from "./hit-counter.js";
 import { emitBattlerPose } from "./battler-pose.js";
@@ -713,6 +713,13 @@ async function resolveAction(director, ar, opts = {}) {
   }
   if (_chainAborted) return;
 
+  // "The move" for a separate Chain's reaction scoping (dispatchReactionMenu):
+  // reaction rows on the acting item hear every strike; everyone else's hear one
+  // combined event per target. Set before the on-hit re-runs (3d) so the status
+  // coalescer knows whose rows a repeated status event is for.
+  const chainOwner = ar.chainPlan && !ar.chainPlan.single ? { actorId: casterActor?.id ?? null, itemId: skill?.id ?? null } : null;
+  if (chainOwner) SE().setChainAeOwner?.(ar._instanceId ?? null, chainOwner);
+
   // 3c. Chain N whose strikes were not shown during ANIMATION (no animation
   //     script, or one a chain step played at RESOLVE — which has reached its
   //     damage moment by now): reveal them on the beat before any HP is written.
@@ -975,50 +982,57 @@ async function resolveAction(director, ar, opts = {}) {
         // creature_gain_resource on the creature whose HP/MP just changed (cause:
         // "damage"). Queued (post-save) + supervised. Part 2's crisis reactor
         // listens here (resource=hp); any "when my <resource> changes" skill too.
-        SE().fireResourceChangeTrigger({
-          director, actor: targetActor, tokenUuid: r.tokenUuid,
-          resource: valueType, direction: _ln.valueDirection, amount: _ln.finalValue,
-          chainStrike: _ln.chainStrike, chainStrikes: _ln.chainStrike ? chainPlan.count : null, chainRepeat: _ln.chainRepeat,
-          cause: "damage",
-          source: { actorUuid: ar.attackerActorRef, tokenUuid: ar.attacker?.tokenUuid ?? null },
-          // Itemized identity + "how it changed" context (the attack site has the
-          // full action result; the tick site can't supply weapon/roll fields).
-          // The TRUE element, never the "healing" display label. An ABSORB is
-          // still a bolt event — the affinity only decided which direction the
-          // HP moved. Collapsing it to "healing" here threw away the one field
-          // an absorb listener needs, so every `creature_gain_resource` row
-          // gated on TRIGGER_DAMAGE_IS_<ELEMENT> read 0 and could never fire
-          // (Lightning Prism's Overcharge, Skizzik's Chain Reaction,
-          // Stitched-Up Jacket's "whether it lands or you absorb it").
-          // The effect/tick path (skill-effects.fireResourceChangeTrigger at the
-          // deal_damage site) has always passed the raw element through — this
-          // is the attack path catching up, not a new convention. On a LOSS the
-          // two expressions are identical, so the loss path is unchanged.
-          // A weapon ATTACK carries no top-level `damageType` — its element lives
-          // on `ar.damage.element` — so without the fallback every Attack-caused
-          // resource event read element null and no TRIGGER_DAMAGE_IS_<ELEMENT>
-          // gate could match a basic attack (Chameleon Armor, Icarus Wing).
-          element: ar.damageType ?? ar.damage?.element ?? null,
+        // A separate Chain reports ONE loss per target — the total, on its last
+        // line — so everyone else's passives (Absorb MP) see one action; the
+        // move's own post_damage effect above still runs per strike.
+        const _lg = !ct ? _ln : (_ln === _lines[_lines.length - 1] ? chainCombinedLine(ct, { finalValue, valueDirection, shieldAbsorbed: Number(dmgRes.shieldAbsorbed) || 0 }, ar) : null);
+        if (_lg) {
+          SE().fireResourceChangeTrigger({
+            director, actor: targetActor, tokenUuid: r.tokenUuid,
+            resource: valueType, direction: _lg.valueDirection, amount: _lg.finalValue,
+            chainStrike: _lg.chainStrike, chainStrikes: _lg.chainStrike ? chainPlan.count : null, chainRepeat: _lg.chainRepeat,
+            cause: "damage",
+            source: { actorUuid: ar.attackerActorRef, tokenUuid: ar.attacker?.tokenUuid ?? null },
+            // Itemized identity + "how it changed" context (the attack site has the
+            // full action result; the tick site can't supply weapon/roll fields).
+            // The TRUE element, never the "healing" display label. An ABSORB is
+            // still a bolt event — the affinity only decided which direction the
+            // HP moved. Collapsing it to "healing" here threw away the one field
+            // an absorb listener needs, so every `creature_gain_resource` row
+            // gated on TRIGGER_DAMAGE_IS_<ELEMENT> read 0 and could never fire
+            // (Lightning Prism's Overcharge, Skizzik's Chain Reaction,
+            // Stitched-Up Jacket's "whether it lands or you absorb it").
+            // The effect/tick path (skill-effects.fireResourceChangeTrigger at the
+            // deal_damage site) has always passed the raw element through — this
+            // is the attack path catching up, not a new convention. On a LOSS the
+            // two expressions are identical, so the loss path is unchanged.
+            // A weapon ATTACK carries no top-level `damageType` — its element lives
+            // on `ar.damage.element` — so without the fallback every Attack-caused
+            // resource event read element null and no TRIGGER_DAMAGE_IS_<ELEMENT>
+            // gate could match a basic attack (Chameleon Armor, Icarus Wing).
+            element: ar.damageType ?? ar.damage?.element ?? null,
 
-          originLabel: ar.skillName ?? skill?.name ?? null,  // the attack/skill that dealt it
-          originUuid: skill?.uuid ?? null,
-          weaponType: ar.weapon?.weaponType ?? null,
-          weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
-          actionKind: view?.kind ?? null,
-          actionIntent: ar.actionIntent ?? null,
-          isCrit: _ln.isCrit,
-          isFumble: _ln.isFumble,
-          accuracyTotal: _ln.total ?? null,
-          highRoll: _ln.hr ?? null,
-          pierce: _ln.pierce,
-          // Tag-provenance of any AE damage-increase actually applied to THIS
-          // hit's element (element-gated) — backs AFFECTED_BY_<TAG>. The
-          // effective element is the per-hit reaction override if any, else the
-          // action element. Only on an HP loss; heals never carry a hex bump.
-          appliedEffectTags: _ln.valueDirection === "loss"
-            ? SE().collectAppliedIncreaseTags(targetActor, r.element ?? ar.damageType)
-            : [],
-        });
+            originLabel: ar.skillName ?? skill?.name ?? null,  // the attack/skill that dealt it
+            originUuid: skill?.uuid ?? null,
+            weaponType: ar.weapon?.weaponType ?? null,
+            weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
+            actionKind: view?.kind ?? null,
+            actionIntent: ar.actionIntent ?? null,
+            isCrit: _lg.isCrit,
+            isFumble: _lg.isFumble,
+            accuracyTotal: _lg.total ?? null,
+            highRoll: _lg.hr ?? null,
+            pierce: _lg.pierce,
+            // Tag-provenance of any AE damage-increase actually applied to THIS
+            // hit's element (element-gated) — backs AFFECTED_BY_<TAG>. The
+            // effective element is the per-hit reaction override if any, else the
+            // action element. Only on an HP loss; heals never carry a hex bump.
+            appliedEffectTags: _lg.valueDirection === "loss"
+              ? SE().collectAppliedIncreaseTags(targetActor, r.element ?? ar.damageType)
+              : [],
+          });
+
+        }
         }
 
         // Drain keyword (Tinkerer Vampire infusion / Keyword Repository): the
@@ -1290,21 +1304,29 @@ async function resolveAction(director, ar, opts = {}) {
       }
 
       for (const r of struck) {
-        // A Chain fires this once per landed strike, each with ITS roll —
-        // on-hit keywords and riders apply every strike (user rule 2026-10-29);
-        // strike 2+ events fire automatic reactions only (dispatchReactionMenu).
+        // A separate Chain fires this once per landed strike, each with ITS
+        // roll, for the move's OWN rows (its on-hit riders apply every strike;
+        // strike 2+ fire automatic reactions only) — and ONCE for this target,
+        // with the combined result, for everyone else's (user rule 2026-10-29).
+        // dispatchReactionMenu scopes them: chainOwnOnly / chainExcludeOwn.
+        const _ctD = chainPlan ? chainTargetOf(chainPlan, r.tokenUuid) : null;
         const _strikeRolls = chainPlan
-          ? (chainTargetOf(chainPlan, r.tokenUuid)?.landedStrikes ?? []).map((s, i) => ({
-              total: s.total ?? 0, hr: s.hr ?? 0, isCrit: !!s.isCrit, isFumble: !!s.isFumble,
-              defense: s.defense ?? r.defense, chainStrike: s.index, chainRepeat: i > 0,
-            }))
+          ? [
+              (() => { const c = chainCombinedLine(_ctD, {}, ar); return { total: c.total, hr: c.hr, isCrit: c.isCrit, isFumble: false, defense: r.defense, chainStrike: null, chainRepeat: false, combined: true }; })(),
+              ...(_ctD?.landedStrikes ?? []).map((s, i) => ({
+                total: s.total ?? 0, hr: s.hr ?? 0, isCrit: !!s.isCrit, isFumble: !!s.isFumble,
+                defense: s.defense ?? r.defense, chainStrike: s.index, chainRepeat: i > 0,
+              })),
+            ]
           : [{ total: ar.roll?.total ?? 0, hr: ar.roll?.hr ?? 0, isCrit: !!ar.roll?.isCrit, isFumble: !!ar.roll?.isFumble, defense: r.defense, chainStrike: null, chainRepeat: false }];
         for (const _sr of _strikeRolls) {
         queuePostResolveTrigger(director, {
           casterActor,
           trigger: "creature_deals_damage",
           payload: {
-            ...(_sr.chainStrike ? { chainStrike: _sr.chainStrike, chainStrikes: chainPlan.count, chainRepeat: _sr.chainRepeat } : {}),
+            ...(_sr.combined
+              ? { chainExcludeOwn: chainOwner, chainStrikes: chainPlan.count, strikesLanded: _ctD?.hitsLanded ?? 0 }
+              : _sr.chainStrike ? { chainOwnOnly: chainOwner, chainStrike: _sr.chainStrike, chainStrikes: chainPlan.count, chainRepeat: _sr.chainRepeat } : {}),
             targets: allTargetUuids,
             targetTokenUuids: allTargetUuids,
             hitTargets: struckTokenUuids,
@@ -1569,11 +1591,12 @@ async function resolveAction(director, ar, opts = {}) {
     const seenMissActors = new Set();
     for (const r of hits) {
       if (!r) continue;
-      // A Chain reports each strike that MISSED this target, with that strike's
-      // own roll — even when other strikes landed. Its first miss is a full
-      // event; later ones are repeats (automatic reactions only).
+      // A separate Chain MISSED this target only if every strike aimed at it
+      // missed — one event, carrying the closest strike. A target any strike
+      // hit was hit (user rule 2026-10-29). These reactions are the missed
+      // creature's own, never the move's, so there is nothing per-strike here.
       const _misses = chainPlan
-        ? chainMissesOf(chainPlan, r)
+        ? chainCombinedMissOf(chainPlan, r)
         : ((r.hit || r.pierceMiss) ? [] : [{ total: accuracyTotal, isCrit: !!ar.roll?.isCrit, isFumble: !!ar.roll?.isFumble, defense: Number(r.defense ?? 0) || 0, chainStrike: null }]);
       if (!_misses.length) continue;                         // only genuine misses
       const dedupKey = r.actorUuid ?? r.tokenUuid;
@@ -1632,7 +1655,7 @@ async function resolveAction(director, ar, opts = {}) {
           isCrit:       _m.isCrit,
           isFumble:     _m.isFumble,
           checkTotal:   _missTotal,   // ATTACK_CHECK_RESULT reads this key only
-          ...(_m.chainStrike ? { chainStrike: _m.chainStrike, chainStrikes: chainPlan.count, chainRepeat: _mi > 0 } : {}),
+          ...(_m.strikesMissed ? { chainStrikes: chainPlan.count, strikesMissed: _m.strikesMissed } : {}),
         },
       });
       }
@@ -1862,21 +1885,6 @@ function chainOnHitStatusRows(ctx, skill) {
     } else if (kind === "apply_ae" && String(row.target_ref ?? "").trim() === "hit_action_targets") {
       out.push(row);
     }
-  }
-  return out;
-}
-
-// Each strike that MISSED this target, with its own roll — a Chain reports
-// misses per strike (its first is a full event, the rest are repeats).
-function chainMissesOf(plan, row) {
-  const out = [];
-  for (const s of plan?.strikes ?? []) {
-    const o = (s.outcomes ?? []).find((x) => x.tokenUuid === row?.tokenUuid);
-    if (!o || o.kind !== "miss") continue;
-    out.push({
-      total: Number(s.roll?.total ?? 0) || 0, isCrit: !!s.roll?.isCrit, isFumble: !!s.roll?.isFumble,
-      defense: o.defense ?? row?.defense ?? 0, chainStrike: s.index,
-    });
   }
   return out;
 }

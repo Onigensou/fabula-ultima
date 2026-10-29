@@ -6676,7 +6676,14 @@ export function beginChainAeCoalesce(instanceId) {
   // An action that threw before its end leaves an entry behind; lookups are by
   // instance id, so a stale one never matches — just keep the map small.
   while (_chainAeCoalescers.size >= 8) _chainAeCoalescers.delete(_chainAeCoalescers.keys().next().value);
-  _chainAeCoalescers.set(instanceId, { pending: new Map(), cards: new Set() });
+  _chainAeCoalescers.set(instanceId, { pending: new Map(), cards: new Set(), statuses: new Set(), owner: null });
+}
+
+// Who "the move" is ({ actorId, itemId }) — its rows hear every strike's events;
+// everyone else's hear each creature's status once (creature_status_applied).
+export function setChainAeOwner(instanceId, owner) {
+  const co = instanceId ? _chainAeCoalescers.get(instanceId) : null;
+  if (co) co.owner = owner ?? null;
 }
 
 // The open Chain of the action resolving now, strike 1 included — or null.
@@ -7574,15 +7581,29 @@ async function applyApplyAeEffect(row, ctx) {
         if (!Array.isArray(director.ctx._postResolveTriggers)) director.ctx._postResolveTriggers = [];
         const causeActorUuid = ctx.appliedByActorUuid ?? ctx.reactorActor?.uuid ?? null;
         const causeTokenUuid = ctx.appliedByTokenUuid ?? ctx.reactorToken?.uuid ?? null;
+        // A separate Chain re-applies its statuses strike by strike. Everyone
+        // else's "a status landed" passives hear each creature's status ONCE per
+        // action; the move's repeats reach only its own rows (chainOwnOnly). A
+        // status from any other source is never held back.
+        const chainCo = chainCoalescerOfAction(director);
+        const fromMoveStrike = !!(ctx.payload?.chainRepeat || ctx.payload?.chainOwnOnly);
         for (const a of applied) {
           if (!a || a.removed || !a.actorUuid) continue;
           const subjActor = await fromUuid(a.actorUuid).catch(() => null);
           if (!subjActor) continue;
           const subjTok = subjActor.getActiveTokens?.()?.[0]?.document ?? null;
+          let chainScope = null;
+          if (chainCo?.statuses) {
+            const key = `${a.actorUuid}|${statusName}`;
+            if (fromMoveStrike && chainCo.statuses.has(key)) chainScope = chainCo.owner ? { chainOwnOnly: chainCo.owner } : "drop";
+            else chainCo.statuses.add(key);
+          }
+          if (chainScope === "drop") continue;
           director.ctx._postResolveTriggers.push({
             casterActor: subjActor,
             trigger: "creature_status_applied",
             payload: {
+              ...(chainScope ?? {}),
               status: statusName,
               // The status AE's tags (STATUS_HAS_TAG_<X>) — lets a row key off a
               // FAMILY of statuses whose names differ (every Arcanum's merge AE

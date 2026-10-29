@@ -13,6 +13,7 @@
 const {
   chainSpecFor, drawChainTargets, narrowToTargets, strikesPerTarget,
   isBlockingOverride, rebaseAccuracyOverride, chainHitsView, _test,
+  chainCombinedLine, chainCombinedMissOf, chainMissesOf,
 } = await import("./chain-plan.js");
 const { makeRng } = await import("./chain-strikes.js");
 
@@ -101,6 +102,35 @@ eq("row: element falls back to the action's", ev({ hit: true, damage: 5 }, { dam
   eq("one roll: Fjord's single MISS", plan.strikes.map((s) => s.outcomes.find((o) => o.tokenUuid === "B").kind), ["miss", "skip", "skip"]);
   eq("one roll: no Opportunity of its own (the card's crit is the card's)", [plan.attackerOpportunity, plan.firstCritStrike], [false, null]);
   eq("one roll: element from the action", plan.strikes[0].outcomes[0].element, "ice");
+}
+
+// ── separate Chain: everyone else sees ONE combined result ───────────────────
+{
+  const ct = { tokenUuid: "A", landed: 2, hitsLanded: 2, crits: 1, landedStrikes: [
+    { index: 1, total: 11, hr: 5 }, { index: 3, total: 14, hr: 6, isCrit: true },
+  ] };
+  const line = chainCombinedLine(ct, { finalValue: 23, valueDirection: "loss", shieldAbsorbed: 4 }, { roll: { total: 9, hr: 3 } });
+  eq("combined: the total as written, the best landed roll, crit if any",
+    [line.finalValue, line.shieldAbsorbed, line.total, line.hr, line.isCrit, line.pierce, line.chainStrike, line.chainRepeat],
+    [23, 4, 14, 6, true, false, null, false]);
+  eq("combined: pierce only when no strike truly hit",
+    chainCombinedLine({ landed: 1, hitsLanded: 0, landedStrikes: [{ total: 7, hr: 2 }] }).pierce, true);
+
+  const plan = (aKinds) => ({
+    perTarget: { A: {
+      landed: aKinds.filter((k) => k === "hit").length,
+      missed: aKinds.filter((k) => k === "miss").length,
+      blocked: aKinds.filter((k) => k === "block").length,
+    } },
+    strikes: aKinds.map((kind, i) => ({ index: i + 1, roll: { total: [9, 12, 7][i] ?? 5 }, outcomes: [{ tokenUuid: "A", kind, defense: 13 }] })),
+  });
+  const row = { tokenUuid: "A", defense: 13 };
+  eq("misses: every missed strike, with its roll", chainMissesOf(plan(["miss", "hit", "miss"]), row).map((m) => [m.chainStrike, m.total]), [[1, 9], [3, 7]]);
+  eq("combined miss: hit / miss / hit is a HIT — no miss event", chainCombinedMissOf(plan(["hit", "miss", "hit"]), row), []);
+  const all = chainCombinedMissOf(plan(["miss", "miss", "miss"]), row);
+  eq("combined miss: all three missed — ONE miss, the closest strike", all.map((m) => [m.total, m.strikesMissed, m.chainStrike]), [[12, 3, null]]);
+  eq("combined miss: a blocked strike hit (Ninja Log) — no miss", chainCombinedMissOf(plan(["block", "miss"]), row), []);
+  eq("combined miss: no plan entry — nothing", chainCombinedMissOf({ perTarget: {} }, row), []);
 }
 
 // ── RESOLVE view of a Chain's targets ────────────────────────────────────────

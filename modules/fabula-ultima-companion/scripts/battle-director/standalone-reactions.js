@@ -461,6 +461,17 @@ export async function dispatchReactionMenu({
   if (payload?.chainRepeat) {
     candidates = candidates.filter((c) => c?.mode !== "ask");
   }
+  // A separate Chain also splits WHO hears its events (user rule 2026-10-29):
+  // the move's own rows (reactions on the acting item) hear every strike —
+  // `chainOwnOnly` — and everyone else's hear one combined event per target —
+  // `chainExcludeOwn` — so a passive like Absorb MP fires once per action.
+  // Both markers carry the move: { actorId, itemId }.
+  const chainOwner = payload?.chainOwnOnly ?? payload?.chainExcludeOwn ?? null;
+  if (chainOwner) {
+    const isOwn = (c) => !!chainOwner.itemId && reactor?.id === chainOwner.actorId
+      && String(c?.carrierUuid ?? "").split(".").pop() === chainOwner.itemId;
+    candidates = candidates.filter((c) => (payload.chainOwnOnly ? isOwn(c) : !isOwn(c)));
+  }
   // Sim diagnostic. A candidate that fails its CONDITION is dropped silently a few
   // lines below (by design — surfacing it to a player is noise), which means an AI that
   // "just never uses" a reaction gives you nothing to go on. Acceleration's free-action
