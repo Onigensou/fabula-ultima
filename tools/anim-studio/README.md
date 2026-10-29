@@ -80,7 +80,8 @@ helper library, so each is short and skips the hand-rolled recipes:
 
 The `oni` helpers available inside the inner script: `screen()` (screen-lock
 transforms), `layer()`, `cloneToken()`, `hideToken()`, `tween()`/`EASE`,
-`gradientTexture()`/`radialTexture()`, `webmSprite()`, `whiteout()`/`dim()`/
+`gradientTexture()`/`radialTexture()`, `webmSprite()`, `vfx()` (one-shot webm from the
+staged pool — use it for impacts; see docs/animation-staging.md), `whiteout()`/`dim()`/
 `screenshake()`, `sfx()`/`sfxUrl()`, `fireDone()`, `wait`. Everything is
 auto-disposed after the inner script's async IIFE resolves.
 
