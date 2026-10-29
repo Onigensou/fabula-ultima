@@ -85,7 +85,8 @@
 
   // tokenId -> { doc, spot } of the bed each member sleeps in. Bed N is member
   // spot N's (poseSpot.slot); a member spot with no paired bed, or a member
-  // standing on no spot, takes the free bed nearest where they were placed.
+  // standing on no spot, takes the free bed nearest where they were placed
+  // (or, placed by hand with no home, where they stand).
   function assignBeds(scene, members) {
     const beds = window.oni?.PoseSpots?.sleepSpotsOf?.(scene) ?? [];
     const out = new Map();
@@ -94,13 +95,13 @@
     const spots = (scene.getFlag(MOD, CAMP.Members?.FLAG_SPOTS ?? "campMemberSpots") ?? [])
       .filter(s => Number.isFinite(s?.x) && Number.isFinite(s?.y));
     const free = new Set(beds);
-    const homeCentre = (t, home) => ({ x: home.x + ((t.width ?? 1) * g) / 2, y: home.y + ((t.height ?? 1) * g) / 2 });
+    const centre = (t, at) => ({ x: at.x + ((t.width ?? 1) * g) / 2, y: at.y + ((t.height ?? 1) * g) / 2 });
 
     const rest = [];
     for (const { t, home } of members) {
-      const c = homeCentre(t, home);
+      const c = centre(t, home ?? t._source);
       let slot = 0, best = Infinity;
-      spots.forEach((s, i) => { const d = dist2(s, c); if (d < best) { best = d; slot = i + 1; } });
+      if (home) spots.forEach((s, i) => { const d = dist2(s, c); if (d < best) { best = d; slot = i + 1; } });
       // Placed on the spot itself (spawned there), not just nearest to it.
       const bed = (best <= (g / 2) ** 2) ? [...free].find(b => b.spot.slot === slot) : null;
       if (bed) { free.delete(bed); out.set(t.id, bed); } else rest.push({ t, c });
@@ -115,37 +116,43 @@
     return out;
   }
 
+  // The camp's member tokens: the ones the camp spawned (with the spot they
+  // were placed on), and party members someone placed by hand (no home).
+  async function campMembers(scene) {
+    const party = new Set(((await CAMP.RestAPI?.getPartyActors?.()) ?? []).map(a => a.id));
+    const out = [];
+    for (const t of scene.tokens) {
+      const spawned = !!t.getFlag(MOD, CAMP.Members?.FLAG_MEMBER ?? "campMember");
+      if (!spawned && !(t.actorLink && party.has(t.actorId))) continue;
+      const home = t.getFlag(MOD, CAMP.Members?.FLAG_HOME ?? "campHome");
+      out.push({ t, home: (Number.isFinite(home?.x) && Number.isFinite(home?.y)) ? home : null });
+    }
+    return out;
+  }
+
   async function sendMembersHome(scene) {
     if (!isPrimaryGM() || !scene || !isCampScene(scene)) return;
 
-    const members = [];
-    for (const t of scene.tokens) {
-      const home = t.getFlag(MOD, CAMP.Members?.FLAG_HOME ?? "campHome");
-      if (!t.getFlag(MOD, CAMP.Members?.FLAG_MEMBER ?? "campMember")) continue;
-      if (!Number.isFinite(home?.x) || !Number.isFinite(home?.y)) continue;
-      members.push({ t, home });
-    }
+    const members = await campMembers(scene);
     const beds = assignBeds(scene, members);
 
     const updates = [];
-    for (const t of scene.tokens) {
-      const home = t.getFlag(MOD, CAMP.Members?.FLAG_HOME ?? "campHome");
-      if (!t.getFlag(MOD, CAMP.Members?.FLAG_MEMBER ?? "campMember")) continue;
-      if (!Number.isFinite(home?.x) || !Number.isFinite(home?.y)) continue;
-
+    for (const { t, home } of members) {
       const u = { _id: t.id };
-      if (t._source.x !== home.x || t._source.y !== home.y) Object.assign(u, { x: home.x, y: home.y });
-      // Facing as placed. A spot authored without one faces the way it was
-      // set on the map: the drawn way, the other way when the token is
-      // flipped (texture.scaleX < 0; sprite-facing-runtime.js restFacing).
-      const drawnRight = t.getFlag(MOD, "spriteFacesRight")
-        ?? game.actors.get(t.actorId)?.prototypeToken?.flags?.[MOD]?.spriteFacesRight;
-      const flipped = (Number(t.texture?.scaleX) || 1) < 0;
-      const facing = home.facing ?? ((!!drawnRight !== flipped) ? "right" : "left");
-      const facingDir = home.facingDir ?? "downLeft";
-      if (t.getFlag(MOD, "facing") !== facing) u[`flags.${MOD}.facing`] = facing;
-      if (t.getFlag(MOD, "facingDir") !== facingDir) u[`flags.${MOD}.facingDir`] = facingDir;
       const bed = beds.get(t.id);
+      if (home) {
+        if (t._source.x !== home.x || t._source.y !== home.y) Object.assign(u, { x: home.x, y: home.y });
+        // Facing as placed. A spot authored without one faces the way it was
+        // set on the map: the drawn way, the other way when the token is
+        // flipped (texture.scaleX < 0; sprite-facing-runtime.js restFacing).
+        const drawnRight = t.getFlag(MOD, "spriteFacesRight")
+          ?? game.actors.get(t.actorId)?.prototypeToken?.flags?.[MOD]?.spriteFacesRight;
+        const flipped = (Number(t.texture?.scaleX) || 1) < 0;
+        const facing = home.facing ?? ((!!drawnRight !== flipped) ? "right" : "left");
+        const facingDir = home.facingDir ?? "downLeft";
+        if (t.getFlag(MOD, "facing") !== facing) u[`flags.${MOD}.facing`] = facing;
+        if (t.getFlag(MOD, "facingDir") !== facingDir) u[`flags.${MOD}.facingDir`] = facingDir;
+      }
       if (bed) {
         // Into bed. Facing above is kept for when they get up.
         const lie = window.oni.PoseSpots.poseUpdate(t, bed.doc, bed.spot);
