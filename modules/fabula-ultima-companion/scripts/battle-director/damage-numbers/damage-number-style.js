@@ -172,10 +172,12 @@ export function resolveDamageNumberStyle(payload = {}) {
 
   // Crit only applies to a landed damaging hit. It enlarges the numeral and
   // raises the gold CRITICAL banner — coexisting with a WEAK!/RESIST tag rather
-  // than replacing it (a critical weakness hit shows BOTH).
+  // than replacing it (a critical weakness hit shows BOTH). `critBanner: false`
+  // keeps the big gold numeral without the banner: a one-roll Chain's earlier
+  // ticks, so one crit raises one banner (on its last tick).
   if (spec.crit && kind === "loss") {
     spec.fontPx = Math.round(spec.fontPx * 1.38);
-    spec.critBanner = true;
+    spec.critBanner = payload.critBanner !== false;
   }
 
   return spec;

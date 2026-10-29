@@ -53,7 +53,12 @@ async function revealStrike(strike, { causeTokenUuid, actorsByToken }) {
           break;
         }
         case "hit": {
-          const common = { tokenUuid, affinity: o.affinity ?? "NE", element: o.element || "elementless", isCrit: !!o.isCrit, pierce: !!o.pierce, cascade: strike.index };
+          // A one-roll Chain's crit is gold on every tick but raises the
+          // CRITICAL! banner on its last tick only (outcome.critBanner).
+          const common = {
+            tokenUuid, affinity: o.affinity ?? "NE", element: o.element || "elementless", isCrit: !!o.isCrit, pierce: !!o.pierce, cascade: strike.index,
+            ...(o.critBanner === false ? { critBanner: false } : {}),
+          };
           if (o.shieldLoss > 0) vfx.playResourceLossVfx?.({ ...common, resource: "shield", amount: o.shieldLoss });
           if (o.hpLoss > 0) vfx.playResourceLossVfx?.({ ...common, resource: "hp", amount: o.hpLoss });
           break;

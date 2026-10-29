@@ -1,8 +1,10 @@
 // ── Chain N — pure strike planner ──────────────────────────────────────────
 //
-// A Chain N action is ONE action card and N strikes. Strike 1 is the roll the
-// card shows; strikes 2..N are rolled when the card is confirmed and stay
-// hidden until they land. Every strike rolls its own accuracy and damage, so
+// A Chain N action is ONE action card and N hits. By default (bare `chain N`)
+// it is one roll shown as N hits — planSingleChain below. A SEPARATE Chain
+// (`separate` / `random` / `pick`) is N strikes: strike 1 is the roll the card
+// shows; strikes 2..N are rolled when the card is confirmed and stay hidden
+// until they land. Every separate strike rolls its own accuracy and damage, so
 // each one can miss, crit, or be stopped on its own.
 //
 // This module holds the parts of that rule that need no Foundry: reading the
@@ -23,15 +25,23 @@
 //     for the defenders);
 //   - the hit count is landed strikes; a miss never counts.
 
-export const CHAIN_MODES = Object.freeze(["same", "random", "pick"]);
+// Players see ONE keyword, Chain; the author picks how it resolves (user,
+// 2026-10-29 — two keywords would be keyword overload):
+//   single   — bare `chain 3`: ONE Accuracy Check and one damage roll, shown as
+//              3 hits (planSingleChain). Every passive treats it as one hit.
+//   separate — each hit rolls its own check and damage, on the card's targets.
+//   random   — separate hits, each on a random card target.
+//   pick     — separate hits, round-robin over the picked targets.
+export const CHAIN_MODES = Object.freeze(["single", "separate", "random", "pick"]);
 export const CHAIN_MAX = 20;
 
 // Keyword forms accepted on an item's `action_keywords` list (already split
 // and lowercased by the caller, or a raw string):
-//   "chain 3", "chain(3)", "chain x3", "chain:3", "chain 3 random", "chain 3 pick"
+//   "chain 3", "chain(3)", "chain x3", "chain:3", "chain 3 separate",
+//   "chain 3 random", "chain 3 pick"
 // The bare word "chain" without a count is NOT a Chain — it is ignored, so a
 // stray label can never turn an action into a multi-strike one.
-const CHAIN_RX = /^chain\s*[:x(]?\s*(\d+)\s*\)?(?:\s*[:,]?\s*(same|random|pick))?$/;
+const CHAIN_RX = /^chain\s*[:x(]?\s*(\d+)\s*\)?(?:\s*[:,]?\s*(separate|random|pick))?$/;
 
 export function parseChainKeyword(keywords) {
   const list = Array.isArray(keywords)
@@ -42,9 +52,14 @@ export function parseChainKeyword(keywords) {
     if (!m) continue;
     const count = Math.min(CHAIN_MAX, Math.max(0, Math.floor(Number(m[1]) || 0)));
     if (count < 2) continue;              // Chain 1 is just an action
-    return { count, mode: m[2] ?? "same" };
+    return { count, mode: m[2] ?? "single" };
   }
   return null;
+}
+
+// A Chain whose hits each roll (everything but the one-roll default).
+export function isSeparateChain(spec) {
+  return !!spec && spec.mode !== "single";
 }
 
 // Small seeded PRNG (mulberry32) — deterministic tests and replays. The engine
@@ -248,6 +263,87 @@ export function breakdownForTarget(plan, uuid) {
     else if (o.kind === "hit") bits.push(`${o.amount}${o.isCrit ? "★" : ""}`);
   }
   return bits.join(" / ");
+}
+
+// ── One-roll Chain (bare `chain N`) ────────────────────────────────────────
+// The card's single result per target, shown as `count` hits. Nothing here is
+// a strike of its own: the action resolves as ONE hit, and these are the
+// numbers the presenter reveals on the animation's cues.
+//   targets: [{ tokenUuid, outcome, state }]
+//     outcome: { kind: "hit"|"miss"|"block"|"absorb"|"immune", amount, affinity,
+//                element, isCrit, pierce, blockedBy? }   (the card's row)
+//     state:   { hp, maxHp, shield, noKo }               (the live sheet)
+// A hit's damage splits into equal ticks that add up exactly, shield soaking
+// the early ticks first; every tick of a crit is gold, but the CRITICAL! banner
+// rides the last one only. A miss, block or immunity shows once, on the first
+// tick; an absorb heals once. A killing hit downs the target on its last tick.
+// Returns { strikes: [{ index, roll: null, outcomes }], perTarget }.
+export function planSingleChain({ count, targets = [] } = {}) {
+  const n = Math.max(1, Math.floor(Number(count) || 1));
+  const strikes = Array.from({ length: n }, (_, i) => ({ index: i + 1, roll: null, outcomes: [] }));
+  const perTarget = {};
+  for (const t of targets) {
+    const uuid = t?.tokenUuid;
+    if (!uuid) continue;
+    const o = t.outcome ?? { kind: "miss" };
+    const noKo = !!t.state?.noKo;
+    const state = { hp: Number(t.state?.hp) || 0, maxHp: Number(t.state?.maxHp) || 0, shield: Number(t.state?.shield) || 0 };
+    const amount = Math.max(0, Math.floor(Number(o.amount) || 0));
+    const tally = {
+      tokenUuid: uuid, strikes: n, landed: 0, hitsLanded: 0, missed: 0, crits: 0, blocked: 0, lost: 0,
+      damage: 0, hpLoss: 0, shieldLoss: 0, hpGain: 0, defeated: false, defeatedOnStrike: null, ticks: [],
+    };
+    if (o.kind === "hit") {
+      tally.landed = 1;
+      tally.hitsLanded = o.pierce ? 0 : 1;
+      tally.crits = o.isCrit ? 1 : 0;
+      tally.damage = amount;
+      splitTicks(amount, Array(n).fill(1)).forEach((amt, i) => {
+        const applied = applyStrikeToState(state, { kind: "hit", amount: amt });
+        tally.hpLoss += applied.hpLoss;
+        tally.shieldLoss += applied.shieldLoss;
+        tally.ticks.push(amt);
+        const last = i === n - 1;
+        strikes[i].outcomes.push({
+          tokenUuid: uuid, kind: "hit", amount: amt, affinity: o.affinity ?? "NE", element: o.element ?? "",
+          isCrit: !!o.isCrit, critBanner: !!o.isCrit && last, pierce: !!o.pierce,
+          ...applied, killing: last && !noKo && state.hp <= 0,
+        });
+      });
+      if (!noKo && state.hp <= 0) { tally.defeated = true; tally.defeatedOnStrike = n; }
+    } else {
+      let first;
+      if (o.kind === "absorb") {
+        const applied = applyStrikeToState(state, { kind: "absorb", amount });
+        tally.landed = 1;
+        tally.hpGain = applied.hpGain;
+        first = { tokenUuid: uuid, kind: "absorb", amount, affinity: "AB", element: o.element ?? "", ...applied };
+      } else if (o.kind === "immune") {
+        tally.landed = 1;
+        first = { tokenUuid: uuid, kind: "immune", amount: 0, affinity: "IM", element: o.element ?? "" };
+      } else if (o.kind === "block") {
+        tally.blocked = 1;
+        first = { tokenUuid: uuid, kind: "block", blockedBy: o.blockedBy ?? null };
+      } else {
+        tally.missed = 1;
+        first = { tokenUuid: uuid, kind: "miss" };
+      }
+      strikes[0].outcomes.push(first);
+      for (let i = 1; i < n; i++) strikes[i].outcomes.push({ tokenUuid: uuid, kind: "skip" });
+    }
+    perTarget[uuid] = tally;
+  }
+  return { strikes, perTarget };
+}
+
+// "4 + 4 + 5" — a one-roll Chain's ticks for one target (or MISS / BLOCK / …).
+export function singleBreakdown(t) {
+  if (!t) return "";
+  if (t.ticks?.length) return t.ticks.join(" + ") + (t.crits ? "★" : "");
+  if (t.blocked) return "BLOCK";
+  if (t.hpGain) return `+${t.hpGain}`;
+  if (t.landed) return "IMMUNE";
+  return "MISS";
 }
 
 // Split ONE damage value into display ticks for a pseudo multi-hit, by

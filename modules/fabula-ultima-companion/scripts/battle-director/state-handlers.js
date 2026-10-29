@@ -726,7 +726,8 @@ async function resolveAction(director, ar, opts = {}) {
   //     on_activate chain above ran once, against every target a strike hit;
   //     its status-on-hit rows run again for each further landed strike, aimed
   //     at that one target. Each row keeps its own chance roll and stacking mode.
-  if (ar.chainPlan) {
+  //     (A one-roll Chain is one hit: nothing re-runs.)
+  if (ar.chainPlan && !ar.chainPlan.single) {
     try {
       const rows = chainOnHitStatusRows(ctx, skill);
       if (rows.length) {
@@ -763,11 +764,16 @@ async function resolveAction(director, ar, opts = {}) {
   //    The post_damage payload's `valueType` is set per-branch so
   //    HP_DEALT vs MP_DEALT resolve correctly in formulas.
   const dmgResource = ar.damageResource ?? "hp";
-  // Chain N (chain-plan.js): every strike is already decided and was shown one
-  // by one. From here a target is HIT when any strike genuinely landed, its
-  // damage is the strikes' total, and each target takes ONE silent write; the
-  // per-strike side (post_damage, ledger, deals_damage) fires per landed strike.
-  const chainPlan = ar.chainPlan ?? null;
+  // Chain N (chain-plan.js). A SEPARATE Chain: every strike is already decided
+  // and was shown one by one. From here a target is HIT when any strike
+  // genuinely landed, its damage is the strikes' total, and each target takes
+  // ONE silent write; the move's own per-strike side (post_damage, its own
+  // riders) fires per landed strike. A ONE-ROLL Chain is a normal hit whose
+  // number was shown as N ticks: only its write is silent and its log line
+  // carries the ticks — `chainPlan` stays null for it, so nothing else branches.
+  const chainShown = ar.chainPlan ?? null;
+  const chainSingle = chainShown?.single ? chainShown : null;
+  const chainPlan = chainShown && !chainShown.single ? chainShown : null;
   const hits = chainPlan ? chainHitsView(chainPlan, ar.perTargetResults ?? []) : (ar.perTargetResults ?? []);
   // ── Card-normalized "is this a damaging attack?" — decided ONCE, never
   // re-derived from a weapon item at apply time. The Action Card is the
@@ -805,6 +811,7 @@ async function resolveAction(director, ar, opts = {}) {
       // Chain: this target's strikes, already shown. A target no strike landed
       // on (all missed / blocked / lost) logs its whiff once and is done.
       const ct = chainPlan ? chainTargetOf(chainPlan, r.tokenUuid) : null;
+      const cs = chainSingle ? chainTargetOf(chainSingle, r.tokenUuid) : null;   // one-roll ticks
       if (chainPlan) {
         if (!ct || !(ct.landed > 0)) {
           if (ct && ct.missed > 0) {
@@ -826,7 +833,8 @@ async function resolveAction(director, ar, opts = {}) {
       // (COMPUTE-reduced) damage; only a plain miss whiffs. r.pierceMiss is set
       // in COMPUTE for ANY action carrying Pierce — not just Attack.
       if (!chainPlan && !r.hit && !r.pierceMiss) {
-        playMissVfx({ tokenUuid: r.tokenUuid });
+        // A one-roll Chain already showed its MISS on the first hit cue.
+        if (!chainSingle) playMissVfx({ tokenUuid: r.tokenUuid });
         // Whiff → a Miss row (no commit, so logged here, not at the seam).
         battleLogSink.push(buildMissRow({
           attackerName: casterActor.name,
@@ -836,6 +844,7 @@ async function resolveAction(director, ar, opts = {}) {
           weaponType: ar.weapon?.weaponType ?? null,
           range: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
           sourceType: isAttackAction ? "Attack" : (view.kind ?? "Skill"),
+          ...(chainSingle ? { chain: chainLogOf(chainSingle, chainTargetOf(chainSingle, r.tokenUuid)) } : {}),
         }));
         continue;
       }
@@ -849,7 +858,7 @@ async function resolveAction(director, ar, opts = {}) {
       // carry no override.)
       if (!chainPlan && r.hit && r.damageOverride
           && Number(r.damageOverride.to) <= 0 && Number(r.damageOverride.from) > 0) {
-        playBlockVfx({ tokenUuid: r.tokenUuid });
+        if (!chainSingle) playBlockVfx({ tokenUuid: r.tokenUuid });
         continue;
       }
       try {
@@ -884,11 +893,12 @@ async function resolveAction(director, ar, opts = {}) {
           tokenUuid: r.tokenUuid,
           sourceTokenUuid: ar.attacker?.tokenUuid ?? null,
           logPrefix: `${view.kind} ${ar.skillName ?? skill?.name ?? ""}:`,
-          logSuffix: passLabel + (r.pierceMiss ? " [Pierce]" : "") + (ct ? ` [Chain ${chainPlan.count}: ${ct.breakdown}]` : ""),
-          // Chain: one write for all strikes, nothing floated (each strike was
-          // shown on its cue), and a blocker the card spent on one strike must
-          // not fire again on the rest.
-          silent: !!ct,
+          logSuffix: passLabel + (r.pierceMiss ? " [Pierce]" : "")
+            + (ct ? ` [Chain ${chainPlan.count}: ${ct.breakdown}]` : cs ? ` [Chain ${chainSingle.count}: ${cs.breakdown}]` : ""),
+          // Chain: one write for all strikes, nothing floated (each strike —
+          // or a one-roll Chain's every tick — was shown on its cue), and a
+          // blocker the card spent on one strike must not fire again on the rest.
+          silent: !!ct || !!cs,
           skipIncomingAeNames: ct ? chainSpentBlockers(ar, r.tokenUuid, ct) : null,
           // Battle Log: hit row, pushed to this action's shared sink (flushed
           // once at the end). Rich attacker context from the action result.
@@ -907,7 +917,7 @@ async function resolveAction(director, ar, opts = {}) {
             pierce: !!r.pierceMiss,
             sourceType: isAttackAction ? "Attack" : (view.kind ?? "Skill"),
             sink: battleLogSink,
-            ...(ct ? { chain: chainLogOf(chainPlan, ct) } : {}),
+            ...(ct ? { chain: chainLogOf(chainPlan, ct) } : cs ? { chain: chainLogOf(chainSingle, cs) } : {}),
           },
         });
         const finalValue = dmgRes.finalValue;
@@ -1766,8 +1776,11 @@ function queuePostResolveTrigger(director, config) {
 // ── Chain N helpers for resolveAction (plan = ar.chainPlan, ct = one target) ──
 
 // What one Chain target's battle-log row carries: strike counts + breakdown,
-// and every strike's check total in the accuracy column ("14 / 7 / 12").
+// and every strike's check total in the accuracy column ("14 / 7 / 12"). A
+// one-roll Chain is ONE hit: only its ticks ("4 + 4 + 5") — no counts, so the
+// battle-end ranking counts it as the single hit it is.
 function chainLogOf(plan, ct) {
+  if (plan?.single) return { single: true, strikes: plan.count ?? 0, breakdown: ct?.breakdown ?? "" };
   const totals = [];
   for (const s of plan?.strikes ?? []) {
     const o = (s.outcomes ?? []).find((x) => x.tokenUuid === ct?.tokenUuid);
@@ -5174,7 +5187,7 @@ const Compute = {
       const _chainNarrow = _chainDraw?.keep
         ? narrowToTargets({ targets: allTargets, perTargetResults: skillProj.perTargetResults ?? [], hitTokenUuids: skillProj.hitTokenUuids ?? null }, _chainDraw.keep)
         : null;
-      if (_chainDraw) log(`COMPUTE: Chain ${_chainDraw.spec.count}${_chainDraw.spec.mode !== "same" ? ` (${_chainDraw.spec.mode})` : ""} on ${ar.skillName ?? skill?.name ?? "?"}`);
+      if (_chainDraw) log(`COMPUTE: Chain ${_chainDraw.spec.count} (${_chainDraw.spec.mode}) on ${ar.skillName ?? skill?.name ?? "?"}`);
       director.ctx.actionResult = freezeActionResult({
         ...arForProfile,
         ...skillProj,
@@ -5292,7 +5305,7 @@ const Compute = {
         const _chainNarrow = _chainDraw?.keep
           ? narrowToTargets({ targets: targetSnapshots, perTargetResults: delta.perTargetResults ?? [], hitTokenUuids: delta.hitTokenUuids ?? null }, _chainDraw.keep)
           : null;
-        if (_chainDraw) log(`COMPUTE: Chain ${_chainDraw.spec.count}${_chainDraw.spec.mode !== "same" ? ` (${_chainDraw.spec.mode})` : ""} on ${weapon?.name ?? "attack"}`);
+        if (_chainDraw) log(`COMPUTE: Chain ${_chainDraw.spec.count} (${_chainDraw.spec.mode}) on ${weapon?.name ?? "attack"}`);
         director.ctx.actionResult = freezeActionResult({
           kind: "Attack",
           costSerialized: attackCostSerialized,
@@ -7439,8 +7452,10 @@ const Resolve = {
     // Chain N: the status writes strikes 2..N cause fold into one write per
     // stack per apply phase (skill-effects beginChainAeCoalesce) — committed
     // after the on-hit re-runs and after each settle pass, closed below once
-    // this action's reactions have settled.
-    if (ar.chainPlan) SE().beginChainAeCoalesce?.(ar._instanceId ?? null);
+    // this action's reactions have settled. Only a SEPARATE Chain has strikes
+    // 2..N; a one-roll Chain resolves as the one hit it is.
+    const chainSeparate = !!(ar.chainPlan && !ar.chainPlan.single);
+    if (chainSeparate) SE().beginChainAeCoalesce?.(ar._instanceId ?? null);
 
     if (ar.kind === "Attack") {
       // ── Unified path (Phase 7 — bespoke Attack branch retired) ──
@@ -7693,7 +7708,7 @@ const Resolve = {
     const rvPhase = rewindPhaseLabel(director.ctx, rvDc?.round);
     // A Chain's merged status writes from the resolve body (post_damage riders
     // per strike) land before the snapshot, so the checkpoint holds the stacks.
-    if (ar.chainPlan) {
+    if (chainSeparate) {
       try { await SE().flushChainAeCoalesce?.(ar._instanceId ?? null); }
       catch (e) { warn("RESOLVE: Chain status write flush threw", e); }
     }
@@ -7736,12 +7751,12 @@ const Resolve = {
       await settleInstance(director, {
         reason: "resolve",
         recordForReoffer: !topIsFreeAction(director.ctx),
-        onPassEnd: ar.chainPlan ? () => SE().flushChainAeCoalesce?.(ar._instanceId ?? null) : null,
+        onPassEnd: chainSeparate ? () => SE().flushChainAeCoalesce?.(ar._instanceId ?? null) : null,
       });
     } catch (e) {
       warn("RESOLVE: settleInstance threw", e);
     }
-    if (ar.chainPlan) {
+    if (chainSeparate) {
       try { await SE().endChainAeCoalesce?.(ar._instanceId ?? null); }
       catch (e) { warn("RESOLVE: Chain status write flush threw", e); }
     }
@@ -7751,14 +7766,14 @@ const Resolve = {
     // during the picker gracefully skips the opportunity (action already committed).
     // A Chain grants ONE Opportunity for the whole sequence — whichever strike
     // crit first (user rule 2026-10-29); strike 1 being the card changes nothing.
-    const _critOpportunity = ar.chainPlan ? !!ar.chainPlan.attackerOpportunity : !!ar.roll?.opportunities;
+    const _critOpportunity = chainSeparate ? !!ar.chainPlan.attackerOpportunity : !!ar.roll?.opportunities;
     if (_critOpportunity && !anyTargetDeniesCritOpportunity(ar) && !attackerDeniesOwnCritOpportunity(ar)) {
       director.ctx.hasPendingOpportunity = {
         actorUuid:    ar.attackerActorRef ?? ar.attacker?.actorUuid ?? null,
         actorName:    ar.attacker?.name ?? "?",
         actionCardId: ar.cardId ?? null,
         // The crit came from a hidden strike: its cut-in plays before the wheel.
-        ...(ar.chainPlan && !ar.roll?.isCrit ? { chainCritCutin: true } : {}),
+        ...(chainSeparate && !ar.roll?.isCrit ? { chainCritCutin: true } : {}),
       };
     }
 

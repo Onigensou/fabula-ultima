@@ -35,7 +35,9 @@ function _cap(s) {
 }
 function _affLabel(code) { return AFFINITY_LABEL[code] ?? "Normal"; }
 // The counts a Chain row carries in its JSON entry (battle-end-rank reads them).
+// A one-roll Chain is one hit shown as ticks: `single`, and no strike counts.
 function _chainCounts(c) {
+  if (c?.single) return { single: true, strikes: Number(c?.strikes) || 0, breakdown: String(c?.breakdown ?? "") };
   return {
     strikes: Number(c?.strikes) || 0, landed: Number(c?.landed) || 0,
     missed: Number(c?.missed) || 0, blocked: Number(c?.blocked) || 0,

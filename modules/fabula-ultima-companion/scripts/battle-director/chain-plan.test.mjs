@@ -26,7 +26,8 @@ function eq(label, got, want) {
 
 // ── keyword gate ─────────────────────────────────────────────────────────────
 const skill = (kw) => ({ system: { props: { action_keywords: kw } } });
-eq("skill chain", chainSpecFor({ kind: "Skill", skillItem: skill("pierce, chain 3"), isCheck: true, hasDamage: true }), { count: 3, mode: "same" });
+eq("skill chain (one roll)", chainSpecFor({ kind: "Skill", skillItem: skill("pierce, chain 3"), isCheck: true, hasDamage: true }), { count: 3, mode: "single" });
+eq("skill chain (separate)", chainSpecFor({ kind: "Skill", skillItem: skill("chain 3 separate"), isCheck: true, hasDamage: true }), { count: 3, mode: "separate" });
 eq("weapon chain on an attack", chainSpecFor({ kind: "Attack", weapon: { actionKeywords: "chain 2 random" } }), { count: 2, mode: "random" });
 eq("weapon keywords ignored for a skill", chainSpecFor({ kind: "Skill", weapon: { actionKeywords: "chain 2" }, isCheck: true, hasDamage: true }), null);
 eq("no check, no chain", chainSpecFor({ kind: "Skill", skillItem: skill("chain 3"), isCheck: false, hasDamage: true }), null);
@@ -46,7 +47,8 @@ eq("old Combo items never chain", chainSpecFor({ kind: "Skill", skillItem: skill
   eq("narrow: targets", n.targets.map((t) => t.tokenUuid), ["C"]);
   eq("narrow: rows", n.perTargetResults.map((t) => t.tokenUuid), ["C"]);
   eq("narrow: hit list", n.hitTokenUuids, ["C"]);
-  eq("same mode keeps the card", drawChainTargets({ count: 3, mode: "same" }, ["A"]).keep, null);
+  eq("separate mode keeps the card", drawChainTargets({ count: 3, mode: "separate" }, ["A"]).keep, null);
+  eq("one-roll mode keeps the card", drawChainTargets({ count: 3, mode: "single" }, ["A", "B"]).keep, null);
   eq("pick mode: round-robin over the picks", drawChainTargets({ count: 3, mode: "pick" }, ["A", "B"]).spec.strikeTargets, [["A"], ["B"], ["A"]]);
   eq("strikes per target (random)", strikesPerTarget({ count: 3, strikeTargets: [["A"], ["B"], ["A"]] }), { A: 2, B: 1 });
   eq("strikes per target (same)", strikesPerTarget({ count: 2 }, ["A", "B"]), { A: 2, B: 2 });
@@ -82,6 +84,24 @@ eq("row: immune", ev({ hit: true, damage: 0, affinity: "IM" }, {}).kind, "immune
 eq("row: crit hit", (({ kind, amount, isCrit }) => ({ kind, amount, isCrit }))(ev({ hit: true, damage: 54, crit: true }, {})), { kind: "hit", amount: 54, isCrit: true });
 eq("row: pierce half-hit", (({ kind, pierce, isCrit }) => ({ kind, pierce, isCrit }))(ev({ hit: false, pierceMiss: true, damage: 20, crit: false }, {})), { kind: "hit", pierce: true, isCrit: false });
 eq("row: element falls back to the action's", ev({ hit: true, damage: 5 }, { damage: { element: "fire" } }).element, "fire");
+
+// ── one-roll Chain plan from the card's own rows ─────────────────────────────
+{
+  const ar = { _instanceId: "act1", hitTokenUuids: ["A"], damage: { element: "ice" } };
+  const rows = [
+    { tokenUuid: "A", actorUuid: "Actor.a", name: "Hina", hit: true, damage: 12, affinity: "NE", crit: true },
+    { tokenUuid: "B", actorUuid: "Actor.b", name: "Fjord", hit: false, defense: 14 },
+  ];
+  const states = new Map([["A", { hp: 50, maxHp: 50, shield: 0 }], ["B", { hp: 40, maxHp: 40, shield: 0 }]]);
+  const meta = new Map([["A", { actorUuid: "Actor.a", name: "Hina" }], ["B", { actorUuid: "Actor.b", name: "Fjord" }]]);
+  const plan = _test.planOneRoll(ar, { count: 3, mode: "single" }, rows, states, meta);
+  eq("one roll: a single plan, nothing rolled", [plan.single, plan.mode, plan.strikes.length, plan.strikes.every((s) => s.roll === null)], [true, "single", 3, true]);
+  eq("one roll: the card's hit list stands", plan.hitTokenUuids, ["A"]);
+  eq("one roll: Hina's ticks + breakdown", [plan.strikes.map((s) => s.outcomes.find((o) => o.tokenUuid === "A").amount), plan.perTarget.A.breakdown], [[4, 4, 4], "4 + 4 + 4★"]);
+  eq("one roll: Fjord's single MISS", plan.strikes.map((s) => s.outcomes.find((o) => o.tokenUuid === "B").kind), ["miss", "skip", "skip"]);
+  eq("one roll: no Opportunity of its own (the card's crit is the card's)", [plan.attackerOpportunity, plan.firstCritStrike], [false, null]);
+  eq("one roll: element from the action", plan.strikes[0].outcomes[0].element, "ice");
+}
 
 // ── RESOLVE view of a Chain's targets ────────────────────────────────────────
 {

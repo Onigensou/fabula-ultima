@@ -7331,7 +7331,10 @@ function chainBadgeHTML(chain, targets) {
   try {
     const n = Number(chain?.count) || 0;
     if (n < 2) return "";
-    let tip = `Chain ${n}: ${n} strikes on one card — each makes its own Accuracy Check and deals its own damage.`;
+    // One keyword for players; the tooltip says how THIS Chain resolves.
+    let tip = chain.mode === "single"
+      ? `Chain ${n}: one Accuracy Check — its damage lands in ${n} hits.`
+      : `Chain ${n}: ${n} strikes on one card — each makes its own Accuracy Check and deals its own damage.`;
     if (Array.isArray(chain.strikeTargets) && chain.strikeTargets.length) {
       const nameOf = new Map((Array.isArray(targets) ? targets : []).map((t) => [t?.tokenUuid, t?.name ?? "?"]));
       const counts = new Map();

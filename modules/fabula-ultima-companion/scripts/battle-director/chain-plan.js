@@ -1,11 +1,17 @@
 // ── Chain N — engine adapter: plan a confirmed Chain action's strikes ──────
 //
-// A Chain action is ONE card and N strikes (keyword `chain N` on the action's
-// `action_keywords`, the skill's or the weapon's). The card shows strike 1;
-// this module rolls and resolves strikes 2..N when the card is confirmed, and
-// stamps the result on the action as `chainPlan` — plain data. The presenter
-// reveals it strike by strike on the animation's hit cues; RESOLVE commits it
-// with ONE write per target (chain-presenter.js, state-handlers resolveAction).
+// A Chain action is ONE card and N hits (keyword `chain N` on the action's
+// `action_keywords`, the skill's or the weapon's). This module stamps the plan
+// on the action as `chainPlan` — plain data. The presenter reveals it hit by
+// hit on the animation's hit cues; RESOLVE commits it with ONE write per target
+// (chain-presenter.js, state-handlers resolveAction).
+//
+// A ONE-ROLL Chain (bare `chain N`, the default) is a normal action: its plan
+// only splits the card's own result into N shown hits (planSingleChain), and
+// RESOLVE treats it as one hit — every passive fires once.
+//
+// A SEPARATE Chain (`separate` / `random` / `pick`) shows strike 1 on the card;
+// this module rolls and resolves strikes 2..N when the card is confirmed:
 //
 // Strike 1 IS the confirmed card: its roll, reactions, Invoke and GM edits are
 // exactly what the table saw. Strikes 2..N roll fresh dice with the card's die
@@ -26,6 +32,7 @@ import { log, warn } from "./logger.js";
 import {
   parseChainKeyword, assignStrikeTargets, createStrikeWalker,
   breakdownForTarget, summarizeTarget, fallbackBeatMs,
+  planSingleChain, singleBreakdown,
 } from "./chain-strikes.js";
 
 // ── keyword ────────────────────────────────────────────────────────────────
@@ -204,32 +211,13 @@ export async function buildChainPlan(director, ar) {
   const cardTargets = (ar.targets ?? []).map((t) => t?.tokenUuid).filter(Boolean);
   if (!cardRows.length || !cardTargets.length) return null;
 
+  // Running state per target, read once from the live sheets.
+  const { states, meta } = await readTargetStates(cardRows, ar);
+  if (spec.mode === "single") return planOneRoll(ar, spec, cardRows, states, meta);
+
   const strikeTargets = Array.isArray(spec.strikeTargets) && spec.strikeTargets.length === spec.count
     ? spec.strikeTargets
     : assignStrikeTargets({ count: spec.count, mode: "same", cardTargets }).strikeTargets;
-
-  // Running state per target, read once from the live sheets.
-  const states = new Map();
-  const meta = new Map();
-  for (const row of cardRows) {
-    if (!row?.tokenUuid || states.has(row.tokenUuid)) continue;
-    let actor = null;
-    try {
-      const tok = await fromUuid(row.tokenUuid).catch(() => null);
-      actor = tok?.actor ?? (row.actorUuid ? await fromUuid(row.actorUuid).catch(() => null) : null);
-    } catch { actor = null; }
-    const p = actor?.system?.props ?? {};
-    const isMp = String(row.resource ?? ar.damageResource ?? "hp") === "mp";
-    states.set(row.tokenUuid, {
-      hp: Number(isMp ? p.current_mp : p.current_hp) || 0,
-      maxHp: Number(isMp ? p.max_mp : p.max_hp) || 0,
-      shield: isMp ? 0 : (Number(p.shield_value) || 0),
-      blockers: isBlockingOverride(row.damageOverride) ? 1 : 0,
-      priorHits: 0,
-      noKo: isMp,
-    });
-    meta.set(row.tokenUuid, { actorUuid: row.actorUuid ?? actor?.uuid ?? null, name: row.name ?? actor?.name ?? "", maxHp: Number(p.max_hp) || 0 });
-  }
 
   // Champion Gloves / Hot Pants read the attacker's per-turn hit tally. It is
   // only kept for Attacks (see resolveAction), and only bumped after an action
@@ -283,6 +271,71 @@ export async function buildChainPlan(director, ar) {
   return toPlainPlan(result, { spec, meta, ar });
 }
 
+// HP / shield / one-shot blocker per card target, from the live sheets.
+async function readTargetStates(cardRows, ar) {
+  const states = new Map();
+  const meta = new Map();
+  for (const row of cardRows) {
+    if (!row?.tokenUuid || states.has(row.tokenUuid)) continue;
+    let actor = null;
+    try {
+      const tok = await fromUuid(row.tokenUuid).catch(() => null);
+      actor = tok?.actor ?? (row.actorUuid ? await fromUuid(row.actorUuid).catch(() => null) : null);
+    } catch { actor = null; }
+    const p = actor?.system?.props ?? {};
+    const isMp = String(row.resource ?? ar.damageResource ?? "hp") === "mp";
+    states.set(row.tokenUuid, {
+      hp: Number(isMp ? p.current_mp : p.current_hp) || 0,
+      maxHp: Number(isMp ? p.max_mp : p.max_hp) || 0,
+      shield: isMp ? 0 : (Number(p.shield_value) || 0),
+      blockers: isBlockingOverride(row.damageOverride) ? 1 : 0,
+      priorHits: 0,
+      noKo: isMp,
+    });
+    meta.set(row.tokenUuid, { actorUuid: row.actorUuid ?? actor?.uuid ?? null, name: row.name ?? actor?.name ?? "", maxHp: Number(p.max_hp) || 0 });
+  }
+  return { states, meta };
+}
+
+// One-roll Chain: the card IS the whole action. Nothing is rolled — the card's
+// result per target is split into `count` shown hits (planSingleChain), and
+// RESOLVE resolves it as the single hit it is.
+function planOneRoll(ar, spec, cardRows, states, meta) {
+  const seen = new Set();
+  const targets = [];
+  for (const row of cardRows) {
+    if (!row?.tokenUuid || seen.has(row.tokenUuid) || !states.has(row.tokenUuid)) continue;
+    seen.add(row.tokenUuid);
+    targets.push({ tokenUuid: row.tokenUuid, outcome: evaluateRow(row, ar), state: states.get(row.tokenUuid) });
+  }
+  const { strikes, perTarget: raw } = planSingleChain({ count: spec.count, targets });
+  const perTarget = {};
+  for (const [uuid, t] of Object.entries(raw)) {
+    const m = meta.get(uuid) ?? {};
+    perTarget[uuid] = { ...t, actorUuid: m.actorUuid ?? null, name: m.name ?? "", breakdown: singleBreakdown(t), summary: summarizeTarget(t), landedStrikes: [] };
+  }
+  const list = Object.values(perTarget);
+  const plan = {
+    count: spec.count,
+    mode: "single",
+    single: true,
+    beatMs: fallbackBeatMs(spec.count),
+    strikes,
+    perTarget,
+    landed: list.filter((t) => t.landed > 0).length,
+    // The card's own verdict — a one-roll Chain changes nothing about who was hit.
+    hitTokenUuids: Array.isArray(ar.hitTokenUuids) ? [...ar.hitTokenUuids] : list.filter((t) => t.hitsLanded > 0).map((t) => t.tokenUuid),
+    struckTokenUuids: list.filter((t) => t.landed > 0).map((t) => t.tokenUuid),
+    firstCritStrike: null,
+    firstFumbleStrike: null,
+    attackerOpportunity: false,
+    defenderOpportunity: false,
+    instanceId: ar?._instanceId ?? null,
+  };
+  log(`Chain ${spec.count} (one roll): ` + list.map((t) => `${t.name || t.tokenUuid} [${t.breakdown || "—"}]`).join(" · "));
+  return plan;
+}
+
 function toPlainPlan(result, { spec, meta, ar }) {
   const perTarget = {};
   for (const [uuid, t] of result.perTarget) {
@@ -324,7 +377,7 @@ function toPlainPlan(result, { spec, meta, ar }) {
     defenderOpportunity: result.defenderOpportunity,
     instanceId: ar?._instanceId ?? null,
   };
-  log(`Chain ${spec.count}${spec.mode !== "same" ? ` (${spec.mode})` : ""}: `
+  log(`Chain ${spec.count} (${spec.mode}): `
     + Object.values(perTarget).map((t) => `${t.name || t.tokenUuid} [${t.breakdown || "—"}]`).join(" · "));
   return plan;
 }
@@ -348,4 +401,4 @@ export function chainHitsView(plan, rows = []) {
   });
 }
 
-export const _test = { zeroingOps, withoutZeroingOps, evaluateRow };
+export const _test = { zeroingOps, withoutZeroingOps, evaluateRow, planOneRoll };

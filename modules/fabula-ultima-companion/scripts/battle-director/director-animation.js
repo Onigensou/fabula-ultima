@@ -489,8 +489,9 @@ function outcomesFromDirector(director) {
     const ar = director?.ctx?.actionResult;
     const rows = ar?.perTargetResults;
     if (!Array.isArray(rows) || !rows.length) return null;
-    // A Chain hits a target when ANY of its strikes landed — not just strike 1.
-    const chain = ar?.chainPlan?.perTarget ?? null;
+    // A separate Chain hits a target when ANY of its strikes landed — not just
+    // strike 1. A one-roll Chain's verdict is the card's own.
+    const chain = ar?.chainPlan && !ar.chainPlan.single ? (ar.chainPlan.perTarget ?? null) : null;
     return rows.map((r) => {
       const t = chain ? chain[r?.tokenUuid] : null;
       return {

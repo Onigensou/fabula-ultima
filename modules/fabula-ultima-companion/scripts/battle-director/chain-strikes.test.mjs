@@ -15,7 +15,7 @@
 const {
   parseChainKeyword, assignStrikeTargets, planStrikes, createStrikeWalker, applyStrikeToState,
   breakdownForTarget, summarizeTarget, splitTicks, fallbackBeatMs, makeRng,
-  foldChargeSteps, aeRefreshIsNoop,
+  foldChargeSteps, aeRefreshIsNoop, isSeparateChain, planSingleChain, singleBreakdown,
 } = await import("./chain-strikes.js");
 
 let failed = 0, passed = 0;
@@ -27,16 +27,19 @@ function eq(label, got, want) {
 }
 
 // ── keyword ──────────────────────────────────────────────────────────────────
-eq("chain 3",              parseChainKeyword(["chain 3"]),            { count: 3, mode: "same" });
-eq("chain(2)",             parseChainKeyword("pierce, chain(2)"),     { count: 2, mode: "same" });
+eq("chain 3 = one roll",   parseChainKeyword(["chain 3"]),            { count: 3, mode: "single" });
+eq("chain(2)",             parseChainKeyword("pierce, chain(2)"),     { count: 2, mode: "single" });
+eq("chain 3 separate",     parseChainKeyword(["chain 3 separate"]),   { count: 3, mode: "separate" });
 eq("chain x4 random",      parseChainKeyword(["chain x4 random"]),    { count: 4, mode: "random" });
 eq("chain:3:pick",         parseChainKeyword(["chain:3:pick"]),       { count: 3, mode: "pick" });
-eq("Chain 3 (case)",       parseChainKeyword(["Chain 3"]),            { count: 3, mode: "same" });
+eq("Chain 3 (case)",       parseChainKeyword(["Chain 3"]),            { count: 3, mode: "single" });
 eq("bare chain ignored",   parseChainKeyword(["chain"]),              null);
 eq("chain 1 is no chain",  parseChainKeyword(["chain 1"]),            null);
 eq("combo is not chain",   parseChainKeyword(["combo 2"]),            null);
-eq("capped at 20",         parseChainKeyword(["chain 99"]),           { count: 20, mode: "same" });
+eq("capped at 20",         parseChainKeyword(["chain 99"]),           { count: 20, mode: "single" });
 eq("other words ignored",  parseChainKeyword(["chain reaction"]),     null);
+eq("unknown mode word ignored", parseChainKeyword(["chain 3 same"]),  null);
+eq("separate kinds", ["single", "separate", "random", "pick"].map((mode) => isSeparateChain({ count: 3, mode })), [false, true, true, true]);
 
 // ── per-strike targets ───────────────────────────────────────────────────────
 eq("same: every strike hits all card targets",
@@ -209,6 +212,50 @@ eq("ticks: no ratios = one tick", splitTicks(50, []), [50]);
 eq("beat: short chain keeps 550", fallbackBeatMs(3), 550);
 eq("beat: long chain shrinks", fallbackBeatMs(10), 288);
 eq("beat: floor at 140", fallbackBeatMs(40), 140);
+
+// ── one-roll Chain: one result shown as N hits ───────────────────────────────
+{
+  const hit = (amount, extra = {}) => ({ kind: "hit", amount, affinity: "NE", element: "fire", ...extra });
+  const st = (hp, shield = 0, extra = {}) => ({ hp, maxHp: hp, shield, ...extra });
+  const p = planSingleChain({ count: 3, targets: [{ tokenUuid: "A", outcome: hit(13), state: st(100) }] });
+  const ticks = p.strikes.map((s) => s.outcomes[0].amount);
+  eq("single: ticks add up to the one damage", [ticks, ticks.reduce((a, b) => a + b, 0)], [[4, 5, 4], 13]);
+  eq("single: one landed hit, not three", [p.perTarget.A.landed, p.perTarget.A.hitsLanded, p.perTarget.A.damage], [1, 1, 13]);
+  eq("single: running HP per tick", p.strikes.map((s) => s.outcomes[0].hpAfter), [96, 91, 87]);
+  eq("single: breakdown", singleBreakdown(p.perTarget.A), "4 + 5 + 4");
+
+  const sh = planSingleChain({ count: 3, targets: [{ tokenUuid: "A", outcome: hit(30), state: st(100, 15) }] });
+  eq("single: shield soaks the early ticks", sh.strikes.map((s) => [s.outcomes[0].shieldLoss, s.outcomes[0].hpLoss]), [[10, 0], [5, 5], [0, 10]]);
+
+  const cr = planSingleChain({ count: 3, targets: [{ tokenUuid: "A", outcome: hit(9, { isCrit: true }), state: st(100) }] });
+  eq("single: every crit tick gold, banner on the last only",
+    cr.strikes.map((s) => [s.outcomes[0].isCrit, s.outcomes[0].critBanner]), [[true, false], [true, false], [true, true]]);
+  eq("single: crit breakdown", singleBreakdown(cr.perTarget.A), "3 + 3 + 3★");
+
+  const ms = planSingleChain({ count: 3, targets: [{ tokenUuid: "A", outcome: { kind: "miss" }, state: st(100) }] });
+  eq("single: a miss shows once", ms.strikes.map((s) => s.outcomes[0].kind), ["miss", "skip", "skip"]);
+  eq("single: miss breakdown", [singleBreakdown(ms.perTarget.A), ms.perTarget.A.missed], ["MISS", 1]);
+
+  const bl = planSingleChain({ count: 2, targets: [{ tokenUuid: "A", outcome: { kind: "block", blockedBy: "Ninja Log" }, state: st(100) }] });
+  eq("single: a block shows once", bl.strikes.map((s) => s.outcomes[0].kind), ["block", "skip"]);
+
+  const ab = planSingleChain({ count: 3, targets: [{ tokenUuid: "A", outcome: { kind: "absorb", amount: 20 }, state: { hp: 90, maxHp: 100, shield: 0 } }] });
+  eq("single: an absorb heals once, capped", [ab.strikes[0].outcomes[0].hpGain, ab.strikes[1].outcomes[0].kind, singleBreakdown(ab.perTarget.A)], [10, "skip", "+10"]);
+
+  const ko = planSingleChain({ count: 3, targets: [{ tokenUuid: "A", outcome: hit(30), state: st(12) }] });
+  eq("single: a killing hit downs on its LAST tick", ko.strikes.map((s) => s.outcomes[0].killing), [false, false, true]);
+  eq("single: overkill ticks still show", [ko.strikes[2].outcomes[0].amount, ko.perTarget.A.defeated, ko.perTarget.A.defeatedOnStrike], [10, true, 3]);
+
+  const mp = planSingleChain({ count: 2, targets: [{ tokenUuid: "A", outcome: hit(50), state: st(10, 0, { noKo: true }) }] });
+  eq("single: MP damage never downs", [mp.strikes[1].outcomes[0].killing, mp.perTarget.A.defeated], [false, false]);
+
+  const aoe = planSingleChain({ count: 2, targets: [
+    { tokenUuid: "A", outcome: hit(10), state: st(100) },
+    { tokenUuid: "B", outcome: { kind: "miss" }, state: st(100) },
+  ] });
+  eq("single: AoE — each strike slot carries every target", aoe.strikes.map((s) => s.outcomes.map((o) => `${o.tokenUuid}:${o.kind}`)),
+    [["A:hit", "B:miss"], ["A:hit", "B:skip"]]);
+}
 
 // ── folding a Chain's repeat status writes ───────────────────────────────────
 eq("fold: plain sum", foldChargeSteps(1, [{ add: 1, max: 99 }, { add: 1, max: 99 }]), 3);

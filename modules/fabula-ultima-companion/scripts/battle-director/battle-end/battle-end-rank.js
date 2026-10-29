@@ -141,7 +141,8 @@ export async function runBattleEndRank(endCtx) {
     const attackerIsParty = isPartyName(attacker);
     const targetIsParty   = isPartyName(target);
     // Chain row: its strikes, not 1 (a row that landed nothing is all misses).
-    const ch = r._chain ?? null;
+    // A one-roll Chain is one hit or one miss, like any other row.
+    const ch = r._chain && !r._chain.single ? r._chain : null;
     const rowHits   = ch ? Math.max(1, Number(ch.landed) || 0) : 1;
     const rowMisses = ch ? Math.max(0, Number(ch.missed) || 0) : 0;
 
