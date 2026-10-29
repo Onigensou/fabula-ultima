@@ -1422,6 +1422,8 @@ function resetTurnState() {
 
 /** The last turn status this client heard (see applyTurnStatus), or null. */
 export function hudTurnStatus() { return _turnStatus; }
+/** The focused picker row's cost preview ({ actorId, mp, hp, ip } or null). */
+export function hudCostPreview() { return _costPreview; }
 
 /** Apply a turn status (GM publish or socket). */
 function applyTurnStatus(status) {

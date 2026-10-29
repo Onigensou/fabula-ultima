@@ -42,7 +42,8 @@
 import { log, warn } from "./logger.js";
 import { playUiHoverSfx, playUiClickSfx, playUiOpenSfx, playUiBackSfx } from "./director-ui-sfx.js";
 import { ensureDrawerStyles, escapeHtml as esc, pickDocked } from "./drawer-views.js";
-import { rightEdgeReserve, hudScale, readUnitInfo } from "./director-player-hud.js";
+import { rightEdgeReserve, hudScale, readUnitInfo, hudCostPreview } from "./director-player-hud.js";
+import { publishDeskWatch } from "./ally-watch.js";
 import { tabAlert, tabAlertClear } from "./tab-alert.js";
 import { TIER } from "./status-classifier.js";
 import { rowTier, rowTurns, rowSpent, sortRows, statusTipHTML, foldTipHTML } from "./status-tip.js";
@@ -75,7 +76,7 @@ const CLOSE_GRACE_MS = 160;    // a reaction menu re-opens after a Use: keep its
 // ── state ─────────────────────────────────────────────────────────────────────
 const D = {
   root: null, bar: null, roster: null, con: null, chd: null, cbody: null,
-  layers: {}, offFns: [], placeKey: "",
+  layers: {}, offFns: [], placeKey: "", watchT: null,
   party: new Set(),          // HUD party actor ids (party extras on their lines)
   units: null,               // last turn-actions snapshot (all combatants)
   rows: new Map(),           // unit id → row record
@@ -662,6 +663,11 @@ export function buildDesk(partyIds = []) {
   const s = D.layers.step;
   D.step = { cmdsEl: s.querySelector(".gmd-cmds"), workEl: s.querySelector(".gmd-work"), detailEl: s.querySelector(".gmd-detail"),
     holds: 0, holdActorId: null, overlay: null, under: null, crumb: null, card: null, budget: null, graceT: null };
+  // The players watch a turn this GM composes for an offline player's creature
+  // (ally-watch.js), as they would watch that player's own drawer.
+  const watchMo = new MutationObserver(queueDeskWatch);
+  watchMo.observe(s, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "inert"], characterData: true });
+  D.offFns.push(() => { watchMo.disconnect(); clearTimeout(D.watchT); D.watchT = null; publishDeskWatch({ actorId: null }); });
   D.rows.clear();
 
   D.bar.addEventListener("click", onBarClick);
@@ -1431,9 +1437,27 @@ function render() {
   // New content in the console (another layer, the next reaction menu) fades in.
   const sig = `${showMirror ? "mirror" : layer === "card" ? "idle" : layer}|${layer === "react" ? D.rxCur ?? "" : ""}`;
   if (sig !== D.swapSig) { const first = D.swapSig == null; D.swapSig = sig; if (!first) swapConsole(mine); }
+  queueDeskWatch();
   if (mine) tabAlert("gm-desk", layer === "take" ? "★ Take Turn" : layer === "react" ? "★ Your call" : D.step?.cmdsEl?.querySelector(".fud-octopath:not([inert])") ? "★ Your turn" : "★ Your pick");
   else tabAlertClear("gm-desk");
   sendPresence(layer, locked);
+}
+
+// ── the players' ally watch ────────────────────────────────────────────────────
+// Only a step this GM composes itself: a creature whose player is online sends
+// its own drawer (and the desk shows that mirror instead).
+function queueDeskWatch() {
+  if (!D.watchT) D.watchT = setTimeout(sendDeskWatch, 140);
+}
+function sendDeskWatch() {
+  D.watchT = null;
+  const s = D.step;
+  if (!s) return;
+  const a = activeLayer() === "step" ? stepActor() : null;
+  const actorId = a && !liveOwnerOf(a) ? a.id : null;
+  const cost = hudCostPreview();
+  publishDeskWatch({ actorId, cmdsEl: s.cmdsEl, workEl: s.workEl, card: s.card, crumb: s.crumb,
+    cost: cost && cost.actorId === actorId ? cost : null });
 }
 
 // ── two GMs: who has what open ────────────────────────────────────────────────

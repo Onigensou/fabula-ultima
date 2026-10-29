@@ -528,18 +528,25 @@ export function pickDocked(host, {
       more();
     }
     const r = flat[cur];
-    // A plain option with no picture and no text (a menu's "Create a new
-    // Phantasm") gets the card of the skill it belongs to when there is one,
-    // else no card. Never the previous row's: that described another option.
-    const entry = r ? rowCardEntry(r, (useTabs ? groups[activeTab]?.label : groups[secOf[cur]]?.label) || tab) : null;
+    host.setCard?.(cardFor(cur));
+    try { onFocusRow?.(r ?? null); } catch (e) { warn("drawer list: onFocusRow threw", e); }
+  }
+  // The card a row shows when focused. A plain option with no picture and no
+  // text (a menu's "Create a new Phantasm") gets the card of the skill it
+  // belongs to when there is one, else no card. Never the previous row's: that
+  // described another option.
+  function cardFor(i) {
+    const r = flat[i];
+    const entry = r ? rowCardEntry(r, (useTabs ? groups[activeTab]?.label : groups[secOf[i]]?.label) || tab) : null;
     // An option with text of its own shows THAT text, however short ("Target
     // recovers 30 HP."): a length floor here used to swap short ones for the
     // whole parent skill's description, so half a menu read the same.
     const worthACard = entry && (entry.img || (entry.body && entry.body !== entry.name));
-    host.setCard?.(worthACard ? (ctxEntry ? { ...entry, from: ctxEntry.from } : entry)
-      : ctxEntry && r ? { ...ctxEntry, key: `${ctxEntry.key}|${cur}`, name: stripTags(r.primary) || ctxEntry.from } : ctxEntry);
-    try { onFocusRow?.(r ?? null); } catch (e) { warn("drawer list: onFocusRow threw", e); }
+    return worthACard ? (ctxEntry ? { ...entry, from: ctxEntry.from } : entry)
+      : ctxEntry && r ? { ...ctxEntry, key: `${ctxEntry.key}|${i}`, name: stripTags(r.primary) || ctxEntry.from } : ctxEntry;
   }
+  // Any row's card, for the players watching this list (ally-watch.js).
+  view._dhvCardOf = cardFor;
   function ensureVisible(list) {
     const el = list.querySelector(".dhv-row.is-cur");
     if (!el) return;
