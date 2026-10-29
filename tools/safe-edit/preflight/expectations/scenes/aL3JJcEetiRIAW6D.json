@@ -669,7 +669,7 @@
     }
   ],
   "notes": [],
-  "tileCount": 8,
+  "tileCount": 12,
   "full": {
     "name": "Wyrmwood_Map012",
     "navName": "Wyrmwood_Hot Spring",
@@ -1307,7 +1307,13 @@
         "flags": {
           "fabula-ultima-companion": {
             "footstepSurface": "water",
-            "footstepMuted": false
+            "footstepMuted": false,
+            "water": {
+              "depth": 0.5,
+              "bathable": true,
+              "autoColor": true,
+              "color": "#6fb8e8"
+            }
           }
         },
         "behaviors": [
