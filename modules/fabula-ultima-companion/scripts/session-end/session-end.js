@@ -107,7 +107,15 @@
   }
 
   function bell() {
-    try { AH()?.play({ src: BELL, volume: BELL_VOLUME, autoplay: true, loop: false }, false); } catch { /* audio optional */ }
+    try {
+      if (!game.audio?.locked) return void AH()?.play({ src: BELL, volume: BELL_VOLUME, autoplay: true, loop: false }, false);
+      // Foundry holds every sound until the player's first click, then plays the backlog. A player
+      // who joined and only watched hasn't clicked, so try a plain <audio>: Chrome lets it play on
+      // sites the player often hears sound from. Same loudness as the interface channel.
+      const a = new Audio(BELL);
+      a.volume = Math.min(1, BELL_VOLUME * (game.settings.get("core", "globalInterfaceVolume") ?? 0.5));
+      a.play().catch(() => { /* blocked until a click: the prompt and the tab title still show */ });
+    } catch { /* audio optional */ }
   }
 
   function show(seconds, text) {
