@@ -35,7 +35,8 @@ const _active = new Map();
 function fxModule() { return import("./director-vfx.js"); }
 function barModule() { return import("./damage-numbers/director-hp-bar.js"); }
 
-// Reveal ONE strike on every client.
+// Reveal ONE strike on every client. `actorsByToken` is empty for a forged
+// plan (the Anim Studio bench), so no HP bar or defeat follows its numbers.
 async function revealStrike(strike, { causeTokenUuid, actorsByToken }) {
   let vfx = null, bar = null;
   try { vfx = await fxModule(); } catch (e) { warn("chain presenter: vfx import failed", e); return; }
@@ -90,18 +91,20 @@ async function revealStrike(strike, { causeTokenUuid, actorsByToken }) {
 // Build a presenter for one planned Chain. Call arm() before the animation
 // script runs, startFallback() at the damage moment, flush() at the true end
 // (or on a GM skip), skip() when nobody is watching. `done` settles once every
-// strike has been revealed (or skipped).
-export function createChainPresenter(plan, { causeTokenUuid = null } = {}) {
+// strike has been revealed (or skipped). `bars: false` shows numbers only —
+// for a forged plan, whose HP values are not real; `reveal: false` shows
+// nothing but keeps the timing, so the bench can count cues without numbers.
+export function createChainPresenter(plan, { causeTokenUuid = null, bars = true, reveal = true } = {}) {
   const queue = [...(plan?.strikes ?? [])].sort((a, b) => a.index - b.index);
   const beatMs = Number(plan?.beatMs) || CHAIN_BEAT_MS;
   const actorsByToken = new Map();
-  for (const s of queue) for (const o of s.outcomes ?? []) {
+  if (bars) for (const s of queue) for (const o of s.outcomes ?? []) {
     if (!o?.tokenUuid || actorsByToken.has(o.tokenUuid)) continue;
     try { actorsByToken.set(o.tokenUuid, fromUuidSync(o.tokenUuid)?.actor ?? null); } catch { actorsByToken.set(o.tokenUuid, null); }
   }
   let resolveDone;
   const done = new Promise((r) => { resolveDone = r; });
-  let finished = false, armed = false, cueSeen = false, flushing = false;
+  let finished = false, armed = false, cueSeen = false, flushing = false, cues = 0;
   let beatTimer = null, stallTimer = null, hookId = null;
 
   const clearTimers = () => {
@@ -123,7 +126,7 @@ export function createChainPresenter(plan, { causeTokenUuid = null } = {}) {
     if (finished) return false;
     const s = queue.shift();
     if (!s) { finish(); return false; }
-    revealStrike(s, { causeTokenUuid, actorsByToken });
+    if (reveal) revealStrike(s, { causeTokenUuid, actorsByToken });
     if (!queue.length) finish();
     return true;
   };
@@ -139,6 +142,7 @@ export function createChainPresenter(plan, { causeTokenUuid = null } = {}) {
   const onCue = () => {
     if (finished || flushing) return;
     cueSeen = true;
+    cues++;
     if (beatTimer) { clearTimeout(beatTimer); beatTimer = null; }
     showNext();
     if (!finished) armStall();
@@ -149,6 +153,8 @@ export function createChainPresenter(plan, { causeTokenUuid = null } = {}) {
     done,
     get remaining() { return queue.length; },
     get finished() { return finished; },
+    // How many strikes the animation's own oni.hit() cues revealed.
+    get cues() { return cues; },
     // Listen for the animation's hit cues from the very start of the script.
     arm() {
       if (armed || finished) return;

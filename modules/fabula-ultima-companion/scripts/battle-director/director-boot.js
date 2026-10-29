@@ -122,7 +122,8 @@ import { peekTop, topIsFreeAction, topIsSrwDetour, stackDepth } from "./continua
 // Anim Studio preview — lets the Preview Bench run a skill/scratch animation
 // through the real BD execution core (payload shape, selection bridging, damage
 // gate) with NO director/combat/damage. See director-animation.js.
-import { previewAnimation, resolveAnimationSpec } from "./director-animation.js";
+import { previewAnimation, previewChainAnimation, resolveAnimationSpec } from "./director-animation.js";
+import { parseChainKeyword, fallbackBeatMs } from "./chain-strikes.js";
 // Test harness — side-effect import (registers
 // FUCompanion.api.test.runDirectorSkillCompute on the "ready" hook).
 // Doesn't add behavior to the live director; lets the test bridge
@@ -1036,6 +1037,16 @@ Hooks.once("ready", () => {
   const studio = (api.animStudio = api.animStudio ?? {});
   studio.preview = previewAnimation;
   studio.resolveSpec = resolveAnimationSpec;
+  // Chain rehearsal: a forged strike plan revealed on the script's oni.hit()
+  // cues, as in battle. chainSpecOf reads an item's `chain N` keyword
+  // ({ count, mode, beatMs } or null) — also used by the anim-studio CLI's push.
+  studio.previewChain = previewChainAnimation;
+  studio.chainSpecOf = async (itemUuid) => {
+    try {
+      const spec = parseChainKeyword((await fromUuid(itemUuid))?.system?.props?.action_keywords ?? "");
+      return spec ? { ...spec, beatMs: fallbackBeatMs(spec.count) } : null;
+    } catch { return null; }
+  };
   // Damage-number preview — fires the REAL production feedback (number + impact
   // + sound) on a token so the bench can show how a hit "feels" landing at the
   // animation's impact moment. Same path applyDamageToTarget drives in battle;

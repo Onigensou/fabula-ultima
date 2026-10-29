@@ -19,6 +19,7 @@ import { emitBattlerPose } from "./battler-pose.js";
 import { skillPose } from "./battler-pose-rules.js";
 import { stageScript, waitStaged, frameMeter } from "../action-animation/animation-stage.js";
 import { createChainPresenter } from "./chain-presenter.js";
+import { CHAIN_MAX, fallbackBeatMs } from "./chain-strikes.js";
 
 // How long the window must be continuously hidden before we start discarding
 // animations. On Windows `document.hidden` flips true for an ordinary alt-tab
@@ -552,7 +553,8 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
   // Abort mechanism: calling abortResolve() collapses the gate Promise.race.
   let abortResolve;
   const abortPromise = new Promise((res) => { abortResolve = res; });
-  const abort = () => { endWatch.settle(); presenter?.flush(); abortResolve(); };
+  let aborted = false;
+  const abort = () => { aborted = true; endWatch.settle(); presenter?.flush(); abortResolve(); };
 
   director.ctx.animationController = { playing: true, abort };
 
@@ -593,6 +595,7 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
         presenter.flush();
         await Promise.race([presenter.done, new Promise((r) => setTimeout(r, 2000))]);
       }
+      if (ran && !aborted) warnUncuedChain(script, chainPlan, presenter, director.ctx.actionResult);
     } catch (e) { warn("[BD Anim] Chain presenter threw", e); }
   }
 
@@ -615,6 +618,19 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
   } else {
     log(`[BD Anim] ANIMATION already left (now ${director.state}) — not advancing again`);
   }
+}
+
+// A Chain whose script never called oni.hit() played its strikes on the fixed
+// beat, not on its contact frames. Say so once per script per session, so the
+// author knows which animation wants cues (Anim Studio: verify --chain N).
+const _uncuedWarned = new Set();
+function warnUncuedChain(script, plan, presenter, ar) {
+  const n = plan?.strikes?.length ?? 0;
+  if (n < 2 || presenter.cues > 0 || _uncuedWarned.has(script)) return;
+  _uncuedWarned.add(script);
+  const name = ar?.skillName ?? ar?.weapon?.name ?? "this action";
+  warn(`[BD Anim] Chain ${n}: "${name}" has no oni.hit() cues — its strikes played on the fixed `
+    + `${Number(plan.beatMs) || 550} ms beat. Call oni.hit() on each contact frame of the inner script.`);
 }
 
 // ── Reaction-path play (round_end guest actions, etc.) ───────────────────
@@ -676,7 +692,8 @@ export async function playSkillAnimation({ skillUuid, casterTokenUuid, targetTok
 //
 // `outcomes` ([{ tokenUuid, hit, crit }]) is forged, not rolled: the bench's
 // Outcome selector puts it on the payload so a script that branches on hit/miss
-// can have either ending rehearsed. Leave it null to mean "unknown".
+// can have either ending rehearsed. Leave it null to mean "unknown". `strikes`
+// is a forged Chain plan's strikes, read by the script as `payload.strikes`.
 //
 // Returns { ok, ms } so the bench can report duration / loop.
 export async function previewAnimation({
@@ -687,6 +704,7 @@ export async function previewAnimation({
   casterTokenUuid = null,
   targetTokenUuids = [],
   outcomes = null,
+  strikes = null,
   timeoutMs = 35000,
 } = {}) {
   const s = spec?.script ?? script;
@@ -708,10 +726,74 @@ export async function previewAnimation({
       outcomes,
       abortPromise: null,
       timeoutMs,
+      strikes,
     });
     return { ok: true, ms: Math.round(performance.now() - t0) };
   } catch (e) {
     warn("[BD Anim] previewAnimation threw", e);
     return { ok: false, ms: Math.round(performance.now() - t0), error: String(e?.message ?? e) };
   }
+}
+
+// Anim Studio: rehearse a Chain animation. Forges a plan of `strikes` strikes
+// on the targets (the caster when none) — every strike a hit of `damage.amount`,
+// or every strike a miss — and runs the REAL presenter against the script's
+// oni.hit() cues, exactly as ANIMATION does: cues reveal strikes, the damage
+// moment starts the beat for any the cues have not reached, the true end
+// flushes the rest. Nothing is rolled or written; no HP bar moves.
+//
+// Returns preview's { ok, ms } plus { strikes, cued, cueCalls, beatMs }: `cued`
+// = strikes the cues revealed (0 → in battle they all go out on the beat),
+// `cueCalls` = every oni.hit() the script made (more than `strikes` means the
+// extras do nothing).
+export async function previewChainAnimation({
+  strikes = 2,
+  miss = false,
+  damage = null,
+  showNumbers = true,
+  ...preview
+} = {}) {
+  const count = Math.max(1, Math.min(CHAIN_MAX, Math.floor(Number(strikes) || 1)));
+  const { casterTokenUuid = null, targetTokenUuids = [] } = preview;
+  const tokens = targetTokenUuids.length ? targetTokenUuids : (casterTokenUuid ? [casterTokenUuid] : []);
+  const hit = {
+    hpLoss: Math.max(0, Number(damage?.amount) || 0), shieldLoss: 0,
+    element: damage?.element || "elementless", affinity: damage?.affinity || "NE", isCrit: !!damage?.isCrit,
+  };
+  const plan = {
+    instanceId: `anim-studio-${foundry.utils.randomID()}`,
+    count,
+    beatMs: fallbackBeatMs(count),
+    strikes: Array.from({ length: count }, (_, index) => ({
+      index,
+      roll: null,
+      outcomes: tokens.map((tokenUuid) => (miss ? { tokenUuid, kind: "miss" } : { tokenUuid, kind: "hit", ...hit })),
+    })),
+  };
+
+  let cueCalls = 0;
+  const cueHook = Hooks.on("oni:hit", () => { cueCalls++; });
+  const presenter = createChainPresenter(plan, { causeTokenUuid: casterTokenUuid, bars: false, reveal: !!showNumbers });
+  const endWatch = armAnimationEndWatch(casterTokenUuid, { timeoutMs: 45000 });
+  presenter.arm();
+  let res;
+  try {
+    res = await previewAnimation({ ...preview, strikes: plan.strikes });
+    if (res.ok) {
+      presenter.startFallback();
+      if (!endWatch.settled()) endWatch.promise.then(() => presenter.flush()).catch(() => {});
+    } else {
+      presenter.flush();
+    }
+    const cap = (count + 1) * (plan.beatMs + 200) + 8000;
+    await Promise.race([presenter.done, new Promise((r) => setTimeout(r, cap))]);
+    if (!presenter.finished) {
+      presenter.flush();
+      await Promise.race([presenter.done, new Promise((r) => setTimeout(r, 2000))]);
+    }
+  } finally {
+    Hooks.off("oni:hit", cueHook);
+    endWatch.settle();
+  }
+  return { ...res, strikes: count, cued: presenter.cues, cueCalls, beatMs: plan.beatMs };
 }

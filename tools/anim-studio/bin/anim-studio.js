@@ -7,13 +7,17 @@
 // Commands:
 //   list-templates                 List starter templates.
 //   new <template> [--out FILE]     Scaffold a script from a template.
-//   verify <file>                   Offline validate (compile + storage
+//   verify <file> [--chain N]       Offline validate (compile + storage
 //                                     round-trip + backtick/String.raw rules).
+//                                     --chain N: the script is for a Chain N
+//                                     action — warn if it has no oni.hit() cues.
 //   encode <file> [--out FILE]      Print/write the HTML-escaped stored form.
 //   decode <file> [--out FILE]      Reverse encode (stored HTML → plain JS).
 //   push <file> --uuid ITEM_UUID    Validate → encode → write to the item's
 //                                     system.props.animation_script (LIVE) →
-//                                     browser round-trip verify.
+//                                     browser round-trip verify. Warns when the
+//                                     item is a Chain N and the script has no
+//                                     oni.hit() cues.
 //   pull --uuid ITEM_UUID [--out F] Read an item's animation_script (LIVE) →
 //                                     decode → save to a file.
 //   sfx-sync                        Trigger the in-game Forge SFX scan (LIVE)
@@ -28,7 +32,8 @@
 
 const fs = require("fs");
 const path = require("path");
-const { encode, decode, validate } = require("../lib/encode.js");
+const { pathToFileURL } = require("url");
+const { encode, decode, validate, chainCueWarnings } = require("../lib/encode.js");
 const { Bridge } = require("../lib/bridge.js");
 
 const TEMPLATES_DIR = path.resolve(__dirname, "..", "templates");
@@ -86,11 +91,21 @@ function cmdNew(positional, flags) {
   ok(`scaffolded ${out} from template "${name}". Edit the CFG block, then: verify ${out}`);
 }
 
-function cmdVerify(positional) {
+// The BD's fixed Chain beat for `count` strikes, from the engine's own module
+// (pure, no Foundry); null if it cannot be loaded.
+async function chainBeatMs(count) {
+  try {
+    const file = path.resolve(__dirname, "..", "..", "..", "modules", "fabula-ultima-companion", "scripts", "battle-director", "chain-strikes.js");
+    return (await import(pathToFileURL(file).href)).fallbackBeatMs(count);
+  } catch { return null; }
+}
+
+async function cmdVerify(positional, flags) {
   const file = positional[0];
-  if (!file) die("usage: verify <file>");
+  if (!file) die("usage: verify <file> [--chain N]");
   const src = fs.readFileSync(file, "utf8");
-  const r = validate(src);
+  const chain = Math.floor(Number(flags.chain) || 0);
+  const r = validate(src, { chain, beatMs: chain >= 2 ? await chainBeatMs(chain) : null });
   for (const w of r.warnings) console.log(`  ⚠ ${w}`);
   if (r.ok) { ok(`${file} valid (${src.split("\n").length} lines).`); }
   else { for (const e of r.errors) console.error(`  ✗ ${e}`); process.exit(1); }
@@ -125,6 +140,15 @@ async function cmdPush(positional, flags) {
   const stored = encode(src);
   const bridge = new Bridge({ world: flags.world });
   await ensureLive(bridge);
+
+  // A Chain item reveals its strikes on the script's oni.hit() cues — say so
+  // before pushing a script that has none (warning only; it still plays).
+  const chain = await bridge.evalGM(
+    `return (await FUCompanion.api.animStudio?.chainSpecOf?.(${JSON.stringify(uuid)})) ?? null;`,
+  ).catch(() => null);
+  if (chain?.count >= 2) {
+    for (const w of chainCueWarnings(src, { chain: chain.count, beatMs: chain.beatMs })) console.log(`  ⚠ ${w}`);
+  }
   await bridge.updateDocument(uuid, { [ANIM_FIELD]: stored });
   ok(`pushed ${src.length} chars → ${uuid}`);
 
@@ -190,7 +214,7 @@ async function main() {
   switch (cmd) {
     case "list-templates": return cmdListTemplates();
     case "new":            return cmdNew(positional, flags);
-    case "verify":         return cmdVerify(positional);
+    case "verify":         return cmdVerify(positional, flags);
     case "encode":         return cmdEncode(positional, flags);
     case "decode":         return cmdDecode(positional, flags);
     case "push":           return cmdPush(positional, flags);

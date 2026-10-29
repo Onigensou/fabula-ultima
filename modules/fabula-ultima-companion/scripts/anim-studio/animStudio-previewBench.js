@@ -17,6 +17,11 @@
 //     so a script that branches on hit/miss can have EITHER ending rehearsed
 //     here. The impact indicator follows it — a damage number or the real MISS
 //     word + whiff.
+//   - Strikes (Chain N): 2+ forges a Chain plan and plays its strikes through
+//     the REAL presenter — each oni.hit() cue the script calls reveals the next
+//     strike, the rest go out on the fixed beat, as in battle. Prefilled from
+//     the item's `chain N` keyword; the status line says how many strikes the
+//     cues carried, so a script missing its cues shows up here.
 //   - Replay + Loop.
 //   - Live CFG panel: the `const CFG = {…}` block is auto-extracted into an
 //     editable box; edit numbers and hit Run to see the change instantly. The
@@ -37,6 +42,7 @@
   let _dlg = null;
   let _selItem = "";       // sticky selected item uuid — survives dropdown rebuilds
   let _casterUuid = null;  // sticky caster — locked while tuning so a run's control-bridge can't lose it
+  let _strikesFor = "";    // the item Strikes was last prefilled from
 
   function esc(s) {
     return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;")
@@ -86,6 +92,13 @@
   }
 
   // ── Run ───────────────────────────────────────────────────────────────────
+
+  // How a Chain preview's strikes were timed — the script's cues, or the beat.
+  function chainCueNote({ strikes, cued, cueCalls, beatMs }) {
+    if (!cued) return `⚠ Chain ${strikes}: no oni.hit() cues — in battle every strike goes out on the ${beatMs}ms beat`;
+    if (cued < strikes) return `⚠ Chain ${strikes}: ${cued} strike(s) on cues, ${strikes - cued} on the beat — add oni.hit() on the missing contact frames`;
+    return `Chain ${strikes}: every strike on a cue${cueCalls > strikes ? ` (${cueCalls - strikes} extra oni.hit() ignored)` : ""}`;
+  }
 
   async function run(root) {
     if (_running) return;
@@ -152,6 +165,8 @@
     for (const o of outcomes) o.crit = o.hit && dmgCfg.isCrit;
     // Whom the numbers pop on: the targets, or the caster if none (self FX).
     const dmgTokens = targetUuids.length ? targetUuids : (casterUuid ? [casterUuid] : []);
+    const strikes = Math.max(1, Math.min(20, Math.floor(Number(root.querySelector(".as-strikes")?.value) || 1)));
+    const chain = strikes >= 2 && !!api.previewChain;
 
     const statusEl = root.querySelector(".as-status");
     _running = true;
@@ -159,7 +174,10 @@
     do {
       let res;
       try {
-        res = await api.preview({ script, timingMode, timingOffset, casterTokenUuid: casterUuid, targetTokenUuids: targetUuids, outcomes });
+        const args = { script, timingMode, timingOffset, casterTokenUuid: casterUuid, targetTokenUuids: targetUuids, outcomes };
+        res = chain
+          ? await api.previewChain({ ...args, strikes, miss: isMiss, damage: dmgCfg, showNumbers: dmgOn })
+          : await api.preview(args);
       } catch (e) {
         console.error(TAG, "preview threw", e);
         res = { ok: false, ms: 0, error: String(e?.message ?? e) };
@@ -169,8 +187,9 @@
       // On a miss it is the MISS word + whiff instead — the same pair RESOLVE
       // floats on a dodged attack. A cinematic that pops its OWN miss number
       // (Crysta's Zero Power does, at its own beat) wants this box UNCHECKED,
-      // exactly as for a script that owns its damage number.
-      if (res.ok && dmgOn && dmgTokens.length) {
+      // exactly as for a script that owns its damage number. A Chain preview
+      // has already shown its strikes, one per cue.
+      if (res.ok && !chain && dmgOn && dmgTokens.length) {
         for (const t of dmgTokens) {
           if (isMiss) api.previewMissVfx?.({ tokenUuid: t });
           else api.previewDamageVfx?.({ tokenUuid: t, resource: "hp", amount: dmgCfg.amount, element: dmgCfg.element, affinity: dmgCfg.affinity, isCrit: dmgCfg.isCrit });
@@ -178,7 +197,7 @@
       }
       if (statusEl) {
         statusEl.textContent = res.ok
-          ? `✓ done in ${res.ms}ms${_loop ? " · looping…" : ""}`
+          ? `✓ done in ${res.ms}ms${chain ? ` · ${chainCueNote(res)}` : ""}${_loop ? " · looping…" : ""}`
           : `✗ error: ${res.error ?? "unknown"}`;
       }
       if (!res.ok) break;                 // don't loop a broken script
@@ -204,6 +223,14 @@
           const spec = await studioApi()?.resolveSpec({ skillUuid: uuid });
           script = spec?.script ?? "";
         } catch { /* ignore */ }
+        // A newly picked item sets Strikes from its `chain N` keyword (1 when it
+        // has none); re-reading the same item keeps a hand-typed value.
+        if (uuid !== _strikesFor) {
+          _strikesFor = uuid;
+          const chain = await studioApi()?.chainSpecOf?.(uuid);
+          const box = root.querySelector(".as-strikes");
+          if (box) box.value = String(chain?.count ?? 1);
+        }
       }
     }
     const cfg = extractCfg(script);
@@ -306,6 +333,8 @@
           <option value="NE">normal</option><option value="VU">WEAK!</option><option value="RS">resist</option>
         </select>
         <label><input type="checkbox" class="as-dmg-crit"/> crit</label>
+        <label title="Chain N: 2+ plays that many strikes, each revealed on the script's next oni.hit() cue (the rest on the fixed beat), as in battle. Prefilled from the item's chain keyword.">Strikes
+          <input type="number" class="as-strikes" value="1" min="1" max="20" style="width:44px;"/></label>
       </div>
 
       <div style="display:flex;gap:8px;align-items:center;">

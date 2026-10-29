@@ -42,6 +42,37 @@ function decode(html) {
     .replace(/&#39;/g, "'");
 }
 
+// ── Chain cues ──────────────────────────────────────────────────────────────
+// A Chain N action reveals strike k on the k-th `oni.hit()` its inner script
+// calls (BD chain-presenter). `oni` exists only in the pseudo.play inner
+// script, so a call in the outer script throws. A Chain script with no cue
+// still plays, but its strikes go out on a fixed beat from the damage moment
+// instead of on the contact frames. Returns warnings; `chain` is the strike
+// count (0 = unknown / not a Chain), `beatMs` that fixed beat if known.
+const CUE_RX = /\boni\s*\.\s*hit\s*\(/;
+
+function stripComments(src) {
+  return String(src).replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:\\])\/\/.*$/gm, "$1");
+}
+
+function chainCueWarnings(script, { chain = 0, beatMs = null } = {}) {
+  const src = String(script);
+  const m = src.match(/String\.raw\s*`([\s\S]*?)`/);
+  const inner = m ? m[1] : "";
+  const outer = m ? src.replace(m[0], "``") : src;
+  const out = [];
+  if (CUE_RX.test(stripComments(outer)) && m) {
+    out.push("oni.hit() is called in the OUTER script — `oni` only exists inside the pseudo.play inner script (the String.raw block), so the call throws there.");
+  }
+  const n = Math.floor(Number(chain) || 0);
+  if (n >= 2 && !CUE_RX.test(stripComments(m ? inner : src))) {
+    out.push(`Chain ${n}: the script never calls oni.hit() — in battle its ${n} strikes go out on a fixed `
+      + `${beatMs ? `${beatMs} ms ` : ""}beat from the damage moment, not on the contact frames. `
+      + "Call oni.hit() on each contact frame (once per strike).");
+  }
+  return out;
+}
+
 // ── Validate ────────────────────────────────────────────────────────────────
 // Returns { ok, errors:[], warnings:[] }.
 //   - Compiles the script as new Function("payload","targets", src) → syntax.
@@ -49,7 +80,8 @@ function decode(html) {
 //   - If the script uses a String.raw`…` inner template, enforces exactly 2
 //     backticks total and none inside the inner (+ inner compiles as an async
 //     IIFE the way the pseudo listener runs it).
-function validate(script) {
+//   - Chain cues (chainCueWarnings), with `opts.chain` = the strike count.
+function validate(script, opts = {}) {
   const errors = [];
   const warnings = [];
   const src = String(script);
@@ -103,7 +135,10 @@ function validate(script) {
     errors.push("game.ONI.pseudo.play({…}) is missing a `scriptId:` — pseudo-core blocks the emit without one, so nothing plays. Add e.g. scriptId: \"anim-studio/<name>\".");
   }
 
+  // 6. Chain hit cues.
+  warnings.push(...chainCueWarnings(src, opts));
+
   return { ok: errors.length === 0, errors, warnings };
 }
 
-module.exports = { encode, decode, validate };
+module.exports = { encode, decode, validate, chainCueWarnings };
