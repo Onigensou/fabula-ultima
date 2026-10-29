@@ -4521,6 +4521,8 @@ async function applyTriggerOpportunityEffect(row, ctx) {
       excludeIds: distinct ? [...excludeIds] : [],
       announce: i === 0,   // dramatic intro once; subsequent picks chain in
       title,
+      // Fired during a battle, the offer ends with it (director-boot stop).
+      battleBound: !!globalThis.FUCompanion?.api?.experimental?.battleDirector?.isRunning?.(),
     }).catch((e) => { warn("skill-effects.trigger_opportunity: offer threw", e); return { cancelled: true }; });
     if (res?.cancelled || !res?.optionId) break;   // a decline ends the run
     picked.push(res.optionId);

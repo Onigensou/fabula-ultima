@@ -41,6 +41,9 @@
   const MSG_TAKEOVER     = "OPP_TAKEOVER";
   const MSG_TAKEOVER_ACK = "OPP_TAKEOVER_ACK";
   const MSG_RESOLVED     = "OPP_RESOLVED";
+  // Withdraw an offer nobody will resolve any more (its battle ended, or the
+  // battle stopped waiting for it): close its wheel on every client.
+  const MSG_WITHDRAW     = "OPP_WITHDRAW";
 
   const DRAMATIC_DURATION = 2800; // ms — must match the CSS animation duration
 
@@ -75,7 +78,9 @@
   let _staggerMs = 800;   // delay BEFORE the "Opportunity!" animation fires
 
   // ── In-flight offer tracking ────────────────────────────────────────────────
-  const _pending = new Map(); // offerKey → { resolve, actorUuid }
+  // battleBound: opened by the Battle Director, so it lives and dies with the
+  // battle (withdrawBattleOffers). Offers from outside battle never are.
+  const _pending = new Map(); // offerKey → { resolve, actorUuid, battleBound }
 
   // A monotonic suffix keeps chained offers distinct even inside one millisecond
   // (A Million Possibility fires three pickers off the same action card). The key
@@ -124,6 +129,45 @@
 
   let _liveOffer   = null;  // this client's own in-flight prompt phase
   let _takeoverReq = null;  // { offerKey, timer } — this GM's outstanding request
+
+  // ── Withdrawing an offer ────────────────────────────────────────────────────
+  // An offer the Battle Director opened lives and dies with its battle. When
+  // the battle ends (End Battle, rewind, an abort) or stops waiting for the
+  // pick (the 120 s safety), nobody will resolve it — so its wheel closes on
+  // every client instead of standing in front of the owner and the mirrors.
+  // Offers opened outside battle are never withdrawn here.
+
+  // This client's own picker or mirror of `offerKey`, if any, closes silently.
+  function closeWithdrawnLocally(offerKey) {
+    if (_liveOffer?.offerKey === offerKey) getDialog()?.cancelPicker?.();
+    if (_specOfferKey && _specOfferKey === offerKey) {
+      _specOfferKey = null;
+      getDialog()?.dismissSpectator?.({ silent: true });
+    }
+  }
+
+  // Everyone else hears it on the socket (which never echoes to the sender).
+  function withdrawOffer(offerKey, reason = "") {
+    game.socket.emit(SOCKET_CH, { type: MSG_WITHDRAW, payload: { offerKey, reason } });
+    closeWithdrawnLocally(offerKey);
+  }
+
+  // Withdraw every battle offer still open — the one this client is picking
+  // (an NPC's crit, or an offline owner's) and every one routed to a player —
+  // and settle their callers as cancelled. Returns how many were withdrawn.
+  function withdrawBattleOffers({ reason = "battle ended" } = {}) {
+    let n = 0;
+    if (_liveOffer?.battleBound && getDialog()?.cancelPicker?.()) n++;   // its own close broadcast follows
+    for (const [offerKey, entry] of Array.from(_pending)) {
+      if (!entry?.battleBound) continue;
+      _pending.delete(offerKey);
+      withdrawOffer(offerKey, reason);
+      try { entry.resolve({ cancelled: true }); } catch (_) {}
+      n++;
+    }
+    if (n) console.log(`${TAG} withdrew ${n} battle opportunit${n === 1 ? "y" : "ies"} — ${reason}`);
+    return n;
+  }
 
   const _awaitingTakeover = new Map(); // offerKey → { resolve, timer }
 
@@ -532,7 +576,7 @@
     if (offerKey && !result?.takenOver) {
       game.socket.emit(SOCKET_CH, {
         type:    MSG_SPEC_CLOSE,
-        payload: { offerKey, optionId: result?.optionId ?? null, cancelled: !!result?.cancelled },
+        payload: { offerKey, optionId: result?.optionId ?? null, cancelled: !!result?.cancelled, silent: !!result?.withdrawn },
       });
     }
 
@@ -544,12 +588,12 @@
   // the effect's pre handler. Returns { optionId, preResult } on success or
   // { cancelled: true } if the player declined or the pre handler cancelled.
   // Shared between the local owner path and the socket OPP_OFFER handler.
-  async function runPromptPhase({ actorName, actorUuid, context = {}, excludeIds = [], title = null, offerKey = null }) {
+  async function runPromptPhase({ actorName, actorUuid, context = {}, excludeIds = [], title = null, offerKey = null, battleBound = false }) {
     // Published so a GM's OPP_TAKEOVER can find (and abort) this wheel, and so
     // the ack can hand the GM the context it needs to finish the job. Cleared in
     // `finally` — while it points at a prompt phase whose wheel has already
     // closed (the pre phase), abortPicker() fails and the hand-over is refused.
-    _liveOffer = offerKey ? { offerKey, actorUuid, actorName, context, excludeIds, title } : null;
+    _liveOffer = offerKey ? { offerKey, actorUuid, actorName, context, excludeIds, title, battleBound } : null;
     try {
       const result = await showDialogLocally({ actorName, actorUuid, excludeIds, title, offerKey });
       // A GM took the wheel off us — the pick, and its resolution, are theirs.
@@ -631,7 +675,7 @@
    * @param {object}  [opts.context]      Caller metadata
    * @returns {Promise<{optionId:string}|{cancelled:boolean}>}
    */
-  async function offer({ actorUuid, actorName, source, actionCardId, context = {}, excludeIds = [], announce = true, title = null }) {
+  async function offer({ actorUuid, actorName, source, actionCardId, context = {}, excludeIds = [], announce = true, title = null, battleBound = false }) {
     const ownerUserId = resolveOwnerUserId(actorUuid);
     const amGM        = game.user?.isGM ?? false;
 
@@ -660,7 +704,7 @@
 
       // Step 3 — prompt phase: picker + pre handler (all user decisions happen here)
       const offerKey = makeOfferKey(actorUuid, actionCardId);
-      const picked   = await runPromptPhase({ actorName, actorUuid, context, excludeIds, title, offerKey });
+      const picked   = await runPromptPhase({ actorName, actorUuid, context, excludeIds, title, offerKey, battleBound });
 
       // A GM claimed the wheel mid-decision. They resolve the offer; we keep our
       // caller's await alive until their OPP_RESOLVED lands, so a pipeline that
@@ -701,18 +745,21 @@
       // Step 3 — send offer; player runs prompt phase (picker + pre), sends back OPP_PICKED
       return new Promise(resolve => {
         const offerKey = makeOfferKey(actorUuid, actionCardId);
-        _pending.set(offerKey, { resolve, actorUuid });
+        _pending.set(offerKey, { resolve, actorUuid, battleBound });
 
         game.socket.emit(SOCKET_CH, {
           type:    MSG_OFFER,
           payload: { offerKey, actorUuid, actorName, context, targetUserId: ownerUserId, excludeIds, title },
         });
 
-        // Safety timeout: give up after 120 s
+        // Safety timeout: give up after 120 s. A battle moves on from here, and
+        // a pick made after this is ignored — so a battle offer's wheel closes
+        // now instead of staying up on the owner's screen.
         setTimeout(() => {
           if (!_pending.has(offerKey)) return;
           _pending.delete(offerKey);
           console.warn(TAG, `offer() timed out for key=${offerKey}`);
+          if (battleBound) withdrawOffer(offerKey, "timed out");
           resolve({ cancelled: true });
         }, 120_000);
       });
@@ -805,6 +852,15 @@
         const { offerKey } = msg.payload ?? {};
         const pending = _pending.get(offerKey);
         if (pending) { _pending.delete(offerKey); pending.resolve({ cancelled: true }); }
+        return;
+      }
+
+      // OPP_WITHDRAW — the offer's battle is over: close our picker / mirror of it.
+      // A picker closed this way answers OPP_CANCELLED, which the GM ignores (the
+      // pending entry is already gone).
+      if (msg.type === MSG_WITHDRAW) {
+        const p = msg.payload ?? {};
+        if (p.offerKey) closeWithdrawnLocally(p.offerKey);
         return;
       }
 
@@ -943,6 +999,7 @@
     offer,
     processCheckCrits,
     isPrimaryGM,
+    withdrawBattleOffers,
     get OPTIONS()       { return getConfig()?.OPTIONS ?? []; },
     get staggerMs()     { return _staggerMs; },
     set staggerMs(v)    { _staggerMs     = Math.max(0,   Number(v) || 0); },

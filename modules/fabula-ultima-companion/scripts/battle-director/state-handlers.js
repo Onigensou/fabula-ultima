@@ -7836,6 +7836,7 @@ const OpportunityWindow = {
       source:       "action",
       actionCardId: opp.actionCardId,
       context:      { source: "battle_director" },
+      battleBound:  true,   // withdrawn if the battle ends before the pick (director-boot stop)
     }).catch(e => warn("OPPORTUNITY_WINDOW: offer() threw", e));
 
     director.enqueue({ type: INTENTS.INTERNAL_DONE });

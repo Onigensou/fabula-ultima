@@ -501,12 +501,19 @@
         resolve(result);
       }
 
-      // Exposed so the manager can hand this wheel over to a GM mid-decision.
+      // Exposed so the manager can hand this wheel over to a GM mid-decision,
+      // or withdraw the offer when nobody will resolve it any more (the battle
+      // that opened it ended). A withdrawal closes like a silent decline.
       _picker = {
         abort: () => {
           if (done) return false;
           playSound(SFX_CANCEL, 0.5);
           finish({ takenOver: true });
+          return true;
+        },
+        cancel: () => {
+          if (done) return false;
+          finish({ cancelled: true, withdrawn: true });
           return true;
         },
       };
@@ -700,6 +707,9 @@
   /** Abort the live picker on this client (GM take-control). True if one was open. */
   function abortPicker() { return _picker?.abort() ?? false; }
 
+  /** Withdraw the live picker on this client (silent decline). True if one was open. */
+  function cancelPicker() { return _picker?.cancel?.() ?? false; }
+
   /** Re-arm (or re-label) the mirror's Take Control button after a failed request. */
   function setSpectatorTakeControl({ enabled = true, label = "⚙ Take Control" } = {}) {
     const btn = _spectator?.backdrop?.querySelector(".oni-opp-btn-takeover");
@@ -718,6 +728,7 @@
     dismissSpectator,
     setSpectatorTakeControl,
     abortPicker,
+    cancelPicker,
     isPickerOpen,
     isSpectating,
   });

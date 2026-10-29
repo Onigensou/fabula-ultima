@@ -407,6 +407,14 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
 
   try { await _instance.stop({ reason }); } catch (e) { warn("stop threw", e); }
 
+  // An Opportunity the battle opened and nobody picked yet (End Battle or a
+  // rewind during the wheel): close it on every client — the owner's picker and
+  // every spectator mirror — since no battle is left to resolve it. Called after
+  // the instance stopped, so the waiting OPPORTUNITY_WINDOW cannot advance a
+  // stopped FSM. Offers from outside battle (exploration checks) are untouched.
+  try { globalThis.ONI?.OpportunitySystem?.withdrawBattleOffers?.({ reason: `battle stopped (${reason})` }); }
+  catch (e) { warn("stop: withdrawing battle opportunities threw", e); }
+
   // Drop any free-action request that was granted but never drained. The queue
   // is a module singleton, so without this it OUTLIVES the battle: a round-end
   // grant (Late Actor) that the fight ended on top of would still be sitting
