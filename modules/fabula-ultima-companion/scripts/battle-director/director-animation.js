@@ -538,6 +538,9 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
   // Skip Animation is the GM saying "get on with it": it collapses the gate
   // AND settles this, so RESOLVE never waits on a cinematic the GM skipped.
   const endWatch = armAnimationEndWatch(casterTokenUuid, { timeoutMs: 45000 });
+  // Which action this run belongs to — the closing INTERNAL_DONE only advances
+  // the ANIMATION of the SAME action.
+  const _actionId = director.ctx?.actionResult?._instanceId ?? null;
 
   // Chain N: the strikes are revealed one by one on the script's `oni.hit()`
   // cues, so the presenter listens from before the script starts. A script
@@ -602,7 +605,16 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
   else endWatch.settle();
 
   // Always advance — even on error or abort, RESOLVE must run to apply damage.
-  director.enqueue({ type: INTENTS.INTERNAL_DONE });
+  // But only out of THIS action's ANIMATION: when the state was already left
+  // (its 35 s timeout on a script that never ends, a STOP), the FSM is past it,
+  // and a late INTERNAL_DONE would advance whatever state it is in now —
+  // RESOLVE mid-write, or the reaction window. (A Chain's presenter can hold
+  // this call past the gate, which makes the window wider; the race predates it.)
+  if (director.state === "ANIMATION" && director.ctx?.actionResult?._instanceId === _actionId) {
+    director.enqueue({ type: INTENTS.INTERNAL_DONE });
+  } else {
+    log(`[BD Anim] ANIMATION already left (now ${director.state}) — not advancing again`);
+  }
 }
 
 // ── Reaction-path play (round_end guest actions, etc.) ───────────────────

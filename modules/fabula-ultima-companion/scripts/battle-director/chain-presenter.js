@@ -26,6 +26,11 @@ const TAIL_MS = 260;       // let the last number pop before RESOLVE writes HP
 // Transient on purpose — never persisted with director.ctx.
 const _presented = new Set();
 export function wasPresented(plan) { return !!plan?.instanceId && _presented.has(plan.instanceId); }
+// The presenter currently revealing each action, so RESOLVE can JOIN it rather
+// than start a second one — ANIMATION can be left before its presenter is done
+// (the 35 s state timeout on a script that never ends, an abort), and two
+// presenters would show every strike twice.
+const _active = new Map();
 
 function fxModule() { return import("./director-vfx.js"); }
 function barModule() { return import("./damage-numbers/director-hp-bar.js"); }
@@ -109,7 +114,10 @@ export function createChainPresenter(plan, { causeTokenUuid = null } = {}) {
     clearTimers();
     if (hookId != null) { try { Hooks.off("oni:hit", hookId); } catch {} hookId = null; }
     if (plan?.instanceId) _presented.add(plan.instanceId);
-    setTimeout(() => resolveDone(), TAIL_MS);
+    setTimeout(() => {
+      if (plan?.instanceId && _active.get(plan.instanceId) === api) _active.delete(plan.instanceId);
+      resolveDone();
+    }, TAIL_MS);
   };
   const showNext = () => {
     if (finished) return false;
@@ -136,7 +144,7 @@ export function createChainPresenter(plan, { causeTokenUuid = null } = {}) {
     if (!finished) armStall();
   };
 
-  return {
+  const api = {
     plan,
     done,
     get remaining() { return queue.length; },
@@ -174,11 +182,24 @@ export function createChainPresenter(plan, { causeTokenUuid = null } = {}) {
       finish();
     },
   };
+  if (plan?.instanceId) _active.set(plan.instanceId, api);
+  return api;
 }
 
 // Present a plan with the beat alone — for actions that have no animation
-// script (or never reached one). Resolves when every strike is shown.
+// script (or never reached one). Resolves when every strike is shown. If a
+// presenter is already revealing this action (ANIMATION was left early), JOIN
+// it: let it finish on its own timing, never start a second one.
 export async function presentChainWithoutAnimation(plan, opts = {}) {
+  const live = plan?.instanceId ? _active.get(plan.instanceId) : null;
+  if (live && !live.finished) {
+    live.startFallback();
+    const capLive = (live.remaining + 1) * ((Number(plan?.beatMs) || CHAIN_BEAT_MS) + 200) + 2000;
+    await Promise.race([live.done, new Promise((r) => setTimeout(r, capLive))]);
+    if (!live.finished) live.flush();
+    await Promise.race([live.done, new Promise((r) => setTimeout(r, 1500))]);
+    return live;
+  }
   const p = createChainPresenter(plan, opts);
   p.arm();
   p.startFallback();
