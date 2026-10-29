@@ -2,7 +2,7 @@
   "id": "fabula-ultima-companion",
   "title": "FabulaUltimaCompanion",
   "description": "Adds custom hooks and cool functionality.",
-  "version": "1.0.482",
+  "version": "1.0.483",
   "compatibility": {
     "minimum": "12",
     "verified": "12"
@@ -34,6 +34,7 @@
     "scripts/scene-texture-repair.js",
     "scripts/reload-broadcast.js",
     "scripts/reload-button.js",
+    "scripts/session-end/session-end.js",
     "scripts/client-health.js",
     "scripts/db-resolver.js",
     "scripts/party-sync/party-sync-core.js",
