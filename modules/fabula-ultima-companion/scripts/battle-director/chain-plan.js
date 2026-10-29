@@ -41,15 +41,16 @@ export function chainSpecFor({ kind = null, skillItem = null, weapon = null, isC
   return parseChainKeyword(lists.join(","));
 }
 
-// Random mode draws each strike's target from the card's targets when the
-// action is COMPUTED, so the card already names who gets hit and every
-// targeting reaction sees the real targets. Returns the spec with
-// `strikeTargets` filled, plus the distinct set the card should keep.
+// Random and pick modes assign each strike's target when the action is
+// COMPUTED, so the card already names who gets hit and every targeting
+// reaction sees the real targets. Random draws from the card's targets; pick
+// goes round-robin over them in the order they were picked. Returns the spec
+// with `strikeTargets` filled, plus the distinct set the card should keep.
 export function drawChainTargets(spec, targetUuids, rng = Math.random) {
   if (!spec) return null;
-  if (spec.mode !== "random" || !targetUuids?.length) return { spec, keep: null };
+  if ((spec.mode !== "random" && spec.mode !== "pick") || !targetUuids?.length) return { spec, keep: null };
   const { strikeTargets, cardTargets } = assignStrikeTargets({
-    count: spec.count, mode: "random", pool: targetUuids, cardTargets: targetUuids, rng,
+    count: spec.count, mode: spec.mode, pool: targetUuids, picks: targetUuids, cardTargets: targetUuids, rng,
   });
   return { spec: { ...spec, strikeTargets }, keep: cardTargets };
 }

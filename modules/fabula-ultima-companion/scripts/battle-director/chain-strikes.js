@@ -62,8 +62,10 @@ export function makeRng(seed = 1) {
 // Per-strike target lists.
 //   same   — every strike hits every card target (Chain on an AoE hits them all).
 //   random — each strike hits ONE target drawn from `pool` (with replacement).
-//   pick   — each strike hits the target the player assigned to it (`picks`,
-//            duplicates allowed); a short list repeats its last pick.
+//   pick   — the strikes go round-robin over the creatures the player picked,
+//            in pick order: pick one and every strike lands on it, pick two
+//            for Chain 3 and it is A, B, A. (No new picker: the normal target
+//            pick decides who; the order decides who takes the extra strike.)
 // Returns { strikeTargets: string[][], cardTargets: string[] } where
 // cardTargets is the distinct set in first-hit order (what the card shows).
 export function assignStrikeTargets({ count, mode = "same", cardTargets = [], pool = [], picks = [], rng = Math.random } = {}) {
@@ -72,7 +74,7 @@ export function assignStrikeTargets({ count, mode = "same", cardTargets = [], po
   if (mode === "random" && pool.length) {
     for (let i = 0; i < n; i++) strikeTargets.push([pool[Math.floor(rng() * pool.length) % pool.length]]);
   } else if (mode === "pick" && picks.length) {
-    for (let i = 0; i < n; i++) strikeTargets.push([picks[Math.min(i, picks.length - 1)]]);
+    for (let i = 0; i < n; i++) strikeTargets.push([picks[i % picks.length]]);
   } else {
     for (let i = 0; i < n; i++) strikeTargets.push([...cardTargets]);
   }

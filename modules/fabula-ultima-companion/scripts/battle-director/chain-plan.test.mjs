@@ -47,6 +47,7 @@ eq("old Combo items never chain", chainSpecFor({ kind: "Skill", skillItem: skill
   eq("narrow: rows", n.perTargetResults.map((t) => t.tokenUuid), ["C"]);
   eq("narrow: hit list", n.hitTokenUuids, ["C"]);
   eq("same mode keeps the card", drawChainTargets({ count: 3, mode: "same" }, ["A"]).keep, null);
+  eq("pick mode: round-robin over the picks", drawChainTargets({ count: 3, mode: "pick" }, ["A", "B"]).spec.strikeTargets, [["A"], ["B"], ["A"]]);
   eq("strikes per target (random)", strikesPerTarget({ count: 3, strikeTargets: [["A"], ["B"], ["A"]] }), { A: 2, B: 1 });
   eq("strikes per target (same)", strikesPerTarget({ count: 2 }, ["A", "B"]), { A: 2, B: 2 });
 }

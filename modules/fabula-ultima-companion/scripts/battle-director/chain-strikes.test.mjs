@@ -49,9 +49,15 @@ eq("same: every strike hits all card targets",
   const again = assignStrikeTargets({ count: 5, mode: "random", pool: ["A", "B", "C"], rng: makeRng(7) });
   eq("random: seeded draw is repeatable", again.strikeTargets, r.strikeTargets);
 }
-eq("pick: duplicates allowed, short list repeats the last",
-  assignStrikeTargets({ count: 3, mode: "pick", picks: ["A", "A"] }),
+eq("pick: one creature takes every strike",
+  assignStrikeTargets({ count: 3, mode: "pick", picks: ["A"] }),
   { strikeTargets: [["A"], ["A"], ["A"]], cardTargets: ["A"] });
+eq("pick: round-robin in pick order",
+  assignStrikeTargets({ count: 3, mode: "pick", picks: ["A", "B"] }).strikeTargets,
+  [["A"], ["B"], ["A"]]);
+eq("pick: more picks than strikes leaves the last unstruck",
+  assignStrikeTargets({ count: 2, mode: "pick", picks: ["A", "B", "C"] }).cardTargets,
+  ["A", "B"]);
 eq("random with an empty pool falls back to the card",
   assignStrikeTargets({ count: 2, mode: "random", pool: [], cardTargets: ["A"] }).strikeTargets,
   [["A"], ["A"]]);
