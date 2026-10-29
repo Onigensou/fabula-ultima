@@ -8,13 +8,16 @@
 //   Phase lock   Walking is for the roaming phases (Free Roam and the two
 //                ready lobbies). Activities, bonds, sleep, the rest-save
 //                ceremony and setting out lock it; a walk under way stops.
-//   Bedtime      When the camp goes to sleep, the primary GM lays every
-//                spawned member on their bed: the sleep pose spot paired with
-//                their member spot (event-system/pose-spots, poseSpot.slot;
-//                unpaired = the nearest free bed). They wake lying there and
-//                stand up at the bed's exit on their first move. A member with
-//                no bed goes back to the spot they were placed on, facing the
-//                way they were placed (flags.<module>.campHome).
+//   Morning      Sleep only fades to black; nobody moves. Once the rest is
+//                done, under the black and before the save ceremony, the
+//                primary GM lays every member on their bed: the sleep pose spot
+//                paired with their member spot (event-system/pose-spots,
+//                poseSpot.slot; unpaired = the nearest free bed). The screen
+//                fades in on Set Out with them lying there (a save taken in the
+//                ceremony keeps them there), and each stands up at the bed's
+//                exit on their first move. A member with no bed goes back to
+//                the spot they were placed on, facing the way they were placed
+//                (flags.<module>.campHome).
 //   Pass-through Members walk through one another. Where two overlap, the one
 //                drawn in front fades, so the one behind stays visible.
 //                Drawn locally on every client; nothing is written.
@@ -176,13 +179,17 @@
     }
   }
 
+  // Morning: the rest is done and the screen is fully black (camp-ui-sleep.js
+  // calls this before the save ceremony, so a save taken there wakes them in
+  // bed too). The camp is the active scene, whatever the GM is looking at.
+  function morning() {
+    const scene = [game.scenes?.active, canvas?.scene].find(isCampScene);
+    return sendMembersHome(scene);
+  }
+
   function onPhase() {
-    const phase = CAMP.State?.getPhase?.();
-    const changed = phase !== state.lastPhase;
-    state.lastPhase = phase;
+    state.lastPhase = CAMP.State?.getPhase?.();
     applyLock();
-    // The screen is dark by now; nobody sees them jump.
-    if (changed && phase === CAMP.PHASE.SLEEPING) sendMembersHome(canvas?.scene);
   }
 
   // ---------------------------------------------------------------------------
@@ -295,7 +302,7 @@
     if (canvas?.ready) onScene();
   });
 
-  CAMP.Walk = { WALK_PHASES, sendMembersHome, state };
+  CAMP.Walk = { WALK_PHASES, sendMembersHome, morning, state };
 
   console.debug(TAG, "Camp walk loaded.");
 })();

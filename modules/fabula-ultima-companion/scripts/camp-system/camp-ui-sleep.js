@@ -25,6 +25,13 @@
           console.error("[CampSystem][SleepUI]", "RestAPI.perform() failed:", e);
         }
         await new Promise(r => setTimeout(r, 500));
+        // Morning, unseen: every member into their own bed (camp-walk.js).
+        // Before the save ceremony, so a save taken there wakes them in bed.
+        try {
+          await CAMP.Walk?.morning?.();
+        } catch (e) {
+          console.error("[CampSystem][SleepUI]", "Putting members to bed failed:", e);
+        }
         // The screen STAYS black: the save ceremony plays out on top of it and
         // hands off to SET_OUT_LOBBY (or the title screen) when it resolves.
         await CAMP.State.setPhase(CAMP.PHASE.REST_SAVE_PROMPT);
