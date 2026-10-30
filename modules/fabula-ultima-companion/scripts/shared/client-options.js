@@ -49,6 +49,16 @@ export const OPTION_GROUPS = [
           { value: "off", label: "Off", hint: "The flat battle view, as before." },
         ],
       },
+      {
+        key: "walkParallax",
+        label: "Walk-map parallax",
+        hint: "Depth on painted walk maps that support it (map-system/exploration-parallax.js).",
+        default: "on",
+        choices: [
+          { value: "on", label: "On", hint: "Far scenery scrolls slower and near rocks faster as the camera follows the party." },
+          { value: "off", label: "Off", hint: "The painting scrolls flat, as before. Lighter on slower machines." },
+        ],
+      },
     ],
   },
 ];

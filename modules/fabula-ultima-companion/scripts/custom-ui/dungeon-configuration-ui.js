@@ -83,6 +83,11 @@
   const DEPTH_HORIZON_Y_KEY  = "depthHorizonY";    // number: scene y where the floor lines meet (perspective mode)
   const DEPTH_STRENGTH_KEY   = "depthStrength";    // number: perspective softening, 0..1
   const DEPTH_SPEED_KEY      = "depthSpeed";       // number: walk speed follows depth, 0..1
+  // Keys for scripts/map-system/exploration-parallax.js — keep the two in step.
+  const PARALLAX_ENABLED_KEY = "parallaxEnabled";  // boolean: shift the painting with the camera
+  const PARALLAX_FAR_KEY     = "parallaxFar";      // number: how much slower far scenery scrolls
+  const PARALLAX_NEAR_KEY    = "parallaxNear";     // number: how much faster near rocks scroll
+  const PARALLAX_DOF_KEY     = "parallaxDof";      // number: blur toward the far plane, 0..1
   const OCCLUDERS_ENABLED_KEY = "occludersEnabled"; // boolean: foreground occluders (foreground-occluder.js)
   const OCCLUDER_SILHOUETTE_KEY = "occluderSilhouette"; // boolean: party silhouette behind objects
   // Invoker wellsprings present on this scene. Per-element boolean under general
@@ -853,6 +858,39 @@
 
               <p class="notes oni-depth-preview-note" style="font-style:italic;margin:0;"></p>
             </div>
+
+            <div class="form-group">
+              <label>Walk Parallax</label>
+              <div class="form-fields">
+                <input type="checkbox" class="oni-parallax-enabled"
+                       name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${PARALLAX_ENABLED_KEY}" data-dtype="Boolean" />
+              </div>
+              <p class="notes">
+                The painting shifts with the camera: far scenery scrolls slower, near rocks faster,
+                the walkable ground never moves. Needs a weight map for this background in
+                <code>assets/walk-depth/</code> (see its README). Off on maps with foreground occluders.
+                Each player can turn it off in Config → Graphic.
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label>Parallax Far / Near / Blur</label>
+              <div class="form-fields" style="display:flex;align-items:center;gap:8px;">
+                <input type="number" class="oni-parallax-far" step="0.02" min="0" max="0.6"
+                       name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${PARALLAX_FAR_KEY}"
+                       placeholder="0.18" style="flex:1 1 0;" />
+                <input type="number" class="oni-parallax-near" step="0.02" min="0" max="0.6"
+                       name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${PARALLAX_NEAR_KEY}"
+                       placeholder="0.10" style="flex:1 1 0;" />
+                <input type="number" class="oni-parallax-dof" step="0.05" min="0" max="1"
+                       name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${PARALLAX_DOF_KEY}"
+                       placeholder="0.35" style="flex:1 1 0;" />
+              </div>
+              <p class="notes">
+                How much slower far scenery scrolls, how much faster near rocks scroll (share of the
+                camera's speed), and how much the far plane blurs. Defaults <b>0.18</b> / <b>0.10</b> / <b>0.35</b>.
+              </p>
+            </div>
           </div>
 
           <div class="oni-occluder-group">
@@ -1268,6 +1306,13 @@
       depthNumField("oni-depth-horizon-y",   DEPTH_HORIZON_Y_KEY);
       depthNumField("oni-depth-strength",    DEPTH_STRENGTH_KEY);
       depthNumField("oni-depth-speed",       DEPTH_SPEED_KEY);
+      depthNumField("oni-parallax-far",      PARALLAX_FAR_KEY);
+      depthNumField("oni-parallax-near",     PARALLAX_NEAR_KEY);
+      depthNumField("oni-parallax-dof",      PARALLAX_DOF_KEY);
+      const parallaxCb = generalPanel?.querySelector("input.oni-parallax-enabled");
+      if (parallaxCb) {
+        parallaxCb.checked = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${PARALLAX_ENABLED_KEY}`, false), false);
+      }
 
       // Depth sorting defaults ON when the flag has never been written.
       const depthSortCb = generalPanel?.querySelector("input.oni-depth-sort");

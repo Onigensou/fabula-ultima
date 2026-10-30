@@ -490,6 +490,7 @@
     "scripts/party-menu/party-menu-core.js",
     "scripts/party-menu/party-menu-app.js",
     "scripts/party-menu/party-menu-button.js",
+    "scripts/map-system/exploration-parallax.js",
     "scripts/main.js",
     "scripts/gacha-system/gacha-bootstrap.js",
     "scripts/stealth-system/sm-constants.js",
