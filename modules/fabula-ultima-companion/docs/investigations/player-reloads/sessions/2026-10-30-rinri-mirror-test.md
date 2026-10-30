@@ -108,11 +108,18 @@ effects records in ActiveEffect hN5IkJdmMjvuGmey" notice, one per vend. Both wer
     path this mirror exists to avoid.
   - Tonight: the sync before launch copied 0 files; after `exportNow()`, one copied 8. Without that, Keren's new sprites
     would have come from Forge.
-  - Fix proposed, not made: have the launcher sync again after the GM's first scan. Worth doing before the full session.
+  - **Fixed the same evening:** once the GM client is in, the launcher asks it for a fresh list and syncs again, before
+    the spectator and any player load. Tried on a real GM client: 5 s in all (`session-mode/mirror-refresh.mjs`).
+- **Four token images were never mirrored.** The GM scanner cuts URLs with raw spaces short: `NPCShade_Inn.png`,
+  `Villager_005.png`, `Bandit_Back.png`, `Generic_Farmer_Standing_001.png`, all on real scenes. Any map using them would
+  have waited on Forge. Added to `wanted.json`'s runtime list and mirrored; the scanner itself isn't fixed yet.
+- **Load Game can bring back URLs the mirror dropped.** Slot 1 (saved 10-25) holds Keren's 8 sprites and
+  `Valley_Map015.png` without the `?v=2` the world uses now, so after a load they would have missed the mirror. Added to
+  the runtime list too; the manifest now serves both forms.
 - **A non-player connection to port 30000** at 20:35:35 from Google Cloud (35.227.x.x), held 6 s, a minute before Rinri
   logged in. It fits Discord's link preview, as on 10-29. The server log has only the expected logins.
-- **The "Gigas A" token deleted from Training Ground on 10-29 is in the world again.** That delete was never committed,
-  and HEAD still has the token. Not on the test path, and nothing to do with this test.
+- **The "Gigas A" token deleted from Training Ground on 10-29 was back in the world.** That delete was never committed.
+  Not on the test path. Deleted again and committed this time (ef3032ed).
 
 **Demo cleanup after the test** (Foundry open, then checked offline):
 - Rinri's join moved the movement controller to Rinri / Hina, and the party token's prototype art to Hina. Both restored
@@ -124,13 +131,24 @@ effects records in ActiveEffect hN5IkJdmMjvuGmey" notice, one per vend. Both wer
   - **Identical:** fog, messages, users, combats, journal, items, tables, playlists, folders, macros, cards, and every
     token and tile.
 - Preflight afterwards matches the 20:29 run line for line. The active scene is the Title.
-- Left uncommitted, as usual: the Field rebuild, the stores' own file rotation and `world.json`'s `lastPlayed`.
+
+**Test tools off before the real session of 10-31** (host's request, same evening):
+- **The driver** only ever ran when started by hand, from a scratch folder. It has finished, and nothing in the game or
+  the launcher refers to it, so a player signing in gets the normal title screen.
+- **The test bridge was armed** on the GM client, and it re-arms itself on every boot. Now off; a real boot confirmed it
+  (not running, no heartbeat writes). The launcher now disarms it at every start.
+- **Settings from earlier tests:**
+  - the 10-28 camp demo had overwritten `campPhase`, `campReturnPoint` and `campSaveChoice`; back to the values from the
+    end of the last session (the same values HEAD holds);
+  - the 10-27 test battle had left `bdRewardSnapshot`, `bdPreBattleViewport` and `bdBattleSceneViewport` set; back to
+    null, and committed in ef3032ed.
+- **Staying on, on purpose:** the mirror, the load indicator, scene pre-fetch and the client-health logger. The
+  session-end prompt only runs when the GM calls it.
 
 **Player comments:** none relayed yet.
 
 **Open:**
 - **A full session with everyone:** are the mid-session reloads gone, and what are the numbers with everyone loading at
   once? The logger is always on, so the first full session measures it.
-- **The launcher sync gap** (above).
 - From the 10-29 record, still open: the `client-health-summary` sample-gap fix, forge-mirror's GM scanner and URLs with
   raw spaces, whether to keep `scenePrefetch`, and whether the ~21:00 measurements are still wanted.

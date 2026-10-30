@@ -18,7 +18,7 @@ Players load the Forge files the game uses from the host's PC instead of from Fo
 |---|---|---|
 | sync tool | `tools/forge-mirror/sync.mjs` | keeps `Data/forge-mirror/` an exact copy (MD5 = Forge's) of every Forge file the game uses |
 | client | `modules/fabula-ultima-companion/scripts/forge-mirror/forge-mirror.js` | on every client, loads a Forge URL from the mirror when the mirror holds that exact file; falls back to Forge if the copy fails |
-| session start | `FoundryVTT/session-mode/Start-SessionApps.ps1` (host's PC, not in git) | runs the sync after preflight, before Foundry. Capped at 3 minutes; never blocks the session |
+| session start | `FoundryVTT/session-mode/Start-SessionApps.ps1` (host's PC, not in git) | runs the sync after preflight, before Foundry. Once the GM client is in, asks it for a fresh `wanted.json` (`mirror-refresh.mjs`) and syncs again, so art added since the last session is mirrored before players load. Each sync is capped at 3 minutes; neither blocks the session |
 | switch | world setting **"Serve Forge files from the game host"** | off = everything from Forge, for the next file loaded; nobody reloads |
 
 ## Run the sync

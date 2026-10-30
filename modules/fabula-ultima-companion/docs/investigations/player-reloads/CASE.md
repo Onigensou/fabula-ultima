@@ -4,8 +4,6 @@
 `tools/forge-mirror/README.md`). **Real-player tests 2026-10-29 and 10-30: it works for all four players:** 0 fallbacks
 to Forge; the two maps that stalled 223–520 s on 10-28 now take 0.8–5.5 s on a first load; world entry 24–42 s. **Next:**
 - a full session with everyone: are the mid-session reloads gone, and what are the load times with everyone at once?
-- before that session, close the launcher's sync gap: art added since the last session isn't mirrored
-  ([10-30 record](sessions/2026-10-30-rinri-mirror-test.md));
 - the players' ~21:00 measurements may be moot, now that players no longer fetch from Forge (host's call).
 
 **Tracking report:** `reports/2026-10-28-player-reload-investigation.md`
@@ -534,7 +532,10 @@ of RAM; it was closed as not planned.
   - **It works for him too:** 279 files from the host, 0 not mirrored, 0 fallbacks. World entry 79.6 s → 34.4 s,
     Kingdom 223.5 s → 0.8 s, Vastwind_Field002 520.5 s → 5.5 s, at 20:37–20:39, close to the hour he says is worst.
   - No reloads, but he was on for only 3 min. Mid-session reloads still need a full session.
-  - **Found: the launcher's sync runs too early for new art.** The GM client writes `wanted.json` after login, so art
-    added since the last session loads from Forge for that session. Fix proposed, not made.
+  - **Found and fixed: the launcher's sync ran too early for new art.** The GM client writes `wanted.json` after login,
+    so art added since the last session loaded from Forge for that session. The launcher now syncs again once the GM
+    client is in.
+  - **Also found:** four token images never mirrored (raw spaces in their URLs; the GM scanner is still to fix), and a
+    Load can bring back URLs without the `?v` the mirror holds. Both mirrored by hand for now.
   - Demo cleanup: a key-by-key compare of `data/` against a copy from before launch found only the Field actor's rebuilt
     wellspring effects, `_stats` on the touched docs and one module's own timestamp.
