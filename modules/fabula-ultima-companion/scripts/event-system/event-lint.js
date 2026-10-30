@@ -74,6 +74,15 @@
     entry[kind].push(where);
   }
 
+  // The way Camera Pan and Set Token find a token: its own name or its actor's.
+  function hasToken(scene, name) {
+    const wanted = String(name ?? "").trim().toLowerCase();
+    return (scene.tokens?.contents ?? []).some(t =>
+      String(t.name ?? "").trim().toLowerCase() === wanted
+      || String(t.actor?.name ?? "").trim().toLowerCase() === wanted
+    );
+  }
+
   function noteCondition(cond, where, switches, variables) {
     const c = Logic.normalizeCondition(cond);
     if (c.kind === K.SWITCH) note(switches, c.name, "read", where);
@@ -125,6 +134,16 @@
               break;
             case "cameraPan":
               if (row.mode === "token" && !String(row.name ?? "").trim()) add("warn", "Camera Pan to a named token, with no name.");
+              else if (row.mode === "token" && !hasToken(scene, row.name)) add("warn", `Camera Pan to "${row.name}", but no token on this scene has that name. The camera would stay put.`);
+              break;
+            case "setToken": {
+              const names = String(row.name ?? "").split(",").map(s => s.trim()).filter(Boolean);
+              if (!names.length) add("warn", "Set Token with no name.");
+              for (const name of names) if (!hasToken(scene, name)) add("warn", `Set Token names "${name}", but no token on this scene has that name. If it was deleted, hide it instead, or take it out of this row.`);
+              break;
+            }
+            case "pauseForGM":
+              if ((row.choices ?? []).some(c => !String(c.label ?? "").trim())) add("warn", "Pause for GM has a choice with no text.");
               break;
             case "condition":
               noteCondition(row.condition, at, switches, variables);

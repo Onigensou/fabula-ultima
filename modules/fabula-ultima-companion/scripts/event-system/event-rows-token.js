@@ -14,11 +14,17 @@
  * - A GM writes the token document; every client sees it through Foundry. So
  *   the change stays after the event, unlike a camera pan or a screen effect.
  *   Author an event to leave its tokens how the next visitor should find them.
- * - Every token with that name changes, as Camera Pan finds names: the token's
- *   own name or its actor's.
+ * - Every token with a listed name changes at once, as Camera Pan finds names:
+ *   the token's own name or its actor's. A name with no token is reported to
+ *   the GM and the rest of the row and the event carry on, so a token a GM
+ *   deleted by hand does not stop a cutscene.
+ * - Jump away is two parts. Every client plays a squash-and-stretch copy of the
+ *   sprite, drawn on its own: nothing fights the idle bounce or the depth system
+ *   for the real mesh. The token itself never moves; it is just hidden, so a
+ *   later Show finds it where it stood.
  *
  * Requires:
- * - event-logic.js, event-eventRegistry.js
+ * - event-logic.js, event-eventRegistry.js, event-client.js, event-flow.js
  */
 
 (() => {
@@ -34,10 +40,13 @@
 
   const Logic = window.oni.EventSystem.Logic;
   const EventRegistry = window.oni.EventSystem.EventRegistry;
-  if (!Logic || !EventRegistry) {
-    console.error(INSTALL_TAG, "Missing Logic or EventRegistry. Check load order.");
+  const Client = window.oni.EventSystem.Client;
+  if (!Logic || !EventRegistry || !Client) {
+    console.error(INSTALL_TAG, "Missing Logic, EventRegistry or Client. Check load order.");
     return;
   }
+
+  const KIND_JUMP = "token.jump";
 
   const VISIBILITY = [
     ["keep", "Leave as it is"],
@@ -46,10 +55,19 @@
     ["jump", "Jump away, then hide"]
   ];
 
-  // Jump away: straight up off the map's view, fast. The token is then put back
-  // where it stood, hidden, so a later Show finds it in place.
-  const JUMP_PX = 900;
-  const JUMP_MS = 420;
+  // Jump away: crouch into a squash, then launch stretched and accelerating.
+  const JUMP = {
+    crouchMs: 190,
+    launchMs: 520,
+    risePx: 1200,
+    squash: { x: 1.26, y: 0.68 },
+    stretch: { x: 0.72, y: 1.46 },
+    // Share of the launch spent going from squash to stretch.
+    snap: 0.28,
+    // Share of the launch left when the sprite starts to fade.
+    fadeFrom: 0.72
+  };
+  const JUMP_TOTAL_MS = JUMP.crouchMs + JUMP.launchMs;
 
   const TINT = [
     ["keep", "Leave as it is"],
@@ -67,6 +85,8 @@
     return /^#[0-9a-f]{6}$/i.test(s) ? s : DEFAULT_COLOR;
   }
 
+  const namesIn = (raw) => String(raw ?? "").split(",").map(s => s.trim()).filter(Boolean);
+
   function tokensNamed(scene, name) {
     const wanted = String(name ?? "").trim().toLowerCase();
     if (!wanted) return [];
@@ -75,6 +95,71 @@
       || String(t.actor?.name ?? "").trim().toLowerCase() === wanted
     );
   }
+
+  const mix = (a, b, t) => a + (b - a) * t;
+
+  // One token's jump on this client. Each frame is guarded: a throw inside a
+  // ticker callback would stop PIXI's whole frame loop.
+  function playJump(tokenId) {
+    if (document.visibilityState === "hidden") return;
+    const mesh = canvas?.tokens?.get(tokenId)?.mesh;
+    const host = canvas?.interface;
+    if (!mesh?.texture?.valid || !host) return;
+
+    const sprite = new PIXI.Sprite(mesh.texture);
+    sprite.anchor.set(0.5, 1);
+    sprite.tint = mesh.tint;
+    const baseX = mesh.scale.x;
+    const baseY = mesh.scale.y;
+    const footX = mesh.x;
+    const footY = mesh.y + mesh.height * (1 - mesh.anchor.y);
+    sprite.position.set(footX, footY);
+    sprite.scale.set(baseX, baseY);
+    host.addChild(sprite);
+    mesh.renderable = false;
+
+    const ticker = canvas.app.ticker;
+    const startedAt = performance.now();
+    const finish = () => {
+      ticker.remove(tick);
+      if (!mesh.destroyed) mesh.renderable = true;
+      if (!sprite.destroyed) sprite.destroy();
+    };
+    const tick = () => {
+      try {
+        if (sprite.destroyed || !sprite.parent) return finish();
+        const elapsed = performance.now() - startedAt;
+        if (elapsed >= JUMP_TOTAL_MS) return finish();
+
+        let sx, sy, rise = 0, alpha = 1;
+        if (elapsed < JUMP.crouchMs) {
+          const t = elapsed / JUMP.crouchMs;
+          const e = 1 - (1 - t) * (1 - t);
+          sx = mix(1, JUMP.squash.x, e);
+          sy = mix(1, JUMP.squash.y, e);
+        } else {
+          const u = (elapsed - JUMP.crouchMs) / JUMP.launchMs;
+          const k = Math.min(1, u / JUMP.snap);
+          sx = mix(JUMP.squash.x, JUMP.stretch.x, k);
+          sy = mix(JUMP.squash.y, JUMP.stretch.y, k);
+          rise = JUMP.risePx * u * u;
+          if (u > JUMP.fadeFrom) alpha = 1 - (u - JUMP.fadeFrom) / (1 - JUMP.fadeFrom);
+        }
+
+        sprite.scale.set(baseX * sx, baseY * sy);
+        sprite.y = footY - rise;
+        sprite.alpha = alpha;
+      } catch (e) {
+        console.warn(INSTALL_TAG, "Jump frame failed; dropping the effect.", e);
+        finish();
+      }
+    };
+    ticker.add(tick);
+  }
+
+  Client.register(KIND_JUMP, (data) => {
+    for (const id of data.tokenIds ?? []) playJump(id);
+  });
 
   EventRegistry.register({
     type: "setToken",
@@ -89,11 +174,14 @@
     },
     execute: async (row, context) => {
       const scene = game.scenes?.get(context?.sceneId) ?? canvas?.scene ?? null;
-      const found = tokensNamed(scene, row?.name);
-      if (!found.length) {
-        console.warn(INSTALL_TAG, "Set Token: no token by that name on this scene.", row?.name);
-        return { ok: false, type: "setToken", reason: "notFound" };
+      const names = namesIn(row?.name);
+      const found = [...new Set(names.flatMap(n => tokensNamed(scene, n)))];
+      const missing = names.filter(n => !tokensNamed(scene, n).length);
+      if (missing.length) {
+        console.warn(INSTALL_TAG, "Set Token: no token by that name on this scene.", missing);
+        ui.notifications?.warn?.(`Event: no token named ${missing.join(", ")} on this scene. That part was skipped.`);
       }
+      if (!found.length) return { ok: false, type: "setToken", reason: "notFound" };
 
       const change = {};
       const visibility = pick(VISIBILITY, row?.visibility);
@@ -102,10 +190,10 @@
       if (tint !== "keep") change["texture.tint"] = tint === "set" ? validColor(row?.color) : NO_TINT;
 
       if (visibility === "jump") {
-        const home = found.map(t => ({ _id: t.id, y: t.y, hidden: true, ...change }));
-        await scene.updateEmbeddedDocuments("Token", found.map(t => ({ _id: t.id, y: t.y - JUMP_PX })), { animation: { duration: JUMP_MS } });
-        await window.oni.EventSystem.Flow?.wait?.(context?.tileId, JUMP_MS + 60);
-        await scene.updateEmbeddedDocuments("Token", home, { animate: false });
+        // Only tokens that can be seen jump; the copy needs a drawn sprite.
+        Client.run(context?.tileId, KIND_JUMP, { tokenIds: found.filter(t => !t.hidden).map(t => t.id) });
+        await scene.updateEmbeddedDocuments("Token", found.map(t => ({ _id: t.id, hidden: true, ...change })));
+        await window.oni.EventSystem.Flow?.wait?.(context?.tileId, JUMP_TOTAL_MS);
         return { ok: true, type: "setToken", changed: found.length };
       }
 
@@ -118,9 +206,9 @@
       const tint = pick(TINT, row.tint);
       const body = kit.fields(
         kit.field(
-          "Token name",
-          `<input type="text" class="oni-event-row-token-name" value="${kit.escapeHTML(row.name ?? "")}" placeholder="Name of a token on this scene" />`,
-          "Changes every token with this name, or whose actor has this name. A hidden token can be named here."
+          "Token names",
+          `<input type="text" class="oni-event-row-token-name" value="${kit.escapeHTML(row.name ?? "")}" placeholder="Names of tokens on this scene, separated by commas" />`,
+          "All of them change at the same moment. Matches a token's name or its actor's. Hidden tokens can be named here. A name with no token is skipped with a warning to the GM."
         ),
         kit.field(
           "Visibility",
