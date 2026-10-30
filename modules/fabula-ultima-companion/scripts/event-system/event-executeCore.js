@@ -69,6 +69,8 @@
     ? C.SOCKET_CHANNELS
     : ["module.fabula-ultima-companion"];
 
+  const STEP_IN_LOAD_WAIT_MS = 8000;
+
   const MSG_EXECUTE_REQ = C.MSG_EVENT_EXECUTE_REQ || "ONI_EVENT_EXECUTE_REQ_V1";
   const MSG_EXECUTE_START = "ONI_EVENT_EXECUTE_START_V1";
   const MSG_EXECUTE_DONE = C.MSG_EVENT_EXECUTE_DONE || "ONI_EVENT_EXECUTE_DONE_V1";
@@ -224,6 +226,7 @@
       eventRows: normalizeEventRows(data?.eventRows ?? []),
       onceOnly: normalizeBoolean(data?.onceOnly, false),
       availableWhen: data?.availableWhen ?? null,
+      startMode: Logic ? Logic.normalizeStartMode(data?.startMode) : "button",
       _scope: found?.scope ?? null,
       _raw: data
     };
@@ -324,6 +327,17 @@
     };
   }
 
+  // user.viewedScene arrives by socket when a client finishes drawing a scene,
+  // with no hook to wait on, so it is polled. Bounded: one stuck client does not
+  // hold the party.
+  async function waitForPlayersOnScene(sceneId) {
+    const deadline = Date.now() + STEP_IN_LOAD_WAIT_MS;
+    const waitingOn = () => (game.users?.players ?? []).filter(u => u.active && u.viewedScene !== sceneId);
+    while (waitingOn().length && Date.now() < deadline) {
+      await new Promise(resolve => setTimeout(resolve, 200));
+    }
+  }
+
   function buildRuntimeContext({ tileDoc, requesterId, partyToken }) {
     return {
       sceneId: canvas?.scene?.id ?? tileDoc?.parent?.id ?? null,
@@ -416,18 +430,26 @@
         return { ok: false, reason: "sourceIsPartyToken", tileId: safeTileId };
       }
 
-      const proximity = await checkProximityForTile(tileDoc, partyToken, null);
-      if (!proximity.ok) {
-        DBG.warn(DEBUG_SCOPE, "Execution blocked by proximity check.", {
-          tileId: safeTileId,
-          distance: Math.round(proximity.distance),
-          proximityPx: proximity.proximityPx
-        });
-        return { ok: false, reason: "outOfRange", tileId: safeTileId, proximity };
+      // A step-in event was judged on the client walking the party. Here the
+      // walk is still catching up over the network, and a moving token could
+      // be refused for a tile it has already reached.
+      const stepIn = data.startMode === Logic?.START_MODES?.STEP_IN;
+      if (!stepIn) {
+        const proximity = await checkProximityForTile(tileDoc, partyToken, null);
+        if (!proximity.ok) {
+          DBG.warn(DEBUG_SCOPE, "Execution blocked by proximity check.", {
+            tileId: safeTileId,
+            distance: Math.round(proximity.distance),
+            proximityPx: proximity.proximityPx
+          });
+          return { ok: false, reason: "outOfRange", tileId: safeTileId, proximity };
+        }
       }
 
       gmActiveExecutions.add(safeTileId);
       markTileRunning(safeTileId);
+      // Stepped in on arrival: the other players may still be drawing the map.
+      if (stepIn) await waitForPlayersOnScene(safeSceneId);
       window.oni.EventSystem.Flow?.begin(safeTileId, safeSceneId, tileDoc);
 
       emitSocketMessage(MSG_EXECUTE_START, {
@@ -609,6 +631,8 @@
     _posOverrides: new Map(),
     _scanQueued: false,
     _scanSeq: 0,
+    // Step-in events the party is standing in, so each fires once per step.
+    _steppedIn: new Set(),
     _activeCandidate: null,
     _activeTalkCandidate: null,
     _moveWatchTimer: null,
@@ -766,12 +790,34 @@
         // side, so the nearest of each kind is tracked separately.
         let best = null;
         let bestTalk = null;
+        let stepInStart = null;
+
+        const flow = window.oni.EventSystem.Flow;
+        const mayAutoStart = flow?.isAutoStarter?.() ?? true;
 
         for (const tile of tiles) {
           const data = readEventData(tile);
           if (!data.isEventTile) continue;
           if (data.isHidden) continue;
           if (!Array.isArray(data.eventRows) || !data.eventRows.length) continue;
+
+          // Starts by itself and never offers a button.
+          if (data.startMode === Logic?.START_MODES?.STEP_IN) {
+            const proximity = await checkProximityForTile(tile, partyToken, ov ? { x: ov.x, y: ov.y } : null);
+            if (seq !== this._scanSeq || !this.running) return;
+            const step = Logic.stepInStep({
+              inRange: proximity.ok,
+              wasInside: this._steppedIn.has(tile.id),
+              busy: !!stepInStart || isTileRunningAnywhere(tile.id) || (flow?.state?.active?.size ?? 0) > 0,
+              available: isEventAvailable(tile, data),
+              mayStart: mayAutoStart
+            });
+            if (step.inside) this._steppedIn.add(tile.id);
+            else this._steppedIn.delete(tile.id);
+            if (step.start) stepInStart = tile.id;
+            continue;
+          }
+
           if (isTileRunningAnywhere(tile.id)) continue;
           if (!isEventAvailable(tile, data)) continue;
 
@@ -797,6 +843,8 @@
             best = candidate;
           }
         }
+
+        if (stepInStart) this.requestExecute(stepInStart);
 
         this._activeCandidate = best;
         this._activeTalkCandidate = bestTalk;
@@ -1047,7 +1095,10 @@
         const ov = this._getOverride(partyToken.id);
         this.ui?.placeForToken(partyToken, ov ? { x: ov.x, y: ov.y } : null);
       };
-      const onCanvasReady = () => this._queueScan("canvasReady");
+      const onCanvasReady = () => {
+        this._steppedIn.clear();
+        this._queueScan("canvasReady");
+      };
       // A switch flipped, a variable changed, a save was loaded.
       const onGameStateChanged = () => this._queueScan("gameStateChanged");
       const onResize = async () => {

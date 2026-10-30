@@ -224,6 +224,24 @@
     return evalCondition(settings?.availableWhen, reader);
   }
 
+  // How an event starts: from its "!" button (RPG Maker's Action Button), or
+  // by itself when the party steps into its range (Player Touch).
+  const START_MODES = { BUTTON: "button", STEP_IN: "stepIn" };
+
+  function normalizeStartMode(raw) {
+    return raw === START_MODES.STEP_IN ? START_MODES.STEP_IN : START_MODES.BUTTON;
+  }
+
+  // One scan of a step-in event. It fires on the step in, not on standing
+  // there, so an event that can repeat does not loop under the party. While
+  // another event is busy the step does not count yet: it fires once that ends.
+  function stepInStep({ inRange, wasInside, busy, available, mayStart }) {
+    if (!inRange) return { inside: false, start: false };
+    if (wasInside) return { inside: true, start: false };
+    if (busy) return { inside: false, start: false };
+    return { inside: true, start: !!available && !!mayStart };
+  }
+
   // Does anything about this event read how often it has run? Only then is a
   // run worth a write to the party sheet.
   function usesRunMemory(rows, settings, getDef) {
@@ -333,6 +351,10 @@
     describeCondition,
     eventAvailable,
     usesRunMemory,
+
+    START_MODES,
+    normalizeStartMode,
+    stepInStep,
 
     substituteVars,
 

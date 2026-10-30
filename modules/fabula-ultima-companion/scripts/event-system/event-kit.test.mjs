@@ -223,6 +223,16 @@ check("nameKey: spacing, case and underscores are one name",
   check("condition: has run",
     Logic.evalCondition({ kind: K.HAS_RUN, want: "yes" }, reader) && !Logic.evalCondition({ kind: K.HAS_RUN, want: "no" }, reader));
 
+  check("start mode: anything unknown means the button",
+    Logic.normalizeStartMode(undefined) === "button" && Logic.normalizeStartMode("nonsense") === "button" && Logic.normalizeStartMode("stepIn") === "stepIn");
+  const stepIn = (o) => Logic.stepInStep({ inRange: true, wasInside: false, busy: false, available: true, mayStart: true, ...o });
+  check("step in: entering range starts it", stepIn().start && stepIn().inside);
+  check("step in: standing in range does not start it again", !stepIn({ wasInside: true }).start && stepIn({ wasInside: true }).inside);
+  check("step in: leaving range rearms it", !stepIn({ inRange: false }).inside && !stepIn({ inRange: false }).start);
+  check("step in: while busy the step waits and still counts as new", !stepIn({ busy: true }).start && !stepIn({ busy: true }).inside);
+  check("step in: an unavailable event does not start, and its step is used up", !stepIn({ available: false }).start && stepIn({ available: false }).inside);
+  check("step in: only the starter client starts it, the others still track it", !stepIn({ mayStart: false }).start && stepIn({ mayStart: false }).inside);
+
   check("eventAvailable: once only hides an event that has run",
     !Logic.eventAvailable({ onceOnly: true }, reader) && Logic.eventAvailable({ onceOnly: true }, { ...reader, runs: () => 0 }));
   check("eventAvailable: erased hides it", !Logic.eventAvailable({}, { ...reader, erased: () => true }));

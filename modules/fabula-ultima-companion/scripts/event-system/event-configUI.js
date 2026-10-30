@@ -427,6 +427,21 @@
 
           <div class="oni-event-fields" hidden>
             <div class="form-group">
+              <label>Starts</label>
+              <div class="form-fields">
+                <select name="flags.${SCOPE}.startMode" class="oni-event-start-mode">
+                  <option value="button">When the party presses the ! button</option>
+                  <option value="stepIn">When the party steps in</option>
+                </select>
+              </div>
+              <p class="notes">
+                Steps in: the event starts by itself as the party enters its range, with no button
+                and nobody pressing anything. A tile under the landing spot starts on arrival.
+                Pair it with Once only for a cutscene.
+              </p>
+            </div>
+
+            <div class="form-group">
               <label>Proximity Range (px)</label>
               <div class="form-fields">
                 <input
@@ -572,6 +587,9 @@
 
       const onceEl = tabPanel.querySelector(".oni-event-once-only");
       if (onceEl) onceEl.checked = normalizeBoolean(safeGet(flags, "onceOnly", false), false);
+
+      const startEl = tabPanel.querySelector(".oni-event-start-mode");
+      if (startEl) startEl.value = window.oni.EventSystem.Logic.normalizeStartMode(safeGet(flags, "startMode", null));
 
       const isEventEl = tabPanel.querySelector(".oni-is-event");
       const fieldsWrap = tabPanel.querySelector(".oni-event-fields");

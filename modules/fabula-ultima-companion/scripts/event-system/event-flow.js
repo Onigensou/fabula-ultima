@@ -113,6 +113,16 @@
     return !!rt.cachedIsMainController;
   }
 
+  // An event nobody pressed for must be started by exactly one client: the one
+  // walking the party, or the main GM when nobody holds the controller or its
+  // holder has dropped out.
+  function isAutoStarter() {
+    const rt = walkRuntime()?.state;
+    const controllerId = rt?.cachedCurrentControllerUserId;
+    if (controllerId && game.users?.get(controllerId)?.active) return !!rt.cachedIsMainController;
+    return game.users?.activeGM?.id === game.user?.id;
+  }
+
   async function isUserInteractor(userId) {
     const user = game.users?.get(userId);
     if (!user) return false;
@@ -590,6 +600,7 @@
     LINE_MAX_WAIT_MS,
 
     isLocalUserInteractor,
+    isAutoStarter,
     isUserInteractor,
     eventStartsLocked,
 
