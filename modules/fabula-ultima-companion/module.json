@@ -123,6 +123,7 @@
     "scripts/martial-practice-hook.js",
     "scripts/remote-choice-api.js",
     "scripts/custom-ui/chat-character-button.js",
+    "scripts/custom-ui/player-token-clicks.js",
     "scripts/custom-ui/chat-party-button.js",
     "scripts/custom-ui/chat-trade-button.js",
     "scripts/emotes-system/emote-debug.js",
