@@ -220,6 +220,17 @@
       "volume": 0.25
     },
     {
+      "_id": "N5EBhNpsUKKzWCOG",
+      "channel": "music",
+      "fade": null,
+      "flags": {},
+      "name": "Awaken",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Awaken.mp3",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.17
+    },
+    {
       "_id": "oKpkOR6xSBQW1VQ4",
       "channel": "music",
       "description": "",
