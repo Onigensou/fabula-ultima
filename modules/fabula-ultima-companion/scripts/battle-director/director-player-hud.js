@@ -1797,7 +1797,12 @@ function watchPlateForMirror(plate) {
   const queue = () => { if (!t) t = setTimeout(send, 140); };
   const mo = new MutationObserver(queue);
   mo.observe(plate.el, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "inert"], characterData: true });
-  return () => { mo.disconnect(); clearTimeout(t); };
+  // The ally watch only goes out while this plate's actor is the one acting.
+  // The command menu can open BEFORE that turn status arrives, and nothing in
+  // the drawer changes after it does, so the watchers saw no menu until the
+  // first cursor move. Send again whenever the turn status changes.
+  const onStatus = Hooks.on("fu-hud-turn-status", () => { last = ""; queue(); });
+  return () => { mo.disconnect(); clearTimeout(t); Hooks.off("fu-hud-turn-status", onStatus); };
 }
 
 // ── "Waiting on" the card's confirmer ─────────────────────────────────────────
