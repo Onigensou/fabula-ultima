@@ -98,7 +98,9 @@
     for (const { src, copies = 1 } of data.media ?? []) {
       if (!src) continue;
 
-      if (isAudio(src)) {
+      if (src.startsWith("bgm:")) {
+        window.oni.EventSystem.RowsMedia?.preloadTrack?.(src.slice(4));
+      } else if (isAudio(src)) {
         window.oni.EventSystem.RowsMedia?.preloadSound?.(src);
       } else if (isVideo(src)) {
         if (!pool.has(src)) pool.set(src, []);

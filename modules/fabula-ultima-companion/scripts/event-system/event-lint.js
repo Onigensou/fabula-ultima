@@ -128,6 +128,12 @@
             case "playSound":
               if (!String(row.src ?? "").trim()) add("warn", "Play Sound with no file.");
               break;
+            case "playBGM": {
+              const track = String(row.track ?? "").trim();
+              if (!track) add("warn", "Play BGM with no track.");
+              else if (![...(game.playlists ?? [])].some(p => p.sounds?.getName?.(track))) add("warn", `Play BGM names "${track}", but no playlist has that track.`);
+              break;
+            }
             case "playAnimation":
               if (!String(row.src ?? "").trim()) add("warn", "Play Animation with no file.");
               if (row.where === "token" && !String(row.name ?? "").trim()) add("warn", "Play Animation on a named token, with no name.");

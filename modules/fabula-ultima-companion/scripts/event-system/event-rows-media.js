@@ -6,8 +6,10 @@
  * scripts/event-system/event-rows-media.js
  *
  * What this does:
- * - Registers three event actions:
+ * - Registers these event actions:
  *     Play Sound       a one-shot sound effect on every client
+ *     Play BGM         a playlist track, by default only until the event ends
+ *     Stop BGM         stops it with a fade; music it moved aside comes back
  *     Screen Effect    fade out / fade in / flash / shake / tint / clear
  *     Play Animation   an image or video, fullscreen or at a point on the map,
  *                      over everything or among the tokens (event-worldFx.js)
@@ -55,6 +57,7 @@
   const KIND_SOUND = "sound.play";
   const KIND_SCREEN = "screen.effect";
   const KIND_ANIMATION = "screen.animation";
+  const KIND_BGM_FADE = "bgm.fade";
 
   const STYLE_ID = "oni-event-screen-style";
   const SCREEN_LAYER_ID = "oni-event-screen-layer";
@@ -65,6 +68,7 @@
   const IMAGE_DEFAULT_MS = 2000;
   const METADATA_TIMEOUT_MS = 4000;
   const END_FADE_MS = 400;
+  const BGM_END_FADE_MS = 1000;
 
   const flow = () => window.oni.EventSystem.Flow;
 
@@ -303,6 +307,157 @@
     collectFields: (rowEl, kit) => ({
       src: kit.readText(rowEl, ".oni-event-row-sound-src", "").trim(),
       volume: clampNumber(kit.readNumber(rowEl, ".oni-event-row-sound-volume", 0.6), 0, 1, 0.6),
+      wait: kit.readWait(rowEl, false)
+    })
+  });
+
+  // ------------------------------------------------------------
+  // Play BGM, Stop BGM
+  // ------------------------------------------------------------
+  // Playlist playback is world state and reaches every client by itself, so
+  // only the GM running the event touches it. Tracks are found by name in any
+  // playlist, the way battle BGM is. Only the music channel is moved aside: an
+  // ambience loop on the environment channel keeps playing under the track.
+  let bgmNow = null;   // { playlistId, soundId, moved: [{ playlistId, soundId }] }
+
+  function findTrack(name) {
+    const wanted = String(name ?? "").trim();
+    if (!wanted) return null;
+    for (const playlist of game.playlists ?? []) {
+      const sound = playlist.sounds?.getName?.(wanted);
+      if (sound) return sound;
+    }
+    return null;
+  }
+
+  function trackById(ref) {
+    return game.playlists?.get?.(ref?.playlistId)?.sounds?.get?.(ref?.soundId) ?? null;
+  }
+
+  function isMusic(sound) {
+    return (sound.channel || sound.parent?.channel) === "music";
+  }
+
+  function playingMusic() {
+    const out = [];
+    for (const playlist of game.playlists ?? []) {
+      for (const sound of playlist.sounds ?? []) if (sound.playing && isMusic(sound)) out.push(sound);
+    }
+    return out;
+  }
+
+  async function startBgm(sound) {
+    const others = playingMusic().filter(s => s !== sound);
+    await Promise.allSettled(others.map(s => s.parent.stopSound(s)));
+
+    // Whatever an earlier Play BGM moved aside is still what comes back after.
+    const moved = bgmNow?.moved?.length
+      ? bgmNow.moved
+      : others.map(s => ({ playlistId: s.parent.id, soundId: s.id }));
+
+    bgmNow = { playlistId: sound.parent.id, soundId: sound.id, moved };
+    if (!sound.playing) await sound.parent.playSound(sound);
+  }
+
+  async function stopBgm(sound, sourceId, fadeMs) {
+    const mine = trackById(bgmNow);
+    const isMine = !sound || sound === mine;
+    const target = sound ?? mine;
+    const moved = isMine ? (bgmNow?.moved ?? []) : [];
+    if (isMine) bgmNow = null;
+
+    if (target?.playing) {
+      if (fadeMs > 0) {
+        Client.run(sourceId, KIND_BGM_FADE, { playlistId: target.parent.id, soundId: target.id, ms: fadeMs });
+        await new Promise((resolve) => setTimeout(resolve, fadeMs));
+      }
+      await target.parent.stopSound(target);
+    }
+
+    await Promise.allSettled(moved.map(trackById).filter(Boolean).map(s => s.parent.playSound(s)));
+  }
+
+  // The lowered volume ends with the track: the next play sets its own.
+  Client.register(KIND_BGM_FADE, (data) => {
+    const sound = trackById(data);
+    sound?.sound?.fade?.(0, { duration: Math.max(0, Logic.toNumber(data.ms, 0)) });
+  });
+
+  EventRegistry.register({
+    type: "playBGM",
+    label: "Play BGM",
+    category: "Audio",
+    defaultData: { type: "playBGM", track: "", untilEnd: true },
+    summary: (row) => String(row?.track ?? ""),
+    mediaOf: (row) => [`bgm:${String(row?.track ?? "").trim()}`],
+    execute: async (row, context) => {
+      const sound = findTrack(row?.track);
+      if (!sound) {
+        ui.notifications?.warn?.(`Event: no playlist track named "${row?.track ?? ""}". That part was skipped.`);
+        return { ok: false, type: "playBGM", reason: "notFound" };
+      }
+
+      await startBgm(sound);
+
+      // Also covers the GM pressing End, so a track never outlives its event.
+      if (row?.untilEnd !== false) {
+        Client.addCleanup(context?.tileId, "bgm.track", ({ sceneGone } = {}) => {
+          stopBgm(sound, context?.tileId, sceneGone ? 0 : BGM_END_FADE_MS).catch((e) => {
+            console.warn(INSTALL_TAG, "Could not stop the BGM.", e);
+          });
+        });
+      }
+
+      return { ok: true, type: "playBGM" };
+    },
+    buildFields: (row, kit) => kit.fields(
+      kit.field(
+        "Track",
+        `<input type="text" class="oni-event-row-bgm-track" value="${kit.escapeHTML(row.track ?? "")}" placeholder="Name of a playlist track" />`,
+        "Found by name in any playlist. Other music stops and comes back after; ambience keeps playing."
+      ),
+      kit.field(
+        "",
+        `<label><input type="checkbox" class="oni-event-row-bgm-until-end" ${row.untilEnd !== false ? "checked" : ""} /> stop it when the event ends</label>`
+      )
+    ),
+    collectFields: (rowEl, kit) => ({
+      track: kit.readText(rowEl, ".oni-event-row-bgm-track", "").trim(),
+      untilEnd: !!kit.own(rowEl, ".oni-event-row-bgm-until-end")?.checked
+    })
+  });
+
+  EventRegistry.register({
+    type: "stopBGM",
+    label: "Stop BGM",
+    category: "Audio",
+    defaultData: { type: "stopBGM", track: "", seconds: 1, wait: false },
+    summary: (row) => String(row?.track ?? "") || "the current track",
+    execute: async (row, context) => {
+      const name = String(row?.track ?? "").trim();
+      const sound = name ? findTrack(name) : null;
+      if (name && !sound) return { ok: false, type: "stopBGM", reason: "notFound" };
+
+      Client.removeCleanup(context?.tileId, "bgm.track");
+
+      const ms = Math.max(0, Logic.toNumber(row?.seconds, 1)) * 1000;
+      const stopping = stopBgm(sound, context?.tileId, ms);
+      if (row?.wait === true) await stopping;
+      else stopping.catch((e) => console.warn(INSTALL_TAG, "Could not stop the BGM.", e));
+
+      return { ok: true, type: "stopBGM" };
+    },
+    buildFields: (row, kit) => kit.fields(
+      kit.field(
+        "Track",
+        `<input type="text" class="oni-event-row-bgm-track" value="${kit.escapeHTML(row.track ?? "")}" placeholder="Empty: the one Play BGM started" />`
+      ),
+      kit.field("Fade out (seconds)", kit.numberInput("oni-event-row-bgm-seconds", Math.max(0, Logic.toNumber(row.seconds, 1)), { min: 0, step: 0.1 })),
+      kit.waitField(row, false)
+    ),
+    collectFields: (rowEl, kit) => ({
+      track: kit.readText(rowEl, ".oni-event-row-bgm-track", "").trim(),
+      seconds: Math.max(0, kit.readNumber(rowEl, ".oni-event-row-bgm-seconds", 1)),
       wait: kit.readWait(rowEl, false)
     })
   });
@@ -775,7 +930,10 @@
     installed: true,
     // Also used by the config window's preview button.
     playSound,
-    preloadSound: (src) => { loadSound(src).catch(() => {}); }
+    preloadSound: (src) => { loadSound(src).catch(() => {}); },
+    // Through the track's own Sound: that is what the playlist will play, and a
+    // long track streams instead of decoding into memory. Fails while audio is locked.
+    preloadTrack: (name) => { Promise.resolve().then(() => findTrack(name)?.load?.()).catch(() => {}); }
   };
 
   console.debug(INSTALL_TAG, "Installed.");
