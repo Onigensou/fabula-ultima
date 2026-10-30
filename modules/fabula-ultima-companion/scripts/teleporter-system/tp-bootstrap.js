@@ -378,8 +378,30 @@
   let _hudBtnRaf   = null;
   let _promptTileId = null; // exploration: tile whose "Enter X?" prompt is open
 
+  // Gap between the top of the drawn sprite and the button's bottom edge, the
+  // same lift the NPC button row uses (map-system/keyboard-interact.js).
+  const HUD_BTN_LIFT_PX = 8;
+
   function _positionHudBtn(btn, tokenDoc) {
     if (!btn || !tokenDoc) return;
+
+    // Over the sprite as it is DRAWN: on a depth map (depth-index.js) a token
+    // far up the path is drawn much smaller than its square, and the button
+    // floated a head's height above it. The drawn bounds also follow a walk.
+    const mesh = tokenDoc.object?.mesh;
+    if (mesh && !mesh.destroyed) {
+      const b = mesh.getBounds();
+      const el = canvas?.app?.view;
+      const rect = el?.getBoundingClientRect?.();
+      if (rect && b.width > 0) {
+        const kx = rect.width / (canvas.app.screen?.width || rect.width);
+        const ky = rect.height / (canvas.app.screen?.height || rect.height);
+        btn.style.left = `${Math.round(rect.left + (b.x + (b.width / 2)) * kx)}px`;
+        btn.style.top  = `${Math.round(rect.top + (b.top * ky) - HUD_BTN_LIFT_PX)}px`;
+        return;
+      }
+    }
+
     const gSize = canvas?.grid?.size ?? 100;
     const cx = (tokenDoc.x ?? 0) + (tokenDoc.width  ?? 1) * gSize / 2;
     const cy = (tokenDoc.y ?? 0) - gSize * 0.25; // anchor point above the token top
