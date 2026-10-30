@@ -55,6 +55,7 @@ const ACTION_TURN_GET = "FU_DIRECTOR_HUD_TURN_GET";   // a (re)built client → 
 const ACTION_PHASE     = "FU_DIRECTOR_HUD_PHASE";      // GM → everyone: is the battle settled (waiting) or moving
 const ACTION_PHASE_GET = "FU_DIRECTOR_HUD_PHASE_GET";  // a (re)built client → GM: the latest one
 const ACTION_WAIT     = "FU_DIRECTOR_HUD_WAIT";       // GM → others: a player is answering a pick
+const ACTION_HUD_GET  = "FU_DIRECTOR_HUD_GET";        // a client with no HUD → GM: is a battle HUD up?
 const FLAG_KEY    = "directorHudKey";
 const FLAG_ACTORS = "directorHudActorIds";
 const STYLE_ID    = "fu-director-hud-style";
@@ -1684,7 +1685,7 @@ function buildLocally(key, entries) {
     catch (e) { warn("[DirectorHud] GM desk build failed", e); }
     offFns.push(() => { try { destroyDesk(); } catch { /* */ } });
   }
-  if (plate && !game.user?.isGM) offFns.push(watchPlateForMirror(plate));
+  if (plate && !game.user?.isGM) offFns.push(watchPlateForMirror(plate), watchCardConfirmWait());
 
   byKey.set(key, owner);
   log(`[DirectorHud] built key=${key} cards=${cards.size} plate=${plate ? mine : "none"}${desk ? " desk" : ""}`);
@@ -1797,6 +1798,36 @@ function watchPlateForMirror(plate) {
   const mo = new MutationObserver(queue);
   mo.observe(plate.el, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "inert"], characterData: true });
   return () => { mo.disconnect(); clearTimeout(t); };
+}
+
+// ── "Waiting on" the card's confirmer ─────────────────────────────────────────
+// Once every reaction on someone else's action card was answered, nothing on a
+// player's screen moved until the GM (or the acting player) pressed Confirm, so
+// the card looked stuck. The plate's "Waiting on" tab now says who it waits on.
+const CONFIRM_WAIT_KEY = "card-confirm";
+function confirmWaitInfo() {
+  const w = document.getElementById("fud-bf-mirror-root");
+  const card = w?.querySelector(".fud-bf-card");
+  // Your own card has your Confirm on it; nothing to wait on.
+  if (!card?.classList.contains("is-readonly-mirror")) return null;
+  // Reactions still open: the reaction indicator already names who answers.
+  if (card.hasAttribute("data-fud-reactions-pending")) return null;
+  if (w.querySelector('.fud-bf-reaction-pill[data-fud-reaction-pending="1"][data-fud-reaction-gating="1"]')) return null;
+  const uid = w.dataset.fudConfirmUserId || "";
+  const user = uid ? game.users?.get(uid) : null;
+  return { userIds: user && !user.isGM ? [uid] : [], label: "confirming the action" };
+}
+function watchCardConfirmWait() {
+  let last = "";
+  const check = () => {
+    const info = confirmWaitInfo();
+    const sig = info ? JSON.stringify(info) : "";
+    if (sig === last) return;
+    last = sig;
+    setPlateWaiting(CONFIRM_WAIT_KEY, info);
+  };
+  const timer = setInterval(check, 400);
+  return () => { clearInterval(timer); if (last) setPlateWaiting(CONFIRM_WAIT_KEY, null); };
 }
 
 // ── drawer host: the steps after a command live in the drawer ─────────────────
@@ -2091,6 +2122,17 @@ function ensureSocket() {
     } catch (e) { warn("[DirectorHud] socket WAIT error:", e); }
   });
 
+  // The HUD this GM has up, read from its scene's flags (the same source the
+  // reload gate trusts), so a client that missed the build can make its own.
+  socket.register(ACTION_HUD_GET, () => {
+    for (const key of byKey.keys()) {
+      const scene = key.startsWith("director-") ? game.scenes?.get(key.slice("director-".length)) : null;
+      const actorIds = scene?.getFlag(MODULE_ID, FLAG_ACTORS);
+      if (scene?.getFlag(MODULE_ID, FLAG_KEY) === key && Array.isArray(actorIds)) return { key, sceneId: scene.id, actorIds };
+    }
+    return null;
+  });
+
   _socket = socket;
   return _socket;
 }
@@ -2099,13 +2141,38 @@ function ensureSocket() {
 function tryReloadRecovery(trigger) {
   const key      = canvas?.scene?.getFlag(MODULE_ID, FLAG_KEY);
   const actorIds = canvas?.scene?.getFlag(MODULE_ID, FLAG_ACTORS);
-  if (!key || !Array.isArray(actorIds)) return;
+  if (!key || !Array.isArray(actorIds)) { askHostForHud(trigger); return; }
   if (byKey.has(key)) return;
   log(`[DirectorHud] reload-recovery (${trigger}): rebuilding key=${key}`);
   const entries = actorIds
     .map(id => ({ actor: game.actors?.get(id), token: null }))
     .filter(e => e.actor);
   buildLocally(key, entries);   // no-op for a player with nothing to show
+}
+
+// A player still LOADING when the battle starts is already "active" (Foundry
+// marks a user active on socket connect), so the host's BUILD went to a client
+// whose handlers weren't registered yet and was lost, and the scene flags this
+// client loaded could predate the host's write. It then sat HUD-less until F5.
+// With no flags on its scene, the client asks the GM what HUD is up instead.
+let _askingHud = false;
+async function askHostForHud(trigger) {
+  if (game.user?.isGM || _askingHud || !canvas?.scene) return;
+  const socket = ensureSocket();
+  if (!socket || !game.users?.activeGM) return;
+  _askingHud = true;
+  try {
+    const hud = await socket.executeAsGM(ACTION_HUD_GET);
+    if (!hud?.key || !Array.isArray(hud.actorIds) || byKey.has(hud.key)) return;
+    // Built on the battle scene only; this client's canvasReady there asks again.
+    if (hud.sceneId !== canvas?.scene?.id) return;
+    log(`[DirectorHud] host-recovery (${trigger}): rebuilding key=${hud.key}`);
+    const entries = hud.actorIds
+      .map(id => ({ actor: game.actors?.get(id), token: null }))
+      .filter(e => e.actor);
+    buildLocally(hud.key, entries);
+  } catch (e) { warn("[DirectorHud] HUD fetch from the GM failed", e); }
+  finally { _askingHud = false; }
 }
 
 // GM preview: rebuild every open HUD on this client with a plate for actorId

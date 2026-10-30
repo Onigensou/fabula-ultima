@@ -21,6 +21,7 @@ import { armPlateTakeTurn, notePlateAnswered } from "./director-player-hud.js";
 import { deskArmTakeTurn } from "./gm-desk.js";
 
 const STYLE_ID = "fud-turnpicker-style";
+const SCENE_DRAW_WAIT_MS = 90000;   // longest a player's picker waits for the battle scene to draw
 
 // Per-director instance state — keyed by combatId.
 const _instances = new Map();
@@ -338,6 +339,9 @@ export const TurnPicker = {
 // On click → emits TURN_COMBATANT_PICKED over IntentChannel. GM's
 // TURN_START races this against its own local picker click.
 export function registerPlayerTurnPickerHandler(channel, isActiveDirector = () => false) {
+  // Bumped by every close: a picker that closed while this client was still
+  // waiting for the battle scene to draw must not open afterwards.
+  let closes = 0;
   const offOpen = channel.onMenuOpen(async (menuSpec) => {
     if (!menuSpec || menuSpec.kind !== "turn-picker") return;
     // Primary GM spawns the turn-picker locally in TURN_START; skip here.
@@ -347,6 +351,7 @@ export function registerPlayerTurnPickerHandler(channel, isActiveDirector = () =
       log("turn-picker MENU_OPEN: empty eligible list, skipping");
       return;
     }
+    const closesAtOpen = closes;
     // Switch to the battle scene if we're not there — pills are anchored
     // to canvas tokens. scene.view() only affects this user.
     try {
@@ -356,20 +361,24 @@ export function registerPlayerTurnPickerHandler(channel, isActiveDirector = () =
           log(`turn-picker MENU_OPEN: switching view to ${scene.name}`);
           try { await scene.view(); } catch (e) { warn("scene.view threw", e); }
           // scene.view() returns before canvas is fully rendered with
-          // tokens. Wait for canvasReady before spawning pills so
-          // canvas.tokens.get() can actually resolve the tokens.
-          if (!canvas?.ready) {
-            log(`turn-picker MENU_OPEN: waiting for canvasReady`);
-            await new Promise((resolve) => {
-              const handler = () => { Hooks.off("canvasReady", handler); resolve(); };
-              Hooks.once("canvasReady", handler);
-              // Safety timeout — don't hang forever if canvas never finishes.
-              setTimeout(() => { try { Hooks.off("canvasReady", handler); } catch {} resolve(); }, 5000);
-            });
+          // tokens. Wait until the battle scene is the drawn, ready canvas
+          // before spawning pills so canvas.tokens.get() can resolve them.
+          // A player still loading (this menu replayed on their PLAYER_HELLO)
+          // can take far longer than a few seconds to draw it; the old 5 s cap
+          // then found no tokens, the picker resolved null and the player
+          // never got a Take Turn. Capped so a canvas that never finishes
+          // can't hang the handler.
+          if (!(canvas?.ready && canvas.scene?.id === scene.id)) {
+            log(`turn-picker MENU_OPEN: waiting for ${scene.name} to draw`);
+            const until = Date.now() + SCENE_DRAW_WAIT_MS;
+            while (!(canvas?.ready && canvas.scene?.id === scene.id) && Date.now() < until) {
+              await new Promise((r) => setTimeout(r, 200));
+            }
           }
         }
       }
     } catch (e) { warn("turn-picker scene-switch threw", e); }
+    if (closes !== closesAtOpen) { log("turn-picker MENU_OPEN: closed while the scene drew, not spawning"); return; }
 
     log(`turn-picker MENU_OPEN: spawning pills (canvas.ready=${!!canvas?.ready}, scene=${canvas?.scene?.name})`);
     TurnPicker.show({
@@ -390,6 +399,7 @@ export function registerPlayerTurnPickerHandler(channel, isActiveDirector = () =
 
   const offClose = channel.onMenuClose((payload) => {
     if (payload?.kind && payload.kind !== "turn-picker") return;
+    closes++;
     // No reliable combatId on the payload; just despawn anything open.
     // At most one turn-picker is up per client at a time.
     try { TurnPicker.despawnAll(); } catch {}
