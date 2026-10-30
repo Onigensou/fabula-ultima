@@ -142,6 +142,13 @@
               for (const name of names) if (!hasToken(scene, name)) add("warn", `Set Token names "${name}", but no token on this scene has that name. If it was deleted, hide it instead, or take it out of this row.`);
               break;
             }
+            case "setFacing":
+              if (row.target === "token") {
+                const names = String(row.name ?? "").split(",").map(s => s.trim()).filter(Boolean);
+                if (!names.length) add("warn", "Set Facing on a named token, with no name.");
+                for (const name of names) if (!hasToken(scene, name)) add("warn", `Set Facing names "${name}", but no token on this scene has that name.`);
+              }
+              break;
             case "showEmote":
               if (row.target === "token" && !String(row.name ?? "").trim()) add("warn", "Show Emote on a named token, with no name.");
               else if (row.target === "token" && !hasToken(scene, row.name)) add("warn", `Show Emote on "${row.name}", but no token on this scene has that name.`);

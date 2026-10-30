@@ -1,5 +1,5 @@
 /**
- * [ONI] Event System — Set Token
+ * [ONI] Event System — Set Token, Set Facing
  * Foundry VTT v12
  *
  * File:
@@ -9,6 +9,7 @@
  * - Registers the "Set Token" event action: show or hide a named token on this
  *   scene and change its tint, so a cutscene can bring characters on and take
  *   them off with nobody clicking anything.
+ * - Registers "Set Facing": turn the party or a token to one of eight directions.
  *
  * How it fits together:
  * - A GM writes the token document; every client sees it through Foundry. So
@@ -301,6 +302,116 @@
       direction: pickDirection(kit.readText(rowEl, ".oni-event-row-token-direction", "up")),
       smoke: !!kit.own(rowEl, ".oni-event-row-token-smoke")?.checked,
       wait: !!kit.own(rowEl, ".oni-event-row-token-wait")?.checked
+    })
+  });
+
+  // ------------------------------------------------------------
+  // Set Facing
+  // ------------------------------------------------------------
+  // Turns a token on every client through the facing system, which holds the
+  // fallbacks: a direction the character has no art for shows the nearest one that
+  // exists, and a character with no direction art keeps its image and mirrors.
+  const KIND_FACING = "token.facing";
+
+  const FACING_TARGETS = [
+    ["party", "The party"],
+    ["source", "This event's token"],
+    ["token", "A named token"]
+  ];
+  const FACINGS = [
+    ["up", "Up (back to the screen)"],
+    ["upRight", "Up and right"],
+    ["right", "Right"],
+    ["downRight", "Down and right"],
+    ["down", "Down (facing the screen)"],
+    ["downLeft", "Down and left"],
+    ["left", "Left"],
+    ["upLeft", "Up and left"]
+  ];
+  const pickFacing = (value) => (FACINGS.some(([key]) => key === value) ? value : "up");
+  const pickFacingTarget = (value) => (FACING_TARGETS.some(([key]) => key === value) ? value : "party");
+  const facingApi = () => globalThis.__ONI_SPRITE_FACING_RUNTIME__ ?? null;
+
+  function facingDocs(row, scene, context) {
+    const target = pickFacingTarget(row?.target);
+    if (target === "party") {
+      const doc = scene?.tokens?.get(context?.tokenId);
+      return doc ? [doc] : [];
+    }
+    if (target === "source") {
+      return context?.sourceDoc?.documentName === "Token" ? [context.sourceDoc] : [];
+    }
+    return namesIn(row?.name).flatMap(n => tokensNamed(scene, n));
+  }
+
+  Client.register(KIND_FACING, (data) => {
+    for (const id of data.tokenIds ?? []) {
+      const token = canvas?.tokens?.get(id);
+      if (token) facingApi()?.setDirection?.(token, data.direction);
+    }
+  });
+
+  EventRegistry.register({
+    type: "setFacing",
+    label: "Set Facing",
+    category: "Token",
+    defaultData: { type: "setFacing", target: "party", name: "", direction: "up" },
+    summary: (row) => {
+      const who = pickFacingTarget(row?.target) === "token" ? (String(row?.name ?? "").trim() || "(no token)")
+        : (pickFacingTarget(row?.target) === "source" ? "this token" : "the party");
+      return `${who}: ${pickFacing(row?.direction)}`;
+    },
+    execute: async (row, context) => {
+      const scene = game.scenes?.get(context?.sceneId) ?? canvas?.scene ?? null;
+      const docs = facingDocs(row, scene, context);
+      if (!docs.length) {
+        console.warn(INSTALL_TAG, "Set Facing: no token to turn; passed over.", row);
+        return { ok: false, type: "setFacing", reason: "notFound" };
+      }
+
+      const direction = pickFacing(row?.direction);
+      Client.run(context?.tileId, KIND_FACING, { tokenIds: docs.map(d => d.id), direction });
+
+      // Saved like the end of a walk, so a reload and a late joiner see it.
+      const named = facingApi()?.NAMED_DIRECTIONS?.[direction];
+      if (named) {
+        const flags = { "flags.fabula-ultima-companion.facingDir": named.dir };
+        if (named.side) flags["flags.fabula-ultima-companion.facing"] = named.side;
+        await scene.updateEmbeddedDocuments("Token", docs.map(d => ({ _id: d.id, ...flags })));
+      }
+
+      return { ok: true, type: "setFacing", changed: docs.length };
+    },
+    buildFields: (row, kit) => {
+      const body = kit.fields(
+        kit.field(
+          "Who",
+          `<select class="oni-event-row-facing-target">${kit.options(FACING_TARGETS, pickFacingTarget(row.target))}</select>`
+        ),
+        `<div class="oni-event-row-facing-name-wrap">${kit.field(
+          "Token names",
+          `<input type="text" class="oni-event-row-facing-name" value="${kit.escapeHTML(row.name ?? "")}" placeholder="Names of tokens on this scene, separated by commas" />`
+        )}</div>`,
+        kit.field(
+          "Direction",
+          `<select class="oni-event-row-facing-direction">${kit.options(FACINGS, pickFacing(row.direction))}</select>`,
+          "Stays after the event. If the character has no art for this direction, the nearest one it has is shown; with no direction art at all, it keeps its image and only mirrors left or right."
+        )
+      );
+
+      const targetEl = body.querySelector(".oni-event-row-facing-target");
+      const sync = () => {
+        body.querySelector(".oni-event-row-facing-name-wrap").hidden = targetEl.value !== "token";
+      };
+      targetEl.addEventListener("change", sync);
+      sync();
+
+      return body;
+    },
+    collectFields: (rowEl, kit) => ({
+      target: pickFacingTarget(kit.readText(rowEl, ".oni-event-row-facing-target", "party")),
+      name: kit.readText(rowEl, ".oni-event-row-facing-name", "").trim(),
+      direction: pickFacing(kit.readText(rowEl, ".oni-event-row-facing-direction", "up"))
     })
   });
 

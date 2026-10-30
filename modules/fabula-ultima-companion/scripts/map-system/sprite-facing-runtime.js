@@ -139,6 +139,21 @@
     { dir: "upLeft",   side: "right" }
   ];
 
+  // A direction by name (Event System's Set Facing): the drawn one, and its side.
+  const NAMED_DIRECTIONS = {
+    up:        { dir: "up",       side: null },
+    down:      { dir: "down",     side: null },
+    left:      { dir: "left",     side: "left" },
+    right:     { dir: "left",     side: "right" },
+    upLeft:    { dir: "upLeft",   side: "left" },
+    upRight:   { dir: "upLeft",   side: "right" },
+    downLeft:  { dir: "downLeft", side: "left" },
+    downRight: { dir: "downLeft", side: "right" }
+  };
+
+  // Where an event's tile keeps its settings (event-constants.js).
+  const EVENT_FLAG_SCOPE = "oni-event-system";
+
   // A new slice must be entered this far (about 8 degrees) before the
   // direction changes, so a winding path does not flicker between two.
   const SECTOR_STICKY_RADIANS = 0.14;
@@ -168,6 +183,7 @@
 
   const state = {
     installed: true,
+    directedIds: new Set(),
     enabled: ENABLED,
     active: false,
     dungeon: false, // a dungeon map: steps come from dp-movement.js, not from watching the token
@@ -409,6 +425,34 @@
 
     w.lastMoverIsMe = true;
     scheduleSaveFacing(token);
+  }
+
+  /**
+   * Face a named direction (Event System's Set Facing). Works on any token: one
+   * that isn't a walker yet starts wearing standing art like one. Art comes from
+   * pickSlot, so a direction the character has no art for shows the nearest one
+   * that exists, and a character with no direction art at all keeps its own image
+   * and only mirrors. Shown here; the event writes it to the token for reloads.
+   */
+  function setDirection(token, name) {
+    const named = NAMED_DIRECTIONS[name];
+    if (!state.active || state.dungeon || !token || !named || isFacingLocked(token)) return false;
+
+    state.directedIds.add(token.id);
+    const w = walkerFor(token);
+    if (w.walking) {
+      // Mid-step: the walk would overwrite it. Applied when the walk ends.
+      w.forcedDirection = named;
+      return true;
+    }
+    applyNamedDirection(token, named);
+    return true;
+  }
+
+  function applyNamedDirection(token, named) {
+    if (named.side) setFacing(token, named.side, { instant: true });
+    entryFor(token).dir = named.dir;
+    walkerFor(token).standDirty = true;
   }
 
   function faceToward(token, point) {
@@ -1226,6 +1270,21 @@
   // Every token that walks here: the party token on a walk map, each party
   // member in a camp.
   function walkerTokens() {
+    return [...new Set([...movingWalkerTokens(), ...directedTokens()])];
+  }
+
+  // Tokens an event has turned to a direction, which wear its standing art.
+  function directedTokens() {
+    const out = [];
+    for (const id of state.directedIds) {
+      const token = canvas.tokens?.get(id);
+      if (token) out.push(token);
+      else state.directedIds.delete(id);
+    }
+    return out;
+  }
+
+  function movingWalkerTokens() {
     if (!state.camp) {
       const party = findPartyToken();
       return party ? [party] : [];
@@ -1243,6 +1302,7 @@
 
   function isWalkerTokenId(tokenId) {
     if (!tokenId) return false;
+    if (state.directedIds.has(tokenId)) return true;
     if (!state.camp) return tokenId === state.partyTokenId;
     return walkerTokens().some(t => t.id === tokenId);
   }
@@ -1307,6 +1367,10 @@
         w.walkDistance = 0;
         w.dirSector = null;
         hideWalk(w);
+        if (w.forcedDirection) {
+          applyNamedDirection(token, w.forcedDirection);
+          w.forcedDirection = null;
+        }
         showStandArt(token);
         scheduleSaveFacing(token);
       }
@@ -1418,11 +1482,15 @@
     const target = centerOfSource(npc ?? tile);
     if (!target) return;
 
+    // A tile the party walked into isn't something they turned to look at: they
+    // keep the direction they were walking. A Set Facing row can turn them.
+    if (tile?.flags?.[EVENT_FLAG_SCOPE]?.startMode === "stepIn") return;
+
     faceToward(party, target);
 
     if (npc && npc.id !== party.id) {
       if (!state.talks.has(npc.id)) {
-        state.talks.set(npc.id, { facingBefore: getFacing(npc), startedAt: performance.now() });
+        state.talks.set(npc.id, { facingBefore: getFacing(npc), dirBefore: entryFor(npc).dir, startedAt: performance.now() });
       }
       faceToward(npc, { x: party.x + (party.w / 2), y: party.y + (party.h / 2) });
     }
@@ -1434,7 +1502,13 @@
     state.talks.delete(npcId);
 
     const npc = canvas?.tokens?.get(npcId);
-    if (npc) setFacing(npc, talk.facingBefore);
+    if (!npc) return;
+    setFacing(npc, talk.facingBefore);
+    // Back to the direction an event had set it to, if any.
+    if (state.directedIds.has(npcId) && talk.dirBefore) {
+      entryFor(npc).dir = talk.dirBefore;
+      walkerFor(npc).standDirty = true;
+    }
   }
 
   function onEventDone({ sourceId } = {}) {
@@ -1516,6 +1590,7 @@
   }
 
   function reset() {
+    state.directedIds.clear();
     for (const id of [...state.poses.keys()]) dropPose(id);
     for (const id of [...state.walkers.keys()]) dropWalker(id);
     state.tokens.clear();
@@ -1579,6 +1654,9 @@
     // The drawn direction a token is on: down, downLeft, left, upLeft or up.
     getDirection(token) { return token ? entryFor(token).dir : null; },
     setFacing(token, facing, options) { if (token) setFacing(token, facing, options); },
+    // Event System's Set Facing: up, down, left, right, upLeft, upRight, downLeft, downRight.
+    setDirection(token, name) { return setDirection(token, name); },
+    NAMED_DIRECTIONS,
     faceToward(token, point) { if (token && point) faceToward(token, point); },
 
     // Keyboard walking (movementControl-cameraRuntime.js): which way the
@@ -1632,6 +1710,9 @@
         entryFor(token);
         applyFacing(token);
       }
+      // An event turned this token (Set Facing): back on that direction's art.
+      const savedDir = token.document?.getFlag?.(MODULE_ID, DIR_FLAG);
+      if (DIR_FIELDS[savedDir] && savedDir !== "downLeft") state.directedIds.add(token.id);
     }
 
     // Walkers stand the way their last walk ended: a new walker record
