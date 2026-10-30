@@ -1,14 +1,17 @@
 # Case: player-reloads — Rinri's and Blumairwen's pages reload mid-session
 
 **Status:** open, **cause located** (2026-10-28 test); **fix built** 2026-10-29 (the forge mirror,
-`tools/forge-mirror/README.md`), tested in the sandbox only. **Next:**
-- a real-player test of the mirror: world entry plus map switches without preloading, compared with 10-28;
-- the players take ~21:00 measurements on another evening.
+`tools/forge-mirror/README.md`). **Real-player test 2026-10-29: it works** for Blumairwen, Trinio and Silryantish:
+0 fallbacks to Forge, first-time map switches 1–5 s (223–520 s on 10-28), world entry 24–42 s. **Next:**
+- Rinri on the same test, another night;
+- a full session with everyone: are the mid-session reloads gone, and what are the load times with everyone at once?
+- the players' ~21:00 measurements may be moot, now that players no longer fetch from Forge (host's call).
 
 **Tracking report:** `reports/2026-10-28-player-reload-investigation.md`
 **Sessions:**
 - [2026-10-24 game session](sessions/2026-10-24-game-session.md) (the baseline)
 - [2026-10-28 test](sessions/2026-10-28-test.md) (Blumairwen + Rinri)
+- [2026-10-29 mirror test](sessions/2026-10-29-mirror-test.md) (Blumairwen, Trinio, Silryantish: the mirror with real players)
 **Data:** [sessions.json](sessions.json) · **Tools:** [../_tools/](../_tools/) · **Deep-dive from that night:** [../../player-reload-investigation-2026-10-24.md](../../player-reload-investigation-2026-10-24.md)
 
 ## Symptom
@@ -210,6 +213,8 @@ The host decides; nothing here is built yet. Cheapest first.
      - Details are in the session addendum.
    - **Built 2026-10-29** as "keep Forge, mirror on the host": `tools/forge-mirror/README.md`. Sound is included;
      images inside sheets, journals and chat are not yet.
+   - **Real-player test 2026-10-29** ([record](sessions/2026-10-29-mirror-test.md)): every file came from the host,
+     0 fallbacks. Blumairwen's Kingdom 345.7 s → 4.5 s, Vastwind_Field002 520.5 s → 5.0 s, world entry 317 s → 23.9 s.
 4. **Report it to Forge.**
    - First fetches of their assets through Cloudflare BKK crawl for True (AS17552) customers, while AIS gets them in
      ~3 s (cf-cache-status MISS, first byte ~1.1–1.5 s).
@@ -509,3 +514,13 @@ of RAM; it was closed as not planned.
       folder name ends in a dot. Both go to `_case/` in the mirror.
     - **203 references point at files no longer on Forge** (broken today, e.g. `Fabula Stuffs/Sprites` ×76),
       listed in `forge-mirror/broken.json`. Noted at the host's request; no action.
+- **2026-10-29 (night) → 10-30: the real-player test of the mirror.** Blumairwen (21:57), Trinio (22:08) and
+  Silryantish (02:04), one at a time. Rinri couldn't come; postponed.
+  - Record: [sessions/2026-10-29-mirror-test.md](sessions/2026-10-29-mirror-test.md). Data: `sessions.json` →
+    `2026-10-29-mirror-test`.
+  - **It works:** 277–285 files per player from the host, 0 not mirrored, 0 fallbacks. First-time map switches took
+    1.1–5.0 s (10-28: 223–520 s); world entry took 23.9–42.0 s (10-28: 80–317 s).
+  - No reloads, but each player was on for only 3–10 min. Mid-session reloads need a full session.
+  - New: the session-end prompt (v1.0.483) sent each player off. All three pressed Leave now.
+  - `client-health-summary` raised a false SAMPLE GAP across map draws; fix proposed.
+  - Demo cleanup: movement controller and party token art restored. Preflight afterwards matched the pre-test run.

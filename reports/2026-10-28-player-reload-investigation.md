@@ -87,3 +87,10 @@ pressed F5. Trinio and Silryantish had 0 reloads.
     - automatic preloading;
     - serving or mirroring map images from the host;
     - a report to Forge.
+- **2026-10-29 (onigensou's side): the forge mirror**, option 3 as "keep Forge, mirror on the host". Built,
+  sandbox-tested and pushed (v1.0.479). Design: `tools/forge-mirror/README.md`.
+- **2026-10-29 → 10-30: real-player test of the mirror** with Blumairwen, Trinio and Silryantish, one at a time. Record:
+  `modules/fabula-ultima-companion/docs/investigations/player-reloads/sessions/2026-10-29-mirror-test.md`.
+  - Every file came from the host, with 0 fallbacks to Forge.
+  - Map switches that stalled 223–520 s on 10-28 took 1.1–5.0 s. Blumairwen's world entry went from 317 s to 23.9 s.
+  - Status stays **open** until a full session shows the mid-session reloads are gone. Rinri's test is postponed.

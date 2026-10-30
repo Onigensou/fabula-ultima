@@ -499,6 +499,615 @@
         "forgeUrlsInWorldData": 3271
       },
       "notes": ["A first-time map switch dropped from 223-520 s (Forge, earlier the same night) to 1.2 s with the background served by the host.", "World entry stays slow until every Forge file clients load (status icons first) is served by the host too.", "Cleanup at 00:08: both scenes reverted to their Forge URLs, mirror and test page deleted, Foundry closed."]
+    },
+    {
+      "id": "2026-10-29-mirror-test",
+      "kind": "fix-test",
+      "window": {
+        "from": "2026-10-29 21:39",
+        "to": "2026-10-30 11:35",
+        "tz": "+07:00"
+      },
+      "build": {
+        "foundry": "12.343",
+        "module": "1.0.482",
+        "moduleNote": "this test's local build; the session-end prompt reached origin as 1.0.483, because sarunphat's Ally watch took 1.0.482 there"
+      },
+      "fix": "option 3 as built: the forge mirror (tools/forge-mirror/README.md); every Forge file the clients load is served by the host",
+      "conditions": {
+        "players": "Blumairwen, Trinio, Silryantish, one at a time; Rinri postponed",
+        "forgeMirror": true,
+        "mirroredFiles": 3120,
+        "mirroredMB": 1198,
+        "loadIndicator": true,
+        "scenePrefetch": true,
+        "driver": "CDP rounds from the GM page: Eisendrache Kingdom > Vastwind_Field002 > Eisendrache Highroad > Eisendrache Burning > Dragonslayer Title, 30 s each; every field map a first load",
+        "mapTimeDefinition": "scene activation -> the GM receives the player's finished draw (userActivity with sceneId)",
+        "sendOff": "session-end prompt (v1.0.483 on origin): bell, Leave now, 180 s countdown",
+        "stream": false,
+        "tcpWatch": false,
+        "pingWatch": true,
+        "preflight": "2 FAIL (the same two as 10-28, off the test maps), 373 WARN"
+      },
+      "server": {
+        "activations": 15,
+        "vendMsRange": [3739, 4523],
+        "errors": 0,
+        "warnings": 9,
+        "warningsDetail": "2 gm-screen deprecations at launch; 7 x 'embedded effects records in ActiveEffect hN5IkJdmMjvuGmey were undefined' (one per vend, in every log since 10-08)",
+        "players": {
+          "Blumairwen": {
+            "route": "27.145.x.x",
+            "pageLoads": 1,
+            "reloads": 0,
+            "logins": 1,
+            "modes": {},
+            "reloadSecAfterDraw": [],
+            "pairedReloads": 0
+          },
+          "Trinio": {
+            "route": "223.205.x.x",
+            "pageLoads": 1,
+            "reloads": 0,
+            "logins": 1,
+            "modes": {},
+            "reloadSecAfterDraw": [],
+            "pairedReloads": 0
+          },
+          "Silryantish": {
+            "route": "27.130.x.x",
+            "pageLoads": 1,
+            "reloads": 0,
+            "logins": 1,
+            "modes": {},
+            "reloadSecAfterDraw": [],
+            "pairedReloads": 0
+          }
+        },
+        "loginToWorldDataS": {
+          "Blumairwen": 9,
+          "Trinio": 15,
+          "Silryantish": 17
+        }
+      },
+      "clientHealth": {
+        "Blumairwen": {
+          "browser": "Chrome 156",
+          "cores": 12,
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5060 (0x00002D05) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "softwareGL": false,
+          "screen": "2170x1221@1.1799999475479126",
+          "boots": [
+            {
+              "at": "10-29 21:57:41",
+              "verdict": "NEW NAVIGATION · boot gap 78505 s",
+              "navType": "navigate",
+              "wasDiscarded": false,
+              "loadS": 24,
+              "prevScene": "Eisendrache Colosseum",
+              "prevSinceDrawS": 567,
+              "prevDrawing": true,
+              "prevHeapMB": 776,
+              "prevTextures": 17,
+              "prevDriftMs": 0
+            }
+          ],
+          "draws": 5,
+          "drawMedianS": 0.9,
+          "drawMaxS": 4.9,
+          "stalls": [],
+          "disconnects": [],
+          "hides": 1,
+          "hiddenMinutes": 0,
+          "longHides": [],
+          "sampleGaps": [
+            {
+              "at": "10-29 22:02:41",
+              "gapS": 240,
+              "scene": "Dragonslayer Title",
+              "hiddenAfter": true
+            }
+          ],
+          "loads": [
+            {
+              "at": "10-29 21:57:41",
+              "scene": "Dragonslayer Title (world entry)",
+              "s": 24,
+              "texS": 24,
+              "files": 77,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Burn.png",
+                  "from": "the game host",
+                  "ms": 431,
+                  "done": true
+                },
+                {
+                  "file": "Blind.png",
+                  "from": "the game host",
+                  "ms": 426,
+                  "done": true
+                },
+                {
+                  "file": "Zombie.png",
+                  "from": "the game host",
+                  "ms": 426,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-29 22:01:26",
+              "scene": "Eisendrache Kingdom",
+              "s": 4,
+              "texS": 4,
+              "files": 77,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Eisendrache_Scene001.png",
+                  "from": "the game host",
+                  "ms": 4204,
+                  "done": true
+                },
+                {
+                  "file": "Fumes_02_Steam_White_400x400.webm",
+                  "from": "the game host",
+                  "ms": 228,
+                  "done": true
+                },
+                {
+                  "file": "rings-steel.json",
+                  "from": "the game host",
+                  "ms": 4,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-29 22:03:42",
+              "scene": "Vastwind_Field002",
+              "s": 5,
+              "texS": 5,
+              "files": 92,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Vastwind_Map002.png",
+                  "from": "the game host",
+                  "ms": 4823,
+                  "done": true
+                },
+                {
+                  "file": "ArrowLeft_Tile.png",
+                  "from": "the game host",
+                  "ms": 165,
+                  "done": true
+                },
+                {
+                  "file": "WindLines01_01_Regular_White_500x500.webm",
+                  "from": "the game host",
+                  "ms": 164,
+                  "done": true
+                }
+              ],
+              "pending": []
+            }
+          ],
+          "peakHeapMB": 805,
+          "peakTextures": 19,
+          "mirror": {
+            "hits": 285,
+            "misses": 0,
+            "fallbacks": 0,
+            "records": 6,
+            "on": true
+          }
+        },
+        "Trinio": {
+          "browser": "Firefox 159",
+          "cores": 16,
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce GTX 980 Direct3D11 vs_5_0 ps_5_0), or similar",
+          "softwareGL": false,
+          "screen": "2560x1440@1",
+          "boots": [
+            {
+              "at": "10-29 22:08:42",
+              "verdict": "FIRST LOAD",
+              "navType": "navigate",
+              "wasDiscarded": null,
+              "loadS": 31,
+              "prevScene": null,
+              "prevSinceDrawS": null,
+              "prevDrawing": null,
+              "prevHeapMB": null,
+              "prevTextures": null,
+              "prevDriftMs": null
+            }
+          ],
+          "draws": 5,
+          "drawMedianS": 0.9,
+          "drawMaxS": 1.1,
+          "stalls": [],
+          "disconnects": [],
+          "hides": 0,
+          "hiddenMinutes": 0,
+          "longHides": [],
+          "sampleGaps": [],
+          "loads": [
+            {
+              "at": "10-29 22:08:42",
+              "scene": "Dragonslayer Title (world entry)",
+              "s": 31,
+              "texS": 31,
+              "files": 77,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "ink_jet.png",
+                  "from": "the game host",
+                  "ms": 333,
+                  "done": true
+                },
+                {
+                  "file": "cross_reaping.png",
+                  "from": "the game host",
+                  "ms": 333,
+                  "done": true
+                },
+                {
+                  "file": "cold_fog.png",
+                  "from": "the game host",
+                  "ms": 332,
+                  "done": true
+                }
+              ],
+              "pending": []
+            }
+          ],
+          "peakHeapMB": 0,
+          "peakTextures": 49,
+          "mirror": {
+            "hits": 279,
+            "misses": 0,
+            "fallbacks": 0,
+            "records": 6,
+            "on": true
+          }
+        },
+        "Silryantish": {
+          "browser": "Edge 156",
+          "cores": 16,
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4060 Ti (0x00002803) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "softwareGL": false,
+          "screen": "1920x1080@1",
+          "boots": [
+            {
+              "at": "10-30 02:04:39",
+              "verdict": "FIRST LOAD",
+              "navType": "navigate",
+              "wasDiscarded": false,
+              "loadS": 42,
+              "prevScene": null,
+              "prevSinceDrawS": null,
+              "prevDrawing": null,
+              "prevHeapMB": null,
+              "prevTextures": null,
+              "prevDriftMs": null
+            }
+          ],
+          "draws": 5,
+          "drawMedianS": 1.9,
+          "drawMaxS": 3,
+          "stalls": [],
+          "disconnects": [],
+          "hides": 0,
+          "hiddenMinutes": 0,
+          "longHides": [],
+          "sampleGaps": [],
+          "loads": [
+            {
+              "at": "10-30 02:04:39",
+              "scene": "Dragonslayer Title (world entry)",
+              "s": 42,
+              "texS": 42,
+              "files": 77,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "rings-steel.json",
+                  "from": "the game host",
+                  "ms": 1572,
+                  "done": true
+                },
+                {
+                  "file": "ink_jet.png",
+                  "from": "the game host",
+                  "ms": 1517,
+                  "done": true
+                },
+                {
+                  "file": "cross_reaping.png",
+                  "from": "the game host",
+                  "ms": 1503,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-30 02:05:32",
+              "scene": "Vastwind_Field002",
+              "s": 3,
+              "texS": 3,
+              "files": 92,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Vastwind_Map002.png",
+                  "from": "the game host",
+                  "ms": 2959,
+                  "done": true
+                },
+                {
+                  "file": "WindLines01_01_Regular_White_500x500.webm",
+                  "from": "the game host",
+                  "ms": 860,
+                  "done": true
+                },
+                {
+                  "file": "Camp_Tile.png",
+                  "from": "the game host",
+                  "ms": 417,
+                  "done": true
+                }
+              ],
+              "pending": []
+            }
+          ],
+          "peakHeapMB": 813,
+          "peakTextures": 41,
+          "mirror": {
+            "hits": 277,
+            "misses": 0,
+            "fallbacks": 0,
+            "records": 6,
+            "on": true
+          }
+        }
+      },
+      "mapLoads": [
+        {
+          "map": "Dragonslayer Title (world entry)",
+          "preloaded": false,
+          "at": null,
+          "BlumairwenS": 23.9,
+          "TrinioS": 31.3,
+          "SilryantishS": 42,
+          "mirrorHits": {
+            "Blumairwen": 112,
+            "Trinio": 112,
+            "Silryantish": 83
+          },
+          "forge1028S": {
+            "Blumairwen": 316.9,
+            "Rinri": 79.6
+          }
+        },
+        {
+          "map": "Eisendrache Kingdom",
+          "preloaded": false,
+          "at": {
+            "Blumairwen": "22:01:21",
+            "Trinio": "22:08:59",
+            "Silryantish": "02:04:57"
+          },
+          "BlumairwenS": 4.5,
+          "TrinioS": 1.2,
+          "SilryantishS": 2.1,
+          "clientDrawS": {
+            "Blumairwen": 4.24,
+            "Trinio": 1.05,
+            "Silryantish": 1.82
+          },
+          "mirrorHits": {
+            "Blumairwen": 117,
+            "Trinio": 112,
+            "Silryantish": 138
+          },
+          "forge1028S": {
+            "Blumairwen": 345.7,
+            "Rinri": 223.5
+          }
+        },
+        {
+          "map": "Vastwind_Field002",
+          "preloaded": false,
+          "at": {
+            "Blumairwen": "22:03:37",
+            "Trinio": "22:09:31",
+            "Silryantish": "02:05:30"
+          },
+          "BlumairwenS": 5,
+          "TrinioS": 1.1,
+          "SilryantishS": 3.1,
+          "clientDrawS": {
+            "Blumairwen": 4.86,
+            "Trinio": 1.04,
+            "Silryantish": 3
+          },
+          "mirrorHits": {
+            "Blumairwen": 35,
+            "Trinio": 34,
+            "Silryantish": 35
+          },
+          "forge1028S": {
+            "Blumairwen": 520.5,
+            "Rinri": 520.5
+          }
+        },
+        {
+          "map": "Eisendrache Highroad",
+          "preloaded": false,
+          "at": {
+            "Blumairwen": "22:04:13",
+            "Trinio": "22:10:02",
+            "Silryantish": "02:06:03"
+          },
+          "BlumairwenS": 1.1,
+          "TrinioS": 0.8,
+          "SilryantishS": 2,
+          "clientDrawS": {
+            "Blumairwen": 0.95,
+            "Trinio": 0.69,
+            "Silryantish": 1.88
+          },
+          "mirrorHits": {
+            "Blumairwen": 16,
+            "Trinio": 16,
+            "Silryantish": 16
+          }
+        },
+        {
+          "map": "Eisendrache Burning",
+          "preloaded": false,
+          "at": {
+            "Blumairwen": "22:04:45",
+            "Trinio": "22:10:34",
+            "Silryantish": "02:06:36"
+          },
+          "BlumairwenS": 0.7,
+          "TrinioS": 1,
+          "SilryantishS": 2.1,
+          "clientDrawS": {
+            "Blumairwen": 0.6,
+            "Trinio": 0.89,
+            "Silryantish": 1.96
+          },
+          "mirrorHits": {
+            "Blumairwen": 4,
+            "Trinio": 4,
+            "Silryantish": 4
+          }
+        },
+        {
+          "map": "Dragonslayer Title",
+          "preloaded": false,
+          "at": {
+            "Blumairwen": "22:05:16",
+            "Trinio": "22:11:06",
+            "Silryantish": "02:07:08"
+          },
+          "BlumairwenS": 0.2,
+          "TrinioS": 0.2,
+          "SilryantishS": 0.2,
+          "clientDrawS": {
+            "Blumairwen": 0.02,
+            "Trinio": 0.02,
+            "Silryantish": 0.02
+          },
+          "mirrorHits": {
+            "Blumairwen": 1,
+            "Trinio": 1,
+            "Silryantish": 1
+          }
+        }
+      ],
+      "sendOff": {
+        "Blumairwen": {
+          "sentAt": "22:05:17",
+          "leftAt": "22:07:39",
+          "how": "button",
+          "afterS": 142
+        },
+        "Trinio": {
+          "sentAt": "22:11:06",
+          "leftAt": "22:11:16",
+          "how": "button",
+          "afterS": 10
+        },
+        "Silryantish": {
+          "sentAt": "02:07:09",
+          "leftAt": "02:07:14",
+          "how": "button",
+          "afterS": 5
+        }
+      },
+      "pingWatch": {
+        "controls": {
+          "maxMs": 27,
+          "lost": 0,
+          "hours": 13.5
+        },
+        "Trinio": {
+          "medianMs": 13,
+          "p95Ms": 20,
+          "maxMs": 26,
+          "lost": 0,
+          "pathping": "3 answering hops, last at hop 6, 13 ms, 0% loss"
+        },
+        "Blumairwen": "no ICMP replies",
+        "Silryantish": "no ICMP replies",
+        "nonPlayerConnections": [
+          {
+            "at": "21:56:35",
+            "route": "35.196.x.x",
+            "heldS": 4,
+            "likely": "Discord link preview (Google Cloud)"
+          },
+          {
+            "at": "23:00:53",
+            "route": "91.196.x.x",
+            "heldS": 4,
+            "likely": "internet scanner"
+          },
+          {
+            "at": "23:07:24",
+            "route": "91.231.x.x",
+            "heldS": 4,
+            "likely": "internet scanner"
+          },
+          {
+            "at": "02:03:52",
+            "route": "35.237.x.x",
+            "heldS": 6,
+            "likely": "Discord link preview (Google Cloud)"
+          }
+        ]
+      },
+      "capacity": {
+        "measuredConcurrently": false,
+        "hostUploadMBps": 6.1,
+        "perMapMB": {
+          "Eisendrache Kingdom": 3.28,
+          "Vastwind_Field002": 3.21,
+          "Eisendrache Highroad": 2.51,
+          "Eisendrache Burning": 3,
+          "Dragonslayer Title": 2.92
+        },
+        "newAfterEarlierMapsMB": {
+          "Eisendrache Highroad": 2.23,
+          "Eisendrache Burning": 2.31
+        },
+        "perMapChange4RemoteClients": "about 12 MB, about 2 s (largest backgrounds about 4 s)",
+        "cacheHeaders": "Cache-Control no-cache + weak ETag + Last-Modified on forge-mirror/, modules/, systems/, icons/, scripts/: browsers revalidate (304), repeat maps cost no upload"
+      },
+      "notes": ["First real-player test of the forge mirror: every file came from the host (277-285 per player), 0 not mirrored, 0 fallbacks to Forge.", "First-time map switches that took 223-520 s from Forge on 10-28 took 1.1-5.0 s; Blumairwen's world entry went from 317 s to 23.9 s.", "Each player was on 3-10 min: no reloads, but too short to judge mid-session reloads.", "Blumairwen's SAMPLE GAP (22:02:41, 240 s) is a client-health-summary false positive: it compared samples across four draws; her raw samples ran every 60-90 s (hidden tab).", "Blumairwen's Kingdom time comes from her client's draw record (her clock): the driver's draw detection was fixed during that switch.", "Demo cleanup: movement controller and party prototype art restored to the pre-test values (Blumairwen / Keren); the Field actor's wellspring AEs were rebuilt by the Title activation (the same five, new ids) and left as is.", "Cut off by the host on 2026-10-30 at 11:20; Rinri postponed."]
     }
   ]
 }
