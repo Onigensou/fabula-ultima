@@ -584,7 +584,17 @@
     try {
       token._refreshSize();
     } catch (_) {}
+    reapplyDepth(token);
     applyFacing(token);
+  }
+
+  // _refreshSize() re-fits the mesh from the document, at full size, and no
+  // refreshToken follows it, so the depth scale of a walk map
+  // (depth-index.js) is lost. Mid-walk the next position frame puts it back;
+  // a token that has just stopped has no next frame, and its standing art
+  // showed at full size wherever it stood. Put the depth scale back here.
+  function reapplyDepth(token) {
+    try { globalThis.__ONI_DEPTH_INDEX__?.reapply?.(token); } catch (_) {}
   }
 
   // The token's own image as it is now. Control can pass to another player
@@ -926,6 +936,7 @@
     if (mesh.texture !== tex) {
       mesh.texture = tex;
       try { token._refreshSize(); } catch (_) {}
+      reapplyDepth(token);   // the size fix below is laid on the depth scale
       rec.applied = null;
       if (art.video?.paused && !game.paused) {
         try { const playing = art.video.play(); if (playing?.catch) playing.catch(() => {}); } catch (_) {}
@@ -1039,6 +1050,7 @@
     try { token._refreshSize(); } catch (_) {}
     const t = token.document?.texture ?? {};
     try { mesh.anchor.set(Number(t.anchorX ?? 0.5), Number(t.anchorY ?? 0.5)); } catch (_) {}
+    reapplyDepth(token);
     const entry = state.tokens.get(tokenId);
     if (entry) { entry.lastApplied = null; entry.shownSlot = null; }
     applyFacing(token);
