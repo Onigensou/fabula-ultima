@@ -127,8 +127,8 @@ Any future destructible-scenery or objective prop can reuse the flag.
 
 `Lightning Crystal`, in the Current Dungeon folder, found by the event through
 `flags.fabula-ultima-companion.conflictObject === "lightning-crystal"` rather
-than by name or id. Art is the placeholder
-`Item Icon/cryst.png`.
+than by name or id. Art is `Beastiary/LightningCrystal_Standard.png`, a static
+sprite with no idle, at token scale 0.8.
 
 ### The event
 
