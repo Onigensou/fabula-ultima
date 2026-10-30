@@ -42,8 +42,14 @@
   const VISIBILITY = [
     ["keep", "Leave as it is"],
     ["show", "Show"],
-    ["hide", "Hide"]
+    ["hide", "Hide"],
+    ["jump", "Jump away, then hide"]
   ];
+
+  // Jump away: straight up off the map's view, fast. The token is then put back
+  // where it stood, hidden, so a later Show finds it in place.
+  const JUMP_PX = 900;
+  const JUMP_MS = 420;
 
   const TINT = [
     ["keep", "Leave as it is"],
@@ -77,7 +83,7 @@
     defaultData: { type: "setToken", name: "", visibility: "show", tint: "keep", color: DEFAULT_COLOR },
     summary: (row) => {
       const parts = [String(row?.name ?? "").trim() || "(no token)"];
-      if (pick(VISIBILITY, row?.visibility) !== "keep") parts.push(row.visibility);
+      if (pick(VISIBILITY, row?.visibility) !== "keep") parts.push(row.visibility === "jump" ? "jump away" : row.visibility);
       if (pick(TINT, row?.tint) !== "keep") parts.push(row.tint === "set" ? `tint ${validColor(row.color)}` : "no tint");
       return parts.join(", ");
     },
@@ -91,9 +97,18 @@
 
       const change = {};
       const visibility = pick(VISIBILITY, row?.visibility);
-      if (visibility !== "keep") change.hidden = visibility === "hide";
+      if (visibility === "show" || visibility === "hide") change.hidden = visibility === "hide";
       const tint = pick(TINT, row?.tint);
       if (tint !== "keep") change["texture.tint"] = tint === "set" ? validColor(row?.color) : NO_TINT;
+
+      if (visibility === "jump") {
+        const home = found.map(t => ({ _id: t.id, y: t.y, hidden: true, ...change }));
+        await scene.updateEmbeddedDocuments("Token", found.map(t => ({ _id: t.id, y: t.y - JUMP_PX })), { animation: { duration: JUMP_MS } });
+        await window.oni.EventSystem.Flow?.wait?.(context?.tileId, JUMP_MS + 60);
+        await scene.updateEmbeddedDocuments("Token", home, { animate: false });
+        return { ok: true, type: "setToken", changed: found.length };
+      }
+
       if (!Object.keys(change).length) return { ok: true, type: "setToken", changed: 0 };
 
       await scene.updateEmbeddedDocuments("Token", found.map(t => ({ _id: t.id, ...change })));

@@ -315,6 +315,7 @@
     "scripts/event-system/event-rows-check.js",
     "scripts/event-system/event-rows-float.js",
     "scripts/event-system/event-rows-token.js",
+    "scripts/event-system/event-rows-pause.js",
     "scripts/event-system/event-gmChip.js",
     "scripts/event-system/event-lint.js",
     "scripts/event-system/event-configUI.js",
