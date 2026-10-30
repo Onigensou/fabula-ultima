@@ -878,17 +878,17 @@
               <div class="form-fields" style="display:flex;align-items:center;gap:8px;">
                 <input type="number" class="oni-parallax-far" step="0.02" min="0" max="0.6"
                        name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${PARALLAX_FAR_KEY}"
-                       placeholder="0.18" style="flex:1 1 0;" />
+                       placeholder="0.30" style="flex:1 1 0;" />
                 <input type="number" class="oni-parallax-near" step="0.02" min="0" max="0.6"
                        name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${PARALLAX_NEAR_KEY}"
-                       placeholder="0.10" style="flex:1 1 0;" />
+                       placeholder="0.18" style="flex:1 1 0;" />
                 <input type="number" class="oni-parallax-dof" step="0.05" min="0" max="1"
                        name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${PARALLAX_DOF_KEY}"
                        placeholder="0.35" style="flex:1 1 0;" />
               </div>
               <p class="notes">
                 How much slower far scenery scrolls, how much faster near rocks scroll (share of the
-                camera's speed), and how much the far plane blurs. Defaults <b>0.18</b> / <b>0.10</b> / <b>0.35</b>.
+                camera's speed), and how much the far plane blurs. Defaults <b>0.30</b> / <b>0.18</b> / <b>0.35</b>.
               </p>
             </div>
           </div>

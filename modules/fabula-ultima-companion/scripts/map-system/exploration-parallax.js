@@ -28,7 +28,7 @@
 // drift off it). Client-local; writes nothing. Per-user switch: Party Menu ->
 // Config -> Graphic -> Walk-map parallax. Reduced-motion users get none.
 //
-// Live tuning: FUCompanion.api.walkParallax.tune({ far: 0.2, near: 0.1, dof: 0.3 })
+// Live tuning: FUCompanion.api.walkParallax.tune({ far: 0.4, near: 0.25, dof: 0.5 })
 // (session only; copy the numbers into the scene's flags to keep them).
 // ============================================================================
 
@@ -41,7 +41,7 @@ const warn = (...a) => console.warn(TAG, ...a);
 
 // Scene flags, under flags.<module>.oniFabula.general (dungeon-configuration-ui.js).
 const KEYS = { enabled: "parallaxEnabled", far: "parallaxFar", near: "parallaxNear", dof: "parallaxDof" };
-const DEFAULTS = Object.freeze({ far: 0.18, near: 0.10, dof: 0.35, blurPx: 5 });
+const DEFAULTS = Object.freeze({ far: 0.30, near: 0.18, dof: 0.35, blurPx: 5 });   // far / near: the user's pick on Valley Entrance, 2026-10-30
 
 const VERT = `
 attribute vec2 aVertexPosition;
