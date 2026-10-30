@@ -239,11 +239,32 @@ export function planEnemyJoin(placed, current, u, { anchor = null } = {}) {
 }
 
 // ── party side: Support row ──────────────────────────────────────────────
-export function partyLine(count) {
+// PCs on the tuned diagonal, top→bottom. Evenly spaced on SCREEN by default.
+// With `depth` (ref row of the feet → distance from the painted camera) they are
+// evenly spaced on the GROUND instead: equal screen gaps are not equal floor gaps
+// (each row further back covers more ground), which the 3D camera shows from the
+// side (2026-10-31: 4 m / 5.3 m / 7 m on Training Ground). The two ends stay put;
+// only the members between them slide along the line. `feet` = per member, its
+// centre-to-feet offset in ref px (the depth is read at the feet).
+export function partyLine(count, { depth = null, feet = null } = {}) {
+  const at = (t) => ({ x: P0.x + (P1.x - P0.x) * t, y: P0.y + (P1.y - P0.y) * t });
+  const tOf = (i) => (count === 1 ? 0.5 : i / (count - 1));
   const out = [];
-  for (let i = 0; i < count; i++) {
-    const t = count === 1 ? 0.5 : i / (count - 1);
-    out.push({ x: P0.x + (P1.x - P0.x) * t, y: P0.y + (P1.y - P0.y) * t });
+  for (let i = 0; i < count; i++) out.push(at(tOf(i)));
+  if (typeof depth !== "function" || count < 3) return out;
+  const fo = (i) => Number(feet?.[i]) || 0;
+  const z = (t, i) => depth(at(t).y + fo(i));
+  const z0 = z(0, 0), z1 = z(1, count - 1);
+  if (!Number.isFinite(z0) || !Number.isFinite(z1) || !(z0 > z1)) return out;
+  for (let i = 1; i < count - 1; i++) {
+    // depth falls as t rises (down the screen = nearer): bisect for the target
+    const target = z0 + (z1 - z0) * tOf(i);
+    let lo = 0, hi = 1;
+    for (let k = 0; k < 40; k++) {
+      const mid = (lo + hi) / 2;
+      if (z(mid, i) > target) lo = mid; else hi = mid;
+    }
+    out[i] = at((lo + hi) / 2);
   }
   return out;
 }
@@ -294,9 +315,13 @@ export function placeSupport(pcs, placed, pos, u, used = {}) {
   }
   return null;
 }
-/** Battle start: PCs on the tuned diagonal (top→bottom in given order), then every extra behind. */
-export function planParty(pcs, extras) {
-  const pos = {}, line = partyLine(pcs.length);
+/**
+ * Battle start: PCs on the tuned diagonal (top→bottom in given order), then every
+ * extra behind. `depth` (see partyLine) spaces the PCs evenly on the ground; a
+ * unit's `fh` is its centre-to-feet offset (token box), else half its sprite.
+ */
+export function planParty(pcs, extras, { depth = null } = {}) {
+  const pos = {}, line = partyLine(pcs.length, { depth, feet: pcs.map((u) => u.fh ?? u.h / 2) });
   pcs.forEach((u, i) => { pos[u.key] = line[i]; });
   const placed = pcs.slice(), used = {};
   for (const u of extras) {

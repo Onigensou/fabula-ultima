@@ -42,7 +42,7 @@
 // ============================================================================
 
 import { log, warn } from "./logger.js";
-import { rigCamera, liveBattler, floorDepth, reliefDepth, reliefPoint } from "./battle-stage-3d-rules.js";
+import { rigCamera, liveBattler, projectNearFoot, floorDepth, reliefDepth, reliefPoint } from "./battle-stage-3d-rules.js";
 import { shadowSpriteFor } from "../sprite-shadow/sprite-shadow-renderer.js";
 
 const THREE_SRC = "modules/fabula-ultima-companion/assets/vendor/three-r128.min.js";
@@ -360,6 +360,28 @@ export class Stage3dCamera {
     const b = liveBattler(foot, this.P, rig);
     const m = Math.max(0.2, Math.min(4, b.scale));
     return { x: b.x + (p.x - foot.x) * m, y: b.y + (p.y - foot.y) * m, m };
+  }
+
+  /**
+   * Where feet standing at a 2D canvas point are drawn this frame: {x, y, m}
+   * (drawn feet, size factor), or null when the camera is flat. For a body
+   * moving across the floor away from any token's spot (an entrance run-in).
+   */
+  projectFoot(foot) {
+    if (!this.running || this.flat || !this.lastRig || !foot) return null;
+    const b = liveBattler(foot, this.P, this.lastRig);
+    return { x: b.x, y: b.y, m: Math.max(0.2, Math.min(4, b.scale)) };
+  }
+
+  /**
+   * Where a point in the arena near feet at 2D canvas point `foot` is drawn
+   * this frame (projectNearFoot: `off` = {x, h, z} in rest px at that row),
+   * or null when the camera is flat. For entrance paths that live in the
+   * arena: an arrow flying in, wisps circling, shards flying out.
+   */
+  projectNear(foot, off) {
+    if (!this.running || this.flat || !this.lastRig || !foot) return null;
+    return projectNearFoot(foot, off, this.P, this.lastRig);
   }
 
   /** Where the token's centre is drawn this frame, or null when the camera is not displacing it. */

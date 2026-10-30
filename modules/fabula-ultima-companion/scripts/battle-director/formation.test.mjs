@@ -9,7 +9,8 @@
 // (texture contain-fit into one cell × token scale), measured 2026-10-27.
 // ============================================================================
 import assert from "node:assert/strict";
-import { planEnemies, planEnemyJoin, planParty, placeSupport, clashes, partyLine, REF_H, ENEMY_ZONE } from "./formation.js";
+import { planEnemies, planEnemyJoin, planParty, placeSupport, clashes, partyLine, REF_W, REF_H, ENEMY_ZONE } from "./formation.js";
+import { resolvePreset, buildCamera, buildProjector, floorDepth } from "./battle-stage-3d-rules.js";
 
 const CELL = 110;
 const lab = (name, shield) => ({ lw: Math.max(name.length * 8.3 + (shield ? 22 : 0), 60), lh: 41 });
@@ -114,6 +115,38 @@ t("party: a mid-battle summon joins behind, near its caster", () => {
   const keren = pos.keren, hina = pos.hina, zarg = pos.zarg;
   assert.ok(Math.abs(at.y - keren.y) < Math.abs(at.y - zarg.y), "nearer Keren than Zarg");
   assert.ok(hina.y < at.y + 200);
+});
+
+// Training Ground's ground model in the reference stage (as director-init groundDepthFor)
+const TG = (() => {
+  const cfg = resolvePreset("Eisendrache_Battlemap001_v2.webp"), ref = { x: 0, y: 0, w: REF_W, h: REF_H };
+  const P = buildProjector(cfg, buildCamera(cfg, ref, CELL), ref);
+  return (row) => floorDepth(row, P);
+})();
+
+t("party: with a ground model the line is evenly spaced ON THE GROUND, ends unchanged", () => {
+  const p = pcs(), fh = CELL / 2;
+  p.forEach((u) => { u.fh = fh; });
+  const flat = planParty(p, []), even = planParty(p, [], { depth: TG });
+  assert.deepEqual(even[p[0].key], flat[p[0].key]);
+  assert.deepEqual(even[p[3].key], flat[p[3].key]);
+  const z = p.map((u) => TG(even[u.key].y + fh));
+  const gaps = z.slice(1).map((v, i) => z[i] - v);
+  assert.ok(gaps.every((g) => Math.abs(g / gaps[0] - 1) < 1e-6), `ground gaps ${gaps.map((g) => g.toFixed(2))}`);
+  const zf = p.map((u) => TG(flat[u.key].y + fh));
+  const gf = zf.slice(1).map((v, i) => zf[i] - v);
+  assert.ok(gf[0] / gf[2] > 1.4, "the screen-even line was uneven on the ground (back gap much bigger)");
+  // still on the tuned diagonal, still in order
+  for (const u of p) { const q = even[u.key]; assert.ok(Math.abs((q.x - 1202) / 165 - (q.y - 162) / 330) < 1e-6, "on the line"); }
+  assert.ok(p.every((u, i) => i === 0 || even[u.key].y > even[p[i - 1].key].y));
+});
+
+t("party: support row still clean with the even line", () => {
+  for (const extras of [[kalina()], [kalina(), crysta()], [kalina(), crysta(), fox("fox1"), fox("fox2")]]) {
+    const p = pcs(), pos = planParty(p, extras, { depth: TG }), units = [...p, ...extras];
+    assert.ok(extras.every((u) => pos[u.key]), `${extras.length} extras placed`);
+    assert.equal(clashes(units, pos), 0, `${extras.length} extras clash-free`);
+  }
 });
 
 console.log(`formation: ${n} groups passed`);
