@@ -10,11 +10,11 @@
   },
   "effects": [
     {
-      "_id": "6NLiJgM6d2wx3ZNt",
+      "_id": "06NaSeed4SnD77yO",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1793300829090,
+        "createdTime": 1793367557232,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -41,9 +41,9 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "6NLiJgM6d2wx3ZNt",
+          "originalId": "06NaSeed4SnD77yO",
           "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.6NLiJgM6d2wx3ZNt"
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.06NaSeed4SnD77yO"
         },
         "fabula-ultima-companion": {
           "directorPermanent": true,
@@ -75,11 +75,11 @@
       "type": "base"
     },
     {
-      "_id": "DTrWgS3G30RwSUWe",
+      "_id": "6mNeH9Gi89ubyVgQ",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1793300829090,
+        "createdTime": 1793367557232,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -106,9 +106,9 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "DTrWgS3G30RwSUWe",
+          "originalId": "6mNeH9Gi89ubyVgQ",
           "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.DTrWgS3G30RwSUWe"
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.6mNeH9Gi89ubyVgQ"
         },
         "fabula-ultima-companion": {
           "directorPermanent": true,
@@ -140,11 +140,11 @@
       "type": "base"
     },
     {
-      "_id": "evfSAtHgsGpqUfvJ",
+      "_id": "FMUsBQnEVKmrCjjM",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1793300829090,
+        "createdTime": 1793367557232,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -171,9 +171,9 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "evfSAtHgsGpqUfvJ",
+          "originalId": "FMUsBQnEVKmrCjjM",
           "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.evfSAtHgsGpqUfvJ"
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.FMUsBQnEVKmrCjjM"
         },
         "fabula-ultima-companion": {
           "directorPermanent": true,
@@ -205,11 +205,11 @@
       "type": "base"
     },
     {
-      "_id": "h6wcdIybNpIXZbbL",
+      "_id": "M7M95xzUCbXNXBpk",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1793300829090,
+        "createdTime": 1793367557232,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -236,9 +236,9 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "h6wcdIybNpIXZbbL",
+          "originalId": "M7M95xzUCbXNXBpk",
           "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.h6wcdIybNpIXZbbL"
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.M7M95xzUCbXNXBpk"
         },
         "fabula-ultima-companion": {
           "directorPermanent": true,
@@ -270,11 +270,11 @@
       "type": "base"
     },
     {
-      "_id": "vmdgI83aWopQIMol",
+      "_id": "SDDRaFBp7fkIJAaS",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1793300829090,
+        "createdTime": 1793367557232,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -301,9 +301,9 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "vmdgI83aWopQIMol",
+          "originalId": "SDDRaFBp7fkIJAaS",
           "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.vmdgI83aWopQIMol"
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.SDDRaFBp7fkIJAaS"
         },
         "fabula-ultima-companion": {
           "directorPermanent": true,
