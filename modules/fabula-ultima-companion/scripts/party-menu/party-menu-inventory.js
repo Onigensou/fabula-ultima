@@ -22,7 +22,7 @@ import { registerHandler, request, installNet, isActingGM } from "../advancement
 import { canUseCommand } from "./party-menu-access.js";
 import { gatherHealingActions } from "../healing-system/healing-actions.js";
 import {
-  getPartyRoster, actorFromRef, ACTIVE_SLOTS, BENCH_SLOTS, AWAY_SLOTS, MODULE_ID,
+  getPartyRoster, actorFromRef, ACTIVE_SLOTS, BENCH_SLOTS, AWAY_SLOTS, MODULE_ID, conflictLive,
 } from "./party-menu-core.js";
 import {
   gatherEquipmentSlots, canEquip, applyEquipmentSwap, syncItemEffectsToEquip,
@@ -191,22 +191,8 @@ export function bagsOf(roster) {
 
 const owns = (actor, user) => !!actor?.testUserPermission?.(user, "OWNER");
 
-/**
- * A conflict is running. The Battle Director keeps no Foundry Combat document,
- * so `game.combat` misses it; its `directorState` scene flag is the cross-client
- * signal (same reading as clock-interaction's directorConflictLive). Every scene
- * is checked: the acting GM may be looking at a different one than the player.
- */
-export function conflictLive() {
-  try {
-    if (game.combat?.started) return true;
-    if (globalThis.FUCompanion?.api?.experimental?.battleDirector?.isRunning?.()) return true;
-    return (game.scenes?.contents ?? []).some((sc) => {
-      const st = sc.getFlag?.(NS, "directorState");
-      return !!(st?.dCombat?.started && !st.dCombat.ended);
-    });
-  } catch { return false; }
-}
+// conflictLive() moved to party-menu-core.js; re-exported for this file's importers.
+export { conflictLive };
 
 /**
  * Why `user` may not move `item` from `src` to `dst`, or "".
@@ -475,6 +461,8 @@ export function rosterCandidates(db) {
  */
 export async function setRosterSlot(kind, slot, actor) {
   if (!game.user?.isGM) return { ok: false, reason: "not-gm" };
+  // Seating changes who the Battle Director's battlers are; not mid-conflict.
+  if (conflictLive()) return { ok: false, reason: "in-combat" };
   const roster = await getPartyRoster();
   const db = roster.db;
   if (!db) return { ok: false, reason: "no-db" };

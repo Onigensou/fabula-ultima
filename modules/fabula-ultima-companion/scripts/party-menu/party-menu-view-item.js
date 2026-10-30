@@ -203,7 +203,7 @@ export const itemView = {
       <div class="pm-win pm-picker">
         <div class="pm-picker-head"><span class="pm-label">Move ${esc(item.name)} to…</span></div>
         <div class="pm-picker-list">${rows || `<div class="pm-empty">Nowhere to move it.</div>`}</div>
-        ${overlayFoot("↑↓ choose · Enter confirm · Esc cancel")}
+        ${overlayFoot("↑↓ choose · Z/Enter confirm · X/Esc cancel")}
       </div>`;
   },
 
@@ -220,7 +220,7 @@ export const itemView = {
           <button type="button" class="pm-btn pm-hit" data-action="it-qty" data-delta="max">All</button>
         </div>
         <div class="pm-actions"><button type="button" class="pm-btn pm-hit" data-action="it-qty-ok">Move</button></div>
-        ${overlayFoot("←→ amount · Enter move · Esc back")}
+        ${overlayFoot("←→ amount · Z/Enter move · X/Esc back")}
       </div>`;
   },
 

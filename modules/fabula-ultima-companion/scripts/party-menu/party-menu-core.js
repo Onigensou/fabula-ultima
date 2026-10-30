@@ -27,6 +27,25 @@ const warn = (...a) => console.warn(TAG, ...a);
 export const MODULE_ID = "fabula-ultima-companion";
 const NS = MODULE_ID;
 
+/**
+ * A conflict is running. The Battle Director keeps no Foundry Combat document,
+ * so `game.combat` misses it; its `directorState` scene flag is the cross-client
+ * signal (same reading as clock-interaction's directorConflictLive). Every scene
+ * is checked: the acting GM may be looking at a different one than the player.
+ * Lives here, not in the inventory, so the summon writers below can use it
+ * (the inventory imports this file, and reads MODULE_ID at load).
+ */
+export function conflictLive() {
+  try {
+    if (game.combat?.started) return true;
+    if (globalThis.FUCompanion?.api?.experimental?.battleDirector?.isRunning?.()) return true;
+    return (game.scenes?.contents ?? []).some((sc) => {
+      const st = sc.getFlag?.(NS, "directorState");
+      return !!(st?.dCombat?.started && !st.dCombat.ended);
+    });
+  } catch { return false; }
+}
+
 // CSB template ids (see the reference_skill_identity_fields memory): skills and
 // monster skills share `type: "equippableItem"` with gear; `system.template`
 // is the only discriminator.
@@ -380,6 +399,9 @@ export function bindRefusal(actor, owner, slot, roster) {
 /** Bind (or with `actor = null`, reset) a fixed summon row on the owner's skill. */
 export async function setFixedBinding(owner, item, label, actor) {
   if (!canBindSummons()) return { ok: false, reason: "gm-only" };
+  // Not even the GM: a rebind mid-conflict could swap a battler out from
+  // under the Battle Director.
+  if (conflictLive()) return { ok: false, reason: "in-combat" };
   if (!item || item.parent?.id !== owner.id) return { ok: false, reason: "not-owners-skill" };
   // The label becomes a flag-path segment; a dot in it would nest the write.
   if (!/^[\w-]+$/.test(String(label ?? ""))) return { ok: false, reason: "bad-label" };
@@ -431,6 +453,8 @@ async function applyPersistentBind(payload) {
   const user = game.users?.get(payload?.requesterUserId);
   // Re-checked here: the request can come from any client.
   if (!canBindSummons(user)) return { ok: false, reason: "gm-only" };
+  // Releasing or rebinding a standing summon mid-conflict would desync its battler.
+  if (conflictLive()) return { ok: false, reason: "in-combat" };
 
   const kind = str(payload?.kind).toLowerCase();
   if (!/^[a-z0-9_]+$/.test(kind)) return { ok: false, reason: "bad-kind" };

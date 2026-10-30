@@ -27,6 +27,7 @@ import {
   skillSource, sourceRanker, SOURCE_KINDS, skillAccess,
 } from "./party-menu-core.js";
 import { COMMAND_DEFS, canUseCommand } from "./party-menu-access.js";
+import { conflictLive } from "./party-menu-core.js";
 import { SND, play, STAT, esc, safeHtml, bar, gridStep as gridStepIn, navBar, overlayFoot, kbd } from "./party-menu-ui.js";
 import { itemView } from "./party-menu-view-item.js";
 import { equipView, statusView, who } from "./party-menu-view-gear.js";
@@ -80,6 +81,7 @@ const REASONS = {
   "not-a-candidate": "That actor isn't one you can pick.",
   "not-granted": "The GM hasn't opened that to players.",
   "bad-target": "That actor can't be used as a summon.",
+  "in-combat": "Summons can't be changed during a conflict.",
 };
 
 // ── state ─────────────────────────────────────────────────────────────────────
@@ -437,8 +439,8 @@ function renderMain() {
       <div class="pm-comp-list">${comps.length ? comps.map(companionCard).join("")
         : `<div class="pm-empty">No guests or summons are travelling with the party.</div>`}</div>
     </div>`;
-  const hint = S.focus === "comp" ? "←→ choose · ↑ party · Enter confirm · Esc back"
-    : S.focus === "member" ? "Choose a character · Esc or right-click: back" : "↑↓ choose · Enter confirm · Esc close";
+  const hint = S.focus === "comp" ? "←→ choose · ↑ party · Z/Enter confirm · X/Esc back"
+    : S.focus === "member" ? "Choose a character · X/Esc or right-click: back" : "↑↓ choose · Z/Enter confirm · X/Esc close";
   return `
     <div class="pm-main">
       <div class="pm-win pm-party"><div class="pm-scroll pm-party-list">${members}${reserve}</div></div>
@@ -683,7 +685,7 @@ function renderPicker() {
       </div>
       <input type="text" class="pm-search" placeholder="Search…" value="${esc(p.query)}">
       <div class="pm-picker-list">${reset}${body || `<div class="pm-empty">No matching actors.</div>`}</div>
-      ${overlayFoot(`↑↓ choose · Enter confirm · Esc cancel${game.user?.isGM ? "" : " · Showing your actors and the summon's own folder"}`)}
+      ${overlayFoot(`↑↓ choose · Z/Enter confirm · X/Esc cancel${game.user?.isGM ? "" : " · Showing your actors and the summon's own folder"}`)}
     </div>`;
 }
 
@@ -842,6 +844,8 @@ async function openPicker(actor, slotIndex) {
   const slot = sel ? resolvedSlotsOf(actor, sel)[slotIndex] : null;
   if (!slot) return;
   if (!canBindSummons()) { play(SND.buzz, 0.5); toast(REASONS["gm-only"]); return; }
+  // Refused up front, so the picker does not open on a write that would fail.
+  if (conflictLive()) { play(SND.buzz, 0.5); toast(REASONS["in-combat"]); return; }
   // The skill is pinned by id: a document hook can re-sort the list while the
   // picker is open, and the write must land on the skill the picker was opened for.
   S.picker = { slotIndex, slot, itemId: sel.id, ownerName: actor.name, query: "", showAll: false, index: 0, list: [], focusSearch: true };
@@ -1007,7 +1011,12 @@ function onKey(ev) {
     if (!S.busy) closePartyMenu();   // never mid-write: the view still owns S.v
     return;
   }
-  const k = ev.key;
+  // Z / X are the game's Confirm / Cancel everywhere else (event-input.js), so
+  // they are Enter / Escape here too. By physical key, like those bindings.
+  const k = typing ? ev.key
+    : ev.code === "KeyZ" ? "Enter"
+    : ev.code === "KeyX" ? "Escape"
+    : ev.key;
   const nav = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter", "Escape", "Tab", "Backspace", "Delete"];
   if (typing && !["ArrowUp", "ArrowDown", "Enter", "Escape"].includes(k)) return;
   if (!nav.includes(k) && !["q", "e", "Q", "E", "u", "U", "t", "T", "o", "O", "PageUp", "PageDown"].includes(k)) {

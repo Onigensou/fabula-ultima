@@ -19,6 +19,7 @@ const ROSTER_REASONS = {
   "no-db": "No party database is set for the current game.",
   "no-such-slot": "That roster slot doesn't exist.",
   "bad-target": "That actor can't join the party.",
+  "in-combat": "The party can't be changed during a conflict.",
 };
 
 export const setupView = {
@@ -116,7 +117,7 @@ export const setupView = {
           <div class="pm-pick pm-hit ${p.index === 0 ? "is-cursor" : ""}" data-action="su-pick" data-index="0"><div class="pm-portrait xs"></div><span>— empty —</span></div>
           ${body || `<div class="pm-empty">No matching characters.</div>`}
         </div>
-        ${overlayFoot("↑↓ choose · Enter confirm · Esc cancel · a seated character moves here")}
+        ${overlayFoot("↑↓ choose · Z/Enter confirm · X/Esc cancel · a seated character moves here")}
       </div>`;
   },
 

@@ -149,7 +149,7 @@ export function navBar(crumbs, actions = []) {
     + `${a.disabled ? " disabled" : ""}${a.title ? ` title="${esc(a.title)}"` : ""}>`
     + `${a.icon ? `<i class="fas ${esc(a.icon)}"></i>` : ""}${esc(a.label)}${kbd(a.key)}</button>`).join("");
   return `<div class="pm-win pm-nav">
-    <button type="button" class="pm-btn pm-navback pm-hit" data-action="nav-back" title="Back (Esc or right-click)"><i class="fas fa-chevron-left"></i>Back</button>
+    <button type="button" class="pm-btn pm-navback pm-hit" data-action="nav-back" title="Back (X, Esc or right-click)"><i class="fas fa-chevron-left"></i>Back</button>
     <div class="pm-crumbs">${path}</div>
     <div class="pm-navacts">${acts}</div>
   </div>`;
