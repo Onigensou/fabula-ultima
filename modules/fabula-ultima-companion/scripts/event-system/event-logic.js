@@ -235,11 +235,11 @@
   // One scan of a step-in event. It fires on the step in, not on standing
   // there, so an event that can repeat does not loop under the party. While
   // another event is busy the step does not count yet: it fires once that ends.
-  function stepInStep({ inRange, wasInside, busy, available, mayStart }) {
+  function stepInStep({ inRange, wasInside, busy, available }) {
     if (!inRange) return { inside: false, start: false };
     if (wasInside) return { inside: true, start: false };
     if (busy) return { inside: false, start: false };
-    return { inside: true, start: !!available && !!mayStart };
+    return { inside: true, start: !!available };
   }
 
   // Does anything about this event read how often it has run? Only then is a

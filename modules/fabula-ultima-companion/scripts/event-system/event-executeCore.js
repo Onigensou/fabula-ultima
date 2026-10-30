@@ -793,7 +793,6 @@
         let stepInStart = null;
 
         const flow = window.oni.EventSystem.Flow;
-        const mayAutoStart = flow?.isAutoStarter?.() ?? true;
 
         for (const tile of tiles) {
           const data = readEventData(tile);
@@ -809,8 +808,7 @@
               inRange: proximity.ok,
               wasInside: this._steppedIn.has(tile.id),
               busy: !!stepInStart || isTileRunningAnywhere(tile.id) || (flow?.state?.active?.size ?? 0) > 0,
-              available: isEventAvailable(tile, data),
-              mayStart: mayAutoStart
+              available: isEventAvailable(tile, data)
             });
             if (step.inside) this._steppedIn.add(tile.id);
             else this._steppedIn.delete(tile.id);
@@ -844,7 +842,9 @@
           }
         }
 
-        if (stepInStart) this.requestExecute(stepInStart);
+        // Every client tracks the step; only one starts the event.
+        if (stepInStart && await (flow?.isAutoStarter?.() ?? true)) this.requestExecute(stepInStart);
+        if (seq !== this._scanSeq || !this.running) return;
 
         this._activeCandidate = best;
         this._activeTalkCandidate = bestTalk;

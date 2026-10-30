@@ -115,11 +115,12 @@
 
   // An event nobody pressed for must be started by exactly one client: the one
   // walking the party, or the main GM when nobody holds the controller or its
-  // holder has dropped out.
-  function isAutoStarter() {
-    const rt = walkRuntime()?.state;
-    const controllerId = rt?.cachedCurrentControllerUserId;
-    if (controllerId && game.users?.get(controllerId)?.active) return !!rt.cachedIsMainController;
+  // holder has dropped out. Asked of the API, not the walk runtime's cache: a GM
+  // client does not follow the party, so its cache never names the controller.
+  async function isAutoStarter() {
+    const controller = await globalThis.FUCompanion?.api?.MovementControl?.getCurrentControllerUser?.();
+    const controllerId = controller?.userId ?? null;
+    if (controllerId && game.users?.get(controllerId)?.active) return controllerId === game.user?.id;
     return game.users?.activeGM?.id === game.user?.id;
   }
 
