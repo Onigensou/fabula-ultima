@@ -11238,7 +11238,10 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     const isInteractive = isPlayerOwner || isSecondaryGm;
     const myUserId = game.user?.id ?? null;
     const card = wrapper.querySelector(".fud-bf-card");
-
+    // Who presses Confirm on this card (blank = the GM). The plate's "Waiting on"
+    // tab reads it once every reaction is answered, so an observer can tell the
+    // card is waiting on someone rather than stuck.
+    wrapper.dataset.fudConfirmUserId = menuSpec.ownerUserId ?? "";
     if (!isInteractive && card) {
       // Visually mark the card as read-only — also disables click via
       // event guard below. The class is purely informational; the real

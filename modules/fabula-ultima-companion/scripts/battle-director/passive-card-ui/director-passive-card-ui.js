@@ -304,7 +304,7 @@ function neighbourOffset(card, tokenUuid) {
 // passive rows (mode "on" / "force"). Resolves after the enter animation
 // so the caller applies the effect while the card is visibly displayed.
 
-export async function enqueuePassiveCard({ title, casterToken, icon, holdMs } = {}) {
+export async function enqueuePassiveCard({ title, casterToken, icon, holdMs, mode } = {}) {
   if (!casterToken) {
     warn("[BD][PassiveCardUI] enqueuePassiveCard: no casterToken");
     return;
@@ -331,6 +331,9 @@ export async function enqueuePassiveCard({ title, casterToken, icon, holdMs } = 
     exitMs:       260,
     exitBufferMs: 40,
     runId:        foundry.utils.randomID(),
+    // The firing mode of the row that fired ("on" / "force"), for the reaction
+    // deck: only an `on` row is played out of the owner's deck.
+    mode:         mode ? String(mode) : null,
   };
 
   log(`[BD][PassiveCardUI] enqueue: "${spec.title}" on ${tokenUuid}`);
@@ -385,6 +388,9 @@ export function initPassiveCardUi() {
     // Handler on every non-GM client: play SFX + render the card.
     _socket.register(ACTION_KEY, async (spec) => {
       playSfx(PASSIVE_CARD_SFX_URL, 0.3);
+      // The reaction deck (reaction-deck.js) plays the same card out of the
+      // owner's deck. Display only; never blocks the badge.
+      try { Hooks.callAll("fuPassiveCardShown", spec); } catch { /* */ }
       await renderCardLocal(spec);
     });
     _socket.register(ACTION_TICK, (spec) => flashStatusLocal(spec ?? {}));

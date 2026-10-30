@@ -1618,7 +1618,7 @@ export function isActionCreatingReactionForAE(ae, reactionRow) {
 //   - No weapon context (lifecycle triggers etc.) → equipped weapons only.
 //
 // Non-weapon carriers (skills, equipment, accessories, AEs) are never gated.
-function weaponReactionInPlay(item, payload, casterActor) {
+export function weaponReactionInPlay(item, payload, casterActor) {
   if (String(item?.system?.props?.item_type ?? "").toLowerCase() !== "weapon") return true;
   const usedUuid = payload?.weaponUuid ?? null;
   const actingActorUuid = payload?.sourceActorUuid ?? null;
@@ -1634,7 +1634,7 @@ function weaponReactionInPlay(item, payload, casterActor) {
 // CONTAINER item's `isEquipped` (the `_skill` itself has no equip state).
 // Fail-open when the container is missing/dangling or isn't equippable gear, so
 // ordinary (non-gear-linked) skill/AE reactions are never gated.
-function containerReactionInPlay(item, casterActor, payload) {
+export function containerReactionInPlay(item, casterActor, payload) {
   const containerId = item?.system?.container;
   if (!containerId) return true;
   const container = casterActor?.items?.get?.(containerId);
@@ -1781,13 +1781,13 @@ function hasInherentKeyword(item, keyword) {
   const raw = item?.system?.props?.action_keywords ?? "";
   return String(raw).split(/[,\n]+/).map((k) => k.trim().toLowerCase()).includes(String(keyword).toLowerCase());
 }
-function readReactionMaxPerRound(row) {
+export function readReactionMaxPerRound(row) {
   const raw = row?.reaction_max_per_round;
   if (raw === undefined || raw === null || raw === "") return 0;
   const n = Number(raw);
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
 }
-function readReactionMaxScope(row) {
+export function readReactionMaxScope(row) {
   const raw = String(row?.reaction_max_scope ?? "").trim().toLowerCase();
   return REACTION_MAX_SCOPES.has(raw) ? raw : "round";
 }
@@ -1826,7 +1826,7 @@ function capSubjectRef(payload, reactorUuid = null) {
 // ripgrep classify this whole file as binary and SKIP it in every content
 // search, silently. Guarded by tools/safe-edit/hooks/pre-commit.
 const CAP_NO_SUBJECT = "\u0000nosubject";
-function reactionRoundCountKey(carrierUuid, rowKey, scope, round, subjectRef) {
+export function reactionRoundCountKey(carrierUuid, rowKey, scope, round, subjectRef) {
   const bucket = scope === "battle" ? "all"
     : scope === "target" ? `t:${subjectRef}`
     : scope === "target_round" ? `t:${subjectRef}@${round}`
@@ -1862,6 +1862,9 @@ export function bumpReactionRoundCount(director, carrierUuid, rowKey, row = null
   const subjectRef = capSubjectRef(payload, reactorUuid) || CAP_NO_SUBJECT;
   const k = reactionRoundCountKey(carrierUuid, rowKey, scope, round, subjectRef);
   director._reactionRoundCounts.set(k, (director._reactionRoundCounts.get(k) ?? 0) + 1);
+  // The reaction deck (reaction-deck.js) shows a used-up quota as SPENT on the
+  // players' screens; the counter only lives here, so the host publishes it.
+  try { Hooks.callAll("fuReactionFireCounted", { carrierUuid, rowKey }); } catch { /* display only */ }
 }
 
 export async function findPassiveCandidates({ casterActor, trigger, payload, includeUnavailable = false }) {
@@ -2294,6 +2297,9 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
         title:       candidate.carrierName,
         casterToken: ctx.reactorToken,
         icon:        candidate.carrierImg,
+        // on vs force: the reaction deck auto-plays only `on` rows (a force
+        // row is engine bookkeeping, e.g. Protect's turn-start refill).
+        mode:        candidate.mode,
       }).catch((e) => warn("firePreAcceptedCandidate: passive card threw", e));
     } catch (e) {
       warn("firePreAcceptedCandidate: passive card import threw", e);

@@ -37,12 +37,19 @@
 // of yours is left undecided (all used, or the rest can't be used) you count as
 // passed and the tag says so.
 //
+// The cards come OUT OF YOUR REACTION DECK (reaction-deck.js, the piles left of
+// the portrait): dealt with a back-to-face flip behind the plate, back into the
+// deck when passed or no longer applicable (a Skip taken back deals them again),
+// onto SPENT when a limited one is played. The Pass card is dealt the same way.
+//
 // Player clients only: the GM answers from the Battle Desk and keeps the pills.
-// Approved mockup: claude.ai/artifact/UJ2LxcUjvGbayKkZ6cbdrx (page "Card game").
+// Approved mockups: claude.ai/artifact/UJ2LxcUjvGbayKkZ6cbdrx (page "Card game"),
+// deck v2 claude.ai/artifact/A6cWr7EbVekVLrB18X4BiV.
 
 import { getClientOption } from "../shared/client-options.js";
 import { plateReactionHost, holdPlateHover } from "./director-player-hud.js";
 import { htmlToCardText } from "./drawer-views.js";
+import { deckDeal, deckReturn, deckPlay, deckSetHand, deckSetAllyHand, deckAllyTab } from "./reaction-deck.js";
 
 const MIRROR_ROOT_ID = "fud-bf-mirror-root";
 const STYLE_ID = "fud-rxh-style";
@@ -66,7 +73,11 @@ const PASS_STAGGER_MS = 120;   // Pass sends one Skip per card, spaced so the ho
 const PLATE_WAIT_MS = 4000;
 // Motion. Dealt cards come in from the right with a little overshoot; leaving
 // ones fade off to the left quickly, so nothing lingers.
-const DEAL_MS = 360, DEAL_STAGGER_MS = 70, LEAVE_MS = 240, GLOW_MS = 520;    // a standalone window waits this long for your plate before the old UI takes it
+const DEAL_MS = 360, DEAL_STAGGER_MS = 70, LEAVE_MS = 240, GLOW_MS = 520;
+// Cards are dealt OUT OF THE DECK (reaction-deck.js) one after another.
+const DECK_STAGGER_MS = 80;
+// The deck flies cards into these slots (plate px, the unit's padding box).
+export const HAND_GEOM = Object.freeze({ CLIP_TOP, CARD_TOP, HAND_LEFT, CARD_W, CARD_H });
 
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c]));
 
@@ -159,7 +170,8 @@ const hand = {
   clip: null,         // .rxh-clip inside the plate unit
   pass: null,         // the Pass slot
   tag: null,          // your own PASSED tag
-  cards: new Map(),   // key → { el, state, order, gating, held }
+  cards: new Map(),   // key → { el, state, order, gating, held, away, carrierUuid }
+  passShown: false,   // the Pass card is out of the deck
   described: null,    // the card whose description the plate's card is showing
   lastPill: new Map(),// key → last pill record seen (to act on it after it left the DOM)
 };
@@ -168,6 +180,7 @@ function ensureHand(unit) {
   if (hand.clip?.isConnected && hand.clip.parentElement === unit) return;
   hand.clip?.remove();
   hand.cards.clear();
+  hand.passShown = false;
   hand.clip = document.createElement("div");
   hand.clip.className = "rxh-clip";
   // Pass is the last card of the hand, dressed like the others: name band, art
@@ -209,6 +222,22 @@ function cardHtml(r, portrait) {
     </div>`;
 }
 
+/**
+ * A card face for a reaction record (the hand's shape: key, rowKey,
+ * carrierUuid, reactorUuid, name, icon, desc, type) — no controls. The deck,
+ * its inspect panel and the flights draw the same card the hand does.
+ */
+export function faceEl(r, cls = "") {
+  const el = document.createElement("div");
+  el.className = `rxh-card${cls ? ` ${cls}` : ""}`;
+  el.dataset.key = r.key;
+  const reactor = actorFromUuid(r.reactorUuid);
+  const portrait = reactor?.img || myUnit()?.querySelector(".dhud-pcard img")?.getAttribute("src") || "";
+  el.innerHTML = cardHtml(r, portrait);
+  fillInfo(el, r).catch((e) => console.warn(TAG, "card face info failed", e));
+  return el;
+}
+
 function makeCard(r) {
   const el = document.createElement("div");
   el.className = "rxh-card";
@@ -235,6 +264,29 @@ const TRIGGER_TEXT = {
   creature_hit_by_action: { self: "When you are hit", other: "When a creature is hit" },
   creature_will_take_damage: { self: "Before you take damage", other: "Before a creature takes damage" },
   creature_took_damage: { self: "After you take damage", other: "After a creature takes damage" },
+  creature_deals_damage: { self: "When your attack deals damage", other: "When a creature deals damage" },
+  creature_takes_damage: { self: "When you take damage", other: "When a creature takes damage" },
+  // {RES} = the row's reaction_resource_filter (Absorb MP: "After you lose HP").
+  creature_lose_resource: { self: "When you lose {RES}", other: "When a creature loses {RES}" },
+  creature_gain_resource: { self: "When you recover {RES}", other: "When a creature recovers {RES}" },
+  caster_short_on_mp: "When you are short on MP",
+  creature_defeated: { self: "When you fall to 0 HP", other: "When a creature is defeated" },
+  creature_enter_crisis: { self: "When you enter Crisis", other: "When a creature enters Crisis" },
+  creature_miss_action: { self: "When your action misses", other: "When an action misses" },
+  creature_completes_attack: { self: "After you attack", other: "After a creature attacks" },
+  creature_completes_action: { self: "After you act", other: "After a creature acts" },
+  creature_completes_spell: { self: "After you cast a spell", other: "After a creature casts a spell" },
+  creature_completes_skill: { self: "After you use a skill", other: "After a creature uses a skill" },
+  creature_uses_item: { self: "When you use an item", other: "When a creature uses an item" },
+  creature_guards: { self: "When you Guard", other: "When a creature Guards" },
+  creature_performs_check: { self: "When you make a Check", other: "When a creature makes a Check" },
+  creature_check_adjusted: { self: "When your Check is adjusted", other: "When a Check is adjusted" },
+  creature_status_applied: { self: "When you gain a status effect", other: "When a creature gains a status effect" },
+  creature_loses_status: { self: "When you lose a status effect", other: "When a creature loses a status effect" },
+  creature_status_triggered: { self: "When one of your statuses triggers", other: "When a creature's status triggers" },
+  creature_unleashes_zero_power: { self: "When you unleash Zero Power", other: "When a creature unleashes Zero Power" },
+  creature_equips_item: { self: "When you equip an item", other: "When a creature equips an item" },
+  creature_unequips_item: { self: "When you unequip an item", other: "When a creature unequips an item" },
   conflict_start: "At the start of the conflict",
   conflict_end: "At the end of the conflict",
   round_start: "At the start of each round",
@@ -256,11 +308,18 @@ let _condMod = null, _fxMod = null;
 const condMod = () => (_condMod ??= import("../skill-forge/condition-builder.js").catch(() => null));
 const fxMod = () => (_fxMod ??= import("./skill-effects.js").catch(() => null));
 
+// An item carrier keeps its tables on system.props; an AE carrier on its
+// reactionConfig flag.
+function tablesOf(doc) {
+  if (!doc) return null;
+  if (doc.documentName === "ActiveEffect") return doc.flags?.["fabula-ultima-companion"]?.reactionConfig ?? null;
+  return doc.system?.props ?? null;
+}
 function rowOf(r) {
   if (!r.carrierUuid) return { item: null, row: null };
   let item = null;
   try { item = fromUuidSync(r.carrierUuid); } catch {}
-  const row = item?.system?.props?.reaction_config_table?.[r.rowKey] ?? null;
+  const row = tablesOf(item)?.reaction_config_table?.[r.rowKey] ?? null;
   return { item, row };
 }
 
@@ -269,6 +328,11 @@ async function whenText(row) {
   const t = TRIGGER_TEXT[trig];
   const src = String(row?.reaction_source ?? "").trim().toLowerCase();
   let when = typeof t === "string" ? t : t ? (src === "self" || !src ? t.self : t.other) : "";
+  if (when.includes("{RES}")) {
+    const res = String(row?.reaction_resource_filter ?? "").toLowerCase().split(/[^a-z]+/)
+      .map((k) => RES_LABEL[k]).filter(Boolean);
+    when = when.replace("{RES}", res.length ? res.join(" or ") : "a resource");
+  }
   const kind = String(row?.reaction_action_kind ?? "").trim();
   if (kind && /act$/.test(when)) when = `${when} (${kind})`;
   const formula = String(row?.condition_formula ?? "").trim();
@@ -283,7 +347,7 @@ async function whenText(row) {
 const lower1 = (t) => String(t).replace(/^[A-Z](?=[a-z])/, (c) => c.toLowerCase()).replace(/  AND  /g, " and ").replace(/  OR  /g, " or ");
 
 function targetText(item, row) {
-  const table = item?.system?.props?.effect_table ?? {};
+  const table = tablesOf(item)?.effect_table ?? {};
   const byLabel = new Map(Object.values(table).filter((x) => x && !x.$deleted).map((x) => [String(x.effect_label ?? "").trim(), x]));
   const seen = new Set();
   const walk = (label) => {
@@ -306,7 +370,10 @@ async function costText(item, row, actor) {
   const m = await fxMod();
   if (!m?.analyzeChainCost || !item || !actor) return "";
   const ref = String(row?.reaction_effect_ref ?? "").trim();
-  const c = m.analyzeChainCost(item.system?.props?.effect_table ?? {}, ref, actor, item);
+  const et = tablesOf(item)?.effect_table ?? {};
+  // The engine scores an AE carrier's formulas against a stand-in item.
+  const carrier = item.documentName === "ActiveEffect" ? { name: item.name, system: { props: { effect_table: et } } } : item;
+  const c = m.analyzeChainCost(et, ref, actor, carrier);
   if (!c?.ok) return "";
   const parts = Object.entries(c.debit ?? {}).filter(([, n]) => n > 0).map(([k, n]) => `${n} ${RES_LABEL[k] ?? k.toUpperCase()}`);
   if (c.variable) return parts.length ? `${parts.join(" + ")} + varies` : "Varies";
@@ -366,9 +433,12 @@ function hideDescription(el, { now = false } = {}) {
   if (now) go(); else _descT = setTimeout(go, DESC_GRACE_MS);
 }
 
+// Cards in the hand now: not on their way out, not back in the deck.
+const inHandCards = () => [...hand.cards.values()].filter((c) => !c.leaving && !c.away);
+
 function layoutHand() {
   // Pill order, not the order cards were (re)dealt: a cancelled card keeps its slot.
-  const inHand = [...hand.cards.values()].filter((c) => !c.leaving).sort((a, b) => a.order - b.order);
+  const inHand = inHandCards().sort((a, b) => a.order - b.order);
   const n = inHand.length;
   const step = n > 1 ? Math.min(MAX_STEP, (HAND_RIGHT - HAND_LEFT - CARD_W - PASS_GAP - PASS_W) / (n - 1)) : 0;
   inHand.forEach((c, i) => { c.el.style.left = `${HAND_LEFT + i * step}px`; });
@@ -382,7 +452,7 @@ function syncHand(pills, wrapper) {
   ensureHand(unit);
   const mine = pills.filter((r) => r.mine);
   const seen = new Set();
-  let dealt = 0;
+  const toDeal = [];   // cards to draw out of the deck once the hand is laid out
   // Gating cards (the ones Pass answers) this window has shown, used or not —
   // so "all of them used" can read as passed after the used ones flew away.
   const gatingSeen = mine.some((r) => r.gating || isStandaloneKey(r.key));
@@ -391,16 +461,16 @@ function syncHand(pills, wrapper) {
     hand.lastPill.set(r.key, r);
     let c = hand.cards.get(r.key);
     if (r.state === "gm") { if (c) leave(c); return; }
-    if (r.state === "applied") { if (c) { leave(c); glowActionCard(wrapper); } return; }
+    if (r.state === "applied") { if (c) leave(c, "play"); return; }
     if (!c) {
       const el = makeCard(r);
-      el.style.setProperty("--d", `${dealt++ * DEAL_STAGGER_MS}ms`);
-      el.classList.add("is-dealt");
+      el.classList.add("is-incoming");
       // In pill order, so the later card overlaps the earlier one as before.
       const next = [...hand.cards.values()].filter((x) => !x.leaving && x.order > order).sort((a, b) => a.order - b.order)[0];
       hand.clip.insertBefore(el, next?.el ?? hand.pass);
-      c = { el, state: null, leaving: false, held: false };
+      c = { el, state: null, leaving: false, held: false, away: false, wasLive: false, carrierUuid: r.carrierUuid };
       hand.cards.set(r.key, c);
+      toDeal.push(c);
     }
     c.order = order;
     c.gating = !!r.gating || isStandaloneKey(r.key);
@@ -421,15 +491,24 @@ function syncHand(pills, wrapper) {
     const ribText = r.state === "off" ? ribbonText(r.reason) : "";
     if (rib.textContent !== ribText) rib.textContent = ribText;
     c.reason = r.reason;
+    // Passed over, or no longer applies after it was usable: back into the
+    // deck. Taken back / applies again: drawn out of the deck again.
+    if (r.state === "live") c.wasLive = true;
+    const inDeck = r.state === "skipped" || (r.state === "off" && c.wasLive);
+    if (inDeck && !c.away) goAway(c);
+    else if (!inDeck && c.away) {
+      c.away = false;
+      c.el.classList.remove("is-away");
+      c.el.classList.add("is-incoming");
+      toDeal.push(c);
+    }
   });
-  // A pill that left the card (card closed / re-posted without it): fold it
-  // away — or, the one card just played from a standalone window, play it.
+  // A pill that left the card (card closed / re-posted without it): back into
+  // the deck — or, the one card just played from a standalone window, play it.
   for (const [key, c] of hand.cards) {
     if (seen.has(key)) continue;
-    leave(c);
+    leave(c, c.held && isStandaloneKey(key) ? "play" : "back");
   }
-  // Cards dealt this pass slide in under a pointer that may be resting there.
-  if (dealt) holdPlateHover();
 
   const cards = [...hand.cards.values()].filter((c) => !c.leaving);
   const gating = cards.filter((c) => c.gating);
@@ -440,7 +519,7 @@ function syncHand(pills, wrapper) {
   // back; cards you used (or that can't be used) leave you passed for good.
   const settled = gatingSeen && live === 0 && busy === 0;
   if (settled) for (const c of cards) if (c.state === "off") leave(c);
-  hand.pass.classList.toggle("is-hidden", live + skipped === 0);
+  const dealPass = setPassShown(live + skipped > 0);
   hand.pass.classList.toggle("is-on", settled && skipped > 0);
   hand.pass.disabled = false;
   const passedNow = settled && skipped > 0;
@@ -452,23 +531,78 @@ function syncHand(pills, wrapper) {
   hand.tag.classList.toggle("is-on", settled);
   unit.classList.toggle("rxh-has-hand", cards.length > 0);
   layoutHand();
+  // Drawn out of the deck one after another, the Pass card last (it is dealt
+  // the same way but is not one of the deck's cards).
+  toDeal.forEach((c, i) => dealIn(c, i * DECK_STAGGER_MS));
+  if (dealPass) {
+    const p = hand.pass;
+    deckDeal(p, toDeal.length * DECK_STAGGER_MS).catch(() => {})
+      .finally(() => { if (hand.pass === p && hand.passShown) p.classList.remove("is-incoming"); });
+  }
+  // Cards dealt this pass slide in under a pointer that may be resting there.
+  if (toDeal.length) holdPlateHover();
+  deckSetHand(inHandCards().map((c) => c.carrierUuid).filter(Boolean));
 }
 
-// A card leaving the hand — played, passed over, or its card closed — fades off
-// to the left (rxhLeave). Playing one adds nothing else: the action card takes
-// a short gold glow (glowActionCard), as if it received the power.
-function leave(c) {
+function dealIn(c, delay) {
+  const el = c.el;
+  deckDeal(el, delay).catch(() => {})
+    .finally(() => { if (c.el === el && !c.away && !c.leaving) el.classList.remove("is-incoming"); });
+}
+
+// The Pass card is dealt from the deck when there is something to answer and
+// goes back into it when nothing is left. Returns true when it must be dealt.
+function setPassShown(show) {
+  const p = hand.pass;
+  if (show === hand.passShown) return false;
+  hand.passShown = show;
+  if (show) {
+    p.classList.remove("is-hidden");
+    if (deckReady()) { p.classList.add("is-incoming"); return true; }
+    p.classList.remove("is-incoming");
+    return false;
+  }
+  if (deckReady() && !p.classList.contains("is-incoming")) deckReturn(p).catch(() => {});
+  p.classList.add("is-hidden");
+  if (deckReady()) p.classList.add("is-incoming");
+  return false;
+}
+
+// Back into the deck, still part of this window (a Skip can be taken back).
+function goAway(c) {
+  c.away = true;
+  hideDescription(c.el, { now: true });
+  if (!c.el.classList.contains("is-incoming") && deckReady()) deckReturn(c.el).catch(() => {});
+  c.el.classList.add("is-away");
+  layoutHand();
+}
+
+// A card leaving the hand for good. "play": it flies onto the action card
+// (or your plate) over everything, and the action card takes a short gold glow
+// as if it received the power. "back": into the deck, behind the plate.
+function leave(c, how = "back") {
   if (c.leaving) return;
   c.leaving = true;
   hideDescription(c.el, { now: true });
   const key = c.el.dataset.key;
-  c.el.classList.add("is-leaving");
-  setTimeout(() => { c.el.remove(); if (hand.cards.get(key) === c) hand.cards.delete(key); }, LEAVE_MS);
+  const el = c.el;
+  const drop = () => { el.remove(); if (hand.cards.get(key) === c) hand.cards.delete(key); };
+  if (c.away || el.classList.contains("is-incoming") || !el.isConnected) drop();
+  else if (deckReady()) {
+    if (how === "play") deckPlay(el, { carrierUuid: c.carrierUuid }).catch(() => {}).finally(drop);
+    else { deckReturn(el).catch(() => {}); drop(); }
+  } else {
+    if (how === "play") glowActionCard(null);
+    el.classList.add("is-leaving");
+    setTimeout(drop, LEAVE_MS);
+  }
   layoutHand();
   holdPlateHover();   // the rest of the hand closes up under a resting pointer
 }
 
-function glowActionCard(wrapper) {
+const deckReady = () => !!myUnit()?.querySelector(":scope > .rxd-fly");
+
+export function glowActionCard(wrapper) {
   const card = (wrapper ?? document.getElementById(MIRROR_ROOT_ID))?.querySelector(".fud-bf-card");
   if (!card) return;
   const base = getComputedStyle(card).boxShadow;
@@ -659,11 +793,15 @@ function syncAllies(pills, wrapper) {
     let a = allies.get(id);
     if (!a) { a = { minis: new Map() }; allies.set(id, a); }
     if (!card) continue;
-    let box = card.querySelector(":scope > .rxh-minis");
+    // Their small cards come out of their deck tab (reaction-deck.js); on the
+    // card's top edge when there is no tab.
+    const holder = deckAllyTab(id) ?? card;
+    let box = holder.querySelector(":scope > .rxh-minis");
     if (!box) {
+      card.querySelectorAll(".rxh-minis").forEach((b) => b.remove());
       box = document.createElement("div");
       box.className = "rxh-minis";
-      card.appendChild(box);
+      holder.appendChild(box);
       a.minis.clear();
     }
     let tag = card.querySelector(":scope > .rxh-tag");
@@ -692,8 +830,9 @@ function syncAllies(pills, wrapper) {
       const r = rs.find((x) => x.key === key);
       if (r?.state === "applied") glowActionCard(wrapper);
       m.classList.add("is-leaving");
-      setTimeout(() => m.remove(), LEAVE_MS);
+      setTimeout(() => m.remove(), LEAVE_MS + 40);
     }
+    deckSetAllyHand(id, pending.map((r) => r.carrierUuid).filter(Boolean));
     [...a.minis.values()].forEach((m, i) => { m.style.left = `${i * 25}px`; m.style.setProperty("--r", i % 2 ? "6deg" : "-6deg"); });
     const deciding = pending.length > 0;
     const answered = rs.length > 0 && !deciding;
@@ -708,7 +847,8 @@ function clearAllies() {
     const card = allyCardFor(id);
     card?.classList.remove("rxh-deciding");
     card?.querySelector(":scope > .rxh-tag")?.classList.remove("is-on");
-    for (const m of a.minis.values()) { m.classList.add("is-leaving"); setTimeout(() => m.remove(), LEAVE_MS); }
+    for (const m of a.minis.values()) { m.classList.add("is-leaving"); setTimeout(() => m.remove(), LEAVE_MS + 40); }
+    deckSetAllyHand(id, []);
   }
   allies.clear();
 }
@@ -772,6 +912,8 @@ function teardown() {
     hand.tag?.remove();
     hand.clip = hand.pass = hand.tag = null;
     hand.cards.clear();
+    hand.passShown = false;
+    deckSetHand([]);
     document.querySelector(".dhud-plate-root .dhud-unit")?.classList.remove("rxh-has-hand");
   }
   clearAllies();
