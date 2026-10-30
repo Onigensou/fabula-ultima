@@ -901,9 +901,13 @@
         return;
       }
 
-      state.lockedScale = canvas.stage.scale.x;
-      state.lockX = canvas.stage.pivot.x;
-      state.lockY = canvas.stage.pivot.y;
+      // Not while another system holds the camera: its zoom is not the walk zoom.
+      // An event's zoom saved here left the party at it after the event ended.
+      if (state.cameraHolds.size === 0) {
+        state.lockedScale = canvas.stage.scale.x;
+        state.lockX = canvas.stage.pivot.x;
+        state.lockY = canvas.stage.pivot.y;
+      }
 
       // Keep the token already being followed while the snapshot re-resolves.
       // Dropping it here opened a window in which the camera stopped and a

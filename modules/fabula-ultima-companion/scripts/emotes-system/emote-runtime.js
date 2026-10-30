@@ -234,7 +234,8 @@
   function buildPseudoScriptSource() {
   return `
 const { casterToken, params } = ctx;
-if (!casterToken) throw new Error("Emote runtime needs casterToken");
+// A client on another scene has no token to draw on, and nothing to see.
+if (!casterToken) return;
 
 const ACTIVE_KEY = "__ONI_EMOTE_RUNTIME_ACTIVE__";
 globalThis[ACTIVE_KEY] ??= new Map();
