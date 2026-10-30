@@ -369,7 +369,16 @@
       sy *= token.ring.subjectScaleAdjustment;
     }
 
+    // Keep the mirror the mesh already shows. resize() lays the document's own
+    // sign (texture.scaleX < 0 = flipped), but on a walk map sprite-facing.js
+    // owns the facing, absolute on screen; re-laying the document's sign on
+    // every movement frame drew a walker facing the wrong way for the first
+    // frames of a walk (measured 3 of 34 on-screen frames, 0 with depth off).
+    // Where Foundry has just re-fitted the mesh, the sign it holds IS the
+    // document's, so a flipped NPC keeps its flip.
+    const keepSign = Math.sign(mesh.scale.x) || 1;
     mesh.resize(size.width, size.height, { fit: fit ?? "fill", scaleX: sx, scaleY: sy });
+    if (Math.sign(mesh.scale.x) !== keepSign) mesh.scale.x = -mesh.scale.x;
 
     // Keep the feet planted. Scaling about the mesh anchor lifts the sprite off
     // the path as it shrinks; shifting it back down by the height just lost
