@@ -122,7 +122,7 @@ maps, Rare items that are also rolled or sold, and Zenit outside the band.
 Budgets: Midgard 3 (2 Mundane, 1 Standard) — set by the user; Valley and
 Fafnir were placed at 6 (2/3/1) and 3 (1/1/1), then the user removed the
 Great Seal chest and both Rare chests (Eye of Skadi in the Monastery
-Interior, Balmung in the Treasure Hoard). Current: Valley 4 (1 Mundane /
+Interior, Balmung in the Treasure Hoard). Current: Valley 5 (2 Mundane /
 3 Standard), Fafnir 2 (1 / 1), no Rare in this chapter. Coordinates are
 scene pixels (tile centre), first pass.
 
@@ -132,6 +132,7 @@ scene pixels (tile centre), first pass.
 | Midgard | Midgard_Map007 Cellar | Mundane | north-east cell by the cages (1060, 130) | Liquid Hope ×1 |
 | Midgard | Midgard_Map006 Castle | Standard | east armoury, weapon-rack wall (1700, 1100) | Rune Blade |
 | Valley | Valley_Map003 Valley Entrance | Mundane | bulge east of the path (700, 1650) | 300z |
+| Valley | Valley_Map023 Thunder Pillar | Mundane | foot of the stone columns, west of the pillar (520, 1515), past the event band (2026-10-31) | Mixed Juice ×1 |
 | Valley | Valley_Map012 Ancient Mural | Standard | dead-end stair landing, top right (1400, 310) | Phoenix Feather ×1 + 300z |
 | Valley | Valley_Map020 Feeding Pit | Standard | by the cauldron, north rim (1240, 190) | Beowulf + 500z |
 | Valley | Valley_Map016 Abandoned Monastery | Standard | behind the fallen pillar by the lion statue (1000, 640) | Goddess Tear ×1 |

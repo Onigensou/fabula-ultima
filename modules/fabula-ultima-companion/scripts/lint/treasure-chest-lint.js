@@ -41,7 +41,7 @@
   // Skadi, Balmung), so Valley and Fafnir carry no Rare for now.
   const AREA_BUDGETS = {
     "Ancient Capital Midgard": { mundane: 2, standard: 1, rare: 0 },
-    "Valley of the Dragon":    { mundane: 1, standard: 3, rare: 0 },
+    "Valley of the Dragon":    { mundane: 2, standard: 3, rare: 0 },
     "Fafnir Castle":           { mundane: 1, standard: 1, rare: 0 },
   };
 
