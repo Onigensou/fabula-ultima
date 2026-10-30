@@ -207,6 +207,10 @@
       zIndex,
       replaceExisting,
 
+      headAnchor: instruction.headAnchor === true,
+      headShiftX: asNumber(instruction.headShiftX, 0),
+      flipX: instruction.flipX === true,
+
       meta
     };
   }
@@ -302,6 +306,13 @@ const holdMs = Math.max(0, Number(params.holdMs ?? 1200));
 const fadeOutMs = Math.max(0, Number(params.fadeOutMs ?? 220));
 const zIndex = Number(params.zIndex ?? 5500);
 
+// Above the head: the emote sits on the top of the drawn sprite, whatever size
+// the depth system gives it, moved over so that its tail meets the head.
+const headAnchor = params.headAnchor === true;
+const headShiftX = Number(params.headShiftX ?? 0) * scale;
+const flipSign = params.flipX === true ? -1 : 1;
+let emoteHalfHeight = 0;
+
 function waitMs(ms) {
   return new Promise(resolve => setTimeout(resolve, Math.max(0, Number(ms) || 0)));
 }
@@ -315,6 +326,17 @@ function easeInCubic(t) {
 }
 
 function getAnchorPoint() {
+  if (headAnchor) {
+    const mesh = casterToken.mesh;
+    const headY = mesh
+      ? mesh.y - (Math.abs(mesh.height) * mesh.anchor.y)
+      : casterToken.document.y;
+    return {
+      x: (mesh ? mesh.x : casterToken.center.x) + headShiftX,
+      y: headY - emoteHalfHeight
+    };
+  }
+
   const baseX = Number.isFinite(forcedX) ? forcedX : casterToken.center.x;
   const baseY = Number.isFinite(forcedY) ? forcedY : casterToken.center.y;
   return {
@@ -431,7 +453,7 @@ function createSprite(texture) {
   const sprite = new PIXI.Sprite(texture);
   sprite.anchor.set(0.5);
   sprite.alpha = 0;
-  sprite.scale.set(0.65 * scale);
+  sprite.scale.set(0.65 * scale * flipSign, 0.65 * scale);
 
   const pt = getAnchorPoint();
   sprite.x = pt.x;
@@ -462,7 +484,7 @@ function tween(entry, {
     if (!canvas?.app?.ticker || durationMs <= 0) {
       if (!entry.destroyed && entry.sprite && !entry.sprite.destroyed) {
         entry.sprite.alpha = toAlpha;
-        entry.sprite.scale.set(toScale);
+        entry.sprite.scale.set(toScale * flipSign, toScale);
         const pt = getAnchorPoint();
         entry.sprite.x = pt.x;
         entry.sprite.y = pt.y;
@@ -488,7 +510,7 @@ function tween(entry, {
       entry.sprite.alpha = fromAlpha + (toAlpha - fromAlpha) * e;
 
       const curScale = fromScale + (toScale - fromScale) * e;
-      entry.sprite.scale.set(curScale);
+      entry.sprite.scale.set(curScale * flipSign, curScale);
 
       const pt = getAnchorPoint();
       entry.sprite.x = pt.x;
@@ -512,6 +534,8 @@ if (!texture) throw new Error("Failed to load emote texture: " + emoteUrl);
 
 // Best-effort: if this is a WEBM/video texture, explicitly start playback
 await ensureVideoTexturePlayback(texture);
+
+emoteHalfHeight = (texture.height * scale) / 2;
 
 const sprite = createSprite(texture);
 const entry = makeEntry(sprite);
@@ -577,6 +601,9 @@ try {
         fadeOutMs: instruction.fadeOutMs,
         zIndex: instruction.zIndex,
         replaceExisting: instruction.replaceExisting,
+        headAnchor: instruction.headAnchor === true,
+        headShiftX: instruction.headShiftX,
+        flipX: instruction.flipX === true,
         sessionKey: getTokenSessionKey(instruction.tokenUuid)
       },
       meta: {
@@ -692,6 +719,9 @@ try {
         fadeOutMs: instruction.fadeOutMs,
         zIndex: instruction.zIndex,
         replaceExisting: instruction.replaceExisting,
+        headAnchor: instruction.headAnchor === true,
+        headShiftX: instruction.headShiftX,
+        flipX: instruction.flipX === true,
         sessionKey: getTokenSessionKey(instruction.tokenUuid)
       }
     };

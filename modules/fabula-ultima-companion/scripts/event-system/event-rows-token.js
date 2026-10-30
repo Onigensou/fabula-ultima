@@ -22,6 +22,8 @@
  *   sprite, drawn on its own: nothing fights the idle bounce or the depth system
  *   for the real mesh. The token itself never moves; it is just hidden, so a
  *   later Show finds it where it stood.
+ * - The copy and its take-off smoke draw among the tokens (event-worldFx.js), so
+ *   a tile at elevation 1, such as a cliff edge they stand behind, stays in front.
  *
  * Requires:
  * - event-logic.js, event-eventRegistry.js, event-client.js, event-flow.js
@@ -69,6 +71,28 @@
   };
   const JUMP_TOTAL_MS = JUMP.crouchMs + JUMP.launchMs;
 
+  const DIRECTIONS = [
+    ["up", "Straight up"],
+    ["upLeft", "Up and left"],
+    ["upRight", "Up and right"]
+  ];
+  const SIDEWAYS = { up: 0, upLeft: -1, upRight: 1 };
+  const JUMP_DRIFT_PX = 520;
+  const pickDirection = (value) => (DIRECTIONS.some(([key]) => key === value) ? value : "up");
+
+  // Guilty Gear white masks, in the same pair and colour as the Dreadwyrm's take-off.
+  const SMOKE_DIR = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/";
+  const SMOKE = {
+    plume: { src: `${SMOKE_DIR}smoke_anim14.webm`, width: 300 },
+    kick: { src: `${SMOKE_DIR}dashsmoke_anim05.webm`, width: 230 },
+    tint: 0xb9a9cc,
+    alpha: 0.6,
+    // Their baseline sits at 95% of the square clip.
+    anchorY: 0.95,
+    // A plume leans out to the side the character is not going.
+    plumeOffsetPx: 28
+  };
+
   const TINT = [
     ["keep", "Leave as it is"],
     ["clear", "Clear (no tint)"],
@@ -100,23 +124,36 @@
 
   // One token's jump on this client. Each frame is guarded: a throw inside a
   // ticker callback would stop PIXI's whole frame loop.
-  function playJump(tokenId) {
+  function playJump(tokenId, { direction = "up", smoke = false, sourceId = "" } = {}) {
     if (document.visibilityState === "hidden") return;
     const mesh = canvas?.tokens?.get(tokenId)?.mesh;
-    const host = canvas?.interface;
-    if (!mesh?.texture?.valid || !host) return;
+    const host = canvas?.primary;
+    const worldFx = window.oni.EventSystem.WorldFx;
+    if (!mesh?.texture?.valid || !host || !worldFx) return;
 
-    const sprite = new PIXI.Sprite(mesh.texture);
+    const sprite = new PrimarySpriteMesh({ texture: mesh.texture, name: "oniEventJump" });
     sprite.anchor.set(0.5, 1);
     sprite.tint = mesh.tint;
+    sprite.elevation = 0;
+    sprite.sortLayer = PrimaryCanvasGroup.SORT_LAYERS.TOKENS;
+    sprite.sort = worldFx.SORT.COPIES;
     const baseX = mesh.scale.x;
     const baseY = mesh.scale.y;
     const footX = mesh.x;
-    const footY = mesh.y + mesh.height * (1 - mesh.anchor.y);
+    const footY = mesh.y + Math.abs(mesh.height) * (1 - mesh.anchor.y);
+    const drift = SIDEWAYS[direction] ?? 0;
     sprite.position.set(footX, footY);
     sprite.scale.set(baseX, baseY);
     host.addChild(sprite);
     mesh.renderable = false;
+
+    let smoked = !smoke;
+    const puff = () => {
+      smoked = true;
+      const common = { y: footY, sourceId, anchorY: SMOKE.anchorY, sort: worldFx.SORT.OVER_TOKENS, alpha: SMOKE.alpha, tint: SMOKE.tint };
+      worldFx.play({ ...common, src: SMOKE.plume.src, x: footX - (drift * SMOKE.plumeOffsetPx), width: SMOKE.plume.width, mirror: drift > 0 });
+      worldFx.play({ ...common, src: SMOKE.kick.src, x: footX, width: SMOKE.kick.width, mirror: drift >= 0 });
+    };
 
     const ticker = canvas.app.ticker;
     const startedAt = performance.now();
@@ -138,6 +175,7 @@
           sx = mix(1, JUMP.squash.x, e);
           sy = mix(1, JUMP.squash.y, e);
         } else {
+          if (!smoked) puff();
           const u = (elapsed - JUMP.crouchMs) / JUMP.launchMs;
           const k = Math.min(1, u / JUMP.snap);
           sx = mix(JUMP.squash.x, JUMP.stretch.x, k);
@@ -148,6 +186,7 @@
 
         sprite.scale.set(baseX * sx, baseY * sy);
         sprite.y = footY - rise;
+        sprite.x = footX + (drift * JUMP_DRIFT_PX * (rise / JUMP.risePx));
         sprite.alpha = alpha;
       } catch (e) {
         console.warn(INSTALL_TAG, "Jump frame failed; dropping the effect.", e);
@@ -157,15 +196,20 @@
     ticker.add(tick);
   }
 
-  Client.register(KIND_JUMP, (data) => {
-    for (const id of data.tokenIds ?? []) playJump(id);
+  Client.register(KIND_JUMP, (data, info) => {
+    for (const id of data.tokenIds ?? []) {
+      playJump(id, { direction: pickDirection(data.direction), smoke: data.smoke === true, sourceId: info.sourceId });
+    }
   });
 
   EventRegistry.register({
     type: "setToken",
     label: "Set Token",
     category: "Token",
-    defaultData: { type: "setToken", name: "", visibility: "show", tint: "keep", color: DEFAULT_COLOR },
+    defaultData: { type: "setToken", name: "", visibility: "show", tint: "keep", color: DEFAULT_COLOR, direction: "up", smoke: false, wait: true },
+    mediaOf: (row) => (row?.visibility === "jump" && row?.smoke === true
+      ? namesIn(row?.name).flatMap(() => [SMOKE.plume.src, SMOKE.kick.src])
+      : []),
     summary: (row) => {
       const parts = [String(row?.name ?? "").trim() || "(no token)"];
       if (pick(VISIBILITY, row?.visibility) !== "keep") parts.push(row.visibility === "jump" ? "jump away" : row.visibility);
@@ -191,9 +235,13 @@
 
       if (visibility === "jump") {
         // Only tokens that can be seen jump; the copy needs a drawn sprite.
-        Client.run(context?.tileId, KIND_JUMP, { tokenIds: found.filter(t => !t.hidden).map(t => t.id) });
+        Client.run(context?.tileId, KIND_JUMP, {
+          tokenIds: found.filter(t => !t.hidden).map(t => t.id),
+          direction: pickDirection(row?.direction),
+          smoke: row?.smoke === true
+        });
         await scene.updateEmbeddedDocuments("Token", found.map(t => ({ _id: t.id, hidden: true, ...change })));
-        await window.oni.EventSystem.Flow?.wait?.(context?.tileId, JUMP_TOTAL_MS);
+        if (row?.wait !== false) await window.oni.EventSystem.Flow?.wait?.(context?.tileId, JUMP_TOTAL_MS);
         return { ok: true, type: "setToken", changed: found.length };
       }
 
@@ -215,6 +263,13 @@
           `<select class="oni-event-row-token-visibility">${kit.options(VISIBILITY, pick(VISIBILITY, row.visibility))}</select>`,
           "Stays after the event ends. Leave tokens how the next visitor should find them."
         ),
+        `<div class="oni-event-row-token-jump-wrap">${kit.field(
+          "Jump",
+          `<select class="oni-event-row-token-direction">${kit.options(DIRECTIONS, pickDirection(row.direction))}</select>
+           <label><input type="checkbox" class="oni-event-row-token-smoke" ${row.smoke === true ? "checked" : ""} /> take-off smoke</label>
+           <label><input type="checkbox" class="oni-event-row-token-wait" ${row.wait !== false ? "checked" : ""} /> wait for it</label>`,
+          "For several directions, use one row each with wait off, so they go together. The smoke sits in front of tokens and behind any tile at elevation 1."
+        )}</div>`,
         kit.field(
           "Tint",
           `<select class="oni-event-row-token-tint">${kit.options(TINT, tint)}</select>`,
@@ -227,10 +282,13 @@
       );
 
       const tintEl = body.querySelector(".oni-event-row-token-tint");
+      const visibilityEl = body.querySelector(".oni-event-row-token-visibility");
       const sync = () => {
         body.querySelector(".oni-event-row-token-color-wrap").hidden = tintEl.value !== "set";
+        body.querySelector(".oni-event-row-token-jump-wrap").hidden = visibilityEl.value !== "jump";
       };
       tintEl.addEventListener("change", sync);
+      visibilityEl.addEventListener("change", sync);
       sync();
 
       return body;
@@ -239,7 +297,10 @@
       name: kit.readText(rowEl, ".oni-event-row-token-name", "").trim(),
       visibility: pick(VISIBILITY, kit.readText(rowEl, ".oni-event-row-token-visibility", "keep")),
       tint: pick(TINT, kit.readText(rowEl, ".oni-event-row-token-tint", "keep")),
-      color: validColor(kit.readText(rowEl, ".oni-event-row-token-color", DEFAULT_COLOR))
+      color: validColor(kit.readText(rowEl, ".oni-event-row-token-color", DEFAULT_COLOR)),
+      direction: pickDirection(kit.readText(rowEl, ".oni-event-row-token-direction", "up")),
+      smoke: !!kit.own(rowEl, ".oni-event-row-token-smoke")?.checked,
+      wait: !!kit.own(rowEl, ".oni-event-row-token-wait")?.checked
     })
   });
 

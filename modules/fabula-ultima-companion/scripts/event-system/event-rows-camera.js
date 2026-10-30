@@ -62,6 +62,11 @@
     ["party", "Back to the party"]
   ];
 
+  const MOTIONS = [
+    ["smooth", "Smooth (eases in and out)"],
+    ["pullBack", "Pull-back (like a camera moving back)"]
+  ];
+
   const flow = () => window.oni.EventSystem.Flow;
   const followRuntime = () => globalThis.__ONI_MOVEMENT_CONTROL_CAMERA_RUNTIME__ ?? null;
 
@@ -166,7 +171,7 @@
     try { canvas.pan({ x: v.x, y: v.y, scale: v.scale }); } catch (_) {}
   }
 
-  function glideTo(target, durationMs, onDone = null) {
+  function glideTo(target, durationMs, onDone = null, motion = "smooth") {
     if (!view || !canvas?.ready) return;
     stopGlide();
 
@@ -184,7 +189,7 @@
 
     view.ticker = () => {
       if (!canvas?.ready || !view) return;
-      const at = Logic.glideAt(from, target, startedAt, durationMs, performance.now());
+      const at = Logic.glideAt(from, target, startedAt, durationMs, performance.now(), motion);
       applyView(at);
 
       if (at.done) {
@@ -246,7 +251,7 @@
     }
 
     takeCamera(info.sourceId);
-    glideTo(resolveTarget(data, info.sourceId), durationMs);
+    glideTo(resolveTarget(data, info.sourceId), durationMs, null, data.motion);
   });
 
   // ------------------------------------------------------------
@@ -255,6 +260,8 @@
   function seconds(row) {
     return Math.min(MAX_SECONDS, Math.max(0, Logic.toNumber(row?.seconds, DEFAULT_SECONDS)));
   }
+
+  const pickMotion = (value) => (MOTIONS.some(([key]) => key === value) ? value : "smooth");
 
   EventRegistry.register({
     type: "cameraPan",
@@ -268,6 +275,7 @@
       name: "",
       zoom: 0,
       seconds: DEFAULT_SECONDS,
+      motion: "smooth",
       wait: true
     },
     summary: (row) => (TARGETS.find(([value]) => value === row?.mode)?.[1] ?? ""),
@@ -280,7 +288,8 @@
         dy: Logic.toNumber(row?.dy, 0),
         name: String(row?.name ?? ""),
         zoom: Logic.toNumber(row?.zoom, 0),
-        durationMs
+        durationMs,
+        motion: pickMotion(row?.motion)
       });
 
       // Timed here, not by any one screen: a hidden or slow client cannot
@@ -319,6 +328,11 @@
           "Duration (s)",
           kit.numberInput("oni-event-row-cam-seconds", seconds(row), { min: 0, max: MAX_SECONDS, step: 0.1 })
         ),
+        kit.field(
+          "Motion",
+          `<select class="oni-event-row-cam-motion">${kit.options(MOTIONS, pickMotion(row.motion))}</select>`,
+          "Pull-back suits a fast zoom out: it starts gently, holds a steady rate and settles softly."
+        ),
         kit.waitField(row, true)
       );
 
@@ -339,6 +353,7 @@
       name: kit.readText(rowEl, ".oni-event-row-cam-name", "").trim(),
       zoom: kit.readNumber(rowEl, ".oni-event-row-cam-zoom", 0),
       seconds: Math.min(MAX_SECONDS, Math.max(0, kit.readNumber(rowEl, ".oni-event-row-cam-seconds", DEFAULT_SECONDS))),
+      motion: pickMotion(kit.readText(rowEl, ".oni-event-row-cam-motion", "smooth")),
       wait: kit.readWait(rowEl, true)
     })
   });

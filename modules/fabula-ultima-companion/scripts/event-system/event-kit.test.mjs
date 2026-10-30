@@ -272,6 +272,22 @@ check("substituteVars: prints a variable, 0 when unset",
   check("glide: halfway in time is halfway there (symmetric ease)", Math.abs(mid.x - 100) < 1e-9 && Math.abs(mid.scale - 1.5) < 1e-9);
   check("glide: eases in (a quarter of the time is less than a quarter of the way)", Logic.glideAt(from, to, 0, 1000, 250).x < 50);
   check("glide: no duration lands at once", Logic.glideAt(from, to, 0, 0, 0).done && Logic.glideAt(from, to, 0, 0, 0).x === 200);
+
+  const near = { x: 1010, y: 630, scale: 2.4 }, far = { x: 1024, y: 1040, scale: 0.95 };
+  const pull = (ms) => Logic.glideAt(near, far, 0, 1600, ms, "pullBack");
+  const scales = [0, 200, 400, 600, 800, 1000, 1200, 1400, 1600].map(ms => pull(ms).scale);
+  check("pull-back: starts at from, lands exactly on to", pull(0).scale === 2.4 && pull(0).y === 630 && Math.abs(pull(1600).scale - 0.95) < 1e-9 && Math.abs(pull(1600).y - 1040) < 1e-9 && pull(1600).done);
+  check("pull-back: the zoom only ever falls", scales.every((s, i) => i === 0 || s < scales[i - 1]));
+  check("pull-back: starts gently and settles softly", (scales[0] - scales[1]) < (scales[2] - scales[3]) && (scales[7] - scales[8]) < (scales[3] - scales[4]));
+  check("pull-back: centre tracks the view size, so a map point holds still", (() => {
+    const p = pull(700);
+    const screenY = (y) => (y - p.y) * p.scale;
+    const fixedY = near.y + (far.y - near.y) * ((1 / near.scale) / ((1 / near.scale) - (1 / far.scale)));
+    const atStart = (fixedY - near.y) * near.scale;
+    return Math.abs(screenY(fixedY) - atStart) < 1e-6;
+  })());
+  check("pull-back: no duration lands at once", Logic.glideAt(near, far, 0, 0, 0, "pullBack").done && Logic.glideAt(near, far, 0, 0, 0, "pullBack").scale === 0.95);
+  check("glide: an unknown motion is the smooth one", Logic.glideAt(from, to, 0, 1000, 500, "nonsense").x === mid.x);
 }
 
 // ---------------------------------------------------------------------------

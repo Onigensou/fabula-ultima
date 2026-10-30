@@ -317,10 +317,38 @@
     return x < 0.5 ? 2 * x * x : 1 - (Math.pow(-2 * x + 2, 2) / 2);
   }
 
+  // Share of the move at time t for a pull-back: a short ease in, a steady
+  // middle, a longer settle (measured from a filmed dolly, JoJo OP2 1:00-1:04).
+  const PULL_IN = 0.12;
+  const PULL_OUT = 0.4;
+
+  function pullBackShare(t) {
+    const x = clamp01(t);
+    const peak = 1 / (1 - (PULL_IN / 2) - (PULL_OUT / 2));
+    if (x < PULL_IN) return peak * x * x / (2 * PULL_IN);
+    if (x <= 1 - PULL_OUT) return peak * (x - (PULL_IN / 2));
+    return 1 - (peak * (1 - x) * (1 - x) / (2 * PULL_OUT));
+  }
+
   // Where a glide is at time `now`. from / to: { x, y, scale }.
-  function glideAt(from, to, startedAt, durationMs, now) {
+  // motion "pullBack": the zoom changes by a steady ratio, not a steady amount,
+  // and the centre moves with the size of the view, so one point of the map
+  // holds still on screen as it would under a real camera moving back.
+  function glideAt(from, to, startedAt, durationMs, now, motion = "smooth") {
     const span = Math.max(0, toNumber(durationMs, 0));
     const t = span <= 0 ? 1 : clamp01((now - startedAt) / span);
+
+    if (motion === "pullBack" && from.scale > 0 && to.scale > 0 && from.scale !== to.scale) {
+      const scale = from.scale * Math.pow(to.scale / from.scale, pullBackShare(t));
+      const k = ((1 / scale) - (1 / from.scale)) / ((1 / to.scale) - (1 / from.scale));
+      return {
+        x: from.x + ((to.x - from.x) * k),
+        y: from.y + ((to.y - from.y) * k),
+        scale,
+        done: t >= 1
+      };
+    }
+
     const e = easeInOutQuad(t);
     return {
       x: from.x + ((to.x - from.x) * e),

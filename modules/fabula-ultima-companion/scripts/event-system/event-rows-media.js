@@ -9,7 +9,8 @@
  * - Registers three event actions:
  *     Play Sound       a one-shot sound effect on every client
  *     Screen Effect    fade out / fade in / flash / shake / tint / clear
- *     Play Animation   an image or video, fullscreen or at a point on the map
+ *     Play Animation   an image or video, fullscreen or at a point on the map,
+ *                      over everything or among the tokens (event-worldFx.js)
  *
  * How it fits together:
  * - The row runs on the GM, which tells every client to play it
@@ -276,6 +277,7 @@
     category: "Audio",
     defaultData: { type: "playSound", src: "", volume: 0.6, wait: false },
     summary: (row) => String(row?.src ?? "").split("/").pop(),
+    mediaOf: (row) => [row?.src],
     execute: async (row, context) => {
       const src = String(row?.src || "").trim();
       if (!src) return { ok: false, reason: "noSoundFile" };
@@ -508,6 +510,14 @@
     ["party", "On the party"]
   ];
 
+  // Where on the map it draws. "over" is a page element above the whole canvas.
+  const LAYERS = [
+    ["over", "Over everything"],
+    ["behind", "Behind tokens"],
+    ["front", "In front of tokens, behind raised tiles"]
+  ];
+  const pickLayer = (value) => (LAYERS.some(([key]) => key === value) ? value : "over");
+
   // Animations playing on this client: sourceId -> Set of stop functions.
   const playing = new Map();
 
@@ -571,6 +581,28 @@
 
     const opacity = clampNumber(data.opacity, 0, 1, 1);
     const scale = clampNumber(data.scalePct, 1, 1000, 100) / 100;
+
+    const worldFx = window.oni.EventSystem.WorldFx;
+    if (!fullscreen && pickLayer(data.layer) !== "over" && worldFx) {
+      const point = anchorFor(data, info.sourceId)?.();
+      if (!point) {
+        console.warn(INSTALL_TAG, "Play Animation: nothing to play it on, on this scene.", data);
+        return;
+      }
+      worldFx.play({
+        src,
+        x: point.x,
+        y: point.y,
+        sourceId: info.sourceId,
+        scale,
+        sort: data.layer === "behind" ? worldFx.SORT.BEHIND_TOKENS : worldFx.SORT.OVER_TOKENS,
+        alpha: opacity,
+        additive: data.additive === true,
+        durationMs: Math.max(0, Logic.toNumber(data.durationMs, 0))
+      });
+      return;
+    }
+
     const el = makeMedia(src, fullscreen ? "oni-event-screen-media" : "oni-event-world-media");
 
     let ticker = null;
@@ -637,10 +669,13 @@
       fit: "contain",
       scalePct: 100,
       opacity: 1,
+      layer: "over",
+      additive: false,
       seconds: 0,
       wait: true
     },
     summary: (row) => String(row?.src ?? "").split("/").pop(),
+    mediaOf: (row) => [row?.src],
     execute: async (row, context) => {
       const src = String(row?.src || "").trim();
       if (!src) return { ok: false, reason: "noAnimationFile" };
@@ -655,6 +690,8 @@
         fit: row?.fit === "cover" ? "cover" : "contain",
         scalePct: clampNumber(row?.scalePct, 1, 1000, 100),
         opacity: clampNumber(row?.opacity, 0, 1, 1),
+        layer: pickLayer(row?.layer),
+        additive: row?.additive === true,
         durationMs
       });
 
@@ -693,6 +730,12 @@
           "Opacity",
           kit.numberInput("oni-event-row-anim-opacity", clampNumber(row.opacity, 0, 1, 1), { min: 0, max: 1, step: 0.05 })
         ),
+        `<div class="oni-event-row-anim-layer-wrap">${kit.field(
+          "Layer",
+          `<select class="oni-event-row-anim-layer">${kit.options(LAYERS, pickLayer(row.layer))}</select>
+           <label><input type="checkbox" class="oni-event-row-anim-additive" ${row.additive === true ? "checked" : ""} /> glowing light (additive)</label>`,
+          "Over everything rides the map. The other two sit among the tokens and stay where they start."
+        )}</div>`,
         kit.field(
           "Duration (s)",
           kit.numberInput("oni-event-row-anim-seconds", Logic.toNumber(row.seconds, 0) > 0 ? row.seconds : "", { min: 0, max: ANIMATION_CAP_MS / 1000, step: 0.1, placeholder: "auto" }),
@@ -707,6 +750,7 @@
         body.querySelector(".oni-event-row-anim-name-wrap").hidden = whereEl.value !== "token";
         body.querySelector(".oni-event-row-anim-fit-wrap").hidden = !fullscreen;
         body.querySelector(".oni-event-row-anim-scale-wrap").hidden = fullscreen;
+        body.querySelector(".oni-event-row-anim-layer-wrap").hidden = fullscreen;
       };
       whereEl.addEventListener("change", sync);
       sync();
@@ -720,6 +764,8 @@
       fit: kit.readText(rowEl, ".oni-event-row-anim-fit", "contain"),
       scalePct: clampNumber(kit.readNumber(rowEl, ".oni-event-row-anim-scale", 100), 1, 1000, 100),
       opacity: clampNumber(kit.readNumber(rowEl, ".oni-event-row-anim-opacity", 1), 0, 1, 1),
+      layer: pickLayer(kit.readText(rowEl, ".oni-event-row-anim-layer", "over")),
+      additive: !!kit.own(rowEl, ".oni-event-row-anim-additive")?.checked,
       seconds: Math.max(0, kit.readNumber(rowEl, ".oni-event-row-anim-seconds", 0)),
       wait: kit.readWait(rowEl, true)
     })
@@ -728,7 +774,8 @@
   window.oni.EventSystem.RowsMedia = {
     installed: true,
     // Also used by the config window's preview button.
-    playSound
+    playSound,
+    preloadSound: (src) => { loadSound(src).catch(() => {}); }
   };
 
   console.debug(INSTALL_TAG, "Installed.");

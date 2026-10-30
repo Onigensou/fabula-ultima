@@ -20,7 +20,8 @@
  *   childLists(row)         [{ label, rows }] for rows that own other rows
  *   prepare(row)            repair the shape of a saved row
  *   summary(row)            one short line for the GM status chip
- *   critical                a failure ends the event (text); otherwise the
+ *   mediaOf(row)            files it plays, warmed up when the event starts
+ *   critical               a failure ends the event (text); otherwise the
  *                           row is passed over and the event carries on
  *
  * Exposes API to:
@@ -150,7 +151,8 @@
         collectFields: optionalFn(definition.collectFields),
         childLists: optionalFn(definition.childLists),
         prepare: optionalFn(definition.prepare),
-        summary: optionalFn(definition.summary)
+        summary: optionalFn(definition.summary),
+        mediaOf: optionalFn(definition.mediaOf)
       };
 
       // Make the type known to the constants, so nothing else has to list it.

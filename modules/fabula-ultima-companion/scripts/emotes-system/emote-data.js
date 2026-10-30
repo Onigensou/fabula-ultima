@@ -206,6 +206,28 @@
     }
   ]);
 
+  // Where each bubble's tail tip sits from the bubble's centre, in the file's
+  // pixels, measured from the art: the tail leans right, drawn to sit left of a
+  // head. Listed emotes can be placed above a head so the tail meets it; the rest
+  // have no usable tail. noMirror: a mirror would turn its "?" or "$" backwards.
+  const EMOTE_TAILS = Object.freeze({
+    Exc: { lean: 6.5 },
+    Que: { lean: 6, noMirror: true },
+    Ang: { lean: 6 },
+    Love: { lean: 6 },
+    No1: { lean: 6 },
+    Heh: { lean: 6.5 },
+    Ggg: { lean: 6.5 },
+    gif: { lean: 6.5 },
+    Ok: { lean: 6.5 },
+    Awsm: { lean: 8 },
+    Hmm: { lean: 6.5 },
+    Hoe: { lean: 6 },
+    Money: { lean: 6, noMirror: true },
+    Rice: { lean: 6 },
+    Sweat: { lean: 6 }
+  });
+
   const DEFAULT_HOTKEY_MAP = Object.freeze({
     "1": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Emotes%20Icon/RO/Exc.webm",
     "2": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Emotes%20Icon/RO/Que.webm",
@@ -329,6 +351,10 @@
     return !!findEmoteByUrl(url);
   }
 
+  function getTail(id) {
+    return EMOTE_TAILS[cleanString(id)] ?? null;
+  }
+
   function normalizeHotkeyMap(inputMap) {
     const base = getDefaultHotkeyMap();
     const src = inputMap && typeof inputMap === "object" ? inputMap : {};
@@ -404,6 +430,7 @@
     findEmoteById,
     isKnownEmoteUrl,
     getEmoteLabelFromUrl,
+    getTail,
 
     getSlotRowsFromMap
   };

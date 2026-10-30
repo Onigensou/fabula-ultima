@@ -142,6 +142,16 @@
               for (const name of names) if (!hasToken(scene, name)) add("warn", `Set Token names "${name}", but no token on this scene has that name. If it was deleted, hide it instead, or take it out of this row.`);
               break;
             }
+            case "showEmote":
+              if (row.target === "token" && !String(row.name ?? "").trim()) add("warn", "Show Emote on a named token, with no name.");
+              else if (row.target === "token" && !hasToken(scene, row.name)) add("warn", `Show Emote on "${row.name}", but no token on this scene has that name.`);
+              break;
+            case "lightningReveal":
+              for (const line of String(row.lit ?? "").split("\n")) {
+                const [name] = line.split("=");
+                if (String(name ?? "").trim() && !hasToken(scene, name)) add("warn", `Lightning Reveal names "${String(name).trim()}", but no token on this scene has that name.`);
+              }
+              break;
             case "pauseForGM":
               if ((row.choices ?? []).some(c => !String(c.label ?? "").trim())) add("warn", "Pause for GM has a choice with no text.");
               break;

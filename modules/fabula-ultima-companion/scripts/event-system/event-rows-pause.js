@@ -8,6 +8,9 @@
  * What this does:
  * - Registers the "Pause for GM" event action: the event stops at this row for
  *   as long as the table needs (roleplay), and only a GM can send it on.
+ * - "GM can't end the event here" hides the status chip's End for as long as
+ *   this pause is open, for a moment with no way back. Continue is always there,
+ *   so it cannot get stuck, and End returns when the event moves on.
  * - With no GM choices, the GM's prompt is one Continue button. With choices,
  *   it is one button per choice, and the events under the chosen one run before
  *   the event carries on. This is for a table that does what the writer did not
@@ -84,6 +87,7 @@
   Client.register(KIND_OPEN, (data, info) => {
     if (!game.user?.isGM) return;
     chip()?.setPanel?.(info.sourceId, buildPanel(info.sourceId, data.note, data.labels ?? []));
+    chip()?.setEndHidden?.(info.sourceId, data.noEnd === true);
     Client.setMarker(info.sourceId, "pause", "waiting for the GM");
     ui.notifications?.info?.("Event paused. Answer on the event panel when the table is ready.");
     Client.addCleanup(info.sourceId, "pause", () => chip()?.setPanel?.(info.sourceId, null));
@@ -92,6 +96,7 @@
   Client.register(KIND_CLOSE, (data, info) => {
     if (!game.user?.isGM) return;
     chip()?.setPanel?.(info.sourceId, null);
+    chip()?.setEndHidden?.(info.sourceId, false);
     Client.setMarker(info.sourceId, "pause", null);
     Client.removeCleanup(info.sourceId, "pause");
   });
@@ -104,6 +109,7 @@
 
   function prepare(row) {
     row.note = String(row.note ?? "");
+    row.noEnd = row.noEnd === true;
     row.choices = (Array.isArray(row.choices) ? row.choices : []).slice(0, MAX_CHOICES).map((raw) => ({
       id: String(raw?.id || Logic.makeId()),
       label: String(raw?.label ?? ""),
@@ -137,7 +143,7 @@
     type: "pauseForGM",
     label: "Pause for GM",
     category: "Flow",
-    defaultData: { type: "pauseForGM", note: "", choices: [] },
+    defaultData: { type: "pauseForGM", note: "", noEnd: false, choices: [] },
     prepare,
     childLists: (row) => (row.choices ?? []).map(c => ({ label: c.label, rows: c.rows })),
     summary: (row) => String(row?.note ?? "").trim() || (row?.choices ?? []).map(c => c.label).join(" / "),
@@ -153,7 +159,7 @@
       const picked = await new Promise((resolve) => {
         pending.set(id, resolve);
         offAbort = f.onAbort(id, () => resolve(null));
-        Client.run(id, KIND_OPEN, { note: String(row?.note ?? "").trim(), labels: choices.map(c => c.label) });
+        Client.run(id, KIND_OPEN, { note: String(row?.note ?? "").trim(), labels: choices.map(c => c.label), noEnd: row?.noEnd === true });
       });
 
       offAbort?.();
@@ -175,6 +181,11 @@
           "Note for the GM",
           `<input type="text" class="oni-event-row-pause-note" value="${kit.escapeHTML(row.note ?? "")}" placeholder="Roleplay the confrontation" />`,
           "Shown beside the buttons. Players don't see it. The event waits here with no time limit."
+        ),
+        kit.field(
+          "End button",
+          `<label><input type="checkbox" class="oni-event-row-pause-noend" ${row.noEnd === true ? "checked" : ""} /> GM can't end the event here</label>`,
+          "Hides End while this pause is open, for a moment with no way back. It returns when the event moves on."
         ),
         kit.field(
           "GM choices",
@@ -207,6 +218,7 @@
     },
     collectFields: (rowEl, kit) => ({
       note: kit.readText(rowEl, ".oni-event-row-pause-note", "").trim(),
+      noEnd: !!kit.own(rowEl, ".oni-event-row-pause-noend")?.checked,
       choices: kit.ownAll(rowEl, ".oni-event-option").map((choiceEl) => {
         const id = String(choiceEl.dataset.choiceId || Logic.makeId());
         return {

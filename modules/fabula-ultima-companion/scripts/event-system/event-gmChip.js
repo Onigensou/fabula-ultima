@@ -245,6 +245,12 @@
     else host.replaceChildren();
   }
 
+  // Takes the End button away for a moment with no way back (Pause for GM).
+  function setEndHidden(sourceId, hidden) {
+    const end = entries.get(String(sourceId || ""))?.el?.querySelector(".is-end");
+    if (end) end.hidden = hidden === true;
+  }
+
   Hooks.on("oniEventExecuteStart", ({ sceneId, sourceId } = {}) => {
     if (!sourceId || !canvas?.scene || sceneId !== canvas.scene.id) return;
     add(sourceId);
@@ -257,7 +263,8 @@
 
   window.oni.EventSystem.GmChip = {
     installed: true,
-    setPanel
+    setPanel,
+    setEndHidden
   };
 
   console.debug(INSTALL_TAG, "Installed. API: window.oni.EventSystem.GmChip");

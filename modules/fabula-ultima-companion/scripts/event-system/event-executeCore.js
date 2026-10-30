@@ -467,6 +467,8 @@
       });
       context.sourceDoc = tileDoc;
 
+      window.oni.EventSystem.WorldFx?.preloadEvent?.(safeTileId, data.eventRows);
+
       DBG.log(DEBUG_SCOPE, "Beginning event sequence.", {
         tileId: safeTileId,
         rowCount: data.eventRows.length,

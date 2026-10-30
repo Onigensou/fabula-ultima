@@ -493,6 +493,11 @@
       fadeOutMs: asNumber(raw.fadeOutMs, runtime?.CFG?.DEFAULT_FADE_OUT_MS ?? 220),
       zIndex: asNumber(raw.zIndex, runtime?.CFG?.DEFAULT_Z_INDEX ?? 5500),
 
+      // Above the head, for callers that ask (the hotkeys keep their place beside it).
+      headAnchor: raw.headAnchor === true,
+      headShiftX: asNumber(raw.headShiftX, 0),
+      flipX: raw.flipX === true,
+
       replaceExisting:
         raw.replaceExisting === undefined
           ? (runtime?.CFG?.DEFAULT_REPLACE_EXISTING ?? true)
