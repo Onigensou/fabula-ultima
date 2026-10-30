@@ -155,6 +155,11 @@
                 for (const name of names) if (!hasToken(scene, name)) add("warn", `Set Facing names "${name}", but no token on this scene has that name.`);
               }
               break;
+            case "setTokenPosition":
+              if (row.target === "token" && !String(row.name ?? "").trim()) add("warn", "Set Token Position on a named token, with no name.");
+              if (row.mode !== "point" && !String(row.mark ?? "").trim()) add("warn", "Set Token Position on a marker token, with no marker.");
+              else if (row.mode !== "point" && !hasToken(scene, row.mark)) add("warn", `Set Token Position names the marker "${row.mark}", but no token on this scene has that name.`);
+              break;
             case "showEmote":
               if (row.target === "token" && !String(row.name ?? "").trim()) add("warn", "Show Emote on a named token, with no name.");
               else if (row.target === "token" && !hasToken(scene, row.name)) add("warn", `Show Emote on "${row.name}", but no token on this scene has that name.`);

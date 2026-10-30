@@ -10,6 +10,8 @@
  *   scene and change its tint, so a cutscene can bring characters on and take
  *   them off with nobody clicking anything.
  * - Registers "Set Facing": turn the party or a token to one of eight directions.
+ * - Registers "Set Token Position": place the party or a token at once, on a
+ *   marker token or a point, without moving anyone's camera.
  *
  * How it fits together:
  * - A GM writes the token document; every client sees it through Foundry. So
@@ -412,6 +414,105 @@
       target: pickFacingTarget(kit.readText(rowEl, ".oni-event-row-facing-target", "party")),
       name: kit.readText(rowEl, ".oni-event-row-facing-name", "").trim(),
       direction: pickFacing(kit.readText(rowEl, ".oni-event-row-facing-direction", "up"))
+    })
+  });
+
+  // ------------------------------------------------------------
+  // Set Token Position
+  // ------------------------------------------------------------
+  // Places a token at once, with no walk, no footsteps and no turning. Foundry
+  // pans a player's camera to a controlled token that lands offscreen, so the
+  // move says not to: an event moving the party out of sight keeps its camera.
+  const POSITION_MODES = [
+    ["token", "On a marker token"],
+    ["point", "At a point on the map"]
+  ];
+  const pickPositionMode = (value) => (POSITION_MODES.some(([key]) => key === value) ? value : "token");
+
+  function positionTarget(row, scene) {
+    if (pickPositionMode(row?.mode) === "point") {
+      return { x: Logic.toNumber(row?.x, 0), y: Logic.toNumber(row?.y, 0) };
+    }
+    const mark = tokensNamed(scene, String(row?.mark ?? "").trim())[0];
+    if (!mark) return null;
+    const grid = scene.grid.size;
+    return { x: mark.x + (mark.width * grid) / 2, y: mark.y + (mark.height * grid) / 2 };
+  }
+
+  EventRegistry.register({
+    type: "setTokenPosition",
+    label: "Set Token Position",
+    category: "Token",
+    defaultData: { type: "setTokenPosition", target: "party", name: "", mode: "token", mark: "", x: 0, y: 0 },
+    summary: (row) => {
+      const who = pickFacingTarget(row?.target) === "token" ? (String(row?.name ?? "").trim() || "(no token)")
+        : (pickFacingTarget(row?.target) === "source" ? "this token" : "the party");
+      const where = pickPositionMode(row?.mode) === "point" ? `${row?.x}, ${row?.y}` : (String(row?.mark ?? "").trim() || "(no marker)");
+      return `${who} to ${where}`;
+    },
+    execute: async (row, context) => {
+      const scene = game.scenes?.get(context?.sceneId) ?? canvas?.scene ?? null;
+      const docs = facingDocs(row, scene, context);
+      const at = positionTarget(row, scene);
+      if (!docs.length || !at) {
+        console.warn(INSTALL_TAG, "Set Token Position: no token or no marker; passed over.", row);
+        return { ok: false, type: "setTokenPosition", reason: "notFound" };
+      }
+
+      const grid = scene.grid.size;
+      await scene.updateEmbeddedDocuments("Token", docs.map(d => ({
+        _id: d.id,
+        x: at.x - (d.width * grid) / 2,
+        y: at.y - (d.height * grid) / 2
+      })), { animate: false, pan: false });
+
+      return { ok: true, type: "setTokenPosition", changed: docs.length };
+    },
+    buildFields: (row, kit) => {
+      const body = kit.fields(
+        kit.field(
+          "Who",
+          `<select class="oni-event-row-position-target">${kit.options(FACING_TARGETS, pickFacingTarget(row.target))}</select>`
+        ),
+        `<div class="oni-event-row-position-name-wrap">${kit.field(
+          "Token names",
+          `<input type="text" class="oni-event-row-position-name" value="${kit.escapeHTML(row.name ?? "")}" placeholder="Names of tokens on this scene, separated by commas" />`
+        )}</div>`,
+        kit.field(
+          "Where",
+          `<select class="oni-event-row-position-mode">${kit.options(POSITION_MODES, pickPositionMode(row.mode))}</select>`,
+          "The token's centre lands there at once. It doesn't move the camera: pan to where they'll be first if the player shouldn't see the jump."
+        ),
+        `<div class="oni-event-row-position-mark-wrap">${kit.field(
+          "Marker token",
+          `<input type="text" class="oni-event-row-position-mark" value="${kit.escapeHTML(row.mark ?? "")}" placeholder="Name of a token on this scene; a hidden one works" />`
+        )}</div>`,
+        `<div class="oni-event-row-position-point-wrap">${kit.field(
+          "Point (x, y)",
+          `${kit.numberInput("oni-event-row-position-x", Logic.toNumber(row.x, 0))} ${kit.numberInput("oni-event-row-position-y", Logic.toNumber(row.y, 0))}`
+        )}</div>`
+      );
+
+      const targetEl = body.querySelector(".oni-event-row-position-target");
+      const modeEl = body.querySelector(".oni-event-row-position-mode");
+      const sync = () => {
+        body.querySelector(".oni-event-row-position-name-wrap").hidden = targetEl.value !== "token";
+        body.querySelector(".oni-event-row-position-mark-wrap").hidden = modeEl.value !== "token";
+        body.querySelector(".oni-event-row-position-point-wrap").hidden = modeEl.value !== "point";
+      };
+      targetEl.addEventListener("change", sync);
+      modeEl.addEventListener("change", sync);
+      sync();
+
+      return body;
+    },
+    collectFields: (rowEl, kit) => ({
+      target: pickFacingTarget(kit.readText(rowEl, ".oni-event-row-position-target", "party")),
+      name: kit.readText(rowEl, ".oni-event-row-position-name", "").trim(),
+      mode: pickPositionMode(kit.readText(rowEl, ".oni-event-row-position-mode", "token")),
+      mark: kit.readText(rowEl, ".oni-event-row-position-mark", "").trim(),
+      x: kit.readNumber(rowEl, ".oni-event-row-position-x", 0),
+      y: kit.readNumber(rowEl, ".oni-event-row-position-y", 0)
     })
   });
 
