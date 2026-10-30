@@ -52,10 +52,12 @@ import {
   partyEntranceSpanMs,
 } from "./party-entrance-styles.js";
 import { playPartyEntranceLocal, preparePartyEntrance } from "./party-entrance-fx.js";
+import { applyOpeningShotLocal, swingBackOpeningShot } from "./battle-opening-shot.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { resolveGuestRoster, ensureGuestPassive } from "../guest-roster/guest-roster-core.js";
 import { planEnemies, planEnemyJoin, planParty, placeSupport, REF_W, REF_H, GIANT_H } from "./formation.js";
 import { isNpcActor } from "./status-classifier.js";
+import { resolvePreset, buildCamera, buildProjector, floorDepth } from "./battle-stage-3d-rules.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const FLAG_NS = MODULE_ID;
@@ -67,6 +69,8 @@ const FLAG_DIRECTOR_SPAWNED = "directorSpawned";
 // (entrance fade delay, dash stagger, post-curtain settle); the first two sit
 // inside playEntranceAnimation, which a hidden window skips outright.
 const wait = pWait;
+// Pause between the battle-start transition clearing and the entrance.
+const ENTRANCE_BEAT_MS = 900;
 
 async function safeFromUuid(uuid) {
   if (!uuid) return null;
@@ -611,6 +615,7 @@ async function formationUnit({ key, actor, td, scene, kind, caster = null }) {
     key,
     w: size.w / kx,
     h: size.h / ky,
+    fh: ((td.height ?? 1) * grid) / 2 / ky,   // centre to feet (token box bottom: where depth is read)
     lw: labelled ? Math.max(name.length * LABEL_CHAR_W + (shield ? 22 : 0), 60) / kx : 0,
     lh: labelled ? LABEL_ROW_H / ky : 0,
     kind,
@@ -625,6 +630,22 @@ function refToCanvas(scene, p) {
 function canvasToRef(scene, p) {
   const s = stageOf(scene);
   return { x: (p.x - s.x) / (s.w / REF_W), y: (p.y - s.y) / (s.h / REF_H) };
+}
+
+// Distance from the painted camera of feet standing on a reference-stage row,
+// for scenes whose backdrop has a 3D model (the same projector the 3D camera
+// uses), else null. formation.js spaces the party line evenly on the ground with it.
+function groundDepthFor(scene) {
+  try {
+    const cfg = resolvePreset(scene?.background?.src);
+    if (!cfg?.stage3d) return null;
+    const ref = { x: 0, y: 0, w: REF_W, h: REF_H };
+    const P = buildProjector(cfg, buildCamera(cfg, ref, (scene?.grid?.size ?? 110) * (REF_H / stageOf(scene).h)), ref);
+    return P ? (row) => floorDepth(row, P) : null;
+  } catch (e) {
+    warn("formation: no ground depth for this scene", e);
+    return null;
+  }
 }
 
 // computeLayout, with formation.js placing the enemies (picker) and the
@@ -652,7 +673,10 @@ async function computeLayoutSized({ party, enemies, scene, formation = null }) {
       }
     }
     const guests = party.filter((m) => m.isGuest);
-    if (party.length && guests.length) {
+    // The planner places the party when there are guests to fit in, and on a
+    // scene with a ground model (the line spaced evenly on the ground).
+    const depth = groundDepthFor(scene);
+    if (party.length && (guests.length || depth)) {
       const members = party.filter((m) => !m.isGuest);
       const pcs = [], extras = [];
       for (const [i, m] of party.entries()) {
@@ -661,10 +685,10 @@ async function computeLayoutSized({ party, enemies, scene, formation = null }) {
         const u = await formationUnit({ key: `p${i}`, actor, td: battleTokenData(actor), scene, kind: m.isGuest ? "guest" : "pc" });
         (m.isGuest ? extras : pcs).push(u);
       }
-      const pos = planParty(pcs, extras);
+      const pos = planParty(pcs, extras, { depth });
       if (extras.some((u) => !pos[u.key])) throw new Error("no clean support-row spot for a guest");
       out.partyLayout = party.map((m, i) => ({ ...m, pos: refToCanvas(scene, pos[`p${i}`]) }));
-      log(`formation: party → ${members.length} on the line, ${guests.length} guest(s) in the support row`);
+      log(`formation: party → ${members.length} on the line${depth ? " (even on the ground)" : ""}, ${guests.length} guest(s) in the support row`);
     }
     return out;
   } catch (e) {
@@ -768,6 +792,24 @@ function shouldLinkSpawnedToken(actor, disposition, proto) {
   return disposition === 1 ? !!proto?.actorLink : false;
 }
 
+// Battle tokens show no Foundry / Bar Brawl resource bars: the director draws its
+// own HP bar, and the stock ones floated over the field (on 2D spots under the 3D
+// camera, and on enemies before they had faded in). Only the spawned token's own
+// data changes; the actor's prototype keeps its bars for everywhere else.
+function hideStockBars(td) {
+  const NONE = CONST.TOKEN_DISPLAY_MODES.NONE;
+  td.displayBars = NONE;
+  const bars = td.flags?.barbrawl?.resourceBars;
+  if (bars && typeof bars === "object") {
+    const hidden = {};
+    for (const [id, bar] of Object.entries(bars)) {
+      hidden[id] = { ...(bar ?? {}), gmVisibility: NONE, ownerVisibility: NONE, otherVisibility: NONE };
+    }
+    td.flags = { ...td.flags, barbrawl: { ...td.flags.barbrawl, resourceBars: hidden } };
+  }
+  return td;
+}
+
 async function spawnTokensHidden({ scene, layout, disposition }) {
   if (!layout?.length) return [];
   const tokensData = [];
@@ -807,6 +849,7 @@ async function spawnTokensHidden({ scene, layout, disposition }) {
     td.hidden = false;
     td.alpha = 0; // start invisible — entrance animation fades in
     td.flags = { ...(td.flags ?? {}), [FLAG_NS]: { ...(td.flags?.[FLAG_NS] ?? {}), [FLAG_DIRECTOR_SPAWNED]: true } };
+    hideStockBars(td);
     tokensData.push(td);
   }
   if (!tokensData.length) return [];
@@ -911,6 +954,7 @@ export async function spawnLiveDirectorTokens({ scene, actorUuids, disposition, 
     const joinStyle = SimMode.active ? DEFAULT_ENTRANCE_STYLE : entranceStyleFromFlags(actor.flags);
     td.alpha = joinStyle === DEFAULT_ENTRANCE_STYLE ? 1 : 0;
     td.flags = { ...(td.flags ?? {}), [FLAG_NS]: { ...(td.flags?.[FLAG_NS] ?? {}), [FLAG_DIRECTOR_SPAWNED]: true } };
+    hideStockBars(td);
     const [created] = await scene.createEmbeddedDocuments("Token", [td]);
     if (created) {
       out.push(created);
@@ -1016,6 +1060,7 @@ function buildEnemyRoarUrls(enemyTokenDocs) {
 const ENTRANCE_MODULE_ID = "fabula-ultima-companion";
 const ACTION_ENTRANCE = "FU_DIRECTOR_ENTRANCE_PLAY";
 const ACTION_JOIN = "FU_DIRECTOR_JOIN_PLAY";
+const ACTION_OPENING = "FU_DIRECTOR_OPENING_SHOT";
 let _entranceSocket = null;
 
 // Register the entrance socket on EVERY client (call once at boot). Lets the
@@ -1030,6 +1075,7 @@ export function initDirectorEntrance() {
     _entranceSocket = socketlib.registerModule(ENTRANCE_MODULE_ID);
     _entranceSocket.register(ACTION_ENTRANCE, playEntranceLocal);
     _entranceSocket.register(ACTION_JOIN, playJoinLocal);
+    _entranceSocket.register(ACTION_OPENING, applyOpeningShotLocal);
     log("director-entrance: socket registered");
   } catch (e) {
     warn("director-entrance: init failed", e);
@@ -1135,8 +1181,11 @@ async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [], party
       const spr = new PIXI.Sprite(tex);
       spr.anchor.set(0.5);
       spr.zIndex = 5000; // above tokens (legacy value)
-      const w = tok.mesh?.width ?? tok.w;
-      const h = tok.mesh?.height ?? tok.h;
+      // tok.center is where the 3D camera draws the token (the copy runs to its
+      // drawn spot); match the drawn size too (1 off the 3D camera)
+      const k3 = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnBox?.(tok)?.scale ?? 1;
+      const w = (tok.mesh?.width ?? tok.w) * k3;
+      const h = (tok.mesh?.height ?? tok.h) * k3;
       if (w) spr.width = w;
       if (h) spr.height = h;
       // Match the token's horizontal facing (texture scaleX sign).
@@ -1224,6 +1273,9 @@ async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [], party
     // Party dashes in first, then enemies fade in (kept light + sequential so
     // we're not moving + fading + looping every WEBM token on the same frames).
     await dashInParty();
+    // From the battle-start opening shot (3D camera) back to the battle view
+    // before anyone else arrives. No-op when this client is not on it.
+    await swingBackOpeningShot();
 
     // Split the enemies by entrance style. Everything without an opt-in flag
     // lands in `fading` and takes the original path untouched.
@@ -1742,19 +1794,30 @@ async function runDirectorInitInner(payload) {
     catch (e) { warn("settleRestFraming threw (continuing)", e); }
   }
 
+  // ── 8.6. Opening shot (3D camera scenes): every client frames the party,
+  // lined up across the screen, while its view is still covered; the party
+  // enter in it and the camera swings back before the enemies (see
+  // battle-opening-shot.js). Nothing happens where there is no 3D camera.
+  if (!lean) {
+    const opening = { sceneId: battleScene.id, partyTokenIds: partyTokens.map((t) => t.id) };
+    try { _entranceSocket?.executeForOthers?.(ACTION_OPENING, opening); }
+    catch (e) { warn("opening shot: broadcast failed", e); }
+    await applyOpeningShotLocal(opening);
+  }
+
   if (shatter) {
-    // the glass breaks and flies past the camera on every client; the
-    // entrance starts as the GM's glass is finishing (the last pieces are
-    // still passing the lens), so the battle opens without dead air
+    // the glass breaks and flies past the camera on every client; the beat
+    // below starts as the GM's glass is finishing (the last pieces are still
+    // passing the lens)
     releaseShatter();
     await shatter.ending;
-  } else {
-    if (!lean) await dropCurtain();
-
-    // Short settle delay so the curtain fade completes visually before
-    // entrance starts.
-    if (!lean) await wait(150);
+  } else if (!lean) {
+    await dropCurtain();
   }
+  // A held beat on the empty stage between the transition and the entrance,
+  // so the arena registers before anyone arrives (user ask 2026-10-31; was
+  // 0 ms after the glass, 150 ms after the curtain).
+  if (!lean) await wait(ENTRANCE_BEAT_MS);
 
   // ── 10. Entrance animation (party run-in from the right, staggered
   // top→bottom; enemies fade in). In lean mode there's no curtain to reveal

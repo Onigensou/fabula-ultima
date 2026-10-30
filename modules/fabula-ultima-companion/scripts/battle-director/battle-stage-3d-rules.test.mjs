@@ -9,9 +9,9 @@
 // ============================================================================
 
 import {
-  PRESETS, backdropKey, resolvePreset, buildCamera, physicalRatio, tokenScaleAt,
+  PRESETS, backdropKey, resolvePreset, buildCamera, physicalRatio, tokenScaleAt, battlerScaleAt,
   floorDisparityAt, floorToWorld, worldToCanvas, parallaxUniforms, shiftUV,
-  buildProjector, restPxPerMetre, rigCamera, liveBattler, stageModeFor,
+  buildProjector, restPxPerMetre, rigCamera, liveBattler, projectNearFoot, stageModeFor,
   reliefDepth, reliefPoint, floorDepth, projectLive,
 } from "./battle-stage-3d-rules.js";
 
@@ -164,6 +164,25 @@ for (const [key, stage] of [["Eisendrache_Battlemap001_v2", V2_STAGE], ["Eisendr
   const off = (r) => { const b = liveBattler({ x: 1280, y: 980 }, P, r); return Math.hypot(b.x - 1280, b.y - 980); };
   ok("neutral 0.5 sits between free and neutral", off(half) > 1e-3 && off(half) < off(free) && Math.abs(half.yaw) < Math.abs(free.yaw), `${off(half)} vs ${off(free)}`);
   ok("neutral is clamped", rigCamera({ ...busy, neutral: 3 }, P, cfg).yaw === 0 && rigCamera({ ...busy, neutral: -1 }, P, cfg).yaw === free.yaw);
+
+  // Arena points near a battler (entrance paths)
+  const f0 = { x: 1500, y: 700 }, ppm0 = restPxPerMetre(f0.y, P);
+  const n0 = projectNearFoot(f0, { x: 0, h: 0, z: 0 }, P, still), lb = liveBattler(f0, P, still);
+  ok("near: zero offset = the battler's own drawn feet", Math.abs(n0.x - lb.x) < 1e-6 && Math.abs(n0.y - lb.y) < 1e-6 && Math.abs(n0.s - 1) < 1e-9 && n0.fx === n0.x);
+  const nx = projectNearFoot(f0, { x: 100 }, P, still), nh = projectNearFoot(f0, { h: 100 }, P, still);
+  near("near: at rest an offset along X is drawn 1:1 on the battler's row", nx.x - f0.x, 100, 1e-6);
+  near("near: at rest a height is drawn 1:1 straight up", f0.y - nh.y, 100, 1e-6);
+  ok("near: at rest a height does not drift sideways", Math.abs(nh.x - f0.x) < 1e-6);
+  const nz = projectNearFoot(f0, { z: 100 }, P, still), nb = projectNearFoot(f0, { z: -100 }, P, still);
+  ok("near: toward the camera = lower and larger, away = higher and smaller", nz.y > f0.y && nz.s > 1 && nb.y < f0.y && nb.s < 1, `${nz.y} ${nz.s} ${nb.y} ${nb.s}`);
+  ok("near: z on the floor lands where a battler standing there is drawn", (() => {
+    const b = liveBattler(floorPointNearer(f0, 100, P, ppm0), P, still);
+    return Math.abs(b.x - nz.x) < 1e-6 && Math.abs(b.y - nz.y) < 1e-6;
+  })());
+  const swung = rigCamera({ view: rest, rest, shot: { yaw: -57 }, sway: false }, P, cfg);
+  const sx = projectNearFoot(f0, { x: 100 }, P, swung), sz = projectNearFoot(f0, { z: 100 }, P, swung);
+  ok("near: swung camera foreshortens X and turns depth sideways", Math.abs(sx.x - sx.fx) < 90 && Math.abs(sz.x - sz.fx) > 40, `${sx.x - sx.fx} ${sz.x - sz.fx}`);
+  ok("near: size factor is clamped", projectNearFoot(f0, { z: 1e6 }, P, still).s <= 4);
 }
 
 // ── Relief model (open scenery) ───────────────────────────────────────────
@@ -196,6 +215,21 @@ for (const [file, stage] of [["Eisendrache_Battlemap002.png", LEGACY_STAGE], ["V
   }));
 }
 
+// ── Battler size follows the 3D model's projector ─────────────────────────
+{
+  const cfg = resolvePreset("Eisendrache_Battlemap001_v2.webp");
+  const cam = buildCamera(cfg, V2_STAGE, 110), P = buildProjector(cfg, cam, V2_STAGE);
+  const rows = [V2_STAGE.y + 217, V2_STAGE.y + 327, V2_STAGE.y + 437, V2_STAGE.y + 547];
+  // drawn height / the projector's px-per-metre = a battler's height in metres: equal for all rows
+  const hM = rows.map((y) => battlerScaleAt(y, cam, P) / restPxPerMetre(y, P));
+  ok("battler scale = projector ratio (same height in metres on every row, inside the clamps)",
+    hM.slice(0, 3).every((h) => Math.abs(h / hM[1] - 1) < 1e-9), JSON.stringify(hM));
+  near("battler scale is 1 at the reference row", battlerScaleAt(cam.refY, cam, P), 1);
+  ok("battler scale keeps the clamps", battlerScaleAt(V2_STAGE.y, cam, P) === cam.minScale);
+  ok("no model = tokenScaleAt", battlerScaleAt(rows[0], cam, null) === tokenScaleAt(rows[0], cam));
+  ok("NaN foot -> 1", battlerScaleAt(NaN, cam, P) === 1);
+}
+
 // ── Fallback ladder: 3D -> parallax -> 2D ─────────────────────────────────
 {
   const tgCfg = resolvePreset("Eisendrache_Battlemap001_v2.webp");
@@ -208,6 +242,12 @@ for (const [file, stage] of [["Eisendrache_Battlemap002.png", LEGACY_STAGE], ["V
   ok("parallax / scale on a plain backdrop = untouched 2D", stageModeFor("full", null) === "off" && stageModeFor("scale", null) === "off");
   ok("Off is off everywhere", stageModeFor("off", tgCfg) === "off");
   ok("parallax setting never starts the 3D camera", stageModeFor("full", tgCfg) === "full");
+}
+
+// The canvas foot point `dzPx` rest px (at `f`'s row) nearer the camera along the floor.
+function floorPointNearer(f, dzPx, P, ppm) {
+  const Z0 = floorDepth(f.y, P), Z = Z0 - dzPx / ppm;
+  return { x: P.cx + ((f.x - P.cx) * Z0) / Z, y: P.hz + (P.f * P.Hp) / Z };
 }
 
 console.log(`\n${pass} passed, ${fail} failed`);

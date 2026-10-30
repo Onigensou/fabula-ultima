@@ -21,6 +21,17 @@
 //
 // The real token is held invisible (locally) for the whole entrance and
 // revealed at the end, under the layer; nothing is written to the document.
+//
+// 3D: under the battle 3D camera the layer rides the camera's map of the
+// member (drawn where and how large the camera draws them), and every path that
+// lives in the ARENA rather than on the member's card (Zarg's arrow and leaves,
+// Keren's wisps and flame column, Hina's flying shards and her shadow) goes
+// through `env.at(x, h, zs, z3)`: an arena point near the feet (mock units:
+// x along the floor's X, h up, zs = floor depth as the flat mockup draws it,
+// z3 = extra depth only the 3D view sees) -> where it lands in the layer, how
+// large, and whether it is behind the member. With no live camera at() is the
+// mockup's own flat view, so 2D plays exactly as approved. Things fixed to the
+// art (eye glints, the mirror pane, the reflection) stay on the card.
 // ============================================================================
 
 import { warn } from "./logger.js";
@@ -58,6 +69,19 @@ const BOUNDS = {
   fiftyFifty:  [-220, -210, 620, 25],
   warningShot: [-210, -610, 670, 60],
 };
+// The arena volume each style's at() paths can reach (mock units: x, h, zs,
+// z3 ranges). Under the 3D camera the layer is grown to cover it as drawn from
+// the camera's angle at the start, so a turned path is not cut off.
+const ARENA = {
+  mirror:      { x: [-200, 200], h: [-20, 260], zs: [0, 0], z3: [-210, 210] },
+  foxfire:     { x: [-250, 250], h: [0, 250], zs: [-95, 95], z3: [-70, 70] },
+  warningShot: { x: [-180, 625], h: [-5, 565], zs: [-65, 65], z3: [-55, 55] },
+};
+const ARENA_PAD = 40;      // mock units around the projected volume
+const ARENA_MAX = 1400;    // never grow a side past this (mock units)
+// The mockup draws floor depth squashed to this fraction (its ellipses use
+// .35 - .38): at() undoes it to get real depth for the 3D view.
+const FLOOR_SQUASH = 0.37;
 
 /**
  * Play `style` for the party token on this client. Resolves when the member is
@@ -70,9 +94,10 @@ export function playPartyEntranceLocal({ tokenId, style, outcome = null, sceneId
     if (!cfg || !BUILDERS[style] || typeof PIXI === "undefined" || !canvas?.ready) { resolve(); return; }
     if (sceneId && canvas.scene?.id !== sceneId) { resolve(); return; }
     let settled = false;
-    // The 3D camera holds at plain 2D while the entrance plays (no-op elsewhere).
-    const release3d = globalThis.__ONI_BATTLE_STAGE_3D__?.hold?.("party-entrance");
-    const finish = () => { if (!settled) { settled = true; release3d?.(); resolve(); } };
+    // No 3D camera hold: the layer rides the camera's map of the token (see
+    // run), so the entrance plays wherever the camera has drawn the member,
+    // including the battle-start opening shot.
+    const finish = () => { if (!settled) { settled = true; resolve(); } };
     const total = partyTotalMs(style, outcome);
     const failsafe = setTimeout(() => {
       const t = canvas?.tokens?.get?.(tokenId);
@@ -197,9 +222,21 @@ async function run(token, style, outcome) {
   const s = geo.h / battle.h;          // scene px per art px
   const k = s / PX;                    // scene px per mock unit
   const flip = geo.flip;
-  const res = Math.max(0.5, Math.min(MAX_RES, (canvas.stage?.scale?.x || 1) * (window.devicePixelRatio || 1)));
-  const [bx0, by0, bx1, by1] = BOUNDS[style];
+  // drawn at the 3D camera's size for the member when it is enlarging them
+  const m0 = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnMap?.(token)?.m ?? 1;
+  const res = Math.max(0.5, Math.min(MAX_RES * Math.max(1, m0), (canvas.stage?.scale?.x || 1) * (window.devicePixelRatio || 1) * m0));
   const q = k * res;                   // device px per mock unit
+  const foot2d = { x: token.document.x + token.w / 2, y: token.document.y + token.h };
+  // How the layer is drawn this frame (set by ride): under the live camera, and
+  // at what size factor. at() only projects while the layer itself does.
+  const cur = { live: !!globalThis.__ONI_BATTLE_STAGE_3D__?.drawnMap?.(token), m: m0 };
+  const at = (x, h = 0, zs = 0, z3 = 0) => {
+    const r = cur.live ? globalThis.__ONI_BATTLE_STAGE_3D__?.projectNear?.(foot2d, { x: x * k, h: h * k, z: (zs / FLOOR_SQUASH + z3) * k }) : null;
+    if (!r) return { x, y: zs - h, s: 1, behind: zs < 0 };
+    const u = k * cur.m;
+    return { x: (r.x - r.fx) / u, y: (r.y - r.fy) / u, s: r.s, behind: r.s < 1 - 1e-6 };
+  };
+  const [bx0, by0, bx1, by1] = layerBounds(style, at);
 
   const cv = document.createElement("canvas");
   cv.width = Math.max(4, Math.ceil((bx1 - bx0) * q));
@@ -209,14 +246,39 @@ async function run(token, style, outcome) {
   const layer = new PIXI.Sprite(tex);
   layer.name = `fud-party-entrance:${token.id}`;
   layer.eventMode = "none";
-  layer.position.set(geo.x + bx0 * k, geo.y + by0 * k);
-  layer.scale.set(1 / res);
+  // 2D spot of the layer. A style that moves the member across the floor
+  // (fx.feetX, mock units along her row) shifts the layer with her by dx scene
+  // px, and draws her back at its origin. Under the 3D camera the layer is
+  // carried to where feet at that floor spot are drawn, at their size: the
+  // token's own map while she is on her mark, projected while she is away.
+  const at2d = { x: geo.x + bx0 * k, y: geo.y + by0 * k };
+  const ride = (dx = 0) => {
+    const S3 = globalThis.__ONI_BATTLE_STAGE_3D__;
+    const o = { x: at2d.x + dx, y: at2d.y };
+    let p = null;
+    if (!dx) { const map = S3?.drawnMap?.(token); if (map) p = { x: map.bx, y: map.by, m: map.m, fx: map.fx, fy: map.fy }; }
+    else { const f = { x: foot2d.x + dx, y: foot2d.y }, d = S3?.projectFoot?.(f); if (d) p = { ...d, fx: f.x, fy: f.y }; }
+    if (p) {
+      layer.position.set(p.x + (o.x - p.fx) * p.m, p.y + (o.y - p.fy) * p.m);
+      layer.scale.set(p.m / res);
+      cur.live = true; cur.m = p.m;
+    } else {
+      layer.position.set(o.x, o.y);
+      layer.scale.set(1 / res);
+      cur.live = false; cur.m = 1;
+    }
+  };
+  ride();
   placeAtTokenDepth(layer, token.mesh);
 
-  const env = { ctx, q, flip, battle, clips, outcome, art: makeArt(ctx, q) };
+  // Blanche fades in at the map's edge on her row (the brown past the painting)
+  const d = canvas.dimensions;
+  const runFrom = (d.sceneX + d.sceneWidth - geo.x) / k;
+  const env = { ctx, q, flip, battle, clips, outcome, runFrom, at, art: makeArt(ctx, q) };
   const fx = BUILDERS[style](env);
-  const total = partyTotalMs(style, outcome);
-  const land = partyLandMs(style, outcome);
+  const extra = Number(fx.extraMs) || 0;
+  const total = partyTotalMs(style, outcome) + extra;
+  const land = partyLandMs(style, outcome) + extra;
   const sfx = partySfx(style);
 
   try {
@@ -229,10 +291,13 @@ async function run(token, style, outcome) {
         holdShadow(token, clamp((t - land) / SHADOW_IN_MS, 0, 1));
         while (sfx.length && t >= sfx[0].atMs) { const c = sfx.shift(); playSfx(c.url, c.volume); }
         keepDepth(layer, token.mesh);
+        const tt = Math.min(t, total);
+        const gx = fx.feetX ? fx.feetX(tt) : 0;
+        ride(gx * k);
+        layer.alpha = fx.alpha ? fx.alpha(tt) : 1;
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.clearRect(0, 0, cv.width, cv.height);
-        ctx.setTransform(q, 0, 0, q, -bx0 * q, -by0 * q);
-        const tt = Math.min(t, total);
+        ctx.setTransform(q, 0, 0, q, (-bx0 - gx) * q, -by0 * q);
         try { fx.back(tt); fx.char(tt); fx.front(tt); }
         catch (e) { warn(`party-entrance: "${style}" frame threw`, e); done(); return; }
         try { tex.baseTexture.update(); } catch { /* gone */ }
@@ -251,6 +316,21 @@ async function run(token, style, outcome) {
     over = true;
     disposeClips(clips);
   }
+}
+
+// The layer's drawing bounds: the style's flat bounds, grown under the live
+// camera to cover its arena volume as drawn from the camera's current angle.
+function layerBounds(style, at) {
+  const b = [...BOUNDS[style]];
+  const v = ARENA[style];
+  const o = at(0, 0, 0, 0), ox = at(1, 0, 0, 0);
+  if (!v || (ox.x === 1 && ox.y === 0 && o.x === 0 && o.y === 0 && at(0, 0, 0, 1).y === 0)) return b;   // flat: the mockup's own bounds
+  for (const x of v.x) for (const h of v.h) for (const zs of v.zs) for (const z3 of v.z3) {
+    const p = at(x, h, zs, z3);
+    b[0] = Math.min(b[0], p.x - ARENA_PAD); b[1] = Math.min(b[1], p.y - ARENA_PAD);
+    b[2] = Math.max(b[2], p.x + ARENA_PAD); b[3] = Math.max(b[3], p.y + ARENA_PAD);
+  }
+  return [Math.max(b[0], -ARENA_MAX), Math.max(b[1], -ARENA_MAX), Math.min(b[2], ARENA_MAX), Math.min(b[3], ARENA_MAX)];
 }
 
 // Release a run's own <video>s (never the token's).
@@ -418,7 +498,7 @@ function clipPlayer(getArt) {
 
 // ── HINA · Mirror ──
 function buildMirror(env) {
-  const { ctx, q, flip, battle, clips } = env;
+  const { ctx, q, flip, battle, clips, at } = env;
   const { sprite, glow, star4, additive } = env.art;
   let stdSil = null;   // the standard sprite as a flat silhouette (made once it has loaded)
   const H_SPIN = [80, 1000], H_SWEEP = [1050, 1300], H_CRACK = 1340, H_BREAK = 1480, H_OUT = 1640, H_BACK = 1900;
@@ -499,7 +579,9 @@ function buildMirror(env) {
       for (const tri of (r() < .5 ? [[a, b, c], [a, c, d]] : [[a, b, d], [b, c, d]])) {
         const cx = (tri[0][0] + tri[1][0] + tri[2][0]) / 3 - LW / 2, cy = (tri[0][1] + tri[1][1] + tri[2][1]) / 3 - LH / 2;
         const rr = R(out.length * 17 + 3);
-        out.push({ tri, cx, cy, sp: rr(.7, 1.5), up: rr(.1, .6), spin: rr(-8, 8) });
+        // vz: how fast it flies out of the pane's plane, toward or away from the
+        // painted camera (only the 3D view sees it; own seed, the rest unchanged)
+        out.push({ tri, cx, cy, sp: rr(.7, 1.5), up: rr(.1, .6), spin: rr(-8, 8), vz: R(out.length * 31 + 9001)(-1.3, 1.3) });
       }
     }
     return out;
@@ -511,7 +593,9 @@ function buildMirror(env) {
       const o = eOut(seg(t, H_BREAK + 40, H_OUT)), r = eIn(seg(t, H_BACK, H_BACK + 150));
       const k = (f) => lerp(SH_NEAR[f], SH_FAR[f], o) * (1 - r);
       const s = 1 + (lerp(SH_NEAR.s, SH_FAR.s, o) - 1) * (1 - r);
-      hBattle({ x: k("dx"), y: k("dy"), sx: s, sy: s, tint: "20,10,46", ta: 1, a: lerp(SH_NEAR.a, SH_FAR.a, o) * (1 - r) });
+      // it stands on the floor just behind her: a spot in the arena (dy = depth)
+      const sp = at(k("dx"), 0, k("dy"));
+      hBattle({ x: sp.x, y: sp.y, sx: s * sp.s, sy: s * sp.s, tint: "20,10,46", ta: 1, a: lerp(SH_NEAR.a, SH_FAR.a, o) * (1 - r) });
     },
     char(t) { if (t >= H_BREAK) hBattle(); },
     front(t) {
@@ -533,14 +617,16 @@ function buildMirror(env) {
         });
         return;
       }
-      // the shatter: the cracked pane breaks into shards that fly out and fall
+      // the shatter: the cracked pane breaks into shards that fly out and fall.
+      // Each leaves its spot on the pane (the card) and flies through the arena.
       if (t < H_BREAK + 560) {
         drawMirror(null, 1);
         const dt = (t - H_BREAK) / 1000, a = 1 - seg(t, H_BREAK, H_BREAK + 560);
         if (a > 0) for (const s of H_SHARDS) {
           const d = Math.hypot(s.cx, s.cy) || 1, vx = s.cx / d * BOX * s.sp, vy = s.cy / d * BOX * s.sp * .5 - BOX * s.up;
-          ctx.save(); ctx.globalAlpha = a; ctx.translate(M.x + s.cx + vx * dt, M.y + s.cy + vy * dt + .5 * BOX * 3.4 * dt * dt);
-          ctx.rotate(s.spin * dt); ctx.translate(-s.cx - LW / 2, -s.cy - LH / 2);
+          const fly = at(vx * dt, -(vy * dt + .5 * BOX * 3.4 * dt * dt), 0, s.vz * BOX * dt);
+          ctx.save(); ctx.globalAlpha = a; ctx.translate(M.x + s.cx + fly.x, M.y + s.cy + fly.y);
+          ctx.scale(fly.s, fly.s); ctx.rotate(s.spin * dt); ctx.translate(-s.cx - LW / 2, -s.cy - LH / 2);
           ctx.beginPath(); s.tri.forEach(([x, y], k) => k ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.closePath();
           ctx.save(); ctx.clip(); ctx.drawImage(MC, 0, 0, LW, LH); ctx.restore();
           ctx.lineWidth = .8; ctx.strokeStyle = `rgba(255,255,255,${.6 * a})`; ctx.stroke(); ctx.restore();
@@ -554,7 +640,7 @@ function buildMirror(env) {
 
 // ── KEREN · Foxfire ──
 function buildFoxfire(env) {
-  const { ctx, flip, battle } = env;
+  const { ctx, flip, battle, at } = env;
   const { sprite, glow, star4, heart, additive } = env.art;
   const FOX = "255,92,40", FOXC = "255,226,160";
   const K_MERGE = 700, K_BURST = 880, K_WINK = 1450;
@@ -562,10 +648,11 @@ function buildFoxfire(env) {
   const kBattle = () => sprite(battle, 0, 0, { flip });
   // her eye, as a fraction of the battle art (measured on Keren_Battler002)
   const ey = { x: (.49 - .5) * battle.w * PX * flip, y: -battle.h * PX * (1 - .238) };
+  // the wisps circle her in the arena: a ring on the floor's plane at chest height
   function kWisp(t, i) {
     const p = seg(t, 0, K_MERGE), rad = BOX * 1.5 * (1 - eIn(p));
     const an = i * Math.PI / 3 + p * 3.2 * Math.PI + p * p * 2 * Math.PI;
-    return { x: C.x + Math.cos(an) * rad, y: C.y + Math.sin(an) * rad * .38 };
+    return at(C.x + Math.cos(an) * rad, -C.y, Math.sin(an) * rad * .38);
   }
   function flame(x, y, s, a, t, i, tall = 1.2) {
     if (!(a > 0)) return;
@@ -584,7 +671,7 @@ function buildFoxfire(env) {
         // the six wisps and their trails
         if (t < K_MERGE + 20) for (let i = 0; i < 6; i++) for (let j = 6; j >= 0; j--) {
           const p = kWisp(Math.max(0, t - j * 18), i);
-          flame(p.x, p.y, BOX * .07 * (1 - j * .1), seg(t, 0, 150) * (j ? (1 - j / 7) * .45 : 1), t, i);
+          flame(p.x, p.y, BOX * .07 * (1 - j * .1) * p.s, seg(t, 0, 150) * (j ? (1 - j / 7) * .45 : 1), t, i);
         }
         // one flame: swells from the merge to the burst
         if (t >= K_MERGE && t < K_BURST + 40) {
@@ -599,22 +686,27 @@ function buildFoxfire(env) {
           for (let i = 0; i < 9; i++) {
             const r = R(1200 + i), d = seg(t, K_BURST + r(0, 120), K_BURST + r(380, 520));
             if (d <= 0 || d >= 1) continue;
-            flame(C.x + r(-.3, .3) * BOX, C.y + BOX * r(.05, .4) - BOX * r(.5, 1) * eOut(d), BOX * r(.07, .11) * (1 - d * .5), (1 - d) * .85, t, i, 2.6);
+            // a column with depth (z3: own seed), so it keeps its width from any angle
+            const x = C.x + r(-.3, .3) * BOX, y = C.y + BOX * r(.05, .4) - BOX * r(.5, 1) * eOut(d), sz = r(.07, .11);
+            const p = at(x, -y, 0, R(1250 + i)(-.3, .3) * BOX);
+            flame(p.x, p.y, BOX * sz * (1 - d * .5) * p.s, (1 - d) * .85, t, i, 2.6);
           }
         }
         // a few embers drifting up after it
         for (let i = 0; i < 6; i++) {
           const r = R(1300 + i), e = seg(t, K_BURST + 100 + i * 40, K_BURST + 900 + i * 40);
           if (e <= 0 || e >= 1) continue;
-          glow(C.x + r(-.4, .4) * BOX + Math.sin(e * 6 + i) * 6, C.y - BOX * .2 - BOX * r(.5, 1) * e, 4, FOXC, .9 * (1 - e));
+          const p = at(C.x + r(-.4, .4) * BOX + Math.sin(e * 6 + i) * 6, -(C.y - BOX * .2 - BOX * r(.5, 1) * e), 0, R(1350 + i)(-.4, .4) * BOX);
+          glow(p.x, p.y, 4 * p.s, FOXC, .9 * (1 - e));
         }
       });
-      // the wink: a glint on her eye, and the heart blows out of it, growing as it drifts up and out
+      // the wink: a glint on her eye (on the art), and the heart blows out of it,
+      // growing as it drifts up and out through the arena
       additive(() => star4(ey.x, ey.y, BOX * .12 * bell(t, K_WINK, K_WINK + 70, K_WINK + 240), "255,240,250", 1, .3));
       const hp = seg(t, K_WINK + 60, K_WINK + 900), ha = 1 - seg(t, K_WINK + 600, K_WINK + 900);
       if (hp > 0 && ha > 0) {
-        const m = eOut(hp), hx = ey.x + BOX * .38 * m + Math.sin(hp * 7) * 2.5, hy = ey.y - BOX * .42 * m + BOX * .08 * Math.sin(Math.PI * Math.min(1, hp * 2.2));
-        heart(hx, hy, 14 * eBack(seg(t, K_WINK + 60, K_WINK + 300)), "rgb(255,96,170)", ha);
+        const m = eOut(hp), d = at(BOX * .38 * m + Math.sin(hp * 7) * 2.5, BOX * .42 * m - BOX * .08 * Math.sin(Math.PI * Math.min(1, hp * 2.2)));
+        heart(ey.x + d.x, ey.y + d.y, 14 * eBack(seg(t, K_WINK + 60, K_WINK + 300)) * d.s, "rgb(255,96,170)", ha);
       }
     },
   };
@@ -623,6 +715,14 @@ function buildFoxfire(env) {
 // ── BLANCHE · 50/50 ──
 // Her own sprites only, no added effects. The outcome was rolled once on the
 // host. Clip rates and lengths are the mockup's (walk 25 fps × 15 frames).
+//
+// She moves only along her row: `feetX(t)` is where her feet are (mock units
+// from her mark, +x = toward the party's side) and every pose is drawn there.
+// run() carries the layer along that row ON THE FLOOR (the row is the floor's X
+// axis), so under the 3D camera her run and fall follow the ground in depth and
+// she grows as she comes nearer. `env.runFrom` = where she fades in (the map's
+// edge on her row); the run keeps the mockup's speed, so a longer way in takes
+// longer and everything after it moves back by `extraMs`.
 function buildFiftyFifty(env) {
   const { ctx, q, flip, battle, clips, outcome } = env;
   const { sprite } = env.art;
@@ -631,7 +731,11 @@ function buildFiftyFifty(env) {
   const ko = clipPlayer(() => clips.sprite_ko ?? null);
   const crisis = clipPlayer(() => clips.sprite_crisis ?? null);
   const H = outcome === OUTCOME_SUCCESS;
-  const B_RUN = 650;
+  const B_RUN = 650, RUN_FROM = 540;               // the mockup's run: 540 units in 650 ms
+  const FADE_IN = 140;
+  const from = Math.max(200, Number(env.runFrom) || RUN_FROM);
+  const extra = Math.round(Math.min(900, Math.max(0, (from - RUN_FROM) * (B_RUN / RUN_FROM))));
+  const RUN = B_RUN + extra;
   const WALK = { n: 15, fps: 25 };
   // walk art is drawn on the standing sprite's canvas, so it takes the
   // standing sprite's height on the map
@@ -660,10 +764,21 @@ function buildFiftyFifty(env) {
     if (f && a) return sprite({ src: f, w: a.w, h: a.h }, x, 0, { h: walkH(), flip });
     if (a) return sprite(walk.at("back"), x, 0, { h: walkH(), flip });
   }
-  const runX = (t) => { const p = seg(t, 0, B_RUN); return H ? lerp(540, 0, 1 - Math.pow(1 - p, 2.2)) : lerp(540, 30, p); };
-  const runFrame = (t, x, o = {}) => {
+  const runX = (t) => { const p = seg(t, 0, RUN); return H ? lerp(from, 0, 1 - Math.pow(1 - p, 2.2)) : lerp(from, 30, p); };
+  // where her feet are (u = the mockup's own clock once the run is over)
+  const feetX = (t) => {
+    if (t < RUN) return runX(t);
+    const u = t - extra;
+    if (H) return u < 800 ? -6 * eOut(seg(u, B_RUN, 800)) : 0;   // skid
+    if (u < 780) return lerp(30, -40, seg(u, B_RUN, 780));        // trip
+    if (u < 1550) return lerp(-75, -100, eOut(seg(u, 780, 1050))); // face down, sliding to a stop
+    if (u < 1850) return -85;                                      // back up
+    if (u < 2450) return lerp(-85, 0, eIO(seg(u, 1850, 2450)));    // steps back to the mark
+    return 0;
+  };
+  const runFrame = (running, x, o = {}) => {
     if (!walk.art) return bat({ x, ...o });   // no walk art: her battle sprite stands in
-    if (t < B_RUN) { walk.at("run", 2); captureWalk(); }
+    if (running) { walk.at("run", 2); captureWalk(); }
     else walk.hold();
     sprite(walk.art, x, 0, { h: walkH(), flip, ...o });
   };
@@ -671,26 +786,31 @@ function buildFiftyFifty(env) {
   // a pose clip, or her battle sprite when the clip is missing
   const pose = (p, key) => (p.art ? p.at(key) : battle);
   return {
+    extraMs: extra,
+    feetX,
+    alpha: (t) => eOut(seg(t, 0, FADE_IN)),
     back() {},
     front() {},
     char(t) {
-      if (t < B_RUN) return runFrame(t, runX(t));
+      const x = feetX(t);
+      if (t < RUN) return runFrame(true, x);
+      const u = t - extra;
       if (H) {
-        if (t < 800) return runFrame(t, -6 * eOut(seg(t, B_RUN, 800)), { rot: .12 * Math.sin(Math.PI * seg(t, B_RUN, 800)) });   // skid, leaning back
-        if (t < 1300) {   // one full twirl; halfway round, facing away, the battle sprite takes over
-          const p = eIO(seg(t, 800, 1300)), sx = Math.cos(TAU * p);
-          return p < .5 ? runFrame(t, 0, { sx }) : bat({ sx });
+        if (u < 800) return runFrame(false, x, { rot: .12 * Math.sin(Math.PI * seg(u, B_RUN, 800)) });   // skid, leaning back
+        if (u < 1300) {   // one full twirl; halfway round, facing away, the battle sprite takes over
+          const p = eIO(seg(u, 800, 1300)), sx = Math.cos(TAU * p);
+          return p < .5 ? runFrame(false, x, { sx }) : bat({ sx });
         }
         return bat();
       }
       walk.hold();
-      if (t < 780) {   // trip: the hurt flinch, pitching forward, still moving
-        const p = seg(t, B_RUN, 780);
-        return sprite(pose(hurt, "trip"), lerp(30, -40, p), -BOX * .1 * Math.sin(Math.PI * p), { rot: -.35 * p, flip });
+      if (u < 780) {   // trip: the hurt flinch, pitching forward, still moving
+        const p = seg(u, B_RUN, 780);
+        return sprite(pose(hurt, "trip"), x, -BOX * .1 * Math.sin(Math.PI * p), { rot: -.35 * p, flip });
       }
-      if (t < 1550) return sprite(pose(ko, "down"), lerp(-75, -100, eOut(seg(t, 780, 1050))), 0, { flip });   // face down, sliding to a stop
-      if (t < 1850) return sprite(pose(crisis, "up"), -85, 0, { flip });   // back up: her crisis sprite, untouched
-      if (t < 2450) return walkBack(t - 1850, lerp(-85, 0, eIO(seg(t, 1850, 2450))));   // steps back to the mark, still facing the enemy
+      if (u < 1550) return sprite(pose(ko, "down"), x, 0, { flip });
+      if (u < 1850) return sprite(pose(crisis, "up"), x, 0, { flip });   // her crisis sprite, untouched
+      if (u < 2450) return walkBack(u - 1850, x);   // still facing the enemy
       return bat();
     },
     dispose() { walkFrames.clear(); },
@@ -699,10 +819,13 @@ function buildFiftyFifty(env) {
 
 // ── ZARG · Warning Shot ──
 function buildWarningShot(env) {
-  const { ctx, flip, battle } = env;
+  const { ctx, flip, battle, at } = env;
   const { sprite, glow, additive } = env.art;
   const Z_HIT = 80, Z_OUT = 760, Z_IN = 800, Z_GLINT = 1150;
+  // the arrow's flight in the arena: from high up on the party's side of his
+  // row down into the ground at his mark (y = the mockup's flat height)
   const A = { x0: 620, y0: -560, x1: -BOX * .05, y1: 2 };
+  const aAt = (f) => at(lerp(A.x0, A.x1, f), -lerp(A.y0, A.y1, f));
   // his eye, as a fraction of the battle art (measured on Zarg_Battler002)
   const E = { x: (.575 - .5) * battle.w * PX * flip, y: -battle.h * PX * (1 - .184) };
   function zSpeedLines(x, y, a, seed, t) {
@@ -710,7 +833,8 @@ function buildWarningShot(env) {
     ctx.save(); ctx.globalAlpha = clamp(a, 0, 1); ctx.strokeStyle = "rgb(255,252,240)"; ctx.lineCap = "round";
     for (let i = 0; i < 9; i++) {
       const r = R(seed + i), lx = x + r(-.32, .32) * BOX, len = BOX * r(.35, .8), top = y - BOX * r(.2, 1.3) - ((t * r(.9, 1.6)) % (BOX * .4));
-      ctx.lineWidth = r(1, 2.2); ctx.beginPath(); ctx.moveTo(lx, top); ctx.lineTo(lx, top + len); ctx.stroke();
+      const p = at(lx, -top, 0, R(seed + 50 + i)(-.32, .32) * BOX);   // a ring of streaks round him (z3: own seed)
+      ctx.lineWidth = r(1, 2.2) * p.s; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, p.y + len * p.s); ctx.stroke();
     }
     ctx.restore();
   }
@@ -718,11 +842,13 @@ function buildWarningShot(env) {
     const r = R(500 + i), t0 = 100 + i * 9, qq = seg(t, t0, t0 + 560);
     if (qq <= 0 || qq >= 1) return null;
     const an = r(0, TAU) + (t - t0) * .009, rad = BOX * (.85 - .5 * qq), hh = BOX * r(1.3, 2.1);
-    return { x: Math.cos(an) * rad, y: -6 + Math.sin(an) * rad * .35 - lerp(hh, BOX * .08, eIO(qq)), an, a: seg(qq, 0, .1) * (1 - seg(qq, .82, 1)), c: i % 3 };
+    // spiralling down round him in the arena; behind = further than his feet
+    const p = at(Math.cos(an) * rad, 6 + lerp(hh, BOX * .08, eIO(qq)), Math.sin(an) * rad * .35);
+    return { x: p.x, y: p.y, s: p.s, behind: p.behind, an, a: seg(qq, 0, .1) * (1 - seg(qq, .82, 1)), c: i % 3 };
   }
-  function leaf(x, y, rot, a, c) {
+  function leaf(x, y, rot, a, c, s = 1) {
     if (!(a > 0)) return;
-    ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.globalAlpha = clamp(a, 0, 1);
+    ctx.save(); ctx.translate(x, y); ctx.scale(s, s); ctx.rotate(rot); ctx.globalAlpha = clamp(a, 0, 1);
     ctx.fillStyle = ["rgb(96,170,70)", "rgb(146,198,88)", "rgb(64,128,58)"][c]; ctx.beginPath(); ctx.ellipse(0, 0, 7, 3, 0, 0, TAU); ctx.fill();
     ctx.strokeStyle = "rgba(30,60,20,.6)"; ctx.lineWidth = .8; ctx.beginPath(); ctx.moveTo(-6, 0); ctx.lineTo(6, 0); ctx.stroke(); ctx.restore();
   }
@@ -753,7 +879,7 @@ function buildWarningShot(env) {
   }
   return {
     back(t) {
-      for (let i = 0; i < 26; i++) { const l = zLeaf(t, i); if (l && Math.sin(l.an) < 0) leaf(l.x, l.y, l.an * 2, l.a, l.c); }
+      for (let i = 0; i < 26; i++) { const l = zLeaf(t, i); if (l && l.behind) leaf(l.x, l.y, l.an * 2, l.a, l.c, l.s); }
     },
     char(t) {
       if (t < Z_IN) return;
@@ -764,13 +890,16 @@ function buildWarningShot(env) {
       sprite(battle, 0, 0, { flip, sy: 1 + sq, sx: 1 - sq * .6, skew: bend * flip });
     },
     front(t) {
-      const dir = Math.atan2(A.y1 - A.y0, A.x1 - A.x0), L = BOX * .42;
+      // the flight as drawn this frame: from, to, and the shaft's tail (L back
+      // along the flight from where it sticks), so it reads at any camera angle
+      const P0 = aAt(0), P1 = aAt(1), PL = aAt(1 - BOX * .42 / Math.hypot(A.x1 - A.x0, A.y1 - A.y0));
+      const dir = Math.atan2(P1.y - P0.y, P1.x - P0.x), L = Math.hypot(P1.x - PL.x, P1.y - PL.y);
       // the flash arrow: a hairline streak, then the shaft standing in the ground
       if (t < Z_HIT + 200) additive(() => {
-        const p = seg(t, 0, Z_HIT), tx = lerp(A.x0, A.x1, p), ty = lerp(A.y0, A.y1, p), fade = 1 - seg(t, Z_HIT, Z_HIT + 200);
-        const g = ctx.createLinearGradient(tx, ty, A.x0, A.y0);
+        const tip = aAt(seg(t, 0, Z_HIT)), fade = 1 - seg(t, Z_HIT, Z_HIT + 200);
+        const g = ctx.createLinearGradient(tip.x, tip.y, P0.x, P0.y);
         g.addColorStop(0, `rgba(255,246,220,${.95 * fade})`); g.addColorStop(1, "rgba(255,246,220,0)");
-        ctx.strokeStyle = g; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(A.x0, A.y0); ctx.stroke();
+        ctx.strokeStyle = g; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(tip.x, tip.y); ctx.lineTo(P0.x, P0.y); ctx.stroke();
       });
       if (t >= Z_HIT && t < Z_IN + 240) {
         // stuck in the ground; flickers and leaves a torn, see-through afterimage as it warps out
@@ -778,17 +907,18 @@ function buildWarningShot(env) {
         const flick = t >= Z_OUT && t < Z_IN ? (Math.floor((t - Z_OUT) / 13) % 2 ? .25 : 1) : 1;
         const ghost = t >= Z_IN, a = ghost ? .45 * (1 - seg(t, Z_IN, Z_IN + 240)) : flick;
         ctx.save(); ctx.globalAlpha = a;
-        ctx.translate(A.x1 + Math.cos(dir) * 6 + (ghost ? Math.sin(t * .09) * 3 : 0), A.y1 + Math.sin(dir) * 6);
+        ctx.translate(P1.x + Math.cos(dir) * 6 + (ghost ? Math.sin(t * .09) * 3 : 0), P1.y + Math.sin(dir) * 6);
         ctx.rotate(dir + quiv); ctx.beginPath(); ctx.rect(-L - 20, -20, L + 20, 40); ctx.clip();   // the head is buried
         arrowShape(L); ctx.restore();
       }
       zSpeedLines(0, 0, bell(t, Z_OUT, Z_IN + 20, Z_IN + 220) * .85, 600, t);
-      for (let i = 0; i < 26; i++) { const l = zLeaf(t, i); if (l && Math.sin(l.an) >= 0) leaf(l.x, l.y, l.an * 2, l.a, l.c); }
+      for (let i = 0; i < 26; i++) { const l = zLeaf(t, i); if (l && !l.behind) leaf(l.x, l.y, l.an * 2, l.a, l.c, l.s); }
       if (t >= Z_IN && t < Z_IN + 550) {   // leaves thrown out as he arrives
         const p = seg(t, Z_IN, Z_IN + 550);
         for (let i = 0; i < 12; i++) {
           const r = R(800 + i), an = r(0, TAU), d = BOX * (.2 + .9 * eOut(p)) * r(.6, 1);
-          leaf(Math.cos(an) * d, -4 + Math.sin(an) * d * .35 - BOX * .25 * Math.sin(Math.PI * p) * r(.5, 1), an + p * 6, 1 - p, i % 3);
+          const w = at(Math.cos(an) * d, 4 + BOX * .25 * Math.sin(Math.PI * p) * r(.5, 1), Math.sin(an) * d * .35);
+          leaf(w.x, w.y, an + p * 6, 1 - p, i % 3, w.s);
         }
       }
       zGlint(t - Z_GLINT);

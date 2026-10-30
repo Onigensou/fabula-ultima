@@ -167,6 +167,22 @@ export function tokenScaleAt(footY, cam) {
   return clamp(s, cam.minScale, cam.maxScale);
 }
 
+/**
+ * Draw scale for a battler on a backdrop with a 3D model (`P`, buildProjector):
+ * the projector's own size ratio to the reference row, so a battler's 2D size is
+ * exactly what the 3D camera assumes it is. tokenScaleAt's softened curve meets
+ * the projector only at its two calibration rows; between and beyond them the two
+ * drift apart (the party's back row came out 3.3% small under the camera,
+ * 2026-10-31). Same clamps; tokenScaleAt when there is no model.
+ */
+export function battlerScaleAt(footY, cam, P = null) {
+  if (!P) return tokenScaleAt(footY, cam);
+  if (!finite(footY)) return 1;
+  if (!(cam.strength > 0)) return 1;
+  const s = restPxPerMetre(footY, P) / restPxPerMetre(cam.refY, P);
+  return clamp(finite(s) ? s : 1, cam.minScale, cam.maxScale);
+}
+
 /** Calibrated floor disparity D at a canvas row (0 = horizon, 1 = stage bottom). */
 export function floorDisparityAt(y, cam) {
   return Math.max(0, (y - cam.hz) / (cam.bottomY - cam.hz));
@@ -429,6 +445,23 @@ export function liveBattler(foot, P, rig) {
   const b = projectLive({ X: p.X, Y: 1, Z: p.Z }, rig);
   const ppm = Math.hypot(b.x - a.x, b.y - a.y);
   return { x: a.x, y: a.y, scale: ppm / restPxPerMetre(y, P), depth: a.depth };
+}
+
+/**
+ * Where a point in the arena near a battler with feet at canvas point `foot` is
+ * drawn by the live camera. `off` = {x, h, z} in rest canvas px at the feet's
+ * row: x along the canvas X, h straight up, z along the floor toward the
+ * camera. Returns the drawn point {x, y}, the drawn feet {fx, fy}, and s = how
+ * large it is drawn relative to the feet (nearer > 1). For effects whose paths
+ * live in the arena rather than on the battler's card.
+ */
+export function projectNearFoot(foot, off, P, rig) {
+  const y = Math.max(foot.y, P.hz + 2);
+  const F = floorPoint3({ x: foot.x, y }, P);
+  const u = 1 / restPxPerMetre(y, P);   // metres per rest px on this row
+  const a = projectLive(F, rig);
+  const b = projectLive({ X: F.X + (Number(off?.x) || 0) * u, Y: (Number(off?.h) || 0) * u, Z: F.Z + (Number(off?.z) || 0) * u }, rig);
+  return { x: b.x, y: b.y, fx: a.x, fy: a.y, s: clamp(a.depth / Math.max(1e-3, b.depth), 0.2, 4) };
 }
 
 /**

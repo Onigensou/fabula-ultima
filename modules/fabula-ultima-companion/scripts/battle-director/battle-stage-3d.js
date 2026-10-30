@@ -29,7 +29,7 @@
 import { log, warn } from "./logger.js";
 import { stageOf, restViewFor } from "./director-camera.js";
 import {
-  resolvePreset, buildCamera, tokenScaleAt, parallaxUniforms,
+  resolvePreset, buildCamera, battlerScaleAt, parallaxUniforms,
   floorToWorld, worldToCanvas, pxPerMetreAt, floorDisparityAt, buildProjector, stageModeFor, STAGE_LABEL,
 } from "./battle-stage-3d-rules.js";
 import { Stage3dCamera, SHOTS } from "./battle-stage-3d-camera.js";
@@ -182,8 +182,11 @@ function configFor(scene) {
   if (!scene) return null;
   const cfg = resolvePreset(scene.background?.src, state.override);
   if (!cfg) return null;
-  const cam = buildCamera(cfg, stageOf(scene), Number(scene.grid?.size) || 100);
-  return { cfg, cam };
+  const stage = stageOf(scene);
+  const cam = buildCamera(cfg, stage, Number(scene.grid?.size) || 100);
+  // the 3D model, when the backdrop has one: battler sizes follow its projector
+  const P = cfg.stage3d ? buildProjector(cfg, cam, stage) : null;
+  return { cfg, cam, P };
 }
 
 // Read by depth-index.js (classic script) through the global below.
@@ -192,7 +195,7 @@ function tokenDepthConfig(scene) {
   const c = configFor(scene);
   if (!c || !(c.cfg.strength > 0)) return null;
   const cam = c.cam;
-  return { factorAt: (footY) => tokenScaleAt(footY, cam), sort: true, source: "battle-stage-3d" };
+  return { factorAt: (footY) => battlerScaleAt(footY, cam, c.P), sort: true, source: "battle-stage-3d" };
 }
 
 // depth-index.js resolves its config while tokens are first drawn, which can be
@@ -242,7 +245,27 @@ function predictDrawn(token, p, view) {
   return state.camera3d?.predictPoint(token, p, view) ?? null;
 }
 
-globalThis[GLOBAL_KEY] = { tokenDepthConfig, drawnBox, drawnMeshBounds, drawnScreenPoint, predictDrawn, drawnCenter: (token) => state.camera3d?.drawnCenter(token) ?? null, hold };
+// The camera's map for a token this frame, {fx, fy, bx, by, m}: a world point p
+// placed against its 2D feet (fx, fy) is drawn at b + (p - f) * m. Null when the
+// camera is not displacing it. For world-space layers that ride on a battler.
+function drawnMap(token) {
+  return state.camera3d?.drawnMap(token) ?? null;
+}
+
+// Where feet at a 2D canvas point are drawn now ({x, y, m}), or null when flat:
+// for a body crossing the floor away from its token's spot (a run-in).
+function projectFoot(foot) {
+  return state.camera3d?.projectFoot(foot) ?? null;
+}
+
+// Where a point in the arena near feet at a 2D canvas point is drawn now
+// ({x, y, fx, fy, s}; off = {x, h, z} rest px at that row), or null when flat:
+// for entrance paths that live in the arena (projectNearFoot).
+function projectNear(foot, off) {
+  return state.camera3d?.projectNear(foot, off) ?? null;
+}
+
+globalThis[GLOBAL_KEY] = { tokenDepthConfig, drawnBox, drawnMeshBounds, drawnScreenPoint, predictDrawn, drawnMap, projectFoot, projectNear, drawnCenter: (token) => state.camera3d?.drawnCenter(token) ?? null, hold };
 
 // Token#center reads the DOCUMENT in v12, so anything placed at token.center
 // (skill animation scripts, reaction menus, scrolling text) would land on the
@@ -480,7 +503,7 @@ export const BattleStage3dApi = {
   /** Draw scale for a battler whose feet are at canvas row footY (1 when off). */
   scaleAt(footY) {
     const c = mode() === MODES.off ? null : configFor(canvas?.scene);
-    return c ? tokenScaleAt(footY, c.cam) : 1;
+    return c ? battlerScaleAt(footY, c.cam, c.P) : 1;
   },
   /** Draw scale of a placed token, from its feet. */
   tokenScale(token) {
