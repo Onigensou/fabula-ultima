@@ -94,3 +94,9 @@ pressed F5. Trinio and Silryantish had 0 reloads.
   - Every file came from the host, with 0 fallbacks to Forge.
   - Map switches that stalled 223–520 s on 10-28 took 1.1–5.0 s. Blumairwen's world entry went from 317 s to 23.9 s.
   - Status stays **open** until a full session shows the mid-session reloads are gone. Rinri's test is postponed.
+- **2026-10-30: Rinri's turn on the same test,** the last of the four. Record:
+  `modules/fabula-ultima-companion/docs/investigations/player-reloads/sessions/2026-10-30-rinri-mirror-test.md`.
+  - Every file came from the host, with 0 fallbacks to Forge.
+  - Against his Forge numbers on 10-28: world entry 79.6 s → 34.4 s, Kingdom 223.5 s → 0.8 s, Vastwind_Field002
+    520.5 s → 5.5 s.
+  - Status stays **open** until a full session shows the mid-session reloads are gone.

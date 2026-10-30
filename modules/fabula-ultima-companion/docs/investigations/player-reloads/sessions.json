@@ -1108,6 +1108,274 @@
         "cacheHeaders": "Cache-Control no-cache + weak ETag + Last-Modified on forge-mirror/, modules/, systems/, icons/, scripts/: browsers revalidate (304), repeat maps cost no upload"
       },
       "notes": ["First real-player test of the forge mirror: every file came from the host (277-285 per player), 0 not mirrored, 0 fallbacks to Forge.", "First-time map switches that took 223-520 s from Forge on 10-28 took 1.1-5.0 s; Blumairwen's world entry went from 317 s to 23.9 s.", "Each player was on 3-10 min: no reloads, but too short to judge mid-session reloads.", "Blumairwen's SAMPLE GAP (22:02:41, 240 s) is a client-health-summary false positive: it compared samples across four draws; her raw samples ran every 60-90 s (hidden tab).", "Blumairwen's Kingdom time comes from her client's draw record (her clock): the driver's draw detection was fixed during that switch.", "Demo cleanup: movement controller and party prototype art restored to the pre-test values (Blumairwen / Keren); the Field actor's wellspring AEs were rebuilt by the Title activation (the same five, new ids) and left as is.", "Cut off by the host on 2026-10-30 at 11:20; Rinri postponed."]
+    },
+    {
+      "id": "2026-10-30-rinri-mirror-test",
+      "kind": "fix-test",
+      "window": {
+        "from": "2026-10-30 20:30",
+        "to": "2026-10-30 20:45",
+        "tz": "+07:00"
+      },
+      "build": {
+        "foundry": "12.343",
+        "module": "1.0.484",
+        "moduleNote": "plus 4 local commits (89f8827a on feat/event-step-in-trigger, not pushed at the time); the other three players ran 1.0.482"
+      },
+      "fix": "the forge mirror, as in 2026-10-29-mirror-test",
+      "conditions": {
+        "players": "Rinri only, the last of the four",
+        "forgeMirror": true,
+        "mirroredFiles": 3120,
+        "mirroredMB": 1198,
+        "mirrorSync": "the sync before launch changed nothing; after GM login, forgeMirror.exportNow() and a second sync copied 8 files (Keren's new ?v=2 sprites)",
+        "loadIndicator": true,
+        "scenePrefetch": true,
+        "driver": "same CDP rounds as 2026-10-29-mirror-test; the first map came 2 s after entry (no other player to wait for), 17 s to 3.7 min for the others",
+        "mapTimeDefinition": "scene activation -> the GM receives the player's finished draw (userActivity with sceneId)",
+        "sendOff": "session-end prompt: bell, Leave now, 180 s countdown",
+        "stream": false,
+        "tcpWatch": false,
+        "pingWatch": true,
+        "preflight": "2 FAIL (the same two as 10-28 and 10-29, off the test maps), 374 WARN"
+      },
+      "server": {
+        "activations": 5,
+        "vendMsRange": [4101, 4101],
+        "errors": 0,
+        "warnings": 5,
+        "warningsDetail": "2 gm-screen deprecations at launch; 3 x 'embedded effects records in ActiveEffect hN5IkJdmMjvuGmey were undefined' (one per vend)",
+        "players": {
+          "Rinri": {
+            "route": "124.122.x.x",
+            "pageLoads": 1,
+            "reloads": 0,
+            "logins": 1,
+            "modes": {},
+            "reloadSecAfterDraw": [],
+            "pairedReloads": 0
+          }
+        },
+        "loginToWorldDataS": {
+          "Rinri": 14
+        }
+      },
+      "clientHealth": {
+        "Rinri": {
+          "browser": "Chrome 156",
+          "cores": 8,
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce GTX 1660 (0x00002184) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "softwareGL": false,
+          "screen": "1920x1080@1",
+          "boots": [
+            {
+              "at": "10-30 20:37:01",
+              "verdict": "NEW NAVIGATION · boot gap 160311 s",
+              "navType": "navigate",
+              "wasDiscarded": false,
+              "loadS": 34,
+              "prevScene": "Eisendrache Colosseum",
+              "prevSinceDrawS": 309,
+              "prevDrawing": false,
+              "prevHeapMB": 770,
+              "prevTextures": 17,
+              "prevDriftMs": 0
+            }
+          ],
+          "draws": 5,
+          "drawMedianS": 1.9,
+          "drawMaxS": 5.4,
+          "stalls": [],
+          "disconnects": [],
+          "hides": 2,
+          "hiddenMinutes": 1,
+          "longHides": [],
+          "sampleGaps": [],
+          "loads": [
+            {
+              "at": "10-30 20:37:01",
+              "scene": "Dragonslayer Title (world entry)",
+              "s": 34,
+              "texS": 34,
+              "files": 77,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "rings-steel.json",
+                  "from": "the game host",
+                  "ms": 1313,
+                  "done": true
+                },
+                {
+                  "file": "Wet.png",
+                  "from": "the game host",
+                  "ms": 437,
+                  "done": true
+                },
+                {
+                  "file": "Stun.png",
+                  "from": "the game host",
+                  "ms": 437,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-30 20:37:40",
+              "scene": "Vastwind_Field002",
+              "s": 5,
+              "texS": 5,
+              "files": 92,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Vastwind_Map002.png",
+                  "from": "the game host",
+                  "ms": 5313,
+                  "done": true
+                },
+                {
+                  "file": "WindLines01_01_Regular_White_500x500.webm",
+                  "from": "the game host",
+                  "ms": 204,
+                  "done": true
+                },
+                {
+                  "file": "SkillCheck_Tile.png",
+                  "from": "the game host",
+                  "ms": 165,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-30 20:38:13",
+              "scene": "Eisendrache Highroad",
+              "s": 2,
+              "texS": 2,
+              "files": 85,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Wagon.png",
+                  "from": "the game host",
+                  "ms": 2249,
+                  "done": true
+                },
+                {
+                  "file": "Eisendrache_Map002.png",
+                  "from": "the game host",
+                  "ms": 1098,
+                  "done": true
+                },
+                {
+                  "file": "Hina_Sitting_Mockup.png",
+                  "from": "the game host",
+                  "ms": 148,
+                  "done": true
+                }
+              ],
+              "pending": []
+            }
+          ],
+          "peakHeapMB": 1199,
+          "peakTextures": 28,
+          "mirror": {
+            "hits": 279,
+            "misses": 0,
+            "fallbacks": 0,
+            "records": 6,
+            "on": true
+          }
+        }
+      },
+      "mapLoads": [
+        {
+          "map": "Dragonslayer Title (world entry)",
+          "preloaded": false,
+          "at": null,
+          "RinriS": 34.4,
+          "mirrorHits": 70,
+          "forge1028S": 79.6
+        },
+        {
+          "map": "Eisendrache Kingdom",
+          "preloaded": false,
+          "at": "20:37:03",
+          "RinriS": 0.8,
+          "clientDrawS": 0.28,
+          "mirrorHits": 13,
+          "forge1028S": 223.5
+        },
+        {
+          "map": "Vastwind_Field002",
+          "preloaded": false,
+          "at": "20:37:34",
+          "RinriS": 5.5,
+          "clientDrawS": 5.37,
+          "mirrorHits": 160,
+          "forge1028S": 520.5
+        },
+        {
+          "map": "Eisendrache Highroad",
+          "preloaded": false,
+          "at": "20:38:11",
+          "RinriS": 2.5,
+          "clientDrawS": 2.33,
+          "mirrorHits": 17
+        },
+        {
+          "map": "Eisendrache Burning",
+          "preloaded": false,
+          "at": "20:38:44",
+          "RinriS": 2,
+          "clientDrawS": 1.9,
+          "mirrorHits": 4
+        },
+        {
+          "map": "Dragonslayer Title",
+          "preloaded": false,
+          "at": "20:39:17",
+          "RinriS": 0.2,
+          "clientDrawS": 0.02,
+          "mirrorHits": 2
+        }
+      ],
+      "sendOff": {
+        "Rinri": {
+          "sentAt": "20:39:17",
+          "leftAt": "20:39:32",
+          "how": "button",
+          "afterS": 15,
+          "tabHidden": "20:39:00-20:39:28"
+        }
+      },
+      "pingWatch": {
+        "controls": {
+          "routerMaxMs": 16,
+          "publicMaxMs": 14,
+          "lost": 0,
+          "window": "20:33-20:43"
+        },
+        "Rinri": "no ICMP replies",
+        "nonPlayerConnections": [
+          {
+            "at": "20:35:35",
+            "route": "35.227.x.x",
+            "heldS": 6,
+            "likely": "Discord link preview (Google Cloud)"
+          }
+        ]
+      },
+      "notes": ["Rinri's turn on the 2026-10-29 mirror test, so all four players have now run it: 279 files from the host, 0 not mirrored, 0 fallbacks to Forge.", "Against his Forge numbers on 10-28: world entry 79.6 s -> 34.4 s, Eisendrache Kingdom 223.5 s -> 0.8 s, Vastwind_Field002 520.5 s -> 5.5 s.", "Kingdom and Vastwind_Field002 are not comparable with each other: the one-time files that the others had up to Kingdom (112-138 hits) landed on his second map (13, then 160 hits), most likely because his first map came 2 s after entry.", "Kingdom was a real first load: the only map art he had loaded from the host before was the 10-28 trial's Castle and Colosseum backgrounds and one test image.", "Route 124.122 tonight; 171.100 on 10-24 and 10-28. Not checked further.", "On for 3 min: no reloads, but too short to judge mid-session reloads. A full session is still owed.", "Launcher sync gap: wanted.json is written by the GM client after login, so the launcher's pre-launch sync misses art added since the last session. Fix proposed, not made.", "Demo cleanup: movement controller and party prototype art restored. A key-by-key compare of data/ against a pre-launch copy found only the Field actor's rebuilt wellspring AEs, _stats on the touched docs and theripper-premium-hub.lastGitCheck. Preflight matches the pre-test run."]
     }
   ]
 }

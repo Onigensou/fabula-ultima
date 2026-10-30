@@ -1,10 +1,11 @@
 # Case: player-reloads — Rinri's and Blumairwen's pages reload mid-session
 
 **Status:** open, **cause located** (2026-10-28 test); **fix built** 2026-10-29 (the forge mirror,
-`tools/forge-mirror/README.md`). **Real-player test 2026-10-29: it works** for Blumairwen, Trinio and Silryantish:
-0 fallbacks to Forge, first-time map switches 1–5 s (223–520 s on 10-28), world entry 24–42 s. **Next:**
-- Rinri on the same test, another night;
+`tools/forge-mirror/README.md`). **Real-player tests 2026-10-29 and 10-30: it works for all four players:** 0 fallbacks
+to Forge; the two maps that stalled 223–520 s on 10-28 now take 0.8–5.5 s on a first load; world entry 24–42 s. **Next:**
 - a full session with everyone: are the mid-session reloads gone, and what are the load times with everyone at once?
+- before that session, close the launcher's sync gap: art added since the last session isn't mirrored
+  ([10-30 record](sessions/2026-10-30-rinri-mirror-test.md));
 - the players' ~21:00 measurements may be moot, now that players no longer fetch from Forge (host's call).
 
 **Tracking report:** `reports/2026-10-28-player-reload-investigation.md`
@@ -12,6 +13,7 @@
 - [2026-10-24 game session](sessions/2026-10-24-game-session.md) (the baseline)
 - [2026-10-28 test](sessions/2026-10-28-test.md) (Blumairwen + Rinri)
 - [2026-10-29 mirror test](sessions/2026-10-29-mirror-test.md) (Blumairwen, Trinio, Silryantish: the mirror with real players)
+- [2026-10-30 Rinri's mirror test](sessions/2026-10-30-rinri-mirror-test.md) (the last of the four)
 **Data:** [sessions.json](sessions.json) · **Tools:** [../_tools/](../_tools/) · **Deep-dive from that night:** [../../player-reload-investigation-2026-10-24.md](../../player-reload-investigation-2026-10-24.md)
 
 ## Symptom
@@ -215,6 +217,8 @@ The host decides; nothing here is built yet. Cheapest first.
      images inside sheets, journals and chat are not yet.
    - **Real-player test 2026-10-29** ([record](sessions/2026-10-29-mirror-test.md)): every file came from the host,
      0 fallbacks. Blumairwen's Kingdom 345.7 s → 4.5 s, Vastwind_Field002 520.5 s → 5.0 s, world entry 317 s → 23.9 s.
+   - **Rinri 2026-10-30** ([record](sessions/2026-10-30-rinri-mirror-test.md)): the same, 0 fallbacks. Kingdom
+     223.5 s → 0.8 s, Vastwind_Field002 520.5 s → 5.5 s, world entry 79.6 s → 34.4 s.
 4. **Report it to Forge.**
    - First fetches of their assets through Cloudflare BKK crawl for True (AS17552) customers, while AIS gets them in
      ~3 s (cf-cache-status MISS, first byte ~1.1–1.5 s).
@@ -524,3 +528,13 @@ of RAM; it was closed as not planned.
   - New: the session-end prompt (v1.0.483) sent each player off. All three pressed Leave now.
   - `client-health-summary` raised a false SAMPLE GAP across map draws; fix proposed.
   - Demo cleanup: movement controller and party token art restored. Preflight afterwards matched the pre-test run.
+- **2026-10-30 (evening): Rinri's turn on the mirror test,** so all four players have now run it.
+  - Record: [sessions/2026-10-30-rinri-mirror-test.md](sessions/2026-10-30-rinri-mirror-test.md). Data: `sessions.json`
+    → `2026-10-30-rinri-mirror-test`.
+  - **It works for him too:** 279 files from the host, 0 not mirrored, 0 fallbacks. World entry 79.6 s → 34.4 s,
+    Kingdom 223.5 s → 0.8 s, Vastwind_Field002 520.5 s → 5.5 s, at 20:37–20:39, close to the hour he says is worst.
+  - No reloads, but he was on for only 3 min. Mid-session reloads still need a full session.
+  - **Found: the launcher's sync runs too early for new art.** The GM client writes `wanted.json` after login, so art
+    added since the last session loads from Forge for that session. Fix proposed, not made.
+  - Demo cleanup: a key-by-key compare of `data/` against a copy from before launch found only the Field actor's rebuilt
+    wellspring effects, `_stats` on the touched docs and one module's own timestamp.

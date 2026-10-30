@@ -1,6 +1,7 @@
 # Session 2026-10-29 — real-player test of the forge mirror (Blumairwen, Trinio, Silryantish)
 
-**Status:** done. Cut off by the host on 10-30 at 11:20. Rinri is postponed to another night.
+**Status:** done. Cut off by the host on 10-30 at 11:20. Rinri's turn came that evening:
+[2026-10-30 record](2026-10-30-rinri-mirror-test.md).
 **Window:** 2026-10-29 21:39 → 2026-10-30 11:35 (+07:00) · Foundry 12.343 · module 1.0.482 (this test's local build;
 the session-end prompt reached origin as 1.0.483, because sarunphat's Ally watch took 1.0.482 there)
 **Who** (one at a time, whenever each could come):
@@ -82,7 +83,7 @@ Map times: activation → the GM receives the finished draw. (draw) = the player
 | Blumairwen world entry | 317 s | **23.9 s** |
 | Blumairwen Eisendrache Kingdom | 345.7 s | **4.5 s** |
 | Blumairwen Vastwind_Field002 | 520.5 s | **5.0 s** |
-| Rinri (entry / Kingdom / Vastwind_Field002) | 80 / 223.5 / 520.5 s | postponed |
+| Rinri (entry / Kingdom / Vastwind_Field002) | 80 / 223.5 / 520.5 s | 34.4 / 0.8 / 5.5 s (on 10-30, [record](2026-10-30-rinri-mirror-test.md)) |
 
 **Server:** 15 activations, 0 errors, 9 warnings:
 - 2 `gm-screen` deprecation notices at launch;
@@ -143,7 +144,7 @@ Map times: activation → the GM receives the finished draw. (draw) = the player
 a benchmark, like being a game tester.
 
 **Open:**
-- **Rinri:** the same test on another night; the host will arrange it.
+- **Rinri:** done on 10-30 ([record](2026-10-30-rinri-mirror-test.md)).
 - **A full session with everyone:** are the mid-session reloads gone, and what are the numbers with everyone loading at
   once? The logger is always on, so the first full session measures it.
 - **The players' ~21:00 measurements** (speed test + Incognito image test) were meant to probe the True ↔ Forge path.
