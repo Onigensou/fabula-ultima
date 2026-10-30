@@ -80,6 +80,9 @@
   const DEPTH_NEAR_SCALE_KEY = "depthNearScale";   // number: sprite multiplier at the near line
   const DEPTH_CURVE_KEY      = "depthCurve";       // number: ramp power (>1 shrinks faster near the top)
   const DEPTH_SORT_KEY       = "depthSort";        // boolean: y-sort tokens (nearer draws in front)
+  const DEPTH_HORIZON_Y_KEY  = "depthHorizonY";    // number: scene y where the floor lines meet (perspective mode)
+  const DEPTH_STRENGTH_KEY   = "depthStrength";    // number: perspective softening, 0..1
+  const DEPTH_SPEED_KEY      = "depthSpeed";       // number: walk speed follows depth, 0..1
   const OCCLUDERS_ENABLED_KEY = "occludersEnabled"; // boolean: foreground occluders (foreground-occluder.js)
   const OCCLUDER_SILHOUETTE_KEY = "occluderSilhouette"; // boolean: party silhouette behind objects
   // Invoker wellsprings present on this scene. Per-element boolean under general
@@ -729,7 +732,7 @@
 
             <div class="oni-depth-fields">
               <div class="form-group" style="align-items:flex-start;">
-                <label>Horizon Line</label>
+                <label>Far Line</label>
                 <div class="form-fields" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                   <input type="number" class="oni-depth-far-y" step="1"
                          name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${DEPTH_FAR_Y_KEY}"
@@ -771,8 +774,54 @@
                          placeholder="1.00" style="flex:1 1 0;" />
                 </div>
                 <p class="notes">
-                  Sprite multiplier at the horizon line and at the near line.
+                  Sprite multiplier at the far line and at the near line.
                   Defaults <b>0.55</b> / <b>1.00</b> — smallest is a bit over half size, nearest is the token's true size.
+                  Above 1.00 near the bottom makes the closest spots feel close to the camera.
+                </p>
+              </div>
+
+              <div class="form-group" style="align-items:flex-start;">
+                <label>Vanishing Line</label>
+                <div class="form-fields" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                  <input type="number" class="oni-depth-horizon-y" step="1"
+                         name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${DEPTH_HORIZON_Y_KEY}"
+                         placeholder="off" style="flex:0 0 120px;" />
+                  <button type="button" class="oni-pick-depth-y" data-depth-target="horizon" style="flex:0 0 auto;white-space:nowrap;">
+                    <i class="fas fa-crosshairs"></i> Pick on map
+                  </button>
+                </div>
+                <p class="notes">
+                  Optional. Scene Y where the painting's path edges would meet if extended. Set, sprites
+                  shrink the way the painted camera sees them (size follows the distance below this line,
+                  as in battle backdrops); Far Line and Falloff Curve are then unused and Far Scale is the
+                  smallest a sprite gets. Blank keeps the far / near ramp.
+                </p>
+              </div>
+
+              <div class="form-group">
+                <label>Perspective Strength</label>
+                <div class="form-fields">
+                  <input type="number" class="oni-depth-strength" step="0.05" min="0" max="1"
+                         name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${DEPTH_STRENGTH_KEY}"
+                         placeholder="0.6" />
+                </div>
+                <p class="notes">
+                  With a vanishing line: <b>1</b> is true perspective (sprites shrink as fast as the painting),
+                  lower softens it so far sprites stay readable. Default <b>0.6</b>.
+                </p>
+              </div>
+
+              <div class="form-group">
+                <label>Walk Speed Depth</label>
+                <div class="form-fields">
+                  <input type="number" class="oni-depth-speed" step="0.05" min="0" max="1"
+                         name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${DEPTH_SPEED_KEY}"
+                         placeholder="0.7" />
+                </div>
+                <p class="notes">
+                  How much a smaller (farther) sprite also walks slower, so it does not skate.
+                  <b>0</b> = the same screen speed everywhere, <b>1</b> = slower in full proportion to its size.
+                  Default <b>0.7</b>.
                 </p>
               </div>
 
@@ -1216,6 +1265,9 @@
       depthNumField("oni-depth-far-scale",   DEPTH_FAR_SCALE_KEY);
       depthNumField("oni-depth-near-scale",  DEPTH_NEAR_SCALE_KEY);
       depthNumField("oni-depth-curve",       DEPTH_CURVE_KEY);
+      depthNumField("oni-depth-horizon-y",   DEPTH_HORIZON_Y_KEY);
+      depthNumField("oni-depth-strength",    DEPTH_STRENGTH_KEY);
+      depthNumField("oni-depth-speed",       DEPTH_SPEED_KEY);
 
       // Depth sorting defaults ON when the flag has never been written.
       const depthSortCb = generalPanel?.querySelector("input.oni-depth-sort");
@@ -1541,7 +1593,8 @@
           farY:  readNum("oni-depth-far-y",  rect ? rect.y : 0),
           nearY: readNum("oni-depth-near-y", rect ? rect.y + rect.height : 0),
           farScale:  readNum("oni-depth-far-scale",  0.55),
-          nearScale: readNum("oni-depth-near-scale", 1.00)
+          nearScale: readNum("oni-depth-near-scale", 1.00),
+          horizonY:  readNum("oni-depth-horizon-y", null)
         };
       }
 
@@ -1553,8 +1606,9 @@
           return;
         }
         const b = readDepthBandFromForm();
-        noteEl.textContent =
-          `Band: y ${Math.round(b.farY)} (×${b.farScale.toFixed(2)}) → y ${Math.round(b.nearY)} (×${b.nearScale.toFixed(2)}).`;
+        noteEl.textContent = (b.horizonY !== null && b.horizonY < b.nearY)
+          ? `Perspective: vanishing line y ${Math.round(b.horizonY)} → near y ${Math.round(b.nearY)} (×${b.nearScale.toFixed(2)}), never below ×${b.farScale.toFixed(2)}.`
+          : `Band: y ${Math.round(b.farY)} (×${b.farScale.toFixed(2)}) → y ${Math.round(b.nearY)} (×${b.nearScale.toFixed(2)}).`;
       }
 
       function isConfiguringActiveScene() {
@@ -1603,6 +1657,11 @@
           g.moveTo(rect.x, b.farY).lineTo(rect.x + rect.width, b.farY);
           g.lineStyle({ width: 4, color: 0xffb347, alpha: 0.9 });
           g.moveTo(rect.x, b.nearY).lineTo(rect.x + rect.width, b.nearY);
+          // Vanishing line (perspective mode) in violet.
+          if (b.horizonY !== null) {
+            g.lineStyle({ width: 4, color: 0xc77dff, alpha: 0.9 });
+            g.moveTo(rect.x, b.horizonY).lineTo(rect.x + rect.width, b.horizonY);
+          }
         } catch (e) {
           console.warn("[FabulaConfigUI] drawDepthGuides failed:", e);
         }
@@ -1610,7 +1669,7 @@
 
       // Redraw as the numbers are typed, so the band can be dialled in against
       // the artwork without closing the dialog.
-      for (const cls of ["oni-depth-far-y", "oni-depth-near-y", "oni-depth-far-scale", "oni-depth-near-scale"]) {
+      for (const cls of ["oni-depth-far-y", "oni-depth-near-y", "oni-depth-far-scale", "oni-depth-near-scale", "oni-depth-horizon-y"]) {
         generalPanel?.querySelector(`input.${cls}`)?.addEventListener("input", () => {
           updateDepthPreviewNote();
           drawDepthGuides();
@@ -1630,15 +1689,19 @@
             return;
           }
 
-          const which = pickBtn.dataset.depthTarget === "near" ? "near" : "far";
-          const inputEl = generalPanel?.querySelector(which === "near" ? "input.oni-depth-near-y" : "input.oni-depth-far-y");
+          const which = ["near", "horizon"].includes(pickBtn.dataset.depthTarget) ? pickBtn.dataset.depthTarget : "far";
+          const inputEl = generalPanel?.querySelector(
+            which === "near" ? "input.oni-depth-near-y" : which === "horizon" ? "input.oni-depth-horizon-y" : "input.oni-depth-far-y"
+          );
           if (!inputEl) return;
 
           app.minimize();
           ui.notifications?.info?.(
             which === "near"
               ? "Click the point on the map where sprites should be FULL size. Escape to cancel."
-              : "Click the point on the map where sprites should be SMALLEST. Escape to cancel."
+              : which === "horizon"
+                ? "Click where the path's edges would meet if extended (the vanishing point). Escape to cancel."
+                : "Click the point on the map where sprites should be SMALLEST. Escape to cancel."
           );
 
           const view = canvas?.app?.view ?? document.querySelector("#board canvas");
@@ -1670,7 +1733,7 @@
             inputEl.value = String(Math.round(worldPt.y));
             updateDepthPreviewNote();
             drawDepthGuides();
-            ui.notifications?.info?.(`${which === "near" ? "Near" : "Horizon"} line set to y ${Math.round(worldPt.y)}. Press Save Changes to keep it.`);
+            ui.notifications?.info?.(`${which === "near" ? "Near" : which === "horizon" ? "Vanishing" : "Far"} line set to y ${Math.round(worldPt.y)}. Press Save Changes to keep it.`);
             app.maximize();
           };
 

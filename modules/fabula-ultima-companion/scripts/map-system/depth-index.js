@@ -53,6 +53,12 @@
  *   depthNearScale  number   multiplier at the near line
  *   depthCurve      number   ramp power (>1 = shrink faster toward the top)
  *   depthSort       boolean  also y-sort tokens (nearer draws in front)
+ *   depthHorizonY   number   optional: scene y where the painting's floor lines
+ *                            meet. Set, the size follows the painted camera
+ *                            instead of the far/near ramp (see factorForY)
+ *   depthStrength   number   perspective softening, 0..1 (1 = true perspective)
+ *   depthSpeed      number   how far the walk speed follows the depth factor,
+ *                            0..1 (0 = same screen speed everywhere)
  *
  * Per-token opt-out:
  *   flags.<module>.depthExempt = true
@@ -82,6 +88,9 @@
   const DEPTH_NEAR_SCALE_KEY = "depthNearScale";
   const DEPTH_CURVE_KEY      = "depthCurve";
   const DEPTH_SORT_KEY       = "depthSort";
+  const DEPTH_HORIZON_Y_KEY  = "depthHorizonY";
+  const DEPTH_STRENGTH_KEY   = "depthStrength";
+  const DEPTH_SPEED_KEY      = "depthSpeed";
 
   const TOKEN_EXEMPT_FLAG = "depthExempt";
 
@@ -90,6 +99,12 @@
   const DEFAULT_NEAR_SCALE = 1.00;
   const DEFAULT_CURVE      = 1.60;
   const DEFAULT_SORT       = true;
+  const DEFAULT_STRENGTH   = 0.60;
+  // A character drawn at half size crossing the screen at full speed reads as
+  // skating (measured on Valley Entrance: 3.3 body lengths a second at the
+  // bottom of the path, 5.1 at the top). Fully proportional feels sluggish up
+  // the path, so the speed follows most of the way, not all of it.
+  const DEFAULT_SPEED      = 0.70;
 
   // Hard clamps. A corrupt flag should degrade to "slightly wrong", never to an
   // invisible or screen-filling sprite.
@@ -115,6 +130,10 @@
   }
 
   function num(value, fallback) {
+    // An unset flag reads null (and a blank form field ""), and Number() of
+    // either is 0, which would pass as a real value: a blank Falloff Curve
+    // became 0.05 instead of the default.
+    if (value === null || value === undefined || value === "") return fallback;
     const n = Number(value);
     return Number.isFinite(n) ? n : fallback;
   }
@@ -189,8 +208,15 @@
     const nearScale = clamp(num(safeGet(fab, `${GENERAL_KEY}.${DEPTH_NEAR_SCALE_KEY}`, null), DEFAULT_NEAR_SCALE), HARD_MIN_FACTOR, HARD_MAX_FACTOR);
     const curve     = clamp(num(safeGet(fab, `${GENERAL_KEY}.${DEPTH_CURVE_KEY}`,      null), DEFAULT_CURVE), 0.05, 8);
     const sort      = bool(safeGet(fab, `${GENERAL_KEY}.${DEPTH_SORT_KEY}`, DEFAULT_SORT), DEFAULT_SORT);
+    const speed     = clamp(num(safeGet(fab, `${GENERAL_KEY}.${DEPTH_SPEED_KEY}`, null), DEFAULT_SPEED), 0, 1);
 
-    return { farY, nearY, farScale, nearScale, curve, sort };
+    // A vanishing line only means something above the near line.
+    const horizonRaw = safeGet(fab, `${GENERAL_KEY}.${DEPTH_HORIZON_Y_KEY}`, null);
+    const horizonY = (horizonRaw === null || horizonRaw === "") ? null : num(horizonRaw, null);
+    const horizon = (horizonY !== null && horizonY < nearY) ? horizonY : null;
+    const strength = clamp(num(safeGet(fab, `${GENERAL_KEY}.${DEPTH_STRENGTH_KEY}`, null), DEFAULT_STRENGTH), 0, 1);
+
+    return { farY, nearY, farScale, nearScale, curve, sort, speed, horizonY: horizon, strength };
   }
 
   function invalidateConfig(reason = "unknown") {
@@ -221,6 +247,20 @@
    */
   function factorForY(y, cfg) {
     if (cfg.factorAt) return clamp(num(cfg.factorAt(y), 1), HARD_MIN_FACTOR, HARD_MAX_FACTOR);
+
+    // Painted camera: a pinhole draws something standing on the floor at a
+    // size proportional to how far its feet are below the horizon, so the
+    // size at the near line times (y - horizon) / (nearY - horizon), softened
+    // by `strength`. The same model as the battle stage's tokenScaleAt
+    // (battle-director/battle-stage-3d-rules.js). Far Scale is the floor, so a
+    // token walking up into the vanishing point never shrinks to a speck.
+    if (cfg.horizonY !== null && cfg.horizonY !== undefined) {
+      const den = cfg.nearY - cfg.horizonY;
+      const ratio = Math.max(y - cfg.horizonY, den * 0.05) / den;
+      const f = cfg.nearScale * Math.pow(ratio, cfg.strength);
+      return clamp(Math.max(f, cfg.farScale), HARD_MIN_FACTOR, HARD_MAX_FACTOR);
+    }
+
     const span = cfg.nearY - cfg.farY;
     const t = clamp((y - cfg.farY) / span, 0, 1);
     const eased = Math.pow(t, cfg.curve);
@@ -462,13 +502,18 @@
       DEPTH_NEAR_SCALE_KEY,
       DEPTH_CURVE_KEY,
       DEPTH_SORT_KEY,
+      DEPTH_HORIZON_Y_KEY,
+      DEPTH_STRENGTH_KEY,
+      DEPTH_SPEED_KEY,
       TOKEN_EXEMPT_FLAG
     },
     DEFAULTS: {
       farScale: DEFAULT_FAR_SCALE,
       nearScale: DEFAULT_NEAR_SCALE,
       curve: DEFAULT_CURVE,
-      sort: DEFAULT_SORT
+      sort: DEFAULT_SORT,
+      strength: DEFAULT_STRENGTH,
+      speed: DEFAULT_SPEED
     },
 
     readSceneConfig,
@@ -483,6 +528,23 @@
       const cfg = getConfig();
       if (!cfg || cfg.sortOnly || !token) return false;
       return applyDepthToToken(token, cfg);
+    },
+
+    /**
+     * Walk speed multiplier for one straight leg of a token, its centre going
+     * from `from` to `to`: the depth factor at the feet (averaged over the
+     * leg's two ends), raised to the scene's depthSpeed. 1 off a depth map.
+     * movementControl-cameraRuntime.js scales each leg's speed by it, and the
+     * walk art's playback rate with it, so the feet keep pace.
+     */
+    walkSpeedFactor(token, from, to) {
+      const cfg = getConfig();
+      if (!cfg || cfg.sortOnly || cfg.factorAt || !token || !from || !to) return 1;
+      if (!(cfg.speed > 0)) return 1;
+      if (token.document?.getFlag?.(MODULE_ID, TOKEN_EXEMPT_FLAG) === true) return 1;
+      const half = (token.h || (token.document?.height ?? 1) * canvas.grid.size) / 2;
+      const f = (factorForY(from.y + half, cfg) + factorForY(to.y + half, cfg)) / 2;
+      return Math.pow(f, cfg.speed);
     },
 
     /** Depth factor a token would be drawn at right now (debug aid). */

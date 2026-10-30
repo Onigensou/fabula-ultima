@@ -1060,6 +1060,9 @@
   // the party facing the key while it slides (sprite-facing-runtime.js).
   async function walkTokenTo(token, spot, from, { speed = WALK_SPEED, facing = null } = {}) {
     const center = topLeftToCenter(spot, token);
+    // On a depth map a character drawn small far up the path walks slower,
+    // so it covers ground at the pace its size says (depth-index.js).
+    try { speed *= globalThis.__ONI_DEPTH_INDEX__?.walkSpeedFactor?.(token, from, center) ?? 1; } catch (_) {}
     const duration = walkDuration(Math.hypot(center.x - from.x, center.y - from.y), speed);
     state.legSpeed = speed;
 
@@ -1067,14 +1070,13 @@
       animate: true,
       animation: { duration, movementSpeed: speed },
       // Marks the move as a walk: in a camp, the only way a player's member moves.
-      oniWalk: true
-    };
-    if (facing) {
-      options.oniWalkFacing = { x: facing.x, y: facing.y };
+      oniWalk: true,
       // How fast the walk art should play, against a plain walk (a run is
-      // quicker, a steep slide slower). Read by sprite-facing on every client.
-      options.oniWalkRate = speed / WALK_SPEED;
-    }
+      // quicker; a steep slide or a far depth slower). Read by sprite-facing
+      // on every client.
+      oniWalkRate: speed / WALK_SPEED
+    };
+    if (facing) options.oniWalkFacing = { x: facing.x, y: facing.y };
 
     await token.document.update({ x: spot.x, y: spot.y }, options);
 
