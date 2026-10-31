@@ -16,7 +16,7 @@
     }
   },
   "folder": "to3QkbU70EQKKxHW",
-  "formula": "1d52",
+  "formula": "1d40",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Valley of the Dragon Underground - Encounter",
   "ownership": {
@@ -26,32 +26,18 @@
   "replacement": true,
   "results": [
     {
-      "_id": "7FqMYKfkWl3GWbgt",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
-      "range": [
-        27,
-        28
-      ],
-      "text": "Electro Slime, Obsidrax, Lightning Prism, Electro Slime",
-      "type": "text",
-      "weight": 2
-    },
-    {
       "_id": "8Miv8Rv3xAaW7V80",
       "documentId": null,
       "drawn": false,
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        3,
-        4
+        1,
+        3
       ],
       "text": "Electro Slime, Lightning Prism, Electro Slime",
       "type": "text",
-      "weight": 2
+      "weight": 3
     },
     {
       "_id": "bOjgF8KU3k4ixtjq",
@@ -60,8 +46,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        41,
-        41
+        35,
+        35
       ],
       "text": "Gigas, Skizzik",
       "type": "text",
@@ -74,26 +60,12 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        37,
-        38
+        17,
+        22
       ],
       "text": "Drakoza, Skizzik",
       "type": "text",
-      "weight": 2
-    },
-    {
-      "_id": "DulsMmsFggo57MFO",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
-      "range": [
-        33,
-        34
-      ],
-      "text": "Crona, Skizzik",
-      "type": "text",
-      "weight": 2
+      "weight": 6
     },
     {
       "_id": "FbGzmqcHMz9Tnuzi",
@@ -102,12 +74,12 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        17,
-        18
+        4,
+        10
       ],
       "text": "Obsidrax, Electro Slime, Electro Slime",
       "type": "text",
-      "weight": 2
+      "weight": 7
     },
     {
       "_id": "FgEncounterRow01",
@@ -116,8 +88,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        46,
-        46
+        40,
+        40
       ],
       "text": "Galvanic Paryashera, Fulgimite, Fulgimite",
       "type": "text",
@@ -130,12 +102,12 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        47,
-        48
+        23,
+        26
       ],
       "text": "Fulgimite, Lightning Prism",
       "type": "text",
-      "weight": 2
+      "weight": 4
     },
     {
       "_id": "FgEncounterRow03",
@@ -144,8 +116,8 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        49,
-        50
+        27,
+        28
       ],
       "text": "Fulgimite, Skizzik, Fulgimite",
       "type": "text",
@@ -158,24 +130,10 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        51,
-        52
+        29,
+        30
       ],
       "text": "Fulgimite, Obsidrax",
-      "type": "text",
-      "weight": 2
-    },
-    {
-      "_id": "FjwJniR6PrQWqK8y",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
-      "range": [
-        15,
-        16
-      ],
-      "text": "Mana Ray, Lightning Prism, Mana Ray",
       "type": "text",
       "weight": 2
     },
@@ -187,24 +145,10 @@
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "name": "Galvanic Paryashera",
       "range": [
-        44,
-        45
+        38,
+        39
       ],
       "text": "Galvanic Paryashera",
-      "type": "text",
-      "weight": 2
-    },
-    {
-      "_id": "JUUeRtsvXKiuFqRx",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
-      "range": [
-        5,
-        6
-      ],
-      "text": "Skizzik, Lightning Prism",
       "type": "text",
       "weight": 2
     },
@@ -215,68 +159,12 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        35,
-        36
+        33,
+        33
       ],
       "text": "Crona, Obsidrax",
       "type": "text",
-      "weight": 2
-    },
-    {
-      "_id": "KgiwunbNivuOrJwG",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
-      "range": [
-        9,
-        10
-      ],
-      "text": "Mana Ray, Mana Ray",
-      "type": "text",
-      "weight": 2
-    },
-    {
-      "_id": "kwzGlKiKcDBJ1nTq",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
-      "range": [
-        1,
-        2
-      ],
-      "text": "Electro Slime, Skizzik, Electro Slime",
-      "type": "text",
-      "weight": 2
-    },
-    {
-      "_id": "LR1nNserfvkHpQM7",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
-      "range": [
-        25,
-        26
-      ],
-      "text": "Obsidrax, Obsidrax",
-      "type": "text",
-      "weight": 2
-    },
-    {
-      "_id": "MQX3S6A8Tagfht6p",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
-      "range": [
-        31,
-        32
-      ],
-      "text": "Crona, Electro Slime, Crona",
-      "type": "text",
-      "weight": 2
+      "weight": 1
     },
     {
       "_id": "n9Ofh5JAkWd2rvYb",
@@ -285,26 +173,12 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        23,
-        24
+        11,
+        16
       ],
       "text": "Obsidrax, Mana Ray, Ampere",
       "type": "text",
-      "weight": 2
-    },
-    {
-      "_id": "NKGajOCSKcvlAcan",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
-      "range": [
-        21,
-        22
-      ],
-      "text": "Obsidrax, Lightning Prism",
-      "type": "text",
-      "weight": 2
+      "weight": 6
     },
     {
       "_id": "NQnnNQUl1yWR4sKL",
@@ -313,38 +187,10 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        42,
-        43
+        36,
+        37
       ],
       "text": "Roper",
-      "type": "text",
-      "weight": 2
-    },
-    {
-      "_id": "QY1Piwi9yAwpHub9",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
-      "range": [
-        11,
-        12
-      ],
-      "text": "Ampere, Mana Ray",
-      "type": "text",
-      "weight": 2
-    },
-    {
-      "_id": "uFTw8OErTYCa9pN0",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
-      "range": [
-        7,
-        8
-      ],
-      "text": "Lightning Prism, Skizzik, Lightning Prism",
       "type": "text",
       "weight": 2
     },
@@ -355,12 +201,12 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        13,
-        14
+        34,
+        34
       ],
       "text": "Ampere, Lightning Prism",
       "type": "text",
-      "weight": 2
+      "weight": 1
     },
     {
       "_id": "wSH3DNDf3hnPQoOX",
@@ -369,38 +215,10 @@
       "flags": {},
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
       "range": [
-        29,
-        30
+        31,
+        32
       ],
       "text": "Crona, Crona, Crona",
-      "type": "text",
-      "weight": 2
-    },
-    {
-      "_id": "XISjsuG1M1XiuRFz",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
-      "range": [
-        19,
-        20
-      ],
-      "text": "Skizzik, Obsidrax",
-      "type": "text",
-      "weight": 2
-    },
-    {
-      "_id": "XJ5WfiaBrPa98PlZ",
-      "documentId": null,
-      "drawn": false,
-      "flags": {},
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
-      "range": [
-        39,
-        40
-      ],
-      "text": "Drakoza, Obsidrax",
       "type": "text",
       "weight": 2
     }

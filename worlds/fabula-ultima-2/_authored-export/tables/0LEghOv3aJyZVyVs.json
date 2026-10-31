@@ -16,7 +16,7 @@
     }
   },
   "folder": "AF1TjOn1OTJNHrkx",
-  "formula": "1d12",
+  "formula": "1d13",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Valley of the Dragon - Enemies",
   "ownership": {
@@ -52,6 +52,21 @@
         12
       ],
       "text": "Rakshasa",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "EncTightenCrona1",
+      "documentCollection": "Actor",
+      "documentId": "vmYeN1WWIF5TSjjF",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Vampire%20Bat_Standard.png",
+      "range": [
+        13,
+        13
+      ],
+      "text": "Crona",
       "type": "document",
       "weight": 1
     },
