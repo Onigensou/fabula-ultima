@@ -47,6 +47,7 @@ import { publishDeskWatch } from "./ally-watch.js";
 import { tabAlert, tabAlertClear } from "./tab-alert.js";
 import { TIER } from "./status-classifier.js";
 import { rowTier, rowTurns, rowSpent, sortRows, statusTipHTML, foldTipHTML } from "./status-tip.js";
+import { hostUser } from "./director-host.js";
 import { setGmFocus, focusState, setFocusPart, setFocusAll, FOCUS_PARTS, FOCUS_TOOLS, toolAvailable, openTool } from "./battle-focus.js";
 
 const MODULE_ID = "fabula-ultima-companion";
@@ -996,13 +997,13 @@ function onDocPointer(e) {
   setMoreOpen(false);
 }
 
-// Turn / Round drive the FSM, which lives on the host (first) GM: a secondary
-// GM's click is sent there, like its other battle input.
+// Turn / Round drive the FSM, which lives on the HOST GM (the client running the
+// director — not necessarily the primary GM): another GM's click is sent there,
+// like its other battle input.
 async function runOnHost(cmd) {
-  const primary = globalThis.FUCompanion?.isPrimaryGM?.() ?? true;
-  if (primary) return runCmd(cmd);
-  const host = globalThis.FUCompanion?.primaryGM?.();
-  if (!host || !ensureSocket()) { ui.notifications?.warn("The host GM is not connected."); return; }
+  const host = hostUser();
+  if (!host || host.id === game.user?.id) return runCmd(cmd);
+  if (!ensureSocket()) { ui.notifications?.warn("The host GM is not connected."); return; }
   return _socket.executeAsUser(ACTION_CMD, host.id, { cmd });
 }
 async function runCmd(cmd) {
