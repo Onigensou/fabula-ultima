@@ -30,7 +30,7 @@ import { Journal } from "./sim-journal.js";
 import { canAffordItem, parseCost } from "./cost.js";
 import { getLinkedSkillUuid } from "../item-resource.js";
 import { protectExhausted } from "./reaction-brain.js";
-import { resolveAttackerWeapon, resolveVirtualAttacks, resolvePrimaryAttackWeapon } from "../snapshot.js";
+import { resolveAttackerWeapon, resolveVirtualAttacks, resolvePrimaryAttackWeapon, getTargetSideBlocks } from "../snapshot.js";
 
 import { ActionReaderCore as AR } from "../../action-reader/actionReader-core.js";
 import { resolveActionReaderPerformer } from "../../action-reader/actionReader-resolvePerformer.js";
@@ -868,7 +868,11 @@ export async function decidePlayerAction(director, snap, blocked = new Set(), gr
   // throwing away half the swing. (Only a real main weapon carries a reach — a virtual
   // attack is single-target.)
   const cap = mode === "main" ? weaponTargetCap(actorDoc) : 1;
-  const picks = bestAttackTargets(actorDoc, foes, SimMode.focus(), cap);
+  // A swing declared multi-target can't pick a `cannot_be_targeted_by: "area"` bearer
+  // (Fulgimite's Evasion), the same as the player's picker. Nobody left = no swing.
+  const reachable = cap > 1 ? foes.filter((dc) => !getTargetSideBlocks(dc.actorDoc).some((b) => b?.ranges?.has?.("area"))) : foes;
+  if (!reachable.length) return null;
+  const picks = bestAttackTargets(actorDoc, reachable, SimMode.focus(), cap);
   const uuids = picks.map((p) => tokenUuidOf(p.dc)).filter(Boolean);
   if (!uuids.length) return null;
 
