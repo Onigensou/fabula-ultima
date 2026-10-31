@@ -41,8 +41,11 @@
 | 2026-10-31 | Supercharge keeps flat DEF/MDEF +2 | Asked to check the band: DEF 14 = 40.5%, MDEF 13 = 49.2%, under the DEF 15 wall line; offline sim costs 4-7 points of win rate | user (verdict +2: claude) | keys moved to `defense` / `magic_defense`: `bonus_*` does nothing on an NPC |
 | 2026-10-31 | IM Charm + Grappled | solo elite rule | user | — |
 | 2026-10-31 | Bespoke shots: silhouette drill ram, purple bolts per target, form-change burst; token scale 2.2 | live review | user (shots: claude) | first review owed |
+| 2026-10-31 | HP 420 -> **520**; animations approved | Live sims at 420 read too easy (2-3 rounds, 61-92% party HP) | user (number: claude) | 6 live sims, all 3-round wins: 0 Crystals 91%, 80%; 1 Crystal 60%, 66%, 79%; 2 Crystals 70%. Keren down in 2 of the 4 Crystal fights |
+| 2026-10-31 | Spiral + Galvanic Drill = bare `chain 6`, shot cues each tick with oni.hit() | Purely visual: one roll and one damage shown as six ticks; passives fire once | user (count: claude) | live: 12 cues for 2 casts; balance approved at HP 520 |
+| 2026-10-31 | Galvanic Drill gains Overflow (all enemies, one check), keeps Pierce + Chain 6 | "If players can handle it, they can take more hits"; absurd multi-hit visual | user | one live sim: overtime at round 8, party 26%, Zarg + Keren down, 9 casts. User watched it and accepted the risk, leaving it to real play |
 
-**Live sims 2026-10-31 (real BD, 4 PCs, no guest, sim party brain):** 1 Crystal: win in 3 rounds at 61% party HP; 2 rounds at 74%; 3 rounds at 75%. 2 Crystals: 3 rounds at 71%. No PC down in any. With guest Kalina: 2 rounds at 75%. Sample is small and the sim party does not manage the Crystal or use Reveal, but it does make Ice through Gadgets and Thermokinesis. Reads easier than the concept; HP is the first dial.
+**Live sims 2026-10-31 (real BD, 4 PCs, no guest, sim party brain):** 1 Crystal: win in 3 rounds at 61% party HP; 2 rounds at 74%; 3 rounds at 75%. 2 Crystals: 3 rounds at 71%. No PC down in any. With guest Kalina: 2 rounds at 75%. Sample is small and the sim party does not manage the Crystal or use Reveal, but it does make Ice through Gadgets and Thermokinesis. Those were at HP 420; see the decision log for 520.
 
 ```json dossier
 {
@@ -64,7 +67,7 @@
     "Sim party brains ignore the Crystal and never use Reveal, so a real party's Hidden windows and clock play are unmeasured."
   ],
   "open_questions": [
-    "Live sims read easier than the concept (2-3 rounds, 61-75% party HP). User owns the verdict; HP is the first dial.",
+    "HP 520 is unproven with real players; the sim party ignores the Crystal and Reveal. User owns the verdict.",
     "A human has not played it. Reveal was proven through the skill simulator, not by a player."
   ]
 }

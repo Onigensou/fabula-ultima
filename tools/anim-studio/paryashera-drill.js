@@ -16,7 +16,8 @@
     morphMs: 560,          // silhouette deforms into the cone
     revMs: 300,            // cone spins up in place
     ramMs: 170,            // the hit: fast and violent
-    grindMs: 420,          // bores into the target
+    grindMs: 620,          // bores into the target; the Chain ticks land across this
+    ticks: 6,              // matches the chain 6 keyword on the item
     returnMs: 560,         // springs home, turning back into the creature
     // shape (fractions of the body)
     recoil: 0.14,          // pull-back before the ram
@@ -50,7 +51,9 @@
   const scriptSource = String.raw`
     const cfg = ctx.params.cfg;
     const caster = oni.caster;
-    const target = oni.targets[0];
+    // Nearest first: the ram lands on it, then the grind rakes through the rest.
+    const stops = [...oni.targets].sort((a, b) => Math.hypot(a.center.x - caster.center.x, a.center.y - caster.center.y) - Math.hypot(b.center.x - caster.center.x, b.center.y - caster.center.y));
+    const target = stops[0];
     const mesh = caster && caster.mesh;
     if (!mesh || !mesh.texture || !target) { oni.fireDone(); return; }
     const E = oni.EASE;
@@ -249,13 +252,14 @@
       }
     } });
 
-    // 5. Impact: damage lands here.
+    // 5. Impact: the first damage tick, and the gate for the rest of the action.
+    oni.hit();
     oni.fireDone();
     oni.sfx(cfg.hitSfx, { volume: cfg.volume });
     oni.screenshake({ duration: cfg.shakeMs, intensity: cfg.shake });
     rig.scale.set(flip * 0.92, 1.12);
     const tipX = tx - ux * target.w * 0.1, tipY = ty - uy * target.h * 0.1;
-    oni.vfx(cfg.GGS + "burst_anim02.webm", { x: tipX, y: tipY, size: Math.max(target.w, 160) * 2.6, zIndex: 96500, blend: PIXI.BLEND_MODES.ADD }).then((fx) => { if (fx) fx.sprite.tint = cfg.burstTint; });
+    for (const st of stops) oni.vfx(cfg.GGS + "burst_anim02.webm", { x: st.center.x, y: st.center.y, size: Math.max(st.w, 160) * 2.6, zIndex: 96500, blend: PIXI.BLEND_MODES.ADD }).then((fx) => { if (fx) fx.sprite.tint = cfg.burstTint; });
     oni.domFlash?.({ color: cfg.look === 'bolt' ? '#d9a0ff' : '#ffffff', alpha: 0.32, fadeIn: 20, fadeOut: 170 });
     await oni.hitstop(60);
     lines.clear();
@@ -265,14 +269,23 @@
     spin = cfg.spinTo;
     oni.particles({ x: tipX, y: tipY, count: 26, color: cfg.look === 'bolt' ? 0xd29aff : 0xfff2d8, size: 16, radius: Math.max(target.w, 160) * 1.5, life: 520, mode: 'burst', blend: PIXI.BLEND_MODES.ADD, parent: layer });
     const sparkAt = async () => {
-      for (let i = 0; i < 4; i++) {
-        oni.vfx(cfg.GGS + "spark_anim01.webm", { x: tipX + (Math.random() - 0.5) * target.w * 0.5, y: tipY + (Math.random() - 0.5) * target.h * 0.5, size: Math.max(target.w, 160) * 1.5, zIndex: 96400, blend: PIXI.BLEND_MODES.ADD, angle: Math.random() * 360 }).then((fx) => { if (fx) fx.sprite.tint = cfg.sparkTint; });
-        await oni.wait(cfg.grindMs / 4);
+      const gap = cfg.grindMs / cfg.ticks;
+      for (let i = 1; i < cfg.ticks; i++) {
+        await oni.wait(gap);
+        oni.hit();
+        oni.screenshake({ duration: 90, intensity: 5 });
+        // every creature on the card takes this tick
+        for (const st of stops) oni.vfx(cfg.GGS + "spark_anim01.webm", { x: st.center.x + (Math.random() - 0.5) * st.w * 0.5, y: st.center.y + (Math.random() - 0.5) * st.h * 0.5, size: Math.max(st.w, 160) * 1.5, zIndex: 96400, blend: PIXI.BLEND_MODES.ADD, angle: Math.random() * 360 }).then((fx) => { if (fx) fx.sprite.tint = cfg.sparkTint; });
       }
     };
     sparkAt();
     await oni.tween({ from: 0, to: 1, duration: cfg.grindMs, ease: E.linear, onUpdate: (v) => {
-      curX = hitX + ux * 26 * Math.sin(v * Math.PI); curY = hitY + uy * 26 * Math.sin(v * Math.PI);
+      if (stops.length < 2) { curX = hitX + ux * 26 * Math.sin(v * Math.PI); curY = hitY + uy * 26 * Math.sin(v * Math.PI); return; }
+      // rake through the party, tip on each creature in turn
+      const p = v * (stops.length - 1), i = Math.min(stops.length - 2, Math.floor(p)), k = p - i;
+      const ax = stops[i].center.x - ux * coneWorld * (0.5 - cfg.stopShort), ay = stops[i].center.y - uy * coneWorld * (0.5 - cfg.stopShort);
+      const bx = stops[i + 1].center.x - ux * coneWorld * (0.5 - cfg.stopShort), by = stops[i + 1].center.y - uy * coneWorld * (0.5 - cfg.stopShort);
+      curX = ax + (bx - ax) * k; curY = ay + (by - ay) * k;
     } });
 
     // 7. Spring home, turning back into the creature.
