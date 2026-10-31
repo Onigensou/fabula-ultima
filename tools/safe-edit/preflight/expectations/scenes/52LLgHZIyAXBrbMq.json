@@ -78,7 +78,7 @@
         "forceInitialView": true
       },
       "fabula-ultima-companion": {
-        "campSceneUuid": "Scene.zo6ZTpspg2C5GnP4",
+        "campSceneUuid": "Scene.MlM1tFJD6YIeOh1L",
         "oniFabula": {
           "general": {
             "sceneMode": "dungeon",
@@ -324,7 +324,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359022361,
-      "modifiedTime": 1793419491096,
+      "modifiedTime": 1793431956247,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [
