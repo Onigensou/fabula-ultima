@@ -16,7 +16,7 @@
     }
   },
   "folder": "to3QkbU70EQKKxHW",
-  "formula": "1d45",
+  "formula": "1d52",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
   "name": "Valley of the Dragon Underground - Encounter",
   "ownership": {
@@ -106,6 +106,62 @@
         18
       ],
       "text": "Obsidrax, Electro Slime, Electro Slime",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "FgEncounterRow01",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        46,
+        46
+      ],
+      "text": "Galvanic Paryashera, Fulgimite, Fulgimite",
+      "type": "text",
+      "weight": 1
+    },
+    {
+      "_id": "FgEncounterRow02",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        47,
+        48
+      ],
+      "text": "Fulgimite, Lightning Prism",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "FgEncounterRow03",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        49,
+        50
+      ],
+      "text": "Fulgimite, Skizzik, Fulgimite",
+      "type": "text",
+      "weight": 2
+    },
+    {
+      "_id": "FgEncounterRow04",
+      "documentId": null,
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+      "range": [
+        51,
+        52
+      ],
+      "text": "Fulgimite, Obsidrax",
       "type": "text",
       "weight": 2
     },

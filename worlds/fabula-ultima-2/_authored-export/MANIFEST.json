@@ -18917,6 +18917,38 @@
         "effects": 0
       },
       {
+        "id": "FulgimiteActor01",
+        "name": "Fulgimite",
+        "type": "character",
+        "items": [
+          {
+            "id": "FgLootEmptyItm01",
+            "name": "(Empty)"
+          },
+          {
+            "id": "FgBiteAttack0001",
+            "name": "Bite"
+          },
+          {
+            "id": "FgEvasionPass001",
+            "name": "Evasion"
+          },
+          {
+            "id": "FgImpersonate001",
+            "name": "Lightning Crystal Impersonation"
+          },
+          {
+            "id": "FgLootEssenceI01",
+            "name": "Lightning Essence"
+          },
+          {
+            "id": "FgResonance00001",
+            "name": "Resonance"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "RTx2b68mGqAXebwh",
         "name": "Fury",
         "type": "character",
@@ -26632,12 +26664,12 @@
       {
         "id": "sULKvLErNMF8JtUr",
         "name": "Valley of the Dragon Underground - Encounter",
-        "results": 23
+        "results": 27
       },
       {
         "id": "hBupoi4SsKj1GmDM",
         "name": "Valley of the Dragon Underground - Enemies",
-        "results": 11
+        "results": 12
       },
       {
         "id": "oDiuDJRoayGJwr1L",

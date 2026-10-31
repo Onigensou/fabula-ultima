@@ -45,3 +45,35 @@ blown up sooner, and a party that swings at the wrong Crystal gets bitten by the
 - Zarg's bow declares "Up to two", so under the declared-shape ruling it can't target a Fulgimite
   at all. Needs the user's call.
 - A human has not played it. Offline Mindscape does not model the Crystal or the disguise.
+
+```json dossier
+{
+  "monster": "Fulgimite",
+  "actorId": "FulgimiteActor01",
+  "status": "draft",
+  "updated": "2026-10-31",
+  "role": "weak Underground utility soldier that speeds up the Lightning Crystal and may disguise as one",
+  "exceptions": [
+    {
+      "rule": "absorb",
+      "why": "Bolt absorb is the brief: the Crystal blast it hastens heals it.",
+      "decided_by": "user",
+      "date": "2026-10-31"
+    }
+  ],
+  "invariants": [
+    { "id": "absorbs-bolt", "affinity": "bolt", "equals": "AB",
+      "why": "The blast heals it, and a Bolt hit can never reveal or bump a fake." },
+    { "id": "resonance-reaches-crystal", "item": "Resonance", "field": "target_eligibility", "contains": "TARGET_COUNTDOWN",
+      "why": "This identifier is what lets ActionReader pick a battlefield object at all." }
+  ],
+  "blind_spots": [
+    "The offline Mindscape engine does not model the Crystal, Resonance or the disguise; use live sim.run with conflictEventOptions.",
+    "Sim party brains don't know which Crystal to suspect or how to play around Resonance."
+  ],
+  "open_questions": [
+    "Balance is unmeasured, by the user's call on 2026-10-31.",
+    "Should a declared Up-to-N weapon (Zarg's bow) be able to single out a Fulgimite? Today it can't."
+  ]
+}
+```

@@ -1,0 +1,1223 @@
+{
+  "_id": "FulgimiteActor01",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "impersonates": {
+        "chance": 0.15,
+        "object": "lightning-crystal"
+      },
+      "spriteShadow": true
+    }
+  },
+  "folder": "4gMC1IxdJlF59BSi",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fulgimite_Standard.png",
+  "items": [
+    {
+      "_id": "FgBiteAttack0001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Bite",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_command": "attack",
+          "action_intent": "harmful",
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_preload_urls": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/016_claw_physical.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/001_hit_physical.webm",
+          "animation_script": "<p>// @desc Fulgimite Bite: crouch, one leap to the target, two claw marks crossing, hop home. Simple on purpose, it is chaff</p><p>\"use strict\";</p><p>(async () =&gt; {</p><p>  const CFG = {</p><p>    MV: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/\",</p><p>    S: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/\",</p><p>    windupMs: 420,</p><p>    leapMs: 560,</p><p>    leapArc: 130,</p><p>    holdMs: 260,</p><p>    returnMs: 720,</p><p>    stopShort: 150,    // stands this far from the target's centre</p><p>    clawSize: 400,</p><p>    clawRate: 0.8,</p><p>    hitSize: 300,</p><p>    volume: 0.7,</p><p>  };</p><p></p><p>  const P = payload ?? globalThis.__PAYLOAD ?? {};</p><p>  const casterUuid = P.casterTokenUuid ?? P.sourceTokenUuid ?? null;</p><p>  const targetUuids = (P.targetTokenUuids ?? (P.targets ?? []).map((t) =&gt; t.tokenUuid) ?? []).filter(Boolean);</p><p>  const doneHook = \"oni:done:\" + foundry.utils.randomID(8);</p><p></p><p>  const onceHook = (name, ms) =&gt; new Promise((resolve) =&gt; {</p><p>    const id = Hooks.once(name, () =&gt; { clearTimeout(t); resolve(); });</p><p>    const t = setTimeout(() =&gt; { Hooks.off(name, id); resolve(); }, ms);</p><p>  });</p><p></p><p>  Hooks.callAll(\"oni:animationStart\", { local: true, world: false });</p><p></p><p>  const scriptSource = String.raw`</p><p>    const cfg = ctx.params.cfg;</p><p>    const E = oni.EASE;</p><p>    const caster = oni.caster;</p><p>    const target = oni.targets[0];</p><p>    if (!caster || !caster.mesh || !target) { oni.fireDone(); return; }</p><p></p><p>    const layer = oni.layer({ zIndex: 95500 });</p><p>    const body = oni.cloneToken(caster, { parent: layer });</p><p>    const restore = oni.hideToken(caster);</p><p>    const hx = body.x, hy = body.y;</p><p>    const sx = body.scale.x, sy = body.scale.y;</p><p>    const dir = target.center.x &gt;= hx ? 1 : -1;</p><p>    const tx = target.center.x - dir * cfg.stopShort, ty = target.center.y;</p><p></p><p>    // Crouch.</p><p>    await oni.tween({ from: 0, to: 1, duration: cfg.windupMs, ease: E.inOutQuad, onUpdate: (v) =&gt; {</p><p>      body.scale.set(sx * (1 + 0.12 * v), sy * (1 - 0.22 * v));</p><p>    } });</p><p></p><p>    // One leap.</p><p>    oni.sfx(cfg.S + \"Soundboard/Jump1.ogg\", { volume: cfg.volume * 0.7 });</p><p>    await oni.jump(body, { height: cfg.leapArc, duration: cfg.leapMs, to: { x: tx, y: ty }, onUpdate: (u) =&gt; {</p><p>      const k = u &lt; 0.3 ? 0.78 + 0.5 * (u / 0.3) : 1.28 - 0.28 * ((u - 0.3) / 0.7);</p><p>      body.scale.set(sx, sy * k);</p><p>    } });</p><p>    body.scale.set(sx, sy);</p><p></p><p>    // The bite: two claw marks crossing.</p><p>    oni.hit();</p><p>    oni.fireDone();</p><p>    oni.sfx(cfg.S + \"HitBlowS.ogg\", { volume: cfg.volume });</p><p>    const cx = target.center.x, cy = target.center.y;</p><p>    const claw = cfg.MV + \"016_claw_physical.webm\";</p><p>    oni.vfx(claw, { x: cx, y: cy, size: cfg.clawSize, zIndex: 96000 }).then((fx) =&gt; { if (fx) try { fx.video.playbackRate = cfg.clawRate; } catch (e) {} });</p><p>    oni.vfx(claw, { x: cx, y: cy, size: cfg.clawSize, zIndex: 96000, mirror: true }).then((fx) =&gt; { if (fx) try { fx.video.playbackRate = cfg.clawRate; } catch (e) {} });</p><p>    oni.vfx(cfg.MV + \"001_hit_physical.webm\", { x: cx, y: cy, size: cfg.hitSize, zIndex: 96100 });</p><p>    await oni.wait(cfg.holdMs);</p><p></p><p>    // Hop home.</p><p>    oni.sfx(cfg.S + \"Soundboard/Jump1.ogg\", { volume: cfg.volume * 0.4 });</p><p>    await oni.jump(body, { height: cfg.leapArc * 0.6, duration: cfg.returnMs, to: { x: hx, y: hy } });</p><p>    await oni.tween({ from: 0, to: 1, duration: 240, ease: E.inOutQuad, onUpdate: (v) =&gt; {</p><p>      body.scale.set(sx, sy * (0.86 + 0.14 * v));</p><p>    } });</p><p>    restore();</p><p>  `;</p><p></p><p>  game.ONI.pseudo.play({</p><p>    scriptId: \"anim-studio/fulgimite-bite\",</p><p>    scriptSource,</p><p>    casterTokenUuid: casterUuid,</p><p>    targetTokenUuids: targetUuids,</p><p>    params: { doneHook, cfg: CFG },</p><p>  });</p><p></p><p>  await onceHook(doneHook, CFG.windupMs + CFG.leapMs + 6000);</p><p>  Hooks.callAll(\"oni:animationEnd\", { local: true, world: false });</p><p>})();</p><p></p>",
+          "check_bonus": "5",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "15",
+          "defense_target_type": "def",
+          "description": "<p>Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Bite",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Attack",
+          "type_damage": "Physical",
+          "use_optional_params": false,
+          "uuid": "Actor.FulgimiteActor01.Item.FgBiteAttack0001"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "FgEvasionPass001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "FgEvasionAE00001",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "cannot_be_targeted_by",
+              "mode": 5,
+              "priority": 0,
+              "value": "area"
+            }
+          ],
+          "description": "<p>This creature can't be targeted by area actions or effects.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "9IyEHsRTryxVBNsR",
+              "originalParentId": "blW2o4tFoB0oVzEM",
+              "originalUuid": "Actor.x8TBsDZaRgoSo5no.Item.blW2o4tFoB0oVzEM.ActiveEffect.9IyEHsRTryxVBNsR"
+            },
+            "fabula-ultima-companion": {
+              "directorPermanent": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": null,
+          "name": "Evasion",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+      "name": "Evasion",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_intent": "harmful",
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>This creature can't be targeted by area actions or effects.</p>",
+          "details_roller": "Show",
+          "duration": "-",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Evasion",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.FulgimiteActor01.Item.FgEvasionPass001"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "iFdNNGp4OVZVMEcB"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "FgImpersonate001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "FgDisguiseAE0001",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "9IyEHsRTryxVBNsR",
+              "originalParentId": "blW2o4tFoB0oVzEM",
+              "originalUuid": "Actor.x8TBsDZaRgoSo5no.Item.blW2o4tFoB0oVzEM.ActiveEffect.9IyEHsRTryxVBNsR"
+            },
+            "fabula-ultima-companion": {
+              "directorPermanent": true,
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "$deleted": false,
+                    "chain_steps": "imp_zero,imp_mask,imp_shot,imp_bolt,imp_para,imp_slow,imp_reveal",
+                    "effect_kind": "chain",
+                    "effect_label": "imp_chain"
+                  },
+                  "1": {
+                    "$deleted": false,
+                    "damage_amount": "0",
+                    "damage_operation": "set",
+                    "damage_stage": "incoming",
+                    "effect_kind": "adjust_damage",
+                    "effect_label": "imp_zero"
+                  },
+                  "2": {
+                    "$deleted": false,
+                    "conflict_action": "mask_countdown",
+                    "effect_kind": "conflict_event_action",
+                    "effect_label": "imp_mask",
+                    "target_ref": "self"
+                  },
+                  "3": {
+                    "$deleted": false,
+                    "action_ref": "Actor.FulgimiteActor01.Item.FgImpersonate001",
+                    "effect_kind": "play_animation",
+                    "effect_label": "imp_shot",
+                    "target_ref": "cause_actor"
+                  },
+                  "4": {
+                    "$deleted": false,
+                    "attacker_name": "Fulgimite",
+                    "damage_amount": "18",
+                    "damage_cause": "damage",
+                    "damage_element": "bolt",
+                    "damage_verbosity": "full",
+                    "effect_kind": "deal_damage",
+                    "effect_label": "imp_bolt",
+                    "target_ref": "cause_actor"
+                  },
+                  "5": {
+                    "$deleted": false,
+                    "ae_template_ref": "Paralyzed",
+                    "effect_kind": "apply_ae",
+                    "effect_label": "imp_para",
+                    "target_ref": "cause_actor"
+                  },
+                  "6": {
+                    "$deleted": false,
+                    "ae_template_ref": "Slow",
+                    "effect_kind": "apply_ae",
+                    "effect_label": "imp_slow",
+                    "target_ref": "cause_actor"
+                  },
+                  "7": {
+                    "$deleted": false,
+                    "conflict_action": "reveal",
+                    "effect_kind": "conflict_event_action",
+                    "effect_label": "imp_reveal",
+                    "target_ref": "self"
+                  }
+                },
+                "name": "Crystal Disguise",
+                "reaction_config_table": {
+                  "0": {
+                    "$deleted": false,
+                    "condition_formula": "HIT_ACTION_AIMED_AT_ME == 1",
+                    "reaction_effect_ref": "imp_chain",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_takes_damage"
+                  },
+                  "1": {
+                    "$deleted": false,
+                    "condition_formula": "HIT_ACTION_AIMED_AT_ME == 0",
+                    "reaction_effect_ref": "imp_zero",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_takes_damage"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": null,
+          "name": "Crystal Disguise",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+      "name": "Lightning Crystal Impersonation",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_intent": "harmful",
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_preload_urls": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fulgimite_Standard.png\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Disgaea%204/webm/flash_ring_white.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/076_thunder_one_1.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/064_paralyze.webm",
+          "animation_script": "<p>// @desc Fulgimite reveal: the Crystal shakes and whitens, turns into a Fulgimite and, given a target, drops a violet bolt on it. With no target it is the reveal alone. Played from the Crystal token</p><p>\"use strict\";</p><p>(async () =&gt; {</p><p>  const CFG = {</p><p>    MV: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/\",</p><p>    D4: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Disgaea%204/webm/\",</p><p>    S: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/\",</p><p>    art: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fulgimite_Standard.png\",</p><p>    scale: 1,              // the actor's token scale: the shot ends on the pose the real token starts in</p><p>    beatMs: 520,</p><p>    shakeMs: 620,</p><p>    shakePx: 7,</p><p>    popMs: 640,</p><p>    hopPx: 110,</p><p>    counterBeatMs: 380,</p><p>    anchorY: 0.858,        // the bolt clip's ground point</p><p>    hue: 225,              // yellow to violet, same as Thunder Vent</p><p>    boltSize: 620,</p><p>    boltRate: 0.7,</p><p>    fireAfterMs: 190,</p><p>    paraDelayMs: 420,</p><p>    paraSize: 420,</p><p>    tailMs: 900,</p><p>    ringSize: 190,</p><p>    ringRate: 0.6,</p><p>    holdForSwapMs: 15000,  // the swap normally ends this much sooner</p><p>    volume: 0.65,</p><p>  };</p><p></p><p>  const P = payload ?? globalThis.__PAYLOAD ?? {};</p><p>  const casterUuid = P.casterTokenUuid ?? P.sourceTokenUuid ?? null;</p><p>  const targetUuids = (P.targetTokenUuids ?? (P.targets ?? []).map((t) =&gt; t.tokenUuid) ?? []).filter(Boolean);</p><p>  const doneHook = \"oni:done:\" + foundry.utils.randomID(8);</p><p></p><p>  const onceHook = (name, ms) =&gt; new Promise((resolve) =&gt; {</p><p>    const id = Hooks.once(name, () =&gt; { clearTimeout(t); resolve(); });</p><p>    const t = setTimeout(() =&gt; { Hooks.off(name, id); resolve(); }, ms);</p><p>  });</p><p></p><p>  Hooks.callAll(\"oni:animationStart\", { local: true, world: false });</p><p></p><p>  const scriptSource = String.raw`</p><p>    const cfg = ctx.params.cfg;</p><p>    const E = oni.EASE;</p><p>    const caster = oni.caster;</p><p>    const target = oni.targets[0] ?? null;</p><p>    if (!caster || !caster.mesh) { oni.fireDone(); return; }</p><p>    const sfx = (f, k = 1) =&gt; oni.sfx(cfg.S + f, { volume: cfg.volume * k });</p><p></p><p>    const load = foundry.canvas?.loadTexture ?? globalThis.loadTexture;</p><p>    const tex = await load(cfg.art);</p><p></p><p>    // Everything the swap must not reveal lives OUTSIDE the script's own layer,</p><p>    // because the script ends before the event swaps the tokens. This holds the</p><p>    // finished Fulgimite in place and the Crystal hidden until the Crystal token is</p><p>    // actually gone, by which point the real token is already drawn beneath it.</p><p>    const stay = new PIXI.Container();</p><p>    stay.zIndex = 95400;</p><p>    canvas.stage.sortableChildren = true;</p><p>    canvas.stage.addChild(stay);</p><p>    const mesh = caster.mesh;</p><p>    const body = new PIXI.Sprite(mesh.texture);</p><p>    body.anchor.set(0.5);</p><p>    body.width = mesh.width;</p><p>    body.height = mesh.height;</p><p>    body.scale.x = Math.abs(body.scale.x) * (Math.sign(mesh.scale?.x || 1) || 1);</p><p>    body.position.set(caster.center.x, caster.center.y);</p><p>    stay.addChild(body);</p><p>    const hx = body.x, hy = body.y;</p><p>    const hold = canvas.app.ticker;</p><p>    const giveUpAt = performance.now() + cfg.holdForSwapMs;</p><p>    const guard = () =&gt; {</p><p>      const gone = caster.destroyed;</p><p>      if (!gone &amp;&amp; performance.now() &lt; giveUpAt) {</p><p>        caster.renderable = false;</p><p>        if (caster.mesh) caster.mesh.renderable = false;</p><p>        return;</p><p>      }</p><p>      hold.remove(guard);</p><p>      if (!gone) { caster.renderable = true; if (caster.mesh) caster.mesh.renderable = true; }</p><p>      try { stay.destroy({ children: true }); } catch (e) {}</p><p>    };</p><p>    hold.add(guard);</p><p></p><p>    // Shake and whiten.</p><p>    await oni.wait(cfg.beatMs);</p><p>    sfx(\"HitElectric.ogg\", 0.8);</p><p>    const white = new PIXI.ColorMatrixFilter();</p><p>    body.filters = [white];</p><p>    await oni.tween({ from: 0, to: 1, duration: cfg.shakeMs, ease: E.inQuad, onUpdate: (v) =&gt; {</p><p>      body.x = hx + (Math.random() - 0.5) * 2 * cfg.shakePx;</p><p>      white.brightness(1 + 2.4 * v, false);</p><p>    } });</p><p>    body.x = hx;</p><p></p><p>    // Into the creature. Contain-fit in the token's box, same as Foundry draws it.</p><p>    oni.vfx(cfg.D4 + \"flash_ring_white.webm\", { x: hx, y: hy, size: cfg.ringSize, zIndex: 96100, blend: PIXI.BLEND_MODES.ADD, alpha: 0.85 }).then((fx) =&gt; { if (fx) try { fx.video.playbackRate = cfg.ringRate; } catch (e) {} });</p><p>    body.texture = tex;</p><p>    const box = canvas.grid.size;</p><p>    const fit = Math.min(box / tex.width, box / tex.height) * cfg.scale;</p><p>    const flip = Math.sign(caster.mesh.scale.x || -1) || -1;</p><p>    sfx(\"Soundboard/Jump1.ogg\");</p><p>    await oni.tween({ from: 0, to: 1, duration: cfg.popMs, ease: E.linear, onUpdate: (u) =&gt; {</p><p>      white.brightness(1 + 2.4 * (1 - E.outQuad(Math.min(1, u * 1.6))), false);</p><p>      const q = E.outQuad(u);</p><p>      body.scale.set(flip * fit * (1.25 - 0.25 * q), fit * (0.35 + 0.65 * q + Math.sin(u * Math.PI) * 0.18));</p><p>      body.y = hy - 4 * cfg.hopPx * u * (1 - u);</p><p>    } });</p><p>    body.filters = null;</p><p>    body.scale.set(flip * fit, fit);</p><p>    body.position.set(hx, hy);</p><p>    sfx(\"Soundboard/Earth3.ogg\", 0.7);</p><p></p><p>    if (!target) { oni.fireDone(); await oni.wait(cfg.tailMs); return; }</p><p></p><p>    // The counter.</p><p>    await oni.wait(cfg.counterBeatMs);</p><p>    const hue = new PIXI.ColorMatrixFilter();</p><p>    hue.hue(cfg.hue, false);</p><p>    sfx(\"Thunder7.ogg\", 1.15);</p><p>    oni.vfx(cfg.MV + \"076_thunder_one_1.webm\", { x: target.center.x, y: target.y + target.h, size: cfg.boltSize, zIndex: 96200 }).then((b) =&gt; {</p><p>      if (!b) return;</p><p>      b.sprite.anchor.set(0.5, cfg.anchorY);</p><p>      b.sprite.filters = [hue];</p><p>      try { b.video.playbackRate = cfg.boltRate; } catch (e) {}</p><p>    });</p><p>    await oni.wait(cfg.fireAfterMs);</p><p>    oni.hit();</p><p>    oni.fireDone();</p><p>    oni.screenshake({ duration: 420, intensity: 8 });</p><p>    await oni.wait(cfg.paraDelayMs);</p><p>    sfx(\"Soundboard/Paralyze1.ogg\", 0.9);</p><p>    oni.vfx(cfg.MV + \"064_paralyze.webm\", { x: target.center.x, y: target.center.y, size: cfg.paraSize, zIndex: 96300 }).then((p) =&gt; {</p><p>      if (p) p.sprite.filters = [hue];</p><p>    });</p><p>    await oni.wait(cfg.tailMs);</p><p>  `;</p><p></p><p>  game.ONI.pseudo.play({</p><p>    scriptId: \"anim-studio/fulgimite-reveal\",</p><p>    scriptSource,</p><p>    casterTokenUuid: casterUuid,</p><p>    targetTokenUuids: targetUuids,</p><p>    params: { doneHook, cfg: CFG },</p><p>  });</p><p></p><p>  await onceHook(doneHook, CFG.beatMs + CFG.shakeMs + CFG.popMs + 8000);</p><p>  Hooks.callAll(\"oni:animationEnd\", { local: true, world: false });</p><p>})();</p><p></p>",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;Lightning Crystals appear</p></li></ul><p>This creature may take the place of one. While disguised, an action aimed at it deals no damage. This creature then deals <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to the attacker, inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Paralyzed</strong></a>&nbsp;and <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Slow</strong></a>, and reveals itself.</p>",
+          "details_roller": "Show",
+          "duration": "-",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Lightning Crystal Impersonation",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.FulgimiteActor01.Item.FgImpersonate001"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "iFdNNGp4OVZVMEcB"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "FgLootEmptyItm01",
+      "_stats": {
+        "compendiumSource": "Item.SUYqRKHBGXUhiOL1",
+        "coreVersion": "12.343",
+        "createdTime": 1791399213688,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "icons/svg/item-bag.svg",
+      "name": "(Empty)",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<pre><code>Use this item as placeholder for failing to steals any item from the target</code></pre>",
+          "dragon_ef": "100",
+          "effect_table": {},
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "SUYqRKHBGXUhiOL1",
+          "img": "icons/svg/item-bag.svg",
+          "ingredient_taste": "",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "0",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "(Empty)",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "skill_tags": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.SUYqRKHBGXUhiOL1",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "SUYqRKHBGXUhiOL1"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "FgLootEssenceI01",
+      "_stats": {
+        "compendiumSource": "Item.E1emEssenceB01t0",
+        "coreVersion": "12.343",
+        "createdTime": 1786934570857,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "icons/commodities/gems/gem-rough-cushion-yellow.webp",
+      "name": "Lightning Essence",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "description": "<p><em>Essence that can be obtained from monsters in the storm area in the ecological environment.</em></p>",
+          "effect_table": {},
+          "id": "E1emEssenceB01t0",
+          "img": "icons/commodities/gems/gem-rough-cushion-yellow.webp",
+          "ingredient_taste": "sour",
+          "ingredient_taste2": "",
+          "ip_cost": "0",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_cost": "60",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "material",
+          "name": "Lightning Essence",
+          "optional_params": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "uuid": "Item.E1emEssenceB01t0"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "E1emEssenceB01t0"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "FgResonance00001",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213946.309.png",
+      "name": "Resonance",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_preload_urls": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/spark_anim01.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Disgaea%204/webm/flash_ring_white.webm",
+          "animation_script": "<p>// @desc Fulgimite Resonance: it trembles and glows, three violet sparks jump to the Crystal, a ring on arrival. The gate fires there, so the count drops on impact</p><p>\"use strict\";</p><p>(async () =&gt; {</p><p>  const CFG = {</p><p>    GGS: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/\",</p><p>    D4: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Disgaea%204/webm/\",</p><p>    S: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/\",</p><p>    chargeMs: 800,</p><p>    sparkGapMs: 180,</p><p>    sparkSize: 300,</p><p>    sparkRate: 0.7,</p><p>    ringSize: 190,</p><p>    ringRate: 0.6,</p><p>    tailMs: 900,</p><p>    tint: 0xc79aff,</p><p>    glowColor: \"rgba(199,154,255,1)\",</p><p>    glowEdge: \"rgba(120,40,220,0)\",</p><p>    tremble: 3,</p><p>    volume: 0.6,</p><p>  };</p><p></p><p>  const P = payload ?? globalThis.__PAYLOAD ?? {};</p><p>  const casterUuid = P.casterTokenUuid ?? P.sourceTokenUuid ?? null;</p><p>  const targetUuids = (P.targetTokenUuids ?? (P.targets ?? []).map((t) =&gt; t.tokenUuid) ?? []).filter(Boolean);</p><p>  const doneHook = \"oni:done:\" + foundry.utils.randomID(8);</p><p></p><p>  const onceHook = (name, ms) =&gt; new Promise((resolve) =&gt; {</p><p>    const id = Hooks.once(name, () =&gt; { clearTimeout(t); resolve(); });</p><p>    const t = setTimeout(() =&gt; { Hooks.off(name, id); resolve(); }, ms);</p><p>  });</p><p></p><p>  Hooks.callAll(\"oni:animationStart\", { local: true, world: false });</p><p></p><p>  const scriptSource = String.raw`</p><p>    const cfg = ctx.params.cfg;</p><p>    const E = oni.EASE;</p><p>    const caster = oni.caster;</p><p>    const target = oni.targets[0];</p><p>    if (!caster || !caster.mesh || !target) { oni.fireDone(); return; }</p><p></p><p>    const layer = oni.layer({ zIndex: 95500 });</p><p>    const glow = new PIXI.Sprite(oni.radialTexture(cfg.glowColor, cfg.glowEdge, { size: 256 }));</p><p>    glow.anchor.set(0.5);</p><p>    glow.blendMode = PIXI.BLEND_MODES.ADD;</p><p>    glow.position.set(caster.center.x, caster.center.y);</p><p>    layer.addChild(glow);</p><p>    const body = oni.cloneToken(caster, { parent: layer });</p><p>    const restore = oni.hideToken(caster);</p><p>    const hx = body.x, cw = Math.abs(caster.mesh.width) * 1.8;</p><p></p><p>    // Tremble and charge.</p><p>    oni.sfx(cfg.S + \"HitElectric.ogg\", { volume: cfg.volume * 0.8 });</p><p>    await oni.tween({ from: 0, to: 1, duration: cfg.chargeMs, ease: E.inOutQuad, onUpdate: (v) =&gt; {</p><p>      body.x = hx + (Math.random() - 0.5) * 2 * cfg.tremble;</p><p>      glow.width = glow.height = cw * (0.4 + 0.6 * v);</p><p>      glow.alpha = v;</p><p>    } });</p><p>    body.x = hx;</p><p></p><p>    // Three sparks along the path.</p><p>    const ax = caster.center.x, ay = caster.center.y, bx = target.center.x, by = target.center.y;</p><p>    const spark = (x, y, size, angle) =&gt; oni.vfx(cfg.GGS + \"spark_anim01.webm\", { x, y, size, angle, zIndex: 96000, blend: PIXI.BLEND_MODES.ADD }).then((fx) =&gt; {</p><p>      if (!fx) return;</p><p>      fx.sprite.tint = cfg.tint;</p><p>      try { fx.video.playbackRate = cfg.sparkRate; } catch (e) {}</p><p>    });</p><p>    for (const f of [0.22, 0.55, 0.88]) {</p><p>      spark(ax + (bx - ax) * f, ay + (by - ay) * f, cfg.sparkSize, f * 115);</p><p>      await oni.wait(cfg.sparkGapMs);</p><p>    }</p><p>    oni.tween({ from: 1, to: 0, duration: 460, ease: E.inOutQuad, onUpdate: (v) =&gt; { glow.alpha = v; } });</p><p></p><p>    // Arrival.</p><p>    oni.fireDone();</p><p>    oni.sfx(cfg.S + \"System_Tick.mp3\", { volume: cfg.volume });</p><p>    spark(bx, by, cfg.sparkSize * 1.2, 0);</p><p>    oni.vfx(cfg.D4 + \"flash_ring_white.webm\", { x: bx, y: by, size: cfg.ringSize, zIndex: 96100, blend: PIXI.BLEND_MODES.ADD, alpha: 0.85 }).then((fx) =&gt; {</p><p>      if (!fx) return;</p><p>      fx.sprite.tint = cfg.tint;</p><p>      try { fx.video.playbackRate = cfg.ringRate; } catch (e) {}</p><p>    });</p><p>    await oni.wait(cfg.tailMs);</p><p>    restore();</p><p>  `;</p><p></p><p>  game.ONI.pseudo.play({</p><p>    scriptId: \"anim-studio/fulgimite-resonance\",</p><p>    scriptSource,</p><p>    casterTokenUuid: casterUuid,</p><p>    targetTokenUuids: targetUuids,</p><p>    params: { doneHook, cfg: CFG },</p><p>  });</p><p></p><p>  await onceHook(doneHook, CFG.chargeMs + 6000);</p><p>  Hooks.callAll(\"oni:animationEnd\", { local: true, world: false });</p><p>})();</p><p></p>",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>Reduce the countdown of one Lightning Crystal by <strong>2</strong>.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "conflict_action": "adjust_countdown",
+              "conflict_amount": "-2",
+              "effect_kind": "conflict_event_action",
+              "effect_label": "res_down",
+              "target_ref": "action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213946.309.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Resonance",
+          "on_activate_effect_ref": "res_down",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "One Ally",
+          "skill_type": "Active",
+          "target_eligibility": "TARGET_COUNTDOWN > 0",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.FulgimiteActor01.Item.FgResonance00001"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    }
+  ],
+  "name": "Fulgimite",
+  "ownership": {
+    "default": 0
+  },
+  "prototypeToken": {
+    "actorId": "FulgimiteActor01",
+    "actorLink": false,
+    "alpha": 1,
+    "appendNumber": false,
+    "bar1": {
+      "attribute": "attributeBar.current_hp"
+    },
+    "bar2": {
+      "attribute": "attributeBar.current_mp"
+    },
+    "detectionModes": [],
+    "displayBars": 50,
+    "displayName": 50,
+    "disposition": -1,
+    "flags": {
+      "barbrawl": {
+        "resourceBars": {
+          "bar1": {
+            "attribute": "attributeBar.current_hp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar1",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "HP",
+            "maxcolor": "#80FF00",
+            "mincolor": "#FF0000",
+            "opacity": null,
+            "order": 1,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar2": {
+            "attribute": "attributeBar.current_mp",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": false,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar2",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "MP",
+            "maxcolor": "#80B3FF",
+            "mincolor": "#000080",
+            "opacity": null,
+            "order": 0,
+            "otherVisibility": 0,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          },
+          "bar3": {
+            "attribute": "attributeBar.shield_value",
+            "bgImage": "",
+            "fgImage": "",
+            "gmVisibility": -1,
+            "hideCombat": false,
+            "hideEmpty": true,
+            "hideFull": false,
+            "hideHud": false,
+            "hideNoCombat": false,
+            "id": "bar3",
+            "indentLeft": null,
+            "indentRight": null,
+            "invert": false,
+            "invertDirection": false,
+            "label": "",
+            "maxcolor": "#FFFFFF",
+            "mincolor": "#000000",
+            "opacity": null,
+            "order": 2,
+            "otherVisibility": 50,
+            "ownerVisibility": 50,
+            "position": "bottom-inner",
+            "shareHeight": false,
+            "style": "fraction",
+            "subdivisions": null,
+            "subdivisionsOwner": false
+          }
+        }
+      },
+      "hex-size-support": {
+        "hideBorder": true,
+        "hideFill": true
+      }
+    },
+    "height": 1,
+    "hexagonalShape": 0,
+    "light": {
+      "alpha": 0.5,
+      "angle": 360,
+      "animation": {
+        "intensity": 5,
+        "reverse": false,
+        "speed": 5,
+        "type": null
+      },
+      "attenuation": 0.5,
+      "bright": 0,
+      "color": null,
+      "coloration": 1,
+      "contrast": 0,
+      "darkness": {
+        "max": 1,
+        "min": 0
+      },
+      "dim": 0,
+      "luminosity": 0.5,
+      "negative": false,
+      "priority": 0,
+      "saturation": 0,
+      "shadows": 0
+    },
+    "lockRotation": false,
+    "name": "Fulgimite",
+    "occludable": {
+      "radius": 0
+    },
+    "prependAdjective": false,
+    "randomImg": false,
+    "ring": {
+      "colors": {
+        "background": null,
+        "ring": null
+      },
+      "effects": 1,
+      "enabled": false,
+      "subject": {
+        "scale": 1,
+        "texture": null
+      }
+    },
+    "rotation": 0,
+    "sight": {
+      "angle": 360,
+      "attenuation": 0.1,
+      "brightness": 0,
+      "color": null,
+      "contrast": 0,
+      "enabled": false,
+      "range": 0,
+      "saturation": 0,
+      "visionMode": "basic"
+    },
+    "texture": {
+      "alphaThreshold": 0.75,
+      "anchorX": 0.5,
+      "anchorY": 0.5,
+      "fit": "contain",
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fulgimite_Standard.png",
+      "tint": "#ffffff"
+    },
+    "width": 1
+  },
+  "sort": 0,
+  "system": {
+    "activeConditionalModifierGroups": [],
+    "props": {
+      "action_pattern_table": {
+        "0": {
+          "$deleted": false,
+          "action_pattern_condition": "target_count",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Resonance",
+          "action_pattern_priority": "8",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "1",
+          "action_pattern_value_2": "99"
+        },
+        "1": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Bite",
+          "action_pattern_priority": "2",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        }
+      },
+      "activation": "1",
+      "affinity_1": "NA",
+      "affinity_2": "RS",
+      "affinity_3": "AB",
+      "affinity_4": "NA",
+      "affinity_5": "VU",
+      "affinity_6": "NA",
+      "affinity_7": "NA",
+      "affinity_8": "NA",
+      "affinity_9": "IM",
+      "animation_table": {},
+      "arcane_ef": "100",
+      "attack_list": {
+        "FgBiteAttack0001": {
+          "active_target": "One Creature",
+          "attack_description": "<p>Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p>",
+          "attribute_die1": "DEX",
+          "attribute_die2": "MIG",
+          "id": "${item.id}",
+          "name": "Bite",
+          "roll": "",
+          "uuid": "Actor.FulgimiteActor01.Item.FgBiteAttack0001"
+        }
+      },
+      "attribute": "LIGHTNING",
+      "battle_facing_direction": "left",
+      "bonus_hp": 0,
+      "bonus_mp": 0,
+      "bow_ef": "75",
+      "brawling_ef": "100",
+      "check_mod_all": 0,
+      "check_mod_magic": 0,
+      "check_mod_melee": 0,
+      "check_mod_ranged": 0,
+      "condition_anomaly": "NA",
+      "condition_bane": "NA",
+      "condition_berserk": "NA",
+      "condition_bleed": "IM",
+      "condition_blind": "NA",
+      "condition_burn": "NA",
+      "condition_charm": "NA",
+      "condition_confused": "NA",
+      "condition_curse": "NA",
+      "condition_dazed": "NA",
+      "condition_delayed": "NA",
+      "condition_despair": "NA",
+      "condition_disarmed": "NA",
+      "condition_doom": "NA",
+      "condition_enraged": "NA",
+      "condition_envenomed": "IM",
+      "condition_fatigue": "NA",
+      "condition_frightened": "NA",
+      "condition_grappled": "NA",
+      "condition_hypothermia": "NA",
+      "condition_isolate": "NA",
+      "condition_obscure": "NA",
+      "condition_oil": "NA",
+      "condition_panic": "NA",
+      "condition_paralyzed": "IM",
+      "condition_petrify": "NA",
+      "condition_poisoned": "IM",
+      "condition_shaken": "NA",
+      "condition_silence": "NA",
+      "condition_slow": "NA",
+      "condition_stagger": "NA",
+      "condition_suppress": "NA",
+      "condition_turbulence": "NA",
+      "condition_weak": "NA",
+      "condition_wet": "NA",
+      "condition_wither": "NA",
+      "condition_zombie": "IM",
+      "critical_damage_bonus": 0,
+      "critical_damage_multiplier": 1,
+      "critical_dice_range": 0,
+      "current_hp": "80",
+      "current_ip": "0",
+      "current_mp": "30",
+      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fulgimite_Standard.png",
+      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fulgimite_Standard.png",
+      "cut_in_offset_y": "",
+      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fulgimite_Standard.png",
+      "dagger_ef": "100",
+      "damage_receiving_mod_air": 0,
+      "damage_receiving_mod_all": 0,
+      "damage_receiving_mod_bolt": 0,
+      "damage_receiving_mod_dark": 0,
+      "damage_receiving_mod_earth": 0,
+      "damage_receiving_mod_fire": 0,
+      "damage_receiving_mod_ice": 0,
+      "damage_receiving_mod_light": 0,
+      "damage_receiving_mod_melee": 0,
+      "damage_receiving_mod_physical": 0,
+      "damage_receiving_mod_poison": 0,
+      "damage_receiving_mod_range": 0,
+      "def_mod": "+1",
+      "default_facing_direction": "right",
+      "defense": 11,
+      "dex_base": "10",
+      "dex_current": "10",
+      "enmity": 100,
+      "event_timeline_table": {},
+      "extra_damage_mod_air": 0,
+      "extra_damage_mod_all": 0,
+      "extra_damage_mod_arcane": 0,
+      "extra_damage_mod_bolt": 0,
+      "extra_damage_mod_bow": 0,
+      "extra_damage_mod_brawling": 0,
+      "extra_damage_mod_dagger": 0,
+      "extra_damage_mod_dark": 0,
+      "extra_damage_mod_earth": 0,
+      "extra_damage_mod_fire": 0,
+      "extra_damage_mod_firearm": 0,
+      "extra_damage_mod_flail": 0,
+      "extra_damage_mod_heavy": 0,
+      "extra_damage_mod_ice": 0,
+      "extra_damage_mod_light": 0,
+      "extra_damage_mod_melee": 0,
+      "extra_damage_mod_physical": 0,
+      "extra_damage_mod_poison": 0,
+      "extra_damage_mod_ranged": 0,
+      "extra_damage_mod_spear": 0,
+      "extra_damage_mod_spell": 0,
+      "extra_damage_mod_sword": 0,
+      "extra_damage_mod_thrown": 0,
+      "firearm_ef": "100",
+      "flail_ef": "100",
+      "gorger": false,
+      "heavy_ef": "200",
+      "icon_offset_x": "",
+      "icon_offset_y": "",
+      "icon_scale": "",
+      "id": "FulgimiteActor01",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fulgimite_Standard.png",
+      "init": "8",
+      "ins_base": "8",
+      "ins_current": "8",
+      "isAlmighty": false,
+      "isAwake": false,
+      "isBlacksmith": false,
+      "isBoss": false,
+      "isClarity": false,
+      "isCustomEvent": false,
+      "isDazed": false,
+      "isEnergized": false,
+      "isEnlighten": false,
+      "isEnraged": false,
+      "isFocus": false,
+      "isMasterful": false,
+      "isPhantasm": false,
+      "isPoisoned": false,
+      "isShaken": false,
+      "isShop": false,
+      "isSlow": false,
+      "isStolen": false,
+      "isStrong": false,
+      "isSummon": false,
+      "isSwift": false,
+      "isUnyielding": false,
+      "isVillain": false,
+      "isWeak": false,
+      "level": "40",
+      "lifesteal_percentage": 0,
+      "lifesteal_value": 0,
+      "magic_defense": 10,
+      "manadrain_percentage": 0,
+      "manadrain_value": 0,
+      "max_hp": "80",
+      "max_ip": "0",
+      "max_mp": "30",
+      "max_zero": "6",
+      "mdef_mod": "+2",
+      "mig_base": "6",
+      "mig_current": "6",
+      "mimic": false,
+      "minimum_critical_dice": 6,
+      "name": "Fulgimite",
+      "normal_spell_list": {},
+      "npc_rank": "soldier",
+      "override_all_damage_type": "None",
+      "override_attack_damage_type": "None",
+      "override_damage_type": "None",
+      "override_spell_damage_type": "None",
+      "rare": false,
+      "resource_maxValue_1": "0",
+      "resource_maxValue_2": "0",
+      "resource_maxValue_3": "0",
+      "resource_value_1": "0",
+      "resource_value_2": "0",
+      "resource_value_3": "0",
+      "rolled_atr1": "DEX",
+      "rolled_atr2": "DEX",
+      "shield_type": "PHYSICAL",
+      "shield_value": "0",
+      "showMacro": false,
+      "skill_active_list": {
+        "FgResonance00001": {
+          "active_cost": "-",
+          "active_description": "<p>Reduce the countdown of one Lightning Crystal by <strong>2</strong>.</p>",
+          "active_duration": "Instantaneous",
+          "active_target": "One Ally",
+          "id": "${item.id}",
+          "name": "Resonance",
+          "roll": "",
+          "uuid": "Actor.FulgimiteActor01.Item.FgResonance00001"
+        }
+      },
+      "skill_passive_list": {
+        "FgEvasionPass001": {
+          "id": "${item.id}",
+          "name": "Evasion",
+          "passive_description": "<p>This creature can't be targeted by area actions or effects.</p>",
+          "roll": "",
+          "uuid": "Actor.FulgimiteActor01.Item.FgEvasionPass001"
+        },
+        "FgImpersonate001": {
+          "id": "${item.id}",
+          "name": "Lightning Crystal Impersonation",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;Lightning Crystals appear</p></li></ul><p>This creature may take the place of one. While disguised, an action aimed at it deals no damage. This creature then deals <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to the attacker, inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Paralyzed</strong></a>&nbsp;and <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Slow</strong></a>, and reveals itself.</p>",
+          "roll": "",
+          "uuid": "Actor.FulgimiteActor01.Item.FgImpersonate001"
+        }
+      },
+      "spear_ef": "100",
+      "species": "ELEMENTAL",
+      "sprite_attack": "",
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fulgimite_Standard.png",
+      "sprite_hurt": "",
+      "sprite_ko": "",
+      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Fulgimite_Standard.png",
+      "sprite_walk": "",
+      "steal_percentage_table": {
+        "0": {
+          "$deleted": false,
+          "loot_id": "(Empty)",
+          "loot_percentage": "60"
+        },
+        "1": {
+          "$deleted": false,
+          "loot_id": "Lightning Essence",
+          "loot_percentage": "40"
+        }
+      },
+      "stealable_loot": {
+        "FgLootEmptyItm01": {
+          "id": "${item.id}",
+          "loot_description": "<pre><code>Use this item as placeholder for failing to steals any item from the target</code></pre>",
+          "name": "(Empty)",
+          "roll": "",
+          "uuid": "Actor.FulgimiteActor01.Item.FgLootEmptyItm01"
+        },
+        "FgLootEssenceI01": {
+          "id": "${item.id}",
+          "loot_description": "<p><em>Essence that can be obtained from monsters in the storm area in the ecological environment.</em></p>",
+          "name": "Lightning Essence",
+          "roll": "",
+          "uuid": "Actor.FulgimiteActor01.Item.FgLootEssenceI01"
+        }
+      },
+      "study_text": "<p>It picks at a crystal with those little legs until the charge shakes loose, and it never gets bored of it. Its shell splits under a <strong>heavy</strong> blow, so count the crystals in the room twice before you swing at one.</p>",
+      "subtype": "Sub-Type",
+      "subtype_list": "INSECT",
+      "sword_ef": "100",
+      "tactic_notes": "",
+      "thrown_ef": "100",
+      "token_option_persist": false,
+      "traits": "Crystal Parasite, Mimic, Skittering, Lightning-Fed",
+      "ultima_point": "0",
+      "unique": false,
+      "uuid": "Actor.FulgimiteActor01",
+      "wlp_base": "6",
+      "wlp_current": "6",
+      "zenit_reward_max": "60",
+      "zenit_reward_min": "40",
+      "zero_power_value": ""
+    },
+    "statusEffects": {},
+    "template": "yegF6R8aaymhrvCg",
+    "templateSystemUniqueVersion": 2114752673
+  },
+  "type": "character"
+}
