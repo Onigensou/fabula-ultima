@@ -113,25 +113,69 @@ function queueStatusEvent(director, actor, direction, tokenUuid) {
   });
 }
 
+// ── Announce by DIFF, not by "did I write it" ────────────────────────────
+// Crisis has TWO writers. This reactor runs in the settle loop and can queue the
+// status event; derived-status-reactor's safety net (Prong B, the updateActor
+// hook — rule "core-crisis") reconciles the moment HP is written and has no
+// director to queue on. The hook fires on the damage write itself, long before
+// RESOLVE's settle, so it nearly always wins: the settle then finds Crisis
+// already there, reports `changed:false`, and the transition is never announced.
+// Every "when you enter Crisis" reaction (Emergency Item, On the Hunt, Heart of
+// Darkness) went silent that way. So announce what is TRUE now against what this
+// battle last announced, whoever wrote the AE. The record lives on the director
+// ctx (one battle); an actor with no record (a resume after a reload, a summon
+// that joined mid-battle) falls back to this reactor's own write until the next
+// sweep seeds it.
+function announcedMap(director) {
+  return (director.ctx._crisisAnnounced ??= {});
+}
+
+// A Crisis status event already on the ledger (queued by the derived-status
+// reactor, or by us) — record it so the other writer does not repeat it.
+export function noteCrisisAnnounced(director, actor, present) {
+  if (!director?.ctx || !actor?.uuid) return;
+  announcedMap(director)[actor.uuid] = !!present;
+}
+
+// Queue the status event iff Crisis presence differs from the last announcement.
+// `fallback` = this caller's own transition, used only when there is no record.
+export function announceCrisisTransition(director, actor, tokenUuid, fallback = null) {
+  if (!director?.ctx || !actor?.uuid) return null;
+  const present = findCrisisAEs(actor).length > 0;
+  const known = announcedMap(director)[actor.uuid];
+  let direction = null;
+  if (known === undefined) direction = fallback;
+  else if (present !== known) direction = present ? "applied" : "removed";
+  announcedMap(director)[actor.uuid] = present;
+  if (direction) queueStatusEvent(director, actor, direction, tokenUuid);
+  return direction;
+}
+
 // Built-in reactor — settleInstance invokes this per ledger event.
 export async function crisisReactor(director, cfg) {
   if (!director?.ctx) return;
   const payload = cfg?.payload ?? {};
-  if (String(payload.resource ?? "").toLowerCase() !== "hp") return;  // crisis is HP-only
   const actor = cfg.casterActor;
   if (!actor) return;
+  if (String(payload.status ?? "").toLowerCase() === "crisis"
+      && (cfg.trigger === "creature_status_applied" || cfg.trigger === "creature_loses_status")) {
+    noteCrisisAnnounced(director, actor, cfg.trigger === "creature_status_applied");
+    return;
+  }
+  if (String(payload.resource ?? "").toLowerCase() !== "hp") return;  // crisis is HP-only
   const { changed, direction } = await evaluateCrisis(actor);
-  if (changed) queueStatusEvent(director, actor, direction, payload.subjectTokenUuid ?? payload.sourceTokenUuid ?? null);
+  announceCrisisTransition(director, actor, payload.subjectTokenUuid ?? payload.sourceTokenUuid ?? null, changed ? direction : null);
 }
 
-// One-time sweep over all combatants — seeds crisis state at combat start
-// (the event-driven reactor only fires on HP changes).
+// Sweep over all combatants — seeds crisis state at combat start (the
+// event-driven reactor only fires on HP changes), and at every turn_start
+// announces a change no settle saw (a manual HP edit between turns).
 export async function sweepCrisis(director) {
   const combatants = director?.dCombat?.combatants ?? director?.dCombat?.turns ?? [];
   for (const c of combatants) {
     const actor = c.actor ?? (c.actorUuid ? await fromUuid(c.actorUuid).catch(() => null) : null);
     if (!actor) continue;
     const { changed, direction } = await evaluateCrisis(actor);
-    if (changed) queueStatusEvent(director, actor, direction, c.tokenUuid ?? null);
+    announceCrisisTransition(director, actor, c.tokenUuid ?? null, changed ? direction : null);
   }
 }
