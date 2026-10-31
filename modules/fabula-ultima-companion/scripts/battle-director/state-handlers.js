@@ -3492,6 +3492,15 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
     secondaryAction                   = null,
   } = opts;
 
+  // An ENGINE-staged free action (free_action preset: Quick Summoning's free
+  // Pulse, a granted named skill) skips compose, so the owner never pre-picked
+  // its targets on their own client — this host-side picker IS the pick. Route it
+  // to the acting player (the GM keeps a racing local copy, see remote-pick.js);
+  // unrouted it opened on the GM and the player saw nothing.
+  const _presetFreeAction = topIsFreeAction(director.ctx)
+    && !!freeActions.get(attackerSnap?.actorId)?.preset;
+  const remote = _presetFreeAction ? buildActingRemotePrompt(director, attackerActor) : null;
+
   // ── target_sequence — multi-step declarative targeting ──────────────────
   // A skill can declare `target_sequence` (comma-list of targeting-row labels)
   // to pick several targets IN ORDER at the TARGET phase, each with its own
@@ -3516,6 +3525,7 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
       reactorActor: attackerActor,
       resolvedTargets: new Map(),
       isPassive: false,
+      remotePrompt: remote,
     };
     const namedPicks = {};
     const pickedUuids = [];
@@ -3653,7 +3663,7 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
       director, eligible: eligibleForPicker,
       mode: "exact", count: eligibleForPicker.length,
       lockSelection: true,
-      titleText: lockedTitle, cancelLabel, secondaryAction,
+      titleText: lockedTitle, cancelLabel, secondaryAction, remote,
     });
   } else {
     const titleText = forcedTitle
@@ -3663,7 +3673,7 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
     result = await requestTargeting({
       director, eligible: eligibleForPicker,
       mode: pickerMode, count, titleText, cancelLabel, secondaryAction, randomizeCount,
-      mandatoryTokenUuids: mandatoryPins,
+      mandatoryTokenUuids: mandatoryPins, remote,
     });
   }
 
