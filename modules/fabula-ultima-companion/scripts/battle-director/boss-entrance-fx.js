@@ -32,6 +32,7 @@ import { warn } from "./logger.js";
 import { CameraApi } from "./director-camera.js";
 import { suspendCamera, resumeCamera } from "./camera-authority.js";
 import { GATHER_STYLES } from "./gather-styles.js";
+import { PIXEL_ENTRANCE_STYLES } from "./pixel-entrance-styles.js";
 
 const STYLE_ID = "fud-boss-entrance-style";
 
@@ -233,7 +234,7 @@ export function entranceStyleFromFlags(flags, ns = ENTRANCE_MODULE_ID) {
     if (!key || key === DEFAULT_ENTRANCE_STYLE) return DEFAULT_ENTRANCE_STYLE;
     // Own keys only: an inherited name ("toString") must not read as a style.
     const own = (t) => Object.prototype.hasOwnProperty.call(t, key);
-    return own(DESCENT_STYLES) || own(GATHER_STYLES) ? key : DEFAULT_ENTRANCE_STYLE;
+    return own(DESCENT_STYLES) || own(GATHER_STYLES) || own(PIXEL_ENTRANCE_STYLES) ? key : DEFAULT_ENTRANCE_STYLE;
   } catch { return DEFAULT_ENTRANCE_STYLE; }
 }
 
