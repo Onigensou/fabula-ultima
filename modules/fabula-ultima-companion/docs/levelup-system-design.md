@@ -204,22 +204,39 @@ click — but it is the better interaction regardless: a player can try a build
 and back out of it. Clicking `+` then `−` on one skill annihilates rather than
 queueing two operations.
 
-On Confirm, **refunds apply before spends**: they free the points later spends
-depend on and relax the three-unmastered-class limit, so "drop this class,
-start that one" works on a single point. The first failure abandons the rest
-and leaves them staged, so the window shows exactly what did not go through.
-Each operation is individually atomic GM-side, so a partial apply is a coherent
-character sheet rather than a corrupt one.
+On Confirm, the order is **unlearned Heroics, refunds, spends, new Heroic picks**.
+Refunds free the points later spends depend on and relax the
+three-unmastered-class limit, so "drop this class, start that one" works on a
+single point. Unlearns go first because a refund may be waiting on one, and picks
+go last because they may be filling the slot an unlearn freed. The first failure
+abandons the rest and leaves them staged, so the window shows exactly what did
+not go through. Each operation is individually atomic GM-side, so a partial apply
+is a coherent character sheet rather than a corrupt one.
 
-**Refund** reverses it, and **blocks rather than cascades**. If dropping a class
-below 10 would orphan a held Heroic Skill, the refund is refused —
-*"unlearn Grand Summoning first."* Cascading refunds are quick to write and
-impossible to reason about at the table; a player who unlearns one skill should
-never watch three others vanish.
+**Refund** reverses it, and **blocks rather than cascades**. It is refused if it
+would strand a held Heroic Skill — *"unlearn Grand Summoning first"* — or if it
+would give up a mastery while leaving more Heroics than slots. Cascading refunds
+are quick to write and impossible to reason about at the table; a player who
+unlearns one skill should never watch three others vanish. Only a requirement the
+refund itself would break counts, and equipment-granted Heroics never block. The
+− button shows the same refusal before anything is staged.
+
+A level gives back every Facet it granted, up to what is still held. Giving back
+fewer would net a free Facet each cycle on skills that grant two.
+
+**Unlearn Heroic** is in Reset mode on the Heroic tab, at one Forget me Nut. It
+frees the slot, and is refused while another held Heroic requires that one.
+Companions leave with their parent.
 
 A skill refunded to level 0 has its item deleted. A class refunded to level 0
 has its row removed and its free benefits revoked, but only if no *other* held
 class still grants them.
+
+**Anything deleted this way is stashed first**, on the actor flag
+`levelupStash`, and re-taking it restores that copy rather than the class's. A
+character's copy can hold animations and effects the class copy lacks, and some
+Heroics are on no class at all (Prophetic Defender), so a stashed Heroic stays on
+offer even with no class listing it.
 
 ### Rules enforced
 
