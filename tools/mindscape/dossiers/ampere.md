@@ -7,7 +7,8 @@
 
 - Actor `kAYN54Id3iTAOw1A`. L43 BEAST/DRAGON soldier (sprite file `Ampyr_Standard.png` is a
   typo; Ampere is correct).
-- Valley random encounter, 4 rows — always paired (Mana Ray, Skizzik, Prism, Mana Ray + Kirin).
+- Valley random encounter, always paired: surface with Mana Ray, Obsidrax, Skizzik, Prism;
+  Underground with Obsidrax + Mana Ray, Prism.
 
 ## Concept
 
@@ -29,6 +30,7 @@ The roster's **Wet applier**. Wet makes a target VU bolt, so it sets up every ot
 |---|---|---|---|---|
 | 2026-08-16 | Built: Wet applier, Rod-paced Splash | sets up the bolt roster | user | — |
 | 2026-08-17 | Renamed Volt Seahorse → Ampere; subtype → DRAGON | — | user | — |
+| 2026-10-31 | 4 surface + 2 Underground rows. New surface row `Ampere, Obsidrax`: Wet doubles a redirected Bolt hit | Valley tables tightened to JRPG size: surface 1d28, Underground 1d40 | user | sim report in the commit |
 
 ```json dossier
 {
@@ -37,7 +39,7 @@ The roster's **Wet applier**. Wet makes a target VU bolt, so it sets up every ot
   "status": "draft",
   "aliases": ["Volt Seahorse"],
   "updated": "2026-10-21",
-  "role": "Valley random encounter, always paired (4 Encounter rows)",
+  "role": "Valley random encounter, always paired (4 surface + 2 Underground Encounter rows)",
   "exceptions": [
     {
       "rule": "basic-attack-min",

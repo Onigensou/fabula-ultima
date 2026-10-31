@@ -31,7 +31,7 @@ blown up sooner, and a party that swings at the wrong Crystal gets bitten by the
 
 - About 2 actions to kill at normal efficiency, one-shot allowed at 100% (Heavy EF 200, VU Earth).
 - Encounter rows: Paryashera + 2 Fulgimite (weight 1, the one allowed break of "always alone"),
-  Fulgimite + Prism, Fulgimite + Skizzik + Fulgimite, Fulgimite + Obsidrax (weight 2 each).
+  Fulgimite + Prism (weight 4), Fulgimite + Skizzik + Fulgimite and Fulgimite + Obsidrax (weight 2 each).
 
 ## Decision log
 
@@ -40,6 +40,7 @@ blown up sooner, and a party that swings at the wrong Crystal gets bitten by the
 | 2026-10-31 | Built as designed | User brief, mockup approved | user | functions proven live; balance not tested, on the user's call |
 | 2026-10-31 | Multi-target counts as area: more than one declared target = no hit, so Zarg's "Up to two" bow can't target it | "simple ruling" | user | as built |
 | 2026-10-31 | Crystal targeting through `target_eligibility` + `target_count`, not a new AI condition and focus | Same behaviour, less code; an inline focus value is reverted when the sheet opens | claude | live: Resonance always picks a Crystal |
+| 2026-10-31 | Rows kept on the smaller table, Prism row widened to 4, so 22.5% of Underground fights | Valley tables tightened to JRPG size: surface 1d28, Underground 1d40 | user | sim report in the commit |
 
 ## Open
 

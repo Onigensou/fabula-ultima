@@ -6,7 +6,7 @@
 ## Identity & role
 
 - Actor `TvLv878yZLNUAWNN` (renamed from "Qilin"). L50 BEAST/FEY **elite**, starts at 0 MP.
-- Valley random encounter, 6 rows (with slimes, Prism, Skizzik, Ampere + Mana Ray, Obsidrax).
+- Valley random encounter, 2 surface rows (with slimes; with Skizzik x2), each feeding its charge.
 
 ## Concept
 
@@ -42,6 +42,7 @@ defuse (user, 2026-08-16 → reworked 2026-08-26). The lever moved from *prevent
 | 2026-08-26 | Divine Railstream = charge dump, income from any bolt × 0.2 | old design was defusable | claude | income untuned |
 | 2026-08-26 | 0.2 accepted as a starting metric | — | user | tuning deferred |
 | 2026-10-31 | Display rename: Rail Stream → Divine Railstream | User naming pass; no mechanical change | user | name-only diff proved |
+| 2026-10-31 | 2 surface rows, width 3 and 2. The rows with Prism, Obsidrax and Ampere + Mana Ray were cut | Valley tables tightened to JRPG size: surface 1d28, Underground 1d40 | user | sim report in the commit |
 
 ```json dossier
 {
@@ -50,7 +51,7 @@ defuse (user, 2026-08-16 → reworked 2026-08-26). The lever moved from *prevent
   "status": "draft",
   "aliases": ["Qilin"],
   "updated": "2026-10-31",
-  "role": "Valley random-encounter elite (6 Encounter rows)",
+  "role": "Valley random-encounter elite (2 Encounter rows)",
   "exceptions": [],
   "invariants": [
     { "id": "charge-from-others-bolt", "item": "Lightning Charge", "table": "reaction_config_table", "row": "charge_horn", "field": "condition_formula", "equals": "TRIGGER_DAMAGE_IS_BOLT == 1 && CAUSE_IS_SELF == 0",

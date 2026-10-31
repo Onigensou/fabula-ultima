@@ -7,8 +7,8 @@
 ## Identity & role
 
 - Actor `1Lw78Js1f7MogV2B`, folder `Current Dungeon`. L45 **elite**, HUMANOID/GIANT, 1 activation.
-- **Random encounter, fields WITH ADDS** (user, 2026-08-14). Valley of the Dragon Encounter
-  row 19: Gigas + 2 Electro Slime. Also underground, rarer (Valley Underground plan) — no
+- **Random encounter, fields WITH ADDS** (user, 2026-08-14). Valley of the Dragon Encounter:
+  Gigas + 2 Electro Slime. Also underground, rarer (Valley Underground plan) — no
   Rod down there, so it is stronger in the cave; user accepts that.
 - Never live-tested. Token art still placeholder.
 
@@ -78,6 +78,7 @@ See `blind_spots` and `open_questions` below — they print in every brief and a
 | 2026-10-21 | Sheet: Oaf gate drops IS_MY_TURN (any Bolt, any cause); text "until the end of its next turn" on the item + passive list; 1 charge kept | design correction; both conflict events must work | user | sim V19: Crystal win 28% → 61%, defeat 40% → 21%; Storm 89% → 91% |
 | 2026-10-22 | Underground placement: ONE width-1 row in `Valley of the Dragon Underground - Encounter` (1d51, ≈2% vs ≈3.8% on the surface), paired with the Galvanize Golem; stat block unchanged | No Rod in the cave → Oaf fires less, so it is stronger there; the user wants it rarer. The Crystal blast DOES hit it (user ruling 2026-10-21) — the bolt answer any party can reach. Pairing: the blast frightens Gigas but supercharges the Golem | user (pairing: claude) | 300-draw picker sample on Valley_Map010: Gigas 2/300 |
 | 2026-10-31 | Underground row now "Gigas, Skizzik" (width 1) | Galvanize Golem became a solo elite. The blast still cuts both ways: it frightens Gigas and gives Skizzik a free attack | user (pairing: claude) | — |
+| 2026-10-31 | Surface row width 1 of 28, Underground `Gigas, Skizzik` width 1 of 40 | Valley tables tightened to JRPG size: surface 1d28, Underground 1d40 | user | sim report in the commit |
 
 ```json dossier
 {
@@ -85,7 +86,7 @@ See `blind_spots` and `open_questions` below — they print in every brief and a
   "actorId": "1Lw78Js1f7MogV2B",
   "status": "draft",
   "updated": "2026-10-21",
-  "role": "random encounter with adds (Valley Encounter row 19: Gigas + 2 Electro Slime); fought under the Lightning Storm or the Lightning Crystal; rarer underground",
+  "role": "random encounter with adds (Valley Encounter: Gigas + 2 Electro Slime); fought under the Lightning Storm or the Lightning Crystal; rarer underground",
   "exceptions": [
     {
       "rule": "one-shot",

@@ -6,8 +6,8 @@
 ## Identity & role
 
 - Actor `A1VzokzJPoyxobCd`. L40 ELEMENTAL/SLIME soldier.
-- Valley chaff: 7 Encounter rows — slime-only rows teach the death burst first (rows 1–2),
-  then paired with the Bolt reactors, and as **Gigas's escort** (row 19).
+- Valley chaff: 5 surface + 2 Underground Encounter rows. The slime-only row teaches the death
+  burst first, then it pairs with the Bolt reactors, and it is **Gigas's escort** on the surface.
 
 ## Concept
 
@@ -31,6 +31,7 @@ Bolt counterpart to Fire Slime. **Its role is its death trigger + Paralyze** (us
 |---|---|---|---|---|
 | 2026-08-01 | Built; stays sub-bracket on purpose | chaff — 45 HP + the death burst are the point | claude | — |
 | 2026-10-20 | Accuracy only: Static Shot chk 5→8, Tackle 6→9 | role is the death trigger + paralyze, not damage | user | — |
+| 2026-10-31 | 5 surface rows (Slime x3, with Skizzik, Prism, Kirin, Gigas), 2 Underground (with Prism, Obsidrax) | Valley tables tightened to JRPG size: surface 1d28, Underground 1d40 | user | sim report in the commit |
 
 ```json dossier
 {
@@ -38,7 +39,7 @@ Bolt counterpart to Fire Slime. **Its role is its death trigger + Paralyze** (us
   "actorId": "A1VzokzJPoyxobCd",
   "status": "draft",
   "updated": "2026-10-21",
-  "role": "Valley chaff (7 Encounter rows), Gigas's escort in row 19",
+  "role": "Valley chaff (5 surface + 2 Underground Encounter rows), Gigas's escort on the surface",
   "exceptions": [
     {
       "rule": "basic-attack-min",

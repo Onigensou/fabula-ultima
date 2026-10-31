@@ -6,7 +6,7 @@
 ## Identity & role
 
 - Actor `8kluKkqkcGFkmXNO`. L45 ELEMENTAL/DRAGON **elite**, WIND.
-- Valley random encounter, 2 rows (with Obsidrax; with Mana Ray + Drakoza).
+- Valley random encounter, 1 surface row (with Obsidrax).
 - Exists so the **Dragonslayer Pendant** has targets; claims Air.
 
 ## Concept
@@ -31,6 +31,7 @@ the valley's other creatures.
 |---|---|---|---|---|
 | 2026-08-26 | Built: Illusory Form, fixed Phantom Shift repertoire | Option A — true mimicry not expressible in data | user | Illusory Form loop live-verified |
 | 2026-10-31 | Display rename: Phantom Shift: Thunder Strike → Phantom Shift: Lightning Blitz (follows Skizzik) | User naming pass; no mechanical change | user | name-only diff proved |
+| 2026-10-31 | 1 surface row, `Mist Dragon, Obsidrax`, width 2 | Valley tables tightened to JRPG size: surface 1d28, Underground 1d40 | user | sim report in the commit |
 
 ```json dossier
 {
@@ -38,7 +39,7 @@ the valley's other creatures.
   "actorId": "8kluKkqkcGFkmXNO",
   "status": "draft",
   "updated": "2026-10-31",
-  "role": "Valley random-encounter elite (2 Encounter rows); Dragon-subtype target",
+  "role": "Valley random-encounter elite (1 Encounter row); Dragon-subtype target",
   "exceptions": [],
   "invariants": [
     { "id": "air-vulnerable", "affinity": "air", "equals": "VU",

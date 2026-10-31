@@ -6,7 +6,7 @@
 ## Identity & role
 
 - Actor `H6Ubup6kmkgNQzLU`. L43 BEAST/DRAGON soldier, DARK.
-- Valley random encounter, 3 rows (pair, with Skizzik, with Mist Dragon + Mana Ray).
+- Valley random encounter: surface as a pair; Underground with Skizzik, where the blast feeds Fury.
 - Exists so the **Dragonslayer Pendant** (150% vs Dragon sub-type) has targets; claims Dark.
 
 ## Concept
@@ -31,6 +31,7 @@ back in one Thrash.
 | 2026-08-26 | Built: Fury bank + Thrash payback | Dragon-subtype target for Dragonslayer Pendant | user | live-verified Fury banking |
 | 2026-08-26 | `add_damage` → `adjust_damage` | retired effect kind was silently inert | claude (fix) | Thrash spends Fury |
 | 2026-10-20 | Claw 20→39, Thrash 18→37, Tail Swipe 12→22 | too-weak pass | user | — |
+| 2026-10-31 | 1 surface + 1 Underground row | Valley tables tightened to JRPG size: surface 1d28, Underground 1d40 | user | sim report in the commit |
 
 ```json dossier
 {
@@ -38,7 +39,7 @@ back in one Thrash.
   "actorId": "H6Ubup6kmkgNQzLU",
   "status": "draft",
   "updated": "2026-10-21",
-  "role": "Valley random encounter (3 Encounter rows); Dragon-subtype target",
+  "role": "Valley random encounter (1 surface + 1 Underground Encounter row); Dragon-subtype target",
   "exceptions": [],
   "invariants": [
     { "id": "fury-banks-all-damage", "item": "Drako Fury", "table": "reaction_config_table", "row": "fury_bank", "field": "reaction_cause_filter", "equals": "",

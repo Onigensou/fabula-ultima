@@ -6,7 +6,7 @@
 ## Identity & role
 
 - Actor `sTGMdYipYCG36aBO`. L45 ELEMENTAL soldier.
-- Valley random encounter, 9 rows (with slimes, Skizzik, Kirin, Ampere, Mana Ray, Obsidrax).
+- Valley random encounter: surface with slimes, Skizzik, Ampere; Underground with slimes, Fulgimite, Ampere.
 
 ## Concept
 
@@ -33,6 +33,7 @@ A crystal that stores lightning: hit it with Bolt and it discharges back at you.
 |---|---|---|---|---|
 | 2026-08-01 | MP economy: max ÷ cost = N discharges, self-gating | MP is the limiter, no per-round cap | user | — |
 | 2026-08-16 | Absorbed damage keeps its element (engine fix) | Overcharge could never fire | claude (fix) | — |
+| 2026-10-31 | 3 surface + 3 Underground rows. `Ampere, Lightning Prism` kept at width 1 in both as the danger row | Valley tables tightened to JRPG size: surface 1d28, Underground 1d40 | user | sim report in the commit |
 
 ```json dossier
 {
@@ -41,7 +42,7 @@ A crystal that stores lightning: hit it with Bolt and it discharges back at you.
   "status": "draft",
   "aliases": ["Prism"],
   "updated": "2026-10-21",
-  "role": "Valley random encounter (9 Encounter rows)",
+  "role": "Valley random encounter (3 surface + 3 Underground Encounter rows)",
   "exceptions": [
     {
       "rule": "vu-count",

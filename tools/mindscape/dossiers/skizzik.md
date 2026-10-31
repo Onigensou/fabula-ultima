@@ -6,8 +6,8 @@
 ## Identity & role
 
 - Actor `I2sSkVIQ4FCunZBE`. L48 ELEMENTAL/SPIRIT soldier, the dungeon's highest initiative.
-- The most common Valley soldier: 11 Encounter rows, alone or with slimes, Prism, Kirin,
-  Ampere, Obsidrax, Drakoza.
+- A common Valley soldier: surface with slimes, Prism, Kirin, Ampere; Underground with Drakoza,
+  Fulgimite, Gigas.
 
 ## Concept
 
@@ -38,6 +38,7 @@ free attacks.
 | 2026-08-20 | Rework: uncapped even-parity riposte, Chain Reaction, Static; HP & damage cut | many small hits identity | claude | sim: real fight with storm |
 | 2026-08-20 | Live test: counter fires but rarely, and hit the WRONG targets | free action inherited the parent's target list | — | open |
 | 2026-10-31 | Display rename: Thunder Strike → Lightning Blitz, Thunder Strike (Riposte) → Lightning Retaliate, Overload Riposte → Lightning Counter | User naming pass; no mechanical change | user | name-only diff proved |
+| 2026-10-31 | 4 surface + 3 Underground rows | Valley tables tightened to JRPG size: surface 1d28, Underground 1d40 | user | sim report in the commit |
 
 ```json dossier
 {
@@ -45,7 +46,7 @@ free attacks.
   "actorId": "I2sSkVIQ4FCunZBE",
   "status": "draft",
   "updated": "2026-10-31",
-  "role": "common Valley soldier (11 Encounter rows); designed WITH the Lightning Storm",
+  "role": "common Valley soldier (4 surface + 3 Underground Encounter rows); designed WITH the Lightning Storm",
   "exceptions": [
     {
       "rule": "basic-attack-min",
