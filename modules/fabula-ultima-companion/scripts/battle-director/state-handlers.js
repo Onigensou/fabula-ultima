@@ -14,7 +14,7 @@ import { isGmOverrideEmpty, summarizeGmOverride, dropGmRemovedReactions } from "
 import { runBattleEndSequence } from "./battle-end/battle-end-orchestrator.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
-import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, pinActionKindForSkill, resolvePrimaryAttackWeapon, captureSubjectSnapshot, resolvesVsMagicDefense, attackRangeBlockedBy, getBlockedActionLabels, isGatingExemptBundle } from "./snapshot.js";
+import { snapshotCombatant, snapshotDirectorCombatant, snapshotEligibleTargets, snapshotEligibleTargetsFromDCombat, readPropNum, attrDieSize, freezeActionResult, applyAffinityToDamage, applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, pinActionKindForSkill, resolvePrimaryAttackWeapon, captureSubjectSnapshot, resolvesVsMagicDefense, attackRangeBlockedBy, getBlockedActionLabels, isGatingExemptBundle, refreshActionGating } from "./snapshot.js";
 import { TurnUI } from "./turn-ui.js";
 import { TurnPicker } from "./turn-picker.js";
 import { requestTargeting } from "./target-picker.js";
@@ -2915,7 +2915,7 @@ function applyComposedBundleAndAdvance(director, winnerBundle) {
 
 const Declare = {
   async onEnter(director) {
-    const snap = director.ctx.turnSnapshot;
+    let snap = director.ctx.turnSnapshot;
     if (!snap) {
       warn("DECLARE entered without turnSnapshot");
       director.enqueue({ type: INTENTS.ABORT });
@@ -2953,6 +2953,14 @@ const Declare = {
       director.enqueue({ type: INTENTS.TIMEOUT });
       return;
     }
+
+    // The snapshot's action gates were read at TURN_START, before the AE ticks
+    // and the turn_start reaction window. A Silence/Frightened cleansed there
+    // must not keep its action greyed: re-read the gates off the live actor.
+    try {
+      const fresh = refreshActionGating(snap, token.actor);
+      if (fresh !== snap) { snap = fresh; director.ctx.turnSnapshot = fresh; }
+    } catch (e) { warn("DECLARE: action-gating refresh threw — using turn-start gates", e); }
 
     // Resolve owner. fromUuid is async but cheap; on error, only GM runs.
     let actor = null;
