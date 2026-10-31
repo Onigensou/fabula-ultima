@@ -5104,6 +5104,19 @@ const Compute = {
       // hr / crit / fumble + per-target outcomes from them. No roll = no Check.
       let dice = null;
       let arForProfile = ar;
+      // A `VAR_<NAME>` damage type (Detonate Phantasm's "VAR_ELEMENT") is the
+      // element picked in pre_activate. Write the pick onto the action's
+      // damageType NOW, before the result is frozen: RESOLVE reads ar.damageType
+      // directly for the battle log, the reaction payloads ("hit by dark damage")
+      // and the Bestiary, and every one of them saw the literal "VAR_ELEMENT".
+      {
+        const dt = String(ar.damageType ?? "");
+        const picked = /^var_/i.test(dt) ? preActivateVars?.[dt.slice(4).toLowerCase()] : null;
+        if (typeof picked === "string" && picked.trim()) {
+          arForProfile = { ...arForProfile, damageType: picked.trim().toLowerCase() };
+          log(`Skill COMPUTE: ${dt} → "${arForProfile.damageType}" (pre_activate pick)`);
+        }
+      }
       if (ar.isCheck) {
         // Roll via the shared check primitive (computeActionProfile re-derives
         // crit/fumble from these dice). Last of the BD's raw roll sites unified.
@@ -5131,7 +5144,7 @@ const Compute = {
         const c = await rollCheck({ actor: liveActor, A1: ar.rolledA1 || "INS", A2: ar.rolledA2 || "INS", allowDieSwap: true, director, actionPayload: dieSwapPayload });
         dice = { rA: c.rA, rB: c.rB };
         if (c.dieSwap) {
-          arForProfile = { ...ar, rolledA1: c.A1, rolledA2: c.A2, dieSwap: c.dieSwap };
+          arForProfile = { ...arForProfile, rolledA1: c.A1, rolledA2: c.A2, dieSwap: c.dieSwap };
           // WEAPON pair mode also carries the weapon's accuracy bonus (+ the
           // skill's own Check Bonus formula) — folded into the profile's bonus.
           if (c.checkBonusDelta) arForProfile.checkBonus = (Number(ar.checkBonus) || 0) + c.checkBonusDelta;
@@ -5343,6 +5356,10 @@ const Compute = {
           // it straight off the weapon snapshot.
           defenseTargetType: weapon?.defenseTargetType ?? "",
           attackMode: director.ctx.attackMode ?? "main",
+          // Kept on the card so every recompute (and a reload) sees it — the
+          // profile's ctx fallback reads ar.multiAttackKeepHr. Without it a
+          // keep-HR multi-attack had its HR zeroed the moment the card recomputed.
+          multiAttackKeepHr: !!director.ctx.multiAttackKeepHr,
           passIndex: director.ctx.passIndex,
           totalPasses: director.ctx.totalPasses,
           targets: _chainNarrow ? _chainNarrow.targets : targetSnapshots,
@@ -5359,6 +5376,9 @@ const Compute = {
           // AEs via the resolve-time all-targets fallback.)
           hitTokenUuids: _chainNarrow ? _chainNarrow.hitTokenUuids : delta.hitTokenUuids,
           ...(attackGrant ? { freeActionGrant: { sourceLabel: attackGrant.sourceLabel, checkBonus: attackGrant.checkBonus ?? 0, damageBonus: attackGrant.damageBonus ?? 0,
+            // HR-as-0 (Counterattack, Hawkeye, …): the recompute reads the grant
+            // from here, so dropping the flag gave the free attack its HR back.
+            hrAsZero: attackGrant.hrAsZero === true,
             // Rider metadata for on-hit effect refs (Ripples ends hexes) — needs to
             // survive to RESOLVE. elementOverride already baked into the profile at
             // COMPUTE; carried here only for card/debug parity.
@@ -5517,6 +5537,7 @@ const Confirm = {
             pickedTargetUuids: director.ctx.pickedTargetUuids ?? null,
             currentWeapon: director.ctx.currentWeapon ?? null,
             hinderCheckConfig: director.ctx.hinderCheckConfig ?? null,
+            multiAttackKeepHr: !!director.ctx.multiAttackKeepHr,
             declaredCommand: director.ctx.declaredCommand ?? null,
           },
         },
@@ -6909,12 +6930,12 @@ const Confirm = {
             if (!newSnaps.length) return { ok: false, cancelled: true };
             if (!await gateAddTargetCost(newSnaps.length)) return { ok: false };
 
-            // Reconstruct the consumed grant (if any) so the recomputed check
-            // total reproduces ar.roll.total exactly — the new target shares the
-            // SAME roll, compared against its own DEF.
-            const grant = ar.freeActionGrant
-              ? { sourceLabel: ar.freeActionGrant.sourceLabel, checkBonus: ar.freeActionGrant.checkBonus ?? 0, damageBonus: ar.freeActionGrant.damageBonus ?? 0 }
-              : null;
+            // The consumed grant (if any), as the card stored it, so the recomputed
+            // check total reproduces ar.roll.total exactly — the new target shares
+            // the SAME roll, compared against its own DEF. Passed whole: a
+            // hand-picked subset dropped the element override (Ripples) and
+            // HR-as-0 (Counterattack), so the added target took the wrong damage.
+            const grant = ar.freeActionGrant ?? null;
             const profile = await computeActionProfile({
               view: { kind: "Attack", check_mode: "opposed", effect_table: {}, fire_points: {}, source: null },
               attacker: fullAttacker, weapon: fullWeapon, targets: newSnaps,

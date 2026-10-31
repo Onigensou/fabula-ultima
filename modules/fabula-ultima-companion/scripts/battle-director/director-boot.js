@@ -738,6 +738,7 @@ async function resumeFromSavedState({ scene, state, animateBanner = true }) {
       if (savedCtx.pickedTargetUuids !== undefined) director.ctx.pickedTargetUuids = savedCtx.pickedTargetUuids;
       if (savedCtx.currentWeapon !== undefined) director.ctx.currentWeapon = savedCtx.currentWeapon;
       if (savedCtx.hinderCheckConfig !== undefined) director.ctx.hinderCheckConfig = savedCtx.hinderCheckConfig;
+      if (savedCtx.multiAttackKeepHr !== undefined) director.ctx.multiAttackKeepHr = savedCtx.multiAttackKeepHr;
       if (savedCtx.declaredCommand !== undefined) director.ctx.declaredCommand = savedCtx.declaredCommand;
       // turnSnapshot isn't persisted — re-derive from the saved
       // currentCombatant so handlers that read ctx.turnSnapshot stay

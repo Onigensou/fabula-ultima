@@ -218,7 +218,12 @@ export async function witnessAffinityHits(ar) {
     // override applied; other rows then take the action's native type — when
     // that is unknown (an attack), they teach nothing rather than a wrong element.
     const anyOverride = rows.some((r) => r?.element);
-    const native = anyOverride ? (ar.damageType || null) : (ar.damage?.element ?? ar.damageType ?? null);
+    // A `VAR_<NAME>` damage type (Detonate Phantasm's "VAR_ELEMENT") is the element
+    // the caster picked in pre_activate, stored on ar.preActivateVars — read the pick,
+    // or the Bestiary would learn an affinity called "var_element".
+    const rawDt = String(ar.damageType ?? "");
+    const arDt = /^var_/i.test(rawDt) ? (ar.preActivateVars?.[rawDt.slice(4).toLowerCase()] ?? null) : (rawDt || null);
+    const native = anyOverride ? arDt : (ar.damage?.element ?? arDt);
     const byProto = new Map();
     for (const r of rows) {
       if (!r || r.grantResource || r.grantAmount != null) continue;
