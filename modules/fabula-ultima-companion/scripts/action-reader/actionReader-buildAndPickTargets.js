@@ -26,6 +26,7 @@
  *   } from "./actionReader-buildAndPickTargets.js";
  * ========================================================================== */
 
+import { getMaxActionTargets } from "../battle-director/snapshot.js";
 import { ActionReaderCore as AR } from "./actionReader-core.js";
 import { ActionReaderDebug as ARD } from "./actionReader-debug.js";
 
@@ -614,7 +615,11 @@ export async function buildAndPickActionReaderTargets(context, options = {}) {
     context.targetCandidatesAll = allCandidates;
     context.targetCandidates = legalCandidates;
 
-    const affordableCap = affordableTargetCap(context);
+    // Fatigue clamps a variable "Up to X" to its cap, as resolveTargetPlan does for
+    // a player. Fixed multi-target actions never get here (matchAndPickAction bars them).
+    const capActor = context?.performer?.actor ?? context?.actorData?.actor ?? null;
+    const targetCap = capActor ? getMaxActionTargets(capActor).cap : Infinity;
+    const affordableCap = Math.min(affordableTargetCap(context), targetCap);
     const pickResult = creatureWide
       ? selectBurnFocusTargets(legalCandidates, focusCtx.focus, targetRule)
       : chooseTargetsFromCandidates(legalCandidates, targetRule, focusCtx, affordableCap);

@@ -19,6 +19,7 @@
  *   } from "./actionReader-matchAndPickAction.js";
  * ========================================================================== */
 
+import { getMaxActionTargets, skillTargetIsMulti, skillTargetIsUpTo } from "../battle-director/snapshot.js";
 import { ActionReaderCore as AR, FU_MODULE_ID } from "./actionReader-core.js";
 import { ActionReaderDebug as ARD } from "./actionReader-debug.js";
 
@@ -174,6 +175,19 @@ function getBlockedLabels(context) {
 function isCandidateActionBlocked(candidate, blockedLabels) {
   if (!blockedLabels?.size) return false;
   return blockedLabels.has(candidateActionLabel(candidate));
+}
+
+// Fatigue ("allows only single-target actions"), the same rule the player's skill
+// picker applies: a fixed multi-target action (All / "Two creatures" / Multi) is
+// barred. A variable "Up to X" stays legal and is clamped to one target at
+// targeting. Honours Domination through getMaxActionTargets.
+function isCandidateOverTargetCap(candidate, context) {
+  const actor = context?.performer?.actor ?? context?.actorData?.actor ?? null;
+  if (!actor) return false;
+  const { cap } = getMaxActionTargets(actor);
+  if (!(cap < 2)) return false;
+  const text = getCandidateProps(candidate)?.skill_target;
+  return skillTargetIsMulti(text) && !skillTargetIsUpTo(text);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -727,7 +741,11 @@ export async function matchAndPickActionReaderAction(context, options = {}) {
     const legalCandidates = [];
     let blockedCandidateCount = 0;
     for (const candidate of matchedCandidates) {
-      if (isCandidateActionBlocked(candidate, blockedLabels)) {
+      if (isCandidateOverTargetCap(candidate, context)) {
+        candidate.actionBlocked = true;
+        candidate.actionBlockedLabel = "Multi-target";
+        blockedCandidateCount++;
+      } else if (isCandidateActionBlocked(candidate, blockedLabels)) {
         candidate.actionBlocked = true;
         candidate.actionBlockedLabel = candidateActionLabel(candidate);
         blockedCandidateCount++;
