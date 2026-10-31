@@ -731,8 +731,11 @@
     // them — OPP_OFFER would go unanswered and the FSM would wedge for the full
     // 120 s safety timeout (a soft-lock during solo/test play). In that case the
     // GM runs the picker locally instead. A connected owner still gets it routed.
-    // Connected isn't enough: a client still loading would lose the offer too.
-    const ownerActive = ownerUserId ? (presence()?.isReady(ownerUserId) ?? !!game.users?.get(ownerUserId)?.active) : false;
+    // Connected isn't enough: a client still loading would lose the offer too. A
+    // merely silent one gets the offer: a busy moment shouldn't cost them the pick,
+    // and it answers the ack or the wheel moves to the GM anyway.
+    const ownerState  = ownerUserId ? presence()?.of(ownerUserId) : null;
+    const ownerActive = ownerUserId ? (ownerState ? ownerState !== "offline" && ownerState !== "loading" : !!game.users?.get(ownerUserId)?.active) : false;
     const amOwner     = !ownerUserId || game.user.id === ownerUserId || (amGM && !ownerActive);
 
     // Case 1: I am the owner (or GM-owned / disconnected-owner actor) — run full
