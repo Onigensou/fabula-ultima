@@ -31,6 +31,7 @@ const T = require(path.join(ANIM_LIB, "lib", "dungeon-templates.js"));
 const G = require(path.join(ANIM_LIB, "lib", "dungeon-signatures.js"));
 const RK = require(path.join(ANIM_LIB, "lib", "rakshasa-signatures.js"));
 const FF = require(path.join(ANIM_LIB, "lib", "fafnir-signatures.js"));
+const KR = require(path.join(ANIM_LIB, "lib", "kirin-signatures.js"));
 const { encode, validate } = require(path.join(ANIM_LIB, "lib", "encode.js"));
 
 /* ── Palette ─────────────────────────────────────────────────────────────── */
@@ -323,15 +324,9 @@ const REGISTRY = {
                // Bolt SFX removed on request; a generic hit still marks contact.
                sfx: null, sfxArrive: "HitBlowS", sfxArriveVol: 0.7 },
       }),
-      "Divine Railstream": () => G.railStream({
-        key: "kirin-rail-stream", name: "Divine Railstream",
-        // A drawn straight BEAM is the strike, with faint jagged strands drawn
-        // behind it as accompanying crackle. No video: a clip has no leading
-        // edge, so it cannot read as falling.
-        cfg: { sfxCharge: "ChargeAttack", sfxChargeVol: 0.6,
-               sfxFire: "Thunder10", sfxFireVol: 0.75,
-               sfxImpact: "Hit_Lightning2", sfxImpactVol: 0.5 },
-      }),
+      // Tuned in the mockup; numbers live in kirin-signatures.js. Writes its own
+      // offset gate + preload list.
+      "Divine Railstream": () => KR.divineRailstream({ key: "kirin-rail-stream", name: "Divine Railstream" }),
     },
   },
 

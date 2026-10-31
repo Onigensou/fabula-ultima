@@ -287,8 +287,12 @@ function footOf(img) {
 
 // A clip decoded to one canvas per frame. A shot with dozens of overlapping
 // clips cannot run them as live videos (Chrome stalls past ~20 playing at once);
-// frames cost one seek each up front, then draw freely. Fetched as a blob so the
+// frames are captured once up front, then draw freely. Fetched as a blob so the
 // canvases stay readable. The caller owns the result: drop it when the run ends.
+// The clip plays once in real time and each presented frame is kept (measured
+// 1.5 s for a whole shot's clips against 4.7 s by seeking, which restarts VP9
+// decoding from the keyframe every time). A window that presents no frames
+// (a hidden tab) falls back to seeking.
 //   url, { fps = 15, scale = 1, dur = null (ms; default the video's own length) }
 export async function decodeFrames(url, { fps = 15, scale = 1, dur = null } = {}) {
   const res = await fetch(url);
@@ -301,13 +305,37 @@ export async function decodeFrames(url, { fps = 15, scale = 1, dur = null } = {}
     const ms = dur ?? (Number.isFinite(v.duration) ? v.duration * 1000 : 1000);
     const n = Math.max(1, Math.round(ms / 1000 * fps));
     const w = Math.max(2, Math.round(v.videoWidth * scale)), h = Math.max(2, Math.round(v.videoHeight * scale));
-    const frames = [];
+    const grab = () => { const c = document.createElement("canvas"); c.width = w; c.height = h; c.getContext("2d").drawImage(v, 0, 0, w, h); return c; };
+    const frames = new Array(n).fill(null);
+    if (typeof v.requestVideoFrameCallback === "function") {
+      await new Promise((ok) => {
+        let seen = false;
+        const stall = setTimeout(() => { if (!seen) ok(); }, 1200);
+        const cb = (_now, meta) => {
+          seen = true;
+          const i = Math.min(n - 1, Math.floor((meta.mediaTime + 0.002) * fps));
+          if (!frames[i]) frames[i] = grab();
+          if (!v.ended) v.requestVideoFrameCallback(cb);
+        };
+        const end = () => { clearTimeout(stall); ok(); };
+        v.onended = end;
+        setTimeout(end, ms + 2500);
+        v.requestVideoFrameCallback(cb);
+        v.play().catch(end);
+      });
+      v.pause();
+    }
+    if (frames.some(Boolean)) {
+      // a frame the player skipped takes its nearest captured neighbour
+      for (let i = 0; i < n; i++) { if (frames[i]) continue; for (let d = 1; d < n; d++) { const f = frames[i - d] || frames[i + d]; if (f) { frames[i] = f; break; } } }
+      return { frames, dur: ms };
+    }
     for (let i = 0; i < n; i++) {
       const at = Math.min(i / fps + 0.001, Math.max(0, v.duration - 0.002));
       if (Math.abs(v.currentTime - at) > 0.0005) {
         await new Promise((ok) => { let done = false; const f = () => { if (!done) { done = true; v.removeEventListener("seeked", f); ok(); } }; v.addEventListener("seeked", f); v.currentTime = at; setTimeout(f, 800); });
       }
-      const c = document.createElement("canvas"); c.width = w; c.height = h; c.getContext("2d").drawImage(v, 0, 0, w, h); frames.push(c);
+      frames[i] = grab();
     }
     return { frames, dur: ms };
   } finally { v.removeAttribute("src"); v.load(); URL.revokeObjectURL(objectUrl); }
