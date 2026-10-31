@@ -16,7 +16,7 @@
  */
 
 const { SEVERITY, finding } = require("../util");
-const { VALID_TYPES, inferType, getTileStates, isDungeonScene } = require("../tile-type");
+const { MODULE_ID, PATHING_ROOT_KEY, VALID_TYPES, inferType, getTileStates, isDungeonScene } = require("../tile-type");
 
 const ID = "tiles";
 const TITLE = "Dungeon tile validity";
@@ -44,6 +44,18 @@ function run(world) {
       if (INERT.has(inferred)) continue;
       out.push(finding(ID, SEVERITY.WARN,
         `Scene "${scene.name}": tile ${tile._id} looks like a "${inferred}" tile but has NO saved state — confirm it gets ensured on load`,
+        { doc: "scene", id: scene._id, extra: tile._id }));
+    }
+
+    // Camp without the Usable flag: Confirm sends the whole party to camp and
+    // there is no Use button, so the party can't walk across the tile.
+    for (const tile of tiles) {
+      const type = states[tile._id]?.currentType ?? inferType(tile);
+      if (type !== "camp") continue;
+      const usable = tile.flags?.[MODULE_ID]?.[PATHING_ROOT_KEY]?.usable;
+      if (usable === true || usable === "true") continue;
+      out.push(finding(ID, SEVERITY.WARN,
+        `Scene "${scene.name}": Camp tile ${tile._id} is not Usable — no Use button, and Confirm goes straight to camp`,
         { doc: "scene", id: scene._id, extra: tile._id }));
     }
 

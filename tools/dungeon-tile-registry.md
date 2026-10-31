@@ -25,7 +25,7 @@ Reference file for the dungeon tile template system. No in-game functionality.
 | 7 | Blank | `Blank_Tile.png` | `Scene.cVxIhCmCguNGxAZv.Tile.mxeuGf5yBj4kIKNl` | active, enter | — | rangeTop:-1, noCollision:true |
 | 8 | Blocked | `Blocked_Tile.png` | `Scene.cVxIhCmCguNGxAZv.Tile.33Klr5JSDVRr9DVp` | inactive | — | — |
 | 9 | Burning | `Burning_Tile.png` | `Scene.cVxIhCmCguNGxAZv.Tile.ztXNEAt3GLRco1DA` | active, enter | — | persistAfterTrigger, AE: Burn, VFX: screenflash red, SFX: Fire1.ogg |
-| 10 | Camp | `Camp_Tile.png` | `Scene.cVxIhCmCguNGxAZv.Tile.xSYAtpt9IUP2mt5C` | inactive | — | — |
+| 10 | Camp | `Camp_Tile.png` | `Scene.cVxIhCmCguNGxAZv.Tile.xSYAtpt9IUP2mt5C` | inactive | — | usable:true |
 | 11 | Chaos | `Chaos_Tile.png` | `Scene.cVxIhCmCguNGxAZv.Tile.B7bB2DPrskYDq6Xj` | inactive | — | — |
 | 12 | Conditions | `Status_Tile.png` | `Scene.cVxIhCmCguNGxAZv.Tile.0mjLItlZguaSvO9Z` | active, stop+enter | runmacro: Global Loot (player), deactivate self | — |
 | 13 | Consumable | `Consumeable_Tile.png` | `Scene.cVxIhCmCguNGxAZv.Tile.idSAcad7QhnKsQ52` | active, stop+enter | runmacro: Trigger TreasureRoulette | — |
