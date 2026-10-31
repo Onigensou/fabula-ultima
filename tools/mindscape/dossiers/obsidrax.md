@@ -26,7 +26,7 @@
   is redirected.
 - Miasma Nova (save or Poisoned), Venomstone Spines (multi, Envenomed), Tectonic Collapse
   (Earth to all), Basalt Crush (35% Petrify).
-- Underground: appears in 40% of Underground encounters (surface about 14%).
+- Underground: appears in 40% of Underground encounters (surface about 12.5%).
 
 ## Decision log
 
@@ -35,7 +35,7 @@
 | 2026-10-21 | Miasma Nova repeating every turn its condition holds: accepted | "already in the design when the monster is created" | user | audit pattern lint → intended |
 | 2026-10-21 | Design intent: none yet — the current kit is not a recorded design | user answer | user | — |
 | 2026-10-22 | Lodestone Core → Earthen Wire (bolt it would take is redirected to a random enemy, target's affinity applies); bolt IM → NA | Lodestone needed the Rod, so the gimmick was dead in the Underground (no Rod); soft update for both areas | user (NA bolt: claude, required by the redirect) | live sim: 20 + 23 bolt (Zarg's bow, Crystal blast) zeroed on Obsidrax and re-dealt to a party member |
-| 2026-10-31 | 2 surface + 4 Underground rows, 14% and 40% of fights | Valley tables tightened to JRPG size: surface 1d28, Underground 1d40 | user | sim report in the commit |
+| 2026-10-31 | 2 surface + 4 Underground rows, 12.5% and 40% of fights | Valley tables tightened to JRPG size: surface 1d32, Underground 1d40 | user | sim report in the commit |
 
 ```json dossier
 {
@@ -43,7 +43,7 @@
   "actorId": "x8TBsDZaRgoSo5no",
   "status": "draft",
   "updated": "2026-10-22",
-  "role": "Valley random encounter (2 surface + 4 Underground Encounter rows, about 14% and 40% of fights); bolt-redirect gimmick Earthen Wire (user, 2026-10-22)",
+  "role": "Valley random encounter (2 surface + 4 Underground Encounter rows, about 12.5% and 40% of fights); bolt-redirect gimmick Earthen Wire (user, 2026-10-22)",
   "exceptions": [
     {
       "rule": "pattern",

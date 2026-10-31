@@ -31,7 +31,7 @@ back in one Thrash.
 | 2026-08-26 | Built: Fury bank + Thrash payback | Dragon-subtype target for Dragonslayer Pendant | user | live-verified Fury banking |
 | 2026-08-26 | `add_damage` → `adjust_damage` | retired effect kind was silently inert | claude (fix) | Thrash spends Fury |
 | 2026-10-20 | Claw 20→39, Thrash 18→37, Tail Swipe 12→22 | too-weak pass | user | — |
-| 2026-10-31 | 1 surface + 1 Underground row | Valley tables tightened to JRPG size: surface 1d28, Underground 1d40 | user | sim report in the commit |
+| 2026-10-31 | 1 surface + 1 Underground row | Valley tables tightened to JRPG size: surface 1d32, Underground 1d40 | user | sim report in the commit |
 
 ```json dossier
 {

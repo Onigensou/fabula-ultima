@@ -31,7 +31,7 @@ Bolt counterpart to Fire Slime. **Its role is its death trigger + Paralyze** (us
 |---|---|---|---|---|
 | 2026-08-01 | Built; stays sub-bracket on purpose | chaff — 45 HP + the death burst are the point | claude | — |
 | 2026-10-20 | Accuracy only: Static Shot chk 5→8, Tackle 6→9 | role is the death trigger + paralyze, not damage | user | — |
-| 2026-10-31 | 5 surface rows (Slime x3, with Skizzik, Prism, Kirin, Gigas), 2 Underground (with Prism, Obsidrax) | Valley tables tightened to JRPG size: surface 1d28, Underground 1d40 | user | sim report in the commit |
+| 2026-10-31 | 5 surface rows (Slime x3, with Skizzik, Prism, Kirin, Gigas), 2 Underground (with Prism, Obsidrax) | Valley tables tightened to JRPG size: surface 1d32, Underground 1d40 | user | sim report in the commit |
 
 ```json dossier
 {

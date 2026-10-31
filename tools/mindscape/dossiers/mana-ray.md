@@ -6,7 +6,7 @@
 ## Identity & role
 
 - Actor `iGc0EUHE9LKWT0Ye`. L45 BEAST/AQUATIC soldier, Flying.
-- Valley random encounter: surface with Ampere; Underground with Obsidrax + Ampere.
+- Valley random encounter: surface with Ampere, Ampere + Kirin; Underground with Obsidrax + Ampere.
 
 ## Concept
 
@@ -28,7 +28,7 @@ refills its whole pool — the intended hook.
 |---|---|---|---|---|
 | 2026-08-16 | Built as structure-only placeholder; 2 VU + 2 RS | user's brief | user | numbers expected to move |
 | 2026-10-20 | Volt Stinger 40→55, Mana Stinger 24→39 | too-weak pass | user | — |
-| 2026-10-31 | 1 surface + 1 Underground row. `Mana Ray x2` was replaced because it barely tested the party | Valley tables tightened to JRPG size: surface 1d28, Underground 1d40 | user | sim report in the commit |
+| 2026-10-31 | 2 surface + 1 Underground rows. `Mana Ray x2` was replaced because it barely tested the party | Valley tables tightened to JRPG size: surface 1d32, Underground 1d40 | user | sim report in the commit |
 
 ```json dossier
 {
@@ -36,7 +36,7 @@ refills its whole pool — the intended hook.
   "actorId": "iGc0EUHE9LKWT0Ye",
   "status": "draft",
   "updated": "2026-10-21",
-  "role": "Valley random encounter (1 surface + 1 Underground Encounter row)",
+  "role": "Valley random encounter (2 surface + 1 Underground Encounter rows)",
   "exceptions": [
     {
       "rule": "vu-count",

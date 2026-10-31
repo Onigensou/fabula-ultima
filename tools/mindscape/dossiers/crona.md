@@ -33,7 +33,7 @@ give the party Virus, and only Vaccine cures that.
 
 ## Numbers & targets
 
-- Valley odds: surface `Crona x3` width 1 of 28 (3.6%); Underground `Crona x3` width 2 and
+- Valley odds: surface `Crona x3` width 1 of 32 (3.1%); Underground `Crona x3` width 2 and
   `Crona, Obsidrax` width 1 of 40 (7.5%).
 - Overworld chapter tables carry a width-1 solo `Crona` row. Other dungeon tables have none yet.
 

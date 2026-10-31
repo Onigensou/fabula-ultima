@@ -31,7 +31,7 @@ the valley's other creatures.
 |---|---|---|---|---|
 | 2026-08-26 | Built: Illusory Form, fixed Phantom Shift repertoire | Option A — true mimicry not expressible in data | user | Illusory Form loop live-verified |
 | 2026-10-31 | Display rename: Phantom Shift: Thunder Strike → Phantom Shift: Lightning Blitz (follows Skizzik) | User naming pass; no mechanical change | user | name-only diff proved |
-| 2026-10-31 | 1 surface row, `Mist Dragon, Obsidrax`, width 2 | Valley tables tightened to JRPG size: surface 1d28, Underground 1d40 | user | sim report in the commit |
+| 2026-10-31 | 1 surface row, `Mist Dragon, Obsidrax`, width 2 | Valley tables tightened to JRPG size: surface 1d32, Underground 1d40 | user | sim report in the commit |
 
 ```json dossier
 {
