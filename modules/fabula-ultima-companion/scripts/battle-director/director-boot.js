@@ -68,6 +68,7 @@ import { initNpcHpBar, emitNpcHpBar, emitNpcHpBarUnchecked, renderNpcHpBarLocal 
 import { initNpcStatusStrip } from "./npc-status-strip.js";
 import { initStatusPop } from "./status-pop.js";
 import { initDominationFx } from "./domination.js";
+import { initLeaveExitFx } from "./leave-exit-fx.js";
 import { initDominationCrest } from "./domination-crest.js";
 import { initEntranceConfig } from "./boss-entrance-config.js";
 import { initDefeatFx } from "./defeat-fx.js";
@@ -1792,6 +1793,8 @@ Hooks.once("ready", () => {
   // the AE-driven red outline watcher, on every client.
   try { initDominationFx(); }
   catch (e) { warn("initDominationFx on ready threw", e); }
+  try { initLeaveExitFx(); }
+  catch (e) { warn("initLeaveExitFx on ready threw", e); }
 
   // Dominance Crest — floating boss emblem showing banked Dominance Point(s),
   // AE-replication-driven on every client.

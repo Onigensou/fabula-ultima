@@ -99,6 +99,7 @@ const ADJUST_GRANT_VIS = `equalText(sameRow("effect_kind",''), "adjust_grant")`;
 // save_check, which instead rolls N independent per-target saves.
 const GROUP_CHECK_VIS = `equalText(sameRow("effect_kind",''), "group_check")`;
 const SET_OUTCOME_VIS = `equalText(sameRow("effect_kind",''), "set_battle_outcome")`;
+const LEAVE_COMBAT_VIS = `equalText(sameRow("effect_kind",''), "leave_combat")`;
 const CLOCK_VIS       = `equalText(sameRow("effect_kind",''), "clock_advance")`;
 // weapon_read — the adaptive weapon-efficiency window (Rakshasa's Adaptive
 // Defense). See skill-effects.applyWeaponReadEffect.
@@ -744,6 +745,11 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
     { key: "defeat",  value: "Defeat" },
     { key: "victory", value: "Victory" },
   ], { tooltip: "set_battle_outcome: how this conflict is reported at battle end. Author the row BEFORE the leave_combat that empties a side — an emptied party side otherwise infers as a victory.", vis: SET_OUTCOME_VIS, defaultValue: "" }),
+  selectCol("leave_exit", "Exit Style", [
+    { key: "",     value: "Run" },
+    { key: "walk", value: "Walk" },
+    { key: "none", value: "None" },
+  ], { tooltip: "leave_combat: how the token leaves before it is removed. Run slides out fast and fades, Walk slowly, None just vanishes.", vis: LEAVE_COMBAT_VIS, defaultValue: "" }),
   textCol("clock_ref", "Clock", { tooltip: "clock_advance: the Clock System clock id, or VAR_<NAME> holding one (an open_action_menu pick can stash the player's choice there).", vis: CLOCK_VIS }),
   selectCol("clock_direction", "Clock Direction", [
     { key: "",     value: "The acting side's own pole" },

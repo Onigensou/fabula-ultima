@@ -1308,7 +1308,219 @@ function bubbles(opts = {}) {
   return shell({ key: opts.key, name: opts.name, cfg, inner: inner(body), timeout: 20000 });
 }
 
+/* ── Roo · Chef's Knife ──────────────────────────────────────────────────── */
+//
+// Approved mockup: Roo and Crona Shots (2026-10-31). Tonberry grammar, measured
+// from FFX and World of FF: stillness, then a hit that takes one frame. The knife
+// draws back level, holds, and thrusts straight along one line, never a swing.
+// Every timing is one function of elapsed time, as in the mockup, so a re-tune
+// here matches what was reviewed.
+//
+// Facing: the clone keeps the token's rendered mirror. The knife aims at the
+// target's live position and is mirrored so its cutting edge stays on the
+// underside, on either side of the stage.
+
+const FORGE = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/";
+const CHEF_KNIFE_ASSETS = {
+  knife: FORGE + "Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Dagger/Icon-Tonberry%2527s_Knife.webp",
+  spark: FORGE + "Animation/RPG%20Maker%20MV/012_pierce_effect.webm",
+};
+
+function chefKnife(opts = {}) {
+  const cfg = Object.assign({
+    camZoom: 1.4, camInMs: 1800, camOutMs: 1400,
+    dimTo: 0.58, dimColor: 0x08040e, dimInMs: 700, dimOutMs: 1000,
+    stepAt: 800, stepMs: 450, stepPx: 16,
+    drawAt: 1500, glintAt: 2500, glintMs: 520, glintSize: 34,
+    holdMs: 1000, freezeMs: 280, recoverAfterMs: 700, tailMs: 2000,
+    lungePx: 28, reachPx: 112, leanPx: 8,
+    knifeScale: 1.3, knifeInMs: 250,
+    flashAlpha: 0.75, flashOutMs: 350, shakeMs: 420, shakeAmp: 9,
+    sparkSize: 210, targetFlash: 0.65, targetFlashMs: 500,
+    sfxStep: "SE_BTL_FootStepNormal_1", sfxStepVol: 0.75,
+    sfxGlint: "Metal_Shing", sfxGlintVol: 0.7,
+    sfxStab: "SE_BTL_HitSlashL", sfxStabVol: 1,
+    sfxDark: "Darkness1", sfxDarkVol: 0.45,
+    totalTimeoutMs: 16000,
+  }, opts.cfg || {});
+
+  const body = [
+    "if (!caster || !prime) { done(); return; }",
+    "const host = oni.layer({ zIndex: 93000 });",
+    "host.sortableChildren = true;",
+    "const t = ctr(prime);",
+    "const dirX = Math.sign(t.x - home.x) || 1;",
+    "const tip = { x: t.x - 14 * dirX, y: t.y - 18 };",
+    "const aim = Math.atan2(tip.y - (home.y - 10), tip.x - home.x);",
+    "const stab = cfg.glintAt + cfg.holdMs, back = stab + cfg.recoverAfterMs, total = back + cfg.tailMs;",
+    "const seg = (v, a, b) => Math.max(0, Math.min(1, (v - a) / (b - a)));",
+    "const io = E.inOutQuad, lerp = (a, b, u) => a + (b - a) * u;",
+    "",
+    "const clone = oni.cloneToken(caster, { parent: host });",
+    "const restoreCaster = oni.hideToken(caster);",
+    "if (!clone) { restoreCaster(); done(); return; }",
+    "clone.zIndex = 10;",
+    "const baseX = clone.scale.x, baseY = clone.scale.y;",
+    "// Far targets (a forced action) still connect: the lunge covers the gap.",
+    "const lunge = Math.max(cfg.lungePx, Math.abs(t.x - home.x) - cfg.reachPx);",
+    "",
+    "// The blade lies along the thrust line. Icon tip is up-left of its handle,",
+    "// and its cutting edge reads on top once turned to point right, so mirror it.",
+    "const tex = await loadTexture(A.knife);",
+    "const knife = new PIXI.Container();",
+    "knife.zIndex = 20;",
+    "knife.alpha = 0;",
+    "knife.rotation = aim;",
+    "knife.scale.y = Math.cos(aim) >= 0 ? -1 : 1;",
+    "host.addChild(knife);",
+    "const blade = new PIXI.Sprite(tex);",
+    "if (tex && tex.baseTexture) tex.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;",
+    "blade.anchor.set(0.92, 0.93);",
+    "blade.width = tex.width * cfg.knifeScale;",
+    "blade.height = tex.height * cfg.knifeScale;",
+    "blade.rotation = -Math.atan2(-49, -45);",
+    "knife.addChild(blade);",
+    "const reach = Math.hypot(blade.width, blade.height) * 0.86;",
+    "",
+    "// The glint: a small four-point star.",
+    "const glint = new PIXI.Graphics();",
+    "glint.beginFill(0xffffff, 1);",
+    "for (let i = 0; i < 4; i++) {",
+    "  const a = i * Math.PI / 2, c = Math.cos(a), s = Math.sin(a);",
+    "  glint.drawPolygon([c * 1.5, s * 1.5, -s * 0.09, c * 0.09, s * 0.09, -c * 0.09]);",
+    "}",
+    "glint.endFill();",
+    "const halo = new PIXI.Sprite(oni.radialTexture('rgba(255,255,255,1)', 'rgba(255,255,255,0)', { size: 64 }));",
+    "halo.anchor.set(0.5);",
+    "halo.width = halo.height = 1.6;",
+    "glint.addChild(halo);",
+    "glint.blendMode = PIXI.BLEND_MODES.ADD;",
+    "halo.blendMode = PIXI.BLEND_MODES.ADD;",
+    "glint.zIndex = 30;",
+    "glint.alpha = 0;",
+    "host.addChild(glint);",
+    "",
+    "const camming = oni.camera.focus({ point: { x: (home.x + t.x) / 2, y: t.y - 20 }, zoom: cfg.camZoom, duration: cfg.camInMs });",
+    "const dimming = oni.sceneDim({ to: cfg.dimTo, fadeIn: cfg.dimInMs, color: cfg.dimColor });",
+    "",
+    "let stepped = false, glinted = false, stabbed = false, darked = false, recovering = null;",
+    "let targetFlash = null;",
+    "function frame(now) {",
+    "  if (!stepped && now >= cfg.stepAt) { stepped = true; playSfx('sfxStep', 'sfxStepVol'); }",
+    "  if (!glinted && now >= cfg.glintAt) { glinted = true; playSfx('sfxGlint', 'sfxGlintVol'); }",
+    "  if (!stabbed && now >= stab) {",
+    "    stabbed = true;",
+    "    playSfx('sfxStab', 'sfxStabVol');",
+    "    oni.domFlash({ color: '#fff', fadeIn: 16, hold: 0, fadeOut: cfg.flashOutMs, alpha: cfg.flashAlpha });",
+    "    oni.screenshake({ duration: cfg.shakeMs, intensity: cfg.shakeAmp });",
+    "    oni.vfx(A.spark, { x: tip.x, y: tip.y, size: cfg.sparkSize, blend: PIXI.BLEND_MODES.ADD, parent: host, zIndex: 40 });",
+    "    targetFlash = oni.cloneToken(prime, { parent: host });",
+    "    if (targetFlash) { targetFlash.zIndex = 5; targetFlash.blendMode = PIXI.BLEND_MODES.ADD; }",
+    "    done();",
+    "  }",
+    "  if (!darked && now >= stab + 60) { darked = true; playSfx('sfxDark', 'sfxDarkVol'); }",
+    "  if (!recovering && now >= back) {",
+    "    recovering = Promise.all([",
+    "      oni.camera.restore({ duration: cfg.camOutMs }),",
+    "      wait(100).then(() => dimming).then((d) => d && d.fadeOut({ duration: cfg.dimOutMs })),",
+    "    ]);",
+    "  }",
+    "",
+    "  const hit = now >= stab, frozen = hit && now < stab + cfg.freezeMs;",
+    "  const draw = io(seg(now, cfg.drawAt, cfg.glintAt));",
+    "  const out = io(seg(now, stab + cfg.freezeMs, back + 500));",
+    "  const step = io(seg(now, cfg.stepAt, cfg.stepAt + cfg.stepMs)) * cfg.stepPx * (1 - io(seg(now, back, back + cfg.camOutMs)));",
+    "  const lean = hit ? 0 : draw * cfg.leanPx;",
+    "  const cx = home.x + dirX * (step + (hit ? lerp(lunge, 0, out) : 0) - lean);",
+    "  clone.position.set(cx, home.y);",
+    "  clone.scale.x = baseX * (frozen ? 1.12 : hit ? 1 : lerp(1, 0.97, draw));",
+    "  clone.scale.y = baseY * (frozen ? 0.94 : hit ? 1 : lerp(1, 1.03, draw));",
+    "",
+    "  const cockX = cx - dirX * 30, cockY = home.y + 6;",
+    "  let px, py;",
+    "  if (!hit) {",
+    "    px = lerp(cx + dirX * 8, cockX, draw);",
+    "    py = lerp(home.y + 14, cockY, draw);",
+    "  } else {",
+    "    px = lerp(tip.x - Math.cos(aim) * reach, cockX, out);",
+    "    py = lerp(tip.y - Math.sin(aim) * reach, cockY, out);",
+    "  }",
+    "  knife.position.set(px, py);",
+    "  knife.alpha = seg(now, cfg.drawAt - 100, cfg.drawAt - 100 + cfg.knifeInMs) * (1 - seg(now, back + 500, back + 1000));",
+    "",
+    "  const g = !hit && now >= cfg.glintAt ? Math.sin(seg(now, cfg.glintAt, cfg.glintAt + cfg.glintMs) * Math.PI) : 0;",
+    "  glint.alpha = g;",
+    "  glint.scale.set(Math.max(0.001, cfg.glintSize * g));",
+    "  glint.position.set(px + Math.cos(aim) * reach, py + Math.sin(aim) * reach);",
+    "",
+    "  if (targetFlash && !targetFlash.destroyed) targetFlash.alpha = cfg.targetFlash * (1 - seg(now, stab, stab + cfg.targetFlashMs));",
+    "}",
+    "",
+    "await oni.tween({ from: 0, to: total, duration: total, ease: E.linear, onUpdate: frame });",
+    "await Promise.all([camming, recovering]);",
+    "restoreCaster();",
+  ].join("\n");
+
+  return {
+    script: shell({ key: opts.key, name: opts.name, cfg, assets: CHEF_KNIFE_ASSETS, inner: inner(body), timeout: 20000 }),
+    preload: Object.values(CHEF_KNIFE_ASSETS),
+  };
+}
+
+/* ── Roo · Curse ─────────────────────────────────────────────────────────── */
+//
+// One Ragnarok Online clip standing on the target's feet. Plain tier: no dim, no
+// camera. Anchor numbers come from the RO manifest, whose origin is the feet.
+
+const CURSE_CLIP = {
+  url: FORGE + "Animation/Ragnarok%20Online/new_howlingoflion_hit.webm",
+  width: 208, height: 258, durationMs: 750, anchorX: 0.5385, anchorY: 0.8682, impact: 0.45,
+};
+
+function curseOnTarget(opts = {}) {
+  const cfg = Object.assign({
+    leadMs: 300, sizeScale: 1.25, clipRate: 0.75,
+    tint: 0x8a3fe0, tintAlpha: 0.55, tintInMs: 200, tintHoldMs: 270, tintOutMs: 550,
+    tailMs: 600,
+    sfx: "Darkness3", sfxVol: 0.8,
+    totalTimeoutMs: 8000,
+  }, opts.cfg || {});
+
+  const body = [
+    "if (!prime) { done(); return; }",
+    "const host = oni.layer({ zIndex: 93000 });",
+    "host.sortableChildren = true;",
+    "const c = ctr(prime);",
+    "const footY = c.y + (prime.mesh ? prime.mesh.height : prime.h) * 0.5 * 0.97;",
+    "await wait(Math.max(0, cfg.leadMs - 50));",
+    "playSfx('sfx', 'sfxVol');",
+    "await wait(50);",
+    "const fx = await oni.vfx(A.url, { x: c.x, y: footY, size: A.width * cfg.sizeScale, parent: host, zIndex: 40 });",
+    "if (fx) { fx.sprite.anchor.set(A.anchorX, A.anchorY); fx.video.playbackRate = cfg.clipRate; }",
+    "const clipMs = A.durationMs / cfg.clipRate;",
+    "const gateAt = clipMs * A.impact;",
+    "await wait(Math.max(0, gateAt - cfg.tintInMs));",
+    "",
+    "// The target tints as the clip peaks; the hit lands at the peak.",
+    "const body = oni.cloneToken(prime, { parent: host });",
+    "if (body) { body.tint = cfg.tint; body.alpha = 0; body.zIndex = 30; }",
+    "const setA = (v) => { if (body && !body.destroyed) body.alpha = v * cfg.tintAlpha; };",
+    "await oni.tween({ from: 0, to: 1, duration: cfg.tintInMs, ease: E.outQuad, onUpdate: setA });",
+    "done();",
+    "await wait(cfg.tintHoldMs);",
+    "await oni.tween({ from: 1, to: 0, duration: cfg.tintOutMs, ease: E.inOutQuad, onUpdate: setA });",
+    "const left = clipMs - gateAt - cfg.tintHoldMs - cfg.tintOutMs;",
+    "await wait(Math.max(0, left) + cfg.tailMs);",
+  ].join("\n");
+
+  return {
+    script: shell({ key: opts.key, name: opts.name, cfg, assets: CURSE_CLIP, inner: inner(body), timeout: 10000 }),
+    preload: [CURSE_CLIP.url],
+  };
+}
+
 module.exports = {
   quadElementalSlash, phantomShift, railStream, thrash, stinkyBreath,
   charm, deathGaze, stripEquip, thunderStrikeDash, bodyslam, boulders, bubbles,
+  chefKnife, curseOnTarget,
 };

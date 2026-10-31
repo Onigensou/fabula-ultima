@@ -26,6 +26,7 @@ import { pickFromList } from "./list-picker.js";
 // below for the existing importers of `promptNumberDialog`.
 import { promptNumberDialog } from "./number-picker.js";
 import { resolveTargetRef } from "./skill-targeting.js";
+import { emitLeaveExit } from "./leave-exit-fx.js";
 import { RESOURCE_REGISTRY } from "./resources.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor, isPersistentCounter } from "./skill-charges.js";
 import { foldChargeSteps, aeRefreshIsNoop } from "./chain-strikes.js";
@@ -3979,9 +3980,14 @@ async function applyLeaveCombatEffect(row, ctx) {
   // The director API lives at FUCompanion.api.experimental.battleDirector.
   const bd = globalThis.FUCompanion?.api?.experimental?.battleDirector;
   const applied = [];
+  // The exit plays here, not as an item script: this row only runs once its
+  // condition has passed, so a passed Run Away check never shows it.
+  const exitStyle = String(row.leave_exit ?? "").trim().toLowerCase() || "run";
+  const playExit = exitStyle !== "none" && !ctx?.captureMode && ctx?.mode !== "preview";
   for (const token of tr.tokens) {
     if (typeof bd?.removeCombatant === "function") {
       try {
+        if (playExit) await emitLeaveExit({ tokenUuid: token.uuid, style: exitStyle });
         const res = await bd.removeCombatant({ tokenUuid: token.uuid });
         if (res?.ok) applied.push(token.uuid);
         else warn(`skill-effects.leave_combat: removeCombatant failed — ${res?.error}`);

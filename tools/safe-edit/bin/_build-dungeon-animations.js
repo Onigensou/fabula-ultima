@@ -718,6 +718,31 @@ const REGISTRY = {
     },
   },
 
+  // ── Roo ────────────────────────────────────────────────────────────────
+  //
+  // Its exit after the knife is NOT here: it plays from the leave_combat row
+  // (battle-director/leave-exit-fx.js), Exit Style Walk.
+  "VwClo606KbQSK6aQ": {
+    actorName: "Roo",
+    items: {
+      "Chef's Knife": () => G.chefKnife({ key: "roo-chef-knife", name: "Chef's Knife" }),
+      "Karma": () => G.curseOnTarget({ key: "roo-karma", name: "Karma" }),
+    },
+  },
+
+  // ── Bandit Roo ─────────────────────────────────────────────────────────
+  //
+  // Its AI only casts Curse. Robbed Blind has no effect rows yet, so the knife
+  // shot is ready for when that move is automated; the weapon named Chef's Knife
+  // on this actor is an equipment item and carries no shot.
+  "kIvWhnszRhsHafWu": {
+    actorName: "Bandit Roo",
+    items: {
+      "Robbed Blind": () => G.chefKnife({ key: "bandit-roo-robbed-blind", name: "Robbed Blind" }),
+      "Curse": () => G.curseOnTarget({ key: "bandit-roo-curse", name: "Curse" }),
+    },
+  },
+
   // ── ⭐ Fafnir (Valley of the Dragon) ─────────────────────────────────────
   //
   // No longer deferred — her ENTRANCE ships as the `shadowstorm` style in
@@ -904,7 +929,12 @@ async function main() {
       const aid = key.split("!")[2].split(".")[0];
       if (!REGISTRY[aid]) continue;
       if (!index.has(aid)) index.set(aid, new Map());
-      index.get(aid).set(String(val.name ?? ""), [key, val]);
+      // A name can be on both an action and an equipment item (Roo's Chef's Knife
+      // is both). The shot belongs on the action, the one with a skill_type.
+      const name = String(val.name ?? "");
+      const prior = index.get(aid).get(name);
+      if (prior && prior[1]?.system?.props?.skill_type && !val.system?.props?.skill_type) continue;
+      index.get(aid).set(name, [key, val]);
     }
     for (const j of jobs) {
       const hit = index.get(j.actorId)?.get(j.itemName);
