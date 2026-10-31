@@ -762,7 +762,7 @@
       "action_pattern_table": {
         "0": {
           "$deleted": false,
-          "action_pattern_condition": "ally_in_crisis",
+          "action_pattern_condition": "player_in_crisis",
           "action_pattern_cooldown": "0",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
