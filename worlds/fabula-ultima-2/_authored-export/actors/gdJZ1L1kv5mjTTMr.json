@@ -10,30 +10,24 @@
   },
   "effects": [
     {
-      "_id": "COKHUbD4Nza8q1M0",
+      "_id": "3IWbKwlv56chcVwm",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1784466355717,
+        "createdTime": 1793473796570,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "changes": [
         {
-          "key": "affinity_3",
-          "mode": 0,
-          "priority": 1,
-          "value": "VU"
-        },
-        {
-          "key": "wet_status",
-          "mode": 5,
-          "priority": 1,
-          "value": "true"
+          "key": "max_mp",
+          "mode": 2,
+          "priority": null,
+          "value": "10"
         }
       ],
-      "description": "<p>Gain <strong>Bolt </strong>vulnerability</p>",
+      "description": "<p>A simple skillet cake sweetened with wild honey, passed around still warm. Everyone who eats gains <strong>+10 Maximum MP</strong> until the next rest.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -47,39 +41,19 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "isPredefined": true,
-          "originalId": "sKaI09DfDAMkJkyy",
-          "originalParentId": "XVOWOq9oUmEECGrU",
-          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.sKaI09DfDAMkJkyy"
-        },
-        "dfreds-convenient-effects": {
-          "ceEffectId": "ce-wet",
-          "isBackup": false,
-          "isConvenient": true,
-          "isDynamic": false,
-          "isTemporary": false,
-          "isViewable": true
+          "originalId": "3IWbKwlv56chcVwm",
+          "originalParentId": "gdJZ1L1kv5mjTTMr",
+          "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.ActiveEffect.3IWbKwlv56chcVwm"
         },
         "fabula-ultima-companion": {
-          "crossScene": true,
-          "directorPermanent": true,
-          "setBonus": "Swift Swimmers:2:ae",
-          "setBonusSig": "{\"n\":\"Wet\",\"s\":[\"5FFBDg2y54bpqgat\"],\"c\":[{\"k\":\"affinity_3\",\"m\":0,\"v\":\"VU\"},{\"k\":\"wet_status\",\"m\":5,\"v\":\"true\"}],\"di\":false,\"du\":{},\"dp\":true,\"cs\":true}",
-          "wetStatusBooleanPatchBackup_v1": {
-            "changes": [
-              {
-                "key": "affinity_3",
-                "mode": 0,
-                "priority": 1,
-                "value": "VU"
-              }
-            ],
-            "createdAt": 1777713393201,
-            "effectName": "Wet",
-            "effectUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.sKaI09DfDAMkJkyy",
-            "parentName": "Debuff",
-            "parentType": "Item"
-          }
+          "campRestCharges": 0,
+          "cookingDish": {
+            "dishId": "oel2cAzIcVh85ocz",
+            "family": "sweet",
+            "instant": {},
+            "tier": 1
+          },
+          "foodBuff": true
         },
         "statuscounter": {
           "config": {
@@ -90,16 +64,16 @@
           "visible": false
         }
       },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/flying_sardine.png",
-      "name": "Wet",
-      "origin": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Doraemon/1587828177600.webp",
+      "name": "Campfire Cake",
+      "origin": "Item.oel2cAzIcVh85ocz",
       "sort": 0,
       "statuses": [
-        "5FFBDg2y54bpqgat"
+        "permanent"
       ],
       "system": {
         "tags": [
-          "debuff"
+          "food"
         ]
       },
       "tint": "#ffffff",
@@ -137,7 +111,7 @@
         },
         "fabula-ultima-companion": {
           "chargeKey": "bodyguard_fatigue",
-          "charges": 5,
+          "charges": 10,
           "chargesMax": 10,
           "crossScene": true,
           "directorPermanent": true,
@@ -198,77 +172,6 @@
       "statuses": [],
       "system": {
         "tags": []
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "r3GS89SFn4WXCjzO",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1792867765380,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "max_hp",
-          "mode": 2,
-          "priority": null,
-          "value": "10"
-        }
-      ],
-      "description": "<p>+10 Maximum Hit Points until the next rest.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "r3GS89SFn4WXCjzO",
-          "originalParentId": "gdJZ1L1kv5mjTTMr",
-          "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.ActiveEffect.r3GS89SFn4WXCjzO"
-        },
-        "fabula-ultima-companion": {
-          "campRestCharges": 0,
-          "cookingDish": {
-            "dishId": "GBixGFmKRv0B1Lgj",
-            "family": "umami",
-            "instant": {},
-            "tier": 1
-          },
-          "foodBuff": true
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/consumables/food/bowl-stew-tofu-potato-brown.webp",
-      "name": "Hearty Hot-Pot",
-      "origin": "Item.GBixGFmKRv0B1Lgj",
-      "sort": 0,
-      "statuses": [
-        "permanent"
-      ],
-      "system": {
-        "tags": [
-          "food"
-        ]
       },
       "tint": "#ffffff",
       "transfer": false,
@@ -502,7 +405,7 @@
           "human_ef": "100",
           "humanoid_ef": "100",
           "insect_ef": "100",
-          "isEquipped": false,
+          "isEquipped": true,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -815,7 +718,7 @@
             }
           ],
           "description": "",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -938,7 +841,7 @@
           "humanoid_ef": "100",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": true,
+          "isEquipped": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -1241,6 +1144,68 @@
           "type": "base"
         },
         {
+          "_id": "pz8auupBtgcVDcxT",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1793459114012,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "check_mod_init",
+              "mode": 2,
+              "priority": null,
+              "value": "${isEquipped ? 1 : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "pz8auupBtgcVDcxT",
+              "originalParentId": "6Pry1DbGlFej0tVP",
+              "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.6Pry1DbGlFej0tVP.ActiveEffect.pz8auupBtgcVDcxT"
+            },
+            "fabula-ultima-companion": {
+              "orbment": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Initiative Up (Orbment)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "orbment"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
           "_id": "scYgrHaDZUs7vp4h",
           "_stats": {
             "compendiumSource": null,
@@ -1341,6 +1306,21 @@
               "actorUuid": "Actor.uJFaNQCSvwwsr2AW",
               "source": "Actor-owned Item"
             }
+          },
+          "orbment": {
+            "baseProps": [],
+            "linkGroup": [
+              "6Pry1DbGlFej0tVP"
+            ],
+            "slots": [
+              {
+                "id": "initiative_up",
+                "param": null,
+                "source": "roll",
+                "value": 1
+              }
+            ],
+            "version": 3
           }
         },
         "fucompanion": {
@@ -1464,105 +1444,6 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "ofAKHqi3j6lAruI4"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "7wfcJjtOohmga8n0",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783788196331,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": "36rowiHAcXnIPsKK",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Sunsettia.webp",
-      "name": "Starfruit",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "The dried peel of a starfruit — intensely tart, prized by travelling chefs.",
-          "dragon_ef": "100",
-          "effect_table": {},
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "ingredient_taste": "sour",
-          "ingredient_taste2": "",
-          "insect_ef": "100",
-          "ip_cost": "0",
-          "isEquipped": false,
-          "isIngredient": true,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "0",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Uncommon",
-          "item_type": "material",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Starfruit",
-          "optional_params": {},
-          "plant_ef": "100",
-          "reaction_config_table": {},
-          "recipe_dish_uuid": "",
-          "recipe_kind": "",
-          "refine_count": "0",
-          "refine_level": "0",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "<Set Name>",
-          "skill_target": "One Enemy",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "zF6faTFO5nlTBVt8"
       },
       "type": "equippableItem"
     },
@@ -2177,6 +2058,68 @@
       },
       "effects": [
         {
+          "_id": "1chS4Z8iXvdMnoOM",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1793459304391,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "heal_receiving_flat_all",
+              "mode": 2,
+              "priority": null,
+              "value": "3"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "1chS4Z8iXvdMnoOM",
+              "originalParentId": "BRNmLkWm9FSqbXRK",
+              "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.BRNmLkWm9FSqbXRK.ActiveEffect.1chS4Z8iXvdMnoOM"
+            },
+            "fabula-ultima-companion": {
+              "orbment": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Vitality Up (Orbment)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "orbment"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
           "_id": "5oJyCcAbC722AbpQ",
           "_stats": {
             "compendiumSource": null,
@@ -2489,7 +2432,23 @@
         "custom-system-builder": {
           "version": "3.2.4"
         },
-        "fabula-ultima-companion": {},
+        "fabula-ultima-companion": {
+          "orbment": {
+            "baseProps": [],
+            "linkGroup": [
+              "BRNmLkWm9FSqbXRK"
+            ],
+            "slots": [
+              {
+                "id": "vitality_up",
+                "param": null,
+                "source": "roll",
+                "value": 3
+              }
+            ],
+            "version": 3
+          }
+        },
         "fucompanion": {
           "itemMigratorBackup": {
             "detectedType": "armor",
@@ -2827,6 +2786,68 @@
           "type": "base"
         },
         {
+          "_id": "FebLwxY3GBWpDm1u",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1793459346991,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "check_mod_init",
+              "mode": 2,
+              "priority": null,
+              "value": "${isEquipped ? 1 : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "FebLwxY3GBWpDm1u",
+              "originalParentId": "ClJ1AQmIN2N5XOcb",
+              "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.ClJ1AQmIN2N5XOcb.ActiveEffect.FebLwxY3GBWpDm1u"
+            },
+            "fabula-ultima-companion": {
+              "orbment": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Initiative Up (Orbment)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "orbment"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
           "_id": "LGLdzXBAwZpielFu",
           "_stats": {
             "compendiumSource": null,
@@ -3001,6 +3022,21 @@
               "actorUuid": "Actor.gdJZ1L1kv5mjTTMr",
               "source": "Actor-owned Item"
             }
+          },
+          "orbment": {
+            "baseProps": [],
+            "linkGroup": [
+              "ClJ1AQmIN2N5XOcb"
+            ],
+            "slots": [
+              {
+                "id": "initiative_up",
+                "param": null,
+                "source": "roll",
+                "value": 1
+              }
+            ],
+            "version": 3
           }
         },
         "fucompanion": {
@@ -3051,6 +3087,7 @@
           "demon_ef": "100",
           "description": "<ul><li><strong>You</strong> may take the first turn in a <strong>Boss Battle.</strong></li></ul>",
           "dragon_ef": "100",
+          "effect_table": {},
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -3086,6 +3123,7 @@
           "name": "Shadow Tunic",
           "optional_params": {},
           "plant_ef": "100",
+          "reaction_config_table": {},
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -4721,6 +4759,212 @@
       "type": "equippableItem"
     },
     {
+      "_id": "GygL59hLViiA5hc9",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1793467712862,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "NRGrqxKBhfKDmNK5",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "NRGrqxKBhfKDmNK5",
+              "originalParentId": "SccgW4PlHy8m6ph5",
+              "originalUuid": "Item.SccgW4PlHy8m6ph5.ActiveEffect.NRGrqxKBhfKDmNK5"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "chain_steps": "lifecharm_cap,lifecharm_heal,lifecharm_spend",
+                    "effect_kind": "chain",
+                    "effect_label": "lifecharm_save"
+                  },
+                  "1": {
+                    "damage_amount": "CUR_HP - 1",
+                    "damage_operation": "cap",
+                    "damage_stage": "incoming",
+                    "effect_kind": "adjust_damage",
+                    "effect_label": "lifecharm_cap",
+                    "modify_mode": "set_hp_floor",
+                    "modify_value": 1
+                  },
+                  "2": {
+                    "effect_kind": "grant",
+                    "effect_label": "lifecharm_heal",
+                    "grant_amount": "floor(MAX_HP / 2) - 1",
+                    "grant_resource": "hp",
+                    "target_ref": "self"
+                  },
+                  "3": {
+                    "consume_item_name": "Life Charm",
+                    "effect_kind": "consume_item",
+                    "effect_label": "lifecharm_spend"
+                  }
+                },
+                "name": "Life Charm",
+                "reaction_config_table": {
+                  "0": {
+                    "reaction_damage_outcome": "would_reduce_to_zero",
+                    "reaction_effect_ref": "lifecharm_save",
+                    "reaction_passive_mode": "ask",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_takes_damage"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wingd.png",
+          "name": "Life Charm",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "VzpCG9mySsd9sQSL",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wingd.png",
+      "name": "Life Charm",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 4400000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li>When you are reduced to <strong>0 HP,&nbsp;</strong>you may immediately use this item, if you do, gain <strong>HP</strong> equal to your <strong>crisis</strong> score.</li><li>You may only hold 1 copy of this item in your inventory</li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "1000",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Rare",
+          "item_type": "consumable",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Life Charm",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "SccgW4PlHy8m6ph5"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "h2zke8eM3OaNV9Vh",
       "_stats": {
         "compendiumSource": "Item.8o1tS1YwcrSoe4et",
@@ -5957,6 +6201,125 @@
       "type": "equippableItem"
     },
     {
+      "_id": "iSps0k7xep6kkw7W",
+      "_stats": {
+        "compendiumSource": "Item.fOEeRwVzYy6YQuIN",
+        "coreVersion": "12.343",
+        "createdTime": 1793472220051,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Nut.png",
+      "name": "Forget me Nut",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 800000,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>Reduce a Skill level by one and <strong>Recovers 1 Skill Point </strong><em>(You may still only have 3 unmastered class at a time)</em></p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "<p><em>\"…Forget Deez Nuts\"</em></p>",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "fOEeRwVzYy6YQuIN",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Nut.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "50",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 97,
+          "item_rarity": "Common",
+          "item_type": "consumable",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Forget me Nut",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.fOEeRwVzYy6YQuIN",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "fOEeRwVzYy6YQuIN"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "Iwt724pOxBNvcgrk",
       "_stats": {
         "compendiumSource": "Item.39Y43bBRXTeu4SNo",
@@ -6560,6 +6923,77 @@
       "type": "equippableItem"
     },
     {
+      "_id": "l4g2xjIMXAh9AP6h",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1793472601322,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/10_VPR/Serpent%27s_Ire.png",
+      "name": "Cheap Shot",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "class": "Rogue",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you hit a creature with an attack, if the attack <strong>only</strong> targeted that creature and they are suffering from <strong>one or more status effects</strong>, you may have it deal extra damage equal to <strong>【SL + the number of status effects on the creature】.</strong></p>",
+          "effect_table": {
+            "0": {
+              "damage_amount": "SL + TARGET_STATUS_COUNT",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "cheap_shot_bonus",
+              "target_ref": "trigger_subject"
+            }
+          },
+          "isCheck": false,
+          "isReaction": true,
+          "level": 2,
+          "max_level": "5",
+          "name": "Cheap Shot",
+          "on_activate_effect_ref": "",
+          "passive_logic_action": "",
+          "pre_activate_effect_ref": "",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "SINGLE_TARGET_ATTACK && TARGET_STATUS_COUNT > 0",
+              "reaction_action_target": "enemy",
+              "reaction_effect_ref": "cheap_shot_bonus",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": true,
+        "uniqueId": "9cHSgi4ag97uKGW7"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "l7hj0bWidYxltnI6",
       "_stats": {
         "compendiumSource": "Item.G6zwbm2sfECSKpDM",
@@ -6641,9 +7075,96 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "8KJ7nqAB9tp7yjOr",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1793459093433,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "condition_slow",
+              "mode": 5,
+              "priority": null,
+              "value": "IM"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "8KJ7nqAB9tp7yjOr",
+              "originalParentId": "Ld4P1df4SK5zvtq6",
+              "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.Ld4P1df4SK5zvtq6.ActiveEffect.8KJ7nqAB9tp7yjOr"
+            },
+            "fabula-ultima-companion": {
+              "orbment": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Antistatus Slow (Orbment)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "orbment"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "orbment": {
+            "baseProps": [],
+            "linkGroup": [
+              "Ld4P1df4SK5zvtq6"
+            ],
+            "slots": [
+              {
+                "id": "hunter",
+                "param": "demon",
+                "source": "roll",
+                "value": 5
+              },
+              {
+                "id": "antistatus",
+                "param": "slow",
+                "source": "roll",
+                "value": null
+              }
+            ],
+            "version": 3
+          }
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
@@ -6670,6 +7191,15 @@
           "demon_ef": "100",
           "description": "<ul><li><p>This weapon gain bonus <strong>Accuracy</strong> equal to <strong>【1 x</strong> <strong>the number of filled sections in your Brainwave Clock</strong>】</p></li><li><p>This weapon deals bonus damage equal to <strong>【2 x</strong> <strong>the number of filled sections in your Brainwave Clock</strong>】</p></li></ul>",
           "dragon_ef": "100",
+          "effect_table": {
+            "0": {
+              "damage_amount": "TARGET_SPECIES_IS_DEMON * 5",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "orbment_hunter_0"
+            }
+          },
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -6713,6 +7243,17 @@
           "name": "+6 Psychic Dagger",
           "optional_params": {},
           "plant_ef": "100",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "",
+              "reaction_damage_outcome": "",
+              "reaction_effect_ref": "orbment_hunter_0",
+              "reaction_passive_mode": "on",
+              "reaction_requires_weapon_used": true,
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
           "refine_count": 21,
           "refine_level": 6,
           "related_item_list": {
@@ -7776,102 +8317,12 @@
       "type": "equippableItem"
     },
     {
-      "_id": "RSnilc4zgPeVi4ib",
+      "_id": "wYv1WhDHGlUQTUNc",
       "_stats": {
-        "compendiumSource": "Item.ZXaslUkB4sJRWJn3",
+        "compendiumSource": "Item.bbEv9kibtZscX9eJ",
         "coreVersion": "12.343",
-        "createdTime": 1783717321807,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "3.2.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "icons/weapons/daggers/dagger-black.webp",
-      "name": "Steel Dagger",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 100000,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Dagger",
-          "celestial_ef": "100",
-          "check_bonus": "1",
-          "construct_ef": "100",
-          "damage_bonus": "4",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li><p>No Quality.</p></li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "150",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Common",
-          "item_type": "weapon",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Steel Dagger",
-          "optional_params": {},
-          "plant_ef": "100",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "INS",
-          "set_description": "",
-          "set_name": "",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "ZXaslUkB4sJRWJn3"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "YIUYJEg53a76vGbH",
-      "_stats": {
-        "compendiumSource": "Item.VXzpUvjAr9Z5wfBA",
-        "coreVersion": "12.343",
-        "createdTime": 1783717321807,
-        "duplicateSource": null,
+        "createdTime": 1793472982739,
+        "duplicateSource": "Item.WYUnQzanvuduKdSy",
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
@@ -7881,146 +8332,132 @@
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/DaydreamerSkill3.png",
-      "name": "Create Phantasm: Dread",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Laby/RumblePumnSkill5.png",
+      "name": "Multi Shatter",
       "ownership": {
         "2vy7wrEUqBy0kzsU": 3,
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
+        "default": 3
       },
       "sort": 0,
       "system": {
         "props": {
           "action_command": "spell",
           "active_effect_config_table": {},
-          "animation_damage_timing_offset": "0",
-          "animation_damage_timing_options": "default",
-          "animation_script": "<p>// ============================================================================</p><p>// Create Phantasm: Dread — Animation Script</p><p>// Mirrors Sneak → Flurry first part:</p><p>// - Caster pseudo-slides forward</p><p>// - Sneak Attack / stealth figure appears in front of target</p><p>// - Then skull smoke appears on target</p><p>// - Hit SFX is Spook.mp3</p><p>// ============================================================================</p><p>return (async () =&gt; {</p><p>const TAG = \"[ANIM][PHANTASM-DREAD]\";</p><p>const FX_SNEAK =</p><p>\"modules/JB2A_DnD5e/Library/1st_Level/Sneak_Attack/Sneak_Attack_Dark_Green_300x300.webm\";</p><p>const FX_DREAD =</p><p>\"modules/JB2A_DnD5e/Library/Cantrip/Toll_The_Dead/TollTheDeadSkullSmoke_01_Regular_Green_400x400.webm\";</p><p>const SFX_MOVE =</p><p>\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Beginspell.mp3\";</p><p>const SFX_SNEAK =</p><p>\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Beginspell.mp3\";</p><p>const SFX_HIT =</p><p>\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Spook.mp3\";</p><p>const TUNE = {</p><p>// Caster movement</p><p>moveDurationMs: 350,</p><p>casterStepSquares: 0.35,</p><p>// Timing</p><p>waitAfterStepOutMs: 150,</p><p>waitBetweenSneakAndSkullMs: 1500,</p><p>waitBeforeStepBackMs: 150,</p><p>endBufferMs: 80,</p><p>// Sneak figure VFX</p><p>sneakScaleToTarget: 2.20,</p><p>sneakOffsetX: 140,</p><p>sneakOffsetY: 0,</p><p>sneakLifeMs: 900,</p><p>sneakFadeInMs: 120,</p><p>sneakFadeOutMs: 220,</p><p>// Skull smoke VFX</p><p>skullScaleToTarget: 1.55,</p><p>skullOffsetX: 0,</p><p>skullOffsetY: -8,</p><p>skullLifeMs: 1150,</p><p>skullFadeInMs: 80,</p><p>skullFadeOutMs: 260,</p><p>// General</p><p>zIndexCaster: 5000,</p><p>zIndexVfx: 7000,</p><p>// Sound</p><p>moveVolume: 0.9,</p><p>sneakVolume: 0.8,</p><p>hitVolume: 0.85</p><p>};</p><p>// ---------------------------------------------------------------------------</p><p>// ONI emit helper</p><p>// ---------------------------------------------------------------------------</p><p>globalThis.ONI = globalThis.ONI ?? {};</p><p>if (!globalThis.ONI.emit) {</p><p>globalThis.ONI.emit = function (eventName, payload = {}, options = {}) {</p><p>const { local = true, world = false } = options;</p><p>if (local) Hooks.callAll(eventName, payload);</p><p>if (world) game.socket.emit(\"world\", { action: eventName, payload });</p><p>};</p><p>}</p><p>const wait = (ms) =&gt; new Promise(resolve =&gt; setTimeout(resolve, ms));</p><p>const isUuid = (v) =&gt; typeof v === \"string\" &amp;&amp; v.includes(\".\");</p><p>const uniq = (arr) =&gt; {</p><p>return Array.from(new Set((Array.isArray(arr) ? arr : []).filter(Boolean).map(String)));</p><p>};</p><p>async function resolveToken(ref) {</p><p>if (!ref) return null;</p><p>if (ref?.document?.documentName === \"Token\") return ref;</p><p>if (ref?.documentName === \"Token\") return ref.object ?? canvas.tokens?.get?.(ref.id) ?? null;</p><p>if (typeof ref === \"string\" &amp;&amp; canvas.tokens?.get?.(ref)) {</p><p>return canvas.tokens.get(ref);</p><p>}</p><p>if (isUuid(ref)) {</p><p>try {</p><p>const doc = await fromUuid(ref);</p><p>if (!doc) return null;</p><p>if (doc.documentName === \"Token\") {</p><p>return doc.object ?? canvas.tokens?.get?.(doc.id) ?? null;</p><p>}</p><p>if (doc.documentName === \"Actor\") {</p><p>return doc.getActiveTokens?.(true, true)?.[0] ?? doc.getActiveTokens?.()?.[0] ?? null;</p><p>}</p><p>if (doc?.actor?.getActiveTokens) {</p><p>return doc.actor.getActiveTokens(true, true)?.[0] ?? doc.actor.getActiveTokens()?.[0] ?? null;</p><p>}</p><p>return doc?.object ?? null;</p><p>} catch (err) {</p><p>console.warn(TAG, \"resolveToken failed:\", ref, err);</p><p>return null;</p><p>}</p><p>}</p><p>return null;</p><p>}</p><p>function collectSourceRef(p) {</p><p>return (</p><p>p?.sourceTokenUuid ??</p><p>p?.casterTokenUuid ??</p><p>p?.attackerTokenUuid ??</p><p>p?.sourceTokenId ??</p><p>p?.casterTokenId ??</p><p>p?.attackerTokenId ??</p><p>p?.meta?.attackerUuid ??</p><p>p?.attackerUuid ??</p><p>p?.attackerActorUuid ??</p><p>null</p><p>);</p><p>}</p><p>function collectTargetRefs(p, targetArg) {</p><p>const out = [];</p><p>if (Array.isArray(targetArg)) {</p><p>for (const t of targetArg) {</p><p>if (t?.document?.uuid) out.push(t.document.uuid);</p><p>else if (t?.documentName === \"Token\" &amp;&amp; t.uuid) out.push(t.uuid);</p><p>else if (typeof t === \"string\") out.push(t);</p><p>}</p><p>}</p><p>if (Array.isArray(p?.targetTokenUuids)) out.push(...p.targetTokenUuids);</p><p>if (Array.isArray(p?.targetTokenIds)) out.push(...p.targetTokenIds);</p><p>if (Array.isArray(p?.originalTargetUUIDs)) out.push(...p.originalTargetUUIDs);</p><p>if (Array.isArray(p?.meta?.originalTargetUUIDs)) out.push(...p.meta.originalTargetUUIDs);</p><p>if (Array.isArray(p?.targets)) out.push(...p.targets);</p><p>return uniq(out);</p><p>}</p><p>const actionPayload =</p><p>(globalThis.__PAYLOAD &amp;&amp; typeof globalThis.__PAYLOAD === \"object\")</p><p>? globalThis.__PAYLOAD</p><p>: ((typeof payload !== \"undefined\" &amp;&amp; payload) ? payload : {});</p><p>const passedTargets =</p><p>Array.isArray(globalThis.__TARGETS)</p><p>? globalThis.__TARGETS</p><p>: ((typeof targets !== \"undefined\" &amp;&amp; Array.isArray(targets)) ? targets : []);</p><p>const sourceRef = collectSourceRef(actionPayload);</p><p>const targetRefs = collectTargetRefs(actionPayload, passedTargets);</p><p>const sourceToken = await resolveToken(sourceRef);</p><p>const targetTokens = [];</p><p>const seenTargetIds = new Set();</p><p>for (const ref of targetRefs) {</p><p>const tok = await resolveToken(ref);</p><p>if (!tok?.document?.uuid) continue;</p><p>if (seenTargetIds.has(tok.id)) continue;</p><p>seenTargetIds.add(tok.id);</p><p>targetTokens.push(tok);</p><p>}</p><p>if (!sourceToken) {</p><p>console.warn(TAG, \"No caster token resolved from payload. Animation skipped.\", {</p><p>sourceRef,</p><p>actionPayload</p><p>});</p><p>return false;</p><p>}</p><p>if (!targetTokens.length) {</p><p>console.warn(TAG, \"No target tokens resolved from payload. Animation skipped.\", {</p><p>targetRefs,</p><p>actionPayload</p><p>});</p><p>return false;</p><p>}</p><p>const firstTarget = targetTokens[0];</p><p>const pseudo = game?.ONI?.pseudo ?? globalThis.ONI?.pseudo ?? null;</p><p>if (!pseudo?.play) {</p><p>ui.notifications?.warn?.(\"Create Phantasm: Dread animation skipped: ONI Pseudo API not found.\");</p><p>console.warn(TAG, \"Missing game.ONI.pseudo.play.\");</p><p>return false;</p><p>}</p><p>let started = false;</p><p>try {</p><p>started = true;</p><p>ONI.emit(\"oni:animationStart\", {</p><p>type: \"phantasmDread\",</p><p>sourceTokenId: sourceToken.id,</p><p>targetTokenIds: targetTokens.map(t =&gt; t.id),</p><p>sceneId: canvas.scene?.id ?? null,</p><p>timestamp: Date.now()</p><p>}, { local: true, world: false });</p><p>const casterDisposition =</p><p>sourceToken?.actor?.document?.disposition ??</p><p>sourceToken?.document?.disposition ??</p><p>0;</p><p>const casterMoveRight = casterDisposition === -1;</p><p>const stepPx = (canvas.grid?.size ?? 100) * TUNE.casterStepSquares;</p><p>const casterDx = casterMoveRight ? +stepPx : -stepPx;</p><p>const skullTotalMs =</p><p>TUNE.skullFadeInMs +</p><p>TUNE.skullLifeMs +</p><p>TUNE.skullFadeOutMs;</p><p>const holdForwardMs =</p><p>TUNE.waitAfterStepOutMs +</p><p>TUNE.waitBetweenSneakAndSkullMs +</p><p>skullTotalMs +</p><p>TUNE.waitBeforeStepBackMs;</p><p>const pseudoScriptSource = `</p><p>const { casterToken, targetTokens, params } = ctx;</p><p>if (!casterToken) throw new Error(\"PhantasmDreadPseudo: casterToken missing\");</p><p>const cfg = params.cfg ?? {};</p><p>const FX_SNEAK = String(params.fxSneak ?? \"\");</p><p>const FX_DREAD = String(params.fxDread ?? \"\");</p><p>const SFX_MOVE = String(params.sfxMove ?? \"\");</p><p>const SFX_SNEAK = String(params.sfxSneak ?? \"\");</p><p>const SFX_HIT = String(params.sfxHit ?? \"\");</p><p>const wait = (ms) =&gt; new Promise(resolve =&gt; setTimeout(resolve, ms));</p><p>function num(v, d = 0) {</p><p>const n = Number(v);</p><p>return Number.isFinite(n) ? n : d;</p><p>}</p><p>function easeOutCubic(t) {</p><p>return 1 - Math.pow(1 - t, 3);</p><p>}</p><p>function easeInOutCubic(t) {</p><p>return t &lt; 0.5</p><p>? 4 * t * t * t</p><p>: 1 - Math.pow(-2 * t + 2, 3) / 2;</p><p>}</p><p>function tweenValue(setter, from, to, durMs, ease = easeOutCubic) {</p><p>return new Promise(resolve =&gt; {</p><p>const dur = Math.max(0, Number(durMs) || 0);</p><p>if (dur &lt;= 0) {</p><p>setter(to, 1);</p><p>resolve();</p><p>return;</p><p>}</p><p>const start = performance.now();</p><p>const ticker = canvas.app.ticker;</p><p>const update = () =&gt; {</p><p>const raw = (performance.now() - start) / dur;</p><p>const t = Math.min(Math.max(raw, 0), 1);</p><p>const e = ease(t);</p><p>const v = from + ((to - from) * e);</p><p>setter(v, t);</p><p>if (t &gt;= 1) {</p><p>ticker.remove(update);</p><p>resolve();</p><p>}</p><p>};</p><p>ticker.add(update);</p><p>});</p><p>}</p><p>function animateXY(obj, fromX, fromY, toX, toY, durMs) {</p><p>return new Promise(resolve =&gt; {</p><p>const dur = Math.max(0, Number(durMs) || 0);</p><p>if (dur &lt;= 0) {</p><p>obj.x = toX;</p><p>obj.y = toY;</p><p>resolve();</p><p>return;</p><p>}</p><p>const start = performance.now();</p><p>const ticker = canvas.app.ticker;</p><p>const update = () =&gt; {</p><p>const raw = (performance.now() - start) / dur;</p><p>const t = Math.min(Math.max(raw, 0), 1);</p><p>const e = easeInOutCubic(t);</p><p>obj.x = fromX + ((toX - fromX) * e);</p><p>obj.y = fromY + ((toY - fromY) * e);</p><p>if (t &gt;= 1) {</p><p>ticker.remove(update);</p><p>resolve();</p><p>}</p><p>};</p><p>ticker.add(update);</p><p>});</p><p>}</p><p>function safeCenter(token) {</p><p>if (token?.center) return { x: token.center.x, y: token.center.y };</p><p>const d = token?.document ?? token;</p><p>const grid = canvas?.grid?.size ?? 100;</p><p>const w = Number(d?.width ?? 1) * grid;</p><p>const h = Number(d?.height ?? 1) * grid;</p><p>return {</p><p>x: Number(d?.x ?? 0) + w / 2,</p><p>y: Number(d?.y ?? 0) + h / 2</p><p>};</p><p>}</p><p>function playSfx(file, volume = 0.8) {</p><p>if (!file) return;</p><p>try {</p><p>if (typeof Sequence !== \"undefined\") {</p><p>new Sequence()</p><p>.sound()</p><p>.file(file)</p><p>.volume(volume)</p><p>.play();</p><p>return;</p><p>}</p><p>} catch (err) {</p><p>console.warn(\"[ANIM][PHANTASM-DREAD][PSEUDO] Sequencer SFX failed, trying AudioHelper.\", err);</p><p>}</p><p>try {</p><p>const helper = foundry?.audio?.AudioHelper ?? AudioHelper ?? null;</p><p>helper?.play?.({ src: file, volume, autoplay: true, loop: false }, true);</p><p>} catch (err) {</p><p>console.warn(\"[ANIM][PHANTASM-DREAD][PSEUDO] Audio fallback failed.\", err);</p><p>}</p><p>}</p><p>async function createCasterClone(token) {</p><p>const baseObj = token.mesh ?? token.icon;</p><p>const texture = baseObj?.texture ?? await loadTexture(token.document.texture.src);</p><p>const sprite = new PIXI.Sprite(texture);</p><p>sprite.anchor.set(0.5);</p><p>sprite.x = token.center.x;</p><p>sprite.y = token.center.y;</p><p>if (baseObj) {</p><p>sprite.width = baseObj.width;</p><p>sprite.height = baseObj.height;</p><p>}</p><p>sprite.zIndex = num(cfg.zIndexCaster, 5000);</p><p>canvas.stage.sortableChildren = true;</p><p>canvas.stage.addChild(sprite);</p><p>canvas.stage.sortChildren();</p><p>return sprite;</p><p>}</p><p>async function createVideoSprite(url) {</p><p>const video = document.createElement(\"video\");</p><p>video.src = url;</p><p>video.crossOrigin = \"anonymous\";</p><p>video.muted = true;</p><p>video.loop = false;</p><p>video.playsInline = true;</p><p>video.preload = \"auto\";</p><p>await new Promise(resolve =&gt; {</p><p>let done = false;</p><p>const finish = () =&gt; {</p><p>if (done) return;</p><p>done = true;</p><p>resolve();</p><p>};</p><p>video.addEventListener(\"loadeddata\", finish, { once: true });</p><p>video.addEventListener(\"canplay\", finish, { once: true });</p><p>video.addEventListener(\"error\", finish, { once: true });</p><p>try { video.load(); } catch (_) {}</p><p>setTimeout(finish, 1500);</p><p>});</p><p>const texture = PIXI.Texture.from(video);</p><p>const sprite = new PIXI.Sprite(texture);</p><p>sprite.anchor.set(0.5, 0.5);</p><p>sprite.alpha = 0;</p><p>sprite.zIndex = num(cfg.zIndexVfx, 7000);</p><p>return { video, texture, sprite };</p><p>}</p><p>async function playVideoVfx({</p><p>url,</p><p>targetToken,</p><p>offsetX = 0,</p><p>offsetY = 0,</p><p>scaleToTarget = 1,</p><p>mirrorX = false,</p><p>fadeInMs = 100,</p><p>lifeMs = 900,</p><p>fadeOutMs = 200</p><p>} = {}) {</p><p>if (!url || !targetToken) return;</p><p>const center = safeCenter(targetToken);</p><p>const container = new PIXI.Container();</p><p>container.zIndex = num(cfg.zIndexVfx, 7000);</p><p>container.sortableChildren = true;</p><p>canvas.stage.sortableChildren = true;</p><p>canvas.stage.addChild(container);</p><p>canvas.stage.sortChildren();</p><p>let pack = null;</p><p>try {</p><p>pack = await createVideoSprite(url);</p><p>const { video, sprite, texture } = pack;</p><p>const grid = canvas?.grid?.size ?? 100;</p><p>const targetW = Number(targetToken?.w ?? targetToken?.width ?? grid) || grid;</p><p>const targetH = Number(targetToken?.h ?? targetToken?.height ?? grid) || grid;</p><p>const side = Math.max(targetW, targetH) * Number(scaleToTarget || 1);</p><p>const naturalW = Number(video.videoWidth || texture.width || 400) || 400;</p><p>const naturalH = Number(video.videoHeight || texture.height || 400) || 400;</p><p>sprite.width = side;</p><p>sprite.height = side * (naturalH / naturalW);</p><p>if (mirrorX) {</p><p>sprite.scale.x = -Math.abs(sprite.scale.x);</p><p>}</p><p>sprite.x = center.x + Number(offsetX || 0);</p><p>sprite.y = center.y + Number(offsetY || 0);</p><p>container.addChild(sprite);</p><p>try {</p><p>video.currentTime = 0;</p><p>await video.play();</p><p>} catch (err) {</p><p>console.warn(\"[ANIM][PHANTASM-DREAD][PSEUDO] Video play warning.\", err);</p><p>}</p><p>await tweenValue(</p><p>(v) =&gt; { sprite.alpha = v; },</p><p>0,</p><p>1,</p><p>fadeInMs,</p><p>easeOutCubic</p><p>);</p><p>await wait(lifeMs);</p><p>await tweenValue(</p><p>(v) =&gt; { sprite.alpha = v; },</p><p>sprite.alpha,</p><p>0,</p><p>fadeOutMs,</p><p>easeInOutCubic</p><p>);</p><p>} finally {</p><p>try {</p><p>if (pack?.video) {</p><p>pack.video.pause();</p><p>pack.video.removeAttribute(\"src\");</p><p>pack.video.load();</p><p>}</p><p>} catch (_) {}</p><p>try {</p><p>if (pack?.sprite?.parent) pack.sprite.parent.removeChild(pack.sprite);</p><p>pack?.sprite?.destroy?.({ texture: false, baseTexture: false });</p><p>} catch (_) {}</p><p>try {</p><p>if (container?.parent) container.parent.removeChild(container);</p><p>container?.destroy?.({ children: true, texture: false, baseTexture: false });</p><p>} catch (_) {}</p><p>}</p><p>}</p><p>async function runCasterStep() {</p><p>const baseMesh = casterToken.mesh ?? casterToken.icon;</p><p>const originalTokenVisible = casterToken.visible;</p><p>const originalMeshVisible = baseMesh?.visible ?? true;</p><p>let sprite;</p><p>try {</p><p>sprite = await createCasterClone(casterToken);</p><p>if (baseMesh) baseMesh.visible = false;</p><p>casterToken.visible = false;</p><p>const startX = sprite.x;</p><p>const startY = sprite.y;</p><p>const outX = startX + num(params.casterDx, 0);</p><p>const outY = startY;</p><p>await animateXY(</p><p>sprite,</p><p>startX,</p><p>startY,</p><p>outX,</p><p>outY,</p><p>num(cfg.moveDurationMs, 350)</p><p>);</p><p>const hold = num(params.holdForwardMs, 0);</p><p>if (hold &gt; 0) await wait(hold);</p><p>await animateXY(</p><p>sprite,</p><p>outX,</p><p>outY,</p><p>startX,</p><p>startY,</p><p>num(cfg.moveDurationMs, 350)</p><p>);</p><p>} finally {</p><p>if (sprite) {</p><p>try {</p><p>if (sprite.parent) sprite.parent.removeChild(sprite);</p><p>sprite.destroy({ texture: false, baseTexture: false });</p><p>} catch (_) {}</p><p>}</p><p>if (baseMesh) baseMesh.visible = originalMeshVisible;</p><p>casterToken.visible = originalTokenVisible;</p><p>}</p><p>}</p><p>async function runVfxTimeline() {</p><p>const targetToken = targetTokens?.[0];</p><p>if (!targetToken) return;</p><p>const targetDisposition =</p><p>targetToken?._token?.actor?.document?.disposition ??</p><p>targetToken?.actor?.document?.disposition ??</p><p>targetToken?.document?.disposition ??</p><p>0;</p><p>const targetHostile = targetDisposition === -1;</p><p>const sneakOffsetX = targetHostile</p><p>? Math.abs(num(cfg.sneakOffsetX, 140))</p><p>: -Math.abs(num(cfg.sneakOffsetX, 140));</p><p>const sneakMirrorX = targetHostile;</p><p>// Move sound starts immediately.</p><p>playSfx(SFX_MOVE, num(cfg.moveVolume, 0.9));</p><p>// Wait until caster has stepped out, then show the stealth figure.</p><p>await wait(num(cfg.moveDurationMs, 350) + num(cfg.waitAfterStepOutMs, 150));</p><p>playSfx(SFX_SNEAK, num(cfg.sneakVolume, 0.8));</p><p>void playVideoVfx({</p><p>url: FX_SNEAK,</p><p>targetToken,</p><p>offsetX: sneakOffsetX,</p><p>offsetY: num(cfg.sneakOffsetY, 0),</p><p>scaleToTarget: num(cfg.sneakScaleToTarget, 1.2),</p><p>mirrorX: sneakMirrorX,</p><p>fadeInMs: num(cfg.sneakFadeInMs, 120),</p><p>lifeMs: num(cfg.sneakLifeMs, 900),</p><p>fadeOutMs: num(cfg.sneakFadeOutMs, 220)</p><p>});</p><p>// Wait like the original Sneak → Flurry before the \"hit\" VFX.</p><p>await wait(num(cfg.waitBetweenSneakAndSkullMs, 1500));</p><p>playSfx(SFX_HIT, num(cfg.hitVolume, 0.85));</p><p>await playVideoVfx({</p><p>url: FX_DREAD,</p><p>targetToken,</p><p>offsetX: num(cfg.skullOffsetX, 0),</p><p>offsetY: num(cfg.skullOffsetY, -8),</p><p>scaleToTarget: num(cfg.skullScaleToTarget, 1.55),</p><p>mirrorX: false,</p><p>fadeInMs: num(cfg.skullFadeInMs, 80),</p><p>lifeMs: num(cfg.skullLifeMs, 1150),</p><p>fadeOutMs: num(cfg.skullFadeOutMs, 260)</p><p>});</p><p>}</p><p>await Promise.all([</p><p>runCasterStep(),</p><p>runVfxTimeline()</p><p>]);</p><p>`;</p><p>pseudo.play({</p><p>scriptId: \"phantasmDread.sneakThenSkull\",</p><p>scriptSource: pseudoScriptSource,</p><p>casterTokenUuid: sourceToken.document.uuid,</p><p>targetTokenUuids: [firstTarget.document.uuid],</p><p>params: {</p><p>fxSneak: FX_SNEAK,</p><p>fxDread: FX_DREAD,</p><p>sfxMove: SFX_MOVE,</p><p>sfxSneak: SFX_SNEAK,</p><p>sfxHit: SFX_HIT,</p><p>casterDx,</p><p>holdForwardMs,</p><p>cfg: TUNE</p><p>},</p><p>meta: {</p><p>source: \"Create Phantasm: Dread\",</p><p>animation: \"Sneak Attack into Toll the Dead Skull Smoke\"</p><p>}</p><p>});</p><p>const totalMs =</p><p>TUNE.moveDurationMs +</p><p>holdForwardMs +</p><p>TUNE.moveDurationMs +</p><p>TUNE.endBufferMs;</p><p>await wait(totalMs);</p><p>console.log(TAG, \"END\", {</p><p>caster: sourceToken.name,</p><p>target: firstTarget.name,</p><p>totalMs,</p><p>skullAppearsAtMs:</p><p>TUNE.moveDurationMs +</p><p>TUNE.waitAfterStepOutMs +</p><p>TUNE.waitBetweenSneakAndSkullMs</p><p>});</p><p>return true;</p><p>} catch (err) {</p><p>console.error(TAG, \"Animation crashed:\", err);</p><p>return false;</p><p>} finally {</p><p>if (started) {</p><p>ONI.emit(\"oni:animationEnd\", {</p><p>type: \"phantasmDread\",</p><p>sourceTokenId: sourceToken?.id ?? null,</p><p>targetTokenIds: targetTokens.map(t =&gt; t.id),</p><p>sceneId: canvas.scene?.id ?? null,</p><p>timestamp: Date.now()</p><p>}, { local: true, world: false });</p><p>}</p><p>}</p><p>})();</p>",
           "check_bonus": "0",
           "class": "Illusionist",
-          "cost": "",
-          "damage_bonus": "",
+          "cost": "10 MP",
+          "damage_bonus": "15",
           "defense_target_type": "mdef",
-          "description": "<p>You may spend one action to conjure a terrifying Phantasm. Choose one:</p><ul><li>the Phantasm inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\">Weak</a></li><li>the Phantasm inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\">Shaken</a></li></ul><p>The Phantasm inflicts the chosen status effect on the target hit by this spell.</p><p>On any subsequent turn, you can perform an action and perform another Magic Check to command the Phantasm to inflict the effects again, with no MP requirements.</p>",
-          "duration": "Scene",
-          "effect_table": {
-            "0": {
-              "$deleted": false,
-              "chain_steps": "dread_cx, dread_status",
-              "effect_kind": "chain",
-              "effect_label": "dread_pre"
-            },
-            "1": {
-              "$deleted": false,
-              "chain_steps": "dread_cx, dread_status",
-              "effect_kind": "chain",
-              "effect_label": "dread_on"
-            },
-            "2": {
-              "$deleted": false,
-              "effect_kind": "open_action_menu",
-              "effect_label": "dread_cx",
-              "menu_option_labels": "Create a new Phantasm|Command an existing Phantasm",
-              "menu_option_refs": "dread_create, dread_existing",
-              "menu_title": "Create Phantasm: Dread"
-            },
-            "3": {
-              "$deleted": false,
-              "candidate_source": "self",
-              "effect_kind": "targeting",
-              "effect_label": "dread_self"
-            },
-            "4": {
-              "$deleted": false,
-              "chain_steps": "dread_cost, dread_summon",
-              "condition_formula": "CUR_MP >= 10 && OWN_PHANTASM_COUNT < 3",
-              "disable_ui_type": "dim",
-              "disabled_reason": "Need 10 MP & under 3 Phantasms",
-              "effect_kind": "chain",
-              "effect_label": "dread_create"
-            },
-            "5": {
-              "$deleted": false,
-              "consume_amount": "10",
-              "consume_resource": "mp",
-              "effect_kind": "consume_resource",
-              "effect_label": "dread_cost",
-              "on_empty": "abort",
-              "target_ref": "dread_self"
-            },
-            "6": {
-              "$deleted": false,
-              "effect_kind": "summon",
-              "effect_label": "dread_summon",
-              "summon_actor": "Fox fire",
-              "summon_count": 1,
-              "summon_max": 3,
-              "summon_type": "phantasm"
-            },
-            "7": {
-              "$deleted": false,
-              "candidate_source": "own_phantasms",
-              "condition_formula": "OWN_PHANTASM_COUNT >= 1",
-              "count": 1,
-              "disable_ui_type": "dim",
-              "disabled_reason": "No Phantasm on the field",
-              "effect_kind": "targeting",
-              "effect_label": "dread_existing",
-              "mode": "exact"
-            },
-            "8": {
-              "$deleted": false,
-              "effect_kind": "open_action_menu",
-              "effect_label": "dread_status",
-              "menu_option_labels": "Weak|Shaken",
-              "menu_option_refs": "dread_weak, dread_shaken",
-              "menu_title": "Dread — choose a status"
-            },
-            "9": {
-              "$deleted": false,
-              "ae_template_ref": "Weak",
-              "effect_kind": "apply_ae",
-              "effect_label": "dread_weak",
-              "target_ref": "hit_action_targets"
-            },
-            "10": {
-              "$deleted": false,
-              "ae_template_ref": "Shaken",
-              "effect_kind": "apply_ae",
-              "effect_label": "dread_shaken",
-              "target_ref": "hit_action_targets"
-            }
-          },
+          "description": "<p>You command all your Phantasms to charge at your foes, shattering on impact. They all share the same Magic Check. Each affected target suffers <strong>[HR + 15]</strong> \n\n  <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a>\n damage. You can target <strong>only one foe per Phantasm</strong>. Damage dealt by this spell <strong>ignores Resistances</strong>.</p>\n",
+          "duration": "Instantaneous",
           "heroic_requirement": "",
-          "ignore_hr": false,
           "isCheck": true,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": true,
           "isReaction": false,
-          "isZeroPower": false,
           "level": "1",
           "max_level": "1",
-          "name": "Create Phantasm: Dread",
-          "on_activate_effect_ref": "dread_on",
+          "name": "Multi Shatter",
           "optional_params": {},
-          "pre_activate_effect_ref": "dread_pre",
-          "reaction_config_table": {},
           "rolled_atr1": "INS",
           "rolled_atr2": "WLP",
           "skill_animation_default": "",
-          "skill_animation_mode": "custom",
+          "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Range",
-          "skill_target": "One Enemy",
+          "skill_target": "Up to three creature",
           "skill_type": "Spell",
-          "type_damage": "",
+          "type_damage": "Physical",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
-        "uniqueId": "PdMEWL0xZ4Hqg1D5"
+        "uniqueId": "bbEv9kibtZscX9eJ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "XdbIc9dAky6dAQ41",
+      "_stats": {
+        "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
+        "coreVersion": "12.343",
+        "createdTime": 1793471609594,
+        "duplicateSource": "Item.cneU6dfTzI13k0U2",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Magic_Tag_Icon_HD.webp",
+      "name": "Super Tonic",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "zR0gROT9VTdCW89D",
+        "props": {
+          "action_command": "item",
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<ul>\n<li>Cure all&nbsp;<strong>Debuff&nbsp;</strong>from target creature</li>\n</ul>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "stonic_cure",
+              "filter_tag": "debuff",
+              "target_ref": "action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "IqREaj1FVwVrCiUI",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Magic_Tag_Icon_HD.webp",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Super Tonic",
+          "on_activate_effect_ref": "stonic_cure",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_description": "<ul>\n<li>Cure all&nbsp;<strong>Debuff&nbsp;</strong>from target creature</li>\n</ul>",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_tags": "",
+          "skill_target": "One Creature",
+          "skill_type": "Item",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Item.IqREaj1FVwVrCiUI"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "IqREaj1FVwVrCiUI"
       },
       "type": "equippableItem"
     },
@@ -8311,6 +8748,135 @@
         "uniqueId": "MfBexg3RMmrBmeyO"
       },
       "type": "equippableItem"
+    },
+    {
+      "_id": "zR0gROT9VTdCW89D",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1793471609155,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "VzpCG9mySsd9sQSL",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Magic_Tag_Icon_HD.webp",
+      "name": "Super Tonic",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 5100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul>\n<li>Cure all&nbsp;<strong>Debuff&nbsp;</strong>from target creature</li>\n</ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "ky7HMdQIZBJxlPqx",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Magic_Tag_Icon_HD.webp",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "800",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Rare",
+          "item_skill_active": {
+            "IqREaj1FVwVrCiUI": {
+              "skill_description": "<ul>\n<li>Cure all&nbsp;<strong>Debuff&nbsp;</strong>from target creature</li>\n</ul>"
+            }
+          },
+          "item_type": "consumable",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Super Tonic",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "related_item_list": {
+            "IqREaj1FVwVrCiUI": {
+              "related_item_description": "<ul>\n<li>Cure all&nbsp;<strong>Debuff&nbsp;</strong>from target creature</li>\n</ul>"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.ky7HMdQIZBJxlPqx",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "ky7HMdQIZBJxlPqx"
+      },
+      "type": "equippableItem"
     }
   ],
   "name": "Keren",
@@ -8517,14 +9083,14 @@
   "system": {
     "activeConditionalModifierGroups": [],
     "props": {
-      "accessory2_details": "<ul><li><p>When you're <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2rh5lyMNU5yL8Btk\" data-id=\"2rh5lyMNU5yL8Btk\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Wet</span></strong></a></span><strong>&nbsp;</strong>increase your Accuracy Checks by 3</p></li></ul>",
-      "accessory2_name": "Diver Goggle",
+      "accessory2_details": "<ul>\n<li>Gain +2 bonus to any <strong>【DEX】</strong>check that related to Stealth or sneaking.</li>\n</ul>",
+      "accessory2_name": "Sneaker",
       "accessory_details": "<ul>\n<li>Lower the chance of being targeted by attacks.</li>\n<li>Gain +1 to Skill Checks that require <strong>【DEX】</strong></li>\n</ul>",
       "accessory_name": "Cat Ears",
       "activation": 1,
       "affinity_1": "NA",
       "affinity_2": "NA",
-      "affinity_3": "VU",
+      "affinity_3": "NA",
       "affinity_4": "NA",
       "affinity_5": "NA",
       "affinity_6": "RS",
@@ -8535,12 +9101,12 @@
       "anomaly_status": 0,
       "arcane_ef": "100",
       "arcanism": false,
-      "armor_details": "<ul><li><p>When you're <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2rh5lyMNU5yL8Btk\" data-id=\"2rh5lyMNU5yL8Btk\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Wet</span></strong></a></span><strong>, </strong>Treat your <strong>【DEX】</strong>size as <strong>D12,&nbsp;</strong></p></li><li><p>Gain +2 to all Skill Checks that require <strong>【DEX】</strong></p></li></ul>",
+      "armor_details": "<ul><li><p>When you're <a class=\"content-link\" data-uuid=\"JournalEntry.2rh5lyMNU5yL8Btk\" data-id=\"2rh5lyMNU5yL8Btk\" data-type=\"JournalEntry\">Wet</a>, Treat your <strong>【DEX】</strong>size as <strong>D12,&nbsp;</strong></p></li><li><p>Gain +2 to all Skill Checks that require <strong>【DEX】</strong></p></li></ul>",
       "armor_mod": "1",
-      "armor_name": "Swimsuit",
+      "armor_name": "+5 Swimsuit",
       "backstory": "",
       "bane_status": 0,
-      "base_defense": 12,
+      "base_defense": 8,
       "base_magic_defense": 12,
       "battle_facing_direction": "left",
       "berserk_status": 0,
@@ -8550,7 +9116,7 @@
       "bond_2": "Hina",
       "bond_3": "Zarg",
       "bond_4": "Freonia",
-      "bond_5": "Geist",
+      "bond_5": "King Gorger",
       "bond_6": "Kalina",
       "bond_temp": "",
       "bonus_defense": 3,
@@ -8572,9 +9138,9 @@
       "character_exp_multiplier": 1,
       "character_zenit_multiplier": 1,
       "charm_status": 0,
-      "check_mod_accuracy": 3,
+      "check_mod_accuracy": 0,
       "check_mod_all": 0,
-      "check_mod_init": 0,
+      "check_mod_init": 1,
       "check_mod_magic": 0,
       "check_mod_melee": 0,
       "check_mod_ranged": 0,
@@ -8597,7 +9163,7 @@
           "$deleted": false,
           "benefit": "ip",
           "class_name": "Rogue",
-          "level": "6"
+          "level": 8
         },
         "3": {
           "$deleted": false,
@@ -8645,7 +9211,7 @@
       "condition_poisoned": "",
       "condition_shaken": "",
       "condition_silence": "",
-      "condition_slow": "",
+      "condition_slow": "IM",
       "condition_stagger": "",
       "condition_suppress": "",
       "condition_turbulence": "",
@@ -8663,6 +9229,14 @@
           "roll": "",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.3OEHGnZS4s2Hyw53"
         },
+        "GygL59hLViiA5hc9": {
+          "consume_description": "<ul><li>When you are reduced to <strong>0 HP,&nbsp;</strong>you may immediately use this item, if you do, gain <strong>HP</strong> equal to your <strong>crisis</strong> score.</li><li>You may only hold 1 copy of this item in your inventory</li></ul>",
+          "id": "${item.id}",
+          "name": "Life Charm",
+          "quantity": 1,
+          "roll": "",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.GygL59hLViiA5hc9"
+        },
         "JRHuXWEaxBlX9DNb": {
           "consume_description": "<ul><li>Reduce the next damage instance on target creature by <strong>15</strong></li></ul>",
           "id": "${item.id}",
@@ -8678,6 +9252,22 @@
           "quantity": 1,
           "roll": "",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.SZWTXlO2Kt9Do1a3"
+        },
+        "iSps0k7xep6kkw7W": {
+          "consume_description": "<ul><li><p>Reduce a Skill level by one and <strong>Recovers 1 Skill Point </strong><em>(You may still only have 3 unmastered class at a time)</em></p></li></ul>",
+          "id": "${item.id}",
+          "name": "Forget me Nut",
+          "quantity": 97,
+          "roll": "",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.iSps0k7xep6kkw7W"
+        },
+        "l12hSjrfZaTkWx4B": {
+          "consume_description": "<ul><li><p>Reduce a Skill level by one and <strong>Recovers 1 Skill Point </strong><em>(You may still only have 3 unmastered class at a time)</em></p></li></ul>",
+          "id": "${item.id}",
+          "name": "Forget me Nut",
+          "quantity": 99,
+          "roll": "",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.l12hSjrfZaTkWx4B"
         },
         "ll9wkUrPJay3Ah0l": {
           "consume_description": "<ul><li><p>Revive one <strong>KO </strong>allies and restore their HP to their <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>score.</p></li></ul>",
@@ -8702,14 +9292,22 @@
           "quantity": 1,
           "roll": "",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.xSKzwZ5v6AVCRvDF"
+        },
+        "zR0gROT9VTdCW89D": {
+          "consume_description": "<ul>\n<li>Cure all&nbsp;<strong>Debuff&nbsp;</strong>from target creature</li>\n</ul>",
+          "id": "${item.id}",
+          "name": "Super Tonic",
+          "quantity": 1,
+          "roll": "",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.zR0gROT9VTdCW89D"
         }
       },
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": 106,
+      "current_hp": 90,
       "current_ip": 8,
-      "current_mp": 111,
+      "current_mp": 91,
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Keren_Cut-in002.png",
       "cut_in_fumble": "",
@@ -8742,11 +9340,11 @@
       "damage_receiving_percentage_range": 0,
       "dazed_status": 0,
       "default_facing_direction": "left",
-      "defense": 15,
+      "defense": 11,
       "delayed_status": 0,
       "despair_status": 0,
       "dex_base": "8",
-      "dex_current": 12,
+      "dex_current": 8,
       "disarmed_status": 0,
       "doom_status": 0,
       "elementalism": false,
@@ -8762,12 +9360,12 @@
       "emotion_4_1": "inferiority",
       "emotion_4_2": "loyalty",
       "emotion_4_3": "affection",
-      "emotion_5_1": "inferiority",
-      "emotion_5_2": "mistrust",
-      "emotion_5_3": "affection",
+      "emotion_5_1": "admiration",
+      "emotion_5_2": "",
+      "emotion_5_3": "",
       "emotion_6_1": "admiration",
       "emotion_6_2": "",
-      "emotion_6_3": "",
+      "emotion_6_3": "affection",
       "emotion_temp_1": "",
       "emotion_temp_2": "",
       "emotion_temp_3": "",
@@ -8775,8 +9373,8 @@
       "enraged_status": 0,
       "entropism": false,
       "envenomed_status": 0,
-      "exp_meter": "9.01",
-      "experience": "9.01",
+      "exp_meter": "9.51",
+      "experience": "9.51",
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
       "extra_damage_mod_all": 0,
@@ -8802,7 +9400,7 @@
       "extra_damage_mod_spell": 0,
       "extra_damage_mod_sword": 0,
       "extra_damage_mod_thrown": 0,
-      "fabula_point": 4,
+      "fabula_point": "0",
       "fatigue_status": 0,
       "firearm_ef": "100",
       "flail_ef": "100",
@@ -8842,7 +9440,7 @@
       "isolate_status": 0,
       "itemContainer2": {
         "BRNmLkWm9FSqbXRK": {
-          "armor_description": "<p><ul><li><p>When you're <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2rh5lyMNU5yL8Btk\" data-id=\"2rh5lyMNU5yL8Btk\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Wet</span></strong></a></span><strong>, </strong>Treat your <strong>【DEX】</strong>size as <strong>D12,&nbsp;</strong></p></li><li><p>Gain +2 to all Skill Checks that require <strong>【DEX】</strong></p></li></ul></p>",
+          "armor_description": "<p><ul><li><p>When you're <a class=\"content-link\" data-uuid=\"JournalEntry.2rh5lyMNU5yL8Btk\" data-id=\"2rh5lyMNU5yL8Btk\" data-type=\"JournalEntry\">Wet</a>, Treat your <strong>【DEX】</strong>size as <strong>D12,&nbsp;</strong></p></li><li><p>Gain +2 to all Skill Checks that require <strong>【DEX】</strong></p></li></ul></p>",
           "armor_martial": "",
           "id": "${item.id}",
           "name": "+5 Swimsuit",
@@ -8919,7 +9517,7 @@
           "id": "${item.id}",
           "name": "+5 Ignis Shield",
           "roll": "",
-          "shield_description": "<ul>\n<li>You have Resistance to<strong> Fire</strong>&nbsp;damage.</li>\n</ul>",
+          "shield_description": "<ul>\n<li>You have Resistance to<a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a>&nbsp;damage.</li>\n</ul>",
           "shield_martial": "",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.6Pry1DbGlFej0tVP"
         }
@@ -8940,7 +9538,7 @@
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.2slFnC9NVO2GDHRf"
         },
         "65iL5jw4rHy1uxC7": {
-          "acess_description": "<ul><li><p>When you're <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2rh5lyMNU5yL8Btk\" data-id=\"2rh5lyMNU5yL8Btk\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Wet</span></strong></a></span><strong>&nbsp;</strong>increase your Accuracy Checks by 3</p></li></ul>",
+          "acess_description": "<ul><li><p>When you're <a class=\"content-link\" data-uuid=\"JournalEntry.2rh5lyMNU5yL8Btk\" data-id=\"2rh5lyMNU5yL8Btk\" data-type=\"JournalEntry\">Wet</a>&nbsp;increase your Accuracy Checks by 3</p></li></ul>",
           "id": "${item.id}",
           "name": "Diver Goggle",
           "roll": "",
@@ -8968,7 +9566,7 @@
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.IyprmzJNxYAjcNx9"
         },
         "JOEi8X46SkQ5tRNG": {
-          "acess_description": "<ul>\n    <li>\n        <p>You are <strong>immune </strong>to <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Charm</span></strong></a></span></span></p>\n    </li>\n    <li>\n        <p>You may cast the spell 【<strong>✨ Charm </strong>】</p>\n        <hr>\n    </li>\n</ul>\n<details>\n    <summary><strong>✨ Charm</strong></summary>\n    <p><strong>Cost:</strong> 15 MP</p>\n    <p><strong>Target:</strong> One Creature</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p>Inflicts @UUID[JournalEntry.x6ByoJnflDAuVn9r]{Charm} on target creature for 1 Round, have 50% success rate</p>\n</details>",
+          "acess_description": "<ul>\n    <li>\n        <p>You are <strong>immune </strong>to <a class=\"content-link\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\">Charm</a></p>\n    </li>\n    <li>\n        <p>You may cast the spell 【<strong>✨ Charm </strong>】</p>\n        <hr>\n    </li>\n</ul>\n<details>\n    <summary><strong>✨ Charm</strong></summary>\n    <p><strong>Cost:</strong> 15 MP</p>\n    <p><strong>Target:</strong> One Creature</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p>Inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\">Charm</a> on target creature for 1 Round, have 50% success rate</p>\n</details>",
           "id": "${item.id}",
           "name": "Fairy Ring",
           "roll": "",
@@ -9034,7 +9632,7 @@
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.alJIkZKIha6tZRiL"
         }
       },
-      "level": "41",
+      "level": "43",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 13,
@@ -9160,10 +9758,19 @@
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.ySL1PCPzqmDYEaMn"
         }
       },
-      "max_hp": 106,
+      "max_hp": 98,
       "max_ip": 8,
-      "max_mp": 111,
-      "memories_list": {},
+      "max_mp": 123,
+      "memories_list": {
+        "0": {
+          "$deleted": false,
+          "emotion_x": "inferiority",
+          "emotion_y": "mistrust",
+          "emotion_z": "affection",
+          "memory_x": "Geist",
+          "relationship_x": "Spec"
+        }
+      },
       "memory": "Memories",
       "mig_base": "6",
       "mig_current": 6,
@@ -9188,7 +9795,7 @@
           "id": "${item.id}",
           "name": "Nocebo Weapon",
           "roll": "",
-          "spell_description": "<p>You make a weapon appear as if it were imbued with soul energy. Choose a damage type:</p><ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span></li><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span></li></ul><p>Until this spell ends, all damage dealt by the weapon becomes of the chosen type. If you have that weapon equipped while casting this spell, you may perform a <strong>free</strong> <strong>attack</strong> with it as part of the same action. This spell can only be cast on a weapon equipped by a willing creature.</p>",
+          "spell_description": "<p>You make a weapon appear as if it were imbued with soul energy. Choose a damage type:</p><ul><li><a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\">Light</a></li><li><a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a></li></ul><p>Until this spell ends, all damage dealt by the weapon becomes of the chosen type. If you have that weapon equipped while casting this spell, you may perform a <strong>free</strong> <strong>attack</strong> with it as part of the same action. This spell can only be cast on a weapon equipped by a willing creature.</p>",
           "spell_target": "One Ally",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.LwbHBK0twVXmekz0"
         },
@@ -9232,7 +9839,7 @@
           "id": "${item.id}",
           "name": "Create Phantasm: Numen",
           "roll": "",
-          "spell_description": "<p>You can now have up to <strong>4</strong> active Phantasms, but one of them must necessarily be <strong>Numen</strong>. Also, you cannot have more than one Numen Phantasm active at a time. This Phantasm cannot be used in any of the Illusionist’s Skills or Spells.</p>\n<p>Numen is bound by the same set of special rules as any other Phantasm, with the following exceptions:</p>\n<ul>\n  <li>Numen Phantasms cost <strong>50 MP</strong> to cast.</li>\n  <li>Numen’s Phantasmal Vitality equals <strong>twice your base Insight die size plus your level</strong>.</li>\n  <li>Once active, Numen acts at the <strong>end of your turn</strong>: it performs a <strong>free action</strong> — one Attack or Skill of its own — chosen and driven automatically. It holds no turn of its own, and does not benefit from Spells that grant additional actions.</li>\n</ul>\n\n<p>When creating a Numen Phantasm you are prompted to choose one <strong>essence</strong>, which dictates Numen’s damage type for as long as it remains on the field:</p>\n<ul>\n  <li><strong>Ravana</strong> — <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(153,153,153) 0 0 4px;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span></li>\n  <li><strong>Asura</strong> — <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(202,189,154) 0 0 4px;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span></li>\n  <li><strong>Diablos</strong> — <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:rgb(182,102,210) 0 0 4px;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span></li>\n</ul>\n\n<p>The target hit by Numen suffers <strong>【HR + 14】</strong> damage.</p>\n<p>Damage dealt by Numen <strong>ignores Resistances and Immunities</strong>.</p>\n<p>The <strong>range</strong> of the attack is determined by your current weapon.</p>\n\n<hr>\n\n<p><em>Numen’s Phantasmal Vitality, MP and damage are all derived from you at the moment of summoning — its own sheet holds only the unscaled baseline.</em></p>\n<p><strong>Skill Enhancement Lv. 20</strong> ― <em>Numen’s on-hit damage</em> increases to <strong>18</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40</strong> ― <em>Numen’s on-hit damage</em> increases to <strong>20</strong>.</p>\n",
+          "spell_description": "<p>You can now have up to <strong>4</strong> active Phantasms, but one of them must necessarily be <strong>Numen</strong>. Also, you cannot have more than one Numen Phantasm active at a time. This Phantasm cannot be used in any of the Illusionist’s Skills or Spells.</p>\n<p>Numen is bound by the same set of special rules as any other Phantasm, with the following exceptions:</p>\n<ul>\n  <li>Numen Phantasms cost <strong>50 MP</strong> to cast.</li>\n  <li>Numen’s Phantasmal Vitality equals <strong>twice your base Insight die size plus your level</strong>.</li>\n  <li>Once active, Numen acts at the <strong>end of your turn</strong>: it performs a <strong>free action</strong> — one Attack or Skill of its own — chosen and driven automatically. It holds no turn of its own, and does not benefit from Spells that grant additional actions.</li>\n</ul>\n\n<p>When creating a Numen Phantasm you are prompted to choose one <strong>essence</strong>, which dictates Numen’s damage type for as long as it remains on the field:</p>\n<ul>\n  <li><strong>Ravana</strong> — <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a></li>\n  <li><strong>Asura</strong> — <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\">Light</a></li>\n  <li><strong>Diablos</strong> — <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a></li>\n</ul>\n\n<p>The target hit by Numen suffers <strong>【HR + 14】</strong> damage.</p>\n<p>Damage dealt by Numen <strong>ignores Resistances and Immunities</strong>.</p>\n<p>The <strong>range</strong> of the attack is determined by your current weapon.</p>\n\n<hr>\n\n<p><em>Numen’s Phantasmal Vitality, MP and damage are all derived from you at the moment of summoning — its own sheet holds only the unscaled baseline.</em></p>\n<p><strong>Skill Enhancement Lv. 20</strong> ― <em>Numen’s on-hit damage</em> increases to <strong>18</strong>.</p>\n<p><strong>Skill Enhancement Lv. 40</strong> ― <em>Numen’s on-hit damage</em> increases to <strong>20</strong>.</p>\n",
           "spell_target": "Self",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.icaJRhvENAfbFx3P"
         },
@@ -9288,7 +9895,7 @@
           "duration": "Instantaneous",
           "id": "${item.id}",
           "name": "Detonate Phantasm",
-          "offensiveSpell_description": "<p>You overflow one Phantasm with energy, making it explode to devastating effect. Choose a damage type:</p>\n<ul>\n  <li>\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n      <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\">\n        <strong><span style=\"text-decoration: underline;\">Light</span></strong>\n      </a>\n    </span></span>\n  </li>\n  <li>\n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\">\n      <a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\">\n        <strong><span style=\"text-decoration: underline;\">Dark</span></strong>\n      </a>\n    </span></span>\n  </li>\n</ul>\n<p>The target hit by this spell suffers <strong>[HR + 25]</strong> damage of the chosen type. This shatters the Phantasm.</p>\n",
+          "offensiveSpell_description": "<p>You overflow one Phantasm with energy, making it explode to devastating effect. Choose a damage type:</p>\n<ul>\n  <li>\n    \n      <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\">Light</a>\n    \n  </li>\n  <li>\n    \n      <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a>\n    \n  </li>\n</ul>\n<p>The target hit by this spell suffers <strong>[HR + 25]</strong> damage of the chosen type. This shatters the Phantasm.</p>\n",
           "offensiveSpell_target": "One Enemy",
           "roll": "",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.4zqAMzzrIHwKLqQg"
@@ -9376,7 +9983,7 @@
           "duration": "Scene",
           "id": "${item.id}",
           "name": "Create Phantasm: Dread",
-          "offensiveSpell_description": "<p>You may spend one action to conjure a terrifying Phantasm. Choose one:</p><ul><li>the Phantasm inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span></li><li>the Phantasm inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing:border-box;user-select:text;scrollbar-width:thin;cursor:pointer;--content-link-background:rgba(0,0,0,.1);background-image:none!important;padding:0;border:none;border-radius:2px;white-space:nowrap;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span></li></ul><p>The Phantasm inflicts the chosen status effect on the target hit by this spell.</p><p>On any subsequent turn, you can perform an action and perform another Magic Check to command the Phantasm to inflict the effects again, with no MP requirements.</p>",
+          "offensiveSpell_description": "<p>You may spend one action to conjure a terrifying Phantasm. Choose one:</p><ul><li>the Phantasm inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\">Weak</a></li><li>the Phantasm inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\">Shaken</a></li></ul><p>The Phantasm inflicts the chosen status effect on the target hit by this spell.</p><p>On any subsequent turn, you can perform an action and perform another Magic Check to command the Phantasm to inflict the effects again, with no MP requirements.</p>",
           "offensiveSpell_target": "One Enemy",
           "roll": "",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.YIUYJEg53a76vGbH"
@@ -9414,6 +10021,17 @@
           "roll": "",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.sqEBgbHcX52Pvxon"
         },
+        "wYv1WhDHGlUQTUNc": {
+          "class": "Illusionist",
+          "cost": "10 MP",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Multi Shatter",
+          "offensiveSpell_description": "<p>You command all your Phantasms to charge at your foes, shattering on impact. They all share the same Magic Check. Each affected target suffers <strong>[HR + 15]</strong> \n\n  <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a>\n damage. You can target <strong>only one foe per Phantasm</strong>. Damage dealt by this spell <strong>ignores Resistances</strong>.</p>\n",
+          "offensiveSpell_target": "Up to three creature",
+          "roll": "",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.wYv1WhDHGlUQTUNc"
+        },
         "ygs90OQ6AduK3pH6": {
           "class": "Illusionist",
           "cost": "10 MP",
@@ -9432,7 +10050,7 @@
       "override_attack_damage_type": "None",
       "override_damage_type": "None",
       "override_defense": 0,
-      "override_dex": 12,
+      "override_dex": 0,
       "override_ins": 0,
       "override_magic_defense": 0,
       "override_mig": 0,
@@ -9448,7 +10066,7 @@
       "relationship_2": "ScamerFriend",
       "relationship_3": "Comrade",
       "relationship_4": "EntityFriend",
-      "relationship_5": "Spec",
+      "relationship_5": "Recycle Bin",
       "relationship_6": "Faithmate",
       "resource_value_1": "0",
       "resource_value_2": "0",
@@ -9509,6 +10127,18 @@
           "roll": "",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.8FD1odJvyVnJRXGC"
         },
+        "C0jN8sHGMf7H0PDb": {
+          "active_class": "Rogue",
+          "active_cost": "",
+          "active_description": "<p>As long as you have no <strong>shields</strong> and no <strong>martial armor</strong> equipped, your Defense score is increased by <strong>【SL】.</strong></p>",
+          "active_duration": "-",
+          "active_level": 2,
+          "active_target": "-",
+          "id": "${item.id}",
+          "name": "Dodge",
+          "roll": "",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.C0jN8sHGMf7H0PDb"
+        },
         "C2iRL9nans6BjliZ": {
           "active_class": "Rogue",
           "active_cost": "",
@@ -9524,7 +10154,7 @@
         "DHHxK3dVRzjui5hw": {
           "active_class": "Necromancer",
           "active_cost": "",
-          "active_description": "<p>After you cause one or more enemies to lose Hit Points, if you have acquired the <strong>Beyond the Realms of Death</strong> Skill and at least one of them is suffering from \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span></span>\n and/or \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span></span>, you gain <strong>1 Grave Point</strong> and recover <strong>[SL × 2]</strong> Hit Points and Mind Points.</p>\n",
+          "active_description": "<p>After you cause one or more enemies to lose Hit Points, if you have acquired the <strong>Beyond the Realms of Death</strong> Skill and at least one of them is suffering from \n<a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\">Shaken</a>\n and/or \n<a class=\"content-link\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\">Weak</a>, you gain <strong>1 Grave Point</strong> and recover <strong>[SL × 2]</strong> Hit Points and Mind Points.</p>\n",
           "active_duration": "",
           "active_level": 3,
           "active_target": "",
@@ -9584,7 +10214,7 @@
         "HuvAVqZwbORQENz9": {
           "active_class": "Esper",
           "active_cost": "-",
-          "active_description": "<p>At the start of your turn during a conflict, you may choose one ally who is able to hear you or one enemy you can see that is suffering from <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dazed</span></strong></a></span>, <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Enraged</span></strong></a></span>, and/or <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span>. Until the start of your next turn, the chosen creature becomes your <strong>focus</strong>.</p><p>You gain a bonus equal to <strong>【SL】</strong> to <strong>Checks</strong> you perform to examine your <strong>focus</strong>, as well as to your <strong>Accuracy Checks</strong> and <strong>Magic Checks</strong> for 【⚔️Attack】 and 【⚡Offensive Spell】 that include your <strong>focus</strong> among the targets. When you cause your <strong>focus</strong> to recover <strong>Hit Points</strong> and/or <strong>Mind Points</strong>, they recover <strong>【SL × 2】</strong> additional <strong>HP</strong> and/or <strong>MP</strong>, respectively.</p>",
+          "active_description": "<p>At the start of your turn during a conflict, you may choose one ally who is able to hear you or one enemy you can see that is suffering from <a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\">Dazed</a>, <a class=\"content-link\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\">Enraged</a>, and/or <a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\">Shaken</a>. Until the start of your next turn, the chosen creature becomes your <strong>focus</strong>.</p><p>You gain a bonus equal to <strong>【SL】</strong> to <strong>Checks</strong> you perform to examine your <strong>focus</strong>, as well as to your <strong>Accuracy Checks</strong> and <strong>Magic Checks</strong> for 【⚔️Attack】 and 【⚡Offensive Spell】 that include your <strong>focus</strong> among the targets. When you cause your <strong>focus</strong> to recover <strong>Hit Points</strong> and/or <strong>Mind Points</strong>, they recover <strong>【SL × 2】</strong> additional <strong>HP</strong> and/or <strong>MP</strong>, respectively.</p>",
           "active_duration": "Until the start of your next turn",
           "active_level": 3,
           "active_target": "One Creature",
@@ -9656,7 +10286,7 @@
         "OoQjrz63C5m8OOoc": {
           "active_class": "Keren",
           "active_cost": "",
-          "active_description": "<p>Shatter all your Phantasms (including the Numen). Deal <strong>(shattered Phantasms x 20) + 20</strong> Fire damage to all enemies.</p>",
+          "active_description": "<p>Shatter all your Phantasms (including the Numen). Deal <strong>(shattered Phantasms x 20) + 20</strong> <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage to all enemies.</p>",
           "active_duration": "Instantaneous",
           "active_level": 1,
           "active_target": "All Enemy",
@@ -9740,7 +10370,7 @@
         "fFHKCwDndsOmUg0q": {
           "active_class": "Necromancer",
           "active_cost": "",
-          "active_description": "<p>When another creature you can see loses Hit Points while in \n<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" style=\"box-sizing:border-box;user-select:text;cursor:pointer;background-color:#666;padding:0;border:none;border-radius:2px;white-space:nowrap;color:#191813;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, if they are not <strong>undead</strong>, you gain <strong>1 Grave Point</strong>. You may never have more than <strong>[SL + 1]</strong> <strong>Grave Points</strong>.</p>\n\n<p>When you are reduced to <strong>0 Hit Points</strong>, you <strong>lose all Grave Points</strong>; then, if you lost at least <strong>1 Grave Point</strong> this way and this is the first time you are reduced to <strong>0 HP</strong> during this scene, you do not <strong>Surrender</strong> nor <strong>Sacrifice</strong> yourself; instead, you recover an amount of <strong>HP</strong> equal to <strong>[SL, multiplied by the amount of Grave Points you lost this way]</strong>.</p>\n",
+          "active_description": "<p>When another creature you can see loses Hit Points while in \n<a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, if they are not <strong>undead</strong>, you gain <strong>1 Grave Point</strong>. You may never have more than <strong>[SL + 1]</strong> <strong>Grave Points</strong>.</p>\n\n<p>When you are reduced to <strong>0 Hit Points</strong>, you <strong>lose all Grave Points</strong>; then, if you lost at least <strong>1 Grave Point</strong> this way and this is the first time you are reduced to <strong>0 HP</strong> during this scene, you do not <strong>Surrender</strong> nor <strong>Sacrifice</strong> yourself; instead, you recover an amount of <strong>HP</strong> equal to <strong>[SL, multiplied by the amount of Grave Points you lost this way]</strong>.</p>\n",
           "active_duration": "",
           "active_level": 3,
           "active_target": "",
@@ -9752,7 +10382,7 @@
         "fWSnV0BKWLOPGZnq": {
           "active_class": "Esper",
           "active_cost": "X MP",
-          "active_description": "<ul><li><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Trigger</span></strong></a></span></span> When you cause one or more enemies to lose Hit Points</li></ul><p><strong>Choose yourself </strong>or an<strong> ally</strong> who is your <strong>focus</strong>: if the chosen creature is in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span>, they recover an amount of <strong>Hit Points</strong> equal to <strong>[5 + (the number of filled sections in your Brainwave Clock, multiplied by 5)]</strong>.</p>",
+          "active_description": "<ul><li><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\">Trigger</a> When you cause one or more enemies to lose Hit Points</li></ul><p><strong>Choose yourself </strong>or an<strong> ally</strong> who is your <strong>focus</strong>: if the chosen creature is in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, they recover an amount of <strong>Hit Points</strong> equal to <strong>[5 + (the number of filled sections in your Brainwave Clock, multiplied by 5)]</strong>.</p>",
           "active_duration": "Instantaneous",
           "active_level": 1,
           "active_target": "One ally",
@@ -9776,7 +10406,7 @@
         "fjrhRNjINs8xk7Lp": {
           "active_class": "Necromancer",
           "active_cost": "",
-          "active_description": "<p>When a non-Villain NPC you can see that belongs to the <strong>beast</strong>, <strong>humanoid</strong>, <strong>monster</strong>, or <strong>plant</strong> Species dies, you may spend <strong>2 Grave Points</strong> and <strong>reduce your maximum HP and MP</strong> by an amount equal to that NPC’s <strong>level</strong>. If you do, their corpse becomes a <strong>Minion</strong> who obeys your telepathic commands:</p>\n<ul>\n  <li>Its Species becomes <strong>undead</strong> and it receives all undead rules. The new Affinities to \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(182, 102, 210) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Dark</span></strong></a></span></span>, \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span>, and \n    <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(102, 255, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Poison</span></strong></a></span></span> damage overwrite any preexisting Affinity, but the original Species’ rules are otherwise maintained.</li>\n  <li>Its <strong>Rank</strong> becomes <strong>soldier</strong>; if the original creature was an <strong>elite</strong> or <strong>champion</strong>, the GM must reduce the Minion’s HP and MP accordingly (<strong>Skills are maintained</strong>).</li>\n  <li>The newly created Minion is a completely new creature and has <strong>full HP</strong>, <strong>full MP</strong>, and <strong>no status effects</strong>. It retains the original creature’s <strong>equipment</strong>.</li>\n  <li>Your Minion acts at the <strong>end of your turn</strong>: it performs a <strong>free action</strong> — one Attack or Skill of its own — chosen and driven automatically. It holds <strong>no turn of its own</strong> in the initiative order, so the GM does <strong>not</strong> count it as an additional Player Character when designing a conflict. <em>(Homebrew: by the printed text the Minion takes its own turn and does count as an extra PC.)</em></li>\n  <li>When you <strong>rest</strong>, your Minion also gains the full benefits of resting.</li>\n  <li>If your Minion is reduced to <strong>0 HP</strong>, if you are <strong>more than 1 travel day</strong> away from it, or if you <strong>die</strong> or <strong>fall unconscious</strong>, your Minion is immediately <strong>destroyed</strong>.</li>\n  <li>You may also destroy your Minion <strong>at any time</strong>; if you want to create a new Minion, you must first destroy the current one.</li>\n  <li>If your Minion is destroyed, your <strong>maximum HP and MP</strong> scores <strong>return to normal</strong>.</li>\n</ul>\n",
+          "active_description": "<p>When a non-Villain NPC you can see that belongs to the <strong>beast</strong>, <strong>humanoid</strong>, <strong>monster</strong>, or <strong>plant</strong> Species dies, you may spend <strong>2 Grave Points</strong> and <strong>reduce your maximum HP and MP</strong> by an amount equal to that NPC’s <strong>level</strong>. If you do, their corpse becomes a <strong>Minion</strong> who obeys your telepathic commands:</p>\n<ul>\n  <li>Its Species becomes <strong>undead</strong> and it receives all undead rules. The new Affinities to \n    <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a>, \n    <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\">Light</a>, and \n    <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\">Poison</a> damage overwrite any preexisting Affinity, but the original Species’ rules are otherwise maintained.</li>\n  <li>Its <strong>Rank</strong> becomes <strong>soldier</strong>; if the original creature was an <strong>elite</strong> or <strong>champion</strong>, the GM must reduce the Minion’s HP and MP accordingly (<strong>Skills are maintained</strong>).</li>\n  <li>The newly created Minion is a completely new creature and has <strong>full HP</strong>, <strong>full MP</strong>, and <strong>no status effects</strong>. It retains the original creature’s <strong>equipment</strong>.</li>\n  <li>Your Minion acts at the <strong>end of your turn</strong>: it performs a <strong>free action</strong> — one Attack or Skill of its own — chosen and driven automatically. It holds <strong>no turn of its own</strong> in the initiative order, so the GM does <strong>not</strong> count it as an additional Player Character when designing a conflict. <em>(Homebrew: by the printed text the Minion takes its own turn and does count as an extra PC.)</em></li>\n  <li>When you <strong>rest</strong>, your Minion also gains the full benefits of resting.</li>\n  <li>If your Minion is reduced to <strong>0 HP</strong>, if you are <strong>more than 1 travel day</strong> away from it, or if you <strong>die</strong> or <strong>fall unconscious</strong>, your Minion is immediately <strong>destroyed</strong>.</li>\n  <li>You may also destroy your Minion <strong>at any time</strong>; if you want to create a new Minion, you must first destroy the current one.</li>\n  <li>If your Minion is destroyed, your <strong>maximum HP and MP</strong> scores <strong>return to normal</strong>.</li>\n</ul>\n",
           "active_duration": "",
           "active_level": 1,
           "active_target": "",
@@ -9833,6 +10463,18 @@
           "roll": "",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.krHYhbzTN0Mh5kXE"
         },
+        "l4g2xjIMXAh9AP6h": {
+          "active_class": "Rogue",
+          "active_cost": "",
+          "active_description": "<p>When you hit a creature with an attack, if the attack <strong>only</strong> targeted that creature and they are suffering from <strong>one or more status effects</strong>, you may have it deal extra damage equal to <strong>【SL + the number of status effects on the creature】.</strong></p>",
+          "active_duration": "",
+          "active_level": 2,
+          "active_target": "-",
+          "id": "${item.id}",
+          "name": "Cheap Shot",
+          "roll": "",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.l4g2xjIMXAh9AP6h"
+        },
         "l7hj0bWidYxltnI6": {
           "active_class": "Necromancer",
           "active_cost": "",
@@ -9860,7 +10502,7 @@
         "njhAd6kpOwOKC5rh": {
           "active_class": "Esper",
           "active_cost": "",
-          "active_description": "<p>When you perform an <strong>Accuracy Check</strong>, you may replace one of the <strong>Attribute</strong> dice with <strong>Willpower</strong> (such as <strong>[DEX + WLP]</strong> for a shortbow). Additionally, your <strong>melee</strong> attacks with weapons belonging to the <strong>arcane</strong> or <strong>sword</strong> Categories may target <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Flying</span></strong></a></span> creatures.</p>",
+          "active_description": "<p>When you perform an <strong>Accuracy Check</strong>, you may replace one of the <strong>Attribute</strong> dice with <strong>Willpower</strong> (such as <strong>[DEX + WLP]</strong> for a shortbow). Additionally, your <strong>melee</strong> attacks with weapons belonging to the <strong>arcane</strong> or <strong>sword</strong> Categories may target <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\">Flying</a> creatures.</p>",
           "active_duration": "",
           "active_level": 1,
           "active_target": "",
@@ -9932,7 +10574,7 @@
         "yyaIgdJIFgxPgS4Z": {
           "active_class": "Esper",
           "active_cost": "",
-          "active_description": "<p>While your <strong>Brainwave Clock</strong> is full, you may use an action to erase all of its sections. If you do, <strong>choose one option:</strong></p><ul><li>You deal <strong>20</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span> damage to every enemy that is present on the scene</li><li>You deal <strong>30</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(153, 153, 153) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Physical</span></strong></a></span></span> damage to a single enemy you can see</li></ul><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20 ― </strong>The damage increases to <strong>30</strong> (all enemies) or <strong>40</strong> (single enemy).</p><p><strong>Skill Enhancement Lv. 40 ― </strong>The damage increases to <strong>40</strong> (all enemies) or <strong>50</strong> (single enemy).</p>",
+          "active_description": "<p>While your <strong>Brainwave Clock</strong> is full, you may use an action to erase all of its sections. If you do, <strong>choose one option:</strong></p><ul><li>You deal <strong>20</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a> damage to every enemy that is present on the scene</li><li>You deal <strong>30</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a> damage to a single enemy you can see</li></ul><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20 ― </strong>The damage increases to <strong>30</strong> (all enemies) or <strong>40</strong> (single enemy).</p><p><strong>Skill Enhancement Lv. 40 ― </strong>The damage increases to <strong>40</strong> (all enemies) or <strong>50</strong> (single enemy).</p>",
           "active_duration": "Instantaneous",
           "active_level": 1,
           "active_target": "Up to 99 Enemies",
@@ -9956,7 +10598,7 @@
       },
       "skill_class_filter": "",
       "skill_hideEffect": false,
-      "skill_point": "0",
+      "skill_point": 0,
       "skill_point_bonus": "0",
       "skill_type_filter": "All",
       "slow_status": 0,
@@ -9968,9 +10610,11 @@
       "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Battler002.webm",
       "sprite_cast": "",
       "sprite_crisis": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Crisis.webm",
+      "sprite_fly": "",
       "sprite_guard": "",
       "sprite_hurt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Hurt.webm",
       "sprite_ko": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_KO.webm",
+      "sprite_leap": "",
       "sprite_onsen": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Onsen.png",
       "sprite_sit": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Sit.png",
       "sprite_sleep": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Sleep.webm",
@@ -10245,13 +10889,13 @@
       "wlp_base": "10",
       "wlp_current": 10,
       "your_class_name": "",
-      "zenit": 4003,
+      "zenit": "7137",
       "zero_label": "Zero Power",
       "zero_power_description": "<p>Shatter all phantom. Deal damage to all enemy equal to <strong>【(shattered phantom x 20) + 20】</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span> damage.</p>",
       "zero_power_macro": "",
       "zero_power_name": "Last Den of Cinders",
       "zero_power_showMacro": false,
-      "zero_power_value": "0",
+      "zero_power_value": "6",
       "zero_trigger_description": "<p>Every time a Phantasm shattered, gain 1 zero trigger</p>",
       "zero_trigger_label": "Trigger",
       "zombie_status": 0

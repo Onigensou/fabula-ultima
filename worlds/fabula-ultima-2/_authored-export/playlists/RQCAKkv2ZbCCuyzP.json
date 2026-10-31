@@ -23,7 +23,7 @@
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
-  "seed": 280,
+  "seed": 49,
   "sort": 100000,
   "sorting": "a",
   "sounds": [
@@ -89,7 +89,7 @@
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/Drips.ogg",
       "repeat": true,
       "sort": 0,
-      "volume": 0.41
+      "volume": 0.25
     },
     {
       "_id": "hbjMzPymYsALXbxj",

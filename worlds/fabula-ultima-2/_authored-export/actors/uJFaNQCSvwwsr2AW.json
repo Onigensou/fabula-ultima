@@ -10,24 +10,24 @@
   },
   "effects": [
     {
-      "_id": "am4w4mqkWjr9p4r9",
+      "_id": "BfuaAQdV5OQEFU0h",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1792867767103,
+        "createdTime": 1793465540082,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "changes": [
         {
-          "key": "max_hp",
-          "mode": 2,
-          "priority": null,
-          "value": "10"
+          "key": "affinity_3",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
         }
       ],
-      "description": "<p>+10 Maximum Hit Points until the next rest.</p>",
+      "description": "",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -41,15 +41,78 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "am4w4mqkWjr9p4r9",
+          "originalId": "BfuaAQdV5OQEFU0h",
           "originalParentId": "uJFaNQCSvwwsr2AW",
-          "originalUuid": "Actor.uJFaNQCSvwwsr2AW.ActiveEffect.am4w4mqkWjr9p4r9"
+          "originalUuid": "Actor.uJFaNQCSvwwsr2AW.ActiveEffect.BfuaAQdV5OQEFU0h"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "crossScene": true,
+          "directorPermanent": true,
+          "lifetimeMode": "persistent_counter"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/lightning/bolt-strike-blue.webp",
+      "name": "Bolt Resistance (Temporary)",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "o4n9klyI33E9JGkb",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1793473797037,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "max_mp",
+          "mode": 2,
+          "priority": null,
+          "value": "10"
+        }
+      ],
+      "description": "<p>A simple skillet cake sweetened with wild honey, passed around still warm. Everyone who eats gains <strong>+10 Maximum MP</strong> until the next rest.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "o4n9klyI33E9JGkb",
+          "originalParentId": "uJFaNQCSvwwsr2AW",
+          "originalUuid": "Actor.uJFaNQCSvwwsr2AW.ActiveEffect.o4n9klyI33E9JGkb"
         },
         "fabula-ultima-companion": {
           "campRestCharges": 0,
           "cookingDish": {
-            "dishId": "GBixGFmKRv0B1Lgj",
-            "family": "umami",
+            "dishId": "oel2cAzIcVh85ocz",
+            "family": "sweet",
             "instant": {},
             "tier": 1
           },
@@ -64,9 +127,9 @@
           "visible": false
         }
       },
-      "img": "icons/consumables/food/bowl-stew-tofu-potato-brown.webp",
-      "name": "Hearty Hot-Pot",
-      "origin": "Item.GBixGFmKRv0B1Lgj",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Doraemon/1587828177600.webp",
+      "name": "Campfire Cake",
+      "origin": "Item.oel2cAzIcVh85ocz",
       "sort": 0,
       "statuses": [
         "permanent"
@@ -245,7 +308,7 @@
       "name": "",
       "optalign": "top",
       "settings": {
-        "emote": "frustrated",
+        "emote": "smile",
         "textcolor": null,
         "textflyin": "typewriter",
         "textfont": null,
@@ -711,126 +774,6 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "DtPQJJvCVSYfFWLF"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "3LqZxvjIcPybQTrn",
-      "_stats": {
-        "compendiumSource": "Item.fOEeRwVzYy6YQuIN",
-        "coreVersion": "12.343",
-        "createdTime": 1792859988267,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Nut.png",
-      "name": "Forget me Nut",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 800000,
-      "system": {
-        "container": null,
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check": "Check",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li><p>Reduce a Skill level by one and <strong>Recovers 1 Skill Point </strong><em>(You may still only have 3 unmastered class at a time)</em></p></li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flavor_text": "<p><em>\"…Forget Deez Nuts\"</em></p>",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "id": "fOEeRwVzYy6YQuIN",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Nut.png",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "50",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": 5,
-          "item_rarity": "Common",
-          "item_type": "consumable",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Forget me Nut",
-          "optional_params": {},
-          "plant_ef": "100",
-          "refine_count": "0",
-          "refine_level": "0",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "uuid": "Item.fOEeRwVzYy6YQuIN",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "fOEeRwVzYy6YQuIN"
       },
       "type": "equippableItem"
     },
@@ -1945,6 +1888,88 @@
       "type": "equippableItem"
     },
     {
+      "_id": "cLilicKiRj3eMFPH",
+      "_stats": {
+        "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
+        "coreVersion": "12.343",
+        "createdTime": 1793467204212,
+        "duplicateSource": "Item.cneU6dfTzI13k0U2",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Magic_Tag_Icon_HD.webp",
+      "name": "Super Tonic",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "mnB6qtxZKjRoD4wQ",
+        "props": {
+          "action_command": "item",
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "",
+          "cost": "-",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<ul>\n<li>Cure all&nbsp;<strong>Debuff&nbsp;</strong>from target creature</li>\n</ul>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "stonic_cure",
+              "filter_tag": "debuff",
+              "target_ref": "action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "IqREaj1FVwVrCiUI",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Magic_Tag_Icon_HD.webp",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Super Tonic",
+          "on_activate_effect_ref": "stonic_cure",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_description": "<ul>\n<li>Cure all&nbsp;<strong>Debuff&nbsp;</strong>from target creature</li>\n</ul>",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_tags": "",
+          "skill_target": "One Creature",
+          "skill_type": "Item",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Item.IqREaj1FVwVrCiUI"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "IqREaj1FVwVrCiUI"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "CMeAGFkIizTUlysk",
       "_stats": {
         "compendiumSource": null,
@@ -2066,11 +2091,11 @@
       "type": "equippableItem"
     },
     {
-      "_id": "drRzxcrhLzYzNU4w",
+      "_id": "etn6c9YBy5AS1QyR",
       "_stats": {
-        "compendiumSource": "Item.E1dOu3pYQKL60blD",
+        "compendiumSource": "Item.T0HplvOxcpR0NdWX",
         "coreVersion": "12.343",
-        "createdTime": 1783717334531,
+        "createdTime": 1793458316176,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -2081,50 +2106,86 @@
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Gatherer-Crafter/12_BTN/stealth.png",
-      "name": "Well-Traveled",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_SCH/embrace_eos.png",
+      "name": "Faithful Companion",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 3,
-        "nSGZ1sz1rdKao0kz": 3
+        "default": 3
       },
       "sort": 0,
       "system": {
+        "container": null,
         "props": {
-          "active_effect_config_table": {},
           "check_bonus": "0",
           "class": "Wayfarer",
           "cost": "",
           "damage_bonus": "0",
-          "defense_target_type": "def",
-          "description": "<p>You reduce the die rolled for your <strong>travel rolls</strong> by one size (to a minimum of <strong>d6</strong>). If multiple characters have this Skill, the effects are <strong>not</strong> cumulative.</p>",
+          "description": "<p>Together with the rest of your group, design a <strong>level 5 beast, construct, elemental </strong>or<strong> plant</strong> creature that becomes your <strong>companion</strong>. This creature has <strong>no</strong> <strong>Initiative score</strong> and <strong>does not level up</strong>, can have <strong>up to two basic attacks</strong>, gains a bonus equal to <strong>【SL】</strong> to Accuracy Checks and Magic Checks, and their maximum Hit Points are equal to <strong>【(SL multiplied by the companion's base Might die size) + half your level】</strong>.</p><p>Your companion doesn't get a turn during conflicts, but on your turn you can use an action to have the companion perform an action (only once per turn). If you leave a scene, your companion leaves with you.</p><p>If your companion falls to 0 Hit Points, they flee and rejoin you at the start of the next scene in which you are present, with HP equal to their <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a> score. When you rest, your companion also gains the full benefits of resting.</p>",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "fc_rest_hp,fc_rest_mp,fc_rest_clear",
+              "effect_kind": "chain",
+              "effect_label": "fc_rest"
+            },
+            "1": {
+              "$deleted": false,
+              "effect_kind": "set_resource",
+              "effect_label": "fc_rest_hp",
+              "grant_amount": "MAX_HP",
+              "grant_resource": "hp",
+              "target_ref": "own_persistent_summons_companion"
+            },
+            "2": {
+              "$deleted": false,
+              "effect_kind": "set_resource",
+              "effect_label": "fc_rest_mp",
+              "grant_amount": "MAX_MP",
+              "grant_resource": "mp",
+              "target_ref": "own_persistent_summons_companion"
+            },
+            "3": {
+              "$deleted": false,
+              "effect_kind": "remove_ae",
+              "effect_label": "fc_rest_clear",
+              "filter_tag": "debuff,buff",
+              "target_ref": "own_persistent_summons_companion"
+            }
+          },
           "heroic_requirement": "",
-          "ignore_hr": false,
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": false,
-          "isZeroPower": false,
-          "level": "1",
-          "max_level": "1",
-          "name": "Well-Traveled",
+          "isReaction": true,
+          "level": 5,
+          "max_level": "5",
+          "name": "Faithful Companion",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "OWN_PERSISTENT_SUMMONS_COMPANION >= 1",
+              "reaction_effect_ref": "fc_rest",
+              "reaction_passive_mode": "force",
+              "reaction_source": "",
+              "reaction_trigger": "party_rested"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
-          "skill_information": "",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Companion Max HP</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>【(1 x MIG die) + half your level】</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>【(2 x MIG die) + half your level】</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p>【(3 x MIG die) + half your level】</p></td></tr><tr><td data-colwidth=\"79\"><p>4</p></td><td data-colwidth=\"148\"><p>【(4 x MIG die) + half your level】</p></td></tr><tr><td data-colwidth=\"79\"><p>5</p></td><td data-colwidth=\"148\"><p>【(5 x MIG die) + half your level】</p></td></tr></tbody></table>",
           "skill_range": "",
           "skill_target": "",
-          "skill_type": "Passive",
+          "skill_type": "Other",
           "type_damage": "",
           "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
-        "uniqueId": "E1dOu3pYQKL60blD"
+        "uniqueId": "T0HplvOxcpR0NdWX"
       },
       "type": "equippableItem"
     },
@@ -2698,6 +2759,68 @@
       },
       "effects": [
         {
+          "_id": "g1ynLkhqVWcu4fps",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1793459363235,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "system.props.max_hp",
+              "mode": 2,
+              "priority": null,
+              "value": "5"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "g1ynLkhqVWcu4fps",
+              "originalParentId": "HZP2Hs14kB0EgMSD",
+              "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.HZP2Hs14kB0EgMSD.ActiveEffect.g1ynLkhqVWcu4fps"
+            },
+            "fabula-ultima-companion": {
+              "orbment": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Max HP +5 (Orbment)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "orbment"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
           "_id": "ioLV6MOkBlTSSRxq",
           "_stats": {
             "compendiumSource": null,
@@ -2876,6 +2999,21 @@
               "actorUuid": "",
               "source": "World Item"
             }
+          },
+          "orbment": {
+            "baseProps": [],
+            "linkGroup": [
+              "HZP2Hs14kB0EgMSD"
+            ],
+            "slots": [
+              {
+                "id": "max_hp",
+                "param": null,
+                "source": "roll",
+                "value": 5
+              }
+            ],
+            "version": 3
           }
         },
         "fucompanion": {
@@ -2943,6 +3081,7 @@
           "demon_ef": "100",
           "description": "<ul>\n<li>You have <strong>Resistance</strong> to damage dealt by spells. When a spell deals damage to<br>you, you recover <strong>5</strong> Mind Points.</li>\n</ul>",
           "dragon_ef": "100",
+          "effect_table": {},
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -2975,6 +3114,7 @@
           "name": "Hekat Shield",
           "optional_params": {},
           "plant_ef": "100",
+          "reaction_config_table": {},
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
@@ -2990,6 +3130,53 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "96gMkuCexILXHXyI"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "IKoueQY7zfZuB0OW",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1793473256395,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/enhanced_healing_magic.png",
+      "name": "Spiritual Magic",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "class": "Spiritist",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "Each time you acquire this Skill, learn one Spiritist spell (see Facet). Offensive Spiritist Spells use <strong>INS + WLP</strong> for the Magic Check.",
+          "implementation_note": "Catalogue skill: each rank learns one Spiritist spell, and each spell carries its own rows. The INS + WLP Magic Check lives on every offensive Spiritist spell (rolled_atr1/2: Lux, Torpor, Enrage, Hallucination).",
+          "isCheck": false,
+          "level": 1,
+          "name": "Spiritual Magic",
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Other",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": true,
+        "uniqueId": "WZ0LtCp3xwiAAa3x"
       },
       "type": "equippableItem"
     },
@@ -4016,11 +4203,140 @@
       "type": "equippableItem"
     },
     {
-      "_id": "LMnXdh32LS4ZRCn5",
+      "_id": "mnB6qtxZKjRoD4wQ",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1783717334531,
+        "createdTime": 1793467203732,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "VzpCG9mySsd9sQSL",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Magic_Tag_Icon_HD.webp",
+      "name": "Super Tonic",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 5100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul>\n<li>Cure all&nbsp;<strong>Debuff&nbsp;</strong>from target creature</li>\n</ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "ky7HMdQIZBJxlPqx",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/FFIX_Magic_Tag_Icon_HD.webp",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "800",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Rare",
+          "item_skill_active": {
+            "IqREaj1FVwVrCiUI": {
+              "skill_description": "<ul>\n<li>Cure all&nbsp;<strong>Debuff&nbsp;</strong>from target creature</li>\n</ul>"
+            }
+          },
+          "item_type": "consumable",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Super Tonic",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "related_item_list": {
+            "IqREaj1FVwVrCiUI": {
+              "related_item_description": "<ul>\n<li>Cure all&nbsp;<strong>Debuff&nbsp;</strong>from target creature</li>\n</ul>"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.ky7HMdQIZBJxlPqx",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "ky7HMdQIZBJxlPqx"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "NZZZBDWN3DCzUVTX",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1793473257168,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -4047,41 +4363,29 @@
           "check_bonus": "0",
           "class": "Spiritist",
           "cost": "10 x T MP",
-          "damage_bonus": "50",
+          "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
-          "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,
-              "consume_self": false,
               "effect_kind": "grant",
               "effect_label": "heal_hp",
-              "from_resource": "",
               "grant_amount": "40 + 10 * floor(min(CHAR_LEVEL, 40) / 20)",
-              "grant_operation": "",
               "grant_resource": "hp",
-              "grant_round": "",
-              "menu_label": "",
-              "target_ref": "action_targets",
-              "to_resource": ""
+              "target_ref": "action_targets"
             }
           },
-          "gadget_alchemy_tier": "",
-          "gadget_infusion_tier": "",
-          "gadget_magitech_tier": "",
           "heroic_requirement": "",
-          "id": "LMnXdh32LS4ZRCn5",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/assize.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
           "isReaction": false,
           "isZeroPower": false,
-          "level": "1",
+          "level": 1,
           "max_level": "1",
           "name": "Heal",
           "on_activate_effect_ref": "heal_hp",
@@ -4095,13 +4399,10 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Range",
-          "skill_tags": "",
           "skill_target": "Up to three creatures",
           "skill_type": "Spell",
-          "target_eligibility": "",
           "type_damage": "healing",
-          "use_optional_params": false,
-          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.LMnXdh32LS4ZRCn5"
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2125250754,
@@ -4121,6 +4422,68 @@
         "systemVersion": "4.8.5"
       },
       "effects": [
+        {
+          "_id": "0wCklryL5klVPpB0",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1793459338009,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "condition_stagger",
+              "mode": 5,
+              "priority": null,
+              "value": "IM"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "0wCklryL5klVPpB0",
+              "originalParentId": "oM6Bo3Hc4wV9ICa9",
+              "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.oM6Bo3Hc4wV9ICa9.ActiveEffect.0wCklryL5klVPpB0"
+            },
+            "fabula-ultima-companion": {
+              "orbment": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Antistatus+ Stagger (Orbment)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "orbment"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
         {
           "_id": "a8ekYxU2DHi49UnH",
           "_stats": {
@@ -4258,6 +4621,68 @@
           "type": "base"
         },
         {
+          "_id": "GSGq05dUAd60fLF0",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1793459338009,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_4",
+              "mode": 5,
+              "priority": null,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "GSGq05dUAd60fLF0",
+              "originalParentId": "oM6Bo3Hc4wV9ICa9",
+              "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.oM6Bo3Hc4wV9ICa9.ActiveEffect.GSGq05dUAd60fLF0"
+            },
+            "fabula-ultima-companion": {
+              "orbment": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Resistance Dark (Orbment)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "orbment"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
           "_id": "tXZEZrLKqDjjDXGA",
           "_stats": {
             "compendiumSource": null,
@@ -4358,6 +4783,27 @@
               "actorUuid": "Actor.uJFaNQCSvwwsr2AW",
               "source": "Actor-owned Item"
             }
+          },
+          "orbment": {
+            "baseProps": [],
+            "linkGroup": [
+              "oM6Bo3Hc4wV9ICa9"
+            ],
+            "slots": [
+              {
+                "id": "resistance",
+                "param": "dark",
+                "source": "roll",
+                "value": null
+              },
+              {
+                "id": "antistatus_adv",
+                "param": "stagger",
+                "source": "roll",
+                "value": null
+              }
+            ],
+            "version": 3
           }
         },
         "fucompanion": {
@@ -4426,6 +4872,7 @@
           "demon_ef": "100",
           "description": "<ul><li><p>Your equipped weapon gain <a class=\"content-link\" data-uuid=\"JournalEntry.ljKBtlzPVvhhmdHW\" data-id=\"ljKBtlzPVvhhmdHW\" data-type=\"JournalEntry\">Weighted</a></p></li></ul>",
           "dragon_ef": "100",
+          "effect_table": {},
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -4461,6 +4908,7 @@
           "name": "+4 Titanic Shield",
           "optional_params": {},
           "plant_ef": "100",
+          "reaction_config_table": {},
           "refine_count": 4,
           "refine_level": 4,
           "reptilian_ef": "100",
@@ -5977,75 +6425,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "tFdGJtY2jCPgnNEm",
-      "_stats": {
-        "compendiumSource": "Item.vpFPtAgKm2tB93w0",
-        "coreVersion": "12.343",
-        "createdTime": 1783717334531,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/11_BRD/PhysicalRangedRollAction/head_graze.png",
-      "name": "Tavern Talk",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3,
-        "nSGZ1sz1rdKao0kz": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "animation_damage_timing_offset": "0",
-          "animation_damage_timing_options": "default",
-          "animation_script": "",
-          "check_bonus": "0",
-          "class": "Wayfarer",
-          "cost": "",
-          "damage_bonus": "0",
-          "defense_target_type": "def",
-          "description": "<p>When you <strong>rest</strong> inside an inn or tavern, you may ask the Game Master up to <strong>【SL】</strong> questions about your surroundings and the people who live here; the Game Master will answer truthfully and you describe how you gathered the information</p>",
-          "duration": "",
-          "heroic_requirement": "",
-          "ignore_hr": false,
-          "implementation_note": "GM-adjudicated, no automation: when you rest in an inn or tavern, ask the GM up to SL questions about the surroundings and the people who live there; the GM answers truthfully.",
-          "isCheck": false,
-          "isFacet": false,
-          "isHeroic": false,
-          "isOffensiveSpell": false,
-          "isReaction": false,
-          "isZeroPower": false,
-          "level": "3",
-          "max_level": "3",
-          "name": "Tavern Talk",
-          "optional_params": {},
-          "reaction_config_table": {},
-          "rolled_atr1": "-",
-          "rolled_atr2": "-",
-          "skill_animation_default": "",
-          "skill_animation_mode": "default",
-          "skill_information": "",
-          "skill_range": "",
-          "skill_target": "",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "use_optional_params": false
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2125250754,
-        "unique": false,
-        "uniqueId": "vpFPtAgKm2tB93w0"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "Tvmjzkit2aqNxEtD",
       "_stats": {
         "compendiumSource": null,
@@ -6414,132 +6793,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "uTYRq5srXMaXat5y",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1783788199890,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": "36rowiHAcXnIPsKK",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/909.gif",
-      "name": "Jellopy",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check": "Check",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<p>A small crystallization created by some monsters.</p>",
-          "dragon_ef": "100",
-          "effect_table": {},
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "id": "L1ki1clOnOhpl7wN",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/909.gif",
-          "ingredient_taste": "sweet",
-          "ingredient_taste2": "",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isIngredient": true,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "3",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": 1,
-          "item_rarity": "Common",
-          "item_type": "material",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Jellopy",
-          "optional_params": {},
-          "plant_ef": "100",
-          "reaction_config_table": {},
-          "recipe_dish_uuid": "",
-          "recipe_kind": "",
-          "refine_count": "0",
-          "refine_level": "0",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "<Set Name>",
-          "skill_target": "One Enemy",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "uuid": "Item.L1ki1clOnOhpl7wN",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "L1ki1clOnOhpl7wN"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "uZGPznG4ahL5zGRZ",
       "_stats": {
         "compendiumSource": "Item.b8BGWwomp8rSkuxz",
@@ -6791,6 +7044,68 @@
           "type": "base"
         },
         {
+          "_id": "6AfHn3YTgpFnim9i",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1793459257794,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "mp_receiving_flat_all",
+              "mode": 2,
+              "priority": null,
+              "value": "3"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "6AfHn3YTgpFnim9i",
+              "originalParentId": "vbpD1aMW4azWQSdn",
+              "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.vbpD1aMW4azWQSdn.ActiveEffect.6AfHn3YTgpFnim9i"
+            },
+            "fabula-ultima-companion": {
+              "orbment": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Spirit Up (Orbment)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "orbment"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
           "_id": "LnX0LB2cJc1wHCdw",
           "_stats": {
             "compendiumSource": null,
@@ -6841,6 +7156,68 @@
           "sort": 0,
           "statuses": [],
           "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
+          "_id": "QDZxAKbLTqu9hezM",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1793459257794,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_1",
+              "mode": 5,
+              "priority": null,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "QDZxAKbLTqu9hezM",
+              "originalParentId": "vbpD1aMW4azWQSdn",
+              "originalUuid": "Actor.uJFaNQCSvwwsr2AW.Item.vbpD1aMW4azWQSdn.ActiveEffect.QDZxAKbLTqu9hezM"
+            },
+            "fabula-ultima-companion": {
+              "orbment": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Swordbreaker (Orbment)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "orbment"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": true,
           "type": "base"
@@ -7019,6 +7396,27 @@
               "actorUuid": "",
               "source": "World Item"
             }
+          },
+          "orbment": {
+            "baseProps": [],
+            "linkGroup": [
+              "vbpD1aMW4azWQSdn"
+            ],
+            "slots": [
+              {
+                "id": "spirit_up",
+                "param": null,
+                "source": "roll",
+                "value": 3
+              },
+              {
+                "id": "swordbreaker",
+                "param": null,
+                "source": "roll",
+                "value": null
+              }
+            ],
+            "version": 3
           }
         },
         "fucompanion": {
@@ -7068,6 +7466,7 @@
           "demon_ef": "100",
           "description": "<ul><li>You have Resistance to<a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a> damage.</li><li>When you <strong>Cover </strong>or <strong>Protect </strong>another creature, you may cast a <strong>non-offensive spell </strong>targeting that creature as a <strong>Free Action</strong></li></ul>",
           "dragon_ef": "100",
+          "effect_table": {},
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -7102,6 +7501,7 @@
           "name": "Paladin Armor",
           "optional_params": {},
           "plant_ef": "100",
+          "reaction_config_table": {},
           "refine_count": 11,
           "refine_level": 5,
           "reptilian_ef": "100",
@@ -8971,7 +9371,7 @@
           "isHeroic": false,
           "isOffensiveSpell": false,
           "isReaction": false,
-          "level": "2",
+          "level": 1,
           "max_level": "2",
           "name": "Treasure Hunter",
           "optional_params": {},
@@ -9201,9 +9601,9 @@
       "accessory_details": "<ul><li><p><strong>【Provoke】SL+1</strong></p></li><li><p>+1 <strong>DEF </strong>this bonus <strong>doubles </strong>if you are in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span></p></li></ul>",
       "accessory_name": "Matador Cape",
       "activation": 1,
-      "affinity_1": "NA",
+      "affinity_1": "RS",
       "affinity_2": "NA",
-      "affinity_3": "NA",
+      "affinity_3": "RS",
       "affinity_4": "RS",
       "affinity_5": "NA",
       "affinity_6": "RS",
@@ -9283,6 +9683,12 @@
           "benefit": "hp",
           "class_name": "Invoker",
           "level": "10"
+        },
+        "4": {
+          "$deleted": false,
+          "benefit": "mp",
+          "class_name": "Spiritist",
+          "level": 1
         }
       },
       "clock_adoration": "0",
@@ -9319,7 +9725,7 @@
       "condition_shaken": "",
       "condition_silence": "",
       "condition_slow": "",
-      "condition_stagger": "",
+      "condition_stagger": "IM",
       "condition_suppress": "",
       "condition_turbulence": "",
       "condition_weak": "",
@@ -9416,6 +9822,14 @@
           "roll": "",
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.WFPNjte4ApAIRcya"
         },
+        "mnB6qtxZKjRoD4wQ": {
+          "consume_description": "<ul>\n<li>Cure all&nbsp;<strong>Debuff&nbsp;</strong>from target creature</li>\n</ul>",
+          "id": "${item.id}",
+          "name": "Super Tonic",
+          "quantity": 1,
+          "roll": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.mnB6qtxZKjRoD4wQ"
+        },
         "pTq1DAhDavGLShsn": {
           "consume_description": "<ul><li><p>Target creature <strong>recovers 30 HP</strong></p></li></ul>",
           "id": "${item.id}",
@@ -9444,9 +9858,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "176",
+      "current_hp": 173,
       "current_ip": "10",
-      "current_mp": "76",
+      "current_mp": 93,
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Blanche_Cut-in002.png",
       "cut_in_fumble": "",
@@ -9503,7 +9917,7 @@
       "emotion_5_2": "loyalty",
       "emotion_5_3": "affection",
       "emotion_6_1": "admiration",
-      "emotion_6_2": "",
+      "emotion_6_2": "loyalty",
       "emotion_6_3": "",
       "emotion_temp_1": "",
       "emotion_temp_2": "",
@@ -9512,8 +9926,8 @@
       "enraged_status": 0,
       "entropism": false,
       "envenomed_status": 0,
-      "exp_meter": "9.01",
-      "experience": "9.01",
+      "exp_meter": "9.51",
+      "experience": "9.51",
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
       "extra_damage_mod_all": 0,
@@ -9659,7 +10073,7 @@
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.rcyOz2H1OGzvSE0P"
         },
         "vbpD1aMW4azWQSdn": {
-          "armor_description": "<p><ul><li>You have Resistance to<strong> dark</strong> damage.</li><li>When you <strong>Cover </strong>or <strong>Protect </strong>another creature, you may cast a <strong>non-offensive spell </strong>targeting that creature as a <strong>Free Action</strong></li></ul></p>",
+          "armor_description": "<p><ul><li>You have Resistance to<a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a> damage.</li><li>When you <strong>Cover </strong>or <strong>Protect </strong>another creature, you may cast a <strong>non-offensive spell </strong>targeting that creature as a <strong>Free Action</strong></li></ul></p>",
           "armor_martial": "♦️",
           "id": "${item.id}",
           "name": "+5 Paladin Armor",
@@ -9752,7 +10166,7 @@
           "id": "${item.id}",
           "name": "+4 Titanic Shield",
           "roll": "",
-          "shield_description": "<ul><li><p>Your equipped weapon gain <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ljKBtlzPVvhhmdHW\" data-id=\"ljKBtlzPVvhhmdHW\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Weighted</span></strong></a></span></p></li></ul>",
+          "shield_description": "<ul><li><p>Your equipped weapon gain <a class=\"content-link\" data-uuid=\"JournalEntry.ljKBtlzPVvhhmdHW\" data-id=\"ljKBtlzPVvhhmdHW\" data-type=\"JournalEntry\">Weighted</a></p></li></ul>",
           "shield_martial": "",
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.oM6Bo3Hc4wV9ICa9"
         },
@@ -9841,7 +10255,7 @@
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.DvZy0Puh6kTxHKVl"
         },
         "FJR1nkpCZNWfHH9v": {
-          "acess_description": "<ul><li><p style=\"\">You have Resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(72, 199, 116) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(168, 255, 187) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span> damage.</p></li></ul>",
+          "acess_description": "<ul><li><p style=\"\">You have Resistance to <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\">Air</a> damage.</p></li></ul>",
           "id": "${item.id}",
           "name": "Air Pendant",
           "roll": "",
@@ -9855,7 +10269,7 @@
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.G0AKHZZboHc86vBt"
         },
         "JT5pvl5buIjL9JHX": {
-          "acess_description": "<ul><li><p><strong>【Provoke】SL+1</strong></p></li><li><p>+1 <strong>DEF </strong>this bonus <strong>doubles </strong>if you are in <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a></span></span></p></li></ul>",
+          "acess_description": "<ul><li><p><strong>【Provoke】SL+1</strong></p></li><li><p>+1 <strong>DEF </strong>this bonus <strong>doubles </strong>if you are in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a></p></li></ul>",
           "id": "${item.id}",
           "name": "Matador Cape",
           "roll": "",
@@ -9869,7 +10283,7 @@
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.TNcJSsr962JEcZBL"
         },
         "XrwiCo9dqjD1UGJi": {
-          "acess_description": "<ul><li><p style=\"\">You have Resistance to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\"> </span></strong></span></span>damage.</p></li></ul>",
+          "acess_description": "<ul><li><p style=\"\">You have Resistance to <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage.</p></li></ul>",
           "id": "${item.id}",
           "name": "Ruby Pendant",
           "roll": "",
@@ -9969,7 +10383,7 @@
       },
       "item_restore_mod": 0,
       "key_list": {},
-      "level": "41",
+      "level": "43",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 15,
@@ -10060,9 +10474,9 @@
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.ya38b6iI7xoO4Jur"
         }
       },
-      "max_hp": 176,
+      "max_hp": 173,
       "max_ip": 10,
-      "max_mp": 76,
+      "max_mp": 78,
       "memories_list": {},
       "memory": "Memories",
       "mig_base": "12",
@@ -10374,7 +10788,7 @@
         "P83dOfskJgWE9QVL": {
           "active_class": "Invoker",
           "active_cost": "",
-          "active_description": "<p>When you acquire this Heroic Skill and whenever you rest, you may choose one wellspring: <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a8ffbb 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Air</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d2b48c 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Earth</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#ffae00 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span>, <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#d7a9ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span>, or <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika,sans-serif\"><a class=\"content-link\" draggable=\"true\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" style=\"background-color:#666;padding:0;border:none;border-radius:2px;color:inherit;font-weight:bold;text-decoration:underline;display:inline-flex;align-items:center;position:relative;top:2px;text-shadow:#a6e3ff 0 0 4px;font-family:Signika,sans-serif;font-size:14px;\"><strong><span style=\"text-decoration: underline;\">Ice</span></strong></a></span></span>. If you do, you gain the following benefits until your next rest:</p><ul><li>You always treat the chosen <strong>wellspring</strong> as being available during each scene, in addition to whatever wellsprings are already available.</li><li>You may perform Rituals of the <strong>Elementalism</strong> discipline, but only if those Rituals manipulate the element of the chosen <strong>wellspring</strong>.</li><li>You gain <strong>Resistance</strong> to the damage type corresponding to the chosen <strong>wellspring</strong>.</li><li>When you deal damage, you may change its type to the one corresponding to the chosen <strong>wellspring</strong>. If you do, that damage ignores Resistances.</li></ul>",
+          "active_description": "<p>When you acquire this Heroic Skill and whenever you rest, you may choose one wellspring: <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\">Air</a>, <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\">Earth</a>, <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a>, <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a>, or <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\">Ice</a>. If you do, you gain the following benefits until your next rest:</p><ul><li>You always treat the chosen <strong>wellspring</strong> as being available during each scene, in addition to whatever wellsprings are already available.</li><li>You may perform Rituals of the <strong>Elementalism</strong> discipline, but only if those Rituals manipulate the element of the chosen <strong>wellspring</strong>.</li><li>You gain <strong>Resistance</strong> to the damage type corresponding to the chosen <strong>wellspring</strong>.</li><li>When you deal damage, you may change its type to the one corresponding to the chosen <strong>wellspring</strong>. If you do, that damage ignores Resistances.</li></ul>",
           "active_duration": "",
           "active_level": 1,
           "active_target": "",
@@ -10710,7 +11124,7 @@
       },
       "skill_class_filter": "Invoker",
       "skill_hideEffect": false,
-      "skill_point": "1",
+      "skill_point": 2,
       "skill_point_bonus": "0",
       "skill_type_filter": "All",
       "slow_status": 0,
@@ -10718,10 +11132,15 @@
       "spell_class_filter": "",
       "spell_hideEffect": false,
       "spiritism": false,
+      "sprite_attack": "",
       "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Blanche_Battler002.webm",
+      "sprite_cast": "",
       "sprite_crisis": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Blanche_Crisis.webm",
+      "sprite_fly": "",
+      "sprite_guard": "",
       "sprite_hurt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Blanche_Hurt.webm",
       "sprite_ko": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Blanche_KO.webm",
+      "sprite_leap": "",
       "sprite_onsen": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Blanche_Onsen.png",
       "sprite_sit": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Blanche_Sit.png",
       "sprite_sleep": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Blanche_Sleep.webm",
@@ -10900,7 +11319,7 @@
       "wlp_base": "6",
       "wlp_current": 6,
       "your_class_name": "Housekeeper",
-      "zenit": "1505",
+      "zenit": "2674",
       "zero_label": "Zero Power",
       "zero_power_description": "<p>You and any number of allies you can see recover from all status effects and recover an amount of Hit Points equal to <strong>【40 + half your level】</strong></p>",
       "zero_power_macro": "",
