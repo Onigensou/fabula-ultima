@@ -10,11 +10,15 @@
 //  - GM processes requests, updates world settings, Foundry broadcasts
 //    updateSetting to all clients automatically.
 //  - Hover state is ephemeral: broadcast to all directly (no persistence).
+//  - Requests are handled by the PRIMARY GM only. Raw socket messages reach
+//    every GM client, and two GMs handling a Ready press would undo each other.
 // ============================================================================
 (() => {
   const CAMP    = globalThis.CampSystem ??= {};
   const TAG     = "[CampSystem][Socket]";
   const GUARD   = "__ONI_CAMP_SOCKET__";
+
+  const isPrimaryGM = () => globalThis.FUCompanion?.isPrimaryGM?.() ?? false;
 
   CAMP.Socket = {
     // ── Emit a request to the GM ──────────────────────────────────────────
@@ -26,6 +30,30 @@
     broadcast(type, payload = {}) {
       if (!game.user?.isGM) return;
       game.socket.emit(CAMP.SOCKET_CH, { type, payload });
+    },
+
+    // ── Lobby Ready: ask for one player's state in the current phase ─────
+    // `ready` is the state wanted, not a flip, so repeating a request is safe.
+    // A broadcast doesn't echo to its sender, so the primary GM handles its
+    // own requests directly.
+    requestReady(userId, ready) {
+      const phase = CAMP.State.getPhase();
+      const type  = _lobbyMsgFor(phase);
+      if (!type) return false;
+      const payload = { userId, ready, phase };
+      if (isPrimaryGM()) _handleLobbyMsg(type, payload);
+      else this.emit(type, payload);
+      return true;
+    },
+
+    // ── Re-run the "everyone has answered" checks ────────────────────────
+    // They normally run when a request arrives, so a player leaving (the last
+    // one everyone was waiting on) needs its own pass.
+    async recheckGates() {
+      if (!isPrimaryGM()) return;
+      const phase = CAMP.State.getPhase();
+      if (phase === CAMP.PHASE.ACTIVITY_SELECT) await _advanceIfAllConfirmedActivity();
+      else if (phase === CAMP.PHASE.BOND_UPDATE) await _advanceIfAllConfirmedBond();
     },
 
     // ── Install listener (called on ready) ───────────────────────────────
@@ -479,12 +507,14 @@
           return;
         }
 
-        // ── GM-only: state mutation requests ────────────────────────────
-        if (!game.user?.isGM) return;
+        // ── Primary GM only: state mutation requests ────────────────────
+        if (!isPrimaryGM()) return;
 
         switch (type) {
           case CAMP.MSG.TOGGLE_READY:
-            await _handleToggleReady(payload);
+          case CAMP.MSG.TOGGLE_SLEEP:
+          case CAMP.MSG.TOGGLE_SET_OUT:
+            await _handleLobbyMsg(type, payload);
             break;
 
           case CAMP.MSG.LOCK_ACTIVITY:
@@ -505,14 +535,6 @@
 
           case CAMP.MSG.ACTIVITY_DONE:
             await _handleActivityDone(payload);
-            break;
-
-          case CAMP.MSG.TOGGLE_SLEEP:
-            await _handleToggleSleep(payload);
-            break;
-
-          case CAMP.MSG.TOGGLE_SET_OUT:
-            await _handleToggleSetOut(payload);
             break;
 
           case CAMP.MSG.RECORD_RETURN:     // entry hook ran on a player's client
@@ -711,83 +733,105 @@
   // GM-side handlers
   // ---------------------------------------------------------------------------
 
-  async function _handleToggleReady({ userId } = {}) {
-    if (!userId) return;
-    await CAMP.State.toggleReady(userId);
-
-    // In ACTIVITY_SELECT: auto-advance when all active players have confirmed.
-    // Only count active players who actually own a party member — spectator
-    // clients are active non-GM users but must not gate the proceed check.
-    if (CAMP.State.getPhase() === CAMP.PHASE.ACTIVITY_SELECT) {
-      const partyUserIds = await CAMP.Party.getActiveUserIds();
-      const readyMap     = CAMP.State.getReady();
-      if (partyUserIds.length > 0 && partyUserIds.every(id => readyMap[id])) {
-        await CAMP.State.clearReady();
-        await CAMP.State.setPhase(CAMP.PHASE.ACTIVITY_RESOLVE);
-      }
+  function _lobbyMsgFor(phase) {
+    switch (phase) {
+      case CAMP.PHASE.FREE_ROAM:
+      case CAMP.PHASE.ACTIVITY_SELECT: return CAMP.MSG.TOGGLE_READY;
+      case CAMP.PHASE.SLEEP_LOBBY:     return CAMP.MSG.TOGGLE_SLEEP;
+      case CAMP.PHASE.SET_OUT_LOBBY:   return CAMP.MSG.TOGGLE_SET_OUT;
+      default: return null;
     }
   }
 
-  async function _handleLockActivity({ actorId, activityKey } = {}) {
-    if (!actorId || !activityKey) return;
-    const res = await CAMP.State.setLocked(actorId, activityKey);
-    if (!res.ok) return; // taken by another actor
-    // Check if all party members have locked
-    const party    = await CAMP.Party.resolve();
-    const actorIds = party.map(e => e.actorId);
-    if (CAMP.State.isAllLocked(actorIds)) {
+  // A press only counts in the phase it was made in: a late Free Roam press must
+  // not become Activity Select's confirm once the phase has moved on.
+  async function _handleLobbyMsg(type, { userId, ready, phase } = {}) {
+    if (!userId) return;
+    const now = CAMP.State.getPhase();
+    if (phase && phase !== now) return;
+    if (_lobbyMsgFor(now) !== type) return;
+
+    switch (type) {
+      case CAMP.MSG.TOGGLE_READY:
+        await CAMP.State.setReady(userId, ready);
+        await _advanceIfAllConfirmedActivity();
+        break;
+      case CAMP.MSG.TOGGLE_SLEEP:
+        await CAMP.State.setSleepReady(userId, ready);
+        break;
+      case CAMP.MSG.TOGGLE_SET_OUT:
+        await CAMP.State.setSetOutReady(userId, ready);
+        break;
+    }
+  }
+
+  // In ACTIVITY_SELECT: auto-advance when all active players have confirmed.
+  // Only count active players who actually own a party member — spectator
+  // clients are active non-GM users but must not gate the proceed check.
+  async function _advanceIfAllConfirmedActivity() {
+    if (CAMP.State.getPhase() !== CAMP.PHASE.ACTIVITY_SELECT) return;
+    const partyUserIds = await CAMP.Party.getActiveUserIds();
+    const readyMap     = CAMP.State.getReady();
+    if (partyUserIds.length > 0 && partyUserIds.every(id => readyMap[id])) {
       await CAMP.State.setPhase(CAMP.PHASE.ACTIVITY_RESOLVE);
     }
   }
 
+  // Picking an activity only locks it in. The phase moves on when everyone has
+  // pressed Confirm (_advanceIfAllConfirmedActivity), not on the last pick.
+  async function _handleLockActivity({ actorId, activityKey } = {}) {
+    if (!actorId || !activityKey) return;
+    if (CAMP.State.getPhase() !== CAMP.PHASE.ACTIVITY_SELECT) return;
+    await CAMP.State.setLocked(actorId, activityKey);
+  }
+
   async function _handleUnlockActivity({ actorId } = {}) {
     if (!actorId) return;
+    if (CAMP.State.getPhase() !== CAMP.PHASE.ACTIVITY_SELECT) return;
     await CAMP.State.clearLocked(actorId);
   }
 
-  async function _handleUnconfirmBond({ userId } = {}) {
-    if (!userId) return;
-    await CAMP.State.clearBondConfirmedForUser(userId);
-    // Refresh the GM lobby dots
+  async function _refreshBondDots(partyUserIds) {
     const dots = document.getElementById("oni-camp-bond-wait-dots");
-    if (dots) {
-      const confirmed   = CAMP.State.getBondConfirmed();
-      const partyIds    = await CAMP.Party.getActiveUserIds();
-      const activeUsers = (game.users?.contents ?? []).filter(u => u.active && !u.isGM && partyIds.includes(u.id));
-      dots.innerHTML = activeUsers.map(u => {
-        const r = !!confirmed[u.id];
-        return `<div class="oni-camp-lobby-dot ${r ? "ready" : ""}" title="${u.name}"></div>`;
-      }).join("");
-    }
+    if (!dots) return;
+    const confirmed   = CAMP.State.getBondConfirmed();
+    const partyIds    = partyUserIds ?? await CAMP.Party.getActiveUserIds();
+    const activeUsers = (game.users?.contents ?? []).filter(u => u.active && !u.isGM && partyIds.includes(u.id));
+    dots.innerHTML = activeUsers.map(u => {
+      const r = !!confirmed[u.id];
+      return `<div class="oni-camp-lobby-dot ${r ? "ready" : ""}" title="${u.name}"></div>`;
+    }).join("");
   }
 
-  async function _handleConfirmBond({ userId, summary } = {}) {
-    if (!userId) return;
-    await CAMP.State.setBondConfirmed(userId, summary);
-
-    // Only count active players who own a party member — spectator clients
-    // are active non-GM users but must not gate the bond-confirm proceed check.
+  // Auto-advance when all active party players have confirmed. Spectator clients
+  // are active non-GM users but must not gate the check. Nobody connected is not
+  // "everyone confirmed": the table may only have dropped for a moment.
+  async function _advanceIfAllConfirmedBond() {
+    if (CAMP.State.getPhase() !== CAMP.PHASE.BOND_UPDATE) return;
     const partyUserIds = await CAMP.Party.getActiveUserIds();
-
-    // Refresh the GM lobby dots if the wait overlay is showing
-    const dots = document.getElementById("oni-camp-bond-wait-dots");
-    if (dots) {
-      const confirmed   = CAMP.State.getBondConfirmed?.() ?? {};
-      const activeUsers = (game.users?.contents ?? []).filter(u => u.active && !u.isGM && partyUserIds.includes(u.id));
-      dots.innerHTML = activeUsers.map(u => {
-        const r = !!confirmed[u.id];
-        return `<div class="oni-camp-lobby-dot ${r ? "ready" : ""}" title="${u.name}"></div>`;
-      }).join("");
-    }
-
-    // Auto-advance when all active players have confirmed
-    if (partyUserIds.length === 0 || CAMP.State.isAllBondConfirmed(partyUserIds)) {
+    await _refreshBondDots(partyUserIds);
+    if (CAMP.State.isAllBondConfirmed(partyUserIds)) {
       await CAMP.State.setPhase(CAMP.PHASE.BOND_SUMMARY);
     }
   }
 
+  async function _handleUnconfirmBond({ userId } = {}) {
+    if (!userId) return;
+    if (CAMP.State.getPhase() !== CAMP.PHASE.BOND_UPDATE) return;
+    await CAMP.State.clearBondConfirmedForUser(userId);
+    await _refreshBondDots();
+  }
+
+  async function _handleConfirmBond({ userId, summary } = {}) {
+    if (!userId) return;
+    if (CAMP.State.getPhase() !== CAMP.PHASE.BOND_UPDATE) return;
+    await CAMP.State.setBondConfirmed(userId, summary);
+    await _advanceIfAllConfirmedBond();
+  }
+
   async function _handleActivityDone({ actorId } = {}) {
     if (!actorId) return;
+    if (CAMP.State.getPhase() !== CAMP.PHASE.ACTIVITY_RESOLVE) return;
     await CAMP.State.markResolved(actorId);
     // Use the locked actor IDs from selections as the source of truth
     const sel = CAMP.State.getSelections();
@@ -796,16 +840,6 @@
       await CAMP.State.clearResolved();
       await CAMP.State.setPhase(CAMP.PHASE.BOND_UPDATE);
     }
-  }
-
-  async function _handleToggleSleep({ userId } = {}) {
-    if (!userId) return;
-    await CAMP.State.toggleSleepReady(userId);
-  }
-
-  async function _handleToggleSetOut({ userId } = {}) {
-    if (!userId) return;
-    await CAMP.State.toggleSetOutReady(userId);
   }
 
   // Install on ready
