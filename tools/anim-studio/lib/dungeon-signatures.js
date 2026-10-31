@@ -24,7 +24,7 @@
 
 const { shell, inner } = require("./dungeon-templates.js");
 
-/* ── Asura · Quad-Elemental Slash ────────────────────────────────────────── */
+/* ── Asura · Asura Strike ────────────────────────────────────────── */
 //
 // Zoom in hard, dim, gather the four elements, beat, eye-flash, then the whole
 // screen is slashes; whiteout with every combatant reduced to a black
@@ -36,7 +36,7 @@ const { shell, inner } = require("./dungeon-templates.js");
 
 function quadElementalSlash(opts = {}) {
   const cfg = Object.assign({
-    // Wide on purpose (see Rail Stream) — the user asked to keep the pull-back
+    // Wide on purpose (see Divine Railstream) — the user asked to keep the pull-back
     // on this shot. <1 is a zoom OUT from rest framing.
     camZoom: 0.85, camInMs: 1300, camOutMs: 1100,
     dimTo: 0.72, dimMs: 900,
@@ -172,7 +172,7 @@ function quadElementalSlash(opts = {}) {
 // so there is no persistent state to revert and no way for a crash mid-shot to
 // strand the Mist Dragon wearing someone else's face.
 //
-// The copy source is fixed per item (Thunder Strike = Skizzik, Venomstone
+// The copy source is fixed per item (Lightning Blitz = Skizzik, Venomstone
 // Spines = Obsidrax, Mana Stinger = Mana Ray), so the art is a build-time
 // constant — no runtime lookup.
 
@@ -297,7 +297,7 @@ function phantomShift(opts = {}) {
   return shell({ key: opts.key, name: opts.name, cfg, assets: opts.assets || {}, inner: inner(body), timeout: 22000 });
 }
 
-/* ── Kirin · Rail Stream ─────────────────────────────────────────────────── */
+/* ── Kirin · Divine Railstream ─────────────────────────────────────────────────── */
 //
 // Everything the Kirin has been hoarding leaves the horn at once: dim, pull
 // back to take in the field, gather blue charge, fire a column straight up out
@@ -966,13 +966,13 @@ function stripEquip(opts = {}) {
   return shell({ key: opts.key, name: opts.name, cfg, inner: inner(body), timeout: 20000 });
 }
 
-/* ── Skizzik · Thunder Strike ────────────────────────────────────────────── */
+/* ── Skizzik · Lightning Blitz ────────────────────────────────────────────── */
 //
 // Too fast to follow: it crosses the target, leaves the screen entirely, and
 // comes back in from the far side. The afterimage trail is what sells the
 // speed — without it this reads as a slide, not a strike.
 //
-// NOTE this same script is also driven by Chain Reaction (free Thunder Strike
+// NOTE this same script is also driven by Chain Reaction (free Lightning Blitz
 // on any Bolt hit) and by the riposte item, so it can replay several times in
 // one round. dashMs is the dial if that starts to drag.
 

@@ -170,15 +170,15 @@ run(async ({ changes }) => {
   }), "NEW item — Phantom Shift (identity passive)"]);
 
   // ── The borrowed repertoire — spike / spread / drain ────────────────────
-  changes.push([ik(IDS.MD_PS_STRIKE), skill(dAtk, IDS.MD_PS_STRIKE, "Phantom Shift: Thunder Strike", ICON.melee, {
+  changes.push([ik(IDS.MD_PS_STRIKE), skill(dAtk, IDS.MD_PS_STRIKE, "Phantom Shift: Lightning Blitz", ICON.melee, {
     skill_type: "Attack", skill_target: "One Creature", skill_range: "Melee",
     rolled_atr1: "DEX", rolled_atr2: "MIG",
     damage_bonus: "30", type_damage: "Air", defense_target_type: "def",
     isCheck: true, isOffensiveSpell: false, isReaction: false,
     cost: "-", duration: "Instantaneous", details_roller: "Show",
     action_keywords: "", description: DESC.psStrike,
-    ...blindRider("Phantom Shift: Thunder Strike", 40),
-  }), "NEW item — Phantom Shift: Thunder Strike"]);
+    ...blindRider("Phantom Shift: Lightning Blitz", 40),
+  }), "NEW item — Phantom Shift: Lightning Blitz"]);
 
   changes.push([ik(IDS.MD_PS_SPINES), skill(dAtk, IDS.MD_PS_SPINES, "Phantom Shift: Venomstone Spines", ICON.range, {
     skill_type: "Attack", skill_target: "Up to three creatures", skill_range: "Range",
@@ -251,7 +251,7 @@ run(async ({ changes }) => {
     [IDS.MD_CLAW]: { name: "Mist Claw", id: "${item.id}", uuid: `Actor.${A}.Item.${IDS.MD_CLAW}`,
                      active_target: "One Creature", attribute_die1: "DEX", attribute_die2: "WLP",
                      attack_description: DESC.claw, roll: "" },
-    [IDS.MD_PS_STRIKE]: { name: "Phantom Shift: Thunder Strike", id: "${item.id}", uuid: `Actor.${A}.Item.${IDS.MD_PS_STRIKE}`,
+    [IDS.MD_PS_STRIKE]: { name: "Phantom Shift: Lightning Blitz", id: "${item.id}", uuid: `Actor.${A}.Item.${IDS.MD_PS_STRIKE}`,
                      active_target: "One Creature", attribute_die1: "DEX", attribute_die2: "MIG",
                      attack_description: DESC.psStrike, roll: "" },
     [IDS.MD_PS_SPINES]: { name: "Phantom Shift: Venomstone Spines", id: "${item.id}", uuid: `Actor.${A}.Item.${IDS.MD_PS_SPINES}`,
@@ -286,7 +286,7 @@ run(async ({ changes }) => {
            action_pattern_string: "", action_pattern_value_1: "50", action_pattern_value_2: "100",
            action_pattern_priority: "8", action_pattern_target_focus: "auto",
            action_pattern_cooldown: "0", action_pattern_hp_reserve: "0", action_pattern_hp_ceiling: "0" },
-    "1": { $deleted: false, action_pattern_name: "Phantom Shift: Thunder Strike", action_pattern_condition: "random",
+    "1": { $deleted: false, action_pattern_name: "Phantom Shift: Lightning Blitz", action_pattern_condition: "random",
            action_pattern_string: "", action_pattern_value_1: "55", action_pattern_value_2: "",
            action_pattern_priority: "7", action_pattern_target_focus: "lowest_hp",
            action_pattern_cooldown: "0", action_pattern_hp_reserve: "0", action_pattern_hp_ceiling: "0" },

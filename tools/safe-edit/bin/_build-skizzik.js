@@ -5,7 +5,7 @@ const { snapshotCollection } = require("../lib/backup");
 
 const APPLY = process.argv.includes("--apply");
 const A = "I2sSkVIQ4FCunZBE";                 // Skizzik
-const TS = "vBuHp8f6NHuYNojr";                // Thunder Strike
+const TS = "vBuHp8f6NHuYNojr";                // Lightning Blitz
 const CR = "IbE6lOJCeAs8Bb4n";                // Chain Reaction
 
 // ⚠ A Foundry document id must be EXACTLY 16 chars of [A-Za-z0-9]. The mnemonic
@@ -15,8 +15,8 @@ const CR = "IbE6lOJCeAs8Bb4n";                // Chain Reaction
 // functionally inert, but they exported as DUPLICATE items and would have shipped
 // that way. Caught only by the world-export report, never by inspection.
 // Never hand-author a short id; use foundry.utils.randomID() or a real 16-char one.
-const RIP_P = "oezr2w4m0LMEFM6F";             // Overload Riposte   (passive carrier)
-const RIP_A = "4XkAxScm0Tj8sBjv";             // Thunder Strike (Riposte)  (damage vehicle)
+const RIP_P = "oezr2w4m0LMEFM6F";             // Lightning Counter   (passive carrier)
+const RIP_A = "4XkAxScm0Tj8sBjv";             // Lightning Retaliate  (damage vehicle)
 const STA_P = "2nHv9Fvn5En9wL3S";             // Static Buildup     (passive carrier)
 const STA_AE = "caLqUKUMBeJxH8kK";            // "Static" AE template
 
@@ -64,10 +64,10 @@ const clone = (src, id, name) => {
   const cr = await getByKey("actors", ik(CR));
   if (!actor || !ts || !cr) throw new Error("missing source doc");
 
-  // ── 1. Thunder Strike: 48 → 30 ────────────────────────────────────────────
+  // ── 1. Lightning Blitz: 48 → 30 ────────────────────────────────────────────
   const tsNew = JSON.parse(JSON.stringify(ts));
   tsNew.system.props.damage_bonus = "30";
-  changes.push([ik(TS), tsNew, `Thunder Strike damage_bonus ${ts.system.props.damage_bonus} → 30`]);
+  changes.push([ik(TS), tsNew, `Lightning Blitz damage_bonus ${ts.system.props.damage_bonus} → 30`]);
 
   // ── 2. Chain Reaction: blank the cause filter so the Storm feeds it ───────
   const crNew = JSON.parse(JSON.stringify(cr));
@@ -75,8 +75,8 @@ const clone = (src, id, name) => {
     crNew.system.props.reaction_config_table[k].reaction_cause_filter = "";
   changes.push([ik(CR), crNew, "Chain Reaction reaction_cause_filter → blank (hazard feeds it)"]);
 
-  // ── 3. Thunder Strike (Riposte) — damage vehicle, OFF attack_list ────────
-  const ripA = clone(ts, RIP_A, "Thunder Strike (Riposte)");
+  // ── 3. Lightning Retaliate — damage vehicle, OFF attack_list ────────
+  const ripA = clone(ts, RIP_A, "Lightning Retaliate");
   Object.assign(ripA.system.props, {
     damage_bonus: "12", check_bonus: "10", type_damage: "Bolt",
     rolled_atr1: "DEX", rolled_atr2: "MIG", defense_target_type: "def",
@@ -84,10 +84,10 @@ const clone = (src, id, name) => {
     cost: "-", duration: "Instantaneous", isCheck: true, isReaction: false,
     description: DESC_RIPA,
   });
-  changes.push([ik(RIP_A), ripA, "NEW item — Thunder Strike (Riposte), dmg 12"]);
+  changes.push([ik(RIP_A), ripA, "NEW item — Lightning Retaliate, dmg 12"]);
 
-  // ── 4. Overload Riposte — the counter ────────────────────────────────────
-  const ripP = clone(cr, RIP_P, "Overload Riposte");
+  // ── 4. Lightning Counter — the counter ────────────────────────────────────
+  const ripP = clone(cr, RIP_P, "Lightning Counter");
   Object.assign(ripP.system.props, {
     description: DESC_RIP,
     reaction_config_table: {
@@ -115,11 +115,11 @@ const clone = (src, id, name) => {
       },
       "1": {
         effect_kind: "free_action", effect_label: "riposte_strike",
-        action_ref: "Thunder Strike (Riposte)", target_ref: "riposte_target",
+        action_ref: "Lightning Retaliate", target_ref: "riposte_target",
       },
     },
   });
-  changes.push([ik(RIP_P), ripP, "NEW item — Overload Riposte (uncapped even-parity counter)"]);
+  changes.push([ik(RIP_P), ripP, "NEW item — Lightning Counter (uncapped even-parity counter)"]);
 
   // ── 5. Static Buildup — 3 stacks → 30 Bolt on the creature just damaged ──
   const staP = clone(cr, STA_P, "Static Buildup");
@@ -198,10 +198,10 @@ const clone = (src, id, name) => {
   // sheet mirrors hold their OWN copy of the description — always re-sync
   p.skill_passive_list = {
     [CR]:    { ...p.skill_passive_list[CR] },
-    [RIP_P]: { name: "Overload Riposte", id: "${item.id}", uuid: `Actor.${A}.Item.${RIP_P}`, passive_description: DESC_RIP, roll: "" },
+    [RIP_P]: { name: "Lightning Counter", id: "${item.id}", uuid: `Actor.${A}.Item.${RIP_P}`, passive_description: DESC_RIP, roll: "" },
     [STA_P]: { name: "Static Buildup",   id: "${item.id}", uuid: `Actor.${A}.Item.${STA_P}`, passive_description: DESC_STA, roll: "" },
   };
-  // attack_list: Thunder Strike only. The Riposte is a free-action component —
+  // attack_list: Lightning Blitz only. The Riposte is a free-action component —
   // listing it would offer it to the NPC action picker as a turn action.
   changes.push([`!actors!${A}`, aNew,
     `Actor — HP ${actor.system.props.max_hp} → 130, +3 items, passive mirrors, study text`]);

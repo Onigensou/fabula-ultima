@@ -237,8 +237,8 @@ const REGISTRY = {
                explosion: true, shakeMs: 620, sfxSweep: "Attack3", sfxSweepVol: 0.6,
                sfxExplosion: "Explosion1", sfxExplosionVol: 0.6 },
       }),
-      "Quad-Elemental Slash": () => G.quadElementalSlash({
-        key: "asura-quad-elemental-slash", name: "Quad-Elemental Slash",
+      "Asura Strike": () => G.quadElementalSlash({
+        key: "asura-quad-elemental-slash", name: "Asura Strike",
         cfg: { sfxCharge: "ChargeAttack", sfxChargeVol: 0.6,
                sfxSlash: "Attack3", sfxSlashVol: 0.55,
                sfxImpact: "Explosion2", sfxImpactVol: 0.85 },
@@ -281,8 +281,8 @@ const REGISTRY = {
                sfx: "ChargeAttack", sfxVol: 0.45,
                sfxSpray: SFX.windWalk, sfxSprayVol: 0.6 },
       }),
-      "Phantom Shift: Thunder Strike": () => G.phantomShift({
-        key: "mist-phantom-thunder", name: "Phantom Shift: Thunder Strike",
+      "Phantom Shift: Lightning Blitz": () => G.phantomShift({
+        key: "mist-phantom-thunder", name: "Phantom Shift: Lightning Blitz",
         assets: { phantomArt: ART.skizzik },
         cfg: { attack: "ranged", color: C.air, travelMs: 560, orbSize: 36,
                sfxShift: "Wind3", sfxShiftVol: 0.45,
@@ -323,8 +323,8 @@ const REGISTRY = {
                // Bolt SFX removed on request; a generic hit still marks contact.
                sfx: null, sfxArrive: "HitBlowS", sfxArriveVol: 0.7 },
       }),
-      "Rail Stream": () => G.railStream({
-        key: "kirin-rail-stream", name: "Rail Stream",
+      "Divine Railstream": () => G.railStream({
+        key: "kirin-rail-stream", name: "Divine Railstream",
         // A drawn straight BEAM is the strike, with faint jagged strands drawn
         // behind it as accompanying crackle. No video: a clip has no leading
         // edge, so it cannot read as falling.
@@ -394,18 +394,18 @@ const REGISTRY = {
   "I2sSkVIQ4FCunZBE": {
     actorName: "Skizzik",
     items: {
-      "Thunder Strike": () => G.thunderStrikeDash({
-        key: "skizzik-thunder-strike", name: "Thunder Strike",
+      "Lightning Blitz": () => G.thunderStrikeDash({
+        key: "skizzik-thunder-strike", name: "Lightning Blitz",
         cfg: { color: C.bolt, impactWebm: FX.impactBlue, impactWebmSize: 400,
                sfxDash: "ThunderStep", sfxDashVol: 0.6,
                sfxImpact: "Hit_Lightning2", sfxImpactVol: 0.75,
                sfxImpactFade: 900, sfxImpactFadeMs: 500 },
       }),
-      // Same shot, as directed. This one is fired by Overload Riposte on every
+      // Same shot, as directed. This one is fired by Lightning Counter on every
       // even-parity accuracy roll, so it is the one most likely to want a
       // shorter dashMs if the repeat starts to drag.
-      "Thunder Strike (Riposte)": () => G.thunderStrikeDash({
-        key: "skizzik-thunder-strike-riposte", name: "Thunder Strike (Riposte)",
+      "Lightning Retaliate": () => G.thunderStrikeDash({
+        key: "skizzik-thunder-strike-riposte", name: "Lightning Retaliate",
         cfg: { color: C.bolt, impactWebm: FX.impactBlue, impactWebmSize: 360,
                sfxDash: "ThunderStep", sfxDashVol: 0.5,
                sfxImpact: "Hit_Lightning", sfxImpactVol: 0.65,

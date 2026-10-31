@@ -96,7 +96,7 @@ const REWRITES = [
     html:
       trig(`When the Asura suffers ${FIRE}, ${BOLT}, ${ICE}&nbsp;or ${AIR}&nbsp;damage.`) +
       `<p>The Asura lights the blade of that element permanently. It is <strong>Vulnerable</strong> to each element until that blade is lit, and <strong>Resistant</strong> to it afterwards. Its Elemental Slash deals <strong>8</strong> extra damage for each lit blade.</p>` +
-      `<p>Its own Sword Enchants light blades the same way an enemy's damage does. With all four blades lit, the Asura can use <strong>Quad-Elemental Slash</strong>.</p>`,
+      `<p>Its own Sword Enchants light blades the same way an enemy's damage does. With all four blades lit, the Asura can use <strong>Asura Strike</strong>.</p>`,
   },
   {
     uuid: "Actor.0AwQ7wEDz4ISA9mA.Item.ohrbXuZkGB4hNrPp",
@@ -110,7 +110,7 @@ const REWRITES = [
   },
   {
     uuid: "Actor.0AwQ7wEDz4ISA9mA.Item.NFruWlBHrgfNSJmM",
-    label: "Asura / Quad-Elemental Slash",
+    label: "Asura / Asura Strike",
     html:
       `<p>The Asura's four blades fall in a single flurry. Deal <strong>devastating</strong> ${BOLT}, ${FIRE}, ${ICE}&nbsp;and ${AIR}&nbsp;damage — four separate strikes, each landing automatically on a random foe.</p>` +
       `<p>Afterwards the Asura loses all of its Aspects and lit blades, and is <strong>Vulnerable</strong> to all four elements again.</p>`,
@@ -177,7 +177,7 @@ const REWRITES = [
   },
   {
     uuid: "Actor.I2sSkVIQ4FCunZBE.Item.oezr2w4m0LMEFM6F",
-    label: "Skizzik / Overload Riposte",
+    label: "Skizzik / Lightning Counter",
     html:
       trig(
         "When an attack strikes the Skizzik and the Result of the attacker's Accuracy Check was an <strong>even number</strong>"
@@ -188,7 +188,7 @@ const REWRITES = [
   // ---- Kirin ------------------------------------------------------------
   {
     uuid: "Actor.TvLv878yZLNUAWNN.Item.zNhzAhg1phFoHW8q",
-    label: "Kirin / Rail Stream",
+    label: "Kirin / Divine Railstream",
     html:
       `<ul><li><p>${PIERCE}</p></li><li><p>${OVERFLOW}</p></li></ul>` +
       `<p>The Kirin looses everything gathered in its horn.</p>` +
