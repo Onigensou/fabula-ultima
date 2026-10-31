@@ -16,6 +16,12 @@
 //      The crystal is Immune to Bolt and Vulnerable to Earth, so Bolt never
 //      delays it and Earth nearly always buys the top tier.
 //   5. At zero it deals 20–30 Bolt to every creature, then shatters.
+//   6. A monster flagged `impersonates` (Fulgimite) may stand in for one crystal.
+//      It looks and counts like the others, takes no damage, and reveals itself
+//      when an action picks it as the only target or its count reaches zero.
+//      The hit's rules (no damage, the counter) are ordinary reaction rows on a
+//      disguise AE stored on the monster's passive. This file only rolls it,
+//      copies the AE onto the crystal and does the swap.
 //
 // ── What a crystal IS ───────────────────────────────────────────────────────
 //
@@ -56,6 +62,9 @@ export const CRYSTAL_OBJECT_ID = "lightning-crystal";
 
 /** The countdown AE. Mirrored in lightning-crystal-countdown.js. */
 export const COUNTDOWN_AE_NAME = "Crystal Countdown";
+
+/** The disguise AE: copied from the impersonator's passive, onto one crystal. */
+export const DISGUISE_AE_NAME = "Crystal Disguise";
 
 /** Attribution shown in the resource-ledger breakdown and the battle log. */
 const SOURCE_LABEL = "Lightning Crystal";
@@ -113,6 +122,27 @@ export function rollCrystalCount(rand = Math.random()) {
     if (rand < acc) return n;
   }
   return SPAWN_WEIGHTS.length - 1;
+}
+
+/**
+ * How many of `crystals` are impostors this conflict: at most one.
+ *
+ * `conflictEventOptions.impersonatorCount` pins it. A pinned crystalCount with no
+ * impersonatorCount means 0, because a balance sim that pins a known hazard must
+ * not silently fight a different one on 15% of its runs.
+ */
+export function impersonatorCountFor({ payload = null, crystals = 0, chance = 0, rand = Math.random() } = {}) {
+  if (crystals <= 0) return 0;
+  const opts = payload?.context?.conflictEventOptions ?? null;
+  const raw = opts?.impersonatorCount;
+  if (raw != null && raw !== "") return Math.min(Math.max(Math.floor(Number(raw)) || 0, 0), 1);
+  if (pinnedCrystalCount(payload) != null) return 0;
+  return rand < (Number(chance) || 0) ? 1 : 0;
+}
+
+/** A crystal's countdown after an adjustment. Zero is as low as it goes. */
+export function adjustedCountdown(countdown, amount) {
+  return Math.max(0, (Number(countdown) || 0) + (Number(amount) || 0));
 }
 
 function rollInt(min, max, rand) {
@@ -204,6 +234,17 @@ function readState(actor) {
   };
 }
 
+function disguiseAe(actor) {
+  try { return actor?.effects?.find?.((e) => e?.name === DISGUISE_AE_NAME) ?? null; }
+  catch { return null; }
+}
+
+/** The world actor that may stand in for a crystal, with its roll, or null. */
+function findImpersonator() {
+  const actor = game.actors?.find?.((a) => a?.flags?.[FLAG_NS]?.impersonates?.object === CRYSTAL_OBJECT_ID) ?? null;
+  return actor ? { actor, chance: Number(actor.flags[FLAG_NS].impersonates.chance) || 0 } : null;
+}
+
 function tokenDocOf(entry) {
   return entry?.token?.document ?? entry?.token ?? null;
 }
@@ -220,6 +261,11 @@ function bdApi() {
 async function crystalsOnField(ctx) {
   const all = typeof ctx.allCombatants === "function" ? await ctx.allCombatants() : await ctx.combatants();
   return all.filter((e) => isCrystalActor(e.actor));
+}
+
+async function crystalsOfTokens(ctx, tokens) {
+  const ids = new Set((tokens ?? []).map((t) => t?.id ?? t?.document?.id).filter(Boolean));
+  return (await crystalsOnField(ctx)).filter((e) => ids.has(tokenDocOf(e)?.id));
 }
 
 // ── Writes ──────────────────────────────────────────────────────────────────
@@ -306,6 +352,81 @@ async function refreshRoster(ctx) {
     refreshTurnActions?.(ctx.dCombat);
   } catch (e) { ctx.warn("banner refresh threw", e); }
   try { Hooks.callAll("fu-director-roster-changed", { dCombat: ctx.dCombat, change: "add" }); } catch { /* observers only */ }
+}
+
+// ── The impostor ────────────────────────────────────────────────────────────
+
+/** The stored AE, ready to create on a crystal, naming who is inside it. */
+function disguiseAeData(impersonator) {
+  for (const item of impersonator.items ?? []) {
+    const template = item.effects?.find?.((e) => e?.name === DISGUISE_AE_NAME);
+    if (!template) continue;
+    const data = template.toObject();
+    delete data._id;
+    data.disabled = false;
+    data.transfer = false;
+    data.flags = { ...(data.flags ?? {}), [FLAG_NS]: {
+      ...(data.flags?.[FLAG_NS] ?? {}),
+      impersonatorUuid: impersonator.uuid,
+      impersonatorSkillUuid: item.uuid,
+      directorPermanent: true,
+    } };
+    return data;
+  }
+  return null;
+}
+
+/** The count stops showing the moment the crystal starts turning into a creature. */
+async function maskCountdown(entry) {
+  await writeState(readState(entry.actor).ae, { crystalRevealing: true });
+}
+
+/**
+ * Swap the crystal for the real creature, on the same spot and at full HP.
+ *
+ * The new token first, the crystal second, so the enemy side is never empty for
+ * the side-wipe check that removing a combatant runs. It acts from next round:
+ * _resetRoundCounters gives it its turns then. A crystal that is not an impostor,
+ * or a fight already over, is a no-op.
+ */
+async function revealImpostor(ctx, entry) {
+  const ae = disguiseAe(entry.actor);
+  const uuid = ae?.flags?.[FLAG_NS]?.impersonatorUuid ?? null;
+  if (!uuid || ctx.dCombat?.ended) return false;
+  const td = tokenDocOf(entry);
+  if (!td) return false;
+  const grid = ctx.scene?.grid?.size ?? 100;
+  const exactCenter = { x: td.x + ((td.width ?? 1) * grid) / 2, y: td.y + ((td.height ?? 1) * grid) / 2 };
+
+  const { spawnLiveDirectorTokens } = await import("../../battle-director/director-init.js");
+  const [tokenDoc] = await spawnLiveDirectorTokens({
+    scene: ctx.scene, actorUuids: [uuid], disposition: -1, exactCenter,
+  });
+  if (!tokenDoc) { ctx.warn("impostor reveal produced no token"); return false; }
+  const c = ctx.dCombat.addCombatant({ tokenDoc, actorDoc: tokenDoc.actor, side: "enemy", disposition: -1 });
+  c.turnsRemaining = 0;
+  await refreshRoster(ctx);
+  await removeCrystal(ctx, entry);
+  ctx.log(`${tokenDoc.name} revealed`);
+  return true;
+}
+
+/**
+ * Its count ran out: the same reveal, no blast and no counter. The script is the
+ * one on the passive, played with no target, which is how it knows to skip the bolt.
+ */
+async function revealAtZero(ctx, entry) {
+  await maskCountdown(entry);
+  const skillUuid = disguiseAe(entry.actor)?.flags?.[FLAG_NS]?.impersonatorSkillUuid ?? null;
+  const casterTokenUuid = tokenDocOf(entry)?.uuid ?? null;
+  if (skillUuid && casterTokenUuid && await showing()) {
+    try {
+      const { playSkillAnimation } = await import("../../battle-director/director-animation.js");
+      const res = await playSkillAnimation({ skillUuid, casterTokenUuid, targetTokenUuids: [] });
+      if (res?.endPromise) await res.endPromise;
+    } catch (e) { ctx.warn("impostor reveal shot threw — the swap still happens", e); }
+  }
+  await revealImpostor(ctx, entry);
 }
 
 // ── The blast ───────────────────────────────────────────────────────────────
@@ -490,12 +611,24 @@ registerConflictEvent({
     }
     const { stageOf } = await import("../../battle-director/director-camera.js");
     const stage = stageOf(ctx.scene);
+    const spawned = [];
     for (const frac of ANCHORS[count] ?? []) {
       const anchor = { x: stage.x + stage.w * frac.x, y: stage.y + stage.h * frac.y };
-      try { await spawnCrystal(ctx, actor, anchor, rollCountdown()); }
+      try { spawned.push(await spawnCrystal(ctx, actor, anchor, rollCountdown())); }
       catch (e) { ctx.warn("crystal spawn threw", e); }
     }
     await refreshRoster(ctx);
+
+    // Rule 6.
+    const standing = spawned.filter(Boolean);
+    const imp = findImpersonator();
+    if (imp && impersonatorCountFor({ payload: ctx.director?.ctx?.payload, crystals: standing.length, chance: imp.chance })) {
+      const data = disguiseAeData(imp.actor);
+      if (!data) { ctx.warn(`${imp.actor.name} has no "${DISGUISE_AE_NAME}" on any item`); return; }
+      const chosen = standing[Math.floor(Math.random() * standing.length)];
+      await chosen.actor.createEmbeddedDocuments("ActiveEffect", [data]);
+      ctx.log("one crystal is an impostor");
+    }
   },
 
   // Rules 3 + 5. Unlike the Storm, the per-turn beat cannot live on an AE's own
@@ -521,7 +654,9 @@ registerConflictEvent({
 
       const next = Math.max(0, state.countdown - 1);
       if (!await writeState(state.ae, { crystalCountdown: next, crystalTickKey: key })) continue;
-      if (next <= 0) await detonate(ctx, entry);
+      if (next > 0) continue;
+      if (disguiseAe(entry.actor)) await revealAtZero(ctx, entry);
+      else await detonate(ctx, entry);
     }
   },
 
@@ -539,6 +674,31 @@ registerConflictEvent({
 
     if (!await writeState(state.ae, { crystalCountdown: state.countdown + bump.turns })) return;
     ctx.log(`${entry.actor.name} took ${bump.damage} — countdown ${state.countdown} → ${state.countdown + bump.turns}`);
+  },
+
+  // What a skill may ask for, through the conflict_event_action row.
+  actions: {
+    // Resonance. Zero is refused nothing: the blast comes at the next turn start.
+    async adjust_countdown(ctx, { tokens, amount }) {
+      const field = await crystalsOnField(ctx);
+      for (const t of tokens) {
+        const id = t?.id ?? t?.document?.id;
+        const entry = field.find((e) => tokenDocOf(e)?.id === id);
+        if (!entry) continue;
+        const state = readState(entry.actor);
+        if (!state.ae || state.spent || state.countdown == null || state.countdown <= 0) continue;
+        const next = adjustedCountdown(state.countdown, amount);
+        await writeState(state.ae, { crystalCountdown: next });
+        ctx.log(`${entry.actor.name} countdown ${state.countdown} → ${next}`);
+      }
+    },
+    async mask_countdown(ctx, { tokens }) {
+      for (const entry of await crystalsOfTokens(ctx, tokens)) await maskCountdown(entry);
+    },
+    // An impostor picked as the only target. Last row of its chain.
+    async reveal(ctx, { tokens }) {
+      for (const entry of await crystalsOfTokens(ctx, tokens)) await revealImpostor(ctx, entry);
+    },
   },
 
   // A crystal must never outlive its fight.

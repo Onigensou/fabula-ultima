@@ -69,7 +69,7 @@ function getParticipantTokens(context = null) {
   return AR.participantTokens(context);
 }
 
-function normalizeSceneToken(tokenLike, performerTokenId = null) {
+function normalizeSceneToken(tokenLike, performerTokenId = null, { allowObject = false } = {}) {
   const token = tokenLike?.object ?? tokenLike ?? null;
   const tokenDocument = AR.getTokenDocument(token);
   const actor = AR.getTokenActor(token);
@@ -81,7 +81,7 @@ function normalizeSceneToken(tokenLike, performerTokenId = null) {
   // exempt: a guest must still be able to see itself, or a Self-targeted skill
   // would be dropped as infeasible with a plausible-looking reason.
   const isPerformer = performerTokenId && tokenDocument.id === performerTokenId;
-  if (!isPerformer && AR.isUntargetableActor(actor)) return null;
+  if (!isPerformer && !allowObject && AR.isUntargetableActor(actor)) return null;
 
   const disposition = AR.getTokenDisposition(tokenDocument);
   const hp = AR.getResourcePair(actor, AR.keys.hpCurrent, AR.keys.hpMax);
@@ -566,6 +566,21 @@ export async function buildAndPickActionReaderTargets(context, options = {}) {
         const reachable = new Set(survey.eligible.map(e => e?.tokenId).filter(Boolean));
         const before = legalCandidates.length;
         legalCandidates = allCandidates.filter(c => reachable.has(c.tokenId));
+        // A monster never picks a battlefield object, except with an action written
+        // to reach one (Resonance: target_eligibility "TARGET_COUNTDOWN > 0"). Without
+        // this the survey would say a Crystal is reachable and the pool would not
+        // hold it. The identifier is the opt-in, so a party brain's "All Enemies"
+        // still doesn't start hitting Crystals.
+        const props = context?.chosenAction?.itemSnapshot?.props ?? context?.chosenAction?.item?.system?.props ?? {};
+        if (/\bTARGET_COUNTDOWN\b/.test(AR.toString(props.target_eligibility, ""))) {
+          const have = new Set(legalCandidates.map(c => c.tokenId));
+          for (const tokenLike of getParticipantTokens(context)) {
+            const id = AR.getTokenDocument(tokenLike)?.id ?? null;
+            if (!id || have.has(id) || !reachable.has(id)) continue;
+            const entry = normalizeSceneToken(tokenLike, null, { allowObject: true });
+            if (entry) legalCandidates.push(decorateCandidate(entry, context));
+          }
+        }
         if (legalCandidates.length !== before) {
           ARD.addWarning(context, stage, `Target survey narrowed ${before} -> ${legalCandidates.length} reachable candidate(s).`);
         }

@@ -160,7 +160,7 @@ function countdownOf(actor) {
     const ae = actor?.effects?.find?.((e) => isCountdownAe(e) && !e.disabled);
     if (!ae) return null;
     const f = ae.flags?.[FLAG_NS] ?? {};
-    if (f.crystalSpent === true || f.crystalShattering === true) return null;
+    if (f.crystalSpent === true || f.crystalShattering === true || f.crystalRevealing === true) return null;
     const n = Number(f.crystalCountdown);
     return Number.isFinite(n) && n > 0 ? n : null;
   } catch { return null; }
@@ -187,6 +187,15 @@ function applyValue(rec, value, { animate = true } = {}) {
     gain.textContent = `+${value - prev}`;
     rec.el.appendChild(gain);
     setTimeout(() => { try { gain.remove(); } catch { /* badge gone */ } }, GAIN_MS + 50);
+  }
+  // A plain tick is -1 and stays quiet. Anything bigger was done TO the crystal
+  // (Resonance), and shows like the gain does.
+  if (prev - value >= 2) {
+    const drop = document.createElement("div");
+    drop.className = "gain";
+    drop.textContent = `-${prev - value}`;
+    rec.el.appendChild(drop);
+    setTimeout(() => { try { drop.remove(); } catch { /* badge gone */ } }, GAIN_MS + 50);
   }
 }
 

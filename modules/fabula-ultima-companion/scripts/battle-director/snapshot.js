@@ -2127,7 +2127,33 @@ export function applySingleTargetGate(eligible, opts = {}) {
   return applyTargetingBlockToken(eligible, "single_target");
 }
 
-// Shared body of the two action-shape gates above: drop every candidate whose
+// ── Area block (Fulgimite's Evasion) ─────────────────────────────────────────
+// `cannot_be_targeted_by: "area"` — the bearer "can't be targeted by area actions
+// or effects". Wider than multi_offensive, which only knows attacks and spells
+// flagged offensive: this catches every HARMFUL action declaring several targets,
+// and skill-targeting drops the bearer from hostile `mode: all` effect rows too.
+// Aid still reaches it, and so does anything that names its targets outright: the
+// Crystal blast does, on purpose (Evasion doesn't stop it, and Absorb Bolt heals).
+export function isAreaHarmfulAction({ isAttack = false, skill = null, skillTargetText = null, intent = null } = {}) {
+  const offensiveSpell = skill?.system?.props?.isOffensiveSpell === true
+    || String(skill?.system?.props?.isOffensiveSpell ?? "").toLowerCase() === "true";
+  let harmful = !!isAttack || offensiveSpell;
+  if (!harmful) {
+    const resolved = intent != null ? String(intent) : (skill ? classifyActionIntent(skill) : "");
+    harmful = resolved.trim().toLowerCase() === "harmful";
+  }
+  if (!harmful) return false;
+  return skillTargetIsMulti(skillTargetText ?? skill?.system?.props?.skill_target ?? "");
+}
+
+// Same four seams as applyMultiOffensiveGate.
+export function applyAreaGate(eligible, opts = {}) {
+  if (!Array.isArray(eligible)) return eligible;
+  if (!isAreaHarmfulAction(opts)) return eligible;
+  return applyTargetingBlockToken(eligible, "area");
+}
+
+// Shared body of the action-shape gates above: drop every candidate whose
 // target-side blocks carry `token`, recording the blocking AE's name as the
 // picker reason and preserving prior exclusions exactly as applyAttackRangeGate
 // does. Returns the SAME array when nothing was excluded (callers rely on that

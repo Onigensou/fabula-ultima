@@ -109,7 +109,11 @@ export const EVENT_HANDLERS = Object.freeze([
 // A bare array is shorthand for `{ grant: [...] }`. Same vocabulary as the
 // battle plan's objectiveGrant / objectiveDeny / objectiveAllow keys, so an
 // event and a hand-authored plan say the same thing the same way.
-const EVENT_META = Object.freeze(["id", "label", "description", "objectives"]);
+//
+// `actions` is what a skill may ask the event to do, by name, through the
+// `conflict_event_action` effect row: { adjust_countdown(evtCtx, request), ... }.
+// `request` = { tokens, amount, row, effectCtx }. See runConflictEventAction.
+const EVENT_META = Object.freeze(["id", "label", "description", "objectives", "actions"]);
 
 const _events = new Map();
 
@@ -170,6 +174,7 @@ export function registerConflictEvent(event, { warn = console.warn } = {}) {
     onTurnStart: event.onTurnStart ?? null,
     onLedgerEvent: event.onLedgerEvent ?? null,
     onConflictEnd: event.onConflictEnd ?? null,
+    actions: Object.freeze({ ...(event.actions ?? {}) }),
   }));
   return true;
 }

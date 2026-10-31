@@ -679,6 +679,10 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // 0 outside that trigger (payload doesn't carry it), so a stray gate is safe.
       case "INCOMING_DAMAGE":
         return Math.max(0, Number(payload?.incomingDamage ?? 0) || 0);
+      // On a creature_takes_damage row: 1 when the action landing this hit picked
+      // the reactor as its only target, 0 for an area hit or a non-action source.
+      case "HIT_ACTION_AIMED_AT_ME":
+        return payload?.actionAimedAtMe === true ? 1 : 0;
       // Native resource cost of the in-flight action, stamped on the pre-resolve
       // `creature_performs_action` payload (ar.costSerialized at CONFIRM). Lets a
       // performer-side cost reaction gate on "am I paying a cost, and how much?" —
@@ -1318,6 +1322,19 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // `flying_grounded` suppressor AE negates flight; otherwise flight = the
       // "flying" CONFIG status OR an AE named "Flying". Gates Dragontrap Bow's
       // force-land so it only fires on airborne targets (TARGET_IS_FLYING == 1).
+      // A Lightning Crystal's turns left, 0 for anything else or one already spent.
+      // Reads the same AE fields as conflict-event/events/lightning-crystal.js.
+      // A target_eligibility of "TARGET_COUNTDOWN > 0" is how an action reaches a
+      // Crystal at all: ActionReader widens its pool to battlefield objects only
+      // for an action naming this identifier.
+      case "TARGET_COUNTDOWN": {
+        const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+        const subject = subjectUuid ? _resolveActorByUuidSync(subjectUuid) : null;
+        const ae = subject?.effects?.find?.((e) => e?.name === "Crystal Countdown");
+        const f = ae?.flags?.["fabula-ultima-companion"] ?? null;
+        if (!f || f.crystalSpent === true) return 0;
+        return Math.max(0, Number(f.crystalCountdown) || 0);
+      }
       case "TARGET_IS_FLYING": {
         const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
         if (!subjectUuid) return 0;

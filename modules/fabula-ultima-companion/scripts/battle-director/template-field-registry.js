@@ -101,6 +101,7 @@ const GROUP_CHECK_VIS = `equalText(sameRow("effect_kind",''), "group_check")`;
 const SET_OUTCOME_VIS = `equalText(sameRow("effect_kind",''), "set_battle_outcome")`;
 const LEAVE_COMBAT_VIS = `equalText(sameRow("effect_kind",''), "leave_combat")`;
 const CLOCK_VIS       = `equalText(sameRow("effect_kind",''), "clock_advance")`;
+const CONFLICT_ACTION_VIS = `equalText(sameRow("effect_kind",''), "conflict_event_action")`;
 // weapon_read — the adaptive weapon-efficiency window (Rakshasa's Adaptive
 // Defense). See skill-effects.applyWeaponReadEffect.
 const WEAPON_READ_VIS = `equalText(sameRow("effect_kind",''), "weapon_read")`;
@@ -761,6 +762,8 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
     { key: "fixed", value: "Fixed — move a flat number of sections" },
   ], { tooltip: "clock_advance: \"roll\" reuses the action card's check, so a better roll fills more sections. \"fixed\" ignores the roll.", vis: CLOCK_VIS, defaultValue: "roll" }),
   textCol("clock_sections", "Clock Sections", { tooltip: "clock_advance (fixed mode only): how many sections to move. Number or formula.", vis: CLOCK_VIS }),
+  textCol("conflict_action", "Event Action", { tooltip: "conflict_event_action: the name of an action the active conflict event offers. Lightning Crystal: adjust_countdown, reveal.", vis: CONFLICT_ACTION_VIS }),
+  textCol("conflict_amount", "Event Amount", { tooltip: "conflict_event_action: the amount the action reads. adjust_countdown: turns to add, negative to take away. Number or formula.", vis: CONFLICT_ACTION_VIS }),
 
   textCol("read_window", "Read Window", { tooltip: "weapon_read: how many DIFFERENT weapon categories must be shown before a read lane returns to full efficiency. 4 means the lane itself plus four others — five distinct categories in total. Default 4.", vis: WEAPON_READ_VIS }),
   textCol("read_curve", "Read Curve", { tooltip: "weapon_read: comma list of efficiency percentages, from a JUST-READ lane down to one step from clear. \"25,40,60,80\" = 25% right after you use it, climbing as other categories are shown; a fully cleared lane is always 100%. Values are floored at 1 — never author 0, since readWeaponEfficiency treats a stored 0 as 100%.", vis: WEAPON_READ_VIS }),
@@ -1007,6 +1010,7 @@ export const REQUIRED_FIELDS_BY_KIND = {
   set_battle_outcome: { all: ["outcome_value"],   either: [] },
   // Resolves no clock without a ref, and returns before touching the registry.
   clock_advance:      { all: ["clock_ref"],       either: [] },
+  conflict_event_action: { all: ["conflict_action"], either: [] },
   chain:            { all: ["chain_steps"],       either: [] },
   consume_charge:   { all: ["charge_key"],        either: [] },
   grant:            { all: ["grant_resource"],    either: [] },

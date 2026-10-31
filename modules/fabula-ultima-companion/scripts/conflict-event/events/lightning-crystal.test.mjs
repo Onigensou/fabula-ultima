@@ -16,7 +16,7 @@ globalThis.canvas = null;
 
 const {
   rollCrystalCount, pinnedCrystalCount, rollCountdown, rollBlastDamage,
-  bumpForDamage, crystalBumpFor, tickKeyFor,
+  bumpForDamage, crystalBumpFor, tickKeyFor, impersonatorCountFor, adjustedCountdown,
 } = await import("./lightning-crystal.js");
 
 let pass = 0, fail = 0;
@@ -35,6 +35,22 @@ eq("roll 0.749 → one", rollCrystalCount(0.749), 1);
 eq("roll 0.75 → two", rollCrystalCount(0.75), 2);
 eq("roll 0.999 → two", rollCrystalCount(0.999), 2);
 eq("a roll of exactly 1 cannot produce a third crystal", rollCrystalCount(1), 2);
+
+// ── Impostor roll ───────────────────────────────────────────────────────────
+
+const opts = (o) => ({ context: { conflictEventOptions: o } });
+eq("no crystal → no impostor", impersonatorCountFor({ crystals: 0, chance: 1, rand: 0 }), 0);
+eq("roll under the chance → one", impersonatorCountFor({ crystals: 2, chance: 0.15, rand: 0.149 }), 1);
+eq("roll at the chance → none", impersonatorCountFor({ crystals: 2, chance: 0.15, rand: 0.15 }), 0);
+eq("a pinned crystal count pins the impostor to 0", impersonatorCountFor({ payload: opts({ crystalCount: 2 }), crystals: 2, chance: 1, rand: 0 }), 0);
+eq("the pin wins over the roll", impersonatorCountFor({ payload: opts({ crystalCount: 1, impersonatorCount: 1 }), crystals: 1, chance: 0, rand: 0.9 }), 1);
+eq("never more than one", impersonatorCountFor({ payload: opts({ impersonatorCount: 5 }), crystals: 2 }), 1);
+eq("no chance on the actor → none", impersonatorCountFor({ crystals: 1, rand: 0 }), 0);
+
+// ── Countdown adjustment ────────────────────────────────────────────────────
+
+eq("Resonance takes 2", adjustedCountdown(7, -2), 5);
+eq("it can't go below zero", adjustedCountdown(1, -2), 0);
 
 const pin = (v) => pinnedCrystalCount({ context: { conflictEventOptions: { crystalCount: v } } });
 eq("no payload → roll", pinnedCrystalCount(null), null);

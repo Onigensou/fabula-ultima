@@ -296,7 +296,7 @@ function ownerUserIdForDamageTarget(actor) {
   return candidates[0].id;
 }
 
-export async function resolveDamageReactions({ target, curHp, rawDamage, sourceActor = null, element = null, skipAeNames = null } = {}) {
+export async function resolveDamageReactions({ target, curHp, rawDamage, sourceActor = null, element = null, skipAeNames = null, actionHit = null } = {}) {
   const result = { newHp: Math.max(0, curHp - rawDamage), dealtDamage: Math.max(0, rawDamage), consumedAeIds: [], fired: [], followUp: [] };
   if (!target || rawDamage <= 0) return result;
   // AE names to leave out of this write — a Chain whose card already spent a
@@ -314,6 +314,12 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
     subjectActorUuid: sourceActor?.uuid ?? null,
     element: element ? String(element).toLowerCase() : null,
     incomingDamage: rawDamage,
+    // Only an action's own hit carries these (state-handlers' damage loop). They
+    // give a reaction the attacker for target_ref "cause_actor", and
+    // HIT_ACTION_AIMED_AT_ME for "was I picked, or merely caught in an area".
+    causeTokenUuid: actionHit?.causeTokenUuid ?? null,
+    causeActorUuid: actionHit?.causeActorUuid ?? null,
+    actionAimedAtMe: actionHit?.aimedAtTarget === true,
   };
 
   // Running landed-damage value the incoming adjust_damage rows mutate.
@@ -638,6 +644,9 @@ export async function applyDamageToTarget({
   // Incoming-damage AE reactions to leave out (lowercase names) — see
   // resolveDamageReactions. A Chain passes the blocker its card already spent.
   skipIncomingAeNames = null,
+  // { causeTokenUuid, causeActorUuid, aimedAtTarget } when an action's own hit is
+  // landing. See resolveDamageReactions' hitPayload.
+  actionHit = null,
 } = {}) {
   const empty = { resource, finalValue: 0, valueDirection: "none", fired: [] };
   if (!target) return empty;
@@ -738,6 +747,7 @@ export async function applyDamageToTarget({
       skipAeNames: Array.isArray(skipIncomingAeNames) && skipIncomingAeNames.length
         ? new Set(skipIncomingAeNames.map((n) => String(n ?? "").trim().toLowerCase()).filter(Boolean))
         : null,
+      actionHit,
     });
     const update = { "system.props.current_hp": newHp };
     if (absorbed > 0) update["system.props.shield_value"] = newShield;
@@ -749,6 +759,16 @@ export async function applyDamageToTarget({
         catch (e) { warn("applyDamageToTarget: consume AE delete failed", e); }
       }
     }
+    // A defender reaction (Ninja Log) soaked the hit to 0 — the loss VFX
+    // early-returns on amount 0, so float the "BLOCK" cue instead. This is the
+    // universal-damage twin of the action-card RESOLVE block (state-handlers),
+    // so a non-accuracy source (DoT/hazard/fixed-damage) nullified here still
+    // shows feedback. Gated on a fired reduction that brought the landed damage
+    // to 0 (a true block), not a plain 0-roll. Ahead of the follow-ups below: they
+    // can run for seconds, and the block is what sets them off.
+    const blockedByReaction = dealtDamage <= 0
+      && fired.some((f) => Number(f.to) <= 0 && Number(f.from) > 0);
+    if (blockedByReaction) vfx?.block({ tokenUuid });
     // Run post-reduction follow-up effects (Ninja Log → apply "Ninja Log Spent"
     // marker on the wearer) through the normal executor, AFTER the HP write.
     // The marker is a direct actor AE independent of the gear, so the once-per-
@@ -772,17 +792,7 @@ export async function applyDamageToTarget({
     const reactionNote = fired.length ? ` (reactions: ${fired.map((f) => f.aeName).join(", ")})` : "";
     const shieldNote = absorbed > 0 ? ` [shield −${absorbed}]` : "";
     log(`${prefix}applied ${toHp} dmg to ${targetName} [${affinity}]: ${curHp} → ${newHp}${shieldNote}${reactionNote}${logSuffix}`);
-    // A defender reaction (Ninja Log) soaked the hit to 0 — the loss VFX
-    // early-returns on amount 0, so float the "BLOCK" cue instead. This is the
-    // universal-damage twin of the action-card RESOLVE block (state-handlers),
-    // so a non-accuracy source (DoT/hazard/fixed-damage) nullified here still
-    // shows feedback. Gated on a fired reduction that brought the landed damage
-    // to 0 (a true block), not a plain 0-roll.
-    const blockedByReaction = dealtDamage <= 0
-      && fired.some((f) => Number(f.to) <= 0 && Number(f.from) > 0);
-    if (blockedByReaction) {
-      vfx?.block({ tokenUuid });
-    } else {
+    if (!blockedByReaction) {
       // A killing blow on a creature whose defeat style starts on the hit:
       // begin it right after its damage number pops, not when the action
       // settles. The removal still happens in the settle (defeat-reactor).
@@ -4498,6 +4508,36 @@ async function applyPlayAnimationEffect(row, ctx) {
   }
 }
 
+// ── conflict_event_action — a skill asks the active conflict event to act ────
+//
+//   { effect_kind: "conflict_event_action",
+//     conflict_action: "adjust_countdown",  // a name the event's `actions` offers
+//     conflict_amount: "-2",                // number or formula, read by the action
+//     target_ref: "action_targets" }
+//
+// The event owns the state (a Crystal's countdown lives on its AE), so a skill
+// never writes it directly. It waits for any cinematic an earlier row of the same
+// chain left running: `reveal` removes the very token that cinematic is playing on.
+async function applyConflictEventActionEffect(row, ctx) {
+  if (ctx?.captureMode || ctx?.mode === "preview") return { ok: true, kind: "conflict_event_action", skipped: true };
+  const action = String(row.conflict_action ?? "").trim();
+  if (!action) return { ok: false, kind: "conflict_event_action", reason: "no-action" };
+  if (Array.isArray(ctx.pendingAnimations) && ctx.pendingAnimations.length) {
+    await Promise.allSettled(ctx.pendingAnimations);
+  }
+  const tr = await resolveTargetRef(row.target_ref || "self", ctx);
+  let amount = 0;
+  const rawAmount = String(row.conflict_amount ?? "").trim();
+  if (rawAmount) {
+    const { buildSkillResolver, evaluateFormula } = await getSkillFormulas();
+    amount = Number(evaluateFormula(rawAmount, buildSkillResolver({ actor: ctx.reactorActor ?? null, payload: ctx.payload ?? null, skill: ctx.skill ?? null, round: ctx.dCombat?.round ?? 0 }), 0)) || 0;
+  }
+  const director = ctx.director ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.() ?? null;
+  const { runConflictEventAction } = await import("../conflict-event/conflict-event-runtime.js");
+  const done = await runConflictEventAction(director, action, { tokens: tr?.tokens ?? [], amount, row, effectCtx: ctx });
+  return { ok: true, kind: "conflict_event_action", applied: done ? [action] : [] };
+}
+
 // Data-only kinds (adjust_damage / redirect_target / adjust_accuracy) return ok
 // without acting — their real work happens earlier (computeSenderDamageBonuses /
 // resolveDamageReactions / card-mutations at the CONFIRM write site); ok keeps
@@ -4708,6 +4748,7 @@ const EFFECT_KIND_DISPATCH = {
   leave_combat:        applyLeaveCombatEffect,
   set_battle_outcome:  applySetBattleOutcomeEffect,
   clock_advance:       applyClockAdvanceEffect,
+  conflict_event_action: applyConflictEventActionEffect,
   break_free:          applyBreakFreeEffect,
   destroy_summon:      applyDestroySummonEffect,
   add_target:          applyAddTargetEffect,
@@ -4863,6 +4904,7 @@ export const EFFECT_KIND_LABELS = {
   leave_combat:        "Leave Combat (remove self from the conflict)",
   set_battle_outcome:  "Set Battle Outcome (escaped / victory / defeat — author BEFORE the leave_combat that empties a side)",
   clock_advance:       "Clock Advance (move a Clock System clock — roll mode commits this action's own check)",
+  conflict_event_action: "Conflict Event Action (ask the active conflict event to act — adjust a Crystal's countdown, reveal an impostor)",
   break_free:          "Break Free (end a Grapple, incl. the grappler-side Grappling cleanup)",
   destroy_summon:      "Destroy Summon (shatter/despawn one of my summons)",
   add_target:          "Add Target",
@@ -5082,6 +5124,7 @@ const EFFECT_KIND_PREVIEW = {
   // Bookkeeping for the battle-end pipeline — nothing to preview on the card.
   set_battle_outcome: () => null,
   clock_advance: () => null,
+  conflict_event_action: () => null,
   break_free: () => null,
   destroy_summon: () => null,
 

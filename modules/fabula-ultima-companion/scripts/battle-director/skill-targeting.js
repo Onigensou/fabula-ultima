@@ -31,7 +31,7 @@
 import { log, warn } from "./logger.js";
 import { requestTargeting as requestBdTargetPicker } from "./target-picker.js";
 import { isGrappled, tokensGrappledBy } from "./grappled.js";
-import { getAllegianceOverrides, applyAllegianceOverride, hasUnconditionalTargetBlock } from "./snapshot.js";
+import { getAllegianceOverrides, applyAllegianceOverride, hasUnconditionalTargetBlock, getTargetSideBlocks } from "./snapshot.js";
 
 // Reserved strings that expand to inline targeting rows. Authoring sugar
 // — saves a row from the effect_table for the most common case.
@@ -446,6 +446,20 @@ async function resolveTargetingRow(row, ctx) {
   // 3. exclude_self.
   if (excludeSelf && ctx.reactorToken?.uuid) {
     pool = pool.filter((t) => t.uuid !== ctx.reactorToken.uuid);
+  }
+
+  // 3-bis. Evasion: a whole-battlefield row aimed across the sides can't touch a
+  // `cannot_be_targeted_by: "area"` bearer. Only the broad combat pool, only "all":
+  // a derived set or an explicit pick is not an area. Own side passes, so a row
+  // that heals every ally still reaches it. No reactor token (the Field) = the row
+  // has no side, and it counts as hostile to everyone.
+  if (candidateSource === "combat" && mode === "all") {
+    const reactorDisp = ctx.reactorToken ? Number(ctx.reactorToken.disposition ?? 0) : null;
+    pool = pool.filter((t) => {
+      if (reactorDisp != null && Number(t.disposition ?? 0) === reactorDisp) return true;
+      return !getTargetSideBlocks(t?.actor ?? null).some((b) => b?.ranges?.has?.("area"));
+    });
+    if (!pool.length) return emptyResult();
   }
 
   // 3a. exclude_defeated — drop creatures at 0 HP. The combat pool keeps

@@ -83,6 +83,7 @@ import {
   applyAttackRangeGate,
   applyMultiOffensiveGate,
   applySingleTargetGate,
+  applyAreaGate,
   attackRangeBlockedBy,
   getMaxActionTargets,
   snapshotEligibleTargets,
@@ -557,6 +558,8 @@ export function surveyActionTargets({
   // Hidden: a single-target harmful attack / skill / spell cannot select a bearer
   // of `cannot_be_targeted_by: "single_target"` (the gate classifies intent itself).
   eligible = applySingleTargetGate(eligible, { isAttack: !!weapon, skill: action, skillTargetText: targetText });
+  // Evasion: the same shape, for `cannot_be_targeted_by: "area"`.
+  eligible = applyAreaGate(eligible, { isAttack: !!weapon, skill: action, skillTargetText: targetText });
   if (postFilter) {
     // Fail CLOSED. A narrowing rule that throws must not resolve to "everyone is
     // targetable" — that is the permissive answer for an exclusion, and it would

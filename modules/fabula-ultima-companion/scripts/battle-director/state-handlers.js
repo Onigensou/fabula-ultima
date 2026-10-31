@@ -907,6 +907,13 @@ async function resolveAction(director, ar, opts = {}) {
           // blocker the card spent on one strike must not fire again on the rest.
           silent: !!ct || !!cs,
           skipIncomingAeNames: ct ? chainSpentBlockers(ar, r.tokenUuid, ct) : null,
+          actionHit: {
+            causeTokenUuid: ar.attacker?.tokenUuid ?? null,
+            causeActorUuid: ar.attackerActorRef ?? null,
+            // Picked as the only target. An "All" action that happens to reach one
+            // creature did not aim at it.
+            aimedAtTarget: hits.length === 1 && !/\ball\b/i.test(String(skill?.system?.props?.skill_target ?? ar.weapon?.skillTarget ?? "")),
+          },
           // Battle Log: hit row, pushed to this action's shared sink (flushed
           // once at the end). Rich attacker context from the action result.
           // (`efficiency` is omitted → the row shows 100%. The BD does NOT apply

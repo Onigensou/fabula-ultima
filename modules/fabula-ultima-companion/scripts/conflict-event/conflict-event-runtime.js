@@ -247,6 +247,27 @@ export async function conflictEventReactor(director, cfg, extra) {
 }
 
 /**
+ * A skill asking the active event to do something by name — the
+ * `conflict_event_action` effect row. Returns false when no event in play offers
+ * that action, which is a legal state: a Fulgimite's Resonance on a scene with no
+ * Crystal event has nothing to do.
+ */
+export async function runConflictEventAction(director, action, request) {
+  if (!game.user?.isGM) return false;
+  const active = activeConflictEvent(director);
+  const handler = active?.event?.actions?.[action];
+  if (typeof handler !== "function") return false;
+  try {
+    const ctx = await buildEventCtx(director, active.id);
+    await handler(ctx, request);
+    return true;
+  } catch (e) {
+    warn(`"${active.id}" action "${action}" threw — the conflict continues without it`, e);
+    return false;
+  }
+}
+
+/**
  * Teardown — called from the battle-end orchestrator.
  *
  * BD has no `conflict_end` dispatch site yet (state-handlers.js says so where

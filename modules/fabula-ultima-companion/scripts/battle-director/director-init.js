@@ -871,7 +871,7 @@ async function spawnTokensHidden({ scene, layout, disposition }) {
 // Placement first asks formation.js (liveFormation) for a clash-free spot and
 // only falls back to the grid below when it has none. `casterTokenId` tells a
 // party-side summon which PC it belongs to.
-export async function spawnLiveDirectorTokens({ scene, actorUuids, disposition, anchor = null, casterTokenId = null }) {
+export async function spawnLiveDirectorTokens({ scene, actorUuids, disposition, anchor = null, casterTokenId = null, exactCenter = null }) {
   if (!scene || !Array.isArray(actorUuids) || !actorUuids.length) return [];
   const grid = scene.grid?.size ?? 100;
   const step = grid * 1.15;
@@ -938,8 +938,10 @@ export async function spawnLiveDirectorTokens({ scene, actorUuids, disposition, 
       td.texture = { ...(td.texture ?? {}), scaleX: disposition === -1 ? -baseSx : baseSx };
     }
     const width = td.width ?? 1, height = td.height ?? 1;
-    let center = null;
-    if (placer) { try { center = await placer.place(actor, td); } catch (e) { warn("formation: place threw — grid fallback", e); } }
+    // `exactCenter`: the token stands on this point, occupied or not. A disguised
+    // Fulgimite must appear exactly where its Crystal is standing.
+    let center = exactCenter ?? null;
+    if (!center && placer) { try { center = await placer.place(actor, td); } catch (e) { warn("formation: place threw — grid fallback", e); } }
     if (!center) center = freeCell();
     occupied.push(center);
     td.x = Math.round(center.x - (width * grid) / 2);
