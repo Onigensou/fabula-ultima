@@ -1572,6 +1572,21 @@ function snapshotBlockedActions(actor) {
   }
 }
 
+// Re-read the action-gating fields off the LIVE actor. The turn snapshot is
+// frozen at TURN_START, BEFORE the turn-start AE ticks and the turn_start
+// reaction window — so a debuff cleansed there (or by a free action mid-turn)
+// left its action greyed in the menu for the rest of the turn. DECLARE calls
+// this on every entry; everything else on the snapshot is kept as-is.
+export function refreshActionGating(snap, actor) {
+  if (!snap || !actor) return snap;
+  return Object.freeze({
+    ...snap,
+    blockedActions: snapshotBlockedActions(actor),
+    gatingExemptions: snapshotGatingExemptions(actor),
+    disabledActionIntents: snapshotDisabledActionIntents(actor),
+  });
+}
+
 // AE-driven target exclusion. Walks the chooser's active effects, collects
 // every change row whose `key === "cannot_target_uuids"`, and returns the
 // set of actor UUIDs the chooser is forbidden from targeting.

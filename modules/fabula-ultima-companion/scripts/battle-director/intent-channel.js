@@ -145,9 +145,11 @@ export class IntentChannel {
   // receive MENU_OPEN broadcasts. GM-side handler in _onPlayerHello replays
   // any cached payloads. Called from director-boot.js's ready hook on every
   // client except the host GM — a SUPPORT GM is sent the same menus (compose,
-  // reactions) and lost them on F5 just like a player did.
+  // reactions) and lost them on F5 just like a player did. "Host" is the client
+  // with a director attached, NOT the primary GM: a Co-DM can host, and then
+  // the primary GM is the one that needs its menus replayed.
   announceReady() {
-    if (game.user?.isGM && (globalThis.FUCompanion?.isPrimaryGM?.() ?? true)) return;
+    if (this.director) return;
     this._emitRaw("PLAYER_HELLO", { fromUserId: game.user?.id ?? null });
   }
 

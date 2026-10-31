@@ -35,6 +35,7 @@ import { registerBlackestNight, blackestNightReactor } from "./battle-end/undyin
 import { initBlackestNightCinematic } from "./battle-end/undying/blackest-night-cinematic.js";
 import { conflictEventReactor } from "../conflict-event/conflict-event-runtime.js";
 import { getIntentChannel, attachDirector, detachDirector } from "./intent-channel.js";
+import { installDirectorHost, claimHost, abandonClaim, announceHost, releaseHost, hostUser, hostInfo, mountingLocally } from "./director-host.js";
 import { TurnUI } from "./turn-ui.js";
 import { registerPlayerComposeActionHandler } from "./compose-action.js";
 import { registerPlayerActionCardHandler } from "./action-card.js";
@@ -154,12 +155,14 @@ let _instance = null;
 //     mid-cleanup.
 //   - Legacy-suppressor still active from a prior run that bypassed stop().
 //   - Lingering Octopath / picker DOM from a UI-only leak.
+const isWedged = (d) => !!d && (d._stopped || d.state === STATES.STOPPED);
+
 async function preflightCleanup() {
   // 1. If _instance is set but the FSM has wedged itself (STOPPED state or
   //    _stopped flag), silently route through stop() to clean + clear the ref.
   if (_instance) {
     const state = _instance.state;
-    const wedged = _instance._stopped || state === STATES.STOPPED;
+    const wedged = isWedged(_instance);
     if (wedged) {
       log(`pre-flight: detected wedged director (state=${state}); auto-recovering before start`);
       try { await stop({ reason: "preflight-stale-cleanup" }); }
@@ -214,6 +217,34 @@ async function start(arg) {
   if (!game.user?.isGM) {
     ui.notifications?.warn("Battle Director v1 is GM-only.");
     return null;
+  }
+
+  // A LIVE director on this client: refuse BEFORE preflight. Preflight sweeps
+  // every director-spawned token, so running it first wiped the live battle
+  // (0 combatants → STOPPED) whenever a macro/tool called start() mid-battle,
+  // and only then reached the "already running" refusal. A wedged instance
+  // still goes through preflight, which clears it.
+  if (_instance && !isWedged(_instance)) {
+    ui.notifications?.warn("Battle Director already running. Call .stop() first.");
+    return _instance;
+  }
+
+  // Another GM already drives a battle — a second director here would race it
+  // (and preflight below would sweep its tokens). See director-host.js.
+  if (!_instance) {
+    // This client's own auto-resume is mounting the saved battle (claim won,
+    // `_instance` not set yet). A start now would run preflight + PREP
+    // concurrently with resumeFromSavedState and both end STOPPED with no
+    // combatants — no battle at all.
+    if (mountingLocally()) {
+      ui.notifications?.warn("Battle Director: resuming the saved battle — wait a moment.");
+      return null;
+    }
+    const other = hostUser();
+    if (other && other.id !== game.user.id) {
+      ui.notifications?.warn(`Battle Director: ${other.name} is hosting the battle already.`);
+      return null;
+    }
   }
 
   // Pre-flight: scrub any leftover state from a prior wedged/aborted run so a
@@ -298,6 +329,7 @@ async function start(arg) {
   registerBuiltinReactor(conflictEventReactor);
 
   _instance = director;
+  announceHost();
   try {
     await director.start();
   } catch (e) {
@@ -536,6 +568,7 @@ async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true
     warn("LegacySuppressor.restore threw", e);
   }
   _instance = null;
+  releaseHost();
   // Drop the ambient active-dCombat global (MP_SPENT_THIS_TURN reads it) — the
   // combat is over, so any later formula eval correctly sees 0 spent.
   try { if (globalThis.__fudActiveDCombat) globalThis.__fudActiveDCombat = null; } catch { /* sandbox */ }
@@ -649,6 +682,7 @@ async function resumeFromSavedState({ scene, state, animateBanner = true }) {
   registerBuiltinReactor(conflictEventReactor);
 
   _instance = director;
+  announceHost();
 
   // Notify UI surfaces (rewind button, combat-button-installer, etc.) that
   // the director is now running. Fired BEFORE the resume's blocking
@@ -704,6 +738,7 @@ async function resumeFromSavedState({ scene, state, animateBanner = true }) {
       if (savedCtx.pickedTargetUuids !== undefined) director.ctx.pickedTargetUuids = savedCtx.pickedTargetUuids;
       if (savedCtx.currentWeapon !== undefined) director.ctx.currentWeapon = savedCtx.currentWeapon;
       if (savedCtx.hinderCheckConfig !== undefined) director.ctx.hinderCheckConfig = savedCtx.hinderCheckConfig;
+      if (savedCtx.multiAttackKeepHr !== undefined) director.ctx.multiAttackKeepHr = savedCtx.multiAttackKeepHr;
       if (savedCtx.declaredCommand !== undefined) director.ctx.declaredCommand = savedCtx.declaredCommand;
       // turnSnapshot isn't persisted — re-derive from the saved
       // currentCombatant so handlers that read ctx.turnSnapshot stay
@@ -1009,6 +1044,11 @@ Hooks.once("init", () => {
 // the rest of the module's boot sequence; we attach an `experimental`
 // namespace under it so the director never shadows production APIs.
 Hooks.once("ready", () => {
+  // Who hosts the director, known on every client — installed first so start()
+  // and the auto-resume below can ask. See director-host.js.
+  try { installDirectorHost({ isHosting: () => !!_instance }); }
+  catch (e) { warn("installDirectorHost threw", e); }
+
   // Grappled rule #2: ending a Guard-cover when its guarder becomes Grappled.
   // Session-global, idempotent — install once here (path-independent of
   // fresh-start vs resume). See [[project_grappled_advanced_debuff]].
@@ -1078,6 +1118,8 @@ Hooks.once("ready", () => {
     stop,
     status,
     isRunning,
+    // Which GM client drives the FSM: { hostUserId, hostName, amHost, claiming }.
+    host: hostInfo,
     getActiveDirector,
     getSourceSceneId,
     // Rewind tool (GM-only). See [[director-rewind-tool-plan]].
@@ -1588,7 +1630,7 @@ Hooks.once("ready", () => {
     getIntentChannel().install();
 
     // Wire up per-surface MENU_OPEN handlers on ALL clients (GM + players).
-    // The primary GM (the one that called start() and owns _instance) skips
+    // The host GM (the one that called start() / resumed and owns _instance) skips
     // each handler via the `isActiveDirector` guard — it spawns those surfaces
     // locally in state-handlers rather than via socket. Secondary GMs and
     // players both receive broadcasts and need these handlers.
@@ -1637,8 +1679,12 @@ Hooks.once("ready", () => {
     // Announce ready to GM AFTER all handlers are attached — players AND support
     // GMs. A support GM is sent the same menus (compose, reactions) as a
     // player, so an F5 mid-decision left it at "between turns" with the menu
-    // gone while the host waited on it. The host GM itself never announces.
-    if (!game.user?.isGM || !(globalThis.FUCompanion?.isPrimaryGM?.() ?? true)) {
+    // gone while the host waited on it. The host GM itself never announces
+    // (announceReady skips a client with a director attached) — and at `ready`
+    // no client hosts yet, so every client wires this. It used to be skipped
+    // on the primary GM, which left a primary GM that was NOT hosting without
+    // its menus after an F5.
+    {
       try { getIntentChannel().announceReady(); }
       catch (e) { warn("announceReady threw", e); }
 
@@ -1960,25 +2006,29 @@ Hooks.once("ready", () => {
     } catch (e) { warn(`oni:reactionPhase bridge (${payload?.trigger}) threw`, e); }
   });
 
-  // Auto-resume mid-combat reloads. PRIMARY-GM-only — the director is GM-side
-  // authoritative and MUST have exactly one host. The saved director state is a
-  // world-scope scene flag every GM can read, so gating this on `isGM` alone
-  // made BOTH GM clients mount their own `_instance` on an F5/world reload with
-  // two GMs connected — two FSMs driving the same combat, racing document
-  // writes / defeat removal / crisis AEs / saveDirectorState. A second (Co-DM)
-  // GM must edit data, not drive the director, so it falls through to the same
-  // local banner-only self-restore as a player (no mount, no broadcast). We
-  // pick the single host via `isPrimaryGM()` (core `game.users.activeGM`, the
-  // lowest-id active GM), the same dedupe idiom used by derived-status-reactor.
-  // Wrapped in setTimeout so the API registration completes first; if
-  // resume throws, the rest of the module is still usable.
-  const _amPrimaryGM = () =>
-    globalThis.FUCompanion?.isPrimaryGM ? globalThis.FUCompanion.isPrimaryGM() : !!game.user?.isGM;
-  if (_amPrimaryGM()) {
-    setTimeout(() => {
+  // Auto-resume mid-combat reloads. The director is GM-side authoritative and
+  // MUST have exactly one host. The saved director state is a world-scope scene
+  // flag every GM can read, so the decision cannot be "am I a GM" (both GM
+  // clients mounted an FSM) nor "am I the primary GM" (a primary GM that loads
+  // while a Co-DM is hosting — or that logs in after the Co-DM resumed alone —
+  // mounted a second one). Instead every GM that finds a saved battle ASKS who
+  // hosts and claims only when nobody answers (claimHost: probe → claim →
+  // tie-break by core's activeGM order). A GM that loses, and every player,
+  // falls through to the local banner-only self-restore (no mount, no
+  // broadcast). Wrapped in setTimeout so the API registration completes first;
+  // if resume throws, the rest of the module is still usable.
+  const restoreBannerOnly = (found) => {
+    if (!found?.state) return;
+    showRoundBannerForResumeFromState(found.state, { animate: false })
+      .catch((e) => warn("Banner self-restore threw", e));
+  };
+  if (game.user?.isGM) {
+    setTimeout(async () => {
       try {
         const found = findSavedDirectorState();
-        if (found) {
+        if (!found) return;
+        if (!(await claimHost())) { restoreBannerOnly(found); return; }
+        {
           // Reloading back INTO an active battle — collapse the Foundry sidebar
           // locally so the battlefield gets the full screen again, matching the
           // battle-start transition.
@@ -2018,28 +2068,21 @@ Hooks.once("ready", () => {
             setTimeout(() => Hooks.off("renderSidebar", collapseUntilStuck), 15000);
           }
 
-          resumeFromSavedState(found).catch((e) => warn("Auto-resume threw", e));
+          resumeFromSavedState(found)
+            .then((d) => { if (!d) abandonClaim(); })
+            .catch((e) => { abandonClaim(); warn("Auto-resume threw", e); });
         }
       } catch (e) {
         warn("Auto-resume detection threw", e);
       }
     }, 0);
   } else {
-    // NON-HOST reload (a player OR a secondary/Co-DM GM): the primary GM is
-    // authoritative and won't re-broadcast just because someone else reloaded,
-    // so the round HUD would stay blank. Self-restore it LOCALLY from the
-    // persisted scene flag (no director mount, no broadcast) — a secondary GM
-    // sees the battle state but never becomes a second host.
+    // A player reload: the host won't re-broadcast just because someone else
+    // reloaded, so the round HUD would stay blank. Self-restore it LOCALLY from
+    // the persisted scene flag (no director mount, no broadcast).
     setTimeout(() => {
-      try {
-        const found = findSavedDirectorState();
-        if (found?.state) {
-          showRoundBannerForResumeFromState(found.state, { animate: false })
-            .catch((e) => warn("Player banner self-restore threw", e));
-        }
-      } catch (e) {
-        warn("Player banner self-restore detection threw", e);
-      }
+      try { restoreBannerOnly(findSavedDirectorState()); }
+      catch (e) { warn("Player banner self-restore detection threw", e); }
     }, 0);
   }
 });

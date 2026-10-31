@@ -1054,7 +1054,7 @@ function gatherEffectPreviews({ view, resolver, targetResolver = null, chainVars
 // post-roll (finals). Reuses the exact COMPUTE helpers for parity.
 export async function computeActionProfile(input) {
   const {
-    view: _viewIn, ar = null, attacker, weapon = null, targets = [], dice = null, ctx = {},
+    view: _viewIn, ar = null, attacker, weapon = null, targets = [], dice = null, ctx: _ctxIn = {},
     acceptedReactions = null, accuracyOverride = null,
     // Manual GM overrides from the card's editor (see gm-card-override.js).
     // Both null on every non-edited action, which keeps the engine on its
@@ -1063,6 +1063,22 @@ export async function computeActionProfile(input) {
     // Per-slot adjust_defense results from card-mutations (recompute only).
     defenseOverrides = null,
   } = input;
+  // Card-time inputs that COMPUTE hands over in ctx but every RECOMPUTE (reaction
+  // decisions at Confirm, chain plan, redirect, add-target, invoke) has to recover
+  // from the frozen actionResult. A caller that passes one explicitly — even as
+  // null — wins; an absent one falls back to what the card stored. Without this
+  // each recompute quietly reverted them to defaults:
+  //   chainVars         — the pre_activate picks (a VAR_ELEMENT spell lost its
+  //                       element, so affinity was skipped)
+  //   grant             — the free-action grant (HR-as-0 Counterattack got its HR back)
+  //   multiAttackKeepHr — a keep-HR multi-attack had its HR zeroed
+  const ctx = {
+    ..._ctxIn,
+    chainVars: _ctxIn?.chainVars ?? ar?.preActivateVars ?? null,
+    grant: _ctxIn?.grant !== undefined ? _ctxIn.grant : (ar?.freeActionGrant ?? null),
+    attackMode: _ctxIn?.attackMode ?? ar?.attackMode ?? null,
+    multiAttackKeepHr: _ctxIn?.multiAttackKeepHr ?? !!ar?.multiAttackKeepHr,
+  };
   let view = _viewIn;
   const kind = view?.kind ?? ar?.kind ?? "Skill";
 
@@ -1104,13 +1120,14 @@ export async function computeActionProfile(input) {
   // apply-side injection in skill-effects. Display-only; keeps the previewed heal
   // amount in step with what the chain will grant.
   const _casterLvl = Number(liveAttacker?.system?.props?.level ?? 0) || 0;
+  const chainVars = ctx.chainVars;   // pre_activate picks — see the ctx fallback at the top
   const resolver = buildSkillResolver({
-    actor: liveAttacker, payload: { targets, _chainVars: ctx?.chainVars ?? null }, skill, round: ctx?.round ?? 0,
+    actor: liveAttacker, payload: { targets, _chainVars: chainVars }, skill, round: ctx?.round ?? 0,
     vars: { CASTER_LEVEL: _casterLvl },
   });
 
   const studiedGate = makeStudiedGate(attacker);
-  const primary = describePrimary({ view, ar, weapon, liveAttacker, resolver, grant: ctx?.grant ?? null, chainVars: ctx?.chainVars ?? null });
+  const primary = describePrimary({ view, ar, weapon, liveAttacker, resolver, grant: ctx?.grant ?? null, chainVars });
   // Manual GM element / weapon-category choice, applied to the primary
   // descriptor BEFORE any per-target derivation — so affinity, element-scoped
   // damage reduction and weapon efficiency are all computed against what the GM
@@ -1165,7 +1182,7 @@ export async function computeActionProfile(input) {
     perTarget = await buildPerTarget({ view, ar, attacker, primary, check, targets, liveAttacker, ctx, studiedGate, opsMap, weapon, gmHitOverrides, gmDamage, defenseOverrides });
   }
   if (primary.mode !== "damage") {
-    const heal = await attachHealEffects({ rows: perTarget, view, ar, targets, resolver, liveAttacker, check, kind, primary, chainVars: ctx?.chainVars ?? null });
+    const heal = await attachHealEffects({ rows: perTarget, view, ar, targets, resolver, liveAttacker, check, kind, primary, chainVars });
     healingObj = heal.healingObj;
   }
 
@@ -1176,9 +1193,9 @@ export async function computeActionProfile(input) {
   const firstTargetUuid = targets?.[0]?.actorUuid ?? null;
   const firstTargetActor = firstTargetUuid ? await fromUuid(firstTargetUuid).catch(() => null) : null;
   const targetResolver = firstTargetActor
-    ? buildSkillResolver({ actor: firstTargetActor, payload: { targets, _chainVars: ctx?.chainVars ?? null }, skill, round: ctx?.round ?? 0 })
+    ? buildSkillResolver({ actor: firstTargetActor, payload: { targets, _chainVars: chainVars }, skill, round: ctx?.round ?? 0 })
     : null;
-  const { selfEffects, targetedEffects } = gatherEffectPreviews({ view, resolver, targetResolver, chainVars: ctx?.chainVars ?? null });
+  const { selfEffects, targetedEffects } = gatherEffectPreviews({ view, resolver, targetResolver, chainVars });
 
   // Per-target status fan-out (additive): surface each targeted status AE on the
   // roster rows it applies to, tagged with a per-target `immune` flag — the status

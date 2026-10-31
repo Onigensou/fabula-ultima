@@ -22,10 +22,10 @@
     FAST_TRAVEL_TELEPORT:   "dungeonPathing.fastTravelTeleport",
   };
 
-  // Raw game.socket channel — used for operations that must survive the socketlib.ready
-  // timing race.  socketlib fires its ready hook before our module's ready hook, so
-  // Hooks.once("socketlib.ready") registered inside installHooks() is always missed.
-  // game.socket has no such race: it is available as soon as Hooks.once("ready") fires.
+  // Raw game.socket channel — added while the socketlib handlers below were never
+  // registered (installHooks() waited on a socketlib.ready hook that had already
+  // fired). dp-bootstrap now registers them directly at ready, but these raw
+  // operations still broadcast to every GM, hence the primary-GM gate.
   const RAW_CH    = `module.${DP.MODULE_ID ?? "fabula-ultima-companion"}`;
   const MSG_MV    = "DP_MARK_VISITED";
   const MSG_AS    = "DP_ACTIVATE_SCENE";
@@ -280,9 +280,8 @@
       return socket.executeAsGM(HANDLERS.CLEAR_TILE, { sceneId: scene.id, tileId, updateTexture });
     },
 
-    // Raw channel, not socketlib: the socketlib handlers are registered on a
-    // socketlib.ready hook that has already fired (see RAW_CH above), so
-    // executeAsGM from a player client never reaches a handler.
+    // Raw channel, not socketlib — written while the socketlib handlers were
+    // never registered (see RAW_CH above).
     async expireTile(scene, tileId) {
       if (game.user?.isGM) {
         return (DP.gmSerialize ?? (fn => fn()))(() => DP.TileState.expireTile(scene, tileId));

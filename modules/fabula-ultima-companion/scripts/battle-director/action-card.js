@@ -193,6 +193,10 @@ function weaponIconHTML(weaponType) {
 // Styles
 // ─────────────────────────────────────────────────────────────────────
 export function ensureStyles() {
+  // GM clients get a lock toggle on Confirm (see the reactions-pending rules).
+  // A body class, not a card class: the host's card HTML is broadcast verbatim
+  // to players for some kinds, and a class baked into it would unlock theirs.
+  try { document.body.classList.toggle("fud-bf-gm", !!game.user?.isGM); } catch {}
   if (document.getElementById(CSS_ID)) return;
   const css = document.createElement("style");
   css.id = CSS_ID;
@@ -1190,6 +1194,51 @@ export function ensureStyles() {
       letter-spacing: 0.3px; text-transform: none;
       color: #4a2f87;
       pointer-events: none;
+    }
+    /* GM lock toggle on Confirm (user, 2026-11-01). The pending counter has
+       drifted out of step with the pills in live play and left the GM with no
+       way forward. Locked (the default on every card) works as before; the GM
+       can unlock it, and an unlocked Confirm stays usable while reactions are
+       open and says so. Confirming skips every unanswered reaction (an
+       undecided pill snapshots as skip). Players keep the lock, and Enter stays
+       gated for everyone: passing over an open reaction takes a deliberate
+       click. Both the toggle and the unlock need body.fud-bf-gm, which only a
+       GM client sets, so neither can reach a player through broadcast HTML. */
+    .fud-bf-card .fud-gm-confirm-lock { display: none; }
+    body.fud-bf-gm .fud-bf-card[data-fud-reactions-pending] .fud-gm-confirm-lock {
+      display: flex; align-items: center; justify-content: center;
+      position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+      z-index: 2;
+      width: 26px; height: 26px; padding: 0; margin: 0;
+      border-radius: 6px;
+      border: 1px solid rgba(74, 47, 135, 0.55);
+      background: rgba(255, 255, 255, 0.85);
+      color: #4a2f87;
+      font-size: 12px; line-height: 1;
+      cursor: pointer;
+      box-shadow: none;
+    }
+    body.fud-bf-gm .fud-bf-card[data-fud-reactions-pending] .fud-gm-confirm-lock:hover { background: #fff; }
+    body.fud-bf-gm .fud-bf-card[data-fud-reactions-pending][data-fud-gm-unlocked] .fud-gm-confirm-lock {
+      border-color: #a8662a; color: #a8662a;
+    }
+    body.fud-bf-gm .fud-bf-card[data-fud-reactions-pending][data-fud-gm-unlocked] .fud-btn-confirm {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      cursor: pointer !important;
+      filter: none;
+      background: linear-gradient(180deg, #f0cf8a, #d99a4a);
+      border-color: #a8662a;
+      box-shadow:
+        0 3px 0 var(--fud-shadow, rgba(24, 28, 41, 0.55)),
+        0 0 0 1px var(--fud-highlight, rgba(255, 255, 255, 0.7)) inset,
+        0 0 0 2px rgba(200, 110, 40, 0.55);
+    }
+    body.fud-bf-gm .fud-bf-card[data-fud-reactions-pending][data-fud-gm-unlocked] .fud-bf-btn-row:has(> .fud-btn-confirm)::after {
+      content: "Confirm \\00B7  skip unanswered";
+      font-size: 11.5px;
+      font-style: normal;
+      color: #4a2410;
     }
     /* Mode footer inside the reaction tooltip body — small chip-like
        hint so the player sees whether the pill is auto / ask / off. */
@@ -3539,6 +3588,48 @@ function projectTargetSurfaceForEditor(targets, rows) {
 // INDEX, so dropping a row would repaint the wrong target.
 function projectRowsForWire(rows) {
   return (Array.isArray(rows) ? rows : []).map((r) => (r ? toWireSafe(r) ?? null : null));
+}
+
+// GM lock toggle on Confirm. A padlock beside Confirm, shown (CSS) only on a
+// GM client while third-party reactions are open. Locked is the default on
+// every card and behaves as Confirm always has; unlocking stamps
+// data-fud-gm-unlocked on the card, which the CSS reads to give the GM a
+// working Confirm that skips the unanswered reactions. Mounted AFTER the
+// spawn broadcast on the host and stripped from player mirrors, so the
+// control itself never reaches a player.
+// The same lock in JS, for the click handlers. CSS pointer-events stops a
+// real click but not a scripted element.click(), which confirmed a locked
+// card in a live run. Locked = third-party reactions open, unless this is a
+// GM who unlocked the card.
+function isConfirmLocked(cardEl) {
+  if (!cardEl?.hasAttribute("data-fud-reactions-pending")) return false;
+  return !(game.user?.isGM && cardEl.hasAttribute("data-fud-gm-unlocked"));
+}
+
+export function mountGmConfirmLock(scopeEl) {
+  if (!game.user?.isGM) return;
+  const card = scopeEl?.querySelector?.(".fud-bf-card");
+  const row = card?.querySelector(".fud-btn-confirm")?.parentElement;
+  if (!row || row.querySelector(".fud-gm-confirm-lock")) return;
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "fud-gm-confirm-lock";
+  const paint = () => {
+    const unlocked = card.hasAttribute("data-fud-gm-unlocked");
+    btn.innerHTML = `<i class="fas ${unlocked ? "fa-lock-open" : "fa-lock"}"></i>`;
+    btn.title = unlocked
+      ? "Confirm unlocked: unanswered reactions are skipped. Click to lock."
+      : "Confirm waits for reactions. Click to unlock it.";
+    btn.setAttribute("aria-pressed", unlocked ? "true" : "false");
+  };
+  btn.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    card.toggleAttribute("data-fud-gm-unlocked");
+    paint();
+  });
+  paint();
+  row.appendChild(btn);
 }
 
 // Reaction Effects panel + damage-nullify strike. Extracted from the GM-side
@@ -10308,6 +10399,11 @@ export async function postActionCard({ director, kind, payload }) {
         ev.stopPropagation();
         return;
       }
+      // Confirm lock (open reactions, padlock not unlocked).
+      if (btn.dataset.fudAction === "confirm" && isConfirmLocked(btn.closest(".fud-bf-card"))) {
+        ev.stopPropagation();
+        return;
+      }
       ev.stopPropagation();
       // Buttons can optionally carry a `data-fud-status-value` attribute
       // (Hinder's status picker). Forward it to Confirm.
@@ -10445,6 +10541,10 @@ export async function postActionCard({ director, kind, payload }) {
     // Hide if the user scrolls the popover so the tooltip doesn't drift
     // past stale option positions.
     root.addEventListener("scroll", hideDescTip, true);
+
+    // GM Confirm lock toggle — here, after the spawn broadcast took the
+    // card's HTML, so the control is never shipped to a player.
+    try { mountGmConfirmLock(root); } catch (e) { warn("postActionCard: GM confirm lock mount threw", e); }
 
     // Enter to confirm. Esc deliberately does nothing — once the dice
     // are rolled the player can't backtrack; GM-side undo lives elsewhere.
@@ -11266,7 +11366,11 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     // than hiding it — the host still rejects a forged EDIT_CARD from a non-GM,
     // but nothing about the edit surface should reach a player at all.
     if (!game.user?.isGM) {
-      for (const p of wrapper.querySelectorAll(".fud-gm-launch")) p.remove();
+      for (const p of wrapper.querySelectorAll(".fud-gm-launch, .fud-gm-confirm-lock")) p.remove();
+    }
+    // A support GM confirms from this mirror, so it gets the same Confirm lock.
+    if (isSecondaryGm) {
+      try { mountGmConfirmLock(wrapper); } catch (e) { warn("mirror: GM confirm lock mount threw", e); }
     }
 
     // ─── Auto-confirm strip on the mirror: informational only ────────────────
@@ -11694,6 +11798,11 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
         const btn = ev.target?.closest?.("[data-fud-action]");
         if (!btn) return;
         if (btn.classList.contains("is-disabled")) {
+          ev.stopPropagation();
+          return;
+        }
+        // Confirm lock (open reactions, padlock not unlocked).
+        if (btn.dataset.fudAction === "confirm" && isConfirmLocked(btn.closest(".fud-bf-card"))) {
           ev.stopPropagation();
           return;
         }
