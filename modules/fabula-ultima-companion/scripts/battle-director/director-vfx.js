@@ -430,7 +430,7 @@ function resolveLossAv(resource, affinity) {
 //   resource  : "hp" | "mp"
 //   amount    : the value lost (already post-clamp / post-affinity)
 //   affinity  : "NE" | "VU" | "RS" | ... (HP only; ignored for MP)
-export function playResourceLossVfx({ tokenUuid, resource = "hp", amount = 0, affinity = "NE", element = "elementless", isCrit = false, pierce = false, cascade = 0, critBanner = true } = {}) {
+export function playResourceLossVfx({ tokenUuid, resource = "hp", amount = 0, affinity = "NE", element = "elementless", isCrit = false, pierce = false, cascade = 0, critBanner = true, numbersOnly = false } = {}) {
   try {
     if (!(amount > 0)) return;
     // Floating NUMBER → BD-native damage-number subsystem (DOM screen-space).
@@ -440,6 +440,8 @@ export function playResourceLossVfx({ tokenUuid, resource = "hp", amount = 0, af
     // `critBanner: false` keeps a crit gold without its banner (a one-roll
     // Chain's earlier ticks).
     emitDamageNumber({ kind: "loss", tokenUuid, resource, amount, affinity, element, isCrit, pierce, ...(cascade ? { cascade } : {}), ...(critBanner === false ? { critBanner: false } : {}) });
+    // A Chain tick from a shot that draws its own impact and hurt: the number only.
+    if (numbersOnly) return;
     // Token hurt flinch — only for a real physical-ish hit (HP / shield), not an
     // MP drain. Strong tier on WEAK/crit.
     if (resource === "hp" || resource === "shield") fireHurt(tokenUuid, affinity, isCrit);

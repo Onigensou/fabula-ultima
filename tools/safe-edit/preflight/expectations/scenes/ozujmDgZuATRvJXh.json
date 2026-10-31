@@ -1,131 +1,8 @@
 {
   "sceneId": "ozujmDgZuATRvJXh",
   "name": "Dragonslayer Overworld",
-  "tokens": [
-    {
-      "name": "Dragonslayer Party",
-      "actorId": "t6E3CQ0pGxwLgXrn",
-      "actorLink": true
-    }
-  ],
-  "tokensFull": [
-    {
-      "name": "Dragonslayer Party",
-      "displayName": 0,
-      "actorLink": true,
-      "appendNumber": false,
-      "prependAdjective": false,
-      "width": 1,
-      "height": 1,
-      "texture": {
-        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hina/Hina_Standard.png",
-        "anchorX": 0.5,
-        "anchorY": 0.5,
-        "offsetX": 0,
-        "offsetY": 0,
-        "fit": "contain",
-        "scaleX": -1.14,
-        "scaleY": 1.14,
-        "rotation": 0,
-        "tint": "#ffffff",
-        "alphaThreshold": 0.75
-      },
-      "hexagonalShape": 0,
-      "lockRotation": false,
-      "rotation": 0,
-      "alpha": 1,
-      "disposition": 1,
-      "displayBars": 50,
-      "bar1": {
-        "attribute": null
-      },
-      "bar2": {
-        "attribute": null
-      },
-      "light": {
-        "negative": false,
-        "priority": 0,
-        "alpha": 0.15,
-        "angle": 360,
-        "bright": 0,
-        "color": "#eea149",
-        "coloration": 1,
-        "dim": 0,
-        "attenuation": 0.5,
-        "luminosity": 0.5,
-        "saturation": 0,
-        "contrast": 0,
-        "shadows": 0,
-        "animation": {
-          "type": "flame",
-          "speed": 2,
-          "intensity": 4,
-          "reverse": false
-        },
-        "darkness": {
-          "min": 0,
-          "max": 1
-        }
-      },
-      "sight": {
-        "enabled": false,
-        "range": 5,
-        "angle": 360,
-        "visionMode": "basic",
-        "color": null,
-        "attenuation": 0.1,
-        "brightness": 0,
-        "saturation": 0,
-        "contrast": 0
-      },
-      "detectionModes": [],
-      "occludable": {
-        "radius": 0
-      },
-      "ring": {
-        "enabled": false,
-        "colors": {
-          "ring": null,
-          "background": null
-        },
-        "effects": 0,
-        "subject": {
-          "scale": 1,
-          "texture": null
-        }
-      },
-      "flags": {
-        "barbrawl": {
-          "resourceBars": {}
-        },
-        "wall-height": {
-          "tokenHeight": 0
-        },
-        "token-z": {
-          "zIndex": 0
-        },
-        "token-variants": {
-          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Overworld%20Tokens/Hina%20Party/Hina_Standard.png",
-          "disableHUDButton": false
-        },
-        "hex-size-support": {
-          "hideBorder": true,
-          "hideFill": true
-        }
-      },
-      "actorId": "t6E3CQ0pGxwLgXrn",
-      "x": 589,
-      "y": 286,
-      "_id": "wv8PKPOcOHCU3ens",
-      "elevation": 0,
-      "sort": 0,
-      "locked": false,
-      "hidden": false,
-      "_regions": [
-        "elJnVHYDhPJ0Iyb5"
-      ]
-    }
-  ],
+  "tokens": [],
+  "tokensFull": [],
   "notes": [],
   "tileCount": 21,
   "full": {
@@ -422,6 +299,11 @@
               "currentType": "random_battle",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Random_Battle_Tile.png"
             }
+          },
+          "visitedTiles": {
+            "XpS5AaCv45jseuAz": true,
+            "nYkh1EdJJ30XZkRN": true,
+            "kdzqDChTijA3ELoT": true
           }
         }
       },
@@ -464,7 +346,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.4",
       "createdTime": 1765672966590,
-      "modifiedTime": 1792844180125,
+      "modifiedTime": 1792855522399,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [
@@ -538,7 +420,7 @@
         "fontSize": 48,
         "textColor": "#ffffff",
         "textAlpha": 1,
-        "hidden": true,
+        "hidden": false,
         "locked": false,
         "interface": false,
         "flags": {

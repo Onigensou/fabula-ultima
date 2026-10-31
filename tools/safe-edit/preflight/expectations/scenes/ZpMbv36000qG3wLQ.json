@@ -215,7 +215,7 @@
       "actorId": "fe2OhexLAGieIBQy",
       "x": 566,
       "y": 282,
-      "hidden": true,
+      "hidden": false,
       "elevation": 0,
       "sort": 0,
       "locked": false,
@@ -310,7 +310,7 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "Midgard - Weapon Shop",
-            "sceneVisited": false,
+            "sceneVisited": true,
             "areaName": "Midgard - Weapon Shop",
             "conflictEvent": "none",
             "depthEnabled": false,
@@ -427,7 +427,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791358976293,
-      "modifiedTime": 1791842361037,
+      "modifiedTime": 1792858364648,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "lights": [

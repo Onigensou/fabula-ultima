@@ -285,6 +285,62 @@ function footOf(img) {
   } catch { return null; }
 }
 
+// A clip decoded to one canvas per frame. A shot with dozens of overlapping
+// clips cannot run them as live videos (Chrome stalls past ~20 playing at once);
+// frames are captured once up front, then draw freely. Fetched as a blob so the
+// canvases stay readable. The caller owns the result: drop it when the run ends.
+// The clip plays once in real time and each presented frame is kept (measured
+// 1.5 s for a whole shot's clips against 4.7 s by seeking, which restarts VP9
+// decoding from the keyframe every time). A window that presents no frames
+// (a hidden tab) falls back to seeking.
+//   url, { fps = 15, scale = 1, dur = null (ms; default the video's own length) }
+export async function decodeFrames(url, { fps = 15, scale = 1, dur = null } = {}) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("decodeFrames: " + res.status + " " + url);
+  const objectUrl = URL.createObjectURL(await res.blob());
+  const v = document.createElement("video");
+  v.muted = true; v.playsInline = true; v.preload = "auto"; v.src = objectUrl;
+  try {
+    await new Promise((ok, no) => { v.onloadeddata = ok; v.onerror = () => no(new Error("decodeFrames: bad video " + url)); });
+    const ms = dur ?? (Number.isFinite(v.duration) ? v.duration * 1000 : 1000);
+    const n = Math.max(1, Math.round(ms / 1000 * fps));
+    const w = Math.max(2, Math.round(v.videoWidth * scale)), h = Math.max(2, Math.round(v.videoHeight * scale));
+    const grab = () => { const c = document.createElement("canvas"); c.width = w; c.height = h; c.getContext("2d").drawImage(v, 0, 0, w, h); return c; };
+    const frames = new Array(n).fill(null);
+    if (typeof v.requestVideoFrameCallback === "function") {
+      await new Promise((ok) => {
+        let seen = false;
+        const stall = setTimeout(() => { if (!seen) ok(); }, 1200);
+        const cb = (_now, meta) => {
+          seen = true;
+          const i = Math.min(n - 1, Math.floor((meta.mediaTime + 0.002) * fps));
+          if (!frames[i]) frames[i] = grab();
+          if (!v.ended) v.requestVideoFrameCallback(cb);
+        };
+        const end = () => { clearTimeout(stall); ok(); };
+        v.onended = end;
+        setTimeout(end, ms + 2500);
+        v.requestVideoFrameCallback(cb);
+        v.play().catch(end);
+      });
+      v.pause();
+    }
+    if (frames.some(Boolean)) {
+      // a frame the player skipped takes its nearest captured neighbour
+      for (let i = 0; i < n; i++) { if (frames[i]) continue; for (let d = 1; d < n; d++) { const f = frames[i - d] || frames[i + d]; if (f) { frames[i] = f; break; } } }
+      return { frames, dur: ms };
+    }
+    for (let i = 0; i < n; i++) {
+      const at = Math.min(i / fps + 0.001, Math.max(0, v.duration - 0.002));
+      if (Math.abs(v.currentTime - at) > 0.0005) {
+        await new Promise((ok) => { let done = false; const f = () => { if (!done) { done = true; v.removeEventListener("seeked", f); ok(); } }; v.addEventListener("seeked", f); v.currentTime = at; setTimeout(f, 800); });
+      }
+      frames[i] = grab();
+    }
+    return { frames, dur: ms };
+  } finally { v.removeAttribute("src"); v.load(); URL.revokeObjectURL(objectUrl); }
+}
+
 // ── the engine ───────────────────────────────────────────────────────────────
 //
 // createTimeline(spec, env) → tl. One per shot run.
@@ -525,7 +581,9 @@ export function createTimeline(spec = {}, env = {}) {
     const f = feet(T); const fx0 = T.x + m.dx, fy = f.y + m.dy;
     g.save(); g.translate(fx0, fy); if (m.rot) g.rotate(m.rot); g.scale(T.flip * m.sx, m.sy); g.globalAlpha = m.alpha;
     const HV = m.hurt && HURT[k] ? HURT[k].video : null;
-    if (HV && HV.readyState >= 2) { const hh = T.h, hw = hh * (HV.videoWidth || 1) / (HV.videoHeight || 1); g.drawImage(HV, -hw / 2, -T.h * T.foot, hw, hh); }
+    // m.img: a shot-supplied frame in place of the art (a decoded hurt loop)
+    if (m.img) { const hh = T.h, hw = hh * m.img.width / m.img.height; g.drawImage(m.img, -hw / 2, -T.h * T.foot, hw, hh); }
+    else if (HV && HV.readyState >= 2) { const hh = T.h, hw = hh * (HV.videoWidth || 1) / (HV.videoHeight || 1); g.drawImage(HV, -hw / 2, -T.h * T.foot, hw, hh); }
     else { const P = m.pose && POSE[k] && POSE[k][m.pose]; if (P && P.img) g.drawImage(P.img, -P.w / 2, -P.h * P.foot, P.w, P.h); else g.drawImage(art, -T.w / 2, -T.h * T.foot, T.w, T.h); }
     if (m.tintA > 0 && m.tint) { const c = tinted(k, m.tint); if (c) { g.globalAlpha = m.alpha * m.tintA * 0.85; g.drawImage(c, -T.w / 2, -T.h * T.foot, T.w, T.h); } }
     if (m.black > 0) { const c = tinted(k, "#000"); if (c) { g.globalAlpha = m.alpha * m.black; g.drawImage(c, -T.w / 2, -T.h * T.foot, T.w, T.h); } }
@@ -662,7 +720,7 @@ export function createTimeline(spec = {}, env = {}) {
     SCENE, STAGE, REST, GRID, TOK, IMG, LIB, POSE,
     feet, JAW, tinted, view, toScreen, camView,
     art: (k) => ART[k] || null,
-    load, mk, run, makeState,
+    load, mk, run, makeState, decode: decodeFrames,
     draw: { boltPath, screenCracks, glowCircle, speedlines, dragonEye, zoomLines, fireball, drawKeystone, drawCover, drawSkyPan, vlines, mountainscape, foregroundRocks, valleyXf, shockRing, needle, tintFrame },
   };
 }

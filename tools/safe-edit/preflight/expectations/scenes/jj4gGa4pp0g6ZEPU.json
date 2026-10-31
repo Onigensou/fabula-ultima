@@ -1,0 +1,1385 @@
+{
+  "sceneId": "jj4gGa4pp0g6ZEPU",
+  "name": "Midgard_Map008",
+  "tokens": [
+    {
+      "name": "Hina",
+      "actorId": "dafTLBUscCDNgq8H",
+      "actorLink": true
+    },
+    {
+      "name": "Keren",
+      "actorId": "gdJZ1L1kv5mjTTMr",
+      "actorLink": true
+    },
+    {
+      "name": "⭐️ Masked Girl",
+      "actorId": "LnlydRl7Ed7agd1g",
+      "actorLink": true
+    },
+    {
+      "name": "Blanche",
+      "actorId": "uJFaNQCSvwwsr2AW",
+      "actorLink": true
+    },
+    {
+      "name": "Zarg",
+      "actorId": "Z4CFy505cD3nzl1W",
+      "actorLink": true
+    }
+  ],
+  "tokensFull": [
+    {
+      "name": "⭐️ Masked Girl",
+      "displayName": 0,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Kalina_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.7,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.54,
+        "scaleY": 1.54,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": -1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Kalina_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true,
+          "hideBorderFill": true
+        },
+        "token-border-supplements": {
+          "hideBorder": true,
+          "hideBorderFill": true
+        },
+        "tokenborder": {
+          "hideBorder": true,
+          "hideBorderFill": true
+        },
+        "fabula-ultima-companion": {
+          "dominanceCrestOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "idleAnimToken": {
+            "float": false,
+            "bounce": false
+          }
+        }
+      },
+      "actorId": "LnlydRl7Ed7agd1g",
+      "hidden": false,
+      "sort": 1,
+      "x": 1336,
+      "y": 605,
+      "elevation": 0,
+      "locked": false,
+      "_regions": [],
+      "_id": "FQeihuXOccPlNj0c"
+    },
+    {
+      "name": "Blanche",
+      "displayName": 0,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Blanche_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.55,
+        "scaleY": 1.55,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 1,
+      "displayBars": 0,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Blanche_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": false
+        },
+        "fabula-ultima-companion": {
+          "campMember": true
+        }
+      },
+      "actorId": "uJFaNQCSvwwsr2AW",
+      "sort": 0,
+      "hidden": false,
+      "x": 1162,
+      "y": 644,
+      "_id": "fV3BG0G3YmzhKIMz",
+      "elevation": 0,
+      "locked": false,
+      "_regions": []
+    },
+    {
+      "name": "Hina",
+      "displayName": 0,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hina/Hina_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.44,
+        "scaleY": 1.44,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 1,
+      "displayBars": 0,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 0.94,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": false
+        },
+        "fabula-ultima-companion": {
+          "campMember": true
+        }
+      },
+      "actorId": "dafTLBUscCDNgq8H",
+      "sort": 0,
+      "hidden": false,
+      "x": 840,
+      "y": 210,
+      "_id": "fvW72tIibxAYBWSp",
+      "elevation": 0,
+      "locked": false,
+      "_regions": []
+    },
+    {
+      "name": "Keren",
+      "displayName": 0,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1.47,
+        "scaleY": 1.47,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 1,
+      "displayBars": 0,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": false
+        },
+        "fabula-ultima-companion": {
+          "campMember": true
+        }
+      },
+      "actorId": "gdJZ1L1kv5mjTTMr",
+      "sort": 0,
+      "hidden": false,
+      "x": 1124,
+      "y": 243,
+      "_id": "kqnjT3K937Uv7YGg",
+      "elevation": 0,
+      "locked": false,
+      "_regions": []
+    },
+    {
+      "name": "Zarg",
+      "displayName": 0,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": -1.56,
+        "scaleY": 1.56,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": "attributeBar.current_hp"
+      },
+      "bar2": {
+        "attribute": "attributeBar.current_mp"
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {
+            "bar2": {
+              "order": 0,
+              "id": "bar2",
+              "attribute": "attributeBar.current_mp",
+              "mincolor": "#000080",
+              "maxcolor": "#80B3FF",
+              "position": "bottom-inner",
+              "otherVisibility": 0,
+              "ownerVisibility": 30,
+              "gmVisibility": -1,
+              "hideFull": false,
+              "hideEmpty": false,
+              "hideCombat": false,
+              "hideNoCombat": false,
+              "indentLeft": null,
+              "indentRight": null,
+              "shareHeight": false,
+              "style": "fraction",
+              "label": "MP",
+              "invert": false,
+              "invertDirection": false,
+              "subdivisions": null,
+              "subdivisionsOwner": false,
+              "fgImage": "",
+              "bgImage": "",
+              "opacity": null,
+              "hideHud": false
+            },
+            "bar1": {
+              "order": 1,
+              "id": "bar1",
+              "attribute": "attributeBar.current_hp",
+              "mincolor": "#FF0000",
+              "maxcolor": "#80FF00",
+              "position": "bottom-inner",
+              "otherVisibility": 0,
+              "ownerVisibility": 30,
+              "gmVisibility": -1,
+              "hideFull": false,
+              "hideEmpty": false,
+              "hideCombat": false,
+              "hideNoCombat": false,
+              "indentLeft": null,
+              "indentRight": null,
+              "shareHeight": false,
+              "style": "fraction",
+              "label": "HP",
+              "invert": false,
+              "invertDirection": false,
+              "subdivisions": null,
+              "subdivisionsOwner": false,
+              "fgImage": "",
+              "bgImage": "",
+              "opacity": null,
+              "hideHud": false
+            },
+            "bar3": {
+              "order": 2,
+              "id": "bar3",
+              "attribute": "attributeBar.shield_value",
+              "mincolor": "#000000",
+              "maxcolor": "#FFFFFF",
+              "position": "bottom-inner",
+              "otherVisibility": 50,
+              "ownerVisibility": 50,
+              "gmVisibility": -1,
+              "hideFull": false,
+              "hideEmpty": true,
+              "hideCombat": false,
+              "hideNoCombat": false,
+              "indentLeft": null,
+              "indentRight": null,
+              "shareHeight": false,
+              "style": "fraction",
+              "label": "",
+              "invert": false,
+              "invertDirection": false,
+              "subdivisions": null,
+              "subdivisionsOwner": false,
+              "fgImage": "",
+              "bgImage": "",
+              "opacity": null,
+              "hideHud": false
+            }
+          }
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Standard.png",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": false
+        }
+      },
+      "actorId": "Z4CFy505cD3nzl1W",
+      "hidden": false,
+      "sort": 2,
+      "_id": "lfyisx4ZbChFyJjz",
+      "x": 923,
+      "y": 657,
+      "elevation": 0,
+      "locked": false,
+      "_regions": []
+    }
+  ],
+  "notes": [],
+  "tileCount": 7,
+  "full": {
+    "name": "Midgard_Map008",
+    "navName": "Midgard - Inn Room",
+    "navigation": false,
+    "folder": "dDFCxuzpgyr3RtkP",
+    "background": {
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Map/Game%20Map/Valley_Map007.png",
+      "anchorX": 0,
+      "anchorY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "fit": "fill",
+      "scaleX": 1,
+      "scaleY": 1,
+      "rotation": 0,
+      "tint": "#ffffff",
+      "alphaThreshold": 0
+    },
+    "width": 1536,
+    "height": 1024,
+    "padding": 0,
+    "backgroundColor": "#000000",
+    "grid": {
+      "type": 0,
+      "size": 105,
+      "style": "solidLines",
+      "thickness": 1,
+      "color": "#000000",
+      "alpha": 0.2,
+      "distance": 2,
+      "units": "m"
+    },
+    "tokenVision": false,
+    "initial": {
+      "x": 1130,
+      "y": 520,
+      "scale": 1.4
+    },
+    "flags": {
+      "battle-transitions": {
+        "version": "1.1.6",
+        "autoTrigger": false,
+        "sequence": [],
+        "isTriggered": false
+      },
+      "LockView": {
+        "editViewbox": false,
+        "lockPan": false,
+        "lockPanInit": false,
+        "lockZoom": false,
+        "lockZoomInit": false,
+        "boundingBox": false,
+        "boundingBoxInit": false,
+        "autoScale": "0",
+        "rotation": "0",
+        "sidebar": "noChange",
+        "blackenSidebar": false,
+        "excludeSidebar": false,
+        "hideUI": false,
+        "forceInit": true,
+        "hideUIelements": {
+          "controls": true,
+          "hotbar": true,
+          "logo": true,
+          "navigation": true,
+          "players": true,
+          "sidebar": false
+        }
+      },
+      "core": {
+        "forceInitialView": true
+      },
+      "fabula-ultima-companion": {
+        "campSceneUuid": "",
+        "oniFabula": {
+          "general": {
+            "sceneMode": "camp",
+            "scanRadius": null,
+            "fastTravelEnabled": true,
+            "disableTransition": false,
+            "isOverworld": false,
+            "isTown": false,
+            "isDungeon": false,
+            "navigationName": "Midgard - Inn Room",
+            "areaName": "Midgard - Inn Room",
+            "conflictEvent": "none",
+            "depthEnabled": false,
+            "depthFarY": null,
+            "depthNearY": null,
+            "depthFarScale": null,
+            "depthNearScale": null,
+            "depthCurve": null,
+            "depthSort": true,
+            "areaPanelEnabled": true,
+            "areaPanelAlwaysShow": false,
+            "wellspring_air": true,
+            "wellspring_earth": true,
+            "wellspring_fire": true,
+            "wellspring_bolt": true,
+            "wellspring_ice": true,
+            "wellspring_dark": false,
+            "wellspring_light": false,
+            "fieldEffects": "",
+            "sceneVisited": true,
+            "occludersEnabled": false,
+            "occluderSilhouette": false
+          },
+          "sceneNetwork": "[{\"name\":\"Midgard - Inn\",\"id\":\"Scene.DhpfHJUGiFSjPL6n\"}]"
+        },
+        "oniDungeon": {
+          "threatLevel": "medium",
+          "encounterTable": "",
+          "enemiesTable": "",
+          "battleMap": "",
+          "battleBGM": "",
+          "bossBGM": "",
+          "event": {
+            "skillCheckEvent": "",
+            "clockEvent": ""
+          },
+          "loot": {
+            "weapon": "",
+            "armor": "",
+            "accessory": "",
+            "consumable": "",
+            "item": "",
+            "zenit": "",
+            "treasure": "",
+            "material": "",
+            "fish": ""
+          },
+          "encounterNoveltyBias": null
+        },
+        "campTwinOf": "DhpfHJUGiFSjPL6n",
+        "campArrival": {
+          "x": 880,
+          "y": 560
+        },
+        "campMemberSpots": [
+          {
+            "x": 965,
+            "y": 384,
+            "actorId": "dafTLBUscCDNgq8H",
+            "look": {
+              "texture": {
+                "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hina/Hina_Standard.png",
+                "anchorX": 0.5,
+                "anchorY": 0.5,
+                "offsetX": 0,
+                "offsetY": 0,
+                "fit": "contain",
+                "scaleX": -1.44,
+                "scaleY": 1.44,
+                "rotation": 0,
+                "tint": "#ffffff",
+                "alphaThreshold": 0.75
+              },
+              "sort": 0,
+              "flags": {
+                "barbrawl": {
+                  "resourceBars": {}
+                },
+                "wall-height": {
+                  "tokenHeight": 0
+                },
+                "token-z": {
+                  "zIndex": 0
+                },
+                "token-variants": {
+                  "randomImgDefault": "",
+                  "disableHUDButton": false
+                },
+                "hex-size-support": {
+                  "hideBorder": true,
+                  "hideFill": false
+                },
+                "fabula-ultima-companion": {}
+              }
+            },
+            "scaleRatio": 1,
+            "mirror": -1
+          },
+          {
+            "x": 1224,
+            "y": 542,
+            "actorId": "uJFaNQCSvwwsr2AW",
+            "look": {
+              "texture": {
+                "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Blanche_Standard.png",
+                "anchorX": 0.5,
+                "anchorY": 0.5,
+                "offsetX": 0,
+                "offsetY": 0,
+                "fit": "contain",
+                "scaleX": 1.55,
+                "scaleY": 1.55,
+                "rotation": 0,
+                "tint": "#ffffff",
+                "alphaThreshold": 0.75
+              },
+              "sort": 0,
+              "flags": {
+                "barbrawl": {
+                  "resourceBars": {}
+                },
+                "wall-height": {
+                  "tokenHeight": 0
+                },
+                "token-z": {
+                  "zIndex": 0
+                },
+                "token-variants": {
+                  "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Blanche_Standard.png",
+                  "disableHUDButton": false
+                },
+                "hex-size-support": {
+                  "hideBorder": true,
+                  "hideFill": false
+                },
+                "fabula-ultima-companion": {}
+              }
+            },
+            "scaleRatio": 1,
+            "mirror": 1
+          },
+          {
+            "x": 1210,
+            "y": 385,
+            "actorId": "gdJZ1L1kv5mjTTMr",
+            "look": {
+              "texture": {
+                "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Standard.png",
+                "anchorX": 0.5,
+                "anchorY": 0.5,
+                "offsetX": 0,
+                "offsetY": 0,
+                "fit": "contain",
+                "scaleX": 1.47,
+                "scaleY": 1.47,
+                "rotation": 0,
+                "tint": "#ffffff",
+                "alphaThreshold": 0.75
+              },
+              "sort": 0,
+              "flags": {
+                "barbrawl": {
+                  "resourceBars": {}
+                },
+                "wall-height": {
+                  "tokenHeight": 0
+                },
+                "token-z": {
+                  "zIndex": 0
+                },
+                "token-variants": {
+                  "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Standard.png",
+                  "disableHUDButton": false
+                },
+                "hex-size-support": {
+                  "hideBorder": true,
+                  "hideFill": false
+                },
+                "fabula-ultima-companion": {}
+              }
+            },
+            "scaleRatio": 1,
+            "mirror": 1
+          },
+          {
+            "x": 968,
+            "y": 553,
+            "actorId": "Z4CFy505cD3nzl1W",
+            "look": {
+              "texture": {
+                "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Standard.png",
+                "anchorX": 0.5,
+                "anchorY": 0.5,
+                "offsetX": 0,
+                "offsetY": 0,
+                "fit": "contain",
+                "scaleX": -1.56,
+                "scaleY": 1.56,
+                "rotation": 0,
+                "tint": "#ffffff",
+                "alphaThreshold": 0.75
+              },
+              "sort": 0,
+              "flags": {
+                "barbrawl": {
+                  "resourceBars": {}
+                },
+                "wall-height": {
+                  "tokenHeight": 0
+                },
+                "token-z": {
+                  "zIndex": 0
+                },
+                "token-variants": {
+                  "randomImgDefault": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Standard.png",
+                  "disableHUDButton": false
+                },
+                "hex-size-support": {
+                  "hideBorder": true,
+                  "hideFill": false
+                },
+                "fabula-ultima-companion": {}
+              }
+            },
+            "scaleRatio": 1,
+            "mirror": -1
+          }
+        ]
+      },
+      "wall-height": {
+        "advancedVision": true
+      }
+    },
+    "navOrder": 0,
+    "foreground": null,
+    "foregroundElevation": 8,
+    "fog": {
+      "exploration": false,
+      "overlay": null,
+      "colors": {
+        "explored": null,
+        "unexplored": null
+      }
+    },
+    "environment": {
+      "darknessLevel": 0.05,
+      "darknessLock": false,
+      "globalLight": {
+        "enabled": false,
+        "alpha": 0.5,
+        "bright": false,
+        "color": null,
+        "coloration": 1,
+        "luminosity": 0,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "cycle": true,
+      "base": {
+        "hue": 0,
+        "intensity": 0,
+        "luminosity": 0,
+        "saturation": 0,
+        "shadows": 0
+      },
+      "dark": {
+        "hue": 0.7138888888888889,
+        "intensity": 0,
+        "luminosity": -0.25,
+        "saturation": 0,
+        "shadows": 0
+      }
+    },
+    "playlist": "POV9fioQ0Kkj7hKC",
+    "playlistSound": "npKhehNDuBVwo2Fn",
+    "journal": null,
+    "journalEntryPage": null,
+    "weather": "",
+    "sort": 0,
+    "ownership": {
+      "default": 0,
+      "JQGNzKpDPHJmcUIW": 3
+    },
+    "_id": "jj4gGa4pp0g6ZEPU",
+    "active": false,
+    "thumb": "worlds/fabula-ultima-2/assets/scenes/jj4gGa4pp0g6ZEPU-thumb.webp",
+    "_stats": {
+      "compendiumSource": null,
+      "duplicateSource": null,
+      "coreVersion": "12.343",
+      "systemId": "custom-system-builder",
+      "systemVersion": "4.8.5",
+      "createdTime": 1792828768314,
+      "modifiedTime": 1792868820584,
+      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+    },
+    "drawings": [
+      {
+        "x": 0,
+        "y": 0,
+        "shape": {
+          "type": "r",
+          "width": 738,
+          "height": 1024,
+          "radius": null,
+          "points": []
+        },
+        "fillType": 1,
+        "fillColor": "#000000",
+        "fillAlpha": 1,
+        "strokeWidth": 0,
+        "strokeAlpha": 0,
+        "locked": true,
+        "hidden": false,
+        "interface": false,
+        "sort": 0,
+        "text": "",
+        "flags": {
+          "fabula-ultima-companion": {
+            "campTwinMask": true
+          }
+        },
+        "_id": "RaACGEez7nxhd9nG",
+        "author": "JQGNzKpDPHJmcUIW",
+        "elevation": 0,
+        "rotation": 0,
+        "bezierFactor": 0,
+        "strokeColor": "#1e00ff",
+        "texture": null,
+        "fontFamily": "Signika",
+        "fontSize": 48,
+        "textColor": "#ffffff",
+        "textAlpha": 1
+      }
+    ],
+    "lights": [
+      {
+        "x": 1335,
+        "y": 200,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 4.19,
+          "bright": 2.1,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#feecc8",
+          "alpha": 0.15,
+          "animation": {
+            "type": "sunburst",
+            "speed": 1,
+            "intensity": 5,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "roof-shaft",
+            "draftKind": "sun"
+          }
+        },
+        "elevation": 0,
+        "rotation": 0,
+        "_id": "ha7wfQXA0Q0upyrl"
+      },
+      {
+        "x": 983,
+        "y": 222,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 0.95,
+          "bright": 0.48,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#ef9b25",
+          "alpha": 0.5,
+          "animation": {
+            "type": "flame",
+            "speed": 3,
+            "intensity": 4,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "bedside-candle-n",
+            "draftKind": "candle"
+          }
+        },
+        "elevation": 0,
+        "rotation": 0,
+        "_id": "jAReQxzahfpEOxMf"
+      },
+      {
+        "x": 1116,
+        "y": 733,
+        "vision": false,
+        "hidden": false,
+        "config": {
+          "dim": 0.95,
+          "bright": 0.48,
+          "angle": 360,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "color": "#ef9b25",
+          "alpha": 0.5,
+          "animation": {
+            "type": "flame",
+            "speed": 3,
+            "intensity": 4,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-10-10",
+            "draftName": "bedside-candle-s",
+            "draftKind": "candle"
+          }
+        },
+        "elevation": 0,
+        "rotation": 0,
+        "_id": "zUeqqrBzdSUO4sim"
+      }
+    ],
+    "walls": [
+      {
+        "c": [
+          1445,
+          430,
+          1445,
+          800
+        ],
+        "_id": "OaspceF7Y2yrcnBq",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1210,
+          150,
+          1445,
+          430
+        ],
+        "_id": "k5D42zFE7jansJ3i",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          790,
+          800,
+          790,
+          150
+        ],
+        "_id": "nSCvDsc0DCAMJro4",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          790,
+          150,
+          1210,
+          150
+        ],
+        "_id": "rVxcclMg6AcyTlN5",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          1445,
+          800,
+          790,
+          800
+        ],
+        "_id": "sPK9Z4KGpeLDgZHi",
+        "light": 20,
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      }
+    ]
+  }
+}

@@ -32,16 +32,18 @@
 //   separate — each hit rolls its own check and damage, on the card's targets.
 //   random   — separate hits, each on a random card target.
 //   pick     — separate hits, round-robin over the picked targets.
+// A one-roll Chain can add `hidden` (`chain 8 hidden`): a pure presentation
+// split the player is not told about, so the action card shows no Chain badge.
 export const CHAIN_MODES = Object.freeze(["single", "separate", "random", "pick"]);
 export const CHAIN_MAX = 20;
 
 // Keyword forms accepted on an item's `action_keywords` list (already split
 // and lowercased by the caller, or a raw string):
 //   "chain 3", "chain(3)", "chain x3", "chain:3", "chain 3 separate",
-//   "chain 3 random", "chain 3 pick"
+//   "chain 3 random", "chain 3 pick", "chain 8 hidden"
 // The bare word "chain" without a count is NOT a Chain — it is ignored, so a
 // stray label can never turn an action into a multi-strike one.
-const CHAIN_RX = /^chain\s*[:x(]?\s*(\d+)\s*\)?(?:\s*[:,]?\s*(separate|random|pick))?$/;
+const CHAIN_RX = /^chain\s*[:x(]?\s*(\d+)\s*\)?(?:\s*[:,]?\s*(separate|random|pick|hidden))?$/;
 
 export function parseChainKeyword(keywords) {
   const list = Array.isArray(keywords)
@@ -52,6 +54,7 @@ export function parseChainKeyword(keywords) {
     if (!m) continue;
     const count = Math.min(CHAIN_MAX, Math.max(0, Math.floor(Number(m[1]) || 0)));
     if (count < 2) continue;              // Chain 1 is just an action
+    if (m[2] === "hidden") return { count, mode: "single", hidden: true };
     return { count, mode: m[2] ?? "single" };
   }
   return null;

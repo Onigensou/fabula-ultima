@@ -178,7 +178,7 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "Valley of the Dragon - Mountain Ascending Path",
-            "sceneVisited": false,
+            "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": false,
             "wellspring_fire": false,
@@ -244,7 +244,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791552422710,
-      "modifiedTime": 1791552456201,
+      "modifiedTime": 1792869126138,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     }
   }

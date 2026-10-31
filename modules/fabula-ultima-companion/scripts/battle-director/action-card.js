@@ -7421,7 +7421,7 @@ function buildAutoConfirmVetoHTML(autoConfirm) {
 function chainBadgeHTML(chain, targets) {
   try {
     const n = Number(chain?.count) || 0;
-    if (n < 2) return "";
+    if (n < 2 || chain?.hidden) return "";
     // One keyword for players; the tooltip says how THIS Chain resolves.
     let tip = chain.mode === "single"
       ? `Chain ${n}: one Accuracy Check — its damage lands in ${n} hits.`

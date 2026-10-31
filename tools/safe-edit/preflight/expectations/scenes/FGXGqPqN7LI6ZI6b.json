@@ -213,13 +213,15 @@
         }
       },
       "actorId": "2JGRG053wW37YeHP",
-      "x": 565,
-      "y": 290,
-      "hidden": true,
+      "x": 605,
+      "y": 491,
+      "hidden": false,
       "elevation": 0,
       "sort": 0,
       "locked": false,
-      "_regions": [],
+      "_regions": [
+        "hQfOqdYqriWszbo0"
+      ],
       "_id": "yGLiDI7jDj7BsoRd"
     }
   ],
@@ -267,8 +269,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "LockView": {
         "editViewbox": false,
@@ -309,7 +310,7 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "Midgard - Accessories Shop",
-            "sceneVisited": false,
+            "sceneVisited": true,
             "areaName": "Midgard - Accessories Shop",
             "conflictEvent": "none",
             "depthEnabled": false,
@@ -426,7 +427,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791358983426,
-      "modifiedTime": 1791577700765,
+      "modifiedTime": 1792859522671,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "lights": [

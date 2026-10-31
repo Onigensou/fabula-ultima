@@ -15660,12 +15660,12 @@
             "name": "Elemental Harmony"
           },
           {
-            "id": "uZGPznG4ahL5zGRZ",
-            "name": "Fancy Footwork"
+            "id": "etn6c9YBy5AS1QyR",
+            "name": "Faithful Companion"
           },
           {
-            "id": "3LqZxvjIcPybQTrn",
-            "name": "Forget me Nut"
+            "id": "uZGPznG4ahL5zGRZ",
+            "name": "Fancy Footwork"
           },
           {
             "id": "KGCFXR53w9u6ispa",
@@ -15676,7 +15676,7 @@
             "name": "Grace Under Pressure"
           },
           {
-            "id": "LMnXdh32LS4ZRCn5",
+            "id": "NZZZBDWN3DCzUVTX",
             "name": "Heal"
           },
           {
@@ -15697,10 +15697,6 @@
           },
           {
             "id": "OReN1ugfRh5MmdXU",
-            "name": "Jellopy"
-          },
-          {
-            "id": "uTYRq5srXMaXat5y",
             "name": "Jellopy"
           },
           {
@@ -15752,6 +15748,10 @@
             "name": "Ruby Pendant"
           },
           {
+            "id": "IKoueQY7zfZuB0OW",
+            "name": "Spiritual Magic"
+          },
+          {
             "id": "rR5hLV8QzLY0vk9k",
             "name": "Starfruit"
           },
@@ -15764,16 +15764,20 @@
             "name": "Status Immunity"
           },
           {
+            "id": "cLilicKiRj3eMFPH",
+            "name": "Super Tonic"
+          },
+          {
+            "id": "mnB6qtxZKjRoD4wQ",
+            "name": "Super Tonic"
+          },
+          {
             "id": "RXSHWJ6UDqT8x7OE",
             "name": "Survivor"
           },
           {
             "id": "3PGlRQq7M3q7X9aA",
             "name": "Tafallera"
-          },
-          {
-            "id": "tFdGJtY2jCPgnNEm",
-            "name": "Tavern Talk"
           },
           {
             "id": "TE0t2PzHnrOZOfHJ",
@@ -15804,10 +15808,6 @@
             "name": "Verónica"
           },
           {
-            "id": "drRzxcrhLzYzNU4w",
-            "name": "Well-Traveled"
-          },
-          {
             "id": "1D1rFRDBiIuINoei",
             "name": "Zero Power: Give me tips or 5stars"
           },
@@ -15816,7 +15816,7 @@
             "name": "Zero Trigger: Motivation"
           }
         ],
-        "effects": 1
+        "effects": 2
       },
       {
         "id": "UXagcMfhhqcSz7OZ",
@@ -19856,6 +19856,14 @@
             "name": "Cleanse"
           },
           {
+            "id": "0vUB416GMGqHQcEc",
+            "name": "Crystal Powder"
+          },
+          {
+            "id": "sWaWzL0e71LsFAIz",
+            "name": "Crystal Powder"
+          },
+          {
             "id": "3NKLKZPGi2XywTWG",
             "name": "Curse Magic"
           },
@@ -19952,16 +19960,20 @@
             "name": "Glowstick (Passive)"
           },
           {
+            "id": "zcHd6uzmJMLCTtr7",
+            "name": "Goddess Tear"
+          },
+          {
+            "id": "zr2N3x09gkculip7",
+            "name": "Goddess Tear"
+          },
+          {
             "id": "4GzzwpTJyf7iyOtq",
             "name": "Golden Apple"
           },
           {
             "id": "Q0g8YFRgXjXDIq4f",
             "name": "Golden Koi"
-          },
-          {
-            "id": "ho6kGg72Gcvnx7uD",
-            "name": "Golem Heart"
           },
           {
             "id": "h5q0pBru1vCPJ6Pr",
@@ -20014,6 +20026,14 @@
           {
             "id": "H7HyFkQ2cH7rzf44",
             "name": "Lift off"
+          },
+          {
+            "id": "iIfJpuDaySDf1LLv",
+            "name": "Liquid Hope"
+          },
+          {
+            "id": "srmgsJkHRuIQNIdk",
+            "name": "Liquid Hope"
           },
           {
             "id": "20QAZWYIlUg4Uj6B",
@@ -20172,7 +20192,7 @@
             "name": "Zero Trigger: Foresight"
           }
         ],
-        "effects": 4
+        "effects": 6
       },
       {
         "id": "YlQpjVGCJwPVIOU7",
@@ -20925,6 +20945,10 @@
             "name": "Charm"
           },
           {
+            "id": "l4g2xjIMXAh9AP6h",
+            "name": "Cheap Shot"
+          },
+          {
             "id": "l7hj0bWidYxltnI6",
             "name": "Children of the Grave"
           },
@@ -20935,10 +20959,6 @@
           {
             "id": "IWyEiMupyiMMM7my",
             "name": "Consume"
-          },
-          {
-            "id": "YIUYJEg53a76vGbH",
-            "name": "Create Phantasm: Dread"
           },
           {
             "id": "icaJRhvENAfbFx3P",
@@ -20969,6 +20989,10 @@
             "name": "For Whom the Bell Tolls"
           },
           {
+            "id": "iSps0k7xep6kkw7W",
+            "name": "Forget me Nut"
+          },
+          {
             "id": "aBoK1AS1nb27Wwye",
             "name": "Hypercognition"
           },
@@ -20981,8 +21005,16 @@
             "name": "Illusory Shield"
           },
           {
+            "id": "GygL59hLViiA5hc9",
+            "name": "Life Charm"
+          },
+          {
             "id": "fWSnV0BKWLOPGZnq",
             "name": "Life Transference"
+          },
+          {
+            "id": "wYv1WhDHGlUQTUNc",
+            "name": "Multi Shatter"
           },
           {
             "id": "LwbHBK0twVXmekz0",
@@ -21033,16 +21065,16 @@
             "name": "Soul Steal"
           },
           {
-            "id": "7wfcJjtOohmga8n0",
-            "name": "Starfruit"
-          },
-          {
-            "id": "RSnilc4zgPeVi4ib",
-            "name": "Steel Dagger"
-          },
-          {
             "id": "N9eKFmdC30lHByXQ",
             "name": "Stubborn Scion"
+          },
+          {
+            "id": "XdbIc9dAky6dAQ41",
+            "name": "Super Tonic"
+          },
+          {
+            "id": "zR0gROT9VTdCW89D",
+            "name": "Super Tonic"
           },
           {
             "id": "Iwt724pOxBNvcgrk",
@@ -21057,7 +21089,7 @@
             "name": "Zero Trigger: Shattered Phantasm"
           }
         ],
-        "effects": 3
+        "effects": 2
       },
       {
         "id": "EHyFlGpLQLriK65C",
@@ -21201,7 +21233,7 @@
             "name": "Flying"
           }
         ],
-        "effects": 1
+        "effects": 2
       },
       {
         "id": "LjS3Wbt3kjtr3peY",
@@ -24086,6 +24118,10 @@
             "name": "Soul Ring (Passive)"
           },
           {
+            "id": "OeKZBrJJRgpT12ms",
+            "name": "Steel Dagger"
+          },
+          {
             "id": "VBzFqBbhT0FnxHNL",
             "name": "Survivor’s Crest"
           }
@@ -25935,10 +25971,6 @@
             "name": "Dodge"
           },
           {
-            "id": "5EENOHfrftUEVX4f",
-            "name": "Ember Petal"
-          },
-          {
             "id": "HiXFAkSm35bBGHfM",
             "name": "Emergency Item"
           },
@@ -26027,6 +26059,14 @@
             "name": "Mega-Elixir"
           },
           {
+            "id": "1Og3GAHY4uQxOsKz",
+            "name": "Mixed Juice"
+          },
+          {
+            "id": "Q8Cd45zCsSKj52pW",
+            "name": "Mixed Juice"
+          },
+          {
             "id": "KL2yI8x7voinAVzf",
             "name": "Myrmidon Dance"
           },
@@ -26079,6 +26119,14 @@
             "name": "See you later"
           },
           {
+            "id": "BIhtvvOe8tu627BB",
+            "name": "Set Trap"
+          },
+          {
+            "id": "Qbwt0J1raYuj2Jh8",
+            "name": "Siren Trap"
+          },
+          {
             "id": "quQU5EZb9TSIxJYp",
             "name": "Skull Orb"
           },
@@ -26111,6 +26159,10 @@
             "name": "Tincture of Strength"
           },
           {
+            "id": "zu0GeHNBzF1M0xQr",
+            "name": "Tripwire Trap"
+          },
+          {
             "id": "lpl9N7ToR7d52GZB",
             "name": "Unicorn Dance"
           },
@@ -26127,8 +26179,16 @@
             "name": "Vampire Cloak (Passive)"
           },
           {
+            "id": "Rcw6CZAu9TNFEtxG",
+            "name": "Vital Strike"
+          },
+          {
             "id": "kTZD5WHGBnT9JJi1",
             "name": "Warning Shot"
+          },
+          {
+            "id": "XLpwRBfaOqNgs0qT",
+            "name": "Wild Reflexes"
           },
           {
             "id": "NwH4UInAFxCn958U",
@@ -26139,7 +26199,7 @@
             "name": "Zero Trigger: Strategy"
           }
         ],
-        "effects": 4
+        "effects": 2
       },
       {
         "id": "eovuAdwJdbtn8rOr",

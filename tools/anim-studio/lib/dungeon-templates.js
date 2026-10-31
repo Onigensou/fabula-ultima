@@ -88,7 +88,7 @@ function shell({ key, name, cfg, assets = {}, inner, timeout = 15000, startOnRea
     "    scriptSource,",
     "    casterTokenUuid: sourceToken?.document?.uuid ?? null,",
     "    targetTokenUuids: partyTargets.map(t => t.document.uuid),",
-    "    params: { doneHook, readyHook, cfg: CFG, assets: ASSETS },",
+    "    params: { doneHook, readyHook, cfg: CFG, assets: ASSETS, strikes: Array.isArray(P?.strikes) ? P.strikes : [] },",
     "    meta: { source: " + j(name) + " },",
     "  });",
     (startOnReady ? "  await waitReady;\n  emitLocal('oni:animationStart', { type: ANIM_KEY, sceneId: canvas.scene?.id ?? null, sourceTokenId: sourceToken?.id ?? null });" : "  // (animationStart emitted above)"),

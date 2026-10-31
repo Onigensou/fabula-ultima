@@ -105,8 +105,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "levels": {
         "backgroundElevation": 0,
@@ -164,7 +163,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1773641682476,
-      "modifiedTime": 1791880080845,
+      "modifiedTime": 1792869267287,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "environment": {

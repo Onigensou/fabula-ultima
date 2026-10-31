@@ -186,9 +186,9 @@
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Healing_Tile.png"
             },
             "vSjOb7qWuBN8i8XL": {
-              "initialType": "blank",
-              "currentType": "blank",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+              "initialType": "camp",
+              "currentType": "camp",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Camp_Tile.png"
             },
             "11mCN4hmZ9Ys3mU6": {
               "initialType": "door",
@@ -312,7 +312,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359007469,
-      "modifiedTime": 1792844180519,
+      "modifiedTime": 1792850202912,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [

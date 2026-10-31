@@ -10,11 +10,84 @@
   },
   "effects": [
     {
-      "_id": "7qVzYw2N271X0V1f",
+      "_id": "hFo0BjC2JTQnuMVV",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1790560788140,
+        "createdTime": 1793459961942,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "max_hp",
+          "mode": 5,
+          "priority": 20,
+          "value": "61"
+        },
+        {
+          "key": "check_mod_accuracy",
+          "mode": 2,
+          "priority": 20,
+          "value": "5"
+        }
+      ],
+      "description": "<p>Companion stats per Faithful Companion: max HP = SL × MIG die + half of Blanche's level; +SL to Accuracy Checks and Magic Checks.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "hFo0BjC2JTQnuMVV",
+          "originalParentId": "A8vBJMBvMT9ON8O4",
+          "originalUuid": "Actor.A8vBJMBvMT9ON8O4.ActiveEffect.hFo0BjC2JTQnuMVV"
+        },
+        "fabula-ultima-companion": {
+          "directorAppliedBy": {
+            "appliedAtRound": 0,
+            "effectLabel": "kg_bond",
+            "reactorActorUuid": "Actor.A8vBJMBvMT9ON8O4",
+            "reactorTokenUuid": "Scene.JKhl4GMekbmkKBXw.Token.7RVLzWsmvkpEClG9",
+            "skillUuid": "Actor.A8vBJMBvMT9ON8O4.Item.eYFMzrOX2InBxKzD"
+          },
+          "directorPermanent": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/svg/pawprint.svg",
+      "name": "Faithful Companion",
+      "origin": "Actor.A8vBJMBvMT9ON8O4.Item.eYFMzrOX2InBxKzD",
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "Pd6PqAuIVRTEmtle",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1793474650361,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -35,9 +108,9 @@
         "custom-system-builder": {
           "isFromTemplate": false,
           "isPredefined": true,
-          "originalId": "7qVzYw2N271X0V1f",
+          "originalId": "Pd6PqAuIVRTEmtle",
           "originalParentId": "A8vBJMBvMT9ON8O4",
-          "originalUuid": "Actor.A8vBJMBvMT9ON8O4.ActiveEffect.7qVzYw2N271X0V1f"
+          "originalUuid": "Actor.A8vBJMBvMT9ON8O4.ActiveEffect.Pd6PqAuIVRTEmtle"
         },
         "dfreds-convenient-effects": {
           "ceEffectId": "ce-flying",
@@ -110,9 +183,13 @@
         "bounce": false,
         "float": false
       },
+      "isPersistentSummon": true,
       "opp_lucky": 0,
+      "persistentSummonBound": true,
+      "persistentSummonKind": "companion",
       "persistentSummonRetainOnDefeat": true,
       "spriteShadow": true,
+      "summonOwnerActorUuid": "Actor.uJFaNQCSvwwsr2AW",
       "summonTurnsPerRound": 0
     }
   },
@@ -1480,10 +1557,12 @@
           "$deleted": false,
           "action_pattern_condition": "always",
           "action_pattern_cooldown": "0",
+          "action_pattern_focus_status": "",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Element Gorge",
           "action_pattern_priority": "5",
+          "action_pattern_string": "",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
           "action_pattern_value_2": "100"
@@ -1552,9 +1631,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "28",
+      "current_hp": 61,
       "current_ip": "0",
-      "current_mp": "0",
+      "current_mp": 100,
       "cut_in_critical": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
       "cut_in_fumble": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
       "cut_in_offset_y": "",
@@ -1579,6 +1658,7 @@
       "dex_current": 8,
       "enmity": 100,
       "event_timeline_table": {},
+      "experience": 1,
       "extra_damage_mod_air": 0,
       "extra_damage_mod_all": 0,
       "extra_damage_mod_arcane": 0,
@@ -1625,6 +1705,7 @@
       "isEnlighten": false,
       "isEnraged": false,
       "isFocus": false,
+      "isInn": false,
       "isMasterful": false,
       "isPhantasm": false,
       "isPoisoned": false,
@@ -1638,13 +1719,13 @@
       "isUnyielding": false,
       "isVillain": false,
       "isWeak": false,
-      "level": "5",
+      "level": 5,
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 8,
       "manadrain_percentage": 0,
       "manadrain_value": 0,
-      "max_hp": "28",
+      "max_hp": "61",
       "max_ip": "0",
       "max_mp": "100",
       "max_zero": "0",
@@ -1672,12 +1753,57 @@
       "shield_type": "PHYSICAL",
       "shield_value": "0",
       "showMacro": false,
-      "skill_active_list": {},
-      "skill_passive_list": {},
+      "skill_active_list": {
+        "y1tW2wC0N3fPHPy8": {
+          "active_cost": "",
+          "active_description": "<p><strong>【INS + WLP】 +5</strong> vs. Magic Defense ◆ no damage.</p><p>On a hit, the target's Affinity to one random element it is not already affected by (air, bolt, earth, fire or ice) worsens by one step until the start of King Gorger's next turn, and King Gorger recovers <strong>20</strong> Mind Points.</p>",
+          "active_duration": "Instantaneous",
+          "active_target": "One Enemy",
+          "id": "${item.id}",
+          "name": "Element Gorge",
+          "roll": "",
+          "uuid": "Actor.A8vBJMBvMT9ON8O4.Item.y1tW2wC0N3fPHPy8"
+        }
+      },
+      "skill_passive_list": {
+        "5VtEaXjywcgfR9Yx": {
+          "id": "${item.id}",
+          "name": "Flying",
+          "passive_description": "<p>King Gorger always has the <strong>Flying</strong> status. While in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, it is <strong>Grounded</strong>.</p>",
+          "roll": "",
+          "uuid": "Actor.A8vBJMBvMT9ON8O4.Item.5VtEaXjywcgfR9Yx"
+        },
+        "eYFMzrOX2InBxKzD": {
+          "id": "${item.id}",
+          "name": "Faithful Companion",
+          "passive_description": "<p>Blanche's companion. King Gorger takes no turn of its own: it acts at the start of Blanche's turn, before Blanche does. At 0 HP it leaves the conflict and rejoins the next one at its Crisis score.</p><p>At the start of each conflict, these values are set from Blanche's <strong>Faithful Companion</strong> Skill Level (SL):</p><ul><li><strong>Maximum HP:</strong> SL × King Gorger's Might die size, plus half of Blanche's level.</li><li><strong>Accuracy Checks:</strong> +SL.</li><li><strong>Magic Checks:</strong> +SL.</li></ul>",
+          "roll": "",
+          "uuid": "Actor.A8vBJMBvMT9ON8O4.Item.eYFMzrOX2InBxKzD"
+        },
+        "qOTsQhU2UyRBAuLu": {
+          "id": "${item.id}",
+          "name": "Elemental Overflow",
+          "passive_description": "<p>At the start of King Gorger's turn, and whenever it recovers Mind Points, if it has <strong>50</strong> or more Mind Points, it spends 50 Mind Points to create a random <strong>Wellspring</strong> (air, bolt, earth, fire or ice): all damage of that type is increased by <strong>10</strong> until the start of King Gorger's next turn. Only one of King Gorger's Wellsprings can exist at a time.</p><p>King Gorger starts each conflict with <strong>0</strong> Mind Points.</p>",
+          "roll": "",
+          "uuid": "Actor.A8vBJMBvMT9ON8O4.Item.qOTsQhU2UyRBAuLu"
+        }
+      },
       "spear_ef": "100",
       "species": "BEAST",
+      "sprite_attack": "",
       "sprite_battle": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+      "sprite_cast": "",
+      "sprite_crisis": "",
+      "sprite_fly": "",
+      "sprite_guard": "",
+      "sprite_hurt": "",
+      "sprite_ko": "",
+      "sprite_leap": "",
+      "sprite_onsen": "",
+      "sprite_sit": "",
+      "sprite_sleep": "",
       "sprite_standard": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
+      "sprite_walk": "",
       "steal_percentage_table": {},
       "stealable_loot": {},
       "study_text": "<p>Blanche's companion — a Gorger grown fat and proud enough to wear a crown. Design pending (Faithful Companion, Wayfarer).</p>",
@@ -1693,13 +1819,14 @@
       "uuid": "Actor.A8vBJMBvMT9ON8O4",
       "wlp_base": "8",
       "wlp_current": 8,
+      "zenit": 0,
       "zenit_reward_max": "0",
       "zenit_reward_min": "0",
       "zero_power_value": "0"
     },
     "statusEffects": {},
     "template": "yegF6R8aaymhrvCg",
-    "templateSystemUniqueVersion": 2114752673
+    "templateSystemUniqueVersion": 1417889971
   },
   "type": "character"
 }

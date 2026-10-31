@@ -10,6 +10,77 @@
   },
   "effects": [
     {
+      "_id": "EOSD58CG6wg5TvpG",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1793473797947,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "max_mp",
+          "mode": 2,
+          "priority": null,
+          "value": "10"
+        }
+      ],
+      "description": "<p>A simple skillet cake sweetened with wild honey, passed around still warm. Everyone who eats gains <strong>+10 Maximum MP</strong> until the next rest.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "EOSD58CG6wg5TvpG",
+          "originalParentId": "Z4CFy505cD3nzl1W",
+          "originalUuid": "Actor.Z4CFy505cD3nzl1W.ActiveEffect.EOSD58CG6wg5TvpG"
+        },
+        "fabula-ultima-companion": {
+          "campRestCharges": 0,
+          "cookingDish": {
+            "dishId": "oel2cAzIcVh85ocz",
+            "family": "sweet",
+            "instant": {},
+            "tier": 1
+          },
+          "foodBuff": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Doraemon/1587828177600.webp",
+      "name": "Campfire Cake",
+      "origin": "Item.oel2cAzIcVh85ocz",
+      "sort": 0,
+      "statuses": [
+        "permanent"
+      ],
+      "system": {
+        "tags": [
+          "food"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "irFQUIW0qFC2sPmm",
       "_stats": {
         "compendiumSource": null,
@@ -47,7 +118,7 @@
             "appliedAtRound": 0,
             "effectLabel": "em_refresh",
             "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.QFqZdO7PjOcPY4mE.Token.UDzDm0r6527UB1b2",
+            "reactorTokenUuid": "Scene.JKhl4GMekbmkKBXw.Token.7jJyBRGVy1ZmxBsO",
             "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.HiXFAkSm35bBGHfM"
           },
           "directorPermanent": true
@@ -71,196 +142,6 @@
       "system": {
         "tags": [
           "ready"
-        ]
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "k10NxHqLMfIyGriJ",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1792867910809,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "Once before the next rest, when your group makes a Travel Roll, you may reroll the die and keep the new result.",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "k10NxHqLMfIyGriJ",
-          "originalParentId": "Z4CFy505cD3nzl1W",
-          "originalUuid": "Actor.Z4CFy505cD3nzl1W.ActiveEffect.k10NxHqLMfIyGriJ"
-        },
-        "fabula-ultima-companion": {
-          "campRestCharges": 0,
-          "cartographyActorId": "Z4CFy505cD3nzl1W",
-          "cartographyCharges": 1,
-          "cartographyReroll": true
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20MainCommand%20(Others)/02_General/dig.png",
-      "name": "Cartography",
-      "origin": "Actor.Z4CFy505cD3nzl1W",
-      "sort": 0,
-      "statuses": [
-        "permanent"
-      ],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "rEGfwsDawDzpEy40",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1792867768276,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "max_hp",
-          "mode": 2,
-          "priority": null,
-          "value": "10"
-        }
-      ],
-      "description": "<p>+10 Maximum Hit Points until the next rest.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "rEGfwsDawDzpEy40",
-          "originalParentId": "Z4CFy505cD3nzl1W",
-          "originalUuid": "Actor.Z4CFy505cD3nzl1W.ActiveEffect.rEGfwsDawDzpEy40"
-        },
-        "fabula-ultima-companion": {
-          "campRestCharges": 0,
-          "cookingDish": {
-            "dishId": "GBixGFmKRv0B1Lgj",
-            "family": "umami",
-            "instant": {},
-            "tier": 1
-          },
-          "foodBuff": true
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/consumables/food/bowl-stew-tofu-potato-brown.webp",
-      "name": "Hearty Hot-Pot",
-      "origin": "Item.GBixGFmKRv0B1Lgj",
-      "sort": 0,
-      "statuses": [
-        "permanent"
-      ],
-      "system": {
-        "tags": [
-          "food"
-        ]
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "RIYSVhyeLepc1g31",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1792693722071,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [],
-      "description": "",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": null,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "bvcEIFX8gLRDL1aq",
-          "originalParentId": "8lF3aCEt5wsYxleL",
-          "originalUuid": "Item.8lF3aCEt5wsYxleL.ActiveEffect.bvcEIFX8gLRDL1aq"
-        },
-        "fabula-ultima-companion": {
-          "category": "Other",
-          "directorAppliedBy": {
-            "appliedAtRound": 2,
-            "effectLabel": "dance_apply",
-            "reactorActorUuid": "Actor.Z4CFy505cD3nzl1W",
-            "reactorTokenUuid": "Scene.QFqZdO7PjOcPY4mE.Token.UDzDm0r6527UB1b2",
-            "skillUuid": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5"
-          },
-          "directorPermanent": true
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/svg/upgrade.svg",
-      "name": "Dance",
-      "origin": "Actor.Z4CFy505cD3nzl1W.Item.B5EA1iq4j0wYzpo5",
-      "sort": 0,
-      "statuses": [],
-      "system": {
-        "tags": [
-          "dance-token"
         ]
       },
       "tint": "#ffffff",
@@ -567,6 +448,69 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "kMbhsJ2cDIFndrKy"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "1Og3GAHY4uQxOsKz",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1793467638506,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "name": "Mixed Juice",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "Q8Cd45zCsSKj52pW",
+        "props": {
+          "action_command": "item",
+          "description": "<ul><li><p><em>Target creature recovers <strong>50 Hit Points</strong> and <strong>50 Mind Points</strong>.</em></p></li></ul>",
+          "effect_table": {
+            "0": {
+              "chain_steps": "mixedjuice_hp,mixedjuice_mp",
+              "effect_kind": "chain",
+              "effect_label": "mixedjuice_use"
+            },
+            "1": {
+              "effect_kind": "grant",
+              "effect_label": "mixedjuice_hp",
+              "grant_amount": "50",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "effect_kind": "grant",
+              "effect_label": "mixedjuice_mp",
+              "grant_amount": "50",
+              "grant_resource": "mp",
+              "target_ref": "action_targets"
+            }
+          },
+          "name": "Mixed Juice",
+          "on_activate_effect_ref": "mixedjuice_use",
+          "skill_description": "<ul><li><p><em>Target creature recovers <strong>50 Hit Points</strong> and <strong>50 Mind Points</strong>.</em></p></li></ul>",
+          "skill_target": "One Creature",
+          "skill_type": "Item"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "z5ToyWoJtzTaboW6"
       },
       "type": "equippableItem"
     },
@@ -1513,123 +1457,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "5EENOHfrftUEVX4f",
-      "_stats": {
-        "compendiumSource": "Item.oAP85eeLJCliYm2E",
-        "coreVersion": "12.343",
-        "createdTime": 1784391290590,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": "36rowiHAcXnIPsKK",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Flower/4cf9a65cd38218340be2753675d98da5_1405866062245277046.webp",
-      "name": "Ember Petal",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 0,
-      "system": {
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<p><em>A petal that smolders with quiet inner warmth, glowing faintly orange like a coal that refuses to fade.</em></p>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "ingredient_taste": "sweet",
-          "ingredient_taste2": "",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isIngredient": true,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "55",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": 1,
-          "item_rarity": "Common",
-          "item_type": "material",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Ember Petal",
-          "optional_params": {},
-          "plant_ef": "100",
-          "refine_count": "0",
-          "refine_level": "0",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "<Set Name>",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "UI9WP1hyxQomHxJb"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "62wNY7bslntnoL7o",
       "_stats": {
         "compendiumSource": "Item.UhJH8T9TEmsJnQVc",
@@ -1873,7 +1700,7 @@
             }
           ],
           "description": "",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -1976,7 +1803,7 @@
           "humanoid_ef": "100",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": true,
+          "isEquipped": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -2446,68 +2273,6 @@
           "type": "base"
         },
         {
-          "_id": "aF3BjiNtyqYO1aQB",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [
-            {
-              "key": "affinity_6",
-              "mode": 5,
-              "priority": null,
-              "value": "aeAffinityFloor(\"RS\")"
-            }
-          ],
-          "description": "",
-          "disabled": true,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "aF3BjiNtyqYO1aQB",
-              "originalParentId": "9eWyiZCnRhC89Fsn",
-              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.9eWyiZCnRhC89Fsn.ActiveEffect.aF3BjiNtyqYO1aQB"
-            },
-            "fabula-ultima-companion": {
-              "orbment": true
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "icons/svg/upgrade.svg",
-          "name": "Resistance Fire (Orbment)",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": [
-              "orbment"
-            ]
-          },
-          "tint": "#ffffff",
-          "transfer": true,
-          "type": "base"
-        },
-        {
           "_id": "BwQwACwVyEpNUKkV",
           "_stats": {
             "compendiumSource": null,
@@ -2561,6 +2326,68 @@
           "sort": 0,
           "statuses": [],
           "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
+          "_id": "JnTLwShUiOAaZapN",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1793459166257,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "orbment_dr_flat_bolt",
+              "mode": 2,
+              "priority": null,
+              "value": "2"
+            }
+          ],
+          "description": "",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "JnTLwShUiOAaZapN",
+              "originalParentId": "9eWyiZCnRhC89Fsn",
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.9eWyiZCnRhC89Fsn.ActiveEffect.JnTLwShUiOAaZapN"
+            },
+            "fabula-ultima-companion": {
+              "orbment": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Guard Bolt (Orbment)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "orbment"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": true,
           "type": "base"
@@ -2748,11 +2575,13 @@
             ],
             "slots": [
               {
-                "id": "resistance",
-                "param": "fire"
+                "id": "guard",
+                "param": "bolt",
+                "source": "roll",
+                "value": 2
               }
             ],
-            "version": 1
+            "version": 3
           }
         }
       },
@@ -2778,7 +2607,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li><p>No Quality.</p></li></ul>\n<hr><p><strong>🔮 Orbment</strong></p><ul style=\"margin:.2em 0\"><li><b>Slot 1:</b> Resistance: Fire — <i>Resistance to <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage.</i></li></ul>",
+          "description": "<ul><li><p>No Quality.</p></li></ul>",
           "dragon_ef": "100",
           "effect_table": {},
           "elemental_ef": "100",
@@ -3945,6 +3774,62 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "8lF3aCEt5wsYxleL"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "BIhtvvOe8tu627BB",
+      "_stats": {
+        "compendiumSource": "Item.XZomcenPLhn7FpGI",
+        "coreVersion": "12.343",
+        "createdTime": 1793473363512,
+        "duplicateSource": "Item.4E3auFhcWT06tIn5",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Sapper/icon_arch_hide.png",
+      "name": "Set Trap",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>You master the art of creating and deploying traps. Each time you acquire this Skill, you progressively learn to create better traps. You can only learn <strong>two traps</strong> from each corresponding Skill Level (SL) (see Facet).</p>",
+          "duration": "-",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": 1,
+          "max_level": "5",
+          "name": "Set Trap",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "XZomcenPLhn7FpGI"
       },
       "type": "equippableItem"
     },
@@ -9420,6 +9305,74 @@
           "type": "base"
         },
         {
+          "_id": "pQdWVeuaCAwBfbMU",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1793474647811,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_3",
+              "mode": 5,
+              "priority": null,
+              "value": "aeAffinityFloor(\"RS\")"
+            },
+            {
+              "key": "affinity_4",
+              "mode": 5,
+              "priority": null,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "pQdWVeuaCAwBfbMU",
+              "originalParentId": "p2ZYcT97cqBChzJS",
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.p2ZYcT97cqBChzJS.ActiveEffect.pQdWVeuaCAwBfbMU"
+            },
+            "fabula-ultima-companion": {
+              "orbment": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Dual Resistance Bolt/Dark (Orbment)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "orbment"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
           "_id": "WTVrZFjtdThvzqik",
           "_stats": {
             "compendiumSource": null,
@@ -9593,6 +9546,21 @@
               "actorUuid": "",
               "source": "World Item"
             }
+          },
+          "orbment": {
+            "baseProps": [],
+            "linkGroup": [
+              "p2ZYcT97cqBChzJS"
+            ],
+            "slots": [
+              {
+                "id": "dual_resistance",
+                "param": "bolt+dark",
+                "source": "upgrade",
+                "value": null
+              }
+            ],
+            "version": 3
           }
         },
         "fucompanion": {
@@ -9665,6 +9633,7 @@
           "demon_ef": "100",
           "description": "<ul>\n<li>When you use the <strong>Potion Rain</strong> Skill, the restoring effect is not halved.</li>\n</ul>",
           "dragon_ef": "100",
+          "effect_table": {},
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -9700,6 +9669,7 @@
           "name": "Apothecary Robes",
           "optional_params": {},
           "plant_ef": "100",
+          "reaction_config_table": {},
           "refine_count": 4,
           "refine_level": 4,
           "reptilian_ef": "100",
@@ -10273,6 +10243,146 @@
       "type": "equippableItem"
     },
     {
+      "_id": "Q8Cd45zCsSKj52pW",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1793467636856,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "VzpCG9mySsd9sQSL",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
+      "name": "Mixed Juice",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "description": "<ul><li><p><em>Target creature recovers <strong>50 Hit Points</strong> and <strong>50 Mind Points</strong>.</em></p></li></ul>",
+          "effect_table": {
+            "0": {
+              "chain_steps": "mixedjuice_hp,mixedjuice_mp",
+              "effect_kind": "chain",
+              "effect_label": "mixedjuice_use"
+            },
+            "1": {
+              "effect_kind": "grant",
+              "effect_label": "mixedjuice_hp",
+              "grant_amount": "50",
+              "grant_resource": "hp",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "effect_kind": "grant",
+              "effect_label": "mixedjuice_mp",
+              "grant_amount": "50",
+              "grant_resource": "mp",
+              "target_ref": "action_targets"
+            }
+          },
+          "ip_cost": "5",
+          "isEquipped": false,
+          "isUnique": false,
+          "item_cost": "500",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_skill_active": {
+            "z5ToyWoJtzTaboW6": {
+              "id": "${item.id}",
+              "name": "Mixed Juice",
+              "skill_cost": "-",
+              "skill_description": "<ul><li><p><em>Target creature recovers <strong>50 Hit Points</strong> and <strong>50 Mind Points</strong>.</em></p></li></ul>",
+              "skill_maxLevel": 1,
+              "uuid": "Item.z5ToyWoJtzTaboW6"
+            }
+          },
+          "item_type": "consumable",
+          "name": "Mixed Juice",
+          "related_item_list": {
+            "z5ToyWoJtzTaboW6": {
+              "id": "${item.id}",
+              "name": "Mixed Juice",
+              "related_item_description": "<ul><li><p><em>Target creature recovers <strong>50 Hit Points</strong> and <strong>50 Mind Points</strong>.</em></p></li></ul>",
+              "uuid": "Item.z5ToyWoJtzTaboW6"
+            }
+          },
+          "skill_target": "One Creature"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "POaW4RjRIguvQpqU"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Qbwt0J1raYuj2Jh8",
+      "_stats": {
+        "compendiumSource": "Item.fT3T2irBXiSWPcvB",
+        "coreVersion": "12.343",
+        "createdTime": 1793473364098,
+        "duplicateSource": "Item.gHEqgUQKQMDAJT5B",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Sapper/icon_arch_detonatetraps.png",
+      "name": "Siren Trap",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "1 IP",
+          "damage_bonus": "0",
+          "description": "<p><strong>Requirement:</strong> Set Trap (SL 1+)</p><p>Once triggered, this trap emits a loud noise designed to distract foes. In non-conflict scenes, you set a timer that expires at your discretion, and affected creatures must immediately move toward the source of the sound upon activation. In combat, there is no timer, and affected creatures suffer <a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\">Dazed</a>.</p>",
+          "duration": "Special",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": 1,
+          "max_level": "1",
+          "name": "Siren Trap",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "fT3T2irBXiSWPcvB"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "QfaU0E6iq829nPxO",
       "_stats": {
         "compendiumSource": null,
@@ -10372,7 +10482,7 @@
           "ingredient_taste2": "",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": false,
+          "isEquipped": true,
           "isIngredient": false,
           "isKey": false,
           "isMartial": false,
@@ -10545,6 +10655,62 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "tGgGFGEavGVjJVAz"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Rcw6CZAu9TNFEtxG",
+      "_stats": {
+        "compendiumSource": "Item.b98EPXDiPplLAZDR",
+        "coreVersion": "12.343",
+        "createdTime": 1793473311480,
+        "duplicateSource": "Item.IIcTXr2RJQ1BdqQn",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/Callofruin.png",
+      "name": "Vital Strike",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>After a successful Accuracy Check, If the creature would enter <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a> with your 【⚔️ Attack】. The targeted creature suffers extra damage of the same type as your attack equal to your <strong>Dexterity</strong> die size.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": 1,
+          "max_level": "1",
+          "name": "Vital Strike",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "",
+          "skill_target": "One creatur",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "b98EPXDiPplLAZDR"
       },
       "type": "equippableItem"
     },
@@ -12925,12 +13091,82 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "S2ROFXkV776qtmRV",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1793459100431,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_5",
+              "mode": 5,
+              "priority": null,
+              "value": "aeAffinityFloor(\"RS\")"
+            },
+            {
+              "key": "affinity_9",
+              "mode": 5,
+              "priority": null,
+              "value": "aeAffinityFloor(\"RS\")"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "S2ROFXkV776qtmRV",
+              "originalParentId": "xEHcsYyJhPaTCGcJ",
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.xEHcsYyJhPaTCGcJ.ActiveEffect.S2ROFXkV776qtmRV"
+            },
+            "fabula-ultima-companion": {
+              "orbment": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Dual Resistance Earth/Poison (Orbment)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "orbment"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.5"
         },
         "fabula-ultima-companion": {
-          "activeForm": 0,
+          "activeForm": 1,
           "orbment": {
             "baseProps": [
               {
@@ -12944,13 +13180,20 @@
             "slots": [
               {
                 "id": "multi",
-                "param": null
+                "param": null,
+                "source": "craft",
+                "value": null
               },
-              null
+              {
+                "id": "dual_resistance",
+                "param": "earth+poison",
+                "source": "roll",
+                "value": null
+              }
             ],
-            "version": 1
+            "version": 3
           },
-          "transformFreeUsedRound": 5,
+          "transformFreeUsedRound": 2,
           "weaponForms": [
             {
               "check_bonus": "1",
@@ -12992,7 +13235,7 @@
           "damage_bonus": 21,
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<p><a class=\"content-link\" data-uuid=\"JournalEntry.EYcZ6QkAqiGBAxLB\" data-id=\"EYcZ6QkAqiGBAxLB\" data-type=\"JournalEntry\">Transform</a>&nbsp;<a class=\"content-link\" data-uuid=\"Item.2mX266qZdTJYJXCy\" data-id=\"2mX266qZdTJYJXCy\" data-type=\"Item\">Zarg's Bow - Light</a></p><ul><li><p>Damage dealt by the weapon ignores <strong>Resistances</strong></p></li></ul>\n<hr><p><strong>🔮 Orbment</strong></p><ul style=\"margin:.2em 0\"><li><b>Slot 1:</b> Multi (2) — <i>Attacks strike up to 2 different targets.</i></li><li><b>Slot 2:</b> <span style=\"opacity:.6\">(empty)</span></li></ul>",
+          "description": "<p><a class=\"content-link\" data-uuid=\"JournalEntry.EYcZ6QkAqiGBAxLB\" data-id=\"EYcZ6QkAqiGBAxLB\" data-type=\"JournalEntry\">Transform</a>&nbsp;<a class=\"content-link\" data-uuid=\"Item.2mX266qZdTJYJXCy\" data-id=\"2mX266qZdTJYJXCy\" data-type=\"Item\">Zarg's Bow - Light</a></p><ul><li><p>Damage dealt by the weapon ignores <strong>Resistances</strong></p></li></ul>",
           "dragon_ef": "100",
           "effect_table": {},
           "elemental_ef": "100",
@@ -13052,6 +13295,63 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "GYrsWYBQ6Hu7DnuA"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "XLpwRBfaOqNgs0qT",
+      "_stats": {
+        "compendiumSource": "Item.YWDErqkiLduFGt3z",
+        "coreVersion": "12.343",
+        "createdTime": 1793473309452,
+        "duplicateSource": "Item.b98EPXDiPplLAZDR",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/RenaSkill3.png",
+      "name": "Wild Reflexes",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "-",
+          "damage_bonus": "0",
+          "description": "<p>When you perform the 【🛡️ Guard】 action, if you choose not to provide cover to another creature, your reflexes are wildly increased! Until the start of your next turn, you gain a bonus to your <strong>Defense</strong> equal to <strong>[SL]</strong>.</p><p>Additionally, if an enemy misses you with an 【⚔️ Attack】 during this time, you may perform a free 【⚔️ Attack】 against them. Treat your <strong>HR</strong> as <strong>0</strong> when calculating damage for this counterattack. Do not stack with other <strong>Counterattack </strong>effects.</p>",
+          "duration": "",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": 1,
+          "max_level": "5",
+          "name": "Wild Reflexes",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Defense Bonus</strong></p></td></tr><tr><td><p>1</p></td><td><p>+1</p></td></tr><tr><td><p>2</p></td><td><p>+2</p></td></tr><tr><td><p>3</p></td><td><p>+3</p></td></tr><tr><td><p>4</p></td><td><p>+4</p></td></tr><tr><td><p>5</p></td><td><p>+5</p></td></tr></tbody></table>",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "YWDErqkiLduFGt3z"
       },
       "type": "equippableItem"
     },
@@ -13238,12 +13538,69 @@
         "uniqueId": "zkemDJpm1IKNrQDn"
       },
       "type": "equippableItem"
+    },
+    {
+      "_id": "zu0GeHNBzF1M0xQr",
+      "_stats": {
+        "compendiumSource": "Item.gHEqgUQKQMDAJT5B",
+        "coreVersion": "12.343",
+        "createdTime": 1793473364098,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Sapper/icon_arch_detonatetraps.png",
+      "name": "Tripwire Trap",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Hunter",
+          "cost": "1 IP",
+          "damage_bonus": "0",
+          "description": "<p><strong>Requirement:</strong> Set Trap (SL 1+)</p><p>You set up a simple wire attached to two points to detect movement and trip your target. In non-conflict scenes, this trap alerts allies of incoming enemies. In combat, the target suffers 【 HR + 10 】 <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a> damage. Describe your contraption and the sound it makes!</p>",
+          "duration": "Special",
+          "heroic_requirement": "",
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "level": 1,
+          "max_level": "1",
+          "name": "Tripwire Trap",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
+          "skill_target": "Special",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "gHEqgUQKQMDAJT5B"
+      },
+      "type": "equippableItem"
     }
   ],
   "name": "Zarg",
   "ownership": {
     "2vy7wrEUqBy0kzsU": 2,
     "7hKw8KGsimboeDif": 0,
+    "FNU2oRs9BdRQk5rL": 2,
     "JQGNzKpDPHJmcUIW": 3,
     "default": 3,
     "iLeUVmwqnze8ulOI": 3,
@@ -13445,8 +13802,8 @@
   "system": {
     "activeConditionalModifierGroups": [],
     "props": {
-      "accessory2_details": "<ul><li><p>Gain +3 to your Accuracy check</p></li><li><p>The first <strong>Range Attack on each round </strong>against your party must target you.</p></li></ul>",
-      "accessory2_name": "Apple o' Archer",
+      "accessory2_details": "<ul><li>Decrease IP usage by 1 when creating a <strong>Potion </strong>or <strong>Magisphere</strong> <em>(to a minimum of 1)</em></li></ul>",
+      "accessory2_name": "Maid cap",
       "accessory_details": "<ul>\n<li>When you take damage for the&nbsp;<strong>first time&nbsp;</strong>in a&nbsp;<strong>conflict,&nbsp;</strong>reduce that damage to&nbsp;<strong>0</strong></li>\n</ul>",
       "accessory_name": "Ninja Log",
       "activation": 1,
@@ -13454,11 +13811,11 @@
       "affinity_2": "NA",
       "affinity_3": "NA",
       "affinity_4": "NA",
-      "affinity_5": "NA",
+      "affinity_5": "RS",
       "affinity_6": "NA",
       "affinity_7": "NA",
       "affinity_8": "NA",
-      "affinity_9": "NA",
+      "affinity_9": "RS",
       "animation_table": {},
       "anomaly_status": 0,
       "arcane_ef": "100",
@@ -13478,7 +13835,7 @@
       "bond_2": "Hina",
       "bond_3": "Freonia",
       "bond_4": "Keren",
-      "bond_5": "Raven",
+      "bond_5": "Unamed Master",
       "bond_6": "Wanderring flame",
       "bond_temp": "",
       "bonus_defense": 2,
@@ -13498,7 +13855,7 @@
       "character_exp_multiplier": 1,
       "character_zenit_multiplier": 1,
       "charm_status": 0,
-      "check_mod_accuracy": 3,
+      "check_mod_accuracy": 0,
       "check_mod_all": 0,
       "check_mod_init": 0,
       "check_mod_magic": 0,
@@ -13536,6 +13893,12 @@
           "benefit": "mp",
           "class_name": "Elementalist",
           "level": 1
+        },
+        "7": {
+          "$deleted": false,
+          "benefit": "ip",
+          "class_name": "Hunter",
+          "level": "3"
         }
       },
       "clock_adoration": "0",
@@ -13630,7 +13993,7 @@
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.7HiiYUgDP7QkANdf"
         },
         "8wPV7YHkxgJ6Sl5J": {
-          "consume_description": "<ul><li><p>Revive one <strong>KO </strong>allies and restore their HP to their <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Crisis</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>score.</p></li></ul>",
+          "consume_description": "<ul><li><p>Revive one <strong>KO </strong>allies and restore their HP to their <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>&nbsp;score.</p></li></ul>",
           "id": "${item.id}",
           "name": "Phoenix Feather",
           "quantity": 1,
@@ -13638,7 +14001,7 @@
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.8wPV7YHkxgJ6Sl5J"
         },
         "A3VqPJRBDW8c1NnH": {
-          "consume_description": "<ul><li>Inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Charm</span></strong></a></span></span> on the target&nbsp;<strong>Humanoid</strong> which last until the end of this round. Have no effect on Champion-Rank creature</li><li>When use outside of <strong>conflict, </strong>the effect last until the end of the <strong>scene </strong>instead</li></ul>",
+          "consume_description": "<ul><li>Inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\">Charm</a> on the target&nbsp;<strong>Humanoid</strong> which last until the end of this round. Have no effect on Champion-Rank creature</li><li>When use outside of <strong>conflict, </strong>the effect last until the end of the <strong>scene </strong>instead</li></ul>",
           "id": "${item.id}",
           "name": "Love Potion",
           "quantity": 1,
@@ -13685,6 +14048,14 @@
           "roll": "",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.N7V1XkfZqFo7gCtM"
         },
+        "Q8Cd45zCsSKj52pW": {
+          "consume_description": "<ul><li><p><em>Target creature recovers <strong>50 Hit Points</strong> and <strong>50 Mind Points</strong>.</em></p></li></ul>",
+          "id": "${item.id}",
+          "name": "Mixed Juice",
+          "quantity": 1,
+          "roll": "",
+          "uuid": "Actor.Z4CFy505cD3nzl1W.Item.Q8Cd45zCsSKj52pW"
+        },
         "VDOza2TrzF7qwNAx": {
           "consume_description": "<blockquote><ul><li><em>Gain <strong>Swift </strong>for the rest of the scene<strong>.(</strong>Increase your <strong>【DEX】</strong> die by 1 stage </em>(to a maximum for D12)<em> )</em></li></ul></blockquote>",
           "id": "${item.id}",
@@ -13718,7 +14089,7 @@
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.gB01wl2u3eJWmvfB"
         },
         "leAYO9ruiIajUdhU": {
-          "consume_description": "<ul><li><p>Target creature gain <strong>10 </strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a></span></span>, if the target already have a <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a><strong><span style=\"text-decoration: underline;\">,</span></strong></span></span> increase that shield value by 10 instead.</p></li></ul>",
+          "consume_description": "<ul><li><p>Target creature gain <strong>10 </strong><a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a>, if the target already have a <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a>, increase that shield value by 10 instead.</p></li></ul>",
           "id": "${item.id}",
           "name": "Golem Soulstone",
           "quantity": 1,
@@ -13785,9 +14156,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "121",
-      "current_ip": "10",
-      "current_mp": "81",
+      "current_hp": 113,
+      "current_ip": "5",
+      "current_mp": 93,
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Zarg_Cut-in002.png",
       "cut_in_fumble": "",
@@ -13841,7 +14212,7 @@
       "emotion_4_2": "loyalty",
       "emotion_4_3": "affection",
       "emotion_5_1": "",
-      "emotion_5_2": "",
+      "emotion_5_2": "loyalty",
       "emotion_5_3": "",
       "emotion_6_1": "",
       "emotion_6_2": "",
@@ -13853,8 +14224,8 @@
       "enraged_status": 0,
       "entropism": false,
       "envenomed_status": 0,
-      "exp_meter": "9.01",
-      "experience": "9.01",
+      "exp_meter": "9.51",
+      "experience": "9.51",
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
       "extra_damage_mod_all": 0,
@@ -13880,7 +14251,7 @@
       "extra_damage_mod_spell": 0,
       "extra_damage_mod_sword": 0,
       "extra_damage_mod_thrown": 0,
-      "fabula_point": "5",
+      "fabula_point": "4",
       "fatigue_status": 0,
       "firearm_ef": "100",
       "flail_ef": "100",
@@ -13920,7 +14291,7 @@
       "isolate_status": 0,
       "itemContainer2": {
         "9eWyiZCnRhC89Fsn": {
-          "armor_description": "<p><ul><li><p>No Quality.</p></li></ul>\n<hr><p><strong>🔮 Orbment</strong></p><ul style=\"margin:.2em 0\"><li><b>Slot 1:</b> Resistance: Fire — <i>Resistance to Fire damage.</i></li></ul></p>",
+          "armor_description": "<p><ul><li><p>No Quality.</p></li></ul></p>",
           "armor_martial": "",
           "id": "${item.id}",
           "name": "+4 Combat Tunic",
@@ -14012,7 +14383,7 @@
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.DnkD0FJseiBxJPbI"
         },
         "DurrKO46Vi8BcNVm": {
-          "acess_description": "<ul><li>At the start of your turn, You lose <strong>15 HP.</strong></li><li><p>Your Attacks gains @UUID[JournalEntry.CRPjA4dHUYLSAh0M]{Drain}</p></li></ul>",
+          "acess_description": "<ul><li>At the start of your turn, You lose <strong>15 HP.</strong></li><li><p>Your Attacks gains <a class=\"content-link\" data-uuid=\"JournalEntry.CRPjA4dHUYLSAh0M\" data-id=\"CRPjA4dHUYLSAh0M\" data-type=\"JournalEntry\">Drain</a></p></li></ul>",
           "id": "${item.id}",
           "name": "Vampire Cloak",
           "roll": "",
@@ -14068,7 +14439,7 @@
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.QfaU0E6iq829nPxO"
         },
         "SopXXY9q83NQSm2x": {
-          "acess_description": "<ul><li>When you apply or re-apply a <strong>Status Conditions</strong> to a creature, it takes&nbsp;<strong>5&nbsp;Dark&nbsp;</strong>damage.</li></ul>",
+          "acess_description": "<ul><li>When you apply or re-apply a <strong>Status Conditions</strong> to a creature, it takes&nbsp;<strong>5&nbsp;<a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a>&nbsp;</strong>damage.</li></ul>",
           "id": "${item.id}",
           "name": "Skull Orb",
           "roll": "",
@@ -14103,7 +14474,7 @@
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.VEPepE5ozQlm8sEZ"
         },
         "VJP2hrigNNHF1M9E": {
-          "acess_description": "<ul><li><p>You are immune to <strong>@UUID[JournalEntry.TOF8epes1eGHwx5J]{Frightened}</strong></p></li></ul>",
+          "acess_description": "<ul><li><p>You are immune to <a class=\"content-link\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\">Frightened</a></p></li></ul>",
           "id": "${item.id}",
           "name": "Teddy Bear",
           "roll": "",
@@ -14196,7 +14567,7 @@
       },
       "item_restore_mod": 20,
       "key_list": {},
-      "level": "41",
+      "level": "43",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 10,
@@ -14322,9 +14693,9 @@
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.ynvsqZxmSc2Eqsld"
         }
       },
-      "max_hp": 121,
-      "max_ip": 10,
-      "max_mp": 81,
+      "max_hp": 113,
+      "max_ip": 12,
+      "max_mp": 93,
       "memories_list": {
         "0": {
           "$deleted": false,
@@ -14333,6 +14704,14 @@
           "emotion_z": "",
           "memory_x": "Test Memories",
           "relationship_x": "testing"
+        },
+        "1": {
+          "$deleted": false,
+          "emotion_x": "",
+          "emotion_y": "",
+          "emotion_z": "",
+          "memory_x": "Raven",
+          "relationship_x": "Conection"
         }
       },
       "memory": "Memories",
@@ -14475,7 +14854,7 @@
       "relationship_2": "",
       "relationship_3": "",
       "relationship_4": "",
-      "relationship_5": "Conection",
+      "relationship_5": "",
       "relationship_6": "",
       "resource_value_1": "0",
       "resource_value_2": "0",
@@ -14971,7 +15350,7 @@
         "kTZD5WHGBnT9JJi1": {
           "active_class": "Sharpshooter",
           "active_cost": "",
-          "active_description": "<p>When you <strong>hit</strong> one or more targets with a <strong>ranged attack</strong> that would deal damage, you may have the attack deal no damage. If you do, <strong>choose one option:</strong></p><ul><li><p>Inflict <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span> on each target hit by the attack</p></li><li><p>Inflict <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Slow</span></strong></a></span> on each target hit by the attack</p></li><li><p>Each target hit by the attack loses <strong>【SL × 10】</strong> Mind Points. Describe your maneuver!</p></li></ul>",
+          "active_description": "<p>When you <strong>hit</strong> one or more targets with a <strong>ranged attack</strong> that would deal damage, you may have the attack deal no damage. If you do, <strong>choose one option:</strong></p><ul><li><p>Inflict <a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\">Shaken</a> on each target hit by the attack</p></li><li><p>Inflict <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\">Slow</a> on each target hit by the attack</p></li><li><p>Each target hit by the attack loses <strong>【SL × 10】</strong> Mind Points. Describe your maneuver!</p></li></ul>",
           "active_duration": "Instantaneous",
           "active_level": 4,
           "active_target": "-",
@@ -15019,7 +15398,7 @@
         "mv4dNcGM84BH46mZ": {
           "active_class": "Sharpshooter",
           "active_cost": "10 MP",
-          "active_description": "<p>When you perform a <strong>ranged attack</strong>, you may spend <strong>10 Mind Points</strong> to <strong>choose</strong> one option:</p><ul><li><p>The attack gains <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></span></p></li><li><p> Increase the attack's multi property by one, up to a maximum of <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Multi</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;3</span></strong></span></p></li></ul>",
+          "active_description": "<p>When you perform a <strong>ranged attack</strong>, you may spend <strong>10 Mind Points</strong> to <strong>choose</strong> one option:</p><ul><li><p>The attack gains <a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\">Multi</a><strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></p></li><li><p> Increase the attack's multi property by one, up to a maximum of <a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\">Multi</a><strong><span style=\"text-decoration: underline;\">&nbsp;3</span></strong></p></li></ul>",
           "active_duration": "Instantaneous",
           "active_level": 1,
           "active_target": "-",
@@ -15173,9 +15552,9 @@
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.zTGWIKiogBtbpJ07"
         }
       },
-      "skill_class_filter": "Sharpshooter",
+      "skill_class_filter": "Rogue",
       "skill_hideEffect": false,
-      "skill_point": "1",
+      "skill_point": "0",
       "skill_point_bonus": "0",
       "skill_type_filter": "All",
       "slow_status": 0,
@@ -15183,10 +15562,15 @@
       "spell_class_filter": "",
       "spell_hideEffect": false,
       "spiritism": false,
+      "sprite_attack": "",
       "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Battler002.webm",
+      "sprite_cast": "",
       "sprite_crisis": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Crisis.webm",
+      "sprite_fly": "",
+      "sprite_guard": "",
       "sprite_hurt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Hurt.webm",
       "sprite_ko": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_KO.webm",
+      "sprite_leap": "",
       "sprite_onsen": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Onsen.png",
       "sprite_sit": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Sit.png",
       "sprite_sleep": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Sleep.webm",
@@ -15462,7 +15846,7 @@
           "roll": "",
           "type": "Arcane",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.mAQopLhkj1OlePlj",
-          "weapon_description": "<p><ul><li><p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p></li><li><p>You may cast the spell 【<strong>⚡ Icicle Lance </strong>】</p><hr contenteditable=\"false\"></li></ul><details><summary><strong>⚡ Icicle Lance</strong></summary><p><strong>Cost:</strong> 15 x T MP</p><p><strong>Target:</strong> Up to three creatures</p><p><strong>Duration:</strong> Instantaneous</p><p><strong>Check:【WLP】</strong> + <strong>【WLP】</strong></p><ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Pierce</span></strong></a></span></span></p></li></ul><p>You summon a glacier spears to strike your foes, Each target hit my this spell suffers <strong>【HR + 20】</strong>ice damage.</p><p></p></details></p>",
+          "weapon_description": "<p><ul><li><p>This weapon deals <a class=\"content-link\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" data-id=\"XYQUsuXPU0CQjEYa\" data-type=\"JournalEntry\">Magic Damage</a></p></li><li><p>You may cast the spell 【<strong>⚡ Icicle Lance </strong>】</p><hr contenteditable=\"false\"></li></ul><details><summary><strong>⚡ Icicle Lance</strong></summary><p><strong>Cost:</strong> 15 x T MP</p><p><strong>Target:</strong> Up to three creatures</p><p><strong>Duration:</strong> Instantaneous</p><p><strong>Check:【WLP】</strong> + <strong>【WLP】</strong></p><ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\">Pierce</a></p></li></ul><p>You summon a glacier spears to strike your foes, Each target hit my this spell suffers <strong>【HR + 20】</strong><a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\">Ice</a> damage.</p><p></p></details></p>",
           "weapon_hand": "Two-handed",
           "weapon_martial": "",
           "weapon_range": "Melee"
@@ -15534,7 +15918,7 @@
           "roll": "",
           "type": "Bow",
           "uuid": "Actor.Z4CFy505cD3nzl1W.Item.xEHcsYyJhPaTCGcJ",
-          "weapon_description": "<p><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.EYcZ6QkAqiGBAxLB\" data-id=\"EYcZ6QkAqiGBAxLB\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Transform</span></strong></a></span></span>&nbsp;@UUID[Item.2mX266qZdTJYJXCy]{Zarg's Bow - Light}</p><ul><li><p>Damage dealt by the weapon ignores <strong>Resistances</strong></p></li></ul>\n<hr><p><strong>🔮 Orbment</strong></p><ul style=\"margin:.2em 0\"><li><b>Slot 1:</b> Multi (2) — <i>Attacks strike up to 2 different targets.</i></li><li><b>Slot 2:</b> <span style=\"opacity:.6\">(empty)</span></li></ul></p>",
+          "weapon_description": "<p><p><a class=\"content-link\" data-uuid=\"JournalEntry.EYcZ6QkAqiGBAxLB\" data-id=\"EYcZ6QkAqiGBAxLB\" data-type=\"JournalEntry\">Transform</a>&nbsp;<a class=\"content-link\" data-uuid=\"Item.2mX266qZdTJYJXCy\" data-id=\"2mX266qZdTJYJXCy\" data-type=\"Item\">Zarg's Bow - Light</a></p><ul><li><p>Damage dealt by the weapon ignores <strong>Resistances</strong></p></li></ul></p>",
           "weapon_hand": "Two-handed",
           "weapon_martial": "♦️",
           "weapon_range": "Ranged"
@@ -15557,7 +15941,7 @@
       "wlp_base": "8",
       "wlp_current": 8,
       "your_class_name": "Tactical Hunter",
-      "zenit": "267",
+      "zenit": "56",
       "zero_label": "Zero Power",
       "zero_power_description": "<p><strong>Zero Scourge</strong></p><p>Special rule: when you select this effect for your Zero Power, choose a damage type</p><p>among air, bolt, dark, earth, fire, ice, light, and poison; then, choose two status effects</p><p>among dazed, shaken, slow, and weak.</p><p>Choose any number of creatures you can see: each of them suffers damage of then</p><p>chosen type equal to【30 + half your level】and suffers the chosen status effects.</p>",
       "zero_power_macro": "",

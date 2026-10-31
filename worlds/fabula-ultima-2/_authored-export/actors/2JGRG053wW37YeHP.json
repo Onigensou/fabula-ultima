@@ -33,6 +33,7 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "isAlchemist": true,
       "opp_lucky": 0
     }
   },
@@ -984,6 +985,97 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "bjhFQPrkM1MR1Yoa"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "OeKZBrJJRgpT12ms",
+      "_stats": {
+        "compendiumSource": "Item.ZXaslUkB4sJRWJn3",
+        "coreVersion": "12.343",
+        "createdTime": 1793459511855,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/weapons/daggers/dagger-black.webp",
+      "name": "Steel Dagger",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Dagger",
+          "celestial_ef": "100",
+          "check_bonus": "1",
+          "construct_ef": "100",
+          "damage_bonus": "4",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>No Quality.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "150",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Steel Dagger",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "set_description": "",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "ZXaslUkB4sJRWJn3"
       },
       "type": "equippableItem"
     },
@@ -2159,7 +2251,7 @@
           "accessory_bonusmdef": 0,
           "accessory_buy": "",
           "accessory_cost": 1200,
-          "accessory_description": "<ul><li><p>You are always inflicts with <strong>@UUID[JournalEntry.rBnvYhLfmrVZDdoW]{Blind}</strong></p></li><li>Gain +5 to all Accuracy Check.</li></ul>",
+          "accessory_description": "<ul><li><p>You are always inflicts with <a class=\"content-link\" data-uuid=\"JournalEntry.rBnvYhLfmrVZDdoW\" data-id=\"rBnvYhLfmrVZDdoW\" data-type=\"JournalEntry\">Blind</a></p></li><li>Gain +5 to all Accuracy Check.</li></ul>",
           "accessory_quantity": 1,
           "accessory_set": false,
           "id": "${item.id}",
@@ -2207,6 +2299,36 @@
       "shop_icon_offset_y": "0",
       "shop_name": "🏷️Roadside Peddler",
       "shop_portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Nightshade.png",
+      "shop_weapon_list": {
+        "1sd5N9F9mSqp7ezQ": {
+          "id": "${item.id}",
+          "name": "Shortbow",
+          "uuid": "Actor.2JGRG053wW37YeHP.Item.1sd5N9F9mSqp7ezQ",
+          "weapon_buy": "",
+          "weapon_category": "Bow",
+          "weapon_cost": 200,
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "",
+          "weapon_quality": "<p><ul><li><p>No Quality.</p></li></ul></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Ranged",
+          "weapon_set": ""
+        },
+        "bbtI25RE7B7RZcm8": {
+          "id": "${item.id}",
+          "name": "Looting Bow",
+          "uuid": "Actor.2JGRG053wW37YeHP.Item.bbtI25RE7B7RZcm8",
+          "weapon_buy": "",
+          "weapon_category": "Bow",
+          "weapon_cost": 1250,
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "",
+          "weapon_quality": "<p><ul><li>When you reduce a creature to 0 Hit Points with this weapon, you may immediately recover <strong>2 Inventory Points.</strong></li></ul></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Ranged",
+          "weapon_set": ""
+        }
+      },
       "showMacro": false,
       "spear_ef": "100",
       "species": "HUMANOID",
@@ -2214,9 +2336,14 @@
       "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Nightshade.png",
       "sprite_cast": "",
       "sprite_crisis": "",
+      "sprite_fly": "",
       "sprite_guard": "",
       "sprite_hurt": "",
       "sprite_ko": "",
+      "sprite_leap": "",
+      "sprite_onsen": "",
+      "sprite_sit": "",
+      "sprite_sleep": "",
       "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Nightshade.png",
       "sprite_walk": "",
       "steal_percentage_table": {},
@@ -2227,6 +2354,13 @@
           "name": "Soul Ring",
           "roll": "",
           "uuid": "Actor.2JGRG053wW37YeHP.Item.0YmQOxhBAjHujoXY"
+        },
+        "1sd5N9F9mSqp7ezQ": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>No Quality.</p></li></ul>",
+          "name": "Shortbow",
+          "roll": "",
+          "uuid": "Actor.2JGRG053wW37YeHP.Item.1sd5N9F9mSqp7ezQ"
         },
         "VBzFqBbhT0FnxHNL": {
           "id": "${item.id}",
@@ -2244,7 +2378,7 @@
         },
         "ZMLZAszoZbkqPmqx": {
           "id": "${item.id}",
-          "loot_description": "<ul><li><p>You are always inflicts with <strong>@UUID[JournalEntry.rBnvYhLfmrVZDdoW]{Blind}</strong></p></li><li>Gain +5 to all Accuracy Check.</li></ul>",
+          "loot_description": "<ul><li><p>You are always inflicts with <a class=\"content-link\" data-uuid=\"JournalEntry.rBnvYhLfmrVZDdoW\" data-id=\"rBnvYhLfmrVZDdoW\" data-type=\"JournalEntry\">Blind</a></p></li><li>Gain +5 to all Accuracy Check.</li></ul>",
           "name": "Blindfold",
           "roll": "",
           "uuid": "Actor.2JGRG053wW37YeHP.Item.ZMLZAszoZbkqPmqx"
@@ -2255,6 +2389,13 @@
           "name": "Shooting Star Fragment",
           "roll": "",
           "uuid": "Actor.2JGRG053wW37YeHP.Item.bZU0PYEbLUHqt5ub"
+        },
+        "bbtI25RE7B7RZcm8": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li>When you reduce a creature to 0 Hit Points with this weapon, you may immediately recover <strong>2 Inventory Points.</strong></li></ul>",
+          "name": "Looting Bow",
+          "roll": "",
+          "uuid": "Actor.2JGRG053wW37YeHP.Item.bbtI25RE7B7RZcm8"
         },
         "eIKHoniMYvSLbBk8": {
           "id": "${item.id}",

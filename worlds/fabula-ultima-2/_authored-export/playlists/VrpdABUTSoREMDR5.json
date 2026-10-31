@@ -23,7 +23,7 @@
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
   },
-  "seed": 948,
+  "seed": 132,
   "sort": 0,
   "sorting": "a",
   "sounds": [
@@ -223,7 +223,11 @@
       "_id": "N5EBhNpsUKKzWCOG",
       "channel": "music",
       "fade": null,
-      "flags": {},
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
       "name": "Awaken",
       "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Awaken.mp3",
       "repeat": true,
