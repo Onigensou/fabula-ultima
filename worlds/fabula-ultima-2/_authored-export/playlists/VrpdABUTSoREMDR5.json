@@ -247,6 +247,22 @@
       "volume": 0.41
     },
     {
+      "_id": "Pqnyr1lW0ntTpmev",
+      "channel": "music",
+      "description": "",
+      "fade": null,
+      "flags": {
+        "monks-sound-enhancements": {
+          "hide-name": true
+        }
+      },
+      "name": "Valley_Underground",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/OST/Valley_Underground.ogg",
+      "repeat": true,
+      "sort": 0,
+      "volume": 0.1
+    },
+    {
       "_id": "qBJH1ti0uQtMFcfE",
       "channel": "music",
       "description": "",
