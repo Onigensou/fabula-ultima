@@ -10,6 +10,7 @@
 
 import { anyTargetDeniesCritOpportunity, attackerDeniesOwnCritOpportunity } from "./snapshot.js";
 import { log, warn, err } from "./logger.js";
+import { watchGone, noteGmWaiting } from "./player-presence.js";
 import { isGmOverrideEmpty, summarizeGmOverride, dropGmRemovedReactions } from "./gm-card-override.js";
 import { runBattleEndSequence } from "./battle-end/battle-end-orchestrator.js";
 import { STATES } from "./states.js";
@@ -3237,6 +3238,10 @@ const Declare = {
       for (const hook of ["updateSetting", "createSetting"]) autoHooks.push([hook, Hooks.on(hook, onSwitch)]);
     });
 
+    // A missing player's turn never passes by itself: the GM's copy of this menu
+    // is already up, so they only need telling.
+    const stopAwayWatch = watchGone(ownerUserId, () => noteGmWaiting(ownerUserId, `${snap.name}'s turn`));
+
     // N-way race: local GM compose vs all remote participants (player + secondary
     // GMs). Whoever resolves first wins; all others are aborted and get
     // MENU_CLOSE. If there are no remotes, the race array contains only the
@@ -3322,6 +3327,7 @@ const Declare = {
       director.enqueue({ type: INTENTS.ABORT });
       return;
     } finally {
+      stopAwayWatch();
       director.ctx._composeCancelToken = null;
       for (const [hook, id] of autoHooks) Hooks.off(hook, id);
     }
@@ -7859,8 +7865,9 @@ function dropAnimationTail(director) {
 // Entered when ar.roll.opportunities was true in the preceding RESOLVE
 // (crit that is not a fumble). Awaits the full ONI opportunity flow —
 // stagger pause, "Opportunity!" animation, picker, resolution — before
-// releasing to REACTION_WINDOW. offer() has a built-in 120 s safety
-// timeout so the FSM is never permanently wedged if the player walks away.
+// releasing to REACTION_WINDOW. A connected player may think as long as they
+// like; offer() hands the wheel to the GM if they go missing, so the FSM is
+// never wedged by a player who isn't there.
 const OpportunityWindow = {
   async onEnter(director) {
     const opp = director.ctx.hasPendingOpportunity;

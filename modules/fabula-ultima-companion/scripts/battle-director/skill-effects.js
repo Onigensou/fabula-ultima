@@ -18,6 +18,7 @@
 //   isPassive, resolvedTargets (Map, mutated as resolution proceeds).
 
 import { log, warn } from "./logger.js";
+import { watchGone } from "./player-presence.js";
 import { stageOf } from "./director-camera.js";
 import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, applyHealReceiving, applyMpReceiving, arcanumQuickSummonLock } from "./skill-formulas.js";
 import { pickFromList } from "./list-picker.js";
@@ -13014,12 +13015,17 @@ async function showLootTableDialog({ caster, results, ctx }) {
   const ownerAwait = (game.user?.isGM && channel && ownerUserId)
     ? channel.awaitIntent(INTENTS.SOUL_STEAL_CLOSED, { fromUserId: ownerUserId, timeoutMs: 30 * 60 * 1000 })
     : null;
+  // Only a results panel: an owner who goes missing has nothing left to decide.
+  let stopAwayWatch = () => {};
+  const ownerGone = new Promise((res) => { stopAwayWatch = watchGone(ownerUserId, res); });
   try {
     await Promise.race([
       localPromise,
       ownerAwait ? ownerAwait.then(() => {}) : new Promise(() => {}),
+      ownerGone,
     ]);
   } finally {
+    stopAwayWatch();
     try { ownerAwait?.abort?.("closed"); } catch {}
     try { SoulStealResult.despawn({ combatId }); } catch {}
     if (broadcastedIds.length) {

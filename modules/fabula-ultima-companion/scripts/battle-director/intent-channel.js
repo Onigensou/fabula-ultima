@@ -60,6 +60,11 @@ export class IntentChannel {
     this._pongHandlers = new Set();
     // GM-side: told when another client announces itself (PLAYER_HELLO).
     this._helloHandlers = new Set();
+    // GM-side: told when a client says it is listening (hello OR probe answer).
+    // Separate from hello: a probe answer must not replay menus or add a GM to one.
+    this._readyHandlers = new Set();
+    // This client has attached its menu handlers (see announceReady).
+    this._announced = false;
     // GM-side cache of recently-broadcast MENU_OPEN payloads, keyed by
     // targetUserId. Used by PLAYER_HELLO to re-broadcast on player
     // late-join (e.g. player's `ready` hook finished AFTER the GM's
@@ -106,6 +111,10 @@ export class IntentChannel {
       case "PING":          return this._onPing(data);
       case "PONG":          return this._onPong(data);
       case "PLAYER_HELLO":  return this._onPlayerHello(data);
+      case "PRESENCE_PROBE":
+        if (this._announced && this._isForMe(data.payload)) this._emitRaw("PRESENCE_ACK", { fromUserId: game.user?.id ?? null });
+        return;
+      case "PRESENCE_ACK":  return this._notifyPeerReady(data.payload?.fromUserId);
       default: return;
     }
   }
@@ -119,6 +128,7 @@ export class IntentChannel {
     // Open windows hear about it first: a support GM who joins after a menu
     // opened was never sent it, and there is no cache entry to replay.
     const helloFrom = data.payload?.fromUserId ?? null;
+    this._notifyPeerReady(helloFrom);
     if (helloFrom) {
       for (const h of this._helloHandlers) {
         try { h({ userId: helloFrom }); } catch (e) { warn("PLAYER_HELLO handler threw", e); }
@@ -149,6 +159,7 @@ export class IntentChannel {
   // with a director attached, NOT the primary GM: a Co-DM can host, and then
   // the primary GM is the one that needs its menus replayed.
   announceReady() {
+    this._announced = true;
     if (this.director) return;
     this._emitRaw("PLAYER_HELLO", { fromUserId: game.user?.id ?? null });
   }
@@ -529,6 +540,26 @@ export class IntentChannel {
   onPeerHello(handler) {
     this._helloHandlers.add(handler);
     return () => this._helloHandlers.delete(handler);
+  }
+
+  // GM-side: ask these clients to say they're listening. A client still booting
+  // stays silent; see player-presence.js. Replays nothing.
+  probePeers(userIds) {
+    if (!game.user?.isGM || !userIds?.length) return;
+    this._emitRaw("PRESENCE_PROBE", { targetUserIds: userIds });
+  }
+
+  // GM-side: register a handler for "this client is listening" ({ userId }).
+  onPeerReady(handler) {
+    this._readyHandlers.add(handler);
+    return () => this._readyHandlers.delete(handler);
+  }
+
+  _notifyPeerReady(userId) {
+    if (!game.user?.isGM || !userId) return;
+    for (const h of this._readyHandlers) {
+      try { h({ userId }); } catch (e) { warn("peer-ready handler threw", e); }
+    }
   }
 
   // ─── Ping / pong (diagnostics + step-1 validation) ──────────────────

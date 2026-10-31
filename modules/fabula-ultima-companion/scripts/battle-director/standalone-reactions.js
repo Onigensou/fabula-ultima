@@ -28,6 +28,7 @@
 // the stage-2 ally-indicator broadcast is a future slice.
 
 import { log, warn } from "./logger.js";
+import { watchGone } from "./player-presence.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { Journal } from "./sim/sim-journal.js";
 import { INTENTS } from "./intents.js";
@@ -104,7 +105,9 @@ const _dispatchCoordinator = new EventTarget();
 function resolveReactorOwnerUserId(actor) {
   if (!actor) return null;
   const S = globalThis.FUCompanion?.api?.Spectator;
-  if (S?.deciderUserIdForActor) return S.deciderUserIdForActor(actor);
+  // An away owner still owns it: their menu is cached for their return, and the
+  // presence watch can pass for them. An online co-owner goes first.
+  if (S?.deciderUserIdForActor) return S.deciderUserIdForActor(actor) ?? S.deciderUserIdForActor(actor, { requireActive: false });
   const candidates = (game.users?.contents ?? []).filter((u) => {
     if (u.isGM) return false;
     if (!u.active) return false;
@@ -1145,10 +1148,25 @@ export async function dispatchReactionMenu({
     renderMenu();
   }) ?? null;
 
+  // The owner is gone: Pass for them. Pass is window-scoped (see processPass), so
+  // nothing is lost and the reaction is offered again next time.
+  const stopAwayWatch = watchGone(ownerUserId, async () => {
+    const r = liveRender;
+    if (!r || r.picked) return;
+    r.picked = true;
+    try { r.remoteAwait?.abort?.("local-won"); } catch {}
+    log(`reaction[${trigger}]: ${reactor.name}'s owner is away — passing for them`);
+    ui.notifications?.info(`${userDisplayName(ownerUserId)} is away: passed ${reactor.name}'s reaction.`);
+    await processPass();
+    closeMenusEverywhere();
+    resolveClose();
+  });
+
   try {
     renderMenu();
     await closed;
   } finally {
+    stopAwayWatch();
     _dispatchCoordinator.removeEventListener("stop-others", stopHandler);
     try { offHello?.(); } catch {}
   }

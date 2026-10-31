@@ -17,6 +17,7 @@
 // die; an empty array = the player kept the original roll).
 
 import { log, warn } from "./logger.js";
+import { watchGone } from "./player-presence.js";
 import { getIntentChannel } from "./intent-channel.js";
 import { INTENTS } from "./intents.js";
 import { plateDrawerHost, notePlateAnswered } from "./director-player-hud.js";
@@ -269,13 +270,25 @@ export async function resolveDieSwapInteractive({ director, actor, label, A1, A2
     timeoutMs: 30 * 60 * 1000,
   });
   const localPromise = pickDieSwap({ director, label, A1, A2, dA, dB, slots, budget });
+  // The swap is optional, so an owner who goes missing keeps the original roll.
+  let stopAwayWatch = () => {};
+  const ownerGone = new Promise((res) => {
+    stopAwayWatch = watchGone(ownerUserId, () => res({ source: "gone", swaps: [] }));
+  });
 
   try {
     const result = await Promise.race([
       localPromise.then((r) => ({ source: "local", swaps: r?.swaps ?? [] })),
       remoteAwait.then((intent) => ({ source: "remote", swaps: intent?.body?.swaps ?? [] })),
+      ownerGone,
     ]);
-    if (result.source === "local") {
+    stopAwayWatch();
+    if (result.source === "gone") {
+      log("check_die_swap: owner is away — keeping the original roll");
+      try { remoteAwait.abort?.("owner-gone"); } catch {}
+      try { DieSwapPicker.despawn({ director }); } catch {}
+      try { channel.broadcastMenuClose({ targetUserId: ownerUserId, kind: "die-swap", reason: "owner-gone" }); } catch {}
+    } else if (result.source === "local") {
       try { remoteAwait.abort?.("local-won"); } catch {}
       try { channel.broadcastMenuClose({ targetUserId: ownerUserId, kind: "die-swap", reason: "local-won", data: { answeredBy: game.user?.id ?? null } }); } catch {}
     } else {
@@ -286,6 +299,7 @@ export async function resolveDieSwapInteractive({ director, actor, label, A1, A2
     return result.swaps ?? [];
   } catch (e) {
     warn("check_die_swap: routing race threw — keeping the original roll", e);
+    stopAwayWatch();
     try { remoteAwait.abort?.("error"); } catch {}
     try { DieSwapPicker.despawn({ director }); } catch {}
     try { channel.broadcastMenuClose({ targetUserId: ownerUserId, kind: "die-swap", reason: "error" }); } catch {}

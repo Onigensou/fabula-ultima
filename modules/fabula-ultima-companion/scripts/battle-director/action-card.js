@@ -26,6 +26,7 @@
 // action-card identity flags, chat-log persistence.
 
 import { log, warn } from "./logger.js";
+import { isGone, noteGmWaiting, watchGone } from "./player-presence.js";
 import { INTENTS } from "./intents.js";
 import { gatherEquipmentSlots } from "./equipment-swap.js";
 import { describeCandidateForTooltip } from "./item-resource.js";
@@ -79,8 +80,15 @@ async function resolveCardOwnerUserId(actorUuid) {
   try {
     if (!actorUuid) return null;
     const actor = await fromUuid(actorUuid);
-    return ownerUserIdForActor(actor);
+    return decidingOwnerForActor(actor);
   } catch { return null; }
+}
+
+// An online owner first, else the owner who is away. A card must still name an
+// away owner: with no owner on a pill it gates Confirm with nobody to answer it
+// and nobody to wait for (Keren's Illusory Shield, 2026-10-31).
+function decidingOwnerForActor(actor) {
+  return ownerUserIdForActor(actor) ?? ownerUserIdForActor(actor, { requireActive: false });
 }
 
 const CSS_ID  = "fud-battlefield-card-style";
@@ -7740,6 +7748,7 @@ export async function postActionCard({ director, kind, payload }) {
   // unknown kinds fall back to shipping the rendered outerHTML. Owner detection
   // uses the attacker actor UUID embedded in the payload.
   let ownerUserId = null;
+  const awayCardOwnerIds = new Set();
   try {
     const attackerActorUuid = payload?.attacker?.actorUuid
       ?? payload?.attackerActorRef
@@ -7754,9 +7763,15 @@ export async function postActionCard({ director, kind, payload }) {
     // recipient gets the identical spec, so this is ONE emit addressed to all
     // of them rather than one per user — see IntentChannel.normalizeTargets.
     const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+    // Owners who are away are addressed too. Nothing reaches them now, but it
+    // caches the card for PLAYER_HELLO: one who returns inside the grace period
+    // has a card to answer, instead of holding Confirm with no buttons.
+    for (const uid of [ownerUserId, ...cardReactions.map((p) => p.reactorOwnerUserId)]) {
+      if (uid && uid !== game.user?.id && !onlineNonPrimary.some((u) => u.id === uid)) awayCardOwnerIds.add(uid);
+    }
     try {
       director.intentChannel?.broadcastMenuOpen({
-        targetUserIds: onlineNonPrimary.map((u) => u.id),
+        targetUserIds: [...onlineNonPrimary.map((u) => u.id), ...awayCardOwnerIds],
         menuSpec: {
           kind: "action-card",
           combatId: director.combatId,
@@ -7793,9 +7808,27 @@ export async function postActionCard({ director, kind, payload }) {
     let despawnTid = null;
     let keyListener = null;
 
+    // Reaction owners who are gone: Skip for them, which is what unlocks Confirm.
+    // Read off the live pills each time, so one added mid-card is covered too.
+    // Only gating pills: nothing else holds the card. A card's own actor is left
+    // to the GM, as Confirm is a required choice.
+    const awayPillTid = SimMode.active ? null : setInterval(() => {
+      for (const pill of root.querySelectorAll('.fud-bf-reaction-pill.is-ask[data-fud-reaction-gating="1"][data-fud-reaction-pending="1"]')) {
+        const owner = pill.dataset.fudReactionOwner ?? "";
+        if (!owner || pill.dataset.fudReactionMoot === "1" || !isGone(owner)) continue;
+        const name = pill.querySelector(".fud-bf-reaction-name")?.textContent?.trim() || "a reaction";
+        log(`postActionCard: ${owner} is away — skipping ${name} for them`);
+        ui.notifications?.info(`${game.users?.get(owner)?.name ?? "A player"} is away: skipped ${name}.`);
+        recordPillDecision(pill.dataset.fudReactionKey ?? "", pill.dataset.fudReactionCarrier ?? "", "skip");
+      }
+    }, 1000);
+    const stopAwayOwnerWatch = watchGone(ownerUserId, () => noteGmWaiting(ownerUserId, `${payload?.attacker?.name ?? "their"}'s action card`));
+
     const finish = (outcome, extras = {}) => {
       if (resolved) return;
       resolved = true;
+      clearInterval(awayPillTid);
+      stopAwayOwnerWatch();
       // CRITICAL: everything between here and resolve() below can throw — DOM ops
       // on a torn-down card, or a malformed reaction-decision snapshot. If it does,
       // we MUST still call resolve(), or Confirm.onEnter's `await postActionCard`
@@ -7814,7 +7847,8 @@ export async function postActionCard({ director, kind, payload }) {
           const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
           try {
             director.intentChannel?.broadcastMenuClose({
-              targetUserIds: onlineNonPrimary.map((u) => u.id),
+              // Away owners too, or the dead card stays cached for their return.
+              targetUserIds: [...new Set([...onlineNonPrimary.map((u) => u.id), ...awayCardOwnerIds])],
               kind: "action-card",
               reason: `card-${outcome}`,
             });
@@ -8248,7 +8282,7 @@ export async function postActionCard({ director, kind, payload }) {
           // Per-pill owner (see initial enrichment) — reactor if known, else
           // the action-taker for self-cascades (Bullet Break after Crossfire).
           c.reactorOwnerUserId = reactor
-            ? ownerUserIdForActor(reactor)
+            ? decidingOwnerForActor(reactor)
             : await resolveCardOwnerUserId(cascadeAttackerUuid);
           cascadeFiredKeys.add(rd.candidateKey(c));
           // Marks this pill as DERIVED — it exists only because some other

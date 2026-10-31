@@ -16,6 +16,7 @@
 
 import { INTENTS } from "./intents.js";
 import { log, warn } from "./logger.js";
+import { isGone, noteGmWaiting, watchGone } from "./player-presence.js";
 import { publishPlateWaiting, notePlateAnswered } from "./director-player-hud.js";
 import { tabAlert, tabAlertClear } from "./tab-alert.js";
 
@@ -154,12 +155,16 @@ export async function remotePick({
   const waitKey = `pick:${requestId}`;
   publishPlateWaiting(waitKey, { userId: targetUserId, label: waitLabelOf(kind, spec) });
 
+  // A pick is required, and the GM's own copy below is already open.
+  const stopAwayWatch = watchGone(targetUserId, () => noteGmWaiting(targetUserId, waitLabelOf(kind, spec) ?? "a choice"));
+
   return await new Promise((resolveRace) => {
     let settled = false;
     // byGm: the GM's own copy answered (the player's plate then says so).
     const finish = (value, byGm = false) => {
       if (settled) return;
       settled = true;
+      stopAwayWatch();
       // Tear down whichever side didn't win: stop awaiting the player, close the
       // GM-local picker, and uncache + dismiss the player's open picker (a
       // reconnect replay must not resurrect an already-answered prompt).
@@ -253,6 +258,12 @@ export async function remotePickAny({
   const closeAll = () => {
     try { channel.broadcastMenuClose({ targetUserIds: uids, kind, data: { requestId } }); } catch {}
   };
+  // There is no GM copy here. Once every target is gone, nobody can answer: end
+  // the awaits so the caller falls back to its local pick.
+  const awayTid = setInterval(() => {
+    if (!uids.every(isGone)) return;
+    for (const a of armed) { try { a.p?.abort?.("all-away"); } catch {} }
+  }, 1000);
   let winnerUid = null, intent = null;
   try {
     // First FULFILLED wins; rejections (timeout/abort) are ignored until all fail.
@@ -263,6 +274,7 @@ export async function remotePickAny({
     closeAll();
     return { value: onTimeoutValue, winnerUserId: null };
   } finally {
+    clearInterval(awayTid);
     if (cancelHooked) { /* settles harmlessly */ }
   }
   // Abort the losers' awaits + force-close every target's picker (winner already
