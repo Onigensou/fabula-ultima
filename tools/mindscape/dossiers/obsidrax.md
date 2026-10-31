@@ -8,7 +8,7 @@
 
 - Actor `x8TBsDZaRgoSo5no`. L46 ELEMENTAL/DRAGON soldier, deliberately sized big (token 2.32).
 - Valley random encounter: surface with Ampere, Mist Dragon; Underground with slimes, Mana Ray + Ampere,
-  Fulgimite, Crona.
+  Fulgimite, Kurona.
 - Possibly the "anti-synergy HP wall" slot from the Lightning Surge design idea — unconfirmed.
 
 ## The gimmick (user redesign 2026-10-22)
