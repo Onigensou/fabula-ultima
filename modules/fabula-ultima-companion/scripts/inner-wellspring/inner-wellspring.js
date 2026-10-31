@@ -17,11 +17,16 @@
 //                                         already honours a creature's own flag,
 //                                         which unlocks WELLSPRING_<ELEM>_AVAILABLE
 //   affinity_<idx> = aeAffinityFloor("RS") — Resistance (keeps a better IM/AB)
+//   reactionConfig (the AE as a reaction carrier, like Ninja Log):
+//     creature_will_deal_damage · ask · self → change_damage_element <elem>
+//     + apply_action_keyword ignore_resistance. RAW benefit 4: "When you deal
+//     damage, you MAY change its type to the chosen wellspring's; if you do, it
+//     ignores Resistances." The pill rides the action card (Thermokinesis's
+//     pattern); the engine folds both ops in action-profile's per-target pass.
 // It is directorPermanent + crossScene so no battle sweep, dungeon tick, rest
 // sweep or Cleanse removes it; this module replaces it at each rest.
 //
-// Not built here (need engine work): the Elementalism ritual benefit and the
-// "change damage type, ignore Resistances" benefit.
+// Not built here (needs engine work): the Elementalism ritual benefit.
 
 import { FLAG_NS, WELLSPRINGS, wellspringChangeKey, wellspringFlagKey } from "../field-system/field-core.js";
 
@@ -99,7 +104,7 @@ export function buildIwEffect(actor, elem) {
     // Guideline D3: multi-option AE = "Skill (Option)".
     name: `${SKILL_NAME} (${e.label})`,
     img: e.img,
-    description: `<p>The ${e.label} wellspring within: always available to you, and Resistance to ${e.id} damage, until your next rest.</p>`,
+    description: `<p>The ${e.label} wellspring within: always available to you, Resistance to ${e.id} damage, and you may turn damage you deal into ${e.id}, ignoring Resistances.</p>`,
     changes: [
       { key: wellspringChangeKey(e.id), mode: 5, priority: 20, value: "1" },
       { key: `affinity_${e.affinity}`, mode: 5, priority: 3, value: 'aeAffinityFloor("RS")' },
@@ -111,13 +116,33 @@ export function buildIwEffect(actor, elem) {
     statuses: [`fud-inner-wellspring-${e.id}`],
     // NOT "buff": that tag makes it strippable by remove_tagged_ae buff/dispels.
     system: { tags: [IW_TAG] },
-    flags: { [FLAG_NS]: { [IW_FLAG]: e.id, directorPermanent: true, crossScene: true } },
+    flags: { [FLAG_NS]: { [IW_FLAG]: e.id, directorPermanent: true, crossScene: true, reactionConfig: iwReactionConfig(e.id) } },
+  };
+}
+
+// Benefit 4 as rows on the AE (full key set per row; flags are not a CSB table).
+function iwReactionConfig(elem) {
+  return {
+    reaction_config_table: {
+      // Not on MP damage: the engine skips affinity for MP loss, but a reaction
+      // element override would re-apply it (pre-test review 2026-11-01).
+      // Not on damage already of this type: RAW "change its type ... if you do,
+      // it ignores Resistances" — bolt to bolt is no change (user ruling, strict).
+      0: { reaction_trigger: "creature_will_deal_damage", reaction_passive_mode: "ask", reaction_source: "self", reaction_effect_ref: "iw_retype",
+        condition_formula: `DAMAGE_IS_MP == 0 && TRIGGER_DAMAGE_IS_${elem.toUpperCase()} == 0` },
+    },
+    effect_table: {
+      0: { effect_kind: "chain", effect_label: "iw_retype", chain_steps: "iw_element, iw_ignore_rs" },
+      1: { effect_kind: "change_damage_element", effect_label: "iw_element", change_element: elem },
+      2: { effect_kind: "apply_action_keyword", effect_label: "iw_ignore_rs", action_keyword: "ignore_resistance" },
+    },
   };
 }
 
 // What makes an existing AE good enough to keep (anything else is replaced).
 const effectSig = (x) => JSON.stringify([x.name, [...(x.statuses ?? [])].sort(),
-  (x.changes ?? []).map((c) => [c.key, Number(c.mode), String(c.value), Number(c.priority ?? 0)])]);
+  (x.changes ?? []).map((c) => [c.key, Number(c.mode), String(c.value), Number(c.priority ?? 0)]),
+  x.flags?.[FLAG_NS]?.reactionConfig ?? null]);
 
 /** Make the holder's Inner Wellspring AE match `elem` (GM side). */
 export async function applyIwEffect(actor, elem) {
@@ -225,7 +250,9 @@ export async function reconcileIw(actor) {
     const cur = actor.flags?.[FLAG_NS]?.[IW_FLAG]?.current;
     if (!ELEM_IDS.has(cur)) return;        // nothing recorded: leave any AE alone
     const effs = iwEffects(actor);
-    const ok = effs.length === 1 && effs[0].flags[FLAG_NS][IW_FLAG] === cur && !effs[0].disabled;
+    // ...and the AE is the current build (an older one, e.g. from before benefit 4, is replaced)
+    const ok = effs.length === 1 && effs[0].flags[FLAG_NS][IW_FLAG] === cur && !effs[0].disabled
+      && effectSig(effs[0]) === effectSig(buildIwEffect(actor, cur));
     if (!ok) {
       const r = await applyIwEffect(actor, cur);
       fixes.push(`AE reset to ${cur} (had ${effs.length}; removed ${r.removed})`);

@@ -284,6 +284,8 @@ async function buildReactionScanPayloads(ar) {
       hitTargets: hitTargetUuids,
       rawDamage: entry.rawDamage,
       damageType: ar.damageType ?? ar.damage?.element ?? null,
+      // Mirror CONFIRM's alias (TRIGGER_DAMAGE_IS_<EL> reads payload.element).
+      element: ar.damageType ?? ar.damage?.element ?? null,
       // Mirror CONFIRM: carry the pending-damage resource so DAMAGE_IS_HP gates
       // (Adversity's HP-only damage rider) resolve in the harness too.
       valueType: String(entry.resource ?? ar.valueType ?? ar.damage?.resource ?? "hp").toLowerCase(),

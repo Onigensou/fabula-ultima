@@ -311,7 +311,7 @@ export class WellspringWindow {
         <li>${svg(SPRING)}<div><b>Always available to you</b><span>${sel.label} counts as an available wellspring in every scene, on top of the scene's own.</span></div></li>
         <li>${svg(SHIELD)}<div><b>Resistance: ${d}</b><span>You take half damage from ${d}.</span></div></li>
         <li>${svg(SWAP)}<div><b>Element override</b><span>When you deal damage, you may change its type to ${d}. That damage ignores Resistances.</span>
-          <span class="iw-manual">Not automated yet: tell the GM when you use it.</span></div></li>
+          <span class="iw-manual">Offered on your action card whenever you deal damage.</span></div></li>
       </ul>`;
   }
 

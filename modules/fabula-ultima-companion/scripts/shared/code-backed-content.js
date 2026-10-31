@@ -102,7 +102,7 @@ const ENTRIES = [
   {
     name: "Inner Wellspring", kind: "skill", match: "lower",
     module: "scripts/inner-wellspring/inner-wellspring.js", symbol: "SKILL_NAME",
-    note: "Invoker heroic: a camp/first-pick window chooses a wellspring; at each rest (or at once on the first pick) a self-AE grants wellspring_<elem> (always available) + Resistance to that element. No pick = last night's carries over. NOT BUILT (need engine work): RAW benefit 2 (Elementalism rituals of that element) and benefit 4 (change damage type to it, ignoring Resistances) — still open, the GM adjudicates them.",
+    note: "Invoker heroic: a camp/first-pick window chooses a wellspring; at each rest (or at once on the first pick) a self-AE grants wellspring_<elem> (always available) + Resistance to that element. No pick = last night's carries over. Benefit 4 (may retype dealt damage to it, ignoring Resistances) rides the AE's own reactionConfig (creature_will_deal_damage ask pill). NOT BUILT (needs engine work): benefit 2, Elementalism rituals of that element.",
   },
   // ── statuses (AE names, not documents) ────────────────────────────────────
   {

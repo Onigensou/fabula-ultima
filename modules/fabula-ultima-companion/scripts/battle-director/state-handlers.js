@@ -5855,6 +5855,13 @@ const Confirm = {
             rawDamage: entry.rawDamage,
             hr: ar.roll?.hr ?? 0,
             damageType: ar.damageType ?? ar.damage?.element ?? null,
+            // Canonical alias, as on creature_performs_action below: the
+            // TRIGGER_DAMAGE_IS_<EL> identifier reads ONLY payload.element, so
+            // without it a "not already this element" gate read 0 and failed
+            // open (Inner Wellspring's retype must not be offered on damage that
+            // is already its element). 0 authored rows on this trigger used the
+            // identifier before (audited 2026-11-01), so nothing else changes.
+            element: ar.damageType ?? ar.damage?.element ?? null,
             // Resource of the pending damage (hp | mp | shield) so a rider can
             // scope via DAMAGE_IS_HP / DAMAGE_IS_MP. Per-target resource wins;
             // falls back to the action-level value, then "hp".
