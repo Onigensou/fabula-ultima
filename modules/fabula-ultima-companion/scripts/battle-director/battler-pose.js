@@ -537,6 +537,9 @@ function loadArt(token, src) {
   _arts.set(key, art);
 
   const fail = (err) => {
+    // releaseArt clears the video's src, which fires its error event. That is
+    // our own cleanup, not a bad file, so it must not blacklist the URL.
+    if (art.released) return;
     art.failed = true;
     _failedSrcs.add(src);
     warn(`battler-pose: could not load ${src} — falling back`, err ?? "");
@@ -621,6 +624,7 @@ function releaseArt(key) {
   const art = _arts.get(key);
   if (!art) return;
   _arts.delete(key);
+  art.released = true;
   if (art.kind === "video") {
     try { art.video.pause(); art.video.removeAttribute("src"); art.video.load(); } catch {}
     try { art.texture?.destroy(true); } catch {}
