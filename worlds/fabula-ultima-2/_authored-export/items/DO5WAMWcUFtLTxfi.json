@@ -205,7 +205,7 @@
       "isOffensiveSpell": false,
       "isReaction": true,
       "level": "1",
-      "max_level": "1",
+      "max_level": "5",
       "name": "Encroaching Hex",
       "optional_params": {},
       "reaction_config_table": {

@@ -36,7 +36,7 @@
       "isHeroic": false,
       "isOffensiveSpell": false,
       "level": "1",
-      "max_level": "1",
+      "max_level": "4",
       "name": "Trap Card",
       "optional_params": {},
       "rolled_atr1": "-",

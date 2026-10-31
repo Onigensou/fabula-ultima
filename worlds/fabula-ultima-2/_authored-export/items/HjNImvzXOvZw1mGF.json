@@ -236,6 +236,7 @@
           "target_ref": "self"
         }
       },
+      "heroic_requirement": "you must have mastered two or more Classes among Elementalist, Entropist, and Spiritist, and your character must be level 30 or higher.",
       "isCheck": false,
       "isHeroic": true,
       "isReaction": true,

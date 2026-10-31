@@ -607,6 +607,7 @@
           "description": "<p>When you hit one or more creatures with a <strong>ranged attack</strong> and choose to deal no damage in order to gain the benefits of the <strong>Warning Shot</strong> Skill, you may choose <strong>two options instead of one</strong> (for instance, you could inflict both shaken and slow on each creature, or inflict a status effect on each creature while also lowering their Mind Points).</p><p><em>Requirements: you must have mastered the Sharpshooter Class, and must have acquired the Warning Shot Skill.</em></p>",
           "duration": "-",
           "effect_table": {},
+          "heroic_requirement": "You must have mastered the Sharpshooter Class, and must have acquired the Warning Shot Skill.",
           "ignore_hr": false,
           "isCheck": false,
           "isFacet": false,

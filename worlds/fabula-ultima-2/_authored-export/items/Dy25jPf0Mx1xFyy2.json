@@ -122,6 +122,7 @@
           "target_ref": "self"
         }
       },
+      "heroic_requirement": "You must have mastered the Guardian Class.",
       "isCheck": false,
       "isHeroic": true,
       "isReaction": true,

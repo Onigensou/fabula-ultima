@@ -2329,6 +2329,7 @@
           "implementation_note": "Catalogue skill: each rank learns one Spiritist spell, and each spell carries its own rows. The INS + WLP Magic Check lives on every offensive Spiritist spell (rolled_atr1/2: Lux, Torpor, Enrage, Hallucination).",
           "isCheck": false,
           "level": "6",
+          "max_level": "10",
           "name": "Spiritual Magic",
           "rolled_atr1": "-",
           "rolled_atr2": "-",

@@ -537,6 +537,7 @@
           "damage_bonus": "0",
           "description": "<p>When you hit one or more creatures with a melee attack, that attack deals <strong>5</strong> extra damage to each creature.</p><p> The amount of extra damage increases to <strong>10</strong> if you are level 40 or higher.</p>",
           "duration": "",
+          "heroic_requirement": "You must have mastered one or more Classes among Fury and Weaponmaster.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": true,

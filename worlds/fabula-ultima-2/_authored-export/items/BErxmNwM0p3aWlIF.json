@@ -84,10 +84,11 @@
       "animation_damage_timing_offset": "0",
       "animation_damage_timing_options": "default",
       "check_bonus": "0",
-      "class": "",
+      "class": "Esper",
       "cost": "-",
       "damage_bonus": "",
       "defense_target_type": "def",
+      "description": "<p>When you perform an <strong>Accuracy Check</strong>, you may replace one of the <strong>Attribute</strong> dice with <strong>Willpower</strong> (such as <strong>[DEX + WLP]</strong> for a shortbow). Additionally, your <strong>melee</strong> attacks with weapons belonging to the <strong>arcane</strong> or <strong>sword</strong> Categories may target <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\">Flying</a> creatures.</p>",
       "details_roller": "Show",
       "duration": "-",
       "effect_table": {
