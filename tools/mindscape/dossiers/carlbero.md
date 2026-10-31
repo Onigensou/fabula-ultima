@@ -43,6 +43,7 @@ grabbing a PC and draining them.
 | 2026-08-31 | Built: 4 activations, Multi 3 Slap, six-tier Breath | user's explicit direction | user | live-verified (tiers, AI, grab) |
 | 2026-08-31 | Mind Sap drain 10 | breath must be re-earned, not fire every round | claude | — |
 | 2026-09-01 | Retext: study/trait flavour + Breath description | action-text voice | user | — |
+| 2026-10-31 | IM Charm | solo elite rule: a charmed solo monster has its gameplan shut down | user | — |
 
 ```json dossier
 {

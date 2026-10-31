@@ -27,6 +27,7 @@ heavy EF as the answer, high DEF / moderate MDEF. Cheap damage, paid in denial (
 | 2026-08-29 | Built as tank (~4.4 TP elite, cheap DPS) | tank archetype, Gigas precedent | user (spec) | — |
 | 2026-10-20 | Concept restated: 4 actions at 100% efficiency; measured HP 480 proposed | rows stall (party has no heavy weapon) | user | options b/c NOT applied |
 | 2026-10-21 | Grinding Quake repeating every turn its condition holds: accepted | "already in the design when the monster is created" | user | audit pattern lint → intended |
+| 2026-10-31 | Golem Fist 6% added to steal, (Empty) 42 → 36 | Galvanize Golem was its only source and became a cave beast | user | — |
 
 ```json dossier
 {

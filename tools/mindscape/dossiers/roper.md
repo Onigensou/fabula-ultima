@@ -37,6 +37,7 @@
 | 2026-10-22 | Kit wired from Carlbero; Tentacle needs on_activate_effect_ref; conflict_start passive needs blank reaction_source | first build ran with no grapple/marker (Tentacle ×4/round) | claude | fixed; Tentacle ~1/round, grapple → Bite/Reel live |
 | 2026-10-22 | 2 live sims (full party, Crystal): overtime at round 4, party 9% / 14% HP, Roper 363 / 265 of 600; party landed 9–11 hits, avg 26–30 | measurement | claude | tuning proposal to the user |
 | 2026-10-22 | HP 600 → **550**; Tentacle damage 30 → **22**, Bite 50 → **38** | User: HP "midway, 500+", don't go too low because the party has Ice the sim doesn't use. Confirmed from the journals: Zarg's Gadgets picked Earth (the Crystal in the same shot is VU earth), Blanche never used Invocation (Ice), Hina cast Iceberg once in 4 rounds, the sim never swaps to Zarg's Glacial Staff / Keren's Frozen Envy. Human-play estimate ~200/round vs the sim's ~80 → 550 ≈ 2.75 rounds, = 5 landed actions at PE 90% | user (numbers: claude) | not re-measured yet |
+| 2026-10-31 | IM Charm | solo elite rule: a charmed solo monster has its gameplan shut down | user | — |
 
 ```json dossier
 {

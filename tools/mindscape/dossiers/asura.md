@@ -45,6 +45,7 @@ doomsday clock, "ever-increasing strength" lore and the elemental theme at once.
 | 2026-08-19 | `include_persistent` on every clear row | resets were silent no-ops → TPK | claude (fix) | — |
 | 2026-10-20 | Removed from the Valley Encounter table | standalone story elite | user | — |
 | 2026-10-31 | Display rename: Quad-Elemental Slash → Asura Strike | User naming pass; no mechanical change | user | name-only diff proved |
+| 2026-10-31 | IM Charm | solo elite rule: a charmed solo monster has its gameplan shut down | user | — |
 
 ```json dossier
 {

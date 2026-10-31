@@ -64,6 +64,7 @@ your element; Rakshasa punishes you for REPEATING a weapon category.
 | 2026-10-21 | Severing Verdict's one-shot is intended: telegraphed by stance | "it telegraphs its attacks before doing it, which allows for counterplay" | user | audit one-shot → intended |
 | 2026-09-08 | Ten Thousand Arms retired for dual-arm Crisis combos; HP 840 → 1200; Verdict sized to 162 | one Crisis idea; party keeps full output, so a bigger bar keeps the 5.5–6 round shape | claude | escalation 27 → 56 per hit |
 | 2026-10-21 | Keep the sheet's HP 1200 | "use sheet" | user | sim stalemate — live test owed |
+| 2026-10-31 | IM Charm | solo elite rule: a charmed solo monster has its gameplan shut down | user | — |
 
 ```json dossier
 {
