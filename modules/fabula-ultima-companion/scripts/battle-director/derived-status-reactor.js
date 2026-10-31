@@ -16,7 +16,7 @@
  * Crisis onto a `core-crisis` rule is Phase 2 (spec §7).
  */
 import { log, warn } from "./logger.js";
-import { crisisThreshold } from "./crisis-reactor.js";
+import { crisisThreshold, announceCrisisTransition } from "./crisis-reactor.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -274,6 +274,9 @@ async function _reconcileOnce(actor) {
 function queueStatusEvent(director, actor, status, direction, srcPayload) {
   if (!Array.isArray(director.ctx._postResolveTriggers)) director.ctx._postResolveTriggers = [];
   const tokenUuid = srcPayload?.subjectTokenUuid ?? srcPayload?.sourceTokenUuid ?? null;
+  // Crisis has a second announcer (crisis-reactor). Both go through its
+  // announced-state record so the ledger carries each transition exactly once.
+  if (status === "Crisis") { announceCrisisTransition(director, actor, tokenUuid, direction); return; }
   director.ctx._postResolveTriggers.push({
     casterActor: actor,
     trigger: direction === "applied" ? "creature_status_applied" : "creature_loses_status",
