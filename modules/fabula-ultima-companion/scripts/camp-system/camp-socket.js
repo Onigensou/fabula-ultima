@@ -29,6 +29,7 @@
     // ── Broadcast to all clients (GM only) ───────────────────────────────
     broadcast(type, payload = {}) {
       if (!game.user?.isGM) return;
+      CAMP.ActivityResolveUI?.noteBroadcast?.(type, payload);
       game.socket.emit(CAMP.SOCKET_CH, { type, payload });
     },
 
@@ -61,9 +62,18 @@
       if (window[GUARD]) return;
       window[GUARD] = true;
 
-      game.socket.on(CAMP.SOCKET_CH, async (msg) => {
+      const onMessage = async (msg) => {
         const { type, payload } = msg ?? {};
         if (!type?.startsWith?.("CAMP_")) return; // not our message
+
+        if (type.endsWith("_PROCEED") && isPrimaryGM()) CAMP.ActivityResolveUI?.noteProceed?.(payload?.actorId);
+
+        // ── A reloaded client catching up on the running activity ────────
+        if (type === CAMP.MSG.RESOLVE_REPLAY) {
+          if (payload?.userId !== game.user?.id) return;
+          for (const m of payload?.messages ?? []) await onMessage(m);
+          return;
+        }
 
         // ── Ephemeral: hover (any client, processed by all) ──────────────
         if (type === CAMP.MSG.HOVER_ACTIVITY) {
@@ -537,6 +547,10 @@
             await _handleActivityDone(payload);
             break;
 
+          case CAMP.MSG.RESOLVE_RESYNC:
+            CAMP.ActivityResolveUI?.onResync?.(payload?.userId);
+            break;
+
           case CAMP.MSG.RECORD_RETURN:     // entry hook ran on a player's client
             await CAMP.SetOut?.recordEntry?.(payload?.point);   // primary-GM gated inside
             break;
@@ -723,7 +737,9 @@
 
           // EXPLORATION_RESULT is handled in the all-clients section above
         }
-      });
+      };
+
+      game.socket.on(CAMP.SOCKET_CH, onMessage);
 
       console.debug(TAG, "Socket listener installed.");
     },

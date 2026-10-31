@@ -77,7 +77,11 @@
         if (CAMP.ExplorationUI.pendingResolvers[actor.id]) {
           console.warn(TAG, "Roll timeout — auto-resolving for", actor.name);
           delete CAMP.ExplorationUI.pendingResolvers[actor.id];
-          resolve(Math.ceil(Math.random() * 6));
+          const roll = Math.ceil(Math.random() * 6);
+          // Show it everywhere, or the owner could still STOP on a different number.
+          CAMP.Socket.broadcast(CAMP.MSG.EXPLORATION_RESULT, { actorId: actor.id, roll });
+          CAMP.ExplorationUI.applyResult(actor.id, roll);
+          resolve(roll);
         }
       }, 60_000);
 

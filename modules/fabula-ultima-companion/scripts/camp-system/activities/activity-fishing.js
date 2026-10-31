@@ -315,6 +315,9 @@
             awardedFish = fishName;
             catches.push(awardedFish);
             await _awardFish(actor, awardedFish);
+            // Fish land round by round, before the Proceed wait. A GM reload must
+            // not restart the rounds and award them again.
+            await CAMP.State.markResolved(actor.id);
           }
 
           // Broadcast round result to all clients

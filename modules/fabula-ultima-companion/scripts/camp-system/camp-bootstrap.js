@@ -45,6 +45,11 @@
     if (scene?.active) CAMP.Members?.ensure(scene);
     // Restore UI for current phase immediately
     _onPhaseChange(CAMP.State.getPhase());
+    // Reloaded into a running activity: its START went out before this page
+    // existed, so ask for what was missed.
+    if (CAMP.State.getPhase() === CAMP.PHASE.ACTIVITY_RESOLVE && !globalThis.FUCompanion?.isPrimaryGM?.()) {
+      CAMP.Socket?.emit?.(CAMP.MSG.RESOLVE_RESYNC, { userId: game.user?.id });
+    }
     // A primary GM reloading may have missed the press that completed a gate.
     setTimeout(() => { if (_campActive) CAMP.Socket?.recheckGates?.(); }, RECHECK_MS);
   }

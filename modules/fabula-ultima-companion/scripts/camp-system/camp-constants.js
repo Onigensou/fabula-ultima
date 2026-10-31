@@ -97,6 +97,8 @@
     CONFIRM_BOND:       "CAMP_CONFIRM_BOND",
     UNCONFIRM_BOND:     "CAMP_UNCONFIRM_BOND",
     ACTIVITY_DONE:      "CAMP_ACTIVITY_DONE",
+    RESOLVE_RESYNC:     "CAMP_RESOLVE_RESYNC",        // reloaded client → primary GM
+    RESOLVE_REPLAY:     "CAMP_RESOLVE_REPLAY",        // primary GM → that client
     TOGGLE_SLEEP:       "CAMP_TOGGLE_SLEEP",
     TOGGLE_SET_OUT:     "CAMP_TOGGLE_SET_OUT",
     RECORD_RETURN:      "CAMP_RECORD_RETURN",         // any → GM { point } (entry hook ran off the GM)

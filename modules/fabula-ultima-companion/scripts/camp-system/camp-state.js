@@ -86,8 +86,8 @@
       case P.FREE_ROAM:
       case P.ACTIVITY_SELECT:  return [S.READY];
       case P.ACTIVITY_RESOLVE: return [S.READY, S.RESOLVED];
-      case P.SLEEP_LOBBY:
-      case P.SLEEPING:         return [S.SLEEP_READY];
+      case P.SLEEP_LOBBY:      return [S.SLEEP_READY];
+      case P.SLEEPING:         return [S.SLEEP_READY, S.RESOLVED];   // holds the rest's progress
       case P.SET_OUT_LOBBY:
       case P.SETTING_OUT:      return [S.SET_OUT_READY];
       default:                 return [];
