@@ -10,24 +10,30 @@
   },
   "effects": [
     {
-      "_id": "BfuaAQdV5OQEFU0h",
+      "_id": "MimNY28QfL3xq5eJ",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1793465540082,
+        "createdTime": 1793487072686,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "changes": [
         {
-          "key": "affinity_3",
+          "key": "flags.fabula-ultima-companion.wellspring_bolt",
           "mode": 5,
           "priority": 20,
+          "value": "1"
+        },
+        {
+          "key": "affinity_3",
+          "mode": 5,
+          "priority": 3,
           "value": "aeAffinityFloor(\"RS\")"
         }
       ],
-      "description": "",
+      "description": "<p>The Lightning wellspring within: always available to you, and Resistance to bolt damage, until your next rest.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -41,15 +47,14 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "BfuaAQdV5OQEFU0h",
+          "originalId": "MimNY28QfL3xq5eJ",
           "originalParentId": "uJFaNQCSvwwsr2AW",
-          "originalUuid": "Actor.uJFaNQCSvwwsr2AW.ActiveEffect.BfuaAQdV5OQEFU0h"
+          "originalUuid": "Actor.uJFaNQCSvwwsr2AW.ActiveEffect.MimNY28QfL3xq5eJ"
         },
         "fabula-ultima-companion": {
-          "category": "buff",
           "crossScene": true,
           "directorPermanent": true,
-          "lifetimeMode": "persistent_counter"
+          "innerWellspring": "bolt"
         },
         "statuscounter": {
           "config": {
@@ -61,12 +66,16 @@
         }
       },
       "img": "icons/magic/lightning/bolt-strike-blue.webp",
-      "name": "Bolt Resistance (Temporary)",
-      "origin": null,
+      "name": "Inner Wellspring (Lightning)",
+      "origin": "Actor.uJFaNQCSvwwsr2AW.Item.P83dOfskJgWE9QVL",
       "sort": 0,
-      "statuses": [],
+      "statuses": [
+        "fud-inner-wellspring-bolt"
+      ],
       "system": {
-        "tags": []
+        "tags": [
+          "inner_wellspring"
+        ]
       },
       "tint": "#ffffff",
       "transfer": false,
@@ -185,6 +194,11 @@
       "idleAnimation": {
         "bounce": false,
         "float": false
+      },
+      "innerWellspring": {
+        "current": "bolt",
+        "setAt": 1793487071977,
+        "tonight": null
       },
       "opp_lucky": 0,
       "skill_level_bonus_provoke": 1
