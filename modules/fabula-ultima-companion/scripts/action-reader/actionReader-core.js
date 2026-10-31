@@ -629,6 +629,54 @@ export const ActionReaderCore = {
     return this.isUntargetableActor(this.getTokenActor(tokenLike));
   },
 
+  /* A SUMMONED body — a Numen, a phantasm, a Floralist plant, a clone. The
+     markers are the ones the summon effect stamps on the spawned TOKEN
+     (`isSummon` / `isPhantasm` / `summonedBy`) plus the legacy actor props
+     (`isSummon` / `isPhantasm`, the Fox fire shape). Same reading as
+     summon-autopilot.isSummonCombatant, minus its guest fold-in (a guest is
+     already untargetable); copied for the zero-imports reason above.
+
+     The token flags matter more than the actor: a summon's actor is usually
+     owned by the summoner's player, so nothing on the ACTOR says "summon". */
+  isSummonedActor(actor, tokenLike = null) {
+    const td = this.getTokenDocument(tokenLike) ?? actor?.token ?? null;
+    const f = td?.flags?.[FU_MODULE_ID] ?? {};
+    if (f.isSummon || f.isPhantasm || f.summonedBy) return true;
+    const p = this.getActorProps(actor) ?? {};
+    const truthy = (v) => v === true || v === "true" || v === 1 || v === "1";
+    return truthy(p.isSummon) || truthy(p.isPhantasm);
+  },
+
+  /* Crisis, byte-for-byte as the reaction engine defines it (_anyAllyInCrisis in
+     reaction-system/formula-evaluator.js). Kept as a mirror on purpose — two
+     different answers to "is this ally in Crisis" is worse than either answer:
+       • a DISABLED effect is NOT crisis (an earlier cut of this missed that, so a
+         disabled Crisis AE short-circuited before the HP fallback and would have
+         made a priority-12 healer burn every turn on a full-HP ally),
+       • the bdCrisis FLAG counts even when the effect is named something else,
+       • otherwise the RAW threshold, so the gate holds before the crisis-reactor
+         has stamped anything — which is exactly when a healer must act. */
+  isActorInCrisis(actor) {
+    const hasAe = (actor?.effects?.contents ?? Array.from(actor?.effects ?? [])).some((e) => {
+      if (e?.disabled) return false;
+      if (e?.flags?.[FU_MODULE_ID]?.bdCrisis === true) return true;
+      return String(e?.name ?? "").trim().toLowerCase() === "crisis";
+    });
+    if (hasAe) return true;
+    const cur = Number(actor?.system?.props?.current_hp);
+    const max = Number(actor?.system?.props?.max_hp);
+    return Number.isFinite(cur) && Number.isFinite(max) && max > 0 && cur * 2 <= max;
+  },
+
+  /* Is this creature one of the allies `player_in_crisis` watches? A same-side
+     creature that is neither untargetable nor summoned — on the party side that
+     is the four player characters (guests are untargetable, so already gone).
+     `ally_in_crisis` deliberately does NOT use this: it still counts summons. */
+  isPlayerAlly(actor, tokenLike = null) {
+    if (!actor || this.isUntargetableActor(actor)) return false;
+    return !this.isSummonedActor(actor, tokenLike);
+  },
+
   /* The token ids that can actually PARTICIPATE, or null when there is no roster
      to scope by (out of combat).
 

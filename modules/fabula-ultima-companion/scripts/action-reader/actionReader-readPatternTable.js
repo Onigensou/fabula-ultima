@@ -91,6 +91,10 @@ const CONDITION_ALIASES = Object.freeze({
   "ally in crisis": "ally_in_crisis",
   ally_crisis: "ally_in_crisis",
 
+  player_in_crisis: "player_in_crisis",
+  "player in crisis": "player_in_crisis",
+  player_crisis: "player_in_crisis",
+
   creature_has_status: "creature_has_status",
   "creature has status": "creature_has_status",
 
@@ -152,6 +156,7 @@ function getConditionLabel(conditionKey) {
     case "enemy_lacks_status": return "Enemy Lacks Status";
     case "ally_has_status": return "Ally Has Status";
     case "ally_in_crisis": return "Ally In Crisis";
+    case "player_in_crisis": return "Player In Crisis";
     case "creature_has_status": return "Creature Has Status";
     case "effect_stacks": return "Effect Stacks";
     case "random": return "Random %";

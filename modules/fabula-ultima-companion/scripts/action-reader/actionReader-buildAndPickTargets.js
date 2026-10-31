@@ -627,6 +627,24 @@ export async function buildAndPickActionReaderTargets(context, options = {}) {
       if (free.length) legalCandidates = free;
     }
 
+    // A row that fired on `player_in_crisis` is ABOUT the player in Crisis, so
+    // its single-target pick goes to one — the same players the condition
+    // counted. `lowest_hp` alone is only a weighted die: a wounded summon (or a
+    // full-HP player, at lower odds) took Kalina's Remedy while the player who
+    // tripped it went unhealed. Same narrowing-not-reweighting and fail-open rule
+    // as status_focus: a row that fires on crisis but targets someone else (an
+    // enemy, self) finds no overlap and keeps its pool. An ALL-target row is left
+    // whole — "heal everyone when someone is in Crisis" means everyone.
+    // `ally_in_crisis` rows are untouched: their targeting is the focus mode's.
+    if (context?.chosenAction?.row?.conditionKey === "player_in_crisis" && !targetRule?.isAll) {
+      const inCrisis = legalCandidates.filter(c =>
+        !c.isSelf
+        && c.relationToPerformer === "ally"
+        && AR.isPlayerAlly(c.actor, c.tokenDocument)
+        && AR.isActorInCrisis(c.actor));
+      if (inCrisis.length) legalCandidates = inCrisis;
+    }
+
     context.targetCandidatesAll = allCandidates;
     context.targetCandidates = legalCandidates;
 
