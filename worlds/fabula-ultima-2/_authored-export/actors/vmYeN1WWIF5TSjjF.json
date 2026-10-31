@@ -27,7 +27,7 @@
           "value": ""
         }
       ],
-      "description": "<p>The Crona flies, so its bite reaches creatures that are Flying.</p>",
+      "description": "<p>The Kurona flies, so its bite reaches creatures that are Flying.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -619,7 +619,7 @@
       "type": "equippableItem"
     }
   ],
-  "name": "Crona",
+  "name": "Kurona",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
@@ -760,7 +760,7 @@
       "shadows": 0
     },
     "lockRotation": false,
-    "name": "Crona",
+    "name": "Kurona",
     "occludable": {
       "radius": 0
     },

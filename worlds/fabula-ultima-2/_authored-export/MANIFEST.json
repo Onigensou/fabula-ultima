@@ -16891,30 +16891,6 @@
         "effects": 0
       },
       {
-        "id": "vmYeN1WWIF5TSjjF",
-        "name": "Crona",
-        "type": "character",
-        "items": [
-          {
-            "id": "Nf1Q94EiayHrJS5Q",
-            "name": "(Empty)"
-          },
-          {
-            "id": "PD9V6PBKW7UAVGjk",
-            "name": "Infectious Bite"
-          },
-          {
-            "id": "xQnD5PabiaifPkla",
-            "name": "Run Away"
-          },
-          {
-            "id": "6CoAPTC9qTbnYgFD",
-            "name": "Vaccine"
-          }
-        ],
-        "effects": 1
-      },
-      {
         "id": "pDaxX9rZP0stut65",
         "name": "Cruxiana?",
         "type": "character",
@@ -21394,6 +21370,30 @@
           {
             "id": "eHPdafvtceGW5zex",
             "name": "Umbra"
+          }
+        ],
+        "effects": 1
+      },
+      {
+        "id": "vmYeN1WWIF5TSjjF",
+        "name": "Kurona",
+        "type": "character",
+        "items": [
+          {
+            "id": "Nf1Q94EiayHrJS5Q",
+            "name": "(Empty)"
+          },
+          {
+            "id": "PD9V6PBKW7UAVGjk",
+            "name": "Infectious Bite"
+          },
+          {
+            "id": "xQnD5PabiaifPkla",
+            "name": "Run Away"
+          },
+          {
+            "id": "6CoAPTC9qTbnYgFD",
+            "name": "Vaccine"
           }
         ],
         "effects": 1
