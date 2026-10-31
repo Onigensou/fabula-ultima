@@ -90,10 +90,11 @@ const D = {
   rxOrder: [],
   rxCur: null,
   done: new Map(),           // tokenId → { text, until }
-  step: null,                // { cmdsEl, workEl, detailEl, holds, holdActorId, overlay, under, crumb, card, budget }
+  step: null,                // { cmdsEl, workEl, detailEl, holds, holdActorId, holdTokenId, holdAt, rx, overlay, under, crumb, card, budget }
+  lastLayer: null,           // the layer render() last showed (roster "Answering" follows it)
   mirror: new Map(),         // actorId → { html, crumb, card, open, userId, at }
   ring: null,
-  ctx: null,                 // { actorId, tokenId, at }: whose follow-up a picker without its own actor belongs to
+  ctx: null,                 // { actorId, tokenId, label, at }: whose follow-up a picker without its own actor belongs to
   size: "m", folded: false, foldShown: false, peek: false,
   hover: null,               // roster row id under the pointer (its token gets the ring)
   ringLit: null,             // { uid, until }: a clicked line's ring glows for a moment
@@ -663,7 +664,7 @@ export function buildDesk(partyIds = []) {
   for (const el of root.querySelectorAll(".gmd-layer")) D.layers[el.dataset.layer] = el;
   const s = D.layers.step;
   D.step = { cmdsEl: s.querySelector(".gmd-cmds"), workEl: s.querySelector(".gmd-work"), detailEl: s.querySelector(".gmd-detail"),
-    holds: 0, holdActorId: null, overlay: null, under: null, crumb: null, card: null, budget: null, graceT: null };
+    holds: 0, holdActorId: null, holdTokenId: null, holdAt: 0, rx: null, overlay: null, under: null, crumb: null, card: null, budget: null, graceT: null };
   // The players watch a turn this GM composes for an offline player's creature
   // (ally-watch.js), as they would watch that player's own drawer.
   const watchMo = new MutationObserver(queueDeskWatch);
@@ -1183,12 +1184,16 @@ function onCardPointer(e) {
   if (!uuid) return;
   let actor = null;
   try { actor = fromUuidSync(uuid); } catch { /* */ }
-  if (actor) noteContext(actor, /Token\.([^.]+)/.exec(uuid)?.[1] ?? null);
+  const label = pill.querySelector(".fud-bf-reaction-name")?.textContent?.trim() || null;
+  if (actor) noteContext(actor, /Token\.([^.]+)/.exec(uuid)?.[1] ?? null, label);
 }
 function paintRxCells() {
   if (!D.root) return;
   const byRow = new Map();
   for (const e of D.rx.values()) { const r = rowForToken(e.tokenId); if (r) byRow.set(r, e); }
+  // A line is "Answering" only while the console shows its menu: a picker over
+  // it (another reaction's target pick) means it is waiting, not being answered.
+  const showing = activeLayer() === "react";
   for (const r of D.rows.values()) {
     const e = byRow.get(r);
     const cell = r.q(".gmd-rxc");
@@ -1197,7 +1202,7 @@ function paintRxCells() {
     if (e) {
       const n = e.candidates.filter((c) => c?.mode !== "on" && c?.mode !== "done").length;
       const names = e.candidates.filter((c) => c?.mode !== "on" && c?.mode !== "done").map((c) => c.carrierName).join(" · ");
-      const on = D.rxCur === e.key;
+      const on = D.rxCur === e.key && showing;
       const owner = liveOwnerOf(e.actor);
       const state = !owner ? `<span class="gmd-chip you">${on ? "Answering" : "Your call"}</span>`
         : on && !D.locked ? `<span class="gmd-chip you">Answering</span>`
@@ -1211,7 +1216,7 @@ function paintRxCells() {
     if (cell._h !== html) { cell.innerHTML = html; cell._h = html; }
     cell.classList.toggle("isdone", !e && !!done);
     r.el.classList.toggle("hasrx", !!e);
-    r.el.classList.toggle("rxsel", !!e && D.rxCur === e.key);
+    r.el.classList.toggle("rxsel", !!e && D.rxCur === e.key && showing);
   }
   // Header banner: the open trigger.
   const wrap = D.roster.querySelector(".gmd-banwrap");
@@ -1376,9 +1381,21 @@ function contextActorId() {
   }
   return null;
 }
-function noteContext(actor, tokenId = null) {
+function noteContext(actor, tokenId = null, label = null) {
   const id = baseActorOf(actor)?.id ?? actor?.id ?? null;
-  D.ctx = id ? { actorId: String(id), tokenId: tokenId ?? null, at: Date.now() } : null;
+  D.ctx = id ? { actorId: String(id), tokenId: tokenId ?? null, label: label ?? null, at: Date.now() } : null;
+}
+/** A picker opened after a reaction's Apply / Use answers for that reactor:
+ *  its header, lock, crumb and Foes | Allies columns. Without this it took
+ *  whatever the step held last — a finished turn's creature and "Turn Action"
+ *  crumb — so an enemy's reaction could show inverted sides, or sit locked
+ *  behind a player's Watch it has nothing to do with. */
+function claimForReaction() {
+  const s = D.step, c = D.ctx;
+  if (!s || !c || Date.now() - c.at >= CTX_MS || c.at <= (s.holdAt ?? 0)) return;
+  s.holdActorId = c.actorId; s.holdTokenId = c.tokenId; s.holdAt = Date.now();
+  s.rx = c.label || "Reaction";
+  s.crumb = s.rx;
 }
 
 function render() {
@@ -1389,7 +1406,9 @@ function render() {
   if (layer === "step") {
     const a = stepActor();
     const owner = liveOwnerOf(a);
-    if (owner) { locked = D.locked; if (locked) mirrorFor = a?.id; else forPlayer = owner; }
+    // A reaction's pick runs only here (the GM pressed its Apply): the player
+    // has no menu of their own to watch, so Watch must not lock it away.
+    if (owner) { locked = D.locked && !D.step.rx; if (locked) mirrorFor = a?.id; else forPlayer = owner; }
   } else if (layer === "react") {
     const e = D.rx.get(D.rxCur);
     const owner = liveOwnerOf(e?.actor);
@@ -1435,6 +1454,7 @@ function render() {
     root._foldT = setTimeout(() => root.classList.remove("is-folding"), MOTION.fold + 60);
     D.foldShown = fold; root.classList.toggle("is-folded", fold); D.placeKey = ""; place();
   }
+  if (layer !== D.lastLayer) { D.lastLayer = layer; paintRxCells(); }
   // New content in the console (another layer, the next reaction menu) fades in.
   const sig = `${showMirror ? "mirror" : layer === "card" ? "idle" : layer}|${layer === "react" ? D.rxCur ?? "" : ""}`;
   if (sig !== D.swapSig) { const first = D.swapSig == null; D.swapSig = sig; if (!first) swapConsole(mine); }
@@ -1522,9 +1542,9 @@ function paintHeader(layer, { locked, forPlayer, mirror }) {
     const ctx = held ? null : contextActorId();
     const a = held ?? (ctx ? game.actors?.get(ctx.actorId) ?? null : null);
     const owner = liveOwnerOf(held);
-    const u = a ? unitForActorId(a.id, held ? null : ctx?.tokenId) : null;
+    const u = a ? unitForActorId(a.id, held ? D.step.holdTokenId : ctx?.tokenId) : null;
     const crumb = mirror?.crumb || D.step.crumb || "Turn Action";
-    const ctl = owner ? `${esc(owner.name)}'s ${locked ? "menu" : "turn"}` : "GM";
+    const ctl = owner ? `${esc(owner.name)}'s ${D.step.rx ? "reaction" : locked ? "menu" : "turn"}` : "GM";
     h = a ? whoHTML({ img: unitFace(u ?? {}, a), name: u?.name ?? a.name, sub: `${esc(crumb)} <span class="c">· ${ctl}</span>`, actor: unitActor(u ?? {}) ?? a })
       : `<div class="gmd-who"><div><div class="n">${esc(crumb)}</div><div class="s">GM</div></div></div>`;
     h += `<span class="gmd-grow"></span>${owner ? lockHTML() : ""}`;
@@ -1900,7 +1920,7 @@ export function deskSpawnReaction({ key, token, candidates, onPick, onPass, labe
   // Flow B: the first creature waiting on the GM opens by itself; a re-opened
   // menu (after a Use) keeps its selection. Player lines never open on their
   // own unless only players are deciding.
-  if (prev && D.rxCur === key) selectRx(key);
+  if (prev && D.rxCur === key) selectRx(key, { auto: true });
   else autoSelectRx();
   paintRxCells();
   render();
@@ -2026,7 +2046,7 @@ function onSrxClick(ev) {
   e.busy = true;
   e.pending = c;
   e.lastAction = "Applied";
-  noteContext(e.actor, e.tokenId);
+  noteContext(e.actor, e.tokenId, c?.carrierName ?? null);
   paintSrxView();
   try { e.onPick?.(c); } catch (err) { warn("[GmDesk] reaction pick threw", err); }
 }
@@ -2087,13 +2107,16 @@ function autoSelectRx() {
   const gm = gmEntries()[0];
   const any = D.rxOrder.map((k) => D.rx.get(k)).find((e) => e && !e.closed);
   const pick = gm ?? any ?? null;
-  if (pick) selectRx(pick.key);
+  if (pick) selectRx(pick.key, { auto: true });
 }
-function selectRx(key, { user = false } = {}) {
+function selectRx(key, { user = false, auto = false } = {}) {
   if (!D.rx.has(key)) return;
   const was = D.rxCur;
   D.rxCur = key;
-  bump("react");
+  // A reaction's own pick open in the console keeps it: a menu selected by
+  // itself meanwhile (the card's next reactor, once this one's pill reads
+  // Sending…) waits underneath and shows when the pick closes.
+  if (!(auto && D.step?.rx && stepLive() && D.z.step > D.z.react)) bump("react");
   showRxNode();
   if (user || was !== key) { paintRxCells(); render(); }
 }
@@ -2356,7 +2379,7 @@ function onCrxClick(ev) {
   const e = row ? _cardRx.get(row.dataset.r) : null;
   if (!row || !e) return;
   e.lastAction = b.dataset.a === "apply" ? "Applied" : "Passed";
-  if (b.dataset.a === "apply") noteContext(e.actor, e.tokenId);
+  if (b.dataset.a === "apply") noteContext(e.actor, e.tokenId, row.querySelector(".nm")?.textContent?.trim() || null);
   clickPill(row.dataset.k, row.dataset.c, b.dataset.a);
 }
 function clearCardRx() {
@@ -2417,7 +2440,7 @@ function clearStepIfIdle() {
   const live = [...s.cmdsEl.children, ...s.workEl.children].some((n) => !n.inert);
   if (live) return;
   s.cmdsEl.replaceChildren(); s.workEl.replaceChildren();
-  s.overlay = null; s.under = null; s.card = null; s.crumb = null; s.holdActorId = null;
+  s.overlay = null; s.under = null; s.card = null; s.crumb = null; s.holdActorId = null; s.holdTokenId = null; s.rx = null;
   paintStepDetail();
   render();
 }
@@ -2479,7 +2502,7 @@ export function deskHold(actorId) {
   if (!deskActive()) return null;
   const s = D.step;
   s.holds += 1;
-  if (actorId) s.holdActorId = String(actorId);
+  if (actorId) { s.holdActorId = String(actorId); s.holdTokenId = null; s.holdAt = Date.now(); s.rx = null; }
   clearTimeout(s.graceT);
   let done = false;
   return () => {
@@ -2495,6 +2518,7 @@ export function deskHold(actorId) {
 /** A picker's host on a GM client with the desk (plateDrawerHost). */
 export function deskDrawerHost() {
   if (!deskActive()) return null;
+  claimForReaction();
   const host = deskStepHost();
   const release = deskHold(null);
   host.release = release ?? (() => {});
@@ -2509,6 +2533,7 @@ export function deskOpenDrawer(actorId, { el, budgetText = "Turn Action" } = {})
   const s = D.step;
   clearTimeout(s.graceT);
   if (actorId) s.holdActorId = String(actorId);
+  s.holdTokenId = null; s.holdAt = Date.now(); s.rx = null;
   el.dataset.gmd = "1";
   // A fresh command window: whatever the last command opened is finished.
   for (const n of [...s.workEl.children]) if (n.inert) n.remove();
