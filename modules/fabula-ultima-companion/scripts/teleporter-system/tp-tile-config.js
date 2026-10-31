@@ -324,7 +324,8 @@
       const destination = flags.destination ?? null;
       const sfxUrl      = typeof flags.sfxUrl === "string" ? flags.sfxUrl : "";
       const promptName  = typeof flags.promptName === "string" ? flags.promptName : "";
-      const escAttr     = (v) => String(v).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+      const reqSwitch   = typeof flags.requiresSwitch === "string" ? flags.requiresSwitch : "";
+      const escAttr    = (v) => String(v).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 
       tabPanel.innerHTML = `
         <h3 style="margin-top:0;"><i class="fas fa-exchange-alt"></i> Teleporter Settings</h3>
@@ -380,6 +381,17 @@
                    placeholder="(destination's name)" />
           </div>
           <p class="notes">Name shown in the "Enter <b>Name</b>?" prompt. Leave blank to use the destination scene's name.</p>
+        </div>
+
+        <div class="form-group">
+          <label>Requires Switch</label>
+          <div class="form-fields">
+            <input type="text"
+                   name="flags.${MODULE_ID}.${FLAG_ROOT}.requiresSwitch"
+                   value="${escAttr(reqSwitch)}"
+                   placeholder="e.g. Great Seal Open" />
+          </div>
+          <p class="notes">This teleporter does nothing until the Event System switch is ON. Blank = always works.</p>
         </div>
 
         <h3><i class="fas fa-map-marker-alt"></i> Destination</h3>

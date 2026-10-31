@@ -301,9 +301,16 @@
     return tileDoc?.flags?.[MODULE_ID]?.[FLAG_ROOT] ?? null;
   }
 
+  // A teleporter with `requiresSwitch` does nothing until that switch is ON
+  // (story-gate.js). A blank name is no gate.
+  function isSwitchLocked(flags) {
+    const name = String(flags?.requiresSwitch ?? "").trim();
+    return !!name && (globalThis.oni?.StoryGate?.isClosed?.(name) ?? true);
+  }
+
   function isTeleporterEnabled(tileDoc) {
     const f = getFlags(tileDoc);
-    return f?.enabled === true || f?.enabled === "true";
+    return (f?.enabled === true || f?.enabled === "true") && !isSwitchLocked(f);
   }
 
   function getSceneMode(scene) {
@@ -741,7 +748,7 @@
     }
 
     const flags = getFlags(tileDoc);
-    if (!flags?.enabled) return;
+    if (!flags?.enabled || isSwitchLocked(flags)) return;
 
     if (!flags.destination) {
       ui.notifications?.warn?.("Teleporter tile has no destination configured.");
@@ -856,6 +863,7 @@
     for (const tileDoc of (canvas?.scene?.tiles ?? [])) {
       const flags = tileDoc?.flags?.[MODULE_ID]?.[FLAG_ROOT];
       if (flags?.enabled !== true && flags?.enabled !== "true") continue;
+      if (isSwitchLocked(flags)) continue;
       _tpTileCache.push({
         tileDoc,
         rx: tileDoc.x,         ry: tileDoc.y,
@@ -870,6 +878,7 @@
     return _tpTileCache;
   }
 
+  Hooks.on("oniGameStateChanged", _invalidateTileCache);
   Hooks.on("createTile", _invalidateTileCache);
   Hooks.on("deleteTile", _invalidateTileCache);
   Hooks.on("updateTile", (tileDoc, changes) => {
