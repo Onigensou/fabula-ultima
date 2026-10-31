@@ -75,14 +75,17 @@ function clearOpening() {
   _active = null;
 }
 
-/** Swing this client's camera back to the battle view. No-op when not on the shot. */
+/**
+ * Swing this client's camera back to the battle view. No-op when not on the
+ * shot. Resolves true when it swung (the camera moved), false otherwise.
+ */
 export async function swingBackOpeningShot({ ms = SWING_BACK_MS } = {}) {
-  if (!_active) return;
+  if (!_active) return false;
   const { sceneId } = _active;
   clearOpening();
   try {
     const cam = camera();
-    if (!canvas?.ready || canvas.scene?.id !== sceneId) { cam?.go?.({ yaw: 0, tilt: 0, push: 1 }, 1); return; }
+    if (!canvas?.ready || canvas.scene?.id !== sceneId) { cam?.go?.({ yaw: 0, tilt: 0, push: 1 }, 1); return false; }
     const rest = restViewFor(canvas.scene);
     const from = { x: canvas.stage.pivot.x, y: canvas.stage.pivot.y, scale: canvas.stage.scale.x };
     const shot = cam?.go?.({ yaw: 0, tilt: 0, push: 1 }, ms);
@@ -100,8 +103,10 @@ export async function swingBackOpeningShot({ ms = SWING_BACK_MS } = {}) {
     } else if (rest) canvas.pan(rest);
     await shot;
     log("opening shot: back on the battle view");
+    return true;
   } catch (e) {
     warn("opening shot: swing back failed", e);
     try { camera()?.go?.({ yaw: 0, tilt: 0, push: 1 }, 1); } catch { /* gone */ }
+    return false;
   }
 }

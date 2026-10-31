@@ -11,6 +11,9 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.8.4"
+    },
+    "fabula-ultima-companion": {
+      "entranceStyle": "voidDash"
     }
   },
   "folder": "Nd8LnosrPid1eX1r",

@@ -7,7 +7,8 @@
 //
 // Two per-ACTOR flags read by the director's entrance (director-init.js):
 //
-//   flags.fabula-ultima-companion.entranceStyle  — "fade" or a DESCENT_STYLES key
+//   flags.fabula-ultima-companion.entranceStyle  — "fade" or a DESCENT_STYLES /
+//       GATHER_STYLES / PIXEL_ENTRANCE_STYLES key
 //       (or, on a party member, a PARTY_ENTRANCE_STYLES key: party-entrance-styles.js)
 //   flags.fabula-ultima-companion.entranceQueue  — true: this entrance waits its
 //       turn. Queued enemies play one at a time, in roster order, before anyone
@@ -37,6 +38,7 @@ import {
   defeatStyleFromFlags,
 } from "./defeat-styles.js";
 import { GATHER_STYLES } from "./gather-styles.js";
+import { PIXEL_ENTRANCE_STYLES } from "./pixel-entrance-styles.js";
 import { PARTY_ENTRANCE_STYLES, partyEntranceStyleFromFlags } from "./party-entrance-styles.js";
 import { baseActorOf } from "../sprite-shadow/sprite-shadow-config.js";
 import { warn } from "./logger.js";
@@ -87,6 +89,9 @@ function injectEntranceConfig(app, html) {
               ${opt(DEFAULT_ENTRANCE_STYLE, "Fade (basic)")}
               ${Object.keys(DESCENT_STYLES).map((k) => opt(k, k)).join("")}
               ${Object.entries(GATHER_STYLES).map(([k, g]) => opt(k, g.label ?? k)).join("")}
+              <optgroup label="Pixel art">
+                ${Object.entries(PIXEL_ENTRANCE_STYLES).map(([k, g]) => opt(k, g.label ?? k)).join("")}
+              </optgroup>
               <optgroup label="Party (replaces the run-in dash at battle start)">
                 ${Object.entries(PARTY_ENTRANCE_STYLES).map(([k, g]) => opt(k, g.label ?? k)).join("")}
               </optgroup>

@@ -45,6 +45,8 @@ import {
 import { pWait, shouldRender, hasOtherViewers } from "./presentation-clock.js";
 import { GATHER_STYLES } from "./gather-styles.js";
 import { playGatherLocal } from "./gather-entrance-fx.js";
+import { PIXEL_ENTRANCE_STYLES } from "./pixel-entrance-styles.js";
+import { playPixelEntranceLocal, isPixelEntranceStyle } from "./pixel-entrance-fx.js";
 import {
   PARTY_ENTRANCE_STYLES,
   partyEntranceStyleFromFlags,
@@ -71,6 +73,10 @@ const FLAG_DIRECTOR_SPAWNED = "directorSpawned";
 const wait = pWait;
 // Pause between the battle-start transition clearing and the entrance.
 const ENTRANCE_BEAT_MS = 900;
+// After the camera swings back from the opening shot (3D-camera scenes only),
+// a short held beat on the battle view before the enemies enter, so their
+// entrances do not start while it is still settling (user ask 2026-10-31).
+const SWING_SETTLE_MS = 300;
 
 async function safeFromUuid(uuid) {
   if (!uuid) return null;
@@ -1256,7 +1262,11 @@ async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [], party
     const placeable = getP(id);
     if (!placeable) return;
     try {
-      if (Object.prototype.hasOwnProperty.call(GATHER_STYLES, styleKey)) {
+      if (isPixelEntranceStyle(styleKey)) {
+        // reveals its own token; false = it could not play: fade instead
+        const played = await playPixelEntranceLocal({ sceneId: canvas?.scene?.id ?? null, tokenId: id, style: styleKey });
+        if (!played) { await fadeIn(id, 0); return; }
+      } else if (Object.prototype.hasOwnProperty.call(GATHER_STYLES, styleKey)) {
         await playGatherLocal({ sceneId: canvas?.scene?.id ?? null, tokenId: id, style: styleKey });
       } else {
         await playDescentLocal(buildDescentPayload(placeable, styleKey, canvas?.scene ?? null));
@@ -1277,7 +1287,7 @@ async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [], party
     await dashInParty();
     // From the battle-start opening shot (3D camera) back to the battle view
     // before anyone else arrives. No-op when this client is not on it.
-    await swingBackOpeningShot();
+    if (await swingBackOpeningShot()) await wait(SWING_SETTLE_MS);
 
     // Split the enemies by entrance style. Everything without an opt-in flag
     // lands in `fading` and takes the original path untouched.
@@ -1316,14 +1326,16 @@ async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [], party
 // entrance style plays it on every client: queued ones one at a time, then the
 // rest together — the same order rule as the battle-start entrance.
 function entranceDurationMs(style) {
-  const g = GATHER_STYLES[style];
+  const g = GATHER_STYLES[style] ?? PIXEL_ENTRANCE_STYLES[style];
   if (g) return g.totalMs;
   return 3000;   // descents: their own timelines; a hidden GM only needs a bound
 }
 
 async function playJoinOne({ tokenId, style }) {
   try {
-    if (Object.prototype.hasOwnProperty.call(GATHER_STYLES, style)) {
+    if (isPixelEntranceStyle(style)) {
+      await playPixelEntranceLocal({ sceneId: canvas?.scene?.id ?? null, tokenId, style });
+    } else if (Object.prototype.hasOwnProperty.call(GATHER_STYLES, style)) {
       await playGatherLocal({ sceneId: canvas?.scene?.id ?? null, tokenId, style });
     } else {
       const placeable = canvas?.tokens?.get?.(tokenId);
