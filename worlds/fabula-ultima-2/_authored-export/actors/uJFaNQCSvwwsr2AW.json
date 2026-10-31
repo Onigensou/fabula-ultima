@@ -10,11 +10,11 @@
   },
   "effects": [
     {
-      "_id": "MimNY28QfL3xq5eJ",
+      "_id": "4Aujzo4Wa8v2qlcx",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1793487072686,
+        "createdTime": 1793489522232,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -33,7 +33,7 @@
           "value": "aeAffinityFloor(\"RS\")"
         }
       ],
-      "description": "<p>The Lightning wellspring within: always available to you, and Resistance to bolt damage, until your next rest.</p>",
+      "description": "<p>The Lightning wellspring within: always available to you, Resistance to bolt damage, and you may turn damage you deal into bolt, ignoring Resistances.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -47,14 +47,42 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "MimNY28QfL3xq5eJ",
+          "originalId": "4Aujzo4Wa8v2qlcx",
           "originalParentId": "uJFaNQCSvwwsr2AW",
-          "originalUuid": "Actor.uJFaNQCSvwwsr2AW.ActiveEffect.MimNY28QfL3xq5eJ"
+          "originalUuid": "Actor.uJFaNQCSvwwsr2AW.ActiveEffect.4Aujzo4Wa8v2qlcx"
         },
         "fabula-ultima-companion": {
           "crossScene": true,
           "directorPermanent": true,
-          "innerWellspring": "bolt"
+          "innerWellspring": "bolt",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "chain_steps": "iw_element, iw_ignore_rs",
+                "effect_kind": "chain",
+                "effect_label": "iw_retype"
+              },
+              "1": {
+                "change_element": "bolt",
+                "effect_kind": "change_damage_element",
+                "effect_label": "iw_element"
+              },
+              "2": {
+                "action_keyword": "ignore_resistance",
+                "effect_kind": "apply_action_keyword",
+                "effect_label": "iw_ignore_rs"
+              }
+            },
+            "reaction_config_table": {
+              "0": {
+                "condition_formula": "DAMAGE_IS_MP == 0 && TRIGGER_DAMAGE_IS_BOLT == 0",
+                "reaction_effect_ref": "iw_retype",
+                "reaction_passive_mode": "ask",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_will_deal_damage"
+              }
+            }
+          }
         },
         "statuscounter": {
           "config": {
