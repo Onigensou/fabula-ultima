@@ -54,7 +54,7 @@
         "Ascension: +8 per charge, up to +32 on every slash. Needs multi-status state -- live Asura",
         "spends four activations on four different Sword Enchants to bank four charges, and",
         "stances.js holds a single-valued stance, so the model arms once and can never reach 4.",
-        "Quad-Elemental Slash: 4 x 45 flat, party-wide, every third round; gated on those 4 charges.",
+        "Asura Strike: 4 x 45 flat, party-wide, every third round; gated on those 4 charges.",
         "EnemyDPR 154.0 is therefore still a FLOOR."
       ]
     }

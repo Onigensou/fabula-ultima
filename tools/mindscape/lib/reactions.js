@@ -72,7 +72,7 @@ const TRAITS = Object.freeze({
 });
 
 // Round parity for equipment riders. `round > 0` is load-bearing: 0 % 2 === 0
-// is TRUE — the same trap as Overload Riposte's roll-less check — so a swing
+// is TRUE — the same trap as Lightning Counter's roll-less check — so a swing
 // with no round threaded through would otherwise qualify every time.
 function evenRoundBasicAttack(ctx) {
   const round = Number(ctx?.round);
@@ -123,7 +123,7 @@ function evenRoundBasicAttack(ctx) {
 
 const REACTION_REGISTRY = Object.freeze({
   // ── Skizzik ───────────────────────────────────────────────────────────────
-  "Overload Riposte": {
+  "Lightning Counter": {
     trigger: TRIGGERS.ON_TARGETED,
     // Live: creature_targeted_by_action, gated
     //   SUBJECT_IS_SELF && INCOMING_DAMAGE > 0 && ATTACK_CHECK_RESULT > 0
@@ -135,7 +135,7 @@ const REACTION_REGISTRY = Object.freeze({
       ctx.accuracyResult > 0 &&
       ctx.accuracyResult % 2 === 0 &&
       ctx.element !== "bolt",
-    effect: { kind: "free_attack", actionName: "Thunder Strike (Riposte)", target: "attacker" },
+    effect: { kind: "free_attack", actionName: "Lightning Retaliate", target: "attacker" },
     note: "fires pre-resolve live, so it also fires on the killing blow; modelled the same way",
   },
 
@@ -156,7 +156,7 @@ const REACTION_REGISTRY = Object.freeze({
     // it. Skizzik ABSORBS bolt, so the storm's strike arrives as a heal —
     // hence direction is deliberately not gated.
     gate: (ctx) => ctx.element === "bolt",
-    effect: { kind: "free_attack", actionName: "Thunder Strike", target: "hostile" },
+    effect: { kind: "free_attack", actionName: "Lightning Blitz", target: "hostile" },
     note: "absorb counts: the Rod strike heals Skizzik AND buys it this attack",
   },
 
@@ -219,7 +219,7 @@ const REACTION_REGISTRY = Object.freeze({
     trigger: TRIGGERS.ON_TAKE_ELEMENT,
     gate: (ctx) => ctx.element === "bolt",
     effect: { kind: "grant_mp", amount: 20, overflowToShield: true },
-    note: "Kirin — one Rod strike (+30) plus this (+20) exactly arms Rail Stream",
+    note: "Kirin — one Rod strike (+30) plus this (+20) exactly arms Divine Railstream",
   },
 
   // ── Rakshasa ──────────────────────────────────────────────────────────────
@@ -281,7 +281,7 @@ const REACTION_REGISTRY = Object.freeze({
   // onto EVERY slash, four times a round, and none of them were modelled: the
   // measured EnemyDPR of 126.4 was a floor, not the figure.
   //
-  // Two are registered here. Ascension and Quad-Elemental Slash are NOT, and
+  // Two are registered here. Ascension and Asura Strike are NOT, and
   // that is deliberate -- see the note on Ascension below.
   "Elemental Aspect": {
     trigger: TRIGGERS.ON_DEAL_DAMAGE,
@@ -306,7 +306,7 @@ const REACTION_REGISTRY = Object.freeze({
   // NOT REGISTERED, and left to report as a coverage gap on purpose:
   //
   //   Ascension            +8 per charge (AE_CHARGES_ASCENSION * 8), up to +32
-  //   Quad-Elemental Slash 4 x 45 flat, party-wide, resets the Marks
+  //   Asura Strike 4 x 45 flat, party-wide, resets the Marks
   //
   // Both depend on a state this model cannot hold. Live, Asura spends four
   // activations on four DIFFERENT Sword Enchants -- each gated on lacking its

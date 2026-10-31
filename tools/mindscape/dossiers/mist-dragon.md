@@ -20,8 +20,8 @@ the valley's other creatures.
   physical affinity, precisely so it can be stripped. Air damage scatters it until the end
   of the round; it re-gathers at round end. **Air is both its VU and its off-switch** (the
   RAW Flying loop).
-- **Phantom Shift is a FIXED repertoire, not real mimicry** (user chose Option A): Thunder
-  Strike (spike), Venomstone Spines (spread), Mana Stinger (MP drain), all re-cast in Air
+- **Phantom Shift is a FIXED repertoire, not real mimicry** (user chose Option A): Lightning
+  Blitz (spike), Venomstone Spines (spread), Mana Stinger (MP drain), all re-cast in Air
   with Blind riders.
 - Mist Breath (heavy Air, 50% Blind) dominates while MP ≥ 50%.
 
@@ -30,13 +30,14 @@ the valley's other creatures.
 | Date | Change | Why | Decided by | Result |
 |---|---|---|---|---|
 | 2026-08-26 | Built: Illusory Form, fixed Phantom Shift repertoire | Option A — true mimicry not expressible in data | user | Illusory Form loop live-verified |
+| 2026-10-31 | Display rename: Phantom Shift: Thunder Strike → Phantom Shift: Lightning Blitz (follows Skizzik) | User naming pass; no mechanical change | user | name-only diff proved |
 
 ```json dossier
 {
   "monster": "Mist Dragon",
   "actorId": "8kluKkqkcGFkmXNO",
   "status": "draft",
-  "updated": "2026-10-21",
+  "updated": "2026-10-31",
   "role": "Valley random-encounter elite (2 Encounter rows); Dragon-subtype target",
   "exceptions": [],
   "invariants": [
@@ -56,7 +57,7 @@ the valley's other creatures.
     "Mindscape does not simulate Phantom Shift / Illusory Form fully (Board card marks it)."
   ],
   "open_questions": [
-    "Best basic attack (Phantom Shift: Thunder Strike, avg 38) is under the 45 floor and its resisted hit is ~16% of PC HP — intended for an elite, or too soft?"
+    "Best basic attack (Phantom Shift: Lightning Blitz, avg 38) is under the 45 floor and its resisted hit is ~16% of PC HP — intended for an elite, or too soft?"
   ]
 }
 ```

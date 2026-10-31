@@ -14,7 +14,7 @@
 ## Concept
 
 **It collects elements, not numbers.** Every element that damages it leaves a permanent Mark
-(+8 damage each); the fourth Mark unlocks Quad-Elemental Slash. One clock = stack collector,
+(+8 damage each); the fourth Mark unlocks Asura Strike. One clock = stack collector,
 doomsday clock, "ever-increasing strength" lore and the elemental theme at once.
 
 ## The gimmick
@@ -44,13 +44,14 @@ doomsday clock, "ever-increasing strength" lore and the elemental theme at once.
 | 2026-08-19 | Adaptive affinity (VU → RS per lit blade) | static VU earth/light meant the party infused earth every turn | claude | n=2: party HP 66% / 84% (easy side) |
 | 2026-08-19 | `include_persistent` on every clear row | resets were silent no-ops → TPK | claude (fix) | — |
 | 2026-10-20 | Removed from the Valley Encounter table | standalone story elite | user | — |
+| 2026-10-31 | Display rename: Quad-Elemental Slash → Asura Strike | User naming pass; no mechanical change | user | name-only diff proved |
 
 ```json dossier
 {
   "monster": "Asura",
   "actorId": "0AwQ7wEDz4ISA9mA",
   "status": "draft",
-  "updated": "2026-10-21",
+  "updated": "2026-10-31",
   "role": "standalone story elite (Rakshasa's counterpart); GM-spawnable via Valley Enemies row 7; designed WITH the Lightning Storm",
   "exceptions": [
     {
@@ -73,9 +74,9 @@ doomsday clock, "ever-increasing strength" lore and the elemental theme at once.
       "why": "The storm must NOT set the Aspect — the party owns the blade's element." },
     { "id": "aspect-clear-persistent", "item": "Elemental Aspect", "table": "effect_table", "row": "aspect_clear", "field": "include_persistent", "equals": true,
       "why": "Aspect AEs are persistent_counter; without it Aspects stack silently." },
-    { "id": "quad-resets-marks", "item": "Quad-Elemental Slash", "table": "effect_table", "row": "quad_reset_marks", "field": "include_persistent", "equals": true,
+    { "id": "quad-resets-marks", "item": "Asura Strike", "table": "effect_table", "row": "quad_reset_marks", "field": "include_persistent", "equals": true,
       "why": "Quad's reset was a silent no-op once → RS to everything from round 1 → TPK." },
-    { "id": "quad-needs-four-marks", "table": "action_pattern_table", "where": { "action_pattern_name": "Quad-Elemental Slash" }, "field": "action_pattern_value_1", "equals": "4",
+    { "id": "quad-needs-four-marks", "table": "action_pattern_table", "where": { "action_pattern_name": "Asura Strike" }, "field": "action_pattern_value_1", "equals": "4",
       "why": "The fourth Mark unlocks Quad — the clock." },
     { "id": "mark-worth-8", "item": "Ascension", "table": "effect_table", "row": "ascension_bonus", "field": "damage_amount", "equals": "AE_CHARGES_ASCENSION * 8",
       "why": "Each collected element = +8 damage (the 'ever-increasing strength')." }

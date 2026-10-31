@@ -15,8 +15,8 @@ function t(name, fn) {
   catch (e) { console.log(`  FAIL ${name}\n       ${e.message}`); fail++; }
 }
 
-// ── Overload Riposte ────────────────────────────────────────────────────────
-const riposte = RX.REACTION_REGISTRY["Overload Riposte"];
+// ── Lightning Counter ────────────────────────────────────────────────────────
+const riposte = RX.REACTION_REGISTRY["Lightning Counter"];
 const hit = (o = {}) => ({ hit: true, damage: 40, accuracyResult: 14, element: "physical", ...o });
 
 t("riposte fires on an even Accuracy Result", () => {
@@ -125,21 +125,21 @@ t("Chrono stacks only on a basic attack that dealt damage", () => {
   assert.strictEqual(declared[0].effect.threshold, 2);
 });
 t("a counter payload is excluded from turn-action selection", () => {
-  assert.ok(RX.REACTION_ONLY_ACTIONS.has("Thunder Strike (Riposte)"));
+  assert.ok(RX.REACTION_ONLY_ACTIONS.has("Lightning Retaliate"));
   // Chain Reaction re-fires the MAIN attack, which must stay selectable.
-  assert.ok(!RX.REACTION_ONLY_ACTIONS.has("Thunder Strike"));
+  assert.ok(!RX.REACTION_ONLY_ACTIONS.has("Lightning Blitz"));
 });
 t("declaredReactions/undeclaredReactions partition the passive list", () => {
-  const passives = [{ name: "Overload Riposte" }, { name: "Nobody Knows This One" }, { name: "Static Buildup" }, { name: "Flying" }];
+  const passives = [{ name: "Lightning Counter" }, { name: "Nobody Knows This One" }, { name: "Static Buildup" }, { name: "Flying" }];
   assert.deepStrictEqual(RX.declaredReactions(passives).map((r) => r.name),
-    ["Overload Riposte", "Static Buildup"]);
+    ["Lightning Counter", "Static Buildup"]);
   // Flying is a TRAIT (reactions.TRAITS): modelled, but not a triggered reaction.
   assert.deepStrictEqual(RX.undeclaredReactions(passives), ["Nobody Knows This One"]);
 });
 t("collect() returns only same-trigger reactions whose gate passes", () => {
-  const c = { reactions: RX.declaredReactions([{ name: "Overload Riposte" }, { name: "Chain Reaction" }]) };
+  const c = { reactions: RX.declaredReactions([{ name: "Lightning Counter" }, { name: "Chain Reaction" }]) };
   const got = RX.collect(c, RX.TRIGGERS.ON_TARGETED, hit());
-  assert.deepStrictEqual(got.map((r) => r.name), ["Overload Riposte"]);
+  assert.deepStrictEqual(got.map((r) => r.name), ["Lightning Counter"]);
 });
 t("collect() treats a throwing gate as no-fire, never as a crash", () => {
   const c = { reactions: [{ name: "boom", trigger: RX.TRIGGERS.ON_TARGETED, gate: () => { throw new Error("x"); }, effect: {} }] };

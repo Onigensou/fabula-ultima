@@ -21,11 +21,11 @@
 | Kirin | elite | 50 | 210 | 1 | 14 (41%) | 15 (33%) | poison | bolt / — / — | Horn Rush 69 | — | draft |
 | Lightning Prism | soldier | 45 | 150 | 1 | 10 (>58%) | 16 (26%) | physical, earth | — / poison / bolt | Arc Spark 31 · Fulgur Finis 70 ×3 | (+3 intended) | draft |
 | Mana Ray | soldier | 45 | 115 | 1 | 11 (>58%) | 10 (>58%) | earth, ice | bolt, fire / — / — | Mana Stinger 46 · Volt Stinger 62 | (+1 intended) | draft |
-| Mist Dragon | elite | 45 | 200 | 1 | 14 (41%) | 13 (49%) | air | — / poison / — | Phantom Shift: Thunder Strike 38 · Mist Breath 46 ×3 | best basic attack avg 38 < 45; resisted hit = 16% of PC HP (< 25%) | draft |
+| Mist Dragon | elite | 45 | 200 | 1 | 14 (41%) | 13 (49%) | air | — / poison / — | Phantom Shift: Lightning Blitz 38 · Mist Breath 46 ×3 | best basic attack avg 38 < 45; resisted hit = 16% of PC HP (< 25%) | draft |
 | Obsidrax | soldier | 46 | 180 | 1 | 13 (49%) | 11 (>58%) | ice | earth / bolt / — | Basalt Crush 44 | best basic attack avg 44 < 45 (+1 intended) | draft |
 | Rakshasa | elite | 40 | 1200 | 4 | 14 (41%) | 12 (58%) | light | dark, poison / — / — | Severing Verdict 166 | (+1 intended) | draft |
 | Roo | soldier | 50 | 255 | 1 | 13 (49%) | 13 (49%) | light | dark / physical, poison / — | — | (+1 intended) | draft |
-| Skizzik | soldier | 48 | 130 | 1 | 12 (58%) | 8 (>58%) | earth | — / poison / bolt | Thunder Strike 37 | (+2 intended) | draft |
+| Skizzik | soldier | 48 | 130 | 1 | 12 (58%) | 8 (>58%) | earth | — / poison / bolt | Lightning Blitz 37 | (+2 intended) | draft |
 | Succubus | soldier | 50 | 180 | 1 | 12 (58%) | 14 (41%) | light | dark, ice / — / — | Rake 42 · Draining Kiss 56 | best basic attack avg 42 < 45 (+1 intended) | draft |
 
 ## Design records
@@ -45,7 +45,7 @@
 
 ### Asura — draft · 2026-10-21
 - intended (unconfirmed): 4 VU (rule: exactly 1 for elite) — Adaptive affinity: the four elements start VU and each flips to RS when its Mark is lit — the 4 VU are the puzzle, not a legibility failure. (claude 2026-08-19)
-- intended (unconfirmed): pattern: Quad-Elemental Slash costs 60 MP; the monster starts at 0 MP and must charge up first — Starting at 0 MP is the design ('enters every conflict with no MP'): Overflow and Quad must be earned through Enchants and the storm's +30 MP. (claude 2026-08-19)
+- intended (unconfirmed): pattern: Asura Strike costs 60 MP; the monster starts at 0 MP and must charge up first — Starting at 0 MP is the design ('enters every conflict with no MP'): Overflow and Quad must be earned through Enchants and the storm's +30 MP. (claude 2026-08-19)
 - intended (unconfirmed): pattern: Elemental Slash: Overflow costs 30 MP; the monster starts at 0 MP and must charge up first — Starting at 0 MP is the design ('enters every conflict with no MP'): Overflow and Quad must be earned through Enchants and the storm's +30 MP. (claude 2026-08-19)
 - blind spot: Mindscape: the sim reads Asura HARDER than live (calibration 2026-10-20: live 50% win r9 vs sim 3%) — offset not resolved.
 - blind spot: Sim observation: Asura rarely casts Quad (60 MP = its whole pool; enchants lock once all Marks are lit).
@@ -116,7 +116,7 @@
 ### Mist Dragon — draft · 2026-10-21
 - blind spot: The Blind riders were never observed firing in a real attack.
 - blind spot: Mindscape does not simulate Phantom Shift / Illusory Form fully (Board card marks it).
-- open: Best basic attack (Phantom Shift: Thunder Strike, avg 38) is under the 45 floor and its resisted hit is ~16% of PC HP — intended for an elite, or too soft?
+- open: Best basic attack (Phantom Shift: Lightning Blitz, avg 38) is under the 45 floor and its resisted hit is ~16% of PC HP — intended for an elite, or too soft?
 
 ### Obsidrax — draft · 2026-10-21
 - intended: pattern: Miasma Nova repeats every turn its condition holds: its 3-round cooldown never applies (no other row within 2 priority of 11) — Miasma Nova firing every turn its condition holds (the cooldown never applies) is part of the design from when the monster was created. (user 2026-10-21)
@@ -142,8 +142,8 @@
 
 ### Skizzik — draft · 2026-10-21
 - intended (unconfirmed): absorbs bolt (warning signal) — Bolt absorb is the roster interlock — bolt-spamming feeds it (and the Rod heals it). (claude 2026-08-01)
-- intended (unconfirmed): best basic attack avg 37 < 45 — Many small hits: free Thunder Strikes (Chain Reaction) and the uncapped riposte multiply its output, so the base number is low on purpose. (claude 2026-08-20)
-- blind spot: Live 2026-08-20: Overload Riposte fired ~1/5 of the design rate and hit the previous action's targets instead of the attacker.
+- intended (unconfirmed): best basic attack avg 37 < 45 — Many small hits: free Lightning Blitzes (Chain Reaction) and the uncapped riposte multiply its output, so the base number is low on purpose. (claude 2026-08-20)
+- blind spot: Live 2026-08-20: Lightning Counter fired ~1/5 of the design rate and hit the previous action's targets instead of the attacker.
 - blind spot: The sim journal does not log enemy free actions — check what a log does not record before concluding from its silence.
 - open: Was the riposte mis-targeting (free action inheriting the parent's target list) ever fixed? Balance should not be re-tuned until it is.
 
@@ -179,13 +179,13 @@
 
 **Iron Colossus** — Siege Fist 42 (physical, vs def) · Grinding Quake 27 ×all (earth, vs mdef) · Seismic Stomp 23 ×3 (earth, vs def)
 
-**Kirin** — Horn Rush 69 (bolt, vs def) · Hooves 52 (physical, vs def) · Rail Stream 37 ×all (bolt, vs mdef)
+**Kirin** — Horn Rush 69 (bolt, vs def) · Hooves 52 (physical, vs def) · Divine Railstream 37 ×all (bolt, vs mdef)
 
 **Lightning Prism** — Fulgur Finis 70 ×3 (bolt, vs mdef) · Arc Spark 31 (bolt, vs mdef)
 
 **Mana Ray** — Volt Stinger 62 (bolt, vs def) · Mana Stinger 46 (dark, vs def)
 
-**Mist Dragon** — Mist Breath 46 ×3 (air, vs mdef) · Phantom Shift: Thunder Strike 38 (air, vs def) · Phantom Shift: Mana Stinger 28 (air, vs def) · Mist Claw 26 (air, vs def) · Phantom Shift: Venomstone Spines 22 ×2 (air, vs def)
+**Mist Dragon** — Mist Breath 46 ×3 (air, vs mdef) · Phantom Shift: Lightning Blitz 38 (air, vs def) · Phantom Shift: Mana Stinger 28 (air, vs def) · Mist Claw 26 (air, vs def) · Phantom Shift: Venomstone Spines 22 ×2 (air, vs def)
 
 **Obsidrax** — Basalt Crush 44 (physical, vs def) · Venomstone Spines 28 ×3 (poison, vs def) · Tectonic Collapse 28 ×all (earth, vs def)
 
@@ -193,6 +193,6 @@
 
 **Roo** — none readable
 
-**Skizzik** — Thunder Strike 37 (bolt, vs def) · Thunder Strike (Riposte) 19 (bolt, vs def)
+**Skizzik** — Lightning Blitz 37 (bolt, vs def) · Lightning Retaliate 19 (bolt, vs def)
 
 **Succubus** — Draining Kiss 56 (dark, vs mdef) · Rake 42 (dark, vs def)

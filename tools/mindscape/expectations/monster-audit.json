@@ -328,7 +328,7 @@
       "flags": [
         "4 VU (rule: exactly 1 for elite)",
         "resisted hit = 21% of PC HP (< 25%)",
-        "pattern: Quad-Elemental Slash costs 60 MP; the monster starts at 0 MP and must charge up first",
+        "pattern: Asura Strike costs 60 MP; the monster starts at 0 MP and must charge up first",
         "pattern: Elemental Slash: Overflow costs 30 MP; the monster starts at 0 MP and must charge up first"
       ],
       "findings": [
@@ -348,7 +348,7 @@
         },
         {
           "rule": "pattern",
-          "text": "pattern: Quad-Elemental Slash costs 60 MP; the monster starts at 0 MP and must charge up first",
+          "text": "pattern: Asura Strike costs 60 MP; the monster starts at 0 MP and must charge up first",
           "status": "intended",
           "why": "Starting at 0 MP is the design ('enters every conflict with no MP'): Overflow and Quad must be earned through Enchants and the storm's +30 MP.",
           "confirmed": false,
@@ -389,13 +389,13 @@
           {
             "id": "quad-resets-marks",
             "ok": true,
-            "text": "Quad-Elemental Slash effect_table[quad_reset_marks].include_persistent = true",
+            "text": "Asura Strike effect_table[quad_reset_marks].include_persistent = true",
             "why": "Quad's reset was a silent no-op once → RS to everything from round 1 → TPK."
           },
           {
             "id": "quad-needs-four-marks",
             "ok": true,
-            "text": "action_pattern_table[Quad-Elemental Slash].action_pattern_value_1 = \"4\"",
+            "text": "action_pattern_table[Asura Strike].action_pattern_value_1 = \"4\"",
             "why": "The fourth Mark unlocks Quad — the clock."
           },
           {
@@ -1397,7 +1397,7 @@
           "vs": "def"
         },
         {
-          "name": "Rail Stream",
+          "name": "Divine Railstream",
           "type": "Spell",
           "element": "bolt",
           "targets": null,
@@ -1424,7 +1424,7 @@
             "id": "charge-from-others-bolt",
             "ok": true,
             "text": "Lightning Charge reaction_config_table[charge_horn].condition_formula = \"TRIGGER_DAMAGE_IS_BOLT == 1 && CAUSE_IS_SELF == 0\"",
-            "why": "Feeds on ANY creature taking bolt, but not its own Rail Stream / Horn Rush."
+            "why": "Feeds on ANY creature taking bolt, but not its own Divine Railstream / Horn Rush."
           },
           {
             "id": "charge-storm-fed",
@@ -1441,13 +1441,13 @@
           {
             "id": "rail-scales-with-mp",
             "ok": true,
-            "text": "Rail Stream effect_table[rail_charge_bonus].damage_amount = \"min(75, CUR_MP)\"",
+            "text": "Divine Railstream effect_table[rail_charge_bonus].damage_amount = \"min(75, CUR_MP)\"",
             "why": "1:1 with the gauge; the min() is the Chimerist guard."
           },
           {
             "id": "rail-paralyze-before-drain",
             "ok": true,
-            "text": "Rail Stream effect_table[rail_chain].chain_steps = \"apply_paralyzed, rail_drain\"",
+            "text": "Divine Railstream effect_table[rail_chain].chain_steps = \"apply_paralyzed, rail_drain\"",
             "why": "Order is load-bearing: the Paralyze chance reads MP before the drain."
           },
           {
@@ -1712,7 +1712,7 @@
           "vs": "mdef"
         },
         {
-          "name": "Phantom Shift: Thunder Strike",
+          "name": "Phantom Shift: Lightning Blitz",
           "type": "Attack",
           "element": "air",
           "targets": 1,
@@ -1745,7 +1745,7 @@
         }
       ],
       "basic": {
-        "name": "Phantom Shift: Thunder Strike",
+        "name": "Phantom Shift: Lightning Blitz",
         "type": "Attack",
         "element": "air",
         "targets": 1,
@@ -1760,13 +1760,13 @@
         {
           "rule": "basic-attack-min",
           "text": "best basic attack avg 38 < 45",
-          "action": "Phantom Shift: Thunder Strike",
+          "action": "Phantom Shift: Lightning Blitz",
           "status": "new"
         },
         {
           "rule": "resisted-min",
           "text": "resisted hit = 16% of PC HP (< 25%)",
-          "action": "Phantom Shift: Thunder Strike",
+          "action": "Phantom Shift: Lightning Blitz",
           "status": "new"
         }
       ],
@@ -1811,7 +1811,7 @@
           "Mindscape does not simulate Phantom Shift / Illusory Form fully (Board card marks it)."
         ],
         "openQuestions": [
-          "Best basic attack (Phantom Shift: Thunder Strike, avg 38) is under the 45 floor and its resisted hit is ~16% of PC HP — intended for an elite, or too soft?"
+          "Best basic attack (Phantom Shift: Lightning Blitz, avg 38) is under the 45 floor and its resisted hit is ~16% of PC HP — intended for an elite, or too soft?"
         ]
       },
       "drift": []
@@ -2224,7 +2224,7 @@
       ],
       "attacks": [
         {
-          "name": "Thunder Strike",
+          "name": "Lightning Blitz",
           "type": "Attack",
           "element": "bolt",
           "targets": 1,
@@ -2232,7 +2232,7 @@
           "vs": "def"
         },
         {
-          "name": "Thunder Strike (Riposte)",
+          "name": "Lightning Retaliate",
           "type": "Attack",
           "element": "bolt",
           "targets": 1,
@@ -2241,7 +2241,7 @@
         }
       ],
       "basic": {
-        "name": "Thunder Strike",
+        "name": "Lightning Blitz",
         "type": "Attack",
         "element": "bolt",
         "targets": 1,
@@ -2264,9 +2264,9 @@
         {
           "rule": "basic-attack-min",
           "text": "best basic attack avg 37 < 45",
-          "action": "Thunder Strike",
+          "action": "Lightning Blitz",
           "status": "intended",
-          "why": "Many small hits: free Thunder Strikes (Chain Reaction) and the uncapped riposte multiply its output, so the base number is low on purpose.",
+          "why": "Many small hits: free Lightning Blitzes (Chain Reaction) and the uncapped riposte multiply its output, so the base number is low on purpose.",
           "confirmed": false,
           "decided": "claude 2026-08-20"
         }
@@ -2297,18 +2297,18 @@
           {
             "id": "riposte-even-parity",
             "ok": true,
-            "text": "Overload Riposte reaction_config_table[riposte_strike].condition_formula contains \"ATTACK_CHECK_RESULT % 2 == 0\"",
+            "text": "Lightning Counter reaction_config_table[riposte_strike].condition_formula contains \"ATTACK_CHECK_RESULT % 2 == 0\"",
             "why": "The even-parity counter motif (shared with Ampere)."
           },
           {
             "id": "riposte-targets-attacker",
             "ok": true,
-            "text": "Overload Riposte effect_table[riposte_target].candidate_source = \"trigger_attacker\"",
+            "text": "Lightning Counter effect_table[riposte_target].candidate_source = \"trigger_attacker\"",
             "why": "Single-target riposte at the attacker — not a second AoE."
           }
         ],
         "blindSpots": [
-          "Live 2026-08-20: Overload Riposte fired ~1/5 of the design rate and hit the previous action's targets instead of the attacker.",
+          "Live 2026-08-20: Lightning Counter fired ~1/5 of the design rate and hit the previous action's targets instead of the attacker.",
           "The sim journal does not log enemy free actions — check what a log does not record before concluding from its silence."
         ],
         "openQuestions": [

@@ -318,7 +318,7 @@ function reductionFor(target, element, { withTincture = true } = {}) {
 // in exactly one place.
 //
 // A reactor that has just been killed STILL acts here. That is not a bug: the
-// live Overload Riposte fires at CONFIRM, before the incoming damage resolves,
+// live Lightning Counter fires at CONFIRM, before the incoming damage resolves,
 // so it lands on the killing blow — and modelling it otherwise would quietly
 // delete the property that makes the mechanic immune to the focus-fire discount.
 function fireReactions(state, reactor, trigger, ctx) {
@@ -1469,7 +1469,7 @@ function runBattle({ party, enemies, rng, expectedRounds = 7, maxRounds = 30, co
     if (dataDriven) {
       // A monster enters with its SHEET'S current HP/MP, as a spawned token does.
       // Asura and Kirin are authored at 0 MP on purpose (they charge up); starting
-      // them full handed Asura its 60-MP Quad-Elemental Slash on turn one.
+      // them full handed Asura its 60-MP Asura Strike on turn one.
       const curMp = Number(c.actor.mp?.cur), curHp = Number(c.actor.hp?.cur);
       if (Number.isFinite(curMp) && curMp >= 0 && curMp < c.mp) c.mp = curMp;
       if (Number.isFinite(curHp) && curHp > 0 && curHp < c.hp) c.hp = curHp;

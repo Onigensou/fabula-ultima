@@ -14889,6 +14889,10 @@
             "name": "Ascension"
           },
           {
+            "id": "NFruWlBHrgfNSJmM",
+            "name": "Asura Strike"
+          },
+          {
             "id": "ll1QCriD5ganoy1h",
             "name": "Demongrin"
           },
@@ -14911,10 +14915,6 @@
           {
             "id": "wUfS7SWAocoznK0n",
             "name": "Four-Armed Fury"
-          },
-          {
-            "id": "NFruWlBHrgfNSJmM",
-            "name": "Quad-Elemental Slash"
           },
           {
             "id": "ZAKzWPxyVEz9MvYH",
@@ -21212,6 +21212,10 @@
             "name": "(Empty)"
           },
           {
+            "id": "zNhzAhg1phFoHW8q",
+            "name": "Divine Railstream"
+          },
+          {
             "id": "IIkAGJ0BQxtk1sBt",
             "name": "Hooves"
           },
@@ -21230,10 +21234,6 @@
           {
             "id": "EFdFBDBt4HBeuqcR",
             "name": "Mystic Horn"
-          },
-          {
-            "id": "zNhzAhg1phFoHW8q",
-            "name": "Rail Stream"
           },
           {
             "id": "WWDKHIwgzpCOpLwZ",
@@ -21853,12 +21853,12 @@
             "name": "Phantom Shift"
           },
           {
-            "id": "zv0kGWfm8fpxeSC4",
-            "name": "Phantom Shift: Mana Stinger"
+            "id": "Iobix2EOuXqGNH6X",
+            "name": "Phantom Shift: Lightning Blitz"
           },
           {
-            "id": "Iobix2EOuXqGNH6X",
-            "name": "Phantom Shift: Thunder Strike"
+            "id": "zv0kGWfm8fpxeSC4",
+            "name": "Phantom Shift: Mana Stinger"
           },
           {
             "id": "fecg9O0PTPyAsxVj",
@@ -23856,6 +23856,14 @@
             "name": "Chain Reaction"
           },
           {
+            "id": "vBuHp8f6NHuYNojr",
+            "name": "Lightning Blitz"
+          },
+          {
+            "id": "oezr2w4m0LMEFM6F",
+            "name": "Lightning Counter"
+          },
+          {
             "id": "us2cwD7ImrjNUQRY",
             "name": "Lightning Essence"
           },
@@ -23864,20 +23872,12 @@
             "name": "Lightning Greaves"
           },
           {
-            "id": "oezr2w4m0LMEFM6F",
-            "name": "Overload Riposte"
+            "id": "4XkAxScm0Tj8sBjv",
+            "name": "Lightning Retaliate"
           },
           {
             "id": "2nHv9Fvn5En9wL3S",
             "name": "Static Buildup"
-          },
-          {
-            "id": "vBuHp8f6NHuYNojr",
-            "name": "Thunder Strike"
-          },
-          {
-            "id": "4XkAxScm0Tj8sBjv",
-            "name": "Thunder Strike (Riposte)"
           },
           {
             "id": "A1oZh6TNti6zAMGq",
