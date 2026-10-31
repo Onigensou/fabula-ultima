@@ -27,6 +27,10 @@
   // ---------------------------------------------------------------------------
   let _campActive = false;
 
+  // How long a player must stay gone before the table stops waiting on them, so
+  // a brief connection blip doesn't skip their turn to answer.
+  const RECHECK_MS = 10000;
+
   function activateCamp(scene) {
     _campActive = true;
     console.debug(TAG, "Camp mode activated for scene:", scene?.name);
@@ -41,6 +45,8 @@
     if (scene?.active) CAMP.Members?.ensure(scene);
     // Restore UI for current phase immediately
     _onPhaseChange(CAMP.State.getPhase());
+    // A primary GM reloading may have missed the press that completed a gate.
+    setTimeout(() => { if (_campActive) CAMP.Socket?.recheckGates?.(); }, RECHECK_MS);
   }
 
   function deactivateCamp() {
@@ -209,6 +215,17 @@
       CAMP.ActivitySelectUI.refresh?.();
       return;
     }
+  });
+
+  // Ready dots and the "everyone answered" checks follow who is connected. Each
+  // only re-evaluated on a press before, so losing the one player everyone was
+  // waiting on left the lobby stuck.
+  Hooks.on("userConnected", (user, connected) => {
+    if (!_campActive || user?.isGM) return;
+    const phase = CAMP.State.getPhase();
+    if ([CAMP.PHASE.FREE_ROAM, CAMP.PHASE.SLEEP_LOBBY, CAMP.PHASE.SET_OUT_LOBBY].includes(phase)) CAMP.Button.render();
+    if (phase === CAMP.PHASE.ACTIVITY_SELECT) CAMP.ActivitySelectUI.refresh?.();
+    if (!connected) setTimeout(() => { if (_campActive) CAMP.Socket?.recheckGates?.(); }, RECHECK_MS);
   });
 
   // ── Phase order for nextPhase / prevPhase ──────────────────────────────────

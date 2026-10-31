@@ -341,7 +341,8 @@
     // Confirm button (players only)
     overlay.querySelector("#oni-camp-act-confirm")?.addEventListener("click", () => {
       CAMP.Sound.play(CAMP.SFX.ACTIVITY_CONFIRM);
-      CAMP.Socket.emit(CAMP.MSG.TOGGLE_READY, { userId: game.user?.id });
+      const userId = game.user?.id;
+      CAMP.Socket.requestReady(userId, !CAMP.State.getReady()[userId]);
     });
 
     // GM controls
