@@ -31,6 +31,7 @@ import { stageOf, restViewFor } from "./director-camera.js";
 import {
   resolvePreset, buildCamera, battlerScaleAt, parallaxUniforms,
   floorToWorld, worldToCanvas, pxPerMetreAt, floorDisparityAt, buildProjector, stageModeFor, STAGE_LABEL,
+  paintedLive, paintedParallax,
 } from "./battle-stage-3d-rules.js";
 import { Stage3dCamera, SHOTS } from "./battle-stage-3d-camera.js";
 import { isCameraSuspended } from "./camera-authority.js";
@@ -265,7 +266,23 @@ function projectNear(foot, off) {
   return state.camera3d?.projectNear(foot, off) ?? null;
 }
 
-globalThis[GLOBAL_KEY] = { tokenDepthConfig, drawnBox, drawnMeshBounds, drawnScreenPoint, predictDrawn, drawnMap, projectFoot, projectNear, drawnCenter: (token) => state.camera3d?.drawnCenter(token) ?? null, hold };
+// Where a point painted on the backdrop is drawn now ({x, y, s}), given the depth
+// map's disparity there. The point itself when the backdrop is not displacing it.
+function paintedPoint(pt, D) {
+  const c = state.camera3d, rig = c?.running && !c.flat ? c.lastRig : null;
+  if (rig) return paintedLive(pt, D, c.P, rig);
+  if (state.mesh && state.lastU && state.cfg) return paintedParallax(pt, D, state.lastU, state.cfg, state.sceneRect);
+  return { x: pt.x, y: pt.y, s: 1 };
+}
+
+// True while the 3D camera is drawing this frame: painted points are fresh only
+// after its prerender, which announces DRAWN_HOOK.
+function cameraLive() {
+  const c = state.camera3d;
+  return !!(c?.running && !c.flat && c.lastRig);
+}
+
+globalThis[GLOBAL_KEY] = { tokenDepthConfig, drawnBox, drawnMeshBounds, drawnScreenPoint, predictDrawn, drawnMap, projectFoot, projectNear, paintedPoint, cameraLive, drawnCenter: (token) => state.camera3d?.drawnCenter(token) ?? null, hold };
 
 // Token#center reads the DOCUMENT in v12, so anything placed at token.center
 // (skill animation scripts, reaction menus, scrolling text) would land on the
@@ -328,6 +345,7 @@ function blurredCopy(tex, px) {
 function teardownMesh() {
   const m = state.mesh;
   state.mesh = null;
+  state.lastU = null;
   if (m) { try { m.parent?.removeChild(m); m.destroy({ children: true }); } catch {} }
   if (state.blurRT) { try { state.blurRT.destroy(true); } catch {} state.blurRT = null; }
   state.bgTex = null;
@@ -407,6 +425,7 @@ function onTick() {
     view, rest: restView(scene), t: (performance.now() - state.t0) / 1000,
     cfg, cam, sceneRect: state.sceneRect, orbit: !reducedMotion(),
   });
+  state.lastU = u;
   const un = m.shader.uniforms;
   un.uOffset[0] = u.offsetUV[0]; un.uOffset[1] = u.offsetUV[1];
   un.uPivot[0] = u.pivotUV[0]; un.uPivot[1] = u.pivotUV[1];

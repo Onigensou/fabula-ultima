@@ -82,7 +82,7 @@ function loadThree() {
 }
 
 // The depth map as numbers (one grey channel, value = D / 2), for building a relief.
-async function loadDepthField(path) {
+export async function loadDepthField(path) {
   const img = new Image();
   img.decoding = "async";
   img.src = foundry.utils.getRoute(path);

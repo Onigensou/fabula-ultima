@@ -78,6 +78,7 @@ import { initStatusCues } from "./status-cues.js";
 import { initBrandMark } from "./brand-mark.js";
 import { initCameraAuthority } from "./camera-authority.js";
 import { initBattleStage3d } from "./battle-stage-3d.js";
+import { initBattleStageAmbient } from "./battle-stage-ambient.js";
 import { initLightningRodCursor } from "../conflict-event/lightning-rod-cursor.js";
 import { initLightningCrystalCountdown } from "../conflict-event/lightning-crystal-countdown.js";
 import { initLightningCrystalFx } from "../conflict-event/lightning-crystal-fx.js";
@@ -1767,6 +1768,10 @@ Hooks.once("ready", () => {
   // depth-index) + the parallax backdrop. Every client draws its own.
   try { initBattleStage3d(); }
   catch (e) { warn("initBattleStage3d on ready threw", e); }
+
+  // Scene effects pinned to the painted backdrop (crystal glow, arcs, mist...).
+  try { initBattleStageAmbient(); }
+  catch (e) { warn("initBattleStageAmbient on ready threw", e); }
 
   // Transient NPC HP bar — registers its socketlib handler on every client so
   // the GM-side damage/heal seams can slide a condition bar under a studied

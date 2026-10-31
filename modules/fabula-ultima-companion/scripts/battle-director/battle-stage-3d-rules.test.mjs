@@ -12,7 +12,7 @@ import {
   PRESETS, backdropKey, resolvePreset, buildCamera, physicalRatio, tokenScaleAt, battlerScaleAt,
   floorDisparityAt, floorToWorld, worldToCanvas, parallaxUniforms, shiftUV,
   buildProjector, restPxPerMetre, rigCamera, liveBattler, projectNearFoot, stageModeFor,
-  reliefDepth, reliefPoint, floorDepth, projectLive,
+  reliefDepth, reliefPoint, floorDepth, projectLive, paintedLive, paintedParallax,
 } from "./battle-stage-3d-rules.js";
 
 let pass = 0, fail = 0;
@@ -242,6 +242,35 @@ for (const [file, stage] of [["Eisendrache_Battlemap002.png", LEGACY_STAGE], ["V
   ok("parallax / scale on a plain backdrop = untouched 2D", stageModeFor("full", null) === "off" && stageModeFor("scale", null) === "off");
   ok("Off is off everywhere", stageModeFor("off", tgCfg) === "off");
   ok("parallax setting never starts the 3D camera", stageModeFor("full", tgCfg) === "full");
+}
+
+// ── Objects pinned to the painting (battle-stage-ambient) ────────────────────
+{
+  const cfg = resolvePreset(FORGE + "Valley_Battlemap002.webp?v=2");
+  ok("Underground battle map has a relief and scene effects", !!cfg?.stage3d?.relief && cfg.ambient?.crystals?.length === 15 && cfg.ambient?.pools?.length === 2);
+  const cam = buildCamera(cfg, V2_STAGE, 110), P = buildProjector(cfg, cam, V2_STAGE);
+  const rest = { x: 1280, y: 635, scale: 1.1415 }, rect = { x: 0, y: 0, w: 2560, h: 1270 };
+  const crystal = { x: 948, y: 225 }, D = 0.05;
+  const rigAt = (shot = {}, view = rest) => rigCamera({ view, rest, shot, t: 0, sway: false, neutral: 0 }, P, cfg);
+  const atRest = paintedLive(crystal, D, P, rigAt());
+  near("a painted point sits on itself at rest (x)", atRest.x, crystal.x, 1e-6);
+  near("a painted point sits on itself at rest (y)", atRest.y, crystal.y, 1e-6);
+  near("... at its rest size", atRest.s, 1, 1e-6);
+  const fold = paintedLive(crystal, D, P, rigCamera({ view: { ...rest, x: rest.x + 150 }, rest, shot: { yaw: 18, tilt: 3, push: 0.9 }, t: 0, sway: false, neutral: 1 }, P, cfg));
+  near("neutral camera folds a painted point back to 2D (x)", fold.x, crystal.x, 1e-6);
+  near("neutral camera folds a painted point back to 2D (y)", fold.y, crystal.y, 1e-6);
+  // The same world point the relief mesh draws, so an object can't part from its paint.
+  const Z = reliefDepth(crystal.y, D, P), swung = rigAt({ yaw: 18, tilt: 3, push: 0.9 });
+  const mesh = projectLive(reliefPoint(crystal, Z, P), swung), pin = paintedLive(crystal, D, P, swung);
+  ok("under a swing the pin moves with the relief", Math.abs(pin.x - crystal.x) > 50 && pin.x === mesh.x && pin.y === mesh.y);
+
+  const u = parallaxUniforms({ view: { ...rest, x: rest.x + 100 }, rest, t: 0, cfg, cam, sceneRect: rect, orbit: false });
+  const farP = paintedParallax(crystal, 0, u, cfg, rect);
+  const uv = [crystal.x / rect.w, crystal.y / rect.h], s = shiftUV(uv, 0, u, cfg);
+  near("parallax pin is the mesh's own shift", farP.x - crystal.x, s[0] * rect.w, 1e-9);
+  ok("far scenery shifts under a pan", Math.abs(farP.x - crystal.x) > 1);
+  const bandD = (u.band[0] + u.band[1]) / 2, floorP = paintedParallax({ x: 1280, y: 600 }, bandD, u, cfg, rect);
+  ok("the battle band stays rigid", floorP.x === 1280 && floorP.y === 600);
 }
 
 // The canvas foot point `dzPx` rest px (at `f`'s row) nearer the camera along the floor.

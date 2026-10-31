@@ -93,6 +93,18 @@ export const PRESETS = Object.freeze({
   Eisendrache_Battlemap002: { horizon: 175.3, strength: 0.178, orbitX: 8, orbitY: 2, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
   // Valley of the Dragon - Battle (v2)
   Valley_Battlemap001: { horizon: 52.0, strength: 0.386, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  // Valley of the Dragon - Underground Area (Battle). `ambient` = the scene effects
+  // pinned to the painting (battle-stage-ambient.js), in canvas px on this image.
+  Valley_Battlemap002: {
+    horizon: -5, strength: 0.472,
+    stage3d: { relief: true, backRow: 222, frontRow: 547 },
+    ambient: {
+      crystals: [[70,283,100],[225,202,46],[179,80,30],[502,130,44],[657,202,40],[948,225,70],[1648,198,36],[1917,130,52],[2235,101,48],[2366,201,50],[2503,361,70],[71,973,48],[405,1131,26],[2266,944,46],[2400,1071,46]],
+      pools: [[310,375,120,26],[2262,408,120,28]],
+      arcSheet: { src: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/sheets/spark_anim01.png", cols: 3, rows: 2, frames: 6, ms: 300 },
+      mistTexture: "modules/fxmaster/assets/particle-effects/effects/clouds/cloud1.webp",
+    },
+  },
 });
 
 const finite = (v) => typeof v === "number" && Number.isFinite(v);
@@ -245,6 +257,25 @@ export function parallaxUniforms({ view, rest, t = 0, cfg, cam, sceneRect, orbit
     dolly: clamp(dolly, -0.3, 0.3),
     band: [floorDisparityAt(cam.band[0], cam), floorDisparityAt(cam.band[1], cam)],
   };
+}
+
+/**
+ * Where a point painted on the backdrop is drawn right now, for objects laid over
+ * the painting. Both take the depth map's disparity D at that point and give the
+ * same answer the backdrop gives, so an object stays on what it was placed on.
+ * paintedParallax is the mesh's displacement (shiftUV: a source texel at uv lands
+ * at uv + shift); paintedLive pushes the point out on the relief and through the
+ * live camera, with s = how large it is drawn relative to rest.
+ */
+export function paintedParallax(pt, D, u, cfg, rect) {
+  const [sx, sy] = shiftUV([(pt.x - rect.x) / rect.w, (pt.y - rect.y) / rect.h], D, u, cfg);
+  return { x: pt.x + sx * rect.w, y: pt.y + sy * rect.h, s: 1 };
+}
+
+export function paintedLive(pt, D, P, rig) {
+  const Z = reliefDepth(pt.y, D, P);
+  const a = projectLive(reliefPoint(pt, Z, P), rig);
+  return { x: a.x, y: a.y, s: clamp((rig.f / P.f) * (Z / a.depth), 0.3, 3) };
 }
 
 /* ── 3D camera (experimental) ─────────────────────────────────────────────
