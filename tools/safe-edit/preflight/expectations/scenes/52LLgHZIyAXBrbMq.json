@@ -98,7 +98,7 @@
             "wellspring_dark": false,
             "wellspring_light": false
           },
-          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Cavern\",\"id\":\"Scene.Uas0vCUZJOjrpgB0\"},{\"name\":\"???\",\"id\":\"Scene.q5y2KZtTg7k9CCi8\"},{\"name\":\"Valley of the Dragon - Underground Area\",\"id\":\"09CApvaBfOesGfbp\"},{\"name\":\"The Great Seal\",\"id\":\"MWQBX1ZnbjcFkvq2\"}]"
+          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Cavern\",\"id\":\"Scene.Uas0vCUZJOjrpgB0\"},{\"name\":\"???\",\"id\":\"Scene.q5y2KZtTg7k9CCi8\"},{\"name\":\"Valley of the Dragon - Underground Area\",\"id\":\"09CApvaBfOesGfbp\"},{\"name\":\"The Great Seal\",\"id\":\"MWQBX1ZnbjcFkvq2\"},{\"name\":\"Nether Bridge\",\"id\":\"sEaLbRiDgEvM0250\"}]"
         },
         "oniDungeon": {
           "threatLevel": "medium",
@@ -324,7 +324,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359022361,
-      "modifiedTime": 1793431956247,
+      "modifiedTime": 1793445672564,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "drawings": [

@@ -98,7 +98,7 @@
             "wellspring_dark": true,
             "wellspring_light": false
           },
-          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"???\",\"id\":\"Scene.q5y2KZtTg7k9CCi8\"},{\"name\":\"Valley of the Dragon - Seal Cavern\",\"id\":\"52LLgHZIyAXBrbMq\"}]"
+          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"???\",\"id\":\"Scene.q5y2KZtTg7k9CCi8\"},{\"name\":\"Valley of the Dragon - Seal Cavern\",\"id\":\"52LLgHZIyAXBrbMq\"},{\"name\":\"Nether Bridge\",\"id\":\"sEaLbRiDgEvM0250\"}]"
         },
         "oniDungeon": {
           "threatLevel": "medium",
@@ -190,7 +190,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359025817,
-      "modifiedTime": 1793431956274,
+      "modifiedTime": 1793445672577,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

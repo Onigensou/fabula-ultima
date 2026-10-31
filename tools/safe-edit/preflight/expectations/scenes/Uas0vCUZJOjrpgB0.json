@@ -136,7 +136,7 @@
           }
         },
         "oniFabula": {
-          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Underground Area\",\"id\":\"09CApvaBfOesGfbp\"},{\"name\":\"Valley of the Dragon - Seal Cavern\",\"id\":\"52LLgHZIyAXBrbMq\"},{\"name\":\"Ancient Mural\",\"id\":\"bcg4esedBAmZTEVL\"}]",
+          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Underground Area\",\"id\":\"09CApvaBfOesGfbp\"},{\"name\":\"Valley of the Dragon - Seal Cavern\",\"id\":\"52LLgHZIyAXBrbMq\"},{\"name\":\"Nether Bridge\",\"id\":\"sEaLbRiDgEvM0250\"},{\"name\":\"Ancient Mural\",\"id\":\"bcg4esedBAmZTEVL\"}]",
           "general": {
             "sceneMode": "theatre",
             "scanRadius": null,
@@ -212,7 +212,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791552425912,
-      "modifiedTime": 1793419491310,
+      "modifiedTime": 1793445672592,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     }
   }
