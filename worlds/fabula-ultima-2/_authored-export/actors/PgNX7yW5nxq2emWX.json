@@ -522,6 +522,9 @@
           }
         }
       },
+      "fabula-ultima-companion": {
+        "spriteFacesRight": true
+      },
       "hex-size-support": {
         "alternateOrientation": false,
         "hideBorder": true,
