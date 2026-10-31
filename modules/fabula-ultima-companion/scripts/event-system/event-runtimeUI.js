@@ -217,6 +217,11 @@
   pointer-events: none;
   cursor: default;
   filter: grayscale(0.6);
+}
+
+/* Only while shown: this selector outranks the base and is-hiding opacity: 0,
+   so on every button it would keep a hidden one drawn where it last stood */
+#${C.UI_LAYER_ID || "oni-event-ui-layer"}.is-readonly .${C.INTERACT_BUTTON_CLASS || "oni-event-btn"}.is-visible {
   opacity: 0.55;
 }
 
