@@ -38,12 +38,11 @@ blown up sooner, and a party that swings at the wrong Crystal gets bitten by the
 | Date | Change | Why | Decided by | Result |
 |---|---|---|---|---|
 | 2026-10-31 | Built as designed | User brief, mockup approved | user | functions proven live; balance not tested, on the user's call |
+| 2026-10-31 | Multi-target counts as area: more than one declared target = no hit, so Zarg's "Up to two" bow can't target it | "simple ruling" | user | as built |
 | 2026-10-31 | Crystal targeting through `target_eligibility` + `target_count`, not a new AI condition and focus | Same behaviour, less code; an inline focus value is reverted when the sheet opens | claude | live: Resonance always picks a Crystal |
 
 ## Open
 
-- Zarg's bow declares "Up to two", so under the declared-shape ruling it can't target a Fulgimite
-  at all. Needs the user's call.
 - A human has not played it. Offline Mindscape does not model the Crystal or the disguise.
 
 ```json dossier
@@ -72,8 +71,7 @@ blown up sooner, and a party that swings at the wrong Crystal gets bitten by the
     "Sim party brains don't know which Crystal to suspect or how to play around Resonance."
   ],
   "open_questions": [
-    "Balance is unmeasured, by the user's call on 2026-10-31.",
-    "Should a declared Up-to-N weapon (Zarg's bow) be able to single out a Fulgimite? Today it can't."
+    "Balance is unmeasured, by the user's call on 2026-10-31."
   ]
 }
 ```
