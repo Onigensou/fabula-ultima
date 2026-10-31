@@ -25,7 +25,7 @@ import { log, warn } from "./logger.js";
 import { registerAnimation } from "./director-surfaces.js";
 import {
   ONE_SHOT, HOLD, LOOPING, poseSrc, declaredPoseSrcs, lastingPose, shownPose,
-  poseScaleFix, poseAnchor,
+  statePoseSrc, poseScaleFix, poseAnchor,
 } from "./battler-pose-rules.js";
 
 const MODULE_ID = "fabula-ultima-companion";
@@ -284,7 +284,9 @@ function render(token, { restart = false, fresh = false } = {}) {
   if (!mesh || token.destroyed) return;
   const entry = entryFor(token);
   const pose = shownPose(entry.lasting, entry.oneShot?.pose ?? null);
-  const src = pose === "idle" ? null : poseSrc(propsOf(token), pose, _failedSrcs);
+  const src = pose === "idle" ? null
+    : pose === "state" ? statePoseSrc(effectsOf(token), _failedSrcs)
+    : poseSrc(propsOf(token), pose, _failedSrcs);
   const art = src ? _arts.get(artKey(token.id, src)) ?? loadArt(token, src) : null;
   trace(token, "render", { pose, src: src?.split("/").pop() ?? null, ready: !!art?.ready, restart, fresh });
 

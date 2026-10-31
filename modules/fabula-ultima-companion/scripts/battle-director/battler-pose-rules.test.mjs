@@ -11,6 +11,7 @@
 import assert from "node:assert/strict";
 import {
   poseSrc, declaredPoseSrcs, lastingPose, shownPose, actionPose, skillPose,
+  effectPoseArt, statePoseSrc,
   poseScaleFix, poseAnchor, isGuardEffect, isCrisisEffect, isKoEffect,
 } from "./battler-pose-rules.js";
 
@@ -138,6 +139,25 @@ t("anchor keeps bottom-centre on bottom-centre", () => {
 });
 t("same size -> same anchor", () => {
   assert.deepEqual(poseAnchor({ x: 0.5, y: 0.5 }, { w: 10, h: 10 }, { w: 10, h: 10 }), { x: 0.5, y: 0.5 });
+});
+
+console.log("effect art");
+const artFx = (src, extra = {}) => ({ name: "Supercharge", flags: { [NS]: { poseArt: src } }, ...extra });
+t("an effect with art gives the state pose", () => assert.equal(lastingPose([artFx("a.png")]), "state"));
+t("no art flag, blank or disabled effect -> not the state pose", () => {
+  assert.equal(lastingPose([{ name: "Supercharge" }]), "idle");
+  assert.equal(lastingPose([artFx("  ")]), "idle");
+  assert.equal(lastingPose([artFx("a.png", { disabled: true })]), "idle");
+});
+t("KO and Guard beat the state, the state beats Crisis", () => {
+  assert.equal(lastingPose([artFx("a.png"), ko]), "ko");
+  assert.equal(lastingPose([artFx("a.png"), guard]), "guard");
+  assert.equal(lastingPose([crisis, artFx("a.png")]), "state");
+});
+t("statePoseSrc reads the effect, skips failed art", () => {
+  assert.equal(statePoseSrc([crisis, artFx("a.png")]), "a.png");
+  assert.equal(statePoseSrc([artFx("a.png")], new Set(["a.png"])), null);
+  assert.equal(effectPoseArt(crisis), null);
 });
 
 console.log(`\n${n} passed`);

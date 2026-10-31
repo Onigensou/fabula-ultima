@@ -7,6 +7,7 @@
 //   attack  once                              (an action's animation starts)
 //   cast    once                              (a spell's animation starts)
 //   guard   loop                              (Guard effect)
+//   state   loop                              (an effect that carries its own art)
 //   crisis  loop                              (Crisis marker)
 //   idle    the token's own image (sprite_battle) — never swapped
 //
@@ -25,7 +26,7 @@ export const ONE_SHOT = new Set(["hurt", "attack", "cast"]);
 // (oni.timeline) and are also valid held poses for the pose system.
 export const HOLD = new Set(["ko", "leap", "fly"]);
 // Poses that loop for as long as they are shown.
-export const LOOPING = new Set(["crisis", "guard"]);
+export const LOOPING = new Set(["crisis", "guard", "state"]);
 
 // Art fallback chain, tried left to right; "idle" = the token's own image.
 export const FALLBACK = {
@@ -98,11 +99,33 @@ export function isGuardEffect(e) {
   return String(e.name ?? "").trim().toLowerCase() === "guard";
 }
 
-// The lasting pose for an actor's effects: KO beats Guard beats Crisis.
+// An effect can carry the art its bearer shows while it lasts, in
+// `flags.<ns>.poseArt` (Supercharge). The art lives on the effect, so it comes
+// and goes with it and needs no sheet column.
+export function effectPoseArt(e) {
+  if (!e || e.disabled === true) return null;
+  const src = String(e.flags?.[NS]?.poseArt ?? "").trim();
+  return src || null;
+}
+
+// The art of the "state" pose. `failed` works as in poseSrc.
+export function statePoseSrc(effects, failed = null) {
+  const list = Array.isArray(effects) ? effects : [...(effects ?? [])];
+  for (const e of list) {
+    const src = effectPoseArt(e);
+    if (src && !(failed && failed.has(src))) return src;
+  }
+  return null;
+}
+
+// The lasting pose for an actor's effects: KO beats Guard beats an effect's own
+// art beats Crisis. The state beats Crisis because it is the bigger change: a
+// Supercharged creature that drops below half is still Supercharged.
 export function lastingPose(effects) {
   const list = Array.isArray(effects) ? effects : [...(effects ?? [])];
   if (list.some(isKoEffect)) return "ko";
   if (list.some(isGuardEffect)) return "guard";
+  if (list.some(effectPoseArt)) return "state";
   if (list.some(isCrisisEffect)) return "crisis";
   return "idle";
 }
