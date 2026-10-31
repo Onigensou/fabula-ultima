@@ -9,6 +9,8 @@
   const TAG        = "[CampSystem][SleepUI]";
   const SCREEN_ID  = "oni-camp-sleep-screen";
 
+  let _resting = false;   // a canvas redraw re-enters run(); the rest runs once
+
   CAMP.SleepUI = {
     async run() {
       _ensureScreen();
@@ -18,7 +20,8 @@
       // an `isGM` gate lets BOTH GM clients perform the rest: two jingle
       // broadcasts, two AE sweeps, and campRestCharges decremented twice (food
       // buffs silently expiring a rest early). See shared/primary-gm.js.
-      if (globalThis.FUCompanion?.isPrimaryGM?.()) {
+      if (globalThis.FUCompanion?.isPrimaryGM?.() && !_resting) {
+        _resting = true;
         try {
           await CAMP.RestAPI.perform();
         } catch (e) {
@@ -32,6 +35,7 @@
         } catch (e) {
           console.error("[CampSystem][SleepUI]", "Putting members to bed failed:", e);
         }
+        _resting = false;
         // The screen STAYS black: the save ceremony plays out on top of it and
         // hands off to SET_OUT_LOBBY (or the title screen) when it resolves.
         await CAMP.State.setPhase(CAMP.PHASE.REST_SAVE_PROMPT);

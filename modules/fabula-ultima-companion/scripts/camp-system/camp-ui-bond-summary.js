@@ -38,10 +38,9 @@
 
       // If there are no log entries, hold briefly then advance
       if (flatLogs.length === 0) {
-        if (game.user?.isGM) {
+        if (_isPrimaryGM()) {
           await _wait(3000);
-          await CAMP.State.clearBondConfirmed();
-          await CAMP.State.setPhase(CAMP.PHASE.SLEEP_LOBBY);
+          await _advance();
         }
         return;
       }
@@ -66,11 +65,10 @@
         }
       }
 
-      // All entries revealed — hold then GM advances
-      if (game.user?.isGM) {
+      // All entries revealed — hold then primary GM advances
+      if (_isPrimaryGM()) {
         await _wait(POST_HOLD_MS);
-        await CAMP.State.clearBondConfirmed();
-        await CAMP.State.setPhase(CAMP.PHASE.SLEEP_LOBBY);
+        await _advance();
       }
     },
 
@@ -315,10 +313,7 @@
       </div>
     `;
 
-    overlay.querySelector("#oni-camp-bsum-force")?.addEventListener("click", async () => {
-      await CAMP.State.clearBondConfirmed();
-      await CAMP.State.setPhase(CAMP.PHASE.SLEEP_LOBBY);
-    });
+    overlay.querySelector("#oni-camp-bsum-force")?.addEventListener("click", () => _advance());
 
     document.body.appendChild(overlay);
   }
@@ -328,6 +323,18 @@
   // ---------------------------------------------------------------------------
   function _wait(ms) {
     return new Promise(r => setTimeout(r, ms));
+  }
+
+  function _isPrimaryGM() {
+    return globalThis.FUCompanion?.isPrimaryGM?.() ?? false;
+  }
+
+  // Only from the summary itself: the timer can still be running after Skip, and
+  // must not pull the camp back to the sleep lobby from a later phase.
+  async function _advance() {
+    if (CAMP.State.getPhase() !== CAMP.PHASE.BOND_SUMMARY) return;
+    await CAMP.State.clearBondConfirmed();
+    await CAMP.State.setPhase(CAMP.PHASE.SLEEP_LOBBY);
   }
 
   console.debug(TAG, "BondSummary UI loaded.");
