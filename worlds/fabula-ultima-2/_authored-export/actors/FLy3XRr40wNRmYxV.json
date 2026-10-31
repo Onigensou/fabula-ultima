@@ -217,6 +217,127 @@
       "type": "equippableItem"
     },
     {
+      "_id": "IcLootGolemFist1",
+      "_stats": {
+        "compendiumSource": "Item.t2hmo5SnPi9LCcdZ",
+        "coreVersion": "12.343",
+        "createdTime": 1792629407600,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "AW77WJGta3x8x3dy",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1821.gif",
+      "name": "Golem Fist",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Brawling",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "custom_logic_action": "<p>(async () =&gt; {</p><p>  const TAG = \"[CL-ACTION][GOLEM-FIST-WEIGHTED]\";</p><p>  const p = __PAYLOAD;</p><p>  if (!p) {</p><p>    console.warn(TAG, \"Missing __PAYLOAD.\");</p><p>    return;</p><p>  }</p><p>  // --------------------------------------------------</p><p>  // Resolve attacker</p><p>  // --------------------------------------------------</p><p>  const attackerUuid =</p><p>    p?.meta?.attackerUuid ??</p><p>    p?.attackerUuid ??</p><p>    \"\";</p><p>  const attackerDoc = await fromUuid(attackerUuid);</p><p>  const attackerActor = attackerDoc?.actor ?? attackerDoc;</p><p>  if (!attackerActor) {</p><p>    console.warn(TAG, \"Could not resolve attacker actor.\", { attackerUuid });</p><p>    return;</p><p>  }</p><p>  // --------------------------------------------------</p><p>  // Read attacker Defense score</p><p>  // Data key: actor.system.props.defense</p><p>  // --------------------------------------------------</p><p>  const rawDefense = foundry.utils.getProperty(</p><p>    attackerActor,</p><p>    \"system.props.defense\"</p><p>  );</p><p>  const defenseScore = Math.max(0, Number(rawDefense) || 0);</p><p>  if (defenseScore &lt;= 0) {</p><p>    console.log(TAG, \"No bonus applied. Defense score is 0 or invalid.\", {</p><p>      attacker: attackerActor.name,</p><p>      rawDefense</p><p>    });</p><p>    return;</p><p>  }</p><p>  // --------------------------------------------------</p><p>  // Add Defense as flat bonus damage</p><p>  // --------------------------------------------------</p><p>  p.advPayload = p.advPayload || {};</p><p>  const beforeBonus = Number(p.advPayload.bonus ?? 0) || 0;</p><p>  p.advPayload.bonus = beforeBonus + defenseScore;</p><p>  // Optional debug marker</p><p>  p.meta = p.meta || {};</p><p>  p.meta.golemFistWeightedBonus = {</p><p>    source: \"defense\",</p><p>    rawDefense,</p><p>    defenseScore,</p><p>    bonusBefore: beforeBonus,</p><p>    bonusAfter: p.advPayload.bonus</p><p>  };</p><p>  console.log(TAG, \"APPLIED Defense as flat bonus damage.\", {</p><p>    attacker: attackerActor.name,</p><p>    rawDefense,</p><p>    defenseScore,</p><p>    bonusBefore: beforeBonus,</p><p>    bonusAfter: p.advPayload.bonus</p><p>  });</p><p>})();</p>",
+          "damage_bonus": "5",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.ljKBtlzPVvhhmdHW\" data-id=\"ljKBtlzPVvhhmdHW\" data-type=\"JournalEntry\">Weighted</a></p></li><li><p><strong>【⚔️Attack】</strong>made with this weapon deals bonus damage equal to <strong>【Your Defense score】</strong></p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "t2hmo5SnPi9LCcdZ",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1821.gif",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "2700",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Rare",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Golem Fist",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "MIG",
+          "set_name": "<Set Name>",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.t2hmo5SnPi9LCcdZ",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "t2hmo5SnPi9LCcdZ"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "JMts2hx49koS7qCz",
       "_stats": {
         "compendiumSource": "Item.SUYqRKHBGXUhiOL1",
@@ -1361,7 +1482,7 @@
         "0": {
           "$deleted": false,
           "loot_id": "(Empty)",
-          "loot_percentage": "42"
+          "loot_percentage": "36"
         },
         "1": {
           "$deleted": false,
@@ -1382,9 +1503,21 @@
           "$deleted": false,
           "loot_id": "Berserker Sword",
           "loot_percentage": "7"
+        },
+        "5": {
+          "$deleted": false,
+          "loot_id": "Golem Fist",
+          "loot_percentage": "6"
         }
       },
       "stealable_loot": {
+        "IcLootGolemFist1": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.ljKBtlzPVvhhmdHW\" data-id=\"ljKBtlzPVvhhmdHW\" data-type=\"JournalEntry\">Weighted</a></p></li><li><p><strong>【⚔️Attack】</strong>made with this weapon deals bonus damage equal to <strong>【Your Defense score】</strong></p></li></ul>",
+          "name": "Golem Fist",
+          "roll": "",
+          "uuid": "Actor.FLy3XRr40wNRmYxV.Item.IcLootGolemFist1"
+        },
         "JMts2hx49koS7qCz": {
           "id": "${item.id}",
           "loot_description": "<pre><code>Use this item as placeholder for failing to steals any item from the target</code></pre>",

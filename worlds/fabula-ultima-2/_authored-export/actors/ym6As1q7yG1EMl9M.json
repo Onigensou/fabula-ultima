@@ -11,15 +11,18 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "spriteShadow": true
     }
   },
   "folder": "4gMC1IxdJlF59BSi",
-  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ragnarok%20Online/dimik_1/dimik_1_standard.png",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/GalvanicParyashera_Standard.png",
   "items": [
     {
-      "_id": "16BERBxpFHIy4083",
+      "_id": "F7gHvYczFw1y0OYj",
       "_stats": {
-        "compendiumSource": "Item.B1s2K9VLjc4XF4GB",
+        "compendiumSource": null,
         "coreVersion": "12.343",
         "createdTime": 1792629407600,
         "duplicateSource": null,
@@ -28,12 +31,145 @@
       },
       "flags": {
         "custom-system-builder": {
-          "version": "4.6.4"
+          "version": "4.8.4"
         }
       },
-      "folder": "VzpCG9mySsd9sQSL",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Mineral2.png",
-      "name": "Golem Soulstone",
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Galvanic Drill",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_command": "attack",
+          "action_intent": "harmful",
+          "action_keywords": "overflow, pierce, chain 6",
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_preload_urls": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/burst_anim02.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/spark_anim01.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/dashsmoke_anim01.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/smoke_anim12.webm",
+          "animation_script": "<p>// @desc Paryashera drill ram: the body goes to a black silhouette, deforms into a spinning cone, rams the target, grinds, springs home</p><p>\"use strict\";</p><p>(async () =&gt; {</p><p>  const CFG = {</p><p>    GGS: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/\",</p><p>    // look: \"bolt\" = Spiral Drill, \"bolt\" = Galvanic Drill</p><p>    look: \"steam\",</p><p>    bandColor: 0xeccbff,   // the moving spiral grooves</p><p>    rimColor: 0xb070ff,    // thin light edge so the black reads on a dark cave</p><p>    trailClip: \"spark_anim01.webm\",</p><p>    trailTint: 0xc98cff,</p><p>    burstTint: 0xc98cff,</p><p>    sparkTint: 0xe2bcff,</p><p>    // timing (ms)</p><p>    blackoutMs: 420,       // body drains to black and pulls back</p><p>    morphMs: 560,          // silhouette deforms into the cone</p><p>    revMs: 300,            // cone spins up in place</p><p>    ramMs: 170,            // the hit: fast and violent</p><p>    grindMs: 620,          // bores into the target; the Chain ticks land across this</p><p>    ticks: 6,              // matches the chain 6 keyword on the item</p><p>    returnMs: 560,         // springs home, turning back into the creature</p><p>    // shape (fractions of the body)</p><p>    recoil: 0.14,          // pull-back before the ram</p><p>    coneLen: 0.92,         // length of the cone against the body width</p><p>    coneBack: 0.4,         // radius at the back, against the body height</p><p>    grooves: 8,</p><p>    spinFrom: 7,           // groove speed (radians per second)</p><p>    spinTo: 46,</p><p>    stopShort: 0.24,       // tip buries this fraction of the cone into the target</p><p>    shake: 16,</p><p>    shakeMs: 460,</p><p>    revSfx: \"ChargeAttack\",</p><p>    ramSfx: \"DashA\",</p><p>    hitSfx: \"Thunder7\",</p><p>    volume: 0.8,</p><p>  };</p><p></p><p>  const P = payload ?? globalThis.__PAYLOAD ?? {};</p><p>  const casterUuid = P.casterTokenUuid ?? P.sourceTokenUuid ?? null;</p><p>  const targetUuids = (P.targetTokenUuids ?? (P.targets ?? []).map((t) =&gt; t.tokenUuid) ?? []).filter(Boolean);</p><p>  const doneHook = \"oni:done:\" + foundry.utils.randomID(8);</p><p>  const fireAtMs = CFG.blackoutMs + CFG.morphMs + CFG.revMs + CFG.ramMs;</p><p></p><p>  const onceHook = (name, ms) =&gt; new Promise((resolve) =&gt; {</p><p>    const id = Hooks.once(name, () =&gt; { clearTimeout(t); resolve(); });</p><p>    const t = setTimeout(() =&gt; { Hooks.off(name, id); resolve(); }, ms);</p><p>  });</p><p></p><p>  Hooks.callAll(\"oni:animationStart\", { local: true, world: false });</p><p></p><p>  const scriptSource = String.raw`</p><p>    const cfg = ctx.params.cfg;</p><p>    const caster = oni.caster;</p><p>    // Nearest first: the ram lands on it, then the grind rakes through the rest.</p><p>    const stops = [...oni.targets].sort((a, b) =&gt; Math.hypot(a.center.x - caster.center.x, a.center.y - caster.center.y) - Math.hypot(b.center.x - caster.center.x, b.center.y - caster.center.y));</p><p>    const target = stops[0];</p><p>    const mesh = caster &amp;&amp; caster.mesh;</p><p>    if (!mesh || !mesh.texture || !target) { oni.fireDone(); return; }</p><p>    const E = oni.EASE;</p><p>    const hx = caster.center.x, hy = caster.center.y;</p><p>    const tx = target.center.x, ty = target.center.y;</p><p>    const dist = Math.max(1, Math.hypot(tx - hx, ty - hy));</p><p>    const ux = (tx - hx) / dist, uy = (ty - hy) / dist;</p><p>    const flip = Math.sign(mesh.scale.x || 1) || 1;</p><p>    const bodyW = Math.abs(mesh.width), bodyH = Math.abs(mesh.height);</p><p></p><p>    const layer = oni.layer({ zIndex: 96000 });</p><p>    const rig = new PIXI.Container();</p><p>    rig.position.set(hx, hy);</p><p>    layer.addChild(rig);</p><p>    const restoreToken = oni.hideToken(caster);</p><p></p><p>    // The body as a bendable sheet. Texture left = the head, so the head becomes</p><p>    // the tip of the cone.</p><p>    const NX = 28, NY = 12;</p><p>    const tex = mesh.texture;</p><p>    const plane = new PIXI.SimplePlane(tex, NX, NY);</p><p>    const texW = tex.width, texH = tex.height;</p><p>    plane.scale.set(bodyW / texW, bodyH / texH);</p><p>    rig.addChild(plane);</p><p>    const buf = plane.geometry.getBuffer('aVertexPosition');</p><p>    const base = Float32Array.from(buf.data);</p><p></p><p>    // Cone radius along its length, u = 0 at the tip.</p><p>    const coneR = (u) =&gt; 0.012 + (1 - 0.012) * Math.pow(u, 0.88);</p><p>    const state = { morph: 0, phase: 0, jitter: 0 };</p><p></p><p>    const bend = () =&gt; {</p><p>      const d = buf.data, m = state.morph;</p><p>      const L = (texW * cfg.coneLen) / 1;</p><p>      for (let i = 0; i &lt; d.length; i += 2) {</p><p>        const u = base[i] / texW, v = base[i + 1] / texH * 2 - 1;</p><p>        const flatX = base[i] - texW / 2, flatY = base[i + 1] - texH / 2;</p><p>        const r = coneR(u) * cfg.coneBack * texH;</p><p>        // a corkscrew wobble that travels down the shaft: this is what turns a</p><p>        // flat shape into something that looks like it is turning</p><p>        const twist = Math.sin(state.phase + u * 15) * 0.2 * r;</p><p>        const coneX = (u - 0.5) * L;</p><p>        const coneY = v * r * (0.82 + 0.18 * Math.cos(state.phase + u * 9)) + twist;</p><p>        d[i] = flatX + (coneX - flatX) * m;</p><p>        d[i + 1] = flatY + (coneY - flatY) * m;</p><p>      }</p><p>      buf.update();</p><p>    };</p><p></p><p>    // Solid core + moving grooves, drawn in the same space as the sheet.</p><p>    const core = new PIXI.Graphics();</p><p>    const grooves = new PIXI.Graphics();</p><p>    const glow = new PIXI.Graphics();</p><p>    glow.blendMode = PIXI.BLEND_MODES.ADD;</p><p>    const overlay = new PIXI.Container();</p><p>    overlay.scale.set(bodyW / texW, bodyH / texH);</p><p>    overlay.addChild(core, grooves, glow);</p><p>    rig.addChild(overlay);</p><p></p><p>    const paintCone = () =&gt; {</p><p>      const m = state.morph;</p><p>      core.clear(); grooves.clear(); glow.clear();</p><p>      overlay.alpha = Math.min(1, Math.max(0, m - 0.25) * 2);</p><p>      if (m &lt;= 0.01) return;</p><p>      const L = texW * cfg.coneLen, R = cfg.coneBack * texH;</p><p>      const tipX = -L / 2, n = 22;</p><p>      // The core stays inside the bent silhouette so the body's spikes still break</p><p>      // the outline: this is the creature wound into a drill, not a clean cone.</p><p>      const inner = 0.72;</p><p>      const edge = (s) =&gt; { const pts = []; for (let k = 0; k &lt;= n; k++) { const u = k / n; pts.push(tipX + u * L, s * coneR(u) * R * inner); } return pts; };</p><p>      const top = edge(-1), low = edge(1);</p><p>      core.beginFill(0x000000, 1).moveTo(top[0], top[1]);</p><p>      for (let k = 2; k &lt; top.length; k += 2) core.lineTo(top[k], top[k + 1]);</p><p>      for (let k = low.length - 2; k &gt;= 0; k -= 2) core.lineTo(low[k], low[k + 1]);</p><p>      core.endFill();</p><p>      // long highlight down the upper flank gives the shaft a round body</p><p>      core.beginFill(cfg.bandColor, 0.16);</p><p>      for (let k = 0; k &lt;= n; k++) { const u = k / n; const x = tipX + u * L, r = coneR(u) * R * inner; if (k === 0) core.moveTo(x, -r * 0.62); else core.lineTo(x, -r * 0.62); }</p><p>      for (let k = n; k &gt;= 0; k--) { const u = k / n; core.lineTo(tipX + u * L, -coneR(u) * R * inner * 0.2); }</p><p>      core.endFill();</p><p>      // spiral grooves: curved thread that thickens toward the back and slides</p><p>      // down the shaft, brightest on the near side</p><p>      const lw = Math.max(3, texH * 0.016);</p><p>      for (let g = 0; g &lt; cfg.grooves; g++) {</p><p>        const a = ((g / cfg.grooves + state.phase / (Math.PI * 2)) % 1 + 1) % 1;</p><p>        const r = coneR(a) * R * inner;</p><p>        const x0 = tipX + a * L;</p><p>        const lean = L * 0.11;</p><p>        const shade = 0.2 + 0.8 * Math.pow(a, 0.7);</p><p>        grooves.lineStyle(lw * (0.45 + 1.15 * a), cfg.bandColor, shade);</p><p>        for (let s = 0; s &lt;= 10; s++) {</p><p>          const q = s / 10, yy = -1 + 2 * q;</p><p>          const x = x0 + lean * (1 - yy * yy) + lean * 0.7 * q;</p><p>          const uu = Math.min(1, Math.max(0, (x - tipX) / L));</p><p>          const y = yy * coneR(uu) * R * inner;</p><p>          if (s === 0) grooves.moveTo(x, y); else grooves.lineTo(x, y);</p><p>        }</p><p>      }</p><p>      // air wound up around the shaft, moving toward the tip</p><p>      for (let i = 0; i &lt; 3; i++) {</p><p>        const a = 1 - ((i / 3 + state.phase * 0.05) % 1);</p><p>        const x = tipX + a * L * 0.98, ry = coneR(Math.min(1, a)) * R * 0.86;</p><p>        grooves.lineStyle(lw * 0.5, cfg.rimColor, 0.15 + 0.4 * (1 - a));</p><p>        grooves.drawEllipse(x, 0, Math.max(3, ry * 0.2), ry);</p><p>      }</p><p>      // thin rim so the black reads against a dark floor</p><p>      grooves.lineStyle(lw * 0.6, cfg.rimColor, 0.85);</p><p>      grooves.moveTo(top[0], top[1]);</p><p>      for (let k = 2; k &lt; top.length; k += 2) grooves.lineTo(top[k], top[k + 1]);</p><p>      grooves.moveTo(low[0], low[1]);</p><p>      for (let k = 2; k &lt; low.length; k += 2) grooves.lineTo(low[k], low[k + 1]);</p><p>      if (cfg.look === 'bolt') {</p><p>        for (let b = 0; b &lt; 3; b++) {</p><p>          let x = tipX + Math.random() * L * 0.5, y = (Math.random() - 0.5) * R * 0.5;</p><p>          glow.lineStyle(lw * 1.1, b === 0 ? 0xffffff : 0xc070ff, 1).moveTo(x, y);</p><p>          for (let s = 0; s &lt; 6; s++) { x += L * 0.09; y += (Math.random() - 0.5) * R * 0.55; glow.lineTo(x, y); }</p><p>        }</p><p>      }</p><p>    };</p><p></p><p>    // The rig's heading: head first toward the target.</p><p>    const heading = (flip &gt; 0 ? Math.atan2(uy, ux) + Math.PI : Math.atan2(uy, ux));</p><p>    const wrap = (a) =&gt; { while (a &gt; Math.PI) a -= Math.PI * 2; while (a &lt; -Math.PI) a += Math.PI * 2; return a; };</p><p>    const faceAngle = wrap(heading);</p><p>    rig.scale.x = flip;</p><p>    const setAim = (k) =&gt; { rig.rotation = faceAngle * k * flip; };</p><p>    const setRig = (x, y) =&gt; {</p><p>      rig.position.set(x + (Math.random() - 0.5) * state.jitter, y + (Math.random() - 0.5) * state.jitter);</p><p>    };</p><p></p><p>    const backX = hx - ux * bodyW * cfg.recoil, backY = hy - uy * bodyW * cfg.recoil;</p><p>    let spin = cfg.spinFrom, ticking = true, last = performance.now();</p><p>    let curX = hx, curY = hy;</p><p>    const tick = () =&gt; {</p><p>      if (!ticking || rig.destroyed) return;</p><p>      const now = performance.now(), dt = Math.min(0.05, (now - last) / 1000); last = now;</p><p>      state.phase += spin * dt;</p><p>      bend(); paintCone(); setRig(curX, curY);</p><p>    };</p><p>    canvas.app.ticker.add(tick);</p><p></p><p>    const tintGrey = (k) =&gt; { const c = Math.round(255 * (1 - k)); plane.tint = (c &lt;&lt; 16) | (c &lt;&lt; 8) | c; };</p><p></p><p>    // 1. Drain to black, pull back.</p><p>    oni.sfx(cfg.revSfx, { volume: cfg.volume * 0.7 });</p><p>    await oni.tween({ from: 0, to: 1, duration: cfg.blackoutMs, ease: E.inOutQuad, onUpdate: (v) =&gt; {</p><p>      tintGrey(v);</p><p>      curX = hx + (backX - hx) * v; curY = hy + (backY - hy) * v;</p><p>      state.jitter = v * 2;</p><p>    } });</p><p></p><p>    // Steam or sparks shed while it turns.</p><p>    const shed = async (n) =&gt; {</p><p>      for (let i = 0; i &lt; n; i++) {</p><p>        const a = Math.random() * Math.PI * 2;</p><p>        oni.vfx(cfg.GGS + cfg.trailClip, { x: curX + Math.cos(a) * bodyW * 0.36, y: curY + Math.sin(a) * bodyH * 0.36, size: bodyW * 0.26, alpha: 0.5, zIndex: 95800, angle: Math.random() * 360 }).then((fx) =&gt; { if (fx) { fx.sprite.tint = cfg.trailTint; try { fx.video.playbackRate = 0.8; } catch (e) {} } });</p><p>        await oni.wait(140);</p><p>      }</p><p>    };</p><p>    shed(4);</p><p></p><p>    // 2. Silhouette deforms into the cone.</p><p>    await oni.tween({ from: 0, to: 1, duration: cfg.morphMs, ease: E.inOutQuad, onUpdate: (v) =&gt; {</p><p>      state.morph = v; setAim(v);</p><p>      spin = cfg.spinFrom + (cfg.spinTo * 0.55 - cfg.spinFrom) * v;</p><p>      state.jitter = 2 + v * 3;</p><p>    } });</p><p></p><p>    // 3. Rev up in place.</p><p>    await oni.tween({ from: 0, to: 1, duration: cfg.revMs, ease: E.inQuad, onUpdate: (v) =&gt; {</p><p>      spin = cfg.spinTo * (0.55 + 0.45 * v);</p><p>      state.jitter = 5 + v * 7;</p><p>    } });</p><p></p><p>    // 4. The ram.</p><p>    const coneWorld = bodyW * cfg.coneLen;</p><p>    const hitX = tx - ux * coneWorld * (0.5 - cfg.stopShort), hitY = ty - uy * coneWorld * (0.5 - cfg.stopShort);</p><p>    oni.sfx(cfg.ramSfx, { volume: cfg.volume });</p><p>    oni.vfx(cfg.GGS + \"dashsmoke_anim01.webm\", { x: backX, y: backY + bodyH * 0.25, size: bodyW * 0.7, zIndex: 95700, alpha: 0.65, mirror: ux &gt; 0 }).then((fx) =&gt; { if (fx) fx.sprite.tint = cfg.trailTint; });</p><p>    const lines = new PIXI.Graphics();</p><p>    layer.addChild(lines);</p><p>    const fromX = curX, fromY = curY;</p><p>    state.jitter = 0;</p><p>    await oni.tween({ from: 0, to: 1, duration: cfg.ramMs, ease: E.inCubic, onUpdate: (v) =&gt; {</p><p>      curX = fromX + (hitX - fromX) * v; curY = fromY + (hitY - fromY) * v;</p><p>      rig.scale.y = 1 - 0.14 * v;</p><p>      rig.scale.x = flip * (1 + 0.28 * v);</p><p>      lines.clear();</p><p>      for (let i = 0; i &lt; 12; i++) {</p><p>        const off = (i / 11 - 0.5) * bodyH * 0.95 + (Math.random() - 0.5) * 12;</p><p>        const px = -uy * off, py = ux * off;</p><p>        const len = coneWorld * (0.5 + Math.random() * 0.9) * v;</p><p>        const sx = curX - ux * coneWorld * 0.35 + px, sy = curY - uy * coneWorld * 0.35 + py;</p><p>        lines.lineStyle(i % 3 === 0 ? 5 : 2.5, cfg.bandColor, 0.3 + 0.55 * Math.random());</p><p>        lines.moveTo(sx, sy).lineTo(sx - ux * len, sy - uy * len);</p><p>      }</p><p>    } });</p><p></p><p>    // 5. Impact: the first damage tick, and the gate for the rest of the action.</p><p>    oni.hit();</p><p>    oni.fireDone();</p><p>    oni.sfx(cfg.hitSfx, { volume: cfg.volume });</p><p>    oni.screenshake({ duration: cfg.shakeMs, intensity: cfg.shake });</p><p>    rig.scale.set(flip * 0.92, 1.12);</p><p>    const tipX = tx - ux * target.w * 0.1, tipY = ty - uy * target.h * 0.1;</p><p>    for (const st of stops) oni.vfx(cfg.GGS + \"burst_anim02.webm\", { x: st.center.x, y: st.center.y, size: Math.max(st.w, 160) * 2.6, zIndex: 96500, blend: PIXI.BLEND_MODES.ADD }).then((fx) =&gt; { if (fx) fx.sprite.tint = cfg.burstTint; });</p><p>    oni.domFlash?.({ color: cfg.look === 'bolt' ? '#d9a0ff' : '#ffffff', alpha: 0.32, fadeIn: 20, fadeOut: 170 });</p><p>    await oni.hitstop(60);</p><p>    lines.clear();</p><p></p><p>    // 6. Grind: bore in, throw sparks.</p><p>    state.jitter = 15;</p><p>    spin = cfg.spinTo;</p><p>    oni.particles({ x: tipX, y: tipY, count: 26, color: cfg.look === 'bolt' ? 0xd29aff : 0xfff2d8, size: 16, radius: Math.max(target.w, 160) * 1.5, life: 520, mode: 'burst', blend: PIXI.BLEND_MODES.ADD, parent: layer });</p><p>    const sparkAt = async () =&gt; {</p><p>      const gap = cfg.grindMs / cfg.ticks;</p><p>      for (let i = 1; i &lt; cfg.ticks; i++) {</p><p>        await oni.wait(gap);</p><p>        oni.hit();</p><p>        oni.screenshake({ duration: 90, intensity: 5 });</p><p>        // every creature on the card takes this tick</p><p>        for (const st of stops) oni.vfx(cfg.GGS + \"spark_anim01.webm\", { x: st.center.x + (Math.random() - 0.5) * st.w * 0.5, y: st.center.y + (Math.random() - 0.5) * st.h * 0.5, size: Math.max(st.w, 160) * 1.5, zIndex: 96400, blend: PIXI.BLEND_MODES.ADD, angle: Math.random() * 360 }).then((fx) =&gt; { if (fx) fx.sprite.tint = cfg.sparkTint; });</p><p>      }</p><p>    };</p><p>    sparkAt();</p><p>    await oni.tween({ from: 0, to: 1, duration: cfg.grindMs, ease: E.linear, onUpdate: (v) =&gt; {</p><p>      if (stops.length &lt; 2) { curX = hitX + ux * 26 * Math.sin(v * Math.PI); curY = hitY + uy * 26 * Math.sin(v * Math.PI); return; }</p><p>      // rake through the party, tip on each creature in turn</p><p>      const p = v * (stops.length - 1), i = Math.min(stops.length - 2, Math.floor(p)), k = p - i;</p><p>      const ax = stops[i].center.x - ux * coneWorld * (0.5 - cfg.stopShort), ay = stops[i].center.y - uy * coneWorld * (0.5 - cfg.stopShort);</p><p>      const bx = stops[i + 1].center.x - ux * coneWorld * (0.5 - cfg.stopShort), by = stops[i + 1].center.y - uy * coneWorld * (0.5 - cfg.stopShort);</p><p>      curX = ax + (bx - ax) * k; curY = ay + (by - ay) * k;</p><p>    } });</p><p></p><p>    // 7. Spring home, turning back into the creature.</p><p>    state.jitter = 0;</p><p>    const outX = curX, outY = curY;</p><p>    await oni.tween({ from: 0, to: 1, duration: cfg.returnMs, ease: E.outCubic, onUpdate: (v) =&gt; {</p><p>      curX = outX + (hx - outX) * v;</p><p>      curY = outY + (hy - outY) * v - Math.sin(v * Math.PI) * bodyH * 0.22;</p><p>      const k = 1 - v;</p><p>      state.morph = k; setAim(k);</p><p>      spin = cfg.spinFrom + (cfg.spinTo - cfg.spinFrom) * k;</p><p>      rig.scale.set(flip * (1 + (0.92 - 1) * k), 1 + 0.12 * k);</p><p>      tintGrey(Math.max(0, 1 - Math.max(0, v - 0.5) * 2));</p><p>    } });</p><p>    ticking = false;</p><p>    canvas.app.ticker.remove(tick);</p><p>    tintGrey(0);</p><p>    restoreToken();</p><p>    await oni.wait(40);</p><p>  `;</p><p></p><p>  game.ONI.pseudo.play({</p><p>    scriptId: \"anim-studio/paryashera-drill\",</p><p>    scriptSource,</p><p>    casterTokenUuid: casterUuid,</p><p>    targetTokenUuids: targetUuids,</p><p>    params: { doneHook, cfg: CFG },</p><p>  });</p><p></p><p>  await onceHook(doneHook, fireAtMs + 6000);</p><p>  Hooks.callAll(\"oni:animationEnd\", { local: true, world: false });</p><p>})();</p><p></p>",
+          "check_bonus": "5",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "42",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a></p></li><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Pierce</strong></a></p></li><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.ChnStrikeKeyw0rd\" data-id=\"ChnStrikeKeyw0rd\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Chain</strong></a><strong>&nbsp;6</strong></p></li></ul><p>Rake a lightning-charged drill through the enemy line. Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to all enemies. Used only while <strong>Supercharged</strong>.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Galvanic Drill",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "All Enemies",
+          "skill_type": "Attack",
+          "type_damage": "Bolt",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "GpLootEssenceI01",
+      "_stats": {
+        "compendiumSource": "Item.E1emEssenceB01t0",
+        "coreVersion": "12.343",
+        "createdTime": 1786934570857,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "icons/commodities/gems/gem-rough-cushion-yellow.webp",
+      "name": "Lightning Essence",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "description": "<p><em>Essence that can be obtained from monsters in the storm area in the ecological environment.</em></p>",
+          "effect_table": {},
+          "id": "E1emEssenceB01t0",
+          "img": "icons/commodities/gems/gem-rough-cushion-yellow.webp",
+          "ingredient_taste": "sour",
+          "ingredient_taste2": "",
+          "ip_cost": "0",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_cost": "60",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "material",
+          "name": "Lightning Essence",
+          "optional_params": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "uuid": "Item.E1emEssenceB01t0"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "E1emEssenceB01t0"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "GpLootFangItem01",
+      "_stats": {
+        "compendiumSource": "Item.oAP85eeLJCliYm2E",
+        "coreVersion": "12.343",
+        "createdTime": 1775141572644,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7172.gif",
+      "name": "Animal Fang",
       "ownership": {
         "2vy7wrEUqBy0kzsU": 3,
         "6DmgigM5jq76r0Gd": 3,
@@ -61,9 +197,8 @@
         "yL2PQxh3R9ddt0te": 3,
         "yUfwoVmEPVdFG3AY": 3
       },
-      "sort": 1000000,
+      "sort": 0,
       "system": {
-        "container": null,
         "props": {
           "active_effect_config_table": {},
           "aquatic_ef": "100",
@@ -72,22 +207,14 @@
           "beast_ef": "100",
           "category": "Arcane",
           "celestial_ef": "100",
+          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li><p>Target creature gain <strong>10 </strong><a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a>, if the target already have a <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a>, increase that shield value by 10 instead.</p></li></ul>",
+          "description": "<p><em>A sharpened calcium remains of a beast type monster</em></p>",
           "dragon_ef": "100",
-          "effect_table": {
-            "0": {
-              "effect_kind": "grant",
-              "effect_label": "golemstone_shield",
-              "grant_amount": "10",
-              "grant_resource": "shield",
-              "target_ref": "action_targets"
-            }
-          },
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
@@ -98,9 +225,14 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
+          "id": "oAP85eeLJCliYm2E",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/7172.gif",
+          "ingredient_taste": "sour",
+          "ingredient_taste2": "",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
+          "isIngredient": true,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -109,60 +241,279 @@
           "isUnique": false,
           "item_baseDef": "0",
           "item_baseMdef": "0",
-          "item_cost": "50",
+          "item_cost": "100",
           "item_def_bonus": "0",
           "item_mdef_bonus": "0",
           "item_quantity": "1",
           "item_rarity": "Common",
-          "item_skill_active": {
-            "HBZ3kC5M0froQyCl": {
-              "id": "${item.id}",
-              "name": "Golem Soulstone",
-              "skill_cost": "-",
-              "skill_description": "<ul><li><p><em>Target creature gains <strong>10 Shield</strong>; if the target already has a Shield, increase that shield value by 10 instead.</em></p></li></ul>",
-              "skill_maxLevel": 1,
-              "uuid": "Item.HBZ3kC5M0froQyCl"
-            }
-          },
-          "item_type": "consumable",
+          "item_type": "material",
           "mimic_ef": "100",
           "monster_ef": "100",
-          "name": "Golem Soulstone",
+          "name": "Animal Fang",
           "optional_params": {},
           "plant_ef": "100",
-          "related_item_list": {
-            "HBZ3kC5M0froQyCl": {
-              "id": "${item.id}",
-              "name": "Golem Soulstone",
-              "related_item_description": "<ul><li><p><em>Target creature gains <strong>10 Shield</strong>; if the target already has a Shield, increase that shield value by 10 instead.</em></p></li></ul>",
-              "uuid": "Item.HBZ3kC5M0froQyCl"
-            }
-          },
+          "refine_count": "0",
+          "refine_level": "0",
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
-          "set_name": "",
-          "skill_target": "One Ally",
+          "set_name": "<Set Name>",
           "soldier_ef": "100",
           "spirit_ef": "100",
-          "type_damage": "",
+          "type_damage": "Physical",
           "undead_ef": "100",
+          "uuid": "Item.oAP85eeLJCliYm2E",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
-        "uniqueId": "B1s2K9VLjc4XF4GB"
+        "uniqueId": "oAP85eeLJCliYm2E"
       },
       "type": "equippableItem"
     },
     {
-      "_id": "F7gHvYczFw1y0OYj",
+      "_id": "GpLootHoundItm01",
+      "_stats": {
+        "compendiumSource": "Item.Sot0IPra5zNXIUvG",
+        "coreVersion": "12.343",
+        "createdTime": 1741656488147,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "Sot0IPra5zNXIUvG",
+            "itemName": "Voltaic Hound",
+            "pickedOldProps": {
+              "cost": "1600",
+              "martial": true
+            },
+            "ts": 1769647436701
+          }
+        }
+      },
+      "folder": "yqDpXcujLeO6M7Yt",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png",
+      "name": "Voltaic Hound",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Firearm",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "1",
+          "construct_ef": "100",
+          "damage_bonus": "16",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul>\n<li>After this weapon deals damage to one or more creatures, if at least one of those creatures is <strong>Vulnerable</strong> to <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage, you may deal <strong>10 <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a></strong> damage to every enemy you can see</li>\n</ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "Sot0IPra5zNXIUvG",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gun.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": true,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "1600",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Uncommon",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Voltaic Hound",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Bolt",
+          "undead_ef": "100",
+          "uuid": "Item.Sot0IPra5zNXIUvG",
+          "vehicle_ef": "100",
+          "weapon_range": "Ranged"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "Sot0IPra5zNXIUvG"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "GpRendingSpinI01",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1792629407600,
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "GpSpinMarkerAE01",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>It has spun its drills this round.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "lifetimeMode": "round_end"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/GalvanicParyashera_Standard.png",
+          "name": "Drill Spun",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Rending Spin",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_command": "attack",
+          "action_intent": "harmful",
+          "action_keywords": "multi",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "<p>// Tentacle Slap — generated by tools/anim-studio/lib/dungeon-templates.js</p><p>// Re-run tools/safe-edit/bin/_build-dungeon-animations.js to regenerate.</p><p>(async () =&gt; {</p><p></p><p>const CFG = {\"color\":11983242,\"slashColor\":16777215,\"slashWidth\":9,\"impactWebm\":\"modules/JB2A_DnD5e/Library/Generic/Impact/Impact_10_Regular_Orange_400x400.webm\",\"impactWebmSize\":380,\"lungeMs\":440,\"holdMs\":90,\"returnMs\":560,\"standoff\":0.62,\"shakeMs\":460,\"shakeAmp\":9,\"particles\":18,\"particleRadius\":120,\"particleSize\":11,\"slashCount\":0,\"slashGapMs\":110,\"slashFadeMs\":300,\"donePhase\":\"end\",\"sfx\":\"Attack2\",\"sfxVol\":0.5,\"sfxImpact\":\"HitBlowS\",\"sfxImpactVol\":0.7,\"totalTimeoutMs\":12000};</p><p>const ASSETS = {};</p><p>const ANIM_KEY = \"oni.dungeon.carlbero-tentacle-slap\";</p><p>const TAG = \"[ONI][Anim][Tentacle Slap]\";</p><p></p><p>const P = globalThis.__PAYLOAD ?? payload ?? {};</p><p>function tokFromUuid(u) { try { const d = fromUuidSync?.(u); return d?.object ?? null; } catch (_) { return null; } }</p><p>function resolveSource() {</p><p>  for (const c of [P?.casterTokenUuid, P?.sourceTokenUuid, P?.tokenUuid]) { const t = tokFromUuid(c); if (t) return t; }</p><p>  return canvas?.tokens?.controlled?.[0] ?? null;</p><p>}</p><p>function resolveTargets() {</p><p>  const out = [];</p><p>  const arg = Array.isArray(targets) ? targets : [];</p><p>  for (const t of arg) if (t?.center) out.push(t);</p><p>  if (!out.length &amp;&amp; Array.isArray(globalThis.__TARGETS)) for (const t of globalThis.__TARGETS) if (t?.center) out.push(t);</p><p>  return out;</p><p>}</p><p>const sourceToken  = resolveSource();</p><p>const partyTargets = resolveTargets();</p><p></p><p>const doneHook = 'oni.anim.' + ANIM_KEY + '.' + (foundry?.utils?.randomID?.(8) ?? String(Date.now()));</p><p>function onceHook(hookName, timeoutMs) {</p><p>  return new Promise((resolve) =&gt; {</p><p>    let settled = false;</p><p>    const timer = setTimeout(() =&gt; { if (settled) return; settled = true; Hooks.off(hookName, h); resolve({ ok: false, timeout: true }); }, timeoutMs);</p><p>    const h = (d) =&gt; { if (settled) return; settled = true; clearTimeout(timer); Hooks.off(hookName, h); resolve(d ?? { ok: true }); };</p><p>    Hooks.on(hookName, h);</p><p>  });</p><p>}</p><p>function emitLocal(n, d) { try { Hooks.callAll(n, d); } catch (_) {} }</p><p></p><p>const scriptSource = String.raw`</p><p>const cfg = ctx.params.cfg || {};</p><p>const A = ctx.params.assets || {};</p><p>const caster = ctx.casterToken;</p><p>const tgts = (ctx.targetTokens || []).filter(t =&gt; t &amp;&amp; t.center);</p><p>const prime = tgts[0] || null;</p><p>const S = oni.screenLive();</p><p>const E = oni.EASE;</p><p>const ctr = (t) =&gt; (t &amp;&amp; t.center) ? t.center : { x: 0, y: 0 };</p><p>const home = caster ? { x: caster.center.x, y: caster.center.y } : { x: 0, y: 0 };</p><p>function centroid(list) {</p><p>  if (!list.length) return home;</p><p>  let x = 0, y = 0;</p><p>  for (const t of list) { const c = ctr(t); x += c.x; y += c.y; }</p><p>  return { x: x / list.length, y: y / list.length };</p><p>}</p><p>// Centre of the authored play area (the v2 conflict scene stage rect).</p><p>// A pull-back should frame the arena, so it wants a FIXED point: aiming at</p><p>// the caster turns a zoom-out into a pan, and aiming at a centroid makes the</p><p>// framing drift with wherever the combatants happen to be standing.</p><p>function stageCentre() {</p><p>  const f = canvas.scene &amp;&amp; canvas.scene.flags ? canvas.scene.flags['fabula-ultima-companion'] : null;</p><p>  const sr = f &amp;&amp; f.conflict ? f.conflict.stage : null;</p><p>  if (sr) return { x: sr.x + sr.w / 2, y: sr.y + sr.h / 2 };</p><p>  return centroid(tgts.concat(caster ? [caster] : []));</p><p>}</p><p>function playSfx(k, v) { if (!cfg[k]) return; oni.sfx(cfg[k], { volume: cfg[v] == null ? 0.6 : cfg[v], fadeAfter: cfg[k + 'Fade'] || 0, fadeMs: cfg[k + 'FadeMs'] || 400 }); }</p><p>async function fxWebm(url, x, y, o) {</p><p>  if (!url) return null;</p><p>  o = o || {};</p><p>  return oni.webm(url, { size: o.size || S.wLen(320), x: x, y: y, angle: o.angle || 0,</p><p>    alpha: o.alpha == null ? 1 : o.alpha, zIndex: o.z || 95000, parent: o.parent || null });</p><p>}</p><p>async function fxBeam(url, from, to, o) {</p><p>  if (!url) return null;</p><p>  o = o || {};</p><p>  const dist = Math.hypot(to.x - from.x, to.y - from.y);</p><p>  const ang = Math.atan2(to.y - from.y, to.x - from.x);</p><p>  const r = await oni.webm(url, { size: dist, x: from.x, y: from.y, parent: o.parent || null, zIndex: o.z || 95000 });</p><p>  if (!r || !r.sprite) return null;</p><p>  const sp = r.sprite;</p><p>  sp.anchor.set(0, 0.5);</p><p>  sp.width = dist * (o.lengthScale || 1);</p><p>  sp.height = dist * (o.thickness || 0.25);</p><p>  sp.position.set(from.x, from.y);</p><p>  sp.rotation = ang;</p><p>  return r;</p><p>}</p><p>let fired = false;</p><p>function done() { if (fired) return; fired = true; oni.fireDone(); }</p><p>async function shakeTarget(t, ms, amp) {</p><p>  if (!t) return;</p><p>  const spr = oni.cloneToken(t);</p><p>  if (!spr) return;</p><p>  const restore = oni.hideToken(t);</p><p>  const c = ctr(t);</p><p>  await oni.tween({ from: 0, to: 1, duration: ms, ease: E.linear, onUpdate: (v) =&gt; {</p><p>    const decay = 1 - v;</p><p>    spr.position.set(c.x + (Math.random() * 2 - 1) * amp * decay, c.y + (Math.random() * 2 - 1) * amp * decay);</p><p>  } });</p><p>  spr.position.set(c.x, c.y);</p><p>  restore();</p><p>  try { spr.destroy(); } catch (e) {}</p><p>}</p><p>function streak(x1, y1, x2, y2, color, width, host) {</p><p>  const g = new PIXI.Graphics();</p><p>  g.lineStyle({ width: width, color: color, alpha: 1, cap: 'round' });</p><p>  g.moveTo(x1, y1); g.lineTo(x2, y2);</p><p>  g.blendMode = PIXI.BLEND_MODES.ADD;</p><p>  (host || canvas.stage).addChild(g);</p><p>  return g;</p><p>}</p><p></p><p>if (!caster || !prime) { done(); return; }</p><p>const host = oni.layer({ zIndex: 93000 });</p><p>const t = ctr(prime);</p><p>const dx = t.x - home.x, dy = t.y - home.y;</p><p>const land = { x: home.x + dx * cfg.standoff, y: home.y + dy * cfg.standoff };</p><p></p><p>const clone = oni.cloneToken(caster, { parent: host });</p><p>const restoreCaster = oni.hideToken(caster);</p><p>playSfx('sfx', 'sfxVol');</p><p></p><p>await oni.tween({ from: 0, to: 1, duration: cfg.lungeMs, ease: E.inOutQuad, onUpdate: (v) =&gt; {</p><p>  if (clone) clone.position.set(home.x + (land.x - home.x) * v, home.y + (land.y - home.y) * v);</p><p>} });</p><p></p><p>playSfx('sfxImpact', 'sfxImpactVol');</p><p>if (cfg.impactWebm) await fxWebm(cfg.impactWebm, t.x, t.y, { size: S.wLen(cfg.impactWebmSize), parent: host });</p><p>const perp = Math.atan2(dy, dx) + Math.PI / 2;</p><p>const len = S.wLen(90);</p><p>for (let i = 0; i &lt; cfg.slashCount; i++) {</p><p>  const off = (i - (cfg.slashCount - 1) / 2) * S.wLen(26);</p><p>  const ox = Math.cos(perp + Math.PI / 2) * off, oy = Math.sin(perp + Math.PI / 2) * off;</p><p>  const g = streak(</p><p>    t.x + Math.cos(perp) * len + ox, t.y + Math.sin(perp) * len + oy,</p><p>    t.x - Math.cos(perp) * len + ox, t.y - Math.sin(perp) * len + oy,</p><p>    cfg.slashColor, S.wLen(cfg.slashWidth), host);</p><p>  oni.tween({ from: 1, to: 0, duration: cfg.slashFadeMs, ease: E.inQuad, onUpdate: (v) =&gt; { g.alpha = v; } });</p><p>  if (i &lt; cfg.slashCount - 1) await wait(cfg.slashGapMs);</p><p>}</p><p></p><p>oni.particles({ x: t.x, y: t.y, count: cfg.particles, color: cfg.color,</p><p>  size: cfg.particleSize, radius: S.wLen(cfg.particleRadius), life: 780,</p><p>  gravity: S.wLen(40), blend: PIXI.BLEND_MODES.ADD, parent: host });</p><p>const shaking = shakeTarget(prime, cfg.shakeMs, S.wLen(cfg.shakeAmp));</p><p>if (cfg.donePhase === 'impact') done();</p><p></p><p>await wait(cfg.holdMs);</p><p>await oni.tween({ from: 0, to: 1, duration: cfg.returnMs, ease: E.inOutQuad, onUpdate: (v) =&gt; {</p><p>  if (clone) clone.position.set(land.x + (home.x - land.x) * v, land.y + (home.y - land.y) * v);</p><p>} });</p><p>restoreCaster();</p><p>await shaking;</p><p>done();</p><p>`;</p><p></p><p>try {</p><p>  emitLocal('oni:animationStart', { type: ANIM_KEY, sceneId: canvas.scene?.id ?? null });</p><p>  const waitDone = onceHook(doneHook, CFG.totalTimeoutMs || 15000);</p><p>  await game.ONI.pseudo.play({</p><p>    scriptId: ANIM_KEY,</p><p>    scriptSource,</p><p>    casterTokenUuid: sourceToken?.document?.uuid ?? null,</p><p>    targetTokenUuids: partyTargets.map(t =&gt; t.document.uuid),</p><p>    params: { doneHook, cfg: CFG, assets: ASSETS },</p><p>    meta: { source: \"Tentacle Slap\" },</p><p>  });</p><p>  const result = await waitDone;</p><p>  if (!result?.ok) console.warn(TAG, 'pseudo non-OK / timeout', result);</p><p>} catch (err) {</p><p>  console.error(TAG, 'orchestration crashed', err);</p><p>} finally {</p><p>  emitLocal('oni:animationEnd', { type: ANIM_KEY, timestamp: Date.now() });</p><p>}</p><p></p><p>})();</p>",
+          "check_bonus": "5",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "20",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Multi</strong></a><strong>&nbsp;3</strong></p></li></ul><p>Spin its drilled claws through nearby enemies. Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to the targets. Once per round.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_duplicate_mode": "skip",
+              "ae_template_ref": "Drill Spun",
+              "effect_kind": "apply_ae",
+              "effect_label": "spin_mark",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Rending Spin",
+          "on_activate_effect_ref": "spin_mark",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "Up to three creatures",
+          "skill_type": "Attack",
+          "type_damage": "Physical",
+          "use_optional_params": false,
+          "uuid": "Actor.ym6As1q7yG1EMl9M.Item.GpRendingSpinI01"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "GpSpiralDrillI01",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -174,31 +525,44 @@
       },
       "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
-      "name": "Galvanic Smash",
+      "name": "Spiral Drill",
       "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
+        "default": 0
       },
       "sort": 0,
       "system": {
         "props": {
           "action_command": "attack",
           "action_intent": "harmful",
-          "action_keywords": "",
+          "action_keywords": "pierce, chain 6",
           "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
-          "animation_script": "<p>// Basalt Crush — generated by tools/anim-studio/lib/dungeon-templates.js</p><p>// Re-run tools/safe-edit/bin/_build-dungeon-animations.js to regenerate.</p><p>(async () =&gt; {</p><p></p><p>const CFG = {\"dashMs\":380,\"holdMs\":200,\"returnMs\":640,\"overlap\":0.76,\"jitter\":0,\"jitterAmp\":0,\"jitterHz\":0,\"impact\":true,\"impactColor\":12757112,\"impactCount\":24,\"impactRadius\":150,\"impactWebm\":\"modules/JB2A_DnD5e/Library/Generic/Impact/Impact_10_Regular_Orange_400x400.webm\",\"impactWebmSize\":380,\"holdWebm\":null,\"holdWebmSize\":380,\"holdWebmRepeatMs\":0,\"holdWebmFadeMs\":0,\"shakeMs\":480,\"shakeAmp\":10,\"donePhase\":\"end\",\"sfx\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Earth4.ogg\",\"sfxVol\":0.6,\"sfxArrive\":\"Earth2\",\"sfxArriveVol\":0.75,\"totalTimeoutMs\":12000};</p><p>const ASSETS = {};</p><p>const ANIM_KEY = \"oni.dungeon.obsidrax-basalt-crush\";</p><p>const TAG = \"[ONI][Anim][Basalt Crush]\";</p><p></p><p>const P = globalThis.__PAYLOAD ?? payload ?? {};</p><p>function tokFromUuid(u) { try { const d = fromUuidSync?.(u); return d?.object ?? null; } catch (_) { return null; } }</p><p>function resolveSource() {</p><p>  for (const c of [P?.casterTokenUuid, P?.sourceTokenUuid, P?.tokenUuid]) { const t = tokFromUuid(c); if (t) return t; }</p><p>  return canvas?.tokens?.controlled?.[0] ?? null;</p><p>}</p><p>function resolveTargets() {</p><p>  const out = [];</p><p>  const arg = Array.isArray(targets) ? targets : [];</p><p>  for (const t of arg) if (t?.center) out.push(t);</p><p>  if (!out.length &amp;&amp; Array.isArray(globalThis.__TARGETS)) for (const t of globalThis.__TARGETS) if (t?.center) out.push(t);</p><p>  return out;</p><p>}</p><p>const sourceToken  = resolveSource();</p><p>const partyTargets = resolveTargets();</p><p></p><p>const doneHook = 'oni.anim.' + ANIM_KEY + '.' + (foundry?.utils?.randomID?.(8) ?? String(Date.now()));</p><p>function onceHook(hookName, timeoutMs) {</p><p>  return new Promise((resolve) =&gt; {</p><p>    let settled = false;</p><p>    const timer = setTimeout(() =&gt; { if (settled) return; settled = true; Hooks.off(hookName, h); resolve({ ok: false, timeout: true }); }, timeoutMs);</p><p>    const h = (d) =&gt; { if (settled) return; settled = true; clearTimeout(timer); Hooks.off(hookName, h); resolve(d ?? { ok: true }); };</p><p>    Hooks.on(hookName, h);</p><p>  });</p><p>}</p><p>function emitLocal(n, d) { try { Hooks.callAll(n, d); } catch (_) {} }</p><p></p><p>const scriptSource = String.raw`</p><p>const cfg = ctx.params.cfg || {};</p><p>const A = ctx.params.assets || {};</p><p>const caster = ctx.casterToken;</p><p>const tgts = (ctx.targetTokens || []).filter(t =&gt; t &amp;&amp; t.center);</p><p>const prime = tgts[0] || null;</p><p>const S = oni.screenLive();</p><p>const E = oni.EASE;</p><p>const ctr = (t) =&gt; (t &amp;&amp; t.center) ? t.center : { x: 0, y: 0 };</p><p>const home = caster ? { x: caster.center.x, y: caster.center.y } : { x: 0, y: 0 };</p><p>function centroid(list) {</p><p>  if (!list.length) return home;</p><p>  let x = 0, y = 0;</p><p>  for (const t of list) { const c = ctr(t); x += c.x; y += c.y; }</p><p>  return { x: x / list.length, y: y / list.length };</p><p>}</p><p>// Centre of the authored play area (the v2 conflict scene stage rect).</p><p>// A pull-back should frame the arena, so it wants a FIXED point: aiming at</p><p>// the caster turns a zoom-out into a pan, and aiming at a centroid makes the</p><p>// framing drift with wherever the combatants happen to be standing.</p><p>function stageCentre() {</p><p>  const f = canvas.scene &amp;&amp; canvas.scene.flags ? canvas.scene.flags['fabula-ultima-companion'] : null;</p><p>  const sr = f &amp;&amp; f.conflict ? f.conflict.stage : null;</p><p>  if (sr) return { x: sr.x + sr.w / 2, y: sr.y + sr.h / 2 };</p><p>  return centroid(tgts.concat(caster ? [caster] : []));</p><p>}</p><p>function playSfx(k, v) { if (!cfg[k]) return; oni.sfx(cfg[k], { volume: cfg[v] == null ? 0.6 : cfg[v], fadeAfter: cfg[k + 'Fade'] || 0, fadeMs: cfg[k + 'FadeMs'] || 400 }); }</p><p>async function fxWebm(url, x, y, o) {</p><p>  if (!url) return null;</p><p>  o = o || {};</p><p>  return oni.webm(url, { size: o.size || S.wLen(320), x: x, y: y, angle: o.angle || 0,</p><p>    alpha: o.alpha == null ? 1 : o.alpha, zIndex: o.z || 95000, parent: o.parent || null });</p><p>}</p><p>async function fxBeam(url, from, to, o) {</p><p>  if (!url) return null;</p><p>  o = o || {};</p><p>  const dist = Math.hypot(to.x - from.x, to.y - from.y);</p><p>  const ang = Math.atan2(to.y - from.y, to.x - from.x);</p><p>  const r = await oni.webm(url, { size: dist, x: from.x, y: from.y, parent: o.parent || null, zIndex: o.z || 95000 });</p><p>  if (!r || !r.sprite) return null;</p><p>  const sp = r.sprite;</p><p>  sp.anchor.set(0, 0.5);</p><p>  sp.width = dist * (o.lengthScale || 1);</p><p>  sp.height = dist * (o.thickness || 0.25);</p><p>  sp.position.set(from.x, from.y);</p><p>  sp.rotation = ang;</p><p>  return r;</p><p>}</p><p>let fired = false;</p><p>function done() { if (fired) return; fired = true; oni.fireDone(); }</p><p>async function shakeTarget(t, ms, amp) {</p><p>  if (!t) return;</p><p>  const spr = oni.cloneToken(t);</p><p>  if (!spr) return;</p><p>  const restore = oni.hideToken(t);</p><p>  const c = ctr(t);</p><p>  await oni.tween({ from: 0, to: 1, duration: ms, ease: E.linear, onUpdate: (v) =&gt; {</p><p>    const decay = 1 - v;</p><p>    spr.position.set(c.x + (Math.random() * 2 - 1) * amp * decay, c.y + (Math.random() * 2 - 1) * amp * decay);</p><p>  } });</p><p>  spr.position.set(c.x, c.y);</p><p>  restore();</p><p>  try { spr.destroy(); } catch (e) {}</p><p>}</p><p>function streak(x1, y1, x2, y2, color, width, host) {</p><p>  const g = new PIXI.Graphics();</p><p>  g.lineStyle({ width: width, color: color, alpha: 1, cap: 'round' });</p><p>  g.moveTo(x1, y1); g.lineTo(x2, y2);</p><p>  g.blendMode = PIXI.BLEND_MODES.ADD;</p><p>  (host || canvas.stage).addChild(g);</p><p>  return g;</p><p>}</p><p></p><p>if (!caster || !prime) { done(); return; }</p><p>const host = oni.layer({ zIndex: 93000 });</p><p>const t = ctr(prime);</p><p>const land = { x: home.x + (t.x - home.x) * cfg.overlap, y: home.y + (t.y - home.y) * cfg.overlap };</p><p>const clone = oni.cloneToken(caster, { parent: host });</p><p>const restoreCaster = oni.hideToken(caster);</p><p>playSfx('sfx', 'sfxVol');</p><p></p><p>await oni.tween({ from: 0, to: 1, duration: cfg.dashMs, ease: E.inOutQuad, onUpdate: (v) =&gt; {</p><p>  if (clone) clone.position.set(home.x + (land.x - home.x) * v, home.y + (land.y - home.y) * v);</p><p>} });</p><p>playSfx('sfxArrive', 'sfxArriveVol');</p><p>if (cfg.impactWebm) await fxWebm(cfg.impactWebm, t.x, t.y, { size: S.wLen(cfg.impactWebmSize), parent: host });</p><p></p><p>let shaking = Promise.resolve();</p><p>if (cfg.impact) {</p><p>  oni.particles({ x: t.x, y: t.y, count: cfg.impactCount, color: cfg.impactColor,</p><p>    size: 11, radius: S.wLen(cfg.impactRadius), life: 700,</p><p>    blend: PIXI.BLEND_MODES.ADD, parent: host });</p><p>  shaking = shakeTarget(prime, cfg.shakeMs, S.wLen(cfg.shakeAmp));</p><p>}</p><p>if (cfg.donePhase === 'impact') done();</p><p></p><p>let holdFx = Promise.resolve();</p><p>if (cfg.holdWebm) {</p><p>  holdFx = (async () =&gt; {</p><p>    const once = async () =&gt; {</p><p>      const r = await fxWebm(cfg.holdWebm, land.x, land.y, { size: S.wLen(cfg.holdWebmSize), parent: host, alpha: cfg.holdWebmFadeMs ? 0 : 1 });</p><p>      if (r &amp;&amp; r.sprite &amp;&amp; cfg.holdWebmFadeMs) {</p><p>        await oni.tween({ from: 0, to: 1, duration: cfg.holdWebmFadeMs, ease: E.inOutQuad, onUpdate: (v) =&gt; { if (!r.sprite.destroyed) r.sprite.alpha = v; } });</p><p>        await wait(Math.max(0, cfg.holdMs - cfg.holdWebmFadeMs * 2));</p><p>        await oni.tween({ from: 1, to: 0, duration: cfg.holdWebmFadeMs, ease: E.inOutQuad, onUpdate: (v) =&gt; { if (!r.sprite.destroyed) r.sprite.alpha = v; } });</p><p>      }</p><p>      return r;</p><p>    };</p><p>    if (cfg.holdWebmRepeatMs &gt; 0) {</p><p>      const n = Math.max(1, Math.floor(cfg.holdMs / cfg.holdWebmRepeatMs));</p><p>      for (let i = 0; i &lt; n; i++) { once(); await wait(cfg.holdWebmRepeatMs); }</p><p>    } else { await once(); }</p><p>  })();</p><p>}</p><p></p><p>if (cfg.jitter &amp;&amp; cfg.holdMs &gt; 0) {</p><p>  await oni.tween({ from: 0, to: 1, duration: cfg.holdMs, ease: E.linear, onUpdate: (v) =&gt; {</p><p>    if (!clone) return;</p><p>    const ph = v * cfg.holdMs / 1000 * cfg.jitterHz * Math.PI * 2;</p><p>    clone.position.set(land.x + Math.sin(ph) * S.wLen(cfg.jitterAmp), land.y + Math.cos(ph * 1.7) * S.wLen(cfg.jitterAmp * 0.6));</p><p>  } });</p><p>} else {</p><p>  await wait(cfg.holdMs);</p><p>}</p><p></p><p>await oni.tween({ from: 0, to: 1, duration: cfg.returnMs, ease: E.inOutQuad, onUpdate: (v) =&gt; {</p><p>  if (clone) clone.position.set(land.x + (home.x - land.x) * v, land.y + (home.y - land.y) * v);</p><p>} });</p><p>restoreCaster();</p><p>await Promise.all([shaking, holdFx]);</p><p>done();</p><p>`;</p><p></p><p>try {</p><p>  emitLocal('oni:animationStart', { type: ANIM_KEY, sceneId: canvas.scene?.id ?? null });</p><p>  const waitDone = onceHook(doneHook, CFG.totalTimeoutMs || 15000);</p><p>  await game.ONI.pseudo.play({</p><p>    scriptId: ANIM_KEY,</p><p>    scriptSource,</p><p>    casterTokenUuid: sourceToken?.document?.uuid ?? null,</p><p>    targetTokenUuids: partyTargets.map(t =&gt; t.document.uuid),</p><p>    params: { doneHook, cfg: CFG, assets: ASSETS },</p><p>    meta: { source: \"Basalt Crush\" },</p><p>  });</p><p>  const result = await waitDone;</p><p>  if (!result?.ok) console.warn(TAG, 'pseudo non-OK / timeout', result);</p><p>} catch (err) {</p><p>  console.error(TAG, 'orchestration crashed', err);</p><p>} finally {</p><p>  emitLocal('oni:animationEnd', { type: ANIM_KEY, timestamp: Date.now() });</p><p>}</p><p></p><p>})();</p>",
-          "check_bonus": "8",
+          "animation_preload_urls": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/burst_anim02.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/spark_anim01.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/dashsmoke_anim01.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/smoke_anim12.webm",
+          "animation_script": "<p>// @desc Paryashera drill ram: the body goes to a black silhouette, deforms into a spinning cone, rams the target, grinds, springs home</p><p>\"use strict\";</p><p>(async () =&gt; {</p><p>  const CFG = {</p><p>    GGS: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/\",</p><p>    // look: \"steam\" = Spiral Drill, \"bolt\" = Galvanic Drill</p><p>    look: \"steam\",</p><p>    bandColor: 0xe8e4f4,   // the moving spiral grooves</p><p>    rimColor: 0xb9a8dc,    // thin light edge so the black reads on a dark cave</p><p>    trailClip: \"smoke_anim12.webm\",</p><p>    trailTint: 0xd8d4e4,</p><p>    burstTint: 0xf2eefa,</p><p>    sparkTint: 0xffffff,</p><p>    // timing (ms)</p><p>    blackoutMs: 420,       // body drains to black and pulls back</p><p>    morphMs: 560,          // silhouette deforms into the cone</p><p>    revMs: 300,            // cone spins up in place</p><p>    ramMs: 170,            // the hit: fast and violent</p><p>    grindMs: 620,          // bores into the target; the Chain ticks land across this</p><p>    ticks: 6,              // matches the chain 6 keyword on the item</p><p>    returnMs: 560,         // springs home, turning back into the creature</p><p>    // shape (fractions of the body)</p><p>    recoil: 0.14,          // pull-back before the ram</p><p>    coneLen: 0.92,         // length of the cone against the body width</p><p>    coneBack: 0.4,         // radius at the back, against the body height</p><p>    grooves: 8,</p><p>    spinFrom: 7,           // groove speed (radians per second)</p><p>    spinTo: 46,</p><p>    stopShort: 0.24,       // tip buries this fraction of the cone into the target</p><p>    shake: 16,</p><p>    shakeMs: 460,</p><p>    revSfx: \"ChargeAttack\",</p><p>    ramSfx: \"DashA\",</p><p>    hitSfx: \"Explosion2\",</p><p>    volume: 0.8,</p><p>  };</p><p></p><p>  const P = payload ?? globalThis.__PAYLOAD ?? {};</p><p>  const casterUuid = P.casterTokenUuid ?? P.sourceTokenUuid ?? null;</p><p>  const targetUuids = (P.targetTokenUuids ?? (P.targets ?? []).map((t) =&gt; t.tokenUuid) ?? []).filter(Boolean);</p><p>  const doneHook = \"oni:done:\" + foundry.utils.randomID(8);</p><p>  const fireAtMs = CFG.blackoutMs + CFG.morphMs + CFG.revMs + CFG.ramMs;</p><p></p><p>  const onceHook = (name, ms) =&gt; new Promise((resolve) =&gt; {</p><p>    const id = Hooks.once(name, () =&gt; { clearTimeout(t); resolve(); });</p><p>    const t = setTimeout(() =&gt; { Hooks.off(name, id); resolve(); }, ms);</p><p>  });</p><p></p><p>  Hooks.callAll(\"oni:animationStart\", { local: true, world: false });</p><p></p><p>  const scriptSource = String.raw`</p><p>    const cfg = ctx.params.cfg;</p><p>    const caster = oni.caster;</p><p>    // Nearest first: the ram lands on it, then the grind rakes through the rest.</p><p>    const stops = [...oni.targets].sort((a, b) =&gt; Math.hypot(a.center.x - caster.center.x, a.center.y - caster.center.y) - Math.hypot(b.center.x - caster.center.x, b.center.y - caster.center.y));</p><p>    const target = stops[0];</p><p>    const mesh = caster &amp;&amp; caster.mesh;</p><p>    if (!mesh || !mesh.texture || !target) { oni.fireDone(); return; }</p><p>    const E = oni.EASE;</p><p>    const hx = caster.center.x, hy = caster.center.y;</p><p>    const tx = target.center.x, ty = target.center.y;</p><p>    const dist = Math.max(1, Math.hypot(tx - hx, ty - hy));</p><p>    const ux = (tx - hx) / dist, uy = (ty - hy) / dist;</p><p>    const flip = Math.sign(mesh.scale.x || 1) || 1;</p><p>    const bodyW = Math.abs(mesh.width), bodyH = Math.abs(mesh.height);</p><p></p><p>    const layer = oni.layer({ zIndex: 96000 });</p><p>    const rig = new PIXI.Container();</p><p>    rig.position.set(hx, hy);</p><p>    layer.addChild(rig);</p><p>    const restoreToken = oni.hideToken(caster);</p><p></p><p>    // The body as a bendable sheet. Texture left = the head, so the head becomes</p><p>    // the tip of the cone.</p><p>    const NX = 28, NY = 12;</p><p>    const tex = mesh.texture;</p><p>    const plane = new PIXI.SimplePlane(tex, NX, NY);</p><p>    const texW = tex.width, texH = tex.height;</p><p>    plane.scale.set(bodyW / texW, bodyH / texH);</p><p>    rig.addChild(plane);</p><p>    const buf = plane.geometry.getBuffer('aVertexPosition');</p><p>    const base = Float32Array.from(buf.data);</p><p></p><p>    // Cone radius along its length, u = 0 at the tip.</p><p>    const coneR = (u) =&gt; 0.012 + (1 - 0.012) * Math.pow(u, 0.88);</p><p>    const state = { morph: 0, phase: 0, jitter: 0 };</p><p></p><p>    const bend = () =&gt; {</p><p>      const d = buf.data, m = state.morph;</p><p>      const L = (texW * cfg.coneLen) / 1;</p><p>      for (let i = 0; i &lt; d.length; i += 2) {</p><p>        const u = base[i] / texW, v = base[i + 1] / texH * 2 - 1;</p><p>        const flatX = base[i] - texW / 2, flatY = base[i + 1] - texH / 2;</p><p>        const r = coneR(u) * cfg.coneBack * texH;</p><p>        // a corkscrew wobble that travels down the shaft: this is what turns a</p><p>        // flat shape into something that looks like it is turning</p><p>        const twist = Math.sin(state.phase + u * 15) * 0.2 * r;</p><p>        const coneX = (u - 0.5) * L;</p><p>        const coneY = v * r * (0.82 + 0.18 * Math.cos(state.phase + u * 9)) + twist;</p><p>        d[i] = flatX + (coneX - flatX) * m;</p><p>        d[i + 1] = flatY + (coneY - flatY) * m;</p><p>      }</p><p>      buf.update();</p><p>    };</p><p></p><p>    // Solid core + moving grooves, drawn in the same space as the sheet.</p><p>    const core = new PIXI.Graphics();</p><p>    const grooves = new PIXI.Graphics();</p><p>    const glow = new PIXI.Graphics();</p><p>    glow.blendMode = PIXI.BLEND_MODES.ADD;</p><p>    const overlay = new PIXI.Container();</p><p>    overlay.scale.set(bodyW / texW, bodyH / texH);</p><p>    overlay.addChild(core, grooves, glow);</p><p>    rig.addChild(overlay);</p><p></p><p>    const paintCone = () =&gt; {</p><p>      const m = state.morph;</p><p>      core.clear(); grooves.clear(); glow.clear();</p><p>      overlay.alpha = Math.min(1, Math.max(0, m - 0.25) * 2);</p><p>      if (m &lt;= 0.01) return;</p><p>      const L = texW * cfg.coneLen, R = cfg.coneBack * texH;</p><p>      const tipX = -L / 2, n = 22;</p><p>      // The core stays inside the bent silhouette so the body's spikes still break</p><p>      // the outline: this is the creature wound into a drill, not a clean cone.</p><p>      const inner = 0.72;</p><p>      const edge = (s) =&gt; { const pts = []; for (let k = 0; k &lt;= n; k++) { const u = k / n; pts.push(tipX + u * L, s * coneR(u) * R * inner); } return pts; };</p><p>      const top = edge(-1), low = edge(1);</p><p>      core.beginFill(0x000000, 1).moveTo(top[0], top[1]);</p><p>      for (let k = 2; k &lt; top.length; k += 2) core.lineTo(top[k], top[k + 1]);</p><p>      for (let k = low.length - 2; k &gt;= 0; k -= 2) core.lineTo(low[k], low[k + 1]);</p><p>      core.endFill();</p><p>      // long highlight down the upper flank gives the shaft a round body</p><p>      core.beginFill(cfg.bandColor, 0.16);</p><p>      for (let k = 0; k &lt;= n; k++) { const u = k / n; const x = tipX + u * L, r = coneR(u) * R * inner; if (k === 0) core.moveTo(x, -r * 0.62); else core.lineTo(x, -r * 0.62); }</p><p>      for (let k = n; k &gt;= 0; k--) { const u = k / n; core.lineTo(tipX + u * L, -coneR(u) * R * inner * 0.2); }</p><p>      core.endFill();</p><p>      // spiral grooves: curved thread that thickens toward the back and slides</p><p>      // down the shaft, brightest on the near side</p><p>      const lw = Math.max(3, texH * 0.016);</p><p>      for (let g = 0; g &lt; cfg.grooves; g++) {</p><p>        const a = ((g / cfg.grooves + state.phase / (Math.PI * 2)) % 1 + 1) % 1;</p><p>        const r = coneR(a) * R * inner;</p><p>        const x0 = tipX + a * L;</p><p>        const lean = L * 0.11;</p><p>        const shade = 0.2 + 0.8 * Math.pow(a, 0.7);</p><p>        grooves.lineStyle(lw * (0.45 + 1.15 * a), cfg.bandColor, shade);</p><p>        for (let s = 0; s &lt;= 10; s++) {</p><p>          const q = s / 10, yy = -1 + 2 * q;</p><p>          const x = x0 + lean * (1 - yy * yy) + lean * 0.7 * q;</p><p>          const uu = Math.min(1, Math.max(0, (x - tipX) / L));</p><p>          const y = yy * coneR(uu) * R * inner;</p><p>          if (s === 0) grooves.moveTo(x, y); else grooves.lineTo(x, y);</p><p>        }</p><p>      }</p><p>      // air wound up around the shaft, moving toward the tip</p><p>      for (let i = 0; i &lt; 3; i++) {</p><p>        const a = 1 - ((i / 3 + state.phase * 0.05) % 1);</p><p>        const x = tipX + a * L * 0.98, ry = coneR(Math.min(1, a)) * R * 0.86;</p><p>        grooves.lineStyle(lw * 0.5, cfg.rimColor, 0.15 + 0.4 * (1 - a));</p><p>        grooves.drawEllipse(x, 0, Math.max(3, ry * 0.2), ry);</p><p>      }</p><p>      // thin rim so the black reads against a dark floor</p><p>      grooves.lineStyle(lw * 0.6, cfg.rimColor, 0.85);</p><p>      grooves.moveTo(top[0], top[1]);</p><p>      for (let k = 2; k &lt; top.length; k += 2) grooves.lineTo(top[k], top[k + 1]);</p><p>      grooves.moveTo(low[0], low[1]);</p><p>      for (let k = 2; k &lt; low.length; k += 2) grooves.lineTo(low[k], low[k + 1]);</p><p>      if (cfg.look === 'bolt') {</p><p>        for (let b = 0; b &lt; 3; b++) {</p><p>          let x = tipX + Math.random() * L * 0.5, y = (Math.random() - 0.5) * R * 0.5;</p><p>          glow.lineStyle(lw * 1.1, b === 0 ? 0xffffff : 0xc070ff, 1).moveTo(x, y);</p><p>          for (let s = 0; s &lt; 6; s++) { x += L * 0.09; y += (Math.random() - 0.5) * R * 0.55; glow.lineTo(x, y); }</p><p>        }</p><p>      }</p><p>    };</p><p></p><p>    // The rig's heading: head first toward the target.</p><p>    const heading = (flip &gt; 0 ? Math.atan2(uy, ux) + Math.PI : Math.atan2(uy, ux));</p><p>    const wrap = (a) =&gt; { while (a &gt; Math.PI) a -= Math.PI * 2; while (a &lt; -Math.PI) a += Math.PI * 2; return a; };</p><p>    const faceAngle = wrap(heading);</p><p>    rig.scale.x = flip;</p><p>    const setAim = (k) =&gt; { rig.rotation = faceAngle * k * flip; };</p><p>    const setRig = (x, y) =&gt; {</p><p>      rig.position.set(x + (Math.random() - 0.5) * state.jitter, y + (Math.random() - 0.5) * state.jitter);</p><p>    };</p><p></p><p>    const backX = hx - ux * bodyW * cfg.recoil, backY = hy - uy * bodyW * cfg.recoil;</p><p>    let spin = cfg.spinFrom, ticking = true, last = performance.now();</p><p>    let curX = hx, curY = hy;</p><p>    const tick = () =&gt; {</p><p>      if (!ticking || rig.destroyed) return;</p><p>      const now = performance.now(), dt = Math.min(0.05, (now - last) / 1000); last = now;</p><p>      state.phase += spin * dt;</p><p>      bend(); paintCone(); setRig(curX, curY);</p><p>    };</p><p>    canvas.app.ticker.add(tick);</p><p></p><p>    const tintGrey = (k) =&gt; { const c = Math.round(255 * (1 - k)); plane.tint = (c &lt;&lt; 16) | (c &lt;&lt; 8) | c; };</p><p></p><p>    // 1. Drain to black, pull back.</p><p>    oni.sfx(cfg.revSfx, { volume: cfg.volume * 0.7 });</p><p>    await oni.tween({ from: 0, to: 1, duration: cfg.blackoutMs, ease: E.inOutQuad, onUpdate: (v) =&gt; {</p><p>      tintGrey(v);</p><p>      curX = hx + (backX - hx) * v; curY = hy + (backY - hy) * v;</p><p>      state.jitter = v * 2;</p><p>    } });</p><p></p><p>    // Steam or sparks shed while it turns.</p><p>    const shed = async (n) =&gt; {</p><p>      for (let i = 0; i &lt; n; i++) {</p><p>        const a = Math.random() * Math.PI * 2;</p><p>        oni.vfx(cfg.GGS + cfg.trailClip, { x: curX + Math.cos(a) * bodyW * 0.36, y: curY + Math.sin(a) * bodyH * 0.36, size: bodyW * 0.26, alpha: 0.5, zIndex: 95800, angle: Math.random() * 360 }).then((fx) =&gt; { if (fx) { fx.sprite.tint = cfg.trailTint; try { fx.video.playbackRate = 0.8; } catch (e) {} } });</p><p>        await oni.wait(140);</p><p>      }</p><p>    };</p><p>    shed(4);</p><p></p><p>    // 2. Silhouette deforms into the cone.</p><p>    await oni.tween({ from: 0, to: 1, duration: cfg.morphMs, ease: E.inOutQuad, onUpdate: (v) =&gt; {</p><p>      state.morph = v; setAim(v);</p><p>      spin = cfg.spinFrom + (cfg.spinTo * 0.55 - cfg.spinFrom) * v;</p><p>      state.jitter = 2 + v * 3;</p><p>    } });</p><p></p><p>    // 3. Rev up in place.</p><p>    await oni.tween({ from: 0, to: 1, duration: cfg.revMs, ease: E.inQuad, onUpdate: (v) =&gt; {</p><p>      spin = cfg.spinTo * (0.55 + 0.45 * v);</p><p>      state.jitter = 5 + v * 7;</p><p>    } });</p><p></p><p>    // 4. The ram.</p><p>    const coneWorld = bodyW * cfg.coneLen;</p><p>    const hitX = tx - ux * coneWorld * (0.5 - cfg.stopShort), hitY = ty - uy * coneWorld * (0.5 - cfg.stopShort);</p><p>    oni.sfx(cfg.ramSfx, { volume: cfg.volume });</p><p>    oni.vfx(cfg.GGS + \"dashsmoke_anim01.webm\", { x: backX, y: backY + bodyH * 0.25, size: bodyW * 0.7, zIndex: 95700, alpha: 0.65, mirror: ux &gt; 0 }).then((fx) =&gt; { if (fx) fx.sprite.tint = cfg.trailTint; });</p><p>    const lines = new PIXI.Graphics();</p><p>    layer.addChild(lines);</p><p>    const fromX = curX, fromY = curY;</p><p>    state.jitter = 0;</p><p>    await oni.tween({ from: 0, to: 1, duration: cfg.ramMs, ease: E.inCubic, onUpdate: (v) =&gt; {</p><p>      curX = fromX + (hitX - fromX) * v; curY = fromY + (hitY - fromY) * v;</p><p>      rig.scale.y = 1 - 0.14 * v;</p><p>      rig.scale.x = flip * (1 + 0.28 * v);</p><p>      lines.clear();</p><p>      for (let i = 0; i &lt; 12; i++) {</p><p>        const off = (i / 11 - 0.5) * bodyH * 0.95 + (Math.random() - 0.5) * 12;</p><p>        const px = -uy * off, py = ux * off;</p><p>        const len = coneWorld * (0.5 + Math.random() * 0.9) * v;</p><p>        const sx = curX - ux * coneWorld * 0.35 + px, sy = curY - uy * coneWorld * 0.35 + py;</p><p>        lines.lineStyle(i % 3 === 0 ? 5 : 2.5, cfg.bandColor, 0.3 + 0.55 * Math.random());</p><p>        lines.moveTo(sx, sy).lineTo(sx - ux * len, sy - uy * len);</p><p>      }</p><p>    } });</p><p></p><p>    // 5. Impact: the first damage tick, and the gate for the rest of the action.</p><p>    oni.hit();</p><p>    oni.fireDone();</p><p>    oni.sfx(cfg.hitSfx, { volume: cfg.volume });</p><p>    oni.screenshake({ duration: cfg.shakeMs, intensity: cfg.shake });</p><p>    rig.scale.set(flip * 0.92, 1.12);</p><p>    const tipX = tx - ux * target.w * 0.1, tipY = ty - uy * target.h * 0.1;</p><p>    for (const st of stops) oni.vfx(cfg.GGS + \"burst_anim02.webm\", { x: st.center.x, y: st.center.y, size: Math.max(st.w, 160) * 2.6, zIndex: 96500, blend: PIXI.BLEND_MODES.ADD }).then((fx) =&gt; { if (fx) fx.sprite.tint = cfg.burstTint; });</p><p>    oni.domFlash?.({ color: cfg.look === 'bolt' ? '#d9a0ff' : '#ffffff', alpha: 0.32, fadeIn: 20, fadeOut: 170 });</p><p>    await oni.hitstop(60);</p><p>    lines.clear();</p><p></p><p>    // 6. Grind: bore in, throw sparks.</p><p>    state.jitter = 15;</p><p>    spin = cfg.spinTo;</p><p>    oni.particles({ x: tipX, y: tipY, count: 26, color: cfg.look === 'bolt' ? 0xd29aff : 0xfff2d8, size: 16, radius: Math.max(target.w, 160) * 1.5, life: 520, mode: 'burst', blend: PIXI.BLEND_MODES.ADD, parent: layer });</p><p>    const sparkAt = async () =&gt; {</p><p>      const gap = cfg.grindMs / cfg.ticks;</p><p>      for (let i = 1; i &lt; cfg.ticks; i++) {</p><p>        await oni.wait(gap);</p><p>        oni.hit();</p><p>        oni.screenshake({ duration: 90, intensity: 5 });</p><p>        // every creature on the card takes this tick</p><p>        for (const st of stops) oni.vfx(cfg.GGS + \"spark_anim01.webm\", { x: st.center.x + (Math.random() - 0.5) * st.w * 0.5, y: st.center.y + (Math.random() - 0.5) * st.h * 0.5, size: Math.max(st.w, 160) * 1.5, zIndex: 96400, blend: PIXI.BLEND_MODES.ADD, angle: Math.random() * 360 }).then((fx) =&gt; { if (fx) fx.sprite.tint = cfg.sparkTint; });</p><p>      }</p><p>    };</p><p>    sparkAt();</p><p>    await oni.tween({ from: 0, to: 1, duration: cfg.grindMs, ease: E.linear, onUpdate: (v) =&gt; {</p><p>      if (stops.length &lt; 2) { curX = hitX + ux * 26 * Math.sin(v * Math.PI); curY = hitY + uy * 26 * Math.sin(v * Math.PI); return; }</p><p>      // rake through the party, tip on each creature in turn</p><p>      const p = v * (stops.length - 1), i = Math.min(stops.length - 2, Math.floor(p)), k = p - i;</p><p>      const ax = stops[i].center.x - ux * coneWorld * (0.5 - cfg.stopShort), ay = stops[i].center.y - uy * coneWorld * (0.5 - cfg.stopShort);</p><p>      const bx = stops[i + 1].center.x - ux * coneWorld * (0.5 - cfg.stopShort), by = stops[i + 1].center.y - uy * coneWorld * (0.5 - cfg.stopShort);</p><p>      curX = ax + (bx - ax) * k; curY = ay + (by - ay) * k;</p><p>    } });</p><p></p><p>    // 7. Spring home, turning back into the creature.</p><p>    state.jitter = 0;</p><p>    const outX = curX, outY = curY;</p><p>    await oni.tween({ from: 0, to: 1, duration: cfg.returnMs, ease: E.outCubic, onUpdate: (v) =&gt; {</p><p>      curX = outX + (hx - outX) * v;</p><p>      curY = outY + (hy - outY) * v - Math.sin(v * Math.PI) * bodyH * 0.22;</p><p>      const k = 1 - v;</p><p>      state.morph = k; setAim(k);</p><p>      spin = cfg.spinFrom + (cfg.spinTo - cfg.spinFrom) * k;</p><p>      rig.scale.set(flip * (1 + (0.92 - 1) * k), 1 + 0.12 * k);</p><p>      tintGrey(Math.max(0, 1 - Math.max(0, v - 0.5) * 2));</p><p>    } });</p><p>    ticking = false;</p><p>    canvas.app.ticker.remove(tick);</p><p>    tintGrey(0);</p><p>    restoreToken();</p><p>    await oni.wait(40);</p><p>  `;</p><p></p><p>  game.ONI.pseudo.play({</p><p>    scriptId: \"anim-studio/paryashera-drill\",</p><p>    scriptSource,</p><p>    casterTokenUuid: casterUuid,</p><p>    targetTokenUuids: targetUuids,</p><p>    params: { doneHook, cfg: CFG },</p><p>  });</p><p></p><p>  await onceHook(doneHook, fireAtMs + 6000);</p><p>  Hooks.callAll(\"oni:animationEnd\", { local: true, world: false });</p><p>})();</p><p></p>",
+          "check_bonus": "5",
           "class": "NPC",
           "cost": "-",
-          "damage_bonus": "55",
+          "damage_bonus": "38",
           "defense_target_type": "def",
-          "description": "<p>Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a>&nbsp;damage to one creature. Used only while <strong>Supercharged</strong>.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Pierce</strong></a></p></li><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.ChnStrikeKeyw0rd\" data-id=\"ChnStrikeKeyw0rd\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Chain</strong></a><strong>&nbsp;6</strong></p></li></ul><p>Burst out of the steam with a spinning drill. Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature. Used only while <a class=\"content-link\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Hidden</strong></a>, and ends it.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_template_ref": "Hidden",
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "spiral_reveal",
+              "include_persistent": true,
+              "target_ref": "self"
+            }
+          },
           "heroic_requirement": "",
+          "id": "${item.id}",
           "ignore_hr": false,
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
           "isCheck": true,
@@ -209,11 +573,11 @@
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
-          "name": "Basalt Crush",
-          "on_activate_effect_ref": "",
+          "name": "Spiral Drill",
+          "on_activate_effect_ref": "spiral_reveal",
           "optional_params": {},
           "reaction_config_table": {},
-          "rolled_atr1": "MIG",
+          "rolled_atr1": "DEX",
           "rolled_atr2": "MIG",
           "skill_animation_default": "",
           "skill_animation_mode": "custom",
@@ -222,7 +586,233 @@
           "skill_target": "One Creature",
           "skill_type": "Attack",
           "type_damage": "Physical",
-          "use_optional_params": false
+          "use_optional_params": false,
+          "uuid": "Actor.ym6As1q7yG1EMl9M.Item.GpSpiralDrillI01"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "GpSteamVeilItm01",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "GpSteamMarkerAE1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>It has vented its steam this round.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "lifetimeMode": "round_end"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/GalvanicParyashera_Standard.png",
+          "name": "Steam Vented",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213946.309.png",
+      "name": "Steam Veil",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_preload_urls": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/smoke_anim12.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/smoke_anim14.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/SmokeBomb.wav",
+          "animation_script": "<p>// @desc Smoke Bomb: grey smoke puffs swallow the target (Guilty Gear smoke clips, tinted), Obscure lands as the smoke closes</p><p>\"use strict\";</p><p>(async () =&gt; {</p><p>  const CFG = {</p><p>    GGS: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/\",</p><p>    puffClip: \"smoke_anim12.webm\",   // round billowing puff, 0.7 s, white mask</p><p>    plumeClip: \"smoke_anim14.webm\",  // rising plume, 0.8 s, white mask</p><p>    puffCount: 6,</p><p>    puffSizeFrac: 1.9,     // puff width as a fraction of the target token width</p><p>    puffSpread: 0.5,       // horizontal scatter as a fraction of token width</p><p>    puffStaggerMs: 220,    // delay between puffs</p><p>    puffRate: 0.4,         // video playbackRate (slower = heavier smoke)</p><p>    plumeSizeFrac: 2.6,</p><p>    plumeRate: 0.5,</p><p>    tint: 0x9a9aa0,        // grey smoke</p><p>    tintPlume: 0xb0b0b6,</p><p>    puffAlpha: 1,</p><p>    cloudSizeFrac: 3.2,    // lingering soft cloud behind the puffs</p><p>    cloudColor: 'rgba(120,120,128,0.95)',</p><p>    cloudInMs: 700,</p><p>    cloudHoldMs: 1400,</p><p>    cloudOutMs: 1800,</p><p>    cloudAlpha: 0.9,</p><p>    fireDoneAtMs: 900,     // Obscure lands as the puffs close over the target</p><p>    castSfx: \"SmokeBomb\",</p><p>    volume: 0.8,</p><p>  };</p><p></p><p>  const P = payload ?? globalThis.__PAYLOAD ?? {};</p><p>  const casterUuid = P.casterTokenUuid ?? P.sourceTokenUuid ?? null;</p><p>  const targetUuids = (P.targetTokenUuids ?? (P.targets ?? []).map((t) =&gt; t.tokenUuid) ?? []).filter(Boolean);</p><p>  const doneHook = \"oni:done:\" + foundry.utils.randomID(8);</p><p></p><p>  const onceHook = (name, ms) =&gt; new Promise((resolve) =&gt; {</p><p>    const id = Hooks.once(name, () =&gt; { clearTimeout(t); resolve(); });</p><p>    const t = setTimeout(() =&gt; { Hooks.off(name, id); resolve(); }, ms);</p><p>  });</p><p></p><p>  Hooks.callAll(\"oni:animationStart\", { local: true, world: false });</p><p></p><p>  const scriptSource = String.raw`</p><p>    const cfg = ctx.params.cfg;</p><p>    const target = oni.targets[0] || oni.caster;</p><p>    if (!target) { oni.fireDone(); return; }</p><p>    const tw = target.w || 100, th = target.h || 100;</p><p>    const cx = target.center.x, feetY = target.y + th;</p><p>    const layer = oni.layer({ zIndex: 95500 });</p><p></p><p>    // soft grey cloud that lingers after the clips are gone</p><p>    const cloud = new PIXI.Sprite(oni.radialTexture(cfg.cloudColor, 'rgba(120,120,128,0)', { size: 256 }));</p><p>    cloud.anchor.set(0.5);</p><p>    cloud.width = cloud.height = tw * cfg.cloudSizeFrac;</p><p>    cloud.position.set(cx, feetY - th * 0.45);</p><p>    cloud.alpha = 0;</p><p>    layer.addChild(cloud);</p><p></p><p>    oni.sfx(cfg.castSfx, { volume: cfg.volume });</p><p></p><p>    const tails = [];</p><p>    const puff = async (i) =&gt; {</p><p>      const side = (i % 2 === 0 ? -1 : 1) * (0.25 + Math.random() * 0.75);</p><p>      const x = cx + side * tw * cfg.puffSpread;</p><p>      const y = feetY - th * (0.25 + Math.random() * 0.5);</p><p>      const fx = await oni.vfx(cfg.GGS + cfg.puffClip, {</p><p>        x, y, size: tw * cfg.puffSizeFrac * (0.85 + Math.random() * 0.3),</p><p>        alpha: cfg.puffAlpha, angle: (Math.random() - 0.5) * 40, mirror: Math.random() &lt; 0.5,</p><p>        zIndex: 96000 + i,</p><p>      });</p><p>      if (!fx) return;</p><p>      fx.sprite.tint = cfg.tint;</p><p>      try { fx.video.playbackRate = cfg.puffRate; } catch (e) {}</p><p>      tails.push(fx.ended);</p><p>    };</p><p></p><p>    // cloud rises while the puffs arrive</p><p>    const cloudIn = oni.tween({ from: 0, to: cfg.cloudAlpha, duration: cfg.cloudInMs, ease: oni.EASE.outQuad, onUpdate: (v) =&gt; (cloud.alpha = v) });</p><p></p><p>    let fired = false;</p><p>    const gate = setTimeout(() =&gt; { if (!fired) { fired = true; oni.fireDone(); } }, cfg.fireDoneAtMs);</p><p></p><p>    for (let i = 0; i &lt; cfg.puffCount; i++) {</p><p>      await puff(i);</p><p>      await oni.wait(cfg.puffStaggerMs);</p><p>    }</p><p>    // the plume rises out of the middle once the puffs have closed in</p><p>    const plume = await oni.vfx(cfg.GGS + cfg.plumeClip, {</p><p>      x: cx, y: feetY - th * 0.9, size: tw * cfg.plumeSizeFrac, alpha: 0.85, zIndex: 95900,</p><p>    });</p><p>    if (plume) { plume.sprite.tint = cfg.tintPlume; try { plume.video.playbackRate = cfg.plumeRate; } catch (e) {} tails.push(plume.ended); }</p><p></p><p>    await cloudIn;</p><p>    if (!fired) { fired = true; clearTimeout(gate); oni.fireDone(); }</p><p>    await oni.wait(cfg.cloudHoldMs);</p><p>    await Promise.all([</p><p>      oni.tween({ from: cloud.alpha, to: 0, duration: cfg.cloudOutMs, ease: oni.EASE.inOutQuad, onUpdate: (v) =&gt; (cloud.alpha = v) }),</p><p>      Promise.all(tails),</p><p>    ]);</p><p>  `;</p><p></p><p>  game.ONI.pseudo.play({</p><p>    scriptId: \"anim-studio/smoke-bomb\",</p><p>    scriptSource,</p><p>    casterTokenUuid: casterUuid,</p><p>    targetTokenUuids: targetUuids,</p><p>    params: { doneHook, cfg: CFG },</p><p>  });</p><p></p><p>  await onceHook(doneHook, CFG.fireDoneAtMs + 6000);</p><p>  Hooks.callAll(\"oni:animationEnd\", { local: true, world: false });</p><p>})();</p><p></p>",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>Vent scalding steam around itself. It gains <a class=\"content-link\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Hidden</strong></a>. Once per round.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "steam_hide,steam_mark",
+              "effect_kind": "chain",
+              "effect_label": "steam_chain"
+            },
+            "1": {
+              "$deleted": false,
+              "ae_duplicate_mode": "skip",
+              "ae_duration_rounds": "3",
+              "ae_template_ref": "Hidden",
+              "effect_kind": "apply_ae",
+              "effect_label": "steam_hide",
+              "target_ref": "self"
+            },
+            "2": {
+              "$deleted": false,
+              "ae_duplicate_mode": "skip",
+              "ae_template_ref": "Steam Vented",
+              "effect_kind": "apply_ae",
+              "effect_label": "steam_mark",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213946.309.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Steam Veil",
+          "on_activate_effect_ref": "steam_chain",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "Self",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.ym6As1q7yG1EMl9M.Item.GpSteamVeilItm01"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "GpThunderVentI01",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213409.361.png",
+      "name": "Thunder Vent",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_preload_urls": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/076_thunder_one_1.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/spark_anim01.webm",
+          "animation_script": "<p>// @desc Thunder Vent: the belly vents flare, then a purple bolt drops on each target (RPG Maker Thunder One 1, hue-shifted)</p><p>\"use strict\";</p><p>(async () =&gt; {</p><p>  const CFG = {</p><p>    clip: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/076_thunder_one_1.webm\",</p><p>    GGS: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/\",</p><p>    anchorY: 0.858,        // the clip's ground point</p><p>    hue: 225,              // yellow bolt to violet</p><p>    boltSize: 620,</p><p>    boltRate: 0.7,         // 0.47 s clip, slowed a little</p><p>    volleys: 2,            // each target is struck this many times</p><p>    volleyGapMs: 300,</p><p>    staggerMs: 110,        // between targets</p><p>    chargeMs: 620,</p><p>    fireAfterMs: 190,      // damage lands this long after the first bolt</p><p>    tailMs: 750,</p><p>    glowColor: 'rgba(214,150,255,1)',</p><p>    glowEdge: 'rgba(120,40,220,0)',</p><p>    sparkTint: 0xd8a4ff,</p><p>    chargeSfx: \"PowerUp\",</p><p>    boltSfx: \"Thunder7\",</p><p>    boltSfx2: \"Thunder10\",</p><p>    volume: 0.85,</p><p>  };</p><p></p><p>  const P = payload ?? globalThis.__PAYLOAD ?? {};</p><p>  const casterUuid = P.casterTokenUuid ?? P.sourceTokenUuid ?? null;</p><p>  const targetUuids = (P.targetTokenUuids ?? (P.targets ?? []).map((t) =&gt; t.tokenUuid) ?? []).filter(Boolean);</p><p>  const doneHook = \"oni:done:\" + foundry.utils.randomID(8);</p><p></p><p>  const onceHook = (name, ms) =&gt; new Promise((resolve) =&gt; {</p><p>    const id = Hooks.once(name, () =&gt; { clearTimeout(t); resolve(); });</p><p>    const t = setTimeout(() =&gt; { Hooks.off(name, id); resolve(); }, ms);</p><p>  });</p><p></p><p>  Hooks.callAll(\"oni:animationStart\", { local: true, world: false });</p><p></p><p>  const scriptSource = String.raw`</p><p>    const cfg = ctx.params.cfg;</p><p>    const E = oni.EASE;</p><p>    const caster = oni.caster;</p><p>    const targets = oni.targets;</p><p>    const layer = oni.layer({ zIndex: 95500 });</p><p>    if (!caster || !targets.length) { oni.fireDone(); return; }</p><p></p><p>    // Charge: the vents flare and gather sparks.</p><p>    oni.sfx(cfg.chargeSfx, { volume: cfg.volume * 0.7 });</p><p>    const cw = Math.abs(caster.mesh?.width || caster.w);</p><p>    const glow = new PIXI.Sprite(oni.radialTexture(cfg.glowColor, cfg.glowEdge, { size: 256 }));</p><p>    glow.anchor.set(0.5);</p><p>    glow.blendMode = PIXI.BLEND_MODES.ADD;</p><p>    glow.position.set(caster.center.x, caster.center.y + (caster.mesh?.height || caster.h) * 0.1);</p><p>    layer.addChild(glow);</p><p>    oni.particles({ x: glow.x, y: glow.y, count: 26, color: 0xd29aff, size: 15, radius: cw * 0.75, life: cfg.chargeMs, mode: 'gather', blend: PIXI.BLEND_MODES.ADD, parent: layer });</p><p>    await oni.tween({ from: 0, to: 1, duration: cfg.chargeMs, ease: E.inQuad, onUpdate: (v) =&gt; {</p><p>      glow.width = glow.height = cw * (0.25 + 0.75 * v);</p><p>      glow.alpha = v;</p><p>    } });</p><p></p><p>    // A bolt drops on every target, feet on the token's ground point.</p><p>    oni.sfx(cfg.boltSfx, { volume: cfg.volume });</p><p>    oni.sfx(cfg.boltSfx2, { volume: cfg.volume * 0.7, delay: cfg.volleyGapMs });</p><p>    oni.tween({ from: 1, to: 0, duration: 380, ease: E.outQuad, onUpdate: (v) =&gt; { glow.alpha = v; } });</p><p>    const hue = new PIXI.ColorMatrixFilter();</p><p>    hue.hue(cfg.hue, false);</p><p>    const strike = async (t, delay) =&gt; {</p><p>      await oni.wait(delay);</p><p>      const b = await oni.vfx(cfg.clip, { x: t.center.x, y: t.y + t.h, size: cfg.boltSize, zIndex: 96200 });</p><p>      if (!b) return;</p><p>      b.sprite.anchor.set(0.5, cfg.anchorY);</p><p>      b.sprite.filters = [hue];</p><p>      try { b.video.playbackRate = cfg.boltRate; } catch (e) {}</p><p>    };</p><p>    targets.forEach((t, i) =&gt; {</p><p>      for (let v = 0; v &lt; cfg.volleys; v++) strike(t, i * cfg.staggerMs + v * cfg.volleyGapMs);</p><p>    });</p><p>    await oni.wait(cfg.fireAfterMs);</p><p></p><p>    oni.fireDone();</p><p>    oni.screenshake({ duration: 620, intensity: 11 });</p><p>    oni.domFlash?.({ color: '#e6b8ff', alpha: 0.3, fadeIn: 30, fadeOut: 240 });</p><p>    for (const t of targets) {</p><p>      oni.vfx(cfg.GGS + \"spark_anim01.webm\", { x: t.center.x, y: t.center.y, size: Math.max(t.w, 150) * 1.8, zIndex: 96300, blend: PIXI.BLEND_MODES.ADD, angle: Math.random() * 360 }).then((s) =&gt; { if (s) s.sprite.tint = cfg.sparkTint; });</p><p>    }</p><p>    await oni.wait(cfg.tailMs);</p><p>  `;</p><p></p><p>  game.ONI.pseudo.play({</p><p>    scriptId: \"anim-studio/paryashera-thunder-vent\",</p><p>    scriptSource,</p><p>    casterTokenUuid: casterUuid,</p><p>    targetTokenUuids: targetUuids,</p><p>    params: { doneHook, cfg: CFG },</p><p>  });</p><p></p><p>  await onceHook(doneHook, CFG.chargeMs + CFG.fireAfterMs + 6000);</p><p>  Hooks.callAll(\"oni:animationEnd\", { local: true, world: false });</p><p>})();</p><p></p>",
+          "check_bonus": "5",
+          "class": "NPC",
+          "cost": "30 MP",
+          "damage_bonus": "22",
+          "defense_target_type": "mdef",
+          "description": "<p>Blast stored lightning out through its belly vents. Deal <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to all enemies. Used only while <strong>Supercharged</strong>.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_template_ref": "Vent Ready",
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "vent_spend",
+              "include_persistent": true,
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213409.361.png",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Thunder Vent",
+          "on_activate_effect_ref": "vent_spend",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "WLP",
+          "skill_animation_default": "",
+          "skill_animation_mode": "custom",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "All Enemies",
+          "skill_type": "Active",
+          "type_damage": "Bolt",
+          "use_optional_params": false,
+          "uuid": "Actor.ym6As1q7yG1EMl9M.Item.GpThunderVentI01"
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2125250754,
@@ -241,6 +831,46 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "GpVentReadyMark1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>Its vents have recharged this round.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "hidden": true,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Roper_Standard.png",
+          "name": "Vent Ready",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.4"
@@ -284,21 +914,44 @@
           "active_effect_config_table": {},
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
-          "animation_script": "",
+          "animation_preload_urls": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/burst_anim02.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/burst_anim05.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/spark_anim01.webm",
+          "animation_script": "<p>// @desc Supercharge form change: sparks rush into the body, it flares white, and the new form bursts out in a purple shockwave</p><p>\"use strict\";</p><p>(async () =&gt; {</p><p>  const CFG = {</p><p>    GGS: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/\",</p><p>    gatherMs: 1150,        // sparks rush in, the body brightens</p><p>    bursts: [\"burst_anim02.webm\", \"burst_anim05.webm\"],</p><p>    burstTint: 0xc98cff,</p><p>    sparkTint: 0xe2bcff,</p><p>    tailMs: 950,</p><p>    gatherSfx: \"PowerUp2\",</p><p>    burstSfx: \"Thunder10\",</p><p>    burstSfx2: \"Explosion1\",</p><p>    volume: 0.85,</p><p>  };</p><p></p><p>  const P = payload ?? globalThis.__PAYLOAD ?? {};</p><p>  const casterUuid = P.casterTokenUuid ?? P.sourceTokenUuid ?? null;</p><p>  const doneHook = \"oni:done:\" + foundry.utils.randomID(8);</p><p></p><p>  const onceHook = (name, ms) =&gt; new Promise((resolve) =&gt; {</p><p>    const id = Hooks.once(name, () =&gt; { clearTimeout(t); resolve(); });</p><p>    const t = setTimeout(() =&gt; { Hooks.off(name, id); resolve(); }, ms);</p><p>  });</p><p></p><p>  Hooks.callAll(\"oni:animationStart\", { local: true, world: false });</p><p></p><p>  const scriptSource = String.raw`</p><p>    const cfg = ctx.params.cfg;</p><p>    const E = oni.EASE;</p><p>    const caster = oni.caster;</p><p>    const mesh = caster &amp;&amp; caster.mesh;</p><p>    if (!mesh) { oni.fireDone(); return; }</p><p>    const cx = caster.center.x, cy = caster.center.y;</p><p>    const bw = Math.abs(mesh.width), bh = Math.abs(mesh.height);</p><p>    const layer = oni.layer({ zIndex: 96000 });</p><p></p><p>    // A white copy of the body over the real one: only it fades, so the art swap</p><p>    // underneath happens at full brightness and is never seen.</p><p>    const flare = new PIXI.Sprite(mesh.texture);</p><p>    flare.anchor.set(0.5);</p><p>    flare.width = bw; flare.height = bh;</p><p>    flare.scale.x = Math.abs(flare.scale.x) * (Math.sign(mesh.scale.x || 1) || 1);</p><p>    flare.position.set(cx, cy);</p><p>    flare.blendMode = PIXI.BLEND_MODES.ADD;</p><p>    flare.alpha = 0;</p><p>    layer.addChild(flare);</p><p></p><p>    oni.sfx(cfg.gatherSfx, { volume: cfg.volume });</p><p>    oni.particles({ x: cx, y: cy, count: 56, color: 0xd29aff, size: 22, radius: bw * 0.95, life: cfg.gatherMs, lifeJitter: 0.2, stagger: cfg.gatherMs * 0.35, mode: 'gather', blend: PIXI.BLEND_MODES.ADD, parent: layer });</p><p>    oni.particles({ x: cx, y: cy, count: 26, color: 0xffffff, size: 13, radius: bw * 0.7, life: cfg.gatherMs * 0.9, stagger: cfg.gatherMs * 0.4, mode: 'gather', blend: PIXI.BLEND_MODES.ADD, parent: layer });</p><p></p><p>    // Arcs snapping toward the core, faster as it builds.</p><p>    const arcs = new PIXI.Graphics();</p><p>    arcs.blendMode = PIXI.BLEND_MODES.ADD;</p><p>    layer.addChild(arcs);</p><p>    await oni.tween({ from: 0, to: 1, duration: cfg.gatherMs, ease: E.inQuad, onUpdate: (v) =&gt; {</p><p>      flare.alpha = v * 0.9;</p><p>      arcs.clear();</p><p>      const n = Math.round(1 + v * 6);</p><p>      for (let i = 0; i &lt; n; i++) {</p><p>        const a = Math.random() * Math.PI * 2;</p><p>        let x = cx + Math.cos(a) * bw * 0.62, y = cy + Math.sin(a) * bh * 0.62;</p><p>        arcs.lineStyle(i % 2 ? 3 : 5, i % 2 ? 0xc070ff : 0xffffff, 0.9).moveTo(x, y);</p><p>        for (let s = 0; s &lt; 5; s++) {</p><p>          x += (cx - x) * 0.3 + (Math.random() - 0.5) * 34;</p><p>          y += (cy - y) * 0.3 + (Math.random() - 0.5) * 34;</p><p>          arcs.lineTo(x, y);</p><p>        }</p><p>      }</p><p>    } });</p><p>    arcs.clear();</p><p></p><p>    // Peak: the effect lands now, so the Supercharged art arrives under the flare.</p><p>    oni.fireDone();</p><p>    oni.sfx(cfg.burstSfx, { volume: cfg.volume });</p><p>    oni.sfx(cfg.burstSfx2, { volume: cfg.volume * 0.8 });</p><p>    oni.screenshake({ duration: 700, intensity: 15 });</p><p>    oni.domFlash?.({ color: '#e6b8ff', alpha: 0.55, fadeIn: 30, fadeOut: 420 });</p><p>    cfg.bursts.forEach((clip, i) =&gt; {</p><p>      oni.vfx(cfg.GGS + clip, { x: cx, y: cy, size: bw * (2.1 + i * 0.5), zIndex: 96500 + i, blend: PIXI.BLEND_MODES.ADD }).then((fx) =&gt; { if (fx) { fx.sprite.tint = cfg.burstTint; try { fx.video.playbackRate = 0.7; } catch (e) {} } });</p><p>    });</p><p>    oni.particles({ x: cx, y: cy, count: 70, color: 0xd29aff, size: 24, radius: bw * 1.25, life: cfg.tailMs, mode: 'burst', gravity: 60, blend: PIXI.BLEND_MODES.ADD, parent: layer });</p><p>    oni.particles({ x: cx, y: cy, count: 30, color: 0xffffff, size: 13, radius: bw * 0.95, life: cfg.tailMs * 0.8, mode: 'burst', blend: PIXI.BLEND_MODES.ADD, parent: layer });</p><p>    for (let i = 0; i &lt; 4; i++) {</p><p>      const a = Math.random() * Math.PI * 2;</p><p>      oni.vfx(cfg.GGS + \"spark_anim01.webm\", { x: cx + Math.cos(a) * bw * 0.35, y: cy + Math.sin(a) * bh * 0.35, size: bw * 0.8, zIndex: 96400, blend: PIXI.BLEND_MODES.ADD, angle: Math.random() * 360 }).then((fx) =&gt; { if (fx) fx.sprite.tint = cfg.sparkTint; });</p><p>    }</p><p></p><p>    await oni.tween({ from: flare.alpha, to: 0, duration: cfg.tailMs * 0.75, ease: E.inOutQuad, onUpdate: (v) =&gt; { flare.alpha = v; } });</p><p>    await oni.wait(cfg.tailMs * 0.3);</p><p>  `;</p><p></p><p>  game.ONI.pseudo.play({</p><p>    scriptId: \"anim-studio/paryashera-supercharge\",</p><p>    scriptSource,</p><p>    casterTokenUuid: casterUuid,</p><p>    targetTokenUuids: [],</p><p>    params: { doneHook, cfg: CFG },</p><p>  });</p><p></p><p>  await onceHook(doneHook, CFG.gatherMs + 6000);</p><p>  Hooks.callAll(\"oni:animationEnd\", { local: true, world: false });</p><p>})();</p><p></p>",
           "check_bonus": "0",
           "class": "NPC",
           "cost": "-",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\">Trigger</a>&nbsp;When <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a>&nbsp;damage strikes the Galvanize Golem</p></li></ul><p>It gains <strong>Supercharge</strong> until the end of the battle: every attribute rises one die size, and its Defense and Magic Defense rise by 2. This happens only once per battle.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage strikes the Galvanic Paryashera</p></li></ul><p>It gains <strong>Supercharge</strong> until the end of the battle: <strong>+2</strong> Accuracy, <strong>+10</strong> damage, <strong>+2</strong> Defense and Magic Defense, Resistant to <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>, Immune to <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>, and spears, heavy weapons and daggers strike it harder. This happens only once per battle.</p>",
           "details_roller": "Show",
           "duration": "-",
           "effect_table": {
             "0": {
+              "$deleted": false,
+              "chain_steps": "sc_shot,sc_apply,sc_ready",
+              "effect_kind": "chain",
+              "effect_label": "sc_chain"
+            },
+            "1": {
+              "$deleted": false,
+              "action_ref": "Super Charge",
+              "effect_kind": "play_animation",
+              "effect_label": "sc_shot",
+              "target_ref": "self"
+            },
+            "2": {
+              "$deleted": false,
               "ae_duplicate_mode": "skip",
               "ae_template_ref": "Supercharge",
               "effect_kind": "apply_ae",
               "effect_label": "sc_apply",
+              "target_ref": "self"
+            },
+            "3": {
+              "$deleted": false,
+              "ae_duplicate_mode": "skip",
+              "ae_template_ref": "Vent Ready",
+              "effect_kind": "apply_ae",
+              "effect_label": "sc_ready",
               "target_ref": "self"
             }
           },
@@ -313,24 +966,32 @@
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
-          "name": "Lodestone Core",
+          "name": "Super Charge",
           "on_activate_effect_ref": "",
           "optional_params": {},
           "reaction_config_table": {
             "0": {
               "condition_formula": "SUBJECT_IS_SELF == 1 && TRIGGER_DAMAGE_IS_BOLT == 1 && HAS_STATUS_SUPERCHARGE == 0",
               "reaction_cause_filter": "",
-              "reaction_effect_ref": "sc_apply",
+              "reaction_effect_ref": "sc_chain",
               "reaction_passive_mode": "force",
               "reaction_resource_filter": "hp",
               "reaction_source": "",
               "reaction_trigger": "creature_lose_resource"
+            },
+            "1": {
+              "$deleted": false,
+              "condition_formula": "AE_COUNT_SUPERCHARGE > 0 && AE_COUNT_VENT_READY == 0",
+              "reaction_effect_ref": "sc_ready",
+              "reaction_passive_mode": "force",
+              "reaction_source": "",
+              "reaction_trigger": "round_start"
             }
           },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
-          "skill_animation_mode": "default",
+          "skill_animation_mode": "custom",
           "skill_information": "",
           "skill_range": "-",
           "skill_target": "-",
@@ -342,128 +1003,6 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "iFdNNGp4OVZVMEcB"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "MQ5RWvF33EqqCFGx",
-      "_stats": {
-        "compendiumSource": "Item.dmiYBQ7BczRfTH1w",
-        "coreVersion": "12.343",
-        "createdTime": 1792629407600,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": "36rowiHAcXnIPsKK",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/999.gif",
-      "name": "Steel",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check": "Check",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<p><em>A dented slab of armor plate pried off something much larger than you.</em></p>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "id": "dmiYBQ7BczRfTH1w",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/999.gif",
-          "ingredient_taste": "",
-          "ingredient_taste2": "",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isIngredient": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "150",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Common",
-          "item_type": "material",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Steel",
-          "optional_params": {},
-          "plant_ef": "100",
-          "refine_count": "0",
-          "refine_level": "0",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "<Set Name>",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "uuid": "Item.dmiYBQ7BczRfTH1w",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "dmiYBQ7BczRfTH1w"
       },
       "type": "equippableItem"
     },
@@ -611,7 +1150,7 @@
       },
       "folder": null,
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
-      "name": "Piston Fist",
+      "name": "Drill Claw",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
         "default": 3
@@ -626,12 +1165,12 @@
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
           "animation_script": "<p>// Basalt Crush — generated by tools/anim-studio/lib/dungeon-templates.js</p><p>// Re-run tools/safe-edit/bin/_build-dungeon-animations.js to regenerate.</p><p>(async () =&gt; {</p><p></p><p>const CFG = {\"dashMs\":380,\"holdMs\":200,\"returnMs\":640,\"overlap\":0.76,\"jitter\":0,\"jitterAmp\":0,\"jitterHz\":0,\"impact\":true,\"impactColor\":12757112,\"impactCount\":24,\"impactRadius\":150,\"impactWebm\":\"modules/JB2A_DnD5e/Library/Generic/Impact/Impact_10_Regular_Orange_400x400.webm\",\"impactWebmSize\":380,\"holdWebm\":null,\"holdWebmSize\":380,\"holdWebmRepeatMs\":0,\"holdWebmFadeMs\":0,\"shakeMs\":480,\"shakeAmp\":10,\"donePhase\":\"end\",\"sfx\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Earth4.ogg\",\"sfxVol\":0.6,\"sfxArrive\":\"Earth2\",\"sfxArriveVol\":0.75,\"totalTimeoutMs\":12000};</p><p>const ASSETS = {};</p><p>const ANIM_KEY = \"oni.dungeon.obsidrax-basalt-crush\";</p><p>const TAG = \"[ONI][Anim][Basalt Crush]\";</p><p></p><p>const P = globalThis.__PAYLOAD ?? payload ?? {};</p><p>function tokFromUuid(u) { try { const d = fromUuidSync?.(u); return d?.object ?? null; } catch (_) { return null; } }</p><p>function resolveSource() {</p><p>  for (const c of [P?.casterTokenUuid, P?.sourceTokenUuid, P?.tokenUuid]) { const t = tokFromUuid(c); if (t) return t; }</p><p>  return canvas?.tokens?.controlled?.[0] ?? null;</p><p>}</p><p>function resolveTargets() {</p><p>  const out = [];</p><p>  const arg = Array.isArray(targets) ? targets : [];</p><p>  for (const t of arg) if (t?.center) out.push(t);</p><p>  if (!out.length &amp;&amp; Array.isArray(globalThis.__TARGETS)) for (const t of globalThis.__TARGETS) if (t?.center) out.push(t);</p><p>  return out;</p><p>}</p><p>const sourceToken  = resolveSource();</p><p>const partyTargets = resolveTargets();</p><p></p><p>const doneHook = 'oni.anim.' + ANIM_KEY + '.' + (foundry?.utils?.randomID?.(8) ?? String(Date.now()));</p><p>function onceHook(hookName, timeoutMs) {</p><p>  return new Promise((resolve) =&gt; {</p><p>    let settled = false;</p><p>    const timer = setTimeout(() =&gt; { if (settled) return; settled = true; Hooks.off(hookName, h); resolve({ ok: false, timeout: true }); }, timeoutMs);</p><p>    const h = (d) =&gt; { if (settled) return; settled = true; clearTimeout(timer); Hooks.off(hookName, h); resolve(d ?? { ok: true }); };</p><p>    Hooks.on(hookName, h);</p><p>  });</p><p>}</p><p>function emitLocal(n, d) { try { Hooks.callAll(n, d); } catch (_) {} }</p><p></p><p>const scriptSource = String.raw`</p><p>const cfg = ctx.params.cfg || {};</p><p>const A = ctx.params.assets || {};</p><p>const caster = ctx.casterToken;</p><p>const tgts = (ctx.targetTokens || []).filter(t =&gt; t &amp;&amp; t.center);</p><p>const prime = tgts[0] || null;</p><p>const S = oni.screenLive();</p><p>const E = oni.EASE;</p><p>const ctr = (t) =&gt; (t &amp;&amp; t.center) ? t.center : { x: 0, y: 0 };</p><p>const home = caster ? { x: caster.center.x, y: caster.center.y } : { x: 0, y: 0 };</p><p>function centroid(list) {</p><p>  if (!list.length) return home;</p><p>  let x = 0, y = 0;</p><p>  for (const t of list) { const c = ctr(t); x += c.x; y += c.y; }</p><p>  return { x: x / list.length, y: y / list.length };</p><p>}</p><p>// Centre of the authored play area (the v2 conflict scene stage rect).</p><p>// A pull-back should frame the arena, so it wants a FIXED point: aiming at</p><p>// the caster turns a zoom-out into a pan, and aiming at a centroid makes the</p><p>// framing drift with wherever the combatants happen to be standing.</p><p>function stageCentre() {</p><p>  const f = canvas.scene &amp;&amp; canvas.scene.flags ? canvas.scene.flags['fabula-ultima-companion'] : null;</p><p>  const sr = f &amp;&amp; f.conflict ? f.conflict.stage : null;</p><p>  if (sr) return { x: sr.x + sr.w / 2, y: sr.y + sr.h / 2 };</p><p>  return centroid(tgts.concat(caster ? [caster] : []));</p><p>}</p><p>function playSfx(k, v) { if (!cfg[k]) return; oni.sfx(cfg[k], { volume: cfg[v] == null ? 0.6 : cfg[v], fadeAfter: cfg[k + 'Fade'] || 0, fadeMs: cfg[k + 'FadeMs'] || 400 }); }</p><p>async function fxWebm(url, x, y, o) {</p><p>  if (!url) return null;</p><p>  o = o || {};</p><p>  return oni.webm(url, { size: o.size || S.wLen(320), x: x, y: y, angle: o.angle || 0,</p><p>    alpha: o.alpha == null ? 1 : o.alpha, zIndex: o.z || 95000, parent: o.parent || null });</p><p>}</p><p>async function fxBeam(url, from, to, o) {</p><p>  if (!url) return null;</p><p>  o = o || {};</p><p>  const dist = Math.hypot(to.x - from.x, to.y - from.y);</p><p>  const ang = Math.atan2(to.y - from.y, to.x - from.x);</p><p>  const r = await oni.webm(url, { size: dist, x: from.x, y: from.y, parent: o.parent || null, zIndex: o.z || 95000 });</p><p>  if (!r || !r.sprite) return null;</p><p>  const sp = r.sprite;</p><p>  sp.anchor.set(0, 0.5);</p><p>  sp.width = dist * (o.lengthScale || 1);</p><p>  sp.height = dist * (o.thickness || 0.25);</p><p>  sp.position.set(from.x, from.y);</p><p>  sp.rotation = ang;</p><p>  return r;</p><p>}</p><p>let fired = false;</p><p>function done() { if (fired) return; fired = true; oni.fireDone(); }</p><p>async function shakeTarget(t, ms, amp) {</p><p>  if (!t) return;</p><p>  const spr = oni.cloneToken(t);</p><p>  if (!spr) return;</p><p>  const restore = oni.hideToken(t);</p><p>  const c = ctr(t);</p><p>  await oni.tween({ from: 0, to: 1, duration: ms, ease: E.linear, onUpdate: (v) =&gt; {</p><p>    const decay = 1 - v;</p><p>    spr.position.set(c.x + (Math.random() * 2 - 1) * amp * decay, c.y + (Math.random() * 2 - 1) * amp * decay);</p><p>  } });</p><p>  spr.position.set(c.x, c.y);</p><p>  restore();</p><p>  try { spr.destroy(); } catch (e) {}</p><p>}</p><p>function streak(x1, y1, x2, y2, color, width, host) {</p><p>  const g = new PIXI.Graphics();</p><p>  g.lineStyle({ width: width, color: color, alpha: 1, cap: 'round' });</p><p>  g.moveTo(x1, y1); g.lineTo(x2, y2);</p><p>  g.blendMode = PIXI.BLEND_MODES.ADD;</p><p>  (host || canvas.stage).addChild(g);</p><p>  return g;</p><p>}</p><p></p><p>if (!caster || !prime) { done(); return; }</p><p>const host = oni.layer({ zIndex: 93000 });</p><p>const t = ctr(prime);</p><p>const land = { x: home.x + (t.x - home.x) * cfg.overlap, y: home.y + (t.y - home.y) * cfg.overlap };</p><p>const clone = oni.cloneToken(caster, { parent: host });</p><p>const restoreCaster = oni.hideToken(caster);</p><p>playSfx('sfx', 'sfxVol');</p><p></p><p>await oni.tween({ from: 0, to: 1, duration: cfg.dashMs, ease: E.inOutQuad, onUpdate: (v) =&gt; {</p><p>  if (clone) clone.position.set(home.x + (land.x - home.x) * v, home.y + (land.y - home.y) * v);</p><p>} });</p><p>playSfx('sfxArrive', 'sfxArriveVol');</p><p>if (cfg.impactWebm) await fxWebm(cfg.impactWebm, t.x, t.y, { size: S.wLen(cfg.impactWebmSize), parent: host });</p><p></p><p>let shaking = Promise.resolve();</p><p>if (cfg.impact) {</p><p>  oni.particles({ x: t.x, y: t.y, count: cfg.impactCount, color: cfg.impactColor,</p><p>    size: 11, radius: S.wLen(cfg.impactRadius), life: 700,</p><p>    blend: PIXI.BLEND_MODES.ADD, parent: host });</p><p>  shaking = shakeTarget(prime, cfg.shakeMs, S.wLen(cfg.shakeAmp));</p><p>}</p><p>if (cfg.donePhase === 'impact') done();</p><p></p><p>let holdFx = Promise.resolve();</p><p>if (cfg.holdWebm) {</p><p>  holdFx = (async () =&gt; {</p><p>    const once = async () =&gt; {</p><p>      const r = await fxWebm(cfg.holdWebm, land.x, land.y, { size: S.wLen(cfg.holdWebmSize), parent: host, alpha: cfg.holdWebmFadeMs ? 0 : 1 });</p><p>      if (r &amp;&amp; r.sprite &amp;&amp; cfg.holdWebmFadeMs) {</p><p>        await oni.tween({ from: 0, to: 1, duration: cfg.holdWebmFadeMs, ease: E.inOutQuad, onUpdate: (v) =&gt; { if (!r.sprite.destroyed) r.sprite.alpha = v; } });</p><p>        await wait(Math.max(0, cfg.holdMs - cfg.holdWebmFadeMs * 2));</p><p>        await oni.tween({ from: 1, to: 0, duration: cfg.holdWebmFadeMs, ease: E.inOutQuad, onUpdate: (v) =&gt; { if (!r.sprite.destroyed) r.sprite.alpha = v; } });</p><p>      }</p><p>      return r;</p><p>    };</p><p>    if (cfg.holdWebmRepeatMs &gt; 0) {</p><p>      const n = Math.max(1, Math.floor(cfg.holdMs / cfg.holdWebmRepeatMs));</p><p>      for (let i = 0; i &lt; n; i++) { once(); await wait(cfg.holdWebmRepeatMs); }</p><p>    } else { await once(); }</p><p>  })();</p><p>}</p><p></p><p>if (cfg.jitter &amp;&amp; cfg.holdMs &gt; 0) {</p><p>  await oni.tween({ from: 0, to: 1, duration: cfg.holdMs, ease: E.linear, onUpdate: (v) =&gt; {</p><p>    if (!clone) return;</p><p>    const ph = v * cfg.holdMs / 1000 * cfg.jitterHz * Math.PI * 2;</p><p>    clone.position.set(land.x + Math.sin(ph) * S.wLen(cfg.jitterAmp), land.y + Math.cos(ph * 1.7) * S.wLen(cfg.jitterAmp * 0.6));</p><p>  } });</p><p>} else {</p><p>  await wait(cfg.holdMs);</p><p>}</p><p></p><p>await oni.tween({ from: 0, to: 1, duration: cfg.returnMs, ease: E.inOutQuad, onUpdate: (v) =&gt; {</p><p>  if (clone) clone.position.set(land.x + (home.x - land.x) * v, land.y + (home.y - land.y) * v);</p><p>} });</p><p>restoreCaster();</p><p>await Promise.all([shaking, holdFx]);</p><p>done();</p><p>`;</p><p></p><p>try {</p><p>  emitLocal('oni:animationStart', { type: ANIM_KEY, sceneId: canvas.scene?.id ?? null });</p><p>  const waitDone = onceHook(doneHook, CFG.totalTimeoutMs || 15000);</p><p>  await game.ONI.pseudo.play({</p><p>    scriptId: ANIM_KEY,</p><p>    scriptSource,</p><p>    casterTokenUuid: sourceToken?.document?.uuid ?? null,</p><p>    targetTokenUuids: partyTargets.map(t =&gt; t.document.uuid),</p><p>    params: { doneHook, cfg: CFG, assets: ASSETS },</p><p>    meta: { source: \"Basalt Crush\" },</p><p>  });</p><p>  const result = await waitDone;</p><p>  if (!result?.ok) console.warn(TAG, 'pseudo non-OK / timeout', result);</p><p>} catch (err) {</p><p>  console.error(TAG, 'orchestration crashed', err);</p><p>} finally {</p><p>  emitLocal('oni:animationEnd', { type: ANIM_KEY, timestamp: Date.now() });</p><p>}</p><p></p><p>})();</p>",
-          "check_bonus": "8",
+          "check_bonus": "5",
           "class": "NPC",
           "cost": "-",
-          "damage_bonus": "40",
+          "damage_bonus": "25",
           "defense_target_type": "def",
-          "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a>&nbsp;damage to one creature.</p>",
+          "description": "<p>Swing a drill-tipped claw at an enemy. Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {},
@@ -646,12 +1185,12 @@
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
-          "name": "Basalt Crush",
+          "name": "Drill Claw",
           "on_activate_effect_ref": "",
           "optional_params": {},
           "reaction_config_table": {},
-          "rolled_atr1": "MIG",
-          "rolled_atr2": "DEX",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
           "skill_animation_default": "",
           "skill_animation_mode": "custom",
           "skill_information": "",
@@ -667,277 +1206,9 @@
         "uniqueId": "yWlkWZC2vLf4J5Pv"
       },
       "type": "equippableItem"
-    },
-    {
-      "_id": "T30voDCtVrGAj3n0",
-      "_stats": {
-        "compendiumSource": "Item.t2hmo5SnPi9LCcdZ",
-        "coreVersion": "12.343",
-        "createdTime": 1792629407600,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": "AW77WJGta3x8x3dy",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1821.gif",
-      "name": "Golem Fist",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Brawling",
-          "celestial_ef": "100",
-          "check": "Check",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "custom_logic_action": "<p>(async () =&gt; {</p><p>  const TAG = \"[CL-ACTION][GOLEM-FIST-WEIGHTED]\";</p><p>  const p = __PAYLOAD;</p><p>  if (!p) {</p><p>    console.warn(TAG, \"Missing __PAYLOAD.\");</p><p>    return;</p><p>  }</p><p>  // --------------------------------------------------</p><p>  // Resolve attacker</p><p>  // --------------------------------------------------</p><p>  const attackerUuid =</p><p>    p?.meta?.attackerUuid ??</p><p>    p?.attackerUuid ??</p><p>    \"\";</p><p>  const attackerDoc = await fromUuid(attackerUuid);</p><p>  const attackerActor = attackerDoc?.actor ?? attackerDoc;</p><p>  if (!attackerActor) {</p><p>    console.warn(TAG, \"Could not resolve attacker actor.\", { attackerUuid });</p><p>    return;</p><p>  }</p><p>  // --------------------------------------------------</p><p>  // Read attacker Defense score</p><p>  // Data key: actor.system.props.defense</p><p>  // --------------------------------------------------</p><p>  const rawDefense = foundry.utils.getProperty(</p><p>    attackerActor,</p><p>    \"system.props.defense\"</p><p>  );</p><p>  const defenseScore = Math.max(0, Number(rawDefense) || 0);</p><p>  if (defenseScore &lt;= 0) {</p><p>    console.log(TAG, \"No bonus applied. Defense score is 0 or invalid.\", {</p><p>      attacker: attackerActor.name,</p><p>      rawDefense</p><p>    });</p><p>    return;</p><p>  }</p><p>  // --------------------------------------------------</p><p>  // Add Defense as flat bonus damage</p><p>  // --------------------------------------------------</p><p>  p.advPayload = p.advPayload || {};</p><p>  const beforeBonus = Number(p.advPayload.bonus ?? 0) || 0;</p><p>  p.advPayload.bonus = beforeBonus + defenseScore;</p><p>  // Optional debug marker</p><p>  p.meta = p.meta || {};</p><p>  p.meta.golemFistWeightedBonus = {</p><p>    source: \"defense\",</p><p>    rawDefense,</p><p>    defenseScore,</p><p>    bonusBefore: beforeBonus,</p><p>    bonusAfter: p.advPayload.bonus</p><p>  };</p><p>  console.log(TAG, \"APPLIED Defense as flat bonus damage.\", {</p><p>    attacker: attackerActor.name,</p><p>    rawDefense,</p><p>    defenseScore,</p><p>    bonusBefore: beforeBonus,</p><p>    bonusAfter: p.advPayload.bonus</p><p>  });</p><p>})();</p>",
-          "damage_bonus": "5",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.ljKBtlzPVvhhmdHW\" data-id=\"ljKBtlzPVvhhmdHW\" data-type=\"JournalEntry\">Weighted</a></p></li><li><p><strong>【⚔️Attack】</strong>made with this weapon deals bonus damage equal to <strong>【Your Defense score】</strong></p></li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "id": "t2hmo5SnPi9LCcdZ",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1821.gif",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "2700",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Rare",
-          "item_type": "weapon",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Golem Fist",
-          "optional_params": {},
-          "plant_ef": "100",
-          "refine_count": "0",
-          "refine_level": "0",
-          "reptilian_ef": "100",
-          "rolled_atr1": "MIG",
-          "rolled_atr2": "MIG",
-          "set_name": "<Set Name>",
-          "skill_target": "One Enemy",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "uuid": "Item.t2hmo5SnPi9LCcdZ",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "t2hmo5SnPi9LCcdZ"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "uos1sLHVyliTyqyc",
-      "_stats": {
-        "compendiumSource": "Item.pJGT7NB0fQhri3Ji",
-        "coreVersion": "12.343",
-        "createdTime": 1792629407600,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.4.2"
-        }
-      },
-      "folder": "VzpCG9mySsd9sQSL",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Mineral.png",
-      "name": "Golem Fragment",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 900000,
-      "system": {
-        "container": null,
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check": "Check",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li><p>Give <strong>5 </strong><a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a> to target ally, if the target already have a <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a>, increase that shield value by 5 instead.</p></li></ul>",
-          "dragon_ef": "100",
-          "effect_table": {
-            "0": {
-              "effect_kind": "grant",
-              "effect_label": "golemfrag_shield",
-              "grant_amount": "5",
-              "grant_resource": "shield",
-              "target_ref": "action_targets"
-            }
-          },
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "id": "pJGT7NB0fQhri3Ji",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Mineral.png",
-          "insect_ef": "100",
-          "ip_cost": "1",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "25",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Common",
-          "item_skill_active": {
-            "zF5H6P553x8T5duB": {
-              "id": "${item.id}",
-              "name": "Golem Fragment",
-              "skill_cost": "-",
-              "skill_description": "<ul><li><p><em>Give <strong>5 Shield</strong> to target ally; if the target already has a Shield, increase that shield value by 5 instead.</em></p></li></ul>",
-              "skill_maxLevel": 1,
-              "uuid": "Item.zF5H6P553x8T5duB"
-            }
-          },
-          "item_type": "consumable",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Golem Fragment",
-          "optional_params": {},
-          "plant_ef": "100",
-          "refine_count": "0",
-          "refine_level": "0",
-          "related_item_list": {
-            "zF5H6P553x8T5duB": {
-              "id": "${item.id}",
-              "name": "Golem Fragment",
-              "related_item_description": "<ul><li><p><em>Give <strong>5 Shield</strong> to target ally; if the target already has a Shield, increase that shield value by 5 instead.</em></p></li></ul>",
-              "uuid": "Item.zF5H6P553x8T5duB"
-            }
-          },
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "",
-          "skill_target": "One Ally",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "uuid": "Item.pJGT7NB0fQhri3Ji",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "pJGT7NB0fQhri3Ji"
-      },
-      "type": "equippableItem"
     }
   ],
-  "name": "Galvanize Golem",
+  "name": "Galvanic Paryashera",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
     "default": 0
@@ -1050,7 +1321,7 @@
         "hideFill": true
       }
     },
-    "height": 1,
+    "height": 2,
     "hexagonalShape": 0,
     "light": {
       "alpha": 0.5,
@@ -1078,7 +1349,7 @@
       "shadows": 0
     },
     "lockRotation": false,
-    "name": "Galvanize Golem",
+    "name": "Galvanic Paryashera",
     "occludable": {
       "radius": 0
     },
@@ -1116,12 +1387,12 @@
       "offsetX": 0,
       "offsetY": 0,
       "rotation": 0,
-      "scaleX": 2.32,
-      "scaleY": 2.32,
-      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ragnarok%20Online/dimik_1/dimik_1_idle.webm",
+      "scaleX": 2.2,
+      "scaleY": 2.2,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/GalvanicParyashera_Standard.png",
       "tint": "#ffffff"
     },
-    "width": 1
+    "width": 2
   },
   "sort": 400000,
   "system": {
@@ -1134,57 +1405,129 @@
           "action_pattern_cooldown": "0",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Galvanic Smash",
-          "action_pattern_priority": "8",
-          "action_pattern_string": "Supercharge",
+          "action_pattern_name": "Spiral Drill",
+          "action_pattern_priority": "12",
+          "action_pattern_string": "Hidden",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
           "action_pattern_value_2": "100"
         },
         "1": {
           "$deleted": false,
+          "action_pattern_condition": "self_lacks_status",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Steam Veil",
+          "action_pattern_priority": "7",
+          "action_pattern_string": "Steam Vented",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "2": {
+          "$deleted": false,
+          "action_pattern_condition": "self_lacks_status",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Rending Spin",
+          "action_pattern_priority": "7",
+          "action_pattern_string": "Drill Spun",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "3": {
+          "$deleted": false,
+          "action_pattern_condition": "self_has_status",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Galvanic Drill",
+          "action_pattern_priority": "7",
+          "action_pattern_string": "Supercharge",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "4": {
+          "$deleted": false,
+          "action_pattern_condition": "self_has_status",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Thunder Vent",
+          "action_pattern_priority": "7",
+          "action_pattern_string": "Vent Ready",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "5": {
+          "$deleted": false,
           "action_pattern_condition": "always",
           "action_pattern_cooldown": "0",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Piston Fist",
-          "action_pattern_priority": "5",
+          "action_pattern_name": "Drill Claw",
+          "action_pattern_priority": "4",
           "action_pattern_string": "",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
           "action_pattern_value_2": "100"
         }
       },
-      "activation": "1",
-      "affinity_1": "RS",
+      "activation": "4",
+      "affinity_1": "NA",
       "affinity_2": "NA",
       "affinity_3": "NA",
       "affinity_4": "NA",
-      "affinity_5": "NA",
+      "affinity_5": "RS",
       "affinity_6": "NA",
       "affinity_7": "VU",
       "affinity_8": "NA",
-      "affinity_9": "IM",
+      "affinity_9": "RS",
       "animation_table": {},
       "arcane_ef": "100",
       "attack_list": {
         "F7gHvYczFw1y0OYj": {
-          "active_target": "One Creature",
-          "attack_description": "<p>Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature. Used only while <strong>Supercharged</strong>.</p>",
-          "attribute_die1": "MIG",
+          "active_target": "All Enemies",
+          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a></p></li><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Pierce</strong></a></p></li><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.ChnStrikeKeyw0rd\" data-id=\"ChnStrikeKeyw0rd\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Chain</strong></a><strong>&nbsp;6</strong></p></li></ul><p>Rake a lightning-charged drill through the enemy line. Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to all enemies. Used only while <strong>Supercharged</strong>.</p>",
+          "attribute_die1": "DEX",
           "attribute_die2": "MIG",
           "id": "${item.id}",
-          "name": "Galvanic Smash",
+          "name": "Galvanic Drill",
           "roll": "",
           "uuid": "Actor.ym6As1q7yG1EMl9M.Item.F7gHvYczFw1y0OYj"
         },
+        "GpRendingSpinI01": {
+          "active_target": "Up to three creatures",
+          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Multi</strong></a><strong>&nbsp;3</strong></p></li></ul><p>Spin its drilled claws through nearby enemies. Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to the targets. Once per round.</p>",
+          "attribute_die1": "DEX",
+          "attribute_die2": "MIG",
+          "id": "${item.id}",
+          "name": "Rending Spin",
+          "roll": "",
+          "uuid": "Actor.ym6As1q7yG1EMl9M.Item.GpRendingSpinI01"
+        },
+        "GpSpiralDrillI01": {
+          "active_target": "One Creature",
+          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.2hNU23YLpCcZCCmf\" data-id=\"2hNU23YLpCcZCCmf\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Pierce</strong></a></p></li><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.ChnStrikeKeyw0rd\" data-id=\"ChnStrikeKeyw0rd\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Chain</strong></a><strong>&nbsp;6</strong></p></li></ul><p>Burst out of the steam with a spinning drill. Deal <strong>heavy</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature. Used only while <a class=\"content-link\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Hidden</strong></a>, and ends it.</p>",
+          "attribute_die1": "DEX",
+          "attribute_die2": "MIG",
+          "id": "${item.id}",
+          "name": "Spiral Drill",
+          "roll": "",
+          "uuid": "Actor.ym6As1q7yG1EMl9M.Item.GpSpiralDrillI01"
+        },
         "PZ1aIYC42nTc1kgL": {
           "active_target": "One Creature",
-          "attack_description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p>",
-          "attribute_die1": "MIG",
-          "attribute_die2": "DEX",
+          "attack_description": "<p>Swing a drill-tipped claw at an enemy. Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p>",
+          "attribute_die1": "DEX",
+          "attribute_die2": "MIG",
           "id": "${item.id}",
-          "name": "Piston Fist",
+          "name": "Drill Claw",
           "roll": "",
           "uuid": "Actor.ym6As1q7yG1EMl9M.Item.PZ1aIYC42nTc1kgL"
         }
@@ -1193,8 +1536,8 @@
       "battle_facing_direction": "left",
       "bonus_hp": 0,
       "bonus_mp": 0,
-      "bow_ef": "50",
-      "brawling_ef": "125",
+      "bow_ef": "100",
+      "brawling_ef": "75",
       "check_mod_all": 0,
       "check_mod_magic": 0,
       "check_mod_melee": 0,
@@ -1202,7 +1545,7 @@
       "condition_anomaly": "NA",
       "condition_bane": "NA",
       "condition_berserk": "NA",
-      "condition_bleed": "IM",
+      "condition_bleed": "NA",
       "condition_blind": "RS",
       "condition_burn": "NA",
       "condition_charm": "IM",
@@ -1214,19 +1557,19 @@
       "condition_disarmed": "NA",
       "condition_doom": "NA",
       "condition_enraged": "IM",
-      "condition_envenomed": "IM",
+      "condition_envenomed": "NA",
       "condition_fatigue": "NA",
       "condition_frightened": "IM",
-      "condition_grappled": "NA",
+      "condition_grappled": "IM",
       "condition_hypothermia": "NA",
       "condition_isolate": "NA",
       "condition_obscure": "NA",
       "condition_oil": "NA",
       "condition_panic": "NA",
-      "condition_paralyzed": "NA",
+      "condition_paralyzed": "RS",
       "condition_petrify": "IM",
       "condition_poisoned": "IM",
-      "condition_shaken": "IM",
+      "condition_shaken": "RS",
       "condition_silence": "NA",
       "condition_slow": "NA",
       "condition_stagger": "NA",
@@ -1235,18 +1578,18 @@
       "condition_weak": "RS",
       "condition_wet": "NA",
       "condition_wither": "NA",
-      "condition_zombie": "IM",
+      "condition_zombie": "NA",
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "170",
+      "current_hp": "520",
       "current_ip": "0",
       "current_mp": "60",
-      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ragnarok%20Online/dimik_1/dimik_1_standard.png",
-      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ragnarok%20Online/dimik_1/dimik_1_standard.png",
+      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/GalvanicParyashera_Standard.png",
+      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/GalvanicParyashera_Standard.png",
       "cut_in_offset_y": "",
-      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ragnarok%20Online/dimik_1/dimik_1_standard.png",
-      "dagger_ef": "50",
+      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/GalvanicParyashera_Standard.png",
+      "dagger_ef": "125",
       "damage_receiving_mod_air": 0,
       "damage_receiving_mod_all": 0,
       "damage_receiving_mod_bolt": 0,
@@ -1259,9 +1602,9 @@
       "damage_receiving_mod_physical": 0,
       "damage_receiving_mod_poison": 0,
       "damage_receiving_mod_range": 0,
-      "def_mod": "+2",
+      "def_mod": "+4",
       "default_facing_direction": "right",
-      "defense": 13,
+      "defense": 12,
       "dex_base": "8",
       "dex_current": "8",
       "enmity": 100,
@@ -1292,15 +1635,15 @@
       "firearm_ef": "100",
       "flail_ef": "100",
       "gorger": false,
-      "heavy_ef": "150",
+      "heavy_ef": "125",
       "icon_offset_x": "",
       "icon_offset_y": "",
       "icon_scale": "",
       "id": "x8TBsDZaRgoSo5no",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ragnarok%20Online/dimik_1/dimik_1_standard.png",
-      "init": "6",
-      "ins_base": "6",
-      "ins_current": "6",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/GalvanicParyashera_Standard.png",
+      "init": "9",
+      "ins_base": "8",
+      "ins_current": "8",
       "isAlmighty": false,
       "isAwake": false,
       "isBlacksmith": false,
@@ -1331,18 +1674,18 @@
       "magic_defense": 11,
       "manadrain_percentage": 0,
       "manadrain_value": 0,
-      "max_hp": "170",
+      "max_hp": "520",
       "max_ip": "0",
       "max_mp": "60",
       "max_zero": "6",
-      "mdef_mod": "+2",
+      "mdef_mod": "+3",
       "mig_base": "10",
       "mig_current": "10",
       "mimic": false,
       "minimum_critical_dice": 6,
-      "name": "Obsidrax",
+      "name": "Galvanic Paryashera",
       "normal_spell_list": {},
-      "npc_rank": "soldier",
+      "npc_rank": "elite",
       "override_all_damage_type": "None",
       "override_attack_damage_type": "None",
       "override_damage_type": "None",
@@ -1362,24 +1705,45 @@
       "shop_consumable_list": {},
       "shop_weapon_list": {},
       "showMacro": false,
-      "skill_active_list": {},
+      "skill_active_list": {
+        "GpSteamVeilItm01": {
+          "active_cost": "-",
+          "active_description": "<p>Vent scalding steam around itself. It gains <a class=\"content-link\" data-uuid=\"JournalEntry.DMaL1B3Z5Y5AUrvC\" data-id=\"DMaL1B3Z5Y5AUrvC\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Hidden</strong></a>. Once per round.</p>",
+          "active_duration": "Instantaneous",
+          "active_target": "Self",
+          "id": "${item.id}",
+          "name": "Steam Veil",
+          "roll": "",
+          "uuid": "Actor.ym6As1q7yG1EMl9M.Item.GpSteamVeilItm01"
+        },
+        "GpThunderVentI01": {
+          "active_cost": "30 MP",
+          "active_description": "<p>Blast stored lightning out through its belly vents. Deal <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage to all enemies. Used only while <strong>Supercharged</strong>.</p>",
+          "active_duration": "Instantaneous",
+          "active_target": "All Enemies",
+          "id": "${item.id}",
+          "name": "Thunder Vent",
+          "roll": "",
+          "uuid": "Actor.ym6As1q7yG1EMl9M.Item.GpThunderVentI01"
+        }
+      },
       "skill_passive_list": {
         "mc5kTxNZqC62RxDd": {
           "id": "${item.id}",
           "name": "Super Charge",
-          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage strikes the Galvanize Golem</p></li></ul><p>It gains <strong>Supercharge</strong> until the end of the battle: every attribute rises one die size, and its Defense and Magic Defense rise by 2. This happens only once per battle.</p>",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage strikes the Galvanic Paryashera</p></li></ul><p>It gains <strong>Supercharge</strong> until the end of the battle: <strong>+2</strong> Accuracy, <strong>+10</strong> damage, <strong>+2</strong> Defense and Magic Defense, Resistant to <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>, Immune to <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>, and spears, heavy weapons and daggers strike it harder. This happens only once per battle.</p>",
           "roll": "",
           "uuid": "Actor.ym6As1q7yG1EMl9M.Item.mc5kTxNZqC62RxDd"
         }
       },
-      "spear_ef": "100",
-      "species": "CONSTRUCT",
-      "sprite_attack": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ragnarok%20Online/dimik_1/dimik_1_attack.webm",
-      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ragnarok%20Online/dimik_1/dimik_1_idle.webm",
-      "sprite_hurt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ragnarok%20Online/dimik_1/dimik_1_hurt.webm",
-      "sprite_ko": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ragnarok%20Online/dimik_1/dimik_1_die.webm",
-      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ragnarok%20Online/dimik_1/dimik_1_standard.png",
-      "sprite_walk": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Ragnarok%20Online/dimik_1/dimik_1_walk.webm",
+      "spear_ef": "150",
+      "species": "BEAST",
+      "sprite_attack": "",
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/GalvanicParyashera_Standard.png",
+      "sprite_hurt": "",
+      "sprite_ko": "",
+      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/GalvanicParyashera_Standard.png",
+      "sprite_walk": "",
       "steal_percentage_table": {
         "0": {
           "$deleted": false,
@@ -1388,46 +1752,41 @@
         },
         "1": {
           "$deleted": false,
-          "loot_id": "Golem Fragment",
-          "loot_percentage": "20"
+          "loot_id": "Animal Fang",
+          "loot_percentage": "25"
         },
         "2": {
           "$deleted": false,
-          "loot_id": "Steel",
-          "loot_percentage": "16"
+          "loot_id": "Lightning Essence",
+          "loot_percentage": "24"
         },
         "3": {
           "$deleted": false,
-          "loot_id": "Golem Soulstone",
-          "loot_percentage": "13"
-        },
-        "4": {
-          "$deleted": false,
-          "loot_id": "Golem Fist",
+          "loot_id": "Voltaic Hound",
           "loot_percentage": "6"
         }
       },
       "stealable_loot": {
-        "16BERBxpFHIy4083": {
+        "GpLootEssenceI01": {
           "id": "${item.id}",
-          "loot_description": "<ul><li><p>Target creature gain <strong>10 </strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a></span></span>, if the target already have a <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a><strong><span style=\"text-decoration: underline;\">,</span></strong></span></span> increase that shield value by 10 instead.</p></li></ul>",
-          "name": "Golem Soulstone",
+          "loot_description": "<p><em>Essence that can be obtained from monsters in the storm area in the ecological environment.</em></p>",
+          "name": "Lightning Essence",
           "roll": "",
-          "uuid": "Actor.ym6As1q7yG1EMl9M.Item.16BERBxpFHIy4083"
+          "uuid": "Actor.ym6As1q7yG1EMl9M.Item.GpLootEssenceI01"
         },
-        "MQ5RWvF33EqqCFGx": {
+        "GpLootFangItem01": {
           "id": "${item.id}",
-          "loot_description": "<p><em>A dented slab of armor plate pried off something much larger than you.</em></p>",
-          "name": "Steel",
+          "loot_description": "<p><em>A sharpened calcium remains of a beast type monster</em></p>",
+          "name": "Animal Fang",
           "roll": "",
-          "uuid": "Actor.ym6As1q7yG1EMl9M.Item.MQ5RWvF33EqqCFGx"
+          "uuid": "Actor.ym6As1q7yG1EMl9M.Item.GpLootFangItem01"
         },
-        "T30voDCtVrGAj3n0": {
+        "GpLootHoundItm01": {
           "id": "${item.id}",
-          "loot_description": "<ul><li><p><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ljKBtlzPVvhhmdHW\" data-id=\"ljKBtlzPVvhhmdHW\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Weighted</span></strong></a></span></p></li><li><p><strong>【⚔️Attack】</strong>made with this weapon deals bonus damage equal to <strong>【Your Defense score】</strong></p></li></ul>",
-          "name": "Golem Fist",
+          "loot_description": "<ul>\n<li>After this weapon deals damage to one or more creatures, if at least one of those creatures is <strong>Vulnerable</strong> to <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage, you may deal <strong>10 <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a></strong> damage to every enemy you can see</li>\n</ul>",
+          "name": "Voltaic Hound",
           "roll": "",
-          "uuid": "Actor.ym6As1q7yG1EMl9M.Item.T30voDCtVrGAj3n0"
+          "uuid": "Actor.ym6As1q7yG1EMl9M.Item.GpLootHoundItm01"
         },
         "pUy2R2lorpmzhYok": {
           "id": "${item.id}",
@@ -1435,30 +1794,23 @@
           "name": "(Empty)",
           "roll": "",
           "uuid": "Actor.ym6As1q7yG1EMl9M.Item.pUy2R2lorpmzhYok"
-        },
-        "uos1sLHVyliTyqyc": {
-          "id": "${item.id}",
-          "loot_description": "<ul><li><p>Give <strong>5 </strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a></span></span><strong> </strong>to target ally, if the target already have a <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shield</span></strong></a><strong><span style=\"text-decoration: underline;\">,</span></strong></span></span> increase that shield value by 5 instead.</p></li></ul>",
-          "name": "Golem Fragment",
-          "roll": "",
-          "uuid": "Actor.ym6As1q7yG1EMl9M.Item.uos1sLHVyliTyqyc"
         }
       },
-      "study_text": "<p>A furnace-hearted construct that idles at half power. Lightning is its fuel: one jolt and it wakes up fully, harder to hurt and far more dangerous. <strong>Finish it before the storm reaches it.</strong></p>",
+      "study_text": "<p>A cave beast that burrows through charged rock, cloaked in the steam of its own vents. It lives on small sparks, but a real jolt sends it into a frenzy, so it is best put down before the <strong>lightning</strong> finds it.</p>",
       "subtype": "Sub-Type",
-      "subtype_list": "GOLEM",
+      "subtype_list": "REPTILIAN",
       "sword_ef": "75",
       "tactic_notes": "",
       "thrown_ef": "100",
       "token_option_persist": false,
-      "traits": "Lightning-Fed Engine",
+      "traits": "Cave Dweller, Steam-Cloaked, Lightning-Fed, Burrowing",
       "ultima_point": "0",
       "unique": false,
       "uuid": "Actor.x8TBsDZaRgoSo5no",
-      "wlp_base": "6",
-      "wlp_current": "6",
-      "zenit_reward_max": "120",
-      "zenit_reward_min": "90",
+      "wlp_base": "8",
+      "wlp_current": "8",
+      "zenit_reward_max": "260",
+      "zenit_reward_min": "200",
       "zero_power_value": ""
     },
     "statusEffects": {},

@@ -18974,7 +18974,7 @@
       },
       {
         "id": "ym6As1q7yG1EMl9M",
-        "name": "Galvanize Golem",
+        "name": "Galvanic Paryashera",
         "type": "character",
         "items": [
           {
@@ -18982,32 +18982,44 @@
             "name": "(Empty)"
           },
           {
-            "id": "F7gHvYczFw1y0OYj",
-            "name": "Galvanic Smash"
-          },
-          {
-            "id": "T30voDCtVrGAj3n0",
-            "name": "Golem Fist"
-          },
-          {
-            "id": "uos1sLHVyliTyqyc",
-            "name": "Golem Fragment"
-          },
-          {
-            "id": "16BERBxpFHIy4083",
-            "name": "Golem Soulstone"
+            "id": "GpLootFangItem01",
+            "name": "Animal Fang"
           },
           {
             "id": "PZ1aIYC42nTc1kgL",
-            "name": "Piston Fist"
+            "name": "Drill Claw"
           },
           {
-            "id": "MQ5RWvF33EqqCFGx",
-            "name": "Steel"
+            "id": "F7gHvYczFw1y0OYj",
+            "name": "Galvanic Drill"
+          },
+          {
+            "id": "GpLootEssenceI01",
+            "name": "Lightning Essence"
+          },
+          {
+            "id": "GpRendingSpinI01",
+            "name": "Rending Spin"
+          },
+          {
+            "id": "GpSpiralDrillI01",
+            "name": "Spiral Drill"
+          },
+          {
+            "id": "GpSteamVeilItm01",
+            "name": "Steam Veil"
           },
           {
             "id": "mc5kTxNZqC62RxDd",
             "name": "Super Charge"
+          },
+          {
+            "id": "GpThunderVentI01",
+            "name": "Thunder Vent"
+          },
+          {
+            "id": "GpLootHoundItm01",
+            "name": "Voltaic Hound"
           }
         ],
         "effects": 0
@@ -20644,6 +20656,10 @@
           {
             "id": "WmNJjB4GEn9hYbgq",
             "name": "Berserker Sword"
+          },
+          {
+            "id": "IcLootGolemFist1",
+            "name": "Golem Fist"
           },
           {
             "id": "rvoScI8fqwuMAfo4",
@@ -26616,7 +26632,7 @@
       {
         "id": "sULKvLErNMF8JtUr",
         "name": "Valley of the Dragon Underground - Encounter",
-        "results": 27
+        "results": 23
       },
       {
         "id": "hBupoi4SsKj1GmDM",

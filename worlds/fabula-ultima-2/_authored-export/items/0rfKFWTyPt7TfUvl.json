@@ -547,43 +547,61 @@
       },
       "changes": [
         {
-          "key": "bonus_dex",
+          "key": "check_mod_accuracy",
           "mode": 2,
-          "priority": 2,
+          "priority": 20,
           "value": "2"
         },
         {
-          "key": "bonus_ins",
+          "key": "extra_damage_mod_all",
           "mode": 2,
-          "priority": 2,
+          "priority": 20,
+          "value": "10"
+        },
+        {
+          "key": "defense",
+          "mode": 2,
+          "priority": 20,
           "value": "2"
         },
         {
-          "key": "bonus_mig",
+          "key": "magic_defense",
           "mode": 2,
-          "priority": 2,
+          "priority": 20,
           "value": "2"
         },
         {
-          "key": "bonus_wlp",
-          "mode": 2,
-          "priority": 2,
-          "value": "2"
+          "key": "affinity_1",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"RS\")"
         },
         {
-          "key": "bonus_defense",
-          "mode": 2,
-          "priority": 2,
-          "value": "2"
+          "key": "affinity_3",
+          "mode": 5,
+          "priority": 20,
+          "value": "aeAffinityFloor(\"IM\")"
         },
         {
-          "key": "bonus_magic_defense",
-          "mode": 2,
-          "priority": 2,
-          "value": "2"
+          "key": "spear_ef",
+          "mode": 5,
+          "priority": 20,
+          "value": "200"
+        },
+        {
+          "key": "heavy_ef",
+          "mode": 5,
+          "priority": 20,
+          "value": "150"
+        },
+        {
+          "key": "dagger_ef",
+          "mode": 5,
+          "priority": 20,
+          "value": "150"
         }
       ],
-      "description": "<p>Overcharged by lightning: every attribute rises one die size and Defense and Magic Defense rise by 2 until the end of the battle.</p>",
+      "description": "<p>Overcharged by lightning until the end of the battle: +2 Accuracy, +10 damage, +2 Defense and Magic Defense, Resistant to Physical, Immune to Bolt, and spears, heavy weapons and daggers strike it harder.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -611,7 +629,8 @@
           "isViewable": true
         },
         "fabula-ultima-companion": {
-          "lifetimeMode": "persistent_counter"
+          "lifetimeMode": "persistent_counter",
+          "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/GalvanicParyashera_Supercharged.png"
         },
         "statuscounter": {
           "config": {
