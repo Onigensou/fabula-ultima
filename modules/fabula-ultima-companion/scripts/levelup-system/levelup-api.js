@@ -23,9 +23,12 @@
 import { LEVELUP, idKey, num, log, warn, err } from "./levelup-const.js";
 import {
   getRegistry, resolveClass, readActorClasses, sumClassLevels,
-  unspentPoints, expectedPoints, invalidate as invalidateRegistry,
+  unspentPoints, expectedPoints, invalidate as invalidateRegistry, companionKeysOf,
 } from "./class-registry.js";
-import { evaluate, availableHeroics, indexActorSkills, heroicsBrokenBy } from "./requirement-eval.js";
+import {
+  evaluate, availableHeroics, indexActorSkills, heroicsBrokenBy, changeBlockers,
+  isContained, readStash, stashUuid,
+} from "./requirement-eval.js";
 import { gateState } from "./levelup-gate.js";
 import { isActingGM, registerHandler, request, installNet } from "../advancement/advancement-net.js";
 import { isAdvancementSubject, subjectFailure } from "../advancement/advancement-subject.js";
@@ -58,7 +61,8 @@ const RULE = LEVELUP.RULE;
  * do not assume the next level-up will heal it. (For Birth of the Cruel it was
  * a no-op: Keren is the only holder and already carried the Dismiss.)
  *
- * Companions are PERMANENT once granted. Nothing mirrors this on refund: a
+ * Companions stay when a base skill is refunded (unlearning a Heroic is the one
+ * exception; see applyUnlearn). Nothing mirrors this on refund: a
  * companion was never bought, so there is no point to give back, and deleting it
  * would destroy a document the player may have since customised. A refund of the
  * parent therefore leaves the companion in place — harmless, since a companion's
@@ -109,25 +113,67 @@ async function grantCompanionsInner(actor, classes, skill) {
       src = cls.companions?.find((c) => c.key === key);
       if (src) break;
     }
-    if (!src) {
+    // A companion unlearned with its parent comes back from the stash, which
+    // also covers a parent no class offers.
+    if (!src && !readStash(actor)[key]) {
       warn(`companion "${key}" named by ${skill.name} is on no offering class `
         + `(${from.map((c) => c.name).join(", ") || "none"}) — skipped`);
       continue;
     }
-    const doc = await fromUuid(src.uuid);
-    if (!doc) { warn(`companion ${src.name} (${src.uuid}) did not resolve — skipped`); continue; }
-    const data = doc.toObject();
-    delete data._id;
-    foundry.utils.setProperty(data, "system.props.level", 1);
+    const data = await skillDataFor(actor, key, src?.uuid);
+    if (!data) { warn(`companion ${src?.name ?? key} (${src?.uuid}) did not resolve — skipped`); continue; }
     create.push(data);
-    granted.push(src.name);
+    granted.push(data.name);
   }
 
   if (create.length) {
     await actor.createEmbeddedDocuments("Item", create);
+    await clearStash(actor, [...seen]);
     log(`companions: ${actor.name} ← ${granted.join(", ")} (with ${skill.name})`);
   }
   return granted;
+}
+
+// ── the stash ──────────────────────────────────────────────────────────────
+//
+// A skill given back is deleted from the sheet, so its copy is kept on an actor
+// flag and restored if it is taken again. Rebuying from the class actor instead
+// would silently lose whatever only the character's copy has: 9 of the party's
+// copies carry animations or effects the class copies lack, and Prophetic
+// Defender is on no class at all.
+
+const stashPath = (key) => `flags.${LEVELUP.MODULE_ID}.${LEVELUP.STASH_FLAG}.${key}`;
+
+/** Keep copies of these items. Call before deleting them. */
+async function stashItems(actor, items) {
+  if (!items.length) return;
+  const update = {};
+  for (const item of items) update[stashPath(idKey(item.name))] = item.toObject();
+  await actor.update(update);
+}
+
+/**
+ * The data to create this skill from: the character's stashed copy if there is
+ * one, otherwise the class's. Null if neither exists.
+ */
+async function skillDataFor(actor, key, sourceUuid) {
+  const kept = readStash(actor)[key];
+  let data = kept ? foundry.utils.deepClone(kept) : null;
+  if (!data && sourceUuid) data = (await fromUuid(sourceUuid))?.toObject() ?? null;
+  if (!data) return null;
+  delete data._id;
+  foundry.utils.setProperty(data, "system.props.level", 1);
+  return data;
+}
+
+/** Drop stash entries now the skills are back on the sheet. */
+async function clearStash(actor, keys) {
+  const stash = readStash(actor);
+  const update = {};
+  for (const key of keys) {
+    if (stash[key]) update[`flags.${LEVELUP.MODULE_ID}.${LEVELUP.STASH_FLAG}.-=${key}`] = null;
+  }
+  if (Object.keys(update).length) await actor.update(update);
 }
 
 const resolveActor = (uuid) => {
@@ -137,6 +183,21 @@ const resolveActor = (uuid) => {
 };
 
 const fail = (reason, extra = {}) => ({ ok: false, reason, ...extra });
+
+/**
+ * May this requester change this character?
+ *
+ * The window only offers characters the player owns, but this runs on the GM, so
+ * a request naming someone else's actor must be refused here. `requesterUserId`
+ * comes from the socket's sender, and is absent only when the acting GM called
+ * directly.
+ */
+function requesterFailure(actor, requesterUserId) {
+  if (!requesterUserId) return null;
+  const user = game.users?.get(requesterUserId);
+  if (user?.isGM) return null;
+  return user && actor.testUserPermission(user, "OWNER") ? null : "not_owner";
+}
 
 // `isActingGM` now lives in the shared transport — see the socket section below
 // for why this system must not keep its own copy.
@@ -171,18 +232,15 @@ function nextRowKey(table) {
  * `granted` is reported so a GM can see which heroics were excluded and why.
  */
 export function heroicSlots(actor) {
-  const contained = (item) =>
-    !!(item?.system?.props?.container ?? item?.system?.container ?? null);
-
   const held = [...indexActorSkills(actor).values()].filter((h) => h.isHeroic);
-  const picked = held.filter((h) => !contained(h.item));
+  const picked = held.filter((h) => !isContained(h.item));
   const earned = readActorClasses(actor).filter((c) => c.mastered).length;
 
   return {
     earned,
     used: picked.length,
     open: Math.max(0, earned - picked.length),
-    granted: held.filter((h) => contained(h.item)).map((h) => h.item.name),
+    granted: held.filter((h) => isContained(h.item)).map((h) => h.item.name),
   };
 }
 
@@ -304,9 +362,10 @@ export function getState(actorUuid) {
       // is neither a pick nor a thing this window can act on. It is already
       // excluded from slot accounting — listing it anyway just invited the
       // question of why four entries showed against three taken.
-      owned: [...held.values()]
-        .filter((h) => h.isHeroic && !(h.item.system?.props?.container ?? h.item.system?.container ?? null))
-        .map((h) => ({
+      owned: [...held.entries()]
+        .filter(([, h]) => h.isHeroic && !isContained(h.item))
+        .map(([key, h]) => ({
+          key,
           uuid: h.item.uuid,
           name: h.item.name,
           img: h.item.img,
@@ -360,7 +419,7 @@ async function applySpend({ actorUuid, classKey, skillUuid, benefit, facetUuids,
 
   // Advancement is a player-character system. The window filters its target,
   // but this handler is the authority — see advancement-subject.js.
-  const wrongSubject = subjectFailure(actor);
+  const wrongSubject = subjectFailure(actor) ?? requesterFailure(actor, requesterUserId);
   if (wrongSubject) return fail(wrongSubject);
 
   const cls = resolveClass(classKey);
@@ -379,6 +438,21 @@ async function applySpend({ actorUuid, classKey, skillUuid, benefit, facetUuids,
   const chosenBenefit = cls.benefit ?? (["hp", "mp", "ip"].includes(benefit) ? benefit : null);
   if (isNewClass && !chosenBenefit) return fail("benefit_required", { classBenefit: cls.benefit });
 
+  // The window asks for exactly the skill's grant, but only the count stated by
+  // the skill is honoured here. Fewer is allowed: the pool can run out.
+  const grant = cls.facets.length ? skill.facetGrant : 0;
+  if (Array.isArray(facetUuids) && new Set(facetUuids).size > grant) {
+    return fail("facet_count", { need: grant });
+  }
+
+  // Everything that can fail to resolve is resolved BEFORE the first write. This
+  // used to happen after the class row was raised, so a missing source item left
+  // a free class level behind with no point charged.
+  const heldBefore = indexActorSkills(actor).get(skill.key);
+  const skillData = heldBefore ? null : await skillDataFor(actor, skill.key, skill.uuid);
+  if (!heldBefore && !skillData) return fail("skill_source_missing");
+
+  let rowKey = null;
   try {
     // 1. Class row — create or increment. CSB dynamicTables are keyed objects,
     //    so a new row is a new numeric key rather than an array push.
@@ -391,33 +465,30 @@ async function applySpend({ actorUuid, classKey, skillUuid, benefit, facetUuids,
       const tomb = Object.entries(table).find(
         ([, r]) => r?.$deleted && idKey(r.class_name) === cls.key
       );
-      const key = tomb ? tomb[0] : nextRowKey(table);
-      table[key] = {
+      rowKey = tomb ? tomb[0] : nextRowKey(table);
+      table[rowKey] = {
         $deleted: false,
         class_name: cls.name, // canonical spelling, not whatever was typed before
         level: 1,
         benefit: chosenBenefit,
       };
     } else {
-      const row = table[v.mine.rowKey];
+      rowKey = v.mine.rowKey;
+      const row = table[rowKey];
       if (!row) return fail("class_row_vanished");
       row.level = v.classLevel + 1;
       if (!row.benefit) row.benefit = chosenBenefit;
     }
     await actor.update({ [`system.props.${PROP.CLASS_LIST}`]: table });
 
-    // 2. Skill — grant a copy from the class actor, or raise the held one.
-    const held = indexActorSkills(actor).get(skill.key);
-    if (held) {
-      await held.item.update({ "system.props.level": v.skillLevel + 1 });
+    // 2. Skill — grant a copy (see skillDataFor), or raise the held one.
+    if (heldBefore) {
+      await heldBefore.item.update({ "system.props.level": v.skillLevel + 1 });
     } else {
-      const source = await fromUuid(skill.uuid);
-      if (!source) return fail("skill_source_missing");
-      const data = source.toObject();
-      delete data._id;
-      foundry.utils.setProperty(data, "system.props.level", 1);
-      await actor.createEmbeddedDocuments("Item", [data]);
+      await actor.createEmbeddedDocuments("Item", [skillData]);
+      await clearStash(actor, [skill.key]);
     }
+    rowKey = null;   // the skill landed, so the class row now stands
 
     // 2b. Companion skills that come WITH this one (see grantCompanions). Runs
     //     on a raise as well as a first take, so a character who took the parent
@@ -430,17 +501,19 @@ async function applySpend({ actorUuid, classKey, skillUuid, benefit, facetUuids,
     if (Array.isArray(facetUuids) && facetUuids.length) {
       const heldNow = indexActorSkills(actor);
       const create = [];
-      for (const uuid of facetUuids) {
+      const keys = [];
+      for (const uuid of new Set(facetUuids)) {
         const src = cls.facets.find((f) => f.uuid === uuid);
         if (!src || heldNow.has(src.key)) continue;
-        const doc = await fromUuid(uuid);
-        if (!doc) continue;
-        const data = doc.toObject();
-        delete data._id;
-        foundry.utils.setProperty(data, "system.props.level", 1);
+        const data = await skillDataFor(actor, src.key, uuid);
+        if (!data) continue;
         create.push(data);
+        keys.push(src.key);
       }
-      if (create.length) await actor.createEmbeddedDocuments("Item", create);
+      if (create.length) {
+        await actor.createEmbeddedDocuments("Item", create);
+        await clearStash(actor, keys);
+      }
     }
 
     // 4. Free benefits on a brand-new class. Only the martial-armor flag is
@@ -465,18 +538,30 @@ async function applySpend({ actorUuid, classKey, skillUuid, benefit, facetUuids,
     };
   } catch (e) {
     err("applySpend threw", e);
+    // The class row went up but the skill did not land. Put the row back, or the
+    // character keeps a level nobody paid for.
+    if (rowKey !== null) {
+      try {
+        const table = foundry.utils.duplicate(actor.system?.props?.[PROP.CLASS_LIST] ?? {});
+        if (isNewClass) table[rowKey].$deleted = true;
+        else table[rowKey].level = v.classLevel;
+        await actor.update({ [`system.props.${PROP.CLASS_LIST}`]: table });
+      } catch (undoError) {
+        err("applySpend could not restore the class row", undoError);
+      }
+    }
     return fail("error", { message: String(e?.message ?? e) });
   }
 }
 
-async function applyRefund({ actorUuid, classKey, skillUuid, facetUuids }) {
+async function applyRefund({ actorUuid, classKey, skillUuid, facetUuids, requesterUserId }) {
   const gate = gateState();
   if (!gate.open) return fail("gate_closed", { gate });
 
   const actor = resolveActor(actorUuid);
   if (!actor) return fail("actor_not_found");
 
-  const wrongSubject = subjectFailure(actor);
+  const wrongSubject = subjectFailure(actor) ?? requesterFailure(actor, requesterUserId);
   if (wrongSubject) return fail(wrongSubject);
 
   const cls = resolveClass(classKey);
@@ -492,10 +577,26 @@ async function applyRefund({ actorUuid, classKey, skillUuid, facetUuids }) {
   const held = indexActorSkills(actor).get(skill.key);
   if (!held || held.level < 1) return fail("skill_not_held");
 
+  // A level gives back everything it granted, up to what is still held. Taking
+  // back fewer would let a character keep the difference: Symbolism grants two
+  // symbols a level, so returning one would net a free symbol each cycle.
+  const heldSkills = indexActorSkills(actor);
+  const facetsBack = [...new Set(Array.isArray(facetUuids) ? facetUuids : [])]
+    .map((uuid) => cls.facets.find((f) => f.uuid === uuid))
+    .filter((f) => f && heldSkills.has(f.key));
+  const facetsHeld = cls.facets.filter((f) => heldSkills.has(f.key)).length;
+  const facetsOwed = Math.min(skill.facetGrant ?? 0, facetsHeld);
+  if (facetsBack.length !== facetsOwed) return fail("facet_count", { need: facetsOwed });
+
   // Refuse rather than cascade. A player who unlearns one skill should never
   // watch three others disappear with it.
-  const broken = heroicsBrokenBy(actor, cls.key, mine.level - 1);
+  const { broken, slotsOver, earned, used } = changeBlockers(actor, {
+    classLevels: { [cls.key]: mine.level - 1 },
+    skillLevels: { [skill.key]: held.level - 1 },
+    removed: facetsBack.map((f) => f.key),
+  });
   if (broken.length) return fail("would_orphan_heroic", { broken });
+  if (slotsOver) return fail("would_exceed_heroic_slots", { earned, used });
 
   // The price, checked before anything moves. Charged after the level is
   // actually given back, so a failure part-way cannot bill for nothing.
@@ -503,20 +604,12 @@ async function applyRefund({ actorUuid, classKey, skillUuid, facetUuids }) {
   if (nutsBefore < 1) return fail("no_nuts", { have: nutsBefore, need: 1 });
 
   try {
-    // 0. Facets handed back with the level. The window offers the choice from
-    //    what the character actually holds; skipping is allowed, which is what
-    //    keeps a pre-existing mismatch (Hina's Elemental Magic 3 against 4
-    //    spells) from being forcibly reconciled by an unrelated refund.
-    if (Array.isArray(facetUuids) && facetUuids.length) {
-      const heldNow = indexActorSkills(actor);
-      const remove = [];
-      for (const uuid of facetUuids) {
-        const src = cls.facets.find((f) => f.uuid === uuid);
-        const hit = src ? heldNow.get(src.key) : null;
-        if (hit) remove.push(hit.item.id);
-      }
-      if (remove.length) await actor.deleteEmbeddedDocuments("Item", remove);
-    }
+    // 0. Keep a copy of whatever is about to leave the sheet (see the stash).
+    const leaving = facetsBack.map((f) => heldSkills.get(f.key).item);
+    await stashItems(actor, held.level <= 1 ? [...leaving, held.item] : leaving);
+
+    // 0b. Facets handed back with the level.
+    if (leaving.length) await actor.deleteEmbeddedDocuments("Item", leaving.map((i) => i.id));
 
     // 1. Skill down, removed entirely at zero.
     if (held.level <= 1) await held.item.delete();
@@ -561,14 +654,63 @@ async function applyRefund({ actorUuid, classKey, skillUuid, facetUuids }) {
   }
 }
 
-async function applyHeroic({ actorUuid, skillUuid }) {
+/**
+ * Give a picked Heroic Skill back, freeing its slot.
+ *
+ * Costs one nut, like a level. This is what makes "unlearn X first" something a
+ * player can actually do: without it, every mastered class with a Heroic hanging
+ * off it could never be refunded at all.
+ *
+ * Companions go with the parent here, unlike a refund (see grantCompanions): the
+ * stash keeps them, so nothing is lost and a re-pick brings them back.
+ */
+async function applyUnlearn({ actorUuid, skillKey, requesterUserId }) {
   const gate = gateState();
   if (!gate.open) return fail("gate_closed", { gate });
 
   const actor = resolveActor(actorUuid);
   if (!actor) return fail("actor_not_found");
 
-  const wrongSubject = subjectFailure(actor);
+  const wrongSubject = subjectFailure(actor) ?? requesterFailure(actor, requesterUserId);
+  if (wrongSubject) return fail(wrongSubject);
+
+  const held = indexActorSkills(actor);
+  const heroic = held.get(skillKey);
+  if (!heroic?.isHeroic) return fail("heroic_not_held");
+  // Equipment grants this one. It arrives and leaves with the item.
+  if (isContained(heroic.item)) return fail("heroic_from_gear");
+
+  const broken = heroicsBrokenBy(actor, { removed: [skillKey] });
+  if (broken.length) return fail("would_orphan_heroic", { broken });
+
+  const nutsBefore = readNuts(actor).count;
+  if (nutsBefore < 1) return fail("no_nuts", { have: nutsBefore, need: 1 });
+
+  try {
+    const companions = companionKeysOf(heroic.item)
+      .map((key) => held.get(key)?.item)
+      .filter(Boolean);
+    const leaving = [heroic.item, ...companions];
+    await stashItems(actor, leaving);
+    await actor.deleteEmbeddedDocuments("Item", leaving.map((i) => i.id));
+    await consumeNut(actor);
+
+    log(`unlearn: ${actor.name} → ${heroic.item.name}`);
+    return { ok: true, name: heroic.item.name, slots: heroicSlots(actor), nutsLeft: readNuts(actor).count };
+  } catch (e) {
+    err("applyUnlearn threw", e);
+    return fail("error", { message: String(e?.message ?? e) });
+  }
+}
+
+async function applyHeroic({ actorUuid, skillUuid, requesterUserId }) {
+  const gate = gateState();
+  if (!gate.open) return fail("gate_closed", { gate });
+
+  const actor = resolveActor(actorUuid);
+  if (!actor) return fail("actor_not_found");
+
+  const wrongSubject = subjectFailure(actor) ?? requesterFailure(actor, requesterUserId);
   if (wrongSubject) return fail(wrongSubject);
 
   const slots = heroicSlots(actor);
@@ -582,12 +724,11 @@ async function applyHeroic({ actorUuid, skillUuid }) {
   }
 
   try {
-    const source = await fromUuid(skillUuid);
-    if (!source) return fail("skill_source_missing");
-    const data = source.toObject();
-    delete data._id;
-    foundry.utils.setProperty(data, "system.props.level", 1);
+    const fromStash = skillUuid === stashUuid(offer.skill.key);
+    const data = await skillDataFor(actor, offer.skill.key, fromStash ? null : skillUuid);
+    if (!data) return fail("skill_source_missing");
     await actor.createEmbeddedDocuments("Item", [data]);
+    await clearStash(actor, [offer.skill.key]);
 
     // Companions ride along with the heroic that names them — Birth of the Cruel
     // brings its Dismiss. Searched across every class that offered this heroic,
@@ -617,6 +758,7 @@ async function applyHeroic({ actorUuid, skillUuid }) {
 registerHandler(LEVELUP.MSG.SPEND_REQ,  LEVELUP.MSG.SPEND_RES,  applySpend);
 registerHandler(LEVELUP.MSG.REFUND_REQ, LEVELUP.MSG.REFUND_RES, applyRefund);
 registerHandler(LEVELUP.MSG.HEROIC_REQ, LEVELUP.MSG.HEROIC_RES, applyHeroic);
+registerHandler(LEVELUP.MSG.UNLEARN_REQ, LEVELUP.MSG.UNLEARN_RES, applyUnlearn);
 
 const REQ_OPTS = { timeoutMs: LEVELUP.REQUEST_TIMEOUT_MS };
 
@@ -656,6 +798,16 @@ export async function reconcileCompanions(actor) {
 export const spendPoint  = (p) => request(LEVELUP.MSG.SPEND_REQ,  p, REQ_OPTS);
 export const refundPoint = (p) => request(LEVELUP.MSG.REFUND_REQ, p, REQ_OPTS);
 export const pickHeroic  = (p) => request(LEVELUP.MSG.HEROIC_REQ, p, REQ_OPTS);
+export const unlearnHeroic = (p) => request(LEVELUP.MSG.UNLEARN_REQ, p, REQ_OPTS);
+
+/**
+ * What would refuse this change? Pure read, for the window's − buttons.
+ * @see changeBlockers
+ */
+export function previewChange(actorUuid, change) {
+  const actor = resolveActor(actorUuid);
+  return actor ? changeBlockers(actor, change) : { broken: [], slotsOver: false };
+}
 
 /** GM-only: reconcile a drifted counter to the derived value. */
 export async function healPoints(actorUuid) {
@@ -671,7 +823,7 @@ function registerApi() {
   globalThis.FUCompanion = globalThis.FUCompanion ?? {};
   globalThis.FUCompanion.api = globalThis.FUCompanion.api ?? {};
   globalThis.FUCompanion.api.levelUp = {
-    getState, spendPoint, refundPoint, pickHeroic, healPoints,
+    getState, spendPoint, refundPoint, pickHeroic, unlearnHeroic, previewChange, healPoints,
     heroicSlots, gateState, invalidateRegistry,
     // The companion backfill lever — see reconcileCompanions. Exposed because
     // declaring a companion on an already-held skill reaches nobody otherwise,

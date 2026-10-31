@@ -1,34 +1,36 @@
 /**
  * [ONI] Skill RAW Drift Lint
  * ---------------------------------------------------------------------------
- * Compares Battle Director master items against the canonical FU reference
- * in `modules/fabula-ultima-companion/reference/skills.json`. Surfaces:
+ * Compares the skills on playable class actors against the canonical FU
+ * reference in `modules/fabula-ultima-companion/reference/skills.json`. These
+ * are the copies the level-up window reads. Surfaces:
  *
  *   RAW_MAX_SL_DRIFT
- *     BD master's `system.props.max_level` != reference `max_sl`.
- *     The bug class that surfaced today: Cheap Shot / Soul Steal authored
- *     at max 3 instead of RAW max 5; Dodge at max 5 instead of 3.
+ *     A skill's `system.props.max_level` != reference `max_sl`. A missing value
+ *     counts as 1, because that is what the level-up window reads it as: this
+ *     is how Spiritual Magic came to offer 1/1 instead of 1/10.
  *
  *   RAW_NAME_CASE_DRIFT
- *     BD master's name matches reference case-insensitively but the
+ *     A skill's name matches the reference case-insensitively but the
  *     casing differs (e.g. "see you later" vs "See You Later").
  *
  *   RAW_HEROIC_FLAG_DRIFT
- *     BD master's `system.props.isHeroic` != reference's heroic-table
+ *     A skill's `system.props.isHeroic` != reference's heroic-table
  *     membership. A non-heroic skill flagged heroic, or vice versa.
  *
  *   RAW_REFERENCE_MISSING (info)
- *     BD master has a name that doesn't appear in any class's
+ *     A skill has a name that doesn't appear in any class's
  *     skills / spells / heroic in the reference. Either a homebrew
  *     skill (silence with `_homebrew: true`), a renamed copy that
  *     drifted from canon, or a reference-coverage gap.
  *
- * Scope: BD-tree masters only (Battle Director / <Class> / ...). Legacy
- * items in `💥 Skill / Class Skill / ...` are untouched.
+ * Scope: actors in Classes / Classic Classes and Classes / Custom Classes.
+ * This used to walk a Battle Director item folder that no longer exists, so for
+ * a long while it checked nothing and reported a clean result.
  *
  * Default severity: info — RAW deviations are sometimes intentional
  * homebrew. Authors override per-item with `system.props._homebrew: true`
- * on the BD master to silence specific drift.
+ * on the class's copy to silence specific drift.
  *
  * Usage:
  *   await FUCompanion.api.lint.runSkillRawDriftLint();
@@ -40,30 +42,16 @@
 (() => {
   const TAG = "[SkillRawDriftLint]";
   const MODULE_ID = "fabula-ultima-companion";
-  const BD_ROOT_NAME = "Battle Director";
+  const CLASS_ROOT_NAME = "Classes";
+  const PLAYABLE_FOLDERS = ["Classic Classes", "Custom Classes"];
 
-  function isInBDTree(item) {
-    let f = item?.folder;
-    while (f) {
-      if (f.name === BD_ROOT_NAME && !(f.folder?.id ?? f.folder)) return true;
-      f = f.folder;
-    }
-    return false;
-  }
-
-  // Walk a BD-tree item's folder ancestry to find its <Class> folder
-  // (the one directly under Battle Director).
-  function getClassFromFolder(item) {
-    let f = item?.folder;
-    let candidate = null;
-    while (f) {
-      if (f.name === BD_ROOT_NAME && !(f.folder?.id ?? f.folder)) {
-        return candidate;
-      }
-      candidate = f.name;
-      f = f.folder;
-    }
-    return null;
+  // The class actors the level-up window can sell skills from. Same rule as
+  // class-registry.js, which is an ES module this classic script cannot import.
+  function playableClassActors() {
+    return (game.actors?.contents ?? []).filter((a) => {
+      const f = a.folder;
+      return f && PLAYABLE_FOLDERS.includes(f.name) && f.folder?.name === CLASS_ROOT_NAME;
+    });
   }
 
   // ── Reference lookup ──────────────────────────────────────────────
@@ -129,19 +117,19 @@
 
     const findings = [];
 
-    for (const item of game.items?.contents ?? []) {
-      if (!isInBDTree(item)) continue;
-      // Skip non-skill / non-spell items (defensive — the BD tree should
+    const classSkills = playableClassActors().flatMap(
+      (actor) => actor.items.contents.map((item) => ({ item, cls: actor.name }))
+    );
+
+    for (const { item, cls } of classSkills) {
+      // Skip non-skill / non-spell items (defensive — a class actor should
       // only contain these but a stray equipment item shouldn't crash).
       const skillType = String(item.system?.props?.skill_type ?? '').toLowerCase();
-      if (!['active', 'passive', 'spell'].includes(skillType) && !item.system?.props?.isHeroic) {
+      if (!['active', 'passive', 'spell', 'other'].includes(skillType) && !item.system?.props?.isHeroic) {
         continue;
       }
       // Author opt-out for homebrew.
       if (item.system?.props?._homebrew === true) continue;
-
-      const cls = getClassFromFolder(item);
-      if (!cls) continue;
 
       const ref = findReferenceEntry(reference, cls, item.name);
       if (!ref) {
@@ -152,7 +140,7 @@
           itemName: item.name,
           class: cls,
           message:
-            `BD master "${item.name}" (${cls}) has no reference entry. ` +
+            `"${item.name}" (${cls}) has no reference entry. ` +
             `Homebrew? Set \`system.props._homebrew: true\` to silence.`,
         });
         continue;
@@ -175,8 +163,9 @@
       // Max SL drift — only for entries that HAVE a max_sl in the reference.
       const refMaxSL = ref.entry.max_sl;
       if (refMaxSL != null) {
-        const liveMaxLevel = Number(item.system?.props?.max_level);
-        if (Number.isFinite(liveMaxLevel) && liveMaxLevel !== refMaxSL) {
+        const rawMax = Number(item.system?.props?.max_level);
+        const liveMaxLevel = Number.isFinite(rawMax) ? Math.max(1, rawMax) : 1;
+        if (liveMaxLevel !== refMaxSL) {
           findings.push({
             severity: 'warning',
             code: 'RAW_MAX_SL_DRIFT',
@@ -227,8 +216,9 @@
       for (const f of findings.filter(f => f.severity === 'warning')) {
         console.warn(`${TAG} [${f.code}] ${f.message}`);
       }
+      // Custom classes are not in the reference, so these are mostly expected.
       for (const f of findings.filter(f => f.severity === 'info')) {
-        console.info(`${TAG} [${f.code}] ${f.message}`);
+        console.debug(`${TAG} [${f.code}] ${f.message}`);
       }
     }
     return { findings, summary };

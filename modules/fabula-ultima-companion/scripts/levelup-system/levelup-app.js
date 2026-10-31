@@ -51,6 +51,11 @@ function describe(html, { clamp = true } = {}) {
 
 const api = () => globalThis.FUCompanion?.api?.levelUp ?? null;
 
+// Shared by the Confirm refusal and the − button's tooltip, so both say the same.
+const SLOTS_OVER_TEXT = "Unlearn a Heroic Skill first — this would leave you more of them than mastered classes.";
+const dependsText = (broken) =>
+  `Unlearn ${(broken ?? []).map((b) => b.name).join(", ")} first — it depends on this.`;
+
 // Failure codes → something a player can act on.
 const REASON = {
   no_points: "No Skill Points to spend.",
@@ -70,13 +75,16 @@ const REASON = {
   actor_not_found: "Character not found.",
   timeout: "The GM didn't respond — are they connected?",
   gm_only: "Only the GM can do that.",
+  not_owner: "That isn't your character.",
+  no_nuts: "You need a Forget me Nut for that.",
+  facet_count: "Choose the right number of Facets for that level.",
+  heroic_not_held: "You don't have that Heroic Skill.",
+  heroic_from_gear: "That Heroic Skill comes from your equipment, so it can't be unlearned.",
+  would_exceed_heroic_slots: SLOTS_OVER_TEXT,
 };
 
 function explain(res) {
-  if (res?.reason === "would_orphan_heroic") {
-    const names = (res.broken ?? []).map((b) => b.name).join(", ");
-    return `Unlearn ${names} first — it depends on this class.`;
-  }
+  if (res?.reason === "would_orphan_heroic") return dependsText(res.broken);
   return REASON[res?.reason] ?? res?.message ?? "That didn't work.";
 }
 
@@ -508,7 +516,7 @@ const LevelUpApp = {
   // and the point counter as three updates, and re-rendering between them
   // showed a drift warning for the instant the books didn't balance. Batching
   // means the window never observes a half-applied spend.
-  _pending: [],         // [{ op:"spend"|"refund"|"heroic", classKey, skillUuid, benefit }]
+  _pending: [],         // [{ op:"spend"|"refund"|"heroic"|"unlearn", classKey, skillUuid, skillKey, benefit }]
   _applying: false,
   _onClose: null,       // one-shot, set by open(); see open()
 
@@ -680,18 +688,58 @@ const LevelUpApp = {
     const bump = (m, k, d) => m.set(k, (m.get(k) ?? 0) + d);
 
     for (const p of this._pending) {
-      if (p.op === "heroic") continue;           // heroics are free
+      if (p.op === "heroic" || p.op === "unlearn") continue;   // no points move
       const d = p.op === "spend" ? 1 : -1;
       bump(classDelta, p.classKey, d);
       bump(skillDelta, p.skillUuid, d);
       points -= d;
     }
+    const unlearns = this._pending.filter((p) => p.op === "unlearn");
     return {
       classDelta, skillDelta, points,
       heroics: this._pending.filter((p) => p.op === "heroic"),
-      // Nuts owed by the staged batch — one per level being given back.
-      refundCount: this._pending.filter((p) => p.op === "refund").length,
+      unlearns,
+      // Nuts owed by the staged batch — one per level or Heroic being given back.
+      refundCount: this._pending.filter((p) => p.op === "refund").length + unlearns.length,
     };
+  },
+
+  /**
+   * What the staged give-backs would do to the sheet, in `changeBlockers` terms.
+   * Spends are left out: they apply after refunds, so they cannot rescue one.
+   */
+  _stagedChange(s) {
+    const classLevels = {}, skillLevels = {}, removed = [];
+    for (const p of this._pending) {
+      if (p.op === "unlearn") { removed.push(p.skillKey); continue; }
+      if (p.op !== "refund") continue;
+      const cls = s.classes.find((c) => c.key === p.classKey);
+      const sk = cls?.skills.find((k) => k.uuid === p.skillUuid);
+      if (!sk) continue;
+      classLevels[cls.key] = (classLevels[cls.key] ?? cls.level) - 1;
+      skillLevels[sk.key] = (skillLevels[sk.key] ?? sk.level) - 1;
+      for (const uuid of p.facetUuids ?? []) {
+        const f = cls.facets.find((x) => x.uuid === uuid);
+        if (f) removed.push(f.key);
+      }
+    }
+    return { classLevels, skillLevels, removed };
+  },
+
+  /**
+   * Why this − cannot be pressed, or null if it can. A refused level is the same
+   * rule the GM applies at Confirm, surfaced before the player builds a batch on
+   * top of it.
+   */
+  _refundBlock(s, cls, sk) {
+    const preview = api()?.previewChange;
+    if (!preview) return null;
+    const change = this._stagedChange(s);
+    change.classLevels[cls.key] = (change.classLevels[cls.key] ?? cls.level) - 1;
+    change.skillLevels[sk.key] = (change.skillLevels[sk.key] ?? sk.level) - 1;
+    const { broken, slotsOver } = preview(this._actorUuid, change);
+    if (broken.length) return dependsText(broken);
+    return slotsOver ? SLOTS_OVER_TEXT : null;
   },
 
   _classLevel(s, cls, proj) { return cls.level + (proj.classDelta.get(cls.key) ?? 0); },
@@ -902,7 +950,7 @@ const LevelUpApp = {
     const left = nuts.count - proj.refundCount;
     // Icon then count, side by side — the item is the label, so it leads.
     const purse = this._resetMode
-      ? `<div class="lu-purse ${left <= 0 ? "empty" : ""}" title="${esc(nuts.name ?? "Forget me Nut")} — one per level given back">
+      ? `<div class="lu-purse ${left <= 0 ? "empty" : ""}" title="${esc(nuts.name ?? "Forget me Nut")} — one per level or Heroic Skill given back">
           <img src="${esc(nuts.img ?? "")}" alt="${esc(nuts.name ?? "")}">
           <b>${left}</b>${proj.refundCount ? `<em>of ${nuts.count}</em>` : ""}
         </div>`
@@ -913,7 +961,7 @@ const LevelUpApp = {
     // mode that unlocks it would be a switch with nothing on the other side.
     return `<div class="lu-switches">
       ${sw("toggledetail", this._detailMode, "Detail", "Show effect text on every row instead of in the panel below")}
-      ${this._creation ? "" : sw("togglereset", this._resetMode, "Reset", "Give skill levels back, one Forget me Nut each")}
+      ${this._creation ? "" : sw("togglereset", this._resetMode, "Reset", "Give skill levels or Heroic Skills back, one Forget me Nut each")}
       ${this._creation ? "" : purse}
     </div>`;
   },
@@ -1030,13 +1078,18 @@ const LevelUpApp = {
       // Confirm.
       const nutsLeft = (s.nuts?.count ?? 0) - proj.refundCount;
       const outOfNuts = nutsLeft <= 0;
-      const canRefund = s.gate.open && lvl > 0 && !outOfNuts;
+      // A staged + on this skill is what − would cancel, so nothing is refused.
+      const blocked = this._resetMode && !this._creation && lvl > 0 && lvl <= sk.level
+        ? this._refundBlock(s, cls, sk)
+        : null;
+      const canRefund = s.gate.open && lvl > 0 && !outOfNuts && !blocked;
       // Character Creation is the exception to that purse: nothing has been
       // written yet, so there is nothing to buy back. Its state reports an
       // unbounded supply, which turns the arithmetic above into a no-op rather
       // than a special case, and the wording below simply drops the price.
       const refundTitle = lvl <= 0 ? "Nothing to give back"
         : this._creation ? "Give back this level"
+        : blocked ? blocked
         : outOfNuts ? `No ${s.nuts?.name ?? "Forget me Nut"} left — one is needed per level`
         : `Give back a level — costs 1 ${s.nuts?.name ?? "Forget me Nut"}`;
       return this._row({
@@ -1125,6 +1178,7 @@ const LevelUpApp = {
       bits.push(`${c?.name ?? key} ${c ? c.level : 0} → ${this._classLevel(s, c ?? { key, level: 0 }, proj)}`);
     }
     for (const p of proj.heroics) bits.push(`Heroic: ${p.name ?? "skill"}`);
+    for (const p of proj.unlearns) bits.push(`Unlearn: ${p.name ?? "skill"}`);
     const facetsIn = this._pending.filter((p) => p.op === "spend").flatMap((p) => p.facetUuids ?? []).length;
     const facetsOut = this._pending.filter((p) => p.op === "refund").flatMap((p) => p.facetUuids ?? []).length;
     if (facetsIn) bits.push(`+${facetsIn} facet${facetsIn === 1 ? "" : "s"}`);
@@ -1201,17 +1255,29 @@ const LevelUpApp = {
    * not limit it (§4 of the design doc), so this is a character-wide view.
    */
   _heroicTab(s) {
-    const { open, earned, used, available, owned } = s.heroic;
+    const { earned, used, available, owned } = s.heroic;
+    // A staged unlearn frees its slot for a pick in the same batch.
+    const proj = this._project(s);
+    const open = s.heroic.open + proj.unlearns.length;
 
-    const head = `<div class="lu-h2"><b>Heroic Skills</b>
+    const head =`<div class="lu-h2"><b>Heroic Skills</b>
       <span>${earned ? `${open} of ${earned} slot${earned === 1 ? "" : "s"} open · ${used} taken`
                      : "master a class to earn one"}</span></div>`;
 
-    const learnedRows = (owned ?? []).map((h) => this._row({
-      uuid: h.uuid, img: h.img, name: h.name, tag: h.from, cls: "have",
-      detail: { name: h.name, img: h.img, cost: h.cost, meta: "Learned", description: h.description },
-      right: `<span class="lu-learned">Learned</span>`,
-    })).join("");
+    const learnedRows = (owned ?? []).map((h) => {
+      const staged = proj.unlearns.some((p) => p.skillKey === h.key);
+      return this._row({
+        uuid: h.uuid, img: h.img, name: h.name, tag: h.from, cls: staged ? "miss" : "have",
+        detail: {
+          name: h.name, img: h.img, cost: h.cost,
+          meta: staged ? "Unlearning" : "Learned",
+          description: h.description,
+        },
+        right: this._resetMode && !this._creation
+          ? this._unlearnBtn(s, h, staged, proj)
+          : `<span class="lu-learned">Learned</span>`,
+      });
+    }).join("");
 
     const met = available.filter((h) => h.relevance === "met");
     const close = available.filter((h) => h.relevance === "close");
@@ -1236,7 +1302,26 @@ const LevelUpApp = {
       (distant.length ? `<div class="lu-empty">${distant.length} more need classes you haven't taken.</div>` : "");
   },
 
+  // The − on a learned Heroic. Costs a nut, like a level, and refuses while another
+  // held Heroic needs this one. A staged one stays clickable, to take it back.
+  _unlearnBtn(s, h, staged, proj) {
+    const change = this._stagedChange(s);
+    change.removed.push(h.key);
+    const broken = staged ? [] : (api()?.previewChange?.(this._actorUuid, change).broken ?? []);
+    const nut = s.nuts?.name ?? "Forget me Nut";
+    const outOfNuts = !staged && (s.nuts?.count ?? 0) - proj.refundCount <= 0;
+    const title = staged ? "Keep this Heroic Skill"
+      : broken.length ? dependsText(broken)
+      : outOfNuts ? `No ${nut} left — one is needed`
+      : `Unlearn and free its slot — costs 1 ${nut}`;
+    const can = s.gate.open && !broken.length && !outOfNuts;
+    return `<button class="lu-btn sell" data-act="unlearn" data-key="${esc(h.key)}" data-name="${esc(h.name)}"
+      ${can ? "" : "disabled"} title="${esc(title)}">${staged ? "✓" : "−"}</button>`;
+  },
+
   _heroicRows(s, list) {
+    const proj = this._project(s);
+    const slotsLeft = s.heroic.open + proj.unlearns.length - proj.heroics.length;
     return list.map((h) => {
       const from = h.from.map((f) => f.name).join(" / ");
       const req = !h.evaluable
@@ -1244,7 +1329,7 @@ const LevelUpApp = {
         : h.met ? "" : `<p class="lu-req">Needs: ${h.clauses.filter((c) => !c.met).map((c) => esc(c.label)).join(" · ")}</p>`;
       const staged = this._pending.some((p) => p.op === "heroic" && p.skillUuid === h.skill.uuid);
       // Taking a Heroic is an increase, so Reset mode has nothing to offer here.
-      const canTake = s.gate.open && !this._resetMode && h.met && (s.heroic.open > 0 || staged);
+      const canTake = s.gate.open && !this._resetMode && h.met && (slotsLeft > 0 || staged);
       return this._row({
         uuid: h.skill.uuid, img: h.skill.img, name: h.skill.name, tag: from,
         cls: staged ? "have" : h.met ? "" : "miss",
@@ -1622,6 +1707,14 @@ const LevelUpApp = {
       return this.render();
     }
 
+    if (act === "unlearn") {
+      sfx("stageDown");
+      const i = this._pending.findIndex((p) => p.op === "unlearn" && p.skillKey === btn.dataset.key);
+      if (i >= 0) this._pending.splice(i, 1);
+      else this._pending.push({ op: "unlearn", skillKey: btn.dataset.key, name: btn.dataset.name });
+      return this.render();
+    }
+
     if (act === "cancel") {
       // Discard throws away the batch, and with it the benefit choices that
       // only existed to serve it.
@@ -1654,6 +1747,9 @@ const LevelUpApp = {
    * they relax the three-unmastered-class limit. Staging "drop Dancer, start
    * Guardian" with only one point has to work.
    *
+   * Unlearned Heroics go before even those, since a refund may be waiting on one
+   * ("drop Adversity, −1 Darkblade"), and new Heroic picks go last, into the slot.
+   *
    * On the first failure the rest are abandoned and left staged, so the window
    * shows exactly what did not go through. Each operation is individually
    * atomic GM-side, so a partial apply is a coherent state, not a corrupt one.
@@ -1663,6 +1759,7 @@ const LevelUpApp = {
     if (!A || !this._pending.length) return;
 
     const ordered = [
+      ...this._pending.filter((p) => p.op === "unlearn"),
       ...this._pending.filter((p) => p.op === "refund"),
       ...this._pending.filter((p) => p.op === "spend"),
       ...this._pending.filter((p) => p.op === "heroic"),
@@ -1677,7 +1774,9 @@ const LevelUpApp = {
       for (let i = 0; i < ordered.length; i++) {
         const p = ordered[i];
         let res;
-        if (p.op === "refund") {
+        if (p.op === "unlearn") {
+          res = await A.unlearnHeroic({ actorUuid: this._actorUuid, skillKey: p.skillKey });
+        } else if (p.op === "refund") {
           res = await A.refundPoint({
             actorUuid: this._actorUuid, classKey: p.classKey, skillUuid: p.skillUuid,
             facetUuids: p.facetUuids,
@@ -1765,7 +1864,8 @@ const LevelUpApp = {
     );
     if (!pool.length) return false;
 
-    const need = Math.min(act === "spend" ? skill.facetGrant : 1, pool.length);
+    // Same count both ways: a level gives back everything it granted.
+    const need = Math.min(skill.facetGrant, pool.length);
     this._facet = {
       act, classKey, skillUuid, editIndex,
       className: cls.name, skillName: skill.name,

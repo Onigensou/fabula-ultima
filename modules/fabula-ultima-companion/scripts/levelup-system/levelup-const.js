@@ -24,7 +24,15 @@ export const LEVELUP = Object.freeze({
     REFUND_RES: "levelup.refund.res",
     HEROIC_REQ: "levelup.heroic.req",
     HEROIC_RES: "levelup.heroic.res",
+    UNLEARN_REQ: "levelup.unlearn.req",
+    UNLEARN_RES: "levelup.unlearn.res",
   }),
+
+  // Actor flag holding the copies of skills given back, keyed by idKey(name).
+  // Re-taking one restores that copy rather than the class actor's, because a
+  // character's own copy can carry animations and effects the class's lacks,
+  // and some Heroic Skills exist on no class at all.
+  STASH_FLAG: "levelupStash",
 
   // Actor props.
   PROP: Object.freeze({

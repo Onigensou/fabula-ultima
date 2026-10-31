@@ -17,8 +17,19 @@
  */
 
 import { LEVELUP, idKey, num } from "./levelup-const.js";
-import { readActorClasses, resolveClass, getRegistry } from "./class-registry.js";
+import { readActorClasses, resolveClass, getRegistry, readSkill } from "./class-registry.js";
 import { resolveRequirement } from "./requirement-parser.js";
+
+/** A skill equipment grants: a contained sub-item, never a pick. See heroicSlots. */
+export const isContained = (item) =>
+  !!(item?.system?.props?.container ?? item?.system?.container ?? null);
+
+/** Copies of skills this actor gave back, keyed by idKey(name). */
+export const readStash = (actor) =>
+  actor?.flags?.[LEVELUP.MODULE_ID]?.[LEVELUP.STASH_FLAG] ?? {};
+
+/** The `uuid` of a Heroic only the actor's stash can offer. */
+export const stashUuid = (key) => `stash:${key}`;
 
 /**
  * Every skill-shaped item the actor holds, keyed by idKey(name).
@@ -190,6 +201,23 @@ export function availableHeroics(actor) {
     }
   }
 
+  // A Heroic the character gave back stays on offer even when no class lists it
+  // (Prophetic Defender, on Hina), or unlearning it would destroy it for good.
+  // Its own requirement text still applies. A blank one passes: the fallback
+  // below needs an offering class, and this was already earned once.
+  for (const [key, data] of Object.entries(readStash(actor))) {
+    if (data?.system?.props?.isHeroic !== true || held.has(key) || byKey.has(key)) continue;
+    const skill = { ...readSkill(data), uuid: stashUuid(key), key };
+    byKey.set(key, {
+      skill,
+      from: [],
+      ...evaluate(actor, skill),
+      _blank: false,
+      _offeredByMastered: false,
+      _offeredByOwned: true,
+    });
+  }
+
   const out = [];
   for (const e of byKey.values()) {
     // Blank requirement → fall back to "must have mastered the offering class".
@@ -209,43 +237,85 @@ export function availableHeroics(actor) {
 }
 
 /**
- * Would removing `levelsAfter` from a class strand a Heroic Skill the actor
- * already holds? Used to refuse a refund rather than cascade one.
+ * Would a change to this character strand a Heroic Skill they hold? Used to
+ * refuse a refund or an unlearn rather than cascade one.
  *
- * Re-evaluates every held heroic against a hypothetical class list, so it
- * catches both "this class is no longer mastered" and the subtler
- * "this was the last of two classes satisfying a masteredAny(2)".
+ * A change is `{ classLevels, skillLevels, removed }`: class levels after it by
+ * class key, skill levels after it by skill key (0 = gone), and any other skill
+ * keys leaving the sheet. Taking the skills as well as the classes is what
+ * catches a requirement met from elsewhere: Harvester of Sorrow taken through
+ * Necromancer still needs Drain Spirit, which an Entropist refund can remove.
+ *
+ * Only a clause the change itself would break counts. A Heroic that already
+ * fails its requirement must not block every refund and blame an unrelated
+ * class. Equipment-granted Heroics are skipped: they cannot be unlearned, so
+ * naming one as the thing to unlearn first would be a dead end.
  *
  * @returns {object[]} held heroics that would become illegal
  */
-export function heroicsBrokenBy(actor, classKey, levelsAfter) {
+export function heroicsBrokenBy(actor, { classLevels = {}, skillLevels = {}, removed = [] } = {}) {
   const held = indexActorSkills(actor);
-  const heldHeroics = [...held.values()].filter((h) => h.isHeroic);
+  const gone = new Set(removed);
+  const heldHeroics = [...held.entries()]
+    .filter(([key, h]) => h.isHeroic && !isContained(h.item) && !gone.has(key));
   if (!heldHeroics.length) return [];
 
-  const mastered = new Set();
-  for (const c of readActorClasses(actor)) {
-    const key = c.class ? c.class.key : c.key;
-    const level = key === classKey ? levelsAfter : c.level;
-    if (level >= LEVELUP.RULE.MAX_CLASS_LEVEL) mastered.add(key);
+  const skillsAfter = new Map(held);
+  for (const key of gone) skillsAfter.delete(key);
+  for (const [key, level] of Object.entries(skillLevels)) {
+    const hit = skillsAfter.get(key);
+    if (!hit) continue;
+    if (level > 0) skillsAfter.set(key, { ...hit, level });
+    else skillsAfter.delete(key);
   }
 
-  const ctx = { mastered, skills: held, level: num(actor?.system?.props?.[LEVELUP.PROP.LEVEL], 0) };
+  const masteredAfter = new Set();
+  for (const c of readActorClasses(actor)) {
+    const key = c.class ? c.class.key : c.key;
+    if ((classLevels[key] ?? c.level) >= LEVELUP.RULE.MAX_CLASS_LEVEL) masteredAfter.add(key);
+  }
+
+  const level = num(actor?.system?.props?.[LEVELUP.PROP.LEVEL], 0);
+  const before = { mastered: masteredKeys(actor), skills: held, level };
+  const after = { mastered: masteredAfter, skills: skillsAfter, level };
   const broken = [];
 
-  for (const h of heldHeroics) {
+  for (const [, h] of heldHeroics) {
     const parsed = resolveRequirement(h.item.system?.props?.heroic_requirement ?? "");
     if (parsed.empty || parsed.unparsed.length || !parsed.all.length) continue;
-    const failing = parsed.all
-      .map((c) => ({ clause: c, ...checkClause(c, ctx) }))
-      .filter((r) => !r.met);
+    const failing = parsed.all.filter((c) => checkClause(c, before).met && !checkClause(c, after).met);
     if (failing.length) {
       broken.push({
         name: h.item.name,
         uuid: h.item.uuid,
-        reasons: failing.map((f) => describe(f.clause)),
+        reasons: failing.map(describe),
       });
     }
   }
   return broken;
+}
+
+/**
+ * Everything that would refuse a change, for the GM's check and the window's
+ * − buttons alike, so the button can say no before Confirm does.
+ *
+ * `slotsOver` is the rule requirements alone cannot catch. One slot is earned
+ * per mastered class, so giving up a mastery must leave room for every Heroic
+ * still held, even when none of them depends on that class. Without it, Zarg
+ * could drop Dancer to 9 and keep four Heroics on three slots. Only a change
+ * that lowers the mastery count can trip it.
+ */
+export function changeBlockers(actor, change = {}) {
+  const broken = heroicsBrokenBy(actor, change);
+  const { classLevels = {}, removed = [] } = change;
+  const rows = readActorClasses(actor);
+  const earnedNow = rows.filter((c) => c.mastered).length;
+  const earned = rows.filter((c) => {
+    const key = c.class ? c.class.key : c.key;
+    return (classLevels[key] ?? c.level) >= LEVELUP.RULE.MAX_CLASS_LEVEL;
+  }).length;
+  const gone = new Set(removed);
+  const used = [...indexActorSkills(actor).entries()]
+    .filter(([key, h]) => h.isHeroic && !isContained(h.item) && !gone.has(key)).length;
+  return { broken, slotsOver: earned < earnedNow && used > earned, earned, used };
 }

@@ -93,7 +93,7 @@ const isFacet = (i) => {
  * here is silent (a pruned list means the companion is never granted AND
  * becomes purchasable again, which is the exact trap this closes).
  */
-const companionKeysOf = (item) =>
+export const companionKeysOf = (item) =>
   String(item.system?.props?.companion_skills ?? "")
     .split(/[,\n]/)
     .map((s) => idKey(s.trim()))
@@ -127,7 +127,17 @@ export function facetGrantCount(description) {
   return Number.isFinite(n) && n > 0 ? n : 1;
 }
 
-function readSkill(item) {
+/**
+ * Could a player buy this as a base skill?
+ *
+ * The sheet's `class_skill` container only lists these three types, so an item
+ * with none set never shows on a class sheet. Without the same test here, a
+ * blank "test skill" left on Arcanist was on sale in the level-up window.
+ */
+const BASE_SKILL_TYPES = new Set(["Active", "Passive", "Other"]);
+const isBaseSkillType = (i) => BASE_SKILL_TYPES.has(String(i.system?.props?.skill_type ?? ""));
+
+export function readSkill(item) {
   const p = item.system?.props ?? {};
   return {
     facetGrant: facetGrantCount(p.description),
@@ -214,7 +224,7 @@ function readClass(actor, folderName) {
     // a level-1 Necromancer could spend a Skill Point on a release for a Minion
     // they cannot raise, and the class would advertise 6 base skills where every
     // other Classic Class has 5.
-    skills: items.filter((i) => !isCompanion(i) && !isHeroic(i) && !isFacet(i)).map(readSkill),
+    skills: items.filter((i) => !isCompanion(i) && !isHeroic(i) && !isFacet(i) && isBaseSkillType(i)).map(readSkill),
     heroics: items.filter((i) => !isCompanion(i) && isHeroic(i)).map(readSkill),
     facets: items.filter((i) => !isCompanion(i) && isFacet(i)).map(readSkill),
     // Resolvable by the grant path; not offered anywhere in the browser.

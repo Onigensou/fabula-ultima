@@ -28,7 +28,7 @@ const GRANT_TEXT = {
 const skillItem = (name, { maxLevel = 5, facetGrant = 0, isFacet = false } = {}) => ({
   id: `i-${name}`, uuid: `Item.${name}`, name, img: `icons/${name}.webp`,
   system: { props: {
-    skill_type: isFacet ? "Facet" : "Skill",
+    skill_type: isFacet ? "Facet" : "Passive",
     max_level: String(maxLevel),
     cost: "",
     description: facetGrant ? GRANT_TEXT[facetGrant] : "<p>Does a thing.</p>",
