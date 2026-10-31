@@ -33,6 +33,7 @@ eq("chain 3 separate",     parseChainKeyword(["chain 3 separate"]),   { count: 3
 eq("chain x4 random",      parseChainKeyword(["chain x4 random"]),    { count: 4, mode: "random" });
 eq("chain:3:pick",         parseChainKeyword(["chain:3:pick"]),       { count: 3, mode: "pick" });
 eq("Chain 3 (case)",       parseChainKeyword(["Chain 3"]),            { count: 3, mode: "single" });
+eq("chain 8 hidden",       parseChainKeyword("pierce, overflow, chain 8 hidden"), { count: 8, mode: "single", hidden: true });
 eq("bare chain ignored",   parseChainKeyword(["chain"]),              null);
 eq("chain 1 is no chain",  parseChainKeyword(["chain 1"]),            null);
 eq("combo is not chain",   parseChainKeyword(["combo 2"]),            null);
