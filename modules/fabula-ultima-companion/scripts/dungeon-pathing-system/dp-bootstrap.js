@@ -923,14 +923,22 @@
     });
     state.hookIds.push(["updateToken", hUpdateToken]);
 
-    Hooks.once("socketlib.ready", () => {
+    // socketlib fires "socketlib.ready" from its own `init` hook, long before
+    // this ready-time install — so a Hooks.once("socketlib.ready") here never
+    // ran. No client registered the DP handlers or set DP.Socket._socket, and
+    // every player-side executeAsGM (random battle, travel, clearTile, treasure…)
+    // bailed with "Socket not ready". GM clients never noticed: they call the
+    // GM function directly. Register now; keep the hook only as a fallback.
+    const registerSocket = () => {
       try {
         const socket = socketlib.registerModule(MOD);
-        DP.Socket.register(socket);
+        if (socket) DP.Socket.register(socket);
       } catch (e) {
         console.warn(TAG, "socketlib not available — socket handlers skipped.", e?.message ?? e);
       }
-    });
+    };
+    if (globalThis.socketlib) registerSocket();
+    else Hooks.once("socketlib.ready", registerSocket);
   }
 
   // ---------------------------------------------------------------------------
