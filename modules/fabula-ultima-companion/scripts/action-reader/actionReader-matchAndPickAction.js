@@ -64,6 +64,15 @@ function isPassiveItemSnapshot(itemSnapshot) {
   return skillType === "passive";
 }
 
+// Several items can share a name: Roo's Chef's Knife is an Active and also a
+// weapon it carries as loot. A row names something to DO, so an item with a
+// skill_type wins over equipment with none, or the action plays as nothing.
+function pickActionByName(items) {
+  const usable = items.filter((item) => !isPassiveItemSnapshot(item));
+  const isAction = (item) => !!AR.normalizeText(item?.skillType ?? item?.props?.[AR.keys.skillType]);
+  return usable.find(isAction) ?? usable[0] ?? items[0] ?? null;
+}
+
 function buildItemIndexes(context) {
   const items = getActorItems(context);
 
@@ -506,7 +515,7 @@ function tryMatchViaReferenceName(row, itemIndexes, refIndexes) {
       source = "actionReference.id";
     } else {
       const fallbackItems = itemIndexes.byName.get(row?.actionNameNormalized) ?? [];
-      itemSnapshot = fallbackItems.find(item => !isPassiveItemSnapshot(item)) ?? fallbackItems[0] ?? null;
+      itemSnapshot = pickActionByName(fallbackItems);
       source = "actionReference.name";
     }
 
@@ -540,8 +549,7 @@ function tryMatchViaDirectItemName(row, itemIndexes) {
   const items = itemIndexes.byName.get(row?.actionNameNormalized) ?? [];
   if (!items.length) return { matched: false };
 
-  const nonPassive = items.find(item => !isPassiveItemSnapshot(item));
-  const selected = nonPassive ?? items[0];
+  const selected = pickActionByName(items);
 
   if (!selected) return { matched: false };
 

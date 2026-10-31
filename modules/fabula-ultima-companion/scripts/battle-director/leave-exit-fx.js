@@ -22,6 +22,7 @@
 
 import { warn } from "./logger.js";
 import { buildOni } from "../anim-studio/oni-helpers.js";
+import { setTurnGlow } from "./turn-glow.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const DRAWN_RIGHT_FLAG = "spriteFacesRight";
@@ -122,6 +123,13 @@ export async function playLeaveExitLocal({ tokenUuid, style = "run" } = {}) {
     const x0 = mesh.x, y0 = mesh.y;
     clone.position.set(x0, y0);
     oni.hideToken(token);
+    // The turn glow belongs to the turn, not to the body leaving. Its outline
+    // filter also floods a fading sprite with solid colour.
+    setTurnGlow(null);
+    const F = PIXI.filters ?? {};
+    const kept = (clone.filters ?? []).filter((f) =>
+      !(F.GlowFilter && f instanceof F.GlowFilter) && !(F.OutlineFilter && f instanceof F.OutlineFilter));
+    clone.filters = kept.length ? kept : null;
 
     const side = travelSide(token);
     clone.scale.x = Math.abs(clone.scale.x) * exitFacingSign(side, drawnFacingRight(token));

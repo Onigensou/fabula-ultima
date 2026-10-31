@@ -40,6 +40,7 @@ then draws the knife. **Easy to hit, hard to hurt** (re-stat 2026-09-04).
 | 2026-09-03 | Built: Approach, Chef's Knife, Empty Stare, Karma | Tonberry for Fafnir Castle | user | chain verified by direct invocation |
 | 2026-09-04 | DEF/MDEF 16 → 13, EF dagger/sword 150 | "easy to hit, hard to hurt" | user | Mindscape DPR +33% |
 | 2026-09-03 | Kept row 13 although its Imp can strip the Light weapon that answers the Roo | flagged | user | — |
+| 2026-10-31 | AI row "Chef's Knife" picked the loot weapon of the same name, so the knife did nothing in fights; the matcher now prefers the action | found while testing the knife shot | claude | First real run: 9995 to a PC, Knife Drawn, walks out at turn end |
 
 ```json dossier
 {
@@ -72,7 +73,7 @@ then draws the knife. **Easy to hit, hard to hurt** (re-stat 2026-09-04).
       "why": "Step / arrive rows are mutually exclusive on the charge count." }
   ],
   "blind_spots": [
-    "The turn_start reaction dispatch and Chef's Knife + the vanish were never seen in a real fight (solo-GM harness wedges at round 0).",
+    "The full three-step Approach into the knife has never run start to finish in a real fight. Chef's Knife + the vanish were seen 2026-10-31 in a sandbox fight with the AI row forced and the Roo placed at reach.",
     "Mindscape reads Zarg and Blanche at 0 damage actions (model gap) and does not model Approach — sim verdicts on the Roo are meaningless."
   ],
   "open_questions": []
