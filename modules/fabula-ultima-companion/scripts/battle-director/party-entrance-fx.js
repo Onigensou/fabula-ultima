@@ -75,7 +75,11 @@ const BOUNDS = {
 const ARENA = {
   mirror:      { x: [-200, 200], h: [-20, 260], zs: [0, 0], z3: [-210, 210] },
   foxfire:     { x: [-250, 250], h: [0, 250], zs: [-95, 95], z3: [-70, 70] },
-  warningShot: { x: [-180, 625], h: [-5, 565], zs: [-65, 65], z3: [-55, 55] },
+  warningShot: { x: [-180, 180], h: [-5, 565], zs: [-65, 65], z3: [-55, 55] },
+};
+// Single arena points a style reaches beyond its box (Zarg's arrow source).
+const ARENA_POINTS = {
+  warningShot: (at) => { const a = arrowSource(at); return [[a.x, a.h, 0, a.z3]]; },
 };
 const ARENA_PAD = 40;      // mock units around the projected volume
 const ARENA_MAX = 1400;    // never grow a side past this (mock units)
@@ -325,11 +329,12 @@ function layerBounds(style, at) {
   const v = ARENA[style];
   const o = at(0, 0, 0, 0), ox = at(1, 0, 0, 0);
   if (!v || (ox.x === 1 && ox.y === 0 && o.x === 0 && o.y === 0 && at(0, 0, 0, 1).y === 0)) return b;   // flat: the mockup's own bounds
-  for (const x of v.x) for (const h of v.h) for (const zs of v.zs) for (const z3 of v.z3) {
-    const p = at(x, h, zs, z3);
+  const grow = (p) => {
     b[0] = Math.min(b[0], p.x - ARENA_PAD); b[1] = Math.min(b[1], p.y - ARENA_PAD);
     b[2] = Math.max(b[2], p.x + ARENA_PAD); b[3] = Math.max(b[3], p.y + ARENA_PAD);
-  }
+  };
+  for (const x of v.x) for (const h of v.h) for (const zs of v.zs) for (const z3 of v.z3) grow(at(x, h, zs, z3));
+  for (const pt of ARENA_POINTS[style]?.(at) ?? []) grow(at(...pt));
   return [Math.max(b[0], -ARENA_MAX), Math.max(b[1], -ARENA_MAX), Math.min(b[2], ARENA_MAX), Math.min(b[3], ARENA_MAX)];
 }
 
@@ -700,13 +705,16 @@ function buildFoxfire(env) {
           glow(p.x, p.y, 4 * p.s, FOXC, .9 * (1 - e));
         }
       });
-      // the wink: a glint on her eye (on the art), and the heart blows out of it,
-      // growing as it drifts up and out through the arena
+      // the wink: a glint on her eye (on the art), and the heart blows out of it
+      // toward the viewer: it stays on her card (which faces the camera, so
+      // toward the viewer is straight out of it), lifting a little and
+      // swelling faster and faster as it comes closer
       additive(() => star4(ey.x, ey.y, BOX * .12 * bell(t, K_WINK, K_WINK + 70, K_WINK + 240), "255,240,250", 1, .3));
-      const hp = seg(t, K_WINK + 60, K_WINK + 900), ha = 1 - seg(t, K_WINK + 600, K_WINK + 900);
+      const hp = seg(t, K_WINK + 60, K_WINK + 900), ha = 1 - seg(t, K_WINK + 600, K_WINK + 840);   // gone before the entrance ends (2300)
       if (hp > 0 && ha > 0) {
-        const m = eOut(hp), d = at(BOX * .38 * m + Math.sin(hp * 7) * 2.5, BOX * .42 * m - BOX * .08 * Math.sin(Math.PI * Math.min(1, hp * 2.2)));
-        heart(ey.x + d.x, ey.y + d.y, 14 * eBack(seg(t, K_WINK + 60, K_WINK + 300)) * d.s, "rgb(255,96,170)", ha);
+        const m = eOut(hp), near = 1 + 1.5 * eIn(hp);
+        const hx = ey.x + BOX * .07 * m + Math.sin(hp * 7) * 2.5, hy = ey.y - BOX * .2 * m;
+        heart(hx, hy, 14 * eBack(seg(t, K_WINK + 60, K_WINK + 300)) * near, "rgb(255,96,170)", ha);
       }
     },
   };
@@ -818,14 +826,28 @@ function buildFiftyFifty(env) {
 }
 
 // ── ZARG · Warning Shot ──
+// Where his arrow is fired from: 620 units out along the floor and 560 up, in
+// the floor direction the camera draws furthest to the RIGHT of him, so the
+// flight is always the mockup's long diagonal from the upper right. In the
+// battle view (and flat 2D) that is the floor's own +x, the mockup exactly;
+// under the opening shot's swing it turns toward the camera's right.
+const ARROW_OUT = 620, ARROW_UP = 560;
+function arrowSource(at) {
+  const ex = at(100, 0, 0).x, ez = at(0, 0, 0, 100).x, n = Math.hypot(ex, ez);
+  const dx = n > 1e-6 ? ex / n : 1, dz = n > 1e-6 ? ez / n : 0;
+  return { x: ARROW_OUT * dx, h: ARROW_UP, z3: ARROW_OUT * dz };
+}
+
 function buildWarningShot(env) {
   const { ctx, flip, battle, at } = env;
   const { sprite, glow, additive } = env.art;
   const Z_HIT = 80, Z_OUT = 760, Z_IN = 800, Z_GLINT = 1150;
-  // the arrow's flight in the arena: from high up on the party's side of his
-  // row down into the ground at his mark (y = the mockup's flat height)
-  const A = { x0: 620, y0: -560, x1: -BOX * .05, y1: 2 };
-  const aAt = (f) => at(lerp(A.x0, A.x1, f), -lerp(A.y0, A.y1, f));
+  // the arrow's flight in the arena: from high up to his upper right (fixed
+  // when the entrance starts) down into the ground at his mark (y = the
+  // mockup's flat height)
+  const src = arrowSource(at);
+  const A = { x0: src.x, y0: -src.h, z0: src.z3, x1: -BOX * .05, y1: 2 };
+  const aAt = (f) => at(lerp(A.x0, A.x1, f), -lerp(A.y0, A.y1, f), 0, lerp(A.z0, 0, f));
   // his eye, as a fraction of the battle art (measured on Zarg_Battler002)
   const E = { x: (.575 - .5) * battle.w * PX * flip, y: -battle.h * PX * (1 - .184) };
   function zSpeedLines(x, y, a, seed, t) {
@@ -892,7 +914,7 @@ function buildWarningShot(env) {
     front(t) {
       // the flight as drawn this frame: from, to, and the shaft's tail (L back
       // along the flight from where it sticks), so it reads at any camera angle
-      const P0 = aAt(0), P1 = aAt(1), PL = aAt(1 - BOX * .42 / Math.hypot(A.x1 - A.x0, A.y1 - A.y0));
+      const P0 = aAt(0), P1 = aAt(1), PL = aAt(1 - BOX * .42 / Math.hypot(A.x1 - A.x0, A.y1 - A.y0, A.z0));
       const dir = Math.atan2(P1.y - P0.y, P1.x - P0.x), L = Math.hypot(P1.x - PL.x, P1.y - PL.y);
       // the flash arrow: a hairline streak, then the shaft standing in the ground
       if (t < Z_HIT + 200) additive(() => {
