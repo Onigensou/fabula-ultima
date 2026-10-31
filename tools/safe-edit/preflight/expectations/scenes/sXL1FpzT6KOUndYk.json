@@ -3,14 +3,14 @@
   "name": "Vastwind_Field010",
   "tokens": [
     {
-      "name": "Dragonslayer Party",
+      "name": "Hina",
       "actorId": "t6E3CQ0pGxwLgXrn",
       "actorLink": true
     }
   ],
   "tokensFull": [
     {
-      "name": "Dragonslayer Party",
+      "name": "Hina",
       "displayName": 0,
       "actorLink": true,
       "appendNumber": false,
@@ -18,7 +18,7 @@
       "width": 1,
       "height": 1,
       "texture": {
-        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The Legend of Dragonslayer/Image/Overworld Tokens/Hina Party/Keren_Standard.png",
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hina/Hina_Standard.png",
         "anchorX": 0.5,
         "anchorY": 0.5,
         "offsetX": 0,

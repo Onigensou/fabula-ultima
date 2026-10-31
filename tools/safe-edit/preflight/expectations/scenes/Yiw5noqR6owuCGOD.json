@@ -209,7 +209,7 @@
       "actorId": "LlbVwdpPONdny8Wx",
       "x": 473,
       "y": 288,
-      "hidden": true,
+      "hidden": false,
       "elevation": 0,
       "sort": 0,
       "locked": false,
@@ -261,8 +261,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "LockView": {
         "editViewbox": false,
@@ -303,7 +302,7 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "Midgard - Item Shop",
-            "sceneVisited": false,
+            "sceneVisited": true,
             "areaName": "Midgard - Item Shop",
             "conflictEvent": "none",
             "depthEnabled": false,
@@ -420,7 +419,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791358979810,
-      "modifiedTime": 1791577721380,
+      "modifiedTime": 1792859960331,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "lights": [

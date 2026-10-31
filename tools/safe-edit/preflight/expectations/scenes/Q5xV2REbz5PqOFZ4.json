@@ -24,7 +24,7 @@
         "offsetX": 0,
         "offsetY": 0,
         "fit": "contain",
-        "scaleX": -1.54,
+        "scaleX": 1.54,
         "scaleY": 1.54,
         "rotation": 0,
         "tint": "#ffffff",
@@ -135,8 +135,8 @@
       "actorId": "LnlydRl7Ed7agd1g",
       "hidden": false,
       "sort": 1,
-      "x": 732,
-      "y": 369,
+      "x": 645,
+      "y": 253,
       "elevation": 0,
       "locked": false,
       "_regions": [
@@ -146,7 +146,7 @@
     }
   ],
   "notes": [],
-  "tileCount": 1,
+  "tileCount": 6,
   "full": {
     "name": "Valley_Map002",
     "navName": "Sunset Camp",
@@ -559,7 +559,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791358968404,
-      "modifiedTime": 1792837418916,
+      "modifiedTime": 1793197961212,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "lights": [

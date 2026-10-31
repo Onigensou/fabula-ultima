@@ -254,7 +254,7 @@
     }
   ],
   "notes": [],
-  "tileCount": 0,
+  "tileCount": 4,
   "full": {
     "folder": "3N7IEgYzTwCMSUC4",
     "name": "Hideout_Map009",
@@ -860,7 +860,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1775088318910,
-      "modifiedTime": 1792844180439,
+      "modifiedTime": 1792850202826,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "lights": [
