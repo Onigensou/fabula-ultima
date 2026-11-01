@@ -18,6 +18,7 @@ import { renderLinkedText, safeHtml, minimalLinkHTML } from "./lt-render.js";
 import { setBonusHTML } from "./lt-setbonus.js";
 import { DESC_SENTINEL, stripOrbmentDescBlock, readOrbment, itemKindOf } from "../orbment/orbment-const.js";
 import { resolveAugment } from "../orbment/augment-registry.js";
+import { resolvesVsMagicDefense } from "../battle-director/snapshot.js";
 
 const ZENIT_ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/GP.png";
 
@@ -114,7 +115,13 @@ function refinePips(rf) {
     + `${"★".repeat(rf.level)}<span class="is-empty">${"☆".repeat(rf.max - rf.level)}</span></span>`;
 }
 
-const check = (p) => (p.rolled_atr1 && p.rolled_atr2 ? `<strong>【${esc(p.rolled_atr1)} + ${esc(p.rolled_atr2)}】</strong>` : "");
+// "-" is the templates' "no attribute" value, not an attribute: it used to print
+// "【- + -】" on every non-rolling skill (Heal read as a Check vs Defense).
+const atr = (v) => { const s = String(v ?? "").trim(); return s === "-" ? "" : s; };
+const check = (p) => (atr(p.rolled_atr1) && atr(p.rolled_atr2) ? `<strong>【${esc(p.rolled_atr1)} + ${esc(p.rolled_atr2)}】</strong>` : "");
+// A skill rolls (and so can face a defense) only when the engine says it can
+// miss: an Attack, or isCheck. Same rule as freezeActionResult's canMiss.
+const skillRolls = (p) => p.isCheck === true || p.isCheck === "true" || String(p.skill_type ?? "").toLowerCase() === "attack";
 export const dmgText = (type) => {
   const d = DAMAGE[String(type ?? "").toLowerCase()];
   return d ? ` <span class="fu-lt-dmgtxt" style="--fu-lt-c:${d.color};--fu-lt-glow:${d.glow}"><i class="fa-solid ${d.fa} fu-lt-fa"></i>${esc(cap(type))}</span>` : "";
@@ -129,10 +136,14 @@ const signed = (n) => (n >= 0 ? `+${n}` : String(n));
 export function gridRows(term, vs = null) {
   const p = term.doc?.system?.props ?? {};
   if (term.kind === "skill" || term.kind === "spell" || term.kind === "passive") {
-    const vs = { def: "Defense", mdef: "Magic Defense" }[p.defense_target_type];
+    const chk = skillRolls(p) ? check(p) : "";
+    const vs = resolvesVsMagicDefense({
+      defenseTargetType: p.defense_target_type,
+      isSpell: String(p.skill_type ?? "").toLowerCase() === "spell",
+    }) ? "Magic Defense" : "Defense";
     return [
       ["Cost", esc(p.cost)], ["Target", esc(p.skill_target)], ["Range", esc(p.skill_range)],
-      ["Duration", esc(p.duration)], ["Check", check(p)], ["vs", check(p) && vs ? vs : ""],
+      ["Duration", esc(p.duration)], ["Check", chk], ["vs", chk ? vs : ""],
     ];
   }
   if (term.kind === "item") {
