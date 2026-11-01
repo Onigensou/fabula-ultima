@@ -132,12 +132,37 @@ is open, so Hina's 4 at the battle's opening (Prophecy Point, Protect, Flying, L
 0.9 s. `flushAeBatch` already batches effects inside a skill chain. Not traced: which caller lacks the batch, and whether those
 effects may safely land together.
 
-**Hina's recalculation itself, unexplained.** It took 908–1,074 ms here. The July note in `csb-derivation-perf.js` measured
-211 ms at 100 items. Items only explain about a third (361 ms), and the layout clones 148 ms. Something has slowed it about 4×
-since then, on a machine that wasn't idle. Worth finding before considering anything bigger. Replacing CSB isn't indicated.
+**Hina's recalculation, explained (second sandbox, idle machine, 2026-11-01).** The 908–1,074 ms above was measured while
+another session's Foundry sandbox was running; alone it is **445–500 ms** (Zarg 390, Blanche 232, Keren 199, King Gorger
+17). Against the July note's 211 ms at 100 items, the growth is two removable overheads plus scale, not a regression:
 
-**The per-frame search, about 5 lines.** Replace the `querySelectorAll` in `layoutOverheadRows` with live
-`getElementsByClassName` collections. Needs a check on an NPC with two or more buttons.
+| in one Hina recalculation (502 ms) | ms | share |
+|---|---|---|
+| 548 formula evaluations | 191 | 38% |
+| of which the item-container **filter** formulas (`equalText(item.item_type, "weapon")` and the like, each run once per item per container: 45 × 7 for items, 38 × 3 for skills) | ~160 | 32% |
+| cloning the shared item-sheet layout for every item (`csb-template-layout-dedup.js`: 111 clones, 20 MB, per recalculation) | 72 | 14% |
+| everything else: CSB component maps, prop clones, item plumbing | ~240 | 48% |
+
+- Both overheads are in sarunphat's `csb-extensions` patches. The dedup clone could be kept once per item (a per-item cached
+  copy, as the stored copy was before dedup) instead of re-cloned every pass; the container filters are trivially
+  recognizable, like the row columns `csb-derivation-perf.js` already fast-paths. Together about 230 ms of 500. Their
+  code: report, don't fix.
+- The slowest single formula is 17.8 ms for all 38 of its evaluations, so nothing to trim on the template side.
+- **An A/B against July's code (a3696f57) on today's data was confounded:** the server keeps its module manifest, so the page
+  loaded the current script list with July's file contents, logged 3 errors and took 1,140 ms. It rules out a shared-engine
+  regression (current code is faster on the same data); it can't split the rest.
+- Replacing CSB isn't indicated by any of this.
+
+**The per-frame search: FIXED, `f641d17e` (local).** `layoutOverheadRows` now searches only the four layers the buttons are
+mounted in (`#oni-event-ui-layer`, `#fu-shopopen-layer-v1`, `#fu-innopen-layer-v1`, `#fu-refineopen-layer-v1`), four id lookups
+per frame instead of a page walk. Sandbox check on Midgard_Map001: two fake buttons on one token laid out centred over its head,
+44 px apart, same height; a button outside the layers untouched. Not yet measured on a real GM page; the next session's `fps`
+records are that measurement.
+
+**King Gorger's tokens, checked.** Only the four scene records and the token documents themselves refer to the four ids; no
+tile, macro, journal, setting or cutscene file does. Slot 1 holds all four under `sceneTokenData`, so a Load recreates them
+unless the slot is patched too. The host says the plaza token (Midgard_Map001) is where the party first met him and the three
+hidden "King Gorger A" copies were duplicated for roleplaying. Deletion awaits the host's word.
 
 **Firefox + 3D, no code needed for one player.** Battle depth is per-user, and the fallback path to Full already exists for
 backdrops without a 3D model.
@@ -148,3 +173,7 @@ backdrops without a 3D model.
   cause, was wrong for the freezes and for Chromium, and right for Firefox.
 - **2026-11-01:** traced what each fix takes. Calling the actor cost "not traced" was too quick: the June and July notes had
   already measured it.
+- **2026-11-01 (later):** the "4× slower" reading was contention from another sandbox; alone, Hina is 445–500 ms. Formula-level
+  timing found the two overheads above. Page-search fix committed. **Rule for this case: never benchmark while another Foundry
+  process is running** (check `Win32_Process` first), and drive CDP from Bash, not PowerShell, which strips the quotes out of
+  JSON arguments silently (the first A/B attempt never reloaded the page).
