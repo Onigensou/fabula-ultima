@@ -30,7 +30,7 @@
       "class": "Spiritist",
       "cost": "",
       "damage_bonus": "0",
-      "defense_target_type": "def",
+      "defense_target_type": "default",
       "description": "<p>When you cast a spell that targets one or more allies, if you have an <strong>arcane</strong> weapon equipped, you may have each of those allies recover Hit Points equal to <strong>SL × the number of Bonds you have</strong>. Separate from any healing caused by the spell.</p>",
       "duration": "",
       "effect_table": {

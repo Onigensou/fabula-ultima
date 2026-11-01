@@ -33,7 +33,7 @@
       "class": "Spiritist",
       "cost": "10 x T MP",
       "damage_bonus": "40",
-      "defense_target_type": "def",
+      "defense_target_type": "default",
       "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points.</strong></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>The amount of Hit Points recovers increase to <strong>50</strong></p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>The amount of Hit Points recovers increase to <strong>60</strong></p>",
       "duration": "Instantaneous",
       "heroic_requirement": "",

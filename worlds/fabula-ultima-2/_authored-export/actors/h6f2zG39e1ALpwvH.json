@@ -49,7 +49,7 @@
           "class": "Spiritist",
           "cost": "10 x T MP",
           "damage_bonus": "0",
-          "defense_target_type": "def",
+          "defense_target_type": "default",
           "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
           "duration": "Instantaneous",
           "effect_table": {
@@ -817,7 +817,7 @@
           "class": "Spiritist",
           "cost": "",
           "damage_bonus": "0",
-          "defense_target_type": "def",
+          "defense_target_type": "default",
           "description": "<p>When you cast a spell that targets one or more allies, if you have an <strong>arcane</strong> weapon equipped, you may have each of those allies recover Hit Points equal to <strong>SL × the number of Bonds you have</strong>. Separate from any healing caused by the spell.</p>",
           "duration": "",
           "effect_table": {

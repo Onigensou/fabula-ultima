@@ -10088,7 +10088,7 @@
           "class": "Spiritist",
           "cost": "",
           "damage_bonus": "0",
-          "defense_target_type": "def",
+          "defense_target_type": "default",
           "description": "<p>When you cast a spell that targets one or more allies, if you have an <strong>arcane</strong> weapon equipped, you may have each of those allies recover Hit Points equal to <strong>SL × the number of Bonds you have</strong>. Separate from any healing caused by the spell.</p>",
           "details_roller": "Show",
           "duration": "",
@@ -15903,7 +15903,7 @@
           "class": "Spiritist",
           "cost": "10 x T MP",
           "damage_bonus": "0",
-          "defense_target_type": "def",
+          "defense_target_type": "default",
           "description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
           "duration": "Instantaneous",
           "effect_table": {
@@ -17485,8 +17485,8 @@
       "offsetX": 0,
       "offsetY": 0,
       "rotation": 0,
-      "scaleX": 1.44,
-      "scaleY": 1.44,
+      "scaleX": 1.54,
+      "scaleY": 1.54,
       "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hina/Hina_Standard.png",
       "tint": "#ffffff"
     },

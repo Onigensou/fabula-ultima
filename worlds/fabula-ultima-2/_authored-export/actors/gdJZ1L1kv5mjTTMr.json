@@ -111,7 +111,7 @@
         },
         "fabula-ultima-companion": {
           "chargeKey": "bodyguard_fatigue",
-          "charges": 10,
+          "charges": 8,
           "chargesMax": 10,
           "crossScene": true,
           "directorPermanent": true,
