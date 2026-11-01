@@ -91,7 +91,7 @@
         "systemVersion": "4.8.5"
       },
       "changes": [],
-      "description": "<p>Shared Fatigue pool for Keren's bodyguards (Stubborn Scion). At 10+ they cannot help. Recovers 1d6 at end of session.</p>",
+      "description": "<p>Shared Fatigue pool for Keren's bodyguards (Stubborn Scion). It has no ceiling; at 10 or more they cannot help. Recovers 1d6 at the start of each session.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -136,7 +136,7 @@
               "scion_rest_sub": {
                 "charge_ae_name": "Bodyguard Fatigue",
                 "charge_amount": "VAR_FATREST",
-                "charge_max": "10",
+                "charge_max": "",
                 "charge_operation": "subtract",
                 "effect_kind": "adjust_charges",
                 "effect_label": "scion_rest_sub",
@@ -7559,6 +7559,102 @@
       },
       "effects": [
         {
+          "_id": "JUIQPJuLpRWnEiw0",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1793535096952,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p><strong>Stay down, I'll take care of this!</strong> You may have this elemental shard deal extra damage equal to 5 + half your level. Your bodyguards suffer 1d6 Fatigue Points.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "JUIQPJuLpRWnEiw0",
+              "originalParentId": "N9eKFmdC30lHByXQ",
+              "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.N9eKFmdC30lHByXQ.ActiveEffect.JUIQPJuLpRWnEiw0"
+            },
+            "fabula-ultima-companion": {
+              "crossScene": false,
+              "directorPermanent": false,
+              "reactionConfig": {
+                "effect_table": {
+                  "scion_shard": {
+                    "chain_steps": "scion_shard_dmg,scion_shard_roll,scion_shard_fatigue",
+                    "effect_kind": "chain",
+                    "effect_label": "scion_shard"
+                  },
+                  "scion_shard_dmg": {
+                    "damage_amount": "5 + floor(CHAR_LEVEL / 2)",
+                    "damage_operation": "add",
+                    "damage_stage": "outgoing",
+                    "effect_kind": "adjust_damage",
+                    "effect_label": "scion_shard_dmg"
+                  },
+                  "scion_shard_fatigue": {
+                    "charge_ae_name": "Bodyguard Fatigue",
+                    "charge_amount": "VAR_FATIGUE",
+                    "charge_operation": "add",
+                    "effect_kind": "adjust_charges",
+                    "effect_label": "scion_shard_fatigue",
+                    "target_ref": "self"
+                  },
+                  "scion_shard_roll": {
+                    "dice_count": "1",
+                    "dice_faces": "6",
+                    "effect_kind": "roll_dice",
+                    "effect_label": "scion_shard_roll",
+                    "prompt_var": "fatigue",
+                    "roll_interactive": true,
+                    "roll_label": "Bodyguard Fatigue"
+                  }
+                },
+                "reaction_config_table": {
+                  "0": {
+                    "condition_formula": "ACTION_IS_ITEM_CREATE == 1 && AE_CHARGES_BODYGUARD_FATIGUE < 10",
+                    "reaction_action_kind": "Item",
+                    "reaction_effect_ref": "scion_shard",
+                    "reaction_passive_mode": "ask",
+                    "reaction_source": "self",
+                    "reaction_source_skill": "Elemental Shard",
+                    "reaction_trigger": "creature_will_deal_damage"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": null,
+          "name": "Stubborn Scion (Shard)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
           "_id": "QVfJN8TvDxABGBu4",
           "_stats": {
             "compendiumSource": null,
@@ -7569,7 +7665,7 @@
             "systemVersion": "4.8.5"
           },
           "changes": [],
-          "description": "The bodyguards may halve damage you suffer (costs 1d6 Fatigue).",
+          "description": "<p><strong>Be careful!</strong> When you suffer damage, you may halve it. Your bodyguards suffer 1d6 Fatigue Points.</p>",
           "disabled": false,
           "duration": {
             "combat": null,
@@ -7602,7 +7698,7 @@
                   "scion_fatigue": {
                     "charge_ae_name": "Bodyguard Fatigue",
                     "charge_amount": "VAR_FATIGUE",
-                    "charge_max": "10",
+                    "charge_max": "",
                     "charge_operation": "add",
                     "effect_kind": "adjust_charges",
                     "effect_label": "scion_fatigue",
