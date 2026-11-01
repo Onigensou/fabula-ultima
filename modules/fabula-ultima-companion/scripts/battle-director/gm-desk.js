@@ -297,7 +297,7 @@ function ensureStyles() {
 .gmd-crx-b.apply { color: var(--cta-ink); background: linear-gradient(180deg, var(--cta-a), var(--cta-b)); }
 .gmd-crx-b.apply:hover { filter: brightness(1.08); }
 /* the column's More menu */
-.gmd-wait { position: absolute; z-index: 5; left: 0; right: 0; bottom: 100%; margin-bottom: 6px; display: flex; flex-direction: column; gap: 4px; pointer-events: none; }
+.gmd-wait { position: absolute; z-index: 6; display: flex; flex-direction: column; gap: 4px; pointer-events: none; }
 .gmd-wait:empty { display: none; }
 .gmd-wait .row { pointer-events: auto; display: flex; align-items: center; gap: 8px; padding: 5px 10px; border-radius: 8px; background: linear-gradient(var(--p-top), var(--p-bot)); box-shadow: 0 0 0 1.5px #b0502f, 0 2px 8px rgba(0,0,0,.3); font: 600 12.5px "Signika", sans-serif; color: var(--tx); }
 .gmd-wait .row b { color: #9a3f22; }
@@ -650,9 +650,9 @@ export function buildDesk(partyIds = []) {
   root.className = "gmd";
   root.innerHTML = `
     <div class="gmd-bar"></div>
+    <div class="gmd-wait"></div>
     <div class="gmd-foldtab" role="button" tabindex="-1"></div>
     <section class="gmd-panel gmd-roster">
-      <div class="gmd-wait"></div>
       <div class="gmd-ph"><span class="gmd-cap">Units</span><span class="gmd-banwrap" style="display:contents"></span><span class="gmd-grow"></span><span class="gmd-hctl"></span></div>
       <div class="gmd-cols"><div class="gmd-rcol" data-side="enemy"><span class="gmd-cap foe">Enemies</span></div><div class="gmd-vr"></div><div class="gmd-rcol" data-side="party"><span class="gmd-cap pc">Party</span></div></div>
     </section>
@@ -1037,8 +1037,15 @@ function paintWaitLine() {
     const st = presenceOf(w.userId);
     return st !== "ready" && st !== "self";
   });
-  const h = away.map((w) => `<div class="row"><span>Waiting on <b>${waitWho(w)}</b> · ${PRESENCE_LABEL[presenceOf(w.userId)]} · <span class="t">${clock(awayForMs(w.userId))}</span> — ${esc(w.label)}</span><span class="sp"></span>${waitBtns(w)}</div>`).join("");
+  // A player who never joined this session has no time to show.
+  const since = (w) => { const ms = awayForMs(w.userId); return ms ? ` · <span class="t">${clock(ms)}</span>` : ""; };
+  const h = away.map((w) => `<div class="row"><span>Waiting on <b>${waitWho(w)}</b> · ${PRESENCE_LABEL[presenceOf(w.userId)]}${since(w)} — ${esc(w.label)}</span><span class="sp"></span>${waitBtns(w)}</div>`).join("");
   if (D.wait._h !== h) { D.wait.innerHTML = h; D.wait._h = h; }
+  // Sits on top of the Units panel, whose own box clips anything outside it.
+  if (h && D.roster) {
+    const H = D.root.offsetHeight || window.innerHeight;
+    Object.assign(D.wait.style, { left: `${D.roster.offsetLeft}px`, width: `${D.roster.offsetWidth}px`, bottom: `${H - D.roster.offsetTop + 6}px` });
+  }
 }
 function onWaitClick(e) {
   const b = e.target.closest?.(".gmd-wb");

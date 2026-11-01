@@ -7839,6 +7839,9 @@ export async function postActionCard({ director, kind, payload }) {
       stopPillWaits(open);
     };
     const awayPillTid = SimMode.active ? null : setInterval(syncAwayPills, 1000);
+    // Right away, so the desk knows from the card's first moment. Not synchronously:
+    // the decision maps a Skip needs are declared further down this constructor.
+    if (!SimMode.active) setTimeout(() => { if (!resolved) syncAwayPills(); }, 0);
     const stopAwayOwnerWatch = watchGone(ownerUserId, () => noteGmWaiting(ownerUserId, `${payload?.attacker?.name ?? "their"}'s action card`));
     const stopOwnerWait = trackWait({
       userId: ownerUserId, label: `${payload?.attacker?.name ?? "their"}'s action card`,
