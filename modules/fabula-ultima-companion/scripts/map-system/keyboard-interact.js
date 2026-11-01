@@ -423,6 +423,12 @@
   // after they have placed theirs, every frame, all of one NPC's buttons are
   // lined up in one centred row just above the top of its drawn sprite.
   const ROW_SELECTOR = ".oni-event-btn.is-talk, .fu-shop-btn, .fu-refine-prox-btn, .fu-inn-prox-btn";
+  // Every one of those buttons is mounted inside one of these layers (event-runtimeUI,
+  // shopOpen-ui, innOpen-ui, refineOpen-ui). Searching the layers instead of the whole
+  // page matters because this runs every frame: on the GM's ~24k-element page the
+  // document-wide search took 14–22% of the main thread, on battle maps with no NPC
+  // button at all (docs/investigations/frame-rate/CASE.md, 2026-11-01).
+  const ROW_LAYER_IDS = ["oni-event-ui-layer", "fu-shopopen-layer-v1", "fu-innopen-layer-v1", "fu-refineopen-layer-v1"];
   const ROW_ORDER = ["is-talk", "fu-shop-btn", "fu-refine-prox-btn", "fu-inn-prox-btn"];
   const ROW_SLOT_PX = 44;
   const ROW_LIFT_PX = 8;
@@ -438,12 +444,16 @@
     if (!canvas?.ready) return;
 
     const rows = new Map();
-    for (const el of document.querySelectorAll(ROW_SELECTOR)) {
-      if (!el.classList.contains("is-visible") || el.classList.contains("is-hiding")) continue;
-      const id = el.dataset.tokenId;
-      if (!id) continue;
-      if (!rows.has(id)) rows.set(id, []);
-      rows.get(id).push(el);
+    for (const layerId of ROW_LAYER_IDS) {
+      const layer = document.getElementById(layerId);
+      if (!layer || !layer.firstElementChild) continue;
+      for (const el of layer.querySelectorAll(ROW_SELECTOR)) {
+        if (!el.classList.contains("is-visible") || el.classList.contains("is-hiding")) continue;
+        const id = el.dataset.tokenId;
+        if (!id) continue;
+        if (!rows.has(id)) rows.set(id, []);
+        rows.get(id).push(el);
+      }
     }
 
     for (const [id, els] of rows) {
