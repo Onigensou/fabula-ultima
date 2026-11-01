@@ -69,6 +69,7 @@ export class RefineOpenBackend {
   // ── Public: UI calls this when the player clicks the ⚒️ button ──
   openBlacksmithByTokenId(tokenId) {
     try {
+      if (globalThis.FUCompanion?.api?.Spectator?.isSpectator?.()) return;
       const tok = canvas.tokens?.get(tokenId);
       if (!tok?.actor || !isBlacksmithActor(tok.actor)) return;
       RefineWindowApp.open(tok.actor.uuid);

@@ -335,6 +335,7 @@ export function removeExitButton() {
 
 function canAct() {
   if (game.user?.isGM) return true;
+  if (globalThis.FUCompanion?.api?.Spectator?.isSpectator?.()) return false;
   const actorId = _view?.party?.controllerActorId;
   if (!actorId) return false;
   return !!game.actors?.get?.(actorId)?.isOwner;

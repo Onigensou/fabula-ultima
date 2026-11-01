@@ -103,9 +103,10 @@
   // ------------------------------------------------------------
   // The main controller is the player holding the controller: whoever
   // currently walks the party. Where the game has no controller at all,
-  // nobody is shut out.
+  // nobody is shut out, except a spectator, who only ever watches.
   function isLocalUserInteractor() {
     if (game.user?.isGM) return true;
+    if (globalThis.FUCompanion?.api?.Spectator?.isSpectator?.()) return false;
 
     const rt = walkRuntime()?.state;
     if (!rt) return true;
@@ -128,6 +129,7 @@
     const user = game.users?.get(userId);
     if (!user) return false;
     if (user.isGM) return true;
+    if (globalThis.FUCompanion?.api?.Spectator?.isSpectator?.(user)) return false;
 
     try {
       const controller = await globalThis.FUCompanion?.api?.MovementControl?.getCurrentControllerUser?.();

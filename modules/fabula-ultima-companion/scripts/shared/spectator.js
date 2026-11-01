@@ -149,6 +149,49 @@
     if (isSpectator()) app.close();
   });
 
+  // Watch-only fence, behind the per-system gates: it catches any path that
+  // reaches a document write because `default: OWNER` made this client an owner.
+  // A player of another campaign keeps their own character and explicit grants;
+  // an always-spectator account keeps nothing.
+  function _actorOf(doc) {
+    let d = doc;
+    while (d && d.documentName !== "Actor") d = d.parent;
+    return d ?? null;
+  }
+
+  function _mayWrite(actor) {
+    const u = game.user;
+    if (!actor || !u || !isSpectator(u)) return true;
+    if (_forcedIds().has(u.id)) return false;
+    if (u.character?.id === actor.id) return true;
+    return (actor.ownership?.[u.id] ?? 0) >= OWNER;
+  }
+
+  const _refused = new Set();
+  function _refuse(what, doc) {
+    const key = `${what}:${doc?.uuid ?? doc?.name}`;
+    if (!_refused.has(key)) {
+      _refused.add(key);
+      console.warn(TAG, `Refused ${what} from a watch-only client:`, doc?.name ?? doc?.uuid);
+    }
+    return false;
+  }
+
+  for (const type of ["Actor", "Item", "ActiveEffect"]) {
+    for (const verb of ["Create", "Update", "Delete"]) {
+      if (type === "Actor" && verb !== "Update") continue;
+      Hooks.on(`pre${verb}${type}`, (doc) => {
+        if (!_mayWrite(_actorOf(doc))) return _refuse(`${verb} ${type}`, doc);
+      });
+    }
+  }
+
+  // Nobody watching moves a token: core drag and arrows, on any scene.
+  Hooks.on("preUpdateToken", (doc, change) => {
+    if (!isSpectator()) return;
+    if ("x" in change || "y" in change || "elevation" in change) return _refuse("token move", doc);
+  });
+
   // Re-resolve when the party roster or the Current Game pointer changes.
   Hooks.on("updateActor", (_actor, changes) => {
     const keys = Object.keys(foundry.utils.flattenObject(changes ?? {}));

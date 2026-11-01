@@ -54,6 +54,46 @@
     await game.settings.set(MOD, key, JSON.stringify(value));
   }
 
+  // One read-modify-write at a time. A setting's new value only lands locally
+  // once the server answers, so two presses in the same round trip would both
+  // start from the old map and the second write would drop the first press.
+  let _writes = Promise.resolve();
+  function serial(fn) {
+    const next = _writes.catch(() => {}).then(fn);
+    _writes = next;
+    return next;
+  }
+
+  // ready: true/false sets the entry; undefined flips it.
+  function setInMap(key, userId, ready) {
+    return serial(async () => {
+      const map  = getJSON(key);
+      const want = ready ?? !map[userId];
+      if (!!map[userId] === !!want) return map;
+      if (want) map[userId] = true; else delete map[userId];
+      await setJSON(key, map);
+      return map;
+    });
+  }
+
+  const clearMap = (key) => serial(() => setJSON(key, {}));
+
+  // Maps that must start empty when a phase is entered, however it was entered
+  // (Start, a Force button, the GM panel's arrows).
+  function mapsToClearOnEntry(phase) {
+    const P = CAMP.PHASE, S = CAMP.SETTING;
+    switch (phase) {
+      case P.FREE_ROAM:
+      case P.ACTIVITY_SELECT:  return [S.READY];
+      case P.ACTIVITY_RESOLVE: return [S.READY, S.RESOLVED];
+      case P.SLEEP_LOBBY:      return [S.SLEEP_READY];
+      case P.SLEEPING:         return [S.SLEEP_READY, S.RESOLVED];   // holds the rest's progress
+      case P.SET_OUT_LOBBY:
+      case P.SETTING_OUT:      return [S.SET_OUT_READY];
+      default:                 return [];
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Public API
   // ---------------------------------------------------------------------------
@@ -63,18 +103,19 @@
       return game.settings.get(MOD, CAMP.SETTING.PHASE) ?? CAMP.PHASE.FREE_ROAM;
     },
     async setPhase(phase) {
+      if (phase !== this.getPhase()) {
+        for (const key of mapsToClearOnEntry(phase)) {
+          if (Object.keys(getJSON(key)).length) await clearMap(key);
+        }
+      }
       await game.settings.set(MOD, CAMP.SETTING.PHASE, phase);
     },
 
     // ── Activity-lobby ready ────────────────────────────────────────────────
     getReady() { return getJSON(CAMP.SETTING.READY); },
-    async toggleReady(userId) {
-      const map = this.getReady();
-      if (map[userId]) delete map[userId]; else map[userId] = true;
-      await setJSON(CAMP.SETTING.READY, map);
-      return map;
-    },
-    async clearReady() { await setJSON(CAMP.SETTING.READY, {}); },
+    setReady(userId, ready) { return setInMap(CAMP.SETTING.READY, userId, ready); },
+    toggleReady(userId) { return this.setReady(userId); },
+    clearReady() { return clearMap(CAMP.SETTING.READY); },
     isAllReady(activeUserIds) {
       const map = this.getReady();
       return activeUserIds.length > 0 && activeUserIds.every(id => map[id]);
@@ -82,22 +123,26 @@
 
     // ── Activity selections ─────────────────────────────────────────────────
     getSelections() { return getJSON(CAMP.SETTING.SELECTIONS); },
-    async setLocked(actorId, activityKey) {
-      const sel = this.getSelections();
-      // Check uniqueness — no two actors can lock the same activity
-      for (const [id, entry] of Object.entries(sel)) {
-        if (id !== actorId && entry.locked === activityKey) return { ok: false, reason: "taken" };
-      }
-      sel[actorId] = { locked: activityKey, lockedAt: Date.now() };
-      await setJSON(CAMP.SETTING.SELECTIONS, sel);
-      return { ok: true };
+    setLocked(actorId, activityKey) {
+      return serial(async () => {
+        const sel = this.getSelections();
+        // Check uniqueness — no two actors can lock the same activity
+        for (const [id, entry] of Object.entries(sel)) {
+          if (id !== actorId && entry.locked === activityKey) return { ok: false, reason: "taken" };
+        }
+        sel[actorId] = { locked: activityKey, lockedAt: Date.now() };
+        await setJSON(CAMP.SETTING.SELECTIONS, sel);
+        return { ok: true };
+      });
     },
-    async clearLocked(actorId) {
-      const sel = this.getSelections();
-      if (sel[actorId]) { sel[actorId].locked = null; sel[actorId].lockedAt = null; }
-      await setJSON(CAMP.SETTING.SELECTIONS, sel);
+    clearLocked(actorId) {
+      return serial(async () => {
+        const sel = this.getSelections();
+        if (sel[actorId]) { sel[actorId].locked = null; sel[actorId].lockedAt = null; }
+        await setJSON(CAMP.SETTING.SELECTIONS, sel);
+      });
     },
-    async clearSelections() { await setJSON(CAMP.SETTING.SELECTIONS, {}); },
+    clearSelections() { return clearMap(CAMP.SETTING.SELECTIONS); },
     isActivityLocked(activityKey) {
       return Object.values(this.getSelections()).some(e => e.locked === activityKey);
     },
@@ -117,12 +162,8 @@
 
     // ── Activity resolved ───────────────────────────────────────────────────
     getResolved() { return getJSON(CAMP.SETTING.RESOLVED); },
-    async markResolved(actorId) {
-      const r = this.getResolved();
-      r[actorId] = true;
-      await setJSON(CAMP.SETTING.RESOLVED, r);
-    },
-    async clearResolved() { await setJSON(CAMP.SETTING.RESOLVED, {}); },
+    markResolved(actorId) { return setInMap(CAMP.SETTING.RESOLVED, actorId, true); },
+    clearResolved() { return clearMap(CAMP.SETTING.RESOLVED); },
     isAllResolved(activeActorIds) {
       const r = this.getResolved();
       return activeActorIds.length > 0 && activeActorIds.every(id => r[id]);
@@ -130,24 +171,25 @@
 
     // ── Bond confirmed ──────────────────────────────────────────────────────
     getBondConfirmed() { return getJSON(CAMP.SETTING.BOND_CONFIRMED); },
-    async setBondConfirmed(userId, summary) {
-      const confirmed = this.getBondConfirmed();
-      confirmed[userId] = true;
-      await setJSON(CAMP.SETTING.BOND_CONFIRMED, confirmed);
-      // Merge summary into BOND_SUMMARY
-      const allSummaries = getJSON(CAMP.SETTING.BOND_SUMMARY);
-      if (summary?.actorId) allSummaries[summary.actorId] = summary;
-      await setJSON(CAMP.SETTING.BOND_SUMMARY, allSummaries);
+    setBondConfirmed(userId, summary) {
+      return serial(async () => {
+        // Merge summary into BOND_SUMMARY first: the confirm is what lets the
+        // phase advance, and the summary screen reads this map.
+        const allSummaries = getJSON(CAMP.SETTING.BOND_SUMMARY);
+        if (summary?.actorId) allSummaries[summary.actorId] = summary;
+        await setJSON(CAMP.SETTING.BOND_SUMMARY, allSummaries);
+        const confirmed = this.getBondConfirmed();
+        confirmed[userId] = true;
+        await setJSON(CAMP.SETTING.BOND_CONFIRMED, confirmed);
+      });
     },
-    async clearBondConfirmed() {
-      await setJSON(CAMP.SETTING.BOND_CONFIRMED, {});
-      await setJSON(CAMP.SETTING.BOND_SUMMARY, {});
+    clearBondConfirmed() {
+      return serial(async () => {
+        await setJSON(CAMP.SETTING.BOND_CONFIRMED, {});
+        await setJSON(CAMP.SETTING.BOND_SUMMARY, {});
+      });
     },
-    async clearBondConfirmedForUser(userId) {
-      const c = this.getBondConfirmed();
-      delete c[userId];
-      await setJSON(CAMP.SETTING.BOND_CONFIRMED, c);
-    },
+    clearBondConfirmedForUser(userId) { return setInMap(CAMP.SETTING.BOND_CONFIRMED, userId, false); },
     isAllBondConfirmed(activeUserIds) {
       const c = this.getBondConfirmed();
       return activeUserIds.length > 0 && activeUserIds.every(id => c[id]);
@@ -156,12 +198,9 @@
 
     // ── Sleep lobby ready ───────────────────────────────────────────────────
     getSleepReady() { return getJSON(CAMP.SETTING.SLEEP_READY); },
-    async toggleSleepReady(userId) {
-      const map = this.getSleepReady();
-      if (map[userId]) delete map[userId]; else map[userId] = true;
-      await setJSON(CAMP.SETTING.SLEEP_READY, map);
-    },
-    async clearSleepReady() { await setJSON(CAMP.SETTING.SLEEP_READY, {}); },
+    setSleepReady(userId, ready) { return setInMap(CAMP.SETTING.SLEEP_READY, userId, ready); },
+    toggleSleepReady(userId) { return this.setSleepReady(userId); },
+    clearSleepReady() { return clearMap(CAMP.SETTING.SLEEP_READY); },
     isAllSleepReady(activeUserIds) {
       const m = this.getSleepReady();
       return activeUserIds.length > 0 && activeUserIds.every(id => m[id]);
@@ -169,21 +208,23 @@
 
     // ── Exploration debuffs ─────────────────────────────────────────────────
     getExplorationDebuffs() { return getJSON(CAMP.SETTING.EXPLORATION_DEBUFFS); },
-    async setExplorationDebuff(actorId, debuff) {
-      const d = this.getExplorationDebuffs();
-      d[actorId] = { ...(d[actorId] ?? {}), ...debuff };
-      await setJSON(CAMP.SETTING.EXPLORATION_DEBUFFS, d);
+    setExplorationDebuff(actorId, debuff) {
+      return serial(async () => {
+        const d = this.getExplorationDebuffs();
+        d[actorId] = { ...(d[actorId] ?? {}), ...debuff };
+        await setJSON(CAMP.SETTING.EXPLORATION_DEBUFFS, d);
+      });
     },
-    async clearExplorationDebuffs() { await setJSON(CAMP.SETTING.EXPLORATION_DEBUFFS, {}); },
+    clearExplorationDebuffs() { return clearMap(CAMP.SETTING.EXPLORATION_DEBUFFS); },
 
     // ── Rest-time save choice ───────────────────────────────────────────────
     getSaveChoice() {
       return { ...CAMP.SAVE_CHOICE_EMPTY, ...getJSON(CAMP.SETTING.SAVE_CHOICE) };
     },
-    async setSaveChoice(patch) {
-      await setJSON(CAMP.SETTING.SAVE_CHOICE, { ...this.getSaveChoice(), ...patch });
+    setSaveChoice(patch) {
+      return serial(() => setJSON(CAMP.SETTING.SAVE_CHOICE, { ...this.getSaveChoice(), ...patch }));
     },
-    async clearSaveChoice() { await setJSON(CAMP.SETTING.SAVE_CHOICE, {}); },
+    clearSaveChoice() { return clearMap(CAMP.SETTING.SAVE_CHOICE); },
 
     // ── Landing phase (see CAMP.LANDING_PHASE) ──────────────────────────────
     // Where a save taken during `phase` should resume. Unknown/absent phases
@@ -196,12 +237,9 @@
 
     // ── Set Out lobby ready ─────────────────────────────────────────────────
     getSetOutReady() { return getJSON(CAMP.SETTING.SET_OUT_READY); },
-    async toggleSetOutReady(userId) {
-      const map = this.getSetOutReady();
-      if (map[userId]) delete map[userId]; else map[userId] = true;
-      await setJSON(CAMP.SETTING.SET_OUT_READY, map);
-    },
-    async clearSetOutReady() { await setJSON(CAMP.SETTING.SET_OUT_READY, {}); },
+    setSetOutReady(userId, ready) { return setInMap(CAMP.SETTING.SET_OUT_READY, userId, ready); },
+    toggleSetOutReady(userId) { return this.setSetOutReady(userId); },
+    clearSetOutReady() { return clearMap(CAMP.SETTING.SET_OUT_READY); },
     isAllSetOutReady(activeUserIds) {
       const m = this.getSetOutReady();
       return activeUserIds.length > 0 && activeUserIds.every(id => m[id]);

@@ -18,6 +18,9 @@
 //   - Reports each scene draw (time, memory before/after), draws that stall,
 //     memory samples after a scene change (every minute for 10 min, then every
 //     5), tab hide/show, and socket disconnects with their reason.
+//   - Reports the canvas frame rate about once a minute of visible time ("fps"):
+//     average, worst frame and how many frames ran slow, with the Battle depth
+//     setting, so a report of low frame rate has numbers per player and scene.
 //
 // Reports queue in localStorage and go to the primary GM over the module
 // socket, so a reload does not lose them. The primary GM writes the session's
@@ -41,6 +44,8 @@
   const EARLY_SAMPLE_MS = 60000;   // memory sample cadence right after a draw…
   const EARLY_WINDOW_MS = 600000;  // …for this long (the 5½–6½ min reload pattern)
   const LATE_SAMPLE_MS  = 300000;  // …then this
+  const FPS_WINDOW_MS   = 60000;   // visible canvas time in one "fps" report
+  const FPS_MIN_MS      = 5000;    // a scene left sooner than this reports nothing
   const QUEUE_MAX  = 300;
   const LOG_MAX    = 5000;
   const CONSOLE_LINES = 15;
@@ -147,11 +152,64 @@
     if (lastBeatAt) maxDriftMs = Math.max(maxDriftMs, now - lastBeatAt - BEAT_MS);
     lastBeatAt = now;
     beat();
+    reportFps(FPS_WINDOW_MS);
     if (nextSampleAt && now >= nextSampleAt && lastDrawAt) {
       const since = now - lastDrawAt;
       push("sample", { ...sceneInfo(), sinceDrawMs: since, hidden: document.hidden, mem: measure() });
       nextSampleAt = now + (since < EARLY_WINDOW_MS ? EARLY_SAMPLE_MS : LATE_SAMPLE_MS);
     }
+  }
+
+  // ── Frame rate ─────────────────────────────────────────────────────────────
+
+  let frameTicker = null;
+  let lastFrameAt = null;    // null = the next frame only starts the clock
+  const frameStats = () => ({ frames: 0, ms: 0, worstMs: 0, over33: 0, over50: 0, over100: 0 });
+  let fps = frameStats();
+
+  function onFrame() {
+    const now = performance.now();
+    if (lastFrameAt !== null) {
+      const d = now - lastFrameAt;
+      fps.frames++;
+      fps.ms += d;
+      if (d > fps.worstMs) fps.worstMs = d;
+      if (d > 33.4) fps.over33++;
+      if (d > 50) fps.over50++;
+      if (d > 100) fps.over100++;
+    }
+    lastFrameAt = now;
+  }
+
+  function watchFrames() {
+    const ticker = canvas?.app?.ticker;
+    if (!ticker || ticker === frameTicker) return;
+    frameTicker?.remove(onFrame);
+    ticker.add(onFrame, null, PIXI.UPDATE_PRIORITY.UTILITY);
+    frameTicker = ticker;
+    lastFrameAt = null;
+  }
+
+  function fpsNow() {
+    let depth = null;
+    try { depth = game.settings.get("fabula-ultima-companion", "battleStage3d"); } catch { /* not registered yet */ }
+    return {
+      fps: fps.ms ? Math.round(fps.frames / (fps.ms / 1000) * 10) / 10 : null,
+      frames: fps.frames,
+      seconds: Math.round(fps.ms / 1000),
+      worstMs: Math.round(fps.worstMs),
+      over33: fps.over33,
+      over50: fps.over50,
+      over100: fps.over100,
+      maxFPS: frameTicker?.maxFPS ?? null,
+      depth,
+    };
+  }
+
+  function reportFps(minMs) {
+    if (fps.ms < minMs) return;
+    push("fps", { ...sceneInfo(), ...fpsNow() });
+    fps = frameStats();
   }
 
   // ── How did the previous page end? ─────────────────────────────────────────
@@ -241,6 +299,10 @@
   // ── Wiring ─────────────────────────────────────────────────────────────────
 
   Hooks.on("canvasTearDown", () => {
+    // what is left of the window belongs to the scene being left; a draw is not a slow frame
+    reportFps(FPS_MIN_MS);
+    fps = frameStats();
+    lastFrameAt = null;
     const at = Date.now();
     tearDownAt = at;
     tearDownMem = measure();
@@ -258,6 +320,8 @@
     }
     tearDownAt = null;
     lastDrawAt = now;
+    lastFrameAt = null;
+    watchFrames();
     nextSampleAt = now + EARLY_SAMPLE_MS;
     // the first scene draws BEFORE ready: beating then would overwrite the
     // previous page's heartbeat before reportBoot reads it
@@ -272,11 +336,13 @@
       summary,
       upload: () => { dirty = true; return upload(); },
       measure,
+      fps: fpsNow,
       record: (kind, data = {}) => push(kind, data),
     };
 
     reportBoot();
     booted = true;
+    watchFrames();
     // the first scene usually drew before ready (canvasReady already set these)
     lastDrawAt ??= canvas?.ready ? Date.now() : null;
     nextSampleAt ??= lastDrawAt ? lastDrawAt + EARLY_SAMPLE_MS : null;
@@ -292,6 +358,7 @@
     game.socket.on("reload", () => push("server-reload"));   // core's own reload broadcast
 
     document.addEventListener("visibilitychange", () => {
+      lastFrameAt = null;   // a hidden page draws nothing: the gap is not a slow frame
       if (document.hidden) { hiddenAt = Date.now(); push("hidden", sceneInfo()); }
       else if (hiddenAt) { push("visible", { hiddenMs: Date.now() - hiddenAt }); hiddenAt = null; }
     });

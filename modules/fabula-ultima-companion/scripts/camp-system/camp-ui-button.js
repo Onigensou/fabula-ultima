@@ -6,15 +6,25 @@
 //
 // PLAYER view:
 //   - Single circular button with phase emoji (🔥 / 💤 / 👣)
-//   - Click toggles their ready state
+//   - Press toggles their ready state
+//   - Pulses while the press is on its way to the GM, and resends it until the
+//     GM answers or it gives up with a warning. Only the GM can write the ready
+//     map, so without this a lost press looks exactly like nothing happening.
 //   - Glows green when they are ready
 //
 // GM view:
 //   - No ready-up button
 //   - "▶" Start button appears only when ALL active players are ready
 //   - GM clicks Start → advances the phase
+//   - Clicking a lobby dot marks that player ready / not ready
 //
 // Lobby indicator: small coloured dots above the button showing who's ready.
+//
+// Presses land on pointerdown, like the Dungeon Pathing buttons and the "!"
+// buttons, so they don't depend on the release landing on the same element.
+// Each press goes in the client-health log, as does a press that lands on
+// something covering the button: 2026-11-01 report, one player's lobby button
+// never reached the GM and nothing recorded why.
 // ============================================================================
 (() => {
   const CAMP = globalThis.CampSystem ??= {};
@@ -27,6 +37,10 @@
   const SIZE   = 64;
   const BOTTOM = 80;
   const LEFT   = 20;
+
+  // A press is resent until the ready map shows it, then given up on.
+  const RESEND_MS  = 1500;
+  const MAX_SENDS  = 4;
 
   // Phase config: which phases show the button and with what emoji
   const PHASE_CFG = {
@@ -73,6 +87,11 @@
   border-color: #5aaa55;
   box-shadow: 0 0 5px rgba(126,200,122,.7);
 }
+.oni-camp-lobby-dots.gm-can-mark .oni-camp-lobby-dot {
+  width: 14px; height: 14px;
+  cursor: pointer;
+}
+.oni-camp-lobby-dots.gm-can-mark .oni-camp-lobby-dot:hover { filter: brightness(1.5); }
 
 /* Shared circular button base */
 .oni-camp-circle-btn {
@@ -145,6 +164,13 @@
 }
 #oni-camp-phase-btn.ready .btn-label { color: #a0e896; }
 
+/* Press on its way to the GM */
+#oni-camp-phase-btn.sending { animation: campPressSending .7s ease infinite; }
+@keyframes campPressSending {
+  0%, 100% { border-color: rgba(200,160,80,0.65); }
+  50%      { border-color: rgba(255,240,190,1); box-shadow: 0 0 20px rgba(255,240,190,.6); }
+}
+
 /* GM Start button */
 #oni-camp-start-btn {
   border-color: rgba(202,164,77,0.9);
@@ -167,6 +193,9 @@
     // synchronous, so the async party resolution is cached here and the live
     // `u.active` filter is applied per-render. Null until first resolved.
     _partyUserIds: null,
+
+    // The press waiting for the GM: { phase, want, sends, timer } or null.
+    _pending: null,
 
     // Resolve the party from the DB actor and cache the owning-user IDs. Only
     // the party→user membership is cached (stable during a camp cycle); the
@@ -226,6 +255,10 @@
       // ready up, so they only watch the lobby dots — hide their phase button.
       const iAmParty    = partyKnown && ids.has(userId);
 
+      if (this._pending && (this._pending.phase !== phase || iAmReady === this._pending.want)) {
+        this._clearPending();
+      }
+
       wrap.classList.remove("hidden");
 
       const phaseBtn = wrap.querySelector("#oni-camp-phase-btn");
@@ -245,51 +278,82 @@
           phaseBtn.querySelector(".btn-emoji").textContent = cfg.emoji;
           phaseBtn.title = cfg.title;
           phaseBtn.classList.toggle("ready", iAmReady);
+          phaseBtn.classList.toggle("sending", !!this._pending);
         }
         if (startBtn) startBtn.style.display = "none";
       }
 
       // Lobby dots — keyed by active party-member clients (spectators excluded)
       if (dotsEl) {
+        dotsEl.classList.toggle("gm-can-mark", !!isGM);
         dotsEl.innerHTML = activeUsers.map(u => {
           const r = !!readyMap[u.id];
-          return `<div class="oni-camp-lobby-dot ${r ? "ready" : ""}" title="${u.name}"></div>`;
+          const title = isGM ? `${u.name} — click to mark ${r ? "not ready" : "ready"}` : u.name;
+          return `<div class="oni-camp-lobby-dot ${r ? "ready" : ""}" data-user-id="${u.id}" title="${title}"></div>`;
         }).join("");
       }
     },
 
-    // Player clicked their phase button
-    async onClick() {
-      const phase  = CAMP.State.getPhase();
-      const userId = game.user?.id;
-      let msg;
-      switch (phase) {
-        case CAMP.PHASE.FREE_ROAM:     msg = CAMP.MSG.TOGGLE_READY;    break;
-        case CAMP.PHASE.SLEEP_LOBBY:   msg = CAMP.MSG.TOGGLE_SLEEP;    break;
-        case CAMP.PHASE.SET_OUT_LOBBY: msg = CAMP.MSG.TOGGLE_SET_OUT;  break;
-        default: return;
+    // Player pressed their phase button. A press while one is already on its
+    // way does nothing: the resend covers it, and a second flip would undo it.
+    onClick() {
+      if (this._pending) return;
+      const phase = CAMP.State.getPhase();
+      if (!PHASE_CFG[phase]) return;
+      const want = !_getReadyMap(phase)[game.user?.id];
+      this._pending = { phase, want, sends: 0, timer: null };
+      _record("camp-press", { phase, want, connected: !!game.socket?.connected });
+      this._send();
+      this.render();
+    },
+
+    _send() {
+      const p = this._pending;
+      if (!p) return;
+      if (p.sends >= MAX_SENDS) {
+        this._clearPending();
+        _record("camp-press-unanswered", { phase: p.phase, want: p.want, connected: !!game.socket?.connected });
+        ui.notifications?.warn("The GM didn't receive your camp button press. Press it again, or ask the GM to mark you ready.");
+        this.render();
+        return;
       }
-      CAMP.Socket.emit(msg, { userId });
-      // Optimistic local re-render while waiting for setting update
-      await this.render();
+      p.sends++;
+      CAMP.Socket.requestReady(game.user?.id, p.want);
+      p.timer = setTimeout(() => this._send(), RESEND_MS);
+    },
+
+    _clearPending() {
+      if (this._pending?.timer) clearTimeout(this._pending.timer);
+      this._pending = null;
+    },
+
+    // GM clicked a lobby dot
+    onDot(userId) {
+      if (!game.user?.isGM || !userId) return;
+      const phase = CAMP.State.getPhase();
+      if (!PHASE_CFG[phase]) return;
+      CAMP.Socket.requestReady(userId, !_getReadyMap(phase)[userId]);
     },
 
     // GM clicked the Start button
     async onGMStart() {
-      if (!game.user?.isGM) return;
-      const phase = CAMP.State.getPhase();
-      switch (phase) {
-        case CAMP.PHASE.FREE_ROAM:
-          await CAMP.State.clearReady();
-          await CAMP.State.setPhase(CAMP.PHASE.ACTIVITY_SELECT);
-          break;
-        case CAMP.PHASE.SLEEP_LOBBY:
-          await CAMP.State.clearSleepReady();
-          await CAMP.State.setPhase(CAMP.PHASE.SLEEPING);
-          break;
-        case CAMP.PHASE.SET_OUT_LOBBY:
-          await CAMP.SetOut.begin();  // back to where the party entered camp
-          break;
+      if (!game.user?.isGM || this._starting) return;
+      this._starting = true;
+      try {
+        const phase = CAMP.State.getPhase();
+        switch (phase) {
+          case CAMP.PHASE.FREE_ROAM:
+            await CAMP.State.setPhase(CAMP.PHASE.ACTIVITY_SELECT);
+            break;
+          case CAMP.PHASE.SLEEP_LOBBY:
+            await CAMP.State.setPhase(CAMP.PHASE.SLEEPING);
+            break;
+          case CAMP.PHASE.SET_OUT_LOBBY:
+            await CAMP.SetOut.begin();  // back to where the party entered camp
+            break;
+        }
+      } finally {
+        this._starting = false;
       }
     },
   };
@@ -313,11 +377,46 @@
       </button>
     `;
 
-    wrap.querySelector("#oni-camp-phase-btn")?.addEventListener("click", () => CAMP.Button.onClick());
-    wrap.querySelector("#oni-camp-start-btn")?.addEventListener("click",  () => CAMP.Button.onGMStart());
+    const phaseBtn = wrap.querySelector("#oni-camp-phase-btn");
+    _onPress(phaseBtn, () => CAMP.Button.onClick());
+    _onPress(wrap.querySelector("#oni-camp-start-btn"), () => CAMP.Button.onGMStart());
+    _onPress(wrap.querySelector(".oni-camp-lobby-dots"), (ev) => CAMP.Button.onDot(ev.target?.dataset?.userId));
+
+    // Evidence only. Tells a press the mouse button saw from one the click event
+    // never delivered, now that the press itself no longer waits for the click.
+    phaseBtn.addEventListener("click", () => _record("camp-press-click", { phase: CAMP.State.getPhase() }));
+    window.addEventListener("pointerdown", (ev) => _noteCoveredPress(ev, phaseBtn), { capture: true });
 
     document.body.appendChild(wrap);
     return wrap;
+  }
+
+  function _onPress(el, fn) {
+    el?.addEventListener("pointerdown", (ev) => {
+      if (ev.button !== 0) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      fn(ev);
+    });
+  }
+
+  function _record(kind, data) {
+    try { globalThis.FUCompanion?.api?.clientHealth?.record?.(kind, data); }
+    catch (e) { console.warn(TAG, "Could not record", kind, e); }
+  }
+
+  // A press inside the round button that landed on something else on top of it.
+  function _noteCoveredPress(ev, phaseBtn) {
+    if (ev.button !== 0 || !phaseBtn.isConnected || phaseBtn.contains(ev.target)) return;
+    const r = phaseBtn.getBoundingClientRect();
+    if (!r.width) return;
+    const radius = r.width / 2;
+    if (Math.hypot(ev.clientX - (r.x + radius), ev.clientY - (r.y + radius)) > radius) return;
+    const t  = ev.target;
+    const by = t?.id ? `#${t.id}` : `${t?.tagName ?? "?"}.${String(t?.className ?? "").slice(0, 60)}`;
+    _record("camp-press-covered", { phase: CAMP.State.getPhase(), by });
+    ui.notifications?.warn(`Something is covering your camp button (${by}). Move it, or ask the GM to mark you ready.`);
+    console.warn(TAG, "Press landed on something covering the button:", t);
   }
 
   function _getReadyMap(phase) {

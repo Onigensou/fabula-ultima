@@ -816,7 +816,8 @@
     showResults(sessionId, outcome) {
       if (!_main?.rendered || _main.sessionId !== sessionId) return;
       const cooker = game.actors?.get(_main.cookerActorId);
-      const isMine = cooker && (game.user?.isGM || cooker.isOwner);
+      const watching = globalThis.FUCompanion?.api?.Spectator?.isSpectator?.();
+      const isMine = cooker && (game.user?.isGM || (cooker.isOwner && !watching));
       _main.showResults(outcome, isMine);
     },
 

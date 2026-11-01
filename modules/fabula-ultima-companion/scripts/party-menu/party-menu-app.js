@@ -238,6 +238,7 @@ function characterList() {
 }
 
 export async function openPartyMenu({ actorId = null, view = null } = {}) {
+  if (globalThis.FUCompanion?.api?.Spectator?.isSpectator?.()) return;
   if (S.open && S.busy) return;   // a write is in flight; its view still owns S.v
   ensureStyles();
   await loadRoster();

@@ -4,11 +4,57 @@
 // Shown during the ACTIVITY_RESOLVE phase. Displays a queue of locked
 // activities and runs them one by one. Each activity's execute() function
 // handles the actual mini-game / skill check.
+//
+// The primary GM drives the queue. An activity is recorded in the RESOLVED
+// setting as soon as it reaches its Proceed wait, since every activity gives its
+// reward before that, so a GM reload or redraw carries on without giving it twice.
+// An activity interrupted before that point starts over.
+//
+// A player who reloads gets the running activity back: the primary GM keeps what
+// it has broadcast for that activity and replays it to them. Their minigame
+// starts over and their result answers the same wait. An owner reloading at the
+// Proceed wait has already been rewarded, so that simply ends the activity.
+//
+// The running activity ends early if its owner stays offline or the GM forces the
+// phase on; either way this closes it on every client.
 // ============================================================================
 (() => {
   const CAMP   = globalThis.CampSystem ??= {};
   const TAG    = "[CampSystem][ActivityResolve]";
   const OVL_ID = "oni-camp-overlay";
+
+  const isPrimaryGM = () => globalThis.FUCompanion?.isPrimaryGM?.() ?? false;
+
+  const OWNER_GONE_MS = 20000;  // offline this long and the activity is given up
+  const OWNER_POLL_MS = 2000;
+  const REWARD_POLL_MS = 500;
+  const REPLAY_MAX    = 200;
+
+  // Activity key → [UI object, message that closes it on the other clients].
+  // Activities not listed draw no overlay of their own here.
+  const ACTIVITY_CLOSE = {
+    cartography:      ["CartographyUI",     "CARTOGRAPHY_DONE"],
+    combat_lesson:    ["CombatLessonUI",    "COMBAT_LESSON_DONE"],
+    curse:            ["CurseUI",           "CURSE_DONE"],
+    daydream:         ["DaydreamUI",        "DAYDREAM_DONE"],
+    double_portion:   ["DoublePortionUI",   "DOUBLE_PORTION_DONE"],
+    exploration:      ["ExplorationUI",     "EXPLORATION_DONE"],
+    fishing:          ["FishingUI",         "FISHING_DONE"],
+    gathering:        ["GatheringUI",       "GATHERING_DONE"],
+    magic_lesson:     ["MagicLessonUI",     "MAGIC_LESSON_DONE"],
+    martial_practice: ["MartialPracticeUI", "MARTIAL_PRACTICE_DONE"],
+    massage:          ["MassageUI",         "MASSAGE_DONE"],
+    midnight_oil:     ["MidnightOilUI",     "MIDNIGHT_OIL_DONE"],
+    pep_talk:         ["PepTalkUI",         "PEP_TALK_DONE"],
+    planning:         ["PlanningUI",        "PLANNING_DONE"],
+    sleep_soundly:    ["SleepSoundlyUI",    "SLEEP_SOUNDLY_DONE"],
+    training:         ["TrainingUI",        "TRAINING_DONE"],
+  };
+
+  let _running  = false;
+  let _forceEnd = null;   // ends the running activity when the phase moves on
+  let _current  = null;   // { entry, log } for the running activity (primary GM)
+  let _reloadedIntoPhase = true;   // until this page sees the phase being entered
 
   CAMP.ActivityResolveUI = {
     _party: [],
@@ -18,11 +64,39 @@
       this._party = await CAMP.Party.resolve();
       this._queue = _buildQueue(this._party);
       _buildOverlay(this._queue);
+      this.refreshDone();
 
-      // Only the GM drives the resolution sequence
-      if (game.user?.isGM) {
+      // Only the primary GM drives the resolution sequence
+      if (isPrimaryGM()) {
         await this._runAll();
       }
+    },
+
+    refreshDone() {
+      for (const actorId of Object.keys(CAMP.State.getResolved())) this.markDone(actorId);
+    },
+
+    // Every broadcast passes through here, on the GM that sent it.
+    noteBroadcast(type, payload) {
+      if (_current && _current.log.length < REPLAY_MAX) _current.log.push({ type, payload });
+    },
+
+    // A client reloaded during this phase and wants the running activity back.
+    onResync(userId) {
+      if (!_current || !userId) return;
+      const { entry, log } = _current;
+      if (userId === entry.userId && _atProceedWait(entry)) {
+        CAMP[ACTIVITY_CLOSE[entry.activityKey][0]].resolveProceed(entry.actorId);
+        return;
+      }
+      if (log.length) CAMP.Socket.emit(CAMP.MSG.RESOLVE_REPLAY, { userId, messages: log });
+    },
+
+    // An owner's Proceed. Their button appears as soon as they see the result,
+    // which can be before this GM has finished applying it and started waiting.
+    // Their button is spent by then, so remember the click.
+    noteProceed(actorId) {
+      if (_current?.entry.actorId === actorId) _current.proceedPressed = true;
     },
 
     hide() {
@@ -47,39 +121,134 @@
       if (status) { status.className = "ri-status running"; status.textContent = "Resolving..."; }
     },
 
-    // GM runs all activities sequentially
+    // Primary GM runs all activities sequentially. Re-entered by a canvas redraw
+    // while it's already running, in which case the first run carries on.
     async _runAll() {
-      if (this._queue.length === 0) {
-        // Nothing to resolve — skip directly to bond update
+      if (_running) return;
+      _running = true;
+      try {
+        const stillResolving = () => CAMP.State.getPhase() === CAMP.PHASE.ACTIVITY_RESOLVE;
+
+        if (this._queue.length === 0) {
+          // Nothing to resolve — skip directly to bond update
+          await new Promise(r => setTimeout(r, 800));
+        }
+
+        // This page reloaded into the phase: whatever the old page left on the
+        // other clients has nothing behind it now. Some activities' show() does
+        // nothing while their overlay exists, so give the close time to finish.
+        if (_reloadedIntoPhase) {
+          _reloadedIntoPhase = false;
+          for (const e of this._queue) _closeActivity(e.activityKey);
+          await new Promise(r => setTimeout(r, 500));
+        }
+
+        for (const entry of this._queue) {
+          if (!stillResolving()) return;
+          if (CAMP.State.getResolved()[entry.actorId]) continue;
+
+          this.markRunning(entry.actorId);
+          CAMP.Sound?.play(CAMP.SFX?.CAMP_START);
+          await _runOne(entry);
+          if (!stillResolving()) return;
+
+          await CAMP.State.markResolved(entry.actorId);
+          this.markDone(entry.actorId);
+          await new Promise(r => setTimeout(r, 600));
+        }
+
+        // All done — auto-advance to Bond Update
         await new Promise(r => setTimeout(r, 800));
+        if (!stillResolving()) return;
         await CAMP.State.clearResolved();
         await CAMP.State.setPhase(CAMP.PHASE.BOND_UPDATE);
-        return;
+      } finally {
+        _running = false;
       }
-
-      for (const entry of this._queue) {
-        this.markRunning(entry.actorId);
-        CAMP.Sound?.play(CAMP.SFX?.CAMP_START);
-        try {
-          const def = CAMP.ActivityRegistry?.get(entry.activityKey);
-          if (def?.execute) {
-            await def.execute(entry.actor, canvas?.scene ?? null);
-          } else {
-            await new Promise(r => setTimeout(r, 1200));
-          }
-        } catch (e) {
-          console.error(TAG, "Activity execute failed:", entry.activityKey, e);
-        }
-        this.markDone(entry.actorId);
-        await new Promise(r => setTimeout(r, 600));
-      }
-
-      // All done — auto-advance to Bond Update
-      await new Promise(r => setTimeout(r, 800));
-      await CAMP.State.clearResolved();
-      await CAMP.State.setPhase(CAMP.PHASE.BOND_UPDATE);
     },
   };
+
+  // ---------------------------------------------------------------------------
+  // One activity: runs until it finishes, its owner is gone, or the phase moves
+  // ---------------------------------------------------------------------------
+  async function _runOne(entry) {
+    const def = CAMP.ActivityRegistry?.get(entry.activityKey);
+    if (!def?.execute) {
+      await new Promise(r => setTimeout(r, 1200));
+      return;
+    }
+
+    const ui = CAMP[ACTIVITY_CLOSE[entry.activityKey]?.[0]];
+    // An ended activity can leave its wait behind, which would read as "rewarded".
+    if (ui?.proceedResolvers) delete ui.proceedResolvers[entry.actorId];
+
+    const current = _current = { entry, log: [], proceedPressed: false };
+    const owner = _watchOwner(entry);
+    const rewardWatch = setInterval(() => {
+      if (!_atProceedWait(entry)) return;
+      if (!CAMP.State.getResolved()[entry.actorId]) CAMP.State.markResolved(entry.actorId);
+      if (current.proceedPressed) ui.resolveProceed(entry.actorId);
+    }, REWARD_POLL_MS);
+    const finished = Promise.resolve()
+      .then(() => def.execute(entry.actor, canvas?.scene ?? null))
+      .catch(e => console.error(TAG, "Activity execute failed:", entry.activityKey, e))
+      .then(() => "finished");
+    const forced = new Promise(r => { _forceEnd = () => r("forced"); });
+
+    const how = await Promise.race([finished, owner.gone, forced]);
+    owner.stop();
+    clearInterval(rewardWatch);
+    _forceEnd = null;
+    _current = null;
+
+    if (how === "finished") return;
+    console.warn(TAG, `Ending ${entry.activityKey} early (${how}) for`, entry.actorName);
+    if (how === "owner offline") {
+      ui.notifications?.warn(`${entry.actorName} is offline: moving on from ${entry.actName}.`);
+    }
+    _closeActivity(entry.activityKey);
+  }
+
+  function _atProceedWait(entry) {
+    const ui = ACTIVITY_CLOSE[entry.activityKey]?.[0];
+    return !!ui && !!CAMP[ui]?.proceedResolvers?.[entry.actorId];
+  }
+
+  // Resolves once the activity's owner has been offline for OWNER_GONE_MS. A
+  // player who is connected keeps as long as they like.
+  function _watchOwner(entry) {
+    let timer = null;
+    const gone = new Promise(resolve => {
+      const user = entry.userId ? game.users?.get(entry.userId) : null;
+      if (!user) return;   // no player owner: the GM runs it
+      let offlineSince = null;
+      timer = setInterval(() => {
+        if (user.active) { offlineSince = null; return; }
+        offlineSince ??= Date.now();
+        if (Date.now() - offlineSince >= OWNER_GONE_MS) resolve("owner offline");
+      }, OWNER_POLL_MS);
+    });
+    return { gone, stop: () => clearInterval(timer) };
+  }
+
+  // A broadcast doesn't echo to its sender, so close it locally too.
+  function _closeActivity(key) {
+    const close = ACTIVITY_CLOSE[key];
+    if (!close) return;
+    const [ui, msg] = close;
+    CAMP.Socket.broadcast(CAMP.MSG[msg], {});
+    CAMP[ui]?.hide?.();
+  }
+
+  Hooks.on("updateSetting", (setting) => {
+    const key = setting?.key ?? "";
+    if (key === `${CAMP.MODULE_ID}.${CAMP.SETTING.RESOLVED}`) {
+      CAMP.ActivityResolveUI.refreshDone();
+    } else if (key === `${CAMP.MODULE_ID}.${CAMP.SETTING.PHASE}`) {
+      _reloadedIntoPhase = false;
+      if (CAMP.State.getPhase() !== CAMP.PHASE.ACTIVITY_RESOLVE) _forceEnd?.();
+    }
+  });
 
   // ---------------------------------------------------------------------------
   // Helpers
@@ -94,6 +263,7 @@
         activityKey,
         actor:     entry?.actor ?? null,
         actorName: entry?.userName ?? actorId,
+        userId:    entry?.userId ?? null,
         actName:   def?.name ?? activityKey,
         actIcon:   def?.icon ?? "fas fa-star",
       };

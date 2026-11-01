@@ -22,6 +22,11 @@
   let _newlyRemovedFromMemory  = [];   // memories cleared THIS session (for summary)
   // Tracks the one allowed emotion change: { slotIdx, emClass, origValue } | null
   let _gatedField         = null;
+  // Slots whose saved bond was freed and now hold a different one.
+  let _reusedSlots        = new Set();
+  // Confirmed before this menu was drawn (a reload): the summary already sent
+  // holds the changes, and _originalBonds already includes them.
+  let _restoredConfirmed  = false;
 
   // ── Public API ──────────────────────────────────────────────────────────────
   CAMP.BondUI = {
@@ -50,7 +55,10 @@
       _newlyMovedToMemory     = [];
       _newlyRemovedFromMemory = [];
       _gatedField             = null;
+      _reusedSlots            = new Set();
+      _restoredConfirmed      = this.isConfirmed();
       _buildOverlay();
+      if (_restoredConfirmed) _setConfirmedState(true);
     },
 
     hide() {
@@ -74,9 +82,18 @@
       }
 
       const updated = _readBondsFromDOM();
-      const changes = BondUpdater.buildChangelog(_originalBonds, updated);
+      // The summary reports against the bonds this menu opened with...
+      const changes = BondUpdater.buildChangelog(_originalBonds, updated).flatMap(c => {
+        if (c.type !== "update" || !_reusedSlots.has(c.slot)) return [c];
+        return [
+          { type: "remove", slot: c.slot, before: c.before },
+          { type: "add",    slot: c.slot, after:  c.after  },
+        ];
+      });
 
-      for (const change of changes) {
+      // ...but writes go against the sheet as it is now, so undoing an edit after
+      // an earlier confirm in this menu really does undo it.
+      for (const change of BondUpdater.buildChangelog(BondUpdater.readBonds(_actor), updated)) {
         const slot = updated.find(b => b.idx === change.slot);
         if (!slot) continue;
         await BondUpdater.writeSlot(_actor, slot.idx, slot);
@@ -86,9 +103,11 @@
       await _actor.update({ 'system.props.memories_list': _buildMemoriesPayload(_pendingMems) }).catch(() => {});
       await _actor.unsetFlag(CAMP.MODULE_ID, MEM_FLAG).catch(() => {});
 
+      const nothingNew = _restoredConfirmed && !changes.length
+        && !_newlyMovedToMemory.length && !_newlyRemovedFromMemory.length;
       CAMP.Socket.emit(CAMP.MSG.CONFIRM_BOND, {
         userId: game.user?.id,
-        summary: { actorId: _actor.id, actorName: _actor.name, changes, memChanges: _newlyMovedToMemory, memRemovals: _newlyRemovedFromMemory },
+        summary: nothingNew ? null : { actorId: _actor.id, actorName: _actor.name, changes, memChanges: _newlyMovedToMemory, memRemovals: _newlyRemovedFromMemory },
       });
 
       CAMP.Sound.play(CAMP.SFX.BOND_CONFIRM);
@@ -130,7 +149,7 @@
   // ── Gate logic (per-field: only one dropdown change allowed per session) ──────
   function _emOrigValue(slotIdx, emClass) {
     const orig = _originalBonds.find(b => b.idx === slotIdx);
-    if (!orig) return "";
+    if (!orig || _reusedSlots.has(slotIdx)) return "";
     if (emClass === "em-1") return orig.e1;
     if (emClass === "em-2") return orig.e2;
     if (emClass === "em-3") return orig.e3;
@@ -209,6 +228,11 @@
     return str ? str.charAt(0).toUpperCase() + str.slice(1) : str;
   }
 
+  // For player-typed text inside a value="…" attribute.
+  function _attr(str) {
+    return String(str ?? "").replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+  }
+
   function _emSelect(pairIdx, selected, cls) {
     const opts = BondUpdater.optionsForPair(pairIdx).map(v =>
       `<option value="${v}" ${v === selected ? "selected" : ""}>${v ? _capitalize(v) : "—"}</option>`
@@ -230,9 +254,9 @@
         <span class="bond-hearts">${_heartHTML(bond.e1, bond.e2, bond.e3)}</span>
       </div>
       <div class="bond-name-rel-row">
-        <input class="bond-name-input" type="text" placeholder="Name…" value="${bond.name}" />
+        <input class="bond-name-input" type="text" placeholder="Name…" value="${_attr(bond.name)}" />
         <span class="bond-arrow">→</span>
-        <input class="bond-rel-input" type="text" placeholder="Relationship…" value="${bond.rel}" />
+        <input class="bond-rel-input" type="text" placeholder="Relationship…" value="${_attr(bond.rel)}" />
       </div>
       <div class="bond-em-row">
         ${_emSelect(0, bond.e1, "em-1")}
@@ -269,22 +293,30 @@
   }
 
   // ── Slot add/remove ────────────────────────────────────────────────────────────
+  // Any slot not on screen is free: empty when the menu opened, or freed by
+  // Clear / Memory since.
+  function _freeSlot() {
+    return _originalBonds.find(b =>
+      !document.querySelector(`.oni-bond-slot[data-slot-index="${b.idx}"]`)
+    ) ?? null;
+  }
+
   function _addNewSlot() {
     const slotsEl = document.getElementById("oni-bond-slots");
     if (!slotsEl) return;
 
-    const next = _originalBonds.find(b =>
-      !b.name && !document.querySelector(`.oni-bond-slot[data-slot-index="${b.idx}"]`)
-    );
+    const next = _freeSlot();
     if (!next) return;
+    if (next.name) _reusedSlots.add(next.idx);
 
     const order = slotsEl.querySelectorAll(".oni-bond-slot").length;
-    slotsEl.appendChild(_createSlotEl(next, order));
+    slotsEl.appendChild(_createSlotEl({ idx: next.idx, name: "", e1: "", e2: "", e3: "", rel: "" }, order));
     _refreshAddNewBtn();
   }
 
   function _removeSlotEl(el, slotIdx) {
     if (_gatedField?.slotIdx === slotIdx) _gatedField = null;
+    _reusedSlots.delete(slotIdx);
     el.style.animation = "campFadeOut .18s ease both";
     setTimeout(() => {
       el.remove();
@@ -295,10 +327,7 @@
   function _refreshAddNewBtn() {
     const btn     = document.getElementById("oni-bond-add-new");
     if (!btn) return;
-    const hasSlot = _originalBonds.some(b =>
-      !b.name && !document.querySelector(`.oni-bond-slot[data-slot-index="${b.idx}"]`)
-    );
-    btn.style.display = hasSlot ? "" : "none";
+    btn.style.display = _freeSlot() ? "" : "none";
   }
 
   // ── Memory persistence helpers ────────────────────────────────────────────────
@@ -369,10 +398,9 @@
 
     // Find any slot not currently visible in the DOM — includes originally-empty
     // slots AND slots that were moved to memory or cleared, freeing their index.
-    const next = _originalBonds.find(b =>
-      !document.querySelector(`.oni-bond-slot[data-slot-index="${b.idx}"]`)
-    );
+    const next = _freeSlot();
     if (!next) { ui.notifications?.warn("No available bond slot found."); return; }
+    if (next.name && next.name !== mem.name) _reusedSlots.add(next.idx);
 
     slotsEl?.appendChild(_createSlotEl({ ...next, ...mem }, visibleCount));
 
@@ -415,9 +443,9 @@
           <span class="bond-hearts">${heartsHtml}</span>
         </div>
         <div class="bond-name-rel-row">
-          <input class="bond-name-input" type="text" value="${m.name ?? ""}" disabled />
+          <input class="bond-name-input" type="text" value="${_attr(m.name)}" disabled />
           <span class="bond-arrow">→</span>
-          <input class="bond-rel-input" type="text" value="${m.rel ?? ""}" placeholder="Relationship…" disabled />
+          <input class="bond-rel-input" type="text" value="${_attr(m.rel)}" placeholder="Relationship…" disabled />
         </div>
         <div class="bond-em-row">
           <select title="${p[0].pos} / ${p[0].neg}" disabled>${emOpts(m.e1 ?? "", 0)}</select>
@@ -452,7 +480,7 @@
     document.getElementById(OVL_ID)?.remove();
 
     const filledBonds = _originalBonds.filter(b => b.name);
-    const hasEmpty    = _originalBonds.some(b => !b.name);
+    const hasEmpty    = filledBonds.length < BondUpdater.MAX_BONDS;
 
     const overlay = document.createElement("div");
     overlay.id = OVL_ID;
@@ -542,7 +570,7 @@
           <div style="font-size:.88em;margin-bottom:12px;">
             Players are updating their bonds.<br>Waiting for everyone to confirm…
           </div>
-          <div class="oni-camp-lobby-dots" style="justify-content:center;">
+          <div class="oni-camp-lobby-dots" id="oni-camp-bond-wait-dots" style="justify-content:center;">
             ${dots || '<span style="font-size:.75em;opacity:.65;">No active players</span>'}
           </div>
         </div>

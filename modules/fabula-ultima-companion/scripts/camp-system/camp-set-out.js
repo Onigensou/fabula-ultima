@@ -76,16 +76,27 @@
   // Recording
   // ---------------------------------------------------------------------------
 
+  // Entries run one at a time, and the scene-activation hook below waits for
+  // them. A tile activates its camp without waiting for the entry to finish, and
+  // reset() clears the point first, so that hook could read it mid-write, take
+  // the camp for a hand-opened one and overwrite the real point.
+  let _recording = Promise.resolve();
+
   /**
    * Record where the party entered camp from, and start the loop fresh — a
    * camp abandoned mid-cycle earlier must not resume half-finished.
    * Primary GM only; noteEntry() routes here from any client.
    */
-  async function recordEntry(point) {
+  function recordEntry(point) {
     // A hand-activated camp has no place it came from: it records only which
     // camp it is (sceneId absent → getReturnPoint() null → Set Out's picker).
-    if (!isPrimaryGM() || !point?.campSceneId) return;
-    if (!point.sceneId && point.via !== "gm_activate") return;
+    if (!isPrimaryGM() || !point?.campSceneId) return Promise.resolve();
+    if (!point.sceneId && point.via !== "gm_activate") return Promise.resolve();
+    _recording = _recording.catch(() => {}).then(() => _record(point));
+    return _recording;
+  }
+
+  async function _record(point) {
     await CAMP.State.reset();
     await CAMP.State.setReturnPoint({ ...point, at: Date.now() });
     console.debug(TAG, `Return point recorded (${point.via}):`, point);
@@ -137,6 +148,7 @@
   //    camp-bootstrap's canvasReady pass never runs.
   Hooks.on("updateScene", async (scene, changes) => {
     if (changes?.active !== true || !isPrimaryGM() || !isCampScene(scene)) return;
+    await _recording.catch(() => {});
     let raw = {};
     try { raw = JSON.parse(game.settings.get(MOD, CAMP.SETTING.RETURN_POINT) || "{}"); } catch {}
     if (raw?.campSceneId !== scene.id) {

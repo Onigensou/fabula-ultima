@@ -18,7 +18,8 @@ Hooks.once("ready", async () => {
   });
 
   // Backend → UI
-  backend.uiSetDesiredVisible = (set) => ui.setDesiredVisible(set);
+  backend.uiSetDesiredVisible = (set) => ui.setDesiredVisible(
+    globalThis.FUCompanion?.api?.Spectator?.isSpectator?.() ? new Set() : set);
 
   // UI → Backend
   ui.onClickBlacksmithToken = (tokenId) => backend.openBlacksmithByTokenId(tokenId);

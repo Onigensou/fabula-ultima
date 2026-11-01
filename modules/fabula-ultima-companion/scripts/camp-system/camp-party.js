@@ -48,7 +48,7 @@
           .filter(([uid, lvl]) => uid !== "default" && lvl >= 3)
           .map(([uid]) => game.users?.get(uid))
           .filter(u => u && !u.isGM && !S?.isSpectator?.(u));
-        const assigned = game.users?.find(u => !u.isGM && u.character?.id === actor.id);
+        const assigned = game.users?.find(u => !u.isGM && u.character?.id === actor.id && !S?.isSpectator?.(u));
         const userId   = assigned?.id
           ?? playerOwners.find(u => u.active)?.id
           ?? playerOwners[0]?.id

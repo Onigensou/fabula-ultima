@@ -199,6 +199,14 @@
      * 6. Post a chat message.
      */
     async perform() {
+      // A primary GM reloading during SLEEPING lands back here. Progress is kept
+      // in RESOLVED (cleared on entering the phase), so nobody rests twice:
+      // food buffs tick down per rest, and the reset-on-rest tiles would fire again.
+      const inCamp   = CAMP.State?.getPhase?.() === CAMP.PHASE.SLEEPING;
+      const restDone = (key) => inCamp && !!CAMP.State.getResolved()[key];
+      const markRest = (key) => inCamp ? CAMP.State.markResolved(key) : null;
+      if (restDone("rest:done")) return;
+
       // 1 — Snapshot & stop BGM
       const { playlist: bgmPlaylist, sound: bgmSound } = _captureBgm();
       await _stopBgm(bgmPlaylist);
@@ -208,7 +216,12 @@
       let jingleSound = null;
       if (AH) {
         try {
-          jingleSound = await AH.play({ src: this.jingle, volume: 0.8, autoplay: true, loop: false }, true);
+          // Audio stays locked until a reloaded GM's first click, and play() waits
+          // for that. The rest must not.
+          jingleSound = await Promise.race([
+            AH.play({ src: this.jingle, volume: 0.8, autoplay: true, loop: false }, true),
+            new Promise(r => setTimeout(() => r(null), 3000)),
+          ]);
         } catch (e) {
           console.warn(TAG, "AudioHelper.play failed:", e);
         }
@@ -228,9 +241,11 @@
       }
 
       for (const actor of actors) {
+        if (restDone(`rest:${actor.id}`)) continue;
         await _restoreResources(actor);
         await _clearTemporaryEffects(actor);
         await _tickCampRestEffects(actor);
+        await markRest(`rest:${actor.id}`);
       }
 
       // Contagious effects (Virus) may pass to a healthy member — silently.
@@ -278,6 +293,7 @@
 
       // 6 — Chat message
       await _postChatMessage();
+      await markRest("rest:done");
 
       console.debug(TAG, "Rest complete.");
     },

@@ -36,7 +36,7 @@ function injectStyles() {
   s.id = STYLE_ID;
   s.textContent = `
 #${STACK_ID} {
-  position: fixed; left: 12px; bottom: 92px; z-index: 2147483000;
+  position: fixed; left: 12px; bottom: 290px; z-index: 2147483000;  /* above the bottom-left button row and its badges */
   display: flex; flex-direction: column-reverse; gap: 8px; pointer-events: none;
 }
 .oni-ritual-pip {

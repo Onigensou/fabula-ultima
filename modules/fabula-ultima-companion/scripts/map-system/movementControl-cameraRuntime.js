@@ -319,7 +319,9 @@
 
   // The member this client walks in a camp: its own character's token, or
   // the one member it owns when no character is set. Never a guess between two.
+  // A spectator has none: `default: OWNER` on an actor makes it an owner too.
   function findOwnCampMember() {
+    if (globalThis.FUCompanion?.api?.Spectator?.isSpectator?.()) return null;
     const mine = (canvas.tokens?.placeables ?? []).filter(t =>
       isCampMemberToken(t) && t.document?.isOwner && !t.document.hidden);
     const characterId = game.user?.character?.id ?? null;
