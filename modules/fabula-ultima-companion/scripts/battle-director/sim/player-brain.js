@@ -331,7 +331,7 @@ function castBundle(item, targetUuids) {
 //
 // gatherCreatables is async and the policies are sync, so the list is fetched once
 // per turn and handed to them already resolved.
-async function fetchCreatables(actorDoc) {
+export async function fetchCreatables(actorDoc) {
   try {
     const { gatherCreatables } = await import("../item-resource.js");
     const list = await gatherCreatables(actorDoc);

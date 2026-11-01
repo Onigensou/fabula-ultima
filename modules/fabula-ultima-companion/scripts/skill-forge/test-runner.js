@@ -245,6 +245,7 @@ export function auditRun({ doc, args = {}, result = null, entry = "skill" } = {}
 const PAYLOAD_BACKED = {
   ACTION_DURATION: "skillDuration",
   ACTION_IS_FREE_CAST: "actionIsFreeCast",
+  ACTION_IS_ITEM_CREATE: "itemMode",
   ACTION_COST_MP: "costMp",
   ACTION_MP_COST: "costMp",
   HR: "hr",

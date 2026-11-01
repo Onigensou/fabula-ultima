@@ -794,6 +794,8 @@ async function normalizeScripts(scripts) {
       targets: d.targets ?? "enemy",
       force: d.force ?? null,
       once: !!d.once,
+      // CREATE the named item with IP instead of casting a skill (scripted-action).
+      create: !!d.create,
     });
   }
   return out;
@@ -828,6 +830,7 @@ function isPcActor(actor) {
 // a `scripts` array directly — that is the general form; this is the common case.
 export async function testSkill({
   caster, skill, targets = "enemy", force = null, once = false,
+  create = false,             // `skill` names an item to CREATE with IP (an Elemental Shard)
   casterSide = null,          // "party" | "enemy" — override the inference
   enemy = null, enemies = null, quantity = 1,
   party = null,
@@ -878,7 +881,7 @@ export async function testSkill({
     party: partyRefs,
     pace, reactions, expectedRounds, maxRounds,
     phoenixFeathers, startingZp, fabulaPoints, enemyZp, guests,
-    scripts: [{ caster: casterActor.uuid, skill, targets, force, once }],
+    scripts: [{ caster: casterActor.uuid, skill, targets, force, once, create }],
   });
 }
 

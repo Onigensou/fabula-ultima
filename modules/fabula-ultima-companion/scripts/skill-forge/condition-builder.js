@@ -71,6 +71,7 @@ const CATALOGUE = [
   ["MAX_MP",                "Maximum MP",                      "number"],
   ["ATTACK_CHECK_RESULT",   "The attack's Check result",       "number"],
   ["ACTION_IS_FREE_CAST",   "The action is a free cast",       "boolean"],
+  ["ACTION_IS_ITEM_CREATE", "The item is created on the spot", "boolean"],
   ["SUBJECT_IS_SELF",       "The subject is me",               "boolean"],
   ["SUBJECT_IS_ALLY",       "The subject is an ally",          "boolean"],
   ["SUBJECT_IS_ENEMY",      "The subject is an enemy",         "boolean"],

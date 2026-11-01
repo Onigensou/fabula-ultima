@@ -1460,6 +1460,13 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // creature_will_deal_damage payload from the live free-action grant.
       case "ACTION_IS_FREE_CAST":
         return payload?.actionIsFreeCast === true ? 1 : 0;
+      // 1 if the action CREATES its item on the spot (paid in IP) rather than
+      // using one from the pack. Reads payload.itemMode, stamped the same way on
+      // creature_uses_item and creature_will_deal_damage (an Alchemy-style
+      // countsAsItem skill counts as a create on both). RAW keys
+      // off it: Stubborn Scion's "when you CREATE an elemental shard".
+      case "ACTION_IS_ITEM_CREATE":
+        return String(payload?.itemMode ?? "").toLowerCase() === "create" ? 1 : 0;
       // 1 if the action targets EXACTLY ONE creature AND that creature carries MY
       // Focus (per-applier, status fud-focus), else 0. Powers Hypercognition's
       // "SL × 2 if your focus is the only target" cost discount. Mirrors

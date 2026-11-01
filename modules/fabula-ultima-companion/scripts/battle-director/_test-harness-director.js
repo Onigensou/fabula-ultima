@@ -280,6 +280,10 @@ async function buildReactionScanPayloads(ar) {
       ...harnessActionBase,   // action-level defaults; every explicit key below wins
       subjectActorUuid,
       subjectTokenUuid,
+      // Mirror CONFIRM's Item damage window: only rows naming Item ride it, and
+      // ACTION_IS_ITEM_CREATE reads the create/use mode.
+      requireExplicitActionKind: ar.kind === "Item" && !!ar.hasDamage,
+      itemMode: ar.itemSelection?.mode ?? (ar.countsAsItem ? "create" : null),
       targets: allTargetUuids,
       hitTargets: hitTargetUuids,
       rawDamage: entry.rawDamage,
@@ -1492,7 +1496,10 @@ function expandForceSemantics(force, { dA, dB, fumbleThreshold, checkBonus, isSp
   const defs = (targetSnaps ?? []).map((t) => isSpell ? (t.magicDefense ?? 0) : (t.defense ?? 0));
   const minDef = defs.length ? Math.min(...defs) : 0;
 
-  if (force.crit) { out.rA = dA; out.rB = dA === dB ? dB : dA; return out; }
+  // A crit is a matching pair, so it must fit on the SMALLER die. (This used to
+  // force dA on both dice; the old uniform override then drew an impossible 10
+  // on a d8. Faces are now forced exactly and clamped to the die.)
+  if (force.crit) { const v = Math.min(dA, dB); out.rA = v; out.rB = v; return out; }
   if (force.fumble) { out.rA = 1; out.rB = 1; return out; }
   if (force.hit) {
     // Greedy: cheapest hit. Iterate (a, b) where a+b+checkBonus >= minDef.
@@ -1530,6 +1537,22 @@ function installRollOverride(force, dA, dB) {
   if (Number.isFinite(rA)) pending.push({ R: rA, N: dA || 20 });
   if (Number.isFinite(rB)) pending.push({ R: rB, N: dB || 20 });
 
+  // Force the FACE, not a uniform tuned to a die size. dA/dB are the sizes
+  // BEFORE the check runs, and a die swap (Psychokinesis DEX d8 → WLP d10) changes
+  // the size after they are read: a uniform built for a d8 5 landed as a 6 on the
+  // d10, so Keren / Soul Steal under {rA:5, rB:6} turned into a 6+6 crit that
+  // play never rolls. DiceTerm#randomFace receives the real die, so the forced
+  // value survives any swap (clamped to the die's faces).
+  const DiceTerm = foundry.dice?.terms?.DiceTerm;
+  const originalFace = DiceTerm?.prototype?.randomFace;
+  if (typeof originalFace === "function") {
+    DiceTerm.prototype.randomFace = function harnessRandomFace() {
+      const next = pending.shift();
+      if (!next) return originalFace.call(this);
+      return Math.max(1, Math.min(Number(this.faces) || next.N, Math.round(next.R)));
+    };
+    return { restore() { DiceTerm.prototype.randomFace = originalFace; } };
+  }
   const original = CONFIG.Dice.randomUniform;
   CONFIG.Dice.randomUniform = function harnessRandomUniform() {
     const next = pending.shift();

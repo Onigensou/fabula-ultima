@@ -37,7 +37,6 @@
       "Hako",
       "Hexer",
       "Hina",
-      "Hina (Backup)",
       "Hunter",
       "Illusionist",
       "Invoker",
@@ -76,8 +75,8 @@
       "Zarg"
     ],
     "enemyTarget": "Test Target Enemy",
-    "count": 499,
-    "engineVersion": "1.0.426",
+    "count": 487,
+    "engineVersion": "1.0.506",
     "override": {
       "SL": 5,
       "CHAR_LEVEL": 50,
@@ -1828,7 +1827,7 @@
       "element": "hp",
       "hasDamage": false,
       "hasHealing": true,
-      "offensive": false,
+      "offensive": true,
       "ok": true,
       "perTarget": [
         {
@@ -2643,285 +2642,6 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Hina (Backup) / Acceleration": {
-      "caster": "Hina (Backup)",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": true,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "Acceleration",
-      "skillType": "Spell",
-      "targets": 1
-    },
-    "Hina (Backup) / Bimagus": {
-      "caster": "Hina (Backup)",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": true,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "Bimagus",
-      "skillType": "Active",
-      "targets": 1
-    },
-    "Hina (Backup) / Dispel": {
-      "caster": "Hina (Backup)",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": true,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "Dispel",
-      "skillType": "Spell",
-      "targets": 1
-    },
-    "Hina (Backup) / Divination": {
-      "caster": "Hina (Backup)",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": true,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "Divination",
-      "skillType": "Spell",
-      "targets": 1
-    },
-    "Hina (Backup) / Draconic Roar": {
-      "caster": "Hina (Backup)",
-      "element": "null",
-      "hasDamage": true,
-      "hasHealing": false,
-      "offensive": true,
-      "ok": true,
-      "perTarget": [
-        {
-          "affinity": "NE",
-          "damage": 19,
-          "grant": null,
-          "grantRes": null,
-          "hit": true,
-          "resource": "hp"
-        }
-      ],
-      "roll": {
-        "crit": false,
-        "fumble": false,
-        "hr": 6
-      },
-      "skill": "Draconic Roar",
-      "skillType": "Active",
-      "targets": 1
-    },
-    "Hina (Backup) / Drain Spirit": {
-      "caster": "Hina (Backup)",
-      "element": "mp",
-      "hasDamage": true,
-      "hasHealing": false,
-      "offensive": true,
-      "ok": true,
-      "perTarget": [
-        {
-          "affinity": "NE",
-          "damage": 26,
-          "grant": null,
-          "grantRes": null,
-          "hit": true,
-          "resource": "mp"
-        }
-      ],
-      "roll": {
-        "crit": false,
-        "fumble": false,
-        "hr": 6
-      },
-      "skill": "Drain Spirit",
-      "skillType": "Spell",
-      "targets": 1
-    },
-    "Hina (Backup) / Elemental Shroud": {
-      "caster": "Hina (Backup)",
-      "ok": false,
-      "reason": "skipped",
-      "skill": "Elemental Shroud",
-      "skillType": "Spell"
-    },
-    "Hina (Backup) / Elemental Weapon": {
-      "caster": "Hina (Backup)",
-      "ok": false,
-      "reason": "skipped",
-      "skill": "Elemental Weapon",
-      "skillType": "Spell"
-    },
-    "Hina (Backup) / Encyclopedia Strike": {
-      "caster": "Hina (Backup)",
-      "element": "physical",
-      "hasDamage": true,
-      "hasHealing": false,
-      "offensive": true,
-      "ok": true,
-      "perTarget": [
-        {
-          "affinity": "NE",
-          "damage": 23,
-          "grant": null,
-          "grantRes": null,
-          "hit": true,
-          "resource": "hp"
-        }
-      ],
-      "roll": {
-        "crit": false,
-        "fumble": false,
-        "hr": 6
-      },
-      "skill": "Encyclopedia Strike",
-      "skillType": "Active",
-      "targets": 1
-    },
-    "Hina (Backup) / Glacies": {
-      "caster": "Hina (Backup)",
-      "element": "ice",
-      "hasDamage": true,
-      "hasHealing": false,
-      "offensive": true,
-      "ok": true,
-      "perTarget": [
-        {
-          "affinity": "NE",
-          "damage": 21,
-          "grant": null,
-          "grantRes": null,
-          "hit": true,
-          "resource": "hp"
-        }
-      ],
-      "roll": {
-        "crit": false,
-        "fumble": false,
-        "hr": 6
-      },
-      "skill": "Glacies",
-      "skillType": "Spell",
-      "targets": 1
-    },
-    "Hina (Backup) / Heal": {
-      "caster": "Hina (Backup)",
-      "element": "hp",
-      "hasDamage": false,
-      "hasHealing": true,
-      "offensive": true,
-      "ok": true,
-      "perTarget": [
-        {
-          "affinity": "NE",
-          "damage": 0,
-          "grant": 60,
-          "grantRes": "hp",
-          "hit": true,
-          "resource": null
-        }
-      ],
-      "roll": null,
-      "skill": "Heal",
-      "skillType": "Spell",
-      "targets": 1
-    },
-    "Hina (Backup) / Iceberg": {
-      "caster": "Hina (Backup)",
-      "element": "ice",
-      "hasDamage": true,
-      "hasHealing": false,
-      "offensive": true,
-      "ok": true,
-      "perTarget": [
-        {
-          "affinity": "NE",
-          "damage": 31,
-          "grant": null,
-          "grantRes": null,
-          "hit": true,
-          "resource": "hp"
-        }
-      ],
-      "roll": {
-        "crit": false,
-        "fumble": false,
-        "hr": 6
-      },
-      "skill": "Iceberg",
-      "skillType": "Spell",
-      "targets": 1
-    },
-    "Hina (Backup) / Starfall": {
-      "caster": "Hina (Backup)",
-      "element": "light",
-      "hasDamage": true,
-      "hasHealing": false,
-      "offensive": true,
-      "ok": true,
-      "perTarget": [
-        {
-          "affinity": "NE",
-          "damage": 15,
-          "grant": null,
-          "grantRes": null,
-          "hit": true,
-          "resource": "hp"
-        }
-      ],
-      "roll": null,
-      "skill": "Starfall",
-      "skillType": "Spell",
-      "targets": 1
-    },
-    "Hina (Backup) / Stop": {
-      "caster": "Hina (Backup)",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": true,
-      "ok": true,
-      "perTarget": [
-        {
-          "affinity": "NE",
-          "damage": 0,
-          "grant": null,
-          "grantRes": null,
-          "hit": true,
-          "resource": "hp"
-        }
-      ],
-      "roll": {
-        "crit": false,
-        "fumble": false,
-        "hr": 6
-      },
-      "skill": "Stop",
-      "skillType": "Spell",
-      "targets": 1
-    },
-    "Hina (Backup) / Zero Power: A Million Possibility": {
-      "caster": "Hina (Backup)",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": true,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "Zero Power: A Million Possibility",
-      "skillType": "Active",
-      "targets": 1
-    },
     "Hina / Acceleration": {
       "caster": "Hina",
       "element": "",
@@ -2985,13 +2705,9 @@
     },
     "Hina / Bind and Summon (variant)": {
       "caster": "Hina",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
       "offensive": true,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
+      "ok": false,
+      "reason": "compute_refused:TARGET_BACK",
       "skill": "Bind and Summon (variant)",
       "skillType": "Active",
       "targets": 1
@@ -3055,7 +2771,7 @@
       "roll": {
         "crit": false,
         "fumble": false,
-        "hr": 9
+        "hr": 6
       },
       "skill": "Draconic Roar",
       "skillType": "Active",
@@ -3302,7 +3018,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 24,
+          "damage": 21,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -3312,7 +3028,7 @@
       "roll": {
         "crit": false,
         "fumble": false,
-        "hr": 9
+        "hr": 6
       },
       "skill": "Starfall Comet",
       "skillType": "Spell",
@@ -4166,13 +3882,6 @@
       "skillType": "Spell",
       "targets": 1
     },
-    "Keren / Create Phantasm: Dread": {
-      "caster": "Keren",
-      "ok": false,
-      "reason": "skipped",
-      "skill": "Create Phantasm: Dread",
-      "skillType": "Spell"
-    },
     "Keren / Create Phantasm: Numen": {
       "caster": "Keren",
       "element": "",
@@ -4235,6 +3944,32 @@
       "roll": null,
       "skill": "Life Transference",
       "skillType": "Active",
+      "targets": 1
+    },
+    "Keren / Multi Shatter": {
+      "caster": "Keren",
+      "element": "physical",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 21,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Multi Shatter",
+      "skillType": "Spell",
       "targets": 1
     },
     "Keren / Nocebo Weapon": {
@@ -4361,7 +4096,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 33,
+          "damage": 31,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -4371,7 +4106,7 @@
       "roll": {
         "crit": false,
         "fumble": false,
-        "hr": 8
+        "hr": 6
       },
       "skill": "Flare",
       "skillType": "Spell",
@@ -4387,7 +4122,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 33,
+          "damage": 31,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -4397,7 +4132,7 @@
       "roll": {
         "crit": false,
         "fumble": false,
-        "hr": 8
+        "hr": 6
       },
       "skill": "Iceberg",
       "skillType": "Spell",
@@ -4413,7 +4148,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 33,
+          "damage": 31,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -4423,7 +4158,7 @@
       "roll": {
         "crit": false,
         "fumble": false,
-        "hr": 8
+        "hr": 6
       },
       "skill": "Rift",
       "skillType": "Spell",
@@ -4439,7 +4174,7 @@
       "perTarget": [
         {
           "affinity": "VU",
-          "damage": 66,
+          "damage": 62,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -4449,7 +4184,7 @@
       "roll": {
         "crit": false,
         "fumble": false,
-        "hr": 8
+        "hr": 6
       },
       "skill": "Thunderbolt",
       "skillType": "Spell",
@@ -5530,7 +5265,7 @@
       "perTarget": [
         {
           "affinity": "VU",
-          "damage": 44,
+          "damage": 42,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -5540,7 +5275,7 @@
       "roll": {
         "crit": false,
         "fumble": false,
-        "hr": 7
+        "hr": 6
       },
       "skill": "Fulgur",
       "skillType": "Spell",
@@ -5556,7 +5291,7 @@
       "perTarget": [
         {
           "affinity": "VU",
-          "damage": 64,
+          "damage": 62,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -5566,7 +5301,7 @@
       "roll": {
         "crit": false,
         "fumble": false,
-        "hr": 7
+        "hr": 6
       },
       "skill": "Thunderbolt",
       "skillType": "Spell",
@@ -6176,6 +5911,19 @@
         "hr": 6
       },
       "skill": "Blazing Impact",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "St. Reefesia / Holy Crucifixion": {
+      "caster": "St. Reefesia",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Holy Crucifixion",
       "skillType": "Active",
       "targets": 1
     },
@@ -6924,6 +6672,19 @@
       "skillType": "Active",
       "targets": 1
     },
+    "Zarg / Siren Trap": {
+      "caster": "Zarg",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": false,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Siren Trap",
+      "skillType": "Active",
+      "targets": 1
+    },
     "Zarg / Soul Steal": {
       "caster": "Zarg",
       "element": "",
@@ -6947,6 +6708,19 @@
         "hr": 6
       },
       "skill": "Soul Steal",
+      "skillType": "Active",
+      "targets": 1
+    },
+    "Zarg / Tripwire Trap": {
+      "caster": "Zarg",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": false,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Tripwire Trap",
       "skillType": "Active",
       "targets": 1
     },

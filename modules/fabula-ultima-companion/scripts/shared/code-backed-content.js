@@ -104,11 +104,21 @@ const ENTRIES = [
     module: "scripts/inner-wellspring/inner-wellspring.js", symbol: "SKILL_NAME",
     note: "Invoker heroic: a camp/first-pick window chooses a wellspring; at each rest (or at once on the first pick) a self-AE grants wellspring_<elem> (always available) + Resistance to that element. No pick = last night's carries over. Benefit 4 (may retype dealt damage to it, ignoring Resistances) rides the AE's own reactionConfig (creature_will_deal_damage ask pill). NOT BUILT (needs engine work): benefit 2, Elementalism rituals of that element.",
   },
+  {
+    name: "Stubborn Scion", kind: "skill", match: "lower",
+    module: "scripts/stubborn-scion/stubborn-scion.js", symbol: "SKILL_NAME",
+    note: "Quirk: benefit 2 (ask the GM one question during a Rest) is a camp button, once per rest, that rolls 1d6 into the holder's \"Bodyguard Fatigue\" AE and posts it to chat. Benefits 1 (halve damage) and 3 (a created Elemental Shard deals 5 + half level extra) are reaction rows on the skill's transfer AEs, gated AE_CHARGES_BODYGUARD_FATIGUE < 10.",
+  },
   // ── statuses (AE names, not documents) ────────────────────────────────────
   {
     name: "Crisis", kind: "status", match: "lower",
     module: "scripts/battle-director/crisis-reactor.js", symbol: "isCrisisEffect",
     note: "The Crisis AE is recognised by name in 3 evaluators + the reactor.",
+  },
+  {
+    name: "Bodyguard Fatigue", kind: "status", match: "lower",
+    module: "scripts/stubborn-scion/stubborn-scion.js", symbol: "FATIGUE_AE",
+    note: "Stubborn Scion's shared Fatigue pool (flags charges, no ceiling); the camp question reads and adds to it by name.",
   },
   {
     name: "Flying", kind: "status", match: "lower",

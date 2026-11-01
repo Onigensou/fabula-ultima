@@ -1085,6 +1085,11 @@ Hooks.once("ready", () => {
   import("../inner-wellspring/inner-wellspring-bootstrap.js")
     .then((m) => m.initInnerWellspring())
     .catch((e) => warn("initInnerWellspring failed to load", e));
+  // Stubborn Scion (Quirk): the camp button for "Here is the information you
+  // previously requested". Self-contained under scripts/stubborn-scion/.
+  import("../stubborn-scion/stubborn-scion-bootstrap.js")
+    .then((m) => m.initStubbornScion())
+    .catch((e) => warn("initStubbornScion failed to load", e));
   const root = (globalThis.FUCompanion = globalThis.FUCompanion ?? {});
   const api = (root.api = root.api ?? {});
   // Anim Studio preview surface — the Preview Bench (classic script) calls these

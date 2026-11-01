@@ -247,10 +247,16 @@ async function resolveCheckDieSwap({ actor, A1, A2, director = null, actionPaylo
   // the owner makes (Keren's Psychokinesis), so the overlay would park the run
   // until the stall watchdog fired. Fall through to the auto path below, which
   // already assigns each skill's charge to the biggest upgrade — i.e. exactly
-  // what a player opening this picker would pick anyway. Note this is currently
-  // latent for Keren (DEX d12 > WLP d10 → no beneficial swap → no picker), but
-  // one DEX debuff makes the swap an upgrade and the picker appears.
-  if (askMode && director && !SimMode.active) {
+  // what a player opening this picker would pick anyway. Keren's DEX is d8 and
+  // only reads d12 while she is Wet (+5 Swimsuit's Swift Swimmer), so dry, every
+  // DEX check offers DEX→WLP and the picker appears.
+  //
+  // The director test harness has nobody to answer either: it sets
+  // __FU_HARNESS_HEADLESS__ (installHeadlessGates), and an unanswered picker
+  // parks COMPUTE before its `finally`, leaving the harness patches installed
+  // on the page. Same fall-through. Measured 2026-11-01: Keren / Soul Steal hung.
+  const noHuman = SimMode.active || globalThis.__FU_HARNESS_HEADLESS__ === true;
+  if (askMode && director && !noHuman) {
     const label = [...new Set(configs.map((c) => c.label).filter(Boolean))].join(" · ") || "Die swap";
     // BOTH dice are shown, each with ALL its swap options (up OR down) + the change
     // and the granting skill. The picker enforces the per-target `budget` so the

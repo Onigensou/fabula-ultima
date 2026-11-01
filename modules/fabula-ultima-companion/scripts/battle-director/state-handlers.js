@@ -5794,10 +5794,18 @@ const Confirm = {
     // an on-hit damage rider (Adversity, future Infusion-likes) was previously
     // excluded, so NO spell could carry one. Resource-scoping (HP vs MP) is left to
     // the row's condition_formula via DAMAGE_IS_HP, not this gate.
+    // A damaging Item (an Elemental Shard thrown or created) fires it too, but
+    // ONLY for rows that name "Item" in reaction_action_kind (see
+    // `requireExplicitActionKind` below). 72 rows corpus-wide leave the kind blank
+    // and were authored against attacks and spells; letting them all ride a
+    // thrown shard would be a balance change nobody asked for. Stubborn Scion's
+    // "when you create an elemental shard, it deals extra damage" is the first
+    // row that opts in.
+    const isDamagingItem = ar.kind === "Item" && !!ar.hasDamage;
     const fireWillDealDamage =
       attackerActor &&
       Array.isArray(ar.perTargetResults) &&
-      (ar.kind === "Attack" || ((ar.kind === "Skill" || ar.kind === "Spell") && ar.hasDamage));
+      (ar.kind === "Attack" || ((ar.kind === "Skill" || ar.kind === "Spell") && ar.hasDamage) || isDamagingItem);
     if (fireWillDealDamage) {
       try {
         const { findPassiveCandidates } = await getSkillEffectsExtras();
@@ -5838,6 +5846,12 @@ const Confirm = {
             // will_deal_damage reaction can scope itself via reaction_action_kind
             // (Tinkerer Infusions: "Attack" only — RAW "hit with an attack").
             actionKind: ar.kind ?? null,
+            // Item damage reaches only rows that ask for Item by name (above).
+            requireExplicitActionKind: isDamagingItem,
+            // Create vs use, the SAME derivation as creature_uses_item (an Alchemy
+            // countsAsItem skill counts as a create), so ACTION_IS_ITEM_CREATE reads
+            // alike on both triggers ("when you CREATE a shard").
+            itemMode: ar.itemSelection?.mode ?? (ar.countsAsItem ? "create" : null),
             // Spell-type identity (mirrors the creature_performs_action payload) so
             // ACTION_IS_SPELL / ACTION_IS_OFFENSIVE_SPELL gates resolve at the damage
             // window too — Cataclysm's "when you cast a damaging spell" overcharge,

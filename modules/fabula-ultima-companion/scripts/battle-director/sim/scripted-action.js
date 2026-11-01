@@ -279,6 +279,53 @@ export async function scriptedBundleFor(director, snap) {
     return null;
   }
 
+  // `create: true` — CREATE the named item on the spot, paying IP (an Elemental
+  // Shard), through the same recipe list and bundle the player brain uses, so the
+  // real Item create path runs (itemMode "create", the IP debit, and the
+  // creature_uses_item / creature_will_deal_damage scans).
+  if (directive.create) {
+    // Same free-action frame rule as a cast (below): an Item may not be declared
+    // inside a window that doesn't admit one. Hold the directive for the real turn.
+    try {
+      const grant = freeActions.get?.(snap?.actorId) ?? null;
+      if (grant) {
+        const labels = Array.isArray(grant.enabledLabels) ? grant.enabledLabels : [];
+        const refs = Array.isArray(grant.allowedSkillRefs) ? grant.allowedSkillRefs.map((r) => String(r).trim().toLowerCase()).filter(Boolean) : [];
+        const want = String(directive.skill ?? "").trim().toLowerCase();
+        if ((labels.length && !labels.includes("Item")) || (refs.length && !refs.includes(want))) {
+          SimMode.note("scripted", `free-action frame (${grant.sourceLabel ?? "grant"}) does not admit creating "${directive.skill}" — holding the directive for the real turn`);
+          return null;
+        }
+      }
+    } catch (e) { warn("[SIM] scripted: free-action grant check threw", e); }
+    const { fetchCreatables } = await import("./player-brain.js");
+    const want = String(directive.skill ?? "").trim().toLowerCase();
+    const recipe = (await fetchCreatables(actorDoc)).find((c) => String(c.name ?? "").trim().toLowerCase() === want);
+    // linkedSkillUuid may be null: a BD-canon recipe's item IS its activation skill.
+    if (!recipe?.itemUuid) {
+      SimMode.note("scripted", `${baseName(actorDoc.name)} can't create "${directive.skill}" — brain decides`);
+      return null;
+    }
+    const ip = Number(actorDoc.system?.props?.current_ip ?? 0) || 0;
+    if (ip < recipe.ipCost) {
+      SimMode.note("scripted", `${baseName(actorDoc.name)} has ${ip} IP, "${recipe.name}" costs ${recipe.ipCost} — brain decides`);
+      return null;
+    }
+    const targetUuids = resolveTargets(director, self, directive.targets);
+    if (!targetUuids.length) {
+      SimMode.note("scripted", `no valid target for "${recipe.name}" — brain decides`);
+      return null;
+    }
+    SimMode.recordDeclaration(turnKey, sig);
+    SimMode.note("scripted", `${baseName(actorDoc.name)} → creates ${recipe.name} on ${targetUuids.length} target(s)`);
+    if (directive.once) SimMode.exhaustScript(directive);
+    return {
+      command: "Item", skillUuid: recipe.itemUuid, sourceItemUuid: recipe.itemUuid,
+      linkedSkillUuid: recipe.linkedSkillUuid, itemMode: "create", itemKey: recipe.key, itemCost: recipe.ipCost,
+      targetUuids, _name: recipe.name, _scripted: true,
+    };
+  }
+
   const item = await resolveSkillItem(actorDoc, directive.skill);
   if (!item?.uuid) {
     SimMode.note("scripted", `${baseName(actorDoc.name)} has no skill "${directive.skill}" — brain decides`);

@@ -1028,6 +1028,14 @@ async function passesMatchFilters(row, item, reactorActor, payload) {
   //     reaction scope to a subset of action types without a hardcoded trigger
   //     (Shadow Possession's Creeped: "Attack,Skill,Spell"; Barrage: "Attack").
   const wantKindRaw = String(row.reaction_action_kind ?? "").trim().toLowerCase();
+  //     A dispatch can flip blank to "not you": the Item damage window
+  //     (state-handlers' creature_will_deal_damage) stamps
+  //     requireExplicitActionKind, so only rows that name Item ride a thrown
+  //     shard, not every blank-kind damage rider authored against attacks.
+  if (!wantKindRaw && payload?.requireExplicitActionKind === true) {
+    log(`passive ${item.name}: action_kind filter failed — blank kind, dispatch requires an explicit one (got="${payload?.actionKind}")`);
+    return false;
+  }
   if (wantKindRaw) {
     const wantKinds = wantKindRaw.split(",").map((s) => s.trim()).filter(Boolean);
     const gotKind = String(payload?.actionKind ?? "").trim().toLowerCase();
@@ -2752,6 +2760,11 @@ export async function refreshReactionSubjects({ acceptedCardReactions, ar, attac
         subjectActorUuid: r.actorUuid,
         subjectTokenUuid: r.tokenUuid,
         actionKind: ar.kind ?? null,
+        // Same Item gate + create/use mode as the CONFIRM scan. Without itemMode
+        // an ACTION_IS_ITEM_CREATE row matched at CONFIRM and then lost every
+        // subject here, so its damage silently never landed.
+        requireExplicitActionKind: ar.kind === "Item" && !!ar.hasDamage,
+        itemMode: ar.itemSelection?.mode ?? (ar.countsAsItem ? "create" : null),
         targets: allTargetUuids,
         hitTargets: hitTokenUuids,
         rawDamage: r.rawDamage,

@@ -8866,6 +8866,12 @@ export async function postActionCard({ director, kind, payload }) {
             // must not re-apply on top of it (see bakeReactionRoll). Same
             // explicit-field-list hazard as gmOverride above.
             bakedRollReactions: base?.bakedRollReactions ?? null,
+            // Create vs use: refreshReactionSubjects re-matches accepted
+            // will_deal_damage rows against this snapshot, and ACTION_IS_ITEM_CREATE
+            // reads it. Dropped, Stubborn Scion's shard bonus lost its subjects
+            // after Apply (preview 10) while the commit, from the full ar, dealt 36.
+            itemSelection: base?.itemSelection ?? null,
+            countsAsItem: !!base?.countsAsItem,
             round: base?.round ?? director?.dCombat?.round ?? 0,
           };
 
