@@ -15,8 +15,15 @@
     {
       "id": "2026-10-24",
       "kind": "game-session",
-      "window": { "from": "2026-10-24 20:40", "to": "2026-10-25 02:30", "tz": "+07:00" },
-      "build": { "foundry": "12.343", "module": "1.0.448" },
+      "window": {
+        "from": "2026-10-24 20:40",
+        "to": "2026-10-25 02:30",
+        "tz": "+07:00"
+      },
+      "build": {
+        "foundry": "12.343",
+        "module": "1.0.448"
+      },
       "conditions": {
         "clientHealthLogger": false,
         "coverWatchdog": "battle-shatter path only (1a330723 landed mid-session); plain scene-change cover had no timeout",
@@ -29,30 +36,106 @@
       },
       "server": {
         "activations": 32,
-        "vendMsRange": [3740, 4971],
+        "vendMsRange": [
+          3740,
+          4971
+        ],
         "errors": "Token <id> does not exist at 22:14 and 22:18 (deleted battle tokens) — unrelated",
         "players": {
           "Rinri": {
-            "route": "171.100.x.x", "pageLoads": 13, "reloads": 12, "logins": 2,
-            "modes": { "quick": 10, "mid": 1, "sixMin": 1 },
-            "reloadSecAfterDraw": [31, 35, 29, 93, 43, 97, 345, 21, 258, 66, 51, 74],
+            "route": "171.100.x.x",
+            "pageLoads": 13,
+            "reloads": 12,
+            "logins": 2,
+            "modes": {
+              "quick": 10,
+              "mid": 1,
+              "sixMin": 1
+            },
+            "reloadSecAfterDraw": [
+              31,
+              35,
+              29,
+              93,
+              43,
+              97,
+              345,
+              21,
+              258,
+              66,
+              51,
+              74
+            ],
             "pairedReloads": 5
           },
           "Blumairwen": {
-            "route": "27.145.x.x", "pageLoads": 13, "reloads": 12, "logins": 1,
-            "modes": { "quick": 5, "sixMin": 6, "long": 1 },
-            "reloadSecAfterDraw": [352, 37, 36, 362, 367, 338, 594, 335, 58, 37, 325, 11],
+            "route": "27.145.x.x",
+            "pageLoads": 13,
+            "reloads": 12,
+            "logins": 1,
+            "modes": {
+              "quick": 5,
+              "sixMin": 6,
+              "long": 1
+            },
+            "reloadSecAfterDraw": [
+              352,
+              37,
+              36,
+              362,
+              367,
+              338,
+              594,
+              335,
+              58,
+              37,
+              325,
+              11
+            ],
             "pairedReloads": 3
           },
-          "Trinio": { "route": "223.204.x.x", "pageLoads": 1, "reloads": 0, "logins": 1 },
-          "Silryantish": { "route": "27.130.x.x", "pageLoads": 1, "reloads": 0, "logins": 1 }
+          "Trinio": {
+            "route": "223.204.x.x",
+            "pageLoads": 1,
+            "reloads": 0,
+            "logins": 1
+          },
+          "Silryantish": {
+            "route": "27.130.x.x",
+            "pageLoads": 1,
+            "reloads": 0,
+            "logins": 1
+          }
         }
       },
       "tcpWatch": {
         "reloadsObserved": 9,
         "pattern": "new page's first connection opened while the old game socket was still up; old socket closed <=1 s later; no DROP gap in any of them",
-        "oldSocketAgeMin": [22, 27, 34, 5, 39, 4, 75, 84],
-        "pageLoadSec": { "Rinri": [11, 10, 11, 10, 11], "Blumairwen": [53, 27, 25, 9] }
+        "oldSocketAgeMin": [
+          22,
+          27,
+          34,
+          5,
+          39,
+          4,
+          75,
+          84
+        ],
+        "pageLoadSec": {
+          "Rinri": [
+            11,
+            10,
+            11,
+            10,
+            11
+          ],
+          "Blumairwen": [
+            53,
+            27,
+            25,
+            9
+          ]
+        }
       },
       "clientHealth": null,
       "notes": [
@@ -93,7 +176,10 @@
       },
       "server": {
         "activations": 6,
-        "vendMsRange": [3828, 4364],
+        "vendMsRange": [
+          3828,
+          4364
+        ],
         "errors": 0,
         "players": {
           "Rinri": {
@@ -397,7 +483,10 @@
             "downMbps": 9.7,
             "upMbps": 5.57,
             "latencyMs": 13.7,
-            "loadedMs": [131, 191],
+            "loadedMs": [
+              131,
+              191
+            ],
             "jitterMs": 58.7,
             "lossPct": 0.6,
             "server": "BKK",
@@ -417,7 +506,10 @@
             "downMbps": 447,
             "upMbps": 399,
             "latencyMs": 43,
-            "loadedMs": [40, 46.9],
+            "loadedMs": [
+              40,
+              46.9
+            ],
             "jitterMs": 3.77,
             "lossPct": 0,
             "server": "SIN",
@@ -433,11 +525,27 @@
         "host": {
           "cloudflareDownMbps": 128,
           "forgeColo": "BKK",
-          "forgeBackgroundFetchS": [2.8, 3.1],
-          "forgeFirstByteS": [1.1, 1.5]
+          "forgeBackgroundFetchS": [
+            2.8,
+            3.1
+          ],
+          "forgeFirstByteS": [
+            1.1,
+            1.5
+          ]
         }
       },
-      "notes": ["No reloads for either player all night: both waited out stalls of up to 8 min 40 s under the load indicator.", "Every slow load waited on one Forge-hosted map background; every other file was already cached. The host fetched the same files from Forge in ~3 s (cf-cache-status MISS).", "Direct-link test (~23:03): a never-loaded Forge map image opened in a plain browser tab filled in slowly top-to-bottom for BOTH players, so the slow path is True -> Forge, not Foundry.", "Incognito re-open (~23:10): instant for Blumairwen (her Cloudflare node had kept the copy), still slow for Rinri (first load possibly never completed; he is on IPv6).", "Preloading the next map ~6-8 min ahead made both switches take ~1.4 s instead of 223-520 s.", "Forge edge copies stay fresh ~500 s (Cache-Control max-age=500) and less-used images get evicted soon after: re-requests 12-60 min later were MISS or REVALIDATED.", "Routes host -> both players' ISP edges: 0 loss all night (median 10-11 ms). Host line: 0-1 loss per 448 pings.", "Blumairwen's tab was hidden 9.7 min and 20.7 min with samples continuing: no freeze (H3 not shown on this browser).", "Not test-related: Vastwind_Field009 was turned into a camp room at the host's request (sceneMode camp, 4 member spots, campArrival); camp members spawned and walked; tokens cleared at cleanup."]
+      "notes": [
+        "No reloads for either player all night: both waited out stalls of up to 8 min 40 s under the load indicator.",
+        "Every slow load waited on one Forge-hosted map background; every other file was already cached. The host fetched the same files from Forge in ~3 s (cf-cache-status MISS).",
+        "Direct-link test (~23:03): a never-loaded Forge map image opened in a plain browser tab filled in slowly top-to-bottom for BOTH players, so the slow path is True -> Forge, not Foundry.",
+        "Incognito re-open (~23:10): instant for Blumairwen (her Cloudflare node had kept the copy), still slow for Rinri (first load possibly never completed; he is on IPv6).",
+        "Preloading the next map ~6-8 min ahead made both switches take ~1.4 s instead of 223-520 s.",
+        "Forge edge copies stay fresh ~500 s (Cache-Control max-age=500) and less-used images get evicted soon after: re-requests 12-60 min later were MISS or REVALIDATED.",
+        "Routes host -> both players' ISP edges: 0 loss all night (median 10-11 ms). Host line: 0-1 loss per 448 pings.",
+        "Blumairwen's tab was hidden 9.7 min and 20.7 min with samples continuing: no freeze (H3 not shown on this browser).",
+        "Not test-related: Vastwind_Field009 was turned into a camp room at the host's request (sceneMode camp, 4 member spots, campArrival); camp members spawned and walked; tokens cleared at cleanup."
+      ]
     },
     {
       "id": "2026-10-28-mirror-trial",
@@ -456,13 +564,19 @@
         "players": "Rinri, Blumairwen",
         "loadIndicator": true,
         "scenePrefetch": true,
-        "mirrored": ["Eisendrache Castle", "Eisendrache Colosseum"],
+        "mirrored": [
+          "Eisendrache Castle",
+          "Eisendrache Colosseum"
+        ],
         "notMirrored": "status icons, tokens, everything else"
       },
       "sideBySidePage": {
         "image": "Eisendrache_Battlemap001.png (1.8 MB)",
         "Rinri": {
-          "hostS": [3.1, 0.4],
+          "hostS": [
+            3.1,
+            0.4
+          ],
           "forgeS": "unfinished at report time (twice)"
         },
         "Blumairwen": "not reported"
@@ -498,7 +612,11 @@
         "diskFreeGB": 47.8,
         "forgeUrlsInWorldData": 3271
       },
-      "notes": ["A first-time map switch dropped from 223-520 s (Forge, earlier the same night) to 1.2 s with the background served by the host.", "World entry stays slow until every Forge file clients load (status icons first) is served by the host too.", "Cleanup at 00:08: both scenes reverted to their Forge URLs, mirror and test page deleted, Foundry closed."]
+      "notes": [
+        "A first-time map switch dropped from 223-520 s (Forge, earlier the same night) to 1.2 s with the background served by the host.",
+        "World entry stays slow until every Forge file clients load (status icons first) is served by the host too.",
+        "Cleanup at 00:08: both scenes reverted to their Forge URLs, mirror and test page deleted, Foundry closed."
+      ]
     },
     {
       "id": "2026-10-29-mirror-test",
@@ -531,7 +649,10 @@
       },
       "server": {
         "activations": 15,
-        "vendMsRange": [3739, 4523],
+        "vendMsRange": [
+          3739,
+          4523
+        ],
         "errors": 0,
         "warnings": 9,
         "warningsDetail": "2 gm-screen deprecations at launch; 7 x 'embedded effects records in ActiveEffect hN5IkJdmMjvuGmey were undefined' (one per vend, in every log since 10-08)",
@@ -1107,7 +1228,15 @@
         "perMapChange4RemoteClients": "about 12 MB, about 2 s (largest backgrounds about 4 s)",
         "cacheHeaders": "Cache-Control no-cache + weak ETag + Last-Modified on forge-mirror/, modules/, systems/, icons/, scripts/: browsers revalidate (304), repeat maps cost no upload"
       },
-      "notes": ["First real-player test of the forge mirror: every file came from the host (277-285 per player), 0 not mirrored, 0 fallbacks to Forge.", "First-time map switches that took 223-520 s from Forge on 10-28 took 1.1-5.0 s; Blumairwen's world entry went from 317 s to 23.9 s.", "Each player was on 3-10 min: no reloads, but too short to judge mid-session reloads.", "Blumairwen's SAMPLE GAP (22:02:41, 240 s) is a client-health-summary false positive: it compared samples across four draws; her raw samples ran every 60-90 s (hidden tab).", "Blumairwen's Kingdom time comes from her client's draw record (her clock): the driver's draw detection was fixed during that switch.", "Demo cleanup: movement controller and party prototype art restored to the pre-test values (Blumairwen / Keren); the Field actor's wellspring AEs were rebuilt by the Title activation (the same five, new ids) and left as is.", "Cut off by the host on 2026-10-30 at 11:20; Rinri postponed."]
+      "notes": [
+        "First real-player test of the forge mirror: every file came from the host (277-285 per player), 0 not mirrored, 0 fallbacks to Forge.",
+        "First-time map switches that took 223-520 s from Forge on 10-28 took 1.1-5.0 s; Blumairwen's world entry went from 317 s to 23.9 s.",
+        "Each player was on 3-10 min: no reloads, but too short to judge mid-session reloads.",
+        "Blumairwen's SAMPLE GAP (22:02:41, 240 s) is a client-health-summary false positive: it compared samples across four draws; her raw samples ran every 60-90 s (hidden tab).",
+        "Blumairwen's Kingdom time comes from her client's draw record (her clock): the driver's draw detection was fixed during that switch.",
+        "Demo cleanup: movement controller and party prototype art restored to the pre-test values (Blumairwen / Keren); the Field actor's wellspring AEs were rebuilt by the Title activation (the same five, new ids) and left as is.",
+        "Cut off by the host on 2026-10-30 at 11:20; Rinri postponed."
+      ]
     },
     {
       "id": "2026-10-30-rinri-mirror-test",
@@ -1141,7 +1270,10 @@
       },
       "server": {
         "activations": 5,
-        "vendMsRange": [4101, 4101],
+        "vendMsRange": [
+          4101,
+          4101
+        ],
         "errors": 0,
         "warnings": 5,
         "warningsDetail": "2 gm-screen deprecations at launch; 3 x 'embedded effects records in ActiveEffect hN5IkJdmMjvuGmey were undefined' (one per vend)",
@@ -1375,7 +1507,1875 @@
           }
         ]
       },
-      "notes": ["Rinri's turn on the 2026-10-29 mirror test, so all four players have now run it: 279 files from the host, 0 not mirrored, 0 fallbacks to Forge.", "Against his Forge numbers on 10-28: world entry 79.6 s -> 34.4 s, Eisendrache Kingdom 223.5 s -> 0.8 s, Vastwind_Field002 520.5 s -> 5.5 s.", "Kingdom and Vastwind_Field002 are not comparable with each other: the one-time files that the others had up to Kingdom (112-138 hits) landed on his second map (13, then 160 hits), most likely because his first map came 2 s after entry.", "Kingdom was a real first load: the only map art he had loaded from the host before was the 10-28 trial's Castle and Colosseum backgrounds and one test image.", "Route 124.122 tonight; 171.100 on 10-24 and 10-28. Not checked further.", "On for 3 min: no reloads, but too short to judge mid-session reloads. A full session is still owed.", "Launcher sync gap: wanted.json is written by the GM client after login, so the launcher's pre-launch sync missed art added since the last session. Fixed the same evening: the launcher syncs again once the GM client is in.", "Demo cleanup: movement controller and party prototype art restored. A key-by-key compare of data/ against a pre-launch copy found only the Field actor's rebuilt wellspring AEs, _stats on the touched docs and theripper-premium-hub.lastGitCheck. Preflight matches the pre-test run."]
+      "notes": [
+        "Rinri's turn on the 2026-10-29 mirror test, so all four players have now run it: 279 files from the host, 0 not mirrored, 0 fallbacks to Forge.",
+        "Against his Forge numbers on 10-28: world entry 79.6 s -> 34.4 s, Eisendrache Kingdom 223.5 s -> 0.8 s, Vastwind_Field002 520.5 s -> 5.5 s.",
+        "Kingdom and Vastwind_Field002 are not comparable with each other: the one-time files that the others had up to Kingdom (112-138 hits) landed on his second map (13, then 160 hits), most likely because his first map came 2 s after entry.",
+        "Kingdom was a real first load: the only map art he had loaded from the host before was the 10-28 trial's Castle and Colosseum backgrounds and one test image.",
+        "Route 124.122 tonight; 171.100 on 10-24 and 10-28. Not checked further.",
+        "On for 3 min: no reloads, but too short to judge mid-session reloads. A full session is still owed.",
+        "Launcher sync gap: wanted.json is written by the GM client after login, so the launcher's pre-launch sync missed art added since the last session. Fixed the same evening: the launcher syncs again once the GM client is in.",
+        "Demo cleanup: movement controller and party prototype art restored. A key-by-key compare of data/ against a pre-launch copy found only the Field actor's rebuilt wellspring AEs, _stats on the touched docs and theripper-premium-hub.lastGitCheck. Preflight matches the pre-test run."
+      ]
+    },
+    {
+      "id": "2026-10-31-game-session",
+      "kind": "game-session",
+      "window": {
+        "from": "2026-10-31 21:18",
+        "to": "2026-11-01 02:28",
+        "tz": "+07:00"
+      },
+      "build": {
+        "foundry": "12.343",
+        "module": "1.0.497",
+        "moduleNote": "local main at 5ddbab3a: origin's v1.0.497 merged with local world commits"
+      },
+      "fix": "the forge mirror, first full session",
+      "conditions": {
+        "players": "Rinri, Silryantish, Trinio, Blumairwen; GM II 21:24-22:49",
+        "forgeMirror": true,
+        "mirroredFiles": 3160,
+        "mirroredMB": 1238,
+        "mirrorSync": "launcher: first sync copied 24 + downloaded 11 (41 MB), second sync after GM login changed nothing",
+        "loadIndicator": true,
+        "scenePrefetch": true,
+        "stream": true,
+        "tcpWatch": false,
+        "pingWatch": false,
+        "preflight": "0 FAIL, 358 WARN",
+        "restart": "host-ordered restart of Foundry + Spectator at 23:17:35 over game bugs; all reloads at 23:18-23:19 are this",
+        "watcher": "read-only log watcher from 22:36; about 9 stray client sessions in the server log at 22:36-22:41 are its first version"
+      },
+      "server": {
+        "activations": 35,
+        "vendMsRange": [
+          3320,
+          6193
+        ],
+        "vendMsMedian": 4152,
+        "errors": 81,
+        "warnings": 24,
+        "errorsDetail": "61 Token does not exist (58 from deletes), 17 undefined id in EmbeddedCollection from fromUuid, 3 ActiveEffect does not exist; bursts around battles",
+        "players": {
+          "Rinri": {
+            "route": "124.122.x.x",
+            "pageLoads": 2,
+            "reloads": 0,
+            "forcedByRestart": 1
+          },
+          "Silryantish": {
+            "route": "27.130.x.x",
+            "pageLoads": 2,
+            "reloads": 0,
+            "forcedByRestart": 1
+          },
+          "Trinio": {
+            "route": "223.205.x.x",
+            "pageLoads": 4,
+            "reloads": 2,
+            "forcedByRestart": 1,
+            "reloadSecAfterDraw": [
+              646,
+              1467
+            ]
+          },
+          "Blumairwen": {
+            "route": "27.145.x.x",
+            "pageLoads": 5,
+            "reloads": 3,
+            "forcedByRestart": 1,
+            "reloadNote": "22:47-23:14, on a connection they reported as wonky; includes one 987 s load"
+          }
+        }
+      },
+      "clientHealth": {
+        "GM": {
+          "browser": "Electron 29",
+          "deviceMemoryGB": 8,
+          "cores": 16,
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce GTX 1070 Ti (0x00001B82) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "softwareGL": false,
+          "screen": "1920x1080@1",
+          "boots": [
+            {
+              "at": "10-31 21:20:11",
+              "verdict": "NEW NAVIGATION · boot gap 1370 s",
+              "navType": "navigate",
+              "wasDiscarded": false,
+              "loadS": 48,
+              "prevScene": "Valley_Map009",
+              "prevSinceDrawS": 99,
+              "prevDrawing": false,
+              "prevHeapMB": 996,
+              "prevTextures": 29,
+              "prevDriftMs": 0
+            },
+            {
+              "at": "10-31 23:19:04",
+              "verdict": "NEW NAVIGATION · boot gap 40 s",
+              "navType": "navigate",
+              "wasDiscarded": false,
+              "loadS": 49,
+              "prevScene": "Dragonslayer Overworld",
+              "prevSinceDrawS": 218,
+              "prevDrawing": false,
+              "prevHeapMB": 1075,
+              "prevTextures": 59,
+              "prevDriftMs": 0
+            }
+          ],
+          "draws": 35,
+          "drawMedianS": 0.3,
+          "drawMaxS": 1.1,
+          "stalls": [],
+          "disconnects": [],
+          "hides": 1,
+          "hiddenMinutes": 0,
+          "longHides": [],
+          "sampleGaps": [],
+          "loads": [
+            {
+              "at": "10-31 21:20:11",
+              "scene": "Dragonslayer Title (world entry)",
+              "s": 47,
+              "texS": 47,
+              "files": 77,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "rings-steel.json",
+                  "from": "the game host",
+                  "ms": 396,
+                  "done": true
+                },
+                {
+                  "file": "ink_jet.png",
+                  "from": "the game host",
+                  "ms": 248,
+                  "done": true
+                },
+                {
+                  "file": "cold_fog.png",
+                  "from": "the game host",
+                  "ms": 247,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-31 23:19:04",
+              "scene": "Dragonslayer Overworld (world entry)",
+              "s": 49,
+              "texS": 49,
+              "files": 83,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Poison.png",
+                  "from": "the game host",
+                  "ms": 707,
+                  "done": true
+                },
+                {
+                  "file": "Burn.png",
+                  "from": "the game host",
+                  "ms": 700,
+                  "done": true
+                },
+                {
+                  "file": "Zombie.png",
+                  "from": "the game host",
+                  "ms": 692,
+                  "done": true
+                }
+              ],
+              "pending": []
+            }
+          ],
+          "waits": [
+            {
+              "at": "10-31 21:20:11",
+              "atS": 30,
+              "scene": "null (world entry)",
+              "pct": 0,
+              "left": 0,
+              "pending": []
+            },
+            {
+              "at": "10-31 23:19:04",
+              "atS": 30,
+              "scene": "null (world entry)",
+              "pct": 0,
+              "left": 0,
+              "pending": []
+            }
+          ],
+          "peakHeapMB": 2581,
+          "peakTextures": 184,
+          "console": {
+            "warn [DungeonPathing][Bootstrap] rebuild: no party token (GM setup mode)": 3,
+            "warn [ONI][JournalSystem] Party/DB token not found on current scene. {\"dbId\":\"t6E3CQ0pGxwLgXrn\",\"dbName\":\"EXFURSION Party\",\"sourceId\":\"t6E3CQ0pGx": 3,
+            "warn [ONI][JournalSystem] Scan aborted: no party token resolved. {\"reason\":\"canvasReady\"}": 3,
+            "warn theatre | OUR DOCK IS NOT ACTIVE, Not responding to reqresync": 1
+          },
+          "mirror": {
+            "hits": 14886,
+            "misses": 7,
+            "fallbacks": 1,
+            "records": 37,
+            "on": true
+          },
+          "fps": []
+        },
+        "Spectator": {
+          "browser": "Edge 156",
+          "deviceMemoryGB": 32,
+          "cores": 16,
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce GTX 1070 Ti (0x00001B82) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "softwareGL": false,
+          "screen": "1920x1080@1",
+          "boots": [
+            {
+              "at": "10-31 21:21:06",
+              "verdict": "FIRST LOAD",
+              "navType": "navigate",
+              "wasDiscarded": false,
+              "loadS": 39,
+              "prevScene": null,
+              "prevSinceDrawS": null,
+              "prevDrawing": null,
+              "prevHeapMB": null,
+              "prevTextures": null,
+              "prevDriftMs": null
+            },
+            {
+              "at": "10-31 23:19:50",
+              "verdict": "PAGE DIED · boot gap 128 s",
+              "navType": "navigate",
+              "wasDiscarded": false,
+              "loadS": 36,
+              "prevScene": "Dragonslayer Overworld",
+              "prevSinceDrawS": 189,
+              "prevDrawing": false,
+              "prevHeapMB": 842,
+              "prevTextures": 58,
+              "prevDriftMs": 0
+            }
+          ],
+          "draws": 35,
+          "drawMedianS": 0.1,
+          "drawMaxS": 0.4,
+          "stalls": [],
+          "disconnects": [],
+          "hides": 0,
+          "hiddenMinutes": 0,
+          "longHides": [],
+          "sampleGaps": [],
+          "loads": [
+            {
+              "at": "10-31 21:21:06",
+              "scene": "Dragonslayer Title (world entry)",
+              "s": 38,
+              "texS": 38,
+              "files": 77,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "rings-steel.json",
+                  "from": "the game host",
+                  "ms": 392,
+                  "done": true
+                },
+                {
+                  "file": "cross_reaping.png",
+                  "from": "the game host",
+                  "ms": 256,
+                  "done": true
+                },
+                {
+                  "file": "ink_jet.png",
+                  "from": "the game host",
+                  "ms": 255,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-31 23:19:50",
+              "scene": "Dragonslayer Overworld (world entry)",
+              "s": 36,
+              "texS": 36,
+              "files": 83,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "rings-steel.json",
+                  "from": "the game host",
+                  "ms": 395,
+                  "done": true
+                },
+                {
+                  "file": "Poison.png",
+                  "from": "the game host",
+                  "ms": 251,
+                  "done": true
+                },
+                {
+                  "file": "Burn.png",
+                  "from": "the game host",
+                  "ms": 251,
+                  "done": true
+                }
+              ],
+              "pending": []
+            }
+          ],
+          "waits": [],
+          "peakHeapMB": 1214,
+          "peakTextures": 179,
+          "console": {
+            "warn theatre | OUR DOCK IS NOT ACTIVE, Not responding to reqresync": 1
+          },
+          "mirror": {
+            "hits": 2550,
+            "misses": 3,
+            "fallbacks": 1,
+            "records": 37,
+            "on": true
+          },
+          "fps": []
+        },
+        "Silryantish": {
+          "browser": "Edge 156",
+          "deviceMemoryGB": null,
+          "cores": 16,
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4060 Ti (0x00002803) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "softwareGL": false,
+          "screen": "1920x1080@1",
+          "boots": [
+            {
+              "at": "10-31 21:23:14",
+              "verdict": "NEW NAVIGATION · boot gap 155719 s",
+              "navType": "navigate",
+              "wasDiscarded": false,
+              "loadS": 41,
+              "prevScene": "Dragonslayer Title",
+              "prevSinceDrawS": 6,
+              "prevDrawing": false,
+              "prevHeapMB": 808,
+              "prevTextures": 35,
+              "prevDriftMs": 0
+            },
+            {
+              "at": "10-31 23:19:32",
+              "verdict": "NEW NAVIGATION · boot gap 36 s",
+              "navType": "navigate",
+              "wasDiscarded": false,
+              "loadS": 40,
+              "prevScene": "Dragonslayer Overworld",
+              "prevSinceDrawS": 260,
+              "prevDrawing": false,
+              "prevHeapMB": 828,
+              "prevTextures": 62,
+              "prevDriftMs": 0
+            }
+          ],
+          "draws": 35,
+          "drawMedianS": 0.1,
+          "drawMaxS": 6.3,
+          "stalls": [],
+          "disconnects": [],
+          "hides": 9,
+          "hiddenMinutes": 1,
+          "longHides": [],
+          "sampleGaps": [],
+          "loads": [
+            {
+              "at": "10-31 21:23:14",
+              "scene": "Dragonslayer Title (world entry)",
+              "s": 41,
+              "texS": 41,
+              "files": 77,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "ink_jet.png",
+                  "from": "the game host",
+                  "ms": 1830,
+                  "done": true
+                },
+                {
+                  "file": "infuriate.png",
+                  "from": "the game host",
+                  "ms": 1829,
+                  "done": true
+                },
+                {
+                  "file": "feculent_flood.png",
+                  "from": "the game host",
+                  "ms": 1823,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-31 21:27:41",
+              "scene": "Midgard_Map008",
+              "s": 3,
+              "texS": 3,
+              "files": 81,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Valley_Map007.png",
+                  "from": "the game host",
+                  "ms": 3039,
+                  "done": true
+                },
+                {
+                  "file": "Hina_Standard.png",
+                  "from": "the game host",
+                  "ms": 128,
+                  "done": true
+                },
+                {
+                  "file": "Zarg_Standard.png",
+                  "from": "the game host",
+                  "ms": 102,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-31 21:28:22",
+              "scene": "Loading Screen",
+              "s": 3,
+              "texS": 3,
+              "files": 77,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "DRG_LoadingIcon.webm",
+                  "from": "the game host",
+                  "ms": 3336,
+                  "done": true
+                },
+                {
+                  "file": "Momonga_Standard.png",
+                  "from": "the game host",
+                  "ms": 38,
+                  "done": true
+                },
+                {
+                  "file": "rings-steel.json",
+                  "from": "the game host",
+                  "ms": 1,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-31 21:59:10",
+              "scene": "Midgard_Map001",
+              "s": 6,
+              "texS": 6,
+              "files": 87,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Valley_Map003.png",
+                  "from": "the game host",
+                  "ms": 6251,
+                  "done": true
+                },
+                {
+                  "file": "Zombie_Standard.png",
+                  "from": "the game host",
+                  "ms": 179,
+                  "done": true
+                },
+                {
+                  "file": "SkelMiner_Standard.png",
+                  "from": "the game host",
+                  "ms": 150,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-31 22:17:47",
+              "scene": "Dragonslayer Overworld",
+              "s": 3,
+              "texS": 3,
+              "files": 83,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Overworld_Map001.png",
+                  "from": "the game host",
+                  "ms": 2777,
+                  "done": true
+                },
+                {
+                  "file": "Fumes_02_Steam_White_400x400.webm",
+                  "from": "the game host",
+                  "ms": 1735,
+                  "done": true
+                },
+                {
+                  "file": "Door_Tile.png",
+                  "from": "the game host",
+                  "ms": 139,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-31 22:18:37",
+              "scene": "Vastwind_Battlemap001",
+              "s": 2,
+              "texS": 2,
+              "files": 77,
+              "left": 0,
+              "shown": false,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "WindStreams_01_White_20OPA_1200x1200.webm",
+                  "from": "the game host",
+                  "ms": 2251,
+                  "done": true
+                },
+                {
+                  "file": "Vastwind_Battlemap001.png",
+                  "from": "the game host",
+                  "ms": 1025,
+                  "done": true
+                },
+                {
+                  "file": "rings-steel.json",
+                  "from": "the game host",
+                  "ms": 2,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-31 23:19:32",
+              "scene": "Dragonslayer Overworld (world entry)",
+              "s": 40,
+              "texS": 40,
+              "files": 83,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "rings-steel.json",
+                  "from": "the game host",
+                  "ms": 860,
+                  "done": true
+                },
+                {
+                  "file": "Poison.png",
+                  "from": "the game host",
+                  "ms": 833,
+                  "done": true
+                },
+                {
+                  "file": "Burn.png",
+                  "from": "the game host",
+                  "ms": 833,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "11-01 00:21:22",
+              "scene": "Valley_Map023",
+              "s": 5,
+              "texS": 5,
+              "files": 83,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Valley_Map030.png",
+                  "from": "the game host",
+                  "ms": 5385,
+                  "done": true
+                },
+                {
+                  "file": "Valley_Map030_PillarFront.webp",
+                  "from": "the game host",
+                  "ms": 246,
+                  "done": true
+                },
+                {
+                  "file": "Deva_Pose_Dark.png",
+                  "from": "the game host",
+                  "ms": 148,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "11-01 00:28:50",
+              "scene": "Valley_Map009",
+              "s": 2,
+              "texS": 2,
+              "files": 93,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Valley_Map016.png",
+                  "from": "the game host",
+                  "ms": 2431,
+                  "done": true
+                },
+                {
+                  "file": "Treasure_Tile.png",
+                  "from": "the game host",
+                  "ms": 96,
+                  "done": true
+                },
+                {
+                  "file": "Fishing_Tile.png",
+                  "from": "the game host",
+                  "ms": 76,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "11-01 01:35:33",
+              "scene": "Valley_Map024",
+              "s": 3,
+              "texS": 3,
+              "files": 80,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Valley_Map031.png",
+                  "from": "the game host",
+                  "ms": 2884,
+                  "done": true
+                },
+                {
+                  "file": "Zarg_Standard.png",
+                  "from": "the game host",
+                  "ms": 82,
+                  "done": true
+                },
+                {
+                  "file": "Blanche_Standard.png",
+                  "from": "the game host",
+                  "ms": 68,
+                  "done": true
+                }
+              ],
+              "pending": []
+            }
+          ],
+          "waits": [],
+          "peakHeapMB": 2090,
+          "peakTextures": 159,
+          "console": {
+            "warn [ONI][JournalSystem] Party/DB token not found on current scene. {\"dbId\":\"t6E3CQ0pGxwLgXrn\",\"dbName\":\"EXFURSION Party\",\"sourceId\":\"t6E3CQ0pGx": 3,
+            "warn [ONI][JournalSystem] Scan aborted: no party token resolved. {\"reason\":\"canvasReady\"}": 3,
+            "error You have lost connection to the server, attempting to re-establish.": 2,
+            "warn theatre | OUR DOCK IS NOT ACTIVE, Not responding to reqresync": 1,
+            "error [unhandledrejection] TypeError: Cannot read properties of null (reading 'sessionId')": 1
+          },
+          "mirror": {
+            "hits": 2997,
+            "misses": 3,
+            "fallbacks": 1,
+            "records": 37,
+            "on": true
+          },
+          "fps": []
+        },
+        "Rinri": {
+          "browser": "Chrome 156",
+          "deviceMemoryGB": null,
+          "cores": 8,
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce GTX 1660 (0x00002184) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "softwareGL": false,
+          "screen": "1920x1080@1",
+          "boots": [
+            {
+              "at": "10-31 21:23:21",
+              "verdict": "NEW NAVIGATION · boot gap 88979 s",
+              "navType": "navigate",
+              "wasDiscarded": false,
+              "loadS": 49,
+              "prevScene": "Dragonslayer Title",
+              "prevSinceDrawS": 16,
+              "prevDrawing": false,
+              "prevHeapMB": 802,
+              "prevTextures": 31,
+              "prevDriftMs": 0
+            },
+            {
+              "at": "10-31 23:19:29",
+              "verdict": "NEW NAVIGATION",
+              "navType": "navigate",
+              "wasDiscarded": false,
+              "loadS": 62,
+              "prevScene": "Dragonslayer Overworld",
+              "prevSinceDrawS": 260,
+              "prevDrawing": false,
+              "prevHeapMB": 855,
+              "prevTextures": 79,
+              "prevDriftMs": 0
+            }
+          ],
+          "draws": 35,
+          "drawMedianS": 0.1,
+          "drawMaxS": 7.7,
+          "stalls": [],
+          "disconnects": [],
+          "hides": 2,
+          "hiddenMinutes": 2,
+          "longHides": [],
+          "sampleGaps": [],
+          "loads": [
+            {
+              "at": "10-31 21:23:21",
+              "scene": "Dragonslayer Title (world entry)",
+              "s": 49,
+              "texS": 49,
+              "files": 77,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "rings-steel.json",
+                  "from": "the game host",
+                  "ms": 3114,
+                  "done": true
+                },
+                {
+                  "file": "Wet.png",
+                  "from": "the game host",
+                  "ms": 545,
+                  "done": true
+                },
+                {
+                  "file": "Stun.png",
+                  "from": "the game host",
+                  "ms": 545,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-31 21:27:42",
+              "scene": "Midgard_Map008",
+              "s": 2,
+              "texS": 2,
+              "files": 81,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Valley_Map007.png",
+                  "from": "the game host",
+                  "ms": 2061,
+                  "done": true
+                },
+                {
+                  "file": "Blanche_Standard.png",
+                  "from": "the game host",
+                  "ms": 86,
+                  "done": true
+                },
+                {
+                  "file": "Hina_Standard.png",
+                  "from": "the game host",
+                  "ms": 78,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-31 21:59:09",
+              "scene": "Midgard_Map001",
+              "s": 4,
+              "texS": 4,
+              "files": 87,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Valley_Map003.png",
+                  "from": "the game host",
+                  "ms": 3880,
+                  "done": true
+                },
+                {
+                  "file": "Zombie_Standard.png",
+                  "from": "the game host",
+                  "ms": 154,
+                  "done": true
+                },
+                {
+                  "file": "Rock Golem_Standard.png",
+                  "from": "the game host",
+                  "ms": 119,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-31 22:00:14",
+              "scene": "Midgard_Map004",
+              "s": 6,
+              "texS": 6,
+              "files": 78,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Valley_Map006.png",
+                  "from": "the game host",
+                  "ms": 5789,
+                  "done": true
+                },
+                {
+                  "file": "Nightshade.png",
+                  "from": "the game host",
+                  "ms": 109,
+                  "done": true
+                },
+                {
+                  "file": "rings-steel.json",
+                  "from": "the game host",
+                  "ms": 2,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-31 23:19:29",
+              "scene": "Dragonslayer Overworld (world entry)",
+              "s": 62,
+              "texS": 62,
+              "files": 83,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Silence.png",
+                  "from": "the game host",
+                  "ms": 478,
+                  "done": true
+                },
+                {
+                  "file": "Sleep.png",
+                  "from": "the game host",
+                  "ms": 465,
+                  "done": true
+                },
+                {
+                  "file": "Fear.png",
+                  "from": "the game host",
+                  "ms": 461,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "11-01 00:28:50",
+              "scene": "Valley_Map009",
+              "s": 3,
+              "texS": 2,
+              "files": 93,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Valley_Map016.png",
+                  "from": "the game host",
+                  "ms": 2470,
+                  "done": true
+                },
+                {
+                  "file": "Treasure_Tile.png",
+                  "from": "the game host",
+                  "ms": 61,
+                  "done": true
+                },
+                {
+                  "file": "Fishing_Tile.png",
+                  "from": "the game host",
+                  "ms": 61,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "11-01 00:29:38",
+              "scene": "Valley_Battlemap002",
+              "s": 8,
+              "texS": 8,
+              "files": 76,
+              "left": 0,
+              "shown": false,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Valley_Battlemap002.webp",
+                  "from": "the game host",
+                  "ms": 7600,
+                  "done": true
+                },
+                {
+                  "file": "rings-steel.json",
+                  "from": "the game host",
+                  "ms": 1,
+                  "done": true
+                },
+                {
+                  "file": "combat.svg",
+                  "from": "the game host",
+                  "ms": 1,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "11-01 02:24:28",
+              "scene": "Dragonslayer Title",
+              "s": 3,
+              "texS": 3,
+              "files": 77,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Title.png",
+                  "from": "the game host",
+                  "ms": 3320,
+                  "done": true
+                },
+                {
+                  "file": "Title_UI.png",
+                  "from": "the game host",
+                  "ms": 295,
+                  "done": true
+                },
+                {
+                  "file": "rings-steel.json",
+                  "from": "the game host",
+                  "ms": 2,
+                  "done": true
+                }
+              ],
+              "pending": []
+            }
+          ],
+          "waits": [],
+          "peakHeapMB": 1448,
+          "peakTextures": 155,
+          "console": {
+            "warn [ONI][JournalSystem] Party/DB token not found on current scene. {\"dbId\":\"t6E3CQ0pGxwLgXrn\",\"dbName\":\"EXFURSION Party\",\"sourceId\":\"t6E3CQ0pGx": 3,
+            "warn [ONI][JournalSystem] Scan aborted: no party token resolved. {\"reason\":\"canvasReady\"}": 3,
+            "error You have lost connection to the server, attempting to re-establish.": 2,
+            "warn theatre | OUR DOCK IS NOT ACTIVE, Not responding to reqresync": 1,
+            "error [unhandledrejection] TypeError: Cannot read properties of null (reading 'sessionId')": 1
+          },
+          "mirror": {
+            "hits": 2994,
+            "misses": 5,
+            "fallbacks": 1,
+            "records": 37,
+            "on": true
+          },
+          "fps": []
+        },
+        "Trinio": {
+          "browser": "Firefox 159",
+          "deviceMemoryGB": null,
+          "cores": 16,
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce GTX 980 Direct3D11 vs_5_0 ps_5_0), or similar",
+          "softwareGL": false,
+          "screen": "2560x1440@1",
+          "boots": [
+            {
+              "at": "10-31 21:24:46",
+              "verdict": "NEW NAVIGATION · boot gap 169980 s",
+              "navType": "navigate",
+              "wasDiscarded": null,
+              "loadS": 31,
+              "prevScene": "Dragonslayer Title",
+              "prevSinceDrawS": 10,
+              "prevDrawing": false,
+              "prevHeapMB": null,
+              "prevTextures": 41,
+              "prevDriftMs": 0
+            },
+            {
+              "at": "10-31 21:39:27",
+              "verdict": "RELOAD",
+              "navType": "reload",
+              "wasDiscarded": null,
+              "loadS": 30,
+              "prevScene": "Loading Screen",
+              "prevSinceDrawS": 638,
+              "prevDrawing": false,
+              "prevHeapMB": null,
+              "prevTextures": 15,
+              "prevDriftMs": 0
+            },
+            {
+              "at": "10-31 22:43:23",
+              "verdict": "RELOAD",
+              "navType": "reload",
+              "wasDiscarded": null,
+              "loadS": 28,
+              "prevScene": "Vastwind_Battlemap001",
+              "prevSinceDrawS": 1459,
+              "prevDrawing": false,
+              "prevHeapMB": null,
+              "prevTextures": 77,
+              "prevDriftMs": 0
+            },
+            {
+              "at": "10-31 23:19:09",
+              "verdict": "NEW NAVIGATION · boot gap 18 s",
+              "navType": "navigate",
+              "wasDiscarded": null,
+              "loadS": 33,
+              "prevScene": "Dragonslayer Overworld",
+              "prevSinceDrawS": 260,
+              "prevDrawing": false,
+              "prevHeapMB": null,
+              "prevTextures": 55,
+              "prevDriftMs": 0
+            }
+          ],
+          "draws": 35,
+          "drawMedianS": 0.2,
+          "drawMaxS": 2.6,
+          "stalls": [],
+          "disconnects": [
+            {
+              "at": "10-31 21:38:57",
+              "reason": "transport close",
+              "scene": "Loading Screen",
+              "unload": true
+            },
+            {
+              "at": "10-31 22:42:55",
+              "reason": "transport close",
+              "scene": "Vastwind_Battlemap001",
+              "unload": true
+            },
+            {
+              "at": "10-31 23:18:17",
+              "reason": "transport close",
+              "scene": "Dragonslayer Overworld",
+              "unload": true
+            }
+          ],
+          "hides": 47,
+          "hiddenMinutes": 13,
+          "longHides": [],
+          "sampleGaps": [
+            {
+              "at": "10-31 23:20:10",
+              "gapS": 151,
+              "scene": "Valley_Map003",
+              "hiddenAfter": false
+            }
+          ],
+          "loads": [
+            {
+              "at": "10-31 21:24:46",
+              "scene": "Dragonslayer Title (world entry)",
+              "s": 31,
+              "texS": 31,
+              "files": 77,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "ink_jet.png",
+                  "from": "the game host",
+                  "ms": 395,
+                  "done": true
+                },
+                {
+                  "file": "cross_reaping.png",
+                  "from": "the game host",
+                  "ms": 393,
+                  "done": true
+                },
+                {
+                  "file": "cold_fog.png",
+                  "from": "the game host",
+                  "ms": 392,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-31 21:39:27",
+              "scene": "Loading Screen (world entry)",
+              "s": 30,
+              "texS": 30,
+              "files": 77,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "cross_reaping.png",
+                  "from": "the game host",
+                  "ms": 1625,
+                  "done": true
+                },
+                {
+                  "file": "infuriate.png",
+                  "from": "the game host",
+                  "ms": 1625,
+                  "done": true
+                },
+                {
+                  "file": "cold_fog.png",
+                  "from": "the game host",
+                  "ms": 1624,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-31 21:39:31",
+              "scene": "Midgard_Map008",
+              "s": 3,
+              "texS": 3,
+              "files": 81,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Valley_Map007.png",
+                  "from": "the game host",
+                  "ms": 2404,
+                  "done": true
+                },
+                {
+                  "file": "Blanche_Standard.png",
+                  "from": "the game host",
+                  "ms": 2403,
+                  "done": true
+                },
+                {
+                  "file": "Zarg_Standard.png",
+                  "from": "the game host",
+                  "ms": 2400,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-31 22:43:23",
+              "scene": "Vastwind_Battlemap001 (world entry)",
+              "s": 27,
+              "texS": 27,
+              "files": 84,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "summon_garuda_II.png",
+                  "from": "the game host",
+                  "ms": 313,
+                  "done": true
+                },
+                {
+                  "file": "ink_jet.png",
+                  "from": "the game host",
+                  "ms": 313,
+                  "done": true
+                },
+                {
+                  "file": "cross_reaping.png",
+                  "from": "the game host",
+                  "ms": 313,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-31 23:19:09",
+              "scene": "Dragonslayer Overworld (world entry)",
+              "s": 33,
+              "texS": 33,
+              "files": 83,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Poison.png",
+                  "from": "the game host",
+                  "ms": 303,
+                  "done": true
+                },
+                {
+                  "file": "Burn.png",
+                  "from": "the game host",
+                  "ms": 302,
+                  "done": true
+                },
+                {
+                  "file": "Blind.png",
+                  "from": "the game host",
+                  "ms": 302,
+                  "done": true
+                }
+              ],
+              "pending": []
+            }
+          ],
+          "waits": [],
+          "peakHeapMB": 0,
+          "peakTextures": 159,
+          "console": {
+            "warn [ONI][JournalSystem] Party/DB token not found on current scene. {\"dbId\":\"t6E3CQ0pGxwLgXrn\",\"dbName\":\"EXFURSION Party\",\"sourceId\":\"t6E3CQ0pGx": 6,
+            "warn [ONI][JournalSystem] Scan aborted: no party token resolved. {\"reason\":\"canvasReady\"}": 4,
+            "error You have lost connection to the server, attempting to re-establish.": 5,
+            "warn [ONI][JournalSystem] Scan aborted: no party token resolved. {\"reason\":\"updateTile\"}": 2,
+            "warn theatre | OUR DOCK IS NOT ACTIVE, Not responding to reqresync": 1,
+            "error [unhandledrejection] TypeError: can't access property \"sessionId\", response is null": 1
+          },
+          "mirror": {
+            "hits": 4140,
+            "misses": 3,
+            "fallbacks": 1,
+            "records": 39,
+            "on": true
+          },
+          "fps": []
+        },
+        "GM II": {
+          "browser": "Chrome 156",
+          "deviceMemoryGB": null,
+          "cores": 12,
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Ti (0x00002489) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "softwareGL": false,
+          "screen": "1920x1080@1",
+          "boots": [
+            {
+              "at": "10-31 21:26:33",
+              "verdict": "FIRST LOAD",
+              "navType": "navigate",
+              "wasDiscarded": false,
+              "loadS": 139,
+              "prevScene": null,
+              "prevSinceDrawS": null,
+              "prevDrawing": null,
+              "prevHeapMB": null,
+              "prevTextures": null,
+              "prevDriftMs": null
+            }
+          ],
+          "draws": 9,
+          "drawMedianS": 1.4,
+          "drawMaxS": 5.3,
+          "stalls": [],
+          "disconnects": [
+            {
+              "at": "10-31 21:51:15",
+              "reason": "transport close",
+              "scene": "Midgard_Map008",
+              "unload": false
+            },
+            {
+              "at": "10-31 22:24:53",
+              "reason": "transport close",
+              "scene": "Vastwind_Battlemap001",
+              "unload": false
+            }
+          ],
+          "hides": 25,
+          "hiddenMinutes": 10,
+          "longHides": [],
+          "sampleGaps": [],
+          "loads": [
+            {
+              "at": "10-31 21:26:33",
+              "scene": "Dragonslayer Title (world entry)",
+              "s": 138,
+              "texS": 138,
+              "files": 77,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "rings-steel.json",
+                  "from": "the game host",
+                  "ms": 13919,
+                  "done": true
+                },
+                {
+                  "file": "Title.png",
+                  "from": "the game host",
+                  "ms": 12995,
+                  "done": true
+                },
+                {
+                  "file": "cold_fog.png",
+                  "from": "the game host",
+                  "ms": 2988,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-31 21:27:51",
+              "scene": "Midgard_Map008",
+              "s": 5,
+              "texS": 5,
+              "files": 81,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Valley_Map007.png",
+                  "from": "the game host",
+                  "ms": 5162,
+                  "done": true
+                },
+                {
+                  "file": "Keren_Standard.png",
+                  "from": "the game host",
+                  "ms": 222,
+                  "done": true
+                },
+                {
+                  "file": "Zarg_Standard.png",
+                  "from": "the game host",
+                  "ms": 214,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-31 22:00:16",
+              "scene": "Midgard_Map004",
+              "s": 3,
+              "texS": 3,
+              "files": 78,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Valley_Map006.png",
+                  "from": "the game host",
+                  "ms": 2594,
+                  "done": true
+                },
+                {
+                  "file": "Nightshade.png",
+                  "from": "the game host",
+                  "ms": 133,
+                  "done": true
+                },
+                {
+                  "file": "rings-steel.json",
+                  "from": "the game host",
+                  "ms": 3,
+                  "done": true
+                }
+              ],
+              "pending": []
+            }
+          ],
+          "waits": [
+            {
+              "at": "10-31 21:26:33",
+              "atS": 30,
+              "scene": "Dragonslayer Title (world entry)",
+              "pct": 97,
+              "left": 2,
+              "pending": [
+                "Title.png (the game host)",
+                "rings-steel.json (the game host)"
+              ]
+            }
+          ],
+          "peakHeapMB": 1222,
+          "peakTextures": 74,
+          "console": {},
+          "mirror": {
+            "hits": 382,
+            "misses": 0,
+            "fallbacks": 0,
+            "records": 10,
+            "on": true
+          },
+          "fps": []
+        },
+        "Blumairwen": {
+          "browser": "Chrome 156",
+          "deviceMemoryGB": null,
+          "cores": 12,
+          "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5060 (0x00002D05) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+          "softwareGL": false,
+          "screen": "2170x1221@1.1799999475479126",
+          "boots": [
+            {
+              "at": "10-31 21:27:09",
+              "verdict": "NEW NAVIGATION · boot gap 170345 s",
+              "navType": "navigate",
+              "wasDiscarded": false,
+              "loadS": 25,
+              "prevScene": "Dragonslayer Title",
+              "prevSinceDrawS": 143,
+              "prevDrawing": false,
+              "prevHeapMB": 788,
+              "prevTextures": 19,
+              "prevDriftMs": 0
+            },
+            {
+              "at": "10-31 23:11:33",
+              "verdict": "NEW NAVIGATION · boot gap 1111 s",
+              "navType": "navigate",
+              "wasDiscarded": false,
+              "loadS": 987,
+              "prevScene": "Vastwind_Battlemap001",
+              "prevSinceDrawS": 1078,
+              "prevDrawing": false,
+              "prevHeapMB": 828,
+              "prevTextures": 55,
+              "prevDriftMs": 0
+            },
+            {
+              "at": "10-31 23:14:24",
+              "verdict": "NEW NAVIGATION · boot gap 124 s",
+              "navType": "navigate",
+              "wasDiscarded": false,
+              "loadS": 23,
+              "prevScene": "Valley_Battlemap001",
+              "prevSinceDrawS": null,
+              "prevDrawing": false,
+              "prevHeapMB": 647,
+              "prevTextures": 0,
+              "prevDriftMs": 0
+            },
+            {
+              "at": "10-31 23:20:03",
+              "verdict": "NEW NAVIGATION · boot gap 83 s",
+              "navType": "navigate",
+              "wasDiscarded": false,
+              "loadS": 25,
+              "prevScene": "Dragonslayer Overworld",
+              "prevSinceDrawS": 231,
+              "prevDrawing": false,
+              "prevHeapMB": 802,
+              "prevTextures": 37,
+              "prevDriftMs": 0
+            }
+          ],
+          "draws": 32,
+          "drawMedianS": 0.1,
+          "drawMaxS": 5.3,
+          "stalls": [],
+          "disconnects": [
+            {
+              "at": "10-31 22:36:14",
+              "reason": "transport close",
+              "scene": "Vastwind_Battlemap001",
+              "unload": false
+            }
+          ],
+          "hides": 33,
+          "hiddenMinutes": 30,
+          "longHides": [
+            {
+              "at": "10-31 21:53:40",
+              "hiddenS": 337
+            }
+          ],
+          "sampleGaps": [],
+          "loads": [
+            {
+              "at": "10-31 21:27:09",
+              "scene": "Dragonslayer Title (world entry)",
+              "s": 25,
+              "texS": 25,
+              "files": 77,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "summon_garuda_II.png",
+                  "from": "the game host",
+                  "ms": 706,
+                  "done": true
+                },
+                {
+                  "file": "Burn.png",
+                  "from": "the game host",
+                  "ms": 684,
+                  "done": true
+                },
+                {
+                  "file": "Blind.png",
+                  "from": "the game host",
+                  "ms": 679,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-31 21:28:25",
+              "scene": "Loading Screen",
+              "s": 5,
+              "texS": 5,
+              "files": 77,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "DRG_LoadingIcon.webm",
+                  "from": "the game host",
+                  "ms": 5306,
+                  "done": true
+                },
+                {
+                  "file": "Momonga_Standard.png",
+                  "from": "the game host",
+                  "ms": 38,
+                  "done": true
+                },
+                {
+                  "file": "rings-steel.json",
+                  "from": "the game host",
+                  "ms": 1,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-31 23:14:24",
+              "scene": "Dragonslayer Overworld (world entry)",
+              "s": 23,
+              "texS": 23,
+              "files": 83,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "rings-steel.json",
+                  "from": "the game host",
+                  "ms": 644,
+                  "done": true
+                },
+                {
+                  "file": "Paralyze.png",
+                  "from": "the game host",
+                  "ms": 613,
+                  "done": true
+                },
+                {
+                  "file": "Wet.png",
+                  "from": "the game host",
+                  "ms": 612,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-31 23:20:03",
+              "scene": "Dragonslayer Overworld (world entry)",
+              "s": 25,
+              "texS": 25,
+              "files": 83,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Paralyze.png",
+                  "from": "the game host",
+                  "ms": 240,
+                  "done": true
+                },
+                {
+                  "file": "Wet.png",
+                  "from": "the game host",
+                  "ms": 239,
+                  "done": true
+                },
+                {
+                  "file": "Bludgeon.png",
+                  "from": "the game host",
+                  "ms": 239,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "10-31 23:21:14",
+              "scene": "Valley_Map003",
+              "s": 3,
+              "texS": 3,
+              "files": 78,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Valley_Map010.png",
+                  "from": "the game host",
+                  "ms": 2924,
+                  "done": true
+                },
+                {
+                  "file": "bag.png",
+                  "from": "the game host",
+                  "ms": 51,
+                  "done": true
+                },
+                {
+                  "file": "rings-steel.json",
+                  "from": "the game host",
+                  "ms": 1,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "11-01 00:21:20",
+              "scene": "Valley_Map023",
+              "s": 3,
+              "texS": 3,
+              "files": 83,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Valley_Map030.png",
+                  "from": "the game host",
+                  "ms": 2818,
+                  "done": true
+                },
+                {
+                  "file": "Valley_Map030_PillarFront.webp",
+                  "from": "the game host",
+                  "ms": 281,
+                  "done": true
+                },
+                {
+                  "file": "bag.png",
+                  "from": "the game host",
+                  "ms": 240,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "11-01 00:29:36",
+              "scene": "Valley_Battlemap002",
+              "s": 5,
+              "texS": 5,
+              "files": 76,
+              "left": 0,
+              "shown": false,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Valley_Battlemap002.webp",
+                  "from": "the game host",
+                  "ms": 4939,
+                  "done": true
+                },
+                {
+                  "file": "rings-steel.json",
+                  "from": "the game host",
+                  "ms": 1,
+                  "done": true
+                },
+                {
+                  "file": "combat.svg",
+                  "from": "the game host",
+                  "ms": 1,
+                  "done": true
+                }
+              ],
+              "pending": []
+            },
+            {
+              "at": "11-01 02:24:30",
+              "scene": "Dragonslayer Title",
+              "s": 5,
+              "texS": 5,
+              "files": 77,
+              "left": 0,
+              "shown": true,
+              "reason": "ready",
+              "slowest": [
+                {
+                  "file": "Title.png",
+                  "from": "the game host",
+                  "ms": 5195,
+                  "done": true
+                },
+                {
+                  "file": "Title_UI.png",
+                  "from": "the game host",
+                  "ms": 646,
+                  "done": true
+                },
+                {
+                  "file": "rings-steel.json",
+                  "from": "the game host",
+                  "ms": 1,
+                  "done": true
+                }
+              ],
+              "pending": []
+            }
+          ],
+          "waits": [
+            {
+              "at": "10-31 23:11:33",
+              "atS": 30,
+              "scene": "Valley_Battlemap001 (world entry)",
+              "pct": 43,
+              "left": 48,
+              "pending": [
+                "Valley_Battlemap001.webp (the game host)",
+                "rings-steel.json (the game host)",
+                "Paralyze.png (the game host)",
+                "Bludgeon.png (the game host)",
+                "Poison.png (the game host)"
+              ]
+            }
+          ],
+          "peakHeapMB": 1993,
+          "peakTextures": 150,
+          "console": {
+            "error [unhandledrejection] AbortError: The play() request was interrupted because video-only background media was paused to save power. https://go": 2,
+            "warn [ONI][JournalSystem] Party/DB token not found on current scene. {\"dbId\":\"t6E3CQ0pGxwLgXrn\",\"dbName\":\"EXFURSION Party\",\"sourceId\":\"t6E3CQ0pGx": 1,
+            "warn [ONI][JournalSystem] Scan aborted: no party token resolved. {\"reason\":\"canvasReady\"}": 1,
+            "error You have lost connection to the server, attempting to re-establish.": 3,
+            "warn [BD] preloadSfx: decode failed for https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/bond_cleared.wav TypeError: Failed to fetch": 1,
+            "warn [BD] preloadSfx: decode failed for https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula_Point.ogg TypeError: Failed to fetch": 1,
+            "warn [BD] preloadSfx: decode failed for https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_5.wav TypeError: Failed to fetch": 1,
+            "warn [BD] preloadSfx: decode failed for https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Cursor_Decide1.wav TypeError: Failed to fetch": 1,
+            "warn [BD] preloadSfx: decode failed for https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/trait_up1.wav TypeError: Failed to fetch": 1,
+            "warn [BD] preloadSfx: decode failed for https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_5_Short.wav TypeError: Failed to": 1,
+            "warn [BD] preloadSfx: decode failed for https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Dice.wav TypeError: Failed to fetch": 1,
+            "warn [BD] preloadSfx: decode failed for https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/trait_down2.wav TypeError: Failed to fetch": 1,
+            "warn [BD] preloadSfx: decode failed for https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Teleport.ogg TypeError: Failed to fetch": 1,
+            "warn [BD] preloadSfx: decode failed for https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Flash2.ogg TypeError: Failed to fetch": 1,
+            "warn [BD] preloadSfx: decode failed for https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fire1.ogg TypeError: Failed to fetch": 1,
+            "warn [BD] preloadSfx: decode failed for https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Charm.ogg TypeError: Failed to fetch": 1,
+            "warn [BD] preloadSfx: decode failed for https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Crossbow.ogg TypeError: Failed to ": 1,
+            "error [unhandledrejection] {\"isTrusted\":true}": 1,
+            "error Foundry VTT | Server connection lost.": 1,
+            "warn [fabula-ultima-companion] Failed to cache cursor SFX ReferenceError: Howl is not defined": 1,
+            "warn [MovementControl:Resolver] 2026-10-31T16:14:25.745Z Timer end requested, but timer was not found {\"timerKey\":\"resolve-snapshot\"}": 3,
+            "warn [MovementControl:Resolver] 2026-10-31T16:14:25.746Z Timer end requested, but timer was not found {\"timerKey\":\"resolve-snapshot\"}": 1,
+            "error [unhandledrejection] SocketlibUnregisteredHandlerError: No socket handler with the name 'FU_DIRECTOR_ROUND_HIDE' has been registered.": 1,
+            "error [unhandledrejection] SocketlibUnregisteredHandlerError: No socket handler with the name 'FU_RXDECK_FIRES' has been registered.": 1,
+            "error [unhandledrejection] TypeError: Cannot read properties of null (reading 'sessionId')": 1
+          },
+          "mirror": {
+            "hits": 5628,
+            "misses": 4,
+            "fallbacks": 47,
+            "records": 36,
+            "on": true
+          },
+          "fps": []
+        }
+      },
+      "notes": [
+        "The first full session on the mirror: 35 map changes, 0 draw stalls, slowest draw 7.7 s (10-28 from Forge: 223-520 s).",
+        "Rinri 12 reloads on 10-24, 0 tonight. Blumairwen's three were a bad-connection window (self-reported, no network capture). Trinio's two are unexplained: clean exits 646 s and 1,467 s after a draw.",
+        "Blumairwen: one 987 s page load with 47 fallbacks to Forge, the only client above 1, while Forge sounds failed too. The next two loads took 23 s and 25 s with 0 fallbacks.",
+        "The mirror's fallback fires on errors only, not on a hang.",
+        "No frame-rate data existed tonight; low frame rate was reported on the GM app and by a player. See ../frame-rate/CASE.md.",
+        "Host upload measured once only: 1.6 MB/s in a 5 s sample mid-battle."
+      ]
     }
   ]
 }

@@ -2,8 +2,12 @@
 
 **Status:** open, **cause located** (2026-10-28 test); **fix built** 2026-10-29 (the forge mirror,
 `tools/forge-mirror/README.md`). **Real-player tests 2026-10-29 and 10-30: it works for all four players:** 0 fallbacks
-to Forge; the two maps that stalled 223–520 s on 10-28 now take 0.8–5.5 s on a first load; world entry 24–42 s. **Next:**
-- a full session with everyone: are the mid-session reloads gone, and what are the load times with everyone at once?
+to Forge; the two maps that stalled 223–520 s on 10-28 now take 0.8–5.5 s on a first load; world entry 24–42 s.
+**First full session 2026-10-31: the stall is gone.** 35 map changes, 0 draw stalls, slowest 7.7 s; Rinri 12 reloads → 0.
+**Next:**
+- Trinio's two reloads (clean exits long after a draw): ask them.
+- Blumairwen's 987 s load on a bad connection: the mirror's fallback fires on errors, not on a hang.
+- The case can close once a second full session repeats this (host's call).
 - the players' ~21:00 measurements may be moot, now that players no longer fetch from Forge (host's call).
 
 **Tracking report:** `reports/2026-10-28-player-reload-investigation.md`
@@ -12,6 +16,7 @@ to Forge; the two maps that stalled 223–520 s on 10-28 now take 0.8–5.5 s on
 - [2026-10-28 test](sessions/2026-10-28-test.md) (Blumairwen + Rinri)
 - [2026-10-29 mirror test](sessions/2026-10-29-mirror-test.md) (Blumairwen, Trinio, Silryantish: the mirror with real players)
 - [2026-10-30 Rinri's mirror test](sessions/2026-10-30-rinri-mirror-test.md) (the last of the four)
+- [2026-10-31 game session](sessions/2026-10-31-game-session.md) (the first full session on the mirror)
 **Data:** [sessions.json](sessions.json) · **Tools:** [../_tools/](../_tools/) · **Deep-dive from that night:** [../../player-reload-investigation-2026-10-24.md](../../player-reload-investigation-2026-10-24.md)
 
 ## Symptom
@@ -539,3 +544,15 @@ of RAM; it was closed as not planned.
     Load can bring back URLs without the `?v` the mirror holds. Both mirrored by hand for now.
   - Demo cleanup: a key-by-key compare of `data/` against a copy from before launch found only the Field actor's rebuilt
     wellspring effects, `_stats` on the touched docs and one module's own timestamp.
+- **2026-10-31 → 11-01: the first full game session on the mirror,** 5 hours with all four players.
+  - Record: [sessions/2026-10-31-game-session.md](sessions/2026-10-31-game-session.md). Data: `sessions.json` →
+    `2026-10-31-game-session`.
+  - **The stall is gone:** 35 map changes, 0 draw stalls, slowest 7.7 s. Rinri 12 reloads on 10-24 → 0. Silryantish 0.
+  - **Blumairwen:** three reloads in a 38-minute bad-connection window they reported themselves, including one 987 s load
+    with 47 fallbacks to Forge. Otherwise clean, so not the old pattern; no network capture ran.
+  - **Trinio:** two reloads, clean exits 646 s and 1,467 s after a draw. Cause unknown; not a stall.
+  - A host-ordered restart at 23:17:35 accounts for every reload at 23:18–23:19.
+  - The fallback only fires on an error, not on a hang: an open follow-up.
+  - **H1 stands as the mechanism;** with no stalls, its reloads stopped. H3's 5½ min pattern didn't reappear: Blumairwen's
+    tab was hidden 337 s once (back 21:53:40), with no reload after it.
+  - New complaint, low frame rate: a separate case, [../frame-rate/CASE.md](../frame-rate/CASE.md).
