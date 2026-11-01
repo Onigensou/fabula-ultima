@@ -68,7 +68,7 @@ import { rollCheck, checkVsThreshold } from "./check.js";
 // Standalone-reaction dispatcher — runs at FSM transitions for triggers
 // that aren't tied to an action card (conflict_start, turn_start, etc.).
 // Spawns the token-anchored reaction menu via [[reaction-menu-on-token]].
-import { dispatchStandaloneTrigger, clearAllStandaloneMenus } from "./standalone-reactions.js";
+import { dispatchStandaloneTrigger, dispatchNextUnleash, clearAllStandaloneMenus } from "./standalone-reactions.js";
 import { STANDALONE_TRIGGERS, phaseOf } from "./director-triggers.js";
 import { pushFrame, popFrame, peekTop, topIsFreeAction, topIsSrwDetour, topIsResolveDetour, stackDepth, rewindPhaseLabel } from "./continuation-stack.js";
 // Grappled (Advanced Debuff) — turn-start break-free helpers.
@@ -8383,20 +8383,43 @@ const StandaloneReactionWindow = {
             await saveDirectorState(director, { skipHistory: true });
           } catch (e) { warn(`STANDALONE_REACTION_WINDOW: ${trigger} settle checkpoint failed`, e); }
         }
-        // ASK pass — surface player-facing reactions only (auto-fires suppressed;
-        // already-decided asks deduped by scope idempotency). Runs every entry.
-        const spawned = await dispatchStandaloneTrigger({ director, trigger, payload, phase: "ask" });
-        if (spawned) log(`STANDALONE_REACTION_WINDOW: ${trigger} ask pass dispatched ${spawned} menu(s)`);
-        // Settle what the ASK pass itself queued. The forced-pass settle above has
-        // already run, so an event a player's ask pick produced here (Cognitive
-        // Focus applied at turn_start → creature_status_applied → Clairvoyance)
-        // used to wait for the next settle — the acting creature's own RESOLVE,
-        // i.e. AFTER they had acted. Only runs when the ask pass left events.
-        if (Array.isArray(ctx._postResolveTriggers) && ctx._postResolveTriggers.length) {
-          try {
-            const { settleInstance } = await import("./instance-settle.js");
-            await settleInstance(director, { reason: `${trigger}:ask` });
-          } catch (e) { warn(`STANDALONE_REACTION_WINDOW: ${trigger} post-ask settleInstance threw`, e); }
+        // UNLEASH — conflict_start only. Fire the next one due, in initiative
+        // order; while its action is queued, skip the ask pass and take the FAW
+        // detour below, which re-enters here for the next one. So the ask pass
+        // (High Speed) only opens once every Unleash has fully resolved. See
+        // dispatchNextUnleash for the ordering rules.
+        let unleashInFlight = false;
+        if (trigger === "conflict_start") {
+          const { freeActionQueue } = await import("./free-action-queue.js");
+          if (!wasReentry || !ctx._unleashAttempted) ctx._unleashAttempted = new Set();
+          while (freeActionQueue.isEmpty()) {
+            const next = await dispatchNextUnleash({ director, payload, attempted: ctx._unleashAttempted });
+            if (!next) break;
+            if (Array.isArray(ctx._postResolveTriggers) && ctx._postResolveTriggers.length) {
+              try {
+                const { settleInstance } = await import("./instance-settle.js");
+                await settleInstance(director, { reason: `${trigger}:unleash` });
+              } catch (e) { warn(`STANDALONE_REACTION_WINDOW: ${trigger} post-unleash settleInstance threw`, e); }
+            }
+          }
+          unleashInFlight = !freeActionQueue.isEmpty();
+        }
+        if (!unleashInFlight) {
+          // ASK pass — surface player-facing reactions only (auto-fires suppressed;
+          // already-decided asks deduped by scope idempotency). Runs every entry.
+          const spawned = await dispatchStandaloneTrigger({ director, trigger, payload, phase: "ask" });
+          if (spawned) log(`STANDALONE_REACTION_WINDOW: ${trigger} ask pass dispatched ${spawned} menu(s)`);
+          // Settle what the ASK pass itself queued. The forced-pass settle above has
+          // already run, so an event a player's ask pick produced here (Cognitive
+          // Focus applied at turn_start → creature_status_applied → Clairvoyance)
+          // used to wait for the next settle — the acting creature's own RESOLVE,
+          // i.e. AFTER they had acted. Only runs when the ask pass left events.
+          if (Array.isArray(ctx._postResolveTriggers) && ctx._postResolveTriggers.length) {
+            try {
+              const { settleInstance } = await import("./instance-settle.js");
+              await settleInstance(director, { reason: `${trigger}:ask` });
+            } catch (e) { warn(`STANDALONE_REACTION_WINDOW: ${trigger} post-ask settleInstance threw`, e); }
+          }
         }
       } else {
         const spawned = await dispatchStandaloneTrigger({ director, trigger, payload });

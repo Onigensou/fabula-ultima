@@ -31,6 +31,7 @@ import { log, warn } from "./logger.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { Journal } from "./sim/sim-journal.js";
 import { INTENTS } from "./intents.js";
+import { readEnemyInitScore } from "./director-initiative.js";
 
 // ── Idempotency persistence (A) ─────────────────────────────────────
 //
@@ -372,6 +373,9 @@ export async function dispatchReactionMenu({
   //              forced pass).
   //   null     → both, in one pass (legacy behavior, all non-phased triggers).
   phase = null,
+  // Leave Unleash rows out of this pass; dispatchNextUnleash fires them, one at
+  // a time. Set by dispatchStandaloneTrigger for conflict_start's forced pass.
+  holdUnleash = false,
 } = {}) {
   // `director` and `token` are required by the ASK path only — menu anchoring,
   // the IntentChannel broadcast, and the fired-set persistence all need them.
@@ -486,6 +490,16 @@ export async function dispatchReactionMenu({
         unavailableReason: c.unavailableReason ?? null,
       });
     }
+  }
+
+  // Tokenless reactors (the Field) are never held: dispatchNextUnleash only walks
+  // creatures with a token, so a held Field row would never fire at all.
+  if (holdUnleash && token && candidates?.length) {
+    const kept = [];
+    for (const c of candidates) {
+      if (!(await isUnleashCandidate(c))) kept.push(c);
+    }
+    candidates = kept;
   }
 
   if (!candidates?.length) return { cancelled: false, fired: [] };
@@ -1159,6 +1173,98 @@ export async function dispatchReactionMenu({
   return { cancelled, fired };
 }
 
+// ── Unleash ─────────────────────────────────────────────────────────────
+//
+// Unleash has no field of its own: the keyword is text, and False Appearance
+// doesn't even carry the link. What every one of them IS, mechanically, is a
+// `force` conflict_start row whose chain creates an action (Dreadwyrm Descent,
+// Explosive Entrance, False Appearance).
+//
+// Order (user ruling, 2026-11-01):
+//   - after the other forced rows, so Protect / Rampart / gear are up for the hit;
+//   - before any ask reaction, so High Speed is decided after seeing the result;
+//   - higher static Initiative Score (`props.init`, never rolled) first. No score
+//     (a PC) counts as 0, after the monsters; PC die sizes are not on that scale;
+//   - ties by spawn order, so a rewind or reload replays the same order;
+//   - one actor's several Unleashes run back to back, by item sort, then name.
+// One at a time: the next is only fired once the last has fully resolved, so its
+// conditions and checks read the battlefield that Unleash left behind.
+async function isUnleashCandidate(cand) {
+  if (cand?.mode !== "force") return false;
+  const { isActionCreatingReaction, isActionCreatingReactionForAE } = await getSkillEffectsExtras();
+  const carrier = await fromUuid(cand.carrierUuid).catch(() => null);
+  if (!carrier) return false;
+  const isAe = cand.carrierKind === "ae";
+  const cfg = isAe
+    ? carrier?.flags?.[STANDALONE_FLAG_NS]?.reactionConfig?.reaction_config_table
+    : carrier?.system?.props?.reaction_config_table;
+  const row = cfg?.[cand.rowKey] ?? null;
+  if (!row) return false;
+  return isAe ? isActionCreatingReactionForAE(carrier, row) : isActionCreatingReaction(carrier, row);
+}
+
+// Fire the next Unleash due, or return null when none is left. The caller drains
+// whatever it queued before calling again. `attempted` guards the caller's loop
+// if the fired-set write fails: without it the same row would be picked forever.
+export async function dispatchNextUnleash({ director, payload: extraPayload = null, attempted = null } = {}) {
+  if (!director) return null;
+  const trigger = "conflict_start";
+  const { findPassiveCandidates, firePreAcceptedCandidate } = await getSkillEffectsExtras();
+  // A FRESH payload per fire: roll_dice / group_check cache their vars on it, so
+  // sharing one would hand a second Unleash the first one's result.
+  const payload = buildStandalonePayload(director, trigger, extraPayload);
+  const scene = director?.dCombat?.scene ?? null;
+  const scope = scopeKeyFor(trigger, payload);
+  const firedSet = scene ? readFiredSet(scene, scope) : new Set();
+
+  const pending = [];
+  const reactors = await collectReactors(director);
+  for (let spawn = 0; spawn < reactors.length; spawn++) {
+    const { actor } = reactors[spawn];
+    let candidates = [];
+    try {
+      candidates = await findPassiveCandidates({ casterActor: actor, trigger, payload });
+    } catch (e) {
+      warn(`dispatchNextUnleash: findPassiveCandidates threw for ${actor?.name}`, e);
+      continue;
+    }
+    for (const c of candidates) {
+      const key = entryKey(actor.uuid, c.rowKey, c.carrierUuid);
+      if (firedSet.has(key) || attempted?.has(key)) continue;
+      if (!(await isUnleashCandidate(c))) continue;
+      const item = actor.items?.get?.(String(c.carrierUuid ?? "").split(".").pop()) ?? null;
+      pending.push({
+        actor, candidate: c, key, spawn,
+        init: readEnemyInitScore(actor) ?? 0,
+        sort: Number(item?.sort ?? 0) || 0,
+        name: String(c.carrierName ?? ""),
+      });
+    }
+  }
+  if (!pending.length) return null;
+  pending.sort((a, b) => (b.init - a.init) || (a.spawn - b.spawn) || (a.sort - b.sort) || a.name.localeCompare(b.name));
+
+  const { actor, candidate, key, init } = pending[0];
+  attempted?.add(key);
+  let chainResult = null;
+  try {
+    chainResult = await firePreAcceptedCandidate({ director, casterActor: actor, candidate, payload });
+    log(`Unleash: "${candidate.carrierName}" for ${actor.name} (init ${init}, ${pending.length - 1} more due)`);
+    if (SimMode.active) {
+      Journal.write("reaction-fired", `${actor.name}: ${candidate.carrierName} [${trigger}]`, { phase: "unleash", init });
+    }
+  } catch (e) {
+    warn(`dispatchNextUnleash: "${candidate.carrierName}" threw for ${actor.name}`, e);
+  }
+  if (scene) {
+    await appendFired(scene, scope, {
+      reactorUuid: actor.uuid, rowKey: candidate.rowKey, carrierUuid: candidate.carrierUuid,
+      decision: "auto",
+    });
+  }
+  return { actor, candidate, chainResult };
+}
+
 // Dispatch a standalone trigger across every live reactor. Each reactor's
 // menu fires concurrently; the Promise resolves only when ALL reactors
 // have resolved their menu (block-the-FSM semantics).
@@ -1195,6 +1301,7 @@ export async function dispatchStandaloneTrigger({ director, trigger, restrictTo 
       scope,
       scene,
       phase,
+      holdUnleash: phase === "forced" && trigger === "conflict_start",
     }).catch((e) => {
       warn(`dispatchStandaloneTrigger[${trigger}]: reactor ${actor?.name} threw`, e);
       return { cancelled: true, fired: [] };
