@@ -83,7 +83,12 @@ function verdict(b) {
 // ── per user ─────────────────────────────────────────────────────────────────
 const users = {};
 for (const e of entries) {
-  const u = (users[e.user] ??= { boots: [], draws: [], stalls: [], disconnects: [], hidden: 0, hiddenMs: 0, longHides: [], sampleGaps: [], lastSample: null, peakHeapMB: 0, peakTextures: 0, machine: null, console: {}, lastPagehide: null, loads: [], waits: [], mirror: { hits: 0, misses: 0, fallbacks: 0, records: 0, on: null } });
+  const u = (users[e.user] ??= { boots: [], draws: [], stalls: [], disconnects: [], hidden: 0, hiddenMs: 0, longHides: [], sampleGaps: [], lastSample: null, peakHeapMB: 0, peakTextures: 0, machine: null, console: {}, lastPagehide: null, loads: [], waits: [], mirror: { hits: 0, misses: 0, fallbacks: 0, records: 0, on: null }, fps: {} });
+  // client-health.js: canvas frame rate over about a minute of visible time, per scene and Battle depth setting.
+  if (e.kind === "fps" && e.fps != null) {
+    const r = (u.fps[`${e.scene ?? "—"}|${e.depth ?? "—"}`] ??= { scene: e.scene ?? "—", depth: e.depth ?? "—", reports: [], seconds: 0, frames: 0, over50: 0, worstMs: 0 });
+    r.reports.push(e.fps); r.seconds += e.seconds ?? 0; r.frames += e.frames ?? 0; r.over50 += e.over50 ?? 0; r.worstMs = Math.max(r.worstMs, e.worstMs ?? 0);
+  }
   // forge-mirror.js: Forge files loaded from the host's mirror. "forge-mirror" = world entry, "forge-mirror-draw" = per draw (deltas).
   if (e.kind === "forge-mirror" || e.kind === "forge-mirror-draw") {
     u.mirror.hits += e.hits ?? 0; u.mirror.misses += e.misses ?? 0; u.mirror.fallbacks += e.fallbacks ?? 0; u.mirror.records++;
@@ -142,6 +147,11 @@ for (const [name, u] of Object.entries(users)) {
     stalls: u.stalls, disconnects: u.disconnects.map(({ t, ...d }) => d), hides: u.hidden, hiddenMinutes: Math.round(u.hiddenMs / 6e4),
     longHides: u.longHides, sampleGaps: u.sampleGaps, loads: u.loads, waits: u.waits,
     peakHeapMB: u.peakHeapMB, peakTextures: u.peakTextures, console: u.console, mirror: u.mirror,
+    fps: Object.values(u.fps).map(r => {
+      const sorted = [...r.reports].sort((a, b) => a - b);
+      return { scene: r.scene, depth: r.depth, minutes: Math.round(r.seconds / 6) / 10, avg: r.seconds ? Math.round(r.frames / r.seconds * 10) / 10 : null,
+        lowest: sorted[0], over50Pct: r.frames ? Math.round(r.over50 / r.frames * 1000) / 10 : 0, worstMs: r.worstMs };
+    }),
   };
   const o = out[name];
   console.log(`## ${name} — ${o.browser} · ${o.deviceMemoryGB ?? "?"} GB · ${o.cores ?? "?"} cores · ${o.softwareGL ? "⚠ SOFTWARE WebGL: " : ""}${gpu}`);
@@ -165,6 +175,11 @@ for (const [name, u] of Object.entries(users)) {
                                      : l.slowest.map(r => `${r.file} ${s(r.ms)} s (${r.from})`).join(", ");
       console.log(`| ${l.at} | ${l.scene ?? "—"} | ${l.s} | ${l.texS ?? "–"} | ${l.files} (${l.left}) | ${l.shown ? "shown" : "—"}${l.reason !== "ready" ? " · " + l.reason : ""} | ${files} |`);
     }
+  }
+  if (o.fps.length) {
+    console.log("\n| frame rate | Battle depth | minutes | avg fps | lowest minute | frames over 50 ms | worst frame ms |");
+    console.log("|---|---|---|---|---|---|---|");
+    for (const f of o.fps) console.log(`| ${f.scene} | ${f.depth} | ${f.minutes} | ${f.avg ?? "–"} | ${f.lowest ?? "–"} | ${f.over50Pct}% | ${f.worstMs} |`);
   }
   for (const w of o.waits) console.log(`- still loading ${w.atS} s into ${w.scene ?? "—"} at ${w.at}: ${w.pct}%, ${w.left} left — ${w.pending.join(", ")}`);
   const con = Object.entries(o.console).sort((a, b) => b[1] - a[1]).slice(0, 8);
