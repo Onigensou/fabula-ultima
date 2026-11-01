@@ -2757,6 +2757,11 @@ export async function refreshReactionSubjects({ acceptedCardReactions, ar, attac
         hitTargets: hitTokenUuids,
         rawDamage: r.rawDamage,
         damageType: ar.damageType ?? ar.damage?.element ?? null,
+        // Same aliases the CONFIRM scan carries (state-handlers Phase 3), so a
+        // positive TRIGGER_DAMAGE_IS_<EL> / DAMAGE_IS_<RES> gate that surfaced
+        // there doesn't lose its subjects here.
+        element: ar.damageType ?? ar.damage?.element ?? null,
+        valueType: String(r.resource ?? ar.valueType ?? ar.damage?.resource ?? "hp").toLowerCase(),
         weaponType: ar.weapon?.weaponType ?? null,
         weaponRange: ar.weapon?.range ?? ar.weapon?.weapon_range ?? null,
         affinity: r.affinity,
