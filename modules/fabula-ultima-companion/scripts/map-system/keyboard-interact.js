@@ -180,6 +180,7 @@
   // Walk maps only, players only: the GM keeps the mouse and Foundry's keys.
   function isActive() {
     if (game.user?.isGM) return false;
+    if (globalThis.FUCompanion?.api?.Spectator?.isSpectator?.()) return false;
     if (!canvas?.ready) return false;
     const rt = runtime();
     return !!rt && rt.state?.mode !== "inactive" && !!rt.state?.followEnabledForScene;

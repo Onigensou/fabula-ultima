@@ -42,7 +42,8 @@ Hooks.once("ready", async () => {
   backend._presence = presence;
 
   // Backend -> UI
-  backend.uiSetDesiredVisible = (set) => ui.setDesiredVisible(set);
+  backend.uiSetDesiredVisible = (set) => ui.setDesiredVisible(
+    globalThis.FUCompanion?.api?.Spectator?.isSpectator?.() ? new Set() : set);
 
   // UI -> Backend
   ui.onClickShopToken = (tokenId) => backend.openShopByTokenId(tokenId);

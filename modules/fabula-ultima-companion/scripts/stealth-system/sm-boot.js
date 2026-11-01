@@ -65,7 +65,8 @@ async function handleIntent(payload, userId) {
   // the socket is open to anyone, so the real gate is here.
   const user = game.users?.get?.(userId);
   const leader = controllerActor(sm);
-  const allowed = user?.isGM || (leader && leader.testUserPermission?.(user, "OWNER"));
+  const watching = globalThis.FUCompanion?.api?.Spectator?.isSpectator?.(user);
+  const allowed = user?.isGM || (!watching && leader && leader.testUserPermission?.(user, "OWNER"));
   if (!allowed) {
     console.debug(TAG, `intent from ${user?.name} refused — not the leader`);
     return;

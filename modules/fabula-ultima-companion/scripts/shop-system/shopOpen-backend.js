@@ -150,6 +150,7 @@ export class ShopOpenBackend {
   // ──────────────────────────────────────────────────────────────
   async openShopByTokenId(shopTokenId) {
     try {
+      if (globalThis.FUCompanion?.api?.Spectator?.isSpectator?.()) return;
       const tok = canvas.tokens?.get(shopTokenId);
       if (!tok?.actor) return;
       if (!isShopActor(tok.actor)) return;
