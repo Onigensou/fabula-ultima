@@ -104,7 +104,9 @@ export function buildIwEffect(actor, elem) {
     // Guideline D3: multi-option AE = "Skill (Option)".
     name: `${SKILL_NAME} (${e.label})`,
     img: e.img,
-    description: `<p>The ${e.label} wellspring within: always available to you, Resistance to ${e.id} damage, and you may turn damage you deal into ${e.id}, ignoring Resistances.</p>`,
+    // The reaction card shows this text (carrierDescription), so it says what the
+    // reaction does, in RAW's words, and nothing else (guideline E1a).
+    description: `<p>Change the damage type to ${e.id}. That damage ignores Resistances.</p>`,
     changes: [
       { key: wellspringChangeKey(e.id), mode: 5, priority: 20, value: "1" },
       { key: `affinity_${e.affinity}`, mode: 5, priority: 3, value: 'aeAffinityFloor("RS")' },
@@ -140,7 +142,7 @@ function iwReactionConfig(elem) {
 }
 
 // What makes an existing AE good enough to keep (anything else is replaced).
-const effectSig = (x) => JSON.stringify([x.name, [...(x.statuses ?? [])].sort(),
+const effectSig = (x) => JSON.stringify([x.name, x.description ?? "", [...(x.statuses ?? [])].sort(),
   (x.changes ?? []).map((c) => [c.key, Number(c.mode), String(c.value), Number(c.priority ?? 0)]),
   x.flags?.[FLAG_NS]?.reactionConfig ?? null]);
 
