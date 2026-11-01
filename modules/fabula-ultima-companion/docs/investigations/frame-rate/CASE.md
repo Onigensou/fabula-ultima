@@ -108,7 +108,43 @@ The host decides. Cheapest first.
 3. **Actor re-derives.** Biggest felt gain, biggest job: find why one PC takes this long and why King Gorger re-derives so
    often, then coalesce the writes. Needs its own investigation.
 
+## What each fix would take (traced 2026-11-01)
+
+A 110 s battle on the GM client spent 17.2 s in actor recalculation (another session's sandbox was also running, so read these
+as shares, not absolute times):
+
+| actor | recalculations | avg | total |
+|---|---|---|---|
+| King Gorger's 4 unlinked tokens | 104 | 51 ms | 5.3 s |
+| Hina (111 items) | 5 | 901 ms | 4.5 s |
+| Blanche | 4 | 523 ms | 2.1 s |
+| Keren | 4 | 452 ms | 1.8 s |
+| EXFURSION Party (battle log writes) | 2 | 702 ms | 1.4 s |
+| Zarg | 1 | 897 ms | 0.9 s |
+
+**King Gorger, a data cleanup.** He is linked now, but 4 old unlinked tokens of his actor remain, on `Midgard_Map001`, `005`,
+`006` and `007`. Each write to his actor rebuilds each of them twice, on every client, on any scene: 13 writes made 104 rebuilds.
+Without them a write costs about 43 ms instead of about 450 ms. No code changes. Check first whether events use those tokens,
+and patch or re-save slot 1 if it holds them.
+
+**Battle-start status effects, a small code change to check.** `skill-effects.js:7587` creates an effect directly when no batch
+is open, so Hina's 4 at the battle's opening (Prophecy Point, Protect, Flying, Lucky Seven Ready) are 4 recalculations of about
+0.9 s. `flushAeBatch` already batches effects inside a skill chain. Not traced: which caller lacks the batch, and whether those
+effects may safely land together.
+
+**Hina's recalculation itself, unexplained.** It took 908–1,074 ms here. The July note in `csb-derivation-perf.js` measured
+211 ms at 100 items. Items only explain about a third (361 ms), and the layout clones 148 ms. Something has slowed it about 4×
+since then, on a machine that wasn't idle. Worth finding before considering anything bigger. Replacing CSB isn't indicated.
+
+**The per-frame search, about 5 lines.** Replace the `querySelectorAll` in `layoutOverheadRows` with live
+`getElementsByClassName` collections. Needs a check on an NPC with two or more buttons.
+
+**Firefox + 3D, no code needed for one player.** Battle depth is per-user, and the fallback path to Full already exists for
+backdrops without a 3D model.
+
 ## Notes (append-only)
 
 - **2026-11-01:** case opened. Logging added and benchmark run the same morning. The first guess, the 3D mode as the main
   cause, was wrong for the freezes and for Chromium, and right for Firefox.
+- **2026-11-01:** traced what each fix takes. Calling the actor cost "not traced" was too quick: the June and July notes had
+  already measured it.
