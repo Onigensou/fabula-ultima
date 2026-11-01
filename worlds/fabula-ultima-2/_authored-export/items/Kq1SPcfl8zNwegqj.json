@@ -93,7 +93,11 @@
     "props": {
       "availability_formula": "AE_CHARGES_BRAINWAVE_CLOCK >= 4",
       "availability_reason": "Brainwave Clock must be full",
+      "check_bonus": "0",
+      "class": "Esper",
       "cost": "",
+      "description": "<p>While your <strong>Brainwave Clock</strong> is full, you may use an action to erase all of its sections. If you do, <strong>choose one option:</strong></p><ul><li>You deal <strong>20</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a> damage to every enemy that is present on the scene</li><li>You deal <strong>30</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a> damage to a single enemy you can see</li></ul><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20 ― </strong>The damage increases to <strong>30</strong> (all enemies) or <strong>40</strong> (single enemy).</p><p><strong>Skill Enhancement Lv. 40 ― </strong>The damage increases to <strong>40</strong> (all enemies) or <strong>50</strong> (single enemy).</p>",
+      "duration": "Instantaneous",
       "effect_table": {
         "0": {
           "chain_steps": "bd_erase,bd_dmg",
@@ -123,13 +127,23 @@
           "target_ref": "enemy_action_targets"
         }
       },
+      "heroic_requirement": "You must have mastered the Esper Class.",
       "isCheck": false,
+      "isFacet": false,
+      "isHeroic": true,
+      "isOffensiveSpell": false,
+      "max_level": "1",
+      "name": "Brainwave Discharge",
       "on_activate_effect_ref": "bd_root",
       "pre_activate_effect_ref": "",
       "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_range": "Any",
       "skill_target": "Up to 99 Enemies",
       "skill_type": "Active",
-      "type_damage": ""
+      "type_damage": "",
+      "use_optional_params": false
     },
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2125250754,

@@ -85,6 +85,10 @@
   "sort": 0,
   "system": {
     "props": {
+      "check_bonus": "0",
+      "class": "Esper",
+      "defense_target_type": "def",
+      "description": "<p>Each time you take this Skill, you gain a <strong>gift</strong> (see Facet). The rules for gifts and for the <strong>Brainwave Clock</strong> can be found on the Unique Mechanic and Facet section of this sheet.</p>",
       "effect_table": {
         "0": {
           "$deleted": false,
@@ -106,7 +110,15 @@
           "target_ref": "pg_self"
         }
       },
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
       "isReaction": true,
+      "isZeroPower": false,
+      "max_level": "5",
+      "name": "Psychic Gifts",
       "reaction_config_table": {
         "0": {
           "$deleted": false,
@@ -120,7 +132,10 @@
           "reaction_trigger": "conflict_start"
         }
       },
-      "skill_type": "Passive"
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_type": "Passive",
+      "use_optional_params": false
     },
     "template": "j0F5Msw5RZ8aIB3j",
     "templateSystemUniqueVersion": 2125250754,

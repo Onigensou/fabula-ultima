@@ -102,10 +102,11 @@
           "animation_damage_timing_offset": "0",
           "animation_damage_timing_options": "default",
           "check_bonus": "0",
-          "class": "",
+          "class": "Esper",
           "cost": "-",
           "damage_bonus": "",
           "defense_target_type": "def",
+          "description": "<p>When you perform an <strong>Accuracy Check</strong>, you may replace one of the <strong>Attribute</strong> dice with <strong>Willpower</strong> (such as <strong>[DEX + WLP]</strong> for a shortbow). Additionally, your <strong>melee</strong> attacks with weapons belonging to the <strong>arcane</strong> or <strong>sword</strong> Categories may target <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\">Flying</a> creatures.</p>",
           "duration": "-",
           "effect_table": {
             "0": {
@@ -630,6 +631,12 @@
       "sort": 0,
       "system": {
         "props": {
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Esper",
+          "defense_target_type": "def",
+          "description": "<p>The total MP cost of your <strong>spells</strong> and <strong>verses</strong> that include your <strong>focus</strong> among their targets is reduced by <strong>【SL】</strong>, or by <strong>【SL × 2】</strong> if your <strong>focus</strong> is the only target (to a minimum cost of 0 <strong>Mind Points</strong>).</p>\n",
           "effect_table": {
             "0": {
               "cost_amount": "-(SL + SL * FOCUS_IS_ONLY_TARGET)",
@@ -639,8 +646,15 @@
               "effect_label": "hc_discount"
             }
           },
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
           "isReaction": true,
+          "isZeroPower": false,
           "level": "1",
+          "max_level": "5",
           "name": "Hypercognition",
           "passive_logic_action": "",
           "reaction_config_table": {
@@ -653,7 +667,12 @@
               "reaction_trigger": "creature_performs_action"
             }
           },
-          "skill_type": "Passive"
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_mode": "default",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Level</strong></p></td><td><p><strong>MP Reduction</strong></p></td><td><p><strong>MP Reduction (Focus Only)</strong></p></td></tr><tr><td><p>1</p></td><td><p>1</p></td><td><p>2</p></td></tr><tr><td><p>2</p></td><td><p>2</p></td><td><p>4</p></td></tr><tr><td><p>3</p></td><td><p>3</p></td><td><p>6</p></td></tr><tr><td><p>4</p></td><td><p>4</p></td><td><p>8</p></td></tr><tr><td><p>5</p></td><td><p>5</p></td><td><p>10</p></td></tr></tbody></table>",
+          "skill_type": "Passive",
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2125250754,
@@ -1212,6 +1231,14 @@
       "sort": 0,
       "system": {
         "props": {
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Esper",
+          "cost": "X MP",
+          "defense_target_type": "def",
+          "description": "<ul><li><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\">Trigger</a> When you cause one or more enemies to lose Hit Points</li></ul><p><strong>Choose yourself </strong>or an<strong> ally</strong> who is your <strong>focus</strong>: if the chosen creature is in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a>, they recover an amount of <strong>Hit Points</strong> equal to <strong>[5 + (the number of filled sections in your Brainwave Clock, multiplied by 5)]</strong>.</p>",
+          "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "$deleted": false,
@@ -1233,8 +1260,15 @@
               "target_ref": "lt_pick"
             }
           },
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
           "isReaction": true,
+          "isZeroPower": false,
           "level": "1",
+          "max_level": "1",
           "name": "Life Transference",
           "reaction_config_table": {
             "0": {
@@ -1249,8 +1283,15 @@
               "reaction_trigger": "creature_completes_action"
             }
           },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_mode": "default",
+          "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>Filled Sections</strong></p></td><td><p><strong>MP Cost to Use Gift</strong></p></td><td><p><strong>HP Recovered</strong></p></td></tr><tr><td><p>0</p></td><td><p>5</p></td><td><p>5</p></td></tr><tr><td><p>1</p></td><td><p>5</p></td><td><p>10</p></td></tr><tr><td><p>2</p></td><td><p>10</p></td><td><p>15</p></td></tr><tr><td><p>3</p></td><td><p>15</p></td><td><p>20</p></td></tr><tr><td><p>4</p></td><td><p>20</p></td><td><p>25</p></td></tr></tbody></table>",
+          "skill_range": "Any",
           "skill_target": "One ally",
-          "skill_type": "Active"
+          "skill_type": "Active",
+          "type_damage": "heal",
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2125250754,
@@ -2066,7 +2107,11 @@
       "sort": 0,
       "system": {
         "props": {
+          "check_bonus": "0",
+          "class": "Esper",
           "cost": "",
+          "description": "<p>While your <strong>Brainwave Clock</strong> is full, you may use an action to erase all of its sections. If you do, <strong>choose one option:</strong></p><ul><li>You deal <strong>20</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a> damage to every enemy that is present on the scene</li><li>You deal <strong>30</strong> <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a> damage to a single enemy you can see</li></ul><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20 ― </strong>The damage increases to <strong>30</strong> (all enemies) or <strong>40</strong> (single enemy).</p><p><strong>Skill Enhancement Lv. 40 ― </strong>The damage increases to <strong>40</strong> (all enemies) or <strong>50</strong> (single enemy).</p>",
+          "duration": "Instantaneous",
           "effect_table": {
             "0": {
               "chain_steps": "bd_erase,bd_dmg",
@@ -2096,15 +2141,24 @@
               "target_ref": "enemy_action_targets"
             }
           },
+          "heroic_requirement": "You must have mastered the Esper Class.",
           "isCheck": false,
+          "isFacet": false,
+          "isHeroic": true,
+          "isOffensiveSpell": false,
           "level": "1",
+          "max_level": "1",
           "name": "Brainwave Discharge",
           "on_activate_effect_ref": "bd_root",
           "pre_activate_effect_ref": "",
           "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Any",
           "skill_target": "Up to 99 Enemies",
           "skill_type": "Active",
-          "type_damage": ""
+          "type_damage": "",
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2125250754,
@@ -2378,6 +2432,10 @@
       "sort": 0,
       "system": {
         "props": {
+          "check_bonus": "0",
+          "class": "Esper",
+          "defense_target_type": "def",
+          "description": "<p>Each time you take this Skill, you gain a <strong>gift</strong> (see Facet). The rules for gifts and for the <strong>Brainwave Clock</strong> can be found on the Unique Mechanic and Facet section of this sheet.</p>",
           "effect_table": {
             "0": {
               "$deleted": false,
@@ -2399,8 +2457,15 @@
               "target_ref": "pg_self"
             }
           },
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
           "isReaction": true,
+          "isZeroPower": false,
           "level": "1",
+          "max_level": "5",
           "name": "Psychic Gifts",
           "reaction_config_table": {
             "0": {
@@ -2415,7 +2480,10 @@
               "reaction_trigger": "conflict_start"
             }
           },
-          "skill_type": "Passive"
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_type": "Passive",
+          "use_optional_params": false
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2125250754,

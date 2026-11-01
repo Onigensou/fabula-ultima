@@ -3496,7 +3496,7 @@
           "isOffensiveSpell": false,
           "isReaction": false,
           "isZeroPower": false,
-          "level": "6",
+          "level": "5",
           "max_level": "10",
           "name": "Illusionist Magic",
           "optional_params": {},
@@ -5523,7 +5523,7 @@
           "cost": "",
           "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<p>Each time you take this Skill, you gain a <strong>gift</strong>. The rules for gifts and for the <strong>Brainwave Clock</strong> can be found on the Unique Mechanic and Facet section of this sheet.</p>",
+          "description": "<p>Each time you take this Skill, you gain a <strong>gift</strong> (see Facet). The rules for gifts and for the <strong>Brainwave Clock</strong> can be found on the Unique Mechanic and Facet section of this sheet.</p>",
           "duration": "",
           "effect_table": {
             "0": {

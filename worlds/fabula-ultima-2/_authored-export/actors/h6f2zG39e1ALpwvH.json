@@ -128,6 +128,7 @@
           "implementation_note": "Catalogue skill: each rank learns one Spiritist spell, and each spell carries its own rows. The INS + WLP Magic Check lives on every offensive Spiritist spell (rolled_atr1/2: Lux, Torpor, Enrage, Hallucination).",
           "isCheck": false,
           "level": "1",
+          "max_level": "10",
           "name": "Spiritual Magic",
           "rolled_atr1": "-",
           "rolled_atr2": "-",
@@ -1385,6 +1386,7 @@
               "target_ref": "self"
             }
           },
+          "heroic_requirement": "you must have mastered two or more Classes among Elementalist, Entropist, and Spiritist, and your character must be level 30 or higher.",
           "isCheck": false,
           "isHeroic": true,
           "isReaction": true,

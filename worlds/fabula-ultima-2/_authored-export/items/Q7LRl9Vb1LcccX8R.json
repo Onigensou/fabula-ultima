@@ -128,7 +128,7 @@
           "target_ref": "hit_action_targets"
         }
       },
-      "heroic_requirement": "",
+      "heroic_requirement": "You must have mastered the Rogue Class.",
       "ignore_hr": false,
       "isCheck": false,
       "isFacet": false,

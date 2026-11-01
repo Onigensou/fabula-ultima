@@ -52,7 +52,7 @@
           "description": "<p>When you use the <strong>【Soul Steal】</strong> Skill, you may target any number of creatures at the same time (you perform a single Check and compare it to the Magic Defense of each creature you are attempting to steal from).</p>",
           "duration": "-",
           "effect_table": {},
-          "heroic_requirement": "",
+          "heroic_requirement": "You must have mastered the Rogue Class, and must have acquired the Soul Steal Skill.",
           "ignore_hr": false,
           "isCheck": false,
           "isFacet": false,
@@ -405,7 +405,7 @@
               "target_ref": "hit_action_targets"
             }
           },
-          "heroic_requirement": "",
+          "heroic_requirement": "You must have mastered the Rogue Class.",
           "ignore_hr": false,
           "isCheck": false,
           "isFacet": false,

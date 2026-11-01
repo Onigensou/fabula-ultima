@@ -517,7 +517,7 @@
               "target_prompt": ""
             }
           },
-          "heroic_requirement": "",
+          "heroic_requirement": "You must have mastered the Guardian Class.",
           "ignore_hr": false,
           "isCheck": false,
           "isFacet": false,
@@ -694,6 +694,7 @@
               "target_ref": "self"
             }
           },
+          "heroic_requirement": "You must have mastered the Guardian Class.",
           "isCheck": false,
           "isHeroic": true,
           "isReaction": true,

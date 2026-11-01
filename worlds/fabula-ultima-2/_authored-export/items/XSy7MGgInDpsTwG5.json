@@ -37,7 +37,7 @@
       "isHeroic": false,
       "isOffensiveSpell": false,
       "level": "1",
-      "max_level": "1",
+      "max_level": "10",
       "name": "Curse Magic",
       "optional_params": {},
       "rolled_atr1": "-",

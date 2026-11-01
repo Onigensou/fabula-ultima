@@ -643,7 +643,7 @@
           "isReaction": true,
           "isZeroPower": false,
           "level": "1",
-          "max_level": "1",
+          "max_level": "2",
           "name": "Elemental Harmony",
           "on_activate_effect_ref": "",
           "optional_params": {},

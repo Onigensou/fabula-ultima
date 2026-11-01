@@ -1730,7 +1730,7 @@
       "isReaction": true,
       "isZeroPower": false,
       "level": "1",
-      "max_level": "1",
+      "max_level": "5",
       "name": "Gadgets",
       "on_activate_effect_ref": "gadget_active_root",
       "optional_params": {},

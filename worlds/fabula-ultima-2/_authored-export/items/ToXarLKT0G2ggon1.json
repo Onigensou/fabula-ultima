@@ -36,7 +36,7 @@
       "isHeroic": false,
       "isOffensiveSpell": false,
       "level": "1",
-      "max_level": "1",
+      "max_level": "5",
       "name": "Mulligan",
       "optional_params": {},
       "rolled_atr1": "-",
