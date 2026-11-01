@@ -46,6 +46,15 @@ function normalizeTargets(targetUserId, targetUserIds) {
   return out;
 }
 
+// What one cached broadcast replaces. A card's replay is its history, so a returning
+// player sees the card as it stands: each pill keeps its own latest word, and the
+// two kinds that are deltas keep every entry, in order.
+const CACHE_APPEND_KINDS = new Set(["action-card-target-mutation", "action-card-pills-append"]);
+function cacheKeyOf(spec) {
+  const kind = spec?.kind ?? null;
+  return kind === "action-card-pill-update" ? `${kind}:${spec.rowKey}:${spec.carrierUuid}` : kind;
+}
+
 export class IntentChannel {
   constructor() {
     this.director = null; // set on GM via attachDirector(); stays null on players
@@ -63,6 +72,8 @@ export class IntentChannel {
     // GM-side: told when a client says it is listening (hello OR probe answer).
     // Separate from hello: a probe answer must not replay menus or add a GM to one.
     this._readyHandlers = new Set();
+    // GM-side: "what is the battle waiting on", passed between GM clients.
+    this._gmEventHandlers = new Set();
     // This client has attached its menu handlers (see announceReady).
     this._announced = false;
     // GM-side cache of recently-broadcast MENU_OPEN payloads, keyed by
@@ -115,6 +126,9 @@ export class IntentChannel {
         if (this._announced && this._isForMe(data.payload)) this._emitRaw("PRESENCE_ACK", { fromUserId: game.user?.id ?? null });
         return;
       case "PRESENCE_ACK":  return this._notifyPeerReady(data.payload?.fromUserId);
+      case "GM_EVENT":
+        if (game.user?.isGM) for (const h of this._gmEventHandlers) { try { h(data.payload ?? {}, data.senderUserId); } catch (e) { warn("GM event handler threw", e); } }
+        return;
       default: return;
     }
   }
@@ -420,9 +434,10 @@ export class IntentChannel {
       const supersedes = kind === "action-card"
         ? (k) => k === "compose-action" || String(k ?? "").startsWith("action-card-")
         : () => false;
+      const key = cacheKeyOf(menuSpec);
       const filtered = arr.filter((p) => {
         const k = p.menuSpec?.kind ?? null;
-        return k !== kind && !supersedes(k);
+        return (CACHE_APPEND_KINDS.has(kind) || cacheKeyOf(p.menuSpec) !== key) && !supersedes(k);
       });
       filtered.push({ requestId, targetUserId: uid, menuSpec });
       this._recentBroadcasts.set(uid, filtered);
@@ -547,6 +562,14 @@ export class IntentChannel {
   probePeers(userIds) {
     if (!game.user?.isGM || !userIds?.length) return;
     this._emitRaw("PRESENCE_PROBE", { targetUserIds: userIds });
+  }
+
+  emitToGms(payload) {
+    if (game.user?.isGM) this._emitRaw("GM_EVENT", payload);
+  }
+  onGmEvent(handler) {
+    this._gmEventHandlers.add(handler);
+    return () => this._gmEventHandlers.delete(handler);
   }
 
   // GM-side: register a handler for "this client is listening" ({ userId }).

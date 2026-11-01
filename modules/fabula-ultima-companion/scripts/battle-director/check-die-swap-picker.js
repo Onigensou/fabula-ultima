@@ -17,7 +17,7 @@
 // die; an empty array = the player kept the original roll).
 
 import { log, warn } from "./logger.js";
-import { watchGone } from "./player-presence.js";
+import { watchGone, trackWait } from "./player-presence.js";
 import { getIntentChannel } from "./intent-channel.js";
 import { INTENTS } from "./intents.js";
 import { plateDrawerHost, notePlateAnswered } from "./director-player-hud.js";
@@ -272,8 +272,11 @@ export async function resolveDieSwapInteractive({ director, actor, label, A1, A2
   const localPromise = pickDieSwap({ director, label, A1, A2, dA, dB, slots, budget });
   // The swap is optional, so an owner who goes missing keeps the original roll.
   let stopAwayWatch = () => {};
+  let stopWait = () => {};
   const ownerGone = new Promise((res) => {
-    stopAwayWatch = watchGone(ownerUserId, () => res({ source: "gone", swaps: [] }));
+    const keep = () => res({ source: "gone", swaps: [] });
+    stopAwayWatch = watchGone(ownerUserId, keep);
+    stopWait = trackWait({ userId: ownerUserId, label: "a die swap", actions: [{ id: "keep", label: "Keep the roll", run: keep }] });
   });
 
   try {
@@ -283,6 +286,7 @@ export async function resolveDieSwapInteractive({ director, actor, label, A1, A2
       ownerGone,
     ]);
     stopAwayWatch();
+    stopWait();
     if (result.source === "gone") {
       log("check_die_swap: owner is away — keeping the original roll");
       try { remoteAwait.abort?.("owner-gone"); } catch {}
@@ -300,6 +304,7 @@ export async function resolveDieSwapInteractive({ director, actor, label, A1, A2
   } catch (e) {
     warn("check_die_swap: routing race threw — keeping the original roll", e);
     stopAwayWatch();
+    stopWait();
     try { remoteAwait.abort?.("error"); } catch {}
     try { DieSwapPicker.despawn({ director }); } catch {}
     try { channel.broadcastMenuClose({ targetUserId: ownerUserId, kind: "die-swap", reason: "error" }); } catch {}

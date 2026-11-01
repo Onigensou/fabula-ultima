@@ -28,7 +28,7 @@
 // the stage-2 ally-indicator broadcast is a future slice.
 
 import { log, warn } from "./logger.js";
-import { watchGone } from "./player-presence.js";
+import { watchGone, trackWait } from "./player-presence.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { Journal } from "./sim/sim-journal.js";
 import { INTENTS } from "./intents.js";
@@ -1150,16 +1150,23 @@ export async function dispatchReactionMenu({
 
   // The owner is gone: Pass for them. Pass is window-scoped (see processPass), so
   // nothing is lost and the reaction is offered again next time.
-  const stopAwayWatch = watchGone(ownerUserId, async () => {
+  const passForOwner = async (why) => {
     const r = liveRender;
     if (!r || r.picked) return;
     r.picked = true;
     try { r.remoteAwait?.abort?.("local-won"); } catch {}
-    log(`reaction[${trigger}]: ${reactor.name}'s owner is away — passing for them`);
-    ui.notifications?.info(`${userDisplayName(ownerUserId)} is away: passed ${reactor.name}'s reaction.`);
+    log(`reaction[${trigger}]: passing for ${reactor.name}'s owner (${why})`);
     await processPass();
     closeMenusEverywhere();
     resolveClose();
+  };
+  const stopAwayWatch = watchGone(ownerUserId, () => {
+    ui.notifications?.info(`${userDisplayName(ownerUserId)} is away: passed ${reactor.name}'s reaction.`);
+    return passForOwner("away");
+  });
+  const stopWait = trackWait({
+    userId: ownerUserId, label: `${reactor.name}'s reaction`,
+    actions: [{ id: "pass", label: "Pass", run: () => passForOwner("GM") }],
   });
 
   try {
@@ -1167,6 +1174,7 @@ export async function dispatchReactionMenu({
     await closed;
   } finally {
     stopAwayWatch();
+    stopWait();
     _dispatchCoordinator.removeEventListener("stop-others", stopHandler);
     try { offHello?.(); } catch {}
   }

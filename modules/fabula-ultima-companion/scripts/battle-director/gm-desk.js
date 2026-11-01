@@ -48,6 +48,7 @@ import { tabAlert, tabAlertClear } from "./tab-alert.js";
 import { TIER } from "./status-classifier.js";
 import { rowTier, rowTurns, rowSpent, sortRows, statusTipHTML, foldTipHTML } from "./status-tip.js";
 import { hostUser } from "./director-host.js";
+import { presenceOf, isGone, listWaits, runWaitAction, awayForMs } from "./player-presence.js";
 import { setGmFocus, focusState, setFocusPart, setFocusAll, FOCUS_PARTS, FOCUS_TOOLS, toolAvailable, openTool } from "./battle-focus.js";
 
 const MODULE_ID = "fabula-ultima-companion";
@@ -149,7 +150,8 @@ export function playerOwnerOf(actor) {
 // Only an ONLINE player can be deciding; an away player's creature is the GM's.
 function liveOwnerOf(actor) {
   const u = playerOwnerOf(actor);
-  return u?.active ? u : null;
+  // Gone doesn't mean the socket has said so: nobody to watch, nothing to lock.
+  return u?.active && !isGone(u.id) ? u : null;
 }
 function lockedFor(actor) { return !!(D.locked && liveOwnerOf(actor)); }
 
@@ -295,6 +297,18 @@ function ensureStyles() {
 .gmd-crx-b.apply { color: var(--cta-ink); background: linear-gradient(180deg, var(--cta-a), var(--cta-b)); }
 .gmd-crx-b.apply:hover { filter: brightness(1.08); }
 /* the column's More menu */
+.gmd-wait { position: absolute; z-index: 5; left: 0; right: 0; bottom: 100%; margin-bottom: 6px; display: flex; flex-direction: column; gap: 4px; pointer-events: none; }
+.gmd-wait:empty { display: none; }
+.gmd-wait .row { pointer-events: auto; display: flex; align-items: center; gap: 8px; padding: 5px 10px; border-radius: 8px; background: linear-gradient(var(--p-top), var(--p-bot)); box-shadow: 0 0 0 1.5px #b0502f, 0 2px 8px rgba(0,0,0,.3); font: 600 12.5px "Signika", sans-serif; color: var(--tx); }
+.gmd-wait .row b { color: #9a3f22; }
+.gmd-wait .row .t { color: var(--tx-soft); font-variant-numeric: tabular-nums; }
+.gmd-wait .row .sp, .gmd-unstick .sp { flex: 1; }
+.gmd-wb { flex: none; padding: 2px 9px; border-radius: 6px; cursor: pointer; font: 700 11px "Signika", sans-serif; color: var(--tx); background: rgba(255,255,255,.55); box-shadow: inset 0 0 0 1px var(--stroke); }
+.gmd-wb:hover { background: rgba(213,182,122,.5); }
+.gmd-unstick { min-width: 340px; max-width: 460px; }
+.gmd-unstick .ln { display: flex; align-items: center; gap: 8px; padding: 5px 14px; }
+.gmd-unstick .ln small { color: var(--tx-dim); font-size: 11px; }
+.gmd-unstick .none { padding: 5px 14px; color: var(--tx-soft); font-size: 12.5px; }
 .gmd-more { position: absolute; z-index: 5; pointer-events: auto; min-width: 230px; padding: 6px 0; border-radius: 10px;
   background: linear-gradient(180deg, var(--p-top), var(--p-bot)); border: 2px solid var(--stroke); box-shadow: 0 0 0 1px rgba(255,255,255,.7) inset, 0 12px 28px rgba(0,0,0,.5);
   font: 500 13px "Signika", sans-serif; color: var(--tx); user-select: none; }
@@ -638,6 +652,7 @@ export function buildDesk(partyIds = []) {
     <div class="gmd-bar"></div>
     <div class="gmd-foldtab" role="button" tabindex="-1"></div>
     <section class="gmd-panel gmd-roster">
+      <div class="gmd-wait"></div>
       <div class="gmd-ph"><span class="gmd-cap">Units</span><span class="gmd-banwrap" style="display:contents"></span><span class="gmd-grow"></span><span class="gmd-hctl"></span></div>
       <div class="gmd-cols"><div class="gmd-rcol" data-side="enemy"><span class="gmd-cap foe">Enemies</span></div><div class="gmd-vr"></div><div class="gmd-rcol" data-side="party"><span class="gmd-cap pc">Party</span></div></div>
     </section>
@@ -654,9 +669,11 @@ export function buildDesk(partyIds = []) {
     </section>`;
   document.body.appendChild(root);
   D.root = root;
-  D.moreOpen = false; D.more = null;
+  D.moreOpen = false; D.more = null; D.unstickOpen = false; D.unstick = null;
   setGmFocus(true);
   D.bar = root.querySelector(".gmd-bar");
+  D.wait = root.querySelector(".gmd-wait");
+  D.wait.addEventListener("click", onWaitClick);
   D.roster = root.querySelector(".gmd-roster");
   D.con = root.querySelector(".gmd-con");
   D.chd = root.querySelector(".gmd-chd");
@@ -858,6 +875,7 @@ function tick() {
   if (open !== D.cardOpen) { D.cardOpen = open; D.root.classList.toggle("is-card", open); render(); }
   try { syncCardRx(); } catch (e) { warn("[GmDesk] card reactions sync failed", e); }
   try { placeCardAside(); } catch (e) { warn("[GmDesk] card step-aside failed", e); }
+  try { paintWaitLine(); paintUnstick(); } catch (e) { warn("[GmDesk] waiting line failed", e); }
   // Done chips expire.
   const now = Date.now();
   let expired = false;
@@ -894,6 +912,7 @@ function paintBar() {
       <span class="gmd-bsep"></span>
       <span data-cmd="turn"${blocked ? ' class="off"' : ""} title="${blocked ? SKIP_BLOCKED_TIP : "Next Turn — skip the current turn"}">${SVG.next}<span class="lbl">Turn</span></span>
       <span data-cmd="round"${blocked ? ' class="off"' : ""} title="${blocked ? SKIP_BLOCKED_TIP : "Next Round — end this round"}">${SVG.round}<span class="lbl">Round</span></span>
+      <span data-cmd="unstick"${D.unstickOpen ? ' class="open"' : ""} title="Unstick: what is holding the game, and the way out">${SVG.unlock}<span class="lbl">Unstick</span></span>
       <span data-cmd="rewind" title="Rewind to a checkpoint">${SVG.rewind}<span class="lbl">Rewind</span></span>
       <span data-cmd="end" class="end" title="End the battle">${SVG.end}<span class="lbl">End</span></span>
       ${tools ? `<span class="gmd-bsep"></span>${tools}` : ""}
@@ -935,6 +954,8 @@ async function onBarClick(e) {
       openTool(b.dataset.tool);
     } else if (cmd === "more") {
       setMoreOpen(!D.moreOpen);
+    } else if (cmd === "unstick") {
+      setUnstickOpen(!D.unstickOpen);
     }
   } catch (err) { warn(`[GmDesk] battle bar "${cmd}" failed`, err); }
 }
@@ -993,9 +1014,74 @@ function onMoreClick(e) {
   place();
 }
 function onDocPointer(e) {
+  if (D.unstickOpen && !D.unstick?.contains(e.target) && !D.bar?.querySelector('[data-cmd="unstick"]')?.contains(e.target)) setUnstickOpen(false);
   if (!D.moreOpen) return;
   if (D.more?.contains(e.target) || D.bar?.querySelector('[data-cmd="more"]')?.contains(e.target)) return;
   setMoreOpen(false);
+}
+
+// ── Waiting on a player who isn't there, and Unstick ─────────────────────────
+// The line shows only who is unreachable. A player who is connected and thinking
+// is nobody's problem: they appear only in Unstick, when the GM goes looking, and
+// with no clock on them.
+const PRESENCE_LABEL = { offline: "Offline", loading: "Loading", silent: "Not responding", ready: "Connected" };
+const waitWho = (w) => esc(game.users?.get(w.userId)?.name ?? "A player");
+const waitBtns = (w) => (w.actions ?? []).map((a) => `<span class="gmd-wb" data-wait="${w.id}" data-act="${a.id}" data-kind="${a.kind ?? ""}">${esc(a.label)}</span>`).join("");
+function clock(ms) {
+  const s = Math.floor(ms / 1000);
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+}
+function paintWaitLine() {
+  if (!D.wait) return;
+  const away = listWaits().filter((w) => {
+    const st = presenceOf(w.userId);
+    return st !== "ready" && st !== "self";
+  });
+  const h = away.map((w) => `<div class="row"><span>Waiting on <b>${waitWho(w)}</b> · ${PRESENCE_LABEL[presenceOf(w.userId)]} · <span class="t">${clock(awayForMs(w.userId))}</span> — ${esc(w.label)}</span><span class="sp"></span>${waitBtns(w)}</div>`).join("");
+  if (D.wait._h !== h) { D.wait.innerHTML = h; D.wait._h = h; }
+}
+function onWaitClick(e) {
+  const b = e.target.closest?.(".gmd-wb");
+  if (!b) return;
+  e.stopPropagation();
+  playUiClickSfx();
+  if (b.dataset.cmd) { runOnHost(b.dataset.cmd).catch((err) => warn("[GmDesk] unstick failed", err)); return; }
+  const kind = b.dataset.kind;
+  if (kind === "unlock") { if (D.locked) toggleLock(); return; }
+  if (kind === "turn") { runOnHost("turn").catch((err) => warn("[GmDesk] pass failed", err)); return; }
+  runWaitAction(b.dataset.wait, b.dataset.act);
+}
+function setUnstickOpen(on) {
+  D.unstickOpen = !!on;
+  if (!D.unstickOpen) { D.unstick?.remove(); D.unstick = null; }
+  else if (!D.unstick) {
+    D.unstick = document.createElement("div");
+    D.unstick.className = "gmd-more gmd-unstick";
+    D.unstick.addEventListener("click", onWaitClick);
+    D.root.appendChild(D.unstick);
+    paintUnstick();
+    const b = D.bar.querySelector('[data-cmd="unstick"]');
+    Object.assign(D.unstick.style, { left: `${D.bar.offsetLeft + D.bar.offsetWidth + 8}px`, top: `${Math.max(8, D.bar.offsetTop + (b?.offsetTop ?? 0) - 8)}px` });
+  }
+  D.bar?.querySelector('[data-cmd="unstick"]')?.classList.toggle("open", D.unstickOpen);
+}
+function paintUnstick() {
+  if (!D.unstick) return;
+  const bd = globalThis.FUCompanion?.api?.experimental?.battleDirector;
+  const s = bd?.status?.();
+  const host = hostUser();
+  const where = s?.running ? `${esc(s.state)}${s.dCombat?.current ? ` · ${esc(s.dCombat.current)}` : ""}` : host ? `Hosted by ${esc(host.name)}` : "No battle on this client";
+  const card = document.getElementById("fud-battlefield-card-root");
+  const cardOpen = !!card?.querySelector(".fud-btn-confirm") && !!s?.running;
+  const locked = cardOpen && card.querySelector(".fud-bf-card")?.hasAttribute("data-fud-reactions-pending");
+  const waits = listWaits();
+  const h = `<div class="h">What is holding the game</div>
+    <div class="none">${where}</div>
+    ${waits.length ? waits.map((w) => `<div class="ln"><span>${waitWho(w)} <small>${PRESENCE_LABEL[presenceOf(w.userId)] ?? "Connected"}</small><br><small>${esc(w.label)}</small></span><span class="sp"></span>${waitBtns(w)}</div>`).join("")
+      : `<div class="none">Nothing is waiting on a player.</div>`}
+    <hr><div class="h">Force it along</div>
+    <div class="ln">${locked ? `<span class="gmd-wb" data-cmd="skipReactions">Skip open reactions</span>` : ""}${cardOpen && !locked ? `<span class="gmd-wb" data-cmd="confirmCard">Confirm the card</span>` : ""}<span class="gmd-wb" data-cmd="cancelOpp">Cancel Opportunity</span>${skipBlocked() ? "" : `<span class="gmd-wb" data-cmd="turn">Next Turn</span>`}</div>`;
+  if (D.unstick._h !== h) { D.unstick.innerHTML = h; D.unstick._h = h; }
 }
 
 // Turn / Round drive the FSM, which lives on the HOST GM (the client running the
@@ -1009,6 +1095,17 @@ async function runOnHost(cmd) {
 }
 async function runCmd(cmd) {
   const bd = globalThis.FUCompanion?.api?.experimental?.battleDirector;
+  const cardRoot = document.getElementById("fud-battlefield-card-root");
+  if (cmd === "skipReactions") {
+    for (const b of cardRoot?.querySelectorAll('.fud-bf-reaction-pill.is-ask[data-fud-reaction-pending="1"] [data-fud-reaction-action="skip"]') ?? []) b.click();
+    return null;
+  }
+  if (cmd === "confirmCard") { cardRoot?.querySelector(".fud-btn-confirm")?.click(); return null; }
+  if (cmd === "cancelOpp") {
+    const n = globalThis.ONI?.OpportunitySystem?.withdrawBattleOffers?.({ reason: "cancelled from Unstick" }) ?? 0;
+    ui.notifications?.info(n ? "Opportunity cancelled." : "No Opportunity is open.");
+    return null;
+  }
   const res = cmd === "turn" ? await bd?.forceNextTurn?.() : cmd === "round" ? await bd?.forceNextRound?.() : null;
   if (res && res.ok === false) ui.notifications?.warn(`${cmd === "turn" ? "Next Turn" : "Next Round"}: ${res.error}`);
   return res ?? null;

@@ -35,7 +35,7 @@ import { registerBlackestNight, blackestNightReactor } from "./battle-end/undyin
 import { initBlackestNightCinematic } from "./battle-end/undying/blackest-night-cinematic.js";
 import { conflictEventReactor } from "../conflict-event/conflict-event-runtime.js";
 import { getIntentChannel, attachDirector, detachDirector } from "./intent-channel.js";
-import { installPlayerPresence, presenceOf, isReady as presenceIsReady, isGone as presenceIsGone, presenceList, GRACE_MS } from "./player-presence.js";
+import { installPlayerPresence, presenceOf, isReady as presenceIsReady, isGone as presenceIsGone, presenceList, trackWait, listWaits, GRACE_MS } from "./player-presence.js";
 import { installDirectorHost, claimHost, abandonClaim, announceHost, releaseHost, hostUser, hostInfo, mountingLocally } from "./director-host.js";
 import { TurnUI } from "./turn-ui.js";
 import { registerPlayerComposeActionHandler } from "./compose-action.js";
@@ -1210,7 +1210,7 @@ Hooks.once("ready", () => {
     // `fu-director-surface-change` hook for push updates. See director-surfaces.js.
     // Who can answer right now (GM-side). The opportunity system is a classic
     // script, so it reaches this through the API. See player-presence.js.
-    presence: { of: presenceOf, isReady: presenceIsReady, isGone: presenceIsGone, list: presenceList, GRACE_MS },
+    presence: { of: presenceOf, isReady: presenceIsReady, isGone: presenceIsGone, list: presenceList, trackWait, waits: listWaits, GRACE_MS },
     surfaces: {
       list: (filter) => getActiveSurfaces(filter),
       has: (kind) => hasSurface(kind),

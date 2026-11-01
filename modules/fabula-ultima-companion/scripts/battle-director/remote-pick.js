@@ -16,7 +16,7 @@
 
 import { INTENTS } from "./intents.js";
 import { log, warn } from "./logger.js";
-import { isGone, noteGmWaiting, watchGone } from "./player-presence.js";
+import { isGone, noteGmWaiting, watchGone, trackWait } from "./player-presence.js";
 import { publishPlateWaiting, notePlateAnswered } from "./director-player-hud.js";
 import { tabAlert, tabAlertClear } from "./tab-alert.js";
 
@@ -157,6 +157,7 @@ export async function remotePick({
 
   // A pick is required, and the GM's own copy below is already open.
   const stopAwayWatch = watchGone(targetUserId, () => noteGmWaiting(targetUserId, waitLabelOf(kind, spec) ?? "a choice"));
+  const stopWait = trackWait({ userId: targetUserId, label: waitLabelOf(kind, spec) ?? "a choice", actions: [{ id: "act", label: "Answer for them", kind: "unlock" }] });
 
   return await new Promise((resolveRace) => {
     let settled = false;
@@ -165,6 +166,7 @@ export async function remotePick({
       if (settled) return;
       settled = true;
       stopAwayWatch();
+      stopWait();
       // Tear down whichever side didn't win: stop awaiting the player, close the
       // GM-local picker, and uncache + dismiss the player's open picker (a
       // reconnect replay must not resurrect an already-answered prompt).

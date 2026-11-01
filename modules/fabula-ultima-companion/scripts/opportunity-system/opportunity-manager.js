@@ -680,7 +680,18 @@
     const goneTid = setInterval(() => {
       if (presence()?.isGone(entry.ownerUserId)) handOfferToGm(offerKey, "they are away");
     }, 1000);
-    entry.stopWatch = () => { clearTimeout(entry.ackTimer); clearInterval(goneTid); };
+    const stopWait = presence()?.trackWait?.({
+      userId: entry.ownerUserId, label: `${entry.spec.actorName}'s Opportunity`,
+      actions: [
+        { id: "take", label: "Pick for them", run: () => handOfferToGm(offerKey, "you took it") },
+        { id: "cancel", label: "Cancel it", run: () => {
+          if (!_pending.delete(offerKey)) return;
+          withdrawOffer(offerKey, "cancelled by the GM");
+          entry.resolve({ cancelled: true });
+        } },
+      ],
+    }) ?? (() => {});
+    entry.stopWatch = () => { clearTimeout(entry.ackTimer); clearInterval(goneTid); stopWait(); };
   }
 
   async function handOfferToGm(offerKey, why) {

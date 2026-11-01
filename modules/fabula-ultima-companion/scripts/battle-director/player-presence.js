@@ -82,7 +82,16 @@ function probeAll() {
 export function installPlayerPresence() {
   if (_installed || !game.user?.isGM) return;
   _installed = true;
-  getIntentChannel().onPeerReady(({ userId }) => markReady(userId));
+  getIntentChannel().onPeerReady(({ userId }) => {
+    markReady(userId);
+    if (_waits.size && game.users?.get(userId)?.isGM) publishWaits();
+  });
+  getIntentChannel().onGmEvent((p, sender) => {
+    if (p.kind === "waits") _remoteWaits = (p.waits ?? []);
+    else if (p.kind === "run" && _waits.has(p.waitId)) runWaitAction(p.waitId, p.actionId);
+    else if (p.kind === "ask" && _waits.size) publishWaits();
+  });
+  getIntentChannel().emitToGms({ kind: "ask" });
   Hooks.on("userConnected", (user, connected) => {
     if (!user?.id || user.id === game.user?.id) return;
     _seen.add(user.id);
@@ -136,6 +145,51 @@ export function noteGmWaiting(userId, what) {
   const state = { loading: "is still loading", silent: "isn't responding" }[presenceOf(userId)] ?? "is offline";
   log(`[presence] ${name} ${state} — ${what} is waiting on the GM`);
   ui.notifications?.warn(`${name} ${state}: ${what} is waiting on you. Answer it from the GM desk, or use Turn to pass.`);
+}
+
+// ── What the battle is waiting on ───────────────────────────────────────────
+// Each place that waits on a player registers here, so the GM desk can say what is
+// holding the game and offer the way out. Lives on the host; other GMs get a copy,
+// because the GM at the screen isn't always the one hosting.
+//   action: { id, label, run? } — run happens on the host. No run means the desk
+//   handles it where it was clicked: kind "unlock" (answer for them), "turn" (pass).
+const _waits = new Map();
+let _remoteWaits = [];
+
+function publishWaits() {
+  getIntentChannel().emitToGms({ kind: "waits", waits: localWaits() });
+}
+function localWaits() {
+  return [..._waits.values()].map(({ id, userId, label, actions }) => ({
+    id, userId, label, actions: actions.map(({ id, label, kind }) => ({ id, label, kind: kind ?? null })),
+  }));
+}
+
+/** Returns the stop function. No owner or a sim run: nothing to track. */
+export function trackWait({ userId, label, actions = [] }) {
+  if (!userId || SimMode.active || !game.user?.isGM) return () => {};
+  const id = foundry.utils.randomID();
+  _waits.set(id, { id, userId, label, actions });
+  publishWaits();
+  return () => { if (_waits.delete(id)) publishWaits(); };
+}
+
+export function listWaits() {
+  return _waits.size ? localWaits() : _remoteWaits;
+}
+
+export function runWaitAction(waitId, actionId) {
+  const w = _waits.get(waitId);
+  if (!w) { getIntentChannel().emitToGms({ kind: "run", waitId, actionId }); return; }
+  try { w.actions.find((a) => a.id === actionId)?.run?.(); }
+  catch (e) { console.error(e); }
+}
+
+/** How long this client has been unreachable, or 0. GM desk only: never shown to players. */
+export function awayForMs(userId) {
+  if (isReady(userId)) return 0;
+  const since = _awaySince.get(userId) ?? _lastHeard.get(userId);
+  return since != null ? Date.now() - since : 0;
 }
 
 export function presenceList() {
