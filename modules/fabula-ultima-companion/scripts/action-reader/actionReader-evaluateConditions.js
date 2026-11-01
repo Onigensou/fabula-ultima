@@ -496,32 +496,18 @@ function evaluateAllyHasStatus(context, row) {
   };
 }
 
-/* Crisis, byte-for-byte as the reaction engine defines it (_anyAllyInCrisis in
-   reaction-system/formula-evaluator.js). Kept as a mirror on purpose — two
-   different answers to "is this ally in Crisis" is worse than either answer:
-     • a DISABLED effect is NOT crisis (an earlier cut of this missed that, so a
-       disabled Crisis AE short-circuited before the HP fallback and would have
-       made a priority-12 healer burn every turn on a full-HP ally),
-     • the bdCrisis FLAG counts even when the effect is named something else,
-     • otherwise the RAW threshold, so the gate holds before the crisis-reactor
-       has stamped anything — which is exactly when a healer must act. */
-function isActorInCrisis(actor) {
-  const hasAe = (actor?.effects?.contents ?? Array.from(actor?.effects ?? [])).some((e) => {
-    if (e?.disabled) return false;
-    if (e?.flags?.["fabula-ultima-companion"]?.bdCrisis === true) return true;
-    return String(e?.name ?? "").trim().toLowerCase() === "crisis";
-  });
-  if (hasAe) return true;
-  const cur = Number(actor?.system?.props?.current_hp);
-  const max = Number(actor?.system?.props?.max_hp);
-  return Number.isFinite(cur) && Number.isFinite(max) && max > 0 && cur * 2 <= max;
-}
-
 /* Is one of my side in CRISIS? A core Fabula Ultima state, so it gets its own
    condition rather than leaning on a status NAME through creature_has_status —
-   which scans both sides and would fire on a wounded ENEMY. */
-function evaluateAllyInCrisis(context, row) {
-  const label = "Ally In Crisis";
+   which scans both sides and would fire on a wounded ENEMY. The crisis test is
+   AR.isActorInCrisis (the reaction engine's definition).
+
+   Two keys share this:
+     • ally_in_crisis   — any ally, summons included.
+     • player_in_crisis — players only: summons are skipped (AR.isPlayerAlly),
+       and the row's single-target pick then goes to the player in Crisis
+       (see buildAndPickTargets). Written for Kalina's Remedy, which on
+       ally_in_crisis tripped on a wounded summon and then healed it. */
+function evaluateCrisisCount(context, row, { conditionKey, label, noun, playersOnly }) {
   const tokenDoc = getPerformerTokenDoc(context);
   const performerDisposition = AR.getTokenDisposition(tokenDoc);
   const performerId = tokenDoc?.id ?? null;
@@ -533,10 +519,11 @@ function evaluateAllyInCrisis(context, row) {
     const actor = AR.getTokenActor(tok);
     if (!actor || AR.isUntargetableActor(actor)) continue;
     const td = AR.getTokenDocument(tok);
+    if (playersOnly && !AR.isPlayerAlly(actor, td)) continue;
     if (performerId && td?.id === performerId) continue;
     if (AR.relationToPerformer(AR.getTokenDisposition(td), performerDisposition) !== "ally") continue;
 
-    if (isActorInCrisis(actor)) { count++; if (!holder) holder = AR.getActorName(actor); }
+    if (AR.isActorInCrisis(actor)) { count++; if (!holder) holder = AR.getActorName(actor); }
   }
 
   // Range semantics match the other count conditions: blank v1/v2 → "at least
@@ -547,13 +534,23 @@ function evaluateAllyInCrisis(context, row) {
 
   return {
     passed,
-    conditionKey: "ally_in_crisis",
+    conditionKey,
     conditionLabel: label,
     reason: passed
-      ? `${count} ally/allies in Crisis${holder ? ` (e.g. ${holder})` : ""} — within ${range.min}–${range.max}.`
-      : `${count} ally/allies in Crisis — outside ${range.min}–${range.max}.`,
+      ? `${count} ${noun} in Crisis${holder ? ` (e.g. ${holder})` : ""} — within ${range.min}–${range.max}.`
+      : `${count} ${noun} in Crisis — outside ${range.min}–${range.max}.`,
     details: { count, holder, min: range.min, max: range.max }
   };
+}
+
+function evaluateAllyInCrisis(context, row) {
+  return evaluateCrisisCount(context, row,
+    { conditionKey: "ally_in_crisis", label: "Ally In Crisis", noun: "ally/allies", playersOnly: false });
+}
+
+function evaluatePlayerInCrisis(context, row) {
+  return evaluateCrisisCount(context, row,
+    { conditionKey: "player_in_crisis", label: "Player In Crisis", noun: "player(s)", playersOnly: true });
 }
 
 function evaluateCreatureHasStatus(context, row) {
@@ -770,6 +767,9 @@ function evaluateOneCondition(context, row, options = {}) {
 
     case "ally_in_crisis":
       return evaluateAllyInCrisis(context, row);
+
+    case "player_in_crisis":
+      return evaluatePlayerInCrisis(context, row);
 
     case "creature_has_status":
       return evaluateCreatureHasStatus(context, row);

@@ -1080,6 +1080,11 @@ Hooks.once("ready", () => {
   import("../orbment/orbment-bootstrap.js")
     .then((m) => m.initOrbment())
     .catch((e) => warn("initOrbment failed to load", e));
+  // Inner Wellspring (Invoker heroic): camp picker + first-pick window + the
+  // rest-time self-AE. Self-contained under scripts/inner-wellspring/.
+  import("../inner-wellspring/inner-wellspring-bootstrap.js")
+    .then((m) => m.initInnerWellspring())
+    .catch((e) => warn("initInnerWellspring failed to load", e));
   const root = (globalThis.FUCompanion = globalThis.FUCompanion ?? {});
   const api = (root.api = root.api ?? {});
   // Anim Studio preview surface — the Preview Bench (classic script) calls these

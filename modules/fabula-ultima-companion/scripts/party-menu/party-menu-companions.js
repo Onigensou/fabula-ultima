@@ -185,6 +185,12 @@ function conditionText(row, name) {
       if (!c) return null;
       return when(c.text === "at least one ally" ? "an ally is in Crisis" : `${c.text} ${c.single ? "is" : "are"} in Crisis`);
     }
+    case "player_in_crisis": {
+      // Summons are not counted (AR.isPlayerAlly) — it is about the players.
+      const c = countText(blank ? 1 : lo, blank ? UNBOUNDED : hi, "player", "players");
+      if (!c) return null;
+      return when(c.text === "at least one player" ? "a player is in Crisis" : `${c.text} ${c.single ? "is" : "are"} in Crisis`);
+    }
     case "target_count": {
       const c = countText(blank ? 1 : lo, blank ? UNBOUNDED : hi, "target", "targets");
       return c && when(`${esc(str(row.action_pattern_name))} can reach ${c.text}`);

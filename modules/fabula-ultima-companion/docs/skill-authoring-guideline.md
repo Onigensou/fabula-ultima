@@ -153,6 +153,12 @@ inventing something. 590 configured skills, 416 reaction rows, 1808 effect rows.
 - **E1 — AEs fired via `apply_ae` set `transfer:false`;** only always-on passives
   use `transfer:true`.
 
+- **E1a — A reaction's text says what the reaction DOES, in RAW's words — nothing
+  else.** The carrier's description is what the player reads on the reaction card
+  (hover). Write only the effect: *"Change the damage type to bolt. That damage
+  ignores Resistances."* No conditions or exclusions (the row's gates enforce
+  them), no other benefits of the same skill, no UI hints. *(Inner Wellspring.)*
+
 - **E2 — `statuses` is decided by the AE's CLASS, not by "do I want an icon".**
   The corpus is emphatic: of 529 `transfer:true` AEs, **521 carry NO `statuses`**.
   - **Always-on passive (`transfer:true`, no duration, no reactionConfig) → OMIT
