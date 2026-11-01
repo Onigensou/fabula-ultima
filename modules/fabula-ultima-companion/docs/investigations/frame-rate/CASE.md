@@ -159,10 +159,18 @@ per frame instead of a page walk. Sandbox check on Midgard_Map001: two fake butt
 44 px apart, same height; a button outside the layers untouched. Not yet measured on a real GM page; the next session's `fps`
 records are that measurement.
 
-**King Gorger's tokens, checked.** Only the four scene records and the token documents themselves refer to the four ids; no
-tile, macro, journal, setting or cutscene file does. Slot 1 holds all four under `sceneTokenData`, so a Load recreates them
-unless the slot is patched too. The host says the plaza token (Midgard_Map001) is where the party first met him and the three
-hidden "King Gorger A" copies were duplicated for roleplaying. Deletion awaits the host's word.
+**King Gorger's tokens: DELETED 2026-11-01 (host's approval).** Only the four scene records and the token documents themselves
+referred to the ids; no tile, macro, journal, setting or cutscene file did, and no save but slot 1 held them. Deleted live in the
+real world (70 s, no players connected), slot 1 patched to match, full token documents and the pre-patch slot backed up in
+`save-backups/2026-11-01-pre-kg-tokens/` (outside git). For re-placing a town copy: the plaza token stood at **1438, 2312 on
+Midgard_Map001**, visible; the three "King Gorger A" copies were hidden at 614,631 (005), 1018,1472 (006), 635,790 (007).
+
+**For a future campaign (host's question):** the town appearance of a recruitable character should be a separate *stage-prop*
+actor (an unlinked NPC that is never written in battle), placed in the plaza as authored content and hidden by story progress;
+the party-member actor is a different document, and recruitment hides the prop. That is how a console game does it, it costs
+nothing per write, and a fresh save never inherits companion state. Today's recruitment reused the companion actor for the
+town token, which is what made it expensive. Also: no "new game" baseline save exists yet; slots 2 and 3 predate the plaza
+token. Authoring a chapter-start slot would make a fresh playthrough a Load, not a git archaeology job.
 
 **Firefox + 3D, no code needed for one player.** Battle depth is per-user, and the fallback path to Full already exists for
 backdrops without a 3D model.
