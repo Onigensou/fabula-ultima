@@ -587,7 +587,7 @@
           "cost": "-",
           "damage_bonus": "",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\">Trigger</a>&nbsp;At the start of the conflict</p></li></ul><p>The party makes a <strong>DL 13</strong> <strong>【INS + INS】</strong> Group Check to see through the stone. On a failure, the Roper performs <strong>Tentacle</strong> as a free action.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.UqXGUQM31kWc7BTc\" data-id=\"UqXGUQM31kWc7BTc\" data-type=\"JournalEntry\">Unleash</a></p></li></ul><p>The party makes a <strong>DL 13</strong> <strong>【INS + INS】</strong> Group Check to see through the stone. On a failure, the Roper performs <strong>Tentacle</strong> as a free action.</p>",
           "details_roller": "Show",
           "duration": "-",
           "effect_table": {
