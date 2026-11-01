@@ -81,9 +81,9 @@ figures come from CDP `Performance.getMetrics`.
 | player, Firefox 155 | see table above | 35–58 | not measurable | |
 
 **A real battle:** `Valley_Battlemap002`, 4 PCs + guests against 3 Tempered Lookers, on the GM (Electron) and a player (Edge) at
-once, prompts passed by a driver. Four runs: 3D twice, Off, Depth only.
+once. Five runs: 3D three times (one with nobody passing prompts, so it sat at the first one), Off, Depth only.
 
-- **Opening (first 30 s):** 7–50 fps on both, worst single frames 0.9–2.9 s.
+- **Opening (first 30 s):** 1–50 fps in 5 s windows on both, worst single frames 0.9–2.9 s.
 - **Attacks (`RESOLVE`):** falls to 6–30 fps when actors re-derive, with frames of 0.5–2.1 s.
 - **Waiting at a menu or card:** 60 fps on the GM.
 
