@@ -3,7 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const BRIDGE_DIR = path.resolve(__dirname, "../../../worlds/fabula-ultima-2/test-bridge");
+const BRIDGE_DIR = path.resolve(__dirname, `../../../worlds/${process.env.FVTT_WORLD || "fabula-ultima-2"}/test-bridge`);
 
 function readSecret() {
   return fs.readFileSync(path.join(BRIDGE_DIR, "bridge-secret.txt"), "utf8").trim();
