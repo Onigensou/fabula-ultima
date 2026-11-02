@@ -26,8 +26,15 @@
 // socket, so a reload does not lose them. The primary GM writes the session's
 // reports to Data/client-health-logs/ (gitignored) every 2 minutes.
 //
+// A GM can also ask one connected client for a read-only report of its screen
+// (2026-11-01 report: one player's camp button failed and nobody could look).
+// The client shows nothing and changes nothing. The list of checks is fixed and
+// the message runs no code it carries, because a socket message doesn't prove
+// who sent it. A page that is frozen or still loading can't answer.
+//
 // GM console:  FUCompanion.api.clientHealth.summary()   per-player roll-up
 //              FUCompanion.api.clientHealth.log()       raw entries
+//              await FUCompanion.api.clientHealth.ask("Rinri", { selectors: ["#oni-camp-phase-btn"] })
 // Other scripts add entries with FUCompanion.api.clientHealth.record(kind, data)
 // (load-indicator.js: "load-progress", "load-waiting").
 // ============================================================================
@@ -51,7 +58,15 @@
   const CONSOLE_LINES = 15;
   const CONSOLE_CHARS = 300;
 
-  const keyBeat  = () => `fuc.clientHealth.beat.${game.world.id}`;
+  const MSG_ASK    = "FU_CLIENT_ASK";
+  const MSG_ANSWER = "FU_CLIENT_ANSWER";
+  const ASK_TIMEOUT_MS   = 8000;
+  const ANSWER_MIN_GAP_MS = 1000;  // the socket doesn't prove the sender: nobody gets to spam a client
+  const REPORT_LINES_MAX = 100;
+  const REPORT_SELECTORS_MAX = 5;
+  const REPORT_WINDOWS_MAX = 20;
+
+  const keyBeat = () => `fuc.clientHealth.beat.${game.world.id}`;
   const keyQueue = () => `fuc.clientHealth.queue.${game.world.id}`;
 
   const store = {
@@ -296,6 +311,127 @@
     return by;
   }
 
+  // ── Report on request ──────────────────────────────────────────────────────
+
+  function describeElement(el) {
+    if (!el) return null;
+    const cs = getComputedStyle(el);
+    return {
+      tag: el.tagName.toLowerCase(),
+      id: el.id || null,
+      class: String(el.className?.baseVal ?? el.className ?? "").slice(0, 120) || null,
+      zIndex: cs.zIndex,
+      pointerEvents: cs.pointerEvents,
+    };
+  }
+
+  // Is this control there, and would a press in its middle land on it?
+  function checkSelector(selector) {
+    let el;
+    try { el = document.querySelector(selector); }
+    catch { return { selector, error: "not a valid selector" }; }
+    if (!el) return { selector, found: false };
+    const r = el.getBoundingClientRect();
+    const cs = getComputedStyle(el);
+    const stack = r.width && r.height
+      ? document.elementsFromPoint(r.left + r.width / 2, r.top + r.height / 2).slice(0, 5)
+      : [];
+    return {
+      selector,
+      found: true,
+      rect: { x: Math.round(r.left), y: Math.round(r.top), w: Math.round(r.width), h: Math.round(r.height) },
+      display: cs.display,
+      visibility: cs.visibility,
+      opacity: cs.opacity,
+      pointerEvents: cs.pointerEvents,
+      disabled: !!el.disabled,
+      onTop: !!stack[0] && (stack[0] === el || el.contains(stack[0])),
+      stack: stack.map(describeElement),
+    };
+  }
+
+  function openWindows() {
+    const apps = [
+      ...Object.values(ui?.windows ?? {}),
+      ...(foundry.applications?.instances?.values?.() ?? []),
+    ];
+    return apps.filter(a => a?.rendered !== false).slice(0, REPORT_WINDOWS_MAX).map(a => {
+      const title = a.title ?? a.options?.window?.title ?? a.id ?? a.constructor?.name;
+      return String(title).slice(0, 80);
+    });
+  }
+
+  function buildReport({ selectors = [], lines = 40, levels = ["warn", "error"], grep } = {}) {
+    const tap = globalThis.__FUConsoleTap?.snapshot?.({
+      levels,
+      grep,
+      limit: Math.min(Math.max(0, Number(lines) || 0), REPORT_LINES_MAX),
+    });
+    return {
+      user: game.user.name,
+      at: new Date().toISOString(),
+      module: game.modules.get("fabula-ultima-companion")?.version ?? null,
+      ...sceneInfo(),
+      viewedScene: game.user.viewedScene ?? null,
+      canvasReady: canvas?.ready ?? null,
+      drawing: tearDownAt !== null,
+      sinceDrawMs: lastDrawAt ? Date.now() - lastDrawAt : null,
+      hidden: document.hidden,
+      focused: document.hasFocus(),
+      viewport: `${innerWidth}x${innerHeight}@${devicePixelRatio}`,
+      socketConnected: !!game.socket?.connected,
+      mem: measure(),
+      fps: fpsNow(),
+      windows: openWindows(),
+      console: (tap?.logs ?? []).map(e => ({ ts: e.ts, level: e.level, msg: String(e.msg).slice(0, CONSOLE_CHARS) })),
+      consoleDropped: tap?.dropped ?? null,
+      selectors: selectors.slice(0, REPORT_SELECTORS_MAX).map(s => checkSelector(String(s))),
+    };
+  }
+
+  const pendingAsks = new Map();
+  let lastAnswerAt = 0;
+
+  function onAskSocket(payload) {
+    if (payload?.type === MSG_ANSWER) {
+      const resolve = pendingAsks.get(payload.requestId);
+      if (!resolve) return;   // another GM's question
+      pendingAsks.delete(payload.requestId);
+      resolve(payload.error ? { ok: false, error: payload.error } : { ok: true, report: payload.report });
+      return;
+    }
+    if (payload?.type !== MSG_ASK || payload.toUserId !== game.user.id) return;
+    const now = Date.now();
+    if (now - lastAnswerAt < ANSWER_MIN_GAP_MS) return;
+    lastAnswerAt = now;
+    const answer = { type: MSG_ANSWER, requestId: payload.requestId };
+    try { answer.report = buildReport(payload.options); }
+    catch (err) { answer.error = String(err?.message ?? err); }
+    game.socket.emit(SOCKET_NS, answer);
+  }
+
+  // Resolves { ok: true, report } or { ok: false, error }, never rejects.
+  async function ask(who, options = {}, timeoutMs = ASK_TIMEOUT_MS) {
+    if (!game.user.isGM) return { ok: false, error: "GM only" };
+    const name = String(who ?? "").trim().toLowerCase();
+    const user = game.users.get(who) ?? game.users.find(u => u.name.toLowerCase() === name);
+    if (!user) return { ok: false, error: `no user called "${who}"` };
+    if (!user.active) return { ok: false, user: user.name, error: "not connected" };
+    if (user.id === game.user.id) return { ok: true, report: buildReport(options) };   // a socket emit never echoes
+
+    const requestId = foundry.utils.randomID();
+    const result = await new Promise(resolve => {
+      pendingAsks.set(requestId, resolve);
+      setTimeout(() => {
+        if (!pendingAsks.delete(requestId)) return;
+        resolve({ ok: false, error: `no answer in ${Math.round(timeoutMs / 1000)} s: the page may be frozen or still loading` });
+      }, timeoutMs);
+      game.socket.emit(SOCKET_NS, { type: MSG_ASK, requestId, toUserId: user.id, options });
+    });
+    push("ask", { target: user.name, ok: result.ok, error: result.error ?? null });
+    return { user: user.name, ...result };
+  }
+
   // ── Wiring ─────────────────────────────────────────────────────────────────
 
   Hooks.on("canvasTearDown", () => {
@@ -338,6 +474,7 @@
       measure,
       fps: fpsNow,
       record: (kind, data = {}) => push(kind, data),
+      ask,
     };
 
     reportBoot();
@@ -353,6 +490,7 @@
     setInterval(upload, UPLOAD_MS);
 
     game.socket.on(SOCKET_NS, onSocket);
+    game.socket.on(SOCKET_NS, onAskSocket);
     game.socket.on("disconnect", reason => push("disconnect", { reason: String(reason), ...sceneInfo() }));
     game.socket.on("connect", () => { push("connect"); flush(); });
     game.socket.on("reload", () => push("server-reload"));   // core's own reload broadcast
