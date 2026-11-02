@@ -1,11 +1,14 @@
 // Battle Director — explicit host.
 //
 // The director's FSM runs on exactly one GM client: the one holding
-// director-boot's `_instance` (whoever clicked Start, or resumed a saved
-// battle). Nothing used to tell the other clients WHICH client that is, so
-// callers guessed "the primary GM" (core `game.users.activeGM`). That is a
-// different thing: a Co-DM can host, and a GM who logs in after the host
-// started becomes primary without hosting. The guess caused:
+// director-boot's `_instance`. The MAIN GM hosts (the highest-ranked GM online,
+// core's `activeGM`): an assistant GM's start() is sent to the main GM's client
+// when it is online, and when the hosting GM disconnects the highest-ranked GM
+// left takes the saved battle over in place (director-boot; report
+// 2026-11-01-bd-host-should-be-main-gm). An assistant GM alone still hosts, and
+// a GM who logs in after the host started becomes primary WITHOUT hosting (no
+// mid-battle hand-off). So "the primary GM" is still not "the host", and
+// callers must not guess. Guessing caused:
 //   - a SECOND director: auto-resume on `ready` was gated on isPrimaryGM(), so
 //     a primary GM that loaded while another GM was hosting mounted its own
 //     FSM from the same saved state. Two FSMs then sent two Opportunity offers
@@ -45,6 +48,7 @@ let _mountingTimer = null;
 const MOUNT_TIMEOUT_MS = 30_000;
 let _knownHostId = null;
 const _probeWaiters = new Set();
+const _hostLostListeners = new Set();
 const _conflictWarned = new Set();
 
 function emit(event, payload = {}) {
@@ -113,12 +117,25 @@ export function installDirectorHost({ isHosting } = {}) {
     if (!connected && user?.id === _knownHostId) {
       log(`[BD host] host ${user.name} disconnected`);
       _knownHostId = null;
+      for (const fn of _hostLostListeners) { try { fn(user); } catch (e) { warn("[BD host] host-lost listener threw", e); } }
     }
   });
   // A socket blip drops our announcement on clients that loaded meanwhile.
   game.socket.on("connect", () => { if (hosting()) emit("HOST", { userId: game.user.id, claim: false }); });
   _installed = true;
   if (game.user?.isGM) probeHost().catch(() => {});   // learn a running host early
+}
+
+/** Run `fn(user)` when the hosting GM disconnects (director-boot takes over). */
+export function onHostLost(fn) { if (typeof fn === "function") _hostLostListeners.add(fn); }
+
+/** The main GM: the highest-ranked GM online (core's activeGM order). */
+export function mainGM() {
+  const core = game.users?.activeGM;
+  if (core) return core;
+  let best = null;
+  for (const u of game.users ?? []) if (u.isGM && u.active && outranks(u, best)) best = u;
+  return best;
 }
 
 /** The hosting user's id, or null when nobody is known to host. */

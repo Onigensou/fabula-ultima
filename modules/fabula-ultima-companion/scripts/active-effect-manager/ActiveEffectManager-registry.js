@@ -551,50 +551,29 @@
     return score;
   }
 
-  function findTemplateForConfigStatus(status = {}) {
-    const candidates = [];
+  // Every world item/actor effect with its match keys, built ONCE per scan. Matching each
+  // CONFIG status against the world used to toObject()+clone every effect again per
+  // status (statuses x ~800 effects), which was most of the startup registry refresh.
+  function buildStatusTemplateIndex() {
+    const index = [];
 
-    const scanOwner = (owner, sourceType, ownerDocumentName) => {
+    const addOwner = (owner, sourceType, ownerDocumentName) => {
       for (const effect of owner?.effects ?? []) {
         try {
           const raw = effectToRawData(effect);
-          if (!effectMatchesConfigStatus(effect, raw, status)) continue;
-
-          const source = {
+          index.push({
+            owner,
             sourceType,
-            ownerName: owner.name,
-            ownerUuid: owner.uuid,
             ownerDocumentName,
-            ownerType: owner.type,
-            effectId: effect.id,
-            effectUuid: effect.uuid,
-            registryId: effect.uuid
-          };
-
-          const tags = extractTags(effect, raw);
-          const category = inferCategory(effect, raw, source);
-          const score = scoreStatusTemplateCandidate({
             effect,
             raw,
-            source,
-            status,
-            tags,
-            category
-          });
-
-          candidates.push({
-            effect,
-            raw,
-            source,
-            tags,
-            category,
-            score
+            statusKeys: getEffectStatuses(effect, raw).map(normalizeStatusMatchKey).filter(Boolean),
+            nameKey: normalizeName(getEffectName(effect ?? raw))
           });
         } catch (e) {
-          warn("Failed while matching CONFIG.statusEffects entry to ActiveEffect template.", {
+          warn("Failed while indexing an ActiveEffect for CONFIG.statusEffects matching.", {
             owner: owner?.name,
             effect: effect?.name,
-            status: status?.name ?? status?.label ?? status?.id,
             error: String(e?.message ?? e)
           });
         }
@@ -602,11 +581,82 @@
     };
 
     for (const item of game.items ?? []) {
-      scanOwner(item, "world-item-effect", "Item");
+      addOwner(item, "world-item-effect", "Item");
     }
 
     for (const actor of game.actors ?? []) {
-      scanOwner(actor, "world-actor-effect", "Actor");
+      addOwner(actor, "world-actor-effect", "Actor");
+    }
+
+    return index;
+  }
+
+  // effectMatchesConfigStatus() over an index row (same rule: status key first, then name).
+  function indexRowMatchesConfigStatus(row, status = {}) {
+    const wanted = new Set(getConfigStatusMatchKeys(status));
+    if (!wanted.size) return false;
+
+    if (row.statusKeys.some(k => wanted.has(k))) return true;
+
+    const wantedNames = uniq([
+      status?.name,
+      status?.label,
+      status?.id
+    ])
+      .map(normalizeName)
+      .filter(Boolean);
+
+    return !!row.nameKey && wantedNames.includes(row.nameKey);
+  }
+
+  function findTemplateForConfigStatus(status = {}, index = buildStatusTemplateIndex()) {
+    const candidates = [];
+
+    for (const row of index) {
+      const { owner, sourceType, ownerDocumentName, effect } = row;
+      try {
+        if (!indexRowMatchesConfigStatus(row, status)) continue;
+        // each candidate owns its raw copy, as when it was cloned per status
+        const raw = clone(row.raw, {});
+
+        const source = {
+          sourceType,
+          ownerName: owner.name,
+          ownerUuid: owner.uuid,
+          ownerDocumentName,
+          ownerType: owner.type,
+          effectId: effect.id,
+          effectUuid: effect.uuid,
+          registryId: effect.uuid
+        };
+
+        const tags = extractTags(effect, raw);
+        const category = inferCategory(effect, raw, source);
+        const score = scoreStatusTemplateCandidate({
+          effect,
+          raw,
+          source,
+          status,
+          tags,
+          category
+        });
+
+        candidates.push({
+          effect,
+          raw,
+          source,
+          tags,
+          category,
+          score
+        });
+      } catch (e) {
+        warn("Failed while matching CONFIG.statusEffects entry to ActiveEffect template.", {
+          owner: owner?.name,
+          effect: effect?.name,
+          status: status?.name ?? status?.label ?? status?.id,
+          error: String(e?.message ?? e)
+        });
+      }
     }
 
     candidates.sort((a, b) => b.score - a.score);
@@ -781,7 +831,7 @@
     return entry;
   }
 
-  function buildConfigStatusEffectEntry(status) {
+  function buildConfigStatusEffectEntry(status, templateIndex = undefined) {
     const id = safeString(status?.id ?? status?.name ?? status?.label);
     const name = safeString(status?.name ?? status?.label ?? status?.id, "Unnamed Status");
     const img = safeString(status?.img ?? status?.icon ?? "icons/svg/aura.svg");
@@ -792,7 +842,7 @@
     // but not the CSB string-tags field from the actual ActiveEffect template.
     // Bridge that gap by matching the CONFIG status to the real ActiveEffect
     // document by status id first, then by name.
-    const template = findTemplateForConfigStatus(status);
+    const template = findTemplateForConfigStatus(status, templateIndex);
     const templateTags = template?.tags ?? [];
     const templateCategory = template?.category ?? "";
 
@@ -859,9 +909,10 @@
   function scanConfigStatusEffects() {
     const rows = [];
 
+    const templateIndex = (CONFIG.statusEffects ?? []).length ? buildStatusTemplateIndex() : [];
     for (const status of CONFIG.statusEffects ?? []) {
       try {
-        rows.push(buildConfigStatusEffectEntry(status));
+        rows.push(buildConfigStatusEffectEntry(status, templateIndex));
       } catch (e) {
         warn("Failed to index CONFIG.statusEffects entry.", {
           status,

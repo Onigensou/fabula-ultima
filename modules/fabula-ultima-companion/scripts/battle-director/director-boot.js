@@ -36,7 +36,7 @@ import { initBlackestNightCinematic } from "./battle-end/undying/blackest-night-
 import { conflictEventReactor } from "../conflict-event/conflict-event-runtime.js";
 import { getIntentChannel, attachDirector, detachDirector } from "./intent-channel.js";
 import { installPlayerPresence, presenceOf, isReady as presenceIsReady, isGone as presenceIsGone, presenceList, trackWait, listWaits, GRACE_MS } from "./player-presence.js";
-import { installDirectorHost, claimHost, abandonClaim, announceHost, releaseHost, hostUser, hostInfo, mountingLocally } from "./director-host.js";
+import { installDirectorHost, claimHost, abandonClaim, announceHost, releaseHost, hostUser, hostInfo, mountingLocally, mainGM, onHostLost, hostUserId } from "./director-host.js";
 import { TurnUI } from "./turn-ui.js";
 import { registerPlayerComposeActionHandler } from "./compose-action.js";
 import { registerPlayerActionCardHandler } from "./action-card.js";
@@ -207,6 +207,96 @@ async function preflightCleanup() {
   if (swept) log(`pre-flight: cleaned ${swept} orphan director-spawned tokens`);
 }
 
+// ─── The main GM hosts ──────────────────────────────────────────────────────
+// Forwarding a start, and taking a battle over when its host disconnects.
+const START_ACTION = "bd.startOnMainGM";
+const FORWARD_TIMEOUT_MS = 30_000;
+const TAKEOVER_GRACE_MS = 15_000;   // a host that is only reloading reconnects within this
+let _hostSocket = null;
+let _takeoverTimer = null;
+
+/**
+ * Send this start to the main GM when that is someone else. Returns undefined
+ * when the start should run HERE (no other main GM, or it could not be reached
+ * at all); otherwise what start() returns to its callers: a marker object on
+ * success (callers read "a new truthy value" as launched), null on refusal.
+ */
+async function forwardStartToMainGM(arg) {
+  const main = mainGM();
+  if (!main || main.id === game.user?.id || !_hostSocket) return undefined;
+  const wireArg = typeof arg === "string" ? { combatId: arg } : (arg ?? {});
+  let res;
+  try {
+    res = await Promise.race([
+      _hostSocket.executeAsUser(START_ACTION, main.id, JSON.parse(JSON.stringify(wireArg))),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), FORWARD_TIMEOUT_MS)),
+    ]);
+  } catch (e) {
+    if (String(e?.message) === "timeout") {
+      // It may still be starting there: starting here too could make two directors.
+      warn(`start: ${main.name} did not answer the forwarded start in ${FORWARD_TIMEOUT_MS / 1000} s`);
+      ui.notifications?.error(`Battle Director: ${main.name} (main GM) did not answer. Check their screen before starting again.`);
+      return null;
+    }
+    // Not reachable at all (still loading, no handler yet): this client hosts, as before.
+    warn(`start: could not reach ${main.name} (main GM), starting here instead`, e);
+    return undefined;
+  }
+  if (!res?.ok) {
+    ui.notifications?.warn(`Battle Director: ${main.name} (main GM) did not start the battle${res?.reason ? ` (${res.reason})` : ""}.`);
+    return null;
+  }
+  log(`start: forwarded to ${main.name} (main GM), who now hosts`);
+  ui.notifications?.info(`Battle Director: the battle runs on ${main.name}'s client (main GM).`);
+  return { forwarded: true, hostUserId: main.id, hostName: main.name };
+}
+
+/** On the main GM: run a start an assistant GM forwarded. */
+async function onForwardedStart(arg) {
+  const before = _instance;
+  const d = await start({ ...(arg ?? {}), local: true });
+  if (!d) return { ok: false, reason: "refused" };
+  if (d === before) return { ok: false, reason: "a battle is already running" };
+  return { ok: true };
+}
+
+/**
+ * The hosting GM disconnected. If it does not come back within the grace
+ * period, the highest-ranked GM still online claims the saved battle in place,
+ * so the battle never waits on a reload.
+ */
+function scheduleTakeover(lostUser) {
+  if (!game.user?.isGM) return;
+  clearTimeout(_takeoverTimer);
+  _takeoverTimer = setTimeout(async () => {
+    _takeoverTimer = null;
+    try {
+      if (_instance || hostUserId()) return;                    // someone hosts again
+      if (game.users?.get(lostUser.id)?.active) return;         // it came back
+      if (mainGM()?.id !== game.user.id) return;                // a higher GM will do it
+      const found = findSavedDirectorState();
+      if (!found) return;
+      if (!(await claimHost())) return;
+      log(`takeover: ${lostUser.name} left mid-battle, resuming it here`);
+      ui.notifications?.info(`Battle Director: ${lostUser.name} disconnected, the battle continues on your client.`);
+      const d = await resumeFromSavedState(found).catch((e) => { warn("takeover: resume threw", e); return null; });
+      if (!d) abandonClaim();
+    } catch (e) { warn("takeover threw", e); }
+  }, TAKEOVER_GRACE_MS);
+}
+
+function installMainGMHosting() {
+  try {
+    if (typeof socketlib !== "undefined" && game.modules.get("socketlib")?.active) {
+      _hostSocket = socketlib.registerModule("fabula-ultima-companion");
+      _hostSocket?.register(START_ACTION, onForwardedStart);
+    }
+  } catch (e) { warn("main-GM start forwarding unavailable", e); }
+  // A host that is only reloading reconnects within the grace period; the
+  // timer re-checks that, and the reloaded host then resumes on its own ready.
+  onHostLost((user) => scheduleTakeover(user));
+}
+
 // start() now accepts either:
 //   - a combat id string  → manual fallback (attaches to an existing combat,
 //                            FSM goes IDLE → ROUND_START, skipping PREP)
@@ -246,6 +336,15 @@ async function start(arg) {
       ui.notifications?.warn(`Battle Director: ${other.name} is hosting the battle already.`);
       return null;
     }
+  }
+
+  // The MAIN GM hosts. An assistant GM's start goes to the main GM's client
+  // when it is online, and nothing mounts here (report
+  // 2026-11-01-bd-host-should-be-main-gm). `{ local: true }` opts out (the sim
+  // runner drives the director it starts, so it must run here).
+  if (!_instance && !(arg && typeof arg === "object" && arg.local)) {
+    const forwarded = await forwardStartToMainGM(arg);
+    if (forwarded !== undefined) return forwarded;
   }
 
   // Pre-flight: scrub any leftover state from a prior wedged/aborted run so a
@@ -1049,6 +1148,8 @@ Hooks.once("ready", () => {
   // and the auto-resume below can ask. See director-host.js.
   try { installDirectorHost({ isHosting: () => !!_instance }); }
   catch (e) { warn("installDirectorHost threw", e); }
+  try { installMainGMHosting(); }
+  catch (e) { warn("installMainGMHosting threw", e); }
 
   // Grappled rule #2: ending a Guard-cover when its guarder becomes Grappled.
   // Session-global, idempotent — install once here (path-independent of

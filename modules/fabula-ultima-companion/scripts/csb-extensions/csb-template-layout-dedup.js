@@ -22,12 +22,19 @@
  *   (2) WRITE — reloadTemplate stops re-stamping the copy onto instances, so a
  *               stripped world does not creep back as you author.
  *
- * SCOPE: ITEMS ONLY. Actors are deliberately excluded — measured 2026-07-28,
- * only 2.6 MB of their 41 MB of layout is safely reclaimable, and stripping a
- * STALE actor provably loses UI: "Cradle" lost 22 rendered fields (the whole
- * chanter_* block) because PC instances carry per-instance layout the char
- * template cannot reproduce. See character-creation/cc-const.js, which already
- * documents that re-stamping resets authored dropdowns on PCs.
+ * SCOPE: ITEMS resolve from their MASTER template. Actors do not — measured
+ * 2026-07-28, stripping a STALE actor to its template provably loses UI:
+ * "Cradle" lost 22 rendered fields (the whole chanter_* block) because PC
+ * instances carry per-instance layout the char template cannot reproduce. See
+ * character-creation/cc-const.js, which already documents that re-stamping
+ * resets authored dropdowns on PCs.
+ *
+ * ACTORS share their OWN layout instead (2026-11-03, see SHARED ACTOR LAYOUTS):
+ * 316 actors stored 47 MB of layout but only 33 distinct layouts (5.6 MB). Each
+ * distinct layout is kept ONCE, on the `_Layout Library` actor, and an actor
+ * whose stored body is empty points at its entry by `flags.<ns>.layoutRef`. The
+ * actor gets back exactly the layout it had: nothing is re-derived from a
+ * template.
  *
  * SAFETY RAILS
  *   - Off by default. Enable via the `csbLayoutDedup` world setting.
@@ -195,6 +202,56 @@
         console.info(`${TAG} installed (active: ${enabled()}, shared trees: ${!!Panel?.fromJSON?.__fuTreeCache}).`);
     });
 
+    /* ------------------------------------------------ SHARED ACTOR LAYOUTS -- */
+    // An actor with an empty stored body and `flags.<ns>.layoutRef` uses the layout
+    // kept under that ref on the library actor (`flags.<ns>.layoutLibrary.layouts`),
+    // a hidden `_template` actor written by tools/safe-edit/bin/_share-actor-layouts.js.
+    // Content-addressed (the ref is a hash of the layout), so an entry never changes.
+    //
+    // Unlike the item path, the resolved layout STAYS on the prepared document
+    // (`actor.system.body`, in memory only; `_source` keeps the empty one), because
+    // module code reads it directly: battle-end-cleanup walks a PC's body for its
+    // number fields, and the Active Effect Manager scans it for status tabs. Foundry
+    // rebuilds `system` from `_source` on every update, so it is resolved again on
+    // each prepare. Not gated by `csbLayoutDedup`: an actor with a ref has no other
+    // layout, so resolving is never worse than stock.
+    //
+    // reloadTemplate on such an actor still stamps the template's layout onto it
+    // (stock CSB); a stored body then wins over the ref, exactly as before.
+    const NS = 'fabula-ultima-companion';
+    const LIB_FLAG = 'layoutLibrary';
+    const REF_FLAG = 'layoutRef';
+    let libId = null;
+    const missingRefs = new Set();
+    function libraryLayouts() {
+        let doc = libId ? game.actors?.get(libId) : null;
+        if (!doc) {
+            doc = game.actors?.find?.((a) => a.flags?.[NS]?.[LIB_FLAG]) ?? null;
+            if (doc) libId = doc.id;
+        }
+        const lib = doc
+            ? doc.flags[NS][LIB_FLAG]
+            : game.data?.actors?.find?.((a) => a.flags?.[NS]?.[LIB_FLAG])?.flags?.[NS]?.[LIB_FLAG];
+        return lib?.layouts ?? null;
+    }
+    /** The shared layout { ref, body, header } an actor points at, or null. */
+    function sharedActorLayout(entity) {
+        if (entity?.documentName !== 'Actor' || TEMPLATE_TYPES.includes(entity.type)) return null;
+        const ref = entity.flags?.[NS]?.[REF_FLAG];
+        if (!ref) return null;
+        const entry = libraryLayouts()?.[ref];
+        const body = entity.system?.body;
+        // Empty stored body, or already resolved by an earlier prepare of this instance.
+        if (entry && (isEmptyPanel(body) || body === entry.body)) return { ref, body: entry.body, header: entry.header };
+        if (!entry && isEmptyPanel(body) && !missingRefs.has(ref)) {
+            missingRefs.add(ref);
+            console.error(`${TAG} ${entity.name}: shared layout ${ref} is not in the layout library — the sheet will be empty.`);
+            if (game.user?.isGM) ui.notifications?.error(`Sheet layout missing for ${entity.name} (shared layout ${ref}). Is the "_Layout Library" actor present?`, { permanent: true });
+        }
+        return null;
+    }
+    globalThis.__fuSharedActorLayouts = { libraryLayouts, sharedActorLayout, missing: missingRefs };
+
     /* ---------------------------------------------------------------- READ -- */
     // prepareData builds customBody/customHeader from `this.entity.system.body`.
     // When an instance has no stored layout, substitute a DEEP CLONE of the
@@ -219,6 +276,20 @@
             const sys = entity?.system;
             const master = (enabled() && sys && isDedupableInstance(entity) && isEmptyPanel(sys.body))
                 ? resolveMaster(entity) : null;   // null on a dangling pointer: stock behaviour
+            const shared = (!master && sys) ? sharedActorLayout(entity) : null;
+            if (shared) {
+                // Left in place after the call (see SHARED ACTOR LAYOUTS).
+                if (!treeCacheOn()) {
+                    sys.body = foundry.utils.deepClone(shared.body);
+                    sys.header = foundry.utils.deepClone(shared.header);
+                    return orig.call(this);
+                }
+                sys.body = shared.body;
+                sys.header = shared.header;
+                const prev = parseCtx;
+                parseCtx = { master: { key: `lib|${shared.ref}`, body: shared.body, header: shared.header } };
+                try { return orig.call(this); } finally { parseCtx = prev; }
+            }
 
             // Shared layout trees (see SHARED LAYOUT TREES below). Never for template
             // documents: the builder edits their trees in place.

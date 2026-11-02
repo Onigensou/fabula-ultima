@@ -613,7 +613,7 @@ export async function run({
     // inherits it); restored in `finally`.
     zpRestore = await chargeEnemyZp(manualPicks, enemyZp);
     if (zpRestore.length) SimMode.note("start", `charged ${zpRestore.length} boss(es) Zero Power`);
-    await a.start({ payload });
+    await a.start({ payload, local: true });   // the sim drives this director: never forwarded to the main GM
 
     // ── Watch it play ─────────────────────────────────────────────────────
     // Poll the director's own authoritative model rather than adding hooks to
