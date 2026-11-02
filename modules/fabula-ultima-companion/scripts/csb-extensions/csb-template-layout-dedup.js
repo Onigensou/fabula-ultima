@@ -79,7 +79,90 @@
 
     const isEmptyPanel = (p) => !p || !Array.isArray(p.contents) || p.contents.length === 0;
 
+    /* ------------------------------------------------- SHARED LAYOUT TREES -- */
+    // CSB turns each document's layout JSON into a component tree (Panel.fromJSON)
+    // the first time it prepares that document, and keeps one tree per document.
+    // Measured 2026-11-03 on this world: 617 documents carry their own layout but
+    // only 57 layouts are distinct, and the ~4,000 items that carry none (the READ
+    // patch below) were handed a deep clone of their master's on EVERY prepare —
+    // every actor update — though CSB builds the tree only once. Together ~4 s of
+    // every client load.
+    //
+    // A tree is a pure function of its JSON, and CSB mutates trees only in the
+    // template BUILDER (add / move / delete component), i.e. on template documents,
+    // which never use this cache. So documents whose layout is the same share one
+    // tree, built from a private copy of the JSON so it never aliases document data
+    // (building mutates its input, which is why the READ patch used to clone).
+    //
+    // Kill switch: world setting `csbLayoutTreeCache` (default on; reload to apply).
+    // Inspect: globalThis.__fuLayoutTreeCache.
+    const TREE_SETTING = 'csbLayoutTreeCache';
+    const TEMPLATE_TYPES = ['_template', '_equippableItemTemplate'];
+    const TREE_CACHE_MAX = 500;
+    const treeCache = new Map();     // key -> Panel
+    const ownKeys = new WeakMap();   // a document's layout JSON object -> its content key
+    const treeStats = { hits: 0, misses: 0 };
+    let parseCtx = null;             // set only around a prepareData this file handles
+    let treeOn = null;
+    // Read once: settings.get scans the world settings on every call, and this runs
+    // on every prepare of every document.
+    const treeCacheOn = () => {
+        if (treeOn !== null) return treeOn;
+        try { treeOn = game.settings.get('fabula-ultima-companion', TREE_SETTING) !== false; }
+        catch { return false; }
+        return treeOn;
+    };
+    // A master's layout is identified by the document and its last change: a template
+    // save bumps templateSystemUniqueVersion, and any server-side update stamps modifiedTime.
+    const masterKey = (m) => `${m.id}|${m.system?.templateSystemUniqueVersion ?? ''}|${m._stats?.modifiedTime ?? ''}`;
+
+    function patchFromJSON(Panel) {
+        const orig = Panel.fromJSON;
+        if (typeof orig !== 'function' || orig.__fuTreeCache) return;
+        const patched = function (json, templateAddress, parent) {
+            const ctx = parseCtx;
+            // Only ROOT panels built by a prepareData we handle; everything else
+            // (the builder, nested panels, other callers) is untouched.
+            if (!ctx || parent !== undefined || !json || typeof json !== 'object') {
+                return orig.call(this, json, templateAddress, parent);
+            }
+            let key;
+            if (ctx.master && (json === ctx.master.body || json === ctx.master.header)) {
+                key = `m|${ctx.master.key}|${json === ctx.master.body ? 'body' : 'header'}|${templateAddress}`;
+            } else {
+                key = ownKeys.get(json);
+                if (!key) { key = `o|${templateAddress}|${JSON.stringify(json)}`; ownKeys.set(json, key); }
+            }
+            let tree = treeCache.get(key);
+            if (tree) { treeStats.hits++; return tree; }
+            treeStats.misses++;
+            tree = orig.call(this, foundry.utils.deepClone(json), templateAddress, parent);
+            if (treeCache.size >= TREE_CACHE_MAX) treeCache.delete(treeCache.keys().next().value);
+            treeCache.set(key, tree);
+            return tree;
+        };
+        patched.__fuTreeCache = true;
+        Panel.fromJSON = patched;
+        globalThis.__fuLayoutTreeCache = {
+            stats: treeStats,
+            get size() { return treeCache.size; },
+            get on() { return treeCacheOn(); },
+            clear() { treeCache.clear(); treeStats.hits = 0; treeStats.misses = 0; },
+        };
+    }
+
     Hooks.once('init', () => {
+        try {
+            game.settings.register('fabula-ultima-companion', TREE_SETTING, {
+                name: 'CSB: share built sheet layouts',
+                hint: 'Documents with the same sheet layout share one built layout instead of each '
+                    + 'building its own. Speeds up loading. Requires a reload.',
+                scope: 'world',
+                config: false,
+                type: Boolean,
+                default: true,
+            });
+        } catch (e) { console.warn(`${TAG} tree-cache setting registration failed`, e); }
         try {
             game.settings.register('fabula-ultima-companion', SETTING, {
                 name: 'CSB: resolve sheet layout from template',
@@ -102,9 +185,14 @@
         const proto = TemplateSystem?.prototype;
         if (!proto) { console.warn(`${TAG} TemplateSystem.prototype missing; skipping.`); return; }
 
+        let Panel;
+        try { Panel = (await import('/systems/custom-system-builder/module/sheets/components/Panel.js')).default; }
+        catch (e) { console.warn(`${TAG} could not import Panel; shared layout trees disabled.`, e); }
+        if (Panel) patchFromJSON(Panel);
+
         patchRead(proto);
         patchWrite(proto);
-        console.info(`${TAG} installed (active: ${enabled()}).`);
+        console.info(`${TAG} installed (active: ${enabled()}, shared trees: ${!!Panel?.fromJSON?.__fuTreeCache}).`);
     });
 
     /* ---------------------------------------------------------------- READ -- */
@@ -127,14 +215,32 @@
         }
 
         const patched = function () {
-            if (!enabled()) return orig.call(this);
-            const sys = this.entity?.system;
-            if (!sys || !isDedupableInstance(this.entity) || !isEmptyPanel(sys.body)) {
-                return orig.call(this);
-            }
-            const master = resolveMaster(this.entity);
-            if (!master) return orig.call(this);   // dangling pointer: leave stock behaviour
+            const entity = this.entity;
+            const sys = entity?.system;
+            const master = (enabled() && sys && isDedupableInstance(entity) && isEmptyPanel(sys.body))
+                ? resolveMaster(entity) : null;   // null on a dangling pointer: stock behaviour
 
+            // Shared layout trees (see SHARED LAYOUT TREES below). Never for template
+            // documents: the builder edits their trees in place.
+            if (treeCacheOn() && sys && !TEMPLATE_TYPES.includes(entity.type)) {
+                const prev = parseCtx;
+                if (!master) {
+                    parseCtx = { master: null };
+                    try { return orig.call(this); } finally { parseCtx = prev; }
+                }
+                // The master's LIVE layout is safe to hand over here: CSB only reads it
+                // through Panel.fromJSON, which this context routes to a tree built from
+                // a private copy. No per-prepare clone, which CSB would discard anyway
+                // whenever the tree is already built.
+                const ob = sys.body, oh = sys.header;
+                sys.body = master.system.body;
+                sys.header = master.system.header;
+                parseCtx = { master: { key: masterKey(master), body: sys.body, header: sys.header } };
+                try { return orig.call(this); }
+                finally { parseCtx = prev; sys.body = ob; sys.header = oh; }
+            }
+
+            if (!master) return orig.call(this);
             const ob = sys.body, oh = sys.header;
             sys.body = foundry.utils.deepClone(master.system.body);
             sys.header = foundry.utils.deepClone(master.system.header);
