@@ -7637,9 +7637,14 @@ const Resolve = {
         const recordedUuid = studiedActorUuid;
         // A party member studying an enemy gets the Study Card, and the battle waits
         // for it. The rare rest (an enemy studying the party) keep the journal page.
-        const targetDoc = ar.target?.tokenUuid ? fromUuidSync(ar.target.tokenUuid) : null;
-        const attackerDoc = ar.attacker?.tokenUuid ? fromUuidSync(ar.attacker.tokenUuid) : null;
-        const onCard = !SimMode.active && !!recordedUuid && !!targetDoc && !!attackerDoc
+        let targetDoc = null, attackerDoc = null;
+        try {
+          targetDoc = ar.target?.tokenUuid ? fromUuidSync(ar.target.tokenUuid) : null;
+          attackerDoc = ar.attacker?.tokenUuid ? fromUuidSync(ar.attacker.tokenUuid) : null;
+        } catch { /* a token that can't be read gets the journal page, as before */ }
+        // Nobody is at a sim or harness run to press Continue.
+        const unattended = SimMode.active || globalThis.__FU_HARNESS_HEADLESS__ === true || globalThis.__fudActiveDCombat?.__isHarnessCombat === true;
+        const onCard = !unattended && !!recordedUuid && !!targetDoc && !!attackerDoc
           && Number(targetDoc.disposition) === -1 && Number(attackerDoc.disposition) !== -1;
         if (onCard) {
           let newBest = previousBest;

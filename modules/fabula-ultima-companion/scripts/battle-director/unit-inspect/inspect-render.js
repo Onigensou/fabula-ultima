@@ -477,7 +477,7 @@ body.fu-inspecting .fu-inspect-dim{filter:brightness(.42) saturate(.5);transitio
 @keyframes fui-unlock{0%{background-color:rgba(255,206,92,.85);box-shadow:0 0 0 2px #d39b2a}100%{box-shadow:0 0 0 0 rgba(211,155,42,0)}}
 #${ROOT_ID} .fui-stamp{animation:fui-stamp 420ms steps(5) both}
 @keyframes fui-stamp{from{transform:scale(1.9);opacity:.2}to{transform:scale(1);opacity:1}}
-#${ROOT_ID} .fui-go{height:32px;padding:0 14px;background:linear-gradient(180deg,#7a5230,#5c3818);color:#f3e6c8;border-color:#3a2410}
+#${ROOT_ID} .fui-btn.fui-go{height:32px;padding:0 14px;background:linear-gradient(180deg,#7a5230,#5c3818);color:#f3e6c8;border-color:#3a2410}
 #${ROOT_ID} .fui-studyline b{color:var(--ink)}
 #${ROOT_ID} .fui-pcrest{flex:none;line-height:0}
 @media (prefers-reduced-motion: reduce){#${ROOT_ID} .fui-flash,#${ROOT_ID} .fui-stamp{animation-duration:1ms}}
