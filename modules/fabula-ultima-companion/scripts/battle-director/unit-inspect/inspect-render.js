@@ -83,6 +83,9 @@ function actionRow(a) {
     ${text}</div></div>`;
 }
 
+// The same icons as the Party Menu Bestiary's action pages.
+const KIND_ICON = { Attack: "fa-khanda", Skill: "fa-burst", Spell: "fa-wand-sparkles", Passive: "fa-shield-halved" };
+
 function actionsPane(m, ui) {
   if (!m.actions.length) return `<div class="fui-note">${m.hasEntry ? "No actions recorded for this creature." : "Nothing recorded yet."}</div>`;
   const kinds = ["Attack", "Skill", "Spell", "Passive"].filter((k) => m.actions.some((a) => a.kind === k));
@@ -90,7 +93,7 @@ function actionsPane(m, ui) {
   const chips = [["all", `All ${m.actions.length}`], ...kinds.map((k) => [k, `${k}s ${m.actions.filter((a) => a.kind === k).length}`])]
     .map(([k, label]) => `<button type="button" class="fui-fchip${filter === k ? " on" : ""}" data-action="filter" data-key="${esc(k)}" aria-pressed="${filter === k}">${esc(label)}</button>`).join("");
   const groups = kinds.filter((k) => filter === "all" || filter === k)
-    .map((k) => `<div class="fui-label">${esc(k)}s</div>${m.actions.filter((a) => a.kind === k).map(actionRow).join("")}`).join("");
+    .map((k) => `<div class="fui-label fui-actlabel"><i class="fas ${KIND_ICON[k]}"></i>${esc(k)}s</div>${m.actions.filter((a) => a.kind === k).map(actionRow).join("")}`).join("");
   return `<div class="fui-filters">${chips}<span class="fui-seen">${esc(m.seenText)} seen</span></div>${groups}`;
 }
 
@@ -382,7 +385,7 @@ body.fu-inspecting .fu-inspect-dim{filter:brightness(.42) saturate(.5);transitio
 #${ROOT_ID} .fui-chip i{margin-right:3px}
 #${ROOT_ID} .fui-chip{display:inline-block;font-size:11px;font-weight:800;padding:1px 6px;border-radius:5px;white-space:nowrap;margin-left:auto;flex:none;max-width:55%;overflow:hidden;text-overflow:ellipsis}
 #${ROOT_ID} .tone-good{color:#24692c;background:#dcebd7}#${ROOT_ID} .tone-bad{color:#a3261b;background:#f6d9d3}#${ROOT_ID} .tone-neutral{color:#4b3517;background:rgba(59,42,25,.08)}
-#${ROOT_ID} .fui-act{display:grid;grid-template-columns:36px minmax(0,1fr);gap:9px;padding:7px 8px;border-radius:8px;background:rgba(59,42,25,.045);margin-bottom:5px}
+#${ROOT_ID} .fui-act{display:grid;grid-template-columns:36px minmax(0,1fr);gap:9px;padding:7px 8px;border-radius:8px;background:rgba(59,42,25,.045);margin-bottom:7px}
 #${ROOT_ID} .fui-acti{width:36px;height:36px;border-radius:7px;background:#2a2118;object-fit:cover;box-shadow:0 0 0 1px rgba(122,106,85,.6);border:0}
 #${ROOT_ID} .fui-actq{width:36px;height:36px;border-radius:7px;display:flex;align-items:center;justify-content:center;color:#8a7d6a;background:rgba(59,42,25,.08)}
 #${ROOT_ID} .fui-actb{min-width:0}
@@ -399,7 +402,9 @@ body.fu-inspecting .fu-inspect-dim{filter:brightness(.42) saturate(.5);transitio
 #${ROOT_ID} .fui-actd ul{margin:0 0 2px;padding:0;list-style:none}
 #${ROOT_ID} .fui-actd.is-none{font-style:italic;color:#8a7d6a}
 #${ROOT_ID} .fui-seen{margin-left:auto;align-self:center;font-size:11.5px;color:var(--ink-soft)}
-#${ROOT_ID} .fui-filters+.fui-label{margin-top:0}
+#${ROOT_ID} .fui-actlabel{margin:20px 0 8px}
+#${ROOT_ID} .fui-actlabel i{font-size:12px;width:14px;text-align:center;color:#8a6a2c}
+#${ROOT_ID} .fui-filters+.fui-actlabel{margin-top:4px}
 #${ROOT_ID} .fui-hint{font-size:14px;color:#4f4537;line-height:1.5;padding:10px 12px;border-radius:8px;background:rgba(213,182,122,.16)}
 #${ROOT_ID} .fui-hint p{margin:0}
 #${ROOT_ID} .fui-label-first{margin-top:0}
