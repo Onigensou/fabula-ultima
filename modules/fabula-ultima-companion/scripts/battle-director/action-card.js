@@ -26,6 +26,7 @@
 // action-card identity flags, chat-log persistence.
 
 import { log, warn } from "./logger.js";
+import { isGone, noteGmWaiting, watchGone, trackWait } from "./player-presence.js";
 import { INTENTS } from "./intents.js";
 import { gatherEquipmentSlots } from "./equipment-swap.js";
 import { describeCandidateForTooltip } from "./item-resource.js";
@@ -79,8 +80,23 @@ async function resolveCardOwnerUserId(actorUuid) {
   try {
     if (!actorUuid) return null;
     const actor = await fromUuid(actorUuid);
-    return ownerUserIdForActor(actor);
+    return decidingOwnerForActor(actor);
   } catch { return null; }
+}
+
+// Who a card's broadcasts are addressed to: every user, online or not. Only online
+// clients receive them, but the channel caches them per address, and that cache is
+// what a returning player's replay is built from. Addressing only who was online
+// left a player who missed part of a card with a stale or missing one.
+function cardAudience() {
+  return (game.users?.contents ?? []).filter((u) => u.id !== game.user?.id);
+}
+
+// An online owner first, else the owner who is away. A card must still name an
+// away owner: with no owner on a pill it gates Confirm with nobody to answer it
+// and nobody to wait for (Keren's Illusory Shield, 2026-10-31).
+function decidingOwnerForActor(actor) {
+  return ownerUserIdForActor(actor) ?? ownerUserIdForActor(actor, { requireActive: false });
 }
 
 const CSS_ID  = "fud-battlefield-card-style";
@@ -7753,10 +7769,9 @@ export async function postActionCard({ director, kind, payload }) {
     // Broadcast to ALL non-primary clients: players + secondary GMs. Every
     // recipient gets the identical spec, so this is ONE emit addressed to all
     // of them rather than one per user — see IntentChannel.normalizeTargets.
-    const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
     try {
       director.intentChannel?.broadcastMenuOpen({
-        targetUserIds: onlineNonPrimary.map((u) => u.id),
+        targetUserIds: cardAudience().map((u) => u.id),
         menuSpec: {
           kind: "action-card",
           combatId: director.combatId,
@@ -7793,9 +7808,59 @@ export async function postActionCard({ director, kind, payload }) {
     let despawnTid = null;
     let keyListener = null;
 
+    // Reaction owners who are gone: Skip for them, which is what unlocks Confirm.
+    // Read off the live pills each time, so one added mid-card is covered too.
+    // Only gating pills: nothing else holds the card. A card's own actor is left
+    // to the GM, as Confirm is a required choice.
+    const pillWaits = new Map();   // "rowKey:carrier" → stop
+    const stopPillWaits = (keep = null) => {
+      for (const [k, stop] of [...pillWaits]) if (!keep?.has(k)) { stop(); pillWaits.delete(k); }
+    };
+    const syncAwayPills = () => {
+      const open = new Set();
+      for (const pill of root.querySelectorAll('.fud-bf-reaction-pill.is-ask[data-fud-reaction-gating="1"][data-fud-reaction-pending="1"]')) {
+        const owner = pill.dataset.fudReactionOwner ?? "";
+        if (!owner || pill.dataset.fudReactionMoot === "1") continue;
+        const name = pill.querySelector(".fud-bf-reaction-name")?.textContent?.trim() || "a reaction";
+        const rowKey = pill.dataset.fudReactionKey ?? "", carrier = pill.dataset.fudReactionCarrier ?? "";
+        const key = `${rowKey}:${carrier}`;
+        open.add(key);
+        if (!pillWaits.has(key)) {
+          pillWaits.set(key, trackWait({
+            userId: owner, label: name,
+            actions: [{ id: "skip", label: "Skip", run: () => recordPillDecision(rowKey, carrier, "skip") }],
+          }));
+        }
+        if (!isGone(owner)) continue;
+        log(`postActionCard: ${owner} is away — skipping ${name} for them`);
+        ui.notifications?.info(`${game.users?.get(owner)?.name ?? "A player"} is away: skipped ${name}.`);
+        recordPillDecision(rowKey, carrier, "skip");
+      }
+      stopPillWaits(open);
+    };
+    const awayPillTid = SimMode.active ? null : setInterval(syncAwayPills, 1000);
+    // Right away, so the desk knows from the card's first moment. Not synchronously:
+    // the decision maps a Skip needs are declared further down this constructor.
+    if (!SimMode.active) setTimeout(() => { if (!resolved) syncAwayPills(); }, 0);
+    const stopAwayOwnerWatch = watchGone(ownerUserId, () => noteGmWaiting(ownerUserId, `${payload?.attacker?.name ?? "their"}'s action card`));
+    const stopOwnerWait = trackWait({
+      userId: ownerUserId, label: `${payload?.attacker?.name ?? "their"}'s action card`,
+      actions: [{ id: "confirm", label: "Confirm for them", run: () => {
+        if (root.querySelector(".fud-bf-card")?.hasAttribute("data-fud-reactions-pending")) {
+          ui.notifications?.warn("Reactions are still open on this card.");
+          return;
+        }
+        root.querySelector(".fud-btn-confirm")?.click();
+      } }],
+    });
+
     const finish = (outcome, extras = {}) => {
       if (resolved) return;
       resolved = true;
+      clearInterval(awayPillTid);
+      stopPillWaits();
+      stopAwayOwnerWatch();
+      stopOwnerWait();
       // CRITICAL: everything between here and resolve() below can throw — DOM ops
       // on a torn-down card, or a malformed reaction-decision snapshot. If it does,
       // we MUST still call resolve(), or Confirm.onEnter's `await postActionCard`
@@ -7811,10 +7876,9 @@ export async function postActionCard({ director, kind, payload }) {
         // Tell all non-primary clients (players + secondary GMs) to close
         // their mirror cards. GM-side DOM despawns via the timeout below.
         try {
-          const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
           try {
             director.intentChannel?.broadcastMenuClose({
-              targetUserIds: onlineNonPrimary.map((u) => u.id),
+              targetUserIds: cardAudience().map((u) => u.id),
               kind: "action-card",
               reason: `card-${outcome}`,
             });
@@ -8044,7 +8108,7 @@ export async function postActionCard({ director, kind, payload }) {
       // Broadcast pill state change to every mirror (players + secondary GMs)
       // so all observers see the decision flip in real time.
       try {
-        const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+        const onlineNonPrimary = cardAudience();
         director?.intentChannel?.broadcastMenuOpen({
           targetUserIds: onlineNonPrimary.map((u) => u.id),
           menuSpec: {
@@ -8100,7 +8164,7 @@ export async function postActionCard({ director, kind, payload }) {
       }
       log(`reopenPillDecision: ${key} back to undecided (by ${fromUserId}); ${n} gating pending`);
       try {
-        const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+        const onlineNonPrimary = cardAudience();
         director?.intentChannel?.broadcastMenuOpen({
           targetUserIds: onlineNonPrimary.map((u) => u.id),
           menuSpec: {
@@ -8160,7 +8224,7 @@ export async function postActionCard({ director, kind, payload }) {
       // Blanche's Protect) re-locked the host's Confirm on a reaction no player
       // and no support GM could see, let alone answer.
       try {
-        const others = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+        const others = cardAudience();
         if (others.length) {
           director?.intentChannel?.broadcastMenuOpen({
             targetUserIds: others.map((u) => u.id),
@@ -8248,7 +8312,7 @@ export async function postActionCard({ director, kind, payload }) {
           // Per-pill owner (see initial enrichment) — reactor if known, else
           // the action-taker for self-cascades (Bullet Break after Crossfire).
           c.reactorOwnerUserId = reactor
-            ? ownerUserIdForActor(reactor)
+            ? decidingOwnerForActor(reactor)
             : await resolveCardOwnerUserId(cascadeAttackerUuid);
           cascadeFiredKeys.add(rd.candidateKey(c));
           // Marks this pill as DERIVED — it exists only because some other
@@ -8597,7 +8661,7 @@ export async function postActionCard({ director, kind, payload }) {
               const bodyEl = root.querySelector(".fud-bf-body");
               const finalBody = bodyEl ? bodyEl.innerHTML : newBody;
               try {
-                const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+                const onlineNonPrimary = cardAudience();
                 director?.intentChannel?.broadcastMenuOpen({
                   targetUserIds: onlineNonPrimary.map((u) => u.id),
                   menuSpec: {
@@ -9384,7 +9448,7 @@ export async function postActionCard({ director, kind, payload }) {
           // which reactions contribute chips.
           try {
             wireDelta.effectPreview = toWireSafe(computeReactionEffectPreviewData());
-            const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+            const onlineNonPrimary = cardAudience();
             if (onlineNonPrimary.length) {
               director?.intentChannel?.broadcastMenuOpen({
                 targetUserIds: onlineNonPrimary.map((u) => u.id),
@@ -9508,9 +9572,7 @@ export async function postActionCard({ director, kind, payload }) {
         actionResult: projectActionResultForRender(cardAr),
         invokeState: { ...invokeState },
       };
-      const targetUserIds = (game.users?.contents ?? [])
-        .filter((u) => u.active && u.id !== game.user?.id)
-        .map((u) => u.id);
+      const targetUserIds = cardAudience().map((u) => u.id);
       try { director.intentChannel?.broadcastMenuOpen({ targetUserIds, menuSpec }); } catch {}
     };
 
@@ -9983,7 +10045,7 @@ export async function postActionCard({ director, kind, payload }) {
           // Mirror every flip out, with the recounted lock, so a player watching
           // sees the GM's call on their own pill instead of a stale Apply button.
           try {
-            const onlineNonPrimary = (game.users?.contents ?? []).filter((u) => u.active && u.id !== game.user?.id);
+            const onlineNonPrimary = cardAudience();
             for (const ch of changes) {
               director?.intentChannel?.broadcastMenuOpen({
                 targetUserIds: onlineNonPrimary.map((u) => u.id),

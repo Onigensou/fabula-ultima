@@ -351,10 +351,11 @@
   let _picker    = null;  // { abort }
   let _spectator = null;  // { backdrop, slots, descEl, options, sel, timer, onKey }
 
-  // Hard ceiling on a mirror's lifetime, longer than offer()'s own 120 s safety
-  // timeout — a dropped close broadcast must never strand a spectator behind a
-  // full-screen backdrop.
-  const SPECTATOR_MAX_MS = 130_000;
+  // Hard ceiling on a mirror's lifetime — a dropped close broadcast must never
+  // strand a spectator behind a full-screen backdrop (Escape closes it sooner).
+  // Long, because a player may think as long as they like and the GM's Take
+  // Control lives on this mirror.
+  const SPECTATOR_MAX_MS = 15 * 60 * 1000;
 
   function clearSpectator() {
     const spec = _spectator;

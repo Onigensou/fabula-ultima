@@ -29,6 +29,7 @@
   window[GUARD] = true;
 
   const MSG_OFFER     = "OPP_OFFER";
+  const MSG_OFFER_ACK = "OPP_OFFER_ACK";
   const MSG_PICKED    = "OPP_PICKED";
   const MSG_CANCELLED = "OPP_CANCELLED";
   const MSG_DRAMATIC   = "OPP_DRAMATIC";
@@ -132,8 +133,8 @@
 
   // ── Withdrawing an offer ────────────────────────────────────────────────────
   // An offer the Battle Director opened lives and dies with its battle. When
-  // the battle ends (End Battle, rewind, an abort) or stops waiting for the
-  // pick (the 120 s safety), nobody will resolve it — so its wheel closes on
+  // the battle ends (End Battle, rewind, an abort) or moves the pick to the GM
+  // (handOfferToGm), its owner's answer no longer counts — so its wheel closes on
   // every client instead of standing in front of the owner and the mirrors.
   // Offers opened outside battle are never withdrawn here.
 
@@ -203,6 +204,9 @@
     if (!offerKey || !game.user?.isGM || _takeoverReq) return;
     const timer = setTimeout(() => {
       _takeoverReq = null;
+      // A frozen client never acks. An offer this GM routed can still move: its
+      // owner's late pick is ignored once the entry is gone (see handOfferToGm).
+      if (_pending.has(offerKey)) { handOfferToGm(offerKey, "no answer from their client"); return; }
       ui.notifications?.warn("[Opportunity] No answer from the picker's client — take-control cancelled.");
       getDialog()?.setSpectatorTakeControl?.({ enabled: true });
     }, TAKEOVER_ACK_MS);
@@ -663,6 +667,61 @@
     }
   }
 
+  // ── An offer routed to a player whose client can't answer ───────────────────
+  // The wheel moves to the GM instead of being lost. Two ways to notice, and
+  // neither one times a player who is there and thinking:
+  //  - their client never acknowledges the offer (a machine reply, no click);
+  //  - presence reports them gone: offline or loading for the whole grace period.
+  const OFFER_ACK_MS = 5_000;
+  const presence = () => globalThis.FUCompanion?.api?.experimental?.battleDirector?.presence ?? null;
+
+  function watchRoutedOffer(offerKey, entry) {
+    entry.ackTimer = setTimeout(() => handOfferToGm(offerKey, "their client didn't respond"), OFFER_ACK_MS);
+    const goneTid = setInterval(() => {
+      if (presence()?.isGone(entry.ownerUserId)) handOfferToGm(offerKey, "they are away");
+    }, 1000);
+    const stopWait = presence()?.trackWait?.({
+      userId: entry.ownerUserId, label: `${entry.spec.actorName}'s Opportunity`,
+      actions: [
+        { id: "take", label: "Pick for them", run: () => handOfferToGm(offerKey, "you took it") },
+        { id: "cancel", label: "Cancel it", run: () => {
+          if (!_pending.delete(offerKey)) return;
+          withdrawOffer(offerKey, "cancelled by the GM");
+          entry.resolve({ cancelled: true });
+        } },
+      ],
+    }) ?? (() => {});
+    entry.stopWatch = () => { clearTimeout(entry.ackTimer); clearInterval(goneTid); stopWait(); };
+  }
+
+  async function handOfferToGm(offerKey, why) {
+    const entry = _pending.get(offerKey);
+    if (!entry) return;
+    // Dropping the entry is what voids the old offer: OPP_PICKED and OPP_CANCELLED
+    // for a key with no entry are ignored, so the owner's late answer can't land
+    // on top of the GM's. The GM's wheel runs under a fresh key for the same reason.
+    _pending.delete(offerKey);
+    entry.stopWatch?.();
+    withdrawOffer(offerKey, why);
+
+    const { actorUuid, actorName, actionCardId, context, excludeIds, title, battleBound } = entry.spec;
+    const owner = game.users?.get(entry.ownerUserId)?.name ?? "The player";
+    console.warn(TAG, `Offer for ${actorName} moved to the GM — ${why} (key=${offerKey})`);
+    ui.notifications?.info(`${owner}'s Opportunity for ${actorName} is yours to pick: ${why}.`);
+
+    const gmKey = makeOfferKey(actorUuid, actionCardId);
+    try {
+      const picked = await runPromptPhase({ actorName, actorUuid, context, excludeIds, title, offerKey: gmKey, battleBound });
+      if (picked.takenOver) { entry.resolve(await waitForTakeover(gmKey)); return; }
+      if (picked.cancelled) { entry.resolve({ cancelled: true }); return; }
+      await applyAndAnnounce({ actorUuid, actorName, optionId: picked.optionId, context, preResult: picked.preResult, offerKey: gmKey });
+      entry.resolve({ optionId: picked.optionId });
+    } catch (e) {
+      console.error(TAG, "GM hand-over error:", e);
+      entry.resolve({ cancelled: true });
+    }
+  }
+
   // ── Core offer() API ────────────────────────────────────────────────────────
   /**
    * Present the opportunity picker to the correct client for the given actor.
@@ -683,7 +742,11 @@
     // them — OPP_OFFER would go unanswered and the FSM would wedge for the full
     // 120 s safety timeout (a soft-lock during solo/test play). In that case the
     // GM runs the picker locally instead. A connected owner still gets it routed.
-    const ownerActive = ownerUserId ? !!game.users?.get(ownerUserId)?.active : false;
+    // Connected isn't enough: a client still loading would lose the offer too. A
+    // merely silent one gets the offer: a busy moment shouldn't cost them the pick,
+    // and it answers the ack or the wheel moves to the GM anyway.
+    const ownerState  = ownerUserId ? presence()?.of(ownerUserId) : null;
+    const ownerActive = ownerUserId ? (ownerState ? ownerState !== "offline" && ownerState !== "loading" : !!game.users?.get(ownerUserId)?.active) : false;
     const amOwner     = !ownerUserId || game.user.id === ownerUserId || (amGM && !ownerActive);
 
     // Case 1: I am the owner (or GM-owned / disconnected-owner actor) — run full
@@ -745,23 +808,20 @@
       // Step 3 — send offer; player runs prompt phase (picker + pre), sends back OPP_PICKED
       return new Promise(resolve => {
         const offerKey = makeOfferKey(actorUuid, actionCardId);
-        _pending.set(offerKey, { resolve, actorUuid, battleBound });
+        const entry = {
+          actorUuid, battleBound, ownerUserId,
+          spec: { actorUuid, actorName, actionCardId, context, excludeIds, title, battleBound },
+          stopWatch: null,
+          ackTimer: null,
+          resolve: result => { entry.stopWatch?.(); resolve(result); },
+        };
+        _pending.set(offerKey, entry);
 
         game.socket.emit(SOCKET_CH, {
           type:    MSG_OFFER,
           payload: { offerKey, actorUuid, actorName, context, targetUserId: ownerUserId, excludeIds, title },
         });
-
-        // Safety timeout: give up after 120 s. A battle moves on from here, and
-        // a pick made after this is ignored — so a battle offer's wheel closes
-        // now instead of staying up on the owner's screen.
-        setTimeout(() => {
-          if (!_pending.has(offerKey)) return;
-          _pending.delete(offerKey);
-          console.warn(TAG, `offer() timed out for key=${offerKey}`);
-          if (battleBound) withdrawOffer(offerKey, "timed out");
-          resolve({ cancelled: true });
-        }, 120_000);
+        watchRoutedOffer(offerKey, entry);
       });
     }
 
@@ -802,6 +862,8 @@
         const { offerKey, actorUuid, actorName, context, targetUserId, excludeIds, title } = msg.payload ?? {};
         if (game.user.id !== targetUserId) return;
 
+        game.socket.emit(SOCKET_CH, { type: MSG_OFFER_ACK, payload: { offerKey } });
+
         const picked = await runPromptPhase({ actorName, actorUuid, context, excludeIds, title, offerKey })
           .catch(e => { console.error(TAG, "Socket prompt phase error:", e); return { cancelled: true }; });
 
@@ -821,6 +883,13 @@
           // resolution. Distinguishes it from a player-initiated local pick.
           payload: { offerKey, actorUuid, actorName, optionId: picked.optionId, context, preResult: picked.preResult, gmInitiated: true },
         });
+        return;
+      }
+
+      // OPP_OFFER_ACK — the owner's client has the offer. From here only their
+      // going missing moves it; how long they take is theirs.
+      if (msg.type === MSG_OFFER_ACK && game.user?.isGM) {
+        clearTimeout(_pending.get(msg.payload?.offerKey)?.ackTimer);
         return;
       }
 
