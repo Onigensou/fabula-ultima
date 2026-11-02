@@ -110,7 +110,9 @@ function sourceItemIds(row) {
   return ids;
 }
 
-function rowView(row, group, gmOnly) {
+const GROUP_WORD = { buffs: "Buff", debuffs: "Debuff", other: "Counter", passive: "Passive" };
+
+function rowView(row, group, gmOnly, id) {
   const chips = (row.chips ?? []).map(chipText).filter(Boolean);
   let chip = "";
   let tone = "neutral";
@@ -124,7 +126,9 @@ function rowView(row, group, gmOnly) {
     name: row.name, img: row.img, chip, tone,
     chipEl: firstChip?.el && ELEMENT_ICON[firstChip.el] ? ELEMENT_ICON[firstChip.el] : null,
     life: row.inactive ? "Inactive right now" : str(row.lifetime?.label),
-    title: [row.name, chips.join(" · "), str(row.lifetime?.label), plain(row.description)].filter(Boolean).join("\n"),
+    // For the hover card. An effect with no text of its own stands on its source item's.
+    id, kicker: GROUP_WORD[group] ?? "Effect", amounts: chips.join(" · "),
+    desc: row.description || row.sources?.find((s) => s.source?.description)?.source?.description || "",
     count: row.count > 1 ? row.count : 0,
     inactive: !!row.inactive, gmOnly: !!gmOnly,
   };
@@ -265,12 +269,11 @@ export function buildInspectModel(token, { side = null, asPlayer = false, capBes
     key: w.type, pct: w.pct, icon: WEAPON_ICON[w.type] ?? "fa-khanda", cls: w.pct > 100 ? "up" : w.pct < 100 ? "down" : "",
     tip: `${cap(w.type)}: ${w.pct}% damage`,
   })) : null;
-  const STATUS_WORD = { IM: "Immune", RS: "Resist", VU: "Weak", AB: "Absorb" };
   const STATUS_ORDER = { IM: 0, RS: 1, AB: 2, VU: 3 };
   const statuses = det ? det.conditions
     .map((c) => {
       const name = cap(c.name);
-      return { name, code: c.code, cls: c.code.toLowerCase(), img: lookupTerm(name)?.icon ?? "", tip: `${name}: ${STATUS_WORD[c.code] ?? c.code}` };
+      return { name, code: c.code, cls: c.code.toLowerCase(), img: lookupTerm(name)?.icon ?? "", tip: name };
     })
     .sort((a, b) => (STATUS_ORDER[a.code] ?? 9) - (STATUS_ORDER[b.code] ?? 9)) : null;
   const immuneAll = !!det && det.conditions.length >= det.conditionTotal && det.conditions.every((c) => c.code === "IM");
@@ -294,7 +297,7 @@ export function buildInspectModel(token, { side = null, asPlayer = false, capBes
       const seen = [...ids].some((id) => seenIds.has(id));
       if (!seen) { if (!gm) continue; gmOnly = true; }
     }
-    groups[g].push(rowView(r, g, gmOnly));
+    groups[g].push(rowView(r, g, gmOnly, `${g}:${groups[g].length}`));
   }
 
   // ── actions (enemies) ──

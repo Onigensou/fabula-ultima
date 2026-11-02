@@ -40,10 +40,17 @@ function crisisBadge(m) {
 
 function effRow(e) {
   const chip = e.chip ? `<span class="fui-chip tone-${esc(e.tone)}">${e.chipEl ? `<i class="fas ${esc(e.chipEl)}"></i>` : ""}${esc(e.chip)}</span>` : "";
-  return `<div class="fui-eff${e.gmOnly ? " is-gmonly" : ""}${e.inactive ? " is-inactive" : ""}" title="${esc(e.title)}">
+  return `<div class="fui-eff${e.gmOnly ? " is-gmonly" : ""}${e.inactive ? " is-inactive" : ""}" data-eff="${esc(e.id)}">
     <img class="fui-ico" src="${esc(e.img)}" alt="" onerror="this.style.visibility='hidden'">
     <div class="fui-effbody"><div class="fui-en"><b>${esc(e.name)}${e.count ? ` ×${e.count}` : ""}</b>${chip}</div><div class="fui-el">${esc(e.life)}</div></div>
   </div>`;
+}
+
+/** One effect row as an entry for the keyword card's hover form. */
+export function effectTipEntry(e) {
+  const meta = [e.amounts, e.life].filter(Boolean).map((t) => `<p class="fud-kt-meta">${esc(t)}</p>`).join("");
+  const text = plain(e.desc) ? safeHtml(renderLinkedText(e.desc)) : `<p style="opacity:.6">No description written.</p>`;
+  return { kicker: e.kicker, label: e.count ? `${e.name} ×${e.count}` : e.name, icon: e.img, descHtml: meta + text };
 }
 
 const GROUPS = [["buffs", "Buffs", "g-good"], ["debuffs", "Debuffs", "g-bad"], ["other", "Counters", ""]];
@@ -129,12 +136,19 @@ function enemyDice(m, flash) {
   return `<div class="fui-dcs">${dice.map((s) => `<div class="fui-dc ${esc(s.cls)}${flash === 2 ? " fui-flash" : ""}" ${TIP(s.tip)}><img src="${esc(s.icon)}" alt="${esc(s.k)}"><b>${esc(s.v)}</b></div>`).join("")}</div>`;
 }
 
-function weaponGauges(m, flash) {
+// `wep` is the Study result's gauge state: "neutral" holds every bar at 100%,
+// "fill" runs them out to their real value (the controller counts the numbers up).
+// Alt+Click passes neither and the gauges simply show.
+function weaponGauges(m, flash, wep) {
   const fx = flash === 3 ? " fui-flash" : "";
-  return `<div class="fui-wgs${m.detGmOnly ? " is-gmonly" : ""}">${m.weapons.map((w) => {
+  return `<div class="fui-wgs${m.detGmOnly ? " is-gmonly" : ""}">${m.weapons.map((w, i) => {
     const width = Math.min(50, Math.abs(w.pct - 100) / 2);
-    const bar = w.pct === 100 ? "" : `<i style="${w.pct > 100 ? "left" : "right"}:50%;width:${width}%"></i>`;
-    return `<div class="fui-wg ${esc(w.cls)}${fx}" ${TIP(w.tip)}><span class="fui-wgi"><i class="fas ${esc(w.icon)}"></i></span><div class="fui-wgb">${bar}</div><b>${w.pct}%</b></div>`;
+    const fill = wep === "fill" ? ` class="fui-wgfill"` : "";
+    const delay = wep === "fill" ? `;animation-delay:${i * 30}ms` : "";
+    const bar = w.pct === 100 || wep === "neutral" ? "" : `<i${fill} style="${w.pct > 100 ? "left" : "right"}:50%;width:${width}%${delay}"></i>`;
+    const cls = wep === "neutral" ? "" : esc(w.cls);
+    const num = wep === "fill" ? `<b data-pct="${w.pct}">100%</b>` : `<b>${wep === "neutral" ? 100 : w.pct}%</b>`;
+    return `<div class="fui-wg ${cls}${fx}" ${TIP(w.tip)}><span class="fui-wgi"><i class="fas ${esc(w.icon)}"></i></span><div class="fui-wgb">${bar}</div>${num}</div>`;
   }).join("")}</div>`;
 }
 
@@ -152,9 +166,9 @@ function statusRows(m, flash) {
   }).join("");
 }
 
-function enemyLeft(m, affs, flash) {
+function enemyLeft(m, affs, flash, wep) {
   const details = m.weapons
-    ? `<div class="fui-label">Weapon efficiency${newTag(flash === 3)}</div>${weaponGauges(m, flash)}
+    ? `<div class="fui-label">Weapon efficiency${newTag(flash === 3)}</div>${weaponGauges(m, flash, wep)}
        <div class="fui-label">Status${newTag(flash === 3)}</div>${statusRows(m, flash)}`
     : `<div class="fui-label">Weapons &amp; status</div><div class="fui-lock"><i class="fas fa-lock"></i><span>Study 13+ reveals weapon efficiency and status resistances.</span></div>`;
   return `<div class="fui-label">Vitals${newTag(flash === 1)}</div>${enemyVitals(m, flash)}
@@ -225,7 +239,7 @@ export function renderFrame(m, ui) {
       </div>
       <div class="fui-body">
         <div class="fui-left">
-          ${m.enemy ? enemyLeft(m, affs, flash) : `<div class="fui-label">Vitals</div>${vit}
+          ${m.enemy ? enemyLeft(m, affs, flash, ui.study?.wep ?? null) : `<div class="fui-label">Vitals</div>${vit}
           ${m.vitalsNote ? `<div class="fui-note">${esc(m.vitalsNote)}</div>` : ""}
           <div class="fui-label">Defense &amp; dice</div>${stats}${lock}
           <div class="fui-label">Affinities</div><div class="fui-affs">${affs}</div>
@@ -376,6 +390,7 @@ body.fu-inspecting .fu-inspect-dim{filter:brightness(.42) saturate(.5);transitio
 #${ROOT_ID} .fui-grp{grid-column:1 / -1;font-size:11px;font-weight:800;color:var(--ink-soft);margin:6px 0 1px;letter-spacing:.06em;text-transform:uppercase}
 #${ROOT_ID} .fui-grp.g-bad{color:#a3261b}#${ROOT_ID} .fui-grp.g-good{color:#24692c}
 #${ROOT_ID} .fui-eff{display:grid;grid-template-columns:28px minmax(0,1fr);gap:8px;align-items:center;padding:4px 6px;border-radius:8px;background:rgba(59,42,25,.04);min-width:0}
+#${ROOT_ID} .fui-eff{cursor:help}
 #${ROOT_ID} .fui-eff.is-inactive{opacity:.55}
 #${ROOT_ID} .fui-ico{width:28px;height:28px;border-radius:6px;background:#2a2118;object-fit:cover;box-shadow:0 0 0 1px rgba(122,106,85,.6)}
 #${ROOT_ID} .fui-effbody{min-width:0}
@@ -464,6 +479,8 @@ body.fu-inspecting .fu-inspect-dim{filter:brightness(.42) saturate(.5);transitio
 #${ROOT_ID} .fui-wgb{position:relative;height:6px;border-radius:3px;background:rgba(59,42,25,.1)}
 #${ROOT_ID} .fui-wgb::after{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:rgba(59,42,25,.35)}
 #${ROOT_ID} .fui-wgb>i{position:absolute;top:0;bottom:0;border-radius:3px}
+#${ROOT_ID} .fui-wgb>i.fui-wgfill{animation:fui-wgfill 900ms cubic-bezier(.2,.7,.2,1) backwards}
+@keyframes fui-wgfill{from{width:0}}
 #${ROOT_ID} .fui-wg b{font-size:11.5px;font-weight:800;text-align:right;font-variant-numeric:tabular-nums;color:#a89a84}
 #${ROOT_ID} .fui-wg.up .fui-wgb>i{background:linear-gradient(90deg,#f26b5b,#c0261c)}#${ROOT_ID} .fui-wg.up b,#${ROOT_ID} .fui-wg.up .fui-wgi{color:#a3261b}
 #${ROOT_ID} .fui-wg.down .fui-wgb>i{background:linear-gradient(270deg,#5aa8ff,#2e64a8)}#${ROOT_ID} .fui-wg.down b,#${ROOT_ID} .fui-wg.down .fui-wgi{color:#2e64a8}
@@ -486,7 +503,7 @@ body.fu-inspecting .fu-inspect-dim{filter:brightness(.42) saturate(.5);transitio
 #${ROOT_ID} .fui-btn.fui-go{height:32px;padding:0 14px;background:linear-gradient(180deg,#7a5230,#5c3818);color:#f3e6c8;border-color:#3a2410}
 #${ROOT_ID} .fui-studyline b{color:var(--ink)}
 #${ROOT_ID} .fui-pcrest{flex:none;line-height:0}
-@media (prefers-reduced-motion: reduce){#${ROOT_ID} .fui-flash,#${ROOT_ID} .fui-stamp{animation-duration:1ms}}
+@media (prefers-reduced-motion: reduce){#${ROOT_ID} .fui-flash,#${ROOT_ID} .fui-stamp,#${ROOT_ID} .fui-wgb>i.fui-wgfill{animation-duration:1ms;animation-delay:0ms !important}}
 #${ROOT_ID} .fui-steps{display:grid;gap:5px}
 #${ROOT_ID} .fui-step{display:flex;align-items:center;gap:9px;font-size:12.5px;padding:6px 9px;border-radius:7px;background:rgba(59,42,25,.05)}
 #${ROOT_ID} .fui-step.done{color:#24692c}

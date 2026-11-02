@@ -95,6 +95,14 @@ function ensureStyles() {
     .fud-kt-body ul { margin: 4px 0; padding-left: 18px; }
     .fud-kt-body img { display: none; } /* icon already shown in the header */
     .fud-kt-body a { color: inherit; text-decoration: underline; pointer-events: none; }
+    /* The same card as a hover tooltip that follows the cursor. */
+    .fud-kw-hover {
+      position: fixed; left: 0; top: 0; z-index: 9500; width: ${PANEL_W}px;
+      pointer-events: none; transform-origin: 0 0;
+      font-family: "Inter","Signika","Segoe UI",system-ui,sans-serif;
+    }
+    .fud-kw-hover[hidden] { display: none; }
+    .fud-kt-meta { font-weight: 700; }
   `;
   document.head.appendChild(s);
 }
@@ -139,13 +147,48 @@ function _buildHTML(entry) {
     ? String(entry.descHtml)
     : `<p style="opacity:.6">No description available.</p>`;
   return `<div class="fud-kt-card">
-    <div class="fud-kt-kicker">${esc(_kicker(entry?.kind))}</div>
+    <div class="fud-kt-kicker">${esc(entry?.kicker ?? _kicker(entry?.kind))}</div>
     <div class="fud-kt-head">
       ${iconHTML}
       <div class="fud-kt-title">${esc(entry?.label ?? "Keyword")}</div>
     </div>
     <div class="fud-kt-body">${body}</div>
   </div>`;
+}
+
+// ── Hover form ───────────────────────────────────────────────────────────────
+// The same card on a cursor hover, for lists that have no room for the text.
+// `entry` as the panel's, plus an optional `kicker` to replace Keyword / Status.
+// Marked fu-inspect-keep so Battle Inspect doesn't darken it along with the HUD.
+
+const HOVER_GAP = 16;
+let _hover = null;
+let _hoverScale = 1;
+
+export function moveKeywordHover(x, y) {
+  if (!_hover || _hover.hidden) return;
+  const w = PANEL_W * _hoverScale, h = _hover.offsetHeight * _hoverScale;
+  const left = x + HOVER_GAP + w > window.innerWidth - 8 ? x - HOVER_GAP - w : x + HOVER_GAP;
+  const top = Math.max(8, Math.min(y + HOVER_GAP, window.innerHeight - h - 8));
+  _hover.style.transform = `translate(${Math.max(8, left)}px, ${top}px) scale(${_hoverScale})`;
+}
+
+export function showKeywordHover(entry, { x = 0, y = 0, scale = 1 } = {}) {
+  ensureStyles();
+  if (!_hover?.isConnected) {
+    _hover = document.createElement("div");
+    _hover.className = "fud-kw-hover fu-inspect-keep";
+    _hover.setAttribute("role", "tooltip");
+    document.body.appendChild(_hover);
+  }
+  _hoverScale = scale;
+  _hover.innerHTML = _buildHTML(entry);
+  _hover.hidden = false;
+  moveKeywordHover(x, y);
+}
+
+export function hideKeywordHover() {
+  if (_hover) _hover.hidden = true;
 }
 
 // ── Lifecycle ─────────────────────────────────────────────────────────────────

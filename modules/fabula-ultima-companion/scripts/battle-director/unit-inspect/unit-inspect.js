@@ -37,7 +37,8 @@
 // their own view.
 
 import { buildInspectModel, HP_RULE_SETTING } from "./inspect-model.js";
-import { ROOT_ID, WORLD_ID, CARD_W, FRAME_H, renderFrame, renderPeek, injectStyles, tabsOf } from "./inspect-render.js";
+import { ROOT_ID, WORLD_ID, CARD_W, FRAME_H, renderFrame, renderPeek, injectStyles, tabsOf, effectTipEntry } from "./inspect-render.js";
+import { showKeywordHover, moveKeywordHover, hideKeywordHover } from "../keyword-tooltip.js";
 import { hudScale, battleIsSettled } from "../director-player-hud.js";
 import { hasSurface, getActiveSurfaces } from "../director-surfaces.js";
 import { tokenCastsSpriteShadow } from "../../sprite-shadow/sprite-shadow-config.js";
@@ -439,6 +440,8 @@ function ensureRoot() {
   const root = document.createElement("div");
   root.id = ROOT_ID;
   root.addEventListener("click", onRootClick);
+  root.addEventListener("mousemove", onEffectHover);
+  root.addEventListener("mouseout", (ev) => { if (!ev.relatedTarget?.closest?.("[data-eff]")) hideEffectTip(); });
   document.body.appendChild(root);
   S.root = root;
   return root;
@@ -462,7 +465,7 @@ const HUD_SKIP = new Set(["board", "tooltip", ROOT_ID, WORLD_ID]);
 
 function dimmable(el) {
   return !!el && !HUD_SKIP.has(el.id) && !/^(SCRIPT|STYLE|CANVAS|TEMPLATE|LINK|META)$/.test(el.tagName)
-    && !el.classList.contains("fu-inspect-keep") && !String(el.id).startsWith("fud-react-menu-");
+    && !el.classList.contains("fu-inspect-keep") && !el.classList.contains("fu-ltc") && !String(el.id).startsWith("fud-react-menu-");
 }
 
 function positionedBoxes(el) {
@@ -554,6 +557,8 @@ function renderCard({ pane = null } = {}) {
     const cardA = frame.querySelector(".fui-card"), cardB = next?.querySelector(".fui-card");
     if (cardA && cardB && cardA.className !== cardB.className) cardA.className = cardB.className;
     for (const sel of [".fui-head", ".fui-left", ".fui-tabs", ".fui-foot"]) {
+      // Gauges mid-fill keep their column: replacing it would restart the fill.
+      if (sel === ".fui-left" && st?.wep === "fill" && frame.querySelector(".fui-wg b[data-pct]")) continue;
       const a = frame.querySelector(sel), b = next?.querySelector(sel);
       if (a && b && a.innerHTML !== b.innerHTML) a.replaceWith(b);
     }
@@ -652,6 +657,7 @@ export function close({ restoreCamera = true } = {}) {
   const o = S.open;
   if (!o) return;
   clearStudyTimers();
+  hideEffectTip();
   S.open = null;
   if (S.raf) cancelAnimationFrame(S.raf);
   S.raf = 0;
@@ -678,6 +684,8 @@ const STUDY_STEPS = [[7, "Identity"], [8, "Attributes"], [13, "Affinities, Weapo
 const STUDY_FIRST_STEP_MS = 700;
 const STUDY_STEP_MS = 1250;
 const STUDY_FLAG_WAIT_MS = 1500;   // the page write can land just after the socket
+const WEP_FILL_MS = 1300;          // the gauges' fill plus their stagger, before the last render
+const WEP_COUNT_MS = 900;
 
 let _studyTimers = [];
 function clearStudyTimers() { _studyTimers.forEach(clearTimeout); _studyTimers = []; }
@@ -690,11 +698,35 @@ function studyLine(p) {
   return `<b>Study ${Number(p.total) || 0}</b> by ${studyEsc(p.studierName)} · ${studyEsc(tail)}`;
 }
 
+// The numbers run with the bars: 100% out to each gauge's real value.
+function countWeapons() {
+  const nums = [...(S.els?.place?.querySelectorAll?.(".fui-wg b[data-pct]") ?? [])];
+  if (!nums.length) return;
+  if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+    for (const b of nums) b.textContent = `${b.dataset.pct}%`;
+    return;
+  }
+  const start = performance.now();
+  const tick = (now) => {
+    const t = Math.min(1, (now - start) / WEP_COUNT_MS);
+    const eased = 1 - (1 - t) ** 3;
+    let live = false;
+    for (const b of nums) {
+      if (!b.isConnected) continue;
+      live = true;
+      b.textContent = `${Math.round(100 + (Number(b.dataset.pct) - 100) * eased)}%`;
+    }
+    if (live && t < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
 /** Show one Study's result here. @returns {Promise<boolean>} false when this client can't show it. */
 export async function openStudy(token, p) {
   clearStudyTimers();
+  // Weapons already known from before: they still fill, once the card has landed.
   const study = {
-    id: p.id, flash: 0, shownBest: p.previousBest, line: studyLine(p),
+    id: p.id, flash: 0, shownBest: p.previousBest, line: studyLine(p), wep: p.previousBest >= 13 ? "neutral" : null,
     canContinue: !!game.user?.isGM || game.user?.id === p.ownerUserId,
     who: p.studierName,
   };
@@ -714,15 +746,29 @@ export async function openStudy(token, p) {
       if (S.open?.study?.id !== p.id) return;
       S.open.study.shownBest = n;
       S.open.study.flash = flash;
+      if (flash === 3) S.open.study.wep = "fill";
       renderCard({ pane: "fade" });
+      if (flash === 3) countWeapons();
     }, STUDY_FIRST_STEP_MS + i * STUDY_STEP_MS));
   });
+  const fillsAlone = study.wep === "neutral";
+  if (fillsAlone) {
+    _studyTimers.push(setTimeout(() => {
+      if (S.open?.study?.id !== p.id) return;
+      S.open.study.wep = "fill";
+      renderCard();
+      countWeapons();
+    }, STUDY_FIRST_STEP_MS));
+  }
+  const fillsLast = crossed.at(-1)?.flash === 3;
+  const lastBeat = crossed.length ? (crossed.length - 1) * STUDY_STEP_MS + (fillsLast ? Math.max(STUDY_STEP_MS, WEP_FILL_MS) : STUDY_STEP_MS) : (fillsAlone ? WEP_FILL_MS : 0);
   _studyTimers.push(setTimeout(() => {
     if (S.open?.study?.id !== p.id) return;
     S.open.study.shownBest = null;
     S.open.study.flash = 0;
+    S.open.study.wep = null;
     renderCard();
-  }, STUDY_FIRST_STEP_MS + crossed.length * STUDY_STEP_MS));
+  }, STUDY_FIRST_STEP_MS + lastBeat));
   return true;
 }
 
@@ -755,6 +801,7 @@ function cycleTab(dir) {
   const i = Math.max(0, tabs.indexOf(S.ui.tab));
   S.ui.tab = tabs[(i + dir + tabs.length) % tabs.length];
   S.ui.filter = "all";
+  hideEffectTip();
   playSfx(SFX_NAV);
   renderCard({ pane: dir > 0 ? "r" : "l" });
 }
@@ -766,9 +813,28 @@ function tabSide(key) {
   return d > 0 ? "r" : d < 0 ? "l" : null;
 }
 
+// Hovering an effect row shows its text on the keyword card, following the cursor.
+let _tipFor = null;
+
+function hideEffectTip() {
+  _tipFor = null;
+  hideKeywordHover();
+}
+
+function onEffectHover(ev) {
+  const id = ev.target?.closest?.("[data-eff]")?.dataset.eff ?? null;
+  if (!id || !S.model) { if (_tipFor) hideEffectTip(); return; }
+  if (id === _tipFor) { moveKeywordHover(ev.clientX, ev.clientY); return; }
+  const row = Object.values(S.model.groups).flat().find((e) => e.id === id);
+  if (!row) { hideEffectTip(); return; }
+  _tipFor = id;
+  showKeywordHover(effectTipEntry(row), { x: ev.clientX, y: ev.clientY, scale: hudScale() });
+}
+
 function onRootClick(ev) {
   const el = ev.target?.closest?.("[data-action]");
   if (!el || !S.open) return;
+  hideEffectTip();
   const a = el.dataset.action;
   if (a === "close" || a === "continue") dismiss();
   else if (a === "prev") step(-1);
