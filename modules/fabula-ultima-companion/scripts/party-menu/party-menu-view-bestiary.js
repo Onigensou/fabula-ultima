@@ -15,6 +15,7 @@
 // only creatures the party KNOWS are vulnerable to it.
 
 import { esc, safeHtml, play, SND, img, gridStep } from "./party-menu-ui.js";
+import { WEAPON_ICON, crestSVG, rankKeyOf, rankInfo } from "../battle-director/unit-inspect/study-visuals.js";
 
 const ELEMENTS = [
   ["physical", "Physical", "fa-hand-fist"], ["air", "Air", "fa-wind"], ["bolt", "Bolt", "fa-bolt"],
@@ -22,10 +23,9 @@ const ELEMENTS = [
   ["ice", "Ice", "fa-snowflake"], ["light", "Light", "fa-sun"], ["poison", "Poison", "fa-skull-crossbones"],
 ];
 const GRADE = { VU: "Vulnerable", RS: "Resistant", IM: "Immune", AB: "Absorbs", NA: "Normal" };
-const WEAPON_ICON = {
-  arcane: "fa-book", bow: "fa-bullseye", brawling: "fa-hand-fist", dagger: "fa-khanda", firearm: "fa-gun",
-  flail: "fa-gavel", heavy: "fa-hammer", spear: "fa-location-arrow", sword: "fa-khanda", thrown: "fa-bomb",
-};
+// Handed over by whoever opens the menu on one creature (Inspect's Bestiary button).
+let _nextPick = null;
+export function pickBestiaryEntry(pageId) { _nextPick = pageId ?? null; }
 const KIND = { attack: ["Attack", "fa-khanda"], skill: ["Skill", "fa-burst"], spell: ["Spell", "fa-wand-sparkles"], passive: ["Passive", "fa-shield-halved"] };
 const FILTERS = [
   { id: "all", label: "All", icon: "fa-layer-group" },
@@ -201,8 +201,10 @@ function loot(e) {
 function tile(e, i, v, cur) {
   const n = tierCount(e);
   const weakI = v.weak ? ELEMENTS.findIndex(([id]) => id === v.weak) : -1;
-  return `<div class="pm-btile pm-hit ${cur ? "is-cursor" : ""} ${n ? "" : "is-unknown"}" data-action="bx-entry" data-index="${i}" title="${esc(e.name)}">
-      <div class="pm-btimg">${img(e.img)}${weakI >= 0 ? `<span class="pm-btweak"><i class="fas ${ELEMENTS[weakI][2]}"></i>VU</span>` : ""}</div>
+  // Rank is an Identity fact: `identity` is null until the party has it.
+  const rank = rankInfo(rankKeyOf(e.identity?.rank));
+  return `<div class="pm-btile pm-hit ${cur ? "is-cursor" : ""} ${n ? "" : "is-unknown"} ${rank ? `rk-${rank.key}` : ""}" data-action="bx-entry" data-index="${i}" title="${esc(e.name)}">
+      <div class="pm-btimg">${img(e.img)}${rank ? `<span class="pm-btcrest" title="${esc(rank.label)}">${crestSVG(rank.key, 26)}</span>` : ""}${weakI >= 0 ? `<span class="pm-btweak"><i class="fas ${ELEMENTS[weakI][2]}"></i>VU</span>` : ""}</div>
       <div class="pm-btname">${esc(e.name)}</div>
       <div class="pm-btstars" title="${esc(e.tier)}">${[0, 1, 2].map((k) => `<i class="fas fa-diamond ${k < n ? "on" : ""}"></i>`).join("")}</div>
     </div>`;
@@ -213,7 +215,8 @@ export const bestiaryView = {
   title: "Bestiary",
 
   enter(ctx) {
-    ctx.S.v = { idx: 0, filter: "all", sort: "rank", query: "", weak: null, page: "profile", act: -1, reveal: false, picked: null };
+    ctx.S.v = { idx: 0, filter: "all", sort: "rank", query: "", weak: null, page: "profile", act: -1, reveal: false, picked: _nextPick };
+    _nextPick = null;
   },
 
   nav(ctx) {
@@ -390,6 +393,9 @@ export const BESTIARY_CSS = `
 #fud-party-menu .pm-btimg { position: relative; width: 72px; height: 72px; border-radius: 8px; overflow: hidden; background: var(--parchment-3);
   border: 2px solid var(--edge); box-shadow: 0 0 0 2px rgba(202,164,77,.45), 0 3px 6px rgba(0,0,0,.25); }
 #fud-party-menu .pm-btimg img { width: 100%; height: 100%; object-fit: cover; object-position: top; border: 0; display: block; }
+#fud-party-menu .pm-btcrest { position: absolute; left: 1px; top: 1px; line-height: 0; filter: drop-shadow(0 1px 1px rgba(0,0,0,.5)); }
+#fud-party-menu .pm-btile.rk-elite .pm-btimg { box-shadow: 0 0 0 2px #2e4f86, 0 0 0 3px #c9a44a; }
+#fud-party-menu .pm-btile.rk-champion .pm-btimg, #fud-party-menu .pm-btile.rk-villain .pm-btimg { box-shadow: 0 0 0 2px #d7ad45, 0 0 0 4px #5a1712; }
 #fud-party-menu .pm-btile.is-unknown .pm-btimg img, #fud-party-menu .pm-portrait.is-unknown img { filter: grayscale(1) brightness(.55) contrast(1.1); }
 #fud-party-menu .pm-btweak { position: absolute; right: 2px; bottom: 2px; font-size: 10px; font-weight: 700; color: #fff; padding: 0 4px; border-radius: 4px;
   background: rgba(155,34,34,.9); display: flex; gap: 3px; align-items: center; }

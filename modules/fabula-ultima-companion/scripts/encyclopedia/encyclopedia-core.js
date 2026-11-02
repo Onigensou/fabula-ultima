@@ -1477,6 +1477,8 @@
   function actionData(actor, p, ws, showDetails, reveal) {
     const out = [];
     const push = (kind, entry, fmt, fields) => {
+      // Template rows nobody filled in are not actions of this creature.
+      if (/^generic npc\b/i.test(String(fields.name ?? "").trim())) return;
       const id = fmt === "new" ? entryItemId(entry) : null;
       // Old-format entries (no uuid) are always shown, as in renderAttacks & co.
       let known = id ? ws.has(id) : true;
@@ -1484,13 +1486,20 @@
       // Same rule as renderPassiveSkills: at Details an INERT passive is read off the page.
       if (kind === "passive" && !known && showDetails && (!item || !hasExecutableReactionRow(item))) known = true;
       const base = { kind, id: id ?? `${kind}:${out.length}`, known: known || reveal, hidden: !known };
+      // One item can sit in several lists (an attack that is also a skill), so
+      // rows are merged by item below; only the row's cost and dice survive that.
+      base.cost = fields.cost ?? null;
+      base.dice = fields.dice ?? "";
       if (!known && !reveal) { out.push(base); return; }
+      // The item is the truth; the list row holds a copy that can be stale or,
+      // when the row has no item behind it, the only text there is.
+      const itemText = item?.system?.props?.description;
       out.push({
         ...base,
         name: String(fields.name ?? "Unknown"),
         img: item?.img || fields.icon,
         meta: fields.meta && fields.meta !== "-" ? String(fields.meta) : "",
-        description: sanitizeRichHtml(fields.desc ?? ""),
+        description: sanitizeRichHtml(plainText(itemText) ? itemText : (fields.desc ?? "")),
       });
     };
     const pick = (newKey, oldKey) => {
@@ -1500,23 +1509,38 @@
     const atk = pick("attack_list", "basic_attacks");
     for (const e of atk.list) {
       const a1 = e?.attribute_die1 ?? e?.attrib_1, a2 = e?.attribute_die2 ?? e?.attrib_2;
+      const dice = a1 && a2 ? `${a1} + ${a2}` : "";
       push("attack", e, atk.fmt, { name: atk.fmt === "new" ? e?.name : (e?.basic_name ?? e?.name), icon: ATTACK_ICON,
-        meta: a1 && a2 ? `${a1} + ${a2}` : "", desc: e?.attack_description ?? e?.detail });
+        meta: dice, dice, desc: e?.attack_description ?? e?.detail });
     }
     const act = pick("skill_active_list", "special_list");
     for (const e of act.list) push("skill", e, act.fmt, { name: act.fmt === "new" ? e?.name : (e?.special_name ?? e?.name),
-      icon: ABILITY_ICON, meta: e?.active_cost, desc: e?.active_description ?? e?.details ?? e?.detail });
+      icon: ABILITY_ICON, meta: e?.active_cost, cost: String(e?.active_cost ?? ""), desc: e?.active_description ?? e?.details ?? e?.detail });
     const sp = pick("normal_spell_list", "spell_list");
     for (const e of sp.list) push("spell", e, sp.fmt, { name: sp.fmt === "new" ? e?.name : (e?.spell_name ?? e?.name),
-      icon: SPELL_ICON, meta: e?.cost, desc: e?.spell_description ?? e?.details ?? e?.detail });
+      icon: SPELL_ICON, meta: e?.cost, cost: String(e?.cost ?? ""), desc: e?.spell_description ?? e?.details ?? e?.detail });
     const pas = pick("skill_passive_list", "other_list");
     for (const e of pas.list) push("passive", e, pas.fmt, { name: pas.fmt === "new" ? e?.name : (e?.other_name ?? e?.name),
       icon: ABILITY_ICON, desc: e?.passive_description ?? e?.details ?? e?.detail });
-    return out;
+    // The same item listed twice is one action. Keep the row that prints a real
+    // cost, so Meteor Impact reads as its 6 Zero Power skill and not a free attack.
+    const hasCost = (a) => { const c = String(a.cost ?? "").trim(); return !!c && c !== "-"; };
+    const seen = new Map();
+    for (const a of out) {
+      const had = seen.get(a.id);
+      if (!had) { seen.set(a.id, a); continue; }
+      if (!hasCost(had) && hasCost(a)) { a.dice = a.dice || had.dice; seen.delete(a.id); seen.set(a.id, a); }
+      else had.dice = had.dice || a.dice;
+    }
+    return [...seen.values()];
   }
 
-  /** One entry as data. `pageOrUuid` = a JournalEntryPage or an actor UUID. */
-  function getEntryData(pageOrUuid, { reveal = false } = {}) {
+  /**
+   * One entry as data. `pageOrUuid` = a JournalEntryPage or an actor UUID.
+   * `asBest` gates as if the party's best were no higher than this: the Study
+   * Card uses it to light up a new result one tier at a time.
+   */
+  function getEntryData(pageOrUuid, { reveal = false, asBest = null } = {}) {
     const page = typeof pageOrUuid === "string" ? getPageForActor(pageOrUuid) : pageOrUuid;
     if (!page) return null;
     const peek = !!reveal && !!game.user?.isGM;
@@ -1525,7 +1549,8 @@
     let actor = null;
     try { actor = actorUuid ? fromUuidSync(actorUuid) : null; } catch { /* tolerate */ }
     const p = actor?.system?.props ?? {};
-    const tiers = { identity: best >= TIER_IDENTITY, stats: best >= TIER_STATS, details: best >= TIER_DETAILS };
+    const gate = asBest == null ? best : Math.min(best, Number(asBest) || 0);
+    const tiers = { identity: gate >= TIER_IDENTITY, stats: gate >= TIER_STATS, details: gate >= TIER_DETAILS };
     const show = (t) => peek || tiers[t];
     const by = getFlag(page, "bestResultBy");
     const tier = tiers.details ? "Details" : tiers.stats ? "Stats" : tiers.identity ? "Identity" : "Unstudied";
@@ -1557,6 +1582,8 @@
       identity: show("identity") ? {
         hidden: !tiers.identity,
         level: String(p.level ?? ""), rank: String(p.npc_rank ?? ""),
+        // Turns per round, as the director reads it (0 = authored with no turn).
+        turns: (Number.isFinite(Number(p.activation)) && String(p.activation ?? "").trim() !== "" ? Number(p.activation) : 1) + (Number(p.bonus_activation) || 0),
         species: String(p.species ?? ""), subtype: String(p.subtype_list ?? ""), attribute: String(p.attribute ?? ""),
         hp: p.max_hp ?? null, mp: p.max_mp ?? null, def: p.defense ?? null, mdef: p.magic_defense ?? null,
         traits: plainText(p.traits), description: sanitizeRichHtml(p.study_text ?? ""),
@@ -1565,9 +1592,11 @@
       details: show("details") ? {
         hidden: !tiers.details,
         affinities,
-        weapons: WEAPON_TYPES.map((wt) => { const n = Number(p[`${wt}_ef`]); return { type: wt, pct: Number.isFinite(n) ? n : 100 }; }),
+        // Same rule as damage (readWeaponEfficiency): a stored 0 means 100%, not 0%.
+        weapons: WEAPON_TYPES.map((wt) => { const n = Number(p[`${wt}_ef`]); return { type: wt, pct: Number.isFinite(n) && n > 0 ? n : 100 }; }),
         conditions: CONDITIONS.map((c) => ({ name: c, code: String(p[`condition_${c}`] ?? "") }))
           .filter((c) => ["RS", "VU", "AB", "IM"].includes(c.code)),
+        conditionTotal: CONDITIONS.length,
       } : null,
       steal: show("identity") ? objectToList(p.stealable_loot ?? p.stealable_equipment ?? {}).filter((e) => !isEmptyLootEntry(e)).map((e) => {
         const embedded = actor?.items?.get?.(String(e?.uuid ?? "").split(".").pop());
@@ -1609,6 +1638,7 @@
       // initiative-bar info-badge click handler.
       openEncyclopediaForActor,
       openEncyclopediaForToken,
+      openBestiaryForToken,
       resolveActorPrototypeUuid,
       // Re-sort pages by (rank, name). Called automatically after writes;
       // exposed for manual triggering / debugging.
@@ -1915,6 +1945,15 @@
       return;
     }
     return openEncyclopediaForActor(actorUuid);
+  }
+
+  /** The player-facing way in: this creature in the Party Menu Bestiary, not the journal. */
+  async function openBestiaryForToken(tokenUuid) {
+    const menu = globalThis.FUCompanion?.api?.partyMenu;
+    if (!menu?.open) return openEncyclopediaForToken(tokenUuid);
+    const actorUuid = await resolveActorPrototypeUuid(tokenUuid);
+    menu.pickBestiary?.(actorUuid ? getPageForActor(actorUuid)?.id : null);
+    return menu.open({ view: "bestiary" });
   }
 
   /**

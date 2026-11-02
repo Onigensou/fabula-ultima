@@ -28,6 +28,13 @@
 // moved the camera meanwhile. Closes itself when the battle needs the screen:
 // an action card, a reaction menu, a target picker (unless Alt-held), an action
 // declared, the battle ending.
+//
+// Study result mode (openStudy, driven by study-reveal.js): the same card replaces
+// the journal page after a Study. It is the one case that opens while the battle is
+// mid-action, so it ignores the "battle moved" closes above: the battle is waiting
+// on it. Each newly learned tier lights up in turn. Continue (or Esc, or right-click)
+// from whoever studied, or a GM, releases the battle; anyone else only closes
+// their own view.
 
 import { buildInspectModel, HP_RULE_SETTING } from "./inspect-model.js";
 import { ROOT_ID, WORLD_ID, CARD_W, FRAME_H, renderFrame, renderPeek, injectStyles, tabsOf } from "./inspect-render.js";
@@ -35,6 +42,9 @@ import { hudScale, battleIsSettled } from "../director-player-hud.js";
 import { hasSurface, getActiveSurfaces } from "../director-surfaces.js";
 import { tokenCastsSpriteShadow } from "../../sprite-shadow/sprite-shadow-config.js";
 import { shadowSpriteFor } from "../../sprite-shadow/sprite-shadow-renderer.js";
+import { playSfx, preloadSfx } from "../director-sfx.js";
+import { SFX_NAV, SFX_OPEN } from "./study-visuals.js";
+import { installStudyReveal, releaseStudy } from "./study-reveal.js";
 
 const NS = "fabula-ultima-companion";
 const TAG = "[fu-inspect]";
@@ -527,9 +537,11 @@ function renderCard({ pane = null } = {}) {
   const token = canvas?.tokens?.get(S.open.tokenId);
   if (!token) return false;
   try {
-    S.model = buildInspectModel(token, { side: sideOf(token), asPlayer: S.asPlayer });
+    // A Study result shows a GM what the table sees, so the tiers can light up for them too.
+    const st = S.open.study ?? null;
+    S.model = buildInspectModel(token, { side: sideOf(token), asPlayer: S.asPlayer || !!st, capBest: st?.shownBest ?? null });
     if (!S.model) return false;
-    const html = renderFrame(S.model, { ...S.ui, alt: !!S.open.viaAlt && !S.open.sticky });
+    const html = renderFrame(S.model, { ...S.ui, alt: !!S.open.viaAlt && !S.open.sticky, study: st });
     const frame = S.els.place.querySelector(".fui-frame");
     if (!frame) { S.els.place.innerHTML = html; return true; }
     // Already open: swap only the parts that changed, inside the frame that is
@@ -538,6 +550,9 @@ function renderCard({ pane = null } = {}) {
     const t = document.createElement("template");
     t.innerHTML = html.trim();
     const next = t.content.querySelector(".fui-frame");
+    // Rank lives on the card itself: identifying a creature mid-reveal restyles it.
+    const cardA = frame.querySelector(".fui-card"), cardB = next?.querySelector(".fui-card");
+    if (cardA && cardB && cardA.className !== cardB.className) cardA.className = cardB.className;
     for (const sel of [".fui-head", ".fui-left", ".fui-tabs", ".fui-foot"]) {
       const a = frame.querySelector(sel), b = next?.querySelector(sel);
       if (a && b && a.innerHTML !== b.innerHTML) a.replaceWith(b);
@@ -594,15 +609,18 @@ function blocked(viaAlt) {
   } catch { return false; }
 }
 
-export async function open(token, { viaAlt = false } = {}) {
-  if (!token || !inspectable(token) || !inBattle() || blocked(viaAlt)) return false;
+export async function open(token, { viaAlt = false, study = null } = {}) {
+  if (!token || !inspectable(token) || !inBattle()) return false;
+  if (!study && (S.open?.study || blocked(viaAlt))) return false;
   hidePeek();
   const root = ensureRoot();
+  const switching = !!S.open;
   const savedView = S.open?.savedView ?? currentView();
-  S.ui = { tab: "effects", filter: "all" };
+  S.ui = { tab: study ? "notes" : "effects", filter: "all" };
   const b = band();
   const view = stageView(token, b, savedView);
-  S.open = { tokenId: token.id, viaAlt: !!viaAlt, savedView, targetView: null, enemy: view.enemy, ax: view.ax, lightX: view.lightX };
+  S.open = { tokenId: token.id, viaAlt: !!viaAlt, savedView, targetView: null, enemy: view.enemy, ax: view.ax, lightX: view.lightX, study };
+  playSfx(switching && !study ? SFX_NAV : SFX_OPEN);
 
   if (!S.els) {
     root.insertAdjacentHTML("beforeend", `<div class="fui-place"></div>`);
@@ -633,6 +651,7 @@ export async function open(token, { viaAlt = false } = {}) {
 export function close({ restoreCamera = true } = {}) {
   const o = S.open;
   if (!o) return;
+  clearStudyTimers();
   S.open = null;
   if (S.raf) cancelAnimationFrame(S.raf);
   S.raf = 0;
@@ -653,9 +672,77 @@ export function close({ restoreCamera = true } = {}) {
 
 export const isOpen = () => !!S.open;
 
+// ── Study result ────────────────────────────────────────────────────────────
+
+const STUDY_STEPS = [[7, "Identity"], [8, "Attributes"], [13, "Affinities, Weapons, Status"]];
+const STUDY_FIRST_STEP_MS = 700;
+const STUDY_STEP_MS = 1250;
+const STUDY_FLAG_WAIT_MS = 1500;   // the page write can land just after the socket
+
+let _studyTimers = [];
+function clearStudyTimers() { _studyTimers.forEach(clearTimeout); _studyTimers = []; }
+
+const studyEsc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+
+function studyLine(p) {
+  const learned = STUDY_STEPS.filter(([n]) => p.previousBest < n && p.newBest >= n).map(([, label]) => label);
+  const tail = learned.length ? `New: ${learned.join(", ")}` : "nothing new learned";
+  return `<b>Study ${Number(p.total) || 0}</b> by ${studyEsc(p.studierName)} · ${studyEsc(tail)}`;
+}
+
+/** Show one Study's result here. @returns {Promise<boolean>} false when this client can't show it. */
+export async function openStudy(token, p) {
+  clearStudyTimers();
+  const study = {
+    id: p.id, flash: 0, shownBest: p.previousBest, line: studyLine(p),
+    canContinue: !!game.user?.isGM || game.user?.id === p.ownerUserId,
+    who: p.studierName,
+  };
+  const ok = await open(token, { study });
+  if (!ok || S.open?.study?.id !== p.id) return ok;
+  const enc =globalThis.FUCompanion?.api?.encyclopedia;
+  // Wait for the page write to reach this client before lighting anything.
+  const started = Date.now();
+  const pageCaughtUp = () => {
+    try { return (enc?.getEntryData?.(p.actorUuid)?.best ?? 0) >= p.newBest; } catch { return true; }
+  };
+  while (!pageCaughtUp() && Date.now() - started < STUDY_FLAG_WAIT_MS) await new Promise((r) => setTimeout(r, 100));
+  if (S.open?.study?.id !== p.id || S.open.tokenId !== token.id) return true;
+  const crossed = STUDY_STEPS.map(([n], i) => ({ n, flash: i + 1 })).filter(({ n }) => p.previousBest < n && p.newBest >= n);
+  crossed.forEach(({ n, flash }, i) => {
+    _studyTimers.push(setTimeout(() => {
+      if (S.open?.study?.id !== p.id) return;
+      S.open.study.shownBest = n;
+      S.open.study.flash = flash;
+      renderCard({ pane: "fade" });
+    }, STUDY_FIRST_STEP_MS + i * STUDY_STEP_MS));
+  });
+  _studyTimers.push(setTimeout(() => {
+    if (S.open?.study?.id !== p.id) return;
+    S.open.study.shownBest = null;
+    S.open.study.flash = 0;
+    renderCard();
+  }, STUDY_FIRST_STEP_MS + crossed.length * STUDY_STEP_MS));
+  return true;
+}
+
+/** The battle has moved on: drop this Study's card wherever it still shows. */
+export function endStudy(id) {
+  if (S.open?.study?.id === id) { S.open.study = null; close(); }
+}
+
+/** Continue / Esc / right-click on a Study result. */
+function dismiss() {
+  const st = S.open?.study;
+  // On the host a release ends the Study right here, which closes the card.
+  if (st?.canContinue) releaseStudy(st.id);
+  // Anyone else just closes their own view.
+  if (S.open) { S.open.study = null; close(); }
+}
+
 function step(dir) {
   const list = inspectableTokens();
-  if (!list.length || !S.open) return;
+  if (!list.length || !S.open || S.open.study) return;
   const i = Math.max(0, list.findIndex((t) => t.id === S.open.tokenId));
   const sticky = !!S.open.sticky;
   open(list[(i + dir + list.length) % list.length], { viaAlt: !!S.open.viaAlt })
@@ -668,6 +755,7 @@ function cycleTab(dir) {
   const i = Math.max(0, tabs.indexOf(S.ui.tab));
   S.ui.tab = tabs[(i + dir + tabs.length) % tabs.length];
   S.ui.filter = "all";
+  playSfx(SFX_NAV);
   renderCard({ pane: dir > 0 ? "r" : "l" });
 }
 // Which side a newly picked tab lies on, relative to the current one.
@@ -682,15 +770,15 @@ function onRootClick(ev) {
   const el = ev.target?.closest?.("[data-action]");
   if (!el || !S.open) return;
   const a = el.dataset.action;
-  if (a === "close") close();
+  if (a === "close" || a === "continue") dismiss();
   else if (a === "prev") step(-1);
   else if (a === "next") step(1);
-  else if (a === "tab") { const pane = tabSide(el.dataset.key); S.ui.tab = el.dataset.key; S.ui.filter = "all"; renderCard({ pane }); }
-  else if (a === "filter") { S.ui.filter = el.dataset.key; renderCard({ pane: "fade" }); }
+  else if (a === "tab") { const pane = tabSide(el.dataset.key); S.ui.tab = el.dataset.key; S.ui.filter = "all"; playSfx(SFX_NAV); renderCard({ pane }); }
+  else if (a === "filter") { S.ui.filter = el.dataset.key; playSfx(SFX_NAV); renderCard({ pane: "fade" }); }
   else if (a === "bestiary") {
     const token = canvas?.tokens?.get(S.open.tokenId);
     close();
-    try { globalThis.FUCompanion?.api?.encyclopedia?.openEncyclopediaForToken?.(token?.document?.uuid); } catch { /* */ }
+    try { globalThis.FUCompanion?.api?.encyclopedia?.openBestiaryForToken?.(token?.document?.uuid); } catch { /* */ }
   }
 }
 
@@ -748,7 +836,7 @@ function onPointerDown(ev) {
   if (ev.button !== 0) {
     // Right-click is Back: consume it entirely so Foundry's own right-click
     // (token HUD, ping) does not also run, then eat the contextmenu that follows.
-    if (ev.button === 2 && S.open) { ev.preventDefault(); ev.stopImmediatePropagation(); S.eatContextMenu = true; close(); }
+    if (ev.button === 2 && S.open) { ev.preventDefault(); ev.stopImmediatePropagation(); S.eatContextMenu = true; dismiss(); }
     return;
   }
   S.down = { x: ev.clientX, y: ev.clientY, t: performance.now(), token: hoveredToken() ?? tokenAt(ev.clientX, ev.clientY) };
@@ -763,6 +851,7 @@ function onPointerUp(ev) {
     : targetingActive() && !ev.altKey ? "targeting" : "";
   if (globalThis.__fuInspectDebug) console.debug(TAG, "pointerup", why || "click", d?.token?.name ?? null);
   if (why) return;                             // targeting: the click picks a target
+  if (S.open?.study) return;                   // a Study result only leaves by Continue
   const tok = d.token ?? hoveredToken();
   // A plain click never opens it; on empty ground it is still a way out.
   if (!ev.altKey) { if (!tok && S.open) close(); return; }
@@ -791,7 +880,8 @@ function onKeyDown(ev) {
   }
   if (!S.open) return;
   const eat = () => { ev.preventDefault(); ev.stopImmediatePropagation(); };
-  if (ev.key === "Escape") { eat(); close(); }
+  if (ev.key === "Escape") { eat(); dismiss(); }
+  else if (S.open.study && ev.code === "KeyZ" && !ev.ctrlKey && !ev.metaKey) { eat(); dismiss(); }
   else if (ev.key === "Tab") { eat(); step(ev.shiftKey ? -1 : 1); }
   else {
     // Q / E by physical key: while Alt is held (Alt mode) ev.key is not "q".
@@ -813,7 +903,7 @@ function onContextMenu(ev) {
   if (!S.open || typing(ev)) return;
   ev.preventDefault();
   ev.stopImmediatePropagation();
-  close();
+  dismiss();
 }
 
 // ── lifecycle ───────────────────────────────────────────────────────────────
@@ -856,13 +946,13 @@ function init() {
     else if (S.peekId === token.id) hidePeek();
   });
   Hooks.on("fu-director-surface-change", ({ action, entry } = {}) => {
-    if (action !== "add" || !S.open) return;
+    if (action !== "add" || !S.open || S.open.study) return;
     const kind = entry?.kind;
     if (CLOSE_ON_SURFACE.has(kind) || (kind === "target-picker" && !S.open.viaAlt)) close();
   });
-  Hooks.on("fu-director-action", () => close());
+  Hooks.on("fu-director-action", () => { if (!S.open?.study) close(); });
   // The battle starts moving (a roll, an animation, a turn change): step aside.
-  Hooks.on("fu-battle-phase", ({ settled } = {}) => { if (!settled && S.open) close(); });
+  Hooks.on("fu-battle-phase", ({ settled } = {}) => { if (!settled && S.open && !S.open.study) close(); });
   Hooks.on("fu-director-stopped", () => { close({ restoreCamera: false }); hidePeek(); });
   // Players never see the GM-local director hooks; the scene flag is their signal.
   Hooks.on("updateScene", (scene) => {
@@ -883,8 +973,12 @@ function init() {
 
   globalThis.FUCompanion ??= { api: {} };
   globalThis.FUCompanion.api ??= {};
+  installStudyReveal();
+  preloadSfx([SFX_NAV, SFX_OPEN]);
+
   globalThis.FUCompanion.api.unitInspect = {
     open: (tokenOrId, opts) => open(typeof tokenOrId === "string" ? canvas?.tokens?.get(tokenOrId) : tokenOrId, opts),
+    openStudy, endStudy,
     close, isOpen, peek: (t) => showPeek(typeof t === "string" ? canvas?.tokens?.get(t) : t), hidePeek,
     model: (t) => buildInspectModel(typeof t === "string" ? canvas?.tokens?.get(t) : t, { asPlayer: S.asPlayer }),
     setAsPlayer: (on) => { S.asPlayer = !!on; if (S.open) renderCard(); },

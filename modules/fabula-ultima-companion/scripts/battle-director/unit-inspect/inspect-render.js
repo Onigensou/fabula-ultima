@@ -10,10 +10,14 @@ export const ROOT_ID = "fu-inspect-root";
 export const WORLD_ID = "fu-inspect-world";   // the spotlight + the unit, just above #board
 const STYLE_ID = "fu-inspect-style";
 
-export const CARD_W = 820;
-export const FRAME_H = 528;
+import { renderLinkedText, safeHtml } from "../../linked-text/lt-render.js";
+import { crestSVG, defenseSVG } from "./study-visuals.js";
 
-const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+export const CARD_W = 820;
+// Never taller than this (user, 2026-11-02): new content fits by tightening.
+export const FRAME_H = 572;
+
+const esc =(s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
 // Sanitized rich text from the Encyclopedia (already sanitizeRichHtml'd there);
 // stripped to plain text here anyway — the hint box is a paragraph, not a page.
@@ -66,18 +70,110 @@ function passivePane(m) {
     ${m.conds ? `<div class="fui-note"><b>Status immunities:</b> ${esc(m.conds)}</div>` : ""}`;
 }
 
-function actionsPane(m) {
+const COST_TIP = (c) => (c.tip ? ` data-tooltip="${esc(c.tip)}" data-tooltip-direction="UP"` : "");
+
+function actionRow(a) {
+  if (!a.readable) {
+    return `<div class="fui-act is-unk"><div class="fui-actq"><i class="fas fa-question"></i></div><div class="fui-actb"><div class="fui-acttop"><span class="fui-actn">???</span><span class="fui-kind">${esc(a.kind)}</span></div><div class="fui-actd is-none">Not seen in battle yet.</div></div></div>`;
+  }
+  const cost = a.cost ? `<span class="fui-cost c-${esc(a.cost.cls)}"${COST_TIP(a.cost)}>${esc(a.cost.text)}</span>` : "";
+  const text = plain(a.desc) ? `<div class="fui-actd">${safeHtml(renderLinkedText(a.desc))}</div>` : `<div class="fui-actd is-none">No description written.</div>`;
+  return `<div class="fui-act${a.gmOnly ? " is-gmonly" : ""}"><img class="fui-acti" src="${esc(a.img)}" alt="" onerror="this.style.visibility='hidden'"><div class="fui-actb">
+    <div class="fui-acttop"><span class="fui-actn">${esc(a.name)}</span>${cost}${a.dice ? `<span class="fui-dice">${esc(a.dice)}</span>` : ""}${a.gmOnly ? `<span class="fui-gm">not seen by players</span>` : ""}<span class="fui-kind">${esc(a.kind)}</span></div>
+    ${text}</div></div>`;
+}
+
+function actionsPane(m, ui) {
   if (!m.actions.length) return `<div class="fui-note">${m.hasEntry ? "No actions recorded for this creature." : "Nothing recorded yet."}</div>`;
-  return `<div class="fui-note fui-note-top">${esc(m.seenText)} seen. Each one is added when the party watches it used.</div>`
-    + m.actions.map((a) => `<div class="fui-act${a.known ? "" : " is-unk"}${a.gmOnly ? " is-gmonly" : ""}"><b>${esc(a.name)}</b>${a.gmOnly ? `<span class="fui-gm">not seen by players</span>` : ""}<span class="fui-kind">${esc(a.kind)}</span></div>`).join("");
+  const kinds = ["Attack", "Skill", "Spell", "Passive"].filter((k) => m.actions.some((a) => a.kind === k));
+  const filter = kinds.includes(ui.filter) ? ui.filter : "all";
+  const chips = [["all", `All ${m.actions.length}`], ...kinds.map((k) => [k, `${k}s ${m.actions.filter((a) => a.kind === k).length}`])]
+    .map(([k, label]) => `<button type="button" class="fui-fchip${filter === k ? " on" : ""}" data-action="filter" data-key="${esc(k)}" aria-pressed="${filter === k}">${esc(label)}</button>`).join("");
+  return `<div class="fui-filters">${chips}<span class="fui-seen">${esc(m.seenText)} seen</span></div>`
+    + m.actions.filter((a) => filter === "all" || a.kind === filter).map(actionRow).join("");
 }
 
 function notesPane(m) {
-  const hint = plain(m.hint);
-  return `${hint ? `<div class="fui-hint">${esc(hint)}</div>` : `<div class="fui-note fui-note-top">Study 7+ to read what the party knows about this creature.</div>`}
-    ${m.conds ? `<div class="fui-note"><b>Status immunities:</b> ${esc(m.conds)}</div>` : ""}
+  const hint = safeHtml(m.hint);
+  return `${plain(hint) ? `<div class="fui-label fui-label-first">Description</div><div class="fui-hint">${hint}</div>` : `<div class="fui-note fui-note-top">Study 7+ to read what the party knows about this creature.</div>`}
     <div class="fui-label">Study progress</div>
     <div class="fui-steps">${m.steps.map((s) => `<div class="fui-step${s.done ? " done" : ""}"><b>${esc(s.n)}</b><span>${esc(s.text)}</span><em>${s.done ? "Known" : "—"}</em></div>`).join("")}</div>`;
+}
+
+// ── the enemy's left column ─────────────────────────────────────────────────
+// `flash` = the Study tier lighting up right now (1 Identity, 2 Stats, 3 Details).
+
+const TIP = (t) => `data-tooltip="${esc(t)}" data-tooltip-direction="UP"`;
+const newTag = (on) => (on ? `<span class="fui-new">NEW</span>` : "");
+
+function defenseBadge(kind, k, stat, name) {
+  const known = !!stat;
+  const tip = known ? `${name}: ${stat.v}${kind === "mdef" ? ". Magic attacks have to beat this." : ". Physical attacks have to beat this."}` : `${name}: Study 7+ reveals it`;
+  return `<div class="fui-sb ${known ? (kind === "mdef" ? "is-mag" : "") : "is-unk"} ${esc(stat?.cls ?? "")}" ${TIP(tip)}>${defenseSVG(kind)}<b>${known ? esc(stat.v) : "?"}</b><em>${esc(k)}</em></div>`;
+}
+
+function enemyVitals(m, flash) {
+  const def = m.stats.find((s) => s.k === "DEF"), mdef = m.stats.find((s) => s.k === "M.DEF");
+  return `<div class="fui-vw"><div class="fui-vwrows">${m.vitals.map((r) => vitalRow(r)).join("")}${crisisBadge(m)}</div>
+    <div class="fui-sbs${flash === 1 ? " fui-flash" : ""}">${defenseBadge("def", "DEF", def, "Defense")}${defenseBadge("mdef", "M.DEF", mdef, "Magic Defense")}</div></div>
+    ${m.vitalsNote ? `<div class="fui-note">${esc(m.vitalsNote)}</div>` : ""}`;
+}
+
+function enemyDice(m, flash) {
+  const dice = m.stats.filter((s) => s.kind === "attr");
+  if (!dice.length) return `<div class="fui-lock"><i class="fas fa-lock"></i><span>Study 8+ reveals the attribute dice.</span></div>`;
+  return `<div class="fui-dcs">${dice.map((s) => `<div class="fui-dc ${esc(s.cls)}${flash === 2 ? " fui-flash" : ""}" ${TIP(s.tip)}><img src="${esc(s.icon)}" alt="${esc(s.k)}"><b>${esc(s.v)}</b></div>`).join("")}</div>`;
+}
+
+function weaponGauges(m, flash) {
+  const fx = flash === 3 ? " fui-flash" : "";
+  return `<div class="fui-wgs${m.detGmOnly ? " is-gmonly" : ""}">${m.weapons.map((w) => {
+    const width = Math.min(50, Math.abs(w.pct - 100) / 2);
+    const bar = w.pct === 100 ? "" : `<i style="${w.pct > 100 ? "left" : "right"}:50%;width:${width}%"></i>`;
+    return `<div class="fui-wg ${esc(w.cls)}${fx}" ${TIP(w.tip)}><span class="fui-wgi"><i class="fas ${esc(w.icon)}"></i></span><div class="fui-wgb">${bar}</div><b>${w.pct}%</b></div>`;
+  }).join("")}</div>`;
+}
+
+const STATUS_LABEL = { im: "Immune", rs: "Resist", ab: "Absorb", vu: "Weak" };
+
+function statusRows(m, flash) {
+  const fx = flash === 3 ? " fui-flash" : "";
+  if (!m.statuses.length) return `<div class="fui-note">No special status resistances.</div>`;
+  const outline = m.detGmOnly ? " is-gmonly" : "";
+  if (m.immuneAll) return `<div class="fui-strow${outline}"><span class="fui-sttag im">Immune</span><span class="fui-stall">Every status</span></div>`;
+  return Object.keys(STATUS_LABEL).map((code) => {
+    const row = m.statuses.filter((s) => s.cls === code);
+    if (!row.length) return "";
+    return `<div class="fui-strow${outline}"><span class="fui-sttag ${code}">${STATUS_LABEL[code]}</span><div class="fui-sts">${row.map((s) => `<span class="fui-stp${fx}" ${TIP(s.tip)}>${s.img ? `<img src="${esc(s.img)}" alt="${esc(s.name)}">` : `<i class="fas fa-circle-question"></i>`}</span>`).join("")}</div></div>`;
+  }).join("");
+}
+
+function enemyLeft(m, affs, flash) {
+  const details = m.weapons
+    ? `<div class="fui-label">Weapon efficiency${newTag(flash === 3)}</div>${weaponGauges(m, flash)}
+       <div class="fui-label">Status${newTag(flash === 3)}</div>${statusRows(m, flash)}`
+    : `<div class="fui-label">Weapons &amp; status</div><div class="fui-lock"><i class="fas fa-lock"></i><span>Study 13+ reveals weapon efficiency and status resistances.</span></div>`;
+  return `<div class="fui-label">Vitals${newTag(flash === 1)}</div>${enemyVitals(m, flash)}
+    <div class="fui-label">Attributes${newTag(flash === 2)}</div>${enemyDice(m, flash)}
+    <div class="fui-label">Affinities${newTag(flash === 3)}</div><div class="fui-affs${flash === 3 ? " fui-flash" : ""}">${affs}</div>
+    ${m.affNote ? `<div class="fui-note">${esc(m.affNote)}</div>` : ""}
+    ${details}`;
+}
+
+function enemyHeadParts(m, flash) {
+  const rank = m.rank;
+  const crest = `<div class="fui-crestbox${flash === 1 ? " fui-stamp" : ""}" ${TIP(rank ? rank.tip : "Rank unknown. Study 7+ reveals it.")}>${crestSVG(rank?.key ?? "", 60)}</div>`;
+  const word = rank ? `<div class="fui-rankword">${esc(rank.label)}</div>` : "";
+  const n = m.turns;
+  const turns = rank && n >= 1 ? `<div class="fui-turns${n > 1 ? " many" : ""}" ${TIP(`Takes ${n} turn${n > 1 ? "s" : ""} every round`)}><div class="fui-tpips">${Array.from({ length: Math.min(n, 8) }, () => `<span class="fui-tpip"></span>`).join("")}</div><span><b>${n}</b> turn${n > 1 ? "s" : ""}/round</span></div>` : "";
+  return { crest, word, turns };
+}
+
+function studyFoot(s) {
+  const end = s.canContinue
+    ? `<button type="button" class="fui-btn fui-go" data-action="continue">Continue ${kbd("Z")}</button>`
+    : `<span class="fui-foothint">Waiting for ${esc(s.who)}</span><button type="button" class="fui-btn" data-action="close">Close ${kbd("Esc")}</button>`;
+  return `<span class="fui-foothint fui-studyline">${s.line}</span><span class="fui-sp"></span>${end}`;
 }
 
 export function tabsOf(m) {
@@ -87,35 +183,49 @@ export function tabsOf(m) {
     : [{ key: "effects", label: "Effects", count: String(nEff), bad: m.groups.debuffs.length > 0 }, { key: "passive", label: "Passive & gear", count: String(m.groups.passive.length) }];
 }
 
-/** The card. `ui` = { tab, filter, alt }. */
+/** The card. `ui` = { tab, filter, alt, study }. */
 export function renderFrame(m, ui) {
   const tabs = tabsOf(m);
   const tab = tabs.some((t) => t.key === ui.tab) ? ui.tab : "effects";
-  const pane = tab === "effects" ? effectsPane(m, ui) : tab === "passive" ? passivePane(m) : tab === "actions" ? actionsPane(m) : notesPane(m);
+  const flash = ui.study?.flash ?? 0;
+  const pane = tab === "effects" ? effectsPane(m, ui) : tab === "passive" ? passivePane(m) : tab === "actions" ? actionsPane(m, ui) : notesPane(m);
   const vit = m.vitals.map((r) => vitalRow(r)).join("") + crisisBadge(m);
   const stats = m.stats.length ? `<div class="fui-stats">${m.stats.map((s) => `<div class="fui-stat ${esc(s.cls)}"><span>${esc(s.k)}</span><b>${esc(s.v)}</b><i>${esc(s.was)}</i></div>`).join("")}</div>` : "";
   const lock = m.statsLock ? `<div class="fui-lock"><i class="fas fa-lock"></i><span>${esc(m.statsLock)}</span></div>` : "";
   const affs = m.affs.map((a) => `<div class="fui-aff ${esc(a.cls)}${a.gmOnly ? " is-gmonly" : ""}" title="${esc(a.title)}"><i class="fas ${esc(a.icon)}"></i><b>${esc(a.text)}</b>${a.learned ? `<span class="fui-learn"></span>` : ""}</div>`).join("");
   const tier = m.enemy ? `<div class="fui-tier" title="${esc(m.tierTitle)}">${[1, 2, 3].map((k) => `<span class="fui-dia${k <= m.tierN ? " on" : ""}"></span>`).join("")}<span>${esc(m.tierShort)}</span></div>` : "";
+  const parts = m.enemy ? enemyHeadParts(m, flash) : { crest: "", word: "", turns: "" };
+  const rankCls = m.rank ? `rf-${m.rank.key}` : "";
+  const foot = ui.study ? studyFoot(ui.study) : `
+        <button type="button" class="fui-btn" data-action="prev" aria-label="Previous unit"><i class="fas fa-chevron-left"></i></button>
+        <button type="button" class="fui-btn" data-action="next" aria-label="Next unit"><i class="fas fa-chevron-right"></i></button>
+        ${ui.alt ? `<span class="fui-foothint">Release ${kbd("Alt")} to go back</span>` : `${kbd("Tab")}<span class="fui-foothint">next unit</span>`}
+        <span class="fui-sp"></span>
+        ${m.enemy ? `<button type="button" class="fui-btn" data-action="bestiary"><i class="fas fa-book"></i>Bestiary</button>` : ""}
+        <button type="button" class="fui-btn" data-action="close">Close ${kbd("Esc")}</button>`;
   return `
   <div class="fui-frame">
-    <div class="fui-card">
+    <div class="fui-card ${m.enemy ? "is-enemy" : ""} ${rankCls}">
+      <span class="fui-corner a"></span><span class="fui-corner b"></span><span class="fui-corner c"></span><span class="fui-corner d"></span>
       <div class="fui-head">
+        ${parts.crest}
         <div class="fui-headtext">
+          ${parts.word}
           <div class="fui-titleline"><div class="fui-name">${esc(m.name)}</div><span class="fui-side ${esc(m.sideCls)}">${esc(m.sideLabel)}</span></div>
           <div class="fui-sub">${esc(m.sub)}</div>
         </div>
+        ${parts.turns}
         ${tier}
         ${m.gm ? `<span class="fui-gm" title="Items players can't see yet have a dashed purple outline">GM view</span>` : ""}
         <button type="button" class="fui-x" data-action="close" aria-label="Close inspect"><i class="fas fa-xmark"></i></button>
       </div>
       <div class="fui-body">
         <div class="fui-left">
-          <div class="fui-label">Vitals</div>${vit}
+          ${m.enemy ? enemyLeft(m, affs, flash) : `<div class="fui-label">Vitals</div>${vit}
           ${m.vitalsNote ? `<div class="fui-note">${esc(m.vitalsNote)}</div>` : ""}
           <div class="fui-label">Defense &amp; dice</div>${stats}${lock}
           <div class="fui-label">Affinities</div><div class="fui-affs">${affs}</div>
-          ${m.affNote ? `<div class="fui-note">${esc(m.affNote)}</div>` : ""}
+          ${m.affNote ? `<div class="fui-note">${esc(m.affNote)}</div>` : ""}`}
         </div>
         <div class="fui-right">
           <div class="fui-tabs" role="tablist">
@@ -125,14 +235,7 @@ export function renderFrame(m, ui) {
           <div class="fui-pane">${pane}</div>
         </div>
       </div>
-      <div class="fui-foot">
-        <button type="button" class="fui-btn" data-action="prev" aria-label="Previous unit"><i class="fas fa-chevron-left"></i></button>
-        <button type="button" class="fui-btn" data-action="next" aria-label="Next unit"><i class="fas fa-chevron-right"></i></button>
-        ${ui.alt ? `<span class="fui-foothint">Release ${kbd("Alt")} to go back</span>` : `${kbd("Tab")}<span class="fui-foothint">next unit</span>`}
-        <span class="fui-sp"></span>
-        ${m.enemy ? `<button type="button" class="fui-btn" data-action="bestiary"><i class="fas fa-book"></i>Bestiary</button>` : ""}
-        <button type="button" class="fui-btn" data-action="close">Close ${kbd("Esc")}</button>
-      </div>
+      <div class="fui-foot">${foot}</div>
     </div>
   </div>`;
 }
@@ -142,7 +245,7 @@ export function renderPeek(m, hint) {
   const shown = m.affs.filter((a) => a.known && a.code !== "NA");
   const unknown = m.affs.filter((a) => !a.known).length;
   return `<div class="fui-peek">
-    <div class="fui-titleline"><div class="fui-pn">${esc(m.name)}</div><span class="fui-side ${esc(m.sideCls)}">${esc(m.sideLabel)}</span></div>
+    <div class="fui-titleline">${m.rank ? `<span class="fui-pcrest" title="${esc(m.rank.label)}">${crestSVG(m.rank.key, 30)}</span>` : ""}<div class="fui-pn">${esc(m.name)}</div><span class="fui-side ${esc(m.sideCls)}">${esc(m.sideLabel)}</span></div>
     ${m.vitals.map((r) => vitalRow(r, "fui-prow")).join("")}${crisisBadge(m)}
     <div class="fui-pmini">${shown.map((a) => `<span class="fui-pa ${esc(a.cls)}"><i class="fas ${esc(a.icon)}"></i>${esc(a.text)}</span>`).join("")}${unknown ? `<span class="fui-pa aff-unk">${unknown} unknown</span>` : ""}</div>
     ${m.peekIcons.length ? `<div class="fui-picons">${m.peekIcons.map((i) => `<img src="${esc(i.img)}" alt="${esc(i.name)}" title="${esc(i.name)}" onerror="this.style.visibility='hidden'">`).join("")}</div>` : ""}
@@ -278,10 +381,106 @@ body.fu-inspecting .fu-inspect-dim{filter:brightness(.42) saturate(.5);transitio
 #${ROOT_ID} .fui-chip i{margin-right:3px}
 #${ROOT_ID} .fui-chip{display:inline-block;font-size:11px;font-weight:800;padding:1px 6px;border-radius:5px;white-space:nowrap;margin-left:auto;flex:none;max-width:55%;overflow:hidden;text-overflow:ellipsis}
 #${ROOT_ID} .tone-good{color:#24692c;background:#dcebd7}#${ROOT_ID} .tone-bad{color:#a3261b;background:#f6d9d3}#${ROOT_ID} .tone-neutral{color:#4b3517;background:rgba(59,42,25,.08)}
-#${ROOT_ID} .fui-act{display:flex;align-items:center;gap:8px;font-size:13px;padding:7px 8px;border-radius:7px;background:rgba(59,42,25,.04);margin-bottom:4px}
-#${ROOT_ID} .fui-act.is-unk{color:#8a7d6a}
-#${ROOT_ID} .fui-kind{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);background:rgba(59,42,25,.07);padding:2px 6px;border-radius:5px;margin-left:auto}
-#${ROOT_ID} .fui-hint{font-size:13px;font-style:italic;color:#4f4537;line-height:1.5;padding:10px 12px;border-radius:8px;background:rgba(213,182,122,.16)}
+#${ROOT_ID} .fui-act{display:grid;grid-template-columns:36px minmax(0,1fr);gap:9px;padding:7px 8px;border-radius:8px;background:rgba(59,42,25,.045);margin-bottom:5px}
+#${ROOT_ID} .fui-acti{width:36px;height:36px;border-radius:7px;background:#2a2118;object-fit:cover;box-shadow:0 0 0 1px rgba(122,106,85,.6);border:0}
+#${ROOT_ID} .fui-actq{width:36px;height:36px;border-radius:7px;display:flex;align-items:center;justify-content:center;color:#8a7d6a;background:rgba(59,42,25,.08)}
+#${ROOT_ID} .fui-actb{min-width:0}
+#${ROOT_ID} .fui-acttop{display:flex;align-items:center;flex-wrap:wrap;gap:5px 7px}
+#${ROOT_ID} .fui-actn{font-size:14px;font-weight:700;line-height:1.2}
+#${ROOT_ID} .fui-act.is-unk .fui-actn{color:#8a7d6a}
+#${ROOT_ID} .fui-dice{font-size:11px;font-weight:600;color:var(--ink-soft)}
+#${ROOT_ID} .fui-kind{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-left:auto}
+#${ROOT_ID} .fui-cost{display:inline-flex;align-items:center;font-size:12px;font-weight:800;color:#fff;padding:1px 7px;border-radius:5px;line-height:1.45;white-space:nowrap}
+#${ROOT_ID} .c-mp{background:#2e7bd6}#${ROOT_ID} .c-ip{background:#b9770f}#${ROOT_ID} .c-zp{background:linear-gradient(90deg,#c9500a,#e88a12)}#${ROOT_ID} .c-hp{background:#a3261b}
+#${ROOT_ID} .c-free{background:rgba(59,42,25,.1);color:#6a5d4c;font-weight:600}
+#${ROOT_ID} .c-short{background:#cfc6b4;color:#6a5d4c}
+#${ROOT_ID} .fui-actd{font-size:12.5px;line-height:1.42;color:#4a4032;margin-top:3px}
+#${ROOT_ID} .fui-actd p{margin:0 0 2px}
+#${ROOT_ID} .fui-actd ul{margin:0 0 2px;padding:0;list-style:none}
+#${ROOT_ID} .fui-actd.is-none{font-style:italic;color:#8a7d6a}
+#${ROOT_ID} .fui-seen{margin-left:auto;align-self:center;font-size:11.5px;color:var(--ink-soft)}
+#${ROOT_ID} .fui-hint{font-size:14px;color:#4f4537;line-height:1.5;padding:10px 12px;border-radius:8px;background:rgba(213,182,122,.16)}
+#${ROOT_ID} .fui-hint p{margin:0}
+#${ROOT_ID} .fui-label-first{margin-top:0}
+/* The enemy card: a tighter left column, because the card never grows. */
+#${ROOT_ID} .is-enemy .fui-head{gap:13px;padding:13px 18px 11px;border-radius:10px 10px 0 0}
+#${ROOT_ID} .is-enemy .fui-left{padding:0 16px 4px 18px;overflow-y:auto;scrollbar-width:none}
+#${ROOT_ID} .is-enemy .fui-left .fui-label{margin:6px 0 3px;line-height:14px}
+#${ROOT_ID} .is-enemy .fui-left .fui-note{margin-top:2px;line-height:1.25}
+#${ROOT_ID} .is-enemy .fui-left .fui-lock{margin-top:2px;padding:3px 8px}
+#${ROOT_ID} .is-enemy .fui-aff{height:23px;padding:3px 7px}
+#${ROOT_ID} .is-enemy .aff-im{background:rgba(224,168,30,.28)}
+#${ROOT_ID} .is-enemy .aff-rs{background:#dbe5f2}
+#${ROOT_ID} .fui-crestbox{flex:none;line-height:0}
+#${ROOT_ID} .fui-rankword{font-size:11.5px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;line-height:1;margin-bottom:3px}
+#${ROOT_ID} .rf-soldier .fui-rankword{color:#5e6468}
+#${ROOT_ID} .fui-turns{display:grid;justify-items:center;gap:2px;font-size:10.5px;color:#4f4537;line-height:1.1;white-space:nowrap}
+#${ROOT_ID} .fui-tpips{display:flex;gap:3px}
+#${ROOT_ID} .fui-tpip{width:9px;height:14px;background:#6a5d4c;clip-path:polygon(50% 0,100% 28%,100% 100%,0 100%,0 28%)}
+#${ROOT_ID} .fui-turns.many .fui-tpip{background:#b3261b}#${ROOT_ID} .fui-turns.many b{color:#a3261b}
+/* Rank escalates the whole card: plain, blue band, crimson band with gold corners. */
+#${ROOT_ID} .fui-corner{display:none;position:absolute;width:22px;height:22px;border:3px solid #ffd76a;z-index:4;pointer-events:none}
+#${ROOT_ID} .fui-corner.a{left:-6px;top:-6px;border-right:0;border-bottom:0}#${ROOT_ID} .fui-corner.b{right:-6px;top:-6px;border-left:0;border-bottom:0}
+#${ROOT_ID} .fui-corner.c{left:-6px;bottom:-6px;border-right:0;border-top:0}#${ROOT_ID} .fui-corner.d{right:-6px;bottom:-6px;border-left:0;border-top:0}
+#${ROOT_ID} .rf-champion .fui-corner,#${ROOT_ID} .rf-villain .fui-corner{display:block}
+#${ROOT_ID} .rf-elite{border-color:#2c4672;box-shadow:0 0 0 1px rgba(255,255,255,.7) inset,0 0 0 2px #c9a44a,0 10px 28px rgba(0,0,0,.5)}
+#${ROOT_ID} .rf-elite .fui-head{background:linear-gradient(180deg,#34568f,#233c68);border-bottom:2px solid #c9a44a}
+#${ROOT_ID} .rf-champion,#${ROOT_ID} .rf-villain{border-color:#6e4b10;box-shadow:0 0 0 1px rgba(255,255,255,.6) inset,0 0 0 3px #d7ad45,0 0 0 5px #5a1712,0 0 30px rgba(226,120,50,.45),0 10px 28px rgba(0,0,0,.5)}
+#${ROOT_ID} .rf-champion .fui-head,#${ROOT_ID} .rf-villain .fui-head{background:linear-gradient(180deg,#71190f,#3a0d09);border-bottom:2px solid #e2b64a}
+#${ROOT_ID} .rf-elite .fui-name,#${ROOT_ID} .rf-champion .fui-name,#${ROOT_ID} .rf-villain .fui-name{color:#fbf1d8}
+#${ROOT_ID} .rf-elite .fui-sub,#${ROOT_ID} .rf-champion .fui-sub,#${ROOT_ID} .rf-villain .fui-sub{color:#e0d3b4}
+#${ROOT_ID} .rf-elite .fui-rankword{color:#f0d890}#${ROOT_ID} .rf-champion .fui-rankword,#${ROOT_ID} .rf-villain .fui-rankword{color:#ffd76a}
+#${ROOT_ID} .rf-elite .fui-tier,#${ROOT_ID} .rf-champion .fui-tier,#${ROOT_ID} .rf-villain .fui-tier,#${ROOT_ID} .rf-elite .fui-turns,#${ROOT_ID} .rf-champion .fui-turns,#${ROOT_ID} .rf-villain .fui-turns{color:#f1e5c8}
+#${ROOT_ID} .rf-elite .fui-dia,#${ROOT_ID} .rf-champion .fui-dia,#${ROOT_ID} .rf-villain .fui-dia{border-color:#e6c977}
+#${ROOT_ID} .rf-elite .fui-tpip{background:#e7ddc4}
+#${ROOT_ID} .rf-elite .fui-turns.many .fui-tpip,#${ROOT_ID} .rf-champion .fui-tpip,#${ROOT_ID} .rf-villain .fui-tpip{background:#ffb347}
+#${ROOT_ID} .rf-elite .fui-turns.many b,#${ROOT_ID} .rf-champion .fui-turns.many b,#${ROOT_ID} .rf-villain .fui-turns.many b{color:#ffd76a}
+#${ROOT_ID} .rf-elite .fui-side,#${ROOT_ID} .rf-champion .fui-side,#${ROOT_ID} .rf-villain .fui-side{background:rgba(255,255,255,.14);color:#fbe8c8}
+/* DEF orange (mostly physical), M.DEF blue (mostly magical). */
+#${ROOT_ID} .fui-vw{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+#${ROOT_ID} .fui-vw .fui-vrow{grid-template-columns:20px minmax(0,1fr) 66px;gap:5px;margin:4px 0}
+#${ROOT_ID} .fui-vw .fui-vv{font-size:14.5px}
+#${ROOT_ID} .fui-sbs{display:flex;gap:3px;border-radius:7px}
+#${ROOT_ID} .fui-sb{position:relative;width:38px;display:grid;justify-items:center;--sh-rim:#ffe6c9;--sh-top:#ee9440;--sh-bot:#a34c10}
+#${ROOT_ID} .fui-sb.is-mag{--sh-rim:#dcecff;--sh-top:#5a94ea;--sh-bot:#1c4a9c}
+#${ROOT_ID} .fui-sb.is-unk{--sh-rim:#cfc6b4;--sh-top:#a89a84;--sh-bot:#8a7d6a}
+#${ROOT_ID} .fui-sb svg{display:block;width:34px;height:40px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+#${ROOT_ID} .fui-sb b{position:absolute;left:0;right:0;top:10px;text-align:center;font-size:15px;font-weight:800;line-height:17px;color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.7)}
+#${ROOT_ID} .fui-sb em{font-style:normal;font-size:9.5px;font-weight:800;letter-spacing:.03em;color:var(--ink-soft);line-height:1.1;white-space:nowrap}
+#${ROOT_ID} .fui-dcs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px}
+#${ROOT_ID} .fui-dc{display:flex;align-items:center;justify-content:center;gap:5px;height:24px;border-radius:7px;background:rgba(59,42,25,.06)}
+#${ROOT_ID} .fui-dc img{width:18px;height:18px;display:block;object-fit:contain;border:0}
+#${ROOT_ID} .fui-dc b{font-size:14px;font-weight:800}
+#${ROOT_ID} .fui-dc.is-down b{color:#a3261b}#${ROOT_ID} .fui-dc.is-up b{color:#24692c}
+#${ROOT_ID} .fui-wgs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px 10px}
+#${ROOT_ID} .fui-wg{display:grid;grid-template-columns:15px minmax(0,1fr) 31px;align-items:center;gap:4px;height:17px;border-radius:3px}
+#${ROOT_ID} .fui-wgi{display:flex;align-items:center;justify-content:center;font-size:11.5px;color:var(--ink-soft)}
+#${ROOT_ID} .fui-wgb{position:relative;height:6px;border-radius:3px;background:rgba(59,42,25,.1)}
+#${ROOT_ID} .fui-wgb::after{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:rgba(59,42,25,.35)}
+#${ROOT_ID} .fui-wgb>i{position:absolute;top:0;bottom:0;border-radius:3px}
+#${ROOT_ID} .fui-wg b{font-size:11.5px;font-weight:800;text-align:right;font-variant-numeric:tabular-nums;color:#a89a84}
+#${ROOT_ID} .fui-wg.up .fui-wgb>i{background:linear-gradient(90deg,#f26b5b,#c0261c)}#${ROOT_ID} .fui-wg.up b,#${ROOT_ID} .fui-wg.up .fui-wgi{color:#a3261b}
+#${ROOT_ID} .fui-wg.down .fui-wgb>i{background:linear-gradient(270deg,#5aa8ff,#2e64a8)}#${ROOT_ID} .fui-wg.down b,#${ROOT_ID} .fui-wg.down .fui-wgi{color:#2e64a8}
+/* Status: one labelled row per grade, listing only what this creature resists. */
+#${ROOT_ID} .fui-strow{display:grid;grid-template-columns:40px minmax(0,1fr);gap:3px;align-items:start}
+#${ROOT_ID} .fui-strow+.fui-strow{margin-top:2px}
+#${ROOT_ID} .fui-sts{display:flex;flex-wrap:wrap;gap:1px}
+#${ROOT_ID} .fui-sttag{height:19px;line-height:19px;border-radius:4px;text-align:center;font-size:9.5px;font-weight:800;letter-spacing:.02em}
+#${ROOT_ID} .fui-sttag.im{background:#e0a81e;color:#2a1d08}#${ROOT_ID} .fui-sttag.rs{background:#2f7fe8;color:#fff}
+#${ROOT_ID} .fui-sttag.ab{background:#24692c;color:#fff}#${ROOT_ID} .fui-sttag.vu{background:#a3261b;color:#fff}
+#${ROOT_ID} .fui-stp{width:19px;height:19px;display:block;border-radius:4px;text-align:center;line-height:19px;color:var(--ink-soft)}
+#${ROOT_ID} .fui-stp img{width:19px;height:19px;display:block;border-radius:4px;object-fit:cover;border:0}
+#${ROOT_ID} .fui-stall{font-size:12px;line-height:19px;font-weight:600}
+/* The Study reveal: each newly learned tier lights up once. */
+#${ROOT_ID} .fui-new{order:2;font-size:9.5px;letter-spacing:.08em;background:#d39b2a;color:#fff8e6;padding:0 5px;border-radius:4px}
+#${ROOT_ID} .fui-flash{animation:fui-unlock 1000ms ease-out}
+@keyframes fui-unlock{0%{background-color:rgba(255,206,92,.85);box-shadow:0 0 0 2px #d39b2a}100%{box-shadow:0 0 0 0 rgba(211,155,42,0)}}
+#${ROOT_ID} .fui-stamp{animation:fui-stamp 420ms steps(5) both}
+@keyframes fui-stamp{from{transform:scale(1.9);opacity:.2}to{transform:scale(1);opacity:1}}
+#${ROOT_ID} .fui-go{height:32px;padding:0 14px;background:linear-gradient(180deg,#7a5230,#5c3818);color:#f3e6c8;border-color:#3a2410}
+#${ROOT_ID} .fui-studyline b{color:var(--ink)}
+#${ROOT_ID} .fui-pcrest{flex:none;line-height:0}
+@media (prefers-reduced-motion: reduce){#${ROOT_ID} .fui-flash,#${ROOT_ID} .fui-stamp{animation-duration:1ms}}
 #${ROOT_ID} .fui-steps{display:grid;gap:5px}
 #${ROOT_ID} .fui-step{display:flex;align-items:center;gap:9px;font-size:12.5px;padding:6px 9px;border-radius:7px;background:rgba(59,42,25,.05)}
 #${ROOT_ID} .fui-step.done{color:#24692c}

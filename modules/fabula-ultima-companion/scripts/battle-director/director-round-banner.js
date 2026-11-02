@@ -992,7 +992,7 @@ function buildTurnActionIcon(c) {
   wrap.appendChild(media);
   frame.appendChild(wrap);
   icon.appendChild(frame);
-  // Enemy icons open that monster's Monster Encyclopedia page on click; a book
+  // Enemy icons open that monster in the Party Menu Bestiary on click; a book
   // badge fades in on hover as the affordance (see CSS, keyed off .left group).
   if (c.side === "enemy" && c.tokenUuid) {
     // Small book badge at the top-right corner — the persistent affordance when
@@ -1007,8 +1007,8 @@ function buildTurnActionIcon(c) {
     icon.appendChild(book);
     icon.addEventListener("click", (ev) => {
       ev.stopPropagation();
-      try { globalThis.FUCompanion?.api?.encyclopedia?.openEncyclopediaForToken?.(c.tokenUuid); }
-      catch (e) { warn("turn-action icon: encyclopedia open failed", e); }
+      try { globalThis.FUCompanion?.api?.encyclopedia?.openBestiaryForToken?.(c.tokenUuid); }
+      catch (e) { warn("turn-action icon: bestiary open failed", e); }
     });
   }
   return icon;

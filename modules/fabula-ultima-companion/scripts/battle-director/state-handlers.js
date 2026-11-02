@@ -11,6 +11,7 @@
 import { anyTargetDeniesCritOpportunity, attackerDeniesOwnCritOpportunity } from "./snapshot.js";
 import { log, warn, err } from "./logger.js";
 import { watchGone, noteGmWaiting, trackWait } from "./player-presence.js";
+import { runStudyReveal } from "./unit-inspect/study-reveal.js";
 import { isGmOverrideEmpty, summarizeGmOverride, dropGmRemovedReactions } from "./gm-card-override.js";
 import { runBattleEndSequence } from "./battle-end/battle-end-orchestrator.js";
 import { STATES } from "./states.js";
@@ -7610,9 +7611,12 @@ const Resolve = {
     } else if (ar.kind === "Study") {
       // resolveAction fires Common/Study's encyclopedia_record row (the data
       // write, incl. the RAW fumble-skip). Presentation (token VFX + opening
-      // the encyclopedia sheet) is not a data effect, so it stays here.
-      await resolveAction(director, ar, { actionSkill: getCoreActionSkill("study") });
+      // the Study Card) is not a data effect, so it stays here.
       const encApi = globalThis.FUCompanion?.api?.encyclopedia;
+      const studiedActorUuid = ar.target?.worldActorUuid ?? ar.target?.actorUuid ?? null;
+      let previousBest = 0;
+      try { previousBest = Number(encApi?.getEntryData?.(studiedActorUuid)?.best) || 0; } catch { /* first Study of it: no page yet */ }
+      await resolveAction(director, ar, { actionSkill: getCoreActionSkill("study") });
       if (ar.roll?.isFumble) {
         playMissVfx({ tokenUuid: ar.target?.tokenUuid });
       } else {
@@ -7630,8 +7634,24 @@ const Resolve = {
           if (studyBelowBar) playMissVfx({ tokenUuid: ar.target?.tokenUuid });
           else await playStudyVfx({ targetTokenUuid: ar.target?.tokenUuid, durationMs: 2500 });
         } catch (e) { warn("RESOLVE Study (unified): VFX threw", e); }
-        const recordedUuid = ar.target?.worldActorUuid ?? ar.target?.actorUuid ?? null;
-        if (recordedUuid && encApi?.openEncyclopediaForActor) {
+        const recordedUuid = studiedActorUuid;
+        // A party member studying an enemy gets the Study Card, and the battle waits
+        // for it. The rare rest (an enemy studying the party) keep the journal page.
+        const targetDoc = ar.target?.tokenUuid ? fromUuidSync(ar.target.tokenUuid) : null;
+        const attackerDoc = ar.attacker?.tokenUuid ? fromUuidSync(ar.attacker.tokenUuid) : null;
+        const onCard = !SimMode.active && !!recordedUuid && !!targetDoc && !!attackerDoc
+          && Number(targetDoc.disposition) === -1 && Number(attackerDoc.disposition) !== -1;
+        if (onCard) {
+          let newBest = previousBest;
+          try { newBest = Number(encApi?.getEntryData?.(recordedUuid)?.best) || previousBest; } catch { /* keep the previous */ }
+          try {
+            await runStudyReveal({
+              tokenUuid: ar.target.tokenUuid, actorUuid: recordedUuid,
+              ownerUserId: resolveActingOwnerForActor(attackerDoc.actor),
+              studierName: ar.attacker?.name ?? attackerDoc.name, total: studyTotal, previousBest, newBest,
+            });
+          } catch (e) { warn("RESOLVE Study (unified): Study Card failed", e); }
+        } else if (recordedUuid && encApi?.openEncyclopediaForActor) {
           try { await encApi.openEncyclopediaForActor(recordedUuid); }
           catch (e) { warn("RESOLVE Study (unified): openEncyclopediaForActor failed", e); }
           try { game.socket?.emit?.("module.fabula-ultima-companion", { type: "encyclopedia:open", actorUuid: recordedUuid }); }

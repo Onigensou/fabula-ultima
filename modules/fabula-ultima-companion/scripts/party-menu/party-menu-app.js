@@ -33,7 +33,7 @@ import { itemView } from "./party-menu-view-item.js";
 import { equipView, statusView, who } from "./party-menu-view-gear.js";
 import { setupView } from "./party-menu-view-setup.js";
 import { bondsView, BONDS_CSS } from "./party-menu-view-bonds.js";
-import { bestiaryView, BESTIARY_CSS } from "./party-menu-view-bestiary.js";
+import { bestiaryView, BESTIARY_CSS, pickBestiaryEntry } from "./party-menu-view-bestiary.js";
 import { configView, CONFIG_CSS } from "./party-menu-view-config.js";
 import { attachScrollbars } from "./party-menu-scrollbar.js";
 import { wireLinkTips, hideLinkTip, removeLinkTip } from "./party-menu-linktip.js";
@@ -1658,5 +1658,5 @@ ${CONFIG_CSS(ROOT_ID)}
 Hooks.once("ready", () => {
   globalThis.FUCompanion = globalThis.FUCompanion || {};
   globalThis.FUCompanion.api = globalThis.FUCompanion.api || {};
-  globalThis.FUCompanion.api.partyMenu = { open: openPartyMenu, close: closePartyMenu, isOpen: isPartyMenuOpen };
+  globalThis.FUCompanion.api.partyMenu = { open: openPartyMenu, close: closePartyMenu, isOpen: isPartyMenuOpen, pickBestiary: pickBestiaryEntry };
 });

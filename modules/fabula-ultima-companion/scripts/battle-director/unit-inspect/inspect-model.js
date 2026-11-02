@@ -22,6 +22,8 @@
 import { effectRowsOf } from "../../party-menu/party-menu-effects.js";
 import { readUnitInfo } from "../director-player-hud.js";
 import { resolveAffinity } from "../snapshot.js";
+import { lookupTerm } from "../keyword-registry.js";
+import { ATTR_ICON, ATTR_NAME, WEAPON_ICON, costChip, rankInfo, rankKeyOf } from "./study-visuals.js";
 
 const NS = "fabula-ultima-companion";
 export const HP_RULE_SETTING = "unitInspectEnemyHp";
@@ -150,9 +152,10 @@ function vitalsOf(actor, { exact = true, showMp = true, crisisOnly = false, isPc
  * @param {Token} token        a placed token (canvas object)
  * @param {object} [o]
  * @param {"enemy"|"party"|"ally"} [o.side]  from the battle roster; else disposition
+ * @param {number} [o.capBest]  gate as if the party's best Study were no higher (Study reveal)
  * @returns view model, or null when the token has no actor
  */
-export function buildInspectModel(token, { side = null, asPlayer = false } = {}) {
+export function buildInspectModel(token, { side = null, asPlayer = false, capBest = null } = {}) {
   const actor = token?.actor;
   if (!actor) return null;
   // `asPlayer`: a GM previewing exactly what the table sees.
@@ -170,7 +173,7 @@ export function buildInspectModel(token, { side = null, asPlayer = false } = {})
     try {
       const enc = encApi();
       const page = enc?.getPageForActor?.(prototypeUuidOf(token));
-      entry = page ? enc.getEntryData(page, { reveal: gm }) : null;
+      entry = page ? enc.getEntryData(page, { reveal: gm, asBest: capBest }) : null;
     } catch { entry = null; }
   }
   const tiers = enemy ? (entry?.tiers ?? { identity: false, stats: false, details: false }) : { identity: true, stats: true, details: true };
@@ -183,8 +186,22 @@ export function buildInspectModel(token, { side = null, asPlayer = false } = {})
     const lv = str(p.level);
     sub = lv ? `Lv ${lv}` : "";
   } else if (idOK) {
-    sub = [str(p.level) ? `Lv ${str(p.level)}` : "", cap(str(p.npc_rank)), cap(str(p.species)), str(p.traits)].filter(Boolean).join(" · ");
+    // Rank has its own crest now, so the line doesn't repeat it.
+    const kind = [cap(str(p.species)), cap(str(p.subtype_list))].filter(Boolean).join(" / ");
+    sub = [str(p.level) ? `Lv ${str(p.level)}` : "", kind, cap(str(p.attribute)), str(p.traits)].filter(Boolean).join(" · ");
   } else sub = "Unknown creature. Study it to learn more.";
+
+  // ── rank + turns (Identity facts) ──
+  const rank = enemy && idOK ? rankInfo(rankKeyOf(p.npc_rank)) : null;
+  // What this battle actually gives it (an Active Effect can change it), else as authored.
+  let turns = 0;
+  if (enemy && idOK) {
+    try {
+      const list = canvas?.scene?.getFlag?.(NS, "directorState")?.dCombat?.combatants ?? [];
+      const here = list.find((c) => String(c?.tokenUuid ?? "").split(".").pop() === token.id);
+      turns = Number(here?.turnsPerRound) || Number(entry?.identity?.turns) || 0;
+    } catch { turns = Number(entry?.identity?.turns) || 0; }
+  }
 
   // ── vitals ──
   const rule = enemyHpRule();
@@ -198,7 +215,7 @@ export function buildInspectModel(token, { side = null, asPlayer = false } = {})
   if (idOK) {
     for (const [k, key] of [["DEF", "defense"], ["M.DEF", "magic_defense"]]) {
       const v = num(p[key]);
-      stats.push({ k, v: v == null ? "–" : String(v), was: "", cls: enemy && !tiers.identity ? "is-gmonly" : "" });
+      stats.push({ k, kind: "def", v: v == null ? "–" : String(v), was: "", cls: enemy && !tiers.identity ? "is-gmonly" : "" });
     }
   }
   if (stOK) {
@@ -206,7 +223,8 @@ export function buildInspectModel(token, { side = null, asPlayer = false } = {})
       const now = num(p[`${key}_current`]) ?? num(p[`${key}_base`]);
       const base = num(p[`${key}_base`]);
       const changed = now != null && base != null && now !== base;
-      stats.push({ k, v: now == null ? "–" : `d${now}`, was: changed ? `${enemy ? "was" : "base"} d${base}` : "",
+      stats.push({ k, kind: "attr", icon: ATTR_ICON[k], tip: `${ATTR_NAME[k]} (${k}): ${now == null ? "unknown" : `d${now}`}${changed ? `, was d${base}` : ""}`,
+        v: now == null ? "–" : `d${now}`, was: changed ? `${enemy ? "was" : "base"} d${base}` : "",
         cls: [changed ? (now > base ? "is-up" : "is-down") : "", enemy && !tiers.stats ? "is-gmonly" : ""].filter(Boolean).join(" ") });
     }
   }
@@ -240,6 +258,23 @@ export function buildInspectModel(token, { side = null, asPlayer = false } = {})
     ? Object.entries(p).filter(([k, v]) => k.startsWith("condition_") && String(v).toUpperCase() === "IM").map(([k]) => cap(k.slice(10))).join(", ")
     : "";
 
+  // ── weapons + statuses (enemies; null while locked) ──
+  const det = enemy ? (entry?.details ?? null) : null;
+  const detGmOnly = !!det?.hidden;
+  const weapons = det ? det.weapons.map((w) => ({
+    key: w.type, pct: w.pct, icon: WEAPON_ICON[w.type] ?? "fa-khanda", cls: w.pct > 100 ? "up" : w.pct < 100 ? "down" : "",
+    tip: `${cap(w.type)}: ${w.pct}% damage`,
+  })) : null;
+  const STATUS_WORD = { IM: "Immune", RS: "Resist", VU: "Weak", AB: "Absorb" };
+  const STATUS_ORDER = { IM: 0, RS: 1, AB: 2, VU: 3 };
+  const statuses = det ? det.conditions
+    .map((c) => {
+      const name = cap(c.name);
+      return { name, code: c.code, cls: c.code.toLowerCase(), img: lookupTerm(name)?.icon ?? "", tip: `${name}: ${STATUS_WORD[c.code] ?? c.code}` };
+    })
+    .sort((a, b) => (STATUS_ORDER[a.code] ?? 9) - (STATUS_ORDER[b.code] ?? 9)) : null;
+  const immuneAll = !!det && det.conditions.length >= det.conditionTotal && det.conditions.every((c) => c.code === "IM");
+
   // ── effects ──
   let rows = [];
   try { rows = effectRowsOf(actor); } catch { rows = []; }
@@ -264,16 +299,31 @@ export function buildInspectModel(token, { side = null, asPlayer = false } = {})
 
   // ── actions (enemies) ──
   const KIND = { attack: "Attack", skill: "Skill", spell: "Spell", passive: "Passive" };
-  const actions = enemy ? (entry?.actions ?? []).map((a) => ({
-    name: a.known || gm ? (a.name ?? "???") : "???", kind: KIND[a.kind] ?? "Action", known: !!a.known && !a.hidden, gmOnly: gm && a.hidden,
-  })) : [];
+  // A cost it can't pay right now is only worth marking when its MP is on show.
+  const mpShown = gm || (enemy && enemyHpRule() === "identity" && tiers.identity);
+  let mpNow = null;
+  if (mpShown) { try { mpNow = readUnitInfo(actor)?.mp?.v ?? null; } catch { /* */ } }
+  const actions = enemy ? (entry?.actions ?? []).map((a) => {
+    const readable = !!a.known;
+    const hasCostSlot = a.kind === "skill" || a.kind === "spell";
+    return {
+      name: readable ? (a.name ?? "???") : "???", kind: KIND[a.kind] ?? "Action", known: !!a.known && !a.hidden, gmOnly: gm && a.hidden,
+      img: readable ? (a.img ?? "") : "", readable,
+      desc: readable ? (a.description ?? "") : "",
+      dice: readable ? (a.dice ?? "") : "",
+      cost: readable && hasCostSlot ? costChip(a.cost, mpNow) : null,
+    };
+  }) : [];
   const seen = actions.filter((a) => a.known).length;
 
   return {
     tokenId: token.id, tokenUuid: token.document?.uuid ?? null, actorUuid: actor.uuid,
-    name: token.document?.name || actor.name, img: actor.img,
+    // Champions carry a ⭐️ in their authored name; the crest does that job here.
+    name: (() => { const n = token.document?.name || actor.name; return enemy ? String(n).replace(/^[^\p{L}\p{N}]+/u, "") || n : n; })(),
+    img: actor.img,
     enemy, isPc, gm, sideLabel, sideCls: enemy ? "side-enemy" : isPc ? "side-party" : "side-ally",
-    sub,
+    sub, rank, turns,
+    weapons, statuses, immuneAll, detGmOnly,
     tierN, tierShort: ["Unstudied", "Identified", "Stats known", "Fully studied"][tierN],
     tierTitle: ["Not studied yet", "Study 7+: identity", "Study 8+: attribute dice", "Study 13+: everything"][tierN],
     vitals: vit.rows, crisisOnly: vit.crisisOnly, crisis: vit.crisis, vitalsNote,
@@ -282,7 +332,7 @@ export function buildInspectModel(token, { side = null, asPlayer = false } = {})
     groups,
     actions, seenText: `${seen} of ${actions.length}`,
     hint: enemy ? (idOK ? (entry?.identity?.description ?? "") : "") : "",
-    steps: [[7, "Identity: level, rank, HP, DEF, traits"], [8, "Attribute dice"], [13, "Affinities, immunities, passives"]]
+    steps: [[7, "Identity: level, rank, turns, HP, DEF, traits"], [8, "Attribute dice"], [13, "Affinities, weapon efficiency, immunities, passives"]]
       .map(([n, text], i) => ({ n: `${n}+`, text, done: tierN > i })),
     hasEntry: !!entry,
     // Hover peek: up to five timed effects, debuffs first.
