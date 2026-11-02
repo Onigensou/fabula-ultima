@@ -18,6 +18,9 @@
       "systemVersion": "4.8.4",
       "world": "legend-dragonslayer"
     },
+    "fabula-ultima-companion": {
+      "layoutRef": "b8806c4bff9074bb"
+    },
     "theatre": {
       "settings": {
         "emote": null,

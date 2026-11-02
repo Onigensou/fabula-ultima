@@ -184,6 +184,7 @@
         "float": false
       },
       "isPersistentSummon": true,
+      "layoutRef": "36f07356c8e6b280",
       "opp_lucky": 0,
       "persistentSummonBound": true,
       "persistentSummonKind": "companion",

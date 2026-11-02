@@ -12,6 +12,9 @@
     "custom-system-builder": {
       "version": "4.5.0"
     },
+    "fabula-ultima-companion": {
+      "layoutRef": "13564577cf6c2a2f"
+    },
     "theatre": {
       "baseinsert": "https://assets.forge-vtt.com/610d89e7183998fea5b9f3a4/Fabula%20Stuffs/Sprites/Melvia/melviatheatre1.png",
       "disabledefault": false,

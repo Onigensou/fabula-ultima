@@ -14,7 +14,8 @@
     },
     "fabula-ultima-companion": {
       "bdObject": true,
-      "conflictObject": "lightning-crystal"
+      "conflictObject": "lightning-crystal",
+      "layoutRef": "a7204eb261df895c"
     }
   },
   "folder": "4gMC1IxdJlF59BSi",

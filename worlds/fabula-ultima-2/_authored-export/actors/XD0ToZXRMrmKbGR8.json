@@ -84,6 +84,9 @@
     "custom-system-builder": {
       "version": "4.5.0"
     },
+    "fabula-ultima-companion": {
+      "layoutRef": "848ca47ee6e5cf0c"
+    },
     "theatre": {
       "baseinsert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Character%20Portrait/Head%20Researcher_Placeholder.png",
       "disabledefault": false,

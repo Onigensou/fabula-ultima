@@ -340,7 +340,8 @@
       "version": "4.8.5"
     },
     "fabula-ultima-companion": {
-      "isField": true
+      "isField": true,
+      "layoutRef": "bc13a6f9666a4a5a"
     }
   },
   "folder": null,

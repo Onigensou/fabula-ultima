@@ -12,6 +12,9 @@
     "custom-system-builder": {
       "version": "4.5.0"
     },
+    "fabula-ultima-companion": {
+      "layoutRef": "1377c6dd9b7f8c59"
+    },
     "theatre": {
       "baseinsert": "",
       "disabledefault": false,

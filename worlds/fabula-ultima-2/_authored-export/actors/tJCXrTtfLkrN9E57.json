@@ -13,6 +13,7 @@
       "version": "4.8.5"
     },
     "fabula-ultima-companion": {
+      "layoutRef": "61fd05ca19c1a564",
       "spriteShadow": true
     }
   },

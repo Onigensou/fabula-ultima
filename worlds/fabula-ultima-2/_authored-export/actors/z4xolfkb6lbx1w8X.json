@@ -12,6 +12,9 @@
     "custom-system-builder": {
       "version": "4.5.0"
     },
+    "fabula-ultima-companion": {
+      "layoutRef": "f27daa493cd449ac"
+    },
     "theatre": {
       "baseinsert": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Generic/F_1.png",
       "disabledefault": true,

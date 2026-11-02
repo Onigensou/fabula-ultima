@@ -15,6 +15,9 @@
     "custom-system-builder": {
       "version": "4.5.0"
     },
+    "fabula-ultima-companion": {
+      "layoutRef": "13564577cf6c2a2f"
+    },
     "theatre": {
       "baseinsert": "https://assets.forge-vtt.com/61332fffbbf86afae53df376/Sophie%20Langford/Report/portrait/smile.webp",
       "disabledefault": false,

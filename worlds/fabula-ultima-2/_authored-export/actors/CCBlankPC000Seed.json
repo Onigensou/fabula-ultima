@@ -8,7 +8,11 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
-  "flags": {},
+  "flags": {
+    "fabula-ultima-companion": {
+      "layoutRef": "b839d874ca70ee9a"
+    }
+  },
   "folder": "Qpc6ITpm60JVdwXF",
   "img": "icons/svg/mystery-man.svg",
   "name": "_CC Blank PC",

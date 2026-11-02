@@ -11,6 +11,9 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "layoutRef": "a90e8fa4f8147c2b"
     }
   },
   "folder": "4gMC1IxdJlF59BSi",
@@ -224,34 +227,53 @@
       "effects": [
         {
           "_id": "RkAeCrippledDef1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [
             {
               "key": "defense",
               "mode": 1,
-              "priority": 20,
+              "priority": 50,
               "value": "0.5"
             }
           ],
           "description": "<p>A knee that no longer takes weight. Defence is halved.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "crossScene": false
             }
           },
-          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
           "name": "Crippled",
           "origin": "Actor.Rk5haXsaDemonAAA.Item.RkCrippleFlail01",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "cleansable",
-              "rakshasa_debuff"
+              "rakshasa_debuff",
+              "debuff"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         }
       ],
       "flags": {
@@ -300,7 +322,7 @@
               "chain_steps": "spend_stance",
               "effect_kind": "apply_ae",
               "effect_label": "cr_debuff",
-              "target_ref": "action_targets"
+              "target_ref": "hit_action_targets"
             },
             "9": {
               "$deleted": false,

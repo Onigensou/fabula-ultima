@@ -1,13 +1,13 @@
 ---
 id: 2026-11-01-bd-host-should-be-main-gm
 title: A battle can run on an assistant GM's client while the main GM is online
-status: open
+status: fixed
 severity: major
 reporter: onigensou
 assignee: sarunphat
 component: battle-director/host
 introduced_in:
-fixed_in:
+fixed_in: dd8b9599
 ---
 
 ## Symptom
@@ -71,3 +71,17 @@ refusal, so a forwarded start needs a defined return value.
 
 - 2026-11-01 onigensou: a local helper now shows who hosts in its `status` output, so the host finds
   out straight away during play. That only reports the problem; it doesn't fix it.
+- 2026-11-03 sarunphat: fixed in dd8b9599 (v1.0.513), your suggested shape. (1) An assistant GM's
+  `start()` goes to the main GM's client (socketlib `executeAsUser`) when that GM is online and
+  mounts nothing locally; it returns `{ forwarded: true, hostUserId, hostName }`, which
+  `dp-random-battle` reads as launched (a refusal there returns null). If the main GM cannot be
+  reached at all (still loading) the start runs locally as before; if it does not answer in 30 s,
+  nothing starts and the GM is told, so two directors cannot result. (2) When the hosting GM
+  disconnects and is not back within 15 s, the highest-ranked GM still online claims the saved
+  battle in place (`findSavedDirectorState` + `claimHost` + `resumeFromSavedState`). A host that only
+  reloads reconnects inside the window and resumes on its own `ready`, as now. (3) Tie-break and
+  refusals untouched; `start({ local: true })` opts out (the sim runner uses it).
+  Tested on the Battle Lab, two real GM clients: GM II's start returned forwarded, GM hosted
+  (`status().running` true, `host().amHost` true), GM II did not; closing GM's page made GM II host
+  the same battle ~19 s later; GM II alone in the game still hosts locally.
+  Script: tools/battle-lab/host-test.mjs (local). Please verify.

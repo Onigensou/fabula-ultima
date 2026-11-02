@@ -17,6 +17,7 @@
         "chance": 0.15,
         "object": "lightning-crystal"
       },
+      "layoutRef": "a7204eb261df895c",
       "spriteShadow": true
     }
   },

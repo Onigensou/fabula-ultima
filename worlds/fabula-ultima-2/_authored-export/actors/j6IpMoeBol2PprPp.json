@@ -16,7 +16,8 @@
       "idleAnimation": {
         "bounce": false,
         "float": false
-      }
+      },
+      "layoutRef": "d3b6e1010c5b8e79"
     },
     "theatre": {
       "settings": {

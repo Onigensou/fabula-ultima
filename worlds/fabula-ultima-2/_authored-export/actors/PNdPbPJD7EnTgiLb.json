@@ -99,7 +99,8 @@
       "idleAnimation": {
         "bounce": false,
         "float": false
-      }
+      },
+      "layoutRef": "b8806c4bff9074bb"
     },
     "theatre": {
       "baseinsert": "",

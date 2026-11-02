@@ -11,6 +11,9 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "layoutRef": "8bfc468e5831ddd8"
     }
   },
   "folder": "oVRjRmlshSvb68gK",

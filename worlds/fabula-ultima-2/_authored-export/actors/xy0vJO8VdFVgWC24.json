@@ -12,6 +12,9 @@
     "custom-system-builder": {
       "version": "4.5.0"
     },
+    "fabula-ultima-companion": {
+      "layoutRef": "dbf8ffcfe7cf4145"
+    },
     "theatre": {
       "settings": {
         "emote": "happytears"

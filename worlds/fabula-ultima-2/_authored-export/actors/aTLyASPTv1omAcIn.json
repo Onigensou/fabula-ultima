@@ -33,6 +33,7 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "layoutRef": "d5b317282d1661b5",
       "opp_lucky": 0
     },
     "theatre": {

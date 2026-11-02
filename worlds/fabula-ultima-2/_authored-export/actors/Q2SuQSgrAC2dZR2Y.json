@@ -21,7 +21,8 @@
       "idleAnimation": {
         "bounce": true,
         "float": false
-      }
+      },
+      "layoutRef": "d1be38702fcf51f3"
     }
   },
   "folder": "Nd8LnosrPid1eX1r",
