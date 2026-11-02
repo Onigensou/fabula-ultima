@@ -74,12 +74,12 @@ const COST_TIP = (c) => (c.tip ? ` data-tooltip="${esc(c.tip)}" data-tooltip-dir
 
 function actionRow(a) {
   if (!a.readable) {
-    return `<div class="fui-act is-unk"><div class="fui-actq"><i class="fas fa-question"></i></div><div class="fui-actb"><div class="fui-acttop"><span class="fui-actn">???</span><span class="fui-kind">${esc(a.kind)}</span></div><div class="fui-actd is-none">Not seen in battle yet.</div></div></div>`;
+    return `<div class="fui-act is-unk"><div class="fui-actq"><i class="fas fa-question"></i></div><div class="fui-actb"><div class="fui-acttop"><span class="fui-actn">???</span></div><div class="fui-actd is-none">Not seen in battle yet.</div></div></div>`;
   }
   const cost = a.cost ? `<span class="fui-cost c-${esc(a.cost.cls)}"${COST_TIP(a.cost)}>${esc(a.cost.text)}</span>` : "";
   const text = plain(a.desc) ? `<div class="fui-actd">${safeHtml(renderLinkedText(a.desc))}</div>` : `<div class="fui-actd is-none">No description written.</div>`;
   return `<div class="fui-act${a.gmOnly ? " is-gmonly" : ""}"><img class="fui-acti" src="${esc(a.img)}" alt="" onerror="this.style.visibility='hidden'"><div class="fui-actb">
-    <div class="fui-acttop"><span class="fui-actn">${esc(a.name)}</span>${cost}${a.dice ? `<span class="fui-dice">${esc(a.dice)}</span>` : ""}${a.gmOnly ? `<span class="fui-gm">not seen by players</span>` : ""}<span class="fui-kind">${esc(a.kind)}</span></div>
+    <div class="fui-acttop"><span class="fui-actn">${esc(a.name)}</span>${cost}${a.dice ? `<span class="fui-dice">${esc(a.dice)}</span>` : ""}${a.gmOnly ? `<span class="fui-gm">not seen by players</span>` : ""}</div>
     ${text}</div></div>`;
 }
 
@@ -89,8 +89,9 @@ function actionsPane(m, ui) {
   const filter = kinds.includes(ui.filter) ? ui.filter : "all";
   const chips = [["all", `All ${m.actions.length}`], ...kinds.map((k) => [k, `${k}s ${m.actions.filter((a) => a.kind === k).length}`])]
     .map(([k, label]) => `<button type="button" class="fui-fchip${filter === k ? " on" : ""}" data-action="filter" data-key="${esc(k)}" aria-pressed="${filter === k}">${esc(label)}</button>`).join("");
-  return `<div class="fui-filters">${chips}<span class="fui-seen">${esc(m.seenText)} seen</span></div>`
-    + m.actions.filter((a) => filter === "all" || a.kind === filter).map(actionRow).join("");
+  const groups = kinds.filter((k) => filter === "all" || filter === k)
+    .map((k) => `<div class="fui-label">${esc(k)}s</div>${m.actions.filter((a) => a.kind === k).map(actionRow).join("")}`).join("");
+  return `<div class="fui-filters">${chips}<span class="fui-seen">${esc(m.seenText)} seen</span></div>${groups}`;
 }
 
 function notesPane(m) {
@@ -389,7 +390,6 @@ body.fu-inspecting .fu-inspect-dim{filter:brightness(.42) saturate(.5);transitio
 #${ROOT_ID} .fui-actn{font-size:14px;font-weight:700;line-height:1.2}
 #${ROOT_ID} .fui-act.is-unk .fui-actn{color:#8a7d6a}
 #${ROOT_ID} .fui-dice{font-size:11px;font-weight:600;color:var(--ink-soft)}
-#${ROOT_ID} .fui-kind{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-left:auto}
 #${ROOT_ID} .fui-cost{display:inline-flex;align-items:center;font-size:12px;font-weight:800;color:#fff;padding:1px 7px;border-radius:5px;line-height:1.45;white-space:nowrap}
 #${ROOT_ID} .c-mp{background:#2e7bd6}#${ROOT_ID} .c-ip{background:#b9770f}#${ROOT_ID} .c-zp{background:linear-gradient(90deg,#c9500a,#e88a12)}#${ROOT_ID} .c-hp{background:#a3261b}
 #${ROOT_ID} .c-free{background:rgba(59,42,25,.1);color:#6a5d4c;font-weight:600}
@@ -399,6 +399,7 @@ body.fu-inspecting .fu-inspect-dim{filter:brightness(.42) saturate(.5);transitio
 #${ROOT_ID} .fui-actd ul{margin:0 0 2px;padding:0;list-style:none}
 #${ROOT_ID} .fui-actd.is-none{font-style:italic;color:#8a7d6a}
 #${ROOT_ID} .fui-seen{margin-left:auto;align-self:center;font-size:11.5px;color:var(--ink-soft)}
+#${ROOT_ID} .fui-filters+.fui-label{margin-top:0}
 #${ROOT_ID} .fui-hint{font-size:14px;color:#4f4537;line-height:1.5;padding:10px 12px;border-radius:8px;background:rgba(213,182,122,.16)}
 #${ROOT_ID} .fui-hint p{margin:0}
 #${ROOT_ID} .fui-label-first{margin-top:0}
