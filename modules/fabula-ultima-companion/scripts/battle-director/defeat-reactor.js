@@ -545,6 +545,16 @@ async function evaluateDefeatStatus(actor) {
   return null;
 }
 
+// A revive written straight to HP (set_resource's restore-revive: Phoenix
+// Feather) never reaches the ledger this reactor runs on, so the KO status, and
+// the KO pose that keys on it, would hold until the creature's next HP event.
+// Stand it up now, as the knockout-revive branch in defeatReactor does.
+export async function settleRevive(actor) {
+  if (!game.user?.isGM || !actor || isActorDefeated(actor)) return null;
+  clearReviveTried(actor);
+  return evaluateDefeatStatus(actor);
+}
+
 // Built-in reactor — settleInstance invokes this per ledger event, passing the
 // shared `firedKeys` dedup set as the third arg.
 export async function defeatReactor(director, cfg, extra) {

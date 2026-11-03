@@ -479,7 +479,15 @@ async function resolveAction(director, ar, opts = {}) {
       const sourceItem = ar.sourceItemUuid
         ? await fromUuid(ar.sourceItemUuid).catch(() => null)
         : skill;
-      if (String(sourceItem?.system?.props?.item_type ?? "").toLowerCase() === "consumable") {
+      // A use that reached none of its picked targets costs nothing. A pick can
+      // drop out of the pool before TARGET (a revive aimed at an ally who is no
+      // longer down, a target that fell meanwhile), and the action then resolves
+      // with an empty target list: the item did nothing, so it is not spent.
+      // Pick-free items ("-" / Self text) have pickedTargetCount 0 and pay as before.
+      const reachedNobody = Number(ar.pickedTargetCount) > 0 && !(ar.targets?.length);
+      if (reachedNobody) {
+        log(`Item resolve: ${ar.skillName ?? "item"} reached none of its ${ar.pickedTargetCount} picked target(s) — not used up`);
+      } else if (String(sourceItem?.system?.props?.item_type ?? "").toLowerCase() === "consumable") {
         try {
           const r = await consumeOne(casterActor, sourceItem);
           if (!r?.ok) warn("Item resolve: consumeOne failed", r);
@@ -3093,6 +3101,14 @@ const Declare = {
     const eligibleAllies = director.dCombat
       ? snapshotEligibleTargetsFromDCombat(director.dCombat, snap, { category: "ally" })
       : snapshotEligibleTargets(director.combat, snap, { category: "ally" });
+    // The downed, for a KO target text (Phoenix Feather's "One KO Ally") — the
+    // two lists above hold only the living. Read by resolveTargetsForSource.
+    const downedEnemies = director.dCombat
+      ? snapshotEligibleTargetsFromDCombat(director.dCombat, snap, { category: "enemy", defeated: "only" })
+      : snapshotEligibleTargets(director.combat, snap, { category: "enemy", defeated: "only" });
+    const downedAllies = director.dCombat
+      ? snapshotEligibleTargetsFromDCombat(director.dCombat, snap, { category: "ally", defeated: "only" })
+      : snapshotEligibleTargets(director.combat, snap, { category: "ally", defeated: "only" });
     // Study guard — the tokens THIS actor already Studied this fight. Plumbed
     // into the compose payload so composeStudy (player or GM) can grey them out
     // + label them in the Study target picker. GM-side memory, so it travels
@@ -3119,7 +3135,7 @@ const Declare = {
       director,
       snap,
       token,
-      eligible: { enemies: eligibleEnemies, allies: eligibleAllies, studiedTokenUuids },
+      eligible: { enemies: eligibleEnemies, allies: eligibleAllies, downedEnemies, downedAllies, studiedTokenUuids },
       cancelSentinel: cancelToken.promise,
       combatId: director.combatId,
       actorUuid: snap.actorUuid,
@@ -3158,7 +3174,7 @@ const Declare = {
       tokenUuid: token.document.uuid,
       actorUuid: snap.actorUuid,
       snap,
-      eligible: { enemies: eligibleEnemies, allies: eligibleAllies, studiedTokenUuids },
+      eligible: { enemies: eligibleEnemies, allies: eligibleAllies, downedEnemies, downedAllies, studiedTokenUuids },
       freeActionGrant,
       objectives: objectiveRows,
     };
@@ -4488,6 +4504,10 @@ const Target = {
         rawCost: itemMode === "create" ? `${itemCost} IP` : "",
         actionIntent: classifyActionIntent(activation),
         itemSelection: { mode: itemMode, key: bundle.itemKey ?? null, cost: itemCost },
+        // How many targets were PICKED (compose / AI). resolveAction compares it to
+        // the targets that survived the pool, so an item that reached none of its
+        // picks is not used up.
+        pickedTargetCount: Array.isArray(bundle.targetUuids) ? bundle.targetUuids.length : 0,
       });
       director.ctx.pickedTargetUuids = targetUuids;
       director.dispatch({

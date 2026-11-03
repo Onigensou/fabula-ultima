@@ -1770,7 +1770,16 @@ export function unconditionalTargetBlockReason(actor) {
   return null;
 }
 
-export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { category = "any" } = {}) {
+// "KO" in a target text aims the action at DOWNED creatures: a revive (Phoenix
+// Feather "One KO Ally", Raise Dead "One KO Creature"). Such an action's pool
+// holds only creatures at 0 HP (`defeated: "only"`); every other action's pool
+// skips them (`defeated: "exclude"`, the default). The survey and the compose
+// picker both ask this, so the AI and the player see the same pool.
+export function targetsKnockedOut(text) {
+  return /\bKO\b/i.test(String(text ?? ""));
+}
+
+export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { category = "any", defeated = "exclude" } = {}) {
   const combatants = dCombat?.combatants ?? [];
   const attackerDisp = attackerSnapshot?.disposition ?? 0;
   // AE-driven exclusion — walks the attacker's AEs once and collects every
@@ -1820,7 +1829,8 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
     if (c.id !== attackerSnapshot?.combatantId && hasUnconditionalTargetBlock(actor)) continue;
     const disp = c.disposition ?? token.disposition ?? 0;
     const hp = readPropNum(actor, ["current_hp", "hp"]);
-    if (hp <= 0) continue;
+    // Downed creatures belong to a KO pool only (see targetsKnockedOut).
+    if (defeated === "only" ? hp > 0 : hp <= 0) continue;
     let ok = true;
     if (category === "ally" || category === "enemy") {
       const isSelf = c.id === attackerSnapshot?.combatantId;
@@ -2374,7 +2384,7 @@ export function applyStudyGuardExclusion(eligible, studiedTokenUuids) {
 // Snapshot eligible targets for a given action category.
 // `category`: "any" | "ally" | "enemy" | "self".
 // For the prototype we keep this simple — token UUIDs + name + disposition.
-export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "any" } = {}) {
+export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "any", defeated = "exclude" } = {}) {
   const combatants = combat?.combatants ?? [];
   const attackerDisp = attackerSnapshot?.disposition ?? 0;
   // AE-driven exclusion — same as the dCombat variant above. The legacy
@@ -2410,7 +2420,8 @@ export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "
     if (c.id !== attackerSnapshot?.combatantId && hasUnconditionalTargetBlock(actor)) continue;
     const disp = token.disposition;
     const hp = readPropNum(actor, ["current_hp", "hp"]);
-    if (hp <= 0) continue; // defeated combatants are not targetable in v1
+    // Downed creatures belong to a KO pool only (see targetsKnockedOut).
+    if (defeated === "only" ? hp > 0 : hp <= 0) continue;
     let ok = true;
     if (category === "ally" || category === "enemy") {
       const isSelf = c.id === attackerSnapshot?.combatantId;

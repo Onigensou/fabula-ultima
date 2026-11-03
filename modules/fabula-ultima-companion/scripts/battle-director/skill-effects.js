@@ -32,7 +32,7 @@ import { RESOURCE_REGISTRY } from "./resources.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor, isPersistentCounter } from "./skill-charges.js";
 import { foldChargeSteps, aeRefreshIsNoop } from "./chain-strikes.js";
 import { readPropNum, resolveAffinity, skillDeclaresVersatile, resolvesVsMagicDefense, actorLiveRuleValues } from "./snapshot.js";
-import { isActorDefeated } from "./defeat-reactor.js";
+import { isActorDefeated, settleRevive } from "./defeat-reactor.js";
 import { computeIncomingDamage, aeOutgoingActionKeywords } from "./damage-ruleset.js";
 import { appendBattleLog, buildDamageRow } from "./director-battle-log.js";
 import { isAutoFireReactionMode } from "./reaction-modes.js";
@@ -6018,6 +6018,11 @@ async function setResourceApply(row, ctx, { resource, amountFormula, targetRef }
         });
       }
       log(`skill-effects.set_resource: ${actor.name} ${resource} ${cur} → ${newValue} (row "${row.effect_label}")`);
+      // Off the resource ledger, so a revive from 0 HP stands the creature up
+      // here (KO status + pose) instead of at its next HP event.
+      if (resource === "hp" && cur <= 0) {
+        await settleRevive(actor).catch((e) => warn(`skill-effects.set_resource: revive settle failed on ${actor.name}`, e));
+      }
     } catch (e) { warn(`skill-effects.set_resource: update failed on ${actor.name}`, e); }
   }
   return { ok: true, kind: "set_resource", applied };
