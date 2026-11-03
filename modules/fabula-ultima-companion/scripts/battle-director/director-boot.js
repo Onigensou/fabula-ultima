@@ -96,7 +96,7 @@ import { Journal as SimJournal } from "./sim/sim-journal.js";
 import { initSimPanel } from "./sim/sim-panel.js";
 import { registerBuiltinReactor, clearBuiltinReactors } from "./instance-settle.js";
 import { crisisReactor } from "./crisis-reactor.js";
-import { defeatReactor } from "./defeat-reactor.js";
+import { defeatReactor, playDefeatOutsideBattle } from "./defeat-reactor.js";
 import { derivedStatusReactor } from "./derived-status-reactor.js";
 import { initDirectorUiSfx } from "./director-ui-sfx.js";
 import { initKeywordSuggest } from "./keyword-suggest.js";
@@ -1250,6 +1250,8 @@ Hooks.once("ready", () => {
     host: hostInfo,
     getActiveDirector,
     getSourceSceneId,
+    // Play a token's defeat outside a battle (auto-defeat.js); the caller removes it.
+    playDefeat: playDefeatOutsideBattle,
     // Rewind tool (GM-only). See [[director-rewind-tool-plan]].
     history,
     rewindTo,

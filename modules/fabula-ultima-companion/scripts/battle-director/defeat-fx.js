@@ -9,14 +9,14 @@
 // frame so a camera move cannot strand them. The token itself is only faded
 // and tinted locally — nothing is written; the GM's delete follows.
 //
-// Only reached for a monster with a non-"standard" style; "standard" never
-// gets here and keeps defeat-reactor's own Sequencer chain untouched.
+// Every defeat comes through here since 2026-11-04: "standard" resolves to the
+// FF7 red fade for the creature's rank (defeat-styles.js resolveDefeatStyle).
 // ============================================================================
 
 import { warn } from "./logger.js";
 import { playSfx } from "./director-sfx.js";
 import { shouldRender, hasOtherViewers } from "./presentation-clock.js";
-import { DEFEAT_STYLES, DEFEAT_MODULE_ID } from "./defeat-styles.js";
+import { DEFEAT_STYLES, DEFEAT_MODULE_ID, scaleDefeatTimings } from "./defeat-styles.js";
 import { shadowSpriteFor, STYLE as SHADOW_STYLE } from "../sprite-shadow/sprite-shadow-renderer.js";
 import { CameraApi } from "./director-camera.js";
 import { suspendCamera, resumeCamera } from "./camera-authority.js";
@@ -47,16 +47,31 @@ export function initDefeatFx() {
   }
 }
 
+// The last foe's finisher: everything slower by this much, under a dim.
+export const FINISHER_PACE = 1.5;
+const FINISHER_DIM = { alpha: 0.3, inMs: 250, outFromMs: null, outMs: 400 };
+
+// The style's table entry as it will play: slowed for the finisher, which also
+// dims the field if the style does not already.
+function styleConfig(style, finisher) {
+  const base = DEFEAT_STYLES[style];
+  if (!base || !finisher) return base;
+  const cfg = scaleDefeatTimings(base, FINISHER_PACE);
+  if (!cfg.screenDim && !cfg.launch) cfg.screenDim = { ...FINISHER_DIM, outFromMs: cfg.totalMs - FINISHER_DIM.outMs };
+  return cfg;
+}
+
 /**
  * GM: play `style` for the token on every client. Resolves when the creature
- * can be removed. Never throws.
+ * can be removed. Never throws. `finisher` — the last foe's defeat — plays it
+ * slower under a dimmed field.
  */
-export async function playDefeatFx({ tokenUuid, style, causeTokenUuid = null } = {}) {
-  const cfg = DEFEAT_STYLES[style];
+export async function playDefeatFx({ tokenUuid, style, causeTokenUuid = null, finisher = false } = {}) {
+  const cfg = styleConfig(style, finisher);
   if (!cfg || !tokenUuid) return;
-  try { _socket?.executeForOthers?.(ACTION_PLAY, { tokenUuid, style, causeTokenUuid }); }
+  try { _socket?.executeForOthers?.(ACTION_PLAY, { tokenUuid, style, causeTokenUuid, finisher }); }
   catch (e) { warn("defeat-fx: broadcast failed", e); }
-  if (shouldRender()) await playDefeatLocal({ tokenUuid, style, causeTokenUuid });
+  if (shouldRender()) await playDefeatLocal({ tokenUuid, style, causeTokenUuid, finisher });
   // A hidden GM draws nothing, but the broadcast has left: hold the removal
   // for the style's length so the token is not deleted under everyone else.
   else if (hasOtherViewers()) await new Promise((r) => setTimeout(r, cfg.totalMs));
@@ -85,6 +100,11 @@ function restoreDefeatLocal({ tokenUuid } = {}) {
   if (!token || token.destroyed) return;
   try { token.alpha = token.document?.alpha ?? 1; } catch { /* gone */ }
   try { if (token.mesh) token.mesh.alpha = 1; } catch { /* gone */ }
+  // The tinted styles (the FF7 red) leave the mesh tinted: put the document's back.
+  try {
+    const tint = Number(token.document?.texture?.tint ?? 0xffffff);
+    if (token.mesh) token.mesh.tint = Number.isFinite(tint) ? tint : 0xffffff;
+  } catch { /* gone */ }
   try {
     const sh = shadowSpriteFor(token.id);
     if (sh && !sh.destroyed) { if (sh.fudBase) sh.fudBase.alpha = SHADOW_STYLE.alpha; sh.alpha = SHADOW_STYLE.alpha; }
@@ -97,9 +117,9 @@ function restoreDefeatLocal({ tokenUuid } = {}) {
  * skipped). `causeTokenUuid` — whoever landed the killing blow — only steers
  * the styles that care which way the hit came from ("launched").
  */
-export function playDefeatLocal({ tokenUuid, style, causeTokenUuid = null } = {}) {
+export function playDefeatLocal({ tokenUuid, style, causeTokenUuid = null, finisher = false } = {}) {
   return new Promise((resolve) => {
-    const cfg = DEFEAT_STYLES[style];
+    const cfg = styleConfig(style, finisher);
     let token = null;
     try { token = fromUuidSync(tokenUuid)?.object ?? null; } catch { token = null; }
     if (!cfg || !token || token.destroyed || !shouldRender() || typeof PIXI === "undefined") {
@@ -118,7 +138,9 @@ export function playDefeatLocal({ tokenUuid, style, causeTokenUuid = null } = {}
       .finally(() => {
         // Undone mid-way: the renderer's last frame may have hidden the token
         // again after the restore, so show it once more now that it has let go.
-        if (stopped()) restoreDefeatLocal({ tokenUuid });
+        // A style that `stays` (the Champion fall) is shown again the same way:
+        // the creature remains on the field under its KO status.
+        if (stopped() || cfg.stays) restoreDefeatLocal({ tokenUuid });
         clearTimeout(failsafe); finish();
       });
   });
@@ -149,6 +171,7 @@ async function runDefeat(token, cfg, stopped = () => false) {
   };
   const motes = cfg.motes ? makeMotes(cfg.motes) : null;
   const embers = cfg.embers ? makeEmbers(cfg.embers) : null;
+  const shards = cfg.shards ? makeShards(cfg.shards) : null;
   const leak = cfg.leak ? makeLeak(cfg.leak) : null;
   const fluff = cfg.fluff ? makeFluff(cfg.fluff) : null;
   const baseTint = Number(token.mesh?.tint ?? 0xffffff);
@@ -170,10 +193,13 @@ async function runDefeat(token, cfg, stopped = () => false) {
         const t = now - t0;
         const r = rectNow();
         applyBody(token, cfg.body, t, baseTint);
+        if (cfg.flickerBody) flickerBody(token, cfg.flickerBody, t);
         playCuesUpTo(cues, t);
         if (copy) placeBody(copy, r, cfg.copy, t, flip);
         if (crown) placeCrown(crown, r, cfg.crown, t, flip);
         fx.ctx.clearRect(0, 0, fx.c.width, fx.c.height);
+        if (cfg.screenDim) drawScreenDim(fx.ctx, fx.c, cfg.screenDim, t);
+        if (cfg.bolt) drawBolt(fx.ctx, r, cfg.bolt, t);
         if (leak) drawLeak(fx.ctx, r, cfg.leak, leak, t);
         if (cfg.screenFlash) drawScreenFlash(fx.ctx, fx.c, cfg.screenFlash, t);
         if (fluff) drawFluff(fx.ctx, r, cfg.fluff, fluff, t);
@@ -182,6 +208,7 @@ async function runDefeat(token, cfg, stopped = () => false) {
         if (cfg.flash) drawFlash(fx.ctx, r, cfg.flash, t);
         if (cfg.ring) drawRing(fx.ctx, r, cfg.ring, t);
         if (embers) drawEmbers(fx.ctx, r, cfg.embers, embers, t);
+        if (shards) drawShards(fx.ctx, r, cfg.shards, shards, t);
         if (t >= cfg.totalMs || stopped()) done();
         else requestAnimationFrame(tick);
       };
@@ -193,16 +220,19 @@ async function runDefeat(token, cfg, stopped = () => false) {
     try { crown?.remove(); } catch { /* gone */ }
   }
   // Leave the body out until the GM's delete lands — a token refresh in
-  // between would otherwise pop it back in for a frame.
-  if (!stopped()) applyBody(token, cfg.body, Infinity, baseTint);
+  // between would otherwise pop it back in for a frame. A style that `stays`
+  // is shown again by playDefeatLocal instead.
+  if (!stopped() && !cfg.stays) applyBody(token, cfg.body, Infinity, baseTint);
 }
 
-// Fade (and optionally cool) the token. Re-applied every frame: a token
-// refresh mid-defeat resets alpha from the document.
+// Fade (and optionally tint) the token. Re-applied every frame: a token
+// refresh mid-defeat resets alpha from the document. With `tintMs` the tint
+// ramps on its own clock first (the FF7 red, then the fade); without it the
+// tint follows the fade. `fadeTo` stops the fade short of invisible.
 function applyBody(token, body, t, baseTint) {
   if (!body || token.destroyed) return;
   const k = clamp01((t - (body.delayMs ?? 0)) / Math.max(1, body.fadeMs ?? 1));
-  const a = 1 - k;
+  const a = 1 - k * (1 - (body.fadeTo ?? 0));
   try { token.alpha = a; } catch { /* gone */ }
   try { if (token.mesh) token.mesh.alpha = a; } catch { /* gone */ }
   // The ground shadow keeps its own alpha copy (re-applied every frame for a
@@ -212,8 +242,28 @@ function applyBody(token, body, t, baseTint) {
     if (sh && !sh.destroyed) { if (sh.fudBase) sh.fudBase.alpha = SHADOW_STYLE.alpha * a; sh.alpha = SHADOW_STYLE.alpha * a; }
   } catch { /* no shadow */ }
   if (body.tintTo != null && token.mesh) {
-    try { token.mesh.tint = lerpColor(baseTint, body.tintTo, k); } catch { /* gone */ }
+    const kt = body.tintMs != null ? clamp01((t - (body.tintDelayMs ?? 0)) / Math.max(1, body.tintMs)) : k;
+    try { token.mesh.tint = lerpColor(baseTint, body.tintTo, kt); } catch { /* gone */ }
   }
+}
+
+// Blink the body out and back (the bolt flicker) until `untilMs`.
+function flickerBody(token, f, t) {
+  if (token.destroyed || t >= f.untilMs) return;
+  const on = Math.floor((t / 1000) * f.hz * 2) % 2 === 0;
+  try { if (token.mesh) token.mesh.alpha = on ? 1 : 0.15; } catch { /* gone */ }
+}
+
+// Darken the whole field (the Champion fall, the finisher).
+function drawScreenDim(ctx, c, d, t) {
+  const kin = clamp01(t / Math.max(1, d.inMs));
+  const kout = d.outFromMs != null ? clamp01((t - d.outFromMs) / Math.max(1, d.outMs)) : 0;
+  const a = d.alpha * kin * (1 - kout);
+  if (!(a > 0)) return;
+  ctx.globalCompositeOperation = "source-over";
+  ctx.fillStyle = `rgba(0,0,0,${a})`;
+  ctx.fillRect(0, 0, c.width, c.height);
+  ctx.globalCompositeOperation = "lighter";
 }
 
 // Token → screen-space rect { x, y (centre), h }. Prefers the drawn mesh (a
@@ -253,7 +303,7 @@ function makeMotes(m) {
   const out = [];
   for (let i = 0; i < m.count; i++) {
     out.push({
-      at: rand(0, m.spawnOverMs),
+      at: (m.fromMs ?? 0) + rand(0, m.spawnOverMs),
       life: rand(m.lifeMs[0], m.lifeMs[1]),
       dx: rand(-0.32, 0.32),        // across the body
       dy: rand(-0.38, 0.4),         // from the feet to the shoulders
@@ -327,6 +377,65 @@ function drawEmbers(ctx, r, m, embers, t) {
     const y = r.y + Math.sin(p.ang) * p.reach * r.h * e - m.lift * r.h * k * k;
     drawGlow(ctx, x, y, p.size * r.h, p.rgb, 1 - k);
   }
+}
+
+/* ── shatter / flicker ── */
+
+// Ice shards thrown out of the body, falling. Speeds and gravity are in token
+// heights per second, so the break reads the same at any zoom.
+function makeShards(m) {
+  const out = [];
+  for (let i = 0; i < m.count; i++) {
+    const ang = rand(0, Math.PI * 2);
+    const v = rand(m.speed[0], m.speed[1]);
+    out.push({
+      vx: Math.cos(ang) * v, vy: Math.sin(ang) * v - 1.2,
+      ox: rand(-0.2, 0.2), oy: rand(-0.25, 0.25),
+      life: rand(m.lifeMs[0], m.lifeMs[1]),
+      size: rand(m.size[0], m.size[1]),
+      rot: rand(0, Math.PI * 2), spin: rand(-8, 8),
+      rgb: m.rgb[i % m.rgb.length],
+    });
+  }
+  return out;
+}
+
+function drawShards(ctx, r, m, shards, t) {
+  const dt = t - m.atMs;
+  if (dt < 0) return;
+  ctx.globalCompositeOperation = "source-over";
+  for (const p of shards) {
+    const k = dt / p.life;
+    if (k > 1) continue;
+    const s = dt / 1000;
+    const x = r.x + (p.ox + p.vx * s) * r.h;
+    const y = r.y + (p.oy + p.vy * s + 0.5 * m.gravity * s * s) * r.h;
+    const z = p.size * r.h;
+    ctx.save();
+    ctx.translate(x, y); ctx.rotate(p.rot + p.spin * s);
+    ctx.globalAlpha = 1 - k * k;
+    ctx.fillStyle = `rgb(${p.rgb})`;
+    ctx.strokeStyle = "rgba(255,255,255,0.85)";
+    ctx.lineWidth = Math.max(1, z * 0.12);
+    ctx.beginPath(); ctx.moveTo(0, -z); ctx.lineTo(z * 0.55, z * 0.7); ctx.lineTo(-z * 0.45, z * 0.5); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    ctx.restore();
+  }
+  ctx.globalCompositeOperation = "lighter";
+}
+
+// A jagged strike from the top of the screen down onto the body.
+function drawBolt(ctx, r, b, t) {
+  const k = (t - b.atMs) / b.ms;
+  if (k < 0 || k > 1) return;
+  const segs = 9, w = r.h * 0.18;
+  ctx.strokeStyle = `rgba(${b.rgb},${1 - k})`;
+  ctx.lineWidth = Math.max(2, r.h * 0.05 * (1 - k));
+  ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.moveTo(r.x, 0);
+  for (let i = 1; i <= segs; i++) ctx.lineTo(r.x + (i < segs ? rand(-w, w) : 0), (r.y * i) / segs);
+  ctx.stroke();
 }
 
 /* ── overfed ── */

@@ -116,12 +116,12 @@ function injectEntranceConfig(app, html) {
           <label>Style</label>
           <div class="form-fields">
             <select data-fud-defeat-style>
-              ${dOpt(DEFAULT_DEFEAT_STYLE, "Standard (red flash / KO fall, then fade)")}
-              ${Object.entries(DEFEAT_STYLES).map(([k, s]) => dOpt(k, s.label ?? k)).join("")}
+              ${dOpt(DEFAULT_DEFEAT_STYLE, "Standard (red fade, timed by rank)")}
+              ${Object.entries(DEFEAT_STYLES).filter(([, s]) => !s.internal).map(([k, s]) => dOpt(k, s.label ?? k)).join("")}
             </select>
           </div>
-          <p class="hint">Plays when this monster is removed at 0 HP (Soldier / Elite, with Auto Defeat on).
-            Bosses that stay on the field are not affected yet.</p>
+          <p class="hint">Plays when this monster falls at 0 HP with Auto Defeat on. Soldiers and Elites are then removed;
+            a Champion stays on the field, knocked out.</p>
         </div>
       </fieldset>
     `);
