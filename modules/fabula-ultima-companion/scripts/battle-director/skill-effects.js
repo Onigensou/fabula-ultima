@@ -770,8 +770,27 @@ export async function applyDamageToTarget({
     const blockedByReaction = dealtDamage <= 0
       && fired.some((f) => Number(f.to) <= 0 && Number(f.from) > 0);
     if (blockedByReaction) vfx?.block({ tokenUuid });
+    const reactionNote = fired.length ? ` (reactions: ${fired.map((f) => f.aeName).join(", ")})` : "";
+    const shieldNote = absorbed > 0 ? ` [shield −${absorbed}]` : "";
+    log(`${prefix}applied ${toHp} dmg to ${targetName} [${affinity}]: ${curHp} → ${newHp}${shieldNote}${reactionNote}${logSuffix}`);
+    if (!blockedByReaction) {
+      // A killing blow on a creature whose defeat style starts on the hit:
+      // begin it right after its damage number pops, not when the action
+      // settles. The removal still happens in the settle (defeat-reactor).
+      // (A silent Chain commit started it already, on the killing strike.)
+      const killing = newHp === 0 && dealtDamage > 0;
+      vfx?.loss({ tokenUuid, resource: "hp", amount: dealtDamage, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce },
+        killing ? () => fireDefeatOnHit({ tokenUuid, actor: target, hpAfter: newHp, causeTokenUuid: sourceTokenUuid }) : null);
+    }
+    // Transient HP bar (studied hostile NPCs only — gated inside). Carries the
+    // shield band so a partially-soaked hit shows white + green shrinking in
+    // one sweep. No-ops when nothing changed (reaction clamp to 0).
+    vfx?.bar({ tokenUuid, actor: target, hpBefore: curHp, hpAfter: newHp, maxHp, shieldBefore: curShield, shieldAfter: newShield });
+    _pushLog({ resource: "hp", affinity, value: damage, valueDirection: "loss", bands: { hp: { from: curHp, to: newHp }, shield: { from: curShield, to: newShield } } });
     // Run post-reduction follow-up effects (Ninja Log → apply "Ninja Log Spent"
-    // marker on the wearer) through the normal executor, AFTER the HP write.
+    // marker on the wearer) through the normal executor, AFTER the HP write —
+    // and after the hit's own number and bar, so a follow-up that plays for
+    // seconds (Life Charm's fall-and-revive) stages AFTER the hit it answers.
     // The marker is a direct actor AE independent of the gear, so the once-per-
     // conflict gate survives unequip/re-equip.
     if (Array.isArray(followUp) && followUp.length) {
@@ -790,23 +809,6 @@ export async function applyDamageToTarget({
         }
       }
     }
-    const reactionNote = fired.length ? ` (reactions: ${fired.map((f) => f.aeName).join(", ")})` : "";
-    const shieldNote = absorbed > 0 ? ` [shield −${absorbed}]` : "";
-    log(`${prefix}applied ${toHp} dmg to ${targetName} [${affinity}]: ${curHp} → ${newHp}${shieldNote}${reactionNote}${logSuffix}`);
-    if (!blockedByReaction) {
-      // A killing blow on a creature whose defeat style starts on the hit:
-      // begin it right after its damage number pops, not when the action
-      // settles. The removal still happens in the settle (defeat-reactor).
-      // (A silent Chain commit started it already, on the killing strike.)
-      const killing = newHp === 0 && dealtDamage > 0;
-      vfx?.loss({ tokenUuid, resource: "hp", amount: dealtDamage, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce },
-        killing ? () => fireDefeatOnHit({ tokenUuid, actor: target, hpAfter: newHp, causeTokenUuid: sourceTokenUuid }) : null);
-    }
-    // Transient HP bar (studied hostile NPCs only — gated inside). Carries the
-    // shield band so a partially-soaked hit shows white + green shrinking in
-    // one sweep. No-ops when nothing changed (reaction clamp to 0).
-    vfx?.bar({ tokenUuid, actor: target, hpBefore: curHp, hpAfter: newHp, maxHp, shieldBefore: curShield, shieldAfter: newShield });
-    _pushLog({ resource: "hp", affinity, value: damage, valueDirection: "loss", bands: { hp: { from: curHp, to: newHp }, shield: { from: curShield, to: newShield } } });
     return {
       resource: "hp",
       finalValue: Math.max(0, curHp - newHp) + absorbed,
@@ -4402,6 +4404,9 @@ async function applyDestroySummonEffect(row, ctx) {
 // with no restructuring). Reads:
 //   notify_message — the text (required)
 //   notify_type    — "info" | "warning" | "error" (UI toast level; default info)
+//                    | "card" — show the message as a PASSIVE CARD on the
+//                    reactor's token instead (an effect-carried reaction such as
+//                    Life Charm's death-save never gets the auto-fire card)
 //   notify_abort   — truthy → stop the chain after notifying (default true: a
 //                    stub branch has nothing more to do)
 // Headless (passive/no-DOM) → no toast, message logged; still returns ok.
@@ -4409,6 +4414,17 @@ async function applyNotifyEffect(row, ctx) {
   const message = String(row.notify_message ?? "").trim();
   const type = String(row.notify_type ?? "info").trim().toLowerCase();
   const abort = row.notify_abort === undefined ? true : !!row.notify_abort;
+  if (message && type === "card") {
+    if (ctx?.captureMode || ctx?.mode === "preview" || ctx?.isPassive) return { ok: true, kind: "notify", message, abort, skipped: true };
+    const casterToken = ctx.reactorToken
+      ?? canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === ctx.reactorActor?.uuid)?.document
+      ?? null;
+    try {
+      const { enqueuePassiveCard } = await import("./passive-card-ui/director-passive-card-ui.js");
+      await enqueuePassiveCard({ title: message, casterToken, mode: "force" });
+    } catch (e) { warn("skill-effects.notify: passive card failed", e); }
+    return { ok: true, kind: "notify", message, abort };
+  }
   if (message) {
     const headless = ctx.isPassive || typeof ui === "undefined" || !ui?.notifications;
     if (headless) {

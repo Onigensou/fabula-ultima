@@ -438,7 +438,8 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
     { key: "info",    value: "Info" },
     { key: "warning", value: "Warning" },
     { key: "error",   value: "Error" },
-  ], { tooltip: "notify: UI toast level.", vis: NOTIFY_VIS, defaultValue: "info" }),
+    { key: "card",    value: "Passive Card (on the reactor's token)" },
+  ], { tooltip: "notify: UI toast level, or Passive Card — show Notify Message as a passive card on the reactor's token (an effect-carried reaction gets no card of its own; Life Charm).", vis: NOTIFY_VIS, defaultValue: "info" }),
   checkboxCol("notify_abort", "Notify Abort", { tooltip: "notify: stop the chain after the message (default ON — a stub branch has nothing more to do). Uncheck to notify then continue.", vis: NOTIFY_VIS, defaultChecked: true }),
   // change_damage_element — override the in-flight attack's element for the chosen
   // targets (Infusions: Cryo→ice, Pyro→fire, …). Applied at the card-mutation phase
