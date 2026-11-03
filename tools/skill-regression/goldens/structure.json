@@ -1,6 +1,6 @@
 {
- "capturedAt": "2026-11-03T15:00:41.743Z",
- "count": 2604,
+ "capturedAt": "2026-11-03T21:31:01.048Z",
+ "count": 2605,
  "structure": {
   "(world) / Absorb MP": {
    "props": {
@@ -18569,6 +18569,7 @@
     "category": "Arcane",
     "check": "Check",
     "hand_slots": "One-handed",
+    "isReaction": "true",
     "item_cost": "1000",
     "item_quantity": "1",
     "item_rarity": "Rare",
@@ -18592,13 +18593,19 @@
      "charges": null,
      "changes": [],
      "aeReactions": [
-      "reaction_damage_outcome=would_reduce_to_zero reaction_effect_ref=lifecharm_save reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_takes_damage"
+      "reaction_damage_outcome=would_reduce_to_zero reaction_effect_ref=lc_save reaction_passive_mode=force reaction_source=self reaction_trigger=creature_takes_damage"
      ],
      "aeEffects": [
-      "chain_steps=lifecharm_cap,lifecharm_heal,lifecharm_spend effect_kind=chain effect_label=lifecharm_save",
-      "damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=lifecharm_cap modify_mode=set_hp_floor modify_value=1",
-      "effect_kind=grant effect_label=lifecharm_heal grant_amount=floor(MAX_HP / 2) - 1 grant_resource=hp target_ref=self",
-      "consume_item_name=Life Charm effect_kind=consume_item effect_label=lifecharm_spend"
+      "chain_steps=lc_cap, lc_card, lc_wait, lc_fall, lc_hold, lc_fx, lc_heal, lc_rise, lc_spend effect_kind=chain effect_label=lc_save",
+      "damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=lc_cap",
+      "effect_kind=notify effect_label=lc_card notify_message=Life Charm notify_type=card",
+      "delay_ms=500 effect_kind=delay effect_label=lc_wait",
+      "effect_kind=play_pose effect_label=lc_fall pose_name=ko",
+      "delay_ms=1200 effect_kind=delay effect_label=lc_hold",
+      "action_ref=Item.FxShared0Revive1 effect_kind=play_animation effect_label=lc_fx target_ref=self",
+      "effect_kind=set_resource effect_label=lc_heal grant_amount=floor(MAX_HP / 2) grant_resource=hp target_ref=self",
+      "effect_kind=play_pose effect_label=lc_rise pose_name=idle",
+      "consume_item_name=Life Charm effect_kind=consume_item effect_label=lc_spend"
      ]
     }
    ]
@@ -23485,6 +23492,8 @@
     "weapon_range": "Melee"
    },
    "effects": [
+    "chain_steps=phoenix_fx, phoenix_revive effect_kind=chain effect_label=phoenix_use",
+    "action_ref=Item.FxShared0Revive1 effect_kind=play_animation effect_label=phoenix_fx target_ref=action_targets",
     "effect_kind=set_resource effect_label=phoenix_revive grant_amount=MAX_HP / 2 grant_resource=hp target_ref=action_targets"
    ],
    "reactions": [],
@@ -23493,11 +23502,13 @@
   "(world) / Phoenix Feather #wzcDK3": {
    "props": {
     "action_command": "item",
-    "on_activate_effect_ref": "phoenix_revive",
+    "on_activate_effect_ref": "phoenix_use",
     "skill_target": "One Ally",
     "skill_type": "Item"
    },
    "effects": [
+    "chain_steps=phoenix_fx, phoenix_revive effect_kind=chain effect_label=phoenix_use",
+    "action_ref=Item.FxShared0Revive1 effect_kind=play_animation effect_label=phoenix_fx target_ref=action_targets",
     "effect_kind=set_resource effect_label=phoenix_revive grant_amount=MAX_HP / 2 grant_resource=hp target_ref=action_targets"
    ],
    "reactions": [],
@@ -44995,11 +45006,13 @@
   "EXFURSION Party / Phoenix Feather #5hvxau": {
    "props": {
     "action_command": "item",
-    "on_activate_effect_ref": "phoenix_revive",
+    "on_activate_effect_ref": "phoenix_use",
     "skill_target": "One Ally",
     "skill_type": "Item"
    },
    "effects": [
+    "chain_steps=phoenix_fx, phoenix_revive effect_kind=chain effect_label=phoenix_use",
+    "action_ref=Item.FxShared0Revive1 effect_kind=play_animation effect_label=phoenix_fx target_ref=action_targets",
     "effect_kind=set_resource effect_label=phoenix_revive grant_amount=MAX_HP / 2 grant_resource=hp target_ref=action_targets"
    ],
    "reactions": [],
@@ -45022,6 +45035,8 @@
     "weapon_range": "Melee"
    },
    "effects": [
+    "chain_steps=phoenix_fx, phoenix_revive effect_kind=chain effect_label=phoenix_use",
+    "action_ref=Item.FxShared0Revive1 effect_kind=play_animation effect_label=phoenix_fx target_ref=action_targets",
     "effect_kind=set_resource effect_label=phoenix_revive grant_amount=MAX_HP / 2 grant_resource=hp target_ref=action_targets"
    ],
    "reactions": [],
@@ -48886,6 +48901,53 @@
    "reactions": [],
    "aes": []
   },
+  "Founding Festival Item Stall / Life Charm": {
+   "props": {
+    "category": "Arcane",
+    "check": "Check",
+    "hand_slots": "One-handed",
+    "isReaction": "true",
+    "isUnique": "true",
+    "item_cost": "500",
+    "item_quantity": "1",
+    "item_rarity": "Common",
+    "item_type": "consumable",
+    "rolled_atr1": "DEX",
+    "rolled_atr2": "DEX",
+    "type_damage": "Physical",
+    "weapon_range": "Melee"
+   },
+   "effects": [],
+   "reactions": [],
+   "aes": [
+    {
+     "name": "Life Charm",
+     "transfer": true,
+     "disabled": false,
+     "statuses": [],
+     "tags": [],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [],
+     "aeReactions": [
+      "reaction_damage_outcome=would_reduce_to_zero reaction_effect_ref=lc_save reaction_passive_mode=force reaction_source=self reaction_trigger=creature_takes_damage"
+     ],
+     "aeEffects": [
+      "chain_steps=lc_cap, lc_card, lc_wait, lc_fall, lc_hold, lc_fx, lc_heal, lc_rise, lc_spend effect_kind=chain effect_label=lc_save",
+      "damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=lc_cap",
+      "effect_kind=notify effect_label=lc_card notify_message=Life Charm notify_type=card",
+      "delay_ms=500 effect_kind=delay effect_label=lc_wait",
+      "effect_kind=play_pose effect_label=lc_fall pose_name=ko",
+      "delay_ms=1200 effect_kind=delay effect_label=lc_hold",
+      "action_ref=Item.FxShared0Revive1 effect_kind=play_animation effect_label=lc_fx target_ref=self",
+      "effect_kind=set_resource effect_label=lc_heal grant_amount=floor(MAX_HP / 2) grant_resource=hp target_ref=self",
+      "effect_kind=play_pose effect_label=lc_rise pose_name=idle",
+      "consume_item_name=Life Charm effect_kind=consume_item effect_label=lc_spend"
+     ]
+    }
+   ]
+  },
   "Founding Festival Item Stall / Mega-Remedy #GKd2Bp": {
    "props": {
     "category": "Arcane",
@@ -51044,11 +51106,13 @@
   "Hako / Phoenix Feather #6QxALp": {
    "props": {
     "action_command": "item",
-    "on_activate_effect_ref": "phoenix_revive",
+    "on_activate_effect_ref": "phoenix_use",
     "skill_target": "One Ally",
     "skill_type": "Item"
    },
    "effects": [
+    "chain_steps=phoenix_fx, phoenix_revive effect_kind=chain effect_label=phoenix_use",
+    "action_ref=Item.FxShared0Revive1 effect_kind=play_animation effect_label=phoenix_fx target_ref=action_targets",
     "effect_kind=set_resource effect_label=phoenix_revive grant_amount=MAX_HP / 2 grant_resource=hp target_ref=action_targets"
    ],
    "reactions": [],
@@ -51071,6 +51135,8 @@
     "weapon_range": "Melee"
    },
    "effects": [
+    "chain_steps=phoenix_fx, phoenix_revive effect_kind=chain effect_label=phoenix_use",
+    "action_ref=Item.FxShared0Revive1 effect_kind=play_animation effect_label=phoenix_fx target_ref=action_targets",
     "effect_kind=set_resource effect_label=phoenix_revive grant_amount=MAX_HP / 2 grant_resource=hp target_ref=action_targets"
    ],
    "reactions": [],
@@ -53537,6 +53603,7 @@
     "category": "Arcane",
     "check": "Check",
     "hand_slots": "One-handed",
+    "isReaction": "true",
     "item_cost": "1000",
     "item_quantity": "1",
     "item_rarity": "Rare",
@@ -53552,7 +53619,7 @@
     {
      "name": "Life Charm",
      "transfer": true,
-     "disabled": true,
+     "disabled": false,
      "statuses": [],
      "tags": [],
      "family": null,
@@ -53560,13 +53627,19 @@
      "charges": null,
      "changes": [],
      "aeReactions": [
-      "reaction_damage_outcome=would_reduce_to_zero reaction_effect_ref=lifecharm_save reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_takes_damage"
+      "reaction_damage_outcome=would_reduce_to_zero reaction_effect_ref=lc_save reaction_passive_mode=force reaction_source=self reaction_trigger=creature_takes_damage"
      ],
      "aeEffects": [
-      "chain_steps=lifecharm_cap,lifecharm_heal,lifecharm_spend effect_kind=chain effect_label=lifecharm_save",
-      "damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=lifecharm_cap modify_mode=set_hp_floor modify_value=1",
-      "effect_kind=grant effect_label=lifecharm_heal grant_amount=floor(MAX_HP / 2) - 1 grant_resource=hp target_ref=self",
-      "consume_item_name=Life Charm effect_kind=consume_item effect_label=lifecharm_spend"
+      "chain_steps=lc_cap, lc_card, lc_wait, lc_fall, lc_hold, lc_fx, lc_heal, lc_rise, lc_spend effect_kind=chain effect_label=lc_save",
+      "damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=lc_cap",
+      "effect_kind=notify effect_label=lc_card notify_message=Life Charm notify_type=card",
+      "delay_ms=500 effect_kind=delay effect_label=lc_wait",
+      "effect_kind=play_pose effect_label=lc_fall pose_name=ko",
+      "delay_ms=1200 effect_kind=delay effect_label=lc_hold",
+      "action_ref=Item.FxShared0Revive1 effect_kind=play_animation effect_label=lc_fx target_ref=self",
+      "effect_kind=set_resource effect_label=lc_heal grant_amount=floor(MAX_HP / 2) grant_resource=hp target_ref=self",
+      "effect_kind=play_pose effect_label=lc_rise pose_name=idle",
+      "consume_item_name=Life Charm effect_kind=consume_item effect_label=lc_spend"
      ]
     }
    ]
@@ -53761,6 +53834,8 @@
     "weapon_range": "Melee"
    },
    "effects": [
+    "chain_steps=phoenix_fx, phoenix_revive effect_kind=chain effect_label=phoenix_use",
+    "action_ref=Item.FxShared0Revive1 effect_kind=play_animation effect_label=phoenix_fx target_ref=action_targets",
     "effect_kind=set_resource effect_label=phoenix_revive grant_amount=MAX_HP / 2 grant_resource=hp target_ref=action_targets"
    ],
    "reactions": [],
@@ -53769,11 +53844,13 @@
   "Hina / Phoenix Feather #gNGNhc": {
    "props": {
     "action_command": "item",
-    "on_activate_effect_ref": "phoenix_revive",
+    "on_activate_effect_ref": "phoenix_use",
     "skill_target": "One Ally",
     "skill_type": "Item"
    },
    "effects": [
+    "chain_steps=phoenix_fx, phoenix_revive effect_kind=chain effect_label=phoenix_use",
+    "action_ref=Item.FxShared0Revive1 effect_kind=play_animation effect_label=phoenix_fx target_ref=action_targets",
     "effect_kind=set_resource effect_label=phoenix_revive grant_amount=MAX_HP / 2 grant_resource=hp target_ref=action_targets"
    ],
    "reactions": [],
@@ -56914,6 +56991,7 @@
     "category": "Arcane",
     "check": "Check",
     "hand_slots": "One-handed",
+    "isReaction": "true",
     "item_cost": "1000",
     "item_quantity": "1",
     "item_rarity": "Rare",
@@ -56937,13 +57015,19 @@
      "charges": null,
      "changes": [],
      "aeReactions": [
-      "reaction_damage_outcome=would_reduce_to_zero reaction_effect_ref=lifecharm_save reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_takes_damage"
+      "reaction_damage_outcome=would_reduce_to_zero reaction_effect_ref=lc_save reaction_passive_mode=force reaction_source=self reaction_trigger=creature_takes_damage"
      ],
      "aeEffects": [
-      "chain_steps=lifecharm_cap,lifecharm_heal,lifecharm_spend effect_kind=chain effect_label=lifecharm_save",
-      "damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=lifecharm_cap modify_mode=set_hp_floor modify_value=1",
-      "effect_kind=grant effect_label=lifecharm_heal grant_amount=floor(MAX_HP / 2) - 1 grant_resource=hp target_ref=self",
-      "consume_item_name=Life Charm effect_kind=consume_item effect_label=lifecharm_spend"
+      "chain_steps=lc_cap, lc_card, lc_wait, lc_fall, lc_hold, lc_fx, lc_heal, lc_rise, lc_spend effect_kind=chain effect_label=lc_save",
+      "damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=lc_cap",
+      "effect_kind=notify effect_label=lc_card notify_message=Life Charm notify_type=card",
+      "delay_ms=500 effect_kind=delay effect_label=lc_wait",
+      "effect_kind=play_pose effect_label=lc_fall pose_name=ko",
+      "delay_ms=1200 effect_kind=delay effect_label=lc_hold",
+      "action_ref=Item.FxShared0Revive1 effect_kind=play_animation effect_label=lc_fx target_ref=self",
+      "effect_kind=set_resource effect_label=lc_heal grant_amount=floor(MAX_HP / 2) grant_resource=hp target_ref=self",
+      "effect_kind=play_pose effect_label=lc_rise pose_name=idle",
+      "consume_item_name=Life Charm effect_kind=consume_item effect_label=lc_spend"
      ]
     }
    ]
@@ -64805,6 +64889,7 @@
     "category": "Arcane",
     "check": "Check",
     "hand_slots": "One-handed",
+    "isReaction": "true",
     "item_cost": "1000",
     "item_quantity": "2",
     "item_rarity": "Rare",
@@ -64820,7 +64905,7 @@
     {
      "name": "Life Charm",
      "transfer": true,
-     "disabled": true,
+     "disabled": false,
      "statuses": [],
      "tags": [],
      "family": null,
@@ -64828,13 +64913,19 @@
      "charges": null,
      "changes": [],
      "aeReactions": [
-      "reaction_damage_outcome=would_reduce_to_zero reaction_effect_ref=lifecharm_save reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_takes_damage"
+      "reaction_damage_outcome=would_reduce_to_zero reaction_effect_ref=lc_save reaction_passive_mode=force reaction_source=self reaction_trigger=creature_takes_damage"
      ],
      "aeEffects": [
-      "chain_steps=lifecharm_cap,lifecharm_heal,lifecharm_spend effect_kind=chain effect_label=lifecharm_save",
-      "damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=lifecharm_cap modify_mode=set_hp_floor modify_value=1",
-      "effect_kind=grant effect_label=lifecharm_heal grant_amount=floor(MAX_HP / 2) - 1 grant_resource=hp target_ref=self",
-      "consume_item_name=Life Charm effect_kind=consume_item effect_label=lifecharm_spend"
+      "chain_steps=lc_cap, lc_card, lc_wait, lc_fall, lc_hold, lc_fx, lc_heal, lc_rise, lc_spend effect_kind=chain effect_label=lc_save",
+      "damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=lc_cap",
+      "effect_kind=notify effect_label=lc_card notify_message=Life Charm notify_type=card",
+      "delay_ms=500 effect_kind=delay effect_label=lc_wait",
+      "effect_kind=play_pose effect_label=lc_fall pose_name=ko",
+      "delay_ms=1200 effect_kind=delay effect_label=lc_hold",
+      "action_ref=Item.FxShared0Revive1 effect_kind=play_animation effect_label=lc_fx target_ref=self",
+      "effect_kind=set_resource effect_label=lc_heal grant_amount=floor(MAX_HP / 2) grant_resource=hp target_ref=self",
+      "effect_kind=play_pose effect_label=lc_rise pose_name=idle",
+      "consume_item_name=Life Charm effect_kind=consume_item effect_label=lc_spend"
      ]
     }
    ]
@@ -64901,11 +64992,13 @@
   "Sigrun / Phoenix Feather #hYhTDn": {
    "props": {
     "action_command": "item",
-    "on_activate_effect_ref": "phoenix_revive",
+    "on_activate_effect_ref": "phoenix_use",
     "skill_target": "One Ally",
     "skill_type": "Item"
    },
    "effects": [
+    "chain_steps=phoenix_fx, phoenix_revive effect_kind=chain effect_label=phoenix_use",
+    "action_ref=Item.FxShared0Revive1 effect_kind=play_animation effect_label=phoenix_fx target_ref=action_targets",
     "effect_kind=set_resource effect_label=phoenix_revive grant_amount=MAX_HP / 2 grant_resource=hp target_ref=action_targets"
    ],
    "reactions": [],
@@ -64928,6 +65021,8 @@
     "weapon_range": "Melee"
    },
    "effects": [
+    "chain_steps=phoenix_fx, phoenix_revive effect_kind=chain effect_label=phoenix_use",
+    "action_ref=Item.FxShared0Revive1 effect_kind=play_animation effect_label=phoenix_fx target_ref=action_targets",
     "effect_kind=set_resource effect_label=phoenix_revive grant_amount=MAX_HP / 2 grant_resource=hp target_ref=action_targets"
    ],
    "reactions": [],
@@ -71278,6 +71373,7 @@
     "category": "Arcane",
     "check": "Check",
     "hand_slots": "One-handed",
+    "isReaction": "true",
     "item_cost": "1000",
     "item_quantity": "1",
     "item_rarity": "Rare",
@@ -71293,7 +71389,7 @@
     {
      "name": "Life Charm",
      "transfer": true,
-     "disabled": true,
+     "disabled": false,
      "statuses": [],
      "tags": [],
      "family": null,
@@ -71301,13 +71397,19 @@
      "charges": null,
      "changes": [],
      "aeReactions": [
-      "reaction_damage_outcome=would_reduce_to_zero reaction_effect_ref=lifecharm_save reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_takes_damage"
+      "reaction_damage_outcome=would_reduce_to_zero reaction_effect_ref=lc_save reaction_passive_mode=force reaction_source=self reaction_trigger=creature_takes_damage"
      ],
      "aeEffects": [
-      "chain_steps=lifecharm_cap,lifecharm_heal,lifecharm_spend effect_kind=chain effect_label=lifecharm_save",
-      "damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=lifecharm_cap modify_mode=set_hp_floor modify_value=1",
-      "effect_kind=grant effect_label=lifecharm_heal grant_amount=floor(MAX_HP / 2) - 1 grant_resource=hp target_ref=self",
-      "consume_item_name=Life Charm effect_kind=consume_item effect_label=lifecharm_spend"
+      "chain_steps=lc_cap, lc_card, lc_wait, lc_fall, lc_hold, lc_fx, lc_heal, lc_rise, lc_spend effect_kind=chain effect_label=lc_save",
+      "damage_amount=CUR_HP - 1 damage_operation=cap damage_stage=incoming effect_kind=adjust_damage effect_label=lc_cap",
+      "effect_kind=notify effect_label=lc_card notify_message=Life Charm notify_type=card",
+      "delay_ms=500 effect_kind=delay effect_label=lc_wait",
+      "effect_kind=play_pose effect_label=lc_fall pose_name=ko",
+      "delay_ms=1200 effect_kind=delay effect_label=lc_hold",
+      "action_ref=Item.FxShared0Revive1 effect_kind=play_animation effect_label=lc_fx target_ref=self",
+      "effect_kind=set_resource effect_label=lc_heal grant_amount=floor(MAX_HP / 2) grant_resource=hp target_ref=self",
+      "effect_kind=play_pose effect_label=lc_rise pose_name=idle",
+      "consume_item_name=Life Charm effect_kind=consume_item effect_label=lc_spend"
      ]
     }
    ]
@@ -71645,6 +71747,8 @@
     "weapon_range": "Melee"
    },
    "effects": [
+    "chain_steps=phoenix_fx, phoenix_revive effect_kind=chain effect_label=phoenix_use",
+    "action_ref=Item.FxShared0Revive1 effect_kind=play_animation effect_label=phoenix_fx target_ref=action_targets",
     "effect_kind=set_resource effect_label=phoenix_revive grant_amount=MAX_HP / 2 grant_resource=hp target_ref=action_targets"
    ],
    "reactions": [],
@@ -71653,11 +71757,13 @@
   "Zarg / Phoenix Feather #RZJ1UW": {
    "props": {
     "action_command": "item",
-    "on_activate_effect_ref": "phoenix_revive",
+    "on_activate_effect_ref": "phoenix_use",
     "skill_target": "One Ally",
     "skill_type": "Item"
    },
    "effects": [
+    "chain_steps=phoenix_fx, phoenix_revive effect_kind=chain effect_label=phoenix_use",
+    "action_ref=Item.FxShared0Revive1 effect_kind=play_animation effect_label=phoenix_fx target_ref=action_targets",
     "effect_kind=set_resource effect_label=phoenix_revive grant_amount=MAX_HP / 2 grant_resource=hp target_ref=action_targets"
    ],
    "reactions": [],
