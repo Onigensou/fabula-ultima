@@ -56,6 +56,10 @@ Defiance, Shooting Star Crystal / Fragment, Robe of Flesh, Faithful Companion, L
 Cruel. Heart Stone also both listens for gains and uses `set_resource`. That's why we stopped at the KO status. If
 you add the emit, `settleRevive` becomes redundant but stays harmless, because it is idempotent.
 
+Also latent, not changed: ActionReader's roster (`bdParticipantRoster` in target-survey.js) drops the defeated.
+A **monster** with a KO-target skill would therefore never choose a downed ally. Nobody carries one today: Raise
+Dead exists only as world items. The party side (the player brain and the compose picker) uses the KO pool above.
+
 ## 5. How it was checked
 
 - **Sandbox copy of our world, real server, real battle** (party vs Skizzik + Lightning Prism):
