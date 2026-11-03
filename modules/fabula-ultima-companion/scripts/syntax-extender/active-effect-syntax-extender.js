@@ -130,15 +130,23 @@
     state.settingsRegistered = true;
   };
 
+  // settings.get builds a Setting document per call, and these are read for every Active Effect
+  // change applied: remember a value until the current task ends.
+  const settingMemo = new Map();
   const getSetting = (key, fallback = undefined) => {
+    if (settingMemo.has(key)) return settingMemo.get(key);
     try {
-      return game.settings.get(MODULE_ID, `activeEffectSyntax.${key}`);
+      const value = game.settings.get(MODULE_ID, `activeEffectSyntax.${key}`);
+      if (!settingMemo.size) queueMicrotask(() => settingMemo.clear());
+      settingMemo.set(key, value);
+      return value;
     } catch (_err) {
       return fallback ?? settingDefs[key]?.default;
     }
   };
 
   const setSetting = async (key, value) => {
+    settingMemo.delete(key);
     try {
       await game.settings.set(MODULE_ID, `activeEffectSyntax.${key}`, value);
     } catch (_err) {
@@ -442,8 +450,19 @@
 
     const alreadyHadCache = state.actorCache.has(actor);
 
+    // During one actor's prepare (csb-derivation-perf.js opens __fuActorPrepScope around it) its
+    // effects do not change, but every Active Effect change applied in it used to rebuild this
+    // cache (all effects, items' transfer effects, uuids): ~1/5 of an HP write (2026-11-03).
+    // Build it once per prepare instead; outside a prepare, as before.
     if (!alreadyHadCache) {
-      state.actorCache.set(actor, buildActorCache(actor));
+      const scope = globalThis.__fuActorPrepScope;
+      const inScope = scope?.actor === actor;
+      let cache = inScope ? scope.caches.get(TAG) : null;
+      if (!cache) {
+        cache = buildActorCache(actor);
+        if (inScope) scope.caches.set(TAG, cache);
+      }
+      state.actorCache.set(actor, cache);
     }
 
     try {

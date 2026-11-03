@@ -82,6 +82,8 @@
         "system.props.battle_log": "[]",       // keep valid JSON string
         "system.props.battle_log_table": []    // empty table
       });
+      // Rows the director queued but has not yet written (director-battle-log.js).
+      await window.FUCompanion?.api?.clearPendingBattleLog?.();
 
       console.log("[FUCompanion][BattleLogClear] Battle Log cleared!");
       console.debug("[FUCompanion][BattleLogClear] done.");

@@ -19,11 +19,41 @@
 //   - `system.props.battle_log`        — JSON string array of rich entries (audit)
 //   - `system.props.battle_log_table`  — flat row array (the rendered table)
 //   Both capped at the last MAX entries.
+//
+// DURING a battle the rows wait in a world setting (`battleLogPending`) and reach
+// the DB actor once, when the battle ends (flushBattleLog, called first thing by
+// runBattleEndSequence, before rank + summary read the log). Any actor update makes
+// every client recompute that actor and all its items: measured 2026-11-03 on the
+// Snapshot Runner, a 16 KB log write cost ~200 ms on the party DB actor and ~1 ms
+// anywhere that is not an actor. That cost landed mid-animation after every action.
+// So the DB actor's sheet table shows this battle's rows only after it ends; listen
+// to the `fu-battle-log-append` hook ({ entries, rows }) to follow them live.
 
 import { log, warn } from "./logger.js";
 import { displayElement } from "./skill-formulas.js";
 
 const MAX = 30;
+const NS = "fabula-ultima-companion";
+const PENDING_SETTING = "battleLogPending";
+
+Hooks.once("init", () => {
+  try {
+    game.settings.register(NS, PENDING_SETTING, {
+      name: "Battle log rows not yet written to the DB actor",
+      scope: "world",
+      config: false,
+      type: Object,
+      default: { entries: [], rows: [] },
+    });
+  } catch (e) { warn("director-battle-log: pending setting registration failed", e); }
+});
+
+Hooks.once("ready", () => {
+  globalThis.FUCompanion = globalThis.FUCompanion || {};
+  globalThis.FUCompanion.api = globalThis.FUCompanion.api || {};
+  globalThis.FUCompanion.api.flushBattleLog = flushBattleLog;
+  globalThis.FUCompanion.api.clearPendingBattleLog = clearPendingBattleLog;
+});
 
 // Affinity code → human label, mirroring the legacy _affinityLabel map.
 const AFFINITY_LABEL = { NE: "Normal", RS: "Resisted", VU: "Vulnerable", IM: "Immune", AB: "Absorbed" };
@@ -86,18 +116,65 @@ function _normalizeTable(table) {
   return [];
 }
 
-// ── The single write ───────────────────────────────────────────────────────
+// ── The write ───────────────────────────────────────────────────────────────
 // `records` = array of { entry, row }. GM-only (the director runs GM-side; one
-// writer avoids dup appends). Caps each field to the last MAX. One update.
+// writer avoids dup appends). Appends to the pending setting; flushBattleLog moves
+// it onto the DB actor at battle end.
 export async function appendBattleLog(records) {
   if (!Array.isArray(records) || !records.length) return;
   if (!game.user?.isGM) return;
   const entries = records.map((r) => r?.entry).filter(Boolean);
   const rows = records.map((r) => r?.row).filter(Boolean);
   if (!entries.length && !rows.length) return;
+  try { Hooks.callAll("fu-battle-log-append", { entries, rows }); } catch (e) { warn("fu-battle-log-append listener threw", e); }
 
+  // Under a harness write-capture ("nothing commits") write the actor update the
+  // battle end would have written: the capture records it and commits nothing,
+  // where a settings write would commit for real.
+  if (globalThis.__FU_HARNESS_WRITE_CAPTURE__) { await _writeToDbActor(entries, rows); return; }
+
+  const pending = _readPending();
+  pending.entries.push(...entries);
+  pending.rows.push(...rows);
+  try {
+    await game.settings.set(NS, PENDING_SETTING, {
+      entries: pending.entries.slice(-MAX),
+      rows: pending.rows.slice(-MAX),
+    });
+    log(`battle-log: queued ${entries.length} entr${entries.length === 1 ? "y" : "ies"} / ${rows.length} row(s)`);
+  } catch (e) { warn("appendBattleLog: pending setting write failed", e); }
+}
+
+// Move the pending rows onto the DB actor (ONE actor update), then empty the
+// queue. Safe to call any time; a no-op when nothing is pending. GM-only.
+export async function flushBattleLog() {
+  if (!game.user?.isGM) return { ok: false, reason: "not GM" };
+  const pending = _readPending();
+  if (!pending.entries.length && !pending.rows.length) return { ok: true, flushed: 0 };
+  const ok = await _writeToDbActor(pending.entries, pending.rows);
+  // Empty the queue only once the actor holds the rows: a failed write keeps them.
+  if (ok) await clearPendingBattleLog();
+  return { ok, flushed: Math.max(pending.entries.length, pending.rows.length) };
+}
+
+export async function clearPendingBattleLog() {
+  if (!game.user?.isGM) return;
+  try { await game.settings.set(NS, PENDING_SETTING, { entries: [], rows: [] }); }
+  catch (e) { warn("clearPendingBattleLog: setting write failed", e); }
+}
+
+function _readPending() {
+  let v = null;
+  try { v = game.settings.get(NS, PENDING_SETTING); } catch (_e) { v = null; }
+  return {
+    entries: Array.isArray(v?.entries) ? v.entries.slice() : [],
+    rows: Array.isArray(v?.rows) ? v.rows.slice() : [],
+  };
+}
+
+async function _writeToDbActor(entries, rows) {
   const db = await getBattleLogDbActor();
-  if (!db) { warn("appendBattleLog: no DB actor (Current Game → game_id unset?)"); return; }
+  if (!db) { warn("battle-log: no DB actor (Current Game → game_id unset?)"); return false; }
 
   const update = {};
   if (entries.length) {
@@ -120,11 +197,12 @@ export async function appendBattleLog(records) {
     if (table.length > MAX) table = table.slice(-MAX);
     update["system.props.battle_log_table"] = table;
   }
-  if (!Object.keys(update).length) return;
+  if (!Object.keys(update).length) return true;
   try {
     await db.update(update);
-    log(`battle-log: appended ${entries.length} entr${entries.length === 1 ? "y" : "ies"} / ${rows.length} row(s)`);
-  } catch (e) { warn("appendBattleLog: dbActor.update failed", e); }
+    log(`battle-log: wrote ${entries.length} entr${entries.length === 1 ? "y" : "ies"} / ${rows.length} row(s) to ${db.name}`);
+    return true;
+  } catch (e) { warn("battle-log: dbActor.update failed", e); return false; }
 }
 
 // ── Row builders (legacy entry/row shape) ──────────────────────────────────
