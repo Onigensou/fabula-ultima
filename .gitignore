@@ -205,3 +205,52 @@ worlds/*/sim-logs/
 # session affords exactly one narrative beat.
 !/tools/session-budget/
 !/tools/session-budget/**
+
+# The fast test tools (2026-11-03): the Snapshot Runner (a real engine with no server),
+# the Staging World (a slim real-server copy of the world) and fvtt-playwright, the
+# headless client both drive. Shared so both sides test skills and battles the same way.
+# Only their CODE ships: every snapshot, capture, run result and installed package they
+# generate is per machine (hundreds of MB) and stays ignored. Machine paths live in
+# fvtt-playwright/config.local.json (from config.local.example.json), never in a tracked file.
+!/tools/fvtt-playwright/
+/tools/fvtt-playwright/*
+!/tools/fvtt-playwright/lib/
+!/tools/fvtt-playwright/scripts/
+/tools/fvtt-playwright/scripts/*
+!/tools/fvtt-playwright/scripts/patch-transport.mjs
+!/tools/fvtt-playwright/scripts/smoke.mjs
+!/tools/fvtt-playwright/scripts/canvas-mode-test.mjs
+!/tools/fvtt-playwright/scripts/scenario-provoke.mjs
+!/tools/fvtt-playwright/scripts/bridge.mjs
+!/tools/fvtt-playwright/scripts/start-server.mjs
+!/tools/fvtt-playwright/scripts/stop-server.mjs
+!/tools/fvtt-playwright/scripts/launch-world-js.mjs
+!/tools/fvtt-playwright/scripts/multiclient-smoke.mjs
+!/tools/fvtt-playwright/scripts/multiclient-measure.mjs
+!/tools/fvtt-playwright/scripts/multiclient-diag.mjs
+!/tools/fvtt-playwright/package.json
+!/tools/fvtt-playwright/package-lock.json
+!/tools/fvtt-playwright/README.md
+!/tools/fvtt-playwright/MULTICLIENT.md
+!/tools/fvtt-playwright/config.local.example.json
+!/tools/snapshot-runner/
+/tools/snapshot-runner/*
+!/tools/snapshot-runner/bin/
+!/tools/snapshot-runner/lib/
+!/tools/snapshot-runner/www/
+!/tools/snapshot-runner/checks/
+!/tools/snapshot-runner/shell/
+!/tools/snapshot-runner/README.md
+!/tools/snapshot-runner/runner.*.json
+# the referees: the real engine's answers the runner is compared with (not the 130 MB payload)
+!/tools/snapshot-runner/capture/
+/tools/snapshot-runner/capture/*
+!/tools/snapshot-runner/capture/oracle.json
+!/tools/snapshot-runner/capture/oracle-simulate-duel.json
+!/tools/snapshot-runner/capture/oracle-sim-battle.json
+!/tools/snapshot-runner/capture/capture-meta.json
+!/tools/staging-world/
+/tools/staging-world/*
+!/tools/staging-world/bin/
+!/tools/staging-world/README.md
+!/tools/staging-world/staging.config.json

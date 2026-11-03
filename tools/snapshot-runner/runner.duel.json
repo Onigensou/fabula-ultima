@@ -1,0 +1,13 @@
+{
+  "_comment": "Small, tightly controlled battle: the party vs the bench dummy, staged on Training Ground (tokens copied from Regression Bench), plus only what they and the settings / module code reference. Items cut to the referenced ones. node bin/build-snapshot.mjs --profile duel",
+  "scenes": ["Training Ground"],
+  "viewScene": "Training Ground",
+  "actors": {
+    "types": ["_template"],
+    "flags": ["isField"],
+    "folders": [],
+    "names": ["Test Caster", "Test Target Ally", "Test Target Enemy"]
+  },
+  "place": { "scene": "Training Ground", "from": "Regression Bench", "actors": ["Hina", "Keren", "Blanche", "Zarg", "Test Target Enemy"] },
+  "items": "referenced"
+}

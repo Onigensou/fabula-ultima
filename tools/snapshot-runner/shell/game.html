@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Page Metadata -->
+    <title>Foundry Virtual Tabletop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="icons/vtt.png">
+
+    <!-- Included Stylesheets -->
+    <link href="modules/color-picker/styles/color-picker.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/colorsettings/css/colorpicker.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/lib-dfreds-ui-extender/styles/lib-dfreds-ui-extender.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/lib-wrapper/lib-wrapper.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/_chatcommands/styles/chatcommands.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/_CodeMirror/lib/codemirror.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/_CodeMirror/addon/hint/show-hint.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/_CodeMirror/codemirror-vtt.css" rel="stylesheet" type="text/css" media="all">
+    <link href="fonts/fontawesome/css/all.min.css" rel="stylesheet" type="text/css" media="all">
+    <link href="css/style.css" rel="stylesheet" type="text/css" media="all">
+    <link href="systems/custom-system-builder/css/sheet/sheet.css" rel="stylesheet" type="text/css" media="all">
+    <link href="systems/custom-system-builder/css/sheet/sheet-v1.css" rel="stylesheet" type="text/css" media="all">
+    <link href="systems/custom-system-builder/css/sheet/sheet-v2.css" rel="stylesheet" type="text/css" media="all">
+    <link href="systems/custom-system-builder/css/sheet/template.css" rel="stylesheet" type="text/css" media="all">
+    <link href="systems/custom-system-builder/css/chat-message.css" rel="stylesheet" type="text/css" media="all">
+    <link href="systems/custom-system-builder/css/attributes-editor.css" rel="stylesheet" type="text/css" media="all">
+    <link href="systems/custom-system-builder/css/component-editor.css" rel="stylesheet" type="text/css" media="all">
+    <link href="systems/custom-system-builder/css/user-input-editor.css" rel="stylesheet" type="text/css" media="all">
+    <link href="systems/custom-system-builder/css/export-display.css" rel="stylesheet" type="text/css" media="all">
+    <link href="systems/custom-system-builder/css/modifiers-editor.css" rel="stylesheet" type="text/css" media="all">
+    <link href="systems/custom-system-builder/css/custom-status-effects.css" rel="stylesheet" type="text/css" media="all">
+    <link href="systems/custom-system-builder/css/custom-dialog.css" rel="stylesheet" type="text/css" media="all">
+    <link href="systems/custom-system-builder/css/display-settings.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/barbrawl/styles/attributeHud.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/battle-transitions/styles/module.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/battle-transitions/vendor/jquery-ui.min.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/better-rolltables/styles/brt.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/better-rolltables/styles/brt-actor-list.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/boss-loot-assets-free/styles/bossLoot.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/chat-images/chat-images.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/chat-portrait/styles/chat-portrait-settings.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/chat-portrait/styles/chat-portrait-style-a5e.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/chat-portrait/styles/chat-portrait-style-generic.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/chat-portrait/styles/chat-portrait-style-dnd5e.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/chat-portrait/styles/chat-portrait-style-pf2e.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/chat-portrait/styles/chat-portrait-style-swade.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/chat-portrait/styles/dd.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/combat-chat/styles/combat-chat.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/curtain-animations/styles/style.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/custom-css/custom-css.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/df-architect/css/swatch.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/df-architect/css/tile-flatten.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/df-architect/css/core.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/df-architect/css/canvas-capture.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/df-architect/css/light-template.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/df-architect/css/temp-overlay.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/dfreds-convenient-effects/styles/dfreds-convenient-effects.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/effectmacro/styles/styles.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/fabula-ultima-companion/styles/style.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/fabula-ultima-companion/styles/shop-content-links.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/fabula-ultima-companion/styles/linked-text.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/forien-quest-log/css/init.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/fxmaster/css/fxmaster.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/hide-player-ui/styles/hide-player-ui.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/item-piles/dist/item-piles.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/koboldworks-turn-announcer/turn-announcer.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/lancer-initiative/lancer-initiative.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/LockView/css/style.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/monks-active-tiles/css/monks-active-tiles.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/monks-combat-details/css/monks-combat-details.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/monks-little-details/css/monks-little-details.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/monks-player-settings/css/monks-player-settings.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/monks-sound-enhancements/css/monks-sound-enhancements.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/moulinette-soundboards/style.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/obligatory-fishing-minigame/css/module.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/quickscale/styles/quickscale.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/quickscale/styles/nouislider.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/rolltable-from-sidebar/rolltable.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/rolltable-requester/styles/module.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/sequencer/dist/sequencer.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/statuscounter/styles/statuscounter.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/theatre/styles/theatre.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/tile-scroll/styles/module.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/token-mold/token-mold.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/token-variants/styles/tva-styles.css" rel="stylesheet" type="text/css" media="all">
+    <link href="modules/tokenmagic/styles/tokenmagic.css" rel="stylesheet" type="text/css" media="all">
+
+    <!-- Included Scripts -->
+    <script defer src="scripts/jquery.min.js"></script>
+    <script defer src="scripts/handlebars.min.js"></script>
+    <script defer src="scripts/handlebars-intl.min.js"></script>
+    <script defer src="scripts/pixi.min.js"></script>
+    <script defer src="scripts/particle-emitter.min.js"></script>
+    <script defer src="scripts/pixi-graphics-smooth.js"></script>
+    <script defer src="scripts/basis.min.js"></script>
+    <script defer src="scripts/socket.io.min.js"></script>
+    <script defer src="scripts/tinymce.min.js"></script>
+    <script defer src="scripts/clipper/clipper.js"></script>
+    <script defer src="scripts/earcut-edges/earcut-edges.js"></script>
+    <script defer src="scripts/showdown.js"></script>
+    <script defer src="scripts/spark-md5.min.js"></script>
+    <script defer src="scripts/simplepeer.min.js"></script>
+    <script defer src="scripts/foundry-esm.js"></script>
+    <script defer src="scripts/foundry.js"></script>
+    <script defer src="modules/_CodeMirror/lib/codemirror.js"></script>
+    <script defer src="modules/_CodeMirror/cm-game-settings.js"></script>
+    <script defer src="modules/_CodeMirror/addon/mode/simple.js"></script>
+    <script defer src="modules/_CodeMirror/addon/mode/multiplex.js"></script>
+    <script defer src="modules/_CodeMirror/addon/edit/matchbrackets.js"></script>
+    <script defer src="modules/_CodeMirror/addon/mode/overlay.js"></script>
+    <script defer src="modules/_CodeMirror/addon/hint/show-hint.js"></script>
+    <script defer src="modules/_CodeMirror/addon/hint/css-hint.js"></script>
+    <script defer src="modules/_CodeMirror/addon/hint/javascript-hint.js"></script>
+    <script defer src="modules/_CodeMirror/addon/hint/html-hint.js"></script>
+    <script defer src="modules/_CodeMirror/addon/selection/selection-pointer.js"></script>
+    <script defer src="modules/_CodeMirror/addon/selection/mark-selection.js"></script>
+    <script defer src="modules/_CodeMirror/addon/selection/active-line.js"></script>
+    <script defer src="modules/_CodeMirror/mode/javascript/javascript.js"></script>
+    <script defer src="modules/_CodeMirror/mode/css/css.js"></script>
+    <script defer src="modules/_CodeMirror/mode/xml/xml.js"></script>
+    <script defer src="modules/_CodeMirror/mode/htmlmixed/htmlmixed.js"></script>
+    <script defer src="modules/_CodeMirror/mode/handlebars/handlebars.js"></script>
+    <script defer src="modules/_CodeMirror/mode/markdown/markdown.js"></script>
+    <script defer src="modules/_CodeMirror/mode/toml/toml.js"></script>
+    <script defer src="modules/_CodeMirror/mode/vue/vue.js"></script>
+    <script defer src="modules/color-picker/scripts/color-picker.js" type="module"></script>
+    <script defer src="modules/colorsettings/colorSetting.js" type="module"></script>
+    <script defer src="modules/lib-dfreds-ui-extender/lib-dfreds-ui-extender.mjs" type="module"></script>
+    <script defer src="modules/lib-wrapper/lib-wrapper.js" type="module"></script>
+    <script defer src="modules/settings-extender/settings-extender.js" type="module"></script>
+    <script defer src="modules/socketlib/src/socketlib.js" type="module"></script>
+    <script defer src="modules/_chatcommands/_chatcommands.js" type="module"></script>
+    <script defer src="systems/custom-system-builder/lib/math.js"></script>
+    <script defer src="systems/custom-system-builder/lib/deep-diff.min.js"></script>
+    <script defer src="systems/custom-system-builder/module/custom-system-builder.js" type="module"></script>
+    <script defer src="scripts/greensock/dist/gsap.min.js"></script>
+    <script defer src="scripts/greensock/dist/PixiPlugin.min.js"></script>
+    <script defer src="scripts/greensock/dist/ScrollToPlugin.min.js"></script>
+    <script defer src="scripts/greensock/dist/SplitText.min.js"></script>
+    <script defer src="modules/battle-transitions/vendor/pixi-filters.js"></script>
+    <script defer src="modules/battle-transitions/vendor/jquery-ui.min.js"></script>
+    <script defer src="modules/battle-transitions/vendor/lunr.min.js"></script>
+    <script defer src="modules/battle-transitions/vendor/jquery.dragOptions.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/_console-tap.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/_module-boot.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/forge-mirror/forge-mirror.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/data-migration-runner.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/lint/reaction-config-lint.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/lint/engine-canon-lint.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/lint/skill-raw-drift-lint.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/lint/equipment-set-lint.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/lint/treasure-chest-lint.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/shared-utils.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/shared/primary-gm.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/shared/spectator.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/shared/mirror-prompt.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/shared/ae-lifetime.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/shared/condition-affinity.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/scene-prefetch.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/scene-texture-repair.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/reload-broadcast.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/reload-button.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/session-end/session-end.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/client-health.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/db-resolver.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/party-sync/party-sync-core.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/party-sync/party-sync-hook.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/richtext-script-converter-api.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/battle-log/battlelog-clear.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/token-mask-bootstrapper.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/syntax-extender/active-effect-syntax-extender.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/syntax-extender/syntaxExtender-conditionalChangeGate.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/resource-ui-manager.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dialog-system/dialog-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dialog-system/dialog-float.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dialog-system/dialog-core.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dialog-system/dialog-examineUI.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/command-system/command-itemCreate.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/screen-transition/screen-transition.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/screen-transition/load-indicator.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/free-action-state.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/turn-ui-manager.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/action-animation/animation-asset-cache.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/anim-studio/animStudio-sfxManifest.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/anim-studio/animStudio-sfxBrowser.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/anim-studio/animStudio-briefBuilder.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/anim-studio/animStudio-previewBench.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/action-execution-core.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/apply-damage-core.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/_test-harness.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/_test-bridge.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/phantasm-api.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/gm-executor.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/action-editor/actionEditor-CardFinder.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/action-editor/actionEditor-PatchEngine.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/action-editor/actionEditor-API.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/action-editor/actionEditor-Rebuilder.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-tooltip/active-effect-tooltip.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-registry.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-field-catalog.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-key-suggestions.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-api.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-csb-compat.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-combat-counter-refresh.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-custom-builder.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-chat.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-fx.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-ui-state.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-ui-styles.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-ui-targets.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-ui-render.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-ui-dom.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-ui-native-builder.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-ui-events.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-ui-core.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-button.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-charges.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-charges-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-charges-badge.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-lifecycle-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-reaction-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-twoWeaponGrant-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/active-effect-manager/ActiveEffectManager-bonus-actions.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/passive-system/autoPassive-targetResolver.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/passive-system/autoPassive-manager.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/passive-system/passive-card-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/passive-system/passive-modifier-engine.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/refinement-system/refinement-config.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/refinement-system/refinement-core.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/refinement-system/refinement-feedback.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/refinement-system/refinement-socket.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/refinement-system/refinement-bootstrap.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/applyDamage-button.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/invokeButtons.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/itemRefresh.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/fu-card-hydrate.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/action-system/action-card-editor.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/action-system/action-card-undo.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/create-damage-card.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/damage-card/damage-card-batch-manager.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/battle-log/battle-log-batch-manager.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/cutin-receiver.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/cutin-broadcast.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/namecard-receiver.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/namecard-broadcast.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/auto-defeat.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/creature-defeated-emitter.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/daydream-hp-hook.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/martial-practice-hook.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/remote-choice-api.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/custom-ui/chat-character-button.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/custom-ui/player-token-clicks.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/custom-ui/chat-party-button.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/custom-ui/chat-trade-button.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/emotes-system/emote-debug.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/emotes-system/emote-data.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/emotes-system/emote-store.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/emotes-system/emote-resolver.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/emotes-system/emote-runtime.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/emotes-system/emote-api.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/emotes-system/emote-hotkeys.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/emotes-system/emote-config-app.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/emotes-system/emote-chat-button.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/emotes-system/emote-bootstrap.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/custom-ui/chat-scene-network-button.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/custom-ui/dungeon-configuration-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/custom-ui/sidebar-anchor.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/custom-ui/combat-button-installer.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/custom-ui/chat-button-final-layout.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/item-transfer/TransferCardUI.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/item-transfer/itemTransferCore.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/item-transfer/item-trading/ItemTransferQuantityUI.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/item-transfer/item-trading/TradeWindow_Core.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/item-transfer/item-trading/TradeWindow_UI.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/item-transfer/item-trading/Trade_ModuleListener.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/item-transfer/item-trading/Trade_StartTrade_API.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/map-system/movementControl-debug.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/map-system/movementControl-resolver.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/map-system/movementControl-store.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/map-system/movementControl-socket.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/map-system/movementControl-api.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/map-system/movementControl-controllerBadge.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/map-system/movementControl-passDialog.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/map-system/movementControl-cameraRuntime.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/map-system/movementControl-bootstrap.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/map-system/footstep-runtime.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/map-system/sprite-facing-runtime.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/map-system/water-wade.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/map-system/depth-index.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/map-system/foreground-occluder.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/check-requester/cr-api.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/check-requester/cr-sound-manager.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/check-requester/cr-group-check.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/check-requester/cr-dp-adapter.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/check-requester/cr-sidebar-button.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-constants.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-tile-registry.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-tile-state.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-tile-transform.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-graph.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-direction.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-overlay.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-fog.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-movement.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-sound.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-helper-mode.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-confirm-dialog.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-events.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-ae-lifecycle.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-status-hud.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-socket.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-regions.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-random-battle.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-travel.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-worldmap.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/tile-events/tile-event-blank.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/tile-events/tile-event-random-battle.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/tile-events/tile-event-treasure.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/tile-events/tile-event-camp.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/tile-events/tile-event-story.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/tile-events/tile-event-force-move.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/tile-events/tile-event-gusty.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/tile-events/tile-event-dirt.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/tile-events/fishing-lobby.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/tile-events/tile-event-fishing.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/tile-events/gathering-summary-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/tile-events/tile-event-gathering.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/tile-events/tile-event-vertigo.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/tile-events/tile-event-travel.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-tile-effect-engine.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-tile-config.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-tile-effect-config.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-scene-config.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-scan-mode.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-vertigo.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-fast-travel.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-scene-travel.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/travel-roll/travel-roll-api.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/dungeon-pathing-system/dp-bootstrap.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/teleporter-system/tp-api.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/teleporter-system/tp-socket.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/teleporter-system/tp-tile-config.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/teleporter-system/tp-bootstrap.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/teleporter-system/tp-test.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/check-roller/checkModifiers.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/check-roller/checkRoller-manager.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/check-roller/checkRoller-core.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/check-roller/checkRoller-createCard.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/check-roller/checkRoller-dialog.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/check-roller/checkRoller-cardHydrate.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/check-roller/checkRoller-invokeButtons.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/check-roller/checkRoller-divinationButtons.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/check-roller/checkRoller-luckySevenButtons.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/check-roller/checkRoller-buttonInstall.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/opportunity-system/opportunity-config.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/opportunity-system/effects/opportunity-effect-registry.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/opportunity-system/effects/opportunity-effect-advantage.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/opportunity-system/effects/opportunity-effect-affliction.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/opportunity-system/effects/opportunity-effect-bonding-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/opportunity-system/effects/opportunity-effect-bonding.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/opportunity-system/effects/opportunity-effect-custom.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/opportunity-system/effects/opportunity-effect-faux-pas.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/opportunity-system/effects/opportunity-effect-favor.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/opportunity-system/effects/opportunity-effect-information.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/opportunity-system/effects/opportunity-effect-lost-item.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/opportunity-system/effects/opportunity-effect-plot-twist.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/opportunity-system/effects/opportunity-effect-progress.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/opportunity-system/effects/opportunity-effect-scan.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/opportunity-system/effects/opportunity-effect-unmask.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/opportunity-system/effects/opportunity-effect-lucky.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/opportunity-system/opportunity-chat-card.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/opportunity-system/opportunity-dialog.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/opportunity-system/opportunity-manager.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/opportunity-system/opportunity-action-hook.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/opportunity-system/opportunity-dev-test.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/treasure-roulette/treasureRoulette-core.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/treasure-roulette/treasureRoulette-UI.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/treasure-roulette/treasureRoulette-net.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/treasure-roulette/treasureRoulette-UIListener.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/treasure-roulette/treasureRoulette-awardDispatcher.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/treasure-roulette/treasureRoulette-skeletalKey.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/treasure-roulette/treasureRoulette-uiKit.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/treasure-roulette/treasureRoulette-recipientUI.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/treasure-roulette/treasureRoulette-equipUI.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/treasure-roulette/treasureRoulette-pickerUI.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/treasure-roulette/treasureRoulette-flow.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/treasure-roulette/treasureRoulette-tileLogic.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/battle-init/battleInit-entranceAnimation-listener.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/battle-end/battleEnd-cameraReset-listener.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/battle-end/battleEnd-fx-listener.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/battle-end/battleEnd-summaryUI-listener.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/reaction-system/reaction-triggers.config.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/reaction-system/reaction-formulaFunctions.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/reaction-system/formula-evaluator.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/reaction-system/reaction-triggerCore.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/reaction-system/reaction-chain-tracker.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/reaction-system/effect-targeting-resolver.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/reaction-system/reaction-grant.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/csb-extensions/CompactDynamicTable.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/csb-extensions/visibilityPresetPicker.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/csb-extensions/csb-formula-compat.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/csb-extensions/csb-derivation-perf.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/csb-extensions/csb-template-layout-dedup.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/reaction-system/reaction-buttonUI.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/reaction-system/reaction-chooseSkill.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/reaction-system/reaction-rebuildActionCard.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/reaction-system/reaction-redirectPendingAction.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/reaction-system/visible-token-picker.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/reaction-system/reaction-manager-helpers.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/reaction-system/reaction-manager.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/reaction-system/reaction-phaseHandler.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/reaction-system/reaction-window.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/reaction-system/reaction-cardLock.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/reaction-system/reaction-aeReactionBridge.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/reaction-system/reaction-protectFeedback.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/fabula-initiative/fabula-initiative-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/fabula-initiative/fabula-initiative-controller.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/fabula-initiative/fabula-initiative-round-announcer.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/fabula-initiative/fabula-initiative-autoUntarget.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/fabula-initiative/fabula-initiative-turn-emitter.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/treasure-chest-system/treasureChest-configUI.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/treasure-chest-system/treasureChest-core.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/journal-system/journalSystem-configUI.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/journal-system/journalSystem-core.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-constants.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-debug.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-logic.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-input.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/map-system/keyboard-interact.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-client.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-worldFx.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-gameState.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/story-gate/story-gate.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-configKit.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-showText-speakerResolver.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-showText-execute.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-eventRegistry.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-flow.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-rows-flow.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-rows-camera.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-rows-media.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-rows-choices.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-rows-check.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-rows-float.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-rows-token.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-rows-pause.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-rows-emote.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-rows-lightning.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-gmChip.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-lint.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-configUI.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-runtimeUI.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-executeCore.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/event-bootstrap.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/pose-spots/pose-spot-core.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/pose-spots/pose-spot-config.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/event-system/pose-spots/pose-bath-fx.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/exp-awarder/expAwarder-ui-listener.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/exp-awarder/expAwarder-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/bond-system/bond-updater-core.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/encyclopedia/encyclopedia-core.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/cooking-system/cooking-api.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/cooking-system/cooking-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/camp-constants.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/camp-sound.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/camp-styles.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/camp-party.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/camp-state.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/camp-socket.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-registry.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-camp-forge.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-cartography.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-cartography-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-combat-lesson.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-combat-lesson-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-cooking.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-curse.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-curse-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-daydream.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-daydream-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-double-portion.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-double-portion-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-exploration.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-exploration-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-fishing.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-fishing-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-gathering.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-gathering-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-magic-lesson.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-magic-lesson-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-martial-practice.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-martial-practice-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-massage.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-massage-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-meditate.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-mending.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-midnight-oil.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-midnight-oil-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-pep-talk.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-pep-talk-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-planning.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-planning-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-sing.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-sleep-soundly.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-sleep-soundly-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-training.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/activities/activity-training-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/camp-ui-button.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/camp-ui-activity-select.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/camp-ui-activity-resolve.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/camp-ui-bond.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/camp-ui-bond-summary.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/rest-api.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/camp-ui-sleep.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/camp-ui-rest-save.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/camp-rest-save-flow.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/camp-members.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/camp-walk.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/camp-set-out.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/camp-ui-gm-panel.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/camp-ui-hider.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/camp-system/camp-bootstrap.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/session-system/session-start-button.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/save-system/save-constants.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/save-system/save-storage.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/save-system/save-core.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/save-system/save-extractors.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/save-system/save-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/save-system/save-bootstrap.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/title-screen/title-constants.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/title-screen/title-socket.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/title-screen/title-load-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/title-screen/title-quit-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/title-screen/title-ui.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/title-screen/title-bootstrap.js"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/battle-director/rewind-button.js"></script>
+    <script defer src="modules/fast-flip/mod.js"></script>
+    <script defer src="modules/fxmaster/libs/filters/pixi-filters.js"></script>
+    <script defer src="modules/monks-active-tiles/js/jquery.typeahead.min.js"></script>
+    <script defer src="modules/popout/popout.js"></script>
+    <script defer src="modules/quickscale/scripts/quickscale.js"></script>
+    <script defer src="modules/quickscale/scripts/nouislider.js"></script>
+    <script defer src="modules/quickscale/scripts/wNumb.min.js"></script>
+    <script defer src="scripts/greensock/dist/gsap.min.js"></script>
+    <script defer src="scripts/greensock/dist/PixiPlugin.min.js"></script>
+    <script defer src="scripts/greensock/dist/ScrollToPlugin.min.js"></script>
+    <script defer src="scripts/greensock/dist/SplitText.min.js"></script>
+    <script defer src="modules/theatre/scripts/libs/ffontsloader/fontsloader.min.js"></script>
+    <script defer src="modules/tile-scroll/scripts/config.js"></script>
+    <script defer src="modules/tile-scroll/scripts/main.js"></script>
+    <script defer src="modules/token-z/scripts/main.js"></script>
+    <script defer src="modules/tokenmagic/libs/filters/pixi-filters.js"></script>
+    <script defer src="modules/barbrawl/barbrawl.js" type="module"></script>
+    <script defer src="modules/battle-transitions/module.js" type="module"></script>
+    <script defer src="modules/better-rolltables/module.js" type="module"></script>
+    <script defer src="modules/boss-loot-assets-free/scripts/bossLootFx.js" type="module"></script>
+    <script defer src="modules/chat-images/chat-images.js" type="module"></script>
+    <script defer src="modules/chat-portrait/module.js" type="module"></script>
+    <script defer src="modules/combat-chat/scripts/combat-chat.js" type="module"></script>
+    <script defer src="modules/cursor-hider/main.js" type="module"></script>
+    <script defer src="modules/curtain-animations/scripts/main.js" type="module"></script>
+    <script defer src="modules/custom-css/custom-css.js" type="module"></script>
+    <script defer src="modules/df-architect/src/df-architect.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/sounds/SoundCounter.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/general/ShowLayerControls.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/general/QuickColourPicker.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/general/AltGridSnap.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/general/PIXIAppOverride.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/general/LayerShortcuts.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/lights/AltLightOrigin.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/lights/AltLightInverted.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/lights/LightCounter.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/tiles/TileCounter.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/tiles/TileConfigExt.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/core/libWrapperShared.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/core/architect.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/core/migration.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/core/declarations.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/core/settings.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/core/CounterUI.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/walls/WallJoinSplit.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/walls/WallChangeType.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/walls/WallGapFiller.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/walls/WallCounter.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/walls/WallCtrlInvert.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/walls/WallShortcuts.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/walls/WallAltDrop.mjs" type="module"></script>
+    <script defer src="modules/df-architect/src/walls/WallDirections.mjs" type="module"></script>
+    <script defer src="modules/dfreds-convenient-effects/dfreds-convenient-effects.mjs" type="module"></script>
+    <script defer src="modules/effectmacro/module.mjs" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/shared/exp-core.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/shared/code-backed-content.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/shared/identifier-registry.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/linked-text/lt-boot.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/shop-system/shopOpen-bootstrap.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/shop-system/shopPurchase-handler.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/shop-system/shopSound-manager.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/shop-system/shopWindow-app.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/action-reader/actionReader-bootstrap.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/warehouse-system/warehouse-debug.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/warehouse-system/warehouse-payloadManager.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/warehouse-system/warehouse-api.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/warehouse-system/warehouse-app.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/warehouse-system/warehouse-dnd.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/warehouse-system/warehouse-gates.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/warehouse-system/warehouse-commit.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/idle-animation/idle-animation-logic.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/idle-animation/idle-animation-ui.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/sprite-shadow/sprite-shadow-config.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/sprite-shadow/sprite-shadow-renderer.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/sprite-shadow/sprite-shadow-airborne.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/pseudo-animation/pseudoAnimation-core.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/pseudo-animation/pseudoAnimation-listener.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/exp-awarder/expAwarder-api.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/custom-ui/expAwarder-sidebar.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/jrpg-targeting-system/jrpg-targeting-bootstrap.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/jrpg-targeting-system/jrpg-targeting-test-harness.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/jrpg-targeting-system/jrpg-targeting-ui-tuner-bridge.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/refinement-system/refineOpen-const.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/refinement-system/refineOpen-ui.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/refinement-system/refineOpen-backend.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/refinement-system/refineWindow-app.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/refinement-system/refineOpen-bootstrap.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/inn-system/innOpen-const.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/inn-system/innOpen-ui.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/inn-system/innOpen-backend.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/inn-system/innRest-panel.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/inn-system/innRest-core.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/inn-system/innOpen-bootstrap.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/healing-system/healing-api.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/ritual-system/ritual-api.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/levelup-system/levelup-api.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/levelup-system/levelup-app.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/levelup-system/levelup-badge.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/attribute-system/attribute-api.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/attribute-system/attribute-app.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/attribute-system/attribute-badge.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/character-creation/cc-const.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/character-creation/cc-folder.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/character-creation/cc-draft.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/character-creation/cc-class-state.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/character-creation/cc-app.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/character-creation/cc-step-profile.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/character-creation/cc-step-attributes.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/character-creation/cc-step-classes.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/character-creation/cc-step-equipment.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/character-creation/cc-step-bond.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/character-creation/cc-step-summary.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/character-creation/cc-api.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/character-creation/cc-bootstrap.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/clock-system/clock-api.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/clock-system/clock-ui-bar.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/clock-system/clock-manager-app.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/clock-system/clock-automation.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/conflict-event/conflict-event-api.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/field-system/field-api.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/battle-director/director-camera.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/battle-director/camera-authority.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/battle-director/director-boot.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/battle-director/unit-inspect/unit-inspect.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/battle-director/set-bonus-hooks.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/battle-director/armor-equip-gate.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/battle-director/battle-end/battle-end-orchestrator.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/battle-director/battle-end/battle-end-prompt.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/battle-director/battle-end/battle-end-fx.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/battle-director/battle-end/battle-end-summary-logic.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/battle-director/battle-end/battle-end-rank.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/battle-director/battle-end/battle-end-summary-ui.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/battle-director/battle-end/battle-end-transition.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/battle-director/battle-end/battle-end-cleanup.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/battle-director/battle-end/battle-end-rewards.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/guest-roster/guest-roster-core.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/guest-roster/guest-roster-ui.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/party-menu/party-menu-core.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/party-menu/party-menu-app.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/party-menu/party-menu-button.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/map-system/exploration-parallax.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/main.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/gacha-system/gacha-bootstrap.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-constants.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-grid.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-lattice.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-vision.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-state.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-states.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-enemy-ai.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-actions.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-reinforcement.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-conflict.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-socket.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-blades.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-motion.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-banner.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-camera.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-overlay.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-ui.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-gm-panel.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-director.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-handlers.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-bgm.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-gm-button.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/stealth-system/sm-boot.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/lint/skill-validator-bridge.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/skill-forge/skill-forge-app.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/area-panel/area-panel-core.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/area-panel/area-panel.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/area-panel/area-panel-tuner.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/pause-screen/pause-clock.js" type="module"></script>
+    <script defer src="modules/fabula-ultima-companion/scripts/pause-screen/pause-screen.js" type="module"></script>
+    <script defer src="modules/forien-quest-log/src/init.js" type="module"></script>
+    <script defer src="modules/fxmaster/fxmaster.js" type="module"></script>
+    <script defer src="modules/hex-size-support/hss.js" type="module"></script>
+    <script defer src="modules/hide-player-ui/scripts/hide-player-ui.js" type="module"></script>
+    <script defer src="modules/item-piles/dist/item-piles.js" type="module"></script>
+    <script defer src="modules/JB2A_DnD5e/scripts/jb2a.js" type="module"></script>
+    <script defer src="modules/koboldworks-turn-announcer/turn-announcer.mjs" type="module"></script>
+    <script defer src="modules/lancer-initiative/lancer-initiative.js" type="module"></script>
+    <script defer src="modules/LockView/lockview.js" type="module"></script>
+    <script defer src="modules/maru-playlist-enhancements/scripts/main.mjs" type="module"></script>
+    <script defer src="modules/monks-active-tiles/monks-active-tiles.js" type="module"></script>
+    <script defer src="modules/monks-active-tiles/settings.js" type="module"></script>
+    <script defer src="modules/monks-combat-details/monks-combat-details.js" type="module"></script>
+    <script defer src="modules/monks-combat-details/settings.js" type="module"></script>
+    <script defer src="modules/monks-little-details/monks-little-details.js" type="module"></script>
+    <script defer src="modules/monks-little-details/settings.js" type="module"></script>
+    <script defer src="modules/monks-player-settings/monks-player-settings.js" type="module"></script>
+    <script defer src="modules/monks-player-settings/settings.js" type="module"></script>
+    <script defer src="modules/monks-sound-enhancements/monks-sound-enhancements.js" type="module"></script>
+    <script defer src="modules/monks-sound-enhancements/settings.js" type="module"></script>
+    <script defer src="modules/moulinette-soundboards/scripts/module.js" type="module"></script>
+    <script defer src="modules/obligatory-fishing-minigame/scripts/module.js" type="module"></script>
+    <script defer src="modules/rolltable-from-sidebar/rolltable.js" type="module"></script>
+    <script defer src="modules/rolltable-requester/scripts/module.js" type="module"></script>
+    <script defer src="modules/sequencer/dist/sequencer.js" type="module"></script>
+    <script defer src="modules/status-icon-tweaks/scripts/status-icon-tweaks.js" type="module"></script>
+    <script defer src="modules/statuscounter/statuscounter.js" type="module"></script>
+    <script defer src="modules/theatre/module.js" type="module"></script>
+    <script defer src="modules/token-mold/scripts/index.js" type="module"></script>
+    <script defer src="modules/token-variants/bundle.js" type="module"></script>
+    <script defer src="modules/tokenmagic/module/tokenmagicBundle.js" type="module"></script>
+    <script defer src="modules/wall-height/scripts/wall-height.js" type="module"></script>
+
+    <!-- Global Variables -->
+    <script>
+    const SIGNED_EULA=true;
+    const ROUTE_PREFIX="";
+    const MESSAGES=null;
+    </script>
+</head>
+<body class="vtt game system-custom-system-builder" style="">
+    <template id="camera-views"></template>
+<div id="interface">
+    <section id="ui-left">
+        <img id="logo" src="icons/fvtt.png" height="50px">
+        <template id="controls"></template>
+        <template id="players"></template>
+    </section>
+    <section id="ui-middle">
+        <header id="ui-top" class="offset">
+            <template id="navigation"></template>
+            <div id="loading">
+                <div id="loading-bar">
+                    <label id="context"></label>
+                    <label id="progress"></label>
+                </div>
+            </div>
+        </header>
+        <footer id="ui-bottom">
+            <div>
+                <template id="hotbar"></template>
+                <div id="fps"></div>
+            </div>
+        </footer>
+    </section>
+    <section id="ui-right">
+        <template id="sidebar"></template>
+    </section>
+</div>
+<template id="notifications"></template>
+<template id="hud"></template>
+<template id="board"></template>
+<template id="pause"></template>
+    <aside id="tooltip" role="tooltip"></aside>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "worldId": "staging-world",
+  "worldTitle": "Staging World (slim copy of Fabula Ultima)",
+  "sourceWorld": "fabula-ultima-2",
+  "port": 30001,
+  "scenes": ["Training Ground"],
+  "activeScene": "Training Ground",
+  "actors": {
+    "types": ["_template"],
+    "flags": ["isField"],
+    "folders": ["Template", "UI", "Companion"],
+    "names": [
+      "Test Caster", "Test Target Ally", "Test Target Enemy",
+      "Hina", "Keren", "Blanche", "Zarg", "Kalina", "King Gorger",
+      "Hellhound", "Imp"
+    ]
+  },
+  "followRefs": {
+    "from": ["settings", "actors", "scenes"],
+    "fromCode": ["modules/fabula-ultima-companion/scripts"],
+    "maxActors": 80
+  },
+  "copyWhole": ["items", "folders", "journal", "macros", "tables", "playlists", "cards", "settings", "users"],
+  "copyPacks": true
+}

@@ -144,19 +144,36 @@ function staticVerdict() {
   return lines;
 }
 
-if (!bridgeAlive()) {
+// ── game CLOSED → the Snapshot Runner runs the check instead ─────────────────
+// tools/snapshot-runner is the real Foundry client + CSB + our module with the
+// server faked and the world read from the LevelDB on disk; `check --runner`
+// builds the bench in that page and runs the same collector. Referee: 487/487
+// identical to the real engine and to goldens/skills.json (2026-11-03), ~40 s.
+// Before it, a closed-game turn deferred the sweep and checked nothing but the
+// two static audits. It ships since 2026-11-03, but needs a one-time setup
+// (snapshot-runner README, "Setup on a new machine"); a clone without that setup
+// defers exactly as before. SKILL_REGRESSION_RUNNER=0 opts out.
+const LIVE = bridgeAlive();
+const RUNNER = !LIVE && (process.env.SKILL_REGRESSION_RUNNER ?? process.env.SKILL_REGRESSION_SANDBOX) !== "0"
+  && fs.existsSync(path.join(ROOT, "..", "snapshot-runner", "bin", "run.mjs"))
+  && fs.existsSync(path.join(ROOT, "..", "snapshot-runner", "runner.regression.json"))
+  && fs.existsSync(path.join(ROOT, "..", "fvtt-playwright", "node_modules"))
+  // the runner finds Foundry through this file (or FVTT_APP); without it every run would fail
+  && (!!process.env.FVTT_APP || fs.existsSync(path.join(ROOT, "..", "fvtt-playwright", "config.local.json")));
+function deferClosed(why = "") {
   // A data-only trigger needs no marker to survive: `dataChanged` is derived by
   // comparing against the verdict we're still holding, so it stays true on every
   // later turn until a check actually runs. The marker is only what carries an
   // ENGINE edit forward.
   const kept = hasMarker ? " (marker kept)" : "";
-  process.stderr.write(`⏳ skill-regression: ${kinds} changed this turn but Foundry is closed — regression check deferred until the world is open${kept}.\n`);
+  process.stderr.write(`⏳ skill-regression: ${kinds} changed this turn but Foundry is closed${why} — regression check deferred until the world is open${kept}.\n`);
   // The sweep needs the game; these two do not. Run them so a closed-game turn
   // is not a turn with zero verification.
   const sv = staticVerdict();
   if (sv.length) process.stderr.write(sv.join("\n") + "\n");
   process.exit(0);
 }
+if (!LIVE && !RUNNER) deferClosed();
 
 // ── a battle is LIVE on the bridge host → defer ─────────────────────────────
 // The bridge page IS the battle's host GM. The sweep views the Regression Bench
@@ -175,7 +192,7 @@ function liveBattle() {
   const r = spawnSync("node", ["-e", probe], { encoding: "utf8", timeout: 40 * 1000 });
   try { return JSON.parse(r.stdout || "null"); } catch { return null; }
 }
-const battle = liveBattle();
+const battle = LIVE ? liveBattle() : null;
 if (battle?.running) {
   const kept = hasMarker ? " (marker kept)" : "";
   process.stderr.write(`⏸ skill-regression: ${kinds} changed this turn but a battle is LIVE on the bridge host (${battle.state} on ${battle.scene ?? "?"}) — regression check deferred until it ends, so the bench cannot take over the host's canvas${kept}.\n`);
@@ -211,6 +228,9 @@ const extra = env ? (env.match(/"[^"]*"|'[^']*'|\S+/g) || []).map((s) => s.repla
 // the gate always runs it. Never fatal on its own error: a missing golden or a
 // closed bridge must not turn into a false "drift".
 function structureVerdict() {
+  // `structure` reads the docs over the bridge; with the game closed it only waits out
+  // its 90 s timer (measured 2026-11-03 on a runner turn) and reports nothing.
+  if (!LIVE) return { drifted: false, note: " (config golden not checked: it needs the game open)", text: "" };
   const r = spawnSync("node", ["bin/skill-regression.js", "structure", "--json"], {
     cwd: ROOT, encoding: "utf8", timeout: 90 * 1000, maxBuffer: 32 * 1024 * 1024,
   });
@@ -239,7 +259,8 @@ function structureVerdict() {
   return { drifted: true, note: "", text: lines.join("\n") + "\n" };
 }
 
-if (!env) {
+// (the runner builds its own bench in-page and has nothing to tear down)
+if (!env && LIVE) {
   const build = spawnSync("node", ["bin/skill-regression.js", "bench"], {
     cwd: ROOT, encoding: "utf8", timeout: 5 * 60 * 1000, maxBuffer: 8 * 1024 * 1024,
   });
@@ -259,7 +280,7 @@ if (!env) {
 // --no-deps-reuse path, without letting a wedged bridge hold turn-end for half an
 // hour. The Stop-hook timeout in .claude/settings.json has to stay above this or
 // the outer kill lands first.
-const args = ["bin/skill-regression.js", "check", "--mode", "compute", "--json", ...extra];
+const args = ["bin/skill-regression.js", "check", "--mode", "compute", "--json", ...extra, ...(LIVE ? [] : ["--runner"])];
 const run = spawnSync("node", args, { cwd: ROOT, encoding: "utf8", timeout: 12 * 60 * 1000, maxBuffer: 32 * 1024 * 1024 });
 
 // Tear down UNCONDITIONALLY — not via the check's own --teardown flag. The check
@@ -267,7 +288,7 @@ const run = spawnSync("node", args, { cwd: ROOT, encoding: "utf8", timeout: 12 *
 // reaches its cleanup: the bench would then sit in the world until someone
 // noticed, which is the exact failure this is meant to prevent. Cheap, and
 // idempotent when the bench is already gone.
-if (!env) {
+if (!env && LIVE) {
   spawnSync("node", ["bin/skill-regression.js", "teardown"], {
     cwd: ROOT, encoding: "utf8", timeout: 2 * 60 * 1000, maxBuffer: 4 * 1024 * 1024,
   });
@@ -276,6 +297,14 @@ if (!env) {
 // Parse the tool's JSON verdict from stdout; anything else = couldn't evaluate.
 let verdict = null;
 try { verdict = JSON.parse((run.stdout || "").trim()); } catch {}
+
+// A runner that could not run (lock held by another session's gate, a page that
+// would not boot) is not a verdict: keep the marker and defer, as a closed game did.
+if (!LIVE && (!verdict || !verdict.counts)) {
+  const why = run.error ? run.error.message : ((run.stderr || "").trim().split("\n").pop() || "no JSON output");
+  deferClosed(` and the Snapshot Runner could not run the check (${why.slice(0, 200)})`);
+}
+const where = LIVE ? "" : " on the Snapshot Runner (game closed)";
 
 if (!verdict || !verdict.counts) {
   const why = run.error ? run.error.message : ((run.stderr || "").trim().split("\n").pop() || "no JSON output");
@@ -296,7 +325,7 @@ clearMarker();
 recordVerified({
   total: counts.total,
   drift: counts.added + counts.removed + counts.changed,
-  by: "stop-hook",
+  by: LIVE ? "stop-hook" : "stop-hook --runner",
   dataKey: witness.key,
 }, fp);
 
@@ -305,16 +334,16 @@ if (!counts.added && !counts.removed && !counts.changed) {
   const stat = staticVerdict();
   if (s.drifted || stat.length) {
     const tail = (s.drifted ? s.text : "") + (stat.length ? stat.join("\n") + "\n" : "");
-    process.stderr.write(`✓ skill-regression: ${counts.total} skills checked after ${kinds} edit — no behavioral drift.\n${tail}`);
+    process.stderr.write(`✓ skill-regression: ${counts.total} skills checked${where} after ${kinds} edit — no behavioral drift.\n${tail}`);
     process.exit(2);
   }
-  process.stderr.write(`✓ skill-regression: ${counts.total} skills checked after ${kinds} edit — no behavioral drift${s.note}.\n`);
+  process.stderr.write(`✓ skill-regression: ${counts.total} skills checked${where} after ${kinds} edit — no behavioral drift${s.note}.\n`);
   process.exit(0);
 }
 
 // Drift — build a concise, review-oriented summary and surface it once.
 const lines = [];
-lines.push(`⚠ skill-regression drift after a ${kinds} edit (${counts.changed} changed, ${counts.added} new, ${counts.removed} removed):`);
+lines.push(`⚠ skill-regression drift${where} after a ${kinds} edit (${counts.changed} changed, ${counts.added} new, ${counts.removed} removed):`);
 const bCh = cap(changed, 12);
 for (const c of bCh.shown) {
   lines.push(`  ~ ${c.key}`);

@@ -1,0 +1,380 @@
+{
+ "opts": {
+  "caster": "Blanche",
+  "skill": "Provoke",
+  "enemy": "Hellhound",
+  "targets": "enemy",
+  "once": true,
+  "startingZp": 0,
+  "maxRounds": 3,
+  "expectedRounds": 3,
+  "seed": 1
+ },
+ "ms": 763053,
+ "err": null,
+ "outcome": "overtime",
+ "verdict": "UNRESOLVED after 3 rounds — neither side can close it out. The fight is not designed well enough: by now the party should have won or lost.",
+ "rounds": 4,
+ "partyHpRemaining": 1,
+ "combatants": [
+  {
+   "name": "Blanche",
+   "hp": 173,
+   "defeated": false
+  },
+  {
+   "name": "Hellhound",
+   "hp": 51,
+   "defeated": false
+  },
+  {
+   "name": "King Gorger",
+   "hp": 61,
+   "defeated": false
+  }
+ ],
+ "transcript": [
+  "{\"t\":3679,\"kind\":\"start\",\"text\":\"persistent summons: King Gorger\",\"data\":null}",
+  "{\"t\":3679,\"kind\":\"start\",\"text\":\"1 PC(s) vs Hellhound×1\",\"data\":null}",
+  "{\"t\":3679,\"kind\":\"start\",\"text\":\"conflict event: none\",\"data\":null}",
+  "{\"t\":86988,\"kind\":\"decide\",\"text\":\"King Gorger → Skill \\\"Element Gorge\\\" on 1 target(s)\",\"data\":null}",
+  "{\"t\":125743,\"kind\":\"scripted\",\"text\":\"blanche → Provoke on 1 target(s)\",\"data\":null}",
+  "{\"t\":142919,\"kind\":\"reaction\",\"text\":\"Elemental Harmony: Elemental Harmony unavailable (Conditions not met)\",\"data\":null}",
+  "{\"t\":142920,\"kind\":\"reaction\",\"text\":\"Linked Invocation: Linked Invocation unavailable (Conditions not met)\",\"data\":null}",
+  "{\"t\":180514,\"kind\":\"decide\",\"text\":\"Hellhound → Skill \\\"Pounce\\\" on 1 target(s)\",\"data\":null}",
+  "{\"t\":243744,\"kind\":\"decide\",\"text\":\"Hellhound → Skill \\\"Pounce\\\" on 1 target(s)\",\"data\":null}",
+  "{\"t\":308073,\"kind\":\"decide\",\"text\":\"King Gorger → Skill \\\"Element Gorge\\\" on 1 target(s)\",\"data\":null}",
+  "{\"t\":348055,\"kind\":\"focus\",\"text\":\"party calls the target: Hellhound — weak to earth/light\",\"data\":null}",
+  "{\"t\":348057,\"kind\":\"cost\",\"text\":\"Blanche can't afford Muleta (0/1 adoration)\",\"data\":null}",
+  "{\"t\":348058,\"kind\":\"attack\",\"text\":\"Blanche swings at Hellhound [NA] (virtual attack)\",\"data\":null}",
+  "{\"t\":348058,\"kind\":\"decide\",\"text\":\"Blanche → Attack (player brain)\",\"data\":null}",
+  "{\"t\":364912,\"kind\":\"reaction\",\"text\":\"Blanche: Inner Wellspring (Lightning) → apply (no policy; run default)\",\"data\":null}",
+  "{\"t\":364912,\"kind\":\"reaction\",\"text\":\"Elemental Harmony: Elemental Harmony unavailable (Conditions not met)\",\"data\":null}",
+  "{\"t\":453337,\"kind\":\"decide\",\"text\":\"Hellhound → Attack \\\"Bite\\\" on 1 target(s)\",\"data\":null}",
+  "{\"t\":469410,\"kind\":\"reaction\",\"text\":\"Bite: Bite unavailable (Conditions not met)\",\"data\":null}",
+  "{\"t\":469411,\"kind\":\"reaction\",\"text\":\"Blanche: Verónica unavailable (No Charge)\",\"data\":null}",
+  "{\"t\":523665,\"kind\":\"free-action\",\"text\":\"Blanche has a free action from Counter Pass (Skill, only: Muleta/Descabello/Verónica/Tafallera/Castigo/Capote)\",\"data\":null}",
+  "{\"t\":524392,\"kind\":\"free-action\",\"text\":\"Blanche spends it on Muleta\",\"data\":null}",
+  "{\"t\":524392,\"kind\":\"decide\",\"text\":\"Blanche → Skill \\\"Muleta\\\" (player brain)\",\"data\":null}",
+  "{\"t\":548453,\"kind\":\"invoke\",\"text\":\"Blanche invokes Bond \\\"Hina\\\" (+3) — short by 2, so it lands\",\"data\":null}",
+  "{\"t\":548454,\"kind\":\"reaction\",\"text\":\"Blanche: Inner Wellspring (Lightning) → apply (no policy; run default)\",\"data\":null}",
+  "{\"t\":548454,\"kind\":\"reaction\",\"text\":\"Elemental Harmony: Elemental Harmony unavailable (Conditions not met)\",\"data\":null}",
+  "{\"t\":548454,\"kind\":\"reaction\",\"text\":\"Linked Invocation: Linked Invocation unavailable (Conditions not met)\",\"data\":null}",
+  "{\"t\":654316,\"kind\":\"decide\",\"text\":\"King Gorger → Skill \\\"Element Gorge\\\" on 1 target(s)\",\"data\":null}",
+  "{\"t\":702697,\"kind\":\"mp\",\"text\":\"Blanche → Elixir (created for 3 IP)\",\"data\":null}",
+  "{\"t\":702697,\"kind\":\"decide\",\"text\":\"Blanche → Item \\\"Elixir\\\" (player brain)\",\"data\":null}",
+  "{\"t\":718625,\"kind\":\"reaction\",\"text\":\"Elemental Harmony: Elemental Harmony unavailable (Conditions not met)\",\"data\":null}",
+  "{\"t\":718625,\"kind\":\"reaction\",\"text\":\"Field: Elemental Overflow (Bolt) unavailable (Conditions not met)\",\"data\":null}",
+  "{\"t\":755552,\"kind\":\"overtime\",\"text\":\"still unresolved after the 3-round budget — stopping\",\"data\":null}"
+ ],
+ "counts": {
+  "act": 10,
+  "res": 13,
+  "ae+": 11,
+  "ae-": 11
+ },
+ "events": [
+  {
+   "k": "ae+",
+   "who": "Blanche",
+   "name": "Adoration Clock"
+  },
+  {
+   "k": "ae+",
+   "who": "Blanche",
+   "name": "Counter Pass"
+  },
+  {
+   "k": "ae+",
+   "who": "Blanche",
+   "name": "Protect"
+  },
+  {
+   "k": "res",
+   "who": "King Gorger",
+   "key": "current_mp",
+   "v": 0
+  },
+  {
+   "k": "act",
+   "by": "King Gorger",
+   "kind": "Skill",
+   "name": "Element Gorge",
+   "el": null,
+   "to": [
+    "Hellhound"
+   ]
+  },
+  {
+   "k": "ae+",
+   "who": "Hellhound",
+   "name": "Element Gorge (Earth)"
+  },
+  {
+   "k": "res",
+   "who": "King Gorger",
+   "key": "current_mp",
+   "v": 20
+  },
+  {
+   "k": "act",
+   "by": "Blanche",
+   "kind": "Skill",
+   "name": "Provoke",
+   "el": null,
+   "to": [
+    "Hellhound"
+   ]
+  },
+  {
+   "k": "res",
+   "who": "Blanche",
+   "key": "current_mp",
+   "v": 73
+  },
+  {
+   "k": "ae+",
+   "who": "Hellhound",
+   "name": "Enraged"
+  },
+  {
+   "k": "ae+",
+   "who": "Hellhound",
+   "name": "Provoked"
+  },
+  {
+   "k": "act",
+   "by": "Hellhound",
+   "kind": "Skill",
+   "name": "Pounce",
+   "el": null,
+   "to": [
+    "Blanche"
+   ]
+  },
+  {
+   "k": "res",
+   "who": "Hellhound",
+   "key": "current_mp",
+   "v": 20
+  },
+  {
+   "k": "act",
+   "by": "Hellhound",
+   "kind": "Skill",
+   "name": "Pounce",
+   "el": null,
+   "to": [
+    "Blanche"
+   ]
+  },
+  {
+   "k": "res",
+   "who": "Hellhound",
+   "key": "current_mp",
+   "v": 10
+  },
+  {
+   "k": "ae-",
+   "who": "Hellhound",
+   "name": "Element Gorge (Earth)"
+  },
+  {
+   "k": "act",
+   "by": "King Gorger",
+   "kind": "Skill",
+   "name": "Element Gorge",
+   "el": null,
+   "to": [
+    "Hellhound"
+   ]
+  },
+  {
+   "k": "ae+",
+   "who": "Hellhound",
+   "name": "Element Gorge (Earth)"
+  },
+  {
+   "k": "res",
+   "who": "King Gorger",
+   "key": "current_mp",
+   "v": 40
+  },
+  {
+   "k": "act",
+   "by": "Blanche",
+   "kind": "Attack",
+   "name": "Twin Shields",
+   "el": "Physical",
+   "to": [
+    "Hellhound"
+   ]
+  },
+  {
+   "k": "res",
+   "who": "Hellhound",
+   "key": "current_hp",
+   "v": 76
+  },
+  {
+   "k": "act",
+   "by": "Hellhound",
+   "kind": "Attack",
+   "name": "Bite",
+   "el": "Physical",
+   "to": [
+    "Blanche"
+   ]
+  },
+  {
+   "k": "res",
+   "who": "Blanche",
+   "key": "current_mp",
+   "v": 63
+  },
+  {
+   "k": "ae+",
+   "who": "Hellhound",
+   "name": "Provoked (Thread the Horns)"
+  },
+  {
+   "k": "ae-",
+   "who": "Blanche",
+   "name": "Counter Pass"
+  },
+  {
+   "k": "act",
+   "by": "Blanche",
+   "kind": "Skill",
+   "name": "Muleta",
+   "el": "physical",
+   "to": [
+    "Hellhound"
+   ]
+  },
+  {
+   "k": "res",
+   "who": "Hellhound",
+   "key": "current_hp",
+   "v": 51
+  },
+  {
+   "k": "ae+",
+   "who": "Hellhound",
+   "name": "Bleed"
+  },
+  {
+   "k": "ae-",
+   "who": "Hellhound",
+   "name": "Enraged"
+  },
+  {
+   "k": "ae-",
+   "who": "Hellhound",
+   "name": "Provoked"
+  },
+  {
+   "k": "ae-",
+   "who": "Hellhound",
+   "name": "Element Gorge (Earth)"
+  },
+  {
+   "k": "act",
+   "by": "King Gorger",
+   "kind": "Skill",
+   "name": "Element Gorge",
+   "el": null,
+   "to": [
+    "Hellhound"
+   ]
+  },
+  {
+   "k": "ae+",
+   "who": "Hellhound",
+   "name": "Element Gorge (Air)"
+  },
+  {
+   "k": "res",
+   "who": "King Gorger",
+   "key": "current_mp",
+   "v": 60
+  },
+  {
+   "k": "res",
+   "who": "King Gorger",
+   "key": "current_mp",
+   "v": 10
+  },
+  {
+   "k": "ae+",
+   "who": "Field",
+   "name": "Elemental Overflow (Bolt)"
+  },
+  {
+   "k": "act",
+   "by": "Blanche",
+   "kind": "Item",
+   "name": "Elixir",
+   "el": "mp",
+   "to": [
+    "King Gorger"
+   ]
+  },
+  {
+   "k": "res",
+   "who": "Blanche",
+   "key": "current_ip",
+   "v": 7
+  },
+  {
+   "k": "res",
+   "who": "King Gorger",
+   "key": "current_mp",
+   "v": 60
+  },
+  {
+   "k": "ae-",
+   "who": "Field",
+   "name": "Elemental Overflow (Bolt)"
+  },
+  {
+   "k": "ae-",
+   "who": "Hellhound",
+   "name": "Provoked (Thread the Horns)"
+  },
+  {
+   "k": "ae-",
+   "who": "Hellhound",
+   "name": "Bleed"
+  },
+  {
+   "k": "ae-",
+   "who": "Hellhound",
+   "name": "Element Gorge (Air)"
+  },
+  {
+   "k": "ae-",
+   "who": "Blanche",
+   "name": "Adoration Clock"
+  },
+  {
+   "k": "ae-",
+   "who": "Blanche",
+   "name": "Protect"
+  },
+  {
+   "k": "stop",
+   "reason": "manual"
+  }
+ ],
+ "leftover": {
+  "directorState": [
+   "Training Ground"
+  ],
+  "simClones": [],
+  "running": false
+ },
+ "runner": null,
+ "code": "real engine (Staging World)",
+ "labBuiltAt": "2026-11-03T09:51:52.361Z"
+}

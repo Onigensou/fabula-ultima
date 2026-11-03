@@ -3,7 +3,9 @@
 const fs = require("fs");
 const path = require("path");
 
-const BRIDGE_DIR = path.resolve(__dirname, `../../../worlds/${process.env.FVTT_WORLD || "fabula-ultima-2"}/test-bridge`);
+// FVTT_STAGING=1 means the Staging World here too: a script that never calls loadConfig() (sim-scenario,
+// skill-regression) otherwise wrote its requests to the LIVE world, and timed out (2026-11-03).
+const BRIDGE_DIR = path.resolve(__dirname, `../../../worlds/${process.env.FVTT_WORLD || ([process.env.FVTT_STAGING, process.env.FVTT_LAB].some((v) => v === "1" || v === "true") ? "staging-world" : "fabula-ultima-2")}/test-bridge`);
 
 function readSecret() {
   return fs.readFileSync(path.join(BRIDGE_DIR, "bridge-secret.txt"), "utf8").trim();

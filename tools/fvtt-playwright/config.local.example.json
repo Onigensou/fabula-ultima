@@ -1,0 +1,22 @@
+{
+  "_comment": "Copy this file to config.local.json (gitignored) and fill in the password. Any field can also be overridden by an env var: FVTT_BASE_URL, FVTT_WORLD, FVTT_USER, FVTT_PASSWORD, FVTT_ADMIN_KEY, FVTT_HEADLESS.",
+
+  "baseURL": "http://localhost:30000",
+  "world": "fabula-ultima-2",
+  "user": "GM",
+  "password": "PUT-THE-GM-PASSWORD-HERE",
+
+  "adminKey": "",
+  "headless": false,
+  "slowMo": 0,
+  "readyTimeoutMs": 120000,
+
+  "_server_comment": "Auto-start (lib/server.js). launcher 'node' = headless server, 1 process / ~94 MB / no GPU renderer — the default, since the harness brings its own Chromium. launcher 'electron' = desktop GUI app, 5 processes / ~551 MB, for when a human wants a window. The node launcher REQUIRES dataPath; foundryMain is derived from foundryExe when blank.",
+  "autoStartServer": true,
+  "launcher": "node",
+  "foundryExe": "C:\\Program Files\\Foundry Virtual Tabletop\\Foundry Virtual Tabletop.exe",
+  "foundryMain": "",
+  "dataPath": "PUT-THE-FOUNDRY-USER-DATA-DIR-HERE",
+  "noupnp": true,
+  "serverStartTimeoutMs": 120000
+}
