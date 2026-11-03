@@ -172,3 +172,17 @@ Notes, and push. If it does not, add what you saw under Notes and leave it open.
   reload, the same as a cold run). Still 487/487. The runner idles quietly (~15–30% of one
   core, ~1.4 GB) and leaves after 30 unused minutes. `SKILL_REGRESSION_WARM=0` turns it off.
   Details: tools/skill-regression/README.md, "Game CLOSED".
+
+- 2026-11-03 (sarunphat): **please fix your hook paths (2 lines, `.claude/settings.json`, not
+  tracked).** If your two skill-regression hooks are written as `node tools/skill-regression/hooks/...`
+  they fail with "Cannot find module" whenever your session is working in a subfolder, and fail
+  silently. On my machine, over 7 days, 158 of 336 end-of-turn checks and 418 of 421 after-edit
+  markers failed this way, so most engine edits were never checked. Change both commands to:
+
+  ```
+  node "$CLAUDE_PROJECT_DIR/tools/skill-regression/hooks/on-skill-edit.js"
+  node "$CLAUDE_PROJECT_DIR/tools/skill-regression/hooks/regression-gate.js"
+  ```
+
+  Full snippet: tools/skill-regression/README.md, "Enforcement: auto-run after skill edits". After
+  the change you will see more automatic checks, because they now actually run.

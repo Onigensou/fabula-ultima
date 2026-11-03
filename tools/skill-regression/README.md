@@ -391,6 +391,24 @@ can't cover this because it runs game-*closed* and this check needs the game
   wedged bridge can't freeze turn-end. Override scene/mode via
   `SKILL_REGRESSION_CHECK_ARGS` (e.g. `--scene "Regression Bench" --dummy "Test Target Enemy"`).
 
+**Wire them with `$CLAUDE_PROJECT_DIR`, never a relative path.** A hook runs in the
+session's *current* folder, and sessions change folders (the runner tools are run
+from `tools/fvtt-playwright`). Written as `node tools/skill-regression/hooks/...`,
+both hooks failed with "Cannot find module" from any subfolder, silently: measured
+over 7 days (2026-11-03), 158 of 336 Stop runs and 418 of 421 PostToolUse records,
+so engine edits were mostly never marked and their check never ran.
+`.claude/settings.json` is not tracked; each machine needs:
+
+```json
+{ "hooks": {
+  "PostToolUse": [{ "matcher": "Edit|Write|MultiEdit", "hooks": [{ "type": "command",
+    "command": "node \"$CLAUDE_PROJECT_DIR/tools/skill-regression/hooks/on-skill-edit.js\"", "timeout": 15 }] }],
+  "Stop": [{ "hooks": [{ "type": "command",
+    "command": "node \"$CLAUDE_PROJECT_DIR/tools/skill-regression/hooks/regression-gate.js\"", "timeout": 900,
+    "statusMessage": "skill-regression: checking for behavioral drift…" }] }]
+} }
+```
+
 #### The semantic gate — why most engine turns cost nothing
 
 The trigger above is a **path** match, so it used to fire the full ~22 min sweep
