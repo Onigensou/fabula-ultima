@@ -7980,43 +7980,51 @@ export async function postActionCard({ director, kind, payload }) {
       baseDecisionMap.delete(key);
       if (!gmDecidedKeys().has(key)) reactionDecisionMap.delete(key);
     };
-    for (const p of cardReactions) {
-      const key = `${p.rowKey}:${p.carrierUuid}`;
-      // "on" + "force" both auto-apply (force is engine-mandatory, on
-      // is player-set auto-apply; same effect on the decision map) — but NOT
-      // when unavailable (can't pay cost): a surfaced-dimmed on/force pill must
-      // never auto-fire, or RESOLVE would try to consume a resource the actor
-      // doesn't have. It stays a dimmed informational pill instead.
-      // A candidate the GM sent back to undecided must NOT re-arm itself on a
-      // re-post — the auto-apply below runs on every card build, so without this
-      // an F5 silently undid the un-decision.
-      // Honour the same editability filter gmReactionDecisionChanges applies
-      // (gm-card-override.js). A candidate the GM may no longer edit — an
-      // unaffordable force, say — must not keep steering this build from a
-      // stored verdict: isGmEditableReaction exists so a force cannot bank the
-      // benefit without paying the cost. Unfiltered, a stale "ask" here also
-      // suppresses auto-fire on a candidate the editor will never draw again,
-      // and nothing in the UI can then clear it.
-      if (!isGmEditableReaction(p)) continue;
-      if (gmReactionBlocksAutoFire(cardAr?.gmOverride ?? null, p.rowKey, p.carrierUuid)) continue;
-      if (isAutoFireReactionMode(p.mode) && p.available !== false) setReactionDecision(key, "apply");
-      if (p.mode === "off") setReactionDecision(key, "skip");
+    // The decision a candidate starts with, before anyone clicks: the auto-fire
+    // verdict, then any GM verdict already in the bag. Runs over the whole list
+    // at card build, and over each batch a mid-card injector adds (see
+    // seedInjectedReactions), so a reaction that joins the card late starts from
+    // the same rules as one that was on it from the start.
+    function seedReactionDecisions(cands) {
+      for (const p of cands) {
+        const key = `${p.rowKey}:${p.carrierUuid}`;
+        // "on" + "force" both auto-apply (force is engine-mandatory, on
+        // is player-set auto-apply; same effect on the decision map) — but NOT
+        // when unavailable (can't pay cost): a surfaced-dimmed on/force pill must
+        // never auto-fire, or RESOLVE would try to consume a resource the actor
+        // doesn't have. It stays a dimmed informational pill instead.
+        // A candidate the GM sent back to undecided must NOT re-arm itself on a
+        // re-post — the auto-apply below runs on every card build, so without this
+        // an F5 silently undid the un-decision.
+        // Honour the same editability filter gmReactionDecisionChanges applies
+        // (gm-card-override.js). A candidate the GM may no longer edit — an
+        // unaffordable force, say — must not keep steering this build from a
+        // stored verdict: isGmEditableReaction exists so a force cannot bank the
+        // benefit without paying the cost. Unfiltered, a stale "ask" here also
+        // suppresses auto-fire on a candidate the editor will never draw again,
+        // and nothing in the UI can then clear it.
+        if (!isGmEditableReaction(p)) continue;
+        if (gmReactionBlocksAutoFire(cardAr?.gmOverride ?? null, p.rowKey, p.carrierUuid)) continue;
+        if (isAutoFireReactionMode(p.mode) && p.available !== false) setReactionDecision(key, "apply");
+        if (p.mode === "off") setReactionDecision(key, "skip");
+      }
+      // A card can be RE-POSTED with GM verdicts already in the bag — ar.gmOverride
+      // rides the frozen actionResult through persistence, so an F5 or a restore
+      // rebuilds this map from scratch while the bag remembers everything.
+      // setReactionDecision deliberately refuses to write over a GM-decided key, so
+      // without this pass those keys would hold NO effective entry at all, and
+      // snapshotReactionDecisions defaults an absent entry to "skip" — silently
+      // dropping a force the GM had already made. Seeding straight from the bag is
+      // the same absolute-value rule the rest of the layer follows.
+      for (const p of cands) {
+        // Same filter as above: seeding straight from the bag must not resurrect a
+        // verdict on a candidate that is no longer GM-editable.
+        if (!isGmEditableReaction(p)) continue;
+        const d = gmReactionDecision(cardAr?.gmOverride ?? null, p.rowKey, p.carrierUuid);
+        if (d) reactionDecisionMap.set(`${p.rowKey}:${p.carrierUuid}`, d);
+      }
     }
-    // A card can be RE-POSTED with GM verdicts already in the bag — ar.gmOverride
-    // rides the frozen actionResult through persistence, so an F5 or a restore
-    // rebuilds this map from scratch while the bag remembers everything.
-    // setReactionDecision deliberately refuses to write over a GM-decided key, so
-    // without this pass those keys would hold NO effective entry at all, and
-    // snapshotReactionDecisions defaults an absent entry to "skip" — silently
-    // dropping a force the GM had already made. Seeding straight from the bag is
-    // the same absolute-value rule the rest of the layer follows.
-    for (const p of cardReactions) {
-      // Same filter as above: seeding straight from the bag must not resurrect a
-      // verdict on a candidate that is no longer GM-editable.
-      if (!isGmEditableReaction(p)) continue;
-      const d = gmReactionDecision(cardAr?.gmOverride ?? null, p.rowKey, p.carrierUuid);
-      if (d) reactionDecisionMap.set(`${p.rowKey}:${p.carrierUuid}`, d);
-    }
+    seedReactionDecisions(cardReactions);
 
     function snapshotReactionDecisions() {
       const out = [];
@@ -8276,6 +8284,23 @@ export async function postActionCard({ director, kind, payload }) {
         anim.oncancel = done;
       }
     }
+    // A reaction a mid-card injector adds (a creature dragged into the targets, a
+    // cascade) starts from the same decision a card-build candidate does, and an
+    // accepted one then gets the spawn pass's follow-up: its option menu, a
+    // recompute so the card shows what it changes, and the Effect panel. Without
+    // this an injected on/force pill read "Active" while holding no decision, so
+    // the CONFIRM snapshot recorded it as "skip" and it never fired — Zarg's Ninja
+    // Log on a Lightning Blitz moved onto Zarg mid-card (2026-11-04).
+    // The follow-up is queued, never awaited: the targeted injector runs INSIDE
+    // recomputeTargetPreviews, and the follow-up's own recompute waits for that
+    // one to finish, so awaiting it from there would deadlock the card.
+    function seedInjectedReactions(added) {
+      seedReactionDecisions(added);
+      const accepted = added.filter((p) => reactionDecisionMap.get(`${p.rowKey}:${p.carrierUuid}`) === "apply");
+      if (!accepted.length) return;
+      log(`seedInjectedReactions: ${accepted.length} injected reaction(s) accepted [${accepted.map((c) => c.carrierName).join(", ")}]`);
+      runAutoReactionPass(accepted);
+    }
     async function injectCascadeReactions() {
       try {
         const rd = await import("./reaction-derive.js?cb=" + Date.now());
@@ -8326,6 +8351,7 @@ export async function postActionCard({ director, kind, payload }) {
         }
         appendCascadePills(added);
         log(`injectCascadeReactions: +${added.length} cascade reaction(s) [${added.map((c) => c.carrierName).join(", ")}]`);
+        seedInjectedReactions(added);
       } catch (e) {
         warn("injectCascadeReactions threw", e);
       }
@@ -8551,6 +8577,7 @@ export async function postActionCard({ director, kind, payload }) {
         }
         appendCascadePills(added);
         log(`injectTargetedReactionsForNewTargets: +${added.length} reaction(s) for ${newSubjects.length} newly-targeted creature(s)`);
+        seedInjectedReactions(added);
       } catch (e) {
         warn("injectTargetedReactionsForNewTargets threw", e);
       }
@@ -9475,14 +9502,19 @@ export async function postActionCard({ director, kind, payload }) {
       return result ?? { cancelled: false };
     }
 
-    // Initial pass — surface "on" / "force" auto-applied reactions immediately
-    // on card spawn (they pre-record as "apply" above). Besides damage bonuses,
-    // resolve any auto reaction's option-menu NOW (so the menu prompts at card
-    // creation, not deferred to RESOLVE), then recompute + render the Effect
-    // panel. Fire-and-forget so the card return isn't blocked.
-    (async () => {
+    // Surface "on" / "force" auto-applied reactions (they pre-record as "apply"
+    // in seedReactionDecisions). Besides damage bonuses, resolve any auto
+    // reaction's option-menu NOW (so the menu prompts when the pill appears, not
+    // deferred to RESOLVE), then recompute + render the Effect panel. Runs over
+    // the whole list on card spawn, and over each accepted batch a mid-card
+    // injector adds (seedInjectedReactions). Fire-and-forget at both: the card
+    // return isn't blocked, and an injector inside a recompute can't deadlock.
+    async function runAutoReactionPass(cands) {
       try {
-        for (const p of cardReactions ?? []) {
+        for (const p of cands ?? []) {
+          // A queued pass can land after Confirm: the snapshot is taken, so a
+          // menu now would only be asked again at RESOLVE.
+          if (resolved) return;
           if (!isAutoFireReactionMode(p?.mode)) continue;
           if (reactionDecisionMap.get(`${p.rowKey}:${p.carrierUuid}`) !== "apply") continue;
           if (Array.isArray(p.chosenMenuPicks)) continue;   // already resolved
@@ -9507,10 +9539,12 @@ export async function postActionCard({ director, kind, payload }) {
             }
           } catch (e) { warn("postActionCard: auto reaction menu preview threw", e); }
         }
+        if (resolved) return;
         await recomputeTargetPreviews().catch(() => {});
-        try { applyReactionEffectPreview(); } catch (e) { warn("postActionCard: spawn effect preview threw", e); }
-      } catch (e) { warn("postActionCard: spawn auto-pass threw", e); }
-    })();
+        try { applyReactionEffectPreview(); } catch (e) { warn("postActionCard: auto-pass effect preview threw", e); }
+      } catch (e) { warn("postActionCard: auto-pass threw", e); }
+    }
+    runAutoReactionPass(cardReactions);
 
     // Player-driven confirm/cancel via IntentChannel. The acting actor's
     // owner sees their own copy of the card; clicking Confirm/Cancel
