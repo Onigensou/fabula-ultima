@@ -164,10 +164,10 @@
               "$deleted": false,
               "ae_duplicate_mode": "replace",
               "ae_template_ref": "Bleed",
-              "chain_steps": "spend_stance",
+              "chain_steps": "",
               "effect_kind": "apply_ae",
               "effect_label": "ch_bleed",
-              "target_ref": "action_targets"
+              "target_ref": "hit_action_targets"
             },
             "9": {
               "$deleted": false,
@@ -177,6 +177,12 @@
               "effect_label": "spend_stance",
               "include_persistent": "true",
               "target_ref": "self"
+            },
+            "10": {
+              "$deleted": false,
+              "chain_steps": "spend_stance,ch_bleed",
+              "effect_kind": "chain",
+              "effect_label": "ch_root"
             }
           },
           "heroic_requirement": "",
@@ -192,7 +198,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Chakram",
-          "on_activate_effect_ref": "ch_bleed",
+          "on_activate_effect_ref": "ch_root",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "DEX",
@@ -256,14 +262,19 @@
           },
           "flags": {
             "fabula-ultima-companion": {
-              "crossScene": false
+              "crossScene": false,
+              "roundUp": [
+                "defense"
+              ]
             }
           },
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
           "name": "Crippled",
           "origin": "Actor.Rk5haXsaDemonAAA.Item.RkCrippleFlail01",
           "sort": 0,
-          "statuses": [],
+          "statuses": [
+            "crippled"
+          ],
           "system": {
             "tags": [
               "cleansable",
@@ -318,8 +329,9 @@
             "1": {
               "$deleted": false,
               "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "scene",
               "ae_template_ref": "Crippled",
-              "chain_steps": "spend_stance",
+              "chain_steps": "",
               "effect_kind": "apply_ae",
               "effect_label": "cr_debuff",
               "target_ref": "hit_action_targets"
@@ -332,6 +344,12 @@
               "effect_label": "spend_stance",
               "include_persistent": "true",
               "target_ref": "self"
+            },
+            "10": {
+              "$deleted": false,
+              "chain_steps": "spend_stance,cr_debuff",
+              "effect_kind": "chain",
+              "effect_label": "cr_root"
             }
           },
           "heroic_requirement": "",
@@ -347,7 +365,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Mace",
-          "on_activate_effect_ref": "cr_debuff",
+          "on_activate_effect_ref": "cr_root",
           "optional_params": {},
           "reaction_config_table": {
             "0": {
@@ -413,15 +431,15 @@
           "check_bonus": "0",
           "class": "NPC",
           "cost": "-",
-          "damage_bonus": "",
+          "damage_bonus": "45",
           "defense_target_type": "def",
           "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.CRPjA4dHUYLSAh0M\" data-id=\"CRPjA4dHUYLSAh0M\" data-type=\"JournalEntry\">Drain</a></p></li></ul><p>It stops fighting for a moment and eats. This attack cannot miss. Deal <strong>moderate</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a>&nbsp;damage to one creature and recover HP equal to half the damage dealt.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
             "0": {
-              "$deleted": false,
-              "chain_steps": "dv_feed",
+              "$deleted": true,
+              "chain_steps": "",
               "damage_amount": "45",
               "damage_cause": "damage",
               "damage_element": "physical",
@@ -431,11 +449,18 @@
             },
             "1": {
               "$deleted": false,
+              "chain_steps": "",
               "effect_kind": "grant",
               "effect_label": "dv_feed",
-              "grant_amount": "22",
+              "grant_amount": "floor(HP_DEALT / 2)",
               "grant_resource": "hp",
               "target_ref": "self"
+            },
+            "2": {
+              "$deleted": true,
+              "chain_steps": "dv_bite,dv_feed",
+              "effect_kind": "chain",
+              "effect_label": "dv_root"
             }
           },
           "heroic_requirement": "",
@@ -450,8 +475,9 @@
           "level": "1",
           "max_level": "1",
           "name": "Devour",
-          "on_activate_effect_ref": "dv_bite",
+          "on_activate_effect_ref": "",
           "optional_params": {},
+          "post_damage_effect_ref": "dv_feed",
           "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
@@ -461,7 +487,7 @@
           "skill_range": "Melee",
           "skill_target": "One Creature",
           "skill_type": "Active",
-          "type_damage": "",
+          "type_damage": "Physical",
           "use_optional_params": false,
           "uuid": "Actor.Rk5haXsaDemonAAA.Item.RkDevourManEat01"
         },
@@ -899,7 +925,7 @@
               "ae_duplicate_mode": "replace",
               "ae_name_pool": "Sword Stance,Bow Stance,Throwing Stance,Flail Stance",
               "ae_pool_skip_existing": "1",
-              "chain_steps": "fs_mp",
+              "chain_steps": "",
               "effect_kind": "apply_ae",
               "effect_label": "fs_draw",
               "target_ref": "self"
@@ -911,6 +937,12 @@
               "grant_amount": "15",
               "grant_resource": "mp",
               "target_ref": "self"
+            },
+            "2": {
+              "$deleted": false,
+              "chain_steps": "fs_draw,fs_mp",
+              "effect_kind": "chain",
+              "effect_label": "fs_root"
             }
           },
           "heroic_requirement": "",
@@ -925,7 +957,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Form Shift",
-          "on_activate_effect_ref": "fs_draw",
+          "on_activate_effect_ref": "fs_root",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",
@@ -1120,7 +1152,7 @@
           "effect_table": {
             "0": {
               "$deleted": false,
-              "chain_steps": "fs2_draw",
+              "chain_steps": "",
               "count": "all",
               "effect_kind": "remove_ae",
               "effect_label": "fs2_clear",
@@ -1133,7 +1165,7 @@
               "ae_duplicate_mode": "replace",
               "ae_name_pool": "Sword and Bow Stance,Flail and Throwing Stance,Sword and Flail Stance",
               "ae_pool_skip_existing": "1",
-              "chain_steps": "fs2_mp",
+              "chain_steps": "",
               "effect_kind": "apply_ae",
               "effect_label": "fs2_draw",
               "target_ref": "self"
@@ -1145,6 +1177,12 @@
               "grant_amount": "15",
               "grant_resource": "mp",
               "target_ref": "self"
+            },
+            "3": {
+              "$deleted": false,
+              "chain_steps": "fs2_clear,fs2_draw,fs2_mp",
+              "effect_kind": "chain",
+              "effect_label": "fs2_root"
             }
           },
           "heroic_requirement": "",
@@ -1159,7 +1197,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Form Shift (Dual)",
-          "on_activate_effect_ref": "fs2_clear",
+          "on_activate_effect_ref": "fs2_root",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "-",
@@ -1320,10 +1358,10 @@
               "$deleted": false,
               "ae_duplicate_mode": "replace",
               "ae_template_ref": "Bleed",
-              "chain_steps": "spend_combo",
+              "chain_steps": "",
               "effect_kind": "apply_ae",
               "effect_label": "ro_bleed",
-              "target_ref": "action_targets"
+              "target_ref": "hit_action_targets"
             },
             "9": {
               "$deleted": false,
@@ -1333,6 +1371,12 @@
               "effect_label": "spend_combo",
               "include_persistent": "true",
               "target_ref": "self"
+            },
+            "10": {
+              "$deleted": false,
+              "chain_steps": "spend_combo,ro_bleed",
+              "effect_kind": "chain",
+              "effect_label": "ro_root"
             }
           },
           "heroic_requirement": "",
@@ -1348,7 +1392,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Rending Orbit",
-          "on_activate_effect_ref": "ro_bleed",
+          "on_activate_effect_ref": "ro_root",
           "optional_params": {},
           "reaction_config_table": {
             "0": {

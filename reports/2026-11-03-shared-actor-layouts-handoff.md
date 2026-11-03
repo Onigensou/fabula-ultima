@@ -112,3 +112,24 @@ __fuSharedActorLayouts.missing.size
 
 It should print 0, and a few NPC and PC sheets should look as before. Then set
 `status: verified` and push.
+
+## Notes
+
+- 2026-11-04 sarunphat: the Rakshasa item in §3 is **fixed in v1.0.514** (world data + `csb-ae-round-up.js`).
+  Each affected skill now runs a real `chain` row, so:
+  - every attack spends its stance or combo, including on a miss;
+  - Form Shift and Form Shift (Dual) recover 15 MP, and Dual now arms its combo;
+  - Devour heals half the damage it actually dealt (its 45 is now primary damage; the heal is
+    a post-damage `floor(HP_DEALT / 2)` step, the route Drain Spirit uses). It still cannot miss
+    and still ignores Strike immunity;
+  - Chakram and Rending Orbit inflict Bleed only on a hit.
+
+  Crippled now follows its text. It lasts until a cleanse removes it or the battle ends (no 3-turn
+  counter; it survives the Rakshasa's death), it shows a token icon, and halved DEF rounds up
+  (Keren 11 → 6, Blanche 19 → 10). The round-up uses a new AE flag,
+  `flags.fabula-ultima-companion.roundUp: ["defense"]`, read after CSB derives the actor.
+
+  Still known: on Blanche, a Barrier-style `defense` AE (an upgrade that changes nothing) also
+  cancels Crippled's halving. That is a pre-existing CSB stacking quirk, and Flying-style
+  additions stack fine. Rakshasa can go back into battles. Script:
+  `tools/safe-edit/bin/_fix-rakshasa-resources.js`.
