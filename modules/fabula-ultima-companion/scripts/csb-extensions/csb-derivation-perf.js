@@ -1,7 +1,8 @@
 /**
  * [ONI] CSB Derivation Perf — fabula-ultima-companion
  * ---------------------------------------------------------------------------
- * Two surgical performance patches for CSB 4.8.5. Both are pure engine-side
+ * Surgical performance patches for CSB 4.8.5 (and, in (4), Foundry 12's
+ * actor-update path; see that section). All are pure engine-side
  * fixes: NO world data, NO template surgery, NO migration.
  *
  * Measured on this world (Hina, 100 items, no sheets open, no combat):
@@ -105,6 +106,32 @@
         patchItemContainerRowComputes(imports.ItemContainer);
         patchActiveEffectPreCreateStamp(imports.CustomActiveEffect);
         patchActiveEffectFlagBatching(imports.CustomActiveEffect);
+        patchItemPrepareOnce();
+    });
+
+    Hooks.once('init', () => {
+        try {
+            game.settings.register('fabula-ultima-companion', ITEM_ONCE_SETTING, {
+                name: 'CSB: prepare items once per actor update',
+                hint: 'An actor update prepares each of its items once instead of twice. '
+                    + 'Requires a reload.',
+                scope: 'world',
+                config: false,
+                type: Boolean,
+                default: true,
+            });
+        } catch (e) { console.warn(`${TAG} item-prepare-once setting registration failed`, e); }
+        try {
+            game.settings.register('fabula-ultima-companion', ITEM_REUSE_SETTING, {
+                name: 'CSB: keep unchanged items on an actor update',
+                hint: 'An actor update keeps the derived data of items that did not change instead of '
+                    + 'rebuilding every item. Requires a reload.',
+                scope: 'world',
+                config: false,
+                type: Boolean,
+                default: true,
+            });
+        } catch (e) { console.warn(`${TAG} item-reuse setting registration failed`, e); }
     });
 
     /* -------------------------------------------------------------- (1) --- */
@@ -256,6 +283,156 @@
         patched.__fuOriginal = orig;
         CustomActiveEffect._preCreateOperation = patched;
         console.info(`${TAG} CustomActiveEffect._preCreateOperation patched (pre-create flag stamping).`);
+    }
+
+    /* -------------------------------------------------------------- (4) --- */
+    // Foundry 12 prepares every item TWICE on each actor update (or AE add/remove):
+    //   1. Actor#_initialize re-initializes the items collection, and each item's
+    //      own _initialize prepares it (ClientDocumentMixin#_initialize);
+    //   2. the actor's prepareData then prepares them all again in
+    //      prepareEmbeddedDocuments.
+    // Pass 2 overwrites everything pass 1 derived, and nothing reads the items in
+    // between. Measured 2026-11-03 (Snapshot Runner): Hina's HP update = 222 item
+    // prepares for 111 items. At boot Foundry prepares each item once (pass 1 is
+    // skipped before documents are ready), so skipping it on updates as well
+    // matches what every client already does on load.
+    //
+    // Pass 1 is skipped only while its own actor is inside _initialize, and the
+    // skip ends as soon as that actor starts preparing. An item updated on its own
+    // still prepares itself as before.
+    //
+    // Kill switch: world setting `csbItemPrepareOnce` (default on; reload to apply).
+    // Toggle live for an A/B: globalThis.__fuItemPrepareOnce.on = false.
+    //
+    // (5) ITEM REUSE. Even prepared once, all 111 of Hina's items are rebuilt from their
+    // source and re-derived on every write to HER, though none of them changed: ~40% of an
+    // HP write after the formula memo (measured 2026-11-03). An item's derived data is a
+    // function of its own source, its siblings (container items list them), its master
+    // template's layout, and nothing else, UNLESS one of its formulas reaches outside the
+    // item (fetchFromParent, fetchFromActor, a %{ }% script, randomness...), which
+    // csb-formula-memo.js reports while the item prepares. So on an actor re-initialization
+    // an item keeps its current fields and derived data, skipping both Foundry's
+    // re-initialization and the prepare, when ALL of these hold:
+    //   - it was fully prepared before and none of its formulas reached outside it;
+    //   - its source object is the one it was prepared from;
+    //   - no item of this actor changed since (the actor's items generation: bumped when
+    //     any item initializes on its own, the set of item ids changes, or an actor update
+    //     carries `items`);
+    //   - its master template is the same version.
+    // Anything else takes the full path, exactly as before.
+    //
+    // Kill switch: world setting `csbItemReuse` (default on; reload to apply).
+    // Live A/B and stats: globalThis.__fuItemReuse ({ on, reused, full, external }).
+    const ITEM_ONCE_SETTING = 'csbItemPrepareOnce';
+    const ITEM_REUSE_SETTING = 'csbItemReuse';
+    const REINIT = Symbol('fuReinitItems');
+    const PASS = Symbol('fuActorPass');        // actor: id of the current re-initialization
+    const GEN = Symbol('fuItemsGen');          // actor: items generation
+    const IDS = Symbol('fuItemIds');           // actor: item-id signature at the last re-initialization
+    const PREP = Symbol('fuItemPrep');         // item: what it was last fully prepared from
+    const REUSED = Symbol('fuItemReused');     // item: the actor pass it was reused in
+    const itemOnce = { on: null, skipped: 0 };
+    const itemReuse = { on: null, reused: 0, full: 0, external: 0 };
+    let passSeq = 0;
+
+    const masterKey = (item) => {
+        const m = game.items?.get?.(item.system?.template);
+        return m ? `${m.id}|${m.system?.templateSystemUniqueVersion ?? ''}|${m._stats?.modifiedTime ?? ''}` : '';
+    };
+
+    function patchItemPrepareOnce() {
+        const AP = CONFIG.Actor?.documentClass?.prototype;
+        const IP = CONFIG.Item?.documentClass?.prototype;
+        if (typeof AP?._initialize !== 'function' || typeof AP?._safePrepareData !== 'function' ||
+            typeof AP?.updateSource !== 'function' ||
+            typeof IP?._safePrepareData !== 'function' || typeof IP?._initialize !== 'function') {
+            console.warn(`${TAG} Actor/Item _initialize/_safePrepareData/updateSource missing; skipping item-prepare-once.`);
+            return;
+        }
+        if (IP._safePrepareData.__fuPatched) return;
+
+        const origActorInit = AP._initialize;
+        const origActorPrep = AP._safePrepareData;
+        const origActorUpdateSource = AP.updateSource;
+        const origItemInit = IP._initialize;
+        const origItemPrep = IP._safePrepareData;
+
+        AP.updateSource = function (changes, ...rest) {
+            if (changes && typeof changes === 'object' && 'items' in changes) this[GEN] = (this[GEN] ?? 0) + 1;
+            return origActorUpdateSource.call(this, changes, ...rest);
+        };
+        AP._initialize = function (...args) {
+            this[REINIT] = true;
+            this[PASS] = ++passSeq;
+            const ids = Array.isArray(this._source?.items) ? this._source.items.map((i) => i?._id).join(',') : '';
+            if (ids !== this[IDS]) { this[IDS] = ids; this[GEN] = (this[GEN] ?? 0) + 1; }
+            try { return origActorInit.apply(this, args); }
+            finally { this[REINIT] = false; }
+        };
+        AP._safePrepareData = function (...args) {
+            this[REINIT] = false;
+            return origActorPrep.apply(this, args);
+        };
+        IP._initialize = function (...args) {
+            const actor = this.parent;
+            if (actor?.[REINIT]) {
+                const prep = this[PREP];
+                if (prep && !prep.external && itemReuseOn() && prep.src === this._source
+                    && prep.gen === (actor[GEN] ?? 0) && prep.master === masterKey(this)) {
+                    this[REUSED] = actor[PASS];
+                    itemReuse.reused++;
+                    return;
+                }
+            } else if (actor?.documentName === 'Actor') {
+                // the item changed on its own: every sibling must re-derive next time
+                actor[GEN] = (actor[GEN] ?? 0) + 1;
+            }
+            this[REUSED] = undefined;
+            return origItemInit.apply(this, args);
+        };
+        const patched = function (...args) {
+            const actor = this.parent;
+            if (actor?.[REINIT] && itemOnceOn()) { itemOnce.skipped++; return; }
+            if (this[REUSED] !== undefined && this[REUSED] === actor?.[PASS]) return;
+            // Full prepare: learn whether any formula reaches outside the item.
+            const prevCtx = globalThis.__fuPrepCtx;
+            const ctx = { external: false };
+            globalThis.__fuPrepCtx = ctx;
+            try { return origItemPrep.apply(this, args); }
+            finally {
+                globalThis.__fuPrepCtx = prevCtx;
+                if (actor?.documentName === 'Actor') {
+                    // Without the formula memo's detection nothing proves an item self-contained.
+                    const external = ctx.external || !globalThis.__fuFormulaMemo?.detectsExternal;
+                    this[PREP] = { src: this._source, gen: actor[GEN] ?? 0, master: masterKey(this), external };
+                    itemReuse.full++;
+                    if (external) itemReuse.external++;
+                }
+            }
+        };
+        patched.__fuPatched = true;
+        patched.__fuOriginal = origItemPrep;
+        IP._safePrepareData = patched;
+        globalThis.__fuItemPrepareOnce = itemOnce;
+        globalThis.__fuItemReuse = itemReuse;
+        console.info(`${TAG} item-prepare-once + item reuse installed.`);
+    }
+
+    // Read once, on first use: this patch installs during CSB's init, possibly
+    // before the setting is registered, and settings.get is too slow per prepare.
+    function itemOnceOn() {
+        if (itemOnce.on === null) {
+            try { itemOnce.on = game.settings.get('fabula-ultima-companion', ITEM_ONCE_SETTING) !== false; }
+            catch { return true; }
+        }
+        return itemOnce.on;
+    }
+    function itemReuseOn() {
+        if (itemReuse.on === null) {
+            try { itemReuse.on = game.settings.get('fabula-ultima-companion', ITEM_REUSE_SETTING) !== false; }
+            catch { return false; }
+        }
+        return itemReuse.on;
     }
 
     /* -------------------------------------------------------------- (2) --- */

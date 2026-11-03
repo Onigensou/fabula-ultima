@@ -185,3 +185,24 @@ backdrops without a 3D model.
   timing found the two overheads above. Page-search fix committed. **Rule for this case: never benchmark while another Foundry
   process is running** (check `Win32_Process` first), and drive CDP from Bash, not PowerShell, which strips the quotes out of
   JSON arguments silently (the first A/B attempt never reloaded the page).
+- **2026-11-03 (sarunphat's session, uncommitted):** two cuts to the per-write cost, both measured on the Snapshot Runner.
+  (a) **Foundry 12 prepares every item twice per actor update** (once when the actor re-initializes its items, again in
+  `prepareEmbeddedDocuments`). `csb-derivation-perf.js` patch (4) skips the first pass: item prepares halve (4,914 → 2,457
+  over 204 actors), derived data identical on all 204 actors and their 2,457 items, HP write −15–26% (Hina 358–406 → 268–300 ms).
+  Kill switch `csbItemPrepareOnce`. (b) **Battle log writes no longer touch an actor mid-battle:** rows queue in the world
+  setting `battleLogPending` (~1 ms vs ~200 ms per action) and reach the EXFURSION Party actor once, at the start of
+  `runBattleEndSequence`. Seeded battle identical to HEAD; simulate 486/487 vs HEAD (the 1 is a timeout flake that also fails on HEAD).
+- **2026-11-03 (later): where an undrawn frame goes.** Live world, headless GM, drawing off, CPU profile of the seeded
+  Blanche-vs-Hellhound battle (10 actions, 35 s). 96 stretches of ≥50 ms with no frame, 7.5 s in total. 59 of them,
+  most of the time, began in `DOMWebSocket.onmessage`: an incoming document update is handled in ONE task on the
+  thread that draws, so nothing is drawn until it finishes. Inside those stretches: CSB recalculation 32%, browser
+  native work (parsing etc.) 16%, socket message decoding 7.5%, Foundry copying the whole document (diff backup,
+  field re-init, game.data mirror via `toObject`: each a `deepClone` of the full actor with every item) 13%, GC 4%,
+  our module code ~10% (`_console-tap.js` 3%, `forge-mirror.js` 2%), UI re-render 1%, idle-but-late 9%.
+  Conclusion: the stall is the update pipeline as a whole, proportional to the SIZE of the document written; no
+  single listener to remove. Zero needs battle writes to stop being writes to big documents.
+- **2026-11-03 (later still): fixing the update pipeline in place.** Formula memo (`csb-formula-memo.js`: a formula whose
+  inputs are unchanged returns its cached result; anything impure is still evaluated) + item reuse
+  (`csb-derivation-perf.js` (5): an unchanged, self-contained item keeps its derived data across an actor update). Hina HP
+  write 273 → 95 ms; seeded battle: recalculation 4.56 → 1.58 s, long tasks 10.2 → 4.8 s, same battle. Parity: 322 actors,
+  354 change scenarios vs a full rebuild, 487/487 regression, simulate 485/487 vs HEAD (2 flakes that also flip on HEAD).
