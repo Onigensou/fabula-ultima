@@ -141,6 +141,10 @@ export const DIRECTOR_NATIVE_TRIGGERS = new Set([
   // consumer: Phantasmal Echo (recover MP when MY phantasm is shattered, gated
   // by SUBJECT_IS_MY_PHANTASM). Queued onto the resource ledger by destroy_summon.
   "creature_defeated",
+  // Knockout revive (Auto-Life / Reraise) — fired by the defeat reactor for the
+  // KO'd creature ITSELF, after the KO status lands, only while it holds such a
+  // row (knockout-revive.js). Side wipe and Soldier/Elite removal wait for it.
+  "creature_knocked_out",
   // Standalone phase triggers — fire outside any action card and don't
   // manipulate an active action's values. Examples per RAW: High Speed
   // ("at the start of a conflict, you may spend 10 MP and..."),
@@ -312,6 +316,7 @@ export const TRIGGER_PHASE = Object.freeze({
   "creature_loses_status":      "post-resolve",
   // Defeat (post-commit, subject = the defeated creature; observer-aware).
   "creature_defeated":          "post-resolve",
+  "creature_knocked_out":       "post-resolve",
   // Legacy-bridged triggers — all post-resolve by RAW shape.
   "creature_performs_check":      "post-resolve",
   "creature_fumbles_check":       "post-resolve",

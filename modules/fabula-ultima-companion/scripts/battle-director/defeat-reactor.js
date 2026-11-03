@@ -38,6 +38,7 @@ import { log, warn } from "./logger.js";
 import { playDefeatPose } from "./battler-pose.js";
 import { defeatStyleFromFlags, DEFAULT_DEFEAT_STYLE, defeatStartsOnHit, ownsDefeatReaction } from "./defeat-styles.js";
 import { playDefeatFx, restoreDefeatFx } from "./defeat-fx.js";
+import { KNOCKOUT_TRIGGER, holdsKnockoutRevive, markReviveTried, clearReviveTried, isKnockoutReviveEffect } from "./knockout-revive.js";
 
 // Property paths — kept identical to the legacy auto-defeat hook.
 const PATH_DB_OPTION = "system.props.option_autoDefeat";
@@ -501,7 +502,9 @@ async function cleanseBuffsDebuffsOnKO(actor) {
     warn("defeat-reactor: could not load isBuffOrDebuffAE for on-KO cleanse", e);
     return;
   }
-  const doomed = (actor.effects?.contents ?? []).filter(isBuffOrDebuffAE);
+  // A revive riding a buff (Auto-Life / Reraise) is what this KO is waiting
+  // for — it must survive the cleanse to fire (knockout-revive.js).
+  const doomed = (actor.effects?.contents ?? []).filter((e) => isBuffOrDebuffAE(e) && !isKnockoutReviveEffect(e));
   if (!doomed.length) return;
   const ids = doomed.map((e) => e.id).filter(Boolean);
   try {
@@ -554,10 +557,16 @@ export async function defeatReactor(director, cfg, extra) {
   // scene still fire their on-death passives). `num` returns null on a bad read
   // — guard so a null doesn't coerce to 0 and false-trigger.
   const hp = num(get(actor, PATH_HP));
-  if (actor && hp != null && hp <= 0) {
+  const down = !!actor && hp != null && hp <= 0;
+  if (!down) clearReviveTried(actor);
+  if (down) {
     await emitCreatureDefeated(director, actor, payload, extra?.firedKeys);
   }
-  const removed = await evaluateDefeat(director, actor, payload);
+  // Auto-Life / Reraise (knockout-revive.js): a creature holding a revive is
+  // knocked out like any survivor — KO status, cleanse, KO pose — and NOT removed
+  // yet, so its creature_knocked_out reaction can raise it.
+  const reviving = down && holdsKnockoutRevive(actor);
+  let removed = reviving ? false : await evaluateDefeat(director, actor, payload);
   if (!removed) {
     try { cancelDefeatOnHit(actor, (await resolveDefeatedToken(actor, payload))?.uuid ?? null); }
     catch (e) { warn("defeat-reactor: cancelDefeatOnHit threw", e); }
@@ -566,6 +575,59 @@ export async function defeatReactor(director, cfg, extra) {
   // status; recovery (HP > 0) reconciles it off on the same reactor. Removed
   // creatures are gone — skip.
   if (!removed) await evaluateDefeatStatus(actor);
+
+  if (reviving) {
+    await emitKnockedOut(director, actor, payload, extra?.firedKeys);
+    if (isActorDefeated(actor)) {
+      // The revive did not raise it (condition false, declined, no HP): it is
+      // down for good this time. Stop holding the side wipe, and let the removal
+      // gates decide as they would have without the revive.
+      markReviveTried(actor);
+      log(`defeat-reactor: ${actor.name} — knockout revive did not raise it; defeat proceeds`);
+      removed = await evaluateDefeat(director, actor, payload);
+    } else {
+      // Raised: take the KO status off now, so it stands up with the revive
+      // instead of at the next HP event.
+      clearReviveTried(actor);
+      await evaluateDefeatStatus(actor);
+    }
+    try {
+      const { checkSideWipe } = await import("./state-handlers.js");
+      checkSideWipe(director);
+    } catch (e) { warn("defeat-reactor: side-wipe re-check after a knockout revive threw", e); }
+  }
+}
+
+// Fire the knocked-out creature's OWN `creature_knocked_out` reactions — after
+// the KO is applied, so a revive plays out over a real KO (status, pose). Self
+// only: an onlooker reacting to a KO uses creature_defeated. Deduped per actor
+// in the settle like the on-death emit, so a multi-strike kill revives once.
+async function emitKnockedOut(director, actor, payload, firedKeys) {
+  const key = `cko:${actor.uuid}`;
+  if (firedKeys?.has?.(key)) return;
+  firedKeys?.add?.(key);
+  const tokenDoc = await resolveDefeatedToken(actor, payload);
+  const placeable = tokenDoc?.object
+    ?? canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === actor.uuid)
+    ?? null;
+  if (!placeable) { warn(`defeat-reactor: ${actor.name} knocked out with no token — revive skipped`); return; }
+  const koPayload = {
+    trigger:          KNOCKOUT_TRIGGER,
+    sourceActorUuid:  actor.uuid,
+    sourceTokenUuid:  tokenDoc?.uuid ?? null,
+    subjectActorUuid: actor.uuid,
+    subjectTokenUuid: tokenDoc?.uuid ?? null,
+    element:          payload?.element ?? null,
+    cause:            payload?.cause ?? null,
+    causeActorUuid:   payload?.causeActorUuid ?? null,
+    causeTokenUuid:   payload?.causeTokenUuid ?? null,
+  };
+  try {
+    const { dispatchReactionMenu } = await import("./standalone-reactions.js");
+    await dispatchReactionMenu({ director, reactor: actor, token: placeable, trigger: KNOCKOUT_TRIGGER, payload: koPayload });
+  } catch (e) {
+    warn(`defeat-reactor: emitKnockedOut dispatch threw for ${actor?.name}`, e);
+  }
 }
 
 // One-time sweep over all combatants — removes creatures that begin combat

@@ -1904,7 +1904,10 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
   // clear. Narrow by construction — only these two triggers newly reach the
   // scan, and only for an already-defeated reactor.
   const OUT_OF_CONFLICT_TRIGGERS = new Set(["party_rested", "session_started"]);
+  // creature_knocked_out is the KO'd creature's own Auto-Life / Reraise, fired by
+  // the defeat reactor after the KO lands (knockout-revive.js) — down by definition.
   if (trigger !== "creature_defeated"
+      && trigger !== "creature_knocked_out"
       && !OUT_OF_CONFLICT_TRIGGERS.has(trigger)
       && isActorDefeated(casterActor)) return [];
   const out = [];

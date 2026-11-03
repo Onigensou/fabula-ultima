@@ -20,6 +20,7 @@ import {
   defeatStartsOnHit,
   ownsDefeatReaction,
 } from "./defeat-styles.js";
+import { holdsKnockoutRevive, markReviveTried, clearReviveTried, isKnockoutReviveEffect } from "./knockout-revive.js";
 
 let pass = 0, fail = 0;
 const eq = (label, got, want) => {
@@ -152,6 +153,24 @@ eq("launched reads as a style", defeatStyleFromFlags(withStyle("launched")), "la
   eq("own reaction: Foundry-style collections (.contents)", ownsDefeatReaction({ items: { contents: [item({ 0: row("creature_defeated") })] }, effects: { contents: [] } }), true);
   const hostileActor = new Proxy({}, { get() { throw new Error("boom"); } });
   eq("own reaction: unreadable actor → assume it might react", ownsDefeatReaction(hostileActor), true);
+  eq("own reaction: an Auto-Life (creature_knocked_out) row counts", ownsDefeatReaction({ items: [], effects: [ae({ 0: row("creature_knocked_out") })] }), true);
+
+  // ── Knockout revive (Auto-Life / Reraise) — knockout-revive.js ──
+  const live = (rows) => ({ uuid: "Actor.k" + Math.random(), items: [], effects: [], appliedEffects: [ae(rows)] });
+  eq("revive: none held", holdsKnockoutRevive({ uuid: "Actor.n", items: [], appliedEffects: [] }), false);
+  eq("revive: AE row held", holdsKnockoutRevive(live({ 0: row("creature_knocked_out") })), true);
+  eq("revive: item row held", holdsKnockoutRevive({ uuid: "Actor.i", items: [item({ 0: row("creature_knocked_out") })], appliedEffects: [] }), true);
+  eq("revive: an OFF row holds nothing", holdsKnockoutRevive(live({ 0: row("creature_knocked_out", { reaction_passive_mode: "off" }) })), false);
+  eq("revive: a deleted row holds nothing", holdsKnockoutRevive(live({ 0: row("creature_knocked_out", { $deleted: true }) })), false);
+  eq("revive: a disabled AE holds nothing", holdsKnockoutRevive({ uuid: "Actor.d", items: [], appliedEffects: [{ ...ae({ 0: row("creature_knocked_out") }), disabled: true }] }), false);
+  eq("revive: an on-death row is not a revive", holdsKnockoutRevive(live({ 0: row("creature_defeated") })), false);
+  const tried = live({ 0: row("creature_knocked_out") });
+  markReviveTried(tried);
+  eq("revive: a tried revive no longer holds", holdsKnockoutRevive(tried), false);
+  clearReviveTried(tried);
+  eq("revive: back up → holds again", holdsKnockoutRevive(tried), true);
+  eq("revive: the AE is spared by the KO cleanse", isKnockoutReviveEffect(ae({ 0: row("creature_knocked_out") })), true);
+  eq("revive: an ordinary buff is not spared", isKnockoutReviveEffect(ae({ 0: row("creature_takes_damage") })), false);
 }
 
 console.log(`${pass} passed, ${fail} failed`);

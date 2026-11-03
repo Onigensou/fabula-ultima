@@ -111,6 +111,7 @@ import { classifyActionIntent, resolveActionTags, INVENTORY_ACTION_TAG } from ".
 import { isAutopilotEnabled, isAiControlledTurn, isAiControlledCombatant, autopilotPickCombatant, autopilotDecideAction } from "./enemy-autopilot.js";
 import { isSummonAutopilotEnabled, isAutomatedSummon, isAutomatedSummonTurn, summonVetoMs, isGuestActor } from "./summon-autopilot.js";
 import { isBattlefieldObject } from "./battlefield-object.js";
+import { holdsKnockoutRevive } from "./knockout-revive.js";
 import { resolveAnimationSpec, playDirectorAnimation, prestageAnimation } from "./director-animation.js";
 import { chainSpecFor, drawChainTargets, narrowToTargets, buildChainPlan, chainTargetOf, chainHitsView, chainMissesOf, chainCombinedLine, chainCombinedMissOf } from "./chain-plan.js";
 import { wasPresented, presentChainWithoutAnimation } from "./chain-presenter.js";
@@ -257,7 +258,10 @@ function sideIsWiped(dc, side) {
   // lose, so it counts as wiped — otherwise a fight where every PC is down but a
   // guest remains would never end.
   if (!members.length) return true;
-  return members.every((c) => c.isDefeatedLive());
+  // A downed creature that still holds an untried Auto-Life / Reraise has not
+  // lost yet: the defeat reactor raises it, or marks the revive tried and calls
+  // this again (knockout-revive.js).
+  return members.every((c) => c.isDefeatedLive() && !holdsKnockoutRevive(c.actorDoc));
 }
 
 // End dCombat when EITHER side is wiped, so the FSM routes to BATTLE_ENDING on

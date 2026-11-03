@@ -408,6 +408,16 @@ Hooks.once("ready", () => {
       filters: ["source"]
     },
     {
+      // Auto-Life / Reraise: the KO'd creature's OWN reaction, after its KO
+      // lands (status, pose). Restore HP to revive; side wipe and Soldier/Elite
+      // removal wait for it (battle-director/knockout-revive.js). Self only.
+      key: "creature_knocked_out",
+      label: "After this creature is knocked out (Auto-Life / revive)",
+      bucket: "resolution_phase",
+      subjectFrom: SUBJECT_STATE_CHANGED,
+      filters: ["source"]
+    },
+    {
       key: "creature_unleashes_zero_power",
       label: "When a creature unleashes Zero Power",
       bucket: "resolution_phase",
@@ -457,7 +467,7 @@ Hooks.once("ready", () => {
       "creature_recovers_hp", "creature_recovers_mp", "creature_lose_mp",
       "creature_takes_damage", "creature_deals_damage", "creature_will_deal_damage",
       "creature_shield_break", "creature_enter_crisis", "creature_exit_crisis",
-      "creature_defeated"
+      "creature_defeated", "creature_knocked_out"
     ],
     // "which status changed" — status filter. Crisis enter/exit are status
     // changes too (Crisis is an AE), so a "when Crisis lands" row can scope by name.

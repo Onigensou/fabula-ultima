@@ -161,10 +161,11 @@ export function defeatStyleFromFlags(flags, ns = DEFEAT_MODULE_ID) {
  * start, never correctness. Pure: plain objects or Foundry documents.
  */
 export function ownsDefeatReaction(actor, ns = DEFEAT_MODULE_ID) {
-  const TRIG = "creature_defeated";
+  // creature_knocked_out = Auto-Life / Reraise: the creature may get back up.
+  const TRIGS = new Set(["creature_defeated", "creature_knocked_out"]);
   const hasRow = (node, depth = 0) => {
     if (!node || typeof node !== "object" || depth > 3) return false;
-    if (String(node.reaction_trigger ?? "").trim() === TRIG && !node.$deleted) return true;
+    if (TRIGS.has(String(node.reaction_trigger ?? "").trim()) && !node.$deleted) return true;
     return Object.values(node).some((v) => hasRow(v, depth + 1));
   };
   const list = (c) => (Array.isArray(c) ? c : (c?.contents ?? (c ? Object.values(c) : [])));
