@@ -8033,6 +8033,9 @@ export async function postActionCard({ director, kind, payload }) {
           carrierKind: p.carrierKind,
           carrierUuid: p.carrierUuid,
           carrierName: p.carrierName,
+          // The passive card RESOLVE raises for this reaction shows it as
+          // the icon; without it every accepted card reaction showed 📜.
+          carrierImg: p.carrierImg ?? null,
           rowKey: p.rowKey,
           mode: p.mode,
           ref: p.ref,

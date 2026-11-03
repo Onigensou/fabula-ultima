@@ -563,7 +563,8 @@ export function beginPassiveCard({ candidate, carrier, item, table, actor, caste
   const tokenUuid = tokenUuidOf(casterToken);
   if (!tokenUuid || !candidate) return NOOP;
   const title = String(candidate.carrierName ?? "Passive");
-  const base = { title, tokenUuid, icon: safeIcon(candidate.carrierImg), mode: candidate.mode ? String(candidate.mode) : null };
+  // A candidate that arrives without its picture takes its owner's.
+  const base = { title, tokenUuid, icon: safeIcon(candidate.carrierImg || carrier?.img), mode: candidate.mode ? String(candidate.mode) : null };
   const dial = CFG.detail;
   // An effect another creature put on the owner (Searing Brand's caster): harm it does to "self" is an attack.
   const appliedBy = candidate.carrierKind === "ae" ? carrier?.flags?.[NS]?.directorAppliedBy?.reactorActorUuid : null;
