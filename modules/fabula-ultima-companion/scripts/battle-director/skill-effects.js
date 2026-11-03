@@ -2292,10 +2292,12 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
   });
   // Show the passive card for auto-fire rows (on / force); ask-mode rows
   // already have a blade menu as visual feedback. FIRE-AND-FORGET: the game
-  // flow no longer blocks on the card's ~280ms enter before applying the
-  // effect (dropped the await). The spec still enqueues synchronously here,
-  // so the FIFO queue preserves the one-at-a-time stagger — each actor's
-  // badge still animates in turn, just off the critical path.
+  // flow never blocks on the card. Passive card v2 (2026-11-03):
+  // beginPassiveCard decides whether this firing gets a card and its tier. A
+  // chain it can't wait for (a prompt, an animation, damage) gets its card now,
+  // before it runs; a quick one is decided by settle() from what changed on its
+  // owner, so a failed roll, a re-arm of something already Ready or a +0 bonus
+  // shows nothing. Pacing happens on each client (director-passive-card-ui.js).
   //
   // The `silent` action keyword (`action_keywords` on the carrier skill — the
   // same inherent-keyword prop execute / fickle / blitz live on) opts the skill
@@ -2314,24 +2316,28 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
       broadcastStatusTick({ casterToken: ctx.reactorToken, name: carrier?.name });
     } catch (e) { warn("firePreAcceptedCandidate: status tick flash threw", e); }
   }
+  let passiveCard = null;
   if (isAutoFireReactionMode(candidate.mode) && ctx.reactorToken && !hideCard && !statusTick
       && chainShowsPassiveCard(director, ctx.reactorToken?.document?.uuid ?? ctx.reactorToken?.uuid ?? null, candidate)) {
     try {
-      const { enqueuePassiveCard } = await import("./passive-card-ui/director-passive-card-ui.js");
-      enqueuePassiveCard({
-        title:       candidate.carrierName,
-        casterToken: ctx.reactorToken,
-        icon:        candidate.carrierImg,
-        // on vs force: the reaction deck auto-plays only `on` rows (a force
-        // row is engine bookkeeping, e.g. Protect's turn-start refill).
-        mode:        candidate.mode,
-      }).catch((e) => warn("firePreAcceptedCandidate: passive card threw", e));
+      const { beginPassiveCard } = await import("./passive-card-ui/director-passive-card-ui.js");
+      // The card carries the row's mode (on vs force): the reaction deck
+      // auto-plays only `on` rows (a force row is engine bookkeeping, e.g.
+      // Protect's turn-start refill).
+      passiveCard = beginPassiveCard({
+        candidate, carrier, item: skillForCtx ?? carrier, table: runtimeEffectTable,
+        actor: casterActor, casterToken: ctx.reactorToken, payload,
+        round: director?.dCombat?.round ?? game.combat?.round ?? 0,
+      });
     } catch (e) {
-      warn("firePreAcceptedCandidate: passive card import threw", e);
+      warn("firePreAcceptedCandidate: passive card threw", e);
     }
   }
 
   const r = await applyEffectByLabel(candidate.ref, ctx);
+  if (passiveCard) {
+    Promise.resolve(passiveCard.settle(r)).catch((e) => warn("firePreAcceptedCandidate: passive card settle threw", e));
+  }
 
   // ── Encyclopedia witness ──────────────────────────────────────────────
   // The party just saw this passive resolve — the passive card broadcast its
