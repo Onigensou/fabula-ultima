@@ -650,9 +650,12 @@ export async function playSkillAnimation({ skillUuid, casterTokenUuid, targetTok
   if (!spec.hasScript) return { played: false, reason: "no-script" };
 
   // Attack / cast pose on the caster (the FSM path poses in Animation.onEnter).
+  // Item-type animations pose nobody, like the Item action itself (the shared
+  // revive cinematic plays on a fallen Life Charm holder and a Phoenix Feather user).
   try {
     const skill = await fromUuid(skillUuid);
-    if (casterTokenUuid) emitBattlerPose({ tokenUuid: casterTokenUuid, pose: skillPose(skill?.system?.props?.skill_type) });
+    const type = String(skill?.system?.props?.skill_type ?? "").toLowerCase();
+    if (casterTokenUuid && type !== "item") emitBattlerPose({ tokenUuid: casterTokenUuid, pose: skillPose(type) });
   } catch (e) { warn("[BD Anim] battler pose threw", e); }
 
   // True-end watch (see armAnimationEndWatch). executeAnimationScript below

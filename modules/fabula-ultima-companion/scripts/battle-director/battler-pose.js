@@ -231,6 +231,8 @@ function forgetAll() {
 function startOneShot(token, pose, { hold = false, art = null } = {}) {
   const entry = entryFor(token);
   if (entry.lasting === "ko" && pose !== "ko") return 0;   // the fallen don't flinch
+  // ...nor does one held down by a staged KO (Life Charm) until "idle" releases it.
+  if (entry.oneShot?.pose === "ko" && entry.oneShot.hold && pose !== "ko") return 0;
   const src = art?.src ?? poseSrc(propsOf(token), pose, _failedSrcs);
   if (!src) return 0;                                       // no art: fallback = nothing to show
   const a = art ?? loadArt(token, src);
