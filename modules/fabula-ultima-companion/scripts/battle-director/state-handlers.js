@@ -2231,6 +2231,21 @@ const RoundStart = {
     const roundNo = director.dCombat?.round ?? director.combat?.round ?? 0;
     log(`ROUND_START — round ${roundNo}`);
 
+    // A sim run's round budget ends the battle HERE, at a fixed point, before
+    // anything of the new round happens. The sim used to stop it from outside,
+    // from a 400 ms poll, so where the FSM was when the stop landed (before or
+    // after the round_start reactions) depended on how fast the client was, and
+    // two runs of the same seeded battle ended differently.
+    if (SimMode.active) {
+      const budget = Math.min(Number(SimMode.config.expectedRounds) || Infinity, Number(SimMode.config.maxRounds) || Infinity);
+      if (roundNo > budget) {
+        log(`ROUND_START — round ${roundNo} is past the sim's ${budget}-round budget: ending the battle`);
+        director.ctx.endOfCombat = true;
+        director.enqueue({ type: INTENTS.INTERNAL_DONE });
+        return;
+      }
+    }
+
     // Determine which side seizes initiative THIS round (director-orchestrated,
     // committed to dCombat before TURN_START picks) and the seal that announces
     // it on the round plate. Awaited so currentSide is authoritative before the picker.
