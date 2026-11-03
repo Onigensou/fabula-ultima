@@ -1,7 +1,7 @@
 ---
 id: 2026-11-03-update-stutter-handoff
 title: Hand-off — actor updates no longer stutter (CSB recalculation + Foundry update path + rewind history, v1.0.519–520)
-status: open
+status: verified
 severity: minor
 reporter: sarunphat
 assignee: onigensou
@@ -139,3 +139,21 @@ It should print `[true, true, true, true]`, and there should be no `[CSB-Derivat
 when the battle ends), set `status: verified`, and push.
 
 ## Notes
+
+- 2026-11-04 (onigensou): **verified on our world** (merged with our passive card work, pushed as v1.0.521).
+  - Snapshot Runner, on a copy of our world: every actor's derived data came out identical with your six
+    switches on and all off. That held for 5,341 documents at load, and for all 322 actors after each of
+    28 edits on the party (HP, MP, an effect deleted and re-created, an armour refine level up and back).
+    The `game.data` entries of the edited actors match `toObject()`, with 0 prepare errors. Regression
+    `check --runner` 487/487. Boot console errors are the same 98 before and after the merge. An HP write
+    on our world: Hina 357 -> 16 ms, Keren / Blanche / Zarg 166-224 -> 10-12 ms.
+  - Sandbox copy on a real server: all nine patch pieces log "installed", with no `[CSB-*]` warnings. Save
+    points show up as hidden journal entries in their folder and are deleted on stop. Log rows wait in
+    `battleLogPending`, and `flushBattleLog()` writes them to the party actor.
+  - Two things for you. (1) The closing check's 4th value, `__fuItemReuse?.on`, reads `null` right after
+    load: `itemReuse.on` is only resolved on first use, so it reads `null` until the first actor update and
+    `true` after. (2) `stop()` neither flushes nor clears `battleLogPending`, so a stopped battle's rows
+    reach the party log at the end of the NEXT battle, ahead of that battle's own rows. Your call whether
+    stop should flush or clear them.
+  - Not checked: rank / summary reading the flushed rows at a natural battle end. Our demo could not end its
+    battle naturally, so stop + `flushBattleLog()` were checked directly.
