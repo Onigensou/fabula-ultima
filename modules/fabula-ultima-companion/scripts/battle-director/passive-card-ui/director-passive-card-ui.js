@@ -590,7 +590,8 @@ export function beginPassiveCard({ candidate, carrier, item, table, actor, caste
       try {
         const d = await decideAfter({ p, result, before, actor, item, title, tokenUuid, dial, candidate, payload, round });
         remember(title, d);
-        if (d.show) broadcastCard({ ...base, tier: d.tier, res: CFG.readout ? (d.res ?? null) : null });
+        // The points change goes out even with the readout off: it picks the reset cue.
+        if (d.show) broadcastCard({ ...base, tier: d.tier, res: d.res ?? null });
         else if (d.chime) broadcastCard({ tokenUuid, title, chime: true });
       } catch (e) {
         warn("[BD][PassiveCardUI] card decision failed", e);

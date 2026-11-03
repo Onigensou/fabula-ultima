@@ -6,7 +6,7 @@
 // user's pick of 2026-11-03 ("not concrete — keep tuning"):
 //
 //   Detail level 6 — Ready: Card · Enemy states: Card once · Background: Card every time
-//   Compact when 5+ cards are up · B Points readout · C Sound by tier · F Color by tier
+//   Compact when 5+ cards are up · C Sound by tier · F Color by tier (B Points readout off since 2026-11-04)
 //   Sound lab: per-cue picks below, gap 350 ms, repeats sound each time
 //   Look lab: ×N white with glow · Background lines neutral
 //
@@ -23,7 +23,7 @@ export const PASSIVE_CARD_CONFIG = Object.freeze({
   detail: Object.freeze({ ready: "card", enemy: "once", bg: "every" }),
 
   compact: true,        // cards that arrive while BUSY or more are up come in the compact size
-  readout: true,        // B: a points line shows what it granted and the new total, "+1 Adoration (1/5)"
+  readout: false,       // B: a points line shows what it granted and the new total, "+1 Adoration (1/5)"
   soundByTier: true,    // C: each tier plays its own cue; off = passive_card for every line
   colorByTier: true,    // F: the tier colors the band's hairlines and each icon frame
   xStyle: "glow",       // ×N suffix look: "glow" | "outline" | "raised"
