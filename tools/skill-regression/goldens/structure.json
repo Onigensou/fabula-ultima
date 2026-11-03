@@ -23488,7 +23488,7 @@
     "related_item_list": "{\"wzcDK3lCWXGYqok6\":{\"name\":\"Phoenix Feather\",\"id\":\"${item.id}\",\"uuid\":\"Item.wzcDK3lCWXGYqok6\",\"related_item_description\":\"<p><em>Phoenix Feather:</em> revive an ally to their Crisis score.</p>\"}}",
     "rolled_atr1": "DEX",
     "rolled_atr2": "DEX",
-    "skill_target": "One Ally",
+    "skill_target": "One KO Ally",
     "weapon_range": "Melee"
    },
    "effects": [
@@ -23503,7 +23503,7 @@
    "props": {
     "action_command": "item",
     "on_activate_effect_ref": "phoenix_use",
-    "skill_target": "One Ally",
+    "skill_target": "One KO Ally",
     "skill_type": "Item"
    },
    "effects": [
@@ -45007,7 +45007,7 @@
    "props": {
     "action_command": "item",
     "on_activate_effect_ref": "phoenix_use",
-    "skill_target": "One Ally",
+    "skill_target": "One KO Ally",
     "skill_type": "Item"
    },
    "effects": [
@@ -45031,7 +45031,7 @@
     "related_item_list": "{\"5hvxauKmmsfLAdnl\":{\"name\":\"Phoenix Feather\",\"id\":\"${item.id}\",\"uuid\":\"Actor.t6E3CQ0pGxwLgXrn.Item.5hvxauKmmsfLAdnl\",\"related_item_description\":\"<p><em>Phoenix Feather:</em> revive an ally to their Crisis score.</p>\"}}",
     "rolled_atr1": "DEX",
     "rolled_atr2": "DEX",
-    "skill_target": "One Ally",
+    "skill_target": "One KO Ally",
     "weapon_range": "Melee"
    },
    "effects": [
@@ -51107,7 +51107,7 @@
    "props": {
     "action_command": "item",
     "on_activate_effect_ref": "phoenix_use",
-    "skill_target": "One Ally",
+    "skill_target": "One KO Ally",
     "skill_type": "Item"
    },
    "effects": [
@@ -53829,7 +53829,7 @@
     "related_item_list": "{\"gNGNhcgcpFgDT1Cu\":{\"name\":\"Phoenix Feather\",\"id\":\"${item.id}\",\"uuid\":\"Actor.dafTLBUscCDNgq8H.Item.gNGNhcgcpFgDT1Cu\",\"related_item_description\":\"<p><em>Phoenix Feather:</em> revive an ally to their Crisis score.</p>\"}}",
     "rolled_atr1": "DEX",
     "rolled_atr2": "DEX",
-    "skill_target": "One Ally",
+    "skill_target": "One KO Ally",
     "type_damage": "Physical",
     "weapon_range": "Melee"
    },
@@ -53845,7 +53845,7 @@
    "props": {
     "action_command": "item",
     "on_activate_effect_ref": "phoenix_use",
-    "skill_target": "One Ally",
+    "skill_target": "One KO Ally",
     "skill_type": "Item"
    },
    "effects": [
@@ -64993,7 +64993,7 @@
    "props": {
     "action_command": "item",
     "on_activate_effect_ref": "phoenix_use",
-    "skill_target": "One Ally",
+    "skill_target": "One KO Ally",
     "skill_type": "Item"
    },
    "effects": [
@@ -65017,7 +65017,7 @@
     "related_item_list": "{\"hYhTDntXjraRqybM\":{\"name\":\"Phoenix Feather\",\"id\":\"${item.id}\",\"uuid\":\"Actor.LlbVwdpPONdny8Wx.Item.hYhTDntXjraRqybM\",\"related_item_description\":\"<p><em>Phoenix Feather:</em> revive an ally to their Crisis score.</p>\"}}",
     "rolled_atr1": "DEX",
     "rolled_atr2": "DEX",
-    "skill_target": "One Ally",
+    "skill_target": "One KO Ally",
     "weapon_range": "Melee"
    },
    "effects": [
@@ -71743,7 +71743,7 @@
     "related_item_list": "{\"RZJ1UW2Ib3O36eCi\":{\"id\":\"${item.id}\",\"name\":\"Phoenix Feather\",\"related_item_description\":\"<p><em>Phoenix Feather:</em> revive an ally to their Crisis score.</p>\",\"uuid\":\"Actor.Z4CFy505cD3nzl1W.Item.RZJ1UW2Ib3O36eCi\"}}",
     "rolled_atr1": "DEX",
     "rolled_atr2": "DEX",
-    "skill_target": "One Ally",
+    "skill_target": "One KO Ally",
     "weapon_range": "Melee"
    },
    "effects": [
@@ -71758,7 +71758,7 @@
    "props": {
     "action_command": "item",
     "on_activate_effect_ref": "phoenix_use",
-    "skill_target": "One Ally",
+    "skill_target": "One KO Ally",
     "skill_type": "Item"
    },
    "effects": [
