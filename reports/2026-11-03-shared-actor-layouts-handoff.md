@@ -1,7 +1,7 @@
 ---
 id: 2026-11-03-shared-actor-layouts-handoff
 title: Hand-off — actors now share their sheet layouts (empty system.body is intended), plus the v1.0.513 fixes
-status: open
+status: verified
 severity: minor
 reporter: sarunphat
 assignee: onigensou
@@ -133,3 +133,21 @@ It should print 0, and a few NPC and PC sheets should look as before. Then set
   cancels Crippled's halving. That is a pre-existing CSB stacking quirk, and Flying-style
   additions stack fine. Rakshasa can go back into battles. Script:
   `tools/safe-edit/bin/_fix-rakshasa-resources.js`.
+
+## Verified live (2026-11-03, onigensou, Foundry 12.343, v1.0.515)
+
+- `__fuSharedActorLayouts.missing.size` = **0**; all 262 `layoutRef` actors resolve a non-empty
+  prepared `system.body`; `_Layout Library` present (`iWCNDjN91VMalobs`, `_template`).
+- Sheets render: Agent Delta, Alicia, Alonzo, Andrey, Aero / Cryo / Electro Gorger.
+- Rakshasa (v1.0.514/515): every listed skill has its chain row; Crippled carries
+  `roundUp: ["defense"]`, duration none. On throwaway copies: Blanche 19 → 10 and Keren
+  11 → 6, both with Crippled alone **and** with a `defense` UPGRADE 12 added — so the
+  "still known" Barrier quirk above is closed by v1.0.515.
+- world-export report 0 / 0 / 0; preflight 0 FAIL.
+
+Seen while verifying, **not caused by this change** (legacy data, our side):
+opening and closing an NPC sheet re-syncs its skill-list copies from the embedded skill
+items. 184 actors carry embedded skills whose links predate the styled-link convention,
+so opening their sheets drops the styling from the (styled) list copies. Electro Gorger's
+`attribute` is the legacy value `BOLT` (not a dropdown option; every other lightning actor
+uses `LIGHTNING`), so its sheet saves it blank. Both are ours to clean up.
