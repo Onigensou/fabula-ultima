@@ -206,3 +206,17 @@ backdrops without a 3D model.
   (`csb-derivation-perf.js` (5): an unchanged, self-contained item keeps its derived data across an actor update). Hina HP
   write 273 → 95 ms; seeded battle: recalculation 4.56 → 1.58 s, long tasks 10.2 → 4.8 s, same battle. Parity: 322 actors,
   354 change scenarios vs a full rebuild, 487/487 regression, simulate 485/487 vs HEAD (2 flakes that also flip on HEAD).
+- **2026-11-03 (night): recalculate only what changed.** `csb-derivation-perf.js` (7) is CSB 4.8.5's `_prepareEntityData`
+  (same passes, order, pass-start reads, Active Effects, modifiers, attribute bars) that compares the values each phrase
+  reads with what it read last time on that document and reuses the result, "not computable yet" included; impure
+  phrases are evaluated every time. Also: arrays instead of `for…in` + `delete` (~3.5 ms alone), one prop-name list per
+  pass, no dotted-key scan per reset merge, binary-search item-container reset, component map kept per layout tree.
+  (8) the `game.data` mirror copy (`DocumentCollection#set` → `toObject`) is made only when read. AE gate: trace-only
+  snapshots and gate listing skipped unless tracing; condition effects collected once per prepare; pass data copied
+  top-level only. Hina HP write 51 → 19 ms under the profiler (same 12-write script), ~13 ms unprofiled (Keren/Blanche/Zarg ~7; AE
+  create+delete 58 → 22 with (7)+(8) toggled live). Seeded battle: CSB
+  prepare 0.66 → 0.32 s (6 ms a call), long tasks 2.2 → 1.9 s, worst lag 312 → 309 ms (not CSB), same battle. Parity
+  430/430 vs a full rebuild with all patches off (incl. 36 input edits), 0 `game.data` mismatches, 487/487 regression,
+  simulate 487/487 vs `aaf77aa3`. Left in Hina's ~13 ms: setup of the compute list (item-container rows, resets) ~3 ms,
+  Active Effect applies ~2 ms, Foundry's update backup `deepClone` in `#updateData` ~1.6 ms (private, not patchable),
+  DataModel re-init ~0.9 ms. Kill switches `csbIncrementalPrepare`, `foundryLazyDataMirror`.

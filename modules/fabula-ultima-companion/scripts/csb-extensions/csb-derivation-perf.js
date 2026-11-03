@@ -89,11 +89,28 @@
         return plan;
     }
 
+    const CSB = '/systems/custom-system-builder/module';
     const csbImports = Promise.all([
-        import('/systems/custom-system-builder/module/sheets/components/ItemContainer.js'),
-        import('/systems/custom-system-builder/module/documents/CustomActiveEffect.js'),
-        import('/systems/custom-system-builder/module/documents/TemplateSystem.js')
-    ]).then(([ic, ae, ts]) => ({ ItemContainer: ic.default, CustomActiveEffect: ae.default, TemplateSystem: ts.default }));
+        import(`${CSB}/sheets/components/ItemContainer.js`),
+        import(`${CSB}/documents/CustomActiveEffect.js`),
+        import(`${CSB}/documents/TemplateSystem.js`),
+        // what _prepareEntityData uses, for (7)
+        import(`${CSB}/utils.js`),
+        import(`${CSB}/errors/UncomputableError.js`),
+        import(`${CSB}/interfaces/ComputableElement.js`),
+        import(`${CSB}/interfaces/AttributeBarElement.js`),
+        import(`${CSB}/documents/simpleImplementations/SimpleComputableElement.js`),
+        import(`${CSB}/documents/simpleImplementations/SimpleAttributeBarElement.js`),
+        import(`${CSB}/formulas/ComputablePhrase.js`),
+        import(`${CSB}/Logger.js`),
+        import(`${CSB}/interfaces/Modifier.js`),
+    ]).then(([ic, ae, ts, u, ue, ce, abe, sce, sabe, cp, lg, mod]) => ({
+        ItemContainer: ic.default, CustomActiveEffect: ae.default, TemplateSystem: ts.default,
+        castToPrimitive: u.castToPrimitive, removeNull: u.removeNull, UncomputableError: ue.UncomputableError,
+        isComputableElement: ce.isComputableElement, isAttributeBarElement: abe.isAttributeBarElement,
+        SimpleComputableElement: sce.default, SimpleAttributeBarElement: sabe.default,
+        ComputablePhrase: cp.default, Logger: lg.default, applyModifiers: mod.applyModifiers,
+    }));
     csbImports.catch(() => {});
 
     Hooks.once('customSystemBuilderInit', async () => {
@@ -109,6 +126,8 @@
         patchActiveEffectFlagBatching(imports.CustomActiveEffect);
         patchItemPrepareOnce();
         patchPassSnapshot(imports.TemplateSystem);
+        patchIncrementalPrepare(imports);
+        patchLazyDataMirror();
     });
 
     Hooks.once('init', () => {
@@ -145,6 +164,28 @@
                 default: true,
             });
         } catch (e) { console.warn(`${TAG} pass-snapshot setting registration failed`, e); }
+        try {
+            game.settings.register('fabula-ultima-companion', INC_SETTING, {
+                name: 'CSB: recalculate only what changed',
+                hint: 'A calculation whose inputs are the same as last time keeps its last result instead '
+                    + 'of going through the formula engine again. Requires a reload.',
+                scope: 'world',
+                config: false,
+                type: Boolean,
+                default: true,
+            });
+        } catch (e) { console.warn(`${TAG} incremental-prepare setting registration failed`, e); }
+        try {
+            game.settings.register('fabula-ultima-companion', MIRROR_SETTING, {
+                name: 'Foundry: copy updated documents into game.data only when read',
+                hint: 'An update no longer deep-copies the whole document into game.data; the copy is '
+                    + 'made the first time something reads it. Requires a reload.',
+                scope: 'world',
+                config: false,
+                type: Boolean,
+                default: true,
+            });
+        } catch (e) { console.warn(`${TAG} lazy-mirror setting registration failed`, e); }
     });
 
     /* -------------------------------------------------------------- (1) --- */
@@ -569,6 +610,7 @@
             finally { snapCtx = prevCtx; globalThis.foundry.utils = prevUtils; }
         };
         prep.__fuSnap = true;
+        prep.__fuOriginal = origPrep;
         proto._prepareEntityData = prep;
         globalThis.__fuPassSnapshot = passSnap;
         console.info(`${TAG} copy-on-write pass snapshot installed.`);
@@ -580,6 +622,531 @@
             catch { return false; }
         }
         return passSnap.on;
+    }
+
+    /* -------------------------------------------------------------- (7) --- */
+    // RECALCULATE ONLY WHAT CHANGED. After (1)-(6) and the formula memo, most of an HP write
+    // was still CSB's calculation loop itself, though nearly every result comes back the same:
+    // each formula, cache hit or not, is parsed into a phrase, gets a list of all 375 prop names,
+    // a merged copy of the props when it lists an item, and a thrown error each pass it has to
+    // wait for another prop (measured 2026-11-03: ~30 of Hina's ~51 ms).
+    //
+    // This is CSB 4.8.5's _prepareEntityData with the same passes, the same order, the same
+    // pass-start reads, Active Effects, deprecated modifiers and attribute bars, and one change:
+    // before a phrase is evaluated, the values it reads are compared with the values it read the
+    // last time this prop was attempted on this document. Same values, same result (including
+    // "not computable yet"), so the recorded result is reused and the formula engine is not
+    // entered. A phrase's inputs come from the formula memo's plan of each of its formulas, so the
+    // contract is the memo's: a formula reading only plain values is a function of them. Anything
+    // else is evaluated exactly as CSB does, every time: a phrase with a script, a nested formula,
+    // a local variable or any function the memo calls impure; an input that is not a plain value;
+    // a row's custom props that would merge into an existing object. Deprecated modifiers and
+    // Active Effects on a prop are applied to its result every time, reused or not.
+    //
+    // Also cheaper than CSB, same result: the pass-start copy of the props is copy-on-write along
+    // the written path (see (6)); the prop-name list is built once per pass instead of once per
+    // formula; the reset values merge without Foundry's dotted-key scan of all props per
+    // component; an item container's reset finds "is any key under this row" by binary search;
+    // a document built from a template keeps its component map until its layout tree changes.
+    // Guarded by a hash of CSB's function: any other CSB version keeps CSB's own loop.
+    //
+    // Measured 2026-11-03 (Snapshot Runner): Hina's HP write 51 -> 19 ms under the profiler, ~13 ms
+    // unprofiled, with (8) and the Active Effect gate's trace-only work skipped; Keren/Blanche/Zarg ~7 ms. Seeded battle: CSB
+    // prepare 0.66 -> 0.32 s (6 ms a call), same battle. Parity: every actor and the party's input,
+    // item and effect edits equal a full rebuild with all patches off (430/430).
+    //
+    // Kill switch: world setting `csbIncrementalPrepare` (default on; reload to apply).
+    // Live A/B and stats: globalThis.__fuIncPrepare ({ on, prepares, replayed, evaluated, ... }).
+    const INC_SETTING = 'csbIncrementalPrepare';
+    // hash of CSB 4.8.5's TemplateSystem#_prepareEntityData with whitespace removed
+    const CSB_PREP_HASH = '4786:hht46i';
+    const inc = { on: null, prepares: 0, replayed: 0, evaluated: 0, unkeyed: 0, fns: 0, copies: 0 };
+    const REC = Symbol('fuIncRecord');     // TemplateSystem: Map prop -> { formula, dv, ref, attempts }
+    let incCtx = null;                      // { entity, live, snapshot } for the loop running now
+    const hasOwn = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+    const isPlain = (v) => v === null || v === undefined || typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean';
+    const hashOf = (s) => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0; return `${s.length}:${h.toString(36)}`; };
+    const getPath = (obj, path) => {
+        let cur = obj;
+        for (const part of path.split('.')) { if (cur === null || cur === undefined) return undefined; cur = cur[part]; }
+        return cur;
+    };
+
+    function patchIncrementalPrepare(H) {
+        const proto = H.TemplateSystem?.prototype;
+        const prev = proto?._prepareEntityData;
+        if (typeof prev !== 'function' || prev.__fuInc) return;
+        const hash = hashOf(String(prev.__fuOriginal ?? prev).replace(/\s+/g, ''));
+        if (hash !== CSB_PREP_HASH) {
+            console.warn(`${TAG} _prepareEntityData is not CSB 4.8.5's (hash ${hash}); skipping incremental prepare.`);
+            return;
+        }
+        const { castToPrimitive, removeNull, UncomputableError, isComputableElement, isAttributeBarElement,
+            SimpleComputableElement, SimpleAttributeBarElement, ComputablePhrase, Logger, applyModifiers } = H;
+        const extract = ComputablePhrase?.prototype?._extractFormulas;
+        const utils = globalThis.foundry?.utils;
+        if ([castToPrimitive, removeNull, UncomputableError, isComputableElement, isAttributeBarElement,
+            SimpleComputableElement, SimpleAttributeBarElement, ComputablePhrase, applyModifiers, extract,
+            H.TemplateSystem.isAppliedTemplateSystem, utils?.mergeObject, utils?.setProperty, utils?.deepClone]
+            .some((f) => typeof f !== 'function') || !Logger) {
+            console.warn(`${TAG} CSB helpers for the calculation loop not found; skipping incremental prepare.`);
+            return;
+        }
+        const realUtils = utils;
+        const realMerge = utils.mergeObject, realSet = utils.setProperty, deepClone = utils.deepClone;
+
+        // The pass-start copy shares every object the pass has not written into yet. Before a write
+        // at `path` (relative to the props), copy each object on the path that is still shared.
+        const detach = (c, path) => {
+            if (path.indexOf('.') < 0) return;
+            const parts = path.split('.');
+            let s = c.snapshot, l = c.live;
+            for (let i = 0; i < parts.length - 1; i++) {
+                const k = parts[i];
+                const lv = l[k];
+                if (!lv || typeof lv !== 'object') return;          // created or replaced by the write
+                let sv = s[k];
+                if (sv === lv) { sv = Array.isArray(lv) ? lv.slice() : { ...lv }; s[k] = sv; inc.copies++; }
+                else if (!sv || typeof sv !== 'object') return;
+                s = sv; l = lv;
+            }
+        };
+        const setProperty = function (object, key, value) {
+            const c = incCtx;
+            if (c && typeof key === 'string') {
+                let sub = null;
+                if (object === c.live) sub = key;
+                else if (object === c.entity && key.startsWith('system.props.')) sub = key.slice(13);
+                else if (object === c.entity?.system && key.startsWith('props.')) sub = key.slice(6);
+                if (sub !== null) detach(c, sub);
+            }
+            return realSet(object, key, value);
+        };
+        // Writes from Active Effects reach the props through foundry.utils.setProperty; see (6) for
+        // why foundry.utils is swapped rather than patched.
+        const view = Object.create(realUtils, { setProperty: { value: setProperty, enumerable: true } });
+        // The loop's own writes into the props: setProperty and the copy-on-write in one walk.
+        const writeLive = (c, path, value) => {
+            if (!path) return;
+            if (path.indexOf('.') < 0) { c.live[path] = value; return; }
+            const parts = path.split('.');
+            let s = c.snapshot, l = c.live;
+            for (let i = 0; i < parts.length - 1; i++) {
+                const k = parts[i];
+                if (!l || typeof l !== 'object') { detach(c, path); realSet(c.live, path, value); return; }
+                if (!hasOwn(l, k)) l[k] = {};
+                const lv = l[k];
+                if (s) {
+                    let sv = s[k];
+                    if (sv === lv && lv && typeof lv === 'object') { sv = Array.isArray(lv) ? lv.slice() : { ...lv }; s[k] = sv; inc.copies++; }
+                    s = sv && typeof sv === 'object' ? sv : null;
+                }
+                l = lv;
+            }
+            if (!l || typeof l !== 'object') { realSet(c.live, path, value); return; }
+            l[parts[parts.length - 1]] = value;
+        };
+
+        // mergeObject(props, resetValues) as Foundry does it, without scanning all 375 prop names for a
+        // dotted key on every call (one scan per prepare instead; reset values never have one).
+        const getType = utils.getType;
+        const fastMerge = (original, other) => {
+            for (const k of Object.keys(other)) {
+                const v = other[k];
+                if (hasOwn(original, k)) {
+                    const x = original[k];
+                    if (getType(v) === 'Object' && getType(x) === 'Object') fastMerge(x, v);
+                    else original[k] = v;
+                } else if (v?.constructor === Object) original[k] = fastMerge({}, v);
+                else original[k] = v;
+            }
+            return original;
+        };
+        // ItemContainer#resetComputeValue asks, for every existing row, whether ANY compute key
+        // starts with it: rows x keys. A sorted key list answers each in one binary search.
+        const IC = H.ItemContainer?.prototype;
+        const icReset = IC?.resetComputeValue;
+        const icResetSrc = String(icReset ?? '').replace(/\s+/g, '');
+        const icResetKnown = typeof icReset === 'function'
+            && icResetSrc.includes('constexistingRows=foundry.utils.getProperty(entity.system.props,this.key);')
+            && icResetSrc.includes('if(!valueKeys.some((key)=>key.startsWith(buildKey))){foundry.utils.setProperty(resetValues,buildKey,null);}');
+        const fastIcReset = function (valueKeys, entity) {
+            const resetValues = {};
+            for (const key of valueKeys) realSet(resetValues, key, undefined);
+            const existingRows = utils.getProperty(entity.system.props, this.key);
+            let sorted = null;
+            for (const existingKey in existingRows) {
+                const buildKey = `${this.key}.${existingKey}`;
+                sorted ??= [...valueKeys].sort();
+                let lo = 0, hi = sorted.length;
+                while (lo < hi) { const mid = (lo + hi) >> 1; if (sorted[mid] < buildKey) lo = mid + 1; else hi = mid; }
+                if (!(lo < sorted.length && sorted[lo].startsWith(buildKey))) realSet(resetValues, buildKey, null);
+            }
+            return resetValues;
+        };
+
+        // A phrase's inputs: the union of its formulas' inputs, or null when it must be evaluated.
+        const phrasePlans = new Map();
+        const phrasePlan = (phrase, planFor) => {
+            let p = phrasePlans.get(phrase);
+            if (p !== undefined) return p;
+            p = null;
+            if (typeof phrase === 'string' && !phrase.includes('%{')) {
+                const paths = new Set(), refs = new Set(), tables = new Set();
+                let ok = true;
+                for (const block of extract.call(null, phrase)) {
+                    const inner = block.startsWith('${') && block.endsWith('}$') ? block.slice(2, -2) : null;
+                    const fp = inner === null || inner.includes('${') ? null : planFor(inner);
+                    if (!fp?.paths) { ok = false; break; }
+                    fp.paths.forEach((x) => paths.add(x));
+                    fp.refs.forEach((x) => refs.add(x));
+                    fp.tables.forEach((x) => tables.add(x));
+                }
+                if (ok) p = { paths: [...paths], refs: [...refs], tables: [...tables] };
+            }
+            phrasePlans.set(phrase, p);
+            return p;
+        };
+        // what the formula reads at `path` from `mergeObject(snapshot, customProps)`
+        const read = (snap, cp, path) => {
+            const dot = path.indexOf('.');
+            const top = dot < 0 ? path : path.slice(0, dot);
+            const base = cp && hasOwn(cp, top) ? cp : snap;
+            return dot < 0 ? base[path] : getPath(base, path);
+        };
+        // The values this attempt reads, or null when it cannot be compared.
+        const attemptValues = (plan, options, snap, cp) => {
+            if (options && ((options.localVars && Object.keys(options.localVars).length)
+                || (options.textVars && Object.keys(options.textVars).length)
+                || (options.rolls && options.rolls.length) || options.computeExplanation)) return null;
+            if (cp) {
+                for (const k of Object.keys(cp)) {
+                    const a = snap[k], b = cp[k];
+                    if (k.includes('.') || b === undefined || (a && typeof a === 'object' && b && typeof b === 'object')) return null;
+                }
+            }
+            const vals = [];
+            for (const p of plan.paths) {
+                const v = read(snap, cp, p);
+                if (!isPlain(v)) return null;
+                vals.push(v);
+            }
+            for (const r of plan.refs) {
+                const v = read(snap, cp, r);
+                if (!isPlain(v)) return null;
+                vals.push(hasOwn(snap, r) || (!!cp && hasOwn(cp, r)), v);
+            }
+            for (const t of plan.tables) {
+                const v = read(snap, cp, t);
+                if (isPlain(v)) vals.push(v);
+                else { try { vals.push('\u0003' + JSON.stringify(v)); } catch { return null; } }
+            }
+            return vals;
+        };
+        const sameValues = (a, b) => {
+            if (a.length !== b.length) return false;
+            for (let i = 0; i < a.length; i++) if (!Object.is(a[i], b[i])) return false;
+            return true;
+        };
+        // CSB: mergeObject(snapshot, customProps, { inplace: false }); copied only where the merge writes
+        const layered = (snap, cp) => {
+            if (Object.keys(cp).some((k) => k.includes('.'))) return realMerge(snap, cp, { inplace: false });
+            const out = { ...snap };
+            for (const k of Object.keys(cp)) {
+                const v = cp[k], c = out[k];
+                if (v && typeof v === 'object' && c && typeof c === 'object') out[k] = deepClone(c);
+            }
+            return realMerge(out, cp, { inplace: true });
+        };
+
+        // CSB 4.8.5 TemplateSystem#_prepareEntityData, line for line where not noted.
+        function prepare(planFor) {
+            let triggeredModifierWarning = false;
+            if (!H.TemplateSystem.isAppliedTemplateSystem(this)) return;
+            const system = this.entity.system;
+            system.props.name = this.entity.name;
+            system.props.uuid = this.uuid;
+            system.props.id = this.entity.id;
+            system.props.img = this.entity.img;
+            const modifierPropsByKey = {};
+            const allModifiers = this.getModifiers();
+            for (const modifier of allModifiers) {
+                this._computeModifierValues(modifier, modifier.originalEntity, modifierPropsByKey);
+            }
+            const activeEffectsByKey = this.getSortedActiveEffects(system);
+            const computableComponents = Object.keys(this.componentMap)
+                .filter((key) => isComputableElement(this.componentMap[key]))
+                .reduce((res, key) => ((res[key] = this.componentMap[key]), res), {});
+            const attributeBars = {
+                ...Object.keys(system.attributeBar ?? {}).reduce((res, key) => ((res[key] = new SimpleAttributeBarElement(key, system.attributeBar[key].value ?? '', system.attributeBar[key].max, system.attributeBar[key].editable)),
+                    res), {}),
+                ...Object.keys(this.componentMap)
+                    .filter((key) => isAttributeBarElement(this.componentMap[key]))
+                    .reduce((res, key) => ((res[key] = this.componentMap[key]), res), {})
+            };
+            for (const hidden of system.hidden ?? []) {
+                computableComponents[hidden.name] = new SimpleComputableElement(hidden.name, hidden.value);
+            }
+            const computeFormulas = {};
+            const merge = Object.keys(system.props).some((k) => k.includes('.')) ? realMerge : fastMerge;
+            for (const component in computableComponents) {
+                const comp = computableComponents[component];
+                const computeFunctions = comp.getComputeFunctions(this, modifierPropsByKey);
+                const keys = Object.keys(computeFunctions);
+                const reset = icResetKnown && comp.resetComputeValue === icReset
+                    ? fastIcReset.call(comp, keys, this) : comp.resetComputeValue(keys, this);
+                if (merge === fastMerge && Object.keys(reset).some((k) => k.includes('.'))) realMerge(system.props, reset);
+                else merge(system.props, reset);
+                // CSB spreads into a new object each time (quadratic); same keys, same order
+                Object.assign(computeFormulas, computeFunctions);
+            }
+            system.props = removeNull(system.props);
+            // CSB iterates `for (prop in uncomputedProps)` and deletes what it computes; the same order
+            // with arrays (for...in over own string keys = Object.keys order)
+            let pending = Object.keys(computeFormulas);
+            const last = this[REC] instanceof Map ? this[REC] : null;
+            const next = new Map();
+            let nLoops = 0, nComputed = 0;
+            do {
+                nLoops++;
+                nComputed = 0;
+                const computedProps = {};
+                const live = system.props;
+                const snapshot = { ...live };        // CSB: a deep copy; here copy-on-write
+                const ctx = { entity: this.entity, live, snapshot };
+                incCtx = ctx;
+                let snapKeys = null;
+                const still = [];
+                for (const prop of pending) {
+                    const computeValue = computeFormulas[prop];
+                    let value, ok = true;
+                    if (typeof computeValue === 'function') {
+                        inc.fns++;
+                        try { value = computeValue(computedProps); }
+                        catch (err) { if (err instanceof UncomputableError) ok = false; else throw err; }
+                    } else {
+                        const { formula, options } = computeValue;
+                        const cp = options?.customProps;
+                        const plan = phrasePlan(formula, planFor);
+                        const vals = plan ? attemptValues(plan, options, snapshot, cp) : null;
+                        let hit = null;
+                        if (vals) {
+                            const old = last?.get(prop);
+                            if (old && old.formula === formula && old.dv === options?.defaultValue && old.ref === options?.reference) {
+                                for (const a of old.attempts) if (sameValues(a.vals, vals)) { hit = a; break; }
+                            }
+                        } else inc.unkeyed++;
+                        if (hit) {
+                            inc.replayed++;
+                            ok = hit.ok;
+                            value = hit.value;
+                        } else {
+                            inc.evaluated++;
+                            // __fuIncPrepare.trace = new Map() to count why props are evaluated
+                            if (inc.trace) {
+                                const why = !plan ? 'impure' : !vals ? 'unplain input'
+                                    : !last?.get(prop) ? 'first attempt' : 'inputs changed';
+                                const k = `${why} | ${String(formula).slice(0, 80)}`;
+                                inc.trace.set(k, (inc.trace.get(k) ?? 0) + 1);
+                            }
+                            const formulaProps = cp ? layered(snapshot, cp) : snapshot;
+                            const availableKeys = cp ? Object.keys(formulaProps) : (snapKeys ??= Object.keys(snapshot));
+                            try {
+                                value = ComputablePhrase.computeMessageStatic(formula, formulaProps, {
+                                    ...options,
+                                    source: prop,
+                                    availableKeys,
+                                    triggerEntity: this
+                                }).result;
+                            } catch (err) { if (err instanceof UncomputableError) ok = false; else throw err; }
+                        }
+                        // what is recorded is the phrase's own result; modifiers and Active Effects run every time
+                        if (vals) {
+                            let rec = next.get(prop);
+                            if (!rec) next.set(prop, (rec = { formula, dv: options?.defaultValue, ref: options?.reference, attempts: [] }));
+                            rec.attempts.push(hit ?? { vals, ok, value });
+                        }
+                        if (ok && (modifierPropsByKey[prop] || activeEffectsByKey[prop])) {
+                            try {
+                                if (modifierPropsByKey[prop]) {
+                                    if (!triggeredModifierWarning) {
+                                        Logger.warn(game.i18n.localize('CSB.Modifier.EditDialog.DeprecationWarning'));
+                                        triggeredModifierWarning = true;
+                                    }
+                                    value = applyModifiers(value, modifierPropsByKey[prop]);
+                                }
+                                setProperty(system.props, prop, castToPrimitive(value));
+                                if (activeEffectsByKey[prop]) {
+                                    activeEffectsByKey[prop].forEach(({ activeEffect, change }) => {
+                                        if (!activeEffect.active) return;
+                                        const override = activeEffect.apply(this.entity, change, true);
+                                        if (Object.values(override)[0] !== undefined && Object.values(override)[0] !== null) {
+                                            value = Object.values(override)[0];
+                                        }
+                                    });
+                                }
+                            } catch (err) { if (err instanceof UncomputableError) ok = false; else throw err; }
+                        }
+                    }
+                    if (ok) {
+                        const v = castToPrimitive(value);
+                        writeLive(ctx, prop, v);
+                        realSet(computedProps, prop, v);
+                        nComputed++;
+                    } else {
+                        writeLive(ctx, prop, undefined);
+                        still.push(prop);
+                    }
+                }
+                pending = still;
+            } while (pending.length > 0 && nComputed > 0);
+            incCtx = null;
+            this[REC] = next;
+            if (pending.length > 0) {
+                const uncomputedProps = {};
+                for (const prop of pending) uncomputedProps[prop] = computeFormulas[prop];
+                Logger.warn('Some props were not computed.', { uncomputedProps, scope: system.props });
+            }
+            Logger.info(`All props for ${this.entity.name} (${this.entity.id}) computed in ${nLoops} loops.`);
+            if (this.entityType === 'actor') {
+                for (const prop in attributeBars) {
+                    const max = attributeBars[prop].getMaxValue(this);
+                    const value = attributeBars[prop].getValue(this);
+                    const editable = attributeBars[prop].isEditable();
+                    realSet(system.attributeBar, prop, { value, max, key: prop, editable });
+                }
+            }
+        }
+
+        const patched = function (...args) {
+            const planFor = globalThis.__fuFormulaMemo?.planFor;
+            if (!incOn() || typeof planFor !== 'function') return prev.apply(this, args);
+            inc.prepares++;
+            const prevCtx = incCtx;
+            const prevUtils = globalThis.foundry.utils;
+            globalThis.foundry.utils = view;
+            try { return prepare.call(this, planFor); }
+            finally { incCtx = prevCtx; globalThis.foundry.utils = prevUtils; }
+        };
+        globalThis.foundry.utils = view;
+        const swappable = globalThis.foundry.utils === view;
+        globalThis.foundry.utils = realUtils;
+        if (!swappable) {
+            console.warn(`${TAG} foundry.utils cannot be swapped; skipping incremental prepare.`);
+            return;
+        }
+        patched.__fuInc = true;
+        patched.__fuOriginal = prev.__fuOriginal ?? prev;
+        proto._prepareEntityData = patched;
+
+        // The component map (every keyed component of the sheet, flat) is rebuilt by walking the
+        // whole layout tree on every prepare (~2 ms on Hina), though it depends on nothing but the
+        // tree. A document built from a template keeps its tree until the template changes, when
+        // CSB builds a new one: same tree objects, same map. Builder templates are edited in place,
+        // so they always rebuild.
+        const origMap = proto._getComponentMap;
+        if (typeof origMap === 'function' && !origMap.__fuInc) {
+            const CMAP = Symbol('fuComponentMap');
+            const mapPatched = function () {
+                const h = this.customHeader, b = this.customBody;
+                if (!incOn() || (!h && !b) || !H.TemplateSystem.isAppliedTemplateSystem(this)) return origMap.call(this);
+                const c = this[CMAP];
+                if (c && c.h === h && c.b === b) return c.map;
+                const map = origMap.call(this);
+                this[CMAP] = { h, b, map };
+                return map;
+            };
+            mapPatched.__fuInc = true;
+            proto._getComponentMap = mapPatched;
+        }
+        globalThis.__fuIncPrepare = inc;
+        console.info(`${TAG} incremental prepare installed.`);
+    }
+
+    function incOn() {
+        if (inc.on === null) {
+            try { inc.on = game.settings.get('fabula-ultima-companion', INC_SETTING) !== false; }
+            catch { return false; }
+        }
+        return inc.on;
+    }
+
+    /* -------------------------------------------------------------- (8) --- */
+    // LAZY game.data MIRROR. Every document update ends in DocumentCollection#set, which replaces
+    // the document's entry in game.data (the collection's `_source` array) with
+    // `document.toObject()`: a deep copy of the whole document, all 111 of Hina's items included,
+    // for every HP write (~4 ms of it, measured 2026-11-03). Nothing reads that array during play:
+    // Foundry itself only for invalid documents (getInvalid), which are never `set`.
+    //
+    // So on an update (an id already in the collection) the entry becomes a stand-in that makes
+    // the same copy the first time anything other than its `_id` is read, and from then on is that
+    // copy. A new document is still copied at once, as before. The one difference: a stand-in read
+    // later shows the document as it is when read, not as it was at the update; every change that
+    // goes through the database calls set again anyway.
+    //
+    // Kill switch: world setting `foundryLazyDataMirror` (default on; reload to apply).
+    // Stats: globalThis.__fuLazyMirror ({ on, deferred, materialized }).
+    const MIRROR_SETTING = 'foundryLazyDataMirror';
+    const mirror = { on: null, deferred: 0, materialized: 0 };
+
+    function lazyEntry(document, id) {
+        let real = null;
+        const mat = () => {
+            if (!real) { real = document.toObject(); mirror.materialized++; }
+            return real;
+        };
+        return new Proxy({}, {
+            get: (t, k) => (k === '_id' && !real ? id : Reflect.get(mat(), k)),
+            has: (t, k) => (k === '_id' && !real ? true : Reflect.has(mat(), k)),
+            set: (t, k, v) => Reflect.set(mat(), k, v),
+            deleteProperty: (t, k) => Reflect.deleteProperty(mat(), k),
+            defineProperty: (t, k, d) => Reflect.defineProperty(mat(), k, d),
+            ownKeys: () => Reflect.ownKeys(mat()),
+            getOwnPropertyDescriptor: (t, k) => {
+                const d = Reflect.getOwnPropertyDescriptor(mat(), k);
+                if (d) d.configurable = true;   // the empty target cannot hold a fixed property
+                return d;
+            },
+            getPrototypeOf: () => Object.getPrototypeOf(mat()),
+        });
+    }
+
+    function patchLazyDataMirror() {
+        // DocumentCollection is not exposed on globalThis in v12: find it from the actors' collection
+        let proto = CONFIG.Actor?.collection?.prototype ?? null;
+        while (proto && !(Object.prototype.hasOwnProperty.call(proto, 'set') && String(proto.set).includes('_source.findSplice'))) {
+            proto = Object.getPrototypeOf(proto);
+        }
+        const orig = proto?.set;
+        const src = String(orig ?? '').replace(/\s+/g, '');
+        if (typeof orig !== 'function' || orig.__fuLazy
+            || !src.includes('constreplacement=this.has(document.id);super.set(document.id,document);if(replacement)this._source.findSplice(e=>e._id===id,document.toObject());elsethis._source.push(document.toObject());')) {
+            console.warn(`${TAG} DocumentCollection#set not as expected; skipping lazy game.data mirror.`);
+            return;
+        }
+        const superSet = Object.getPrototypeOf(proto)?.set;
+        if (typeof superSet !== 'function') return;
+        const patched = function (id, document) {
+            if (!mirrorOn() || !(document instanceof this.documentClass) || !this.has(document.id)) {
+                return orig.call(this, id, document);
+            }
+            superSet.call(this, document.id, document);
+            this._source.findSplice((e) => e._id === id, lazyEntry(document, id));
+            mirror.deferred++;
+        };
+        patched.__fuLazy = true;
+        patched.__fuOriginal = orig;
+        proto.set = patched;
+        globalThis.__fuLazyMirror = mirror;
+        console.info(`${TAG} lazy game.data mirror installed.`);
+    }
+
+    function mirrorOn() {
+        if (mirror.on === null) {
+            try { mirror.on = game.settings.get('fabula-ultima-companion', MIRROR_SETTING) !== false; }
+            catch { return false; }
+        }
+        return mirror.on;
     }
 
     /* -------------------------------------------------------------- (2) --- */

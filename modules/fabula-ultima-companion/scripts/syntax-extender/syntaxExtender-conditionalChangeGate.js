@@ -455,7 +455,19 @@
     return results.filter(isEffectUsable);
   }
 
+  // Every gate asks for the actor's condition effects (hasEffect, Crisis...). They cannot change
+  // during one prepare of that actor (csb-derivation-perf.js opens __fuActorPrepScope around it),
+  // so collect them once per prepare there; outside a prepare, every time as before.
   function collectActorConditionEffects(actor) {
+    const scope = globalThis.__fuActorPrepScope;
+    if (!actor || scope?.actor !== actor) return collectActorConditionEffectsNow(actor);
+    const key = `${TAG} conditionEffects`;
+    let list = scope.caches.get(key);
+    if (!list) { list = collectActorConditionEffectsNow(actor); scope.caches.set(key, list); }
+    return list;
+  }
+
+  function collectActorConditionEffectsNow(actor) {
   const results = [];
   const seenObjects = new WeakSet();
   const seenIds = new Set();
@@ -996,7 +1008,8 @@ if (helperNorm === "aewhen") {
     effectName: effect?.name ?? effect?.id ?? null,
     key: change?.key ?? null,
 
-    debug: {
+    // computed when read (debug logs, the API): it re-collects the actor's effects
+    get debug() { return {
       helperNorm,
       queryNorm,
       crisisDetected: queryNorm === "crisis" ? isActorInCrisis(actor, effect) : null,
@@ -1011,7 +1024,7 @@ conditionEffects: queryNorm === "crisis"
       statuses: safeArrayFrom(e.statuses)
     }))
   : null
-    }
+    }; }
   };
 
   log("Gate evaluated.", result);
@@ -1100,8 +1113,10 @@ function isActorInCrisis(actor, currentEffect = null) {
   }
 
   function makeActorPassData(actor) {
-    const sourceProps = clone(getActorSourceProps(actor) ?? {});
-    const currentProps = clone(actor?.system?.props ?? {});
+    // getBaseValueForChange reads only top-level keys of these, so a top-level copy holds the
+    // values as they were when the pass began; a deep copy of both was ~1.5 ms per prepare.
+    const sourceProps = { ...(getActorSourceProps(actor) ?? {}) };
+    const currentProps = { ...(actor?.system?.props ?? {}) };
 
     return {
       actor,
@@ -1206,7 +1221,7 @@ function getBaseValueForChange(actor, change) {
     const explicitActor = args.find((arg) => isActorDocument(arg)) ?? null;
     const actor = resolveActorFromEffect(effect, explicitActor);
 
-    pushTrace("ActiveEffect.apply ENTER", actor, {
+    traceEnabledFor(actor) && pushTrace("ActiveEffect.apply ENTER", actor, {
       effect: summarizeEffect(effect),
       args: summarizeArgs(args),
       actorBefore: actor ? actorTraceSnapshot(actor) : null
@@ -1229,7 +1244,7 @@ function getBaseValueForChange(actor, change) {
 
         if (!arg || typeof arg.value !== "string") continue;
 
-        pushTrace("ActiveEffect.apply CHANGE SEEN", actor, {
+        traceEnabledFor(actor) && pushTrace("ActiveEffect.apply CHANGE SEEN", actor, {
           effect: summarizeEffect(effect),
           argIndex: i,
           change: summarizeChange(arg),
@@ -1240,7 +1255,7 @@ function getBaseValueForChange(actor, change) {
 
         const decision = evaluateGate(arg.value, actor, effect, arg);
 
-        pushTrace("ActiveEffect.apply GATE DECISION", actor, {
+        traceEnabledFor(actor) && pushTrace("ActiveEffect.apply GATE DECISION", actor, {
           effect: summarizeEffect(effect),
           argIndex: i,
           change: summarizeChange(arg),
@@ -1255,7 +1270,7 @@ function getBaseValueForChange(actor, change) {
         if (decision.active) {
           cloned.value = decision.value;
 
-          pushTrace("ActiveEffect.apply TRANSFORM TRUE", actor, {
+          traceEnabledFor(actor) && pushTrace("ActiveEffect.apply TRANSFORM TRUE", actor, {
             effect: summarizeEffect(effect),
             before: summarizeChange(arg),
             after: summarizeChange(cloned),
@@ -1267,7 +1282,7 @@ function getBaseValueForChange(actor, change) {
 
           cloned.value = fallbackValue;
 
-          pushTrace("ActiveEffect.apply TRANSFORM FALSE TO BASE", actor, {
+          traceEnabledFor(actor) && pushTrace("ActiveEffect.apply TRANSFORM FALSE TO BASE", actor, {
             effect: summarizeEffect(effect),
             before: summarizeChange(arg),
             after: summarizeChange(cloned),
@@ -1513,17 +1528,20 @@ function getBaseValueForChange(actor, change) {
     if (!actor) return callback();
 
     if (state.actorGuard.has(actor)) {
-      pushTrace("Actor.applyActiveEffects REENTRY BYPASS", actor, {
+      traceEnabledFor(actor) && pushTrace("Actor.applyActiveEffects REENTRY BYPASS", actor, {
         actorBefore: actorTraceSnapshot(actor)
       });
 
       return callback();
     }
 
-    const before = actorTraceSnapshot(actor);
-    const gateChangesBefore = listAllGateChanges(actor);
+    // Snapshots and the gate listing exist only for the trace; building them on every prepare cost
+    // ~3 ms of an HP write (2026-11-03), so only when tracing this actor.
+    const tracing = traceEnabledFor(actor);
+    const before = tracing ? actorTraceSnapshot(actor) : null;
+    const gateChangesBefore = tracing ? listAllGateChanges(actor) : null;
 
-    pushTrace("Actor.applyActiveEffects BEFORE", actor, {
+    traceEnabledFor(actor) && pushTrace("Actor.applyActiveEffects BEFORE", actor, {
       actorBefore: before,
       gateChangesBefore,
       sourceProps: clone(getActorSourceProps(actor) ?? {})
@@ -1533,11 +1551,11 @@ function getBaseValueForChange(actor, change) {
     state.actorPass.set(actor, makeActorPassData(actor));
 
     const finish = (result = undefined, error = null) => {
-      const after = actorTraceSnapshot(actor);
-      const diff = diffSnapshots(before, after);
-      const gateChangesAfter = listAllGateChanges(actor);
+      const after = tracing ? actorTraceSnapshot(actor) : null;
+      const diff = tracing ? diffSnapshots(before, after) : null;
+      const gateChangesAfter = tracing ? listAllGateChanges(actor) : null;
 
-      pushTrace(error ? "Actor.applyActiveEffects ERROR/AFTER" : "Actor.applyActiveEffects AFTER", actor, {
+      traceEnabledFor(actor) && pushTrace(error ? "Actor.applyActiveEffects ERROR/AFTER" : "Actor.applyActiveEffects AFTER", actor, {
         actorBefore: before,
         actorAfter: after,
         diff,
