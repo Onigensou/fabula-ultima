@@ -878,7 +878,7 @@
       emitTransferCardToRecipients({
         receiverActor,
         quantity: transferQty,
-        itemName: sourceItem.name,
+        itemName: payload?.cardItemName || sourceItem.name,
         itemImg: sourceItem.img,
         receiverItemUuid
       });
@@ -1188,7 +1188,7 @@
       emitTransferCardToRecipients({
         receiverActor,
         quantity: grantQty,
-        itemName: templateItem.name,
+        itemName: payload?.cardItemName || templateItem.name,
         itemImg: templateItem.img,
         receiverItemUuid
       });
@@ -1305,6 +1305,55 @@
   // --------------------------------------------------------------------------
 
   /**
+   * Carry limit (carry-limit.js): a party member may hold only N copies of an
+   * item flagged `carryLimit` (Life Charm, Magic Mirror). Deliver what fits to
+   * the receiver and the rest to the Party Bag; a copy already IN the bag that
+   * does not fit simply stays there. No limit, no API, or no bag → plain delivery.
+   */
+  async function deliverWithCarryLimit(payload, run) {
+    const api = globalThis.FUCompanion?.api?.carryLimit;
+    if (!api?.planCarry) return await run(payload);
+
+    let plan = null;
+    let item = null;
+    try {
+      item = await resolveItem(payload.itemUuid);
+      const receiver = await resolveActor(payload.receiverActorUuid, "receiverActorUuid");
+      let qty = normalizeQuantity(payload.quantity);
+      if (payload.mode === "actorToActor") qty = Math.min(qty, getItemQuantity(item));
+      plan = await api.planCarry({ item, receiver, qty });
+    } catch (err) {
+      console.warn("[ItemTransferCore] carry-limit check failed; delivering as asked.", err);
+    }
+    if (!plan) return await run(payload);
+
+    const fromBag = !!plan.bag && payload.mode === "actorToActor" && item?.parent?.id === plan.bag.id;
+    console.log("[ItemTransferCore] carry limit:", item?.name, plan.keep, "to receiver,", plan.overflow, fromBag ? "stays in the Party Bag" : "to the Party Bag");
+
+    const kept = plan.keep > 0 ? await run({ ...payload, quantity: plan.keep }) : null;
+    if (!plan.bag || fromBag) {
+      return kept ?? { ok: false, reason: "carry_limit", carryLimit: true };
+    }
+    const over = await run({
+      ...payload,
+      quantity: plan.overflow,
+      receiverActorUuid: plan.bag.uuid,
+      cardItemName: `${item.name} → ${plan.bag.name || "Party Bag"}`,
+    });
+    const base = kept ?? over;
+    return {
+      ...base,
+      ok: (kept?.ok ?? true) && over?.ok !== false,
+      transferredQty: (kept?.transferredQty ?? 0) + (over?.transferredQty ?? 0),
+      overflow: {
+        quantity: over?.transferredQty ?? plan.overflow,
+        actorUuid: plan.bag.uuid,
+        itemUuid: over?.receiver?.itemUuid ?? null,
+      },
+    };
+  }
+
+  /**
    * Public entry point:
    *   await ItemTransferCore.transfer(payload)
    *
@@ -1322,10 +1371,10 @@
 
     switch (mode) {
       case "actorToActor":
-        return await transferActorToActor(payload);
+        return await deliverWithCarryLimit(payload, transferActorToActor);
 
       case "gmToActor":
-        return await grantItemToActor(payload);
+        return await deliverWithCarryLimit(payload, grantItemToActor);
 
       case "actorToGm":
         return await removeItemFromActor(payload);

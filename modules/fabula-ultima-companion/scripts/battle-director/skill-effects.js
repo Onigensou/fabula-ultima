@@ -4527,6 +4527,44 @@ async function applyPlayAnimationEffect(row, ctx) {
   }
 }
 
+// ── play_pose ──────────────────────────────────────────────────────────────
+//
+// Show a battler pose (battler-pose.js) on the `target_ref` tokens — the reactor's
+// own token when blank. Lets a chain stage a body beat the engine would not show
+// by itself: Life Charm fires on creature_defeated BEFORE the KO marker exists, so
+// it plays "ko" here, and "idle" releases that held KO once the revive heals.
+// Held poses (ko / leap / fly) stay until released; one-shots hand back on their
+// own. No pose art = nothing shown (the fallback), never a chain failure.
+async function applyPlayPoseEffect(row, ctx) {
+  if (ctx?.captureMode || ctx?.mode === "preview") return { ok: true, kind: "play_pose", skipped: true };
+  const pose = String(row.pose_name ?? "").trim().toLowerCase();
+  if (!pose) return { ok: true, kind: "play_pose", skipped: true, reason: "no-pose" };
+
+  let tokenUuids = [];
+  if (String(row.target_ref ?? "").trim()) {
+    try {
+      const tr = await resolveTargetRef(row.target_ref, ctx);
+      tokenUuids = (tr?.tokens ?? []).map((t) => t?.uuid ?? t?.document?.uuid).filter(Boolean);
+    } catch (e) { warn("skill-effects.play_pose: target_ref threw", e); }
+  } else {
+    const reactor = ctx.reactorActor ?? null;
+    const own = ctx.reactorToken?.uuid
+      ?? canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === reactor?.uuid)?.document?.uuid;
+    if (own) tokenUuids = [own];
+  }
+  if (!tokenUuids.length) return { ok: true, kind: "play_pose", skipped: true, reason: "no-tokens" };
+
+  try {
+    const { emitBattlerPose } = await import("./battler-pose.js");
+    const { HOLD } = await import("./battler-pose-rules.js");
+    for (const tokenUuid of tokenUuids) emitBattlerPose({ tokenUuid, pose, hold: HOLD.has(pose) });
+    return { ok: true, kind: "play_pose", pose, count: tokenUuids.length };
+  } catch (e) {
+    warn("skill-effects.play_pose: threw", e);
+    return { ok: true, kind: "play_pose", played: false, reason: "threw" };
+  }
+}
+
 // ── conflict_event_action — a skill asks the active conflict event to act ────
 //
 //   { effect_kind: "conflict_event_action",
@@ -4874,6 +4912,7 @@ const EFFECT_KIND_DISPATCH = {
   negate_action:       (row) => ({ ok: true, kind: "negate_action", applied: [], reason: "applied-at-card-mutation-phase" }),
   delay:               applyDelayEffect,
   play_animation:      applyPlayAnimationEffect,
+  play_pose:           applyPlayPoseEffect,
 };
 
 // Canonical effect_kind keys (every kind the engine dispatches). The template
@@ -4951,6 +4990,7 @@ export const EFFECT_KIND_LABELS = {
   negate_action:       "Negate Action (block — no outcome/reactions)",
   delay:               "Delay (pause the chain N ms — space out multi-hit effects)",
   play_animation:      "Play Animation (a referenced skill's cinematic — bridges reaction/round-end actions into the animation system; action_ref = the skill)",
+  play_pose:           "Play Pose (show a battler pose on target_ref, self when blank — ko/leap/fly hold until 'idle' releases them; Life Charm's fall)",
 };
 
 // ── Effect-kind PREVIEW registry (ActionProfile / Action Card) ───────────────

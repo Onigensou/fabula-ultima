@@ -20,6 +20,8 @@ const REASONS = {
   equipped: "Unequip it first.",
   "in-combat": "Items can't change hands during a conflict.",
   "not-yours": "That isn't yours to give away.",
+  "carry-limit": "Already carrying one. Keep extras in the Party Bag.",
+  carry_limit: "Already carrying one. Keep extras in the Party Bag.",
   "no-transfer-core": "Item transfer isn't loaded.",
   timeout: "No GM answered. A GM must be online to move items.",
   "not-granted": "The GM hasn't opened the Item menu to players.",

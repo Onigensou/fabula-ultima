@@ -38,6 +38,8 @@ const CONSUME_RES_VIS = `equalText(sameRow("effect_kind",''), "consume_resource"
 // consume_item — spend one unit of a carried consumable (Life Charm spends
 // itself when its death-save fires). The permanent twin of hide_item.
 const CONSUME_ITEM_VIS = `equalText(sameRow("effect_kind",''), "consume_item")`;
+// play_pose — show a battler pose on the row's targets (Life Charm's KO fall).
+const PLAY_POSE_VIS = `equalText(sameRow("effect_kind",''), "play_pose")`;
 // adjust_charges — charge arithmetic on a target's named charge-AE.
 const ADJUST_CHARGES_VIS = `equalText(sameRow("effect_kind",''), "adjust_charges")`;
 // trigger_status — fire a charge-based status's own tick N× on the target(s).
@@ -248,6 +250,15 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // follow-ups with skill:null), so those MUST name their item. Life Charm.
   textCol("consume_item_name", "Consume Item Name", { tooltip: "consume_item: name of the carried item to spend one unit of (case-insensitive). Required when the row fires from an AE, which has no firing skill to infer a container from. Blank = fall back to Consume Item Id, then the firing skill's container item.", vis: CONSUME_ITEM_VIS }),
   textCol("consume_item_id", "Consume Item Id", { tooltip: "consume_item: exact item id to spend, when a name would be ambiguous. Takes precedence over Consume Item Name.", vis: CONSUME_ITEM_VIS }),
+  selectCol("pose_name", "Pose", [
+    { key: "ko", value: "KO (held until released)" },
+    { key: "idle", value: "Idle (release a held pose)" },
+    { key: "hurt", value: "Hurt" },
+    { key: "attack", value: "Attack" },
+    { key: "cast", value: "Cast" },
+    { key: "leap", value: "Leap (held)" },
+    { key: "fly", value: "Fly (held)" },
+  ], { tooltip: "play_pose: which battler pose to show. Held poses (KO / Leap / Fly) stay until a later play_pose 'idle' releases them.", vis: PLAY_POSE_VIS }),
   selectCol("damage_cause", "Damage Cause", [
     { key: "hazard", value: "Hazard (Burn/Poison/environment — not an attack)" },
     { key: "damage", value: "Damage (creature-inflicted — counts as an attack)" },

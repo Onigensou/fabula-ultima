@@ -119,9 +119,12 @@ export function emitBattlerPose(payload = {}) {
 }
 
 // Play a one-shot pose on this client. { tokenUuid, pose, hold? }
+// pose "idle" releases a held one-shot (a revive standing back up from a KO
+// that no KO marker owns) and hands back to the lasting pose.
 export function playBattlerPoseLocal({ tokenUuid, pose, hold = false } = {}) {
   const token = tokenFromUuid(tokenUuid);
   if (!token || !inScope(token)) return 0;
+  if (pose === "idle") return releaseOneShot(token);
   if (!ONE_SHOT.has(pose) && !HOLD.has(pose)) return 0;
   if (!hold && globalThis.FUCompanion?.api?.vfxSuppressed?.()) return 0;
   return startOneShot(token, pose, { hold: hold || HOLD.has(pose) });
@@ -250,6 +253,16 @@ function startOneShot(token, pose, { hold = false, art = null } = {}) {
   let done = false;
   a.waiters.push(() => { if (!done) { done = true; begin(); } });
   setTimeout(() => { done = true; }, ONE_SHOT_LOAD_WAIT_MS);
+  return 0;
+}
+
+function releaseOneShot(token) {
+  const entry = _tokens.get(token.id);
+  if (!entry?.oneShot) return 0;
+  if (entry.oneShot.timer) clearTimeout(entry.oneShot.timer);
+  trace(token, "release", { pose: entry.oneShot.pose });
+  entry.oneShot = null;
+  render(token, { restart: true });
   return 0;
 }
 

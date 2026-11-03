@@ -29,6 +29,7 @@ import {
 } from "../battle-director/equipment-swap.js";
 import { DESC_SENTINEL, stripOrbmentDescBlock, readOrbment, itemKindOf } from "../orbment/orbment-const.js";
 import { resolveAugment } from "../orbment/augment-registry.js";
+import { carryRoom } from "../item-transfer/carry-limit.js";
 
 const TAG = "[PartyMenu]";
 const log = (...a) => console.log(TAG, ...a);
@@ -208,6 +209,8 @@ export function moveRefusal({ user, item, src, dst, roster }) {
   if (isWorn(item, roster)) return "equipped";
   // Not even the GM: items change hands during a conflict only through actions.
   if (conflictLive()) return "in-combat";
+  // "Hold only one" items (carry-limit.js): a member at the limit takes no more.
+  if (carryRoom(dst, item, roster) <= 0) return "carry-limit";
   if (user?.isGM) return "";
   if (!canUseCommand("item", user)) return "not-granted";
   if (owns(src, user)) return "";
