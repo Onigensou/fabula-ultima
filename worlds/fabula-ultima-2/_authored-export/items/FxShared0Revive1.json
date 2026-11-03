@@ -1,0 +1,51 @@
+{
+  "_id": "FxShared0Revive1",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1793712597345,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "nvrcSADMXJG1VgU1",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wingd.png",
+  "name": "FX: Revive",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": null,
+    "props": {
+      "action_command": "",
+      "animation_preload_urls": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/049_revive_1.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Raise1.ogg",
+      "animation_script": "<p>// @desc Revive: a gold circle opens under each target and feathers of light rise through them; the revive lands as the light peaks (shared by Life Charm and Phoenix Feather)</p><p>\"use strict\";</p><p>(async () =&gt; {</p><p>  const CFG = {</p><p>    MV: \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/\",</p><p>    clip: \"049_revive_1.webm\",   // gold circle + rising feathers, 1.67 s at 1x</p><p>    clipAnchor: { x: 0.4982, y: 0.8394 },  // manifest anchor = the ground point</p><p>    clipSizeFrac: 2.4,     // clip width as a fraction of the target token width</p><p>    clipRate: 0.7,         // slower = calmer rise</p><p>    glowColor: 'rgba(255,236,170,1)',</p><p>    glowSizeFrac: 1.8,     // warm glow on the body as the light peaks</p><p>    glowAlpha: 0.85,</p><p>    glowInMs: 600,</p><p>    glowHoldMs: 500,</p><p>    glowOutMs: 1100,</p><p>    fireDoneAtMs: 1300,    // revive lands as the feathers peak (~55% of the slowed clip)</p><p>    sfx: \"Raise1\",</p><p>    volume: 0.8,</p><p>  };</p><p></p><p>  const P = payload ?? globalThis.__PAYLOAD ?? {};</p><p>  const casterUuid = P.casterTokenUuid ?? P.sourceTokenUuid ?? null;</p><p>  const targetUuids = (P.targetTokenUuids ?? (P.targets ?? []).map((t) =&gt; t.tokenUuid) ?? []).filter(Boolean);</p><p>  const doneHook = \"oni:done:\" + foundry.utils.randomID(8);</p><p></p><p>  const onceHook = (name, ms) =&gt; new Promise((resolve) =&gt; {</p><p>    const id = Hooks.once(name, () =&gt; { clearTimeout(t); resolve(); });</p><p>    const t = setTimeout(() =&gt; { Hooks.off(name, id); resolve(); }, ms);</p><p>  });</p><p></p><p>  Hooks.callAll(\"oni:animationStart\", { local: true, world: false });</p><p></p><p>  const scriptSource = String.raw`</p><p>    const cfg = ctx.params.cfg;</p><p>    const list = oni.targets.length ? oni.targets : (oni.caster ? [oni.caster] : []);</p><p>    if (!list.length) { oni.fireDone(); return; }</p><p>    const layer = oni.layer({ zIndex: 95500 });</p><p></p><p>    oni.sfx(cfg.sfx, { volume: cfg.volume });</p><p></p><p>    let fired = false;</p><p>    const gate = setTimeout(() =&gt; { if (!fired) { fired = true; oni.fireDone(); } }, cfg.fireDoneAtMs);</p><p></p><p>    const one = async (target) =&gt; {</p><p>      const tw = target.w || 100, th = target.h || 100;</p><p>      const cx = target.center.x, feetY = target.y + th;</p><p></p><p>      const fx = await oni.vfx(cfg.MV + cfg.clip, { x: cx, y: feetY, size: tw * cfg.clipSizeFrac, zIndex: 96000 });</p><p>      if (fx) {</p><p>        fx.sprite.anchor.set(cfg.clipAnchor.x, cfg.clipAnchor.y);</p><p>        fx.sprite.position.set(cx, feetY);</p><p>        try { fx.video.playbackRate = cfg.clipRate; } catch (e) {}</p><p>      }</p><p></p><p>      const glow = new PIXI.Sprite(oni.radialTexture(cfg.glowColor, 'rgba(255,236,170,0)', { size: 256 }));</p><p>      glow.anchor.set(0.5);</p><p>      glow.width = glow.height = tw * cfg.glowSizeFrac;</p><p>      glow.position.set(cx, target.center.y);</p><p>      glow.blendMode = PIXI.BLEND_MODES.ADD;</p><p>      glow.alpha = 0;</p><p>      layer.addChild(glow);</p><p></p><p>      await oni.wait(Math.max(0, cfg.fireDoneAtMs - cfg.glowInMs));</p><p>      await oni.tween({ from: 0, to: cfg.glowAlpha, duration: cfg.glowInMs, ease: oni.EASE.inOutQuad, onUpdate: (v) =&gt; (glow.alpha = v) });</p><p>      await oni.wait(cfg.glowHoldMs);</p><p>      await Promise.all([</p><p>        oni.tween({ from: glow.alpha, to: 0, duration: cfg.glowOutMs, ease: oni.EASE.inOutQuad, onUpdate: (v) =&gt; (glow.alpha = v) }),</p><p>        fx ? fx.ended : Promise.resolve(),</p><p>      ]);</p><p>    };</p><p></p><p>    await Promise.all(list.map(one));</p><p>    if (!fired) { fired = true; clearTimeout(gate); oni.fireDone(); }</p><p>  `;</p><p></p><p>  game.ONI.pseudo.play({</p><p>    scriptId: \"anim-studio/revive\",</p><p>    scriptSource,</p><p>    casterTokenUuid: casterUuid,</p><p>    targetTokenUuids: targetUuids,</p><p>    params: { doneHook, cfg: CFG },</p><p>  });</p><p></p><p>  await onceHook(doneHook, CFG.fireDoneAtMs + 6000);</p><p>  Hooks.callAll(\"oni:animationEnd\", { local: true, world: false });</p><p>})();</p>",
+      "cost": "-",
+      "description": "<p>Shared animation: the revive cinematic. Played through a <strong>play_animation</strong> step (action_ref Item.FxShared0Revive1) by Life Charm and Phoenix Feather. Not an action of its own.</p>",
+      "effect_table": {},
+      "id": "FxShared0Revive1",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wingd.png",
+      "isCheck": false,
+      "name": "FX: Revive",
+      "on_activate_effect_ref": "",
+      "skill_description": "",
+      "skill_tags": "",
+      "skill_target": "One Ally",
+      "skill_type": "Item",
+      "type_damage": "",
+      "uuid": "Item.FxShared0Revive1"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "FxShared0Revive1"
+  },
+  "type": "equippableItem"
+}

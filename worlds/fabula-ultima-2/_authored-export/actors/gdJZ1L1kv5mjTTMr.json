@@ -4771,11 +4771,11 @@
       },
       "effects": [
         {
-          "_id": "NRGrqxKBhfKDmNK5",
+          "_id": "6AfJQDWUqo9zqK0R",
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": null,
+            "createdTime": 1793714669225,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
@@ -4788,54 +4788,85 @@
             "rounds": null,
             "seconds": null,
             "startRound": null,
-            "startTime": 298800,
+            "startTime": null,
             "startTurn": null,
             "turns": null
           },
           "flags": {
             "custom-system-builder": {
               "isFromTemplate": false,
-              "originalId": "NRGrqxKBhfKDmNK5",
-              "originalParentId": "SccgW4PlHy8m6ph5",
-              "originalUuid": "Item.SccgW4PlHy8m6ph5.ActiveEffect.NRGrqxKBhfKDmNK5"
+              "originalId": "6AfJQDWUqo9zqK0R",
+              "originalParentId": "GygL59hLViiA5hc9",
+              "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.GygL59hLViiA5hc9.ActiveEffect.6AfJQDWUqo9zqK0R"
             },
             "fabula-ultima-companion": {
               "category": "buff",
               "reactionConfig": {
                 "effect_table": {
                   "0": {
-                    "chain_steps": "lifecharm_cap,lifecharm_heal,lifecharm_spend",
+                    "chain_steps": "lc_cap, lc_card, lc_wait, lc_fall, lc_hold, lc_fx, lc_heal, lc_rise, lc_spend",
                     "effect_kind": "chain",
-                    "effect_label": "lifecharm_save"
+                    "effect_label": "lc_save"
                   },
                   "1": {
                     "damage_amount": "CUR_HP - 1",
                     "damage_operation": "cap",
                     "damage_stage": "incoming",
                     "effect_kind": "adjust_damage",
-                    "effect_label": "lifecharm_cap",
-                    "modify_mode": "set_hp_floor",
-                    "modify_value": 1
+                    "effect_label": "lc_cap"
                   },
                   "2": {
-                    "effect_kind": "grant",
-                    "effect_label": "lifecharm_heal",
-                    "grant_amount": "floor(MAX_HP / 2) - 1",
+                    "effect_kind": "notify",
+                    "effect_label": "lc_card",
+                    "notify_abort": false,
+                    "notify_message": "Life Charm",
+                    "notify_type": "card"
+                  },
+                  "3": {
+                    "delay_ms": "500",
+                    "effect_kind": "delay",
+                    "effect_label": "lc_wait"
+                  },
+                  "4": {
+                    "effect_kind": "play_pose",
+                    "effect_label": "lc_fall",
+                    "pose_name": "ko"
+                  },
+                  "5": {
+                    "delay_ms": "1200",
+                    "effect_kind": "delay",
+                    "effect_label": "lc_hold"
+                  },
+                  "6": {
+                    "action_ref": "Item.FxShared0Revive1",
+                    "effect_kind": "play_animation",
+                    "effect_label": "lc_fx",
+                    "target_ref": "self"
+                  },
+                  "7": {
+                    "effect_kind": "set_resource",
+                    "effect_label": "lc_heal",
+                    "grant_amount": "floor(MAX_HP / 2)",
                     "grant_resource": "hp",
                     "target_ref": "self"
                   },
-                  "3": {
+                  "8": {
+                    "effect_kind": "play_pose",
+                    "effect_label": "lc_rise",
+                    "pose_name": "idle"
+                  },
+                  "9": {
                     "consume_item_name": "Life Charm",
                     "effect_kind": "consume_item",
-                    "effect_label": "lifecharm_spend"
+                    "effect_label": "lc_spend"
                   }
                 },
                 "name": "Life Charm",
                 "reaction_config_table": {
                   "0": {
                     "reaction_damage_outcome": "would_reduce_to_zero",
-                    "reaction_effect_ref": "lifecharm_save",
-                    "reaction_passive_mode": "ask",
+                    "reaction_effect_ref": "lc_save",
+                    "reaction_passive_mode": "force",
                     "reaction_source": "self",
                     "reaction_trigger": "creature_takes_damage"
                   }
@@ -4865,6 +4896,9 @@
       "flags": {
         "custom-system-builder": {
           "version": "3.2.4"
+        },
+        "fabula-ultima-companion": {
+          "carryLimit": 1
         }
       },
       "folder": "VzpCG9mySsd9sQSL",
@@ -4931,6 +4965,7 @@
           "isKey": false,
           "isMartial": false,
           "isModule": false,
+          "isReaction": true,
           "isRelatedItem": false,
           "isSet": false,
           "isUnique": false,

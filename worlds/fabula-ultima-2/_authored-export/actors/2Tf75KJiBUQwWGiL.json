@@ -173,9 +173,136 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "JTESbh9ZpVUn1OC4",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1793714667741,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "JTESbh9ZpVUn1OC4",
+              "originalParentId": "6cTszJo67Yroy1oi",
+              "originalUuid": "Actor.2Tf75KJiBUQwWGiL.Item.6cTszJo67Yroy1oi.ActiveEffect.JTESbh9ZpVUn1OC4"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "chain_steps": "lc_cap, lc_card, lc_wait, lc_fall, lc_hold, lc_fx, lc_heal, lc_rise, lc_spend",
+                    "effect_kind": "chain",
+                    "effect_label": "lc_save"
+                  },
+                  "1": {
+                    "damage_amount": "CUR_HP - 1",
+                    "damage_operation": "cap",
+                    "damage_stage": "incoming",
+                    "effect_kind": "adjust_damage",
+                    "effect_label": "lc_cap"
+                  },
+                  "2": {
+                    "effect_kind": "notify",
+                    "effect_label": "lc_card",
+                    "notify_abort": false,
+                    "notify_message": "Life Charm",
+                    "notify_type": "card"
+                  },
+                  "3": {
+                    "delay_ms": "500",
+                    "effect_kind": "delay",
+                    "effect_label": "lc_wait"
+                  },
+                  "4": {
+                    "effect_kind": "play_pose",
+                    "effect_label": "lc_fall",
+                    "pose_name": "ko"
+                  },
+                  "5": {
+                    "delay_ms": "1200",
+                    "effect_kind": "delay",
+                    "effect_label": "lc_hold"
+                  },
+                  "6": {
+                    "action_ref": "Item.FxShared0Revive1",
+                    "effect_kind": "play_animation",
+                    "effect_label": "lc_fx",
+                    "target_ref": "self"
+                  },
+                  "7": {
+                    "effect_kind": "set_resource",
+                    "effect_label": "lc_heal",
+                    "grant_amount": "floor(MAX_HP / 2)",
+                    "grant_resource": "hp",
+                    "target_ref": "self"
+                  },
+                  "8": {
+                    "effect_kind": "play_pose",
+                    "effect_label": "lc_rise",
+                    "pose_name": "idle"
+                  },
+                  "9": {
+                    "consume_item_name": "Life Charm",
+                    "effect_kind": "consume_item",
+                    "effect_label": "lc_spend"
+                  }
+                },
+                "name": "Life Charm",
+                "reaction_config_table": {
+                  "0": {
+                    "reaction_damage_outcome": "would_reduce_to_zero",
+                    "reaction_effect_ref": "lc_save",
+                    "reaction_passive_mode": "force",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_takes_damage"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wingd.png",
+          "name": "Life Charm",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "3.2.4"
+        },
+        "fabula-ultima-companion": {
+          "carryLimit": 1
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
@@ -217,6 +344,7 @@
           "isKey": false,
           "isMartial": false,
           "isModule": false,
+          "isReaction": true,
           "isSet": false,
           "isUnique": true,
           "item_baseDef": "0",

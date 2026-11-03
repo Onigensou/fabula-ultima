@@ -1,0 +1,19 @@
+{
+  "_id": "nvrcSADMXJG1VgU1",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1793712596663,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": "#6b5a2a",
+  "description": "",
+  "flags": {},
+  "folder": null,
+  "name": "Shared Animations",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}

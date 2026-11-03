@@ -29,7 +29,17 @@
       "description": "<p><em>Phoenix Feather:</em> revive an ally to their Crisis score.</p>",
       "effect_table": {
         "0": {
-          "$deleted": false,
+          "chain_steps": "phoenix_fx, phoenix_revive",
+          "effect_kind": "chain",
+          "effect_label": "phoenix_use"
+        },
+        "1": {
+          "action_ref": "Item.FxShared0Revive1",
+          "effect_kind": "play_animation",
+          "effect_label": "phoenix_fx",
+          "target_ref": "action_targets"
+        },
+        "2": {
           "effect_kind": "set_resource",
           "effect_label": "phoenix_revive",
           "grant_amount": "MAX_HP / 2",
@@ -38,7 +48,7 @@
         }
       },
       "isCheck": false,
-      "on_activate_effect_ref": "phoenix_revive",
+      "on_activate_effect_ref": "phoenix_use",
       "skill_target": "One Ally",
       "skill_type": "Item",
       "type_damage": ""

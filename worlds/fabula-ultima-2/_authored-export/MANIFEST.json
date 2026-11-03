@@ -1761,6 +1761,12 @@
         "parent": "yIXRZeBsb9OQyi02"
       },
       {
+        "id": "nvrcSADMXJG1VgU1",
+        "name": "Shared Animations",
+        "type": "Item",
+        "parent": null
+      },
+      {
         "id": "HyB3n86bNR4UQBOv",
         "name": "Sharpshooter",
         "type": "Item",
@@ -6183,6 +6189,12 @@
         "name": "Full Plate",
         "type": "equippableItem",
         "effects": 3
+      },
+      {
+        "id": "FxShared0Revive1",
+        "name": "FX: Revive",
+        "type": "equippableItem",
+        "effects": 0
       },
       {
         "id": "1w2LjUOVhlbLR8nn",

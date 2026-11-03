@@ -1872,18 +1872,18 @@
       },
       "effects": [
         {
-          "_id": "5tKJ2deCPP1hhqD5",
+          "_id": "qI8JLyuTHWzgcGaH",
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
-            "createdTime": 1787064019273,
+            "createdTime": 1793714670159,
             "duplicateSource": null,
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
           },
           "changes": [],
           "description": "",
-          "disabled": true,
+          "disabled": false,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -1896,47 +1896,78 @@
           "flags": {
             "custom-system-builder": {
               "isFromTemplate": false,
-              "originalId": "5tKJ2deCPP1hhqD5",
+              "originalId": "qI8JLyuTHWzgcGaH",
               "originalParentId": "7EGpAPJU0BSBxeWK",
-              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.7EGpAPJU0BSBxeWK.ActiveEffect.5tKJ2deCPP1hhqD5"
+              "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.7EGpAPJU0BSBxeWK.ActiveEffect.qI8JLyuTHWzgcGaH"
             },
             "fabula-ultima-companion": {
               "category": "buff",
               "reactionConfig": {
                 "effect_table": {
                   "0": {
-                    "chain_steps": "lifecharm_cap,lifecharm_heal,lifecharm_spend",
+                    "chain_steps": "lc_cap, lc_card, lc_wait, lc_fall, lc_hold, lc_fx, lc_heal, lc_rise, lc_spend",
                     "effect_kind": "chain",
-                    "effect_label": "lifecharm_save"
+                    "effect_label": "lc_save"
                   },
                   "1": {
                     "damage_amount": "CUR_HP - 1",
                     "damage_operation": "cap",
                     "damage_stage": "incoming",
                     "effect_kind": "adjust_damage",
-                    "effect_label": "lifecharm_cap",
-                    "modify_mode": "set_hp_floor",
-                    "modify_value": 1
+                    "effect_label": "lc_cap"
                   },
                   "2": {
-                    "effect_kind": "grant",
-                    "effect_label": "lifecharm_heal",
-                    "grant_amount": "floor(MAX_HP / 2) - 1",
+                    "effect_kind": "notify",
+                    "effect_label": "lc_card",
+                    "notify_abort": false,
+                    "notify_message": "Life Charm",
+                    "notify_type": "card"
+                  },
+                  "3": {
+                    "delay_ms": "500",
+                    "effect_kind": "delay",
+                    "effect_label": "lc_wait"
+                  },
+                  "4": {
+                    "effect_kind": "play_pose",
+                    "effect_label": "lc_fall",
+                    "pose_name": "ko"
+                  },
+                  "5": {
+                    "delay_ms": "1200",
+                    "effect_kind": "delay",
+                    "effect_label": "lc_hold"
+                  },
+                  "6": {
+                    "action_ref": "Item.FxShared0Revive1",
+                    "effect_kind": "play_animation",
+                    "effect_label": "lc_fx",
+                    "target_ref": "self"
+                  },
+                  "7": {
+                    "effect_kind": "set_resource",
+                    "effect_label": "lc_heal",
+                    "grant_amount": "floor(MAX_HP / 2)",
                     "grant_resource": "hp",
                     "target_ref": "self"
                   },
-                  "3": {
+                  "8": {
+                    "effect_kind": "play_pose",
+                    "effect_label": "lc_rise",
+                    "pose_name": "idle"
+                  },
+                  "9": {
                     "consume_item_name": "Life Charm",
                     "effect_kind": "consume_item",
-                    "effect_label": "lifecharm_spend"
+                    "effect_label": "lc_spend"
                   }
                 },
                 "name": "Life Charm",
                 "reaction_config_table": {
                   "0": {
                     "reaction_damage_outcome": "would_reduce_to_zero",
-                    "reaction_effect_ref": "lifecharm_save",
-                    "reaction_passive_mode": "ask",
+                    "reaction_effect_ref": "lc_save",
+                    "reaction_passive_mode": "force",
                     "reaction_source": "self",
                     "reaction_trigger": "creature_takes_damage"
                   }
@@ -1966,6 +1997,9 @@
       "flags": {
         "custom-system-builder": {
           "version": "3.2.4"
+        },
+        "fabula-ultima-companion": {
+          "carryLimit": 1
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
@@ -2031,6 +2065,7 @@
           "isKey": false,
           "isMartial": false,
           "isModule": false,
+          "isReaction": true,
           "isRelatedItem": false,
           "isSet": false,
           "isUnique": false,
@@ -2110,6 +2145,17 @@
           "dragon_ef": "100",
           "effect_table": {
             "0": {
+              "chain_steps": "phoenix_fx, phoenix_revive",
+              "effect_kind": "chain",
+              "effect_label": "phoenix_use"
+            },
+            "1": {
+              "action_ref": "Item.FxShared0Revive1",
+              "effect_kind": "play_animation",
+              "effect_label": "phoenix_fx",
+              "target_ref": "action_targets"
+            },
+            "2": {
               "effect_kind": "set_resource",
               "effect_label": "phoenix_revive",
               "grant_amount": "MAX_HP / 2",
@@ -11034,7 +11080,17 @@
           "description": "<p><em>Phoenix Feather:</em> revive an ally to their Crisis score.</p>",
           "effect_table": {
             "0": {
-              "$deleted": false,
+              "chain_steps": "phoenix_fx, phoenix_revive",
+              "effect_kind": "chain",
+              "effect_label": "phoenix_use"
+            },
+            "1": {
+              "action_ref": "Item.FxShared0Revive1",
+              "effect_kind": "play_animation",
+              "effect_label": "phoenix_fx",
+              "target_ref": "action_targets"
+            },
+            "2": {
               "effect_kind": "set_resource",
               "effect_label": "phoenix_revive",
               "grant_amount": "MAX_HP / 2",
@@ -11044,7 +11100,7 @@
           },
           "isCheck": false,
           "name": "Phoenix Feather",
-          "on_activate_effect_ref": "phoenix_revive",
+          "on_activate_effect_ref": "phoenix_use",
           "skill_target": "One Ally",
           "skill_type": "Item",
           "type_damage": ""

@@ -11,6 +11,9 @@
   "flags": {
     "custom-system-builder": {
       "version": "3.2.4"
+    },
+    "fabula-ultima-companion": {
+      "carryLimit": 1
     }
   },
   "folder": "VzpCG9mySsd9sQSL",
