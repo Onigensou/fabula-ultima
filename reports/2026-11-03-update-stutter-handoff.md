@@ -1,16 +1,16 @@
 ---
 id: 2026-11-03-update-stutter-handoff
-title: Hand-off — actor updates no longer stutter (CSB recalculation + Foundry update path, v1.0.519)
+title: Hand-off — actor updates no longer stutter (CSB recalculation + Foundry update path + rewind history, v1.0.519–520)
 status: open
 severity: minor
 reporter: sarunphat
 assignee: onigensou
 component: process/merge-handoff (csb-extensions, syntax-extender, battle log)
 introduced_in:
-fixed_in: 1.0.519
+fixed_in: 1.0.520
 ---
 
-# Not a bug: a hand-off note for the v1.0.519 pull
+# Not a bug: a hand-off note for the v1.0.519 and v1.0.520 pulls
 
 Written for onigensou, and for the Claude session that runs the pull. Nothing in the game
 rules changed. Please skim it before touching CSB internals, Active Effect syntax code or the
@@ -103,6 +103,29 @@ All on the Snapshot Runner (the real client, CSB and module, with the world read
 The user played a 4-PC + guest battle on the first two rounds of this work and said it
 "feels great".
 
+## 6. Added in v1.0.520
+
+- **The GM rewind history moved off the battle scene.** It was one `directorHistory` array
+  flag that grew with every save point (1.6 MB after 10 actions in the seeded battle;
+  preflight once met a 6.2 MB one). Every scene save sent the whole array to every client,
+  and each client copied it, so stalls grew as the battle went on. Now each save point is
+  its own hidden JournalEntry (ownership NONE) in the folder **⚙ Battle Director (rewind
+  points)**, flagged `flags.fabula-ultima-companion.directorHistoryEntry = { sceneId, seq, entry }`.
+  Rewind works as before: same 50-point window, shared, survives a reload, any GM. The entries
+  and the folder are deleted when the battle stops.
+  - **What you will see:** that folder in the Journal sidebar while a battle runs. Leave it
+    alone; deleting an entry there deletes that rewind point.
+  - **Code or tools that read `scene.getFlag(…, "directorHistory")`** must use
+    `getHistory(scene)` from `battle-director/persistence.js` (or the API's `history()`).
+    The old flag is still read, and a battle saved on an older version moves its points into
+    documents on the first new save.
+  - **Measured on the seeded battle:** the scene document stays under 60 KB (it reached
+    1.6 MB). Long tasks went from 2.15 s to 1.05 s, and the 60–130 ms stalls that came with
+    each scene save are gone. Same battle. A live rewind to "Battle Start" kept exactly that
+    point and resumed the fight.
+- **Item containers keep the rows of unchanged items** (`csb-derivation-perf.js` (1), under
+  `csbIncrementalPrepare`). Hina's HP write: ~13 → ~10 ms.
+
 ## Closing this
 
 Pull, open the world once as GM, and check in the console:
@@ -112,7 +135,7 @@ Pull, open the world once as GM, and check in the console:
 ```
 
 It should print `[true, true, true, true]`, and there should be no `[CSB-DerivationPerf]` or
-`[CSB-FormulaMemo]` warnings in the console. Then play one battle, set `status: verified`, and
-push.
+`[CSB-FormulaMemo]` warnings in the console. Then play one battle (the rewind folder should appear in the Journal sidebar and vanish
+when the battle ends), set `status: verified`, and push.
 
 ## Notes
