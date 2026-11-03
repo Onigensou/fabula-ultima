@@ -1,0 +1,11 @@
+{
+  "_comment": "One-scene battle profile: Training Ground, the party, the fixtures and two enemies (plus whatever they reference). node bin/build-snapshot.mjs --profile battle",
+  "scenes": ["Training Ground"],
+  "viewScene": "Training Ground",
+  "actors": {
+    "types": ["_template"],
+    "flags": ["isField"],
+    "folders": [],
+    "names": ["Test Caster", "Test Target Ally", "Test Target Enemy", "Hina", "Keren", "Blanche", "Zarg", "Hellhound", "Imp"]
+  }
+}

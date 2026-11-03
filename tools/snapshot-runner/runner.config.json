@@ -1,0 +1,59 @@
+{
+  "worldId": "snapshot-runner",
+  "worldTitle": "Snapshot Runner (serverless)",
+  "port": 30101,
+  "user": "GM II",
+  "scenes": [
+    "Regression Bench"
+  ],
+  "viewScene": "Regression Bench",
+  "actors": {
+    "types": [
+      "_template"
+    ],
+    "flags": [
+      "isField"
+    ],
+    "folders": [
+      "Template",
+      "UI",
+      "Companion"
+    ],
+    "names": [
+      "Test Caster",
+      "Test Target Ally",
+      "Test Target Enemy",
+      "Hina",
+      "Keren",
+      "Blanche",
+      "Zarg"
+    ]
+  },
+  "followRefs": {
+    "from": [
+      "settings",
+      "actors",
+      "scenes"
+    ],
+    "fromCode": [
+      "modules/fabula-ultima-companion/scripts"
+    ]
+  },
+  "keepWhole": [
+    "items",
+    "folders",
+    "journal",
+    "macros",
+    "tables",
+    "playlists",
+    "cards",
+    "settings",
+    "users",
+    "packs",
+    "modules"
+  ],
+  "dropWhole": [
+    "messages",
+    "combats"
+  ]
+}

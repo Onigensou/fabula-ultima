@@ -11,9 +11,10 @@ a field-level diff.
 
 ## Requirements
 
-- **The Foundry world must be OPEN.** The tool drives the running world through
-  the file-IPC test-bridge (`worlds/fabula-ultima-2/test-bridge/`). No combat is
-  required — the harness runs skills against a synthetic director context.
+- **The Foundry world must be OPEN** — or pass **`--runner`** to `capture` /
+  `check` (below). The tool drives the running world through the file-IPC
+  test-bridge (`worlds/fabula-ultima-2/test-bridge/`). No combat is required —
+  the harness runs skills against a synthetic director context.
 - A roster scene with tokens. Defaults to the **active scene**, else
   **Training Ground**. The 4 PCs (Blanche/Hina/Keren/Zarg) + 2 enemies
   (Salamander/Hellhound) on Training Ground are the standard roster.
@@ -29,6 +30,54 @@ node bin/skill-regression.js check            # diff current vs goldens; exit 1 
 node bin/skill-regression.js check --update   # accept current behavior as the new goldens
 node bin/skill-regression.js verify           # assert expected-value invariants; exit 1 on mismatch
 ```
+
+## Game CLOSED: `--runner`
+
+`check --runner` / `capture --runner` run the same collector on the **Snapshot
+Runner** (`tools/snapshot-runner`; one-time setup in its README): the real Foundry client + CSB +
+our module with the server faked and the world read from the LevelDB on disk
+(a temp copy; the world's files are never opened). The bench is built **in that
+page** by `lib/build-bench.js`, as the live gate builds it, so a bench torn down
+on disk does not matter, and nothing reaches the world.
+
+```bash
+node bin/skill-regression.js check --runner --scene "Regression Bench" --dummy "Test Target Enemy"   # ~35 s, drawing off
+```
+
+- Referee (2026-11-03): **487/487 identical** to `goldens/skills.json` and to the
+  real engine's capture (`snapshot-runner/capture/oracle.json`). A perturbed golden
+  goes red with exit 1 (1 changed, 1 new).
+- Whole catalog in ~40 s (collector ~17 s: no bridge round-trips), vs ~110 s live.
+- Own snapshot dir (`snap-regression`) + port (`SKILL_REGRESSION_RUNNER_PORT`,
+  default 30103), and a lock (`.state/runner.lock`), so it never collides with a
+  hand-driven Snapshot Runner run or another session's gate.
+- Not covered: `--full` / the `wide` golden has not been refereed on the Snapshot Runner;
+  `structure` and `verify` still need the game.
+- The **Stop-hook gate uses it automatically** when Foundry is closed
+  (`SKILL_REGRESSION_RUNNER=0` restores the old "deferred" behaviour). A Snapshot Runner
+  that cannot run (lock held, boot failure) still defers and keeps the marker.
+- **Warm (2026-11-03).** The first cold `--runner` check leaves a warm runner behind
+  (`snapshot-runner/bin/warm.mjs`, regression profile + bench, control port 31103,
+  log `.state/warm-runner.log`). Later checks go to it:
+
+  | check after | time |
+  |---|---|
+  | nothing changed | **~1 s** (was ~40 s) |
+  | a world-data edit on disk (only changed docs pushed) | **~7 s** |
+  | a module code edit (the page reloads + rebuilds the bench) | ~38 s, about a cold run |
+  | the daemon is still starting | waits for it (~30 s), never starts a second client |
+
+  It is still 487/487 against the golden; a `--per-skill-ms 1` control turns 6 red. It runs
+  without time warp (a warped per-skill guard could time out a slow skill). Between checks
+  the page is quiet and frozen: idle ~15–30% of one core, ~1.4 GB, and it leaves after
+  30 unused minutes (`SKILL_REGRESSION_WARM_IDLE_MIN`). `SKILL_REGRESSION_WARM=0` turns it
+  off; `--full` always runs cold. Stop it by hand: `node ../snapshot-runner/bin/warm.mjs stop --port 30103`.
+- 🪤 Only a check against the gate's compute golden records a verdict for the
+  gate now. A check against another `--goldens` file (a simulate golden, a
+  perturbed control copy) used to record its drift as the gate's verdict.
+- `--seed <n>` pins Math.random per skill (`collect.js` seedRandom): an
+  `ae_name_pool` row (Draconic Roar) picks with Math.random, which forced dice do
+  not cover, so its simulate fingerprint flipped run to run in the real engine too.
 
 ## Coverage: the Regression Bench (whole catalog)
 
@@ -341,6 +390,24 @@ can't cover this because it runs game-*closed* and this check needs the game
   intended); game open, clean → clear marker. A kill-timer caps the run so a
   wedged bridge can't freeze turn-end. Override scene/mode via
   `SKILL_REGRESSION_CHECK_ARGS` (e.g. `--scene "Regression Bench" --dummy "Test Target Enemy"`).
+
+**Wire them with `$CLAUDE_PROJECT_DIR`, never a relative path.** A hook runs in the
+session's *current* folder, and sessions change folders (the runner tools are run
+from `tools/fvtt-playwright`). Written as `node tools/skill-regression/hooks/...`,
+both hooks failed with "Cannot find module" from any subfolder, silently: measured
+over 7 days (2026-11-03), 158 of 336 Stop runs and 418 of 421 PostToolUse records,
+so engine edits were mostly never marked and their check never ran.
+`.claude/settings.json` is not tracked; each machine needs:
+
+```json
+{ "hooks": {
+  "PostToolUse": [{ "matcher": "Edit|Write|MultiEdit", "hooks": [{ "type": "command",
+    "command": "node \"$CLAUDE_PROJECT_DIR/tools/skill-regression/hooks/on-skill-edit.js\"", "timeout": 15 }] }],
+  "Stop": [{ "hooks": [{ "type": "command",
+    "command": "node \"$CLAUDE_PROJECT_DIR/tools/skill-regression/hooks/regression-gate.js\"", "timeout": 900,
+    "statusMessage": "skill-regression: checking for behavioral drift…" }] }]
+} }
+```
 
 #### The semantic gate — why most engine turns cost nothing
 

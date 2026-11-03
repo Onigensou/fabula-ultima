@@ -1,0 +1,7681 @@
+{
+ "ok": true,
+ "mode": "compute",
+ "scene": "Regression Bench",
+ "casters": [
+  "⭐️ Fafnir",
+  "⭐️ Geist",
+  "⭐️ Gryphon",
+  "⭐️ Jack",
+  "⭐️ Jill",
+  "⭐️ Love",
+  "⭐️ Rauben",
+  "⭐️ Wandering Flame",
+  "Ace of Cards",
+  "Arcanist",
+  "Arcanist (Variant)",
+  "Berserker",
+  "Blanche",
+  "Bruce",
+  "Cardinal Gora",
+  "Cherry",
+  "Chiyo",
+  "Commander",
+  "Crysta",
+  "Dancer",
+  "Darkblade",
+  "Elementalist",
+  "Entropist",
+  "Esper",
+  "Farian Pasta",
+  "Fjord",
+  "Floralist",
+  "Fury",
+  "Geist (Overworld)",
+  "Gourmet",
+  "Guardian",
+  "Hako",
+  "Hexer",
+  "Hina",
+  "Hunter",
+  "Illusionist",
+  "Invoker",
+  "Juno",
+  "Kalina",
+  "Keren",
+  "Kiki",
+  "Koshka",
+  "Loremaster",
+  "Matador",
+  "Monk",
+  "Moses",
+  "Mutant",
+  "Necromancer",
+  "Oki (Copy)",
+  "Orator",
+  "Pirate",
+  "Pyromancer",
+  "RaiRai",
+  "Reaper",
+  "Revolver",
+  "Rogue",
+  "Slayer",
+  "Sniper",
+  "Spell Fencer",
+  "Spiritist",
+  "St. Reefesia",
+  "Surtur",
+  "Symbolist",
+  "Tactician",
+  "Tailor",
+  "Tamer",
+  "Tinkerer",
+  "Varan",
+  "Weaponmaster",
+  "Zarg"
+ ],
+ "enemyTarget": "Test Target Enemy",
+ "total": 487,
+ "offset": 0,
+ "count": 487,
+ "nextOffset": 487,
+ "hasMore": false,
+ "errorCount": 14,
+ "tookMs": 7962,
+ "slowest": [
+  {
+   "key": "⭐️ Fafnir / Condemn",
+   "ms": 2667
+  },
+  {
+   "key": "Elementalist / Bimagus",
+   "ms": 1704
+  },
+  {
+   "key": "Hexer / Transfer Life",
+   "ms": 688
+  },
+  {
+   "key": "Spiritist / Bimagus",
+   "ms": 634
+  },
+  {
+   "key": "Hina / Bimagus",
+   "ms": 631
+  }
+ ],
+ "engineVersion": "1.0.508",
+ "override": {
+  "SL": 5,
+  "CHAR_LEVEL": 50,
+  "BOND_COUNT": 4,
+  "BOND_STRENGTH": 4
+ },
+ "force": {
+  "rA": 5,
+  "rB": 6
+ },
+ "errors": [
+  {
+   "key": "Arcanist / Bind and Summon",
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  {
+   "key": "Arcanist (Variant) / Bind and Summon (variant)",
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  {
+   "key": "Farian Pasta / Bind and Summon (variant)",
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  {
+   "key": "Hina / Bind and Summon (variant)",
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  {
+   "key": "Illusionist / Create Phantasm: Mockery",
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  {
+   "key": "Illusionist / Detonate Phantasm",
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  {
+   "key": "Illusionist / Essence Sacrifice",
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  {
+   "key": "Illusionist / Phantasmal Recovery",
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  {
+   "key": "Illusionist / Vital Sacrifice",
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  {
+   "key": "Keren / Detonate Phantasm",
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  {
+   "key": "RaiRai / Bind and Summon",
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  {
+   "key": "Tinkerer / Gadgets",
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  {
+   "key": "Varan / Bind and Summon",
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  {
+   "key": "Zarg / Gadgets",
+   "reason": "compute_refused:TARGET_BACK"
+  }
+ ],
+ "skills": {
+  "⭐️ Fafnir / Condemn": {
+   "skill": "Condemn",
+   "skillType": "Active",
+   "caster": "⭐️ Fafnir",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "dark",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 106,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "⭐️ Fafnir / Draconic Domination": {
+   "skill": "Draconic Domination",
+   "skillType": "Spell",
+   "caster": "⭐️ Fafnir",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Fafnir / Ruinous Breath": {
+   "skill": "Ruinous Breath",
+   "skillType": "Spell",
+   "caster": "⭐️ Fafnir",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "bolt",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 600,
+     "resource": "hp",
+     "affinity": "VU",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "⭐️ Fafnir / Searing Brand": {
+   "skill": "Searing Brand",
+   "skillType": "Spell",
+   "caster": "⭐️ Fafnir",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Fafnir / Storm Calm": {
+   "skill": "Storm Calm",
+   "skillType": "Spell",
+   "caster": "⭐️ Fafnir",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Fafnir / Summon Elemental Drake": {
+   "skill": "Summon Elemental Drake",
+   "skillType": "Active",
+   "caster": "⭐️ Fafnir",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Fafnir / Torment": {
+   "skill": "Torment",
+   "skillType": "Active",
+   "caster": "⭐️ Fafnir",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Fafnir / Zero Power: Cruel Ultimatum": {
+   "skill": "Zero Power: Cruel Ultimatum",
+   "skillType": "Active",
+   "caster": "⭐️ Fafnir",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Geist / Dark Missionary": {
+   "skill": "Dark Missionary",
+   "skillType": "Spell",
+   "caster": "⭐️ Geist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Geist / Living Shadow": {
+   "skill": "Living Shadow",
+   "skillType": "Spell",
+   "caster": "⭐️ Geist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Geist / Shadow Strike": {
+   "skill": "Shadow Strike",
+   "skillType": "Active",
+   "caster": "⭐️ Geist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Geist / Shadow Wall": {
+   "skill": "Shadow Wall",
+   "skillType": "Spell",
+   "caster": "⭐️ Geist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Geist / Shadowbringers": {
+   "skill": "Shadowbringers",
+   "skillType": "Active",
+   "caster": "⭐️ Geist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Geist / Zero Power: The Blackest Night": {
+   "skill": "Zero Power: The Blackest Night",
+   "skillType": "Active",
+   "caster": "⭐️ Geist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Gryphon / Aerial Shockwave": {
+   "skill": "Aerial Shockwave",
+   "skillType": "Spell",
+   "caster": "⭐️ Gryphon",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "air",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "IM",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "⭐️ Gryphon / Air Blast": {
+   "skill": "Air Blast",
+   "skillType": "Spell",
+   "caster": "⭐️ Gryphon",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "air",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "IM",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "⭐️ Gryphon / Turbulence Wind": {
+   "skill": "Turbulence Wind",
+   "skillType": "Spell",
+   "caster": "⭐️ Gryphon",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Gryphon / Wind Wall": {
+   "skill": "Wind Wall",
+   "skillType": "Active",
+   "caster": "⭐️ Gryphon",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Gryphon / Zero Power: Downburst": {
+   "skill": "Zero Power: Downburst",
+   "skillType": "Active",
+   "caster": "⭐️ Gryphon",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "air",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "IM",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "⭐️ Jack / Burning Arrow": {
+   "skill": "Burning Arrow",
+   "skillType": "Active",
+   "caster": "⭐️ Jack",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "fire",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 26,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "⭐️ Jack / Poison Arrow": {
+   "skill": "Poison Arrow",
+   "skillType": "Active",
+   "caster": "⭐️ Jack",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "poison",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 26,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "⭐️ Jack / Snaring Arrow": {
+   "skill": "Snaring Arrow",
+   "skillType": "Active",
+   "caster": "⭐️ Jack",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "air",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "IM",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "⭐️ Jack / Zero Power: Apex Arrow": {
+   "skill": "Zero Power: Apex Arrow",
+   "skillType": "Active",
+   "caster": "⭐️ Jack",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "air",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "IM",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "⭐️ Jill / Cleaving Strike": {
+   "skill": "Cleaving Strike",
+   "skillType": "Active",
+   "caster": "⭐️ Jill",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 26,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "⭐️ Jill / Mug": {
+   "skill": "Mug",
+   "skillType": "Active",
+   "caster": "⭐️ Jill",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 26,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "⭐️ Jill / Pulverize": {
+   "skill": "Pulverize",
+   "skillType": "Active",
+   "caster": "⭐️ Jill",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 31,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "⭐️ Jill / Zero Power: Temper Tantrum": {
+   "skill": "Zero Power: Temper Tantrum",
+   "skillType": "Active",
+   "caster": "⭐️ Jill",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Love / Come! My Amigo!": {
+   "skill": "Come! My Amigo!",
+   "skillType": "Active",
+   "caster": "⭐️ Love",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Love / Gangster Paradise": {
+   "skill": "Gangster Paradise",
+   "skillType": "Spell",
+   "caster": "⭐️ Love",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Love / Heartache": {
+   "skill": "Heartache",
+   "skillType": "Active",
+   "caster": "⭐️ Love",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Love / One more for you": {
+   "skill": "One more for you",
+   "skillType": "Active",
+   "caster": "⭐️ Love",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Love / Rock your World": {
+   "skill": "Rock your World",
+   "skillType": "Spell",
+   "caster": "⭐️ Love",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Love / Shout my Soul": {
+   "skill": "Shout my Soul",
+   "skillType": "Spell",
+   "caster": "⭐️ Love",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "air",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "IM",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "⭐️ Love / Zero Power: Love Serenade": {
+   "skill": "Zero Power: Love Serenade",
+   "skillType": "Active",
+   "caster": "⭐️ Love",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Rauben / All you can take": {
+   "skill": "All you can take",
+   "skillType": "Active",
+   "caster": "⭐️ Rauben",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Rauben / Bandit Raid": {
+   "skill": "Bandit Raid",
+   "skillType": "Active",
+   "caster": "⭐️ Rauben",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 11,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "⭐️ Rauben / Cleaving Strike": {
+   "skill": "Cleaving Strike",
+   "skillType": "Active",
+   "caster": "⭐️ Rauben",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 26,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "⭐️ Rauben / Mug": {
+   "skill": "Mug",
+   "skillType": "Active",
+   "caster": "⭐️ Rauben",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 36,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "⭐️ Rauben / Oi! Come help me now!": {
+   "skill": "Oi! Come help me now!",
+   "skillType": "Active",
+   "caster": "⭐️ Rauben",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "⭐️ Rauben / Zero Power: Night of Hundred Bandits": {
+   "skill": "Zero Power: Night of Hundred Bandits",
+   "skillType": "Active",
+   "caster": "⭐️ Rauben",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "⭐️ Wandering Flame / Diving Blaze Kick": {
+   "skill": "Diving Blaze Kick",
+   "skillType": "Active",
+   "caster": "⭐️ Wandering Flame",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "fire",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 56,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "⭐️ Wandering Flame / Flamethrower": {
+   "skill": "Flamethrower",
+   "skillType": "Active",
+   "caster": "⭐️ Wandering Flame",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "fire",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 26,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "⭐️ Wandering Flame / Overblaze": {
+   "skill": "Overblaze",
+   "skillType": "Active",
+   "caster": "⭐️ Wandering Flame",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "fire",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 15,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "⭐️ Wandering Flame / Zero Power: Meteor Impact": {
+   "skill": "Zero Power: Meteor Impact",
+   "skillType": "Active",
+   "caster": "⭐️ Wandering Flame",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "fire",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 5,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Ace of Cards / Card Vanguard": {
+   "skill": "Card Vanguard",
+   "skillType": "Active",
+   "caster": "Ace of Cards",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Ace of Cards / Magic Cards": {
+   "skill": "Magic Cards",
+   "skillType": "Active",
+   "caster": "Ace of Cards",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Arcanist / Bind and Summon": {
+   "skill": "Bind and Summon",
+   "skillType": "Active",
+   "caster": "Arcanist",
+   "offensive": true,
+   "targets": 1,
+   "ok": false,
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  "Arcanist / Revelation": {
+   "skill": "Revelation",
+   "skillType": "Active",
+   "caster": "Arcanist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Arcanist (Variant) / Bind and Summon (variant)": {
+   "skill": "Bind and Summon (variant)",
+   "skillType": "Active",
+   "caster": "Arcanist (Variant)",
+   "offensive": true,
+   "targets": 1,
+   "ok": false,
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  "Berserker / Berserk": {
+   "skill": "Berserk",
+   "skillType": "Active",
+   "caster": "Berserker",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Berserker / Berserker Showdown": {
+   "skill": "Berserker Showdown",
+   "skillType": "Active",
+   "caster": "Berserker",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Berserker / Rumble!": {
+   "skill": "Rumble!",
+   "skillType": "Active",
+   "caster": "Berserker",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Blanche / Capote": {
+   "skill": "Capote",
+   "skillType": "Active",
+   "caster": "Blanche",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Blanche / Castigo": {
+   "skill": "Castigo",
+   "skillType": "Active",
+   "caster": "Blanche",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Blanche / Descabello": {
+   "skill": "Descabello",
+   "skillType": "Active",
+   "caster": "Blanche",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 55,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Blanche / Heal": {
+   "skill": "Heal",
+   "skillType": "Spell",
+   "caster": "Blanche",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": true,
+   "element": "hp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": null,
+     "affinity": "NE",
+     "grant": 60,
+     "grantRes": "hp"
+    }
+   ]
+  },
+  "Blanche / Invocation": {
+   "skill": "Invocation",
+   "skillType": "Active",
+   "caster": "Blanche",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Blanche / Muleta": {
+   "skill": "Muleta",
+   "skillType": "Active",
+   "caster": "Blanche",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 26,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Blanche / Protect": {
+   "skill": "Protect",
+   "skillType": "Active",
+   "caster": "Blanche",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Blanche / Provoke": {
+   "skill": "Provoke",
+   "skillType": "Active",
+   "caster": "Blanche",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Blanche / Tafallera": {
+   "skill": "Tafallera",
+   "skillType": "Active",
+   "caster": "Blanche",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 36,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Blanche / Verónica": {
+   "skill": "Verónica",
+   "skillType": "Active",
+   "caster": "Blanche",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Blanche / Zero Power: Give me tips or 5stars": {
+   "skill": "Zero Power: Give me tips or 5stars",
+   "skillType": "Active",
+   "caster": "Blanche",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": true,
+   "element": "hp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": null,
+     "affinity": "NE",
+     "grant": 65,
+     "grantRes": "hp"
+    }
+   ]
+  },
+  "Bruce / One-Ilm Punch": {
+   "skill": "One-Ilm Punch",
+   "skillType": "Active",
+   "caster": "Bruce",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 11,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Bruce / Provoke": {
+   "skill": "Provoke",
+   "skillType": "Active",
+   "caster": "Bruce",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Bruce / Zero Power: Teleport Slash": {
+   "skill": "Zero Power: Teleport Slash",
+   "skillType": "Spell",
+   "caster": "Bruce",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 26,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Cardinal Gora / Omega": {
+   "skill": "Omega",
+   "skillType": "Spell",
+   "caster": "Cardinal Gora",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Cherry / Adrenaline Endure": {
+   "skill": "Adrenaline Endure",
+   "skillType": "Active",
+   "caster": "Cherry",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Cherry / Adrenaline Rush": {
+   "skill": "Adrenaline Rush",
+   "skillType": "Active",
+   "caster": "Cherry",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Cherry / Aura": {
+   "skill": "Aura",
+   "skillType": "Spell",
+   "caster": "Cherry",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Cherry / Awaken": {
+   "skill": "Awaken",
+   "skillType": "Spell",
+   "caster": "Cherry",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Cherry / Barrier": {
+   "skill": "Barrier",
+   "skillType": "Spell",
+   "caster": "Cherry",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Cherry / Blazing Impact": {
+   "skill": "Blazing Impact",
+   "skillType": "Active",
+   "caster": "Cherry",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 11,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Cherry / Cleanse": {
+   "skill": "Cleanse",
+   "skillType": "Spell",
+   "caster": "Cherry",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Cherry / Fulgur": {
+   "skill": "Fulgur",
+   "skillType": "Spell",
+   "caster": "Cherry",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "bolt",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 42,
+     "resource": "hp",
+     "affinity": "VU",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Cherry / Heal": {
+   "skill": "Heal",
+   "skillType": "Spell",
+   "caster": "Cherry",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": true,
+   "element": "hp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": null,
+     "affinity": "NE",
+     "grant": 60,
+     "grantRes": "hp"
+    }
+   ]
+  },
+  "Cherry / Mercy": {
+   "skill": "Mercy",
+   "skillType": "Spell",
+   "caster": "Cherry",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Cherry / Protect": {
+   "skill": "Protect",
+   "skillType": "Active",
+   "caster": "Cherry",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Cherry / Sample Reaction": {
+   "skill": "Sample Reaction",
+   "skillType": "Active",
+   "caster": "Cherry",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Cherry / Sample Skill": {
+   "skill": "Sample Skill",
+   "skillType": "Active",
+   "caster": "Cherry",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "bolt",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 20,
+     "resource": "hp",
+     "affinity": "VU",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Cherry / Thunderbolt": {
+   "skill": "Thunderbolt",
+   "skillType": "Spell",
+   "caster": "Cherry",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "bolt",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 62,
+     "resource": "hp",
+     "affinity": "VU",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Chiyo / Aero Blast": {
+   "skill": "Aero Blast",
+   "skillType": "Active",
+   "caster": "Chiyo",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Chiyo / Aero Hex": {
+   "skill": "Aero Hex",
+   "skillType": "Active",
+   "caster": "Chiyo",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Chiyo / Electro Blast": {
+   "skill": "Electro Blast",
+   "skillType": "Active",
+   "caster": "Chiyo",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Chiyo / Electro Hex": {
+   "skill": "Electro Hex",
+   "skillType": "Active",
+   "caster": "Chiyo",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Chiyo / Geo Blast": {
+   "skill": "Geo Blast",
+   "skillType": "Active",
+   "caster": "Chiyo",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Chiyo / Geo Hex": {
+   "skill": "Geo Hex",
+   "skillType": "Active",
+   "caster": "Chiyo",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Chiyo / Golem Dance": {
+   "skill": "Golem Dance",
+   "skillType": "Active",
+   "caster": "Chiyo",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Chiyo / Hydro Blast": {
+   "skill": "Hydro Blast",
+   "skillType": "Active",
+   "caster": "Chiyo",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Chiyo / Hydro Hex": {
+   "skill": "Hydro Hex",
+   "skillType": "Active",
+   "caster": "Chiyo",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Chiyo / Invocation": {
+   "skill": "Invocation",
+   "skillType": "Active",
+   "caster": "Chiyo",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Chiyo / Myrmidon Dance": {
+   "skill": "Myrmidon Dance",
+   "skillType": "Active",
+   "caster": "Chiyo",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Chiyo / Phoenix Dance": {
+   "skill": "Phoenix Dance",
+   "skillType": "Active",
+   "caster": "Chiyo",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Chiyo / Pyro Blast": {
+   "skill": "Pyro Blast",
+   "skillType": "Active",
+   "caster": "Chiyo",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Chiyo / Pyro Hex": {
+   "skill": "Pyro Hex",
+   "skillType": "Active",
+   "caster": "Chiyo",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Chiyo / Yeti Dance": {
+   "skill": "Yeti Dance",
+   "skillType": "Active",
+   "caster": "Chiyo",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Commander / Bishop's Edict": {
+   "skill": "Bishop's Edict",
+   "skillType": "Active",
+   "caster": "Commander",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Commander / Charging Cavalry": {
+   "skill": "Charging Cavalry",
+   "skillType": "Active",
+   "caster": "Commander",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Commander / King's Castle": {
+   "skill": "King's Castle",
+   "skillType": "Active",
+   "caster": "Commander",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Commander / Queen's Gambit": {
+   "skill": "Queen's Gambit",
+   "skillType": "Active",
+   "caster": "Commander",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Crysta / Crescent Cut": {
+   "skill": "Crescent Cut",
+   "skillType": "Active",
+   "caster": "Crysta",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 31,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Crysta / Zero Power: Water-Moon Mirage": {
+   "skill": "Zero Power: Water-Moon Mirage",
+   "skillType": "Active",
+   "caster": "Crysta",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 66,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Dancer / Angel Dance": {
+   "skill": "Angel Dance",
+   "skillType": "Active",
+   "caster": "Dancer",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Dancer / Banshee Dance": {
+   "skill": "Banshee Dance",
+   "skillType": "Active",
+   "caster": "Dancer",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Dancer / Bat Dance": {
+   "skill": "Bat Dance",
+   "skillType": "Active",
+   "caster": "Dancer",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Dancer / Golem Dance": {
+   "skill": "Golem Dance",
+   "skillType": "Active",
+   "caster": "Dancer",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Dancer / Griffin Dance": {
+   "skill": "Griffin Dance",
+   "skillType": "Active",
+   "caster": "Dancer",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Dancer / Hydra Dance": {
+   "skill": "Hydra Dance",
+   "skillType": "Active",
+   "caster": "Dancer",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Dancer / Kraken Dance": {
+   "skill": "Kraken Dance",
+   "skillType": "Active",
+   "caster": "Dancer",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Dancer / Lion Dance": {
+   "skill": "Lion Dance",
+   "skillType": "Active",
+   "caster": "Dancer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": null,
+   "perTarget": []
+  },
+  "Dancer / Meanad Dance": {
+   "skill": "Meanad Dance",
+   "skillType": "Active",
+   "caster": "Dancer",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Dancer / Myrmidon Dance": {
+   "skill": "Myrmidon Dance",
+   "skillType": "Active",
+   "caster": "Dancer",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Dancer / Nightmare Dance": {
+   "skill": "Nightmare Dance",
+   "skillType": "Active",
+   "caster": "Dancer",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Dancer / Ouroboros Dance": {
+   "skill": "Ouroboros Dance",
+   "skillType": "Active",
+   "caster": "Dancer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": null,
+   "perTarget": []
+  },
+  "Dancer / Peacock Dance": {
+   "skill": "Peacock Dance",
+   "skillType": "Active",
+   "caster": "Dancer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Dancer / Phoenix Dance": {
+   "skill": "Phoenix Dance",
+   "skillType": "Active",
+   "caster": "Dancer",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Dancer / Satyr Dance": {
+   "skill": "Satyr Dance",
+   "skillType": "Active",
+   "caster": "Dancer",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Dancer / Unicorn Dance": {
+   "skill": "Unicorn Dance",
+   "skillType": "Active",
+   "caster": "Dancer",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": true,
+   "element": "hp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": null,
+     "affinity": "NE",
+     "grant": 10,
+     "grantRes": "hp"
+    }
+   ]
+  },
+  "Dancer / Yeti Dance": {
+   "skill": "Yeti Dance",
+   "skillType": "Active",
+   "caster": "Dancer",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Darkblade / Shadow Strike": {
+   "skill": "Shadow Strike",
+   "skillType": "Active",
+   "caster": "Darkblade",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Elementalist / Bimagus": {
+   "skill": "Bimagus",
+   "skillType": "Active",
+   "caster": "Elementalist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Elementalist / Elemental Shroud": {
+   "skill": "Elemental Shroud",
+   "skillType": "Spell",
+   "caster": "Elementalist",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Elementalist / Elemental Weapon": {
+   "skill": "Elemental Weapon",
+   "skillType": "Spell",
+   "caster": "Elementalist",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Elementalist / Flare": {
+   "skill": "Flare",
+   "skillType": "Spell",
+   "caster": "Elementalist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "fire",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 31,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Elementalist / Fulgur": {
+   "skill": "Fulgur",
+   "skillType": "Spell",
+   "caster": "Elementalist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "bolt",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 42,
+     "resource": "hp",
+     "affinity": "VU",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Elementalist / Glacies": {
+   "skill": "Glacies",
+   "skillType": "Spell",
+   "caster": "Elementalist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "ice",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 21,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Elementalist / Iceberg": {
+   "skill": "Iceberg",
+   "skillType": "Spell",
+   "caster": "Elementalist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "ice",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 31,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Elementalist / Ignis": {
+   "skill": "Ignis",
+   "skillType": "Spell",
+   "caster": "Elementalist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "fire",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 21,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Elementalist / Rift": {
+   "skill": "Rift",
+   "skillType": "Spell",
+   "caster": "Elementalist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "earth",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 31,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Elementalist / Soaring Strike": {
+   "skill": "Soaring Strike",
+   "skillType": "Spell",
+   "caster": "Elementalist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Elementalist / Terra": {
+   "skill": "Terra",
+   "skillType": "Spell",
+   "caster": "Elementalist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "earth",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 21,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Elementalist / Thunderbolt": {
+   "skill": "Thunderbolt",
+   "skillType": "Spell",
+   "caster": "Elementalist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "bolt",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 62,
+     "resource": "hp",
+     "affinity": "VU",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Elementalist / Ventus": {
+   "skill": "Ventus",
+   "skillType": "Spell",
+   "caster": "Elementalist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "air",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "IM",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Elementalist / Volcano": {
+   "skill": "Volcano",
+   "skillType": "Spell",
+   "caster": "Elementalist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Elementalist / Vortex": {
+   "skill": "Vortex",
+   "skillType": "Spell",
+   "caster": "Elementalist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Elementalist / Wind Wall": {
+   "skill": "Wind Wall",
+   "skillType": "Spell",
+   "caster": "Elementalist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Entropist / Acceleration": {
+   "skill": "Acceleration",
+   "skillType": "Spell",
+   "caster": "Entropist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Entropist / Anomaly": {
+   "skill": "Anomaly",
+   "skillType": "Spell",
+   "caster": "Entropist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Entropist / Bimagus": {
+   "skill": "Bimagus",
+   "skillType": "Active",
+   "caster": "Entropist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Entropist / Comet": {
+   "skill": "Comet",
+   "skillType": "Active",
+   "caster": "Entropist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Entropist / Dark Weapon": {
+   "skill": "Dark Weapon",
+   "skillType": "Spell",
+   "caster": "Entropist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Entropist / Dispel": {
+   "skill": "Dispel",
+   "skillType": "Spell",
+   "caster": "Entropist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Entropist / Divination": {
+   "skill": "Divination",
+   "skillType": "Spell",
+   "caster": "Entropist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Entropist / Drain Spirit": {
+   "skill": "Drain Spirit",
+   "skillType": "Spell",
+   "caster": "Entropist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "mp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 26,
+     "resource": "mp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Entropist / Drain Vigor": {
+   "skill": "Drain Vigor",
+   "skillType": "Active",
+   "caster": "Entropist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "dark",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 21,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Entropist / Gamble": {
+   "skill": "Gamble",
+   "skillType": "Spell",
+   "caster": "Entropist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": true,
+   "element": "hp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": null,
+     "affinity": "NE",
+     "grant": 50,
+     "grantRes": "hp"
+    }
+   ]
+  },
+  "Entropist / Mirror": {
+   "skill": "Mirror",
+   "skillType": "Spell",
+   "caster": "Entropist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Entropist / Omega": {
+   "skill": "Omega",
+   "skillType": "Spell",
+   "caster": "Entropist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Entropist / Stolen Time": {
+   "skill": "Stolen Time",
+   "skillType": "Active",
+   "caster": "Entropist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Entropist / Stop": {
+   "skill": "Stop",
+   "skillType": "Spell",
+   "caster": "Entropist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Entropist / Umbra": {
+   "skill": "Umbra",
+   "skillType": "Spell",
+   "caster": "Entropist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "dark",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 21,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Esper / Atmokinesis": {
+   "skill": "Atmokinesis",
+   "skillType": "Active",
+   "caster": "Esper",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Esper / Brainwave Discharge": {
+   "skill": "Brainwave Discharge",
+   "skillType": "Active",
+   "caster": "Esper",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Esper / Clairvoyance": {
+   "skill": "Clairvoyance",
+   "skillType": "Active",
+   "caster": "Esper",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Esper / Gravitokinesis": {
+   "skill": "Gravitokinesis",
+   "skillType": "Active",
+   "caster": "Esper",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Esper / Life Transference": {
+   "skill": "Life Transference",
+   "skillType": "Active",
+   "caster": "Esper",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": true,
+   "element": "hp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": null,
+     "affinity": "NE",
+     "grant": 5,
+     "grantRes": "hp"
+    }
+   ]
+  },
+  "Esper / Photokinesis": {
+   "skill": "Photokinesis",
+   "skillType": "Active",
+   "caster": "Esper",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Esper / Psychic Backlash": {
+   "skill": "Psychic Backlash",
+   "skillType": "Active",
+   "caster": "Esper",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Esper / Psychic Shield": {
+   "skill": "Psychic Shield",
+   "skillType": "Active",
+   "caster": "Esper",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Esper / Reassuring Presence": {
+   "skill": "Reassuring Presence",
+   "skillType": "Active",
+   "caster": "Esper",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": true,
+   "element": "mp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": null,
+     "affinity": "NE",
+     "grant": 30,
+     "grantRes": "mp"
+    }
+   ]
+  },
+  "Farian Pasta / Bind and Summon (variant)": {
+   "skill": "Bind and Summon (variant)",
+   "skillType": "Active",
+   "caster": "Farian Pasta",
+   "offensive": true,
+   "targets": 1,
+   "ok": false,
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  "Farian Pasta / Drain Spirit": {
+   "skill": "Drain Spirit",
+   "skillType": "Spell",
+   "caster": "Farian Pasta",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "mp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 26,
+     "resource": "mp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Farian Pasta / Drain Vigor": {
+   "skill": "Drain Vigor",
+   "skillType": "Spell",
+   "caster": "Farian Pasta",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "dark",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 21,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Fjord / Atmokinesis": {
+   "skill": "Atmokinesis",
+   "skillType": "Active",
+   "caster": "Fjord",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Fjord / Breach": {
+   "skill": "Breach",
+   "skillType": "Active",
+   "caster": "Fjord",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Fjord / Psychic Shield": {
+   "skill": "Psychic Shield",
+   "skillType": "Active",
+   "caster": "Fjord",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Floralist / Arctic Narcissus": {
+   "skill": "Arctic Narcissus",
+   "skillType": "Active",
+   "caster": "Floralist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Floralist / Blazing Chrysanthemum": {
+   "skill": "Blazing Chrysanthemum",
+   "skillType": "Active",
+   "caster": "Floralist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Floralist / Desert Dahlia": {
+   "skill": "Desert Dahlia",
+   "skillType": "Active",
+   "caster": "Floralist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Floralist / Golden Ginkgo": {
+   "skill": "Golden Ginkgo",
+   "skillType": "Active",
+   "caster": "Floralist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Floralist / Grave Asphodel": {
+   "skill": "Grave Asphodel",
+   "skillType": "Active",
+   "caster": "Floralist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Floralist / Hermit Iris": {
+   "skill": "Hermit Iris",
+   "skillType": "Active",
+   "caster": "Floralist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Floralist / Hookleaf Nightshade": {
+   "skill": "Hookleaf Nightshade",
+   "skillType": "Active",
+   "caster": "Floralist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Floralist / Horned Hawthorn": {
+   "skill": "Horned Hawthorn",
+   "skillType": "Active",
+   "caster": "Floralist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Floralist / Lunar Magnolia": {
+   "skill": "Lunar Magnolia",
+   "skillType": "Active",
+   "caster": "Floralist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Floralist / Ocean Lotus": {
+   "skill": "Ocean Lotus",
+   "skillType": "Active",
+   "caster": "Floralist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Floralist / Pilgrim Gazalia": {
+   "skill": "Pilgrim Gazalia",
+   "skillType": "Active",
+   "caster": "Floralist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Floralist / Prancing Dandelion": {
+   "skill": "Prancing Dandelion",
+   "skillType": "Active",
+   "caster": "Floralist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Floralist / Regal Protea": {
+   "skill": "Regal Protea",
+   "skillType": "Active",
+   "caster": "Floralist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Floralist / Remedy Lily": {
+   "skill": "Remedy Lily",
+   "skillType": "Active",
+   "caster": "Floralist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Floralist / Serrated Rose": {
+   "skill": "Serrated Rose",
+   "skillType": "Active",
+   "caster": "Floralist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Floralist / Silver Strelitzia": {
+   "skill": "Silver Strelitzia",
+   "skillType": "Active",
+   "caster": "Floralist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Floralist / Star Peony": {
+   "skill": "Star Peony",
+   "skillType": "Active",
+   "caster": "Floralist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Floralist / Striped Orchid": {
+   "skill": "Striped Orchid",
+   "skillType": "Active",
+   "caster": "Floralist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Floralist / Wardwattle": {
+   "skill": "Wardwattle",
+   "skillType": "Active",
+   "caster": "Floralist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Floralist / Wrathful Carnation": {
+   "skill": "Wrathful Carnation",
+   "skillType": "Active",
+   "caster": "Floralist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Fury / Provoke": {
+   "skill": "Provoke",
+   "skillType": "Active",
+   "caster": "Fury",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Geist (Overworld) / Dark Missionary": {
+   "skill": "Dark Missionary",
+   "skillType": "Spell",
+   "caster": "Geist (Overworld)",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Geist (Overworld) / Living Shadow": {
+   "skill": "Living Shadow",
+   "skillType": "Spell",
+   "caster": "Geist (Overworld)",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Geist (Overworld) / Shadow Strike": {
+   "skill": "Shadow Strike",
+   "skillType": "Active",
+   "caster": "Geist (Overworld)",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Geist (Overworld) / Shadow Wall": {
+   "skill": "Shadow Wall",
+   "skillType": "Spell",
+   "caster": "Geist (Overworld)",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Geist (Overworld) / Shadowbringers": {
+   "skill": "Shadowbringers",
+   "skillType": "Active",
+   "caster": "Geist (Overworld)",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Geist (Overworld) / Zero Power: The Blackest Night": {
+   "skill": "Zero Power: The Blackest Night",
+   "skillType": "Active",
+   "caster": "Geist (Overworld)",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Gourmet / Cooking": {
+   "skill": "Cooking",
+   "skillType": "Active",
+   "caster": "Gourmet",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Guardian / Protect": {
+   "skill": "Protect",
+   "skillType": "Active",
+   "caster": "Guardian",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hako / Blink": {
+   "skill": "Blink",
+   "skillType": "Spell",
+   "caster": "Hako",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hako / Heal": {
+   "skill": "Heal",
+   "skillType": "Spell",
+   "caster": "Hako",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": true,
+   "element": "hp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": null,
+     "affinity": "NE",
+     "grant": 60,
+     "grantRes": "hp"
+    }
+   ]
+  },
+  "Hexer / Abyss": {
+   "skill": "Abyss",
+   "skillType": "Spell",
+   "caster": "Hexer",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hexer / Acid Splash": {
+   "skill": "Acid Splash",
+   "skillType": "Spell",
+   "caster": "Hexer",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "poison",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 21,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Hexer / Aura of Decay": {
+   "skill": "Aura of Decay",
+   "skillType": "Spell",
+   "caster": "Hexer",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hexer / Blind": {
+   "skill": "Blind",
+   "skillType": "Spell",
+   "caster": "Hexer",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Hexer / Deteriorate": {
+   "skill": "Deteriorate",
+   "skillType": "Spell",
+   "caster": "Hexer",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Hexer / Muddle": {
+   "skill": "Muddle",
+   "skillType": "Spell",
+   "caster": "Hexer",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Hexer / Plague": {
+   "skill": "Plague",
+   "skillType": "Spell",
+   "caster": "Hexer",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Hexer / Pressure": {
+   "skill": "Pressure",
+   "skillType": "Spell",
+   "caster": "Hexer",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Hexer / Seething Blight": {
+   "skill": "Seething Blight",
+   "skillType": "Spell",
+   "caster": "Hexer",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Hexer / Shadow Mask": {
+   "skill": "Shadow Mask",
+   "skillType": "Spell",
+   "caster": "Hexer",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hexer / Symptom Shift": {
+   "skill": "Symptom Shift",
+   "skillType": "Spell",
+   "caster": "Hexer",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Hexer / Transfer Life": {
+   "skill": "Transfer Life",
+   "skillType": "Spell",
+   "caster": "Hexer",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": true,
+   "element": "hp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": null,
+     "affinity": "NE",
+     "grant": 50,
+     "grantRes": "hp"
+    }
+   ]
+  },
+  "Hexer / Venomous Weapon": {
+   "skill": "Venomous Weapon",
+   "skillType": "Spell",
+   "caster": "Hexer",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hina / Acceleration": {
+   "skill": "Acceleration",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hina / Avatar of Vengeance: Dismiss": {
+   "skill": "Avatar of Vengeance: Dismiss",
+   "skillType": "Active",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "fire",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 30,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Hina / Avatar of Vengeance: Pulse": {
+   "skill": "Avatar of Vengeance: Pulse",
+   "skillType": "Active",
+   "caster": "Hina",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": null,
+   "perTarget": []
+  },
+  "Hina / Bimagus": {
+   "skill": "Bimagus",
+   "skillType": "Active",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hina / Bind and Summon (variant)": {
+   "skill": "Bind and Summon (variant)",
+   "skillType": "Active",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": false,
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  "Hina / Cleanse": {
+   "skill": "Cleanse",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hina / Dispel": {
+   "skill": "Dispel",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hina / Divination": {
+   "skill": "Divination",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hina / Draconic Roar": {
+   "skill": "Draconic Roar",
+   "skillType": "Active",
+   "caster": "Hina",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Hina / Drain Spirit": {
+   "skill": "Drain Spirit",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "mp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 26,
+     "resource": "mp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Hina / Elemental Shroud": {
+   "skill": "Elemental Shroud",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Hina / Elemental Weapon": {
+   "skill": "Elemental Weapon",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Hina / Encyclopedia Strike": {
+   "skill": "Encyclopedia Strike",
+   "skillType": "Active",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 23,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Hina / Glacies": {
+   "skill": "Glacies",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "ice",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 21,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Hina / Glacies Finis #dafT:7vAXk1": {
+   "skill": "Glacies Finis",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "ice",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 41,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Hina / Glacies Finis #dafT:C3K6l9": {
+   "skill": "Glacies Finis",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "ice",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 41,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Hina / Heal": {
+   "skill": "Heal",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": true,
+   "element": "hp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": null,
+     "affinity": "NE",
+     "grant": 60,
+     "grantRes": "hp"
+    }
+   ]
+  },
+  "Hina / Iceberg": {
+   "skill": "Iceberg",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "ice",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 31,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Hina / Lift off": {
+   "skill": "Lift off",
+   "skillType": "Active",
+   "caster": "Hina",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hina / Protect": {
+   "skill": "Protect",
+   "skillType": "Active",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hina / Starfall": {
+   "skill": "Starfall",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hina / Starfall Comet": {
+   "skill": "Starfall Comet",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "light",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 21,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Hina / Stop": {
+   "skill": "Stop",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Hina / Symptom Shift": {
+   "skill": "Symptom Shift",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Hina / Zero Power: A Million Possibility": {
+   "skill": "Zero Power: A Million Possibility",
+   "skillType": "Active",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hunter / Bear Trap": {
+   "skill": "Bear Trap",
+   "skillType": "Active",
+   "caster": "Hunter",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hunter / Blinding Powder Trap": {
+   "skill": "Blinding Powder Trap",
+   "skillType": "Active",
+   "caster": "Hunter",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hunter / Explosive Trap": {
+   "skill": "Explosive Trap",
+   "skillType": "Active",
+   "caster": "Hunter",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hunter / Fly Trap": {
+   "skill": "Fly Trap",
+   "skillType": "Active",
+   "caster": "Hunter",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hunter / Lock-On": {
+   "skill": "Lock-On",
+   "skillType": "Active",
+   "caster": "Hunter",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hunter / Mocking Trap": {
+   "skill": "Mocking Trap",
+   "skillType": "Active",
+   "caster": "Hunter",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hunter / Moth Trap": {
+   "skill": "Moth Trap",
+   "skillType": "Active",
+   "caster": "Hunter",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hunter / Poison Dart Trap": {
+   "skill": "Poison Dart Trap",
+   "skillType": "Active",
+   "caster": "Hunter",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hunter / Siren Trap": {
+   "skill": "Siren Trap",
+   "skillType": "Active",
+   "caster": "Hunter",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hunter / Smoke bomb Trap": {
+   "skill": "Smoke bomb Trap",
+   "skillType": "Active",
+   "caster": "Hunter",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hunter / Snap Out Trap": {
+   "skill": "Snap Out Trap",
+   "skillType": "Active",
+   "caster": "Hunter",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hunter / Snare Net Trap": {
+   "skill": "Snare Net Trap",
+   "skillType": "Active",
+   "caster": "Hunter",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hunter / Soul Mirror Trap": {
+   "skill": "Soul Mirror Trap",
+   "skillType": "Active",
+   "caster": "Hunter",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hunter / Sting Thing Trap": {
+   "skill": "Sting Thing Trap",
+   "skillType": "Active",
+   "caster": "Hunter",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hunter / Track": {
+   "skill": "Track",
+   "skillType": "Active",
+   "caster": "Hunter",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hunter / Tripwire Trap": {
+   "skill": "Tripwire Trap",
+   "skillType": "Active",
+   "caster": "Hunter",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Hunter / Venomous Cloud Trap": {
+   "skill": "Venomous Cloud Trap",
+   "skillType": "Active",
+   "caster": "Hunter",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Illusionist / Create Phantasm: Dread": {
+   "skill": "Create Phantasm: Dread",
+   "skillType": "Spell",
+   "caster": "Illusionist",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Illusionist / Create Phantasm: Mockery": {
+   "skill": "Create Phantasm: Mockery",
+   "skillType": "Spell",
+   "caster": "Illusionist",
+   "offensive": true,
+   "targets": 1,
+   "ok": false,
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  "Illusionist / Create Phantasm: Numen": {
+   "skill": "Create Phantasm: Numen",
+   "skillType": "Spell",
+   "caster": "Illusionist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": null,
+   "perTarget": []
+  },
+  "Illusionist / Create Phantasm: Strike": {
+   "skill": "Create Phantasm: Strike",
+   "skillType": "Spell",
+   "caster": "Illusionist",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Illusionist / Detonate Phantasm": {
+   "skill": "Detonate Phantasm",
+   "skillType": "Spell",
+   "caster": "Illusionist",
+   "offensive": true,
+   "targets": 1,
+   "ok": false,
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  "Illusionist / Essence Sacrifice": {
+   "skill": "Essence Sacrifice",
+   "skillType": "Spell",
+   "caster": "Illusionist",
+   "offensive": false,
+   "targets": 1,
+   "ok": false,
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  "Illusionist / Illusory Shield": {
+   "skill": "Illusory Shield",
+   "skillType": "Spell",
+   "caster": "Illusionist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": null,
+   "perTarget": []
+  },
+  "Illusionist / Mirage Blitz": {
+   "skill": "Mirage Blitz",
+   "skillType": "Spell",
+   "caster": "Illusionist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 16,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Illusionist / Multi Shatter": {
+   "skill": "Multi Shatter",
+   "skillType": "Spell",
+   "caster": "Illusionist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 21,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Illusionist / Nocebo Weapon": {
+   "skill": "Nocebo Weapon",
+   "skillType": "Spell",
+   "caster": "Illusionist",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Illusionist / Phantasmal Recovery": {
+   "skill": "Phantasmal Recovery",
+   "skillType": "Active",
+   "caster": "Illusionist",
+   "offensive": false,
+   "targets": 1,
+   "ok": false,
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  "Illusionist / Placebo Energy": {
+   "skill": "Placebo Energy",
+   "skillType": "Spell",
+   "caster": "Illusionist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Illusionist / Spectral Light": {
+   "skill": "Spectral Light",
+   "skillType": "Spell",
+   "caster": "Illusionist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Illusionist / Vital Sacrifice": {
+   "skill": "Vital Sacrifice",
+   "skillType": "Spell",
+   "caster": "Illusionist",
+   "offensive": false,
+   "targets": 1,
+   "ok": false,
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  "Invoker / Aero Blast": {
+   "skill": "Aero Blast",
+   "skillType": "Active",
+   "caster": "Invoker",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Invoker / Aero Hex": {
+   "skill": "Aero Hex",
+   "skillType": "Active",
+   "caster": "Invoker",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Invoker / Electro Blast": {
+   "skill": "Electro Blast",
+   "skillType": "Active",
+   "caster": "Invoker",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Invoker / Electro Hex": {
+   "skill": "Electro Hex",
+   "skillType": "Active",
+   "caster": "Invoker",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Invoker / Geo Blast": {
+   "skill": "Geo Blast",
+   "skillType": "Active",
+   "caster": "Invoker",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Invoker / Geo Hex": {
+   "skill": "Geo Hex",
+   "skillType": "Active",
+   "caster": "Invoker",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Invoker / Hydro Blast": {
+   "skill": "Hydro Blast",
+   "skillType": "Active",
+   "caster": "Invoker",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Invoker / Hydro Hex": {
+   "skill": "Hydro Hex",
+   "skillType": "Active",
+   "caster": "Invoker",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Invoker / Invocation": {
+   "skill": "Invocation",
+   "skillType": "Active",
+   "caster": "Invoker",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Invoker / Invoke: Breeze": {
+   "skill": "Invoke: Breeze",
+   "skillType": "Active",
+   "caster": "Invoker",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Invoker / Invoke: Burst": {
+   "skill": "Invoke: Burst",
+   "skillType": "Active",
+   "caster": "Invoker",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Invoker / Invoke: Chill": {
+   "skill": "Invoke: Chill",
+   "skillType": "Active",
+   "caster": "Invoker",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Invoker / Invoke: Frostbite": {
+   "skill": "Invoke: Frostbite",
+   "skillType": "Active",
+   "caster": "Invoker",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Invoker / Invoke: Growth": {
+   "skill": "Invoke: Growth",
+   "skillType": "Active",
+   "caster": "Invoker",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Invoker / Invoke: Quicksand": {
+   "skill": "Invoke: Quicksand",
+   "skillType": "Active",
+   "caster": "Invoker",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Invoker / Invoke: Smoke": {
+   "skill": "Invoke: Smoke",
+   "skillType": "Active",
+   "caster": "Invoker",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Invoker / Invoke: Static": {
+   "skill": "Invoke: Static",
+   "skillType": "Active",
+   "caster": "Invoker",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Invoker / Invoke: Thunder": {
+   "skill": "Invoke: Thunder",
+   "skillType": "Active",
+   "caster": "Invoker",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Invoker / Invoke: Twister": {
+   "skill": "Invoke: Twister",
+   "skillType": "Active",
+   "caster": "Invoker",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Invoker / Pyro Blast": {
+   "skill": "Pyro Blast",
+   "skillType": "Active",
+   "caster": "Invoker",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Invoker / Pyro Hex": {
+   "skill": "Pyro Hex",
+   "skillType": "Active",
+   "caster": "Invoker",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Juno / Disintegration Drone(Anomaly)": {
+   "skill": "Disintegration Drone(Anomaly)",
+   "skillType": "Spell",
+   "caster": "Juno",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Kalina / Dragonfire Dive": {
+   "skill": "Dragonfire Dive",
+   "skillType": "Active",
+   "caster": "Kalina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "fire",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 20,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Kalina / Remedy": {
+   "skill": "Remedy",
+   "skillType": "Active",
+   "caster": "Kalina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": true,
+   "element": "hp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": null,
+     "affinity": "NE",
+     "grant": 50,
+     "grantRes": "hp"
+    }
+   ]
+  },
+  "Kalina / Skyfall Dive": {
+   "skill": "Skyfall Dive",
+   "skillType": "Active",
+   "caster": "Kalina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "air",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "IM",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Keren / Birth of the Cruel: Dismiss": {
+   "skill": "Birth of the Cruel: Dismiss",
+   "skillType": "Active",
+   "caster": "Keren",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Keren / Brainwave Discharge": {
+   "skill": "Brainwave Discharge",
+   "skillType": "Active",
+   "caster": "Keren",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Keren / Charm": {
+   "skill": "Charm",
+   "skillType": "Spell",
+   "caster": "Keren",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Keren / Create Phantasm: Numen": {
+   "skill": "Create Phantasm: Numen",
+   "skillType": "Spell",
+   "caster": "Keren",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Keren / Create Phantasm: Strike": {
+   "skill": "Create Phantasm: Strike",
+   "skillType": "Spell",
+   "caster": "Keren",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Keren / Detonate Phantasm": {
+   "skill": "Detonate Phantasm",
+   "skillType": "Spell",
+   "caster": "Keren",
+   "offensive": true,
+   "targets": 1,
+   "ok": false,
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  "Keren / Illusory Shield": {
+   "skill": "Illusory Shield",
+   "skillType": "Spell",
+   "caster": "Keren",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Keren / Life Transference": {
+   "skill": "Life Transference",
+   "skillType": "Active",
+   "caster": "Keren",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": true,
+   "element": "hp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": null,
+     "affinity": "NE",
+     "grant": 5,
+     "grantRes": "hp"
+    }
+   ]
+  },
+  "Keren / Multi Shatter": {
+   "skill": "Multi Shatter",
+   "skillType": "Spell",
+   "caster": "Keren",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 21,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Keren / Nocebo Weapon": {
+   "skill": "Nocebo Weapon",
+   "skillType": "Spell",
+   "caster": "Keren",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Keren / See you later": {
+   "skill": "See you later",
+   "skillType": "Active",
+   "caster": "Keren",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Keren / Soul Steal": {
+   "skill": "Soul Steal",
+   "skillType": "Active",
+   "caster": "Keren",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Keren / Zero Power: Last Den of Cinders": {
+   "skill": "Zero Power: Last Den of Cinders",
+   "skillType": "Active",
+   "caster": "Keren",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "fire",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 20,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Kiki / Adrenaline Endure": {
+   "skill": "Adrenaline Endure",
+   "skillType": "Active",
+   "caster": "Kiki",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Kiki / Adrenaline Rush": {
+   "skill": "Adrenaline Rush",
+   "skillType": "Active",
+   "caster": "Kiki",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Kiki / Breach": {
+   "skill": "Breach",
+   "skillType": "Active",
+   "caster": "Kiki",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Kiki / Elemental Shroud": {
+   "skill": "Elemental Shroud",
+   "skillType": "Spell",
+   "caster": "Kiki",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Kiki / Flare": {
+   "skill": "Flare",
+   "skillType": "Spell",
+   "caster": "Kiki",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "fire",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 31,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Kiki / Iceberg": {
+   "skill": "Iceberg",
+   "skillType": "Spell",
+   "caster": "Kiki",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "ice",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 31,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Kiki / Rift": {
+   "skill": "Rift",
+   "skillType": "Spell",
+   "caster": "Kiki",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "earth",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 31,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Kiki / Thunderbolt": {
+   "skill": "Thunderbolt",
+   "skillType": "Spell",
+   "caster": "Kiki",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "bolt",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 62,
+     "resource": "hp",
+     "affinity": "VU",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Kiki / Vortex": {
+   "skill": "Vortex",
+   "skillType": "Spell",
+   "caster": "Kiki",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Kiki / Wind Wall": {
+   "skill": "Wind Wall",
+   "skillType": "Spell",
+   "caster": "Kiki",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Koshka / Anomaly": {
+   "skill": "Anomaly",
+   "skillType": "Spell",
+   "caster": "Koshka",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Koshka / Blind": {
+   "skill": "Blind",
+   "skillType": "Spell",
+   "caster": "Koshka",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Koshka / Deteriorate": {
+   "skill": "Deteriorate",
+   "skillType": "Spell",
+   "caster": "Koshka",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Koshka / Muddle": {
+   "skill": "Muddle",
+   "skillType": "Spell",
+   "caster": "Koshka",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Koshka / Omega": {
+   "skill": "Omega",
+   "skillType": "Spell",
+   "caster": "Koshka",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Koshka / Plague": {
+   "skill": "Plague",
+   "skillType": "Spell",
+   "caster": "Koshka",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Koshka / Seething Blight": {
+   "skill": "Seething Blight",
+   "skillType": "Spell",
+   "caster": "Koshka",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Loremaster / Predictable!": {
+   "skill": "Predictable!",
+   "skillType": "Active",
+   "caster": "Loremaster",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Matador / Capote": {
+   "skill": "Capote",
+   "skillType": "Active",
+   "caster": "Matador",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Matador / Castigo": {
+   "skill": "Castigo",
+   "skillType": "Active",
+   "caster": "Matador",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Matador / Corrida Finale": {
+   "skill": "Corrida Finale",
+   "skillType": "Active",
+   "caster": "Matador",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Matador / Descabello": {
+   "skill": "Descabello",
+   "skillType": "Active",
+   "caster": "Matador",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 55,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Matador / Faena": {
+   "skill": "Faena",
+   "skillType": "Active",
+   "caster": "Matador",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Matador / Festivities": {
+   "skill": "Festivities",
+   "skillType": "Active",
+   "caster": "Matador",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Matador / Muleta": {
+   "skill": "Muleta",
+   "skillType": "Active",
+   "caster": "Matador",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 26,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Matador / Ole!": {
+   "skill": "Ole!",
+   "skillType": "Active",
+   "caster": "Matador",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Matador / Tafallera": {
+   "skill": "Tafallera",
+   "skillType": "Active",
+   "caster": "Matador",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 36,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Matador / Triumphal Salute": {
+   "skill": "Triumphal Salute",
+   "skillType": "Active",
+   "caster": "Matador",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": true,
+   "element": "zero_power",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": null,
+     "affinity": "NE",
+     "grant": 3,
+     "grantRes": "zero_power"
+    }
+   ]
+  },
+  "Matador / Verónica": {
+   "skill": "Verónica",
+   "skillType": "Active",
+   "caster": "Matador",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Monk / Beaded Weapon": {
+   "skill": "Beaded Weapon",
+   "skillType": "Active",
+   "caster": "Monk",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Monk / Soul Renewal": {
+   "skill": "Soul Renewal",
+   "skillType": "Active",
+   "caster": "Monk",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Monk / Spirit Shot": {
+   "skill": "Spirit Shot",
+   "skillType": "Active",
+   "caster": "Monk",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Monk / Spiritual Fortress": {
+   "skill": "Spiritual Fortress",
+   "skillType": "Active",
+   "caster": "Monk",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Moses / Breach": {
+   "skill": "Breach",
+   "skillType": "Active",
+   "caster": "Moses",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Moses / Elemental Weapon": {
+   "skill": "Elemental Weapon",
+   "skillType": "Spell",
+   "caster": "Moses",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Moses / Soaring Strike": {
+   "skill": "Soaring Strike",
+   "skillType": "Spell",
+   "caster": "Moses",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Mutant / Amphibia": {
+   "skill": "Amphibia",
+   "skillType": "Active",
+   "caster": "Mutant",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Mutant / Arpaktida": {
+   "skill": "Arpaktida",
+   "skillType": "Active",
+   "caster": "Mutant",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Mutant / Dynamotheria": {
+   "skill": "Dynamotheria",
+   "skillType": "Active",
+   "caster": "Mutant",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Mutant / Electrophora": {
+   "skill": "Electrophora",
+   "skillType": "Active",
+   "caster": "Mutant",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Mutant / Neurophagodia": {
+   "skill": "Neurophagodia",
+   "skillType": "Active",
+   "caster": "Mutant",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Mutant / Placophora": {
+   "skill": "Placophora",
+   "skillType": "Active",
+   "caster": "Mutant",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Mutant / Pneumophora": {
+   "skill": "Pneumophora",
+   "skillType": "Active",
+   "caster": "Mutant",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Mutant / Polypoda": {
+   "skill": "Polypoda",
+   "skillType": "Active",
+   "caster": "Mutant",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Mutant / Pterotheria": {
+   "skill": "Pterotheria",
+   "skillType": "Active",
+   "caster": "Mutant",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Mutant / Pyrophora": {
+   "skill": "Pyrophora",
+   "skillType": "Active",
+   "caster": "Mutant",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Mutant / Tachytheria": {
+   "skill": "Tachytheria",
+   "skillType": "Active",
+   "caster": "Mutant",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Mutant / Theriomorphosis": {
+   "skill": "Theriomorphosis",
+   "skillType": "Active",
+   "caster": "Mutant",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Mutant / Toxicophora": {
+   "skill": "Toxicophora",
+   "skillType": "Active",
+   "caster": "Mutant",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Necromancer / Birth of the Cruel: Dismiss": {
+   "skill": "Birth of the Cruel: Dismiss",
+   "skillType": "Active",
+   "caster": "Necromancer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": null,
+   "perTarget": []
+  },
+  "Oki (Copy) / Breach": {
+   "skill": "Breach",
+   "skillType": "Active",
+   "caster": "Oki (Copy)",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Orator / Condemn": {
+   "skill": "Condemn",
+   "skillType": "Active",
+   "caster": "Orator",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Orator / Disarming Rhetoric": {
+   "skill": "Disarming Rhetoric",
+   "skillType": "Active",
+   "caster": "Orator",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Orator / Encourage": {
+   "skill": "Encourage",
+   "skillType": "Active",
+   "caster": "Orator",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": true,
+   "element": "hp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": null,
+     "affinity": "NE",
+     "grant": 25,
+     "grantRes": "hp"
+    }
+   ]
+  },
+  "Orator / Unexpected Ally": {
+   "skill": "Unexpected Ally",
+   "skillType": "Active",
+   "caster": "Orator",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Pirate / Anchor Smash": {
+   "skill": "Anchor Smash",
+   "skillType": "Active",
+   "caster": "Pirate",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Pirate / Arm Hook": {
+   "skill": "Arm Hook",
+   "skillType": "Active",
+   "caster": "Pirate",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Pirate / Barrel Bomb": {
+   "skill": "Barrel Bomb",
+   "skillType": "Active",
+   "caster": "Pirate",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Pirate / Blood Chalice": {
+   "skill": "Blood Chalice",
+   "skillType": "Active",
+   "caster": "Pirate",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Pirate / Boardside Cannon Salvo": {
+   "skill": "Boardside Cannon Salvo",
+   "skillType": "Active",
+   "caster": "Pirate",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Pirate / Cannon": {
+   "skill": "Cannon",
+   "skillType": "Active",
+   "caster": "Pirate",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Pirate / Cursed Dagger": {
+   "skill": "Cursed Dagger",
+   "skillType": "Active",
+   "caster": "Pirate",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Pirate / Grenadose": {
+   "skill": "Grenadose",
+   "skillType": "Active",
+   "caster": "Pirate",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Pirate / Hook Throw": {
+   "skill": "Hook Throw",
+   "skillType": "Active",
+   "caster": "Pirate",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Pirate / Magic Conch": {
+   "skill": "Magic Conch",
+   "skillType": "Active",
+   "caster": "Pirate",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Pirate / Magic Monocular": {
+   "skill": "Magic Monocular",
+   "skillType": "Active",
+   "caster": "Pirate",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Pirate / Spare Bullet": {
+   "skill": "Spare Bullet",
+   "skillType": "Active",
+   "caster": "Pirate",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Pyromancer / Chain Fireball": {
+   "skill": "Chain Fireball",
+   "skillType": "Active",
+   "caster": "Pyromancer",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "fire",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 16,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Pyromancer / Conflagration": {
+   "skill": "Conflagration",
+   "skillType": "Active",
+   "caster": "Pyromancer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Pyromancer / Explosion": {
+   "skill": "Explosion",
+   "skillType": "Active",
+   "caster": "Pyromancer",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "fire",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 56,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Pyromancer / Fire Bolt": {
+   "skill": "Fire Bolt",
+   "skillType": "Active",
+   "caster": "Pyromancer",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "fire",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 16,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Pyromancer / Fire Wall": {
+   "skill": "Fire Wall",
+   "skillType": "Active",
+   "caster": "Pyromancer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Pyromancer / Flame Weapon": {
+   "skill": "Flame Weapon",
+   "skillType": "Active",
+   "caster": "Pyromancer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Pyromancer / Flarestorm": {
+   "skill": "Flarestorm",
+   "skillType": "Active",
+   "caster": "Pyromancer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Pyromancer / Heat Body": {
+   "skill": "Heat Body",
+   "skillType": "Active",
+   "caster": "Pyromancer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Pyromancer / Ignites": {
+   "skill": "Ignites",
+   "skillType": "Active",
+   "caster": "Pyromancer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Pyromancer / Kindle Fire": {
+   "skill": "Kindle Fire",
+   "skillType": "Active",
+   "caster": "Pyromancer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Pyromancer / Self Destruct": {
+   "skill": "Self Destruct",
+   "skillType": "Active",
+   "caster": "Pyromancer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "RaiRai / Bind and Summon": {
+   "skill": "Bind and Summon",
+   "skillType": "Active",
+   "caster": "RaiRai",
+   "offensive": true,
+   "targets": 1,
+   "ok": false,
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  "RaiRai / Elemental Weapon": {
+   "skill": "Elemental Weapon",
+   "skillType": "Spell",
+   "caster": "RaiRai",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "RaiRai / Fulgur": {
+   "skill": "Fulgur",
+   "skillType": "Spell",
+   "caster": "RaiRai",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "bolt",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 42,
+     "resource": "hp",
+     "affinity": "VU",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "RaiRai / Thunderbolt": {
+   "skill": "Thunderbolt",
+   "skillType": "Spell",
+   "caster": "RaiRai",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "bolt",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 62,
+     "resource": "hp",
+     "affinity": "VU",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Reaper / Corpse Explosion": {
+   "skill": "Corpse Explosion",
+   "skillType": "Active",
+   "caster": "Reaper",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Reaper / Death's Shadow": {
+   "skill": "Death's Shadow",
+   "skillType": "Active",
+   "caster": "Reaper",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "dark",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 66,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Reaper / Executioner's Gallow": {
+   "skill": "Executioner's Gallow",
+   "skillType": "Active",
+   "caster": "Reaper",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Reaper / Harvest Moon": {
+   "skill": "Harvest Moon",
+   "skillType": "Active",
+   "caster": "Reaper",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "dark",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 19,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Reaper / Keeper of the Dead": {
+   "skill": "Keeper of the Dead",
+   "skillType": "Active",
+   "caster": "Reaper",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Reaper / Reaper's Scythe": {
+   "skill": "Reaper's Scythe",
+   "skillType": "Active",
+   "caster": "Reaper",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Reaper / Rest in Peace": {
+   "skill": "Rest in Peace",
+   "skillType": "Active",
+   "caster": "Reaper",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "dark",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 41,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Reaper / Soul Conversion": {
+   "skill": "Soul Conversion",
+   "skillType": "Active",
+   "caster": "Reaper",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Reaper / Soul Strike": {
+   "skill": "Soul Strike",
+   "skillType": "Active",
+   "caster": "Reaper",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Reaper / Spirit Cleaver": {
+   "skill": "Spirit Cleaver",
+   "skillType": "Active",
+   "caster": "Reaper",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Reaper / Twilight Requiem": {
+   "skill": "Twilight Requiem",
+   "skillType": "Active",
+   "caster": "Reaper",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Revolver / Fastest Finger": {
+   "skill": "Fastest Finger",
+   "skillType": "Active",
+   "caster": "Revolver",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Revolver / Six-Iron Saint": {
+   "skill": "Six-Iron Saint",
+   "skillType": "Active",
+   "caster": "Revolver",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Rogue / See you later": {
+   "skill": "See you later",
+   "skillType": "Active",
+   "caster": "Rogue",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": null,
+   "perTarget": []
+  },
+  "Rogue / Soul Steal": {
+   "skill": "Soul Steal",
+   "skillType": "Active",
+   "caster": "Rogue",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Slayer / Bane Oils": {
+   "skill": "Bane Oils",
+   "skillType": "Active",
+   "caster": "Slayer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Sniper / Camouflage": {
+   "skill": "Camouflage",
+   "skillType": "Active",
+   "caster": "Sniper",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Sniper / Heartbreak": {
+   "skill": "Heartbreak",
+   "skillType": "Active",
+   "caster": "Sniper",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Sniper / Phantom Snipe": {
+   "skill": "Phantom Snipe",
+   "skillType": "Active",
+   "caster": "Sniper",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 6,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Spell Fencer / Spellblade Rhapsody": {
+   "skill": "Spellblade Rhapsody",
+   "skillType": "Active",
+   "caster": "Spell Fencer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Spiritist / Aura": {
+   "skill": "Aura",
+   "skillType": "Spell",
+   "caster": "Spiritist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Spiritist / Awaken": {
+   "skill": "Awaken",
+   "skillType": "Spell",
+   "caster": "Spiritist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Spiritist / Barrier": {
+   "skill": "Barrier",
+   "skillType": "Spell",
+   "caster": "Spiritist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Spiritist / Bimagus": {
+   "skill": "Bimagus",
+   "skillType": "Active",
+   "caster": "Spiritist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Spiritist / Cleanse": {
+   "skill": "Cleanse",
+   "skillType": "Spell",
+   "caster": "Spiritist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Spiritist / Enrage": {
+   "skill": "Enrage",
+   "skillType": "Spell",
+   "caster": "Spiritist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Spiritist / Hallucination": {
+   "skill": "Hallucination",
+   "skillType": "Spell",
+   "caster": "Spiritist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Spiritist / Heal": {
+   "skill": "Heal",
+   "skillType": "Spell",
+   "caster": "Spiritist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": true,
+   "element": "hp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": null,
+     "affinity": "NE",
+     "grant": 60,
+     "grantRes": "hp"
+    }
+   ]
+  },
+  "Spiritist / Hope": {
+   "skill": "Hope",
+   "skillType": "Active",
+   "caster": "Spiritist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Spiritist / Lux": {
+   "skill": "Lux",
+   "skillType": "Spell",
+   "caster": "Spiritist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "light",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 21,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Spiritist / Mercy": {
+   "skill": "Mercy",
+   "skillType": "Spell",
+   "caster": "Spiritist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Spiritist / Reinforce": {
+   "skill": "Reinforce",
+   "skillType": "Spell",
+   "caster": "Spiritist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Spiritist / Soul Weapon": {
+   "skill": "Soul Weapon",
+   "skillType": "Spell",
+   "caster": "Spiritist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Spiritist / Torpor": {
+   "skill": "Torpor",
+   "skillType": "Spell",
+   "caster": "Spiritist",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "St. Reefesia / Blazing Impact": {
+   "skill": "Blazing Impact",
+   "skillType": "Active",
+   "caster": "St. Reefesia",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "fire",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 36,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "St. Reefesia / Holy Crucifixion": {
+   "skill": "Holy Crucifixion",
+   "skillType": "Active",
+   "caster": "St. Reefesia",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Surtur / Shadow Strike": {
+   "skill": "Shadow Strike",
+   "skillType": "Active",
+   "caster": "Surtur",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Symbolist / Clean Slate": {
+   "skill": "Clean Slate",
+   "skillType": "Active",
+   "caster": "Symbolist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Symbolist / Symbol of Binding": {
+   "skill": "Symbol of Binding",
+   "skillType": "Active",
+   "caster": "Symbolist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Symbolist / Symbol of Creation": {
+   "skill": "Symbol of Creation",
+   "skillType": "Active",
+   "caster": "Symbolist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Symbolist / Symbol of Despair": {
+   "skill": "Symbol of Despair",
+   "skillType": "Active",
+   "caster": "Symbolist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Symbolist / Symbol of Destiny": {
+   "skill": "Symbol of Destiny",
+   "skillType": "Active",
+   "caster": "Symbolist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Symbolist / Symbol of Elements": {
+   "skill": "Symbol of Elements",
+   "skillType": "Active",
+   "caster": "Symbolist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Symbolist / Symbol of Enmity": {
+   "skill": "Symbol of Enmity",
+   "skillType": "Active",
+   "caster": "Symbolist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Symbolist / Symbol of Flux": {
+   "skill": "Symbol of Flux",
+   "skillType": "Active",
+   "caster": "Symbolist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Symbolist / Symbol of Forbiddance": {
+   "skill": "Symbol of Forbiddance",
+   "skillType": "Active",
+   "caster": "Symbolist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Symbolist / Symbol of Growth": {
+   "skill": "Symbol of Growth",
+   "skillType": "Active",
+   "caster": "Symbolist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Symbolist / Symbol of Metamorphosis": {
+   "skill": "Symbol of Metamorphosis",
+   "skillType": "Active",
+   "caster": "Symbolist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Symbolist / Symbol of Prosperity": {
+   "skill": "Symbol of Prosperity",
+   "skillType": "Active",
+   "caster": "Symbolist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Symbolist / Symbol of Protection": {
+   "skill": "Symbol of Protection",
+   "skillType": "Active",
+   "caster": "Symbolist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Symbolist / Symbol of Rebellion": {
+   "skill": "Symbol of Rebellion",
+   "skillType": "Active",
+   "caster": "Symbolist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Symbolist / Symbol of Rebirth": {
+   "skill": "Symbol of Rebirth",
+   "skillType": "Active",
+   "caster": "Symbolist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Symbolist / Symbol of Revenge": {
+   "skill": "Symbol of Revenge",
+   "skillType": "Active",
+   "caster": "Symbolist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Symbolist / Symbol of Sacrifice": {
+   "skill": "Symbol of Sacrifice",
+   "skillType": "Active",
+   "caster": "Symbolist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Symbolist / Symbol of Sorcery": {
+   "skill": "Symbol of Sorcery",
+   "skillType": "Active",
+   "caster": "Symbolist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Symbolist / Symbol of Truth": {
+   "skill": "Symbol of Truth",
+   "skillType": "Active",
+   "caster": "Symbolist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Symbolist / Symbol of Weakness": {
+   "skill": "Symbol of Weakness",
+   "skillType": "Active",
+   "caster": "Symbolist",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Tactician / Art of War": {
+   "skill": "Art of War",
+   "skillType": "Active",
+   "caster": "Tactician",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Tactician / Chain Strategem": {
+   "skill": "Chain Strategem",
+   "skillType": "Active",
+   "caster": "Tactician",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Tactician / Last Stand": {
+   "skill": "Last Stand",
+   "skillType": "Active",
+   "caster": "Tactician",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Tactician / Strategic Retreat": {
+   "skill": "Strategic Retreat",
+   "skillType": "Active",
+   "caster": "Tactician",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Tactician / Synergize": {
+   "skill": "Synergize",
+   "skillType": "Active",
+   "caster": "Tactician",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Tailor / Dance of the Marionette": {
+   "skill": "Dance of the Marionette",
+   "skillType": "Active",
+   "caster": "Tailor",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Tailor / Down to Size": {
+   "skill": "Down to Size",
+   "skillType": "Active",
+   "caster": "Tailor",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Tailor / Taking Measurement": {
+   "skill": "Taking Measurement",
+   "skillType": "Active",
+   "caster": "Tailor",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Tamer / Negotiate": {
+   "skill": "Negotiate",
+   "skillType": "Active",
+   "caster": "Tamer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Tamer / Rapid Hybridization": {
+   "skill": "Rapid Hybridization",
+   "skillType": "Active",
+   "caster": "Tamer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Tinkerer / Advance Alchemy": {
+   "skill": "Advance Alchemy",
+   "skillType": "Active",
+   "caster": "Tinkerer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Tinkerer / Advance Infusion": {
+   "skill": "Advance Infusion",
+   "skillType": "Active",
+   "caster": "Tinkerer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Tinkerer / Basic Alchemy": {
+   "skill": "Basic Alchemy",
+   "skillType": "Active",
+   "caster": "Tinkerer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Tinkerer / Basic Infusion": {
+   "skill": "Basic Infusion",
+   "skillType": "Active",
+   "caster": "Tinkerer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Tinkerer / Gadgets": {
+   "skill": "Gadgets",
+   "skillType": "Active",
+   "caster": "Tinkerer",
+   "offensive": true,
+   "targets": 1,
+   "ok": false,
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  "Tinkerer / Magicannon": {
+   "skill": "Magicannon",
+   "skillType": "Active",
+   "caster": "Tinkerer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Tinkerer / Magicsphere": {
+   "skill": "Magicsphere",
+   "skillType": "Active",
+   "caster": "Tinkerer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Tinkerer / Magitech Override": {
+   "skill": "Magitech Override",
+   "skillType": "Active",
+   "caster": "Tinkerer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Tinkerer / Superior Alchemy": {
+   "skill": "Superior Alchemy",
+   "skillType": "Active",
+   "caster": "Tinkerer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Tinkerer / Superior Infusion": {
+   "skill": "Superior Infusion",
+   "skillType": "Active",
+   "caster": "Tinkerer",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Varan / Adrenaline Endure": {
+   "skill": "Adrenaline Endure",
+   "skillType": "Active",
+   "caster": "Varan",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Varan / Adrenaline Rush": {
+   "skill": "Adrenaline Rush",
+   "skillType": "Active",
+   "caster": "Varan",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Varan / Bind and Summon": {
+   "skill": "Bind and Summon",
+   "skillType": "Active",
+   "caster": "Varan",
+   "offensive": true,
+   "targets": 1,
+   "ok": false,
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  "Varan / Elemental Weapon": {
+   "skill": "Elemental Weapon",
+   "skillType": "Spell",
+   "caster": "Varan",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Varan / Glacies": {
+   "skill": "Glacies",
+   "skillType": "Spell",
+   "caster": "Varan",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "ice",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 21,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Varan / Iceberg": {
+   "skill": "Iceberg",
+   "skillType": "Spell",
+   "caster": "Varan",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "ice",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 31,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Weaponmaster / Breach": {
+   "skill": "Breach",
+   "skillType": "Active",
+   "caster": "Weaponmaster",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Zarg / Angel Dance": {
+   "skill": "Angel Dance",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Zarg / Barrage": {
+   "skill": "Barrage",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Zarg / Bat Dance": {
+   "skill": "Bat Dance",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Zarg / Gadgets": {
+   "skill": "Gadgets",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "offensive": true,
+   "targets": 1,
+   "ok": false,
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  "Zarg / Golem Dance": {
+   "skill": "Golem Dance",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Zarg / Griffin Dance": {
+   "skill": "Griffin Dance",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Zarg / High Speed": {
+   "skill": "High Speed",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Zarg / Lion Dance": {
+   "skill": "Lion Dance",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Zarg / Myrmidon Dance": {
+   "skill": "Myrmidon Dance",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Zarg / Ouroboros Dance": {
+   "skill": "Ouroboros Dance",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Zarg / See you later": {
+   "skill": "See you later",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Zarg / Siren Trap": {
+   "skill": "Siren Trap",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Zarg / Soul Steal": {
+   "skill": "Soul Steal",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ]
+  },
+  "Zarg / Tripwire Trap": {
+   "skill": "Tripwire Trap",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Zarg / Unicorn Dance": {
+   "skill": "Unicorn Dance",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": true,
+   "element": "hp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": null,
+     "affinity": "NE",
+     "grant": 22,
+     "grantRes": "hp"
+    }
+   ]
+  },
+  "Zarg / Warning Shot": {
+   "skill": "Warning Shot",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": []
+  },
+  "Zarg / Zero Power: Meteor Shower": {
+   "skill": "Zero Power: Meteor Shower",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "ok": false,
+   "reason": "skipped"
+  }
+ },
+ "capturedAt": "2026-11-02T16:11:05.359Z"
+}

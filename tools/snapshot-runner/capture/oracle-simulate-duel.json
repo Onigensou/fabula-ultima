@@ -1,0 +1,1509 @@
+{
+ "ok": true,
+ "mode": "simulate",
+ "scene": "Training Ground",
+ "casters": [
+  "Blanche",
+  "Hina",
+  "Keren",
+  "Zarg"
+ ],
+ "enemyTarget": "Test Target Enemy",
+ "total": 66,
+ "offset": 0,
+ "count": 66,
+ "nextOffset": 66,
+ "hasMore": false,
+ "errorCount": 4,
+ "tookMs": 308581,
+ "slowest": [
+  {
+   "key": "Hina / Zero Power: A Million Possibility",
+   "ms": 30432
+  },
+  {
+   "key": "Hina / Starfall Comet",
+   "ms": 18228
+  },
+  {
+   "key": "Keren / Multi Shatter",
+   "ms": 11634
+  },
+  {
+   "key": "Hina / Stop",
+   "ms": 11321
+  },
+  {
+   "key": "Hina / Glacies Finis #dafT:7vAXk1",
+   "ms": 11091
+  }
+ ],
+ "engineVersion": "1.0.515",
+ "override": {
+  "SL": 5,
+  "CHAR_LEVEL": 50,
+  "BOND_COUNT": 4,
+  "BOND_STRENGTH": 4
+ },
+ "force": {
+  "rA": 5,
+  "rB": 6
+ },
+ "seed": 1,
+ "errors": [
+  {
+   "key": "Hina / Bind and Summon (variant)",
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  {
+   "key": "Hina / Zero Power: A Million Possibility",
+   "reason": "timeout"
+  },
+  {
+   "key": "Keren / Detonate Phantasm",
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  {
+   "key": "Zarg / Gadgets",
+   "reason": "compute_refused:TARGET_BACK"
+  }
+ ],
+ "skills": {
+  "Blanche / Capote": {
+   "skill": "Capote",
+   "skillType": "Active",
+   "caster": "Blanche",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [
+    {
+     "actor": "Test Target Enemy",
+     "props": [],
+     "aeApplied": [
+      "Provoked (Capote)[must_include_applier 5= Attack,Spell]"
+     ],
+     "aeRemoved": []
+    }
+   ],
+   "cardHtml": [
+    "Capote <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Range</span><span class=\"dot\">•</span><span class=\"bullet\">Skill</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"4 Adoration\">4 Adoration</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Blanche</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>Threatens target enemies into chasing you, <strong>Choose:</strong></p><ul><li><p>Inflicts <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"JournalEntry.c4sYPClmvld4TEK8\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/TankRollAction/provoke.png\" alt=\"\"><span class=\"fud-kw-label\">Provoked</span></span>&nbsp;to the target</p></li><li><p>Inflicts <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"JournalEntry.aPF9gzkqnUkcQmIC\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/infuriate.png\" alt=\"\"><span class=\"fud-kw-label\">Berserk</span></span>&nbsp;to the target</p></li></ul></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Blanche / Castigo": {
+   "skill": "Castigo",
+   "skillType": "Active",
+   "caster": "Blanche",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [],
+   "cardHtml": [
+    "Castigo <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Range</span><span class=\"dot\">•</span><span class=\"bullet\">Skill</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"3 Adoration\">3 Adoration</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Blanche</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>Weakens the enemy, Inflicts <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"JournalEntry.SNK1IJTKfxjAy2NS\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/basic_instinct.png\" alt=\"\"><span class=\"fud-kw-label\">Bane</span></span>&nbsp;to the target</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Blanche / Descabello": {
+   "skill": "Descabello",
+   "skillType": "Active",
+   "caster": "Blanche",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 55,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ],
+   "writes": [],
+   "cardHtml": [
+    "Descabello <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Melee</span><span class=\"dot\">•</span><span class=\"bullet\">Skill</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"5 Adoration\">5 Adoration</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Blanche</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-dmg\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Element:&lt;/b&gt; Physical&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Base bonus:&lt;/b&gt; +55&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR:&lt;/b&gt; — (no Check rolled)&lt;/p&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Final on hit:&lt;/b&gt; 0 + 55 = &lt;b&gt;55&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-top:6px; opacity:0.85;&quot;&gt;&lt;b&gt;Per-target affinity:&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;VU = ×2 &amp;nbsp;•&amp;nbsp; RS = ×0.5 (round up)&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;IM = 0 &amp;nbsp;•&amp;nbsp; AB = heals target&lt;/p&gt;\" data-fud-equip-desc-name=\"Damage Preview\"> <legend>Damage</legend> <div class=\"fud-bf-dmg-row\"> <div class=\"fud-bf-dmg-number\" style=\"color:#1b1b1b; text-shadow: 0 0 15px rgba(0,0,0,0.28);\"> 55 </div> <div class=\"fud-bf-dmg-element\" style=\"color:#1b1b1b;\">Physical</div> </div> </fieldset> <fieldset class=\"fud-bf-section\"> <legend>Result</legend> <div class=\"fud-bf-target-list\"><div class=\"fud-bf-target-row is-unstudied\" data-fud-target-token-uuid=\"Scene.*.Token.*\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" data-fud-target-slot-index=\"0\" data-fud-equip-desc=\"&lt;p&gt;Study this target to identity tier (≥7) to reveal defense, damage, and affinity.&lt;/p&gt;\" data-fud-equip-desc-name=\"Test Target Enemy\"> <span class=\"t-name\">Test Target Enemy</span> <span class=\"t-def\">DEF ???</span> <span class=\"t-result\">???</span> </div></div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-keyword-row\"><span class=\"fud-kw-term is-keyword\" role=\"button\" tabindex=\"0\" data-fud-kw=\"JournalEntry.U76k25jMlkIFIVB9\"><span class=\"fud-kw-bullet\" aria-hidden=\"true\">◆</span><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/02_WAR/primal_rend.png\" alt=\"\"><span class=\"fud-kw-label\">Crush</span></span></div><div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>Perform a finishing blow on the target, Deal <strong>【30 + half your level】</strong> <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.XpKZuGo3VmT0TlTu\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png\" alt=\"\"><span class=\"fud-kw-label\">Physical</span></span>&nbsp;damage to the target.</p><hr class=\"\" contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20 ― </strong>This skill base damage increase to <strong>40 </strong><span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.XpKZuGo3VmT0TlTu\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png\" alt=\"\"><span class=\"fud-kw-label\">Physical</span></span>&nbsp;</p><p><strong>Skill Enhancement Lv. 40 ― </strong>This skill base damage increase to <strong>50 </strong><span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.XpKZuGo3VmT0TlTu\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png\" alt=\"\"><span class=\"fud-kw-label\">Physical</span></span>&nbsp;</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Blanche / Heal": {
+   "skill": "Heal",
+   "skillType": "Spell",
+   "caster": "Blanche",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": true,
+   "element": "hp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": null,
+     "affinity": "NE",
+     "grant": 60,
+     "grantRes": "hp"
+    }
+   ],
+   "writes": [],
+   "cardHtml": [
+    "Heal <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Range</span><span class=\"dot\">•</span><span class=\"bullet\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i>Arcane</span><span class=\"dot\">•</span><span class=\"bullet\">Spell</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"10 x T MP\">10 x T MP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Blanche</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-dmg\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Restores:&lt;/b&gt; HP&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Base bonus:&lt;/b&gt; +60&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR:&lt;/b&gt; — (no Check rolled)&lt;/p&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Final on hit:&lt;/b&gt; 0 + 60 = &lt;b&gt;60&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-top:6px; opacity:0.85;&quot;&gt;Restores HP — no defense or affinity check.&lt;/p&gt;\" data-fud-equip-desc-name=\"Heal Preview\"> <legend>Heal</legend> <div class=\"fud-bf-dmg-row\"> <div class=\"fud-bf-dmg-number\" style=\"color:#2a8a3a; text-shadow: 0 0 15px rgba(42, 138, 58, 0.45);\"> 60 </div> <div class=\"fud-bf-dmg-element\" style=\"color:#2a8a3a;\">HP</div> </div> </fieldset> <fieldset class=\"fud-bf-section\"> <legend>Result</legend> <div class=\"fud-bf-target-list\"><div class=\"fud-bf-target-row\" data-fud-target-token-uuid=\"Scene.*.Token.*\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" data-fud-target-slot-index=\"0\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Hit Check:&lt;/b&gt; Auto-hit (no Check)&lt;/p&gt;\" data-fud-equip-desc-name=\"Test Target Enemy\"> <span class=\"t-name\">Test Target Enemy</span> <span class=\"t-def\">HP 9999/9999</span> <span class=\"t-result heal\">FULL · NO EFFECT</span> </div></div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Blanche / Invocation": {
+   "skill": "Invocation",
+   "skillType": "Active",
+   "caster": "Blanche",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Blanche / Muleta": {
+   "skill": "Muleta",
+   "skillType": "Active",
+   "caster": "Blanche",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 26,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ],
+   "writes": [],
+   "cardHtml": [
+    "Muleta <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Melee</span><span class=\"dot\">•</span><span class=\"bullet\">Skill</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"1 Adoration\">1 Adoration</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Blanche</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;DEX:&lt;/b&gt; 1d12 → &lt;b&gt;5&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;DEX:&lt;/b&gt; 1d12 → &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Check Bonus:&lt;/b&gt; +1&lt;/p&gt;&lt;ul style=&quot;margin:2px 0 0 14px; padding:0; opacity:0.85; font-size:11.5px;&quot;&gt;&lt;li&gt;&lt;b&gt;Muleta:&lt;/b&gt; +1&lt;/li&gt;&lt;/ul&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Total:&lt;/b&gt; 5 + 6 + 1 = &lt;b&gt;12&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR (High Roll):&lt;/b&gt; max(5, 6) = &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.75;&quot;&gt;Compares vs target&#39;s &lt;b&gt;Defense&lt;/b&gt;.&lt;/p&gt;\" data-fud-equip-desc-name=\"Accuracy Check\"> <legend>Accuracy Check</legend> <div class=\"fud-bf-acc \"> <div class=\"fud-bf-acc-row\"> <span class=\"die-block\"><i class=\"fa-solid fa-person-running\" aria-hidden=\"true\"></i> <span class=\"attr\">DEX</span> <span class=\"die-size\">d12</span> <span class=\"die-result\">5</span></span> <span class=\"plus\">+</span> <span class=\"die-block\"><i class=\"fa-solid fa-person-running\" aria-hidden=\"true\"></i> <span class=\"attr\">DEX</span> <span class=\"die-size\">d12</span> <span class=\"die-result\">6</span></span> <span class=\"bonus\">+1</span> <span class=\"spacer\"></span> <span class=\"total-wrap\"> <img class=\"strike-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/UI/fu-icon/physical_icon.png\" alt=\"Strike\" title=\"Strike\"> <span class=\"total\">12</span> </span> </div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-dmg\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Element:&lt;/b&gt; Physical&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Base bonus:&lt;/b&gt; +20&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR:&lt;/b&gt; 6 (from accuracy roll)&lt;/p&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Final on hit:&lt;/b&gt; 6 + 20 = &lt;b&gt;26&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-top:6px; opacity:0.85;&quot;&gt;&lt;b&gt;Per-target affinity:&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;VU = ×2 &amp;nbsp;•&amp;nbsp; RS = ×0.5 (round up)&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;IM = 0 &amp;nbsp;•&amp;nbsp; AB = heals target&lt;/p&gt;\" data-fud-equip-desc-name=\"Damage Preview\"> <legend>Damage</legend> <div class=\"fud-bf-dmg-row\"> <div class=\"fud-bf-dmg-number\" style=\"color:#1b1b1b; text-shadow: 0 0 15px rgba(0,0,0,0.28);\"> 26<span class=\"hr-pill\">+HR</span> </div> <div class=\"fud-bf-dmg-element\" style=\"color:#1b1b1b;\">Physical</div> </div> </fieldset> <fieldset class=\"fud-bf-section\"> <legend>Result</legend> <div class=\"fud-bf-target-list\"><div class=\"fud-bf-target-row is-unstudied\" data-fud-target-token-uuid=\"Scene.*.Token.*\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" data-fud-target-slot-index=\"0\" data-fud-equip-desc=\"&lt;p&gt;Study this target to identity tier (≥7) to reveal defense, damage, and affinity.&lt;/p&gt;\" data-fud-equip-desc-name=\"Test Target Enemy\"> <span class=\"t-name\">Test Target Enemy</span> <span class=\"t-def\">DEF ???</span> <span class=\"t-result\">???</span> </div></div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>Perform a fast jab with your weapon, Deal <strong>【HR + 10】</strong> <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.XpKZuGo3VmT0TlTu\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png\" alt=\"\"><span class=\"fud-kw-label\">Physical</span></span>&nbsp;damage to the target. 50% chance to inflicts <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"JournalEntry.GePNxftPupElcCWp\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/RPR/cross_reaping.png\" alt=\"\"><span class=\"fud-kw-label\">Bleed</span></span>&nbsp;to the target</p><hr class=\"\" contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20 ― </strong>This skill base damage increase to <strong>15 </strong><span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.XpKZuGo3VmT0TlTu\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png\" alt=\"\"><span class=\"fud-kw-label\">Physical</span></span>&nbsp;</p><p><strong>Skill Enhancement Lv. 40 ― </strong>This skill base damage increase to <strong>20 </strong><span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.XpKZuGo3VmT0TlTu\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png\" alt=\"\"><span class=\"fud-kw-label\">Physical</span></span>&nbsp;</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"trait\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🎭</span>Invoke Trait</span> </div> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"bond\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🤝</span>Invoke Bond</span> </div> </div> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Blanche / Protect": {
+   "skill": "Protect",
+   "skillType": "Active",
+   "caster": "Blanche",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [],
+   "cardHtml": [
+    "Protect <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Skill</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Blanche</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>When another creature is threatened by an <strong>attack, spell</strong> or <strong>other danger</strong>, you may take their place (any Checks that are part of the danger will be performed against you; you may declare the use of this Skill <strong>before or after</strong> the Checks have been made). If the danger already affected you, it affects you <strong>twice</strong> (resolve both instances separately); you also cannot protect multiple creatures from the same danger. If you use this Skill during a conflict, you cannot use it again until the start of your next turn.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Blanche / Provoke": {
+   "skill": "Provoke",
+   "skillType": "Active",
+   "caster": "Blanche",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Blanche / Tafallera": {
+   "skill": "Tafallera",
+   "skillType": "Active",
+   "caster": "Blanche",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 36,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ],
+   "writes": [],
+   "cardHtml": [
+    "Tafallera <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Range</span><span class=\"dot\">•</span><span class=\"bullet\">Skill</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"3 Adoration\">3 Adoration</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Blanche</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;MIG:&lt;/b&gt; 1d12 → &lt;b&gt;5&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;MIG:&lt;/b&gt; 1d12 → &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Check Bonus:&lt;/b&gt; —&lt;/p&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Total:&lt;/b&gt; 5 + 6 = &lt;b&gt;11&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR (High Roll):&lt;/b&gt; max(5, 6) = &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.75;&quot;&gt;Compares vs target&#39;s &lt;b&gt;Defense&lt;/b&gt;.&lt;/p&gt;\" data-fud-equip-desc-name=\"Accuracy Check\"> <legend>Accuracy Check</legend> <div class=\"fud-bf-acc \"> <div class=\"fud-bf-acc-row\"> <span class=\"die-block\"><i class=\"fa-solid fa-dumbbell\" aria-hidden=\"true\"></i> <span class=\"attr\">MIG</span> <span class=\"die-size\">d12</span> <span class=\"die-result\">5</span></span> <span class=\"plus\">+</span> <span class=\"die-block\"><i class=\"fa-solid fa-dumbbell\" aria-hidden=\"true\"></i> <span class=\"attr\">MIG</span> <span class=\"die-size\">d12</span> <span class=\"die-result\">6</span></span> <span class=\"spacer\"></span> <span class=\"total-wrap\"> <img class=\"strike-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/UI/fu-icon/physical_icon.png\" alt=\"Strike\" title=\"Strike\"> <span class=\"total\">11</span> </span> </div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-dmg\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Element:&lt;/b&gt; Physical&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Base bonus:&lt;/b&gt; +30&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR:&lt;/b&gt; 6 (from accuracy roll)&lt;/p&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Final on hit:&lt;/b&gt; 6 + 30 = &lt;b&gt;36&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-top:6px; opacity:0.85;&quot;&gt;&lt;b&gt;Per-target affinity:&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;VU = ×2 &amp;nbsp;•&amp;nbsp; RS = ×0.5 (round up)&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;IM = 0 &amp;nbsp;•&amp;nbsp; AB = heals target&lt;/p&gt;\" data-fud-equip-desc-name=\"Damage Preview\"> <legend>Damage</legend> <div class=\"fud-bf-dmg-row\"> <div class=\"fud-bf-dmg-number\" style=\"color:#1b1b1b; text-shadow: 0 0 15px rgba(0,0,0,0.28);\"> 36<span class=\"hr-pill\">+HR</span> </div> <div class=\"fud-bf-dmg-element\" style=\"color:#1b1b1b;\">Physical</div> </div> </fieldset> <fieldset class=\"fud-bf-section\"> <legend>Result</legend> <div class=\"fud-bf-target-list\"><div class=\"fud-bf-target-row is-unstudied\" data-fud-target-token-uuid=\"Scene.*.Token.*\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" data-fud-target-slot-index=\"0\" data-fud-equip-desc=\"&lt;p&gt;Study this target to identity tier (≥7) to reveal defense, damage, and affinity.&lt;/p&gt;\" data-fud-equip-desc-name=\"Test Target Enemy\"> <span class=\"t-name\">Test Target Enemy</span> <span class=\"t-def\">DEF ???</span> <span class=\"t-result\">???</span> </div></div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-keyword-row\"><span class=\"fud-kw-term is-keyword\" role=\"button\" tabindex=\"0\" data-fud-kw=\"JournalEntry.NUaxIAIPUu5Qnk8l\"><span class=\"fud-kw-bullet\" aria-hidden=\"true\">◆</span><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/verflare.png\" alt=\"\"><span class=\"fud-kw-label\">Overflow</span></span></div><div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>Perform a sweeping strike, Deal <strong>【HR + 10】</strong><span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.XpKZuGo3VmT0TlTu\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png\" alt=\"\"><span class=\"fud-kw-label\">Physical</span></span>&nbsp;to all target</p><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20 ― </strong>This skill base damage increase to <strong>20 </strong><span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.XpKZuGo3VmT0TlTu\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png\" alt=\"\"><span class=\"fud-kw-label\">Physical</span></span>&nbsp;</p><p><strong>Skill Enhancement Lv. 40 ― </strong>This skill base damage increase to <strong>30 </strong><span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.XpKZuGo3VmT0TlTu\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png\" alt=\"\"><span class=\"fud-kw-label\">Physical</span></span>&nbsp;</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"trait\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🎭</span>Invoke Trait</span> </div> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"bond\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🤝</span>Invoke Bond</span> </div> </div> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Blanche / Verónica": {
+   "skill": "Verónica",
+   "skillType": "Active",
+   "caster": "Blanche",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [],
+   "cardHtml": [
+    "Verónica <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Any</span><span class=\"dot\">•</span><span class=\"bullet\">Skill</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"2 Adoration\">2 Adoration</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Blanche</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>When a creature target you with an <strong>【⚔️Attack】</strong>, <strong>【💥Skill】</strong> or <strong>【📕Spell】</strong>, as a reaction, you may increase your <strong>Defense </strong>score by 2 for that action.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Blanche / Zero Power: Give me tips or 5stars": {
+   "skill": "Zero Power: Give me tips or 5stars",
+   "skillType": "Active",
+   "caster": "Blanche",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": true,
+   "element": "hp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": null,
+     "affinity": "NE",
+     "grant": 65,
+     "grantRes": "hp"
+    }
+   ],
+   "writes": [],
+   "cardHtml": [
+    "Zero Power: Give me tips or 5stars <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Any</span><span class=\"dot\">•</span><span class=\"bullet\">Skill</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"6 Zero Power\">6 Zero Power</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Blanche</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-dmg\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Restores:&lt;/b&gt; HP&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Base bonus:&lt;/b&gt; +65&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR:&lt;/b&gt; — (no Check rolled)&lt;/p&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Final on hit:&lt;/b&gt; 0 + 65 = &lt;b&gt;65&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-top:6px; opacity:0.85;&quot;&gt;Restores HP — no defense or affinity check.&lt;/p&gt;\" data-fud-equip-desc-name=\"Heal Preview\"> <legend>Heal</legend> <div class=\"fud-bf-dmg-row\"> <div class=\"fud-bf-dmg-number\" style=\"color:#2a8a3a; text-shadow: 0 0 15px rgba(42, 138, 58, 0.45);\"> 65 </div> <div class=\"fud-bf-dmg-element\" style=\"color:#2a8a3a;\">HP</div> </div> </fieldset> <fieldset class=\"fud-bf-section\"> <legend>Result</legend> <div class=\"fud-bf-target-list\"><div class=\"fud-bf-target-row\" data-fud-target-token-uuid=\"Scene.*.Token.*\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" data-fud-target-slot-index=\"0\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Hit Check:&lt;/b&gt; Auto-hit (no Check)&lt;/p&gt;\" data-fud-equip-desc-name=\"Test Target Enemy\"> <span class=\"t-name\">Test Target Enemy</span> <span class=\"t-def\">HP 9999/9999</span> <span class=\"t-result heal\">FULL · NO EFFECT</span> </div></div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>You and any number of allies you can see recover from all status effects and recover an amount of Hit Points equal to <strong>【40 + half your level】</strong></p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Hina / Acceleration": {
+   "skill": "Acceleration",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [
+    {
+     "actor": "Test Target Enemy",
+     "props": [],
+     "aeApplied": [
+      "Acceleration[]"
+     ],
+     "aeRemoved": []
+    }
+   ],
+   "cardHtml": [
+    "Acceleration <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Range</span><span class=\"dot\">•</span><span class=\"bullet\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i>Arcane</span><span class=\"dot\">•</span><span class=\"bullet\">Spell</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"20 MP\">20 MP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Hina</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><div class=\"oni-tooltip\"><p>At the end of each of their turns, the target may <strong>choose one option:</strong></p><ul><li><p>Perform a <strong>free attack</strong> with a weapon they have equipped</p></li><li><p>Perform the【📕Spell】 action for free, casting a spell with a total MP cost equal to or lower than 10 <em>(paying its MP cost).</em></p></li></ul><p>After the same creature benefits from this effect a second time, this spell ends.</p></div></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Hina / Avatar of Vengeance: Dismiss": {
+   "skill": "Avatar of Vengeance: Dismiss",
+   "skillType": "Active",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "fire",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 30,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ],
+   "writes": [
+    {
+     "actor": "?",
+     "props": [],
+     "aeApplied": [],
+     "aeRemoved": [
+      "Avatar of Vengeance"
+     ]
+    },
+    {
+     "actor": "EXFURSION Party",
+     "props": [],
+     "aeApplied": [],
+     "aeRemoved": []
+    },
+    {
+     "actor": "Test Target Enemy",
+     "props": [
+      "system.props.current_hp=9969"
+     ],
+     "aeApplied": [],
+     "aeRemoved": []
+    }
+   ],
+   "cardHtml": [
+    "Avatar of Vengeance: Dismiss <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Skill</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Hina</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-dmg\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Element:&lt;/b&gt; Fire&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Base bonus:&lt;/b&gt; +30&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR:&lt;/b&gt; — (no Check rolled)&lt;/p&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Final on hit:&lt;/b&gt; 0 + 30 = &lt;b&gt;30&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-top:6px; opacity:0.85;&quot;&gt;&lt;b&gt;Per-target affinity:&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;VU = ×2 &amp;nbsp;•&amp;nbsp; RS = ×0.5 (round up)&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;IM = 0 &amp;nbsp;•&amp;nbsp; AB = heals target&lt;/p&gt;\" data-fud-equip-desc-name=\"Damage Preview\"> <legend>Damage</legend> <div class=\"fud-bf-dmg-row\"> <div class=\"fud-bf-dmg-number\" style=\"color:#e25822; text-shadow: 0 0 15px rgba(226,88,34,0.45);\"> 30 </div> <div class=\"fud-bf-dmg-element\" style=\"color:#e25822;\">Fire</div> </div> </fieldset> <fieldset class=\"fud-bf-section\"> <legend>Result</legend> <div class=\"fud-bf-target-list\"><div class=\"fud-bf-target-row is-unstudied\" data-fud-target-token-uuid=\"Scene.*.Token.*\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" data-fud-target-slot-index=\"0\" data-fud-equip-desc=\"&lt;p&gt;Study this target to identity tier (≥7) to reveal defense, damage, and affinity.&lt;/p&gt;\" data-fud-equip-desc-name=\"Test Target Enemy\"> <span class=\"t-name\">Test Target Enemy</span> <span class=\"t-def\">DEF ???</span> <span class=\"t-result\">???</span> </div></div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p><em>As a free action, before or after your action on your turn,</em> you release the Avatar in a final blaze, dealing <strong>【30】 <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.0sFCVCoM6FRrQP2f\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Burn.png\" alt=\"\"><span class=\"fud-kw-label\">Fire</span></span> damage</strong> to <strong>all enemies</strong> and ending the merge.</p><p>As you do, you may spend <strong>【6 Zero Power】</strong> to deal additional <strong><span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.0sFCVCoM6FRrQP2f\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Burn.png\" alt=\"\"><span class=\"fud-kw-label\">Fire</span></span> damage</strong> to each enemy equal to <strong>【10 × their Burn stacks】</strong>, then remove all <strong>Burn</strong> from those enemies.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Hina / Avatar of Vengeance: Pulse": {
+   "skill": "Avatar of Vengeance: Pulse",
+   "skillType": "Active",
+   "caster": "Hina",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": null,
+   "perTarget": [],
+   "writes": [
+    {
+     "actor": "Hina",
+     "props": [],
+     "aeApplied": [
+      "Burn[]"
+     ],
+     "aeRemoved": []
+    }
+   ],
+   "cardHtml": [
+    "Avatar of Vengeance: Pulse <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Skill</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.dafTLBUscCDNgq8H\" style=\"color:#3aa0ff\">Hina</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Hina</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>You channel the Avatar's flame, inflicting <strong>3 stacks of Burn</strong> on up to <strong>three creatures</strong> you can see.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Hina / Bimagus": {
+   "skill": "Bimagus",
+   "skillType": "Active",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [
+    {
+     "actor": "Hina",
+     "props": [
+      "system.props.current_mp=98"
+     ],
+     "aeApplied": [
+      "Bimagus[]"
+     ],
+     "aeRemoved": []
+    }
+   ],
+   "cardHtml": [
+    "Bimagus <div class=\"fud-bf-subtitle\"><span class=\"bullet\">-</span><span class=\"dot\">•</span><span class=\"bullet\">Skill</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"30 MP\">30 MP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Hina</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>Once per turn during a conflict, if you have an <strong>arcane</strong> weapon equipped, you may use an action and spend <strong>20 to 50 Mind Points</strong> to perform the <strong>【📕Spell】</strong> action for free <strong>twice</strong>, casting two spells without needing to pay their MP costs. If you do, the two spells must have a combined total MP cost equal to or lower than <strong>【20 + the amount of MP you spent to use this Skill】</strong>, and the second spell must have a total MP cost that is equal to or lower than half the total MP cost of the first spell.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Hina / Bind and Summon (variant)": {
+   "skill": "Bind and Summon (variant)",
+   "skillType": "Active",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": false,
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  "Hina / Cleanse": {
+   "skill": "Cleanse",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [],
+   "cardHtml": [
+    "Cleanse <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Range</span><span class=\"dot\">•</span><span class=\"bullet\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i>Arcane</span><span class=\"dot\">•</span><span class=\"bullet\">Spell</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"5 x T MP\">5 x T MP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Hina</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>You strengthen and purify the soul energy coursing through your companions. Each target <strong>recovers</strong> from 1 status effects.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Hina / Dispel": {
+   "skill": "Dispel",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [],
+   "cardHtml": [
+    "Dispel <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Range</span><span class=\"dot\">•</span><span class=\"bullet\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i>Arcane</span><span class=\"dot\">•</span><span class=\"bullet\">Spell</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"10 MP\">10 MP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Hina</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>You release a wave of negative energy and cleanse all magic from a creature. If the target is affected by one or more spells with a <strong>duration</strong> of Scene, they are no longer affected by any of those spells instead</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Hina / Divination": {
+   "skill": "Divination",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [
+    {
+     "actor": "Test Target Enemy",
+     "props": [],
+     "aeApplied": [
+      "Divination[]"
+     ],
+     "aeRemoved": []
+    }
+   ],
+   "cardHtml": [
+    "Divination <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Range</span><span class=\"dot\">•</span><span class=\"bullet\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i>Arcane</span><span class=\"dot\">•</span><span class=\"bullet\">Spell</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"10 MP\">10 MP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Hina</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>You glimpse briefly into the future. Until this spell ends, after a creature you can see performs a Check, if it was not a <strong>fumble</strong> nor a <strong>critical success</strong>, you may force that creature to reroll both dice. Once you have forced <strong>two</strong> rerolls this way, this spell ends.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Hina / Draconic Roar": {
+   "skill": "Draconic Roar",
+   "skillType": "Active",
+   "caster": "Hina",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ],
+   "writes": [
+    {
+     "actor": "EXFURSION Party",
+     "props": [],
+     "aeApplied": [],
+     "aeRemoved": []
+    },
+    {
+     "actor": "Hina",
+     "props": [
+      "system.props.current_hp=101"
+     ],
+     "aeApplied": [
+      "Dazed[bonus_ins 2= -2]"
+     ],
+     "aeRemoved": []
+    }
+   ],
+   "cardHtml": [
+    "Draconic Roar <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Skill</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"30 MP\">30 MP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.dafTLBUscCDNgq8H\" style=\"color:#3aa0ff\">Hina</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Hina</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;INS:&lt;/b&gt; 1d12 → &lt;b&gt;5&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;INS:&lt;/b&gt; 1d12 → &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Check Bonus:&lt;/b&gt; —&lt;/p&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Total:&lt;/b&gt; 5 + 6 = &lt;b&gt;11&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR (High Roll):&lt;/b&gt; max(5, 6) = &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.75;&quot;&gt;Compares vs target&#39;s &lt;b&gt;Defense&lt;/b&gt;.&lt;/p&gt;\" data-fud-equip-desc-name=\"Accuracy Check\"> <legend>Accuracy Check</legend> <div class=\"fud-bf-acc \"> <div class=\"fud-bf-acc-row\"> <span class=\"die-block\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i> <span class=\"attr\">INS</span> <span class=\"die-size\">d12</span> <span class=\"die-result\">5</span></span> <span class=\"plus\">+</span> <span class=\"die-block\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i> <span class=\"attr\">INS</span> <span class=\"die-size\">d12</span> <span class=\"die-result\">6</span></span> <span class=\"spacer\"></span> <span class=\"total-wrap\"> <img class=\"strike-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/UI/fu-icon/physical_icon.png\" alt=\"Strike\" title=\"Strike\"> <span class=\"total\">11</span> </span> </div> </div> </fieldset> <fieldset class=\"fud-bf-section\"> <legend>Result</legend> <div class=\"fud-bf-target-list\"><div class=\"fud-bf-target-row\" data-fud-target-token-uuid=\"Scene.*.Token.*\" data-fud-target-actor-uuid=\"Actor.dafTLBUscCDNgq8H\" data-fud-target-slot-index=\"0\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Hit Check:&lt;/b&gt; Total 11 ≥ DEF 8 — hit&lt;/p&gt;\" data-fud-equip-desc-name=\"Hina\"> <span class=\"t-name\">Hina</span> <span class=\"t-def\">DEF 8</span> <span class=\"t-result hit\">SUCCESS</span> </div></div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>Unleash a terrifying roar. Deals <strong>【HR+13】 Non-Elemental damage</strong> to all enemies and inflicts each with a random <strong>Basic Debuff</strong>.</p><p>An enemy whose Level is lower than yours is afflicted by an even <strong>stronger debuff</strong> instead.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"trait\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🎭</span>Invoke Trait</span> </div> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"bond\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🤝</span>Invoke Bond</span> </div> </div> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Hina / Drain Spirit": {
+   "skill": "Drain Spirit",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "mp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 26,
+     "resource": "mp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ],
+   "writes": [
+    {
+     "actor": "EXFURSION Party",
+     "props": [],
+     "aeApplied": [],
+     "aeRemoved": []
+    },
+    {
+     "actor": "Test Target Enemy",
+     "props": [
+      "system.props.current_mp=34"
+     ],
+     "aeApplied": [],
+     "aeRemoved": []
+    }
+   ],
+   "cardHtml": [
+    "Drain Spirit <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Range</span><span class=\"dot\">•</span><span class=\"bullet\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i>Arcane</span><span class=\"dot\">•</span><span class=\"bullet\">Spell</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"5 MP\">5 MP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Hina</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;INS:&lt;/b&gt; 1d12 → &lt;b&gt;5&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;WLP:&lt;/b&gt; 1d10 → &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Check Bonus:&lt;/b&gt; +6&lt;/p&gt;&lt;ul style=&quot;margin:2px 0 0 14px; padding:0; opacity:0.85; font-size:11.5px;&quot;&gt;&lt;li&gt;&lt;b&gt;Magical Artillery:&lt;/b&gt; +6&lt;/li&gt;&lt;/ul&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Total:&lt;/b&gt; 5 + 6 + 6 = &lt;b&gt;17&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR (High Roll):&lt;/b&gt; max(5, 6) = &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.75;&quot;&gt;Compares vs target&#39;s &lt;b&gt;Magic Defense&lt;/b&gt;.&lt;/p&gt;\" data-fud-equip-desc-name=\"Accuracy Check\"> <legend>Accuracy Check</legend> <div class=\"fud-bf-acc \"> <div class=\"fud-bf-acc-row\"> <span class=\"die-block\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i> <span class=\"attr\">INS</span> <span class=\"die-size\">d12</span> <span class=\"die-result\">5</span></span> <span class=\"plus\">+</span> <span class=\"die-block\"><i class=\"fa-solid fa-comment-dots\" aria-hidden=\"true\"></i> <span class=\"attr\">WLP</span> <span class=\"die-size\">d10</span> <span class=\"die-result\">6</span></span> <span class=\"bonus\">+6</span> <span class=\"spacer\"></span> <span class=\"total-wrap\"> <img class=\"strike-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/UI/fu-icon/magical_icon.png\" alt=\"Magic\" title=\"Magic\"> <span class=\"total\">17</span> </span> </div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-dmg\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Element:&lt;/b&gt; MP damage (resource burn, no element)&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Base bonus:&lt;/b&gt; +20&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR:&lt;/b&gt; 6 (from accuracy roll)&lt;/p&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Final on hit:&lt;/b&gt; 6 + 20 = &lt;b&gt;26&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-top:6px; opacity:0.85;&quot;&gt;MP damage skips elemental affinity — final number lands on each target&#39;s current MP unchanged.&lt;/p&gt;\" data-fud-equip-desc-name=\"MP Damage Preview\"> <legend>MP Damage</legend> <div class=\"fud-bf-dmg-row\"> <div class=\"fud-bf-dmg-number\" style=\"color:#1e6cff; text-shadow: 0 0 15px rgba(30,108,255,0.45);\"> 26<span class=\"hr-pill\">+HR</span> </div> <div class=\"fud-bf-dmg-element\" style=\"color:#1e6cff;\">MP</div> </div> </fieldset> <fieldset class=\"fud-bf-section\"> <legend>Result</legend> <div class=\"fud-bf-target-list\"><div class=\"fud-bf-target-row is-unstudied\" data-fud-target-token-uuid=\"Scene.*.Token.*\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" data-fud-target-slot-index=\"0\" data-fud-equip-desc=\"&lt;p&gt;Study this target to identity tier (≥7) to reveal defense, damage, and affinity.&lt;/p&gt;\" data-fud-equip-desc-name=\"Test Target Enemy\"> <span class=\"t-name\">Test Target Enemy</span> <span class=\"t-def\">MDEF ???</span> <span class=\"t-result\">???</span> </div></div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>You consume a creature's psyche. The target loses <strong>【HR + 20】</strong> Mind Points. Then, you recover an amount of Mind Points equal to half the Mind Points loss they suffered (if the loss was reduced to 0 in some way, you recover none).</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"trait\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🎭</span>Invoke Trait</span> </div> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"bond\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🤝</span>Invoke Bond</span> </div> </div> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Hina / Elemental Shroud": {
+   "skill": "Elemental Shroud",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Hina / Elemental Weapon": {
+   "skill": "Elemental Weapon",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Hina / Encyclopedia Strike": {
+   "skill": "Encyclopedia Strike",
+   "skillType": "Active",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 23,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ],
+   "writes": [
+    {
+     "actor": "EXFURSION Party",
+     "props": [],
+     "aeApplied": [],
+     "aeRemoved": []
+    },
+    {
+     "actor": "Test Target Enemy",
+     "props": [
+      "system.props.current_hp=9976"
+     ],
+     "aeApplied": [],
+     "aeRemoved": []
+    }
+   ],
+   "cardHtml": [
+    "Encyclopedia Strike <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Ranged</span><span class=\"dot\">•</span><span class=\"bullet\">Skill</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Hina</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;INS:&lt;/b&gt; 1d12 → &lt;b&gt;5&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;INS:&lt;/b&gt; 1d12 → &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Check Bonus:&lt;/b&gt; —&lt;/p&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Total:&lt;/b&gt; 5 + 6 = &lt;b&gt;11&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR (High Roll):&lt;/b&gt; max(5, 6) = &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.75;&quot;&gt;Compares vs target&#39;s &lt;b&gt;Defense&lt;/b&gt;.&lt;/p&gt;\" data-fud-equip-desc-name=\"Accuracy Check\"> <legend>Accuracy Check</legend> <div class=\"fud-bf-acc \"> <div class=\"fud-bf-acc-row\"> <span class=\"die-block\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i> <span class=\"attr\">INS</span> <span class=\"die-size\">d12</span> <span class=\"die-result\">5</span></span> <span class=\"plus\">+</span> <span class=\"die-block\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i> <span class=\"attr\">INS</span> <span class=\"die-size\">d12</span> <span class=\"die-result\">6</span></span> <span class=\"spacer\"></span> <span class=\"total-wrap\"> <img class=\"strike-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/UI/fu-icon/physical_icon.png\" alt=\"Strike\" title=\"Strike\"> <span class=\"total\">11</span> </span> </div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-dmg\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Element:&lt;/b&gt; Physical&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Base bonus:&lt;/b&gt; +17&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR:&lt;/b&gt; 6 (from accuracy roll)&lt;/p&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Final on hit:&lt;/b&gt; 6 + 17 = &lt;b&gt;23&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-top:6px; opacity:0.85;&quot;&gt;&lt;b&gt;Per-target affinity:&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;VU = ×2 &amp;nbsp;•&amp;nbsp; RS = ×0.5 (round up)&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;IM = 0 &amp;nbsp;•&amp;nbsp; AB = heals target&lt;/p&gt;\" data-fud-equip-desc-name=\"Damage Preview\"> <legend>Damage</legend> <div class=\"fud-bf-dmg-row\"> <div class=\"fud-bf-dmg-number\" style=\"color:#1b1b1b; text-shadow: 0 0 15px rgba(0,0,0,0.28);\"> 23<span class=\"hr-pill\">+HR</span> </div> <div class=\"fud-bf-dmg-element\" style=\"color:#1b1b1b;\">Physical</div> </div> </fieldset> <fieldset class=\"fud-bf-section\"> <legend>Result</legend> <div class=\"fud-bf-target-list\"><div class=\"fud-bf-target-row is-unstudied\" data-fud-target-token-uuid=\"Scene.*.Token.*\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" data-fud-target-slot-index=\"0\" data-fud-equip-desc=\"&lt;p&gt;Study this target to identity tier (≥7) to reveal defense, damage, and affinity.&lt;/p&gt;\" data-fud-equip-desc-name=\"Test Target Enemy\"> <span class=\"t-name\">Test Target Enemy</span> <span class=\"t-def\">DEF ???</span> <span class=\"t-result\">???</span> </div></div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>As a Skill Action, perform a free ranged attack with the Encyclopedia dealing +10 bonus damage (HR + 17 Physical). The Encyclopedia is then unequipped and vanishes from your inventory until the end of the scene; you may immediately perform an Equipment action as a Free Action.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"trait\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🎭</span>Invoke Trait</span> </div> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"bond\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🤝</span>Invoke Bond</span> </div> </div> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Hina / Glacies": {
+   "skill": "Glacies",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "ice",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 21,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ],
+   "writes": [
+    {
+     "actor": "EXFURSION Party",
+     "props": [],
+     "aeApplied": [],
+     "aeRemoved": []
+    },
+    {
+     "actor": "Test Target Enemy",
+     "props": [
+      "system.props.current_hp=9978"
+     ],
+     "aeApplied": [],
+     "aeRemoved": []
+    }
+   ],
+   "cardHtml": [
+    "Glacies <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Range</span><span class=\"dot\">•</span><span class=\"bullet\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i>Arcane</span><span class=\"dot\">•</span><span class=\"bullet\">Spell</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"10 x T MP\">10 x T MP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Hina</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;INS:&lt;/b&gt; 1d12 → &lt;b&gt;5&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;WLP:&lt;/b&gt; 1d10 → &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Check Bonus:&lt;/b&gt; +6&lt;/p&gt;&lt;ul style=&quot;margin:2px 0 0 14px; padding:0; opacity:0.85; font-size:11.5px;&quot;&gt;&lt;li&gt;&lt;b&gt;Magical Artillery:&lt;/b&gt; +6&lt;/li&gt;&lt;/ul&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Total:&lt;/b&gt; 5 + 6 + 6 = &lt;b&gt;17&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR (High Roll):&lt;/b&gt; max(5, 6) = &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.75;&quot;&gt;Compares vs target&#39;s &lt;b&gt;Magic Defense&lt;/b&gt;.&lt;/p&gt;\" data-fud-equip-desc-name=\"Accuracy Check\"> <legend>Accuracy Check</legend> <div class=\"fud-bf-acc \"> <div class=\"fud-bf-acc-row\"> <span class=\"die-block\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i> <span class=\"attr\">INS</span> <span class=\"die-size\">d12</span> <span class=\"die-result\">5</span></span> <span class=\"plus\">+</span> <span class=\"die-block\"><i class=\"fa-solid fa-comment-dots\" aria-hidden=\"true\"></i> <span class=\"attr\">WLP</span> <span class=\"die-size\">d10</span> <span class=\"die-result\">6</span></span> <span class=\"bonus\">+6</span> <span class=\"spacer\"></span> <span class=\"total-wrap\"> <img class=\"strike-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/UI/fu-icon/magical_icon.png\" alt=\"Magic\" title=\"Magic\"> <span class=\"total\">17</span> </span> </div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-dmg\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Element:&lt;/b&gt; Ice&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Base bonus:&lt;/b&gt; +15&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR:&lt;/b&gt; 6 (from accuracy roll)&lt;/p&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Final on hit:&lt;/b&gt; 6 + 15 = &lt;b&gt;21&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-top:6px; opacity:0.85;&quot;&gt;&lt;b&gt;Per-target affinity:&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;VU = ×2 &amp;nbsp;•&amp;nbsp; RS = ×0.5 (round up)&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;IM = 0 &amp;nbsp;•&amp;nbsp; AB = heals target&lt;/p&gt;\" data-fud-equip-desc-name=\"Damage Preview\"> <legend>Damage</legend> <div class=\"fud-bf-dmg-row\"> <div class=\"fud-bf-dmg-number\" style=\"color:#5ab3d4; text-shadow: 0 0 15px rgba(90,179,212,0.45);\"> 21<span class=\"hr-pill\">+HR</span> </div> <div class=\"fud-bf-dmg-element\" style=\"color:#5ab3d4;\">Ice</div> </div> </fieldset> <fieldset class=\"fud-bf-section\"> <legend>Result</legend> <div class=\"fud-bf-target-list\"><div class=\"fud-bf-target-row is-unstudied\" data-fud-target-token-uuid=\"Scene.*.Token.*\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" data-fud-target-slot-index=\"0\" data-fud-equip-desc=\"&lt;p&gt;Study this target to identity tier (≥7) to reveal defense, damage, and affinity.&lt;/p&gt;\" data-fud-equip-desc-name=\"Test Target Enemy\"> <span class=\"t-name\">Test Target Enemy</span> <span class=\"t-def\">MDEF ???</span> <span class=\"t-result\">???</span> </div></div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>You coat your foes under a thick layer of frost. Each target hit by this spell suffers <strong>【HR + 15】</strong><span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.Osq3NN3QCtiW7otU\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Freeze.png\" alt=\"\"><span class=\"fud-kw-label\">Ice</span></span> damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"JournalEntry.HHmYmj7xffQMqtzT\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEF%20DOWN.png\" alt=\"\"><span class=\"fud-kw-label\">Slow</span></span></p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"trait\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🎭</span>Invoke Trait</span> </div> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"bond\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🤝</span>Invoke Bond</span> </div> </div> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Hina / Glacies Finis #dafT:7vAXk1": {
+   "skill": "Glacies Finis",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "ice",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 41,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ],
+   "writes": [
+    {
+     "actor": "EXFURSION Party",
+     "props": [],
+     "aeApplied": [],
+     "aeRemoved": []
+    },
+    {
+     "actor": "Test Target Enemy",
+     "props": [
+      "system.props.current_hp=9958"
+     ],
+     "aeApplied": [],
+     "aeRemoved": []
+    }
+   ],
+   "cardHtml": [
+    "Glacies Finis <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Range</span><span class=\"dot\">•</span><span class=\"bullet\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i>Arcane</span><span class=\"dot\">•</span><span class=\"bullet\">Spell</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"30 x T MP\">30 x T MP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Hina</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;INS:&lt;/b&gt; 1d12 → &lt;b&gt;5&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;WLP:&lt;/b&gt; 1d10 → &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Check Bonus:&lt;/b&gt; +6&lt;/p&gt;&lt;ul style=&quot;margin:2px 0 0 14px; padding:0; opacity:0.85; font-size:11.5px;&quot;&gt;&lt;li&gt;&lt;b&gt;Magical Artillery:&lt;/b&gt; +6&lt;/li&gt;&lt;/ul&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Total:&lt;/b&gt; 5 + 6 + 6 = &lt;b&gt;17&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR (High Roll):&lt;/b&gt; max(5, 6) = &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.75;&quot;&gt;Compares vs target&#39;s &lt;b&gt;Magic Defense&lt;/b&gt;.&lt;/p&gt;\" data-fud-equip-desc-name=\"Accuracy Check\"> <legend>Accuracy Check</legend> <div class=\"fud-bf-acc \"> <div class=\"fud-bf-acc-row\"> <span class=\"die-block\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i> <span class=\"attr\">INS</span> <span class=\"die-size\">d12</span> <span class=\"die-result\">5</span></span> <span class=\"plus\">+</span> <span class=\"die-block\"><i class=\"fa-solid fa-comment-dots\" aria-hidden=\"true\"></i> <span class=\"attr\">WLP</span> <span class=\"die-size\">d10</span> <span class=\"die-result\">6</span></span> <span class=\"bonus\">+6</span> <span class=\"spacer\"></span> <span class=\"total-wrap\"> <img class=\"strike-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/UI/fu-icon/magical_icon.png\" alt=\"Magic\" title=\"Magic\"> <span class=\"total\">17</span> </span> </div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-dmg\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Element:&lt;/b&gt; Ice&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Base bonus:&lt;/b&gt; +35&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR:&lt;/b&gt; 6 (from accuracy roll)&lt;/p&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Final on hit:&lt;/b&gt; 6 + 35 = &lt;b&gt;41&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-top:6px; opacity:0.85;&quot;&gt;&lt;b&gt;Per-target affinity:&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;VU = ×2 &amp;nbsp;•&amp;nbsp; RS = ×0.5 (round up)&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;IM = 0 &amp;nbsp;•&amp;nbsp; AB = heals target&lt;/p&gt;\" data-fud-equip-desc-name=\"Damage Preview\"> <legend>Damage</legend> <div class=\"fud-bf-dmg-row\"> <div class=\"fud-bf-dmg-number\" style=\"color:#5ab3d4; text-shadow: 0 0 15px rgba(90,179,212,0.45);\"> 41<span class=\"hr-pill\">+HR</span> </div> <div class=\"fud-bf-dmg-element\" style=\"color:#5ab3d4;\">Ice</div> </div> </fieldset> <fieldset class=\"fud-bf-section\"> <legend>Result</legend> <div class=\"fud-bf-target-list\"><div class=\"fud-bf-target-row is-unstudied\" data-fud-target-token-uuid=\"Scene.*.Token.*\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" data-fud-target-slot-index=\"0\" data-fud-equip-desc=\"&lt;p&gt;Study this target to identity tier (≥7) to reveal defense, damage, and affinity.&lt;/p&gt;\" data-fud-equip-desc-name=\"Test Target Enemy\"> <span class=\"t-name\">Test Target Enemy</span> <span class=\"t-def\">MDEF ???</span> <span class=\"t-result\">???</span> </div></div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>You cause a glacial avalanche. Each target hit by this spell suffers <strong>【HR + 35】</strong><span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.Osq3NN3QCtiW7otU\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Freeze.png\" alt=\"\"><span class=\"fud-kw-label\">Ice</span></span>&nbsp;damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"JournalEntry.J4fv0XKFy678UIn8\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/feculent_flood.png\" alt=\"\"><span class=\"fud-kw-label\">Fatigue</span></span></p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"trait\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🎭</span>Invoke Trait</span> </div> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"bond\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🤝</span>Invoke Bond</span> </div> </div> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Hina / Glacies Finis #dafT:C3K6l9": {
+   "skill": "Glacies Finis",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "ice",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 41,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ],
+   "writes": [
+    {
+     "actor": "EXFURSION Party",
+     "props": [],
+     "aeApplied": [],
+     "aeRemoved": []
+    },
+    {
+     "actor": "Test Target Enemy",
+     "props": [
+      "system.props.current_hp=9958"
+     ],
+     "aeApplied": [],
+     "aeRemoved": []
+    }
+   ],
+   "cardHtml": [
+    "Glacies Finis <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Range</span><span class=\"dot\">•</span><span class=\"bullet\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i>Arcane</span><span class=\"dot\">•</span><span class=\"bullet\">Spell</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"30 x T MP\">30 x T MP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Hina</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;INS:&lt;/b&gt; 1d12 → &lt;b&gt;5&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;WLP:&lt;/b&gt; 1d10 → &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Check Bonus:&lt;/b&gt; +6&lt;/p&gt;&lt;ul style=&quot;margin:2px 0 0 14px; padding:0; opacity:0.85; font-size:11.5px;&quot;&gt;&lt;li&gt;&lt;b&gt;Magical Artillery:&lt;/b&gt; +6&lt;/li&gt;&lt;/ul&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Total:&lt;/b&gt; 5 + 6 + 6 = &lt;b&gt;17&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR (High Roll):&lt;/b&gt; max(5, 6) = &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.75;&quot;&gt;Compares vs target&#39;s &lt;b&gt;Magic Defense&lt;/b&gt;.&lt;/p&gt;\" data-fud-equip-desc-name=\"Accuracy Check\"> <legend>Accuracy Check</legend> <div class=\"fud-bf-acc \"> <div class=\"fud-bf-acc-row\"> <span class=\"die-block\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i> <span class=\"attr\">INS</span> <span class=\"die-size\">d12</span> <span class=\"die-result\">5</span></span> <span class=\"plus\">+</span> <span class=\"die-block\"><i class=\"fa-solid fa-comment-dots\" aria-hidden=\"true\"></i> <span class=\"attr\">WLP</span> <span class=\"die-size\">d10</span> <span class=\"die-result\">6</span></span> <span class=\"bonus\">+6</span> <span class=\"spacer\"></span> <span class=\"total-wrap\"> <img class=\"strike-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/UI/fu-icon/magical_icon.png\" alt=\"Magic\" title=\"Magic\"> <span class=\"total\">17</span> </span> </div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-dmg\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Element:&lt;/b&gt; Ice&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Base bonus:&lt;/b&gt; +35&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR:&lt;/b&gt; 6 (from accuracy roll)&lt;/p&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Final on hit:&lt;/b&gt; 6 + 35 = &lt;b&gt;41&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-top:6px; opacity:0.85;&quot;&gt;&lt;b&gt;Per-target affinity:&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;VU = ×2 &amp;nbsp;•&amp;nbsp; RS = ×0.5 (round up)&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;IM = 0 &amp;nbsp;•&amp;nbsp; AB = heals target&lt;/p&gt;\" data-fud-equip-desc-name=\"Damage Preview\"> <legend>Damage</legend> <div class=\"fud-bf-dmg-row\"> <div class=\"fud-bf-dmg-number\" style=\"color:#5ab3d4; text-shadow: 0 0 15px rgba(90,179,212,0.45);\"> 41<span class=\"hr-pill\">+HR</span> </div> <div class=\"fud-bf-dmg-element\" style=\"color:#5ab3d4;\">Ice</div> </div> </fieldset> <fieldset class=\"fud-bf-section\"> <legend>Result</legend> <div class=\"fud-bf-target-list\"><div class=\"fud-bf-target-row is-unstudied\" data-fud-target-token-uuid=\"Scene.*.Token.*\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" data-fud-target-slot-index=\"0\" data-fud-equip-desc=\"&lt;p&gt;Study this target to identity tier (≥7) to reveal defense, damage, and affinity.&lt;/p&gt;\" data-fud-equip-desc-name=\"Test Target Enemy\"> <span class=\"t-name\">Test Target Enemy</span> <span class=\"t-def\">MDEF ???</span> <span class=\"t-result\">???</span> </div></div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>You cause a glacial avalanche. Each target hit by this spell suffers <strong>【HR + 35】</strong><span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.Osq3NN3QCtiW7otU\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Freeze.png\" alt=\"\"><span class=\"fud-kw-label\">Ice</span></span>&nbsp;damage.</p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"JournalEntry.J4fv0XKFy678UIn8\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/feculent_flood.png\" alt=\"\"><span class=\"fud-kw-label\">Fatigue</span></span></p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"trait\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🎭</span>Invoke Trait</span> </div> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"bond\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🤝</span>Invoke Bond</span> </div> </div> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Hina / Heal": {
+   "skill": "Heal",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": true,
+   "element": "hp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": null,
+     "affinity": "NE",
+     "grant": 60,
+     "grantRes": "hp"
+    }
+   ],
+   "writes": [],
+   "cardHtml": [
+    "Heal <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Range</span><span class=\"dot\">•</span><span class=\"bullet\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i>Arcane</span><span class=\"dot\">•</span><span class=\"bullet\">Spell</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"10 x T MP\">10 x T MP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Hina</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-dmg\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Restores:&lt;/b&gt; HP&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Base bonus:&lt;/b&gt; +60&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR:&lt;/b&gt; — (no Check rolled)&lt;/p&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Final on hit:&lt;/b&gt; 0 + 60 = &lt;b&gt;60&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-top:6px; opacity:0.85;&quot;&gt;Restores HP — no defense or affinity check.&lt;/p&gt;\" data-fud-equip-desc-name=\"Heal Preview\"> <legend>Heal</legend> <div class=\"fud-bf-dmg-row\"> <div class=\"fud-bf-dmg-number\" style=\"color:#2a8a3a; text-shadow: 0 0 15px rgba(42, 138, 58, 0.45);\"> 60 </div> <div class=\"fud-bf-dmg-element\" style=\"color:#2a8a3a;\">HP</div> </div> </fieldset> <fieldset class=\"fud-bf-section\"> <legend>Result</legend> <div class=\"fud-bf-target-list\"><div class=\"fud-bf-target-row\" data-fud-target-token-uuid=\"Scene.*.Token.*\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" data-fud-target-slot-index=\"0\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Hit Check:&lt;/b&gt; Auto-hit (no Check)&lt;/p&gt;\" data-fud-equip-desc-name=\"Test Target Enemy\"> <span class=\"t-name\">Test Target Enemy</span> <span class=\"t-def\">HP 9999/9999</span> <span class=\"t-result heal\">FULL · NO EFFECT</span> </div></div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Hina / Iceberg": {
+   "skill": "Iceberg",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "ice",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 31,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ],
+   "writes": [
+    {
+     "actor": "EXFURSION Party",
+     "props": [],
+     "aeApplied": [],
+     "aeRemoved": []
+    },
+    {
+     "actor": "Test Target Enemy",
+     "props": [
+      "system.props.current_hp=9968"
+     ],
+     "aeApplied": [],
+     "aeRemoved": []
+    }
+   ],
+   "cardHtml": [
+    "Iceberg <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Range</span><span class=\"dot\">•</span><span class=\"bullet\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i>Arcane</span><span class=\"dot\">•</span><span class=\"bullet\">Spell</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"20 MP\">20 MP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Hina</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;INS:&lt;/b&gt; 1d12 → &lt;b&gt;5&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;WLP:&lt;/b&gt; 1d10 → &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Check Bonus:&lt;/b&gt; +6&lt;/p&gt;&lt;ul style=&quot;margin:2px 0 0 14px; padding:0; opacity:0.85; font-size:11.5px;&quot;&gt;&lt;li&gt;&lt;b&gt;Magical Artillery:&lt;/b&gt; +6&lt;/li&gt;&lt;/ul&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Total:&lt;/b&gt; 5 + 6 + 6 = &lt;b&gt;17&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR (High Roll):&lt;/b&gt; max(5, 6) = &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.75;&quot;&gt;Compares vs target&#39;s &lt;b&gt;Magic Defense&lt;/b&gt;.&lt;/p&gt;\" data-fud-equip-desc-name=\"Accuracy Check\"> <legend>Accuracy Check</legend> <div class=\"fud-bf-acc \"> <div class=\"fud-bf-acc-row\"> <span class=\"die-block\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i> <span class=\"attr\">INS</span> <span class=\"die-size\">d12</span> <span class=\"die-result\">5</span></span> <span class=\"plus\">+</span> <span class=\"die-block\"><i class=\"fa-solid fa-comment-dots\" aria-hidden=\"true\"></i> <span class=\"attr\">WLP</span> <span class=\"die-size\">d10</span> <span class=\"die-result\">6</span></span> <span class=\"bonus\">+6</span> <span class=\"spacer\"></span> <span class=\"total-wrap\"> <img class=\"strike-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/UI/fu-icon/magical_icon.png\" alt=\"Magic\" title=\"Magic\"> <span class=\"total\">17</span> </span> </div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-dmg\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Element:&lt;/b&gt; Ice&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Base bonus:&lt;/b&gt; +25&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR:&lt;/b&gt; 6 (from accuracy roll)&lt;/p&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Final on hit:&lt;/b&gt; 6 + 25 = &lt;b&gt;31&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-top:6px; opacity:0.85;&quot;&gt;&lt;b&gt;Per-target affinity:&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;VU = ×2 &amp;nbsp;•&amp;nbsp; RS = ×0.5 (round up)&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;IM = 0 &amp;nbsp;•&amp;nbsp; AB = heals target&lt;/p&gt;\" data-fud-equip-desc-name=\"Damage Preview\"> <legend>Damage</legend> <div class=\"fud-bf-dmg-row\"> <div class=\"fud-bf-dmg-number\" style=\"color:#5ab3d4; text-shadow: 0 0 15px rgba(90,179,212,0.45);\"> 31<span class=\"hr-pill\">+HR</span> </div> <div class=\"fud-bf-dmg-element\" style=\"color:#5ab3d4;\">Ice</div> </div> </fieldset> <fieldset class=\"fud-bf-section\"> <legend>Result</legend> <div class=\"fud-bf-target-list\"><div class=\"fud-bf-target-row is-unstudied\" data-fud-target-token-uuid=\"Scene.*.Token.*\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" data-fud-target-slot-index=\"0\" data-fud-equip-desc=\"&lt;p&gt;Study this target to identity tier (≥7) to reveal defense, damage, and affinity.&lt;/p&gt;\" data-fud-equip-desc-name=\"Test Target Enemy\"> <span class=\"t-name\">Test Target Enemy</span> <span class=\"t-def\">MDEF ???</span> <span class=\"t-result\">???</span> </div></div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>A pillar of ice magic envelops your foe, suddenly dropping their body temperature to a critical level. The target suffers <strong>【HR + 25】</strong><span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.Osq3NN3QCtiW7otU\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Freeze.png\" alt=\"\"><span class=\"fud-kw-label\">Ice</span></span> damage. </p><p>Damage dealt by this spell ignores Resistances.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"trait\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🎭</span>Invoke Trait</span> </div> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"bond\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🤝</span>Invoke Bond</span> </div> </div> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Hina / Lift off": {
+   "skill": "Lift off",
+   "skillType": "Active",
+   "caster": "Hina",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [
+    {
+     "actor": "Hina",
+     "props": [],
+     "aeApplied": [
+      "Flying[]"
+     ],
+     "aeRemoved": []
+    }
+   ],
+   "cardHtml": [
+    "Lift off <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Skill</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"1 IP\">1 IP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.dafTLBUscCDNgq8H\" style=\"color:#3aa0ff\">Hina</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Hina</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\">Spend 1 Inventory Point to gain Flying for three turns.</div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Hina / Protect": {
+   "skill": "Protect",
+   "skillType": "Active",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [],
+   "cardHtml": [
+    "Protect <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Skill</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Hina</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>When another creature is threatened by an <strong>attack, spell</strong> or <strong>other danger</strong>, you may take their place (any Checks that are part of the danger will be performed against you; you may declare the use of this Skill <strong>before or after</strong> the Checks have been made). If the danger already affected you, it affects you <strong>twice</strong> (resolve both instances separately); you also cannot protect multiple creatures from the same danger. If you use this Skill during a conflict, you cannot use it again until the start of your next turn.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Hina / Starfall": {
+   "skill": "Starfall",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [],
+   "cardHtml": [
+    "Starfall <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Range</span><span class=\"dot\">•</span><span class=\"bullet\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i>Arcane</span><span class=\"dot\">•</span><span class=\"bullet\">Spell</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"30 MP\">30 MP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.dafTLBUscCDNgq8H\" style=\"color:#3aa0ff\">Hina</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Hina</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p><strong>Roulette Enemy.</strong> Summon 3 comets to fall on random enemies (repeats allowed). Each deals <strong>【HR+15】 <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.IQaK3IzvfFp4I1xB\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Holy.png\" alt=\"\"><span class=\"fud-kw-label\">Light</span></span> damage</strong>.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Hina / Starfall Comet": {
+   "skill": "Starfall Comet",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "light",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 21,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ],
+   "writes": [
+    {
+     "actor": "EXFURSION Party",
+     "props": [],
+     "aeApplied": [],
+     "aeRemoved": []
+    },
+    {
+     "actor": "Test Target Enemy",
+     "props": [
+      "system.props.current_hp=9978"
+     ],
+     "aeApplied": [],
+     "aeRemoved": []
+    }
+   ],
+   "cardHtml": [
+    "Starfall Comet <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Range</span><span class=\"dot\">•</span><span class=\"bullet\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i>Arcane</span><span class=\"dot\">•</span><span class=\"bullet\">Spell</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"0\">0</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Hina</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;INS:&lt;/b&gt; 1d12 → &lt;b&gt;5&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;INS:&lt;/b&gt; 1d12 → &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Check Bonus:&lt;/b&gt; +6&lt;/p&gt;&lt;ul style=&quot;margin:2px 0 0 14px; padding:0; opacity:0.85; font-size:11.5px;&quot;&gt;&lt;li&gt;&lt;b&gt;Magical Artillery:&lt;/b&gt; +6&lt;/li&gt;&lt;/ul&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Total:&lt;/b&gt; 5 + 6 + 6 = &lt;b&gt;17&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR (High Roll):&lt;/b&gt; max(5, 6) = &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.75;&quot;&gt;Compares vs target&#39;s &lt;b&gt;Magic Defense&lt;/b&gt;.&lt;/p&gt;\" data-fud-equip-desc-name=\"Accuracy Check\"> <legend>Accuracy Check</legend> <div class=\"fud-bf-acc \"> <div class=\"fud-bf-acc-row\"> <span class=\"die-block\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i> <span class=\"attr\">INS</span> <span class=\"die-size\">d12</span> <span class=\"die-result\">5</span></span> <span class=\"plus\">+</span> <span class=\"die-block\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i> <span class=\"attr\">INS</span> <span class=\"die-size\">d12</span> <span class=\"die-result\">6</span></span> <span class=\"bonus\">+6</span> <span class=\"spacer\"></span> <span class=\"total-wrap\"> <img class=\"strike-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/UI/fu-icon/magical_icon.png\" alt=\"Magic\" title=\"Magic\"> <span class=\"total\">17</span> </span> </div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-dmg\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Element:&lt;/b&gt; Light&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Base bonus:&lt;/b&gt; +15&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR:&lt;/b&gt; 6 (from accuracy roll)&lt;/p&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Final on hit:&lt;/b&gt; 6 + 15 = &lt;b&gt;21&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-top:6px; opacity:0.85;&quot;&gt;&lt;b&gt;Per-target affinity:&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;VU = ×2 &amp;nbsp;•&amp;nbsp; RS = ×0.5 (round up)&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;IM = 0 &amp;nbsp;•&amp;nbsp; AB = heals target&lt;/p&gt;\" data-fud-equip-desc-name=\"Damage Preview\"> <legend>Damage</legend> <div class=\"fud-bf-dmg-row\"> <div class=\"fud-bf-dmg-number\" style=\"color:#a38b50; text-shadow: 0 0 15px rgba(163,139,80,0.45);\"> 21<span class=\"hr-pill\">+HR</span> </div> <div class=\"fud-bf-dmg-element\" style=\"color:#a38b50;\">Light</div> </div> </fieldset> <fieldset class=\"fud-bf-section\"> <legend>Result</legend> <div class=\"fud-bf-target-list\"><div class=\"fud-bf-target-row is-unstudied\" data-fud-target-token-uuid=\"Scene.*.Token.*\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" data-fud-target-slot-index=\"0\" data-fud-equip-desc=\"&lt;p&gt;Study this target to identity tier (≥7) to reveal defense, damage, and affinity.&lt;/p&gt;\" data-fud-equip-desc-name=\"Test Target Enemy\"> <span class=\"t-name\">Test Target Enemy</span> <span class=\"t-def\">MDEF ???</span> <span class=\"t-result\">???</span> </div></div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>A single Starfall comet. Deals <strong>【HR+15】 <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.IQaK3IzvfFp4I1xB\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Holy.png\" alt=\"\"><span class=\"fud-kw-label\">Light</span></span> damage</strong> to one random enemy.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"trait\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🎭</span>Invoke Trait</span> </div> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"bond\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🤝</span>Invoke Bond</span> </div> </div> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Hina / Stop": {
+   "skill": "Stop",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ],
+   "writes": [],
+   "cardHtml": [
+    "Stop <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Range</span><span class=\"dot\">•</span><span class=\"bullet\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i>Arcane</span><span class=\"dot\">•</span><span class=\"bullet\">Spell</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"10 MP\">10 MP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Hina</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;INS:&lt;/b&gt; 1d12 → &lt;b&gt;5&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;WLP:&lt;/b&gt; 1d10 → &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Check Bonus:&lt;/b&gt; +6&lt;/p&gt;&lt;ul style=&quot;margin:2px 0 0 14px; padding:0; opacity:0.85; font-size:11.5px;&quot;&gt;&lt;li&gt;&lt;b&gt;Magical Artillery:&lt;/b&gt; +6&lt;/li&gt;&lt;/ul&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Total:&lt;/b&gt; 5 + 6 + 6 = &lt;b&gt;17&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR (High Roll):&lt;/b&gt; max(5, 6) = &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.75;&quot;&gt;Compares vs target&#39;s &lt;b&gt;Magic Defense&lt;/b&gt;.&lt;/p&gt;\" data-fud-equip-desc-name=\"Accuracy Check\"> <legend>Accuracy Check</legend> <div class=\"fud-bf-acc \"> <div class=\"fud-bf-acc-row\"> <span class=\"die-block\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i> <span class=\"attr\">INS</span> <span class=\"die-size\">d12</span> <span class=\"die-result\">5</span></span> <span class=\"plus\">+</span> <span class=\"die-block\"><i class=\"fa-solid fa-comment-dots\" aria-hidden=\"true\"></i> <span class=\"attr\">WLP</span> <span class=\"die-size\">d10</span> <span class=\"die-result\">6</span></span> <span class=\"bonus\">+6</span> <span class=\"spacer\"></span> <span class=\"total-wrap\"> <img class=\"strike-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/UI/fu-icon/magical_icon.png\" alt=\"Magic\" title=\"Magic\"> <span class=\"total\">17</span> </span> </div> </div> </fieldset> <fieldset class=\"fud-bf-section\"> <legend>Result</legend> <div class=\"fud-bf-target-list\"><div class=\"fud-bf-target-row is-unstudied\" data-fud-target-token-uuid=\"Scene.*.Token.*\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" data-fud-target-slot-index=\"0\" data-fud-equip-desc=\"&lt;p&gt;Study this target to identity tier (≥7) to reveal defense, damage, and affinity.&lt;/p&gt;\" data-fud-equip-desc-name=\"Test Target Enemy\"> <span class=\"t-name\">Test Target Enemy</span> <span class=\"t-def\">MDEF ???</span> <span class=\"t-result\">???</span> </div></div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>You trap a foe inside a circle of altered time and space. The target will perform one fewer action on their next turn <em>(to a minimum of 0 actions).</em></p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"trait\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🎭</span>Invoke Trait</span> </div> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"bond\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🤝</span>Invoke Bond</span> </div> </div> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Hina / Symptom Shift": {
+   "skill": "Symptom Shift",
+   "skillType": "Spell",
+   "caster": "Hina",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Hina / Zero Power: A Million Possibility": {
+   "skill": "Zero Power: A Million Possibility",
+   "skillType": "Active",
+   "caster": "Hina",
+   "offensive": true,
+   "targets": 1,
+   "ok": false,
+   "reason": "timeout"
+  },
+  "Keren / Birth of the Cruel: Dismiss": {
+   "skill": "Birth of the Cruel: Dismiss",
+   "skillType": "Active",
+   "caster": "Keren",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [],
+   "cardHtml": [
+    "Birth of the Cruel: Dismiss <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Skill</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.gdJZ1L1kv5mjTTMr\" style=\"color:#3aa0ff\">Keren</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Keren</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>Destroy your Minion. You may do this <strong>at any time</strong>; if you want to create a new Minion, you must first destroy the current one.</p><p>When your Minion is destroyed, your <strong>maximum HP and MP</strong> scores <strong>return to normal</strong>.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Keren / Brainwave Discharge": {
+   "skill": "Brainwave Discharge",
+   "skillType": "Active",
+   "caster": "Keren",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [
+    {
+     "actor": "Keren",
+     "props": [],
+     "aeApplied": [
+      "Brainwave Clock[]"
+     ],
+     "aeRemoved": []
+    }
+   ],
+   "cardHtml": [
+    "Brainwave Discharge <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Any</span><span class=\"dot\">•</span><span class=\"bullet\">Skill</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.gdJZ1L1kv5mjTTMr\" style=\"color:#3aa0ff\">Keren</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Keren</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>While your <strong>Brainwave Clock</strong> is full, you may use an action to erase all of its sections. If you do, <strong>choose one option:</strong></p><ul><li>You deal <strong>20</strong> <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.XpKZuGo3VmT0TlTu\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png\" alt=\"\"><span class=\"fud-kw-label\">Physical</span></span> damage to every enemy that is present on the scene</li><li>You deal <strong>30</strong> <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.XpKZuGo3VmT0TlTu\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png\" alt=\"\"><span class=\"fud-kw-label\">Physical</span></span> damage to a single enemy you can see</li></ul><hr contenteditable=\"false\"><p><strong>Skill Enhancement Lv. 20 ― </strong>The damage increases to <strong>30</strong> (all enemies) or <strong>40</strong> (single enemy).</p><p><strong>Skill Enhancement Lv. 40 ― </strong>The damage increases to <strong>40</strong> (all enemies) or <strong>50</strong> (single enemy).</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Keren / Charm": {
+   "skill": "Charm",
+   "skillType": "Spell",
+   "caster": "Keren",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [],
+   "cardHtml": [
+    "Charm <div class=\"fud-bf-subtitle\"><span class=\"bullet\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i>Arcane</span><span class=\"dot\">•</span><span class=\"bullet\">Spell</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"15 MP\">15 MP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.gdJZ1L1kv5mjTTMr\" style=\"color:#3aa0ff\">Keren</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Keren</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>Cast 【✨ Charm】: 15 MP, One Creature. 50% chance to inflict Charmed for 1 Round.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Keren / Create Phantasm: Numen": {
+   "skill": "Create Phantasm: Numen",
+   "skillType": "Spell",
+   "caster": "Keren",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [],
+   "cardHtml": [
+    "Create Phantasm: Numen <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Any</span><span class=\"dot\">•</span><span class=\"bullet\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i>Arcane</span><span class=\"dot\">•</span><span class=\"bullet\">Spell</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"50 MP\">50 MP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Keren</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>You can now have up to <strong>4</strong> active Phantasms, but one of them must necessarily be <strong>Numen</strong>. Also, you cannot have more than one Numen Phantasm active at a time. This Phantasm cannot be used in any of the Illusionist’s Skills or Spells.</p> <p>Numen is bound by the same set of special rules as any other Phantasm, with the following exceptions:</p> <ul> <li>Numen Phantasms cost <strong>50 MP</strong> to cast.</li> <li>Numen’s Phantasmal Vitality equals <strong>twice your base Insight die size plus your level</strong>.</li> <li>Once active, Numen acts at the <strong>end of your turn</strong>: it performs a <strong>free action</strong> — one Attack or Skill of its own — chosen and driven automatically. It holds no turn of its own, and does not benefit from Spells that grant additional actions.</li> </ul> <p>When creating a Numen Phantasm you are prompted to choose one <strong>essence</strong>, which dictates Numen’s damage type for as long as it remains on the field:</p> <ul> <li><strong>Ravana</strong> — <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.XpKZuGo3VmT0TlTu\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png\" alt=\"\"><span class=\"fud-kw-label\">Physical</span></span></li> <li><strong>Asura</strong> — <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.IQaK3IzvfFp4I1xB\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Holy.png\" alt=\"\"><span class=\"fud-kw-label\">Light</span></span></li> <li><strong>Diablos</strong> — <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.vKU8UYT6DBhgOjtE\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Zombie.png\" alt=\"\"><span class=\"fud-kw-label\">Dark</span></span></li> </ul> <p>The target hit by Numen suffers <strong>【HR + 14】</strong> damage.</p> <p>Damage dealt by Numen <strong>ignores Resistances and Immunities</strong>.</p> <p>The <strong>range</strong> of the attack is determined by your current weapon.</p> <hr> <p><em>Numen’s Phantasmal Vitality, MP and damage are all derived from you at the moment of summoning — its own sheet holds only the unscaled baseline.</em></p> <p><strong>Skill Enhancement Lv. 20</strong> ― <em>Numen’s on-hit damage</em> increases to <strong>18</strong>.</p> <p><strong>Skill Enhancement Lv. 40</strong> ― <em>Numen’s on-hit damage</em> increases to <strong>20</strong>.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Keren / Create Phantasm: Strike": {
+   "skill": "Create Phantasm: Strike",
+   "skillType": "Spell",
+   "caster": "Keren",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Keren / Detonate Phantasm": {
+   "skill": "Detonate Phantasm",
+   "skillType": "Spell",
+   "caster": "Keren",
+   "offensive": true,
+   "targets": 1,
+   "ok": false,
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  "Keren / Illusory Shield": {
+   "skill": "Illusory Shield",
+   "skillType": "Spell",
+   "caster": "Keren",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [],
+   "cardHtml": [
+    "Illusory Shield <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Range</span><span class=\"dot\">•</span><span class=\"bullet\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i>Arcane</span><span class=\"dot\">•</span><span class=\"bullet\">Spell</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"10 MP\">10 MP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Keren</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>When another creature is threatened by an 【⚔️ Attack】, 【📕 Spell】, or other danger, command one Phantasm to take their place. Any Checks that are part of the danger will be performed against the Phantasm. The Phantasm shields the creature, suffering an amount of damage corresponding to how much PV it has left, until it shatters. The remaining damage goes to the creature being defended. All status effects related to the attack are nullified.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Keren / Life Transference": {
+   "skill": "Life Transference",
+   "skillType": "Active",
+   "caster": "Keren",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": true,
+   "element": "hp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": null,
+     "affinity": "NE",
+     "grant": 5,
+     "grantRes": "hp"
+    }
+   ],
+   "writes": [],
+   "cardHtml": [
+    "Life Transference <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Any</span><span class=\"dot\">•</span><span class=\"bullet\">Skill</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"X MP\">X MP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Keren</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-dmg\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Restores:&lt;/b&gt; HP&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Base bonus:&lt;/b&gt; +5&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR:&lt;/b&gt; — (no Check rolled)&lt;/p&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Final on hit:&lt;/b&gt; 0 + 5 = &lt;b&gt;5&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-top:6px; opacity:0.85;&quot;&gt;Restores HP — no defense or affinity check.&lt;/p&gt;\" data-fud-equip-desc-name=\"Heal Preview\"> <legend>Heal</legend> <div class=\"fud-bf-dmg-row\"> <div class=\"fud-bf-dmg-number\" style=\"color:#2a8a3a; text-shadow: 0 0 15px rgba(42, 138, 58, 0.45);\"> 5 </div> <div class=\"fud-bf-dmg-element\" style=\"color:#2a8a3a;\">HP</div> </div> </fieldset> <fieldset class=\"fud-bf-section\"> <legend>Result</legend> <div class=\"fud-bf-target-list\"><div class=\"fud-bf-target-row\" data-fud-target-token-uuid=\"Scene.*.Token.*\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" data-fud-target-slot-index=\"0\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Hit Check:&lt;/b&gt; Auto-hit (no Check)&lt;/p&gt;\" data-fud-equip-desc-name=\"Test Target Enemy\"> <span class=\"t-name\">Test Target Enemy</span> <span class=\"t-def\">HP 9999/9999</span> <span class=\"t-result heal\">FULL · NO EFFECT</span> </div></div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-keyword-row\"><span class=\"fud-kw-term is-keyword\" role=\"button\" tabindex=\"0\" data-fud-kw=\"JournalEntry.P7eaFojxra2gTRTG\"><span class=\"fud-kw-bullet\" aria-hidden=\"true\">◆</span><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/GNB/abdomen_tear.png\" alt=\"\"><span class=\"fud-kw-label\">Trigger</span></span></div><div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><ul><li> When you cause one or more enemies to lose Hit Points</li></ul><p><strong>Choose yourself </strong>or an<strong> ally</strong> who is your <strong>focus</strong>: if the chosen creature is in <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"JournalEntry.GJevbCPM8cffm1QM\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/08_DRG/blood_for_blood.png\" alt=\"\"><span class=\"fud-kw-label\">Crisis</span></span>, they recover an amount of <strong>Hit Points</strong> equal to <strong>[5 + (the number of filled sections in your Brainwave Clock, multiplied by 5)]</strong>.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Keren / Multi Shatter": {
+   "skill": "Multi Shatter",
+   "skillType": "Spell",
+   "caster": "Keren",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": {
+    "hr": 6,
+    "crit": false,
+    "fumble": false
+   },
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "physical",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 21,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ],
+   "writes": [
+    {
+     "actor": "EXFURSION Party",
+     "props": [],
+     "aeApplied": [],
+     "aeRemoved": []
+    },
+    {
+     "actor": "Keren",
+     "props": [
+      "system.props.current_mp=101"
+     ],
+     "aeApplied": [],
+     "aeRemoved": []
+    },
+    {
+     "actor": "Test Target Enemy",
+     "props": [
+      "system.props.current_hp=9978"
+     ],
+     "aeApplied": [],
+     "aeRemoved": []
+    }
+   ],
+   "cardHtml": [
+    "Multi Shatter <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Range</span><span class=\"dot\">•</span><span class=\"bullet\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i>Arcane</span><span class=\"dot\">•</span><span class=\"bullet\">Spell</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"10 MP\">10 MP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Keren</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;INS:&lt;/b&gt; 1d12 → &lt;b&gt;5&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;WLP:&lt;/b&gt; 1d10 → &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Check Bonus:&lt;/b&gt; —&lt;/p&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Total:&lt;/b&gt; 5 + 6 = &lt;b&gt;11&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR (High Roll):&lt;/b&gt; max(5, 6) = &lt;b&gt;6&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.75;&quot;&gt;Compares vs target&#39;s &lt;b&gt;Magic Defense&lt;/b&gt;.&lt;/p&gt;\" data-fud-equip-desc-name=\"Accuracy Check\"> <legend>Accuracy Check</legend> <div class=\"fud-bf-acc \"> <div class=\"fud-bf-acc-row\"> <span class=\"die-block\"><i class=\"fa-solid fa-book\" aria-hidden=\"true\"></i> <span class=\"attr\">INS</span> <span class=\"die-size\">d12</span> <span class=\"die-result\">5</span></span> <span class=\"plus\">+</span> <span class=\"die-block\"><i class=\"fa-solid fa-comment-dots\" aria-hidden=\"true\"></i> <span class=\"attr\">WLP</span> <span class=\"die-size\">d10</span> <span class=\"die-result\">6</span></span> <span class=\"spacer\"></span> <span class=\"total-wrap\"> <img class=\"strike-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/UI/fu-icon/magical_icon.png\" alt=\"Magic\" title=\"Magic\"> <span class=\"total\">11</span> </span> </div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-dmg\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Element:&lt;/b&gt; Physical&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Base bonus:&lt;/b&gt; +15&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR:&lt;/b&gt; 6 (from accuracy roll)&lt;/p&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Final on hit:&lt;/b&gt; 6 + 15 = &lt;b&gt;21&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-top:6px; opacity:0.85;&quot;&gt;&lt;b&gt;Per-target affinity:&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;VU = ×2 &amp;nbsp;•&amp;nbsp; RS = ×0.5 (round up)&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;IM = 0 &amp;nbsp;•&amp;nbsp; AB = heals target&lt;/p&gt;\" data-fud-equip-desc-name=\"Damage Preview\"> <legend>Damage</legend> <div class=\"fud-bf-dmg-row\"> <div class=\"fud-bf-dmg-number\" style=\"color:#1b1b1b; text-shadow: 0 0 15px rgba(0,0,0,0.28);\"> 21<span class=\"hr-pill\">+HR</span> </div> <div class=\"fud-bf-dmg-element\" style=\"color:#1b1b1b;\">Physical</div> </div> </fieldset> <fieldset class=\"fud-bf-section\"> <legend>Result</legend> <div class=\"fud-bf-target-list\"><div class=\"fud-bf-target-row is-unstudied\" data-fud-target-token-uuid=\"Scene.*.Token.*\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" data-fud-target-slot-index=\"0\" data-fud-equip-desc=\"&lt;p&gt;Study this target to identity tier (≥7) to reveal defense, damage, and affinity.&lt;/p&gt;\" data-fud-equip-desc-name=\"Test Target Enemy\"> <span class=\"t-name\">Test Target Enemy</span> <span class=\"t-def\">MDEF ???</span> <span class=\"t-result\">???</span> </div></div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>You command all your Phantasms to charge at your foes, shattering on impact. They all share the same Magic Check. Each affected target suffers <strong>[HR + 15]</strong> <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.XpKZuGo3VmT0TlTu\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png\" alt=\"\"><span class=\"fud-kw-label\">Physical</span></span> damage. You can target <strong>only one foe per Phantasm</strong>. Damage dealt by this spell <strong>ignores Resistances</strong>.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"trait\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🎭</span>Invoke Trait</span> </div> <div class=\"fud-btn fud-btn-invoke\" data-fud-invoke=\"bond\" role=\"button\" tabindex=\"0\"> <span class=\"btn-label\"><span class=\"icon\">🤝</span>Invoke Bond</span> </div> </div> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Keren / Nocebo Weapon": {
+   "skill": "Nocebo Weapon",
+   "skillType": "Spell",
+   "caster": "Keren",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Keren / See you later": {
+   "skill": "See you later",
+   "skillType": "Active",
+   "caster": "Keren",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [],
+   "cardHtml": [
+    "See you later <div class=\"fud-bf-subtitle\"><span class=\"bullet\">-</span><span class=\"dot\">•</span><span class=\"bullet\">Skill</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.gdJZ1L1kv5mjTTMr\" style=\"color:#3aa0ff\">Keren</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Keren</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>Spend <strong>1 Fabula Point</strong> to leave the current conflict. You slip away from this scene and play resumes without you — you reappear in a later scene, as the story dictates.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Keren / Soul Steal": {
+   "skill": "Soul Steal",
+   "skillType": "Active",
+   "caster": "Keren",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Keren / Zero Power: Last Den of Cinders": {
+   "skill": "Zero Power: Last Den of Cinders",
+   "skillType": "Active",
+   "caster": "Keren",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": true,
+   "hasHealing": false,
+   "element": "fire",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 20,
+     "resource": "hp",
+     "affinity": "NE",
+     "grant": null,
+     "grantRes": null
+    }
+   ],
+   "writes": [
+    {
+     "actor": "EXFURSION Party",
+     "props": [],
+     "aeApplied": [],
+     "aeRemoved": []
+    },
+    {
+     "actor": "Keren",
+     "props": [
+      "system.props.zero_power_value=0"
+     ],
+     "aeApplied": [],
+     "aeRemoved": []
+    },
+    {
+     "actor": "Test Target Enemy",
+     "props": [
+      "system.props.current_hp=9979"
+     ],
+     "aeApplied": [],
+     "aeRemoved": []
+    }
+   ],
+   "cardHtml": [
+    "Zero Power: Last Den of Cinders <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Any</span><span class=\"dot\">•</span><span class=\"bullet\">Skill</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Keren</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-dmg\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Element:&lt;/b&gt; Fire&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Base bonus:&lt;/b&gt; +20&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR:&lt;/b&gt; — (no Check rolled)&lt;/p&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Final on hit:&lt;/b&gt; 0 + 20 = &lt;b&gt;20&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-top:6px; opacity:0.85;&quot;&gt;&lt;b&gt;Per-target affinity:&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;VU = ×2 &amp;nbsp;•&amp;nbsp; RS = ×0.5 (round up)&lt;/p&gt;&lt;p style=&quot;opacity:0.85;&quot;&gt;IM = 0 &amp;nbsp;•&amp;nbsp; AB = heals target&lt;/p&gt;\" data-fud-equip-desc-name=\"Damage Preview\"> <legend>Damage</legend> <div class=\"fud-bf-dmg-row\"> <div class=\"fud-bf-dmg-number\" style=\"color:#e25822; text-shadow: 0 0 15px rgba(226,88,34,0.45);\"> 20 </div> <div class=\"fud-bf-dmg-element\" style=\"color:#e25822;\">Fire</div> </div> </fieldset> <fieldset class=\"fud-bf-section\"> <legend>Result</legend> <div class=\"fud-bf-target-list\"><div class=\"fud-bf-target-row is-unstudied\" data-fud-target-token-uuid=\"Scene.*.Token.*\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" data-fud-target-slot-index=\"0\" data-fud-equip-desc=\"&lt;p&gt;Study this target to identity tier (≥7) to reveal defense, damage, and affinity.&lt;/p&gt;\" data-fud-equip-desc-name=\"Test Target Enemy\"> <span class=\"t-name\">Test Target Enemy</span> <span class=\"t-def\">DEF ???</span> <span class=\"t-result\">???</span> </div></div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>Shatter all your Phantasms (including the Numen). Deal <strong>(shattered Phantasms x 20) + 20</strong> <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.0sFCVCoM6FRrQP2f\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Burn.png\" alt=\"\"><span class=\"fud-kw-label\">Fire</span></span> damage to all enemies.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Zarg / Angel Dance": {
+   "skill": "Angel Dance",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Zarg / Barrage": {
+   "skill": "Barrage",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [],
+   "cardHtml": [
+    "Barrage <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Skill</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"10 MP\">10 MP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Zarg</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-keyword-row\"><span class=\"fud-kw-term is-keyword\" role=\"button\" tabindex=\"0\" data-fud-kw=\"JournalEntry.Gm3upxgpUVoLSK5u\"><span class=\"fud-kw-bullet\" aria-hidden=\"true\">◆</span><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/10_SAM/way_of_the_samurai.png\" alt=\"\"><span class=\"fud-kw-label\">Multi</span></span></div><div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>When you perform a <strong>ranged attack</strong>, you may spend <strong>10 Mind Points</strong> to <strong>choose</strong> one option:</p><ul><li><p>The attack gains <strong><span style=\"text-decoration: underline;\">&nbsp;2</span></strong></p></li><li><p> Increase the attack's multi property by one, up to a maximum of <strong><span style=\"text-decoration: underline;\">&nbsp;3</span></strong></p></li></ul></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Zarg / Bat Dance": {
+   "skill": "Bat Dance",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Zarg / Gadgets": {
+   "skill": "Gadgets",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "offensive": true,
+   "targets": 1,
+   "ok": false,
+   "reason": "compute_refused:TARGET_BACK"
+  },
+  "Zarg / Golem Dance": {
+   "skill": "Golem Dance",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Zarg / Griffin Dance": {
+   "skill": "Griffin Dance",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Zarg / High Speed": {
+   "skill": "High Speed",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [],
+   "cardHtml": [
+    "High Speed <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Any</span><span class=\"dot\">•</span><span class=\"bullet\">Skill</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"10 MP\">10 MP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Zarg</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>At the start of a conflict, you may spend 10 Mind Points. If you do, <strong>choose one option</strong> and apply it before the start of the first round:</p><ul><li><p>Perform a <strong>free attack</strong> with a weapon you have equipped</p></li><li><p>Perform a <strong>【🚫Hinder】</strong> or <strong>【❗️Objective】</strong> action. You also gain a bonus equal to <strong>【SL】</strong> to all Checks you perform as part of the chosen option.</p></li></ul></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Zarg / Lion Dance": {
+   "skill": "Lion Dance",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [],
+   "cardHtml": [
+    "Lion Dance <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Any</span><span class=\"dot\">•</span><span class=\"bullet\">Skill</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Zarg</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>You immediately recover from a single status effect of your choice.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Zarg / Myrmidon Dance": {
+   "skill": "Myrmidon Dance",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Zarg / Ouroboros Dance": {
+   "skill": "Ouroboros Dance",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [],
+   "cardHtml": [
+    "Ouroboros Dance <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Any</span><span class=\"dot\">•</span><span class=\"bullet\">Skill</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Zarg</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>Choose one ally you can see who has yet to take a turn during this round. That ally may take their turn immediately after yours during this round.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Zarg / See you later": {
+   "skill": "See you later",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [
+    {
+     "actor": "Zarg",
+     "props": [
+      "system.props.fabula_point=3"
+     ],
+     "aeApplied": [],
+     "aeRemoved": []
+    }
+   ],
+   "cardHtml": [
+    "See you later <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Any</span><span class=\"dot\">•</span><span class=\"bullet\">Skill</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"1 Fabula Point\">1 Fabula Point</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Zarg</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>You may use an action and spend <strong>1 Fabula Point</strong> to vanish from the current scene, reappearing whenever you want during a <strong>different</strong> scene in which another Player Character is present. Describe how you escaped and miraculously got here!</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Zarg / Siren Trap": {
+   "skill": "Siren Trap",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [],
+   "cardHtml": [
+    "Siren Trap <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Any</span><span class=\"dot\">•</span><span class=\"bullet\">Skill</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"1 IP\">1 IP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.Z4CFy505cD3nzl1W\" style=\"color:#3aa0ff\">Zarg</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Zarg</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p><strong>Requirement:</strong> Set Trap (SL 1+)</p><p>Once triggered, this trap emits a loud noise designed to distract foes. In non-conflict scenes, you set a timer that expires at your discretion, and affected creatures must immediately move toward the source of the sound upon activation. In combat, there is no timer, and affected creatures suffer <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"JournalEntry.3nmUvPei3zrOJkEt\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGICDEFENSE%20DOWN.png\" alt=\"\"><span class=\"fud-kw-label\">Dazed</span></span>.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Zarg / Soul Steal": {
+   "skill": "Soul Steal",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "ok": false,
+   "reason": "skipped"
+  },
+  "Zarg / Tripwire Trap": {
+   "skill": "Tripwire Trap",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "offensive": false,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [],
+   "cardHtml": [
+    "Tripwire Trap <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Any</span><span class=\"dot\">•</span><span class=\"bullet\">Skill</span><span class=\"dot\">•</span><span class=\"bullet fud-bf-cost-bullet\" data-fud-base-cost=\"1 IP\">1 IP</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.Z4CFy505cD3nzl1W\" style=\"color:#3aa0ff\">Zarg</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Zarg</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p><strong>Requirement:</strong> Set Trap (SL 1+)</p><p>You set up a simple wire attached to two points to detect movement and trip your target. In non-conflict scenes, this trap alerts allies of incoming enemies. In combat, the target suffers 【 HR + 10 】 <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"Item.XpKZuGo3VmT0TlTu\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Bludgeon.png\" alt=\"\"><span class=\"fud-kw-label\">Physical</span></span> damage. Describe your contraption and the sound it makes!</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Zarg / Unicorn Dance": {
+   "skill": "Unicorn Dance",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": true,
+   "element": "hp",
+   "perTarget": [
+    {
+     "hit": true,
+     "damage": 0,
+     "resource": null,
+     "affinity": "NE",
+     "grant": 22,
+     "grantRes": "hp"
+    }
+   ],
+   "writes": [],
+   "cardHtml": [
+    "Unicorn Dance <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Any</span><span class=\"dot\">•</span><span class=\"bullet\">Skill</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Zarg</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-dmg\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Restores:&lt;/b&gt; HP&lt;/p&gt;&lt;p style=&quot;margin-bottom:0;&quot;&gt;&lt;b&gt;Base bonus:&lt;/b&gt; +22&lt;/p&gt;&lt;p&gt;&lt;b&gt;HR:&lt;/b&gt; — (no Check rolled)&lt;/p&gt;&lt;p style=&quot;margin-top:6px;&quot;&gt;&lt;b&gt;Final on hit:&lt;/b&gt; 0 + 22 = &lt;b&gt;22&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin-top:6px; opacity:0.85;&quot;&gt;Restores HP — no defense or affinity check.&lt;/p&gt;\" data-fud-equip-desc-name=\"Heal Preview\"> <legend>Heal</legend> <div class=\"fud-bf-dmg-row\"> <div class=\"fud-bf-dmg-number\" style=\"color:#2a8a3a; text-shadow: 0 0 15px rgba(42, 138, 58, 0.45);\"> 22 </div> <div class=\"fud-bf-dmg-element\" style=\"color:#2a8a3a;\">HP</div> </div> </fieldset> <fieldset class=\"fud-bf-section\"> <legend>Result</legend> <div class=\"fud-bf-target-list\"><div class=\"fud-bf-target-row\" data-fud-target-token-uuid=\"Scene.*.Token.*\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" data-fud-target-slot-index=\"0\" data-fud-equip-desc=\"&lt;p&gt;&lt;b&gt;Hit Check:&lt;/b&gt; Auto-hit (no Check)&lt;/p&gt;\" data-fud-equip-desc-name=\"Test Target Enemy\"> <span class=\"t-name\">Test Target Enemy</span> <span class=\"t-def\">HP 9999/9999</span> <span class=\"t-result heal\">FULL · NO EFFECT</span> </div></div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>Choose an ally that is able to see you and has a Bond towards you: you and that ally both recover an amount of Hit Points equal to your current <strong>Dexterity</strong> die size.</p> <hr> <p><strong>Skill Enhancement Lv. 20 ― </strong>The restored amount increases by 5 Hit Points.</p> <p><strong>Skill Enhancement Lv. 40 ― </strong>The restored amount increases by 10 Hit Points.</p></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Zarg / Warning Shot": {
+   "skill": "Warning Shot",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "offensive": true,
+   "targets": 1,
+   "ok": true,
+   "roll": null,
+   "hasDamage": false,
+   "hasHealing": false,
+   "element": "",
+   "perTarget": [],
+   "writes": [],
+   "cardHtml": [
+    "Warning Shot <div class=\"fud-bf-subtitle\"><span class=\"bullet\">Skill</span></div> [object Object] <fieldset class=\"fud-bf-section\"> <legend>Engagement</legend> <div class=\"fud-bf-attacker-row\"> <div class=\"left is-targets\"><span class=\"fud-bf-role-tag\">Target</span><span class=\"t-name\" data-fud-target-actor-uuid=\"Actor.WJnlTHuNJaILbnrc\" style=\"color:#e36a6a\">Test Target Enemy</span></div> <div class=\"mid\"><i class=\"fa-solid fa-swords\"></i></div> <div class=\"right is-attacker\"><span class=\"fud-bf-role-tag\">Attacker</span><span class=\"t-name\">Zarg</span></div> </div> </fieldset> <fieldset class=\"fud-bf-section fud-bf-effect\"> <legend>Effect</legend> <div class=\"fud-bf-effect-body\" style=\"font-size:11.5px; line-height:1.5; opacity:0.92;\"><p>When you <strong>hit</strong> one or more targets with a <strong>ranged attack</strong> that would deal damage, you may have the attack deal no damage. If you do, <strong>choose one option:</strong></p><ul><li><p>Inflict <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"JournalEntry.ImFKpNNGjstom7Q9\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MAGIC%20ATTACK%20DOWN.png\" alt=\"\"><span class=\"fud-kw-label\">Shaken</span></span> on each target hit by the attack</p></li><li><p>Inflict <span class=\"fud-kw-term is-status\" role=\"button\" tabindex=\"0\" data-fud-kw=\"JournalEntry.HHmYmj7xffQMqtzT\"><img class=\"fud-kw-term-icon\" src=\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEF%20DOWN.png\" alt=\"\"><span class=\"fud-kw-label\">Slow</span></span> on each target hit by the attack</p></li><li><p>Each target hit by the attack loses <strong>【SL × 10】</strong> Mind Points. Describe your maneuver!</p></li></ul></div> </fieldset> <div class=\"fud-bf-btn-row\"> <div class=\"fud-btn fud-btn-confirm\" data-fud-action=\"confirm\" role=\"button\" tabindex=\"0\">Confirm</div> </div>"
+   ]
+  },
+  "Zarg / Zero Power: Meteor Shower": {
+   "skill": "Zero Power: Meteor Shower",
+   "skillType": "Active",
+   "caster": "Zarg",
+   "ok": false,
+   "reason": "skipped"
+  }
+ },
+ "code": "real engine (battle lab)",
+ "labBuiltAt": "2026-11-03T04:34:05.057Z",
+ "capturedAt": "2026-11-03T04:39:38.966Z"
+}

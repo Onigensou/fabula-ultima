@@ -54,6 +54,30 @@ const skipNames = Array.isArray(opts.skip) ? opts.skip : [];
 const force = opts.force || { rA: 5, rB: 6 };
 const override = opts.override || { SL: 5, CHAR_LEVEL: 50, BOND_COUNT: 4, BOND_STRENGTH: 4 };
 
+// `force` pins the dice, but not every random choice goes through the dice: an
+// `ae_name_pool` row (Draconic Roar's "a random Basic Debuff") picks with
+// Math.random. Unpinned, that skill's simulate fingerprint flips between runs of the
+// SAME engine — measured 2026-11-03, the real engine wrote Dazed where the runner wrote
+// Shaken, the only diff in 66. `OPTS.seed` (a number) replaces Math.random with a PRNG
+// seeded per skill key for the duration of each harness call, so the pick is a function
+// of (seed, key). Opt-in: goldens captured without it stay valid.
+const seedBase = Number.isFinite(Number(opts.seed)) && opts.seed !== null && opts.seed !== undefined ? Number(opts.seed) >>> 0 : null;
+function seedRandom(key) {
+  if (seedBase === null) return () => {};
+  let h = seedBase ^ 0x9e3779b9;
+  for (const ch of String(key)) h = Math.imul(h ^ ch.codePointAt(0), 0x01000193) >>> 0;
+  let s = h >>> 0;
+  const real = Math.random;
+  Math.random = () => {   // mulberry32
+    s = (s + 0x6d2b79f5) >>> 0;
+    let t = s;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  return () => { Math.random = real; };
+}
+
 const api = globalThis.FUCompanion?.api?.test;
 if (!api?.runDirectorSkillCompute) {
   return { ok: false, error: "director test harness not registered (FUCompanion.api.test missing)" };
@@ -157,9 +181,13 @@ for (const { cTok, skill } of tasks) {
   const nk = `${cTok.actor.name} / ${skill.name}`;
   nameCounts[nk] = (nameCounts[nk] || 0) + 1;
 }
-const window = pageSize ? tasks.slice(offset, offset + pageSize) : tasks.slice(offset);
+// OPTS.onlySkills: names or uuids, for testing one skill (the warm runner). Applied after the
+// keys are fixed above, so a skill keeps the key it has in a whole-catalog run.
+const onlySkills = Array.isArray(opts.onlySkills) && opts.onlySkills.length ? new Set(opts.onlySkills) : null;
+const selected = onlySkills ? tasks.filter(({ cTok, skill }) => onlySkills.has(skill.name) || onlySkills.has(skill.uuid) || onlySkills.has(`${cTok.actor.name} / ${skill.name}`)) : tasks;
+const window = pageSize ? selected.slice(offset, offset + pageSize) : selected.slice(offset);
 const nextOffset = offset + window.length;
-const hasMore = nextOffset < total;
+const hasMore = nextOffset < selected.length;
 
 function fingerprint(skill, actor, offensive, targets, r) {
   const p = skill.system?.props || {};
@@ -232,7 +260,9 @@ const runFn = mode === "simulate" ? api.runDirectorSkillSimulate : api.runDirect
 // `--no-deps-reuse` restores the old per-skill bust — an escape hatch if module
 // reuse is ever suspected of leaking state between skills, and the control arm
 // for A/B-ing the two paths against one golden.
-const depsToken = opts.noDepsReuse ? null : `sweep-${Date.now()}-${offset}`;
+// OPTS.depsToken: a page that stays open (the warm runner, which reloads on any code change)
+// keeps one token for its life, so only its first call pays the re-import.
+const depsToken = opts.noDepsReuse ? null : (opts.depsToken ?? `sweep-${Date.now()}-${offset}`);
 
 for (const { cTok, skill } of window) {
   const actor = cTok.actor;
@@ -258,10 +288,14 @@ for (const { cTok, skill } of window) {
   const offensive = isOffensive(p);
   const targets = offensive ? [enemyTarget.uuid] : [cTok.uuid];
   const t0 = Date.now();
-  const r = await guardedRun(runFn, {
-    skillUuid: skill.uuid, casterTokenUuid: cTok.uuid, targetTokenUuids: targets,
-    force, override, depsToken, ...(Array.isArray(opts.picks) ? { picks: opts.picks } : {}),
-  });
+  const unseed = seedRandom(key);
+  let r;
+  try {
+    r = await guardedRun(runFn, {
+      skillUuid: skill.uuid, casterTokenUuid: cTok.uuid, targetTokenUuids: targets,
+      force, override, depsToken, ...(Array.isArray(opts.picks) ? { picks: opts.picks } : {}),
+    });
+  } finally { unseed(); }
   timings.push({ key, ms: Date.now() - t0 });
   skills[key] = fingerprint(skill, actor, offensive, targets, r);
   if (!r.ok) errors.push({ key, reason: r.reason || "not_ok" });
@@ -288,6 +322,7 @@ return {
   engineVersion: game.modules.get("fabula-ultima-companion")?.version || null,
   override,
   force,
+  seed: seedBase,
   errors,
   skills,
 };

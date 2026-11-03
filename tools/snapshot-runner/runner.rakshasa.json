@@ -1,0 +1,32 @@
+{
+ "_comment": "Rakshasa vs the bench dummy on Training Ground (Rakshasa from its prototype token).",
+ "scenes": [
+  "Training Ground"
+ ],
+ "viewScene": "Training Ground",
+ "actors": {
+  "types": [
+   "_template"
+  ],
+  "flags": [
+   "isField"
+  ],
+  "folders": [],
+  "names": [
+   "Test Caster",
+   "Test Target Ally",
+   "Test Target Enemy"
+  ]
+ },
+ "place": {
+  "scene": "Training Ground",
+  "from": "Regression Bench",
+  "actors": [
+   "Rakshasa",
+   "Test Target Enemy",
+   "Keren",
+   "Blanche"
+  ]
+ },
+ "items": "referenced"
+}

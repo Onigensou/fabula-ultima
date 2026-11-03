@@ -1,0 +1,16 @@
+{
+  "name": "fvtt-playwright",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Playwright control-plane harness for driving Foundry VTT (Fabula Ultima) gameplay tests.",
+  "scripts": {
+    "postinstall": "node scripts/patch-transport.mjs",
+    "patch": "node scripts/patch-transport.mjs",
+    "smoke": "node scripts/smoke.mjs",
+    "repl": "node scripts/repl.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0"
+  }
+}

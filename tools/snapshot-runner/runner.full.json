@@ -1,0 +1,1 @@
+{ "_comment": "The whole world (every actor, scene and item) for whole-world parity checks. Set sourceWorld to read another world folder.", "scenes": "*", "viewScene": "Training Ground", "actors": { "all": true } }

@@ -80,6 +80,8 @@ function optsFrom(a) {
   // (1212 docs) and their behavior by the equip witness.
   if (a["include-types"]) o.includeTypes = String(a["include-types"]).split(",").map((s) => s.trim()).filter(Boolean);
   if (a.forceSimulate) o.forceSimulate = true;
+  // pin Math.random per skill (collect.js seedRandom): random pools the forced dice do not cover
+  if (a.seed !== undefined) o.seed = Number(a.seed);
   if (a["no-deps-reuse"]) o.noDepsReuse = true;
   // Per-skill guard (collect.js, default 12000). Simulate re-imports the ~660 KB
   // skill-effects.js several times per skill (engine `?cb=` imports), which costs
@@ -157,6 +159,138 @@ async function collect(opts, { pageSize, onProgress } = {}) {
     override: head.override, force: head.force, tookMs: 0,
     slowest: merged.slowest.slice(0, 8), errors: merged.errors, skills: merged.skills,
   };
+}
+
+// ── --runner: the same collector, game CLOSED ──────────────────────────────
+// tools/snapshot-runner runs the real Foundry client + CSB + our module with the
+// server faked and the world read from the LevelDB on disk (a temp copy — the
+// world's files are never opened). The bench is built IN that page with this
+// tool's own build-bench.js, exactly as the live gate builds it, so a bench torn
+// down on disk does not matter. Referee: 487/487 identical to the real engine's
+// capture AND to goldens/skills.json (2026-11-03), ~45 s for the whole catalog.
+// It has its own snapshot dir + port, so a session using the runner by hand is
+// never disturbed. Nothing it does reaches the world.
+const RUNNER = path.resolve(ROOT, "..", "snapshot-runner");
+const PLAYWRIGHT = path.resolve(ROOT, "..", "fvtt-playwright");
+const RUNNER_SNAP = "snap-regression";
+const RUNNER_PORT = Number(process.env.SKILL_REGRESSION_RUNNER_PORT || 30103);
+function runnerAvailable() {
+  return fs.existsSync(path.join(RUNNER, "bin", "run.mjs")) && fs.existsSync(path.join(RUNNER, "runner.regression.json"))
+    && fs.existsSync(path.join(PLAYWRIGHT, "node_modules"))
+    && (!!process.env.FVTT_APP || fs.existsSync(path.join(PLAYWRIGHT, "config.local.json")));
+}
+// ── the WARM runner (snapshot-runner/bin/warm.mjs): one page that stays open ──
+// A cold run boots a fresh page and builds the bench every time (~40 s). The warm
+// runner keeps both, resets the world between checks, re-reads world data that
+// changed on disk and reloads the page itself when module code changed, so a check
+// costs ~1 s, or ~5 s / ~30 s after a data / code edit. The first cold run starts one
+// in the background (it leaves after WARM_IDLE_MIN unused minutes); later checks use
+// it. It runs WITHOUT time warp: the collector's per-skill guard is a timer, and a
+// warped 12 s guard (0.6 s) could time a slow skill out and report false drift.
+// SKILL_REGRESSION_WARM=0 turns it off (every check is a cold run again).
+const WARM_CTL = RUNNER_PORT + 1000;
+const WARM_IDLE_MIN = Number(process.env.SKILL_REGRESSION_WARM_IDLE_MIN || 30);
+const warmEnabled = () => process.env.SKILL_REGRESSION_WARM !== "0";
+async function warmCall(body, timeoutMs) {
+  const r = await fetch(`http://localhost:${WARM_CTL}/`, { method: "POST", body: JSON.stringify(body), headers: { "content-type": "application/json" }, signal: AbortSignal.timeout(timeoutMs) });
+  return r.json();
+}
+// Status waits for a daemon that is still booting (its first request waits for the boot).
+async function warmStatus() { try { const r = await warmCall({ cmd: "status" }, 90 * 1000); return r.ok ? r.result : null; } catch { return null; } }
+function startWarm() {
+  const { spawn } = require("child_process");
+  const log = fs.openSync(path.join(ROOT, ".state", "warm-runner.log"), "a");
+  const child = spawn(process.execPath, [path.join(RUNNER, "bin", "warm.mjs"), "start", "--snapshot", RUNNER_SNAP, "--port", String(RUNNER_PORT),
+    "--profile", "regression", "--bench", "--canvas", "off", "--viewport", "800x450", "--idle-exit", String(WARM_IDLE_MIN)],
+  { cwd: PLAYWRIGHT, detached: true, stdio: ["ignore", log, log], windowsHide: true });
+  child.unref();
+  return child.pid;
+}
+const shapeResult = (r) => ({
+  ok: true, mode: r.mode, scene: r.scene, casters: r.casters, enemyTarget: r.enemyTarget, total: r.total, count: r.count,
+  errorCount: r.errorCount, engineVersion: r.engineVersion, override: r.override, force: r.force, tookMs: 0,
+  slowest: (r.slowest || []).slice(0, 8), errors: r.errors || [], skills: r.skills, engine: "runner",
+});
+function checkKeys(r) {
+  const keyCount = Object.keys(r.skills || {}).length;
+  if (keyCount !== r.count) throw new Error(`collector key collision: ran ${r.count} task(s) but produced ${keyCount} key(s); do NOT trust this run`);
+}
+
+async function collectRunner(opts, { full = false, say = (s) => process.stderr.write(s + "\n") } = {}) {
+  const { spawnSync } = require("child_process");
+  if (!runnerAvailable()) throw new Error(`snapshot-runner not found at ${RUNNER} (or not set up: see its README, "Setup on a new machine")`);
+  const { pageSizeOverride: _p, ...copts0 } = opts;
+  // The opts a cold run.mjs --collector-opts run ends up with: its own defaults (the reference
+  // capture's scene + dummy, the skip list, the per-skill guard) with ours laid over them.
+  const mode = copts0.mode === "simulate" ? "simulate" : "compute";
+  let ref = {}; try { ref = JSON.parse(fs.readFileSync(path.join(RUNNER, "capture", "oracle.json"), "utf8")); } catch {}
+  let sj = {}; try { sj = JSON.parse(fs.readFileSync(path.join(ROOT, "skip.json"), "utf8")); } catch {}
+  const wopts = {
+    mode, sceneName: ref.scene ?? ref._meta?.scene, dummy: ref.enemyTarget ?? ref._meta?.enemyTarget,
+    skip: [...(sj.skip ?? []), ...(mode === "simulate" ? sj.skipSimulate ?? [] : [])], perSkillMs: mode === "simulate" ? 30000 : 12000,
+    ...copts0,
+  };
+  let st = null;
+  if (!full && warmEnabled()) {
+    st = await warmStatus();
+    if (st && st.profile === "regression" && st.bench && !st.timeWarp) {
+      const t0 = Date.now();
+      let r = null;
+      try { r = await warmCall({ cmd: "collect", opts: wopts }, 15 * 60 * 1000); } catch (e) { r = { ok: false, error: e.message }; }
+      if (r.ok && r.result?.ok === true) {
+        checkKeys(r.result);
+        const b = r.before ?? {};
+        const why = b.reload ? `reloaded for code edits (${b.reload.slice(0, 2).join(", ")})` : b.sync ? `pushed ${b.sync.docs ?? 0} changed world document(s)` : "no reload needed";
+        say(`· runner (warm): game closed, so the check ran on the warm Snapshot Runner, ${((Date.now() - t0) / 1000).toFixed(1)} s; ${why}`);
+        return shapeResult(r.result);
+      }
+      say(`· runner (warm) failed (${r.error ?? r.result?.error ?? "no result"}); falling back to a cold run`);
+    } else if (st) say(`· a warm runner is up on :${WARM_CTL} but not a regression bench one (${st.profile}${st.bench ? "" : ", no bench"}${st.timeWarp ? ", time-warped" : ""}); cold run`);
+  }
+  const state = path.join(ROOT, ".state");
+  fs.mkdirSync(state, { recursive: true });
+  // One runner regression run at a time: two sessions' Stop hooks can fire together,
+  // and the port + snapshot dir are shared by design. A stale lock (dead pid) is taken over.
+  const lock = path.join(state, "runner.lock");
+  try {
+    const held = JSON.parse(fs.readFileSync(lock, "utf8"));
+    let alive = false; try { process.kill(held.pid, 0); alive = true; } catch {}
+    if (alive && held.pid !== process.pid) throw new Error(`another runner regression run holds the lock (pid ${held.pid}, since ${held.at})`);
+  } catch (e) { if (!/ENOENT|Unexpected|JSON/.test(e.message)) throw e; }
+  fs.writeFileSync(lock, JSON.stringify({ pid: process.pid, at: new Date().toISOString() }));
+  try {
+    const t0 = Date.now();
+    const build = spawnSync(process.execPath, [path.join(RUNNER, "bin", "build-snapshot.mjs"), "--profile", "regression", "--snapshot", RUNNER_SNAP],
+      { cwd: PLAYWRIGHT, encoding: "utf8", timeout: 5 * 60 * 1000, maxBuffer: 16 * 1024 * 1024 });
+    if (build.status !== 0) throw new Error("runner snapshot build failed: " + ((build.stderr || build.stdout || "").trim().split("\n").pop() || `exit ${build.status}`));
+    const { pageSizeOverride, ...copts } = opts;   // no paging: no bridge cap in the runner
+    const optsFile = path.join(state, "runner-opts.json");
+    const outFile = path.join(state, "runner-result.json");
+    fs.writeFileSync(optsFile, JSON.stringify(copts));
+    try { fs.unlinkSync(outFile); } catch {}
+    const args = [path.join(RUNNER, "bin", "run.mjs"), "--snapshot", RUNNER_SNAP, "--port", String(RUNNER_PORT), "--bench", "--canvas", "off",   // logic only: drawing is ~all of a headless run (snapshot-runner/bin/canvas-mode.mjs)
+     
+      ...(full ? ["--full"] : []), ...(copts.mode === "simulate" ? ["--mode", "simulate"] : []),
+      "--collector-opts", optsFile, "--collect", outFile];
+    const run = spawnSync(process.execPath, args, { cwd: PLAYWRIGHT, encoding: "utf8", timeout: 20 * 60 * 1000, maxBuffer: 32 * 1024 * 1024 });
+    if (!fs.existsSync(outFile)) {
+      const tail = ((run.stderr || "") + (run.stdout || "")).trim().split("\n").filter(Boolean).slice(-3).join(" | ");
+      throw new Error(`runner run produced no result (${run.error ? run.error.message : `exit ${run.status}`}): ${tail}`);
+    }
+    const r = JSON.parse(fs.readFileSync(outFile, "utf8"));
+    if (!r || r.ok !== true) throw new Error("collector failed in the runner: " + (r?.error || JSON.stringify(r).slice(0, 300)));
+    checkKeys(r);
+    let report = {};
+    try { report = JSON.parse(fs.readFileSync(path.join(RUNNER, RUNNER_SNAP, "run-report.json"), "utf8")); } catch {}
+    say(`· runner: game closed, so the check ran on the Snapshot Runner (real engine, world read from disk), ${((Date.now() - t0) / 1000).toFixed(0)} s`
+      + (report.pageErrors?.length ? ` — ${report.pageErrors.length} page error(s), see tools/snapshot-runner/${RUNNER_SNAP}/run-report.json` : ""));
+    // The cold run is done and its page closed, so this is never a second headless client.
+    if (!full && warmEnabled() && !st) {
+      try { say(`· started a warm runner for the next checks (pid ${startWarm()}, leaves after ${WARM_IDLE_MIN} idle min; log .state/warm-runner.log)`); }
+      catch (e) { say(`· could not start a warm runner: ${e.message}`); }
+    }
+    return shapeResult(r);
+  } finally { try { fs.unlinkSync(lock); } catch {} }
 }
 
 // Stable stringify: sort object keys recursively so goldens diff cleanly in git.
@@ -273,23 +407,29 @@ async function teardownBench(a) {
 async function main() {
   const argv = process.argv.slice(2);
   const a = parseArgs(argv);
+  if (a.sandbox) a.runner = true;   // --sandbox: the Snapshot Runner's name until 2026-11-03
   const cmd = a._[0] || "help";
   const opts = optsFrom(a);
   const file = goldenPath(a);
+  // Only a run against the compute golden the Stop-hook gate checks may record its verdict:
+  // the gate reads it as "this engine was checked, N drifted". A check against another file
+  // (a simulate golden, a perturbed copy used as a control) recorded drift for the gate too,
+  // and the next turn then reported drift that the gate golden never had (2026-11-03).
+  const gateGolden = file === goldenPath({}) && (a.mode || "compute") === "compute";
 
   const onProgress = a.json ? null : ({ done, total }) => process.stderr.write(`\r  collecting… ${done}/${total}   `);
 
   if (cmd === "capture") {
     const t0 = Date.now();
-    const result = await collect(opts, { onProgress });
+    const result = await (a.runner ? collectRunner(opts, { full: !!a.full }) : collect(opts, { onProgress }));
     result.tookMs = Date.now() - t0;
     if (onProgress) process.stderr.write("\r" + " ".repeat(40) + "\r");
-    if (a.teardown) await teardownBench(a);
+    if (a.teardown && !a.runner) await teardownBench(a);
     writeGoldens(file, result);
     // A full capture makes current == golden by definition, so it establishes a
     // verdict for this engine source just as a clean check does — tell the
     // Stop-hook gate, or it re-sweeps 22 min for a state we just baselined.
-    if (!a.caster && !a.limit) recordVerified({ total: result.count, drift: 0, by: "capture", dataKey: DATA_KEY });
+    if (!a.caster && !a.limit && gateGolden) recordVerified({ total: result.count, drift: 0, by: a.runner ? "capture --runner" : "capture", dataKey: DATA_KEY });
     console.log(`✓ captured ${result.count} skills (${result.mode} mode, scene "${result.scene}", casters: ${result.casters.join(", ")}) in ${(result.tookMs / 1000).toFixed(1)}s`);
     console.log(`  engine ${result.engineVersion} · errors: ${result.errorCount} · wrote ${path.relative(process.cwd(), file)}`);
     if (result.errorCount) console.log(`  (errored skills are recorded as fingerprints too — a change in error is still a regression signal)`);
@@ -297,13 +437,13 @@ async function main() {
   }
 
   if (cmd === "check") {
-    const result = await collect(opts, { onProgress });
+    const result = await (a.runner ? collectRunner(opts, { full: !!a.full }) : collect(opts, { onProgress }));
     if (onProgress) process.stderr.write("\r" + " ".repeat(40) + "\r");
     // Tear down BEFORE reporting so the world is clean even if the diff exits 1.
-    if (a.teardown) await teardownBench(a);
+    if (a.teardown && !a.runner) await teardownBench(a);
     if (a.update) {
       writeGoldens(file, result);
-      if (!a.caster && !a.limit) recordVerified({ total: result.count, drift: 0, by: "check --update", dataKey: DATA_KEY });
+      if (!a.caster && !a.limit && gateGolden) recordVerified({ total: result.count, drift: 0, by: a.runner ? "check --update --runner" : "check --update", dataKey: DATA_KEY });
       console.log(`✓ goldens updated to current behavior (${result.count} skills).`);
       return 0;
     }
@@ -327,7 +467,7 @@ async function main() {
     }
     // Only a FULL run licenses the gate's skip — a --caster/--limit subset says
     // nothing about the rest of the catalog.
-    if (!partial) recordVerified({ total: result.count, drift: added.length + removed.length + changed.length, by: "check", dataKey: DATA_KEY });
+    if (!partial && gateGolden) recordVerified({ total: result.count, drift: added.length + removed.length + changed.length, by: a.runner ? "check --runner" : "check", dataKey: DATA_KEY });
     if (a.json) {
       console.log(JSON.stringify({ partial, added, removed, changed, counts: { added: added.length, removed: removed.length, changed: changed.length, total: result.count } }, null, 2));
     } else {
@@ -671,18 +811,22 @@ Options:
   --include-types <csv>     skill_types to collect (default Active,Spell).
                             Pass the SAME value to bench AND capture/check.
   --json                    machine-readable check output
+  --runner                 capture/check with the game CLOSED: runs the collector on
+                            tools/snapshot-runner (real engine, world read from disk,
+                            bench built in-page). 487/487 = real engine. ~45 s compute
+  --seed <n>                pin Math.random per skill (random AE pools; dice are forced)
   --per-skill-ms <ms>       per-skill timeout guard (default 12000). Use 30000 for
                             simulate: RESOLVE re-imports skill-effects.js per call
   --page-size <N>           skills per bridge page (default 30; auto-shrinks when
                             --per-skill-ms is raised so a page fits the 285 s cap)
 
-Game must be OPEN. See README.md.`);
+Game must be OPEN (or pass --runner to capture/check). See README.md.`);
   return 0;
 }
 
 function report(added, removed, changed, result, golden, partial) {
   const engGolden = (JSON.parse(fs.existsSync(goldenPath({})) ? fs.readFileSync(goldenPath({}), "utf8") : "{}")._meta || {}).engineVersion;
-  console.log(`skill-regression check — ${result.mode} mode, scene "${result.scene}", ${result.count} skills${partial ? " (partial run — 'removed' suppressed)" : ""}`);
+  console.log(`skill-regression check — ${result.mode} mode${result.engine === "runner" ? " (Snapshot Runner, game closed)" : ""}, scene "${result.scene}", ${result.count} skills${partial ? " (partial run — 'removed' suppressed)" : ""}`);
   console.log(`  engine now ${result.engineVersion}${engGolden && engGolden !== result.engineVersion ? ` (golden captured on ${engGolden})` : ""}\n`);
   if (!added.length && !removed.length && !changed.length) {
     console.log("✓ no behavioral changes — all skills match golden.");
