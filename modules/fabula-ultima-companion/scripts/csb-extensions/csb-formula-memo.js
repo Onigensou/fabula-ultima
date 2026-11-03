@@ -55,7 +55,7 @@
     // CSB custom functions that only use their arguments.
     const PURE_CSB = new Set(['fallback', 'replace', 'replaceAll', 'concat', 'switchCase', 'escapeQuotes', 'array', 'first']);
 
-    const stats = { on: null, hits: 0, misses: 0, bypass: 0, uncacheable: 0, formulas: 0, impureFormulas: 0, size: 0 };
+    const stats = { on: null, hits: 0, misses: 0, bypass: 0, uncacheable: 0, formulas: 0, impureFormulas: 0, size: 0, filterHits: 0 };
     const plans = new Map();        // formula text -> { paths } (cacheable) | { external: bool } (always evaluate)
     const cache = new Map();        // key -> { result, parsed, hasDice }
 
@@ -86,6 +86,8 @@
         let root;
         try { root = m.parse(formula.trim()); } catch { return { external: true }; }
         const paths = new Set();
+        const refs = new Set();     // ref('name'): the value AND whether the key exists (CSB throws on a present-but-empty key)
+        const tables = new Set();   // lookup('table', ...): the whole table, compared by content
         let cacheable = true, external = false;
         const pathOf = (node) => {
             // a.b.c / a['b'] / a[1] with constant indices -> "a.b.c"; anything else -> null
@@ -112,6 +114,15 @@
                 case 'FunctionNode': {
                     const name = node.fn?.type === 'SymbolNode' ? node.fn.name : null;
                     if (!name || EXTERNAL.has(name)) { external = true; return; }
+                    // ref / lookup with a constant name read a known prop: an input like any other
+                    const first = node.args[0];
+                    const constName = first?.type === 'ConstantNode' && typeof first.value === 'string' ? first.value : null;
+                    if (constName !== null && (name === 'ref' || name === 'lookup')) {
+                        (name === 'ref' ? refs : tables).add(constName);
+                        paths.add(name);
+                        node.args.slice(1).forEach(walk);
+                        return;
+                    }
                     if (SELF_ONLY.has(name)) cacheable = false;
                     else if (!PURE_CSB.has(name) && typeof m[name] !== 'function') { external = true; return; }
                     // the name itself is looked up in the scope first: record it, so a prop
@@ -127,7 +138,7 @@
         };
         try { walk(root); } catch { external = true; }
         if (external) return { external: true };
-        return cacheable ? { paths: [...paths] } : { external: false };
+        return cacheable ? { paths: [...paths], refs: [...refs], tables: [...tables] } : { external: false };
     }
 
     const isPrim = (v) => v === null || v === undefined || ['string', 'number', 'boolean'].includes(typeof v);
@@ -138,6 +149,41 @@
         for (const part of path.split('.')) { if (cur === null || cur === undefined) return undefined; cur = cur[part]; }
         return cur;
     };
+
+    /**
+     * The cache key for evaluating `text` with these options, reading each input through
+     * `read(path)`; null when this evaluation must not be cached.
+     */
+    function keyFor(text, opts, read, has) {
+        if ((opts.localVars && Object.keys(opts.localVars).length) || (opts.textVars && Object.keys(opts.textVars).length)
+            || (opts.rolls && opts.rolls.length) || opts.computeExplanation) { stats.bypass++; return null; }
+        const plan = planFor(text);
+        if (!plan.paths) {
+            stats.bypass++;
+            // __fuFormulaMemo.trace = new Map() to count which formulas always evaluate
+            if (stats.trace) stats.trace.set(text, (stats.trace.get(text) ?? 0) + 1);
+            return null;
+        }
+        let key = `${text}\u0001${enc(opts.defaultValue)}\u0001${opts.reference ?? ''}`;
+        for (const p of plan.paths) {
+            const v = read(p);
+            if (!isPrim(v)) { stats.uncacheable++; return null; }
+            key += '\u0001' + enc(v);
+        }
+        for (const r of plan.refs) {
+            const v = read(r);
+            if (!isPrim(v)) { stats.uncacheable++; return null; }
+            key += '\u0002' + (has(r) ? 'P' : 'A') + enc(v);
+        }
+        for (const t of plan.tables) {
+            const v = read(t);
+            let e;
+            if (isPrim(v)) e = enc(v);
+            else { try { e = 'j' + JSON.stringify(v); } catch { stats.uncacheable++; return null; } }
+            key += '\u0003' + e;
+        }
+        return key;
+    }
 
     function patchComputeStatic(Formula) {
         const proto = Formula?.prototype;
@@ -155,19 +201,8 @@
             if (ctx && !ctx.external && planFor(text).external) ctx.external = true;
             if (!memoOn() || !props || typeof props !== 'object' || typeof text !== 'string') return orig.call(this, props, options, formula);
             const opts = options ?? {};
-            if ((opts.localVars && Object.keys(opts.localVars).length) || (opts.textVars && Object.keys(opts.textVars).length)
-                || (opts.rolls && opts.rolls.length) || opts.computeExplanation) {
-                stats.bypass++;
-                return orig.call(this, props, options, formula);
-            }
-            const plan = planFor(text);
-            if (!plan.paths) { stats.bypass++; return orig.call(this, props, options, formula); }
-            let key = `${text}\u0001${enc(opts.defaultValue)}\u0001${opts.reference ?? ''}`;
-            for (const p of plan.paths) {
-                const v = getPath(props, p);
-                if (!isPrim(v)) { stats.uncacheable++; return orig.call(this, props, options, formula); }
-                key += '\u0001' + enc(v);
-            }
+            const key = keyFor(text, opts, (p) => getPath(props, p), (p) => p in props);
+            if (key === null) return orig.call(this, props, options, formula);
             const hit = cache.get(key);
             if (hit) {
                 stats.hits++;
@@ -199,6 +234,52 @@
         console.info(`${TAG} Formula.computeStatic memo installed.`);
     }
 
+    /* ---------------------------------------------------- ITEM-LIST FILTERS -- */
+    // An item container decides which items it lists with a filter formula, evaluated per item
+    // on every prepare of the actor. CSB builds `{ ...actor props, item: item props }` (a copy
+    // of ~375 props) for each item before the formula runs, so even a cached result paid for
+    // the copy: ~13 ms of Hina's HP write (111 items x her containers). Here the cache is asked
+    // first, reading the inputs straight from the two props objects; only a miss builds the copy
+    // and evaluates exactly as CSB does (which also fills the cache).
+    function patchItemFilters(ItemContainer, CustomItem, castToPrimitive, Formula) {
+        const proto = ItemContainer?.prototype;
+        if (typeof proto?.filterItems !== 'function' || proto.filterItems.__fuMemo
+            || typeof CustomItem?.isEquippableItem !== 'function' || typeof castToPrimitive !== 'function') {
+            console.warn(`${TAG} ItemContainer.filterItems not as expected; filter fast path not installed.`);
+            return;
+        }
+        // Shape guard: the body must still be the per-item spread we replace.
+        const src = String(proto.filterItems);
+        if (!src.includes('_itemFilterFormula') || !src.includes('item: item.system.props') || !src.includes('.filter`')) {
+            console.warn(`${TAG} ItemContainer.filterItems body changed; filter fast path not installed.`);
+            return;
+        }
+        const orig = proto.filterItems;
+        const patched = function (entity, options) {
+            const formula = this._itemFilterFormula;
+            if (!formula || !memoOn()) return orig.call(this, entity, options);
+            const entityProps = entity.system.props;
+            return entity.items.filter((item) => {
+                if (!CustomItem.isEquippableItem(item)) return false;
+                if (!item.system.template ||
+                    (this._templateFilter.length > 0 && !this._templateFilter.includes(item.system.template))) return false;
+                const itemProps = item.system.props;
+                const opts = { ...options, source: `${this.key}.${item.name}.filter` };
+                // the scope CSB builds: the actor's props, with `item` set to the item's props
+                const read = (p) => (p === 'item' ? itemProps
+                    : p.startsWith('item.') ? getPath(itemProps, p.slice(5)) : getPath(entityProps, p));
+                const key = keyFor(formula, opts, read, (p) => p === 'item' || p in entityProps);
+                const hit = key === null ? null : cache.get(key);
+                if (hit) { stats.hits++; stats.filterHits++; return !!castToPrimitive(hit.result); }
+                return !!castToPrimitive(new Formula(formula).computeStatic({ ...entityProps, item: itemProps }, opts).result);
+            });
+        };
+        patched.__fuMemo = true;
+        patched.__fuOriginal = orig;
+        proto.filterItems = patched;
+        console.info(`${TAG} ItemContainer.filterItems fast path installed.`);
+    }
+
     // %{ ... }% blocks in a phrase run arbitrary JS with the entity in hand: external.
     function patchPhraseScripts(ComputablePhrase) {
         const proto = ComputablePhrase?.prototype;
@@ -218,6 +299,12 @@
     formulaImport.catch(() => {});
     const phraseImport = import('/systems/custom-system-builder/module/formulas/ComputablePhrase.js').then((m) => m.default);
     phraseImport.catch(() => {});
+    const filterImports = Promise.all([
+        import('/systems/custom-system-builder/module/sheets/components/ItemContainer.js'),
+        import('/systems/custom-system-builder/module/documents/CustomItem.js'),
+        import('/systems/custom-system-builder/module/utils.js'),
+    ]).then(([ic, ci, u]) => ({ ItemContainer: ic.default, CustomItem: ci.default, castToPrimitive: u.castToPrimitive }));
+    filterImports.catch(() => {});
 
     Hooks.once('init', () => {
         try {
@@ -239,5 +326,9 @@
             // Reuse of an item's derived data depends on this detection: say it is in place.
             if (patchPhraseScripts(await phraseImport) && globalThis.__fuFormulaMemo) globalThis.__fuFormulaMemo.detectsExternal = true;
         } catch (e) { console.warn(`${TAG} could not import Formula / ComputablePhrase; not installed.`, e); }
+        try {
+            const { ItemContainer, CustomItem, castToPrimitive } = await filterImports;
+            patchItemFilters(ItemContainer, CustomItem, castToPrimitive, await formulaImport);
+        } catch (e) { console.warn(`${TAG} could not import the item-container modules; filter fast path not installed.`, e); }
     });
 })();

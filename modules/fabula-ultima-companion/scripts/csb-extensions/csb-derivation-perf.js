@@ -91,8 +91,9 @@
 
     const csbImports = Promise.all([
         import('/systems/custom-system-builder/module/sheets/components/ItemContainer.js'),
-        import('/systems/custom-system-builder/module/documents/CustomActiveEffect.js')
-    ]).then(([ic, ae]) => ({ ItemContainer: ic.default, CustomActiveEffect: ae.default }));
+        import('/systems/custom-system-builder/module/documents/CustomActiveEffect.js'),
+        import('/systems/custom-system-builder/module/documents/TemplateSystem.js')
+    ]).then(([ic, ae, ts]) => ({ ItemContainer: ic.default, CustomActiveEffect: ae.default, TemplateSystem: ts.default }));
     csbImports.catch(() => {});
 
     Hooks.once('customSystemBuilderInit', async () => {
@@ -107,6 +108,7 @@
         patchActiveEffectPreCreateStamp(imports.CustomActiveEffect);
         patchActiveEffectFlagBatching(imports.CustomActiveEffect);
         patchItemPrepareOnce();
+        patchPassSnapshot(imports.TemplateSystem);
     });
 
     Hooks.once('init', () => {
@@ -132,6 +134,17 @@
                 default: true,
             });
         } catch (e) { console.warn(`${TAG} item-reuse setting registration failed`, e); }
+        try {
+            game.settings.register('fabula-ultima-companion', SNAP_SETTING, {
+                name: 'CSB: copy-on-write formula snapshot',
+                hint: 'Each calculation pass copies the props only where the pass changes them instead '
+                    + 'of deep-copying all of them. Requires a reload.',
+                scope: 'world',
+                config: false,
+                type: Boolean,
+                default: true,
+            });
+        } catch (e) { console.warn(`${TAG} pass-snapshot setting registration failed`, e); }
     });
 
     /* -------------------------------------------------------------- (1) --- */
@@ -371,7 +384,12 @@
         };
         AP._safePrepareData = function (...args) {
             this[REINIT] = false;
-            return origActorPrep.apply(this, args);
+            // Scope for caches valid for exactly one prepare of this actor (the Active Effect
+            // syntax files keep their per-actor effect index here).
+            const prevScope = globalThis.__fuActorPrepScope;
+            globalThis.__fuActorPrepScope = { actor: this, caches: new Map() };
+            try { return origActorPrep.apply(this, args); }
+            finally { globalThis.__fuActorPrepScope = prevScope; }
         };
         IP._initialize = function (...args) {
             const actor = this.parent;
@@ -433,6 +451,135 @@
             catch { return false; }
         }
         return itemReuse.on;
+    }
+
+    /* -------------------------------------------------------------- (6) --- */
+    // PER-PASS SNAPSHOT. CSB computes an entity's props in passes (Hina: 4), and every pass
+    // starts with `mergeObject(system.props, {}, { inplace: false })`: a deep copy of all of
+    // them (375 props, 14 lists and tables), so that every formula in the pass reads the
+    // values as they were when the pass began. ~1/6 of an HP write (measured 2026-11-03).
+    //
+    // Same contract, paid only where needed: the snapshot is a SHALLOW copy, and a list or
+    // table inside it is deep-copied only at the moment the pass is about to write INTO it
+    // (copy-on-write). A top-level value that is replaced (not written into) needs no copy:
+    // the snapshot still holds the old one. Writes are seen through foundry.utils.setProperty,
+    // which is how CSB's loop writes (`system.props`, and Active Effects through the actor).
+    // Outside _prepareEntityData, and for any other mergeObject / setProperty call, nothing
+    // changes.
+    //
+    // Kill switch: world setting `csbPassSnapshot` (default on; reload to apply).
+    // Live A/B and stats: globalThis.__fuPassSnapshot ({ on, passes, copies }).
+    const SNAP_SETTING = 'csbPassSnapshot';
+    const passSnap = { on: null, passes: 0, copies: 0, layered: 0 };
+    let snapCtx = null;   // { entity, live, snapshot } for the _prepareEntityData running now
+
+    function patchPassSnapshot(TemplateSystem) {
+        const proto = TemplateSystem?.prototype;
+        const utils = globalThis.foundry?.utils;
+        if (typeof proto?._prepareEntityData !== 'function' || typeof utils?.mergeObject !== 'function'
+            || typeof utils?.setProperty !== 'function' || typeof utils?.deepClone !== 'function') {
+            console.warn(`${TAG} _prepareEntityData / foundry.utils not as expected; skipping pass snapshot.`);
+            return;
+        }
+        if (proto._prepareEntityData.__fuSnap) return;
+        // Shape guard: the pass snapshot we replace must still be there.
+        const src = String(proto._prepareEntityData);
+        if (!/mergeObject\(system\.props, computedProps, \{\s*inplace: false\s*\}\)/.test(src)) {
+            console.warn(`${TAG} _prepareEntityData no longer snapshots with mergeObject; skipping pass snapshot.`);
+            return;
+        }
+        const origPrep = proto._prepareEntityData;
+        const origMerge = utils.mergeObject;
+        const origSet = utils.setProperty;
+        const deepClone = utils.deepClone;
+
+        // foundry.utils is a frozen module namespace, so its functions cannot be replaced. CSB
+        // reaches them as `foundry.utils.X` at call time, though, and `foundry` is a plain
+        // object: while a _prepareEntityData runs (synchronously, so nothing else runs in
+        // between), `foundry.utils` points at a view of the namespace with these two overridden.
+        const mergeObject = function (original, other, options) {
+            const c = snapCtx;
+            if (c && options && options.inplace === false && original && original === c.entity?.system?.props
+                && other && typeof other === 'object' && Object.getPrototypeOf(other) === Object.prototype
+                && Object.keys(other).length === 0) {
+                passSnap.passes++;
+                c.live = original;
+                c.snapshot = { ...original };
+                return c.snapshot;
+            }
+            // A formula with custom props (an item-container row: `item`, the row's own values)
+            // reads `mergeObject(snapshot, customProps, { inplace: false })`: CSB deep-copies the
+            // whole snapshot for every such formula. Same result, copying only what the merge
+            // writes into: a shallow copy, with a deep copy of each top-level object the custom
+            // props merge INTO, then the merge itself in place on that copy.
+            if (c && c.snapshot && original === c.snapshot && options && options.inplace === false
+                && other && typeof other === 'object' && Object.getPrototypeOf(other) === Object.prototype
+                && !Object.keys(other).some((k) => k.includes('.'))) {   // dotted keys expand: CSB's own path
+                const out = { ...original };
+                for (const k of Object.keys(other)) {
+                    const v = other[k], cur = out[k];
+                    if (v && typeof v === 'object' && cur && typeof cur === 'object') out[k] = deepClone(cur);
+                }
+                passSnap.layered++;
+                return origMerge(out, other, { ...options, inplace: true });
+            }
+            return origMerge(original, other, options);
+        };
+        const setProperty = function (object, key, value) {
+            const c = snapCtx;
+            if (c && c.snapshot && typeof key === 'string') {
+                let sub = null;
+                if (object === c.live) sub = key;
+                else if (object === c.entity && key.startsWith('system.props.')) sub = key.slice(13);
+                else if (object === c.entity?.system && key.startsWith('props.')) sub = key.slice(6);
+                if (sub !== null) {
+                    const dot = sub.indexOf('.');
+                    if (dot > 0) {
+                        const top = sub.slice(0, dot);
+                        const cur = c.live[top];
+                        if (cur && typeof cur === 'object' && c.snapshot[top] === cur) {
+                            c.snapshot[top] = deepClone(cur);
+                            passSnap.copies++;
+                        }
+                    }
+                }
+            }
+            return origSet(object, key, value);
+        };
+        const realUtils = globalThis.foundry.utils;
+        const view = Object.create(realUtils, {
+            mergeObject: { value: mergeObject, enumerable: true },
+            setProperty: { value: setProperty, enumerable: true },
+        });
+        globalThis.foundry.utils = view;
+        const swappable = globalThis.foundry.utils === view;
+        globalThis.foundry.utils = realUtils;
+        if (!swappable) {
+            console.warn(`${TAG} foundry.utils cannot be swapped; skipping pass snapshot.`);
+            return;
+        }
+
+        const prep = function (...args) {
+            if (!passSnapOn()) return origPrep.apply(this, args);
+            const prevCtx = snapCtx;
+            const prevUtils = globalThis.foundry.utils;
+            snapCtx = { entity: this.entity, live: null, snapshot: null };
+            globalThis.foundry.utils = view;
+            try { return origPrep.apply(this, args); }
+            finally { snapCtx = prevCtx; globalThis.foundry.utils = prevUtils; }
+        };
+        prep.__fuSnap = true;
+        proto._prepareEntityData = prep;
+        globalThis.__fuPassSnapshot = passSnap;
+        console.info(`${TAG} copy-on-write pass snapshot installed.`);
+    }
+
+    function passSnapOn() {
+        if (passSnap.on === null) {
+            try { passSnap.on = game.settings.get('fabula-ultima-companion', SNAP_SETTING) !== false; }
+            catch { return false; }
+        }
+        return passSnap.on;
     }
 
     /* -------------------------------------------------------------- (2) --- */
