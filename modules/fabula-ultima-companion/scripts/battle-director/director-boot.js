@@ -455,11 +455,27 @@ async function start(arg) {
 // snapshot still references those tokens by UUID; deleting them here
 // would force `reconstructDirectorCombat` to drop every combatant as
 // "stale" on the next mount.
-async function stop({ reason = "manual", clearFlags = true, cleanupTokens = true } = {}) {
+// One teardown at a time. The FSM's natural stop (STOPPED → onNaturalStop) and
+// an outside caller (the sim's round budget poll) can ask in the same beat; the
+// second joins the first instead of sweeping and deleting a second time.
+let _stopping = null;
+function stop(opts = {}) {
+  if (_stopping) return _stopping;
+  _stopping = stopNow(opts).finally(() => { _stopping = null; });
+  return _stopping;
+}
+
+async function stopNow({ reason = "manual", clearFlags = true, cleanupTokens = true } = {}) {
   if (!_instance) {
     log("Director.stop: no instance running");
     return;
   }
+
+  // Freeze the FSM and let its current step finish BEFORE anything below
+  // tears the battle down. Without this the AE sweep raced whatever the FSM
+  // was still doing (see Director.halt).
+  try { TurnPicker.despawn({ director: _instance }); } catch {}   // a pick no human will make now
+  try { await _instance.halt(); } catch (e) { warn("stop: halt threw", e); }
   // Resolve the battle scene from dCombat (the authoritative ref), falling
   // back to canvas.scene. Used for cleanupDirectorSpawnedTokens.
   const battleScene = _instance.dCombat?.scene ?? _instance.combat?.scene ?? canvas?.scene ?? null;

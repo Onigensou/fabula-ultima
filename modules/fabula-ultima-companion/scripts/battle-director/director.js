@@ -157,6 +157,31 @@ export class BattleDirector {
     await this.dispatch({ type: INTENTS.START_COMBAT });
   }
 
+  // Freeze the FSM and let the step it is in finish, so nothing it does lands
+  // after the caller's teardown. boot.stop() calls this BEFORE its end-of-battle
+  // AE sweep: a stop() from outside the FSM (the sim's round budget, a dev
+  // stop, wedge recovery) used to sweep while a round_start reaction was still
+  // applying its AE. A slow client applied it after the sweep and the AE
+  // survived the battle (Blanche's Counter Pass, 2026-11-03); a fast one applied
+  // it before and it was swept. Blocking UIs are released the way the End
+  // Battle prompt releases them. Bounded: a step waiting on something no
+  // release reaches (a human, an animation) is abandoned after `timeoutMs`,
+  // which is the old behavior.
+  async halt({ timeoutMs = 5000 } = {}) {
+    this._stopped = true;
+    this.ctx.endOfCombat = true;
+    try { this.ctx._composeCancelToken?.cancel?.("battle-end"); } catch {}
+    try { this._signalBattleEnd(); } catch {}
+    let timer = null;
+    const drained = await Promise.race([
+      this._lock.then(() => true),
+      new Promise((r) => { timer = setTimeout(() => r(false), timeoutMs); }),
+    ]);
+    clearTimeout(timer);
+    if (!drained) warn(`halt: the step in ${this.state} did not finish within ${timeoutMs} ms; stopping anyway`);
+    return drained;
+  }
+
   async stop({ reason = "manual" } = {}) {
     log(`Stopping director for combat ${this.combatId} (reason: ${reason})`);
     this._stopped = true;
@@ -215,6 +240,13 @@ export class BattleDirector {
   // ─── Internals ─────────────────────────────────────────────────────────
 
   async _processIntent(intent) {
+    // An intent queued before a stop (an onEnter's INTERNAL_DONE waiting on the
+    // lock) must not start a new state after it: halt() drains the lock and
+    // relies on the queue doing nothing more.
+    if (this._stopped) {
+      log(`drop intent ${intent?.type} after stop (state ${this.state})`);
+      return;
+    }
     if (!intent || typeof intent !== "object" || !intent.type) {
       warn("invalid intent shape", intent);
       return;
