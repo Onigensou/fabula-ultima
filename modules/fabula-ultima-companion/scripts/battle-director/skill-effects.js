@@ -458,7 +458,13 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
         // Stash chain follow-ups (e.g. apply_ae the "spent" marker) for the
         // caller to run post-write through the normal executor.
         if (followUpRows.length) {
-          result.followUp.push({ rows: followUpRows, effectTable, aeName: ae.name, payload: { ...hitPayload } });
+          // The carrier's picture rides along for a "card" notify step (Life
+          // Charm's save): the follow-up runs with no skill, so the card had
+          // nothing to show but 📜. A worn item's AE has the item as its
+          // parent; a copied one points back to it through `origin`.
+          let carrier = ae.parent?.documentName === "Item" ? ae.parent : null;
+          if (!carrier && ae.origin) { try { carrier = globalThis.fromUuidSync?.(ae.origin) ?? null; } catch { carrier = null; } }
+          result.followUp.push({ rows: followUpRows, effectTable, aeName: ae.name, carrierImg: carrier?.img ?? ae.img ?? null, payload: { ...hitPayload } });
         }
       }
     }
@@ -802,7 +808,7 @@ export async function applyDamageToTarget({
         // row (skill-targeting.findTargetingRow) — without it a follow-up could
         // only aim at reserved refs like "self" (Ninja Log), never at a pick made
         // by an earlier step of the same chain (Earthen Wire's random enemy).
-        const fctx = { director: dirf, reactorActor: target, reactorToken: tokf, skill: null, payload: { ...(fu.payload ?? {}) }, effect_table: fu.effectTable, runtimeEffectTable: fu.effectTable, dCombat: dirf?.dCombat ?? null };
+        const fctx = { director: dirf, reactorActor: target, reactorToken: tokf, skill: null, carrierImg: fu.carrierImg ?? null, payload: { ...(fu.payload ?? {}) }, effect_table: fu.effectTable, runtimeEffectTable: fu.effectTable, dCombat: dirf?.dCombat ?? null };
         for (const frow of (fu.rows ?? [])) {
           try { await applyEffectRow(frow, fctx); }
           catch (e) { warn(`applyDamageToTarget: follow-up "${frow.effect_label}" failed`, e); }
@@ -4428,9 +4434,12 @@ async function applyNotifyEffect(row, ctx) {
     const casterToken = ctx.reactorToken
       ?? canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === ctx.reactorActor?.uuid)?.document
       ?? null;
+    // The carrier's picture: a damage-reaction follow-up passes it as
+    // `carrierImg` (it runs with no skill); any other chain has its skill.
+    const icon = ctx?.carrierImg ?? ctx?.skill?.img ?? null;
     try {
       const { enqueuePassiveCard } = await import("./passive-card-ui/director-passive-card-ui.js");
-      await enqueuePassiveCard({ title: message, casterToken, mode: "force" });
+      await enqueuePassiveCard({ title: message, casterToken, icon, mode: "force" });
     } catch (e) { warn("skill-effects.notify: passive card failed", e); }
     return { ok: true, kind: "notify", message, abort };
   }
