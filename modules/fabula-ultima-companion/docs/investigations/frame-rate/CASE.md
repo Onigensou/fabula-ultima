@@ -220,3 +220,11 @@ backdrops without a 3D model.
   simulate 487/487 vs `aaf77aa3`. Left in Hina's ~13 ms: setup of the compute list (item-container rows, resets) ~3 ms,
   Active Effect applies ~2 ms, Foundry's update backup `deepClone` in `#updateData` ~1.6 ms (private, not patchable),
   DataModel re-init ~0.9 ms. Kill switches `csbIncrementalPrepare`, `foundryLazyDataMirror`.
+- **2026-11-04: what is left in a battle, and the rewind history.** CPU profile of the seeded battle (scratchpad
+  `battle-profile.mjs` + `lt-sum.mjs`): every mid-battle long task was a Scene update. Cause: the rewind history
+  (`directorHistory`, one array flag on the scene, rewritten per save point) reached 1.6 MB in 10 actions, and every scene
+  save made each client deep-copy all scene flags (`#updateData` backup). Each save point is now its own hidden JournalEntry
+  (`persistence.js`, History store). Scene stays < 60 KB; long tasks 2.15 → 1.05 s; same battle; live rewind verified.
+  Left: battle start (token actors' first prepare ~140–230 ms, `prewarmShatter` ~170–230 ms, sprite-shadow `readPixels`
+  ~300 ms under software GL), and 50–95 ms UI tasks (round banner `refreshTurnActions`, a `settings.get` in
+  monks-little-details). Item containers also keep unchanged rows now: Hina's HP write ~13 → ~10 ms.

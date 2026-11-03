@@ -1014,7 +1014,7 @@ function status() {
 //                       director, restores actors, mounts a fresh director.
 
 // Return the metadata for each history entry on the running director's
-// battle scene, newest first. Full snapshot data stays on the flag — the
+// battle scene, newest first. Full snapshot data stays in the save-point documents — the
 // panel only needs labels / description / timing to render. Returns []
 // if no director is running or no history exists.
 function history() {

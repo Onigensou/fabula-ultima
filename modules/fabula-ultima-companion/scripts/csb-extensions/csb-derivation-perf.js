@@ -104,12 +104,13 @@
         import(`${CSB}/formulas/ComputablePhrase.js`),
         import(`${CSB}/Logger.js`),
         import(`${CSB}/interfaces/Modifier.js`),
-    ]).then(([ic, ae, ts, u, ue, ce, abe, sce, sabe, cp, lg, mod]) => ({
+        import(`${CSB}/sheets/components/Label.js`),
+    ]).then(([ic, ae, ts, u, ue, ce, abe, sce, sabe, cp, lg, mod, lb]) => ({
         ItemContainer: ic.default, CustomActiveEffect: ae.default, TemplateSystem: ts.default,
         castToPrimitive: u.castToPrimitive, removeNull: u.removeNull, UncomputableError: ue.UncomputableError,
         isComputableElement: ce.isComputableElement, isAttributeBarElement: abe.isAttributeBarElement,
         SimpleComputableElement: sce.default, SimpleAttributeBarElement: sabe.default,
-        ComputablePhrase: cp.default, Logger: lg.default, applyModifiers: mod.applyModifiers,
+        ComputablePhrase: cp.default, Logger: lg.default, applyModifiers: mod.applyModifiers, Label: lb.default,
     }));
     csbImports.catch(() => {});
 
@@ -121,7 +122,7 @@
             console.warn(`${TAG} dynamic import of CSB internals failed; skipping patches.`, e);
             return;
         }
-        patchItemContainerRowComputes(imports.ItemContainer);
+        patchItemContainerRowComputes(imports.ItemContainer, imports.Label);
         patchActiveEffectPreCreateStamp(imports.CustomActiveEffect);
         patchActiveEffectFlagBatching(imports.CustomActiveEffect);
         patchItemPrepareOnce();
@@ -190,7 +191,18 @@
 
     /* -------------------------------------------------------------- (1) --- */
 
-    function patchItemContainerRowComputes(ItemContainer) {
+    // ROW CACHE (with (7) on): a row's compute entries depend only on its item (the item object,
+    // its props object, its name, and whether it was prepared again since) and on the container.
+    // An unchanged item keeps its row entries from the last prepare of this actor: ~1 ms of Hina's
+    // HP write (111 items). Only when every formula column is a plain Label, whose entries are a
+    // function of the options it is given, and only for the call _prepareEntityData makes (no
+    // options). The rows used are attached to the result (ROWS_USED) so the container's reset
+    // values can be kept too, see (7).
+    const ROW_CACHE = Symbol('fuRowCache');   // container component: WeakMap entity -> Map item -> row
+    const ROWS_USED = Symbol('fuRowsUsed');   // result of getComputeFunctions: the rows, in order
+
+    function patchItemContainerRowComputes(ItemContainer, Label) {
+        const labelFns = Label?.prototype?.getComputeFunctions;
         const proto = ItemContainer?.prototype;
         if (typeof proto?.getComputeFunctions !== 'function' ||
             typeof proto?._getRowEntries !== 'function' ||
@@ -218,12 +230,51 @@
             );
             const customHidden = this._hiddenColumns ?? [];
             const fns = {};
+            const cacheable = options === undefined && typeof labelFns === 'function' && incOn()
+                && computableFields.every((f) => planForField(f) || f.getComputeFunctions === labelFns);
+            let last = null, now = null, used = null;
+            if (cacheable) {
+                let byEntity = this[ROW_CACHE];
+                if (!byEntity) Object.defineProperty(this, ROW_CACHE, { value: (byEntity = new WeakMap()) });
+                last = byEntity.get(entity) ?? null;
+                now = new Map();
+                used = [];
+                byEntity.set(entity, now);
+            }
 
             for (const entry of this._getRowEntries(entity, computationKey, options)) {
                 const item = entry.data;
                 const itemProps = item?.system?.props ?? {};
                 const ref = entry.reference;
+                if (cacheable) {
+                    const prep = item?.[PREP];
+                    const row = last?.get(item);
+                    if (prep && row && row.props === itemProps && row.name === item.name && row.prep === prep && row.ref === ref) {
+                        now.set(item, row);
+                        used.push(row);
+                        Object.assign(fns, row.fns);
+                        continue;
+                    }
+                    if (prep) {
+                        const rowFns = {};
+                        buildRow(this, rowFns, entity, modifiers, entry, item, itemProps, ref, computableFields, customHidden, options);
+                        const fresh = { props: itemProps, name: item.name, prep, ref, fns: rowFns };
+                        now.set(item, fresh);
+                        used.push(fresh);
+                        Object.assign(fns, rowFns);
+                        continue;
+                    }
+                    used = null;   // a row that cannot be kept: no reset reuse either
+                }
+                buildRow(this, fns, entity, modifiers, entry, item, itemProps, ref, computableFields, customHidden, options);
+            }
+            if (used) Object.defineProperty(fns, ROWS_USED, { value: used });
+            return fns;
+        };
 
+        // One row's entries, as CSB 4.8.5 emits them (see the header of (1) for the fast path).
+        const buildRow = function (container, fns, entity, modifiers, entry, item, itemProps, ref, computableFields, customHidden, options) {
+            {
                 // Predefined hidden columns — resolved directly. `name`/`uuid` match
                 // what CSB's formulas produce; `id` keeps CSB's un-interpolated literal.
                 fns[`${ref}.name`] = () => item.name;
@@ -253,12 +304,11 @@
                     } else {
                         Object.assign(
                             fns,
-                            this._getComputeFunctionsOfField(entity, modifiers, entry, field, options)
+                            container._getComputeFunctionsOfField(entity, modifiers, entry, field, options)
                         );
                     }
                 }
             }
-            return fns;
         };
 
         patched.__fuPatched = true;
@@ -647,7 +697,9 @@
     // the written path (see (6)); the prop-name list is built once per pass instead of once per
     // formula; the reset values merge without Foundry's dotted-key scan of all props per
     // component; an item container's reset finds "is any key under this row" by binary search;
-    // a document built from a template keeps its component map until its layout tree changes.
+    // a document built from a template keeps its component map until its layout tree changes;
+    // an item container keeps the rows of unchanged items and, when all of them are kept, its
+    // reset values (ROW_CACHE in (1)).
     // Guarded by a hash of CSB's function: any other CSB version keeps CSB's own loop.
     //
     // Measured 2026-11-03 (Snapshot Runner): Hina's HP write 51 -> 19 ms under the profiler, ~13 ms
@@ -660,8 +712,9 @@
     const INC_SETTING = 'csbIncrementalPrepare';
     // hash of CSB 4.8.5's TemplateSystem#_prepareEntityData with whitespace removed
     const CSB_PREP_HASH = '4786:hht46i';
-    const inc = { on: null, prepares: 0, replayed: 0, evaluated: 0, unkeyed: 0, fns: 0, copies: 0 };
-    const REC = Symbol('fuIncRecord');     // TemplateSystem: Map prop -> { formula, dv, ref, attempts }
+    const inc = { on: null, prepares: 0, replayed: 0, evaluated: 0, unkeyed: 0, fns: 0, copies: 0, resetsKept: 0 };
+    const REC = Symbol('fuIncRecord');
+    const RESET_CACHE = Symbol('fuResetCache');   // item container: WeakMap entity -> { rows, existing, reset }     // TemplateSystem: Map prop -> { formula, dv, ref, attempts }
     let incCtx = null;                      // { entity, live, snapshot } for the loop running now
     const hasOwn = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
     const isPlain = (v) => v === null || v === undefined || typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean';
@@ -893,8 +946,26 @@
                 const comp = computableComponents[component];
                 const computeFunctions = comp.getComputeFunctions(this, modifierPropsByKey);
                 const keys = Object.keys(computeFunctions);
-                const reset = icResetKnown && comp.resetComputeValue === icReset
-                    ? fastIcReset.call(comp, keys, this) : comp.resetComputeValue(keys, this);
+                let reset;
+                if (icResetKnown && comp.resetComputeValue === icReset) {
+                    // Same rows as last time (see ROWS_USED in (1)) and the same stored rows: same reset.
+                    const rows = computeFunctions[ROWS_USED];
+                    const existingRows = utils.getProperty(system.props, comp.key);
+                    const existing = existingRows && typeof existingRows === 'object'
+                        ? Object.keys(existingRows).join('') : `${typeof existingRows}:${existingRows}`;
+                    let byEntity = comp[RESET_CACHE];
+                    const c = rows ? byEntity?.get(this) : null;
+                    if (c && c.existing === existing && c.rows.length === rows.length && c.rows.every((r, i) => r === rows[i])) {
+                        reset = c.reset;
+                        inc.resetsKept++;
+                    } else {
+                        reset = fastIcReset.call(comp, keys, this);
+                        if (rows) {
+                            if (!byEntity) Object.defineProperty(comp, RESET_CACHE, { value: (byEntity = new WeakMap()) });
+                            byEntity.set(this, { rows, existing, reset });
+                        }
+                    }
+                } else reset = comp.resetComputeValue(keys, this);
                 if (merge === fastMerge && Object.keys(reset).some((k) => k.includes('.'))) realMerge(system.props, reset);
                 else merge(system.props, reset);
                 // CSB spreads into a new object each time (quadratic); same keys, same order
