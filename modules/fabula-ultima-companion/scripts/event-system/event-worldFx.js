@@ -54,6 +54,10 @@
 
   const SORT = { BEHIND_TOKENS: -100000, COPIES: 500000, OVER_TOKENS: 1000000 };
 
+  // Spawn: grow from 55% with an easeOutBack overshoot over 520 ms, fade in a bit
+  // faster; the last 0.45 s fades out and shrinks 10%.
+  const SPAWN = { from: 0.55, inMs: 520, overshoot: 1.2, outS: 0.45 };
+
   const READY_TIMEOUT_MS = 4000;
   const CAP_MS = 30000;
   const IMAGE_DEFAULT_MS = 2000;
@@ -168,12 +172,17 @@
    *   additive       glowing light rather than solid paint
    *   mirror         flip left to right
    *   durationMs     for an image, or to cut a video short
+   *   flat           0-1: height kept, to lay a round effect on the floor at the map's
+   *                  angle (0.66 matches the sigils of Maelstrom Confluence); 1 = upright
+   *   hue            degrees to turn the colours (a blue circle made violet); 0 = as drawn
+   *   spawn          grow in from about half size with a slight overshoot and fade in,
+   *                  then fade and shrink over the last moments
    */
   async function play({
     src, x, y, sourceId,
     width = 0, scale = 1, anchorX = 0.5, anchorY = 0.5,
     sort = SORT.OVER_TOKENS, alpha = 1, tint = null, additive = false, mirror = false,
-    durationMs = 0
+    durationMs = 0, flat = 1, hue = 0, spawn = false
   } = {}) {
     if (!src || !canvas?.ready || hiddenTab()) return false;
 
@@ -201,8 +210,9 @@
     const fileWidth = video ? video.videoWidth : texture.width;
     const fileHeight = video ? video.videoHeight : texture.height;
     const drawnWidth = width > 0 ? width : fileWidth * scale;
+    const flatK = Math.min(1, Math.max(0.05, Number(flat) || 1));
     mesh.width = drawnWidth * (mirror ? -1 : 1);
-    mesh.height = drawnWidth * (fileHeight / Math.max(1, fileWidth));
+    mesh.height = drawnWidth * (fileHeight / Math.max(1, fileWidth)) * flatK;
     mesh.position.set(x, y);
     mesh.elevation = 0;
     mesh.sortLayer = PrimaryCanvasGroup.SORT_LAYERS.TOKENS;
@@ -210,7 +220,46 @@
     mesh.alpha = alpha;
     if (tint !== null) mesh.tint = tint;
     if (additive) mesh.blendMode = PIXI.BLEND_MODES.ADD;
+    if (Number(hue)) {
+      const turn = new PIXI.ColorMatrixFilter();
+      turn.hue(Number(hue), false);
+      mesh.filters = [turn];
+    }
     canvas.primary.addChild(mesh);
+
+    // Spawn: scale and alpha are driven per frame from the clip's own clock.
+    const baseW = mesh.scale.x;
+    const baseH = mesh.scale.y;
+    const startedAt = performance.now();
+    let spawnTick = null;
+    if (spawn) {
+      mesh.alpha = 0;
+      mesh.scale.set(baseW * SPAWN.from, baseH * SPAWN.from);
+      spawnTick = () => {
+        try {
+          if (mesh.destroyed) return;
+          const e = (performance.now() - startedAt) / SPAWN.inMs;
+          const u = Math.min(1, e);
+          const back = 1 + (SPAWN.overshoot + 1) * Math.pow(u - 1, 3) + SPAWN.overshoot * Math.pow(u - 1, 2);   // easeOutBack
+          let k = SPAWN.from + (1 - SPAWN.from) * back;
+          let a = Math.min(1, e * 1.4);
+          const total = video ? (video.duration || 0) : (durationMs || IMAGE_DEFAULT_MS) / 1000;
+          const elapsed = video ? video.currentTime : (performance.now() - startedAt) / 1000;
+          const left = total - elapsed;
+          if (total > 0 && left < SPAWN.outS) {
+            const o = Math.max(0, left / SPAWN.outS);
+            a *= o;
+            k *= 0.9 + (0.1 * o);
+          }
+          mesh.scale.set(baseW * k, baseH * k);
+          mesh.alpha = alpha * a;
+        } catch (err) {
+          console.warn(INSTALL_TAG, "Spawn frame failed; showing it as it is.", err);
+          try { canvas.app.ticker.remove(spawnTick); } catch (_) {}
+        }
+      };
+      canvas.app.ticker.add(spawnTick);
+    }
 
     return new Promise((resolve) => {
       let timer = null;
@@ -220,6 +269,7 @@
         if (stopped) return;
         stopped = true;
         clearTimeout(timer);
+        if (spawnTick) { try { canvas.app.ticker.remove(spawnTick); } catch (_) {} }
         playing.get(sourceId)?.delete(stop);
         try { mesh.destroy(); } catch (_) {}
         if (video) {

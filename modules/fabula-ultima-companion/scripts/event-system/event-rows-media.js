@@ -753,6 +753,9 @@
         sort: data.layer === "behind" ? worldFx.SORT.BEHIND_TOKENS : worldFx.SORT.OVER_TOKENS,
         alpha: opacity,
         additive: data.additive === true,
+        flat: clampNumber(data.flatPct, 5, 100, 100) / 100,
+        hue: clampNumber(data.hue, -180, 180, 0),
+        spawn: data.spawn === true,
         durationMs: Math.max(0, Logic.toNumber(data.durationMs, 0))
       });
       return;
@@ -826,6 +829,9 @@
       opacity: 1,
       layer: "over",
       additive: false,
+      flatPct: 100,
+      hue: 0,
+      spawn: false,
       seconds: 0,
       wait: true
     },
@@ -847,6 +853,9 @@
         opacity: clampNumber(row?.opacity, 0, 1, 1),
         layer: pickLayer(row?.layer),
         additive: row?.additive === true,
+        flatPct: clampNumber(row?.flatPct, 5, 100, 100),
+        hue: clampNumber(row?.hue, -180, 180, 0),
+        spawn: row?.spawn === true,
         durationMs
       });
 
@@ -891,6 +900,13 @@
            <label><input type="checkbox" class="oni-event-row-anim-additive" ${row.additive === true ? "checked" : ""} /> glowing light (additive)</label>`,
           "Over everything rides the map. The other two sit among the tokens and stay where they start."
         )}</div>`,
+        `<div class="oni-event-row-anim-floor-wrap">${kit.field(
+          "On the floor",
+          `${kit.numberInput("oni-event-row-anim-flat", clampNumber(row.flatPct, 5, 100, 100), { min: 5, max: 100, step: 1 })} % height
+           ${kit.numberInput("oni-event-row-anim-hue", clampNumber(row.hue, -180, 180, 0), { min: -180, max: 180, step: 5 })} ° colour turn
+           <label><input type="checkbox" class="oni-event-row-anim-spawn" ${row.spawn === true ? "checked" : ""} /> spawn (grow in, fade out)</label>`,
+          "Behind or in front of tokens only. Height below 100 lays a circle flat on the floor at the map's angle (66 for Maelstrom Confluence's sigils). The colour turn shifts every hue, e.g. 40 makes a blue circle violet."
+        )}</div>`,
         kit.field(
           "Duration (s)",
           kit.numberInput("oni-event-row-anim-seconds", Logic.toNumber(row.seconds, 0) > 0 ? row.seconds : "", { min: 0, max: ANIMATION_CAP_MS / 1000, step: 0.1, placeholder: "auto" }),
@@ -906,6 +922,7 @@
         body.querySelector(".oni-event-row-anim-fit-wrap").hidden = !fullscreen;
         body.querySelector(".oni-event-row-anim-scale-wrap").hidden = fullscreen;
         body.querySelector(".oni-event-row-anim-layer-wrap").hidden = fullscreen;
+        body.querySelector(".oni-event-row-anim-floor-wrap").hidden = fullscreen;
       };
       whereEl.addEventListener("change", sync);
       sync();
@@ -921,6 +938,9 @@
       opacity: clampNumber(kit.readNumber(rowEl, ".oni-event-row-anim-opacity", 1), 0, 1, 1),
       layer: pickLayer(kit.readText(rowEl, ".oni-event-row-anim-layer", "over")),
       additive: !!kit.own(rowEl, ".oni-event-row-anim-additive")?.checked,
+      flatPct: clampNumber(kit.readNumber(rowEl, ".oni-event-row-anim-flat", 100), 5, 100, 100),
+      hue: clampNumber(kit.readNumber(rowEl, ".oni-event-row-anim-hue", 0), -180, 180, 0),
+      spawn: !!kit.own(rowEl, ".oni-event-row-anim-spawn")?.checked,
       seconds: Math.max(0, kit.readNumber(rowEl, ".oni-event-row-anim-seconds", 0)),
       wait: kit.readWait(rowEl, true)
     })

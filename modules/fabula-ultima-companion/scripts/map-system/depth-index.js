@@ -556,6 +556,17 @@
       return Math.pow(f, cfg.speed);
     },
 
+    /**
+     * Depth factor for feet at map y on this scene (1 off a depth map). Jump To
+     * (event-rows-jump.js) grows or shrinks its sprite copy by the ratio of the
+     * two ends of a hop, so it lands at the size the token is drawn at there.
+     */
+    factorAtY(y) {
+      const cfg = getConfig();
+      if (!cfg || cfg.sortOnly) return 1;
+      return factorForY(Number(y) || 0, cfg);
+    },
+
     /** Depth factor a token would be drawn at right now (debug aid). */
     factorForToken(token) {
       const cfg = getConfig();

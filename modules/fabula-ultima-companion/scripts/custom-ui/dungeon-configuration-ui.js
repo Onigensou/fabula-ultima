@@ -88,6 +88,9 @@
   const PARALLAX_FAR_KEY     = "parallaxFar";      // number: how much slower far scenery scrolls
   const PARALLAX_NEAR_KEY    = "parallaxNear";     // number: how much faster near rocks scroll
   const PARALLAX_DOF_KEY     = "parallaxDof";      // number: blur toward the far plane, 0..1
+  const PARALLAX_MIST_KEY    = "parallaxMist";     // boolean: open sky is churning mist (needs <bg>.mist.webp)
+  const MIST_CHURN_KEY       = "mistChurn";        // number: how far the mist flows, map px
+  const MIST_SPEED_KEY       = "mistSpeed";        // number: flow cycles per second
   const OCCLUDERS_ENABLED_KEY = "occludersEnabled"; // boolean: foreground occluders (foreground-occluder.js)
   const OCCLUDER_SILHOUETTE_KEY = "occluderSilhouette"; // boolean: party silhouette behind objects
   // Invoker wellsprings present on this scene. Per-element boolean under general
@@ -891,6 +894,25 @@
                 camera's speed), and how much the far plane blurs. Defaults <b>0.30</b> / <b>0.18</b> / <b>0.35</b>.
               </p>
             </div>
+
+            <div class="form-group">
+              <label>Churning Mist</label>
+              <div class="form-fields" style="display:flex;align-items:center;gap:8px;">
+                <input type="checkbox" class="oni-parallax-mist"
+                       name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${PARALLAX_MIST_KEY}" data-dtype="Boolean" />
+                <input type="number" class="oni-mist-churn" step="1" min="0" max="120"
+                       name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${MIST_CHURN_KEY}"
+                       placeholder="46" style="flex:1 1 0;" />
+                <input type="number" class="oni-mist-speed" step="0.01" min="0" max="1"
+                       name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${MIST_SPEED_KEY}"
+                       placeholder="0.14" style="flex:1 1 0;" />
+              </div>
+              <p class="notes">
+                With Walk Parallax on: the open sky drifts and churns behind the islands. Needs the weight map's
+                mist channel and a clean plate <code>&lt;background&gt;.mist.webp</code> beside it. Strength (map px)
+                and speed (cycles per second); defaults <b>46</b> / <b>0.14</b>.
+              </p>
+            </div>
           </div>
 
           <div class="oni-occluder-group">
@@ -1309,6 +1331,12 @@
       depthNumField("oni-parallax-far",      PARALLAX_FAR_KEY);
       depthNumField("oni-parallax-near",     PARALLAX_NEAR_KEY);
       depthNumField("oni-parallax-dof",      PARALLAX_DOF_KEY);
+      depthNumField("oni-mist-churn",        MIST_CHURN_KEY);
+      depthNumField("oni-mist-speed",        MIST_SPEED_KEY);
+      const mistCb = generalPanel?.querySelector("input.oni-parallax-mist");
+      if (mistCb) {
+        mistCb.checked = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${PARALLAX_MIST_KEY}`, false), false);
+      }
       const parallaxCb = generalPanel?.querySelector("input.oni-parallax-enabled");
       if (parallaxCb) {
         parallaxCb.checked = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${PARALLAX_ENABLED_KEY}`, false), false);

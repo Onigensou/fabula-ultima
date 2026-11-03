@@ -28,7 +28,16 @@
 // drift off it). Client-local; writes nothing. Per-user switch: Party Menu ->
 // Config -> Graphic -> Walk-map parallax. Reduced-motion users get none.
 //
-// Live tuning: FUCompanion.api.walkParallax.tune({ far: 0.4, near: 0.25, dof: 0.5 })
+// Churning mist (Scene Config "Walk Parallax", mist on): for a painting whose
+// open sky is mist, the weight map's GREEN channel marks the mist (1) apart
+// from the solid ground (0), and a clean plate <bg>.mist.webp holds the mist
+// with every island lifted out and filled. Mist pixels then read the clean
+// plate (never the islands they slide past) through a slow curl-noise flow,
+// so the mist drifts and churns while the islands stay put. Off unless the
+// scene asks for it, so older grey weight maps are untouched.
+// First use: Maelstrom Confluence (Valley_Map015).
+//
+// Live tuning: FUCompanion.api.walkParallax.tune({ far: 0.4, near: 0.25, dof: 0.5, churn: 46, speed: 0.14 })
 // (session only; copy the numbers into the scene's flags to keep them).
 // ============================================================================
 
@@ -40,8 +49,10 @@ const TAG = "[ONI][WalkParallax]";
 const warn = (...a) => console.warn(TAG, ...a);
 
 // Scene flags, under flags.<module>.oniFabula.general (dungeon-configuration-ui.js).
-const KEYS = { enabled: "parallaxEnabled", far: "parallaxFar", near: "parallaxNear", dof: "parallaxDof" };
-const DEFAULTS = Object.freeze({ far: 0.30, near: 0.18, dof: 0.35, blurPx: 5 });   // far / near: the user's pick on Valley Entrance, 2026-10-30
+const KEYS = { enabled: "parallaxEnabled", far: "parallaxFar", near: "parallaxNear", dof: "parallaxDof",
+  mist: "parallaxMist", churn: "mistChurn", speed: "mistSpeed" };
+// churn: how far the mist flows, map px; speed: flow cycles per second (the user's picks on Maelstrom Confluence)
+const DEFAULTS = Object.freeze({ far: 0.30, near: 0.18, dof: 0.35, blurPx: 5, churn: 46, speed: 0.14 });   // far / near: the user's pick on Valley Entrance, 2026-10-30
 
 const VERT = `
 attribute vec2 aVertexPosition;
@@ -67,7 +78,22 @@ uniform vec2 uCenter;
 uniform float uFar;
 uniform float uNear;
 uniform float uDof;
+uniform sampler2D uMist;
+uniform float uMistOn;
+uniform float uTime;
+uniform float uChurn;
+uniform float uSpeed;
+uniform vec2 uSize;
 float signedW(vec2 uv) { return texture2D(uWeight, clamp(uv, 0.0, 1.0)).r * 2.0 - 1.0; }
+float hash(vec2 q) { return fract(sin(dot(q, vec2(127.1, 311.7))) * 43758.5453); }
+float noise(vec2 q) { vec2 i = floor(q), f = fract(q); vec2 u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y); }
+float fbm(vec2 q) { float v = 0.0, a = 0.5; for (int i = 0; i < 4; i++) { v += a * noise(q); q = q * 2.03 + vec2(1.7, 9.2); a *= 0.5; } return v; }
+// A slow swirl (curl of noise) plus a gentle drift, in map px.
+vec2 flowAt(vec2 px, float t) { vec2 q = px * 0.0032; float e = 0.55, tt = t * 0.045;
+  float n1 = fbm(q + vec2(0.0, e) + tt), n2 = fbm(q - vec2(0.0, e) + tt), n3 = fbm(q + vec2(e, 0.0) - tt), n4 = fbm(q - vec2(e, 0.0) - tt);
+  vec2 curl = vec2(n1 - n2, n4 - n3); return normalize(curl + 1e-5) * (0.55 + 0.9 * fbm(q * 1.7 - tt)) + vec2(0.3, -0.06); }
+vec3 mistAt(vec2 uv) { return texture2D(uMist, clamp(uv, 0.0, 1.0)).rgb; }
 float shiftOf(vec2 uv) { float w = signedW(uv); return w > 0.0 ? w * uFar : w * uNear; }
 void main() {
   vec2 p = vUV;
@@ -77,7 +103,25 @@ void main() {
   }
   p = clamp(p, 0.0, 1.0);
   float b = clamp(uDof * max(signedW(p), 0.0), 0.0, 1.0);
-  gl_FragColor = mix(texture2D(uSampler, p), texture2D(uBlur, p), b);
+  vec4 col = mix(texture2D(uSampler, p), texture2D(uBlur, p), b);
+  if (uMistOn > 0.5) {
+    // mist where this pixel shows mist: the clean plate, flowing; ground stays the painting
+    float m = texture2D(uWeight, vUV).g;
+    if (m > 0.002) {
+      vec2 pp = p * uSize;
+      float luma = dot(mistAt(p), vec3(0.3, 0.5, 0.2));
+      vec2 f = flowAt(pp, uTime) * uChurn * smoothstep(0.08, 0.32, luma);   // dark spires and trees barely move
+      float ph0 = fract(uTime * uSpeed), ph1 = fract(uTime * uSpeed + 0.5), w0 = 1.0 - abs(1.0 - 2.0 * ph0);
+      vec3 mist = mistAt((pp - f * (ph0 - 0.5)) / uSize) * w0 + mistAt((pp - f * (ph1 - 0.5)) / uSize) * (1.0 - w0);
+      if (uChurn > 0.5) {
+        float n = fbm(pp * 0.0024 + vec2(uTime * 0.021, -uTime * 0.013));
+        mist *= 0.86 + 0.3 * n;
+        mist += vec3(0.42, 0.15, 0.58) * smoothstep(0.56, 0.86, n) * 0.2;
+      }
+      col.rgb = mix(col.rgb, mist, m);
+    }
+  }
+  gl_FragColor = col;
 }`;
 
 const state = {
@@ -86,7 +130,9 @@ const state = {
   mesh: null,
   blurRT: null,
   bgTex: null,
+  mistTex: null,
   rect: null,
+  t0: performance.now(),
   building: null,
   ticking: false,
   override: {},
@@ -123,6 +169,10 @@ function configFor(scene) {
     far: clamp(num(o.far ?? g[KEYS.far], DEFAULTS.far), 0, 0.6),
     near: clamp(num(o.near ?? g[KEYS.near], DEFAULTS.near), 0, 0.6),
     dof: clamp(num(o.dof ?? g[KEYS.dof], DEFAULTS.dof), 0, 1),
+    mist: g[KEYS.mist] === true,
+    mistMap: `${WEIGHT_DIR}/${key}.mist.webp`,
+    churn: clamp(num(o.churn ?? g[KEYS.churn], DEFAULTS.churn), 0, 120),
+    speed: clamp(num(o.speed ?? g[KEYS.speed], DEFAULTS.speed), 0, 1),
   };
 }
 
@@ -147,6 +197,7 @@ function teardownMesh() {
   if (m) { try { m.parent?.removeChild(m); m.destroy({ children: true }); } catch { /* */ } }
   if (state.blurRT) { try { state.blurRT.destroy(true); } catch { /* */ } state.blurRT = null; }
   state.bgTex = null;
+  state.mistTex = null;
 }
 
 async function buildMesh() {
@@ -163,6 +214,12 @@ async function buildMesh() {
   try { weightTex = await loadTexture(cfg.weightMap); } catch { weightTex = null; }
   if (canvas?.scene?.id !== sceneId || canvas.primary?.background?.texture !== bgTex) return;
   if (!weightTex?.valid) { warn(`no weight map at ${cfg.weightMap}; parallax off for this scene`); state.cfg = null; return; }
+  let mistTex = null;
+  if (cfg.mist) {
+    try { mistTex = await loadTexture(cfg.mistMap); } catch { mistTex = null; }
+    if (canvas?.scene?.id !== sceneId || canvas.primary?.background?.texture !== bgTex) return;
+    if (!mistTex?.valid) { warn(`no clean plate at ${cfg.mistMap}; mist stays still`); mistTex = null; }
+  }
 
   const d = canvas.dimensions;
   const rect = { x: d.sceneX, y: d.sceneY, w: d.sceneWidth, h: d.sceneHeight };
@@ -174,6 +231,8 @@ async function buildMesh() {
   const shader = PIXI.Shader.from(VERT, FRAG, {
     uSampler: bgTex, uBlur: state.blurRT, uWeight: weightTex,
     uCenter: [0.5, 0.5], uFar: cfg.far, uNear: cfg.near, uDof: cfg.dof,
+    uMist: mistTex ?? bgTex, uMistOn: mistTex ? 1 : 0, uTime: 0, uChurn: cfg.churn, uSpeed: cfg.speed,
+    uSize: [rect.w, rect.h],
   });
   const mesh = new PIXI.Mesh(geom, shader);
   mesh.name = "walkParallax";
@@ -187,6 +246,7 @@ async function buildMesh() {
 
   state.mesh = mesh;
   state.bgTex = bgTex;
+  state.mistTex = mistTex;
   state.rect = rect;
   onTick();
 }
@@ -211,6 +271,11 @@ function onTick() {
     un.uFar = state.cfg.far;
     un.uNear = state.cfg.near;
     un.uDof = state.cfg.dof;
+    if (state.mistTex) {
+      un.uTime = (performance.now() - state.t0) / 1000;
+      un.uChurn = state.cfg.churn;
+      un.uSpeed = state.cfg.speed;
+    }
   } catch (e) {
     warn("tick failed; parallax off until the scene is redrawn", e);
     stop();

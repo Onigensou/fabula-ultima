@@ -617,6 +617,69 @@
     return art;
   }
 
+  // ------------------------------------------------------------
+  // Stride frame (Jump To)
+  // ------------------------------------------------------------
+  // The first frame of the walk art for a direction: a strip's first frame, or
+  // a video's frame at STRIDE_AT_S copied once into an image (a video texture
+  // would keep playing). Returns { texture, mirror } or null when the character
+  // has no walk art; the jump then keeps the standing image.
+  const STRIDE_AT_S = 0.02;
+  const strideBySrc = new Map();   // src -> Promise<PIXI.Texture|null>
+
+  function videoFrameTexture(src) {
+    return new Promise((resolve) => {
+      const video = document.createElement("video");
+      video.crossOrigin = "anonymous";
+      video.muted = true;
+      video.playsInline = true;
+      video.preload = "auto";
+      const done = (tex) => { try { video.removeAttribute("src"); video.load(); } catch (_) {} resolve(tex); };
+      const timer = setTimeout(() => done(null), 5000);
+      video.addEventListener("loadeddata", () => { try { video.currentTime = STRIDE_AT_S; } catch (_) { clearTimeout(timer); done(null); } }, { once: true });
+      video.addEventListener("seeked", () => {
+        clearTimeout(timer);
+        try {
+          const c = document.createElement("canvas");
+          c.width = video.videoWidth;
+          c.height = video.videoHeight;
+          c.getContext("2d").drawImage(video, 0, 0);
+          done(c.width ? PIXI.Texture.from(c) : null);
+        } catch (err) {
+          console.warn("[SpriteFacing] Could not copy a stride frame", src, err);
+          done(null);
+        }
+      }, { once: true });
+      video.addEventListener("error", () => { clearTimeout(timer); done(null); }, { once: true });
+      video.src = src;
+    });
+  }
+
+  async function strideFor(token, dx, dy) {
+    if (!state.active || state.dungeon || Math.hypot(dx, dy) < 1e-6) return null;
+    const { dir, side } = SECTORS[sectorOf(dx, dy)];
+    const pick = pickSlot(token, "walk", dir);
+    if (!pick?.src) return null;
+
+    if (!strideBySrc.has(pick.src)) {
+      strideBySrc.set(pick.src, isVideoSrc(pick.src)
+        ? videoFrameTexture(pick.src)
+        : Promise.resolve(loadTexture(pick.src)).then((tex) => {
+          if (!tex?.valid) return null;
+          const idle = token.texture;
+          const aspect = (idle?.width && idle?.height) ? idle.width / idle.height : 1;
+          const count = Math.max(1, Math.round(tex.width / (tex.height * aspect)));
+          return new PIXI.Texture(tex.baseTexture, new PIXI.Rectangle(tex.frame.x, tex.frame.y, Math.floor(tex.width / count), tex.height));
+        }).catch(() => null));
+    }
+
+    const texture = await strideBySrc.get(pick.src);
+    if (!texture?.valid) { strideBySrc.delete(pick.src); return null; }
+    const facing = side ?? entryFor(token).facing;
+    const mirror = !NEVER_MIRRORED.has(pick.slot) && facing !== drawnFacing(token);
+    return { texture, mirror };
+  }
+
   // Put a texture on the mesh and let Foundry size the mesh to it, the same
   // way it sizes the standing art: fitted to the token's box. Walk art drawn
   // on the same canvas size as the standing sprite therefore shows at the
@@ -1673,6 +1736,10 @@
     poseArtSrc(token, pose) { return token && POSE_FIELDS[pose] ? poseSrcFor(token, pose) : ""; },
     isPosed(token) { return !!poseOf(token); },
     POSE_FLAG,
+
+    // Jump To (event-rows-jump.js): one held frame of the walk art for a hop
+    // of dx, dy, so a jump reads as a leap mid-stride, not a walk in the air.
+    strideFor(token, dx, dy) { return token ? strideFor(token, dx, dy) : Promise.resolve(null); },
 
     // Testing: play this walk art for the party token on this client,
     // whatever the character sheet says. Pass nothing to clear it.

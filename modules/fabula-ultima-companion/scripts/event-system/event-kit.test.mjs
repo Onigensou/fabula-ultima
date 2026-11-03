@@ -820,5 +820,72 @@ await quiet(async () => {
   verify("runRows: each row is told which row comes next", seen.join() === "2,");
 }
 
+// ---------------------------------------------------------------------------
+// Jump To and Run Code
+// ---------------------------------------------------------------------------
+{
+  for (const file of ["event-rows-jump.js", "event-rows-code.js"]) load(file);
+  globalThis.ui = { notifications: { warn: () => {}, error: () => {}, info: () => {} } };
+
+  // A scene with a party token and two hidden markers on a 60 px grid.
+  const updates = [];
+  const tokenDoc = (id, name, x, y, hidden = false) => ({ id, name, x, y, width: 1, height: 1, hidden, actor: null });
+  const scene = {
+    id: "jumpScene",
+    grid: { size: 60 },
+    tokens: null,
+    async updateEmbeddedDocuments(kind, changes) {
+      updates.push(...changes);
+      for (const c of changes) Object.assign(this.tokens.get(c._id), { x: c.x, y: c.y });
+    }
+  };
+  const docs = [tokenDoc("party", "Party", 100, 100), tokenDoc("s1", "Stone 01", 200, 100, true), tokenDoc("s2", "Stone 02", 300, 160, true)];
+  docs.forEach(d => { d.parent = scene; });
+  scene.tokens = { contents: docs, get: (id) => docs.find(d => d.id === id) ?? null };
+  const oldScenes = game.scenes;
+  game.scenes = { get: (id) => (id === scene.id ? scene : null) };
+
+  const hops = [];
+  Client.register("jump.hop", (data) => { hops.push(data); });
+  const Jump = ES.Jump;
+
+  check("Jump To: both new actions are registered", EventRegistry.has("jumpTo") && EventRegistry.has("runCode"));
+  const p = Jump.resolvePoint(scene, "845, 562");
+  check("Jump To: a line like '845, 562' is a map point", p?.x === 845 && p?.y === 562);
+  const m = Jump.resolvePoint(scene, "stone 02");
+  check("Jump To: a marker is found by name (any case), at its centre", m?.x === 330 && m?.y === 190);
+  check("Jump To: an unknown marker is null", Jump.resolvePoint(scene, "Stone 99") === null);
+
+  const def = EventRegistry.peek("jumpTo");
+  check("Jump To: the summary lists the path", def.summary({ target: "party", path: "Stone 01\nStone 02" }) === "the party → Stone 01 → Stone 02");
+
+  const t0 = Date.now();
+  const res = await def.execute({ target: "party", path: "Stone 01\nStone 02", hopMs: 150, pauseMs: 0, arcPct: 100 }, { sceneId: scene.id, tokenId: "party", tileId: null });
+  const party = scene.tokens.get("party");
+  check("Jump To: the party lands on each marker in turn and ends on the last", res.ok === true && updates.length === 2 && party.x === 300 && party.y === 160);
+  check("Jump To: every client is sent one hop per marker, from where the last one ended",
+    hops.length === 2 && hops[0].from.x === 130 && hops[0].to.x === 230 && hops[1].from.x === 230 && hops[1].to.y === 190);
+  check("Jump To: the arc grows with the hop and the default take-off sound is on", hops[0].arc > 30 && /SE_JUMPLANDA/.test(hops[0].takeoffSrc));
+  check("Jump To: a hop takes the squeeze, the flight and the landing", (Date.now() - t0) >= 2 * (260 + 70 + 120 + 190) - 50);
+
+  const miss = await def.execute({ target: "party", path: "Stone 99" }, { sceneId: scene.id, tokenId: "party" });
+  check("Jump To: a missing marker skips the jump, with the reason", miss.ok === false && miss.reason === "missingMarker" && updates.length === 2);
+
+  // Run Code
+  const code = EventRegistry.peek("runCode");
+  check("Run Code: a syntax error is caught before running", !!ES.RunCode.syntaxError("await ctx.jump(") && ES.RunCode.syntaxError("return 1;") === null);
+  let seenMarker = null;
+  globalThis.__runCodeProbe = (v) => { seenMarker = v; };
+  const okRun = await code.execute({ code: "globalThis.__runCodeProbe(ctx.marker('Stone 01')); await ctx.wait(5);" }, { sceneId: scene.id, tokenId: "party", tileId: null });
+  check("Run Code: the script runs with ctx and is awaited", okRun.ok === true && seenMarker?.x === 230 && seenMarker?.y === 130);
+  const thrown = await code.execute({ code: "throw new Error('boom');" }, { sceneId: scene.id, tokenId: "party" });
+  check("Run Code: a script that throws ends the event", thrown.ok === false && thrown.stop === true);
+  const broken = await code.execute({ code: "await ctx.jump(" }, { sceneId: scene.id, tokenId: "party" });
+  check("Run Code: a script that does not parse ends the event without running", broken.ok === false && broken.stop === true && broken.reason === "syntax");
+  await code.execute({ code: "await ctx.jumpPath(ctx.party, ['Stone 01'], { hopMs: 150 });" }, { sceneId: scene.id, tokenId: "party", tileId: null });
+  check("Run Code: ctx.jumpPath jumps the same way as the Jump To row", party.x === 200 && party.y === 100 && hops.length === 3);
+  game.scenes = oldScenes;
+}
+
 console.log(fail ? `\n${fail} FAILED` : "\nall passed");
 process.exit(fail ? 1 : 0);

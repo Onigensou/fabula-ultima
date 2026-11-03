@@ -173,6 +173,21 @@
             case "pauseForGM":
               if ((row.choices ?? []).some(c => !String(c.label ?? "").trim())) add("warn", "Pause for GM has a choice with no text.");
               break;
+            case "jumpTo": {
+              const lines = String(row.path ?? "").split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+              if (!lines.length) add("warn", "Jump To with no path.");
+              for (const line of lines) {
+                if (/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test(line)) continue;
+                if (!hasToken(scene, line)) add("warn", `Jump To names the marker "${line}", but no token on this scene has that name. The jump would be skipped.`);
+              }
+              break;
+            }
+            case "runCode": {
+              const err = window.oni.EventSystem.RunCode?.syntaxError?.(row.code);
+              if (!String(row.code ?? "").trim()) add("warn", "Run Code with no code.");
+              else if (err) add("error", `Run Code does not parse: ${err}`);
+              break;
+            }
             case "condition":
               noteCondition(row.condition, at, switches, variables);
               if (!row.thenRows?.length && !row.elseRows?.length) add("warn", "Condition with nothing under Then or Else.");
