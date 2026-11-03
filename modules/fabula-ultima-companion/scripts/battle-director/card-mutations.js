@@ -1205,10 +1205,12 @@ async function applyAdjustDefenseMutation(ctx, cand, row) {
   }
 
   // Locate the reactor's own per-target slot (targets / perTargets are parallel).
+  // No slot YET is not a failure: a creature the add_target splash or the GM
+  // brings in gets its row after this pass — see placeDefenderMutation.
   const idx = ctx.targets.findIndex((t) => t?.actorUuid === reactorUuid);
   if (idx < 0) {
-    log(`adjust_defense: reactor ${reactorUuid} not among the action's targets — no-op`);
-    return "failed";
+    log(`adjust_defense: reactor ${reactorUuid} not among the action's targets (yet) — no-op`);
+    return "unplaced";
   }
   const pt = ctx.perTargets[idx];
   if (!pt) return "failed";
@@ -1323,9 +1325,10 @@ async function applyAdjustDamageMutation(ctx, cand, row) {
   if (idx < 0 && cand?.subjectActorUuid) {
     idx = ctx.targets.findIndex((t) => t?.actorUuid === cand.subjectActorUuid);
   }
+  // No slot YET is not a failure either — see placeDefenderMutation.
   if (idx < 0) {
-    log(`adjust_damage: neither reactor ${reactorUuid} nor subject ${cand?.subjectActorUuid ?? "—"} among the action's targets — no-op`);
-    return "failed";
+    log(`adjust_damage: neither reactor ${reactorUuid} nor subject ${cand?.subjectActorUuid ?? "—"} among the action's targets (yet) — no-op`);
+    return "unplaced";
   }
   const pt = ctx.perTargets[idx];
   if (!pt) return "failed";
@@ -1363,6 +1366,41 @@ async function applyAdjustDamageMutation(ctx, cand, row) {
   log(`adjust_damage: ${op} ${amount} on ${pt.name ?? reactorUuid} — damage ${oldDmg} → ${newDmg} (via ${via})`);
   recordCarrierConsume(ctx, cand, row);
   return "applied";
+}
+
+// ── Defender changes that arrive before their creature's row ─────────────────
+// adjust_defense / adjust_damage change the REACTOR's own slot, but Phase 2 runs
+// before the Phase 3 add_target splash and before the GM's added targets. A
+// creature brought in by either had no row yet, so its own "when targeted" change
+// was dropped while the rest of its chain still ran at RESOLVE: Ninja Log on a hit
+// the GM moved onto Zarg was spent and the damage landed anyway (2026-11-04). Such
+// a change comes back `unplaced` and is placed here once the row exists — after
+// Phase 3 for the splash, and after the GM's additions in applyTargetSetMutation.
+// Placing it on the row is all it takes: the override lists the recompute
+// re-applies are read off the rows.
+function placeDefenderMutation(ctx, u) {
+  return u.kind === "adjust_defense"
+    ? applyAdjustDefenseMutation(ctx, u.cand, u.row)
+    : applyAdjustDamageMutation(ctx, u.cand, u.row);
+}
+
+// The `creature_check_adjusted` causer of one applied mutation: the reactor for a
+// third-party reaction, else the action-taker (a performer-side one like Magical
+// Artillery / Cognitive Focus, which carries no reactorActorUuid).
+function checkAdjusterOf(ar, cand, mechanism) {
+  const causerActorUuid = cand?.reactorActorUuid
+    ?? ar?.attacker?.actorUuid ?? ar?.attackerActorRef ?? null;
+  const causerTokenUuid = cand?.reactorTokenUuid
+    ?? ar?.attacker?.tokenUuid ?? null;
+  return causerActorUuid ? { causerActorUuid, causerTokenUuid, mechanism } : null;
+}
+
+// A per-target override list (defenseOverride / damageOverride), as the recompute
+// takes it: keyed by token, falling back to actor.
+function overridesOf(rows, key) {
+  return (rows ?? [])
+    .filter((p) => p?.[key])
+    .map((p) => ({ tokenUuid: p.tokenUuid, actorUuid: p.actorUuid, ...p[key] }));
 }
 
 // ── Cost adjustment (effect_kind: "adjust_cost", card-mutation path) ──────
@@ -1703,6 +1741,9 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
   accepted = gmReactionCut.kept;
   const mut = await applyAcceptedCardMutations(ar, accepted, remotePrompt, costOnlyAccepted);
   if (mut.cancelled) return { cancelled: true };
+  // Taken off here so the candidate objects never ride out with the result.
+  const unplaced = mut.unplacedDefenderMutations ?? [];
+  delete mut.unplacedDefenderMutations;
   let mutatedTargets = mut.targets;
   let perTargetResults = mut.perTargetResults;
   if (mut.negated) {
@@ -1770,9 +1811,7 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
   // core mutation and THREADED INTO the recompute (like accuracyOverride), so the
   // recompute itself honors them — one place re-derives hit/miss for every override
   // kind, instead of patching the result after the recompute clobbers it.
-  let defenseOverrides = (mut.perTargetResults ?? [])
-    .filter((p) => p?.defenseOverride)
-    .map((p) => ({ tokenUuid: p.tokenUuid, actorUuid: p.actorUuid, ...p.defenseOverride }));
+  let defenseOverrides = overridesOf(mut.perTargetResults, "defenseOverride");
   // GM-set DEF/MDEF joins the same list (composed at its FRONT, so it wins on a
   // slot a reaction also bumped — the consumer resolves by first match) and
   // rides the existing per-target re-apply. COMPOSED
@@ -1783,9 +1822,7 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
   // Per-target incoming-damage overrides (adjust_damage / Ninja Log): collected
   // like defenseOverrides and THREADED INTO the recompute so the rebuilt damage
   // is re-soaked, instead of the recompute clobbering the reduction.
-  const damageOverrides = (mut.perTargetResults ?? [])
-    .filter((p) => p?.damageOverride)
-    .map((p) => ({ tokenUuid: p.tokenUuid, actorUuid: p.actorUuid, ...p.damageOverride }));
+  let damageOverrides = overridesOf(mut.perTargetResults, "damageOverride");
   let hitTokenUuids = null;
   // The recomputed action-level (headline) damage. When a mutation changed the roll
   // (check_reroll), the COMPUTE-time payload.damage has the STALE HR baked into
@@ -1845,6 +1882,35 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
         }
         mutatedTargets = addedTargets;
         perTargetResults = addedRows;
+      }
+      // A defender reaction of a creature the GM just added found no row in the
+      // reaction pass (placeDefenderMutation): place it on the added row now so it
+      // joins the override lists. The GM's own DEF edit (composed next, at the
+      // front) and hand-set damage (applied last) still overrule it.
+      if (unplaced.length && toAdd.length) {
+        const placeCtx = {
+          ar: { ...ar, roll: gmRoll ?? mut.roll ?? ar.roll },
+          targets: mutatedTargets,
+          perTargets: [...perTargetResults],
+          accuracyOverride,
+          carrierConsumes: mut.carrierConsumes ?? null,
+        };
+        let placed = 0;
+        for (const u of unplaced) {
+          if (await placeDefenderMutation(placeCtx, u) !== "applied") continue;
+          placed += 1;
+          if (u.kind === "adjust_defense") {
+            const a = checkAdjusterOf(placeCtx.ar, u.cand, "adjust_defense");
+            if (a) (mut.checkAdjusters ??= []).push(a);
+          }
+        }
+        if (placed) {
+          perTargetResults = placeCtx.perTargets;
+          mut.carrierConsumes = placeCtx.carrierConsumes ?? null;
+          mut.mutationsApplied = (mut.mutationsApplied ?? 0) + placed;
+          defenseOverrides = overridesOf(perTargetResults, "defenseOverride");
+          damageOverrides = overridesOf(perTargetResults, "damageOverride");
+        }
       }
       // NOW compose the GM's DEF/MDEF edits — against the POST-edit rows, so a
       // hand-added creature's slot resolves to its own actorUuid and its own
@@ -2021,12 +2087,11 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedCardReactio
   // commit path diffs baseline-vs-final hits to decide resultChanged + direction.
   const checkAdjusters = [];
   const pushAdjuster = (cand, mechanism) => {
-    const causerActorUuid = cand?.reactorActorUuid
-      ?? ctx.ar?.attacker?.actorUuid ?? ctx.ar?.attackerActorRef ?? null;
-    const causerTokenUuid = cand?.reactorTokenUuid
-      ?? ctx.ar?.attacker?.tokenUuid ?? null;
-    if (causerActorUuid) checkAdjusters.push({ causerActorUuid, causerTokenUuid, mechanism });
+    const a = checkAdjusterOf(ctx.ar, cand, mechanism);
+    if (a) checkAdjusters.push(a);
   };
+  // Defender changes whose creature had no row yet (placeDefenderMutation).
+  const unplaced = [];
 
   // Phase 0: negate_action — a performer/self reaction (Shadow Possession's
   // Creeped block variant) nullifies the WHOLE action: no hit, no damage, no
@@ -2126,12 +2191,14 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedCardReactio
         // (Verónica). Per-target; only the reactor's slot recomputes hit/miss.
         const result = await applyAdjustDefenseMutation(ctx, cand, row);
         if (result === "applied") { mutationsApplied += 1; pushAdjuster(cand, "adjust_defense"); }
+        else if (result === "unplaced") unplaced.push({ cand, row, kind });
       } else if (kind === "adjust_damage") {
         // Defender-side: the targeted creature reduces the damage IT is about to
         // take (Ninja Log → 0). Per-target; only the reactor's own slot. Skips
         // the outgoing stage (sender bonuses own that at RESOLVE).
         const result = await applyAdjustDamageMutation(ctx, cand, row);
         if (result === "applied") mutationsApplied += 1;
+        else if (result === "unplaced") unplaced.push({ cand, row, kind });
       } else if (kind === "adjust_grant") {
         // Performer/self reaction heal-boost (Cognitive Focus). Reaction-context
         // adjust_grant ONLY — Potion Rain's in-chain adjust_grant never appears as
@@ -2227,11 +2294,25 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedCardReactio
   // attacker-side add_target is tagged `_addTarget` and excluded upstream.
   mutationsApplied += await runAddTargetPhase(ctx, acceptedCardReactions);
 
+  // Phase 3b: a defender change whose creature arrived with the Phase 3 splash
+  // lands on its new row now. Anything still without a row waits for the GM's
+  // added targets (applyTargetSetMutation).
+  const stillUnplaced = [];
+  for (const u of unplaced) {
+    const result = await placeDefenderMutation(ctx, u);
+    if (result !== "applied") { stillUnplaced.push(u); continue; }
+    mutationsApplied += 1;
+    if (u.kind === "adjust_defense") pushAdjuster(u.cand, "adjust_defense");
+  }
+
   return {
     targets: ctx.targets,
     perTargetResults: ctx.perTargets,
     mutationsApplied,
     cancelled,
+    // Defender changes still without a row — candidate + effect row pairs, for
+    // applyTargetSetMutation only (it takes them off before returning).
+    unplacedDefenderMutations: stillUnplaced,
     accuracyOverride: ctx.accuracyOverride ?? null,
     grantOverride: ctx.grantOverride ?? null,
     costOverride: ctx.costOverride ?? null,
