@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-01T12:21:06.832Z",
+ "capturedAt": "2026-11-03T15:00:41.743Z",
  "count": 2604,
  "structure": {
   "(world) / Absorb MP": {
@@ -15603,7 +15603,7 @@
     "action_command": "spell",
     "class": "Spiritist",
     "cost": "10 x T MP",
-    "defense_target_type": "def",
+    "defense_target_type": "default",
     "duration": "Instantaneous",
     "on_activate_effect_ref": "heal_hp",
     "skill_range": "Range",
@@ -15623,7 +15623,7 @@
     "class": "Spiritist",
     "cost": "10 x T MP",
     "damage_bonus": "40",
-    "defense_target_type": "def",
+    "defense_target_type": "default",
     "duration": "Instantaneous",
     "isFacet": "true",
     "skill_range": "Range",
@@ -15641,7 +15641,7 @@
     "class": "Spiritist",
     "cost": "10 x T MP",
     "damage_bonus": "40",
-    "defense_target_type": "def",
+    "defense_target_type": "default",
     "duration": "Instantaneous",
     "isFacet": "true",
     "skill_range": "Range",
@@ -15656,7 +15656,7 @@
   "(world) / Healing Power": {
    "props": {
     "class": "Spiritist",
-    "defense_target_type": "def",
+    "defense_target_type": "default",
     "isReaction": "true",
     "skill_type": "Passive"
    },
@@ -37714,7 +37714,7 @@
     "action_command": "spell",
     "class": "Spiritist",
     "cost": "10 x T MP",
-    "defense_target_type": "def",
+    "defense_target_type": "default",
     "duration": "Instantaneous",
     "on_activate_effect_ref": "heal_hp",
     "skill_range": "Range",
@@ -40319,7 +40319,7 @@
     "action_command": "spell",
     "class": "Spiritist",
     "cost": "10 x T MP",
-    "defense_target_type": "def",
+    "defense_target_type": "default",
     "duration": "Instantaneous",
     "on_activate_effect_ref": "heal_hp",
     "skill_range": "Range",
@@ -40336,7 +40336,7 @@
   "Cherry / Healing Power": {
    "props": {
     "class": "Spiritist",
-    "defense_target_type": "def",
+    "defense_target_type": "default",
     "isReaction": "true",
     "skill_type": "Passive"
    },
@@ -50872,7 +50872,7 @@
     "action_command": "spell",
     "class": "Spiritist",
     "cost": "10 x T MP",
-    "defense_target_type": "def",
+    "defense_target_type": "default",
     "duration": "Instantaneous",
     "on_activate_effect_ref": "heal_hp",
     "skill_range": "Range",
@@ -53370,7 +53370,7 @@
     "action_command": "spell",
     "class": "Spiritist",
     "cost": "10 x T MP",
-    "defense_target_type": "def",
+    "defense_target_type": "default",
     "duration": "Instantaneous",
     "on_activate_effect_ref": "heal_hp",
     "skill_range": "Range",
@@ -53387,7 +53387,7 @@
   "Hina / Healing Power": {
    "props": {
     "class": "Spiritist",
-    "defense_target_type": "def",
+    "defense_target_type": "default",
     "isReaction": "true",
     "skill_type": "Passive"
    },
@@ -62803,7 +62803,7 @@
     "defense_target_type": "mdef",
     "duration": "Instantaneous",
     "isCheck": "true",
-    "on_activate_effect_ref": "ch_bleed",
+    "on_activate_effect_ref": "ch_root",
     "rolled_atr1": "DEX",
     "rolled_atr2": "INS",
     "skill_range": "Range",
@@ -62812,8 +62812,9 @@
     "type_damage": "Physical"
    },
    "effects": [
-    "ae_duplicate_mode=replace ae_template_ref=Bleed chain_steps=spend_stance effect_kind=apply_ae effect_label=ch_bleed target_ref=action_targets",
-    "ae_template_ref=Throwing Stance count=1 effect_kind=remove_ae effect_label=spend_stance include_persistent=true target_ref=self"
+    "ae_duplicate_mode=replace ae_template_ref=Bleed effect_kind=apply_ae effect_label=ch_bleed target_ref=hit_action_targets",
+    "ae_template_ref=Throwing Stance count=1 effect_kind=remove_ae effect_label=spend_stance include_persistent=true target_ref=self",
+    "chain_steps=spend_stance,ch_bleed effect_kind=chain effect_label=ch_root"
    ],
    "reactions": [],
    "aes": []
@@ -62821,16 +62822,19 @@
   "Rakshasa / Devour": {
    "props": {
     "class": "NPC",
+    "damage_bonus": "45",
     "defense_target_type": "def",
     "duration": "Instantaneous",
-    "on_activate_effect_ref": "dv_bite",
+    "post_damage_effect_ref": "dv_feed",
     "skill_range": "Melee",
     "skill_target": "One Creature",
-    "skill_type": "Active"
+    "skill_type": "Active",
+    "type_damage": "Physical"
    },
    "effects": [
-    "chain_steps=dv_feed damage_amount=45 damage_cause=damage damage_element=physical effect_kind=deal_damage effect_label=dv_bite target_ref=action_targets",
-    "effect_kind=grant effect_label=dv_feed grant_amount=22 grant_resource=hp target_ref=self"
+    "$deleted=true damage_amount=45 damage_cause=damage damage_element=physical effect_kind=deal_damage effect_label=dv_bite target_ref=action_targets",
+    "effect_kind=grant effect_label=dv_feed grant_amount=floor(HP_DEALT / 2) grant_resource=hp target_ref=self",
+    "$deleted=true chain_steps=dv_bite,dv_feed effect_kind=chain effect_label=dv_root"
    ],
    "reactions": [],
    "aes": []
@@ -62868,13 +62872,14 @@
     "class": "NPC",
     "defense_target_type": "def",
     "duration": "Scene",
-    "on_activate_effect_ref": "fs_draw",
+    "on_activate_effect_ref": "fs_root",
     "skill_target": "Self",
     "skill_type": "Active"
    },
    "effects": [
-    "ae_duplicate_mode=replace ae_name_pool=Sword Stance,Bow Stance,Throwing Stance,Flail Stance ae_pool_skip_existing=1 chain_steps=fs_mp effect_kind=apply_ae effect_label=fs_draw target_ref=self",
-    "effect_kind=grant effect_label=fs_mp grant_amount=15 grant_resource=mp target_ref=self"
+    "ae_duplicate_mode=replace ae_name_pool=Sword Stance,Bow Stance,Throwing Stance,Flail Stance ae_pool_skip_existing=1 effect_kind=apply_ae effect_label=fs_draw target_ref=self",
+    "effect_kind=grant effect_label=fs_mp grant_amount=15 grant_resource=mp target_ref=self",
+    "chain_steps=fs_draw,fs_mp effect_kind=chain effect_label=fs_root"
    ],
    "reactions": [],
    "aes": [
@@ -62937,14 +62942,15 @@
     "class": "NPC",
     "defense_target_type": "def",
     "duration": "Scene",
-    "on_activate_effect_ref": "fs2_clear",
+    "on_activate_effect_ref": "fs2_root",
     "skill_target": "Self",
     "skill_type": "Active"
    },
    "effects": [
-    "chain_steps=fs2_draw count=all effect_kind=remove_ae effect_label=fs2_clear filter_tag=rakshasa_stance include_persistent=true target_ref=self",
-    "ae_duplicate_mode=replace ae_name_pool=Sword and Bow Stance,Flail and Throwing Stance,Sword and Flail Stance ae_pool_skip_existing=1 chain_steps=fs2_mp effect_kind=apply_ae effect_label=fs2_draw target_ref=self",
-    "effect_kind=grant effect_label=fs2_mp grant_amount=15 grant_resource=mp target_ref=self"
+    "count=all effect_kind=remove_ae effect_label=fs2_clear filter_tag=rakshasa_stance include_persistent=true target_ref=self",
+    "ae_duplicate_mode=replace ae_name_pool=Sword and Bow Stance,Flail and Throwing Stance,Sword and Flail Stance ae_pool_skip_existing=1 effect_kind=apply_ae effect_label=fs2_draw target_ref=self",
+    "effect_kind=grant effect_label=fs2_mp grant_amount=15 grant_resource=mp target_ref=self",
+    "chain_steps=fs2_clear,fs2_draw,fs2_mp effect_kind=chain effect_label=fs2_root"
    ],
    "reactions": [],
    "aes": [
@@ -63000,7 +63006,7 @@
     "duration": "Instantaneous",
     "isCheck": "true",
     "isReaction": "true",
-    "on_activate_effect_ref": "cr_debuff",
+    "on_activate_effect_ref": "cr_root",
     "rolled_atr1": "MIG",
     "rolled_atr2": "MIG",
     "skill_range": "Melee",
@@ -63010,13 +63016,34 @@
    },
    "effects": [
     "$deleted=true damage_amount=2 damage_operation=multiply damage_stage=outgoing effect_kind=adjust_damage effect_label=cr_double",
-    "ae_duplicate_mode=replace ae_template_ref=Crippled chain_steps=spend_stance effect_kind=apply_ae effect_label=cr_debuff target_ref=action_targets",
-    "ae_template_ref=Flail Stance count=1 effect_kind=remove_ae effect_label=spend_stance include_persistent=true target_ref=self"
+    "ae_duplicate_mode=replace ae_duration_rounds=scene ae_template_ref=Crippled effect_kind=apply_ae effect_label=cr_debuff target_ref=hit_action_targets",
+    "ae_template_ref=Flail Stance count=1 effect_kind=remove_ae effect_label=spend_stance include_persistent=true target_ref=self",
+    "chain_steps=spend_stance,cr_debuff effect_kind=chain effect_label=cr_root"
    ],
    "reactions": [
     "$deleted=true condition_formula=TARGET_AE_COUNT_CRISIS == 0 reaction_effect_ref=cr_double reaction_passive_mode=force reaction_source=self reaction_source_skill=Mace reaction_trigger=creature_will_deal_damage"
    ],
-   "aes": []
+   "aes": [
+    {
+     "name": "Crippled",
+     "transfer": false,
+     "disabled": false,
+     "statuses": [
+      "crippled"
+     ],
+     "tags": [
+      "cleansable",
+      "debuff",
+      "rakshasa_debuff"
+     ],
+     "family": null,
+     "lifetime": null,
+     "charges": null,
+     "changes": [
+      "defense mode1 = 0.5"
+     ]
+    }
+   ]
   },
   "Rakshasa / Rain of Arrows": {
    "props": {
@@ -63054,7 +63081,7 @@
     "duration": "Instantaneous",
     "isCheck": "true",
     "isReaction": "true",
-    "on_activate_effect_ref": "ro_bleed",
+    "on_activate_effect_ref": "ro_root",
     "rolled_atr1": "DEX",
     "rolled_atr2": "MIG",
     "skill_range": "Range",
@@ -63064,8 +63091,9 @@
    },
    "effects": [
     "$deleted=true damage_amount=2 damage_operation=multiply damage_stage=outgoing effect_kind=adjust_damage effect_label=ro_double",
-    "ae_duplicate_mode=replace ae_template_ref=Bleed chain_steps=spend_combo effect_kind=apply_ae effect_label=ro_bleed target_ref=action_targets",
-    "ae_template_ref=Flail and Throwing Stance count=1 effect_kind=remove_ae effect_label=spend_combo include_persistent=true target_ref=self"
+    "ae_duplicate_mode=replace ae_template_ref=Bleed effect_kind=apply_ae effect_label=ro_bleed target_ref=hit_action_targets",
+    "ae_template_ref=Flail and Throwing Stance count=1 effect_kind=remove_ae effect_label=spend_combo include_persistent=true target_ref=self",
+    "chain_steps=spend_combo,ro_bleed effect_kind=chain effect_label=ro_root"
    ],
    "reactions": [
     "$deleted=true condition_formula=TARGET_AE_COUNT_CRISIS == 0 reaction_effect_ref=ro_double reaction_passive_mode=force reaction_source=self reaction_source_skill=Rending Orbit reaction_trigger=creature_will_deal_damage"
@@ -66357,7 +66385,7 @@
     "action_command": "spell",
     "class": "Spiritist",
     "cost": "10 x T MP",
-    "defense_target_type": "def",
+    "defense_target_type": "default",
     "duration": "Instantaneous",
     "on_activate_effect_ref": "heal_hp",
     "skill_range": "Range",
@@ -66374,7 +66402,7 @@
   "Spiritist / Healing Power": {
    "props": {
     "class": "Spiritist",
-    "defense_target_type": "def",
+    "defense_target_type": "default",
     "isReaction": "true",
     "skill_type": "Passive"
    },

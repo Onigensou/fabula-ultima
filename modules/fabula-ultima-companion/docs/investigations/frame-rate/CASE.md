@@ -185,3 +185,46 @@ backdrops without a 3D model.
   timing found the two overheads above. Page-search fix committed. **Rule for this case: never benchmark while another Foundry
   process is running** (check `Win32_Process` first), and drive CDP from Bash, not PowerShell, which strips the quotes out of
   JSON arguments silently (the first A/B attempt never reloaded the page).
+- **2026-11-03 (sarunphat's session, uncommitted):** two cuts to the per-write cost, both measured on the Snapshot Runner.
+  (a) **Foundry 12 prepares every item twice per actor update** (once when the actor re-initializes its items, again in
+  `prepareEmbeddedDocuments`). `csb-derivation-perf.js` patch (4) skips the first pass: item prepares halve (4,914 → 2,457
+  over 204 actors), derived data identical on all 204 actors and their 2,457 items, HP write −15–26% (Hina 358–406 → 268–300 ms).
+  Kill switch `csbItemPrepareOnce`. (b) **Battle log writes no longer touch an actor mid-battle:** rows queue in the world
+  setting `battleLogPending` (~1 ms vs ~200 ms per action) and reach the EXFURSION Party actor once, at the start of
+  `runBattleEndSequence`. Seeded battle identical to HEAD; simulate 486/487 vs HEAD (the 1 is a timeout flake that also fails on HEAD).
+- **2026-11-03 (later): where an undrawn frame goes.** Live world, headless GM, drawing off, CPU profile of the seeded
+  Blanche-vs-Hellhound battle (10 actions, 35 s). 96 stretches of ≥50 ms with no frame, 7.5 s in total. 59 of them,
+  most of the time, began in `DOMWebSocket.onmessage`: an incoming document update is handled in ONE task on the
+  thread that draws, so nothing is drawn until it finishes. Inside those stretches: CSB recalculation 32%, browser
+  native work (parsing etc.) 16%, socket message decoding 7.5%, Foundry copying the whole document (diff backup,
+  field re-init, game.data mirror via `toObject`: each a `deepClone` of the full actor with every item) 13%, GC 4%,
+  our module code ~10% (`_console-tap.js` 3%, `forge-mirror.js` 2%), UI re-render 1%, idle-but-late 9%.
+  Conclusion: the stall is the update pipeline as a whole, proportional to the SIZE of the document written; no
+  single listener to remove. Zero needs battle writes to stop being writes to big documents.
+- **2026-11-03 (later still): fixing the update pipeline in place.** Formula memo (`csb-formula-memo.js`: a formula whose
+  inputs are unchanged returns its cached result; anything impure is still evaluated) + item reuse
+  (`csb-derivation-perf.js` (5): an unchanged, self-contained item keeps its derived data across an actor update). Hina HP
+  write 273 → 95 ms; seeded battle: recalculation 4.56 → 1.58 s, long tasks 10.2 → 4.8 s, same battle. Parity: 322 actors,
+  354 change scenarios vs a full rebuild, 487/487 regression, simulate 485/487 vs HEAD (2 flakes that also flip on HEAD).
+- **2026-11-03 (night): recalculate only what changed.** `csb-derivation-perf.js` (7) is CSB 4.8.5's `_prepareEntityData`
+  (same passes, order, pass-start reads, Active Effects, modifiers, attribute bars) that compares the values each phrase
+  reads with what it read last time on that document and reuses the result, "not computable yet" included; impure
+  phrases are evaluated every time. Also: arrays instead of `for…in` + `delete` (~3.5 ms alone), one prop-name list per
+  pass, no dotted-key scan per reset merge, binary-search item-container reset, component map kept per layout tree.
+  (8) the `game.data` mirror copy (`DocumentCollection#set` → `toObject`) is made only when read. AE gate: trace-only
+  snapshots and gate listing skipped unless tracing; condition effects collected once per prepare; pass data copied
+  top-level only. Hina HP write 51 → 19 ms under the profiler (same 12-write script), ~13 ms unprofiled (Keren/Blanche/Zarg ~7; AE
+  create+delete 58 → 22 with (7)+(8) toggled live). Seeded battle: CSB
+  prepare 0.66 → 0.32 s (6 ms a call), long tasks 2.2 → 1.9 s, worst lag 312 → 309 ms (not CSB), same battle. Parity
+  430/430 vs a full rebuild with all patches off (incl. 36 input edits), 0 `game.data` mismatches, 487/487 regression,
+  simulate 487/487 vs `aaf77aa3`. Left in Hina's ~13 ms: setup of the compute list (item-container rows, resets) ~3 ms,
+  Active Effect applies ~2 ms, Foundry's update backup `deepClone` in `#updateData` ~1.6 ms (private, not patchable),
+  DataModel re-init ~0.9 ms. Kill switches `csbIncrementalPrepare`, `foundryLazyDataMirror`.
+- **2026-11-04: what is left in a battle, and the rewind history.** CPU profile of the seeded battle (scratchpad
+  `battle-profile.mjs` + `lt-sum.mjs`): every mid-battle long task was a Scene update. Cause: the rewind history
+  (`directorHistory`, one array flag on the scene, rewritten per save point) reached 1.6 MB in 10 actions, and every scene
+  save made each client deep-copy all scene flags (`#updateData` backup). Each save point is now its own hidden JournalEntry
+  (`persistence.js`, History store). Scene stays < 60 KB; long tasks 2.15 → 1.05 s; same battle; live rewind verified.
+  Left: battle start (token actors' first prepare ~140–230 ms, `prewarmShatter` ~170–230 ms, sprite-shadow `readPixels`
+  ~300 ms under software GL), and 50–95 ms UI tasks (round banner `refreshTurnActions`, a `settings.get` in
+  monks-little-details). Item containers also keep unchanged rows now: Hina's HP write ~13 → ~10 ms.

@@ -8,10 +8,13 @@
 //      mount the FSM at TURN_START (or TURN_END if RESOLVE had committed).
 //      Actor docs persist in Foundry on their own; no per-actor data here.
 //
-//   2. `directorHistory` (rolling array, max 20) — rewind tool. Each
+//   2. Rewind history (max 50 save points) — rewind tool. Each
 //      entry is `directorState` PLUS per-combatant actor snapshots
 //      (props, effects, itemStates, deletedItemsLog). Lets the GM jump
-//      back to any of the last 50 committed states. Design locked in
+//      back to any of the last 50 committed states. Each save point is
+//      its OWN hidden JournalEntry (see "History store" below); it used to
+//      be one growing `directorHistory` array on the scene, which every
+//      scene save then sent to every client and every client copied. Design locked in
 //      [[director-rewind-tool-plan]] — Tier 2 full snapshot, EXACT-match
 //      restore policy, deleted consumables RECREATABLE via the per-save
 //      deletedItemsLog (populated by a preDeleteItem hook).
@@ -57,7 +60,10 @@ import {
 
 const FLAG_NS = "fabula-ultima-companion";
 const FLAG_KEY = "directorState";       // single-object reload-survival flag
-const HISTORY_KEY = "directorHistory";  // rolling-20 rewind history flag
+const HISTORY_KEY = "directorHistory";  // LEGACY scene flag (array); read + migrated, no longer written
+const HISTORY_DOC_FLAG = "directorHistoryEntry";     // JournalEntry flag: { sceneId, seq, entry }
+const HISTORY_FOLDER_FLAG = "directorHistoryFolder"; // Folder flag marking the rewind folder
+const HISTORY_FOLDER_NAME = "⚙ Battle Director (rewind points)";
 // SCHEMA_VERSION 2: replaces v1's `freeActionContext.flags` with a
 // top-level `continuationStack` array. Migration auto-synthesizes
 // equivalent frames from v1's flag bag (see hydrateContinuationState).
@@ -571,20 +577,23 @@ export async function clearDirectorStateFlag(scene) {
   }
 }
 
-// Clear the rewind history flag on a scene. Kept as its own function so
-// stop() can decide to clear ONLY the history (rare) or both flags via
-// `clearAllDirectorStateFlags`. The BattleEnd Cleanup macro also calls
-// this defensively in case stop() was bypassed.
+// Clear the rewind history of a scene: its save-point documents and the legacy
+// scene flag. Kept as its own function so stop() can decide to clear ONLY the
+// history (rare) or both via `clearAllDirectorStateFlags`. The BattleEnd Cleanup
+// macro also unsets the legacy flag defensively in case stop() was bypassed.
 export async function clearDirectorHistoryFlag(scene) {
   if (!scene) return;
-  try {
-    if (scene.getFlag(FLAG_NS, HISTORY_KEY)) {
-      await scene.unsetFlag(FLAG_NS, HISTORY_KEY);
-      log(`persistence.clearHistoryFlag: removed from scene ${scene.name}`);
+  await serializeHistory(async () => {
+    try {
+      if (scene.getFlag(FLAG_NS, HISTORY_KEY)) {
+        await scene.unsetFlag(FLAG_NS, HISTORY_KEY);
+        log(`persistence.clearHistoryFlag: removed legacy flag from scene ${scene.name}`);
+      }
+      await deleteHistoryDocs(historyDocs(scene));
+    } catch (e) {
+      warn("persistence.clearHistoryFlag failed", e);
     }
-  } catch (e) {
-    warn("persistence.clearHistoryFlag failed", e);
-  }
+  });
 }
 
 // Convenience — find + clear in one call. Used by director-boot.stop()
@@ -606,19 +615,29 @@ export async function clearAllDirectorStateFlags() {
     if (scene.getFlag(FLAG_NS, FLAG_KEY)) {
       await clearDirectorStateFlag(scene);
     }
-    if (scene.getFlag(FLAG_NS, HISTORY_KEY)) {
+    if (scene.getFlag(FLAG_NS, HISTORY_KEY) || historyDocs(scene).length) {
       await clearDirectorHistoryFlag(scene);
     }
     if (clearStandaloneFiredFlag) {
       try { await clearStandaloneFiredFlag(scene); } catch (e) { warn("clearStandaloneFiredFlag threw", e); }
     }
   }
+  // Save points of scenes that no longer exist, and the (now empty) folder.
+  await serializeHistory(async () => {
+    try {
+      await deleteHistoryDocs((game.journal ?? []).filter((j) => historyMeta(j)));
+      const folder = game.folders?.find((f) => f.type === "JournalEntry" && f.flags?.[FLAG_NS]?.[HISTORY_FOLDER_FLAG]);
+      if (folder && !folder.contents?.length) await folder.delete();
+    } catch (e) {
+      warn("clearAllDirectorStateFlags: history cleanup failed", e);
+    }
+  });
 }
 
 // ── History (rewind tool) ───────────────────────────────────────────────
 
-// Append an entry to the scene's rolling history flag. Drops oldest
-// entries past MAX_HISTORY (50). Idempotent on failure — the rest of
+// Append a save point to the scene's rewind history. Drops the oldest
+// past MAX_HISTORY (50). Idempotent on failure — the rest of
 // the save still succeeded (history is a nice-to-have for the rewind
 // tool, not load-bearing for combat).
 //
@@ -653,34 +672,130 @@ function historyFingerprint(entry) {
   ]);
 }
 
-export async function pushToHistory(scene, entry) {
-  if (!scene || !entry) return;
-  let current = scene.getFlag(FLAG_NS, HISTORY_KEY);
-  if (!Array.isArray(current)) current = [];
-  if (current.length) {
-    const latest = current[current.length - 1];
-    if (historyFingerprint(latest) === historyFingerprint(entry)) {
-      log(`persistence.pushToHistory: dedup skip — "${entry.label}" matches latest entry`);
-      return;
-    }
+// ── History store ───────────────────────────────────────────────────────
+//
+// One hidden JournalEntry per save point (default ownership NONE, so only GMs
+// see them), in a folder of its own, flagged `{ sceneId, seq, entry }`. A push
+// creates one ~50 KB document and a trim deletes the oldest. The scene keeps
+// only the small reload-survival flag, so its saves stay small for every
+// client. Measured 2026-11-03 on a 10-action seeded battle: the old array flag
+// reached 1.6 MB, and each scene save made each client deep-copy all of it.
+//
+// Writes are serialized (pushes can be fire-and-forget, see `deferWrites`), so
+// `seq` and the trim always see the previous write.
+let historyChain = Promise.resolve();
+function serializeHistory(fn) {
+  const run = historyChain.then(fn);
+  historyChain = run.catch(() => {});
+  return run;
+}
+
+function historyMeta(doc) {
+  return doc?.flags?.[FLAG_NS]?.[HISTORY_DOC_FLAG] ?? null;
+}
+
+// The scene's save-point documents, oldest first.
+function historyDocs(scene) {
+  if (!scene) return [];
+  const docs = [];
+  for (const j of game.journal ?? []) {
+    const m = historyMeta(j);
+    if (m && m.sceneId === scene.id) docs.push(j);
   }
-  const next = [...current, entry];
-  // Rolling window — oldest entries fall off the front.
-  while (next.length > MAX_HISTORY) next.shift();
+  return docs.sort((x, y) => (historyMeta(x).seq ?? 0) - (historyMeta(y).seq ?? 0));
+}
+
+function legacyHistory(scene) {
+  const arr = scene?.getFlag?.(FLAG_NS, HISTORY_KEY);
+  return Array.isArray(arr) ? arr : [];
+}
+
+async function historyFolder() {
+  const found = game.folders?.find((f) => f.type === "JournalEntry" && f.flags?.[FLAG_NS]?.[HISTORY_FOLDER_FLAG]);
+  if (found) return found;
   try {
-    await scene.setFlag(FLAG_NS, HISTORY_KEY, next);
-    log(`persistence.pushToHistory: ${next.length}/${MAX_HISTORY} entries on ${scene.name} (latest: "${entry.label}")`);
+    return await CONFIG.Folder.documentClass.create({
+      name: HISTORY_FOLDER_NAME,
+      type: "JournalEntry",
+      sorting: "m",
+      flags: { [FLAG_NS]: { [HISTORY_FOLDER_FLAG]: true } },
+    });
   } catch (e) {
-    warn("persistence.pushToHistory: setFlag failed", e);
+    warn("persistence.history: folder create failed (save points go to the root)", e);
+    return null;
   }
 }
 
-// Read the history list for a scene. Returns [] if none. Caller can sort
-// (entries are appended in order, so newest is .at(-1)).
+function historyDocData(scene, entry, seq, folderId) {
+  return {
+    name: `${scene.name} · ${entry?.label || "save"} (#${seq})`,
+    folder: folderId,
+    ownership: { default: CONST.DOCUMENT_OWNERSHIP_LEVELS.NONE },
+    flags: { [FLAG_NS]: { [HISTORY_DOC_FLAG]: { sceneId: scene.id, seq, entry } } },
+  };
+}
+
+async function deleteHistoryDocs(docs) {
+  const ids = docs.map((d) => d.id).filter(Boolean);
+  if (ids.length) await CONFIG.JournalEntry.documentClass.deleteDocuments(ids);
+}
+
+// A battle saved before the store moved keeps its points in the legacy scene
+// flag: move them into documents (once), then drop the flag.
+async function migrateLegacyHistory(scene) {
+  const legacy = legacyHistory(scene);
+  if (!legacy.length) return;
+  const folder = await historyFolder();
+  const first = historyMeta(historyDocs(scene)[0])?.seq ?? (legacy.length + 1);
+  const data = legacy.map((entry, i) => historyDocData(scene, entry, first - legacy.length + i, folder?.id ?? null));
+  await CONFIG.JournalEntry.documentClass.createDocuments(data);
+  await scene.unsetFlag(FLAG_NS, HISTORY_KEY);
+  log(`persistence.history: moved ${legacy.length} legacy save point(s) of ${scene.name} into documents`);
+}
+
+export function pushToHistory(scene, entry) {
+  if (!scene || !entry) return Promise.resolve();
+  return serializeHistory(async () => {
+    try {
+      await migrateLegacyHistory(scene);
+      const docs = historyDocs(scene);
+      const latest = docs.length ? historyMeta(docs[docs.length - 1]).entry : null;
+      if (latest && historyFingerprint(latest) === historyFingerprint(entry)) {
+        log(`persistence.pushToHistory: dedup skip — "${entry.label}" matches latest entry`);
+        return;
+      }
+      const folder = await historyFolder();
+      const seq = (docs.length ? historyMeta(docs[docs.length - 1]).seq ?? docs.length : 0) + 1;
+      await CONFIG.JournalEntry.documentClass.create(historyDocData(scene, entry, seq, folder?.id ?? null));
+      // Rolling window — the oldest save points are deleted.
+      const all = historyDocs(scene);
+      if (all.length > MAX_HISTORY) await deleteHistoryDocs(all.slice(0, all.length - MAX_HISTORY));
+      log(`persistence.pushToHistory: ${Math.min(all.length, MAX_HISTORY)}/${MAX_HISTORY} entries on ${scene.name} (latest: "${entry.label}")`);
+    } catch (e) {
+      warn("persistence.pushToHistory failed", e);
+    }
+  });
+}
+
+// Keep the first `keep` save points of a scene and delete the rest (rewind).
+function truncateHistory(scene, keep) {
+  return serializeHistory(async () => {
+    const legacy = legacyHistory(scene);
+    const docs = historyDocs(scene);
+    if (keep < legacy.length) {
+      await scene.setFlag(FLAG_NS, HISTORY_KEY, legacy.slice(0, keep));
+      await deleteHistoryDocs(docs);
+    } else {
+      await deleteHistoryDocs(docs.slice(keep - legacy.length));
+    }
+  });
+}
+
+// Read the history list for a scene, oldest first (newest is .at(-1)).
+// Returns [] if none.
 export function getHistory(scene) {
   if (!scene) return [];
-  const arr = scene.getFlag(FLAG_NS, HISTORY_KEY);
-  return Array.isArray(arr) ? arr : [];
+  return [...legacyHistory(scene), ...historyDocs(scene).map((d) => historyMeta(d).entry)];
 }
 
 // Find a snapshot by id across all scenes that hold a history flag.
@@ -1115,10 +1230,9 @@ export async function rewindToHistorySnapshot(snapshotId) {
   //    actor edits that no longer match the live state).
   //    Keep the target entry itself; the user just rewound TO it and
   //    may want to rewind again.
-  const truncated = history.slice(0, index + 1);
   try {
-    await scene.setFlag(FLAG_NS, HISTORY_KEY, truncated);
-    log(`rewindToHistorySnapshot: history truncated to ${truncated.length} entries`);
+    await truncateHistory(scene, index + 1);
+    log(`rewindToHistorySnapshot: history truncated to ${index + 1} entries`);
   } catch (e) {
     warn("rewindToHistorySnapshot: history truncate failed", e);
   }

@@ -18,6 +18,7 @@ import { runBattleEndTransition } from "./battle-end-transition.js";
 import { runBattleEndResourceReset } from "./battle-end-cleanup.js";
 import { evaluateFollowups, mergeRewardSnapshots } from "./battle-followup.js";
 import { evaluateUndying } from "./undying/undying.js";
+import { flushBattleLog } from "../director-battle-log.js";
 
 function detectOutcome(director) {
   const dc = director.dCombat;
@@ -46,6 +47,9 @@ function detectOutcome(director) {
 }
 
 export async function runBattleEndSequence(director) {
+  // The battle's log rows wait in a setting until now (director-battle-log.js);
+  // rank + summary read them from the DB actor, so write them there first.
+  try { await flushBattleLog(); } catch (e) { warn("battle-end: flushBattleLog threw", e); }
   const dc = director.dCombat;
   const payload = director.ctx.payload;
 
