@@ -179,9 +179,74 @@ function runnerAvailable() {
     && fs.existsSync(path.join(PLAYWRIGHT, "node_modules"))
     && (!!process.env.FVTT_APP || fs.existsSync(path.join(PLAYWRIGHT, "config.local.json")));
 }
+// ── the WARM runner (snapshot-runner/bin/warm.mjs): one page that stays open ──
+// A cold run boots a fresh page and builds the bench every time (~40 s). The warm
+// runner keeps both, resets the world between checks, re-reads world data that
+// changed on disk and reloads the page itself when module code changed, so a check
+// costs ~1 s, or ~5 s / ~30 s after a data / code edit. The first cold run starts one
+// in the background (it leaves after WARM_IDLE_MIN unused minutes); later checks use
+// it. It runs WITHOUT time warp: the collector's per-skill guard is a timer, and a
+// warped 12 s guard (0.6 s) could time a slow skill out and report false drift.
+// SKILL_REGRESSION_WARM=0 turns it off (every check is a cold run again).
+const WARM_CTL = RUNNER_PORT + 1000;
+const WARM_IDLE_MIN = Number(process.env.SKILL_REGRESSION_WARM_IDLE_MIN || 30);
+const warmEnabled = () => process.env.SKILL_REGRESSION_WARM !== "0";
+async function warmCall(body, timeoutMs) {
+  const r = await fetch(`http://localhost:${WARM_CTL}/`, { method: "POST", body: JSON.stringify(body), headers: { "content-type": "application/json" }, signal: AbortSignal.timeout(timeoutMs) });
+  return r.json();
+}
+// Status waits for a daemon that is still booting (its first request waits for the boot).
+async function warmStatus() { try { const r = await warmCall({ cmd: "status" }, 90 * 1000); return r.ok ? r.result : null; } catch { return null; } }
+function startWarm() {
+  const { spawn } = require("child_process");
+  const log = fs.openSync(path.join(ROOT, ".state", "warm-runner.log"), "a");
+  const child = spawn(process.execPath, [path.join(RUNNER, "bin", "warm.mjs"), "start", "--snapshot", RUNNER_SNAP, "--port", String(RUNNER_PORT),
+    "--profile", "regression", "--bench", "--canvas", "off", "--viewport", "800x450", "--idle-exit", String(WARM_IDLE_MIN)],
+  { cwd: PLAYWRIGHT, detached: true, stdio: ["ignore", log, log], windowsHide: true });
+  child.unref();
+  return child.pid;
+}
+const shapeResult = (r) => ({
+  ok: true, mode: r.mode, scene: r.scene, casters: r.casters, enemyTarget: r.enemyTarget, total: r.total, count: r.count,
+  errorCount: r.errorCount, engineVersion: r.engineVersion, override: r.override, force: r.force, tookMs: 0,
+  slowest: (r.slowest || []).slice(0, 8), errors: r.errors || [], skills: r.skills, engine: "runner",
+});
+function checkKeys(r) {
+  const keyCount = Object.keys(r.skills || {}).length;
+  if (keyCount !== r.count) throw new Error(`collector key collision: ran ${r.count} task(s) but produced ${keyCount} key(s); do NOT trust this run`);
+}
+
 async function collectRunner(opts, { full = false, say = (s) => process.stderr.write(s + "\n") } = {}) {
   const { spawnSync } = require("child_process");
   if (!runnerAvailable()) throw new Error(`snapshot-runner not found at ${RUNNER} (or not set up: see its README, "Setup on a new machine")`);
+  const { pageSizeOverride: _p, ...copts0 } = opts;
+  // The opts a cold run.mjs --collector-opts run ends up with: its own defaults (the reference
+  // capture's scene + dummy, the skip list, the per-skill guard) with ours laid over them.
+  const mode = copts0.mode === "simulate" ? "simulate" : "compute";
+  let ref = {}; try { ref = JSON.parse(fs.readFileSync(path.join(RUNNER, "capture", "oracle.json"), "utf8")); } catch {}
+  let sj = {}; try { sj = JSON.parse(fs.readFileSync(path.join(ROOT, "skip.json"), "utf8")); } catch {}
+  const wopts = {
+    mode, sceneName: ref.scene ?? ref._meta?.scene, dummy: ref.enemyTarget ?? ref._meta?.enemyTarget,
+    skip: [...(sj.skip ?? []), ...(mode === "simulate" ? sj.skipSimulate ?? [] : [])], perSkillMs: mode === "simulate" ? 30000 : 12000,
+    ...copts0,
+  };
+  let st = null;
+  if (!full && warmEnabled()) {
+    st = await warmStatus();
+    if (st && st.profile === "regression" && st.bench && !st.timeWarp) {
+      const t0 = Date.now();
+      let r = null;
+      try { r = await warmCall({ cmd: "collect", opts: wopts }, 15 * 60 * 1000); } catch (e) { r = { ok: false, error: e.message }; }
+      if (r.ok && r.result?.ok === true) {
+        checkKeys(r.result);
+        const b = r.before ?? {};
+        const why = b.reload ? `reloaded for code edits (${b.reload.slice(0, 2).join(", ")})` : b.sync ? `pushed ${b.sync.docs ?? 0} changed world document(s)` : "no reload needed";
+        say(`· runner (warm): game closed, so the check ran on the warm Snapshot Runner, ${((Date.now() - t0) / 1000).toFixed(1)} s; ${why}`);
+        return shapeResult(r.result);
+      }
+      say(`· runner (warm) failed (${r.error ?? r.result?.error ?? "no result"}); falling back to a cold run`);
+    } else if (st) say(`· a warm runner is up on :${WARM_CTL} but not a regression bench one (${st.profile}${st.bench ? "" : ", no bench"}${st.timeWarp ? ", time-warped" : ""}); cold run`);
+  }
   const state = path.join(ROOT, ".state");
   fs.mkdirSync(state, { recursive: true });
   // One runner regression run at a time: two sessions' Stop hooks can fire together,
@@ -214,17 +279,17 @@ async function collectRunner(opts, { full = false, say = (s) => process.stderr.w
     }
     const r = JSON.parse(fs.readFileSync(outFile, "utf8"));
     if (!r || r.ok !== true) throw new Error("collector failed in the runner: " + (r?.error || JSON.stringify(r).slice(0, 300)));
-    const keyCount = Object.keys(r.skills || {}).length;
-    if (keyCount !== r.count) throw new Error(`collector key collision: ran ${r.count} task(s) but produced ${keyCount} key(s); do NOT trust this run`);
+    checkKeys(r);
     let report = {};
     try { report = JSON.parse(fs.readFileSync(path.join(RUNNER, RUNNER_SNAP, "run-report.json"), "utf8")); } catch {}
     say(`· runner: game closed, so the check ran on the Snapshot Runner (real engine, world read from disk), ${((Date.now() - t0) / 1000).toFixed(0)} s`
       + (report.pageErrors?.length ? ` — ${report.pageErrors.length} page error(s), see tools/snapshot-runner/${RUNNER_SNAP}/run-report.json` : ""));
-    return {
-      ok: true, mode: r.mode, scene: r.scene, casters: r.casters, enemyTarget: r.enemyTarget, total: r.total, count: r.count,
-      errorCount: r.errorCount, engineVersion: r.engineVersion, override: r.override, force: r.force, tookMs: 0,
-      slowest: (r.slowest || []).slice(0, 8), errors: r.errors || [], skills: r.skills, engine: "runner",
-    };
+    // The cold run is done and its page closed, so this is never a second headless client.
+    if (!full && warmEnabled() && !st) {
+      try { say(`· started a warm runner for the next checks (pid ${startWarm()}, leaves after ${WARM_IDLE_MIN} idle min; log .state/warm-runner.log)`); }
+      catch (e) { say(`· could not start a warm runner: ${e.message}`); }
+    }
+    return shapeResult(r);
   } finally { try { fs.unlinkSync(lock); } catch {} }
 }
 

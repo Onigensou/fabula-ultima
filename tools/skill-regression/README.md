@@ -56,6 +56,22 @@ node bin/skill-regression.js check --runner --scene "Regression Bench" --dummy "
 - The **Stop-hook gate uses it automatically** when Foundry is closed
   (`SKILL_REGRESSION_RUNNER=0` restores the old "deferred" behaviour). A Snapshot Runner
   that cannot run (lock held, boot failure) still defers and keeps the marker.
+- **Warm (2026-11-03).** The first cold `--runner` check leaves a warm runner behind
+  (`snapshot-runner/bin/warm.mjs`, regression profile + bench, control port 31103,
+  log `.state/warm-runner.log`). Later checks go to it:
+
+  | check after | time |
+  |---|---|
+  | nothing changed | **~1 s** (was ~40 s) |
+  | a world-data edit on disk (only changed docs pushed) | **~7 s** |
+  | a module code edit (the page reloads + rebuilds the bench) | ~38 s, about a cold run |
+  | the daemon is still starting | waits for it (~30 s), never starts a second client |
+
+  It is still 487/487 against the golden; a `--per-skill-ms 1` control turns 6 red. It runs
+  without time warp (a warped per-skill guard could time out a slow skill). Between checks
+  the page is quiet and frozen: idle ~15–30% of one core, ~1.4 GB, and it leaves after
+  30 unused minutes (`SKILL_REGRESSION_WARM_IDLE_MIN`). `SKILL_REGRESSION_WARM=0` turns it
+  off; `--full` always runs cold. Stop it by hand: `node ../snapshot-runner/bin/warm.mjs stop --port 30103`.
 - 🪤 Only a check against the gate's compute golden records a verdict for the
   gate now. A check against another `--goldens` file (a simulate golden, a
   perturbed control copy) used to record its drift as the gate's verdict.

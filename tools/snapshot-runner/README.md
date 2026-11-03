@@ -350,6 +350,15 @@ Requests are served one at a time on the runner port + 1000. `collect` takes run
 flags plus `--skills` (names, uuids or "Caster / Skill"; a filtered run is compared only on the
 keys it ran). `battle --sim-opts '{"seed":2}'` sets the battle's options for that request only.
 
+- The control port listens before the page starts, and every request waits for the boot, so a
+  caller that finds the daemon starting waits instead of launching its own headless client.
+- Between requests the page is **quiet**: PIXI tickers and CSS animations stopped
+  (`__warm.quiet()` / `wake()`) and the page frozen through CDP. Idle went from ~75% of one
+  core to ~15–30%; the page holds ~1.4 GB. `--no-freeze` keeps it live.
+- `--idle-exit <min>` makes the daemon leave after that many unused minutes.
+- skill-regression's `check --runner` (and so the Stop hook) uses a warm runner of its own
+  on :30103 / :31103, started by its first cold check; see the skill-regression README.
+
 Validated against the existing referees, all in ONE page each, with resets between:
 
 | test | warm | before (run.mjs) | vs referee |

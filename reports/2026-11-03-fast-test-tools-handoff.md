@@ -164,3 +164,11 @@ When the setup check reads 66/66 on your machine, set `status: verified`, add a 
 Notes, and push. If it does not, add what you saw under Notes and leave it open.
 
 ## Notes
+
+- 2026-11-03 (sarunphat): **the automatic regression check now uses a warm runner.** With
+  Foundry closed, the first `check --runner` (the Stop hook's) is a normal ~40 s cold run, and it
+  leaves a warm runner behind on :30103 / :31103. After that, a check costs ~1 s when nothing
+  changed, ~7 s after a world-data edit, and ~38 s after a module code edit (the page has to
+  reload, the same as a cold run). Still 487/487. The runner idles quietly (~15–30% of one
+  core, ~1.4 GB) and leaves after 30 unused minutes. `SKILL_REGRESSION_WARM=0` turns it off.
+  Details: tools/skill-regression/README.md, "Game CLOSED".

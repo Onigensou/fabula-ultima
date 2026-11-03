@@ -183,6 +183,25 @@
     return { roots: roots.size, pushed, passes, residue: residue.map((p) => `${p.action} ${p.parentUuid ? p.parentUuid + "." : ""}${p.type}.${p.id ?? p.data?._id}`), left, ms: Math.round(now() - t0) };
   };
 
+  /**
+   * Idle between requests: stop the PIXI tickers and pause running CSS animations, and put back
+   * exactly those on wake(). Freezing the page alone (bin/warm.mjs) left the compositor and the
+   * GPU process drawing: an idle page cost ~75% of a core, ~10% after this (2026-11-03).
+   */
+  W.quiet = () => {
+    const q = (W.quieted = { tickers: [], anims: [] });
+    for (const t of new Set([globalThis.canvas?.app?.ticker, globalThis.PIXI?.Ticker?.shared])) if (t?.started) { t.stop(); q.tickers.push(t); }
+    for (const a of document.getAnimations()) if (a.playState === "running") { a.pause(); q.anims.push(a); }
+    return { tickers: q.tickers.length, anims: q.anims.length };
+  };
+  W.wake = () => {
+    const q = W.quieted; W.quieted = null;
+    if (!q) return null;
+    for (const t of q.tickers) t.start();
+    for (const a of q.anims) { try { a.play(); } catch {} }
+    return { tickers: q.tickers.length, anims: q.anims.length };
+  };
+
   /** Every document vs the baseline, without changing anything: the reset's own check. */
   W.verify = () => {
     const plan = planRoots(allRoots(), (r) => W.baseline.get(r) ?? null);

@@ -2,7 +2,7 @@
 // test stops paying the ~20 s boot that every run.mjs run pays.
 //
 //   node ../snapshot-runner/bin/warm.mjs start --snapshot <dir> --port <n> [--profile <p>] [--fast]
-//        [--bench [--full]] [--no-auto-sync]                        (the daemon; leave it running)
+//        [--bench [--full]] [--no-auto-sync] [--idle-exit <min>]     (the daemon; leave it running)
 //   node ../snapshot-runner/bin/warm.mjs <command> --port <n> [...]  (a request to it)
 //
 // Commands:
@@ -130,6 +130,7 @@ async function daemon() {
   const WARP = Number(val("--time-warp", FAST ? "20" : "0"));
   const VIEWPORT = val("--viewport", FAST ? "800x450" : null);
   const AUTO_SYNC = !has("--no-auto-sync");
+  const IDLE_MIN = Number(val("--idle-exit", "0"));
   const BENCH = has("--bench");
   const MOD_DIR = resolve(DATA, "modules/fabula-ultima-companion");
   const WORLD_DIR = resolve(DATA, "worlds", CFG.sourceWorld ?? "fabula-ultima-2", "data");
@@ -137,6 +138,46 @@ async function daemon() {
   const log = (...a) => console.log(`[warm ${new Date().toISOString().slice(11, 19)}]`, ...a);
 
   if (!existsSync(resolve(SNAP_DIR, "world.json"))) throw new Error(`no snapshot at ${SNAP_DIR}: build-snapshot --snapshot ${SNAPSHOT}${PROFILE ? ` --profile ${PROFILE}` : ""} first`);
+
+  // ---- the control server, up FIRST: one request at a time, in arrival order. It listens before
+  // the page even starts and every request waits for the boot, so a caller that finds the daemon
+  // starting waits for it instead of starting a second headless client (skill-regression's Stop hook).
+  // Between requests the page is QUIET: its PIXI tickers and CSS animations stopped (www/warm.js
+  // quiet / wake) and the page frozen (Chrome's page lifecycle: no timers). Idle, an open runner
+  // page otherwise burned ~75% of a core (measured 2026-11-03), ~10% quiet: too much for a daemon
+  // the Stop hook leaves running. --no-freeze keeps it live.
+  const FREEZE = !has("--no-freeze");
+  let cdp = null;   // set once the page exists
+  const lifecycle = async (state) => {
+    if (!FREEZE || !cdp) return;
+    try {
+      if (state === "frozen") { await page.evaluate(() => window.__warm?.quiet()); await cdp.send("Page.setWebLifecycleState", { state }); }
+      else { await cdp.send("Page.setWebLifecycleState", { state }); await page.evaluate(() => window.__warm?.wake()); }
+    } catch (e) { log("lifecycle", state, e.message); }
+  };
+  let openPage;
+  let queue = new Promise((r) => { openPage = r; }).then(() => boot()).then(() => lifecycle("frozen")).catch((e) => { log("✗ boot failed:", e.message); setTimeout(shutdown, 50); });
+  let lastRequestAt = Date.now();
+  const ctl = http.createServer((req, res) => {
+    const chunks = [];
+    req.on("data", (c) => chunks.push(c));
+    req.on("end", () => {
+      lastRequestAt = Date.now();
+      queue = queue.then(async () => {
+        let out;
+        try {
+          const body = JSON.parse(Buffer.concat(chunks).toString() || "{}");
+          const live = body.cmd !== "status" && body.cmd !== "stop";
+          if (live) await lifecycle("active");
+          try { out = { ok: true, ...(await handle(body)) }; } finally { if (live) await lifecycle("frozen"); }
+          if (body.cmd !== "status") log(body.cmd, out.ms != null ? `${out.ms} ms` : "", out.before ? JSON.stringify({ reload: !!out.before.reload, sync: out.before.sync?.docs ?? out.before.sync?.summary ?? null, reset: { roots: out.before.reset.roots, pushed: out.before.reset.pushed, ms: out.before.reset.ms } }) : "");
+        } catch (e) { out = { ok: false, error: String(e?.stack ?? e?.message ?? e).split("\n").slice(0, 4).join(" | ") }; log("✗", out.error); }
+        res.writeHead(200, { "content-type": "application/json" });
+        res.end(JSON.stringify(out));
+      });
+    });
+  });
+  ctl.listen(CTL, () => log(`warm runner: page :${PORT}, requests :${CTL} (snapshot ${SNAPSHOT}${PROFILE ? `, profile ${PROFILE}` : ""}${FAST ? ", fast" : ""})`));
 
   // ---- the runner server (same as run.mjs)
   const status = async () => { try { const r = await fetch(`http://localhost:${PORT}/api/status`, { signal: AbortSignal.timeout(1500) }); return r.ok ? await r.json() : null; } catch { return null; } };
@@ -228,7 +269,7 @@ async function daemon() {
     const t0 = Date.now();
     switch (body.cmd) {
       case "status":
-        return { result: { ...S, port: PORT, snapshot: SNAPSHOT, profile: PROFILE, fast: FAST, pending: { code: codeEdits().slice(0, 10), world: pending.world }, errors: { page: errors.page.length, console: errors.console.length, lastPage: errors.page.slice(-3) } } };
+        return { result: { ...S, port: PORT, snapshot: SNAPSHOT, profile: PROFILE, bench: BENCH, frozenWhenIdle: FREEZE, canvas: CANVAS, timeWarp: WARP, fast: FAST, idleExitMin: IDLE_MIN, pending: { code: codeEdits().slice(0, 10), world: pending.world }, errors: { page: errors.page.length, console: errors.console.length, lastPage: errors.page.slice(-3) } } };
       case "collect": {
         const before = await prepare();
         const t1 = Date.now();
@@ -262,27 +303,10 @@ async function daemon() {
     process.exit(0);
   }
 
-  await boot();
-
-  // ---- the control server: one request at a time, in arrival order
-  let queue = Promise.resolve();
-  const ctl = http.createServer((req, res) => {
-    const chunks = [];
-    req.on("data", (c) => chunks.push(c));
-    req.on("end", () => {
-      queue = queue.then(async () => {
-        let out;
-        try {
-          const body = JSON.parse(Buffer.concat(chunks).toString() || "{}");
-          out = { ok: true, ...(await handle(body)) };
-          if (body.cmd !== "status") log(body.cmd, out.ms != null ? `${out.ms} ms` : "", out.before ? JSON.stringify({ reload: !!out.before.reload, sync: out.before.sync?.docs ?? out.before.sync?.summary ?? null, reset: { roots: out.before.reset.roots, pushed: out.before.reset.pushed, ms: out.before.reset.ms } }) : "");
-        } catch (e) { out = { ok: false, error: String(e?.stack ?? e?.message ?? e).split("\n").slice(0, 4).join(" | ") }; log("✗", out.error); }
-        res.writeHead(200, { "content-type": "application/json" });
-        res.end(JSON.stringify(out));
-      });
-    });
-  });
-  ctl.listen(CTL, () => log(`warm runner: page :${PORT}, requests :${CTL} (snapshot ${SNAPSHOT}${PROFILE ? `, profile ${PROFILE}` : ""}${FAST ? ", fast" : ""})`));
+  cdp = await page.context().newCDPSession(page);
+  openPage();   // requests that came in while the page was starting now run, the boot first
+  // --idle-exit <min>: a daemon started for someone else (the Stop hook) leaves when nobody uses it
+  if (IDLE_MIN > 0) setInterval(() => { if (Date.now() - lastRequestAt > IDLE_MIN * 60000) { log(`idle for ${IDLE_MIN} min: exiting`); shutdown(); } }, 30000).unref();
   process.on("SIGINT", shutdown);
   process.on("SIGTERM", shutdown);
 }
