@@ -51,8 +51,8 @@ const HELLO_MS = 5000;
 const OUT_OF_BATTLE = new Set(["party_rested", "session_started"]);
 const BACK_ORDER = ["turn_start", "round_start", "conflict_start"];
 const BACK_TEXT = { turn_start: "At the start of your turn", round_start: "Next round", conflict_start: "Next battle" };
-const SCOPE_WORD = { round: "round", battle: "battle", target: "target", target_round: "target each round" };
-const RES_LABEL = { mp: "MP", hp: "HP", ip: "IP", zp: "ZP", fp: "FP" };
+const SCOPE_WORD = { round: "round", battle: "battle", target: "target", target_round: "target each round", target_action: "target each action" };
+const RES_LABEL = { mp: "MP", hp: "HP", ip: "IP", zp: "ZP", zero_power: "ZP", fp: "FP" };
 
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c]));
 const reducedMotion = () => { try { return matchMedia("(prefers-reduced-motion: reduce)").matches; } catch { return false; } };

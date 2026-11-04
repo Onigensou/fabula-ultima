@@ -24,6 +24,8 @@
 // auto-defeat IS suppressed: while the director runs, the BD-native defeat
 // reactor (defeat-reactor.js) owns the removal pipeline behind the same gates,
 // so the legacy updateActor hook must stand down to avoid a double-delete.
+// This only reaches the director host. Every other client still has the hook,
+// so auto-defeat.js also stands down on its own (directorOwnsDefeat).
 
 import { log, warn } from "./logger.js";
 

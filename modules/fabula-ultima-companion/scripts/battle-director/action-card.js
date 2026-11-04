@@ -225,7 +225,11 @@ export function ensureStyles() {
       opacity: 0;
       z-index: 95;
       pointer-events: none;
-      transition: transform 220ms cubic-bezier(.2,.7,.2,1), opacity 220ms ease-out;
+      /* left: reaction-hand.js steps the card aside to clear the player's hand. */
+      transition: left 200ms ease, transform 220ms cubic-bezier(.2,.7,.2,1), opacity 220ms ease-out;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #${ROOT_ID} { transition: transform 220ms cubic-bezier(.2,.7,.2,1), opacity 220ms ease-out; }
     }
     #${ROOT_ID}.is-visible {
       transform: translate(-50%, -50%) scale(1);

@@ -379,6 +379,11 @@ export async function dispatchReactionMenu({
   // Leave Unleash rows out of this pass; dispatchNextUnleash fires them, one at
   // a time. Set by dispatchStandaloneTrigger for conflict_start's forced pass.
   holdUnleash = false,
+  // This caller runs a paired "forced" then "ask" pass, and a row in the forced pass
+  // can change an ask row's gate. A harness-accepted ask row then answers in the ask
+  // pass, re-read, as a real player would; without this it fires in the forced pass
+  // from candidates read before that pass ran, and is thrown away in the ask pass.
+  askPassFollows = false,
 } = {}) {
   // `director` and `token` are required by the ASK path only — menu anchoring,
   // the IntentChannel broadcast, and the fired-set persistence all need them.
@@ -529,6 +534,7 @@ export async function dispatchReactionMenu({
   const autoFire = [];
   const askable = [];
   const harnessSkipped = [];
+  const harnessInAskPass = [];
   for (const c of candidates) {
     const isAutoMode = c.mode === "on" || c.mode === "force";
     const wasUsed = firedSet.has(entryKey(reactor.uuid, c.rowKey, c.carrierUuid));
@@ -555,7 +561,10 @@ export async function dispatchReactionMenu({
     // promote to autoFire; false → silently skip. null/no-match → fall
     // through to interactive askable.
     const harnessChoice = harnessChoiceFor(c);
-    if (harnessChoice === true && c.available) autoFire.push(c);
+    if (harnessChoice === true && c.available) {
+      if (!askPassFollows) autoFire.push(c);
+      else if (phase === "ask") harnessInAskPass.push(c);
+    }
     else if (harnessChoice === false) harnessSkipped.push(c);
     else askable.push(c);
   }
@@ -575,7 +584,7 @@ export async function dispatchReactionMenu({
 
   // Phase: "ask" suppresses auto-fire (force/on already ran in the forced
   // pass); "forced"/null run it.
-  for (const c of (phase === "ask" ? [] : autoFire)) {
+  for (const c of (phase === "ask" ? harnessInAskPass : autoFire)) {
     try {
       // ANNOTATE, don't filter. The ask path below drops a candidate whose chain
       // returned !ok, but here `fired` is also what feeds appendFired's scope
@@ -1062,7 +1071,7 @@ export async function dispatchReactionMenu({
         if (keepGoing) renderMenu();
         else { closeMenusEverywhere(); resolveClose(); }
       }).catch((e) => {
-        if (!/local-won|rearm/.test(String(e?.message ?? e))) {
+        if (!/local-won|rearm|director-stop/.test(String(e?.message ?? e))) {
           warn(`reaction[${trigger}]: awaitIntent rejected`, e);
         }
       });

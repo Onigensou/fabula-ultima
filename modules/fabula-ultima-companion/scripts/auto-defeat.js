@@ -161,6 +161,32 @@
   }
 
   // -------------------------
+  // Battle Director ownership
+  // -------------------------
+  /**
+   * Does the Battle Director own defeats on this scene right now?
+   *
+   * While it runs, defeat-reactor.js removes the corpse, and only after the
+   * creature_defeated reactions are answered. LegacySuppressor takes this file's
+   * hook off the director HOST only, so without this check a player's client (or
+   * a second GM's) still ran the legacy removal and deleted the token about a
+   * second after the blow, while a "when a creature dies" prompt was open. Birth
+   * of the Cruel then had no corpse to raise, after its cost was paid.
+   *
+   * `directorState` is the cross-client signal. It is deliberately not read for
+   * `ended`: killing the last enemy ends the combat at once, but its reactions
+   * still have to run. stop() clears the flag when the director is really done.
+   */
+  function directorOwnsDefeat(scene) {
+    try {
+      if (globalThis.FUCompanion?.api?.experimental?.battleDirector?.isRunning?.()) return true;
+      return !!scene?.getFlag?.(MODULE_ID, "directorState")?.dCombat?.started;
+    } catch {
+      return false;
+    }
+  }
+
+  // -------------------------
   // Defeat Operation
   // -------------------------
   async function performDefeat(tokenLike) {
@@ -172,6 +198,13 @@
 
     if (!tokenDoc?.id || !scene?.id) {
       warn("performDefeat aborted: invalid tokenDoc or scene.", { tokenDoc, scene });
+      return;
+    }
+
+    // Every route lands here: a player's request (on both ends of the socket)
+    // and a GM's own hook.
+    if (directorOwnsDefeat(scene)) {
+      log("Battle Director owns this defeat -> skip:", { token: tokenDoc.name });
       return;
     }
 

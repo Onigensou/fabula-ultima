@@ -355,6 +355,24 @@ export class IntentChannel {
     return promise;
   }
 
+  // The battle is over: nothing will ever answer what it was waiting for. A wait
+  // left behind has a 30-minute timeout and matches on type + user alone, oldest
+  // first, so it takes the player's pick in the NEXT battle and that battle's own
+  // window never hears it (reproduced: the card comes back, "No response from the
+  // host"). Remote picks too: the same stop has already closed every player's open
+  // picker, so one could not be answered anyway. remotePick ignores the rejection (its
+  // GM copy settles it); remotePickAny has no GM copy and reports `stopped`.
+  abortBattleAwaits(reason = "director-stop") {
+    let n = 0;
+    for (const [id, entry] of this._pendingAwaits) {
+      try { clearTimeout(entry.timer); } catch {}
+      this._pendingAwaits.delete(id);
+      try { entry.reject(new Error(reason)); } catch {}
+      n++;
+    }
+    return n;
+  }
+
   _tryResolveAwait(intent) {
     for (const [id, entry] of this._pendingAwaits) {
       if (entry.type !== intent.type) continue;

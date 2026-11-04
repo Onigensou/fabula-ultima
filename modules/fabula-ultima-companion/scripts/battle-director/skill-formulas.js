@@ -2373,8 +2373,11 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
           const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
           if (!subjectUuid) return 0;
           const subject = _resolveActorByUuidSync(subjectUuid);
-          if (!subject) return 0;
-          const species = String(speciesOf(subject))
+          // Subject removed: only a resource event carries its species. Answering 0
+          // there would pass a "TARGET_SPECIES_IS_UNDEAD == 0" gate for a slain
+          // undead. Other events stay at 0, so a "== 1" rider cannot fire on a corpse.
+          if (!subject && payload?.subjectSpecies == null) return 0;
+          const species = String(subject ? speciesOf(subject) : payload.subjectSpecies)
             .replace(/_/g, " ")
             .toLowerCase()
             .trim();
@@ -2452,6 +2455,16 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         // ordinary NPCs → 0. Subject-based twin of TARGET_SPECIES_IS_<X> (reads the
         // defeated/triggering creature, not the resolver). Powers Birth of the
         // Cruel's "non-Villain NPC" reanimation gate: `... && TARGET_IS_VILLAIN == 0`.
+        // TARGET_WAS_IN_CRISIS — 1 when the trigger SUBJECT was already in Crisis
+        // BEFORE this loss, from the pre-damage snapshot. Beyond the Realms of Death's
+        // "loses Hit Points while in Crisis": TARGET_AE_COUNT_CRISIS cannot answer that,
+        // because it reads the creature after the hit (the hit that enters Crisis has
+        // already added the effect). No snapshot on the event = 0.
+        if (name === "TARGET_WAS_IN_CRISIS") return payload?.subjectSnapshot?.inCrisis ? 1 : 0;
+        // TRIGGER_LOSS_IS_DAMAGE — 1 when this HP loss (or the loss behind this defeat)
+        // was damage: an action's hit or a deal_damage row, ticks included. HP paid as a
+        // cost or a scripted drop reads 0.
+        if (name === "TRIGGER_LOSS_IS_DAMAGE") return payload?.isDamage ? 1 : 0;
         if (name === "TARGET_IS_VILLAIN") {
           const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
           if (!subjectUuid) return 0;

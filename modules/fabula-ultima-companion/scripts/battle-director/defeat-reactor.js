@@ -385,7 +385,25 @@ async function evaluateDefeat(director, actor, payload) {
 // per actor via the settle's shared `firedKeys` set so a multi-event kill (e.g.
 // a multi-hit attack) only fires the death reaction once. Observer reactions
 // (creature_defeated is observer-aware) fan out to every live combatant.
-async function emitCreatureDefeated(director, actor, payload, firedKeys) {
+// Which loss in this batch the defeat reports. All of an action's HP writes are done
+// before the settle runs, so the FIRST queued event already reads 0 HP and is the one
+// that emits, while the hit that matters can be another event in the batch (a hit
+// into Crisis, then a rider). Queue order is not hit order either: a post_damage row
+// queues its event ahead of the hit that set it off. So: damage taken while already in
+// Crisis, if any of these losses was; otherwise the last one.
+function lossBehindDefeat(actor, payload, batch) {
+  const counts = (p) => !!(p?.isDamage && p?.subjectSnapshot?.inCrisis);
+  let loss = payload;
+  for (const cfg of batch ?? []) {
+    const p = cfg?.payload;
+    if (String(p?.resource ?? "").toLowerCase() !== "hp") continue;
+    if (p?.direction !== "loss" || p?.subjectActorUuid !== actor.uuid) continue;
+    if (counts(p) || !counts(loss)) loss = p;
+  }
+  return loss;
+}
+
+async function emitCreatureDefeated(director, actor, payload, firedKeys, batch) {
   if (!actor) return;
   const key = `cdef:${actor.uuid}`;
   if (firedKeys?.has?.(key)) return;
@@ -410,6 +428,7 @@ async function emitCreatureDefeated(director, actor, payload, firedKeys) {
   // Read from token flags + actor props exactly as skill-effects.destroy_summon.
   const NS = "fabula-ultima-companion";
   const tokenFlags = tokenDoc?.flags?.[NS] ?? {};
+  const loss = lossBehindDefeat(actor, payload, batch);
   const defeatedPayload = {
     trigger:          "creature_defeated",
     sourceActorUuid:  actor.uuid,
@@ -422,6 +441,9 @@ async function emitCreatureDefeated(director, actor, payload, firedKeys) {
     cause:            payload?.cause ?? null,
     causeActorUuid:   payload?.causeActorUuid ?? null,
     causeTokenUuid:   payload?.causeTokenUuid ?? null,
+    subjectSnapshot:  loss?.subjectSnapshot ?? null,
+    isDamage:         !!loss?.isDamage,
+    damageInstance:   loss?.damageInstance ?? null,
   };
 
   try {
@@ -432,12 +454,29 @@ async function emitCreatureDefeated(director, actor, payload, firedKeys) {
     if (placeable && !reactors.some((r) => r.actor?.uuid === actor.uuid)) {
       reactors.push({ actor, token: placeable });
     }
-    for (const { actor: ra, token } of reactors) {
-      if (!ra || !token) continue;
-      await dispatchReactionMenu({
-        director, reactor: ra, token,
-        trigger: "creature_defeated", payload: defeatedPayload,
-      });
+    // Observers' automatic rows, then observers' prompts, then the dying creature's
+    // own rows. A prompt's gate is read when it is offered, so it has to see what the
+    // automatic rows changed: the Grave Point this kill earns (Beyond the Realms of
+    // Death) can be the one that pays for raising the corpse (Birth of the Cruel).
+    // The subject stays last, as it always was: everyone answers the death before a
+    // bomb's Explosion goes off, so the blast cannot take a prompt away from them.
+    //
+    // The reactor list is read once, up front, so an observer's automatic row can
+    // down someone already on it. Only the subject reacts from 0 HP; the scan's own
+    // defeat guard exempts this trigger for ANY reactor, so it cannot catch this.
+    const isSubject = (r) => r.actor?.uuid === actor.uuid;
+    const observers = reactors.filter((r) => !isSubject(r));
+    const subject = reactors.filter(isSubject);
+    const passes = [[observers, "forced"], [observers, "ask"], [subject, "forced"], [subject, "ask"]];
+    for (const [list, phase] of passes) {
+      for (const { actor: ra, token } of list) {
+        if (!ra || !token) continue;
+        if (ra.uuid !== actor.uuid && isActorDefeated(ra)) continue;
+        await dispatchReactionMenu({
+          director, reactor: ra, token, phase, askPassFollows: true,
+          trigger: "creature_defeated", payload: defeatedPayload,
+        });
+      }
     }
   } catch (e) {
     warn(`defeat-reactor: emitCreatureDefeated dispatch threw for ${actor?.name}`, e);
@@ -560,7 +599,7 @@ export async function defeatReactor(director, cfg, extra) {
   const down = !!actor && hp != null && hp <= 0;
   if (!down) clearReviveTried(actor);
   if (down) {
-    await emitCreatureDefeated(director, actor, payload, extra?.firedKeys);
+    await emitCreatureDefeated(director, actor, payload, extra?.firedKeys, extra?.batch);
   }
   // Auto-Life / Reraise (knockout-revive.js): a creature holding a revive is
   // knocked out like any survivor — KO status, cleanse, KO pose — and NOT removed

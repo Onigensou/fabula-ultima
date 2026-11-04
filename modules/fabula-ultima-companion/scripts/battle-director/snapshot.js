@@ -4,6 +4,7 @@
 // view rather than racing with live document mutations.
 
 import { warn } from "./logger.js";
+import { crisisThreshold } from "./crisis-reactor.js";
 import { getActorKind, getNpcAttackItems } from "./actor-shape.js";
 import { buildSkillResolver, evaluateFormula, isFormulaString, registerBlockedActionReader } from "./skill-formulas.js";
 import { hasIgnoreActionGating, snapshotUltimaBundle } from "./domination.js";
@@ -2550,7 +2551,13 @@ export function captureSubjectSnapshot(actor) {
   if (!actor) return null;
   try {
     const effects = actor.effects?.contents ?? Array.from(actor.effects ?? []);
+    // From HP, the crisis reactor's own rule, not from the Crisis effect: that is
+    // applied a moment after the HP write, so a second hit in the same action could
+    // find it missing.
+    const hp = Number(actor.system?.props?.current_hp);
+    const threshold = crisisThreshold(actor);
     return {
+      inCrisis: Number.isFinite(hp) && threshold != null && hp <= threshold,
       effects: effects
         .filter((e) => !e.disabled)
         .map((e) => ({

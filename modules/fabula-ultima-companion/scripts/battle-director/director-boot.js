@@ -656,6 +656,8 @@ async function stopNow({ reason = "manual", clearFlags = true, cleanupTokens = t
         });
       } catch (e) { warn("stop: broadcastMenuClose sweep threw", e); }
     }
+    const aborted = channel.abortBattleAwaits(`director-stop`);
+    if (aborted) log(`stop: dropped ${aborted} wait(s) for player input`);
   } catch (e) { warn("stop: mirror MENU_CLOSE sweep threw", e); }
 
   // Remove tokens we spawned during runDirectorInit. Only tokens flagged
