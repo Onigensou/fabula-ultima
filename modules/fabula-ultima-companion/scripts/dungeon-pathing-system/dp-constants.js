@@ -214,6 +214,7 @@
       STAGGER_MS:  90,         // per tile, left to right
       DURATION_MS: 950,        // one ring
       GROW:        0.4,        // ring travel, × the tile's smaller half-size
+      ROUND:       true,       // ring hugs round tile art; false = hover-highlight corners
       SOUND:       "FT_CYCLE", // DP.SOUNDS key; local only. "" = silent
       VOLUME:      0.3,
     },

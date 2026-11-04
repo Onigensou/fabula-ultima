@@ -196,7 +196,10 @@
     oldB.textContent = newB.textContent; newB.textContent = v;
     const o = { duration: 420, easing: "cubic-bezier(.3,.7,.3,1)", fill: "both" };
     try {
-      oldB.animate([{ transform: "translateY(0)", opacity: 1 }, { transform: "translateY(-100%)", opacity: 0 }], o);
+      const out = oldB.animate([{ transform: "translateY(0)", opacity: 1 }, { transform: "translateY(-100%)", opacity: 0 }], o);
+      // Drop the outgoing number once it has rolled away, so the chip never
+      // holds two numbers (its textContent read "Turn45" after a battle).
+      out.onfinish = () => { if (oldB.textContent !== newB.textContent) { oldB.textContent = ""; out.cancel(); } };
       newB.animate([{ transform: "translateY(100%)", opacity: 0 }, { transform: "translateY(0)", opacity: 1 }], o);
     } catch { /* no WAAPI: the number just changes */ }
   }
@@ -254,6 +257,10 @@
     const stagger = c.STAGGER_MS ?? 90;
     const dur     = c.DURATION_MS ?? 950;
     const grow    = c.GROW ?? 0.4;              // × the tile's smaller half-size
+    // Dungeon tile art is round tokens in square bounds, so a square ring reads
+    // boxy (seen on Valley_Map009). ROUND hugs the art: full corner radius gives
+    // a circle on square tiles and a pill on oblong ones.
+    const round   = c.ROUND !== false;
     const corner  = DP.UI?.HOVER_HIGHLIGHT?.CORNER_R ?? 6;
     const t0      = performance.now();
     const ease    = (u) => 0.5 - 0.5 * Math.cos(Math.PI * Math.min(1, Math.max(0, u)));
@@ -271,14 +278,15 @@
         live = true;
         const b = n.bounds, w = b.right - b.left, h = b.bottom - b.top;
         const out = ease(u * 1.15) * grow * Math.min(w, h) / 2;
+        const cr  = (extra) => round ? Math.min(w, h) / 2 + extra : corner + extra;
         // the ring, travelling outward and fading
         g.lineStyle(2.2 * px, color, k * 0.85 * Math.pow(1 - u, 1.6));
-        g.drawRoundedRect(b.left - out, b.top - out, w + out * 2, h + out * 2, corner + out);
+        g.drawRoundedRect(b.left - out, b.top - out, w + out * 2, h + out * 2, cr(out));
         // a brief brightening of the tile's own edge
         const rim = k * 0.6 * Math.sin(Math.PI * Math.min(1, u * 1.6));
         if (rim > 0.01) {
           g.lineStyle(2 * px, color, rim);
-          g.drawRoundedRect(b.left, b.top, w, h, corner);
+          g.drawRoundedRect(b.left, b.top, w, h, cr(0));
         }
       });
       if (!live) stopPulse();
