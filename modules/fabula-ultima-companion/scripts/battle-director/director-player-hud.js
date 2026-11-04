@@ -162,7 +162,7 @@ let _turnStatus = null;
 let _takeTurn = null;
 
 // ── helpers ───────────────────────────────────────────────────────────────────
-const pick  = (o, p) => { try { return getProperty(o, p); } catch { return undefined; } };
+const pick  = (o, p) => { try { return foundry.utils.getProperty(o, p); } catch { return undefined; } };
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 const pct   = (v, m) => `${(clamp(v / m, 0, 1) * 100).toFixed(4)}%`;
 const nice  = x => new Intl.NumberFormat().format(Math.max(0, Math.floor(Number(x) || 0)));

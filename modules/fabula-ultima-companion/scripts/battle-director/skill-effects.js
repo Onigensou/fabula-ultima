@@ -2094,7 +2094,7 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         carrierKind: "ae",
         carrierUuid: ae.uuid,
         carrierName: ae.name,
-        carrierImg:  ae.icon ?? ae.img,
+        carrierImg:  ae.img ?? ae.icon,
         carrierDescription: ae.description ?? "",
         rowKey: key,
         kind: kindForMode(mode),

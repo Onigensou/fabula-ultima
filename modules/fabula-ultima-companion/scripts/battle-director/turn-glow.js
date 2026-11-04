@@ -82,6 +82,14 @@ function makeFilters(rgb) {
   return { glow, outline };
 }
 
+// Compile the outline + glow shaders while idle after a scene loads (perf/pixi-shader-prewarm.js):
+// compiled at the first turn start they held the page 150-220 ms (real GPU, 2026-11-04). Their
+// source depends on distance/quality only, so either side's colour warms both.
+globalThis.__fuShaderPrewarm?.register("turn-glow", () => {
+  const { glow, outline } = makeFilters(SIDE_RGB.party);
+  return [outline, glow].filter(Boolean);
+});
+
 // White radial pool; tinted per side.
 function floorTexture() {
   if (_floorTexture && !_floorTexture.destroyed) return _floorTexture;

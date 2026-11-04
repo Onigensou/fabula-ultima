@@ -59,7 +59,7 @@ function readActiveConditions(actor) {
     const effs = actor?.effects ?? actor?.appliedEffects ?? [];
     const labels = [];
     for (const e of effs) {
-      const label = e?.label ?? e?.name ?? null;
+      const label = e?.name ?? e?.label ?? null;   // name first: AE#label is a deprecated alias (a compat warning per read)
       if (label) labels.push(String(label));
     }
     return labels;

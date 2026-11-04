@@ -289,6 +289,13 @@ function mutationsCouldAffectChatLayout(mutations = []) {
     return state.lastSnapshot;
   }
 
+  // The debug snapshot reads each button's computed style, which forces a style recalc of the
+  // page. Built when asked for (getSnapshot), not on every schedule: a chat message used to
+  // schedule a layout and pay that recalc at once (109 ms over a seeded battle, 2026-11-04).
+  function markSnapshotStale() {
+    state.lastSnapshot = null;
+  }
+
   function getSnapshot() {
     return state.lastSnapshot ?? updateSnapshot();
   }
@@ -497,8 +504,7 @@ function mutationsCouldAffectChatLayout(mutations = []) {
       delay: cleanDelay,
       scheduledAt: Date.now()
     };
-    updateSnapshot();
-
+    markSnapshotStale();
     debugLog("Layout scheduled.", state.lastSchedule);
 
     state.timer = setTimeout(() => {
@@ -551,7 +557,7 @@ function mutationsCouldAffectChatLayout(mutations = []) {
       chatFormId: chatForm.id ?? null
     });
 
-    updateSnapshot();
+    markSnapshotStale();
     return true;
   }
 
@@ -600,7 +606,7 @@ function mutationsCouldAffectChatLayout(mutations = []) {
     });
 
     debugLog("Attached body observer for chat replacement.");
-    updateSnapshot();
+    markSnapshotStale();
     return true;
   }
 
@@ -615,7 +621,7 @@ function mutationsCouldAffectChatLayout(mutations = []) {
     window.addEventListener("resize", state.resizeHandler, { passive: true });
 
     debugLog("Attached window resize listener.");
-    updateSnapshot();
+    markSnapshotStale();
     return true;
   }
 
@@ -646,7 +652,7 @@ function mutationsCouldAffectChatLayout(mutations = []) {
     state.resizeHandler = null;
     state.observedChatForm = null;
 
-    updateSnapshot();
+    markSnapshotStale();
     debugLog("Final layout manager destroyed.");
   }
 
@@ -677,8 +683,7 @@ function mutationsCouldAffectChatLayout(mutations = []) {
     requestLayout("readyWarmup300", 300);
 
     state.ready = true;
-    updateSnapshot();
-
+    markSnapshotStale();
     log("Ready.");
     debugLog("Ready snapshot.", getSnapshot());
   });
