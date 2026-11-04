@@ -203,6 +203,27 @@
       CORNER_R: 6,          // rounded-rect corner radius in world units
     },
 
+    // Turn start (dp-turn-start.js). Host-approved in the review mockup,
+    // 2026-11-04: "Ripple" at 40%, chip resting dimmed. Keep it subtle — the
+    // goal is a little life plus a hint of where the party can walk.
+    TURN_PULSE: {
+      ENABLED:     true,
+      STRENGTH:    0.4,        // 0..1 multiplier on the ring + rim alpha
+      COLOR:       0xffe08c,   // warm gold, a shade lighter than the hover fill
+      DELAY_MS:    120,        // after the cue fires
+      STAGGER_MS:  90,         // per tile, left to right
+      DURATION_MS: 950,        // one ring
+      GROW:        0.4,        // ring travel, × the tile's smaller half-size
+      SOUND:       "FT_CYCLE", // DP.SOUNDS key; local only. "" = silent
+      VOLUME:      0.3,
+    },
+    TURN_CHIP: {
+      ENABLED:      true,
+      LIT_MS:       1800,      // bright after a turn starts, then rests at 62%
+      NAMED_LIT_MS: 3400,      // first turn on a scene, with the area name
+      NAME_MS:      3000,
+    },
+
     // Silent hold after a Random Battle MISS (tile-event-random-battle.js).
     // A hit keeps the players waiting through the GM's ~2.5s override window
     // before the shatter, so a miss waits too, or the speed of the reply would
