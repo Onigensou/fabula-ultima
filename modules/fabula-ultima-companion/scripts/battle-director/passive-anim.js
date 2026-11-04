@@ -82,25 +82,38 @@ async function PASSIVE_INNER() {
     r.sprite.anchor.set(c.ax, c.ay); r.sprite.position.set(t.center.x, t.center.y);
     await r.ended;
   }
-  function arc(from, to, ms) {
+  // Reflect fallback (user pick, 2026-11-04: MIRROR): a glass pane snaps up
+  // beside the owner, facing whoever takes the hit, a shine sweeps across it.
+  // Returns where the hit leaves the pane.
+  function mirror(t, toward) {
+    const side = Math.sign(toward.x - t.center.x) || 1;
+    const px = t.center.x + side * 95 * s, cy = t.center.y, h = Math.max(200 * s, t.h * 1.1), w = 70 * s;
+    const poly = [px - w / 2, cy - h / 2, px + w / 2, cy - h / 2 - 18 * s * side, px + w / 2, cy + h / 2 - 18 * s * side, px - w / 2, cy + h / 2];
+    const pane = keep(new PIXI.Graphics());
+    pane.lineStyle({ width: 3 * s, color: 0xeaf8ff, alpha: 1 });
+    pane.beginFill(0xc8ebff, 0.35); pane.drawPolygon(poly); pane.endFill();
+    pane.zIndex = 95650; pane.alpha = 0; canvas.stage.addChild(pane);
+    const mask = keep(new PIXI.Graphics()); mask.beginFill(0xffffff); mask.drawPolygon(poly); mask.endFill(); canvas.stage.addChild(mask);
+    const shine = keep(new PIXI.Graphics());
+    shine.beginFill(0xffffff, 0.85); shine.drawRect(-11 * s, -h, 22 * s, h * 2); shine.endFill();
+    shine.rotation = 0.3; shine.zIndex = 95660; shine.position.set(px - w, cy); shine.mask = mask; canvas.stage.addChild(shine);
+    const done = oni.tween({ from: 0, to: 1, duration: 130, ease: E.outQuad, onUpdate: function (v) { pane.alpha = v; } })
+      .then(function () { return oni.tween({ from: 0, to: 1, duration: 260, ease: E.linear, onUpdate: function (v) { shine.position.set(px - w + v * w * 2, cy); } }); })
+      .then(function () { return oni.tween({ from: 1, to: 0, duration: 380, ease: E.outQuad, onUpdate: function (v) { pane.alpha = v; shine.alpha = v; } }); })
+      .then(function () { for (const o of [pane, mask, shine]) { try { o.destroy(); } catch (e) {} } });
+    return { from: { x: px, y: cy }, done: done };
+  }
+  // The hit ricochets off the pane in a straight line.
+  function ricochet(from, to, ms) {
     const g = keep(new PIXI.Graphics());
     g.blendMode = PIXI.BLEND_MODES.ADD; g.zIndex = 95650; canvas.stage.addChild(g);
-    const N = 9, pts = [];
-    for (let i = 0; i <= N; i++) {
-      const v = i / N, j = (i === 0 || i === N) ? 0 : (Math.random() - 0.5) * 46 * s;
-      pts.push({ x: from.x + (to.x - from.x) * v, y: from.y + (to.y - from.y) * v + j });
-    }
-    const draw = function (v) {
+    return oni.tween({ from: 0, to: 1, duration: ms, ease: E.linear, onUpdate: function (v) {
       g.clear();
-      g.lineStyle({ width: 9 * s, color: 0xc9a0ff, alpha: 0.35, cap: "round", join: "round" });
-      const upto = Math.max(1, Math.round(v * N));
-      g.moveTo(pts[0].x, pts[0].y); for (let i = 1; i <= upto; i++) g.lineTo(pts[i].x, pts[i].y);
-      g.lineStyle({ width: 4 * s, color: 0xfff6a8, alpha: 1, cap: "round", join: "round" });
-      g.moveTo(pts[0].x, pts[0].y); for (let i = 1; i <= upto; i++) g.lineTo(pts[i].x, pts[i].y);
-    };
-    return oni.tween({ from: 0, to: 1, duration: ms, ease: E.linear, onUpdate: draw })
-      .then(function () { return wait(160); })
-      .then(function () { return oni.tween({ from: 1, to: 0, duration: 200, ease: E.linear, onUpdate: function (v) { g.alpha = v; } }); })
+      g.lineStyle({ width: 10 * s, color: 0x7fd8ff, alpha: 0.35, cap: "round" });
+      g.moveTo(from.x, from.y); g.lineTo(from.x + (to.x - from.x) * v, from.y + (to.y - from.y) * v);
+      g.lineStyle({ width: 5 * s, color: 0xe9fbff, alpha: 1, cap: "round" });
+      g.moveTo(from.x, from.y); g.lineTo(from.x + (to.x - from.x) * v, from.y + (to.y - from.y) * v);
+    } }).then(function () { return oni.tween({ from: 1, to: 0, duration: 160, ease: E.linear, onUpdate: function (v) { g.alpha = v; } }); })
       .then(function () { try { g.destroy(); } catch (e) {} });
   }
 
@@ -111,8 +124,11 @@ async function PASSIVE_INNER() {
       const targets = (beat.recipients || []).map(tok).filter(function (t) { return t && t.center; });
       if (!targets.length) continue;
       if (beat.k === "redirect" && owner) {
+        const m = mirror(owner, targets[0].center);
+        pending.push(m.done);
+        await wait(260);
         await Promise.all(targets.map(function (t, i) {
-          return wait(i * 90).then(function () { return arc(owner.center, t.center, 220); });
+          return wait(i * 90).then(function () { return ricochet(m.from, t.center, 170); });
         }));
         pending.push(Promise.all(targets.map(function (t) { return hit(beat.clip, t); })));
       } else if (beat.k === "damage") {

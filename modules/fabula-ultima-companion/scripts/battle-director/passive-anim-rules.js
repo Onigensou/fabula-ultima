@@ -11,7 +11,7 @@
 //   cleanse → white rising lines
 //   damage  → the element's small hit clip on the recipient (BD's number plays
 //             the sound — a passive never claims the hit, hit-sound-rules.js)
-//   redirect→ a bolt-style arc from the owner, then the hit (damage dealt by a
+//   redirect→ a MIRROR pane at the owner, a straight ricochet, then the hit (damage dealt by a
 //             damage-reaction follow-up: Obsidrax's Earthen Wire)
 //
 // Input is the rows that ACTUALLY RAN (the recorder in skill-effects
