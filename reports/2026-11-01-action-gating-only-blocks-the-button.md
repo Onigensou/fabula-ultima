@@ -1,16 +1,56 @@
 ---
 id: 2026-11-01-action-gating-only-blocks-the-button
 title: Paralyzed, Frightened, Confused and similar block the command button but not actions of that category offered elsewhere
-status: open
+status: fixed
 severity: major
 reporter: onigensou
-assignee:
+assignee: onigensou
 component: battle-director/reactions
 introduced_in:
-fixed_in:
+fixed_in: v1.0.527
 ---
 
-# Deferred on purpose: this needs its own thread
+# Fixed in v1.0.527
+
+Commits 12bc8cae, e2e836a9 and 0838542e. Seen again in a real session: Paralyzed Zarg could not
+Dance, but could still add Barrage to his attack.
+
+**Heads-up, sarunphat:** `findPassiveCandidates` (and `findTargetOwnedCandidates`) now run a shared
+gate, `getReactionGate` in `skill-effects.js`. If you have work in flight on reaction scanning,
+please rebase onto this. A gated row comes back with `available: false` and either:
+- the new `unavailableKind: "blocked"`, shown dimmed with the debuff's name, like `"cost"`; or
+- `"condition"`, hidden and never fired. This one is used for Suppressed passives.
+
+## The rules (Onigensou's rulings, all uniform; no per-skill cases)
+
+Active and Passive come from each row's `reaction_passive_mode`, not from `skill_type` (Barrage and
+Cheap Shot are both typed Passive):
+
+- **Active** (`ask`): the player or GM chooses to use it. Only the command debuffs block these:
+  - **Check A, where it comes from.** The carrier item is sorted into a command: gear-granted is
+    Equipment (Disarmed), a consumable is Item (Panic), skill_type Spell is Spell (Silence), and
+    anything else is Skill (Paralyzed). Rows carried by an AE, or granted by someone else's skill,
+    skip this check.
+  - **Check B, what it lets you do.** Blocked when the whole payload is free actions and every one
+    of them is blocked (Frightened stops Counterattack). A grant is sorted by what it COUNTS AS:
+    a Skill grant limited to tag:inventory is an Item action, so Panic stops Emergency Item.
+- **Passive** (`on` / `force`): fires by itself. Only **Suppressed** blocks these, through the new
+  AE change `disable_passive`, which is now on the Debuff hub's Suppressed. It applies to players
+  and monsters alike: rows of a non-gear skill labelled Passive that has no `ask` row. Gear is
+  never suppressed. A skill with an `ask` row counts as Active, so its automatic rows keep running
+  (Dance's cost row). Suppressed does not remove what a passive already granted.
+- No reaction is ever blocked by both families. Domination State and `ignore_gating_<ae>` tags
+  still exempt. Only the label gates feed this; the Charm-style intent filter stays per entry.
+
+`resolveDamageReactions` needed no change: it walks only AE rows, and those never grant actions.
+
+Tests: `tools/snapshot-runner/checks/reaction-gating.js` and `reaction-gating-barrage.js` (7 actors ×
+11 debuff scenarios). skill-regression check 487/487 unchanged; parity and census clean. Not yet
+seen in a live session.
+
+---
+
+# History: deferred on 2026-11-01
 
 Written for whoever picks this up. Nothing has been fixed. Owner not decided yet.
 
