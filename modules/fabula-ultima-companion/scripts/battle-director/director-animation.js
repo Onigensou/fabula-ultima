@@ -101,6 +101,7 @@ export async function resolveAnimationSpec(ar, { allowDefault = false } = {}) {
           p.animation_script,
           p.animation_damage_timing_options,
           p.animation_damage_timing_offset,
+          item.flags?.[ANIM_NS]?.animOwnsImpact === true,
         );
         if (spec.hasScript || !allowDefault) return spec;
         return (await _defaultSpec(ar, { skillItem: item })) ?? spec;
@@ -127,6 +128,7 @@ export async function resolveAnimationSpec(ar, { allowDefault = false } = {}) {
           own ? p.animation_script : f.animationScript,
           own ? p.animation_damage_timing_options : f.animationTiming,
           own ? p.animation_damage_timing_offset : f.animationOffset,
+          f.animOwnsImpact === true,
         );
         if (spec.hasScript || !allowDefault) return spec;
         return (await _defaultSpec(ar, { weaponItem: item })) ?? spec;
@@ -219,6 +221,8 @@ function _defaultResult(plan, impactAt) {
     timingOffset: Math.max(0, Math.round(impactAt)),
     playAt: "animation",
     source: "default",
+    // every default plays its own weapon / element hit sound
+    claimsImpact: true,
     defaultLabel: plan.label,
   };
 }
@@ -290,16 +294,20 @@ function _stripHtml(html) {
     .replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'");
 }
 
-function _buildSpec(rawScript, rawMode, rawOffset) {
+// claimsImpact: the script plays its own hit sound, so BD's damage number drops
+// its impact + hit sound (hit-sound-rules.js). Authored scripts opt in with the
+// item flag `animOwnsImpact`; every default animation claims.
+function _buildSpec(rawScript, rawMode, rawOffset, claimsImpact = false) {
   const script = _stripHtml(rawScript).trim();
   // Reject empty strings and the legacy placeholder sentinel (same check as
   // ActionAnimationHandler's isPlaceholderScript).
   if (!script || /insert your sequencer animation here/i.test(script)) {
-    return { hasScript: false, script: "", timingMode: "default", timingOffset: 0, playAt: "animation" };
+    return { hasScript: false, script: "", timingMode: "default", timingOffset: 0, playAt: "animation", claimsImpact: false };
   }
   return {
     hasScript: true,
     script,
+    claimsImpact: !!claimsImpact,
     timingMode:   _parseTimingMode(rawMode),
     timingOffset: _parseTimingOffset(rawOffset),
     // "animation" = the FSM's ANIMATION state (default); "resolve" = only a
@@ -697,7 +705,11 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
   // cues, so the presenter listens from before the script starts. A script
   // without cues falls back to a beat from the damage moment (chain-presenter).
   const chainPlan = director.ctx.actionResult?.chainPlan ?? null;
-  const presenter = chainPlan ? createChainPresenter(chainPlan, { causeTokenUuid: casterTokenUuid }) : null;
+  const presenter = chainPlan ? createChainPresenter(chainPlan, {
+    causeTokenUuid: casterTokenUuid,
+    // read live: a script that never ran (fast-forward) drops the claim below
+    impactClaimed: () => !!director.ctx?.animClaimsImpact,
+  }) : null;
   presenter?.arm();
 
   // Abort mechanism: calling abortResolve() collapses the gate Promise.race.
@@ -719,6 +731,8 @@ export async function playDirectorAnimation({ spec, director, casterTokenUuid, t
       strikes: chainPlan?.strikes ?? null,
     });
     ran = !!r?.ran;
+    // Nothing played (hidden window, no viewers): nothing owns the hit sound.
+    if (!ran && director.ctx) director.ctx.animClaimsImpact = false;
     log("[BD Anim] gate resolved — advancing to RESOLVE");
   } catch (e) {
     warn("[BD Anim] playDirectorAnimation threw", e);

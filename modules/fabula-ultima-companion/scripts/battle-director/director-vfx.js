@@ -17,6 +17,7 @@ import { PARTY_ENTRANCE_SFX_URLS } from "./party-entrance-styles.js";
 import { emitDamageNumber } from "./damage-numbers/director-damage-numbers.js";
 import { emitImpactFx } from "./damage-numbers/director-impact-fx.js";
 import { emitHurtReaction } from "./damage-numbers/director-hurt-reaction.js";
+import { lossSound } from "./hit-sound-rules.js";
 
 export const DIRECTOR_STATIC_URLS = Object.freeze([
   // Guard / Covered AE icons (Forge-vtt — remote, slowest first-fetch).
@@ -430,7 +431,10 @@ function resolveLossAv(resource, affinity) {
 //   resource  : "hp" | "mp"
 //   amount    : the value lost (already post-clamp / post-affinity)
 //   affinity  : "NE" | "VU" | "RS" | ... (HP only; ignored for MP)
-export function playResourceLossVfx({ tokenUuid, resource = "hp", amount = 0, affinity = "NE", element = "elementless", isCrit = false, pierce = false, cascade = 0, critBanner = true, numbersOnly = false } = {}) {
+//   impactOwned : the hit's animation CLAIMED the impact (hit-sound-rules.js):
+//                 no impact burst, no hit sound — the number + flinch stay,
+//                 a WEAK / RESIST accent still sounds.
+export function playResourceLossVfx({ tokenUuid, resource = "hp", amount = 0, affinity = "NE", element = "elementless", isCrit = false, pierce = false, cascade = 0, critBanner = true, numbersOnly = false, impactOwned = false } = {}) {
   try {
     if (!(amount > 0)) return;
     // Floating NUMBER → BD-native damage-number subsystem (DOM screen-space).
@@ -445,10 +449,13 @@ export function playResourceLossVfx({ tokenUuid, resource = "hp", amount = 0, af
     // Token hurt flinch — only for a real physical-ish hit (HP / shield), not an
     // MP drain. Strong tier on WEAK/crit.
     if (resource === "hp" || resource === "shield") fireHurt(tokenUuid, affinity, isCrit);
-    // Impact burst + affinity SFX — both BD-native now (DOM <video> + Web Audio).
-    const { file, sfx } = resolveLossAv(resource, affinity);
-    emitImpactFx({ tokenUuid, file, durationMs: 1000 });
-    if (sfx) throttledSfx(sfx, 0.6);
+    // Impact burst + hit sound — one impact sound per hit, never none
+    // (hit-sound-rules.js): an element sound by default, nothing but a
+    // WEAK / RESIST accent when the animation claimed the hit.
+    const { file } = resolveLossAv(resource, affinity);
+    const snd = lossSound({ resource, affinity, element, impactOwned });
+    if (snd.impact) emitImpactFx({ tokenUuid, file, durationMs: 1000 });
+    if (snd.sfx) throttledSfx(snd.sfx, snd.vol);
   } catch (e) {
     warn("playResourceLossVfx threw", e);
   }

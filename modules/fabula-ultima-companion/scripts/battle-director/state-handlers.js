@@ -944,6 +944,9 @@ async function resolveAction(director, ar, opts = {}) {
           // or a one-roll Chain's every tick — was shown on its cue), and a
           // blocker the card spent on one strike must not fire again on the rest.
           silent: !!ct || !!cs,
+          // The action's animation claimed the impact sound (set in
+          // Animation.onEnter; false when nothing played). hit-sound-rules.js.
+          impactClaimed: !!director.ctx?.animClaimsImpact,
           skipIncomingAeNames: ct ? chainSpentBlockers(ar, r.tokenUuid, ct) : null,
           actionHit: {
             causeTokenUuid: ar.attacker?.tokenUuid ?? null,
@@ -8829,6 +8832,10 @@ const Animation = {
     // default (action-anim-rules.js), per the "default action animations" setting.
     const spec = await resolveAnimationSpec(ar, { allowDefault: true });
     if (spec.source === "default") log(`ANIMATION: default — ${spec.defaultLabel} (damage at ${spec.timingOffset} ms)`);
+    // RESOLVE reads this: the animation plays the hit sound, so the damage
+    // number must not play its own on top (hit-sound-rules.js). Cleared again by
+    // playDirectorAnimation if the script never actually runs.
+    director.ctx.animClaimsImpact = !!(spec.hasScript && spec.playAt !== "resolve" && spec.claimsImpact);
 
     // Attack / cast pose on the actor, on every client — also for actions with
     // no animation script, the way a JRPG battler swings even without effects.

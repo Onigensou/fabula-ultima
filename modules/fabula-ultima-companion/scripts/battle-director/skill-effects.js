@@ -655,6 +655,10 @@ export async function applyDamageToTarget({
   // { causeTokenUuid, causeActorUuid, aimedAtTarget } when an action's own hit is
   // landing. See resolveDamageReactions' hitPayload.
   actionHit = null,
+  // The action's animation CLAIMED this hit's impact sound (a default
+  // animation, or an authored one flagged animOwnsImpact): the number keeps its
+  // pop and flinch but drops its impact burst and hit sound. hit-sound-rules.js.
+  impactClaimed = false,
 } = {}) {
   const empty = { resource, finalValue: 0, valueDirection: "none", fired: [] };
   if (!target) return empty;
@@ -735,7 +739,7 @@ export async function applyDamageToTarget({
       newShield = curShield - absorbed;
       toHp = damage - absorbed;
       log(`${prefix}shield absorbed ${absorbed} on ${targetName}: shield ${curShield} → ${newShield}${logSuffix}`);
-      vfx?.loss({ tokenUuid, resource: "shield", amount: absorbed, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce });
+      vfx?.loss({ tokenUuid, resource: "shield", amount: absorbed, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce, impactOwned: !!impactClaimed });
     }
 
     // Fully absorbed — only the shield changed; HP untouched. The HP bar still
@@ -786,7 +790,7 @@ export async function applyDamageToTarget({
       // settles. The removal still happens in the settle (defeat-reactor).
       // (A silent Chain commit started it already, on the killing strike.)
       const killing = newHp === 0 && dealtDamage > 0;
-      vfx?.loss({ tokenUuid, resource: "hp", amount: dealtDamage, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce },
+      vfx?.loss({ tokenUuid, resource: "hp", amount: dealtDamage, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce, impactOwned: !!impactClaimed },
         killing ? () => fireDefeatOnHit({ tokenUuid, actor: target, hpAfter: newHp, causeTokenUuid: sourceTokenUuid }) : null);
     }
     // Transient HP bar (studied hostile NPCs only — gated inside). Carries the
