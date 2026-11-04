@@ -222,6 +222,10 @@
       LIT_MS:       1800,      // bright after a turn starts, then rests at 62%
       NAMED_LIT_MS: 3400,      // first turn on a scene, with the area name
       NAME_MS:      3000,
+      // Name the area on the chip's first turn on a scene. OFF: the Area Name
+      // Panel (scripts/area-panel) already plays a plaque on scene activation,
+      // so the chip would say it twice. Turn on only if that panel is off.
+      SHOW_AREA:    false,
     },
 
     // Silent hold after a Random Battle MISS (tile-event-random-battle.js).

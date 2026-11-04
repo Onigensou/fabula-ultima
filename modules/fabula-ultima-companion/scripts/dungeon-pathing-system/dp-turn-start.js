@@ -203,9 +203,10 @@
 
   function areaName(scene) {
     const g = scene?.flags?.[MOD]?.[DP.FABULA_ROOT_KEY ?? "oniFabula"]?.[DP.GENERAL_KEY ?? "general"] ?? {};
-    // navigationName only: it is the player-facing name. The scene's own name
-    // is a working title and must never reach the players.
-    return String(g.navigationName ?? "").trim();
+    // Authored player-facing names only (the Area Name Panel's areaName, then
+    // the travel dialog's navigationName). The scene's own name is a working
+    // title and must never reach the players.
+    return String(g.areaName || g.navigationName || "").trim();
   }
 
   function wakeChip(named, scene = canvas?.scene) {
@@ -213,7 +214,7 @@
     if (!el) return;
     const c = cfgChip();
     clearTimeout(_restTimer); clearTimeout(_nameTimer);
-    const name = named ? areaName(scene) : "";
+    const name = named && c.SHOW_AREA ? areaName(scene) : "";
     el.querySelector(".area").textContent = name ? `${name} ·` : "";
     el.classList.add("lit");
     el.classList.toggle("named", !!name);
