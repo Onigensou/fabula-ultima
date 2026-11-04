@@ -21,6 +21,36 @@
     return;
   }
 
+  // ── Silent miss hold ───────────────────────────────────────────────────────
+  // A hit keeps the party waiting through the GM's override window, so a miss
+  // that came straight back would give the result away. Hold the turn (busy
+  // stays set, so the party cannot move) for one of three fixed patterns, then
+  // let the turn end; the next turn's start is the only thing that follows.
+  // No sound, no text. Per client: only the walking client holds.
+  let _lastHoldWasRare = false;
+
+  function pickHoldMs() {
+    const pats = DP.UI?.RANDOM_BATTLE_HOLD?.PATTERNS;
+    if (!Array.isArray(pats) || !pats.length) return 0;
+    let pick = pats[0];
+    // A longer hold never comes twice in a row: players learn the rhythm.
+    if (!_lastHoldWasRare) {
+      const total = pats.reduce((s, p) => s + Math.max(0, Number(p.weight) || 0), 0) || 1;
+      let r = Math.random() * total;
+      for (const p of pats) { r -= Math.max(0, Number(p.weight) || 0); if (r < 0) { pick = p; break; } }
+    }
+    _lastHoldWasRare = pick !== pats[0];
+    return Math.max(0, Number(pick.ms) || 0);
+  }
+
+  async function holdSince(t0) {
+    const left = pickHoldMs() - (performance.now() - t0);
+    if (left > 0) await new Promise(r => setTimeout(r, left));
+  }
+
+  // Exposed for the offline spread check (tools/) only.
+  DP.RandomBattleHold = { pickHoldMs };
+
   DP.TileEventRegistry.register(DP.TILE_TYPES.RANDOM_BATTLE, {
     label:             "Random Battle",
     clearAfterTrigger: false,
@@ -31,6 +61,7 @@
       const story = tileDoc?.flags?.[DP.MODULE_ID ?? "fabula-ultima-companion"]?.[DP.PATHING_ROOT_KEY]?.storyBattle;
       const opts  = (story === true || story === "true") ? { forced: true, verdict: "customize" } : {};
       let res = null;
+      const t0 = performance.now();   // ≈ the moment the player confirmed
       try {
         res = await DP.Socket.requestRandomBattle(scene, tileDoc?.id, tokenDoc?.id, opts);
       } catch (e) {
@@ -51,7 +82,12 @@
       if (res.launched) {
         const st = globalThis.__ONI_DUNGEON_PATHING__?.state;
         if (st) st.battleLaunching = true;
+        return;
       }
+
+      // A pity-roll miss: hide it behind the silent hold. Story, fixed and
+      // already-won battles never rolled, so they end at once.
+      if (res.rolled && !res.appear) await holdSince(t0);
     }
   });
 })();

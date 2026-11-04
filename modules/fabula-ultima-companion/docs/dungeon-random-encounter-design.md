@@ -33,11 +33,11 @@ player confirms a move onto a Random Battle tile
   └─ tile-event-random-battle.js  (any client — thin request only)
       └─ DP.Socket.requestRandomBattle → DP.RandomBattle.run()  (ONE GM)
           1. d100 vs random_battle_percentage
-          2. miss → "Nothing appears…" card, rate climbs 20–30 → turn ends
+          2. miss → rate climbs 20–30 → reply; the tile handler holds the turn
+                    silently (1.075 / 1.25 / 2.5 s), then the next turn begins
           3. hit  → resolve the group (novelty-biased)
                   → roll engagement from the flat percentages
-                  → encounter SFX (broadcast)
-                  → GM override window, ~2.5s
+                  → GM override window, ~2.5s (players see and hear nothing)
                   → rate halves (floored at minimum_encounter_percentage)
                   → battleDirector.start({ payload })
           4. Director: shatter → curtain → spawn → round-1 AMBUSH!/ADVANTAGE!
@@ -143,9 +143,10 @@ the roster is exhausted.
 Two intercepts, both GM-only:
 
 **The override window** — a ~2.5s toast naming the resolved group (and flagging
-any first encounters), with *Fight now* and *Customize…*. It runs **while the
-encounter SFX plays**, so the pause it adds sits inside a beat the players are
-already watching. Untouched, it launches.
+any first encounters), with *Fight now* and *Customize…*. Untouched, it launches. The players see and
+hear nothing during it (the encounter sound and the "Nothing appears…" card were
+removed 2026-11-04): their turn is simply held, and a miss is held silently for
+a comparable time, so the wait itself does not give the outcome away.
 
 **Customize Next Battle** — a toggle in the GM's Developer Tools speed-dial
 (🎲 off / 📝 armed), beside the AI Autopilot toggle. It is GM-only, so it does

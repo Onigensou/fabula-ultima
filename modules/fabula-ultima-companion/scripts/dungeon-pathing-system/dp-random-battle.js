@@ -650,8 +650,8 @@
 
   // forced: the caller already decided a battle happens — a world-map travel
   // Danger (dp-travel.js), where the FU travel die replaces the pity d100. The
-  // pity rate is neither rolled nor moved, a failure posts no "Nothing
-  // appears…" card (the caller falls back to something else), and `verdict`
+  // pity rate is neither rolled nor moved, a failure is a plain miss (the
+  // caller falls back to something else), and `verdict`
   // ("auto" | "customize") is the GM's pick, so the override toast is skipped.
   // A tile with fixed enemies forces itself the same way (readFixed below).
   async function resolveLanding({ sceneId, tileId, forced = false, verdict: forcedVerdict = "auto" } = {}) {
@@ -679,7 +679,9 @@
     const d100 = Math.floor(Math.random() * 100) + 1;
     if (!forced && d100 > rates.encounter) {
       applyRateUpdate(rates, false);
-      return { ok: true, appear: false, launched: false };
+      // `rolled`: the pity die really ran, so the tile handler hides this miss
+      // behind its silent hold. Forced and fixed battles never set it.
+      return { ok: true, appear: false, launched: false, rolled: true };
     }
 
     // 2. Resolve the group BEFORE committing to the encounter, so a misconfigured
@@ -697,7 +699,7 @@
       warn("degrading to a miss:", why);
       ui.notifications?.warn?.(`Random Battle | ${why}`);   // GM-only: this runs on the GM
       if (!forced) applyRateUpdate(rates, false);
-      return { ok: true, appear: false, launched: false, error: why };
+      return { ok: true, appear: false, launched: false, rolled: !forced, error: why };
     }
 
     // 3. Engagement — the same flat percentages the tile has always rolled,
@@ -711,7 +713,7 @@
 
     log(`encounter: ${picks.map(p => p.name).join(", ")} | engagement=${engagement}`);
 
-    // 5. GM interception.
+    // 4. GM interception.
     let verdict = "auto";
     if (forced) {
       verdict = forcedVerdict === "customize" ? "customize" : "auto";
@@ -741,7 +743,7 @@
       return { ok: true, appear: true, launched: false };
     }
 
-    // 6. Launch.
+    // 5. Launch.
     const api = globalThis.FUCompanion?.api?.experimental?.battleDirector;
     if (!api?.start) {
       ui.notifications?.error?.("Random Battle | Battle Director API not loaded (Setup-relaunch needed).");
