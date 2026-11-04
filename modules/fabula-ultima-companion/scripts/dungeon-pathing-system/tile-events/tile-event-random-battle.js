@@ -48,6 +48,27 @@
     if (left > 0) await new Promise(r => setTimeout(r, left));
   }
 
+  // ── GM-left release ────────────────────────────────────────────────────────
+  // While the GM customizes, the reply is withheld (dp-random-battle.js
+  // watchPrompt). If that GM disconnects or reloads, the reply never comes, so
+  // release the turn the moment Foundry reports them gone (host decision B2).
+  // socketlib's executeAsGM goes to game.users.activeGM; a GM walking the
+  // party resolves locally and needs no guard.
+  function untilGmLeaves(request) {
+    const gmId = game.user?.isGM ? null : game.users?.activeGM?.id ?? null;
+    if (!gmId) return request;
+    let hookId = null;
+    const left = new Promise(resolve => {
+      hookId = Hooks.on("userConnected", (user, connected) => {
+        if (user?.id === gmId && !connected) {
+          console.warn(TAG, "the resolving GM disconnected — releasing the turn");
+          resolve({ ok: false, error: "GM disconnected" });
+        }
+      });
+    });
+    return Promise.race([request, left]).finally(() => Hooks.off("userConnected", hookId));
+  }
+
   // Exposed for the offline spread check (tools/) only.
   DP.RandomBattleHold = { pickHoldMs };
 
@@ -63,7 +84,7 @@
       let res = null;
       const t0 = performance.now();   // ≈ the moment the player confirmed
       try {
-        res = await DP.Socket.requestRandomBattle(scene, tileDoc?.id, tokenDoc?.id, opts);
+        res = await untilGmLeaves(DP.Socket.requestRandomBattle(scene, tileDoc?.id, tokenDoc?.id, opts));
       } catch (e) {
         // A throw here would strand the player's dungeon turn — swallow it and
         // let the turn end normally instead.
