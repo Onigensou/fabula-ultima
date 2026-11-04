@@ -43,10 +43,10 @@ t("inner body: no backtick, no ${", () => {
   assert.equal(/`/.test(b), false);
   assert.equal(b.includes("${"), false);
 });
-t("Lightning Charge: MP lines + the recovery sound, all sprites cleaned up", async () => {
+t("Lightning Charge: MP lines, no sound of their own (BD's +X gain plays it), all sprites cleaned up", async () => {
   const e = env();
   const log = await run(buildPassiveCfg({ ownerTokenUuid: "Scene.s.Token.owner", beats: [{ k: "mp", recipients: ["Scene.s.Token.owner"] }] }), e);
-  assert.ok(log.includes("sfx:Recovery.ogg"));
+  assert.equal(log.some((x) => x.startsWith("sfx:")), false);
   assert.equal(log.filter((x) => x === "destroy").length >= 10, true);
   assert.equal(e.stage.children.every((c) => c.destroyed), true);
 });
