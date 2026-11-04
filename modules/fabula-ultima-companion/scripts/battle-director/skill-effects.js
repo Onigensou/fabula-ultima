@@ -814,9 +814,17 @@ export async function applyDamageToTarget({
         // only aim at reserved refs like "self" (Ninja Log), never at a pick made
         // by an earlier step of the same chain (Earthen Wire's random enemy).
         const fctx = { director: dirf, reactorActor: target, reactorToken: tokf, skill: null, carrierImg: fu.carrierImg ?? null, payload: { ...(fu.payload ?? {}) }, effect_table: fu.effectTable, runtimeEffectTable: fu.effectTable, dCombat: dirf?.dCombat ?? null };
+        // Passive fallback (passive-anim.js): damage dealt by a damage-reaction
+        // follow-up is a redirect (Earthen Wire) — an arc from the wearer.
+        fctx.__passiveRec = { records: [] };
         for (const frow of (fu.rows ?? [])) {
           try { await applyEffectRow(frow, fctx); }
           catch (e) { warn(`applyDamageToTarget: follow-up "${frow.effect_label}" failed`, e); }
+        }
+        if (!silent) {
+          import("./passive-anim.js")
+            .then((m) => m.playPassiveFallback({ ctx: fctx, carrierName: fu.aeName ?? "passive", redirect: true }))
+            .catch((e) => warn("applyDamageToTarget: passive fallback import failed", e));
         }
       }
     }
@@ -2508,7 +2516,15 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
     }
   }
 
+  // Passive fallback: record what this chain does, show it where it lands once
+  // it is done (passive-anim.js). A status tick is BD's own flash, not a beat.
+  if (!statusTick) ctx.__passiveRec = { records: [] };
   const r = await applyEffectByLabel(candidate.ref, ctx);
+  if (ctx.__passiveRec && r?.ok) {
+    import("./passive-anim.js")
+      .then((m) => m.playPassiveFallback({ ctx, carrierName: carrier?.name ?? "passive" }))
+      .catch((e) => warn("firePreAcceptedCandidate: passive fallback import failed", e));
+  }
   if (passiveCard) {
     Promise.resolve(passiveCard.settle(r)).catch((e) => warn("firePreAcceptedCandidate: passive card settle threw", e));
   }
@@ -5608,7 +5624,13 @@ export async function applyEffectRow(row, ctx) {
   // "pick an extra enemy"). Restored in finally so nested dispatch is unaffected.
   const _prevSkipConfirm = ctx._skipTargetConfirm;
   ctx._skipTargetConfirm = !OWNS_TARGETING_UI.has(kind);
-  try { return await runEffectKind(kind, row, ctx, "apply"); }
+  try {
+    const res = await runEffectKind(kind, row, ctx, "apply");
+    // Passive fallback recorder (passive-anim.js): only a reaction chain turns
+    // it on; it keeps every row that RAN with its real recipients.
+    if (ctx?.__passiveRec) { try { ctx.__passiveRec.records.push({ kind, row, res }); } catch { /* cosmetic */ } }
+    return res;
+  }
   finally { ctx._skipTargetConfirm = _prevSkipConfirm; }
 }
 

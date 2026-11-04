@@ -170,6 +170,15 @@ t("Fulgur shape: a pre-damage status on the creatures HIT plays after the damage
   }, { aeTagOf, intent: "harmful" });
   assert.deepEqual(c.beats.map((b) => [b.k, b.post, b.needsHit]), [["damage", false, false], ["debuff", true, true]]);
 });
+t("rows the item's own reaction fires are left to the reaction path (no double beat)", () => {
+  const c = composeBeats({ type_damage: "Physical",
+    reaction_config_table: rows({ reaction_trigger: "creature_deals_damage", reaction_effect_ref: "bc_chain" }),
+    effect_table: rows(
+      { effect_label: "bc_chain", effect_kind: "chain", chain_steps: "bc_petrify" },
+      { effect_label: "bc_petrify", effect_kind: "apply_ae", target_ref: "hit_action_targets", ae_template_ref: "Poison" }),
+  }, { aeTagOf, intent: "harmful" });
+  assert.deepEqual(c.beats.map((b) => b.k), ["damage"]);
+});
 t("a menu stops the walk and is reported opaque", () => {
   const c = composeBeats({ on_activate_effect_ref: "m",
     effect_table: rows({ effect_label: "m", effect_kind: "open_action_menu", menu_option_refs: "x" },

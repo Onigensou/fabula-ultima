@@ -268,6 +268,20 @@ export function composeBeats(props = {}, { aeTagOf = null, intent = "neutral" } 
     if (lc(r.effect_kind) === "chain") for (const s of String(r.chain_steps ?? "").split(/[,\n]/)) referenced.add(s.trim());
     for (const ref of String(r.menu_option_refs ?? "").split(/[,\n]/)) if (ref.trim()) referenced.add(ref.trim());
   }
+  // Rows the item's OWN reactions fire (Basalt Crush: creature_deals_damage →
+  // a 35% Petrify) run through the reaction path, whose passive fallback shows
+  // them when — and only if — they land. Not guessed here as post beats.
+  for (const rc of Object.values(props.reaction_config_table ?? {})) {
+    if (!rc || rc.$deleted) continue;
+    const ref = String(rc.reaction_effect_ref ?? "").trim();
+    if (!ref) continue;
+    referenced.add(ref);
+    const sub = { rows: [], opaque: false };
+    walk(ref, byLabel, new Set(), sub);
+    for (const r of sub.rows) referenced.add(String(r.effect_label ?? "").trim());
+    const root = byLabel.get(ref);
+    if (root && lc(root.effect_kind) === "chain") for (const s of String(root.chain_steps ?? "").split(/[,\n]/)) referenced.add(s.trim());
+  }
   const pre = { rows: [], opaque: false }, post = { rows: [], opaque: false };
   for (const key of ["pre_activate_effect_ref", "on_activate_effect_ref"]) {
     const ref = String(props[key] ?? "").trim(); if (ref) walk(ref, byLabel, seen, pre);
