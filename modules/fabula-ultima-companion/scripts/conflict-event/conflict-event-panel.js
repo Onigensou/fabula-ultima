@@ -193,13 +193,18 @@ function place() {
   const root = document.getElementById(ROOT_ID);
   if (!root) return;
   const SIZE = 46;
+  // The desk's root covers the whole screen; its panels (and the fold tab and
+  // "waiting on" strip above them) are what take room. The left tool column
+  // is not part of that edge.
   const desk = document.getElementById("fud-gm-desk");
-  const deskBox = desk && isShown(desk) ? desk.getBoundingClientRect() : null;
+  const parts = desk
+    ? [...desk.children].filter((c) => !c.classList.contains("gmd-bar") && isShown(c)).map((c) => c.getBoundingClientRect())
+    : [];
   const dice = document.getElementById("oni-cr-button");
   let left, top;
-  if (deskBox && deskBox.height > 40) {
-    left = deskBox.right - SIZE - 6;
-    top = deskBox.top - SIZE - 10;
+  if (parts.length) {
+    left = Math.max(...parts.map((b) => b.right)) - SIZE;
+    top = Math.min(...parts.map((b) => b.top)) - SIZE - 8;
   } else if (dice && isShown(dice)) {
     const r = dice.getBoundingClientRect();
     left = r.left + r.width / 2 - SIZE / 2;
