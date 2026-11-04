@@ -164,6 +164,12 @@ t("chains are walked; an untagged AE on the target of a harmful skill reads as a
     ) }, { aeTagOf, intent: "harmful" });
   assert.deepEqual(c.beats.map((b) => [b.k, b.to]), [["debuff", "target"], ["heal", "self"]]);
 });
+t("Fulgur shape: a pre-damage status on the creatures HIT plays after the damage", () => {
+  const c = composeBeats({ type_damage: "Bolt", on_activate_effect_ref: "st",
+    effect_table: rows({ effect_label: "st", effect_kind: "apply_ae", target_ref: "hit_action_targets", ae_template_ref: "Poison" }),
+  }, { aeTagOf, intent: "harmful" });
+  assert.deepEqual(c.beats.map((b) => [b.k, b.post, b.needsHit]), [["damage", false, false], ["debuff", true, true]]);
+});
 t("a menu stops the walk and is reported opaque", () => {
   const c = composeBeats({ on_activate_effect_ref: "m",
     effect_table: rows({ effect_label: "m", effect_kind: "open_action_menu", menu_option_refs: "x" },

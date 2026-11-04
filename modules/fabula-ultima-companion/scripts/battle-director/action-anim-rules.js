@@ -289,9 +289,17 @@ export function composeBeats(props = {}, { aeTagOf = null, intent = "neutral" } 
     // every post beat (a drain's self-heal included) needs the hit.
     beats.push({ ...b, post: isPost, needsHit: !!b.needsHit || (isPost && hasDamage) });
   };
-  for (const r of pre.rows) push(beatOfRow(r, { aeTagOf, harmful }), false);
+  // A pre-damage row aimed at the creatures HIT (hit_action_targets — Fulgur's
+  // status) only lands on a hit, so it plays after the damage beat, the way a
+  // status-on-hit reads in any JRPG. Pre-damage self buffs stay first.
+  const deferred = [];
+  for (const r of pre.rows) {
+    const b = beatOfRow(r, { aeTagOf, harmful });
+    if (b && b.needsHit && hasDamage) deferred.push(b); else push(b, false);
+  }
   if (hasDamage) push({ k: "damage", to: "target", needsHit: false }, false);
   else if (healing) push({ k: "heal", to: "target", needsHit: false }, false);
+  for (const b of deferred) push(b, true);
   for (const r of post.rows) push(beatOfRow(r, { aeTagOf, harmful }), true);
   const kw = lc(props.action_keywords);
   if (hasDamage && /\bdrain\b/.test(kw)) push({ k: "heal", to: "self", needsHit: true }, true);
