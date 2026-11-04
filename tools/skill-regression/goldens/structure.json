@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-04T20:51:17.394Z",
+ "capturedAt": "2026-11-04T20:57:16.141Z",
  "count": 2605,
  "structure": {
   "(world) / Absorb MP": {
@@ -2129,7 +2129,7 @@
     "count=all effect_kind=remove_tagged_ae effect_label=aov_overload_consume filter_tag=burn target_ref=hit_action_targets"
    ],
    "reactions": [
-    "condition_formula=TRIGGER_IS_SELF == 1 reaction_effect_ref=aov_overload reaction_passive_mode=ask reaction_source=self reaction_source_skill=Avatar of Vengeance: Dismiss reaction_trigger=creature_will_deal_damage"
+    "condition_formula=TRIGGER_IS_SELF == 1 && ANY_TARGET_HAS_BURN == 1 reaction_effect_ref=aov_overload reaction_passive_mode=ask reaction_source=self reaction_source_skill=Avatar of Vengeance: Dismiss reaction_trigger=creature_will_deal_damage"
    ],
    "aes": []
   },
@@ -3655,8 +3655,9 @@
     "ae_duplicate_mode=replace ae_initial_charges=1 ae_initial_charges_max=1 ae_template_ref=Beyond the Realms of Death effect_kind=apply_ae effect_label=bortd_seed_mark target_ref=bortd_self"
    ],
    "reactions": [
-    "condition_formula=SUBJECT_IS_SELF == 0 && TARGET_AE_COUNT_CRISIS > 0 && TARGET_SPECIES_IS_UNDEAD == 0 reaction_effect_ref=bortd_gain reaction_passive_mode=force reaction_passive_target=self reaction_resource_filter=hp reaction_source=all reaction_trigger=creature_lose_resource",
-    "reaction_effect_ref=bortd_seed reaction_passive_mode=force reaction_passive_target=self reaction_trigger=conflict_start"
+    "condition_formula=SUBJECT_IS_SELF == 0 && TRIGGER_LOSS_IS_DAMAGE == 1 && TARGET_WAS_IN_CRISIS == 1 && TARGET_SPECIES_IS_UNDEAD == 0 reaction_effect_ref=bortd_gain reaction_max_per_round=1 reaction_max_scope=target_action reaction_passive_mode=force reaction_passive_target=self reaction_resource_filter=hp reaction_source=all reaction_trigger=creature_lose_resource",
+    "reaction_effect_ref=bortd_seed reaction_passive_mode=force reaction_passive_target=self reaction_trigger=conflict_start",
+    "condition_formula=SUBJECT_IS_SELF == 0 && TRIGGER_LOSS_IS_DAMAGE == 1 && TARGET_WAS_IN_CRISIS == 1 && TARGET_SPECIES_IS_UNDEAD == 0 reaction_effect_ref=bortd_gain reaction_max_per_round=1 reaction_max_scope=target_action reaction_passive_mode=force reaction_passive_target=self reaction_source=all reaction_trigger=creature_defeated"
    ],
    "aes": [
     {
@@ -4028,7 +4029,7 @@
     "skill_type": "Passive"
    },
    "effects": [
-    "chain_steps=botc_cost,botc_summon,botc_toll effect_kind=chain effect_label=botc_chain",
+    "chain_steps=botc_summon,botc_cost,botc_toll effect_kind=chain effect_label=botc_chain",
     "charge_key=grave count=2 effect_kind=consume_charge effect_label=botc_cost on_empty=abort target_ref=self",
     "ae_duplicate_mode=replace ae_template_ref=Grave Toll effect_kind=apply_ae effect_label=botc_toll target_ref=self",
     "effect_kind=summon effect_label=botc_summon summon_act_this_round=false summon_clone_suffix=(Reanimated) summon_clone_target=true summon_count=1 summon_folder=Blue's PC summon_kind=minion summon_max=1 summon_overrides={\"species\":\"UNDEAD\",\"npc_rank\":\"soldier\",\"affinity_4\":\"IM\",\"affinity_8\":\"VU\",\"affinity_9\":\"IM\",\"max_hp\":\"=floor(MAX_HP*(1-(1-RANK_IS_SOLDIER)*0.5))\",\"current_hp\":\"=floor(MAX_HP*(1-(1-RANK_IS_SOLDIER)*0.5))\",\"current_mp\":\"=MAX_MP\"} summon_persist=true summon_strip_types=weapon,armor,shield,accessory summon_turns_per_round=0 target_ref=trigger_subject",
@@ -47491,8 +47492,9 @@
     "ae_duplicate_mode=replace ae_initial_charges=1 ae_initial_charges_max=1 ae_template_ref=Beyond the Realms of Death effect_kind=apply_ae effect_label=bortd_seed_mark target_ref=bortd_self"
    ],
    "reactions": [
-    "condition_formula=SUBJECT_IS_SELF == 0 && TARGET_AE_COUNT_CRISIS > 0 && TARGET_SPECIES_IS_UNDEAD == 0 reaction_effect_ref=bortd_gain reaction_passive_mode=force reaction_passive_target=self reaction_resource_filter=hp reaction_source=all reaction_trigger=creature_lose_resource",
-    "reaction_effect_ref=bortd_seed reaction_passive_mode=force reaction_passive_target=self reaction_trigger=conflict_start"
+    "condition_formula=SUBJECT_IS_SELF == 0 && TRIGGER_LOSS_IS_DAMAGE == 1 && TARGET_WAS_IN_CRISIS == 1 && TARGET_SPECIES_IS_UNDEAD == 0 reaction_effect_ref=bortd_gain reaction_max_per_round=1 reaction_max_scope=target_action reaction_passive_mode=force reaction_passive_target=self reaction_resource_filter=hp reaction_source=all reaction_trigger=creature_lose_resource",
+    "reaction_effect_ref=bortd_seed reaction_passive_mode=force reaction_passive_target=self reaction_trigger=conflict_start",
+    "condition_formula=SUBJECT_IS_SELF == 0 && TRIGGER_LOSS_IS_DAMAGE == 1 && TARGET_WAS_IN_CRISIS == 1 && TARGET_SPECIES_IS_UNDEAD == 0 reaction_effect_ref=bortd_gain reaction_max_per_round=1 reaction_max_scope=target_action reaction_passive_mode=force reaction_passive_target=self reaction_source=all reaction_trigger=creature_defeated"
    ],
    "aes": [
     {
@@ -52374,7 +52376,7 @@
     "count=all effect_kind=remove_tagged_ae effect_label=aov_overload_consume filter_tag=burn target_ref=hit_action_targets"
    ],
    "reactions": [
-    "condition_formula=TRIGGER_IS_SELF == 1 reaction_effect_ref=aov_overload reaction_passive_mode=ask reaction_source=self reaction_source_skill=Avatar of Vengeance: Dismiss reaction_trigger=creature_will_deal_damage"
+    "condition_formula=TRIGGER_IS_SELF == 1 && ANY_TARGET_HAS_BURN == 1 reaction_effect_ref=aov_overload reaction_passive_mode=ask reaction_source=self reaction_source_skill=Avatar of Vengeance: Dismiss reaction_trigger=creature_will_deal_damage"
    ],
    "aes": []
   },
@@ -56354,8 +56356,9 @@
     "ae_duplicate_mode=replace ae_initial_charges=1 ae_initial_charges_max=1 ae_template_ref=Beyond the Realms of Death effect_kind=apply_ae effect_label=bortd_seed_mark target_ref=bortd_self"
    ],
    "reactions": [
-    "condition_formula=SUBJECT_IS_SELF == 0 && TARGET_AE_COUNT_CRISIS > 0 && TARGET_SPECIES_IS_UNDEAD == 0 reaction_effect_ref=bortd_gain reaction_passive_mode=force reaction_passive_target=self reaction_resource_filter=hp reaction_source=all reaction_trigger=creature_lose_resource",
-    "reaction_effect_ref=bortd_seed reaction_passive_mode=force reaction_passive_target=self reaction_trigger=conflict_start"
+    "condition_formula=SUBJECT_IS_SELF == 0 && TRIGGER_LOSS_IS_DAMAGE == 1 && TARGET_WAS_IN_CRISIS == 1 && TARGET_SPECIES_IS_UNDEAD == 0 reaction_effect_ref=bortd_gain reaction_max_per_round=1 reaction_max_scope=target_action reaction_passive_mode=force reaction_passive_target=self reaction_resource_filter=hp reaction_source=all reaction_trigger=creature_lose_resource",
+    "reaction_effect_ref=bortd_seed reaction_passive_mode=force reaction_passive_target=self reaction_trigger=conflict_start",
+    "condition_formula=SUBJECT_IS_SELF == 0 && TRIGGER_LOSS_IS_DAMAGE == 1 && TARGET_WAS_IN_CRISIS == 1 && TARGET_SPECIES_IS_UNDEAD == 0 reaction_effect_ref=bortd_gain reaction_max_per_round=1 reaction_max_scope=target_action reaction_passive_mode=force reaction_passive_target=self reaction_source=all reaction_trigger=creature_defeated"
    ],
    "aes": [
     {
@@ -56415,7 +56418,7 @@
     "skill_type": "Passive"
    },
    "effects": [
-    "chain_steps=botc_cost,botc_summon,botc_toll effect_kind=chain effect_label=botc_chain",
+    "chain_steps=botc_summon,botc_cost,botc_toll effect_kind=chain effect_label=botc_chain",
     "charge_key=grave count=2 effect_kind=consume_charge effect_label=botc_cost on_empty=abort target_ref=self",
     "ae_duplicate_mode=replace ae_template_ref=Grave Toll effect_kind=apply_ae effect_label=botc_toll target_ref=self",
     "effect_kind=summon effect_label=botc_summon summon_act_this_round=false summon_clone_suffix=(Reanimated) summon_clone_target=true summon_count=1 summon_folder=Blue's PC summon_kind=minion summon_max=1 summon_overrides={\"species\":\"UNDEAD\",\"npc_rank\":\"soldier\",\"affinity_4\":\"IM\",\"affinity_8\":\"VU\",\"affinity_9\":\"IM\",\"max_hp\":\"=floor(MAX_HP*(1-(1-RANK_IS_SOLDIER)*0.5))\",\"current_hp\":\"=floor(MAX_HP*(1-(1-RANK_IS_SOLDIER)*0.5))\",\"current_mp\":\"=MAX_MP\"} summon_persist=true summon_strip_types=weapon,armor,shield,accessory summon_turns_per_round=0 target_ref=trigger_subject",
@@ -60690,8 +60693,9 @@
     "ae_duplicate_mode=replace ae_initial_charges=1 ae_initial_charges_max=1 ae_template_ref=Beyond the Realms of Death effect_kind=apply_ae effect_label=bortd_seed_mark target_ref=bortd_self"
    ],
    "reactions": [
-    "condition_formula=SUBJECT_IS_SELF == 0 && TARGET_AE_COUNT_CRISIS > 0 && TARGET_SPECIES_IS_UNDEAD == 0 reaction_effect_ref=bortd_gain reaction_passive_mode=force reaction_passive_target=self reaction_resource_filter=hp reaction_source=all reaction_trigger=creature_lose_resource",
-    "reaction_effect_ref=bortd_seed reaction_passive_mode=force reaction_passive_target=self reaction_trigger=conflict_start"
+    "condition_formula=SUBJECT_IS_SELF == 0 && TRIGGER_LOSS_IS_DAMAGE == 1 && TARGET_WAS_IN_CRISIS == 1 && TARGET_SPECIES_IS_UNDEAD == 0 reaction_effect_ref=bortd_gain reaction_max_per_round=1 reaction_max_scope=target_action reaction_passive_mode=force reaction_passive_target=self reaction_resource_filter=hp reaction_source=all reaction_trigger=creature_lose_resource",
+    "reaction_effect_ref=bortd_seed reaction_passive_mode=force reaction_passive_target=self reaction_trigger=conflict_start",
+    "condition_formula=SUBJECT_IS_SELF == 0 && TRIGGER_LOSS_IS_DAMAGE == 1 && TARGET_WAS_IN_CRISIS == 1 && TARGET_SPECIES_IS_UNDEAD == 0 reaction_effect_ref=bortd_gain reaction_max_per_round=1 reaction_max_scope=target_action reaction_passive_mode=force reaction_passive_target=self reaction_source=all reaction_trigger=creature_defeated"
    ],
    "aes": [
     {
@@ -60751,7 +60755,7 @@
     "skill_type": "Passive"
    },
    "effects": [
-    "chain_steps=botc_cost,botc_summon,botc_toll effect_kind=chain effect_label=botc_chain",
+    "chain_steps=botc_summon,botc_cost,botc_toll effect_kind=chain effect_label=botc_chain",
     "charge_key=grave count=2 effect_kind=consume_charge effect_label=botc_cost on_empty=abort target_ref=self",
     "ae_duplicate_mode=replace ae_template_ref=Grave Toll effect_kind=apply_ae effect_label=botc_toll target_ref=self",
     "effect_kind=summon effect_label=botc_summon summon_act_this_round=false summon_clone_suffix=(Reanimated) summon_clone_target=true summon_count=1 summon_folder=Blue's PC summon_kind=minion summon_max=1 summon_overrides={\"species\":\"UNDEAD\",\"npc_rank\":\"soldier\",\"affinity_4\":\"IM\",\"affinity_8\":\"VU\",\"affinity_9\":\"IM\",\"max_hp\":\"=floor(MAX_HP*(1-(1-RANK_IS_SOLDIER)*0.5))\",\"current_hp\":\"=floor(MAX_HP*(1-(1-RANK_IS_SOLDIER)*0.5))\",\"current_mp\":\"=MAX_MP\"} summon_persist=true summon_strip_types=weapon,armor,shield,accessory summon_turns_per_round=0 target_ref=trigger_subject",
