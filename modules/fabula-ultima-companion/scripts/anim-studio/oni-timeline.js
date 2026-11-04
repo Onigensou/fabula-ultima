@@ -485,7 +485,7 @@ export function createTimeline(spec = {}, env = {}) {
     const m = {
       tw(t0, dur, fn) { T.push({ t0, t1: t0 + dur, fn: (tl, S) => fn(clamp01(tl / dur), S, tl) }); },
       hold(t0, t1, fn) { T.push({ t0, t1, fn }); },
-      // o: x,y scene px (or screen:{x,y} viewport fractions) | w scene px (or wh = fraction of viewport height) | rot | flip | loop | hold | z | alpha(fn) | over (above whiteout) | tint | add | blur | pivot | persp | sx/sy | live(tl,S,g)
+      // o: x,y scene px (or screen:{x,y} viewport fractions) | w scene px (or wh = fraction of viewport height) | rot | flip | loop | hold | z | alpha(fn) | over (above whiteout) | tint | add | blur | filter (CSS filter string) | pivot | persp | sx/sy | live(tl,S,g)
       clip(key, t0, o) {
         const def = LIB[key]; if (!def) { console.warn(TAG, "unknown clip", key); return null; }
         const c = new Clip(def); const dur = o.hold != null ? o.hold : def.dur;
@@ -499,6 +499,9 @@ export function createTimeline(spec = {}, env = {}) {
             else { dw = o.w; x = o.x; y = o.y; if (o.live) { const p = o.live(tl, S, g); if (!p) return; x = p.x; y = p.y; dw = p.w; rot = p.rot || 0; } dh = dw * def.h / def.w; }
             g.save(); g.translate(x, y); if (rot) g.rotate(rot); if (o.flip) g.scale(-1, 1); if (sy || sx) g.scale(sx || 1, sy || 1); g.globalAlpha = a;
             if (def.add || o.add) g.globalCompositeOperation = "lighter"; else if (o.blur) g.filter = "blur(" + (o.blur * (g.H / 788)).toFixed(1) + "px)";
+            // o.filter: a CSS filter string (hue-rotate / brightness / saturate) for
+            // recolouring a full-colour clip, as the party mockup does. Composes with blur.
+            if (o.filter) g.filter = (g.filter && g.filter !== "none" ? g.filter + " " : "") + o.filter;
             const pax = o.pivot ? o.pivot.x : def.ax, pay = o.pivot ? o.pivot.y : def.ay; const F = o.tint ? tintFrame(V, o.tint) : V;
             if (persp) { const n = 48, fh = (F.videoHeight || F.height), sh = fh / n, fw = (F.videoWidth || F.width); for (let i = 0; i < n; i++) { const k0 = i / n, k1 = (i + 1) / n; const s = (k0 + k1) / 2; const depth = lerp(persp.near, persp.far, s); const ws = dw * persp.near / depth; const y0 = -pay * dh + dh * k0, y1 = -pay * dh + dh * k1; g.drawImage(F, 0, i * sh, fw, sh, -ws / 2, y0, ws, y1 - y0 + 1.5); } }
             else g.drawImage(F, -pax * dw, -pay * dh, dw, dh);
