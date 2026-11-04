@@ -62,22 +62,24 @@ export const MV_CLIPS = {
 };
 export const clipUrl = (key) => MV_BASE + key + ".webm";
 
-// Battle sounds (Forge Sound/), with the mockup's volumes.
+// Battle sounds (Forge Sound/). The mockup's volumes x0.7 — the user found
+// them loud overall in the 2026-11-04 Foundry demo (BD's own hit sound also
+// plays at the damage moment, on top of these).
 export const SFX = {
-  swing:  { path: "Soundboard/SE_SWINGA.wav",          vol: 0.5 },
-  slash:  { path: "Soundboard/SE_BTL_HitSlashS.ogg",   vol: 0.55 },
-  blow:   { path: "Soundboard/SE_BTL_HitBlowS.ogg",    vol: 0.55 },
-  blowM:  { path: "Soundboard/SE_BTL_HitBlowM.ogg",    vol: 0.55 },
-  pierce: { path: "Hit_Piercing.wav",                  vol: 0.55 },
-  crit:   { path: "Soundboard/SE_BTL_HitCritical.ogg", vol: 0.6 },
-  fire:   { path: "Soundboard/SE_BTL_HitFire.ogg",     vol: 0.45 },
-  ice:    { path: "Soundboard/SE_BTL_HitIce_1.mp3",    vol: 0.45 },
-  bolt:   { path: "Soundboard/SE_BTL_HitElectric.ogg", vol: 0.45 },
-  gun:    { path: "GunshotA.ogg",                      vol: 0.22 },   // user: 0.5 was too loud
-  bow:    { path: "Soundboard/Crossbow.ogg",           vol: 0.55 },
-  heal:   { path: "Soundboard/Heal3.ogg",              vol: 0.5 },
-  up:     { path: "Soundboard/Powerup.ogg",            vol: 0.5 },
-  down:   { path: "Soundboard/Down2.ogg",              vol: 0.5 },
+  swing:  { path: "Soundboard/SE_SWINGA.wav",          vol: 0.35 },
+  slash:  { path: "Soundboard/SE_BTL_HitSlashS.ogg",   vol: 0.38 },
+  blow:   { path: "Soundboard/SE_BTL_HitBlowS.ogg",    vol: 0.38 },
+  blowM:  { path: "Soundboard/SE_BTL_HitBlowM.ogg",    vol: 0.38 },
+  pierce: { path: "Hit_Piercing.wav",                  vol: 0.38 },
+  crit:   { path: "Soundboard/SE_BTL_HitCritical.ogg", vol: 0.42 },
+  fire:   { path: "Soundboard/SE_BTL_HitFire.ogg",     vol: 0.32 },
+  ice:    { path: "Soundboard/SE_BTL_HitIce_1.mp3",    vol: 0.32 },
+  bolt:   { path: "Soundboard/SE_BTL_HitElectric.ogg", vol: 0.32 },
+  gun:    { path: "GunshotA.ogg",                      vol: 0.15 },   // user: 0.5 was too loud
+  bow:    { path: "Soundboard/Crossbow.ogg",           vol: 0.38 },
+  heal:   { path: "Soundboard/Heal3.ogg",              vol: 0.35 },
+  up:     { path: "Soundboard/Powerup.ogg",            vol: 0.35 },
+  down:   { path: "Soundboard/Down2.ogg",              vol: 0.35 },
 };
 export const sfxUrl = (key) => (SFX[key] ? SFX_BASE + SFX[key].path : null);
 

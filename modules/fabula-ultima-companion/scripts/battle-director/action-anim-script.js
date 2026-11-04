@@ -290,8 +290,9 @@ function clipTable(keys) {
   return out;
 }
 
-// The mockup drew clips at 0.85 of native size on the 1682 stage.
-export const CLIP_SCALE = 0.85;
+// The mockup drew clips at 0.85 of native size on the 1682 stage; in Foundry
+// that read too big next to the tokens (user, 2026-11-04 demo) → 0.65.
+export const CLIP_SCALE = 0.65;
 
 // plan (attack): { mode:"attack", key, attack: pickAttack(...) }
 // plan (beats):  { mode:"beats",  key, beats: resolveBeats(...), attackLike }
