@@ -4,7 +4,7 @@
 // isPhantasm). It overloads where it stands, rushes the target and bursts in the
 // ORIGINAL explosion (boss-loot Explosion_2_Radial_PURPLE under a 0.6 dim). With no
 // phantasm on the board (Preview Bench) the skin is drawn at the summon spot instead.
-if (!caster) { oni.fireDone(); return; }
+if (!caster) { K.ready(); oni.fireDone(); return; }
 const NS = 'fabula-ultima-companion';
 const ownerUuid = caster.actor ? caster.actor.uuid : null;
 const isMine = (tk) => { const f = (tk && tk.document && tk.document.flags && tk.document.flags[NS]) || {}; return !!f.isPhantasm && String(f.summonedBy || '') === String(ownerUuid); };
@@ -14,7 +14,7 @@ if (!ph) { const mine = all.filter(isMine); mine.sort((a, b) => Math.hypot(a.cen
 const enemies = (ctx.targetTokens || []).filter((tk) => tk && tk.center && !isMine(tk) && tk.id !== caster.id);
 // the phantasm is drawn as 'ph', never also as a target
 for (let i = targets.length - 1; i >= 0; i--) if (isMine(targets[i])) targets.splice(i, 1);
-const B = await boot(ph ? { ph: { token: ph, foot: 0.95 } } : null);
+const B = await boot(ph ? { ph: { token: ph } } : null);
 const { tl, T, m, TOK, U, E } = B;
 const tk = Object.keys(TOK).find((k) => /^t\d+$/.test(k) && enemies.some((x) => TOK[k].token && TOK[k].token.id === x.id));
 if (!tk) { await tl.run(T, { total: 10, onStart: K.ready }); oni.fireDone(); return; }
@@ -23,7 +23,7 @@ const dir = K.dirOf(TOK, 'c');
 const hue = cfg.dark === false ? 48 : 280;
 const tf = K.feet(tl, tk), tmid = K.mid(tl, tk);
 K.step(m, E, U, dir, 'c', t.cast, t.cast, t.back, 40);
-K.circle(tl, m, U, 'c', t.cast + 380, t.castHold, hue);
+K.circle(tl, m, U, 'c', t.cast + 380, t.castHold, hue, { dx: dir * 40 * U });
 const dest = { x: tf.x - dir * 60 * U, y: tf.y };
 const glow = 'hsl(' + hue + ',90%,65%)';
 if (ph) {

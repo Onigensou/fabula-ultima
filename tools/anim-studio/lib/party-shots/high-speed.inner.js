@@ -2,7 +2,7 @@
 // oni.timeline, same numbers: blur sway +/-70 px x7 (55 ms each), afterimages every
 // 35 ms (fade 240), snap to centre, vanish 120, empty beat 140, fade back in 520.
 // Fired by the play_animation step at the head of the hs_react chain (conflict start).
-if (!caster) { oni.fireDone(); return; }
+if (!caster) { K.ready(); oni.fireDone(); return; }
 const B = await boot(); const { tl, T, m, TOK, U, E } = B;
 const p = cfg.p; const C = TOK.c; const art = tl.art('c'); const f = K.feet(tl, 'c');
 const swingEnd = p.swings * p.swingMs, snapEnd = swingEnd + Math.max(35, Math.floor(p.swingMs * 0.8));

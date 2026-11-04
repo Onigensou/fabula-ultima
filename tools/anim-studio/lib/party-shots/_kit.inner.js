@@ -11,9 +11,9 @@ const targets = (ctx.targetTokens || []).filter((t) => t && t.center && (!caster
 // boot(extra): the timeline with the caster as 'c', targets as t0..tn, plus extra tokens.
 async function boot(extra) {
   const tokens = {};
-  if (caster) tokens.c = { token: caster, foot: cfg.foot || 0.97 };
+  if (caster) tokens.c = cfg.foot ? { token: caster, foot: cfg.foot } : { token: caster };
   const TG = [];
-  targets.forEach((t, i) => { const k = 't' + i; TG.push(k); tokens[k] = { token: t, foot: cfg.targetFoot || 0.97 }; });
+  targets.forEach((t, i) => { const k = 't' + i; TG.push(k); tokens[k] = cfg.targetFoot ? { token: t, foot: cfg.targetFoot } : { token: t }; });
   Object.assign(tokens, extra || {});
   const tl = oni.timeline({ tokens, clips: A.clips || {}, images: A.images || {} });
   await tl.load();
@@ -30,6 +30,8 @@ K.mid = (tl, k) => { const t = tl.TOK[k]; const f = tl.feet(t); return { x: f.x,
 K.head = (tl, k) => { const t = tl.TOK[k]; const f = tl.feet(t); return { x: f.x, y: f.y - t.h * 0.92 }; };
 // BD places a summon at caster_front: caster centre +/- max(1.15 cell, meshW/2 + 0.65 cell) toward stage centre.
 K.summonSpot = (tl, k) => { const t = tl.TOK[k]; const f = tl.feet(t); const g = tl.GRID; const sx = (tl.REST.cx < f.x) ? -1 : 1; return { x: f.x + sx * Math.max(1.15 * g, t.w / 2 + 0.65 * g), y: f.y }; };
+// CSS-filter tint for white GG mask clips (the mockup recipe: sepia gives ~38deg, then rotate).
+K.tintF = (hue, sat, br) => 'sepia(1) saturate(' + (sat || 5) + ') hue-rotate(' + Math.round(hue - 38) + 'deg) brightness(' + (br || 1.1) + ')';
 K.ease = (E, name) => (name && E[name]) || E.ioQ;
 // A token path: keys = [[t, dx, dy, ease?], ...]; held between keys, nothing before/after.
 K.path = (m, E, k, keys) => {
@@ -47,7 +49,7 @@ K.step = (m, E, U, dir, k, out, hold, back, dist) => K.path(m, E, k, [[out, 0, 0
 // RO hexagram cast circle under k's feet. Eases in (scale .55 to 1 + fade, 380 ms),
 // loops while channelling, fades out (420 ms) when released. Ground layer (z 2).
 K.circle = (tl, m, U, k, at, hold, hue, o) => {
-  o = o || {}; const f = tl.feet(tl.TOK[k]); const s = (o.scale || 1) * Math.max(0.8, tl.TOK[k].w / (170 * U)) * U;
+  o = o || {}; const f0 = tl.feet(tl.TOK[k]); const f = { x: f0.x + (o.dx || 0), y: f0.y }; const s = (o.scale || 1) * Math.max(0.8, tl.TOK[k].w / (170 * U)) * U;
   const dur = hold + 420; const w = 112 * 1.9 * 0.85 * 2.0 * s;
   const shift = 'hue-rotate(' + Math.round(hue - 268) + 'deg) brightness(1.35)';
   const alpha = (u) => { const t = u * dur; return t < 380 ? t / 380 : t > hold ? Math.max(0, 1 - (t - hold) / 420) : 1; };
@@ -111,7 +113,7 @@ K.orb = (m, at, from, to, ms, h, color, size, U) => {
 };
 // GG twinkle sparks around pt (mask clip, tinted).
 K.twinkles = (m, at, pt, color, n, spread, U, seed) => {
-  const r = Math.random; for (let i = 0; i < n; i++) m.clip('twinkle', at + i * 70, { x: pt.x + (r() - 0.5) * spread * 2 * U, y: pt.y + (r() - 0.5) * spread * 2 * U, w: 64 * 1.6 * 0.85 * U, z: 63, add: true, tint: color });
+  const r = Math.random; for (let i = 0; i < n; i++) m.clip('twinkle', at + i * 70, { x: pt.x + (r() - 0.5) * spread * 2 * U, y: pt.y + (r() - 0.5) * spread * 2 * U, w: 64 * 1.6 * 0.85 * U, z: 63, add: true, filter: color });
 };
 
 // ── Phantasm skins: draw(g, x, feetY, alpha, scale, t) at a feet point. ──

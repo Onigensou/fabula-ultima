@@ -84,7 +84,7 @@ function detonatePhantasm({ skin = "mirage", dark = true } = {}) {
 // High Speed: the original AfterImageBlurStep, ported. No damage → default gate (end).
 function highSpeed() {
   const p = { amplitude: 70, swings: 7, swingMs: 55, afterimageEveryMs: 35, afterimageFadeMs: 240, disappearFadeMs: 120, hiddenHoldMs: 140, returnFadeMs: 520, blurStrength: 12 };
-  return build({ key: "high-speed", name: "High Speed", shot: "high-speed", clips: [], cfg: { p, sfx: [{ at: 0, url: snd("Wind2.ogg"), v: 0.85 }] }, gate: null });
+  return build({ key: "high-speed", name: "High Speed", shot: "high-speed", clips: [], cfg: { p, sfx: [{ at: 0, url: snd("Wind2.ogg"), v: 0.5 }] }, gate: null }); // was 0.85 (user: too loud, 2026-11-05)
 }
 
 module.exports = { CLIPS, IMAGES, snd, cue, build, inner, phantasmStrike, detonatePhantasm, highSpeed };
