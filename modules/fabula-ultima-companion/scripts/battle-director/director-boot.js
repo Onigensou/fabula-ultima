@@ -85,6 +85,7 @@ import { initLightningRodCursor } from "../conflict-event/lightning-rod-cursor.j
 import { initLightningCrystalCountdown } from "../conflict-event/lightning-crystal-countdown.js";
 import { initLightningCrystalFx } from "../conflict-event/lightning-crystal-fx.js";
 import { initLightningStormFx } from "../conflict-event/lightning-storm-strike-fx.js";
+import { initConflictEventPanel, registerConflictEventPanelSettings } from "../conflict-event/conflict-event-panel.js";
 // Damage-number audition (look-only) tool is intentionally not registered as a
 // dev-tool button — consolidated into the live-path tool below to save space.
 import { initDamageNumberLivetest } from "./damage-numbers/damage-number-livetest.js";
@@ -1154,6 +1155,8 @@ Hooks.once("init", () => {
   // Summon Autopilot — the same treatment for SUMMONED creatures, on its own
   // switch so a GM who hand-drives monsters still gets self-driving summons.
   try { registerSummonAutopilotSetting(); } catch (e) { warn("registerSummonAutopilotSetting threw", e); }
+  // Conflict Event panel: the GM's per-trip memory + the I key.
+  try { registerConflictEventPanelSettings(); } catch (e) { warn("registerConflictEventPanelSettings threw", e); }
 });
 
 // Register the public API on ready. The `FUCompanion.api` root is set up by
@@ -2020,6 +2023,11 @@ Hooks.once("ready", () => {
   catch (e) { warn("initLightningCrystalFx on ready threw", e); }
   try { initLightningStormFx(); }
   catch (e) { warn("initLightningStormFx on ready threw", e); }
+  // The Conflict Event panel — emblem by the dice, battle-start label, tutorial
+  // screen. Every client reads its own view; nothing shows for an event with no
+  // `ruling`, or with no event at all.
+  try { initConflictEventPanel(); }
+  catch (e) { warn("initConflictEventPanel on ready threw", e); }
 
   // Damage-number dev tool — consolidated to a SINGLE button (the robust
   // live-path version below). The look-only audition tool

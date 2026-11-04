@@ -34,6 +34,8 @@
 // initialised from its ready hook — loads on a normal hard-reload, no relaunch.
 // ============================================================================
 
+import { pulseConflictEventEmblem } from "./conflict-event-panel.js";
+
 const FLAG_NS = "fabula-ultima-companion";
 const TAG = "[FU][LightningRodCursor]";
 const STYLE_ID = "fud-rod-cursor-style";
@@ -300,7 +302,12 @@ export function initLightningRodCursor() {
       catch (e) { warn("AE sync threw", e); }
     }
   };
-  Hooks.on("createActiveEffect", onAeEvent);
+  // A new Rod is the event doing something (seeded, or passed on a hit): the
+  // Conflict Event emblem pulses with it.
+  Hooks.on("createActiveEffect", (effect) => {
+    onAeEvent(effect);
+    if (isRodAe(effect) && effect.parent?.documentName === "Actor") pulseConflictEventEmblem();
+  });
   Hooks.on("updateActiveEffect", onAeEvent);
   Hooks.on("deleteActiveEffect", onAeEvent);
 

@@ -113,7 +113,51 @@ export const EVENT_HANDLERS = Object.freeze([
 // `actions` is what a skill may ask the event to do, by name, through the
 // `conflict_event_action` effect row: { adjust_countdown(evtCtx, request), ... }.
 // `request` = { tokens, amount, row, effectCtx }. See runConflictEventAction.
-const EVENT_META = Object.freeze(["id", "label", "description", "objectives", "actions"]);
+//
+// `ruling` is what the players read in battle — the Conflict Event panel
+// (conflict-event-panel.js): the emblem by the dice, its battle-start line and
+// the tutorial pages. See normalizeRuling for the shape. An event with no
+// `ruling` shows no emblem at all, which is how a story gimmick stays a surprise.
+const EVENT_META = Object.freeze(["id", "label", "description", "objectives", "actions", "ruling"]);
+
+/** The emblem colour of an event whose `ruling` names none. */
+export const DEFAULT_RULING_COLOR = "#b3261e";
+
+/**
+ * Validate and freeze an event's `ruling`:
+ *
+ *   ruling: {
+ *     color: "#6a3cc4",              // the sigil + its trigger ring; optional
+ *     line:  "One sentence.",        // the battle-start label
+ *     pages: [                       // one tutorial page per rule, in order
+ *       { image: "modules/…/x.jpg", text: "Plain text with **bold** words." },
+ *     ],
+ *   }
+ *
+ * Returns null when there is nothing a player could read (no pages), so the
+ * panel never shows an empty screen. A page with no text is dropped; a page
+ * with no image still shows its text.
+ */
+export function normalizeRuling(raw, { id = "?", warn = console.warn } = {}) {
+  if (raw == null) return null;
+  if (typeof raw !== "object") {
+    warn(`[FU][ConflictEvent] "${id}": ruling must be an object — ignored`);
+    return null;
+  }
+  const pages = (Array.isArray(raw.pages) ? raw.pages : [])
+    .map((p) => ({ image: String(p?.image ?? "").trim(), text: String(p?.text ?? "").trim() }))
+    .filter((p) => p.text);
+  if (!pages.length) {
+    warn(`[FU][ConflictEvent] "${id}": ruling has no pages with text — no panel for this event`);
+    return null;
+  }
+  const color = String(raw.color ?? "").trim();
+  return Object.freeze({
+    color: /^#[0-9a-f]{3}([0-9a-f]{3})?$/i.test(color) ? color : DEFAULT_RULING_COLOR,
+    line: String(raw.line ?? "").trim(),
+    pages: Object.freeze(pages.map((p) => Object.freeze(p))),
+  });
+}
 
 const _events = new Map();
 
@@ -174,7 +218,9 @@ export function registerConflictEvent(event, { warn = console.warn } = {}) {
     onTurnStart: event.onTurnStart ?? null,
     onLedgerEvent: event.onLedgerEvent ?? null,
     onConflictEnd: event.onConflictEnd ?? null,
+    objectives: event.objectives ?? null,
     actions: Object.freeze({ ...(event.actions ?? {}) }),
+    ruling: normalizeRuling(event.ruling, { id, warn }),
   }));
   return true;
 }

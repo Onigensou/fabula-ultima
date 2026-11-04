@@ -30,6 +30,7 @@ import { DIRECTOR_STATIC_URLS, playBattleStartTransition, playBattleBgm, stopBat
 import { preloadDirectorCutins } from "./director-cutin.js";
 import { playSfx } from "./director-sfx.js";
 import { playBattleStartBanner } from "./director-round-banner.js";
+import { planConflictEventIntro } from "../conflict-event/conflict-event-panel.js";
 import { showBattleLoader, hideBattleLoader } from "./director-battle-loader.js";
 import { beginBattleShatter, battleTransitionMode, releaseActiveShatters } from "../battle-transition/shatter-broadcast.js";
 import { buildDirectorHud, hudPartyActorIds, isHudPartyMember } from "./director-player-hud.js";
@@ -1887,7 +1888,15 @@ async function runDirectorInitInner(payload) {
   // so the battle process (dCombat build → FSM → ROUND 1 banner → turns)
   // only begins once the flash has cleared the screen. Broadcasts to all
   // clients on its own socket channel.
-  if (!lean) await playBattleStartBanner({ text: "BATTLE START" });
+  // The plate also carries the scene's Conflict Event, so every client can put
+  // up its emblem as the plate clears (and the line, when this battle should
+  // introduce it — see conflict-event-intro.js).
+  if (!lean) {
+    let conflictIntro = null;
+    try { conflictIntro = await planConflictEventIntro({ battleScene, payload, enemyTokens }); }
+    catch (e) { warn("PREP: planConflictEventIntro threw", e); }
+    await playBattleStartBanner({ text: "BATTLE START", conflictIntro });
+  }
 
   // ── 11. Build the director-owned DirectorCombat (no Foundry Combat doc).
   // dCombat is the sole authority for round/turn/current. The Foundry Combat

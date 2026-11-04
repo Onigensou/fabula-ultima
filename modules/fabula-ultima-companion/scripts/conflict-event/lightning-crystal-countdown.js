@@ -26,6 +26,8 @@
 // initialised from its ready hook.
 // ============================================================================
 
+import { pulseConflictEventEmblem } from "./conflict-event-panel.js";
+
 const FLAG_NS = "fabula-ultima-companion";
 const TAG = "[FU][CrystalCountdown]";
 const STYLE_ID = "fud-crystal-countdown-style";
@@ -181,6 +183,8 @@ function applyValue(rec, value, { animate = true } = {}) {
   void rec.num.offsetWidth;
   rec.num.classList.add("is-pop");
 
+  // Time added or taken by a hit is the event doing something; a plain -1 tick is not.
+  if (value > prev || prev - value >= 2) pulseConflictEventEmblem();
   if (value > prev) {
     const gain = document.createElement("div");
     gain.className = "gain";

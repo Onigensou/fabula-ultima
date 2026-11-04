@@ -785,6 +785,8 @@ async function playBattleStartBannerLocal(payload = {}) {
   } catch (e) {
     warn("playBattleStartBannerLocal threw", e);
   }
+  // The Conflict Event panel puts its emblem up here (payload.conflictIntro).
+  try { Hooks.callAll("fu-battle-start-closed", payload); } catch (e) { warn("battle-start closed hook threw", e); }
 }
 
 // Dev/preview helper — the round plate ALONE (never touches the docked round
@@ -913,9 +915,9 @@ export async function showRoundBannerForResumeFromState(state, { animate = false
 // Broadcast to all OTHER clients, then play + AWAIT locally. Unlike
 // playRoundBanner this is awaited by the caller (runDirectorInit) so the
 // battle process only begins once the plate has opened, held, and closed.
-export async function playBattleStartBanner({ text = "BATTLE START" } = {}) {
+export async function playBattleStartBanner({ text = "BATTLE START", conflictIntro = null } = {}) {
   try {
-    const payload = { text };
+    const payload = { text, ...(conflictIntro ? { conflictIntro } : {}) };
     try { _socket?.executeForOthers?.(ACTION_BATTLE_START, payload); }
     catch (e) { warn("director-round-banner: battle-start broadcast failed", e); }
     await playBattleStartBannerLocal(payload);

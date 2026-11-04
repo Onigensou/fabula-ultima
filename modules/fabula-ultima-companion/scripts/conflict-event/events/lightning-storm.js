@@ -315,6 +315,19 @@ registerConflictEvent({
     "A singleton Lightning Rod marks one creature. At the start of its turn the holder takes " +
     "30 Bolt damage and recovers 30 MP. Dealing damage to a creature moves the Rod onto it.",
 
+  // What the players read in battle (conflict-event-panel.js). The 30s mirror the
+  // Lightning Rod AE's own rows, which live in world data, not in this file.
+  ruling: {
+    color: "#6a3cc4",   // the Rod marker's violet
+    line: "The Rod strikes its holder, and passes to whoever takes damage.",
+    pages: [
+      { image: "modules/fabula-ultima-companion/assets/conflict-event/lightning-storm-1.jpg",
+        text: "One creature holds the **Lightning Rod**. At the start of its turn, it takes **30 Bolt** damage and recovers **30 MP**." },
+      { image: "modules/fabula-ultima-companion/assets/conflict-event/lightning-storm-2.jpg",
+        text: "A creature that takes damage from another creature **takes the Rod**." },
+    ],
+  },
+
   // Rule 1. Strips first, so a conflict inherited from a battle-end follow-up
   // (same scene, new conflict) cannot start with a stale Rod alongside the
   // fresh one.
