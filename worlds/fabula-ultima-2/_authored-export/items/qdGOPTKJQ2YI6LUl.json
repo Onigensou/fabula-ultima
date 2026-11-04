@@ -310,13 +310,15 @@
       "reaction_config_table": {
         "0": {
           "$deleted": false,
-          "condition_formula": "SUBJECT_IS_SELF == 0 && TARGET_AE_COUNT_CRISIS > 0 && TARGET_SPECIES_IS_UNDEAD == 0",
+          "condition_formula": "SUBJECT_IS_SELF == 0 && TRIGGER_LOSS_IS_DAMAGE == 1 && TARGET_WAS_IN_CRISIS == 1 && TARGET_SPECIES_IS_UNDEAD == 0",
           "reaction_damage_amount": "",
           "reaction_damage_type": "",
           "reaction_debuff_count_min": "",
           "reaction_debuff_count_target": "",
           "reaction_effect_ref": "bortd_gain",
           "reaction_isPassive": false,
+          "reaction_max_per_round": "1",
+          "reaction_max_scope": "target_action",
           "reaction_passive_mode": "force",
           "reaction_passive_target": "self",
           "reaction_resource_filter": "hp",
@@ -336,6 +338,24 @@
           "reaction_passive_target": "self",
           "reaction_source": "",
           "reaction_trigger": "conflict_start",
+          "requires_skill": ""
+        },
+        "2": {
+          "$deleted": false,
+          "condition_formula": "SUBJECT_IS_SELF == 0 && TRIGGER_LOSS_IS_DAMAGE == 1 && TARGET_WAS_IN_CRISIS == 1 && TARGET_SPECIES_IS_UNDEAD == 0",
+          "reaction_damage_amount": "",
+          "reaction_damage_type": "",
+          "reaction_debuff_count_min": "",
+          "reaction_debuff_count_target": "",
+          "reaction_effect_ref": "bortd_gain",
+          "reaction_isPassive": false,
+          "reaction_max_per_round": "1",
+          "reaction_max_scope": "target_action",
+          "reaction_passive_mode": "force",
+          "reaction_passive_target": "self",
+          "reaction_resource_filter": "",
+          "reaction_source": "all",
+          "reaction_trigger": "creature_defeated",
           "requires_skill": ""
         }
       },

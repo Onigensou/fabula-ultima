@@ -121,7 +121,7 @@
       "pre_activate_effect_ref": "",
       "reaction_config_table": {
         "0": {
-          "condition_formula": "TRIGGER_IS_SELF == 1",
+          "condition_formula": "TRIGGER_IS_SELF == 1 && ANY_TARGET_HAS_BURN == 1",
           "reaction_action_kind": "",
           "reaction_cause_filter": "",
           "reaction_effect_ref": "aov_overload",
