@@ -92,14 +92,17 @@ async function PASSIVE_INNER() {
     const pane = keep(new PIXI.Graphics());
     pane.lineStyle({ width: 3 * s, color: 0xeaf8ff, alpha: 1 });
     pane.beginFill(0xc8ebff, 0.35); pane.drawPolygon(poly); pane.endFill();
+    // grows up from its base and swells a little as it fades (mockup mirrorFx)
+    const base = { x: px, y: cy + h / 2 };
+    pane.pivot.set(base.x, base.y); pane.position.set(base.x, base.y); pane.scale.set(1, 0);
     pane.zIndex = 95650; pane.alpha = 0; canvas.stage.addChild(pane);
     const mask = keep(new PIXI.Graphics()); mask.beginFill(0xffffff); mask.drawPolygon(poly); mask.endFill(); canvas.stage.addChild(mask);
     const shine = keep(new PIXI.Graphics());
     shine.beginFill(0xffffff, 0.85); shine.drawRect(-11 * s, -h, 22 * s, h * 2); shine.endFill();
     shine.rotation = 0.3; shine.zIndex = 95660; shine.position.set(px - w, cy); shine.mask = mask; canvas.stage.addChild(shine);
-    const done = oni.tween({ from: 0, to: 1, duration: 130, ease: E.outQuad, onUpdate: function (v) { pane.alpha = v; } })
+    const done = oni.tween({ from: 0, to: 1, duration: 130, ease: E.outQuad, onUpdate: function (v) { pane.alpha = v; pane.scale.set(1, v); } })
       .then(function () { return oni.tween({ from: 0, to: 1, duration: 260, ease: E.linear, onUpdate: function (v) { shine.position.set(px - w + v * w * 2, cy); } }); })
-      .then(function () { return oni.tween({ from: 1, to: 0, duration: 380, ease: E.outQuad, onUpdate: function (v) { pane.alpha = v; shine.alpha = v; } }); })
+      .then(function () { return oni.tween({ from: 1, to: 0, duration: 380, ease: E.outQuad, onUpdate: function (v) { pane.alpha = v; shine.alpha = v; pane.scale.set(1 + 0.08 * (1 - v), 1 + 0.08 * (1 - v)); } }); })
       .then(function () { for (const o of [pane, mask, shine]) { try { o.destroy(); } catch (e) {} } });
     return { from: { x: px, y: cy }, done: done };
   }
@@ -124,6 +127,7 @@ async function PASSIVE_INNER() {
       const targets = (beat.recipients || []).map(tok).filter(function (t) { return t && t.center; });
       if (!targets.length) continue;
       if (beat.k === "redirect" && owner) {
+        sfx(cfg.reflectSfx);
         const m = mirror(owner, targets[0].center);
         pending.push(m.done);
         await wait(260);
@@ -168,7 +172,10 @@ export function buildPassiveCfg({ beats, ownerTokenUuid }) {
   });
   const styles = {};
   for (const [k, v] of Object.entries(LINE_STYLE)) styles[k] = { dir: v.dir, color: v.color, sfx: v.sfx };
-  return { ownerTokenUuid, beats: out, clips, styles, sfxBase: SFX_BASE, vol: SFX_VOL, clipScale: CLIP_SCALE };
+  // the reflect cue (mockup: Reflection, 0.55 × the 0.7 tuning); only the
+  // mirror beat plays it — the hit itself still sounds through BD's number
+  const reflectSfx = out.some((b) => b.k === "redirect") ? "Soundboard/Reflection.ogg" : null;
+  return { ownerTokenUuid, beats: out, clips, styles, sfxBase: SFX_BASE, vol: SFX_VOL, clipScale: CLIP_SCALE, reflectSfx };
 }
 
 // ── runtime glue (Foundry) ─────────────────────────────────────────────

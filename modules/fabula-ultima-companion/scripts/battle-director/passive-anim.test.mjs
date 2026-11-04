@@ -10,7 +10,7 @@ const t = (name, fn) => tests.push([name, fn]);
 function env() {
   const log = [];
   const pt = () => ({ x: 0, y: 0, set(x, y) { this.x = x; this.y = y; } });
-  class Sprite { constructor() { this.anchor = pt(); this.position = pt(); this.destroyed = false; } destroy() { this.destroyed = true; log.push("destroy"); } }
+  class Sprite { constructor() { this.anchor = pt(); this.position = pt(); this.pivot = pt(); this.scale = pt(); this.destroyed = false; } destroy() { this.destroyed = true; log.push("destroy"); } }
   class Graphics extends Sprite { clear() {} lineStyle() {} moveTo() {} lineTo() { log.push("arc-seg"); } beginFill() {} endFill() {} drawPolygon() { log.push("mirror"); } drawRect() {} }
   const PIXI = { Sprite, Graphics, Texture: { from: () => ({}) }, BLEND_MODES: { ADD: 1 } };
   const stage = { children: [], sortableChildren: false, addChild(c) { this.children.push(c); } };
@@ -50,13 +50,13 @@ t("Lightning Charge: MP lines, no sound of their own (BD's +X gain plays it), al
   assert.equal(log.filter((x) => x === "destroy").length >= 10, true);
   assert.equal(e.stage.children.every((c) => c.destroyed), true);
 });
-t("reflect fallback: a mirror pane at the owner, the ricochet, then the hit on the new target — no hit sound", async () => {
+t("reflect fallback: the Reflection cue, a mirror pane at the owner, the ricochet, then the hit on the new target — no hit sound of its own", async () => {
   const e = env();
   const log = await run(buildPassiveCfg({ ownerTokenUuid: "Scene.s.Token.owner", beats: [{ k: "redirect", recipients: ["Scene.s.Token.a"], element: "bolt" }] }), e);
   assert.ok(log.includes("mirror"));
   assert.ok(log.includes("arc-seg"));
   assert.ok(log.includes("vfx:005_hit_thunder.webm"));
-  assert.equal(log.some((x) => x.startsWith("sfx:")), false);
+  assert.deepEqual(log.filter((x) => x.startsWith("sfx:")), ["sfx:Reflection.ogg"]);
 });
 t("damage on two targets: two hit clips; debuff lines then", async () => {
   const e = env();
