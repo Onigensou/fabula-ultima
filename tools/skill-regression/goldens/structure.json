@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-03T21:31:01.048Z",
+ "capturedAt": "2026-11-04T17:19:45.480Z",
  "count": 2605,
  "structure": {
   "(world) / Absorb MP": {
@@ -9298,7 +9298,9 @@
      "family": null,
      "lifetime": null,
      "charges": null,
-     "changes": []
+     "changes": [
+      "disable_passive mode5 = 1"
+     ]
     },
     {
      "name": "Turbulence",
@@ -58629,8 +58631,8 @@
     "skill_type": "Passive"
    },
    "effects": [
-    "effect_kind=grant effect_label=charge_mp grant_amount=ceil(DAMAGE_DEALT * 0.2) grant_resource=mp target_ref=self",
-    "effect_kind=grant effect_label=charge_overflow grant_amount=max(0, CUR_MP + ceil(DAMAGE_DEALT * 0.2) - MAX_MP) grant_resource=shield target_ref=self",
+    "effect_kind=grant effect_label=charge_mp grant_amount=ceil(TRIGGER_AMOUNT * 0.2) grant_resource=mp target_ref=self",
+    "effect_kind=grant effect_label=charge_overflow grant_amount=max(0, CUR_MP + ceil(TRIGGER_AMOUNT * 0.2) - MAX_MP) grant_resource=shield target_ref=self",
     "chain_steps=charge_overflow, charge_mp effect_kind=chain effect_label=charge_horn"
    ],
    "reactions": [
@@ -61473,10 +61475,11 @@
       "condition_formula=TRIGGER_DAMAGE_IS_BOLT == 1 reaction_effect_ref=ew_chain reaction_passive_mode=force reaction_source=self reaction_trigger=creature_takes_damage"
      ],
      "aeEffects": [
-      "chain_steps=ew_zero,ew_target,ew_redirect effect_kind=chain effect_label=ew_chain",
+      "chain_steps=ew_zero,ew_target,ew_anim,ew_redirect effect_kind=chain effect_label=ew_chain",
       "damage_amount=0 damage_operation=set damage_stage=incoming effect_kind=adjust_damage effect_label=ew_zero",
       "candidate_source=combat category=enemy count=1 effect_kind=targeting effect_label=ew_target mode=random",
-      "damage_amount=INCOMING_DAMAGE damage_element=bolt damage_verbosity=full effect_kind=deal_damage effect_label=ew_redirect target_ref=ew_target"
+      "damage_amount=INCOMING_DAMAGE damage_element=bolt damage_verbosity=full effect_kind=deal_damage effect_label=ew_redirect target_ref=ew_target",
+      "action_ref=Earthen Wire effect_kind=play_animation effect_label=ew_anim target_ref=ew_target"
      ]
     }
    ]
