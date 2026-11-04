@@ -51,6 +51,7 @@ import { parseSkillCost, resolveCost, checkAffordable, debitCost, affordableTarg
 // resolveDamageElementOverride) moved to action-profile.js (single-source COMPUTE).
 import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { freeActions } from "./free-actions.js";
+import { isActorDefeated } from "./defeat-reactor.js";
 import { makeChainContext, resolveTargetRef } from "./skill-targeting.js";
 // skill-effects is routed through the hot-reload registry so edits to it take
 // effect without Ctrl+Shift+R: the harness (per-call) and a live reloadHot()
@@ -392,6 +393,29 @@ function getCoreActionSkill(command) {
 // walk effect_table → queue post-resolve triggers. (Phase 7: the per-kind
 // bespoke RESOLVE branches and the `resolveSkillAction` alias are retired —
 // this is the only resolver.)
+// Is this accepted reaction's chain a COUNTERATTACK — a free action or dealt
+// damage — that a defeated owner can't perform? Everything else still happens
+// on a KO: riders (applied mid-card), owner-only bookkeeping, and on-damaged
+// effects like Pantie's Bleed on the attacker (user, 2026-11-04: "not a
+// counter, it's an on-damaged trigger"). Static walk via the passive card's
+// chainProfile. Unreadable carrier → false (fire as before; never suppress on
+// a guess).
+async function reactionChainActs(cand) {
+  try {
+    const carrier = cand?.carrierUuid ? await fromUuid(cand.carrierUuid) : null;
+    if (!carrier) return false;
+    const table = cand.carrierKind === "item"
+      ? getRuntimeSkillView(carrier)?.effect_table
+      : (() => { const c = carrier.flags?.["fabula-ultima-companion"]?.reactionConfig ?? {}; return c.effect_table ?? c.reaction_effect_table; })();
+    const { chainProfile } = await import("./passive-card-ui/passive-card-classify.js");
+    const p = chainProfile({ table: table ?? {}, ref: cand.ref, item: carrier, trigger: "creature_targeted_by_action" });
+    return !!(p?.kinds?.has?.("free_action") || p?.kinds?.has?.("deal_damage"));
+  } catch (e) {
+    warn(`reactionChainActs: profile failed for ${cand?.carrierName ?? cand?.carrierUuid}`, e);
+    return false;
+  }
+}
+
 async function resolveAction(director, ar, opts = {}) {
   const skipCost = !!opts.skipCost;
   // Caster: prefer the explicit attackerActorRef (Skill/Spell/Attack/Item/
@@ -1240,6 +1264,23 @@ async function resolveAction(director, ar, opts = {}) {
           const resolved = await fromUuid(cand.reactorActorUuid);
           if (resolved) fireActor = resolved;
           if (cand.payloadAtFire) firePayload = cand.payloadAtFire;
+        }
+        // A "when targeted" COUNTERATTACK (free action / dealt damage) does not
+        // fire when THIS action just defeated its owner. It was scanned at CONFIRM (pre-damage) but replays here, after
+        // the HP write — so without this a dead Skizzik raised its Lightning
+        // Counter card (the free action itself was then refused by free-actions'
+        // defeat guard) and a dead Ampere still discharged Volt Counter's 10 Bolt.
+        // User rule (2026-11-04): the card shows iff the effect took effect.
+        // Riders (Blood Mail's damage cut…) already applied mid-card, and an
+        // owner-only chain (Apple o' Archer consuming its taunt) and on-damaged
+        // effects (Pantie's Bleed) still happen, so they keep firing — and keep
+        // their card — even on a KO. On-death
+        // effects ride `creature_defeated` (post-resolve), not this loop.
+        const _candTrigger = cand?.phaseTrigger ?? cand?.payloadAtFire?.trigger ?? null;
+        if (cand?.reactorActorUuid && _candTrigger === "creature_targeted_by_action"
+            && isActorDefeated(fireActor) && await reactionChainActs(cand)) {
+          log(`resolveAction: card reaction "${cand?.carrierName}" not fired — ${fireActor?.name} was defeated by this action`);
+          continue;
         }
         // Round-trip apply-click captures (roll_dice / prompt_number) for
         // performer/self reactions too (no reactorActorUuid, so firePayload stayed
