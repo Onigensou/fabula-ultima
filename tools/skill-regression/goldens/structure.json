@@ -1,5 +1,5 @@
 {
- "capturedAt": "2026-11-04T17:19:45.480Z",
+ "capturedAt": "2026-11-04T20:51:17.394Z",
  "count": 2605,
  "structure": {
   "(world) / Absorb MP": {
@@ -3235,10 +3235,11 @@
     "skill_type": "Passive"
    },
    "effects": [
-    "chain_steps=barrage_add,barrage_cost effect_kind=chain effect_label=barrage_do",
+    "chain_steps=barrage_anim, barrage_add, barrage_cost effect_kind=chain effect_label=barrage_do",
     "effect_kind=add_target effect_label=barrage_add target_ref=barrage_pick",
     "consume_amount=10 consume_resource=mp cost_amount=10 cost_operation=add cost_resource=mp effect_kind=adjust_cost effect_label=barrage_cost on_empty=abort target_ref=self",
-    "auto_target=skip candidate_source=combat category=enemy count=1 effect_kind=targeting effect_label=barrage_pick exclude_action_targets=true iteration_mode=together mode=exact"
+    "auto_target=skip candidate_source=combat category=enemy count=1 effect_kind=targeting effect_label=barrage_pick exclude_action_targets=true iteration_mode=together mode=exact",
+    "action_ref=Barrage effect_kind=play_animation effect_label=barrage_anim target_ref=action_targets"
    ],
    "reactions": [
     "condition_formula=ATTACK_IS_RANGED == 1 reaction_action_kind=Attack reaction_effect_ref=barrage_do reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_performs_action"
@@ -15997,7 +15998,8 @@
     "auto_confirm_when_obvious=true candidate_source=self count=1 effect_kind=targeting effect_label=hs_self iteration_mode=together mode=exact skip_when_passive=true",
     "consume_amount=10 consume_resource=mp effect_kind=consume_resource effect_label=hs_mp_cost on_empty=abort target_ref=hs_self",
     "allowed_types=Attack,Hinder check_bonus_formula=SL effect_kind=open_action_menu effect_label=hs_free_action free_mode=true",
-    "chain_steps=hs_mp_cost, hs_free_action effect_kind=chain effect_label=hs_react"
+    "chain_steps=hs_mp_cost, hs_anim, hs_free_action effect_kind=chain effect_label=hs_react",
+    "action_ref=High Speed effect_kind=play_animation effect_label=hs_anim target_ref=hs_self"
    ],
    "reactions": [
     "$deleted=true reaction_effect_ref=hs_react reaction_passive_mode=ask reaction_trigger=conflict_start",
@@ -17341,12 +17343,13 @@
     "uniqueId": "MfBexg3RMmrBmeyO"
    },
    "effects": [
-    "chain_steps=is_shield, is_cost effect_kind=chain effect_label=is_react",
+    "chain_steps=is_anim, is_shield, is_cost effect_kind=chain effect_label=is_react",
     "destination_ref=is_phantasm effect_kind=shield_redirect effect_label=is_shield rebuild_card=true target_ref=is_incoming",
     "consume_amount=10 consume_resource=mp effect_kind=consume_resource effect_label=is_cost on_empty=abort target_ref=is_self",
     "auto_confirm_when_obvious=true candidate_source=action_targets count=1 effect_kind=targeting effect_label=is_incoming exclude_self=true iteration_mode=together mode=exact",
     "auto_confirm_when_obvious=true candidate_source=own_phantasms count=1 effect_kind=targeting effect_label=is_phantasm exclude_action_targets=true exclude_self=true iteration_mode=together mode=exact",
-    "auto_confirm_when_obvious=true candidate_source=self count=1 effect_kind=targeting effect_label=is_self iteration_mode=together mode=exact skip_when_passive=true"
+    "auto_confirm_when_obvious=true candidate_source=self count=1 effect_kind=targeting effect_label=is_self iteration_mode=together mode=exact skip_when_passive=true",
+    "action_ref=Illusory Shield effect_kind=play_animation effect_label=is_anim target_ref=trigger_subject"
    ],
    "reactions": [
     "condition_formula=OWN_PHANTASM_COUNT >= 1 reaction_action_intent=harmful reaction_effect_ref=is_react reaction_passive_mode=ask reaction_source=ally reaction_trigger=creature_targeted_by_action"
@@ -18624,10 +18627,12 @@
    },
    "effects": [
     "auto_confirm_when_obvious=true auto_target=confirm candidate_source=self_or_my_focus count=1 effect_kind=targeting effect_label=lt_pick iteration_mode=together mode=exact target_filter=HAS_STATUS_CRISIS",
-    "effect_kind=grant effect_label=lt_heal grant_amount=5 + AE_CHARGES_BRAINWAVE_CLOCK * 5 grant_resource=hp target_ref=lt_pick"
+    "effect_kind=grant effect_label=lt_heal grant_amount=5 + AE_CHARGES_BRAINWAVE_CLOCK * 5 grant_resource=hp target_ref=lt_pick",
+    "action_ref=Life Transference effect_kind=play_animation effect_label=lt_anim target_ref=lt_pick",
+    "chain_steps=lt_anim, lt_heal effect_kind=chain effect_label=lt_react"
    ],
    "reactions": [
-    "condition_formula=HAS_STATUS_CRISIS == 1 || MY_FOCUS_IN_CRISIS == 1 reaction_effect_ref=lt_heal reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_completes_action"
+    "condition_formula=HAS_STATUS_CRISIS == 1 || MY_FOCUS_IN_CRISIS == 1 reaction_effect_ref=lt_react reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_completes_action"
    ],
    "aes": []
   },
@@ -24258,9 +24263,10 @@
     "charge_key=protect count=1 effect_kind=consume_charge effect_label=protect_gate on_empty=abort target_ref=protect_self",
     "ae_duplicate_mode=replace ae_template_ref=Protect count=1 effect_kind=apply_ae effect_label=protect_refill on_empty=abort target_ref=protect_self",
     "ae_duplicate_mode=replace count=1 destination_ref=protect_self effect_kind=redirect_target effect_label=protect_redirect on_empty=abort rebuild_card=true target_ref=protect_incoming",
-    "chain_steps=protect_redirect, protect_gate effect_kind=chain effect_label=protect_react",
+    "chain_steps=protect_anim, protect_redirect, protect_gate effect_kind=chain effect_label=protect_react",
     "auto_confirm_when_obvious=true candidate_source=self count=1 effect_kind=targeting effect_label=protect_self iteration_mode=together mode=exact skip_when_passive=true",
-    "auto_confirm_when_obvious=true candidate_source=action_targets count=1 effect_kind=targeting effect_label=protect_incoming exclude_self=true iteration_mode=together mode=exact skip_when_passive=true"
+    "auto_confirm_when_obvious=true candidate_source=action_targets count=1 effect_kind=targeting effect_label=protect_incoming exclude_self=true iteration_mode=together mode=exact skip_when_passive=true",
+    "action_ref=Protect effect_kind=play_animation effect_label=protect_anim target_ref=trigger_subject"
    ],
    "reactions": [
     "reaction_action_intent=harmful reaction_effect_ref=protect_react reaction_passive_mode=ask reaction_source=ally reaction_trigger=creature_targeted_by_action",
@@ -24298,9 +24304,10 @@
     "charge_key=protect count=1 effect_kind=consume_charge effect_label=protect_gate on_empty=abort target_ref=protect_self",
     "ae_duplicate_mode=replace ae_template_ref=Protect count=1 effect_kind=apply_ae effect_label=protect_refill on_empty=abort target_ref=protect_self",
     "ae_duplicate_mode=replace count=1 destination_ref=protect_self effect_kind=redirect_target effect_label=protect_redirect on_empty=abort rebuild_card=true target_ref=protect_incoming",
-    "chain_steps=protect_redirect, protect_gate effect_kind=chain effect_label=protect_react",
+    "chain_steps=protect_anim, protect_redirect, protect_gate effect_kind=chain effect_label=protect_react",
     "auto_confirm_when_obvious=true candidate_source=self count=1 effect_kind=targeting effect_label=protect_self iteration_mode=together mode=exact skip_when_passive=true",
-    "auto_confirm_when_obvious=true candidate_source=action_targets count=1 effect_kind=targeting effect_label=protect_incoming exclude_self=true iteration_mode=together mode=exact skip_when_passive=true"
+    "auto_confirm_when_obvious=true candidate_source=action_targets count=1 effect_kind=targeting effect_label=protect_incoming exclude_self=true iteration_mode=together mode=exact skip_when_passive=true",
+    "action_ref=Protect effect_kind=play_animation effect_label=protect_anim target_ref=trigger_subject"
    ],
    "reactions": [
     "reaction_action_intent=harmful reaction_effect_ref=protect_react reaction_passive_mode=ask reaction_source=ally reaction_trigger=creature_targeted_by_action",
@@ -32637,9 +32644,10 @@
     "skill_type": "Active"
    },
    "effects": [
-    "chain_steps=ver_cost, ver_def effect_kind=chain effect_label=ver_do",
+    "chain_steps=ver_cost, ver_anim, ver_def effect_kind=chain effect_label=ver_do",
     "charge_key=adoration count=2 effect_kind=consume_charge effect_label=ver_cost on_empty=abort target_ref=self",
-    "defense_amount=2 defense_operation=add effect_kind=adjust_defense effect_label=ver_def"
+    "defense_amount=2 defense_operation=add effect_kind=adjust_defense effect_label=ver_def",
+    "action_ref=Verónica effect_kind=play_animation effect_label=ver_anim target_ref=self"
    ],
    "reactions": [
     "condition_formula=ATTACK_VS_DEF == 1 reaction_action_intent=harmful reaction_action_kind=Attack,Spell,Skill reaction_effect_ref=ver_do reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_targeted_by_action"
@@ -32864,12 +32872,13 @@
     "skill_type": "Passive"
    },
    "effects": [
-    "chain_steps=ws_nullify,ws_menu effect_kind=chain effect_label=warning_shot",
+    "chain_steps=ws_nullify, ws_anim, ws_menu effect_kind=chain effect_label=warning_shot",
     "damage_amount=0 damage_operation=multiply damage_stage=outgoing effect_kind=adjust_damage effect_label=ws_nullify target_ref=hit_action_targets",
     "effect_kind=open_action_menu effect_label=ws_menu menu_option_refs=ws_shaken,ws_slow,ws_mp menu_pick_count=1 + HAS_SKILL_PERFECT_AIM",
     "ae_duplicate_mode=replace ae_template_ref=Shaken effect_kind=apply_ae effect_label=ws_shaken target_ref=hit_action_targets",
     "ae_duplicate_mode=replace ae_template_ref=Slow effect_kind=apply_ae effect_label=ws_slow target_ref=hit_action_targets",
-    "consume_amount=SL * 10 consume_resource=mp effect_kind=consume_resource effect_label=ws_mp on_empty=skip target_ref=hit_action_targets"
+    "consume_amount=SL * 10 consume_resource=mp effect_kind=consume_resource effect_label=ws_mp on_empty=skip target_ref=hit_action_targets",
+    "action_ref=Warning Shot effect_kind=play_animation effect_label=ws_anim target_ref=hit_action_targets"
    ],
    "reactions": [
     "condition_formula=ATTACK_IS_RANGED == 1 reaction_effect_ref=warning_shot reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_will_deal_damage"
@@ -38166,9 +38175,10 @@
     "charge_key=protect count=1 effect_kind=consume_charge effect_label=protect_gate on_empty=abort target_ref=protect_self",
     "ae_duplicate_mode=replace ae_template_ref=Protect count=1 effect_kind=apply_ae effect_label=protect_refill on_empty=abort target_ref=protect_self",
     "ae_duplicate_mode=replace count=1 destination_ref=protect_self effect_kind=redirect_target effect_label=protect_redirect on_empty=abort rebuild_card=true target_ref=protect_incoming",
-    "chain_steps=protect_redirect, protect_gate effect_kind=chain effect_label=protect_react",
+    "chain_steps=protect_anim, protect_redirect, protect_gate effect_kind=chain effect_label=protect_react",
     "auto_confirm_when_obvious=true candidate_source=self count=1 effect_kind=targeting effect_label=protect_self iteration_mode=together mode=exact skip_when_passive=true",
-    "auto_confirm_when_obvious=true candidate_source=action_targets count=1 effect_kind=targeting effect_label=protect_incoming exclude_self=true iteration_mode=together mode=exact skip_when_passive=true"
+    "auto_confirm_when_obvious=true candidate_source=action_targets count=1 effect_kind=targeting effect_label=protect_incoming exclude_self=true iteration_mode=together mode=exact skip_when_passive=true",
+    "action_ref=Protect effect_kind=play_animation effect_label=protect_anim target_ref=trigger_subject"
    ],
    "reactions": [
     "reaction_action_intent=harmful reaction_effect_ref=protect_react reaction_passive_mode=ask reaction_source=ally reaction_trigger=creature_targeted_by_action",
@@ -38462,9 +38472,10 @@
     "skill_type": "Active"
    },
    "effects": [
-    "chain_steps=ver_cost, ver_def effect_kind=chain effect_label=ver_do",
+    "chain_steps=ver_cost, ver_anim, ver_def effect_kind=chain effect_label=ver_do",
     "charge_key=adoration count=2 effect_kind=consume_charge effect_label=ver_cost on_empty=abort target_ref=self",
-    "defense_amount=2 defense_operation=add effect_kind=adjust_defense effect_label=ver_def"
+    "defense_amount=2 defense_operation=add effect_kind=adjust_defense effect_label=ver_def",
+    "action_ref=Verónica effect_kind=play_animation effect_label=ver_anim target_ref=self"
    ],
    "reactions": [
     "condition_formula=ATTACK_VS_DEF == 1 reaction_action_intent=harmful reaction_action_kind=Attack,Spell,Skill reaction_effect_ref=ver_do reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_targeted_by_action"
@@ -53946,9 +53957,10 @@
     "charge_key=protect count=1 effect_kind=consume_charge effect_label=protect_gate on_empty=abort target_ref=protect_self",
     "ae_duplicate_mode=replace ae_template_ref=Protect count=1 effect_kind=apply_ae effect_label=protect_refill on_empty=abort target_ref=protect_self",
     "ae_duplicate_mode=replace count=1 destination_ref=protect_self effect_kind=redirect_target effect_label=protect_redirect on_empty=abort rebuild_card=true target_ref=protect_incoming",
-    "chain_steps=protect_redirect, protect_gate effect_kind=chain effect_label=protect_react",
+    "chain_steps=protect_anim, protect_redirect, protect_gate effect_kind=chain effect_label=protect_react",
     "auto_confirm_when_obvious=true candidate_source=self count=1 effect_kind=targeting effect_label=protect_self iteration_mode=together mode=exact skip_when_passive=true",
-    "auto_confirm_when_obvious=true candidate_source=action_targets count=1 effect_kind=targeting effect_label=protect_incoming exclude_self=true iteration_mode=together mode=exact skip_when_passive=true"
+    "auto_confirm_when_obvious=true candidate_source=action_targets count=1 effect_kind=targeting effect_label=protect_incoming exclude_self=true iteration_mode=together mode=exact skip_when_passive=true",
+    "action_ref=Protect effect_kind=play_animation effect_label=protect_anim target_ref=trigger_subject"
    ],
    "reactions": [
     "reaction_action_intent=harmful reaction_effect_ref=protect_react reaction_passive_mode=ask reaction_source=ally reaction_trigger=creature_targeted_by_action",
@@ -56976,12 +56988,13 @@
     "skill_type": "Spell"
    },
    "effects": [
-    "chain_steps=is_shield, is_cost effect_kind=chain effect_label=is_react",
+    "chain_steps=is_anim, is_shield, is_cost effect_kind=chain effect_label=is_react",
     "destination_ref=is_phantasm effect_kind=shield_redirect effect_label=is_shield rebuild_card=true target_ref=is_incoming",
     "consume_amount=10 consume_resource=mp effect_kind=consume_resource effect_label=is_cost on_empty=abort target_ref=is_self",
     "auto_confirm_when_obvious=true candidate_source=action_targets count=1 effect_kind=targeting effect_label=is_incoming exclude_self=true iteration_mode=together mode=exact",
     "auto_confirm_when_obvious=true candidate_source=own_phantasms count=1 effect_kind=targeting effect_label=is_phantasm exclude_action_targets=true exclude_self=true iteration_mode=together mode=exact",
-    "auto_confirm_when_obvious=true candidate_source=self count=1 effect_kind=targeting effect_label=is_self iteration_mode=together mode=exact skip_when_passive=true"
+    "auto_confirm_when_obvious=true candidate_source=self count=1 effect_kind=targeting effect_label=is_self iteration_mode=together mode=exact skip_when_passive=true",
+    "action_ref=Illusory Shield effect_kind=play_animation effect_label=is_anim target_ref=trigger_subject"
    ],
    "reactions": [
     "condition_formula=OWN_PHANTASM_COUNT >= 1 reaction_action_intent=harmful reaction_effect_ref=is_react reaction_passive_mode=ask reaction_source=ally reaction_trigger=creature_targeted_by_action"
@@ -57049,10 +57062,12 @@
    },
    "effects": [
     "auto_confirm_when_obvious=true auto_target=skip candidate_source=self_or_my_focus count=1 effect_kind=targeting effect_label=lt_pick iteration_mode=together mode=exact target_filter=HAS_STATUS_CRISIS",
-    "effect_kind=grant effect_label=lt_heal grant_amount=5 + AE_CHARGES_BRAINWAVE_CLOCK * 5 grant_resource=hp target_ref=lt_pick"
+    "effect_kind=grant effect_label=lt_heal grant_amount=5 + AE_CHARGES_BRAINWAVE_CLOCK * 5 grant_resource=hp target_ref=lt_pick",
+    "action_ref=Life Transference effect_kind=play_animation effect_label=lt_anim target_ref=lt_pick",
+    "chain_steps=lt_anim, lt_heal effect_kind=chain effect_label=lt_react"
    ],
    "reactions": [
-    "condition_formula=HAS_STATUS_CRISIS == 1 || MY_FOCUS_IN_CRISIS == 1 reaction_effect_ref=lt_heal reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_completes_action"
+    "condition_formula=HAS_STATUS_CRISIS == 1 || MY_FOCUS_IN_CRISIS == 1 reaction_effect_ref=lt_react reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_completes_action"
    ],
    "aes": []
   },
@@ -57408,9 +57423,10 @@
       "condition_formula=AE_CHARGES_BODYGUARD_FATIGUE < 10 && INCOMING_DAMAGE > 0 reaction_effect_ref=scion_halve reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_targeted_by_action"
      ],
      "aeEffects": [
+      "action_ref=Stubborn Scion effect_kind=play_animation effect_label=scion_anim target_ref=self",
       "damage_amount=0.5 damage_operation=multiply damage_stage=incoming effect_kind=adjust_damage effect_label=scion_cut",
       "charge_ae_name=Bodyguard Fatigue charge_amount=VAR_FATIGUE charge_operation=add effect_kind=adjust_charges effect_label=scion_fatigue target_ref=self",
-      "chain_steps=scion_cut,scion_roll,scion_fatigue effect_kind=chain effect_label=scion_halve",
+      "chain_steps=scion_anim, scion_cut, scion_roll, scion_fatigue effect_kind=chain effect_label=scion_halve",
       "dice_count=1 dice_faces=6 effect_kind=roll_dice effect_label=scion_roll prompt_var=fatigue roll_interactive=true roll_label=Bodyguard Fatigue"
      ]
     },
@@ -70389,10 +70405,11 @@
     "skill_type": "Active"
    },
    "effects": [
-    "chain_steps=barrage_add,barrage_cost effect_kind=chain effect_label=barrage_do",
+    "chain_steps=barrage_anim, barrage_add, barrage_cost effect_kind=chain effect_label=barrage_do",
     "effect_kind=add_target effect_label=barrage_add target_ref=barrage_pick",
     "consume_amount=10 consume_resource=mp cost_amount=10 cost_operation=add cost_resource=mp effect_kind=adjust_cost effect_label=barrage_cost on_empty=abort target_ref=self",
-    "candidate_source=combat category=enemy count=1 effect_kind=targeting effect_label=barrage_pick exclude_action_targets=true mode=exact"
+    "candidate_source=combat category=enemy count=1 effect_kind=targeting effect_label=barrage_pick exclude_action_targets=true mode=exact",
+    "action_ref=Barrage effect_kind=play_animation effect_label=barrage_anim target_ref=action_targets"
    ],
    "reactions": [
     "condition_formula=ATTACK_IS_RANGED == 1 reaction_action_kind=Attack reaction_effect_ref=barrage_do reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_performs_action"
@@ -71330,7 +71347,8 @@
     "auto_confirm_when_obvious=true candidate_source=self count=1 effect_kind=targeting effect_label=hs_self iteration_mode=together mode=exact skip_when_passive=true",
     "consume_amount=10 consume_resource=mp effect_kind=consume_resource effect_label=hs_mp_cost on_empty=abort target_ref=hs_self",
     "allowed_types=Attack,Hinder check_bonus_formula=SL effect_kind=open_action_menu effect_label=hs_free_action free_mode=true",
-    "chain_steps=hs_mp_cost, hs_free_action effect_kind=chain effect_label=hs_react"
+    "chain_steps=hs_mp_cost, hs_anim, hs_free_action effect_kind=chain effect_label=hs_react",
+    "action_ref=High Speed effect_kind=play_animation effect_label=hs_anim target_ref=hs_self"
    ],
    "reactions": [
     "$deleted=true reaction_effect_ref=hs_react reaction_passive_mode=ask reaction_trigger=conflict_start",
@@ -72071,12 +72089,13 @@
     "skill_type": "Active"
    },
    "effects": [
-    "chain_steps=ws_nullify,ws_menu effect_kind=chain effect_label=warning_shot",
+    "chain_steps=ws_nullify, ws_anim, ws_menu effect_kind=chain effect_label=warning_shot",
     "damage_amount=0 damage_operation=multiply damage_stage=outgoing effect_kind=adjust_damage effect_label=ws_nullify target_ref=hit_action_targets",
     "effect_kind=open_action_menu effect_label=ws_menu menu_option_refs=ws_shaken,ws_slow,ws_mp menu_pick_count=1 + HAS_SKILL_PERFECT_AIM",
     "ae_template_ref=Shaken effect_kind=apply_ae effect_label=ws_shaken target_ref=hit_action_targets",
     "ae_template_ref=Slow effect_kind=apply_ae effect_label=ws_slow target_ref=hit_action_targets",
-    "consume_amount=SL * 10 consume_resource=mp effect_kind=consume_resource effect_label=ws_mp on_empty=skip target_ref=hit_action_targets"
+    "consume_amount=SL * 10 consume_resource=mp effect_kind=consume_resource effect_label=ws_mp on_empty=skip target_ref=hit_action_targets",
+    "action_ref=Warning Shot effect_kind=play_animation effect_label=ws_anim target_ref=hit_action_targets"
    ],
    "reactions": [
     "condition_formula=ATTACK_IS_RANGED == 1 reaction_effect_ref=warning_shot reaction_passive_mode=ask reaction_source=self reaction_trigger=creature_will_deal_damage"

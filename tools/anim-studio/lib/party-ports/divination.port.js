@@ -65,12 +65,19 @@ const FX_BURST = "modules/JB2A_DnD5e/Library/Generic/Particles/ParticleBurstStar
 const FX_CIRCLE = "modules/JB2A_DnD5e/Library/Generic/Cast/CastShapeCircleSingle01_01_Regular_Blue_600x600.webm";
 const SFX_START_1 = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Up3.ogg";
 const SFX_START_2 = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Starlight.ogg";
+// Divination is a SELF spell: BD may hand it no target at all. The legacy returned
+// here without firing oni:animationEnd, so BD sat on its 35 s timeout. Fall back to
+// the caster (payload, then the controlled token) and never return silently.
 const targets = Array.from(game.user.targets ?? []);
-if (targets.length !== 1) {
-ui.notifications.warn(`${TAG} Please target exactly 1 token.`);
-return;
+const __P = globalThis.__PAYLOAD ?? {};
+let __caster = null;
+for (const u of [__P.casterTokenUuid, __P.sourceTokenUuid, __P.tokenUuid]) { try { const d = u ? fromUuidSync(u) : null; if (d?.object) { __caster = d.object; break; } } catch (e) {} }
+const token = targets[0] ?? __caster ?? canvas.tokens.controlled?.[0] ?? null;
+if (!token) {
+  console.warn(TAG, "Divination: no caster or target token");
+  Hooks.callAll("oni:animationEnd", { type: "divination", error: true, timestamp: Date.now() });
+  return;
 }
-const token = targets[0];
 const center = token.center;
 const squaresUp = 0.9;
 const yUpPx = canvas.grid.size * squaresUp;
