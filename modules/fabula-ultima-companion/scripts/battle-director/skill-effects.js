@@ -32,7 +32,7 @@ import { RESOURCE_REGISTRY } from "./resources.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor, isPersistentCounter } from "./skill-charges.js";
 import { foldChargeSteps, aeRefreshIsNoop } from "./chain-strikes.js";
 import { readPropNum, resolveAffinity, skillDeclaresVersatile, resolvesVsMagicDefense, actorLiveRuleValues, getActionLabelBlockers, getPassiveSuppression, canonActionLabel, GATEABLE_ACTION_LABELS, GATING_EXEMPT_TAG_PREFIX } from "./snapshot.js";
-import { getActorKind } from "./actor-shape.js";
+import { INVENTORY_ACTION_TAG } from "./skill-intent.js";
 import { isActorDefeated, settleRevive } from "./defeat-reactor.js";
 import { computeIncomingDamage, aeOutgoingActionKeywords } from "./damage-ruleset.js";
 import { appendBattleLog, buildDamageRow } from "./director-battle-log.js";
@@ -1725,11 +1725,16 @@ export function containerReactionInPlay(item, casterActor, payload) {
 //     reaction's WHOLE payload is free actions (plus cost/target plumbing) and
 //     every label they grant is blocked. Anything with another outcome
 //     (Glowstick's damage step, High Speed's menu) stays open; the free-action
-//     menu / DECLARE backstop already greys the blocked part.
-//   Suppressed (`disable_passive`): never gear. Monsters (NPC actors): every row
-//     of a skill labelled Passive — on monsters the label is reliable. Players:
-//     on/force rows of a Passive skill with NO ask row (a skill with a choosable
-//     row is Active; its auto rows are its machinery — Dance's cost).
+//     menu / DECLARE backstop already greys the blocked part. A grant is sorted
+//     by what it COUNTS AS, not which picker it opens: a Skill/Spell grant
+//     restricted to tag:inventory skills is an Inventory (Item) action, per the
+//     2026-09-28 ruling DECLARE already enforces (countsAsItem) — so Emergency
+//     Item's "Item, or an inventory Skill" is all-Item and Panic stops it.
+//   Suppressed (`disable_passive`), players and monsters alike: on/force rows
+//     of a non-gear skill labelled Passive that has NO ask row. Choosable rows
+//     are the command debuffs' job, never Suppressed's (no reaction is blocked
+//     by both families); a skill with a choosable row is Active, and its auto
+//     rows are its machinery (Dance's cost).
 //
 // Exemptions: Domination State (all gates inert), and ignore_gating_<ae> skill
 // tags on the carrier (must name every AE blocking that label), as the menu.
@@ -1781,8 +1786,11 @@ function reactionGrantedActionLabels(effectTable, refLabel) {
         if (!walk(step)) return false;
       }
     } else if (kind === "free_action") {
+      const allow = String(r.allowed_skill_refs ?? "").split(/[,\n]/).map((s) => s.trim().toLowerCase()).filter(Boolean);
+      const inventoryOnly = allow.length > 0 && allow.every((a) => a === `tag:${INVENTORY_ACTION_TAG}`);
       for (const part of String(r.action_ref ?? "").split(/[,|]/).map((s) => s.trim()).filter(Boolean)) {
-        const L = canonActionLabel(part);
+        let L = canonActionLabel(part);
+        if (inventoryOnly && (L === "Skill" || L === "Spell")) L = "Item";
         // An item-named grant (Lightning Rod) is not a gateable command.
         if (!GATEABLE_ACTION_LABELS.includes(L)) return false;
         labels.add(L);
@@ -1814,14 +1822,12 @@ export function getReactionGate(actor, { carrier, carrierKind, row, effectTable,
   const mode = resolveReactionPassiveMode(row);
   if (mode === "off") return null;
 
-  if (carrierKind === "item" && carrier) {
+  if (carrierKind === "item" && carrier && mode !== "ask") {
     const sup = getPassiveSuppression(actor);
     if (sup && _lc(carrier.system?.props?.skill_type) === "passive"
-        && reactionCarrierCategory(carrier, actor) !== "Equipment") {
-      const isNpc = getActorKind(actor) === "npc";
-      if (isNpc || (mode !== "ask" && !_hasAskRow(carrier))) {
-        return { kind: mode === "ask" ? "blocked" : "condition", reason: sup };
-      }
+        && reactionCarrierCategory(carrier, actor) !== "Equipment"
+        && !_hasAskRow(carrier)) {
+      return { kind: "condition", reason: sup };
     }
   }
 

@@ -13,6 +13,7 @@ const SCEN = {
   Silence: ["Silence"],
   Disarmed: ["Disarmed"],
   Panic: ["Panic"],
+  "Panic+Paralyzed": ["Panic", "Paralyzed"],
   Berserk: ["Berserk"],
   Suppressed: ["Suppressed"],
   "Paralyzed+Domination": ["Paralyzed", "Domination State"],
