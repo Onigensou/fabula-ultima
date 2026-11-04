@@ -506,10 +506,11 @@ const RESOURCE_GAIN_DEFAULT = Object.freeze({ file: null, color: "#9be15d", icon
 //   cascade   : a Chain strike's index — never merged (gain-coalesce.js)
 // Gains of the same resource on the same token inside GAIN_COALESCE_MS float as
 // ONE total (three Lightning Charges = "+15", not three overlapping "+5").
-export function playResourceGainVfx({ tokenUuid, resource = "hp", amount = 0, cascade = 0 } = {}) {
+//   noMerge   : the move opted out of merging (flags.<NS>.separateNumbers)
+export function playResourceGainVfx({ tokenUuid, resource = "hp", amount = 0, cascade = 0, noMerge = false } = {}) {
   try {
     if (!(amount > 0)) return;
-    _gainCoalescer({ tokenUuid, resource, amount, cascade });
+    _gainCoalescer({ tokenUuid, resource, amount, cascade, noMerge });
   } catch (e) {
     warn("playResourceGainVfx threw", e);
   }

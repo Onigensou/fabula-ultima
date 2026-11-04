@@ -100,7 +100,7 @@ async function DEFAULT_INNER() {
     const c = cfg.clips[key];
     if (!c || !t) return;
     const p = pointOn(t, c.pos);
-    const r = await oni.vfx(c.url, { x: p.x, y: p.y, size: c.w * cfg.clipScale * (scale || 1) * s, zIndex: 95500 });
+    const r = await oni.vfx(c.url, { x: p.x, y: p.y, size: c.w * cfg.clipScale * (scale || 1) * (c.scaleMul || 1) * s, zIndex: 95500 });
     if (!r || !r.sprite) return;
     r.sprite.anchor.set(c.ax, c.ay);
     r.sprite.position.set(p.x, p.y);
@@ -137,6 +137,67 @@ async function DEFAULT_INNER() {
     });
     if (!list.length) land();
     return { landed: landed, all: Promise.all(all) };
+  }
+  // FF-style "use" flourish: a quick four-point glint + sparkles at the hand.
+  function glintAt(p) {
+    const g = new PIXI.Graphics();
+    const pts = [];
+    for (let i = 0; i < 8; i++) { const a = Math.PI / 4 * i, r = (i % 2 ? 0.22 : 1) * 34 * s; pts.push(Math.cos(a) * r, Math.sin(a) * r); }
+    g.beginFill(0xfffbe8); g.drawPolygon(pts); g.endFill();
+    g.blendMode = PIXI.BLEND_MODES.ADD; g.position.set(p.x, p.y); g.zIndex = 95700;
+    canvas.stage.sortableChildren = true; canvas.stage.addChild(g);
+    const sparks = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new PIXI.Graphics(); d.beginFill(0xfff6c8); d.drawCircle(0, 0, 3.5 * s); d.endFill();
+      d.blendMode = PIXI.BLEND_MODES.ADD; d.position.set(p.x, p.y); d.zIndex = 95700; canvas.stage.addChild(d);
+      sparks.push({ d: d, a: (Math.PI * 2 * i) / 7 + Math.random() * 0.4 });
+    }
+    return oni.tween({ from: 0, to: 1, duration: T.glintMs, ease: E.outQuad, onUpdate: function (v) {
+      const k = v < 0.35 ? v / 0.35 * 1.15 : 1.15 * (1 - (v - 0.35) / 0.65);
+      g.scale.set(k); g.rotation = v * Math.PI / 4;
+      for (const sp of sparks) { sp.d.position.set(p.x + Math.cos(sp.a) * 46 * s * v, p.y + Math.sin(sp.a) * 46 * s * v); sp.d.alpha = 1 - v; }
+    } }).then(function () {
+      try { g.destroy(); } catch (e) {}
+      for (const sp of sparks) { try { sp.d.destroy(); } catch (e) {} }
+      return p;
+    });
+  }
+  // The item preamble: step, glint, and — only for an item that deals damage —
+  // its own icon pops at the hand and is thrown, spinning, at each target.
+  async function itemPreamble() {
+    const I = cfg.item || {};
+    await stepTo(dir * 70 * s, T.itemStepMs, E.outQuad);
+    sfx("item");
+    const hp = await glintAt(handOf());
+    if (!I.thrown) { await wait(T.itemNoThrowMs); return; }
+    let tex = null;
+    try { if (I.icon) tex = await loadTexture(I.icon); } catch (e) { tex = null; }
+    const size = 64 * s;
+    const mk = function () {
+      if (!tex) return null;
+      const sp = new PIXI.Sprite(tex); sp.anchor.set(0.5);
+      sp.zIndex = 95600; canvas.stage.sortableChildren = true; canvas.stage.addChild(sp);
+      return sp;
+    };
+    const baseK = tex ? size / Math.max(tex.width || 1, tex.height || 1) : 1;
+    const pop = mk();
+    if (pop) {
+      await oni.tween({ from: 0, to: 1, duration: T.itemPopMs, ease: E.outQuad, onUpdate: function (v) { pop.position.set(hp.x, hp.y); pop.scale.set(baseK * v); } });
+      try { pop.destroy(); } catch (e) {}
+    } else await wait(T.itemPopMs);
+    sfx("swing");
+    await Promise.all(tgts.map(async function (t, i) {
+      await wait(i * 90);
+      const sp = mk();
+      const to = t.center;
+      await oni.tween({ from: 0, to: 1, duration: T.itemThrowMs, ease: E.linear, onUpdate: function (v) {
+        if (!sp) return;
+        sp.scale.set(baseK);
+        sp.position.set(hp.x + (to.x - hp.x) * v, hp.y + (to.y - hp.y) * v - Math.sin(Math.PI * v) * 120 * s);
+        sp.rotation = v * Math.PI * 4;
+      } });
+      if (sp) { try { sp.destroy(); } catch (e) {} }
+    }));
   }
   function glow(ms) {
     if (!clone || !CM) return wait(ms);
@@ -227,9 +288,12 @@ async function DEFAULT_INNER() {
     } else {
       // ── skills: the fallback composer's beats ───────────────────────────
       const B = cfg.beats || [];
-      const lead = cfg.attackLike ? 150 : 120;
-      await stepTo(dir * lead * s, cfg.attackLike ? T.stepMs : T.slideMs, E.outQuad);
-      if (!cfg.attackLike) await glow(T.castMs);
+      if (cfg.mode === "item") await itemPreamble();
+      else {
+        const lead = cfg.attackLike ? 150 : 120;
+        await stepTo(dir * lead * s, cfg.attackLike ? T.stepMs : T.slideMs, E.outQuad);
+        if (!cfg.attackLike) await glow(T.castMs);
+      }
       const pending = [];
       for (let i = 0; i < B.length; i++) {
         const b = B[i];
@@ -285,7 +349,7 @@ function clipTable(keys) {
   for (const k of keys) {
     const c = MV_CLIPS[k];
     if (!c) continue;
-    out[k] = { url: clipUrl(k), w: c.w, h: c.h, ax: c.ax, ay: c.ay, pos: c.pos, flashes: c.flashes.slice() };
+    out[k] = { url: clipUrl(k), w: c.w, h: c.h, ax: c.ax, ay: c.ay, pos: c.pos, flashes: c.flashes.slice(), scaleMul: c.scaleMul ?? 1 };
   }
   return out;
 }
@@ -310,7 +374,8 @@ export function buildDefaultScript(plan) {
     cfg.beats = beats;
     cfg.attackLike = !!plan.attackLike;
     cfg.clips = clipTable(beats.map((b) => b.clip).filter(Boolean));
-    const keys = { swing: "swing", crit: "crit" };
+    if (plan.mode === "item") cfg.item = { thrown: !!plan.item?.thrown, icon: plan.item?.icon ?? null };
+    const keys = { swing: "swing", crit: "crit", item: "item" };
     for (const b of beats) { if (b.sfx) keys[b.sfx] = b.sfx; if (b.elementSfx) keys[b.elementSfx] = b.elementSfx; }
     cfg.sfx = sfxTable(keys);
   }

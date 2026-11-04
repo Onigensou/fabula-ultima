@@ -59,8 +59,24 @@ export const MV_CLIPS = {
   "051_powerup_1": { w: 508, h: 790, ax: 0.5, ay: 0.543, dur: 867, pos: "feet", flashes: [333] },
   "054_powerdown_1": { w: 508, h: 656, ax: 0.5, ay: 0.628, dur: 867, pos: "feet", flashes: [333] },
   "111_shoot_normal": { w: 584, h: 584, ax: 0.5, ay: 0.5, dur: 933, pos: "center", flashes: [133] },
+  // gains + item effects (approved on the mockup's Item tab, 2026-11-04)
+  "045_cure_one_1": { w: 700, h: 754, ax: 0.5, ay: 0.561, dur: 1133, pos: "feet", flashes: [67, 133, 200, 400, 667] },
+  "052_powerup_2": { w: 508, h: 630, ax: 0.5, ay: 0.6508, dur: 1200, pos: "feet", flashes: [267, 1000] },
+  "053_powerup_3": { w: 354, h: 354, ax: 0.5, ay: 0.6695, dur: 1867, pos: "center", flashes: [0] },
+  // an item that deals damage: the element's "one target" spell clip
+  "066_fire_one_1": { w: 776, h: 784, ax: 0.5, ay: 0.8827, dur: 733, pos: "feet", flashes: [67, 267, 467] },
+  "072_ice_one_2": { w: 488, h: 488, ax: 0.5, ay: 0.7951, dur: 800, pos: "feet", flashes: [200] },
+  "076_thunder_one_1": { w: 624, h: 704, ax: 0.5, ay: 0.858, dur: 467, pos: "feet", flashes: [133, 267] },
+  "086_earth_one_1": { w: 680, h: 680, ax: 0.5, ay: 0.5, dur: 1333, pos: "center", flashes: [333, 467, 600, 800] },
+  "091_wind_one_1": { w: 508, h: 510, ax: 0.5, ay: 0.8529, dur: 1000, pos: "feet", flashes: [333, 533] },
+  "096_light_one_1": { w: 662, h: 682, ax: 0.5, ay: 0.8666, dur: 1533, pos: "feet", flashes: [400, 533] },
+  "101_darkness_one_1": { w: 546, h: 546, ax: 0.5, ay: 0.5, dur: 1467, pos: "center", flashes: [667, 800] },
+  "059_poison": { w: 392, h: 394, ax: 0.5, ay: 0.8198, dur: 1000, pos: "feet", flashes: [67, 200, 333] },
+  // Ragnarok Online (native RO resolution — scaleMul brings it level with the MV clips)
+  "ro_food_int": { w: 456, h: 456, ax: 0.5, ay: 0.6316, dur: 1500, pos: "feet", flashes: [250], ro: "food_int", scaleMul: 2.2 },
 };
-export const clipUrl = (key) => MV_BASE + key + ".webm";
+export const RO_BASE = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Ragnarok%20Online/";
+export const clipUrl = (key) => (MV_CLIPS[key]?.ro ? RO_BASE + MV_CLIPS[key].ro + ".webm" : MV_BASE + key + ".webm");
 
 // Battle sounds (Forge Sound/). The mockup's volumes x0.7 — the user found
 // them loud overall in the 2026-11-04 Foundry demo (BD's own hit sound also
@@ -80,6 +96,7 @@ export const SFX = {
   heal:   { path: "Soundboard/Heal3.ogg",              vol: 0.35 },
   up:     { path: "Soundboard/Powerup.ogg",            vol: 0.35 },
   down:   { path: "Soundboard/Down2.ogg",              vol: 0.35 },
+  item:   { path: "Soundboard/Item1.ogg",              vol: 0.4 },   // the item-use chime
 };
 export const sfxUrl = (key) => (SFX[key] ? SFX_BASE + SFX[key].path : null);
 
@@ -192,10 +209,21 @@ export function pickAttack({ category, element, outcome = "hit", preset = null }
 
 // ── Skills: the fallback composer ───────────────────────────────────────
 
+// Gains (heal / mp / shield / zp) carry no sound of their own: BD's gain number
+// already plays one (playResourceGainVfx) — one sound per moment.
 export const BEAT = {
-  heal:   { clip: "041_heal_one_1",  sfx: "heal" },
-  buff:   { clip: "051_powerup_1",   sfx: "up" },
-  debuff: { clip: "054_powerdown_1", sfx: "down" },
+  heal:    { clip: "041_heal_one_1",  sfx: null },
+  mp:      { clip: "ro_food_int",     sfx: null },
+  shield:  { clip: "053_powerup_3",   sfx: null },
+  zp:      { clip: "052_powerup_2",   sfx: null },
+  buff:    { clip: "051_powerup_1",   sfx: "up" },
+  debuff:  { clip: "054_powerdown_1", sfx: "down" },
+  cleanse: { clip: "045_cure_one_1",  sfx: "up" },
+};
+// An item that deals damage plays its element's "one target" clip.
+export const ITEM_ELEMENT_CLIP = {
+  Physical: "001_hit_physical", Fire: "066_fire_one_1", Ice: "072_ice_one_2", Bolt: "076_thunder_one_1",
+  Earth: "086_earth_one_1", Air: "091_wind_one_1", Light: "096_light_one_1", Dark: "101_darkness_one_1", Poison: "059_poison",
 };
 const HEALING_TYPES = new Set(["healing", "heal", "hp_heal", "mp_heal", "hp", "mp", "recovery"]);
 const NONDAMAGING = new Set(["", "none", "n/a", "-", "any", "no", "support"]);
@@ -222,16 +250,16 @@ function beatOfRow(row, { aeTagOf, harmful }) {
     return { k: kind, to, needsHit: needsHit(row) };
   }
   if (k === "grant") {
-    const res = lc(row.grant_resource);
-    if (res !== "hp" && res !== "mp") return null;
-    return { k: "heal", to, needsHit: needsHit(row) };
+    const kind = { hp: "heal", mp: "mp", shield: "shield", zero_power: "zp" }[lc(row.grant_resource)];
+    return kind ? { k: kind, to, needsHit: needsHit(row) } : null;
   }
   if (k === "deal_damage") return { k: "damage", to: "target", needsHit: needsHit(row) };
   if (k === "remove_tagged_ae") {
     const f = lc(row.filter_tag);
-    if (f === "debuff") return { k: "buff", to, needsHit: false };     // cleanse
-    if (f === "buff") return { k: "debuff", to, needsHit: needsHit(row) }; // dispel
+    if (f === "debuff") return { k: "cleanse", to, needsHit: false };       // cleanse
+    if (f === "buff") return { k: "debuff", to, needsHit: needsHit(row) };  // dispel
   }
+  if (k === "remove_ae") return { k: "cleanse", to, needsHit: false };       // Vaccine: one status off
   return null;
 }
 
@@ -328,9 +356,16 @@ export function composeBeats(props = {}, { aeTagOf = null, intent = "neutral" } 
   return { beats: beats.slice(0, MAX_BEATS), hasDamage, healing, opaque: pre.opaque || post.opaque };
 }
 
+// A move whose effect rows play an animation of their own (Phoenix Feather's
+// chain plays "FX: Revive") gets no default on top of it.
+export function hasOwnAnimationRow(props = {}) {
+  return rowsOf(props).some((r) => lc(r.effect_kind) === "play_animation");
+}
+
 // Beats → what plays, given the outcome. A miss swings the damage beat (no
-// clip) and drops every beat that needed the hit.
-export function resolveBeats(beats, { outcome = "hit", element = "Physical", attackLike = false } = {}) {
+// clip) and drops every beat that needed the hit. itemLike: an item that
+// deals damage plays its element's "one target" clip (ITEM_ELEMENT_CLIP).
+export function resolveBeats(beats, { outcome = "hit", element = "Physical", attackLike = false, itemLike = false } = {}) {
   const el = ELEMENT[element] ? element : "Physical";
   const crit = outcome === "crit", miss = outcome === "miss";
   const s = ELEMENT[el].suffix;
@@ -338,8 +373,9 @@ export function resolveBeats(beats, { outcome = "hit", element = "Physical", att
   for (const b of beats) {
     if (b.k === "damage") {
       const clip = miss ? null : crit ? FAMILY.hit.crit
+        : itemLike ? ITEM_ELEMENT_CLIP[el]
         : (attackLike ? FAMILY.hit[s] : (s === "physical" ? "002_hit_effect" : FAMILY.hit[s]));
-      const tint = !miss && !crit && (s === "effect" || (!attackLike && s === "physical")) ? (ELEMENT[el].tint ?? null) : null;
+      const tint = !itemLike && !miss && !crit && (s === "effect" || (!attackLike && s === "physical")) ? (ELEMENT[el].tint ?? null) : null;
       out.push({ ...b, clip, tint, sfx: miss ? null : "blow", elementSfx: miss ? null : (ELEMENT[el].sfx ?? null), crit, miss });
       continue;
     }
@@ -364,6 +400,9 @@ export const TIMING = {
   slideMs: 320,            // skill: slide forward
   chainBeatMs: 380,        // Chain N: gap between strikes
   tailMs: 120,
+  // items (FF style): a short step, a use-glint at the hand; a damaging item
+  // pops at the hand and is thrown, spinning
+  itemStepMs: 260, glintMs: 340, itemPopMs: 120, itemThrowMs: 380, itemNoThrowMs: 80,
 };
 
 const firstFlash = (key) => (MV_CLIPS[key]?.flashes?.[0] ?? 0);
@@ -386,12 +425,15 @@ export function attackImpactAt(pick, { strikes = 1 } = {}) {
 // Skill composer: damage (or, with no damage, the first beat) lands at its
 // clip's first flash; beats before it each take `flash + beatGapMs`.
 // attackLike (an attack item with extra effects): a step in, no cast glow.
-export function beatsImpactAt(resolved, { attackLike = false } = {}) {
+// item: the item preamble (step, glint, and a throw when it deals damage).
+export function beatsImpactAt(resolved, { attackLike = false, item = null } = {}) {
   const T = TIMING;
-  let t = attackLike ? T.stepMs : T.slideMs + T.castMs;
+  let t = item
+    ? T.itemStepMs + T.glintMs + (item.thrown ? T.itemPopMs + T.itemThrowMs : T.itemNoThrowMs)
+    : (attackLike ? T.stepMs : T.slideMs + T.castMs);
   for (const b of resolved) {
     const land = b.clip ? Math.max(b.k === "damage" ? 40 : 200, firstFlash(b.clip)) : 60;
-    if (b.k === "damage" || b.k === "heal" || b === resolved[resolved.length - 1]) return t + land;
+    if (b.k === "damage" || b.k === "heal" || b.k === "mp" || b.k === "shield" || b.k === "zp" || b === resolved[resolved.length - 1]) return t + land;
     t += land + T.beatGapMs;
   }
   return t;

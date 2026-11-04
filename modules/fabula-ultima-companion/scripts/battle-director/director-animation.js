@@ -22,7 +22,7 @@ import { createChainPresenter } from "./chain-presenter.js";
 import { CHAIN_MAX, fallbackBeatMs } from "./chain-strikes.js";
 import {
   normalizeCategory, normalizeElement, summarizeOutcome, pickAttack,
-  composeBeats, resolveBeats, attackImpactAt, beatsImpactAt,
+  composeBeats, resolveBeats, attackImpactAt, beatsImpactAt, hasOwnAnimationRow,
 } from "./action-anim-rules.js";
 import { buildDefaultScript } from "./action-anim-script.js";
 import { classifyActionIntent } from "./skill-intent.js";
@@ -256,10 +256,28 @@ async function _defaultSpec(ar, { skillItem = null, weaponItem = null } = {}) {
     return _defaultResult({ mode: "attack", attack, key: "atk", label }, attackImpactAt(attack, { strikes }));
   }
 
+  // Item (approved mockup Item tab, 2026-11-04): FF style — a short step, a
+  // use-glint at the hand, the effect on the target. Only an item that deals
+  // damage is shown: its own icon is thrown, spinning, at the target.
+  if (kind === "Item" && skillItem) {
+    const p = skillItem.system?.props ?? {};
+    if (hasOwnAnimationRow(p)) return null;   // Phoenix Feather plays "FX: Revive"
+    const intent = ar.actionIntent ?? classifyActionIntent(skillItem);
+    const c = composeBeats(p, { aeTagOf: _aeTagLookup(skillItem), intent });
+    const element = normalizeElement(p.type_damage);
+    const beats = resolveBeats(c.beats, { outcome, element, itemLike: true });
+    if (!beats.length) return null;
+    const thrown = beats.some((b) => b.k === "damage");
+    const icon = ar.skillImg ?? skillItem.img ?? null;
+    const label = `Item ${ar.skillName ?? skillItem.name}: ${beats.map((b) => `${b.k}→${b.to}`).join(" + ")}${thrown ? " (thrown)" : ""}`;
+    return _defaultResult({ mode: "item", beats, item: { thrown, icon }, key: "item", label }, beatsImpactAt(beats, { item: { thrown } }));
+  }
+
   if (kind === "Skill" && skillItem) {
     const p = skillItem.system?.props ?? {};
     const st = String(p.skill_type ?? "").trim().toLowerCase();
     if (!["attack", "spell", "active", "skill"].includes(st)) return null;
+    if (hasOwnAnimationRow(p)) return null;   // its chain plays an animation of its own
     const intent = ar.actionIntent ?? classifyActionIntent(skillItem);
     const c = composeBeats(p, { aeTagOf: _aeTagLookup(skillItem), intent });
     const element = normalizeElement(p.type_damage);

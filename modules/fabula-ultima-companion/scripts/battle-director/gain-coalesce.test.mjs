@@ -36,6 +36,11 @@ t("a Chain strike (cascade) is never merged and floats at once", () => {
   h.push({ tokenUuid: "a", resource: "hp", amount: 9, cascade: 2 });
   assert.equal(h.out.length, 2);
 });
+t("a move that opted out (separateNumbers) keeps one float per gain", () => {
+  const h = harness();
+  for (let i = 0; i < 3; i++) h.push({ tokenUuid: "kirin", resource: "mp", amount: 5, noMerge: true });
+  assert.deepEqual(h.out.map((g) => g.amount), [5, 5, 5]);
+});
 t("a gain after the window closes starts a new number", () => {
   const h = harness();
   h.push({ tokenUuid: "a", resource: "hp", amount: 4 }); h.flush();

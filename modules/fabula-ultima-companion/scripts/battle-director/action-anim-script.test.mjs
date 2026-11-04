@@ -29,7 +29,7 @@ function stubEnv({ strikes = [], targets = 1, casterDisp = 1 } = {}) {
   };
   const pt = () => ({ x: 0, y: 0, set(x, y) { this.x = x; this.y = y; }, copyFrom() {} });
   class Sprite { constructor() { this.anchor = pt(); this.scale = pt(); this.position = pt(); this.destroyed = false; } destroy() { this.destroyed = true; } }
-  class Graphics extends Sprite { lineStyle() {} moveTo() {} lineTo() {} beginFill() {} endFill() {} drawStar() {} drawCircle() {} }
+  class Graphics extends Sprite { lineStyle() {} moveTo() {} lineTo() {} beginFill() {} endFill() {} drawStar() {} drawCircle() {} drawPolygon() {} }
   class ColorMatrixFilter { hue() {} saturate() {} brightness() {} }
   const PIXI = { Sprite, Graphics, ColorMatrixFilter, BLEND_MODES: { ADD: 1 } };
   const tick = new Set();
@@ -61,7 +61,7 @@ async function runInner(script, env) {
   const inner = script.slice(script.indexOf("String.raw`") + "String.raw`".length, script.lastIndexOf("`;"));
   const fn = new Function("ctx", "canvas", "PIXI", "FAudioHelper", "loadTexture", "fromUuid", "wait", "foundry", "oni", "Sequence", "Hooks",
     `"use strict"; return (async () => {\n${inner}\n})();`);
-  await fn(env.ctx, env.canvas, env.PIXI, null, null, null, env.wait, null, env.oni, undefined, env.Hooks);
+  await fn(env.ctx, env.canvas, env.PIXI, null, async () => { env.log.push("texture"); return { width: 32, height: 32 }; }, null, env.wait, null, env.oni, undefined, env.Hooks);
   return env.log;
 }
 
@@ -153,9 +153,34 @@ t("composer — Life Drain: damage on the target, heal on the caster", async () 
   const log = await runInner(beatsScript({ type_damage: "Dark", action_keywords: "drain" }, { element: "Dark" }), stubEnv());
   order(log, "vfx:002_hit_effect.webm", "vfx:041_heal_one_1.webm", "hook:done");
 });
-t("composer — heal skill: the heal beat plays with its own sound", async () => {
+t("composer — heal skill: the heal beat plays silently (BD's gain number carries the sound)", async () => {
   const log = await runInner(beatsScript({ type_damage: "Healing" }, { intent: "aid" }), stubEnv());
-  order(log, "sfx:Heal3.ogg", "vfx:041_heal_one_1.webm", "hook:done");
+  order(log, "vfx:041_heal_one_1.webm", "hook:done");
+  assert.equal(log.includes("sfx:Heal3.ogg"), false);
+});
+const itemScript = (props, { element = "Physical", thrown = false } = {}) => buildDefaultScript({ mode: "item", key: "item",
+  item: { thrown, icon: "https://example/icon.png" },
+  beats: resolveBeats(composeBeats(props, { intent: thrown ? "harmful" : "aid" }).beats, { element, itemLike: true }) });
+t("item — Remedy: step, glint + Item1 chime, the heal on the target, no icon thrown", async () => {
+  const env = stubEnv();
+  const log = await runInner(itemScript({ type_damage: "Heal" }), env);
+  order(log, "hook:ready", "sfx:Item1.ogg", "vfx:041_heal_one_1.webm", "restore", "hook:done");
+  assert.equal(log.includes("texture"), false);
+});
+t("item — Wind Stone: the icon pops at the hand and is thrown, then the wind clip; claims the hit", async () => {
+  const env = stubEnv();
+  const log = await runInner(itemScript({ type_damage: "Air" }, { element: "Air", thrown: true }), env);
+  order(log, "sfx:Item1.ogg", "texture", "sfx:SE_SWINGA.wav", "vfx:091_wind_one_1.webm", "hit", "hook:done");
+  assert.ok(log.includes("sfx:SE_BTL_HitBlowS.ogg"));
+});
+t("item — Golem Fragment: shield crystal; Elixir: the RO MP burst (scaled)", async () => {
+  const shield = composeBeats({ effect_table: { 0: { effect_label: "g", effect_kind: "grant", grant_resource: "shield", target_ref: "action_targets", grant_amount: 5 } } }, { intent: "aid" }).beats;
+  const s1 = buildDefaultScript({ mode: "item", key: "i", item: { thrown: false }, beats: resolveBeats(shield, { itemLike: true }) });
+  order(await runInner(s1, stubEnv()), "vfx:053_powerup_3.webm", "hook:done");
+  const mp = composeBeats({ effect_table: { 0: { effect_label: "g", effect_kind: "grant", grant_resource: "mp", target_ref: "action_targets", grant_amount: 5 } } }, { intent: "aid" }).beats;
+  const s2 = buildDefaultScript({ mode: "item", key: "i", item: { thrown: false }, beats: resolveBeats(mp, { itemLike: true }) });
+  order(await runInner(s2, stubEnv()), "vfx:food_int.webm", "hook:done");
+  assert.match(s2, /"scaleMul":2\.2/);
 });
 t("no caster on the canvas: still signals ready and done", async () => {
   const env = stubEnv(); env.ctx.casterToken = null;

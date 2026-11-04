@@ -18,10 +18,11 @@ export const GAIN_COALESCE_MS = 150;
 // emit({ tokenUuid, resource, amount, count }) is called once per merged group.
 export function createGainCoalescer({ windowMs = GAIN_COALESCE_MS, emit, setTimer = (fn, ms) => setTimeout(fn, ms) } = {}) {
   const pending = new Map();
-  return function push({ tokenUuid, resource = "hp", amount = 0, cascade = 0 } = {}) {
+  // noMerge: the move opted out (flags.<NS>.separateNumbers) — one float per gain, at once.
+  return function push({ tokenUuid, resource = "hp", amount = 0, cascade = 0, noMerge = false } = {}) {
     const n = Number(amount) || 0;
     if (!(n > 0) || !tokenUuid) return;
-    if (cascade) { emit({ tokenUuid, resource, amount: n, count: 1 }); return; }
+    if (cascade || noMerge) { emit({ tokenUuid, resource, amount: n, count: 1 }); return; }
     const key = `${tokenUuid}|${String(resource).toLowerCase()}`;
     const open = pending.get(key);
     if (open) { open.amount += n; open.count += 1; return; }

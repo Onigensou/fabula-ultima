@@ -524,6 +524,19 @@ function fireStatusImmuneVfx(opts) {
 
 // Gain counterpart — floats a recover number on a heal / restore. Same
 // lazy fire-and-forget contract as fireResourceLossVfx.
+// Per-move opt-out of gain-number merging (gain-coalesce.js). Default = merge;
+// a move whose item carries flags.<NS>.separateNumbers keeps one float per
+// gain. Read from the move running the chain: its skill, else the carrier
+// (AE / item) firing the reaction.
+function moveKeepsSeparateNumbers(ctx) {
+  try {
+    if (ctx?.skill?.flags?.[FLAG_NS]?.separateNumbers === true) return true;
+    const src = ctx?.sourceUuid ? globalThis.fromUuidSync?.(ctx.sourceUuid) : null;
+    if (src?.flags?.[FLAG_NS]?.separateNumbers === true) return true;
+    const owner = src?.parent?.documentName === "Item" ? src.parent : null;
+    return owner?.flags?.[FLAG_NS]?.separateNumbers === true;
+  } catch { return false; }
+}
 function fireResourceGainVfx(opts) {
   try {
     import("./director-vfx.js")
@@ -6100,7 +6113,7 @@ async function grantApply(row, ctx, { resource, targetRef, amount }) {
       // (drain authored as a grant) is a loss; per the loss-VFX scoping
       // decision that path stays silent, so we only float gains here.
       if (result.applied > 0) {
-        fireResourceGainVfx({ tokenUuid: token.uuid, resource, amount: result.applied });
+        fireResourceGainVfx({ tokenUuid: token.uuid, resource, amount: result.applied, noMerge: moveKeepsSeparateNumbers(ctx) });
         if (resource === "hp" || resource === "shield") {
           // hp grant: HP band moves, standing shield rides along. shield
           // grant: shield band moves, current HP rides along.
@@ -6193,7 +6206,7 @@ async function setResourceApply(row, ctx, { resource, amountFormula, targetRef }
     try {
       await actor.update({ [`system.props.${def.prop}`]: newValue });
       applied.push({ actorUuid: actor.uuid, resource, from: cur, to: newValue });
-      try { fireResourceGainVfx({ tokenUuid: token.uuid, resource, amount: newValue - cur }); } catch {}
+      try { fireResourceGainVfx({ tokenUuid: token.uuid, resource, amount: newValue - cur, noMerge: moveKeepsSeparateNumbers(ctx) }); } catch {}
       if (resource === "hp" || resource === "shield") {
         // Covers both the restore-revive (hp) and shield-apply (Golem
         // Soulstone "gain 10 Shield") uses of set_resource.

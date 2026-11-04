@@ -11,7 +11,7 @@ import assert from "node:assert/strict";
 import {
   MV_CLIPS, CATEGORY, FAMILY, ELEMENT, SFX, clipUrl, sfxUrl,
   normalizeCategory, normalizeElement, summarizeOutcome, pickAttack,
-  composeBeats, resolveBeats, attackImpactAt, beatsImpactAt, TIMING,
+  composeBeats, resolveBeats, attackImpactAt, beatsImpactAt, TIMING, ITEM_ELEMENT_CLIP, hasOwnAnimationRow, BEAT,
 } from "./action-anim-rules.js";
 
 let n = 0;
@@ -162,7 +162,7 @@ t("chains are walked; an untagged AE on the target of a harmful skill reads as a
       { effect_label: "a", effect_kind: "apply_ae", target_ref: "action_targets", ae_template_ref: "Mystery" },
       { effect_label: "b", effect_kind: "grant", target_ref: "self", grant_resource: "mp", grant_amount: 5 },
     ) }, { aeTagOf, intent: "harmful" });
-  assert.deepEqual(c.beats.map((b) => [b.k, b.to]), [["debuff", "target"], ["heal", "self"]]);
+  assert.deepEqual(c.beats.map((b) => [b.k, b.to]), [["debuff", "target"], ["mp", "self"]]);
 });
 t("Fulgur shape: a pre-damage status on the creatures HIT plays after the damage", () => {
   const c = composeBeats({ type_damage: "Bolt", on_activate_effect_ref: "st",
@@ -195,9 +195,9 @@ t("rows with no visible meaning add nothing; then the intent decides", () => {
   assert.deepEqual(composeBeats(props, { intent: "aid" }).beats.map((b) => b.k), ["buff"]);
   assert.deepEqual(composeBeats(props, { intent: "neutral" }).beats, []);
 });
-t("cleanse reads as a buff, dispel as a debuff", () => {
+t("cleanse (remove debuffs) is its own beat, dispel reads as a debuff", () => {
   const c = composeBeats({ effect_table: rows({ effect_label: "c", effect_kind: "remove_tagged_ae", filter_tag: "debuff", target_ref: "action_targets" }) }, { intent: "aid" });
-  assert.deepEqual(c.beats.map((b) => b.k), ["buff"]);
+  assert.deepEqual(c.beats.map((b) => b.k), ["cleanse"]);
 });
 t("the same beat on the same recipient plays once; at most three beats", () => {
   const c = composeBeats({ type_damage: "Fire", effect_table: rows(
@@ -272,6 +272,41 @@ t("composer: a pre-damage buff pushes the damage back by its beat", () => {
 t("composer, attack-like (an attack item that also poisons): a step, no glow", () => {
   const r = resolveBeats(venom, { element: "Poison", attackLike: true });
   assert.equal(beatsImpactAt(r, { attackLike: true }), T.stepMs + 67);
+});
+
+
+console.log("items");
+t("item damage plays the element's one-target clip (Wind Stone = wind)", () => {
+  const b = resolveBeats([{ k: "damage", to: "target", post: false, needsHit: false }], { element: "Air", itemLike: true });
+  assert.equal(b[0].clip, "091_wind_one_1");
+  assert.equal(b[0].tint, null);
+  for (const el of Object.keys(ITEM_ELEMENT_CLIP)) assert.ok(MV_CLIPS[ITEM_ELEMENT_CLIP[el]], el);
+});
+t("gains read by resource: HP heal, MP, Shield (Golem Fragment), Zero Power (Liquid Hope)", () => {
+  const g = (res) => composeBeats({ effect_table: rows({ effect_label: "g", effect_kind: "grant", target_ref: "action_targets", grant_resource: res, grant_amount: 5 }) }, { intent: "aid" }).beats[0]?.k;
+  assert.deepEqual(["hp", "mp", "shield", "zero_power", "ip"].map(g), ["heal", "mp", "shield", "zp", "buff"]);
+});
+t("gain beats carry no sound of their own (BD's gain number plays it)", () => {
+  for (const k of ["heal", "mp", "shield", "zp"]) assert.equal(BEAT[k].sfx, null, k);
+  assert.ok(BEAT.buff.sfx && BEAT.debuff.sfx && BEAT.cleanse.sfx);
+});
+t("remove_ae (Vaccine) is a cleanse", () => {
+  const c = composeBeats({ type_damage: "Heal", effect_table: rows({ effect_label: "v", effect_kind: "remove_ae", target_ref: "action_targets" }) }, { intent: "aid" });
+  assert.deepEqual(c.beats.map((b) => b.k), ["heal", "cleanse"]);
+});
+t("a move whose rows play their own animation (Phoenix Feather) gets no default", () => {
+  assert.equal(hasOwnAnimationRow({ effect_table: rows({ effect_label: "a", effect_kind: "chain", chain_steps: "b" }, { effect_label: "b", effect_kind: "play_animation", action_ref: "FX: Revive" }) }), true);
+  assert.equal(hasOwnAnimationRow({ effect_table: rows({ effect_label: "g", effect_kind: "grant" }) }), false);
+});
+t("item timing: step + glint (+ pop and throw when it deals damage) before the first landing", () => {
+  const heal = resolveBeats([{ k: "heal", to: "target", post: false, needsHit: false }], {});
+  assert.equal(beatsImpactAt(heal, { item: { thrown: false } }), T.itemStepMs + T.glintMs + T.itemNoThrowMs + 200);
+  const dmg = resolveBeats([{ k: "damage", to: "target", post: false, needsHit: false }], { element: "Air", itemLike: true });
+  assert.equal(beatsImpactAt(dmg, { item: { thrown: true } }), T.itemStepMs + T.glintMs + T.itemPopMs + T.itemThrowMs + 333);
+});
+t("the MP clip is the RO one, served from the RO folder, scaled up", () => {
+  assert.match(clipUrl("ro_food_int"), /Ragnarok%20Online\/food_int\.webm$/);
+  assert.ok(MV_CLIPS.ro_food_int.scaleMul > 1);
 });
 
 console.log(`\n${n} passed`);
