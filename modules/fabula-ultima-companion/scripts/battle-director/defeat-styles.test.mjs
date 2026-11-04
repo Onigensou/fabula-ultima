@@ -24,6 +24,7 @@ import {
   ELEMENT_DEFEAT_STYLE,
   RANK_DEFEAT_STYLE,
 } from "./defeat-styles.js";
+import { WISP_PALETTES } from "./particles/wisps.js";
 import { holdsKnockoutRevive, markReviveTried, clearReviveTried, isKnockoutReviveEffect } from "./knockout-revive.js";
 
 let pass = 0, fail = 0;
@@ -92,6 +93,12 @@ for (const [key, s] of Object.entries(DEFEAT_STYLES)) {
   if (s.ring?.atMs != null) ok(`${key}.ring: ends inside totalMs`, s.ring.atMs + s.ring.ms <= s.totalMs);
   if (s.bolt) ok(`${key}.bolt: ends inside totalMs`, s.bolt.atMs + s.bolt.ms <= s.totalMs);
   if (s.screenDim) ok(`${key}.screenDim: lifts inside totalMs`, s.screenDim.outFromMs + s.screenDim.outMs <= s.totalMs);
+  if (s.wisps) {
+    ok(`${key}.wisps: count > 0`, s.wisps.count > 0);
+    ok(`${key}.wisps: released inside totalMs (they may outlive it)`, s.wisps.fromMs + s.wisps.spawnOverMs <= s.totalMs);
+    ok(`${key}.wisps: a known palette`, s.wisps.palette in WISP_PALETTES);
+    ok(`${key}.wisps: life range`, s.wisps.lifeMs[0] > 0 && s.wisps.lifeMs[0] <= s.wisps.lifeMs[1]);
+  }
 }
 
 /* ── FF7 red fade by rank (user ruling 2026-11-04) ───────────────────────── */
@@ -102,7 +109,11 @@ for (const [key, s] of Object.entries(DEFEAT_STYLES)) {
     ok(`${k}: internal (not offered in Token Config)`, S[k].internal === true);
     eq(`${k}: turns red`, S[k].body.tintTo, 0xff2a2a);
     ok(`${k}: red before the fade`, S[k].body.tintDelayMs + S[k].body.tintMs <= S[k].body.delayMs);
+    // user ruling 2026-11-05: the red fade keeps its tint, its motes became crimson wisps
+    ok(`${k}: crimson wisps, no motes`, S[k].wisps?.palette === "crimson" && !S[k].motes);
+    ok(`${k}: wisps leave as the fade begins`, S[k].wisps.fromMs <= S[k].body.delayMs);
   }
+  ok("more wisps by rank", S.ff7_soldier.wisps.count < S.ff7_elite.wisps.count && S.ff7_elite.wisps.count < S.ff7_champion.wisps.count);
   ok("ranks lengthen: Soldier < Elite < Champion", S.ff7_soldier.totalMs < S.ff7_elite.totalMs && S.ff7_elite.totalMs < S.ff7_champion.totalMs);
   ok("Champion stays (shown again, KO takes over)", S.ff7_champion.stays === true && S.ff7_champion.body.fadeTo > 0);
   ok("Soldier and Elite are removed (no stays)", !S.ff7_soldier.stays && !S.ff7_elite.stays);
@@ -143,8 +154,9 @@ for (const [key, s] of Object.entries(DEFEAT_STYLES)) {
   eq("totalMs scaled", slow.totalMs, base.totalMs * 1.5);
   eq("nested *Ms scaled", slow.body.fadeMs, base.body.fadeMs * 1.5);
   eq("bare ms scaled", slow.flash.ms, base.flash.ms * 1.5);
-  eq("*Ms arrays scaled", slow.motes.lifeMs, base.motes.lifeMs.map((v) => v * 1.5));
-  eq("non-timing numbers kept", [slow.motes.count, slow.flash.size, slow.body.tintTo, slow.shake.px], [base.motes.count, base.flash.size, base.body.tintTo, base.shake.px]);
+  eq("*Ms arrays scaled", slow.wisps.lifeMs, base.wisps.lifeMs.map((v) => v * 1.5));
+  eq("wisp release window scaled", [slow.wisps.fromMs, slow.wisps.spawnOverMs], [base.wisps.fromMs * 1.5, base.wisps.spawnOverMs * 1.5]);
+  eq("non-timing numbers kept", [slow.wisps.count, slow.wisps.palette, slow.flash.size, slow.body.tintTo, slow.shake.px], [base.wisps.count, base.wisps.palette, base.flash.size, base.body.tintTo, base.shake.px]);
   eq("sound cue times scaled", scaleDefeatTimings(DEFEAT_STYLES.ff7_champion, 2).sfx.map((c) => c.atMs), [0, 2600]);
   eq("source entry untouched", base.totalMs, 1450);
 }

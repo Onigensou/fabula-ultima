@@ -17,6 +17,7 @@ import { warn } from "./logger.js";
 import { playSfx } from "./director-sfx.js";
 import { shouldRender, hasOtherViewers } from "./presentation-clock.js";
 import { DEFEAT_STYLES, DEFEAT_MODULE_ID, scaleDefeatTimings } from "./defeat-styles.js";
+import { WispBurst, scheduleWisps } from "./particles/wisps.js";
 import { shadowSpriteFor, STYLE as SHADOW_STYLE } from "../sprite-shadow/sprite-shadow-renderer.js";
 import { CameraApi } from "./director-camera.js";
 import { suspendCamera, resumeCamera } from "./camera-authority.js";
@@ -172,6 +173,7 @@ async function runDefeat(token, cfg, stopped = () => false) {
   const motes = cfg.motes ? makeMotes(cfg.motes) : null;
   const embers = cfg.embers ? makeEmbers(cfg.embers) : null;
   const shards = cfg.shards ? makeShards(cfg.shards) : null;
+  const wisps = cfg.wisps ? new WispBurst(scheduleWisps(cfg.wisps)) : null;
   const leak = cfg.leak ? makeLeak(cfg.leak) : null;
   const fluff = cfg.fluff ? makeFluff(cfg.fluff) : null;
   const baseTint = Number(token.mesh?.tint ?? 0xffffff);
@@ -185,12 +187,18 @@ async function runDefeat(token, cfg, stopped = () => false) {
   if (cfg.shake) shakeBoard(cfg.shake);
 
   const fx = makeFxCanvas();
+  let tailed = false;
   try {
     await new Promise((done) => {
       const t0 = performance.now();
+      let lastT = 0;
       const tick = (now) => {
         if (stopped()) { done(); return; }   // undone: draw nothing more
         const t = now - t0;
+        const dt = Math.min(50, Math.max(0, t - lastT)); lastT = t;
+        // A draw that throws must not strand the defeat (the promise would never
+        // settle and the overlay would stay on screen): stop drawing, finish.
+        try {
         const r = rectNow();
         applyBody(token, cfg.body, t, baseTint);
         if (cfg.flickerBody) flickerBody(token, cfg.flickerBody, t);
@@ -209,13 +217,18 @@ async function runDefeat(token, cfg, stopped = () => false) {
         if (cfg.ring) drawRing(fx.ctx, r, cfg.ring, t);
         if (embers) drawEmbers(fx.ctx, r, cfg.embers, embers, t);
         if (shards) drawShards(fx.ctx, r, cfg.shards, shards, t);
+        if (wisps) { wisps.step(t, dt); wisps.draw(fx.ctx, r); }
+        } catch (e) { warn("defeat-fx: a frame threw — ending this defeat's drawing", e); done(); return; }
         if (t >= cfg.totalMs || stopped()) done();
         else requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
     });
+    // Wisps still in the air keep rising on the overlay after the defeat has
+    // finished (and the token is gone), detached: nothing waits for them.
+    if (wisps?.alive && !stopped()) { tailed = true; runWispTail(fx, wisps, cfg.totalMs, rectNow); }
   } finally {
-    fx.done();
+    if (!tailed) fx.done();
     try { copy?.remove(); } catch { /* gone */ }
     try { crown?.remove(); } catch { /* gone */ }
   }
@@ -223,6 +236,26 @@ async function runDefeat(token, cfg, stopped = () => false) {
   // between would otherwise pop it back in for a frame. A style that `stays`
   // is shown again by playDefeatLocal instead.
   if (!stopped() && !cfg.stays) applyBody(token, cfg.body, Infinity, baseTint);
+}
+
+// Draw the last wisps of a finished defeat until they burn out (capped), then
+// take the overlay down. Positions stay on the body's last rect: by now the
+// token may be gone, so rectNow() keeps returning where it was.
+const WISP_TAIL_MAX_MS = 2500;
+function runWispTail(fx, wisps, fromT, rectNow) {
+  const t0 = performance.now() - fromT;
+  let lastT = fromT;
+  const tick = (now) => {
+    const t = now - t0, dt = Math.min(50, Math.max(0, t - lastT)); lastT = t;
+    try {
+      fx.ctx.clearRect(0, 0, fx.c.width, fx.c.height);
+      wisps.step(t, dt);
+      wisps.draw(fx.ctx, rectNow());
+    } catch (e) { warn("defeat-fx: wisp tail threw", e); fx.done(); return; }
+    if (wisps.alive && t - fromT < WISP_TAIL_MAX_MS) requestAnimationFrame(tick);
+    else fx.done();
+  };
+  requestAnimationFrame(tick);
 }
 
 // Fade (and optionally tint) the token. Re-applied every frame: a token

@@ -31,6 +31,10 @@ const SFX_BASE = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
 // Token Config dropdown: "Standard" resolves to one of them by rank
 // (resolveDefeatStyle). The body tint ramps over `tintMs` BEFORE the fade
 // (applyBody), where the older styles cool while they fade.
+// `wisps` (2026-11-05, user ask: the red fade with crimson wisps instead of
+// motes) is a particles/wisps.js burst. Its wisps may outlive totalMs: they
+// keep rising on the overlay after the token is gone, so they never hold the
+// battle — only the release window must fall inside totalMs.
 const DEATH_SFX = { url: SFX_BASE + "Enemy_Death.ogg", volume: 0.6 };
 const RED = 0xff2a2a;
 
@@ -40,8 +44,7 @@ export const DEFEAT_STYLES = {
     internal: true,
     totalMs: 1000,
     body: { tintDelayMs: 0, tintMs: 250, tintTo: RED, delayMs: 300, fadeMs: 650 },
-    motes: { count: 14, fromMs: 300, spawnOverMs: 250, lifeMs: [250, 450], rise: [0.25, 0.6], size: [0.03, 0.06], sway: 0.08,
-             rgb: ["255,90,90", "255,160,160", "255,220,220"] },
+    wisps: { count: 7, fromMs: 250, spawnOverMs: 450, lifeMs: [700, 950], palette: "crimson" },
     shake: null,
     sfx: DEATH_SFX,
   },
@@ -51,8 +54,7 @@ export const DEFEAT_STYLES = {
     totalMs: 1450,
     flash: { atMs: 0, ms: 220, size: 0.8, rgb: "255,245,235" },
     body: { tintDelayMs: 100, tintMs: 350, tintTo: RED, delayMs: 550, fadeMs: 850 },
-    motes: { count: 24, fromMs: 550, spawnOverMs: 450, lifeMs: [350, 450], rise: [0.3, 0.8], size: [0.035, 0.07], sway: 0.1,
-             rgb: ["255,80,80", "255,150,150", "255,225,225"] },
+    wisps: { count: 11, fromMs: 450, spawnOverMs: 650, lifeMs: [800, 1100], palette: "crimson" },
     shake: { px: 3, ms: 200 },
     sfx: DEATH_SFX,
   },
@@ -65,8 +67,7 @@ export const DEFEAT_STYLES = {
     totalMs: 3000,
     flash: { atMs: 0, ms: 320, size: 1.1, rgb: "255,248,240" },
     body: { tintDelayMs: 150, tintMs: 950, tintTo: RED, delayMs: 1300, fadeMs: 1500, fadeTo: 0.3 },
-    motes: { count: 40, fromMs: 1300, spawnOverMs: 900, lifeMs: [500, 800], rise: [0.4, 1.1], size: [0.04, 0.085], sway: 0.12,
-             rgb: ["255,70,70", "255,140,140", "255,215,215"] },
+    wisps: { count: 26, fromMs: 1200, spawnOverMs: 1500, lifeMs: [1300, 1800], palette: "crimson" },
     glow: { rgb: "255,60,60", alpha: 0.28, ms: 1400 },
     screenDim: { alpha: 0.35, inMs: 300, outFromMs: 2500, outMs: 500 },
     shake: { px: 6, ms: 500 },
