@@ -31,8 +31,9 @@ import { emitLeaveExit } from "./leave-exit-fx.js";
 import { RESOURCE_REGISTRY } from "./resources.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor, isPersistentCounter } from "./skill-charges.js";
 import { foldChargeSteps, aeRefreshIsNoop } from "./chain-strikes.js";
-import { captureSubjectSnapshot, readPropNum, resolveAffinity, skillDeclaresVersatile, resolvesVsMagicDefense, actorLiveRuleValues } from "./snapshot.js";
-import { isActorDefeated } from "./defeat-reactor.js";
+import { captureSubjectSnapshot, readPropNum, resolveAffinity, skillDeclaresVersatile, resolvesVsMagicDefense, actorLiveRuleValues, getActionLabelBlockers, getPassiveSuppression, canonActionLabel, GATEABLE_ACTION_LABELS, GATING_EXEMPT_TAG_PREFIX } from "./snapshot.js";
+import { INVENTORY_ACTION_TAG } from "./skill-intent.js";
+import { isActorDefeated, settleRevive } from "./defeat-reactor.js";
 import { computeIncomingDamage, aeOutgoingActionKeywords } from "./damage-ruleset.js";
 import { appendBattleLog, buildDamageRow } from "./director-battle-log.js";
 import { isAutoFireReactionMode } from "./reaction-modes.js";
@@ -458,7 +459,13 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
         // Stash chain follow-ups (e.g. apply_ae the "spent" marker) for the
         // caller to run post-write through the normal executor.
         if (followUpRows.length) {
-          result.followUp.push({ rows: followUpRows, effectTable, aeName: ae.name, payload: { ...hitPayload } });
+          // The carrier's picture rides along for a "card" notify step (Life
+          // Charm's save): the follow-up runs with no skill, so the card had
+          // nothing to show but 📜. A worn item's AE has the item as its
+          // parent; a copied one points back to it through `origin`.
+          let carrier = ae.parent?.documentName === "Item" ? ae.parent : null;
+          if (!carrier && ae.origin) { try { carrier = globalThis.fromUuidSync?.(ae.origin) ?? null; } catch { carrier = null; } }
+          result.followUp.push({ rows: followUpRows, effectTable, aeName: ae.name, carrierImg: carrier?.img ?? ae.img ?? null, payload: { ...hitPayload } });
         }
       }
     }
@@ -517,6 +524,19 @@ function fireStatusImmuneVfx(opts) {
 
 // Gain counterpart — floats a recover number on a heal / restore. Same
 // lazy fire-and-forget contract as fireResourceLossVfx.
+// Per-move opt-out of gain-number merging (gain-coalesce.js). Default = merge;
+// a move whose item carries flags.<NS>.separateNumbers keeps one float per
+// gain. Read from the move running the chain: its skill, else the carrier
+// (AE / item) firing the reaction.
+function moveKeepsSeparateNumbers(ctx) {
+  try {
+    if (ctx?.skill?.flags?.[FLAG_NS]?.separateNumbers === true) return true;
+    const src = ctx?.sourceUuid ? globalThis.fromUuidSync?.(ctx.sourceUuid) : null;
+    if (src?.flags?.[FLAG_NS]?.separateNumbers === true) return true;
+    const owner = src?.parent?.documentName === "Item" ? src.parent : null;
+    return owner?.flags?.[FLAG_NS]?.separateNumbers === true;
+  } catch { return false; }
+}
 function fireResourceGainVfx(opts) {
   try {
     import("./director-vfx.js")
@@ -648,6 +668,10 @@ export async function applyDamageToTarget({
   // { causeTokenUuid, causeActorUuid, aimedAtTarget } when an action's own hit is
   // landing. See resolveDamageReactions' hitPayload.
   actionHit = null,
+  // The action's animation CLAIMED this hit's impact sound (a default
+  // animation, or an authored one flagged animOwnsImpact): the number keeps its
+  // pop and flinch but drops its impact burst and hit sound. hit-sound-rules.js.
+  impactClaimed = false,
 } = {}) {
   const empty = { resource, finalValue: 0, valueDirection: "none", fired: [] };
   if (!target) return empty;
@@ -728,7 +752,7 @@ export async function applyDamageToTarget({
       newShield = curShield - absorbed;
       toHp = damage - absorbed;
       log(`${prefix}shield absorbed ${absorbed} on ${targetName}: shield ${curShield} → ${newShield}${logSuffix}`);
-      vfx?.loss({ tokenUuid, resource: "shield", amount: absorbed, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce });
+      vfx?.loss({ tokenUuid, resource: "shield", amount: absorbed, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce, impactOwned: !!impactClaimed });
     }
 
     // Fully absorbed — only the shield changed; HP untouched. The HP bar still
@@ -779,7 +803,7 @@ export async function applyDamageToTarget({
       // settles. The removal still happens in the settle (defeat-reactor).
       // (A silent Chain commit started it already, on the killing strike.)
       const killing = newHp === 0 && dealtDamage > 0;
-      vfx?.loss({ tokenUuid, resource: "hp", amount: dealtDamage, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce },
+      vfx?.loss({ tokenUuid, resource: "hp", amount: dealtDamage, affinity, element: _vfxElement, isCrit: _vfxIsCrit, pierce: _vfxPierce, impactOwned: !!impactClaimed },
         killing ? () => fireDefeatOnHit({ tokenUuid, actor: target, hpAfter: newHp, causeTokenUuid: sourceTokenUuid }) : null);
     }
     // Transient HP bar (studied hostile NPCs only — gated inside). Carries the
@@ -802,10 +826,18 @@ export async function applyDamageToTarget({
         // row (skill-targeting.findTargetingRow) — without it a follow-up could
         // only aim at reserved refs like "self" (Ninja Log), never at a pick made
         // by an earlier step of the same chain (Earthen Wire's random enemy).
-        const fctx = { director: dirf, reactorActor: target, reactorToken: tokf, skill: null, payload: { ...(fu.payload ?? {}) }, effect_table: fu.effectTable, runtimeEffectTable: fu.effectTable, dCombat: dirf?.dCombat ?? null };
+        const fctx = { director: dirf, reactorActor: target, reactorToken: tokf, skill: null, carrierImg: fu.carrierImg ?? null, payload: { ...(fu.payload ?? {}) }, effect_table: fu.effectTable, runtimeEffectTable: fu.effectTable, dCombat: dirf?.dCombat ?? null };
+        // Passive fallback (passive-anim.js): damage dealt by a damage-reaction
+        // follow-up is a redirect (Earthen Wire) — an arc from the wearer.
+        fctx.__passiveRec = { records: [] };
         for (const frow of (fu.rows ?? [])) {
           try { await applyEffectRow(frow, fctx); }
           catch (e) { warn(`applyDamageToTarget: follow-up "${frow.effect_label}" failed`, e); }
+        }
+        if (!silent) {
+          import("./passive-anim.js")
+            .then((m) => m.playPassiveFallback({ ctx: fctx, carrierName: fu.aeName ?? "passive", redirect: true }))
+            .catch((e) => warn("applyDamageToTarget: passive fallback import failed", e));
         }
       }
     }
@@ -1703,6 +1735,152 @@ export function containerReactionInPlay(item, casterActor, payload) {
   return false;
 }
 
+// ── Reaction gating: action-blocking debuffs + Suppressed ──────────────────
+// Ruling (Onigensou, 2026-11-04): a debuff that blocks a command blocks every
+// use of that action type, wherever it is offered — not just the menu button.
+// "Reaction" is only the mechanism; what the debuffs read is Active vs Passive:
+//   Active  = the player chooses to use it  → reaction_passive_mode "ask"
+//   Passive = fires on its own              → "on" / "force"
+// skill_type can't tell them apart (Barrage AND Cheap Shot are typed Passive).
+//
+//   Check A (ask rows on ITEMS): the category of what the reaction comes from —
+//     gear-granted → Equipment (Disarmed), consumable → Item (Panic),
+//     skill_type Spell → Spell (Silence), anything else → Skill (Paralyzed).
+//     Rows carried by an AE / granted by someone else's skill skip A: the action
+//     that put them there already passed its own gate.
+//   Check B (every ask row): the free actions it grants. Blocked only when the
+//     reaction's WHOLE payload is free actions (plus cost/target plumbing) and
+//     every label they grant is blocked. Anything with another outcome
+//     (Glowstick's damage step, High Speed's menu) stays open; the free-action
+//     menu / DECLARE backstop already greys the blocked part. A grant is sorted
+//     by what it COUNTS AS, not which picker it opens: a Skill/Spell grant
+//     restricted to tag:inventory skills is an Inventory (Item) action, per the
+//     2026-09-28 ruling DECLARE already enforces (countsAsItem) — so Emergency
+//     Item's "Item, or an inventory Skill" is all-Item and Panic stops it.
+//   Suppressed (`disable_passive`), players and monsters alike: on/force rows
+//     of a non-gear skill labelled Passive that has NO ask row. Choosable rows
+//     are the command debuffs' job, never Suppressed's (no reaction is blocked
+//     by both families); a skill with a choosable row is Active, and its auto
+//     rows are its machinery (Dance's cost).
+//
+// Exemptions: Domination State (all gates inert), and ignore_gating_<ae> skill
+// tags on the carrier (must name every AE blocking that label), as the menu.
+// Only the LABEL gates feed A/B; the Charm-style intent filter stays per-entry.
+const REACTION_GEAR_ITEM_TYPES = new Set(["accessory", "armor", "weapon", "shield"]);
+const _lc = (v) => String(v ?? "").trim().toLowerCase();
+
+// Category of an item-carried reaction, for Check A.
+export function reactionCarrierCategory(item, actor) {
+  const p = item?.system?.props ?? {};
+  const own = _lc(p.item_type);
+  if (REACTION_GEAR_ITEM_TYPES.has(own)) return "Equipment";
+  const cid = item?.system?.container;
+  const cont = cid ? actor?.items?.get?.(cid) : null;
+  // Gear `_skill`-inside model. Legacy gear shells carry a blank item_type
+  // (Dark Ring, Robe of Flesh) — any non-Arcanum container with no type is gear.
+  if (cont && !isArcanumContainer(cont)) {
+    const ct = _lc(cont.system?.props?.item_type);
+    if (REACTION_GEAR_ITEM_TYPES.has(ct) || ct === "") return "Equipment";
+  }
+  if (own === "consumable") return "Item";
+  if (_lc(p.skill_type) === "spell") return "Spell";
+  return "Skill";
+}
+
+// Plumbing that doesn't count as an outcome of its own for Check B.
+const GRANT_PASSTHROUGH_KINDS = new Set(["chain", "targeting", "consume_resource", "consume_charge", "adjust_cost", "free_action"]);
+// Set of canonical action labels the reaction's payload grants, or null when it
+// does anything besides granting gateable free actions.
+function reactionGrantedActionLabels(effectTable, refLabel) {
+  if (!refLabel || !effectTable) return null;
+  const byLabel = new Map();
+  for (const r of Object.values(effectTable)) {
+    if (!r || r.$deleted) continue;
+    const l = String(r.effect_label ?? "").trim();
+    if (l) byLabel.set(l, r);
+  }
+  const labels = new Set();
+  const seen = new Set();
+  const walk = (lbl) => {
+    if (seen.has(lbl)) return true;
+    seen.add(lbl);
+    const r = byLabel.get(lbl);
+    if (!r) return true;
+    const kind = _lc(r.effect_kind);
+    if (!GRANT_PASSTHROUGH_KINDS.has(kind)) return false;
+    if (kind === "chain") {
+      for (const step of String(r.chain_steps ?? "").split(/[,\n]/).map((s) => s.trim()).filter(Boolean)) {
+        if (!walk(step)) return false;
+      }
+    } else if (kind === "free_action") {
+      const allow = String(r.allowed_skill_refs ?? "").split(/[,\n]/).map((s) => s.trim().toLowerCase()).filter(Boolean);
+      const inventoryOnly = allow.length > 0 && allow.every((a) => a === `tag:${INVENTORY_ACTION_TAG}`);
+      for (const part of String(r.action_ref ?? "").split(/[,|]/).map((s) => s.trim()).filter(Boolean)) {
+        let L = canonActionLabel(part);
+        if (inventoryOnly && (L === "Skill" || L === "Spell")) L = "Item";
+        // An item-named grant (Lightning Rod) is not a gateable command.
+        if (!GATEABLE_ACTION_LABELS.includes(L)) return false;
+        labels.add(L);
+      }
+    }
+    return true;
+  };
+  if (!walk(refLabel) || !labels.size) return null;
+  return labels;
+}
+
+function _carrierSkillTags(item) {
+  return new Set(String(item?.system?.props?.skill_tags ?? "").split(/[\s,]+/)
+    .map((t) => t.trim().toLowerCase().split("@")[0]).filter(Boolean));
+}
+
+function _hasAskRow(item) {
+  return Object.values(item?.system?.props?.reaction_config_table ?? {}).some((r) =>
+    r && !r.$deleted && String(r.reaction_trigger ?? "").trim()
+    && resolveReactionPassiveMode(r) === "ask");
+}
+
+// Returns null (allowed) or { kind, reason }. kind "blocked" surfaces as a
+// dimmed pill naming the debuff (like "cost"); kind "condition" is hidden and
+// never fires — used for Suppressed auto passives (no card: nothing happened).
+//   carrierKind: "item" (the reactor's own item) | "ae" | "granted"
+export function getReactionGate(actor, { carrier, carrierKind, row, effectTable, refLabel } = {}) {
+  if (!actor || !row) return null;
+  const mode = resolveReactionPassiveMode(row);
+  if (mode === "off") return null;
+
+  if (carrierKind === "item" && carrier && mode !== "ask") {
+    const sup = getPassiveSuppression(actor);
+    if (sup && _lc(carrier.system?.props?.skill_type) === "passive"
+        && reactionCarrierCategory(carrier, actor) !== "Equipment"
+        && !_hasAskRow(carrier)) {
+      return { kind: "condition", reason: sup };
+    }
+  }
+
+  if (mode !== "ask") return null;
+  const blockers = getActionLabelBlockers(actor);
+  if (!blockers.size) return null;
+  const tags = carrierKind === "item" ? _carrierSkillTags(carrier) : new Set();
+  const blockedBy = (label) => {
+    const b = blockers.get(label);
+    if (!b) return null;
+    if ([...b.slugs].every((s) => tags.has(`${GATING_EXEMPT_TAG_PREFIX}${s}`))) return null;
+    return b.reason;
+  };
+
+  if (carrierKind === "item" && carrier) {
+    const why = blockedBy(reactionCarrierCategory(carrier, actor));
+    if (why) return { kind: "blocked", reason: why };
+  }
+  const granted = reactionGrantedActionLabels(effectTable, refLabel);
+  if (granted) {
+    const reasons = [...granted].map(blockedBy);
+    if (reasons.every(Boolean)) return { kind: "blocked", reason: reasons[0] };
+  }
+  return null;
+}
+
 // Per-ROW weapon-USED gate. A reaction row may DECLARE (via the checkbox column
 // `reaction_requires_weapon_used`) that it only fires when the weapon BACKING it
 // is the one actually used in the triggering action — the gear `_skill`-inside-
@@ -2029,6 +2207,12 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         available = false; unavailableKind = "condition";
         unavailableReason = CAP_REASONS[readReactionMaxScope(row)];
       }
+      // Action-blocking debuffs / Suppressed (see getReactionGate). Outranks a
+      // cost shortfall (the debuff is the real reason), never a failed condition.
+      if (available || unavailableKind === "cost") {
+        const gate = getReactionGate(casterActor, { carrier: item, carrierKind: "item", row, effectTable, refLabel });
+        if (gate) { available = false; unavailableKind = gate.kind; unavailableReason = gate.reason; }
+      }
       if (!includeUnavailable && !available) continue;
       const mode = modeFor(row);
       out.push({
@@ -2106,6 +2290,11 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         available = false; unavailableKind = "condition";
         unavailableReason = CAP_REASONS[readReactionMaxScope(row)];
       }
+      // AE-carried: granted-action check only (see getReactionGate).
+      if (available || unavailableKind === "cost") {
+        const gate = getReactionGate(casterActor, { carrier: ae, carrierKind: "ae", row, effectTable, refLabel });
+        if (gate) { available = false; unavailableKind = gate.kind; unavailableReason = gate.reason; }
+      }
       if (!includeUnavailable && !available) continue;
       const mode = modeFor(row);
       out.push({
@@ -2163,6 +2352,12 @@ export async function findTargetOwnedCandidates({ skill, trigger, targetActor, p
     if (available) {
       const cost = analyzeChainCost(effectTable, refLabel, targetActor, skill);
       if (cost.ok && !cost.sufficient) { available = false; unavailableKind = "cost"; unavailableReason = cost.badge; }
+    }
+    // The decision is granted by the ACTOR's skill, so only the target's
+    // granted-action check applies (see getReactionGate).
+    if (available || unavailableKind === "cost") {
+      const gate = getReactionGate(targetActor, { carrier: skill, carrierKind: "granted", row, effectTable, refLabel });
+      if (gate) { available = false; unavailableKind = gate.kind; unavailableReason = gate.reason; }
     }
     if (!includeUnavailable && !available) continue;
     const mode = resolveReactionPassiveMode(row);
@@ -2310,10 +2505,12 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
   });
   // Show the passive card for auto-fire rows (on / force); ask-mode rows
   // already have a blade menu as visual feedback. FIRE-AND-FORGET: the game
-  // flow no longer blocks on the card's ~280ms enter before applying the
-  // effect (dropped the await). The spec still enqueues synchronously here,
-  // so the FIFO queue preserves the one-at-a-time stagger — each actor's
-  // badge still animates in turn, just off the critical path.
+  // flow never blocks on the card. Passive card v2 (2026-11-03):
+  // beginPassiveCard decides whether this firing gets a card and its tier. A
+  // chain it can't wait for (a prompt, an animation, damage) gets its card now,
+  // before it runs; a quick one is decided by settle() from what changed on its
+  // owner, so a failed roll, a re-arm of something already Ready or a +0 bonus
+  // shows nothing. Pacing happens on each client (director-passive-card-ui.js).
   //
   // The `silent` action keyword (`action_keywords` on the carrier skill — the
   // same inherent-keyword prop execute / fickle / blitz live on) opts the skill
@@ -2332,24 +2529,36 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
       broadcastStatusTick({ casterToken: ctx.reactorToken, name: carrier?.name });
     } catch (e) { warn("firePreAcceptedCandidate: status tick flash threw", e); }
   }
+  let passiveCard = null;
   if (isAutoFireReactionMode(candidate.mode) && ctx.reactorToken && !hideCard && !statusTick
       && chainShowsPassiveCard(director, ctx.reactorToken?.document?.uuid ?? ctx.reactorToken?.uuid ?? null, candidate)) {
     try {
-      const { enqueuePassiveCard } = await import("./passive-card-ui/director-passive-card-ui.js");
-      enqueuePassiveCard({
-        title:       candidate.carrierName,
-        casterToken: ctx.reactorToken,
-        icon:        candidate.carrierImg,
-        // on vs force: the reaction deck auto-plays only `on` rows (a force
-        // row is engine bookkeeping, e.g. Protect's turn-start refill).
-        mode:        candidate.mode,
-      }).catch((e) => warn("firePreAcceptedCandidate: passive card threw", e));
+      const { beginPassiveCard } = await import("./passive-card-ui/director-passive-card-ui.js");
+      // The card carries the row's mode (on vs force): the reaction deck
+      // auto-plays only `on` rows (a force row is engine bookkeeping, e.g.
+      // Protect's turn-start refill).
+      passiveCard = beginPassiveCard({
+        candidate, carrier, item: skillForCtx ?? carrier, table: runtimeEffectTable,
+        actor: casterActor, casterToken: ctx.reactorToken, payload,
+        round: director?.dCombat?.round ?? game.combat?.round ?? 0,
+      });
     } catch (e) {
-      warn("firePreAcceptedCandidate: passive card import threw", e);
+      warn("firePreAcceptedCandidate: passive card threw", e);
     }
   }
 
+  // Passive fallback: record what this chain does, show it where it lands once
+  // it is done (passive-anim.js). A status tick is BD's own flash, not a beat.
+  if (!statusTick) ctx.__passiveRec = { records: [] };
   const r = await applyEffectByLabel(candidate.ref, ctx);
+  if (ctx.__passiveRec && r?.ok) {
+    import("./passive-anim.js")
+      .then((m) => m.playPassiveFallback({ ctx, carrierName: carrier?.name ?? "passive" }))
+      .catch((e) => warn("firePreAcceptedCandidate: passive fallback import failed", e));
+  }
+  if (passiveCard) {
+    Promise.resolve(passiveCard.settle(r)).catch((e) => warn("firePreAcceptedCandidate: passive card settle threw", e));
+  }
 
   // ── Encyclopedia witness ──────────────────────────────────────────────
   // The party just saw this passive resolve — the passive card broadcast its
@@ -4454,9 +4663,12 @@ async function applyNotifyEffect(row, ctx) {
     const casterToken = ctx.reactorToken
       ?? canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === ctx.reactorActor?.uuid)?.document
       ?? null;
+    // The carrier's picture: a damage-reaction follow-up passes it as
+    // `carrierImg` (it runs with no skill); any other chain has its skill.
+    const icon = ctx?.carrierImg ?? ctx?.skill?.img ?? null;
     try {
       const { enqueuePassiveCard } = await import("./passive-card-ui/director-passive-card-ui.js");
-      await enqueuePassiveCard({ title: message, casterToken, mode: "force" });
+      await enqueuePassiveCard({ title: message, casterToken, icon, mode: "force" });
     } catch (e) { warn("skill-effects.notify: passive card failed", e); }
     return { ok: true, kind: "notify", message, abort };
   }
@@ -5457,7 +5669,13 @@ export async function applyEffectRow(row, ctx) {
   // "pick an extra enemy"). Restored in finally so nested dispatch is unaffected.
   const _prevSkipConfirm = ctx._skipTargetConfirm;
   ctx._skipTargetConfirm = !OWNS_TARGETING_UI.has(kind);
-  try { return await runEffectKind(kind, row, ctx, "apply"); }
+  try {
+    const res = await runEffectKind(kind, row, ctx, "apply");
+    // Passive fallback recorder (passive-anim.js): only a reaction chain turns
+    // it on; it keeps every row that RAN with its real recipients.
+    if (ctx?.__passiveRec) { try { ctx.__passiveRec.records.push({ kind, row, res }); } catch { /* cosmetic */ } }
+    return res;
+  }
   finally { ctx._skipTargetConfirm = _prevSkipConfirm; }
 }
 
@@ -5928,7 +6146,7 @@ async function grantApply(row, ctx, { resource, targetRef, amount }) {
       // (drain authored as a grant) is a loss; per the loss-VFX scoping
       // decision that path stays silent, so we only float gains here.
       if (result.applied > 0) {
-        fireResourceGainVfx({ tokenUuid: token.uuid, resource, amount: result.applied });
+        fireResourceGainVfx({ tokenUuid: token.uuid, resource, amount: result.applied, noMerge: moveKeepsSeparateNumbers(ctx) });
         if (resource === "hp" || resource === "shield") {
           // hp grant: HP band moves, standing shield rides along. shield
           // grant: shield band moves, current HP rides along.
@@ -6021,7 +6239,7 @@ async function setResourceApply(row, ctx, { resource, amountFormula, targetRef }
     try {
       await actor.update({ [`system.props.${def.prop}`]: newValue });
       applied.push({ actorUuid: actor.uuid, resource, from: cur, to: newValue });
-      try { fireResourceGainVfx({ tokenUuid: token.uuid, resource, amount: newValue - cur }); } catch {}
+      try { fireResourceGainVfx({ tokenUuid: token.uuid, resource, amount: newValue - cur, noMerge: moveKeepsSeparateNumbers(ctx) }); } catch {}
       if (resource === "hp" || resource === "shield") {
         // Covers both the restore-revive (hp) and shield-apply (Golem
         // Soulstone "gain 10 Shield") uses of set_resource.
@@ -6036,6 +6254,11 @@ async function setResourceApply(row, ctx, { resource, amountFormula, targetRef }
         });
       }
       log(`skill-effects.set_resource: ${actor.name} ${resource} ${cur} → ${newValue} (row "${row.effect_label}")`);
+      // Off the resource ledger, so a revive from 0 HP stands the creature up
+      // here (KO status + pose) instead of at its next HP event.
+      if (resource === "hp" && cur <= 0) {
+        await settleRevive(actor).catch((e) => warn(`skill-effects.set_resource: revive settle failed on ${actor.name}`, e));
+      }
     } catch (e) { warn(`skill-effects.set_resource: update failed on ${actor.name}`, e); }
   }
   return { ok: true, kind: "set_resource", applied };

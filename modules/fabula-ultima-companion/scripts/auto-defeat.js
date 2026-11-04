@@ -12,6 +12,12 @@
  *   - npc_rank must be Soldier or Elite (never Champion)
  *   - token_option_persist true => skip
  *
+ *  Who acts (2026-11-04): ONE client — the primary GM — and only while no
+ *  Battle Director battle is hosted (defeat-reactor.js owns defeats then, on
+ *  every client). Players used to send AUTO_DEFEAT_REQUEST and the GM ran the
+ *  defeat once per client: the "Token ... does not exist!" double delete.
+ *  No chat card; the defeat itself is the BD's (playDefeat: FF7 red fade by rank).
+ *
  *  Debug toggle:
  *   globalThis.ONI_AUTO_DEFEAT_DEBUG = true/false
  * ============================================ */
@@ -33,9 +39,6 @@
   // -------------------------
   // Config
   // -------------------------
-  const MODULE_ID = "fabula-ultima-companion";
-  const SOCKET_NS = `module.${MODULE_ID}`;
-
   const PATH_DB_OPTION = "system.props.option_autoDefeat";
   const PATH_HP = "system.props.current_hp";
   const PATH_MAX_HP = "system.props.max_hp";
@@ -131,6 +134,25 @@
     } catch {}
   }
 
+  // The one client that acts: the primary GM, and nobody while a Battle Director
+  // battle is hosted anywhere (its defeat reactor owns defeats then).
+  function shouldAct() {
+    if (!game.user?.isGM) return false;
+    const primary = globalThis.FUCompanion?.isPrimaryGM;
+    if (typeof primary === "function" && !primary()) return false;
+    const bd = globalThis.FUCompanion?.api?.experimental?.battleDirector;
+    try { if (bd?.host?.()?.hostUserId || bd?.isRunning?.()) return false; } catch {}
+    return true;
+  }
+
+  // Tokens being defeated — one run per token, whatever repeats the HP write.
+  const inFlight = new Set();
+
+  // The auto-defeat option, read off the game DB (slow on a loaded client), kept
+  // for a minute: it is a campaign setting, not something that flips mid-fight.
+  const OPTION_TTL_MS = 60000;
+  let optionCache = null;   // { value, at }
+
   // -------------------------
   // DB Resolver
   // -------------------------
@@ -161,77 +183,23 @@
   }
 
   // -------------------------
-  // Battle Director ownership
-  // -------------------------
-  /**
-   * Does the Battle Director own defeats on this scene right now?
-   *
-   * While it runs, defeat-reactor.js removes the corpse, and only after the
-   * creature_defeated reactions are answered. LegacySuppressor takes this file's
-   * hook off the director HOST only, so without this check a player's client (or
-   * a second GM's) still ran the legacy removal and deleted the token about a
-   * second after the blow, while a "when a creature dies" prompt was open. Birth
-   * of the Cruel then had no corpse to raise, after its cost was paid.
-   *
-   * `directorState` is the cross-client signal. It is deliberately not read for
-   * `ended`: killing the last enemy ends the combat at once, but its reactions
-   * still have to run. stop() clears the flag when the director is really done.
-   */
-  function directorOwnsDefeat(scene) {
-    try {
-      if (globalThis.FUCompanion?.api?.experimental?.battleDirector?.isRunning?.()) return true;
-      return !!scene?.getFlag?.(MODULE_ID, "directorState")?.dCombat?.started;
-    } catch {
-      return false;
-    }
-  }
-
-  // -------------------------
   // Defeat Operation
   // -------------------------
   async function performDefeat(tokenLike) {
     // Normalize: tokenLike can be Token (placeable) or TokenDocument
-    const token = tokenLike?.object ?? tokenLike; // if TokenDocument, .object is the placeable
     const tokenDoc = tokenLike?.document ?? tokenLike; // if Token, .document is TokenDocument
     const scene = tokenDoc?.parent;
-    const actor = tokenDoc?.actor ?? token?.actor ?? null;
 
     if (!tokenDoc?.id || !scene?.id) {
       warn("performDefeat aborted: invalid tokenDoc or scene.", { tokenDoc, scene });
       return;
     }
-
-    // Every route lands here: a player's request (on both ends of the socket)
-    // and a GM's own hook.
-    if (directorOwnsDefeat(scene)) {
-      log("Battle Director owns this defeat -> skip:", { token: tokenDoc.name });
+    const uuid = tokenDoc.uuid;
+    if (inFlight.has(uuid)) {
+      log("Defeat already running for this token -> skip:", tokenDoc.name);
       return;
     }
-
-    // Non-GM -> request GM (deleting/combat edits must be GM)
-    if (!game.user.isGM) {
-      log("Not GM -> sending AUTO_DEFEAT_REQUEST via socket:", {
-        sceneId: scene.id,
-        tokenId: tokenDoc.id,
-        tokenName: tokenDoc.name,
-      });
-
-      game.socket.emit(SOCKET_NS, {
-        type: "AUTO_DEFEAT_REQUEST",
-        sceneId: scene.id,
-        tokenId: tokenDoc.id,
-      });
-      return;
-    }
-
-    // Need the placeable token for Sequencer .on(token)
-    if (!token) {
-      warn("performDefeat aborted: TokenDocument has no placeable object (not rendered?).", {
-        tokenId: tokenDoc.id,
-        sceneId: scene.id,
-      });
-      return;
-    }
+    inFlight.add(uuid);
 
     log("GM performing defeat:", {
       scene: scene.name,
@@ -261,11 +229,9 @@
       return picked;
     };
 
-    const activeCombat = getActiveCombatOnActiveScene();
-    const isInCombatOnThisScene = !!activeCombat;
-
     const removeTokenFromCombatIfNeeded = async (tokenDocToRemove) => {
-      if (!isInCombatOnThisScene || !activeCombat) return;
+      const activeCombat = getActiveCombatOnActiveScene();
+      if (!activeCombat) return;
 
       const combatant =
         activeCombat.combatants?.find(c => c.tokenId === tokenDocToRemove.id) ??
@@ -280,29 +246,45 @@
       }
     };
 
-    // --- EXACT animation chain from your Defeated.js (no dialog, auto-run) ---
     try {
-      await new Sequence()
-        .sound("https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Enemy_Death.ogg")
-        .animation().on(token).tint("#ff0000").waitUntilFinished()
-        .animation().on(token).fadeOut(1000).waitUntilFinished()
-        .thenDo(async () => {
-          // 1) remove from combat first
-          await removeTokenFromCombatIfNeeded(tokenDoc);
+      // The Battle Director's defeat (FF7 red fade by rank, a monster's own
+      // Battle Defeat style, KO fall), played on every client.
+      const bd = globalThis.FUCompanion?.api?.experimental?.battleDirector;
+      if (typeof bd?.playDefeat === "function") await bd.playDefeat(tokenDoc);
 
-          // 2) delete token AFTER animation
-          await tokenDoc.delete();
-
-          // 3) chat message
-          ChatMessage.create({ content: `<b>${token.name}</b> was defeated!` });
-
-          log("Defeat completed -> token deleted (after animation).");
-        })
-        .play();
+      // Only if nothing else took it meanwhile — a second delete is a server error.
+      if (!scene.tokens?.has(tokenDoc.id)) {
+        log("Token already gone after the defeat -> nothing to delete:", tokenDoc.name);
+        return;
+      }
+      await removeTokenFromCombatIfNeeded(tokenDoc);
+      await tokenDoc.delete();
+      log("Defeat completed -> token deleted (after animation).");
     } catch (e) {
       err("performDefeat failed:", e);
       ui.notifications?.error(`Auto Defeat failed for ${tokenDoc.name}.`);
+    } finally {
+      inFlight.delete(uuid);
     }
+  }
+
+  async function autoDefeatOptionOn() {
+    if (optionCache && performance.now() - optionCache.at < OPTION_TTL_MS) return optionCache.value;
+    const db = await resolveDatabaseActor();
+    if (!db) {
+      warn("No database actor resolved -> skip.");
+      return false;
+    }
+    const opt = get(db, PATH_DB_OPTION);
+    const value = parseDbOption(opt);
+    log("DB option check:", {
+      dbActor: `${db.name} (${db.id})`,
+      optionPath: PATH_DB_OPTION,
+      rawValue: opt,
+      enabled: value,
+    });
+    optionCache = { value, at: performance.now() };
+    return value;
   }
 
   // -------------------------
@@ -310,6 +292,7 @@
   // -------------------------
   async function tryAutoDefeatForActor(actor, updateData, options, userId) {
     if (!actor) return;
+    if (!shouldAct()) return;
 
     const hpGate = hpUpdateDetected(updateData);
     if (!hpGate.hit) return;
@@ -325,23 +308,7 @@
     if (!Number.isFinite(hp) || hp !== 0) return;
 
     // DB option gate
-    const db = await resolveDatabaseActor();
-    if (!db) {
-      warn("No database actor resolved -> skip.");
-      return;
-    }
-
-    const opt = get(db, PATH_DB_OPTION);
-    const enabled = parseDbOption(opt);
-
-    log("DB option check:", {
-      dbActor: `${db.name} (${db.id})`,
-      optionPath: PATH_DB_OPTION,
-      rawValue: opt,
-      enabled,
-    });
-
-    if (!enabled) return;
+    if (!(await autoDefeatOptionOn())) return;
 
     // Persist gate
     const persist = Boolean(get(actor, PATH_TOKEN_PERSIST, false));
@@ -401,38 +368,6 @@
   }
 
   // -------------------------
-  // Socket Listener (GM executes)
-  // -------------------------
-  function installSocketListener() {
-    game.socket.off(SOCKET_NS, onSocketMessage);
-    game.socket.on(SOCKET_NS, onSocketMessage);
-    log("Socket listener installed:", SOCKET_NS);
-  }
-
-  async function onSocketMessage(payload) {
-    try {
-      if (!payload || payload.type !== "AUTO_DEFEAT_REQUEST") return;
-      if (!game.user.isGM) return;
-
-      const { sceneId, tokenId } = payload;
-      const scene = game.scenes.get(sceneId);
-      const tokenDoc = scene?.tokens?.get(tokenId);
-
-      log("GM received AUTO_DEFEAT_REQUEST:", {
-        sceneId,
-        tokenId,
-        hasScene: !!scene,
-        hasToken: !!tokenDoc,
-      });
-
-      if (!scene || !tokenDoc) return;
-      await performDefeat(tokenDoc);
-    } catch (e) {
-      err("Socket handler crashed:", e);
-    }
-  }
-
-  // -------------------------
   // Hooks
   // -------------------------
   async function onUpdateActor(actor, updateData, options, userId) {
@@ -450,7 +385,6 @@
   // -------------------------
   Hooks.once("ready", () => {
     log("Booting Auto Defeat system...", { DEBUG });
-    installSocketListener();
     installHooks();
     log("Auto Defeat system READY.");
   });

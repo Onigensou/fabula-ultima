@@ -49,7 +49,7 @@
       },
       "isCheck": false,
       "on_activate_effect_ref": "phoenix_use",
-      "skill_target": "One Ally",
+      "skill_target": "One KO Ally",
       "skill_type": "Item",
       "type_damage": ""
     },

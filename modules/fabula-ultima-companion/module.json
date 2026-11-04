@@ -2,7 +2,7 @@
   "id": "fabula-ultima-companion",
   "title": "FabulaUltimaCompanion",
   "description": "Adds custom hooks and cool functionality.",
-  "version": "1.0.520",
+  "version": "1.0.529",
   "compatibility": {
     "minimum": "12",
     "verified": "12"
@@ -214,6 +214,7 @@
     "scripts/dungeon-pathing-system/dp-vertigo.js",
     "scripts/dungeon-pathing-system/dp-fast-travel.js",
     "scripts/dungeon-pathing-system/dp-scene-travel.js",
+    "scripts/dungeon-pathing-system/dp-turn-start.js",
     "scripts/travel-roll/travel-roll-api.js",
     "scripts/dungeon-pathing-system/dp-bootstrap.js",
     "scripts/teleporter-system/tp-api.js",

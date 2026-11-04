@@ -19,12 +19,19 @@
  * fully supervised by the FSM — fires on every `hp` resource-ledger event from
  * any commit path (attack/effect damage at the RESOLVE tail, Burn ticks at
  * Start-of-Turn). A one-time sweepDefeat() at conflict_start handles creatures
- * that begin combat already at 0 HP. While the director is active the legacy
- * `auto-defeat.js` updateActor hook is suppressed (legacy-suppressor.js), so this
- * is the single owner of defeat removal — no double-delete.
+ * that begin combat already at 0 HP. While a battle is hosted the legacy
+ * `auto-defeat.js` stands down on EVERY client (it checks the host itself; the
+ * suppressor only reaches the host's own hook), so this is the single owner of
+ * defeat removal — and a token is claimed once (_removing), so a repeat HP event
+ * never deletes it twice.
  *
  * Removal goes through the GM-native `bd.removeCombatant({ tokenUuid })`, which
  * drops the director combatant AND deletes the token (mirrors destroy_summon).
+ * The defeat itself (2026-11-04): the FF7 red fade timed by rank, a monster's own
+ * Battle Defeat style, or its killing element's (world setting). A Champion is
+ * not removed: it plays its fall and stays, knocked out. No chat card — a
+ * "Defeated" row goes to the BD battle log. Several deaths from one action play
+ * together, staggered (drainPendingDefeats); the last foe's plays slower.
  *
  * Scope note: this owns the physical-removal pipeline AND (since the on-death
  * reaction work) the `creature_defeated` emit for normal HP→0 deaths. The emit
@@ -36,7 +43,7 @@
  */
 import { log, warn } from "./logger.js";
 import { playDefeatPose } from "./battler-pose.js";
-import { defeatStyleFromFlags, DEFAULT_DEFEAT_STYLE, defeatStartsOnHit, ownsDefeatReaction } from "./defeat-styles.js";
+import { DEFEAT_STYLES, defeatStyleFromFlags, defeatStartsOnHit, ownsDefeatReaction, resolveDefeatStyle } from "./defeat-styles.js";
 import { playDefeatFx, restoreDefeatFx } from "./defeat-fx.js";
 import { KNOCKOUT_TRIGGER, holdsKnockoutRevive, markReviveTried, clearReviveTried, isKnockoutReviveEffect } from "./knockout-revive.js";
 
@@ -52,10 +59,47 @@ const PATH_TOKEN_PERSIST = "system.props.token_option_persist";
 const PATH_GUEST = "flags.fabula-ultima-companion.bdGuest";
 function isGuest(actor) { return Boolean(get(actor, PATH_GUEST, false)); }
 
-const DEATH_SFX_URL =
-  "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Enemy_Death.ogg";
 // How long a fallen creature with KO art lies on its last frame before fading.
 const KO_HOLD_MS = 400;
+// Several defeats from one action start this far apart instead of in lockstep
+// (capped, so a wide AoE does not trickle on).
+const STAGGER_MS = 120;
+const STAGGER_MAX_STEPS = 4;
+
+// World setting: the killing blow's element picks the defeat (fire chars, ice
+// shatters, bolt flickers out) for monsters without a style of their own.
+const NS = "fabula-ultima-companion";
+const FOLLOW_ELEMENT_SETTING = "defeatFollowsElement";
+globalThis.Hooks?.once?.("init", () => {
+  try {
+    game.settings.register(NS, FOLLOW_ELEMENT_SETTING, {
+      name: "Battle: defeat style follows the killing element",
+      hint: "A monster without its own Battle Defeat style chars on a Fire kill, shatters on Ice and flickers out on Bolt. Off: every monster gets the red fade for its rank. Champions always keep their own fall.",
+      scope: "world",
+      config: true,
+      type: Boolean,
+      default: false,
+    });
+  } catch (e) { warn("defeat-reactor: setting registration failed", e); }
+});
+function followElement() {
+  try { return game.settings.get(NS, FOLLOW_ELEMENT_SETTING) === true; }
+  catch { return false; }
+}
+
+// Which defeat this creature plays — see resolveDefeatStyle (defeat-styles.js).
+function defeatStyleFor(actor, payload) {
+  return resolveDefeatStyle({
+    flagStyle: defeatStyleFromFlags(actor?.flags),
+    rank: get(actor, PATH_NPC_RANK, ""),
+    element: payload?.element ?? null,
+    followElement: followElement(),
+  });
+}
+
+function isChampion(actor) {
+  return String(get(actor, PATH_NPC_RANK, "") ?? "").trim().toLowerCase() === "champion";
+}
 
 function num(v) { const n = Number(v); return Number.isFinite(n) ? n : null; }
 
@@ -234,13 +278,72 @@ function cancelDefeatOnHit(actor, tokenUuid) {
   restoreDefeatFx(tokenUuid);
 }
 
+// Tokens whose removal is claimed — playing or about to. One defeat per token:
+// a repeat HP event, a multi-hit's second strike or a sweep that lands while
+// the first is still fading finds the claim and does nothing (the "Token ...
+// does not exist!" double delete, 2026-11-04).
+const _removing = new Set();
+// Defeats scheduled by the reactor during a settle pass, awaited at the pass
+// end (drainPendingDefeats) so several deaths from one action overlap.
+const _pending = [];
+
+function tokenExists(tokenUuid) {
+  try { return !!fromUuidSync(tokenUuid); } catch { return false; }
+}
+
+// Is this the enemy side's last removable creature? Then its defeat is the
+// finisher. Another downed enemy still waiting for its own removal later in the
+// same action takes the finisher instead; a Champion kept on the field at 0 HP
+// does not count as waiting.
+function isLastFoe(director, tokenUuid) {
+  const dc = director?.dCombat;
+  const list = dc?.combatants ?? [];
+  const me = list.find((c) => c.tokenUuid === tokenUuid);
+  if (!me || me.side !== "enemy") return false;
+  for (const c of list) {
+    if (c === me || c.side !== "enemy") continue;
+    const down = typeof c.isDefeatedLive === "function" ? c.isDefeatedLive() : isActorDefeated(c.actorDoc ?? c.actor);
+    if (!down) return false;                                // someone still standing
+    if (c.tokenUuid && !_removing.has(c.tokenUuid) && tokenExists(c.tokenUuid)
+        && passesActorGates(c.actorDoc ?? c.actor)) return false;   // its removal comes later
+  }
+  return true;
+}
+
+// A "Defeated" row in the BD battle log (the DB actor's table + Battle End
+// summary) — no chat card, nothing on screen. Rank and totals ignore the mode.
+async function logDefeat(name, disposition, payload) {
+  try {
+    let killer = null;
+    try { killer = payload?.causeActorUuid ? fromUuidSync(payload.causeActorUuid)?.name ?? null : null; } catch { killer = null; }
+    const { appendBattleLog, buildDefeatRow } = await import("./director-battle-log.js");
+    await appendBattleLog([buildDefeatRow({ targetName: name, targetDisposition: disposition, killerName: killer })]);
+  } catch (e) { warn("defeat-reactor: battle log row failed", e); }
+}
+
+// Play `actor`'s defeat on every client. KO art (sprite_ko) falls first, holds,
+// then the style plays over the fallen frame. Resolves when it has finished.
+async function playDefeatFor(tokenDoc, actor, payload, { finisher = false } = {}) {
+  const tokenUuid = tokenDoc.uuid;
+  const style = defeatStyleFor(actor, payload);
+  if (style.startsWith("ff7_")) {
+    let koMs = 0;
+    try { koMs = playDefeatPose(tokenDoc); }
+    catch (e) { warn("defeat-reactor: playDefeatPose threw — fading without the fall", e); }
+    if (koMs > 0) await new Promise((r) => setTimeout(r, koMs + KO_HOLD_MS));
+  }
+  await playDefeatFx({ tokenUuid, style, causeTokenUuid: payload?.causeTokenUuid ?? null, finisher });
+  return style;
+}
+
 // Run the death animation then remove the combatant + token via the director.
-async function performDefeat(director, tokenDoc, actor, payload = null) {
+async function performDefeat(director, tokenDoc, actor, payload = null, { delayMs = 0 } = {}) {
   if (!game.user?.isGM) return;            // director removal is GM-only
   const tokenUuid = tokenDoc?.uuid;
   if (!tokenUuid) return;
-  const placeable = tokenDoc?.object ?? null;   // for Sequencer .on(token)
+  const placeable = tokenDoc?.object ?? null;
   const name = tokenDoc?.name ?? actor?.name ?? "Creature";
+  const disposition = getDisposition(tokenDoc);
 
   const bd = globalThis.FUCompanion?.api?.experimental?.battleDirector;
   // Clone-actor cleanup (summon_clone_target). Capture the flags BEFORE removal —
@@ -261,15 +364,15 @@ async function performDefeat(director, tokenDoc, actor, payload = null) {
     _cf.deleteCloneOnDespawn === true || String(_cf.deleteCloneOnDespawn) === "true"
     || _cf.deleteCloneOnDeath === true || String(_cf.deleteCloneOnDeath) === "true"
   );
+  // Each delete only if the token is still there: anything else that took it in
+  // the meantime (battle end, a GM delete) must not turn into a server error.
   const remove = async () => {
-    if (typeof bd?.removeCombatant === "function") {
-      const res = await bd.removeCombatant({ tokenUuid });
-      if (!res?.ok) {
-        warn(`defeat-reactor: removeCombatant failed — ${res?.error}`);
-        try { await tokenDoc.delete(); } catch (e) { warn("defeat-reactor: token delete fallback threw", e); }
+    if (tokenExists(tokenUuid)) {
+      const res = typeof bd?.removeCombatant === "function" ? await bd.removeCombatant({ tokenUuid }) : null;
+      if (!res?.ok && tokenExists(tokenUuid)) {
+        if (res) warn(`defeat-reactor: removeCombatant failed — ${res.error}`);
+        try { await tokenDoc.delete(); } catch (e) { warn("defeat-reactor: token delete threw", e); }
       }
-    } else {
-      try { await tokenDoc.delete(); } catch (e) { warn("defeat-reactor: token delete threw", e); }
     }
     if (_delClone) {
       try {
@@ -279,67 +382,95 @@ async function performDefeat(director, tokenDoc, actor, payload = null) {
     }
   };
 
-  // Defeat style (Token Config → Appearance → Battle Defeat; defeat-styles.js).
-  // "standard" — every monster without the flag — skips this and takes the
-  // chain below untouched. playDefeatFx never throws and is failsafe-capped.
-  const style = defeatStyleFromFlags(actor?.flags);
-  // Begun on the killing blow (startDefeatOnHit)? Then it is already playing on
-  // every client: wait for it to finish rather than start a second one. A check
-  // still in flight is waited for too.
-  const entry = _defeatPlaying.get(tokenUuid);
-  const begun = entry && (await entry.decided) ? entry : null;
-  if (style !== DEFAULT_DEFEAT_STYLE && (placeable || begun)) {
-    // Otherwise play it now. The killer's token steers styles that care where
-    // the blow came from.
-    const own = begun ? null : { decided: Promise.resolve(true), playing: playDefeatFx({ tokenUuid, style, causeTokenUuid: payload?.causeTokenUuid ?? null }) };
-    if (own) _defeatPlaying.set(tokenUuid, own);
-    await (begun ?? own).playing;
-    try {
-      _defeatPlaying.delete(tokenUuid);
-      await remove();
-      ChatMessage.create({ content: `<b>${name}</b> was defeated!` });
-      log(`defeat-reactor: removed ${name} (HP 0, gates passed, style "${style}")`);
-    } catch (e) { warn("defeat-reactor: remove after defeat style threw", e); }
-    return;
-  }
-
-  // KO art (sprite_ko): play the fall on every client, let it land, then fade —
-  // in place of the red tint. 0 = no KO art (or not loaded): the legacy chain.
-  let koMs = 0;
-  try { koMs = playDefeatPose(tokenDoc); }
-  catch (e) { warn("defeat-reactor: playDefeatPose threw — using the legacy death", e); }
-
-  // Mirror the legacy auto-defeat animation chain. If Sequencer or the placeable
-  // is unavailable (token off-canvas / inactive scene), skip straight to removal.
   try {
-    if (typeof Sequence === "function" && placeable && koMs > 0) {
-      await new Sequence()
-        .sound(DEATH_SFX_URL)
-        .wait(koMs + KO_HOLD_MS)
-        .animation().on(placeable).fadeOut(1000).waitUntilFinished()
-        .thenDo(async () => {
-          await remove();
-          ChatMessage.create({ content: `<b>${name}</b> was defeated!` });
-        })
-        .play();
-    } else if (typeof Sequence === "function" && placeable) {
-      await new Sequence()
-        .sound(DEATH_SFX_URL)
-        .animation().on(placeable).tint("#ff0000").waitUntilFinished()
-        .animation().on(placeable).fadeOut(1000).waitUntilFinished()
-        .thenDo(async () => {
-          await remove();
-          ChatMessage.create({ content: `<b>${name}</b> was defeated!` });
-        })
-        .play();
-    } else {
-      await remove();
-      ChatMessage.create({ content: `<b>${name}</b> was defeated!` });
+    // Begun on the killing blow (startDefeatOnHit)? Then it is already playing on
+    // every client: wait for it to finish rather than start a second one. A check
+    // still in flight is waited for too.
+    const entry = _defeatPlaying.get(tokenUuid);
+    const begun = entry && (await entry.decided) ? entry : null;
+    let style = null;
+    if (begun) {
+      await begun.playing;
+    } else if (placeable) {
+      if (delayMs > 0) await new Promise((r) => setTimeout(r, delayMs));
+      const finisher = isLastFoe(director, tokenUuid);
+      // Held in the same slot as an on-hit start, so a late on-hit check for this
+      // token sees it playing and stands down.
+      const own = { decided: Promise.resolve(true), playing: null };
+      _defeatPlaying.set(tokenUuid, own);
+      own.playing = playDefeatFor(tokenDoc, actor, payload, { finisher }).then((s) => { style = s; });
+      await own.playing;
     }
-    log(`defeat-reactor: removed ${name} (HP 0, gates passed)`);
+    _defeatPlaying.delete(tokenUuid);
+    // Back up before the removal landed (a heal later in the same action)?
+    // Then it stays: show it again instead of deleting it.
+    if (!isActorDefeated(actor)) {
+      log(`defeat-reactor: ${name} is back up before its removal — kept`);
+      restoreDefeatFx(tokenUuid);
+      return;
+    }
+    await remove();
+    await logDefeat(name, disposition, payload);
+    log(`defeat-reactor: removed ${name} (HP 0, gates passed${style ? `, style "${style}"` : ""})`);
   } catch (e) {
-    warn("defeat-reactor: performDefeat animation threw — removing without animation", e);
+    warn("defeat-reactor: performDefeat threw — removing without animation", e);
+    _defeatPlaying.delete(tokenUuid);
     try { await remove(); } catch (e2) { warn("defeat-reactor: fallback remove threw", e2); }
+  } finally {
+    _removing.delete(tokenUuid);
+  }
+}
+
+/**
+ * Outside a Battle Director battle (auto-defeat.js): play this token's defeat —
+ * the same style a battle would pick, minus the killing element, which only the
+ * battle ledger knows — and resolve when it has finished. The caller removes it.
+ */
+export async function playDefeatOutsideBattle(tokenDoc) {
+  try {
+    const doc = tokenDoc?.document ?? tokenDoc;
+    if (!doc?.uuid || !doc.object) return;
+    await playDefeatFor(doc, doc.actor, null);
+  } catch (e) { warn("defeat-reactor: playDefeatOutsideBattle threw", e); }
+}
+
+/**
+ * Wait for every defeat the reactor scheduled during this settle pass. Called by
+ * settleInstance at the end of each pass (as `defeatReactor.drain`), so the
+ * removals are done before the action moves on, as when each was awaited in turn.
+ */
+export async function drainPendingDefeats() {
+  while (_pending.length) {
+    const batch = _pending.splice(0);
+    await Promise.allSettled(batch);
+  }
+}
+
+// Champion fall (2026-11-04): a Champion is never removed (passesActorGates),
+// but its defeat still reads as an event — flash, shake, a slow red fall — and
+// then it is shown again for the KO status + KO pose to take over. Only on the
+// way down (no KO status yet), with auto-defeat on, in a running battle.
+async function playChampionFall(actor, payload) {
+  if (!isChampion(actor) || isGuest(actor) || findKoAEs(actor).length) return;
+  if (!(await autoDefeatEnabledCached())) return;
+  const tokenDoc = await resolveDefeatedToken(actor, payload);
+  const tokenUuid = tokenDoc?.uuid;
+  if (!tokenUuid || !tokenDoc.object || _defeatPlaying.has(tokenUuid)) return;
+  if (![-1, 0, 1].includes(getDisposition(tokenDoc))) return;
+  const style = defeatStyleFor(actor, payload);
+  const own = { decided: Promise.resolve(true), playing: null };
+  _defeatPlaying.set(tokenUuid, own);
+  try {
+    own.playing = playDefeatFx({ tokenUuid, style, causeTokenUuid: payload?.causeTokenUuid ?? null });
+    await own.playing;
+    // A Champion with a style of its own (not the `stays` fall) is shown again here.
+    if (!DEFEAT_STYLES[style]?.stays) restoreDefeatFx(tokenUuid);
+    await logDefeat(tokenDoc.name ?? actor.name, getDisposition(tokenDoc), payload);
+  } catch (e) {
+    warn(`defeat-reactor: Champion fall threw for ${actor?.name}`, e);
+    restoreDefeatFx(tokenUuid);
+  } finally {
+    if (_defeatPlaying.get(tokenUuid) === own) _defeatPlaying.delete(tokenUuid);
   }
 }
 
@@ -355,8 +486,11 @@ async function resolveDefeatedToken(actor, payload) {
   return tokens[0]?.document ?? tokens[0] ?? null;
 }
 
-// Evaluate ONE actor at HP 0 and remove it if the gates pass.
-async function evaluateDefeat(director, actor, payload) {
+// Evaluate ONE actor at HP 0 and remove it if the gates pass. `defer` (the
+// reactor's own path): start the defeat and return at once; the settle pass
+// awaits it (drainPendingDefeats). Returns true when the creature is being or
+// has been removed.
+async function evaluateDefeat(director, actor, payload, { defer = false } = {}) {
   if (!actor) return false;
   if (num(get(actor, PATH_HP)) !== 0) return false;     // only at exactly 0
   if (!passesActorGates(actor)) return false;
@@ -372,7 +506,16 @@ async function evaluateDefeat(director, actor, payload) {
   const disposition = getDisposition(tokenDoc);
   if (![-1, 0, 1].includes(disposition)) return false;
 
-  await performDefeat(director, tokenDoc, actor, payload);
+  // One removal per token — claimed synchronously, before anything awaits.
+  if (_removing.has(tokenDoc.uuid)) return true;
+  _removing.add(tokenDoc.uuid);
+
+  if (!defer) {
+    await performDefeat(director, tokenDoc, actor, payload);
+    return true;
+  }
+  const delayMs = Math.min(_pending.length, STAGGER_MAX_STEPS) * STAGGER_MS;
+  _pending.push(performDefeat(director, tokenDoc, actor, payload, { delayMs }));
   return true;
 }
 
@@ -584,6 +727,16 @@ async function evaluateDefeatStatus(actor) {
   return null;
 }
 
+// A revive written straight to HP (set_resource's restore-revive: Phoenix
+// Feather) never reaches the ledger this reactor runs on, so the KO status, and
+// the KO pose that keys on it, would hold until the creature's next HP event.
+// Stand it up now, as the knockout-revive branch in defeatReactor does.
+export async function settleRevive(actor) {
+  if (!game.user?.isGM || !actor || isActorDefeated(actor)) return null;
+  clearReviveTried(actor);
+  return evaluateDefeatStatus(actor);
+}
+
 // Built-in reactor — settleInstance invokes this per ledger event, passing the
 // shared `firedKeys` dedup set as the third arg.
 export async function defeatReactor(director, cfg, extra) {
@@ -605,11 +758,15 @@ export async function defeatReactor(director, cfg, extra) {
   // knocked out like any survivor — KO status, cleanse, KO pose — and NOT removed
   // yet, so its creature_knocked_out reaction can raise it.
   const reviving = down && holdsKnockoutRevive(actor);
-  let removed = reviving ? false : await evaluateDefeat(director, actor, payload);
+  // The removal is scheduled, not awaited: several deaths from one action play
+  // together (staggered) and the settle pass waits for them at its end.
+  let removed = reviving ? false : await evaluateDefeat(director, actor, payload, { defer: true });
   if (!removed) {
     try { cancelDefeatOnHit(actor, (await resolveDefeatedToken(actor, payload))?.uuid ?? null); }
     catch (e) { warn("defeat-reactor: cancelDefeatOnHit threw", e); }
   }
+  // A Champion stays on the field, but falls first — before its KO status lands.
+  if (!removed && down && !reviving) await playChampionFall(actor, payload);
   // Survivors (not physically removed) get the visible, reversible Defeated
   // status; recovery (HP > 0) reconciles it off on the same reactor. Removed
   // creatures are gone — skip.
@@ -636,6 +793,8 @@ export async function defeatReactor(director, cfg, extra) {
     } catch (e) { warn("defeat-reactor: side-wipe re-check after a knockout revive threw", e); }
   }
 }
+// settleInstance calls a builtin reactor's `drain` at the end of each pass.
+defeatReactor.drain = drainPendingDefeats;
 
 // Fire the knocked-out creature's OWN `creature_knocked_out` reactions — after
 // the KO is applied, so a revive plays out over a real KO (status, pose). Self

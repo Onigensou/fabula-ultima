@@ -1053,7 +1053,14 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "changes": [],
+      "changes": [
+        {
+          "key": "disable_passive",
+          "mode": 5,
+          "priority": 0,
+          "value": "1"
+        }
+      ],
       "description": "<p>Disable <strong>Passive </strong>effects</p>",
       "disabled": false,
       "duration": {

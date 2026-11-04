@@ -37,7 +37,7 @@ function barModule() { return import("./damage-numbers/director-hp-bar.js"); }
 
 // Reveal ONE strike on every client. `actorsByToken` is empty for a forged
 // plan (the Anim Studio bench), so no HP bar or defeat follows its numbers.
-async function revealStrike(strike, { causeTokenUuid, actorsByToken, numbersOnly = false }) {
+async function revealStrike(strike, { causeTokenUuid, actorsByToken, numbersOnly = false, impactOwned = false }) {
   let vfx = null, bar = null;
   try { vfx = await fxModule(); } catch (e) { warn("chain presenter: vfx import failed", e); return; }
   for (const o of strike.outcomes ?? []) {
@@ -59,6 +59,7 @@ async function revealStrike(strike, { causeTokenUuid, actorsByToken, numbersOnly
             tokenUuid, affinity: o.affinity ?? "NE", element: o.element || "elementless", isCrit: !!o.isCrit, pierce: !!o.pierce, cascade: strike.index,
             ...(o.critBanner === false ? { critBanner: false } : {}),
             ...(numbersOnly ? { numbersOnly: true } : {}),
+            ...(impactOwned ? { impactOwned: true } : {}),
           };
           if (o.shieldLoss > 0) vfx.playResourceLossVfx?.({ ...common, resource: "shield", amount: o.shieldLoss });
           if (o.hpLoss > 0) vfx.playResourceLossVfx?.({ ...common, resource: "hp", amount: o.hpLoss });
@@ -100,7 +101,10 @@ async function revealStrike(strike, { causeTokenUuid, actorsByToken, numbersOnly
 // strike has been revealed (or skipped). `bars: false` shows numbers only —
 // for a forged plan, whose HP values are not real; `reveal: false` shows
 // nothing but keeps the timing, so the bench can count cues without numbers.
-export function createChainPresenter(plan, { causeTokenUuid = null, bars = true, reveal = true } = {}) {
+// `impactClaimed` (fn → bool): the animation plays each strike's hit sound, so
+// the numbers drop BD's own impact + hit sound (hit-sound-rules.js). Read per
+// strike, so a claim dropped mid-way (script never ran) is honoured.
+export function createChainPresenter(plan, { causeTokenUuid = null, bars = true, reveal = true, impactClaimed = null } = {}) {
   const queue = [...(plan?.strikes ?? [])].sort((a, b) => a.index - b.index);
   const beatMs = Number(plan?.beatMs) || CHAIN_BEAT_MS;
   const actorsByToken = new Map();
@@ -137,7 +141,7 @@ export function createChainPresenter(plan, { causeTokenUuid = null, bars = true,
     if (finished) return false;
     const s = queue.shift();
     if (!s) { finish(); return false; }
-    if (reveal) revealStrike(s, { causeTokenUuid, actorsByToken, numbersOnly });
+    if (reveal) revealStrike(s, { causeTokenUuid, actorsByToken, numbersOnly, impactOwned: !!(typeof impactClaimed === "function" && impactClaimed()) });
     if (!queue.length) finish();
     return true;
   };

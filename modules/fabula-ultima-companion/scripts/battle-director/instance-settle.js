@@ -180,6 +180,13 @@ export async function settleInstance(director, { reason = "", maxIters = 8, reco
         warn(`settleInstance(${reason}): drain threw for ${cfg?.trigger}`, e);
       }
     }
+    // Work a builtin reactor started but did not await (the defeat reactor's
+    // removals, so several deaths from one action overlap) finishes here.
+    for (const fn of BUILTIN_REACTORS) {
+      if (typeof fn.drain !== "function") continue;
+      try { await fn.drain(director); }
+      catch (e) { warn(`settleInstance(${reason}): builtin reactor drain threw`, e); }
+    }
     if (onPassEnd) {
       try { await onPassEnd(); }
       catch (e) { warn(`settleInstance(${reason}): onPassEnd threw`, e); }

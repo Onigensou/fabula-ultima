@@ -22,6 +22,8 @@ import {
   hasConflictEvent,
   listConflictEvents,
   clearConflictEvents,
+  normalizeRuling,
+  DEFAULT_RULING_COLOR,
 } from "./conflict-event-registry.js";
 
 let pass = 0, fail = 0;
@@ -138,6 +140,39 @@ registerConflictEvent({ id: "frozen", onConflictStart: noop }, quiet);
 const ev = getConflictEvent("frozen");
 try { ev.onConflictStart = () => "hijacked"; } catch { /* strict-mode throw is fine too */ }
 eq("registered events are frozen", ev.onConflictStart, noop);
+
+// ── Descriptive keys survive registration ───────────────────────────────────
+// `objectives` was accepted by the typo guard but left off the frozen event, so
+// objectives.js always read nothing. Pin every descriptive key that is copied.
+
+clearConflictEvents();
+registerConflictEvent({ id: "with-objectives", onConflictStart: noop, objectives: ["sabotage"] }, quiet);
+eq("objectives survive registration", getConflictEvent("with-objectives")?.objectives, ["sabotage"]);
+eq("no objectives → null", (registerConflictEvent({ id: "plain", onConflictStart: noop }, quiet),
+  getConflictEvent("plain")?.objectives), null);
+
+// ── ruling (the Conflict Event panel) ───────────────────────────────────────
+
+const page = (text, image = "a.jpg") => ({ image, text });
+clearConflictEvents();
+registerConflictEvent({ id: "ruled", onConflictStart: noop,
+  ruling: { color: "#6a3cc4", line: "One line.", pages: [page("First."), page("Second.")] } }, quiet);
+const ruled = getConflictEvent("ruled")?.ruling;
+eq("ruling survives registration", ruled?.pages?.map((p) => p.text), ["First.", "Second."]);
+eq("ruling keeps its colour and line", [ruled?.color, ruled?.line], ["#6a3cc4", "One line."]);
+eq("an event with no ruling has none (no emblem)", getConflictEvent("plain")?.ruling ?? null, null);
+
+eq("a ruling with no colour gets the default red",
+  normalizeRuling({ pages: [page("x")] }, quiet).color, DEFAULT_RULING_COLOR);
+eq("a bad colour gets the default red",
+  normalizeRuling({ color: "violet", pages: [page("x")] }, quiet).color, DEFAULT_RULING_COLOR);
+eq("pages with no text are dropped",
+  normalizeRuling({ pages: [page(""), page("kept")] }, quiet).pages.map((p) => p.text), ["kept"]);
+eq("a page may have no image", normalizeRuling({ pages: [{ text: "words only" }] }, quiet).pages[0].image, "");
+eq("a ruling with no readable page is no ruling", normalizeRuling({ pages: [page("  ")] }, quiet), null);
+eq("a non-object ruling is ignored", normalizeRuling("rules", quiet), null);
+eq("ruling is not mistaken for a typo'd handler",
+  (clearConflictEvents(), registerConflictEvent({ id: "r", onConflictStart: noop, ruling: { pages: [page("x")] } }, quiet)), true);
 
 console.log(`\n${fail === 0 ? "PASS" : "FAIL"} — ${pass} passed, ${fail} failed`);
 process.exit(fail === 0 ? 0 : 1);

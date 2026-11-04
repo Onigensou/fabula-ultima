@@ -35,14 +35,14 @@
 
   const BATTLE_INIT_MACRO = "BattleInit — BattleInit Manager";
 
-  const SFX = {
-    ambush:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Down2.ogg",
-    advantage: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Up4.ogg",
-    normal:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Monster1.ogg",
-  };
+  // No encounter sound and no "Nothing appears…" card (removed 2026-11-04, host
+  // decision): the players must not learn the outcome before the GM has had the
+  // override window. The screen shatter is the only sign that a battle started;
+  // a miss is hidden behind the tile handler's silent hold, then the next turn
+  // simply begins.
 
-  // How long the GM gets to intercept, in ms. Deliberately short: it runs while
-  // the encounter SFX plays, so it costs the player no visible pause.
+  // How long the GM gets to intercept, in ms. Deliberately short. The tile
+  // handler's silent miss hold (DP.UI.RANDOM_BATTLE_HOLD) is sized against it.
   const OVERRIDE_WINDOW_MS = 2500;
 
   const log  = (...a) => console.debug(TAG, ...a);
@@ -497,23 +497,6 @@
 
   // ── Presentation ───────────────────────────────────────────────────────────
 
-  function playEncounterSfx(engagement) {
-    const src = SFX[engagement] ?? SFX.normal;
-    try {
-      // Sequencer broadcasts by default; AudioHelper needs to be told to.
-      if (game.modules.get("sequencer")?.active) new Sequence().sound(src).play();
-      else AudioHelper.play({ src, volume: 0.8, autoplay: true, loop: false }, true);
-    } catch (e) { warn("SFX failed", e); }
-  }
-
-  function postMissCard() {
-    const style = "font-size:1.4rem;font-style:italic;text-align:center;padding:6px;";
-    ChatMessage.create({
-      speaker: { alias: "System" },
-      content: `<div style="${style}">Nothing appears…</div>`,
-    }).catch(e => warn("ChatMessage.create failed:", e));
-  }
-
   const TOAST_ID    = "oni-dp-encounter-toast";
   const TOAST_STYLE = "oni-dp-encounter-toast-styles";
 
@@ -555,8 +538,8 @@
   /**
    * GM-only interception window. Resolves "auto" | "customize" | "now".
    *
-   * Runs concurrently with the encounter SFX, so the pause it adds is hidden
-   * behind a beat the players are already watching.
+   * The players see nothing during it: the turn is held silently on their
+   * side, the same as a miss is held, so the wait itself gives nothing away.
    */
   function showOverrideToast(picks, engagement, ms) {
     injectToastStyles();
@@ -618,9 +601,77 @@
     const m = game.macros?.getName?.(BATTLE_INIT_MACRO);
     if (!m) {
       ui.notifications?.error?.(`Random Battle | Macro not found: "${BATTLE_INIT_MACRO}"`);
-      return;
+      return false;
     }
+    // execute() resolves at once: the Manager is a fire-and-forget async IIFE,
+    // so its progress is read from the Prompt marker instead (watchPrompt).
     m.execute().catch(e => warn("BattleInit Manager threw", e));
+    return true;
+  }
+
+  // ── Holding the player while the GM customizes ─────────────────────────────
+  // Host decision 2026-11-04 (B2): the walking player stays frozen until the GM
+  // starts or cancels the Battle Prompt. The reply to the player's socket call
+  // is simply withheld until then; their dungeon turn stays busy meanwhile.
+  //
+  // The Prompt writes `world` flag "battleInit.promptMarker" on the GM's
+  // CURRENT canvas scene: "running" when it opens, then "ok" / "cancelled" /
+  // "blocked" (the close-X writes "cancelled" too). Watched via updateScene,
+  // which also fires for this client's own writes. Polling would miss "ok":
+  // the Manager unsets the marker as soon as it reads it.
+  //
+  // The cap mirrors the Manager's own PROMPT_TIMEOUT_MS (10 min): past it the
+  // Manager has given up and nothing would launch, so holding longer only
+  // strands the player. A GM disconnect is handled on the player's side
+  // (tile-event-random-battle.js), since this client would be gone.
+  const PROMPT_MARKER_SCOPE = "world";
+  const PROMPT_MARKER_KEY   = "battleInit.promptMarker";
+  const PROMPT_OPEN_MS      = 20_000;          // no "running" by then → it never opened
+  const PROMPT_HOLD_MAX_MS  = 10.5 * 60_000;
+  const LAUNCH_WAIT_MS      = 60_000;          // "ok" → battle scene active
+
+  function watchPrompt() {
+    let hookId = null, openTimer = null, capTimer = null, runId = null, markerSceneId = null, settle;
+    const startedAt = Date.now();
+    const done = new Promise(r => { settle = r; });
+    const finish = (outcome) => {
+      if (hookId !== null) Hooks.off("updateScene", hookId);
+      clearTimeout(openTimer); clearTimeout(capTimer);
+      hookId = null;
+      settle(outcome);
+    };
+    hookId = Hooks.on("updateScene", (scene) => {
+      // Every scene update lands here; only the scene the Prompt opened on counts.
+      if (markerSceneId && scene.id !== markerSceneId) return;
+      let m = null;
+      try { m = scene.getFlag(PROMPT_MARKER_SCOPE, PROMPT_MARKER_KEY) ?? null; } catch { m = null; }
+      const st = String(m?.status ?? "").toLowerCase();
+      if (st === "running") {
+        // A stale "running" left by an earlier Prompt is older than this watch.
+        const at = Date.parse(m.at ?? "") || 0;
+        if (!runId && at >= startedAt - 2000) { runId = m.runId ?? "?"; markerSceneId = scene.id; clearTimeout(openTimer); }
+        return;
+      }
+      if (!runId) return;                         // not opened yet, or someone else's marker
+      if (!m) return finish("ok");                // the Manager unset it after "ok"
+      if (m.runId && runId !== "?" && m.runId !== runId) return;
+      if (st === "ok" || st === "cancelled" || st === "blocked") finish(st);
+    });
+    openTimer = setTimeout(() => finish("none"), PROMPT_OPEN_MS);
+    capTimer  = setTimeout(() => finish("timeout"), PROMPT_HOLD_MAX_MS);
+    return { done, stop: () => finish("none") };
+  }
+
+  // After "ok" the Manager runs the init pipeline, which activates the battle
+  // scene. Keep the player held until that happens so they cannot step off in
+  // the gap; a blocked pipeline releases them after LAUNCH_WAIT_MS.
+  async function waitForBattleScene(sceneId) {
+    const t0 = Date.now();
+    while (Date.now() - t0 < LAUNCH_WAIT_MS) {
+      if ((game.scenes?.active?.id ?? sceneId) !== sceneId) return true;
+      await new Promise(r => setTimeout(r, 250));
+    }
+    return false;
   }
 
   // ── Launch ─────────────────────────────────────────────────────────────────
@@ -667,8 +718,8 @@
 
   // forced: the caller already decided a battle happens — a world-map travel
   // Danger (dp-travel.js), where the FU travel die replaces the pity d100. The
-  // pity rate is neither rolled nor moved, a failure posts no "Nothing
-  // appears…" card (the caller falls back to something else), and `verdict`
+  // pity rate is neither rolled nor moved, a failure is a plain miss (the
+  // caller falls back to something else), and `verdict`
   // ("auto" | "customize") is the GM's pick, so the override toast is skipped.
   // A tile with fixed enemies forces itself the same way (readFixed below).
   async function resolveLanding({ sceneId, tileId, forced = false, verdict: forcedVerdict = "auto" } = {}) {
@@ -695,9 +746,10 @@
     // 1. Does anything happen at all?
     const d100 = Math.floor(Math.random() * 100) + 1;
     if (!forced && d100 > rates.encounter) {
-      postMissCard();
       applyRateUpdate(rates, false);
-      return { ok: true, appear: false, launched: false };
+      // `rolled`: the pity die really ran, so the tile handler hides this miss
+      // behind its silent hold. Forced and fixed battles never set it.
+      return { ok: true, appear: false, launched: false, rolled: true };
     }
 
     // 2. Resolve the group BEFORE committing to the encounter, so a misconfigured
@@ -714,11 +766,8 @@
         : `no Battle Map is configured on "${scene.name}"`;
       warn("degrading to a miss:", why);
       ui.notifications?.warn?.(`Random Battle | ${why}`);   // GM-only: this runs on the GM
-      if (!forced) {
-        postMissCard();
-        applyRateUpdate(rates, false);
-      }
-      return { ok: true, appear: false, launched: false, error: why };
+      if (!forced) applyRateUpdate(rates, false);
+      return { ok: true, appear: false, launched: false, rolled: !forced, error: why };
     }
 
     // 3. Engagement — the same flat percentages the tile has always rolled,
@@ -732,10 +781,7 @@
 
     log(`encounter: ${picks.map(p => p.name).join(", ")} | engagement=${engagement}`);
 
-    // 4. SFX now — it covers the override window that follows.
-    playEncounterSfx(engagement);
-
-    // 5. GM interception.
+    // 4. GM interception.
     let verdict = "auto";
     if (forced) {
       verdict = forcedVerdict === "customize" ? "customize" : "auto";
@@ -761,11 +807,20 @@
       // Area of the tile that triggered the fight, not wherever the party
       // marker happens to sit on this client.
       DP.RandomBattle.lastTrigger = { sceneId, tileId, at: Date.now() };
-      openBattlePrompt();
-      return { ok: true, appear: true, launched: false };
+      const watch = watchPrompt();               // listen BEFORE the Prompt writes "running"
+      if (!openBattlePrompt()) {
+        watch.stop();
+        return { ok: true, appear: true, launched: false };
+      }
+      const prompt = await watch.done;
+      log(`Battle Prompt → ${prompt}`);
+      if (prompt !== "ok") return { ok: true, appear: true, launched: false, prompt };
+      const launched = await waitForBattleScene(sceneId);
+      if (!launched) warn("Battle Prompt confirmed but no battle scene activated — releasing the party");
+      return { ok: true, appear: true, launched, prompt };
     }
 
-    // 6. Launch.
+    // 5. Launch.
     const api = globalThis.FUCompanion?.api?.experimental?.battleDirector;
     if (!api?.start) {
       ui.notifications?.error?.("Random Battle | Battle Director API not loaded (Setup-relaunch needed).");

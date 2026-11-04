@@ -592,6 +592,21 @@ registerConflictEvent({
     "0–2 Lightning Crystals appear with a countdown that drops every turn. Damaging a crystal " +
     "adds time (never with Bolt). At zero it deals 20–30 Bolt to every creature and shatters.",
 
+  // What the players read in battle (conflict-event-panel.js). Says nothing
+  // about a Fulgimite impostor on purpose: that one is for the table to find.
+  ruling: {
+    color: "#2f7fd0",
+    line: "Crystals count down every turn and explode at zero.",
+    pages: [
+      { image: "modules/fabula-ultima-companion/assets/conflict-event/lightning-crystal-1.jpg",
+        text: "**Lightning Crystals** count down by 1 at the start of every turn." },
+      { image: "modules/fabula-ultima-companion/assets/conflict-event/lightning-crystal-2.jpg",
+        text: "Damage a crystal to **add turns**. Dealing more damage adds more turns." },
+      { image: "modules/fabula-ultima-companion/assets/conflict-event/lightning-crystal-3.jpg",
+        text: `At zero, the crystal explodes for **${BLAST_MIN} to ${BLAST_MAX} Bolt** damage to every creature.` },
+    ],
+  },
+
   // Rules 1 + 2. Clears first, so a conflict inherited from a battle-end
   // follow-up (same scene, new conflict) cannot start with a stale crystal
   // from the fight before it.

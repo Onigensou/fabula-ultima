@@ -6660,7 +6660,7 @@
           "isCheck": false,
           "name": "Phoenix Feather",
           "on_activate_effect_ref": "phoenix_use",
-          "skill_target": "One Ally",
+          "skill_target": "One KO Ally",
           "skill_type": "Item",
           "type_damage": ""
         },
@@ -7982,7 +7982,7 @@
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
           "set_name": "",
-          "skill_target": "One Ally",
+          "skill_target": "One KO Ally",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Physical",

@@ -25,7 +25,7 @@
 // reactor (defeat-reactor.js) owns the removal pipeline behind the same gates,
 // so the legacy updateActor hook must stand down to avoid a double-delete.
 // This only reaches the director host. Every other client still has the hook,
-// so auto-defeat.js also stands down on its own (directorOwnsDefeat).
+// so auto-defeat.js also stands down on its own (shouldAct).
 
 import { log, warn } from "./logger.js";
 

@@ -166,14 +166,14 @@
             "0": {
               "effect_kind": "grant",
               "effect_label": "charge_mp",
-              "grant_amount": "ceil(DAMAGE_DEALT * 0.2)",
+              "grant_amount": "ceil(TRIGGER_AMOUNT * 0.2)",
               "grant_resource": "mp",
               "target_ref": "self"
             },
             "1": {
               "effect_kind": "grant",
               "effect_label": "charge_overflow",
-              "grant_amount": "max(0, CUR_MP + ceil(DAMAGE_DEALT * 0.2) - MAX_MP)",
+              "grant_amount": "max(0, CUR_MP + ceil(TRIGGER_AMOUNT * 0.2) - MAX_MP)",
               "grant_resource": "shield",
               "target_ref": "self"
             },

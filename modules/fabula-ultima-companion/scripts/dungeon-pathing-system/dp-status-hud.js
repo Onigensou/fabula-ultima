@@ -579,6 +579,12 @@
         </div>`;
     }).join("");
 
+    // Turn chip (dp-turn-start.js): one persistent node, re-attached rather
+    // than redrawn so its number roll and light survive this innerHTML rebuild.
+    // Sits first, above the Vertigo chip.
+    const turnChip = DP.TurnStart?.chipEl?.();
+    if (turnChip) panel.prepend(turnChip);
+
     panel.classList.add("dp-hud-visible");
   }
 

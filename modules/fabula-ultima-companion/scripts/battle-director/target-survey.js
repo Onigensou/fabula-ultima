@@ -88,6 +88,7 @@ import {
   getMaxActionTargets,
   snapshotEligibleTargets,
   snapshotEligibleTargetsFromDCombat,
+  targetsKnockedOut,
 } from "./snapshot.js";
 import { buildPseudoWeaponFromNpcAttack } from "./actor-shape.js";
 
@@ -126,6 +127,8 @@ export function extractTargetCountFromText(text, { isUpTo, resolver }) {
   // enemies" → "3". If nothing matches, the whole string is kept and
   // evaluated as-is (handles bare "SL" or "3").
   expr = expr.replace(/\s+(creatures?|enemies|enemy|allies|ally|targets?|foes?|opponents?)\b.*$/i, "").trim();
+  // The KO qualifier ("One KO Ally" — a revive) says WHO, not how many.
+  expr = expr.replace(/\s+KO$/i, "").trim();
   // Common English number-word aliases used in skill text. RAW often
   // writes "Up to three creatures" or "One creature" — treat the word
   // forms as their numeric values. Anything beyond ten (rare in FU) the
@@ -523,12 +526,14 @@ export function surveyActionTargets({
   }
 
   const category = classifyTargetCategory(targetText, action, creatureMeans);
+  // A KO target text (a revive) surveys the downed instead of the living.
+  const defeated = targetsKnockedOut(targetText) ? "only" : "exclude";
 
   let eligible;
   if (dCombat?.combatants?.length) {
-    eligible = snapshotEligibleTargetsFromDCombat(dCombat, snap, { category });
+    eligible = snapshotEligibleTargetsFromDCombat(dCombat, snap, { category, defeated });
   } else if (combat?.combatants?.size || combat?.combatants?.length) {
-    eligible = snapshotEligibleTargets(combat, snap, { category });
+    eligible = snapshotEligibleTargets(combat, snap, { category, defeated });
   } else {
     // No roster to survey. Report that we cannot answer rather than falling
     // back to the canvas — a scene-wide guess presented as a battle answer is

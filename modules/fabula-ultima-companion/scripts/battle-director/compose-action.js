@@ -52,7 +52,7 @@ import { buildUltimaMenuSpec } from "./domination.js";
 import { buildObjectiveMenuSpec } from "./objectives.js";
 import { pickFromList } from "./list-picker.js";
 import { applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, pinActionKindForSkill, snapshotEligibleTargetsFromDCombat,
-         attackRangeBlockedBy, applyMultiOffensiveGate, applySingleTargetGate, applyAreaGate } from "./snapshot.js";
+         attackRangeBlockedBy, applyMultiOffensiveGate, applySingleTargetGate, applyAreaGate, targetsKnockedOut } from "./snapshot.js";
 
 // Race-cancellation token. Returns { promise, cancel }. The promise
 // resolves with the cancellation reason when cancel() is called.
@@ -244,6 +244,9 @@ async function composeActionChain({
         eligible = {
           enemies: snapshotEligibleTargetsFromDCombat(director.dCombat, snap, { category: "enemy" }),
           allies:  snapshotEligibleTargetsFromDCombat(director.dCombat, snap, { category: "ally"  }),
+          // The downed, for a KO target text (see resolveTargetsForSource).
+          downedEnemies: snapshotEligibleTargetsFromDCombat(director.dCombat, snap, { category: "enemy", defeated: "only" }),
+          downedAllies:  snapshotEligibleTargetsFromDCombat(director.dCombat, snap, { category: "ally",  defeated: "only" }),
           // Study guard (RAW p.74) — recompute live from dCombat too, else the
           // rebuild would drop the baked value and the GM-side Study picker
           // wouldn't grey out tokens this actor already studied this fight.
@@ -1044,6 +1047,14 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
   // enemy; ally). The action-intent heuristic is only a TIEBREAKER for
   // side-agnostic text — it must NOT override an explicit "Enemy"/"Ally". Mirrors
   // resolveActionTargets (state-handlers) exactly.
+  // A KO target text (Phoenix Feather's "One KO Ally", Raise Dead's "One KO
+  // Creature") picks among the DOWNED. DECLARE bakes those next to the living
+  // lists (eligible.downedAllies / downedEnemies, same pool rule as the TARGET
+  // survey), so a player's client — which has no dCombat — gets them too.
+  const knockedOut = targetsKnockedOut(skillTargetText);
+  if (knockedOut) {
+    eligible = { allies: eligible?.downedAllies ?? [], enemies: eligible?.downedEnemies ?? [] };
+  }
   const intent = classifyActionIntent(source);
   const wantsCreature = /creature|creatures/i.test(skillTargetText);
   const wantsEnemy    = /enem/i.test(skillTargetText);
@@ -1055,7 +1066,8 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
   let targetList = side === "any"
     ? [...(eligible?.allies ?? []), ...(eligible?.enemies ?? [])]
     : (side === "ally" ? (eligible?.allies ?? []) : (eligible?.enemies ?? []));
-  const categoryLabel = side === "any" ? "creatures" : (side === "ally" ? "allies" : "enemies");
+  const categoryLabel = (knockedOut ? "knocked-out " : "")
+    + (side === "any" ? "creatures" : (side === "ally" ? "allies" : "enemies"));
 
   // Optional per-candidate eligibility filter (skill prop `target_eligibility`):
   // a formula evaluated against EACH candidate's own actor; keep only the truthy

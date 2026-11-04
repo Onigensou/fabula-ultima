@@ -7,8 +7,8 @@
 //   actor.flags["fabula-ultima-companion"].defeatStyle = "dissolve"
 //
 // set from Token Config → Appearance → Battle Defeat. Anything without the
-// flag — every monster in the world when this landed — reads as "standard" and
-// keeps the defeat it always had (death SFX → red tint or KO fall → fade).
+// flag reads as "standard": the FF7 red fade timed by its rank (ff7_*, chosen by
+// resolveDefeatStyle — or its element style, with that world setting on).
 // The renderer lives in defeat-fx.js; this file is what the bare-Node test
 // (defeat-styles.test.mjs) covers.
 //
@@ -25,7 +25,96 @@ import { ELEMENT_RGB } from "./gather-styles.js";
 
 const SFX_BASE = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
 
+// FF7-style red fade, the "standard" defeat — 2026-11-04 user ask: the default
+// stays the classic "actor turns red, then fades away", timed by rank so a
+// Champion's fall reads as an event. `internal` styles are never offered in the
+// Token Config dropdown: "Standard" resolves to one of them by rank
+// (resolveDefeatStyle). The body tint ramps over `tintMs` BEFORE the fade
+// (applyBody), where the older styles cool while they fade.
+// `wisps` (2026-11-05, user ask: the red fade with crimson wisps instead of
+// motes) is a particles/wisps.js burst. Its wisps may outlive totalMs: they
+// keep rising on the overlay after the token is gone, so they never hold the
+// battle — only the release window must fall inside totalMs.
+const DEATH_SFX = { url: SFX_BASE + "Enemy_Death.ogg", volume: 0.6 };
+const RED = 0xff2a2a;
+
 export const DEFEAT_STYLES = {
+  ff7_soldier: {
+    label: "FF7 fade (Soldier)",
+    internal: true,
+    totalMs: 1000,
+    body: { tintDelayMs: 0, tintMs: 250, tintTo: RED, delayMs: 300, fadeMs: 650 },
+    wisps: { count: 7, fromMs: 250, spawnOverMs: 450, lifeMs: [700, 950], palette: "crimson" },
+    shake: null,
+    sfx: DEATH_SFX,
+  },
+  ff7_elite: {
+    label: "FF7 fade (Elite)",
+    internal: true,
+    totalMs: 1450,
+    flash: { atMs: 0, ms: 220, size: 0.8, rgb: "255,245,235" },
+    body: { tintDelayMs: 100, tintMs: 350, tintTo: RED, delayMs: 550, fadeMs: 850 },
+    wisps: { count: 11, fromMs: 450, spawnOverMs: 650, lifeMs: [800, 1100], palette: "crimson" },
+    shake: { px: 3, ms: 200 },
+    sfx: DEATH_SFX,
+  },
+  // A Champion is not removed (defeat-reactor gates): it plays this, then is
+  // shown again (`stays`) and the KO status + KO pose take over as before.
+  ff7_champion: {
+    label: "FF7 fall (Champion)",
+    internal: true,
+    stays: true,
+    totalMs: 3000,
+    flash: { atMs: 0, ms: 320, size: 1.1, rgb: "255,248,240" },
+    body: { tintDelayMs: 150, tintMs: 950, tintTo: RED, delayMs: 1300, fadeMs: 1500, fadeTo: 0.3 },
+    wisps: { count: 26, fromMs: 1200, spawnOverMs: 1500, lifeMs: [1300, 1800], palette: "crimson" },
+    glow: { rgb: "255,60,60", alpha: 0.28, ms: 1400 },
+    screenDim: { alpha: 0.35, inMs: 300, outFromMs: 2500, outMs: 500 },
+    shake: { px: 6, ms: 500 },
+    sfx: [
+      { atMs: 0,    ...DEATH_SFX },
+      { atMs: 1300, url: SFX_BASE + "MG_DEATH_BLUR01.wav", volume: 0.5 },
+    ],
+  },
+
+  // Element defeats (2026-11-04) — opt-in per monster, or chosen by the killing
+  // blow's element when the world setting "Defeat style follows the killing
+  // element" is on (ELEMENT_DEFEAT_STYLE).
+  // Fire: the body chars black and embers rise off it.
+  char: {
+    label: "Char (fire)",
+    totalMs: 1100,
+    flash: { atMs: 0, ms: 300, size: 0.9, rgb: "255,140,60" },
+    body: { tintDelayMs: 0, tintMs: 500, tintTo: 0x2a1408, delayMs: 450, fadeMs: 500 },
+    motes: { count: 44, fromMs: 0, spawnOverMs: 550, lifeMs: [350, 520], rise: [0.5, 1.2], size: [0.03, 0.07], sway: 0.06,
+             rgb: ["255,120,50", "255,190,90", "255,230,160"] },
+    shake: null,
+    sfx: DEATH_SFX,
+  },
+  // Ice: it freezes pale blue, then breaks into falling shards.
+  shatter: {
+    label: "Shatter (ice)",
+    totalMs: 1050,
+    body: { tintDelayMs: 0, tintMs: 220, tintTo: 0x9fe0ff, delayMs: 330, fadeMs: 30 },
+    ring: { atMs: 330, ms: 450, reach: 0.9, width: 0.04, rgb: "200,240,255" },
+    shards: { atMs: 330, count: 24, lifeMs: [550, 700], speed: [0.9, 2.4], size: [0.04, 0.09], gravity: 3.2,
+              rgb: ["170,220,255", "220,245,255", "120,190,240"] },
+    shake: { px: 4, ms: 200 },
+    sfx: DEATH_SFX,
+  },
+  // Bolt: a strike from above, then the body flickers out.
+  flicker: {
+    label: "Flicker (bolt)",
+    totalMs: 800,
+    bolt: { atMs: 0, ms: 260, rgb: "255,240,140" },
+    flash: { atMs: 0, ms: 220, size: 1, rgb: "255,245,180" },
+    body: { delayMs: 500, fadeMs: 1, tintTo: null },
+    flickerBody: { untilMs: 500, hz: 18 },
+    embers: { atMs: 0, ms: 450, count: 22, reach: [0.5, 1.2], size: [0.02, 0.04], lift: 0, rgb: ["255,235,120", "255,255,220"] },
+    shake: null,
+    sfx: DEATH_SFX,
+  },
+
   // The body thins into pale motes that drift upward and go out.
   dissolve: {
     label: "Dissolve",
@@ -149,6 +238,38 @@ export function defeatStyleFromFlags(flags, ns = DEFEAT_MODULE_ID) {
     if (!key || key === DEFAULT_DEFEAT_STYLE) return DEFAULT_DEFEAT_STYLE;
     return Object.prototype.hasOwnProperty.call(DEFEAT_STYLES, key) ? key : DEFAULT_DEFEAT_STYLE;
   } catch { return DEFAULT_DEFEAT_STYLE; }
+}
+
+// Which style plays (2026-11-04): the monster's own style › the killing element
+// (only with the world setting on, never for a Champion) › the FF7 fade for its
+// rank. Anything without a rank (a PC) or with an unknown one reads as Soldier.
+export const ELEMENT_DEFEAT_STYLE = { fire: "char", ice: "shatter", bolt: "flicker" };
+export const RANK_DEFEAT_STYLE = { soldier: "ff7_soldier", elite: "ff7_elite", champion: "ff7_champion" };
+
+export function resolveDefeatStyle({ flagStyle = DEFAULT_DEFEAT_STYLE, rank = "", element = null, followElement = false } = {}) {
+  if (flagStyle && flagStyle !== DEFAULT_DEFEAT_STYLE && Object.prototype.hasOwnProperty.call(DEFEAT_STYLES, flagStyle)) return flagStyle;
+  const r = String(rank ?? "").trim().toLowerCase();
+  if (followElement && r !== "champion") {
+    const el = ELEMENT_DEFEAT_STYLE[String(element ?? "").trim().toLowerCase()];
+    if (el) return el;
+  }
+  return RANK_DEFEAT_STYLE[r] ?? RANK_DEFEAT_STYLE.soldier;
+}
+
+// The last foe's defeat plays slower (the finisher). Returns a copy of `cfg`
+// with every timing — keys ending in "Ms" and the bare "ms" — scaled by `k`.
+export function scaleDefeatTimings(cfg, k) {
+  if (!(k > 0) || k === 1) return cfg;
+  const walk = (node, key = "") => {
+    if (Array.isArray(node)) return node.map((v) => (typeof v === "number" && /Ms$/.test(key) ? v * k : walk(v, key)));
+    if (node && typeof node === "object") {
+      const out = {};
+      for (const [kk, v] of Object.entries(node)) out[kk] = walk(v, kk);
+      return out;
+    }
+    return typeof node === "number" && (/Ms$/.test(key) || key === "ms") ? node * k : node;
+  };
+  return walk(cfg);
 }
 
 /**

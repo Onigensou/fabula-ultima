@@ -203,6 +203,51 @@
       CORNER_R: 6,          // rounded-rect corner radius in world units
     },
 
+    // Turn start (dp-turn-start.js). Host-approved in the review mockup,
+    // 2026-11-04: "Ripple" at 40%, chip resting dimmed. Keep it subtle — the
+    // goal is a little life plus a hint of where the party can walk.
+    TURN_PULSE: {
+      ENABLED:     true,
+      STRENGTH:    0.4,        // 0..1 multiplier on the ring + rim alpha
+      COLOR:       0xffe08c,   // warm gold, a shade lighter than the hover fill
+      DELAY_MS:    120,        // after the cue fires
+      STAGGER_MS:  90,         // per tile, left to right
+      DURATION_MS: 950,        // one ring
+      GROW:        0.4,        // ring travel, × the tile's smaller half-size
+      ROUND:       true,       // ring hugs round tile art; false = hover-highlight corners
+      SOUND:       "FT_CYCLE", // DP.SOUNDS key; local only. "" = silent
+      VOLUME:      0.3,
+    },
+    TURN_CHIP: {
+      ENABLED:      true,
+      LIT_MS:       1800,      // bright after a turn starts, then rests at 62%
+      NAMED_LIT_MS: 3400,      // first turn on a scene, with the area name
+      NAME_MS:      3000,
+      // Name the area on the chip's first turn on a scene. OFF: the Area Name
+      // Panel (scripts/area-panel) already plays a plaque on scene activation,
+      // so the chip would say it twice. Turn on only if that panel is off.
+      SHOW_AREA:    false,
+    },
+
+    // Silent hold after a Random Battle MISS (tile-event-random-battle.js).
+    // A hit keeps the players waiting through the GM's ~2.5s override window
+    // before the shatter, so a miss waits too, or the speed of the reply would
+    // give the result away. Three FIXED holds picked by weight, not a random
+    // duration, so the rhythm stays learnable; a longer hold never comes twice
+    // in a row. Measured from the moment the player confirmed. Host-tuned
+    // 2026-11-04 in the review mockup to FELT shares of 75 / 17 / 8 %.
+    // The no-repeat rule skips the roll after a longer hold, which pulls the
+    // rare share down: felt = w / (1 + w) for a raw rare share w. So the raw
+    // weights below are 66.7 / 22.7 / 10.7 % (w = 1/3), which land on
+    // 75 / 17 / 8 in play (offline check: 200k picks).
+    RANDOM_BATTLE_HOLD: {
+      PATTERNS: [
+        { name: "usual",  ms: 1075, weight: 200 },
+        { name: "longer", ms: 1250, weight: 68 },   // 50% of the override window
+        { name: "full",   ms: 2500, weight: 32 },   // the whole override window
+      ],
+    },
+
     // Camera follow behaviour (player clients only)
     CAMERA: {
       LERP: 0.25,   // fraction of remaining distance closed per frame (~250 ms to settle at 60 fps)

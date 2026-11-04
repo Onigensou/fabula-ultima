@@ -20,6 +20,7 @@
     MARK_VISITED:           "dungeonPathing.markVisited",
     UNMARK_VISITED:         "dungeonPathing.unmarkVisited",
     FAST_TRAVEL_TELEPORT:   "dungeonPathing.fastTravelTeleport",
+    TURN_STEP:              "dungeonPathing.turnStep",
   };
 
   // Raw game.socket channel — added while the socketlib handlers below were never
@@ -225,6 +226,21 @@
         }
       });
 
+      // One confirmed dungeon step → the party's turn count (dp-turn-start.js).
+      // executeAsGM routes to ONE GM, and the write is a world setting whose
+      // onChange is the turn-start cue on every client.
+      socket.register(HANDLERS.TURN_STEP, async ({ battle = false } = {}) => {
+        if (!game.user?.isGM) return { ok: false, error: "Not GM" };
+        if (!DP.TurnStart?.gmStep) return { ok: false, error: "TurnStart not loaded" };
+        try {
+          await DP.TurnStart.gmStep({ battle: !!battle });
+          return { ok: true };
+        } catch (e) {
+          console.error(TAG, "turnStep socket handler failed", e);
+          return { ok: false, error: e?.message };
+        }
+      });
+
       socket.register(HANDLERS.MARK_VISITED, async ({ sceneId, tileId }) => {
         if (!game.user?.isGM) return { ok: false, error: "Not GM" };
         const scene = game.scenes.get(sceneId);
@@ -419,6 +435,13 @@
      * Ask the GM to resolve a Random Battle tile landing.
      * Resolves { ok, appear?, launched?, error? } — see DP.RandomBattle.run().
      */
+    /** Count one confirmed dungeon step (dp-turn-start.js). Non-GM only. */
+    async requestTurnStep({ battle = false } = {}) {
+      const socket = this._socket ?? window.FUCompanionSocket;
+      if (!socket) return { ok: false, error: "Socket not ready" };
+      return socket.executeAsGM(HANDLERS.TURN_STEP, { battle: !!battle });
+    },
+
     // opts: { forced, verdict } — a story battle tile (see DP.RandomBattle.run).
     async requestRandomBattle(scene, tileId, tokenId, opts = {}) {
       const args = { sceneId: scene.id, tileId, tokenId, forced: !!opts.forced, verdict: opts.verdict ?? "auto" };

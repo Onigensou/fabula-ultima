@@ -186,3 +186,12 @@ Notes, and push. If it does not, add what you saw under Notes and leave it open.
 
   Full snippet: tools/skill-regression/README.md, "Enforcement: auto-run after skill edits". After
   the change you will see more automatic checks, because they now actually run.
+
+- 2026-11-04 (onigensou): **set up on our machine, still open.** playwright 1.60 + Chromium, and
+  `config.local.json` with `foundryExe` + `dataPath` only (no password; `autoStartServer` off so nothing
+  starts a real server on the live data path). The setup check cannot build here: `--profile duel` (and
+  `rakshasa`) copies tokens from a saved "Regression Bench" scene, and our world never keeps one (our gate
+  always builds the bench with `--teardown`), so build-snapshot stops at `place.from: no scene "Regression
+  Bench"`. What we ran instead, on a copy of our world: `check --runner` 487/487, and a whole-world parity
+  of your six update switches on vs off (see the update-stutter hand-off). Could the duel profile build its
+  bench in the page, the way `--profile regression` does? Leaving this open until the 66/66 check can run.

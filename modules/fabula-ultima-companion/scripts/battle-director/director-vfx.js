@@ -17,6 +17,8 @@ import { PARTY_ENTRANCE_SFX_URLS } from "./party-entrance-styles.js";
 import { emitDamageNumber } from "./damage-numbers/director-damage-numbers.js";
 import { emitImpactFx } from "./damage-numbers/director-impact-fx.js";
 import { emitHurtReaction } from "./damage-numbers/director-hurt-reaction.js";
+import { lossSound } from "./hit-sound-rules.js";
+import { createGainCoalescer } from "./gain-coalesce.js";
 
 export const DIRECTOR_STATIC_URLS = Object.freeze([
   // Guard / Covered AE icons (Forge-vtt — remote, slowest first-fetch).
@@ -430,7 +432,10 @@ function resolveLossAv(resource, affinity) {
 //   resource  : "hp" | "mp"
 //   amount    : the value lost (already post-clamp / post-affinity)
 //   affinity  : "NE" | "VU" | "RS" | ... (HP only; ignored for MP)
-export function playResourceLossVfx({ tokenUuid, resource = "hp", amount = 0, affinity = "NE", element = "elementless", isCrit = false, pierce = false, cascade = 0, critBanner = true, numbersOnly = false } = {}) {
+//   impactOwned : the hit's animation CLAIMED the impact (hit-sound-rules.js):
+//                 no impact burst, no hit sound — the number + flinch stay,
+//                 a WEAK / RESIST accent still sounds.
+export function playResourceLossVfx({ tokenUuid, resource = "hp", amount = 0, affinity = "NE", element = "elementless", isCrit = false, pierce = false, cascade = 0, critBanner = true, numbersOnly = false, impactOwned = false } = {}) {
   try {
     if (!(amount > 0)) return;
     // Floating NUMBER → BD-native damage-number subsystem (DOM screen-space).
@@ -445,10 +450,13 @@ export function playResourceLossVfx({ tokenUuid, resource = "hp", amount = 0, af
     // Token hurt flinch — only for a real physical-ish hit (HP / shield), not an
     // MP drain. Strong tier on WEAK/crit.
     if (resource === "hp" || resource === "shield") fireHurt(tokenUuid, affinity, isCrit);
-    // Impact burst + affinity SFX — both BD-native now (DOM <video> + Web Audio).
-    const { file, sfx } = resolveLossAv(resource, affinity);
-    emitImpactFx({ tokenUuid, file, durationMs: 1000 });
-    if (sfx) throttledSfx(sfx, 0.6);
+    // Impact burst + hit sound — one impact sound per hit, never none
+    // (hit-sound-rules.js): an element sound by default, nothing but a
+    // WEAK / RESIST accent when the animation claimed the hit.
+    const { file } = resolveLossAv(resource, affinity);
+    const snd = lossSound({ resource, affinity, element, impactOwned });
+    if (snd.impact) emitImpactFx({ tokenUuid, file, durationMs: 1000 });
+    if (snd.sfx) throttledSfx(snd.sfx, snd.vol);
   } catch (e) {
     warn("playResourceLossVfx threw", e);
   }
@@ -495,18 +503,30 @@ const RESOURCE_GAIN_DEFAULT = Object.freeze({ file: null, color: "#9be15d", icon
 //   tokenUuid : the healed token ("Scene.X.Token.Y")
 //   resource  : "hp" | "mp" | "ip" | "zenit" | "fp" | "zero_power" | "enmity"
 //   amount    : the value restored (already clamped to what actually applied)
-export function playResourceGainVfx({ tokenUuid, resource = "hp", amount = 0 } = {}) {
+//   cascade   : a Chain strike's index — never merged (gain-coalesce.js)
+// Gains of the same resource on the same token inside GAIN_COALESCE_MS float as
+// ONE total (three Lightning Charges = "+15", not three overlapping "+5").
+//   noMerge   : the move opted out of merging (flags.<NS>.separateNumbers)
+export function playResourceGainVfx({ tokenUuid, resource = "hp", amount = 0, cascade = 0, noMerge = false } = {}) {
   try {
     if (!(amount > 0)) return;
+    _gainCoalescer({ tokenUuid, resource, amount, cascade, noMerge });
+  } catch (e) {
+    warn("playResourceGainVfx threw", e);
+  }
+}
+function _emitGain({ tokenUuid, resource, amount }) {
+  try {
     // Floating number → BD-native subsystem; heal aura webm + cue stay here.
     emitDamageNumber({ kind: "gain", tokenUuid, resource, amount });
     const av = RESOURCE_GAIN_AV[String(resource).toLowerCase()] ?? RESOURCE_GAIN_DEFAULT;
     if (av.file) emitImpactFx({ tokenUuid, file: av.file, durationMs: 1000 });
     if (av.sfx) throttledSfx(av.sfx, 0.6);
   } catch (e) {
-    warn("playResourceGainVfx threw", e);
+    warn("playResourceGainVfx emit threw", e);
   }
 }
+const _gainCoalescer = createGainCoalescer({ emit: _emitGain });
 
 // ── Resource-spend VFX (self-paid cost: casting / reaction / free action) ─
 //

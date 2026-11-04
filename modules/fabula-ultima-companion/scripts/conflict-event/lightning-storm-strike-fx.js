@@ -45,6 +45,7 @@ import { playSfx } from "../battle-director/director-sfx.js";
 import { playImpactFxLocal } from "../battle-director/damage-numbers/director-impact-fx.js";
 import { playHurtReactionLocal } from "../battle-director/damage-numbers/director-hurt-reaction.js";
 import { shouldRender } from "../battle-director/presentation-clock.js";
+import { pulseConflictEventEmblem } from "./conflict-event-panel.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const TAG = "[FU][LightningStorm][FX]";
@@ -286,6 +287,7 @@ export async function playLightningStrikeLocal({ tokenUuid } = {}) {
 
     const token = canvasTokenFromUuid(tokenUuid);
     if (!token || token.destroyed) { log("target token not on canvas, skipping"); return; }
+    pulseConflictEventEmblem();
 
     const { setRodCursorHiddenLocal } = await import("./lightning-rod-cursor.js");
     setRodCursorHiddenLocal(true);

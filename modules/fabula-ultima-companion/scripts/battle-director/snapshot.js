@@ -1299,7 +1299,7 @@ const ACTION_LABEL_INTENT = Object.freeze({
   Attack: "harmful", Hinder: "harmful",
   Guard: "aid", Study: "neutral", Objective: "neutral", Equipment: "neutral",
 });
-function canonActionLabel(raw) {
+export function canonActionLabel(raw) {
   const k = String(raw ?? "").trim().toLowerCase();
   return _ACTION_LABEL_CANON.get(k) ?? String(raw ?? "").trim();
 }
@@ -1448,14 +1448,21 @@ registerBlockedActionReader(getBlockedActionLabels);
 export const GATING_EXEMPT_TAG_PREFIX = "ignore_gating_";
 const _gatingSlug = (s) => String(s ?? "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
 const _GATING_LABEL_SKILL_TYPE = Object.freeze({ Skill: "active", Spell: "spell" });
-export function getGatingExemptions(actor) {
-  if (!actor || hasIgnoreActionGating(actor)) return [];
-  const blockers = new Map();          // label → Set<ae slug>
-  const addBlocker = (label, slug) => {
+
+// The LABEL gates only (disable_action / enable_action_only — not the intent
+// filter), per label: the stamp reason (first AE wins, as getBlockedActionLabels)
+// and the slug of EVERY AE blocking it (what an ignore_gating_<slug> exemption
+// must name in full). Map<label, { reason, slugs:Set }>. Empty under Domination.
+// Shared by the menu exemptions below and the reaction gate (skill-effects
+// getReactionGate), so both read one definition of "which debuff blocks what".
+export function getActionLabelBlockers(actor) {
+  const out = new Map();
+  if (!actor || hasIgnoreActionGating(actor)) return out;
+  const add = (label, reason, slug) => {
     const L = canonActionLabel(label);
     if (!L) return;
-    if (!blockers.has(L)) blockers.set(L, new Set());
-    blockers.get(L).add(slug);
+    if (!out.has(L)) out.set(L, { reason, slugs: new Set() });
+    out.get(L).slugs.add(slug);
   };
   const effects = actor?.appliedEffects
     ? Array.from(actor.appliedEffects)
@@ -1463,16 +1470,52 @@ export function getGatingExemptions(actor) {
   const splitList = (raw) => String(raw ?? "").split(/[\s,]+/).map((s) => s.trim()).filter(Boolean);
   for (const ae of effects) {
     if (ae?.disabled) continue;
+    const reason = String(ae?.name ?? "").trim() || "Disabled";
     const slug = _gatingSlug(ae?.name) || "__unnamed__";
     for (const ch of (ae?.changes ?? [])) {
       if (ch?.key === "disable_action") {
-        for (const lbl of splitList(ch.value)) addBlocker(lbl, slug);
+        for (const lbl of splitList(ch.value)) add(lbl, reason, slug);
       } else if (ch?.key === "enable_action_only") {
         const allow = new Set(splitList(ch.value).map(canonActionLabel));
-        for (const lbl of GATEABLE_ACTION_LABELS) if (!allow.has(lbl)) addBlocker(lbl, slug);
+        for (const lbl of GATEABLE_ACTION_LABELS) if (!allow.has(lbl)) add(lbl, reason, slug);
       }
     }
   }
+  return out;
+}
+
+// Suppressed — "Disable Passive effects". An AE change `disable_passive` (any
+// non-empty value but "0"/"false") marks the bearer; returns the first such
+// AE's name as the reason, or null. WHICH passives it silences is decided by
+// the reaction gate (skill-effects getReactionGate), not here. Inert under
+// Domination State like every other gate.
+export const DISABLE_PASSIVE_KEY = "disable_passive";
+export function getPassiveSuppression(actor) {
+  if (!actor || hasIgnoreActionGating(actor)) return null;
+  const effects = actor?.appliedEffects
+    ? Array.from(actor.appliedEffects)
+    : (actor?.effects?.contents ?? actor?.effects ?? []);
+  for (const ae of effects) {
+    if (ae?.disabled) continue;
+    for (const ch of (ae?.changes ?? [])) {
+      if (ch?.key !== DISABLE_PASSIVE_KEY) continue;
+      const v = String(ch.value ?? "").trim().toLowerCase();
+      if (v && v !== "0" && v !== "false") return String(ae?.name ?? "").trim() || "Suppressed";
+    }
+  }
+  return null;
+}
+
+export function getGatingExemptions(actor) {
+  if (!actor || hasIgnoreActionGating(actor)) return [];
+  const blockers = new Map();          // label → Set<ae slug>
+  for (const [label, b] of getActionLabelBlockers(actor)) blockers.set(label, new Set(b.slugs));
+  const addBlocker = (label, slug) => {
+    const L = canonActionLabel(label);
+    if (!L) return;
+    if (!blockers.has(L)) blockers.set(L, new Set());
+    blockers.get(L).add(slug);
+  };
   // Intent blocks on a label can't be exempted — poison the label's set.
   const disabledIntents = getDisabledActionIntents(actor);
   for (const [label, intent] of Object.entries(ACTION_LABEL_INTENT)) {
@@ -1771,7 +1814,16 @@ export function unconditionalTargetBlockReason(actor) {
   return null;
 }
 
-export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { category = "any" } = {}) {
+// "KO" in a target text aims the action at DOWNED creatures: a revive (Phoenix
+// Feather "One KO Ally", Raise Dead "One KO Creature"). Such an action's pool
+// holds only creatures at 0 HP (`defeated: "only"`); every other action's pool
+// skips them (`defeated: "exclude"`, the default). The survey and the compose
+// picker both ask this, so the AI and the player see the same pool.
+export function targetsKnockedOut(text) {
+  return /\bKO\b/i.test(String(text ?? ""));
+}
+
+export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { category = "any", defeated = "exclude" } = {}) {
   const combatants = dCombat?.combatants ?? [];
   const attackerDisp = attackerSnapshot?.disposition ?? 0;
   // AE-driven exclusion — walks the attacker's AEs once and collects every
@@ -1821,7 +1873,8 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
     if (c.id !== attackerSnapshot?.combatantId && hasUnconditionalTargetBlock(actor)) continue;
     const disp = c.disposition ?? token.disposition ?? 0;
     const hp = readPropNum(actor, ["current_hp", "hp"]);
-    if (hp <= 0) continue;
+    // Downed creatures belong to a KO pool only (see targetsKnockedOut).
+    if (defeated === "only" ? hp > 0 : hp <= 0) continue;
     let ok = true;
     if (category === "ally" || category === "enemy") {
       const isSelf = c.id === attackerSnapshot?.combatantId;
@@ -2375,7 +2428,7 @@ export function applyStudyGuardExclusion(eligible, studiedTokenUuids) {
 // Snapshot eligible targets for a given action category.
 // `category`: "any" | "ally" | "enemy" | "self".
 // For the prototype we keep this simple — token UUIDs + name + disposition.
-export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "any" } = {}) {
+export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "any", defeated = "exclude" } = {}) {
   const combatants = combat?.combatants ?? [];
   const attackerDisp = attackerSnapshot?.disposition ?? 0;
   // AE-driven exclusion — same as the dCombat variant above. The legacy
@@ -2411,7 +2464,8 @@ export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "
     if (c.id !== attackerSnapshot?.combatantId && hasUnconditionalTargetBlock(actor)) continue;
     const disp = token.disposition;
     const hp = readPropNum(actor, ["current_hp", "hp"]);
-    if (hp <= 0) continue; // defeated combatants are not targetable in v1
+    // Downed creatures belong to a KO pool only (see targetsKnockedOut).
+    if (defeated === "only" ? hp > 0 : hp <= 0) continue;
     let ok = true;
     if (category === "ally" || category === "enemy") {
       const isSelf = c.id === attackerSnapshot?.combatantId;

@@ -558,6 +558,7 @@
 
     state.busy = true;
     let _deferredVisitTileId = null; // set after confirm; fired after rebuild
+    let _countStep = false;          // set on confirm; Go Back never sets it
     DP.HelperMode.hide();
     DP.Overlay.clearHover?.();
 
@@ -642,6 +643,7 @@
       // — Confirmed (land + optionally use) —
       state.turnPhase = DP.TURN_PHASE.RESOLUTION;
       DP.Events.turnConfirmed(freshToken.document, fromNode, clicked, tileDoc);
+      _countStep = true;   // a confirmed step is one turn (dp-turn-start.js)
 
       const _storedType = (tileDoc && DP.TileState.getCurrentType(scene, tileDoc.id))
         ?? clicked.tileType
@@ -709,6 +711,10 @@
       }
       // Keep busy=true through the full rebuild so no concurrent turn can start.
       state.busy = false;
+      // Count the turn AFTER the rebuild: the GM's write is what fires the next
+      // turn's cue on every client, so it must land once the party can move.
+      // A launching battle counts silently (no cue — only the shatter).
+      if (_countStep) DP.TurnStart?.stepTaken?.({ battle: !!state.battleLaunching });
 
       // Deferred markVisited — fires 300 ms after rebuild completes so the
       // server socket queue is clear before the next turn's doc update.
@@ -766,6 +772,9 @@
     // while state.active is still false and would conclude "not in a dungeon".
     // Syncing here, after activation, is order-independent.
     DP.Vertigo?.sync?.({ silent: true });
+    // The first turn on this scene: chip (with the area name on arrival) +
+    // the walkable-tile pulse. Only when the graph found the party.
+    if (state.currentNode) DP.TurnStart?.onEnterScene?.(canvas.scene);
     console.debug(TAG, "Activated. Press H to toggle helper mode.");
   }
 

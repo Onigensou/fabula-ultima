@@ -51,6 +51,7 @@ import { parseSkillCost, resolveCost, checkAffordable, debitCost, affordableTarg
 // resolveDamageElementOverride) moved to action-profile.js (single-source COMPUTE).
 import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { freeActions } from "./free-actions.js";
+import { isActorDefeated } from "./defeat-reactor.js";
 import { makeChainContext, resolveTargetRef } from "./skill-targeting.js";
 // skill-effects is routed through the hot-reload registry so edits to it take
 // effect without Ctrl+Shift+R: the harness (per-call) and a live reloadHot()
@@ -392,6 +393,29 @@ function getCoreActionSkill(command) {
 // walk effect_table → queue post-resolve triggers. (Phase 7: the per-kind
 // bespoke RESOLVE branches and the `resolveSkillAction` alias are retired —
 // this is the only resolver.)
+// Is this accepted reaction's chain a COUNTERATTACK — a free action or dealt
+// damage — that a defeated owner can't perform? Everything else still happens
+// on a KO: riders (applied mid-card), owner-only bookkeeping, and on-damaged
+// effects like Pantie's Bleed on the attacker (user, 2026-11-04: "not a
+// counter, it's an on-damaged trigger"). Static walk via the passive card's
+// chainProfile. Unreadable carrier → false (fire as before; never suppress on
+// a guess).
+async function reactionChainActs(cand) {
+  try {
+    const carrier = cand?.carrierUuid ? await fromUuid(cand.carrierUuid) : null;
+    if (!carrier) return false;
+    const table = cand.carrierKind === "item"
+      ? getRuntimeSkillView(carrier)?.effect_table
+      : (() => { const c = carrier.flags?.["fabula-ultima-companion"]?.reactionConfig ?? {}; return c.effect_table ?? c.reaction_effect_table; })();
+    const { chainProfile } = await import("./passive-card-ui/passive-card-classify.js");
+    const p = chainProfile({ table: table ?? {}, ref: cand.ref, item: carrier, trigger: "creature_targeted_by_action" });
+    return !!(p?.kinds?.has?.("free_action") || p?.kinds?.has?.("deal_damage"));
+  } catch (e) {
+    warn(`reactionChainActs: profile failed for ${cand?.carrierName ?? cand?.carrierUuid}`, e);
+    return false;
+  }
+}
+
 async function resolveAction(director, ar, opts = {}) {
   const skipCost = !!opts.skipCost;
   // Caster: prefer the explicit attackerActorRef (Skill/Spell/Attack/Item/
@@ -479,7 +503,15 @@ async function resolveAction(director, ar, opts = {}) {
       const sourceItem = ar.sourceItemUuid
         ? await fromUuid(ar.sourceItemUuid).catch(() => null)
         : skill;
-      if (String(sourceItem?.system?.props?.item_type ?? "").toLowerCase() === "consumable") {
+      // A use that reached none of its picked targets costs nothing. A pick can
+      // drop out of the pool before TARGET (a revive aimed at an ally who is no
+      // longer down, a target that fell meanwhile), and the action then resolves
+      // with an empty target list: the item did nothing, so it is not spent.
+      // Pick-free items ("-" / Self text) have pickedTargetCount 0 and pay as before.
+      const reachedNobody = Number(ar.pickedTargetCount) > 0 && !(ar.targets?.length);
+      if (reachedNobody) {
+        log(`Item resolve: ${ar.skillName ?? "item"} reached none of its ${ar.pickedTargetCount} picked target(s) — not used up`);
+      } else if (String(sourceItem?.system?.props?.item_type ?? "").toLowerCase() === "consumable") {
         try {
           const r = await consumeOne(casterActor, sourceItem);
           if (!r?.ok) warn("Item resolve: consumeOne failed", r);
@@ -912,6 +944,9 @@ async function resolveAction(director, ar, opts = {}) {
           // or a one-roll Chain's every tick — was shown on its cue), and a
           // blocker the card spent on one strike must not fire again on the rest.
           silent: !!ct || !!cs,
+          // The action's animation claimed the impact sound (set in
+          // Animation.onEnter; false when nothing played). hit-sound-rules.js.
+          impactClaimed: !!director.ctx?.animClaimsImpact,
           skipIncomingAeNames: ct ? chainSpentBlockers(ar, r.tokenUuid, ct) : null,
           actionHit: {
             causeTokenUuid: ar.attacker?.tokenUuid ?? null,
@@ -1241,6 +1276,23 @@ async function resolveAction(director, ar, opts = {}) {
           const resolved = await fromUuid(cand.reactorActorUuid);
           if (resolved) fireActor = resolved;
           if (cand.payloadAtFire) firePayload = cand.payloadAtFire;
+        }
+        // A "when targeted" COUNTERATTACK (free action / dealt damage) does not
+        // fire when THIS action just defeated its owner. It was scanned at CONFIRM (pre-damage) but replays here, after
+        // the HP write — so without this a dead Skizzik raised its Lightning
+        // Counter card (the free action itself was then refused by free-actions'
+        // defeat guard) and a dead Ampere still discharged Volt Counter's 10 Bolt.
+        // User rule (2026-11-04): the card shows iff the effect took effect.
+        // Riders (Blood Mail's damage cut…) already applied mid-card, and an
+        // owner-only chain (Apple o' Archer consuming its taunt) and on-damaged
+        // effects (Pantie's Bleed) still happen, so they keep firing — and keep
+        // their card — even on a KO. On-death
+        // effects ride `creature_defeated` (post-resolve), not this loop.
+        const _candTrigger = cand?.phaseTrigger ?? cand?.payloadAtFire?.trigger ?? null;
+        if (cand?.reactorActorUuid && _candTrigger === "creature_targeted_by_action"
+            && isActorDefeated(fireActor) && await reactionChainActs(cand)) {
+          log(`resolveAction: card reaction "${cand?.carrierName}" not fired — ${fireActor?.name} was defeated by this action`);
+          continue;
         }
         // Round-trip apply-click captures (roll_dice / prompt_number) for
         // performer/self reactions too (no reactorActorUuid, so firePayload stayed
@@ -3102,6 +3154,14 @@ const Declare = {
     const eligibleAllies = director.dCombat
       ? snapshotEligibleTargetsFromDCombat(director.dCombat, snap, { category: "ally" })
       : snapshotEligibleTargets(director.combat, snap, { category: "ally" });
+    // The downed, for a KO target text (Phoenix Feather's "One KO Ally") — the
+    // two lists above hold only the living. Read by resolveTargetsForSource.
+    const downedEnemies = director.dCombat
+      ? snapshotEligibleTargetsFromDCombat(director.dCombat, snap, { category: "enemy", defeated: "only" })
+      : snapshotEligibleTargets(director.combat, snap, { category: "enemy", defeated: "only" });
+    const downedAllies = director.dCombat
+      ? snapshotEligibleTargetsFromDCombat(director.dCombat, snap, { category: "ally", defeated: "only" })
+      : snapshotEligibleTargets(director.combat, snap, { category: "ally", defeated: "only" });
     // Study guard — the tokens THIS actor already Studied this fight. Plumbed
     // into the compose payload so composeStudy (player or GM) can grey them out
     // + label them in the Study target picker. GM-side memory, so it travels
@@ -3128,7 +3188,7 @@ const Declare = {
       director,
       snap,
       token,
-      eligible: { enemies: eligibleEnemies, allies: eligibleAllies, studiedTokenUuids },
+      eligible: { enemies: eligibleEnemies, allies: eligibleAllies, downedEnemies, downedAllies, studiedTokenUuids },
       cancelSentinel: cancelToken.promise,
       combatId: director.combatId,
       actorUuid: snap.actorUuid,
@@ -3167,7 +3227,7 @@ const Declare = {
       tokenUuid: token.document.uuid,
       actorUuid: snap.actorUuid,
       snap,
-      eligible: { enemies: eligibleEnemies, allies: eligibleAllies, studiedTokenUuids },
+      eligible: { enemies: eligibleEnemies, allies: eligibleAllies, downedEnemies, downedAllies, studiedTokenUuids },
       freeActionGrant,
       objectives: objectiveRows,
     };
@@ -4497,6 +4557,10 @@ const Target = {
         rawCost: itemMode === "create" ? `${itemCost} IP` : "",
         actionIntent: classifyActionIntent(activation),
         itemSelection: { mode: itemMode, key: bundle.itemKey ?? null, cost: itemCost },
+        // How many targets were PICKED (compose / AI). resolveAction compares it to
+        // the targets that survived the pool, so an item that reached none of its
+        // picks is not used up.
+        pickedTargetCount: Array.isArray(bundle.targetUuids) ? bundle.targetUuids.length : 0,
       });
       director.ctx.pickedTargetUuids = targetUuids;
       director.dispatch({
@@ -8773,7 +8837,14 @@ const Animation = {
         beginHitCounter({ id: ar._instanceId ?? null, side: disp === -1 ? "enemy" : "party" });
       }
     } catch (e) { warn("ANIMATION: hit counter begin threw", e); }
-    const spec = await resolveAnimationSpec(ar);
+    // allowDefault: an Attack / Skill with no script of its own gets the short
+    // default (action-anim-rules.js), per the "default action animations" setting.
+    const spec = await resolveAnimationSpec(ar, { allowDefault: true });
+    if (spec.source === "default") log(`ANIMATION: default — ${spec.defaultLabel} (damage at ${spec.timingOffset} ms)`);
+    // RESOLVE reads this: the animation plays the hit sound, so the damage
+    // number must not play its own on top (hit-sound-rules.js). Cleared again by
+    // playDirectorAnimation if the script never actually runs.
+    director.ctx.animClaimsImpact = !!(spec.hasScript && spec.playAt !== "resolve" && spec.claimsImpact);
 
     // Attack / cast pose on the actor, on every client — also for actions with
     // no animation script, the way a JRPG battler swings even without effects.
@@ -8797,9 +8868,13 @@ const Animation = {
     // JRPG cinematic etiquette — fade the Dominance Crests out on every client
     // while the animation plays (restored in onExit/onAbort, which fire on
     // every way out of this state incl. Skip Animation and battle-end aborts).
-    try { emitCrestsHidden(true); } catch (e) { warn("ANIMATION: emitCrestsHidden(true) threw", e); }
-    try { emitAurasHidden(true); } catch (e) { warn("ANIMATION: emitAurasHidden(true) threw", e); }
-    try { emitMarksHidden(true); } catch (e) { warn("ANIMATION: emitMarksHidden(true) threw", e); }
+    // A default (a one-second step-and-hit) leaves them up: hiding the HUD for
+    // every basic attack would make it flicker all fight long.
+    if (spec.source !== "default") {
+      try { emitCrestsHidden(true); } catch (e) { warn("ANIMATION: emitCrestsHidden(true) threw", e); }
+      try { emitAurasHidden(true); } catch (e) { warn("ANIMATION: emitAurasHidden(true) threw", e); }
+      try { emitMarksHidden(true); } catch (e) { warn("ANIMATION: emitMarksHidden(true) threw", e); }
+    }
 
     // playDirectorAnimation is intentionally not awaited here — it drives
     // itself asynchronously and enqueues INTERNAL_DONE when the gate resolves.

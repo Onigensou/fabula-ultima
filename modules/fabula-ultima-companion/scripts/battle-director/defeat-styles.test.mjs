@@ -19,7 +19,12 @@ import {
   defeatStyleFromFlags,
   defeatStartsOnHit,
   ownsDefeatReaction,
+  resolveDefeatStyle,
+  scaleDefeatTimings,
+  ELEMENT_DEFEAT_STYLE,
+  RANK_DEFEAT_STYLE,
 } from "./defeat-styles.js";
+import { WISP_PALETTES } from "./particles/wisps.js";
 import { holdsKnockoutRevive, markReviveTried, clearReviveTried, isKnockoutReviveEffect } from "./knockout-revive.js";
 
 let pass = 0, fail = 0;
@@ -82,7 +87,78 @@ for (const [key, s] of Object.entries(DEFEAT_STYLES)) {
     ok(`${key}.${part}: count > 0`, s[part].count > 0);
     ok(`${key}.${part}: rgb list non-empty`, Array.isArray(s[part].rgb) && s[part].rgb.length);
   }
-  if (s.motes) ok(`${key}.motes: last mote dies inside totalMs`, s.motes.spawnOverMs + s.motes.lifeMs[1] <= s.totalMs);
+  if (s.motes) ok(`${key}.motes: last mote dies inside totalMs`, (s.motes.fromMs ?? 0) + s.motes.spawnOverMs + s.motes.lifeMs[1] <= s.totalMs);
+  if (s.body?.tintMs != null) ok(`${key}: tint ramp ends inside totalMs`, (s.body.tintDelayMs ?? 0) + s.body.tintMs <= s.totalMs);
+  if (s.shards) ok(`${key}.shards: last shard dies inside totalMs`, s.shards.atMs + s.shards.lifeMs[1] <= s.totalMs);
+  if (s.ring?.atMs != null) ok(`${key}.ring: ends inside totalMs`, s.ring.atMs + s.ring.ms <= s.totalMs);
+  if (s.bolt) ok(`${key}.bolt: ends inside totalMs`, s.bolt.atMs + s.bolt.ms <= s.totalMs);
+  if (s.screenDim) ok(`${key}.screenDim: lifts inside totalMs`, s.screenDim.outFromMs + s.screenDim.outMs <= s.totalMs);
+  if (s.wisps) {
+    ok(`${key}.wisps: count > 0`, s.wisps.count > 0);
+    ok(`${key}.wisps: released inside totalMs (they may outlive it)`, s.wisps.fromMs + s.wisps.spawnOverMs <= s.totalMs);
+    ok(`${key}.wisps: a known palette`, s.wisps.palette in WISP_PALETTES);
+    ok(`${key}.wisps: life range`, s.wisps.lifeMs[0] > 0 && s.wisps.lifeMs[0] <= s.wisps.lifeMs[1]);
+  }
+}
+
+/* ── FF7 red fade by rank (user ruling 2026-11-04) ───────────────────────── */
+
+{
+  const S = DEFEAT_STYLES;
+  for (const k of ["ff7_soldier", "ff7_elite", "ff7_champion"]) {
+    ok(`${k}: internal (not offered in Token Config)`, S[k].internal === true);
+    eq(`${k}: turns red`, S[k].body.tintTo, 0xff2a2a);
+    ok(`${k}: red before the fade`, S[k].body.tintDelayMs + S[k].body.tintMs <= S[k].body.delayMs);
+    // user ruling 2026-11-05: the red fade keeps its tint, its motes became crimson wisps
+    ok(`${k}: crimson wisps, no motes`, S[k].wisps?.palette === "crimson" && !S[k].motes);
+    ok(`${k}: wisps leave as the fade begins`, S[k].wisps.fromMs <= S[k].body.delayMs);
+  }
+  ok("more wisps by rank", S.ff7_soldier.wisps.count < S.ff7_elite.wisps.count && S.ff7_elite.wisps.count < S.ff7_champion.wisps.count);
+  ok("ranks lengthen: Soldier < Elite < Champion", S.ff7_soldier.totalMs < S.ff7_elite.totalMs && S.ff7_elite.totalMs < S.ff7_champion.totalMs);
+  ok("Champion stays (shown again, KO takes over)", S.ff7_champion.stays === true && S.ff7_champion.body.fadeTo > 0);
+  ok("Soldier and Elite are removed (no stays)", !S.ff7_soldier.stays && !S.ff7_elite.stays);
+  for (const k of ["char", "shatter", "flicker"]) ok(`${k}: offered in Token Config`, !S[k].internal);
+}
+
+/* ── Which style plays: flag › element (setting on) › rank ───────────────── */
+
+{
+  const r = (o) => resolveDefeatStyle(o);
+  eq("no flag, no rank → Soldier fade",            r({}), "ff7_soldier");
+  eq("Soldier",                                    r({ rank: "Soldier" }), "ff7_soldier");
+  eq("Elite (case, padding)",                      r({ rank: "  elite " }), "ff7_elite");
+  eq("Champion",                                   r({ rank: "Champion" }), "ff7_champion");
+  eq("unknown rank → Soldier",                     r({ rank: "boss" }), "ff7_soldier");
+  eq("element ignored with the setting off",       r({ rank: "Soldier", element: "fire" }), "ff7_soldier");
+  eq("fire kill, setting on → char",               r({ rank: "Soldier", element: "fire", followElement: true }), "char");
+  eq("ice kill, setting on → shatter",             r({ rank: "Elite", element: "Ice", followElement: true }), "shatter");
+  eq("bolt kill, setting on → flicker",            r({ rank: "Elite", element: "bolt", followElement: true }), "flicker");
+  eq("earth has no element style → rank",          r({ rank: "Elite", element: "earth", followElement: true }), "ff7_elite");
+  eq("no element → rank",                          r({ rank: "Elite", element: null, followElement: true }), "ff7_elite");
+  eq("Champion keeps its fall on an element kill", r({ rank: "Champion", element: "fire", followElement: true }), "ff7_champion");
+  eq("own style wins over element",                r({ flagStyle: "dissolve", rank: "Soldier", element: "fire", followElement: true }), "dissolve");
+  eq("own style wins over rank (Champion)",        r({ flagStyle: "launched", rank: "Champion" }), "launched");
+  eq("explicit standard → rank",                   r({ flagStyle: "standard", rank: "Elite" }), "ff7_elite");
+  eq("unknown flag value → rank",                  r({ flagStyle: "meteor", rank: "Elite" }), "ff7_elite");
+  eq("element map", ELEMENT_DEFEAT_STYLE, { fire: "char", ice: "shatter", bolt: "flicker" });
+  for (const s of [...Object.values(ELEMENT_DEFEAT_STYLE), ...Object.values(RANK_DEFEAT_STYLE)]) ok(`mapped style "${s}" exists`, s in DEFEAT_STYLES);
+}
+
+/* ── Finisher pacing ─────────────────────────────────────────────────────── */
+
+{
+  const base = DEFEAT_STYLES.ff7_elite;
+  const slow = scaleDefeatTimings(base, 1.5);
+  eq("pace 1 returns the entry itself", scaleDefeatTimings(base, 1), base);
+  eq("bad pace returns the entry itself", scaleDefeatTimings(base, 0), base);
+  eq("totalMs scaled", slow.totalMs, base.totalMs * 1.5);
+  eq("nested *Ms scaled", slow.body.fadeMs, base.body.fadeMs * 1.5);
+  eq("bare ms scaled", slow.flash.ms, base.flash.ms * 1.5);
+  eq("*Ms arrays scaled", slow.wisps.lifeMs, base.wisps.lifeMs.map((v) => v * 1.5));
+  eq("wisp release window scaled", [slow.wisps.fromMs, slow.wisps.spawnOverMs], [base.wisps.fromMs * 1.5, base.wisps.spawnOverMs * 1.5]);
+  eq("non-timing numbers kept", [slow.wisps.count, slow.wisps.palette, slow.flash.size, slow.body.tintTo, slow.shake.px], [base.wisps.count, base.wisps.palette, base.flash.size, base.body.tintTo, base.shake.px]);
+  eq("sound cue times scaled", scaleDefeatTimings(DEFEAT_STYLES.ff7_champion, 2).sfx.map((c) => c.atMs), [0, 2600]);
+  eq("source entry untouched", base.totalMs, 1450);
 }
 
 /* ── Overfed (King Gorger companion, user ruling 2026-10-24) ─────────────── */

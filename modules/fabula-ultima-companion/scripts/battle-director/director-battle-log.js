@@ -333,3 +333,34 @@ export function buildMissRow({
   };
   return { entry, row };
 }
+
+// A creature defeated (defeat-reactor): the record the "X was defeated!" chat
+// card used to be. apply_mode "Defeated" is neither damage, heal nor miss, so the
+// Battle End rank and the damage/heal totals skip it.
+export function buildDefeatRow({ targetName = "", targetDisposition = null, killerName = null } = {}) {
+  const tgtDisp = targetDisposition === 1 ? "ally" : targetDisposition === -1 ? "enemy" : "neutral";
+  const entry = {
+    ts: new Date().toISOString(),
+    accuracy: "-",
+    dealer: { name: killerName ?? "—", disposition: "neutral", range: "None", sourceType: "None" },
+    target: { name: targetName, disposition: tgtDisp },
+    defeated: true,
+    summary: killerName ? `${targetName} is defeated by ${killerName}` : `${targetName} is defeated`,
+  };
+  const row = {
+    $deleted: false,
+    attacker: killerName ?? "—",
+    attack_target: targetName,
+    accuracy: "-",
+    value: "—",
+    value_type: "HP",
+    apply_mode: "Defeated",
+    damage_type: "—",
+    affinity: "—",
+    efficiency: "—",
+    weapon_type: "—",
+    range: "None",
+    source_type: "None",
+  };
+  return { entry, row };
+}

@@ -29,6 +29,7 @@
 
 import { playSfx, preloadSfx } from "../battle-director/director-sfx.js";
 import { shouldRender } from "../battle-director/presentation-clock.js";
+import { pulseConflictEventEmblem } from "./conflict-event-panel.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 const TAG = "[FU][CrystalFx]";
@@ -226,6 +227,7 @@ function onCountdownUpdate(effect, changed) {
       for (const token of tokens) {
         if (_spent.has(token.id)) continue;
         _spent.add(token.id);
+        pulseConflictEventEmblem();
         if (!canShow()) continue;
         playShatter(token).catch((e) => warn("shatter threw", e));
       }

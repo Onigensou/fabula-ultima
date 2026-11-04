@@ -27,6 +27,7 @@
 import { log, warn } from "./logger.js";
 import { hudTurnStatus, hudScale, readUnitInfo } from "./director-player-hud.js";
 import { getClientOption } from "../shared/client-options.js";
+import { playUiHoverSfx, playUiClickSfx } from "./director-ui-sfx.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const ACTION_SNAP = "FU_ALLY_WATCH";
@@ -277,7 +278,7 @@ function receive(p) {
     if (W.snap && W.snap.actorId === p.actorId) {
       const recap = recapOf(W.snap);
       W.snap = null;
-      if (recap) showRecap(recap);
+      if (recap) { showRecap(recap); if (enabled() && !busyMyself()) watchSfx("click"); }
     }
     render();
     return;
@@ -287,9 +288,43 @@ function receive(p) {
   // Another list (or no list): this player's own look and scroll let go.
   const key = p.step === "list" ? p.listKey ?? null : null;
   if (key !== W.listKey) { W.listKey = key; W.look = null; W.free = false; W.scrollTop = 0; }
+  const prev = W.snap;
   W.snap = p;
   onCard(p.card ?? null);
+  if (watching() && !busyMyself()) watchSfx(cueOf(prev, p));
   render();
+}
+
+// ── sound: the acting ally's menu cues, heard while watching ──────────────────
+// The same cues the acting player hears in their drawer (drawer-views.js):
+// a cursor blip on a move, the select sound on a pick / step / back / confirm.
+// Read off the difference between two snapshots, so the first snapshot of a
+// turn (or a late-join replay) is silent.
+const cursorOf = (s) => {
+  if (s.step === "cmd") return String((s.cmds ?? []).findIndex((c) => c.cur));
+  if (s.step === "list") return String((s.list ?? []).findIndex((r) => r.cur));
+  if (s.step === "tgt") return (s.targets ?? []).map((c) => c.rows.findIndex((r) => r.cur)).join(",");
+  return "";
+};
+const picksOf = (s) => (s.targets ?? []).flatMap((c) => c.rows).filter((r) => r.sel).map((r) => r.uuid || r.name).join(",");
+function cueOf(prev, p) {
+  if (!prev?.open || prev.actorId !== p.actorId) return null;
+  if (prev.step !== p.step || (p.step === "list" && prev.listKey !== p.listKey)) return "click";
+  if (p.step === "tgt" && picksOf(prev) !== picksOf(p)) return "click";
+  if (cursorOf(prev) !== cursorOf(p)) return "hover";
+  return null;
+}
+// A pick that confirms at once can arrive as a picked snapshot and a close a
+// moment apart; the acting player heard one select, so the watcher does too.
+const CLICK_QUIET_MS = 150;
+let _lastWatchClickAt = 0;
+function watchSfx(cue) {
+  if (cue === "hover") { playUiHoverSfx(); return; }
+  if (cue !== "click") return;
+  const now = performance.now();
+  if (now - _lastWatchClickAt < CLICK_QUIET_MS) return;
+  _lastWatchClickAt = now;
+  playUiClickSfx();
 }
 
 function resetWatch(actorId = null) {

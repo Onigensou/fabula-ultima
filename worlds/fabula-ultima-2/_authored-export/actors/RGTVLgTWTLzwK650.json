@@ -10,11 +10,11 @@
   },
   "effects": [
     {
-      "_id": "Ec2ifhQN6mxecfid",
+      "_id": "0aEjfGUn30eSDkzw",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1793474665456,
+        "createdTime": 1793719848795,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -41,14 +41,14 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "Ec2ifhQN6mxecfid",
+          "originalId": "0aEjfGUn30eSDkzw",
           "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.Ec2ifhQN6mxecfid"
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.0aEjfGUn30eSDkzw"
         },
         "fabula-ultima-companion": {
           "directorPermanent": true,
           "fieldOrigin": "scene",
-          "fieldSceneId": "T0Eo2forSEruOgO0",
+          "fieldSceneId": "jvvy4FvYYmCJtLoz",
           "wellspring": "fire"
         },
         "statuscounter": {
@@ -75,11 +75,11 @@
       "type": "base"
     },
     {
-      "_id": "iGeLTN5zIu2TDXGl",
+      "_id": "biOWfbAJXTK6L3sS",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1793474665456,
+        "createdTime": 1793719848795,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -106,14 +106,14 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "iGeLTN5zIu2TDXGl",
+          "originalId": "biOWfbAJXTK6L3sS",
           "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.iGeLTN5zIu2TDXGl"
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.biOWfbAJXTK6L3sS"
         },
         "fabula-ultima-companion": {
           "directorPermanent": true,
           "fieldOrigin": "scene",
-          "fieldSceneId": "T0Eo2forSEruOgO0",
+          "fieldSceneId": "jvvy4FvYYmCJtLoz",
           "wellspring": "earth"
         },
         "statuscounter": {
@@ -140,11 +140,11 @@
       "type": "base"
     },
     {
-      "_id": "nSg24ZWOevJ6Bbfe",
+      "_id": "FqWY1HPGCXrtKKlb",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1793474665456,
+        "createdTime": 1793719848795,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -171,14 +171,14 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "nSg24ZWOevJ6Bbfe",
+          "originalId": "FqWY1HPGCXrtKKlb",
           "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.nSg24ZWOevJ6Bbfe"
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.FqWY1HPGCXrtKKlb"
         },
         "fabula-ultima-companion": {
           "directorPermanent": true,
           "fieldOrigin": "scene",
-          "fieldSceneId": "T0Eo2forSEruOgO0",
+          "fieldSceneId": "jvvy4FvYYmCJtLoz",
           "wellspring": "bolt"
         },
         "statuscounter": {
@@ -205,11 +205,11 @@
       "type": "base"
     },
     {
-      "_id": "yXga18BnYIfx6yE6",
+      "_id": "incXldYf0Qrm4YP1",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1793474665456,
+        "createdTime": 1793719848795,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -236,14 +236,14 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "yXga18BnYIfx6yE6",
+          "originalId": "incXldYf0Qrm4YP1",
           "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.yXga18BnYIfx6yE6"
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.incXldYf0Qrm4YP1"
         },
         "fabula-ultima-companion": {
           "directorPermanent": true,
           "fieldOrigin": "scene",
-          "fieldSceneId": "T0Eo2forSEruOgO0",
+          "fieldSceneId": "jvvy4FvYYmCJtLoz",
           "wellspring": "ice"
         },
         "statuscounter": {
@@ -270,11 +270,11 @@
       "type": "base"
     },
     {
-      "_id": "Z4sJPFQFnoAx0s7L",
+      "_id": "uVojaxFu8TlbjsHT",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1793474665456,
+        "createdTime": 1793719848795,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -301,14 +301,14 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "Z4sJPFQFnoAx0s7L",
+          "originalId": "uVojaxFu8TlbjsHT",
           "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.Z4sJPFQFnoAx0s7L"
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.uVojaxFu8TlbjsHT"
         },
         "fabula-ultima-companion": {
           "directorPermanent": true,
           "fieldOrigin": "scene",
-          "fieldSceneId": "T0Eo2forSEruOgO0",
+          "fieldSceneId": "jvvy4FvYYmCJtLoz",
           "wellspring": "air"
         },
         "statuscounter": {
