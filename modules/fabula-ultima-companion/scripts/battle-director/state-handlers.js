@@ -1043,7 +1043,7 @@ async function resolveAction(director, ar, opts = {}) {
             && (Number(_lg.shieldAbsorbed) || 0) >= (Number(_lg.finalValue) || 0);
           SE().fireResourceChangeTrigger({
             director, actor: targetActor, tokenUuid: r.tokenUuid,
-            subjectSnapshot: _subjectSnapshots.get(r.tokenUuid) ?? null,
+            subjectSnapshot: snapshotForChain(_subjectSnapshots.get(r.tokenUuid) ?? null, ct, cs, dmgRes.shieldAbsorbed),
             isDamage: !_soakedWhole,
             damageInstance: ar._instanceId ?? null,
             resource: valueType, direction: _lg.valueDirection, amount: _lg.finalValue,
@@ -1871,6 +1871,26 @@ function queuePostResolveTrigger(director, config) {
 }
 
 // ── Chain N helpers for resolveAction (plan = ar.chainPlan, ct = one target) ──
+
+// A Chain is one card and one write, so its one HP event carries one snapshot, taken
+// before strike 1. "Was this creature in Crisis when it was hit" has to be asked per
+// hit: true if any strike that moved HP landed on a creature already in Crisis, which
+// includes one an earlier strike of the same Chain put there. A separate Chain reports
+// each strike's HP loss; a one-roll Chain has only its ticks, Shield eating the first.
+function snapshotForChain(snap, ct, cs, shieldAbsorbed) {
+  if (!snap || snap.inCrisis || snap.hp == null || snap.crisisAt == null || !(ct || cs)) return snap;
+  let shield = Math.max(0, Number(shieldAbsorbed) || 0);
+  const losses = ct
+    ? (ct.landedStrikes ?? []).map((s) => (s.kind === "absorb" ? 0 : Number(s.hpLoss) || 0))
+    : (cs.ticks ?? []).map((t) => { const n = Number(t) || 0; const sh = Math.min(shield, n); shield -= sh; return n - sh; });
+  let hp = snap.hp;
+  for (const loss of losses) {
+    if (hp <= 0) break;   // a tick past the kill moved no HP
+    if (loss > 0 && hp <= snap.crisisAt) return { ...snap, inCrisis: true };
+    hp -= loss;
+  }
+  return snap;
+}
 
 // What one Chain target's battle-log row carries: strike counts + breakdown,
 // and every strike's check total in the accuracy column ("14 / 7 / 12"). A

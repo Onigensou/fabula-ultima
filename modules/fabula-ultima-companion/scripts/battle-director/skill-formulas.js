@@ -2462,8 +2462,9 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         // already added the effect). No snapshot on the event = 0.
         if (name === "TARGET_WAS_IN_CRISIS") return payload?.subjectSnapshot?.inCrisis ? 1 : 0;
         // TRIGGER_LOSS_IS_DAMAGE — 1 when this HP loss (or the loss behind this defeat)
-        // was damage: an action's hit or a deal_damage row, ticks included. HP paid as a
-        // cost or a scripted drop reads 0.
+        // was damage: an action's hit, a deal_damage row (ticks included), or a
+        // consume_resource row aimed at someone else (Omega). HP paid as a cost or a
+        // scripted drop reads 0.
         if (name === "TRIGGER_LOSS_IS_DAMAGE") return payload?.isDamage ? 1 : 0;
         if (name === "TARGET_IS_VILLAIN") {
           const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();

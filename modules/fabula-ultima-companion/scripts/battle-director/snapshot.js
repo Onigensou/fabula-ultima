@@ -2612,6 +2612,8 @@ export function captureSubjectSnapshot(actor) {
     const threshold = crisisThreshold(actor);
     return {
       inCrisis: Number.isFinite(hp) && threshold != null && hp <= threshold,
+      hp: Number.isFinite(hp) ? hp : null,
+      crisisAt: threshold,
       effects: effects
         .filter((e) => !e.disabled)
         .map((e) => ({

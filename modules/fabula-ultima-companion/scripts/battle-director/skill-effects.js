@@ -6896,6 +6896,11 @@ async function consumeResourceApply(row, ctx, { resource, targetRef, amount }) {
             director: _director, actor, subjectSnapshot,
             tokenUuid: token.uuid ?? token.document?.uuid ?? null,
             resource: "hp", direction: "loss", amount: Math.abs(delta),
+            // Omega's "the target loses HP" is damage dealt; a row on its own creature
+            // is a cost (Shadow Strike) or a curse's bite (Cursed Sword).
+            isDamage: String(row.target_ref ?? "").trim().toLowerCase() !== "self",
+            damageInstance: (!ctx?.isPassive && _director.state === "RESOLVE")
+              ? (_director.ctx?.actionResult?._instanceId ?? null) : null,
             cause: String(row.consume_cause ?? "hazard").trim().toLowerCase() || "hazard",
             // WHO caused the loss — an AE rider's applier, else the creature
             // running this chain (a "you lose X HP" skill/curse). Mirrors
