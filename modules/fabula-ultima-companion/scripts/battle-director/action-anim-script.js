@@ -172,6 +172,17 @@ async function DEFAULT_INNER() {
     if (!I.thrown) { await wait(T.itemNoThrowMs); return; }
     let tex = null;
     try { if (I.icon) tex = await loadTexture(I.icon); } catch (e) { tex = null; }
+    // PIXI's loader rejects a .gif icon (Wind Stone): an <img> decodes its
+    // first frame, which is all a spinning throw needs
+    if (!tex && I.icon && typeof Image === "function") {
+      tex = await new Promise(function (ok) {
+        const im = new Image(); im.crossOrigin = "anonymous";
+        im.onload = function () { try { ok(PIXI.Texture.from(im)); } catch (e) { ok(null); } };
+        im.onerror = function () { ok(null); };
+        setTimeout(function () { ok(null); }, 2500);
+        im.src = I.icon;
+      });
+    }
     const size = 64 * s;
     const mk = function () {
       if (!tex) return null;

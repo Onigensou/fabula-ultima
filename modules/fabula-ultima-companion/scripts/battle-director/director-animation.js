@@ -262,6 +262,9 @@ async function _defaultSpec(ar, { skillItem = null, weaponItem = null } = {}) {
   if (kind === "Item" && skillItem) {
     const p = skillItem.system?.props ?? {};
     if (hasOwnAnimationRow(p)) return null;   // Phoenix Feather plays "FX: Revive"
+    // an item's effect lives in its rows; a rowless copy (a shop / folder stub)
+    // must not read its default "Physical" type as a thrown damage item
+    if (!Object.values(p.effect_table ?? {}).some((r) => r && !r.$deleted)) return null;
     const intent = ar.actionIntent ?? classifyActionIntent(skillItem);
     const c = composeBeats(p, { aeTagOf: _aeTagLookup(skillItem), intent });
     const element = normalizeElement(p.type_damage);
