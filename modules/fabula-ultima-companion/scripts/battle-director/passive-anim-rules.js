@@ -68,6 +68,10 @@ export function composePassiveBeats(records, { ownerActorUuid = null, sameSide =
     if (kind === "apply_ae") {
       for (const e of applied) {
         if (!e?.actorUuid || e.removed || e.unchanged || e.skipped) continue;
+        // charges added to an effect that is already there (a Grave Points
+        // counter ticking up) or a refresh in place is bookkeeping — only a
+        // newly applied effect is something to show (live sandbox, 2026-11-04)
+        if (e.chargesAdded !== undefined || e.refreshedInPlace) continue;
         // buff / debuff tag → that; a status condition (Dazed, Poisoned…) →
         // by side; anything else is bookkeeping (a "Spent" / "Ready" marker)
         // that nobody should see.

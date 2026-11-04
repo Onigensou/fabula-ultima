@@ -37,6 +37,14 @@ t("an untagged, non-status AE is bookkeeping (a Spent / Ready marker): nothing s
   const r = composePassiveBeats([rec("apply_ae", [{ actorUuid: OWNER, name: "Ninja Log Spent" }])], { ownerActorUuid: OWNER, aeTagOf: () => null });
   assert.equal(r.skipped, "nothing-visible");
 });
+t("a counter gaining charges (Grave Points) or a refresh in place shows nothing", () => {
+  const tag = () => "buff";
+  const r = composePassiveBeats([rec("apply_ae", [
+    { actorUuid: OWNER, aeId: "x", name: "Grave Points", chargesAdded: 1, newCharges: 3 },
+    { actorUuid: OWNER, aeId: "y", name: "Haste", refreshedInPlace: true },
+  ])], { ownerActorUuid: OWNER, aeTagOf: tag });
+  assert.equal(r.skipped, "nothing-visible");
+});
 t("removed / unchanged AE entries show nothing", () => {
   const r = composePassiveBeats([rec("apply_ae", [{ actorUuid: FOE, removed: "Burn" }, { actorUuid: FOE, unchanged: true }])], { ownerActorUuid: OWNER });
   assert.equal(r.skipped, "nothing-visible");
