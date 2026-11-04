@@ -20,6 +20,12 @@ import { skillPose } from "./battler-pose-rules.js";
 import { stageScript, waitStaged, frameMeter } from "../action-animation/animation-stage.js";
 import { createChainPresenter } from "./chain-presenter.js";
 import { CHAIN_MAX, fallbackBeatMs } from "./chain-strikes.js";
+import {
+  normalizeCategory, normalizeElement, summarizeOutcome, pickAttack,
+  composeBeats, resolveBeats, attackImpactAt, beatsImpactAt,
+} from "./action-anim-rules.js";
+import { buildDefaultScript } from "./action-anim-script.js";
+import { classifyActionIntent } from "./skill-intent.js";
 
 // How long the window must be continuously hidden before we start discarding
 // animations. On Windows `document.hidden` flips true for an ordinary alt-tab
@@ -70,7 +76,12 @@ export const ANIMATION_TIMING_OPTIONS = [
   { key: "resolve", value: "Play at resolve (chain play_animation only)" },
 ];
 
-export async function resolveAnimationSpec(ar) {
+// `allowDefault` — when the action has no authored script, build the default
+// one (action-anim-rules.js + action-anim-script.js). Only the turn path asks
+// for it (Animation.onEnter + the CONFIRM prestage, which must agree so the
+// staged text matches). A `play_animation` chain step and the Anim Studio
+// lookups name a skill whose OWN cinematic they want, so they never get one.
+export async function resolveAnimationSpec(ar, { allowDefault = false } = {}) {
   const EMPTY = { hasScript: false, script: "", timingMode: "default", timingOffset: 0, playAt: "animation" };
   if (!ar) return EMPTY;
 
@@ -86,11 +97,13 @@ export async function resolveAnimationSpec(ar) {
       const item = await fromUuid(skillUuid);
       if (item?.system?.props) {
         const p = item.system.props;
-        return _buildSpec(
+        const spec = _buildSpec(
           p.animation_script,
           p.animation_damage_timing_options,
           p.animation_damage_timing_offset,
         );
+        if (spec.hasScript || !allowDefault) return spec;
+        return (await _defaultSpec(ar, { skillItem: item })) ?? spec;
       }
     } catch (e) {
       warn("[BD Anim] resolveAnimationSpec: skill fromUuid threw", e);
@@ -99,24 +112,160 @@ export async function resolveAnimationSpec(ar) {
 
   // 3. Attack action — try the weapon's backing item. The weapon snapshot
   //    on `ar` may carry `.uuid` (set by some TARGET paths) or `.weaponUuid`.
+  //    The weapon's own script comes from its animation_script field, or —
+  //    for a weapon whose template has no such field yet — the item flag
+  //    `animationScript` (+ `animationTiming` / `animationOffset`).
   const weaponUuid = ar.weapon?.uuid ?? ar.weapon?.weaponUuid ?? null;
   if (weaponUuid) {
     try {
       const item = await fromUuid(weaponUuid);
       if (item?.system?.props) {
         const p = item.system.props;
-        return _buildSpec(
-          p.animation_script,
-          p.animation_damage_timing_options,
-          p.animation_damage_timing_offset,
+        const f = item.flags?.[ANIM_NS] ?? {};
+        const own = _stripHtml(p.animation_script).trim() ? p : null;
+        const spec = _buildSpec(
+          own ? p.animation_script : f.animationScript,
+          own ? p.animation_damage_timing_options : f.animationTiming,
+          own ? p.animation_damage_timing_offset : f.animationOffset,
         );
+        if (spec.hasScript || !allowDefault) return spec;
+        return (await _defaultSpec(ar, { weaponItem: item })) ?? spec;
       }
     } catch (e) {
       warn("[BD Anim] resolveAnimationSpec: weapon fromUuid threw", e);
     }
   }
 
+  // 4. Nothing authored and no item to read (an unarmed attack): the default.
+  if (allowDefault) {
+    try { return (await _defaultSpec(ar, {})) ?? EMPTY; }
+    catch (e) { warn("[BD Anim] default animation failed", e); }
+  }
   return EMPTY;
+}
+
+// ── Default action animations ───────────────────────────────────────────
+//
+// An Attack or Skill with no authored script gets a short default (approved
+// mockup 2026-11-04): step in, one RPG Maker MV clip on the target, step back —
+// by weapon category for attacks, by the skill's own effects for skills. The
+// world setting picks whose actions get it. See action-anim-rules.js.
+
+const ANIM_NS = "fabula-ultima-companion";
+const DEFAULT_ANIM_SETTING = "defaultActionAnimations";
+
+Hooks.once("init", () => {
+  try {
+    game.settings.register(ANIM_NS, DEFAULT_ANIM_SETTING, {
+      name: "Battle: default action animations",
+      hint: "Attacks, skills and spells that have no animation of their own play a short default: the actor steps in, a hit effect plays on the target, the actor steps back. Choose whose actions get it.",
+      scope: "world",
+      config: true,
+      type: String,
+      choices: { everyone: "Everyone", party: "Party only", npc: "NPCs only", off: "Off" },
+      default: "everyone",
+    });
+  } catch (e) { warn("[BD Anim] default-animation setting registration failed", e); }
+});
+
+function _defaultsFor(ar) {
+  let mode = "everyone";
+  try { mode = game.settings.get(ANIM_NS, DEFAULT_ANIM_SETTING) ?? "everyone"; } catch {}
+  if (mode === "off") return false;
+  if (mode === "everyone") return true;
+  let disp = 1;
+  try {
+    const tok = ar?.attacker?.tokenUuid ? fromUuidSync(ar.attacker.tokenUuid) : null;
+    disp = Number(tok?.disposition ?? ar?.attacker?.disposition ?? 1);
+  } catch {}
+  const enemy = disp === -1;
+  return mode === "npc" ? enemy : !enemy;
+}
+
+// AE template name → "buff" | "debuff" | null, from the effect's tags: the
+// item's own effects first (per-skill templates), then the world's status
+// library (activeEffectContainer items) — the order apply_ae resolves names in.
+function _aeTagLookup(item) {
+  const memo = new Map();
+  const tagOf = (eff) => {
+    const raw = eff?.system?.tags;
+    const list = Array.isArray(raw) ? raw : (raw && typeof raw.has === "function" ? Array.from(raw) : []);
+    const l = list.map((x) => String(x).trim().toLowerCase());
+    return l.includes("debuff") ? "debuff" : l.includes("buff") ? "buff" : null;
+  };
+  return (name) => {
+    if (!name) return null;
+    if (memo.has(name)) return memo.get(name);
+    let found = null;
+    for (const eff of item?.effects ?? []) if (eff.name === name || eff.id === name) { found = eff; break; }
+    if (!found) {
+      for (const it of game.items ?? []) {
+        if (it.type !== "activeEffectContainer") continue;
+        found = (it.effects ?? []).find((e) => e.name === name) ?? null;
+        if (found) break;
+      }
+    }
+    const tag = found ? tagOf(found) : null;
+    memo.set(name, tag);
+    return tag;
+  };
+}
+
+function _defaultResult(plan, impactAt) {
+  return {
+    hasScript: true,
+    script: buildDefaultScript(plan),
+    timingMode: "timing_offset",
+    timingOffset: Math.max(0, Math.round(impactAt)),
+    playAt: "animation",
+    source: "default",
+    defaultLabel: plan.label,
+  };
+}
+
+async function _defaultSpec(ar, { skillItem = null, weaponItem = null } = {}) {
+  if (!_defaultsFor(ar)) return null;
+  const kind = String(ar?.kind ?? "");
+  const outcome = summarizeOutcome(ar?.perTargetResults);
+  const strikes = ar?.chainPlan && !ar.chainPlan.single ? (ar.chainPlan.strikes?.length ?? 1) : 1;
+
+  if (kind === "Attack") {
+    const w = ar.weapon ?? {};
+    const wp = weaponItem?.system?.props ?? {};
+    const category = normalizeCategory(w.weaponType || wp.weapon_type || wp.category);
+    const element = normalizeElement(w.damageType || wp.type_damage);
+    const preset = String(wp.attack_anim_preset ?? weaponItem?.flags?.[ANIM_NS]?.attackAnimPreset ?? "").trim() || null;
+    // An attack item that carries visible effects of its own (an NPC bite
+    // that poisons) plays them as beats after the hit.
+    if (weaponItem && !preset && strikes === 1) {
+      const c = composeBeats({ ...wp, type_damage: element }, { aeTagOf: _aeTagLookup(weaponItem), intent: "harmful" });
+      if (c.beats.length > 1) {
+        const beats = resolveBeats(c.beats, { outcome, element, attackLike: true });
+        const label = `Attack ${weaponItem.name}: ${beats.map((b) => b.k).join(" + ")} (${outcome})`;
+        return _defaultResult({ mode: "beats", attackLike: true, beats, key: "atk-beats", label }, beatsImpactAt(beats, { attackLike: true }));
+      }
+    }
+    // A Chain's strikes carry their own crits; its base clip is the plain one.
+    const pickOutcome = strikes > 1 && outcome === "crit" ? "hit" : outcome;
+    const attack = pickAttack({ category, element, outcome: pickOutcome, preset });
+    const label = `Attack ${category} · ${element} · ${pickOutcome}${preset ? " · preset " + preset : ""}${strikes > 1 ? " · chain " + strikes : ""}`;
+    return _defaultResult({ mode: "attack", attack, key: "atk", label }, attackImpactAt(attack, { strikes }));
+  }
+
+  if (kind === "Skill" && skillItem) {
+    const p = skillItem.system?.props ?? {};
+    const st = String(p.skill_type ?? "").trim().toLowerCase();
+    if (!["attack", "spell", "active", "skill"].includes(st)) return null;
+    const intent = ar.actionIntent ?? classifyActionIntent(skillItem);
+    const c = composeBeats(p, { aeTagOf: _aeTagLookup(skillItem), intent });
+    const element = normalizeElement(p.type_damage);
+    const attackLike = st === "attack";
+    const beats = resolveBeats(c.beats, { outcome, element, attackLike });
+    if (!beats.length) return null;   // a neutral action with nothing to show
+    const label = `${skillItem.name}: ${beats.map((b) => `${b.k}→${b.to}`).join(" + ")} (${outcome})`;
+    return _defaultResult({ mode: "beats", attackLike, beats, key: "skill", label }, beatsImpactAt(beats, { attackLike }));
+  }
+  return null;
 }
 
 // Strip HTML tags produced by Foundry's ProseMirror/TipTap rich-text editor.
@@ -518,7 +667,7 @@ const PRESTAGE_FRESH_MS = 20000;
 export function prestageAnimation(director, ar) {
   if (!director || !ar) return;
   const entry = { script: null, job: null, at: Date.now() };
-  entry.job = resolveAnimationSpec(ar).then((spec) => {
+  entry.job = resolveAnimationSpec(ar, { allowDefault: true }).then((spec) => {
     if (!spec.hasScript || spec.playAt === "resolve") return null;
     entry.script = spec.script;
     return stageScript(spec.script);

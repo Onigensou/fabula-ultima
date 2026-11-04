@@ -254,4 +254,9 @@ t("composer: a pre-damage buff pushes the damage back by its beat", () => {
   assert.equal(beatsImpactAt(r), T.slideMs + T.castMs + (333 + T.beatGapMs) + 67);
 });
 
+t("composer, attack-like (an attack item that also poisons): a step, no glow", () => {
+  const r = resolveBeats(venom, { element: "Poison", attackLike: true });
+  assert.equal(beatsImpactAt(r, { attackLike: true }), T.stepMs + 67);
+});
+
 console.log(`\n${n} passed`);

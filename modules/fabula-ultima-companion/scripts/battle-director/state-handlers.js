@@ -8825,7 +8825,10 @@ const Animation = {
         beginHitCounter({ id: ar._instanceId ?? null, side: disp === -1 ? "enemy" : "party" });
       }
     } catch (e) { warn("ANIMATION: hit counter begin threw", e); }
-    const spec = await resolveAnimationSpec(ar);
+    // allowDefault: an Attack / Skill with no script of its own gets the short
+    // default (action-anim-rules.js), per the "default action animations" setting.
+    const spec = await resolveAnimationSpec(ar, { allowDefault: true });
+    if (spec.source === "default") log(`ANIMATION: default — ${spec.defaultLabel} (damage at ${spec.timingOffset} ms)`);
 
     // Attack / cast pose on the actor, on every client — also for actions with
     // no animation script, the way a JRPG battler swings even without effects.
@@ -8849,9 +8852,13 @@ const Animation = {
     // JRPG cinematic etiquette — fade the Dominance Crests out on every client
     // while the animation plays (restored in onExit/onAbort, which fire on
     // every way out of this state incl. Skip Animation and battle-end aborts).
-    try { emitCrestsHidden(true); } catch (e) { warn("ANIMATION: emitCrestsHidden(true) threw", e); }
-    try { emitAurasHidden(true); } catch (e) { warn("ANIMATION: emitAurasHidden(true) threw", e); }
-    try { emitMarksHidden(true); } catch (e) { warn("ANIMATION: emitMarksHidden(true) threw", e); }
+    // A default (a one-second step-and-hit) leaves them up: hiding the HUD for
+    // every basic attack would make it flicker all fight long.
+    if (spec.source !== "default") {
+      try { emitCrestsHidden(true); } catch (e) { warn("ANIMATION: emitCrestsHidden(true) threw", e); }
+      try { emitAurasHidden(true); } catch (e) { warn("ANIMATION: emitAurasHidden(true) threw", e); }
+      try { emitMarksHidden(true); } catch (e) { warn("ANIMATION: emitMarksHidden(true) threw", e); }
+    }
 
     // playDirectorAnimation is intentionally not awaited here — it drives
     // itself asynchronously and enqueues INTERNAL_DONE when the gate resolves.

@@ -361,9 +361,10 @@ export function attackImpactAt(pick, { strikes = 1 } = {}) {
 
 // Skill composer: damage (or, with no damage, the first beat) lands at its
 // clip's first flash; beats before it each take `flash + beatGapMs`.
-export function beatsImpactAt(resolved) {
+// attackLike (an attack item with extra effects): a step in, no cast glow.
+export function beatsImpactAt(resolved, { attackLike = false } = {}) {
   const T = TIMING;
-  let t = T.slideMs + T.castMs;
+  let t = attackLike ? T.stepMs : T.slideMs + T.castMs;
   for (const b of resolved) {
     const land = b.clip ? Math.max(b.k === "damage" ? 40 : 200, firstFlash(b.clip)) : 60;
     if (b.k === "damage" || b.k === "heal" || b === resolved[resolved.length - 1]) return t + land;
