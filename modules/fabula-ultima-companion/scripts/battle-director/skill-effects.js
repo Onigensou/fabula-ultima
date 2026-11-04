@@ -31,7 +31,8 @@ import { emitLeaveExit } from "./leave-exit-fx.js";
 import { RESOURCE_REGISTRY } from "./resources.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor, isPersistentCounter } from "./skill-charges.js";
 import { foldChargeSteps, aeRefreshIsNoop } from "./chain-strikes.js";
-import { readPropNum, resolveAffinity, skillDeclaresVersatile, resolvesVsMagicDefense, actorLiveRuleValues } from "./snapshot.js";
+import { readPropNum, resolveAffinity, skillDeclaresVersatile, resolvesVsMagicDefense, actorLiveRuleValues, getActionLabelBlockers, getPassiveSuppression, canonActionLabel, GATEABLE_ACTION_LABELS, GATING_EXEMPT_TAG_PREFIX } from "./snapshot.js";
+import { getActorKind } from "./actor-shape.js";
 import { isActorDefeated, settleRevive } from "./defeat-reactor.js";
 import { computeIncomingDamage, aeOutgoingActionKeywords } from "./damage-ruleset.js";
 import { appendBattleLog, buildDamageRow } from "./director-battle-log.js";
@@ -1707,6 +1708,146 @@ export function containerReactionInPlay(item, casterActor, payload) {
   return false;
 }
 
+// ── Reaction gating: action-blocking debuffs + Suppressed ──────────────────
+// Ruling (Onigensou, 2026-11-04): a debuff that blocks a command blocks every
+// use of that action type, wherever it is offered — not just the menu button.
+// "Reaction" is only the mechanism; what the debuffs read is Active vs Passive:
+//   Active  = the player chooses to use it  → reaction_passive_mode "ask"
+//   Passive = fires on its own              → "on" / "force"
+// skill_type can't tell them apart (Barrage AND Cheap Shot are typed Passive).
+//
+//   Check A (ask rows on ITEMS): the category of what the reaction comes from —
+//     gear-granted → Equipment (Disarmed), consumable → Item (Panic),
+//     skill_type Spell → Spell (Silence), anything else → Skill (Paralyzed).
+//     Rows carried by an AE / granted by someone else's skill skip A: the action
+//     that put them there already passed its own gate.
+//   Check B (every ask row): the free actions it grants. Blocked only when the
+//     reaction's WHOLE payload is free actions (plus cost/target plumbing) and
+//     every label they grant is blocked. Anything with another outcome
+//     (Glowstick's damage step, High Speed's menu) stays open; the free-action
+//     menu / DECLARE backstop already greys the blocked part.
+//   Suppressed (`disable_passive`): never gear. Monsters (NPC actors): every row
+//     of a skill labelled Passive — on monsters the label is reliable. Players:
+//     on/force rows of a Passive skill with NO ask row (a skill with a choosable
+//     row is Active; its auto rows are its machinery — Dance's cost).
+//
+// Exemptions: Domination State (all gates inert), and ignore_gating_<ae> skill
+// tags on the carrier (must name every AE blocking that label), as the menu.
+// Only the LABEL gates feed A/B; the Charm-style intent filter stays per-entry.
+const REACTION_GEAR_ITEM_TYPES = new Set(["accessory", "armor", "weapon", "shield"]);
+const _lc = (v) => String(v ?? "").trim().toLowerCase();
+
+// Category of an item-carried reaction, for Check A.
+export function reactionCarrierCategory(item, actor) {
+  const p = item?.system?.props ?? {};
+  const own = _lc(p.item_type);
+  if (REACTION_GEAR_ITEM_TYPES.has(own)) return "Equipment";
+  const cid = item?.system?.container;
+  const cont = cid ? actor?.items?.get?.(cid) : null;
+  // Gear `_skill`-inside model. Legacy gear shells carry a blank item_type
+  // (Dark Ring, Robe of Flesh) — any non-Arcanum container with no type is gear.
+  if (cont && !isArcanumContainer(cont)) {
+    const ct = _lc(cont.system?.props?.item_type);
+    if (REACTION_GEAR_ITEM_TYPES.has(ct) || ct === "") return "Equipment";
+  }
+  if (own === "consumable") return "Item";
+  if (_lc(p.skill_type) === "spell") return "Spell";
+  return "Skill";
+}
+
+// Plumbing that doesn't count as an outcome of its own for Check B.
+const GRANT_PASSTHROUGH_KINDS = new Set(["chain", "targeting", "consume_resource", "consume_charge", "adjust_cost", "free_action"]);
+// Set of canonical action labels the reaction's payload grants, or null when it
+// does anything besides granting gateable free actions.
+function reactionGrantedActionLabels(effectTable, refLabel) {
+  if (!refLabel || !effectTable) return null;
+  const byLabel = new Map();
+  for (const r of Object.values(effectTable)) {
+    if (!r || r.$deleted) continue;
+    const l = String(r.effect_label ?? "").trim();
+    if (l) byLabel.set(l, r);
+  }
+  const labels = new Set();
+  const seen = new Set();
+  const walk = (lbl) => {
+    if (seen.has(lbl)) return true;
+    seen.add(lbl);
+    const r = byLabel.get(lbl);
+    if (!r) return true;
+    const kind = _lc(r.effect_kind);
+    if (!GRANT_PASSTHROUGH_KINDS.has(kind)) return false;
+    if (kind === "chain") {
+      for (const step of String(r.chain_steps ?? "").split(/[,\n]/).map((s) => s.trim()).filter(Boolean)) {
+        if (!walk(step)) return false;
+      }
+    } else if (kind === "free_action") {
+      for (const part of String(r.action_ref ?? "").split(/[,|]/).map((s) => s.trim()).filter(Boolean)) {
+        const L = canonActionLabel(part);
+        // An item-named grant (Lightning Rod) is not a gateable command.
+        if (!GATEABLE_ACTION_LABELS.includes(L)) return false;
+        labels.add(L);
+      }
+    }
+    return true;
+  };
+  if (!walk(refLabel) || !labels.size) return null;
+  return labels;
+}
+
+function _carrierSkillTags(item) {
+  return new Set(String(item?.system?.props?.skill_tags ?? "").split(/[\s,]+/)
+    .map((t) => t.trim().toLowerCase().split("@")[0]).filter(Boolean));
+}
+
+function _hasAskRow(item) {
+  return Object.values(item?.system?.props?.reaction_config_table ?? {}).some((r) =>
+    r && !r.$deleted && String(r.reaction_trigger ?? "").trim()
+    && resolveReactionPassiveMode(r) === "ask");
+}
+
+// Returns null (allowed) or { kind, reason }. kind "blocked" surfaces as a
+// dimmed pill naming the debuff (like "cost"); kind "condition" is hidden and
+// never fires — used for Suppressed auto passives (no card: nothing happened).
+//   carrierKind: "item" (the reactor's own item) | "ae" | "granted"
+export function getReactionGate(actor, { carrier, carrierKind, row, effectTable, refLabel } = {}) {
+  if (!actor || !row) return null;
+  const mode = resolveReactionPassiveMode(row);
+  if (mode === "off") return null;
+
+  if (carrierKind === "item" && carrier) {
+    const sup = getPassiveSuppression(actor);
+    if (sup && _lc(carrier.system?.props?.skill_type) === "passive"
+        && reactionCarrierCategory(carrier, actor) !== "Equipment") {
+      const isNpc = getActorKind(actor) === "npc";
+      if (isNpc || (mode !== "ask" && !_hasAskRow(carrier))) {
+        return { kind: mode === "ask" ? "blocked" : "condition", reason: sup };
+      }
+    }
+  }
+
+  if (mode !== "ask") return null;
+  const blockers = getActionLabelBlockers(actor);
+  if (!blockers.size) return null;
+  const tags = carrierKind === "item" ? _carrierSkillTags(carrier) : new Set();
+  const blockedBy = (label) => {
+    const b = blockers.get(label);
+    if (!b) return null;
+    if ([...b.slugs].every((s) => tags.has(`${GATING_EXEMPT_TAG_PREFIX}${s}`))) return null;
+    return b.reason;
+  };
+
+  if (carrierKind === "item" && carrier) {
+    const why = blockedBy(reactionCarrierCategory(carrier, actor));
+    if (why) return { kind: "blocked", reason: why };
+  }
+  const granted = reactionGrantedActionLabels(effectTable, refLabel);
+  if (granted) {
+    const reasons = [...granted].map(blockedBy);
+    if (reasons.every(Boolean)) return { kind: "blocked", reason: reasons[0] };
+  }
+  return null;
+}
+
 // Per-ROW weapon-USED gate. A reaction row may DECLARE (via the checkbox column
 // `reaction_requires_weapon_used`) that it only fires when the weapon BACKING it
 // is the one actually used in the triggering action — the gear `_skill`-inside-
@@ -2017,6 +2158,12 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         available = false; unavailableKind = "condition";
         unavailableReason = CAP_REASONS[readReactionMaxScope(row)];
       }
+      // Action-blocking debuffs / Suppressed (see getReactionGate). Outranks a
+      // cost shortfall (the debuff is the real reason), never a failed condition.
+      if (available || unavailableKind === "cost") {
+        const gate = getReactionGate(casterActor, { carrier: item, carrierKind: "item", row, effectTable, refLabel });
+        if (gate) { available = false; unavailableKind = gate.kind; unavailableReason = gate.reason; }
+      }
       if (!includeUnavailable && !available) continue;
       const mode = modeFor(row);
       out.push({
@@ -2094,6 +2241,11 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         available = false; unavailableKind = "condition";
         unavailableReason = CAP_REASONS[readReactionMaxScope(row)];
       }
+      // AE-carried: granted-action check only (see getReactionGate).
+      if (available || unavailableKind === "cost") {
+        const gate = getReactionGate(casterActor, { carrier: ae, carrierKind: "ae", row, effectTable, refLabel });
+        if (gate) { available = false; unavailableKind = gate.kind; unavailableReason = gate.reason; }
+      }
       if (!includeUnavailable && !available) continue;
       const mode = modeFor(row);
       out.push({
@@ -2151,6 +2303,12 @@ export async function findTargetOwnedCandidates({ skill, trigger, targetActor, p
     if (available) {
       const cost = analyzeChainCost(effectTable, refLabel, targetActor, skill);
       if (cost.ok && !cost.sufficient) { available = false; unavailableKind = "cost"; unavailableReason = cost.badge; }
+    }
+    // The decision is granted by the ACTOR's skill, so only the target's
+    // granted-action check applies (see getReactionGate).
+    if (available || unavailableKind === "cost") {
+      const gate = getReactionGate(targetActor, { carrier: skill, carrierKind: "granted", row, effectTable, refLabel });
+      if (gate) { available = false; unavailableKind = gate.kind; unavailableReason = gate.reason; }
     }
     if (!includeUnavailable && !available) continue;
     const mode = resolveReactionPassiveMode(row);

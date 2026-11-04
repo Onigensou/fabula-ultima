@@ -8468,7 +8468,9 @@ export async function postActionCard({ director, kind, payload }) {
           }
           const again = rescans.get(rk).find((c) => String(c.rowKey) === String(p.rowKey) && String(c.carrierUuid) === String(p.carrierUuid));
           if (again && again.available === false) {
-            reason = again.unavailableKind === "cost" ? (again.unavailableReason || "Can't pay for it now") : "No longer applies";
+            reason = again.unavailableKind === "cost" ? (again.unavailableReason || "Can't pay for it now")
+              : again.unavailableKind === "blocked" ? (again.unavailableReason || "Blocked")
+              : "No longer applies";
           }
         }
         if (reason) out.push({ rowKey: p.rowKey, carrierUuid: p.carrierUuid, carrierName: p.carrierName ?? null, reason });
