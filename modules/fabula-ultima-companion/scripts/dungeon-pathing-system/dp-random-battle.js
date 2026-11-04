@@ -35,14 +35,14 @@
 
   const BATTLE_INIT_MACRO = "BattleInit — BattleInit Manager";
 
-  const SFX = {
-    ambush:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Down2.ogg",
-    advantage: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Up4.ogg",
-    normal:    "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Monster1.ogg",
-  };
+  // No encounter sound and no "Nothing appears…" card (removed 2026-11-04, host
+  // decision): the players must not learn the outcome before the GM has had the
+  // override window. The screen shatter is the only sign that a battle started;
+  // a miss is hidden behind the tile handler's silent hold, then the next turn
+  // simply begins.
 
-  // How long the GM gets to intercept, in ms. Deliberately short: it runs while
-  // the encounter SFX plays, so it costs the player no visible pause.
+  // How long the GM gets to intercept, in ms. Deliberately short. The tile
+  // handler's silent miss hold (DP.UI.RANDOM_BATTLE_HOLD) is sized against it.
   const OVERRIDE_WINDOW_MS = 2500;
 
   const log  = (...a) => console.debug(TAG, ...a);
@@ -497,23 +497,6 @@
 
   // ── Presentation ───────────────────────────────────────────────────────────
 
-  function playEncounterSfx(engagement) {
-    const src = SFX[engagement] ?? SFX.normal;
-    try {
-      // Sequencer broadcasts by default; AudioHelper needs to be told to.
-      if (game.modules.get("sequencer")?.active) new Sequence().sound(src).play();
-      else AudioHelper.play({ src, volume: 0.8, autoplay: true, loop: false }, true);
-    } catch (e) { warn("SFX failed", e); }
-  }
-
-  function postMissCard() {
-    const style = "font-size:1.4rem;font-style:italic;text-align:center;padding:6px;";
-    ChatMessage.create({
-      speaker: { alias: "System" },
-      content: `<div style="${style}">Nothing appears…</div>`,
-    }).catch(e => warn("ChatMessage.create failed:", e));
-  }
-
   const TOAST_ID    = "oni-dp-encounter-toast";
   const TOAST_STYLE = "oni-dp-encounter-toast-styles";
 
@@ -555,8 +538,8 @@
   /**
    * GM-only interception window. Resolves "auto" | "customize" | "now".
    *
-   * Runs concurrently with the encounter SFX, so the pause it adds is hidden
-   * behind a beat the players are already watching.
+   * The players see nothing during it: the turn is held silently on their
+   * side, the same as a miss is held, so the wait itself gives nothing away.
    */
   function showOverrideToast(picks, engagement, ms) {
     injectToastStyles();
@@ -695,7 +678,6 @@
     // 1. Does anything happen at all?
     const d100 = Math.floor(Math.random() * 100) + 1;
     if (!forced && d100 > rates.encounter) {
-      postMissCard();
       applyRateUpdate(rates, false);
       return { ok: true, appear: false, launched: false };
     }
@@ -714,10 +696,7 @@
         : `no Battle Map is configured on "${scene.name}"`;
       warn("degrading to a miss:", why);
       ui.notifications?.warn?.(`Random Battle | ${why}`);   // GM-only: this runs on the GM
-      if (!forced) {
-        postMissCard();
-        applyRateUpdate(rates, false);
-      }
+      if (!forced) applyRateUpdate(rates, false);
       return { ok: true, appear: false, launched: false, error: why };
     }
 
@@ -731,9 +710,6 @@
                        : "normal");
 
     log(`encounter: ${picks.map(p => p.name).join(", ")} | engagement=${engagement}`);
-
-    // 4. SFX now — it covers the override window that follows.
-    playEncounterSfx(engagement);
 
     // 5. GM interception.
     let verdict = "auto";
