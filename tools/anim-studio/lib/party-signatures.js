@@ -48,7 +48,8 @@ const IMAGES = {
 
 const KIT = fs.readFileSync(path.join(__dirname, "party-shots", "_kit.inner.js"), "utf8");
 function inner(name) { return KIT + "\n// ── shot ──\n" + fs.readFileSync(path.join(__dirname, "party-shots", name + ".inner.js"), "utf8"); }
-function pick(keys) { const o = {}; for (const k of keys) { if (!CLIPS[k]) throw new Error("unknown clip " + k); o[k] = CLIPS[k]; } return o; }
+// clips: an array of registry keys, or an object { key: def | true } (true = take the registry def).
+function pick(keys) { const o = {}; if (Array.isArray(keys)) { for (const k of keys) { if (!CLIPS[k]) throw new Error("unknown clip " + k); o[k] = CLIPS[k]; } return o; } for (const [k, v] of Object.entries(keys || {})) { const d = v === true ? CLIPS[k] : v; if (!d || !d.url) throw new Error("bad clip " + k); o[k] = d; } return o; }
 function build({ key, name, shot, clips, images, cfg, gate, timeout }) {
   const assets = { clips: pick(clips), images: images || {} };
   const full = Object.assign({ totalTimeoutMs: timeout || 20000 }, cfg);
@@ -87,4 +88,4 @@ function highSpeed() {
   return build({ key: "high-speed", name: "High Speed", shot: "high-speed", clips: [], cfg: { p, sfx: [{ at: 0, url: snd("Wind2.ogg"), v: 0.5 }] }, gate: null }); // was 0.85 (user: too loud, 2026-11-05)
 }
 
-module.exports = { CLIPS, IMAGES, snd, cue, build, inner, phantasmStrike, detonatePhantasm, highSpeed };
+module.exports = { CLIPS, IMAGES, MV, RO, GG, FORGE, snd, cue, build, inner, phantasmStrike, detonatePhantasm, highSpeed };
