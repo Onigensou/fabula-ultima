@@ -228,3 +228,26 @@ backdrops without a 3D model.
   Left: battle start (token actors' first prepare ~140–230 ms, `prewarmShatter` ~170–230 ms, sprite-shadow `readPixels`
   ~300 ms under software GL), and 50–95 ms UI tasks (round banner `refreshTurnActions`, a `settings.get` in
   monks-little-details). Item containers also keep unchanged rows now: Hina's HP write ~13 → ~10 ms.
+- **2026-11-04 (later): battle start and the first turn, on a real GPU.** First real-GPU runs (one headless client,
+  `FVTT_GPU=true`, persistent browser profile so the shader disk cache behaves like a player's). The sprite-shadow
+  `readPixels` ~300 ms was a software-GL artifact (15–50 ms on the GPU). The real cost was SHADER COMPILES: 9 programs
+  compiled during the first battle, 440–460 ms on a fresh profile; on a warm profile the turn-glow outline (115–156 ms)
+  and a ColorMatrixFilter (80–97 ms) still recompiled every session, because PIXI names each program
+  `pixi-shader-<counter>` and the counter follows creation order, so the source (the cache key) changed. Most of that
+  time was waiting on GPU work already queued in the same frame (a `getError` probe: 60–80 ms before the compile).
+  Fixes: `perf/pixi-stable-shader-names.js` (name = hash of the source), `perf/pixi-shader-prewarm.js` (turn-glow,
+  sprite-shadow bake, ColorMatrix drawn once on a small render texture while idle after a scene loads; 5–17 ms warm,
+  ~250 ms total on a never-seen profile). In-battle compiles: 440 → 56 ms (fresh profile), 230–300 → 11 ms (warm).
+  Also: `prewarmShatter` spread over ≤ 8 ms idle slices (was one 170–230 ms task; panes identical to HEAD);
+  `perf/client-setting-memo.js` (client-scope `settings.get` built a Setting document per call: 184 ms per battle);
+  bare `getProperty` in the player HUD hit Foundry's deprecated-global getter (a compat warning per read, 68 ms);
+  GM desk rows forced a layout per row per repaint (78 ms); the chat-button layout built a debug snapshot with
+  `getComputedStyle` on every schedule (109 ms); rewind save points re-rendered the Journal sidebar per action
+  (`render: false`); component map shared per layout tree. Seeded battle, real GPU, warm profile, after a 4 s settle:
+  long tasks 838–1242 → 281 ms (2 tasks, both the sim's actor/token creation at t=0), worst lag 284–309 → 156 ms.
+  Software runner A/B vs HEAD (2 runs each): long tasks ~1.0 s → ~0.65 s. Same battle, 487/487 compute, simulate
+  487/487 vs HEAD, parity 430/430.
+  Left: new documents at battle start (each is constructed and prepared twice by Foundry: preCreate + create;
+  ~160 + 60 ms in the sim), sprite-shadow `getTextureAlphaData` (~50 ms GPU), forced layouts in
+  `npc-status-strip` `layout()` when the DOM is dirty, 30–45 ms director turn tasks (`onEnter`, round banner,
+  `previewEnemyActionOdds`, handlebars renders).

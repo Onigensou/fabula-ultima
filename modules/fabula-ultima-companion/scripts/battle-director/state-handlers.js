@@ -1035,8 +1035,17 @@ async function resolveAction(director, ar, opts = {}) {
         // move's own post_damage effect above still runs per strike.
         const _lg = !ct ? _ln : (_ln === _lines[_lines.length - 1] ? chainCombinedLine(ct, { finalValue, valueDirection, shieldAbsorbed: Number(dmgRes.shieldAbsorbed) || 0 }, ar) : null);
         if (_lg) {
+          // A hit the Shield soaked whole still reports its damage as finalValue and
+          // still queues this event (Phantom Strength spends on it, Sleep wakes on it),
+          // but it moved no HP, so it is not damage taken for isDamage's readers.
+          const _soakedWhole = valueType === "hp" && _lg.valueDirection === "loss"
+            && (Number(_lg.shieldAbsorbed) || 0) > 0
+            && (Number(_lg.shieldAbsorbed) || 0) >= (Number(_lg.finalValue) || 0);
           SE().fireResourceChangeTrigger({
             director, actor: targetActor, tokenUuid: r.tokenUuid,
+            subjectSnapshot: _subjectSnapshots.get(r.tokenUuid) ?? null,
+            isDamage: !_soakedWhole,
+            damageInstance: ar._instanceId ?? null,
             resource: valueType, direction: _lg.valueDirection, amount: _lg.finalValue,
             chainStrike: _lg.chainStrike, chainStrikes: _lg.chainStrike ? chainPlan.count : null, chainRepeat: _lg.chainRepeat,
             cause: "damage",

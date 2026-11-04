@@ -77,10 +77,15 @@ function buildGameHtml() {
   const inject = `<script>window.__RUNNER_CFG = ${JSON.stringify({ userId: snapMeta.userId, worldId: CFG.worldId, code: CODE ? { ref: CODE.ref, sha: CODE.sha, version: JSON.parse(readFileSync(join(CODE.dir, MOD, "module.json"), "utf8")).version } : null })};</script>\n` +
     `<script src="/runner/fake-io.js"></script>`;
   let out = src.replace(/<script[^>]*socket\.io[^>]*><\/script>/i, inject);
-  if (CODE) out = swapModuleTags(out, JSON.parse(readFileSync(join(CODE.dir, MOD, "module.json"), "utf8")));
   if (out === src) throw new Error("could not find the socket.io <script> tag in snapshot/game.html");
+  // Our module's tags always come from the manifest being served (the commit's with --code, else the
+  // working tree's): the snapshot's page lists the scripts module.json had when it was BUILT, so a
+  // script added since was silently not loaded (found 2026-11-04 adding scripts/perf/*).
+  out = swapModuleTags(out, JSON.parse(readFileSync(manifestPath(), "utf8")));
   return out;
 }
+const manifestPath = () => join(CODE ? CODE.dir : DATA, MOD, "module.json");
+let gameHtmlStamp = null;
 
 /** Replace our module's script / esmodule / style tags with the ones a commit's manifest lists.
  *  Each kind is one contiguous run in the page (it is not a library module). */
@@ -149,7 +154,8 @@ const server = http.createServer(async (req, res) => {
     if (p === "/" || p === "/join" || p === "/setup") return send(res, 302, "", "text/plain", { Location: "/game" });
     if (p === "/api/status") return send(res, 200, JSON.stringify({ active: true, world: CFG.worldId, runner: true, code: CODE?.sha ?? "working-tree", snapshot: SNAP_DIR.slice(TOOL.length + 1) }), TYPES[".json"]);
     if (p === "/game") {
-      gameHtml ??= buildGameHtml();
+      const stamp = statSync(manifestPath()).mtimeMs;
+      if (gameHtml === null || stamp !== gameHtmlStamp) { gameHtml = buildGameHtml(); gameHtmlStamp = stamp; }
       return send(res, 200, gameHtml, TYPES[".html"], { "Set-Cookie": "session=runner; Path=/" });
     }
     if (p === "/runner/world.json") return existsSync(SNAP) ? sendFile(res, SNAP) : send(res, 404, "no snapshot — run build-snapshot");

@@ -1239,10 +1239,13 @@ function paintRow(r) {
   r.q(".mp").title = mp ? `MP ${Math.round(mp.v)} / ${Math.round(mp.m)}` : "";
   const fl = r.q(".bar .fl"), tr = r.q(".bar .tr");
   const w = hp ? pctOf(hp.v, hp.m) : "0%";
-  fl.style.width = w;
+  if (fl.style.width !== w) fl.style.width = w;
   const prevW = parseFloat(tr.style.width || "0");
-  // The trail drops slowly behind a loss and jumps up with a heal.
-  if (!tr.style.width || parseFloat(w) >= prevW) { tr.style.transition = "none"; tr.style.width = w; void tr.offsetWidth; tr.style.transition = ""; }
+  // The trail drops slowly behind a loss and jumps up with a heal. Only on a change: the jump
+  // reads offsetWidth to apply the width without the transition, which forces a page layout,
+  // and every row did that on every repaint (78 ms over a seeded battle, measured 2026-11-04).
+  if (tr.style.width === w) { /* unchanged */ }
+  else if (!tr.style.width || parseFloat(w) >= prevW) { tr.style.transition = "none"; tr.style.width = w; void tr.offsetWidth; tr.style.transition = ""; }
   else tr.style.width = w;
   const ko = !!(hp && hp.v <= 0) || !!u.defeated;
   const crisis = !ko && !!(hp && hp.v <= hp.m / 2);

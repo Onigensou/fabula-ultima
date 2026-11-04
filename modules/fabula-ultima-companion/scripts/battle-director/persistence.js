@@ -735,9 +735,15 @@ function historyDocData(scene, entry, seq, folderId) {
   };
 }
 
+// Save points are internal (ownership NONE, never opened): writing one must not re-render the
+// Journal sidebar on every client. A directory render rebuilds the whole folder tree of the
+// collection, ~50 ms per save point in a seeded battle (measured 2026-11-04), and a battle
+// writes one per action. A fresh object per call: Foundry writes into the operation it is given.
+const historyWrite = () => ({ render: false });
+
 async function deleteHistoryDocs(docs) {
   const ids = docs.map((d) => d.id).filter(Boolean);
-  if (ids.length) await CONFIG.JournalEntry.documentClass.deleteDocuments(ids);
+  if (ids.length) await CONFIG.JournalEntry.documentClass.deleteDocuments(ids, historyWrite());
 }
 
 // A battle saved before the store moved keeps its points in the legacy scene
@@ -748,7 +754,7 @@ async function migrateLegacyHistory(scene) {
   const folder = await historyFolder();
   const first = historyMeta(historyDocs(scene)[0])?.seq ?? (legacy.length + 1);
   const data = legacy.map((entry, i) => historyDocData(scene, entry, first - legacy.length + i, folder?.id ?? null));
-  await CONFIG.JournalEntry.documentClass.createDocuments(data);
+  await CONFIG.JournalEntry.documentClass.createDocuments(data, historyWrite());
   await scene.unsetFlag(FLAG_NS, HISTORY_KEY);
   log(`persistence.history: moved ${legacy.length} legacy save point(s) of ${scene.name} into documents`);
 }
@@ -766,7 +772,7 @@ export function pushToHistory(scene, entry) {
       }
       const folder = await historyFolder();
       const seq = (docs.length ? historyMeta(docs[docs.length - 1]).seq ?? docs.length : 0) + 1;
-      await CONFIG.JournalEntry.documentClass.create(historyDocData(scene, entry, seq, folder?.id ?? null));
+      await CONFIG.JournalEntry.documentClass.create(historyDocData(scene, entry, seq, folder?.id ?? null), historyWrite());
       // Rolling window — the oldest save points are deleted.
       const all = historyDocs(scene);
       if (all.length > MAX_HISTORY) await deleteHistoryDocs(all.slice(0, all.length - MAX_HISTORY));

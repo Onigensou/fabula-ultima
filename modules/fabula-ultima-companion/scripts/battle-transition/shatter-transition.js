@@ -334,6 +334,7 @@ const raceTimeout = (p, ms) => Promise.race([p, wait(ms)]);
 
 // ── the cracked panes, cached per screen size (they depend only on W x H) ───
 let regionCache = null;
+let regionWork = null;   // { key, it }: a prewarm in progress (crackRegionSteps), finished by the next crackRegions
 
 // ============================================================================
 // A scene: everything that depends on the screen size, in one closure (the
@@ -544,6 +545,16 @@ function makeScene({ W, H, DPR, thick = false, st = STYLES.ink, els = {} }) {
   function crackRegions(geo) {
     const key = `${W}x${H}@${DPR}`;
     if (regionCache && regionCache.key === key) return regionCache;
+    // a prewarm for this size still under way: finish it here rather than start again
+    const it = regionWork && regionWork.key === key ? regionWork.it : crackRegionSteps(geo);
+    regionWork = null;
+    for (;;) { const r = it.next(); if (r.done) return r.value; }
+  }
+
+  // crackRegions as steps: it yields between passes over the pixels (each a few ms), so a prewarm
+  // can spread the work over idle time instead of holding the page for a few hundred ms.
+  function* crackRegionSteps(geo) {
+    const key = `${W}x${H}@${DPR}`;
     const n = W * H, lab = new Int32Array(n);   // per css pixel: 0 = unfilled, -1 = crushed ring, -2 = crack line, >0 = region
     const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
     const x = cv.getContext("2d", { willReadFrequently: true });
@@ -553,14 +564,17 @@ function makeScene({ W, H, DPR, thick = false, st = STYLES.ink, els = {} }) {
     x.fill("nonzero");
     let d = x.getImageData(0, 0, W, H).data;
     for (let i = 0; i < n; i++) if (d[i * 4 + 3] > 0) lab[i] = -2;
+    yield;
     x.clearRect(0, 0, W, H); x.beginPath(); trace(x, FROST.map(([fx, fy]) => ({ x: geo.I.x + fx * sc, y: geo.I.y + fy * sc })), true); x.fill();
     d = x.getImageData(0, 0, W, H).data;
     for (let i = 0; i < n; i++) if (d[i * 4 + 3] > 127) lab[i] = -1;
+    yield;
     // flood fill, 4-connected, so a diagonal one-pixel line still holds
     const q = new Int32Array(n), sum = [null];
-    let count = 0;
+    let count = 0, filled = 0;
     for (let s = 0; s < n; s++) {
       if (lab[s] !== 0) continue;
+      if (filled > 200000) { filled = 0; yield; }
       const id = ++count; let head = 0, tail = 0, sx = 0, sy = 0, px = 0;
       lab[s] = id; q[tail++] = s;
       while (head < tail) {
@@ -571,7 +585,9 @@ function makeScene({ W, H, DPR, thick = false, st = STYLES.ink, els = {} }) {
         if (iy < H - 1 && lab[i + W] === 0) { lab[i + W] = id; q[tail++] = i + W; }
       }
       sum.push({ px, cx: sx / px, cy: sy / px });
+      filled += px;
     }
+    yield;
     // the line pixels join a neighbouring region, so the edge between two panes runs inside the line
     for (let pass = 0; pass < 6; pass++) {
       let left = 0;
@@ -582,7 +598,9 @@ function makeScene({ W, H, DPR, thick = false, st = STYLES.ink, els = {} }) {
       }
       for (let i = 0; i < n; i++) if (lab[i] < -2) lab[i] = -lab[i] - 3;
       if (!left) break;
+      yield;
     }
+    yield;
     // which shard covers most of each region: the shards drawn with their index in the red channel
     // (in steps of 6, so an anti-aliased edge between two shards never reads as a third)
     x.clearRect(0, 0, W, H);
@@ -594,6 +612,7 @@ function makeScene({ W, H, DPR, thick = false, st = STYLES.ink, els = {} }) {
       const v = d[i * 4]; if (v % 6) continue;
       votes[r * K + v / 6]++;
     }
+    yield;
     const centres = geo.cells.map((c) => polyInfo(c.poly));
     const owner = new Int32Array(count + 1).fill(-1);
     for (let r = 1; r <= count; r++) {
@@ -609,9 +628,11 @@ function makeScene({ W, H, DPR, thick = false, st = STYLES.ink, els = {} }) {
       const b = box[owner[r]], ix = i % W, iy = (i - ix) / W;
       if (ix < b.x0) b.x0 = ix; if (ix > b.x1) b.x1 = ix; if (iy < b.y0) b.y0 = iy; if (iy > b.y1) b.y1 = iy;
     }
+    yield;
     const masks = [];
-    box.forEach((b, k) => {
-      if (b.x1 < 0) return;
+    for (let k = 0; k < box.length; k++) {
+      const b = box[k];
+      if (b.x1 < 0) continue;
       const bw = b.x1 - b.x0 + 1, bh = b.y1 - b.y0 + 1, im = new ImageData(bw, bh), a = im.data;
       for (let y = 0; y < bh; y++) for (let xx = 0; xx < bw; xx++) {
         const r = lab[(b.y0 + y) * W + b.x0 + xx];
@@ -619,11 +640,15 @@ function makeScene({ W, H, DPR, thick = false, st = STYLES.ink, els = {} }) {
       }
       const mc = document.createElement("canvas"); mc.width = bw; mc.height = bh; mc.getContext("2d").putImageData(im, 0, 0);
       masks.push({ k, bx: b.x0, by: b.y0, bw, bh, cv: mc });
-    });
+      yield;
+    }
     // each shard's outline: largest 4-connected part of its panes, marching squares along pixel
     // corners, Douglas-Peucker to within TRACE_EPS px
-    const polys = box.map((b, k) => {
-      if (b.x1 < 0) return null;
+    const polys = [];
+    for (let k = 0; k < box.length; k++) {
+      const b = box[k];
+      if (k) yield;
+      if (b.x1 < 0) { polys.push(null); continue; }
       const bw = b.x1 - b.x0 + 1, bh = b.y1 - b.y0 + 1, own = new Uint8Array(bw * bh);
       for (let y = 0; y < bh; y++) for (let xx = 0; xx < bw; xx++) { const r = lab[(b.y0 + y) * W + b.x0 + xx]; if (r > 0 && owner[r] === k) own[y * bw + xx] = 1; }
       const comp = new Int32Array(bw * bh), q2 = new Int32Array(bw * bh);
@@ -662,8 +687,8 @@ function makeScene({ W, H, DPR, thick = false, st = STYLES.ink, els = {} }) {
       let far = 0, fd = 0; pts.forEach((v, i) => { const dd = Math.hypot(v.x - pts[0].x, v.y - pts[0].y); if (dd > fd) { fd = dd; far = i; } });
       const half1 = simplify(pts.slice(0, far + 1), TRACE_EPS), half2 = simplify([...pts.slice(far), pts[0]], TRACE_EPS);
       const out = [...half1, ...half2.slice(1, -1)];
-      return { poly: out.length >= 3 ? out : null, px: bestN, stray: own.reduce((nn, v) => nn + v, 0) - bestN };
-    });
+      polys.push({ poly: out.length >= 3 ? out : null, px: bestN, stray: own.reduce((nn, v) => nn + v, 0) - bestN });
+    }
     const scratch = document.createElement("canvas"); scratch.width = Math.round(W * DPR); scratch.height = Math.round(H * DPR);
     regionCache = { key, count, centres, masks, scratch, polys };
     return regionCache;
@@ -942,7 +967,7 @@ function makeScene({ W, H, DPR, thick = false, st = STYLES.ink, els = {} }) {
     return { back, mid, front, majors, cores, flakes, puff, P };
   }
 
-  return { buildGeometry, toSegs, crackRegions, drawCracks, drawRefraction, drawGlow, buildCollage };
+  return { buildGeometry, toSegs, crackRegions, crackRegionSteps, drawCracks, drawRefraction, drawGlow, buildCollage };
 }
 
 // ============================================================================
@@ -1119,16 +1144,46 @@ async function readyCast(cast) {
 /**
  * Find the cracked panes for the current screen size ahead of time (a few hundred ms of CPU once
  * per size). Runs at boot when idle and after a resize; the transition does it at the impact
- * otherwise.
+ * otherwise. Spread over idle slices of <= 8 ms (it used to hold the page for 170-230 ms in one
+ * go); `{ sync: true }` does it (or the rest of it) at once. Resolves to the cached panes.
  */
-export function prewarmShatter() {
+export function prewarmShatter({ sync = false } = {}) {
   const W = Math.max(1, Math.round(window.innerWidth)), H = Math.max(1, Math.round(window.innerHeight));
   const DPR = Math.min(2, window.devicePixelRatio || 1);
-  if (regionCache && regionCache.key === `${W}x${H}@${DPR}`) return;
-  const t = performance.now();
+  const key = `${W}x${H}@${DPR}`;
+  if (regionCache && regionCache.key === key) return Promise.resolve(regionCache);
+  if (regionWork && regionWork.key === key && !sync) return regionWork.done;
   const sc = makeScene({ W, H, DPR });
-  sc.crackRegions(sc.buildGeometry());
-  console.debug(TAG, `cracked panes for ${W}x${H} found in ${Math.round(performance.now() - t)} ms`);
+  if (sync) return Promise.resolve(sc.crackRegions(sc.buildGeometry()));
+  // In slices of idle time (at most SLICE_MS each), so the page never stalls for the whole job.
+  // A transition that starts meanwhile finishes the remaining steps itself (crackRegions).
+  const SLICE_MS = 8;
+  const t0 = performance.now(); let busy = 0, slices = 0;
+  const work = { key, it: sc.crackRegionSteps(sc.buildGeometry()) };
+  regionWork = work;
+  work.done = new Promise((resolve) => {
+    const idle = (fn) => (window.requestIdleCallback ? window.requestIdleCallback(fn, { timeout: 1000 }) : setTimeout(fn, 16));
+    const step = (deadline) => {
+      if (regionWork !== work) return resolve(regionCache);   // finished by a transition, or superseded
+      const ts = performance.now(), budget = Math.min(SLICE_MS, Math.max(2, deadline?.timeRemaining?.() ?? SLICE_MS));
+      slices++;
+      for (;;) {
+        let r;
+        try { r = work.it.next(); }
+        catch (e) { regionWork = null; console.warn(TAG, "prewarm failed", e); return resolve(null); }
+        if (r.done) {
+          regionWork = null; busy += performance.now() - ts;
+          console.debug(TAG, `cracked panes for ${W}x${H} found: ${Math.round(busy)} ms of work in ${slices} slices over ${Math.round(performance.now() - t0)} ms`);
+          return resolve(r.value);
+        }
+        if (performance.now() - ts >= budget) break;
+      }
+      busy += performance.now() - ts;
+      idle(step);
+    };
+    idle(step);
+  });
+  return work.done;
 }
 
 // ============================================================================

@@ -76,7 +76,7 @@
     ],
     "enemyTarget": "Test Target Enemy",
     "count": 487,
-    "engineVersion": "1.0.506",
+    "engineVersion": "1.0.520",
     "override": {
       "SL": 5,
       "CHAR_LEVEL": 50,
@@ -2705,9 +2705,13 @@
     },
     "Hina / Bind and Summon (variant)": {
       "caster": "Hina",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
       "offensive": true,
-      "ok": false,
-      "reason": "compute_refused:TARGET_BACK",
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
       "skill": "Bind and Summon (variant)",
       "skillType": "Active",
       "targets": 1

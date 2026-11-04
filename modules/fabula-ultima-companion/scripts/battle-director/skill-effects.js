@@ -31,7 +31,7 @@ import { emitLeaveExit } from "./leave-exit-fx.js";
 import { RESOURCE_REGISTRY } from "./resources.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor, isPersistentCounter } from "./skill-charges.js";
 import { foldChargeSteps, aeRefreshIsNoop } from "./chain-strikes.js";
-import { readPropNum, resolveAffinity, skillDeclaresVersatile, resolvesVsMagicDefense, actorLiveRuleValues, getActionLabelBlockers, getPassiveSuppression, canonActionLabel, GATEABLE_ACTION_LABELS, GATING_EXEMPT_TAG_PREFIX } from "./snapshot.js";
+import { captureSubjectSnapshot, readPropNum, resolveAffinity, skillDeclaresVersatile, resolvesVsMagicDefense, actorLiveRuleValues, getActionLabelBlockers, getPassiveSuppression, canonActionLabel, GATEABLE_ACTION_LABELS, GATING_EXEMPT_TAG_PREFIX } from "./snapshot.js";
 import { INVENTORY_ACTION_TAG } from "./skill-intent.js";
 import { isActorDefeated, settleRevive } from "./defeat-reactor.js";
 import { computeIncomingDamage, aeOutgoingActionKeywords } from "./damage-ruleset.js";
@@ -847,6 +847,8 @@ export async function applyDamageToTarget({
       valueDirection: "loss",
       fired,
       shieldAbsorbed: absorbed,
+      // HP right after this hit, before the follow-ups above ran.
+      hpAfterHit: newHp,
     };
   }
 
@@ -1956,6 +1958,10 @@ function effectRefUsesAddTarget(effectTable, ref, depth = 0) {
 //   target                   — N per SUBJECT creature, for the whole fight.
 //                              ("Each enemy suffers this from you only once.")
 //   target_round             — N per subject per round.
+//   target_action            — N per subject per damage instance (one action card, or
+//                              one tick). All of a carrier's rows on this scope share
+//                              ONE quota: a kill reports both a defeat and an HP loss,
+//                              and that is one event for the rule being capped.
 //
 // Why here and not a new mechanism: Study's once-per-target rule already exists as
 // a hand-rolled `studyLog` Map on DirectorCombat (markStudied / hasStudied), which
@@ -1964,7 +1970,7 @@ function effectRefUsesAddTarget(effectTable, ref, depth = 0) {
 // gear and the built-in action can share one notion of "already did this to you".
 // (Study itself still uses studyLog; it needs the list of spent targets to grey
 // out picker entries, not just a yes/no, so migrating it is a separate job.)
-const REACTION_MAX_SCOPES = new Set(["round", "battle", "target", "target_round"]);
+const REACTION_MAX_SCOPES = new Set(["round", "battle", "target", "target_round", "target_action"]);
 // Player-facing reason on a capped pill — must name the scope, or "once per
 // target" reads as a bug ("why is this greyed out, it hasn't fired this round?").
 const CAP_REASONS = Object.freeze({
@@ -1972,6 +1978,7 @@ const CAP_REASONS = Object.freeze({
   battle:       "Limit for this battle reached",
   target:       "Already used against this target",
   target_round: "Already used against this target this round",
+  target_action: "Already used against this target by this action",
 });
 // Inherent action keywords declared on a skill's own `action_keywords` prop
 // (comma/newline list, case-insensitive) — the same parse action-profile.js
@@ -2019,6 +2026,16 @@ function capSubjectRef(payload, reactorUuid = null) {
     ?? payload?.causeTokenUuid ?? payload?.causeActorUuid ?? ""
   ).trim();
 }
+// target_action's bucket. The actor, not the token: a defeat can arrive with its token
+// already gone, and it has to land in the same bucket as the HP loss that caused it.
+function capActionRef(payload) {
+  const subject = String(payload?.subjectActorUuid ?? "").trim();
+  const instance = String(payload?.damageInstance ?? "").trim();
+  return subject && instance ? `${subject}@${instance}` : "";
+}
+function capRefFor(scope, payload, reactorUuid) {
+  return scope === "target_action" ? capActionRef(payload) : capSubjectRef(payload, reactorUuid);
+}
 // A target-scoped row with NO resolvable subject must not silently collapse every
 // creature into one shared bucket (that would cap the row globally after N fires).
 // Sentinel keeps it per-fire-safe: an unresolvable subject never blocks.
@@ -2027,6 +2044,7 @@ function capSubjectRef(payload, reactorUuid = null) {
 // search, silently. Guarded by tools/safe-edit/hooks/pre-commit.
 const CAP_NO_SUBJECT = "\u0000nosubject";
 export function reactionRoundCountKey(carrierUuid, rowKey, scope, round, subjectRef) {
+  if (scope === "target_action") return `${carrierUuid}::action::${subjectRef}`;
   const bucket = scope === "battle" ? "all"
     : scope === "target" ? `t:${subjectRef}`
     : scope === "target_round" ? `t:${subjectRef}@${round}`
@@ -2048,9 +2066,9 @@ function reactionRoundCapReached(row, carrierUuid, rowKey, payload, reactorUuid 
   const max = readReactionMaxPerRound(row);
   if (!max || !director) return false;
   const scope = readReactionMaxScope(row);
-  const subjectRef = capSubjectRef(payload, reactorUuid);
+  const subjectRef = capRefFor(scope, payload, reactorUuid);
   // Target-scoped with nothing to key on: never cap (see CAP_NO_SUBJECT).
-  if ((scope === "target" || scope === "target_round") && !subjectRef) return false;
+  if ((scope === "target" || scope === "target_round" || scope === "target_action") && !subjectRef) return false;
   return reactionRoundCount(director, carrierUuid, rowKey, scope, subjectRef) >= max;
 }
 // Increment the fire count for a capped row after it actually fires.
@@ -2059,7 +2077,7 @@ export function bumpReactionRoundCount(director, carrierUuid, rowKey, row = null
   if (!(director._reactionRoundCounts instanceof Map)) director._reactionRoundCounts = new Map();
   const round = director?.dCombat?.round ?? 0;
   const scope = readReactionMaxScope(row);
-  const subjectRef = capSubjectRef(payload, reactorUuid) || CAP_NO_SUBJECT;
+  const subjectRef = capRefFor(scope, payload, reactorUuid) || CAP_NO_SUBJECT;
   const k = reactionRoundCountKey(carrierUuid, rowKey, scope, round, subjectRef);
   director._reactionRoundCounts.set(k, (director._reactionRoundCounts.get(k) ?? 0) + 1);
   // The reaction deck (reaction-deck.js) shows a used-up quota as SPENT on the
@@ -2283,7 +2301,7 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         carrierKind: "ae",
         carrierUuid: ae.uuid,
         carrierName: ae.name,
-        carrierImg:  ae.icon ?? ae.img,
+        carrierImg:  ae.img ?? ae.icon,
         carrierDescription: ae.description ?? "",
         rowKey: key,
         kind: kindForMode(mode),
@@ -3073,17 +3091,18 @@ function isTruthyRowFlag(v) {
   return v === true || String(v ?? "").trim().toLowerCase() === "true";
 }
 
-export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource, direction, amount, cause, source = {}, element = null, originLabel = null, originUuid = null, weaponType = null, weaponRange = null, actionKind = null, actionIntent = null, isCrit = null, isFumble = null, accuracyTotal = null, highRoll = null, pierce = null, appliedEffectTags = [], chainStrike = null, chainStrikes = null, chainRepeat = false }) {
+export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource, direction, amount, cause, subjectSnapshot = null, isDamage = false, damageInstance = null, source = {}, element = null, originLabel = null, originUuid = null, weaponType = null, weaponRange = null, actionKind = null, actionIntent = null, isCrit = null, isFumble = null, accuracyTotal = null, highRoll = null, pierce = null, appliedEffectTags = [], chainStrike = null, chainStrikes = null, chainRepeat = false }) {
   if (!director?.ctx || !actor || !resource || !(amount > 0)) return;
   if (direction !== "loss" && direction !== "recover") return;
   if (!Array.isArray(director.ctx._postResolveTriggers)) director.ctx._postResolveTriggers = [];
+  const eventId = foundry.utils.randomID();
   director.ctx._postResolveTriggers.push({
     casterActor: actor,
     trigger: direction === "loss" ? "creature_lose_resource" : "creature_gain_resource",
     payload: {
       // Identity of THIS ledger line. The event fans out to every combatant, so
       // it is what lets an apply_ae `ae_once_per_event` count it exactly once.
-      eventId: foundry.utils.randomID(),
+      eventId,
       resource: String(resource).toLowerCase(),
       amount,
       cause: cause ?? null,
@@ -3121,6 +3140,19 @@ export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource
       sourceTokenUuid: tokenUuid ?? null,
       subjectActorUuid: actor.uuid,
       subjectTokenUuid: tokenUuid ?? null,
+      // The subject as it was BEFORE this loss. A killing blow removes a soldier's
+      // or elite's token before this event is dispatched, so its Crisis and species
+      // are unreadable by then: "when a creature in Crisis loses HP" (Beyond the
+      // Realms of Death) never heard a kill. See captureSubjectSnapshot.
+      subjectSnapshot,
+      // Damage, as opposed to HP paid as a cost or a scripted drop. Only the two damage
+      // routes set it, so anything else reads as "not damage".
+      isDamage: !!isDamage,
+      // Which damage instance this loss belongs to: the action card when the caller
+      // says so (its hit and its own riders), otherwise this event alone (a Burn tick,
+      // a reaction's damage). See the target_action fire cap.
+      damageInstance: damageInstance ?? eventId,
+      subjectSpecies: String(actor.flags?.[FLAG_NS]?.species_override ?? actor.system?.props?.species ?? ""),
       // Who/what CAUSED the change (e.g. the attacker, for cause==damage) — for
       // reflect/leech-style reactions (Painful Lesson). NOT the source filter.
       causeActorUuid: source.actorUuid ?? null,
@@ -6082,6 +6114,7 @@ async function grantApply(row, ctx, { resource, targetRef, amount }) {
       // already baked into the PRIMARY grant's perTargetResults (the fromProfile
       // branch above). Secondary/chain grants don't carry the boost by design.
     }
+    const subjectSnapshot = resource === "hp" && recipAmount < 0 ? captureSubjectSnapshot(actor) : null;
     const result = await writeResourceDelta(actor, def, recipAmount);
     if (result.ok) {
       applied.push({ actorUuid: actor.uuid, resource, delta: result.applied, newValue: result.newValue });
@@ -6098,7 +6131,7 @@ async function grantApply(row, ctx, { resource, targetRef, amount }) {
         if (_director) {
           try {
             fireResourceChangeTrigger({
-              director: _director, actor,
+              director: _director, actor, subjectSnapshot,
               tokenUuid: token.uuid ?? token.document?.uuid ?? null,
               resource, direction: result.applied > 0 ? "recover" : "loss", amount: Math.abs(result.applied),
               cause: "grant",
@@ -6491,6 +6524,7 @@ async function dealDamageApply(row, ctx, d) {
         base: _outgoing, element, ignoreAffinity, keywords: _kw,
       });
       const hpBefore = readPropNum(actor, ["current_hp", "hp"]);
+      const subjectSnapshot = captureSubjectSnapshot(actor);
       const res = await applyDamageToTarget({
         target: actor,
         damage: isMp ? amount : ruled.damage,
@@ -6521,12 +6555,20 @@ async function dealDamageApply(row, ctx, d) {
       const _director = ctx?.director
         ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.();
       if (_director) {
-        const hpAfter = readPropNum(actor, ["current_hp", "hp"]);
+        // At the hit, not now: a follow-up can have healed already (Life Charm's rise),
+        // which turned a capped hit into a net "recover" that nobody heard as a loss.
+        const hpAfter = res?.hpAfterHit ?? readPropNum(actor, ["current_hp", "hp"]);
         const delta = hpAfter - hpBefore;
         if (delta !== 0) {
           fireResourceChangeTrigger({
             director: _director,
             actor,
+            subjectSnapshot,
+            isDamage: true,
+            // The running card's own rider shares the card's instance. A reaction runs
+            // with isPassive even inside the card's settle: its damage is its own.
+            damageInstance: (!ctx?.isPassive && _director.state === "RESOLVE")
+              ? (_director.ctx?.actionResult?._instanceId ?? null) : null,
             tokenUuid: token.uuid ?? token.document?.uuid ?? null,
             resource: "hp",
             direction: delta < 0 ? "loss" : "recover",
@@ -6840,6 +6882,7 @@ async function consumeResourceApply(row, ctx, { resource, targetRef, amount }) {
       if (onEmpty !== "drain") continue;               // abort handled above; skip / warn: unchanged
     }
     const hpBefore = canDefeat ? readPropNum(actor, ["current_hp", "hp"]) : 0;
+    const subjectSnapshot = canDefeat ? captureSubjectSnapshot(actor) : null;
     const result = await writeResourceDelta(actor, def, -effAmount);
     if (result.ok && canDefeat && resource === "hp") {
       // Itemize onto the director's ledger so the settle sees this loss (crisis
@@ -6850,7 +6893,7 @@ async function consumeResourceApply(row, ctx, { resource, targetRef, amount }) {
         const delta = readPropNum(actor, ["current_hp", "hp"]) - hpBefore;
         if (delta < 0) {
           fireResourceChangeTrigger({
-            director: _director, actor,
+            director: _director, actor, subjectSnapshot,
             tokenUuid: token.uuid ?? token.document?.uuid ?? null,
             resource: "hp", direction: "loss", amount: Math.abs(delta),
             cause: String(row.consume_cause ?? "hazard").trim().toLowerCase() || "hazard",
@@ -6986,6 +7029,36 @@ function aeBatchConflicts(batch, actorUuid, template) {
   }
   return false;
 }
+// Current HP/MP may not stay above their maximum. An AE that lowers a maximum
+// (Grave Toll) is the only thing that can open that gap from this side, and
+// nothing else closes it: heals clamp, but they only run when something heals,
+// and the excess carried into the next battle (98/85). Reads the maximum after
+// the AE is committed, so what the actor derives is what gets compared. Only
+// runs for an AE that touches a maximum, and writes only when over; never to 0,
+// since losing maximum HP is not a killing blow.
+const AE_MAX_VITAL_KEY = /(?:^|\.)(?:max|bonus)_(hp|mp)$/;
+async function clampVitalsToMax(actor, aes) {
+  const vitals = new Set();
+  for (const ae of aes ?? []) {
+    for (const c of ae?.changes ?? []) {
+      const m = AE_MAX_VITAL_KEY.exec(String(c?.key ?? ""));
+      if (m) vitals.add(m[1]);
+    }
+  }
+  if (!vitals.size || !actor) return;
+  const upd = {};
+  for (const v of vitals) {
+    const cur = readPropNum(actor, [`current_${v}`], NaN);
+    const max = readPropNum(actor, [`max_${v}`], NaN);
+    if (Number.isFinite(cur) && Number.isFinite(max) && cur > max) upd[`system.props.current_${v}`] = Math.max(1, max);
+  }
+  if (!Object.keys(upd).length) return;
+  try {
+    await actor.update(upd);
+    log(`skill-effects.apply_ae: ${actor.name} clamped to its lowered maximum`, upd);
+  } catch (e) { warn(`skill-effects.apply_ae: vital clamp failed on ${actor.name}`, e); }
+}
+
 // Commit every queued create — one createEmbeddedDocuments per actor. Clears
 // `pending` BEFORE awaiting so a re-entrant flush can't double-commit. Backfills
 // each queued `applied` record's aeId from the created doc (by reference, so the
@@ -6999,6 +7072,7 @@ async function flushAeBatch(batch) {
     try {
       const created = await actor.createEmbeddedDocuments("ActiveEffect", entries.map((e) => e.data));
       entries.forEach((e, i) => { if (e.applied) e.applied.aeId = created?.[i]?.id ?? null; });
+      await clampVitalsToMax(actor, created);
     } catch (e) {
       warn(`skill-effects.apply_ae: batched createEmbeddedDocuments failed on ${actor?.name}`, e);
     }
@@ -7869,6 +7943,7 @@ async function applyApplyAeEffect(row, ctx) {
       try {
         await replaceTarget.update(data);
         applied.push({ actorUuid: actor.uuid, aeId: replaceTarget.id, name: data.name, refreshedInPlace: true });
+        await clampVitalsToMax(actor, [replaceTarget]);
       } catch (e) {
         warn(`skill-effects.apply_ae: replace-in-place update failed on ${actor.name}`, e);
       }
@@ -7887,6 +7962,7 @@ async function applyApplyAeEffect(row, ctx) {
       try {
         const [created] = await actor.createEmbeddedDocuments("ActiveEffect", [data]);
         applied.push({ actorUuid: actor.uuid, aeId: created?.id ?? null, name: data.name });
+        await clampVitalsToMax(actor, [created]);
       } catch (e) {
         warn(`skill-effects.apply_ae: createEmbeddedDocuments failed on ${actor.name}`, e);
       }
@@ -9250,6 +9326,10 @@ async function promptMenuList(listArgs, ctx, row, { allowEnemyResponder = false 
         channel, targetUserIds: enemyUserIds, combatId: director?.combatId ?? null,
         kind: REMOTE_PICK_KINDS.LIST, onTimeoutValue: null, spec: listArgs,
       });
+      if (res?.stopped) {
+        log(`open_action_menu: battle stopped while "${row.effect_label}" waited on an enemy player`);
+        return null;
+      }
       let picked = res?.value ?? null;
       // Route this action's follow-on picks to the SAME player who answered.
       if (picked != null && res?.winnerUserId) {
@@ -11791,10 +11871,12 @@ async function applySummonEffect(row, ctx) {
       // per-kind or it is not a slot.
       // Unstamped legacy clones count toward ANY named kind — same rule as the
       // identifier and the target refs. Strict here would leave `summon_max: 1`
-      // open for a creature the refs can still see.
+      // open for a creature the refs can still see. It has to be a CLONE, though:
+      // a phantasm or a Numen has no kind stamp either, and counting those let
+      // Keren's Fox fire fill Birth of the Cruel's slot.
       if (summonKind) {
         const k = String(f.persistentSummonKind ?? "");
-        if (!k || k === summonKind) n++;
+        if (k === summonKind || (!k && f.cloneActorUuid)) n++;
         continue;
       }
       if (f.isSummon && !f.isPhantasm && !f.isNumen) n++;
@@ -11957,6 +12039,8 @@ async function applySummonEffect(row, ctx) {
       // battle. (Reanimating the LAST enemy lands here — the kill ended the battle.)
       if (!battleActive) {
         applied.push({ actor: actor.name, tokenUuid: null, combatantId: null, side, persistedOnly: true, ...(unit.cloneUuid ? { clone: true } : {}) });
+        // Mark it placed, or the surplus sweep below deletes the clone it just made.
+        unit._spawned = true;
         liveCount++;
         continue;
       }
@@ -12078,6 +12162,10 @@ async function applySummonEffect(row, ctx) {
   ctx.resolvedTargets.set(row.effect_label, { ok: spawnedDocs.length > 0, tokens: spawnedDocs });
   // Also expose the most-recent summon for the `last_summoned` candidate_source.
   ctx.lastSummonedTokenUuids = applied.map((a) => a.tokenUuid).filter(Boolean);
+  // A clone that could not be created or a token that could not be placed arrives
+  // here with nothing applied. The chain has to stop, or the rows after it run for a
+  // creature that does not exist (Birth of the Cruel would charge its cost and toll).
+  if (!applied.length) return { ok: false, kind: "summon", reason: "nothing-spawned", applied };
   return { ok: true, kind: "summon", applied };
 }
 

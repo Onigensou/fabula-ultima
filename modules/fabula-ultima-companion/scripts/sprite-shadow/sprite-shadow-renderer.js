@@ -225,6 +225,17 @@ function bake(texture, g) {
   return b;
 }
 
+// The bake's shaders (the smooth-graphics ellipse, the blur passes) compiled at the first
+// bake held battle start ~170 ms on a fresh browser profile (real GPU, 2026-11-04); warm them
+// while idle after a scene loads (perf/pixi-shader-prewarm.js).
+globalThis.__fuShaderPrewarm?.register("sprite-shadow", () => {
+  const root = new PIXI.Container();
+  root.addChild(new PIXI.Graphics().beginFill(0x000000).drawEllipse(8, 8, 6, 3).endFill());
+  root.filters = [new PIXI.BlurFilter(4, 2)];
+  root.filterArea = new PIXI.Rectangle(0, 0, 16, 16);
+  return root;
+});
+
 // ---------------------------------------------------------------------------
 // Per-token sync
 // ---------------------------------------------------------------------------

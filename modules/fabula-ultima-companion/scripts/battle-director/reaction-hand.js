@@ -69,6 +69,8 @@ const HAND_LEFT = 64;          // first card's left edge, clear of the portrait 
 const HAND_RIGHT = 664;        // the Pass slot's right edge may not pass this
 const MAX_STEP = CARD_W + 8;
 const PASS_GAP = 6;
+const ACTION_CARD_GAP = 12;    // screen px kept between the action card and the hand
+const ACTION_CARD_MARGIN = 8;  // the action card never steps closer than this to the screen's left edge
 const PASS_STAGGER_MS = 120;   // Pass sends one Skip per card, spaced so the host takes them in turn
 const PLATE_WAIT_MS = 4000;
 // Motion. Dealt cards come in from the right with a little overshoot; leaving
@@ -302,7 +304,7 @@ const TARGET_TEXT = {
   action_source: "The acting creature",
   field: "The battlefield",
 };
-const RES_LABEL = { mp: "MP", hp: "HP", ip: "IP", zp: "ZP", fp: "FP" };
+const RES_LABEL = { mp: "MP", hp: "HP", ip: "IP", zp: "ZP", zero_power: "ZP", fp: "FP" };
 
 let _condMod = null, _fxMod = null;
 const condMod = () => (_condMod ??= import("../skill-forge/condition-builder.js").catch(() => null));
@@ -344,7 +346,7 @@ async function whenText(row) {
   }
   return when;
 }
-const lower1 = (t) => String(t).replace(/^[A-Z](?=[a-z])/, (c) => c.toLowerCase()).replace(/  AND  /g, " and ").replace(/  OR  /g, " or ");
+const lower1 = (t) => String(t).replace(/^[A-Z](?=[a-z])/, (c) => c.toLowerCase()).replace(/  (AND|OR)  (?:([A-Z])(?=[a-z]))?/g, (_, join, cap) => ` ${join.toLowerCase()} ${cap ? cap.toLowerCase() : ""}`);
 
 function targetText(item, row) {
   const table = tablesOf(item)?.effect_table ?? {};
@@ -366,6 +368,21 @@ function targetText(item, row) {
   return st && st !== "-" ? st : "";
 }
 
+// The AE that holds a charge key: on the reactor, or, before it has been seeded
+// (a deck face is built at battle start), the template it will be seeded from.
+function chargePoolAe(actor, key) {
+  const holds = (e) => e.flags?.["fabula-ultima-companion"]?.chargeKey === key;
+  const owned = actor.effects?.find?.(holds);
+  if (owned) return owned;
+  for (const it of actor.items ?? []) { const e = it.effects?.find?.(holds); if (e) return e; }
+  for (const it of game.items ?? []) {
+    if (it.type !== "activeEffectContainer") continue;
+    const e = it.effects?.find?.(holds);
+    if (e) return e;
+  }
+  return null;
+}
+
 async function costText(item, row, actor) {
   const m = await fxMod();
   if (!m?.analyzeChainCost || !item || !actor) return "";
@@ -376,8 +393,21 @@ async function costText(item, row, actor) {
   const c = m.analyzeChainCost(et, ref, actor, carrier);
   if (!c?.ok) return "";
   const parts = Object.entries(c.debit ?? {}).filter(([, n]) => n > 0).map(([k, n]) => `${n} ${RES_LABEL[k] ?? k.toUpperCase()}`);
+  // A pool the reactor spends from (Grave Points) is a real price. A once-per
+  // "Ready" marker, or the reaction's own charges, is a use limit: the deck shows
+  // those as ×N, and the card stays "Free".
+  // A charge nothing can name is not free either: say nothing rather than "Free".
+  let unnamed = false;
+  for (const [key, n] of Object.entries(c.chargeDebit ?? {})) {
+    if (!(n > 0)) continue;
+    const pool = chargePoolAe(actor, key);
+    if (!pool) { unnamed = true; continue; }
+    const f = pool.flags?.["fabula-ultima-companion"];
+    if (f?.lifetimeMode !== "persistent_counter" || /\sReady$/i.test(pool.name) || pool.name === item.name) continue;
+    parts.push(`${n} ${pool.name}`);
+  }
   if (c.variable) return parts.length ? `${parts.join(" + ")} + varies` : "Varies";
-  return parts.length ? parts.join(" + ") : "Free";
+  return parts.length ? parts.join(" + ") : (unnamed ? "" : "Free");
 }
 
 async function fillInfo(el, r) {
@@ -436,13 +466,45 @@ function hideDescription(el, { now = false } = {}) {
 // Cards in the hand now: not on their way out, not back in the deck.
 const inHandCards = () => [...hand.cards.values()].filter((c) => !c.leaving && !c.away);
 
+// The action card stands in the middle of the screen, in front of the hand, and
+// a tall one covered the first cards completely. While it is up the hand starts
+// clear of it, as far right on the plate as the hand's width allows; if the
+// plate has no room for that (a narrow window, a big hand), the action card steps
+// left by what is still missing. Returns the first card's left, in plate px.
+//
+// Measured from the card's layout box and the screen centre, not its rect: the
+// entrance scale and this very shift move the rect, and the answer must not
+// depend on the moment it was read.
+function placeClearOfActionCard(need) {
+  const root = document.querySelector(`#${MIRROR_ROOT_ID} #fud-battlefield-card-root`);
+  const card = root?.querySelector(".fud-bf-card");
+  let first = HAND_LEFT, shift = 0;
+  if (card && need > 0) {
+    const box = hand.clip.getBoundingClientRect();
+    const scale = box.width / hand.clip.offsetWidth || 1;
+    const cardBottom = (window.innerHeight + card.offsetHeight) / 2;
+    if (cardBottom + ACTION_CARD_GAP > box.top + CARD_TOP * scale) {
+      const cardRight = (window.innerWidth + card.offsetWidth) / 2;
+      const clearOf = (cardRight + ACTION_CARD_GAP - box.left) / scale;
+      first = Math.max(HAND_LEFT, Math.min(clearOf, HAND_RIGHT - need));
+      const room = (window.innerWidth - card.offsetWidth) / 2 - ACTION_CARD_MARGIN;
+      shift = Math.max(0, Math.min((clearOf - first) * scale, room));
+    }
+  }
+  if (root) root.style.left = shift ? `calc(50% - ${Math.round(shift)}px)` : "";
+  return first;
+}
+
 function layoutHand() {
   // Pill order, not the order cards were (re)dealt: a cancelled card keeps its slot.
   const inHand = inHandCards().sort((a, b) => a.order - b.order);
   const n = inHand.length;
-  const step = n > 1 ? Math.min(MAX_STEP, (HAND_RIGHT - HAND_LEFT - CARD_W - PASS_GAP - PASS_W) / (n - 1)) : 0;
-  inHand.forEach((c, i) => { c.el.style.left = `${HAND_LEFT + i * step}px`; });
-  const last = n ? HAND_LEFT + (n - 1) * step : HAND_LEFT - CARD_W - PASS_GAP;
+  const passPart = hand.passShown ? PASS_GAP + PASS_W : 0;
+  const widest = n ? CARD_W + (n - 1) * MAX_STEP + passPart : 0;
+  const first = placeClearOfActionCard(Math.min(widest, HAND_RIGHT - HAND_LEFT));
+  const step = n > 1 ? Math.min(MAX_STEP, (HAND_RIGHT - first - CARD_W - passPart) / (n - 1)) : 0;
+  inHand.forEach((c, i) => { c.el.style.left = `${first + i * step}px`; });
+  const last = n ? first + (n - 1) * step : first - CARD_W - PASS_GAP;
   hand.pass.style.left = `${last + CARD_W + PASS_GAP}px`;
 }
 
@@ -908,6 +970,8 @@ function sync() {
 
 function teardown() {
   if (hand.clip) {
+    const cardRoot = document.querySelector(`#${MIRROR_ROOT_ID} #fud-battlefield-card-root`);
+    if (cardRoot) cardRoot.style.left = "";
     hand.clip.remove();
     hand.tag?.remove();
     hand.clip = hand.pass = hand.tag = null;

@@ -271,10 +271,13 @@ export async function remotePickAny({
     // First FULFILLED wins; rejections (timeout/abort) are ignored until all fail.
     const res = await Promise.any(armed.map((a) => a.tagged));
     winnerUid = res.uid; intent = res.intent;
-  } catch {
+  } catch (e) {
     log(`remotePickAny(${kind}): no reply from any of ${uids.length} target(s) — cancelled`);
     closeAll();
-    return { value: onTimeoutValue, winnerUserId: null };
+    // The battle stopped (abortBattleAwaits), as opposed to nobody answering. The
+    // caller must not open its GM-local fallback over the scene the battle left.
+    const stopped = (e?.errors ?? []).some((x) => /director-stop/.test(String(x?.message ?? "")));
+    return { value: onTimeoutValue, winnerUserId: null, stopped };
   } finally {
     clearInterval(awayTid);
     if (cancelHooked) { /* settles harmlessly */ }

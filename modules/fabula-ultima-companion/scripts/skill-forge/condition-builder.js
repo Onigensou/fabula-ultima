@@ -124,6 +124,10 @@ const PREFIX_LABELS = [
   // The supported way to ask "does the target have status X": compare >= 1.
   ["TARGET_AE_COUNT_",      (x) => `How many ${titleCase(x)} effects the target has`, "number"],
   ["TARGET_AE_CHARGES_",    (x) => `Charges on the target's ${titleCase(x)}`,   "number"],
+  // Most specific first: the plain form is a prefix of the other two.
+  ["ANY_TARGET_HAS_MY_",    (x) => `Any target has my ${titleCase(x)}`,        "boolean"],
+  ["ANY_TARGET_HAS_EQUIPPED_", (x) => `Any target has a ${titleCase(x)} equipped`, "boolean"],
+  ["ANY_TARGET_HAS_",       (x) => `Any target has ${titleCase(x)}`,           "boolean"],
   ["WELLSPRING_",           (x) => `The ${titleCase(x.replace(/_AVAILABLE$/, ""))} wellspring is available`, "boolean"],
   ["SPECIES_IS_",           (x) => `I am a ${titleCase(x)}`,                    "boolean"],
   ["TARGET_SPECIES_IS_",    (x) => `The target is a ${titleCase(x)}`,           "boolean"],

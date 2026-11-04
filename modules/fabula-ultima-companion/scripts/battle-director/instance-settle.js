@@ -145,7 +145,7 @@ export async function settleInstance(director, { reason = "", maxIters = 8, reco
       // Built-in engine reactors first (crisis etc.) — they read the event and
       // may apply AEs / append further events.
       for (const fn of BUILTIN_REACTORS) {
-        try { await fn(director, cfg, { firedKeys }); }
+        try { await fn(director, cfg, { firedKeys, batch }); }
         catch (e) { warn(`settleInstance(${reason}): builtin reactor threw for ${cfg?.trigger}`, e); }
       }
       // Authored reactions. Ledger-family events dispatch observer-aware
@@ -161,7 +161,10 @@ export async function settleInstance(director, { reason = "", maxIters = 8, reco
             const r = await dispatchReactionMenu({ director, reactor: actor, token, trigger: cfg.trigger, payload: cfg.payload, skipEvaluated });
             for (const f of (r?.fired ?? [])) {
               fired += 1;
-              if (f?.carrierUuid != null && f?.rowKey != null) {
+              // Not a target_action row: this guard has no subject, so it would silence
+              // the row for a DIFFERENT creature hurt in a later pass (a dying bomb's
+              // blast). The row's own quota already bounds it per creature.
+              if (f?.carrierUuid != null && f?.rowKey != null && f?.maxScope !== "target_action") {
                 firedThisPass.push({ carrierUuid: f.carrierUuid, rowKey: f.rowKey });
               }
               rememberUsed(f);

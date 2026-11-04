@@ -1115,16 +1115,20 @@
         // tree. A document built from a template keeps its tree until the template changes, when
         // CSB builds a new one: same tree objects, same map. Builder templates are edited in place,
         // so they always rebuild.
+        // Keyed on the tree objects, not the document: documents of one template share their trees
+        // (csb-template-layout-dedup), so a token actor spawned at battle start reuses the map its
+        // template's other documents already built (it walked the tree twice per spawned token:
+        // ~65 ms of a seeded battle's start, measured 2026-11-04).
         const origMap = proto._getComponentMap;
         if (typeof origMap === 'function' && !origMap.__fuInc) {
-            const CMAP = Symbol('fuComponentMap');
+            const byTree = new WeakMap();   // body (or header) -> { h, b, map }
             const mapPatched = function () {
                 const h = this.customHeader, b = this.customBody;
                 if (!incOn() || (!h && !b) || !H.TemplateSystem.isAppliedTemplateSystem(this)) return origMap.call(this);
-                const c = this[CMAP];
+                const k = b ?? h, c = byTree.get(k);
                 if (c && c.h === h && c.b === b) return c.map;
                 const map = origMap.call(this);
-                this[CMAP] = { h, b, map };
+                byTree.set(k, { h, b, map });
                 return map;
             };
             mapPatched.__fuInc = true;
