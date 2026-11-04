@@ -18,6 +18,7 @@ import { emitDamageNumber } from "./damage-numbers/director-damage-numbers.js";
 import { emitImpactFx } from "./damage-numbers/director-impact-fx.js";
 import { emitHurtReaction } from "./damage-numbers/director-hurt-reaction.js";
 import { lossSound } from "./hit-sound-rules.js";
+import { createGainCoalescer } from "./gain-coalesce.js";
 
 export const DIRECTOR_STATIC_URLS = Object.freeze([
   // Guard / Covered AE icons (Forge-vtt — remote, slowest first-fetch).
@@ -502,18 +503,29 @@ const RESOURCE_GAIN_DEFAULT = Object.freeze({ file: null, color: "#9be15d", icon
 //   tokenUuid : the healed token ("Scene.X.Token.Y")
 //   resource  : "hp" | "mp" | "ip" | "zenit" | "fp" | "zero_power" | "enmity"
 //   amount    : the value restored (already clamped to what actually applied)
-export function playResourceGainVfx({ tokenUuid, resource = "hp", amount = 0 } = {}) {
+//   cascade   : a Chain strike's index — never merged (gain-coalesce.js)
+// Gains of the same resource on the same token inside GAIN_COALESCE_MS float as
+// ONE total (three Lightning Charges = "+15", not three overlapping "+5").
+export function playResourceGainVfx({ tokenUuid, resource = "hp", amount = 0, cascade = 0 } = {}) {
   try {
     if (!(amount > 0)) return;
+    _gainCoalescer({ tokenUuid, resource, amount, cascade });
+  } catch (e) {
+    warn("playResourceGainVfx threw", e);
+  }
+}
+function _emitGain({ tokenUuid, resource, amount }) {
+  try {
     // Floating number → BD-native subsystem; heal aura webm + cue stay here.
     emitDamageNumber({ kind: "gain", tokenUuid, resource, amount });
     const av = RESOURCE_GAIN_AV[String(resource).toLowerCase()] ?? RESOURCE_GAIN_DEFAULT;
     if (av.file) emitImpactFx({ tokenUuid, file: av.file, durationMs: 1000 });
     if (av.sfx) throttledSfx(av.sfx, 0.6);
   } catch (e) {
-    warn("playResourceGainVfx threw", e);
+    warn("playResourceGainVfx emit threw", e);
   }
 }
+const _gainCoalescer = createGainCoalescer({ emit: _emitGain });
 
 // ── Resource-spend VFX (self-paid cost: casting / reaction / free action) ─
 //
