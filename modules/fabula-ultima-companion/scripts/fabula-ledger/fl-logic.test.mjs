@@ -20,7 +20,8 @@ const is = (d, action, extra = {}) => d.action === action && Object.entries(extr
 
 // ── statuses ─────────────────────────────────────────────────────────────────
 check("villain token pays", is(L.decideAppearance(geist(), empty()), "pay"));
-check("hidden never pays from detection", is(L.decideAppearance(geist({ status: "hidden" }), empty()), "ignore", { reason: "status-hidden" }));
+check("neutral never pays from detection", is(L.decideAppearance(geist({ status: "neutral" }), empty()), "ignore", { reason: "status-neutral" }));
+check("old value 'hidden' reads as neutral", L.normStatus("hidden") === "neutral");
 check("never never pays", is(L.decideAppearance(geist({ status: "never" }), empty()), "ignore", { reason: "status-never" }));
 check("unset Champion asks (first)", is(L.decideAppearance(geist({ status: "auto" }), empty()), "ask", { prompt: "first" }));
 check("unset Champion pays with Auto-pay", is(L.decideAppearance(geist({ status: "auto" }), empty(), { autoPay: true }), "pay", { reason: "auto-pay" }));
@@ -66,7 +67,7 @@ check("junk status reads as auto", L.normStatus("Villainous") === "auto" && L.no
 {
   const s = empty(); s.prevVisit.paid = ["geist"];
   check("event pays through a 'followed' loop", is(L.decideAppearance(geist({ source: "event" }), s), "pay"));
-  check("event pays a hidden actor (author named them)", is(L.decideAppearance(geist({ source: "event", status: "hidden" }), empty()), "pay"));
+  check("event pays a neutral actor (author named them)", is(L.decideAppearance(geist({ source: "event", status: "neutral" }), empty()), "pay"));
   check("event does not pay a never actor", is(L.decideAppearance(geist({ source: "event", status: "never" }), empty()), "ignore"));
   s.visit.paid = ["geist"];
   check("event does not double-pay in one visit", is(L.decideAppearance(geist({ source: "event" }), s), "ignore", { reason: "paid-this-visit" }));
@@ -92,14 +93,15 @@ check("junk status reads as auto", L.normStatus("Villainous") === "auto" && L.no
   check("a NEW villain ambushing in battle still pays", is(L.decideAppearance(geist({ actorId: "new", inBattle: true }), s), "pay"));
 }
 check("boss point: Champion enemy pays", is(L.decideBossPoint([{ rank: "soldier" }, { rank: "champion", status: "auto" }], empty()), "pay"));
-check("boss point: hidden Champion (neutral Geist sparring) does not", is(L.decideBossPoint([{ rank: "champion", status: "hidden" }], empty()), "ignore"));
+check("boss point: a Neutral Champion fought as an enemy pays (Geist)", is(L.decideBossPoint([{ rank: "champion", status: "neutral" }], empty()), "pay"));
+check("boss point: a Never Champion (training dummy) does not", is(L.decideBossPoint([{ rank: "champion", status: "never" }], empty()), "ignore"));
 check("boss point: elites only, no point", is(L.decideBossPoint([{ rank: "elite", status: "villain" }], empty()), "ignore", { reason: "no-champion" }));
 {
   const s = empty(); s.visit.boss = true;
   check("boss point: once per visit (a reload mid-battle does not repay)", is(L.decideBossPoint([{ rank: "champion" }], s), "ignore", { reason: "boss-paid-this-visit" }));
 }
-check("candidate: villain elite yes, unset champion yes, unset elite no, hidden no",
-  L.isCandidate("elite", "villain") && L.isCandidate("champion", "auto") && !L.isCandidate("elite", "auto") && !L.isCandidate("champion", "hidden"));
+check("candidate: villain elite yes, unset champion yes, unset elite no, neutral no",
+  L.isCandidate("elite", "villain") && L.isCandidate("champion", "auto") && !L.isCandidate("elite", "auto") && !L.isCandidate("champion", "neutral"));
 
 // ── cap ──────────────────────────────────────────────────────────────────────
 const cap = (c, d) => L.applyCap(c, d);
@@ -111,7 +113,7 @@ check("Blanche 12 - 1 = 11 (a spend is never clamped)", cap(12, -1).next === 11)
 check("1 - 3 floors at 0", cap(1, -3).next === 0 && cap(1, -3).gained === -1);
 
 // ── prompt ───────────────────────────────────────────────────────────────────
-check("first prompt has 4 buttons", L.promptButtons("first").join() === "confirm,skip,hidden,never");
+check("first prompt has 4 buttons", L.promptButtons("first").join() === "confirm,skip,neutral,never");
 check("loop prompt has 2 buttons", L.promptButtons("loop").join() === "confirm,skip");
 check("reason text: stationary", L.promptReason(geist(), { loop: "stationary" }) === "same spot");
 check("reason text: followed", L.promptReason(geist(), { loop: "followed" }) === "followed in");

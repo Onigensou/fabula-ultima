@@ -9,7 +9,7 @@
  * the clock stack, beside the sidebar), slides in from the top-right with a
  * fade, stacks downward, never blocks, waits until answered.
  *
- *   show({ kind, name, img, reason, buttons, seconds }) -> Promise<"confirm"|"skip"|"hidden"|"never"|"timeout">
+ *   show({ kind, name, img, reason, buttons, seconds }) -> Promise<"confirm"|"skip"|"neutral"|"never"|"timeout">
  *     "timeout" = nobody answered in time (setting fabulaPromptSeconds, default 15 s); callers treat it as Skip.
  *   paidNote(entry)   a short "Paid +1 · Name  [Undo]" panel after an automatic villain award
  *
@@ -41,12 +41,12 @@
     });
   });
 
-  const LABEL = { confirm: "Confirm", skip: "Skip", hidden: "Hidden", never: "Never", "new": "New session", same: "Same session" };
+  const LABEL = { confirm: "Confirm", skip: "Skip", neutral: "Neutral", never: "Never", "new": "New session", same: "Same session" };
   const TIP = {
     confirm: "Pay +1 to the party. On a first sighting this also marks them as a villain.",
     skip: "No point this time.",
-    hidden: "A villain who hasn't shown their hand: no point, and no more asking until you Reveal them.",
-    never: "Not a villain: never asked or paid again.",
+    neutral: "Not hostile right now (they may turn villain later): no point for appearing and no more asking. Reveal them when they turn.",
+    never: "Not part of the story (training dummy, summon): never asked or paid, not even the boss point.",
     "new": "Start a new session: start-of-session effects run, anyone on 0 Fabula Points gets 1.",
     same: "Carry on the last session (it was only interrupted)."
   };

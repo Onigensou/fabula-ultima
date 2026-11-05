@@ -19,8 +19,9 @@
  *                      When a battle
  *                      starts (fu-director-started, after the entrance), the
  *                      host GM reports the hostile villains (inBattle) and the
- *                      boss point. Reinforcements that appear mid-battle are
- *                      reported as they show.
+ *                      boss point (any Champion enemy except Never). Reinforcements
+ *                      that appear mid-battle are reported as they show, and a
+ *                      Champion among them pays the boss point if none has yet.
  *   title, gacha       nothing.
  *   everything else    PRESENCE (primary GM). A villain token created or
  *   (theatre, camp,    unhidden on the ACTIVE scene, and every visible villain
@@ -88,16 +89,21 @@
     for (const doc of scene.tokens ?? []) presenceReport(doc);
   }
 
+  // Battle arrivals are noticed by the GM HOSTING the battle (only that client
+  // knows the director is running); the ledger forwards to the primary GM.
+  // Everything else is noticed by the primary GM.
+  const isBattleDoc = (doc) => isBattleToken(doc) || detectorFor(doc.parent) === "battle";
+
   Hooks.on("createToken", (doc) => {
-    if (!isPrimaryGM()) return;
-    if (isBattleToken(doc) || detectorFor(doc.parent) === "battle") return battleReinforcement(doc);
-    presenceReport(doc);
+    if (!game.user?.isGM) return;
+    if (isBattleDoc(doc)) return battleReinforcement(doc);
+    if (isPrimaryGM()) presenceReport(doc);
   });
 
   Hooks.on("updateToken", (doc, changes) => {
-    if (!isPrimaryGM() || changes?.hidden !== false) return;
-    if (isBattleToken(doc) || detectorFor(doc.parent) === "battle") return battleReinforcement(doc);
-    presenceReport(doc);
+    if (!game.user?.isGM || changes?.hidden !== false) return;
+    if (isBattleDoc(doc)) return battleReinforcement(doc);
+    if (isPrimaryGM()) presenceReport(doc);
   });
 
   // A scene becoming active is a new visit (fl-ledger.js); sweep it after.
@@ -113,11 +119,16 @@
     return [...(scene?.tokens ?? [])].filter(t => t.disposition === HOSTILE && !t.hidden && t.actorId);
   }
 
+  // This client runs the battle (the director's host GM).
+  function amBattleHost() {
+    if (!game.user?.isGM) return false;
+    const host = globalThis.FUCompanion?.api?.experimental?.battleDirector?.host?.();
+    return host ? host.amHost !== false : isPrimaryGM();
+  }
+
   Hooks.on("fu-director-started", () => {
-    if (!game.user?.isGM) return;
-    const bd = globalThis.FUCompanion?.api?.experimental?.battleDirector;
-    const host = bd?.host?.();
-    if (host && host.amHost === false) return;
+    _battleLive = true;
+    if (!amBattleHost()) return;
     const scene = game.scenes?.active ?? canvas?.scene;
     if (!scene) return;
     // A beat after the entrance so the tab does not land on the BATTLE START banner.
@@ -128,8 +139,19 @@
     }, 600);
   });
 
+  // "Live" only between fu-director-started and fu-director-stopped. The
+  // director already reports isRunning() while its entrance is still playing and
+  // the starting enemies spawn, so those spawns came through here ~30 s early
+  // (sandbox timing 2026-11-05) and could pay during the cinematic. The start
+  // hook covers the starting roster; this path is for later arrivals only.
+  let _battleLive = false;
+  Hooks.on("fu-director-stopped", () => { _battleLive = false; });
+
   function battleReinforcement(doc) {
-    if (!bdRunning() || doc.disposition !== HOSTILE || doc.hidden || !doc.parent?.active) return;
+    if (!_battleLive || !amBattleHost() || !bdRunning() || doc.disposition !== HOSTILE || doc.hidden || !doc.parent?.active) return;
+    // A Champion joining mid-battle is a boss appearing: the boss point, if this
+    // visit hasn't paid one yet (a fight that started with only soldiers).
+    if (doc.actorId) api()?.bossFight?.({ enemyActorIds: [doc.actorId] });
     if (!gmCandidate(doc)) return;
     api()?.report?.(tokenAppearance(doc, { inBattle: true }));
   }

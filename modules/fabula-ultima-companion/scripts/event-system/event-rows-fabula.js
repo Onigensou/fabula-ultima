@@ -15,7 +15,7 @@
  *                           once-per-visit rule as detection applies and a
  *                           portrait or token of theirs later in the same
  *                           visit pays nothing. No GM prompt: the author decided.
- *   Change Villain Status   villain / hidden / never / unset. "Reveal" also
+ *   Change Villain Status   villain / neutral / never / unset. "Reveal" also
  *                           pays at once, as the villain's entrance.
  *
  * The Fabula Ledger (scripts/fabula-ledger/) does the work; these rows only
@@ -51,7 +51,7 @@
 
   const OPS = [["increase", "Increase"], ["decrease", "Decrease"]];
   const OPERANDS = [["constant", "Number"], ["variable", "Variable"]];
-  const STATUSES = [["villain", "Villain (pays when they appear)"], ["hidden", "Hidden (never pays until revealed)"], ["never", "Not a villain"], ["auto", "Unset (Champions ask the GM)"]];
+  const STATUSES = [["villain", "Villain (pays when they appear)"], ["neutral", "Neutral (not hostile now; pays nothing for appearing)"], ["never", "Never (not part of the story)"], ["auto", "Unset (Champions ask the GM)"]];
 
   // ------------------------------------------------------------
   // Actor picking: a name box with a list of every non-player actor.
@@ -247,7 +247,7 @@
            <div class="oni-event-list-actions"><button type="button" class="oni-fabula-villain-add"><i class="fas fa-plus"></i> Add villain</button></div>`,
           `Each pays the party +1, once per visit to this map. A Theatre portrait or token of theirs
            later in the same visit pays nothing more. Any rank counts: the event says they are villains,
-           so an actor whose status is unset becomes a Villain (Hidden and Not a villain are kept).`
+           so an actor whose status is unset becomes a Villain (Neutral and Never are kept).`
         )
       );
       const host = body.querySelector(".oni-fabula-villains");
@@ -311,7 +311,7 @@
         kit.field(
           "Reveal",
           `<label><input type="checkbox" class="oni-fabula-reveal" ${row.reveal ? "checked" : ""} /> pay +1 now, as their entrance</label>`,
-          "Only with Villain: the moment a hidden villain shows their hand."
+          "Only with Villain: the moment a neutral character turns on the party."
         )
       );
       const statusEl = body.querySelector(".oni-fabula-status");

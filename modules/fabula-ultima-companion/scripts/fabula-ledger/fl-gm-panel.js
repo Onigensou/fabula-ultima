@@ -8,7 +8,7 @@
  *   Party      each member's Fabula Points with − / + (a manual change; the
  *              cap does not apply to these: they are the GM's own call) and
  *              the flag = Surrender (+2, capped; nothing in the game detects it)
- *   Villains   status per actor (Auto / Villain / Hidden / Never) and
+ *   Villains   status per actor (Auto / Villain / Neutral / Never) and
  *              Cameo (the GM voices them, no token) · Reveal · Escalate
  *   Awards     the recent awards, each with Undo
  *   Log        what the ledger decided and why; a quiet or skipped sighting
@@ -30,12 +30,12 @@
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const FP_PROP = "fabula_point";
 
-  const STATUS_LABEL = { auto: "Auto", villain: "Villain", hidden: "Hidden", never: "Never" };
+  const STATUS_LABEL = { auto: "Auto", villain: "Villain", neutral: "Neutral", never: "Never" };
   const AWARD_LABEL = { villain: "villain", escalation: "escalated", boss: "boss fight", session: "session start", gm: "GM", change: "event", fumble: "fumble", surrender: "surrender" };
   const WHY = {
     villain: "paid", "auto-pay": "paid (Auto-pay)", event: "paid (event)", cameo: "paid (cameo)", reveal: "paid (reveal)",
     escalation: "paid (escalated)", "paid-this-visit": "already paid here", "visit-cap": "3 already paid here",
-    muted: "skipped loop", "status-hidden": "hidden", unset: "asked: first sighting", loop: "asked: loop",
+    muted: "skipped loop", "status-neutral": "neutral", unset: "asked: first sighting", loop: "asked: loop",
     "battle-followed": "boss point covers it"
   };
 
@@ -113,7 +113,7 @@
   // labelled, seen this session or added by hand, so a brand-new world shows its
   // cast instead of an empty list (user, 2026-11-05: the module may be handed to
   // friends as a template, set up without Claude).
-  const FILTERS = [["champ", "All Champions"], ["villain", "Villains"], ["hidden", "Hidden"], ["never", "Never"]];
+  const FILTERS = [["champ", "All Champions"], ["villain", "Villains"], ["neutral", "Neutral"], ["never", "Never"]];
   let _filter = "champ";
 
   function villainActors(state) {
@@ -163,7 +163,7 @@
         <span class="flg-name" title="${esc(rank)}">${esc(a.name)}</span>
         ${statusSel(a)}
         ${status === "never" ? "" : `<button class="b" data-act="cameo" data-id="${a.id}" title="They speak or act with no token: +1 (once per visit)">Cameo</button>`}
-        ${status === "hidden" || status === "auto" ? `<button class="b" data-act="reveal" data-id="${a.id}" title="Mark as Villain and pay +1">Reveal</button>` : ""}
+        ${status === "neutral" || status === "auto" ? `<button class="b" data-act="reveal" data-id="${a.id}" title="Mark as Villain and pay +1">Reveal</button>` : ""}
         ${status === "villain" ? `<button class="b" data-act="escalate" data-id="${a.id}" title="Boss phase / escalation: +1 even if paid here">Escalate</button>` : ""}
       </div>`;
     }).join("") : `<div class="flg-empty">${_filter === "never" ? "Nobody yet. Training dummies and friendly Champions go here." : _filter === "champ" ? "No Champions in this world yet." : "Nobody yet."}</div>`;

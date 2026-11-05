@@ -13,11 +13,16 @@
  *     GM instead of paying, even with Auto-pay on:
  *       followed   — the villain was paid during the visit right before this one
  *       stationary — this same token already paid this session and has not moved
- *   - Status (actor flag): auto (unset) | villain | hidden | never.
+ *   - Status (actor flag): auto (unset) | villain | neutral | never.
  *       auto + Champion rank -> ask the GM ("first" prompt), or pay with Auto-pay
  *       auto + not Champion  -> not a villain, ignored
  *       villain              -> pays without asking
- *       hidden / never       -> never pays from detection
+ *       neutral              -> a story character not hostile right now (may
+ *                               turn villain later: Reveal / event); appearing pays nothing
+ *       never                -> not part of the story (dummies, summons): nothing, ever
+ *     ("neutral" was called "hidden" before 2026-11-05; the old value still reads as neutral.)
+ *   - Boss point: any Champion on the enemy side, whatever the status except
+ *     never (user, 2026-11-05: "if a boss appears, just give points").
  *   - Explicit sources skip the questions:
  *       event    (Villain Entrance command)  pays unless never / already paid this visit
  *       cameo    (GM hotkey)                 same as event
@@ -28,7 +33,7 @@
  * left alone until spent; a spend is never clamped.
  */
 (() => {
-  const STATUS = Object.freeze({ AUTO: "auto", VILLAIN: "villain", HIDDEN: "hidden", NEVER: "never" });
+  const STATUS = Object.freeze({ AUTO: "auto", VILLAIN: "villain", NEUTRAL: "neutral", NEVER: "never" });
   const STATUSES = Object.freeze(Object.values(STATUS));
   const FP_CAP = 10;
   const VISIT_VILLAIN_CAP = 3;
@@ -40,6 +45,7 @@
 
   function normStatus(raw) {
     const s = String(raw ?? "").trim().toLowerCase();
+    if (s === "hidden") return STATUS.NEUTRAL;   // the old name
     return STATUSES.includes(s) ? s : STATUS.AUTO;
   }
 
@@ -97,7 +103,7 @@
 
     if (!DETECTED.has(source)) return { action: "ignore", reason: "unknown-source" };
 
-    if (status === STATUS.HIDDEN) return { action: "ignore", reason: "status-hidden" };
+    if (status === STATUS.NEUTRAL) return { action: "ignore", reason: "status-neutral" };
     if (status === STATUS.AUTO && !isChampionRank(app.rank)) return { action: "ignore", reason: "not-a-villain" };
     if (visitPaid.includes(actorId)) return { action: "ignore", reason: "paid-this-visit" };
     if (visitPaid.length >= VISIT_VILLAIN_CAP) return { action: "ignore", reason: "visit-cap" };
@@ -140,13 +146,14 @@
   }
 
   /**
-   * The boss point: +1 once per visit when a battle has a Champion enemy whose
-   * status is not hidden / never. enemies: [{ rank, status }]
+   * The boss point: +1 once per visit when a battle has a Champion enemy,
+   * whatever its status except never (a Neutral Geist fought as an enemy pays).
+   * enemies: [{ rank, status }]
    */
   function decideBossPoint(enemies, state) {
     if (state?.visit?.boss) return { action: "ignore", reason: "boss-paid-this-visit" };
     const boss = (enemies ?? []).find(e => isChampionRank(e?.rank)
-      && ![STATUS.HIDDEN, STATUS.NEVER].includes(normStatus(e?.status)));
+      && normStatus(e?.status) !== STATUS.NEVER);
     return boss ? { action: "pay", reason: "boss", boss } : { action: "ignore", reason: "no-champion" };
   }
 
@@ -158,7 +165,7 @@
 
   /** The buttons a GM prompt shows. */
   function promptButtons(kind) {
-    if (kind === "first") return ["confirm", "skip", "hidden", "never"];
+    if (kind === "first") return ["confirm", "skip", "neutral", "never"];
     return ["confirm", "skip"];
   }
 

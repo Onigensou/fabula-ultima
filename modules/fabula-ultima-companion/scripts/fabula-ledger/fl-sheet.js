@@ -3,7 +3,7 @@
  *
  * File: scripts/fabula-ledger/fl-sheet.js
  *
- * The status (Auto / Villain / Hidden / Never) is set where monsters are made:
+ * The status (Auto / Villain / Neutral / Never) is set where monsters are made:
  * a small dropdown right of the Rank field on an NPC's sheet. A sheet whose
  * template has no Rank field gets it in the title bar instead. GM only, so a
  * player opening an NPC sheet never sees it (no spoilers).
@@ -22,13 +22,14 @@
   const FL = globalThis.FabulaLedger = globalThis.FabulaLedger || {};
   const I = () => FL._internal;
 
-  const OPTIONS = [["auto", "☆ Auto"], ["villain", "★ Villain"], ["hidden", "◐ Hidden"], ["never", "✕ Never"]];
+  const OPTIONS = [["auto", "☆ Auto"], ["villain", "★ Villain"], ["neutral", "◐ Neutral"], ["never", "✕ Never"]];
   const HELP = [
     "Villain status (Fabula Points), GM only:",
     "☆ Auto: not decided. A Champion makes the GM prompt ask the first time they appear.",
     "★ Villain: appearing pays the party +1 (once per map); a fight pays the boss point.",
-    "◐ Hidden: a villain the players don't know yet. Nothing until you Reveal them.",
-    "✕ Never: never pays, never asks (friendly Champions, training dummies)."
+    "◐ Neutral: not hostile right now; may turn villain later (Reveal). Appearing pays nothing.",
+    "✕ Never: not part of the story (training dummies, summons). Never pays, not even the boss point.",
+    "Any Champion fought as an enemy still pays the boss point (except Never)."
   ].join("\n");
 
   function ensureStyle() {
@@ -38,7 +39,7 @@
     s.textContent = `
 select.fl-villain-status { margin-left: 6px; width: auto; min-width: 7.5em; flex: 0 0 auto; font-weight: 600; }
 select.fl-villain-status[data-s="villain"] { color: #a1362a; }
-select.fl-villain-status[data-s="hidden"] { color: #5b4a8a; }
+select.fl-villain-status[data-s="neutral"] { color: #5b4a8a; }
 select.fl-villain-status[data-s="never"] { color: #6b6b6b; }
 .window-header select.fl-villain-status {
   height: 22px; font-size: 12px; margin: 0 6px; background: rgba(255,255,255,0.9); color: #3a1e06; border-radius: 3px;

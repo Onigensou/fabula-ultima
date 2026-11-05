@@ -19,7 +19,7 @@
  *   log         the last decisions, for the GM ledger panel (step 3)
  *
  * Villain status is a flag on the WORLD actor: flags.<module>.fabulaVillain
- *   "auto" (default) | "villain" | "hidden" | "never"
+ *   "auto" (default) | "villain" | "neutral" | "never"   ("hidden" = old name of neutral)
  *
  * API: FUCompanion.api.fabula (also globalThis.FabulaLedger.api)
  *   change(actors, delta, opts)    plain award or spend; actors = Actor[] | "party"
@@ -71,7 +71,7 @@
     });
     game.settings.register(MODULE_ID, SETTING_AUTOPAY, {
       name: "Fabula Points: pay unset Champions without asking",
-      hint: "Off (recommended): the first time an unset Champion appears, the GM is asked Confirm / Skip / Hidden / Never. On: they pay straight away. Suspected loops always ask.",
+      hint: "Off (recommended): the first time an unset Champion appears, the GM is asked Confirm / Skip / Neutral / Never. On: they pay straight away. Suspected loops always ask.",
       scope: "world", config: true, type: Boolean, default: false
     });
   });
@@ -392,7 +392,7 @@
     debug("answer", app.name, decision.prompt, answer);
     if (decision.prompt === "first") {
       if (answer === "confirm") { await setStatus(app.actorId, L.STATUS.VILLAIN); return payVillain(app, decision); }
-      if (answer === "hidden") await setStatus(app.actorId, L.STATUS.HIDDEN);
+      if (answer === "neutral") await setStatus(app.actorId, L.STATUS.NEUTRAL);
       if (answer === "never") await setStatus(app.actorId, L.STATUS.NEVER);
       return { ok: true, answer };
     }
@@ -420,7 +420,7 @@
     for (const a of list) {
       // The event declares them villains: an unset actor becomes one, so its
       // later appearances pay too (Asura is an elite, not a Champion).
-      // Hidden and Never are the GM's deliberate calls and stay.
+      // Neutral and Never are the GM's deliberate calls and stay.
       if (getStatus(a) === L.STATUS.AUTO) await setStatus(a, L.STATUS.VILLAIN);
       results.push(await report({ actorId: a.id, source: "event", img: spriteOf(a) }));
     }
