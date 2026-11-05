@@ -96,7 +96,8 @@
             "wellspring_bolt": true,
             "wellspring_ice": false,
             "wellspring_dark": false,
-            "wellspring_light": false
+            "wellspring_light": false,
+            "surfaceFxEnabled": true
           },
           "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Cavern\",\"id\":\"Scene.Uas0vCUZJOjrpgB0\"},{\"name\":\"Valley of the Dragon - Underground Area\",\"id\":\"09CApvaBfOesGfbp\"}]"
         },
@@ -122,6 +123,210 @@
             "material": "RollTable.QailcoOmaoZW0v6b",
             "fish": "RollTable.pEHm2gU70pTHQM6v"
           }
+        },
+        "surfaceFx": {
+          "mode": "water",
+          "crystals": [
+            [
+              42,
+              432,
+              46
+            ],
+            [
+              172,
+              393,
+              44
+            ],
+            [
+              438,
+              420,
+              46
+            ],
+            [
+              915,
+              412,
+              40
+            ],
+            [
+              1198,
+              300,
+              42
+            ],
+            [
+              1395,
+              262,
+              44
+            ],
+            [
+              100,
+              722,
+              42
+            ],
+            [
+              1385,
+              742,
+              42
+            ],
+            [
+              1282,
+              918,
+              46
+            ]
+          ],
+          "crystalColor": [
+            0.72,
+            0.5,
+            1
+          ],
+          "wisp": 0.12,
+          "darkness": 0.32,
+          "lights": [
+            [
+              42,
+              432,
+              150,
+              0.78,
+              0.58,
+              1,
+              1
+            ],
+            [
+              172,
+              393,
+              150,
+              0.78,
+              0.58,
+              1,
+              1
+            ],
+            [
+              438,
+              420,
+              170,
+              0.78,
+              0.58,
+              1,
+              1
+            ],
+            [
+              915,
+              412,
+              150,
+              0.78,
+              0.58,
+              1,
+              1
+            ],
+            [
+              1198,
+              300,
+              150,
+              0.78,
+              0.58,
+              1,
+              1
+            ],
+            [
+              1395,
+              262,
+              160,
+              0.78,
+              0.58,
+              1,
+              1
+            ],
+            [
+              100,
+              722,
+              140,
+              0.78,
+              0.58,
+              1,
+              1
+            ],
+            [
+              1385,
+              742,
+              140,
+              0.78,
+              0.58,
+              1,
+              1
+            ],
+            [
+              1282,
+              918,
+              140,
+              0.78,
+              0.58,
+              1,
+              1
+            ],
+            [
+              20,
+              400,
+              120,
+              0.85,
+              0.7,
+              1,
+              0.8
+            ],
+            [
+              700,
+              250,
+              520,
+              0.72,
+              0.76,
+              1,
+              0.55
+            ]
+          ],
+          "draft": "claude-2026-11-06-underground-decor"
+        },
+        "ambience": {
+          "spores": {
+            "preset": "crystal",
+            "points": [
+              [
+                42,
+                432
+              ],
+              [
+                172,
+                393
+              ],
+              [
+                438,
+                420
+              ],
+              [
+                915,
+                412
+              ],
+              [
+                1198,
+                300
+              ],
+              [
+                1395,
+                262
+              ],
+              [
+                100,
+                722
+              ],
+              [
+                1385,
+                742
+              ],
+              [
+                1282,
+                918
+              ]
+            ]
+          },
+          "drips": true,
+          "draft": "claude-2026-11-06-underground-decor"
         }
       }
     },

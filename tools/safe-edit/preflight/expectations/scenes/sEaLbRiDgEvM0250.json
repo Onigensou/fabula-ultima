@@ -154,7 +154,8 @@
             "depthCurve": 1,
             "depthSort": true,
             "depthHorizonY": 596,
-            "depthStrength": 1
+            "depthStrength": 1,
+            "surfaceFxEnabled": true
           },
           "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Cavern\",\"id\":\"Scene.Uas0vCUZJOjrpgB0\"},{\"name\":\"Valley of the Dragon - Seal Cavern\",\"id\":\"52LLgHZIyAXBrbMq\"},{\"name\":\"The Great Seal\",\"id\":\"MWQBX1ZnbjcFkvq2\"}]"
         },
@@ -181,7 +182,72 @@
             "fish": "RollTable.pEHm2gU70pTHQM6v"
           }
         },
-        "draftScene": "claude-2026-10-31"
+        "draftScene": "claude-2026-10-31",
+        "surfaceFx": {
+          "mode": "gas",
+          "crystals": [
+            [
+              350,
+              560,
+              70
+            ],
+            [
+              730,
+              478,
+              60
+            ],
+            [
+              1395,
+              575,
+              80
+            ],
+            [
+              1880,
+              548,
+              70
+            ],
+            [
+              1550,
+              100,
+              60
+            ],
+            [
+              260,
+              120,
+              50
+            ],
+            [
+              1930,
+              335,
+              55
+            ],
+            [
+              360,
+              1362,
+              45
+            ]
+          ],
+          "crystalColor": [
+            0.7,
+            0.48,
+            1
+          ],
+          "wisp": 0.16,
+          "shimmerTile": "GIRssfFkLlaJ5evn",
+          "shimmer": {
+            "cx": 1024,
+            "cy": 820,
+            "squash": 1.9
+          },
+          "draft": "claude-2026-11-06-underground-decor"
+        },
+        "ambience": {
+          "spores": {
+            "preset": "gas"
+          },
+          "puffs": true,
+          "draft": "claude-2026-11-06-underground-decor"
+        }
       }
     },
     "active": false,
