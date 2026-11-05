@@ -1,6 +1,6 @@
 ---
 id: 2026-11-05-session-start-automation
-title: Start Session now runs automatically when a save loads (Fabula Ledger) — your call on the details
+title: Start Session now runs automatically when a save loads (Fabula Ledger) — your call on the details; plus a 10 FP cap in writeResourceDelta
 status: open
 severity: minor
 reporter: onigensou
@@ -54,3 +54,29 @@ So the "not idempotent" concern in your header is handled by the flag: a second
 3. `forceLoad(3)` again → GM prompt "New session? · last one still open".
 
 ## Notes
+
+### Also in your files: a 10 Fabula Point cap (FYI, small)
+
+The user capped Fabula Points at 10 ("easy to get > use fast > cap at 10"). Two
+lines in Battle Director code you own:
+
+- `battle-director/resources.js`: the `fp` row gets `hardMax: 10`.
+- `battle-director/skill-effects.js` `writeResourceDelta`: `hardMax` now caps a
+  **gain** only, and never pulls a total that is already above it back down:
+
+  ```js
+  // before
+  next = Math.min(hardMax, Math.max(hardMin, next));
+  // after
+  const ceiling = delta > 0 ? Math.max(cur, hardMax) : Infinity;
+  next = Math.min(ceiling, Math.max(hardMin, next));
+  ```
+
+  Why: Blanche sits on 12 FP (set by hand on the sheet). Under the old line, her
+  next spend would have dropped her to 10, not 11. GM sheet edits stay uncapped
+  on purpose.
+
+**Zero Power also has `hardMax` (6), so it sees the same rule.** Gains still stop
+at 6, so nothing changes in play. The only difference is a ZP total already above
+6 (only possible by a hand edit) is no longer snapped to 6 by the next write.
+Tell me if ZP should keep the old hard clamp and I'll special-case it.
