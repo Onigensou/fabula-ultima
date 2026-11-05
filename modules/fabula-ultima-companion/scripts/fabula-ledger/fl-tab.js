@@ -28,7 +28,11 @@
   const FP_COLOUR = "#14b8a6";      // the action card's invoke counter star
 
   const T = { slideIn: 320, firstStep: 700, step: 420, settle: 1000, hold: 1200, slideOut: 280, capHold: 1500 };
-  const DOCK_SELECTORS = ["#theatre-bar", "#oni-camp-phase-btn", "#oni-camp-start-btn", ".dhud-root .dhud-card", "#players", "#hotbar"];
+  // Exploration's round mode buttons (.oni-dp-mode-btn: travel / heal / ritual)
+  // and the "Controller" badge above them sat over the tab: found in the demo
+  // recording 2026-11-05.
+  const DOCK_SELECTORS = ["#theatre-bar", "#oni-camp-phase-btn", "#oni-camp-start-btn", ".dhud-root .dhud-card", "#players", "#hotbar",
+    ".oni-dp-mode-btn", "#oni-movement-control-badge-root"];
   const DOCK_ZONE_PX = 320;          // only things in the left part of the screen push the tab up
   const HELD_MODES = new Set(["title", "gacha"]);
 
