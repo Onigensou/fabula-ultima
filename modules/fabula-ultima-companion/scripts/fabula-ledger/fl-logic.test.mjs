@@ -85,6 +85,22 @@ check("junk status reads as auto", L.normStatus("Villainous") === "auto" && L.no
   check("trio portrait after the row pays nothing", is(again, "ignore", { reason: "paid-this-visit" }));
 }
 
+// ── battles ──────────────────────────────────────────────────────────────────
+{
+  const s = empty(); s.prevVisit.paid = ["geist"];
+  check("battle right after a sighting: no 'followed' prompt", is(L.decideAppearance(geist({ inBattle: true, tokenId: "b1", sceneId: "arena" }), s), "ignore", { reason: "battle-followed" }));
+  check("a NEW villain ambushing in battle still pays", is(L.decideAppearance(geist({ actorId: "new", inBattle: true }), s), "pay"));
+}
+check("boss point: Champion enemy pays", is(L.decideBossPoint([{ rank: "soldier" }, { rank: "champion", status: "auto" }], empty()), "pay"));
+check("boss point: hidden Champion (neutral Geist sparring) does not", is(L.decideBossPoint([{ rank: "champion", status: "hidden" }], empty()), "ignore"));
+check("boss point: elites only, no point", is(L.decideBossPoint([{ rank: "elite", status: "villain" }], empty()), "ignore", { reason: "no-champion" }));
+{
+  const s = empty(); s.visit.boss = true;
+  check("boss point: once per visit (a reload mid-battle does not repay)", is(L.decideBossPoint([{ rank: "champion" }], s), "ignore", { reason: "boss-paid-this-visit" }));
+}
+check("candidate: villain elite yes, unset champion yes, unset elite no, hidden no",
+  L.isCandidate("elite", "villain") && L.isCandidate("champion", "auto") && !L.isCandidate("elite", "auto") && !L.isCandidate("champion", "hidden"));
+
 // ── cap ──────────────────────────────────────────────────────────────────────
 const cap = (c, d) => L.applyCap(c, d);
 check("4 + 1 = 5", JSON.stringify(cap(4, 1)) === JSON.stringify({ next: 5, gained: 1, overflow: 0 }));

@@ -114,6 +114,9 @@
       return { action: "ask", reason: "loop", prompt: "loop", loop: "stationary" };
     }
     if (prevPaid.includes(actorId)) {
+      // Seen on the map just before and now fighting them: the boss point
+      // covers this moment, so the sighting is not asked about again.
+      if (app.inBattle) return { action: "ignore", reason: "battle-followed" };
       return { action: "ask", reason: "loop", prompt: "loop", loop: "followed" };
     }
 
@@ -136,6 +139,23 @@
     return { next, gained: next - cur, overflow: 0 };
   }
 
+  /**
+   * The boss point: +1 once per visit when a battle has a Champion enemy whose
+   * status is not hidden / never. enemies: [{ rank, status }]
+   */
+  function decideBossPoint(enemies, state) {
+    if (state?.visit?.boss) return { action: "ignore", reason: "boss-paid-this-visit" };
+    const boss = (enemies ?? []).find(e => isChampionRank(e?.rank)
+      && ![STATUS.HIDDEN, STATUS.NEVER].includes(normStatus(e?.status)));
+    return boss ? { action: "pay", reason: "boss", boss } : { action: "ignore", reason: "no-champion" };
+  }
+
+  /** Is this actor worth reporting at all? (Cheap pre-filter for detectors.) */
+  function isCandidate(rank, status) {
+    const s = normStatus(status);
+    return s === STATUS.VILLAIN || (s === STATUS.AUTO && isChampionRank(rank));
+  }
+
   /** The buttons a GM prompt shows. */
   function promptButtons(kind) {
     if (kind === "first") return ["confirm", "skip", "hidden", "never"];
@@ -154,7 +174,7 @@
   const Logic = {
     STATUS, STATUSES, FP_CAP, VISIT_VILLAIN_CAP,
     normStatus, isChampionRank, tokenKey, tokenSpot, sameSpot,
-    decideAppearance, applyCap, promptButtons, promptReason
+    decideAppearance, decideBossPoint, isCandidate, applyCap, promptButtons, promptReason
   };
 
   globalThis.FabulaLedger = globalThis.FabulaLedger || {};

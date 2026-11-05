@@ -153,10 +153,10 @@
   // get no note: the author wrote them on purpose.
   function paidNote(entry) {
     if (!game.user?.isGM) return;
-    if (!["villain", "escalation"].includes(entry?.reason)) return;
-    const actor = game.actors?.get(entry.villainIds?.[0]) ?? game.actors?.getName?.(entry.label);
+    if (!["villain", "escalation", "boss"].includes(entry?.reason)) return;
+    const actor = game.actors?.get(entry.villainIds?.[0] ?? entry.bossId) ?? game.actors?.getName?.(entry.label);
     const img = actor ? (FL._internal?.spriteOf?.(actor) ?? "") : "";
-    const what = entry.reason === "escalation" ? "escalated" : "paid";
+    const what = { escalation: "escalated", boss: "boss fight" }[entry.reason] ?? "paid";
     const panel = mount(`
       ${img ? `<img class="flp-spr" src="${esc(img)}" alt="">` : ""}
       <div class="flp-q">Fabula Point +1 <small>${esc(entry.label)} · ${what}</small></div>

@@ -42,6 +42,7 @@
     "scripts/fabula-ledger/fl-ledger.js",
     "scripts/fabula-ledger/fl-gm-prompt.js",
     "scripts/fabula-ledger/fl-tab.js",
+    "scripts/fabula-ledger/fl-detect.js",
     "scripts/client-health.js",
     "scripts/db-resolver.js",
     "scripts/party-sync/party-sync-core.js",

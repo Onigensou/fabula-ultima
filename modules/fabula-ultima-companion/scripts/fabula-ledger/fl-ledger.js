@@ -57,8 +57,8 @@
 
   // ── settings ───────────────────────────────────────────────────────────────
   const blankState = () => ({
-    visit: { id: null, sceneId: null, paid: [] },
-    prevVisit: { id: null, sceneId: null, paid: [] },
+    visit: { id: null, sceneId: null, paid: [], boss: false },
+    prevVisit: { id: null, sceneId: null, paid: [], boss: false },
     paidTokens: {}, muted: {}, undo: [], log: []
   });
 
@@ -163,6 +163,7 @@
       case "cameo": return cameo(a(args[0]));
       case "reveal": return reveal(a(args[0]));
       case "escalate": return escalate(a(args[0]));
+      case "bossFight": return bossFight(args[0]);
       default: console.warn(TAG, "unknown call", op);
     }
   }
@@ -175,7 +176,7 @@
     await mutate((s) => {
       if (onlyIfChanged && s.visit.sceneId === sceneId) return;
       s.prevVisit = s.visit.id ? s.visit : s.prevVisit;
-      s.visit = { id: foundry.utils.randomID(), sceneId, paid: [] };
+      s.visit = { id: foundry.utils.randomID(), sceneId, paid: [], boss: false };
       debug("new visit", sceneId);
     });
   }
@@ -189,7 +190,7 @@
     await mutate((s) => {
       const keep = s.visit;
       Object.assign(s, blankState());
-      s.visit = { id: foundry.utils.randomID(), sceneId: keep.sceneId ?? game.scenes?.active?.id ?? null, paid: [] };
+      s.visit = { id: foundry.utils.randomID(), sceneId: keep.sceneId ?? game.scenes?.active?.id ?? null, paid: [], boss: false };
     });
   }
 
@@ -222,7 +223,7 @@
 
     const entry = {
       id: foundry.utils.randomID(), at: Date.now(), delta: d,
-      reason: opts.reason ?? "change", label: opts.label ?? "", villainIds: opts.villainIds ?? [],
+      reason: opts.reason ?? "change", label: opts.label ?? "", villainIds: opts.villainIds ?? [], bossId: opts.bossId ?? null,
       changes: changes.map(c => ({ actorId: c.actorId, before: c.from, after: c.to }))
     };
     await mutate((s) => { s.undo.unshift(entry); s.undo.length = Math.min(s.undo.length, MAX_UNDO); });
@@ -243,8 +244,9 @@
       const i = id ? s.undo.findIndex(u => u.id === id) : 0;
       if (i < 0 || !s.undo[i]) return null;
       const [e] = s.undo.splice(i, 1);
-      // A paid villain becomes unpaid again for this visit.
+      // A paid villain becomes unpaid again for this visit; same for the boss point.
       for (const vid of e.villainIds ?? []) s.visit.paid = s.visit.paid.filter(x => x !== vid);
+      if (e.reason === "boss") s.visit.boss = false;
       return e;
     });
     if (!entry) return { ok: false, reason: "nothing-to-undo" };
@@ -284,7 +286,8 @@
 
     const state = readState();
     const decision = L.decideAppearance(app, state, { autoPay: autoPay() });
-    logDecision(app, decision);
+    // Players' cameras may report ordinary monsters; keep those out of the log.
+    if (!["not-a-villain", "status-never"].includes(decision.reason)) logDecision(app, decision);
 
     if (decision.action === "pay") return payVillain(app, decision);
     if (decision.action === "ask") return ask(app, decision, state.visit.id);
@@ -378,9 +381,39 @@
   const reveal = explicit("reveal");
   const escalate = explicit("escalate");
 
+  // ── boss fight ─────────────────────────────────────────────────────────────
+  /**
+   * A battle started on the active scene. info: { enemyActorIds: [id] }
+   * +1 to the party once per visit when any enemy is a Champion whose status
+   * is not hidden / never. Called by the battle detector on whichever GM hosts
+   * the Battle Director; forwarded to the primary GM.
+   */
+  async function bossFight(info = {}) {
+    if (!game.user?.isGM) return { ok: false };
+    if (!isPrimaryGM()) return callPrimary("bossFight", [info]);
+    const activeId = game.scenes?.active?.id ?? null;
+    if (readState().visit.sceneId !== activeId) await newVisit(activeId, { onlyIfChanged: true });
+
+    const enemies = (info.enemyActorIds ?? []).map(id => game.actors?.get(id)).filter(Boolean)
+      .map(a => ({ actorId: a.id, name: a.name, rank: rankOf(a), status: getStatus(a) }));
+    const decision = L.decideBossPoint(enemies, readState());
+    debug("boss fight", decision.reason, enemies.map(e => e.name));
+    if (decision.action !== "pay") return { ok: true, decision };
+    const claimed = await mutate((s) => { if (s.visit.boss) return false; s.visit.boss = true; return true; });
+    if (!claimed) return { ok: true, decision: { action: "ignore", reason: "boss-paid-this-visit" } };
+    const res = await change("party", 1, { reason: "boss", label: decision.boss.name, bossId: decision.boss.actorId });
+    return { ...res, decision };
+  }
+
+  /** Cheap pre-filter for detectors: could this actor ever pay as a villain? */
+  function isCandidate(actor) {
+    const a = worldActor(actor);
+    return !!a && L.isCandidate(rankOf(a), getStatus(a));
+  }
+
   // ── API ────────────────────────────────────────────────────────────────────
   const api = {
-    change, villainEntrance, report, cameo, reveal, escalate,
+    change, villainEntrance, report, cameo, reveal, escalate, bossFight, isCandidate,
     getStatus, setStatus, undo, newVisit, resetSession,
     state: () => foundry.utils.deepClone(readState()),
     STATUS: L.STATUS, MSG
