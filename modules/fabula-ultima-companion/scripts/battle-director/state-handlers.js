@@ -5352,7 +5352,10 @@ const Compute = {
       // its own Check and damage — planned when the card is confirmed
       // (chain-plan.js). Random mode draws each strike's target NOW, so the
       // card already names who gets hit and targeting reactions see them.
-      const _chainSpec = chainSpecFor({ kind: "Skill", skillItem: skill, isCheck: !!skillProj?.roll, hasDamage: !!skillProj?.hasDamage });
+      // `chain {FORMULA}`: the count is evaluated now with the caster's skill resolver.
+      const _chainCasterActor = attacker?.actorUuid ? await fromUuid(attacker.actorUuid).catch(() => null) : null;
+      const _chainEval = (f) => evaluateFormula(String(f), buildSkillResolver({ actor: _chainCasterActor, payload: {}, skill, round: director.dCombat?.round ?? 0, vars: { CASTER_LEVEL: Number(_chainCasterActor?.system?.props?.level ?? 0) || 0 } }), 0);
+      const _chainSpec = chainSpecFor({ kind: "Skill", skillItem: skill, isCheck: !!skillProj?.roll, hasDamage: !!skillProj?.hasDamage, evalCount: _chainEval });
       const _chainDraw = _chainSpec ? drawChainTargets(_chainSpec, allTargets.map((t) => t?.tokenUuid).filter(Boolean)) : null;
       const _chainNarrow = _chainDraw?.keep
         ? narrowToTargets({ targets: allTargets, perTargetResults: skillProj.perTargetResults ?? [], hitTokenUuids: skillProj.hitTokenUuids ?? null }, _chainDraw.keep)

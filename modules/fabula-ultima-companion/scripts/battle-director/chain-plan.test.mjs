@@ -32,6 +32,11 @@ eq("skill chain (separate)", chainSpecFor({ kind: "Skill", skillItem: skill("cha
 eq("weapon chain on an attack", chainSpecFor({ kind: "Attack", weapon: { actionKeywords: "chain 2 random" } }), { count: 2, mode: "random" });
 eq("weapon keywords ignored for a skill", chainSpecFor({ kind: "Skill", weapon: { actionKeywords: "chain 2" }, isCheck: true, hasDamage: true }), null);
 eq("no check, no chain", chainSpecFor({ kind: "Skill", skillItem: skill("chain 3"), isCheck: false, hasDamage: true }), null);
+// `chain {FORMULA}`: evaluated by the caller's evalCount; no evaluator = no Chain.
+eq("formula chain evaluated", chainSpecFor({ kind: "Skill", skillItem: skill("fire, chain {OWN_PHANTASM_COUNT + 2}"), isCheck: true, hasDamage: true, evalCount: (f) => (f === "OWN_PHANTASM_COUNT + 2" ? 5 : 0) }), { count: 5, mode: "single" });
+eq("formula chain under 2 = none", chainSpecFor({ kind: "Skill", skillItem: skill("chain {N}"), isCheck: true, hasDamage: true, evalCount: () => 1 }), null);
+eq("formula chain without evaluator = none", chainSpecFor({ kind: "Skill", skillItem: skill("chain {N}"), isCheck: true, hasDamage: true }), null);
+eq("formula chain evaluator throws = none", chainSpecFor({ kind: "Skill", skillItem: skill("chain {N}"), isCheck: true, hasDamage: true, evalCount: () => { throw new Error("x"); } }), null);
 eq("no damage, no chain", chainSpecFor({ kind: "Skill", skillItem: skill("chain 3"), isCheck: true, hasDamage: false }), null);
 eq("old Combo items never chain", chainSpecFor({ kind: "Skill", skillItem: skill("combo 3"), isCheck: true, hasDamage: true }), null);
 

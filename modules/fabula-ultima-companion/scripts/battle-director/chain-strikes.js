@@ -35,21 +35,34 @@
 // A one-roll Chain can add `hidden` (`chain 8 hidden`): a pure presentation
 // split the player is not told about, so the action card shows no Chain badge.
 export const CHAIN_MODES = Object.freeze(["single", "separate", "random", "pick"]);
-export const CHAIN_MAX = 20;
+// 30: Zarg's Meteor Shower volley is a 24-hit one-roll Chain (Zero Power overhaul, 2026-11-06).
+export const CHAIN_MAX = 30;
 
 // Keyword forms accepted on an item's `action_keywords` list (already split
 // and lowercased by the caller, or a raw string):
 //   "chain 3", "chain(3)", "chain x3", "chain:3", "chain 3 separate",
 //   "chain 3 random", "chain 3 pick", "chain 8 hidden"
+//   "chain {FORMULA}" (+ any mode word) - the count is a skill formula, evaluated
+//   when the action is COMPUTED (chain-plan.js chainSpecFor `evalCount`), e.g. Keren's
+//   Last Den of Cinders: one hit per summon strike + the blast + the last hit. The
+//   formula keeps its case (identifiers are upper-case) and must not contain a comma
+//   (the keyword list splits on commas). Returns { count: null, formula, mode }.
 // The bare word "chain" without a count is NOT a Chain — it is ignored, so a
 // stray label can never turn an action into a multi-strike one.
 const CHAIN_RX = /^chain\s*[:x(]?\s*(\d+)\s*\)?(?:\s*[:,]?\s*(separate|random|pick|hidden))?$/;
+const CHAIN_FORMULA_RX = /^chain\s*\{([^{}]+)\}(?:\s*[:,]?\s*(separate|random|pick|hidden))?$/i;
 
 export function parseChainKeyword(keywords) {
   const list = Array.isArray(keywords)
     ? keywords
     : String(keywords ?? "").split(/[,\n]+/);
   for (const raw of list) {
+    const f = CHAIN_FORMULA_RX.exec(String(raw ?? "").trim());
+    if (f) {
+      const mode = f[2] ? f[2].toLowerCase() : null;
+      if (mode === "hidden") return { count: null, formula: f[1].trim(), mode: "single", hidden: true };
+      return { count: null, formula: f[1].trim(), mode: mode ?? "single" };
+    }
     const m = CHAIN_RX.exec(String(raw ?? "").trim().toLowerCase());
     if (!m) continue;
     const count = Math.min(CHAIN_MAX, Math.max(0, Math.floor(Number(m[1]) || 0)));
@@ -58,6 +71,16 @@ export function parseChainKeyword(keywords) {
     return { count, mode: m[2] ?? "single" };
   }
   return null;
+}
+
+// A formula Chain's count, once evaluated: the same clamp and "under 2 is no Chain" rule
+// as a literal count. Returns the finished spec (formula dropped) or null.
+export function resolveChainCount(spec, value) {
+  if (!spec || spec.formula == null) return spec ?? null;
+  const count = Math.min(CHAIN_MAX, Math.max(0, Math.floor(Number(value) || 0)));
+  if (count < 2) return null;
+  const { formula, ...rest } = spec;
+  return { ...rest, count };
 }
 
 // A Chain whose hits each roll (everything but the one-roll default).

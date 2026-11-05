@@ -549,6 +549,21 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // `rememberedAction` (stamped by apply_ae `ae_remember_action`) to the dance
       // being performed now:
       //   AE_FLAG("Dancing","rememberedAction") != PERFORMED_SKILL   → 1 if a DIFFERENT dance.
+      // ON_FIELD("Name"): how many tokens on the active canvas belong to an actor
+      // (or carry a token name) called Name, case-insensitive. Lets a formula see
+      // creatures that are not the actor's own summons - Keren's Last Den of Cinders
+      // counts Leichi and Leilan as one parade strike when either is on the field.
+      case "ON_FIELD": {
+        const want = String(args?.[0] ?? "").trim().toLowerCase();
+        if (!want) return 0;
+        let n = 0;
+        for (const t of (globalThis.canvas?.tokens?.placeables ?? [])) {
+          const td = t?.document; if (!td) continue;
+          const an = String(td.actor?.name ?? "").trim().toLowerCase(), tn = String(td.name ?? "").trim().toLowerCase();
+          if (an === want || tn === want) n++;
+        }
+        return n;
+      }
       case "AE_FLAG": {
         const aeName = String(args?.[0] ?? "").trim().toLowerCase();
         const key = String(args?.[1] ?? "").trim();

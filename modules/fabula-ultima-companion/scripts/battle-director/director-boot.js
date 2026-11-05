@@ -1226,7 +1226,13 @@ Hooks.once("ready", () => {
   studio.previewChain = previewChainAnimation;
   studio.chainSpecOf = async (itemUuid) => {
     try {
-      const spec = parseChainKeyword((await fromUuid(itemUuid))?.system?.props?.action_keywords ?? "");
+      const item = await fromUuid(itemUuid);
+      let spec = parseChainKeyword(item?.system?.props?.action_keywords ?? "");
+      // A `chain {FORMULA}` count is evaluated against the owning actor as it stands now.
+      if (spec && spec.formula != null) {
+        const sf = await import("./skill-formulas.js"); const cs = await import("./chain-strikes.js");
+        spec = cs.resolveChainCount(spec, sf.evaluateFormula(spec.formula, sf.buildSkillResolver({ actor: item?.parent ?? null, payload: {}, skill: item }), 0));
+      }
       return spec ? { ...spec, beatMs: fallbackBeatMs(spec.count) } : null;
     } catch { return null; }
   };

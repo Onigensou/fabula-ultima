@@ -37,7 +37,22 @@ eq("chain 8 hidden",       parseChainKeyword("pierce, overflow, chain 8 hidden")
 eq("bare chain ignored",   parseChainKeyword(["chain"]),              null);
 eq("chain 1 is no chain",  parseChainKeyword(["chain 1"]),            null);
 eq("combo is not chain",   parseChainKeyword(["combo 2"]),            null);
-eq("capped at 20",         parseChainKeyword(["chain 99"]),           { count: 20, mode: "single" });
+eq("capped at 30",         parseChainKeyword(["chain 99"]),           { count: 30, mode: "single" });
+eq("chain 24 (Zarg volley)", parseChainKeyword(["chain 24"]),         { count: 24, mode: "single" });
+// `chain {FORMULA}`: the count is evaluated later (chain-plan chainSpecFor evalCount); case is kept.
+eq("chain {formula}",      parseChainKeyword('fire, chain {OWN_PHANTASM_COUNT + OWN_NUMEN_COUNT * 2 + (ON_FIELD("Leichi") + ON_FIELD("Leilan") > 0) + 2}'),
+                           { count: null, formula: 'OWN_PHANTASM_COUNT + OWN_NUMEN_COUNT * 2 + (ON_FIELD("Leichi") + ON_FIELD("Leilan") > 0) + 2', mode: "single" });
+eq("chain {formula} hidden", parseChainKeyword(["chain {A + 1} hidden"]), { count: null, formula: "A + 1", mode: "single", hidden: true });
+eq("chain {formula} separate", parseChainKeyword(["Chain {A} separate"]), { count: null, formula: "A", mode: "separate" });
+{
+  const { resolveChainCount } = await import("./chain-strikes.js");
+  const f = parseChainKeyword(["chain {X}"]);
+  eq("formula resolves to its count", resolveChainCount(f, 7), { count: 7, mode: "single" });
+  eq("formula under 2 is no chain", resolveChainCount(f, 1), null);
+  eq("formula clamps at CHAIN_MAX", resolveChainCount(f, 99), { count: 30, mode: "single" });
+  eq("formula floors", resolveChainCount(f, 4.9), { count: 4, mode: "single" });
+  eq("literal spec passes through", resolveChainCount({ count: 3, mode: "single" }, 9), { count: 3, mode: "single" });
+}
 eq("other words ignored",  parseChainKeyword(["chain reaction"]),     null);
 eq("unknown mode word ignored", parseChainKeyword(["chain 3 same"]),  null);
 eq("separate kinds", ["single", "separate", "random", "pick"].map((mode) => isSeparateChain({ count: 3, mode })), [false, true, true, true]);

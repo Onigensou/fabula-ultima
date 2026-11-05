@@ -30,7 +30,7 @@
 
 import { log, warn } from "./logger.js";
 import {
-  parseChainKeyword, assignStrikeTargets, createStrikeWalker,
+  parseChainKeyword, resolveChainCount, assignStrikeTargets, createStrikeWalker,
   breakdownForTarget, summarizeTarget, fallbackBeatMs,
   planSingleChain, singleBreakdown,
 } from "./chain-strikes.js";
@@ -38,14 +38,22 @@ import {
 // ── keyword ────────────────────────────────────────────────────────────────
 // Which Chain (if any) an action carries. Only an action with an Accuracy /
 // Magic Check that deals damage can be a Chain — a Chain is strikes.
-export function chainSpecFor({ kind = null, skillItem = null, weapon = null, isCheck = true, hasDamage = true } = {}) {
+// evalCount(formula) -> number: evaluates a `chain {FORMULA}` count with the acting
+// skill's resolver (the caller owns the resolver; without one a formula Chain is off).
+export function chainSpecFor({ kind = null, skillItem = null, weapon = null, isCheck = true, hasDamage = true, evalCount = null } = {}) {
   if (!isCheck || !hasDamage) return null;
   const lists = [];
   const skillKw = skillItem?.system?.props?.action_keywords;
   if (skillKw) lists.push(String(skillKw));
   if (kind === "Attack" && weapon?.actionKeywords) lists.push(String(weapon.actionKeywords));
   if (!lists.length) return null;
-  return parseChainKeyword(lists.join(","));
+  const spec = parseChainKeyword(lists.join(","));
+  if (spec && spec.formula != null) {
+    if (typeof evalCount !== "function") return null;
+    let v = 0; try { v = evalCount(spec.formula); } catch { v = 0; }
+    return resolveChainCount(spec, v);
+  }
+  return spec;
 }
 
 // Random and pick modes assign each strike's target when the action is
