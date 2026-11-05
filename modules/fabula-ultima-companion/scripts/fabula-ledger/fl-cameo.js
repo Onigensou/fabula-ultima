@@ -64,7 +64,7 @@
     if (q) {
       list = list.filter(c => c.a.name.toLowerCase().includes(q));
       // Any actor by name, so a villain never seen before can still cameo.
-      if (!list.length) list = [...game.actors].filter(a => a.type !== "character" && a.name.toLowerCase().includes(q)).map(a => ({ a, hint: "" }));
+      if (!list.length) list = [...game.actors].filter(a => I()?.isNpc?.(a) && a.name.toLowerCase().includes(q)).map(a => ({ a, hint: "" }));
     }
     list = list.slice(0, MAX_ROWS);
     _sel = Math.min(_sel, Math.max(0, list.length - 1));

@@ -114,6 +114,15 @@
   }
 
   const rankOf = (actor) => String(actor?.system?.props?.npc_rank ?? "").trim().toLowerCase();
+
+  // Every actor in this system is type "character" (CSB), monsters included, so
+  // the type can't tell an NPC apart. An NPC = not a CSB template, and either it
+  // has a Rank or no player owns it (the second half covers other templates).
+  function isNpc(actor) {
+    const a = worldActor(actor);
+    if (!a || a.type === "_template") return false;
+    return !!rankOf(a) || !a.hasPlayerOwner;
+  }
   const getStatus = (actor) => L.normStatus(worldActor(actor)?.getFlag?.(MODULE_ID, FLAG));
 
   async function setStatus(actor, status) {
@@ -503,7 +512,7 @@
     STATUS: L.STATUS, MSG
   };
   FL.api = api;
-  FL._internal = { worldActor, spriteOf, partyActors, isPrimaryGM, mutate, readState, callPrimary, note, rankOf, emit };
+  FL._internal = { worldActor, spriteOf, partyActors, isPrimaryGM, mutate, readState, callPrimary, note, rankOf, emit, isNpc };
   Hooks.once("init", () => {
     globalThis.FUCompanion = globalThis.FUCompanion || {};
     globalThis.FUCompanion.api = globalThis.FUCompanion.api || {};

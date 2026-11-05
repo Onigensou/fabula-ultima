@@ -46,6 +46,7 @@
     "scripts/fabula-ledger/fl-session.js",
     "scripts/fabula-ledger/fl-gm-panel.js",
     "scripts/fabula-ledger/fl-cameo.js",
+    "scripts/fabula-ledger/fl-sheet.js",
     "scripts/client-health.js",
     "scripts/db-resolver.js",
     "scripts/party-sync/party-sync-core.js",

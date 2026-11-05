@@ -90,6 +90,13 @@
 #${ROOT_ID} label.flg-auto input { margin: 0; }
 #${ROOT_ID} .flg-add { display: flex; gap: 6px; margin-top: 5px; }
 #${ROOT_ID} .flg-add input { flex: 1; }
+#${ROOT_ID} .flg-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 3px; }
+#${ROOT_ID} .flg-tabs button {
+  all: unset; cursor: pointer; font-size: 12px; padding: 1px 9px; border-radius: 9px;
+  background: rgba(122,78,32,0.13); color: #6a4a22;
+}
+#${ROOT_ID} .flg-tabs button[aria-pressed="true"] { background: #6b4423; color: #f6ead0; }
+#${ROOT_ID} .flg-tabs button:focus-visible { box-shadow: 0 0 0 2px #c9a44a; }
 #${ROOT_ID} .flg-empty { color: #8a6a3a; font-style: italic; padding: 2px 0; }`;
     document.head.appendChild(s);
   }
@@ -102,12 +109,27 @@
     return m < 1 ? "now" : m < 60 ? `${m}m` : `${Math.round(m / 60)}h`;
   };
 
+  // Filter tabs. "champ" (the default) = every NPC Champion plus anyone already
+  // labelled, seen this session or added by hand, so a brand-new world shows its
+  // cast instead of an empty list (user, 2026-11-05: the module may be handed to
+  // friends as a template, set up without Claude).
+  const FILTERS = [["champ", "All Champions"], ["villain", "Villains"], ["hidden", "Hidden"], ["never", "Never"]];
+  let _filter = "champ";
+
   function villainActors(state) {
-    const ids = new Set(_extra);
-    for (const a of game.actors ?? []) if (a.getFlag(MODULE_ID, "fabulaVillain")) ids.add(a.id);
-    for (const e of state.log ?? []) if (e.actorId) ids.add(e.actorId);
-    return [...ids].map(id => game.actors.get(id)).filter(Boolean)
-      .sort((a, b) => a.name.localeCompare(b.name));
+    const all = [...(game.actors ?? [])].filter(a => I().isNpc(a));
+    let list;
+    if (_filter === "champ") {
+      const ids = new Set(_extra);
+      for (const a of all) {
+        if (FL.Logic.isChampionRank(I().rankOf(a)) || a.getFlag(MODULE_ID, "fabulaVillain")) ids.add(a.id);
+      }
+      for (const e of state.log ?? []) if (e.actorId) ids.add(e.actorId);
+      list = [...ids].map(id => game.actors.get(id)).filter(Boolean);
+    } else {
+      list = all.filter(a => api().getStatus(a) === _filter);
+    }
+    return list.sort((a, b) => a.name.localeCompare(b.name));
   }
 
   // ── render ─────────────────────────────────────────────────────────────────
@@ -144,7 +166,9 @@
         ${status === "hidden" || status === "auto" ? `<button class="b" data-act="reveal" data-id="${a.id}" title="Mark as Villain and pay +1">Reveal</button>` : ""}
         ${status === "villain" ? `<button class="b" data-act="escalate" data-id="${a.id}" title="Boss phase / escalation: +1 even if paid here">Escalate</button>` : ""}
       </div>`;
-    }).join("") : `<div class="flg-empty">No villains yet.</div>`;
+    }).join("") : `<div class="flg-empty">${_filter === "never" ? "Nobody yet. Training dummies and friendly Champions go here." : _filter === "champ" ? "No Champions in this world yet." : "Nobody yet."}</div>`;
+    const tabsHtml = `<div class="flg-tabs">${FILTERS.map(([k, v]) =>
+      `<button type="button" data-act="filter" data-f="${k}" aria-pressed="${k === _filter}">${v}</button>`).join("")}</div>`;
 
     const awards = (st.undo ?? []).slice(0, 8);
     const awardHtml = awards.length ? awards.map(u => {
@@ -167,7 +191,7 @@
         ${canPay ? `<button class="b" data-act="cameo" data-id="${e.actorId}" title="Pay +1 now (counts as a cameo)">Pay</button>` : ""}</div>`;
     }).join("") || `<div class="flg-empty">Nothing yet.</div>`;
 
-    const opts = [...game.actors].filter(a => a.type !== "character").map(a => `<option value="${esc(a.name)}"></option>`).join("");
+    const opts = [...game.actors].filter(a => I().isNpc(a)).map(a => `<option value="${esc(a.name)}"></option>`).join("");
 
     el.innerHTML = `
       <div class="flg-head">
@@ -180,7 +204,7 @@
       <div class="flg-body">
         <label class="flg-auto" title="On: unset Champions pay without asking. Loops always ask."><input type="checkbox" data-act="autopay" ${autoPay ? "checked" : ""}> Auto-pay unset Champions</label>
         <h4>Party</h4><div class="flg-party">${partyHtml}</div>
-        <h4>Villains</h4>${villainHtml}
+        <h4>Villains</h4>${tabsHtml}${villainHtml}
         <div class="flg-add"><input type="text" list="${LIST_ID}" placeholder="Add an actor…" data-act="add-name"><button class="b" data-act="add">Add</button></div>
         <datalist id="${LIST_ID}">${opts}</datalist>
         <h4>Awards</h4>${awardHtml}
@@ -199,6 +223,7 @@
     const actor = b.dataset.id ? game.actors.get(b.dataset.id) : null;
     try {
       if (act === "hide") return hide();
+      if (act === "filter") { _filter = b.dataset.f; return render(); }
       if (act === "fp") return api().change([actor], Number(b.dataset.d), { reason: "gm", label: actor?.name, uncapped: true, silent: Number(b.dataset.d) < 0 });
       if (act === "surrender") return api().surrender([actor]);
       if (act === "cameo") return report(await api().cameo(actor), actor);
