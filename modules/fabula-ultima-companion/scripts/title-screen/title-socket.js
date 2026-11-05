@@ -211,6 +211,9 @@
       if (result.ok) {
         _broadcast(TS.MSG.LOAD_PROCEED, { slotId });
         TS.LoadUI?.onProceed?.({ slotId });
+        // The table just loaded a save from the title screen: the Fabula
+        // Ledger opens a session here (fabula-ledger/fl-session.js).
+        Hooks.callAll("fuSaveLoaded", { slotId });
       } else {
         console.error(TAG, "Load failed:", result.error);
         _broadcast(TS.MSG.LOAD_CONFLICT, { votes: {}, error: result.error });

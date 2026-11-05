@@ -115,6 +115,8 @@
     //     black, camp, title. Doing it after, every client has already run
     //     deactivateCamp() and the phase write is silent.
     console.log(TAG, `Returning the party to the title screen: "${scene.name}".`);
+    // The night is over: the Fabula Ledger closes the session (fl-session.js).
+    Hooks.callAll("fuSessionClosing", { via: "camp" });
     try {
       await scene.activate();
       // Let the other clients tear camp down before the phase write lands.

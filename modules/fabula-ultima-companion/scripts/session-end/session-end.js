@@ -211,6 +211,8 @@
       const to = targets(userIds);
       game.socket.emit(SOCKET_NS, { type: MSG_START, to, seconds, text });
       console.info(TAG, `prompt sent to ${to.length} player(s), ${seconds} s`);
+      // The night is over: the Fabula Ledger closes the session (fl-session.js).
+      Hooks.callAll("fuSessionClosing", { via: "session-end" });
       return to;
     },
     cancel(userIds) {

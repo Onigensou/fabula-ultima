@@ -24,12 +24,14 @@
   const NOTE_MS = 6000;
   const SPRITE_OVERHANG = 36;  // how far the 92px sprite rises above a ~60px panel
 
-  const LABEL = { confirm: "Confirm", skip: "Skip", hidden: "Hidden", never: "Never" };
+  const LABEL = { confirm: "Confirm", skip: "Skip", hidden: "Hidden", never: "Never", "new": "New session", same: "Same session" };
   const TIP = {
     confirm: "Pay +1 to the party. On a first sighting this also marks them as a villain.",
     skip: "No point this time.",
     hidden: "A villain who hasn't shown their hand: no point, and no more asking until you Reveal them.",
-    never: "Not a villain: never asked or paid again."
+    never: "Not a villain: never asked or paid again.",
+    "new": "Start a new session: start-of-session effects run, anyone on 0 Fabula Points gets 1.",
+    same: "Carry on the last session (it was only interrupted)."
   };
 
   const FL = globalThis.FabulaLedger = globalThis.FabulaLedger || {};
@@ -84,6 +86,7 @@
 }
 #${ROOT_ID} .flp-b button.ok { box-shadow: 0 0 0 2px #c9a44a, 0 0 8px rgba(255,215,106,0.45); }
 #${ROOT_ID} .flp.note { padding-top: 7px; padding-bottom: 7px; }
+#${ROOT_ID} .flp.noimg { padding-left: 14px; }
 @media (prefers-reduced-motion: reduce) {
   #${ROOT_ID} .flp, #${ROOT_ID} .flp.in, #${ROOT_ID} .flp.out { transition: none; transform: none; }
 }`;
@@ -114,6 +117,7 @@
     const panel = document.createElement("div");
     panel.className = "flp";
     panel.innerHTML = html;
+    if (!panel.querySelector(".flp-spr")) panel.classList.add("noimg");
     // A sprite that fails to load should not leave a broken-image box.
     panel.querySelector(".flp-spr")?.addEventListener("error", (e) => { e.currentTarget.style.visibility = "hidden"; });
     host.appendChild(panel);
@@ -128,14 +132,14 @@
     setTimeout(() => panel.remove(), OUT_MS + 40);
   }
 
-  function show({ kind = "first", name = "", img = "", reason = "", buttons = ["confirm", "skip"] } = {}) {
+  function show({ kind = "first", title = "Award Fabula Point?", name = "", img = "", reason = "", buttons = ["confirm", "skip"] } = {}) {
     if (!game.user?.isGM) return Promise.resolve("skip");
     return new Promise((resolve) => {
       const btns = buttons.map((b, i) =>
         `<button type="button" data-a="${b}" class="${i === 0 ? "ok" : ""}" title="${esc(TIP[b] ?? "")}">${LABEL[b] ?? b}</button>`).join("");
       const panel = mount(`
         ${img ? `<img class="flp-spr" src="${esc(img)}" alt="">` : ""}
-        <div class="flp-q">Award Fabula Point? <small>${esc(name)}${reason ? ` · ${esc(reason)}` : ""}</small></div>
+        <div class="flp-q">${esc(title)} <small>${esc(name)}${reason ? ` · ${esc(reason)}` : ""}</small></div>
         <div class="flp-b">${btns}</div>`);
       panel.dataset.kind = kind;
       panel.addEventListener("click", (ev) => {
@@ -153,10 +157,11 @@
   // get no note: the author wrote them on purpose.
   function paidNote(entry) {
     if (!game.user?.isGM) return;
-    if (!["villain", "escalation", "boss"].includes(entry?.reason)) return;
-    const actor = game.actors?.get(entry.villainIds?.[0] ?? entry.bossId) ?? game.actors?.getName?.(entry.label);
+    if (!["villain", "escalation", "boss", "session"].includes(entry?.reason)) return;
+    // Session start pays party members, so their sprite stands on the note.
+    const actor = game.actors?.get(entry.villainIds?.[0] ?? entry.bossId ?? entry.changes?.[0]?.actorId) ?? game.actors?.getName?.(entry.label);
     const img = actor ? (FL._internal?.spriteOf?.(actor) ?? "") : "";
-    const what = { escalation: "escalated", boss: "boss fight" }[entry.reason] ?? "paid";
+    const what = { escalation: "escalated", boss: "boss fight", session: "session start" }[entry.reason] ?? "paid";
     const panel = mount(`
       ${img ? `<img class="flp-spr" src="${esc(img)}" alt="">` : ""}
       <div class="flp-q">Fabula Point +1 <small>${esc(entry.label)} · ${what}</small></div>

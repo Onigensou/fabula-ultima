@@ -59,7 +59,9 @@
   const blankState = () => ({
     visit: { id: null, sceneId: null, paid: [], boss: false },
     prevVisit: { id: null, sceneId: null, paid: [], boss: false },
-    paidTokens: {}, muted: {}, undo: [], log: []
+    paidTokens: {}, muted: {}, undo: [], log: [],
+    // open: a session is running (fl-session.js opens and closes it)
+    session: { open: false, id: null, openedAt: null, closedAt: null }
   });
 
   Hooks.once("init", () => {
@@ -84,7 +86,8 @@
       visit: { ...b.visit, ...(s.visit ?? {}), paid: [...(s.visit?.paid ?? [])] },
       prevVisit: { ...b.prevVisit, ...(s.prevVisit ?? {}), paid: [...(s.prevVisit?.paid ?? [])] },
       paidTokens: s.paidTokens ?? {}, muted: s.muted ?? {},
-      undo: Array.isArray(s.undo) ? s.undo : [], log: Array.isArray(s.log) ? s.log : []
+      undo: Array.isArray(s.undo) ? s.undo : [], log: Array.isArray(s.log) ? s.log : [],
+      session: { ...b.session, ...(s.session ?? {}) }
     };
   }
 
@@ -164,9 +167,16 @@
       case "reveal": return reveal(a(args[0]));
       case "escalate": return escalate(a(args[0]));
       case "bossFight": return bossFight(args[0]);
-      default: console.warn(TAG, "unknown call", op);
+      case "undo": return undo(args[0]);
+      default: {
+        // Operations added by the other ledger files (fl-session.js).
+        const fn = FL._calls?.[op];
+        if (fn) return fn(...args);
+        console.warn(TAG, "unknown call", op);
+      }
     }
   }
+  FL._calls = FL._calls || {};
 
   // ── visits ─────────────────────────────────────────────────────────────────
   // A visit is the party's stay on the active scene. A new one starts when the
@@ -185,12 +195,24 @@
     if (changes?.active === true && isPrimaryGM()) newVisit(scene.id);
   });
 
+  // A new session: the loop memory and the undo list start empty. The log and
+  // the session record stay (the panel shows where the session began).
   async function resetSession() {
     if (!isPrimaryGM()) return;
     await mutate((s) => {
-      const keep = s.visit;
+      const keep = { visit: s.visit, log: s.log, session: s.session };
       Object.assign(s, blankState());
-      s.visit = { id: foundry.utils.randomID(), sceneId: keep.sceneId ?? game.scenes?.active?.id ?? null, paid: [], boss: false };
+      s.log = keep.log;
+      s.session = keep.session;
+      s.visit = { id: foundry.utils.randomID(), sceneId: keep.visit.sceneId ?? game.scenes?.active?.id ?? null, paid: [], boss: false };
+    });
+  }
+
+  /** A plain line in the panel's log ("session opened", "Geist -> Villain"). */
+  function note(text) {
+    return mutate((s) => {
+      s.log.unshift({ at: Date.now(), note: String(text ?? "") });
+      s.log.length = Math.min(s.log.length, MAX_LOG);
     });
   }
 
@@ -226,7 +248,8 @@
     const changes = [];
     await Promise.all(targets.map(async (actor) => {
       const from = Number(actor.system?.props?.[FP_PROP] ?? 0) || 0;
-      const { next, overflow } = L.applyCap(from, d);
+      // uncapped: the GM's own hand (panel −/+), like a sheet edit: not clamped.
+      const { next, overflow } = opts.uncapped ? { next: Math.max(0, from + d), overflow: 0 } : L.applyCap(from, d);
       changes.push({ actorId: actor.id, name: actor.name, from, to: next, overflow });
       if (next !== from) await actor.update({ [`system.props.${FP_PROP}`]: next });
     }));
@@ -435,7 +458,7 @@
     STATUS: L.STATUS, MSG
   };
   FL.api = api;
-  FL._internal = { worldActor, spriteOf, partyActors, isPrimaryGM };
+  FL._internal = { worldActor, spriteOf, partyActors, isPrimaryGM, mutate, readState, callPrimary, note, rankOf, emit };
   Hooks.once("init", () => {
     globalThis.FUCompanion = globalThis.FUCompanion || {};
     globalThis.FUCompanion.api = globalThis.FUCompanion.api || {};
