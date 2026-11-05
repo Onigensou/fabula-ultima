@@ -435,7 +435,7 @@ function resolveLossAv(resource, affinity) {
 //   impactOwned : the hit's animation CLAIMED the impact (hit-sound-rules.js):
 //                 no impact burst, no hit sound — the number + flinch stay,
 //                 a WEAK / RESIST accent still sounds.
-export function playResourceLossVfx({ tokenUuid, resource = "hp", amount = 0, affinity = "NE", element = "elementless", isCrit = false, pierce = false, cascade = 0, critBanner = true, numbersOnly = false, impactOwned = false } = {}) {
+export function playResourceLossVfx({ tokenUuid, resource = "hp", amount = 0, affinity = "NE", element = "elementless", isCrit = false, pierce = false, cascade = 0, critBanner = true, numbersOnly = false, impactOwned = false, screenFrac = null } = {}) {
   try {
     if (!(amount > 0)) return;
     // Floating NUMBER → BD-native damage-number subsystem (DOM screen-space).
@@ -444,7 +444,7 @@ export function playResourceLossVfx({ tokenUuid, resource = "hp", amount = 0, af
     // Chain strike's index — it places the number on the strike cascade;
     // `critBanner: false` keeps a crit gold without its banner (a one-roll
     // Chain's earlier ticks).
-    emitDamageNumber({ kind: "loss", tokenUuid, resource, amount, affinity, element, isCrit, pierce, ...(cascade ? { cascade } : {}), ...(critBanner === false ? { critBanner: false } : {}) });
+    emitDamageNumber({ kind: "loss", tokenUuid, resource, amount, affinity, element, isCrit, pierce, ...(cascade ? { cascade } : {}), ...(critBanner === false ? { critBanner: false } : {}), ...(screenFrac ? { screenFrac } : {}) });
     // A Chain tick from a shot that draws its own impact and hurt: the number only.
     if (numbersOnly) return;
     // Token hurt flinch — only for a real physical-ish hit (HP / shield), not an

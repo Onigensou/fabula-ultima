@@ -37,7 +37,9 @@ function barModule() { return import("./damage-numbers/director-hp-bar.js"); }
 
 // Reveal ONE strike on every client. `actorsByToken` is empty for a forged
 // plan (the Anim Studio bench), so no HP bar or defeat follows its numbers.
-async function revealStrike(strike, { causeTokenUuid, actorsByToken, numbersOnly = false, impactOwned = false }) {
+// screenAt: { [tokenUuid]: { fx, fy } } — float that token's number at a point of the board view
+// (fractions), where the shot drew the target, instead of over the real token.
+async function revealStrike(strike, { causeTokenUuid, actorsByToken, numbersOnly = false, impactOwned = false, screenAt = null }) {
   let vfx = null, bar = null;
   try { vfx = await fxModule(); } catch (e) { warn("chain presenter: vfx import failed", e); return; }
   for (const o of strike.outcomes ?? []) {
@@ -60,6 +62,7 @@ async function revealStrike(strike, { causeTokenUuid, actorsByToken, numbersOnly
             ...(o.critBanner === false ? { critBanner: false } : {}),
             ...(numbersOnly ? { numbersOnly: true } : {}),
             ...(impactOwned ? { impactOwned: true } : {}),
+            ...(screenAt && screenAt[tokenUuid] ? { screenFrac: screenAt[tokenUuid] } : {}),
           };
           if (o.shieldLoss > 0) vfx.playResourceLossVfx?.({ ...common, resource: "shield", amount: o.shieldLoss });
           if (o.hpLoss > 0) vfx.playResourceLossVfx?.({ ...common, resource: "hp", amount: o.hpLoss });
@@ -121,6 +124,9 @@ export function createChainPresenter(plan, { causeTokenUuid = null, bars = true,
   // and impact videos sit above that canvas and would break a white-out. Sticky,
   // so a flush after the cues stop stays quiet too.
   let numbersOnly = false;
+  // oni.hit({ screenAt }): where the shot drew each target (board-view fractions). Sticky
+  // until a cue passes screenAt: null; a flush after the cues stop keeps the last anchor.
+  let screenAt = null;
 
   const clearTimers = () => {
     if (beatTimer) { clearTimeout(beatTimer); beatTimer = null; }
@@ -141,7 +147,7 @@ export function createChainPresenter(plan, { causeTokenUuid = null, bars = true,
     if (finished) return false;
     const s = queue.shift();
     if (!s) { finish(); return false; }
-    if (reveal) revealStrike(s, { causeTokenUuid, actorsByToken, numbersOnly, impactOwned: !!(typeof impactClaimed === "function" && impactClaimed()) });
+    if (reveal) revealStrike(s, { causeTokenUuid, actorsByToken, numbersOnly, screenAt, impactOwned: !!(typeof impactClaimed === "function" && impactClaimed()) });
     if (!queue.length) finish();
     return true;
   };
@@ -157,6 +163,7 @@ export function createChainPresenter(plan, { causeTokenUuid = null, bars = true,
   const onCue = (info) => {
     if (finished || flushing) return;
     if (info?.numbersOnly) numbersOnly = true;
+    if (info && Object.prototype.hasOwnProperty.call(info, "screenAt")) screenAt = info.screenAt || null;
     cueSeen = true;
     cues++;
     if (beatTimer) { clearTimeout(beatTimer); beatTimer = null; }

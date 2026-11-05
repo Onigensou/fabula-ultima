@@ -247,8 +247,17 @@ export function renderDamageNumberLocal(payload = {}) {
     const spawn = () => {
       const token = canvasTokenFromUuid(tokenUuid);
       if (!token || token.destroyed) return;
-      const a = tokenAnchor(token);
-      const pt = worldToClient(a.x, a.y);
+      // payload.screenFrac { fx, fy }: a shot drew this target elsewhere (a cinematic scene) and
+      // asked for the number there — fractions of the board view, the same on every client.
+      let pt;
+      const sf = payload?.screenFrac;
+      if (sf && Number.isFinite(sf.fx) && Number.isFinite(sf.fy)) {
+        const rect = canvas.app.view.getBoundingClientRect();
+        pt = { x: rect.left + sf.fx * rect.width, y: rect.top + sf.fy * rect.height };
+      } else {
+        const a = tokenAnchor(token);
+        pt = worldToClient(a.x, a.y);
+      }
 
       const root = document.createElement("div");
       root.className = `fud-dn fud-dn--${spec.variant}` +
