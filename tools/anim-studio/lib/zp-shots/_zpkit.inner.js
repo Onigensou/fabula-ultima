@@ -10,7 +10,8 @@ const ZP = {};
 ZP.once = (m, at, fn) => { let done = false; m.hold(at, 1e9, () => { if (done) return; done = true; try { fn(); } catch (e) { console.warn('[ZP] once threw', e); } }); };
 // A Chain tick: reveals the next strike (number, HP bar, counter) on the acting GM.
 // info: { numbersOnly, screenAt: { [tokenUuid]: { fx, fy } } } or a function returning it.
-ZP.hit = (m, at, info) => ZP.once(m, at, () => oni.hit(typeof info === 'function' ? info() : (info || {})));
+// paced: every Zero Power cues each strike itself, so the presenter never fills a gap with its own beat.
+ZP.hit = (m, at, info) => ZP.once(m, at, () => oni.hit(Object.assign({ paced: true }, typeof info === 'function' ? info() : (info || {}))));
 
 // The shipped Zero Power cut-in (createCutinDOM/runCutinDOM): a full-body image
 // 92% of the view tall on the bottom edge; left -120% -> 0 (CSS ease-out, 650 ms),

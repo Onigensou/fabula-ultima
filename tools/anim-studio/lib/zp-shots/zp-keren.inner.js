@@ -248,9 +248,12 @@ function camAt(now) {
   if (now >= T5 && now < T5 + SPIN) { const u = (now - T5) / SPIN; cur.r += Math.sin(u * Math.PI) * 4; }
   return cur;
 }
-// virtual -> screen
+// virtual -> screen. UW_BIAS: the camera looks this much lower in the painting than the mockup did, which lifts
+// the whole underworld up the screen so the centre-stage cluster clears the battle HUD along the bottom edge
+// (sandbox 2026-11-06: at the mockup framing the targets sat behind the GM desk). The painting still covers.
+const UW_BIAS = 120;
 function proj(now, W, H) { const cm = camAt(now); const fit = Math.max(W / VW, H / VH); const k = fit * cm.z; const a = cm.r * Math.PI / 180, ca = Math.cos(a), sa = Math.sin(a);
-  return { k, fit, cm, map: (x, y) => { const dx = (x - cm.x) * k, dy = (y - cm.y) * k; return { x: W / 2 + dx * ca - dy * sa, y: H / 2 + dx * sa + dy * ca, k }; } }; }
+  return { k, fit, cm, map: (x, y) => { const dx = (x - cm.x) * k, dy = (y - cm.y - UW_BIAS) * k; return { x: W / 2 + dx * ca - dy * sa, y: H / 2 + dx * sa + dy * ca, k }; } }; }
 // finale camera (the parade holds the wide view; camPunch 1)
 const P0 = UW.portal;
 camTo(T4, 1, { x: P0.x - 130, y: P0.y - 110, z: 1.55, r: -2 });

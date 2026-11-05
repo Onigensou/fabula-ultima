@@ -127,6 +127,9 @@ export function createChainPresenter(plan, { causeTokenUuid = null, bars = true,
   // oni.hit({ screenAt }): where the shot drew each target (board-view fractions). Sticky
   // until a cue passes screenAt: null; a flush after the cues stop keeps the last anchor.
   let screenAt = null;
+  // oni.hit({ paced: true }): the shot cues every strike itself, however far apart, so a
+  // gap between cues is not a stall (no fallback beat in between). Sticky; the end flush stays.
+  let paced = false;
 
   const clearTimers = () => {
     if (beatTimer) { clearTimeout(beatTimer); beatTimer = null; }
@@ -158,11 +161,13 @@ export function createChainPresenter(plan, { causeTokenUuid = null, bars = true,
   };
   const armStall = () => {
     if (stallTimer) clearTimeout(stallTimer);
+    if (paced) { stallTimer = null; return; }
     stallTimer = setTimeout(() => { stallTimer = null; if (!finished && !flushing && !beatTimer) beat(); }, STALL_MS);
   };
   const onCue = (info) => {
     if (finished || flushing) return;
     if (info?.numbersOnly) numbersOnly = true;
+    if (info?.paced) paced = true;
     if (info && Object.prototype.hasOwnProperty.call(info, "screenAt")) screenAt = info.screenAt || null;
     cueSeen = true;
     cues++;
