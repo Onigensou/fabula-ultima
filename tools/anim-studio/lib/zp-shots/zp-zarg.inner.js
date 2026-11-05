@@ -365,7 +365,9 @@ m.hold(R0, R1, (e, S) => { const k = e / c.rainMs; const w = k > 0.55 ? E.inQ((k
 m.flash(R0, 1, 259, '#ffffff', 1);
 S1(R0, 'wind7', 0.4);
 // the Chain ticks: one cue = every target's next number (flinch + hurt art on the real tokens)
-for (let j = 0; j < c.hits; j++) ZP.hit(m, R0 + c.rainMs * (0.04 + 0.62 * (j + 0.5) / c.hits), {});
+// The ticks end before the white starts (55% of the rain): the game's own flinch and impact sit above
+// the shot's canvas, so a tick inside the white would cover the silhouettes with a bright flinch copy.
+for (let j = 0; j < c.hits; j++) ZP.hit(m, R0 + c.rainMs * (0.04 + 0.46 * (j + 0.5) / c.hits), {});
 // arrow-storm clips + venom (or the element's burst) on the targets, every 300 ms
 const DEFS = A.clips || {};
 for (let at = 0, i = 0; at < c.rainMs && TG.length; at += 300, i++) {
