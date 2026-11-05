@@ -92,18 +92,16 @@ const JOBS = [
   // Batch B — copy of an existing world animation
   { name: "Glacies Finis (copy of the world item's script)", kind: "copy", from: "g74cJxJ4guXSyVlJ", targets: [A("hina", "Glacies Finis")] },
   // Batch C — Sequencer ports (look unchanged; reaction ones get their missing play step)
+  // (The four party Zero Power ports moved to bin/_build-zero-powers.js, the 2026-11-06 overhaul;
+  //  writing them here again would revert that build.)
   { name: "Protect (port)", kind: "port", gen: port("protect"), targets: [A("hina", "Protect"), A("blanche", "Protect"), W("YBTRLqaFzBFu5xyt"), W("MZXmnywINICmx7Ua")], rows: { chain: "protect_react", label: "protect_anim", actionRef: "Protect", targetRef: "trigger_subject" } },
   { name: "Divination (port)", kind: "port", gen: port("divination"), targets: [A("hina", "Divination"), W("eTagzbuJWVfudChW")] },
   { name: "Acceleration (port)", kind: "port", gen: port("acceleration"), targets: [A("hina", "Acceleration"), W("jlPwgwAQkOBCNg6K")] },
   { name: "Stop (port)", kind: "port", gen: port("stop"), targets: [A("hina", "Stop"), W("Xf6q7cCeuczSTfXp")] },
-  { name: "Zero Power: A Million Possibility (port)", kind: "port", gen: port("zero-power-a-million-possibility"), targets: [A("hina", "Zero Power: A Million Possibility"), W("WjrBIzz4zJvO4C4k")] },
   { name: "Barrage (port)", kind: "port", gen: port("barrage"), targets: [A("zarg", "Barrage"), W("yh4vm3wru6nAkkaN")], rows: { chain: "barrage_do", label: "barrage_anim", actionRef: "Barrage", targetRef: "action_targets" } },
   { name: "Soul Steal (port)", kind: "port", gen: port("soul-steal"), targets: [A("zarg", "Soul Steal"), A("keren", "Soul Steal"), W("aTce11W2dmw2lKtR"), W("CWVTIIx0KgYXnQY7")] },
-  { name: "Zero Power: Meteor Shower (port)", kind: "port", gen: port("zero-power-meteor-shower"), targets: [A("zarg", "Zero Power: Meteor Shower"), W("hTb8c9ZREooiKs9k")] },
-  { name: "Zero Power: Last Den of Cinders (port)", kind: "port", gen: port("zero-power-last-den-of-cinders"), targets: [A("keren", "Zero Power: Last Den of Cinders"), W("dKbnZH1Vw1a9WPUf")] },
   { name: "Muleta (port)", kind: "port", gen: port("muleta"), targets: [A("blanche", "Muleta"), W("Qvo1tWsdqYJAhvzU")] },
   { name: "Descabello (port)", kind: "port", gen: port("descabello"), targets: [A("blanche", "Descabello"), W("CmyctfYXyvsBmRuf")] },
-  { name: "Zero Power: Give me tips or 5stars (port)", kind: "port", gen: port("zero-power-give-me-tips-or-5stars"), targets: [A("blanche", "Zero Power: Give me tips or 5stars"), W("5vKJb9OFFYdPK8iF")] },
 ];
 
 // Reaction rows for the new Batch B shots (applied to every target of the job with that name).
