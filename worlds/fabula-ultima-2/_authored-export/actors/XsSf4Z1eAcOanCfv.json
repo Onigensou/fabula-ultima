@@ -835,7 +835,7 @@
           "isHeroic": false,
           "isOffensiveSpell": false,
           "isReaction": false,
-          "isZeroPower": false,
+          "isZeroPower": true,
           "level": "1",
           "max_level": "1",
           "name": "Zero Power: Night of Hundred Bandits",

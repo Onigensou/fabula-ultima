@@ -754,6 +754,7 @@
           "isHeroic": false,
           "isOffensiveSpell": true,
           "isReaction": false,
+          "isZeroPower": true,
           "level": "1",
           "max_level": "1",
           "name": "Zero Power: Teleport Slash",
