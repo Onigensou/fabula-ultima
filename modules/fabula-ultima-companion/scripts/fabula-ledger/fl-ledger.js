@@ -284,6 +284,10 @@
   }
 
   function undo(id = null) {
+    // A second GM's Undo (panel or note) goes to the primary GM, like every
+    // other write. Was refused as "not-primary-gm": found in the two-GM
+    // sandbox test 2026-11-05.
+    if (game.user?.isGM && !isPrimaryGM()) return Promise.resolve(callPrimary("undo", [id]));
     const run = _awardChain.then(() => undoNow(id));
     _awardChain = run.catch(() => {});
     return run;
