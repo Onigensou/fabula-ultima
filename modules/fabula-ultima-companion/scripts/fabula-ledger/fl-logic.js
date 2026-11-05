@@ -145,8 +145,9 @@
   /** The small grey text after "Award Fabula Point?". */
   function promptReason(appearance, decision) {
     const where = { token: "token", theatre: "Theatre", event: "event", cameo: "cameo", reveal: "reveal" }[appearance?.source] ?? "seen";
-    if (decision?.loop === "stationary") return "again, same spot";
-    if (decision?.loop === "followed") return "again, right after the last map";
+    // Short: the panel has room for about 20 characters after the name.
+    if (decision?.loop === "stationary") return "same spot";
+    if (decision?.loop === "followed") return "followed in";
     return where;
   }
 

@@ -97,7 +97,8 @@ check("1 - 3 floors at 0", cap(1, -3).next === 0 && cap(1, -3).gained === -1);
 // ── prompt ───────────────────────────────────────────────────────────────────
 check("first prompt has 4 buttons", L.promptButtons("first").join() === "confirm,skip,hidden,never");
 check("loop prompt has 2 buttons", L.promptButtons("loop").join() === "confirm,skip");
-check("reason text: stationary", L.promptReason(geist(), { loop: "stationary" }) === "again, same spot");
+check("reason text: stationary", L.promptReason(geist(), { loop: "stationary" }) === "same spot");
+check("reason text: followed", L.promptReason(geist(), { loop: "followed" }) === "followed in");
 check("reason text: theatre", L.promptReason(geist({ source: "theatre" }), {}) === "Theatre");
 
 console.log(fail ? `\n${fail} FAILED` : "\nall passed");

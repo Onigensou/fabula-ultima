@@ -67,6 +67,8 @@
   height: 92px; width: 72px; object-fit: contain; object-position: bottom center;
   image-rendering: pixelated; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.45));
   pointer-events: none;
+  /* Foundry core puts a border on every img. */
+  border: 0 !important; outline: 0; background: transparent; box-shadow: none; border-radius: 0;
 }
 #${ROOT_ID} .flp-q { font-size: 16px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #${ROOT_ID} .flp-q small { font-size: 12px; color: #7a5a2e; margin-left: 6px; }

@@ -128,8 +128,10 @@
     catch (e) { console.warn(TAG, "party lookup failed", e); return []; }
   }
 
+  // A wildcard token path ("…/Geist/*") is not a file; skip to the next choice.
   function spriteOf(actor, tokenDoc) {
-    return tokenDoc?.texture?.src || actor?.prototypeToken?.texture?.src || actor?.img || "";
+    const usable = (src) => (src && !String(src).includes("*")) ? src : "";
+    return usable(tokenDoc?.texture?.src) || usable(actor?.prototypeToken?.texture?.src) || usable(actor?.img) || "";
   }
 
   // ── socket ─────────────────────────────────────────────────────────────────
@@ -148,7 +150,8 @@
       else if (msg.type === MSG.CALL && isPrimaryGM()) runCall(msg.op, msg.args);
       else if (msg.type === MSG.AWARD) FL.Tab?.onAward?.(msg);
     });
-    if (isPrimaryGM()) newVisit(game.scenes?.active?.id ?? null, { onlyIfChanged: true });
+    // Best effort; report() re-checks, since primary-GM status can lag at ready.
+    setTimeout(() => { if (isPrimaryGM()) newVisit(game.scenes?.active?.id ?? null, { onlyIfChanged: true }); }, 1500);
   });
 
   async function runCall(op, args = []) {
@@ -274,6 +277,11 @@
     app.name = actor.name;
     app.img = app.img || spriteOf(actor, null);
 
+    // The visit must match the active scene. At startup the ready-hook call can
+    // run before this client counts as the primary GM, so check every time.
+    const activeId = game.scenes?.active?.id ?? null;
+    if (readState().visit.sceneId !== activeId) await newVisit(activeId, { onlyIfChanged: true });
+
     const state = readState();
     const decision = L.decideAppearance(app, state, { autoPay: autoPay() });
     logDecision(app, decision);
@@ -349,7 +357,13 @@
     if (!isPrimaryGM()) return callPrimary("villainEntrance", [list.map(a => a.id)]);
     const results = [];
     // One at a time so each sees the one before (visit cap, no double pay).
-    for (const a of list) results.push(await report({ actorId: a.id, source: "event", img: spriteOf(a) }));
+    for (const a of list) {
+      // The event declares them villains: an unset actor becomes one, so its
+      // later appearances pay too (Asura is an elite, not a Champion).
+      // Hidden and Never are the GM's deliberate calls and stay.
+      if (getStatus(a) === L.STATUS.AUTO) await setStatus(a, L.STATUS.VILLAIN);
+      results.push(await report({ actorId: a.id, source: "event", img: spriteOf(a) }));
+    }
     return { ok: true, results };
   }
 

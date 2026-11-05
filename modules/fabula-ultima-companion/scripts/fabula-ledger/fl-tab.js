@@ -28,7 +28,7 @@
   const FP_COLOUR = "#14b8a6";      // the action card's invoke counter star
 
   const T = { slideIn: 320, firstStep: 700, step: 420, settle: 1000, hold: 1200, slideOut: 280, capHold: 1500 };
-  const DOCK_SELECTORS = ["#theatre-bar", "#oni-camp-phase-btn", "#oni-camp-start-btn", ".dhud-root .dhud-card", "#players"];
+  const DOCK_SELECTORS = ["#theatre-bar", "#oni-camp-phase-btn", "#oni-camp-start-btn", ".dhud-root .dhud-card", "#players", "#hotbar"];
   const DOCK_ZONE_PX = 320;          // only things in the left part of the screen push the tab up
   const HELD_MODES = new Set(["title", "gacha"]);
 
@@ -157,6 +157,7 @@
 
   function finish(root) {
     pass.holdTimer = later(T.hold, () => {
+      pass.holdTimer = null;
       root.classList.remove("lit");
       root.classList.add("out");
       root.classList.remove("in");
@@ -171,6 +172,7 @@
   function start(from, to, capped) {
     const root = el();
     clearTimers();
+    pass.holdTimer = null;   // a stale one from the last pass would make a merge step at once
     pass.running = true;
     pass.soundPlayed = false;
     pass.shown = from;

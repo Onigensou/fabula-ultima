@@ -246,7 +246,8 @@
           `<div class="oni-fabula-villains oni-event-row-body"></div>
            <div class="oni-event-list-actions"><button type="button" class="oni-fabula-villain-add"><i class="fas fa-plus"></i> Add villain</button></div>`,
           `Each pays the party +1, once per visit to this map. A Theatre portrait or token of theirs
-           later in the same visit pays nothing more. Any rank counts: the event says they are villains.`
+           later in the same visit pays nothing more. Any rank counts: the event says they are villains,
+           so an actor whose status is unset becomes a Villain (Hidden and Not a villain are kept).`
         )
       );
       const host = body.querySelector(".oni-fabula-villains");
