@@ -38,8 +38,10 @@ if (LIVEPARADE) {
   minions.forEach((t) => parade.push({ kind: 'minion', tok: t }));
   if (leichi || leilan) parade.push({ kind: 'twins', a: leichi, b: leilan });
   numens.forEach((t) => parade.push({ kind: 'crysta', tok: t }));
-} else {
-  // Preview Bench / no summons out: the mockup's set, drawn from Forge art
+} else if (!(ctx.params.strikes || []).length || (ctx.params.strikes || []).length > 2) {
+  // Preview Bench (no strike plan, or a forged plan with parade strikes) and no summons out:
+  // the mockup's set, drawn from Forge art. In battle with NO summons out the plan is exactly
+  // the blast + the last hit (2 ticks), so there is no parade: never show summons she lacks.
   parade.push({ kind: 'fox', i: 0 }, { kind: 'fox', i: 1 }, { kind: 'twins', a: null, b: null }, { kind: 'crysta' });
 }
 const strikesOf = (s) => s.kind === 'crysta' ? 2 : 1;
