@@ -491,7 +491,13 @@
     readIndividual,
     readGroup,
     branchFor,
-    resolveTargets
+    resolveTargets,
+    // Shared with other actions that pick party members (event-rows-fabula.js).
+    TARGET_KINDS,
+    MAX_TARGETS,
+    isKind,
+    describeTargets,
+    buildTargetElement
   };
 
   console.debug(INSTALL_TAG, "Installed.");

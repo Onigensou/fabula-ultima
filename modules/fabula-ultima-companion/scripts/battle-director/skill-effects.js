@@ -6949,7 +6949,10 @@ async function writeResourceDelta(actor, resourceDef, delta) {
 
   let next = cur + delta;
   if (max != null) next = Math.min(max, next);
-  next = Math.min(hardMax, Math.max(hardMin, next));
+  // hardMax caps a GAIN only, and never pulls a total that is already above it
+  // back down (a character on 12 FP who spends 1 lands on 11, not 10).
+  const ceiling = delta > 0 ? Math.max(cur, hardMax) : Infinity;
+  next = Math.min(ceiling, Math.max(hardMin, next));
   if (next === cur) return { ok: true, applied: 0, newValue: cur };
 
   try {

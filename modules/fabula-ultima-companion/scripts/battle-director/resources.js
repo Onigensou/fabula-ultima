@@ -24,7 +24,9 @@ export const RESOURCE_REGISTRY = {
   zero_power: { prop: "zero_power_value", max: null, hardMin: 0, hardMax: 6, label: "Zero Power", restorable: true, colour: "#b061ff" },
   zenit:      { prop: "zenit",            max: null,      label: "Zenit",          restorable: true, colour: "#c9a227" },
   enmity:     { prop: "enmity",           max: null,      label: "Enmity",         restorable: true, colour: "#c0392b" },
-  fp:         { prop: "fabula_point",     max: null,      label: "Fabula Points",  restorable: true, colour: "#c9a227" },
+  // hardMax 10: Fabula Ledger cap (user, 2026-11-05). writeResourceDelta never
+  // clamps a spend or a total already above it — gains just stop there.
+  fp:         { prop: "fabula_point",     max: null, hardMax: 10, label: "Fabula Points",  restorable: true, colour: "#c9a227" },
   shield:     { prop: "shield_value",     max: null, hardMin: 0, label: "Shield",  restorable: true, colour: "#7f8c8d" },
 };
 
