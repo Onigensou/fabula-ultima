@@ -41,13 +41,16 @@ import {
 // evalCount(formula) -> number: evaluates a `chain {FORMULA}` count with the acting
 // skill's resolver (the caller owns the resolver; without one a formula Chain is off).
 export function chainSpecFor({ kind = null, skillItem = null, weapon = null, isCheck = true, hasDamage = true, evalCount = null } = {}) {
-  if (!isCheck || !hasDamage) return null;
+  if (!hasDamage) return null;
   const lists = [];
   const skillKw = skillItem?.system?.props?.action_keywords;
   if (skillKw) lists.push(String(skillKw));
   if (kind === "Attack" && weapon?.actionKeywords) lists.push(String(weapon.actionKeywords));
   if (!lists.length) return null;
-  const spec = parseChainKeyword(lists.join(","));
+  const parsed = parseChainKeyword(lists.join(","));
+  // An auto-hit action (no Check) can only be a ONE-ROLL Chain: its card already hit
+  // every target, so the ticks just split that damage. Strikes that each roll need a check.
+  const spec = parsed && !isCheck && parsed.mode !== "single" ? null : parsed;
   if (spec && spec.formula != null) {
     if (typeof evalCount !== "function") return null;
     let v = 0; try { v = evalCount(spec.formula); } catch { v = 0; }
@@ -214,7 +217,8 @@ const rollLite = (roll) => (roll ? {
 export async function buildChainPlan(director, ar) {
   const spec = ar?.chain ?? null;
   if (!spec || !(spec.count >= 2)) return null;
-  if (ar.negated || !ar.roll) return null;
+  // A one-roll Chain needs no roll (an auto-hit card); strikes that each roll do.
+  if (ar.negated || (!ar.roll && spec.mode !== "single")) return null;
   const cardRows = Array.isArray(ar.perTargetResults) ? ar.perTargetResults : [];
   const cardTargets = (ar.targets ?? []).map((t) => t?.tokenUuid).filter(Boolean);
   if (!cardRows.length || !cardTargets.length) return null;

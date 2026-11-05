@@ -31,7 +31,13 @@ eq("skill chain (one roll)", chainSpecFor({ kind: "Skill", skillItem: skill("pie
 eq("skill chain (separate)", chainSpecFor({ kind: "Skill", skillItem: skill("chain 3 separate"), isCheck: true, hasDamage: true }), { count: 3, mode: "separate" });
 eq("weapon chain on an attack", chainSpecFor({ kind: "Attack", weapon: { actionKeywords: "chain 2 random" } }), { count: 2, mode: "random" });
 eq("weapon keywords ignored for a skill", chainSpecFor({ kind: "Skill", weapon: { actionKeywords: "chain 2" }, isCheck: true, hasDamage: true }), null);
-eq("no check, no chain", chainSpecFor({ kind: "Skill", skillItem: skill("chain 3"), isCheck: false, hasDamage: true }), null);
+// An auto-hit skill (no Check) can be a ONE-ROLL Chain (its ticks split the card's damage),
+// never a separate / random / pick Chain (those strikes each roll).
+eq("no check: one-roll chain allowed", chainSpecFor({ kind: "Skill", skillItem: skill("chain 3"), isCheck: false, hasDamage: true }), { count: 3, mode: "single" });
+eq("no check: separate chain refused", chainSpecFor({ kind: "Skill", skillItem: skill("chain 3 separate"), isCheck: false, hasDamage: true }), null);
+eq("no check: hidden one-roll allowed", chainSpecFor({ kind: "Skill", skillItem: skill("chain 8 hidden"), isCheck: false, hasDamage: true }), { count: 8, mode: "single", hidden: true });
+eq("no check: formula one-roll", chainSpecFor({ kind: "Skill", skillItem: skill("chain {N}"), isCheck: false, hasDamage: true, evalCount: () => 6 }), { count: 6, mode: "single" });
+eq("no damage, no chain", chainSpecFor({ kind: "Skill", skillItem: skill("chain 3"), isCheck: false, hasDamage: false }), null);
 // `chain {FORMULA}`: evaluated by the caller's evalCount; no evaluator = no Chain.
 eq("formula chain evaluated", chainSpecFor({ kind: "Skill", skillItem: skill("fire, chain {OWN_PHANTASM_COUNT + 2}"), isCheck: true, hasDamage: true, evalCount: (f) => (f === "OWN_PHANTASM_COUNT + 2" ? 5 : 0) }), { count: 5, mode: "single" });
 eq("formula chain under 2 = none", chainSpecFor({ kind: "Skill", skillItem: skill("chain {N}"), isCheck: true, hasDamage: true, evalCount: () => 1 }), null);
