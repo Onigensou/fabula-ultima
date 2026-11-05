@@ -12,8 +12,11 @@
  *                      the player's vision can see it. The GM's camera never
  *                      counts. (User, 2026-11-05: a pre-placed villain pays
  *                      when the party walks up to it, not on map load.)
- *   conflict           BATTLE. Nothing on token creation (the Battle Director
- *                      spawns tokens before its entrance). When a battle
+ *   any battle         BATTLE. Tokens the Battle Director spawns (flag
+ *                      directorSpawned) are never reported on creation; most
+ *                      battle maps are NOT sceneMode "conflict", so the flag is
+ *                      the signal. Conflict-mode scenes also skip presence.
+ *                      When a battle
  *                      starts (fu-director-started, after the entrance), the
  *                      host GM reports the hostile villains (inBattle) and the
  *                      boss point. Reinforcements that appear mid-battle are
@@ -64,28 +67,36 @@
   // On the GM every world actor is readable, so the pre-filter is exact.
   const gmCandidate = (doc) => !!doc?.actorId && api()?.isCandidate?.(doc.actorId);
 
+  // Tokens the Battle Director spawns carry this flag. Only 6 of 19 battle maps
+  // are sceneMode "conflict", so the flag, not the mode, is what marks a battle
+  // token: they are reported by the battle detector after the entrance (or as
+  // reinforcements once the battle runs), never on creation.
+  const isBattleToken = (doc) => !!doc?.getFlag?.(MODULE_ID, "directorSpawned");
+
   // ── presence (primary GM) ──────────────────────────────────────────────────
   function presenceReport(doc) {
     const scene = doc?.parent;
     if (!scene?.active || doc.hidden || detectorFor(scene) !== "presence") return;
+    if (isBattleToken(doc)) return;
     if (!gmCandidate(doc)) return;
     api()?.report?.(tokenAppearance(doc));
   }
 
   function sweepScene(scene) {
     if (!isPrimaryGM() || !scene?.active || detectorFor(scene) !== "presence") return;
+    if (bdRunning()) return;   // a battle's own detector covers its scene
     for (const doc of scene.tokens ?? []) presenceReport(doc);
   }
 
   Hooks.on("createToken", (doc) => {
     if (!isPrimaryGM()) return;
-    if (detectorFor(doc.parent) === "battle") return battleReinforcement(doc);
+    if (isBattleToken(doc) || detectorFor(doc.parent) === "battle") return battleReinforcement(doc);
     presenceReport(doc);
   });
 
   Hooks.on("updateToken", (doc, changes) => {
     if (!isPrimaryGM() || changes?.hidden !== false) return;
-    if (detectorFor(doc.parent) === "battle") return battleReinforcement(doc);
+    if (isBattleToken(doc) || detectorFor(doc.parent) === "battle") return battleReinforcement(doc);
     presenceReport(doc);
   });
 
@@ -156,7 +167,7 @@
     if (!r) return;
     for (const token of canvas.tokens?.placeables ?? []) {
       const doc = token.document;
-      if (_seen.has(doc.id) || doc.hidden || !token.visible) continue;
+      if (_seen.has(doc.id) || doc.hidden || !token.visible || isBattleToken(doc)) continue;
       if (!playerCandidate(doc)) continue;
       const c = token.center;
       if (c.x < r.x0 || c.x > r.x1 || c.y < r.y0 || c.y > r.y1) continue;

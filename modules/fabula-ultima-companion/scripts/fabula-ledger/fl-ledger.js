@@ -199,7 +199,17 @@
    * actors: Actor[] or "party". delta: +n / -n.
    * opts: { reason, label, villainIds, silent }
    */
-  async function change(actors, delta, opts = {}) {
+  // Awards run one at a time: two at once (a villain sighting and the boss
+  // point at battle start) would both read the same total and one +1 would be
+  // lost. Found in the sandbox 2026-11-05.
+  let _awardChain = Promise.resolve();
+  function change(actors, delta, opts = {}) {
+    const run = _awardChain.then(() => changeNow(actors, delta, opts));
+    _awardChain = run.catch(() => {});
+    return run;
+  }
+
+  async function changeNow(actors, delta, opts = {}) {
     const d = Math.round(Number(delta) || 0);
     if (!d) return { ok: true, changes: [] };
     if (!game.user?.isGM) { console.warn(TAG, "Fabula Point changes are GM-only."); return { ok: false }; }
@@ -238,7 +248,13 @@
     return { ok: true, changes, awardId: entry.id };
   }
 
-  async function undo(id = null) {
+  function undo(id = null) {
+    const run = _awardChain.then(() => undoNow(id));
+    _awardChain = run.catch(() => {});
+    return run;
+  }
+
+  async function undoNow(id = null) {
     if (!isPrimaryGM()) return { ok: false, reason: "not-primary-gm" };
     const entry = await mutate((s) => {
       const i = id ? s.undo.findIndex(u => u.id === id) : 0;
