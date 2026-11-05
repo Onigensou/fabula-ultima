@@ -13,7 +13,16 @@
  *       motes:  { count: 70 }                        specks rising and twinkling round the view
  *       sparks: [{ x, y, rx, ry }]                   some motes rise from these (the living sigils)
  *       glows:  [[x, y, r]]                          soft pulsing glows on painted crystals
+ *       spores: { preset: "gas" | "crystal", points: [[x, y]] }
+ *                                                    rising specks (Underground Decor mockup):
+ *                                                    "gas" rise out of the surface mask,
+ *                                                    "crystal" mostly from the points
+ *       puffs:  true                                 gas belches rising from the mask (behind tokens)
+ *       drips:  true                                 drops falling onto the mask, rings spreading
  *     }
+ *   spores/puffs/drips spawn from the surface FX mask
+ *   (assets/surface-fx/<background>.webp, see map-surface-fx.js).
+ *   Scene Config "Ambient FX" set to OFF (surfaceFxEnabled false) stops all of it.
  * - Layers: glows sit among the tokens' layer but behind them (over the island
  *   and stone tiles); motes and sparks in front of the tokens; wisps over all.
  * - A glow inside a bobbing tile (tile-bob.js) rides that tile.
@@ -65,8 +74,72 @@ void main() {
   gl_FragColor = vec4(vec3(0.8, 0.62, 0.96) * a, a);
 }`;
 
-  const state = { cfg: null, root: null, glowLayer: null, frontLayer: null, wisp: null, glows: [], motes: [], tick: null, t0: performance.now(), last: performance.now() };
-  let dotTex = null, glowTex = null;
+  const state = { cfg: null, root: null, glowLayer: null, frontLayer: null, wisp: null, glows: [], motes: [], tick: null, t0: performance.now(), last: performance.now(),
+    cand: null, spores: [], puffs: [], drips: [], dripGfx: null, puffT: 0, dripT: 0, buildId: 0 };
+  let dotTex = null, glowTex = null, sporeTex = null, puffTex = null;
+
+  // Numbers from the Underground Decor mockup (stepParticles / drawFx).
+  const SPORE = {
+    gas: { cap: 90, rate: 40, vy: [22, 55], color: 0xc8ff82, fromPoints: 0 },
+    crystal: { cap: 46, rate: 14, vy: [10, 26], color: 0xd7afff, fromPoints: 0.7 },
+  };
+  const MASK_DIR = "modules/fabula-ultima-companion/assets/surface-fx";
+  const rnd = (a, b) => a + Math.random() * (b - a);
+
+  function makeParticleTextures() {
+    if (!sporeTex) {   // the mock's spore gradient: a, a*.35 at 35%, 0 at the edge
+      const c = document.createElement("canvas"); c.width = c.height = 64;
+      const g = c.getContext("2d"), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+      gr.addColorStop(0, "rgba(255,255,255,1)"); gr.addColorStop(0.35, "rgba(255,255,255,0.35)"); gr.addColorStop(1, "rgba(255,255,255,0)");
+      g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
+      sporeTex = PIXI.Texture.from(c);
+    }
+    if (!puffTex) {    // the mock's belch gradient at full strength; sprite alpha carries the mock's a
+      const c = document.createElement("canvas"); c.width = c.height = 128;
+      const g = c.getContext("2d"), gr = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+      gr.addColorStop(0, "rgba(150,235,95,1)"); gr.addColorStop(0.55, "rgba(95,190,60,0.5)"); gr.addColorStop(1, "rgba(60,140,40,0)");
+      g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+      puffTex = PIXI.Texture.from(c);
+    }
+  }
+
+  function backdropKey(src) {
+    if (typeof src !== "string" || !src) return null;
+    let s = src.split(/[?#]/)[0];
+    s = s.slice(s.lastIndexOf("/") + 1);
+    try { s = decodeURIComponent(s); } catch (_) { /* keep raw */ }
+    const dot = s.lastIndexOf(".");
+    return (dot > 0 ? s.slice(0, dot) : s) || null;
+  }
+
+  // Spawn points where the surface mask is solid (the mock's candidate rule).
+  function loadCandidates(scene, id) {
+    const key = backdropKey(scene?.background?.src);
+    if (!key) return;
+    const img = new Image();
+    img.onload = () => {
+      if (id !== state.buildId) return;
+      try {
+        const w = img.naturalWidth, h = img.naturalHeight, c = document.createElement("canvas"); c.width = w; c.height = h;
+        const g = c.getContext("2d", { willReadFrequently: true }); g.drawImage(img, 0, 0);
+        const px = g.getImageData(0, 0, w, h).data, d = canvas.dimensions;
+        const kx = d.sceneWidth / w, ky = d.sceneHeight / h, out = [];
+        for (let i = 0; i < w * h; i++) {
+          if (px[i * 4] > 0.85 * 255 && i % 3 === 0) out.push([d.sceneX + ((i % w) + Math.random()) * kx, d.sceneY + (Math.floor(i / w) + Math.random()) * ky]);
+        }
+        state.cand = out;
+      } catch (e) { console.warn(TAG, "mask read failed; no gas/drip spawns", e); }
+    };
+    img.onerror = () => { if (id === state.buildId) console.warn(TAG, `no surface mask for ${key}; puffs/drips/gas spores off`); };
+    img.src = `${MASK_DIR}/${key}.webp`;
+  }
+
+  function inView(v, x, y, pad = 80) { return Math.abs(x - v.x) < v.w / 2 + pad && Math.abs(y - v.y) < v.h / 2 + pad; }
+  function pickCand(v) {
+    const L = state.cand; if (!L || !L.length) return null;
+    for (let i = 0; i < 12; i++) { const p = L[(Math.random() * L.length) | 0]; if (inView(v, p[0], p[1])) return p; }
+    return null;
+  }
 
   function makeTextures() {
     if (!dotTex) {
@@ -84,6 +157,10 @@ void main() {
   }
 
   function readCfg(scene) {
+    // Scene Config "Ambient FX" off — only on scenes set up for surface FX: an unticked
+    // box saves false on every scene, and Maelstrom's ambience has no such switch.
+    const fu = scene?.flags?.[MODULE_ID];
+    if (fu?.surfaceFx && fu?.oniFabula?.general?.surfaceFxEnabled !== true) return null;
     const raw = scene?.flags?.[MODULE_ID]?.[FLAG];
     return raw && typeof raw === "object" ? raw : null;
   }
@@ -103,6 +180,7 @@ void main() {
     for (const c of [state.glowLayer, state.frontLayer, state.wisp]) { try { c?.parent?.removeChild(c); c?.destroy({ children: true }); } catch (_) {} }
     state.glowLayer = state.frontLayer = state.wisp = null;
     state.glows = []; state.motes = []; state.cfg = null;
+    state.spores = []; state.puffs = []; state.drips = []; state.dripGfx = null; state.cand = null; state.buildId++;
   }
 
   // The view the camera shows, in map px.
@@ -185,9 +263,94 @@ void main() {
       state.wisp = mesh;
     }
 
+    // spores, belches, drips (Underground Decor)
+    if (!still && (cfg.spores || cfg.puffs || cfg.drips)) {
+      makeParticleTextures();
+      if (cfg.puffs || cfg.drips || cfg.spores?.preset === "gas") loadCandidates(scene, state.buildId);
+      if (cfg.drips) { state.dripGfx = new PIXI.Graphics(); state.glowLayer.addChild(state.dripGfx); }
+    }
+
     state.last = performance.now();
     state.tick = tick;
     canvas.app.ticker.add(state.tick);
+  }
+
+  // The mock's stepParticles + drawFx, on PIXI sprites. Map px throughout.
+  function stepUnderground(dt, v) {
+    const cfg = state.cfg;
+
+    // spores (in front of tokens)
+    const sp = cfg.spores ? SPORE[cfg.spores.preset] : null;
+    if (sp && state.spores.length < sp.cap && Math.random() < dt * sp.rate) {
+      let p = null;
+      const pts = Array.isArray(cfg.spores.points) ? cfg.spores.points : [];
+      if (sp.fromPoints > 0) {
+        if (pts.length && Math.random() < sp.fromPoints) { const c = pts[(Math.random() * pts.length) | 0]; p = [c[0] + rnd(-20, 20), c[1] + rnd(-10, 10)]; }
+        else p = [v.x + rnd(-0.5, 0.5) * v.w, v.y + rnd(-0.5, 0.5) * v.h];
+      } else p = pickCand(v);
+      if (p) {
+        const s = new PIXI.Sprite(sporeTex);
+        s.anchor.set(0.5); s.blendMode = PIXI.BLEND_MODES.ADD; s.tint = sp.color;
+        state.frontLayer.addChild(s);
+        const r = rnd(1.4, 3.2);
+        s.width = s.height = r * 3.2 * 2;
+        state.spores.push({ s, x: p[0], y: p[1], vy: rnd(sp.vy[0], sp.vy[1]), ph: rnd(0, 6.28), life: 0, max: rnd(3.5, 7) });
+      }
+    }
+    state.spores = state.spores.filter((p) => {
+      p.life += dt; p.y -= p.vy * dt; p.x += Math.sin(p.life * 1.3 + p.ph) * 8 * dt;
+      if (p.life >= p.max) { p.s.destroy(); return false; }
+      const k = p.life / p.max;
+      p.s.position.set(p.x, p.y);
+      p.s.alpha = Math.max(0, Math.sin(Math.PI * k) * (0.55 + 0.45 * Math.sin(p.life * 5 + p.ph)) * 0.75);
+      return true;
+    });
+
+    // gas belches (behind tokens)
+    if (cfg.puffs) {
+      state.puffT -= dt;
+      if (state.puffT <= 0) {
+        state.puffT = rnd(0.7, 1.8);
+        const p = pickCand(v);
+        if (p) {
+          const s = new PIXI.Sprite(puffTex);
+          s.anchor.set(0.5); s.blendMode = PIXI.BLEND_MODES.SCREEN;
+          state.glowLayer.addChild(s);
+          state.puffs.push({ s, x: p[0], y: p[1], r: rnd(50, 130), life: 0, max: rnd(4.5, 7), vy: rnd(28, 55) });
+        }
+      }
+    }
+    state.puffs = state.puffs.filter((p) => {
+      p.life += dt; p.y -= p.vy * dt;
+      if (p.life >= p.max) { p.s.destroy(); return false; }
+      const k = p.life / p.max, rr = p.r * (0.6 + 1.1 * k);
+      p.s.position.set(p.x, p.y); p.s.width = rr * 2; p.s.height = rr * 1.6;
+      p.s.alpha = Math.sin(Math.PI * k) * 0.24;
+      return true;
+    });
+
+    // drips + rings (behind tokens)
+    const gfx = state.dripGfx;
+    if (cfg.drips && gfx && !gfx.destroyed) {
+      state.dripT -= dt;
+      if (state.dripT <= 0) { state.dripT = rnd(1.0, 2.6); const p = pickCand(v); if (p) state.drips.push({ x: p[0], y: p[1], life: 0 }); }
+      gfx.clear();
+      state.drips = state.drips.filter((d) => {
+        d.life += dt;
+        if (d.life >= 2.2) return false;
+        if (d.life < 0.35) {
+          const k = d.life / 0.35, y = d.y - 140 * (1 - k * k);
+          gfx.lineStyle(1.4, 0xc8cdff, 0.55); gfx.moveTo(d.x, y - 9); gfx.lineTo(d.x, y);
+        } else {
+          for (let i = 0; i < 2; i++) {
+            const k = (d.life - 0.35 - i * 0.28) / 1.6; if (k <= 0 || k >= 1) continue;
+            const rx = 4 + 30 * k;
+            gfx.lineStyle(1.2, 0xbec3ff, 0.42 * (1 - k)); gfx.drawEllipse(d.x, d.y, rx, rx * 0.42);
+          }
+        }
+        return true;
+      });
+    }
   }
 
   function tick() {
@@ -216,6 +379,8 @@ void main() {
         m.sprite.position.set(m.x, m.y);
         m.sprite.alpha = (m.sig ? MOTE.sigilAlpha : MOTE.alpha) * fade * tw;
       }
+
+      if (!still && state.glowLayer && state.frontLayer) stepUnderground(dt, view());
 
       if (state.wisp && !state.wisp.destroyed) {
         const un = state.wisp.shader.uniforms;

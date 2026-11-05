@@ -91,6 +91,8 @@
   const PARALLAX_MIST_KEY    = "parallaxMist";     // boolean: open sky is churning mist (needs <bg>.mist.webp)
   const MIST_CHURN_KEY       = "mistChurn";        // number: how far the mist flows, map px
   const MIST_SPEED_KEY       = "mistSpeed";        // number: flow cycles per second
+  // Key for scripts/map-system/map-surface-fx.js (+ map-ambience.js) — keep in step.
+  const SURFACE_FX_KEY       = "surfaceFxEnabled"; // boolean: Ambient FX (gas/water surface FX); false also stops map ambience
   const OCCLUDERS_ENABLED_KEY = "occludersEnabled"; // boolean: foreground occluders (foreground-occluder.js)
   const OCCLUDER_SILHOUETTE_KEY = "occluderSilhouette"; // boolean: party silhouette behind objects
   // Invoker wellsprings present on this scene. Per-element boolean under general
@@ -913,6 +915,20 @@
                 and speed (cycles per second); defaults <b>46</b> / <b>0.14</b>.
               </p>
             </div>
+
+            <div class="form-group">
+              <label>Ambient FX</label>
+              <div class="form-fields">
+                <input type="checkbox" class="oni-surface-fx"
+                       name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${SURFACE_FX_KEY}" data-dtype="Boolean" />
+              </div>
+              <p class="notes">
+                Living details on maps that have them set up: rising gas, rippling water, crystal glows,
+                spores and drips (Nether Bridge, Ancient Mural). Needs a mask in
+                <code>assets/surface-fx/</code>. Unticking it also stops this map's ambience particles.
+                Not with Walk Parallax.
+              </p>
+            </div>
           </div>
 
           <div class="oni-occluder-group">
@@ -1336,6 +1352,10 @@
       const mistCb = generalPanel?.querySelector("input.oni-parallax-mist");
       if (mistCb) {
         mistCb.checked = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${PARALLAX_MIST_KEY}`, false), false);
+      }
+      const surfaceFxCb = generalPanel?.querySelector("input.oni-surface-fx");
+      if (surfaceFxCb) {
+        surfaceFxCb.checked = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${SURFACE_FX_KEY}`, false), false);
       }
       const parallaxCb = generalPanel?.querySelector("input.oni-parallax-enabled");
       if (parallaxCb) {

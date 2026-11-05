@@ -2,7 +2,7 @@
   "id": "fabula-ultima-companion",
   "title": "FabulaUltimaCompanion",
   "description": "Adds custom hooks and cool functionality.",
-  "version": "1.0.534",
+  "version": "1.0.535",
   "compatibility": {
     "minimum": "12",
     "verified": "12"
@@ -519,6 +519,7 @@
     "scripts/party-menu/party-menu-app.js",
     "scripts/party-menu/party-menu-button.js",
     "scripts/map-system/exploration-parallax.js",
+    "scripts/map-system/map-surface-fx.js",
     "scripts/main.js",
     "scripts/gacha-system/gacha-bootstrap.js",
     "scripts/stealth-system/sm-constants.js",
