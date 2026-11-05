@@ -157,14 +157,16 @@
   // get no note: the author wrote them on purpose.
   function paidNote(entry) {
     if (!game.user?.isGM) return;
-    if (!["villain", "escalation", "boss", "session"].includes(entry?.reason)) return;
+    if (!["villain", "escalation", "boss", "session", "fumble", "surrender"].includes(entry?.reason)) return;
     // Session start pays party members, so their sprite stands on the note.
     const actor = game.actors?.get(entry.villainIds?.[0] ?? entry.bossId ?? entry.changes?.[0]?.actorId) ?? game.actors?.getName?.(entry.label);
     const img = actor ? (FL._internal?.spriteOf?.(actor) ?? "") : "";
-    const what = { escalation: "escalated", boss: "boss fight", session: "session start" }[entry.reason] ?? "paid";
+    const what = { escalation: "escalated", boss: "boss fight", session: "session start", fumble: "fumble", surrender: "surrender" }[entry.reason] ?? "paid";
+    // What actually landed (the cap can eat some or all of it), not what was asked.
+    const gained = Math.max(0, ...(entry.changes ?? []).map(c => (c.after ?? 0) - (c.before ?? 0)));
     const panel = mount(`
       ${img ? `<img class="flp-spr" src="${esc(img)}" alt="">` : ""}
-      <div class="flp-q">Fabula Point +1 <small>${esc(entry.label)} · ${what}</small></div>
+      <div class="flp-q">Fabula Point +${gained}${gained < (Number(entry.delta) || 1) ? " (cap)" : ""} <small>${esc(entry.label)} · ${what}</small></div>
       <div class="flp-b"><button type="button" data-a="undo" title="Take the point back from everyone">Undo</button></div>`);
     panel.classList.add("note");
     const timer = setTimeout(() => dismiss(panel), NOTE_MS);

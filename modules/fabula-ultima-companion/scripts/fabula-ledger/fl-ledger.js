@@ -26,6 +26,7 @@
  *   villainEntrance(actors)        "these villains just appeared" (event command)
  *   report(appearance)             a detected appearance (token / theatre)
  *   cameo(actor) / reveal(actor) / escalate(actor)
+ *   fumble(actor) +1 to that PC / surrender(actors = "party") +2 each
  *   getStatus(actor) / setStatus(actor, status)
  *   undo(id?)                      reverse an award (the newest when no id)
  *   newVisit(sceneId) / resetSession()
@@ -168,6 +169,8 @@
       case "escalate": return escalate(a(args[0]));
       case "bossFight": return bossFight(args[0]);
       case "undo": return undo(args[0]);
+      case "fumble": return fumble(a(args[0]), args[1]);
+      case "surrender": return surrender(args[0] === "party" ? "party" : (args[0] ?? []).map(a).filter(Boolean));
       default: {
         // Operations added by the other ledger files (fl-session.js).
         const fn = FL._calls?.[op];
@@ -444,6 +447,46 @@
     return { ...res, decision };
   }
 
+  // ── fumble / surrender ─────────────────────────────────────────────────────
+  // Both pay the PC themselves, automatically (they're mechanical, nothing to
+  // judge). Only party members: a monster's fumble pays nobody.
+  async function isPartyMember(actor) {
+    const a = worldActor(actor);
+    if (!a) return null;
+    const party = await partyActors();
+    return party.some(p => p.id === a.id) ? a : null;
+  }
+
+  const _recentFumble = new Map();   // actorId -> time; one fumble reported twice pays once
+  const FUMBLE_DEDUPE_MS = 1500;
+
+  /** A party member fumbled a Check: +1 to them. info: { via } */
+  async function fumble(actor, info = {}) {
+    if (!game.user?.isGM) return { ok: false };
+    const raw = worldActor(actor);
+    if (!raw) return { ok: false, reason: "no-actor" };
+    if (!isPrimaryGM()) return callPrimary("fumble", [raw.id, info]);
+    const a = await isPartyMember(raw);
+    if (!a) return { ok: true, ignored: "not-party" };
+    const last = _recentFumble.get(a.id) ?? 0;
+    if (Date.now() - last < FUMBLE_DEDUPE_MS) return { ok: true, ignored: "duplicate" };
+    _recentFumble.set(a.id, Date.now());
+    debug("fumble", a.name, info.via ?? "");
+    return change([a], 1, { reason: "fumble", label: a.name });
+  }
+
+  /** Party members surrendered: +2 each. actors = Actor[] (default: whole party). */
+  async function surrender(actors = "party") {
+    if (!game.user?.isGM) return { ok: false };
+    if (!isPrimaryGM()) {
+      const ids = actors === "party" ? "party" : (actors ?? []).map(x => worldActor(x)?.id).filter(Boolean);
+      return callPrimary("surrender", [ids]);
+    }
+    const list = actors === "party" ? await partyActors() : (actors ?? []).map(worldActor).filter(Boolean);
+    if (!list.length) return { ok: false, reason: "no-actors" };
+    return change(list, 2, { reason: "surrender", label: list.map(a => a.name).join(", ") });
+  }
+
   /** Cheap pre-filter for detectors: could this actor ever pay as a villain? */
   function isCandidate(actor) {
     const a = worldActor(actor);
@@ -452,7 +495,7 @@
 
   // ── API ────────────────────────────────────────────────────────────────────
   const api = {
-    change, villainEntrance, report, cameo, reveal, escalate, bossFight, isCandidate,
+    change, villainEntrance, report, cameo, reveal, escalate, bossFight, isCandidate, fumble, surrender,
     getStatus, setStatus, undo, newVisit, resetSession,
     state: () => foundry.utils.deepClone(readState()),
     STATUS: L.STATUS, MSG

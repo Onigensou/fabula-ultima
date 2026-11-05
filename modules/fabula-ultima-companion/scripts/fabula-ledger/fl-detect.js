@@ -189,6 +189,35 @@
   Hooks.on("createToken", scheduleCamera);
   Hooks.on("sightRefresh", scheduleCamera);
 
+  // ── fumbles (+1 to the PC who fumbled) ─────────────────────────────────────
+  // Two places a Check is final:
+  //  • Check Requester (exploration, events, any non-battle check): emits
+  //    creature_fumbles_check on the GM after invokes are spent (cr-api.js
+  //    emitCheckReactions). Only kind "check_requester": the legacy reaction
+  //    window re-emits battle cards on F5 and must not pay again.
+  //  • Battle Director: there is no native fumble event in battle, but a fumble
+  //    always misses, and the attacker-side "I missed" trigger
+  //    (creature_miss_action, once per action, after resolve) carries the final
+  //    isFumble. It reaches observers through the read-only fu-director-trigger
+  //    hook, on the client running the director.
+  // The ledger pays party members only and drops a second report within 1.5 s.
+  const actorFromUuid = (uuid) => {
+    if (!uuid) return null;
+    try { const d = fromUuidSync(uuid); return d?.actor ?? d ?? null; } catch { return null; }
+  };
+
+  Hooks.on("oni:reactionPhase", (p) => {
+    if (!game.user?.isGM || p?.trigger !== "creature_fumbles_check" || p?.kind !== "check_requester") return;
+    const a = actorFromUuid(p.actorUuid ?? p.checkActorUuid);
+    if (a) api()?.fumble?.(a, { via: "check" });
+  });
+
+  Hooks.on("fu-director-trigger", ({ casterActor, trigger, payload } = {}) => {
+    if (!game.user?.isGM || trigger !== "creature_miss_action" || !payload?.isFumble) return;
+    const a = casterActor ?? actorFromUuid(payload.attackerActorUuid ?? payload.sourceActorUuid);
+    if (a) api()?.fumble?.(a, { via: "battle" });
+  });
+
   // ── Theatre Inserts ────────────────────────────────────────────────────────
   let _theatreDepth = 0;   // inject Left/Right call each other; report once
 

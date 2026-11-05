@@ -6,7 +6,8 @@
  * One parchment window for everything the automation can't guess:
  *   header     session open/closed + Open / Close session, Auto-pay toggle
  *   Party      each member's Fabula Points with − / + (a manual change; the
- *              cap does not apply to these: they are the GM's own call)
+ *              cap does not apply to these: they are the GM's own call) and
+ *              the flag = Surrender (+2, capped; nothing in the game detects it)
  *   Villains   status per actor (Auto / Villain / Hidden / Never) and
  *              Cameo (the GM voices them, no token) · Reveal · Escalate
  *   Awards     the recent awards, each with Undo
@@ -30,7 +31,7 @@
   const FP_PROP = "fabula_point";
 
   const STATUS_LABEL = { auto: "Auto", villain: "Villain", hidden: "Hidden", never: "Never" };
-  const AWARD_LABEL = { villain: "villain", escalation: "escalated", boss: "boss fight", session: "session start", gm: "GM", change: "event" };
+  const AWARD_LABEL = { villain: "villain", escalation: "escalated", boss: "boss fight", session: "session start", gm: "GM", change: "event", fumble: "fumble", surrender: "surrender" };
   const WHY = {
     villain: "paid", "auto-pay": "paid (Auto-pay)", event: "paid (event)", cameo: "paid (cameo)", reveal: "paid (reveal)",
     escalation: "paid (escalated)", "paid-this-visit": "already paid here", "visit-cap": "3 already paid here",
@@ -122,7 +123,8 @@
       <div class="flg-row"><span class="flg-name">${esc(a.name)}</span>
         <button class="b sm" data-act="fp" data-id="${a.id}" data-d="-1" title="−1 (spend)">−</button>
         <span class="flg-fp">${fpOf(a)}</span>
-        <button class="b sm" data-act="fp" data-id="${a.id}" data-d="1" title="+1 (GM award, uncapped)">+</button></div>`).join("")
+        <button class="b sm" data-act="fp" data-id="${a.id}" data-d="1" title="+1 (GM award, uncapped)">+</button>
+        <button class="b sm" data-act="surrender" data-id="${a.id}" title="Surrendered: +2 (Undo below if misclicked)"><i class="fa-solid fa-flag"></i></button></div>`).join("")
       : `<div class="flg-empty">No party found.</div>`;
 
     const villains = villainActors(st);
@@ -147,7 +149,10 @@
     const awards = (st.undo ?? []).slice(0, 8);
     const awardHtml = awards.length ? awards.map(u => {
       const who = (u.changes ?? []).filter(c => c.after !== c.before).length;
-      return `<div class="flg-row"><span class="flg-name">${u.delta > 0 ? "+" : ""}${u.delta} · ${esc(u.label || AWARD_LABEL[u.reason] || u.reason)}
+      // Show what landed: the cap can trim a +2 surrender to +1.
+      const moved = (u.changes ?? []).map(c => (c.after ?? 0) - (c.before ?? 0));
+      const shown = u.delta > 0 ? Math.max(0, ...moved) : Math.min(0, ...moved);
+      return `<div class="flg-row"><span class="flg-name">${shown > 0 ? "+" : ""}${shown} ·${esc(u.label || AWARD_LABEL[u.reason] || u.reason)}
         <span class="flg-dim">${esc(AWARD_LABEL[u.reason] ?? u.reason)} · ${who} changed · ${ago(u.at)}</span></span>
         <button class="b" data-act="undo" data-award="${u.id}">Undo</button></div>`;
     }).join("") : `<div class="flg-empty">Nothing awarded this session.</div>`;
@@ -195,6 +200,7 @@
     try {
       if (act === "hide") return hide();
       if (act === "fp") return api().change([actor], Number(b.dataset.d), { reason: "gm", label: actor?.name, uncapped: true, silent: Number(b.dataset.d) < 0 });
+      if (act === "surrender") return api().surrender([actor]);
       if (act === "cameo") return report(await api().cameo(actor), actor);
       if (act === "reveal") return report(await api().reveal(actor), actor);
       if (act === "escalate") return report(await api().escalate(actor), actor);
