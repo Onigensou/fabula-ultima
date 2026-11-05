@@ -91,7 +91,8 @@
       buttons: ["new", "same"]
     });
     if (answer === "new") return open("save loaded");
-    await I().note("Session carried on after a load");
+    // "Same session", or the prompt timed out: carry on. The panel can still open one.
+    await I().note(answer === "timeout" ? "Session carried on (no answer in time)" : "Session carried on after a load");
     return { ok: true, carried: true };
   }
 

@@ -9,7 +9,8 @@
  * the clock stack, beside the sidebar), slides in from the top-right with a
  * fade, stacks downward, never blocks, waits until answered.
  *
- *   show({ kind, name, img, reason, buttons }) -> Promise<"confirm"|"skip"|"hidden"|"never">
+ *   show({ kind, name, img, reason, buttons, seconds }) -> Promise<"confirm"|"skip"|"hidden"|"never"|"timeout">
+ *     "timeout" = nobody answered in time (setting fabulaPromptSeconds, default 15 s); callers treat it as Skip.
  *   paidNote(entry)   a short "Paid +1 · Name  [Undo]" panel after an automatic villain award
  *
  * GM only; the ledger calls it on the primary GM.
@@ -23,6 +24,22 @@
   const IN_MS = 320, OUT_MS = 220;
   const NOTE_MS = 6000;
   const SPRITE_OVERHANG = 36;  // how far the 92px sprite rises above a ~60px panel
+  // Unanswered prompts must not pile up on the GM's screen (user, 2026-11-05):
+  // each one counts down and answers itself with "timeout" (= Skip). The
+  // countdown pauses while the mouse is over the prompt.
+  const SETTING_SECONDS = "fabulaPromptSeconds";
+  const DEFAULT_SECONDS = 15;
+  const promptSeconds = () => {
+    try { return Math.max(5, Math.min(60, Number(game.settings.get("fabula-ultima-companion", SETTING_SECONDS)) || DEFAULT_SECONDS)); }
+    catch { return DEFAULT_SECONDS; }
+  };
+  Hooks.once("init", () => {
+    game.settings.register("fabula-ultima-companion", SETTING_SECONDS, {
+      name: "Fabula Points: GM prompt time limit (seconds)",
+      hint: "An unanswered \"Award Fabula Point?\" prompt closes itself after this long and counts as Skip. Paused while the mouse is over it.",
+      scope: "world", config: true, type: Number, range: { min: 5, max: 60, step: 1 }, default: DEFAULT_SECONDS
+    });
+  });
 
   const LABEL = { confirm: "Confirm", skip: "Skip", hidden: "Hidden", never: "Never", "new": "New session", same: "Same session" };
   const TIP = {
@@ -52,7 +69,7 @@
 #${ROOT_ID} .flp {
   position: relative; box-sizing: border-box;
   display: grid; gap: 6px;
-  padding: 8px 12px 9px 84px;
+  padding: 8px 12px 13px 84px;   /* bottom room for the countdown bar */
   color: #3a1e06; font-family: "Signika","Noto Sans","Segoe UI",sans-serif;
   background:
     repeating-linear-gradient(0deg, transparent 0 11px, rgba(140,90,30,0.05) 11px 12px),
@@ -87,6 +104,21 @@
 #${ROOT_ID} .flp-b button.ok { box-shadow: 0 0 0 2px #c9a44a, 0 0 8px rgba(255,215,106,0.45); }
 #${ROOT_ID} .flp.note { padding-top: 7px; padding-bottom: 7px; }
 #${ROOT_ID} .flp.noimg { padding-left: 14px; }
+#${ROOT_ID} .flp-b .flp-s {
+  margin-left: auto; align-self: center; font-size: 11.5px; color: #8a6a3a;
+  font-variant-numeric: tabular-nums; min-width: 2.6em; text-align: right;
+}
+#${ROOT_ID} .flp-t {
+  position: absolute; left: 84px; right: 12px; bottom: 4px; height: 3px;
+  border-radius: 2px; background: rgba(122,78,32,0.18); overflow: hidden; pointer-events: none;
+}
+#${ROOT_ID} .flp.noimg .flp-t { left: 14px; }
+#${ROOT_ID} .flp-t i {
+  display: block; height: 100%; width: 100%; transform-origin: left center;
+  background: linear-gradient(90deg, #b8865a, #c9a44a);
+}
+#${ROOT_ID} .flp-t.low i { background: linear-gradient(90deg, #a24a2a, #c9663a); }
+#${ROOT_ID} .flp.paused .flp-t i { opacity: 0.55; }
 @media (prefers-reduced-motion: reduce) {
   #${ROOT_ID} .flp, #${ROOT_ID} .flp.in, #${ROOT_ID} .flp.out { transition: none; transform: none; }
 }`;
@@ -132,21 +164,46 @@
     setTimeout(() => panel.remove(), OUT_MS + 40);
   }
 
-  function show({ kind = "first", title = "Award Fabula Point?", name = "", img = "", reason = "", buttons = ["confirm", "skip"] } = {}) {
+  function show({ kind = "first", title = "Award Fabula Point?", name = "", img = "", reason = "", buttons = ["confirm", "skip"], seconds = 0 } = {}) {
     if (!game.user?.isGM) return Promise.resolve("skip");
     return new Promise((resolve) => {
       const btns = buttons.map((b, i) =>
         `<button type="button" data-a="${b}" class="${i === 0 ? "ok" : ""}" title="${esc(TIP[b] ?? "")}">${LABEL[b] ?? b}</button>`).join("");
+      const total = (Number(seconds) > 0 ? Number(seconds) : promptSeconds()) * 1000;
       const panel = mount(`
         ${img ? `<img class="flp-spr" src="${esc(img)}" alt="">` : ""}
         <div class="flp-q">${esc(title)} <small>${esc(name)}${reason ? ` · ${esc(reason)}` : ""}</small></div>
-        <div class="flp-b">${btns}</div>`);
+        <div class="flp-b">${btns}<span class="flp-s" title="Closes as Skip when it runs out. Paused while your mouse is here."></span></div>
+        <div class="flp-t"><i></i></div>`);
       panel.dataset.kind = kind;
+
+      // Countdown: a draining bar + seconds left; paused on hover.
+      const bar = panel.querySelector(".flp-t"), fill = bar.firstElementChild, secs = panel.querySelector(".flp-s");
+      let left = total, last = performance.now(), hover = false, done = false, raf = 0;
+      const finish = (answer) => {
+        if (done) return;
+        done = true;
+        cancelAnimationFrame(raf);
+        dismiss(panel);
+        resolve(answer);
+      };
+      const tick = (now) => {
+        if (done) return;
+        if (!hover) left -= now - last;
+        last = now;
+        if (left <= 0) return finish("timeout");
+        fill.style.transform = `scaleX(${(left / total).toFixed(4)})`;
+        secs.textContent = `${Math.ceil(left / 1000)}s`;
+        bar.classList.toggle("low", left <= 4000);
+        raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+      panel.addEventListener("mouseenter", () => { hover = true; panel.classList.add("paused"); });
+      panel.addEventListener("mouseleave", () => { hover = false; panel.classList.remove("paused"); });
+
       panel.addEventListener("click", (ev) => {
         const a = ev.target?.closest?.("button[data-a]")?.dataset?.a;
-        if (!a) return;
-        dismiss(panel);
-        resolve(a);
+        if (a) finish(a);
       });
       cue();
     });

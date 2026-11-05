@@ -367,7 +367,9 @@
         reason: L.promptReason(app, decision),
         buttons: L.promptButtons(decision.prompt)
       });
-      return await applyAnswer(app, decision, answer);
+      // Nobody answered in time: Skip, and say so in the panel's log.
+      if (answer === "timeout") note(`${app.name}: no answer in time, skipped`);
+      return await applyAnswer(app, decision, answer === "timeout" ? "skip" : answer);
     } finally {
       _pending.delete(key);
     }
