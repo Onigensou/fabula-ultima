@@ -220,7 +220,7 @@ return sprite;
 let __restore = null;
 let sprite;
 try {
-sprite = await createClone(casterToken);
+sprite = await createClone(casterToken); try { oni.depthFollow(sprite, casterToken); } catch (e) {}
 // hide real token locally
 __restore = oni.hideToken(casterToken);
 const start = { x: sprite.x, y: sprite.y };

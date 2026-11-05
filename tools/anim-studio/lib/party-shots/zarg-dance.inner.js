@@ -25,7 +25,7 @@ m.hold(0, END + 1, (e, S) => {
   const u = E.sine(Math.min(1, (e - i * SP) / SP));
   q.sx *= Math.cos(u * Math.PI * 2);
   q.dx += dir * 20 * U * Math.sin(u * Math.PI) * (i % 2 ? -1 : 1);
-  q.dy += -Math.sin(u * Math.PI) * 26 * U;
+  q.air += Math.sin(u * Math.PI) * 26 * U;
 });
 const mid = K.mid(tl, 'c');
 for (let i = 0; i < N; i++) K.twinkles(m, i * SP, mid, K.tintF(hue, 4, 1.3), 2, 50, U);

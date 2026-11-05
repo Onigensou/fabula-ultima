@@ -225,7 +225,7 @@ const target = targetTokens?.[0] ?? null;
 let sprite;
 let __restore = null;
 try {
-sprite = await createClone(casterToken);
+sprite = await createClone(casterToken); try { oni.depthFollow(sprite, casterToken); } catch (e) {}
 __restore = oni.hideToken(casterToken);
 let front = {
 x: home.x + Number(params.fallbackDx ?? -120),

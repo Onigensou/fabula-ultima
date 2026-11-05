@@ -258,7 +258,7 @@ return sprite;
 let __restore = () => {};
 let sprite;
 try {
-sprite = await createClone(casterToken);
+sprite = await createClone(casterToken); try { oni.depthFollow(sprite, casterToken); } catch (e) {}
 // Hide real token visuals (local only) for the WHOLE session (guarded hide)
 __restore = oni.hideToken(casterToken);
 const startX = sprite.x;

@@ -15,11 +15,16 @@ async function boot(extra) {
   const TG = [];
   targets.forEach((t, i) => { const k = 't' + i; TG.push(k); tokens[k] = cfg.targetFoot ? { token: t, foot: cfg.targetFoot } : { token: t }; });
   Object.assign(tokens, extra || {});
-  const tl = oni.timeline({ tokens, clips: A.clips || {}, images: A.images || {} });
+  // live: the party shots never move the camera, so they run on the LIVE board (oni-timeline
+  // spec.live): idle bounce, depth, 3D parallax keep running; only touched tokens are taken over.
+  // depthRef: clip sizes are authored for the caster; on a 3D / depth-map stage the engine
+  // rescales a clip placed on another battler (or on the floor) by the depth ratio to it.
+  const tl = oni.timeline({ tokens, clips: A.clips || {}, images: A.images || {}, live: cfg.live !== false, depthRef: caster ? 'c' : null });
   await tl.load();
   const T = []; const m = tl.mk(T);
   const TOK = tl.TOK;
   const U = ((TOK.c && TOK.c.h) || 300) / 300;
+  K._tl = tl; K._c0 = TOK.c ? tl.feet(TOK.c) : null;
   return { tl, T, m, TOK, TG, U, E: tl.E };
 }
 const K = {};
@@ -32,6 +37,9 @@ K.head = (tl, k) => { const t = tl.TOK[k]; const f = tl.feet(t); return { x: f.x
 K.summonSpot = (tl, k) => { const t = tl.TOK[k]; const f = tl.feet(t); const g = tl.GRID; const sx = (tl.REST.cx < f.x) ? -1 : 1; return { x: f.x + sx * Math.max(1.15 * g, t.w / 2 + 0.65 * g), y: f.y }; };
 // CSS-filter tint for white GG mask clips (the mockup recipe: sepia gives ~38deg, then rotate).
 K.tintF = (hue, sat, br) => 'sepia(1) saturate(' + (sat || 5) + ') hue-rotate(' + Math.round(hue - 38) + 'deg) brightness(' + (br || 1.1) + ')';
+// Depth size of a body (phantasm skin, painted copy) whose feet are at p, relative to the
+// caster where it stands (1 on a flat stage). Set by boot() once the timeline exists.
+K.depth = (p) => (K._tl && K._tl.depthRatio && K._c0) ? K._tl.depthRatio(K._c0, p) : 1;
 K.ease = (E, name) => (name && E[name]) || E.ioQ;
 // A token path: keys = [[t, dx, dy, ease?], ...]; held between keys, nothing before/after.
 K.path = (m, E, k, keys) => {
@@ -135,8 +143,8 @@ K.skin = (tl, name, U) => {
 // Draw a phantasm along posFn(e) -> { x, y (feet), a, s } between t0 and t1, with afterimages when moving.
 K.phantasm = (m, skin, t0, t1, posFn, trail) => {
   m.hold(t0, t1, (e, S) => S.world.push({ z: 30, draw: (g) => {
-    if (trail) for (let i = 4; i >= 1; i--) { const q = posFn(Math.max(0, e - i * 60)); const p0 = posFn(e); if (Math.hypot(q.x - p0.x, q.y - p0.y) < 4) continue; g.save(); g.filter = 'blur(2px)'; skin.draw(g, q.x, q.y, (q.a || 1) * 0.3 * (1 - i / 5), q.s, e); g.restore(); }
-    const p = posFn(e); skin.draw(g, p.x, p.y, p.a == null ? 1 : p.a, p.s, e);
+    if (trail) for (let i = 4; i >= 1; i--) { const q = posFn(Math.max(0, e - i * 60)); const p0 = posFn(e); if (Math.hypot(q.x - p0.x, q.y - p0.y) < 4) continue; g.save(); g.filter = 'blur(2px)'; skin.draw(g, q.x, q.y, (q.a || 1) * 0.3 * (1 - i / 5), (q.s || 1) * K.depth(q), e); g.restore(); }
+    const p = posFn(e); skin.draw(g, p.x, p.y, p.a == null ? 1 : p.a, (p.s || 1) * K.depth(p), e);
   } }));
 };
 // Ring under a point on the ground (z 2), expanding; used as an arrival / selection mark.

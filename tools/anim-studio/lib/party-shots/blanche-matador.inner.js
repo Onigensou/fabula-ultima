@@ -39,7 +39,7 @@ function glow(k, t0, t1, color, blur) {
   m.hold(t0, t1, (e, S) => S.world.push({ z: 4, draw: (g) => {
     const q = S.tok[k], TT = TOK[k]; if (!q || !TT || q.hidden || q.alpha <= 0) return;
     const c = tl.tinted(k, color); if (!c) return; const f = tl.feet(TT);
-    g.save(); g.translate(TT.x + q.dx, f.y + q.dy); if (q.rot) g.rotate(q.rot); g.scale(TT.flip * q.sx, q.sy);
+    g.save(); g.translate(TT.x + q.dx, f.y + q.dy - (q.air || 0)); if (q.rot) g.rotate(q.rot); g.scale(TT.flip * q.sx, q.sy);
     g.globalAlpha = q.alpha; g.filter = 'blur(' + (blur * 0.5 * U * pxScale(g)).toFixed(1) + 'px)';
     for (let i = 0; i < 2; i++) g.drawImage(c, -TT.w / 2, -TT.h * TT.foot, TT.w, TT.h);
     g.restore();
@@ -244,7 +244,7 @@ if (kind === 'tafallera') {
   glow('c', t.fury, t.back, '#ff3030', 12);
   m.tint(t.fury, t.back - t.fury, 'c', '#ffffff', () => 0.06);   // brightness(1.1)
   // two chin-up bounces (200 ms each, sine), then lean back 6 deg (220 ms) and hold
-  m.hold(t.fury, t.fury + 400, (e, S) => { const k = (e % 200) / 200; S.tok.c.dy += -10 * U * Math.sin(E.sine(k) * Math.PI); });
+  m.hold(t.fury, t.fury + 400, (e, S) => { const k = (e % 200) / 200; S.tok.c.air += 10 * U * Math.sin(E.sine(k) * Math.PI); });
   m.hold(t.fury + 400, t.back, (e, S) => { S.tok.c.rot += -dir * 6 * RAD * E.outQ(Math.min(1, e / 220)); });
   angerMark(t.mark, { x: tf.x + toward(tk) * 30 * U, y: hd(tk).y + 10 * U }, 84);
   // the tantrum
@@ -254,8 +254,8 @@ if (kind === 'tafallera') {
   for (let i = 0; i < 3; i++) {
     const h0 = t.tantrum + i * 400;
     m.clip('smoke', h0, { x: top.x + (i % 2 ? 26 : -18) * U, y: top.y + 4 * U, w: cw(170, 1.2), z: 52, filter: 'grayscale(1) brightness(1.6)', alpha: () => 0.9 });
-    m.hold(h0, h0 + 170, (e, S) => { S.tok[tk].dy += -34 * U * E.outQ(Math.min(1, e / 170)); });
-    m.hold(h0 + 170, h0 + 320, (e, S) => { S.tok[tk].dy += -34 * U * (1 - E.inQ(Math.min(1, e / 150))); });
+    m.hold(h0, h0 + 170, (e, S) => { S.tok[tk].air += 34 * U * E.outQ(Math.min(1, e / 170)); });
+    m.hold(h0 + 170, h0 + 320, (e, S) => { S.tok[tk].air += 34 * U * (1 - E.inQ(Math.min(1, e / 150))); });
     m.hold(h0 + 320, h0 + 400, (e, S) => { const s = Math.sin(E.outQ(Math.min(1, e / 80)) * Math.PI); S.tok[tk].sx *= 1 + 0.06 * s; S.tok[tk].sy *= 1 - 0.08 * s; });
   }
 } else if (kind === 'veronica') {

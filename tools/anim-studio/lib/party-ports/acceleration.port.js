@@ -96,6 +96,7 @@ function __fxDurMs(file, fallback) {
     "const dx = Number(params.dx || 0), dur = Number(params.dur || 350), hold = Number(params.hold || 0);",
     "const clone = oni.cloneToken(casterToken);",
     "if (!clone) return;",
+    "try { oni.depthFollow(clone, casterToken); } catch (e) {}",
     "clone.zIndex = 5000; canvas.stage.sortableChildren = true; canvas.stage.sortChildren();",
     "const __restore = oni.hideToken(casterToken);",
     "try {",

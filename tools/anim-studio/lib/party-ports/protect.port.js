@@ -260,7 +260,7 @@ const shouldFlip = Boolean(params.shouldFlip ?? false);
 let __restore = () => {};
 let sprite;
 try {
-sprite = await createClone(casterToken);
+sprite = await createClone(casterToken); try { oni.depthFollow(sprite, casterToken); } catch (e) {}
 // Hide real token locally (guarded hide; Foundry refresh cannot re-show it)
 __restore = oni.hideToken(casterToken);
 const homeX = sprite.x, homeY = sprite.y;

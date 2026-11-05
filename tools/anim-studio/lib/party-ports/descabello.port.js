@@ -502,7 +502,7 @@ async function playTargetFeedback(token, dirSign) {
 const state = hideTokenVisual(token);
 let sprite = null;
 try {
-sprite = await makeTokenSprite(token, Number(params.zTargetFeedback ?? 8100));
+sprite = await makeTokenSprite(token, Number(params.zTargetFeedback ?? 8100)); try { oni.depthFollow(sprite, token); } catch (e) {}
 const start = tokenCenter(token);
 const knock = Number(params.targetKnockbackDistance ?? 42);
 const dur = Number(params.targetFeedbackMs ?? 420);
@@ -552,7 +552,7 @@ const targetCenter = tokenCenter(targetToken);
 const behindX = targetCenter.x + dirSign * Number(params.behindTargetDistance ?? 125);
 const behindY = targetCenter.y;
 casterState = hideTokenVisual(casterToken);
-casterSprite = await makeTokenSprite(casterToken, Number(params.zCaster ?? 8000));
+casterSprite = await makeTokenSprite(casterToken, Number(params.zCaster ?? 8000)); try { oni.depthFollow(casterSprite, casterToken); } catch (e) {}
 overlay = createSpotlightOverlay();
 const spotlightLoop = () => {
 updateSpotlight(overlay, casterSprite, targetToken);

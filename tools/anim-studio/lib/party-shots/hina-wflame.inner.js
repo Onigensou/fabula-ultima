@@ -15,11 +15,13 @@ K.circle(tl, m, U, 'c', 380, R - 380, 12, { dx: dir * 46 * U });
 const f = K.feet(tl, 'c'); const out = { x: f.x + dir * 46 * U, y: f.y }; const outMid = { x: out.x, y: out.y - C.h * 0.5 };
 // fire pillar just behind her (ground layer)
 fx('pillar', R, { x: out.x - dir * 60 * U, y: f.y - 2 * U }, { scale: 1.2, add: true, z: 2, filter: 'hue-rotate(-35deg) saturate(1.6)' });
-// the Flame: 320 x 467 (mockup px), mirrored to face the enemy; home = 190 px toward the
-// enemy and up to 150 px toward the stage's vertical centre from her feet
+// the Flame: 320 x 467 (mockup px). User 2026-11-05: it floats down BEHIND Hina, on her far
+// side from the enemy and a little higher (deeper in the arena), facing the way she faces.
+// It is drawn on the ground layer (z < 5 = under the real tokens on the live board), so Hina
+// stands in front of it. Native art faces left (toward the enemy for the party), so it is
+// mirrored only when the caster faces right.
 const img = tl.IMG.wflame; const W = 320 * U, H = 467 * U;
-const vy = Math.max(-150 * U, Math.min(150 * U, tl.REST.cy - f.y));
-const home = { x: out.x + dir * 190 * U, y: f.y + vy };
+const home = { x: out.x - dir * (cfg.behindX != null ? cfg.behindX : 130) * U, y: f.y - (cfg.behindUp != null ? cfg.behindUp : 36) * U };
 const D0 = R, D1 = R + 1200, D2 = R + 1700, D3 = R + 2600;
 const posAt = (e) => {
   if (e < D1) { const u = E.outQ((e - D0) / 1200); return { x: home.x - dir * 120 * U * (1 - u), y: home.y - 540 * U * (1 - u) }; }
@@ -29,7 +31,7 @@ if (img) m.hold(D0, D3, (e0, S) => {
   const e = D0 + e0; const p = posAt(e); let a = 1, glow = 22, br = 1.1;
   if (e >= D1 && e < D2) { const s = Math.sin((e - D1) / 500 * Math.PI); glow = 22 + 30 * s; br = 1.1 + 0.5 * s; }
   else if (e >= D2) { const u = (e - D2) / 900; a = 1 - E.inQ(u); glow = 40; br = 1.6 + u; }
-  S.world.push({ z: 45, draw: (g) => { if (a <= 0) return; g.save(); g.translate(p.x, p.y); g.scale(dir < 0 ? -1 : 1, 1); g.globalAlpha = a; g.shadowColor = '#ff6a1f'; g.shadowBlur = glow * U; g.filter = 'brightness(' + br.toFixed(2) + ')'; g.drawImage(img, -W / 2, -H, W, H); g.restore(); } });
+  S.world.push({ z: 3, draw: (g) => { if (a <= 0) return; g.save(); g.translate(p.x, p.y); g.scale(dir < 0 ? 1 : -1, 1); g.globalAlpha = a; g.shadowColor = '#ff6a1f'; g.shadowBlur = glow * U; g.filter = 'brightness(' + br.toFixed(2) + ')'; g.drawImage(img, -W / 2, -H, W, H); g.restore(); } });
 });
 // embers off the Flame while it descends (one GG twinkle every 120 ms)
 for (let e = D0; e < D1; e += 120) { const p = posAt(e); K.twinkles(m, e, { x: p.x, y: p.y - H * 0.3 }, K.tintF(20, 4, 1.3), 1, 60, U); }

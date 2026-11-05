@@ -34,7 +34,7 @@ const power = (e) => {
 const back = -dir * 22 * U;
 const packAt = (e) => ({ x: f.x + back, y: f.y - C.h * 0.52 + lift(e) * U });
 m.hold(0, 4941, (e, S) => {
-  const q = S.tok.c; q.dy += lift(e) * U; q.rot += tilt(e) * Math.PI / 180;
+  const q = S.tok.c; q.air -= lift(e) * U; q.rot += tilt(e) * Math.PI / 180;
   const p = packAt(e); const pw = power(e);
   S.world.push({ z: 54, draw: (g) => {
     if (pw > 0.02) for (let i = 0; i < 2; i++) {
