@@ -169,6 +169,57 @@ export function buildOni(ctx, env) {
     return restore;
   }
 
+  // ── Depth (perspective) ───────────────────────────────────────────────────
+  // How big, and where, a body standing with its feet at a 2D canvas point is
+  // DRAWN: the scene's depth-map factor at that row (depth-index; 1 off a depth
+  // map) times the 3D stage's size factor there (battle-stage-3d projectFoot;
+  // null = flat). { x, y } = drawn feet, s = total size factor.
+  function depthAt(foot) {
+    let f = 1, p = null;
+    try { f = Number(globalThis.__ONI_DEPTH_INDEX__?.factorAtY?.(foot.y)) || 1; } catch {}
+    try { p = globalThis.__ONI_BATTLE_STAGE_3D__?.projectFoot?.(foot) ?? null; } catch {}
+    return p ? { x: p.x, y: p.y, s: f * p.m, f, m: p.m } : { x: foot.x, y: foot.y, s: f, f, m: 1 };
+  }
+  // depthFollow(sprite, token): keep a copy that a script animates in plain 2D
+  // canvas coordinates (a clone running from its token to another, legacy-style,
+  // anchored anywhere) drawn where a body at that floor spot really is drawn: at
+  // the 3D stage's displaced spot and the depth size of that row, relative to the
+  // token's own spot. Runs after the script's own motion each frame (ticker
+  // priority -10: after NORMAL animators, before the render at LOW), and only
+  // re-reads the script's values when the script changes them, so holds and
+  // flips keep working. Returns stop(); also stopped on dispose().
+  function depthFollow(sprite, token) {
+    if (!sprite || !token) return () => {};
+    const h0 = Math.abs(sprite.height) || token.h || 100;
+    const below = h0 * (1 - (sprite.anchor?.y ?? 0.5));          // anchor -> feet, 2D px
+    const home = { x: token.center.x, y: (token.document?.y ?? token.y) + token.h };
+    const ref = depthAt(home).f;                                   // the token mesh already carries this
+    // The script's own 2D values, tracked SEPARATELY for position and scale: a frame where
+    // the script only moved the copy must not re-read our depth-scaled scale as its base
+    // (that compounds every frame).
+    let w2d = null, wrote = null;
+    const tick = () => {
+      if (sprite.destroyed) return;
+      const cur = { x: sprite.x, y: sprite.y, sx: sprite.scale.x, sy: sprite.scale.y };
+      if (!w2d) w2d = { ...cur };
+      else {
+        if (cur.x !== wrote.x || cur.y !== wrote.y) { w2d.x = cur.x; w2d.y = cur.y; }        // the script moved it
+        if (cur.sx !== wrote.sx || cur.sy !== wrote.sy) { w2d.sx = cur.sx; w2d.sy = cur.sy; }  // the script rescaled / flipped it
+      }
+      const foot = { x: w2d.x, y: w2d.y + below };
+      const d = depthAt(foot);
+      const k = (d.f / ref) * d.m;
+      sprite.scale.set(w2d.sx * k, w2d.sy * k);
+      sprite.position.set(d.x, d.y - below * k);
+      wrote = { x: sprite.x, y: sprite.y, sx: sprite.scale.x, sy: sprite.scale.y };
+    };
+    ticker?.add(tick, null, -10);
+    let stopped = false;
+    const stop = () => { if (stopped) return; stopped = true; ticker?.remove(tick); if (w2d && !sprite.destroyed) { try { sprite.position.set(w2d.x, w2d.y); sprite.scale.set(w2d.sx, w2d.sy); } catch {} } };
+    _disposers.push(stop);
+    return stop;
+  }
+
   // ── Generated textures ────────────────────────────────────────────────────
 
   // Vertical gradient (e.g. sky). stops = [[offset0..1, "#rrggbb"], …].
@@ -881,6 +932,8 @@ export function buildOni(ctx, env) {
     screen, screenLive, layer,
     // tokens
     cloneToken, hideToken, jump,
+    // perspective: where/how big a body at a 2D floor point is drawn; keep a 2D-animated copy on it
+    depthAt, depthFollow,
     // textures / media
     gradientTexture, radialTexture, webmSprite, webm, vfx,
     // full-screen fx (PIXI helpers are WORLD space; dom* are camera-proof)

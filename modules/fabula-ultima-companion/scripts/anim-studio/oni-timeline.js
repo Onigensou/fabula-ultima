@@ -352,9 +352,19 @@ export async function decodeFrames(url, { fps = 15, scale = 1, dur = null } = {}
 //   spec.clips   { key: { url, w, h, dur, ax, ay, add?, mask?, impact? } }
 //   spec.poses   { tokKey: { pose: { url, foot, scale? } } }  scale defaults to art px / pose px
 //   spec.bystanders  true (default) → every other visible token is drawn too, as itself
+//   spec.live        false (default) → the shot owns the board: every token is hidden and
+//                    painted, the camera is driven (S.cam), the 3D stage flattens for it.
+//                    true → LIVE BOARD (short on-board shots, e.g. party actions): the camera
+//                    is left alone (no S.cam / no suspension, so the 3D stage keeps its
+//                    parallax), only tokens a track is touching THIS frame are hidden and
+//                    painted (everyone else stays the real token: idle bounce, depth, 3D
+//                    placement), token positions are read where the 3D stage DRAWS them,
+//                    and the dim + ground layers (z < 5) render under the real tokens.
 //   env = { canvas, PIXI, loadTexture, oni, scene? }
 export function createTimeline(spec = {}, env = {}) {
   const { canvas, loadTexture, oni } = env;
+  const LIVE = !!spec.live;
+  const PIXI_ = env.PIXI ?? globalThis.PIXI;
   const app = canvas?.app ?? null;
   const ticker = app?.ticker ?? null;
   const scene = env.scene ?? canvas?.scene ?? null;
@@ -409,7 +419,7 @@ export function createTimeline(spec = {}, env = {}) {
     const named = new Map(); for (const [k, s] of Object.entries(spec.tokens || {})) if (s?.token) named.set(s.token.id, k);
     const all = [];
     for (const [k, s] of Object.entries(spec.tokens || {})) if (s?.token) all.push([k, s]);
-    if (spec.bystanders !== false) {
+    if (spec.bystanders !== false && !LIVE) {
       let n = 0;
       for (const t of canvas?.tokens?.placeables ?? []) {
         if (named.has(t.id)) continue;
@@ -434,6 +444,19 @@ export function createTimeline(spec = {}, env = {}) {
       ART[k] = art;
       const foot = s.foot ?? (art ? footOf(art) : null) ?? 0.97;
       TOK[k] = { token: t, x: t.center.x, y: t.center.y, w: mesh?.width ?? t.w, h: mesh?.height ?? t.h, flip: sign, dir: sign * nativeDir, foot, name: t.name, hidden: !!s.hidden };
+      // LIVE: read the token where the 3D stage DRAWS it (displaced + rescaled body), so
+      // every effect placed against it, and its painted copy, sit on the real battler.
+      // drawnMap: a world point p placed against the 2D feet f is drawn at b + (p - f) * m.
+      if (LIVE) {
+        try {
+          const map = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnMap?.(t);
+          if (map && Number.isFinite(map.m) && map.m > 0) {
+            const T = TOK[k];
+            T.x = map.bx + (T.x - map.fx) * map.m; T.y = map.by + (T.y - map.fy) * map.m;
+            T.w *= map.m; T.h *= map.m; T.m3d = map.m;
+          }
+        } catch {}
+      }
       if (s.shadow) { PAINTED[k] = await imageOf(s.shadow); }
       else if (art && (t.document?.flags?.[MODULE_ID]?.spriteShadow || t.actor?.flags?.[MODULE_ID]?.spriteShadow)) {
         try { SHADOW[k] = bakeShadow(art, s.shadowStyle); } catch { SHADOW[k] = null; }
@@ -460,7 +483,7 @@ export function createTimeline(spec = {}, env = {}) {
 
   // ── per-frame state ──
   function makeState() {
-    const tok = {}; for (const k in TOK) tok[k] = { dx: 0, dy: 0, sx: 1, sy: 1, alpha: 1, hidden: !!TOK[k].hidden, black: 0, tint: null, tintA: 0, glow: 0, rot: 0, noShadow: false, hurt: false, pose: null };
+    const tok = {}; for (const k in TOK) tok[k] = { dx: 0, dy: 0, air: 0, sx: 1, sy: 1, alpha: 1, hidden: !!TOK[k].hidden, black: 0, tint: null, tintA: 0, glow: 0, rot: 0, noShadow: false, hurt: false, pose: null };
     return { cam: { cx: REST.cx, cy: REST.cy, zoom: 1 }, dim: 0, flash: { a: 0, c: "#fff" }, white: 0, black: 0, shake: 0, letterbox: 0, topdark: 0, tok, world: [], screen: [], over: [], texts: [], beat: "", whiteUnder: 0, hideBoard: false, panY: 0, _skyOy: 0 };
   }
 
@@ -496,7 +519,7 @@ export function createTimeline(spec = {}, env = {}) {
             const V = src; let dw, dh, x, y, rot = o.rot || 0;
             let persp = o.persp || null, sx = o.sx, sy = o.sy;
             if (o.screen) { dh = g.H * o.wh; x = o.screen.x * g.W; y = o.screen.y * g.H; if (o.live) { const p = o.live(tl, S, g); if (!p) return; x = p.x; y = p.y; dh = g.H * p.wh; rot = p.rot || 0; if (p.persp) persp = p.persp; if (p.sx != null) sx = p.sx; if (p.sy != null) sy = p.sy; } dw = dh * def.w / def.h; }
-            else { dw = o.w; x = o.x; y = o.y; if (o.live) { const p = o.live(tl, S, g); if (!p) return; x = p.x; y = p.y; dw = p.w; rot = p.rot || 0; } dh = dw * def.h / def.w; }
+            else { dw = o.w; x = o.x; y = o.y; if (o.live) { const p = o.live(tl, S, g); if (!p) return; x = p.x; y = p.y; dw = p.w; rot = p.rot || 0; } if (LIVE && o.depth !== false) dw *= clipDepth(x, y); dh = dw * def.h / def.w; }
             g.save(); g.translate(x, y); if (rot) g.rotate(rot); if (o.flip) g.scale(-1, 1); if (sy || sx) g.scale(sx || 1, sy || 1); g.globalAlpha = a;
             if (def.add || o.add) g.globalCompositeOperation = "lighter"; else if (o.blur) g.filter = "blur(" + (o.blur * (g.H / 788)).toFixed(1) + "px)";
             // o.filter: a CSS filter string (hue-rotate / brightness / saturate) for
@@ -556,6 +579,8 @@ export function createTimeline(spec = {}, env = {}) {
   function camView(S) {
     const { W, H } = view();
     let v;
+    // LIVE never moves the camera: the view is whatever the stage shows now (v12: pivot = view centre).
+    if (LIVE) { const st = canvas.stage; const sc = st.scale.x; const x = st.pivot.x, y = st.pivot.y; const top = y - H / 2 / sc, left = x - W / 2 / sc; return { x, y, scale: sc, W, H, top, left, bottom: top + H / sc, right: left + W / sc }; }
     try { v = cam?.resolveIntent ? cam.resolveIntent({ point: { x: S.cam.cx, y: S.cam.cy }, zoom: S.cam.zoom }, scene) : null; } catch { v = null; }
     if (!v) { const st = canvas.stage; v = { x: S.cam.cx, y: S.cam.cy, scale: st.scale.x }; }
     const sc = v.scale; const top = v.y - (H / 2 + (S.panY || 0) * H) / sc, left = v.x - W / 2 / sc;
@@ -565,6 +590,14 @@ export function createTimeline(spec = {}, env = {}) {
   // ── camera write (S.cam + panY + shake) ──
   function applyCamera(S, t) {
     const { W, H } = view();
+    if (LIVE) {
+      // Never write the stage (that would read as a cinematic to the 3D stage and the
+      // camera authority). Shake = a CSS nudge on the board view; the overlay adds the
+      // same offset to its own drawing, so both move together.
+      const shx = S.shake ? Math.sin(t * 0.9) * S.shake : 0, shy = S.shake ? Math.cos(t * 1.3) * S.shake * 0.6 : 0;
+      const vw = app?.view; if (vw) vw.style.translate = (shx || shy) ? (shx.toFixed(1) + "px " + shy.toFixed(1) + "px") : "";
+      return { W, H, shx, shy };
+    }
     let v;
     try { v = cam?.resolveIntent ? cam.resolveIntent({ point: { x: S.cam.cx, y: S.cam.cy }, zoom: S.cam.zoom }, scene) : null; } catch { v = null; }
     if (!v) { const st = canvas.stage; v = { x: S.cam.cx, y: S.cam.cy, scale: st.scale.x }; }
@@ -581,7 +614,7 @@ export function createTimeline(spec = {}, env = {}) {
   // ── draw one token as the mockup does ──
   function drawTok(g, k, m) {
     const T = TOK[k]; const art = ART[k]; if (!art || m.hidden || m.alpha <= 0) return;
-    const f = feet(T); const fx0 = T.x + m.dx, fy = f.y + m.dy;
+    const f = feet(T); const fx0 = T.x + m.dx, fy = f.y + m.dy - (m.air || 0);
     g.save(); g.translate(fx0, fy); if (m.rot) g.rotate(m.rot); g.scale(T.flip * m.sx, m.sy); g.globalAlpha = m.alpha;
     const HV = m.hurt && HURT[k] ? HURT[k].video : null;
     // m.img: a shot-supplied frame in place of the art (a decoded hurt loop)
@@ -592,6 +625,75 @@ export function createTimeline(spec = {}, env = {}) {
     if (m.black > 0) { const c = tinted(k, "#000"); if (c) { g.globalAlpha = m.alpha * m.black; g.drawImage(c, -T.w / 2, -T.h * T.foot, T.w, T.h); } }
     g.restore();
     if (m.glow > 0) { g.save(); g.translate(T.x + m.dx, fy - T.h * T.foot * m.sy + T.h * 0.5 * m.sy); glowCircle(g, 0, -T.h * 0.05, T.w * 0.42, "#8a5cff", 0.55 * m.glow); glowCircle(g, T.w * 0.1, -T.h * 0.25, T.w * 0.22, "#c9a5ff", 0.5 * m.glow); g.restore(); }
+  }
+
+  // ── depth (perspective) in DRAWN space ──
+  // Size factor of a body whose DRAWN feet are at (x, y): invert the 3D stage
+  // projection to find the 2D floor spot under it (fixed-point, 4 steps), then the
+  // depth-map factor at that row times the 3D size factor there. 1 on a flat scene
+  // with no depth map. depthRatio(from, to) = size at to / size at from.
+  function depthS(x, y) {
+    const P3 = globalThis.__ONI_BATTLE_STAGE_3D__; let f = { x, y }, p = null;
+    for (let i = 0; i < 4; i++) { try { p = P3?.projectFoot?.(f) ?? null; } catch { p = null; } if (!p) break; f = { x: f.x + (x - p.x), y: f.y + (y - p.y) }; }
+    let fy = 1; try { fy = Number(globalThis.__ONI_DEPTH_INDEX__?.factorAtY?.(f.y)) || 1; } catch {}
+    return fy * (p ? p.m : 1);
+  }
+  function depthRatio(from, to) { const a = depthS(from.x, from.y); if (!(a > 0)) return 1; const r = depthS(to.x, to.y) / a; return Number.isFinite(r) && r > 0 ? r : 1; }
+  // A clip depth reference: the feet of the token whose drawn box holds the point (an effect
+  // ON a battler shares its depth), else the point itself; sizes are authored for spec.depthRef.
+  function clipDepth(x, y) {
+    const ref = spec.depthRef && TOK[spec.depthRef]; if (!ref) return 1;
+    let foot = { x, y };
+    for (const k in TOK) { const T = TOK[k]; if (Math.abs(x - T.x) <= T.w * 0.6 && y >= T.y - T.h * 0.6 && y <= T.y + T.h * 0.6) { foot = feet(T); break; } }
+    return depthRatio(feet(ref), foot);
+  }
+
+  // ── LIVE board helpers ──
+  // A token is "touched" this frame when any track changed its per-frame state.
+  function liveTouched(m) {
+    return !!(m.hidden || m.dx || m.dy || m.air || m.sx !== 1 || m.sy !== 1 || m.rot || m.alpha !== 1
+      || m.tintA > 0 || m.black > 0 || m.glow > 0 || m.pose || m.img || m.hurt);
+  }
+  // Real token hidden (renderable guard) only while touched; released the frame it is not.
+  const LIVE_HIDDEN = {};
+  function liveHide(k, on) {
+    const t = TOK[k]?.token; if (!t) return;
+    if (on && !LIVE_HIDDEN[k]) { try { LIVE_HIDDEN[k] = oni.hideToken(t); } catch { LIVE_HIDDEN[k] = null; } }
+    else if (!on && LIVE_HIDDEN[k]) { try { LIVE_HIDDEN[k](); } catch {} LIVE_HIDDEN[k] = null; }
+  }
+  function liveReleaseAll() { for (const k of Object.keys(LIVE_HIDDEN)) liveHide(k, false); }
+  // The under-token layer: a 2D canvas the size of the view, shown as a PIXI sprite in
+  // canvas.primary just below the first token (the slot oni.sceneDim uses), positioned in
+  // world space over the current view so ground effects and the dim sit under real tokens.
+  let UCAN = null, UCTX = null, USPR = null;
+  function liveUnder(need, wt, drawFn) {
+    if (!need) { if (USPR) USPR.visible = false; return; }
+    const { W, H } = view(); const bw = Math.round(W * dpr), bh = Math.round(H * dpr);
+    if (!UCAN) { UCAN = document.createElement("canvas"); UCTX = UCAN.getContext("2d"); }
+    if (UCAN.width !== bw || UCAN.height !== bh) { UCAN.width = bw; UCAN.height = bh; if (USPR) { try { USPR.texture.destroy(true); } catch {} USPR.texture = PIXI_.Texture.from(UCAN); } }
+    if (!USPR) {
+      USPR = new PIXI_.Sprite(PIXI_.Texture.from(UCAN)); USPR.name = "oni-timeline-under"; USPR.eventMode = "none";
+      (canvas.primary ?? canvas.stage).addChild(USPR);
+    }
+    const u = UCTX; u.setTransform(1, 0, 0, 1, 0, 0); u.clearRect(0, 0, bw, bh);
+    u.setTransform(dpr * wt.a, 0, 0, dpr * wt.d, dpr * wt.tx, dpr * wt.ty);
+    try { drawFn(u); } catch (e) { console.warn(TAG, "under layer draw threw", e); }
+    u.setTransform(1, 0, 0, 1, 0, 0);
+    USPR.texture.baseTexture.update();
+    // world placement: the view's top-left, one canvas px = 1 / (scale * dpr) world px
+    USPR.position.set(-wt.tx / wt.a, -wt.ty / wt.d); USPR.scale.set(1 / (wt.a * dpr), 1 / (wt.d * dpr)); USPR.visible = true;
+    const P = canvas.primary; if (P) {
+      const kids = P.children; let first = -1;
+      for (let i = 0; i < kids.length; i++) { const n = kids[i]?.name; if (typeof n === "string" && n.startsWith("Token.")) { first = i; break; } }
+      const want = first < 0 ? kids.length - 1 : Math.max(0, first - 1); const cur = kids.indexOf(USPR);
+      if (cur >= 0 && cur !== want) { try { P.setChildIndex(USPR, Math.min(want, kids.length - 1)); } catch {} }
+    }
+  }
+  function liveTeardown() {
+    liveReleaseAll();
+    if (USPR) { try { USPR.destroy({ texture: true, baseTexture: true }); } catch {} USPR = null; }
+    UCAN = null; UCTX = null;
+    try { if (app?.view) app.view.style.translate = ""; } catch {}
   }
 
   // ── render a frame of state S ──
@@ -607,8 +709,37 @@ export function createTimeline(spec = {}, env = {}) {
     const wt = { a: sc, b: 0, c: 0, d: sc, tx: st.position.x - st.pivot.x * sc, ty: st.position.y - st.pivot.y * sc };
     _wt = wt;
     const order = Object.keys(TOK).sort((a, b) => feet(TOK[a]).y - feet(TOK[b]).y);
-    const boardXf = () => { g.setTransform(dpr * wt.a, dpr * wt.b, dpr * wt.c, dpr * wt.d, dpr * wt.tx, dpr * wt.ty); };
+    // LIVE: the board view itself is CSS-nudged by the shake, so the overlay's world layers follow it.
+    const ox = LIVE ? shx : 0, oy = LIVE ? shy : 0;
+    const boardXf = () => { g.setTransform(dpr * wt.a, dpr * wt.b, dpr * wt.c, dpr * wt.d, dpr * (wt.tx + ox), dpr * (wt.ty + oy)); };
     if (S.hideBoard) { g.fillStyle = "#000"; g.fillRect(0, 0, W, H); }
+    else if (LIVE) {
+      // Under the real tokens: dim, top-dark and the ground layers (z < 5), on their own canvas.
+      const low = S.world.filter((l) => l.z < 5).sort((a, b) => a.z - b.z);
+      liveUnder(S.dim > 0 || S.topdark > 0 || low.length > 0, wt, (u) => {
+        if (S.dim > 0) { u.fillStyle = "rgba(4,2,10," + S.dim + ")"; u.fillRect(SCENE.x - SCENE.w, SCENE.y - SCENE.h, SCENE.w * 3, SCENE.h * 3); }
+        if (S.topdark > 0) { const gr = u.createLinearGradient(0, SCENE.y, 0, SCENE.y + SCENE.h * 0.7); gr.addColorStop(0, "rgba(8,3,20," + S.topdark + ")"); gr.addColorStop(1, "rgba(8,3,20,0)"); u.fillStyle = gr; u.fillRect(SCENE.x - SCENE.w, SCENE.y - SCENE.h, SCENE.w * 3, SCENE.h * 1.7); }
+        for (const l of low) l.draw(u);
+      });
+      g.save(); boardXf();
+      // Only the tokens a track touches this frame are taken over (hidden + painted).
+      for (const k of order) {
+        const m = S.tok[k], T = TOK[k];
+        const touch = !T.token || liveTouched(m);
+        liveHide(k, touch && !!T.token);
+        if (!touch || m.hidden || m.alpha <= 0) continue;
+        if (!m.noShadow) {
+          const lift = Math.max(0, -m.dy) + (m.air || 0); const lk = Math.min(1, lift / T.h); const ls = 1 - 0.35 * lk, la = 1 - 0.45 * lk; const f = feet(T);
+          if (PAINTED[k]) { g.save(); g.translate(T.x + m.dx, f.y); g.scale(T.flip * m.sx * ls, ls); g.globalAlpha = m.alpha * la; g.drawImage(PAINTED[k], -T.w / 2, -T.h * T.foot, T.w, T.h); g.restore(); }
+          else if (SHADOW[k]) { const sh = SHADOW[k]; const s = T.w / sh.texW; g.save(); g.translate(T.x + m.dx, f.y); g.scale(T.flip * m.sx * ls, ls); g.globalAlpha = sh.alpha * m.alpha * la; g.drawImage(sh.cv, (sh.ox - sh.texW / 2) * s, (sh.oy - sh.footY) * s, sh.cv.width * s, sh.cv.height * s); g.restore(); }
+        }
+        // a body that moved across the floor is drawn at the depth size of where it stands now
+        if (m.dx || m.dy) { const f0 = feet(T); const r = depthRatio(f0, { x: f0.x + m.dx, y: f0.y + m.dy }); if (r !== 1) { m.sx *= r; m.sy *= r; } }
+        drawTok(g, k, m);
+      }
+      const high = S.world.filter((l) => l.z >= 5).sort((a, b) => a.z - b.z); for (const l of high) l.draw(g);
+      g.restore();
+    }
     else {
       g.save(); boardXf();
       if (S.dim > 0) { g.fillStyle = "rgba(4,2,10," + S.dim + ")"; g.fillRect(SCENE.x - SCENE.w, SCENE.y - SCENE.h, SCENE.w * 3, SCENE.h * 3); }
@@ -616,7 +747,7 @@ export function createTimeline(spec = {}, env = {}) {
       const low = S.world.filter((l) => l.z < 5).sort((a, b) => a.z - b.z); for (const l of low) l.draw(g);
       for (const k of order) {
         const m = S.tok[k], T = TOK[k]; if (m.hidden || m.alpha <= 0 || m.noShadow) continue;
-        const lift = Math.max(0, -m.dy); const lk = Math.min(1, lift / T.h); const ls = 1 - 0.35 * lk, la = 1 - 0.45 * lk; const f = feet(T);
+        const lift = Math.max(0, -m.dy) + (m.air || 0); const lk = Math.min(1, lift / T.h); const ls = 1 - 0.35 * lk, la = 1 - 0.45 * lk; const f = feet(T);
         if (PAINTED[k]) { g.save(); g.translate(T.x + m.dx, f.y); g.scale(T.flip * m.sx * ls, ls); g.globalAlpha = m.alpha * la; g.drawImage(PAINTED[k], -T.w / 2, -T.h * T.foot, T.w, T.h); g.restore(); continue; }
         const sh = SHADOW[k]; if (!sh) continue; const s = T.w / sh.texW;
         g.save(); g.translate(T.x + m.dx, f.y); g.scale(T.flip * m.sx * ls, ls); g.globalAlpha = sh.alpha * m.alpha * la; g.drawImage(sh.cv, (sh.ox - sh.texW / 2) * s, (sh.oy - sh.footY) * s, sh.cv.width * s, sh.cv.height * s); g.restore();
@@ -678,9 +809,10 @@ export function createTimeline(spec = {}, env = {}) {
     await Promise.all(clips.filter((tr) => tr.t0 < lead).map((tr) => tr.clip.take()));
     const prerollMs = Math.round(performance.now() - tLoad0);
     const restores = [];
-    for (const t of canvas?.tokens?.placeables ?? []) { if (!t?.mesh) continue; try { restores.push(oni.hideToken(t)); } catch {} }
+    // LIVE hides per token per frame (liveHide); the full takeover hides the whole board up front.
+    if (!LIVE) for (const t of canvas?.tokens?.placeables ?? []) { if (!t?.mesh) continue; try { restores.push(oni.hideToken(t)); } catch {} }
     for (const k in HURT) { try { const v = HURT[k].video; v.loop = true; v.currentTime = 0; v.play?.().catch(() => {}); } catch {} }
-    try { oni.camera.capture(); } catch {}
+    if (!LIVE) { try { oni.camera.capture(); } catch {} }
     const removeOverlay = makeOverlay();
     const fired = new Set();
     let t0 = performance.now();
@@ -698,6 +830,7 @@ export function createTimeline(spec = {}, env = {}) {
         for (const k in HURT) { try { HURT[k].video.pause(); releaseVideo(HURT[k]); } catch {} }
         removeOverlay();
         for (const r of restores) { try { r(); } catch {} }
+        if (LIVE) liveTeardown();
         resolve();
       };
       const tick = () => {
@@ -721,7 +854,7 @@ export function createTimeline(spec = {}, env = {}) {
     // maths + constants
     E, seg, lerp, clamp01, rng, VALLEY_HY,
     SCENE, STAGE, REST, GRID, TOK, IMG, LIB, POSE,
-    feet, JAW, tinted, view, toScreen, camView,
+    feet, JAW, tinted, view, toScreen, camView, depthS, depthRatio,
     art: (k) => ART[k] || null,
     load, mk, run, makeState, decode: decodeFrames,
     draw: { boltPath, screenCracks, glowCircle, speedlines, dragonEye, zoomLines, fireball, drawKeystone, drawCover, drawSkyPan, vlines, mountainscape, foregroundRocks, valleyXf, shockRing, needle, tintFrame },
