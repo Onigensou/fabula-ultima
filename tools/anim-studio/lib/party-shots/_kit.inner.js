@@ -9,7 +9,8 @@ const caster = ctx.casterToken;
 const targets = (ctx.targetTokens || []).filter((t) => t && t.center && (!caster || t.id !== caster.id));
 
 // boot(extra): the timeline with the caster as 'c', targets as t0..tn, plus extra tokens.
-async function boot(extra) {
+// poses (optional): oni.timeline spec.poses, e.g. { c: { dl: { prop: 'sprite_standard' } } }.
+async function boot(extra, poses) {
   const tokens = {};
   if (caster) tokens.c = cfg.foot ? { token: caster, foot: cfg.foot } : { token: caster };
   const TG = [];
@@ -19,7 +20,7 @@ async function boot(extra) {
   // spec.live): idle bounce, depth, 3D parallax keep running; only touched tokens are taken over.
   // depthRef: clip sizes are authored for the caster; on a 3D / depth-map stage the engine
   // rescales a clip placed on another battler (or on the floor) by the depth ratio to it.
-  const tl = oni.timeline({ tokens, clips: A.clips || {}, images: A.images || {}, live: cfg.live !== false, depthRef: caster ? 'c' : null });
+  const tl = oni.timeline({ tokens, clips: A.clips || {}, images: A.images || {}, poses: poses || {}, live: cfg.live !== false, depthRef: caster ? 'c' : null });
   await tl.load();
   const T = []; const m = tl.mk(T);
   const TOK = tl.TOK;
@@ -146,6 +147,44 @@ K.phantasm = (m, skin, t0, t1, posFn, trail) => {
     if (trail) for (let i = 4; i >= 1; i--) { const q = posFn(Math.max(0, e - i * 60)); const p0 = posFn(e); if (Math.hypot(q.x - p0.x, q.y - p0.y) < 4) continue; g.save(); g.filter = 'blur(2px)'; skin.draw(g, q.x, q.y, (q.a || 1) * 0.3 * (1 - i / 5), (q.s || 1) * K.depth(q), e); g.restore(); }
     const p = posFn(e); skin.draw(g, p.x, p.y, p.a == null ? 1 : p.a, (p.s || 1) * K.depth(p), e);
   } }));
+};
+// ── 8-direction spin (the walk-map standing art) ──
+// The five drawn standing slots, all drawn facing LEFT; the three right-hand views are mirrors.
+K.SPIN8_POSES = { dl: { prop: 'sprite_standard' }, d: { prop: 'sprite_stand_down' }, l: { prop: 'sprite_stand_left' }, ul: { prop: 'sprite_stand_up_left' }, u: { prop: 'sprite_stand_up' } };
+// Opaque rows of an image (alpha > 128) as fractions of its height, or null (unreadable).
+K.bodyBox = (img) => {
+  try {
+    const W = img.naturalWidth || img.videoWidth || img.width, H = img.naturalHeight || img.videoHeight || img.height; if (!W || !H) return null;
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const x = cv.getContext('2d'); x.drawImage(img, 0, 0);
+    const d = x.getImageData(0, 0, W, H).data; let top = -1, bot = -1;
+    for (let y = 0; y < H && top < 0; y++) for (let i = 0; i < W; i++) if (d[(y * W + i) * 4 + 3] > 128) { top = y; break; }
+    for (let y = H - 1; y >= 0 && bot < 0; y--) for (let i = 0; i < W; i++) if (d[(y * W + i) * 4 + 3] > 128) { bot = y + 1; break; }
+    return top < 0 ? null : { top: top / H, bot: bot / H };
+  } catch (e) { return null; }
+};
+// After boot(_, { k: K.SPIN8_POSES }): true when all five slots loaded for token k. Re-sizes
+// every slot by ONE scale (the standing body height matched to the battle art's body height)
+// and gives each slot its own feet line, so no frame jumps against another.
+K.spin8Ready = (tl, k) => {
+  const P = tl.POSE[k]; if (!P) return false;
+  for (const s of ['dl', 'd', 'l', 'ul', 'u']) if (!P[s] || !P[s].img) return false;
+  const T = tl.TOK[k], art = tl.art(k);
+  const ab = art ? K.bodyBox(art) : null, sb = K.bodyBox(P.dl.img);
+  const sH = P.dl.img.naturalHeight || P.dl.img.height;
+  let scale = P.dl.w / (P.dl.img.naturalWidth || P.dl.img.width);
+  if (ab && sb && sb.bot > sb.top) scale = (T.h * (ab.bot - ab.top)) / (sH * (sb.bot - sb.top));
+  for (const s in P) { const p = P[s]; const iw = p.img.naturalWidth || p.img.width, ih = p.img.naturalHeight || p.img.height; const b = K.bodyBox(p.img); p.w = iw * scale; p.h = ih * scale; if (b) p.foot = b.bot; }
+  return true;
+};
+// Slot for spin progress u (0..1, one full turn), for a body facing screen dir (-1 left).
+// Turn order seen facing left: DL, D, DR, R, UR, U, UL, L (then back to DL).
+// Returns { pose, sx } where sx multiplies the token's sx (mirror on screen when needed).
+K.SPIN8_SEQ = [['dl', -1], ['d', 0], ['dl', 1], ['l', 1], ['ul', 1], ['u', 0], ['ul', -1], ['l', -1]];
+K.spin8At = (T, dir, u) => {
+  const i = ((Math.floor(u * 8 + 0.5) % 8) + 8) % 8; const sl = K.SPIN8_SEQ[i];
+  const f = sl[1] * (dir < 0 ? 1 : -1);  // screen facing wanted: -1 left, 1 right, 0 straight
+  // art faces left when T.flip * sx > 0; straight-on art is never mirrored
+  return { pose: sl[0], sx: f === 0 ? T.flip : -f * T.flip };
 };
 // Ring under a point on the ground (z 2), expanding; used as an arrival / selection mark.
 K.groundRing = (m, at, ms, pt, r0, r1, color, U, dashed) => {

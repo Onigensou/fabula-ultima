@@ -1,5 +1,6 @@
 // Zarg's Dances — approved mockup (Party Action Animations v8), one shared shot.
-// The dance: three hop-spins in place (300 ms each: scaleX = cos(2 pi u), a 26 px hop,
+// The dance: three hop-spins in place (300 ms each: through the 8 standing directions when
+// the dancer has them wired, else the flat scaleX = cos(2 pi u) spin; a 26 px hop,
 // a 20 px sway that alternates side), two tinted GG twinkles at the start of each hop.
 // Fall.ogg at the start, Up1 at the burst (cues in cfg.sfx; no Move1 step sound).
 // cfg.kind:
@@ -10,12 +11,15 @@
 //   'ouroboros' — teal sparkles (170), a ring of light arcs to the ally and widens around them (Bell1)
 // No text (the mockup's option tags are dropped: BD shows the real result).
 if (!caster) { K.ready(); oni.fireDone(); return; }
-const B = await boot(); const { tl, T, m, TOK, TG, U, E } = B;
+const B = await boot(null, { c: K.SPIN8_POSES }); const { tl, T, m, TOK, TG, U, E } = B;
 const kind = cfg.kind || 'element';
 const hue = cfg.hue == null ? 48 : cfg.hue;
 const dir = K.dirOf(TOK, 'c');
 const C = TOK.c;
 const SP = 300, N = 3, END = SP * N;
+// 8-direction spin when the dancer has all five standing slots wired (sprite_standard +
+// sprite_stand_down/_left/_up_left/_up); otherwise the flat Paper Mario spin (scaleX = cos).
+const SPIN8 = K.spin8Ready(tl, 'c');
 
 // three hop-spins
 m.hold(0, END + 1, (e, S) => {
@@ -23,7 +27,8 @@ m.hold(0, END + 1, (e, S) => {
   if (e >= END) return;
   const i = Math.min(N - 1, Math.floor(e / SP));
   const u = E.sine(Math.min(1, (e - i * SP) / SP));
-  q.sx *= Math.cos(u * Math.PI * 2);
+  if (SPIN8) { const s = K.spin8At(C, dir, u); q.pose = s.pose; q.sx *= s.sx; }
+  else q.sx *= Math.cos(u * Math.PI * 2);
   q.dx += dir * 20 * U * Math.sin(u * Math.PI) * (i % 2 ? -1 : 1);
   q.air += Math.sin(u * Math.PI) * 26 * U;
 });
