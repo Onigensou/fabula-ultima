@@ -63,6 +63,8 @@
   await scene.update({ [`flags.${MOD}.-=surfaceFx`]: null, [`flags.${MOD}.-=ambience`]: null });
   await scene.update({
     "environment.darknessLevel": 0.45,
+    // FXMaster lightning: mean gap 2500 -> 12000 ms on this scene only (user, 11-06: too flashy, twice)
+    "flags.fxmaster.filters.core_lightning.options.frequency": 12000,
     [`flags.${MOD}.surfaceFx`]: surfaceFx,
     [`flags.${MOD}.ambience`]: ambience,
     [`flags.${MOD}.oniFabula.general.surfaceFxEnabled`]: true,
@@ -77,15 +79,16 @@
   await delIds("AmbientLight", scene.lights.filter((l) => ours(l, "draftLights")).map((l) => l.id));
 
   // ---- native lights (user, 11-06): warm camp, subtle cool pond. Radius m = px / 65 * 2.
-  const light = (name, x, y, dim, color, alpha, luminosity, animation) => ({
+  // Values as the user tuned them by hand in the live world (11-06).
+  const light = (name, x, y, dim, bright, color, alpha, luminosity, animation) => ({
     x, y, walls: true, vision: false,
-    config: { dim, bright: dim / 2, color, alpha, coloration: 1, luminosity, attenuation: 0.5, animation: animation ?? { type: null } },
+    config: { dim, bright, color, alpha, coloration: 1, luminosity, attenuation: 0.5, animation: animation ?? { type: null } },
     flags: { [MOD]: { draftLights: TAG, draftName: name } },
   });
   const lights = await scene.createEmbeddedDocuments("AmbientLight", [
-    light("campfire", 603, 470, 10, "#e8851a", 0.5, 0.5, { type: "flame", speed: 5, intensity: 5 }),
-    light("tent lantern", 474, 325, 3, "#eeb61b", 0.5, 0.5, { type: "flame", speed: 3, intensity: 3 }),
-    light("pond", 1030, 680, 13, "#8fa8e8", 0.25, 0.45),
+    light("campfire", 603, 470, 10, 1, "#e8851a", 0.3, 0.5, { type: "flame", speed: 5, intensity: 5 }),
+    light("tent lantern", 474, 325, 3, 1.5, "#eeb61b", 0.35, 0.5, { type: "flame", speed: 3, intensity: 3 }),
+    light("pond", 1030, 680, 13, 6.5, "#8fa8e8", 0.25, 0.45),
   ]);
   out.created.AmbientLight = lights.length;
 

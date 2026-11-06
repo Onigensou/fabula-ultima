@@ -187,7 +187,8 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": []
+        "sequence": [],
+        "isTriggered": false
       },
       "LockView": {
         "editViewbox": false,
@@ -236,7 +237,31 @@
             "wellspring_ice": false,
             "wellspring_dark": false,
             "wellspring_light": false,
-            "surfaceFxEnabled": true
+            "surfaceFxEnabled": true,
+            "conflictEvent": "none",
+            "depthEnabled": false,
+            "depthFarY": null,
+            "depthNearY": null,
+            "depthFarScale": null,
+            "depthNearScale": null,
+            "depthHorizonY": null,
+            "depthStrength": null,
+            "depthSpeed": null,
+            "depthCurve": null,
+            "depthSort": true,
+            "parallaxEnabled": false,
+            "parallaxFar": null,
+            "parallaxNear": null,
+            "parallaxDof": null,
+            "parallaxMist": false,
+            "mistChurn": null,
+            "mistSpeed": null,
+            "occludersEnabled": false,
+            "occluderSilhouette": false,
+            "areaName": "",
+            "areaPanelEnabled": true,
+            "areaPanelAlwaysShow": false,
+            "fieldEffects": ""
           },
           "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"}]"
         },
@@ -261,7 +286,8 @@
             "treasure": "RollTable.DMeYaPoSPUxH6xVE",
             "material": "RollTable.QailcoOmaoZW0v6b",
             "fish": "RollTable.pEHm2gU70pTHQM6v"
-          }
+          },
+          "encounterNoveltyBias": null
         },
         "campMemberSpots": [
           {
@@ -441,7 +467,7 @@
           "mode": "water",
           "layers": {
             "water": true,
-            "light": true,
+            "light": false,
             "crystal": false,
             "wisp": true
           },
@@ -471,14 +497,15 @@
             [
               1030,
               680,
-              430,
+              480,
               0.7,
               0.75,
               1,
-              0.9
+              1.5
             ]
           ],
-          "draft": "claude-2026-11-06-valley-camp"
+          "draft": "claude-2026-11-06-valley-camp",
+          "lightCap": 1.8
         },
         "ambience": {
           "spores": {
@@ -499,12 +526,15 @@
             "type": "lightning",
             "options": {
               "belowTokens": false,
-              "frequency": 2500,
+              "frequency": 12000,
               "spark_duration": 1310,
               "brightness": 1.3
             }
           }
         }
+      },
+      "wall-height": {
+        "advancedVision": true
       }
     },
     "playlist": "POV9fioQ0Kkj7hKC",
@@ -513,7 +543,7 @@
     "active": false,
     "navOrder": 0,
     "foreground": null,
-    "foregroundElevation": null,
+    "foregroundElevation": 8,
     "thumb": "worlds/fabula-ultima-2/assets/scenes/zo6ZTpspg2C5GnP4-thumb.webp",
     "fog": {
       "exploration": true,
@@ -524,7 +554,7 @@
       }
     },
     "environment": {
-      "darknessLevel": 0,
+      "darknessLevel": 0.45,
       "darknessLock": false,
       "globalLight": {
         "enabled": false,
@@ -572,9 +602,140 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359000736,
-      "modifiedTime": 1793972350937,
+      "modifiedTime": 1793973772178,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
+    "lights": [
+      {
+        "x": 1030,
+        "y": 680,
+        "vision": false,
+        "config": {
+          "dim": 13,
+          "bright": 6.5,
+          "color": "#8fa8e8",
+          "alpha": 0.25,
+          "coloration": 1,
+          "luminosity": 0.45,
+          "attenuation": 0.5,
+          "animation": {
+            "type": null,
+            "speed": 5,
+            "intensity": 5,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "angle": 360,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-11-06-valley-camp",
+            "draftName": "pond"
+          },
+          "levels": {
+            "rangeTop": null
+          }
+        },
+        "_id": "IaA5s4CKlgi6vF2C",
+        "elevation": 0,
+        "rotation": 0,
+        "hidden": false
+      },
+      {
+        "x": 474,
+        "y": 325,
+        "vision": false,
+        "config": {
+          "dim": 3,
+          "bright": 1.5,
+          "color": "#eeb61b",
+          "alpha": 0.35,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "animation": {
+            "type": "flame",
+            "speed": 1,
+            "intensity": 3,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "angle": 360,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-11-06-valley-camp",
+            "draftName": "tent lantern"
+          },
+          "levels": {
+            "rangeTop": null
+          }
+        },
+        "_id": "ZoyixJ6gy8iGuinI",
+        "elevation": 0,
+        "rotation": 0,
+        "hidden": false
+      },
+      {
+        "x": 603,
+        "y": 470,
+        "vision": false,
+        "config": {
+          "dim": 10,
+          "bright": 1,
+          "color": "#e8851a",
+          "alpha": 0.3,
+          "coloration": 1,
+          "luminosity": 0.5,
+          "attenuation": 0.5,
+          "animation": {
+            "type": "flame",
+            "speed": 1,
+            "intensity": 3,
+            "reverse": false
+          },
+          "negative": false,
+          "priority": 0,
+          "angle": 360,
+          "saturation": 0,
+          "contrast": 0,
+          "shadows": 0,
+          "darkness": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftLights": "claude-2026-11-06-valley-camp",
+            "draftName": "campfire"
+          },
+          "levels": {
+            "rangeTop": null
+          }
+        },
+        "_id": "pLGD4lTf5RksfSZE",
+        "elevation": 0,
+        "rotation": 2,
+        "hidden": false
+      }
+    ],
     "regions": [
       {
         "name": "Pond Shallows",
