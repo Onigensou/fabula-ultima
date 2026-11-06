@@ -478,9 +478,110 @@
     }
   }
 
+  // ------------------------------------------------------------
+  // Free buttons: the ones not over an NPC
+  // ------------------------------------------------------------
+  // The examine "!" and the door sit over the party; the pose / bath "!" and
+  // the fish button sit on their spot. Each system places its own, so two can
+  // land on each other (a door next to an examine point, a pond both bathable
+  // and fishable). When they would overlap, they are lined up in one centred
+  // row, in this order. They are moved by margin, never left/top: those are
+  // rewritten by their owners every frame (the door from its own animation
+  // frame loop), and the margin is taken back out before measuring, so the
+  // row does not chase itself.
+  const FREE_SOURCES = [
+    { layerId: "oni-event-ui-layer", selector: ".oni-event-btn.is-visible:not(.is-talk):not(.is-hiding)", rank: 0 },
+    { id: "oni-tp-hud-btn", rank: 1 },
+    { layerId: "oni-pose-spot-layer", selector: ".oni-pose-btn.is-visible", rank: 2 },
+    { layerId: "oni-fishing-spot-layer", selector: ".oni-fish-spot-btn.is-visible", rank: 3 }
+  ];
+  const FREE_GAP_PX = 8;
+
+  let freeDocked = new Set();
+
+  function layoutFreeButtons() {
+    const items = [];
+    for (const src of FREE_SOURCES) {
+      if (src.id) {
+        const el = document.getElementById(src.id);
+        if (el?.isConnected) items.push({ el, rank: src.rank });
+        continue;
+      }
+      const layer = document.getElementById(src.layerId);
+      if (!layer?.firstElementChild) continue;
+      for (const el of layer.querySelectorAll(src.selector)) items.push({ el, rank: src.rank });
+    }
+
+    const used = new Set();
+    if (items.length >= 2) {
+      for (const it of items) {
+        const r = it.el.getBoundingClientRect();
+        // Layout size: a hover / pop-in scale must not change who overlaps.
+        it.w = it.el.offsetWidth || r.width;
+        it.h = it.el.offsetHeight || r.height;
+        it.x = r.left + (r.width / 2) - (parseFloat(it.el.style.marginLeft) || 0);
+        it.y = r.top + (r.height / 2) - (parseFloat(it.el.style.marginTop) || 0);
+      }
+
+      // Overlapping buttons (and buttons overlapping those) form one row.
+      const parent = items.map((_, i) => i);
+      const find = (i) => (parent[i] === i ? i : (parent[i] = find(parent[i])));
+      for (let i = 0; i < items.length; i++) {
+        for (let j = i + 1; j < items.length; j++) {
+          const a = items[i], b = items[j];
+          if (Math.abs(a.x - b.x) < ((a.w + b.w) / 2) + FREE_GAP_PX && Math.abs(a.y - b.y) < (a.h + b.h) / 2) {
+            parent[find(i)] = find(j);
+          }
+        }
+      }
+      const rows = new Map();
+      items.forEach((it, i) => {
+        const k = find(i);
+        if (!rows.has(k)) rows.set(k, []);
+        rows.get(k).push(it);
+      });
+
+      for (const row of rows.values()) {
+        if (row.length < 2) continue;
+        row.sort((a, b) => (a.rank - b.rank) || (a.x - b.x));
+        const centre = row.reduce((s, it) => s + it.x, 0) / row.length;
+        const top = Math.min(...row.map(it => it.y));
+        const width = row.reduce((s, it) => s + it.w, 0) + (FREE_GAP_PX * (row.length - 1));
+        let cursor = centre - (width / 2);
+        for (const it of row) {
+          const dx = `${Math.round(cursor + (it.w / 2) - it.x)}px`;
+          const dy = `${Math.round(top - it.y)}px`;
+          if (it.el.style.marginLeft !== dx) it.el.style.marginLeft = dx;
+          if (it.el.style.marginTop !== dy) it.el.style.marginTop = dy;
+          cursor += it.w + FREE_GAP_PX;
+          used.add(it.el);
+        }
+      }
+    }
+
+    for (const el of freeDocked) {
+      if (used.has(el)) continue;
+      el.style.marginLeft = "";
+      el.style.marginTop = "";
+    }
+    freeDocked = used;
+  }
+
   function attachRowTicker() {
     if (rowTicker || !canvas?.app?.ticker) return;
-    rowTicker = () => layoutOverheadRows();
+    // A ticker callback that throws stops PIXI's frame loop: never let it.
+    rowTicker = () => {
+      try {
+        layoutOverheadRows();
+        layoutFreeButtons();
+      } catch (e) {
+        const now = Date.now();
+        if (now - (rowTicker.lastWarnAt ?? 0) > 5000) {
+          rowTicker.lastWarnAt = now;
+          console.warn(INSTALL_TAG, "Button layout failed.", e);
+        }
+      }
+    };
     // Lowest priority: after the camera has moved and the systems have
     // placed their buttons for this frame.
     canvas.app.ticker.add(rowTicker, null, PIXI.UPDATE_PRIORITY.UTILITY);

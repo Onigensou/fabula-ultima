@@ -170,6 +170,17 @@
   const WATER = `flags.${MODULE_ID}.water`;
   const DEPTH_PRESETS = [[0.12, "Ankle"], [0.25, "Knee"], [0.38, "Waist"], [0.5, "Chest"]];
 
+  // Every world RollTable as <option>s, by name; `current` (a uuid) selected.
+  // A table that no longer exists stays listed so saving does not drop it silently.
+  function tableOptions(current) {
+    const esc = (s) => String(s ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
+    const cur = String(current ?? "").trim();
+    const tables = [...(game.tables ?? [])].sort((a, b) => a.name.localeCompare(b.name));
+    let html = tables.map(t => `<option value="${esc(t.uuid)}" ${t.uuid === cur ? "selected" : ""}>${esc(t.name)}</option>`).join("");
+    if (cur && !tables.some(t => t.uuid === cur)) html = `<option value="${esc(cur)}" selected>(missing) ${esc(cur)}</option>` + html;
+    return html;
+  }
+
   function buildWater(app, root) {
     const doc = app?.document;
     if (!doc || root.querySelector(".oni-water")) return;
@@ -197,6 +208,21 @@
         <label>Bathable</label>
         <div class="form-fields"><input type="checkbox" name="${WATER}.bathable" ${w.bathable ? "checked" : ""}></div>
         <p class="hint">At the edge the party gets the "!" and can step in to bathe in their onsen art (or their own). They leave by walking out. Needs a depth above 0.</p>
+      </div>
+      <div class="form-group">
+        <label>Fishable</label>
+        <div class="form-fields"><input type="checkbox" name="${WATER}.fishable" ${w.fishable ? "checked" : ""}></div>
+        <p class="hint">At the edge the walker gets the fish button: bait costs 1 IP for one round of the Fishing minigame. Works at any depth, 0 included.</p>
+      </div>
+      <div class="form-group">
+        <label>Fish table</label>
+        <div class="form-fields">
+          <select name="${WATER}.fishTable">
+            <option value="">Scene's Fish table (else Generic - Fish)</option>
+            ${tableOptions(w.fishTable)}
+          </select>
+        </div>
+        <p class="hint">What bites in this water. Leave on the scene's table unless this pond has its own.</p>
       </div>
       <div class="form-group">
         <label>Ripple colour from the map</label>

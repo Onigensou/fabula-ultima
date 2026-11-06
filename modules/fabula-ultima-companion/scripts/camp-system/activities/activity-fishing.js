@@ -266,8 +266,17 @@
         const pools = await _resolveFishPools(opts?.fishTable || _sceneFishRef(_scene));
         if (!pools) {
           ui.notifications?.warn("Fishing | No fish table found — there is nothing to catch here.");
-          return;
+          return false;
         }
+
+        // A fishing spot on a map (map-system/fishing-spot.js) runs outside the
+        // camp flow: it must not touch the camp's activity state.
+        const fromSpot = opts?.source === "spot";
+
+        // Who opens the minigame: null = every client (camp activity, dungeon
+        // tile, walk-map spot); a list of user ids = those users and the GMs
+        // only (a camp spot: the others keep roaming).
+        const audience = Array.isArray(opts?.audience) ? opts.audience : null;
         _sessionFish.set(actor.id, pools.flat());
         const fishPools = pools.map(pool => pool.map(f => ({ name: f.name, weight: f.weight })));
 
@@ -283,6 +292,7 @@
           battleTimeout: BATTLE_TIMEOUT,
           totalRounds,
           fishPools,
+          audience,
         });
         CAMP.FishingUI?.show(actor.id, actor.name, stats, { battleTimeout: BATTLE_TIMEOUT, totalRounds, fishPools });
 
@@ -317,7 +327,7 @@
             await _awardFish(actor, awardedFish);
             // Fish land round by round, before the Proceed wait. A GM reload must
             // not restart the rounds and award them again.
-            await CAMP.State.markResolved(actor.id);
+            if (!fromSpot) await CAMP.State.markResolved(actor.id);
           }
 
           // Broadcast round result to all clients
@@ -344,6 +354,7 @@
 
         CAMP.Socket.broadcast(CAMP.MSG.FISHING_DONE, { actorId: actor.id });
         CAMP.FishingUI?.hide();
+        return true;
       },
     });
   });

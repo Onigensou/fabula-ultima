@@ -597,7 +597,7 @@
     setTimeout(() => el.remove(), TP_PROMPT_OUT_MS + 40);
   }
 
-  function showTpPrompt(text) {
+  function showTpPrompt(text, { mirror: mirrored = true } = {}) {
     closeTpPrompt(false);
     ensureStyle();
 
@@ -605,7 +605,8 @@
       const { el, yesBtn, noBtn } = buildTpPromptEl(text);
 
       // Everyone else watches this prompt read-only; a GM watcher may answer for us.
-      const mirror = globalThis.FUCompanion?.api?.MirrorPrompt?.open?.(TP_MIRROR_KIND, { text }, {
+      // mirror:false keeps it on this screen only (a camp player's own question).
+      const mirror = !mirrored ? null : globalThis.FUCompanion?.api?.MirrorPrompt?.open?.(TP_MIRROR_KIND, { text }, {
         onAnswer: (value) => entry.finish(value === true),
       }) ?? null;
 
@@ -678,7 +679,8 @@
   // The same parchment Yes / No for other exploration confirms (Fast Travel,
   // Scene Travel), mirrored to every client the same way. text is a string or
   // [before, bold name, after]. Resolves true / false.
-  TP.askYesNo = (text) => showTpPrompt(text);
+  // opts.mirror false: no watcher copies (a camp player fishing on their own).
+  TP.askYesNo = (text, opts) => showTpPrompt(text, opts);
 
   Hooks.once("ready", () => {
     globalThis.FUCompanion?.api?.MirrorPrompt?.register?.(TP_MIRROR_KIND, {

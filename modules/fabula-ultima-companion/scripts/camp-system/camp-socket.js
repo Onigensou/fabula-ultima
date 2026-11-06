@@ -449,6 +449,11 @@
 
         // ── Fishing minigame (two-phase: Cast + Battle) ───────────────────
         if (type === CAMP.MSG.FISHING_START) {
+          // A camp fishing spot plays to the angler and the GMs only; everyone
+          // else keeps roaming (the later FISHING_* messages find no overlay
+          // on their screen and do nothing).
+          const audience = Array.isArray(payload?.audience) ? payload.audience : null;
+          if (audience && !game.user?.isGM && !audience.includes(game.user?.id)) return;
           CAMP.FishingUI?.show(payload?.actorId, payload?.actorName, payload?.stats,
             { battleTimeout: payload?.battleTimeout ?? 0, totalRounds: payload?.totalRounds,
               fishPools: payload?.fishPools });
