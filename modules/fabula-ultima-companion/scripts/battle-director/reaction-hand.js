@@ -6,12 +6,17 @@
 // whom it touches, what it costs, and why it can't be used if it can't; the
 // rules text is NOT on the card. Hover singles a card out and flips the plate's
 // portrait to that reaction's description (the skill picker's card). Clicking
-// a card uses it (it flies onto the action card) — there is no Use button, the
+// a card uses it (it shrinks into its skill icon, which lands in the action card's
+// Reactions box: reaction-landing.js) — there is no Use button, the
 // whole card is the control — and one Pass — the last card of the hand —
 // answers every card left. Pass is a toggle:
 // pressing it again takes the Skips back while the card is still open.
-// Allies' reactions show on THEIR compact cards: the card glows and gets one
-// small card per reaction while they decide, then a PASSED / DONE tag.
+// Allies' reactions show on THEIR compact cards: the card glows and a straight
+// row of small cards stands behind it, one per reaction, with the skill icon as
+// the card's face. Hover shows the rules on your portrait card. A card lifts while
+// the ally decides, flies into the action card as an icon when it applies, and a
+// PASSED / DONE tag follows. Their own pickers stay on their screen: Ally Watch
+// (ally-watch.js) stands down while an action card is up.
 //
 // This is a VIEW over the action card's own reaction pills, not a second
 // decision path. The pills stay in the card's DOM (hidden by CSS), they remain
@@ -50,7 +55,8 @@ import { getClientOption } from "../shared/client-options.js";
 import { plateReactionHost, holdPlateHover } from "./director-player-hud.js";
 import { htmlToCardText } from "./drawer-views.js";
 import { shortSkillName } from "./skill-formulas.js";
-import { deckDeal, deckReturn, deckPlay, deckSetHand, deckSetAllyHand, deckAllyTab } from "./reaction-deck.js";
+import { deckDeal, deckReturn, deckPlay, deckSetHand, deckSetAllyHand } from "./reaction-deck.js";
+import { flyToReactionBox, preloadLandingCue } from "./reaction-landing.js";
 
 const MIRROR_ROOT_ID = "fud-bf-mirror-root";
 const STYLE_ID = "fud-rxh-style";
@@ -77,6 +83,10 @@ const PLATE_WAIT_MS = 4000;
 // Motion. Dealt cards come in from the right with a little overshoot; leaving
 // ones fade off to the left quickly, so nothing lingers.
 const DEAL_MS = 360, DEAL_STAGGER_MS = 70, LEAVE_MS = 240, GLOW_MS = 520;
+// An ally's small cards, in HUD px: a straight row from their tab's left edge,
+// standing behind the panel. Only with too many for the room do they overlap.
+const MINI_W = 46, MINI_H = 70, MINI_GAP = 4, MINI_ROOM = 155, MINI_LEFT = 74, MINI_TOP = -70;
+const MINI_HIDDEN = 26;        // px of a small card behind the panel at rest
 // Cards are dealt OUT OF THE DECK (reaction-deck.js) one after another.
 const DECK_STAGGER_MS = 80;
 // The deck flies cards into these slots (plate px, the unit's padding box).
@@ -145,6 +155,8 @@ function pillState(p) {
 }
 function readPills(wrapper) {
   const me = game.user?.id ?? "";
+  // The action-taker's own pills carry no reactor: the card says who is acting.
+  const acting = wrapper?.querySelector(".fud-bf-card")?.dataset.fudActorUuid ?? "";
   return [...(wrapper?.querySelectorAll(".fud-bf-reaction-pill") ?? [])].map((p) => ({
     el: p,
     key: `${p.dataset.fudReactionKey ?? ""}:${p.dataset.fudReactionCarrier ?? ""}`,
@@ -154,7 +166,7 @@ function readPills(wrapper) {
     mine: (p.dataset.fudReactionOwner ?? "") === me,
     // Third-party reactions hold the action's Confirm; the action-taker's own do not.
     gating: p.dataset.fudReactionGating === "1",
-    reactorUuid: p.dataset.fudReactorUuid ?? "",
+    reactorUuid: p.dataset.fudReactorUuid || acting,
     name: p.querySelector(".fud-bf-reaction-name")?.textContent?.trim() || "Reaction",
     icon: p.querySelector("img.fud-bf-reaction-icon")?.getAttribute("src") ?? "",
     desc: p.dataset.fudEquipDesc ?? "",
@@ -684,9 +696,9 @@ function goAway(c) {
   layoutHand();
 }
 
-// A card leaving the hand for good. "play": it flies onto the action card
-// (or your plate) over everything, and the action card takes a short gold glow
-// as if it received the power. "back": into the deck, behind the plate.
+// A card leaving the hand for good. "play": it turns into its icon and lands in
+// the action card's Reactions box, or on your portrait from a standalone window.
+// "back": into the deck, behind the plate.
 function leave(c, how = "back") {
   if (c.leaving) return;
   c.leaving = true;
@@ -696,7 +708,7 @@ function leave(c, how = "back") {
   const drop = () => { el.remove(); if (hand.cards.get(key) === c) hand.cards.delete(key); };
   if (c.away || el.classList.contains("is-incoming") || !el.isConnected) drop();
   else if (deckReady()) {
-    if (how === "play") deckPlay(el, { carrierUuid: c.carrierUuid }).catch(() => {}).finally(drop);
+    if (how === "play") deckPlay(el, { carrierUuid: c.carrierUuid, pill: pillFor(key) }).catch(() => {}).finally(drop);
     else { deckReturn(el).catch(() => {}); drop(); }
   } else {
     if (how === "play") glowActionCard(null);
@@ -901,15 +913,12 @@ function syncAllies(pills, wrapper) {
     let a = allies.get(id);
     if (!a) { a = { minis: new Map() }; allies.set(id, a); }
     if (!card) continue;
-    // Their small cards come out of their deck tab (reaction-deck.js); on the
-    // card's top edge when there is no tab.
-    const holder = deckAllyTab(id) ?? card;
-    let box = holder.querySelector(":scope > .rxh-minis");
+    // Their small cards stand behind the panel and rise out from behind it.
+    let box = card.querySelector(":scope > .rxh-minis");
     if (!box) {
-      card.querySelectorAll(".rxh-minis").forEach((b) => b.remove());
       box = document.createElement("div");
       box.className = "rxh-minis";
-      holder.appendChild(box);
+      card.appendChild(box);
       a.minis.clear();
     }
     let tag = card.querySelector(":scope > .rxh-tag");
@@ -924,24 +933,42 @@ function syncAllies(pills, wrapper) {
     let dealt = 0;
     for (const r of pending) {
       seen.add(r.key);
-      if (a.minis.has(r.key)) continue;
-      const m = document.createElement("span");
-      m.className = "rxh-mini is-dealt";
-      m.style.setProperty("--d", `${120 + dealt++ * DEAL_STAGGER_MS}ms`);
-      if (r.icon) m.innerHTML = `<img src="${esc(r.icon)}" alt="">`;
-      box.appendChild(m);
-      a.minis.set(r.key, m);
+      let m = a.minis.get(r.key);
+      if (!m) {
+        m = document.createElement("span");
+        m.className = "rxh-mini is-dealt";
+        m.style.setProperty("--d", `${120 + dealt++ * DEAL_STAGGER_MS}ms`);
+        if (r.icon) m.innerHTML = `<img src="${esc(r.icon)}" alt="">`;
+        const who = actorFromUuid(r.reactorUuid)?.name;
+        const hoverRec = { ...r, kind: who ? `${who}'s reaction` : "Reaction" };
+        m.addEventListener("pointerenter", () => showDescription(hoverRec, m));
+        m.addEventListener("pointerleave", () => hideDescription(m));
+        box.appendChild(m);
+        a.minis.set(r.key, m);
+      }
+      // The ally's own decision (a target, an option) is open on their screen.
+      m.classList.toggle("is-busy", r.state === "busy");
     }
     for (const [key, m] of a.minis) {
       if (seen.has(key)) continue;
       a.minis.delete(key);
+      hideDescription(m, { now: true });
       const r = rs.find((x) => x.key === key);
-      if (r?.state === "applied") glowActionCard(wrapper);
+      if (r?.state === "applied") {
+        // The same flight as your own card, from their panel, a little softer.
+        flyToReactionBox({ el: m, iconEl: m.querySelector("img"), pill: r.el, power: 0.6, collapseMs: 140, travelMs: 560, apex: 1.12, clipBottom: MINI_HIDDEN })
+          .then((flew) => { if (!flew) glowActionCard(wrapper); })
+          .catch(() => {})
+          .finally(() => m.remove());
+        continue;
+      }
       m.classList.add("is-leaving");
       setTimeout(() => m.remove(), LEAVE_MS + 40);
     }
     deckSetAllyHand(id, pending.map((r) => r.carrierUuid).filter(Boolean));
-    [...a.minis.values()].forEach((m, i) => { m.style.left = `${i * 25}px`; m.style.setProperty("--r", i % 2 ? "6deg" : "-6deg"); });
+    const row = [...a.minis.values()];
+    const step = row.length > 1 ? Math.min(MINI_W + MINI_GAP, (MINI_ROOM - MINI_W) / (row.length - 1)) : 0;
+    row.forEach((m, i) => { m.style.left = `${Math.round(i * step)}px`; });
     const deciding = pending.length > 0;
     const answered = rs.length > 0 && !deciding;
     card.classList.toggle("rxh-deciding", deciding);
@@ -1039,6 +1066,8 @@ function injectStyles() {
 
 Hooks.once("ready", () => {
   injectStyles();
+  // So the first landing of a session makes its sound on time.
+  if (!game.user?.isGM) preloadLandingCue();
   // The mirror card is a direct child of <body>; watch only that level.
   new MutationObserver(schedule).observe(document.body, { childList: true });
   Hooks.on("fuClientOptionChanged", ({ key }) => { if (key === "reactionUi") schedule(); });
@@ -1176,22 +1205,27 @@ const CSS_TEXT = `
 .rxh-tag { right: 10px; top: -12px; }
 .rxh-mytag.is-on, .rxh-tag.is-on { opacity: 1; transform: none; }
 
-/* allies: glow while deciding, one small card per reaction */
+/* allies: glow while deciding, a straight row of small cards behind the panel; the icon is the card */
 @keyframes rxhAlly {
   from { box-shadow: 0 0 0 1px rgba(255,255,255,.7) inset, 0 8px 22px rgba(0,0,0,.42), 0 0 10px 2px rgba(222,66,46,.5); }
   to   { box-shadow: 0 0 0 1px rgba(255,255,255,.7) inset, 0 8px 22px rgba(0,0,0,.42), 0 0 26px 8px rgba(232,72,50,.8); }
 }
 .dhud-card.rxh-deciding { animation: rxhAlly 3.4s ease-in-out infinite alternate; }
-.rxh-minis { position: absolute; left: 156px; top: -31px; width: 60px; height: 46px; z-index: -1; pointer-events: none; }
+.rxh-minis { position: absolute; left: ${MINI_LEFT}px; top: ${MINI_TOP}px; width: ${MINI_ROOM}px; height: ${MINI_H}px; z-index: -1; pointer-events: none; }
 .rxh-mini {
-  position: absolute; top: 0; width: 30px; height: 44px; box-sizing: border-box; border-radius: 5px; border: 1.5px solid #e2c27e;
-  background: linear-gradient(180deg, #c4473a, #8e2219 60%, #741a14); box-shadow: 0 2px 6px rgba(0,0,0,.45);
-  display: grid; place-items: start center; padding-top: 4px; transform: rotate(var(--r, 0deg)); transition: left 300ms ease;
+  position: absolute; top: 0; width: ${MINI_W}px; height: ${MINI_H}px; box-sizing: border-box; border-radius: 7px; border: 1.5px solid #e2c27e;
+  background: linear-gradient(180deg, #c4473a, #8e2219 60%, #741a14); box-shadow: 0 3px 8px rgba(0,0,0,.5);
+  display: flex; justify-content: center; padding-top: 2.5px; pointer-events: auto; cursor: default;
+  transition: left 300ms ease, translate 160ms ease, box-shadow 160ms ease;
 }
-.rxh-mini img { width: 20px; height: 20px; border-radius: 4px; box-shadow: 0 0 0 1px #e2c27e; border: none; }
-@keyframes rxhMiniIn { from { transform: translateX(24px) rotate(var(--r, 0deg)); opacity: 0; } to { transform: rotate(var(--r, 0deg)); opacity: 1; } }
-.rxh-mini.is-dealt { animation: rxhMiniIn 300ms cubic-bezier(.2,.9,.3,1) var(--d, 0ms) backwards; }
-.rxh-mini.is-leaving { animation: rxhLeave ${LEAVE_MS}ms cubic-bezier(.4,0,.6,1) forwards; }
+.rxh-mini img { width: 38px; height: 38px; object-fit: cover; border-radius: 5px; box-shadow: 0 0 0 1px #e2c27e; border: none; display: block; }
+.rxh-mini:hover { translate: 0 -6px; }
+/* The ally is making this reaction's decision on their own screen. */
+.rxh-mini.is-busy, .rxh-mini.is-busy:hover { translate: 0 -8px; box-shadow: 0 0 0 2px #e2c27e, 0 0 16px 4px rgba(226,194,126,.85), 0 4px 10px rgba(0,0,0,.5); }
+@keyframes rxhMiniUp { from { translate: 0 72px; } 70% { translate: 0 -4px; } to { translate: 0 0; } }
+@keyframes rxhMiniDown { to { translate: 0 72px; } }
+.rxh-mini.is-dealt { animation: rxhMiniUp 340ms cubic-bezier(.2,.9,.3,1) var(--d, 0ms) backwards; }
+.rxh-mini.is-leaving { animation: rxhMiniDown 260ms ease-in forwards; pointer-events: none; }
 
 /* in flight, above everything */
 
@@ -1203,6 +1237,8 @@ const CSS_TEXT = `
   .rxh-card.is-dealt, .rxh-mini.is-dealt { animation: rxhFade 220ms ease var(--d, 0ms) backwards; }
   .rxh-card.is-leaving, .rxh-mini.is-leaving { animation: rxhOut ${LEAVE_MS}ms ease forwards; }
   .rxh-card.is-skipped, .rxh-card.is-skipped:hover, .rxh-card.is-held { transform: none; }
+  .rxh-mini { transition: box-shadow 160ms ease; }
+  .rxh-mini:hover, .rxh-mini.is-busy, .rxh-mini.is-busy:hover { translate: none; }
   .rxh-mytag, .rxh-tag { transform: none !important; }
   .dhud-unit.is-open .rxh-clip { transform: none; }
 }

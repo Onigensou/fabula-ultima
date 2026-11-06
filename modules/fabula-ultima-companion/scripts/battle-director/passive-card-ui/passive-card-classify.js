@@ -45,6 +45,33 @@ const OWN_NUMBERS = ["hp", "mp", "ip", "shield"];
 const listOf = (v) => String(v ?? "").split(/[,\n]+/).map((x) => x.trim()).filter(Boolean);
 const kindOf = (r) => String(r?.effect_kind ?? "").trim().toLowerCase();
 
+// Which way one effect row pushes the action it fires on: 1 stronger, -1 weaker,
+// 0 can't tell from the row. A formula amount only counts where every value it can
+// take points one way (an addition). Own damage taken to 0 is 0 here on purpose: it
+// is a trade the reactor chose, so whose side it is decides.
+function actionPush(r, k) {
+  const literal = (v) => { const s = String(v ?? "").trim(); return s !== "" && Number.isFinite(Number(s)) ? Number(s) : null; };
+  if (k === "adjust_damage") {
+    const op = String(r.damage_operation ?? "add").trim().toLowerCase(), a = literal(r.damage_amount);
+    const incoming = String(r.damage_stage ?? "outgoing").trim().toLowerCase() === "incoming";
+    let dir = 0;
+    if (op === "add") dir = a != null && a < 0 ? -1 : a === 0 ? 0 : 1;
+    else if (op === "subtract") dir = a != null && a < 0 ? 1 : a === 0 ? 0 : -1;
+    else if (op === "multiply" && a != null && a !== 0 && a !== 1) dir = a > 1 ? 1 : -1;
+    return dir;
+  }
+  if (k === "adjust_accuracy") {
+    const a = literal(r.accuracy_amount);
+    if (a == null) return 0;
+    const op = String(r.accuracy_operation ?? "add").trim().toLowerCase();
+    if (op === "add") return Math.sign(a);
+    return op === "set" && a === 0 ? -1 : 0;
+  }
+  if (k === "adjust_defense" || k === "negate_action") return -1;
+  if (k === "add_target" || k === "apply_action_keyword") return 1;
+  return 0;
+}
+
 export function hasKeyword(item, keyword) {
   const raw = item?.system?.props?.action_keywords ?? "";
   return String(raw).replace(/<[^>]*>/g, " ").split(/[,\n]+/).map((k) => k.trim().toLowerCase()).includes(keyword);
@@ -75,6 +102,17 @@ function resourceOf(r) {
 }
 
 /**
+ * Is a reaction helping or hindering the action it fires on? "pos" or "neg".
+ * Its rows decide when they all point one way. Otherwise (no row changes the
+ * action, a moved target, an accuracy formula, a damage-to-0 trade, a mix) whose
+ * side it comes from does: the acting creature or its side helps, the other hinders.
+ */
+export function reactionTone({ profile = null, reactorIsActor = false, sameSide = true } = {}) {
+  if (profile && profile.pushUp !== profile.pushDown) return profile.pushUp ? "pos" : "neg";
+  return reactorIsActor || sameSide ? "pos" : "neg";
+}
+
+/**
  * Static profile of the chain a reaction row runs.
  * @param {object} a
  * @param {object} a.table    the carrier's runtime effect table
@@ -99,6 +137,7 @@ export function chainProfile({ table, ref, item = null, trigger = "", foreign = 
     selfPoints: new Map(),     // actor prop → resource def (Zero Power…)
     selfNumbers: false,        // grants / costs / damage on the owner's HP, MP…
     damageRiders: [],          // outgoing adjust_damage rows
+    pushUp: false, pushDown: false,   // some row makes the action stronger / weaker
   };
   const seen = new Set(), q = [String(ref ?? "").trim()];
   while (q.length) {
@@ -111,6 +150,8 @@ export function chainProfile({ table, ref, item = null, trigger = "", foreign = 
     const k = kindOf(r);
     if (!k || k === "targeting") continue;
     p.kinds.add(k);
+    const push = actionPush(r, k);
+    if (push > 0) p.pushUp = true; else if (push < 0) p.pushDown = true;
     if (!QUICK.has(k)) p.quick = false;
     if (RIDERS.has(k)) p.riders = true;
     else if (k !== "chain" && k !== "chance") p.ridersOnly = false;

@@ -20,6 +20,11 @@
 // cursor rests on it (SETTLE_MS), so fast scrolling moves the highlight
 // without the card flickering.
 //
+// All of it stands down while an action card is up. The card is when every
+// player has reactions of their own to answer, and the acting ally's reaction
+// pickers (a target, an option) must not open on anyone else's screen. Their
+// small card in the reaction hand shows that they are deciding (reaction-hand.js).
+//
 // Approved mockup: claude.ai/artifact/FCCr8xz64J1VovgrTPBDkc (v5, Panel style).
 // Per-user switch: Party Menu › Config › Graphic › Ally's turn (client option
 // "allyWatch"); a GM never gets it (the Battle Desk has its own Watch).
@@ -278,7 +283,8 @@ function receive(p) {
     if (W.snap && W.snap.actorId === p.actorId) {
       const recap = recapOf(W.snap);
       W.snap = null;
-      if (recap) { showRecap(recap); if (enabled() && !busyMyself()) watchSfx("click"); }
+      // A pick made during an action card was a reaction's: no recap of it.
+      if (recap && !actionCardUp()) { showRecap(recap); if (enabled() && !busyMyself()) watchSfx("click"); }
     }
     render();
     return;
@@ -393,8 +399,9 @@ function hideRecap() { clearTimeout(W.recapT); W.recap = null; render(); }
 function clearRecapSoon() { if (W.recap) { clearTimeout(W.recapT); W.recapT = setTimeout(hideRecap, 1200); } }
 
 // ── what is on screen ─────────────────────────────────────────────────────────
+const actionCardUp = () => !!document.getElementById("fud-bf-mirror-root");
 function watching() {
-  if (!enabled() || !W.snap?.open) return false;
+  if (!enabled() || !W.snap?.open || actionCardUp()) return false;
   const st = hudTurnStatus();
   return st?.phase === "acting" && st.side === "party" && String(st.actorId) === W.snap.actorId;
 }
@@ -402,7 +409,8 @@ const myUnit = () => document.querySelector(".dhud-plate-root .dhud-unit");
 const allyCard = (actorId) => document.querySelector(`.dhud-root .dhud-card[data-actor-id="${CSS.escape(String(actorId))}"]`);
 // This player has a decision of their own: their drawer is out, or their
 // reaction hand holds a card.
-const busyMyself = () => !!(myUnit()?.classList.contains("is-open") || document.querySelector(".rxh-card:not(.is-leaving)"));
+// Only the hand: the deck piles show a face of the same card class at all times.
+const busyMyself = () => !!(myUnit()?.classList.contains("is-open") || document.querySelector(".rxh-clip .rxh-card:not(.is-leaving)"));
 
 // Every draw goes through here: a drawing fault hides the watch, never the battle.
 function render() {
@@ -413,7 +421,9 @@ function render() {
     if (W.tickT) { clearInterval(W.tickT); W.tickT = null; }
   }
 }
+let _drawnCardUp = false;   // what the last draw saw: a card coming or going redraws
 function draw() {
+  _drawnCardUp = actionCardUp();
   const on = watching();
   const panel = on || W.recap ? ensurePanel() : document.getElementById(PANEL_ID);
   if (panel) {
@@ -916,6 +926,11 @@ Hooks.once("ready", () => {
   if (game.user?.isGM) return;
   Hooks.on("fu-hud-turn-status", (st) => { try { onTurnStatus(st); } catch (e) { warn("[AllyWatch] turn status failed", e); } });
   Hooks.on("fuClientOptionChanged", ({ key } = {}) => { if (key === "allyWatch") render(); });
+  // An action card coming or going turns the watch off or on. The mirror card is a
+  // direct child of <body>, so this watches only that level.
+  new MutationObserver(() => {
+    if (actionCardUp() !== _drawnCardUp && (W.snap || W.recap)) render();
+  }).observe(document.body, { childList: true });
   Hooks.on("canvasPan", () => { if (W.rings.size) positionRings(); });
   Hooks.on("fu-stage3d-drawn", () => { if (W.rings.size) positionRings(); });
   globalThis.FUCompanion = globalThis.FUCompanion || {};
