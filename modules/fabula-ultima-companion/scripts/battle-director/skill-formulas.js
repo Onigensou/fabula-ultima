@@ -8,7 +8,7 @@
 // reactor itself. Prev: ALLY_COUNT / ANY_ALLY_IN_CRISIS for the Guest system;
 // TARGET_MDEF / CLASS_COUNT / ENEMY_COUNT; pow(); ALL_TARGETS_HIT).
 // Not load-bearing; diagnostic only.
-export const SKILL_FORMULAS_SCHEMA = 11;
+export const SKILL_FORMULAS_SCHEMA = 12;
 
 // Skill formula resolver — director-native equivalent of legacy
 // `window["oni.ReactionFormula"]`. The schema doc (docs/reaction-config-
@@ -31,6 +31,7 @@ export const SKILL_FORMULAS_SCHEMA = 11;
 // No `eval` / `new Function`. Tokenizer + recursive-descent parser.
 
 import { log, warn } from "./logger.js";
+import { crisisThreshold } from "./crisis-reactor.js";
 import { orbmentReduction } from "../orbment/orbment-dr.js";
 
 // snapshot.getBlockedActionLabels, registered by snapshot.js at load (it already
@@ -1017,6 +1018,10 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // (RAW_DAMAGE >= 100). Distinct from DAMAGE_DEALT (post-affinity, set at
       // HP-write on creature_deals_damage).
       case "RAW_DAMAGE":         return Number(payload?.rawDamage) || 0;
+      // PREDICTED_DAMAGE: what this hit will take off the target, after its other
+      // bonuses, affinity and accepted incoming reductions. Only in the amount of a
+      // "final" stage adjust_damage row, which the damage fold sizes per target.
+      case "PREDICTED_DAMAGE":   return Number(payload?.predictedDamage) || 0;
       // FINAL_DAMAGE: the outgoing hit AFTER pre-resolve bonuses (add/multiply)
       // but BEFORE the target's affinity — what an attack is about to deal. Set
       // by computeSenderDamageBonuses' keyword-condition pass so a keyword gate
@@ -1188,6 +1193,14 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         if (!subjectUuid) return 0;
         const subject = _resolveActorByUuidSync(subjectUuid);
         return subject ? (Number(subject?.system?.props?.max_hp ?? 0) || 0) : 0;
+      }
+      // HP at or below which the trigger's subject is in Crisis: the same number
+      // the Crisis reactor applies its AE from (Vital Strike's "would enter Crisis").
+      case "TARGET_CRISIS_HP": {
+        const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+        if (!subjectUuid) return 0;
+        const subject = _resolveActorByUuidSync(subjectUuid);
+        return subject ? (Number(crisisThreshold(subject)) || 0) : 0;
       }
       // HP of the creature the hit was ORIGINALLY aimed at — redirect-aware twins
       // of TARGET_CURRENT_HP / TARGET_MAX_HP. When Protect / Prophetic Defender

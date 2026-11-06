@@ -322,26 +322,70 @@
       "system": {
         "container": null,
         "props": {
+          "action_intent": "harmful",
+          "animation_damage_timing_options": "resolve",
+          "availability_formula": "SL_SET_TRAP >= 1",
+          "availability_reason": "Requires Set Trap SL 1",
           "check_bonus": "0",
           "class": "Hunter",
-          "cost": "1 IP",
+          "cost": "1 IP + 5 x T MP",
           "damage_bonus": "0",
           "description": "<p><strong>Requirement:</strong> Set Trap (SL 1+)</p><p>You set up a simple wire attached to two points to detect movement and trip your target. In non-conflict scenes, this trap alerts allies of incoming enemies. In combat, the target suffers 【 HR + 10 】 <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a> damage. Describe your contraption and the sound it makes!</p>",
-          "duration": "Special",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "chain_steps": "tr_contest, tw_anim, tw_dmg",
+              "effect_kind": "chain",
+              "effect_label": "tr_root"
+            },
+            "1": {
+              "contest_attr1": "dex",
+              "contest_attr2": "ins",
+              "contest_bonus": "SL_SET_TRAP",
+              "contest_max_rerolls": "5",
+              "effect_kind": "contest_check",
+              "effect_label": "tr_contest",
+              "save_attr1": "dex",
+              "save_attr2": "ins",
+              "save_mode": "interactive",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "damage_amount": "VAR_CONTEST_HR + 10",
+              "damage_cause": "damage",
+              "damage_element": "physical",
+              "damage_resource": "hp",
+              "effect_kind": "deal_damage",
+              "effect_label": "tw_dmg",
+              "target_ref": "contest_lost_targets"
+            },
+            "3": {
+              "action_ref": "Tripwire Trap",
+              "effect_kind": "play_animation",
+              "effect_label": "tw_anim",
+              "target_ref": "contest_lost_targets"
+            }
+          },
           "heroic_requirement": "",
+          "implementation_note": "Deployed via Set Trap at conflict start. Out of conflict it is an alarm (narrated): it warns allies of approaching enemies.",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": false,
           "level": "1",
           "max_level": "1",
+          "menu_hidden": true,
           "name": "Tripwire Trap",
+          "on_activate_effect_ref": "tr_root",
           "optional_params": {},
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Any",
-          "skill_target": "Special",
+          "skill_tags": "trap",
+          "skill_target": "Up to three enemies",
           "skill_type": "Active",
+          "target_eligibility": "",
           "type_damage": "",
           "use_optional_params": false
         },
@@ -384,19 +428,39 @@
           "damage_bonus": "0",
           "description": "<p>After a successful Accuracy Check, If the creature would enter <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\">Crisis</a> with your 【⚔️ Attack】. The targeted creature suffers extra damage of the same type as your attack equal to your <strong>Dexterity</strong> die size.</p>",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "damage_amount": "DEX_CURRENT_DIE * (TARGET_CURRENT_HP > TARGET_CRISIS_HP) * (TARGET_CURRENT_HP + TARGET_CUR_SHIELD - PREDICTED_DAMAGE <= TARGET_CRISIS_HP)",
+              "damage_operation": "add",
+              "damage_stage": "final",
+              "effect_kind": "adjust_damage",
+              "effect_label": "vs_add"
+            }
+          },
           "heroic_requirement": "",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "1",
           "name": "Vital Strike",
           "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_CURRENT_HP > TARGET_CRISIS_HP",
+              "reaction_effect_ref": "vs_add",
+              "reaction_passive_mode": "on",
+              "reaction_passive_target": "self",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "",
-          "skill_target": "One creatur",
+          "skill_target": "-",
           "skill_type": "Passive",
           "type_damage": "",
           "use_optional_params": false
@@ -550,17 +614,36 @@
           "class": "Hunter",
           "cost": "-",
           "damage_bonus": "0",
-          "description": "<p>You master the art of creating and deploying traps. Each time you acquire this Skill, you progressively learn to create better traps. You can only learn <strong>two traps</strong> from each corresponding Skill Level (SL) (see Facet).</p>",
+          "description": "<p>You master the art of creating and deploying traps. Each time you acquire this Skill, you progressively learn to create better traps. You can only learn <strong>two traps</strong> from each corresponding Skill Level (SL) (see Facet).</p><p>At the start of a conflict, you may deploy <strong>one</strong> trap you know before the first round. Spend <strong>【IP equal to the trap's SL】</strong> and <strong>【5 MP】</strong> for one creature, <strong>【10 MP】</strong> for two, or <strong>【15 MP】</strong> for three. Each target performs an Opposed <strong>【DEX + INS】</strong> Check against your <strong>【DEX + INS + SL】</strong>. Those who succeed escape the trap.</p>",
           "duration": "-",
+          "effect_table": {
+            "0": {
+              "action_ref": "Skill",
+              "allowed_skill_refs": "tag:trap",
+              "effect_kind": "free_action",
+              "effect_label": "st_deploy"
+            }
+          },
           "heroic_requirement": "",
+          "implementation_note": "At the start of each conflict you may deploy ONE trap you have learned (Set Trap SL must be at least the trap's tier). Cost = the trap's IP + 5 MP per creature (max 3). Learning: two trap docs per Set Trap SL. Out-of-conflict uses are narrated with the GM.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "5",
           "name": "Set Trap",
           "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "SL_SET_TRAP >= 1 && CUR_IP >= 1 && CUR_MP >= 5",
+              "reaction_effect_ref": "st_deploy",
+              "reaction_passive_mode": "ask",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "",
@@ -586,6 +669,74 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "QSmVwqI98aJVZWmJ",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1793984416383,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "bonus_defense",
+              "mode": 2,
+              "priority": 20,
+              "value": "SL"
+            }
+          ],
+          "description": "<p><em>Wild Reflexes:</em> bonus to Defense; an enemy attack that misses you lets you counterattack.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "QSmVwqI98aJVZWmJ",
+              "originalParentId": "c7VIxNOsQhUREUHe",
+              "originalUuid": "Actor.kJZlpeknuISvPB9w.Item.c7VIxNOsQhUREUHe.ActiveEffect.QSmVwqI98aJVZWmJ"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff",
+              "crossScene": false,
+              "directorPermanent": false
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/RenaSkill3.png",
+          "name": "Wild Reflexes",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-wild-reflexes"
+          ],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -608,15 +759,51 @@
           "damage_bonus": "0",
           "description": "<p>When you perform the 【🛡️ Guard】 action, if you choose not to provide cover to another creature, your reflexes are wildly increased! Until the start of your next turn, you gain a bonus to your <strong>Defense</strong> equal to <strong>[SL]</strong>.</p><p>Additionally, if an enemy misses you with an 【⚔️ Attack】 during this time, you may perform a free 【⚔️ Attack】 against them. Treat your <strong>HR</strong> as <strong>0</strong> when calculating damage for this counterattack. Do not stack with other <strong>Counterattack </strong>effects.</p>",
           "duration": "",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Wild Reflexes",
+              "effect_kind": "apply_ae",
+              "effect_label": "wr_apply",
+              "target_ref": "self"
+            },
+            "1": {
+              "action_ref": "Attack",
+              "effect_kind": "free_action",
+              "effect_label": "wr_counter",
+              "free_hr_as_zero": true,
+              "target_ref": "trigger_attacker"
+            }
+          },
           "heroic_requirement": "",
+          "implementation_note": "Guard without covering: +SL Defense until your next turn; an enemy attack that misses you offers a free counterattack (HR 0). When another counterattack (Counterattack, Counter Pass, Ole!) would also be offered on that miss, Wild Reflexes stands aside.",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
+          "isReaction": true,
           "level": "1",
           "max_level": "5",
           "name": "Wild Reflexes",
           "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "DID_COVER_ALLY == 0",
+              "reaction_effect_ref": "wr_apply",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_guards"
+            },
+            "1": {
+              "condition_formula": "ACTION_IS_ATTACK == 1 && AE_COUNT_WILD_REFLEXES >= 1 && AE_CHARGES_COUNTER_PASS == 0 && HAS_STATUS_OLETAUNT == 0 && (HAS_SKILL_COUNTERATTACK == 0 || ATTACK_IS_MELEE == 0 || ATTACK_CHECK_RESULT % 2 == 1)",
+              "reaction_action_intent": "harmful",
+              "reaction_effect_ref": "wr_counter",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "self",
+              "reaction_source": "enemy",
+              "reaction_trigger": "creature_miss_action"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td><p><strong>SL</strong></p></td><td><p><strong>Defense Bonus</strong></p></td></tr><tr><td><p>1</p></td><td><p>+1</p></td></tr><tr><td><p>2</p></td><td><p>+2</p></td></tr><tr><td><p>3</p></td><td><p>+3</p></td></tr><tr><td><p>4</p></td><td><p>+4</p></td></tr><tr><td><p>5</p></td><td><p>+5</p></td></tr></tbody></table>",
@@ -940,26 +1127,68 @@
       "system": {
         "container": null,
         "props": {
+          "action_intent": "harmful",
+          "animation_damage_timing_options": "resolve",
+          "availability_formula": "SL_SET_TRAP >= 1",
+          "availability_reason": "Requires Set Trap SL 1",
           "check_bonus": "0",
           "class": "Hunter",
-          "cost": "1 IP",
+          "cost": "1 IP + 5 x T MP",
           "damage_bonus": "0",
           "description": "<p><strong>Requirement:</strong> Set Trap (SL 1+)</p><p>Once triggered, this trap emits a loud noise designed to distract foes. In non-conflict scenes, you set a timer that expires at your discretion, and affected creatures must immediately move toward the source of the sound upon activation. In combat, there is no timer, and affected creatures suffer <a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\">Dazed</a>.</p>",
-          "duration": "Special",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "chain_steps": "tr_contest, si_anim, si_daze",
+              "effect_kind": "chain",
+              "effect_label": "tr_root"
+            },
+            "1": {
+              "contest_attr1": "dex",
+              "contest_attr2": "ins",
+              "contest_bonus": "SL_SET_TRAP",
+              "contest_max_rerolls": "5",
+              "effect_kind": "contest_check",
+              "effect_label": "tr_contest",
+              "save_attr1": "dex",
+              "save_attr2": "ins",
+              "save_mode": "interactive",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Dazed",
+              "effect_kind": "apply_ae",
+              "effect_label": "si_daze",
+              "target_ref": "contest_lost_targets"
+            },
+            "3": {
+              "action_ref": "Siren Trap",
+              "effect_kind": "play_animation",
+              "effect_label": "si_anim",
+              "target_ref": "contest_lost_targets"
+            }
+          },
           "heroic_requirement": "",
+          "implementation_note": "Deployed via Set Trap at conflict start. Out of conflict the GM runs the timer and the lure (narrated).",
           "isCheck": false,
           "isFacet": true,
           "isHeroic": false,
           "isOffensiveSpell": false,
           "level": "1",
           "max_level": "1",
+          "menu_hidden": true,
           "name": "Siren Trap",
+          "on_activate_effect_ref": "tr_root",
           "optional_params": {},
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_range": "Any",
-          "skill_target": "Special",
+          "skill_tags": "trap",
+          "skill_target": "Up to three enemies",
           "skill_type": "Active",
+          "target_eligibility": "",
           "type_damage": "",
           "use_optional_params": false
         },

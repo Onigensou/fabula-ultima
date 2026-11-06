@@ -526,7 +526,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
   const foldOps = (d, ops) => {
     if (!ops?.length) return d;
     let v = d;
-    for (const { op, amount } of ops) v = applyDamageOp(v, op, amount);
+    for (const { op, amount, finalFormula } of ops) { if (!finalFormula) v = applyDamageOp(v, op, amount); }
     return v;
   };
 
@@ -735,7 +735,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       // their integer contribution + source for the card breakdown; the element
       // op overrides the affinity element below; pierce downgrades RS→NE.
       if (hit && targetOps.length) {
-        const numericOps = targetOps.filter((o) => o.op !== "keyword" && o.op !== "element");
+        const numericOps = targetOps.filter((o) => o.op !== "keyword" && o.op !== "element" && !o.finalFormula);
         const kwSet = new Set(targetOps.filter((o) => o.op === "keyword").map((o) => o.keyword));
         const elementOp = [...targetOps].reverse().find((o) => o.op === "element" && o.element);
         const fromRaw = rawDamage;
@@ -812,6 +812,48 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
         });
         damageVal = cm.value;
         if (cm.absorbed && affinityCode !== "AB") affinityCode = "AB";
+      }
+
+      // "final" stage bonuses (Vital Strike). Sized here because only now is the
+      // hit's real size known, with every other bonus, element change and affinity
+      // in it. A bonus goes through the same affinity steps as the rest of the hit.
+      const finalOps = hit ? targetOps.filter((o) => o.finalFormula) : [];
+      for (const o of finalOps) {
+        // An HP hit only: absorbed or MP damage takes nothing off HP.
+        let predictedDamage = (primary.isMpDamage || affinityCode === "AB") ? 0 : damageVal;
+        // The target's accepted reductions land after this fold (see recompute's
+        // damageOverrides re-apply) but are part of what the hit will really do.
+        const soak = ctx?.damageOverrides?.find?.((v) =>
+          (v.tokenUuid && v.tokenUuid === e.tokenUuid) || (v.actorUuid && v.actorUuid === e.actorUuid));
+        if (soak) {
+          const soakOps = Array.isArray(soak.ops) && soak.ops.length ? soak.ops : [{ op: soak.op ?? "set", amount: soak.amount ?? 0 }];
+          for (const s of soakOps) predictedDamage = applyAdjustOp(predictedDamage, String(s.op ?? "set"), Number(s.amount) || 0);
+          predictedDamage = Math.max(0, Math.floor(predictedDamage));
+        }
+        const finalResolver = buildSkillResolver({
+          actor: liveAttacker,
+          payload: { ...o.finalContext?.payload, subjectActorUuid: e.actorUuid, subjectTokenUuid: e.tokenUuid, predictedDamage },
+          skill: o.finalContext?.skill ?? null,
+          round: ctx?.round ?? 0,
+        });
+        const finalAmount = Math.floor(Number(evaluateFormula(o.finalFormula, finalResolver, 0)) || 0);
+        if (finalAmount === 0) continue;
+        const nextRaw = Math.max(0, Math.floor(applyDamageOp(rawDamage, o.op, finalAmount)));
+        if (nextRaw === rawDamage) continue;
+        reactionParts.push({ source: o.source ?? "Reaction", amount: nextRaw - rawDamage });
+        rawDamage = nextRaw;
+        damageVal = applyAffinityToDamage(rawDamage, affinityCode);
+        if (!primary.isMpDamage) {
+          damageVal = applyClassAffinityAndMult(liveTarget, damageVal, {
+            damageClass: check.required ? (vsMDef ? "magic" : "strike") : null,
+            elementAbsorbed: affinityCode === "AB",
+          }).value;
+        }
+        if (reactionBreakdown) {
+          reactionBreakdown.ops = [...reactionBreakdown.ops, { op: o.op, amount: finalAmount, source: o.source, finalStage: true }];
+          reactionBreakdown.to = rawDamage;
+          reactionBreakdown.baseBonus = rawDamage - reactionBreakdown.from;
+        }
       }
 
       // Benign keyword — "if this attack would reduce a creature to 0 HP, they
@@ -1570,7 +1612,7 @@ export async function recomputeActionProfile({ ar, targets = null, acceptedReact
       // damage to the un-granted base (header keeps the COMPUTE value, so only
       // the per-target rows drift) and its hit/miss to the un-granted total.
       // Re-derives from the same dice, so the grant folds once — no double-count.
-      ctx: { round: ar.round ?? round ?? 0, attackMode: attackMode ?? ar.attackMode ?? null, grant: ar.freeActionGrant ?? null },
+      ctx: { damageOverrides, round: ar.round ?? round ?? 0, attackMode: attackMode ?? ar.attackMode ?? null, grant: ar.freeActionGrant ?? null },
       acceptedReactions, accuracyOverride, gmHitOverrides, gmDamage, defenseOverrides,
     });
     const delta = projectProfileToActionResult(profile, ar, snaps);

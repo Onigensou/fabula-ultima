@@ -796,6 +796,12 @@ async function normalizeScripts(scripts) {
       once: !!d.once,
       // CREATE the named item with IP instead of casting a skill (scripted-action).
       create: !!d.create,
+      // GUARD instead of casting (skill is then only a label for the logs).
+      guard: !!d.guard,
+      // With guard: cover the first other ally instead of guarding alone.
+      cover: !!d.cover,
+      // A main-hand Attack on `targets` instead of casting (skill is a label too).
+      attack: !!d.attack,
     });
   }
   return out;

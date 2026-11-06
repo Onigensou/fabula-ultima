@@ -286,7 +286,8 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   selectCol("damage_stage", "Damage Stage", [
     { key: "outgoing", value: "Outgoing (attacker, pre-resolve)" },
     { key: "incoming", value: "Incoming (victim, at HP-write)" },
-  ], { tooltip: "Which side adjust_damage modifies.", vis: ADJUST_VIS, defaultValue: "outgoing" }),
+    { key: "final", value: "Final (attacker, sized per target after everything else)" },
+  ], { tooltip: "Which side adjust_damage modifies. Final works out its amount per target once the hit's other bonuses and affinity are known; the amount can read PREDICTED_DAMAGE, and 0 means no bonus.", vis: ADJUST_VIS, defaultValue: "outgoing" }),
   // adjust_accuracy config — action-level accuracy override (the accuracy twin of
   // adjust_damage). Was added (Magical Artillery / Adversity / Cognitive Focus /
   // Crossfire) without effect_table columns → its operand was data-only / strippable

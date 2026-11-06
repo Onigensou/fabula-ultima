@@ -8,6 +8,74 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "DuKO19HD12YIOIva",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1793984416331,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_defense",
+          "mode": 2,
+          "priority": 20,
+          "value": "SL"
+        }
+      ],
+      "description": "<p><em>Wild Reflexes:</em> bonus to Defense; an enemy attack that misses you lets you counterattack.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 1,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "DuKO19HD12YIOIva",
+          "originalParentId": "YWDErqkiLduFGt3z",
+          "originalUuid": "Item.YWDErqkiLduFGt3z.ActiveEffect.DuKO19HD12YIOIva"
+        },
+        "fabula-ultima-companion": {
+          "category": "buff",
+          "crossScene": false,
+          "directorPermanent": false
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Rena/RenaSkill3.png",
+      "name": "Wild Reflexes",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "fud-wild-reflexes"
+      ],
+      "system": {
+        "tags": [
+          "buff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
@@ -30,15 +98,51 @@
       "damage_bonus": "0",
       "description": "<p>When you perform the 【🛡️ Guard】 action, if you choose not to provide cover to another creature, your reflexes are wildly increased! Until the start of your next turn, you gain a bonus to your <strong>Defense</strong> equal to <strong>[SL]</strong>.</p><p>Additionally, if an enemy misses you with an 【⚔️ Attack】 during this time, you may perform a free 【⚔️ Attack】 against them. Treat your <strong>HR</strong> as <strong>0</strong> when calculating damage for this counterattack. Do not stack with other <strong>Counterattack </strong>effects.</p>",
       "duration": "",
+      "effect_table": {
+        "0": {
+          "ae_duplicate_mode": "replace",
+          "ae_template_ref": "Wild Reflexes",
+          "effect_kind": "apply_ae",
+          "effect_label": "wr_apply",
+          "target_ref": "self"
+        },
+        "1": {
+          "action_ref": "Attack",
+          "effect_kind": "free_action",
+          "effect_label": "wr_counter",
+          "free_hr_as_zero": true,
+          "target_ref": "trigger_attacker"
+        }
+      },
       "heroic_requirement": "",
+      "implementation_note": "Guard without covering: +SL Defense until your next turn; an enemy attack that misses you offers a free counterattack (HR 0). When another counterattack (Counterattack, Counter Pass, Ole!) would also be offered on that miss, Wild Reflexes stands aside.",
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
       "isOffensiveSpell": false,
+      "isReaction": true,
       "level": "1",
       "max_level": "5",
       "name": "Wild Reflexes",
       "optional_params": {},
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "DID_COVER_ALLY == 0",
+          "reaction_effect_ref": "wr_apply",
+          "reaction_passive_mode": "force",
+          "reaction_source": "self",
+          "reaction_trigger": "creature_guards"
+        },
+        "1": {
+          "condition_formula": "ACTION_IS_ATTACK == 1 && AE_COUNT_WILD_REFLEXES >= 1 && AE_CHARGES_COUNTER_PASS == 0 && HAS_STATUS_OLETAUNT == 0 && (HAS_SKILL_COUNTERATTACK == 0 || ATTACK_IS_MELEE == 0 || ATTACK_CHECK_RESULT % 2 == 1)",
+          "reaction_action_intent": "harmful",
+          "reaction_effect_ref": "wr_counter",
+          "reaction_passive_mode": "ask",
+          "reaction_passive_target": "self",
+          "reaction_source": "enemy",
+          "reaction_trigger": "creature_miss_action"
+        }
+      },
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_mode": "default",

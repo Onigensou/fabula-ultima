@@ -48,6 +48,20 @@ export function parseCost(costText) {
 
 // → { ok, have, need, res, unknown? }
 export function canAfford(actor, costText) {
+  // A compound price ("1 IP + 5 x T MP") must clear every part, split the way the
+  // real parser splits it (skill-cost.js parseSkillCost). Read whole, it became a
+  // resource called "ip_mp" that no actor holds, so the sim could never buy it.
+  // Only when every part is a whole price: "5+ MP" (5 or more MP) is one price.
+  const parts = String(costText ?? "").split(/[+,&/]/g).map((s) => s.trim()).filter(Boolean);
+  if (parts.length > 1 && parts.every((p) => /\d/.test(p) && /[a-z]/i.test(p))) {
+    let last = null;
+    for (const part of parts) {
+      last = canAfford(actor, part);
+      if (!last.ok) return last;
+    }
+    return last;
+  }
+
   const c = parseCost(costText);
   if (c.free) return { ok: true, free: true };
 

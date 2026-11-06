@@ -5437,7 +5437,7 @@ function buildReactionPills(cardReactions) {
   // player sees the reaction exists and why they can't use it (vs it silently
   // vanishing).
   const visible = cardReactions.filter((p) =>
-    p?.mode !== "off" && !(p?.available === false && p?.unavailableKind === "condition")
+    p?.mode !== "off" && !(p?.available === false && p?.unavailableKind === "condition") && !p?.gatedBonusOnly
   );
   if (!visible.length) return "";
   // Collapse duplicate AUTO (on/force) pills from the SAME carrier+reactor into
@@ -5952,6 +5952,7 @@ function projectCardReactionForRender(p) {
     carrierName: p?.carrierName ?? null,
     carrierImg: p?.carrierImg ?? null,
     carrierDescription: p?.carrierDescription ?? null,
+    gatedBonusOnly: !!p?.gatedBonusOnly,
     mode: p?.mode ?? null,
     available: p?.available,
     unavailableKind: p?.unavailableKind ?? null,
@@ -8197,6 +8198,7 @@ export async function postActionCard({ director, kind, payload }) {
           // dispatch silently no-ops because the wrong effect_table is
           // looked up.
           carrierKind: p.carrierKind,
+          gatedBonusOnly: !!p.gatedBonusOnly,
           carrierUuid: p.carrierUuid,
           carrierName: p.carrierName,
           // The passive card RESOLVE raises for this reaction shows it as

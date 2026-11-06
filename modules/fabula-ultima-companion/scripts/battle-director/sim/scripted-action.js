@@ -279,6 +279,37 @@ export async function scriptedBundleFor(director, snap) {
     return null;
   }
 
+  // `guard: true` — take the real Guard action, no cover. A free-action frame does
+  // not admit Guard, so hold the directive for the real turn.
+  if (directive.guard) {
+    if (freeActions.get?.(snap?.actorId)) return null;
+    if (directive.once) SimMode.exhaustScript(directive);
+    SimMode.note("scripted", `${baseName(actorDoc.name)} → Guard`);
+    // `cover: true` covers the first other ally, a choice the real picker offers.
+    const cover = directive.cover
+      ? (resolveTargets(director, self, "other-allies")[0] ?? null)
+      : null;
+    return { command: "Guard", coverTokenUuid: cover };
+  }
+
+  // `attack: true` — a main-hand Attack on the directive's targets, for a test that
+  // needs a chosen target list ("all-enemies": a mixed multi-target hit). Skipped
+  // inside a free-action frame that does not admit an Attack.
+  if (directive.attack) {
+    const grant = freeActions.get?.(snap?.actorId) ?? null;
+    const labels = Array.isArray(grant?.enabledLabels) ? grant.enabledLabels : [];
+    if (grant && labels.length && !labels.includes("Attack")) return null;
+    const targetUuids = resolveTargets(director, self, directive.targets);
+    if (!targetUuids.length) {
+      SimMode.note("scripted", "no valid target for an Attack — brain decides");
+      return null;
+    }
+    SimMode.recordDeclaration(turnKey, sig);
+    if (directive.once) SimMode.exhaustScript(directive);
+    SimMode.note("scripted", `${baseName(actorDoc.name)} → Attack on ${targetUuids.length} target(s)`);
+    return { command: "Attack", attackMode: "main", targetUuids };
+  }
+
   // `create: true` — CREATE the named item on the spot, paying IP (an Elemental
   // Shard), through the same recipe list and bundle the player brain uses, so the
   // real Item create path runs (itemMode "create", the IP debit, and the

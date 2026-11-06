@@ -95,6 +95,7 @@ const CATALOGUE = [
   ["CHAR_LEVEL",            "My character level",              "number"],
   ["TARGET_CURRENT_HP",     "The target's current HP",         "number"],
   ["TARGET_MAX_HP",         "The target's maximum HP",         "number"],
+  ["TARGET_CRISIS_HP",      "HP at which the target is in Crisis", "number"],
   ["HIT_MARGIN",            "How much the attack beat DEF by", "number"],
   ["IS_MY_TURN",            "It is my turn",                   "boolean"],
   ["ANY_ALLY_IN_CRISIS",    "Any ally is in Crisis",           "boolean"],

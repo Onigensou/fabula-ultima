@@ -306,6 +306,10 @@ function backgroundCard(dial, key, why) {
 async function ridersAddedNothing(p, { actor, item, candidate, payload, round }) {
   if (!p.ridersOnly || !p.damageRiders.length) return false;
   if ([...p.kinds].some((k) => RIDERS.has(k) && k !== "adjust_damage")) return false;
+  // A "final" stage amount exists only inside the damage fold: it reads
+  // PREDICTED_DAMAGE, which no payload here carries. RESOLVE has already dropped
+  // a bonus no target earned, so one that reaches this point landed.
+  if (p.damageRiders.some((r) => String(r.damage_stage ?? "").trim().toLowerCase() === "final")) return false;
   const { buildSkillResolver, evaluateFormula, readAdjustment } = await import("../skill-formulas.js");
   const subjects = Array.isArray(candidate?.appliesToTargetUuids) && candidate.appliesToTargetUuids.length
     ? candidate.appliesToTargetUuids

@@ -57,7 +57,7 @@ S.hooks.push(["createActiveEffect", Hooks.on("createActiveEffect", (e) => { try 
   changes: (e.changes ?? []).map((c) => c.key.split(".").pop() + "=" + c.value).join("|") }); } catch {} })]);
 S.hooks.push(["deleteActiveEffect", Hooks.on("deleteActiveEffect", (e) => { try { S.events.push({ t: T(), k: "ae-", on: nm(e.parent), name: e.name }); } catch {} })]);
 S.hooks.push(["updateActor", Hooks.on("updateActor", (a, ch) => { try { const p = ch?.system?.props ?? {};
-  for (const key of ["current_hp", "current_mp"]) if (key in p) S.events.push({ t: T(), k: "res", on: a.name, key, value: p[key] }); } catch {} })]);
+  for (const key of ["current_hp", "current_mp", "current_ip"]) if (key in p) S.events.push({ t: T(), k: "res", on: a.name, key, value: p[key] }); } catch {} })]);
 S.logRe = ${logFilter ? `new RegExp(${JSON.stringify(logFilter)}, "i")` : "null"};
 if (S.logRe) { S.origLog = console.log; S.origWarn = console.warn;
   const wrap = (f, tag) => (...a) => { try { const t = a.map((x) => typeof x === "string" ? x : "").join(" "); if (S.logRe.test(t)) S.events.push({ t: T(), k: "log", tag, text: t.slice(0, 300) }); } catch {} return f.apply(console, a); };

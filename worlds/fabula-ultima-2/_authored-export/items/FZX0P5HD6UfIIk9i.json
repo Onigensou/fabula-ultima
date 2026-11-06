@@ -94,6 +94,7 @@
         },
         "100": {
           "$deleted": false,
+          "condition_formula": "CUR_MP >= 10",
           "reaction_effect_ref": "hs_react",
           "reaction_passive_mode": "ask",
           "reaction_source": "",

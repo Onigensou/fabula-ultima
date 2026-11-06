@@ -2886,6 +2886,15 @@ export async function computeSenderDamageBonuses({
             const kind = String(row.effect_kind ?? "").toLowerCase();
             if (kind === "adjust_damage") {
               const { op, amountFormula, stage } = readAdjustRow(row);
+              // "final": sized per target at the damage fold (action-profile
+              // buildPerTarget), once the hit's other bonuses and affinity are known,
+              // so the amount can read PREDICTED_DAMAGE. It re-runs on every
+              // recompute, so an Invoke or an accepted rider counts.
+              if (stage === "final" && DAMAGE_OPS.has(op)) {
+                ops.push({ op, finalFormula: amountFormula, finalContext: { payload: cand.payloadAtFire ?? {}, skill: carrierSkill },
+                  source: cand.carrierName || carrierSkill?.name || "Reaction" });
+                return;
+              }
               if (stage !== "outgoing" || !DAMAGE_OPS.has(op)) return; // incoming handled receiver-side
               const amount = Number(evaluateFormula(amountFormula, resolver)) || 0;
               // `source` lets the action-card damage breakdown attribute this
@@ -2983,7 +2992,7 @@ export async function computeSenderDamageBonuses({
   // condition couldn't see).
   for (const [uuid, ops] of out) {
     if (!ops.some((o) => o.op === "keyword" && o.condition)) continue;
-    const numeric = ops.filter((o) => o.op !== "keyword" && o.op !== "element");
+    const numeric = ops.filter((o) => o.op !== "keyword" && o.op !== "element" && !o.finalFormula);
     let d = Number(subjectBaseRaw.get(uuid)) || 0;
     for (const { op, amount } of numeric) d = applyDamageOp(d, op, amount);
     d = Math.max(0, Math.floor(d));
@@ -3008,6 +3017,22 @@ export async function computeSenderDamageBonuses({
     if (ops && !out.has(tokenUuid)) out.set(tokenUuid, ops);
   }
   return out;
+}
+
+// True when a card reaction's whole job is one "final" stage damage bonus that
+// fires by itself. Its pill would show on every attack whether or not the bonus
+// applies, and only the fold knows, so the card hides the pill and the damage
+// breakdown names it instead. An ask row keeps its pill: it needs an answer.
+export async function isGatedDamageBonus(cand) {
+  if (cand?.mode === "ask") return false;
+  try {
+    const carrier = await fromUuid(cand?.carrierUuid).catch(() => null);
+    const table = cand?.carrierKind === "ae"
+      ? carrier?.flags?.[FLAG_NS]?.reactionConfig?.effect_table
+      : carrier?.system?.props?.effect_table;
+    const row = Object.values(table ?? {}).find((r) => !r?.$deleted && r?.effect_label === cand?.ref);
+    return String(row?.effect_kind ?? "").toLowerCase() === "adjust_damage" && String(row?.damage_stage ?? "").trim().toLowerCase() === "final";
+  } catch { return false; }
 }
 
 // Re-resolve which CURRENT action targets each accepted creature_will_deal_damage
@@ -11215,7 +11240,9 @@ async function rollContestPerformer(actor, { attrA, attrB, mods, label }) {
       context: { checkContext: "opposed" },
     });
     const total = Number(res?.[0]?.total);
-    return Number.isFinite(total) ? total : null;
+    if (!Number.isFinite(total)) return null;
+    const hr = Number(res?.[0]?.hr);
+    return { total, hr: Number.isFinite(hr) ? hr : 0 };
   } catch (e) {
     warn("contest_check: performer roll threw", e);
     return null;
@@ -11223,6 +11250,20 @@ async function rollContestPerformer(actor, { attrA, attrB, mods, label }) {
 }
 
 async function applyContestCheckEffect(row, ctx) {
+  // VAR_CONTEST_HR: the performer's High Roll on this contest, for consequences
+  // that scale with it (Hunter traps: "HR + 10"). Starts at 0 so a contest that
+  // never rolls cannot leak an earlier contest's HR into this chain.
+  // Harness: inject harnessNumbers.contest_hr for a deterministic value.
+  const publishContestHr = (hr) => {
+    if (!ctx.payload) return;
+    if (!ctx.payload._chainVars) ctx.payload._chainVars = {};
+    const injected = ctx?.harnessNumbers?.contest_hr;
+    ctx.payload._chainVars.contest_hr = (injected != null && Number.isFinite(Number(injected)))
+      ? Math.floor(Number(injected))
+      : (Number(hr) || 0);
+  };
+  publishContestHr(0);
+
   const targetRef = String(row.target_ref ?? "action_targets").trim() || "action_targets";
   let tokens = [];
   try {
@@ -11333,8 +11374,12 @@ async function applyContestCheckEffect(row, ctx) {
   let lastPerformerTotal = null;
 
   while (pending.length) {
-    const performerTotal = await rollContestPerformer(performer, { attrA: pAttrA, attrB: pAttrB, mods: perfMods, label });
+    const performerRoll = await rollContestPerformer(performer, { attrA: pAttrA, attrB: pAttrB, mods: perfMods, label });
+    const performerTotal = performerRoll?.total ?? null;
     lastPerformerTotal = performerTotal;
+    // One trap, one High Roll: a tie rerolls only the tied targets, and the HR
+    // stays the first roll's so every loser takes the same damage.
+    if (round === 0) publishContestHr(performerRoll?.hr ?? 0);
 
     // No performer roll ⇒ no contest can run. House rule: the targets LOSE, so a
     // headless/sim context still exercises the consequence.

@@ -1264,6 +1264,13 @@ async function resolveAction(director, ar, opts = {}) {
           log(`resolveAction: card reaction "${cand?.carrierName}" not fired — 0 hit targets (no cost/effect)`);
           continue;
         }
+        // A conditional damage bonus (Vital Strike) that no target earned did
+        // nothing, so it shows no card. The damage fold already decided this.
+        if (cand?.gatedBonusOnly && !(ar.perTargetResults ?? []).some((row) =>
+          row?.bonusBreakdown?.ops?.some((o) => o.finalStage && o.source === cand.carrierName))) {
+          log(`resolveAction: card reaction "${cand?.carrierName}" not fired — no target earned its bonus`);
+          continue;
+        }
         // Third-party reactions (Protect on an Attack(ally) card) carry
         // `reactorActorUuid` identifying whose chain this is. Route the
         // firing to the reactor's actor and use the per-candidate
@@ -6114,6 +6121,10 @@ const Confirm = {
           }
         }
         for (const cand of byKey.values()) delete cand._payloadFromHit;
+        {
+          const { isGatedDamageBonus } = await getSkillEffectsExtras();
+          for (const agg of byKey.values()) agg.gatedBonusOnly = await isGatedDamageBonus(agg);
+        }
         addCardReactions("creature_will_deal_damage", byKey.values());
       } catch (e) {
         warn("CONFIRM: will_deal_damage dispatch threw", e);
