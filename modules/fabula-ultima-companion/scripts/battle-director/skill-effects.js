@@ -10982,7 +10982,7 @@ function freeActionPresentation(item, performer, { source = "", freeOfCost = fal
 // A description may open by saying it uses your action (Pulse). A free action does
 // not, so anything showing that skill AS a free action drops the sentence.
 export function stripUsesYourAction(html) {
-  return String(html ?? "").replace(/^(\s*<p>\s*)(?:<(strong|b|em)>)?\s*Uses your action\.\s*(?:<\/\2>)?\s*/i, "$1");
+  return String(html ?? "").replace(/^(\s*<p>\s*)(?:<(strong|b|em)>)?\s*(?:Uses your action|Spend your action [^.<]*)\.\s*(?:<\/\2>)?\s*/i, "$1");
 }
 
 // ── save_check ──────────────────────────────────────────────────────────────
@@ -11603,6 +11603,11 @@ async function applyGroupCheckEffect(row, ctx) {
   }
 
   const label = ctx.skill?.name ?? row.effect_label ?? "Group Check";
+  // A free action's check bonus belongs to the creature taking that action, so it
+  // reaches the Check that creature leads and no helper's (High Speed into Run Away).
+  const freeGrant = ctx.actionResult?.freeActionGrant ?? null;
+  const grantBonus = leaderUuid === ctx.reactorActor?.uuid ? (Number(freeGrant?.checkBonus) || 0) : 0;
+  const leaderModifiers = grantBonus !== 0 ? [{ label: freeGrant.sourceLabel || "Free Action", value: grantBonus }] : [];
   let result = null;
   try {
     result = await GC.request({
@@ -11613,6 +11618,7 @@ async function applyGroupCheckEffect(row, ctx) {
       helperDl:         dl,
       leaderDl:         dl,
       helperBonus,
+      leaderModifiers,
       attrA, attrB,
       singleDie:        false,
       label,

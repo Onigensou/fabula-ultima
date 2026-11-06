@@ -367,11 +367,11 @@ function computeCheck({ view, ar, attacker, weapon, primary, liveAttacker, dice,
   const dA = attacker?.attributes?.[A1] ?? 8;
   const dB = attacker?.attributes?.[A2] ?? 8;
 
-  // Free-action grant (Attack/Hinder consume it; peeked here non-destructively —
+  // Free-action grant (Attack/Hinder/Objective read it; peeked here non-destructively —
   // the caller / COMPUTE owns the real consume). Adds check bonus.
   const grant = ctx?.grant ?? null;
   let grantHrAsZero = false;
-  if (grant && (kind === "Attack" || kind === "Hinder")) {
+  if (grant && (kind === "Attack" || kind === "Hinder" || ar?.kind === "Objective")) {
     const gcb = Number(grant.checkBonus) || 0;
     grantHrAsZero = grant.hrAsZero === true;
     if (gcb !== 0) bonusParts.push({ source: grant.sourceLabel || "Free Action", amount: gcb });

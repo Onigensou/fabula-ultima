@@ -7919,7 +7919,7 @@
               "target_ref": "hs_self"
             },
             "2": {
-              "allowed_types": "Attack,Hinder",
+              "allowed_types": "Attack,Hinder,Objective",
               "check_bonus_formula": "SL",
               "damage_bonus_formula": "",
               "effect_kind": "open_action_menu",
@@ -7982,7 +7982,7 @@
           "skill_information": "<table style=\"width: 100%; text-align: center;\"><tbody><tr><td data-colwidth=\"79\"><p><strong>Level</strong></p></td><td data-colwidth=\"148\"><p><strong>Bonus Check</strong></p></td></tr><tr><td data-colwidth=\"79\"><p>1</p></td><td data-colwidth=\"148\"><p>+1</p></td></tr><tr><td data-colwidth=\"79\"><p>2</p></td><td data-colwidth=\"148\"><p>+2</p></td></tr><tr><td data-colwidth=\"79\"><p>3</p></td><td data-colwidth=\"148\"><p>+3</p></td></tr></tbody></table>",
           "skill_range": "Any",
           "skill_target": "-",
-          "skill_type": "Active",
+          "skill_type": "Passive",
           "type_damage": "",
           "use_optional_params": false
         },

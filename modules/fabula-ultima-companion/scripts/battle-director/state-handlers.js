@@ -5316,6 +5316,14 @@ const Compute = {
           }
         }
       }
+      // An Objective taken through a free action rolls with its check bonus (High
+      // Speed: "+SL to all Checks you perform as part of the chosen option"). Stamped
+      // on the ar so every recompute reads it too; the free-action window clears it.
+      const objectiveGrant = ar.kind === "Objective" ? (freeActions.get(ar.attacker?.actorId ?? attacker?.actorId) ?? null) : null;
+      if (objectiveGrant) {
+        arForProfile = { ...arForProfile, freeActionGrant: { sourceLabel: objectiveGrant.sourceLabel, checkBonus: objectiveGrant.checkBonus ?? 0, damageBonus: 0 } };
+        log(`Objective COMPUTE: applied ${objectiveGrant.sourceLabel} grant (+${objectiveGrant.checkBonus ?? 0} check)`);
+      }
       const profile = await computeActionProfile({
         view, ar: arForProfile, attacker, targets: allTargets, dice,
         // chainVars lets the card preview resolve a VAR_<NAME> element (the
@@ -5323,7 +5331,7 @@ const Compute = {
         // menuPicks scopes the preview to the CHOSEN open_action_menu option (the
         // picks aren't on `ar` yet — written to the actionResult below), so the card
         // reflects the pick. DISPLAY-ONLY (never sets hasDamage / applies damage).
-        ctx: { round: director.dCombat?.round ?? 0, chainVars: preActivateVars, menuPicks: preActivateMenuPicks },
+        ctx: { round: director.dCombat?.round ?? 0, chainVars: preActivateVars, menuPicks: preActivateMenuPicks, grant: arForProfile.freeActionGrant ?? null },
       });
       const skillProj = projectProfileToActionResult(profile, arForProfile, allTargets);
       // Surface the check_die_swap note on the roll so the accuracy card shows it.
@@ -5334,7 +5342,7 @@ const Compute = {
       let descriptionHtml = arForProfile.descriptionHtml;
       // A skill staged as a free action does not use your action, whatever its
       // description opens with.
-      if (topIsFreeAction(director.ctx) && freeActions.get(attacker?.actorId)?.preset) {
+      if (topIsFreeAction(director.ctx) && (freeActions.get(attacker?.actorId)?.preset || ar.kind === "Objective")) {
         descriptionHtml = SE().stripUsesYourAction(descriptionHtml);
       }
       let dynamicPickCost = null;

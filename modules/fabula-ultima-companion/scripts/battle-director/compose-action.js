@@ -298,7 +298,7 @@ async function composeActionChain({
         // ONE command; the picked option travels as `objectiveId` on the bundle
         // (the Item pattern), so TARGET/COMPUTE/CONFIRM/RESOLVE stay shared and
         // content can extend the list without touching the FSM.
-        result = await composeObjective({ director, snap, objectiveSpec, cancelSentinel });
+        result = await composeObjective({ director, snap, objectiveSpec, cancelSentinel, freeActionGrant });
         break;
       case "Ultima":
         // Boss Ultima menu — ListPicker over the three Ultima actions. The
@@ -1395,30 +1395,33 @@ async function composeGuard({ director, snap, eligible, cancelSentinel }) {
 // choice rides `objectiveId`, so a runtime-granted option needs no FSM branch of
 // its own. The GM re-derives and re-validates that id against the live actor at
 // DECLARE before anything is spent — a player client's bundle is never trusted.
-async function composeObjective({ director, snap, objectiveSpec, cancelSentinel }) {
+async function composeObjective({ director, snap, objectiveSpec, cancelSentinel, freeActionGrant = null }) {
   const rows = objectiveSpec?.rows ?? [];
   if (!rows.length) {
     ui.notifications?.info(`${snap?.name ?? "This creature"} has no Objective actions available.`);
     return { cancelled: true, reason: "no objectives" };
   }
+  // Inside a free action the option does not use the action, whatever its text opens with.
+  const { stripUsesYourAction } = freeActionGrant ? await import("./skill-effects.js") : {};
+  const descOf = (r) => (stripUsesYourAction ? stripUsesYourAction(r.desc) : r.desc);
   const picked = await raceCancel(
     pickFromList({
       director,
       title: "Objective Actions",
       crumb: "Objective",
       verb: "Choose",
-      subtitle: `${snap.name} • costs your action`,
+      subtitle: `${snap.name} • ${freeActionGrant ? "free action" : "costs your action"}`,
       width: 460,
       options: rows.map((r) => ({
         value: r.id,
         primary: r.name,
         secondary: r.disabledReason
-          ? `${stripHtml(r.desc)} <span style="color:#c81010; font-weight:800;">— ${r.disabledReason}</span>`
-          : stripHtml(r.desc),
+          ? `${stripHtml(descOf(r))} <span style="color:#c81010; font-weight:800;">— ${r.disabledReason}</span>`
+          : stripHtml(descOf(r)),
         imageUrl: r.img,
         badge: r.cost || undefined,
         disabled: !!r.disabledReason,
-        tooltip: r.desc || undefined,
+        tooltip: descOf(r) || undefined,
       })),
       externalCancel: cancelSentinel,
     }),

@@ -508,7 +508,7 @@
               "target_ref": "hs_self"
             },
             "2": {
-              "allowed_types": "Attack,Hinder",
+              "allowed_types": "Attack,Hinder,Objective",
               "check_bonus_formula": "SL",
               "damage_bonus_formula": "",
               "effect_kind": "open_action_menu",

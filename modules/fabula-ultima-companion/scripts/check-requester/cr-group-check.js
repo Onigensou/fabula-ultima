@@ -705,6 +705,7 @@
       postChat         = true,
       hiddenDl         = false,
       checkBuffActions = [],   // forwarded to both helper + leader CR.request calls
+      leaderModifiers  = [],   // extra {label, value} rows on the leader's Check only
       // ms before a participant's roll panel auto-confirms itself. Forwarded to
       // both CR.request calls below. Until this existed a Group Check driven
       // from automation waited FOREVER on a participant whose owner is offline —
@@ -797,9 +798,10 @@
     const bonus          = passingHelpers * helperBonus;
 
     // ── Phase B: Leader check ──────────────────────────────────────────────
-    const modifiers = bonus > 0
-      ? [{ label: `Helper Bonus (${passingHelpers}×+${helperBonus})`, value: bonus }]
-      : [];
+    const modifiers = [
+      ...(bonus > 0 ? [{ label: `Helper Bonus (${passingHelpers}×+${helperBonus})`, value: bonus }] : []),
+      ...leaderModifiers,
+    ];
 
     const leaderResults = await CR.request([leaderActor], {
       attrA, attrB, singleDie,
