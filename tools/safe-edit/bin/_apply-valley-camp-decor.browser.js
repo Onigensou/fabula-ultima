@@ -40,7 +40,9 @@
 
   const surfaceFx = {
     mode: "water",
-    layers: { water: true, light: true, crystal: false, wisp: true },
+    // light layer OFF (user, 11-06): Foundry's own darkness + AmbientLights below do the
+    // contrast; the light pools still steer the haze (wispOutsideLight).
+    layers: { water: true, light: false, crystal: false, wisp: true },
     crystals: [],
     wisp: 0.16,
     wispOutsideLight: true,
@@ -60,6 +62,7 @@
   // ---- scene flags (unset then set: no deep merge with an older version)
   await scene.update({ [`flags.${MOD}.-=surfaceFx`]: null, [`flags.${MOD}.-=ambience`]: null });
   await scene.update({
+    "environment.darknessLevel": 0.45,
     [`flags.${MOD}.surfaceFx`]: surfaceFx,
     [`flags.${MOD}.ambience`]: ambience,
     [`flags.${MOD}.oniFabula.general.surfaceFxEnabled`]: true,
@@ -71,6 +74,20 @@
   await delIds("Region", scene.regions.filter((r) => ours(r, "draftRegions")).map((r) => r.id));
   await delIds("Wall", scene.walls.filter((w) => ours(w, "draftWalls")).map((w) => w.id));
   await delIds("Tile", scene.tiles.filter((t) => ours(t, "draftTiles")).map((t) => t.id));
+  await delIds("AmbientLight", scene.lights.filter((l) => ours(l, "draftLights")).map((l) => l.id));
+
+  // ---- native lights (user, 11-06): warm camp, subtle cool pond. Radius m = px / 65 * 2.
+  const light = (name, x, y, dim, color, alpha, luminosity, animation) => ({
+    x, y, walls: true, vision: false,
+    config: { dim, bright: dim / 2, color, alpha, coloration: 1, luminosity, attenuation: 0.5, animation: animation ?? { type: null } },
+    flags: { [MOD]: { draftLights: TAG, draftName: name } },
+  });
+  const lights = await scene.createEmbeddedDocuments("AmbientLight", [
+    light("campfire", 603, 470, 10, "#e8851a", 0.5, 0.5, { type: "flame", speed: 5, intensity: 5 }),
+    light("tent lantern", 474, 325, 3, "#eeb61b", 0.5, 0.5, { type: "flame", speed: 3, intensity: 3 }),
+    light("pond", 1030, 680, 13, "#8fa8e8", 0.25, 0.45),
+  ]);
+  out.created.AmbientLight = lights.length;
 
   // ---- the one shore wall that closes the beach (untagged, matched exactly)
   const same = (c) => c.length === 4 && ((c[0] === CUT_WALL[0] && c[1] === CUT_WALL[1] && c[2] === CUT_WALL[2] && c[3] === CUT_WALL[3])
