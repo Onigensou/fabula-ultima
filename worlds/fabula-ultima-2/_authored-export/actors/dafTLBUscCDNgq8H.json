@@ -3686,7 +3686,7 @@
           "arcanum_role": "pulse",
           "class": "Arcanist",
           "cost": "",
-          "description": "<p>You channel the Avatar's flame, inflicting <strong>3 stacks of Burn</strong> on up to <strong>three creatures</strong> you can see.</p>",
+          "description": "<p><strong>Uses your action.</strong> Inflict 3 Burn stacks on up to three creatures you can see.</p>",
           "details_roller": "Show",
           "effect_table": {
             "0": {
@@ -8104,7 +8104,7 @@
             "systemVersion": "4.8.5"
           },
           "changes": [],
-          "description": "<p>Merged with the <strong>Avatar of Vengeance</strong>. You recover HP &amp; MP whenever <strong>Burn</strong> triggers.</p>",
+          "description": "<p>Merged with the <strong>Avatar of Vengeance</strong>. Whenever any creature's <strong>Burn</strong> triggers, you recover 2% of your Max HP and MP.</p>",
           "disabled": false,
           "duration": {
             "combat": null,
@@ -8253,6 +8253,120 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": true,
         "uniqueId": "UoFV3k6ELMKMLhRB"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "j87E0Ygherc0t2Zb",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1793919753346,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+      "name": "Spend 6 ZP",
+      "ownership": {
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "UHYsH5KfgNmSzywt",
+        "props": {
+          "class": "Arcanist",
+          "cost": "",
+          "description": "<p>Adds <strong>10 Fire damage per Burn stack</strong> to each enemy on this Dismiss, then removes all Burn from them.</p><p>Pass to keep the Burn and deal only the 30 damage.</p>",
+          "duration": "-",
+          "effect_table": {
+            "0": {
+              "chain_steps": "aov_overload_cost,aov_overload_dmg,aov_overload_consume",
+              "consume_self": false,
+              "effect_kind": "chain",
+              "effect_label": "aov_overload",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
+            },
+            "1": {
+              "consume_amount": "6",
+              "consume_resource": "zero_power",
+              "consume_self": false,
+              "cost_amount": "6",
+              "cost_operation": "add",
+              "cost_resource": "zero_power",
+              "effect_kind": "adjust_cost",
+              "effect_label": "aov_overload_cost",
+              "from_resource": "",
+              "grant_amount": "",
+              "grant_resource": "",
+              "menu_label": "",
+              "on_empty": "abort",
+              "target_ref": "self",
+              "to_resource": ""
+            },
+            "2": {
+              "consume_self": false,
+              "damage_amount": "TARGET_AE_CHARGES_BURN * 10",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "aov_overload_dmg",
+              "from_resource": "",
+              "menu_label": "",
+              "to_resource": ""
+            },
+            "3": {
+              "consume_self": false,
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "aov_overload_consume",
+              "filter_tag": "burn",
+              "from_resource": "",
+              "menu_label": "",
+              "target_ref": "hit_action_targets",
+              "to_resource": ""
+            }
+          },
+          "isReaction": true,
+          "level": "1",
+          "max_level": "1",
+          "menu_hidden": true,
+          "name": "Spend 6 ZP",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "ANY_TARGET_HAS_BURN == 1",
+              "reaction_action_kind": "",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "aov_overload",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
+              "reaction_passive_mode": "ask",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "Avatar of Vengeance: Dismiss",
+              "reaction_status_filter": "",
+              "reaction_trigger": "creature_will_deal_damage",
+              "requires_skill": ""
+            }
+          },
+          "skill_target": "Self",
+          "skill_type": "Passive"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": true,
+        "uniqueId": "dnouOqucx5rnWsT4"
       },
       "type": "equippableItem"
     },
@@ -14508,7 +14622,7 @@
       "system": {
         "props": {
           "class": "Arcanum",
-          "description": "<p><strong>Domain:</strong> Vengeance, Burn.</p><p>An Arcanum of wrathful flame. While merged with the <strong>Avatar of Vengeance</strong>, every <strong>Burn</strong> that flares across the battlefield feeds your fury — spread the flames with <strong>Pulse</strong>, then release the Avatar in a blaze with <strong>Dismiss</strong>.</p>",
+          "description": "<p><strong>Merge:</strong> whenever any creature's Burn triggers, recover 2% of your Max HP and MP.</p><p><strong>Pulse:</strong> uses your action, no MP. 3 Burn stacks on up to three creatures.</p><p><strong>Dismiss:</strong> free, at the start or end of your turn. 30 Fire damage to all enemies, then the merge ends. For 6 ZP, add 10 damage per Burn stack and clear their Burn.</p>",
           "domain": "Vengeance, Burn",
           "element": "fire",
           "id": "i2iiWtzT0FMQHRqj",
@@ -15395,7 +15509,7 @@
           "cost": "",
           "damage_bonus": "30",
           "defense_target_type": "def",
-          "description": "<p><em>As a free action, before or after your action on your turn,</em> you release the Avatar in a final blaze, dealing <strong>【30】 <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage</strong> to <strong>all enemies</strong> and ending the merge.</p><p>As you do, you may spend <strong>【6 Zero Power】</strong> to deal additional <strong><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage</strong> to each enemy equal to <strong>【10 × their Burn stacks】</strong>, then remove all <strong>Burn</strong> from those enemies.</p>",
+          "description": "<p>Release the Avatar: <strong>30 <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage</strong> to all enemies, and the merge ends.</p><p>You can spend <strong>6 ZP</strong> to add 10 damage per Burn stack and clear their Burn.</p>",
           "details_roller": "Show",
           "duration": "-",
           "effect_table": {
@@ -15408,54 +15522,6 @@
               "from_resource": "",
               "menu_label": "",
               "target_ref": "self",
-              "to_resource": ""
-            },
-            "1": {
-              "chain_steps": "aov_overload_cost,aov_overload_dmg,aov_overload_consume",
-              "consume_self": false,
-              "effect_kind": "chain",
-              "effect_label": "aov_overload",
-              "from_resource": "",
-              "menu_label": "",
-              "to_resource": ""
-            },
-            "2": {
-              "consume_amount": "6",
-              "consume_resource": "zero_power",
-              "consume_self": false,
-              "cost_amount": "6",
-              "cost_operation": "add",
-              "cost_resource": "zero_power",
-              "effect_kind": "adjust_cost",
-              "effect_label": "aov_overload_cost",
-              "from_resource": "",
-              "grant_amount": "",
-              "grant_resource": "",
-              "menu_label": "",
-              "on_empty": "abort",
-              "target_ref": "self",
-              "to_resource": ""
-            },
-            "3": {
-              "consume_self": false,
-              "damage_amount": "TARGET_AE_CHARGES_BURN * 10",
-              "damage_operation": "add",
-              "damage_stage": "outgoing",
-              "effect_kind": "adjust_damage",
-              "effect_label": "aov_overload_dmg",
-              "from_resource": "",
-              "menu_label": "",
-              "to_resource": ""
-            },
-            "4": {
-              "consume_self": false,
-              "count": "all",
-              "effect_kind": "remove_tagged_ae",
-              "effect_label": "aov_overload_consume",
-              "filter_tag": "burn",
-              "from_resource": "",
-              "menu_label": "",
-              "target_ref": "hit_action_targets",
               "to_resource": ""
             }
           },
@@ -15470,7 +15536,7 @@
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": true,
+          "isReaction": false,
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
@@ -15479,25 +15545,7 @@
           "on_activate_effect_ref": "aov_dismiss_unmerge",
           "optional_params": {},
           "pre_activate_effect_ref": "",
-          "reaction_config_table": {
-            "0": {
-              "condition_formula": "TRIGGER_IS_SELF == 1 && ANY_TARGET_HAS_BURN == 1",
-              "reaction_action_kind": "",
-              "reaction_cause_filter": "",
-              "reaction_effect_ref": "aov_overload",
-              "reaction_max_per_round": "",
-              "reaction_origin_filter": "",
-              "reaction_passive_mode": "ask",
-              "reaction_requires_weapon_used": false,
-              "reaction_resource_filter": "",
-              "reaction_responder": "",
-              "reaction_source": "self",
-              "reaction_source_skill": "Avatar of Vengeance: Dismiss",
-              "reaction_status_filter": "",
-              "reaction_trigger": "creature_will_deal_damage",
-              "requires_skill": ""
-            }
-          },
+          "reaction_config_table": {},
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -15551,13 +15599,13 @@
           "animation_preload_urls": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Ragnarok%20Online/efst_magiccircle__mc.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/117_light_pillar_1.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/twinkle_anim02.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/066_fire_one_1.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/052_powerup_2.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/WanderingFlame_Standard.png\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Fire2.ogg\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Fire2.ogg\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Monster1.ogg\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Up4.ogg",
           "animation_script": "<p>// Bind and Summon (The Wandering Flame) — generated by tools/anim-studio/lib/dungeon-templates.js</p><p>// Re-run tools/safe-edit/bin/_build-dungeon-animations.js to regenerate.</p><p>(async () =&gt; {</p><p></p><p>const CFG = {\"totalTimeoutMs\":20000,\"t\":{\"rel\":1280,\"fin\":4450,\"auraEnd\":5610,\"dimOut\":5610,\"total\":6250},\"sfx\":[{\"at\":380,\"url\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Fire2.ogg\",\"v\":0.35},{\"at\":1280,\"url\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Fire2.ogg\",\"v\":0.385},{\"at\":2480,\"url\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Monster1.ogg\",\"v\":0.42},{\"at\":4450,\"url\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Up4.ogg\",\"v\":0.385}]};</p><p>const ASSETS = {\"clips\":{\"mc\":{\"url\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Ragnarok%20Online/efst_magiccircle__mc.webm\",\"w\":112,\"h\":64,\"dur\":2417,\"ax\":0.5,\"ay\":0.5},\"pillar\":{\"url\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/117_light_pillar_1.webm\",\"w\":384,\"h\":384,\"dur\":2467,\"ax\":0.5,\"ay\":0.8438,\"ro\":false},\"twinkle\":{\"url\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/twinkle_anim02.webm\",\"w\":64,\"h\":64,\"dur\":250,\"ax\":0.5,\"ay\":0.5,\"mask\":true},\"fire1\":{\"url\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/066_fire_one_1.webm\",\"w\":776,\"h\":784,\"dur\":733,\"ax\":0.5,\"ay\":0.8827,\"ro\":false},\"pu2\":{\"url\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/052_powerup_2.webm\",\"w\":508,\"h\":630,\"dur\":1200,\"ax\":0.5,\"ay\":0.6508,\"ro\":false}},\"images\":{\"wflame\":\"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/WanderingFlame_Standard.png\"}};</p><p>const ANIM_KEY = \"oni.dungeon.party.hina-wandering-flame\";</p><p>const TAG = \"[ONI][Anim][Bind and Summon (The Wandering Flame)]\";</p><p></p><p>const P = globalThis.__PAYLOAD ?? payload ?? {};</p><p>function tokFromUuid(u) { try { const d = fromUuidSync?.(u); return d?.object ?? null; } catch (_) { return null; } }</p><p>function resolveSource() {</p><p>  for (const c of [P?.casterTokenUuid, P?.sourceTokenUuid, P?.tokenUuid]) { const t = tokFromUuid(c); if (t) return t; }</p><p>  return canvas?.tokens?.controlled?.[0] ?? null;</p><p>}</p><p>function resolveTargets() {</p><p>  const out = [];</p><p>  const arg = Array.isArray(targets) ? targets : [];</p><p>  for (const t of arg) if (t?.center) out.push(t);</p><p>  if (!out.length &amp;&amp; Array.isArray(globalThis.__TARGETS)) for (const t of globalThis.__TARGETS) if (t?.center) out.push(t);</p><p>  return out;</p><p>}</p><p>const sourceToken  = resolveSource();</p><p>const partyTargets = resolveTargets();</p><p></p><p>const doneHook = 'oni.anim.' + ANIM_KEY + '.' + (foundry?.utils?.randomID?.(8) ?? String(Date.now()));</p><p>const readyHook = doneHook + '.ready';</p><p>function onceHook(hookName, timeoutMs) {</p><p>  return new Promise((resolve) =&gt; {</p><p>    let settled = false;</p><p>    const timer = setTimeout(() =&gt; { if (settled) return; settled = true; Hooks.off(hookName, h); resolve({ ok: false, timeout: true }); }, timeoutMs);</p><p>    const h = (d) =&gt; { if (settled) return; settled = true; clearTimeout(timer); Hooks.off(hookName, h); resolve(d ?? { ok: true }); };</p><p>    Hooks.on(hookName, h);</p><p>  });</p><p>}</p><p>function emitLocal(n, d) { try { Hooks.callAll(n, d); } catch (_) {} }</p><p></p><p>const scriptSource = String.raw`</p><p>// ── Party kit (prepended to every party shot by party-signatures.js) ─────────</p><p>// Ports of the approved \"Party Action Animations\" mockup helpers onto</p><p>// oni.timeline. Mockup px were drawn for a ~300 px tall battler, so every size</p><p>// and distance below is multiplied by U = caster height / 300.</p><p>// Storage rules: no backticks and no dollar-brace anywhere in this file.</p><p>const cfg = ctx.params.cfg || {};</p><p>const A = ctx.params.assets || {};</p><p>const caster = ctx.casterToken;</p><p>const targets = (ctx.targetTokens || []).filter((t) =&gt; t &amp;&amp; t.center &amp;&amp; (!caster || t.id !== caster.id));</p><p></p><p>// boot(extra): the timeline with the caster as 'c', targets as t0..tn, plus extra tokens.</p><p>async function boot(extra) {</p><p>  const tokens = {};</p><p>  if (caster) tokens.c = cfg.foot ? { token: caster, foot: cfg.foot } : { token: caster };</p><p>  const TG = [];</p><p>  targets.forEach((t, i) =&gt; { const k = 't' + i; TG.push(k); tokens[k] = cfg.targetFoot ? { token: t, foot: cfg.targetFoot } : { token: t }; });</p><p>  Object.assign(tokens, extra || {});</p><p>  // live: the party shots never move the camera, so they run on the LIVE board (oni-timeline</p><p>  // spec.live): idle bounce, depth, 3D parallax keep running; only touched tokens are taken over.</p><p>  // depthRef: clip sizes are authored for the caster; on a 3D / depth-map stage the engine</p><p>  // rescales a clip placed on another battler (or on the floor) by the depth ratio to it.</p><p>  const tl = oni.timeline({ tokens, clips: A.clips || {}, images: A.images || {}, live: cfg.live !== false, depthRef: caster ? 'c' : null });</p><p>  await tl.load();</p><p>  const T = []; const m = tl.mk(T);</p><p>  const TOK = tl.TOK;</p><p>  const U = ((TOK.c &amp;&amp; TOK.c.h) || 300) / 300;</p><p>  K._tl = tl; K._c0 = TOK.c ? tl.feet(TOK.c) : null;</p><p>  return { tl, T, m, TOK, TG, U, E: tl.E };</p><p>}</p><p>const K = {};</p><p>K.ready = () =&gt; { const h = ctx.params.readyHook; if (h) { try { Hooks.callAll(h); } catch (e) {} } };</p><p>K.dirOf = (TOK, k) =&gt; (TOK[k] &amp;&amp; TOK[k].dir) || -1;</p><p>K.feet = (tl, k) =&gt; { const t = tl.TOK[k]; return tl.feet(t); };</p><p>K.mid = (tl, k) =&gt; { const t = tl.TOK[k]; const f = tl.feet(t); return { x: f.x, y: f.y - t.h * 0.5 }; };</p><p>K.head = (tl, k) =&gt; { const t = tl.TOK[k]; const f = tl.feet(t); return { x: f.x, y: f.y - t.h * 0.92 }; };</p><p>// BD places a summon at caster_front: caster centre +/- max(1.15 cell, meshW/2 + 0.65 cell) toward stage centre.</p><p>K.summonSpot = (tl, k) =&gt; { const t = tl.TOK[k]; const f = tl.feet(t); const g = tl.GRID; const sx = (tl.REST.cx &lt; f.x) ? -1 : 1; return { x: f.x + sx * Math.max(1.15 * g, t.w / 2 + 0.65 * g), y: f.y }; };</p><p>// CSS-filter tint for white GG mask clips (the mockup recipe: sepia gives ~38deg, then rotate).</p><p>K.tintF = (hue, sat, br) =&gt; 'sepia(1) saturate(' + (sat || 5) + ') hue-rotate(' + Math.round(hue - 38) + 'deg) brightness(' + (br || 1.1) + ')';</p><p>// Depth size of a body (phantasm skin, painted copy) whose feet are at p, relative to the</p><p>// caster where it stands (1 on a flat stage). Set by boot() once the timeline exists.</p><p>K.depth = (p) =&gt; (K._tl &amp;&amp; K._tl.depthRatio &amp;&amp; K._c0) ? K._tl.depthRatio(K._c0, p) : 1;</p><p>K.ease = (E, name) =&gt; (name &amp;&amp; E[name]) || E.ioQ;</p><p>// A token path: keys = [[t, dx, dy, ease?], ...]; held between keys, nothing before/after.</p><p>K.path = (m, E, k, keys) =&gt; {</p><p>  const t0 = keys[0][0], t1 = keys[keys.length - 1][0];</p><p>  m.hold(t0, t1 + 1, (tl, S) =&gt; {</p><p>    const t = tl + t0; const q = S.tok[k]; if (!q) return;</p><p>    for (let i = 1; i &lt; keys.length; i++) {</p><p>      const a = keys[i - 1], b = keys[i];</p><p>      if (t &lt;= b[0]) { const u = (b[0] === a[0]) ? 1 : K.ease(E, b[3])(Math.min(1, Math.max(0, (t - a[0]) / (b[0] - a[0])))); q.dx += a[1] + (b[1] - a[1]) * u; q.dy += a[2] + (b[2] - a[2]) * u; return; }</p><p>    }</p><p>  });</p><p>};</p><p>// Step out toward the enemy and back. dist in mockup px.</p><p>K.step = (m, E, U, dir, k, out, hold, back, dist) =&gt; K.path(m, E, k, [[out, 0, 0], [out + 380, dir * dist * U, 0, 'ioQ'], [back, dir * dist * U, 0], [back + 460, 0, 0, 'ioQ']]);</p><p>// RO hexagram cast circle under k's feet. Eases in (scale .55 to 1 + fade, 380 ms),</p><p>// loops while channelling, fades out (420 ms) when released. Ground layer (z 2).</p><p>K.circle = (tl, m, U, k, at, hold, hue, o) =&gt; {</p><p>  o = o || {}; const f0 = tl.feet(tl.TOK[k]); const f = { x: f0.x + (o.dx || 0), y: f0.y }; const s = (o.scale || 1) * Math.max(0.8, tl.TOK[k].w / (170 * U)) * U;</p><p>  const dur = hold + 420; const w = 112 * 1.9 * 0.85 * 2.0 * s;</p><p>  const shift = 'hue-rotate(' + Math.round(hue - 268) + 'deg) brightness(1.35)';</p><p>  const alpha = (u) =&gt; { const t = u * dur; return t &lt; 380 ? t / 380 : t &gt; hold ? Math.max(0, 1 - (t - hold) / 420) : 1; };</p><p>  const live = (t) =&gt; ({ x: f.x, y: f.y + 4 * U, w: w * (t &lt; 380 ? 0.55 + 0.45 * tl.E.outQ(t / 380) : t &gt; hold ? 1 + 0.08 * (t - hold) / 420 : 1) });</p><p>  m.clip('mc', at, { x: f.x, y: f.y, w, z: 2, add: true, loop: true, hold: dur, filter: shift, alpha, live });</p><p>  if (o.ring) {</p><p>    const rw = (A.clips[o.ring] ? A.clips[o.ring].w : 592) * 1.9 * 0.85 * 0.95 * s;</p><p>    m.clip(o.ring, at, { x: f.x, y: f.y, w: rw, z: 2, add: true, loop: true, hold: dur, filter: 'hue-rotate(' + Math.round(hue - 265) + 'deg) brightness(1.1)', alpha, live: (t) =&gt; ({ x: f.x, y: f.y + 4 * U, w: rw * (t &lt; 380 ? 0.55 + 0.45 * tl.E.outQ(t / 380) : 1) }) });</p><p>  }</p><p>  // the caster's glow while channelling</p><p>  m.tint(at, hold, k, 'hsl(' + hue + ',90%,70%)', (u) =&gt; 0.35 * Math.sin(Math.PI * u));</p><p>};</p><p>// Wisp (port of battle-director/particles/wisps.js draw) on a travel path:</p><p>// lift lift px off from, then home along an arc to to. Trail = the path sampled into the past.</p><p>K.wisp = (m, at, from, to, o) =&gt; {</p><p>  o = o || {}; const U = o.U || 1; const rgb = o.rgb || '110,180,255'; const rad = (o.rad || 7) * U;</p><p>  const liftMs = o.liftMs || 380, travelMs = o.travelMs || 900, lift = (o.lift || 46) * U, arcH = (o.arcH || 120) * U;</p><p>  const ph = o.phase != null ? o.phase : Math.random() * 6.28, sw = (o.sway || 16) * U;</p><p>  const pos = (e) =&gt; {</p><p>    const up = { x: from.x + Math.sin(ph) * 18 * U, y: from.y - lift };</p><p>    if (e &lt; liftMs) { const k = 1 - (1 - e / liftMs) * (1 - e / liftMs); return { x: from.x + (up.x - from.x) * k, y: from.y + (up.y - from.y) * k }; }</p><p>    const k = Math.min(1, (e - liftMs) / travelMs), q = k &lt; 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;</p><p>    return { x: up.x + (to.x - up.x) * q + Math.sin(k * 9 + ph) * sw * (1 - k), y: up.y + (to.y - up.y) * q - Math.sin(k * Math.PI) * arcH };</p><p>  };</p><p>  const end = liftMs + travelMs;</p><p>  m.hold(at, at + end, (e, S) =&gt; {</p><p>    S.world.push({ z: 60, draw: (g) =&gt; {</p><p>      const a = Math.min(1, e / 180); const p = pos(e);</p><p>      g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';</p><p>      const n = 20; let prev = null;</p><p>      for (let i = n; i &gt;= 0; i--) { const q = pos(Math.max(0, e - i * 16)); if (prev) { const f = 1 - i / n; g.strokeStyle = 'rgba(' + rgb + ',' + (0.42 * f * a).toFixed(3) + ')'; g.lineWidth = rad * 2.4 * f; g.beginPath(); g.moveTo(prev.x, prev.y); g.lineTo(q.x, q.y); g.stroke(); } prev = q; }</p><p>      const hr = rad * 7; let gr = g.createRadialGradient(p.x, p.y, 0, p.x, p.y, hr);</p><p>      gr.addColorStop(0, 'rgba(' + rgb + ',' + (0.5 * a).toFixed(3) + ')'); gr.addColorStop(0.35, 'rgba(' + rgb + ',' + (0.16 * a).toFixed(3) + ')'); gr.addColorStop(1, 'rgba(' + rgb + ',0)');</p><p>      g.fillStyle = gr; g.beginPath(); g.arc(p.x, p.y, hr, 0, 6.283); g.fill();</p><p>      const tw = 0.6 + 0.4 * Math.sin(e * 0.013 + ph), L = rad * 7.5 * tw;</p><p>      g.save(); g.translate(p.x, p.y); g.rotate(ph + e * 0.002);</p><p>      for (let q2 = 0; q2 &lt; 4; q2++) { const len = q2 &lt; 2 ? L : L * 0.5; g.save(); g.rotate(q2 * Math.PI / 2 + (q2 &gt;= 2 ? Math.PI / 4 : 0)); const lg = g.createLinearGradient(-len, 0, len, 0); lg.addColorStop(0, 'rgba(255,255,255,0)'); lg.addColorStop(0.5, 'rgba(255,255,255,' + ((q2 &lt; 2 ? 0.85 : 0.45) * a * tw).toFixed(3) + ')'); lg.addColorStop(1, 'rgba(255,255,255,0)'); g.strokeStyle = lg; g.lineWidth = 1.4 * U; g.beginPath(); g.moveTo(-len, 0); g.lineTo(len, 0); g.stroke(); g.restore(); }</p><p>      g.restore();</p><p>      gr = g.createRadialGradient(p.x, p.y, 0, p.x, p.y, rad * 1.9); gr.addColorStop(0, 'rgba(255,255,255,' + a.toFixed(3) + ')'); gr.addColorStop(0.5, 'rgba(255,255,255,' + (0.7 * a).toFixed(3) + ')'); gr.addColorStop(1, 'rgba(' + rgb + ',0)');</p><p>      g.fillStyle = gr; g.beginPath(); g.arc(p.x, p.y, rad * 1.9, 0, 6.283); g.fill();</p><p>      g.restore();</p><p>    } });</p><p>  });</p><p>  return at + end;</p><p>};</p><p>// Glass shards (or embers) flung from pt; deterministic per seed.</p><p>K.shards = (tl, m, at, pt, color, n, spread, U, seed) =&gt; {</p><p>  const r = tl.rng(seed || 7); const P2 = [];</p><p>  for (let i = 0; i &lt; n; i++) P2.push({ a: r() * 6.283, d: spread * U * (0.5 + r() * 0.6), r0: r() * 6.28, rs: (r() - 0.5) * 16, ms: 700 + r() * 300 });</p><p>  m.hold(at, at + 1000, (e, S) =&gt; S.world.push({ z: 62, draw: (g) =&gt; {</p><p>    for (const s of P2) { const u = Math.min(1, e / s.ms); if (u &gt;= 1) continue; const k = 1 - (1 - u) * (1 - u);</p><p>      g.save(); g.translate(pt.x + Math.cos(s.a) * s.d * k, pt.y + Math.sin(s.a) * s.d * k + 90 * U * u * u); g.rotate(s.r0 + s.rs * u); g.scale(1 - 0.5 * u, 1 - 0.5 * u);</p><p>      g.globalAlpha = 1 - u; g.globalCompositeOperation = 'lighter'; const gr = g.createLinearGradient(-8 * U, -11 * U, 8 * U, 11 * U); gr.addColorStop(0, '#fff'); gr.addColorStop(1, color); g.fillStyle = gr;</p><p>      g.beginPath(); g.moveTo(0, -11 * U); g.lineTo(8 * U, -2 * U); g.lineTo(3 * U, 11 * U); g.lineTo(-8 * U, 4 * U); g.closePath(); g.fill(); g.restore(); }</p><p>  } }));</p><p>};</p><p>// A soft glowing orb travelling an arc (from, to) over ms.</p><p>K.orb = (m, at, from, to, ms, h, color, size, U) =&gt; {</p><p>  m.hold(at, at + ms, (e, S) =&gt; { const k = e / ms, q = k &lt; 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2; const x = from.x + (to.x - from.x) * q, y = from.y + (to.y - from.y) * q - Math.sin(k * Math.PI) * h * U;</p><p>    S.world.push({ z: 61, draw: (g) =&gt; { const r = size * U; const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, '#fff'); gr.addColorStop(0.35, color); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 6.283); g.fill(); g.restore(); } }); });</p><p>};</p><p>// GG twinkle sparks around pt (mask clip, tinted).</p><p>K.twinkles = (m, at, pt, color, n, spread, U, seed) =&gt; {</p><p>  const r = Math.random; for (let i = 0; i &lt; n; i++) m.clip('twinkle', at + i * 70, { x: pt.x + (r() - 0.5) * spread * 2 * U, y: pt.y + (r() - 0.5) * spread * 2 * U, w: 64 * 1.6 * 0.85 * U, z: 63, add: true, filter: color });</p><p>};</p><p></p><p>// ── Phantasm skins: draw(g, x, feetY, alpha, scale, t) at a feet point. ──</p><p>//   mirage  = Illusionist default: a violet double of the CASTER (red/cyan split, flicker).</p><p>//   foxfire = Keren: her Fox fire summon art (A.images.foxfire), a pink spirit flame.</p><p>K.skin = (tl, name, U) =&gt; {</p><p>  if (name === 'foxfire') {</p><p>    const img = tl.IMG.foxfire; const size = 120 * U;</p><p>    return { h: size + 40 * U, draw(g, x, y, a, s, t) { if (!img || a &lt;= 0) return; const iw = img.naturalWidth || img.width || 1, ih = img.naturalHeight || img.height || 1; const h = size * (s || 1), w = h * iw / ih; const fl = 1 + 0.06 * Math.sin(t / 60);</p><p>      g.save(); g.translate(x, y - 40 * U); g.scale(1 / fl, fl); g.globalAlpha = a; g.shadowColor = '#ff6fb4'; g.shadowBlur = 18 * U; g.drawImage(img, -w / 2, -h, w, h); g.globalCompositeOperation = 'lighter'; g.globalAlpha = a * 0.35; g.drawImage(img, -w / 2, -h, w, h); g.restore(); } };</p><p>  }</p><p>  const art = tl.art('c'); const T0 = tl.TOK.c;</p><p>  return { h: T0 ? T0.h : 300 * U, draw(g, x, y, a, s, t) { if (!art || !T0 || a &lt;= 0) return; const w = T0.w * (s || 1), h = T0.h * (s || 1); const j = (Math.floor(t / 70) % 12 === 0) ? 9 * U : 4 * U;</p><p>    const one = (f, al, ox, add) =&gt; { g.save(); g.translate(x + ox, y); g.scale(T0.flip, 1); g.globalAlpha = al; g.filter = f; if (add) g.globalCompositeOperation = 'lighter'; g.drawImage(art, -w / 2, -h * T0.foot, w, h); g.restore(); };</p><p>    one('grayscale(1) sepia(1) saturate(4) hue-rotate(225deg) brightness(1.35) drop-shadow(0 0 8px #b98cff)', a * (0.72 + 0.08 * Math.sin(t / 70)), 0, false);</p><p>    one('grayscale(1) sepia(1) saturate(8) hue-rotate(-50deg)', a * 0.32, -j, true);</p><p>    one('grayscale(1) sepia(1) saturate(8) hue-rotate(140deg)', a * 0.32, j, true); } };</p><p>};</p><p>// Draw a phantasm along posFn(e) -&gt; { x, y (feet), a, s } between t0 and t1, with afterimages when moving.</p><p>K.phantasm = (m, skin, t0, t1, posFn, trail) =&gt; {</p><p>  m.hold(t0, t1, (e, S) =&gt; S.world.push({ z: 30, draw: (g) =&gt; {</p><p>    if (trail) for (let i = 4; i &gt;= 1; i--) { const q = posFn(Math.max(0, e - i * 60)); const p0 = posFn(e); if (Math.hypot(q.x - p0.x, q.y - p0.y) &lt; 4) continue; g.save(); g.filter = 'blur(2px)'; skin.draw(g, q.x, q.y, (q.a || 1) * 0.3 * (1 - i / 5), (q.s || 1) * K.depth(q), e); g.restore(); }</p><p>    const p = posFn(e); skin.draw(g, p.x, p.y, p.a == null ? 1 : p.a, (p.s || 1) * K.depth(p), e);</p><p>  } }));</p><p>};</p><p>// Ring under a point on the ground (z 2), expanding; used as an arrival / selection mark.</p><p>K.groundRing = (m, at, ms, pt, r0, r1, color, U, dashed) =&gt; {</p><p>  m.hold(at, at + ms, (e, S) =&gt; S.world.push({ z: 2, draw: (g) =&gt; { const u = e / ms; const r = (r0 + (r1 - r0) * (dashed ? 1 : u)) * U; g.save(); g.globalCompositeOperation = 'lighter'; g.strokeStyle = color; g.lineWidth = 4 * U; g.globalAlpha = dashed ? 0.9 : 1 - u; if (dashed) { g.setLineDash([10 * U, 8 * U]); g.lineDashOffset = -e / 20; } g.beginPath(); g.ellipse(pt.x, pt.y, r, r * 0.37, 0, 0, 6.283); g.stroke(); g.restore(); } }));</p><p>};</p><p></p><p>// ── shot ──</p><p>// Hina: Bind and Summon -- The Wandering Flame (approved mockup, Hina exclusive).</p><p>// Ember-red dim, fire-red hexagram circle, a fire pillar behind her, the Wandering</p><p>// Flame descends out of the sky trailing embers into a hover in front of her (toward</p><p>// centre stage), roars (shake, wings flare), dissolves into six crimson wisps that pour</p><p>// into her; fire burst + red power-up at her feet; she keeps a burning aura a moment.</p><p>if (!caster) { K.ready(); oni.fireDone(); return; }</p><p>const B = await boot(); const { tl, T, m, TOK, U, E } = B;</p><p>const t = cfg.t; const dir = K.dirOf(TOK, 'c'); const SC = tl.SCENE; const C = TOK.c;</p><p>const fx = (key, tt, pt, o) =&gt; { o = o || {}; const d = A.clips[key]; if (!d) return; m.clip(key, tt, { x: pt.x, y: pt.y, w: d.w * 0.85 * (o.scale || 1) * (d.ro ? 1.9 : 1) * U, z: o.z || 50, add: !!o.add, filter: o.filter }); };</p><p>const tdim = (at, inMs, to, color, outAt, outMs) =&gt; m.hold(at, outAt + outMs, (e, S) =&gt; { const tt = at + e; const a = tt &lt; at + inMs ? to * E.sine(e / inMs) : tt &lt; outAt ? to : to * (1 - E.sine((tt - outAt) / outMs)); S.world.push({ z: 0, draw: (g) =&gt; { g.save(); g.globalAlpha = a; g.fillStyle = color; g.fillRect(SC.x - SC.w, SC.y - SC.h, SC.w * 3, SC.h * 3); g.restore(); } }); });</p><p>const R = t.rel, F = t.fin;</p><p>tdim(0, 600, 0.55, '#1c0602', t.dimOut, 600);</p><p>K.step(m, E, U, dir, 'c', 0, 0, F, 46);</p><p>K.circle(tl, m, U, 'c', 380, R - 380, 12, { dx: dir * 46 * U });</p><p>const f = K.feet(tl, 'c'); const out = { x: f.x + dir * 46 * U, y: f.y }; const outMid = { x: out.x, y: out.y - C.h * 0.5 };</p><p>// fire pillar just behind her (ground layer)</p><p>fx('pillar', R, { x: out.x - dir * 60 * U, y: f.y - 2 * U }, { scale: 1.2, add: true, z: 2, filter: 'hue-rotate(-35deg) saturate(1.6)' });</p><p>// the Flame: 320 x 467 (mockup px). User 2026-11-05: it floats down BEHIND Hina, on her far</p><p>// side from the enemy and a little higher (deeper in the arena), facing the way she faces.</p><p>// It is drawn on the ground layer (z &lt; 5 = under the real tokens on the live board), so Hina</p><p>// stands in front of it. Native art faces left (toward the enemy for the party), so it is</p><p>// mirrored only when the caster faces right.</p><p>const img = tl.IMG.wflame; const W = 320 * U, H = 467 * U;</p><p>const home = { x: out.x - dir * (cfg.behindX != null ? cfg.behindX : 130) * U, y: f.y - (cfg.behindUp != null ? cfg.behindUp : 36) * U };</p><p>const D0 = R, D1 = R + 1200, D2 = R + 1700, D3 = R + 2600;</p><p>const posAt = (e) =&gt; {</p><p>  if (e &lt; D1) { const u = E.outQ((e - D0) / 1200); return { x: home.x - dir * 120 * U * (1 - u), y: home.y - 540 * U * (1 - u) }; }</p><p>  const b = Math.min(e, D2); return { x: home.x, y: home.y + Math.sin((b - D1) / 400) * 8 * U };</p><p>};</p><p>if (img) m.hold(D0, D3, (e0, S) =&gt; {</p><p>  const e = D0 + e0; const p = posAt(e); let a = 1, glow = 22, br = 1.1;</p><p>  if (e &gt;= D1 &amp;&amp; e &lt; D2) { const s = Math.sin((e - D1) / 500 * Math.PI); glow = 22 + 30 * s; br = 1.1 + 0.5 * s; }</p><p>  else if (e &gt;= D2) { const u = (e - D2) / 900; a = 1 - E.inQ(u); glow = 40; br = 1.6 + u; }</p><p>  S.world.push({ z: 3, draw: (g) =&gt; { if (a &lt;= 0) return; g.save(); g.translate(p.x, p.y); g.scale(dir &lt; 0 ? 1 : -1, 1); g.globalAlpha = a; g.shadowColor = '#ff6a1f'; g.shadowBlur = glow * U; g.filter = 'brightness(' + br.toFixed(2) + ')'; g.drawImage(img, -W / 2, -H, W, H); g.restore(); } });</p><p>});</p><p>// embers off the Flame while it descends (one GG twinkle every 120 ms)</p><p>for (let e = D0; e &lt; D1; e += 120) { const p = posAt(e); K.twinkles(m, e, { x: p.x, y: p.y - H * 0.3 }, K.tintF(20, 4, 1.3), 1, 60, U); }</p><p>m.shake(D1, 500, 10 * U);</p><p>// six crimson wisps pour from the Flame into her</p><p>const c0 = { x: home.x, y: home.y - H * 0.55 };</p><p>['255,80,95', '255,120,90', '255,150,135', '255,95,60', '255,175,120', '255,110,70'].forEach((rgb, i) =&gt; K.wisp(m, D2 + i * 110, { x: c0.x + (Math.random() - 0.5) * 140 * U, y: c0.y + (Math.random() - 0.5) * 160 * U }, outMid, { U, rgb, rad: 6.5, liftMs: 220, travelMs: 700, arcH: 40 }));</p><p>// the Avatar's power: flash, fire burst, red power-up, a burning aura kept till t.auraEnd</p><p>m.flash(F, 75, 225, '#ffb070', 0.35);</p><p>fx('fire1', F, out, { scale: 0.8 });</p><p>fx('pu2', F, out, { filter: 'hue-rotate(-45deg) saturate(1.5)' });</p><p>m.hold(F, t.auraEnd, (e, S) =&gt; { const k = e &gt; t.auraEnd - F - 250 ? (t.auraEnd - F - e) / 250 : Math.min(1, e / 150); const q = S.tok.c; const x = f.x + q.dx, y = f.y + q.dy - C.h * 0.5;</p><p>  S.world.push({ z: 4, draw: (g) =&gt; { const r = C.h * 0.55; const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, 'rgba(255,90,31,' + (0.5 * k).toFixed(3) + ')'); gr.addColorStop(0.6, 'rgba(255,90,31,' + (0.18 * k).toFixed(3) + ')'); gr.addColorStop(1, 'rgba(255,90,31,0)'); g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 6.283); g.fill(); g.restore(); } });</p><p>  if (0.2 * k &gt; q.tintA) { q.tint = '#ffb27a'; q.tintA = 0.2 * k; } });</p><p>await tl.run(T, { total: t.total, sfx: cfg.sfx || [], onStart: K.ready });</p><p>oni.fireDone();</p><p></p><p>`;</p><p></p><p>try {</p><p>  const waitReady = onceHook(readyHook, 8000);</p><p>  const waitDone = onceHook(doneHook, CFG.totalTimeoutMs || 20000);</p><p>  await game.ONI.pseudo.play({</p><p>    scriptId: ANIM_KEY,</p><p>    scriptSource,</p><p>    casterTokenUuid: sourceToken?.document?.uuid ?? null,</p><p>    targetTokenUuids: partyTargets.map(t =&gt; t.document.uuid),</p><p>    params: { doneHook, readyHook, cfg: CFG, assets: ASSETS, strikes: Array.isArray(P?.strikes) ? P.strikes : [] },</p><p>    meta: { source: \"Bind and Summon (The Wandering Flame)\" },</p><p>  });</p><p>  await waitReady;</p><p>  emitLocal('oni:animationStart', { type: ANIM_KEY, sceneId: canvas.scene?.id ?? null, sourceTokenId: sourceToken?.id ?? null });</p><p>  const result = await waitDone;</p><p>  if (!result?.ok) console.warn(TAG, 'pseudo non-OK / timeout', result);</p><p>} catch (err) {</p><p>  console.error(TAG, 'orchestration crashed', err);</p><p>} finally {</p><p>  emitLocal('oni:animationEnd', { type: ANIM_KEY, timestamp: Date.now(), sourceTokenId: sourceToken?.id ?? null });</p><p>}</p><p></p><p>})();</p>",
           "availability_formula": "ARCANUM_MERGED == 0",
-          "availability_reason": "Dismiss your Arcanum before summoning another",
+          "availability_reason": "Already merged. Dismiss is offered at the start and end of your turn.",
           "check_bonus": "0",
           "class": "Arcanist Variant",
           "cost": "",
           "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<p>You may bind Arcana to your soul and summon them later. The Game Master will tell you the details of each binding process when you first encounter the Arcanum in question.</p><p> You may use an action and spend <strong>30 Mind Points</strong> to summon an Arcanum you have bound: the details of this process are explained on the next page. If you take this Skill at character creation, you begin play with one Arcanum of your choice already bound to you, chosen from the list on the next pages. Other than that, you may only obtain new Arcana through exploration and story progression</p>",
+          "description": "<p>Use an action and spend 30 MP to summon an Arcanum you have bound and merge with it. You can only merge with one Arcanum at a time.</p><p>While merged, you gain its <strong>Merge</strong> effect and can use its <strong>Pulse</strong> from your Skill list.</p><p>At the start and end of your turn you are offered its <strong>Dismiss</strong>, a final blast that ends the merge.</p><p>You gain new Arcana through exploration and story.</p>",
           "details_roller": "Show",
           "duration": "",
           "effect_table": {

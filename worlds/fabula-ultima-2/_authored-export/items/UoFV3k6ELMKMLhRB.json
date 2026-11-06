@@ -20,7 +20,7 @@
         "systemVersion": "4.8.5"
       },
       "changes": [],
-      "description": "<p>Merged with the <strong>Avatar of Vengeance</strong>. You recover HP &amp; MP whenever <strong>Burn</strong> triggers.</p>",
+      "description": "<p>Merged with the <strong>Avatar of Vengeance</strong>. Whenever any creature's <strong>Burn</strong> triggers, you recover 2% of your Max HP and MP.</p>",
       "disabled": false,
       "duration": {
         "combat": null,

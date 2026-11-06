@@ -464,13 +464,13 @@
         "props": {
           "active_effect_config_table": {},
           "availability_formula": "ARCANUM_MERGED == 0",
-          "availability_reason": "Dismiss your Arcanum before summoning another",
+          "availability_reason": "Already merged. Dismiss is offered at the start and end of your turn.",
           "check_bonus": "0",
           "class": "Arcanist Variant",
           "cost": "",
           "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<p>You may bind Arcana to your soul and summon them later. The Game Master will tell you the details of each binding process when you first encounter the Arcanum in question.</p><p> You may use an action and spend <strong>30 Mind Points</strong> to summon an Arcanum you have bound: the details of this process are explained on the next page. If you take this Skill at character creation, you begin play with one Arcanum of your choice already bound to you, chosen from the list on the next pages. Other than that, you may only obtain new Arcana through exploration and story progression</p>",
+          "description": "<p>Use an action and spend 30 MP to summon an Arcanum you have bound and merge with it. You can only merge with one Arcanum at a time.</p><p>While merged, you gain its <strong>Merge</strong> effect and can use its <strong>Pulse</strong> from your Skill list.</p><p>At the start and end of your turn you are offered its <strong>Dismiss</strong>, a final blast that ends the merge.</p><p>You gain new Arcana through exploration and story.</p>",
           "duration": "",
           "effect_table": {
             "0": {

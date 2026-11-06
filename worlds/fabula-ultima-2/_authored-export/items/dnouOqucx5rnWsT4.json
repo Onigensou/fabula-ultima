@@ -1,0 +1,114 @@
+{
+  "_id": "dnouOqucx5rnWsT4",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1793919752816,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ip5BRdQzbnsmkpnU",
+  "img": "icons/magic/fire/flame-burning-skull-orange.webp",
+  "name": "Spend 6 ZP",
+  "ownership": {
+    "WQGFvLStTZeWGpak": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "i2iiWtzT0FMQHRqj",
+    "props": {
+      "class": "Arcanist",
+      "cost": "",
+      "description": "<p>Adds <strong>10 Fire damage per Burn stack</strong> to each enemy on this Dismiss, then removes all Burn from them.</p><p>Pass to keep the Burn and deal only the 30 damage.</p>",
+      "duration": "-",
+      "effect_table": {
+        "0": {
+          "chain_steps": "aov_overload_cost,aov_overload_dmg,aov_overload_consume",
+          "consume_self": false,
+          "effect_kind": "chain",
+          "effect_label": "aov_overload",
+          "from_resource": "",
+          "menu_label": "",
+          "to_resource": ""
+        },
+        "1": {
+          "consume_amount": "6",
+          "consume_resource": "zero_power",
+          "consume_self": false,
+          "cost_amount": "6",
+          "cost_operation": "add",
+          "cost_resource": "zero_power",
+          "effect_kind": "adjust_cost",
+          "effect_label": "aov_overload_cost",
+          "from_resource": "",
+          "grant_amount": "",
+          "grant_resource": "",
+          "menu_label": "",
+          "on_empty": "abort",
+          "target_ref": "self",
+          "to_resource": ""
+        },
+        "2": {
+          "consume_self": false,
+          "damage_amount": "TARGET_AE_CHARGES_BURN * 10",
+          "damage_operation": "add",
+          "damage_stage": "outgoing",
+          "effect_kind": "adjust_damage",
+          "effect_label": "aov_overload_dmg",
+          "from_resource": "",
+          "menu_label": "",
+          "to_resource": ""
+        },
+        "3": {
+          "consume_self": false,
+          "count": "all",
+          "effect_kind": "remove_tagged_ae",
+          "effect_label": "aov_overload_consume",
+          "filter_tag": "burn",
+          "from_resource": "",
+          "menu_label": "",
+          "target_ref": "hit_action_targets",
+          "to_resource": ""
+        }
+      },
+      "isReaction": true,
+      "level": "1",
+      "max_level": "1",
+      "menu_hidden": true,
+      "name": "Spend 6 ZP",
+      "reaction_config_table": {
+        "0": {
+          "condition_formula": "ANY_TARGET_HAS_BURN == 1",
+          "reaction_action_kind": "",
+          "reaction_cause_filter": "",
+          "reaction_effect_ref": "aov_overload",
+          "reaction_max_per_round": "",
+          "reaction_origin_filter": "",
+          "reaction_passive_mode": "ask",
+          "reaction_requires_weapon_used": false,
+          "reaction_resource_filter": "",
+          "reaction_responder": "",
+          "reaction_source": "self",
+          "reaction_source_skill": "Avatar of Vengeance: Dismiss",
+          "reaction_status_filter": "",
+          "reaction_trigger": "creature_will_deal_damage",
+          "requires_skill": ""
+        }
+      },
+      "skill_target": "Self",
+      "skill_type": "Passive"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": true,
+    "uniqueId": "dnouOqucx5rnWsT4"
+  },
+  "type": "equippableItem"
+}
