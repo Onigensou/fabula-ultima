@@ -245,6 +245,9 @@
         line-height: 1.4;
         vertical-align: baseline;
       }
+      /* Damage types carry their element color (set inline as --fud-dmg-c). */
+      .tr-desc-body .fud-kw-term.is-dmg,
+      .tr-desc-kw .fud-kw-term.is-dmg { color: var(--fud-dmg-c, inherit); }
       .tr-desc-body p { margin:0 0 6px; }
       .tr-desc-body ul { margin:0 0 6px; padding-left:18px; }
       .tr-desc-body img { ${IMG_RESET} }

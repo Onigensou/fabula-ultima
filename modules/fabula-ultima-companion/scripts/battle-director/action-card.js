@@ -35,6 +35,7 @@ import { plateSettled } from "./director-player-hud.js";
 import { computeEffectiveCost, formatCostMap } from "./skill-cost.js";
 import { displayElement } from "./skill-formulas.js";
 import { lookupTerm } from "./keyword-registry.js";
+import { DAMAGE as DAMAGE_TYPE_STYLE } from "../linked-text/lt-terms.js";
 import { formatHitChance, isConcealedRoll } from "./check.js";
 import { toggleKeywordTooltip, dismissKeywordTooltip } from "./keyword-tooltip.js";
 import { isAutoFireReactionMode } from "./reaction-modes.js";
@@ -785,6 +786,12 @@ export function ensureStyles() {
     .fud-bf-card .fud-kw-term:hover .fud-kw-label { filter: brightness(1.18); opacity: .82; }
     /* Status term — reads in the prose ink color. */
     .fud-bf-card .fud-kw-term.is-status { color: var(--fud-ink, #3a3228); }
+    /* Damage type — the colored Font Awesome element icon + label in the
+       element's color (same look as linked text and the Keyword Repository). */
+    .fud-bf-card .fud-kw-term.is-dmg { color: var(--fud-dmg-c, var(--fud-ink, #3a3228)); }
+    .fud-bf-card .fud-kw-term .fud-kw-term-fa {
+      width: 15px; text-align: center; font-size: 12px; line-height: 1; flex-shrink: 0;
+    }
     /* Action keyword — uppercase accent text + diamond bullet prefix. */
     .fud-bf-card .fud-kw-term.is-keyword { color: #8a5a12; }
     .fud-bf-card .fud-kw-term.is-keyword .fud-kw-label {
@@ -5518,6 +5525,15 @@ function statusChipHTML({ key, label, icon }) {
     + `<span class="fud-kw-label">${escapeHtml(label)}</span></span>`;
 }
 
+// Damage type — colored Font Awesome element icon + label, inline in the prose.
+// The registry's image icons for damage types (Paralyze.png for Bolt…) are NOT
+// the house format; the element icons + colors live in linked-text's DAMAGE.
+function damageChipHTML({ key, label, style }) {
+  return `<span class="fud-kw-term is-dmg" role="button" tabindex="0" data-fud-kw="${escapeHtml(key)}" style="--fud-dmg-c:${escapeHtml(style.color)}">`
+    + `<i class="fa-solid ${escapeHtml(style.fa)} fud-kw-term-fa" aria-hidden="true"></i>`
+    + `<span class="fud-kw-label">${escapeHtml(label)}</span></span>`;
+}
+
 // Parse a description HTML string: extract Action Keywords, swap status links
 // for chips, flatten unknown links. Returns { keywords:[{key,label,icon}],
 // bodyHtml:string }. Never throws — on any failure falls back to the old
@@ -5556,6 +5572,13 @@ export function parseEffectDescription(html) {
           keywords.push({ key, label, icon: entry.icon ?? null });
         }
         a.remove();
+        continue;
+      }
+      const dmgStyle = entry?.category === "damage" ? DAMAGE_TYPE_STYLE[entry.label.toLowerCase()] : null;
+      if (dmgStyle) {
+        const span = document.createElement("span");
+        span.innerHTML = damageChipHTML({ key: entry.key ?? uuid, label, style: dmgStyle });
+        a.replaceWith(span.firstElementChild ?? document.createTextNode(text));
         continue;
       }
       if (entry?.kind === "status") {
