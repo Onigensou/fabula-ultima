@@ -37,6 +37,12 @@
   // ---------------------------------------------------------------------------
   // State
   // ---------------------------------------------------------------------------
+  // Read-only view of the live state for other DP files (dp-look.js tooltip).
+  Object.defineProperty(DP, "Runtime", { configurable: true, get: () => ({
+    active: state.active, busy: state.busy, graph: state.graph, neighborIds: state.neighborIds,
+    currentNodeId: state.currentNode?.nodeId ?? null,
+  }) });
+
   const state = {
     installed:    true,
     active:       false,

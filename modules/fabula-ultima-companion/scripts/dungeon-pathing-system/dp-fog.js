@@ -98,6 +98,16 @@
     container.x      = b.left;
     container.y      = b.top;
 
+    // Dungeon chart look (dp-look.js): the "?" disc; the tile art underneath is
+    // hidden while the disc shows and crossfades back on reveal (_artAlpha).
+    if (DP.Look?.unknownDisc) {
+      const disc = DP.Look.unknownDisc(w, h, fogMode);
+      container.addChild(disc);
+      container._sprite = disc;
+      container._artFade = true;
+      return container;
+    }
+
     // Build sprite
     const url    = fogMode === "shroud" ? SHROUD_TEXTURE_URL : FOG_TEXTURE_URL;
     const cached = getTexture(url);
@@ -122,14 +132,24 @@
     return container;
   }
 
+  /** Tile art alpha under a fog / shroud disc (new look only; the old sprite covered the art itself). */
+  function _artAlpha(tileId, a) {
+    const c = _fogContainers.get(tileId);
+    if (c && !c._artFade) return;
+    const m = canvas?.tiles?.get(tileId)?.mesh;
+    if (m && !m.destroyed) m.alpha = a;
+  }
+
   function destroyContainer(tileId) {
     const c = _fogContainers.get(tileId);
     if (!c) return;
+    _artAlpha(tileId, 1);
     _fogContainers.delete(tileId);
     _animating.delete(tileId);
     if (c.destroyed) return;
     c.parent?.removeChild(c);
     c.destroy({ children: true });
+    DP.LinkLayer?.redraw?.();
   }
 
   // ---------------------------------------------------------------------------
@@ -165,13 +185,16 @@
       const t    = Math.min((performance.now() - start) / REVEAL_MS, 1);
       const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
       container.alpha = 1 - ease;
+      _artAlpha(tileId, ease);
       if (t < 1) {
         requestAnimationFrame(tick);
       } else {
+        _artAlpha(tileId, 1);
         container.parent?.removeChild(container);
         container.destroy({ children: true });
         _fogContainers.delete(tileId);
         _animating.delete(tileId);
+        DP.LinkLayer?.redraw?.();
       }
     }
     requestAnimationFrame(tick);
@@ -187,6 +210,7 @@
 
     _animating.add(tileId);
     container.alpha = 0;
+    _artAlpha(tileId, 1);
 
     const start = performance.now();
     function tick() {
@@ -197,10 +221,12 @@
       const t    = Math.min((performance.now() - start) / REFOG_MS, 1);
       const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
       container.alpha = ease;
+      _artAlpha(tileId, 1 - ease);
       if (t < 1) {
         requestAnimationFrame(tick);
       } else {
         container.alpha = 1;
+        _artAlpha(tileId, 0);
         _animating.delete(tileId);
       }
     }
@@ -383,6 +409,15 @@
   // ---------------------------------------------------------------------------
 
   DP.Fog = {
+    /** True while a fog / shroud disc or an invisible-tile hide conceals what this tile is. */
+    isConcealed(tileId) {
+      const c = _fogContainers.get(tileId);
+      return (!!c && !c.destroyed && c.alpha > 0.5) || _hiddenTileIds.has(tileId);
+    },
+    /** True while this tile shows the "?" disc (its art hidden) — dp-links stops paths at its edge. */
+    hasDisc(tileId) { const c = _fogContainers.get(tileId); return !!c && !c.destroyed && !!c._artFade; },
+    /** True while an invisible tile is hidden from players. */
+    isHiddenPassage(tileId) { return _hiddenTileIds.has(tileId); },
 
     refresh(graph, currentNode, neighbors) {
       if (!ensureStage()) return;
@@ -441,11 +476,13 @@
             const container = buildContainer(node, fogMode);
             canvas.stage.addChild(container);
             _fogContainers.set(tileId, container);
+            DP.LinkLayer?.redraw?.();
 
             if (wasAdjacent && _initialized && fogMode === "fog") {
               _animateFadeIn(tileId);
             } else {
               container.alpha = 1;
+              _artAlpha(tileId, 0);
             }
           }
         }
@@ -525,7 +562,9 @@
       const container = buildContainer(node, fogMode);
       canvas.stage.addChild(container);
       _fogContainers.set(tileId, container);
+      DP.LinkLayer?.redraw?.();
       container.alpha = 1;
+      _artAlpha(tileId, 0);
     },
   };
 

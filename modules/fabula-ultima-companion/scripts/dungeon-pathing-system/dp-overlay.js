@@ -34,6 +34,8 @@
 
     setHoverNode(node) {
       if (!node || !canvas?.stage) { this.clearHover(); return; }
+      // Migrated scenes: a soft glow under the tile art (dp-look.js) instead of the gold square.
+      if (DP.Look?.showGlow?.(node)) { if (_g && !_g.destroyed) _g.clear(); return; }
 
       const g = ensureGraphics();
       if (!g) return;
@@ -49,6 +51,7 @@
 
     clearHover() {
       if (_g && !_g.destroyed) _g.clear();
+      DP.Look?.hideGlow?.();
     },
   };
 })();
