@@ -247,7 +247,14 @@
       }
       /* Damage types carry their element color (set inline as --fud-dmg-c). */
       .tr-desc-body .fud-kw-term.is-dmg,
-      .tr-desc-kw .fud-kw-term.is-dmg { color: var(--fud-dmg-c, inherit); }
+      .tr-desc-kw .fud-kw-term.is-dmg {
+        display: inline; color: var(--fud-dmg-c, inherit);
+        text-shadow: 0 0 4px var(--fud-dmg-glow, transparent); font-weight: 700;
+      }
+      .tr-desc-body .fud-kw-term.is-dmg .fud-kw-label,
+      .tr-desc-kw .fud-kw-term.is-dmg .fud-kw-label { text-decoration: none; }
+      .tr-desc-body .fud-kw-term.is-dmg i,
+      .tr-desc-kw .fud-kw-term.is-dmg i { width: 1.05em !important; height: auto !important; margin-right: .2em; vertical-align: baseline; }
       .tr-desc-body p { margin:0 0 6px; }
       .tr-desc-body ul { margin:0 0 6px; padding-left:18px; }
       .tr-desc-body img { ${IMG_RESET} }

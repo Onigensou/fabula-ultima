@@ -788,9 +788,16 @@ export function ensureStyles() {
     .fud-bf-card .fud-kw-term.is-status { color: var(--fud-ink, #3a3228); }
     /* Damage type — the colored Font Awesome element icon + label in the
        element's color (same look as linked text and the Keyword Repository). */
-    .fud-bf-card .fud-kw-term.is-dmg { color: var(--fud-dmg-c, var(--fud-ink, #3a3228)); }
+    .fud-bf-card .fud-kw-term.is-dmg {
+      display: inline; gap: 0; vertical-align: baseline;
+      color: var(--fud-dmg-c, var(--fud-ink, #3a3228));
+      text-shadow: 0 0 4px var(--fud-dmg-glow, transparent);
+      font-weight: 700;
+    }
+    .fud-bf-card .fud-kw-term.is-dmg .fud-kw-label { text-decoration: none; font-weight: 700; }
     .fud-bf-card .fud-kw-term .fud-kw-term-fa {
-      width: 15px; text-align: center; font-size: 12px; line-height: 1; flex-shrink: 0;
+      display: inline-block; width: 1.05em; margin: 0 .2em 0 0; text-align: center;
+      font-size: .92em; color: inherit;
     }
     /* Action keyword — uppercase accent text + diamond bullet prefix. */
     .fud-bf-card .fud-kw-term.is-keyword { color: #8a5a12; }
@@ -5529,7 +5536,7 @@ function statusChipHTML({ key, label, icon }) {
 // The registry's image icons for damage types (Paralyze.png for Bolt…) are NOT
 // the house format; the element icons + colors live in linked-text's DAMAGE.
 function damageChipHTML({ key, label, style }) {
-  return `<span class="fud-kw-term is-dmg" role="button" tabindex="0" data-fud-kw="${escapeHtml(key)}" style="--fud-dmg-c:${escapeHtml(style.color)}">`
+  return `<span class="fud-kw-term is-dmg" role="button" tabindex="0" data-fud-kw="${escapeHtml(key)}" style="--fud-dmg-c:${escapeHtml(style.color)};--fud-dmg-glow:${escapeHtml(style.glow ?? "transparent")}">`
     + `<i class="fa-solid ${escapeHtml(style.fa)} fud-kw-term-fa" aria-hidden="true"></i>`
     + `<span class="fud-kw-label">${escapeHtml(label)}</span></span>`;
 }
