@@ -690,7 +690,8 @@ async function cleanseBuffsDebuffsOnKO(actor) {
   if (!doomed.length) return;
   const ids = doomed.map((e) => e.id).filter(Boolean);
   try {
-    await actor.deleteEmbeddedDocuments("ActiveEffect", ids);
+    // KO wipes statuses outright — no onRemoveApply follow-up (Crystal High).
+    await actor.deleteEmbeddedDocuments("ActiveEffect", ids, { fuNoFollowup: true });
     log(`defeat-reactor: on-KO cleanse removed ${doomed.length} buff/debuff AE(s) from ${actor.name} — ${doomed.map((e) => e.name).join(", ")}`);
   } catch (e) {
     warn(`defeat-reactor: on-KO cleanse delete failed on ${actor.name}`, e);

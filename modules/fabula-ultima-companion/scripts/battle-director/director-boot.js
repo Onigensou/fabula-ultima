@@ -105,7 +105,7 @@ import { initDevToolsMenu, registerDevTool } from "./dev-tools-menu.js";
 import { registerAutopilotSetting, registerAutopilotDevTool } from "./enemy-autopilot.js";
 import { registerSummonAutopilotSetting, registerSummonAutopilotDevTool } from "./summon-autopilot.js";
 import { initDirectorSurfaces, getActiveSurfaces, hasSurface, countSurfaces, clearAllSurfaces } from "./director-surfaces.js";
-import { sweepTransientAEsAtSceneEnd, sweepRetainedSummonsAtSceneEnd, firePassiveTriggers, installRiderAeLinkage, fireResourceChangeTrigger } from "./skill-effects.js";
+import { sweepTransientAEsAtSceneEnd, sweepRetainedSummonsAtSceneEnd, firePassiveTriggers, installRiderAeLinkage, installOnRemoveFollowup, fireResourceChangeTrigger } from "./skill-effects.js";
 import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
 import { PassiveManager } from "./passive-manager.js";
 import { initPassiveCardUi, passiveCardQueue } from "./passive-card-ui/director-passive-card-ui.js";
@@ -1186,6 +1186,10 @@ Hooks.once("ready", () => {
   // when its parent AE leaves the bearer (first consumer: Draconic Domination
   // riding Charmed). Session-global, idempotent. See [[reference_rider_ae_linkage]].
   installRiderAeLinkage();
+  // Generic on-remove follow-up: an AE flagged `onRemoveApply: "<ref>"` applies
+  // that template to its bearer when it leaves in battle (Crystal High →
+  // Crystal Withdraw). Session-global, idempotent.
+  installOnRemoveFollowup();
   // Battle-End follow-up subsystem: register the entrance-animation socket on
   // every client, and register the ⭐ Wandering Flame ambush rule (GM evaluates
   // it). Idempotent. See [[battle-followup]].

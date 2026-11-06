@@ -1010,7 +1010,8 @@ export async function restoreActorsFromSnapshot(snapshot, futureSaves = []) {
     // 2a. Delete AEs that exist on the actor but NOT in the snapshot.
     const toDeleteAEs = [...currentEffectIds].filter((id) => !snapEffectsById.has(id));
     if (toDeleteAEs.length) {
-      try { await actor.deleteEmbeddedDocuments("ActiveEffect", toDeleteAEs); }
+      // A rewind restore is not "losing" a status — no onRemoveApply follow-up.
+      try { await actor.deleteEmbeddedDocuments("ActiveEffect", toDeleteAEs, { fuNoFollowup: true }); }
       catch (e) { warn(`restore: AE delete threw on ${actor.name}`, e); }
     }
 

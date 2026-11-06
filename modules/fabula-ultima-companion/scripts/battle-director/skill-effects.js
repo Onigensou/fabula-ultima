@@ -146,7 +146,8 @@ export async function sweepTransientAEsAtSceneEnd() {
       if (!actor) return;
       const existing = Array.from(ids).filter((id) => !!actor.effects?.get?.(id));
       if (!existing.length) return;
-      await actor.deleteEmbeddedDocuments("ActiveEffect", existing);
+      // Battle over: a buff ending here is not "lost" (no onRemoveApply follow-up).
+      await actor.deleteEmbeddedDocuments("ActiveEffect", existing, { fuNoFollowup: true });
     } catch (e) {
       warn(`sweepTransientAEsAtSceneEnd: delete failed for ${actorUuid}`, e);
     }
@@ -3559,6 +3560,74 @@ export function installRiderAeLinkage() {
     }
   });
   log("rider-linkage: deleteActiveEffect cascade installed");
+}
+
+// ── Generic on-remove follow-up ──────────────────────────────────────────
+//
+// An AE that declares `flags.fabula-ultima-companion.onRemoveApply = "<ref>"`
+// applies that AE template to its OWN bearer when it leaves — by ANY in-battle
+// means: turn-tick expiry, Cleanse / Dispel / strip rows, a remove_ae row,
+// manual deletion. The follow-up goes through the normal apply_ae handler, so
+// it gets the template's lifetime/charges and the usual status triggers. `<ref>`
+// is anything apply_ae's `ae_template_ref` accepts (a full AE UUID is safest).
+//
+// First consumer: Crystal Powder — "Crystal High" (+2 stages to every
+// attribute) leaves "Crystal Withdraw" (−2 stages) behind when it ends.
+//
+// Fires ONLY while a battle is running, and never for the bulk clean-ups that
+// are not "losing the status": the battle-end sweep, a rewind restore and the
+// on-KO cleanse pass `{ fuNoFollowup: true }` in their delete options, and a
+// bearer at 0 HP is skipped as a second guard. Out of battle (Rest, camp,
+// scene tools) nothing fires.
+let _onRemoveFollowupInstalled = false;
+export function installOnRemoveFollowup() {
+  if (_onRemoveFollowupInstalled) return;
+  _onRemoveFollowupInstalled = true;
+  Hooks.on("deleteActiveEffect", (effect, options, _userId) => {
+    try {
+      const ref = String(effect?.flags?.[FLAG_NS]?.onRemoveApply ?? "").trim();
+      if (!ref) return;
+      const primary = globalThis.FUCompanion?.isPrimaryGM;
+      if (primary ? !primary() : !game.user?.isGM) return;   // one GM acts
+      if (options?.fuNoFollowup) return;
+      const actor = effect?.parent;
+      if (!actor || actor.documentName !== "Actor") return;
+      const director = globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.() ?? null;
+      if (!director?.dCombat) {
+        log(`on-remove follow-up: "${effect.name}" left ${actor.name} outside battle — no follow-up`);
+        return;
+      }
+      const hp = Number(actor.system?.props?.current_hp);
+      if (Number.isFinite(hp) && hp <= 0) return;
+      const tokenDoc = actor.token
+        ?? actor.getActiveTokens?.(false, true)?.[0]
+        ?? null;
+      if (!tokenDoc) {
+        warn(`on-remove follow-up: no token for ${actor.name}; "${ref}" not applied`);
+        return;
+      }
+      const row = {
+        effect_label: "on_remove_followup",
+        effect_kind: "apply_ae",
+        ae_template_ref: ref,
+        ae_duplicate_mode: "replace",
+        target_ref: "self",
+      };
+      const ctx = {
+        reactorActor: actor,
+        reactorToken: tokenDoc,
+        director,
+        dCombat: director.dCombat,
+        skill: null,
+      };
+      applyEffectRow(row, ctx)
+        .then((res) => log(`on-remove follow-up: "${effect.name}" left ${actor.name} → ${res?.ok ? "applied" : "FAILED"} "${ref}"${res?.reason ? ` (${res.reason})` : ""}`))
+        .catch((e) => warn(`on-remove follow-up: apply threw for ${actor.name}`, e));
+    } catch (e) {
+      warn("on-remove follow-up: hook threw", e);
+    }
+  });
+  log("on-remove follow-up: deleteActiveEffect hook installed");
 }
 
 // Apply an effect by its `effect_label`. Looks up the row in the
