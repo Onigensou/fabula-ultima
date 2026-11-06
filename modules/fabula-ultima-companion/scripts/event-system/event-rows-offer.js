@@ -205,10 +205,11 @@
   // ------------------------------------------------------------
   // The box (every client that presents)
   // ------------------------------------------------------------
-  function iconHtml(item, extra = "") {
+  // inSlot: a slot holds one unit, so no stack count there.
+  function iconHtml(item, extra = "", inSlot = false) {
     if (!item) return "";
     return `<div class="ofr-ic ${extra}" data-id="${esc(item.id)}" tabindex="0" aria-label="${esc(item.name)}">
-      <img src="${esc(item.img)}" alt="">${item.qty > 1 ? `<span class="q">${item.qty}</span>` : ""}</div>`;
+      <img src="${esc(item.img)}" alt="">${!inSlot && item.qty > 1 ? `<span class="q">${item.qty}</span>` : ""}</div>`;
   }
 
   function tipEl() {
@@ -296,7 +297,7 @@
       <div class="ofr-head"><span class="ofr-title">${esc(box.title)}</span><span class="ofr-ask">${esc(box.ask)}</span></div>
       <div class="ofr-body">
         <div class="ofr-box"><span class="ofr-lbl">${esc(box.slotLabel)}</span>
-          <div class="ofr-slots">${view.slots.map((id, k) => `<div class="ofr-slot" data-slot="${k}">${id ? iconHtml(byId.get(id)) : ""}<span class="n">${k + 1}</span></div>`).join("")}</div>
+          <div class="ofr-slots">${view.slots.map((id, k) => `<div class="ofr-slot" data-slot="${k}">${id ? iconHtml(byId.get(id), "", true) : ""}<span class="n">${k + 1}</span></div>`).join("")}</div>
         </div>
         <div class="ofr-box"><span class="ofr-lbl">Party bag</span><div class="ofr-bag">${groups}</div></div>
       </div>
