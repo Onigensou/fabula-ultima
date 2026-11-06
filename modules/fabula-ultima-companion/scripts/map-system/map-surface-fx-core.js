@@ -13,6 +13,9 @@
 //     crystals: [[x, y, r]],             soft pulsing glows (map px)
 //     crystalColor: [r, g, b],           0..1
 //     wisp: 0.16,                         near-haze strength, 0 = none
+//     wispOutsideLight: false,            true = the haze thins out inside the
+//                                         light pools (Valley camp: clear camp,
+//                                         hazy storm side)
 //     darkness: 0.32,                     how dark unlit stone gets ("light" layer)
 //     lights: [[x, y, radius, r, g, b, strength]],
 //     shimmerTile: "<tile id>", shimmer: { cx, cy, squash }   seal sheen
@@ -72,7 +75,8 @@ export function readSurfaceConfig(scene) {
   const flags = scene?.flags?.[MODULE_ID];
   const general = flags?.oniFabula?.general ?? {};
   if (general[ENABLED_KEY] !== true) return null;
-  if (general.sceneMode && general.sceneMode !== "exploration") return null;
+  // Walk maps and camps (both are walked on); tile-path dungeons and theatres are not.
+  if (general.sceneMode && general.sceneMode !== "exploration" && general.sceneMode !== "camp") return null;
   // Walk parallax redraws the same painting; the two would stack. Parallax wins.
   if (general.parallaxEnabled === true) return null;
   const raw = flags?.[FLAG];
@@ -100,6 +104,7 @@ export function readSurfaceConfig(scene) {
     crystals: triples(raw.crystals, MAX_CRYSTALS, 1),
     crystalColor: color(raw.crystalColor, [0.70, 0.48, 1.0]),
     wisp: layers.wisp ? clamp(num(raw.wisp, mode === "gas" ? 0.16 : 0.12), 0, 1) : 0,
+    wispOutsideLight: raw.wispOutsideLight === true,
     darkness: clamp(num(raw.darkness, 0.32), 0, 1),
     lights,
     shimmerTile: typeof raw.shimmerTile === "string" && raw.shimmerTile ? raw.shimmerTile : null,

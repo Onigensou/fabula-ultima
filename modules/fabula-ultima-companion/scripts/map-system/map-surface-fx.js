@@ -47,7 +47,7 @@ varying vec2 vWorld;
 uniform sampler2D uArt, uMask;
 uniform vec2 uOrigin, uMap, uCam;
 uniform float uTime, uMode;
-uniform float uChurn, uPlume, uRim, uCrystal, uWisp, uWater, uLight, uDark;
+uniform float uChurn, uPlume, uRim, uCrystal, uWisp, uWater, uLight, uDark, uWispOut;
 uniform vec3 uCrystals[10];
 uniform vec3 uCrystalColor;
 uniform vec4 uLights[12];
@@ -71,6 +71,19 @@ void main() {
   vec3 col = art(P);
   vec4 m = mask(P);
   float t = uTime;
+  // Light pools (water mode): darken the stone outside them ("light" layer),
+  // and/or thin the haze inside them (wispOutsideLight, Valley camp mockup).
+  vec3 L = vec3(0.0);
+  if (uMode > 0.5 && (uLight > 0.5 || uWispOut > 0.5)) {
+    for (int i = 0; i < 12; i++) {
+      if (float(i) >= uNL) break;
+      vec4 l = uLights[i];
+      float d = distance(P, l.xy) / l.z;
+      float fall = clamp(1.0 - d, 0.0, 1.0);
+      fall = fall * fall * (0.85 + 0.15 * sin(t * 1.3 + float(i) * 1.7));
+      L += uLightCol[i] * fall * l.w;
+    }
+  }
 
   if (uMode < 0.5) {
     if (uChurn > 0.5 && m.r > 0.003) {
@@ -118,15 +131,6 @@ void main() {
       col = mix(col, rip, m.r);
     }
     if (uLight > 0.5) {
-      vec3 L = vec3(0.0);
-      for (int i = 0; i < 12; i++) {
-        if (float(i) >= uNL) break;
-        vec4 l = uLights[i];
-        float d = distance(P, l.xy) / l.z;
-        float fall = clamp(1.0 - d, 0.0, 1.0);
-        fall = fall * fall * (0.85 + 0.15 * sin(t * 1.3 + float(i) * 1.7));
-        L += uLightCol[i] * fall * l.w;
-      }
       col = col * (1.0 - uDark) + col * uDark * min(L * 1.15, vec3(1.25));
     }
   }
@@ -146,6 +150,7 @@ void main() {
     float n = fbm(q * 0.0038 + vec2(t * 0.03, t * 0.008));
     float n2 = fbm(q * 0.0085 - vec2(t * 0.018, -t * 0.006));
     float a = smoothstep(0.56, 0.9, n * 0.72 + n2 * 0.44) * uWisp;
+    if (uWispOut > 0.5) a *= 1.0 - smoothstep(0.12, 0.6, dot(L, vec3(0.333)));
     vec3 wc = uMode < 0.5 ? vec3(0.62, 0.92, 0.55) : vec3(0.8, 0.62, 0.96);
     col = col * (1.0 - a) + wc * a;
   }
@@ -213,6 +218,7 @@ function packUniforms(cfg) {
     uMode: cfg.mode === "gas" ? 0 : 1,
     uChurn: on("churn"), uPlume: on("plume"), uRim: on("rim"), uCrystal: on("crystal"),
     uWater: on("water"), uLight: on("light"), uWisp: cfg.wisp, uDark: cfg.darkness,
+    uWispOut: cfg.wispOutsideLight ? 1 : 0,
     uCrystals: cr, uNC: cfg.crystals.length, uCrystalColor: cfg.crystalColor,
     uLights: L, uLightCol: LC, uNL: cfg.lights.length,
   };

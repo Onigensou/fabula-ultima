@@ -13,7 +13,7 @@
  *       motes:  { count: 70 }                        specks rising and twinkling round the view
  *       sparks: [{ x, y, rx, ry }]                   some motes rise from these (the living sigils)
  *       glows:  [[x, y, r]]                          soft pulsing glows on painted crystals
- *       spores: { preset: "gas" | "crystal", points: [[x, y]] }
+ *       spores: { preset: "gas" | "crystal" | "ember", points: [[x, y]] }
  *                                                    rising specks (Underground Decor mockup):
  *                                                    "gas" rise out of the surface mask,
  *                                                    "crystal" mostly from the points
@@ -82,6 +82,8 @@ void main() {
   const SPORE = {
     gas: { cap: 90, rate: 40, vy: [22, 55], color: 0xc8ff82, fromPoints: 0 },
     crystal: { cap: 46, rate: 14, vy: [10, 26], color: 0xd7afff, fromPoints: 0.7 },
+    // Valley camp mockup (2026-11-06): sparks off a campfire, bright at birth, fading out.
+    ember: { cap: 10, rate: 5, vy: [22, 42], color: 0xffa64d, fromPoints: 1, jitter: [12, 5], life: [1.4, 2.8], size: [8, 14], fadeOut: true },
   };
   const MASK_DIR = "modules/fabula-ultima-companion/assets/surface-fx";
   const rnd = (a, b) => a + Math.random() * (b - a);
@@ -285,16 +287,17 @@ void main() {
       let p = null;
       const pts = Array.isArray(cfg.spores.points) ? cfg.spores.points : [];
       if (sp.fromPoints > 0) {
-        if (pts.length && Math.random() < sp.fromPoints) { const c = pts[(Math.random() * pts.length) | 0]; p = [c[0] + rnd(-20, 20), c[1] + rnd(-10, 10)]; }
-        else p = [v.x + rnd(-0.5, 0.5) * v.w, v.y + rnd(-0.5, 0.5) * v.h];
+        const [jx, jy] = sp.jitter ?? [20, 10];
+        if (pts.length && Math.random() < sp.fromPoints) { const c = pts[(Math.random() * pts.length) | 0]; p = [c[0] + rnd(-jx, jx), c[1] + rnd(-jy, jy)]; }
+        else if (sp.fromPoints < 1) p = [v.x + rnd(-0.5, 0.5) * v.w, v.y + rnd(-0.5, 0.5) * v.h];
       } else p = pickCand(v);
       if (p) {
         const s = new PIXI.Sprite(sporeTex);
         s.anchor.set(0.5); s.blendMode = PIXI.BLEND_MODES.ADD; s.tint = sp.color;
         state.frontLayer.addChild(s);
-        const r = rnd(1.4, 3.2);
-        s.width = s.height = r * 3.2 * 2;
-        state.spores.push({ s, x: p[0], y: p[1], vy: rnd(sp.vy[0], sp.vy[1]), ph: rnd(0, 6.28), life: 0, max: rnd(3.5, 7) });
+        s.width = s.height = sp.size ? rnd(sp.size[0], sp.size[1]) : rnd(1.4, 3.2) * 3.2 * 2;
+        const life = sp.life ?? [3.5, 7];
+        state.spores.push({ s, x: p[0], y: p[1], vy: rnd(sp.vy[0], sp.vy[1]), ph: rnd(0, 6.28), life: 0, max: rnd(life[0], life[1]), fadeOut: !!sp.fadeOut });
       }
     }
     state.spores = state.spores.filter((p) => {
@@ -302,7 +305,9 @@ void main() {
       if (p.life >= p.max) { p.s.destroy(); return false; }
       const k = p.life / p.max;
       p.s.position.set(p.x, p.y);
-      p.s.alpha = Math.max(0, Math.sin(Math.PI * k) * (0.55 + 0.45 * Math.sin(p.life * 5 + p.ph)) * 0.75);
+      p.s.alpha = p.fadeOut
+        ? Math.max(0, Math.min(1, (1 - k) * 1.6) * (0.75 + 0.25 * Math.sin(p.life * 13 + p.ph)))
+        : Math.max(0, Math.sin(Math.PI * k) * (0.55 + 0.45 * Math.sin(p.life * 5 + p.ph)) * 0.75);
       return true;
     });
 

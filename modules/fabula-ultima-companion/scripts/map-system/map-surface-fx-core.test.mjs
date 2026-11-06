@@ -63,6 +63,15 @@ eq("crystals capped at 10", w?.crystals.length, 10);
 eq("darkness", w?.darkness, 0.32);
 eq("water wisp default", w?.wisp, 0.12);
 eq("water mask", w?.mask, "modules/fabula-ultima-companion/assets/surface-fx/Valley_Map019.webp");
+eq("wispOutsideLight default off", w?.wispOutsideLight, false);
+
+// camp scenes (Valley camp) are walked on too
+const WATER = { mode: "water", wispOutsideLight: true };
+eq("camp mode scene draws", readSurfaceConfig(scene({ surfaceFxEnabled: true, sceneMode: "camp" }, WATER))?.mode, "water");
+eq("camp wispOutsideLight", readSurfaceConfig(scene({ surfaceFxEnabled: true, sceneMode: "camp" }, WATER))?.wispOutsideLight, true);
+eq("camp switch off", readSurfaceConfig(scene({ surfaceFxEnabled: false, sceneMode: "camp" }, WATER)), null);
+eq("theatre mode scene", readSurfaceConfig(scene({ surfaceFxEnabled: true, sceneMode: "theatre" }, WATER)), null);
+eq("wispOutsideLight only true counts", readSurfaceConfig(scene({ surfaceFxEnabled: true }, { mode: "water", wispOutsideLight: "yes" }))?.wispOutsideLight, false);
 
 // map-ambience switch: only scenes set up for surface FX obey it
 eq("ambience: plain scene, unset", ambientSwitchedOff(scene({}, undefined)), false);

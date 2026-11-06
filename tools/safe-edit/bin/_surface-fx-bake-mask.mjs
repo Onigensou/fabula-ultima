@@ -37,7 +37,19 @@ const PRESETS = {
       return g >= r - 4 && b > g * 1.25 && luma < 115 && my > 470 ? 1 : 0;
     },
   },
+  // Valley of the Dragon - Camp, Valley_Map011.png 1448x1086: the pond, as the
+  // approved Valley camp mockup (2026-11-06) drew it (shallows + deep polygons).
+  "valley-camp": {
+    k: 4,
+    pick(r, g, b, mx, my) {
+      return inPoly(mx, my, CAMP_POND_DEEP) || inPoly(mx, my, CAMP_POND_SHALLOW) ? 1 : 0;
+    },
+  },
 };
+
+// Valley camp pond (map px), same points as the water Regions on Valley_Map004.
+const CAMP_POND_DEEP = [[890,575],[930,552],[990,545],[1060,550],[1130,552],[1150,580],[1150,605],[1195,615],[1245,608],[1295,622],[1322,660],[1318,715],[1290,752],[1240,778],[1180,800],[1120,802],[1060,792],[1000,798],[940,795],[895,775],[885,700],[895,620]];
+const CAMP_POND_SHALLOW = [[705,640],[745,616],[805,612],[852,596],[890,575],[895,620],[885,700],[895,775],[860,752],[800,740],[745,730],[712,700]];
 
 // The bridge deck (map px). Gas never flows across it.
 const DECK = [[985, 680], [878, 1272], [555, 2530], [1565, 2530], [1212, 1272], [1095, 680]];
