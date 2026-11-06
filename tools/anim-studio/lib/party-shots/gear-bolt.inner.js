@@ -30,16 +30,46 @@ if (mode === 'fulgur') {
   const plan = oni.strikes || [];
   const n = plan.length || t.bolts;
   const S0 = t.strike0 || R;
-  // ── anticipation: the sky darkens while the rumble rolls in (cfg sfx), sheet
-  // lightning flickers far off, and sparks gather over the field before it breaks
+  // ── anticipation (King Gorger entrance, shot 1): a dark storm cloud looms in
+  // over the top of the field while the quake rumble rolls (cfg sfx), the dim
+  // deepens, and far-off lightning flickers inside the cloud before it breaks.
   m.dim(300, 700, t.dim1);
   m.dim(R, S0 - R, t.dim2, t.dim1);
-  (t.flickers || []).forEach((f) => m.flash(f[0], 30, f[1], '#d6defa', f[2]));
-  TG.forEach((k, j) => {
-    const h = K.head(tl, k); const p = { x: h.x, y: h.y - 40 * U };
-    (t.charges || []).forEach((c, ci) => K.twinkles(m, c + j * 60, { x: p.x, y: p.y - ci * 18 * U }, K.tintF(cfg.hue, 5, 1.3), t.sparks, 34, U));
+  const UND = S0 + (n - 1) * t.gap + t.undimAfter;
+  m.undim(UND, t.undimMs, t.dim2);
+  const fl = t.flickers || [];
+  fl.forEach((f) => m.flash(f[0], 30, f[1], '#d6defa', f[2]));
+  // the cloud: blurred dark blobs (giant-entrance-fx cloud(), rgba 8,3,16) baked
+  // once into a screen-sized band, pinned to the top of the view every frame
+  const SL = oni.screenLive();
+  const cw = Math.round(SL.W), ch = Math.round(SL.H * t.cloudBand);
+  const cc = document.createElement('canvas'); cc.width = cw; cc.height = ch;
+  const cx = cc.getContext('2d');
+  let seed = 7; const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+  cx.filter = 'blur(' + Math.round(ch * 0.06) + 'px)';
+  for (let i = 0; i < t.cloudBlobs; i++) {
+    const x = rnd() * cw, y = rnd() * ch * 0.55, rx = cw * (0.10 + rnd() * 0.16), ry = ch * (0.22 + rnd() * 0.22);
+    const g = cx.createRadialGradient(x, y, 0, x, y, rx);
+    g.addColorStop(0, 'rgba(8,3,16,0.85)'); g.addColorStop(1, 'rgba(8,3,16,0)');
+    cx.save(); cx.translate(x, y); cx.scale(1, ry / rx); cx.translate(-x, -y); cx.fillStyle = g; cx.fillRect(x - rx, y - rx, rx * 2, rx * 2); cx.restore();
+  }
+  // a solid top edge, so the band reads as a ceiling of cloud, not floating puffs
+  cx.filter = 'none';
+  const top = cx.createLinearGradient(0, 0, 0, ch); top.addColorStop(0, 'rgba(8,3,16,0.9)'); top.addColorStop(0.45, 'rgba(8,3,16,0.35)'); top.addColorStop(1, 'rgba(8,3,16,0)');
+  cx.fillStyle = top; cx.fillRect(0, 0, cw, ch);
+  const cloudTex = PIXI.Texture.from(cc);
+  const sky = oni.layer({ zIndex: 89990 });
+  const cloud = new PIXI.Sprite(cloudTex); cloud.anchor.set(0.5, 0); sky.addChild(cloud);
+  const w0 = cloud.texture.width;
+  m.hold(0, t.total, (now) => {
+    const z = SL.zoom;
+    const inK = E.outQ(Math.min(1, Math.max(0, (now - 300) / t.cloudInMs)));
+    const outK = now < UND ? 0 : Math.min(1, (now - UND) / t.undimMs);
+    const p = SL.S2W(0.5 + 0.015 * Math.sin(now / 1400), 0);
+    cloud.position.set(p.x, p.y + SL.hPx(-t.cloudBand * (1 - inK) * 0.6 - t.cloudBand * outK * 0.5));
+    cloud.scale.set((SL.W * 1.15 / w0) / z);
+    cloud.alpha = t.cloudAlpha * inK * (1 - outK);
   });
-  m.undim(S0 + (n - 1) * t.gap + t.undimAfter, t.undimMs, t.dim2);
   for (let i = 0; i < n; i++) {
     const at = S0 + i * t.gap;
     const s = plan[i]; const o = s && s.outcomes ? s.outcomes[0] : null;

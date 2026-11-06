@@ -33,10 +33,12 @@ function fulgur() {
 }
 
 // ── Thunderstorm: three bolts, one per planned strike (Chain 3 seek) ──
-// Medium tier (user, 2026-11-06): a real storm builds first. The cast rolls in a
-// storm rumble under a dim; far-off sheet lightning flickers and sparks gather over
-// the targets (anticipation, R..S0); THEN the bolts break, one per strike.
-const STORM_RUMBLE = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/Storm1.ogg"; // 2.35 s
+// Medium tier (user, 2026-11-06): a real storm builds first, modelled on the King
+// Gorger entrance's opening (giant-entrance-fx.js shot 1): a dark cloud looms in over
+// the top of the field under a dim, the Quake rumble rolls, far-off lightning flickers
+// (anticipation, R..S0); THEN the bolts break, one per strike.
+// User rejected (same day): gathering sparks over the targets, BGS/Storm1 (rain).
+const QUAKE = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/Quake.ogg"; // King Gorger's rumble
 function thunderstorm() {
   const gap = 420, contact = 133, bolts = 3;
   const S0 = REL + 900;                       // first bolt, after the build-up
@@ -44,14 +46,14 @@ function thunderstorm() {
     rel: REL, strike0: S0, gap, contact, bolts, boltScale: 1.8,
     dim1: 0.45, dim2: 0.6,                    // cast dim, then the storm deepens it
     flickers: [[REL - 280, 110, 0.10], [REL + 260, 140, 0.14], [REL + 640, 90, 0.12]], // [at, fade ms, alpha]
-    charges: [REL + 150, REL + 520], sparks: 6,
+    cloudBand: 0.5, cloudBlobs: 16, cloudAlpha: 0.9, cloudInMs: 1300, // top half of the view
     undimAfter: 500, undimMs: 600,
     total: S0 + (bolts - 1) * gap + 467 + 650,
   };
-  const sfx = [cue(380, "Magic3.ogg", 0.45), { at: 380, url: STORM_RUMBLE, v: 0.45 }, cue(REL + 200, "Thunder9.ogg", 0.28)];
+  const sfx = [cue(380, "Magic3.ogg", 0.45), { at: 300, url: QUAKE, v: 0.42 }, cue(REL + 200, "Thunder9.ogg", 0.28)];
   for (let i = 0; i < bolts; i++) sfx.push(cue(S0 + i * gap, "Thunder1.ogg", 0.4), cue(S0 + i * gap + contact, "SE_BTL_HitElectric.ogg", 0.4));
   // gate null: a Chain's numbers land on the shot's oni.hit() cues, not on a damage offset
-  return PS.build({ key: "gear-thunderstorm", name: "Thunderstorm", shot: "gear-bolt", clips: Object.assign(clips("bolt"), { twinkle: true }),
+  return PS.build({ key: "gear-thunderstorm", name: "Thunderstorm", shot: "gear-bolt", clips: clips("bolt"),
     cfg: { mode: "thunderstorm", hue: HUE, t, sfx }, gate: null });
 }
 
