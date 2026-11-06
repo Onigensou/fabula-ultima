@@ -205,6 +205,22 @@
               if (!row.thenRows?.length && !(elseCounts && row.elseRows?.length)) add("warn", "Condition with nothing under Then or Else.");
               break;
             }
+            case "offerItem": {
+              const names = Logic.nameList(row.names);
+              if (row.mode === "specific" && !names.length) add("warn", "Offer Item asks for specific items but lists none: nothing can pass.");
+              if (row.mode === "specific" && names.length && names.length !== Number(row.count)) {
+                add("warn", `Offer Item asks for ${row.count} item(s) but lists ${names.length} name(s): the offering can never match.`);
+              }
+              if (row.judge !== "auto" && (row.presets ?? []).some(p => !String(p.label ?? "").trim())) add("warn", "Offer Item has a verdict with no text.");
+              break;
+            }
+            case "changeItems":
+              if (row.what === "item" && !String(row.name ?? "").trim()) add("warn", "Change Items with no item name.");
+              if (row.what === "item" && row.op !== "remove" && String(row.name ?? "").trim() && !window.oni.EventSystem.RowsItems?.worldItemByName?.(row.name)) {
+                add("warn", `Change Items adds "${row.name}", but no world item has that name.`);
+              }
+              if (row.what === "offered" && !offers) add("warn", "Change Items removes the offered items, but the event has no Offer Item row.");
+              break;
             case "setSwitch":
               if (row.scope !== "self") {
                 if (!String(row.name ?? "").trim()) add("warn", "Set Switch with no name.");

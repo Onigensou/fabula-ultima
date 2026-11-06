@@ -360,7 +360,8 @@ globalThis.oni.EventSystem.ShowText = {
 
 for (const file of [
   "event-client.js", "event-gameState.js", "event-eventRegistry.js", "event-flow.js",
-  "event-rows-flow.js", "event-rows-choices.js", "event-rows-check.js", "event-rows-float.js"
+  "event-rows-flow.js", "event-rows-choices.js", "event-rows-check.js", "event-rows-float.js",
+  "event-rows-offer.js", "event-rows-items.js"
 ]) load(file);
 
 const ES = globalThis.oni.EventSystem;
@@ -963,6 +964,156 @@ await quiet(async () => {
   await code.execute({ code: "await ctx.jumpPath(ctx.party, ['Stone 01'], { hopMs: 150 });" }, { sceneId: scene.id, tokenId: "party", tileId: null });
   check("Run Code: ctx.jumpPath jumps the same way as the Jump To row", party.x === 200 && party.y === 100 && hops.length === 3);
   game.scenes = oldScenes;
+}
+
+// --- Offer Item + Change Items (Nether Bridge seal) --------------------------
+{
+  const party = await GameState.refresh();
+  const mk = (id, name, type, qty = 1) => ({ id, uuid: `Actor.${party.id}.Item.${id}`, name, img: "", system: { props: { item_type: type, item_quantity: qty, description: "" } } });
+  const bag = [mk("coin", "Bloodied Coin", "material"), mk("claw", "Draconic Claw", "weapon"), mk("stone", "Golem Soulstone", "consumable", 2), mk("whistle", "Gryphon Whistle", "key"), mk("recipe", "Tonic Recipe", "recipe")];
+  bag.get = (id) => bag.find(i => i.id === id);
+  const oldItems = party.items;
+  party.items = bag;
+
+  users.set("gm2", { id: "gm2", isGM: true, name: "GM II" });
+  globalThis.FUCompanion = globalThis.FUCompanion ?? {};
+  const oldPrimary = globalThis.FUCompanion.primaryGM;
+  globalThis.FUCompanion.primaryGM = () => users.get("gm1");
+
+  const removed = [];
+  window["oni.ItemTransferCore"] = {
+    removeItemFromActor: async (p) => { removed.push(p); },
+    grantItemToActor: async (p) => { removed.push({ grant: p }); },
+    adjustZenit: async (p) => { removed.push({ zenit: p }); }
+  };
+
+  const offerSent = [];
+  for (const kind of ["offer.open", "offer.slots", "offer.judging", "offer.reopen", "offer.close"]) {
+    Client.register(kind, (data, info) => { offerSent.push({ kind, data, sourceId: info.sourceId }); });
+  }
+  const offerAsk = (userId, data) => Flow.state.requestHandlers.get("offerItem")(data, userId);
+  const offer = (extra = {}) => ({
+    type: "offerItem", count: 2, mode: "free", judge: "gm",
+    presets: [{ id: "ok", label: "Unsealed", rows: [text("open")] }, { id: "no", label: "Not satisfied", rows: [text("nope")] }],
+    withdrawnRows: [text("withdrawn")],
+    ...extra
+  });
+
+  check("offer: the bag is the party's real items only (no recipes), sorted by type",
+    ES.RowsOffer.bagForBox().map(i => i.id).join() === "whistle,coin,stone,claw", ES.RowsOffer.bagForBox().map(i => i.id).join());
+  check("offer: a stack fills as many slots as it has units, unknown ids and over-use are dropped",
+    ES.RowsOffer.cleanSlots(["stone", "stone", "stone", "nope"], ES.RowsOffer.bagForBox(), { mode: "free" }, 4).join() === "stone,stone,,");
+
+  // GM Prompt: only the main GM's verdict counts.
+  let sourceUsed = null;
+  await quiet(async () => {
+    said.length = 0; offerSent.length = 0;
+    await runEvent([offer(), text("after")], {
+      during: async (sourceId) => {
+        sourceUsed = sourceId;
+        await sleep(10);
+        const open = offerSent.find(m => m.kind === "offer.open");
+        check("offer: the box opens on every screen with the bag and the GM's presets",
+          open?.data.box.count === 2 && open.data.bag.length === 4 && open.data.box.presets.map(p => p.label).join() === "Unsealed,Not satisfied");
+        await offerAsk("gm1", { sourceId, op: "slots", slots: ["coin", "claw"] });
+        check("offer: a GM does not move items for the table", !offerSent.some(m => m.kind === "offer.slots"));
+        await offerAsk("p1", { sourceId, op: "slots", slots: ["coin", "claw"] });
+        check("offer: the controller's slots are told to everyone", offerSent.some(m => m.kind === "offer.slots" && m.data.slots.join() === "coin,claw"));
+        await offerAsk("p1", { sourceId, op: "confirm", slots: ["coin", "claw"] });
+        check("offer: confirming with GM Prompt waits for the GM", offerSent.some(m => m.kind === "offer.judging") && said.length === 0);
+        await offerAsk("gm2", { sourceId, op: "verdict", presetId: "ok" });
+        await sleep(20);
+        check("offer: GM II (an assistant) cannot give the verdict", said.length === 0 && !offerSent.some(m => m.kind === "offer.close"));
+        await offerAsk("p1", { sourceId, op: "verdict", presetId: "ok" });
+        await sleep(20);
+        check("offer: a player cannot give the verdict", said.length === 0);
+        await offerAsk("gm1", { sourceId, op: "verdict", presetId: "ok" });
+      }
+    });
+  });
+  check("offer: the main GM's verdict runs that preset's branch, then the event carries on", said.join() === "open,after", said.join());
+  const mem = GameState.readerFor("scene1", sourceUsed).offering();
+  check("offer: the offering and its verdict are remembered for later checks",
+    mem?.verdict === "Unsealed" && mem.items.map(i => i.name).join() === "Bloodied Coin,Draconic Claw" && mem.items[0].type === "material");
+  check("offer: nothing is taken from the bag by the offer itself", removed.length === 0);
+  check("offer: a later Condition reads it",
+    Logic.evalCondition({ kind: "offering", test: "contains", name: "draconic claw" }, GameState.readerFor("scene1", sourceUsed))
+    && Logic.evalCondition({ kind: "verdict", name: "Unsealed" }, GameState.readerFor("scene1", sourceUsed)));
+
+  // Hand back, then withdraw.
+  await quiet(async () => {
+    said.length = 0; offerSent.length = 0;
+    await runEvent([offer(), text("after")], {
+      during: async (sourceId) => {
+        await sleep(10);
+        await offerAsk("p1", { sourceId, op: "confirm", slots: ["coin", "whistle"] });
+        await offerAsk("gm1", { sourceId, op: "verdict", presetId: "__handBack" });
+        check("offer: 'hand back' reopens the box with the items still in it",
+          offerSent.some(m => m.kind === "offer.reopen" && m.data.slots.join() === "coin,whistle"));
+        await offerAsk("p1", { sourceId, op: "withdraw" });
+      }
+    });
+  });
+  check("offer: taking the items back runs Withdrawn", said.join() === "withdrawn,after", said.join());
+
+  // Automatic, specific items.
+  const auto = (extra) => offer({ judge: "auto", mode: "specific", names: "Draconic Claw, Bloodied Coin", acceptedRows: [text("yes")], refusedRows: [text("no")], ...extra });
+  await quiet(async () => {
+    said.length = 0;
+    await runEvent([auto()], { during: async (sourceId) => { await sleep(10); await offerAsk("p1", { sourceId, op: "confirm", slots: ["coin", "claw"] }); } });
+    await runEvent([auto()], { during: async (sourceId) => { await sleep(10); await offerAsk("p1", { sourceId, op: "confirm", slots: ["coin", "stone"] }); } });
+  });
+  check("offer: automatic + specific accepts the listed items in any order, refuses others", said.join() === "yes,no", said.join());
+
+  // An item that left the bag before Offer was pressed.
+  await quiet(async () => {
+    said.length = 0; offerSent.length = 0;
+    await runEvent([offer({ judge: "auto", acceptedRows: [text("yes")] })], {
+      during: async (sourceId) => {
+        await sleep(10);
+        const claw = bag.findIndex(i => i.id === "claw");
+        const [gone] = bag.splice(claw, 1);
+        await offerAsk("p1", { sourceId, op: "confirm", slots: ["coin", "claw"] });
+        check("offer: an item no longer in the bag empties its slot instead of being offered",
+          said.length === 0 && offerSent.some(m => m.kind === "offer.slots" && m.data.slots.join() === "coin,"));
+        bag.push(gone);
+        await offerAsk("p1", { sourceId, op: "confirm", slots: ["coin", "claw"] });
+      }
+    });
+  });
+  check("offer: ... and it can then be offered again", said.join() === "yes");
+
+  // Ending the event while the box is open.
+  await quiet(async () => {
+    said.length = 0; offerSent.length = 0;
+    const out = await runEvent([offer(), text("never")], { during: async (sourceId) => { await sleep(10); Flow.abort(sourceId); } });
+    check("offer: ending the event closes the box and runs nothing after", out.aborted === true && said.length === 0 && offerSent.some(m => m.kind === "offer.close"));
+  });
+
+  // Change Items: the offered items, by name, zenit.
+  await quiet(async () => {
+    removed.length = 0; said.length = 0;
+    await runEvent([offer({ count: 3, presets: [{ id: "ok", label: "Take", rows: [{ type: "changeItems", op: "remove", what: "offered" }] }] })], {
+      during: async (sourceId) => {
+        await sleep(10);
+        await offerAsk("p1", { sourceId, op: "confirm", slots: ["stone", "stone", "coin"] });
+        await offerAsk("gm1", { sourceId, op: "verdict", presetId: "ok" });
+      }
+    });
+  });
+  check("Change Items: 'the offered items' removes one per slot (a stack of 2 offered twice loses 2)",
+    removed.length === 2 && removed.find(r => r.itemUuid?.endsWith("stone"))?.quantity === 2 && removed.find(r => r.itemUuid?.endsWith("coin"))?.quantity === 1,
+    JSON.stringify(removed.map(r => [r.itemUuid, r.quantity])));
+  await quiet(async () => {
+    removed.length = 0;
+    await runEvent([{ type: "changeItems", op: "remove", what: "item", name: "golem soulstone", amount: 5 }, { type: "changeItems", op: "add", what: "zenit", amount: 50 }]);
+  });
+  check("Change Items: removing by name takes at most what the bag has; zenit goes to the party stash",
+    removed[0]?.quantity === 2 && removed[1]?.zenit?.delta === 50 && removed[1].zenit.actorUuid === party.uuid);
+
+  party.items = oldItems;
+  users.delete("gm2");
+  globalThis.FUCompanion.primaryGM = oldPrimary;
 }
 
 console.log(fail ? `\n${fail} FAILED` : "\nall passed");
