@@ -8,8 +8,9 @@
 // Underworld (screen space, covers the board): drawn in the mockup's own 1682 x 788
 // space and fitted to the view, with its own camera (static for the parade, moving for
 // the finale). Parade = her REAL summons in the chain-formula order: each own Phantasm
-// (fox fire) 1 strike, each own Minion 1, Leichi/Leilan (either on the field) 1 cross
-// strike, each own Numen (Crysta) 2 knife stabs. Then the finale (fire portal, walk, den,
+// (fox fire) 1 strike, each own Minion 1, Leichi/Leilan ALWAYS 1 cross strike (the user,
+// 11-06: the twins are mandatory, summoned or not; their real tokens when on the field,
+// else their standard art), each own Numen (Crysta) 2 knife stabs. Then the finale (fire portal, walk, den,
 // spin with her back pose, channel circle, fox-fire ring, blast), the whiteout, and the
 // last hit back on the board as the targets fall into their places.
 // Ticks: strikes + blast + last hit = the item's 'chain {...}' count. Every tick is
@@ -33,15 +34,17 @@ const minions = allTok.filter((t) => isMine(t) && flagsOf(t).cloneActorUuid && !
 const leichi = allTok.find((t) => nameIs(t, 'leichi')) || null, leilan = allTok.find((t) => nameIs(t, 'leilan')) || null;
 const LIVEPARADE = phantasms.length + numens.length + minions.length + ((leichi || leilan) ? 1 : 0) > 0;
 const parade = [];
-if (LIVEPARADE) {
+const nPlan = (ctx.params.strikes || []).length;
+if (LIVEPARADE || (nPlan && nPlan <= 3)) {
+  // In battle: her real summons, plus the twins every time. With NO summons out the plan
+  // is exactly the twins + the blast + the last hit (3 ticks): never show summons she lacks.
   phantasms.forEach((t, i) => parade.push({ kind: 'fox', i, tok: t }));
   minions.forEach((t) => parade.push({ kind: 'minion', tok: t }));
-  if (leichi || leilan) parade.push({ kind: 'twins', a: leichi, b: leilan });
+  parade.push({ kind: 'twins', a: leichi, b: leilan });
   numens.forEach((t) => parade.push({ kind: 'crysta', tok: t }));
-} else if (!(ctx.params.strikes || []).length || (ctx.params.strikes || []).length > 2) {
+} else {
   // Preview Bench (no strike plan, or a forged plan with parade strikes) and no summons out:
-  // the mockup's set, drawn from Forge art. In battle with NO summons out the plan is exactly
-  // the blast + the last hit (2 ticks), so there is no parade: never show summons she lacks.
+  // the mockup's set, drawn from Forge art.
   parade.push({ kind: 'fox', i: 0 }, { kind: 'fox', i: 1 }, { kind: 'twins', a: null, b: null }, { kind: 'crysta' });
 }
 const strikesOf = (s) => s.kind === 'crysta' ? 2 : 1;
@@ -91,7 +94,7 @@ const FIELD_H = { fox: 70, minion: 110, leichi: 150, leilan: 155, crysta: 230 };
 // field drop-in list: each parade summon body that appears on the field
 const drops = [];
 parade.forEach((s) => {
-  if (s.kind === 'twins') { if (s.ka || !LIVEPARADE) drops.push({ s, who: 'a', key: s.ka, img: 'leichi', base: FIELD_H.leichi }); if (s.kb || !LIVEPARADE) drops.push({ s, who: 'b', key: s.kb, img: 'leilan', base: FIELD_H.leilan }); }
+  if (s.kind === 'twins') { drops.push({ s, who: 'a', key: s.ka, img: 'leichi', base: FIELD_H.leichi }); drops.push({ s, who: 'b', key: s.kb, img: 'leilan', base: FIELD_H.leilan }); }
   else if (s.kind === 'fox') drops.push({ s, key: s.key, img: 'foxfire', base: FIELD_H.fox, add: true });
   else if (s.kind === 'minion') drops.push({ s, key: s.key, img: null, base: FIELD_H.minion });
   else if (s.kind === 'crysta') drops.push({ s, key: s.key, img: 'crysta', base: FIELD_H.crysta });
@@ -379,8 +382,9 @@ plan.forEach((p) => {
     uwClip('dark', p.hit, MID, 1, false, { add: true }); say(p.hit, 'swingB', 0.45);
     uwShatter(p.shat, () => ({ x: X(1000), y: Y(690) }), h, '150,220,140');
   } else if (s.kind === 'twins') {
-    const ha = sh(s.ka, SUM_H.leichi), hb = sh(s.kb, SUM_H.leilan);
-    const showA = !!(s.ka || !LIVEPARADE), showB = !!(s.kb || !LIVEPARADE);
+    const TWS = t.twinScale || 0.55; // user 11-06: the twins read too big in the attack (1.0 -> 0.8 still too big; 0.55 = ~1.3x a dummy)
+    const ha = sh(s.ka, SUM_H.leichi) * TWS, hb = sh(s.kb, SUM_H.leilan) * TWS;
+    const showA = true, showB = true; // mandatory: real token art when on the field, else the standard art
     const enterEnd = p.at + p.enter, dashEnd = p.hit;
     const pathA = (now) => now < enterEnd ? { x: lerp(X(1500), X(1080), E.outQ((now - p.at) / p.enter)), y: lerp(Y(430), Y(450), E.outQ((now - p.at) / p.enter)) } : now < dashEnd ? { x: lerp(X(1080), X(300), E.inQ((now - enterEnd) / p.dash)), y: lerp(Y(450), Y(700), E.inQ((now - enterEnd) / p.dash)) } : { x: X(300), y: Y(700) };
     const pathB = (now) => now < enterEnd ? { x: lerp(Mx(1500), Mx(1080), E.outQ((now - p.at) / p.enter)), y: lerp(Y(720), Y(700), E.outQ((now - p.at) / p.enter)) } : now < dashEnd ? { x: lerp(Mx(1080), Mx(300), E.inQ((now - enterEnd) / p.dash)), y: lerp(Y(700), Y(450), E.inQ((now - enterEnd) / p.dash)) } : { x: Mx(300), y: Y(450) };
@@ -451,10 +455,13 @@ say(T6, 'fire3', 0.55); m.flash(T6, 30, 250, '#ff5ab0', 0.35);
 say(T_RINGIN, 'dark2', 0.4); say(T_RUSH, 'wind4', 0.5);
 const ringCen = () => { const fs = FOES.map((F) => foeState(F, T6)).filter(Boolean); return fs.length ? centroid(fs) : MID; };
 const RING = () => { const cc = ringCen(); return { x: cc.x, y: cc.y - 40, rx: 300, ry: 105 }; };
+// user 11-06: the ring shot and the blast frame the RING (the targets after the spin), not the
+// pre-spin cluster centre, which sits toward Keren. CAMS[5] = T6, CAMS[6] = T_BLAST.
+{ const rc = ringCen(); Object.assign(CAMS[5].to, { x: rc.x, y: rc.y - 120 }); Object.assign(CAMS[6].to, { x: rc.x, y: rc.y - 150 }); }
 const ringEmbers = emit(1700, T_RINGIN, T_RUSH, 160, 1, (r) => { const R = RING(); return { x: R.x + (r() - 0.5) * 2 * R.rx, y: R.y - 20 + r() * 50, vx: (r() - 0.5) * 0.06, vy: -(0.05 + r() * 0.07), life: 1400 + r() * 1200, r: 2 + r() * 3, rgb: PINK }; });
 function ringFoxes(now) {
   if (now < T6 || now >= T_BLAST) return [];
-  const R = RING(); const d0 = denState(T6 - 1) || { x: UWC.x, y: UWC.y - 270 }; const H0 = 120 * uwS(ringCen().y) * 1.3;
+  const R = RING(); const d0 = denState(T6 - 1) || { x: UWC.x, y: UWC.y - 270 }; const H0 = 120 * uwS(ringCen().y) * 1.3 * (t.ringFoxScale || 0.7); /* user 11-06: ring foxes read too big */
   const out = []; let spinA = 0, r = 1, hk = 1;
   if (now >= T_RINGIN) { const u = Math.min(1, (now - T_RINGIN) / RINGMS); spinA = u * Math.PI * 1.2; r = lerp(1, 0.78, E.inQ(u)); }
   if (now >= T_RUSH) { const u = E.inC(Math.min(1, (now - T_RUSH) / 260)); spinA = Math.PI * 1.2; r = 0.78 * (1 - u); hk = 1 + u * 0.5; }

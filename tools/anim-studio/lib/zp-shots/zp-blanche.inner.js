@@ -166,13 +166,16 @@ function foodCanvas(kind) {
   return cv;
 }
 const DRAWN = { cake: foodCanvas('cake'), latte: foodCanvas('latte'), omurice: foodCanvas('omurice') };
+// the spill's real art (Genshin icons, user 11-06); the drawn dishes stay as the fallback if an image fails to load
+const SPILL_ART = { cake: 'gCake', latte: 'gDrink', omurice: 'gOmurice' };
 // a dish in a 120 x 110 box (icons fit "contain"), centred at (x, y), rotated r deg, scaled s, alpha a
 const TRAY_SC = 0.85;
 function drawDish(g, kind, x, y, r, s, a) {
-  const src = DRAWN[kind] || tl.IMG[kind]; if (!src || !(s > 0) || !(a > 0)) return;
+  const gk = SPILL_ART[kind]; const src = (gk && tl.IMG[gk]) || DRAWN[kind] || tl.IMG[kind]; if (!src || !(s > 0) || !(a > 0)) return;
+  const drawn = src === DRAWN[kind];
   const iw = src.naturalWidth || src.width || 1, ih = src.naturalHeight || src.height || 1; const k = Math.min(120 / iw, 110 / ih); const w = iw * k, h = ih * k;
   g.save(); g.translate(x, y); if (r) g.rotate(r * Math.PI / 180); g.scale(s * KF, s * KF); g.globalAlpha *= a;
-  if (!DRAWN[kind]) { g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = 2; g.shadowOffsetY = 3; }
+  if (!drawn) { g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = 2; g.shadowOffsetY = 3; }
   g.drawImage(src, -w / 2, -h / 2, w, h); g.restore();
 }
 // a playing clip copy's current frame (the pose clips run hidden; we draw their frames ourselves)
@@ -242,7 +245,7 @@ for (const s of served) { const to = CF.seats[s.i].table; for (let k = 0; k < 5;
 const spin = spill === 'drink' ? 120 : spill === 'omurice' ? 200 : 70;
 const slowEase = (k) => (k < 0.12 ? k / 0.12 * 0.55 : 0.55 + 0.45 * (1 - (1 - (k - 0.12) / 0.88) * (1 - (k - 0.12) / 0.88)));
 const dishAt = (tt) => { const k = slowEase(clampN((tt - tSlow) / cfg.slowMs, 0, 1)); return { x: lerp(cakeFrom.x, stopP.x, k), y: lerp(cakeFrom.y, stopP.y, k) - Math.sin(k * Math.PI) * 110 * KF, r: -25 + k * spin, s: 1.35 + k * 0.15 }; };
-const bitCols = spill === 'drink' ? ['242,167,184', '90,58,46'] : spill === 'omurice' ? ['216,38,44', '246,200,74'] : ['255,250,240', '240,70,90'];
+const bitCols = spill === 'drink' ? ['242,167,184', '90,58,46'] : spill === 'omurice' ? ['216,38,44', '246,200,74'] : ['255,250,240', '196,150,222']; // cream + the Traveler cake's lavender
 const bits = []; const rb = tl.rng(57);
 for (let tb = tSlow; tb < tWhite; tb += 16) if (rb() < 0.3) { const p = dishAt(tb); bits.push({ t: tb, x: p.x + (rb() - 0.5) * 32 * KF, y: p.y + (rb() - 0.5) * 20 * KF, vx: (rb() - 0.5) * 0.02, vy: (rb() - 0.5) * 0.018, r: (2 + rb() * 2.5) * KF, col: bitCols[rb() < 0.5 ? 0 : 1] }); }
 m.hold(tCafe, tBack, (e, S) => { const tt = tCafe + e; S.screen.push({ draw: (g) => {
@@ -267,7 +270,7 @@ m.hold(tTrip, tSlow, (e, S) => S.screen.push({ draw: (g) => { const r = tl.rng(1
 m.hold(tSlow, tBack, (e, S) => S.screen.push({ draw: (g) => { const a = 0.9 * clampN(e / 600, 0, 1); const R = Math.hypot(g.W, g.H) / 2; const gr = g.createRadialGradient(g.W / 2, g.H / 2, R * 0.45 * 1.4, g.W / 2, g.H / 2, R * 1.1); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,' + (0.85 * a) + ')'); g.fillStyle = gr; g.fillRect(0, 0, g.W, g.H); } }));
 
 // ── the iris: closes on Blanche on the battlefield, opens on the cafe ──
-const irisDraw = (g, cx, cy, r) => { g.save(); g.fillStyle = '#000'; g.beginPath(); g.rect(-20, -20, g.W + 40, g.H + 40); if (r > 0) g.arc(cx, cy, r, 0, 6.2832, true); g.fill('evenodd'); g.restore(); };
+const irisDraw = (g, cx, cy, r) => { g.save(); g.fillStyle = '#000'; g.beginPath(); g.rect(-20, -20, g.W + 40, g.H + 40); if (r > 0) { g.moveTo(cx + r, cy); g.arc(cx, cy, r, 0, 6.2832, true); } /* moveTo: no sliver from the rect corner to the circle */ g.fill('evenodd'); g.restore(); };
 m.hold(tIrisC, tCafe, (e, S) => S.screen.push({ draw: (g) => { const f = tl.feet(TOK.c); const p = tl.toScreen(f.x, f.y - TOK.c.h * 0.5); const R = Math.hypot(g.W, g.H); const k = e / 520; irisDraw(g, p.x, p.y, lerp(R, 0, k * k)); } }));
 m.hold(tCafe, tIrisO + 600, (e, S) => S.screen.push({ draw: (g) => { const tt = tCafe + e; const X = xf(g, tt); const p = X.P(CF.home.x, CF.home.y - 100); const R = Math.hypot(g.W, g.H); const k = tt < tIrisO ? 0 : clampN((tt - tIrisO) / 600, 0, 1); irisDraw(g, p.x, p.y, R * (1 - (1 - k) * (1 - k))); } }));
 
@@ -286,7 +289,7 @@ if (cfg.cream !== false && vi >= 0) {
   const vk = 'q' + vi; const Uv = TOK[vk].h / 170; const sp = document.createElement('canvas'); sp.width = 90; sp.height = 80; const c = sp.getContext('2d'); const rs = tl.rng(91);
   if (spill === 'drink') { c.fillStyle = 'rgba(242,167,184,.85)'; for (let i = 0; i < 7; i++) { c.beginPath(); c.arc(45 + (rs() - 0.5) * 44, 30 + (rs() - 0.5) * 24, 8 + rs() * 5, 0, 7); c.fill(); } for (let i = 0; i < 5; i++) c.fillRect(22 + i * 11, 32, 5, 20 + rs() * 20); c.fillStyle = '#5b3a2e'; for (let i = 0; i < 4; i++) { c.beginPath(); c.arc(30 + i * 10, 26 + (rs() - 0.5) * 12, 4, 0, 7); c.fill(); } }
   else if (spill === 'omurice') { c.fillStyle = '#f6c84a'; for (let i = 0; i < 6; i++) { c.beginPath(); c.arc(45 + (rs() - 0.5) * 48, 30 + (rs() - 0.5) * 20, 9 + rs() * 5, 0, 7); c.fill(); } c.fillStyle = '#d8262c'; heartPath(c, 45, 30, 13); c.fill(); for (let i = 0; i < 3; i++) c.fillRect(34 + i * 10, 36, 4, 14 + rs() * 12); }
-  else { c.fillStyle = '#fffaf0'; for (let i = 0; i < 9; i++) { c.beginPath(); c.arc(45 + (rs() - 0.5) * 48, 30 + (rs() - 0.5) * 24, 8 + rs() * 6, 0, 7); c.fill(); } for (let i = 0; i < 4; i++) c.fillRect(24 + i * 13, 32, 6, 18 + rs() * 16); c.fillStyle = '#e5354f'; c.beginPath(); c.arc(50, 22, 6, 0, 7); c.fill(); }
+  else { c.fillStyle = '#fffaf0'; for (let i = 0; i < 9; i++) { c.beginPath(); c.arc(45 + (rs() - 0.5) * 48, 30 + (rs() - 0.5) * 24, 8 + rs() * 6, 0, 7); c.fill(); } for (let i = 0; i < 4; i++) c.fillRect(24 + i * 13, 32, 6, 18 + rs() * 16); c.fillStyle = '#c496de'; c.beginPath(); c.arc(50, 22, 6, 0, 7); c.fill(); }
   play(tCure, 'water3', { v: 0.3, rate: 1.2 });
   m.hold(tCure, tCure + 160 + 1500 + 400, (e, S) => { const hd = K.head(tl, vk); let s, a = 1, dy = 0; if (e < 160) s = lerp(0.2, 1, outBack(e / 160)); else if (e < 1660) s = 1; else { const u = (e - 1660) / 400; s = 1; a = 1 - u; dy = u * 26 * Uv; }
     S.world.push({ z: 60, draw: (g) => { g.save(); g.globalAlpha = a; g.translate(hd.x, hd.y + 20 * Uv + dy); g.scale(s * Uv, s * Uv); g.drawImage(sp, -45, -20, 90, 80); g.restore(); } }); });

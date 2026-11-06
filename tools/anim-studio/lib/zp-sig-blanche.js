@@ -15,6 +15,7 @@ const BLANCHE = "uJFaNQCSvwwsr2AW";
 const CH = "Character/Blanche/";
 const IMG = "Campaign/The Legend of Dragonslayer/Image/";
 const FOOD_DIR = "Item Icon/Food/NEO The World Ends with you/";
+const GENSHIN_DIR = "Item Icon/Food/Genshin/";
 const FOODS = [
   "NEO_Food_001_Hachiko_Blend.webp", "NEO_Food_003_Iced_Cold_Brew.webp", "NEO_Food_005_Ice_Cream_Float.webp", "NEO_Food_006_BLT_Sandwich.webp",
   "NEO_Food_008_Chocolate_Chunk_Scone.webp", "NEO_Food_027_Fruit_Cocktail.webp", "NEO_Food_028_Dark_Chocolate_Dream.webp", "NEO_Food_029_Ruby_Chocolate_Delight.webp",
@@ -37,7 +38,9 @@ function blanche() {
     heal:    { url: MV("041_heal_one_1"), w: 546, h: 548, dur: 1400, ax: 0.5, ay: 0.885 },
     cure:    { url: MV("045_cure_one_1"), w: 700, h: 754, dur: 1133, ax: 0.5, ay: 0.561 },
   };
-  const images = { cut: F(IMG + "Cut-in/Blanche_Cut-in002.png"), cafe: F(IMG + "Map/Game Map/Blanche_Map001.png") };
+  const images = { cut: F(IMG + "Cut-in/Blanche_Cut-in002.png"), cafe: F(IMG + "Map/Game Map/Blanche_Map001.png"),
+    // the final spill's dishes: Genshin Impact wiki icons at full 256 px (user 11-06: the drawn dishes didn't match the art)
+    gCake: F(GENSHIN_DIR + "Item_Cake_for_Traveler_3.png"), gDrink: F(GENSHIN_DIR + "Item_Fruity_Duet.png"), gOmurice: F(GENSHIN_DIR + "Item_Omelette_Rice.png") };
   const foods = FOODS.map((f, i) => { images["f" + i] = F(FOOD_DIR + f); return "f" + i; });
   const cfg = {
     customers: 4, laps: 4, lap1: 500, accel: 1.6, slowMs: 2800, whiteHold: 900, spill: "random", cream: true, foods,

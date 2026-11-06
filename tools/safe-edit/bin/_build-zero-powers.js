@@ -34,7 +34,7 @@ const { encode, validate } = require(path.join(LIB, "encode.js"));
 
 const ACTOR = { hina: "dafTLBUscCDNgq8H", zarg: "Z4CFy505cD3nzl1W", keren: "gdJZ1L1kv5mjTTMr", blanche: "uJFaNQCSvwwsr2AW" };
 
-const KEREN_CHAIN = 'chain {OWN_PHANTASM_COUNT + OWN_NUMEN_COUNT * 2 + OWN_MINION_COUNT + (ON_FIELD("Leichi") + ON_FIELD("Leilan") > 0) + 2} hidden';
+const KEREN_CHAIN = 'chain {OWN_PHANTASM_COUNT + OWN_NUMEN_COUNT * 2 + OWN_MINION_COUNT + 3} hidden';
 const ZARG_CHAIN = "chain 24 hidden";
 
 // Merge a chain keyword into an action_keywords list (replacing any earlier chain keyword).

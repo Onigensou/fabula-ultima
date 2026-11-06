@@ -64,6 +64,6 @@ function keren() {
 // Keren's actor copy + the world parent
 const TARGETS = [{ actor: "gdJZ1L1kv5mjTTMr", item: "OoQjrz63C5m8OOoc" }, { world: "dKbnZH1Vw1a9WPUf" }];
 // one-roll Chain: parade strikes + the blast + the last hit (no commas: the keyword list splits on them)
-const KEYWORDS = 'chain {OWN_PHANTASM_COUNT + OWN_NUMEN_COUNT * 2 + OWN_MINION_COUNT + (ON_FIELD("Leichi") + ON_FIELD("Leilan") > 0) + 2}';
+const KEYWORDS = 'chain {OWN_PHANTASM_COUNT + OWN_NUMEN_COUNT * 2 + OWN_MINION_COUNT + 3}';
 
 module.exports = { keren, TARGETS, KEYWORDS, CLIPS, IMAGES };
