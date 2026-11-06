@@ -56,7 +56,7 @@
             "appliedAtRound": 0,
             "effectLabel": "kg_bond",
             "reactorActorUuid": "Actor.A8vBJMBvMT9ON8O4",
-            "reactorTokenUuid": "Scene.JKhl4GMekbmkKBXw.Token.7RVLzWsmvkpEClG9",
+            "reactorTokenUuid": "Scene.cuv0etY2LHsVmveW.Token.p6OLbOlyvemgl8He",
             "skillUuid": "Actor.A8vBJMBvMT9ON8O4.Item.eYFMzrOX2InBxKzD"
           },
           "directorPermanent": true
@@ -1634,7 +1634,7 @@
       "critical_dice_range": 0,
       "current_hp": 61,
       "current_ip": "0",
-      "current_mp": 100,
+      "current_mp": 0,
       "cut_in_critical": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
       "cut_in_fumble": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
       "cut_in_offset_y": "",

@@ -59,7 +59,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>Target creature gain <strong>All Basic Buffs </strong>when any of these <strong>condition </strong>is removed from you, remove all <strong>conditions </strong>gain this way, then, inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><strong><span style=\"text-decoration: underline;\">All Basic Debuffs</span></strong></span></span>&nbsp;to the target.</p></li><li><p>If the target has already <strong>consume </strong>a <strong>Crystal Powder </strong>before in this scene inflicts <strong>All Basic Debuffs</strong>&nbsp;instead.</p></li></ul>",
+      "description": "<ul><li><p>Target creature gains <strong>Crystal High</strong>: each of its <strong>Attributes</strong> increases by two die sizes for 3 turns.</p></li><li><p>When <strong>Crystal High</strong> ends or is removed during a battle, the creature gains <strong>Crystal Withdraw</strong>: each of its <strong>Attributes</strong> decreases by two die sizes for 3 turns.</p></li><li><p>If the target has already consumed a <strong>Crystal Powder</strong> in this scene, it gains <strong>Crystal Withdraw</strong> instead (ending any <strong>Crystal High</strong>).</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

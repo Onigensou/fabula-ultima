@@ -618,6 +618,63 @@
           "tint": "#ffffff",
           "transfer": true,
           "type": "base"
+        },
+        {
+          "_id": "VcYFPlWBuWMGlrhA",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1793958321475,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "check_mod_init",
+              "mode": 2,
+              "priority": null,
+              "value": "${isEquipped ? 3 : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "VcYFPlWBuWMGlrhA",
+              "originalParentId": "Nc1GEFqrF6PbzSfn",
+              "originalUuid": "Actor.5m6jyFCVzfBSzJvN.Item.Nc1GEFqrF6PbzSfn.ActiveEffect.VcYFPlWBuWMGlrhA"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "icons/svg/upgrade.svg",
+          "name": "Initiative Up",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
         }
       ],
       "flags": {
@@ -789,7 +846,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li><strong>You</strong> may take the first turn in a <strong>Boss Battle.</strong></li></ul>",
+          "description": "<ul><li><p>Initiative <strong>+3</strong>.</p></li></ul>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
