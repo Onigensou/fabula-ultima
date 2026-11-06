@@ -270,10 +270,23 @@ const DESC = {
   "ljKBtlzPVvhhmdHW": "<ul><li>You can only perform one attack per turn with this weapon</li><li>You cannot perform attacks without <strong>HR</strong> with this weapon</li></ul><p><em>*This keyword is only use for Equipment only</em></p>",
 };
 
-// Damage types — the element Items carry no text to harvest. User's wording
-// (2026-11-06): keep it simple, "Deal <Element> damage".
+// Damage types — the element Items carry no text to harvest. User's layout
+// (2026-11-06): "Deal <Element> damage" first, then the Fabula Ultima core
+// rulebook's damage-type table line.
+const DAMAGE_DESC = {
+  Physical: "The most common damage, caused by weapons and impacts.",
+  Air:      "Caused by supernatural winds and sky monsters.",
+  Bolt:     "Caused by lightning and electricity.",
+  Dark:     "Caused by undead and life-destroying magic.",
+  Earth:    "Caused by supernatural tremors and earth spirits.",
+  Fire:     "Caused by flames, magma or intense heat.",
+  Ice:      "Caused by very low temperatures and frost magic.",
+  Light:    "Caused by pure and untainted spiritual energy.",
+  Poison:   "Caused by poison, infections and pollution.",
+};
 for (const [name, tail] of DAMAGE) {
-  DESC[tail] = `<p>Deal <strong>${name}</strong> damage</p>`;
+  DESC[tail] = `<p>Deal <strong>${name}</strong> damage</p>`
+    + (DAMAGE_DESC[name] ? `<p>${DAMAGE_DESC[name]}</p>` : "");
 }
 
 // ── Category metadata ───────────────────────────────────────────────────────
