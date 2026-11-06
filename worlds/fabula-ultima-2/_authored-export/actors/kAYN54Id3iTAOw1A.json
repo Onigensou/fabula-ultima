@@ -810,42 +810,99 @@
       "type": "equippableItem"
     },
     {
-      "_id": "wDh8JUX0axpgzLV3",
+      "_id": "pGow5MydLxOiQuNm",
       "_stats": {
-        "compendiumSource": "Item.aPVUpJ1KwspTpUTV",
+        "compendiumSource": "Item.gmqiLVM5ymdrjxLd",
         "coreVersion": "12.343",
-        "createdTime": 1791399213688,
+        "createdTime": 1793948315630,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "jfjVtt4SsXigoxYV",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1793948315630,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "affinity_3",
+              "mode": 5,
+              "priority": 1,
+              "value": "${isEquipped ? 'RS' : 'NA'}$"
+            }
+          ],
+          "description": "<p>Gain resistance to <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "us315Kbn63PDab7a",
+              "originalParentId": "gmqiLVM5ymdrjxLd",
+              "originalUuid": "Item.gmqiLVM5ymdrjxLd.ActiveEffect.us315Kbn63PDab7a"
+            },
+            "statuscounter": {
+              "config": {
+                "dataSource": "flags.statuscounter.value",
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/ThunderBow.png",
+          "name": "Thunder Bow",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
+        "core": {
+          "sourceId": "Item.Qex8FZz4dvDcBmlz"
+        },
         "custom-system-builder": {
-          "version": "4.6.4"
+          "version": "3.2.4"
         },
         "fucompanion": {
           "itemMigratorBackup": {
-            "detectedType": "accessory",
-            "fromTemplate": "r0yZpLPAK9VXhM2p",
-            "itemId": "aPVUpJ1KwspTpUTV",
-            "itemName": "Silver Bolt",
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "gmqiLVM5ymdrjxLd",
+            "itemName": "Thunder Bow",
             "pickedOldProps": {
-              "cost": "1500",
-              "def_bonus": "",
-              "defense": "0",
-              "defense_include_dex": false,
-              "initiative": "0",
-              "magic_defense": "0",
-              "magic_defense_include_ins": false,
-              "mdef_bonus": ""
+              "cost": "1000",
+              "martial": false
             },
-            "ts": 1769647436465
+            "ts": 1769647000286
           }
         }
       },
-      "folder": "5uQIy5BCy7UEVfcT",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/SilverBolt.png",
-      "name": "Silver Bolt",
+      "folder": "gkxeb18rMnUvyuqk",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/ThunderBow.png",
+      "name": "Thunder Bow",
       "ownership": {
         "2vy7wrEUqBy0kzsU": 3,
         "6DmgigM5jq76r0Gd": 3,
@@ -873,7 +930,7 @@
         "yL2PQxh3R9ddt0te": 3,
         "yUfwoVmEPVdFG3AY": 3
       },
-      "sort": 3000000,
+      "sort": 1600000,
       "system": {
         "container": null,
         "props": {
@@ -882,63 +939,88 @@
           "automaton_ef": "100",
           "avian_ef": "100",
           "beast_ef": "100",
-          "category": "Arcane",
+          "category": "Bow",
           "celestial_ef": "100",
+          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
-          "damage_bonus": "0",
+          "damage_bonus": "8",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li><p>Whenever you take <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a>damage, you recovers <strong>MP </strong>equal to the damage taken</p></li></ul>",
+          "description": "<ul><li><p>You have Resistance to <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage.</p></li><li><p>You may cast the spell <a class=\"content-link\" data-uuid=\"Item.3SG96LfUyQaA0qAp\" data-id=\"3SG96LfUyQaA0qAp\" data-type=\"Item\">Fulgur</a></p></li></ul>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
+          "flavor_text": "",
           "flora_ef": "100",
           "fungus_ef": "100",
           "golem_ef": "100",
           "gorger_ef": "100",
-          "hand_slots": "One-handed",
+          "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
+          "id": "gmqiLVM5ymdrjxLd",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/ThunderBow.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
-          "isRelatedItem": false,
-          "isSet": true,
+          "isRelatedItem": true,
+          "isSet": false,
           "isUnique": false,
           "item_baseDef": "0",
           "item_baseMdef": "0",
-          "item_cost": "1500",
+          "item_cost": "1000",
           "item_def_bonus": "0",
           "item_mdef_bonus": "0",
           "item_quantity": "1",
-          "item_rarity": "Common",
-          "item_type": "accessory",
+          "item_rarity": "Uncommon",
+          "item_skill_active": {
+            "3SG96LfUyQaA0qAp": {
+              "id": "${item.id}",
+              "name": "Fulgur",
+              "skill_cost": "10 x T MP",
+              "skill_description": "<p>You weave electricity into a wave of crackling bolts. Each target hit by this spell suffers <strong>【HR + 15】</strong><a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage. </p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\">Dazed</a></p>",
+              "skill_maxLevel": 1,
+              "uuid": "Item.3SG96LfUyQaA0qAp"
+            }
+          },
+          "item_type": "weapon",
           "mimic_ef": "100",
           "monster_ef": "100",
-          "name": "Silver Bolt",
+          "name": "Thunder Bow",
           "optional_params": {},
           "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "related_item_list": {
+            "3SG96LfUyQaA0qAp": {
+              "id": "${item.id}",
+              "name": "Fulgur",
+              "related_item_description": "<p>You weave electricity into a wave of crackling bolts. Each target hit by this spell suffers <strong>【HR + 15】</strong><a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage. </p><p><strong>Opportunity:</strong> Each target hit by this spell suffers <a class=\"content-link\" data-uuid=\"JournalEntry.3nmUvPei3zrOJkEt\" data-id=\"3nmUvPei3zrOJkEt\" data-type=\"JournalEntry\">Dazed</a></p>",
+              "uuid": "Item.3SG96LfUyQaA0qAp"
+            }
+          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
-          "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</strong></p><ul><li><p>At the start of your turn, deal <strong>5 <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> </strong>damage to yourself</p><hr contenteditable=\"false\"></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Whenever a creature in the scene is targeted by an effect that deal <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a>damage, you may change its target to you instead</p></li></ul>",
-          "set_name": "Monster of Frankensteiner",
+          "set_name": "",
+          "skill_target": "One Enemy",
           "soldier_ef": "100",
           "spirit_ef": "100",
-          "type_damage": "Physical",
+          "type_damage": "Bolt",
           "undead_ef": "100",
+          "uuid": "Item.gmqiLVM5ymdrjxLd",
           "vehicle_ef": "100",
-          "weapon_range": "Melee"
+          "weapon_range": "Ranged"
         },
         "template": "ZoiV53VaLzeRsEps",
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
-        "uniqueId": "aPVUpJ1KwspTpUTV"
+        "uniqueId": "gmqiLVM5ymdrjxLd"
       },
       "type": "equippableItem"
     }
@@ -1417,7 +1499,7 @@
         },
         "4": {
           "$deleted": false,
-          "loot_id": "Silver Bolt",
+          "loot_id": "Thunder Bow",
           "loot_percentage": "6"
         }
       },
@@ -1450,12 +1532,12 @@
           "roll": "",
           "uuid": "Actor.kAYN54Id3iTAOw1A.Item.oC7kgVnmgEnMmgwT"
         },
-        "wDh8JUX0axpgzLV3": {
+        "pGow5MydLxOiQuNm": {
           "id": "${item.id}",
-          "loot_description": "<ul><li><p>Whenever you take <strong>Bolt </strong>damage, you recovers <strong>MP </strong>equal to the damage taken</p><hr contenteditable=\"false\"></li></ul><ul><li><p><strong>【Set Bonus】</strong></p></li></ul><p><strong>2 Piece</strong></p><ul><li><p>At the start of your turn, deal <strong>5 Bolt </strong>damage to yourself</p><hr contenteditable=\"false\"></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Whenever a creature in the scene is targeted by an effect that deal <strong>Bolt </strong>damage, you may change its target to you instead</p></li></ul>",
-          "name": "Silver Bolt",
+          "loot_description": "<ul><li><p>You have Resistance to <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage.</p></li><li><p>You may cast the spell <a class=\"content-link\" data-uuid=\"Item.3SG96LfUyQaA0qAp\" data-id=\"3SG96LfUyQaA0qAp\" data-type=\"Item\">Fulgur</a></p></li></ul>",
+          "name": "Thunder Bow",
           "roll": "",
-          "uuid": "Actor.kAYN54Id3iTAOw1A.Item.wDh8JUX0axpgzLV3"
+          "uuid": "Actor.kAYN54Id3iTAOw1A.Item.pGow5MydLxOiQuNm"
         }
       },
       "study_text": "<p>It soaks a battlefield before it ever charges one. Anything left <strong>wet</strong> conducts the current beautifully — its own allies included, which it does not appear to mind. <strong>Earth</strong> grounds it for good.</p>",

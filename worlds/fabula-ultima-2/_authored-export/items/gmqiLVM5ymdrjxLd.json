@@ -8,6 +8,66 @@
     "systemId": "custom-system-builder",
     "systemVersion": "4.8.5"
   },
+  "effects": [
+    {
+      "_id": "us315Kbn63PDab7a",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1793948315630,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_3",
+          "mode": 5,
+          "priority": 1,
+          "value": "${isEquipped ? 'RS' : 'NA'}$"
+        }
+      ],
+      "description": "<p>Gain resistance to <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "us315Kbn63PDab7a",
+          "originalParentId": "gmqiLVM5ymdrjxLd",
+          "originalUuid": "Item.gmqiLVM5ymdrjxLd.ActiveEffect.us315Kbn63PDab7a"
+        },
+        "statuscounter": {
+          "config": {
+            "dataSource": "flags.statuscounter.value",
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Image/ThunderBow.png",
+      "name": "Thunder Bow",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    }
+  ],
   "flags": {
     "core": {
       "sourceId": "Item.Qex8FZz4dvDcBmlz"
@@ -76,7 +136,7 @@
       "damage_bonus": "8",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul>\n    <li>You have Resistance to <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage</li>\n    <li>\n        <p>You may cast the spell 【<strong>⚡ Fulgur </strong>】</p>\n        <hr>\n    </li>\n</ul>",
+      "description": "<ul><li><p>You have Resistance to <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage.</p></li><li><p>You may cast the spell <a class=\"content-link\" data-uuid=\"Item.3SG96LfUyQaA0qAp\" data-id=\"3SG96LfUyQaA0qAp\" data-type=\"Item\">Fulgur</a></p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

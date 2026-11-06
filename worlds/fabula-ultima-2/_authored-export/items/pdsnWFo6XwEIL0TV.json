@@ -62,14 +62,35 @@
     "props": {
       "category": "Arcane",
       "check_bonus": "0",
-      "damage_bonus": "7",
-      "description": "<ul>\n    <li>\n        <p>This weapon deals <a class=\"content-link\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" data-id=\"XYQUsuXPU0CQjEYa\" data-type=\"JournalEntry\">Magic Damage</a></p>\n    </li>\n    <li>\n        <p>You may cast the spell 【<strong>⚡ Thunderstorm</strong>】</p>\n        <hr>\n    </li>\n</ul>\n<details>\n    <summary><strong>⚡ Thunderstorm</strong></summary>\n    <p><strong>MP:</strong> 50 MP</p>\n    <p><strong>Target:</strong> One Creature</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p><strong>Check:【WLP】</strong> + <strong>【WLP】</strong></p>\n    <p><a class=\"content-link\" data-uuid=\"JournalEntry.1TyH5hsRlBx4xYDs\" data-id=\"1TyH5hsRlBx4xYDs\" data-type=\"JournalEntry\">Roulette</a></p>\n    <p>Deal <strong>【HR + 10】</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage to target creature, repeat this 5 times</p>\n</details>",
+      "damage_bonus": "6",
+      "description": "<ul><li><p>This weapon deals <a class=\"content-link\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" data-id=\"XYQUsuXPU0CQjEYa\" data-type=\"JournalEntry\">Magic Damage</a></p></li><li><p>You may cast the spell <a class=\"content-link\" data-uuid=\"Item.SpcEksmH6AECN7qa\" data-id=\"SpcEksmH6AECN7qa\" data-type=\"Item\">Thunderstorm</a></p></li></ul>",
       "flavor_text": "<p><em>This staves is well known among lightning elemental mages.</em></p>",
       "hand_slots": "Two-handed",
       "isMartial": false,
+      "isRelatedItem": true,
+      "isSet": false,
       "item_cost": "2500",
+      "item_rarity": "Rare",
+      "item_skill_active": {
+        "SpcEksmH6AECN7qa": {
+          "id": "${item.id}",
+          "name": "Thunderstorm",
+          "skill_cost": "30 MP",
+          "skill_description": "<p><a class=\"content-link\" data-uuid=\"JournalEntry.ChnStrikeKeyw0rd\" data-id=\"ChnStrikeKeyw0rd\" data-type=\"JournalEntry\">Chain</a> 3: call down three bolts, each on a random enemy. Each bolt makes its own Magic Check and deals <strong>【HR + 15】</strong><a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage. A bolt aimed at an enemy already reduced to 0 HP strikes another enemy instead.</p>",
+          "skill_maxLevel": 1,
+          "uuid": "Item.SpcEksmH6AECN7qa"
+        }
+      },
       "item_type": "weapon",
       "name": "Rumbling Staves",
+      "related_item_list": {
+        "SpcEksmH6AECN7qa": {
+          "id": "${item.id}",
+          "name": "Thunderstorm",
+          "related_item_description": "<p><a class=\"content-link\" data-uuid=\"JournalEntry.ChnStrikeKeyw0rd\" data-id=\"ChnStrikeKeyw0rd\" data-type=\"JournalEntry\">Chain</a> 3: call down three bolts, each on a random enemy. Each bolt makes its own Magic Check and deals <strong>【HR + 15】</strong><a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage. A bolt aimed at an enemy already reduced to 0 HP strikes another enemy instead.</p>",
+          "uuid": "Item.SpcEksmH6AECN7qa"
+        }
+      },
       "rolled_atr1": "WLP",
       "rolled_atr2": "WLP",
       "set_name": "",

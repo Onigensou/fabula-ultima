@@ -12764,7 +12764,7 @@
         "id": "gmqiLVM5ymdrjxLd",
         "name": "Thunder Bow",
         "type": "equippableItem",
-        "effects": 0
+        "effects": 1
       },
       {
         "id": "2qhIJG9OTmyPYMFB",
@@ -12775,6 +12775,12 @@
       {
         "id": "eMFnmNlwEks944Vk",
         "name": "Thunderbolt",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "SpcEksmH6AECN7qa",
+        "name": "Thunderstorm",
         "type": "equippableItem",
         "effects": 0
       },
@@ -14743,8 +14749,8 @@
             "name": "Fish Fin"
           },
           {
-            "id": "wDh8JUX0axpgzLV3",
-            "name": "Silver Bolt"
+            "id": "pGow5MydLxOiQuNm",
+            "name": "Thunder Bow"
           },
           {
             "id": "oC7kgVnmgEnMmgwT",
@@ -21303,12 +21309,12 @@
             "name": "Lightning Charge"
           },
           {
-            "id": "EQAK97MsaFD6Zp2e",
-            "name": "Lightning Rod"
-          },
-          {
             "id": "EFdFBDBt4HBeuqcR",
             "name": "Mystic Horn"
+          },
+          {
+            "id": "8bgOFd1zZI0hdyLJ",
+            "name": "Rumbling Staves"
           },
           {
             "id": "WWDKHIwgzpCOpLwZ",

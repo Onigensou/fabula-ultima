@@ -226,6 +226,113 @@
       "type": "equippableItem"
     },
     {
+      "_id": "8bgOFd1zZI0hdyLJ",
+      "_stats": {
+        "compendiumSource": "Item.pdsnWFo6XwEIL0TV",
+        "coreVersion": "12.343",
+        "createdTime": 1793948315630,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "pdsnWFo6XwEIL0TV",
+            "itemName": "Rumbling Staves",
+            "pickedOldProps": {
+              "cost": "2500",
+              "martial": false
+            },
+            "ts": 1769646981463
+          }
+        }
+      },
+      "folder": "QGuy8DVLgrvQqs1c",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1473.gif",
+      "name": "Rumbling Staves",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "category": "Arcane",
+          "check_bonus": "0",
+          "damage_bonus": "6",
+          "description": "<ul><li><p>This weapon deals <a class=\"content-link\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" data-id=\"XYQUsuXPU0CQjEYa\" data-type=\"JournalEntry\">Magic Damage</a></p></li><li><p>You may cast the spell <a class=\"content-link\" data-uuid=\"Item.SpcEksmH6AECN7qa\" data-id=\"SpcEksmH6AECN7qa\" data-type=\"Item\">Thunderstorm</a></p></li></ul>",
+          "flavor_text": "<p><em>This staves is well known among lightning elemental mages.</em></p>",
+          "hand_slots": "Two-handed",
+          "isMartial": false,
+          "isRelatedItem": true,
+          "isSet": false,
+          "item_cost": "2500",
+          "item_rarity": "Rare",
+          "item_skill_active": {
+            "SpcEksmH6AECN7qa": {
+              "id": "${item.id}",
+              "name": "Thunderstorm",
+              "skill_cost": "30 MP",
+              "skill_description": "<p><a class=\"content-link\" data-uuid=\"JournalEntry.ChnStrikeKeyw0rd\" data-id=\"ChnStrikeKeyw0rd\" data-type=\"JournalEntry\">Chain</a> 3: call down three bolts, each on a random enemy. Each bolt makes its own Magic Check and deals <strong>【HR + 15】</strong><a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage. A bolt aimed at an enemy already reduced to 0 HP strikes another enemy instead.</p>",
+              "skill_maxLevel": 1,
+              "uuid": "Item.SpcEksmH6AECN7qa"
+            }
+          },
+          "item_type": "weapon",
+          "name": "Rumbling Staves",
+          "related_item_list": {
+            "SpcEksmH6AECN7qa": {
+              "id": "${item.id}",
+              "name": "Thunderstorm",
+              "related_item_description": "<p><a class=\"content-link\" data-uuid=\"JournalEntry.ChnStrikeKeyw0rd\" data-id=\"ChnStrikeKeyw0rd\" data-type=\"JournalEntry\">Chain</a> 3: call down three bolts, each on a random enemy. Each bolt makes its own Magic Check and deals <strong>【HR + 15】</strong><a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage. A bolt aimed at an enemy already reduced to 0 HP strikes another enemy instead.</p>",
+              "uuid": "Item.SpcEksmH6AECN7qa"
+            }
+          },
+          "rolled_atr1": "WLP",
+          "rolled_atr2": "WLP",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "type_damage": "Bolt",
+          "weapon_range": "Ranged"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "pdsnWFo6XwEIL0TV"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "EFdFBDBt4HBeuqcR",
       "_stats": {
         "compendiumSource": "Item.qwLfGN1ahEvnV4Tg",
@@ -343,112 +450,6 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "qwLfGN1ahEvnV4Tg"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "EQAK97MsaFD6Zp2e",
-      "_stats": {
-        "compendiumSource": "Item.nvsyVWdA6cevPiIL",
-        "coreVersion": "12.343",
-        "createdTime": 1791399213688,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        },
-        "fucompanion": {
-          "itemMigratorBackup": {
-            "detectedType": "weapon",
-            "fromTemplate": "gIRU9XGqYeMBwBN9",
-            "itemId": "nvsyVWdA6cevPiIL",
-            "itemName": "Lightning Rod",
-            "pickedOldProps": {
-              "cost": "2500",
-              "martial": false
-            },
-            "ts": 1769647435883
-          }
-        }
-      },
-      "folder": "j8Al1ueoAvP4x5QV",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/Genshin/The_Catch.png",
-      "name": "Lightning Rod",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 3
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Spear",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "8",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li><p>Whenever you take <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a>damage, you may perform a <strong>Free Attack </strong>with this weapon, this attack deals bonus damage equal to the <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> damage taken</p></li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flavor_text": "<p><em>This instrument harness the power of lightning and turn it into energy</em></p>",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": true,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "2500",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Common",
-          "item_type": "weapon",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Lightning Rod",
-          "optional_params": {},
-          "plant_ef": "100",
-          "reptilian_ef": "100",
-          "rolled_atr1": "MIG",
-          "rolled_atr2": "WLP",
-          "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</strong></p><ul><li><p>At the start of your turn, deal <strong>5 <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a> </strong>damage to yourself</p><hr contenteditable=\"false\"></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Whenever a creature in the scene is targeted by an effect that deal <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\">Bolt</a>damage, you may change its target to you instead</p></li></ul>",
-          "set_name": "Monster of Frankensteiner",
-          "skill_target": "One Enemy",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Bolt",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "nvsyVWdA6cevPiIL"
       },
       "type": "equippableItem"
     },
@@ -1412,24 +1413,24 @@
         },
         "3": {
           "$deleted": false,
-          "loot_id": "Lightning Rod",
+          "loot_id": "Rumbling Staves",
           "loot_percentage": "7"
         }
       },
       "stealable_loot": {
+        "8bgOFd1zZI0hdyLJ": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>This weapon deals <a class=\"content-link\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" data-id=\"XYQUsuXPU0CQjEYa\" data-type=\"JournalEntry\">Magic Damage</a></p></li><li><p>You may cast the spell <a class=\"content-link\" data-uuid=\"Item.SpcEksmH6AECN7qa\" data-id=\"SpcEksmH6AECN7qa\" data-type=\"Item\">Thunderstorm</a></p></li></ul>",
+          "name": "Rumbling Staves",
+          "roll": "",
+          "uuid": "Actor.TvLv878yZLNUAWNN.Item.8bgOFd1zZI0hdyLJ"
+        },
         "EFdFBDBt4HBeuqcR": {
           "id": "${item.id}",
           "loot_description": "<p><em>A horn capable of storing a vast amount of magical energy.</em></p>",
           "name": "Mystic Horn",
           "roll": "",
           "uuid": "Actor.TvLv878yZLNUAWNN.Item.EFdFBDBt4HBeuqcR"
-        },
-        "EQAK97MsaFD6Zp2e": {
-          "id": "${item.id}",
-          "loot_description": "<ul><li><p>Whenever you take <strong>Bolt </strong>damage, you may perform a <strong>Free Attack </strong>with this weapon<strong>, </strong>this attack deals<strong> </strong>bonus damage equal to the <strong>Bolt</strong> damage taken</p><hr class=\"\" contenteditable=\"false\"></li></ul><ul><li><p><strong>【Set Bonus】</strong></p></li></ul><p><strong>2 Piece</strong></p><ul><li><p>At the start of your turn, deal <strong>5 Bolt </strong>damage to yourself</p><hr contenteditable=\"false\"></li></ul><p><strong>3 Piece</strong></p><ul><li><p>Whenever a creature in the scene is targeted by an effect that deal <strong>Bolt </strong>damage, you may change its target to you instead</p></li></ul>",
-          "name": "Lightning Rod",
-          "roll": "",
-          "uuid": "Actor.TvLv878yZLNUAWNN.Item.EQAK97MsaFD6Zp2e"
         },
         "IrsyQ2uBZJja1GWU": {
           "id": "${item.id}",
