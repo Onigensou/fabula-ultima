@@ -1,6 +1,7 @@
 // ============================================================================
 // Dungeon Pathing System — Graph Builder
-// Builds the movement graph from scene tiles (nodes) and drawings (edges).
+// Builds the movement graph from scene tiles (nodes) and links (edges): the
+// scene's link data once migrated (dp-links.js), its Drawing lines before that.
 // Ported and refactored from the Pathfinder Prototype V2 macro.
 // ============================================================================
 (() => {
@@ -153,8 +154,13 @@
      */
     build() {
       const nodes     = this.getTileNodes();
-      const drawings  = this.getDrawingEdges();
-      const edges     = this.buildEdges(nodes, drawings);
+      // Migrated scenes keep their links as scene data (dp-links-core.js); the
+      // rest still read their Drawing lines. Both give the same edge shape.
+      const linked    = DP.Links?.isMigrated?.(canvas?.scene);
+      const drawings  = linked ? [] : this.getDrawingEdges();
+      const edges     = linked
+        ? DP.LinksCore.edgesFromLinks(DP.Links.read(canvas.scene), nodes.map(n => n.nodeId), { switchOn: DP.Links.switchOn })
+        : this.buildEdges(nodes, drawings);
       const adjacency = this.buildAdjacency(nodes, edges);
 
       const nodeMap     = new Map(nodes.map(n => [n.nodeId, n]));

@@ -1165,6 +1165,11 @@
   // tiles together as graph edges in the DungeonPathing system).
   // On load: drawings added after save are deleted; missing drawings are
   // recreated from saved data; existing drawings are updated to saved state.
+  //
+  // Scenes whose links were migrated to scene data (dungeonPathing.linksVersion,
+  // dp-links-core.js) are skipped both ways: their links are scene design, not
+  // save state, and an older save must not bring the old link drawings back.
+  const linksMigrated = (scene) => !!scene?.flags?.["fabula-ultima-companion"]?.dungeonPathing?.linksVersion;
   SS.registerExtractor({
     key:   "sceneDrawingData",
     label: "Scene Drawings (Dungeon)",
@@ -1173,6 +1178,7 @@
       const result = {};
       for (const scene of game.scenes.contents) {
         if (getSceneMode(scene) !== "dungeon") continue;
+        if (linksMigrated(scene)) continue;
         if (!scene.drawings?.size) continue;
         const drawings = {};
         for (const drawing of scene.drawings.values()) {
@@ -1189,6 +1195,7 @@
         Object.entries(data).map(async ([sceneId, drawings]) => {
           const scene = game.scenes.get(sceneId);
           if (!scene) return;
+          if (linksMigrated(scene)) return;   // links live in scene data now (see above)
           // Same delete+recreate pattern as sceneTileVisibility — mergeObject
           // semantics on updateEmbeddedDocuments cannot clear absent-default flags.
           const currentIds = [...scene.drawings.values()].map(d => d.id);

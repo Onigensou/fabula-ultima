@@ -212,7 +212,9 @@
   // ---------------------------------------------------------------------------
   function _getDrawingPlaceable(drawingId) {
     const dr = canvas?.drawings?.placeables?.find(d => d.document?.id === drawingId) ?? null;
-    if (!dr) return null;
+    // Migrated scenes have no Drawings: the link layer (dp-links.js) keeps one
+    // display object per link, keyed by the same id, whose alpha we animate.
+    if (!dr) return DP.LinkLayer?.get?.(drawingId) ?? null;
     // Target the shape child, not the container. Foundry's _refreshOpacity() resets
     // Drawing.alpha (the container) back to document.alpha on each render-flag cycle,
     // undoing any manual alpha we set. Drawing.shape is a PIXI.Graphics child that

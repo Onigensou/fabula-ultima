@@ -77,6 +77,8 @@
 !/tools/csb-template/**
 !/tools/anim-studio/
 !/tools/anim-studio/**
+!/tools/dungeon-links/
+!/tools/dungeon-links/**
 !/tools/skill-regression/
 !/tools/skill-regression/**
 # forge-mirror: the sync tool is shared; the mirror itself (/forge-mirror/, ~1.2 GB of

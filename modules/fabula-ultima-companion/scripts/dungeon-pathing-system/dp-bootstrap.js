@@ -908,6 +908,22 @@
       });
       state.hookIds.push(["updateDrawing", id]);
     }
+    // Migrated scenes (dp-links.js): links live in scene flags, so a link edit
+    // is a scene update. Only link keys count; tileStates writes do not.
+    {
+      const id = Hooks.on("updateScene", (scene, diff, options) => {
+        if (options?.dungeonPathing || scene.id !== canvas?.scene?.id) return;
+        if (DP.Links?.touchesLinks?.(diff)) debouncedRebuild();
+      });
+      state.hookIds.push(["updateScene", id]);
+    }
+    {
+      // A switch-locked link opens/closes with its switch (dp-worldmap locked routes).
+      const id = Hooks.on("oniGameStateChanged", () => {
+        if (DP.Links?.hasSwitchLocks?.(canvas?.scene)) debouncedRebuild();
+      });
+      state.hookIds.push(["oniGameStateChanged", id]);
+    }
 
     // Block token drag (left-click drag-drop) while dungeon mode is active.
     // Allows only updates flagged dungeonPathing:true (from dp-movement.js).
