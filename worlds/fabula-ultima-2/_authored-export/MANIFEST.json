@@ -11921,6 +11921,12 @@
         "effects": 0
       },
       {
+        "id": "dnouOqucx5rnWsT4",
+        "name": "Spend 6 ZP",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "6ThyGpmcPzrBBGji",
         "name": "Spicy Cocktail",
         "type": "equippableItem",
@@ -20155,6 +20161,10 @@
           {
             "id": "ftTbURtcbfwCg8CT",
             "name": "Shield of Rejuvenation (Passive)"
+          },
+          {
+            "id": "j87E0Ygherc0t2Zb",
+            "name": "Spend 6 ZP"
           },
           {
             "id": "uK8MN1c3SDjR2Pgs",

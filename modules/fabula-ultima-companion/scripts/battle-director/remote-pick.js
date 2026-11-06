@@ -90,6 +90,7 @@ async function renderLocalPick({ kind, spec = {}, externalCancel = null }) {
     mode: spec.mode ?? "exact",
     count: spec.count ?? 1,
     titleText: spec.titleText ?? null,
+    card: spec.card ?? null,
     cancelLabel: spec.cancelLabel ?? "Cancel",
     secondaryAction: spec.secondaryAction ?? null,
     randomizeCount: !!spec.randomizeCount,

@@ -319,6 +319,9 @@ function candidateFromSkill(skill, actor, { source, sourceItem, freeOfCost = fal
   // flags choice-gated costs (menu / confirm branch) → shown as "Varied".
   // Skills with no on_activate chain skip this entirely → identical to before.
   const configDebit = new Map();
+  // The price this entry reads, when it differs from what its gate allows
+  // (Bind and Summon: gated at 25 so a Quick option stays reachable, reads 30).
+  const displayDebit = new Map();
   let costVariable = false;
   // Charge-cost shortfalls (AE-charge "clock" resources like Adoration) — the
   // string/resource cost path can't see these (they're consume_charge rows, not
@@ -333,6 +336,7 @@ function candidateFromSkill(skill, actor, { source, sourceItem, freeOfCost = fal
       const ac = analyzeChainCost(p.effect_table, activateRef, actor, skill);
       if (ac?.ok) {
         for (const [res, amt] of Object.entries(ac.debit ?? {})) if (Number(amt) > 0) configDebit.set(res, Number(amt));
+        for (const [res, amt] of Object.entries(ac.listExtra ?? {})) if (Number(amt) > 0) displayDebit.set(res, Number(amt));
         costVariable = !!ac.variable;
         chargeCostParts = Object.entries(ac.chargeDebit ?? {})
           .filter(([, amt]) => Number(amt) > 0)
@@ -468,6 +472,7 @@ function candidateFromSkill(skill, actor, { source, sourceItem, freeOfCost = fal
     parsedCost,
     costMap,
     configDebit,
+    displayDebit,
     chargeCostParts,
     costVariable,
     // A granted free cast pays nothing at RESOLVE (skipCost), so the caster's
@@ -551,7 +556,9 @@ function candidateToRow(c) {
   // up-to / % / ×T) + the config-chain cost appended. "Varied" when the real
   // cost depends on a player choice (menu / confirm branch).
   const stringLabel = c.parsedCost?.tokens?.length ? formatParsedCost(c.parsedCost) : "";
-  const configLabel = c.configDebit && c.configDebit.size ? formatCostMap(c.configDebit) : "";
+  const shownDebit = new Map(c.configDebit ?? []);
+  for (const [res, amt] of c.displayDebit ?? []) shownDebit.set(res, (shownDebit.get(res) ?? 0) + amt);
+  const configLabel = shownDebit.size ? formatCostMap(shownDebit) : "";
   // Charge costs (AE-charge clocks like Adoration) — not resources, so they
   // aren't in configDebit/stringLabel; render them as "3 Adoration".
   const chargeLabel = (c.chargeCostParts ?? []).map((p) => `${p.amount} ${p.label}`).join(", ");
@@ -560,7 +567,9 @@ function candidateToRow(c) {
   if (parts.length && c.costVariable) costLabel = `${parts.join(", ")} + Varied`;
   else if (parts.length) costLabel = parts.join(", ");
   else if (c.costVariable) costLabel = "Varied";
-  else costLabel = "Free";
+  // Not "Free": on this tag that read as "no action", and Pulse uses your action.
+  // A granted free cast (below) and a reaction's Cost line keep saying Free.
+  else costLabel = "No MP";
   // A swap-funded row shows ONLY what is actually spent — the HP. The MP figure
   // is what you CANNOT pay, so leading with it (the old "5 MP -> 10 HP") buried
   // the real price behind a number that never leaves your pool. The full
@@ -621,7 +630,7 @@ function candidateToRow(c) {
     // What the row would spend, for the plate's cost preview (previewPlateCost).
     // A swap-funded row spends HP instead, which its costMap does not hold.
     costPreview: c.freeOfCost || c.costSwap ? null : {
-      mp: Number(c.costMap?.get?.("mp")) || 0,
+      mp: (Number(c.costMap?.get?.("mp")) || 0) + (Number(c.displayDebit?.get?.("mp")) || 0),
       hp: Number(c.costMap?.get?.("hp")) || 0,
       ip: Number(c.costMap?.get?.("ip")) || 0,
     },

@@ -36,7 +36,11 @@ export function keysBlockedFor(node) {
   return !!layer.closest(".gmd")?.classList.contains("is-card");
 }
 const stripTags = (html) => String(html ?? "").replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
-// Rich text → plain text that keeps its paragraphs and list items as lines.
+// Rich text → plain text that keeps its paragraphs and list items as lines, and its
+// bold: \u0001 and \u0002 mark where it starts and ends, and cardFaceHTML turns them
+// back into <b> after escaping. Anything else printing this text strips them.
+const BOLD_ON = "\u0001", BOLD_OFF = "\u0002";
+export const stripCardBold = (s) => String(s ?? "").replace(/[\u0001\u0002]/g, "");
 export function htmlToCardText(html) {
   const s = String(html ?? "");
   if (!s.trim()) return "";
@@ -45,7 +49,9 @@ export function htmlToCardText(html) {
     .replace(/<\s*br\s*\/?>/gi, "\n")
     .replace(/<\/?(p|div|h\d|tr|ul|ol)(\s[^>]*)?>/gi, "\n")
     .replace(/<li[^>]*>/gi, "\n• ")
-    .replace(/<\/li>/gi, "");
+    .replace(/<\/li>/gi, "")
+    .replace(/<(strong|b)(\s[^>]*)?>/gi, BOLD_ON)
+    .replace(/<\/(strong|b)>/gi, BOLD_OFF);
   // @UUID[...]{Label} links keep their label.
   const text = (div.textContent ?? "").replace(/@UUID\[[^\]]*\]\{([^}]*)\}/g, "$1");
   return text.split("\n").map((l) => l.replace(/[ \t]+/g, " ").trim()).filter(Boolean).join("\n");
@@ -372,7 +378,7 @@ function cardFaceHTML(e) {
   const chips = (e.chips ?? []).filter((c) => c?.text && !seen.has(c.text) && seen.add(c.text))
     .map((c) => `<span class="dhv-chip t-${escapeHtml(c.tone || "tag")}">${escapeHtml(c.text)}</span>`).join("");
   const paras = String(e.body || "").split("\n").filter(Boolean)
-    .map((l) => `<p${/^Skill Enhancement/i.test(l) ? ' class="enh"' : ""}>${escapeHtml(l)}</p>`).join("");
+    .map((l) => `<p${/^Skill Enhancement/i.test(stripCardBold(l)) ? ' class="enh"' : ""}>${escapeHtml(l).replaceAll(BOLD_ON, "<b>").replaceAll(BOLD_OFF, "</b>")}</p>`).join("");
   return `<div class="dhv-shead">${ic}<div style="min-width:0">${e.from ? `<div class="dhv-sfrom">From ${escapeHtml(e.from)}</div>` : ""}<div class="dhv-sname">${escapeHtml(e.name)}</div></div></div>
     ${chips ? `<div class="dhv-schips">${chips}</div>` : ""}<div class="dhv-srule"></div>
     ${e.reason ? `<div class="dhv-swhy">${escapeHtml(e.reason)}</div>` : ""}
@@ -415,7 +421,7 @@ function rowCardEntry(r, kind) {
     || (facts ? "" : htmlToCardText(r.secondary));   // decodes &amp; etc.
   const chips = [
     ...(facts ? secondaryParts(r.secondary) : []).map((t) => ({ text: t, tone: "tag" })),
-    ...rowChips(r).map((c) => ({ text: stripTags(c.html), tone: c.tone || (/\bMP\b/.test(c.html) ? "mp" : /\bIP\b/.test(c.html) ? "ip" : "") })),
+    ...rowChips(r).map((c) => ({ text: c.tone === "danger" ? firstSentence(stripTags(c.html)) : stripTags(c.html), tone: c.tone || (/\bMP\b/.test(c.html) ? "mp" : /\bIP\b/.test(c.html) ? "ip" : "") })),
   ];
   if (tipObj?.cost && !chips.some((c) => c.text === tipObj.cost)) chips.push({ text: String(tipObj.cost), tone: /\bMP\b/.test(tipObj.cost) ? "mp" : "" });
   let reason = rowReason(r);
@@ -423,11 +429,11 @@ function rowCardEntry(r, kind) {
   return { key: `${kind}|${name}|${JSON.stringify(r.value ?? null).slice(0, 80)}`, name, kind, img: r.imageUrl ?? null, iconHTML: r.fallbackIcon ?? "", chips, body, reason };
 }
 function rowSummary(r) {
-  if (r.disabled) return `<span class="bad">${escapeHtml(rowReason(r))}</span>`;
+  if (r.disabled) return `<span class="bad">${escapeHtml(firstSentence(rowReason(r)))}</span>`;
   const parts = secondaryParts(r.secondary);
   if (parts.length) return escapeHtml(parts.join(" · "));
   const tip = r.tooltip;
-  return escapeHtml(stripTags(typeof tip === "string" ? tip : tip?.body ?? "").slice(0, 160));
+  return escapeHtml(stripCardBold(stripTags(typeof tip === "string" ? tip : tip?.body ?? "")).slice(0, 160));
 }
 function sameValue(a, b) {
   if (a === b) return true;
@@ -658,9 +664,14 @@ export function pickDocked(host, {
   log(`drawer list: "${tab}" with ${flat.length} rows${tiles ? " (tiles)" : ""}`);
   return { promise, cleanup: () => finish(null, true) };
 }
+// A reason can carry more than a tag has room for. The tag and the footer take its
+// first sentence; the card says all of it.
+function firstSentence(s) {
+  return String(s ?? "").trim().split(/(?<=[.!?])\s+/)[0].replace(/\.$/, "");
+}
 // A row's chip has ~140 px; the card says the whole reason.
 function shortReason(s) {
-  const t = String(s ?? "").trim();
+  const t = firstSentence(s);
   return t.length > 22 ? `${t.slice(0, 21).trimEnd()}…` : t;
 }
 
@@ -730,9 +741,9 @@ export function mountDockedReaction(host, { candidates, onPick, onPass, label = 
   let done = false;
   const view = document.createElement("div");
   view.className = "dhv-view is-in";
-  const modeChip = (c) => c?.mode === "on" ? { text: "Auto", tone: "tag" } : c?.kind === "manual" ? { text: "Manual", tone: "tag" } : { text: "Asks", tone: "tag" };
+  const modeChip = (c) => c?.carrierCost ? { text: c.carrierCost, tone: "tag" } : c?.mode === "on" ? { text: "Auto", tone: "tag" } : c?.kind === "manual" ? { text: "Manual", tone: "tag" } : { text: "Asks", tone: "tag" };
   const entry = (c) => ({
-    key: `react|${c?.carrierUuid}|${c?.rowKey}`, name: c?.carrierName ?? "Reaction", kind: label, img: c?.carrierImg ?? null,
+    key: `react|${c?.carrierUuid}|${c?.rowKey}`, name: c?.carrierName ?? "Reaction", kind: label, img: c?.carrierImg ?? null, from: c?.carrierFrom ?? null,
     chips: [modeChip(c)], body: htmlToCardText(c?.carrierDescription ?? ""),
     reason: reasonOf(c) ?? (c?.mode === "on" ? "This one happens on its own; it is listed so you can see it." : null),
   });

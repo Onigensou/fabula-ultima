@@ -397,7 +397,7 @@ function spawnMenu({ token, combatId, onPick, onPassive, enabledLabels = null, b
   );
   // Nothing to use it on — Array<{label, reason, tag}> from compose-action (no
   // spell you can pay for, no item or affordable recipe). Dimmed under a soft
-  // grey tag (`tag`, e.g. "No MP"); the red stamp stays reserved for a status
+  // grey tag (`tag`, e.g. "Low MP"); the red stamp stays reserved for a status
   // that took the action away. The full reason is the help line.
   const unavailableReasons = new Map(
     (Array.isArray(unavailableLabels) ? unavailableLabels : [])

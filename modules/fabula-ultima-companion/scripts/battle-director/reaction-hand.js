@@ -49,6 +49,7 @@
 import { getClientOption } from "../shared/client-options.js";
 import { plateReactionHost, holdPlateHover } from "./director-player-hud.js";
 import { htmlToCardText } from "./drawer-views.js";
+import { shortSkillName } from "./skill-formulas.js";
 import { deckDeal, deckReturn, deckPlay, deckSetHand, deckSetAllyHand, deckAllyTab } from "./reaction-deck.js";
 
 const MIRROR_ROOT_ID = "fud-bf-mirror-root";
@@ -209,11 +210,25 @@ function ensureHand(unit) {
 const PASS_ICON = '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 5 7 7-7 7"></path><path d="m12 5 7 7-7 7"></path></svg>';
 const CHECK = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg>';
 
+// "From <the skill it rides>" on the panel, and that skill on the card's type line.
+function fromText(r) {
+  if (r.from) return r.from;
+  const { item, row } = rowOf(r);
+  const src = String(row?.reaction_source_skill ?? "").trim();
+  return src && src.toLowerCase() !== String(item?.name ?? "").trim().toLowerCase() ? src : null;
+}
+function typeText(r) {
+  if (r.type) return r.type;
+  const { item, row } = rowOf(r);
+  const source = fromText(r) && sourceSkillOf(row, item?.parent ?? actorFromUuid(r.reactorUuid));
+  return source ? `Reaction · ${source.short}` : "Reaction";
+}
+
 function cardHtml(r, portrait) {
   return `<div class="rxh-face">
       <div class="rxh-name"><span class="nm">${esc(r.name)}</span></div>
       <div class="rxh-art">${portrait ? `<img class="bg" src="${esc(portrait)}" alt="">` : ""}${r.icon ? `<span class="emb"><img src="${esc(r.icon)}" alt=""></span>` : ""}</div>
-      <div class="rxh-type">${esc(r.type || "Reaction")}</div>
+      <div class="rxh-type">${esc(typeText(r))}</div>
       <div class="rxh-info">
         <div class="rxh-row is-when"><span class="k">When</span><span class="v">…</span></div>
         <div class="rxh-row is-target"><span class="k">Target</span><span class="v"></span></div>
@@ -260,13 +275,13 @@ function makeCard(r) {
 // it never blocks the card. Everything comes from the carrier on this client
 // (your own character's items), so no host round-trip is needed.
 const TRIGGER_TEXT = {
-  creature_will_deal_damage: { self: "Before your attack deals damage", other: "Before an attack deals damage" },
+  creature_will_deal_damage: { self: "Before you deal damage", other: "Before a creature deals damage" },
   creature_performs_action: { self: "When you act", other: "When a creature acts" },
   creature_targeted_by_action: { self: "When you are targeted", other: "When a creature is targeted" },
   creature_hit_by_action: { self: "When you are hit", other: "When a creature is hit" },
   creature_will_take_damage: { self: "Before you take damage", other: "Before a creature takes damage" },
   creature_took_damage: { self: "After you take damage", other: "After a creature takes damage" },
-  creature_deals_damage: { self: "When your attack deals damage", other: "When a creature deals damage" },
+  creature_deals_damage: { self: "When you deal damage", other: "When a creature deals damage" },
   creature_takes_damage: { self: "When you take damage", other: "When a creature takes damage" },
   // {RES} = the row's reaction_resource_filter (Absorb MP: "After you lose HP").
   creature_lose_resource: { self: "When you lose {RES}", other: "When a creature loses {RES}" },
@@ -295,6 +310,16 @@ const TRIGGER_TEXT = {
   round_end: "At the end of each round",
   turn_start: { self: "At the start of your turn", other: "At the start of a turn" },
   turn_end: { self: "At the end of your turn", other: "At the end of a turn" },
+};
+// A row of your own scoped to one named skill says that skill, not the general
+// trigger: "As you Dismiss", "After you use Crossfire".
+const SOURCE_SKILL_TEXT = {
+  creature_will_deal_damage: "As you {S}",
+  creature_deals_damage: "When you {S}",
+  creature_performs_action: "When you {S}",
+  creature_completes_skill: "After you {S}",
+  creature_completes_spell: "After you {S}",
+  creature_completes_attack: "After you {S}",
 };
 const TARGET_TEXT = {
   self: "You",
@@ -325,11 +350,27 @@ function rowOf(r) {
   return { item, row };
 }
 
-async function whenText(row) {
+// The skill a row is scoped to (reaction_source_skill), as its owner knows it.
+function sourceSkillOf(row, actor) {
+  const name = String(row?.reaction_source_skill ?? "").trim();
+  if (!name) return null;
+  const want = name.toLowerCase();
+  const item = actor?.items?.find?.((i) => String(i.name ?? "").trim().toLowerCase() === want) ?? null;
+  return { name, item, short: item ? shortSkillName(item, actor) : name };
+}
+const isOwnRow = (row) => { const s = String(row?.reaction_source ?? "").trim().toLowerCase(); return s === "self" || !s; };
+
+async function whenText(row, actor = null) {
   const trig = String(row?.reaction_trigger ?? "").trim();
   const t = TRIGGER_TEXT[trig];
   const src = String(row?.reaction_source ?? "").trim().toLowerCase();
   let when = typeof t === "string" ? t : t ? (src === "self" || !src ? t.self : t.other) : "";
+  const source = isOwnRow(row) ? sourceSkillOf(row, actor) : null;
+  if (source && SOURCE_SKILL_TEXT[trig]) {
+    // An Arcanum's Dismiss and Pulse are verbs; any other skill is used.
+    const verb = source.item?.system?.props?.arcanum_role ? source.short : `use ${source.short}`;
+    when = SOURCE_SKILL_TEXT[trig].replace("{S}", verb);
+  }
   if (when.includes("{RES}")) {
     const res = String(row?.reaction_resource_filter ?? "").toLowerCase().split(/[^a-z]+/)
       .map((k) => RES_LABEL[k]).filter(Boolean);
@@ -341,14 +382,18 @@ async function whenText(row) {
   if (formula) {
     const m = await condMod();
     const model = m?.parse?.(formula);
-    const said = model ? m.explain(model) : "";
-    if (said && said !== "(always)") when = when ? `${when}, if ${lower1(said)}` : `If ${lower1(said)}`;
+    const aimedAt = String(source?.item?.system?.props?.skill_target ?? "");
+    const targetWord = /enem|foe/i.test(aimedAt) ? "enemy" : /all(y|ies)\b/i.test(aimedAt) ? "ally" : "target";
+    // What a player reads: engine plumbing stays unsaid (explainForPlayer).
+    const said = model ? m.explainForPlayer(model, { targetWord }) : "";
+    if (said) when = when ? `${when}, if ${said}` : `If ${said}`;
   }
   return when;
 }
-const lower1 = (t) => String(t).replace(/^[A-Z](?=[a-z])/, (c) => c.toLowerCase()).replace(/  (AND|OR)  (?:([A-Z])(?=[a-z]))?/g, (_, join, cap) => ` ${join.toLowerCase()} ${cap ? cap.toLowerCase() : ""}`);
 
 function targetText(item, row) {
+  // A rider on your own action changes that action; it picks nobody.
+  if (String(row?.reaction_trigger ?? "").trim() === "creature_will_deal_damage" && isOwnRow(row)) return "";
   const table = tablesOf(item)?.effect_table ?? {};
   const byLabel = new Map(Object.values(table).filter((x) => x && !x.$deleted).map((x) => [String(x.effect_label ?? "").trim(), x]));
   const seen = new Set();
@@ -419,8 +464,8 @@ async function fillInfo(el, r) {
     line.querySelector(".v").textContent = text;
     line.hidden = !text;
   };
-  set("is-target", targetText(item, row));
-  set("is-when", await whenText(row));
+  set("is-target", r.target ?? targetText(item, row));
+  set("is-when", await whenText(row, actor));
   set("is-cost", await costText(item, row, actor));
 }
 
@@ -441,7 +486,7 @@ function showDescription(r, el) {
   if (!host?.setCard) return;
   const cost = el.querySelector(".rxh-row.is-cost .v")?.textContent || "";
   host.setCard({
-    key: `rxh|${r.key}`, name: r.name, kind: "Reaction", img: r.icon || null, 
+    key: `rxh|${r.key}`, name: r.name, kind: r.kind ?? "Reaction", img: r.icon || null, from: fromText(r),
     chips: cost ? [{ text: cost, tone: "tag" }] : [],
     body: htmlToCardText(cleanDesc(r.desc)),
     // The pill as it is NOW (the card was dealt live and may have gone stale since).
@@ -792,6 +837,7 @@ export function mountHandReaction({ candidates, onPick, onPass, label = "Reactio
         key, rowKey: c.rowKey ?? "", carrierUuid: c.carrierUuid ?? "",
         owner: game.user?.id ?? "", mine: true, reactorUuid,
         name: c.carrierName ?? "Reaction", icon: c.carrierImg ?? "", desc: c.carrierDescription ?? "",
+        from: c.carrierFrom ?? null, target: c.carrierTarget,
         type: `Reaction · ${label}`, reason: why ? String(why) : "", state: why ? "off" : "live",
       };
     });

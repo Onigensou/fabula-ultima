@@ -27,7 +27,7 @@
   "system": {
     "props": {
       "class": "Arcanum",
-      "description": "<p><strong>Domain:</strong> Vengeance, Burn.</p><p>An Arcanum of wrathful flame. While merged with the <strong>Avatar of Vengeance</strong>, every <strong>Burn</strong> that flares across the battlefield feeds your fury — spread the flames with <strong>Pulse</strong>, then release the Avatar in a blaze with <strong>Dismiss</strong>.</p>",
+      "description": "<p><strong>Merge:</strong> whenever any creature's Burn triggers, recover 2% of your Max HP and MP.</p><p><strong>Pulse:</strong> uses your action, no MP. 3 Burn stacks on up to three creatures.</p><p><strong>Dismiss:</strong> free, at the start or end of your turn. 30 Fire damage to all enemies, then the merge ends. For 6 ZP, add 10 damage per Burn stack and clear their Burn.</p>",
       "domain": "Vengeance, Burn",
       "element": "fire",
       "id": "i2iiWtzT0FMQHRqj",

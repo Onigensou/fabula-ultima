@@ -150,10 +150,12 @@ for (const it of a.items) {
       }
     }
     let arcanumUid = null;
-    if (String(it.system?.props?.arcanum_role ?? "").trim() && it.system?.container) {
+    if (it.system?.container) {
+      // Any child of an Arcanum is gated on the merge, role or not (Spend 6 ZP has none).
       const arc = a.items.get(it.system.container);
+      const isArc = String(arc?.system?.props?.class ?? "").trim().toLowerCase() === "arcanum";
       const uid = String(arc?.system?.uniqueId ?? "").trim();
-      if (uid) arcanumUid = uid;
+      if (uid && (isArc || String(it.system?.props?.arcanum_role ?? "").trim())) arcanumUid = uid;
     }
     rows.push({ name: it.name, row: k, trig: r.reaction_trigger ?? "", refCond, ref, chargeKeys, arcanumUid, resourceSeeds,
       cond: String(r.condition_formula ?? ""), mode: r.reaction_passive_mode ?? "",

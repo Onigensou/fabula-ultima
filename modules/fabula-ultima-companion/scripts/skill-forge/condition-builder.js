@@ -261,6 +261,93 @@ export function explain(condition) {
   return lines.join(`  ${joiner}  `);
 }
 
+// ── what a PLAYER reads ─────────────────────────────────────────────────────
+// `explain` is the author's preview: it names every clause, engine plumbing
+// included. Reaction cards used to print it, so a player read "if arcanum Dismiss
+// Locked is 0" and "if I triggered this". A card only shows while its gate holds,
+// so a clause with nothing to tell the player can simply go unsaid.
+//
+// The rule is an ALLOW-LIST: a clause is spoken only if it has wording here.
+// Anything else (internal markers, charge counters, tags, unknown identifiers)
+// says nothing, so a new engine identifier can never leak onto a card.
+const PLAYER_FLAGS = new Map([
+  ["ACTION_IS_ATTACK",  ["the action is an attack", "the action is not an attack"]],
+  ["ACTION_IS_SPELL",   ["the action is a spell", "the action is not a spell"]],
+  ["ATTACK_IS_MELEE",   ["the attack is melee", "the attack is not melee"]],
+  ["ATTACK_IS_RANGED",  ["the attack is ranged", "the attack is not ranged"]],
+  // A null wording goes unsaid: "not a critical" and "not to MP" are the normal
+  // case, and four of them in a row filled the whole card (Divination).
+  ["ATTACK_IS_CRIT",    ["the Check is a critical success", null]],
+  ["ATTACK_IS_FUMBLE",  ["the Check is a fumble", null]],
+  ["HAS_ARCANE_WEAPON", ["you have an arcane weapon", "you have no arcane weapon"]],
+  ["HAS_MELEE_WEAPON",  ["you have a melee weapon", "you have no melee weapon"]],
+  ["HAS_RANGED_WEAPON", ["you have a ranged weapon", "you have no ranged weapon"]],
+  ["HAS_SHIELD",        ["you have a shield", "you have no shield"]],
+  ["HAS_FIREARM",       ["you have a firearm", "you have no firearm"]],
+  ["HAS_MARTIAL_ARMOR", ["you wear martial armor", "you wear no martial armor"]],
+  ["HAS_STATUS_CRISIS", ["you are in Crisis", "you are not in Crisis"]],
+  ["DAMAGE_IS_MP",      ["the damage is to MP", null]],
+  ["SUBJECT_IS_ALLY",   ["the creature is an ally", "the creature is not an ally"]],
+  ["SUBJECT_IS_ENEMY",  ["the creature is an enemy", "the creature is not an enemy"]],
+  ["SUBJECT_IS_NPC",    ["the creature is an NPC", "the creature is not an NPC"]],
+  ["TARGET_IS_FLYING",  ["the target is flying", "the target is not flying"]],
+  ["DID_COVER_ALLY",    ["you covered an ally", "you did not cover an ally"]],
+  ["ANY_ALLY_IN_CRISIS",  ["an ally is in Crisis", "no ally is in Crisis"]],
+  ["ANY_ENEMY_IN_CRISIS", ["an enemy is in Crisis", "no enemy is in Crisis"]],
+]);
+const PLAYER_POOLS = new Map([["CUR_MP", "MP"], ["CUR_HP", "HP"], ["CUR_IP", "IP"], ["CUR_FP", "FP"]]);
+const PLAYER_AMOUNT = new Map([[">=", "at least"], [">", "more than"], ["<=", "at most"], ["<", "less than"]]);
+const withArticle = (word) => `${/^[aeiou]/i.test(word) ? "an" : "a"} ${word}`;
+
+function playerClause(c, { targetWord = "target" } = {}) {
+  const num = Number(c.right);
+  const isFlagValue = c.right === "1" || c.right === "0";
+  const positive = isFlagValue && (c.right === "1") === (c.op === "==");
+  if (PLAYER_FLAGS.has(c.left)) {
+    if (!isFlagValue || (c.op !== "==" && c.op !== "!=")) return null;
+    return PLAYER_FLAGS.get(c.left)[positive ? 0 : 1];
+  }
+  if (PLAYER_POOLS.has(c.left)) {
+    const amount = PLAYER_AMOUNT.get(c.op);
+    if (!amount || !Number.isFinite(num)) return null;   // CUR_MP >= ATTACK_CHECK_RESULT
+    if (c.op === ">" && num === 0) return `you have ${PLAYER_POOLS.get(c.left)}`;
+    return `you have ${amount} ${num} ${PLAYER_POOLS.get(c.left)}`;
+  }
+  if (c.left === "ACTION_TARGET_COUNT" && Number.isFinite(num)) {
+    if (c.op === "==" && num === 1) return "the action has one target";
+    if (c.op === ">=") return `the action has ${num} or more targets`;
+    return null;
+  }
+  // Open families. Only a yes/no reading: a count on these is bookkeeping.
+  if (!isFlagValue || (c.op !== "==" && c.op !== "!=")) return null;
+  const tail = (prefix) => (c.left.startsWith(prefix) && c.left.length > prefix.length ? titleCase(c.left.slice(prefix.length)) : null);
+  let x;
+  if ((x = tail("ANY_TARGET_HAS_MY_")) || (x = tail("ANY_TARGET_HAS_EQUIPPED_"))) return null;
+  if ((x = tail("ANY_TARGET_HAS_"))) return positive ? `${withArticle(targetWord)} has ${x}` : `no ${targetWord} has ${x}`;
+  if ((x = tail("HAS_STATUS_"))) return positive ? `you are ${x}` : `you are not ${x}`;
+  if ((x = tail("TARGET_SPECIES_IS_"))) return positive ? `the target is ${withArticle(x)}` : `the target is not ${withArticle(x)}`;
+  if ((x = tail("TRIGGER_DAMAGE_IS_"))) return positive ? `the damage is ${x}` : `the damage is not ${x}`;
+  return null;
+}
+
+/**
+ * The condition as a player reads it on a reaction card ("an enemy has Burn"),
+ * lower case, ready to follow "if ". Empty when there is nothing to tell them.
+ * `targetWord` names who the action's targets are when the caller knows.
+ * An OR with an unspoken clause says nothing: naming one branch would state a
+ * requirement that does not exist.
+ */
+export function explainForPlayer(condition, opts = {}) {
+  if (!condition?.clauses?.length) return "";
+  const said = condition.clauses.map((c) => playerClause(c, opts));
+  // "The attack is melee" already says it is an attack.
+  const ranged = condition.clauses.some((c) => /^ATTACK_IS_(MELEE|RANGED)$/.test(c.left));
+  const known = said.filter((s) => s && !(ranged && s === "the action is an attack"));
+  if (!known.length) return "";
+  if (condition.join === "||") return known.length === said.length ? known.join(" or ") : "";
+  return known.join(" and ");
+}
+
 /** Every identifier a condition references — feeds the validator's check. */
 export function identifiersUsed(condition) {
   return [...new Set((condition?.clauses ?? []).map((c) => c.left))];

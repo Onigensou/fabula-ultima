@@ -347,7 +347,7 @@ async function unavailableCommands(snap, actorUuid) {
       if (!list.length) out.push({ label, reason: `You have no ${noun}s to use.`, tag: "None" });
       else if (!list.some((c) => c.affordable)) {
         const short = [...new Set(list.flatMap((c) => (c.missingResources ?? []).map((m) => m.label)))];
-        out.push({ label, reason: `You can't pay for any ${noun} right now${short.length ? ` (not enough ${short.join(" / ")})` : ""}.`, tag: short.length ? `No ${short.join("/")}` : "Can't pay" });
+        out.push({ label, reason: `You can't pay for any ${noun} right now${short.length ? ` (not enough ${short.join(" / ")})` : ""}.`, tag: short.length ? `Low ${short.join("/")}` : "Can't pay" });
       }
     }
   } catch (e) { warn("composeAction: skill availability check threw — leaving Skill/Spell open", e); }
@@ -356,7 +356,7 @@ async function unavailableCommands(snap, actorUuid) {
     const ip = Number(readActorIp(actor)?.current ?? 0) || 0;
     if (!use.length && !create.length) out.push({ label: "Item", reason: "No items to use and no recipes to craft.", tag: "None" });
     else if (!use.length && !create.some((c) => Number(c.ipCost) <= ip)) {
-      out.push({ label: "Item", reason: `No items to use, and not enough IP to craft (IP ${ip}).`, tag: "No IP" });
+      out.push({ label: "Item", reason: `No items to use, and not enough IP to craft (IP ${ip}).`, tag: "Low IP" });
     }
   } catch (e) { warn("composeAction: item availability check threw — leaving Item open", e); }
   return out;

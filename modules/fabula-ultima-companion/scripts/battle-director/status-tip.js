@@ -13,7 +13,11 @@ import { classifyEffect, TIER, TIER_ORDER } from "./status-classifier.js";
 const STYLE_ID = "fu-status-tip-style";
 
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-const stripTags = (s) => String(s ?? "").replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+// Decodes what an editor escapes, because `esc` re-escapes it on the way out: left
+// in, "HP &amp; MP" reached the screen as a literal "&amp;".
+const ENTITIES = { amp: "&", lt: "<", gt: ">", quot: '"', "#39": "'" };
+const stripTags = (s) => String(s ?? "").replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ")
+  .replace(/&(amp|lt|gt|quot|#39);/g, (m, k) => ENTITIES[k]).replace(/\s+/g, " ").replace(/\s+([.,;:!?])/g, "$1").trim();
 const clip = (s, n) => (s.length > n ? `${s.slice(0, n - 1).trimEnd()}…` : s);
 
 const KIND = { debuff: "Debuff", buff: "Buff", ready: "Ready", marker: "Marker" };
@@ -67,11 +71,28 @@ function descOf(r) {
   return clip(stripTags(r.description || r.sources?.find((s) => s.source?.description)?.source?.description || ""), 260);
 }
 
+// The merge status is the one place that can say why no Dismiss offer came up, so
+// it says what Dismiss will do NOW. Read from the merge AE's own stamps, on every
+// client (a player has no live combat; the round banner tells them the round).
+const QS_LEAD = "<strong>Quick Summoning:</strong>";
+export function arcanumMergeLine(eff, round = Number(globalThis.__fudActiveDCombat?.round ?? globalThis.__fudDisplayRound ?? NaN)) {
+  const f = eff?.flags?.["fabula-ultima-companion"];
+  if (!f?.arcanumMerge) return "";
+  const opts = Array.isArray(f.quickSummonOpts) ? f.quickSummonOpts : [];
+  const stamp = Number(f.quickSummonRound ?? NaN);
+  const locked = opts.length > 0 && (!Number.isFinite(round) || !Number.isFinite(stamp) || round <= stamp);
+  const noEffect = !!f.quickSummonNoDismissEffect;
+  if (locked) return `${QS_LEAD} you cannot dismiss until your next turn.${noEffect ? " Dismiss then only ends the merge, with no damage." : ""}`;
+  if (noEffect) return `${QS_LEAD} Dismiss only ends the merge, with no damage.`;
+  return "Dismiss is offered at the start and end of your turn.";
+}
+
 /** Tooltip for one row. `extra` is appended HTML (already safe). */
 export function statusTipHTML(r, { tier = rowTier(r), extra = "" } = {}) {
   ensureTipStyles();
   const amounts = amountsOf(r);
   const desc = descOf(r);
+  const mergeLine = arcanumMergeLine(r?.sources?.[0]?.eff);
   const spent = tier === TIER.READY && rowSpent(r);
   const sub = [KIND[tier] ?? "", r.short ? esc(r.short) : ""].filter(Boolean).join(" · ");
   return `<div class="fu-st-tip t-${tier}">`
@@ -80,6 +101,7 @@ export function statusTipHTML(r, { tier = rowTier(r), extra = "" } = {}) {
     + (r.lifetime?.label ? `<div class="life">${esc(r.lifetime.label)}</div>` : "")
     + (amounts.length ? `<div class="amt">${amounts.map((a) => `<span>${formatRulesText(a)}</span>`).join("")}</div>` : "")
     + (desc ? `<div class="desc">${formatRulesText(desc)}</div>` : "")
+    + (mergeLine ? `<div class="desc">${mergeLine}</div>` : "")
     + (tier === TIER.READY ? `<div class="when">${spent ? "Spent. It comes back when its uses refresh." : "Available now."}</div>` : "")
     + extra
     + `</div></div>`;
@@ -96,9 +118,10 @@ export function foldTipHTML(rows, { title } = {}) {
     + rows.map((r) => {
       const t = r.tier ?? rowTier(r);
       const desc = descOf(r);
+      const mergeLine = arcanumMergeLine(r?.sources?.[0]?.eff);
       return `<div class="fr t-${t}"><img src="${esc(r.img)}" alt=""><div><b>${esc(r.name)}</b>`
         + (r.lifetime?.label ? ` <em>· ${esc(r.lifetime.label)}</em>` : "")
-        + (desc ? `<p>${formatRulesText(desc)}</p>` : "") + `</div></div>`;
+        + (desc ? `<p>${formatRulesText(desc)}</p>` : "") + (mergeLine ? `<p>${mergeLine}</p>` : "") + `</div></div>`;
     }).join("")
     + `</div></div>`;
 }
