@@ -26,6 +26,8 @@
 // Stable import URL (no ?cb=) so the module singleton survives cache-busted
 // loads of its callers.
 
+import { DAMAGE as DAMAGE_TYPE_STYLE } from "../linked-text/lt-terms.js";
+
 const PANEL_ID = "fud-kw-tooltip";
 const CSS_ID   = "fud-kw-tooltip-style";
 const PANEL_W  = 256;
@@ -84,6 +86,11 @@ function ensureStyles() {
       width: 28px; height: 28px; object-fit: contain;
       border: none; background: transparent; border-radius: 0; box-shadow: none; flex-shrink: 0;
     }
+    .fud-kt-fa {
+      width: 28px; text-align: center; font-size: 22px; line-height: 1; flex-shrink: 0;
+      color: var(--fud-dmg-c, inherit); text-shadow: 0 0 6px var(--fud-dmg-glow, transparent);
+    }
+    .fud-kt-title.is-dmg { color: var(--fud-dmg-c, inherit); text-shadow: 0 0 4px var(--fud-dmg-glow, transparent); }
     .fud-kt-title {
       font-size: 16px; font-weight: 900; line-height: 1.1; color: var(--fud-ink,#3a3228);
     }
@@ -139,7 +146,13 @@ function _position(el, cardRoot) {
 function _buildHTML(entry) {
   const iconSafe = entry?.icon && !/['"<>\n\r]/.test(String(entry.icon))
     ? String(entry.icon) : null;
-  const iconHTML = iconSafe ? `<img class="fud-kt-icon" src="${esc(iconSafe)}" alt="">` : "";
+  // Damage types use the colored element icon (linked-text DAMAGE), never the
+  // registry's image file — same look as the chip on the card.
+  const dmg = entry?.category === "damage" ? DAMAGE_TYPE_STYLE[String(entry.label ?? "").toLowerCase()] : null;
+  const dmgVars = dmg ? ` style="--fud-dmg-c:${esc(dmg.color)};--fud-dmg-glow:${esc(dmg.glow)}"` : "";
+  const iconHTML = dmg
+    ? `<i class="fa-solid ${esc(dmg.fa)} fud-kt-fa"${dmgVars} aria-hidden="true"></i>`
+    : iconSafe ? `<img class="fud-kt-icon" src="${esc(iconSafe)}" alt="">` : "";
   // descHtml is authored content from the static registry (harvested from the
   // keyword journals). It's trusted module data, not user input, so it renders
   // as HTML; nested links are de-activated via CSS (pointer-events:none).
@@ -147,10 +160,10 @@ function _buildHTML(entry) {
     ? String(entry.descHtml)
     : `<p style="opacity:.6">No description available.</p>`;
   return `<div class="fud-kt-card">
-    <div class="fud-kt-kicker">${esc(entry?.kicker ?? _kicker(entry?.kind))}</div>
+    <div class="fud-kt-kicker">${esc(entry?.kicker ?? (dmg ? "Damage Type" : _kicker(entry?.kind)))}</div>
     <div class="fud-kt-head">
       ${iconHTML}
-      <div class="fud-kt-title">${esc(entry?.label ?? "Keyword")}</div>
+      <div class="fud-kt-title${dmg ? " is-dmg" : ""}"${dmgVars}>${esc(entry?.label ?? "Keyword")}</div>
     </div>
     <div class="fud-kt-body">${body}</div>
   </div>`;
