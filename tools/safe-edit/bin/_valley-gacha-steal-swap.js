@@ -116,6 +116,9 @@ async function all(db, prefix) { const out = []; for await (const kv of db.itera
   storm.img = STORM_IMG;
   storm._stats = { ...storm._stats, compendiumSource: null, duplicateSource: null, createdTime: now, modifiedTime: now };
   storm.system.uniqueId = stormId;
+  // CSB container model: the grant link lives on the CHILD (reference_csb_item_container_linkage).
+  // The clone inherited Fulgur's container (Thunder Bow); the staff is Thunderstorm's carrier.
+  storm.system.container = ID.staves;
   const sp = storm.system.props;
   Object.assign(sp, {
     name: "Thunderstorm", img: STORM_IMG, id: stormId, uuid: `Item.${stormId}`,

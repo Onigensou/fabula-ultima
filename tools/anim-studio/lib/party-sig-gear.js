@@ -35,7 +35,7 @@ function fulgur() {
 // ── Thunderstorm: three bolts, one per planned strike (Chain 3 seek) ──
 function thunderstorm() {
   const gap = 420, contact = 133, bolts = 3;
-  const t = { rel: REL, gap, contact, bolts, boltScale: 1.0, total: REL + (bolts - 1) * gap + 467 + 350 };
+  const t = { rel: REL, gap, contact, bolts, boltScale: 1.8, total: REL + (bolts - 1) * gap + 467 + 350 };
   const sfx = [cue(380, "Magic3.ogg", 0.5)];
   for (let i = 0; i < bolts; i++) sfx.push(cue(REL + i * gap, "Thunder1.ogg", 0.4), cue(REL + i * gap + contact, "SE_BTL_HitElectric.ogg", 0.4));
   // gate null: a Chain's numbers land on the shot's oni.hit() cues, not on a damage offset
