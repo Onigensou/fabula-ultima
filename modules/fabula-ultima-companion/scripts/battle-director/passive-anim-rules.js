@@ -20,13 +20,13 @@
 // ============================================================================
 
 export const LINE_STYLE = {
-  buff:    { dir: "up",   color: 0xffb347, sfx: "Soundboard/Powerup.ogg" },
+  buff:    { dir: "up",   color: 0xffb347, sfx: "Soundboard/Up1.ogg" },
   debuff:  { dir: "down", color: 0x8f7dff, sfx: "Soundboard/Down2.ogg" },
   // HP / MP gains: BD's own gain VFX already floats the blue / green "+X" and
   // plays its gain sound (playResourceGainVfx) — one sound, so the lines stay quiet.
   heal:    { dir: "up",   color: 0x7dffa0, sfx: null },
   mp:      { dir: "up",   color: 0x6ec8ff, sfx: null },
-  cleanse: { dir: "up",   color: 0xffffff, sfx: "Soundboard/Powerup.ogg" },
+  cleanse: { dir: "up",   color: 0xffffff, sfx: "Soundboard/Up3.ogg" },
 };
 // damage / redirect: the small element hit clip (no sound of its own)
 export const PASSIVE_HIT_CLIP = {
