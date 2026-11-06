@@ -133,12 +133,13 @@
 
   function tileTitle(node) {
     if (!game.user?.isGM && DP.Fog?.isConcealed?.(node.nodeId)) return "Unknown";
-    const raw = DP.TileRegistry?.get?.(node.tileType)?.label ?? node.name ?? "Tile";
+    const raw = DP.TileEventRegistry?.get?.(node.tileType)?.label ?? node.name ?? "Tile";
     // Registry labels read "SkillCheck Tile"; players see "Skill Check".
-    return String(raw).replace(/\s*Tile$/i, "").replace(/([a-z])([A-Z])/g, "$1 $2").trim() || "Tile";
+    return String(raw).replace(/\s*\(.*\)$/, "").replace(/\s*Tile$/i, "").replace(/([a-z])([A-Z])/g, "$1 $2").trim() || "Tile";
   }
   function onMove(ev) {
     const now = performance.now(); if (now - _throttle < 60) return; _throttle = now;
+    if (DP.Maker?.active) return hide();
     const rt = DP.Runtime, helper = !!DP.HelperMode?.enabled, scan = !!DP.ScanMode?.active;
     if (!rt?.active || !rt.graph || !(helper || scan) || rt.busy || DP.ConfirmDialog?.isOpen) return hide();
     const p = DP.Graph.clientToWorld(ev.clientX, ev.clientY);

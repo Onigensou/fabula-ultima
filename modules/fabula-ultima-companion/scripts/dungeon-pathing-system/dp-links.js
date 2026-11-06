@@ -327,11 +327,13 @@
   }
 
   /** What a link looks like right now (for this viewer). */
+  let _ov = null;                                            // { state, switches } — Dungeon Maker playtest (local only)
+  const swOn = (name) => (_ov?.switches && name in _ov.switches) ? !!_ov.switches[name] : switchOn(name);
   function lookOf(id, l, st, gm) {
-    if (!l || l.off || (l.requiresSwitch && !switchOn(l.requiresSwitch))) return gm ? { kind: "shut" } : null;
+    if (!l || l.off || (l.requiresSwitch && !swOn(l.requiresSwitch))) return gm ? { kind: "shut" } : null;
     if (st.broken?.[id]) return null;
     if (l.hidden && !st.revealed?.[id]) return gm ? { kind: "hidden" } : null;
-    const lock = l.lock && !st.unlocked?.[id] && !(l.lock.type === "switch" && switchOn(l.lock.name)) ? l.lock : null;
+    const lock = l.lock && !st.unlocked?.[id] && !(l.lock.type === "switch" && swOn(l.lock.name)) ? l.lock : null;
     if (lock) { const k = lock.lever ? "lever" : lock.type; return { kind: "locked", lockKind: k, color: COL[k] ?? COL.key, dl: lock.type === "check" ? Number(lock.dl) || 10 : null }; }
     if (l.oneWay) return { kind: "oneway" };
     if (l.hazard) return { kind: "hazard" };
@@ -396,7 +398,7 @@
     if (!scene || !isMigrated(scene)) { if (_root) destroy(); return; }
     if (_scene !== scene.id) { destroy(); _scene = scene.id; }
     const root = ensureRoot(); if (!root) return;
-    const links = read(scene), st = state(scene), gm = !!game.user?.isGM, alive = new Set();
+    const links = read(scene), st = _ov?.state ?? state(scene), gm = !!game.user?.isGM && !_ov, alive = new Set();
     placeUnderTiles(root, links);
     // Animate what changed since the last draw (not on first draw of a scene).
     const prev = _prev; _prev = JSON.parse(JSON.stringify(st));
@@ -430,7 +432,11 @@
   }
   function queue() { if (_queued) return; _queued = true; requestAnimationFrame(redraw); }
 
-  DP.LinkLayer = { get: (id) => _c.get(id) ?? null, root: () => (_root && !_root.destroyed ? _root : null), redraw: queue, destroy };
+  DP.LinkLayer = { get: (id) => _c.get(id) ?? null, root: () => (_root && !_root.destroyed ? _root : null), redraw: queue, destroy,
+    /** Draw from a local state instead of the scene's (playtest). null = back to the scene. */
+    setOverride(o) { _ov = o; _prev = o ? JSON.parse(JSON.stringify(o.state ?? {})) : null; queue(); },
+    /** Paths as screen-independent polylines, for the Dungeon Maker's hit tests and overlays. */
+    points(scene, l) { return linkPoints(scene, l); } };
 
   Hooks.on("canvasReady", () => queue());
   Hooks.on("canvasTearDown", () => destroy());

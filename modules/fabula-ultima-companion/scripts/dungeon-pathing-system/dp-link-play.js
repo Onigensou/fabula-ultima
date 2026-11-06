@@ -64,7 +64,7 @@
     clearTimeout(_hintT); _hintT = setTimeout(() => el.classList.remove("show"), 2600);
   }
   /** A two-button panel beside the party token, in the game's move-button style. Resolves to the picked value. */
-  function prompt(token, head, buttons) {
+  function prompt(token, head, buttons, anchor = null) {
     ensureStyle(); document.getElementById("oni-dp-lockprompt")?.remove();
     const el = document.createElement("div"); el.id = "oni-dp-lockprompt";
     el.innerHTML = (head ? `<div class="head"></div>` : "") + buttons.map((b, i) => `<button class="oni-dp-btn ${b.cls}" data-i="${i}" ${b.disabled ? "disabled" : ""}></button>`).join("");
@@ -72,7 +72,7 @@
     el.querySelectorAll("button").forEach((btn, i) => { btn.textContent = buttons[i].label; });
     document.body.appendChild(el);
     let raf = null; const place = () => { try { const t = token?.document, gs = canvas.grid.size;
-      const p = canvas.clientCoordinatesFromCanvas({ x: t.x + t.width * gs, y: t.y + t.height * gs / 2 });
+      const p = canvas.clientCoordinatesFromCanvas(anchor ?? { x: t.x + t.width * gs, y: t.y + t.height * gs / 2 });
       el.style.left = `${Math.round(p.x + 14)}px`; el.style.top = `${Math.round(p.y - el.offsetHeight / 2)}px`; } catch {} raf = requestAnimationFrame(place); };
     place();
     return new Promise(res => el.querySelectorAll("button").forEach((btn, i) => btn.addEventListener("pointerdown", (ev) => {

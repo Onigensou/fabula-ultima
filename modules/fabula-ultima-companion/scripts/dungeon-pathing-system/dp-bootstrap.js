@@ -471,6 +471,7 @@
 
     state.hoverHandler = (ev) => {
       if (!state.active || state.busy) return;
+      if (DP.Maker?.active) return;   // the Dungeon Maker owns the canvas while open
       // Suppress hover sound/overlay while the GM edits tiles on a non-Token layer.
       if (game.user?.isGM && !isPlayLayerActive()) return;
       if (state.neighborIds.size === 0) return;
@@ -522,6 +523,7 @@
   // ---------------------------------------------------------------------------
   async function handleClick(ev) {
     if (!state.active) return;
+    if (DP.Maker?.active) return;     // the Dungeon Maker owns the canvas while open
     if (game.paused) { ui.notifications?.info?.("The game is paused."); return; }
     if (DP.FastTravel?.active) return; // FT mode owns the canvas while active
     if (state.busy) { ui.notifications?.info?.("Movement in progress…"); return; }
