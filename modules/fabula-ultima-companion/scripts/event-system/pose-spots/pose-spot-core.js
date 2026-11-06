@@ -509,6 +509,10 @@
         key: `bath:${region.id}`, label: POSES.bath.label, icon: POSES.bath.icon,
         world: { x: edge.x, y: edge.y - (g * 0.25) },
         centre: edge,
+        // Over the bather-to-be's head, not at the edge: the edge is at their
+        // feet, so the "!" sat on their body (seen live 2026-11-06). Docks with
+        // the fish button there (window.oni.Interact).
+        overHead: true,
         run: () => enterBath(region.id)
       });
     }
@@ -553,12 +557,16 @@
     try {
       checkOwnBather();
       const keep = new Set();
+      const walker = myWalker();
+      const head = (walker?.mesh && !walker.mesh.destroyed) ? walker.mesh.getBounds() : null;
       for (const offer of allOffers()) {
         keep.add(offer.key);
         const el = buttonFor(offer);
         // Centred on left/top (translate -50%, as the examine "!" is).
-        const s = worldToScreen(offer.world.x, offer.world.y);
         const half = (el.offsetHeight || 34) / 2;
+        const s = (offer.overHead && head)
+          ? { x: head.x + (head.width / 2), y: head.top }
+          : worldToScreen(offer.world.x, offer.world.y);
         const left = `${Math.round(s.x)}px`, top = `${Math.round(s.y - BUTTON_LIFT_PX - half)}px`;
         if (el.style.left !== left) el.style.left = left;
         if (el.style.top !== top) el.style.top = top;
