@@ -7451,8 +7451,9 @@ function chainBadgeHTML(chain, targets) {
       const counts = new Map();
       for (const list of chain.strikeTargets) for (const u of list ?? []) counts.set(u, (counts.get(u) ?? 0) + 1);
       tip += ` Strikes: ${[...counts].map(([u, c]) => `${nameOf.get(u) ?? "?"} ×${c}`).join(", ")}.`;
+      if (chain.mode === "seek") tip += " A strike on a creature already at 0 HP seeks another target.";
     }
-    const mode = chain.mode === "random" ? " · Random" : chain.mode === "pick" ? " · Pick" : "";
+    const mode = (chain.mode === "random" || chain.mode === "seek") ? " · Random" : chain.mode === "pick" ? " · Pick" : "";
     return `<span class="fud-bf-chain-badge" title="${escapeHtml(tip)}"><i class="fa-solid fa-burst" aria-hidden="true"></i>Chain ×${n}${mode}</span>`;
   } catch { return ""; }
 }

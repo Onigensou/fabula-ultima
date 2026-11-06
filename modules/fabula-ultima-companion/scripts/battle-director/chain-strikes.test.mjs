@@ -15,7 +15,7 @@
 const {
   parseChainKeyword, assignStrikeTargets, planStrikes, createStrikeWalker, applyStrikeToState,
   breakdownForTarget, summarizeTarget, splitTicks, fallbackBeatMs, makeRng,
-  foldChargeSteps, aeRefreshIsNoop, isSeparateChain, planSingleChain, singleBreakdown,
+  foldChargeSteps, aeRefreshIsNoop, isSeparateChain, planSingleChain, singleBreakdown, redirectSeek,
 } = await import("./chain-strikes.js");
 
 let failed = 0, passed = 0;
@@ -289,6 +289,33 @@ eq("fold: missing max = uncapped", foldChargeSteps(0, [{ add: 2 }, { add: 2 }]),
   eq("noop: another applier is a change", aeRefreshIsNoop(ae, { ...same, flags: { [NS]: { charges: 3, directorAppliedBy: { ...by, reactorActorUuid: "Actor.b" } } } }, NS), false);
   eq("noop: different changes", aeRefreshIsNoop(ae, { ...same, changes: [{ key: "bonus_dex", mode: 2, value: "-4" }] }, NS), false);
   eq("noop: core duration is not compared", aeRefreshIsNoop({ ...ae, duration: { startRound: 3 } }, { ...same, duration: { startRound: null } }, NS), true);
+}
+
+// ── seek mode: random draw + a downed target's strike goes to a survivor ────
+eq("chain 3 seek parses", parseChainKeyword(["chain 3 seek"]), { count: 3, mode: "seek" });
+eq("chain {X} seek parses", parseChainKeyword(["chain {HITS} seek"]), { count: null, formula: "HITS", mode: "seek" });
+eq("seek is a separate chain", isSeparateChain({ count: 3, mode: "seek" }), true);
+{
+  const r = assignStrikeTargets({ count: 6, mode: "seek", pool: ["A", "B", "C"], rng: makeRng(7) });
+  eq("seek: draws like random", r.strikeTargets, assignStrikeTargets({ count: 6, mode: "random", pool: ["A", "B", "C"], rng: makeRng(7) }).strikeTargets);
+}
+{
+  const up = new Set(["B", "C"]);
+  const out = redirectSeek(["A"], ["A", "B", "C"], (u) => up.has(u), makeRng(2));
+  eq("seek: a downed pick moves to a survivor", up.has(out[0]), true);
+  eq("seek: a standing pick stays", redirectSeek(["B"], ["A", "B", "C"], (u) => up.has(u)), ["B"]);
+  eq("seek: nobody standing keeps the pick (lost)", redirectSeek(["A"], ["A", "B"], () => false), ["A"]);
+  // The walker drops A on strike 1; strikes 2 and 3 were drawn onto A too.
+  const states = new Map([["A", { hp: 10, maxHp: 10, shield: 0, blockers: 0, priorHits: 0 }], ["B", { hp: 50, maxHp: 50, shield: 0, blockers: 0, priorHits: 0 }]]);
+  const w = createStrikeWalker(states);
+  const ev = () => ({ hit: true, kind: "hit", amount: 20 });
+  const rng = makeRng(5);
+  for (const k of [1, 2, 3]) w.step({ index: k, roll: {}, targets: redirectSeek(["A"], ["A", "B"], (u) => w.standing(u), rng) }, ev);
+  const plan = w.finish();
+  eq("seek walk: A takes strike 1 and drops", plan.strikes[0].outcomes.map((o) => [o.tokenUuid, o.killing]), [["A", true]]);
+  eq("seek walk: strikes 2-3 land on B", plan.strikes.slice(1).map((s) => s.outcomes[0].tokenUuid), ["B", "B"]);
+  eq("seek walk: no strike lost", plan.perTarget.get("A").lost, 0);
+  eq("seek walk: B took 40", states.get("B").hp, 10);
 }
 
 console.log(`chain-strikes: ${passed} passed, ${failed} failed`);

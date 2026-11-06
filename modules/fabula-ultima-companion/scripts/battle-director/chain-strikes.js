@@ -32,16 +32,21 @@
 //   separate — each hit rolls its own check and damage, on the card's targets.
 //   random   — separate hits, each on a random card target.
 //   pick     — separate hits, round-robin over the picked targets.
+//   seek     — like random, but the card keeps EVERY target (a storm over the
+//              field), and a hit drawn onto a creature already reduced to 0 HP
+//              by an earlier hit goes to a random target still standing
+//              instead of being lost (user, 2026-11-06: Rumbling Staves'
+//              Thunderstorm). See redirectSeek().
 // A one-roll Chain can add `hidden` (`chain 8 hidden`): a pure presentation
 // split the player is not told about, so the action card shows no Chain badge.
-export const CHAIN_MODES = Object.freeze(["single", "separate", "random", "pick"]);
+export const CHAIN_MODES = Object.freeze(["single", "separate", "random", "pick", "seek"]);
 // 30: Zarg's Meteor Shower volley is a 24-hit one-roll Chain (Zero Power overhaul, 2026-11-06).
 export const CHAIN_MAX = 30;
 
 // Keyword forms accepted on an item's `action_keywords` list (already split
 // and lowercased by the caller, or a raw string):
 //   "chain 3", "chain(3)", "chain x3", "chain:3", "chain 3 separate",
-//   "chain 3 random", "chain 3 pick", "chain 8 hidden"
+//   "chain 3 random", "chain 3 pick", "chain 3 seek", "chain 8 hidden"
 //   "chain {FORMULA}" (+ any mode word) - the count is a skill formula, evaluated
 //   when the action is COMPUTED (chain-plan.js chainSpecFor `evalCount`), e.g. Keren's
 //   Last Den of Cinders: one hit per summon strike + the blast + the last hit. The
@@ -49,8 +54,8 @@ export const CHAIN_MAX = 30;
 //   (the keyword list splits on commas). Returns { count: null, formula, mode }.
 // The bare word "chain" without a count is NOT a Chain — it is ignored, so a
 // stray label can never turn an action into a multi-strike one.
-const CHAIN_RX = /^chain\s*[:x(]?\s*(\d+)\s*\)?(?:\s*[:,]?\s*(separate|random|pick|hidden))?$/;
-const CHAIN_FORMULA_RX = /^chain\s*\{([^{}]+)\}(?:\s*[:,]?\s*(separate|random|pick|hidden))?$/i;
+const CHAIN_RX = /^chain\s*[:x(]?\s*(\d+)\s*\)?(?:\s*[:,]?\s*(separate|random|pick|seek|hidden))?$/;
+const CHAIN_FORMULA_RX = /^chain\s*\{([^{}]+)\}(?:\s*[:,]?\s*(separate|random|pick|seek|hidden))?$/i;
 
 export function parseChainKeyword(keywords) {
   const list = Array.isArray(keywords)
@@ -103,6 +108,7 @@ export function makeRng(seed = 1) {
 // Per-strike target lists.
 //   same   — every strike hits every card target (Chain on an AoE hits them all).
 //   random — each strike hits ONE target drawn from `pool` (with replacement).
+//   seek   — drawn the same way as random (the redirect happens at RESOLVE).
 //   pick   — the strikes go round-robin over the creatures the player picked,
 //            in pick order: pick one and every strike lands on it, pick two
 //            for Chain 3 and it is A, B, A. (No new picker: the normal target
@@ -112,7 +118,7 @@ export function makeRng(seed = 1) {
 export function assignStrikeTargets({ count, mode = "same", cardTargets = [], pool = [], picks = [], rng = Math.random } = {}) {
   const n = Math.max(0, Math.floor(Number(count) || 0));
   const strikeTargets = [];
-  if (mode === "random" && pool.length) {
+  if ((mode === "random" || mode === "seek") && pool.length) {
     for (let i = 0; i < n; i++) strikeTargets.push([pool[Math.floor(rng() * pool.length) % pool.length]]);
   } else if (mode === "pick" && picks.length) {
     for (let i = 0; i < n; i++) strikeTargets.push([picks[i % picks.length]]);
@@ -123,6 +129,22 @@ export function assignStrikeTargets({ count, mode = "same", cardTargets = [], po
   const distinct = [];
   for (const list of strikeTargets) for (const t of list) if (t && !seen.has(t)) { seen.add(t); distinct.push(t); }
   return { strikeTargets, cardTargets: distinct.length ? distinct : [...cardTargets] };
+}
+
+// Seek mode: one strike's drawn targets, with every creature already down
+// swapped for a random creature from `pool` that is still standing. Several
+// downed picks can land on the same survivor (the draw is with replacement).
+// When nobody in the pool stands, the target is kept and the walker records
+// the strike as lost, exactly as random mode does.
+//   targets:  string[]            the strike's drawn targets
+//   pool:     string[]            the card's targets
+//   standing: (uuid) => boolean   the walker's running HP check
+export function redirectSeek(targets = [], pool = [], standing = () => true, rng = Math.random) {
+  const alive = pool.filter((u) => u && standing(u));
+  return targets.map((u) => {
+    if (!u || standing(u) || !alive.length) return u;
+    return alive[Math.floor(rng() * alive.length) % alive.length];
+  });
 }
 
 // Apply one strike's damage to a target's running state. Mirrors the engine's

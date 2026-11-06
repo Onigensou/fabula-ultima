@@ -30,7 +30,7 @@
 
 import { log, warn } from "./logger.js";
 import {
-  parseChainKeyword, resolveChainCount, assignStrikeTargets, createStrikeWalker,
+  parseChainKeyword, resolveChainCount, assignStrikeTargets, createStrikeWalker, redirectSeek,
   breakdownForTarget, summarizeTarget, fallbackBeatMs,
   planSingleChain, singleBreakdown,
 } from "./chain-strikes.js";
@@ -64,13 +64,17 @@ export function chainSpecFor({ kind = null, skillItem = null, weapon = null, isC
 // reaction sees the real targets. Random draws from the card's targets; pick
 // goes round-robin over them in the order they were picked. Returns the spec
 // with `strikeTargets` filled, plus the distinct set the card should keep.
+// Seek draws like random but keeps EVERY target on the card (keep: null): the
+// whole field is the storm's target, and a strike redirected at RESOLVE needs
+// the survivor's card row (buildChainPlan).
 export function drawChainTargets(spec, targetUuids, rng = Math.random) {
   if (!spec) return null;
-  if ((spec.mode !== "random" && spec.mode !== "pick") || !targetUuids?.length) return { spec, keep: null };
+  const draws = spec.mode === "random" || spec.mode === "pick" || spec.mode === "seek";
+  if (!draws || !targetUuids?.length) return { spec, keep: null };
   const { strikeTargets, cardTargets } = assignStrikeTargets({
     count: spec.count, mode: spec.mode, pool: targetUuids, picks: targetUuids, cardTargets: targetUuids, rng,
   });
-  return { spec: { ...spec, strikeTargets }, keep: cardTargets };
+  return { spec: { ...spec, strikeTargets }, keep: spec.mode === "seek" ? null : cardTargets };
 }
 
 // Narrow COMPUTE's target-aligned fields to the drawn set (random mode).
@@ -214,7 +218,7 @@ const rollLite = (roll) => (roll ? {
 // ── the plan ───────────────────────────────────────────────────────────────
 // Returns plain data (safe to freeze + persist), or null when the action is not
 // a Chain that can strike (no check, negated, no damage rows).
-export async function buildChainPlan(director, ar) {
+export async function buildChainPlan(director, ar, rng = Math.random) {
   const spec = ar?.chain ?? null;
   if (!spec || !(spec.count >= 2)) return null;
   // A one-roll Chain needs no roll (an auto-hit card); strikes that each roll do.
@@ -255,7 +259,11 @@ export async function buildChainPlan(director, ar) {
   const walker = createStrikeWalker(states);
   try {
     for (let k = 1; k <= spec.count; k++) {
-      const targets = (strikeTargets[k - 1] ?? cardTargets).filter(Boolean);
+      let targets = (strikeTargets[k - 1] ?? cardTargets).filter(Boolean);
+      // Seek: a strike drawn onto a creature an earlier strike dropped goes to a
+      // survivor on the card instead (the plan's outcomes carry the real target,
+      // so the presenter and the animation follow the redirect).
+      if (spec.mode === "seek") targets = redirectSeek(targets, cardTargets, (u) => walker.standing(u), rng);
       let rows = cardRows, roll = ar.roll;
       if (k > 1) {
         const standing = targets.filter((u) => walker.standing(u));

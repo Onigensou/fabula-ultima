@@ -114,7 +114,7 @@ const ROWS_BY_NAME = {
 };
 
 // Agent-built character modules (Batch B): party-sig-<who>.js → { jobs }
-for (const who of ["hina", "zarg", "keren", "blanche"]) {
+for (const who of ["hina", "zarg", "keren", "blanche", "gear"]) {
   const f = path.join(LIB, "party-sig-" + who + ".js");
   if (!fs.existsSync(f)) continue;
   let mod; try { mod = require(f); } catch (e) { console.error("✗ party-sig-" + who + ".js failed to load: " + e.message); process.exitCode = 1; continue; }

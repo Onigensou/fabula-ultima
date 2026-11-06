@@ -60,6 +60,10 @@ eq("old Combo items never chain", chainSpecFor({ kind: "Skill", skillItem: skill
   eq("narrow: rows", n.perTargetResults.map((t) => t.tokenUuid), ["C"]);
   eq("narrow: hit list", n.hitTokenUuids, ["C"]);
   eq("separate mode keeps the card", drawChainTargets({ count: 3, mode: "separate" }, ["A"]).keep, null);
+  const sk = drawChainTargets({ count: 4, mode: "seek" }, ["A", "B", "C"], makeRng(3));
+  eq("seek mode keeps every target on the card", sk.keep, null);
+  eq("seek mode draws one target per strike", sk.spec.strikeTargets.length === 4 && sk.spec.strikeTargets.every((l) => l.length === 1), true);
+  eq("seek mode draws like random", sk.spec.strikeTargets, drawChainTargets({ count: 4, mode: "random" }, ["A", "B", "C"], makeRng(3)).spec.strikeTargets);
   eq("one-roll mode keeps the card", drawChainTargets({ count: 3, mode: "single" }, ["A", "B"]).keep, null);
   eq("pick mode: round-robin over the picks", drawChainTargets({ count: 3, mode: "pick" }, ["A", "B"]).spec.strikeTargets, [["A"], ["B"], ["A"]]);
   eq("strikes per target (random)", strikesPerTarget({ count: 3, strikeTargets: [["A"], ["B"], ["A"]] }), { A: 2, B: 1 });
