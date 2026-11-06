@@ -270,31 +270,10 @@ const DESC = {
   "ljKBtlzPVvhhmdHW": "<ul><li>You can only perform one attack per turn with this weapon</li><li>You cannot perform attacks without <strong>HR</strong> with this weapon</li></ul><p><em>*This keyword is only use for Equipment only</em></p>",
 };
 
-// Damage types — written 2026-11-06 (the element Items carry no text to harvest).
-// Shared affinity rules (engine: snapshot.js applyAffinityToDamage) + the
-// statuses whose own text says "Gain vulnerability to <element> damage".
-const DAMAGE_VULN_STATUSES = {
-  Physical: ["Frozen"],
-  Air:      ["Turbulence"],
-  Bolt:     ["Wet"],
-  Dark:     [],
-  Earth:    ["Frozen", "Petrify"],
-  Fire:     ["Frozen", "Oil"],
-  Ice:      ["Hypothermia"],
-  Light:    ["Zombie"],
-  Poison:   [],
-};
+// Damage types — the element Items carry no text to harvest. User's wording
+// (2026-11-06): keep it simple, "Deal <Element> damage".
 for (const [name, tail] of DAMAGE) {
-  const vuln = DAMAGE_VULN_STATUSES[name] ?? [];
-  DESC[tail] =
-    `<p>A creature's <strong>Affinity</strong> to <strong>${name}</strong> damage decides how much it takes:</p>`
-    + `<ul><li><strong>Vulnerable</strong>: takes double damage</li>`
-    + `<li><strong>Resistant</strong>: takes half damage</li>`
-    + `<li><strong>Immune</strong>: takes no damage</li>`
-    + `<li><strong>Absorb</strong>: recovers HP instead</li></ul>`
-    + (vuln.length
-        ? `<p><em>Statuses that cause ${name} Vulnerability: ${vuln.join(", ")}</em></p>`
-        : "");
+  DESC[tail] = `<p>Deal <strong>${name}</strong> damage</p>`;
 }
 
 // ── Category metadata ───────────────────────────────────────────────────────
