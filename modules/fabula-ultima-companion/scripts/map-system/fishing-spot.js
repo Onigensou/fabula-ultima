@@ -162,13 +162,16 @@
     if (document.getElementById(FISH_OVERLAY_ID)) return [];
     if (someoneFishing()) return [];
 
-    const feet = feetOf(walker), g = canvas.dimensions?.size || 100, out = [];
+    // One button only: the nearest fishable water (two ponds in reach would
+    // otherwise put two fish over the same head).
+    const feet = feetOf(walker), g = canvas.dimensions?.size || 100;
+    let best = null;
     for (const region of fishRegions()) {
-      if (inRegion(region, feet)) { out.push({ region, edge: feet }); continue; }
+      if (inRegion(region, feet)) { best = { region, edge: feet, dist: 0 }; break; }
       const e = nearestEdge(region.document, feet);
-      if (e && e.dist <= g * ENTER_RANGE_GRID) out.push({ region, edge: e.point });
+      if (e && e.dist <= g * ENTER_RANGE_GRID && (!best || e.dist < best.dist)) best = { region, edge: e.point, dist: e.dist };
     }
-    return out;
+    return best ? [best] : [];
   }
 
   // ------------------------------------------------------------
@@ -439,16 +442,30 @@
       el.addEventListener("pointerdown", (ev) => { ev.preventDefault(); ev.stopPropagation(); press(regionId); });
       layer().appendChild(el);
       state.buttons.set(regionId, el);
-      requestAnimationFrame(() => el.classList.add("is-visible"));
+      reveal(el, state.buttons, regionId);
     }
     return el;
+  }
+
+  // Shown one frame after it is added, so the fade plays. A background tab
+  // (the stream spectator, a player in another window) holds that frame back
+  // for seconds: a removal in between must cancel it, or the frame turns a
+  // gone button back on and it sticks on screen (the talk bubble's bug,
+  // event-runtimeUI.js, fixed v1.0.449).
+  function reveal(el, map, key) {
+    el._showFrame = requestAnimationFrame(() => {
+      el._showFrame = null;
+      if (map.get(key) === el) el.classList.add("is-visible");
+    });
   }
 
   function removeEl(map, key) {
     const el = map.get(key);
     if (!el) return;
     map.delete(key);
+    if (el._showFrame) { cancelAnimationFrame(el._showFrame); el._showFrame = null; }
     el.classList.remove("is-visible");
+    // A timer, not a frame: it still runs on a hidden tab (throttled to ~1 s).
     setTimeout(() => el.remove(), 200);
   }
 
@@ -461,7 +478,7 @@
       el.innerHTML = `<div class="bubble"><i class="${ICON}"></i></div>`;
       layer().appendChild(el);
       state.bubbles.set(tokenId, el);
-      requestAnimationFrame(() => el.classList.add("is-visible"));
+      reveal(el, state.bubbles, tokenId);
     }
     return el;
   }
@@ -488,13 +505,24 @@
     try {
       watchOwnPending();
 
+      // Over the walker's head, like the examine "!" and the door: pinned to
+      // the water's edge it landed on the character's body whenever the water
+      // was right at their feet (seen live). Overlaps with those buttons are
+      // lined up by window.oni.Interact. The keyboard anchor stays the water.
       const keep = new Set();
+      const walker = myWalker();
+      const head = (walker?.mesh && !walker.mesh.destroyed) ? walker.mesh.getBounds() : null;
       for (const { region, edge } of offers()) {
         const id = region.id;
         keep.add(id);
         const el = buttonFor(id);
-        const s = worldToScreen(edge.x, edge.y - ((canvas.dimensions?.size || 100) * 0.25));
-        placeAt(el, s.x, s.y - BUTTON_LIFT_PX - ((el.offsetHeight || 34) / 2));
+        const half = (el.offsetHeight || 34) / 2;
+        if (head) {
+          placeAt(el, head.x + (head.width / 2), head.top - BUTTON_LIFT_PX - half);
+        } else {
+          const s = worldToScreen(edge.x, edge.y - ((canvas.dimensions?.size || 100) * 0.25));
+          placeAt(el, s.x, s.y - BUTTON_LIFT_PX - half);
+        }
         el._anchor = edge;
       }
       for (const id of [...state.buttons.keys()]) if (!keep.has(id)) removeEl(state.buttons, id);
@@ -561,6 +589,17 @@
     gmClearStale(cv?.scene);
   });
   Hooks.on("canvasTearDown", () => { detachTicker(); endPending(); });
+
+  // The bubble goes the moment the mark does, without waiting for a frame:
+  // the ticker does not run on a hidden tab, and the bubble would hang there
+  // over the angler until the tab came back.
+  Hooks.on("updateToken", (doc, change) => {
+    const f = change?.flags?.[MODULE_ID];
+    if (!f || !(`-=${FISHING_FLAG}` in f || (FISHING_FLAG in f && !f[FISHING_FLAG]))) return;
+    removeEl(state.bubbles, doc.id);
+    if (state.pending?.tokenId === doc.id && state.pending.sawFlag) endPending();
+  });
+  Hooks.on("deleteToken", (doc) => removeEl(state.bubbles, doc.id));
 
   Hooks.once("ready", () => {
     try { game.socket.on(SOCKET_CHANNEL, onSocket); } catch (e) { console.error(INSTALL_TAG, "Socket listener failed.", e); }
