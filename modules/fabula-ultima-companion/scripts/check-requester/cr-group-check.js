@@ -283,7 +283,11 @@
 
     const subtitleEl = document.createElement("div");
     subtitleEl.className = "oni-gc-subtitle";
-    if (participantMode === "open") {
+    if (participantMode === "open" && allPanels.some(p => p.role === "leader")) {
+      // The leader was set by whoever asked for the check (an event's
+      // "main controller leads"); helping is optional.
+      subtitleEl.textContent = `Participate as Helper (DL ${helperDl}, +1 each), or stay out`;
+    } else if (participantMode === "open") {
       subtitleEl.textContent = "Choose a Leader — then Participate as Helper";
     } else {
       subtitleEl.textContent = `Helpers DL ${helperDl}  ▸  Leader DL ${leaderDl}`;

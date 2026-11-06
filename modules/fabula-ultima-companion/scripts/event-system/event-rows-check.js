@@ -80,6 +80,16 @@
     ["group", "Group Check (a leader, the rest help)"]
   ];
 
+  // Who leads a Group Check.
+  const GROUP_LEADER = [
+    ["choose", "The players choose in the lobby"],
+    ["controller", "Main controller's character"]
+  ];
+
+  // Fabula Ultima: a helper's own check in a Group Check is always DL 10;
+  // each helper who succeeds gives the leader +1. The row's DL is the leader's.
+  const HELPER_DL = 10;
+
   const flow = () => window.oni.EventSystem.Flow;
   const gameState = () => window.oni.EventSystem.GameState;
 
@@ -242,6 +252,7 @@
     row.dl = Math.max(0, Math.round(Logic.toNumber(row.dl, 10)));
     row.hiddenDl = row.hiddenDl !== false;
     row.combine = COMBINE.some(([key]) => key === row.combine) ? row.combine : "all";
+    row.groupLeader = row.groupLeader === "controller" ? "controller" : "choose";
     row.useSpecial = row.useSpecial === true;
     row.storeVar = String(row.storeVar ?? "").trim();
 
@@ -299,13 +310,28 @@
       const group = row.combine === "group" && actors.length > 1 && globalThis.ONI?.GroupCheck?.request;
 
       if (group) {
+        // "Main controller's character" leads: that character is the leader
+        // from the start (and can still pass the lead in the lobby); everyone
+        // else may join as a helper or stay out.
+        let leaderUuid = null;
+        let pool = actors;
+        if (row.groupLeader === "controller") {
+          const found = await resolveTargets({ targets: [{ kind: "controller", slot: 1, name: "" }] }, context);
+          const leader = found?.actors?.[0] ?? null;
+          if (leader) {
+            leaderUuid = leader.uuid;
+            if (!pool.some(a => a.uuid === leader.uuid)) pool = [leader, ...pool];
+          }
+        }
         const raw = await globalThis.ONI.GroupCheck.request({
           ...shared,
-          leaderUuid: null,
+          // The lobby already reads "Group Check"; no "— Check" after it.
+          label: row.label || "",
+          leaderUuid,
           participantMode: "open",
           helperActorUuids: [],
-          allActorUuids: actors.map(a => a.uuid),
-          helperDl: row.dl,
+          allActorUuids: pool.map(a => a.uuid),
+          helperDl: HELPER_DL,
           leaderDl: row.dl,
           helperBonus: 1
         });
@@ -419,6 +445,12 @@
           "Only matters when more than one character rolls."
         ),
         kit.field(
+          "Group leader",
+          `<select class="oni-check-group-leader">${kit.options(GROUP_LEADER, row.groupLeader)}</select>`,
+          `Group Check only. Helpers roll against DL ${HELPER_DL} and each success gives the leader +1;
+           the difficulty above is the leader's. Helping is optional in the lobby.`
+        ),
+        kit.field(
           "Critical / fumble",
           `<label><input type="checkbox" class="oni-check-special" ${row.useSpecial ? "checked" : ""} /> also branch on a critical success and a fumble</label>`,
           `Off: a critical runs Success and a fumble runs Failure. On: two more lists appear;
@@ -461,6 +493,13 @@
       specialEl.addEventListener("change", sync);
       sync();
 
+      // The leader choice only means something for a Group Check.
+      const combineEl = body.querySelector(".oni-check-combine");
+      const leaderField = body.querySelector(".oni-check-group-leader")?.closest(".oni-event-inline-grid");
+      const syncLeader = () => { if (leaderField) leaderField.hidden = combineEl.value !== "group"; };
+      combineEl.addEventListener("change", syncLeader);
+      syncLeader();
+
       return body;
     },
     collectFields: (rowEl, kit) => ({
@@ -475,6 +514,7 @@
         name: String(el.querySelector(".oni-check-target-name")?.value ?? "").trim()
       })),
       combine: kit.readText(rowEl, ".oni-check-combine", "all"),
+      groupLeader: kit.readText(rowEl, ".oni-check-group-leader", "choose"),
       useSpecial: !!kit.own(rowEl, ".oni-check-special")?.checked,
       storeVar: kit.readText(rowEl, ".oni-check-store", "").trim(),
       successRows: kit.readSubList(rowEl, "success"),

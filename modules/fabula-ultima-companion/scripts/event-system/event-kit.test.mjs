@@ -740,6 +740,17 @@ await quiet(async () => {
     verify("Run Check: a Group Check goes to the group orchestrator with every roller, and its leader decides",
       asked[0]?.kind === "group" && asked[0].uuids.length === 4 && asked[0].opts.leaderDl === 12 && said.join() === "success");
     verify("Run Check: the number of successes is stored (1 helper + the leader)", GameState.getVariable("door_successes") === 2);
+    verify("Run Check: Group Check helpers roll against DL 10 (Fabula Ultima), the row's DL is the leader's",
+      asked[0]?.opts.helperDl === 10 && asked[0]?.opts.leaderDl === 12);
+    verify("Run Check: by default the players choose the leader", asked[0]?.opts.leaderUuid === null);
+
+    asked.length = 0; said.length = 0;
+    nextGroup = { leaderPass: false, leaderResult: FAIL, helperResults: [], bonus: 0 };
+    await runAs("p1", [check({ label: "", targets: [{ kind: "party" }], combine: "group", groupLeader: "controller" })]);
+    verify("Run Check: 'main controller leads' presets the controller's character as leader",
+      typeof asked[0]?.opts.leaderUuid === "string" && asked[0].uuids.includes(asked[0].opts.leaderUuid) && said.join() === "failure",
+      String(asked[0]?.opts.leaderUuid));
+    verify("Run Check: a Group Check with no label is just 'Group Check'", asked[0]?.opts.label === "");
 
     asked.length = 0; said.length = 0; nextGroup = null;
     const closed = await runAs("p1", [check({ targets: [{ kind: "party" }], combine: "group" }), text("after")]);
