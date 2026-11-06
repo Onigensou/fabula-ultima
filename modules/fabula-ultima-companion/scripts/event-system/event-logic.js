@@ -146,8 +146,30 @@
     SWITCH: "switch",
     VARIABLE: "variable",
     SELF: "self",
-    HAS_RUN: "hasRun"
+    HAS_RUN: "hasRun",
+    FABULA: "fabula",       // Fabula Points of the controller's character
+    HAS_ITEM: "hasItem",    // how many of an item the party bag holds
+    OFFERING: "offering",   // this event's last offering (Offer Item row)
+    VERDICT: "verdict",     // the outcome of this event's last offering
+    ZENIT: "zenit",
+    MEMBER: "member"        // a character is in the party
   });
+
+  // What the Offering check tests.
+  const OFFERING_TESTS = Object.freeze(["contains", "exactly", "count", "type"]);
+  // Where a Zenit check reads from.
+  const ZENIT_SOURCES = Object.freeze(["stash", "total", "controller"]);
+  // The item types an offering can carry (item_type on the sheet -> label).
+  const ITEM_TYPES = Object.freeze({
+    weapon: "Weapon", armor: "Armor", shield: "Shield", accessory: "Accessory",
+    consumable: "Consumable", material: "Material", key: "Key Item"
+  });
+
+  // "Blood, Bone , soul" -> ["Blood", "Bone", "soul"]
+  function nameList(raw) {
+    const list = Array.isArray(raw) ? raw : String(raw ?? "").split(",");
+    return list.map(s => String(s ?? "").trim()).filter(Boolean);
+  }
 
   const COMPARE_OPS = Object.freeze(["=", "!=", ">", ">=", "<", "<="]);
   const SELF_SLOTS = Object.freeze(["A", "B", "C", "D"]);
@@ -168,9 +190,81 @@
       cond.want = raw?.want === "off" ? "off" : "on";
     } else if (kind === CONDITION_KINDS.HAS_RUN) {
       cond.want = raw?.want === "no" ? "no" : "yes";
+    } else if (kind === CONDITION_KINDS.FABULA) {
+      cond.op = COMPARE_OPS.includes(raw?.op) ? raw.op : ">=";
+      cond.value = toNumber(raw?.value, 1);
+    } else if (kind === CONDITION_KINDS.HAS_ITEM) {
+      cond.name = String(raw?.name ?? "").trim();
+      cond.op = COMPARE_OPS.includes(raw?.op) ? raw.op : ">=";
+      cond.value = toNumber(raw?.value, 1);
+    } else if (kind === CONDITION_KINDS.OFFERING) {
+      cond.test = OFFERING_TESTS.includes(raw?.test) ? raw.test : "contains";
+      cond.name = String(raw?.name ?? "").trim();
+      cond.names = nameList(raw?.names);
+      cond.itemType = Object.keys(ITEM_TYPES).includes(raw?.itemType) ? raw.itemType : "key";
+      cond.op = COMPARE_OPS.includes(raw?.op) ? raw.op : ">=";
+      cond.value = toNumber(raw?.value, 1);
+    } else if (kind === CONDITION_KINDS.VERDICT) {
+      cond.name = String(raw?.name ?? "").trim();
+    } else if (kind === CONDITION_KINDS.ZENIT) {
+      cond.source = ZENIT_SOURCES.includes(raw?.source) ? raw.source : "stash";
+      cond.op = COMPARE_OPS.includes(raw?.op) ? raw.op : ">=";
+      cond.value = toNumber(raw?.value, 0);
+    } else if (kind === CONDITION_KINDS.MEMBER) {
+      cond.name = String(raw?.name ?? "").trim();
+      cond.want = raw?.want === "out" ? "out" : "in";
     }
 
     return cond;
+  }
+
+  // A Condition row may hold several checks. Its first check stays in
+  // row.condition (as before), the others in row.moreConditions, joined by
+  // row.combine: "all" (every check) or "any" (one is enough).
+  function conditionSet(row) {
+    const list = [row?.condition, ...(Array.isArray(row?.moreConditions) ? row.moreConditions : [])]
+      .filter(c => c !== undefined && c !== null)
+      .map(normalizeCondition);
+    return { mode: row?.combine === "any" ? "any" : "all", list: list.length ? list : [normalizeCondition(null)] };
+  }
+
+  function evalConditionSet(row, reader) {
+    const { mode, list } = conditionSet(row);
+    return mode === "any" ? list.some(c => evalCondition(c, reader)) : list.every(c => evalCondition(c, reader));
+  }
+
+  function describeConditionSet(row) {
+    const { mode, list } = conditionSet(row);
+    return list.map(describeCondition).join(mode === "any" ? " OR " : " AND ");
+  }
+
+  // Does a check need the controller's character resolved first?
+  function needsController(cond) {
+    const c = normalizeCondition(cond);
+    return c.kind === CONDITION_KINDS.FABULA || (c.kind === CONDITION_KINDS.ZENIT && c.source === "controller");
+  }
+
+  // ------------------------------------------------------------
+  // Offerings (Offer Item row)
+  // ------------------------------------------------------------
+  // offered: [{ name, type }], type = an item_type key (weapon, key, ...).
+  // rule: { mode: "free" | "specific" | "type", names, itemType }
+  // "specific" passes when the offering holds every listed name, in any
+  // order, and nothing else (a name listed twice must be offered twice).
+  function judgeOffering(rule, offered) {
+    const items = Array.isArray(offered) ? offered : [];
+    if (rule?.mode === "type") return items.length > 0 && items.every(i => i?.type === rule.itemType);
+    if (rule?.mode === "specific") {
+      const want = nameList(rule?.names).map(nameKey).sort();
+      const got = items.map(i => nameKey(i?.name)).sort();
+      return want.length > 0 && want.length === got.length && want.every((n, i) => n === got[i]);
+    }
+    return items.length > 0;
+  }
+
+  // May this item go into the offer box at all? (Only "one type" limits it.)
+  function offerAllows(rule, item) {
+    return rule?.mode !== "type" || item?.type === rule.itemType;
   }
 
   function compare(left, op, right) {
@@ -188,8 +282,13 @@
 
   // reader: { switch(name) -> bool, variable(name) -> number,
   //           self(slot) -> bool, runs() -> number }
+  //   newer: fabula() -> number (controller's character), itemCount(name),
+  //          offering() -> { items: [{ name, type }], verdict } | null,
+  //          zenit(source) -> number, member(name) -> bool.
+  //   A reader without one of the newer functions reads 0 / nothing.
   function evalCondition(rawCond, reader) {
     const cond = normalizeCondition(rawCond);
+    const call = (fn, ...args) => (typeof reader?.[fn] === "function" ? reader[fn](...args) : undefined);
 
     switch (cond.kind) {
       case CONDITION_KINDS.SWITCH:
@@ -200,6 +299,26 @@
         return !!reader.self(cond.slot) === (cond.want === "on");
       case CONDITION_KINDS.HAS_RUN:
         return (toNumber(reader.runs(), 0) > 0) === (cond.want === "yes");
+      case CONDITION_KINDS.FABULA:
+        return compare(call("fabula"), cond.op, cond.value);
+      case CONDITION_KINDS.HAS_ITEM:
+        return compare(call("itemCount", cond.name), cond.op, cond.value);
+      case CONDITION_KINDS.OFFERING: {
+        const items = call("offering")?.items ?? [];
+        if (cond.test === "count") return compare(items.length, cond.op, cond.value);
+        if (cond.test === "type") return items.some(i => i?.type === cond.itemType);
+        if (cond.test === "exactly") return judgeOffering({ mode: "specific", names: cond.names }, items);
+        const want = nameKey(cond.name);
+        return !!want && items.some(i => nameKey(i?.name) === want);
+      }
+      case CONDITION_KINDS.VERDICT: {
+        const got = call("offering")?.verdict;
+        return !!got && nameKey(got) === nameKey(cond.name);
+      }
+      case CONDITION_KINDS.ZENIT:
+        return compare(call("zenit", cond.source), cond.op, cond.value);
+      case CONDITION_KINDS.MEMBER:
+        return !!call("member", cond.name) === (cond.want === "in");
       default:
         return true;
     }
@@ -212,6 +331,16 @@
       case CONDITION_KINDS.VARIABLE: return `Variable "${cond.name}" ${cond.op} ${cond.value}`;
       case CONDITION_KINDS.SELF: return `This event's switch ${cond.slot} is ${cond.want}`;
       case CONDITION_KINDS.HAS_RUN: return cond.want === "yes" ? "This event has run before" : "This event has not run yet";
+      case CONDITION_KINDS.FABULA: return `Controller's Fabula Points ${cond.op} ${cond.value}`;
+      case CONDITION_KINDS.HAS_ITEM: return `Party has "${cond.name}" ${cond.op} ${cond.value}`;
+      case CONDITION_KINDS.OFFERING:
+        if (cond.test === "count") return `Last offering count ${cond.op} ${cond.value}`;
+        if (cond.test === "type") return `Last offering includes a ${ITEM_TYPES[cond.itemType]}`;
+        if (cond.test === "exactly") return `Last offering is exactly ${cond.names.join(", ")}`;
+        return `Last offering contains "${cond.name}"`;
+      case CONDITION_KINDS.VERDICT: return `Last offering's verdict is "${cond.name}"`;
+      case CONDITION_KINDS.ZENIT: return `Zenit (${cond.source}) ${cond.op} ${cond.value}`;
+      case CONDITION_KINDS.MEMBER: return `"${cond.name}" is ${cond.want === "in" ? "in" : "not in"} the party`;
       default: return "Always";
     }
   }
@@ -250,7 +379,7 @@
 
     let found = false;
     walkRows(rows, getDef, (row) => {
-      if (normalizeCondition(row?.condition).kind === CONDITION_KINDS.HAS_RUN) found = true;
+      if (conditionSet(row).list.some(c => c.kind === CONDITION_KINDS.HAS_RUN)) found = true;
     });
     return found;
   }
@@ -373,10 +502,20 @@
     CONDITION_KINDS,
     COMPARE_OPS,
     SELF_SLOTS,
+    OFFERING_TESTS,
+    ZENIT_SOURCES,
+    ITEM_TYPES,
+    nameList,
     normalizeCondition,
     compare,
     evalCondition,
     describeCondition,
+    conditionSet,
+    evalConditionSet,
+    describeConditionSet,
+    needsController,
+    judgeOffering,
+    offerAllows,
     eventAvailable,
     usesRunMemory,
 

@@ -105,6 +105,10 @@
 
         noteCondition(ev.availableWhen, at, switches, variables);
 
+        // Does this event make an offering a later check could read?
+        let offers = false;
+        EventRegistry.walkRows(ev.rows, (row) => { if (row?.type === "offerItem") offers = true; });
+
         EventRegistry.walkRows(ev.rows, (row) => {
           const type = String(row?.type || "");
 
@@ -188,10 +192,19 @@
               else if (err) add("error", `Run Code does not parse: ${err}`);
               break;
             }
-            case "condition":
-              noteCondition(row.condition, at, switches, variables);
-              if (!row.thenRows?.length && !row.elseRows?.length) add("warn", "Condition with nothing under Then or Else.");
+            case "condition": {
+              const set = Logic.conditionSet(row);
+              for (const c of set.list) {
+                noteCondition(c, at, switches, variables);
+                if ((c.kind === K.OFFERING || c.kind === K.VERDICT) && !offers) {
+                  add("warn", "Condition reads this event's last offering, but the event has no Offer Item row.");
+                }
+                if ((c.kind === K.HAS_ITEM || c.kind === K.MEMBER) && !c.name) add("warn", "Condition checks an item or party member with no name.");
+              }
+              const elseCounts = row.hasElse !== false;
+              if (!row.thenRows?.length && !(elseCounts && row.elseRows?.length)) add("warn", "Condition with nothing under Then or Else.");
               break;
+            }
             case "setSwitch":
               if (row.scope !== "self") {
                 if (!String(row.name ?? "").trim()) add("warn", "Set Switch with no name.");

@@ -121,19 +121,65 @@
     return {
       runs: Logic.toNumber(entry.runs, 0),
       erased: entry.erased === true,
-      self: { ...(entry.self ?? {}) }
+      self: { ...(entry.self ?? {}) },
+      // The last Offer Item result: { items: [{ name, type }], verdict, at }
+      offering: entry.offering && typeof entry.offering === "object" ? Logic.clone(entry.offering) : null
     };
   }
 
   // What a condition reads, for one event.
-  function readerFor(sceneId, sourceId) {
+  // extra.controllerActor: the controller's character, resolved by the caller
+  // (it takes an async lookup) when a check needs it.
+  function readerFor(sceneId, sourceId, extra = {}) {
+    const controller = extra?.controllerActor ?? null;
     return {
       switch: (name) => getSwitch(name),
       variable: (name) => getVariable(name),
       self: (slot) => getMemory(sceneId, sourceId).self?.[slot] === true,
       runs: () => getMemory(sceneId, sourceId).runs,
-      erased: () => getMemory(sceneId, sourceId).erased
+      erased: () => getMemory(sceneId, sourceId).erased,
+      fabula: () => Logic.toNumber(controller?.system?.props?.fabula_point, 0),
+      itemCount: (name) => bagCount(name),
+      offering: () => getMemory(sceneId, sourceId).offering,
+      zenit: (source) => zenitOf(source, controller),
+      member: (name) => isMember(name)
     };
+  }
+
+  // ------------------------------------------------------------
+  // The party bag (items on the party database actor)
+  // ------------------------------------------------------------
+  // Only real carried items: no recipes, no skills that live inside gear.
+  function bagItems() {
+    const out = [];
+    for (const item of partyActor()?.items ?? []) {
+      const type = String(item?.system?.props?.item_type ?? "").trim().toLowerCase();
+      if (!Logic.ITEM_TYPES[type]) continue;
+      const qty = Math.max(1, Math.round(Logic.toNumber(item.system?.props?.item_quantity, 1)));
+      out.push({ id: item.id, uuid: item.uuid, name: item.name, type, qty, img: item.img, item });
+    }
+    return out;
+  }
+
+  function bagCount(name) {
+    const want = Logic.nameKey(name);
+    if (!want) return 0;
+    return bagItems().filter(i => Logic.nameKey(i.name) === want).reduce((n, i) => n + i.qty, 0);
+  }
+
+  function zenitOf(source, controller) {
+    const props = (source === "controller" ? controller : partyActor())?.system?.props ?? {};
+    return Logic.toNumber(source === "total" ? props.total_zenit : props.zenit, 0);
+  }
+
+  function isMember(name) {
+    const want = Logic.nameKey(name);
+    const props = partyActor()?.system?.props ?? {};
+    if (!want) return false;
+    for (let i = 1; i <= 4; i += 1) {
+      if (Logic.nameKey(props[`member_name_${i}`]) === want) return true;
+    }
+    return false;
   }
 
   // ------------------------------------------------------------
@@ -235,6 +281,15 @@
     const next = value === "toggle" ? !current : !!value;
     await updateMemory(sceneId, sourceId, { [`self.${key}`]: next });
     return next;
+  }
+
+  // offering: { items: [{ name, type }], verdict }
+  async function setOffering(sceneId, sourceId, offering) {
+    const items = (Array.isArray(offering?.items) ? offering.items : [])
+      .map(i => ({ name: String(i?.name ?? ""), type: String(i?.type ?? "") }));
+    return updateMemory(sceneId, sourceId, {
+      offering: { items, verdict: String(offering?.verdict ?? ""), at: Date.now() }
+    });
   }
 
   async function resetEvent(sceneId, sourceId) {
@@ -344,8 +399,11 @@
     variableNames,
     getMemory,
     readerFor,
+    bagItems,
+    bagCount,
 
     setSwitch,
+    setOffering,
     setVariable,
     setSelf,
     markRun,

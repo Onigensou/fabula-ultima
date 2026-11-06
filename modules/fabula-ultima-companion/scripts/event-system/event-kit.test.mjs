@@ -245,6 +245,63 @@ check("nameKey: spacing, case and underscores are one name",
     && Logic.usesRunMemory([], { onceOnly: true }, getDef)
     && Logic.usesRunMemory([], { availableWhen: { kind: K.HAS_RUN } }, getDef)
     && Logic.usesRunMemory([{ type: "condition", thenRows: [{ type: "condition", condition: { kind: K.HAS_RUN }, thenRows: [] }] }], {}, getDef));
+  check("usesRunMemory: a Has Run check that is not the row's first one counts",
+    Logic.usesRunMemory([{ type: "condition", condition: { kind: K.SWITCH, name: "x" }, moreConditions: [{ kind: K.HAS_RUN }], thenRows: [] }], {}, getDef));
+
+  // --- The checks added for the Nether Bridge seal (Condition upgrade) ---
+  const rich = {
+    ...reader,
+    fabula: () => 2,
+    itemCount: (name) => (Logic.nameKey(name) === "potion" ? 3 : 0),
+    offering: () => ({ items: [{ name: "Bloodied Coin", type: "material" }, { name: "Gryphon Whistle", type: "key" }], verdict: "Unsealed" }),
+    zenit: (source) => ({ stash: 500, total: 1600, controller: 40 }[source] ?? 0),
+    member: (name) => ["keren", "blanche"].includes(Logic.nameKey(name))
+  };
+  check("condition: controller's Fabula Points",
+    Logic.evalCondition({ kind: K.FABULA, op: ">=", value: 1 }, rich) && !Logic.evalCondition({ kind: K.FABULA, op: ">=", value: 3 }, rich));
+  check("condition: Fabula Points default is 'at least 1'",
+    Logic.normalizeCondition({ kind: K.FABULA }).op === ">=" && Logic.normalizeCondition({ kind: K.FABULA }).value === 1);
+  check("condition: party has item (by name, counts the stack)",
+    Logic.evalCondition({ kind: K.HAS_ITEM, name: "POTION", op: ">=", value: 3 }, rich)
+    && !Logic.evalCondition({ kind: K.HAS_ITEM, name: "Elixir", op: ">=", value: 1 }, rich));
+  check("condition: last offering contains / is exactly / count / type",
+    Logic.evalCondition({ kind: K.OFFERING, test: "contains", name: "bloodied coin" }, rich)
+    && !Logic.evalCondition({ kind: K.OFFERING, test: "contains", name: "Apple" }, rich)
+    && Logic.evalCondition({ kind: K.OFFERING, test: "exactly", names: "Gryphon Whistle, Bloodied Coin" }, rich)
+    && !Logic.evalCondition({ kind: K.OFFERING, test: "exactly", names: "Gryphon Whistle" }, rich)
+    && Logic.evalCondition({ kind: K.OFFERING, test: "count", op: "=", value: 2 }, rich)
+    && Logic.evalCondition({ kind: K.OFFERING, test: "type", itemType: "key" }, rich)
+    && !Logic.evalCondition({ kind: K.OFFERING, test: "type", itemType: "weapon" }, rich));
+  check("condition: no offering yet reads as empty",
+    !Logic.evalCondition({ kind: K.OFFERING, test: "contains", name: "x" }, reader)
+    && Logic.evalCondition({ kind: K.OFFERING, test: "count", op: "=", value: 0 }, reader)
+    && !Logic.evalCondition({ kind: K.VERDICT, name: "Unsealed" }, reader));
+  check("condition: verdict", Logic.evalCondition({ kind: K.VERDICT, name: "unsealed" }, rich) && !Logic.evalCondition({ kind: K.VERDICT, name: "Not satisfied" }, rich));
+  check("condition: zenit by source",
+    Logic.evalCondition({ kind: K.ZENIT, source: "stash", op: ">=", value: 500 }, rich)
+    && Logic.evalCondition({ kind: K.ZENIT, source: "total", op: ">", value: 1000 }, rich)
+    && !Logic.evalCondition({ kind: K.ZENIT, source: "controller", op: ">=", value: 50 }, rich));
+  check("condition: party member in / out",
+    Logic.evalCondition({ kind: K.MEMBER, name: "Keren", want: "in" }, rich) && Logic.evalCondition({ kind: K.MEMBER, name: "Zarg", want: "out" }, rich));
+  check("condition sets: all / any, and one check alone",
+    Logic.evalConditionSet({ condition: { kind: K.FABULA, value: 1 }, moreConditions: [{ kind: K.MEMBER, name: "Keren" }] }, rich)
+    && !Logic.evalConditionSet({ condition: { kind: K.FABULA, value: 1 }, moreConditions: [{ kind: K.MEMBER, name: "Zarg" }] }, rich)
+    && Logic.evalConditionSet({ combine: "any", condition: { kind: K.FABULA, value: 9 }, moreConditions: [{ kind: K.MEMBER, name: "Keren" }] }, rich)
+    && Logic.evalConditionSet({ condition: { kind: K.SWITCH, name: "Boss Down" } }, rich));
+  check("needsController: Fabula and controller zenit only",
+    Logic.needsController({ kind: K.FABULA }) && Logic.needsController({ kind: K.ZENIT, source: "controller" })
+    && !Logic.needsController({ kind: K.ZENIT, source: "stash" }) && !Logic.needsController({ kind: K.SWITCH }));
+
+  const offered = [{ name: "Bloodied Coin", type: "material" }, { name: "Draconic Claw", type: "weapon" }, { name: "Golem Soulstone", type: "consumable" }];
+  check("judgeOffering: free choice passes anything offered", Logic.judgeOffering({ mode: "free" }, offered) && !Logic.judgeOffering({ mode: "free" }, []));
+  check("judgeOffering: specific = the listed names, any order, nothing else",
+    Logic.judgeOffering({ mode: "specific", names: "golem soulstone, Bloodied Coin, Draconic Claw" }, offered)
+    && !Logic.judgeOffering({ mode: "specific", names: "Bloodied Coin, Draconic Claw" }, offered)
+    && !Logic.judgeOffering({ mode: "specific", names: "Bloodied Coin, Draconic Claw, Apple" }, offered)
+    && !Logic.judgeOffering({ mode: "specific", names: "" }, offered));
+  check("judgeOffering: one type", Logic.judgeOffering({ mode: "type", itemType: "material" }, [offered[0]]) && !Logic.judgeOffering({ mode: "type", itemType: "material" }, offered));
+  check("offerAllows: only 'one type' limits what goes in the box",
+    Logic.offerAllows({ mode: "type", itemType: "key" }, { type: "key" }) && !Logic.offerAllows({ mode: "type", itemType: "key" }, { type: "weapon" }) && Logic.offerAllows({ mode: "free" }, { type: "weapon" }));
 }
 
 check("substituteVars: prints a variable, 0 when unset",
@@ -354,6 +411,16 @@ await quiet(async () => {
   ]);
 });
 check("condition + Set Switch: Else before the switch, Then after", said.join(",") === "before,after", said.join(","));
+
+await quiet(async () => {
+  said.length = 0;
+  await runEvent([
+    { type: "condition", hasElse: false, condition: { kind: "switch", name: "Never Set", want: "on" }, thenRows: [text("then")], elseRows: [text("hidden else")] },
+    { type: "condition", combine: "any", condition: { kind: "switch", name: "Never Set", want: "on" }, moreConditions: [{ kind: "switch", name: "Boss Down", want: "on" }], thenRows: [text("any")], elseRows: [text("no")] },
+    text("after")
+  ]);
+});
+check("condition: Else switched off runs nothing; 'any of' passes on its second check", said.join(",") === "any,after", said.join(","));
 check("Set Switch: a new switch is added to the party sheet as a table row",
   party.system.props.global_switch_table[0]?.global_switch_name === "boss_down"
   && party.system.props.global_switch_table[0]?.global_switch_boolean === "on"

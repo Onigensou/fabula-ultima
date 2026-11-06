@@ -78,38 +78,62 @@
     defaultData: {
       type: "condition",
       condition: { kind: Logic.CONDITION_KINDS.SWITCH, name: "", want: "on" },
+      moreConditions: [],
+      combine: "all",
+      hasElse: true,
       thenRows: [],
       elseRows: []
     },
     prepare: (row) => {
       row.condition = Logic.normalizeCondition(row.condition);
+      row.moreConditions = (Array.isArray(row.moreConditions) ? row.moreConditions : []).map(Logic.normalizeCondition);
+      row.combine = row.combine === "any" ? "any" : "all";
+      // Rows written before "Has Else" existed all had an Else list.
+      row.hasElse = row.hasElse !== false;
       if (!Array.isArray(row.thenRows)) row.thenRows = [];
       if (!Array.isArray(row.elseRows)) row.elseRows = [];
     },
     childLists: (row) => [
       { label: "Then", rows: row.thenRows },
-      { label: "Else", rows: row.elseRows }
+      ...(row.hasElse !== false ? [{ label: "Else", rows: row.elseRows }] : [])
     ],
-    summary: (row) => Logic.describeCondition(row?.condition),
+    summary: (row) => Logic.describeConditionSet(row),
     execute: async (row, context) => {
-      const reader = gameState()?.readerFor?.(context?.sceneId, context?.tileId);
-      const passed = reader ? Logic.evalCondition(row?.condition, reader) : true;
+      const set = Logic.conditionSet(row);
+      let controllerActor = null;
+      if (set.list.some(Logic.needsController)) {
+        const Check = window.oni.EventSystem.RowsCheck;
+        const found = await Check?.resolveTargets?.({ targets: [{ kind: "controller", slot: 1, name: "" }] }, context);
+        controllerActor = found?.actors?.[0] ?? null;
+      }
+      const reader = gameState()?.readerFor?.(context?.sceneId, context?.tileId, { controllerActor });
+      const passed = reader ? Logic.evalConditionSet(row, reader) : true;
 
+      if (!passed && row.hasElse === false) return { ok: true, type: "condition", passed };
       const result = await context.runRows(passed ? row.thenRows : row.elseRows);
       return { ...result, type: "condition", passed };
     },
     buildFields: (row, kit) => {
       const body = kit.fields(
-        kit.field("If", `<div class="oni-event-cond-host"></div>`)
+        kit.field("If", `<div class="oni-event-cond-host"></div>`),
+        kit.field("Else", `<label class="oni-event-inline-row"><input type="checkbox" class="oni-cond-has-else" ${row.hasElse !== false ? "checked" : ""}/> Has an Else list</label>`,
+          "Off: when the check fails, the event simply carries on after this row.")
       );
-      body.querySelector(".oni-event-cond-host").appendChild(kit.conditionEditor(row.condition, { allowAlways: false }));
+      body.querySelector(".oni-event-cond-host").appendChild(kit.conditionSetEditor(row));
       body.appendChild(kit.subList("then", "Then", row.thenRows));
-      body.appendChild(kit.subList("else", "Else", row.elseRows));
+      const elseList = kit.subList("else", "Else", row.elseRows);
+      body.appendChild(elseList);
+      const box = body.querySelector(".oni-cond-has-else");
+      const sync = () => { elseList.hidden = !box.checked; };
+      box.addEventListener("change", sync);
+      sync();
       return body;
     },
     collectFields: (rowEl, kit) => ({
-      condition: kit.readCondition(kit.own(rowEl, ".oni-cond")),
+      ...kit.readConditionSet(kit.own(rowEl, ".oni-cond-set")),
+      hasElse: !!kit.own(rowEl, ".oni-cond-has-else")?.checked,
       thenRows: kit.readSubList(rowEl, "then"),
+      // Kept when Else is switched off, so switching it back loses nothing.
       elseRows: kit.readSubList(rowEl, "else")
     })
   });

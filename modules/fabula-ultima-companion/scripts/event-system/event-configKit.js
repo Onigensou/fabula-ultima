@@ -215,9 +215,15 @@
       /* Fields shown for one choice of a dropdown only; "hidden" must win
          over the flex / grid display these wrappers carry. */
       .oni-cond [data-kind][hidden],
+      .oni-cond [data-test][hidden],
       .oni-event-row [hidden] {
         display: none !important;
       }
+
+      .oni-cond-set { display: flex; flex-direction: column; gap: 6px; }
+      .oni-cond-set-item { display: flex; gap: 6px; align-items: center; }
+      .oni-cond-set-item > .oni-cond { flex: 1; flex-wrap: wrap; }
+      .oni-cond-set-foot { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     `;
 
     document.head.appendChild(style);
@@ -376,7 +382,11 @@
   // ------------------------------------------------------------
   // Condition editor
   // ------------------------------------------------------------
-  function conditionEditor(rawCond, { allowAlways = true } = {}) {
+  // extended: also offer the checks a Condition row can make while an event
+  // runs (controller's Fabula Points, party bag, last offering, zenit, party
+  // member). "Available when" leaves them out: it is read before anyone
+  // interacts, so there is no controller and no offering yet.
+  function conditionEditor(rawCond, { allowAlways = true, extended = false } = {}) {
     const K = Logic.CONDITION_KINDS;
     const cond = Logic.normalizeCondition(rawCond);
     if (!allowAlways && cond.kind === K.NONE) cond.kind = K.SWITCH;
@@ -386,8 +396,18 @@
       [K.SWITCH, "Switch"],
       [K.VARIABLE, "Variable"],
       [K.SELF, "This event's switch"],
-      [K.HAS_RUN, "This event has run"]
+      [K.HAS_RUN, "This event has run"],
+      ...(extended ? [
+        [K.FABULA, "Controller's Fabula Points"],
+        [K.HAS_ITEM, "Party has item"],
+        [K.OFFERING, "Last offering"],
+        [K.VERDICT, "Last offering's verdict"],
+        [K.ZENIT, "Zenit"],
+        [K.MEMBER, "Party member"]
+      ] : [])
     ];
+    const ops = (cur) => options(Logic.COMPARE_OPS.map(op => [op, op]), cur);
+    const val = (k, field, fallback) => (cond.kind === k ? cond[field] : fallback);
 
     const el = document.createElement("div");
     el.className = "oni-cond oni-event-inline-row";
@@ -415,18 +435,113 @@
       <span data-kind="${K.HAS_RUN}" class="oni-event-inline-row">
         <select class="oni-cond-run-want">${options([["yes", "at least once"], ["no", "never"]], cond.want ?? "yes")}</select>
       </span>
+
+      ${extended ? `
+      <span data-kind="${K.FABULA}" class="oni-event-inline-row">
+        <select class="oni-cond-fabula-op">${ops(val(K.FABULA, "op", ">="))}</select>
+        ${numberInput("oni-cond-fabula-value", val(K.FABULA, "value", 1), { step: 1 })}
+      </span>
+
+      <span data-kind="${K.HAS_ITEM}" class="oni-event-inline-row oni-grow">
+        <input type="text" class="oni-cond-item-name oni-grow" value="${escapeHTML(val(K.HAS_ITEM, "name", ""))}" placeholder="Item name" />
+        <select class="oni-cond-item-op">${ops(val(K.HAS_ITEM, "op", ">="))}</select>
+        ${numberInput("oni-cond-item-value", val(K.HAS_ITEM, "value", 1), { step: 1 })}
+      </span>
+
+      <span data-kind="${K.OFFERING}" class="oni-event-inline-row oni-grow">
+        <select class="oni-cond-offer-test">${options([["contains", "contains"], ["exactly", "is exactly"], ["count", "item count"], ["type", "includes a type"]], val(K.OFFERING, "test", "contains"))}</select>
+        <span data-test="contains" class="oni-event-inline-row oni-grow"><input type="text" class="oni-cond-offer-name oni-grow" value="${escapeHTML(val(K.OFFERING, "name", ""))}" placeholder="Item name" /></span>
+        <span data-test="exactly" class="oni-event-inline-row oni-grow"><input type="text" class="oni-cond-offer-names oni-grow" value="${escapeHTML((val(K.OFFERING, "names", []) || []).join(", "))}" placeholder="Names, comma separated" /></span>
+        <span data-test="count" class="oni-event-inline-row"><select class="oni-cond-offer-op">${ops(val(K.OFFERING, "op", ">="))}</select>${numberInput("oni-cond-offer-value", val(K.OFFERING, "value", 1), { step: 1 })}</span>
+        <span data-test="type" class="oni-event-inline-row"><select class="oni-cond-offer-type">${options(Object.entries(Logic.ITEM_TYPES), val(K.OFFERING, "itemType", "key"))}</select></span>
+      </span>
+
+      <span data-kind="${K.VERDICT}" class="oni-event-inline-row oni-grow">
+        <span>is</span>
+        <input type="text" class="oni-cond-verdict-name oni-grow" value="${escapeHTML(val(K.VERDICT, "name", ""))}" placeholder="Accepted / Refused / Withdrawn, or a GM preset" />
+      </span>
+
+      <span data-kind="${K.ZENIT}" class="oni-event-inline-row">
+        <select class="oni-cond-zenit-source">${options([["stash", "party stash"], ["total", "party total"], ["controller", "controller's character"]], val(K.ZENIT, "source", "stash"))}</select>
+        <select class="oni-cond-zenit-op">${ops(val(K.ZENIT, "op", ">="))}</select>
+        ${numberInput("oni-cond-zenit-value", val(K.ZENIT, "value", 0), { step: 1 })}
+      </span>
+
+      <span data-kind="${K.MEMBER}" class="oni-event-inline-row oni-grow">
+        <input type="text" class="oni-cond-member-name oni-grow" value="${escapeHTML(val(K.MEMBER, "name", ""))}" placeholder="Character name" />
+        <span>is</span>
+        <select class="oni-cond-member-want">${options([["in", "in the party"], ["out", "not in the party"]], val(K.MEMBER, "want", "in"))}</select>
+      </span>` : ""}
     `;
 
     const kindEl = el.querySelector(".oni-cond-kind");
+    const testEl = el.querySelector(".oni-cond-offer-test");
     const sync = () => {
       for (const part of el.querySelectorAll(":scope > [data-kind]")) {
         part.hidden = part.dataset.kind !== kindEl.value;
       }
+      if (testEl) {
+        for (const part of el.querySelectorAll("[data-test]")) part.hidden = part.dataset.test !== testEl.value;
+      }
     };
     kindEl.addEventListener("change", sync);
+    testEl?.addEventListener("change", sync);
     sync();
 
     return el;
+  }
+
+  // Several checks for one Condition row: { condition, moreConditions, combine }.
+  function conditionSetEditor(row) {
+    const set = Logic.conditionSet(row);
+    const wrap = document.createElement("div");
+    wrap.className = "oni-cond-set";
+
+    const addItem = (cond) => {
+      const item = document.createElement("div");
+      item.className = "oni-cond-set-item";
+      item.appendChild(conditionEditor(cond, { allowAlways: false, extended: true }));
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "oni-cond-set-del";
+      del.title = "Remove this check";
+      del.innerHTML = `<i class="fas fa-times"></i>`;
+      del.addEventListener("click", () => {
+        if (wrap.querySelectorAll(":scope > .oni-cond-set-item").length > 1) item.remove();
+        syncMode();
+      });
+      item.appendChild(del);
+      wrap.insertBefore(item, foot);
+      syncMode();
+    };
+
+    const foot = document.createElement("div");
+    foot.className = "oni-cond-set-foot";
+    foot.innerHTML = `
+      <button type="button" class="oni-cond-set-add"><i class="fas fa-plus"></i> Add check</button>
+      <label class="oni-cond-set-mode-wrap">Pass when
+        <select class="oni-cond-set-mode">${options([["all", "all of these are true"], ["any", "any of these is true"]], set.mode)}</select>
+      </label>`;
+    wrap.appendChild(foot);
+
+    const syncMode = () => {
+      const many = wrap.querySelectorAll(":scope > .oni-cond-set-item").length > 1;
+      foot.querySelector(".oni-cond-set-mode-wrap").hidden = !many;
+    };
+
+    foot.querySelector(".oni-cond-set-add").addEventListener("click", () => addItem(null));
+    for (const cond of set.list) addItem(cond);
+    return wrap;
+  }
+
+  function readConditionSet(setEl) {
+    const list = [...(setEl?.querySelectorAll(":scope > .oni-cond-set-item > .oni-cond") ?? [])].map(readCondition);
+    const first = list[0] ?? { kind: Logic.CONDITION_KINDS.SWITCH, name: "", want: "on" };
+    return {
+      condition: first,
+      moreConditions: list.slice(1),
+      combine: setEl?.querySelector(".oni-cond-set-mode")?.value === "any" ? "any" : "all"
+    };
   }
 
   function readCondition(condEl) {
@@ -449,6 +564,26 @@
         return Logic.normalizeCondition({ kind, slot: get(".oni-cond-self-slot"), want: get(".oni-cond-self-want") });
       case K.HAS_RUN:
         return Logic.normalizeCondition({ kind, want: get(".oni-cond-run-want") });
+      case K.FABULA:
+        return Logic.normalizeCondition({ kind, op: get(".oni-cond-fabula-op"), value: get(".oni-cond-fabula-value") });
+      case K.HAS_ITEM:
+        return Logic.normalizeCondition({ kind, name: get(".oni-cond-item-name"), op: get(".oni-cond-item-op"), value: get(".oni-cond-item-value") });
+      case K.OFFERING:
+        return Logic.normalizeCondition({
+          kind,
+          test: get(".oni-cond-offer-test"),
+          name: get(".oni-cond-offer-name"),
+          names: get(".oni-cond-offer-names"),
+          op: get(".oni-cond-offer-op"),
+          value: get(".oni-cond-offer-value"),
+          itemType: get(".oni-cond-offer-type")
+        });
+      case K.VERDICT:
+        return Logic.normalizeCondition({ kind, name: get(".oni-cond-verdict-name") });
+      case K.ZENIT:
+        return Logic.normalizeCondition({ kind, source: get(".oni-cond-zenit-source"), op: get(".oni-cond-zenit-op"), value: get(".oni-cond-zenit-value") });
+      case K.MEMBER:
+        return Logic.normalizeCondition({ kind, name: get(".oni-cond-member-name"), want: get(".oni-cond-member-want") });
       default:
         return { kind: K.NONE };
     }
@@ -754,6 +889,8 @@
     nameInput,
     conditionEditor,
     readCondition,
+    conditionSetEditor,
+    readConditionSet,
 
     buildList,
     collectList,
