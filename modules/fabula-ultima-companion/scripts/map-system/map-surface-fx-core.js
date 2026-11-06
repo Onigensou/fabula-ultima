@@ -17,6 +17,9 @@
 //                                         light pools (Valley camp: clear camp,
 //                                         hazy storm side)
 //     darkness: 0.32,                     how dark unlit stone gets ("light" layer)
+//     lightCap: 1.25,                     how far a light pool may brighten the
+//                                         painting (1.25 = the mockup's cap; the
+//                                         Valley camp pond uses more)
 //     lights: [[x, y, radius, r, g, b, strength]],
 //     shimmerTile: "<tile id>", shimmer: { cx, cy, squash }   seal sheen
 //   }
@@ -106,6 +109,7 @@ export function readSurfaceConfig(scene) {
     wisp: layers.wisp ? clamp(num(raw.wisp, mode === "gas" ? 0.16 : 0.12), 0, 1) : 0,
     wispOutsideLight: raw.wispOutsideLight === true,
     darkness: clamp(num(raw.darkness, 0.32), 0, 1),
+    lightCap: clamp(num(raw.lightCap, 1.25), 1, 3),
     lights,
     shimmerTile: typeof raw.shimmerTile === "string" && raw.shimmerTile ? raw.shimmerTile : null,
     shimmer: { cx: num(sh.cx, 1024), cy: num(sh.cy, 820), squash: clamp(num(sh.squash, 1.9), 0.2, 5) },

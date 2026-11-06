@@ -47,7 +47,7 @@ varying vec2 vWorld;
 uniform sampler2D uArt, uMask;
 uniform vec2 uOrigin, uMap, uCam;
 uniform float uTime, uMode;
-uniform float uChurn, uPlume, uRim, uCrystal, uWisp, uWater, uLight, uDark, uWispOut;
+uniform float uChurn, uPlume, uRim, uCrystal, uWisp, uWater, uLight, uDark, uWispOut, uLightCap;
 uniform vec3 uCrystals[10];
 uniform vec3 uCrystalColor;
 uniform vec4 uLights[12];
@@ -131,7 +131,7 @@ void main() {
       col = mix(col, rip, m.r);
     }
     if (uLight > 0.5) {
-      col = col * (1.0 - uDark) + col * uDark * min(L * 1.15, vec3(1.25));
+      col = col * (1.0 - uDark) + col * uDark * min(L * 1.15, vec3(uLightCap));
     }
   }
 
@@ -218,7 +218,7 @@ function packUniforms(cfg) {
     uMode: cfg.mode === "gas" ? 0 : 1,
     uChurn: on("churn"), uPlume: on("plume"), uRim: on("rim"), uCrystal: on("crystal"),
     uWater: on("water"), uLight: on("light"), uWisp: cfg.wisp, uDark: cfg.darkness,
-    uWispOut: cfg.wispOutsideLight ? 1 : 0,
+    uWispOut: cfg.wispOutsideLight ? 1 : 0, uLightCap: cfg.lightCap,
     uCrystals: cr, uNC: cfg.crystals.length, uCrystalColor: cfg.crystalColor,
     uLights: L, uLightCol: LC, uNL: cfg.lights.length,
   };

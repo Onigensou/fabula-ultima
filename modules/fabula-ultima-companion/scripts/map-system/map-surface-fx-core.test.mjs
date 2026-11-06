@@ -64,6 +64,9 @@ eq("darkness", w?.darkness, 0.32);
 eq("water wisp default", w?.wisp, 0.12);
 eq("water mask", w?.mask, "modules/fabula-ultima-companion/assets/surface-fx/Valley_Map019.webp");
 eq("wispOutsideLight default off", w?.wispOutsideLight, false);
+eq("lightCap default", w?.lightCap, 1.25);
+eq("lightCap set", readSurfaceConfig(scene({ surfaceFxEnabled: true }, { mode: "water", lightCap: 1.8 }))?.lightCap, 1.8);
+eq("lightCap clamped", readSurfaceConfig(scene({ surfaceFxEnabled: true }, { mode: "water", lightCap: 9 }))?.lightCap, 3);
 
 // camp scenes (Valley camp) are walked on too
 const WATER = { mode: "water", wispOutsideLight: true };

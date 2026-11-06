@@ -48,8 +48,9 @@
     lights: [
       [603, 472, 340, 1.0, 0.66, 0.36, 1.0],   // campfire
       [474, 325, 110, 1.0, 0.78, 0.45, 0.7],   // tent lantern
-      [1030, 680, 430, 0.70, 0.75, 1.0, 0.9],  // cool pool over the pond (user, 11-06: brighter round the pond)
+      [1030, 680, 480, 0.70, 0.75, 1.0, 1.5],  // cool pool over the pond (user, 11-06: brighter round the pond, three times)
     ],
+    lightCap: 1.8,   // lets the pond light brighten past the painting (default 1.25)
     draft: TAG,
   };
   const ambience = { spores: { preset: "ember", points: [[603, 466]] }, draft: TAG };
