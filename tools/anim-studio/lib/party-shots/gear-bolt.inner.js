@@ -17,8 +17,11 @@ const R = t.rel;
 const fx = (key, tt, pt, o) => { o = o || {}; const d = A.clips[key]; if (!d) return; m.clip(key, tt, { x: pt.x, y: pt.y, w: d.w * 0.85 * (o.scale || 1) * U, z: o.z || 50, add: !!o.add }); };
 const hurt = (tt, k) => { m.tint(tt, 220, k, '#fff6b0', (u) => 0.65 * (1 - u)); const d = -K.dirOf(TOK, k); m.hold(tt, tt + 300, (e, S) => { const q = S.tok[k]; if (q) q.dx += d * Math.sin(e / 300 * Math.PI * 4) * 9 * U * (1 - e / 300); }); };
 const once = (at, fn) => { let done = false; m.hold(at, 1e9, () => { if (done) return; done = true; try { fn(); } catch (e) { console.warn('[gear-bolt] cue threw', e); } }); };
-K.step(m, E, U, dir, 'c', 0, 0, t.back || R, 46);
-K.circle(tl, m, U, 'c', 380, R - 380, cfg.hue, { dx: dir * 46 * U, scale: t.scale });
+// Thunderstorm channels through its anticipation: the circle holds and the caster
+// stays out until the first bolt (t.strike0); Fulgur releases at R as before.
+const REL2 = mode === 'thunderstorm' ? (t.strike0 || R) : R;
+K.step(m, E, U, dir, 'c', 0, 0, t.back || REL2, 46);
+K.circle(tl, m, U, 'c', 380, REL2 - 380, cfg.hue, { dx: dir * 46 * U, scale: t.scale });
 if (mode === 'fulgur') {
   // tier 1: a small crackle on each target (005 hit clip at ~55 %), damage on the burst
   TG.forEach((k, i) => { const at = R + i * 140; fx('spark', at, K.mid(tl, k), { scale: t.sparkScale, add: true }); hurt(at + 120, k); });
@@ -26,8 +29,19 @@ if (mode === 'fulgur') {
   const byUuid = {}; targets.forEach((tok, i) => { byUuid[tok.document.uuid] = TG[i]; });
   const plan = oni.strikes || [];
   const n = plan.length || t.bolts;
+  const S0 = t.strike0 || R;
+  // ── anticipation: the sky darkens while the rumble rolls in (cfg sfx), sheet
+  // lightning flickers far off, and sparks gather over the field before it breaks
+  m.dim(300, 700, t.dim1);
+  m.dim(R, S0 - R, t.dim2, t.dim1);
+  (t.flickers || []).forEach((f) => m.flash(f[0], 30, f[1], '#d6defa', f[2]));
+  TG.forEach((k, j) => {
+    const h = K.head(tl, k); const p = { x: h.x, y: h.y - 40 * U };
+    (t.charges || []).forEach((c, ci) => K.twinkles(m, c + j * 60, { x: p.x, y: p.y - ci * 18 * U }, K.tintF(cfg.hue, 5, 1.3), t.sparks, 34, U));
+  });
+  m.undim(S0 + (n - 1) * t.gap + t.undimAfter, t.undimMs, t.dim2);
   for (let i = 0; i < n; i++) {
-    const at = R + i * t.gap;
+    const at = S0 + i * t.gap;
     const s = plan[i]; const o = s && s.outcomes ? s.outcomes[0] : null;
     const k = (o && byUuid[o.tokenUuid]) || TG[Math.floor(Math.random() * TG.length)];
     const kind = o ? o.kind : 'hit';

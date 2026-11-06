@@ -33,13 +33,25 @@ function fulgur() {
 }
 
 // ── Thunderstorm: three bolts, one per planned strike (Chain 3 seek) ──
+// Medium tier (user, 2026-11-06): a real storm builds first. The cast rolls in a
+// storm rumble under a dim; far-off sheet lightning flickers and sparks gather over
+// the targets (anticipation, R..S0); THEN the bolts break, one per strike.
+const STORM_RUMBLE = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/Storm1.ogg"; // 2.35 s
 function thunderstorm() {
   const gap = 420, contact = 133, bolts = 3;
-  const t = { rel: REL, gap, contact, bolts, boltScale: 1.8, total: REL + (bolts - 1) * gap + 467 + 350 };
-  const sfx = [cue(380, "Magic3.ogg", 0.5)];
-  for (let i = 0; i < bolts; i++) sfx.push(cue(REL + i * gap, "Thunder1.ogg", 0.4), cue(REL + i * gap + contact, "SE_BTL_HitElectric.ogg", 0.4));
+  const S0 = REL + 900;                       // first bolt, after the build-up
+  const t = {
+    rel: REL, strike0: S0, gap, contact, bolts, boltScale: 1.8,
+    dim1: 0.45, dim2: 0.6,                    // cast dim, then the storm deepens it
+    flickers: [[REL - 280, 110, 0.10], [REL + 260, 140, 0.14], [REL + 640, 90, 0.12]], // [at, fade ms, alpha]
+    charges: [REL + 150, REL + 520], sparks: 6,
+    undimAfter: 500, undimMs: 600,
+    total: S0 + (bolts - 1) * gap + 467 + 650,
+  };
+  const sfx = [cue(380, "Magic3.ogg", 0.45), { at: 380, url: STORM_RUMBLE, v: 0.45 }, cue(REL + 200, "Thunder9.ogg", 0.28)];
+  for (let i = 0; i < bolts; i++) sfx.push(cue(S0 + i * gap, "Thunder1.ogg", 0.4), cue(S0 + i * gap + contact, "SE_BTL_HitElectric.ogg", 0.4));
   // gate null: a Chain's numbers land on the shot's oni.hit() cues, not on a damage offset
-  return PS.build({ key: "gear-thunderstorm", name: "Thunderstorm", shot: "gear-bolt", clips: clips("bolt"),
+  return PS.build({ key: "gear-thunderstorm", name: "Thunderstorm", shot: "gear-bolt", clips: Object.assign(clips("bolt"), { twinkle: true }),
     cfg: { mode: "thunderstorm", hue: HUE, t, sfx }, gate: null });
 }
 
