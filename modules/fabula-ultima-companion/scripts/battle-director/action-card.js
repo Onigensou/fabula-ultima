@@ -39,6 +39,8 @@ import { DAMAGE as DAMAGE_TYPE_STYLE } from "../linked-text/lt-terms.js";
 import { formatHitChance, isConcealedRoll } from "./check.js";
 import { toggleKeywordTooltip, dismissKeywordTooltip } from "./keyword-tooltip.js";
 import { isAutoFireReactionMode } from "./reaction-modes.js";
+import { chainProfile, reactionTone } from "./passive-card-ui/passive-card-classify.js";
+import { getRuntimeSkillView } from "./skill-recipes.js";
 import { resolvesVsMagicDefense, freezeActionResult, hasUnconditionalTargetBlock } from "./snapshot.js";
 import { mergeGmOverride, normalizeGmOverride, describeGmEditors, isGmEditableRow,
          summarizeGmOverride, isGmOverrideEmpty, GM_DIE_SIZES,
@@ -91,6 +93,20 @@ async function resolveCardOwnerUserId(actorUuid) {
 // left a player who missed part of a card with a stale or missing one.
 function cardAudience() {
   return (game.users?.contents ?? []).filter((u) => u.id !== game.user?.id);
+}
+
+// Tell the other players that this reaction's owner has pressed Apply and is
+// making its decision (a target, an option), or that they backed out. Their
+// reaction hand lifts the ally's small card; their own screen stays untouched.
+function announceAllyDeciding(director, rowKey, carrierUuid, fromUserId, on) {
+  const targetUserIds = cardAudience().filter((u) => u.active && !u.isGM && u.id !== fromUserId).map((u) => u.id);
+  if (!targetUserIds.length) return;
+  try {
+    director?.intentChannel?.broadcastMenuOpen({
+      targetUserIds,
+      menuSpec: { kind: "action-card-pill-update", combatId: director.combatId, rowKey, carrierUuid, decision: "deciding", on: !!on },
+    });
+  } catch (e) { warn("announceAllyDeciding: broadcast threw", e); }
 }
 
 // An online owner first, else the owner who is away. A card must still name an
@@ -5368,6 +5384,44 @@ function buildSkillSubtitleHTML({ skillType, skillRange, rawCost, isSpellish }) 
 // rows) surfaces the skill's description on hover. The body bundles a
 // "Mode" footer chip so the player can see whether the pill is acting
 // automatically vs. waiting on their click vs. disabled.
+// Stamps each candidate with which way it pushes this action (reactionTone), which
+// picks its landing (reaction-landing.js). Runs where the carrier can be read, the
+// host; the stamp then travels with the pill. Display only: a carrier that can't be
+// read just goes by side.
+function actorDisposition(uuid) {
+  try {
+    const actor = uuid ? fromUuidSync(uuid) : null;
+    if (!actor) return null;
+    const tok = actor.token ?? actor.getActiveTokens?.(false, true)?.[0];
+    const d = tok?.disposition ?? actor.prototypeToken?.disposition;
+    return Number.isFinite(d) ? d : null;
+  } catch { return null; }
+}
+export function stampReactionTones(list, payload) {
+  const attacker = payload?.attacker ?? null;
+  const actorUuid = attacker?.actorUuid ?? payload?.attackerActorRef ?? payload?.attackerActor?.uuid ?? payload?.attackerActorUuid ?? null;
+  const actingDisp = attacker?.disposition ?? actorDisposition(actorUuid);
+  for (const p of list ?? []) {
+    if (!p || p.actionTone) continue;
+    let profile = null;
+    try {
+      const carrier = p.carrierUuid ? fromUuidSync(p.carrierUuid) : null;
+      if (carrier && p.ref) {
+        const table = carrier.documentName === "Item"
+          ? getRuntimeSkillView(carrier)?.effect_table
+          : (() => { const c = carrier.flags?.["fabula-ultima-companion"]?.reactionConfig ?? {}; return c.effect_table ?? c.reaction_effect_table; })();
+        profile = chainProfile({ table: table ?? {}, ref: p.ref, item: carrier, trigger: p.trigger ?? "" });
+      }
+    } catch (e) { warn("stampReactionTones: carrier unreadable", e); }
+    const reactorIsActor = !p.reactorActorUuid || p.reactorActorUuid === actorUuid;
+    const reactorDisp = actorDisposition(p.reactorActorUuid);
+    const sameSide = reactorDisp != null && actingDisp != null
+      ? (reactorDisp < 0) === (actingDisp < 0)
+      : !!p.reactorIsPlayer === (Number(actingDisp ?? 0) >= 0);
+    p.actionTone = reactionTone({ profile, reactorIsActor, sameSide });
+  }
+}
+
 // Build just the pill elements (no row wrapper) for a candidate list. Shared by
 // the initial row render and the cascade-injection append path so dynamically
 // added reactions (Bullet Break after Crossfire) render identically.
@@ -5429,9 +5483,9 @@ function buildReactionPills(cardReactions) {
     const sideClass = isThirdParty
       ? (p.reactorIsPlayer ? "is-third-party is-side-pc" : "is-third-party is-side-npc")
       : "";
-    const reactorAttr = isThirdParty
+    const reactorAttr = (isThirdParty
       ? ` data-fud-reactor-uuid="${escapeHtml(String(p.reactorActorUuid))}"`
-      : "";
+      : "") + (p.actionTone ? ` data-fud-reaction-tone="${escapeHtml(String(p.actionTone))}"` : "");
     // Per-pill owner — the active non-GM user who owns the REACTOR (not
     // the action-taker). Drives mirror-side interactivity: a player may
     // apply ONLY the reaction pills carried by a creature they own, even
@@ -5906,6 +5960,7 @@ function projectCardReactionForRender(p) {
     reactorActorName: p?.reactorActorName ?? null,
     reactorIsPlayer: p?.reactorIsPlayer ?? null,
     reactorOwnerUserId: p?.reactorOwnerUserId ?? null,
+    actionTone: p?.actionTone ?? null,
   };
 }
 
@@ -5918,6 +5973,7 @@ function projectActionCardRenderPayload(payload) {
   if (!payload) return null;
   const out = {};
   for (const k of ACTION_CARD_RENDER_KEYS) out[k] = payload[k];
+  stampReactionTones(payload.cardReactions, payload);
   out.cardReactions = (Array.isArray(payload.cardReactions) ? payload.cardReactions : [])
     .map(projectCardReactionForRender);
   return out;
@@ -7529,6 +7585,7 @@ function withChainBullet(subtitle, chain, targets) {
 
 function assembleActionCardRoot({ card, cardReactions, rootId, payload = null, kind = null }) {
   const list = Array.isArray(cardReactions) ? cardReactions : [];
+  stampReactionTones(list, payload);
   const askPassives = list.filter((p) => p?.mode === "ask" && p?.available !== false);
   const reactionRowHtml = list.length ? buildReactionPillRow(list) : "";
   // `initialPending` (ALL actionable ask pills) arms the GM's REACTION_CHOICE
@@ -7552,7 +7609,11 @@ function assembleActionCardRoot({ card, cardReactions, rootId, payload = null, k
   // GM desk reads it here to know whose reactions they are (gm-desk syncCardRx).
   const actorUuid = payload?.attacker?.actorUuid ?? payload?.attackerActorRef
     ?? payload?.attackerActor?.uuid ?? payload?.attackerActorUuid ?? null;
-  const actorAttr = actorUuid ? ` data-fud-actor-uuid="${escapeHtml(String(actorUuid))}"` : "";
+  // Which side is acting: a reaction with no pill of its own (a passive the card
+  // doesn't list) goes by this when it lands (reaction-landing.js).
+  const actingDisposition = payload?.attacker?.disposition;
+  const actorAttr = (actorUuid ? ` data-fud-actor-uuid="${escapeHtml(String(actorUuid))}"` : "")
+    + (actingDisposition != null ? ` data-fud-action-side="${Number(actingDisposition) < 0 ? "hostile" : "friendly"}"` : "");
   const innerHTML = `
     <div class="fud-bf-card" role="dialog" aria-label="${escapeHtml(card.titleText)}"${actorAttr}${initialGating > 0 ? ` data-fud-reactions-pending="${initialGating}"` : ""}>
       <div class="fud-bf-header">
@@ -7927,8 +7988,32 @@ export async function postActionCard({ director, kind, payload }) {
       } }],
     });
 
+    // A reaction still being decided (its follow-up pick, the recompute it starts,
+    // an add_target splice) writes to this action when it finishes. A Confirm that
+    // arrives before then would resolve the action first, and that late write would
+    // replace the confirmed result: Barrage's target pick wiped an accepted Warning
+    // Shot, and the attack dealt full damage. So a Confirm waits for them. It is
+    // dropped if they left the card locked (a cascade added a reaction to answer).
+    let decisionsInFlight = 0;
+    let queuedConfirm = null;
+    const decisionSettled = () => {
+      if (--decisionsInFlight > 0 || !queuedConfirm || resolved) return;
+      const extras = queuedConfirm.extras;
+      queuedConfirm = null;
+      if (isConfirmLocked(root.querySelector(".fud-bf-card"))) {
+        log("postActionCard: held Confirm dropped — a new reaction needs an answer");
+        return;
+      }
+      finish("confirm", extras);
+    };
+
     const finish = (outcome, extras = {}) => {
       if (resolved) return;
+      if (outcome === "confirm" && decisionsInFlight > 0) {
+        log(`postActionCard: Confirm held until ${decisionsInFlight} reaction decision(s) finish`);
+        queuedConfirm = { extras };
+        return;
+      }
       resolved = true;
       clearInterval(awayPillTid);
       stopPillWaits();
@@ -8274,6 +8359,7 @@ export async function postActionCard({ director, kind, payload }) {
     const cascadeFiredKeys = new Set();   // candidateKeys already injected
     function appendCascadePills(cands) {
       if (!cands?.length) return;
+      stampReactionTones(cands, payload);
       const card = root.querySelector(".fud-bf-card");
       const h0 = card ? card.offsetHeight : 0;   // height BEFORE the new pill
       let list = root.querySelector(".fud-bf-reactions-list");
@@ -8659,6 +8745,11 @@ export async function postActionCard({ director, kind, payload }) {
     }
 
     async function recordPillDecision(rowKey, carrierUuid, decision, routeUserId = null) {
+      decisionsInFlight++;
+      try { return await runPillDecision(rowKey, carrierUuid, decision, routeUserId); }
+      finally { decisionSettled(); }
+    }
+    async function runPillDecision(rowKey, carrierUuid, decision, routeUserId = null) {
       const pillEl = root.querySelector(
         `.fud-bf-reaction-pill[data-fud-reaction-key="${CSS.escape(rowKey)}"][data-fud-reaction-carrier="${CSS.escape(carrierUuid)}"]`
       );
@@ -8692,6 +8783,7 @@ export async function postActionCard({ director, kind, payload }) {
             },
           });
         } catch (e) { warn("recordPillDecision: revert broadcast threw", e); }
+        announceAllyDeciding(director, rowKey, carrierUuid, routeUserId, false);
       };
 
       // Provisional set so recompute / card-mutations see the decision.
@@ -9929,6 +10021,7 @@ export async function postActionCard({ director, kind, payload }) {
                   },
                 });
               } catch (e) { warn("postActionCard: reaction ack broadcast threw", e); }
+              if (decision === "apply") announceAllyDeciding(director, String(body.rowKey ?? ""), String(body.carrierUuid ?? ""), fromUid, true);
             }
             // intent.fromUserId = the player who applied → route their secondary
             // pickers back to their client (recordPillDecision builds remotePrompt).
@@ -11361,6 +11454,13 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     if (menuSpec.decision === "ack") {
       clearReactionPillTimer(pillEl);
       delete pillEl.dataset.fudReactionAckPending;
+      return;
+    }
+    // "deciding" — another player pressed Apply on THEIR pill and is making its
+    // decision. Display only, on someone else's pill: the final word or a
+    // "deciding off" clears it. Not a response to this client, so no timer stops.
+    if (menuSpec.decision === "deciding") {
+      if (!pillEl.classList.contains("is-resolved")) pillEl.classList.toggle("is-submitting", !!menuSpec.on);
       return;
     }
     // The GM responded — stop the retry timer regardless of outcome.

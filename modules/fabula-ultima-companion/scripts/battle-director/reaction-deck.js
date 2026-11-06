@@ -8,7 +8,7 @@
 // and hops back onto the deck when it refills. An `on` reaction is the same
 // card: when it fires it is drawn, held a moment to read, and plays itself.
 // Each ally's compact card gets a tab with their deck count (+ spent in grey);
-// their small cards come out of it, and clicking it opens their deck.
+// their small cards stand behind the panel, and clicking it opens their deck.
 //
 // What counts (one card per CARRIER: an item, or an AE with a reactionConfig):
 //   in the deck  — the carrier has an `ask` or `on` row (force rows never show)
@@ -27,6 +27,7 @@
 import { getClientOption } from "../shared/client-options.js";
 import { battleIsSettled, hudScale } from "./director-player-hud.js";
 import { faceEl, glowActionCard, HAND_GEOM } from "./reaction-hand.js";
+import { flyToReactionBox, flyToPortrait, bookLanding } from "./reaction-landing.js";
 
 const NS = "fabula-ultima-companion";
 const TAG = "[ReactionDeck]";
@@ -44,6 +45,8 @@ const INSP_W = 878;
 // Motion (approved spec, 1x).
 const DEAL_MS = 380, BACK_MS = 300, PLAY_MS = 340, REFILL_MS = 460, FADE_MS = 220;
 const AUTO_OUT_MS = 180, AUTO_READ_MS = 300, AUTO_IN_MS = 220;   // the user's "Snappy" pick
+// Then the icon flight. It hits softer than a card you played: nobody chose this one.
+const AUTO_COLLAPSE_MS = 180, AUTO_FLY_MS = 400, AUTO_POWER = 0.6;
 const PENDING_AFTER_CLOSE_MS = 4000;   // a played limited card reads SPENT until the host confirms
 const PENDING_MAX_WAIT_MS = 20000;     // …or this long after its card closed, if the battle never moved
 const HELLO_MS = 5000;
@@ -727,15 +730,26 @@ export async function deckReturn(el) {
 }
 
 /**
- * Play `el` over everything: into the action card when one is up, else into
- * your plate. Lands (glow) on SPENT when limited, back on the deck otherwise.
+ * Play `el` over everything. It shrinks into its skill icon and lands in the
+ * Reactions box when it has a `pill` (the action card's own record of this
+ * reaction), and on your portrait when it doesn't (a standalone window): see
+ * reaction-landing.js. Lands (glow) on SPENT when limited, back on the deck otherwise.
  */
-export async function deckPlay(el, { carrierUuid = null } = {}) {
+export async function deckPlay(el, { carrierUuid = null, pill = null } = {}) {
   if (!el?.isConnected) return;
-  const from = vpRect(el);
-  const face = cleanFace(el);
   const e = carrierUuid ? (D.decks.get(myActorId()) ?? []).find((x) => x.carrierUuid === carrierUuid) : null;
   if (e?.limited) { D.pending.set(carrierUuid, { until: null }); render(); }
+  const flightOpts = { el, iconEl: el.querySelector(".emb img"), power: 1, collapseMs: 260, travelMs: 480, apex: 1.34 };
+  const flew = pill
+    ? await flyToReactionBox({ ...flightOpts, pill })
+    : await flyToPortrait({ ...flightOpts, portrait: myUnit()?.querySelector(".dhud-pcard") });
+  if (flew) {
+    if (D.ui) glowPile(e?.limited ? D.ui.spent : D.ui.ready);
+    return;
+  }
+  if (!el.isConnected) return;
+  const from = vpRect(el);
+  const face = cleanFace(el);
   el.style.visibility = "hidden";
   await fly(topLayer(), face, from, playTarget(), { dur: PLAY_MS, arc: 60, easing: "cubic-bezier(.4,0,.6,1)", fadeEnd: true, rm: "from" });
   const card = document.querySelector(`#${MIRROR_ROOT_ID} .fud-bf-card`);
@@ -809,8 +823,7 @@ async function autoPlay(spec, { slow = 1 } = {}) {
     if (tab && !reducedMotion()) { tab.classList.remove("rxd-fired"); void tab.offsetWidth; tab.classList.add("rxd-fired"); }
     return;
   }
-  const ui = D.ui;
-  if (!ui || D.auto.has(e.carrierUuid) || D.inHand.has(e.carrierUuid)) return;
+  if (!D.ui || D.auto.has(e.carrierUuid) || D.inHand.has(e.carrierUuid)) return;
   D.auto.add(e.carrierUuid);
   render();
   try {
@@ -826,14 +839,37 @@ async function autoPlay(spec, { slow = 1 } = {}) {
       f.remove();
       return;
     }
+    // Several firing together come out one after another, so each lands on its own.
+    const hold = bookLanding((AUTO_OUT_MS + AUTO_READ_MS + AUTO_COLLAPSE_MS + AUTO_FLY_MS) * slow);
+    if (hold > 0) await new Promise((r) => setTimeout(r, hold));
+    const ui = D.ui;
+    if (!ui) return;
     // 1) out of the deck, behind the portrait and plate, into the first hand slot
     await fly(ui.fly, face, pileLocal("ready"), read, { dur: AUTO_OUT_MS * slow, flip: "in", easing: "cubic-bezier(.15,.85,.3,1)" });
     // 2) above everything: hold to read, then into its target
     const at = toViewport(read), lift = { ...at, y: at.y - 16 * unitK(ui.unit) };
-    const { f } = makeFlyer(entryFace(e, "is-live"));
+    const readFace = entryFace(e, "is-live");
+    const { f } = makeFlyer(readFace);
     f.classList.add("is-read");
     topLayer().appendChild(f);
     f.style.transform = tf(at);
+    const icon = readFace.querySelector(".emb img");
+    const portrait = myUnit()?.querySelector(".dhud-pcard");
+    if (icon && (portrait || autoPill(e.carrierUuid))) {
+      await f.animate([{ transform: tf(at) }, { transform: tf(lift) }],
+        { duration: AUTO_READ_MS * slow, easing: "cubic-bezier(.3,.7,.3,1)", fill: "both" }).finished.catch(() => {});
+      // Asked now: the card may have opened or closed during the read.
+      const pill = autoPill(e.carrierUuid);
+      const times = { collapseMs: AUTO_COLLAPSE_MS * slow, travelMs: AUTO_FLY_MS * slow, power: AUTO_POWER, apex: 1.2, booked: true };
+      const flight = pill
+        ? flyToReactionBox({ el: readFace, iconEl: icon, pill, ...times })
+        : flyToPortrait({ el: readFace, iconEl: icon, portrait, ...times });
+      // The flyer's own copy has taken over by now. Hide the card it was made from
+      // here: `.rxd-side .rxh-card` forces visibility, so hiding the face itself fails.
+      f.style.opacity = "0";
+      if (await flight) { f.remove(); return; }
+      f.style.opacity = "";
+    }
     const total = (AUTO_READ_MS + AUTO_IN_MS) * slow;
     await f.animate([
       { transform: tf(at), opacity: 1 },
@@ -846,6 +882,12 @@ async function autoPlay(spec, { slow = 1 } = {}) {
     D.auto.delete(e.carrierUuid);
     render();
   }
+}
+
+// The action card's own record of an auto-firing reaction, when it lists one.
+function autoPill(carrierUuid) {
+  const list = document.querySelectorAll(`#${MIRROR_ROOT_ID} .fud-bf-reaction-pill.is-auto`);
+  return [...list].find((p) => p.dataset.fudReactionCarrier === carrierUuid && p.isConnected && getComputedStyle(p).display !== "none") ?? null;
 }
 
 // ── Max Fires: the host publishes its counter ────────────────────────────────
@@ -1059,13 +1101,6 @@ const CSS_TEXT = `
 .rxd-atab .sp i::after { background: #d9d1c0; }
 @keyframes rxdFired { 0% { box-shadow: 0 0 0 0 rgba(226,194,126,0); } 30% { box-shadow: 0 0 0 3px rgba(226,194,126,1), 0 0 14px 4px rgba(226,194,126,.8); } 100% { box-shadow: 0 0 0 0 rgba(226,194,126,0); } }
 .rxd-atab.rxd-fired { animation: rxdFired 700ms ease-out; }
-/* their small cards come up out of the tab, and drop back into it */
-.rxd-atab .rxh-minis { left: 50%; top: auto; bottom: calc(100% + 5px); width: 80px; height: 52px; margin-left: -40px; overflow: hidden; z-index: 1; }
-.rxd-atab .rxh-mini { top: 6px; }
-@keyframes rxdMiniUp { from { transform: translateY(52px) rotate(var(--r, 0deg)); } 70% { transform: translateY(-4px) rotate(var(--r, 0deg)); } to { transform: rotate(var(--r, 0deg)); } }
-@keyframes rxdMiniDown { to { transform: translateY(52px) rotate(var(--r, 0deg)); } }
-.rxd-atab .rxh-mini.is-dealt { animation: rxdMiniUp 340ms cubic-bezier(.2,.9,.3,1) var(--d, 0ms) backwards; }
-.rxd-atab .rxh-mini.is-leaving { animation: rxdMiniDown 260ms ease-in forwards; }
 
 /* ── inspect panel ── */
 .rxd-insp { position: fixed; left: 0; top: 0; width: ${INSP_W}px; z-index: 110; opacity: 0; pointer-events: none; transform-origin: 0 0;
@@ -1115,7 +1150,5 @@ const CSS_TEXT = `
   .rxd-pile .stk, .rxd-insp, .rxd-atab { transition: none; }
   .rxd-pile:hover .stk, .rxd-pile.is-open .stk { transform: none; }
   .rxd-insp { translate: none; }
-  .rxd-atab .rxh-mini.is-dealt { animation: rxhFade 220ms ease var(--d, 0ms) backwards; }
-  .rxd-atab .rxh-mini.is-leaving { animation: rxhOut 240ms ease forwards; }
 }
 `;
