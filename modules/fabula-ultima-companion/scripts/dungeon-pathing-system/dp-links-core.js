@@ -113,7 +113,7 @@
     const switchOn = ctx.switchOn ?? (() => false);
     const edges = [], seen = new Set();
     for (const [id, l] of Object.entries(links || {})) {
-      if (!l || l.off) continue;
+      if (!l || !exists(id, l, ctx.state)) continue;
       if (!ids.has(l.a) || !ids.has(l.b) || l.a === l.b) continue;
       if (l.requiresSwitch && !switchOn(l.requiresSwitch)) continue;
       const key = pairKey(l.a, l.b);
@@ -122,6 +122,64 @@
       edges.push({ fromNodeId: l.a, toNodeId: l.b, drawingId: id, linkId: id });
     }
     return edges;
+  }
+
+  // ── In-play state (phase C) ────────────────────────────────────────────────
+  // flags.<mod>.dungeonPathing.linkState = { revealed, unlocked, broken, events }
+  // (each { [id]: true }), written only by the primary GM, saved with the game.
+  const on = (m, id) => !!(m && m[id]);
+
+  /** Does this link exist on the map right now (part of the graph at all)? */
+  function exists(id, l, st = {}) {
+    if (!l || l.off) return false;
+    if (on(st.broken, id)) return false;                        // collapsed bridge
+    if (l.hidden && !on(st.revealed, id)) return false;         // not found yet
+    return true;
+  }
+
+  /**
+   * May the party step from `from` across this link right now?
+   * @returns {{ ok: boolean, reason?: "oneway"|"switch"|"key"|"check" }}
+   *   Locked links and the wrong way of a one-way link stay in the graph (fog and
+   *   tooltips still see across them); the move itself is refused with a reason.
+   */
+  function stepRule(id, l, from, ctx = {}) {
+    const st = ctx.state ?? {}, switchOn = ctx.switchOn ?? (() => false);
+    if (l.oneWay && from !== l.a) return { ok: false, reason: "oneway" };
+    const lock = l.lock;
+    if (lock && !on(st.unlocked, id)) {
+      if (lock.type === "switch" && !switchOn(lock.name)) return { ok: false, reason: "switch" };
+      if (lock.type === "key") return { ok: false, reason: "key" };
+      if (lock.type === "check") return { ok: false, reason: "check" };
+    }
+    return { ok: true };
+  }
+
+  /** The link (if any) joining two tiles, among links that exist. */
+  function linkBetween(links, a, b, st = {}) {
+    for (const [id, l] of Object.entries(links || {})) {
+      if (!exists(id, l, st)) continue;
+      if ((l.a === a && l.b === b) || (l.a === b && l.b === a)) return { id, link: l };
+    }
+    return null;
+  }
+
+  /**
+   * Hidden-until-landing links ("adjacent") that should be revealed now that
+   * the party has CONFIRMED a move onto `tileId`.
+   */
+  function toRevealOnLanding(links, tileId, st = {}) {
+    return Object.entries(links || {}).filter(([id, l]) => l?.hidden?.by === "adjacent" && !on(st.revealed, id) && !on(st.broken, id)
+      && (l.a === tileId || l.b === tileId)).map(([id]) => id);
+  }
+
+  /**
+   * Events (When → If → Then) to run for a trigger. Pure: the caller checks
+   * conditions that need the game (items) through `cond(e)`.
+   * @param {object[]} events  [{ id, when: { type: "land"|"switch", arg }, cond, then: [{ type, arg }] }]
+   */
+  function eventsFor(events, trigger, arg, st = {}, cond = () => true) {
+    return (events || []).filter(e => e && e.when?.type === trigger && e.when?.arg === arg && !on(st.events, e.id) && cond(e));
   }
 
   /** Neighbour sets per node — used to prove a migration changed nothing. */
@@ -196,5 +254,6 @@
     return { unreachable, traps };
   }
 
-  DP.LinksCore = { snapRadius, normalizePoints, migrateDrawings, edgesFromLinks, sameNeighbours, legacyEdges, reachable, mapCheck, pairKey };
+  DP.LinksCore = { snapRadius, normalizePoints, migrateDrawings, edgesFromLinks, sameNeighbours, legacyEdges, reachable, mapCheck, pairKey,
+    exists, stepRule, linkBetween, toRevealOnLanding, eventsFor };
 })();

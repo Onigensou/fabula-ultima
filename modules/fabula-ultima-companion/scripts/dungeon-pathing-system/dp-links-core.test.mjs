@@ -69,5 +69,33 @@ check("one-way dead end is reported as a trap", JSON.stringify(mc.traps) === '["
 const mc2 = L.mapCheck({ tileIds: ["A", "B", "C", "D"], links: { ...links, l4: { a: "D", b: "A" } }, start: "A" });
 check("a way back clears the trap", mc2.traps.length === 0 && mc2.unreachable.length === 0);
 
+// ── Phase C: in-play rules ───────────────────────────────────────────────────
+const P = {
+  gate:  { a: "A", b: "B", lock: { type: "key", item: "Rusty Key" } },
+  ward:  { a: "B", b: "C", lock: { type: "switch", name: "Ward" } },
+  rock:  { a: "C", b: "D", lock: { type: "check", attrA: "MIG", attrB: "DEX", dl: 10 } },
+  ledge: { a: "D", b: "A", oneWay: true },
+  crev:  { a: "A", b: "C", hidden: { by: "adjacent" } },
+  rope:  { a: "B", b: "D", hidden: { by: "event" } },
+  crumb: { a: "D", b: "E", collapse: true },
+};
+const ids4 = ["A", "B", "C", "D", "E"];
+const ed = (st = {}, sw = () => false) => L.edgesFromLinks(P, ids4, { state: st, switchOn: sw }).map(e => e.linkId).sort().join(",");
+check("locked and one-way links stay in the graph; hidden ones do not", ed() === "crumb,gate,ledge,rock,ward");
+check("a found hidden path joins the graph", ed({ revealed: { crev: true, rope: true } }) === "crev,crumb,gate,ledge,rock,rope,ward");
+check("a broken bridge leaves the graph", !ed({ broken: { crumb: true } }).includes("crumb"));
+const rule = (id, from, st = {}, sw = () => false) => L.stepRule(id, P[id], from, { state: st, switchOn: sw });
+check("key gate blocks until unlocked", rule("gate", "A").reason === "key" && rule("gate", "A", { unlocked: { gate: true } }).ok);
+check("ward blocks until its switch is ON", rule("ward", "B").reason === "switch" && rule("ward", "B", {}, n => n === "Ward").ok);
+check("skill-check rock blocks until passed", rule("rock", "C").reason === "check" && rule("rock", "C", { unlocked: { rock: true } }).ok);
+check("one-way: allowed a → b, refused b → a", rule("ledge", "D").ok && rule("ledge", "A").reason === "oneway");
+check("plain link always passes", rule("crumb", "D").ok && rule("crumb", "E").ok);
+check("linkBetween ignores links that are not there yet", L.linkBetween(P, "A", "C") === null && L.linkBetween(P, "A", "C", { revealed: { crev: true } })?.id === "crev");
+check("landing at either end reveals a hidden-until-landing path", JSON.stringify(L.toRevealOnLanding(P, "C")) === '["crev"]' && L.toRevealOnLanding(P, "C", { revealed: { crev: true } }).length === 0);
+check("event-hidden paths are not revealed by landing", L.toRevealOnLanding(P, "D").length === 0);
+const evs = [{ id: "e1", when: { type: "land", arg: "D" }, then: [{ type: "connect", arg: "rope" }] }, { id: "e2", when: { type: "switch", arg: "Ward" }, then: [] }];
+check("land event fires once", L.eventsFor(evs, "land", "D").length === 1 && L.eventsFor(evs, "land", "D", { events: { e1: true } }).length === 0);
+check("event conditions are honoured", L.eventsFor(evs, "land", "D", {}, () => false).length === 0);
+
 console.log(fail ? `\n${fail} FAILED` : "\nall passed");
 process.exit(fail ? 1 : 0);

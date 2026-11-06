@@ -1089,10 +1089,12 @@
       for (const scene of game.scenes.contents) {
         if (!TILE_SAVE_MODES.has(getSceneMode(scene))) continue;
         const dp = scene.flags?.[MOD]?.[DP_KEY];
-        if (!dp || (!dp.tileStates && !dp.visitedTiles)) continue;
+        if (!dp || (!dp.tileStates && !dp.visitedTiles && !dp.linkState)) continue;
         result[scene.id] = {
           tileStates:   foundry.utils.deepClone(dp.tileStates   ?? {}),
           visitedTiles: foundry.utils.deepClone(dp.visitedTiles ?? {}),
+          // In-play link state (dp-links.js): paths found, gates opened, bridges broken, events done.
+          linkState:    foundry.utils.deepClone(dp.linkState    ?? {}),
         };
       }
       return result;
@@ -1101,7 +1103,7 @@
     async apply(ctx, data) {
       if (!data) return;
       const DP_KEY = "dungeonPathing";
-      for (const [sceneId, { tileStates, visitedTiles }] of Object.entries(data)) {
+      for (const [sceneId, { tileStates, visitedTiles, linkState }] of Object.entries(data)) {
         const scene = game.scenes.get(sceneId);
         if (!scene) continue;
         // unsetFlag first for both maps — setFlag uses update() with mergeObject
@@ -1114,6 +1116,11 @@
         await scene.unsetFlag(MOD, `${DP_KEY}.visitedTiles`).catch(() => {});
         if (Object.keys(visitedTiles).length > 0) {
           await scene.setFlag(MOD, `${DP_KEY}.visitedTiles`, visitedTiles);
+        }
+        // Saves made before link state existed carry none: the map goes back to "nothing found yet".
+        await scene.unsetFlag(MOD, `${DP_KEY}.linkState`).catch(() => {});
+        if (linkState && Object.keys(linkState).length > 0) {
+          await scene.setFlag(MOD, `${DP_KEY}.linkState`, linkState);
         }
       }
     },

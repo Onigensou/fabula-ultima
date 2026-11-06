@@ -159,7 +159,7 @@
       const linked    = DP.Links?.isMigrated?.(canvas?.scene);
       const drawings  = linked ? [] : this.getDrawingEdges();
       const edges     = linked
-        ? DP.LinksCore.edgesFromLinks(DP.Links.read(canvas.scene), nodes.map(n => n.nodeId), { switchOn: DP.Links.switchOn })
+        ? DP.LinksCore.edgesFromLinks(DP.Links.read(canvas.scene), nodes.map(n => n.nodeId), { switchOn: DP.Links.switchOn, state: DP.Links.state(canvas.scene) })
         : this.buildEdges(nodes, drawings);
       const adjacency = this.buildAdjacency(nodes, edges);
 

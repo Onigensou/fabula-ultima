@@ -188,6 +188,7 @@
     "scripts/dungeon-pathing-system/dp-links-core.js",
     "scripts/dungeon-pathing-system/dp-links.js",
     "scripts/dungeon-pathing-system/dp-look.js",
+    "scripts/dungeon-pathing-system/dp-link-play.js",
     "scripts/dungeon-pathing-system/dp-graph.js",
     "scripts/dungeon-pathing-system/dp-direction.js",
     "scripts/dungeon-pathing-system/dp-overlay.js",

@@ -263,13 +263,18 @@
 
     // ── 5. Neighbors + helper mode ──────────────────────────────────────────
     const tNeighbors = performance.now();
-    const neighbors  = DP.Graph.getNeighbors(currentNode.nodeId, graph);
+    // Locked links and the wrong way of a one-way link stay in the graph (fog
+    // and tooltips see across them) but are not walkable (dp-link-play.js).
+    const allNeighbors = DP.Graph.getNeighbors(currentNode.nodeId, graph);
+    const linkSplit  = DP.LinkPlay?.split?.(canvas.scene, currentNode.nodeId, allNeighbors) ?? { walk: allNeighbors, blocked: new Map() };
+    const neighbors  = linkSplit.walk;
+    state.blockedNeighbors = linkSplit.blocked;
     state.neighborIds = new Set(neighbors.map(n => n.nodeId));
     DP.HelperMode.update(neighbors);
     const dtNeighbors = performance.now() - tNeighbors;
 
     // ── 6. Fog overlay — reveal tiles adjacent to current node ──────────────
-    DP.Fog?.refresh?.(graph, currentNode, neighbors);
+    DP.Fog?.refresh?.(graph, currentNode, allNeighbors);
 
     state.lastHoveredNodeId = null; // reset hover tracking after rebuild
     DP.Overlay.clearHover?.();
@@ -520,6 +525,7 @@
     if (game.paused) { ui.notifications?.info?.("The game is paused."); return; }
     if (DP.FastTravel?.active) return; // FT mode owns the canvas while active
     if (state.busy) { ui.notifications?.info?.("Movement in progress…"); return; }
+    if (state.linkPrompt) return;   // a lock prompt / bump is running (dp-link-play.js)
     if (ev.button !== 0) return;
 
     // GM tile-editing gate: when the GM is on a non-Token layer (e.g. Tiles), a
@@ -542,7 +548,22 @@
     const isNeighbor = state.neighborIds.has(clicked.nodeId);
 
     if (isCurrent)   { ui.notifications?.info?.("You are already on this tile."); return; }
-    if (!isNeighbor) return; // tile out of range — correct behaviour, no need to notify
+    if (!isNeighbor) {
+      // A neighbour behind a lock or the wrong way of a one-way link: let the link
+      // rules answer (bump + hint, Use Key, Roll). When the way opens, move as normal.
+      const blocked = state.blockedNeighbors?.get?.(clicked.nodeId);
+      if (blocked && DP.LinkPlay && (game.user?.isGM || state.isMainController)) {
+        ev.preventDefault(); ev.stopPropagation();
+        const retry = { button: 0, clientX: ev.clientX, clientY: ev.clientY, preventDefault() {}, stopPropagation() {} };
+        let open = false;
+        state.linkPrompt = true;
+        try { open = await DP.LinkPlay.onBlocked({ scene: canvas.scene, token: state.partyToken, from: state.currentNode, to: clicked,
+          info: blocked, isWalkable: () => state.neighborIds.has(clicked.nodeId) }); }
+        finally { state.linkPrompt = false; }
+        if (open) return handleClick(retry);
+      }
+      return; // tile out of range — correct behaviour, no need to notify
+    }
 
     // — Main Controller gate —
     // Only the current Main Controller (or any GM) may drive dungeon movement.
