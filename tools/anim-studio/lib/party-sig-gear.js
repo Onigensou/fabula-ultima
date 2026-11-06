@@ -43,7 +43,7 @@ function thunderstorm() {
   const gap = 420, contact = 133, bolts = 3;
   const S0 = REL + 900;                       // first bolt, after the build-up
   const t = {
-    rel: REL, strike0: S0, gap, contact, bolts, boltScale: 1.8,
+    rel: REL, strike0: S0, gap, contact, bolts, boltScale: 2.6,
     dim1: 0.45, dim2: 0.6,                    // cast dim, then the storm deepens it
     flickers: [[REL - 280, 110, 0.10], [REL + 260, 140, 0.14], [REL + 640, 90, 0.12]], // [at, fade ms, alpha]
     cloudBand: 0.5, cloudBlobs: 16, cloudAlpha: 0.9, cloudInMs: 1300, // top half of the view
