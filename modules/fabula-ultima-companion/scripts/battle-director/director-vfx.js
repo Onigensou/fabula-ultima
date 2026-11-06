@@ -608,12 +608,44 @@ export function playMissVfx({ tokenUuid, cascade = 0 } = {}) {
 // no battlefield feedback. Float a steel "BLOCK" shield word + reuse the warmed
 // parry/resist cue. Same broadcasts-to-all-clients + graceful no-op rules.
 const BLOCK_SFX_URL = RESOURCE_VFX_SFX.resist;
-export function playBlockVfx({ tokenUuid, cascade = 0 } = {}) {
+// `via` = the blocking reaction's carrier name (card-mutations' damageOverride.via,
+// a Chain strike's blockedBy, or the damage-reaction AE's name). When that carrier
+// item carries its own animation (Ninja Log's substitution trick), it plays here,
+// on the wearer, alongside the BLOCK float — cosmetic, never awaited.
+export function playBlockVfx({ tokenUuid, cascade = 0, via = null } = {}) {
   try {
     emitDamageNumber({ kind: "block", tokenUuid, ...(cascade ? { cascade } : {}) });
     throttledSfx(BLOCK_SFX_URL, 0.5);
   } catch (e) {
     warn("playBlockVfx threw", e);
+  }
+  if (via) playBlockCarrierAnimation(tokenUuid, via);
+}
+
+// The carrier = an item on the blocked token's actor named `via`, or the item
+// holding a transfer AE of that name (Ninja Log's reaction lives on its AE).
+// Only an item with an authored animation plays; everything else is a no-op.
+function findBlockCarrier(actor, via) {
+  const want = String(via ?? "").trim().toLowerCase();
+  if (!actor || !want) return null;
+  const items = Array.from(actor.items ?? []);
+  return items.find((i) => String(i.name ?? "").trim().toLowerCase() === want)
+    ?? items.find((i) => Array.from(i.effects ?? []).some((e) => String(e.name ?? "").trim().toLowerCase() === want))
+    ?? null;
+}
+function playBlockCarrierAnimation(tokenUuid, via) {
+  try {
+    if (!game.user?.isGM || !tokenUuid) return;
+    const tokenDoc = fromUuidSync(tokenUuid);
+    const item = findBlockCarrier(tokenDoc?.actor, via);
+    if (!item) return;
+    const f = item.flags?.["fabula-ultima-companion"] ?? {};
+    if (!f.animationScript && !String(item.system?.props?.animation_script ?? "").trim()) return;
+    import("./director-animation.js")
+      .then((m) => m.playCarrierAnimation?.({ item, casterTokenUuid: tokenUuid }))
+      .catch((e) => warn("block carrier animation failed", e));
+  } catch (e) {
+    warn("playBlockCarrierAnimation threw", e);
   }
 }
 

@@ -48,7 +48,7 @@ async function revealStrike(strike, { causeTokenUuid, actorsByToken, numbersOnly
     try {
       switch (o.kind) {
         case "miss": vfx.playMissVfx?.({ tokenUuid, cascade: strike.index }); break;
-        case "block": vfx.playBlockVfx?.({ tokenUuid, cascade: strike.index }); break;
+        case "block": vfx.playBlockVfx?.({ tokenUuid, cascade: strike.index, via: o.blockedBy ?? null }); break;
         case "immune": vfx.playImmuneVfx?.({ tokenUuid, cascade: strike.index }); break;
         case "absorb": {
           if (o.hpGain > 0) vfx.playAbsorbVfx?.({ tokenUuid, amount: o.hpGain });

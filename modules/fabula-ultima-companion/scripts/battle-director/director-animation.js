@@ -865,6 +865,56 @@ export async function playSkillAnimation({ skillUuid, casterTokenUuid, targetTok
   return { played: true, endPromise: endWatch.promise };
 }
 
+// ── Carrier animation (a passive's own cosmetic shot) ─────────────────────
+//
+// Play the animation authored on a reaction's CARRIER item — first user: Ninja
+// Log's substitution trick at the BLOCK moment (director-vfx playBlockVfx). The
+// script lives in the item's animation_script field, or — for an item whose
+// template has no such field (accessories) — the item flag `animationScript`,
+// the same fallback the weapon path reads. Cosmetic only: nothing waits on it,
+// no battler pose, the wearer is the "caster". Returns { played, reason? }.
+const CARRIER_STAGE_CAP_MS = 250;
+export async function playCarrierAnimation({ item, casterTokenUuid } = {}) {
+  try {
+    if (!item || !casterTokenUuid) return { played: false, reason: "no-item" };
+    const p = item.system?.props ?? {};
+    const f = item.flags?.[ANIM_NS] ?? {};
+    const own = _stripHtml(p.animation_script).trim() ? p : null;
+    const spec = _buildSpec(
+      own ? p.animation_script : f.animationScript,
+      own ? p.animation_damage_timing_options : f.animationTiming,
+      own ? p.animation_damage_timing_offset : f.animationOffset,
+    );
+    if (!spec.hasScript) return { played: false, reason: "no-script" };
+    if (canFastForwardAnimation()) return { played: false, reason: "hidden" };
+    // No gate and no canvas-selection bridge: it plays alongside the attacker's
+    // own animation tail, so it must not touch the GM's selection / targets or
+    // wait on (or fire into) a damage gate. The scripts read their caster from
+    // the payload; __PAYLOAD is set only for the synchronous start of the call
+    // (where the outer script reads it), then put back.
+    const fn = compileScript(spec.script);
+    // It has to land WITH the BLOCK float, so staging gets a short head start
+    // only (the full cap is seconds); a cold client catches up in the shot's own load.
+    const staged = await Promise.race([waitStaged(stageScript(spec.script)), new Promise((r) => setTimeout(() => r({ capped: true }), CARRIER_STAGE_CAP_MS))]);
+    if (staged?.capped || staged?.timedOut) log("[BD Anim] carrier animation: playing before every client acked staging");
+    const payload = {
+      sourceTokenUuid: casterTokenUuid, casterTokenUuid,
+      targetTokenUuids: [], targetTokenIds: [], targets: [],
+      animationScriptRaw: spec.script, outcomes: null, strikes: null,
+    };
+    const prevPayload = globalThis.__PAYLOAD, prevTargets = globalThis.__TARGETS;
+    globalThis.__PAYLOAD = payload; globalThis.__TARGETS = [];
+    let result;
+    try { result = fn(payload, []); }
+    finally { globalThis.__PAYLOAD = prevPayload; globalThis.__TARGETS = prevTargets; }
+    if (result && typeof result.then === "function") await result;
+    return { played: true };
+  } catch (e) {
+    warn("[BD Anim] playCarrierAnimation threw", e);
+    return { played: false, reason: "error" };
+  }
+}
+
 // ── Anim Studio preview entry ────────────────────────────────────────────
 //
 // Runs an animation exactly like the FSM would — same payload shape, same

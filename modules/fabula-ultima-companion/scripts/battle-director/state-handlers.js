@@ -903,7 +903,7 @@ async function resolveAction(director, ar, opts = {}) {
       // carry no override.)
       if (!chainPlan && r.hit && r.damageOverride
           && Number(r.damageOverride.to) <= 0 && Number(r.damageOverride.from) > 0) {
-        if (!chainSingle) playBlockVfx({ tokenUuid: r.tokenUuid });
+        if (!chainSingle) playBlockVfx({ tokenUuid: r.tokenUuid, via: r.damageOverride.via ?? null });
         continue;
       }
       try {

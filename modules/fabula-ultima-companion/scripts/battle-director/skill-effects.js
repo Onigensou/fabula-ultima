@@ -794,7 +794,7 @@ export async function applyDamageToTarget({
     // can run for seconds, and the block is what sets them off.
     const blockedByReaction = dealtDamage <= 0
       && fired.some((f) => Number(f.to) <= 0 && Number(f.from) > 0);
-    if (blockedByReaction) vfx?.block({ tokenUuid });
+    if (blockedByReaction) vfx?.block({ tokenUuid, via: fired.find((f) => Number(f.to) <= 0 && Number(f.from) > 0)?.aeName ?? null });
     const reactionNote = fired.length ? ` (reactions: ${fired.map((f) => f.aeName).join(", ")})` : "";
     const shieldNote = absorbed > 0 ? ` [shield −${absorbed}]` : "";
     log(`${prefix}applied ${toHp} dmg to ${targetName} [${affinity}]: ${curHp} → ${newHp}${shieldNote}${reactionNote}${logSuffix}`);
