@@ -20,7 +20,7 @@
 import { log, warn } from "./logger.js";
 import { watchGone } from "./player-presence.js";
 import { stageOf } from "./director-camera.js";
-import { evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, applyHealReceiving, applyMpReceiving, arcanumQuickSummonLock } from "./skill-formulas.js";
+import { shortSkillName, evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, applyHealReceiving, applyMpReceiving, arcanumQuickSummonLock } from "./skill-formulas.js";
 import { pickFromList } from "./list-picker.js";
 // The amount selector lives in its own leaf module so remote-pick can render it
 // on a player's client without dragging the effect engine along. Re-exported
@@ -154,6 +154,29 @@ export async function sweepTransientAEsAtSceneEnd() {
   }));
   if (swept) log(`sweepTransientAEsAtSceneEnd: cleared ${swept} transient AE(s) across ${deleteByActor.size} actor(s)`);
   return { swept, perActor: deleteByActor.size };
+}
+
+// Quick Summoning's "you cannot dismiss until your next turn" belongs to the
+// battle it was stamped in, but the merge outlives that battle (directorPermanent)
+// and the stamp is a bare round number, so the next battle's early rounds read as
+// still locked: no Dismiss offer, and a tooltip saying you cannot dismiss. Drop the
+// lock's stamps when a battle ends, and again before one starts in case the last one
+// never reached a clean stop. `quickSummonNoDismissEffect` stays: it lasts for the
+// summoning, not the battle.
+export async function clearQuickSummonLocks() {
+  let cleared = 0;
+  for (const actor of collectDirectorAEBearers()) {
+    for (const eff of actor.effects ?? []) {
+      const f = eff.flags?.[FLAG_NS];
+      if (!f?.[ARCANUM_MERGE_FLAG] || (f.quickSummonRound == null && f.quickSummonOpts == null)) continue;
+      try {
+        await eff.update({ [`flags.${FLAG_NS}.-=quickSummonOpts`]: null, [`flags.${FLAG_NS}.-=quickSummonRound`]: null });
+        cleared += 1;
+      } catch (e) { warn(`clearQuickSummonLocks: update failed on ${actor.name}`, e); }
+    }
+  }
+  if (cleared) log(`clearQuickSummonLocks: cleared ${cleared} Quick Summoning lock(s)`);
+  return cleared;
 }
 
 // ── Damage-taken reaction resolver ─────────────────────────────────────
@@ -1291,6 +1314,10 @@ export function analyzeChainCost(effectTable, startLabel, actor, skill = null, p
   const resolver = buildSkillResolver({ actor, payload, skill, round: 0 });
   const seen = new Set();
   const debit = {};
+  // What the action's PRICE reads when it differs from what the gate must allow:
+  // Bind and Summon is gated at its cheapest option (25 MP) but costs 30 unless a
+  // Quick Summoning option is taken. Display only, never part of affordability.
+  const listExtra = {};
   const chargeDebit = {};
   let variable = false;
 
@@ -1392,6 +1419,8 @@ export function analyzeChainCost(effectTable, startLabel, actor, skill = null, p
         if (merged > 0) return;
         const amount = summonCostViaResolver(row, resolver);
         if (amount > 0) debit.mp = (debit.mp ?? 0) + amount;
+        const listPrice = summonCostViaResolver(row, resolver, { quickReduce: false });
+        if (listPrice > amount) listExtra.mp = (listExtra.mp ?? 0) + (listPrice - amount);
         return;
       }
       // Options are player choices — NOT summed into the fixed cost (you pick
@@ -1442,6 +1471,8 @@ export function analyzeChainCost(effectTable, startLabel, actor, skill = null, p
       if (merged > 0) return;
       const amount = summonCostViaResolver(row, resolver);
       if (amount > 0) debit.mp = (debit.mp ?? 0) + amount;
+      const listPrice = summonCostViaResolver(row, resolver, { quickReduce: false });
+      if (listPrice > amount) listExtra.mp = (listExtra.mp ?? 0) + (listPrice - amount);
       return;
     }
     // grant / apply_ae / remove_tagged_ae / leave_combat / etc.: not a gate on
@@ -1451,6 +1482,7 @@ export function analyzeChainCost(effectTable, startLabel, actor, skill = null, p
 
   out.ok = true;
   out.debit = debit;
+  out.listExtra = listExtra;
   out.chargeDebit = chargeDebit;
   out.variable = variable;
 
@@ -1485,7 +1517,7 @@ export function analyzeChainCost(effectTable, startLabel, actor, skill = null, p
     const chargeShort = out.shortfalls.filter((s) => s.kind === "charge");
     const parts = [];
     if (resShort.length) {
-      parts.push("Low " + resShort.map((s) => s.resource.toUpperCase()).join("/"));
+      parts.push("Low " + resShort.map((s) => (s.resource === "zero_power" ? "ZP" : s.resource.toUpperCase())).join("/"));
     }
     if (chargeShort.length) parts.push("No Charge");
     out.badge = parts.join(", ");
@@ -2304,6 +2336,7 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
         carrierName: ae.name,
         carrierImg:  ae.img ?? ae.icon,
         carrierDescription: ae.description ?? "",
+        ...(mode === "ask" ? offerPresentationFields(casterActor, effectTable, refLabel, ae.name) : {}),
         rowKey: key,
         kind: kindForMode(mode),
         mode,
@@ -2322,6 +2355,60 @@ export async function findPassiveCandidates({ casterActor, trigger, payload, inc
     }
   }
   return out;
+}
+
+// What an ASK offer shows when its whole effect is to perform another skill: THAT
+// skill's name and text, not its carrier's. The merge AE offers "Dismiss" at the
+// turn edges, and the player was being shown the merge status's own name and
+// description, which never mention what pressing it does.
+//
+// Reads the action_ref of a free_action row. Only merged_arcanum:<role> names one
+// skill today, and it resolves live, so one shared merge AE serves every Arcanum.
+// Returns null for anything else, which leaves the carrier's own text in place.
+const OFFER_PASS_LINE = "<p>Pass to stay merged. You are asked again at the start and end of each of your turns.</p>";
+export function presentReactionOffer(actor, effectTable, refLabel) {
+  const rows = Object.values(effectTable ?? {}).filter((r) => r && r.$deleted !== true);
+  const entry = rows.find((r) => String(r.effect_label ?? "").trim() === String(refLabel ?? "").trim()) ?? null;
+  if (String(entry?.effect_kind ?? "").trim() !== "free_action") return null;
+  const ref = String(entry.action_ref ?? "").trim().toLowerCase();
+  if (!ref.startsWith("merged_arcanum:") || !actor) return null;
+  const role = ref.slice("merged_arcanum:".length).trim();
+  const mergeAe = findMergedArcanumAe(actor);
+  const arcanum = mergeAe ? arcanumForMergeAe(actor, mergeAe) : null;
+  const child = arcanum ? findArcanumChild(actor, arcanum, role) : null;
+  if (!child) return null;
+  const props = child.system?.props ?? {};
+  const shown = {
+    name: shortSkillName(child, actor),
+    img: child.img ?? null,
+    from: arcanum.name,
+    target: String(props.skill_target ?? "").trim().replace(/^-$/, ""),
+    description: String(props.description ?? ""),
+    cost: "Free",
+  };
+  if (role !== "dismiss") return shown;
+  // Both Quick Summoning options: pressing this only ends the merge. It must not
+  // read like the Dismiss it replaces (free_action's plain-unmerge branch).
+  if (arcanumQuickSummonLock(actor).noEffect) {
+    shown.name = "End Merge";
+    shown.target = "";
+    shown.description = "<p>Ends the merge with <strong>no damage</strong>. You took both Quick Summoning options, so this summoning has no Dismiss effect.</p>";
+  }
+  shown.description += OFFER_PASS_LINE;
+  return shown;
+}
+function offerPresentationFields(actor, effectTable, refLabel, carrierName) {
+  const shown = presentReactionOffer(actor, effectTable, refLabel);
+  if (!shown) return {};
+  return {
+    carrierName: shown.name,
+    carrierImg: shown.img,
+    carrierDescription: shown.description,
+    carrierFrom: shown.from,
+    carrierTarget: shown.target,
+    carrierCost: shown.cost,
+    carrierOwnName: carrierName,
+  };
 }
 
 // Skill-granted, TARGET-owned reaction candidates (reaction_responder:
@@ -9274,8 +9361,13 @@ function escapeMenuHtml(s) {
 function menuOptionsToRows(opts) {
   return opts.map((o, i) => ({
     value: i,
-    primary: escapeMenuHtml(o.label),
+    // `label` is the pick's capture key; `displayLabel` is what the row reads
+    // when the two differ (buildArcanumMenuOptions).
+    primary: escapeMenuHtml(o.displayLabel ?? o.label),
     secondary: o.description ? escapeMenuHtml(o.description) : null,
+    // Rich text for the plate's description panel, and its cost chip.
+    ...(o.cardHtml ? { cardHtml: String(o.cardHtml) } : {}),
+    ...(o.costText ? { tooltip: { name: o.displayLabel ?? o.label, cost: o.costText } } : {}),
     imageUrl: o.icon ?? null,
     color: o.color ?? null,
     // disable_ui_type:"dim" options arrive disabled + reason-badged (greyed,
@@ -10051,7 +10143,7 @@ function buildArcanumMenuOptions(row, ctx) {
     // disabled row carries the reason, so every caller that bypasses the picker's
     // availability greying still gets a refusal it can show.
     const arcanum = arcanumForMergeAe(caster, mergeAe);
-    options.push({ label: arcanum?.name ?? "Arcanum", description: "Already merged.", icon: arcanum?.img ?? null, disabled: true, badge: "Dismiss your Arcanum first" });
+    options.push({ label: arcanum?.name ?? "Arcanum", description: "Already merged.", icon: arcanum?.img ?? null, disabled: true, badge: "Already merged" });
     optionRows.push({ effect_kind: "summon_arcanum", arcanum_action: "none", effect_label: `${baseLabel}:merged` });
   } else {
     // Affordability is decided HERE, at pick time: the debit runs at RESOLVE,
@@ -10065,9 +10157,12 @@ function buildArcanumMenuOptions(row, ctx) {
     const mp = Number(caster.system?.props?.[RESOURCE_PROPS.mp?.prop ?? "current_mp"] ?? 0) || 0;
     const qs = quickSummonMods(caster);
     const qsLive = qs.owns && quickSummonInTurn(ctx);
-    for (const arc of listBoundArcana(caster)) {
+    const bound = listBoundArcana(caster);
+    const keepsEffect = quickSummonKeepsDismissEffect(caster);
+    for (const arc of bound) {
       const dom = String(arc.system?.props?.domain ?? "").trim();
       const hasPulse = !!findArcanumChild(caster, arc, "pulse");
+      const hasDismiss = !!findArcanumChild(caster, arc, "dismiss");
       const sets = qsLive
         ? [[], ...(qs.costReduction > 0 ? [["cost"]] : []), ...(hasPulse ? [["pulse"]] : []),
            ...(qs.costReduction > 0 && hasPulse ? [["cost", "pulse"]] : [])]
@@ -10075,11 +10170,17 @@ function buildArcanumMenuOptions(row, ctx) {
       for (const set of sets) {
         const cost = summonCost(row, ctx, { quickReduce: set.includes("cost") });
         const short = mp < cost;
-        const consequence = !set.length ? null
-          : (set.length === 2 ? "no willing dismiss until your next turn; no dismiss effect this summoning"
-            : "no willing dismiss until your next turn");
-        const description = [`${cost} MP`, dom ? `Domain: ${dom}` : null, consequence].filter(Boolean).join(" · ");
-        options.push({ label: quickSummonOptionLabel(arc.name, set, qs.costReduction), description, icon: arc.img ?? null, disabled: short, badge: short ? "Not enough MP" : null });
+        const noEffect = set.length === 2 && !keepsEffect;
+        const words = quickSummonOptionWords({ arc, set, reduction: qs.costReduction, noEffect, hasPulse, hasDismiss, several: bound.length > 1 });
+        const description = [`${cost} MP`, set.includes("pulse") ? "Free Pulse" : null, set.length ? words.consequence : (dom ? `Domain: ${dom}` : null)]
+          .filter(Boolean).join(" · ");
+        options.push({
+          label: quickSummonOptionLabel(arc.name, set, qs.costReduction), displayLabel: words.rowLabel,
+          description, costText: `${cost} MP`,
+          cardHtml: `${words.panelLead}${String(arc.system?.props?.description ?? "")}`,
+          cardEffectHtml: words.cardHtml,
+          icon: arc.img ?? null, disabled: short, badge: short ? "Not enough MP" : null,
+        });
         optionRows.push({
           effect_kind: "summon_arcanum",
           summon_target: String(arc.system?.uniqueId ?? arc.id ?? "").trim(),
@@ -10103,6 +10204,48 @@ function quickSummonOptionLabel(arcName, set, reduction) {
   if (set.includes("cost")) parts.push(`−${reduction} MP`);
   if (set.includes("pulse")) parts.push("Pulse");
   return `${arcName}${QS_LABEL_SEP}${parts.join(" + ")}`;
+}
+// The words one summon option shows: its row, its panel, its action card. The row
+// name drops the Arcanum's when there is only one (the two Quick rows otherwise
+// cut off to the same text on the player's menu) and keeps it when there are
+// several, so the player can still tell whose option it is.
+function quickSummonOptionWords({ arc, set, reduction, noEffect, hasPulse, hasDismiss, several }) {
+  const name = escapeMenuHtml(arc.name);
+  const QS = "<strong>Quick Summoning:</strong>";
+  const summonLine = `<p><strong>Summon ${name}</strong> and merge with it.</p>`;
+  if (!set.length) {
+    const usage = [hasPulse ? "Its Pulse joins your Skill list." : "", hasDismiss ? "Dismiss is offered at the start and end of your turn." : ""].filter(Boolean).join(" ");
+    return { rowLabel: arc.name, panelLead: "", consequence: null, cardHtml: `${summonLine}${usage ? `<p>${usage}</p>` : ""}` };
+  }
+  const cost = set.includes("cost"), pulse = set.includes("pulse");
+  const parts = [...(cost ? [`−${reduction} MP`] : []), ...(pulse ? ["Free Pulse"] : [])];
+  const rowLabel = `${several ? `${arc.name} · ` : ""}Quick: ${parts.join(" + ")}`;
+  const gain = cost && pulse ? `costs ${reduction} less, with a free Pulse`
+    : cost ? `costs ${reduction} less` : "a free Pulse right after summoning";
+  const panelLead = `<p>${QS} ${gain}. You cannot dismiss until your next turn${noEffect ? ", and Dismiss then only ends the merge" : ""}.</p>`;
+  const cardLine = pulse
+    ? `${QS} free Pulse right after. You cannot dismiss until your next turn${noEffect ? ", and Dismiss then only ends the merge, with no damage" : ""}.`
+    : `${QS} you cannot dismiss until your next turn.`;
+  return {
+    rowLabel, panelLead,
+    consequence: noEffect ? "Dismiss will only end the merge" : "No dismiss until your next turn",
+    cardHtml: `${summonLine}<p>${cardLine}</p>`,
+  };
+}
+// The action card's words for a dynamic menu's pick, plus the price that option
+// actually costs. Menus built from authored rows get theirs from each option's
+// menu_description at COMPUTE; a dynamic menu has no authored rows to read, so its
+// builder writes them on the option (`cardEffectHtml`, `costText`). A source that
+// writes none keeps the skill's own description on the card.
+export function describeDynamicMenuPick(menuRow, picks, ctx) {
+  const wanted = (Array.isArray(picks) ? picks : []).map((p) => String(p).trim().toLowerCase());
+  if (!wanted.length) return null;
+  let options = [];
+  try { ({ options } = buildMenuOptions(menuRow, ctx)); }
+  catch (e) { warn("skill-effects.describeDynamicMenuPick: options threw", e); return null; }
+  const picked = options.find((o) => wanted.includes(String(o.label ?? "").trim().toLowerCase()));
+  if (!picked?.cardEffectHtml) return null;
+  return { html: picked.cardEffectHtml, costText: picked.costText ?? null };
 }
 export function parseQuickSummonLabel(label) {
   const s = String(label ?? "");
@@ -10160,6 +10303,11 @@ export function quickSummonMods(actor) {
 // Revelation (June-22 variant): "When you summon an Arcanum, if you are in Crisis
 // and choose both options of the Quick Summoning Skill, you only suffer the first
 // penalty (the dismiss effect … will be available for this summoning)."
+function quickSummonKeepsDismissEffect(actor) {
+  let crisis = 0;
+  try { crisis = Number(evaluateFormula("HAS_STATUS_CRISIS", buildSkillResolver({ actor }), 0)) || 0; } catch {}
+  return crisis > 0 && ownsRevelation(actor);
+}
 function ownsRevelation(actor) {
   return (actor?.items ?? []).some((it) => /^revelation\b/i.test(String(it?.name ?? "").trim())
     && !!String(it?.system?.props?.skill_type ?? ""));
@@ -10226,14 +10374,12 @@ async function doSummonArcanum(arc, row, ctx) {
     if (opts.includes("pulse") && findArcanumChild(caster, arc, "pulse")) {
       log(`skill-effects.summon_arcanum: Quick Summoning grants a free Pulse of "${arc.name}"`);
       try {
-        const fr = await applyFreeActionEffect({ effect_kind: "free_action", effect_label: "quick_summoning:pulse", action_ref: "merged_arcanum:pulse" }, ctx);
+        const fr = await applyFreeActionEffect({ effect_kind: "free_action", effect_label: "quick_summoning:pulse", action_ref: "merged_arcanum:pulse", source_label: "Quick Summoning" }, ctx);
         autoPulsed = !!fr?.ok;
       } catch (e) { warn(`skill-effects.summon_arcanum: Quick Summoning free Pulse failed: ${e.message}`); }
     }
     // Consequences, stamped on the merge AE (read by arcanumQuickSummonLock).
-    let crisis = 0;
-    try { crisis = Number(evaluateFormula("HAS_STATUS_CRISIS", buildSkillResolver({ actor: caster }), 0)) || 0; } catch {}
-    noDismissEffect = opts.length === 2 && !(crisis > 0 && ownsRevelation(caster));
+    noDismissEffect = opts.length === 2 && !quickSummonKeepsDismissEffect(caster);
     const mergeAe = findMergedArcanumAe(caster);
     const round = Number(ctx.dCombat?.round ?? globalThis.__fudActiveDCombat?.round ?? 0) || 0;
     if (mergeAe) {
@@ -10713,6 +10859,15 @@ async function applyFreeActionEffect(row, ctx) {
     // honored in resolveActionTargets' obvious-set branch only, so a genuine
     // pick (One Enemy / pool > count) still prompts.
     preset.skipTargetConfirm = true;
+    // What the target picker shows: nothing else on screen says this is the free
+    // action, or what it does (the panel would otherwise still hold whatever
+    // opened the free action, e.g. the summon that granted a free Pulse).
+    // Words only: never let them stop the free action.
+    try {
+      preset.presentation = freeActionPresentation(presetItem, performer, {
+        source: String(row.source_label ?? ctx.skill?.name ?? "").trim(), freeOfCost,
+      });
+    } catch (e) { warn(`skill-effects.free_action: presentation threw for ${presetItem.name}`, e); }
     // Keep the grant's type filter consistent with the preset command.
     enabledLabels = [preset.command];
   }
@@ -10778,6 +10933,31 @@ async function applyFreeActionEffect(row, ctx) {
   });
   log(`free_action: enqueued "${sourceLabel}" for ${performer.name} — ${preset ? `preset ${preset.command} (${presetItem?.name})` : `compose [${enabledLabels.join(", ") || "any"}]`} (+${checkBonus} check / +${damageBonus} dmg)`);
   return { ok: true, kind: "free_action", queued: true, freeMode: true, applied: [{ actor: performer.uuid, sourceLabel, enabledLabels, checkBonus, damageBonus, preset: preset ? preset.command : null }] };
+}
+
+function freeActionPresentation(item, performer, { source = "", freeOfCost = false } = {}) {
+  const p = item.system?.props ?? {};
+  const name = shortSkillName(item, performer);
+  const target = String(p.skill_target ?? "").trim().replace(/^-$/, "");
+  let free = freeOfCost;
+  if (!free && !String(p.cost ?? "").trim().replace(/^-$/, "")) {
+    const ref = String(p.on_activate_effect_ref ?? "").trim();
+    const ac = ref ? analyzeChainCost(p.effect_table ?? {}, ref, performer, item) : null;
+    free = !ac?.ok || !Object.values(ac.debit ?? {}).some((n) => Number(n) > 0);
+  }
+  return {
+    prompt: `Free ${name} targets`,
+    card: {
+      key: `free|${item.uuid}`, name, kind: `Free ${name}`, img: item.img ?? null,
+      chips: [...(target ? [{ text: target, tone: "tag" }] : []), ...(free ? [{ text: "Free", tone: "tag" }] : [])],
+      body: `<p>${source ? `From ${escapeMenuHtml(source)}. ` : ""}This does not use your action.</p>${stripUsesYourAction(p.description)}`,
+    },
+  };
+}
+// A description may open by saying it uses your action (Pulse). A free action does
+// not, so anything showing that skill AS a free action drops the sentence.
+export function stripUsesYourAction(html) {
+  return String(html ?? "").replace(/^(\s*<p>\s*)(?:<(strong|b|em)>)?\s*Uses your action\.\s*(?:<\/\2>)?\s*/i, "$1");
 }
 
 // ── save_check ──────────────────────────────────────────────────────────────

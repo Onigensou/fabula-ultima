@@ -149,7 +149,7 @@ export function initDirectorRoundBanner() {
     }
     _socket = socketlib.registerModule(MODULE_ID);
     _socket.register(ACTION_PLAY, playRoundBannerLocal);
-    _socket.register(ACTION_HIDE, () => { exitRoundBannerLocal({ animate: true }); clearTurnActionsLocal(); });
+    _socket.register(ACTION_HIDE, () => { forgetDisplayRound(); exitRoundBannerLocal({ animate: true }); clearTurnActionsLocal(); });
     _socket.register(ACTION_BATTLE_START, playBattleStartBannerLocal);
     // Payload is { list, animate } (tolerate a bare array from older senders).
     _socket.register(ACTION_TURNACTIONS, (p) =>
@@ -733,6 +733,9 @@ async function playRoundBannerLocal(payload = {}) {
       followup = null,
     } = payload;
     const dock = { round, dockTopPct, dockScale, dockBgOpacity };
+    // Players have no live combat object: this is how a client knows the round
+    // (the merge status's Quick Summoning line reads it).
+    try { globalThis.__fudDisplayRound = round; Hooks.callAll("fud.displayRound", round); } catch { /* sandbox */ }
 
     // Instant mode (rewind restore) — jump straight to the docked persistent
     // state with no plate + no SFX. Used so a rewind doesn't replay the round
@@ -1452,8 +1455,15 @@ export function refreshTurnActions(dCombat, { animate = false } = {}) {
 // ── public: clear the docked banner at battle end ─────────────────────────
 // Fade out + remove on THIS client and broadcast the same to all others, so
 // the persistent round indicator never lingers after the director stops.
+// The battle's round is over with its banner: a stale value must not read as this
+// client's round in the next battle, before its first banner arrives.
+function forgetDisplayRound() {
+  try { delete globalThis.__fudDisplayRound; Hooks.callAll("fud.displayRound", null); } catch { /* sandbox */ }
+}
+
 export function hideRoundBanner() {
   try {
+    forgetDisplayRound();
     dropSpotlightHold();
     exitRoundBannerLocal({ animate: true });
     clearTurnActionsLocal();

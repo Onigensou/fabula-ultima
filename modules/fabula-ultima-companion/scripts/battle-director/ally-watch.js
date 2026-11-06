@@ -141,7 +141,7 @@ function entryCard(e) {
     icon: e.img ?? "",
     chips: (e.chips ?? []).filter((c) => c?.text).slice(0, 8).map((c) => ({ text: clip(c.text, 28), tone: c.tone ?? "" })),
     why: clip(e.reason ?? "", 120),
-    body: clip(String(e.body ?? ""), 600),
+    body: clip(String(e.body ?? "").replace(/[\u0001\u0002]/g, ""), 600),
   };
 }
 

@@ -105,7 +105,7 @@ import { initDevToolsMenu, registerDevTool } from "./dev-tools-menu.js";
 import { registerAutopilotSetting, registerAutopilotDevTool } from "./enemy-autopilot.js";
 import { registerSummonAutopilotSetting, registerSummonAutopilotDevTool } from "./summon-autopilot.js";
 import { initDirectorSurfaces, getActiveSurfaces, hasSurface, countSurfaces, clearAllSurfaces } from "./director-surfaces.js";
-import { sweepTransientAEsAtSceneEnd, sweepRetainedSummonsAtSceneEnd, firePassiveTriggers, installRiderAeLinkage, installOnRemoveFollowup, fireResourceChangeTrigger } from "./skill-effects.js";
+import { sweepTransientAEsAtSceneEnd, sweepRetainedSummonsAtSceneEnd, clearQuickSummonLocks, firePassiveTriggers, installRiderAeLinkage, installOnRemoveFollowup, fireResourceChangeTrigger } from "./skill-effects.js";
 import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
 import { PassiveManager } from "./passive-manager.js";
 import { initPassiveCardUi, passiveCardQueue } from "./passive-card-ui/director-passive-card-ui.js";
@@ -360,6 +360,10 @@ async function start(arg) {
     return _instance;
   }
 
+  // A battle that never reached a clean stop left its Quick Summoning lock behind.
+  try { await clearQuickSummonLocks(); }
+  catch (e) { warn("start: clearQuickSummonLocks threw", e); }
+
   // Normalize the argument
   let payload = null;
   let combat = null;
@@ -547,6 +551,8 @@ async function stopNow({ reason = "manual", clearFlags = true, cleanupTokens = t
     try {
       await sweepTransientAEsAtSceneEnd();
     } catch (e) { warn("stop: sweepTransientAEsAtSceneEnd threw", e); }
+    try { await clearQuickSummonLocks(); }
+    catch (e) { warn("stop: clearQuickSummonLocks threw", e); }
     // A retained persistent summon that fell this battle (Faithful Companion:
     // "they flee and rejoin you … with HP equal to their Crisis score") stands
     // back up now, so its sheet reads Crisis between fights instead of 0.

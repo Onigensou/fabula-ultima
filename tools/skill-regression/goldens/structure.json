@@ -1,6 +1,6 @@
 {
- "capturedAt": "2026-11-04T20:57:16.141Z",
- "count": 2605,
+ "capturedAt": "2026-11-05T23:52:17.893Z",
+ "count": 2607,
  "structure": {
   "(world) / Absorb MP": {
    "props": {
@@ -2114,7 +2114,6 @@
     "class": "Arcanist",
     "damage_bonus": "30",
     "defense_target_type": "def",
-    "isReaction": "true",
     "menu_hidden": "true",
     "on_activate_effect_ref": "aov_dismiss_unmerge",
     "skill_target": "All enemies",
@@ -2122,15 +2121,9 @@
     "type_damage": "fire"
    },
    "effects": [
-    "count=all effect_kind=remove_tagged_ae effect_label=aov_dismiss_unmerge filter_tag=arcanum-merge target_ref=self",
-    "chain_steps=aov_overload_cost,aov_overload_dmg,aov_overload_consume effect_kind=chain effect_label=aov_overload",
-    "consume_amount=6 consume_resource=zero_power cost_amount=6 cost_operation=add cost_resource=zero_power effect_kind=adjust_cost effect_label=aov_overload_cost on_empty=abort target_ref=self",
-    "damage_amount=TARGET_AE_CHARGES_BURN * 10 damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=aov_overload_dmg",
-    "count=all effect_kind=remove_tagged_ae effect_label=aov_overload_consume filter_tag=burn target_ref=hit_action_targets"
+    "count=all effect_kind=remove_tagged_ae effect_label=aov_dismiss_unmerge filter_tag=arcanum-merge target_ref=self"
    ],
-   "reactions": [
-    "condition_formula=TRIGGER_IS_SELF == 1 && ANY_TARGET_HAS_BURN == 1 reaction_effect_ref=aov_overload reaction_passive_mode=ask reaction_source=self reaction_source_skill=Avatar of Vengeance: Dismiss reaction_trigger=creature_will_deal_damage"
-   ],
+   "reactions": [],
    "aes": []
   },
   "(world) / Avatar of Vengeance: Merge": {
@@ -3877,7 +3870,7 @@
   "(world) / Bind and Summon": {
    "props": {
     "availability_formula": "ARCANUM_MERGED == 0",
-    "availability_reason": "Dismiss your Arcanum before summoning another",
+    "availability_reason": "Already merged. Dismiss is offered at the start and end of your turn.",
     "class": "Arcanist",
     "on_activate_effect_ref": "arcanum_control",
     "pre_activate_effect_ref": "arcanum_control",
@@ -3893,7 +3886,7 @@
   "(world) / Bind and Summon (variant)": {
    "props": {
     "availability_formula": "ARCANUM_MERGED == 0",
-    "availability_reason": "Dismiss your Arcanum before summoning another",
+    "availability_reason": "Already merged. Dismiss is offered at the start and end of your turn.",
     "class": "Arcanist Variant",
     "defense_target_type": "def",
     "on_activate_effect_ref": "arcanum_control",
@@ -28900,6 +28893,25 @@
    "reactions": [],
    "aes": []
   },
+  "(world) / Spend 6 ZP": {
+   "props": {
+    "class": "Arcanist",
+    "isReaction": "true",
+    "menu_hidden": "true",
+    "skill_target": "Self",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=aov_overload_cost,aov_overload_dmg,aov_overload_consume effect_kind=chain effect_label=aov_overload",
+    "consume_amount=6 consume_resource=zero_power cost_amount=6 cost_operation=add cost_resource=zero_power effect_kind=adjust_cost effect_label=aov_overload_cost on_empty=abort target_ref=self",
+    "damage_amount=TARGET_AE_CHARGES_BURN * 10 damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=aov_overload_dmg",
+    "count=all effect_kind=remove_tagged_ae effect_label=aov_overload_consume filter_tag=burn target_ref=hit_action_targets"
+   ],
+   "reactions": [
+    "condition_formula=ANY_TARGET_HAS_BURN == 1 reaction_effect_ref=aov_overload reaction_passive_mode=ask reaction_source=self reaction_source_skill=Avatar of Vengeance: Dismiss reaction_trigger=creature_will_deal_damage"
+   ],
+   "aes": []
+  },
   "(world) / Spicy Cocktail": {
    "props": {
     "action_command": "item",
@@ -34442,7 +34454,7 @@
   "Arcanist (Variant) / Bind and Summon (variant)": {
    "props": {
     "availability_formula": "ARCANUM_MERGED == 0",
-    "availability_reason": "Dismiss your Arcanum before summoning another",
+    "availability_reason": "Already merged. Dismiss is offered at the start and end of your turn.",
     "class": "Arcanist Variant",
     "defense_target_type": "def",
     "on_activate_effect_ref": "arcanum_control",
@@ -34564,7 +34576,7 @@
   "Arcanist / Bind and Summon": {
    "props": {
     "availability_formula": "ARCANUM_MERGED == 0",
-    "availability_reason": "Dismiss your Arcanum before summoning another",
+    "availability_reason": "Already merged. Dismiss is offered at the start and end of your turn.",
     "class": "Arcanist",
     "defense_target_type": "def",
     "on_activate_effect_ref": "arcanum_control",
@@ -47546,7 +47558,7 @@
   "Farian Pasta / Bind and Summon (variant)": {
    "props": {
     "availability_formula": "ARCANUM_MERGED == 0",
-    "availability_reason": "Dismiss your Arcanum before summoning another",
+    "availability_reason": "Already merged. Dismiss is offered at the start and end of your turn.",
     "class": "Arcanist Variant",
     "defense_target_type": "def",
     "on_activate_effect_ref": "arcanum_control",
@@ -52361,7 +52373,6 @@
     "class": "Arcanist",
     "damage_bonus": "30",
     "defense_target_type": "def",
-    "isReaction": "true",
     "menu_hidden": "true",
     "on_activate_effect_ref": "aov_dismiss_unmerge",
     "skill_target": "All enemies",
@@ -52369,15 +52380,9 @@
     "type_damage": "fire"
    },
    "effects": [
-    "count=all effect_kind=remove_tagged_ae effect_label=aov_dismiss_unmerge filter_tag=arcanum-merge target_ref=self",
-    "chain_steps=aov_overload_cost,aov_overload_dmg,aov_overload_consume effect_kind=chain effect_label=aov_overload",
-    "consume_amount=6 consume_resource=zero_power cost_amount=6 cost_operation=add cost_resource=zero_power effect_kind=adjust_cost effect_label=aov_overload_cost on_empty=abort target_ref=self",
-    "damage_amount=TARGET_AE_CHARGES_BURN * 10 damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=aov_overload_dmg",
-    "count=all effect_kind=remove_tagged_ae effect_label=aov_overload_consume filter_tag=burn target_ref=hit_action_targets"
+    "count=all effect_kind=remove_tagged_ae effect_label=aov_dismiss_unmerge filter_tag=arcanum-merge target_ref=self"
    ],
-   "reactions": [
-    "condition_formula=TRIGGER_IS_SELF == 1 && ANY_TARGET_HAS_BURN == 1 reaction_effect_ref=aov_overload reaction_passive_mode=ask reaction_source=self reaction_source_skill=Avatar of Vengeance: Dismiss reaction_trigger=creature_will_deal_damage"
-   ],
+   "reactions": [],
    "aes": []
   },
   "Hina / Avatar of Vengeance: Merge": {
@@ -52503,7 +52508,7 @@
   "Hina / Bind and Summon (variant)": {
    "props": {
     "availability_formula": "ARCANUM_MERGED == 0",
-    "availability_reason": "Dismiss your Arcanum before summoning another",
+    "availability_reason": "Already merged. Dismiss is offered at the start and end of your turn.",
     "class": "Arcanist Variant",
     "defense_target_type": "def",
     "on_activate_effect_ref": "arcanum_control",
@@ -54095,6 +54100,25 @@
    ],
    "reactions": [
     "reaction_effect_ref=shield_regen reaction_passive_mode=on reaction_passive_target=self reaction_source=self reaction_trigger=turn_start"
+   ],
+   "aes": []
+  },
+  "Hina / Spend 6 ZP": {
+   "props": {
+    "class": "Arcanist",
+    "isReaction": "true",
+    "menu_hidden": "true",
+    "skill_target": "Self",
+    "skill_type": "Passive"
+   },
+   "effects": [
+    "chain_steps=aov_overload_cost,aov_overload_dmg,aov_overload_consume effect_kind=chain effect_label=aov_overload",
+    "consume_amount=6 consume_resource=zero_power cost_amount=6 cost_operation=add cost_resource=zero_power effect_kind=adjust_cost effect_label=aov_overload_cost on_empty=abort target_ref=self",
+    "damage_amount=TARGET_AE_CHARGES_BURN * 10 damage_operation=add damage_stage=outgoing effect_kind=adjust_damage effect_label=aov_overload_dmg",
+    "count=all effect_kind=remove_tagged_ae effect_label=aov_overload_consume filter_tag=burn target_ref=hit_action_targets"
+   ],
+   "reactions": [
+    "condition_formula=ANY_TARGET_HAS_BURN == 1 reaction_effect_ref=aov_overload reaction_passive_mode=ask reaction_source=self reaction_source_skill=Avatar of Vengeance: Dismiss reaction_trigger=creature_will_deal_damage"
    ],
    "aes": []
   },
@@ -62571,7 +62595,7 @@
   "RaiRai / Bind and Summon": {
    "props": {
     "availability_formula": "ARCANUM_MERGED == 0",
-    "availability_reason": "Dismiss your Arcanum before summoning another",
+    "availability_reason": "Already merged. Dismiss is offered at the start and end of your turn.",
     "class": "Arcanist",
     "defense_target_type": "def",
     "on_activate_effect_ref": "arcanum_control",
@@ -68863,7 +68887,7 @@
   "Varan / Bind and Summon": {
    "props": {
     "availability_formula": "ARCANUM_MERGED == 0",
-    "availability_reason": "Dismiss your Arcanum before summoning another",
+    "availability_reason": "Already merged. Dismiss is offered at the start and end of your turn.",
     "class": "Arcanist",
     "defense_target_type": "def",
     "on_activate_effect_ref": "arcanum_control",

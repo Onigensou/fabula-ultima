@@ -14,7 +14,7 @@ import { log, warn } from "./logger.js";
 import { playUiHoverSfx } from "./director-ui-sfx.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { plateDrawerHost, readActorHp } from "./director-player-hud.js";
-import { mountDockedTargets, scrollPlateCard, keysBlockedFor } from "./drawer-views.js";
+import { mountDockedTargets, scrollPlateCard, keysBlockedFor, htmlToCardText } from "./drawer-views.js";
 
 const STYLE_ID = "fud-targetpicker-style";
 
@@ -315,7 +315,7 @@ function clearTargetingDim(dimState) {
 //   { ok: true, skipped: true, secondaryValue: value, tokenUuids: [] }.
 //   Used for Guard's "Skip Cover" — confirms an "I'm proceeding without
 //   making a target selection" path distinct from cancel.
-export function requestTargeting({ director, eligible, mode = "exact", count = 1, titleText = null, cancelLabel = "Cancel", secondaryAction = null, externalCancel = null, randomizeCount = false, randomPool = null, lockSelection = false, mandatoryTokenUuids = [], remote = null } = {}) {
+export function requestTargeting({ director, eligible, mode = "exact", count = 1, titleText = null, card = null, cancelLabel = "Cancel", secondaryAction = null, externalCancel = null, randomizeCount = false, randomPool = null, lockSelection = false, mandatoryTokenUuids = [], remote = null } = {}) {
   // `mandatoryTokenUuids`: tokens that MUST be among the final selection — the
   // "must include X as one of your targets" taunt (Apple o' Archer via
   // must_be_targeted_by). Distinct from `lockSelection` (which locks ALL targets)
@@ -430,7 +430,7 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
         kind: REMOTE_PICK_KINDS.TARGET,
         externalCancel,
         onTimeoutValue: { ok: false, cancelled: true, tokenUuids: [] },
-        spec: { eligible, mode, count, titleText, cancelLabel, secondaryAction, randomizeCount, randomPool, lockSelection, mandatoryTokenUuids },
+        spec: { eligible, mode, count, titleText, card, cancelLabel, secondaryAction, randomizeCount, randomPool, lockSelection, mandatoryTokenUuids },
       })
     );
   }
@@ -1115,6 +1115,9 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
         onBack: () => finish({ ok: false, cancelled: true, tokenUuids: [] }),
       });
       host.pushCrumb(mode === "random" ? "Random Target" : "Targets");
+      // The action this pick is for, when the panel cannot already be showing it
+      // (an engine-staged free action never passed through a skill list).
+      if (card) host.setCard?.({ ...card, body: htmlToCardText(card.body ?? "") });
       refreshDock();
     }
 

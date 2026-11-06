@@ -7,7 +7,7 @@
 // data-tooltip as HTML, so it must escape first and highlight second.
 // ============================================================================
 import assert from "node:assert/strict";
-import { formatRulesText, sortRows, rowTurns, rowSpent, statusTipHTML } from "./status-tip.js";
+import { formatRulesText, sortRows, rowTurns, rowSpent, statusTipHTML, arcanumMergeLine } from "./status-tip.js";
 
 let n = 0;
 const t = (name, fn) => { fn(); n++; };
@@ -52,6 +52,29 @@ t("numerals only for turns / uses; spent = 0 charges", () => {
 t("tooltip header carries the tier and never raw names", () => {
   const h = statusTipHTML({ name: "Bad <b>", img: "x.png", short: "2 turns", lifetime: { label: "2 turns left" }, description: "Taking Fire damage." }, { tier: "debuff" });
   assert.ok(h.includes("t-debuff") && h.includes("Debuff") && h.includes("Bad &lt;b&gt;"));
+});
+
+t("an escaped ampersand reaches the screen once-escaped", () => {
+  const h = statusTipHTML({ name: "M", img: "x.png", description: "<p>Recover HP &amp; MP.</p>", sources: [] }, { tier: "buff" });
+  assert.ok(h.includes("HP &amp; MP") && !h.includes("&amp;amp;"));
+});
+
+t("the merge status says what Dismiss will do now", () => {
+  const ae = (f) => ({ flags: { "fabula-ultima-companion": { arcanumMerge: true, ...f } } });
+  const plain = "Dismiss is offered at the start and end of your turn.";
+  assert.equal(arcanumMergeLine({ flags: {} }, 3), "");
+  assert.equal(arcanumMergeLine(ae({}), 3), plain);
+  // One option: locked through the round it was stamped, then the normal line.
+  const one = ae({ quickSummonOpts: ["cost"], quickSummonRound: 2 });
+  assert.ok(arcanumMergeLine(one, 2).includes("you cannot dismiss until your next turn."));
+  assert.ok(!arcanumMergeLine(one, 2).includes("only ends"));
+  assert.equal(arcanumMergeLine(one, 3), plain);
+  // Both options: the effect stays gone after the lock has passed.
+  const both = ae({ quickSummonOpts: ["cost", "pulse"], quickSummonRound: 2, quickSummonNoDismissEffect: true });
+  assert.ok(arcanumMergeLine(both, 2).includes("Dismiss then only ends the merge, with no damage."));
+  assert.ok(arcanumMergeLine(both, 3).includes("Dismiss only ends the merge, with no damage."));
+  // A client that has not heard the round yet: the stamp is recent, so say locked.
+  assert.ok(arcanumMergeLine(one, NaN).includes("you cannot dismiss"));
 });
 
 console.log(`status-tip: ${n} groups passed`);

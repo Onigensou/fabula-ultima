@@ -3359,6 +3359,20 @@ export function arcanumQuickSummonLock(actor) {
   return { locked: false, noEffect: false, opts: [] };
 }
 
+// A child skill's name without its container's prefix: "Avatar of Vengeance:
+// Dismiss" reads "Dismiss" where the card title and the desk pill have 14-19
+// characters and the parent is named next to it anyway. Any other skill keeps
+// its name.
+export function shortSkillName(item, actor = null) {
+  const name = String(item?.name ?? "").trim();
+  const containerId = String(item?.system?.container ?? "").trim();
+  if (!name || !containerId || containerId === "-") return name;
+  const owner = actor ?? item?.parent ?? null;
+  const container = owner?.items?.get?.(containerId) ?? null;
+  const prefix = container ? `${String(container.name ?? "").trim()}: ` : null;
+  return prefix && name.startsWith(prefix) ? name.slice(prefix.length) : name;
+}
+
 function actorHasArcanumMerge(actor) {
   for (const e of (actor?.effects?.contents ?? actor?.effects ?? [])) {
     if (e?.disabled) continue;

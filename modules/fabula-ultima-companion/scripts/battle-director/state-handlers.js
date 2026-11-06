@@ -3620,6 +3620,7 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
   const _presetFreeAction = topIsFreeAction(director.ctx)
     && !!freeActions.get(attackerSnap?.actorId)?.preset;
   const remote = _presetFreeAction ? buildActingRemotePrompt(director, attackerActor) : null;
+  const _presetShown = _presetFreeAction ? freeActions.get(attackerSnap?.actorId)?.preset?.presentation ?? null : null;
 
   // ── target_sequence — multi-step declarative targeting ──────────────────
   // A skill can declare `target_sequence` (comma-list of targeting-row labels)
@@ -3786,13 +3787,14 @@ async function resolveActionTargets(director, attackerSnap, opts = {}) {
       titleText: lockedTitle, cancelLabel, secondaryAction, remote,
     });
   } else {
-    const titleText = forcedTitle
+    const titleText = (_presetShown?.prompt ? `${attackerSnap.name}: ${_presetShown.prompt}` : null)
+      ?? forcedTitle
       ?? (pickerMode === "random"
           ? `${attackerSnap.name}: randomizing target`
           : `${attackerSnap.name}: pick target${count > 1 ? "s" : ""}`);
     result = await requestTargeting({
       director, eligible: eligibleForPicker,
-      mode: pickerMode, count, titleText, cancelLabel, secondaryAction, randomizeCount,
+      mode: pickerMode, count, titleText, card: _presetShown?.card ?? null, cancelLabel, secondaryAction, randomizeCount,
       mandatoryTokenUuids: mandatoryPins, remote,
     });
   }
@@ -5323,6 +5325,12 @@ const Compute = {
       // section (which swaps status names → chips) so the card reflects the pick, not
       // the skill's generic blurb. Falls back to the skill description when no pick.
       let descriptionHtml = arForProfile.descriptionHtml;
+      // A skill staged as a free action does not use your action, whatever its
+      // description opens with.
+      if (topIsFreeAction(director.ctx) && freeActions.get(attacker?.actorId)?.preset) {
+        descriptionHtml = SE().stripUsesYourAction(descriptionHtml);
+      }
+      let dynamicPickCost = null;
       if (preActivateMenuPicks && Object.keys(preActivateMenuPicks).length) {
         const tbl = view?.effect_table ?? {};
         const byLabel = new Map(Object.values(tbl).filter((r) => r?.effect_label).map((r) => [r.effect_label, r]));
@@ -5335,6 +5343,14 @@ const Compute = {
         for (const [menuLabel, picks] of Object.entries(preActivateMenuPicks)) {
           const menuRow = byLabel.get(menuLabel);
           if (!menuRow) continue;
+          // A dynamic menu (Bind and Summon) has no authored option rows: its
+          // builder supplies the pick's card text and what that pick costs.
+          if (String(menuRow.menu_dynamic_source ?? "").trim()) {
+            const said = SE().describeDynamicMenuPick(menuRow, picks, interpCtx);
+            if (said?.html) parts.push(said.html);
+            if (said?.costText) dynamicPickCost = said.costText;
+            continue;
+          }
           const optRefs = String(menuRow.menu_option_refs ?? "").split(/[,\n]/).map((s) => s.trim()).filter(Boolean);
           const labelToOpt = new Map();
           for (const oref of optRefs) {
@@ -5387,6 +5403,9 @@ const Compute = {
               arForProfile.costSerialized,
               mergeCostOverrides(arForProfile.costOverride ?? null, preCostOverride))) }
           : {}),
+        // The summon debits at RESOLVE, so nothing above knows its price: the
+        // picked option says it (Bind and Summon: "Skill • 30 MP").
+        ...(dynamicPickCost && !preCostOverride && !arForProfile.rawCost ? { rawCost: dynamicPickCost } : {}),
       });
       director.enqueue({ type: INTENTS.INTERNAL_DONE });
       return;

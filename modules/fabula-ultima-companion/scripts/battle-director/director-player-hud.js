@@ -44,7 +44,7 @@ import { buildDesk, destroyDesk, deskActive, deskEnabled, deskOpenDrawer, deskHo
 import { publishAllyWatch } from "./ally-watch.js";
 import { tabAlert, tabAlertClear } from "./tab-alert.js";
 import { TIER } from "./status-classifier.js";
-import { rowTier, rowTurns, rowSpent, sortRows, statusTipHTML, foldTipHTML } from "./status-tip.js";
+import { rowTier, rowTurns, rowSpent, sortRows, statusTipHTML, foldTipHTML, arcanumMergeLine } from "./status-tip.js";
 
 const MODULE_ID  = "fabula-ultima-companion";
 const ACTION_BUILD   = "FU_DIRECTOR_HUD_BUILD";
@@ -477,7 +477,9 @@ function renderStatuses(card, actor) {
   }
   let rows = [];
   try { rows = sortRows(statusRowsOf(actor)); } catch (e) { warn("[DirectorHud] status rows failed", e); }
-  const sig = rows.map(r => `${r.key}:${r.tier}:${r.short}:${r.count}:${r.lifetime?.counter ?? ""}`).join("|");
+  // The merge line is in the signature: Quick Summoning stamps the merge AE after
+  // it lands, and the lock runs out with the round, and neither changes the pip.
+  const sig = rows.map(r => `${r.key}:${r.tier}:${r.short}:${r.count}:${r.lifetime?.counter ?? ""}:${arcanumMergeLine(r.sources?.[0]?.eff)}`).join("|");
   if (sig === host._sig) return;
   host._sig = sig;
   const max = card.kind === "plate" ? STATUS_MAX : CARD_STATUS_MAX;
@@ -1609,6 +1611,11 @@ function buildLocally(key, entries) {
     const h3 = Hooks.on("createActiveEffect", onAE);
     const h4 = Hooks.on("updateActiveEffect", onAE);
     const h5 = Hooks.on("deleteActiveEffect", onAE);
+    const hRound = Hooks.on("fud.displayRound", () => {
+      const live = game.actors?.get(actor.id);
+      if (live) renderStatuses(card, live);
+    });
+    offFns.push(() => Hooks.off("fud.displayRound", hRound));
     offFns.push(
       () => Hooks.off("updateActor", h1),
       () => Hooks.off("updateToken", h2),

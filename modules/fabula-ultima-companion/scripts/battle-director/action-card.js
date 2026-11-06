@@ -4118,18 +4118,42 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
   // base cost). Both the GM card and the player mirror route through here → the
   // displayed cost stays in sync. Idempotent: with no override this pass (pill
   // toggled off) revert to the printed base cost, mirroring the accuracy reset above.
-  const costBullet = rootEl.querySelector(".fud-bf-cost-bullet");
+  // An action that natively costs nothing prints no bullet (Dismiss + Spend 6 ZP,
+  // Barrage on a plain Attack), so the first cost that appears adds one, with an
+  // empty base; undoing that cost takes it away again.
+  const costText = delta.cost?.effectiveText || "";
+  let costBullet = rootEl.querySelector(".fud-bf-cost-bullet");
+  if (!costBullet && costText && costText !== "Free") {
+    const subtitle = rootEl.querySelector(".fud-bf-subtitle");
+    if (subtitle) {
+      if (subtitle.childNodes.length) subtitle.insertAdjacentHTML("beforeend", `<span class="dot">•</span>`);
+      costBullet = document.createElement("span");
+      costBullet.className = "bullet fud-bf-cost-bullet";
+      costBullet.setAttribute("data-fud-base-cost", "");
+      subtitle.appendChild(costBullet);
+    }
+  }
   if (costBullet) {
     const baseText = costBullet.getAttribute("data-fud-base-cost");
-    if (delta.cost && delta.cost.effectiveText) {
+    const seeded = baseText === "";
+    if (costText && !(seeded && costText === "Free")) {
       const srcs = Array.isArray(delta.cost.parts)
         ? [...new Set(delta.cost.parts.map((p) => p?.source).filter(Boolean))] : [];
-      const changed = baseText != null && baseText !== delta.cost.effectiveText;
+      const changed = !seeded && baseText != null && baseText !== costText;
       costBullet.innerHTML = changed
-        ? `<s style="opacity:0.55;">${escapeHtml(baseText)}</s> ${escapeHtml(delta.cost.effectiveText)}`
-        : escapeHtml(delta.cost.effectiveText);
-      costBullet.setAttribute("title",
-        srcs.length ? `Base ${baseText ?? "?"} — adjusted by ${srcs.join(", ")}` : `Base ${baseText ?? "?"}`);
+        ? `<s style="opacity:0.55;">${escapeHtml(baseText)}</s> ${escapeHtml(costText)}`
+        : escapeHtml(costText);
+      if (seeded) {
+        if (srcs.length) costBullet.setAttribute("title", `Added by ${srcs.join(", ")}`);
+        else costBullet.removeAttribute("title");
+      } else {
+        costBullet.setAttribute("title",
+          srcs.length ? `Base ${baseText ?? "?"} — adjusted by ${srcs.join(", ")}` : `Base ${baseText ?? "?"}`);
+      }
+    } else if (seeded) {
+      const dot = costBullet.previousElementSibling;
+      if (dot?.classList.contains("dot")) dot.remove();
+      costBullet.remove();
     } else if (baseText != null) {
       costBullet.innerHTML = escapeHtml(baseText);
       costBullet.removeAttribute("title");

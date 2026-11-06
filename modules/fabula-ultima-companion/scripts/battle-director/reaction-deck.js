@@ -197,10 +197,14 @@ async function buildDeck(actor) {
     const st = rows.map(([k, r]) => ({ k, r, s: rowStatus(c, k, r, actor, fx, chg, inBattle, back) }));
     const pick = st.find((x) => x.s.st === "ready") ?? st.find((x) => x.s.st === "cantpay") ?? st[0];
     const prim = rows.find(([, r]) => modeOf(r) === "ask") ?? rows[0];
+    // An offer that performs another skill reads as that skill, as in the hand.
+    const shown = modeOf(prim[1]) === "ask"
+      ? fx?.presentReactionOffer?.(actor, c.et, String(prim[1].reaction_effect_ref ?? "").trim()) ?? null : null;
     out.push({
       id: c.doc.uuid, carrierUuid: c.doc.uuid, rowKey: pick.k ?? prim[0],
       actorId: actor.id, reactorUuid: actor.uuid,
-      name: c.name, icon: c.icon, desc: c.desc,
+      name: shown?.name ?? c.name, icon: shown?.img ?? c.icon, desc: shown?.description ?? c.desc,
+      ...(shown ? { from: shown.from, target: shown.target } : {}),
       auto: rows.every(([, r]) => modeOf(r) === "on"),
       state: pick.s.st, limit: pick.s.limit ?? null, back: pick.s.back ?? null,
       spent: pick.s.spent ?? null, why: pick.s.why ?? null, have: pick.s.have ?? null,
