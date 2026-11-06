@@ -39,7 +39,10 @@ const mb = (n) => (n / 1048576).toFixed(2) + " MB";
 /** Copy a collection's LevelDB to a temp dir (minus LOCK) and read every key. */
 async function readCollection(name, scratch) {
   const src = join(SRC, "data", name);
-  if (!existsSync(src)) return [];
+  // A store folder with no CURRENT is not a LevelDB yet (an empty leftover such as
+  // data/adventures: LOCK + LOG + an empty .log). Opening it with createIfMissing
+  // false fails the whole build ("Database is not open"), so read it as empty.
+  if (!existsSync(src) || !existsSync(join(src, "CURRENT"))) return [];
   const dst = join(scratch, name);
   cpSync(src, dst, { recursive: true, filter: (p) => !/[\\/]LOCK$/.test(p) });
   const db = new ClassicLevel(dst, { keyEncoding: "utf8", valueEncoding: "utf8" });
