@@ -412,6 +412,7 @@ export function ensureStyles() {
     .fud-bf-card .fud-bf-title-row {
       display: flex; align-items: center; justify-content: center; gap: 7px;
       flex: 1 1 auto;          /* take the middle; keep the name centred */
+      min-width: 0;            /* may shrink — the portrait slots never do */
       min-height: 28px;
     }
     .fud-bf-card .fud-bf-title-icon {
@@ -424,6 +425,9 @@ export function ensureStyles() {
       font-weight: 900; letter-spacing: 0.32px; text-transform: uppercase;
       font-size: 16px;
       color: var(--fud-ink, #3a3228);
+      /* A long name truncates instead of pushing the caster sprite off the card. */
+      min-width: 0;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
     .fud-bf-card .fud-bf-subtitle {
       font-size: 11.5px;
@@ -443,14 +447,9 @@ export function ensureStyles() {
       white-space: nowrap;
     }
     .fud-bf-card .fud-bf-subtitle i.fa-solid { margin-right: 4px; }
-    /* Chain N — strikes that follow the one this card shows. */
-    .fud-bf-card .fud-bf-chain-badge {
-      display: inline-flex; align-items: center; gap: 4px; margin-left: 8px;
-      padding: 1px 8px 2px; border-radius: 999px; white-space: nowrap;
-      font-size: 12px; font-weight: 700; letter-spacing: .4px; color: #3a2a12;
-      background: linear-gradient(180deg, #e9cf8f, #c9a45e);
-      box-shadow: inset 0 0 0 1px rgba(90, 60, 20, .55), 0 1px 0 rgba(0, 0, 0, .25);
-      cursor: help; vertical-align: middle;
+    /* Chain N — real multi-strike only; a subtitle bullet, bold so it reads. */
+    .fud-bf-card .fud-bf-subtitle .fud-bf-chain-bullet {
+      font-weight: 700; cursor: help;
     }
 
     .fud-bf-card fieldset.fud-bf-section {
@@ -7436,16 +7435,19 @@ function buildAutoConfirmVetoHTML(autoConfirm) {
   `;
 }
 
-// Chain N badge beside the card title: the card shows strike 1; the badge says
-// how many strikes follow. Random mode lists who each strike was drawn onto.
-function chainBadgeHTML(chain, targets) {
+// Chain N bullet, appended to the subtitle line (Range • … • MP): the card shows
+// strike 1; the bullet says how many strikes follow. Random mode lists who each
+// strike was drawn onto.
+// It used to be a pill beside the title, where it pushed the caster sprite out
+// of the card. Pseudo multi-hit ("single": one Accuracy Check, one damage
+// number split across the animation's hits) shows NOTHING — the hit count is
+// visual only, and a "×3" read as triple damage.
+function chainBulletHTML(chain, targets) {
   try {
     const n = Number(chain?.count) || 0;
-    if (n < 2 || chain?.hidden) return "";
+    if (n < 2 || chain?.hidden || chain?.mode === "single") return "";
     // One keyword for players; the tooltip says how THIS Chain resolves.
-    let tip = chain.mode === "single"
-      ? `Chain ${n}: one Accuracy Check — its damage lands in ${n} hits.`
-      : `Chain ${n}: ${n} strikes on one card — each makes its own Accuracy Check and deals its own damage.`;
+    let tip = `Chain ${n}: ${n} strikes on one card — each makes its own Accuracy Check and deals its own damage.`;
     if (Array.isArray(chain.strikeTargets) && chain.strikeTargets.length) {
       const nameOf = new Map((Array.isArray(targets) ? targets : []).map((t) => [t?.tokenUuid, t?.name ?? "?"]));
       const counts = new Map();
@@ -7453,9 +7455,22 @@ function chainBadgeHTML(chain, targets) {
       tip += ` Strikes: ${[...counts].map(([u, c]) => `${nameOf.get(u) ?? "?"} ×${c}`).join(", ")}.`;
       if (chain.mode === "seek") tip += " A strike on a creature already at 0 HP seeks another target.";
     }
-    const mode = (chain.mode === "random" || chain.mode === "seek") ? " · Random" : chain.mode === "pick" ? " · Pick" : "";
-    return `<span class="fud-bf-chain-badge" title="${escapeHtml(tip)}"><i class="fa-solid fa-burst" aria-hidden="true"></i>Chain ×${n}${mode}</span>`;
+    const mode = (chain.mode === "random" || chain.mode === "seek") ? " (Random)" : chain.mode === "pick" ? " (Pick)" : "";
+    return `<span class="bullet fud-bf-chain-bullet" title="${escapeHtml(tip)}"><i class="fa-solid fa-burst" aria-hidden="true"></i>Chain ×${n}${mode}</span>`;
   } catch { return ""; }
+}
+
+// Append the Chain bullet to the card's subtitle line (or give it a line of its
+// own when the card has none). Subtitle builders return a single
+// `<div class="fud-bf-subtitle">…</div>`; the bullet goes before its close tag.
+function withChainBullet(subtitle, chain, targets) {
+  const bullet = chainBulletHTML(chain, targets);
+  if (!bullet) return subtitle ?? "";
+  const s = String(subtitle ?? "").trim();
+  if (s.includes("fud-bf-subtitle") && s.endsWith("</div>")) {
+    return `${s.slice(0, -6)}<span class="dot">•</span>${bullet}</div>`;
+  }
+  return `${s}<div class="fud-bf-subtitle">${bullet}</div>`;
 }
 
 function assembleActionCardRoot({ card, cardReactions, rootId, payload = null, kind = null }) {
@@ -7490,8 +7505,7 @@ function assembleActionCardRoot({ card, cardReactions, rootId, payload = null, k
         <div class="fud-bf-portrait-slot left">${card.portraits?.left ?? ""}</div>
         <div class="fud-bf-title-row">
           ${card.titleIcon ?? ""}
-          <span class="fud-bf-title">${escapeHtml(card.titleText)}</span>
-          ${chainBadgeHTML(payload?.chain ?? null, payload?.targets ?? null)}
+          <span class="fud-bf-title" title="${escapeHtml(card.titleText)}">${escapeHtml(card.titleText)}</span>
         </div>
         <div class="fud-bf-portrait-slot right">${card.portraits?.right ?? ""}</div>
         <!-- Inside the HEADER so it can dock on that element's bottom rule.
@@ -7501,7 +7515,7 @@ function assembleActionCardRoot({ card, cardReactions, rootId, payload = null, k
              slots' contents and the target list — never this). -->
         ${gmEditHtml}
       </div>
-      ${card.subtitle ?? ""}
+      ${withChainBullet(card.subtitle, payload?.chain ?? null, payload?.targets ?? null)}
       <div class="fud-bf-body">${card.body}</div>
       ${reactionRowHtml}
       ${buildAutoConfirmVetoHTML(payload?.autoConfirm ?? null)}
