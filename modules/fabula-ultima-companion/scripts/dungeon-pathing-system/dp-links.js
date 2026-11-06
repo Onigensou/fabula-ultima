@@ -113,9 +113,9 @@
   DP.Links = { MOD, ROOT, LEGACY_DUNGEONS, isMigrated, read, switchOn, hasSwitchLocks, touchesLinks, migrateScene, migrateAll };
 
   // ── Link layer ─────────────────────────────────────────────────────────────
-  // "Dungeon chart" look: thin cream paths with a soft drop shadow that run
+  // "Dungeon chart" look: thin white paths with a soft drop shadow that run
   // into the tile centres, drawn UNDER the tile art.
-  const STYLE = { color: 0xefe3bf, main: 3, side: 2.2, alpha: 1, shadow: 0x000000, shadowAlpha: 0.55, sx: 1.5, sy: 2 };
+  const STYLE = { color: 0xffffff, main: 3, side: 2.2, alpha: 1, shadow: 0x000000, shadowAlpha: 0.55, sx: 1.5, sy: 2 };
   const GM_DIM = 0.25;                                       // GM sees switched-off / locked links faintly
   let _root = null, _scene = null, _queued = false;
   const _g = new Map();                                      // link id → PIXI.Graphics
