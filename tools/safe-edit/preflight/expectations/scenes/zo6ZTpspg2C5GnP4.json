@@ -144,7 +144,7 @@
     }
   ],
   "notes": [],
-  "tileCount": 4,
+  "tileCount": 7,
   "full": {
     "name": "Valley_Map004",
     "navName": "Valley of the Dragon - Camp",
@@ -187,8 +187,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "LockView": {
         "editViewbox": false,
@@ -229,14 +228,15 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "Valley of the Dragon - Camp",
-            "sceneVisited": false,
+            "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": false,
             "wellspring_fire": false,
             "wellspring_bolt": true,
             "wellspring_ice": false,
             "wellspring_dark": false,
-            "wellspring_light": false
+            "wellspring_light": false,
+            "surfaceFxEnabled": true
           },
           "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"}]"
         },
@@ -436,7 +436,62 @@
             "scaleRatio": 1,
             "mirror": 1
           }
-        ]
+        ],
+        "surfaceFx": {
+          "mode": "water",
+          "layers": {
+            "water": true,
+            "light": true,
+            "crystal": false,
+            "wisp": true
+          },
+          "crystals": [],
+          "wisp": 0.16,
+          "wispOutsideLight": true,
+          "darkness": 0.38,
+          "lights": [
+            [
+              603,
+              472,
+              340,
+              1,
+              0.66,
+              0.36,
+              1
+            ],
+            [
+              474,
+              325,
+              110,
+              1,
+              0.78,
+              0.45,
+              0.7
+            ],
+            [
+              1030,
+              680,
+              430,
+              0.7,
+              0.75,
+              1,
+              0.9
+            ]
+          ],
+          "draft": "claude-2026-11-06-valley-camp"
+        },
+        "ambience": {
+          "spores": {
+            "preset": "ember",
+            "points": [
+              [
+                603,
+                466
+              ]
+            ]
+          },
+          "draft": "claude-2026-11-06-valley-camp"
+        }
       },
       "fxmaster": {
         "filters": {
@@ -517,9 +572,195 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359000736,
-      "modifiedTime": 1792837418916,
+      "modifiedTime": 1793972350937,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
+    "regions": [
+      {
+        "name": "Pond Shallows",
+        "color": "#28c1cc",
+        "visibility": 0,
+        "locked": false,
+        "shapes": [
+          {
+            "type": "polygon",
+            "points": [
+              705,
+              640,
+              745,
+              616,
+              805,
+              612,
+              852,
+              596,
+              890,
+              575,
+              895,
+              620,
+              885,
+              700,
+              895,
+              775,
+              860,
+              752,
+              800,
+              740,
+              745,
+              730,
+              712,
+              700
+            ],
+            "hole": false
+          }
+        ],
+        "elevation": {
+          "bottom": null,
+          "top": null
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "footstepSurface": "water",
+            "footstepMuted": false,
+            "water": {
+              "depth": 0.25,
+              "bathable": false,
+              "autoColor": true,
+              "color": "#6fb8e8"
+            },
+            "draftRegions": "claude-2026-11-06-valley-camp"
+          }
+        },
+        "_id": "GBLMRdI8YARoHKWl",
+        "behaviors": [
+          {
+            "name": "FootstepWater",
+            "type": "executeMacro",
+            "disabled": true,
+            "system": {
+              "events": [
+                "tokenPreMove"
+              ],
+              "uuid": "Macro.kyCFucvT7HsnPQks",
+              "everyone": false
+            },
+            "_id": "GBzkbMy8LJZ1EjCW",
+            "flags": {},
+            "_stats": {
+              "compendiumSource": null,
+              "duplicateSource": null,
+              "coreVersion": "12.343",
+              "systemId": "custom-system-builder",
+              "systemVersion": "4.8.5",
+              "createdTime": null,
+              "modifiedTime": null,
+              "lastModifiedBy": null
+            }
+          }
+        ]
+      },
+      {
+        "name": "Pond",
+        "color": "#28c1cc",
+        "visibility": 0,
+        "locked": false,
+        "shapes": [
+          {
+            "type": "polygon",
+            "points": [
+              890,
+              575,
+              930,
+              552,
+              990,
+              545,
+              1060,
+              550,
+              1130,
+              552,
+              1150,
+              580,
+              1150,
+              605,
+              1195,
+              615,
+              1245,
+              608,
+              1295,
+              622,
+              1322,
+              660,
+              1318,
+              715,
+              1290,
+              752,
+              1240,
+              778,
+              1180,
+              800,
+              1120,
+              802,
+              1060,
+              792,
+              1000,
+              798,
+              940,
+              795,
+              895,
+              775,
+              885,
+              700,
+              895,
+              620
+            ],
+            "hole": false
+          }
+        ],
+        "elevation": {
+          "bottom": null,
+          "top": null
+        },
+        "flags": {
+          "fabula-ultima-companion": {
+            "footstepSurface": "water",
+            "footstepMuted": false,
+            "water": {
+              "depth": 0.5,
+              "bathable": true,
+              "autoColor": true,
+              "color": "#6fb8e8"
+            },
+            "draftRegions": "claude-2026-11-06-valley-camp"
+          }
+        },
+        "_id": "velkBbK1J1q3xXXa",
+        "behaviors": [
+          {
+            "name": "FootstepWater",
+            "type": "executeMacro",
+            "disabled": true,
+            "system": {
+              "events": [
+                "tokenPreMove"
+              ],
+              "uuid": "Macro.kyCFucvT7HsnPQks",
+              "everyone": false
+            },
+            "_id": "B2o6vKB2bOCeGwkC",
+            "flags": {},
+            "_stats": {
+              "compendiumSource": null,
+              "duplicateSource": null,
+              "coreVersion": "12.343",
+              "systemId": "custom-system-builder",
+              "systemVersion": "4.8.5",
+              "createdTime": null,
+              "modifiedTime": null,
+              "lastModifiedBy": null
+            }
+          }
+        ]
+      }
+    ],
     "walls": [
       {
         "c": [
@@ -550,6 +791,33 @@
       },
       {
         "c": [
+          640,
+          580,
+          695,
+          600
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-11-06-valley-camp"
+          }
+        },
+        "_id": "0IZxF3XcXd2dYvW1",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
           260,
           950,
           230,
@@ -567,6 +835,60 @@
           }
         },
         "_id": "2ZsHppOxTX2YG7is",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          870,
+          772,
+          1000,
+          808
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-11-06-valley-camp"
+          }
+        },
+        "_id": "3kZlxsMR3V10SdCp",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          1000,
+          808,
+          1130,
+          810
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-11-06-valley-camp"
+          }
+        },
+        "_id": "44wS8I5wfTgJe2SA",
         "ds": 0,
         "threshold": {
           "light": null,
@@ -621,6 +943,33 @@
           }
         },
         "_id": "7IU7cttMNziwB9sl",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          745,
+          742,
+          870,
+          772
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-11-06-valley-camp"
+          }
+        },
+        "_id": "9Hodx7R1CEbsuNgd",
         "ds": 0,
         "threshold": {
           "light": null,
@@ -874,6 +1223,33 @@
       },
       {
         "c": [
+          1250,
+          784,
+          1325,
+          722
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-11-06-valley-camp"
+          }
+        },
+        "_id": "K6w1RzWA6VvEdAHf",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
           1100,
           450,
           1250,
@@ -918,6 +1294,33 @@
           }
         },
         "_id": "MEsGJCcnW89qSqPN",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          1325,
+          722,
+          1338,
+          640
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-11-06-valley-camp"
+          }
+        },
+        "_id": "RpLbOQubRx0lHZRw",
         "ds": 0,
         "threshold": {
           "light": null,
@@ -1117,10 +1520,10 @@
       },
       {
         "c": [
-          760,
-          600,
+          1338,
           640,
-          580
+          1300,
+          500
         ],
         "move": 20,
         "sight": 0,
@@ -1130,10 +1533,37 @@
         "dir": 0,
         "flags": {
           "fabula-ultima-companion": {
-            "draftWalls": "claude-2026-10-07"
+            "draftWalls": "claude-2026-11-06-valley-camp"
           }
         },
-        "_id": "jboAJqSPN1cATKYt",
+        "_id": "hdgsZVdwSoX57Img",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          700,
+          690,
+          745,
+          742
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-11-06-valley-camp"
+          }
+        },
+        "_id": "lsen3dKmBSooJ4Wu",
         "ds": 0,
         "threshold": {
           "light": null,
@@ -1188,6 +1618,60 @@
           }
         },
         "_id": "mHWoHq0B64JfI7Tc",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          695,
+          600,
+          700,
+          690
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-11-06-valley-camp"
+          }
+        },
+        "_id": "nQukk3neIqQU1gNN",
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        }
+      },
+      {
+        "c": [
+          1130,
+          810,
+          1250,
+          784
+        ],
+        "move": 20,
+        "sight": 0,
+        "light": 0,
+        "sound": 0,
+        "door": 0,
+        "dir": 0,
+        "flags": {
+          "fabula-ultima-companion": {
+            "draftWalls": "claude-2026-11-06-valley-camp"
+          }
+        },
+        "_id": "qdEoA42KButz9ujt",
         "ds": 0,
         "threshold": {
           "light": null,
