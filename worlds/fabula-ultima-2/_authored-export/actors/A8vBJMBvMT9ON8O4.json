@@ -1634,7 +1634,7 @@
       "critical_dice_range": 0,
       "current_hp": 61,
       "current_ip": "0",
-      "current_mp": 0,
+      "current_mp": 100,
       "cut_in_critical": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
       "cut_in_fumble": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",
       "cut_in_offset_y": "",
