@@ -32,7 +32,9 @@
   // and the "Controller" badge above them sat over the tab: found in the demo
   // recording 2026-11-05.
   const DOCK_SELECTORS = ["#theatre-bar", "#oni-camp-phase-btn", "#oni-camp-start-btn", ".dhud-root .dhud-card", "#players", "#hotbar",
-    ".oni-dp-mode-btn", "#oni-movement-control-badge-root"];
+    ".oni-dp-mode-btn", "#oni-movement-control-badge-root",
+    // "Unspent Skill Points" (z 99997) hid the whole tab: found 2026-11-07.
+    "#oni-levelup-badge"];
   const DOCK_ZONE_PX = 320;          // only things in the left part of the screen push the tab up
   const HELD_MODES = new Set(["title", "gacha"]);
 
