@@ -394,10 +394,9 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
 // to expose "Twin Shields" when the bearer has two shields equipped;
 // generalises to any future "wield X+Y, gain access to Z attack" rule.
 //
-// Formula resolution at snapshot time means the bonus values are
-// frozen — re-equip after snapshot doesn't re-evaluate until the next
-// snapshot. That's fine for the current authoring model (Dual
-// Shieldbearer scenarios don't have mid-turn shield swaps).
+// Formula resolution at snapshot time means the bonus values are frozen
+// until the next snapshot; DECLARE re-reads them on every entry
+// (refreshTurnSnapshot), so a mid-turn swap is seen by the next menu.
 export function resolveVirtualAttacks(actor) {
   if (!actor) return Object.freeze([]);
   // Foundry V12: `actor.effects.contents` lists only actor-stamped AEs;
@@ -741,6 +740,15 @@ function buildWeaponBundle(actor) {
   return { actorKind: kind, weapon, offWeapon, canTwoWeaponFight, twoWeaponSolo, multiAttack: multiAttack ? Object.freeze(multiAttack) : null, npcAttackItems: Object.freeze([]), virtualAttacks };
 }
 
+function snapshotAttributes(actor) {
+  return Object.freeze({
+    DEX: attrDieSize(actor, "DEX"),
+    INS: attrDieSize(actor, "INS"),
+    MIG: attrDieSize(actor, "MIG"),
+    WLP: attrDieSize(actor, "WLP"),
+  });
+}
+
 // Director-owned snapshot. Takes a DirectorCombatant (live tokenDoc + actorDoc
 // refs) and produces the same frozen shape that snapshotCombatant returns.
 // This is what TurnStart calls in the dCombat path.
@@ -767,12 +775,7 @@ export function snapshotDirectorCombatant(dc) {
       maxMp: readPropNum(actor, ["max_mp"]),
       defense: readPropNum(actor, ["defense", "current_def", "def"]),
       magicDefense: readPropNum(actor, ["magic_defense", "current_mdef", "mdef"]),
-      attributes: Object.freeze({
-        DEX: attrDieSize(actor, "DEX"),
-        INS: attrDieSize(actor, "INS"),
-        MIG: attrDieSize(actor, "MIG"),
-        WLP: attrDieSize(actor, "WLP"),
-      }),
+      attributes: snapshotAttributes(actor),
       // Default fumble threshold per RAW: a Fumble is two 1s. Per-actor
       // override via `fumble_threshold` (the highest die value that still
       // counts as a fumbled die — both dice must be ≤ threshold).
@@ -826,12 +829,7 @@ export function snapshotCombatant(combat) {
       maxMp: readPropNum(actor, ["max_mp"]),
       defense: readPropNum(actor, ["defense", "current_def", "def"]),
       magicDefense: readPropNum(actor, ["magic_defense", "current_mdef", "mdef"]),
-      attributes: Object.freeze({
-        DEX: attrDieSize(actor, "DEX"),
-        INS: attrDieSize(actor, "INS"),
-        MIG: attrDieSize(actor, "MIG"),
-        WLP: attrDieSize(actor, "WLP"),
-      }),
+      attributes: snapshotAttributes(actor),
       fumbleThreshold: readPropNum(actor, ["fumble_threshold"], 1),
       blockedActions: snapshotBlockedActions(actor),
       // Per-skill exemptions from those gates (skill tag ignore_gating_<ae>) —
@@ -1616,18 +1614,24 @@ function snapshotBlockedActions(actor) {
   }
 }
 
-// Re-read the action-gating fields off the LIVE actor. The turn snapshot is
-// frozen at TURN_START, BEFORE the turn-start AE ticks and the turn_start
-// reaction window — so a debuff cleansed there (or by a free action mid-turn)
-// left its action greyed in the menu for the rest of the turn. DECLARE calls
-// this on every entry; everything else on the snapshot is kept as-is.
-export function refreshActionGating(snap, actor) {
+// Re-read what the coming action depends on off the LIVE actor: the action gates,
+// the weapons and the check dice. The turn snapshot is frozen at TURN_START, BEFORE
+// the turn-start AE ticks and the turn_start reaction window, and DECLARE can open
+// more than once inside a turn (a free Equipment action, a free weapon transform,
+// an authored free skill). Left frozen, a cleansed debuff kept its action greyed,
+// the Attack menu offered, and then swung, the weapon the actor no longer held, and
+// a check rolled the dice of a buff that had already expired.
+// DECLARE calls this on every entry; everything else on the snapshot is kept as-is.
+export function refreshTurnSnapshot(snap, actor) {
   if (!snap || !actor) return snap;
   return Object.freeze({
     ...snap,
     blockedActions: snapshotBlockedActions(actor),
     gatingExemptions: snapshotGatingExemptions(actor),
     disabledActionIntents: snapshotDisabledActionIntents(actor),
+    attributes: snapshotAttributes(actor),
+    fumbleThreshold: readPropNum(actor, ["fumble_threshold"], 1),
+    ...buildWeaponBundle(actor),
   });
 }
 

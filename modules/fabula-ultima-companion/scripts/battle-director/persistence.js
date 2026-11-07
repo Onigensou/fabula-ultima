@@ -48,6 +48,7 @@ import { RESOURCE_REGISTRY } from "./resources.js";
 import { DirectorCombat, DirectorCombatant } from "./director-combat.js";
 import { freeActions } from "./free-actions.js";
 import { freeActionQueue } from "./free-action-queue.js";
+import { reconcileSetBonuses, withManagedEquip } from "./set-bonus.js";
 import {
   serializeStack,
   rehydrateStack,
@@ -442,6 +443,30 @@ export async function saveDirectorState(director, opts = {}) {
 
 // ── Per-actor snapshot (rewind tool) ────────────────────────────────────
 
+// What a piece of gear holds about being worn, beyond the actor's slot props: its
+// own isEquipped, whether each of its effects is switched on, and the flags a gear
+// change or weapon transform writes. Without these a rewind put the slots back while
+// the gear itself stayed in its post-swap state: the worn weapon's bonuses off, and
+// loadout gates reading the wrong item.
+const GEAR_ITEM_TYPES = new Set(["weapon", "shield", "accessory", "armor"]);
+const GEAR_REWIND_FLAGS = ["activeForm", "transformFreeUsedRound", "hiddenUntilBattleEnd"];
+
+function captureGearState(item) {
+  const props = item.system?.props ?? {};
+  if (!GEAR_ITEM_TYPES.has(String(props.item_type ?? "").toLowerCase())) return null;
+  const flags = item.flags?.[FLAG_NS] ?? {};
+  return {
+    equipped: props.isEquipped === true,
+    flags: Object.fromEntries(GEAR_REWIND_FLAGS.filter((k) => flags[k] != null).map((k) => [k, flags[k]])),
+    effectsDisabled: Object.fromEntries((item.effects?.contents ?? []).map((fx) => [fx.id, !!fx.disabled])),
+  };
+}
+
+function gearEntry(item) {
+  const gear = captureGearState(item);
+  return gear ? { gear } : {};
+}
+
 // Capture the per-combatant actor state that the rewind tool needs to
 // restore (HP/MP/IP/Fabula points + equipment-display props + Active
 // Effects + per-item isEquipped/quantity). Also drains the deletion
@@ -480,6 +505,9 @@ async function snapshotCombatantActors(dCombat) {
       continue;
     }
     const p = actor.system?.props ?? {};
+    // Armor props are read from the SOURCE: Active Effects can add to them, and
+    // writing a derived value back would bake those bonuses in on every rewind.
+    const armorSource = actor._source?.system?.props ?? p;
     out.push({
       actorUuid: actor.uuid,
       actorId: actor.id,
@@ -513,6 +541,11 @@ async function snapshotCombatantActors(dCombat) {
         off_details:         p.off_details,
         accessory_details:   p.accessory_details,
         accessory2_details:  p.accessory2_details,
+        armor_name:          armorSource.armor_name,
+        armor_mod:           armorSource.armor_mod,
+        magic_defense_mod:   armorSource.magic_defense_mod,
+        armor_details:       armorSource.armor_details,
+        init_penalty:        armorSource.init_penalty,
       },
       // AE.toObject() returns a plain serializable clone with `_id` —
       // safe to round-trip through JSON. We snapshot ALL effects (not
@@ -529,8 +562,10 @@ async function snapshotCombatantActors(dCombat) {
       // from the live actor.
       itemStates: Array.from(actor.items ?? []).map((it) => ({
         id: it.id,
-        isEquipped: !!it.system?.isEquipped,
         item_quantity: it.system?.props?.item_quantity ?? null,
+        // Named `gear`, not the old `isEquipped`: entries saved before this read the
+        // wrong field and hold false for every item, so they must not be restored.
+        ...gearEntry(it),
       })),
       deletedItemsLog: consumePendingDeletions(actor.uuid),
     });
@@ -1100,13 +1135,12 @@ export async function restoreActorsFromSnapshot(snapshot, futureSaves = []) {
       if (currentItemIds.has(id)) continue;
       const itemData = findDeletedItemData(id, actorSnap.actorUuid, futureSaves);
       if (itemData) {
-        // Apply the snapshot's slim fields onto the captured toObject
-        // so isEquipped + quantity match the target snapshot (not the
-        // pre-delete state, which may have differed).
+        // Apply the snapshot's quantity onto the captured toObject (not the
+        // pre-delete value, which may have differed). Gear state is applied to
+        // the recreated item by step 3c below.
         const data = foundry.utils.deepClone(itemData);
         if (!data.system) data.system = {};
         if (!data.system.props) data.system.props = {};
-        data.system.isEquipped = !!snapItem.isEquipped;
         if (snapItem.item_quantity != null) {
           data.system.props.item_quantity = snapItem.item_quantity;
         }
@@ -1123,16 +1157,33 @@ export async function restoreActorsFromSnapshot(snapshot, futureSaves = []) {
       catch (e) { warn(`restore: Item create threw on ${actor.name}`, e); }
     }
 
-    // 3c. Update isEquipped + item_quantity on items that exist on both.
+    // 3c. Update gear state + item_quantity on items that exist on both.
     const itemUpdates = [];
+    const effectUpdates = [];   // [item, [{ _id, disabled }]]
+    let gearChanged = false;
     for (const [id, snapItem] of snapItemsById) {
       const live = actor.items?.get?.(id);
       if (!live) continue;
       const update = { _id: id };
       let changed = false;
-      if (!!live.system?.isEquipped !== !!snapItem.isEquipped) {
-        update["system.isEquipped"] = !!snapItem.isEquipped;
-        changed = true;
+      if (snapItem.gear) {
+        const { equipped, flags = {}, effectsDisabled = {} } = snapItem.gear;
+        if ((live.system?.props?.isEquipped === true) !== equipped) {
+          update["system.props.isEquipped"] = equipped;
+          changed = gearChanged = true;
+        }
+        const liveFlags = live.flags?.[FLAG_NS] ?? {};
+        for (const key of GEAR_REWIND_FLAGS) {
+          const want = flags[key] ?? null;
+          if ((liveFlags[key] ?? null) === want) continue;
+          if (want === null) update[`flags.${FLAG_NS}.-=${key}`] = null;
+          else update[`flags.${FLAG_NS}.${key}`] = want;
+          changed = true;
+        }
+        const fxUpdates = (live.effects?.contents ?? [])
+          .filter((fx) => fx.id in effectsDisabled && !!fx.disabled !== effectsDisabled[fx.id])
+          .map((fx) => ({ _id: fx.id, disabled: effectsDisabled[fx.id] }));
+        if (fxUpdates.length) { effectUpdates.push([live, fxUpdates]); gearChanged = true; }
       }
       if (snapItem.item_quantity != null) {
         const liveQty = live.system?.props?.item_quantity;
@@ -1143,10 +1194,22 @@ export async function restoreActorsFromSnapshot(snapshot, futureSaves = []) {
       }
       if (changed) itemUpdates.push(update);
     }
-    if (itemUpdates.length) {
-      try { await actor.updateEmbeddedDocuments("Item", itemUpdates); }
-      catch (e) { warn(`restore: Item update threw on ${actor.name}`, e); }
-    }
+    // Managed like any other equip flow, so the ambient set-bonus and armor hooks
+    // stand down while the gear goes back; the set bonuses are reconciled once at the end.
+    await withManagedEquip(actor, async () => {
+      if (itemUpdates.length) {
+        try { await actor.updateEmbeddedDocuments("Item", itemUpdates); }
+        catch (e) { warn(`restore: Item update threw on ${actor.name}`, e); }
+      }
+      for (const [item, fxUpdates] of effectUpdates) {
+        try { await item.updateEmbeddedDocuments("ActiveEffect", fxUpdates); }
+        catch (e) { warn(`restore: gear effect update threw on ${item.name}`, e); }
+      }
+      if (gearChanged) {
+        try { await reconcileSetBonuses(actor); }
+        catch (e) { warn(`restore: set-bonus reconcile threw on ${actor.name}`, e); }
+      }
+    });
 
     restored++;
   }
