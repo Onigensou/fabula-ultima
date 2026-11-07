@@ -45,6 +45,9 @@
 
   // Camp scenes: spawned party members carry this flag (camp-members.js).
   const CAMP_MEMBER_FLAG = "campMember";
+  // A summon a player called into camp (camp-system/camp-summons-*.js). It
+  // walks like a member: pass-through, facing, depth, no drag and drop.
+  const CAMP_SUMMON_FLAG = "campSummon";
 
   // A camp room this much larger than the screen (either way) has the camera
   // follow the player's member; a smaller one keeps the room's own framing.
@@ -158,6 +161,8 @@
     walkKind: "party",
     // The active party's actor ids (camp: who counts as a member).
     partyMemberIds: new Set(),
+    // Camp: the summon this client walks instead of its member (Q), or null.
+    campWalkOverrideId: null,
 
     followTokenId: null,
     followTokenActorId: null,
@@ -301,7 +306,13 @@
     const doc = token?.document ?? token;
     if (!doc) return false;
     if (doc.getFlag?.(MODULE_ID, CAMP_MEMBER_FLAG)) return true;
+    if (doc.getFlag?.(MODULE_ID, CAMP_SUMMON_FLAG)) return true;
     return !!doc.actorId && state.partyMemberIds.has(doc.actorId);
+  }
+
+  function isCampSummonToken(token) {
+    const doc = token?.document ?? token;
+    return !!doc?.getFlag?.(MODULE_ID, CAMP_SUMMON_FLAG);
   }
 
   async function refreshPartyMemberIds() {
@@ -320,10 +331,17 @@
   // The member this client walks in a camp: its own character's token, or
   // the one member it owns when no character is set. Never a guess between two.
   // A spectator has none: `default: OWNER` on an actor makes it an owner too.
+  // A summon this client chose to walk with Q comes first, while it still
+  // stands here and is ours; summons are never picked otherwise.
   function findOwnCampMember() {
     if (globalThis.FUCompanion?.api?.Spectator?.isSpectator?.()) return null;
+    if (state.campWalkOverrideId) {
+      const led = canvas.tokens?.get(state.campWalkOverrideId);
+      if (led && isCampSummonToken(led) && led.document?.isOwner && !led.document.hidden) return led;
+      state.campWalkOverrideId = null;
+    }
     const mine = (canvas.tokens?.placeables ?? []).filter(t =>
-      isCampMemberToken(t) && t.document?.isOwner && !t.document.hidden);
+      isCampMemberToken(t) && !isCampSummonToken(t) && t.document?.isOwner && !t.document.hidden);
     const characterId = game.user?.character?.id ?? null;
     return mine.find(t => characterId && t.actor?.id === characterId)
       ?? (mine.length === 1 ? mine[0] : null);
@@ -1096,6 +1114,39 @@
     return duration;
   }
 
+  // Camp: walk this client's own summon toward `destination` (a canvas point),
+  // stopping short of walls like any walk. Used to have it trail its summoner.
+  // Returns the leg's duration in milliseconds, 0 when it did not move.
+  async function walkCampSummon(token, destination, { speed = WALK_SPEED } = {}) {
+    if (state.walkKind !== "camp" || !isCampSummonToken(token) || !token.document?.isOwner) return 0;
+    if (!canCurrentUserMovePartyToken()) return 0;
+    const origin = drawnCenter(token);
+    const walk = resolveWalk(token, origin, destination, { snap: false });
+    if (!walk.spot) return 0;
+    const center = topLeftToCenter(walk.spot, token);
+    const distance = Math.hypot(center.x - origin.x, center.y - origin.y);
+    if (distance < 2) return 0;
+    const duration = walkDuration(distance, speed);
+    await token.document.update({ x: walk.spot.x, y: walk.spot.y }, {
+      animate: true,
+      animation: { duration, movementSpeed: speed },
+      oniWalk: true,
+      oniSummonFollow: true,
+      oniWalkRate: speed / WALK_SPEED,
+      oniWalkFacing: { x: (center.x - origin.x) / distance, y: (center.y - origin.y) / distance }
+    });
+    return duration;
+  }
+
+  // Camp: walk a summon of ours instead of our member (Q), or null to walk
+  // the member again. The camera and keys follow on the next apply.
+  function setCampWalker(tokenId = null) {
+    if (state.campWalkOverrideId === (tokenId ?? null)) return;
+    state.campWalkOverrideId = tokenId ?? null;
+    releaseAllKeys();
+    scheduleApply("campWalker", 0);
+  }
+
   /**
    * Send the slide leg once the first leg is nearly done. Sent early, the
    * token bends from wherever it is drawn straight to the end of the slide,
@@ -1686,6 +1737,8 @@
         if (state.walkKind === "camp") {
           if (!isCampMemberToken(doc)) return;
           if (options?.oniWalk && doc.id === state.followTokenId && canCurrentUserMovePartyToken()) return;
+          // The player's own summon trailing them (walkCampSummon).
+          if (options?.oniSummonFollow && isCampSummonToken(doc) && doc.isOwner && canCurrentUserMovePartyToken()) return;
           if ("x" in change) delete change.x;
           if ("y" in change) delete change.y;
           return;
@@ -1856,6 +1909,13 @@
     // party member standing in a camp.
     isCampWalk: () => state.walkKind === "camp" && !!state.followEnabledForScene,
     isCampMemberToken,
+    isCampSummonToken,
+    // Camp summons: walk one of ours instead of our member (Q), have one
+    // trail us, and which token we walk right now.
+    setCampWalker,
+    getCampWalker: () => state.campWalkOverrideId,
+    walkCampSummon,
+    WALK_SPEED,
 
     holdCamera,
     releaseCamera,
