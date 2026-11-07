@@ -130,6 +130,12 @@
       ?? { SIZE: 64, BOTTOM: 80, LEFT: 390, LEFT_NO_FT: 316, LEFT_EXPLORATION: 168, LEFT_SOLO: 20, FONT_SIZE: "28px" };
   }
 
+  // The HUD dock (scripts/shared/hud-dock.js) packs the row left to right from
+  // whichever buttons exist (registerSlot at the end of this file), so a button
+  // that is not shown leaves no hole. The fixed LEFT slots below are only the
+  // starting position of a new button and the no-dock fallback.
+  const restackRow = () => { try { globalThis.oni?.HudDock?.relayoutRow?.(); } catch { /* no dock */ } };
+
   // The ritual button is the rightmost of the row, so its slot depends on how
   // many buttons the current mode docked to its left.
   function getRitualLeft(mode) {
@@ -425,6 +431,7 @@
     syncFtBtn();
     syncScanDisabled();   // a rebuild rebuilds the button; keep Vertigo's lock
     installEsc();
+    restackRow();
 
     requestAnimationFrame(() => {
       _scanBtn?.classList.add("dp-scan-visible");
@@ -452,6 +459,7 @@
       },
     );
     document.body.appendChild(_healBtn);
+    restackRow();
     requestAnimationFrame(() => _healBtn?.classList.add("dp-scan-visible"));
   }
 
@@ -461,6 +469,7 @@
     const btn = _healBtn;
     setTimeout(() => btn.remove(), 280);
     _healBtn = null;
+    restackRow();
   }
 
   // ── Ritual button (dungeon + exploration + theatre) ─────────────────────────
@@ -492,6 +501,7 @@
     if (_ritualBtn) {
       _ritualBtn.style.left = `${left}px`;
       syncRitualBtn();
+      restackRow();
       return;
     }
 
@@ -513,6 +523,7 @@
     );
     document.body.appendChild(_ritualBtn);
     syncRitualBtn();
+    restackRow();
 
     // A GM's eligibility changes with their token selection, not with the scene.
     if (!_ritualCtrlHook) _ritualCtrlHook = Hooks.on("controlToken", () => syncRitualBtn());
@@ -527,6 +538,7 @@
     const btn = _ritualBtn;
     setTimeout(() => btn.remove(), 280);
     _ritualBtn = null;
+    restackRow();
   }
 
   function hide() {
@@ -544,6 +556,7 @@
     _scanBtn   = null;
     _helperBtn = null;
     _ftBtn     = null;
+    restackRow();
   }
 
   // Show/hide the FT + travel buttons when the scene config fastTravelEnabled flag changes.
@@ -581,6 +594,7 @@
 
     // The ritual button docks to the right of them all, so toggling FT slides it.
     if (_ritualBtn) _ritualBtn.style.left = `${getRitualLeft("dungeon")}px`;
+    restackRow();
   }
 
   // Show the scene travel button (called from bootstrap for dungeon + exploration modes).
@@ -596,6 +610,7 @@
       // Already shown — just refresh emoji and position
       _travelBtn.textContent = emoji;
       _travelBtn.style.left  = leftPx + "px";
+      restackRow();
       return;
     }
 
@@ -610,6 +625,7 @@
     );
     document.body.appendChild(_travelBtn);
     _travelBtnMode = mode;
+    restackRow();
     requestAnimationFrame(() => _travelBtn?.classList.add("dp-scan-visible"));
   }
 
@@ -620,6 +636,7 @@
     setTimeout(() => btn.remove(), 280);
     _travelBtn     = null;
     _travelBtnMode = null;
+    restackRow();
   }
 
   // ── Public API ─────────────────────────────────────────────────────────────
@@ -663,4 +680,15 @@
   // what floats above the stack (Party Talk) clears it.
   globalThis.oni?.HudDock?.registerRow?.("dp-mode-buttons", () =>
     [...document.querySelectorAll(".oni-dp-mode-btn")].some((b) => b.isConnected && getComputedStyle(b).display !== "none"));
+
+  // Left-to-right order in the row. Travel leads in exploration (it is the
+  // first button there) and follows Fast Travel in a dungeon. A button that is
+  // null (hidden / never created) takes no slot.
+  const dock = globalThis.oni?.HudDock;
+  dock?.registerSlot?.("dp-scan",   { order: 10, el: () => _scanBtn });
+  dock?.registerSlot?.("dp-heal",   { order: 20, el: () => _healBtn });
+  dock?.registerSlot?.("dp-helper", { order: 30, el: () => _helperBtn });
+  dock?.registerSlot?.("dp-ft",     { order: 40, el: () => _ftBtn });
+  dock?.registerSlot?.("dp-travel", { order: () => (_travelBtnMode === "dungeon" ? 50 : 5), el: () => _travelBtn });
+  dock?.registerSlot?.("dp-ritual", { order: 90, el: () => _ritualBtn });
 })();

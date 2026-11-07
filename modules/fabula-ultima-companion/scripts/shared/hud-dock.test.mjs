@@ -72,5 +72,28 @@ const eq = (label, got, want) => {
   eq("a throwing member counts as absent", D.stackTop(), 0);
 }
 
+// ── row packing: full sets reproduce the old fixed slots ──────────────────
+{
+  const D = fresh();
+  const P = (present, travelOrder = 50) => D.packRow([
+    { id: "scan", order: 10, present: present.includes("scan") },
+    { id: "heal", order: 20, present: present.includes("heal") },
+    { id: "helper", order: 30, present: present.includes("helper") },
+    { id: "ft", order: 40, present: present.includes("ft") },
+    { id: "travel", order: travelOrder, present: present.includes("travel") },
+    { id: "ritual", order: 90, present: present.includes("ritual") },
+  ]);
+  eq("dungeon, everything on = old slots",
+    P(["scan", "heal", "helper", "ft", "travel", "ritual"]), { scan: 20, heal: 94, helper: 168, ft: 242, travel: 316, ritual: 390 });
+  eq("dungeon, Fast Travel off = old LEFT_NO_FT slots",
+    P(["scan", "heal", "helper", "travel", "ritual"]), { scan: 20, heal: 94, helper: 168, travel: 242, ritual: 316 });
+  eq("exploration (travel leads) = old exploration slots",
+    P(["travel", "heal", "ritual"], 5), { travel: 20, heal: 94, ritual: 168 });
+  eq("theatre: ritual alone = old LEFT_SOLO", P(["ritual"]), { ritual: 20 });
+  eq("the reported gap: heal + ritual close up", P(["heal", "ritual"]), { heal: 20, ritual: 94 });
+  eq("custom geometry", fresh({ DungeonPathing: { UI: { SCAN_BUTTON: { LEFT: 30, SIZE: 50 } } } })
+    .packRow([{ id: "a", order: 1, present: true }, { id: "b", order: 2, present: true }]), { a: 30, b: 90 });
+}
+
 console.log(`hud-dock: ${pass} passed, ${fail} failed`);
 if (fail) process.exit(1);

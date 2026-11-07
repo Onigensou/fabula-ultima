@@ -126,11 +126,51 @@
 
   function onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); }
 
+  // ── the button row, left to right ─────────────────────────────────────────
+  // Row buttons register a slot { order, el }. The dock lines up the ones that
+  // exist from the row's left edge, one button + gap apart, so a missing button
+  // leaves no hole. With every button present the result is the old fixed slots
+  // (20, 94, 168, 242, 316, 390). order may be a function (Travel leads in
+  // exploration but follows Fast Travel in a dungeon).
+  const slots = new Map();   // id -> { order, el }
+
+  /** Pure packing. items: [{ id, order, present }] → { id: leftPx } for present items. */
+  function packRow(items, { left, step } = {}) {
+    const btn = root.DungeonPathing?.UI?.SCAN_BUTTON;
+    let x = left ?? Number(btn?.LEFT ?? 20);
+    const dx = step ?? (Number(btn?.SIZE ?? ROW_SIZE) + GAP);
+    const out = {};
+    for (const it of [...items].filter((i) => i.present)
+      .sort((a, b) => (a.order - b.order) || String(a.id).localeCompare(String(b.id)))) {
+      out[it.id] = x;
+      x += dx;
+    }
+    return out;
+  }
+
+  function relayoutRow() {
+    const items = [];
+    for (const [id, s] of slots) {
+      const el = safe(() => s.el?.() ?? null, null);
+      const order = safe(() => (typeof s.order === "function" ? s.order() : s.order), 50);
+      items.push({ id, order: Number(order) || 0, present: !!el?.isConnected, el });
+    }
+    const lefts = packRow(items);
+    for (const it of items) if (it.present) it.el.style.left = `${lefts[it.id]}px`;
+  }
+
+  function registerSlot(id, { order = 50, el } = {}) {
+    slots.set(String(id), { order, el });
+    return () => slots.delete(String(id));
+  }
+
   root.oni.HudDock = {
     installed: true,
     GAP,
     register, unregister, registerRow, relayout, stackTop, onChange, layout, rowGeometry,
+    registerSlot, relayoutRow, packRow,
     _members: members,
+    _slots: slots,
   };
 
   if (root.Hooks?.on) {
