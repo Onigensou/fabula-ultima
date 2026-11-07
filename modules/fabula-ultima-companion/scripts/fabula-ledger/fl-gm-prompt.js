@@ -47,7 +47,7 @@
     skip: "No point this time.",
     neutral: "Not hostile right now (they may turn villain later): no point for appearing and no more asking. Reveal them when they turn.",
     never: "Not part of the story (training dummy, summon): never asked or paid, not even the boss point.",
-    "new": "Start a new session: start-of-session effects run, anyone on 0 Fabula Points gets 1.",
+    "new": "Start a new session: start-of-session effects run, every party member gets 1 Fabula Point.",
     same: "Carry on the last session (it was only interrupted)."
   };
 

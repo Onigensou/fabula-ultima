@@ -9,7 +9,7 @@
  *   OPENS   when a save finishes loading from the title screen and no session
  *           is open (hook fuSaveLoaded, title-screen/title-socket.js).
  *           Opening = SessionSystem.startSession() (start-of-session effects),
- *           +1 Fabula Point to every party member on 0, and a fresh loop memory.
+ *           +1 Fabula Point to every party member (cap 10), and a fresh loop memory.
  *   CLOSES  on the camp rest "return to title" yes (camp-rest-save-flow.js), on
  *           the session-end prompt (session-end.js) — both raise
  *           fuSessionClosing — or from the GM ledger panel.
@@ -47,11 +47,13 @@
       await I().note(`Session opened (${via})`);
       debug("opened", via);
 
-      // Anyone on 0 Fabula Points starts the night with 1.
+      // Every party member starts the night with +1 (user, 2026-11-07; was
+      // "only members on 0"). The ledger cap stops gains at 10 and leaves a
+      // total already above 10 alone (Blanche's pre-cap 12).
       const party = await I().partyActors();
-      const empty = party.filter(a => (Number(a.system?.props?.[FP_PROP] ?? 0) || 0) <= 0);
-      if (empty.length) {
-        await FL.api.change(empty, 1, { reason: "session", label: empty.map(a => a.name).join(", ") });
+      const paid = party.filter(a => (Number(a.system?.props?.[FP_PROP] ?? 0) || 0) < 10);
+      if (party.length) {
+        await FL.api.change(party, 1, { reason: "session", label: paid.map(a => a.name).join(", ") || "all capped" });
       }
 
       // Start-of-session effects (Instability decay, Fatigue, Lucky Seven).
@@ -62,7 +64,7 @@
         .then(() => globalThis.SessionSystem?.startSession?.())
         .catch((e) => console.error(TAG, "SessionSystem.startSession failed", e));
 
-      return { ok: true, paid: empty.map(a => a.name) };
+      return { ok: true, paid: paid.map(a => a.name) };
     } finally {
       _busy = false;
     }

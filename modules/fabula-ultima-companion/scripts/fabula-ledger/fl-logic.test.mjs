@@ -110,6 +110,17 @@ check("9 + 3 = 10, 2 lost", JSON.stringify(cap(9, 3)) === JSON.stringify({ next:
 check("10 + 1 stays 10", cap(10, 1).next === 10 && cap(10, 1).overflow === 1);
 check("Blanche 12 + 1 stays 12 (not cut to 10)", cap(12, 1).next === 12 && cap(12, 1).gained === 0);
 check("Blanche 12 - 1 = 11 (a spend is never clamped)", cap(12, -1).next === 11);
+// Blanche's pre-cap hoard (user, 2026-11-07): keeps 12, gains nothing, the cap
+// takes over once she spends below 10.
+{
+  let b = 12;
+  b = cap(b, 1).next;  const s1 = b;   // session start: stays 12
+  b = cap(b, -3).next; const s2 = b;   // spends 3: 9
+  b = cap(b, 1).next;  const s3 = b;   // +1: 10
+  b = cap(b, 1).next;  const s4 = b;   // +1: still 10
+  check("Blanche 12 → +1 → -3 → +1 → +1 = 12, 9, 10, 10", [s1, s2, s3, s4].join() === "12,9,10,10");
+}
+check("11 - 1 = 10, then +1 stays 10", cap(cap(11, -1).next, 1).next === 10);
 check("1 - 3 floors at 0", cap(1, -3).next === 0 && cap(1, -3).gained === -1);
 
 // ── prompt ───────────────────────────────────────────────────────────────────
