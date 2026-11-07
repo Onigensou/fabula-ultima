@@ -10,8 +10,13 @@
 //   surfaceFx = {
 //     mode: "gas" | "water",
 //     layers: { churn, plume, rim, crystal, wisp, water, light },  booleans
-//     crystals: [[x, y, r]],             soft pulsing glows (map px)
+//     crystals: [[x, y, r]],             soft pulsing glows (map px); an
+//                                        optional 4th value 1 = second colour
 //     crystalColor: [r, g, b],           0..1
+//     crystalColor2: [r, g, b],          the second colour (default green)
+//     fall: [x1, y1, x2, y2],            water mode: a painted waterfall's box;
+//                                        it streams down with mist at its foot
+//                                        (layers.fall false = off)
 //     wisp: 0.16,                         near-haze strength, 0 = none
 //     wispOutsideLight: false,            true = the haze thins out inside the
 //                                         light pools (Valley camp: clear camp,
@@ -100,12 +105,25 @@ export function readSurfaceConfig(scene) {
     : [];
 
   const sh = raw.shimmer ?? {};
+  const crystals = triples(raw.crystals, MAX_CRYSTALS, 1);
+  // Which colour each kept crystal uses (0 = crystalColor, 1 = crystalColor2).
+  const crystalTones = (Array.isArray(raw.crystals) ? raw.crystals : [])
+    .filter((c) => Array.isArray(c) && c.length >= 3 && c.slice(0, 3).every((v) => Number.isFinite(Number(v))))
+    .slice(0, MAX_CRYSTALS)
+    .map((c) => (Number(c[3]) === 1 ? 1 : 0));
+  const fb = raw.fall;
+  const fall = mode === "water" && raw.layers?.fall !== false && Array.isArray(fb) && fb.length === 4
+    && fb.every((v) => Number.isFinite(Number(v))) && Number(fb[2]) > Number(fb[0]) && Number(fb[3]) > Number(fb[1])
+    ? fb.map(Number) : null;
   return {
     mode,
     mask,
     layers,
-    crystals: triples(raw.crystals, MAX_CRYSTALS, 1),
+    crystals,
+    crystalTones,
     crystalColor: color(raw.crystalColor, [0.70, 0.48, 1.0]),
+    crystalColor2: color(raw.crystalColor2, [0.45, 1.0, 0.62]),
+    fall,
     wisp: layers.wisp ? clamp(num(raw.wisp, mode === "gas" ? 0.16 : 0.12), 0, 1) : 0,
     wispOutsideLight: raw.wispOutsideLight === true,
     darkness: clamp(num(raw.darkness, 0.32), 0, 1),

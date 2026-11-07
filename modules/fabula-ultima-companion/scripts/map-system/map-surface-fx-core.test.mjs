@@ -68,6 +68,20 @@ eq("lightCap default", w?.lightCap, 1.25);
 eq("lightCap set", readSurfaceConfig(scene({ surfaceFxEnabled: true }, { mode: "water", lightCap: 1.8 }))?.lightCap, 1.8);
 eq("lightCap clamped", readSurfaceConfig(scene({ surfaceFxEnabled: true }, { mode: "water", lightCap: 9 }))?.lightCap, 3);
 
+// second crystal colour + waterfall (Underground Lake, 2026-11-07)
+eq("tones default 0", g?.crystalTones, [0]);
+eq("no fall on gas", g?.fall, null);
+const lk = readSurfaceConfig(scene({ surfaceFxEnabled: true }, {
+  mode: "water", crystals: [[1, 2, 30], [3, 4, 30, 1], [5, 6, 30, 7]], fall: [1222, 200, 1270, 430],
+}, "x/Valley_Map034.png"));
+eq("tones read", lk?.crystalTones, [0, 1, 0]);
+eq("crystals still triples", lk?.crystals, [[1, 2, 30], [3, 4, 30], [5, 6, 30]]);
+eq("crystalColor2 default", lk?.crystalColor2, [0.45, 1.0, 0.62]);
+eq("fall kept", lk?.fall, [1222, 200, 1270, 430]);
+eq("fall off by layer", readSurfaceConfig(scene({ surfaceFxEnabled: true }, { mode: "water", fall: [0, 0, 10, 10], layers: { fall: false } }))?.fall, null);
+eq("fall bad box", readSurfaceConfig(scene({ surfaceFxEnabled: true }, { mode: "water", fall: [10, 0, 0, 10] }))?.fall, null);
+eq("water layers unchanged", Object.keys(lk?.layers ?? {}), ["water", "light", "crystal", "wisp"]);
+
 // camp scenes (Valley camp) are walked on too
 const WATER = { mode: "water", wispOutsideLight: true };
 eq("camp mode scene draws", readSurfaceConfig(scene({ surfaceFxEnabled: true, sceneMode: "camp" }, WATER))?.mode, "water");

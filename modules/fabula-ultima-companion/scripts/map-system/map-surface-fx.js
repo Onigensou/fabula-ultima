@@ -48,8 +48,10 @@ uniform sampler2D uArt, uMask;
 uniform vec2 uOrigin, uMap, uCam;
 uniform float uTime, uMode;
 uniform float uChurn, uPlume, uRim, uCrystal, uWisp, uWater, uLight, uDark, uWispOut, uLightCap;
-uniform vec3 uCrystals[10];
-uniform vec3 uCrystalColor;
+uniform vec4 uCrystals[10];
+uniform vec3 uCrystalColor, uCrystalColor2;
+uniform float uFall;
+uniform vec4 uFallBox;
 uniform vec4 uLights[12];
 uniform vec3 uLightCol[12];
 uniform float uNC, uNL;
@@ -130,6 +132,21 @@ void main() {
       rip += vec3(0.45, 0.48, 0.9) * caus * 0.12;
       col = mix(col, rip, m.r);
     }
+    // Waterfall (Underground Lake mockup, 2026-11-07): streaks run down the
+    // painted fall inside its box, soft mist breathes at its foot.
+    if (uFall > 0.5) {
+      if (P.x > uFallBox.x && P.x < uFallBox.z && P.y > uFallBox.y && P.y < uFallBox.w) {
+        float ex = smoothstep(uFallBox.x, uFallBox.x + 10.0, P.x) * (1.0 - smoothstep(uFallBox.z - 10.0, uFallBox.z, P.x));
+        float st = fbm(vec2(P.x * 0.09, P.y * 0.012 - t * 1.6));
+        float streak = smoothstep(0.45, 0.85, st);
+        vec3 fc = art(P + vec2(0.0, -mod(t * 90.0, 24.0)));
+        col = mix(col, fc, 0.35 * ex) + vec3(0.6, 0.95, 1.0) * streak * 0.22 * ex;
+      }
+      vec2 foot = vec2((uFallBox.x + uFallBox.z) * 0.5, uFallBox.w);
+      float fd = distance(P * vec2(1.0, 2.2), foot * vec2(1.0, 2.2)) / 110.0;
+      float mist = exp(-fd * fd * 2.0) * (0.55 + 0.45 * fbm(P * 0.02 + vec2(t * 0.3, -t * 0.4)));
+      col += vec3(0.55, 0.9, 1.0) * mist * 0.18;
+    }
     if (uLight > 0.5) {
       col = col * (1.0 - uDark) + col * uDark * min(L * 1.15, vec3(uLightCap));
     }
@@ -138,10 +155,10 @@ void main() {
   if (uCrystal > 0.5) {
     for (int i = 0; i < 10; i++) {
       if (float(i) >= uNC) break;
-      vec3 c = uCrystals[i];
+      vec4 c = uCrystals[i];
       float d = distance(P, c.xy) / c.z;
       float pulse = 0.6 + 0.4 * sin(t * (0.9 + 0.13 * float(i)) + float(i) * 2.1);
-      col += uCrystalColor * exp(-d * d * 2.2) * 0.30 * pulse;
+      col += (c.w > 0.5 ? uCrystalColor2 : uCrystalColor) * exp(-d * d * 2.2) * 0.30 * pulse;
     }
   }
 
@@ -209,8 +226,8 @@ function teardownMeshes() {
 }
 
 function packUniforms(cfg) {
-  const cr = new Float32Array(30);
-  cfg.crystals.forEach((c, i) => cr.set(c, i * 3));
+  const cr = new Float32Array(40);
+  cfg.crystals.forEach((c, i) => cr.set([c[0], c[1], c[2], cfg.crystalTones?.[i] ?? 0], i * 4));
   const L = new Float32Array(48), LC = new Float32Array(36);
   cfg.lights.forEach((l, i) => { L.set([l[0], l[1], l[2], l[6]], i * 4); LC.set([l[3], l[4], l[5]], i * 3); });
   const on = (id) => (cfg.layers[id] ? 1 : 0);
@@ -220,6 +237,8 @@ function packUniforms(cfg) {
     uWater: on("water"), uLight: on("light"), uWisp: cfg.wisp, uDark: cfg.darkness,
     uWispOut: cfg.wispOutsideLight ? 1 : 0, uLightCap: cfg.lightCap,
     uCrystals: cr, uNC: cfg.crystals.length, uCrystalColor: cfg.crystalColor,
+    uCrystalColor2: cfg.crystalColor2 ?? [0.45, 1.0, 0.62],
+    uFall: cfg.fall ? 1 : 0, uFallBox: cfg.fall ?? [0, 0, 0, 0],
     uLights: L, uLightCol: LC, uNL: cfg.lights.length,
   };
 }

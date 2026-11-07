@@ -13,12 +13,18 @@
  *       motes:  { count: 70 }                        specks rising and twinkling round the view
  *       sparks: [{ x, y, rx, ry }]                   some motes rise from these (the living sigils)
  *       glows:  [[x, y, r]]                          soft pulsing glows on painted crystals
- *       spores: { preset: "gas" | "crystal" | "ember", points: [[x, y]] }
+ *       spores: { preset: "gas" | "crystal" | "ember" | "dust", points: [[x, y]] }
  *                                                    rising specks (Underground Decor mockup):
  *                                                    "gas" rise out of the surface mask,
- *                                                    "crystal" mostly from the points
+ *                                                    "crystal" mostly from the points,
+ *                                                    "dust" pale specks hanging anywhere in view
+ *                                                    (a list of these runs several presets at once)
  *       puffs:  true                                 gas belches rising from the mask (behind tokens)
  *       drips:  true                                 drops falling onto the mask, rings spreading
+ *       drips:  { points: [[x, y]], fall: [min, max], land: "dust" | "rings" }
+ *                                                    drops falling from these ceiling points,
+ *                                                    landing min..max px lower in a dust puff
+ *                                                    (Cave Dwelling) or rings
  *     }
  *   spores/puffs/drips spawn from the surface FX mask
  *   (assets/surface-fx/<background>.webp, see map-surface-fx.js).
@@ -84,7 +90,12 @@ void main() {
     crystal: { cap: 46, rate: 14, vy: [10, 26], color: 0xd7afff, fromPoints: 0.7 },
     // Valley camp mockup (2026-11-06): sparks off a campfire, bright at birth, fading out.
     ember: { cap: 10, rate: 5, vy: [22, 42], color: 0xffa64d, fromPoints: 1, jitter: [12, 5], life: [1.4, 2.8], size: [8, 14], fadeOut: true },
+    // Cave Dwelling mockup (2026-11-07): slow pale dust hanging in the room light.
+    dust: { cap: 40, rate: 9, vy: [-3, 4], color: 0xd2c8be, anywhere: true, life: [5, 9], size: [5, 10], alpha: 0.35, sway: 4 },
   };
+  const sporeList = (cfg) => (Array.isArray(cfg?.spores) ? cfg.spores : cfg?.spores ? [cfg.spores] : [])
+    .filter((s) => s && SPORE[s.preset]);
+  const pointDrips = (cfg) => (cfg?.drips && typeof cfg.drips === "object" && Array.isArray(cfg.drips.points) && cfg.drips.points.length ? cfg.drips : null);
   const MASK_DIR = "modules/fabula-ultima-companion/assets/surface-fx";
   const rnd = (a, b) => a + Math.random() * (b - a);
 
@@ -268,7 +279,7 @@ void main() {
     // spores, belches, drips (Underground Decor)
     if (!still && (cfg.spores || cfg.puffs || cfg.drips)) {
       makeParticleTextures();
-      if (cfg.puffs || cfg.drips || cfg.spores?.preset === "gas") loadCandidates(scene, state.buildId);
+      if (cfg.puffs || (cfg.drips && !pointDrips(cfg)) || sporeList(cfg).some((s) => s.preset === "gas")) loadCandidates(scene, state.buildId);
       if (cfg.drips) { state.dripGfx = new PIXI.Graphics(); state.glowLayer.addChild(state.dripGfx); }
     }
 
@@ -281,12 +292,14 @@ void main() {
   function stepUnderground(dt, v) {
     const cfg = state.cfg;
 
-    // spores (in front of tokens)
-    const sp = cfg.spores ? SPORE[cfg.spores.preset] : null;
-    if (sp && state.spores.length < sp.cap && Math.random() < dt * sp.rate) {
+    // spores (in front of tokens), one or more presets
+    for (const entry of sporeList(cfg)) {
+    const sp = SPORE[entry.preset];
+    if (state.spores.filter((q) => q.preset === entry.preset).length < sp.cap && Math.random() < dt * sp.rate) {
       let p = null;
-      const pts = Array.isArray(cfg.spores.points) ? cfg.spores.points : [];
-      if (sp.fromPoints > 0) {
+      const pts = Array.isArray(entry.points) ? entry.points : [];
+      if (sp.anywhere) p = [v.x + rnd(-0.5, 0.5) * v.w, v.y + rnd(-0.5, 0.5) * v.h];
+      else if (sp.fromPoints > 0) {
         const [jx, jy] = sp.jitter ?? [20, 10];
         if (pts.length && Math.random() < sp.fromPoints) { const c = pts[(Math.random() * pts.length) | 0]; p = [c[0] + rnd(-jx, jx), c[1] + rnd(-jy, jy)]; }
         else if (sp.fromPoints < 1) p = [v.x + rnd(-0.5, 0.5) * v.w, v.y + rnd(-0.5, 0.5) * v.h];
@@ -297,17 +310,19 @@ void main() {
         state.frontLayer.addChild(s);
         s.width = s.height = sp.size ? rnd(sp.size[0], sp.size[1]) : rnd(1.4, 3.2) * 3.2 * 2;
         const life = sp.life ?? [3.5, 7];
-        state.spores.push({ s, x: p[0], y: p[1], vy: rnd(sp.vy[0], sp.vy[1]), ph: rnd(0, 6.28), life: 0, max: rnd(life[0], life[1]), fadeOut: !!sp.fadeOut });
+        state.spores.push({ s, x: p[0], y: p[1], vy: rnd(sp.vy[0], sp.vy[1]), ph: rnd(0, 6.28), life: 0, max: rnd(life[0], life[1]),
+          fadeOut: !!sp.fadeOut, preset: entry.preset, peak: sp.alpha ?? 0.75, sway: sp.sway ?? 8 });
       }
     }
+    }
     state.spores = state.spores.filter((p) => {
-      p.life += dt; p.y -= p.vy * dt; p.x += Math.sin(p.life * 1.3 + p.ph) * 8 * dt;
+      p.life += dt; p.y -= p.vy * dt; p.x += Math.sin(p.life * 1.3 + p.ph) * p.sway * dt;
       if (p.life >= p.max) { p.s.destroy(); return false; }
       const k = p.life / p.max;
       p.s.position.set(p.x, p.y);
       p.s.alpha = p.fadeOut
         ? Math.max(0, Math.min(1, (1 - k) * 1.6) * (0.75 + 0.25 * Math.sin(p.life * 13 + p.ph)))
-        : Math.max(0, Math.sin(Math.PI * k) * (0.55 + 0.45 * Math.sin(p.life * 5 + p.ph)) * 0.75);
+        : Math.max(0, Math.sin(Math.PI * k) * (0.55 + 0.45 * Math.sin(p.life * 5 + p.ph)) * p.peak);
       return true;
     });
 
@@ -338,14 +353,26 @@ void main() {
     const gfx = state.dripGfx;
     if (cfg.drips && gfx && !gfx.destroyed) {
       state.dripT -= dt;
-      if (state.dripT <= 0) { state.dripT = rnd(1.0, 2.6); const p = pickCand(v); if (p) state.drips.push({ x: p[0], y: p[1], life: 0 }); }
+      const pd = pointDrips(cfg);
+      if (state.dripT <= 0) {
+        state.dripT = rnd(1.0, 2.6);
+        if (pd) {
+          // From a ceiling point, landing fall[0]..fall[1] px lower (Cave Dwelling mockup).
+          const c = pd.points[(Math.random() * pd.points.length) | 0], f = Array.isArray(pd.fall) ? pd.fall : [160, 360];
+          const x = c[0] + rnd(-20, 20), y0 = c[1], y = y0 + rnd(f[0], f[1]);
+          if (inView(v, x, y)) state.drips.push({ x, y, y0, life: 0, fallT: 0.45, dust: pd.land === "dust" });
+        } else { const p = pickCand(v); if (p) state.drips.push({ x: p[0], y: p[1], y0: p[1] - 140, life: 0, fallT: 0.35 }); }
+      }
       gfx.clear();
       state.drips = state.drips.filter((d) => {
         d.life += dt;
-        if (d.life >= 2.2) return false;
-        if (d.life < 0.35) {
-          const k = d.life / 0.35, y = d.y - 140 * (1 - k * k);
+        if (d.life >= d.fallT + 1.85) return false;
+        if (d.life < d.fallT) {
+          const k = d.life / d.fallT, y = d.y0 + (d.y - d.y0) * k * k;
           gfx.lineStyle(1.4, 0xc8cdff, 0.55); gfx.moveTo(d.x, y - 9); gfx.lineTo(d.x, y);
+        } else if (d.dust) {
+          const k = (d.life - d.fallT) / 1.2;
+          if (k < 1) { const r = 8 + 18 * k; gfx.lineStyle(0); gfx.beginFill(0xbeaac8, 0.3 * (1 - k)); gfx.drawEllipse(d.x, d.y, r, r * 0.45); gfx.endFill(); }
         } else {
           for (let i = 0; i < 2; i++) {
             const k = (d.life - 0.35 - i * 0.28) / 1.6; if (k <= 0 || k >= 1) continue;
