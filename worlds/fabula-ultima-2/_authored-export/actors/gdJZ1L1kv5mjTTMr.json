@@ -7906,6 +7906,14 @@
       "flags": {
         "custom-system-builder": {
           "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "campSummons": [
+            [
+              "Actor.HhQa0gNYyZG25imR",
+              "Actor.EfJbHRGk2eIi14d7"
+            ]
+          ]
         }
       },
       "folder": null,
