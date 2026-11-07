@@ -24,7 +24,7 @@
           "key": "max_hp",
           "mode": 5,
           "priority": 20,
-          "value": "61"
+          "value": "62"
         },
         {
           "key": "check_mod_accuracy",
@@ -56,7 +56,7 @@
             "appliedAtRound": 0,
             "effectLabel": "kg_bond",
             "reactorActorUuid": "Actor.A8vBJMBvMT9ON8O4",
-            "reactorTokenUuid": "Scene.cuv0etY2LHsVmveW.Token.p6OLbOlyvemgl8He",
+            "reactorTokenUuid": "Scene.XHe8LfutYAkPuR5B.Token.j7tTMOu0AKUq7xya",
             "skillUuid": "Actor.A8vBJMBvMT9ON8O4.Item.eYFMzrOX2InBxKzD"
           },
           "directorPermanent": true
@@ -83,11 +83,122 @@
       "type": "base"
     },
     {
-      "_id": "Pd6PqAuIVRTEmtle",
+      "_id": "KIFW6RJb0h3Oub8C",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1793474650361,
+        "createdTime": 1794069143920,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [],
+      "description": "<p>Loses a little HP at the start of each of its turns and on every step of the dungeon map, but never drops below 1 HP this way. Only a <strong>Vaccine</strong> cures it, and it can pass to a companion while the party rests.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "KIFW6RJb0h3Oub8C",
+          "originalParentId": "A8vBJMBvMT9ON8O4",
+          "originalUuid": "Actor.A8vBJMBvMT9ON8O4.ActiveEffect.KIFW6RJb0h3Oub8C"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-virus",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "crossScene": true,
+          "directorAppliedBy": {
+            "appliedAtRound": 1,
+            "effectLabel": "bite_virus",
+            "lifetimeMode": "persistent_counter",
+            "reactorActorUuid": "Scene.JKhl4GMekbmkKBXw.Token.QVMnQfLD3HFQQpdI.Actor.vmYeN1WWIF5TSjjF",
+            "reactorTokenUuid": "Scene.JKhl4GMekbmkKBXw.Token.QVMnQfLD3HFQQpdI",
+            "skillUuid": "Scene.JKhl4GMekbmkKBXw.Token.QVMnQfLD3HFQQpdI.Actor.vmYeN1WWIF5TSjjF.Item.PD9V6PBKW7UAVGjk"
+          },
+          "dungeonDot": {
+            "maxHpPercent": 5,
+            "minHp": 1
+          },
+          "lifetimeMode": "persistent_counter",
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "damage_amount": "max(0, min(ceil(MAX_HP * 0.05), CUR_HP - 1))",
+                "damage_element": "null",
+                "damage_ignore_affinity": true,
+                "damage_keywords": "crush",
+                "damage_verbosity": "full",
+                "effect_kind": "deal_damage",
+                "effect_label": "virus_dmg",
+                "emit_status": "Virus",
+                "emit_trigger": "creature_status_triggered",
+                "target_ref": "self"
+              }
+            },
+            "name": "Virus",
+            "reaction_config_table": {
+              "0": {
+                "reaction_effect_ref": "virus_dmg",
+                "reaction_passive_mode": "force",
+                "reaction_passive_target": "self",
+                "reaction_source": "self",
+                "reaction_trigger": "turn_start"
+              }
+            }
+          },
+          "restSpread": {
+            "chance": 22
+          },
+          "runState": true,
+          "uncleansable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/MaxhpDown.png",
+      "name": "Virus",
+      "origin": "Scene.JKhl4GMekbmkKBXw.Token.QVMnQfLD3HFQQpdI.Actor.vmYeN1WWIF5TSjjF.Item.PD9V6PBKW7UAVGjk",
+      "sort": 0,
+      "statuses": [
+        "permanent"
+      ],
+      "system": {
+        "tags": [
+          "debuff",
+          "virus"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "ZWXwsSa9AmGaMlTh",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1794078500479,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -108,9 +219,9 @@
         "custom-system-builder": {
           "isFromTemplate": false,
           "isPredefined": true,
-          "originalId": "Pd6PqAuIVRTEmtle",
+          "originalId": "ZWXwsSa9AmGaMlTh",
           "originalParentId": "A8vBJMBvMT9ON8O4",
-          "originalUuid": "Actor.A8vBJMBvMT9ON8O4.ActiveEffect.Pd6PqAuIVRTEmtle"
+          "originalUuid": "Actor.A8vBJMBvMT9ON8O4.ActiveEffect.ZWXwsSa9AmGaMlTh"
         },
         "dfreds-convenient-effects": {
           "ceEffectId": "ce-flying",
@@ -1632,7 +1743,7 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": 61,
+      "current_hp": 62,
       "current_ip": "0",
       "current_mp": 100,
       "cut_in_critical": "worlds/fabula-ultima-2/assets/Beastiary/KingGorger_Standard.png",

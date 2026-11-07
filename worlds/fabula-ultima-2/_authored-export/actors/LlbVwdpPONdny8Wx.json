@@ -2603,7 +2603,7 @@
           },
           "changes": [],
           "description": "",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,

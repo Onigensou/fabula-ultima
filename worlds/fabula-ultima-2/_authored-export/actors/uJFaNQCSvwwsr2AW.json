@@ -10,24 +10,24 @@
   },
   "effects": [
     {
-      "_id": "o4n9klyI33E9JGkb",
+      "_id": "js4Jq45r1nIbdqRC",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1793473797037,
+        "createdTime": 1794078173542,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "changes": [
         {
-          "key": "max_mp",
+          "key": "max_hp",
           "mode": 2,
           "priority": null,
-          "value": "10"
+          "value": "30"
         }
       ],
-      "description": "<p>A simple skillet cake sweetened with wild honey, passed around still warm. Everyone who eats gains <strong>+10 Maximum MP</strong> until the next rest.</p>",
+      "description": "<p>A massive pot of deep-simmered bone broth, shared from a single ladle passed hand to hand. Everyone who eats gains <strong>+30 Maximum HP</strong> until the next rest.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -41,17 +41,17 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "o4n9klyI33E9JGkb",
+          "originalId": "js4Jq45r1nIbdqRC",
           "originalParentId": "uJFaNQCSvwwsr2AW",
-          "originalUuid": "Actor.uJFaNQCSvwwsr2AW.ActiveEffect.o4n9klyI33E9JGkb"
+          "originalUuid": "Actor.uJFaNQCSvwwsr2AW.ActiveEffect.js4Jq45r1nIbdqRC"
         },
         "fabula-ultima-companion": {
           "campRestCharges": 0,
           "cookingDish": {
-            "dishId": "oel2cAzIcVh85ocz",
-            "family": "sweet",
+            "dishId": "H45kwofTyj8J4OVf",
+            "family": "umami",
             "instant": {},
-            "tier": 1
+            "tier": 3
           },
           "foodBuff": true
         },
@@ -64,9 +64,9 @@
           "visible": false
         }
       },
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Doraemon/1587828177600.webp",
-      "name": "Campfire Cake",
-      "origin": "Item.oel2cAzIcVh85ocz",
+      "img": "icons/consumables/food/bowl-stew-brown.webp",
+      "name": "Giant's Bone Broth",
+      "origin": "Item.H45kwofTyj8J4OVf",
       "sort": 0,
       "statuses": [
         "permanent"
@@ -225,7 +225,7 @@
       },
       "innerWellspring": {
         "current": "bolt",
-        "setAt": 1793487071977,
+        "setAt": 1794078499603,
         "tonight": null
       },
       "layoutRef": "6bb548d77fabe22c",
@@ -610,6 +610,170 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "MZXmnywINICmx7Ua"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "0lu4GUdwJRTUVZjM",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1794060089526,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "JmB6MmhhpXPSWVRF",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>If this creature would be reduced to 0 HP, they are instead left at exactly 1 HP. Consumed on first trigger; this AE auto-removes when fired.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "FM1KMP69MAOzVwVP",
+              "originalParentId": "1MKAmY4pPdhkLSRt",
+              "originalUuid": "Item.1MKAmY4pPdhkLSRt.ActiveEffect.FM1KMP69MAOzVwVP"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff",
+              "crossScene": true,
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "consume_self": true,
+                    "damage_amount": "CUR_HP - 1",
+                    "damage_operation": "cap",
+                    "damage_stage": "incoming",
+                    "effect_kind": "adjust_damage",
+                    "effect_label": "mercy_clamp",
+                    "modify_mode": "set_hp_floor",
+                    "modify_value": 1
+                  }
+                },
+                "name": "Mercy",
+                "reaction_config_table": {
+                  "0": {
+                    "reaction_damage_outcome": "would_reduce_to_zero",
+                    "reaction_effect_ref": "mercy_clamp",
+                    "reaction_passive_mode": "ask",
+                    "reaction_source": "self",
+                    "reaction_trigger": "creature_takes_damage"
+                  }
+                }
+              }
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/cure.png",
+          "name": "Mercy",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "fud-mercy"
+          ],
+          "system": {
+            "tags": [
+              "buff",
+              "dispellable"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/cure.png",
+      "name": "Mercy",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_command": "spell",
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Spiritist",
+          "cost": "20 MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>You strengthen the heart of a creature against suffering and despair. Until this spell ends, if the target would be reduced to 0 Hit Points, they are instead left at exactly 1 Hit Point. Once that happens, this spell ends.</p>",
+          "duration": "Scene",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace_per_caster",
+              "ae_template_ref": "Mercy",
+              "effect_kind": "apply_ae",
+              "effect_label": "mercy_apply",
+              "menu_description": "",
+              "menu_label": "",
+              "target_ref": "action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": true,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": 1,
+          "max_level": "1",
+          "name": "Mercy",
+          "on_activate_effect_ref": "mercy_apply",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One creature",
+          "skill_type": "Spell",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "1B4DL1K7xYaEdhPu"
       },
       "type": "equippableItem"
     },
@@ -1151,6 +1315,70 @@
       "type": "equippableItem"
     },
     {
+      "_id": "4rDtEgeEQFHpJKdw",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1794077663258,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/SGE/pepsis.png",
+      "name": "Cleanse",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_command": "spell",
+          "class": "Spiritist",
+          "cost": "5 x T MP",
+          "damage_bonus": "0",
+          "description": "<p>You strengthen and purify the soul energy coursing through your companions. Each target <strong>recovers from 1 debuff</strong> of your choice <em>(any active effect tagged as a debuff)</em>.</p>",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "count": "1",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "cleanse_pick",
+              "filter_tag": "debuff",
+              "menu_subtitle": "Recover from one status effect",
+              "menu_title": "Cleanse — Remove a Status",
+              "target_ref": "action_targets"
+            }
+          },
+          "isCheck": false,
+          "isFacet": false,
+          "isOffensiveSpell": false,
+          "level": 1,
+          "name": "Cleanse",
+          "on_activate_effect_ref": "cleanse_pick",
+          "pre_activate_effect_ref": "cleanse_pick",
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_range": "Range",
+          "skill_target": "Up to three creatures",
+          "skill_type": "Spell",
+          "type_damage": ""
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": true,
+        "uniqueId": "C3KMINBBXGYPZ5oj"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "5eaTJGto8B0HIDhg",
       "_stats": {
         "compendiumSource": "Item.yVFJkol5V9OWvceZ",
@@ -1637,6 +1865,169 @@
       "type": "equippableItem"
     },
     {
+      "_id": "9AmrFH5boGRao3zB",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1794074019814,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/905.gif",
+      "name": "Darkroot Herb",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "A dense, almost-black root with a brutally sharp bite. Used in scholarly cuisine.",
+          "dragon_ef": "100",
+          "effect_table": {},
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "0nnDHyX2zs80s8qz",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/905.gif",
+          "ingredient_taste": "bitter",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "0",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "0",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Darkroot Herb",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.0nnDHyX2zs80s8qz",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "0nnDHyX2zs80s8qz"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "BGwlnGHSQhx7TU7Q",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1794074019558,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "icons/consumables/food/salt-seasoning-spice-pink.webp",
+      "name": "Rock Salt",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "description": "<p><em>Coarse pink crystals chipped from a seam. The oldest seasoning there is.</em></p>",
+          "effect_table": {},
+          "id": "F00dStap1eSa1t00",
+          "img": "icons/consumables/food/salt-seasoning-spice-pink.webp",
+          "ingredient_taste": "salty",
+          "ingredient_taste2": "",
+          "ip_cost": "0",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_cost": "8",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "material",
+          "name": "Rock Salt",
+          "optional_params": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "uuid": "Item.F00dStap1eSa1t00"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "F00dStap1eSa1t00"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "bNQshbn7G8YoDX9p",
       "_stats": {
         "compendiumSource": "Item.PGGgozrKWNrtGZLH",
@@ -1944,6 +2335,388 @@
       "type": "equippableItem"
     },
     {
+      "_id": "C5b6BKAGBBlxqEnm",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1794060089868,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "BDqFbfgn2G7hycxI",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>Target is <strong>immune to Dazed</strong> until this spell ends. The Dazed status would normally penalise INS Opposed Checks (-1 die size to INS).</p><p><em>From Reinforce.</em></p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "7sjGOB1onA4C5Cm6",
+              "originalParentId": "mMtCOqDTDWXu9ZOi",
+              "originalUuid": "Item.mMtCOqDTDWXu9ZOi.ActiveEffect.7sjGOB1onA4C5Cm6"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff",
+              "reinforceImmunity": "Dazed"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/divine_benison.png",
+          "name": "Reinforce (Dazed)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "reinforced-dazed"
+          ],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "hGIURZNkpJdasQDe",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>Target is <strong>immune to Shaken</strong> until this spell ends. The Shaken status would normally penalise WLP Opposed Checks (-1 die size to WLP).</p><p><em>From Reinforce.</em></p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "oJKDcLtkPmffeqmc",
+              "originalParentId": "mMtCOqDTDWXu9ZOi",
+              "originalUuid": "Item.mMtCOqDTDWXu9ZOi.ActiveEffect.oJKDcLtkPmffeqmc"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff",
+              "reinforceImmunity": "Shaken"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/divine_benison.png",
+          "name": "Reinforce (Shaken)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "reinforced-shaken"
+          ],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "SVS42MZstY5K4lFL",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>Target is <strong>immune to Weak</strong> until this spell ends. The Weak status would normally penalise MIG Opposed Checks (-1 die size to MIG).</p><p><em>From Reinforce.</em></p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "Nd1MgoUkXdv4MSxv",
+              "originalParentId": "mMtCOqDTDWXu9ZOi",
+              "originalUuid": "Item.mMtCOqDTDWXu9ZOi.ActiveEffect.Nd1MgoUkXdv4MSxv"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff",
+              "reinforceImmunity": "Weak"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/divine_benison.png",
+          "name": "Reinforce (Weak)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "reinforced-weak"
+          ],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        },
+        {
+          "_id": "WqlHlirwe60arGr1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [],
+          "description": "<p>Target is <strong>immune to Slow</strong> until this spell ends. The Slow status would normally penalise DEX Opposed Checks (-1 die size to DEX).</p><p><em>From Reinforce.</em></p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "jQaR8lFEmDOQrItV",
+              "originalParentId": "mMtCOqDTDWXu9ZOi",
+              "originalUuid": "Item.mMtCOqDTDWXu9ZOi.ActiveEffect.jQaR8lFEmDOQrItV"
+            },
+            "fabula-ultima-companion": {
+              "category": "buff",
+              "reinforceImmunity": "Slow"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/divine_benison.png",
+          "name": "Reinforce (Slow)",
+          "origin": null,
+          "sort": 0,
+          "statuses": [
+            "reinforced-slow"
+          ],
+          "system": {
+            "tags": [
+              "buff"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/divine_benison.png",
+      "name": "Reinforce",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_command": "spell",
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Spiritist",
+          "cost": "5 x T MP",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "You protect the targets from attacks that would corrupt their body and spirit. <strong>Choose:</strong> Dazed, Shaken, Slow, or Weak. Until this spell ends, each target is <strong>immune</strong> to the chosen status.",
+          "duration": "Scene",
+          "effect_table": {
+            "0": {
+              "allowed_types": "",
+              "check_bonus_formula": "",
+              "damage_bonus_formula": "",
+              "effect_kind": "open_action_menu",
+              "effect_label": "reinforce_pick",
+              "free_mode": false,
+              "max_mp_cost": "",
+              "menu_option_descriptions": "Penalises INS Opposed Checks. Affects mental focus. | Penalises WLP Opposed Checks. Affects resolve. | Penalises DEX Opposed Checks. Affects agility. | Penalises MIG Opposed Checks. Affects might.",
+              "menu_option_labels": "Dazed | Shaken | Slow | Weak",
+              "menu_option_refs": "reinforce_dazed, reinforce_shaken, reinforce_slow, reinforce_weak",
+              "menu_options": {
+                "0": {
+                  "ae_duplicate_mode": "replace_per_caster",
+                  "ae_template_ref": "Reinforced (Dazed)",
+                  "description": "Penalises INS Opposed Checks. Affects mental focus.",
+                  "effect_kind": "apply_ae",
+                  "label": "Dazed",
+                  "target_ref": "action_targets"
+                },
+                "1": {
+                  "ae_duplicate_mode": "replace_per_caster",
+                  "ae_template_ref": "Reinforced (Shaken)",
+                  "description": "Penalises WLP Opposed Checks. Affects resolve.",
+                  "effect_kind": "apply_ae",
+                  "label": "Shaken",
+                  "target_ref": "action_targets"
+                },
+                "2": {
+                  "ae_duplicate_mode": "replace_per_caster",
+                  "ae_template_ref": "Reinforced (Slow)",
+                  "description": "Penalises DEX Opposed Checks. Affects agility.",
+                  "effect_kind": "apply_ae",
+                  "label": "Slow",
+                  "target_ref": "action_targets"
+                },
+                "3": {
+                  "ae_duplicate_mode": "replace_per_caster",
+                  "ae_template_ref": "Reinforced (Weak)",
+                  "description": "Penalises MIG Opposed Checks. Affects might.",
+                  "effect_kind": "apply_ae",
+                  "label": "Weak",
+                  "target_ref": "action_targets"
+                }
+              },
+              "menu_options_view": "<p>{ \"0\": { \"label\": \"Dazed\", \"description\": \"Penalises INS Opposed Checks. Affects mental focus.\", \"effect_kind\": \"apply_ae\", \"ae_template_ref\": \"Reinforced (Dazed)\", \"target_ref\": \"action_targets\", \"ae_duplicate_mode\": \"replace_per_caster\" }, \"1\": { \"label\": \"Shaken\", \"description\": \"Penalises WLP Opposed Checks. Affects resolve.\", \"effect_kind\": \"apply_ae\", \"ae_template_ref\": \"Reinforced (Shaken)\", \"target_ref\": \"action_targets\", \"ae_duplicate_mode\": \"replace_per_caster\" }, \"2\": { \"label\": \"Slow\", \"description\": \"Penalises DEX Opposed Checks. Affects agility.\", \"effect_kind\": \"apply_ae\", \"ae_template_ref\": \"Reinforced (Slow)\", \"target_ref\": \"action_targets\", \"ae_duplicate_mode\": \"replace_per_caster\" }, \"3\": { \"label\": \"Weak\", \"description\": \"Penalises MIG Opposed Checks. Affects might.\", \"effect_kind\": \"apply_ae\", \"ae_template_ref\": \"Reinforced (Weak)\", \"target_ref\": \"action_targets\", \"ae_duplicate_mode\": \"replace_per_caster\" } }</p>",
+              "menu_subtitle": "All targets gain immunity to the chosen status.",
+              "menu_title": "Reinforce: choose an immunity",
+              "target_ref": ""
+            },
+            "1": {
+              "ae_duplicate_mode": "replace_per_caster",
+              "ae_template_ref": "Reinforce (Dazed)",
+              "effect_kind": "apply_ae",
+              "effect_label": "reinforce_dazed",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "ae_duplicate_mode": "replace_per_caster",
+              "ae_template_ref": "Reinforce (Shaken)",
+              "effect_kind": "apply_ae",
+              "effect_label": "reinforce_shaken",
+              "target_ref": "action_targets"
+            },
+            "3": {
+              "ae_duplicate_mode": "replace_per_caster",
+              "ae_template_ref": "Reinforce (Slow)",
+              "effect_kind": "apply_ae",
+              "effect_label": "reinforce_slow",
+              "target_ref": "action_targets"
+            },
+            "4": {
+              "ae_duplicate_mode": "replace_per_caster",
+              "ae_template_ref": "Reinforce (Weak)",
+              "effect_kind": "apply_ae",
+              "effect_label": "reinforce_weak",
+              "target_ref": "action_targets"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": 1,
+          "max_level": "1",
+          "name": "Reinforce",
+          "on_activate_effect_ref": "reinforce_pick",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "Up to three creatures",
+          "skill_type": "Spell",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": true,
+        "uniqueId": "ENH0AYNeBYoScQ99"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "cLilicKiRj3eMFPH",
       "_stats": {
         "compendiumSource": "Item.P2ZlEmmK2DUhao0y",
@@ -2143,6 +2916,334 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "oAP85eeLJCliYm2E"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "D60GZWI9hc1ZEgmE",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1794065314852,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "M5VOqokm97pmFqrA",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Tiger_cod_icon1.png",
+      "name": "Hearty Cod",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><em>Thick, dense, and honest. One fillet has carried a whole camp through a cold night.</em></p>",
+          "dragon_ef": "100",
+          "effect_table": {},
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "unAiIGTSSYpmonn8",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fish/70px-Tiger_cod_icon1.png",
+          "ingredient_taste": "umami",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "0",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "100",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Rare",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Hearty Cod",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reaction_config_table": {},
+          "recipe_dish_uuid": "",
+          "recipe_kind": "",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "skill_tags": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.unAiIGTSSYpmonn8",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "unAiIGTSSYpmonn8"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "darifaK6tZNResIN",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1794063173558,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Genshin/Item_Noctilucous_Jade.webp",
+      "name": "Obsidian",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><em>Volcanic glass, black and sharp enough to cut the hand that picks it up.</em></p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "Ct03jR1j4OXXr55R",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Genshin/Item_Noctilucous_Jade.webp",
+          "ingredient_taste": "",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "120",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Obsidian",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.Ct03jR1j4OXXr55R",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "Ct03jR1j4OXXr55R"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "dl82DbjJXDYk0wYb",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1794077664054,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/05_BLM/manaward.png",
+      "name": "Vismagus",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "check_bonus": "0",
+          "class": "Spiritist",
+          "cost": "",
+          "damage_bonus": "0",
+          "defense_target_type": "def",
+          "description": "<p>When you cast a spell, if you don't have enough Mind Points to pay for its total cost, you may choose to spend <strong>twice as many Hit Points instead</strong>. You cannot use this Skill if doing so would reduce you to 0 HP. If the spell would cause you to recover HP, you recover no HP <em>(the spell still works on other targets).</em></p>",
+          "duration": "",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "effect_kind": "substitute_cost",
+              "effect_label": "vismagus_swap",
+              "from_resource": "mp",
+              "menu_description": "",
+              "menu_label": "",
+              "min_remaining": 1,
+              "multiplier": 2,
+              "target_ref": "self",
+              "to_resource": "hp"
+            }
+          },
+          "heroic_requirement": "",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": 1,
+          "max_level": "1",
+          "name": "Vismagus",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "",
+              "reaction_action_intent": "",
+              "reaction_action_target": "",
+              "reaction_damage_amount": "",
+              "reaction_damage_source": "",
+              "reaction_damage_type": "",
+              "reaction_debuff_count_min": "",
+              "reaction_debuff_count_target": "",
+              "reaction_effect_ref": "vismagus_swap",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "ask",
+              "reaction_passive_target": "self",
+              "reaction_source": "self",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "caster_short_on_mp",
+              "requires_skill": ""
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "eW2d3HmbS2ur9hax"
       },
       "type": "equippableItem"
     },
@@ -3220,7 +4321,7 @@
           "description": "Each time you acquire this Skill, learn one Spiritist spell (see Facet). Offensive Spiritist Spells use <strong>INS + WLP</strong> for the Magic Check.",
           "implementation_note": "Catalogue skill: each rank learns one Spiritist spell, and each spell carries its own rows. The INS + WLP Magic Check lives on every offensive Spiritist spell (rolled_atr1/2: Lux, Torpor, Enrage, Hallucination).",
           "isCheck": false,
-          "level": 1,
+          "level": 4,
           "max_level": "10",
           "name": "Spiritual Magic",
           "rolled_atr1": "-",
@@ -6740,6 +7841,125 @@
       "type": "equippableItem"
     },
     {
+      "_id": "uIkgruttZSTO21rV",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1794063173359,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/914.gif",
+      "name": "Animal Fur",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><em>A Fur of a beast-type monster, it's the core material for making winter garments</em></p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "OfQc5hgDif7XsRH8",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/914.gif",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "200",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Animal Fur",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.OfQc5hgDif7XsRH8",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "OfQc5hgDif7XsRH8"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "Uq2ImnVoeNW4gt88",
       "_stats": {
         "compendiumSource": "Item.OFaq1NASo4uD8huP",
@@ -9759,7 +10979,7 @@
           "$deleted": false,
           "benefit": "mp",
           "class_name": "Spiritist",
-          "level": 1
+          "level": 5
         }
       },
       "clock_adoration": "0",
@@ -9929,9 +11149,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": 173,
-      "current_ip": "10",
-      "current_mp": 93,
+      "current_hp": 205,
+      "current_ip": 10,
+      "current_mp": 85,
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Blanche_Cut-in002.png",
       "cut_in_fumble": "",
@@ -9989,7 +11209,7 @@
       "emotion_5_3": "affection",
       "emotion_6_1": "admiration",
       "emotion_6_2": "loyalty",
-      "emotion_6_3": "",
+      "emotion_6_3": "affection",
       "emotion_temp_1": "",
       "emotion_temp_2": "",
       "emotion_temp_3": "",
@@ -9997,8 +11217,8 @@
       "enraged_status": 0,
       "entropism": false,
       "envenomed_status": 0,
-      "exp_meter": "9.51",
-      "experience": "9.51",
+      "exp_meter": "2.23",
+      "experience": 9.23,
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
       "extra_damage_mod_all": 0,
@@ -10024,7 +11244,7 @@
       "extra_damage_mod_spell": 0,
       "extra_damage_mod_sword": 0,
       "extra_damage_mod_thrown": 0,
-      "fabula_point": "12",
+      "fabula_point": 8,
       "fatigue_status": 0,
       "firearm_ef": "100",
       "flail_ef": "100",
@@ -10454,7 +11674,7 @@
       },
       "item_restore_mod": 0,
       "key_list": {},
-      "level": "43",
+      "level": 45,
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 15,
@@ -10495,12 +11715,33 @@
           "roll": "",
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.CMeAGFkIizTUlysk"
         },
+        "D60GZWI9hc1ZEgmE": {
+          "id": "${item.id}",
+          "key_description": "<p><em>Thick, dense, and honest. One fillet has carried a whole camp through a cold night.</em></p>",
+          "name": "Hearty Cod",
+          "roll": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.D60GZWI9hc1ZEgmE"
+        },
         "OReN1ugfRh5MmdXU": {
           "id": "${item.id}",
           "key_description": "<p>A small crystallization created by some monsters.</p>",
           "name": "Jellopy",
           "roll": "",
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.OReN1ugfRh5MmdXU"
+        },
+        "RuJkDiIDxjAZOPnn": {
+          "id": "${item.id}",
+          "key_description": "<p><em>A hoarder of a fish; its gullet is a small treasury of swallowed coins and stones. Salt-cured, it keeps for months.</em></p>",
+          "name": "Stash Gar",
+          "roll": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.RuJkDiIDxjAZOPnn"
+        },
+        "darifaK6tZNResIN": {
+          "id": "${item.id}",
+          "key_description": "<p><em>Volcanic glass, black and sharp enough to cut the hand that picks it up.</em></p>",
+          "name": "Obsidian",
+          "roll": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.darifaK6tZNResIN"
         },
         "lBjoxCeeS0JmOVhb": {
           "id": "${item.id}",
@@ -10530,6 +11771,13 @@
           "roll": "",
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.s7GhfXoC9ZMy71wM"
         },
+        "uIkgruttZSTO21rV": {
+          "id": "${item.id}",
+          "key_description": "<p><em>A Fur of a beast-type monster, it's the core material for making winter garments</em></p>",
+          "name": "Animal Fur",
+          "roll": "",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.uIkgruttZSTO21rV"
+        },
         "uTYRq5srXMaXat5y": {
           "id": "${item.id}",
           "key_description": "<p>A small crystallization created by some monsters.</p>",
@@ -10545,9 +11793,9 @@
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.ya38b6iI7xoO4Jur"
         }
       },
-      "max_hp": 173,
+      "max_hp": 174,
       "max_ip": 10,
-      "max_mp": 78,
+      "max_mp": 94,
       "memories_list": {},
       "memory": "Memories",
       "mig_base": "12",
@@ -10555,6 +11803,17 @@
       "minimum_critical_dice": 6,
       "name": "Blanche",
       "normal_spell_list": {
+        "0lu4GUdwJRTUVZjM": {
+          "class": "Spiritist",
+          "cost": "20 MP",
+          "duration": "Scene",
+          "id": "${item.id}",
+          "name": "Mercy",
+          "roll": "",
+          "spell_description": "<p>You strengthen the heart of a creature against suffering and despair. Until this spell ends, if the target would be reduced to 0 Hit Points, they are instead left at exactly 1 Hit Point. Once that happens, this spell ends.</p>",
+          "spell_target": "One creature",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.0lu4GUdwJRTUVZjM"
+        },
         "59DvOVZHpS5rVLjl": {
           "class": "Spiritist",
           "cost": "10 x T MP",
@@ -10565,6 +11824,17 @@
           "spell_description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points.</strong></p>\n<hr>\n<p><strong>Skill Enhancement Lv. 20 ― </strong>The amount of Hit Points recovers increase to <strong>50</strong></p>\n<p><strong>Skill Enhancement Lv. 40 ― </strong>The amount of Hit Points recovers increase to <strong>60</strong></p>",
           "spell_target": "Up to three creatures",
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.59DvOVZHpS5rVLjl"
+        },
+        "C5b6BKAGBBlxqEnm": {
+          "class": "Spiritist",
+          "cost": "5 x T MP",
+          "duration": "Scene",
+          "id": "${item.id}",
+          "name": "Reinforce",
+          "roll": "",
+          "spell_description": "You protect the targets from attacks that would corrupt their body and spirit. <strong>Choose:</strong> Dazed, Shaken, Slow, or Weak. Until this spell ends, each target is <strong>immune</strong> to the chosen status.",
+          "spell_target": "Up to three creatures",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.C5b6BKAGBBlxqEnm"
         },
         "Hp6wehvESGaMioTo": {
           "class": "Guardian",
@@ -10609,6 +11879,17 @@
           "spell_description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
           "spell_target": "Up to three creatures",
           "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.LMnXdh32LS4ZRCn5"
+        },
+        "NZZZBDWN3DCzUVTX": {
+          "class": "Spiritist",
+          "cost": "10 x T MP",
+          "duration": "Instantaneous",
+          "id": "${item.id}",
+          "name": "Heal",
+          "roll": "",
+          "spell_description": "<p>You invigorate your companions, soothing their pain and healing their fatigue. Each target <strong>recovers 40 Hit Points</strong>.</p><hr><p><strong>Skill Enhancement Lv. 20</strong> — The amount of Hit Points recovered increases to <strong>50</strong>.</p><p><strong>Skill Enhancement Lv. 40</strong> — The amount of Hit Points recovered increases to <strong>60</strong>.</p>",
+          "spell_target": "Up to three creatures",
+          "uuid": "Actor.uJFaNQCSvwwsr2AW.Item.NZZZBDWN3DCzUVTX"
         },
         "bElIg6CwtxVuDtqk": {
           "class": "Guardian",
@@ -10733,7 +12014,7 @@
       "rolled_atr2": "MIG",
       "shaken_status": 0,
       "shield_type": "",
-      "shield_value": "0",
+      "shield_value": 0,
       "silence_status": 0,
       "skill_active_list": {
         "0bJVBvEP9ESLcbxs": {
@@ -11195,7 +12476,7 @@
       },
       "skill_class_filter": "Invoker",
       "skill_hideEffect": false,
-      "skill_point": 2,
+      "skill_point": 0,
       "skill_point_bonus": "0",
       "skill_type_filter": "All",
       "slow_status": 0,
@@ -11390,7 +12671,7 @@
       "wlp_base": "6",
       "wlp_current": 6,
       "your_class_name": "Housekeeper",
-      "zenit": "2674",
+      "zenit": 4423,
       "zero_label": "Zero Power",
       "zero_power_description": "<p>You and any number of allies you can see recover from all status effects and recover an amount of Hit Points equal to <strong>【40 + half your level】</strong></p>",
       "zero_power_macro": "",

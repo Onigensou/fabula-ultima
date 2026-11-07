@@ -33,6 +33,7 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "fabulaVillain": "never",
       "idleAnimation": {
         "bounce": false,
         "float": false
