@@ -45,7 +45,21 @@ const PRESETS = {
       return inPoly(mx, my, CAMP_POND_DEEP) || inPoly(mx, my, CAMP_POND_SHALLOW) ? 1 : 0;
     },
   },
+  // Underground Lake, Valley_Map034.png 1448x1086: the lake as the approved
+  // mockup (2026-11-07) drew it, a little past the Regions so the shimmer
+  // reaches the painted shoreline.
+  "underground-lake": {
+    k: 4,
+    pick(r, g, b, mx, my) { return inPoly(mx, my, LAKE_LOOK) ? 1 : 0; },
+  },
+  // Cave Dwelling, Valley_Map033.png 1448x1086: no water. An empty mask so the
+  // water-mode lighting, crystal glows and haze run with nothing rippling.
+  "cave-dwelling": {
+    k: 4,
+    pick() { return 0; },
+  },
 };
+const LAKE_LOOK = [[330,520],[520,470],[900,430],[1448,420],[1448,800],[1250,870],[1100,1000],[880,990],[740,920],[620,850],[500,790],[400,710],[350,640]];
 
 // Valley camp pond (map px), same points as the water Regions on Valley_Map004.
 const CAMP_POND_DEEP = [[890,575],[930,552],[990,545],[1060,550],[1130,552],[1150,580],[1150,605],[1195,615],[1245,608],[1295,622],[1322,660],[1318,715],[1290,752],[1240,778],[1180,800],[1120,802],[1060,792],[1000,798],[940,795],[895,775],[885,700],[895,620]];

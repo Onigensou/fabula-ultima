@@ -38,10 +38,12 @@
 
   // Chest budget per area = scene folder name. Set with the user, 2026-10-24;
   // the user then removed the Great Seal chest and both Rare chests (Eye of
-  // Skadi, Balmung), so Valley and Fafnir carry no Rare for now.
+  // Skadi, Balmung), so Fafnir carries no Rare for now. 2026-11-07: Valley
+  // gained Cave Dwelling (Elixir bag; the Ancient Bone is an event, not a
+  // chest) and Underground Lake (one bag), user-requested.
   const AREA_BUDGETS = {
     "Ancient Capital Midgard": { mundane: 2, standard: 1, rare: 0 },
-    "Valley of the Dragon":    { mundane: 2, standard: 3, rare: 0 },
+    "Valley of the Dragon":    { mundane: 4, standard: 3, rare: 0 },
     "Fafnir Castle":           { mundane: 1, standard: 1, rare: 0 },
   };
 
