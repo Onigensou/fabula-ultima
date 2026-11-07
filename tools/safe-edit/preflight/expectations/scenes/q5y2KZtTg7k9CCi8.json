@@ -136,7 +136,7 @@
           }
         },
         "oniFabula": {
-          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Seal Cavern\",\"id\":\"52LLgHZIyAXBrbMq\"},{\"name\":\"The Great Seal\",\"id\":\"MWQBX1ZnbjcFkvq2\"}]",
+          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Sealed Cavern\",\"id\":\"52LLgHZIyAXBrbMq\"},{\"name\":\"The Great Seal\",\"id\":\"MWQBX1ZnbjcFkvq2\"}]",
           "general": {
             "sceneMode": "theatre",
             "scanRadius": null,

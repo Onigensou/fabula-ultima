@@ -7,7 +7,7 @@
   "tileCount": 26,
   "full": {
     "name": "Valley_Map010",
-    "navName": "Valley of the Dragon - Seal Cavern",
+    "navName": "Valley of the Dragon - Sealed Cavern",
     "navigation": false,
     "folder": "RBurzhUXBqf46PbU",
     "background": {
@@ -47,8 +47,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "LockView": {
         "editViewbox": false,
@@ -88,8 +87,8 @@
             "isOverworld": false,
             "isTown": false,
             "isDungeon": false,
-            "navigationName": "Valley of the Dragon - Seal Cavern",
-            "sceneVisited": false,
+            "navigationName": "Valley of the Dragon - Sealed Cavern",
+            "sceneVisited": true,
             "wellspring_air": false,
             "wellspring_earth": true,
             "wellspring_fire": false,
@@ -104,7 +103,7 @@
           "threatLevel": "medium",
           "encounterTable": "RollTable.sULKvLErNMF8JtUr",
           "enemiesTable": "RollTable.hBupoi4SsKj1GmDM",
-          "battleMap": "Scene.JKhl4GMekbmkKBXw",
+          "battleMap": "Scene.VaLLeYBaTTLeM004",
           "battleBGM": "DRG_Battle",
           "bossBGM": "DRG_Boss",
           "event": {
@@ -124,138 +123,6 @@
           }
         },
         "dungeonPathing": {
-          "tileStates": {
-            "cfJKWaLaIe2DddtM": {
-              "initialType": "door",
-              "currentType": "door",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Door_Tile.png"
-            },
-            "7Votn2FymkL4dw9l": {
-              "initialType": "event",
-              "currentType": "event",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Event_Tile.png"
-            },
-            "Q96RwHWovVoehUST": {
-              "initialType": "consumable",
-              "currentType": "consumable",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Consumeable_Tile.png"
-            },
-            "8VcscGu6SRWVnvBj": {
-              "initialType": "vertigo",
-              "currentType": "vertigo",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Vertigo_Tile.png"
-            },
-            "9KZGy3L0zp5KlIwy": {
-              "initialType": "item",
-              "currentType": "item",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Item_Tile.png"
-            },
-            "khppK6A6X6CekZmg": {
-              "initialType": "blank",
-              "currentType": "blank",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
-            },
-            "iLEyp64LZgeBxYvP": {
-              "initialType": "random_battle",
-              "currentType": "random_battle",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Random_Battle_Tile.png"
-            },
-            "1EV2yRTG3G2wRVmF": {
-              "initialType": "random_battle",
-              "currentType": "random_battle",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Random_Battle_Tile.png"
-            },
-            "S9XddT6cWLvG7ck4": {
-              "initialType": "blank",
-              "currentType": "blank",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
-            },
-            "CsxBE5Htu6kPuVB9": {
-              "initialType": "random_battle",
-              "currentType": "random_battle",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Random_Battle_Tile.png"
-            },
-            "a0gLAjgERXbyCj34": {
-              "initialType": "gold",
-              "currentType": "gold",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Gold_Tile.png"
-            },
-            "KoP7MrSLVAHlWdjf": {
-              "initialType": "skill_check",
-              "currentType": "skill_check",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/SkillCheck_Tile.png"
-            },
-            "W5BZK6OBUZ6V5K6S": {
-              "initialType": "blank",
-              "currentType": "blank",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
-            },
-            "Rp9ek3DPwUnRei76": {
-              "initialType": "random_battle",
-              "currentType": "random_battle",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Random_Battle_Tile.png"
-            },
-            "PSyGeyw14sn8EnFV": {
-              "initialType": "consumable",
-              "currentType": "consumable",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Consumeable_Tile.png"
-            },
-            "YTq6M8FkAJINDIHn": {
-              "initialType": "blank",
-              "currentType": "blank",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
-            },
-            "GeZn8dfjxx3lmxPH": {
-              "initialType": "random_battle",
-              "currentType": "random_battle",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Random_Battle_Tile.png"
-            },
-            "kh7p6Fk9Noeqb2AT": {
-              "initialType": "gold",
-              "currentType": "gold",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Gold_Tile.png"
-            },
-            "IOATiWH8IBxBVFsX": {
-              "initialType": "item",
-              "currentType": "item",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Item_Tile.png"
-            },
-            "gVEBpTkZOPfHd2ff": {
-              "initialType": "random_battle",
-              "currentType": "random_battle",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Random_Battle_Tile.png"
-            },
-            "b185vsJrUYha6wyM": {
-              "initialType": "trap",
-              "currentType": "trap",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Trap_Tile.png"
-            },
-            "TiEkjtdkjskqmnX6": {
-              "initialType": "blank",
-              "currentType": "blank",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
-            },
-            "vszF8DC8U2oQlADQ": {
-              "initialType": "random_battle",
-              "currentType": "random_battle",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Random_Battle_Tile.png"
-            },
-            "E1XN7o2d5jecvuXm": {
-              "initialType": "vertigo",
-              "currentType": "vertigo",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Vertigo_Tile.png"
-            },
-            "tOpoor6AVZ8nQLEu": {
-              "initialType": "gathering",
-              "currentType": "gathering",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Gathering_Tile.png"
-            },
-            "vH0hQzQlKdQjBunX": {
-              "initialType": "healing",
-              "currentType": "healing",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Healing_Tile.png"
-            }
-          },
           "links": {
             "LsP9hb3S1YFbr5ts": {
               "a": "cfJKWaLaIe2DddtM",
@@ -513,6 +380,138 @@
             "at": "2026-11-06T15:58:09.486Z",
             "drawings": 25,
             "kept": []
+          },
+          "tileStates": {
+            "cfJKWaLaIe2DddtM": {
+              "initialType": "door",
+              "currentType": "door",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Door_Tile.png"
+            },
+            "7Votn2FymkL4dw9l": {
+              "initialType": "event",
+              "currentType": "event",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Event_Tile.png"
+            },
+            "Q96RwHWovVoehUST": {
+              "initialType": "consumable",
+              "currentType": "consumable",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Consumeable_Tile.png"
+            },
+            "8VcscGu6SRWVnvBj": {
+              "initialType": "vertigo",
+              "currentType": "vertigo",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Vertigo_Tile.png"
+            },
+            "9KZGy3L0zp5KlIwy": {
+              "initialType": "item",
+              "currentType": "item",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Item_Tile.png"
+            },
+            "khppK6A6X6CekZmg": {
+              "initialType": "blank",
+              "currentType": "blank",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "iLEyp64LZgeBxYvP": {
+              "initialType": "random_battle",
+              "currentType": "random_battle",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Random_Battle_Tile.png"
+            },
+            "1EV2yRTG3G2wRVmF": {
+              "initialType": "random_battle",
+              "currentType": "random_battle",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Random_Battle_Tile.png"
+            },
+            "S9XddT6cWLvG7ck4": {
+              "initialType": "blank",
+              "currentType": "blank",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "CsxBE5Htu6kPuVB9": {
+              "initialType": "random_battle",
+              "currentType": "random_battle",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Random_Battle_Tile.png"
+            },
+            "a0gLAjgERXbyCj34": {
+              "initialType": "gold",
+              "currentType": "gold",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Gold_Tile.png"
+            },
+            "KoP7MrSLVAHlWdjf": {
+              "initialType": "skill_check",
+              "currentType": "skill_check",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/SkillCheck_Tile.png"
+            },
+            "W5BZK6OBUZ6V5K6S": {
+              "initialType": "blank",
+              "currentType": "blank",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "Rp9ek3DPwUnRei76": {
+              "initialType": "random_battle",
+              "currentType": "random_battle",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Random_Battle_Tile.png"
+            },
+            "PSyGeyw14sn8EnFV": {
+              "initialType": "consumable",
+              "currentType": "consumable",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Consumeable_Tile.png"
+            },
+            "YTq6M8FkAJINDIHn": {
+              "initialType": "blank",
+              "currentType": "blank",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "GeZn8dfjxx3lmxPH": {
+              "initialType": "random_battle",
+              "currentType": "random_battle",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Random_Battle_Tile.png"
+            },
+            "kh7p6Fk9Noeqb2AT": {
+              "initialType": "gold",
+              "currentType": "gold",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Gold_Tile.png"
+            },
+            "IOATiWH8IBxBVFsX": {
+              "initialType": "item",
+              "currentType": "item",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Item_Tile.png"
+            },
+            "gVEBpTkZOPfHd2ff": {
+              "initialType": "random_battle",
+              "currentType": "random_battle",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Random_Battle_Tile.png"
+            },
+            "b185vsJrUYha6wyM": {
+              "initialType": "trap",
+              "currentType": "trap",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Trap_Tile.png"
+            },
+            "TiEkjtdkjskqmnX6": {
+              "initialType": "blank",
+              "currentType": "blank",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "vszF8DC8U2oQlADQ": {
+              "initialType": "random_battle",
+              "currentType": "random_battle",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Random_Battle_Tile.png"
+            },
+            "E1XN7o2d5jecvuXm": {
+              "initialType": "vertigo",
+              "currentType": "vertigo",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Vertigo_Tile.png"
+            },
+            "tOpoor6AVZ8nQLEu": {
+              "initialType": "gathering",
+              "currentType": "gathering",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Gathering_Tile.png"
+            },
+            "vH0hQzQlKdQjBunX": {
+              "initialType": "healing",
+              "currentType": "healing",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Healing_Tile.png"
+            }
           }
         }
       }
@@ -582,7 +581,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359022361,
-      "modifiedTime": 1793980689488,
+      "modifiedTime": 1794065469340,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [
