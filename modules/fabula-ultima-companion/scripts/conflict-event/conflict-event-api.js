@@ -39,6 +39,7 @@ import {
 // Importing registers. Add new events here.
 import "./events/lightning-storm.js";
 import "./events/lightning-crystal.js";
+import "./events/soul-tithe.js";
 
 const TAG = "[FU][ConflictEvent]";
 

@@ -72,6 +72,9 @@ const RESOURCE_PROPS = RESOURCE_REGISTRY;
 // to "keep".
 function isTransientAE(eff) {
   const fuFlags = eff?.flags?.[FLAG_NS] ?? {};
+  // A conflict event's own marker: never ticked (directorPermanent), but it must
+  // not outlive the battle, even one that ended without its teardown.
+  if (fuFlags.conflictScoped === true) return true;
   if (fuFlags.crossScene === true) return false;
   if (fuFlags.directorPermanent === true) return false;
   if (fuFlags.directorAppliedBy) return true;

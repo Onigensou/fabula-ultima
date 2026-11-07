@@ -1607,6 +1607,8 @@ function buildLocally(key, entries) {
       if (!live) return;
       renderResources(card, live);
       renderStatuses(card, live);
+      // An AE on max_hp moves the bar with no updateActor to say so.
+      if (eff.changes?.some?.((c) => c.key === "max_hp")) updateCard(card, live);
     };
     const h3 = Hooks.on("createActiveEffect", onAE);
     const h4 = Hooks.on("updateActiveEffect", onAE);

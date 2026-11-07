@@ -1,0 +1,11 @@
+{
+  "_comment": "Soul Tithe: Training Ground + the battle map, the party, fixtures, two enemies and the fragment template. node bin/build-snapshot.mjs --profile soultithe --snapshot snap-soultithe",
+  "scenes": ["Training Ground", "Valley_Battlemap004"],
+  "viewScene": "Training Ground",
+  "actors": {
+    "types": ["_template"],
+    "flags": ["isField"],
+    "folders": [],
+    "names": ["Test Caster", "Test Target Ally", "Test Target Enemy", "Hina", "Keren", "Blanche", "Zarg", "Hellhound", "Imp", "Soul Fragment"]
+  }
+}

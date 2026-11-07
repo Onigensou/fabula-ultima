@@ -73,6 +73,14 @@ export const NONE_ID = "none";
  *                                    `actingActorUuid` — the trigger fans out
  *                                    across every combatant, so an event that
  *                                    cares who is acting must read it.
+ *   onRoundEnd(evtCtx)             — the round is over and its round_end reactions
+ *                                    have settled, so everything that was going to
+ *                                    hurt this round already has. Awaited, ahead of
+ *                                    the new round. Not called when the fight ended.
+ *   onObjectDestroyed(evtCtx, info) — a battlefield object just reached 0 HP. Called
+ *                                    from the defeat reactor BEFORE the removal, so
+ *                                    the object's token and combatant still exist.
+ *                                    info = { actor, tokenDoc, firedKeys }.
  *   onLedgerEvent(evtCtx, cfg)     — a resource/status ledger event is settling.
  *                                    Runs INSIDE settleInstance, awaited, with
  *                                    the shared `firedKeys` dedupe set. This is
@@ -92,6 +100,8 @@ export const EVENT_HANDLERS = Object.freeze([
   "onConflictStart",
   "onRoundStart",
   "onTurnStart",
+  "onRoundEnd",
+  "onObjectDestroyed",
   "onLedgerEvent",
   "onConflictEnd",
 ]);
@@ -216,6 +226,8 @@ export function registerConflictEvent(event, { warn = console.warn } = {}) {
     onConflictStart: event.onConflictStart ?? null,
     onRoundStart: event.onRoundStart ?? null,
     onTurnStart: event.onTurnStart ?? null,
+    onRoundEnd: event.onRoundEnd ?? null,
+    onObjectDestroyed: event.onObjectDestroyed ?? null,
     onLedgerEvent: event.onLedgerEvent ?? null,
     onConflictEnd: event.onConflictEnd ?? null,
     objectives: event.objectives ?? null,

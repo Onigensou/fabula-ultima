@@ -120,7 +120,7 @@ eq("an empty registry still offers none", (clearConflictEvents(), listConflictEv
 // sooner. Update it deliberately, never reflexively.
 
 eq("handler list is pinned", [...EVENT_HANDLERS],
-  ["onConflictStart", "onRoundStart", "onTurnStart", "onLedgerEvent", "onConflictEnd"]);
+  ["onConflictStart", "onRoundStart", "onTurnStart", "onRoundEnd", "onObjectDestroyed", "onLedgerEvent", "onConflictEnd"]);
 
 // The drift this pin exists to catch: a name in the list that registerConflictEvent
 // forgets to copy onto the frozen event. Register an event implementing EVERY

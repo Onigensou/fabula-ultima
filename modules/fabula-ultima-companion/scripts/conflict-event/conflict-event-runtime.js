@@ -220,6 +220,46 @@ export async function dispatchConflictEventLifecycle(director, trigger) {
 }
 
 /**
+ * Round end — called from ROUND_START, ahead of the deferred round wrap.
+ *
+ * Deliberately not a LIFECYCLE_HANDLERS entry. That dispatch runs at the TOP of
+ * the standalone window, before the round_end reactions (a Late Actor's dive, a
+ * forced row), and an event that reads "what did this round do" has to come after
+ * them. By ROUND_START they have all settled.
+ */
+export async function dispatchConflictEventRoundEnd(director) {
+  if (!game.user?.isGM) return;
+  const active = activeConflictEvent(director);
+  const handler = active?.event?.onRoundEnd;
+  if (typeof handler !== "function") return;
+  try {
+    const ctx = await buildEventCtx(director, active.id);
+    log(`round end → ${active.id}.onRoundEnd()`);
+    await handler(ctx);
+  } catch (e) {
+    warn(`"${active.id}" onRoundEnd threw — the conflict continues without it`, e);
+  }
+}
+
+/**
+ * A battlefield object reached 0 HP. Called by the defeat reactor ahead of the
+ * removal: on a path with nothing to animate (a sim, a hidden GM) the removal
+ * lands at once, and the ledger reactor, which runs after it, finds no combatant.
+ */
+export async function dispatchConflictEventObjectDestroyed(director, info) {
+  if (!game.user?.isGM) return;
+  const active = activeConflictEvent(director);
+  const handler = active?.event?.onObjectDestroyed;
+  if (typeof handler !== "function") return;
+  try {
+    const ctx = await buildEventCtx(director, active.id);
+    await handler(ctx, info);
+  } catch (e) {
+    warn(`"${active.id}" onObjectDestroyed threw — the conflict continues without it`, e);
+  }
+}
+
+/**
  * Ledger dispatch — registered via registerBuiltinReactor, so it runs inside
  * settleInstance for every resource/status ledger event (creature_lose_resource,
  * creature_gain_resource, creature_defeated, ...).

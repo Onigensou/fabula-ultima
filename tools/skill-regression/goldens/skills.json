@@ -75,8 +75,8 @@
       "Zarg"
     ],
     "enemyTarget": "Test Target Enemy",
-    "count": 487,
-    "engineVersion": "1.0.520",
+    "count": 486,
+    "engineVersion": "1.0.553",
     "override": {
       "SL": 5,
       "CHAR_LEVEL": 50,
@@ -6616,19 +6616,6 @@
       "reason": "skipped",
       "skill": "Griffin Dance",
       "skillType": "Active"
-    },
-    "Zarg / High Speed": {
-      "caster": "Zarg",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": true,
-      "ok": true,
-      "perTarget": [],
-      "roll": null,
-      "skill": "High Speed",
-      "skillType": "Active",
-      "targets": 1
     },
     "Zarg / Lion Dance": {
       "caster": "Zarg",

@@ -13,6 +13,8 @@ Events so far:
   hazard (a moving status).
 - [Lightning Crystal](lightning-crystal-design.md) — its underground
   counterpart (spawned battlefield objects with a countdown).
+- [Soul Tithe](soul-tithe-design.md) — the Sealed Cavern hazard (wounds become
+  fragments that steal Max HP).
 
 ---
 
@@ -46,6 +48,7 @@ Every handler is optional; an event implements only the beats it needs.
 | `onConflictStart(ctx)` | the conflict has begun (round 0) — seed here |
 | `onRoundStart(ctx)` | a new round has begun — re-seed / upkeep |
 | `onTurnStart(ctx)` | any creature's turn is starting — awaited, and ahead of the forced reaction pass |
+| `onRoundEnd(ctx)` | the round is over and its `round_end` reactions have settled — awaited, ahead of the new round |
 | `onLedgerEvent(ctx, cfg, extra)` | a resource/status ledger event is settling |
 | `onConflictEnd(ctx)` | the conflict is over — sweep here |
 

@@ -2303,6 +2303,15 @@ async function resolveRoundInitiative(director, roundNo) {
 const RoundStart = {
   async onEnter(director) {
     if (routeEndedCombat(director, "ROUND_START")) return;
+    // A pending wrap means a round just finished and its round_end reactions have
+    // settled: the conflict event's round-end beat. (The first ROUND_START has no
+    // wrap pending, so this never fires before Round 1.) No-ops without an event.
+    if (director.dCombat?.pendingRoundWrap) {
+      try {
+        const { dispatchConflictEventRoundEnd } = await import("../conflict-event/conflict-event-runtime.js");
+        await dispatchConflictEventRoundEnd(director);
+      } catch (e) { warn("ROUND_START: conflict-event round end threw", e); }
+    }
     director.ctx.endOfRound = false;
     director.ctx.endOfCombat = false;
     // Deferred wrap: the last TURN_END of the previous round only MARKED the

@@ -28,7 +28,7 @@
 //     unaffordable rather than guessed at, so Blanche's rotation stays thin
 
 import { SimMode } from "./sim-mode.js";
-import { rodDisplacementTarget, noteDisplacement } from "./hazard-brain.js";
+import { rodDisplacementTarget, noteDisplacement, soulFragmentTarget } from "./hazard-brain.js";
 
 // ── Tuning ──────────────────────────────────────────────────────────────────
 // The judgement calls, in one place, so they can be moved from what the fights
@@ -279,6 +279,15 @@ export function refreshFocus(api) {
   // focus-fire inertia, and holding the Rod costs ~30 Bolt every single round;
   // letting inertia win is precisely how a sim run ate six rounds of free damage
   // and reported a TPK that no table would ever have played into.
+  // Hazard: Soul Tithe. Same rank as the Rod, for the same reason: an ignored
+  // fragment doubles every round, so focus-fire inertia is how a party loses.
+  const fragment = soulFragmentTarget(api);
+  if (fragment) {
+    if (api.focusUuid() !== fragment.tokenUuid) SimMode.note("focus", `party goes for ${fragment.name} — it steals its current HP at round's end`);
+    api.setFocus(fragment.tokenUuid);
+    return fragment;
+  }
+
   const shift = rodDisplacementTarget(api);
   if (shift) {
     if (api.focusUuid() !== shift.target.tokenUuid) noteDisplacement(shift);

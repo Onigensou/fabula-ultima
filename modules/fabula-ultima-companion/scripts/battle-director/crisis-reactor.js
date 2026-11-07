@@ -20,6 +20,7 @@
  * gates (Dark Blood) keep working.
  */
 import { log, warn } from "./logger.js";
+import { isBattlefieldObject } from "./battlefield-object.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 // Canonical Crisis AE template (name "Crisis", marker status). Same source the
@@ -31,6 +32,9 @@ function num(v) { const n = Number(v); return Number.isFinite(n) ? n : null; }
 // Threshold = stored crisis_hp (skill-manipulable) when present & finite, else
 // ceil(max_hp/2) for NPCs/monsters that don't carry crisis_hp.
 export function crisisThreshold(actor) {
+  // Crisis is a creature's state. No threshold also keeps an object out of
+  // TARGET_WAS_IN_CRISIS, which reads this through captureSubjectSnapshot.
+  if (isBattlefieldObject(actor)) return null;
   const p = actor?.system?.props ?? {};
   const stored = num(p.crisis_hp);
   if (stored != null) return stored;
@@ -69,6 +73,8 @@ async function buildCrisisData() {
 // Returns { changed, direction: "applied" | "removed" | null }.
 export async function evaluateCrisis(actor) {
   if (!actor) return { changed: false, direction: null };
+  // Crisis is a creature's state; a Soul Fragment's low HP is not one.
+  if (isBattlefieldObject(actor)) return { changed: false, direction: null };
   const cur = num(actor.system?.props?.current_hp);
   const threshold = crisisThreshold(actor);
   if (cur == null || threshold == null) return { changed: false, direction: null };

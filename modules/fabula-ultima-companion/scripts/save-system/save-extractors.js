@@ -608,8 +608,8 @@
         if (savedById.has(id)) continue;
         const f = live.flags?.[MOD] ?? {};
         if (f.runState === true) { toDelete.push(id); continue; }
-        const keep = f.crossScene === true || f.directorPermanent === true ||
-          (f.reactionConfig && !f.directorAppliedBy);
+        const keep = f.conflictScoped !== true && (f.crossScene === true || f.directorPermanent === true ||
+          (f.reactionConfig && !f.directorAppliedBy));
         if (keep) { keptUnique.push(live.name ?? id); keptNames.add(live.name); continue; }
         toDelete.push(id);
       }

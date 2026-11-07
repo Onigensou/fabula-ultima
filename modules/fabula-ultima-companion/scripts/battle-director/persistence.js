@@ -526,6 +526,8 @@ async function snapshotCombatantActors(dCombat) {
         main_hand:           p.main_hand,
         off_hand:            p.off_hand,
         accessory_name:      p.accessory_name,
+        // An object destroyed by HP grows as the fight goes on (a Soul Fragment).
+        ...(actor.flags?.[FLAG_NS]?.bdObjectHpBar === true ? { max_hp: p.max_hp } : {}),
         accessory2_name:     p.accessory2_name,
         main_attrib_1:       p.main_attrib_1,
         main_attrib_2:       p.main_attrib_2,
@@ -1104,6 +1106,14 @@ export async function restoreActorsFromSnapshot(snapshot, futureSaves = []) {
           changed = true;
         }
       }
+      // A conflict event's own marker holds the event's state in its flags and
+      // changes, and only the event writes it, so there is no in-flight change to
+      // clobber: put it back whole.
+      if (snapEff?.flags?.[FLAG_NS]?.conflictScoped === true) {
+        update.changes = snapEff.changes ?? [];
+        update[`flags.${FLAG_NS}`] = snapEff.flags[FLAG_NS];
+        changed = true;
+      }
       if (changed) aeUpdates.push(update);
     }
     if (aeUpdates.length) {
@@ -1273,7 +1283,9 @@ export async function rewindToHistorySnapshot(snapshotId) {
     const strayNames = [];
     for (const td of (scene.tokens ?? [])) {
       const f = td?.flags?.[FLAG_NS] ?? {};
-      const isDirectorSummon = !!(f.isSummon || f.isPhantasm || f.summonedBy);
+      // conflictSpawned: a conflict event's own token. Not a summon (the summon
+      // sweeps and counts must not read it), but rewound past all the same.
+      const isDirectorSummon = !!(f.isSummon || f.isPhantasm || f.summonedBy || f.conflictSpawned);
       if (!isDirectorSummon) continue;
       if (savedTokenUuids.has(td.uuid)) continue;
       strayIds.push(td.id);

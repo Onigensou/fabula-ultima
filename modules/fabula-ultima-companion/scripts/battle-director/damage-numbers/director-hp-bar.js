@@ -203,8 +203,12 @@ export function emitNpcHpBar({ tokenUuid, actor = null, hpBefore, hpAfter, maxHp
     if (!tokenDoc) { log(`hp-bar: gated out (token not found) — ${who}`); return; }
     const HOSTILE = CONST?.TOKEN_DISPOSITIONS?.HOSTILE ?? -1;
     if (tokenDoc.disposition !== HOSTILE) { log(`hp-bar: gated out (not hostile) — ${who}`); return; }
-    if (isBattlefieldObject(actor ?? tokenDoc.actor)) { log(`hp-bar: gated out (battlefield object) — ${who}`); return; }
-    if (!isStudiedMonster(tokenDoc, actor)) { log(`hp-bar: gated out (not studied) — ${who}`); return; }
+    // Most objects have no HP worth showing. One flagged bdObjectHpBar is destroyed
+    // by HP (a Soul Fragment), so its bar is the point and needs no Study.
+    const objectActor = actor ?? tokenDoc.actor;
+    const isObject = isBattlefieldObject(objectActor);
+    if (isObject && objectActor?.flags?.["fabula-ultima-companion"]?.bdObjectHpBar !== true) { log(`hp-bar: gated out (battlefield object) — ${who}`); return; }
+    if (!isObject && !isStudiedMonster(tokenDoc, actor)) { log(`hp-bar: gated out (not studied) — ${who}`); return; }
     emitNpcHpBarUnchecked({
       tokenUuid,
       fromFrac: quantFrac(before / maxHp),

@@ -188,6 +188,20 @@ export function rodDisplacementTarget(api) {
 }
 
 /**
+ * Soul Tithe: the fragment the party should attack, or null.
+ *
+ * A table goes for the biggest thief. Its current HP is exactly what it steals at
+ * the end of the round, and killing it hands all of it back. Ties go to the one
+ * closest to dying only through the sort being stable; nothing here needs more.
+ */
+export function soulFragmentTarget(api) {
+  const fragments = (api.foes?.() ?? []).filter((f) => f.actorDoc?.flags?.["fabula-ultima-companion"]?.conflictObject === "soul-fragment");
+  if (!fragments.length) return null;
+  const hp = (f) => Number(f.actorDoc?.system?.props?.current_hp) || 0;
+  return fragments.slice().sort((a, b) => hp(b) - hp(a))[0];
+}
+
+/**
  * Narrate the decision. Kept here rather than at the call site so the transcript
  * wording stays with the reasoning that produced it — the journal is how a "the
  * AI won't do X" report gets diagnosed, and a bare target swap with no stated

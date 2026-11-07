@@ -90,6 +90,8 @@ async function start(scene) {
   const cfg = scene ? resolvePreset(scene.background?.src) : null;
   const a = cfg?.ambient;
   if (!a) return;
+  // A scene reusing another's backdrop can keep its glow and drop the lightning.
+  state.noArcs = scene?.flags?.["fabula-ultima-companion"]?.stageAmbientNoArcs === true;
   const bg = canvas.primary?.background;
   if (!bg) return;
 
@@ -175,7 +177,7 @@ function surgeOf(c) {
 function step(dt) {
   const a = state.cfg.ambient, k = state.strength;
   const every = (key, [lo, hi], fn) => { state[key] -= dt * k; if (state[key] <= 0) { state[key] = rnd(lo, hi); fn(); } };
-  const arcAt = (c, big) => state.arcLive.push({ c, age: 0, dur: a.arcSheet.ms / 1000, rot: rnd(0, Math.PI * 2), big });
+  const arcAt = (c, big) => state.noArcs ? 0 : state.arcLive.push({ c, age: 0, dur: a.arcSheet.ms / 1000, rot: rnd(0, Math.PI * 2), big });
   every("tSurge", LOOK.surgeEvery, () => { const c = pick(a.crystals); state.surges.push({ c, age: 0, dur: LOOK.surgeDur }); arcAt(c, 1.5); });
   every("tArc", LOOK.arcEvery, () => arcAt(pick(a.crystals), 1));
   every("tRipple", LOOK.rippleEvery, () => {

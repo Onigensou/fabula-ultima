@@ -45,6 +45,7 @@ import { log, warn } from "./logger.js";
 import { playDefeatPose } from "./battler-pose.js";
 import { DEFEAT_STYLES, defeatStyleFromFlags, defeatStartsOnHit, ownsDefeatReaction, resolveDefeatStyle } from "./defeat-styles.js";
 import { playDefeatFx, restoreDefeatFx } from "./defeat-fx.js";
+import { isBattlefieldObject } from "./battlefield-object.js";
 import { KNOCKOUT_TRIGGER, holdsKnockoutRevive, markReviveTried, clearReviveTried, isKnockoutReviveEffect } from "./knockout-revive.js";
 
 // Property paths — kept identical to the legacy auto-defeat hook.
@@ -302,6 +303,7 @@ function isLastFoe(director, tokenUuid) {
   if (!me || me.side !== "enemy") return false;
   for (const c of list) {
     if (c === me || c.side !== "enemy") continue;
+    if (isBattlefieldObject(c.actorDoc ?? c.actor)) continue;  // never holds the finisher back
     const down = typeof c.isDefeatedLive === "function" ? c.isDefeatedLive() : isActorDefeated(c.actorDoc ?? c.actor);
     if (!down) return false;                                // someone still standing
     if (c.tokenUuid && !_removing.has(c.tokenUuid) && tokenExists(c.tokenUuid)
@@ -752,8 +754,19 @@ export async function defeatReactor(director, cfg, extra) {
   const hp = num(get(actor, PATH_HP));
   const down = !!actor && hp != null && hp <= 0;
   if (!down) clearReviveTried(actor);
-  if (down) {
+  // A battlefield object is not a creature: destroying one is not a kill, so no
+  // on-defeat or on-kill reaction reads it (a Soul Fragment must not farm them).
+  if (down && !isBattlefieldObject(actor)) {
     await emitCreatureDefeated(director, actor, payload, extra?.firedKeys, extra?.batch);
+  }
+  // Its event hears about it here, ahead of the removal below, which can land at
+  // once on a path with nothing to animate.
+  if (down && isBattlefieldObject(actor)) {
+    try {
+      const { dispatchConflictEventObjectDestroyed } = await import("../conflict-event/conflict-event-runtime.js");
+      const tokenDoc = await resolveDefeatedToken(actor, payload);
+      await dispatchConflictEventObjectDestroyed(director, { actor, tokenDoc, firedKeys: extra?.firedKeys });
+    } catch (e) { warn("defeat-reactor: object-destroyed dispatch threw", e); }
   }
   // Auto-Life / Reraise (knockout-revive.js): a creature holding a revive is
   // knocked out like any survivor — KO status, cleanse, KO pose — and NOT removed
