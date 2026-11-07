@@ -616,7 +616,8 @@ function injectStyles() {
   css.id = STYLE_ID;
   css.textContent = `
 #${LAYER_ID} {
-  --u: max(1vw, 10px); --ta: .7;
+  /* Size unit: ~10px on a small window, capped at 12px on a full 1920 screen (user: keep it minimal). */
+  --u: clamp(10px, 0.62vw, 12px); --ta: .7;
   --bubble: #fbf3d9; --bubble-hi: #fffaea; --bubble-edge: #4a2e17; --bubble-ink: #3b2412;
   --hud: rgba(16,12,6,.72); --hud-ink: #f3ead8; --gold: #d6b46a;
   position: fixed; inset: 0; pointer-events: none; z-index: 950;
