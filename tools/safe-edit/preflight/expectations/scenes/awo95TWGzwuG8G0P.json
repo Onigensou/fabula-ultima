@@ -148,7 +148,7 @@
             "isOverworld": false,
             "isTown": false,
             "isDungeon": false,
-            "navigationName": "",
+            "navigationName": "Path of Trial",
             "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": true,
@@ -721,7 +721,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780398852837,
-      "modifiedTime": 1793980689143,
+      "modifiedTime": 1794057780314,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [

@@ -674,7 +674,7 @@
             "isOverworld": false,
             "isTown": false,
             "isDungeon": false,
-            "navigationName": "",
+            "navigationName": "Kindred Tree",
             "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": true,
@@ -906,7 +906,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780398857383,
-      "modifiedTime": 1784475452968,
+      "modifiedTime": 1794057780871,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "lights": [

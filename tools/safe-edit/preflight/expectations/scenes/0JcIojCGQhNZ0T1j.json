@@ -146,7 +146,7 @@
             "isOverworld": false,
             "isTown": false,
             "isDungeon": false,
-            "navigationName": "",
+            "navigationName": "Wyrmwood - Ember Crossroads",
             "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": true,
@@ -1010,7 +1010,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780396665050,
-      "modifiedTime": 1793980689649,
+      "modifiedTime": 1794057781400,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "lights": [

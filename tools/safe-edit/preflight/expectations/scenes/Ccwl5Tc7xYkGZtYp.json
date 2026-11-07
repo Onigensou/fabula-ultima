@@ -164,7 +164,7 @@
             "isOverworld": false,
             "isTown": false,
             "isDungeon": false,
-            "navigationName": "",
+            "navigationName": "Ancient Temple",
             "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": true,
@@ -377,7 +377,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780398835916,
-      "modifiedTime": 1792059635189,
+      "modifiedTime": 1794057778738,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

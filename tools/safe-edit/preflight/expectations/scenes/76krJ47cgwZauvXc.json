@@ -540,7 +540,7 @@
             "isOverworld": false,
             "isTown": false,
             "isDungeon": false,
-            "navigationName": "",
+            "navigationName": "Wyrmwood - Clearing",
             "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": true,
@@ -603,7 +603,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780396678707,
-      "modifiedTime": 1792034608524,
+      "modifiedTime": 1794057783358,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

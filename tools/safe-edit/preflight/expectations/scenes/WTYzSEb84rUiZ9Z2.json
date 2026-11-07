@@ -145,7 +145,7 @@
             "isOverworld": false,
             "isTown": false,
             "isDungeon": false,
-            "navigationName": "",
+            "navigationName": "Wyrmwood - Entrance",
             "sceneVisited": true
           },
           "sceneNetwork": "[{\"name\":\"Wyrmwood Theatre Scene\",\"id\":\"Scene.u4UwSVZ6JOzyJ0tl\"},{\"name\":\"Wyrmwood - Forest Path\",\"id\":\"0JcIojCGQhNZ0T1j\"}]"
@@ -207,7 +207,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780396662433,
-      "modifiedTime": 1783752102215,
+      "modifiedTime": 1794057781135,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

@@ -295,7 +295,7 @@
             "isOverworld": false,
             "isTown": false,
             "isDungeon": false,
-            "navigationName": "",
+            "navigationName": "Ancient Temple - Accessory Shop",
             "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": true,
@@ -336,7 +336,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780398845317,
-      "modifiedTime": 1784342586350,
+      "modifiedTime": 1794057779515,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

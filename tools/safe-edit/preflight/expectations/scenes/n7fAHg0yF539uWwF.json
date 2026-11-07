@@ -269,7 +269,7 @@
             "isOverworld": false,
             "isTown": false,
             "isDungeon": false,
-            "navigationName": "",
+            "navigationName": "Path of Trial - Hollow Log",
             "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": true,
@@ -767,7 +767,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780398854849,
-      "modifiedTime": 1793980689172,
+      "modifiedTime": 1794057780591,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [

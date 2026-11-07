@@ -266,7 +266,7 @@
             "isOverworld": false,
             "isTown": false,
             "isDungeon": false,
-            "navigationName": "",
+            "navigationName": "Wyrmwood - Exit",
             "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": true,
@@ -732,7 +732,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780396671781,
-      "modifiedTime": 1793980689738,
+      "modifiedTime": 1794057782545,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "lights": [

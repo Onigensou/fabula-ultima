@@ -243,7 +243,7 @@
             "isOverworld": false,
             "isTown": false,
             "isDungeon": false,
-            "navigationName": "",
+            "navigationName": "Wyrmwood - Mossy Trail",
             "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": true,
@@ -742,7 +742,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780453399403,
-      "modifiedTime": 1793980689686,
+      "modifiedTime": 1794057781689,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [

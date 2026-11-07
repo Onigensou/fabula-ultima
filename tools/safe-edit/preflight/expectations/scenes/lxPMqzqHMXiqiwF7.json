@@ -145,7 +145,7 @@
             "isOverworld": false,
             "isTown": false,
             "isDungeon": false,
-            "navigationName": "",
+            "navigationName": "Wyrmwood - River",
             "sceneVisited": true
           },
           "sceneNetwork": "[{\"name\":\"Wyrmwood Theatre Scene\",\"id\":\"Scene.u4UwSVZ6JOzyJ0tl\"}]"
@@ -203,7 +203,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780396676401,
-      "modifiedTime": 1783752102290,
+      "modifiedTime": 1794057783100,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "lights": [

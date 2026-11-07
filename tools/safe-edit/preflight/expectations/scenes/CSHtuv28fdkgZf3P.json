@@ -145,7 +145,7 @@
             "isOverworld": false,
             "isTown": false,
             "isDungeon": false,
-            "navigationName": "",
+            "navigationName": "Wyrmwood - Pond",
             "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": true,
@@ -724,7 +724,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780396670285,
-      "modifiedTime": 1793980689719,
+      "modifiedTime": 1794057782275,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "lights": [

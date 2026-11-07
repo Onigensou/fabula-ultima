@@ -266,7 +266,7 @@
             "isOverworld": false,
             "isTown": false,
             "isDungeon": false,
-            "navigationName": "",
+            "navigationName": "Wyrmwood - Temple Path",
             "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": true,
@@ -787,7 +787,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780396674137,
-      "modifiedTime": 1793980689756,
+      "modifiedTime": 1794057782814,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "lights": [
