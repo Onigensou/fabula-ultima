@@ -2705,6 +2705,12 @@
         "effects": 0
       },
       {
+        "id": "KdFShwZDkWwcPLop",
+        "name": "Ancient Bone",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "wIkld1R2JP4M2LVz",
         "name": "Ancient Root Medley",
         "type": "equippableItem",
@@ -11593,6 +11599,12 @@
       {
         "id": "OofEp3N2cnIi3aD6",
         "name": "Slave Collar",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "1wKhUvJbSHa5Wr9M",
+        "name": "Slayer's Blood",
         "type": "equippableItem",
         "effects": 0
       },

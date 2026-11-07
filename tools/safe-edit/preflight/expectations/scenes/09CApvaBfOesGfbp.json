@@ -125,7 +125,7 @@
     }
   ],
   "notes": [],
-  "tileCount": 52,
+  "tileCount": 54,
   "full": {
     "name": "Valley_Map009",
     "navName": "Valley of the Dragon - Underground Area",
@@ -218,7 +218,7 @@
             "wellspring_dark": false,
             "wellspring_light": false
           },
-          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Cavern\",\"id\":\"Scene.Uas0vCUZJOjrpgB0\"},{\"name\":\"Valley of the Dragon - Lower Trail\",\"id\":\"QIUobWQvzsjvZK08\"},{\"name\":\"Valley of the Dragon - Winding Trail\",\"id\":\"8ZqllaT165aEOEOn\"},{\"name\":\"Valley of the Dragon - Seal Cavern\",\"id\":\"52LLgHZIyAXBrbMq\"},{\"name\":\"Ancient Mural\",\"id\":\"bcg4esedBAmZTEVL\"}]"
+          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Cavern\",\"id\":\"Scene.Uas0vCUZJOjrpgB0\"},{\"name\":\"Valley of the Dragon - Lower Trail\",\"id\":\"QIUobWQvzsjvZK08\"},{\"name\":\"Valley of the Dragon - Winding Trail\",\"id\":\"8ZqllaT165aEOEOn\"},{\"name\":\"Valley of the Dragon - Seal Cavern\",\"id\":\"52LLgHZIyAXBrbMq\"},{\"name\":\"Ancient Mural\",\"id\":\"bcg4esedBAmZTEVL\"},{\"name\":\"Underground Lake\",\"id\":\"8AyfDRlbqgMk3ku3\"},{\"name\":\"Cave Dwelling\",\"id\":\"ftu35elzee5yhLKG\"}]"
         },
         "oniDungeon": {
           "threatLevel": "medium",
@@ -486,19 +486,19 @@
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Random_Battle_Tile.png"
             },
             "enqt2S1yG70vmr4Z": {
-              "initialType": "blank",
-              "currentType": "blank",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+              "initialType": "unknown",
+              "currentType": "unknown",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Water_Tile.png"
             },
             "I87y14MEgmH9XTpr": {
-              "initialType": "fishing",
-              "currentType": "fishing",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Fishing_Tile.png"
+              "initialType": "event",
+              "currentType": "event",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Event_Tile.png"
             },
             "6P9FNnSD307VqGoY": {
-              "initialType": "blank",
-              "currentType": "blank",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+              "initialType": "unknown",
+              "currentType": "unknown",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Water_Tile.png"
             },
             "5HhZfAZYBBo6zLu6": {
               "initialType": "door",
@@ -511,6 +511,16 @@
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Door_Tile.png"
             },
             "DRwfRPRiNJzKdErX": {
+              "initialType": "event",
+              "currentType": "event",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Event_Tile.png"
+            },
+            "hManhzftA3mb02Rg": {
+              "initialType": "fishing",
+              "currentType": "fishing",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Fishing_Tile.png"
+            },
+            "UiPqiCi2aPctAtmU": {
               "initialType": "event",
               "currentType": "event",
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Event_Tile.png"
@@ -1062,6 +1072,26 @@
               "off": false,
               "requiresSwitch": "",
               "label": ""
+            },
+            "urg6t8uPKIEJ0xD3": {
+              "a": "6P9FNnSD307VqGoY",
+              "b": "hManhzftA3mb02Rg",
+              "route": "side",
+              "oneWay": false,
+              "via": [],
+              "off": false,
+              "requiresSwitch": "",
+              "label": ""
+            },
+            "0Egowvfvjq1NFnh3": {
+              "a": "BixtfXhqb8nHi1Ln",
+              "b": "UiPqiCi2aPctAtmU",
+              "route": "side",
+              "oneWay": false,
+              "via": [],
+              "off": false,
+              "requiresSwitch": "",
+              "label": ""
             }
           },
           "linksVersion": 1,
@@ -1138,7 +1168,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359018436,
-      "modifiedTime": 1793980689451,
+      "modifiedTime": 1794050147925,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [
