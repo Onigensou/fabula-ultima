@@ -339,7 +339,10 @@
 
   function setVisible(visible) {
     const root = ensureRoot();
+    const was = root.classList.contains("is-visible");
     root.classList.toggle("is-visible", !!visible);
+    // Its height counts toward the dock's stack top (Party Talk docks above it).
+    if (was !== !!visible) globalThis.oni?.HudDock?.relayout?.({ defer: true });
   }
 
   function hide() {
@@ -363,6 +366,17 @@
     // defensively from the Dungeon Pathing UI constants (button row at
     // BOTTOM=80, SIZE=64), with the same fallbacks dp-scan-mode.js uses.
     if (isMainControllerSceneMode(canvas?.scene)) {
+      // The HUD dock (scripts/shared/hud-dock.js, order 30) owns the stack:
+      // it puts this badge above the button row and whichever advancement
+      // badges are showing. The measuring below is the no-dock fallback.
+      const dock = globalThis.oni?.HudDock;
+      if (dock) {
+        root.style.left = "20px";
+        root.style.top  = "auto"; // override the stylesheet's top:0 so bottom anchors
+        state.docked = true;
+        dock.relayout();
+        return;
+      }
       const btn       = globalThis.DungeonPathing?.UI?.SCAN_BUTTON;
       const btnBottom = Number(btn?.BOTTOM ?? 80);
       const btnSize   = Number(btn?.SIZE   ?? 64);
@@ -616,6 +630,21 @@
     }
 
     state.ready = true;
+
+    // Bottom-left stack member: only while docked on a walk map and showing.
+    globalThis.oni?.HudDock?.register?.("controller-badge", {
+      order: 30,
+      height: () => {
+        const r = document.getElementById(ROOT_ID);
+        return state.docked && r?.classList.contains("is-visible") ? Math.round(r.getBoundingClientRect().height) : 0;
+      },
+      apply: (bottom) => {
+        if (!state.docked) return;
+        const r = document.getElementById(ROOT_ID);
+        if (r) r.style.bottom = `${bottom}px`;
+      },
+    });
+
     scheduleRefresh("ready", 50);
 
     DBG.verbose("ControllerBadge", "movementControl-controllerBadge.js ready", {

@@ -26,11 +26,12 @@ const ROOT_ID = "oni-levelup-badge";
 //   THIS badge                  bottom 154, only when points are unspent
 //   main controller badge       above whichever of the two is topmost
 //
-// The button row's geometry is read defensively from the Dungeon Pathing UI
-// constants, matching how movementControl-controllerBadge.js docks. That badge
-// measures this one and offsets itself, so when there is nothing to spend it
-// simply falls back to the 154 slot.
+// Placement belongs to the HUD dock (scripts/shared/hud-dock.js, order 20): it
+// hands this badge its bottom and moves the layers above when it comes or goes.
+// dockBottom() is only the fallback for a load where the dock is missing.
 const GAP = 10;
+const DOCK_ID = "skill-point-badge";
+const hudDock = () => globalThis.oni?.HudDock ?? null;
 const dockBottom = () => {
   const btn = globalThis.DungeonPathing?.UI?.SCAN_BUTTON;
   return Number(btn?.BOTTOM ?? 80) + Number(btn?.SIZE ?? 64) + GAP;
@@ -102,7 +103,7 @@ const Badge = {
       document.body.appendChild(el);
       this._el = el;
     }
-    this._el.style.bottom = `${dockBottom()}px`;
+    if (!hudDock()) this._el.style.bottom = `${dockBottom()}px`;
     this._el.innerHTML =
       `<div class="lub-n">${points}</div>
        <div><div class="lub-t">Unspent Skill Point${points === 1 ? "" : "s"}</div>
@@ -119,13 +120,21 @@ const Badge = {
     this._restack();
   },
 
-  // Let the controller badge re-measure. It docks above this one when present
-  // and returns to its usual slot when not.
+  // Re-stack: the dock places this badge and moves the controller badge (and
+  // anything else above) up or back down in the same frame.
   _restack() {
+    const dock = hudDock();
+    if (dock) { dock.relayout(); return; }
     try { globalThis.FUCompanion?.api?.MovementControlControllerBadge?.reposition?.(); }
     catch { /* badge not on this scene */ }
   },
 };
+
+hudDock()?.register(DOCK_ID, {
+  order: 20,
+  height: () => (Badge._el ? Math.round(Badge._el.getBoundingClientRect().height) : 0),
+  apply: (bottom) => { if (Badge._el) Badge._el.style.bottom = `${bottom}px`; },
+});
 
 // While the screen-transition overlay is black, the badge must not slide in
 // behind it — its entrance would be spent unseen. covered tracks that window;

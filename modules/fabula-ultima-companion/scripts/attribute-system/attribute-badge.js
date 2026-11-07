@@ -34,6 +34,12 @@ const STYLE_ID = "oni-attribute-badge-style";
 const ROOT_ID = "oni-attribute-badge";
 const GAP = 10;
 
+// Placement belongs to the HUD dock (scripts/shared/hud-dock.js, order 21, just
+// above the Skill Point badge). dockBottom() is only the fallback for a load
+// where the dock is missing.
+const DOCK_ID = "attribute-point-badge";
+const hudDock = () => globalThis.oni?.HudDock ?? null;
+
 /** Directly above the button row, plus the Skill Point badge if it is showing. */
 function dockBottom() {
   const btn = globalThis.DungeonPathing?.UI?.SCAN_BUTTON;
@@ -109,7 +115,7 @@ export const AttributeBadge = {
       `<span class="ab-n">${n}</span>
        <span class="ab-t">Unspent Attribute Point${n === 1 ? "" : "s"}
          <span class="ab-s" style="display:block">Click to raise an attribute</span></span>`;
-    this._el.style.bottom = `${dockBottom()}px`;
+    if (!hudDock()) this._el.style.bottom = `${dockBottom()}px`;
     this._nudgeStack();
   },
 
@@ -122,9 +128,17 @@ export const AttributeBadge = {
 
   /** Let the layers above settle now rather than on the next resize. */
   _nudgeStack() {
+    const dock = hudDock();
+    if (dock) { dock.relayout(); return; }
     try { globalThis.FUCompanion?.api?.MovementControlControllerBadge?.reposition?.(); } catch { /* optional */ }
   },
 };
+
+hudDock()?.register(DOCK_ID, {
+  order: 21,
+  height: () => (AttributeBadge._el ? Math.round(AttributeBadge._el.getBoundingClientRect().height) : 0),
+  apply: (bottom) => { if (AttributeBadge._el) AttributeBadge._el.style.bottom = `${bottom}px`; },
+});
 
 // See the SP badge: the entrance must not play behind the transition overlay's
 // black. covered holds it back until the scene is revealed. Without the
