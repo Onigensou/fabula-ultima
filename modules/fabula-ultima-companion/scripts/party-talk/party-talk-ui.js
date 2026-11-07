@@ -151,25 +151,15 @@ function playPop() {
 }
 
 // ── dock above the bottom-left HUD ─────────────────────────────────────────
-// There is no shared dock manager yet (planned: window.oni.HudDock). Until then
-// Party Talk measures the stack itself: any visible fixed element in the
-// bottom-left corner, plus Foundry's hotbar and Players list. Each scene mode
-// shows a different set (dungeon buttons, controller badge…), so it is measured
-// live rather than hard-coded.
+// Party Talk floats above the bottom-left stack, which the HUD dock owns
+// (scripts/shared/hud-dock.js): button row, advancement badges, controller
+// badge. Foundry's hotbar is not a dock member, so it is the floor.
 function measureStack() {
-  const H = innerHeight, W = innerWidth;
-  let top = 0;
-  for (const e of document.querySelectorAll("body > *, #ui-bottom > *, #ui-left > *, #players, #hotbar")) {
-    if (e === D.root || e.tagName === "SCRIPT" || e.tagName === "STYLE") continue;
-    const cs = getComputedStyle(e);
-    if (e.id !== "players" && e.id !== "hotbar" && cs.position !== "fixed") continue;
-    if (cs.display === "none" || cs.visibility === "hidden" || Number(cs.opacity) === 0) continue;
-    const r = e.getBoundingClientRect();
-    if (!r.width || !r.height) continue;
-    if (r.left > W * 0.45 || r.right <= 0 || r.bottom < H * 0.6 || r.height > H * 0.45) continue;
-    top = Math.max(top, H - r.top);
-  }
-  return Math.round(Math.min(top, H * 0.45));
+  const H = innerHeight;
+  const hb = document.getElementById("hotbar");
+  const hotbarTop = hb && hb.offsetParent !== null ? H - hb.getBoundingClientRect().top : 0;
+  const dockTop = globalThis.oni?.HudDock?.stackTop?.() ?? 0;
+  return Math.round(Math.max(dockTop, hotbarTop));
 }
 function layoutDock() {
   if (!D.root) return;
@@ -862,6 +852,7 @@ Hooks.once("ready", () => {
     Hooks.on("canvasReady", () => { clearAll(); closePrompt(); S.allowed = null; gateTick(); });
     setInterval(gateTick, GATE_MS);
     window.addEventListener("resize", () => layoutDock());
+    globalThis.oni?.HudDock?.onChange?.(() => layoutDock());
     requestAnimationFrame(frame);
     gateTick();
 

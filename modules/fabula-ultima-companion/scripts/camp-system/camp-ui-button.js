@@ -428,5 +428,13 @@
     }
   }
 
+  // The camp button sits in the bottom-left button row (bottom 80). The HUD dock
+  // only needs to know when it is on screen, so what floats above the stack
+  // (Party Talk) clears it.
+  globalThis.oni?.HudDock?.registerRow?.("camp-button", () => {
+    const w = document.getElementById(WRAP_ID);
+    return !!w && !w.classList.contains("hidden") && getComputedStyle(w).display !== "none";
+  });
+
   console.debug(TAG, "Button module loaded.");
 })();

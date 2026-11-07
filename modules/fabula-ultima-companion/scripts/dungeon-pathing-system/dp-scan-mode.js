@@ -657,4 +657,10 @@
     /** Re-grey the ritual button after an external performer-eligibility change. */
     syncRitualBtn,
   };
+
+  // The mode buttons are the bottom-left button row (bottom 80). They keep their
+  // own position; the HUD dock only needs to know when the row is on screen, so
+  // what floats above the stack (Party Talk) clears it.
+  globalThis.oni?.HudDock?.registerRow?.("dp-mode-buttons", () =>
+    [...document.querySelectorAll(".oni-dp-mode-btn")].some((b) => b.isConnected && getComputedStyle(b).display !== "none"));
 })();
