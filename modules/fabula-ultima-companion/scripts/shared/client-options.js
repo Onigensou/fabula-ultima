@@ -61,6 +61,38 @@ export const OPTION_GROUPS = [
       },
     ],
   },
+  {
+    id: "partyTalk",
+    label: "Party Talk",
+    icon: "fa-comment-dots",
+    options: [
+      {
+        key: "partyTalkStyle",
+        label: "Bubble style",
+        hint: "How party lines (T to talk) look on the left of your screen.",
+        default: "glass",
+        choices: [
+          { value: "glass", label: "Glass", hint: "A dark see-through band that fades out to the right, with light text. Covers the least of the map." },
+          { value: "frost", label: "Frost", hint: "See-through paper with the map blurred behind it. A little heavier on slower machines." },
+          { value: "subtitle", label: "Subtitle", hint: "No box at all: outlined text beside the portrait." },
+          { value: "ribbon", label: "Ribbon", hint: "A slanted dark band with gold edges." },
+          { value: "paper", label: "Paper", hint: "A solid bubble in the game's paper colours. Easiest to read, covers the most map." },
+        ],
+      },
+      {
+        key: "partyTalkBacking",
+        label: "Bubble backing",
+        hint: "How see-through the Glass, Frost and Ribbon backing is.",
+        default: "70",
+        choices: [
+          { value: "40", label: "Light", hint: "40%: the map shows clearly through the band." },
+          { value: "55", label: "Medium", hint: "55%: between Light and Standard." },
+          { value: "70", label: "Standard", hint: "70%: readable over bright and dark maps alike." },
+          { value: "85", label: "Strong", hint: "85%: nearly solid, for the busiest maps." },
+        ],
+      },
+    ],
+  },
 ];
 
 const ALL = OPTION_GROUPS.flatMap((g) => g.options);
