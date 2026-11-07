@@ -17,6 +17,9 @@ const hina = game.actors.getName("Hina");
 const keren = game.actors.getName("Keren");
 const kalinaLike = game.actors.getName("Blanche"); // stands in as a summon below
 const phantasmLike = game.actors.getName("Zarg"); // rankless, so only the token flag can exclude it
+// The design table below is Hina at 120 Max HP. Play moves her real Max (food, gear), so pin it.
+const maxPin = 120 - num(hina.system.props.max_hp);
+if (maxPin) { await hina.createEmbeddedDocuments("ActiveEffect", [{ name: "Rig: Max HP pin", changes: [{ key: "max_hp", mode: 2, value: String(maxPin) }], flags: { [NS]: { directorPermanent: true } } }]); await sleep(500); }
 const templateBefore = JSON.stringify(game.actors.find((a) => a.flags?.[NS]?.conflictObject === "soul-fragment").system.props.max_hp);
 const base = { hina: num(hina.system.props.max_hp), keren: num(keren.system.props.max_hp) };
 

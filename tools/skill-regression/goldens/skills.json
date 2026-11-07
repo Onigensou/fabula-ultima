@@ -75,8 +75,8 @@
       "Zarg"
     ],
     "enemyTarget": "Test Target Enemy",
-    "count": 486,
-    "engineVersion": "1.0.553",
+    "count": 494,
+    "engineVersion": "1.0.565",
     "override": {
       "SL": 5,
       "CHAR_LEVEL": 50,
@@ -211,6 +211,19 @@
       "skillType": "Active",
       "targets": 1
     },
+    "Blanche / Cleanse": {
+      "caster": "Blanche",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": false,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Cleanse",
+      "skillType": "Spell",
+      "targets": 1
+    },
     "Blanche / Descabello": {
       "caster": "Blanche",
       "element": "physical",
@@ -262,6 +275,19 @@
       "skill": "Invocation",
       "skillType": "Active"
     },
+    "Blanche / Mercy": {
+      "caster": "Blanche",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Mercy",
+      "skillType": "Spell",
+      "targets": 1
+    },
     "Blanche / Muleta": {
       "caster": "Blanche",
       "element": "physical",
@@ -312,6 +338,19 @@
       "roll": null,
       "skill": "Provoke",
       "skillType": "Active",
+      "targets": 1
+    },
+    "Blanche / Reinforce": {
+      "caster": "Blanche",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Reinforce",
+      "skillType": "Spell",
       "targets": 1
     },
     "Blanche / Tafallera": {
@@ -2690,6 +2729,19 @@
       "skillType": "Active",
       "targets": 1
     },
+    "Hina / Barrier": {
+      "caster": "Hina",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Barrier",
+      "skillType": "Spell",
+      "targets": 1
+    },
     "Hina / Bimagus": {
       "caster": "Hina",
       "element": "",
@@ -2753,32 +2805,6 @@
       "roll": null,
       "skill": "Divination",
       "skillType": "Spell",
-      "targets": 1
-    },
-    "Hina / Draconic Roar": {
-      "caster": "Hina",
-      "element": "",
-      "hasDamage": false,
-      "hasHealing": false,
-      "offensive": false,
-      "ok": true,
-      "perTarget": [
-        {
-          "affinity": "NE",
-          "damage": 0,
-          "grant": null,
-          "grantRes": null,
-          "hit": true,
-          "resource": "hp"
-        }
-      ],
-      "roll": {
-        "crit": false,
-        "fumble": false,
-        "hr": 6
-      },
-      "skill": "Draconic Roar",
-      "skillType": "Active",
       "targets": 1
     },
     "Hina / Drain Spirit": {
@@ -2947,6 +2973,19 @@
       "skillType": "Spell",
       "targets": 1
     },
+    "Hina / Hope": {
+      "caster": "Hina",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": false,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Hope",
+      "skillType": "Active",
+      "targets": 1
+    },
     "Hina / Iceberg": {
       "caster": "Hina",
       "element": "ice",
@@ -2986,6 +3025,45 @@
       "skillType": "Active",
       "targets": 1
     },
+    "Hina / Lux": {
+      "caster": "Hina",
+      "element": "light",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 21,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Lux",
+      "skillType": "Spell",
+      "targets": 1
+    },
+    "Hina / Mercy": {
+      "caster": "Hina",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Mercy",
+      "skillType": "Spell",
+      "targets": 1
+    },
     "Hina / Protect": {
       "caster": "Hina",
       "element": "",
@@ -2997,6 +3075,19 @@
       "roll": null,
       "skill": "Protect",
       "skillType": "Active",
+      "targets": 1
+    },
+    "Hina / Solar Beam": {
+      "caster": "Hina",
+      "element": "",
+      "hasDamage": false,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [],
+      "roll": null,
+      "skill": "Solar Beam",
+      "skillType": "Spell",
       "targets": 1
     },
     "Hina / Starfall": {
@@ -6616,6 +6707,32 @@
       "reason": "skipped",
       "skill": "Griffin Dance",
       "skillType": "Active"
+    },
+    "Zarg / Icicle Lance": {
+      "caster": "Zarg",
+      "element": "ice",
+      "hasDamage": true,
+      "hasHealing": false,
+      "offensive": true,
+      "ok": true,
+      "perTarget": [
+        {
+          "affinity": "NE",
+          "damage": 26,
+          "grant": null,
+          "grantRes": null,
+          "hit": true,
+          "resource": "hp"
+        }
+      ],
+      "roll": {
+        "crit": false,
+        "fumble": false,
+        "hr": 6
+      },
+      "skill": "Icicle Lance",
+      "skillType": "Spell",
+      "targets": 1
     },
     "Zarg / Lion Dance": {
       "caster": "Zarg",
