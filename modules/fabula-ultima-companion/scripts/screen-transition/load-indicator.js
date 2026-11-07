@@ -29,8 +29,9 @@
 // the spinner turns means the page itself has hung.
 //
 // The mascot reacts to a click; each kind moves its own way. Purely cosmetic,
-// it gives restless hands something other than F5. Momonga always qualifies;
-// the others only once the Monster Encyclopedia has their page (no spoilers).
+// it gives restless hands something other than F5. Every load picks one of the
+// mascots at random, never the same twice in a row. They are mascots, not
+// bestiary entries, so they show whether the party has met them or not.
 //
 // While the screen is black, Foundry's toasts ("lost connection", "map image
 // didn't load") are lifted above it; they used to be hidden underneath.
@@ -67,14 +68,13 @@
 
   const FORGE = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/";
   const LOGO  = FORGE + "Campaign/The%20Legend%20of%20Dragonslayer/Image/UI/DRG_LoadingLogo.webp";
-  // Momonga is the house loading mascot (it is on the Loading Screen scene). The others show only once
-  // the party has met them: a page with their name in the Monster Encyclopedia. No spoilers.
-  const ENCYCLOPEDIA_ID = "PNjdkqQx1X0Rx4Eh";
+  // The loading mascots, picked at random per load (Momonga is the one on the Loading Screen scene).
+  // No bestiary gate: a mascot is not a spoiler. flip = the sprite faces left; mirror it.
   const MASCOTS = [
-    { id: "momonga", name: "Momonga",      src: FORGE + "Beastiary/Momonga_Standard.png",        w: 64, pokeMs: 900, always: true },
+    { id: "momonga", name: "Momonga",      src: FORGE + "Beastiary/Momonga_Standard.png",        w: 64, pokeMs: 900 },
     { id: "slime",   name: "Slime",        src: FORGE + "Beastiary/Slime_Standard.png",          w: 56, pokeMs: 800 },
     { id: "sylph",   name: "Sylph",        src: FORGE + "Beastiary/Sylph_Standard.png",          w: 66, pokeMs: 900, fx: "#8fcf6a" },
-    { id: "boar",    name: "Prickle Boar", src: FORGE + "Beastiary/Prickle%20Boar_Standard.png", w: 74, pokeMs: 800, fx: "#a8957a", bonk: true },
+    { id: "boar",    name: "Prickle Boar", src: FORGE + "Beastiary/Prickle%20Boar_Standard.png", w: 74, pokeMs: 800, fx: "#a8957a", bonk: true, flip: true },
     { id: "shroom",  name: "Shroomy",      src: FORGE + "Beastiary/Shroomy_Standard.png",        w: 60, pokeMs: 700, fx: "#efe2b0" },
   ];
   // stand-ins until the GM writes the real ones
@@ -166,20 +166,9 @@
 
   // ── The draw ───────────────────────────────────────────────────────────────
 
-  // read at every pick: the bestiary grows during a session. Before the journal is
-  // available (world entry) or without access to it, only the house mascot qualifies.
-  function allowedMascots() {
-    let met = new Set();
-    try {
-      const j = game.journal?.get(ENCYCLOPEDIA_ID) ?? game.journal?.getName?.("Monster Encyclopedia");
-      met = new Set((j?.pages?.map?.(p => String(p.name).trim().toLowerCase())) ?? []);
-    } catch { /* no journal yet */ }
-    return MASCOTS.filter(m => m.always || met.has(m.name.toLowerCase()));
-  }
-
+  // equal odds, never the same mascot twice in a row
   function pickMascot() {
-    const allowed = allowedMascots();
-    const pool = allowed.length > 1 ? allowed.filter(m => m !== lastMascot) : allowed;
+    const pool = MASCOTS.length > 1 ? MASCOTS.filter(m => m !== lastMascot) : MASCOTS;
     lastMascot = pool[Math.floor(Math.random() * pool.length)] ?? MASCOTS[0];
     return lastMascot;
   }
@@ -373,6 +362,7 @@
     ui.mascot.src = m.src;
     ui.mascot.style.width = `${m.w}px`;
     ui.mascot.className = `fu-nl-${m.id}-idle`;
+    ui.mascot.toggleAttribute("data-flip", !!m.flip);
     ui.mascotBtn.setAttribute("aria-label", `Poke ${m.name}`);
   }
 
@@ -485,6 +475,7 @@ ${R} .fu-nl-row{display:flex;align-items:flex-end;gap:14px}
 ${R} .fu-nl-mascot,${R} .fu-nl-mascot:hover,${R} .fu-nl-mascot:focus{position:relative;pointer-events:auto;width:auto;height:auto;min-width:44px;min-height:44px;margin:0;padding:0;border:0;background:none;box-shadow:none;line-height:0;cursor:pointer;display:flex;align-items:flex-end;justify-content:center}
 ${R} .fu-nl-mascot:focus-visible{outline:2px solid #c9a44a;outline-offset:2px}
 ${R} .fu-nl-mascot img{display:block;height:auto;border:0;transform-origin:50% 100%}
+${R} .fu-nl-mascot img[data-flip]{transform:scaleX(-1)}
 ${R} .fu-nl-logo{display:block;width:220px;height:auto;border:0;animation:fuNlBreathe 5s steps(25) infinite}
 ${R} .fu-nl-status{display:flex;align-items:center;gap:12px;font-size:18px}
 ${R} .fu-nl-label{text-shadow:1px 0 rgba(255,70,70,.45),-1px 0 rgba(70,150,255,.45)}
@@ -529,8 +520,8 @@ ${R} .fu-nl-shroom-poke{animation:fuNlShroomPoke .7s steps(3) 1}
 @keyframes fuNlSlimePoke{0%{transform:translateY(0) scale(1,1)}20%{transform:translateY(0) scale(1.3,.65)}45%{transform:translateY(-30px) scale(.85,1.2)}70%{transform:translateY(0) scale(1.2,.8)}85%{transform:translateY(0) scale(.95,1.05)}100%{transform:translateY(0) scale(1,1)}}
 @keyframes fuNlSylphIdle{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-7px) rotate(3deg)}}
 @keyframes fuNlSylphPoke{0%{transform:translateY(0) rotate(0)}50%{transform:translateY(-26px) rotate(180deg)}100%{transform:translateY(0) rotate(360deg)}}
-@keyframes fuNlBoarIdle{0%,68%,100%{transform:translateX(0)}72%{transform:translateX(-1px)}76%{transform:translateX(1px)}80%{transform:translateX(-1px)}84%{transform:translateX(1px)}}
-@keyframes fuNlBoarPoke{0%{transform:translateX(0) rotate(0)}15%{transform:translateX(-8px) rotate(2deg)}45%{transform:translateX(30px) rotate(0)}55%{transform:translateX(20px) rotate(-7deg)}75%{transform:translateX(5px) rotate(0)}100%{transform:translateX(0) rotate(0)}}
+@keyframes fuNlBoarIdle{0%,68%,100%{transform:translateX(0) scaleX(-1)}72%{transform:translateX(-1px) scaleX(-1)}76%{transform:translateX(1px) scaleX(-1)}80%{transform:translateX(-1px) scaleX(-1)}84%{transform:translateX(1px) scaleX(-1)}}
+@keyframes fuNlBoarPoke{0%{transform:translateX(0) rotate(0) scaleX(-1)}15%{transform:translateX(-8px) rotate(2deg) scaleX(-1)}45%{transform:translateX(30px) rotate(0) scaleX(-1)}55%{transform:translateX(20px) rotate(-7deg) scaleX(-1)}75%{transform:translateX(5px) rotate(0) scaleX(-1)}100%{transform:translateX(0) rotate(0) scaleX(-1)}}
 @keyframes fuNlShroomIdle{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
 @keyframes fuNlShroomPoke{0%{transform:translateY(0) scale(1,1)}25%{transform:translateY(0) scale(1.12,.82)}50%{transform:translateY(-18px) scale(.95,1.08)}75%{transform:translateY(0) scale(1.06,.94)}100%{transform:translateY(0) scale(1,1)}}
 @media (prefers-reduced-motion: reduce){${R} *,${R}{animation:none!important;transition:none!important}}
@@ -566,8 +557,8 @@ ${R} .fu-nl-shroom-poke{animation:fuNlShroomPoke .7s steps(3) 1}
         onChange: on => { if (!on) { hide(); liftBootCover(); document.body.classList.remove(COVER_CLASS); } },
       });
     } catch (err) { console.warn(TAG, "setting registration failed", err); }
-    // load the art now, so neither world entry nor a slow map waits on it (the met mascots follow at ready)
-    for (const src of [LOGO, ...MASCOTS.filter(m => m.always).map(m => m.src)]) {
+    // load the art now, so neither world entry nor a slow map waits on it
+    for (const src of [LOGO, ...MASCOTS.map(m => m.src)]) {
       const img = new Image();
       img.decoding = "async";
       img.src = src;
@@ -592,13 +583,6 @@ ${R} .fu-nl-shroom-poke{animation:fuNlShroomPoke .7s steps(3) 1}
       const ov = document.getElementById(OVERLAY_ID);
       if (ov) ensureDom(ov);
       for (const [kind, data] of pendingRecords.splice(0)) record(kind, data);
-      for (const m of allowedMascots()) {
-        if (m.always) continue;
-        const img = new Image();
-        img.decoding = "async";
-        img.src = m.src;
-        preloaded.push(img);
-      }
     } catch (err) { console.warn(TAG, "ready setup failed", err); }
     liftBootCover();
     globalThis.FUCompanion ??= {};
@@ -607,8 +591,8 @@ ${R} .fu-nl-shroom-poke{animation:fuNlShroomPoke .7s steps(3) 1}
       /** The draw in progress, for the console and the test bridge. */
       state: () => draw && { entry: draw.entry, elapsedMs: Date.now() - draw.t0, ...counts(draw), pending: pendingList(draw),
         texturesDone: !!draw.texDoneAt, ready: !!draw.readyAt, shown: draw.shown, mascot: draw.mascot?.id },
-      /** The mascots this client may show: the house one plus those the bestiary has met. */
-      mascots: () => allowedMascots().map(m => m.name),
+      /** The mascots a load may show (random, never the same twice in a row). */
+      mascots: () => MASCOTS.map(m => m.name),
     };
   });
 })();
