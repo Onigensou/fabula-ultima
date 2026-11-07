@@ -1120,7 +1120,15 @@
   async function walkCampSummon(token, destination, { speed = WALK_SPEED } = {}) {
     if (state.walkKind !== "camp" || !isCampSummonToken(token) || !token.document?.isOwner) return 0;
     if (!canCurrentUserMovePartyToken()) return 0;
-    const origin = drawnCenter(token);
+    // From where it is drawn, unless the drawing hasn't caught up (a token
+    // just created, or a page that isn't drawing reports 0,0): then from the
+    // document. Planned from the map's corner, the leg stopped at the first
+    // wall and stranded the summon.
+    const doc = token.document;
+    const docCenter = { x: doc.x + token.w / 2, y: doc.y + token.h / 2 };
+    const drawn = drawnCenter(token);
+    const gridSize = canvas.dimensions?.size || 100;
+    const origin = Math.hypot(drawn.x - docCenter.x, drawn.y - docCenter.y) > gridSize * 3 ? docCenter : drawn;
     const walk = resolveWalk(token, origin, destination, { snap: false });
     if (!walk.spot) return 0;
     const center = topLeftToCenter(walk.spot, token);

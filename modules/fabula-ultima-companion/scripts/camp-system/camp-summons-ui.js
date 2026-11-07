@@ -113,7 +113,7 @@ async function refreshButton() {
   btn.classList.toggle("is-on", out.length > 0);
   btn.classList.toggle("is-sending", _sending);
   if (out.length) {
-    const names = out.map((t) => t.name).join(" & ");
+    const names = out.map((t) => t.actor?.name ?? t.name).join(" & ");
     const face = out[0].texture?.src ?? "";
     btn.innerHTML = `<span class="fu-summon-face">${spriteHtml(face)}</span><span class="fu-summon-lbl">Dismiss</span>`
       + `<span class="fu-summon-key" aria-hidden="true">Q</span>`;
@@ -244,6 +244,9 @@ export function initCampSummonsUI() {
   }
   Hooks.on("userConnected", () => refreshSoon());
   refreshSoon();
+  // Safety net: a first join can miss the first refresh (seen once in the
+  // sandbox, behind the client-settings sync prompt; not reproduced on reload).
+  setTimeout(() => refreshSoon(), 3000);
 }
 
 function injectStyles() {

@@ -246,6 +246,9 @@ async function spawnGroup(scene, owner, userId, group) {
     const d = actor.prototypeToken.toObject();
     const spot = spots[i];
     d.texture = { ...d.texture, src: campSpriteOf(actor) };
+    d.name = actor.name;
+    d.appendNumber = false;
+    d.prependAdjective = false;
     const facing = Math.sign(member.texture?.scaleX ?? 1) || 1;
     d.texture.scaleX = Math.abs(d.texture.scaleX ?? 1) * ratio * facing;
     d.texture.scaleY = Math.abs(d.texture.scaleY ?? 1) * ratio;
@@ -347,25 +350,33 @@ async function onPhase(phase) {
 
 // ── every client: fade in / out ─────────────────────────────────────────────
 
-// An alpha filter of our own on the sprite, so nothing that rewrites the
-// token's alpha (refreshes, the camp overlap fade) fights the fade; plus a
-// soft glow at the feet. Local drawing only, nothing is written.
+// The fade drives the sprite's own alpha and never touches its filter list:
+// the idle float is a TokenMagic filter the GM writes onto the token right
+// after it is created, and editing mesh.filters mid-fade dropped it on some
+// clients. A token refresh resets mesh.alpha, so refreshToken puts the fade's
+// value back (fading). Plus a soft glow at the feet. Local drawing only.
+const fading = new Map();   // token id → current fade alpha
 function animate(token, from, to, ms, done) {
   const mesh = token?.mesh;
   if (!mesh || !canvas?.app?.ticker) { done?.(); return; }
-  const filter = new PIXI.AlphaFilter(from);
-  mesh.filters = [...(mesh.filters ?? []), filter];
+  fading.set(token.id, from);
+  mesh.alpha = from;
   const glow = feetGlow(token);
   const t0 = performance.now();
   const tick = () => {
     const k = Math.min(1, (performance.now() - t0) / ms);
     const e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
-    filter.alpha = from + (to - from) * e;
+    const a = from + (to - from) * e;
+    fading.set(token.id, a);
+    if (!mesh.destroyed) mesh.alpha = a;
     if (glow) { glow.alpha = Math.sin(Math.PI * k) * 0.85; glow.scale.set(0.6 + 0.6 * k); }
     if (k >= 1 || mesh.destroyed) {
       canvas.app.ticker.remove(tick);
-      if (!mesh.destroyed && mesh.filters) mesh.filters = mesh.filters.filter((f) => f !== filter);
       glow?.destroy();
+      if (to >= 1) {
+        fading.delete(token.id);
+        if (!mesh.destroyed) token.renderFlags?.set?.({ refreshState: true });
+      }
       done?.();
     }
   };
@@ -402,11 +413,8 @@ function fadeOut(sceneId, ids) {
     if (!t || _fadingOut.has(id)) continue;
     _fadingOut.add(id);
     any = true;
-    animate(t, 1, 0, FADE_MS, () => {
-      // Stay hidden for the moment between the fade and the delete.
-      const f = new PIXI.AlphaFilter(0);
-      if (t.mesh && !t.mesh.destroyed) t.mesh.filters = [...(t.mesh.filters ?? []), f];
-    });
+    // Stays at 0 (fading keeps it there) for the moment until the delete.
+    animate(t, 1, 0, FADE_MS);
   }
   if (any) playSfx("leave");
 }
@@ -438,7 +446,10 @@ function onMemberMoved(doc, change, options, userId) {
   if (!rt?.walkCampSummon || !token) return;
   const g = canvas.grid?.size ?? 100;
   const to = { x: doc.x + token.w / 2, y: doc.y + token.h / 2 };
-  const from = _lastCenter.get(doc.id) ?? { x: token.x + token.w / 2, y: token.y + token.h / 2 };
+  const drawn = { x: token.x + token.w / 2, y: token.y + token.h / 2 };
+  const from = _lastCenter.get(doc.id)
+    ?? (Math.hypot(drawn.x - to.x, drawn.y - to.y) < g * 6 ? drawn : null);
+  if (!from) { _lastCenter.set(doc.id, to); return; }
   _lastCenter.set(doc.id, to);
   const led = rt.getCampWalker?.();
   const followers = summonTokensOf(canvas.scene, game.user.id)
@@ -451,7 +462,7 @@ function onMemberMoved(doc, change, options, userId) {
   followers.forEach((t, i) => {
     const tok = t.object;
     if (!tok) return;
-    const here = { x: tok.x + tok.w / 2, y: tok.y + tok.h / 2 };
+    const here = { x: t.x + tok.w / 2, y: t.y + tok.h / 2 };
     if (Math.hypot(targets[i].x - here.x, targets[i].y - here.y) < g * 0.35) return;
     rt.walkCampSummon(tok, targets[i], { speed }).catch(() => {});
   });
@@ -522,8 +533,13 @@ export function installCampSummons() {
     pendingIn.delete(token.id);
     fadeIn(token);
   });
+  Hooks.on("refreshToken", (token) => {
+    const a = fading.get(token.id);
+    if (a !== undefined && token.mesh && !token.mesh.destroyed) token.mesh.alpha = a;
+  });
   Hooks.on("deleteToken", (doc) => {
     _fadingOut.delete(doc.id);
+    fading.delete(doc.id);
     _lastCenter.delete(doc.id);
     if (flagOf(doc) && runtime()?.getCampWalker?.() === doc.id) {
       runtime()?.setCampWalker?.(null);
