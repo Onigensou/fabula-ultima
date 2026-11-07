@@ -373,6 +373,9 @@
     const safeSceneId = String(sceneId || "");
 
     const grouped = !!DBG.group?.(DEBUG_SCOPE, `GM Execute Tile [${safeTileId}]`, true);
+    // Only a run this call started may be cleaned up on the way out. A refusal
+    // ("alreadyExecuting" from a second press) must not end the run in progress.
+    let started = false;
     DBG.log(DEBUG_SCOPE, "Execution request received.", {
       sceneId: safeSceneId,
       tileId: safeTileId,
@@ -447,7 +450,11 @@
       }
 
       gmActiveExecutions.add(safeTileId);
+      started = true;
       markTileRunning(safeTileId);
+      // Sockets do not echo, so the GM running it never gets its own "start":
+      // take this event's "!" off this GM's screen here, as other clients do.
+      window.oni.EventSystem.Core?.hideRunningCandidate?.(safeTileId);
       // Stepped in on arrival: the other players may still be drawing the map.
       if (stepIn) await waitForPlayersOnScene(safeSceneId);
       window.oni.EventSystem.Flow?.begin(safeTileId, safeSceneId, tileDoc);
@@ -598,9 +605,11 @@
         error: e
       };
     } finally {
-      gmActiveExecutions.delete(safeTileId);
-      unmarkTileRunning(safeTileId);
-      window.oni.EventSystem.Flow?.end(safeTileId);
+      if (started) {
+        gmActiveExecutions.delete(safeTileId);
+        unmarkTileRunning(safeTileId);
+        window.oni.EventSystem.Flow?.end(safeTileId);
+      }
       if (grouped) DBG.groupEnd?.();
     }
   }
@@ -883,6 +892,22 @@
 
     // End an event on this client without word from the GM running it (its
     // time limit ran out, or that GM dropped out).
+    // An event just began (here or elsewhere): take its "!" / talk button off
+    // this screen now and rescan, so nobody can press it a second time.
+    hideRunningCandidate(tileId) {
+      const id = String(tileId || "");
+      if (!id) return;
+      if (this._activeCandidate?.tileId === id) {
+        this._activeCandidate = null;
+        this.ui?.hide();
+      }
+      if (this._activeTalkCandidate?.tileId === id) {
+        this._activeTalkCandidate = null;
+        this.ui?.hideTalk();
+      }
+      this._queueScan("after-execute-start");
+    },
+
     forceEndLocal(sourceId) {
       const id = String(sourceId || "");
       if (!id) return;
@@ -1011,15 +1036,8 @@
             if (runningTileId) {
               markTileRunning(runningTileId);
               announceExecution("start", msg?.payload?.sceneId, runningTileId, msg?.payload?.gmUserId ?? null);
-
-              if (this._activeCandidate?.tileId === runningTileId) {
-                this._activeCandidate = null;
-                this.ui?.hide();
-              }
-              if (this._activeTalkCandidate?.tileId === runningTileId) {
-                this._activeTalkCandidate = null;
-                this.ui?.hideTalk();
-              }
+              this.hideRunningCandidate(runningTileId);
+              return;
             }
 
             this._queueScan("after-execute-start");
