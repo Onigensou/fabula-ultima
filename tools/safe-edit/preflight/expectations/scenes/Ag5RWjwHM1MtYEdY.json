@@ -965,8 +965,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "LockView": {
         "editViewbox": false,
@@ -1007,7 +1006,7 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "Thunder Pillar",
-            "sceneVisited": false,
+            "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": false,
             "wellspring_fire": false,
@@ -1087,7 +1086,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1793383397711,
-      "modifiedTime": 1793384884457,
+      "modifiedTime": 1793467277334,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

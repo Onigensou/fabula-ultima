@@ -127,8 +127,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "sequencer": {
         "effects": []
@@ -1128,7 +1127,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1788073353631,
-      "modifiedTime": 1791392287209,
+      "modifiedTime": 1793467134104,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "environment": {

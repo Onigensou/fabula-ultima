@@ -47,8 +47,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "LockView": {
         "editViewbox": false,
@@ -89,7 +88,7 @@
             "isTown": false,
             "isDungeon": false,
             "navigationName": "Valley Entrance",
-            "sceneVisited": false,
+            "sceneVisited": true,
             "wellspring_air": true,
             "wellspring_earth": false,
             "wellspring_fire": false,
@@ -213,7 +212,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791358997301,
-      "modifiedTime": 1793343325723,
+      "modifiedTime": 1793463840919,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

@@ -1019,6 +1019,14 @@
               "startedAtMs": 1780213955940,
               "expiresAtMs": 1780213957666
             }
+          },
+          "promptMarker": {
+            "status": "cancelled",
+            "at": "2026-10-31T15:46:37.775Z",
+            "runId": "bi_prompt_1793461583468_nrjzj1",
+            "sceneId": "QFqZdO7PjOcPY4mE",
+            "sceneName": "Vastwind_Battlemap001",
+            "via": "close-x"
           }
         },
         "battleEnd": {
@@ -1103,8 +1111,8 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1769387745118,
-      "modifiedTime": 1792855192383,
-      "lastModifiedBy": "JQGNzKpDPHJmcUIW"
+      "modifiedTime": 1793461730426,
+      "lastModifiedBy": "WQGFvLStTZeWGpak"
     },
     "environment": {
       "globalLight": {

@@ -104,8 +104,7 @@
       "battle-transitions": {
         "version": "1.1.6",
         "autoTrigger": false,
-        "sequence": [],
-        "isTriggered": false
+        "sequence": []
       },
       "sequencer": {
         "effects": []
@@ -139,7 +138,7 @@
             "cameraFollowToken": false,
             "sceneMode": "conflict",
             "conflictEvent": "lightning-crystal",
-            "sceneVisited": false,
+            "sceneVisited": true,
             "scanRadius": null,
             "fastTravelEnabled": true,
             "disableTransition": false,
@@ -240,7 +239,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791438123126,
-      "modifiedTime": 1793431956308,
+      "modifiedTime": 1793471579086,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [
