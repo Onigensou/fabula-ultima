@@ -1232,6 +1232,9 @@
         if (!scene.tokens?.size) continue;
         const tokens = {};
         for (const token of scene.tokens.values()) {
+          // A summon called into camp is cosmetic and never saved (camp-summons):
+          // left out here, a load also deletes any that are standing there.
+          if (token.getFlag?.(MOD, "campSummon")) continue;
           tokens[token.id] = foundry.utils.deepClone(token.toObject());
         }
         result[scene.id] = tokens;

@@ -22,6 +22,10 @@ export async function runJRPGSpeechBubble() {
     }
 
     // Player path: user-linked actor on this scene
+    // At camp, a summon this player walks with Q speaks in their place (camp-summons).
+    const led = globalThis.FUCompanion?.api?.campSummons?.ledToken?.() ?? null;
+    if (led) return led;
+
     const linkedActor = game.user?.character ?? null; // Foundry's linked Actor
     if (!linkedActor) {
       // No linked actor configured for this user → quietly ignore

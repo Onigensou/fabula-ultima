@@ -487,6 +487,21 @@
         return resolveGmSelectedToken();
       }
 
+      // Priority 1b: at camp, a summon this player walks with Q (camp-summons)
+      // emotes in their place.
+      const led = globalThis.FUCompanion?.api?.campSummons?.ledToken?.() ?? null;
+      if (led) {
+        return makeBaseResult({
+          ok: true,
+          reason: "campLedSummon",
+          mode: "individual",
+          token: led,
+          actor: led.actor ?? null,
+          user: game.user,
+          permission: true
+        });
+      }
+
       // Priority 2: camera-follow mode
       if (isCameraFollowModeActive(canvas.scene)) {
         return await resolveCameraFollowCentralToken();
