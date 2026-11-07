@@ -35,7 +35,9 @@ const SOUND = `modules/${MODULE_ID}/assets/sounds/party-talk-pop.ogg`;
 // The file is the mockup's blip at 8× amplitude; 1/8 here plays it at the
 // mockup's level (peak 0.05) before Foundry's interface volume.
 const SOUND_VOLUME = 0.125;
-const TYPING_TTL_MS = 20000;
+const TYPING_TTL_MS = 20000;       // a typer who vanishes (crash, reload) stops showing after this
+const TYPING_HEARTBEAT_MS = 8000;  // an open box re-announces itself, so a slow typer stays shown
+let typingHeartbeat = null;
 const GATE_MS = 400;
 const PICKER_MAP_MAX = 12;
 
@@ -148,6 +150,34 @@ function playPop() {
   } catch (e) { console.debug(TAG, "pop failed", e); }
 }
 
+// ── dock above the bottom-left HUD ─────────────────────────────────────────
+// There is no shared dock manager yet (planned: window.oni.HudDock). Until then
+// Party Talk measures the stack itself: any visible fixed element in the
+// bottom-left corner, plus Foundry's hotbar and Players list. Each scene mode
+// shows a different set (dungeon buttons, controller badge…), so it is measured
+// live rather than hard-coded.
+function measureStack() {
+  const H = innerHeight, W = innerWidth;
+  let top = 0;
+  for (const e of document.querySelectorAll("body > *, #ui-bottom > *, #ui-left > *, #players, #hotbar")) {
+    if (e === D.root || e.tagName === "SCRIPT" || e.tagName === "STYLE") continue;
+    const cs = getComputedStyle(e);
+    if (e.id !== "players" && e.id !== "hotbar" && cs.position !== "fixed") continue;
+    if (cs.display === "none" || cs.visibility === "hidden" || Number(cs.opacity) === 0) continue;
+    const r = e.getBoundingClientRect();
+    if (!r.width || !r.height) continue;
+    if (r.left > W * 0.45 || r.right <= 0 || r.bottom < H * 0.6 || r.height > H * 0.45) continue;
+    top = Math.max(top, H - r.top);
+  }
+  return Math.round(Math.min(top, H * 0.45));
+}
+function layoutDock() {
+  if (!D.root) return;
+  const s = measureStack();
+  if (s !== S.stack) { S.stack = s; D.root.style.setProperty("--pt-stack", `${s}px`); }
+  if (S.promptOpen) D.root.style.setProperty("--pt-prompt-h", `${Math.round(D.prompt.getBoundingClientRect().height)}px`);
+}
+
 // ── stack (FLIP so bubbles glide) ──────────────────────────────────────────
 function flip(mutate) {
   const els = [...D.col.querySelectorAll(".pt-talk:not(.leave)"), D.pills];
@@ -186,6 +216,7 @@ function showBubble(line) {
   el.addEventListener("pointerleave", () => S.queue.hold(line.id, false));
   el.addEventListener("click", () => retire(line.id));
   el.addEventListener("animationend", (e) => { if (e.animationName === "pt-bIn" || e.animationName === "pt-fade") el.classList.remove("enter"); });
+  if (!S.bubbles.size) layoutDock();
   flip(() => D.col.insertBefore(el, D.pills));
   S.bubbles.set(line.id, b);
   restyle();
@@ -222,9 +253,18 @@ function clearAll() {
 }
 
 // ── pills: who waits, who types ────────────────────────────────────────────
+// Pills redraw ONLY when what they show changes: a rebuild replays the slide-in
+// and reloads the faces, which reads as a blink if done on every tick.
+let pillSig = "";
 function renderPills() {
   if (!D.pills) return;
-  D.pills.replaceChildren();
+  const now = Date.now();
+  for (const [uid, t] of S.typing) if (t.until < now) S.typing.delete(uid);
+  const sig = !S.allowed ? "off"
+    : `${S.queue.waiting.map((l) => l.id).join(",")}|${[...S.typing].map(([uid, t]) => `${uid}:${t.speaker.key}`).join(",")}`;
+  if (sig === pillSig) return;
+  pillSig = sig;
+  D.pills.querySelectorAll(".pt-pill:not(.pt-note)").forEach((p) => p.remove());
   if (!S.allowed) return;
   if (S.queue.waiting.length) {
     const p = document.createElement("span");
@@ -233,9 +273,7 @@ function renderPills() {
     p.appendChild(document.createTextNode(`+${S.queue.waiting.length}`));
     D.pills.appendChild(p);
   }
-  const now = Date.now();
-  for (const [uid, t] of S.typing) {
-    if (t.until < now) { S.typing.delete(uid); continue; }
+  for (const t of S.typing.values()) {
     const p = document.createElement("span");
     p.className = "pt-pill";
     const dots = document.createElement("span");
@@ -248,7 +286,7 @@ function renderPills() {
 
 function flashNote(text) {
   const p = document.createElement("span");
-  p.className = "pt-pill";
+  p.className = "pt-pill pt-note";
   p.textContent = text;
   D.pills.appendChild(p);
   setTimeout(() => p.remove(), 2000);
@@ -363,21 +401,29 @@ export function openPrompt(prefill = "") {
   S.histIdx = -1;
   D.prompt.hidden = false;
   D.prompt.classList.toggle("gm", !!game.user.isGM);
+  D.root.classList.add("pt-typing");
   D.input.value = prefill;
   setMode("say");
   renderSpeaker();
   renderKeys();
   updateCount();
+  layoutDock();
+  requestAnimationFrame(layoutDock);   // box height is known after its first layout
   setTimeout(() => D.input.focus(), 0);
   sendTyping(true);
+  clearInterval(typingHeartbeat);
+  typingHeartbeat = setInterval(() => { if (S.promptOpen) sendTyping(true); }, TYPING_HEARTBEAT_MS);
   return true;
 }
 
 export function closePrompt() {
   if (!S.promptOpen) return;
+  clearInterval(typingHeartbeat);
+  typingHeartbeat = null;
   closePicker();
   S.promptOpen = false;
   D.prompt.hidden = true;
+  D.root.classList.remove("pt-typing");
   sendTyping(false);
   D.input.blur();
 }
@@ -544,6 +590,8 @@ function gateTick() {
     D.root.classList.toggle("pt-off", !allowed);
     if (!allowed && was !== false) { clearAll(); closePrompt(); if (S.logOpen) toggleLog(false); }
   }
+  // Re-dock while anything is on screen (HUD pieces come and go with the scene mode).
+  if (S.allowed && (S.promptOpen || S.bubbles.size)) layoutDock();
   // rAF sleeps in a hidden tab; keep the clock honest from here too.
   for (const id of S.queue.expire(performance.now())) retire(id);
   if (S.typing.size) renderPills();
@@ -632,9 +680,12 @@ function injectStyles() {
 .pt-face img { position: absolute; display: block; max-width: none; height: auto; border: 0; }
 
 /* column */
-/* 200px floor: the bottom-left HUD (hotbar, round buttons, controller badge) is sized in px, not vw */
-#${LAYER_ID} .pt-col { position: absolute; left: ${u(1.6)}; bottom: max(${u(7.4)}, 200px); width: ${u(42)};
-  display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: ${u(0.9)}; }
+/* Docked above the bottom-left HUD stack (hotbar, mode buttons, controller badge, Players):
+   --pt-stack = its measured height (layoutDock). While the box is open the column sits above the box. */
+#${LAYER_ID} .pt-col { position: absolute; left: ${u(1.6)}; bottom: max(${u(7.4)}, calc(var(--pt-stack, 186px) + 12px)); width: ${u(42)};
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: ${u(0.9)};
+  transition: bottom .25s cubic-bezier(.16,1,.3,1); }
+#${LAYER_ID}.pt-typing .pt-col { bottom: calc(var(--pt-stack, 0px) + 8px + var(--pt-prompt-h, ${u(6)}) + 10px); }
 .pt-talk { position: relative; pointer-events: auto; display: flex; align-items: center; cursor: pointer; max-width: 100%; }
 .pt-portrait { width: ${u(5.6)}; height: ${u(5.6)}; z-index: 2; margin-right: ${u(-1.6)}; align-self: flex-end; filter: drop-shadow(0 ${u(0.2)} ${u(0.3)} rgba(0,0,0,.45)); }
 .pt-portrait.cutout { -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent 100%); mask-image: linear-gradient(to bottom, #000 80%, transparent 100%); }
@@ -734,7 +785,7 @@ function injectStyles() {
 @keyframes pt-dot { 0%, 60%, 100% { opacity: .25; transform: none; } 30% { opacity: 1; transform: translateY(${u(-0.2)}); } }
 
 /* text box */
-#${LAYER_ID} .pt-prompt { position: absolute; left: ${u(1.6)}; bottom: ${u(1.6)}; width: ${u(44)}; pointer-events: auto;
+#${LAYER_ID} .pt-prompt { position: absolute; left: ${u(1.6)}; bottom: max(${u(1.6)}, calc(var(--pt-stack, 0px) + 8px)); width: ${u(44)}; pointer-events: auto;
   display: flex; flex-direction: column; gap: ${u(0.45)}; padding: ${u(0.6)} ${u(0.8)} ${u(0.55)}; border-radius: ${u(0.7)};
   background: rgba(18,13,7,.88); box-shadow: 0 0 0 ${u(0.14)} rgba(214,180,106,.55), 0 ${u(0.6)} ${u(1.4)} rgba(0,0,0,.5);
   animation: pt-up .25s cubic-bezier(.16,1,.3,1); }
@@ -789,6 +840,13 @@ function injectStyles() {
   #${LAYER_ID} *, #${LAYER_ID} *::before, #${LAYER_ID} *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }`;
   document.head.appendChild(css);
+  // A stray line in the template once made the browser drop .pt-talk silently
+  // (portraits stacked above bubbles). Say so loudly if a core rule is missing.
+  try {
+    const have = new Set([...css.sheet.cssRules].map((r) => r.selectorText));
+    const missing = [".pt-talk", ".pt-portrait", ".pt-body", ".pt-lines", `#${LAYER_ID} .pt-col`].filter((s) => !have.has(s));
+    if (missing.length) console.error(TAG, "stylesheet lost rules:", missing);
+  } catch { /* */ }
 }
 
 // ── boot ───────────────────────────────────────────────────────────────────
@@ -803,6 +861,7 @@ Hooks.once("ready", () => {
     // A new map starts clean (lines from the last map are in the log).
     Hooks.on("canvasReady", () => { clearAll(); closePrompt(); S.allowed = null; gateTick(); });
     setInterval(gateTick, GATE_MS);
+    window.addEventListener("resize", () => layoutDock());
     requestAnimationFrame(frame);
     gateTick();
 
