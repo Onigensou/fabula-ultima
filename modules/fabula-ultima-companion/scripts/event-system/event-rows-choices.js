@@ -60,7 +60,8 @@
   const MENU_ID = "oni-event-choice";
 
   const MIN_OPTIONS = 2;
-  const MAX_OPTIONS = 4;
+  // RPG Maker allows six; the King's question menu (Eisendrache prologue) needs them.
+  const MAX_OPTIONS = 6;
   const DEFAULT_ROLEPLAY_LABEL = "Something else…";
   const MENU_OUT_MS = 280; // keep in step with #oni-event-choice.is-leaving
 

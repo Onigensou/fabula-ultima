@@ -121,8 +121,38 @@ async function renderLocal(payload) {
 
     const token = pickSpeakerToken({ tokenId, actorId });
     if (!token) {
-      ui.notifications?.warn("FU.Dialog.show: No speaker token found (select a token or pass tokenId/actorId).");
-      return;
+      // No speaker on this map (a theatre scene, an announcer, a voice from
+      // off-stage): with screen:true the bubble sits at the bottom of the
+      // screen, with the actor's portrait when there is one.
+      if (opts.screen !== true) {
+        ui.notifications?.warn("FU.Dialog.show: No speaker token found (select a token or pass tokenId/actorId).");
+        return;
+      }
+      const actor = actorId ? game.actors?.get(actorId) : null;
+      const payload = {
+        bubbleId: `fu-bubble-${randomID(12)}`,
+        sceneId,
+        tokenId: null,
+        screenAnchor: true,
+        actorId: actor?.id ?? null,
+        name: name ?? actor?.name ?? "",
+        text: String(text),
+        mode,
+        speed: Math.max(1, Number(speed) || 28),
+        portraitSrc: portraitSrc ?? actor?.img ?? null,
+        waitForInput: waitForInput === true,
+        maxWaitMs: Number(maxWaitMs) > 0 ? Number(maxWaitMs) : null,
+        controlled: controlled === true,
+        fromUserId: game.user.id,
+        fromUserName: game.user.name,
+        createdAt: Date.now(),
+      };
+      await renderLocal(payload);
+      if (broadcast) {
+        try { await emitToSocket(payload); }
+        catch (e) { console.warn("[FU Dialog:Core] broadcast failed:", e); }
+      }
+      return payload;
     }
 
     const payload = {

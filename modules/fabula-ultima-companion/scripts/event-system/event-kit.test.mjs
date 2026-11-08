@@ -654,9 +654,9 @@ await quiet(async () => {
 });
 
 {
-  const row = EventRegistry.normalizeRows([{ type: "showChoices", options: [{ label: "only" }, { cancel: true }, { cancel: true }, {}, {}, {}] }])[0];
-  check("choices: at most four answers, each with an id and its own list",
-    row.options.length === 4 && row.options.every(o => o.id && Array.isArray(o.rows)));
+  const row = EventRegistry.normalizeRows([{ type: "showChoices", options: [{ label: "only" }, { cancel: true }, { cancel: true }, {}, {}, {}, {}, {}] }])[0];
+  check("choices: at most six answers, each with an id and its own list",
+    row.options.length === 6 && row.options.every(o => o.id && Array.isArray(o.rows)));
   check("choices: only one answer stands for Cancel", row.options.filter(o => o.cancel).length === 1);
   check("choices: fewer than two answers are padded to two",
     EventRegistry.normalizeRows([{ type: "showChoices", options: [] }])[0].options.length === 2);

@@ -240,13 +240,9 @@
 
     const tokenId = payload.tokenId || null;
     const actorId = payload.actorId || null;
-
-    if (!tokenId && !actorId) {
-      DBG.warn(DEBUG_SCOPE, "FU.Dialog.show could not be used because no anchor token/actor was resolved.", {
-        payload
-      });
-      return { ok: false };
-    }
+    // Nobody to stand above (a theatre scene with no tokens, an announcer):
+    // the line goes in a bubble at the bottom of the screen instead.
+    const screen = !tokenId || !canvas?.tokens?.get?.(tokenId);
 
     DBG.verboseLog(DEBUG_SCOPE, "Using FU.Dialog.show.", {
       tokenId,
@@ -272,6 +268,7 @@
       speed: payload.speed || 28,
       portraitSrc: payload.portraitSrc || null,
       broadcast: true,
+      screen,
       sceneId: context.sceneId || canvas?.scene?.id || null,
       waitForInput,
       maxWaitMs,

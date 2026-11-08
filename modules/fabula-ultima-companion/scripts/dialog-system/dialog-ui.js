@@ -395,12 +395,16 @@
     const mode = (payload.mode || "normal");
     const isShout = mode === "shout";
     const isThink = mode === "think";
-    const portraitSrc =
-      payload.portraitSrc ||
-      token.actor?.img ||
-      token.document?.texture?.src ||
-      token.texture?.src ||
-      "icons/svg/mystery-man.svg";
+    // token null = a screen-anchored line (payload.screenAnchor): bottom of the
+    // screen, no tail; the portrait column only when there is a picture.
+    const onScreen = !token;
+    const portraitSrc = onScreen
+      ? (payload.portraitSrc || "")
+      : (payload.portraitSrc ||
+        token.actor?.img ||
+        token.document?.texture?.src ||
+        token.texture?.src ||
+        "icons/svg/mystery-man.svg");
 
     const id = payload.bubbleId || `fu-bubble-${randomID(8)}`;
 
@@ -411,9 +415,9 @@
     box.id = id;
 
     box.innerHTML = `
-      <div class="fu-left"><img alt="portrait" src="${htmlEscape(portraitSrc)}"/></div>
+      ${portraitSrc ? `<div class="fu-left"><img alt="portrait" src="${htmlEscape(portraitSrc)}"/></div>` : ""}
       <div class="fu-paper">
-        <div class="fu-name">${htmlEscape(payload.name || token.document?.name || "Speaker")}</div>
+        <div class="fu-name">${htmlEscape(payload.name || token?.document?.name || "Speaker")}</div>
         <div class="fu-text"><span class="fu-typed"></span></div>
         <div class="fu-next">&#9660;</div>
         <div class="fu-tail"></div>
@@ -425,6 +429,11 @@
       </div>
     `;
     layer.appendChild(box);
+    if (onScreen) {
+      const tail = box.querySelector(".fu-tail");
+      if (tail) tail.style.display = "none";
+      box.style.width = `min(${MAX_BUBBLE_WIDTH}px, 92vw)`;
+    }
 
     function getScreenXY() {
       const gp = token.mesh.getGlobalPosition();
@@ -434,9 +443,14 @@
 
     function place() {
       if (!box.isConnected) return;
-      const { x, y } = getScreenXY();
       const rect = box.getBoundingClientRect();
       const vw = window.innerWidth, vh = window.innerHeight;
+      if (onScreen) {
+        box.style.left = `${Math.max(6, (vw - rect.width) / 2)}px`;
+        box.style.top = `${Math.max(6, vh - rect.height - Math.round(vh * 0.08))}px`;
+        return;
+      }
+      const { x, y } = getScreenXY();
 
       let left = x - Math.min(160, rect.width * 0.25);
       let top = y - rect.height;
@@ -505,7 +519,7 @@
       }
     });
 
-    const onDelete = (doc) => { if (doc.id === token.document.id) line.close(); };
+    const onDelete = (doc) => { if (token && doc.id === token.document.id) line.close(); };
     Hooks.on("preDeleteToken", onDelete);
 
     let cleaned = false;
@@ -615,6 +629,11 @@
           return;
         }
 
+        if (payload.screenAnchor && !payload.tokenId) {
+          await renderBubble(null, payload, { remote: true });
+          return;
+        }
+
         const token = getTokenOnCanvas(payload.tokenId);
         if (!token) return;
 
@@ -655,9 +674,10 @@
         return globalThis.FU?.DialogUI?.renderFloat?.(payload, { remote });
       }
 
+      if (!canvas?.scene?.id || canvas.scene.id !== payload.sceneId) return;
+      if (payload?.screenAnchor && !payload?.tokenId) return renderBubble(null, payload, { remote });
       if (!payload?.tokenId) return;
 
-      if (!canvas?.scene?.id || canvas.scene.id !== payload.sceneId) return;
       const token = getTokenOnCanvas(payload.tokenId);
       if (!token) return;
 
