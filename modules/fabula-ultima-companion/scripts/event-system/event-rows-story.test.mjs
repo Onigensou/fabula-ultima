@@ -22,7 +22,7 @@ window.oni = { EventSystem: {
 vm.runInThisContext(readFileSync(resolve(HERE, "event-rows-story.js"), "utf8"), { filename: "event-rows-story.js" });
 const S = window.oni.EventSystem.RowsStory;
 
-check("registers the five actions", ["startBattle", "changeScene", "moveToken", "nameInput", "recoverAll"].every(t => registered.some(d => d.type === t)));
+check("registers the seven actions", ["startBattle", "changeScene", "moveToken", "nameInput", "recoverAll", "loop", "breakLoop"].every(t => registered.some(d => d.type === t)));
 
 const e = S.parseEnemyList("Ape, Wolf x2");
 check("enemy list: names and counts", JSON.stringify(e) === JSON.stringify([{ name: "Ape", quantity: 1 }, { name: "Wolf", quantity: 2 }]));
@@ -37,6 +37,10 @@ check("victory runs Victory", S.battleBranch("victory", false).key === "victory"
 check("defeat without story loss stops after Defeat", S.battleBranch("defeat", false).key === "defeat" && S.battleBranch("defeat", false).stop);
 check("defeat with story loss carries on", S.battleBranch("defeat", true).stop === false);
 check("an escape counts as a defeat", S.battleBranch("escaped", true).key === "defeat");
+
+check("loop: a normal pass repeats", S.loopStep({ ok: true }) === "again");
+check("loop: Break Loop leaves it", S.loopStep({ ok: true, stop: true, breakLoop: true }) === "break");
+check("loop: End Event inside still ends the event", S.loopStep({ ok: true, stop: true }) === "stop");
 
 const battle = registered.find(d => d.type === "startBattle");
 const row = { type: "startBattle" }; battle.prepare(row);

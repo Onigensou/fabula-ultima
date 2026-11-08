@@ -143,6 +143,25 @@
     return Object.keys(update).length ? update : null;
   }
 
+  // ── Story Background (one scene, the map art swaps with the story) ─────────
+  //   flags.<mod>.storyBg = { when, normal, alt }   (image paths / URLs)
+  const BG_KEY = "storyBg";
+  function bgOf(scene) {
+    const b = scene?.flags?.[MOD]?.[BG_KEY];
+    if (!b || !str(b.when)) return null;
+    return { when: str(b.when), normal: str(b.normal) || null, alt: str(b.alt) || null };
+  }
+
+  /** The background.src this scene needs, or null when it already matches. */
+  function planBg(scene, isOn = switchOn) {
+    const b = bgOf(scene);
+    if (!b) return null;
+    const want = isOn(b.when) === true ? b.alt : b.normal;
+    if (!want) return null;
+    const cur = scene?.background?.src ?? null;
+    return cur === want ? null : want;
+  }
+
   // ── Runtime: primary GM keeps scene BGM in line with the switches ──────────
   let _running = false, _again = false;
   async function reconcile() {
@@ -153,8 +172,10 @@
       do {
         _again = false;
         for (const scene of allScenes()) {
-          const update = planBgm(scene);
-          if (update) await scene.update(update);
+          const update = planBgm(scene) ?? {};
+          const bg = planBg(scene);
+          if (bg) update["background.src"] = bg;
+          if (Object.keys(update).length) await scene.update(update);
         }
       } while (_again);
     } catch (e) {
@@ -247,6 +268,20 @@
         <label>BGM while ON</label>
         <div class="form-fields"><select class="oni-bgm-alt">${soundOptions(b.altPlaylist, b.altSound)}</select></div>
       </div>
+      <h3 style="margin:12px 0 6px;"><i class="fas fa-image"></i> Story Background</h3>
+      <p class="notes" style="margin:0 0 8px;">The same map with different art for a story state (Eisendrache before and after the attack). The layout must match.</p>
+      <div class="form-group">
+        <label>Switch</label>
+        <div class="form-fields"><input type="text" name="flags.${MOD}.${BG_KEY}.when" placeholder="blank = off" /></div>
+      </div>
+      <div class="form-group">
+        <label>Art while OFF</label>
+        <div class="form-fields"><input type="text" name="flags.${MOD}.${BG_KEY}.normal" placeholder="image path" /></div>
+      </div>
+      <div class="form-group">
+        <label>Art while ON</label>
+        <div class="form-fields"><input type="text" name="flags.${MOD}.${BG_KEY}.alt" placeholder="image path" /></div>
+      </div>
       <input type="hidden" name="flags.${MOD}.${BGM_KEY}.normalPlaylist" />
       <input type="hidden" name="flags.${MOD}.${BGM_KEY}.normalSound" />
       <input type="hidden" name="flags.${MOD}.${BGM_KEY}.altPlaylist" />
@@ -261,6 +296,10 @@
     set(`${BGM_KEY}.normalSound`, b.normalSound);
     set(`${BGM_KEY}.altPlaylist`, b.altPlaylist);
     set(`${BGM_KEY}.altSound`, b.altSound);
+    const bgf = scene.flags?.[MOD]?.[BG_KEY] ?? {};
+    set(`${BG_KEY}.when`, bgf.when);
+    set(`${BG_KEY}.normal`, bgf.normal);
+    set(`${BG_KEY}.alt`, bgf.alt);
     const bindSelect = (cls, prefix) => {
       wrap.querySelector(cls)?.addEventListener("change", (ev) => {
         const [pl, snd] = String(ev.target.value || "|").split("|");
@@ -289,6 +328,6 @@
   globalThis.oni ??= {};
   globalThis.oni.Place = {
     placeIdOf, activeWhenOf, stageOf, pickCurrent, statesOf, currentSceneFor, redirectId,
-    isSuperseded, samePlace, anyState, bgmOf, planBgm, reconcile
+    isSuperseded, samePlace, anyState, bgmOf, planBgm, bgOf, planBg, reconcile
   };
 })();

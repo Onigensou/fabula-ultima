@@ -89,6 +89,13 @@ check("BGM: no switch, scene left alone", P.planBgm({ flags: { [MOD]: { storyBgm
 check("BGM: a blank side never clears the music", P.planBgm({ playlist: "X", playlistSound: "Y",
   flags: { [MOD]: { storyBgm: { when: "Z", normalPlaylist: "X", normalSound: "Y" } } } }, on("Z")) === null);
 
+// ── story background ─────────────────────────────────────────────────────────
+const bgScene = (src) => ({ background: { src }, flags: { [MOD]: { storyBg: { when: "Eisendrache Destroyed", normal: "Map001.png", alt: "Map_018.png" } } } });
+check("BG: ON wants the destroyed art", P.planBg(bgScene("Map001.png"), on("Eisendrache Destroyed")) === "Map_018.png");
+check("BG: OFF wants the festival art", P.planBg(bgScene("Map_018.png"), on()) === "Map001.png");
+check("BG: already right, no write", P.planBg(bgScene("Map_018.png"), on("Eisendrache Destroyed")) === null);
+check("BG: no switch set, left alone", P.planBg({ background: { src: "x" }, flags: { [MOD]: { storyBg: { when: "" } } } }, on()) === null && P.planBg(shop, on()) === null);
+
 // ── reconcile writes ─────────────────────────────────────────────────────────
 const writes = [];
 const live = { ...bgmScene(["PL1", "City"]), toObject() { return this; }, update: async (u) => { writes.push(u); } };

@@ -622,6 +622,56 @@
     collectFields: () => ({})
   });
 
-  window.oni.EventSystem.RowsStory = { installed: true, parseEnemyList, parseWaypoints, battleBranch };
+  // ------------------------------------------------------------
+  // Loop / Break Loop (RPG Maker style): a question menu that comes back
+  // until the player picks "No more questions".
+  // ------------------------------------------------------------
+  const LOOP_MAX = 60;
+
+  // One pass's result -> what the loop does next.
+  function loopStep(result) {
+    if (!result?.stop) return "again";
+    if (result.breakLoop) return "break";
+    return "stop";
+  }
+
+  EventRegistry.register({
+    type: "loop",
+    label: "Loop",
+    category: "Flow",
+    defaultData: { type: "loop", rows: [] },
+    prepare: (row) => { if (!Array.isArray(row.rows)) row.rows = []; },
+    childLists: (row) => [{ label: "Repeat", rows: row.rows }],
+    summary: (row) => `${(row?.rows ?? []).length} row(s), until Break Loop`,
+    execute: async (row, context) => {
+      for (let i = 0; i < LOOP_MAX; i += 1) {
+        const result = await context.runRows(row.rows ?? []);
+        const next = loopStep(result);
+        if (next === "break") return { ok: true, type: "loop", passes: i + 1 };
+        if (next === "stop") return { ...result, type: "loop" };
+      }
+      console.warn(INSTALL_TAG, `Loop: stopped after ${LOOP_MAX} passes (no Break Loop ran).`);
+      return { ok: true, type: "loop", passes: LOOP_MAX };
+    },
+    buildFields: (row, kit) => {
+      const body = kit.fields(`<div class="oni-event-row-notes">The rows below repeat until a Break Loop row runs (put one under a choice). End Event still ends everything.</div>`);
+      body.appendChild(kit.subList("loop", "Repeat", row.rows));
+      return body;
+    },
+    collectFields: (rowEl, kit) => ({ rows: kit.readSubList(rowEl, "loop") })
+  });
+
+  EventRegistry.register({
+    type: "breakLoop",
+    label: "Break Loop",
+    category: "Flow",
+    defaultData: { type: "breakLoop" },
+    summary: () => "leave the loop",
+    execute: async () => ({ ok: true, type: "breakLoop", stop: true, breakLoop: true }),
+    buildFields: (row, kit) => kit.fields(`<div class="oni-event-row-notes">Leaves the nearest Loop; the event carries on after it. Outside a loop it ends the event.</div>`),
+    collectFields: () => ({})
+  });
+
+  window.oni.EventSystem.RowsStory = { installed: true, parseEnemyList, parseWaypoints, battleBranch, loopStep };
   console.debug(INSTALL_TAG, "Installed.");
 })();
