@@ -58,6 +58,28 @@
     return !!general(scene).sceneVisited;
   }
 
+  // Multi-state places (scripts/place-state/place-state.js): only the CURRENT
+  // state of a place is a destination, and it counts as visited when any of
+  // its states was (the party knew Ruhig Village before it became the Ruin).
+  const Place = () => globalThis.oni?.Place ?? null;
+  function isOldState(scene) {
+    try { return !!Place()?.isSuperseded?.(scene); } catch { return false; }
+  }
+  function isPlaceVisited(scene) {
+    try { return Place()?.anyState ? Place().anyState(scene, isSceneVisited) : isSceneVisited(scene); }
+    catch { return isSceneVisited(scene); }
+  }
+  function isSamePlaceAs(scene, otherId) {
+    const other = otherId ? game.scenes?.get(otherId) : null;
+    if (!other) return false;
+    try { return Place()?.samePlace ? Place().samePlace(scene, other) : scene.id === other.id; }
+    catch { return scene.id === other.id; }
+  }
+  const isHerePlace = (scene) => isSamePlaceAs(scene, canvas?.scene?.id);
+  function currentStateOf(scene) {
+    try { return Place()?.currentSceneFor?.(scene) ?? scene; } catch { return scene; }
+  }
+
   function isFtEnabled(scene) {
     const raw = general(scene ?? canvas?.scene).fastTravelEnabled;
     return raw !== false && raw !== "false" && raw !== 0;
@@ -148,6 +170,10 @@
           : isSceneVisited(src);
         const p = resolveDest(dest);
         if (!p) continue;
+        // A door into an old state (the Overworld door into Ruhig Village) is
+        // a door into the current one (the Ruin), same spot.
+        const cur = currentStateOf(p.scene);
+        if (cur && cur.id !== p.scene.id) { p.scene = cur; p.tileId = null; }
         const list = idx.get(p.scene.id) ?? [];
         list.push({ x: p.x, y: p.y, tileId: p.tileId, fromSceneId: src.id, known, srcTileId: tile.id });
         idx.set(p.scene.id, list);
@@ -247,7 +273,8 @@
     const maps = [];
     for (const scene of game.scenes ?? []) {
       if (scene.id === excludeSceneId) continue;
-      if (!isSceneVisited(scene) || isTownScene(scene) || isNoTravel(scene)) continue;
+      if (isOldState(scene) || isSamePlaceAs(scene, excludeSceneId)) continue;
+      if (!isPlaceVisited(scene) || isTownScene(scene) || isNoTravel(scene)) continue;
       if (!REGION_MODES.has(sceneModeOf(scene))) continue;
       const world = !!DP.isWorldMap?.(scene);
       // The world map is its own section ("World Map"), not its scene folder.
@@ -276,8 +303,8 @@
     const current = canvas?.scene;
     const towns = [];
     for (const scene of game.scenes ?? []) {
-      if (scene.id === current?.id) continue;
-      if (!isSceneVisited(scene) || !isTownScene(scene) || isNoTravel(scene)) continue;
+      if (scene.id === current?.id || isHerePlace(scene) || isOldState(scene)) continue;
+      if (!isPlaceVisited(scene) || !isTownScene(scene) || isNoTravel(scene)) continue;
       towns.push({ id: scene.id, name: scene.name, scene, type: "town" });
     }
     return { towns, maps: getRegionMaps() };

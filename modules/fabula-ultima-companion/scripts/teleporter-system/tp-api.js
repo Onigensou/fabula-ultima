@@ -105,7 +105,21 @@
 
   // ── Destination resolution ────────────────────────────────────────────────────
 
+  // A door into one state of a multi-state place (Ruhig Village / Ruin) lands
+  // on the place's CURRENT state, same spot — state maps share one layout.
+  // See scripts/place-state/place-state.js.
+  function toCurrentState(sceneId) {
+    try { return globalThis.oni?.Place?.redirectId?.(sceneId) ?? sceneId; }
+    catch (e) { console.warn(TAG, "place redirect failed:", e); return sceneId; }
+  }
+
   async function resolveDestination(destination) {
+    const r = await resolveRaw(destination);
+    if (r?.sceneId) r.sceneId = toCurrentState(r.sceneId);
+    return r;
+  }
+
+  async function resolveRaw(destination) {
     if (!destination) return null;
 
     if (destination.type === "coords") {
@@ -258,6 +272,8 @@
   async function executeCrossSceneTeleport(actorId, fromSceneId, toSceneId, spawnX, spawnY) {
     if (!isPrimaryGM()) return;
 
+    // Camp Set Out / Inn / socket callers pass a scene id straight in.
+    toSceneId = toCurrentState(toSceneId);
     const destScene = game.scenes.get(toSceneId);
     if (!destScene) { console.warn(TAG, "destination scene not found:", toSceneId); return; }
 

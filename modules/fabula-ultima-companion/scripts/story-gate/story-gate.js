@@ -11,8 +11,12 @@
 //                   Shown until ON, then hidden.
 //   Barrier wall    flags.<mod>.storyGate.openedBy (this file)
 //                   Blocks movement until ON, then lets tokens through.
+//   NPC token       flags.<mod>.storyGate.shownWhen / hiddenWhen (this file)
+//                   Shown only while shownWhen is ON (the Opening Ceremony
+//                   crowd), hidden once hiddenWhen is ON (a festival guest
+//                   after the city burns). Both set: needs both.
 //
-// Tiles and walls are scene data, so one client has to write them: the primary
+// Tiles, walls and tokens are scene data, so one client has to write them: the primary
 // GM reconciles every gated document against the switches, whichever scene it
 // is viewing. Reconciling (not toggling) means a loaded save or a re-created
 // tile ends up right without anyone remembering what state it was in.
@@ -55,7 +59,25 @@
       const move = isOn(name) === true ? MOVE_OPEN : MOVE_BLOCKED;
       if (wall.move !== move) walls.push({ _id: wall.id ?? wall._id, move });
     }
-    return { tiles, walls };
+    const tokens = [];
+    for (const token of scene?.tokens ?? []) {
+      const hidden = tokenHidden(token, isOn);
+      if (hidden === null) continue;
+      if (!!token.hidden !== hidden) tokens.push({ _id: token.id ?? token._id, hidden });
+    }
+    return { tiles, walls, tokens };
+  }
+
+  const shownWhen  = (doc) => String(doc?.flags?.[MOD]?.[KEY]?.shownWhen  ?? "").trim();
+  const hiddenWhen = (doc) => String(doc?.flags?.[MOD]?.[KEY]?.hiddenWhen ?? "").trim();
+
+  /** Should this token be hidden? null = not gated, leave it to the GM. */
+  function tokenHidden(token, isOn = switchOn) {
+    const show = shownWhen(token), hide = hiddenWhen(token);
+    if (!show && !hide) return null;
+    if (show && isOn(show) !== true) return true;
+    if (hide && isOn(hide) === true) return true;
+    return false;
   }
 
   // Several triggers land together (a save being loaded): one pass at a time,
@@ -70,9 +92,10 @@
       do {
         _again = false;
         for (const scene of game.scenes ?? []) {
-          const { tiles, walls } = planScene(scene);
+          const { tiles, walls, tokens } = planScene(scene);
           if (tiles.length) await scene.updateEmbeddedDocuments("Tile", tiles);
           if (walls.length) await scene.updateEmbeddedDocuments("Wall", walls);
+          if (tokens.length) await scene.updateEmbeddedDocuments("Token", tokens);
         }
       } while (_again);
     } catch (e) {
@@ -127,6 +150,34 @@
     } catch (e) { console.warn(TAG, "wall config inject failed", e); }
   });
 
+  // Token Config: two fields in the Identity tab.
+  Hooks.on("renderTokenConfig", (app, html) => {
+    try {
+      if (!game.user?.isGM) return;
+      const root = html?.[0] ?? html;
+      const doc  = app.document ?? app.object;
+      if (!root || !doc || root.querySelector(".oni-story-gate-token")) return;
+      const parent = root.querySelector('.tab[data-tab="character"]') ?? root.querySelector("form");
+      if (!parent) return;
+      const wrap = document.createElement("div");
+      wrap.className = "oni-story-gate-token";
+      wrap.innerHTML = `
+        <div class="form-group">
+          <label>Shown while switch ON</label>
+          <div class="form-fields"><input type="text" name="flags.${MOD}.${KEY}.shownWhen" placeholder="e.g. Opening Ceremony" /></div>
+        </div>
+        <div class="form-group">
+          <label>Hidden once switch ON</label>
+          <div class="form-fields"><input type="text" name="flags.${MOD}.${KEY}.hiddenWhen" placeholder="e.g. Eisendrache Destroyed" /></div>
+          <p class="notes">Story Gate: the primary GM shows / hides this token from the Event System switches. Both blank = you show and hide it by hand.</p>
+        </div>`;
+      wrap.querySelector(`[name$=".shownWhen"]`).value  = shownWhen(doc);
+      wrap.querySelector(`[name$=".hiddenWhen"]`).value = hiddenWhen(doc);
+      parent.appendChild(wrap);
+      app.setPosition?.({ height: "auto" });
+    } catch (e) { console.warn(TAG, "token config inject failed", e); }
+  });
+
   globalThis.oni ??= {};
-  globalThis.oni.StoryGate = { isClosed, planScene, reconcile, openedBy };
+  globalThis.oni.StoryGate = { isClosed, planScene, reconcile, openedBy, tokenHidden };
 })();

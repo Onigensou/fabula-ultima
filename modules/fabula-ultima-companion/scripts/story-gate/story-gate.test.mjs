@@ -72,6 +72,20 @@ check("each document follows its own switch", p.tiles.length === 1 && p.tiles[0]
 p = SG.planScene({}, on);
 check("a scene with nothing gated is fine", p.tiles.length === 0 && p.walls.length === 0);
 
+// ── tokens (shownWhen / hiddenWhen) ──────────────────────────────────────────
+const npc = (id, gate, hidden) => ({ id, hidden, flags: { [MOD]: { storyGate: gate } } });
+const only = (...names) => (n) => names.includes(n);
+check("ungated token: left to the GM", SG.tokenHidden({ flags: {} }, on) === null);
+check("crowd hidden while the ceremony switch is OFF", SG.tokenHidden(npc("c", { shownWhen: "Opening Ceremony" }), off) === true);
+check("crowd shown while the ceremony switch is ON", SG.tokenHidden(npc("c", { shownWhen: "Opening Ceremony" }), on) === false);
+check("guest hidden once the city burns", SG.tokenHidden(npc("g", { hiddenWhen: "Eisendrache Destroyed" }), on) === true);
+check("guest shown before that", SG.tokenHidden(npc("g", { hiddenWhen: "Eisendrache Destroyed" }), off) === false);
+check("both set: needs shown ON and hidden OFF",
+  SG.tokenHidden(npc("b", { shownWhen: "A", hiddenWhen: "B" }), only("A")) === false &&
+  SG.tokenHidden(npc("b", { shownWhen: "A", hiddenWhen: "B" }), only("A", "B")) === true);
+p = SG.planScene({ tokens: [npc("c", { shownWhen: "Opening Ceremony" }, false), npc("k", { shownWhen: "Opening Ceremony" }, true), { id: "party", hidden: false, flags: {} }] }, off);
+check("planScene hides only the gated token that is shown", p.tokens.length === 1 && p.tokens[0]._id === "c" && p.tokens[0].hidden === true);
+
 // ── reconcile ────────────────────────────────────────────────────────────────
 const writes = [];
 const live = {
