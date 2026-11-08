@@ -1,0 +1,64 @@
+{
+  "_id": "GkGzE00BEuDEqyi7",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1794121950199,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/assize.png",
+  "name": "Hex",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "container": "DY5RBlybpPqfV4dw",
+    "props": {
+      "action_command": "spell",
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_preload_urls": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Ragnarok%20Online/efst_magiccircle__mc.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Magic1.ogg\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Saint1.ogg",
+      "animation_script": "",
+      "cost": "10 MP",
+      "damage_bonus": "0",
+      "description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a> damage to target creature equal to <strong>【5 × the amount of Status Effects on the target】</strong>. If this is the seventh round or later, this effect deals <strong>300%</strong> damage instead.</p>",
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "damage_amount": "5 * STATUS_COUNT * (1 + 2 * (ROUND >= 7))",
+          "damage_cause": "damage",
+          "damage_element": "dark",
+          "effect_kind": "deal_damage",
+          "effect_label": "hex_damage",
+          "target_ref": "action_targets"
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/04_WHM/assize.png",
+      "isCheck": false,
+      "isOffensiveSpell": false,
+      "name": "Hex",
+      "on_activate_effect_ref": "hex_damage",
+      "skill_animation_mode": "custom",
+      "skill_description": "",
+      "skill_target": "One Creature",
+      "skill_type": "Spell",
+      "type_damage": ""
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "GkGzE00BEuDEqyi7"
+  },
+  "type": "equippableItem"
+}

@@ -139,6 +139,84 @@
       "type": "base"
     },
     {
+      "_id": "X1ZqGseq7UQmM1wr",
+      "_stats": {
+        "createdTime": 1794121618452
+      },
+      "changes": [],
+      "description": "<p>Cast a non-offensive spell targeting that creature as a free action.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "X1ZqGseq7UQmM1wr",
+          "originalParentId": "oQuaoYmMq9vsbgUf",
+          "originalUuid": "Item.oQuaoYmMq9vsbgUf.ActiveEffect.X1ZqGseq7UQmM1wr"
+        },
+        "fabula-ultima-companion": {
+          "reactionConfig": {
+            "effect_table": {
+              "0": {
+                "$deleted": false,
+                "action_ref": "Spell",
+                "allowed_skill_refs": "kind:non_offensive",
+                "effect_kind": "free_action",
+                "effect_label": "paladin_spell_protected",
+                "source_label": "Paladin Armor",
+                "target_ref": "trigger_subject"
+              },
+              "1": {
+                "$deleted": false,
+                "action_ref": "Spell",
+                "allowed_skill_refs": "kind:non_offensive",
+                "effect_kind": "free_action",
+                "effect_label": "paladin_spell_covered",
+                "source_label": "Paladin Armor",
+                "target_ref": "action_targets"
+              }
+            },
+            "name": "Paladin Armor",
+            "reaction_config_table": {
+              "0": {
+                "$deleted": false,
+                "reaction_effect_ref": "paladin_spell_protected",
+                "reaction_passive_mode": "ask",
+                "reaction_source": "self",
+                "reaction_source_skill": "Protect",
+                "reaction_trigger": "creature_completes_skill"
+              },
+              "1": {
+                "$deleted": false,
+                "condition_formula": "DID_COVER_ALLY == 1",
+                "reaction_effect_ref": "paladin_spell_covered",
+                "reaction_passive_mode": "ask",
+                "reaction_source": "self",
+                "reaction_trigger": "creature_guards"
+              }
+            }
+          }
+        }
+      },
+      "img": "icons/svg/aura.svg",
+      "name": "Paladin Armor",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": true,
+      "type": "base"
+    },
+    {
       "_id": "ZfP5ryZkClvWJVfX",
       "_stats": {
         "compendiumSource": null,
