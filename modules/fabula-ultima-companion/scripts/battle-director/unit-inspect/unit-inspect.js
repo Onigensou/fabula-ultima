@@ -39,7 +39,7 @@
 import { buildInspectModel, HP_RULE_SETTING } from "./inspect-model.js";
 import { ROOT_ID, WORLD_ID, CARD_W, FRAME_H, renderFrame, renderPeek, injectStyles, tabsOf, effectTipEntry } from "./inspect-render.js";
 import { showKeywordHover, moveKeywordHover, hideKeywordHover } from "../keyword-tooltip.js";
-import { hudScale, battleIsSettled } from "../director-player-hud.js";
+import { hudScale, battleIsSettled, resyncBattlePhase } from "../director-player-hud.js";
 import { hasSurface, getActiveSurfaces } from "../director-surfaces.js";
 import { tokenCastsSpriteShadow } from "../../sprite-shadow/sprite-shadow-config.js";
 import { shadowSpriteFor } from "../../sprite-shadow/sprite-shadow-renderer.js";
@@ -601,22 +601,35 @@ function placeFrame() {
 // click while picking a target (Alt opens it there).
 const BLOCKING = ["attribute-pair-picker", "passive-manager"];
 
-function battleSettledHere() {
-  try { if (!battleIsSettled()) return false; } catch {}
-  try { return !getActiveSurfaces({ category: "animation" }).length; } catch { return true; }
-}
-
-function blocked(viaAlt) {
+// Why open() is refused right now ("" = it may open). `__fuInspectDebug` logs it.
+function blockReason(viaAlt) {
   try {
-    if (!battleSettledHere()) return true;
-    if (BLOCKING.some((k) => hasSurface(k))) return true;
-    return !viaAlt && targetingActive();
-  } catch { return false; }
+    try { if (!battleIsSettled()) return "moving"; } catch {}
+    try { if (getActiveSurfaces({ category: "animation" }).length) return "animation"; } catch {}
+    const modal = BLOCKING.find((k) => hasSurface(k));
+    if (modal) return `modal:${modal}`;
+    return !viaAlt && targetingActive() ? "targeting" : "";
+  } catch { return ""; }
 }
 
 export async function open(token, { viaAlt = false, study = null } = {}) {
   if (!token || !inspectable(token) || !inBattle()) return false;
-  if (!study && (S.open?.study || blocked(viaAlt))) return false;
+  if (!study) {
+    if (S.open?.study) return false;
+    let why = blockReason(viaAlt);
+    // A player / Spectator can miss the GM's "settled" broadcast and stay
+    // "moving" for good: ask the GM once and re-check. If Alt was let go while
+    // we asked, a hold-to-peek has nothing left to show.
+    if (why === "moving" && !game.user?.isGM) {
+      await resyncBattlePhase();
+      if (viaAlt && !S.altDown) return false;
+      why = blockReason(viaAlt);
+    }
+    if (why) {
+      if (globalThis.__fuInspectDebug) console.debug(TAG, "open refused:", why, token.name);
+      return false;
+    }
+  }
   hidePeek();
   const root = ensureRoot();
   const switching = !!S.open;
@@ -939,7 +952,9 @@ function onKeyDown(ev) {
   if (ev.key === "Alt" && !ev.repeat) {
     S.altDown = true;
     if (!S.open) {
-      const tok = hoveredToken();
+      // Foundry's hover can be empty (a non-owner, a DOM label under the
+      // pointer, a missed pointerover): fall back to the sprite under the pointer.
+      const tok = hoveredToken() ?? (S.pointer ? tokenAt(S.pointer.x, S.pointer.y) : null);
       if (tok && inBattle()) { ev.preventDefault(); open(tok, { viaAlt: true }); }
     }
     return;
@@ -1000,6 +1015,8 @@ function init() {
   window.addEventListener("keydown", onKeyDown, true);
   window.addEventListener("keyup", onKeyUp, true);
   window.addEventListener("contextmenu", onContextMenu, true);
+  // Last pointer spot, for Alt's hold-to-peek when Foundry reports no hover.
+  window.addEventListener("pointermove", (ev) => { S.pointer = { x: ev.clientX, y: ev.clientY }; }, { capture: true, passive: true });
   window.addEventListener("blur", () => { S.altDown = false; if (S.open?.viaAlt) close(); });
   window.addEventListener("resize", () => { if (S.open) placeFrame(); });
 

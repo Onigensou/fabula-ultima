@@ -1476,6 +1476,26 @@ Hooks.on("fu-director-state", ({ state } = {}) => {
   catch (e) { warn("[DirectorHud] phase broadcast failed", e); }
 });
 
+// A non-GM client asks for the phase only once (fetchTurnStatus on build) and
+// otherwise trusts the GM's broadcasts; one missed "settled" leaves it thinking
+// the battle is moving, which refuses Battle Inspect until the next change
+// (Spectator, session 2026-11-07). Callers that were refused re-ask here.
+// Throttled; resolves to the (possibly updated) settled state.
+let _phaseResyncAt = 0;
+export async function resyncBattlePhase() {
+  if (game.user?.isGM) return _settled;
+  const now = Date.now();
+  if (now - _phaseResyncAt < 1500) return _settled;
+  _phaseResyncAt = now;
+  const socket = ensureSocket();
+  if (!socket || !game.users?.activeGM) return _settled;
+  try {
+    const settled = await socket.executeAsGM(ACTION_PHASE_GET);
+    if (typeof settled === "boolean") applyPhase(settled);
+  } catch (e) { warn("[DirectorHud] phase resync failed", e); }
+  return _settled;
+}
+
 async function fetchTurnStatus() {
   if (game.user?.isGM) return;
   const socket = ensureSocket();
