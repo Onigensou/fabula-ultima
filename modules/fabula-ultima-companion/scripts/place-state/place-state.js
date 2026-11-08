@@ -275,9 +275,14 @@
     app.setPosition?.({ height: "auto" });
   }
 
+  // The Fabula tab (dungeon-configuration-ui.js) builds its fields from a
+  // renderSceneConfig hook it registers at "ready"; registering ours at
+  // "ready" too (later file) puts it after theirs.
   if (typeof Hooks !== "undefined") {
-    Hooks.on("renderSceneConfig", (app, html) => {
-      try { injectSceneFields(app, html); } catch (e) { console.warn(TAG, "scene config inject failed", e); }
+    Hooks.once("ready", () => {
+      Hooks.on("renderSceneConfig", (app, html) => {
+        try { injectSceneFields(app, html); } catch (e) { console.warn(TAG, "scene config inject failed", e); }
+      });
     });
   }
 
