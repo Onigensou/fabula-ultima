@@ -123,33 +123,6 @@
           }
         },
         "dungeonPathing": {
-          "tileStates": {
-            "wf77YJJF4MzI91YZ": {
-              "initialType": "door",
-              "currentType": "door",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Door_Tile.png"
-            },
-            "MZqztb5SvbKSYP3L": {
-              "initialType": "blank",
-              "currentType": "blank",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
-            },
-            "DbsLHvAlZZCF5mUX": {
-              "initialType": "final",
-              "currentType": "final",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Final_Story%20Tile.png"
-            },
-            "6AeJzX8Yc12NtdRt": {
-              "initialType": "accessory",
-              "currentType": "accessory",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Accessory_Tile.png"
-            },
-            "8n6luhKjsZUXacqg": {
-              "initialType": "treasure",
-              "currentType": "treasure",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Treasure_Tile.png"
-            }
-          },
           "links": {
             "fpJC5GtZamhCKyoc": {
               "a": "DbsLHvAlZZCF5mUX",
@@ -197,6 +170,33 @@
             "at": "2026-11-06T15:58:09.274Z",
             "drawings": 4,
             "kept": []
+          },
+          "tileStates": {
+            "wf77YJJF4MzI91YZ": {
+              "initialType": "door",
+              "currentType": "door",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Door_Tile.png"
+            },
+            "MZqztb5SvbKSYP3L": {
+              "initialType": "blank",
+              "currentType": "blank",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+            },
+            "DbsLHvAlZZCF5mUX": {
+              "initialType": "final",
+              "currentType": "final",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Final_Story%20Tile.png"
+            },
+            "6AeJzX8Yc12NtdRt": {
+              "initialType": "accessory",
+              "currentType": "accessory",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Accessory_Tile.png"
+            },
+            "8n6luhKjsZUXacqg": {
+              "initialType": "treasure",
+              "currentType": "treasure",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Treasure_Tile.png"
+            }
           }
         }
       }
@@ -266,7 +266,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359087985,
-      "modifiedTime": 1793980689275,
+      "modifiedTime": 1794060316692,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [

@@ -288,6 +288,13 @@
             "treasure": "",
             "zenit": ""
           }
+        },
+        "storyBgm": {
+          "when": "Eisendrache Destroyed",
+          "normalPlaylist": "VrpdABUTSoREMDR5",
+          "normalSound": "l6vviXPgQkuOdLkt",
+          "altPlaylist": "POV9fioQ0Kkj7hKC",
+          "altSound": "MOTOW9tUMblwXz9y"
         }
       }
     },
@@ -298,7 +305,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.4",
       "createdTime": 1766285439196,
-      "modifiedTime": 1781425619861,
+      "modifiedTime": 1794157459012,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "_id": "sj32T8cqeqbXOdD2",

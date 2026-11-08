@@ -1406,6 +1406,11 @@
               "b64": "eNrt2u2SgiAUBmBn3qveaUut/ErbveUdQwQFFRIkWDj/GlOfThzxaJLYH3fckQQ2wjP1otBU1BSSipluq6oMfppoXMfIh8iG8EFUIJp8UEVTNPlS96IpmmyoQrk+hbiOiKZwTP7daxSKeQrRRCN9RVjXp3SMEE0XXBCi6fKBMv11ucx0HiNE0/cYIZpOODnqr9k0uekZFoimaLo7m09FgDUimvRM7Djpa6sQrk9MlA5b+Zinm8SUgZmOWF+YNOX/wET2muNYUwmbNSKaTIwKFWyaigNNDRrUqFFYMs3voOemrx2qB/pouSCfUFNl3URUpkwP0JibSi9NDR5YNtnOk9i/2Wsi5xySqUU0mTfJeod7TPSsjzbR48vW3KLpS8PUwY1pu8dLTefX2kLd1MGNSaVvTUxnTVMvcmFS68X3371omIjGjUn1+YKeiRfZMtFjTU06z0zmJnWRHdP0iPpPqY82ba/LdVdlOfaZ5iIbedITZVAx6WRp3dSgRTWaSpSDaa23rJul3nTF+yZRZD5PNkyqFXzLVAumUmE+6YpSiCZ2n7vVr3yig4k82TGxd9T5fsTyiuMJElPHHtPSfNK/E2Wm2/BL8SbZN37Qh2jiXaKpntSIVrlGvNcv0DERz5rJZI3Y05GSm8R9/mLbRDI1N5EzF2t5uZKnvX02Uya9+VSu1AgT3UNTpvl8agZZPdZykqdqMMlqucl+9dQkbmEvT2w+2XlasrZfuzXCzdszKjWi26wRFbfeYyZ37wSZ/O8xk+u3t5ZNraRGyNflvCn5oKGSJ/4JgCxPyccOeS2XdzJpJB6MaZ4Sb8Yf4XUBtg=="
             }
           ]
+        },
+        "place": {
+          "id": "Ruhig Village",
+          "activeWhen": "",
+          "stage": ""
         }
       },
       "LockView": {
@@ -1613,7 +1618,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1773641643533,
-      "modifiedTime": 1792742199950,
+      "modifiedTime": 1794157458794,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

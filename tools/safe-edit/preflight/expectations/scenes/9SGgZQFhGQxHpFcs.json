@@ -1192,7 +1192,7 @@
             "isTown": true,
             "isDungeon": false,
             "sceneVisited": true,
-            "navigationName": "Ruhig Village Ruin",
+            "navigationName": "Ruhig Village",
             "disableTransition": false,
             "wellspring_air": true,
             "wellspring_earth": true,
@@ -1525,6 +1525,11 @@
               "b64": "eNrt3e1S20YUBuB97/9WIGlCEpoCpZ2JiBMg4LgFbCA2bUM/AoYhvYCMrKy1knbFfsor6bznFx5GXj+zs5KO1sBY/3KLrBjFa25wg1uQbhhZsg0nK9qSrl9ZsiXb9uQLyDaULNmGyA94iqd4Qrae8xzPwG3XydarLNmGyAtsgGz95yVeQM+WrEzyCq+gsl0nW4dsgmzD5EeY2ZJYMW+R1p7E5TUes70hW2UGGIDbZkW2Tdi+Btm6yRZtd7CDbZBtONstMPYTyNY+76C23YLK9hnZki3ZdlTW1HZDYkv3DrJklu8cbWneyu7FTGxf0rw1usuV2+4hWdSv+AW72MXP2HnEdk2wpfPXQLBMSj9XbTfJ9tG8x3vw81fRtm7ebkps10rVb9t97ENtq5q32Wpbtq269tk2lTW1zc9kRdtcVbY/oW+yBzC33VLYrkmqv7YHCGvbh3n7EUMMcbyoo+VnPISN7ZbUNimYMuZ33l7jGp/xF2KULdoe4QM+4BA6tgneFGy3pbbp9Vby3Td/X1+2f4Pbxqcb2jZZ2pbf2cea8A9E2z+j0h0hrG0q+0Qqy4Q9+baj/xfx2o7gbvumxjZZVpjxx2ubWoa0Desas+3xd01d22ofrN42tGu8tlxWz1beY6yzDe8qt/1jxbpDHBfK1Jb3xtW2zcjGZjsUHHVtq0ept21KNibbzFXf9lBhW38N1pxsPLa5rOu8VdsmjcrGYivKDkuyfm2b/FSrt+V6drbV45GtKOtiW70CI1tR1s22qEu2RVm17cjwvqy+VxODbTO6uawPW50+WHdsL/AJM1wtjjfDFNXeYXjbQQdtL5BW0XaKkVBka5dzyGxHnm1zXR3bpPE7B5XtFdpnm+8JzWcqt00kffDw1l2xHWjbJlLpdtieQ2b7WxDbTJbvZOa2vBO2J1kTmtWV285QFpvAxdb/vD1Q2OZdxr3K+hujbeo1wRjx2xZ7uLL9YKtfE2ZL3UtcIG7b/Cqh3B8fKHuMTTyJrLOd4RMuYWY7wWQltvJnDwPl93nD5Q5p/Ydu2KrGIq7ATbpmVW87NbQdYwK1baj7MhZNRNlMV2U7NbA9wxnGqLcdddy2LJuWu20qa2s7lBa3HVo8d2inrfyYp7C1HSpLxzbTjVnWzXaMU5BtCNsxstKznWrb5nuW6m3jXg9cbLks1/VhKx5fbcuii1/bsqyJ7YnUtjze3PZjYZ1oj6yNreiqv95O8fviN86ktrIxV20Za5Osqa3o6se2btyiLWNtk3WzPS3Zjo1s9Z8Gr97wFreSvyhaL5uWre2J0vb8UVvWspRt8wpjaz9vGSPbsm15tR333vYuoC2/AtNZE2a9mrfzRen3avzYMka2sj6Y2jbvjme2l72wvQtqW+08cttLqW23Z+1XPOBesJ079RhVuz9ktrOO2z4obBlrwpaxrtrOlbb8KGpbs9HIbRnrmi2vuYYtY7JnkTbjqdp2W1bHNtUVn6Hbj0m9t7lbsra2buPKbbssa2frOrL22v6PrHzbZip+zupXjX03JYSsH9vrYJ+/zbay/wXlPm/7naKsnS33Jdtqbqxtyz0FsqwTNrG9J1sjXRdbEvRn+0C2AW3vaU0IbDtfvkqGZEu2XdMl29V1w+psSc8taluy8ZOiLXn4DbcliVC25EC2bctXa9lv6otYcQ=="
             }
           ]
+        },
+        "place": {
+          "id": "Ruhig Village",
+          "activeWhen": "Ruhig Destroyed",
+          "stage": ""
         }
       },
       "LockView": {
@@ -1564,7 +1569,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791880065592,
-      "modifiedTime": 1792876811510,
+      "modifiedTime": 1794157458839,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

@@ -213,8 +213,8 @@
         "shadows": 0
       }
     },
-    "playlist": "VrpdABUTSoREMDR5",
-    "playlistSound": "l6vviXPgQkuOdLkt",
+    "playlist": "POV9fioQ0Kkj7hKC",
+    "playlistSound": "MOTOW9tUMblwXz9y",
     "journal": null,
     "journalEntryPage": null,
     "weather": "",
@@ -299,7 +299,14 @@
           },
           "threatLevel": "medium"
         },
-        "campSceneUuid": ""
+        "campSceneUuid": "",
+        "storyBgm": {
+          "when": "Eisendrache Destroyed",
+          "normalPlaylist": "VrpdABUTSoREMDR5",
+          "normalSound": "l6vviXPgQkuOdLkt",
+          "altPlaylist": "POV9fioQ0Kkj7hKC",
+          "altSound": "MOTOW9tUMblwXz9y"
+        }
       }
     },
     "_stats": {
@@ -309,7 +316,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.4",
       "createdTime": 1766285685185,
-      "modifiedTime": 1781425619868,
+      "modifiedTime": 1794157475633,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "_id": "T9vRqh5UmhTlxU8A",

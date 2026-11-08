@@ -554,7 +554,14 @@
           },
           "threatLevel": "medium"
         },
-        "campSceneUuid": ""
+        "campSceneUuid": "",
+        "storyBgm": {
+          "when": "Eisendrache Destroyed",
+          "normalPlaylist": "VrpdABUTSoREMDR5",
+          "normalSound": "l6vviXPgQkuOdLkt",
+          "altPlaylist": "POV9fioQ0Kkj7hKC",
+          "altSound": "MOTOW9tUMblwXz9y"
+        }
       }
     },
     "_stats": {
@@ -564,7 +571,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.4",
       "createdTime": 1766124153203,
-      "modifiedTime": 1781425619718,
+      "modifiedTime": 1794157458995,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "_id": "kaGY8DrtnCvzwLy4",

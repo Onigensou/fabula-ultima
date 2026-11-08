@@ -126,10 +126,16 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "storyGate": {
+            "shownWhen": "",
+            "hiddenWhen": "Eisendrache Destroyed"
+          }
         }
       },
       "actorId": "yghaJlx5fcj6DtfX",
-      "hidden": false,
+      "hidden": true,
       "sort": 2,
       "x": 183,
       "y": 384,
@@ -367,11 +373,15 @@
           "idleAnimToken": {
             "float": false,
             "bounce": false
+          },
+          "storyGate": {
+            "shownWhen": "",
+            "hiddenWhen": "Eisendrache Destroyed"
           }
         }
       },
       "actorId": "zAsUhIYMdLDOWJFt",
-      "hidden": false,
+      "hidden": true,
       "sort": 1,
       "x": 269,
       "y": 385,

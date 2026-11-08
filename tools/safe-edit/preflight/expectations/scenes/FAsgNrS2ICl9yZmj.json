@@ -136,14 +136,20 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": false
+        },
+        "fabula-ultima-companion": {
+          "storyGate": {
+            "shownWhen": "King Summon",
+            "hiddenWhen": ""
+          }
         }
       },
       "actorId": "wqfGUTRInZUS2MNY",
-      "hidden": true,
+      "hidden": false,
       "sort": 2,
       "_id": "5xQEw6eoxWd7qKMs",
-      "x": 87,
-      "y": 214,
+      "x": 228,
+      "y": 118,
       "elevation": 0,
       "locked": false,
       "_regions": [
@@ -252,10 +258,16 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "storyGate": {
+            "shownWhen": "King Summon",
+            "hiddenWhen": ""
+          }
         }
       },
       "actorId": "N4hYREOor4xOIaT1",
-      "hidden": true,
+      "hidden": false,
       "sort": 2,
       "_id": "WDOmL3Gt7PGXWURe",
       "x": 164,
@@ -368,10 +380,16 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "storyGate": {
+            "shownWhen": "King Summon",
+            "hiddenWhen": ""
+          }
         }
       },
       "actorId": "N4hYREOor4xOIaT1",
-      "hidden": true,
+      "hidden": false,
       "sort": 2,
       "x": 292,
       "y": 245,
@@ -484,10 +502,16 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "storyGate": {
+            "shownWhen": "",
+            "hiddenWhen": "Eisendrache Destroyed"
+          }
         }
       },
       "actorId": "yghaJlx5fcj6DtfX",
-      "hidden": false,
+      "hidden": true,
       "sort": 2,
       "_id": "pQDvutJ7319ew68B",
       "x": 203,
@@ -725,11 +749,15 @@
           "idleAnimToken": {
             "float": false,
             "bounce": false
+          },
+          "storyGate": {
+            "shownWhen": "",
+            "hiddenWhen": "Eisendrache Destroyed"
           }
         }
       },
       "actorId": "zAsUhIYMdLDOWJFt",
-      "hidden": false,
+      "hidden": true,
       "sort": 1,
       "_id": "wziEtQRkC0wEPbM5",
       "x": 269,
@@ -742,7 +770,7 @@
     }
   ],
   "notes": [],
-  "tileCount": 1,
+  "tileCount": 2,
   "full": {
     "folder": "W6amZLAXw1nGn4gs",
     "name": "Eisendrache_Map012",

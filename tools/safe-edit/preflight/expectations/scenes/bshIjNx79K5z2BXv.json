@@ -163,6 +163,11 @@
       "actorLink": false
     },
     {
+      "name": "Royal Messenger",
+      "actorId": "N4hYREOor4xOIaT1",
+      "actorLink": false
+    },
+    {
       "name": "Eisendrachian Knight",
       "actorId": "N4hYREOor4xOIaT1",
       "actorLink": false
@@ -330,10 +335,152 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "storyGate": {
+            "shownWhen": "",
+            "hiddenWhen": "Eisendrache Destroyed"
+          }
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "Gardner",
+              "text": "Defense is the ONLY stat that matters. I'm wearing three breastplates. At once.",
+              "bubbleMode": "normal",
+              "id": "08jxcNc1pa1xEWH1"
+            },
+            {
+              "type": "showText",
+              "speaker": "Nullis",
+              "text": "Three breastplates? One Fireball and you're a very well-armored soup pot.",
+              "bubbleMode": "normal",
+              "id": "EtoS1qR3KsYNcHWl"
+            },
+            {
+              "type": "showText",
+              "speaker": "Gardner",
+              "text": "Then I'll wear a FOURTH. Made of soup pots. Fireproof soup pots.",
+              "bubbleMode": "normal",
+              "id": "dMNUunekVNceSRen"
+            },
+            {
+              "type": "showText",
+              "speaker": "Nullis",
+              "text": "Magic Defense is the path of the wise. I once took a meteor to the face and only lost my eyebrows.",
+              "bubbleMode": "normal",
+              "id": "JscP0bgmdP6lcKpI"
+            },
+            {
+              "type": "showText",
+              "speaker": "Gardner",
+              "text": "You never HAD eyebrows.",
+              "bubbleMode": "shout",
+              "id": "4sbXy88HQVXXdWys"
+            },
+            {
+              "type": "showText",
+              "speaker": "Nullis",
+              "text": "Because of the METEOR, Gardner!",
+              "bubbleMode": "shout",
+              "id": "l1eera8jPxyl76X7"
+            },
+            {
+              "type": "showText",
+              "speaker": "Gardner",
+              "text": "You there! Settle this. Which is better?",
+              "bubbleMode": "normal",
+              "id": "d7jqworFAypf1TSG"
+            },
+            {
+              "type": "showChoices",
+              "prompt": "",
+              "options": [
+                {
+                  "id": "6AvAMj4EYzd9pE1a",
+                  "label": "Defense!",
+                  "cancel": false,
+                  "rows": [
+                    {
+                      "type": "showText",
+                      "speaker": "Gardner",
+                      "text": "HA! The people have spoken! Tonight I sleep in my armor. Again.",
+                      "bubbleMode": "normal",
+                      "id": "o3Qxgjlg2HdDQiYQ"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Nullis",
+                      "text": "The people are wrong. Loudly wrong.",
+                      "bubbleMode": "normal",
+                      "id": "vuz6DUT4MbTGQRxk"
+                    }
+                  ]
+                },
+                {
+                  "id": "1j0583PFqb685gfp",
+                  "label": "Magic Defense!",
+                  "cancel": false,
+                  "rows": [
+                    {
+                      "type": "showText",
+                      "speaker": "Nullis",
+                      "text": "Wisdom prevails! Gardner, remove one breastplate in shame.",
+                      "bubbleMode": "normal",
+                      "id": "NJ8QlcYeP9RH6d3L"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Gardner",
+                      "text": "…Only one.",
+                      "bubbleMode": "normal",
+                      "id": "akfud08TAqiQxAN4"
+                    }
+                  ]
+                },
+                {
+                  "id": "nceXx3gzvbsUT7OT",
+                  "label": "Speed, obviously.",
+                  "cancel": false,
+                  "rows": [
+                    {
+                      "type": "showText",
+                      "speaker": "Gardner",
+                      "text": "…",
+                      "bubbleMode": "normal",
+                      "id": "1q63yntAyXXfJQDa"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Nullis",
+                      "text": "…Get out of our argument.",
+                      "bubbleMode": "normal",
+                      "id": "7GeLKudrc5Gz2dMN"
+                    }
+                  ]
+                }
+              ],
+              "roleplay": false,
+              "roleplayLabel": "Something else…",
+              "id": "PdpB7CZWg4nBpdOq"
+            },
+            {
+              "type": "showText",
+              "speaker": "Nullis",
+              "text": "We're in the tournament, by the way. If you enter, we'll prove it in the arena!",
+              "bubbleMode": "normal",
+              "id": "UzCBLkmNNqB9LXQA"
+            }
+          ],
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true
         }
       },
       "actorId": "GINJQ0L5tcOCQpxG",
-      "hidden": false,
+      "hidden": true,
       "sort": 2,
       "_id": "39tuAQAwiILyZaQ4",
       "x": 1820,
@@ -562,6 +709,12 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "storyGate": {
+            "shownWhen": "Opening Ceremony",
+            "hiddenWhen": ""
+          }
         }
       },
       "actorId": "LlRVGhSD3bQJpiiV",
@@ -678,6 +831,12 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "storyGate": {
+            "shownWhen": "Opening Ceremony",
+            "hiddenWhen": ""
+          }
         }
       },
       "actorId": "LlRVGhSD3bQJpiiV",
@@ -794,6 +953,44 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "condition",
+              "condition": {
+                "kind": "switch",
+                "name": "Eisendrache Destroyed",
+                "want": "on"
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": true,
+              "thenRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "The fountain cracked in two. My grandfather helped build that fountain.",
+                  "bubbleMode": "normal",
+                  "id": "1ZdmNsiS5TcrPYBZ"
+                }
+              ],
+              "elseRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "Food stalls by the fountain, games up near the plaza. Don't miss the fortune teller!",
+                  "bubbleMode": "normal",
+                  "id": "eJ94Kf2I3Ap1NExq"
+                }
+              ],
+              "id": "zOT6KTZfNSlPFw10"
+            }
+          ],
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",
@@ -910,10 +1107,152 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "storyGate": {
+            "shownWhen": "",
+            "hiddenWhen": "Eisendrache Destroyed"
+          }
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "Gardner",
+              "text": "Defense is the ONLY stat that matters. I'm wearing three breastplates. At once.",
+              "bubbleMode": "normal",
+              "id": "ZIC002XZ2hx0XsXu"
+            },
+            {
+              "type": "showText",
+              "speaker": "Nullis",
+              "text": "Three breastplates? One Fireball and you're a very well-armored soup pot.",
+              "bubbleMode": "normal",
+              "id": "XPLNsxtMP3K3S9Ls"
+            },
+            {
+              "type": "showText",
+              "speaker": "Gardner",
+              "text": "Then I'll wear a FOURTH. Made of soup pots. Fireproof soup pots.",
+              "bubbleMode": "normal",
+              "id": "QTnvBfHuylRLYvDX"
+            },
+            {
+              "type": "showText",
+              "speaker": "Nullis",
+              "text": "Magic Defense is the path of the wise. I once took a meteor to the face and only lost my eyebrows.",
+              "bubbleMode": "normal",
+              "id": "PdBagnGPGuVMGvOC"
+            },
+            {
+              "type": "showText",
+              "speaker": "Gardner",
+              "text": "You never HAD eyebrows.",
+              "bubbleMode": "shout",
+              "id": "JNUzshJmLrKZj8HO"
+            },
+            {
+              "type": "showText",
+              "speaker": "Nullis",
+              "text": "Because of the METEOR, Gardner!",
+              "bubbleMode": "shout",
+              "id": "TBBQi4BnswwLa73y"
+            },
+            {
+              "type": "showText",
+              "speaker": "Gardner",
+              "text": "You there! Settle this. Which is better?",
+              "bubbleMode": "normal",
+              "id": "TWP6cE4hkVb3COrx"
+            },
+            {
+              "type": "showChoices",
+              "prompt": "",
+              "options": [
+                {
+                  "id": "TQaE0AKoBEEmTDZs",
+                  "label": "Defense!",
+                  "cancel": false,
+                  "rows": [
+                    {
+                      "type": "showText",
+                      "speaker": "Gardner",
+                      "text": "HA! The people have spoken! Tonight I sleep in my armor. Again.",
+                      "bubbleMode": "normal",
+                      "id": "dYT3Sul2WzlZnQX2"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Nullis",
+                      "text": "The people are wrong. Loudly wrong.",
+                      "bubbleMode": "normal",
+                      "id": "GiS3RMGJRngmHUrZ"
+                    }
+                  ]
+                },
+                {
+                  "id": "Ochjq7wJkuMjMB1s",
+                  "label": "Magic Defense!",
+                  "cancel": false,
+                  "rows": [
+                    {
+                      "type": "showText",
+                      "speaker": "Nullis",
+                      "text": "Wisdom prevails! Gardner, remove one breastplate in shame.",
+                      "bubbleMode": "normal",
+                      "id": "ipF1b8c58j29jVRG"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Gardner",
+                      "text": "…Only one.",
+                      "bubbleMode": "normal",
+                      "id": "1Ww8QD4MVIuXSRjG"
+                    }
+                  ]
+                },
+                {
+                  "id": "JHmyJJorBZIfLZQg",
+                  "label": "Speed, obviously.",
+                  "cancel": false,
+                  "rows": [
+                    {
+                      "type": "showText",
+                      "speaker": "Gardner",
+                      "text": "…",
+                      "bubbleMode": "normal",
+                      "id": "MHf4xZNKJFe99Po1"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Nullis",
+                      "text": "…Get out of our argument.",
+                      "bubbleMode": "normal",
+                      "id": "bqmFpgKD1Ex7wdDd"
+                    }
+                  ]
+                }
+              ],
+              "roleplay": false,
+              "roleplayLabel": "Something else…",
+              "id": "sy4YpVLEVJuna6Hz"
+            },
+            {
+              "type": "showText",
+              "speaker": "Nullis",
+              "text": "We're in the tournament, by the way. If you enter, we'll prove it in the arena!",
+              "bubbleMode": "normal",
+              "id": "58M25vB2G4dCf02O"
+            }
+          ],
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true
         }
       },
       "actorId": "HSLzklG64h0nVZGE",
-      "hidden": false,
+      "hidden": true,
       "sort": 2,
       "_id": "AJYULGjauehJartR",
       "x": 1775,
@@ -923,6 +1262,211 @@
       "_regions": [
         "uQaOBnoP6qLC9PPw"
       ]
+    },
+    {
+      "name": "Royal Messenger",
+      "displayName": 30,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Eidrachian%20Knights/EidrachianKnight_Standard.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": -1.28,
+        "scaleY": 1.28,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 0.9,
+      "disposition": 0,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": "attributeBar.current_hp"
+      },
+      "bar2": {
+        "attribute": "attributeBar.current_mp"
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {
+            "bar2": {
+              "order": 0,
+              "id": "bar2",
+              "attribute": "attributeBar.current_mp",
+              "mincolor": "#000080",
+              "maxcolor": "#80B3FF",
+              "position": "bottom-inner",
+              "otherVisibility": 0,
+              "ownerVisibility": 50,
+              "gmVisibility": -1,
+              "hideFull": false,
+              "hideEmpty": false,
+              "hideCombat": false,
+              "hideNoCombat": false,
+              "indentLeft": null,
+              "indentRight": null,
+              "shareHeight": false,
+              "style": "fraction",
+              "label": "MP",
+              "invert": false,
+              "invertDirection": false,
+              "subdivisions": null,
+              "subdivisionsOwner": false,
+              "fgImage": "",
+              "bgImage": "",
+              "opacity": null,
+              "hideHud": false
+            },
+            "bar1": {
+              "order": 1,
+              "id": "bar1",
+              "attribute": "attributeBar.current_hp",
+              "mincolor": "#FF0000",
+              "maxcolor": "#80FF00",
+              "position": "bottom-inner",
+              "otherVisibility": 0,
+              "ownerVisibility": 50,
+              "gmVisibility": -1,
+              "hideFull": false,
+              "hideEmpty": false,
+              "hideCombat": false,
+              "hideNoCombat": false,
+              "indentLeft": null,
+              "indentRight": null,
+              "shareHeight": false,
+              "style": "fraction",
+              "label": "HP",
+              "invert": false,
+              "invertDirection": false,
+              "subdivisions": null,
+              "subdivisionsOwner": false,
+              "fgImage": "",
+              "bgImage": "",
+              "opacity": null,
+              "hideHud": false
+            },
+            "bar3": {
+              "order": 2,
+              "id": "bar3",
+              "attribute": "attributeBar.shield_value",
+              "mincolor": "#000000",
+              "maxcolor": "#FFFFFF",
+              "position": "bottom-inner",
+              "otherVisibility": 50,
+              "ownerVisibility": 50,
+              "gmVisibility": -1,
+              "hideFull": false,
+              "hideEmpty": true,
+              "hideCombat": false,
+              "hideNoCombat": false,
+              "indentLeft": null,
+              "indentRight": null,
+              "shareHeight": false,
+              "style": "fraction",
+              "label": "",
+              "invert": false,
+              "invertDirection": false,
+              "subdivisions": null,
+              "subdivisionsOwner": false,
+              "fgImage": "",
+              "bgImage": "",
+              "opacity": null,
+              "hideHud": false
+            }
+          }
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true
+        },
+        "fabula-ultima-companion": {
+          "prologueKey": "royal-messenger",
+          "storyGate": {
+            "shownWhen": "Eisendrache Destroyed",
+            "hiddenWhen": "King Summon"
+          }
+        }
+      },
+      "actorId": "N4hYREOor4xOIaT1",
+      "x": 812,
+      "y": 748,
+      "hidden": true,
+      "_id": "EvdP16rutRlp7di9",
+      "elevation": 0,
+      "sort": 1,
+      "locked": false,
+      "_regions": []
     },
     {
       "name": "Villager L",
@@ -1026,6 +1570,65 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "condition",
+              "condition": {
+                "kind": "switch",
+                "name": "Eisendrache Destroyed",
+                "want": "on"
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": true,
+              "thenRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "I'm glad I never entered. Not that it matters now.",
+                  "bubbleMode": "normal",
+                  "id": "tDQmYlnCnxcxYTBF"
+                }
+              ],
+              "elseRows": [
+                {
+                  "type": "showText",
+                  "speaker": "Villager K",
+                  "text": "The Eisenfaust Tournament is this afternoon! So, are you entering this year?",
+                  "bubbleMode": "normal",
+                  "id": "y13tQ76KbQyJ3jm9"
+                },
+                {
+                  "type": "showText",
+                  "speaker": "Villager L",
+                  "text": "Me? Ha… I'd be flattened before the first bell. I'm not that confident in my sword arm.",
+                  "bubbleMode": "normal",
+                  "id": "wfjasQ5GSGLgNeVb"
+                },
+                {
+                  "type": "showText",
+                  "speaker": "Villager K",
+                  "text": "You say that every ten years.",
+                  "bubbleMode": "normal",
+                  "id": "bl5iHhLDoximz4Go"
+                },
+                {
+                  "type": "showText",
+                  "speaker": "Villager L",
+                  "text": "And every ten years I'm right. I'll cheer from the stands, thank you.",
+                  "bubbleMode": "normal",
+                  "id": "YQPWqMS5CUKtjElY"
+                }
+              ],
+              "id": "nFZiJkk27q5YtzsX"
+            }
+          ],
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",
@@ -1142,6 +1745,12 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "storyGate": {
+            "shownWhen": "Opening Ceremony",
+            "hiddenWhen": ""
+          }
         }
       },
       "actorId": "Yw64sV8zIYFbMtUF",
@@ -1258,6 +1867,12 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "storyGate": {
+            "shownWhen": "Opening Ceremony",
+            "hiddenWhen": ""
+          }
         }
       },
       "actorId": "LlRVGhSD3bQJpiiV",
@@ -1374,10 +1989,48 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "condition",
+              "condition": {
+                "kind": "switch",
+                "name": "Eisendrache Destroyed",
+                "want": "on"
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": true,
+              "thenRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "They say the south road is the only safe way out of the city.",
+                  "bubbleMode": "normal",
+                  "id": "OBLiVcCVBD8FJCzv"
+                }
+              ],
+              "elseRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "The south gate was packed this morning. Half the kingdom must be here.",
+                  "bubbleMode": "normal",
+                  "id": "LZedDMxMAiFvP4MD"
+                }
+              ],
+              "id": "u3SpiZYntZcDeSJr"
+            }
+          ],
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",
-      "hidden": true,
+      "hidden": false,
       "sort": 2,
       "_id": "H3MvshkP72FrgOtw",
       "x": 415,
@@ -1490,6 +2143,44 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "condition",
+              "condition": {
+                "kind": "switch",
+                "name": "Eisendrache Destroyed",
+                "want": "on"
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": true,
+              "thenRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "I'd give every coin I have to get yesterday back.",
+                  "bubbleMode": "normal",
+                  "id": "tPagebzilCn6Bskh"
+                }
+              ],
+              "elseRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "I bet my lunch money on the champion. Again.",
+                  "bubbleMode": "normal",
+                  "id": "jbkhvREr55HEkXr0"
+                }
+              ],
+              "id": "gMe6l11EHtbLvXGR"
+            }
+          ],
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",
@@ -1722,10 +2413,48 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "condition",
+              "condition": {
+                "kind": "switch",
+                "name": "Eisendrache Destroyed",
+                "want": "on"
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": true,
+              "thenRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "Nobody's ringing the bell at Test Your Might today.",
+                  "bubbleMode": "normal",
+                  "id": "LrxZvGbOBOED26yw"
+                }
+              ],
+              "elseRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "Test Your Might! Ring the bell and they say the King himself will shake your hand.",
+                  "bubbleMode": "normal",
+                  "id": "uj65FTNKlSwZiFCf"
+                }
+              ],
+              "id": "a3q2oGXXrUiy35Gq"
+            }
+          ],
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",
-      "hidden": true,
+      "hidden": false,
       "sort": 2,
       "_id": "TdjY1WqCa9Syl1SK",
       "x": 1726,
@@ -1838,6 +2567,44 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "condition",
+              "condition": {
+                "kind": "switch",
+                "name": "Eisendrache Destroyed",
+                "want": "on"
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": true,
+              "thenRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "The Princess said our strength would protect what we built… I hope she was right.",
+                  "bubbleMode": "normal",
+                  "id": "jIGYzDgKpNgF3SeP"
+                }
+              ],
+              "elseRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "Princess Hilde's speeches always make my mother cry. Every single time.",
+                  "bubbleMode": "normal",
+                  "id": "BSvjyilFX47h66i7"
+                }
+              ],
+              "id": "5yGvOhVgma5VM1Bb"
+            }
+          ],
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",
@@ -1954,6 +2721,12 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "storyGate": {
+            "shownWhen": "Opening Ceremony",
+            "hiddenWhen": ""
+          }
         }
       },
       "actorId": "yghaJlx5fcj6DtfX",
@@ -2070,6 +2843,44 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "condition",
+              "condition": {
+                "kind": "switch",
+                "name": "Eisendrache Destroyed",
+                "want": "on"
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": true,
+              "thenRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "If you have bandages to spare, the inn is full of wounded.",
+                  "bubbleMode": "normal",
+                  "id": "gnI4PXL8hm9rZplv"
+                }
+              ],
+              "elseRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "Mind your coin purse in the crowds, traveler.",
+                  "bubbleMode": "normal",
+                  "id": "FaO1VZRZEdg9F1lt"
+                }
+              ],
+              "id": "3D8oEubpU6WMZkzm"
+            }
+          ],
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",
@@ -2186,6 +2997,51 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "condition",
+              "condition": {
+                "kind": "switch",
+                "name": "Eisendrache Destroyed",
+                "want": "on"
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": true,
+              "thenRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "Keep your weapons close. Monsters were sighted outside the walls at dawn.",
+                  "bubbleMode": "normal",
+                  "id": "LspcntYOK23dJo4L"
+                }
+              ],
+              "elseRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "Travelers? Welcome to Eisendrache. Routine inspection — hold still a moment.",
+                  "bubbleMode": "normal",
+                  "id": "r5RSTzVaDttmTWvk"
+                },
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "…All clear. Enjoy the Founding Festival, and keep your blades sheathed in the crowds.",
+                  "bubbleMode": "normal",
+                  "id": "vnNIFi7SOu7ZxmyM"
+                }
+              ],
+              "id": "AmuTrO6byxRQCgQy"
+            }
+          ],
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true
         }
       },
       "actorId": "N4hYREOor4xOIaT1",
@@ -2284,6 +3140,27 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": false
+        },
+        "fabula-ultima-companion": {
+          "storyGate": {
+            "shownWhen": "",
+            "hiddenWhen": "Eisendrache Destroyed"
+          }
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "The stars are unusually loud today… Would you like your fortune read? Sit at my table, traveler.",
+              "bubbleMode": "normal",
+              "id": "Xt07kLLss7U55955"
+            }
+          ],
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true
         }
       },
       "appendNumber": false,
@@ -2305,7 +3182,7 @@
         }
       },
       "actorId": "XIuH4g1Z6LHRiDwy",
-      "hidden": false,
+      "hidden": true,
       "sort": 1,
       "_id": "WTubS8wHhaXqTPg8",
       "x": 1318,
@@ -2650,6 +3527,44 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "condition",
+              "condition": {
+                "kind": "switch",
+                "name": "Eisendrache Destroyed",
+                "want": "on"
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": true,
+              "thenRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "They took the Princess. Right in front of the King.",
+                  "bubbleMode": "normal",
+                  "id": "xV0u934rwwORCP6w"
+                }
+              ],
+              "elseRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "They say the reigning champion has never lost a match in the Eisenfaust.",
+                  "bubbleMode": "normal",
+                  "id": "rooffJN6gCDSjSuQ"
+                }
+              ],
+              "id": "FLRUTuMhzPTozlbO"
+            }
+          ],
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",
@@ -2766,6 +3681,12 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "storyGate": {
+            "shownWhen": "Opening Ceremony",
+            "hiddenWhen": ""
+          }
         }
       },
       "actorId": "LlRVGhSD3bQJpiiV",
@@ -2882,6 +3803,65 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "condition",
+              "condition": {
+                "kind": "switch",
+                "name": "Eisendrache Destroyed",
+                "want": "on"
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": true,
+              "thenRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "I was going to cheer for you in the tournament… At least you're alive.",
+                  "bubbleMode": "normal",
+                  "id": "SQ490GQmWifJuJ2Q"
+                }
+              ],
+              "elseRows": [
+                {
+                  "type": "showText",
+                  "speaker": "Villager K",
+                  "text": "The Eisenfaust Tournament is this afternoon! So, are you entering this year?",
+                  "bubbleMode": "normal",
+                  "id": "y13tQ76KbQyJ3jm9"
+                },
+                {
+                  "type": "showText",
+                  "speaker": "Villager L",
+                  "text": "Me? Ha… I'd be flattened before the first bell. I'm not that confident in my sword arm.",
+                  "bubbleMode": "normal",
+                  "id": "wfjasQ5GSGLgNeVb"
+                },
+                {
+                  "type": "showText",
+                  "speaker": "Villager K",
+                  "text": "You say that every ten years.",
+                  "bubbleMode": "normal",
+                  "id": "bl5iHhLDoximz4Go"
+                },
+                {
+                  "type": "showText",
+                  "speaker": "Villager L",
+                  "text": "And every ten years I'm right. I'll cheer from the stands, thank you.",
+                  "bubbleMode": "normal",
+                  "id": "YQPWqMS5CUKtjElY"
+                }
+              ],
+              "id": "8i2tGK1vr1EVSpyS"
+            }
+          ],
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",
@@ -3114,6 +4094,12 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "storyGate": {
+            "shownWhen": "Opening Ceremony",
+            "hiddenWhen": ""
+          }
         }
       },
       "actorId": "LlRVGhSD3bQJpiiV",
@@ -3230,6 +4216,44 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "condition",
+              "condition": {
+                "kind": "switch",
+                "name": "Eisendrache Destroyed",
+                "want": "on"
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": true,
+              "thenRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "The knights worked all night, pulling people out of the rubble.",
+                  "bubbleMode": "normal",
+                  "id": "u2HuPcNWBQ9Z41ym"
+                }
+              ],
+              "elseRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "The knights have been marching about all morning. King Seigfried must be in a fine mood.",
+                  "bubbleMode": "normal",
+                  "id": "6gJ0vUwWLcKTljll"
+                }
+              ],
+              "id": "SRCSKfZRW5rtVqlC"
+            }
+          ],
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",
@@ -3346,6 +4370,44 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "condition",
+              "condition": {
+                "kind": "switch",
+                "name": "Eisendrache Destroyed",
+                "want": "on"
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": true,
+              "thenRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "The roasted-nut stand is gone. Half the street is gone.",
+                  "bubbleMode": "normal",
+                  "id": "cdXh2bDxBTaG2Eqs"
+                }
+              ],
+              "elseRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "Ten years since the last Founding Festival! The whole city smells like roasted nuts.",
+                  "bubbleMode": "normal",
+                  "id": "TVA9I7GxoBQgwcDO"
+                }
+              ],
+              "id": "J1U0m5u99f4Bt4Lb"
+            }
+          ],
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",
@@ -3462,6 +4524,44 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "condition",
+              "condition": {
+                "kind": "switch",
+                "name": "Eisendrache Destroyed",
+                "want": "on"
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": true,
+              "thenRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "My house is still standing. My neighbor's isn't. I don't know what to feel.",
+                  "bubbleMode": "normal",
+                  "id": "NjA8XbMy4MgYmjZ2"
+                }
+              ],
+              "elseRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "My feet ache, but I'm not going home until the tournament's over.",
+                  "bubbleMode": "normal",
+                  "id": "GLeqKrkSevPvbMNA"
+                }
+              ],
+              "id": "nCmUX3L2LZZy4L5D"
+            }
+          ],
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",
@@ -3578,6 +4678,44 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "condition",
+              "condition": {
+                "kind": "switch",
+                "name": "Eisendrache Destroyed",
+                "want": "on"
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": true,
+              "thenRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "I keep looking up at the sky. What if it comes back?",
+                  "bubbleMode": "normal",
+                  "id": "oNt8OIsnBrLW6wgl"
+                }
+              ],
+              "elseRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "Nobody's won the big bear at the ring toss in three festivals. Those rings are cursed, I tell you.",
+                  "bubbleMode": "normal",
+                  "id": "TorVkyXw6tIekLRz"
+                }
+              ],
+              "id": "KwyXLdFGPCjRQxXu"
+            }
+          ],
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",
@@ -3672,6 +4810,51 @@
         },
         "barbrawl": {
           "resourceBars": {}
+        },
+        "fabula-ultima-companion": {
+          "storyGate": {
+            "shownWhen": "",
+            "hiddenWhen": "Eisendrache Destroyed"
+          }
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "Hold on, hold on… I've got this one…",
+              "bubbleMode": "normal",
+              "id": "pJLTCTirKikFR6Ak"
+            },
+            {
+              "type": "showEmote",
+              "target": "source",
+              "name": "",
+              "emote": "Sweat",
+              "side": "auto",
+              "seconds": 0.9,
+              "wait": true,
+              "id": "QllAD2JA0ai9Wdqn"
+            },
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "Missed again! These rings are two sizes too small, I swear.",
+              "bubbleMode": "normal",
+              "id": "tt5XsoaTwLCovdAg"
+            },
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "Name's Guy. Just a regular adventurer passing through for the festival. You trying your luck too? If you land one, tell me your secret.",
+              "bubbleMode": "normal",
+              "id": "wnFfz5XZeE8D6OB0"
+            }
+          ],
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true
         }
       },
       "appendNumber": false,
@@ -3806,6 +4989,12 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "storyGate": {
+            "shownWhen": "Opening Ceremony",
+            "hiddenWhen": ""
+          }
         }
       },
       "actorId": "LlRVGhSD3bQJpiiV",
@@ -3922,6 +5111,1084 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "condition",
+              "condition": {
+                "kind": "switch",
+                "name": "Eisendrache Destroyed",
+                "want": "on"
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": true,
+              "thenRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "Every knight in the city is on duty today. Titles mean nothing when the streets are burning.",
+                  "bubbleMode": "normal",
+                  "id": "sxPhVXpTTU3Qex3g"
+                }
+              ],
+              "elseRows": [
+                {
+                  "type": "condition",
+                  "condition": {
+                    "kind": "switch",
+                    "name": "Tournament Signed Up",
+                    "want": "off"
+                  },
+                  "moreConditions": [],
+                  "combine": "all",
+                  "hasElse": false,
+                  "thenRows": [
+                    {
+                      "type": "showText",
+                      "speaker": "This",
+                      "text": "Halt! This is the entrance to the Colosseum.",
+                      "bubbleMode": "normal",
+                      "id": "EwFF2IkLKz5BHTQX"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "This",
+                      "text": "…You look like you can handle yourselves. Want to enter the Eisenfaust Fighting Tournament?",
+                      "bubbleMode": "normal",
+                      "id": "NOOeTDZWfTr4N2ys"
+                    },
+                    {
+                      "type": "showChoices",
+                      "prompt": "",
+                      "options": [
+                        {
+                          "id": "CLuiIUkO24cWSN4W",
+                          "label": "Yes",
+                          "cancel": false,
+                          "rows": []
+                        },
+                        {
+                          "id": "klg8xZSBUE0QuKi4",
+                          "label": "No",
+                          "cancel": true,
+                          "rows": [
+                            {
+                              "type": "showText",
+                              "speaker": "This",
+                              "text": "Suit yourselves. The festival's plenty fun without a broken nose.",
+                              "bubbleMode": "normal",
+                              "id": "ABRmOd5hYp3BD1Z3"
+                            },
+                            {
+                              "type": "endEvent",
+                              "id": "yxR7tw6Xo7YeClbD"
+                            }
+                          ]
+                        }
+                      ],
+                      "roleplay": false,
+                      "roleplayLabel": "Something else…",
+                      "id": "aDHRqUbPhGRfwKLp"
+                    },
+                    {
+                      "type": "setSwitch",
+                      "scope": "story",
+                      "name": "Tournament Signed Up",
+                      "slot": "A",
+                      "value": "on",
+                      "id": "tejVqFFnERBfkhJW"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "This",
+                      "text": "Splendid! Every team fights under a banner. What do you call yourselves?",
+                      "bubbleMode": "normal",
+                      "id": "IN8AoGpUmxi5q1UY"
+                    },
+                    {
+                      "type": "nameInput",
+                      "prompt": "Please enter your party's name",
+                      "variable": "Party Name",
+                      "initialFrom": "party",
+                      "renameParty": true,
+                      "suffix": " Party",
+                      "max": 16,
+                      "id": "1BC6U1fM0iZXPv0A"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "This",
+                      "text": "“{var:Party Name}”… it has a ring to it. You're on the list!",
+                      "bubbleMode": "normal",
+                      "id": "72MbruEUdeh19dgw"
+                    }
+                  ],
+                  "elseRows": [],
+                  "id": "V5Qq9n8lPe5LSkEa"
+                },
+                {
+                  "type": "condition",
+                  "condition": {
+                    "kind": "variable",
+                    "name": "Stalls Played",
+                    "op": ">=",
+                    "value": 4
+                  },
+                  "moreConditions": [],
+                  "combine": "all",
+                  "hasElse": true,
+                  "thenRows": [
+                    {
+                      "type": "showText",
+                      "speaker": "This",
+                      "text": "There's the horn! The matches are about to begin. Follow me inside, {var:Party Name}!",
+                      "bubbleMode": "normal",
+                      "id": "9NfR21NzFzPikZPZ"
+                    },
+                    {
+                      "type": "screenEffect",
+                      "effect": "fadeOut",
+                      "color": "#000000",
+                      "strength": 0,
+                      "seconds": 0.8,
+                      "wait": true,
+                      "id": "CCyebJMvQLwltob8"
+                    },
+                    {
+                      "type": "changeScene",
+                      "scene": "G0ZGYTa04uq51UH1",
+                      "arrival": "theatre",
+                      "mark": "",
+                      "x": 0,
+                      "y": 0,
+                      "id": "AOS1pTKmh6kLYR7F"
+                    },
+                    {
+                      "type": "screenEffect",
+                      "effect": "fadeIn",
+                      "color": "#000000",
+                      "strength": 0,
+                      "seconds": 0.8,
+                      "wait": true,
+                      "id": "Cblyf0aci0ShR2NK"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Announcer",
+                      "text": "Citizens of Eisendrache! Travelers from distant roads! Welcome to the Eisenfaust Fighting Tournament!",
+                      "bubbleMode": "shout",
+                      "id": "Msn4yPZwmrRAESd4"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Announcer",
+                      "text": "Ours is a kingdom forged by strength! King Seigfried united this land with steel and will — and every ten years, we honor that strength right here!",
+                      "bubbleMode": "normal",
+                      "id": "x41BhgyPJtLnojg4"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Announcer",
+                      "text": "Show us your strength! Show us your spirit! And remember — only one name stands at the top… our reigning champion!",
+                      "bubbleMode": "normal",
+                      "id": "SrCfYIYMj0KUWAuE"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Announcer",
+                      "text": "Our challengers today: give it up for… {var:Party Name}!",
+                      "bubbleMode": "shout",
+                      "id": "kegyVsSy5kXcmPBY"
+                    },
+                    {
+                      "type": "setVariable",
+                      "name": "Tournament Wins",
+                      "op": "set",
+                      "value": 0,
+                      "max": 0,
+                      "id": "jUSSqe8u2HHirY5t"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Announcer",
+                      "text": "Round one! From the wilds beyond the walls — a savage Ape and its pack of Wolves!",
+                      "bubbleMode": "normal",
+                      "id": "NQiVYOVPfK2qEvhC"
+                    },
+                    {
+                      "type": "startBattle",
+                      "enemies": "Ape, Wolf x2",
+                      "battleMap": "Jsyy6IQ91wWbjZpv",
+                      "bgm": "",
+                      "isBoss": false,
+                      "engagement": "normal",
+                      "storyLoss": true,
+                      "recoverOnDefeat": true,
+                      "victoryRows": [
+                        {
+                          "type": "setVariable",
+                          "name": "Tournament Wins",
+                          "op": "add",
+                          "value": 1,
+                          "max": 0,
+                          "id": "m9Vywfb0HPltxSjV"
+                        },
+                        {
+                          "type": "pauseForGM",
+                          "note": "Between rounds: players may heal, use items and change equipment. Continue when the table is ready.",
+                          "noEnd": false,
+                          "choices": [],
+                          "id": "35jQZ5kBGXnvXI2c"
+                        }
+                      ],
+                      "defeatRows": [
+                        {
+                          "type": "showText",
+                          "speaker": "Announcer",
+                          "text": "Oh! And the challengers are down! What a show — let's hear it for them anyway!",
+                          "bubbleMode": "normal",
+                          "id": "sTFX4WBl2FuRsZlI"
+                        }
+                      ],
+                      "id": "TGkqldl4B3pUiZDN"
+                    },
+                    {
+                      "type": "condition",
+                      "condition": {
+                        "kind": "variable",
+                        "name": "Tournament Wins",
+                        "op": ">=",
+                        "value": 1
+                      },
+                      "moreConditions": [],
+                      "combine": "all",
+                      "hasElse": false,
+                      "thenRows": [
+                        {
+                          "type": "showText",
+                          "speaker": "Announcer",
+                          "text": "Round two! The Armor Enthusiast and the Arcane Theorist — Gardner and Nullis!",
+                          "bubbleMode": "normal",
+                          "id": "o0gYf5XSVLH9sLfl"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Gardner",
+                          "text": "Defense wins championships!",
+                          "bubbleMode": "normal",
+                          "id": "KnGlNvK8Tq5gCYKZ"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Nullis",
+                          "text": "MAGIC Defense wins championships!",
+                          "bubbleMode": "normal",
+                          "id": "K1DRCYiu85OGMmXb"
+                        },
+                        {
+                          "type": "startBattle",
+                          "enemies": "Gardner, Nullis",
+                          "battleMap": "Jsyy6IQ91wWbjZpv",
+                          "bgm": "",
+                          "isBoss": false,
+                          "engagement": "normal",
+                          "storyLoss": true,
+                          "recoverOnDefeat": true,
+                          "victoryRows": [
+                            {
+                              "type": "setVariable",
+                              "name": "Tournament Wins",
+                              "op": "add",
+                              "value": 1,
+                              "max": 0,
+                              "id": "cj1ATrUlybcWEc3y"
+                            },
+                            {
+                              "type": "pauseForGM",
+                              "note": "Between rounds: players may heal, use items and change equipment. Continue when the table is ready.",
+                              "noEnd": false,
+                              "choices": [],
+                              "id": "VuOv7IcySgM9iJrt"
+                            }
+                          ],
+                          "defeatRows": [
+                            {
+                              "type": "showText",
+                              "speaker": "Announcer",
+                              "text": "Oh! And the challengers are down! What a show — let's hear it for them anyway!",
+                              "bubbleMode": "normal",
+                              "id": "attLnnq6GTkbAueN"
+                            }
+                          ],
+                          "id": "aYJfPW8MZJMT2eMI"
+                        }
+                      ],
+                      "elseRows": [],
+                      "id": "3w0YTVMjttiYtDbI"
+                    },
+                    {
+                      "type": "condition",
+                      "condition": {
+                        "kind": "variable",
+                        "name": "Tournament Wins",
+                        "op": ">=",
+                        "value": 2
+                      },
+                      "moreConditions": [],
+                      "combine": "all",
+                      "hasElse": false,
+                      "thenRows": [
+                        {
+                          "type": "showText",
+                          "speaker": "Announcer",
+                          "text": "The final round! Undefeated in three festivals, Knight of Eisendrache, your reigning champion — BRUUUCE!",
+                          "bubbleMode": "shout",
+                          "id": "7cybyIsL0dD9i5Na"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Bruce",
+                          "text": "Surprised? Somebody has to mind the gate when the champion isn't fighting. Now — show me what you've got, {var:Party Name}!",
+                          "bubbleMode": "normal",
+                          "id": "PLPE0OUdr0MprXTp"
+                        },
+                        {
+                          "type": "startBattle",
+                          "enemies": "Bruce",
+                          "battleMap": "Jsyy6IQ91wWbjZpv",
+                          "bgm": "",
+                          "isBoss": true,
+                          "engagement": "normal",
+                          "storyLoss": true,
+                          "recoverOnDefeat": true,
+                          "victoryRows": [
+                            {
+                              "type": "setVariable",
+                              "name": "Tournament Wins",
+                              "op": "add",
+                              "value": 1,
+                              "max": 0,
+                              "id": "ydz8N9ixs2eDQ6yn"
+                            }
+                          ],
+                          "defeatRows": [
+                            {
+                              "type": "showText",
+                              "speaker": "Announcer",
+                              "text": "Oh! And the challengers are down! What a show — let's hear it for them anyway!",
+                              "bubbleMode": "normal",
+                              "id": "XbHBLKsVlfDsJlHH"
+                            }
+                          ],
+                          "id": "rGepkEfNByigLjC0"
+                        }
+                      ],
+                      "elseRows": [],
+                      "id": "zHyObPP2yYvs5LHH"
+                    },
+                    {
+                      "type": "condition",
+                      "condition": {
+                        "kind": "variable",
+                        "name": "Tournament Wins",
+                        "op": "=",
+                        "value": 0
+                      },
+                      "moreConditions": [],
+                      "combine": "all",
+                      "hasElse": false,
+                      "thenRows": [
+                        {
+                          "type": "showText",
+                          "speaker": "Announcer",
+                          "text": "No prize this time, friends — but the crowd will remember your courage!",
+                          "bubbleMode": "normal",
+                          "id": "lAz2VdzzbDMmkcmL"
+                        }
+                      ],
+                      "elseRows": [],
+                      "id": "ABF5To9Z7Ic2WZt5"
+                    },
+                    {
+                      "type": "condition",
+                      "condition": {
+                        "kind": "variable",
+                        "name": "Tournament Wins",
+                        "op": "=",
+                        "value": 1
+                      },
+                      "moreConditions": [],
+                      "combine": "all",
+                      "hasElse": false,
+                      "thenRows": [
+                        {
+                          "type": "showText",
+                          "speaker": "Announcer",
+                          "text": "One victory for our challengers! For your trouble — a Remedy!",
+                          "bubbleMode": "normal",
+                          "id": "0UxKaTjbuKXBSIOC"
+                        },
+                        {
+                          "type": "changeItems",
+                          "op": "add",
+                          "what": "item",
+                          "name": "Remedy",
+                          "amount": 1,
+                          "id": "MVezeRfuaF5lhOn1"
+                        }
+                      ],
+                      "elseRows": [],
+                      "id": "bKbfN6le0Ys4AImv"
+                    },
+                    {
+                      "type": "condition",
+                      "condition": {
+                        "kind": "variable",
+                        "name": "Tournament Wins",
+                        "op": "=",
+                        "value": 2
+                      },
+                      "moreConditions": [],
+                      "combine": "all",
+                      "hasElse": false,
+                      "thenRows": [
+                        {
+                          "type": "showText",
+                          "speaker": "Announcer",
+                          "text": "Two victories! So close to the champion! Take this Tonic with the kingdom's thanks!",
+                          "bubbleMode": "normal",
+                          "id": "nbAqYYzzN9VWBiCs"
+                        },
+                        {
+                          "type": "changeItems",
+                          "op": "add",
+                          "what": "item",
+                          "name": "Tonic",
+                          "amount": 1,
+                          "id": "deEDdhJEIi2RQLyp"
+                        }
+                      ],
+                      "elseRows": [],
+                      "id": "zcdqbnmxcER7lmn3"
+                    },
+                    {
+                      "type": "condition",
+                      "condition": {
+                        "kind": "variable",
+                        "name": "Tournament Wins",
+                        "op": "=",
+                        "value": 3
+                      },
+                      "moreConditions": [],
+                      "combine": "all",
+                      "hasElse": false,
+                      "thenRows": [
+                        {
+                          "type": "showText",
+                          "speaker": "Announcer",
+                          "text": "UNBELIEVABLE! The champion has fallen! A new name for the history books — {var:Party Name}! One thousand zenit to the victors!",
+                          "bubbleMode": "shout",
+                          "id": "aOW42tsnRj7zX4Ji"
+                        },
+                        {
+                          "type": "changeItems",
+                          "op": "add",
+                          "what": "zenit",
+                          "name": "",
+                          "amount": 1000,
+                          "id": "Bn0fHHlT8pUMuH0G"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Bruce",
+                          "text": "Well fought. The arena is yours… for now.",
+                          "bubbleMode": "normal",
+                          "id": "weNRrGQU5j4F9XuV"
+                        }
+                      ],
+                      "elseRows": [],
+                      "id": "QAkqJB9N3pu5zR22"
+                    },
+                    {
+                      "type": "screenEffect",
+                      "effect": "shake",
+                      "color": "#000000",
+                      "strength": 20,
+                      "seconds": 0.8,
+                      "wait": true,
+                      "id": "4yAynHx4WLjPKLL4"
+                    },
+                    {
+                      "type": "playSound",
+                      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Explosion2.ogg",
+                      "volume": 0.7,
+                      "wait": false,
+                      "id": "uu4lxl9dMFCmjZ8s"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Announcer",
+                      "text": "W-what was that? Is that… part of the show?",
+                      "bubbleMode": "normal",
+                      "id": "7lkiPGZKGxbbh8lh"
+                    },
+                    {
+                      "type": "playSound",
+                      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Scream.ogg",
+                      "volume": 0.6,
+                      "wait": false,
+                      "id": "kaL0DbTTINuNMdxu"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Eisendrachian Knight",
+                      "text": "Move! Move — out of the way!",
+                      "bubbleMode": "shout",
+                      "id": "w03lTOwPbrXn35tl"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Eisendrachian Knight",
+                      "text": "Monsters! Monsters are attacking the city! This isn't part of the festival — get everyone to safety!",
+                      "bubbleMode": "shout",
+                      "id": "BfkrV5d4RCHqumVX"
+                    },
+                    {
+                      "type": "screenEffect",
+                      "effect": "flash",
+                      "color": "#000000",
+                      "strength": 0,
+                      "seconds": 0.4,
+                      "wait": true,
+                      "id": "J45E2bWOxoJuI7HV"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Announcer",
+                      "text": "Th-there's one in the arena!",
+                      "bubbleMode": "shout",
+                      "id": "rcCOAE6b1l7uHmxr"
+                    },
+                    {
+                      "type": "startBattle",
+                      "enemies": "Voidog x3",
+                      "battleMap": "Jsyy6IQ91wWbjZpv",
+                      "bgm": "",
+                      "isBoss": false,
+                      "engagement": "normal",
+                      "storyLoss": true,
+                      "recoverOnDefeat": true,
+                      "victoryRows": [],
+                      "defeatRows": [],
+                      "id": "I8hFVnJgPCbXLZxF"
+                    },
+                    {
+                      "type": "pauseForGM",
+                      "note": "Roleplay: the party reacts to the attack. Continue to move them into the burning city.",
+                      "noEnd": false,
+                      "choices": [],
+                      "id": "6MMgbcmej7pT8Fup"
+                    },
+                    {
+                      "type": "screenEffect",
+                      "effect": "fadeOut",
+                      "color": "#000000",
+                      "strength": 0,
+                      "seconds": 0.8,
+                      "wait": true,
+                      "id": "GinSSQBlWNYcqId0"
+                    },
+                    {
+                      "type": "changeScene",
+                      "scene": "2kf6YmAKvAsOcmfi",
+                      "arrival": "theatre",
+                      "mark": "",
+                      "x": 0,
+                      "y": 0,
+                      "id": "6yWCJ6V5jsNDYG9n"
+                    },
+                    {
+                      "type": "screenEffect",
+                      "effect": "fadeIn",
+                      "color": "#000000",
+                      "strength": 0,
+                      "seconds": 0.8,
+                      "wait": true,
+                      "id": "gBY2J7LZ2xAfU8Xn"
+                    },
+                    {
+                      "type": "pauseForGM",
+                      "note": "Roleplay: the party sees the burning streets. Continue to start the next fight.",
+                      "noEnd": false,
+                      "choices": [],
+                      "id": "8KNwSj0Pzip9FTMI"
+                    },
+                    {
+                      "type": "floatingText",
+                      "text": "Monsters pour through the burning streets!",
+                      "place": "auto",
+                      "name": "",
+                      "nudgeX": 0,
+                      "nudgeY": 0,
+                      "startFresh": false,
+                      "autoSeconds": 0,
+                      "id": "1U0SJOvDsPCIE2ku"
+                    },
+                    {
+                      "type": "startBattle",
+                      "enemies": "Voidog, Looker, Banestrix",
+                      "battleMap": "0cGatQVzULogtnYi",
+                      "bgm": "",
+                      "isBoss": false,
+                      "engagement": "normal",
+                      "storyLoss": true,
+                      "recoverOnDefeat": true,
+                      "victoryRows": [],
+                      "defeatRows": [],
+                      "id": "IbjiVq4562fM2zbb"
+                    },
+                    {
+                      "type": "pauseForGM",
+                      "note": "Roleplay after the street fight. Continue for Fafnir's arrival.",
+                      "noEnd": false,
+                      "choices": [],
+                      "id": "cX49imUsaQm5Q0WT"
+                    },
+                    {
+                      "type": "screenEffect",
+                      "effect": "tint",
+                      "color": "#0a001e",
+                      "strength": 0.45,
+                      "seconds": 1,
+                      "wait": true,
+                      "id": "KPwy4cRjg170m2f0"
+                    },
+                    {
+                      "type": "floatingText",
+                      "text": "A shadow falls across the burning city.",
+                      "place": "auto",
+                      "name": "",
+                      "nudgeX": 0,
+                      "nudgeY": 0,
+                      "startFresh": false,
+                      "autoSeconds": 0,
+                      "id": "xElwALd5A4B07mws"
+                    },
+                    {
+                      "type": "floatingText",
+                      "text": "Above the smoke, something vast blots out the sky…",
+                      "place": "auto",
+                      "name": "",
+                      "nudgeX": 0,
+                      "nudgeY": 0,
+                      "startFresh": false,
+                      "autoSeconds": 0,
+                      "id": "yS2nFv7x8XiVNz5Y"
+                    },
+                    {
+                      "type": "floatingText",
+                      "text": "…and it is descending.",
+                      "place": "auto",
+                      "name": "",
+                      "nudgeX": 0,
+                      "nudgeY": 0,
+                      "startFresh": false,
+                      "autoSeconds": 0,
+                      "id": "5I5aqqwMx69TD8YJ"
+                    },
+                    {
+                      "type": "villainEntrance",
+                      "villains": [
+                        {
+                          "id": "P1uCkpNnxLRBNqZr",
+                          "name": "⭐️ Fafnir"
+                        }
+                      ],
+                      "id": "l6N8NXpc8bJYAQ9L"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Fafnir",
+                      "text": "So this is Eisendrache… a city built on songs and lies.",
+                      "bubbleMode": "normal",
+                      "id": "c6v9xh0q0c7nJkBt"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Fafnir",
+                      "text": "Hear me, little ones. I am Fafnir.",
+                      "bubbleMode": "shout",
+                      "id": "usuOh5aIQAtImcAW"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Fafnir",
+                      "text": "Where is your king? Where is the wolf who dares to call himself a ruler? Let him crawl out and face me!",
+                      "bubbleMode": "shout",
+                      "id": "uGwV6OW4Hnpt9z2Z"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Fafnir",
+                      "text": "No? Then the ones standing nearest shall burn in his place.",
+                      "bubbleMode": "normal",
+                      "id": "en96NLTF5MQjvgvu"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Fafnir",
+                      "text": "Today, your festival ends — and your hope with it. Run if you wish. Hide if you can. In the end… none of you will survive.",
+                      "bubbleMode": "normal",
+                      "id": "zF9yConYyDOXAkFg"
+                    },
+                    {
+                      "type": "startBattle",
+                      "enemies": "Fafnir",
+                      "battleMap": "0cGatQVzULogtnYi",
+                      "bgm": "Draconic Battle",
+                      "isBoss": true,
+                      "engagement": "normal",
+                      "storyLoss": true,
+                      "recoverOnDefeat": false,
+                      "victoryRows": [],
+                      "defeatRows": [],
+                      "id": "wDVElQHM0rEIHemW"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Fafnir",
+                      "text": "Oh? You still draw breath.",
+                      "bubbleMode": "normal",
+                      "id": "qcxhgu8BGGT7b1lm"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Fafnir",
+                      "text": "Stronger than average… I will grant you that. There is a warrior's fire in you.",
+                      "bubbleMode": "normal",
+                      "id": "PcXOAmzkxacJkF8c"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Fafnir",
+                      "text": "But it changes nothing. Your struggle is a candle held against the storm.",
+                      "bubbleMode": "normal",
+                      "id": "NmgAoMVMiFeMvTDp"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Fafnir",
+                      "text": "Let me show you what futility looks like.",
+                      "bubbleMode": "shout",
+                      "id": "lYPZ4mN3rNJfLaEU"
+                    },
+                    {
+                      "type": "screenEffect",
+                      "effect": "tint",
+                      "color": "#8c0a00",
+                      "strength": 0.35,
+                      "seconds": 0.8,
+                      "wait": true,
+                      "id": "T3vGwduyrjdEMiGc"
+                    },
+                    {
+                      "type": "floatingText",
+                      "text": "Your vision blurs. Your legs give way…",
+                      "place": "auto",
+                      "name": "",
+                      "nudgeX": 0,
+                      "nudgeY": 0,
+                      "startFresh": false,
+                      "autoSeconds": 0,
+                      "id": "Wh7HnDprvuHGmGep"
+                    },
+                    {
+                      "type": "floatingText",
+                      "text": "…but the blow never comes.",
+                      "place": "auto",
+                      "name": "",
+                      "nudgeX": 0,
+                      "nudgeY": 0,
+                      "startFresh": false,
+                      "autoSeconds": 0,
+                      "id": "P2FxH0QdHeU7nSBP"
+                    },
+                    {
+                      "type": "screenEffect",
+                      "effect": "flash",
+                      "color": "#000000",
+                      "strength": 0,
+                      "seconds": 0.4,
+                      "wait": true,
+                      "id": "7O3bB1pnm1f8jGEw"
+                    },
+                    {
+                      "type": "screenEffect",
+                      "effect": "clear",
+                      "color": "#000000",
+                      "strength": 0,
+                      "seconds": 0.4,
+                      "wait": true,
+                      "id": "IDRgVaz9LiNpbsIV"
+                    },
+                    {
+                      "type": "floatingText",
+                      "text": "A figure stands between you and the flames, shield raised against the dragon's breath.",
+                      "place": "auto",
+                      "name": "",
+                      "nudgeX": 0,
+                      "nudgeY": 0,
+                      "startFresh": false,
+                      "autoSeconds": 0,
+                      "id": "25ahSQtJq0mSkf62"
+                    },
+                    {
+                      "type": "floatingText",
+                      "text": "King Seigfried of Eisendrache.",
+                      "place": "auto",
+                      "name": "",
+                      "nudgeX": 0,
+                      "nudgeY": 0,
+                      "startFresh": false,
+                      "autoSeconds": 0,
+                      "id": "i0zgcsGZmPahrlCF"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Fafnir",
+                      "text": "So… the crowned wolf doth bare his throat at last.",
+                      "bubbleMode": "normal",
+                      "id": "cuiCDdWXB9pUmJ9a"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Fafnir",
+                      "text": "King of Eisendrache — thy city sings, and yet it reeks of fear.",
+                      "bubbleMode": "normal",
+                      "id": "573DYsygQhIpvxfw"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "King Seigfried",
+                      "text": "Begone, vile beast. Thou dost not belong here.",
+                      "bubbleMode": "normal",
+                      "id": "gsNISCUcj0rn6cA6"
+                    },
+                    {
+                      "type": "screenEffect",
+                      "effect": "shake",
+                      "color": "#000000",
+                      "strength": 12,
+                      "seconds": 0.5,
+                      "wait": true,
+                      "id": "Nr1G2fOYbhIX9N0A"
+                    },
+                    {
+                      "type": "screenEffect",
+                      "effect": "flash",
+                      "color": "#000000",
+                      "strength": 0,
+                      "seconds": 0.3,
+                      "wait": true,
+                      "id": "f3tqEyjFeJdcu5Bt"
+                    },
+                    {
+                      "type": "screenEffect",
+                      "effect": "shake",
+                      "color": "#000000",
+                      "strength": 20,
+                      "seconds": 0.7,
+                      "wait": true,
+                      "id": "vGjh3LSgWFwBsN1Y"
+                    },
+                    {
+                      "type": "floatingText",
+                      "text": "Steel meets scale. The King's blade bites true, and the dragon is driven back.",
+                      "place": "auto",
+                      "name": "",
+                      "nudgeX": 0,
+                      "nudgeY": 0,
+                      "startFresh": false,
+                      "autoSeconds": 0,
+                      "id": "9u9HyUlpnGeIpEZQ"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Fafnir",
+                      "text": "Hmph… so the crown is not hollow.",
+                      "bubbleMode": "normal",
+                      "id": "h72JgXoAZ4JOOg85"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Fafnir",
+                      "text": "Thy might is true… but there is naught in this world without weakness.",
+                      "bubbleMode": "normal",
+                      "id": "bmtYFMWgST4gYNzz"
+                    },
+                    {
+                      "type": "floatingText",
+                      "text": "An Orc lumbers out of the smoke, dragging a struggling figure.",
+                      "place": "auto",
+                      "name": "",
+                      "nudgeX": 0,
+                      "nudgeY": 0,
+                      "startFresh": false,
+                      "autoSeconds": 0,
+                      "id": "8iJOArph0kKIqLJX"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Princess Hilde",
+                      "text": "Father!",
+                      "bubbleMode": "shout",
+                      "id": "U1oYjFpVyot0ul7p"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "King Seigfried",
+                      "text": "…!",
+                      "bubbleMode": "normal",
+                      "id": "jtnCKaQ011CYMLqu"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Fafnir",
+                      "text": "Thou wouldst slay me here, before all eyes. Do it, then. And watch what thy courage costs.",
+                      "bubbleMode": "normal",
+                      "id": "UJFu84BPEL6Gtf26"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Fafnir",
+                      "text": "Eisendrache shall learn remembrance in fire and ruin. And I shall savor thy despair — slowly… sweetly.",
+                      "bubbleMode": "normal",
+                      "id": "P3YN8ahijnwRrAnu"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Fafnir",
+                      "text": "Today was but a warning, little king.",
+                      "bubbleMode": "normal",
+                      "id": "ry6uJOuO6UIM63OQ"
+                    },
+                    {
+                      "type": "showText",
+                      "speaker": "Fafnir",
+                      "text": "Come, if thou wouldst chase. I shall leave thee a trail of ashes — so even fools may follow.",
+                      "bubbleMode": "normal",
+                      "id": "rL24alheCCw9bTlT"
+                    },
+                    {
+                      "type": "screenEffect",
+                      "effect": "shake",
+                      "color": "#000000",
+                      "strength": 20,
+                      "seconds": 0.8,
+                      "wait": true,
+                      "id": "VnRhGyGAl87HEOac"
+                    },
+                    {
+                      "type": "floatingText",
+                      "text": "Fafnir takes to the sky, Princess Hilde bound in her grasp.",
+                      "place": "auto",
+                      "name": "",
+                      "nudgeX": 0,
+                      "nudgeY": 0,
+                      "startFresh": false,
+                      "autoSeconds": 0,
+                      "id": "C9J41otYOiwe7nuU"
+                    },
+                    {
+                      "type": "floatingText",
+                      "text": "The roar fades. The world goes dark…",
+                      "place": "auto",
+                      "name": "",
+                      "nudgeX": 0,
+                      "nudgeY": 0,
+                      "startFresh": false,
+                      "autoSeconds": 0,
+                      "id": "J4anTnAufOGnl5w5"
+                    },
+                    {
+                      "type": "screenEffect",
+                      "effect": "fadeOut",
+                      "color": "#000000",
+                      "strength": 0,
+                      "seconds": 1.2,
+                      "wait": true,
+                      "id": "2EkEEMC3noxOZXlF"
+                    },
+                    {
+                      "type": "pauseForGM",
+                      "note": "Roleplay in the dark. Continue to end the scene.",
+                      "noEnd": false,
+                      "choices": [],
+                      "id": "ybPtqt4HcoNRJIjy"
+                    },
+                    {
+                      "type": "setSwitch",
+                      "scope": "story",
+                      "name": "Eisendrache Destroyed",
+                      "slot": "A",
+                      "value": "on",
+                      "id": "D9xHQrvX6YIkoQTu"
+                    },
+                    {
+                      "type": "changeScene",
+                      "scene": "L1OcJF2TJ05xhOEU",
+                      "arrival": "point",
+                      "mark": "",
+                      "x": 304,
+                      "y": 400,
+                      "id": "ATVTMX9pfRmtZ34g"
+                    },
+                    {
+                      "type": "recoverAll",
+                      "id": "XHjKDIrfE6E2FH0P"
+                    },
+                    {
+                      "type": "screenEffect",
+                      "effect": "fadeIn",
+                      "color": "#000000",
+                      "strength": 0,
+                      "seconds": 1,
+                      "wait": true,
+                      "id": "3h4D9R18gmbFcWnc"
+                    },
+                    {
+                      "type": "floatingText",
+                      "text": "Eisendrache Inn — the next morning.",
+                      "place": "auto",
+                      "name": "",
+                      "nudgeX": 0,
+                      "nudgeY": 0,
+                      "startFresh": false,
+                      "autoSeconds": 0,
+                      "id": "8i6hXiP9WGgxvGNT"
+                    }
+                  ],
+                  "elseRows": [
+                    {
+                      "type": "showText",
+                      "speaker": "This",
+                      "text": "The tournament hasn't started yet, though. Go enjoy the festival games first — you'll hear the horn when it's time.",
+                      "bubbleMode": "normal",
+                      "id": "xKfbCB1NNGOoWbnX"
+                    }
+                  ],
+                  "id": "tGq1qp5SqjxFysok"
+                }
+              ],
+              "id": "V00tUTsHrolmUeUn"
+            }
+          ],
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true
         }
       },
       "actorId": "Usyut9yS2Tm5ZCXI",
@@ -4038,6 +6305,12 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "storyGate": {
+            "shownWhen": "Opening Ceremony",
+            "hiddenWhen": ""
+          }
         }
       },
       "actorId": "LlRVGhSD3bQJpiiV",
@@ -4067,7 +6340,7 @@
         "offsetX": 0,
         "offsetY": 0,
         "fit": "contain",
-        "scaleX": -1.17,
+        "scaleX": 1.17,
         "scaleY": 1.17,
         "rotation": 0,
         "tint": "#ffffff",
@@ -4154,14 +6427,80 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "storyGate": {
+            "shownWhen": "",
+            "hiddenWhen": "Eisendrache Destroyed"
+          }
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "condition",
+              "condition": {
+                "kind": "self",
+                "slot": "A",
+                "want": "off"
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": true,
+              "thenRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "…",
+                  "bubbleMode": "normal",
+                  "id": "wQfQ5ZUjfDvou7Qt"
+                },
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "I have no time for idle chatter.",
+                  "bubbleMode": "normal",
+                  "id": "wqAi7MioCtIzSoYg"
+                },
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "Move along. The festival is that way.",
+                  "bubbleMode": "normal",
+                  "id": "bRea83eRyHEPyraX"
+                },
+                {
+                  "type": "setSwitch",
+                  "scope": "self",
+                  "name": "",
+                  "slot": "A",
+                  "value": "on",
+                  "id": "ryRZPCUEXzjvHzhC"
+                }
+              ],
+              "elseRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "Are you deaf? I said move along.",
+                  "bubbleMode": "normal",
+                  "id": "OsXDn2TP4PqbCuA9"
+                }
+              ],
+              "id": "iFsnbWzAlz6P3UGv"
+            }
+          ],
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true
         }
       },
       "actorId": "UYAabJiUZJ1uKers",
       "hidden": true,
       "sort": 1,
       "_id": "pT0MhuF47snm6dVv",
-      "x": 2029,
-      "y": 1130,
+      "x": 1073,
+      "y": 585,
       "elevation": 0,
       "locked": false,
       "_regions": [
@@ -4270,6 +6609,12 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "storyGate": {
+            "shownWhen": "Opening Ceremony",
+            "hiddenWhen": ""
+          }
         }
       },
       "actorId": "LlRVGhSD3bQJpiiV",
@@ -4502,6 +6847,44 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "condition",
+              "condition": {
+                "kind": "switch",
+                "name": "Eisendrache Destroyed",
+                "want": "on"
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": true,
+              "thenRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "You're the ones who fought in the square! Thank you. Truly.",
+                  "bubbleMode": "normal",
+                  "id": "ZK6W0AtLC227KUUC"
+                }
+              ],
+              "elseRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "Is that a real adventuring party? Ooh — are you entering the tournament?",
+                  "bubbleMode": "normal",
+                  "id": "1ivVexy6pPcxB7a8"
+                }
+              ],
+              "id": "FysAAOdMMikXDW08"
+            }
+          ],
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",
@@ -4618,10 +7001,48 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "condition",
+              "condition": {
+                "kind": "switch",
+                "name": "Eisendrache Destroyed",
+                "want": "on"
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": true,
+              "thenRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "She waved at me. Yesterday. She waved at me…",
+                  "bubbleMode": "normal",
+                  "id": "XgWZjmkr9lUi1unq"
+                }
+              ],
+              "elseRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "Did you see the Princess? She waved at me. At ME!",
+                  "bubbleMode": "normal",
+                  "id": "NJlgcnMrPHGc5iZt"
+                }
+              ],
+              "id": "EYZxVkjYSlouf4ox"
+            }
+          ],
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",
-      "hidden": true,
+      "hidden": false,
       "sort": 2,
       "_id": "uBUdVZr0IvG5YG8h",
       "x": 1216,
@@ -4734,6 +7155,12 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "storyGate": {
+            "shownWhen": "Opening Ceremony",
+            "hiddenWhen": ""
+          }
         }
       },
       "actorId": "LlRVGhSD3bQJpiiV",
@@ -4750,7 +7177,7 @@
     }
   ],
   "notes": [],
-  "tileCount": 26,
+  "tileCount": 29,
   "full": {
     "name": "Eisendrache Kingdom",
     "_id": "bshIjNx79K5z2BXv",
@@ -5271,6 +7698,18 @@
               "b64": "eNrt2cEOgyAQBFAO+79qjUqr/fdGLQqisBiajHaZo0afiQeYVQpvVVRaKb7x7+vJ5GXluWS9U5OmbpPWi2ako5pqekypppS7WuMdaE5PMe0Y+z0hbcO0pmmNNbe2za4taKBfaZu/19p/wpj3lNXue/l/QrtcCWvHLzNS35tLqyNW0bpe0YpWtHm17j5BtPm0Zvcn2tzadWd9La3txdS6JxzR5tNuT4/I2mMrntY/l+Nq99oGVO1+N4KoPW5y8LSh3glNG27JsLSxTg9JG28gcbS8xlS06VpuGy3aVC2/6RftnbUpMx/R3lebOv87qw0/ladNn1amaNOffqw9N1vlaJFmwSEt4Oha7WkV7HK16gJr1qLqPl/OM/E="
             }
           ]
+        },
+        "storyBg": {
+          "when": "Eisendrache Destroyed",
+          "normal": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Map/Game%20Map/Eisendrache_Map001.png",
+          "alt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Map/Game%20Map/Eisendrache_Map_018.png"
+        },
+        "storyBgm": {
+          "when": "Eisendrache Destroyed",
+          "normalPlaylist": "VrpdABUTSoREMDR5",
+          "normalSound": "l6vviXPgQkuOdLkt",
+          "altPlaylist": "POV9fioQ0Kkj7hKC",
+          "altSound": "MOTOW9tUMblwXz9y"
         }
       },
       "world": {
@@ -5293,7 +7732,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.4",
       "createdTime": 1765930057957,
-      "modifiedTime": 1792059761622,
+      "modifiedTime": 1794157458859,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [
