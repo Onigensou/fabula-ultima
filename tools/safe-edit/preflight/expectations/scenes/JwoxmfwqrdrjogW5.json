@@ -319,7 +319,8 @@
             "isDungeon": false,
             "sceneVisited": true,
             "navigationName": "Misty Field",
-            "disableTransition": false
+            "disableTransition": false,
+            "noTravelDestination": true
           },
           "sceneNetwork": "[]"
         },
@@ -621,7 +622,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1781946065525,
-      "modifiedTime": 1781948620159,
+      "modifiedTime": 1794128972392,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [
