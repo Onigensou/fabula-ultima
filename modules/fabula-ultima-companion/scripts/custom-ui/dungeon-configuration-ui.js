@@ -46,6 +46,10 @@
   const CAMERA_FOLLOW_KEY  = "cameraFollowToken"; // legacy — kept for backward-compat read
   const SCENE_MODE_KEY     = "sceneMode";          // new: "none" | "exploration" | "dungeon"
   const SCAN_RADIUS_KEY    = "scanRadius";          // world-unit clamp radius for scan mode
+  // Dungeon zoom overrides (tile steps) — read by battle-director/dungeon-zoom.js SCENE_KEYS
+  const ZOOM_TILES_KEY     = "dungeonZoomTiles";
+  const SCAN_TILES_KEY     = "dungeonScanTiles";
+  const SCAN_PAN_TILES_KEY = "dungeonScanPanTiles";
   const FT_ENABLED_KEY     = "fastTravelEnabled";   // boolean: allow fast travel in dungeon mode
   const IS_OVERWORLD_KEY   = "isOverworld";         // boolean: scene is an overworld map
   const IS_TOWN_KEY        = "isTown";              // boolean: scene is a town map
@@ -703,8 +707,44 @@
             </div>
             <p class="notes">
               How far (in world units) the player can pan the camera from the party token while Scan Mode is active.
-              Only applies to <b>Dungeon</b> scene mode. Default: 600.
+              Only applies to <b>Dungeon</b> scene mode. Leave blank to use <b>Scan Pan Tiles</b> below instead
+              (recommended); a number here overrides it.
             </p>
+          </div>
+
+          <div class="form-group">
+            <label>Dungeon Zoom (tiles)</label>
+            <div class="form-fields">
+              <input type="number" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${ZOOM_TILES_KEY}"
+                     placeholder="3" min="1" max="12" step="0.5" />
+            </div>
+            <p class="notes">
+              Dungeon mode: how many tile steps the players see above and below the party. The zoom is fixed
+              at this (the mouse wheel does nothing outside Scan Mode). One step = the typical distance between
+              linked tiles on this map. A small map is also capped so no more than about a third of it shows.
+              Blank = 3.
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label>Scan Zoom-out (tiles)</label>
+            <div class="form-fields">
+              <input type="number" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${SCAN_TILES_KEY}"
+                     placeholder="6" min="1" max="24" step="0.5" />
+            </div>
+            <p class="notes">
+              In Scan Mode the mouse wheel can zoom out until this many tile steps show, but never far enough
+              to see more than about 60% of the map. Blank = 6.
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label>Scan Pan Tiles</label>
+            <div class="form-fields">
+              <input type="number" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${SCAN_PAN_TILES_KEY}"
+                     placeholder="5" min="1" max="30" step="0.5" />
+            </div>
+            <p class="notes">How far, in tile steps, Scan Mode lets the camera move from the party. Blank = 5.</p>
           </div>
 
           <div class="form-group">
@@ -1311,6 +1351,15 @@
         const raw = safeGet(fabulaData, `${GENERAL_KEY}.${SCAN_RADIUS_KEY}`, "");
         const n = Number(raw);
         radiusInput.value = (Number.isFinite(n) && n > 0) ? String(n) : "";
+      }
+
+      // Dungeon zoom tile prefills (blank = default)
+      for (const key of [ZOOM_TILES_KEY, SCAN_TILES_KEY, SCAN_PAN_TILES_KEY]) {
+        const input = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${key}"]`);
+        if (!input) continue;
+        const raw = safeGet(fabulaData, `${GENERAL_KEY}.${key}`, "");
+        const v = Number(raw);
+        input.value = (raw !== null && raw !== "" && Number.isFinite(v) && v > 0) ? String(v) : "";
       }
 
       // Fast Travel enabled prefill (default: true when not yet set)

@@ -1,11 +1,12 @@
 // Camera Authority — our own camera rules, in our own system.
 //
-// Four jobs:
+// Five jobs:
 //   1. Keep a player's view inside the play area (the video-game bounding box).
 //   2. Keep the play area out from under the chat sidebar, so nothing on the
 //      map can hide behind chrome.
 //   3. Get out of the way when a cinematic wants the camera.
 //   4. Open each scene on the party token, whichever door they came in by.
+//   5. Decide the zoom in Dungeon mode (dungeon-zoom.js).
 //
 // ── Coexistence with LockView, and why no migration is needed ───────────────
 //
@@ -49,6 +50,9 @@ import { log, warn } from "./logger.js";
 import {
   stageOf, hasStageRect, restViewFor, viewportOf, pivotShift, panTo,
 } from "./director-camera.js";
+import {
+  constrainDungeonZoom, installDungeonZoomHooks, DungeonZoomApi,
+} from "./dungeon-zoom.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 const SCENE_MODE_PATH = ["oniFabula", "general", "sceneMode"];
@@ -223,7 +227,9 @@ function installConstrainWrapper() {
     const base = original.call(this, view);
     try {
       if (!shouldConstrain(this?.scene)) return base;
-      return clampToPlayArea(base, this?.scene);
+      // Dungeon mode decides the zoom first (fixed outside Scan, a range in
+      // Scan); the play-area clamp then places the pan at that zoom.
+      return clampToPlayArea(constrainDungeonZoom(base, this?.scene), this?.scene);
     } catch (e) {
       warn("camera-authority: clamp threw, falling back to core", e);
       return base;
@@ -348,6 +354,7 @@ export function initCameraAuthority() {
   _installed = true;
 
   const ok = installConstrainWrapper();
+  installDungeonZoomHooks();
 
   Hooks.on("canvasReady", () => {
     focusPartyOnEntry();
@@ -376,6 +383,7 @@ export function initCameraAuthority() {
     isOurScene,
     status: cameraAuthorityStatus,
     install: installConstrainWrapper,
+    dungeonZoom: DungeonZoomApi,
   };
 
   log(`camera-authority: ${ok ? "installed" : "NOT installed"} (constrainView wrapper)`);

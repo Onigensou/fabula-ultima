@@ -10,12 +10,16 @@
 //
 //   Scan mode ON (user toggled via 🔍 button or ESC):
 //     The ticker switches to clamp mode.  Right-click drag pans normally but
-//     the pivot is clamped within a configurable world-unit radius around the
-//     token center.  Exiting scan mode snaps the camera back and re-engages
-//     the smooth lock.
+//     the pivot is clamped within a radius around the token center.  Exiting
+//     scan mode snaps the camera back and re-engages the smooth lock.
 //
-// Scan radius is saved per scene (Fabula Configuration → General → Scan Mode
-// Radius).  Default: DP.UI.SCAN_BUTTON.DEFAULT_RADIUS world units.
+// ZOOM is not decided here. The ticker re-applies whatever scale the camera
+// has; Camera Authority's dungeon zoom (battle-director/dungeon-zoom.js) holds
+// that scale fixed outside Scan and inside a range during Scan.
+//
+// Scan radius: counted in tile steps by dungeon-zoom (per-scene override
+// "Scan Pan Tiles"); a px "Scan Mode Radius" set on the scene still wins.
+// Fallback when Camera Authority is not booted: DP.UI.SCAN_BUTTON.DEFAULT_RADIUS.
 //
 // Two fixed buttons appear in the bottom-left while dungeon mode is active:
 //   🔍  Scan Mode  — explore within radius; ESC or click again to exit.
@@ -174,12 +178,20 @@
     };
   }
 
+  // Pan radius while scanning. Camera Authority's dungeon zoom counts it in tile
+  // steps (dungeon-zoom.js), so it means the same on a dense map as on a sparse
+  // one; a hand-set Scan Mode Radius (px) on the scene still wins inside it.
   function getScanRadius() {
     if (_cachedScanRadius !== null) return _cachedScanRadius;
-    const raw = canvas?.scene?.flags?.[DP.MODULE_ID]?.[DP.FABULA_ROOT_KEY]
-                  ?.[DP.GENERAL_KEY]?.[DP.PATHING_SCAN_RADIUS_KEY];
-    const n = Number(raw);
-    _cachedScanRadius = Number.isFinite(n) && n > 0 ? n : (cfgScan().DEFAULT_RADIUS ?? 600);
+    let r = NaN;
+    try { r = Number(globalThis.FUCompanion?.api?.cameraAuthority?.dungeonZoom?.scanRadius?.(canvas?.scene)); } catch { /* not booted */ }
+    if (!(Number.isFinite(r) && r > 0)) {
+      const raw = canvas?.scene?.flags?.[DP.MODULE_ID]?.[DP.FABULA_ROOT_KEY]
+                    ?.[DP.GENERAL_KEY]?.[DP.PATHING_SCAN_RADIUS_KEY];
+      const n = Number(raw);
+      r = Number.isFinite(n) && n > 0 ? n : (cfgScan().DEFAULT_RADIUS ?? 600);
+    }
+    _cachedScanRadius = r;
     return _cachedScanRadius;
   }
 
