@@ -59,7 +59,7 @@ traced in code.
   Weak) disappeared shortly after it was applied. Check whether Form Shift or something else removes it.
 - [ ] **10. Keren's Life Transference formula may be wrong.** The player is **not sure**, so verify the formula
   against the skill text first.
-- [ ] **11. Study no longer shows the enemy's stealable items. This is a regression.**
+- [x] **11. Study no longer shows the enemy's stealable items. This is a regression.**
   Check the Study card's read of steal data, and whether the 11-06 change that made Valley gacha items unstealable
   (`e9aed725`) touched the list it reads.
 
@@ -80,7 +80,7 @@ traced in code.
 
 ## Dungeon
 
-- [ ] **17. A cleared Dirt tile still shows the Use button when the party steps back on.** Not investigated.
+- [x] **17. A cleared Dirt tile still shows the Use button when the party steps back on.** Not investigated.
 
 ## Also seen (low priority)
 
@@ -92,3 +92,6 @@ traced in code.
 ## Notes
 
 - 2026-11-08 onigensou: filed after the session. The host will take items during the week as time allows.
+- 2026-11-08 onigensou: #17 fixed in e67f6634. The Use button now also checks that the tile isn't blank or spent. The authored `usable` flag stays, so a dungeon reset re-arms the tile. Sandbox-checked on the real Valley_Map009 tile.
+- 2026-11-08 onigensou: #11 fixed in 9e9f9bdd and 58a3aab7. The stealables weren't lost from the data. The Study card (v1.0.512) replaced the journal page and never drew them. The Notes tab now has "Can be stolen", with icon, name, base steal rate and a "Nothing" row. Gated at Identity 7+. sarunphat: this touches your Battle Inspect files (inspect-model, inspect-render, unit-inspect).
+- 2026-11-08 onigensou: not on the list, same branch. Holding Alt in battle no longer brings back Foundry's icons and bars (562c46e7). Battle tokens hide them from spawn, so the entrance no longer flashes them (562c46e7). Spectator Alt-to-inspect is hardened (85a7d9a0): Alt falls back to the sprite under the pointer, and a client that missed the GM's "settled" broadcast asks again (new `resyncBattlePhase` in director-player-hud.js). sarunphat: please check these too.
