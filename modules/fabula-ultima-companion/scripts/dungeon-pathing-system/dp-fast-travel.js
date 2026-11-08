@@ -218,6 +218,27 @@
     token.alpha = 1;
   }
 
+  // Gryphon size follows the party sprite as DRAWN, so it respects perspective
+  // depth: exploration maps scale the party by depth (Nether Bridge: 288 px on
+  // a 110 px grid), which a fixed 2-grid gryphon could not match. Never
+  // smaller than the old 2-grid size, so dungeon maps look as before.
+  const GRYPHON_TO_PARTY = 1.6;
+  function gryphonHeight(token, gSize) {
+    const meshH = Number(token?.mesh?.height) || 0;
+    return Math.max(gSize * 2, meshH * GRYPHON_TO_PARTY);
+  }
+
+  // Vertical centre of the drawn party sprite (a depth sprite stands on its
+  // feet, so its centre sits above the token square). World coordinates.
+  function spriteCenterY(token, fallbackY) {
+    try {
+      const b = token?.mesh?.getBounds?.();
+      if (!b || !b.height) return fallbackY;
+      const p = canvas.stage.worldTransform.applyInverse(new PIXI.Point(b.x + b.width / 2, b.y + b.height / 2));
+      return Number.isFinite(p.y) ? p.y : fallbackY;
+    } catch { return fallbackY; }
+  }
+
   async function runDropOffAnimation(token, { refreshGuardId = null } = {}) {
     if (!canvas?.stage || !token) return;
 
@@ -230,7 +251,7 @@
     const docW    = Number(token.document?.width  ?? 1) * gSize;
     const docH    = Number(token.document?.height ?? 1) * gSize;
     const tokenCX = docX + docW / 2;
-    const tokenCY = docY + docH / 2;
+    const tokenCY = spriteCenterY(token, docY + docH / 2);
 
     const pivot  = canvas.stage.pivot;
     const scaleX = canvas.stage.scale.x || 1;
@@ -244,7 +265,7 @@
 
     const natW    = _gryphonNatW || 480;
     const natH    = _gryphonNatH || 270;
-    const spriteH = gSize * 2;
+    const spriteH = gryphonHeight(token, gSize);
     const spriteW = spriteH * (natW / natH);
 
     const arrivedX = tokenCX - spriteW / 2;
@@ -291,7 +312,7 @@
     const docW    = Number(token.document?.width  ?? 1) * gSize;
     const docH    = Number(token.document?.height ?? 1) * gSize;
     const tokenCX = docX + docW / 2;
-    const tokenCY = docY + docH / 2;
+    const tokenCY = spriteCenterY(token, docY + docH / 2);
 
     const pivot  = canvas.stage.pivot;
     const scaleX = canvas.stage.scale.x || 1;
@@ -303,7 +324,7 @@
     // Derive sprite size from natural video dimensions — no squash/stretch
     const natW    = _gryphonNatW || 480;
     const natH    = _gryphonNatH || 270;
-    const spriteH = gSize * 2;
+    const spriteH = gryphonHeight(token, gSize);
     const spriteW = spriteH * (natW / natH);
 
     const arrivedX = tokenCX - spriteW / 2;
@@ -412,7 +433,7 @@
     return isAutoLandmark(scene, tileDoc);
   }
 
-  const TYPE_LABEL = { camp: "Camp", event: "Event", story: "Story", final: "Final Story" };
+  const TYPE_LABEL = { camp: "Camp", event: "Event", story: "Story", final: "Final Story", door: "Door" };
 
   // Name players see: where a door leads (its prompt name / destination map),
   // else the tile's type ("Camp").
@@ -422,7 +443,14 @@
       const sameMap = !destId || destId === scene?.id;
       const custom  = tileDoc.getFlag(MODULE_ID, "teleporter")?.promptName?.trim?.();
       if (custom) return custom;
-      if (!sameMap) return DP.locationName?.(tileDoc) || "Exit";
+      if (!sameMap) {
+        // "Valley of the Dragon - Lower Trail" inside the Valley → "Lower Trail"
+        const name   = DP.locationName?.(tileDoc) || "Exit";
+        const region = String(scene?.folder?.name ?? "").trim();
+        return (region && name.toLowerCase().startsWith(region.toLowerCase() + " - "))
+          ? name.slice(region.length + 3).trim() || name
+          : name;
+      }
       return "Warp Door";
     }
     const t = landmarkType(scene, tileDoc);
@@ -854,7 +882,11 @@
     _eligible = nodes;
     console.debug(TAG, "enter(): eligible nodes=", _eligible.length, _eligible.map(n => n.name));
     if (!_eligible.length) {
-      ui.notifications?.info?.("No fast travel points yet. Visit a Camp or a map exit first!");
+      // Other maps are reached from the Travel button (dp-scene-travel.js).
+      const others = DP.SceneTravel?.getRegionMaps?.() ?? [];
+      ui.notifications?.info?.(others.length
+        ? "No fast travel points on this map yet. Use the Travel button to go to another map!"
+        : "No fast travel points yet. Visit a Camp or a map exit first!");
       if (game.user?.isGM) console.info(TAG, "No eligible landmarks on this map. Skipped:", skipped);
       return;
     }

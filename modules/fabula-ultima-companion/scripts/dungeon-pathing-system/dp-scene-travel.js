@@ -45,9 +45,12 @@
     if (g.isDungeon)   return "dungeon";
     if (g.isTown)      return "town";
     if (g.isOverworld) return "overworld";
-    // Fallback: infer from sceneMode when explicit type flags are not set
+    // Fallback: infer from sceneMode when explicit type flags are not set.
+    // Only an explicit isTown tag makes a town; an exploration map (a mural,
+    // a bridge) is a place inside its region, listed with its entrances.
     if (g.sceneMode === "dungeon")     return "dungeon";
-    if (g.sceneMode === "exploration") return "town";
+    if (g.sceneMode === "exploration") return "exploration";
+    if (g.sceneMode === "camp")        return "camp";
     return null;
   }
 
@@ -80,24 +83,168 @@
   }
 
   // ── Eligible destinations ───────────────────────────────────────────────────
-  // Overworld tracked but not shown in dialog (reserved for future systems).
+  // Towns land on their spawn point. Every other visited map (dungeon,
+  // exploration, camp) is listed under its REGION — the scene folder, e.g.
+  // "Valley of the Dragon" — with the exact points the party can land on:
+  //   • dungeon map: its visited landmarks (Fast Travel rules) + the doors the
+  //     party is known to arrive through;
+  //   • exploration / camp map: the arrival spot of each known door into it,
+  //     else its spawn point when one is set.
+  // A door is "known" when its tile was visited (dungeon map) or its map was
+  // visited (exploration map). All derived from existing data — nothing new
+  // is stored.
+  const REGION_MODES = new Set(["dungeon", "exploration", "camp"]);
+
+  function sceneModeOf(scene) { return general(scene).sceneMode ?? null; }
+  function isTownScene(scene) { const v = general(scene).isTown; return v === true || v === "true"; }
+  function regionOf(scene) { return scene?.folder?.id ?? scene?.folder ?? null; }
+  function regionName(id) { return (id && game.folders?.get(id)?.name) || "Other Places"; }
+
+  // "Valley of the Dragon - Lower Trail" under region "Valley of the Dragon" → "Lower Trail".
+  function shortName(name, region) {
+    const n = String(name ?? "").trim();
+    const r = String(region ?? "").trim();
+    if (r && n.toLowerCase().startsWith(r.toLowerCase() + " - ")) return n.slice(r.length + 3).trim() || n;
+    return n;
+  }
+
+  function isEnabledTeleporter(tile) {
+    const f = tile?.flags?.[MODULE_ID]?.teleporter;
+    return (f?.enabled === true || f?.enabled === "true") && !!f?.destination;
+  }
+
+  function resolveDest(dest) {
+    const sc = game.scenes?.get(dest?.sceneId);
+    if (!sc) return null;
+    if (dest.type === "tile") {
+      const t = sc.tiles?.get?.(dest.tileId);
+      return t ? { scene: sc, x: t.x + t.width / 2, y: t.y + t.height / 2, tileId: t.id } : null;
+    }
+    const x = Number(dest.x), y = Number(dest.y);
+    return (Number.isFinite(x) && Number.isFinite(y)) ? { scene: sc, x, y, tileId: null } : null;
+  }
+
+  // sceneId → [{ x, y, tileId, fromSceneId }] for every known door into it.
+  function buildArrivalIndex() {
+    const idx = new Map();
+    for (const src of game.scenes ?? []) {
+      const srcMode = sceneModeOf(src);
+      if (!srcMode || srcMode === "none") continue;
+      for (const tile of src.tiles ?? []) {
+        if (!isEnabledTeleporter(tile)) continue;
+        const dest = tile.flags[MODULE_ID].teleporter.destination;
+        if (!dest.sceneId || dest.sceneId === src.id) continue;
+        const known = srcMode === "dungeon"
+          ? !!DP.TileState?.isVisited?.(src, tile.id)
+          : isSceneVisited(src);
+        if (!known) continue;
+        const p = resolveDest(dest);
+        if (!p) continue;
+        const list = idx.get(p.scene.id) ?? [];
+        list.push({ x: p.x, y: p.y, tileId: p.tileId, fromSceneId: src.id });
+        idx.set(p.scene.id, list);
+      }
+    }
+    return idx;
+  }
+
+  function tilePoint(scene, tile, region) {
+    const FT = DP.FastTravel;
+    return {
+      tileId: tile.id,
+      x: tile.x + tile.width / 2,
+      y: tile.y + tile.height / 2,
+      isDoor: !!FT?.isLocationNode?.(tile),
+      label: shortName(FT?.landmarkLabel?.(scene, tile) ?? "Landmark", region),
+    };
+  }
+
+  function pointsForScene(scene, arrivals, region) {
+    const FT   = DP.FastTravel;
+    const pts  = [];
+    const seen = new Set();
+    const add  = (p) => {
+      const k = p.tileId ?? `${Math.round(p.x / 10)},${Math.round(p.y / 10)}`;
+      if (seen.has(k)) return;
+      seen.add(k);
+      pts.push(p);
+    };
+
+    if (sceneModeOf(scene) === "dungeon") {
+      for (const tile of scene.tiles ?? []) {
+        if (!FT?.isLandmark?.(scene, tile)) continue;
+        if (!DP.TileState?.isVisited?.(scene, tile.id)) continue;
+        add(tilePoint(scene, tile, region));
+      }
+      for (const a of arrivals) {
+        const tile = (a.tileId && scene.tiles?.get?.(a.tileId)) || FT?.tileAtPoint?.(scene, a.x, a.y);
+        if (!tile) continue;
+        const t = FT?.landmarkType?.(scene, tile);
+        if ((t === "story" || t === "final") && !DP.TileState?.isExpired?.(scene, tile.id)) continue;
+        add(tilePoint(scene, tile, region));
+      }
+    } else {
+      // Only doors from a dungeon map (incl. the world map) make an entrance:
+      // a shop / inn reached from inside a town is not a travel point, and a
+      // town is not listed once per shop door.
+      for (const a of arrivals) {
+        if (sceneModeOf(game.scenes.get(a.fromSceneId)) !== "dungeon") continue;
+        const from = shortName(getNavigationName(game.scenes.get(a.fromSceneId)), region);
+        add({ tileId: null, x: a.x, y: a.y, isDoor: false, label: `Entrance from ${from}` });
+      }
+      if (!pts.length && general(scene).spawnPoint) {
+        const sp = getSpawnPoint(scene);
+        add({ tileId: null, x: sp.x, y: sp.y, isDoor: false, label: "Entrance" });
+      }
+      if (pts.length === 1) pts[0].label = "Entrance";
+    }
+    // Two "Camp"s on one map → "Camp 1", "Camp 2".
+    const count = {};
+    for (const p of pts) count[p.label] = (count[p.label] ?? 0) + 1;
+    const nth = {};
+    for (const p of pts) if (count[p.label] > 1) p.label = `${p.label} ${(nth[p.label] = (nth[p.label] ?? 0) + 1)}`;
+    return pts;
+  }
+
+  /**
+   * Visited maps with their landing points, grouped by region.
+   * @param {object} [o]
+   * @param {string|null} [o.regionId]  only this region (undefined = all)
+   * @param {string|null} [o.excludeSceneId]  default: the current map
+   * @returns {{ scene, id, name, regionId, regionName, points }[]}
+   */
+  function getRegionMaps({ regionId = undefined, excludeSceneId = canvas?.scene?.id ?? null } = {}) {
+    const arrivals = buildArrivalIndex();
+    const maps = [];
+    for (const scene of game.scenes ?? []) {
+      if (scene.id === excludeSceneId) continue;
+      if (!isSceneVisited(scene) || isTownScene(scene)) continue;
+      if (!REGION_MODES.has(sceneModeOf(scene))) continue;
+      const rid = regionOf(scene);
+      if (regionId !== undefined && rid !== regionId) continue;
+      const rName  = regionName(rid);
+      const points = pointsForScene(scene, arrivals.get(scene.id) ?? [], rName);
+      if (!points.length) continue;
+      maps.push({ scene, id: scene.id, name: shortName(getNavigationName(scene), rName), regionId: rid, regionName: rName, points });
+    }
+    // The region the party is in comes first, then the rest A→Z.
+    const hereRegion = regionOf(canvas?.scene);
+    maps.sort((a, b) =>
+      ((b.regionId === hereRegion) - (a.regionId === hereRegion)) ||
+      a.regionName.localeCompare(b.regionName) ||
+      String(a.scene.name).localeCompare(String(b.scene.name), undefined, { numeric: true }));
+    return maps;
+  }
+
   function getEligibleDestinations() {
     const current = canvas?.scene;
-    const towns = [], dungeons = [], overworlds = [];
-
+    const towns = [];
     for (const scene of game.scenes ?? []) {
       if (scene.id === current?.id) continue;
-      if (!isSceneVisited(scene)) continue;
-
-      const type = getSceneType(scene);
-      if (!type) continue;
-
-      const entry = { id: scene.id, name: scene.name, scene, type };
-      if      (type === "town")      towns.push(entry);
-      else if (type === "dungeon")   dungeons.push(entry);
-      else if (type === "overworld") overworlds.push(entry);
+      if (!isSceneVisited(scene) || !isTownScene(scene)) continue;
+      towns.push({ id: scene.id, name: scene.name, scene, type: "town" });
     }
-    return { towns, dungeons, overworlds };
+    return { towns, maps: getRegionMaps() };
   }
 
   // ── JRPG dialog styles ──────────────────────────────────────────────────────
@@ -247,6 +394,17 @@
     rgba(0,0,0,0.85) 65%,
     #000 100%);
 }
+
+/* Landing point under the map name (same panel button as before) */
+.oni-dest-point {
+  font-family: serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #6b3410;
+  margin-top: 2px;
+}
+/* Long lists scroll instead of running off screen */
+.oni-travel-list { max-height: 62vh; overflow-y: auto; padding-right: 4px !important; }
     `;
     document.head.appendChild(s);
   }
@@ -302,39 +460,57 @@
       }
     }
 
-    const { towns, dungeons } = getEligibleDestinations();
-    const all = [...towns, ...dungeons]; // overworlds excluded from dialog
+    const { towns, maps } = getEligibleDestinations();
 
-    if (!all.length) {
-      ui.notifications?.info?.("No visited scenes available to travel to. Explore more first!");
+    if (!towns.length && !maps.length) {
+      ui.notifications?.info?.("No places to travel to yet. Visit a town, a Camp or a map exit first!");
       return;
     }
 
     DP.Sound?.playConfirm?.();
 
-    let content = `<div class="oni-travel-list" style="padding:2px 0;">`;
-
-    const addGroup = (label, icon, items) => {
-      if (!items.length) return;
-      content += `<div class="oni-travel-category"><i class="${icon}"></i> ${label}</div>`;
-      for (const e of items) {
-        const navName = getNavigationName(e.scene);
-        const thumb   = e.scene.thumb ?? e.scene.background?.src ?? "";
-        const thumbEl = thumb
-          ? `<div class="oni-dest-thumb" style="background-image:url('${thumb}');"></div>`
-          : "";
-        content += `
-          <button type="button" class="oni-travel-dest" data-scene-id="${e.id}" tabindex="-1">
-            <div class="oni-dest-left">
-              <div class="oni-dest-name">${navName}</div>
-            </div>
-            ${thumbEl}
-          </button>`;
-      }
+    // Every destination is a button; `dests` holds what each one lands on.
+    const dests = [];
+    const esc = (s) => foundry.utils.escapeHTML?.(String(s ?? "")) ?? String(s ?? "");
+    const thumbOf = (scene) => {
+      const thumb = scene.thumb ?? scene.background?.src ?? "";
+      return thumb ? `<div class="oni-dest-thumb" style="background-image:url('${thumb}');"></div>` : "";
     };
 
-    addGroup("Towns",    "fas fa-city",    towns);
-    addGroup("Dungeons", "fas fa-dungeon", dungeons);
+    let content = `<div class="oni-travel-list" style="padding:2px 0;">`;
+
+    if (towns.length) {
+      content += `<div class="oni-travel-category"><i class="fas fa-city"></i> Towns</div>`;
+      for (const e of towns) {
+        const i = dests.push({ sceneId: e.id, point: null, label: getNavigationName(e.scene) }) - 1;
+        content += `
+          <button type="button" class="oni-travel-dest" data-dest="${i}" tabindex="-1">
+            <div class="oni-dest-left"><div class="oni-dest-name">${esc(getNavigationName(e.scene))}</div></div>
+            ${thumbOf(e.scene)}
+          </button>`;
+      }
+    }
+
+    let lastRegion = null;
+    for (const m of maps) {
+      if (m.regionId !== lastRegion) {
+        lastRegion = m.regionId;
+        content += `<div class="oni-travel-category"><i class="fas fa-map"></i> ${esc(m.regionName)}</div>`;
+      }
+      // Same panel button as before, one per landing point:
+      // map name on top, the point under it, the map thumbnail behind.
+      for (const p of m.points) {
+        const i = dests.push({ sceneId: m.id, point: p, label: `${m.name} — ${p.label}` }) - 1;
+        content += `
+          <button type="button" class="oni-travel-dest" data-dest="${i}" tabindex="-1">
+            <div class="oni-dest-left">
+              <div class="oni-dest-name">${esc(m.name)}</div>
+              <div class="oni-dest-point">${esc(p.label)}</div>
+            </div>
+            ${thumbOf(m.scene)}
+          </button>`;
+      }
+    }
     content += `</div>`;
 
     // Everyone else watches the destination list read-only, focus echoed.
@@ -368,6 +544,7 @@
               btns.forEach(b => b.classList.remove("oni-travel-focused"));
               focusedIdx = ((idx % btns.length) + btns.length) % btns.length;
               btns[focusedIdx]?.classList.add("oni-travel-focused");
+              btns[focusedIdx]?.scrollIntoView?.({ block: "nearest" });
               mirror?.patch({ focus: focusedIdx });
               if (sound) DP.Sound?.playHover?.();
             };
@@ -382,7 +559,7 @@
                 resolved = true;
                 DP.Sound?.playConfirm?.();
                 d.close();
-                resolve(btn.dataset.sceneId ?? null);
+                resolve(btn.dataset.dest ?? null);
               });
             });
 
@@ -400,7 +577,7 @@
                   resolved = true;
                   DP.Sound?.playConfirm?.();
                   d.close();
-                  resolve(btn.dataset.sceneId ?? null);
+                  resolve(btn.dataset.dest ?? null);
                 }
               }
               // Escape propagates naturally to Dialog's built-in close handler
@@ -421,29 +598,48 @@
     });
     mirror?.close(selectedId ?? null);
 
-    if (!selectedId) return;
-    const destScene = game.scenes.get(selectedId);
-    if (!destScene) return;
+    if (selectedId == null) return;
+    const dest = dests[Number(selectedId)];
+    if (!dest) return;
+    await confirmAndTravel(dest.sceneId, dest.point, dest.label);
+  }
 
-    const navName   = getNavigationName(destScene);
+  // Yes / No, then travel. point = { x, y, tileId, isDoor } or null (spawn point).
+  async function confirmAndTravel(sceneId, point, label, { onConfirmed = null } = {}) {
+    const destScene = game.scenes.get(sceneId);
+    if (!destScene) return false;
     // Parchment Yes / No that every other client watches (teleporter prompt).
     const ask = globalThis.TeleporterSystem?.askYesNo;
     const confirmed = ask
-      ? await ask(["Travel to ", navName, "?"])
+      ? await ask(["Travel to ", label, "?"])
       : await Dialog.confirm({
           title:   "Confirm Travel",
-          content: `<p style="text-align:center;padding:8px;">Travel to <b>${navName}</b>?</p>`,
+          content: `<p style="text-align:center;padding:8px;">Travel to <b>${label}</b>?</p>`,
         });
     if (!confirmed) {
       DP.Sound?.playCancel?.();
-      return;
+      return false;
     }
+    try { onConfirmed?.(); } catch (e) { console.warn(TAG, "onConfirmed:", e); }
+    await executeTravelTo(destScene, point).catch(e => console.error(TAG, "executeTravelTo failed:", e));
+    return true;
+  }
 
-    await executeTravelTo(destScene).catch(e => console.error(TAG, "executeTravelTo failed:", e));
+  // Where the party token's centre goes. A dungeon tile lands like a walk
+  // does (tile centre + the party token offset) so the map finds the node.
+  function landingSpot(destScene, point) {
+    if (!point) return getSpawnPoint(destScene);
+    if (point.tileId && sceneModeOf(destScene) === "dungeon") {
+      return {
+        x: point.x + Number(DP.UI?.TOKEN_OFFSET?.x ?? 0),
+        y: point.y + Number(DP.UI?.TOKEN_OFFSET?.y ?? 0),
+      };
+    }
+    return { x: point.x, y: point.y };
   }
 
   // ── Execute travel ──────────────────────────────────────────────────────────
-  async function executeTravelTo(destScene) {
+  async function executeTravelTo(destScene, point = null) {
     // Capture source scene BEFORE any scene switch
     const fromSceneId = canvas?.scene?.id ?? null;
     const dpState     = globalThis.__ONI_DUNGEON_PATHING__?.state ?? null;
@@ -455,7 +651,12 @@
       token = await DP.Graph?.resolvePartyToken?.().catch(() => null) ?? null;
     }
 
-    const spawn   = getSpawnPoint(destScene);
+    const spawn   = landingSpot(destScene, point);
+    // Landing on a door: once the drop-off finishes, this client (the one
+    // choosing) offers that door's own "Enter <place>?" prompt.
+    window.__ONI_DP_DOOR_OFFER__ = (point?.isDoor && point.tileId)
+      ? { sceneId: destScene.id, tileId: point.tileId }
+      : null;
     const actorId = token?.actor?.id ?? token?.document?.actorId ?? null;
 
     // Play gryphon pick-up animation if there is a party token on the current canvas
@@ -615,6 +816,15 @@
           if (refreshGuardId != null) Hooks.off("refreshToken", refreshGuardId);
           if (token?.mesh) token.mesh.alpha = 1;
         });
+        const offer = window.__ONI_DP_DOOR_OFFER__;
+        window.__ONI_DP_DOOR_OFFER__ = null;
+        if (offer?.sceneId === canvas?.scene?.id && token?.document) {
+          const tileDoc = canvas.scene.tiles?.get?.(offer.tileId);
+          if (tileDoc) {
+            globalThis.TeleporterSystem?.offerTeleport?.(tileDoc, token.document)
+              ?.catch?.(e => console.warn(TAG, "door offer:", e));
+          }
+        }
       } else {
         if (refreshGuardId != null) Hooks.off("refreshToken", refreshGuardId);
       }
@@ -713,6 +923,10 @@
     isSceneVisited,
     isFtEnabled,
     getEligibleDestinations,
+    getRegionMaps,
+    regionOf,
+    regionName,
+    confirmAndTravel,
     markSceneVisited,
   };
 
