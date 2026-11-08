@@ -409,6 +409,10 @@
   // ---------------------------------------------------------------------------
 
   DP.Fog = {
+    /** A tile's concealment mode: "fog" | "shroud" | "invisible" | null. */
+    getFogMode,
+    /** Disc textures, for drawings outside the canvas (Travel map preview). */
+    TEXTURES: Object.freeze({ fog: FOG_TEXTURE_URL, shroud: SHROUD_TEXTURE_URL }),
     /** True while a fog / shroud disc or an invisible-tile hide conceals what this tile is. */
     isConcealed(tileId) {
       const c = _fogContainers.get(tileId);

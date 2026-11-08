@@ -436,7 +436,21 @@
     /** Draw from a local state instead of the scene's (playtest). null = back to the scene. */
     setOverride(o) { _ov = o; _prev = o ? JSON.parse(JSON.stringify(o.state ?? {})) : null; queue(); },
     /** Paths as screen-independent polylines, for the Dungeon Maker's hit tests and overlays. */
-    points(scene, l) { return linkPoints(scene, l); } };
+    points(scene, l) { return linkPoints(scene, l); },
+    /** What a PLAYER sees of any scene's paths (no GM-only looks), for drawings off the
+     *  canvas (Travel map preview): [{ a, b, pts, kind, side, dotted, color }] — color as CSS hex. */
+    playerLinks(scene) {
+      if (!isMigrated(scene)) return [];
+      const st = state(scene), out = [];
+      for (const [id, l] of Object.entries(read(scene))) {
+        const look = lookOf(id, l, st, false); if (!look) continue;
+        const pts = linkPoints(scene, l); if (!pts) continue;
+        const c = look.color ?? (look.kind === "hazard" ? COL.hazard : look.kind === "collapse" ? COL.collapse : STYLE.color);
+        out.push({ a: l.a, b: l.b, pts, kind: look.kind, side: l.route === "side", dotted: look.kind === "locked",
+          color: "#" + c.toString(16).padStart(6, "0") });
+      }
+      return out;
+    } };
 
   Hooks.on("canvasReady", () => queue());
   Hooks.on("canvasTearDown", () => destroy());

@@ -395,14 +395,6 @@
     #000 100%);
 }
 
-/* Landing point under the map name (same panel button as before) */
-.oni-dest-point {
-  font-family: serif;
-  font-size: 14px;
-  font-weight: 700;
-  color: #6b3410;
-  margin-top: 2px;
-}
 /* Long lists scroll instead of running off screen */
 .oni-travel-list { max-height: 62vh; overflow-y: auto; padding-right: 4px !important; }
     `;
@@ -439,6 +431,271 @@
           close: () => { d.close().catch?.(() => {}); },
         };
       },
+    });
+  }
+
+  // ── Map preview (pick a landing point on another map) ───────────────────────
+  // The chosen map's image fills the screen with its landing points marked
+  // (each point's own tile icon; nothing else of the map, so unexplored tiles
+  // stay hidden). Same loop as Fast Travel: ◀ ▶ / arrow keys / wheel cycle the
+  // points and the view pans + zooms to each; click a point or Enter picks it;
+  // Esc goes back. Every other client watches a read-only copy (MirrorPrompt).
+  const MP_MIRROR_KIND = "dp.mapPreview";
+  const MP_STYLE_ID    = "oni-dp-map-preview-styles";
+
+  function injectPreviewStyles() {
+    if (document.getElementById(MP_STYLE_ID)) return;
+    const s = document.createElement("style");
+    s.id = MP_STYLE_ID;
+    s.textContent = `
+.oni-mp { position: fixed; inset: 0; z-index: 99990; background: rgba(8,5,2,0.86);
+  opacity: 0; transition: opacity 260ms ease; }
+.oni-mp.mp-visible { opacity: 1; }
+.oni-mp img { border: none !important; box-shadow: none; max-width: none; }
+.oni-mp-box { position: absolute; left: 70px; right: 70px; top: 64px; bottom: 56px; overflow: hidden;
+  border: 2px solid rgba(200,160,80,0.65); border-radius: 8px; box-shadow: 0 0 24px rgba(0,0,0,0.7); background: #000; }
+.oni-mp-world { position: absolute; left: 0; top: 0; transform-origin: 0 0;
+  background-size: 100% 100%; background-repeat: no-repeat;
+  transition: transform 500ms cubic-bezier(.4,0,.2,1); }
+.oni-mp-pt { position: absolute; transform: translate(-50%,-50%); cursor: pointer; }
+.oni-mp-pt.mp-ring { border-radius: 50%; border: 3px solid rgba(255,217,102,0.0); transition: border-color 200ms ease; }
+.oni-mp-pt.mp-ring.mp-focused { border-color: rgba(255,217,102,0.95); }
+.oni-mp-pt.mp-dot { border-radius: 50%; background: radial-gradient(circle, #ffe9a8 0%, #d9a441 70%, #8b5a2b 100%);
+  border: 2px solid #3d1f00; }
+.oni-mp-pt img.mp-hand { position: absolute; left: 70%; top: 50%; transform: translateY(-50%);
+  filter: drop-shadow(0 0 6px rgba(0,0,0,0.8)); display: none; pointer-events: none; }
+.oni-mp-pt.mp-focused img.mp-hand { display: block; }
+.oni-mp-pt.mp-focused { filter: drop-shadow(0 0 10px rgba(255,217,102,0.95)); }
+.oni-mp-title { position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+  padding: 6px 22px; border-radius: 8px; white-space: nowrap; pointer-events: none;
+  font-family: serif; font-size: 22px; font-weight: 900; color: #f5e2b4; text-shadow: 0 0 8px rgba(0,0,0,0.9);
+  background: radial-gradient(circle at 40% 35%, rgba(90,65,30,0.94) 0%, rgba(45,32,14,0.97) 100%);
+  border: 2px solid rgba(200,160,80,0.65); }
+.oni-mp-title .mp-point { color: #e8c870; }
+.oni-mp-hint { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); white-space: nowrap;
+  font-family: "Signika", sans-serif; font-size: 15px; font-style: italic; color: #e8c870; pointer-events: none;
+  text-shadow: 0 0 6px rgba(0,0,0,0.9); }
+.oni-mp-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 80px;
+  display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; user-select: none;
+  font-size: 28px; color: #e8c870; text-shadow: 0 0 8px rgba(0,0,0,0.9);
+  background: radial-gradient(circle at 40% 35%, rgba(90,65,30,0.92) 0%, rgba(45,32,14,0.96) 100%);
+  border: 2px solid rgba(200,160,80,0.65); box-shadow: 0 0 14px rgba(0,0,0,0.55); }
+.oni-mp-nav:hover { filter: brightness(1.2); }
+.oni-mp-nav.mp-left { left: 10px; } .oni-mp-nav.mp-right { right: 10px; }
+.oni-mp.mp-readonly .oni-mp-nav, .oni-mp.mp-readonly .oni-mp-pt { pointer-events: none; }
+    `;
+    document.head.appendChild(s);
+  }
+
+  // Path lines (SVG) + path tiles of a dungeon map into the preview world.
+  // Player view only: hidden / switched-off paths are left out (LinkLayer),
+  // invisible tiles stay hidden, fog / unrevealed shroud tiles show their disc.
+  // Only tiles that are path nodes are drawn — not décor or effect tiles.
+  // Returns the ids of the tiles drawn with their own art.
+  function drawDungeonLayer(world, scene, d, W, H) {
+    const drawn = new Set();
+    if (sceneModeOf(scene) !== "dungeon") return drawn;
+    const links = DP.LinkLayer?.playerLinks?.(scene) ?? [];
+    if (!links.length) return drawn;
+
+    const Fog = DP.Fog;
+    const revealed = scene.flags?.[MODULE_ID]?.[DP.PATHING_ROOT_KEY ?? "dungeonPathing"]?.fogRevealed ?? {};
+    const shown = (id) => {
+      const t = scene.tiles?.get?.(id);
+      return !!t && !t.hidden && Fog?.getFogMode?.(t) !== "invisible";
+    };
+
+    const NS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("width", W); svg.setAttribute("height", H);
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    svg.style.cssText = "position:absolute;left:0;top:0;pointer-events:none;overflow:visible;";
+    const nodeIds = new Set();
+    for (const l of links) {
+      if (!shown(l.a) || !shown(l.b)) continue;
+      nodeIds.add(l.a); nodeIds.add(l.b);
+      const pts = l.pts.map(p => `${p.x - d.sceneX},${p.y - d.sceneY}`).join(" ");
+      const w = l.side ? 2.2 : 3;
+      for (const [stroke, width, opacity, dx, dy] of [["#000", w + 1.5, 0.55, 1.5, 2], [l.color, w, 1, 0, 0]]) {
+        const pl = document.createElementNS(NS, "polyline");
+        pl.setAttribute("points", pts);
+        pl.setAttribute("fill", "none");
+        pl.setAttribute("stroke", stroke);
+        pl.setAttribute("stroke-width", width);
+        pl.setAttribute("stroke-opacity", opacity);
+        pl.setAttribute("stroke-linecap", "round");
+        pl.setAttribute("stroke-linejoin", "round");
+        if (l.dotted) pl.setAttribute("stroke-dasharray", "2 7");
+        if (dx || dy) pl.setAttribute("transform", `translate(${dx} ${dy})`);
+        svg.appendChild(pl);
+      }
+    }
+    world.appendChild(svg);
+
+    for (const id of nodeIds) {
+      const t = scene.tiles.get(id);
+      const mode = Fog?.getFogMode?.(t);
+      const veiled = mode === "fog" || (mode === "shroud" && !revealed[id]);
+      const src = veiled ? (Fog?.TEXTURES?.[mode] ?? "") : (t.texture?.src ?? "");
+      if (!src) continue;
+      const img = document.createElement("img");
+      img.src = src;
+      img.style.cssText = `position:absolute;left:${t.x - d.sceneX}px;top:${t.y - d.sceneY}px;` +
+        `width:${t.width}px;height:${t.height}px;pointer-events:none;`;
+      world.appendChild(img);
+      if (!veiled) drawn.add(id);
+    }
+    return drawn;
+  }
+
+  /**
+   * Draw the preview. Returns { setFocus(i), close() }.
+   * opts: { sceneId, name, points, focus, readOnly, operatorName, onFocus(i), onPick(i), onBack() }
+   */
+  function buildMapPreview(opts) {
+    injectPreviewStyles();
+    const scene = game.scenes.get(opts.sceneId);
+    const pts   = opts.points ?? [];
+    const esc   = (s) => foundry.utils.escapeHTML?.(String(s ?? "")) ?? String(s ?? "");
+    const d     = scene?.dimensions ?? { sceneX: 0, sceneY: 0, sceneWidth: scene?.width ?? 1000, sceneHeight: scene?.height ?? 1000 };
+    const W = d.sceneWidth, H = d.sceneHeight;
+    const grid = Number(scene?.grid?.size ?? 100) || 100;
+    const img  = scene?.background?.src ?? scene?.thumb ?? "";
+
+    const root = document.createElement("div");
+    root.className = "oni-mp" + (opts.readOnly ? " mp-readonly" : "");
+    root.innerHTML = `
+      <div class="oni-mp-box"><div class="oni-mp-world" style="width:${W}px;height:${H}px;background-image:url('${img}');"></div></div>
+      <div class="oni-mp-title"></div>
+      ${pts.length > 1 ? `<div class="oni-mp-nav mp-left">&#9664;</div><div class="oni-mp-nav mp-right">&#9654;</div>` : ""}
+      <div class="oni-mp-hint">${opts.readOnly
+        ? `${esc(opts.operatorName ?? "The leader")} is choosing where to land…`
+        : "◀ ▶ / wheel: choose · click or Enter: travel · Esc: back"}</div>`;
+    const box   = root.querySelector(".oni-mp-box");
+    const world = root.querySelector(".oni-mp-world");
+    const title = root.querySelector(".oni-mp-title");
+
+    // Dungeon map: draw it as the party would see it on the board — its path
+    // lines and path tiles, with the same fog rules (nothing a player can't see).
+    const drawnTiles = drawDungeonLayer(world, scene, d, W, H);
+
+    const els = pts.map((p, i) => {
+      const tile = p.tileId ? scene?.tiles?.get?.(p.tileId) : null;
+      const onBoard = !!(tile && drawnTiles.has(tile.id));
+      // A point already drawn on the board gets a ring around it; any other
+      // point (exploration map entrance) a gold dot about one grid square wide.
+      const size = onBoard ? Math.max(tile.width, tile.height) * 1.25 : grid * 0.6;
+      const el = document.createElement("div");
+      el.className = "oni-mp-pt" + (onBoard ? " mp-ring" : " mp-dot");
+      el.style.left = `${p.x - d.sceneX}px`;
+      el.style.top  = `${p.y - d.sceneY}px`;
+      el.style.width = el.style.height = `${size}px`;
+      el.innerHTML = `<img class="mp-hand" src="${DP.HAND_CURSOR_URL}" style="width:${size * 0.9}px;height:${size * 0.9}px;filter:sepia(1) saturate(4) hue-rotate(5deg) brightness(1.15);">`;
+      if (!opts.readOnly) el.addEventListener("click", (ev) => { ev.stopPropagation(); opts.onPick?.(i); });
+      world.appendChild(el);
+      return el;
+    });
+
+    let focus = Math.min(Math.max(0, opts.focus ?? 0), Math.max(0, pts.length - 1));
+    const frame = (i) => {
+      const bw = box.clientWidth || window.innerWidth - 140;
+      const bh = box.clientHeight || window.innerHeight - 120;
+      const fit = Math.min(bw / W, bh / H);
+      // Camera like on the board: the map's own starting zoom (scene initial view),
+      // scaled to the preview box; else a close-up of fit. Never smaller than fit.
+      const boardZoom = Number(scene?.initial?.scale) || 0;
+      const s = Math.max(fit, boardZoom ? boardZoom * Math.min(bw / window.innerWidth, bh / window.innerHeight) : Math.min(1.2, fit * 2.2));
+      const p = pts[i] ?? { x: d.sceneX + W / 2, y: d.sceneY + H / 2 };
+      let tx = bw / 2 - (p.x - d.sceneX) * s;
+      let ty = bh / 2 - (p.y - d.sceneY) * s;
+      tx = W * s <= bw ? (bw - W * s) / 2 : Math.min(0, Math.max(bw - W * s, tx));
+      ty = H * s <= bh ? (bh - H * s) / 2 : Math.min(0, Math.max(bh - H * s, ty));
+      world.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+    };
+    const setFocus = (i) => {
+      if (!pts.length) return;
+      focus = ((i % pts.length) + pts.length) % pts.length;
+      els.forEach((el, k) => el.classList.toggle("mp-focused", k === focus));
+      title.innerHTML = `${esc(opts.name)} — <span class="mp-point">${esc(pts[focus]?.label)}</span>`;
+      frame(focus);
+    };
+
+    if (!opts.readOnly) {
+      root.querySelector(".mp-left")?.addEventListener("click", () => opts.onFocus?.(focus - 1));
+      root.querySelector(".mp-right")?.addEventListener("click", () => opts.onFocus?.(focus + 1));
+      root.addEventListener("wheel", (ev) => { ev.preventDefault(); opts.onFocus?.(focus + (ev.deltaY > 0 ? 1 : -1)); }, { passive: false });
+    }
+    document.body.appendChild(root);
+    // First frame without the pan animation, then fade in.
+    world.style.transition = "none";
+    setFocus(focus);
+    requestAnimationFrame(() => { world.style.transition = ""; root.classList.add("mp-visible"); });
+    const onResize = () => frame(focus);
+    window.addEventListener("resize", onResize);
+
+    return {
+      get focus() { return focus; },
+      setFocus,
+      close() {
+        window.removeEventListener("resize", onResize);
+        root.classList.remove("mp-visible");
+        setTimeout(() => root.remove(), 280);
+      },
+    };
+  }
+
+  function registerPreviewWatcher() {
+    globalThis.FUCompanion?.api?.MirrorPrompt?.register?.(MP_MIRROR_KIND, {
+      show(ctx) {
+        const p = ctx.payload ?? {};
+        if (!p.sceneId) return null;
+        const view = buildMapPreview({ ...p, focus: ctx.state?.focus ?? 0, readOnly: true, operatorName: ctx.operatorName });
+        return {
+          patch: (state) => { if (Number.isInteger(state?.focus)) view.setFocus(state.focus); },
+          close: () => view.close(),
+        };
+      },
+    });
+  }
+
+  /** Operator: preview map m and let the player pick a point. → point | null (back). */
+  function pickPointOnMap(m) {
+    return new Promise((resolve) => {
+      const points = m.points.map(p => ({ x: p.x, y: p.y, tileId: p.tileId ?? null, isDoor: !!p.isDoor, label: p.label }));
+      const mirror = globalThis.FUCompanion?.api?.MirrorPrompt?.open?.(MP_MIRROR_KIND,
+        { sceneId: m.id, name: m.name, points }) ?? null;
+      let done = false;
+      let view = null;
+      const finish = (val) => {
+        if (done) return;
+        done = true;
+        window.removeEventListener("keydown", onKey, true);
+        view?.close();
+        mirror?.close(val == null ? null : view?.focus ?? null);
+        resolve(val);
+      };
+      const focusTo = (i) => {
+        view.setFocus(i);
+        mirror?.patch({ focus: view.focus });
+        DP.Sound?.playFastTravelCycle?.();
+      };
+      const pick = (i) => {
+        if (i !== view.focus) { view.setFocus(i); mirror?.patch({ focus: view.focus }); }
+        DP.Sound?.playConfirm?.();
+        finish(m.points[view.focus] ?? null);
+      };
+      const onKey = (ev) => {
+        const k = ev.key;
+        if (["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown", "Enter", "Escape"].includes(k)) {
+          ev.preventDefault(); ev.stopImmediatePropagation();
+        } else return;
+        if (k === "ArrowLeft" || k === "ArrowUp")    focusTo(view.focus - 1);
+        if (k === "ArrowRight" || k === "ArrowDown") focusTo(view.focus + 1);
+        if (k === "Enter")  pick(view.focus);
+        if (k === "Escape") { DP.Sound?.playCancel?.(); finish(null); }
+      };
+      view = buildMapPreview({ sceneId: m.id, name: m.name, points, focus: 0, onFocus: focusTo, onPick: pick });
+      window.addEventListener("keydown", onKey, true);
     });
   }
 
@@ -497,19 +754,14 @@
         lastRegion = m.regionId;
         content += `<div class="oni-travel-category"><i class="fas fa-map"></i> ${esc(m.regionName)}</div>`;
       }
-      // Same panel button as before, one per landing point:
-      // map name on top, the point under it, the map thumbnail behind.
-      for (const p of m.points) {
-        const i = dests.push({ sceneId: m.id, point: p, label: `${m.name} — ${p.label}` }) - 1;
-        content += `
-          <button type="button" class="oni-travel-dest" data-dest="${i}" tabindex="-1">
-            <div class="oni-dest-left">
-              <div class="oni-dest-name">${esc(m.name)}</div>
-              <div class="oni-dest-point">${esc(p.label)}</div>
-            </div>
-            ${thumbOf(m.scene)}
-          </button>`;
-      }
+      // Same panel button as before, one per map; the landing point is
+      // chosen on the map preview that opens next.
+      const i = dests.push({ sceneId: m.id, map: m }) - 1;
+      content += `
+        <button type="button" class="oni-travel-dest" data-dest="${i}" tabindex="-1">
+          <div class="oni-dest-left"><div class="oni-dest-name">${esc(m.name)}</div></div>
+          ${thumbOf(m.scene)}
+        </button>`;
     }
     content += `</div>`;
 
@@ -601,7 +853,15 @@
     if (selectedId == null) return;
     const dest = dests[Number(selectedId)];
     if (!dest) return;
-    await confirmAndTravel(dest.sceneId, dest.point, dest.label);
+    if (dest.map) {
+      // Pick the landing point on the map preview; Esc / No = back to the list.
+      const point = await pickPointOnMap(dest.map);
+      if (!point) return showDialog();
+      const went = await confirmAndTravel(dest.sceneId, point, `${dest.map.name} — ${point.label}`);
+      if (!went) return showDialog();
+      return;
+    }
+    await confirmAndTravel(dest.sceneId, null, dest.label);
   }
 
   // Yes / No, then travel. point = { x, y, tileId, isDoor } or null (spawn point).
@@ -935,6 +1195,7 @@
     injectTravelStyles(); // pre-inject so first dialog open is instant
     setupSocketListener();
     registerWatcher();
+    registerPreviewWatcher();
 
     Hooks.on("canvasReady", async () => {
       const scene = canvas?.scene;
