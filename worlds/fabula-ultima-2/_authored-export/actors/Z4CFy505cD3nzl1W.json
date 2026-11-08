@@ -5933,7 +5933,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul>\n<li>Your&nbsp;<strong>Attacks&nbsp;</strong>deal&nbsp;<strong>20%&nbsp;</strong>more damage</li>\n</ul>",
+          "description": "<ul>\n<li>Your&nbsp;<strong>Attacks&nbsp;</strong>deal&nbsp;<strong>10%&nbsp;</strong>more damage</li>\n</ul>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -15248,10 +15248,10 @@
         "container": "gvpwwXxjRIveDtFW",
         "props": {
           "cost": "",
-          "description": "<ul>\n<li>Your&nbsp;<strong>Attacks&nbsp;</strong>deal&nbsp;<strong>10&nbsp;</strong>bonus damage</li>\n</ul>",
+          "description": "<ul>\n<li>Your&nbsp;<strong>Attacks&nbsp;</strong>deal&nbsp;<strong>10%&nbsp;</strong>more damage</li>\n</ul>",
           "effect_table": {
             "0": {
-              "damage_amount": "1.2",
+              "damage_amount": "1.1",
               "damage_operation": "multiply",
               "damage_stage": "outgoing",
               "effect_kind": "adjust_damage",
@@ -15273,7 +15273,7 @@
               "reaction_trigger": "creature_will_deal_damage"
             }
           },
-          "skill_description": "<ul>\n<li>Your&nbsp;<strong>Attacks&nbsp;</strong>deal&nbsp;<strong>10&nbsp;</strong>bonus damage</li>\n</ul>",
+          "skill_description": "<ul>\n<li>Your&nbsp;<strong>Attacks&nbsp;</strong>deal&nbsp;<strong>10%&nbsp;</strong>more damage</li>\n</ul>",
           "skill_target": "Self",
           "skill_type": "Passive",
           "type_damage": "",

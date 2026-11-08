@@ -141,7 +141,12 @@
     {
       "_id": "X1ZqGseq7UQmM1wr",
       "_stats": {
-        "createdTime": 1794121618452
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1794121618452,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
       },
       "changes": [],
       "description": "<p>Cast a non-offensive spell targeting that creature as a free action.</p>",

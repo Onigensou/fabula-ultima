@@ -354,7 +354,7 @@
       "item_def_bonus": "+1",
       "item_mdef_bonus": "0",
       "item_quantity": "1",
-      "item_rarity": "Uncommon",
+      "item_rarity": "Rare",
       "item_skill_passive": {
         "NYsZRGgjHTD4KsWJ": {
           "skill_description": "<p>Equipped passive: Your attacks with a Flail weapon deal 5 bonus damage and inflict <a class=\"content-link\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\">Enraged</a> on the target.</p>"
