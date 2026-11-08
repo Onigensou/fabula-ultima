@@ -38,6 +38,27 @@ const RULE = LEVELUP.RULE;
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
+// A lasting record of every spend (2026-11-07 bug list): the console line dies
+// with the page, and working out which skills the players bought needed item
+// timestamps. One chat line per change, whispered to the GMs, so the table's
+// chat is not cluttered and the log survives a reload. Never fails the change
+// it records.
+async function recordLedger(actor, text, requesterUserId) {
+  try {
+    const gms = game.users.filter((u) => u.isGM).map((u) => u.id);
+    if (!gms.length) return;
+    const who = game.users.get(requesterUserId)?.name ?? game.user?.name ?? "";
+    const esc = foundry.utils.escapeHTML ?? ((s) => String(s).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`));
+    await ChatMessage.create({
+      content: `<div class="fu-levelup-ledger"><strong>Level-up</strong> · ${esc(actor.name)}: ${esc(text)}`
+        + `${who ? ` <span style="opacity:.7">(${esc(who)})</span>` : ""}</div>`,
+      whisper: gms,
+      speaker: { alias: "Level-up ledger" },
+      flags: { "fabula-ultima-companion": { levelupLedger: { actorUuid: actor.uuid, text, requesterUserId: requesterUserId ?? null, at: Date.now() } } },
+    });
+  } catch (e) { warn("level-up ledger line failed", e); }
+}
+
 /**
  * Grant the companion skills a just-taken skill brings with it.
  *
@@ -529,6 +550,7 @@ async function applySpend({ actorUuid, classKey, skillUuid, benefit, facetUuids,
     });
 
     log(`spend: ${actor.name} → ${cls.name} ${v.classLevel + 1}, ${skill.name} ${v.skillLevel + 1}`);
+    await recordLedger(actor, `spent a Skill Point: ${cls.name} ${v.classLevel + 1}, ${skill.name} SL ${v.skillLevel + 1}`, requesterUserId);
     return {
       ok: true,
       classLevel: v.classLevel + 1,
@@ -641,6 +663,7 @@ async function applyRefund({ actorUuid, classKey, skillUuid, facetUuids, request
     });
 
     log(`refund: ${actor.name} → ${cls.name} ${mine.level - 1}, ${skill.name} ${held.level - 1} (nut paid: ${paid})`);
+    await recordLedger(actor, `refunded a Skill Point: ${cls.name} ${mine.level - 1}, ${skill.name} SL ${held.level - 1}${paid ? " (1 nut paid)" : ""}`, requesterUserId);
     return {
       ok: true,
       classLevel: mine.level - 1,
@@ -696,6 +719,7 @@ async function applyUnlearn({ actorUuid, skillKey, requesterUserId }) {
     await consumeNut(actor);
 
     log(`unlearn: ${actor.name} → ${heroic.item.name}`);
+    await recordLedger(actor, `unlearned the Heroic Skill ${heroic.item.name}`, requesterUserId);
     return { ok: true, name: heroic.item.name, slots: heroicSlots(actor), nutsLeft: readNuts(actor).count };
   } catch (e) {
     err("applyUnlearn threw", e);
@@ -736,6 +760,7 @@ async function applyHeroic({ actorUuid, skillUuid, requesterUserId }) {
     await grantCompanions(actor, offer.from, offer.skill);
 
     log(`heroic: ${actor.name} → ${offer.skill.name}`);
+    await recordLedger(actor, `learned the Heroic Skill ${offer.skill.name}`, requesterUserId);
     // Heroic picks are free — no Skill Point moves.
     return { ok: true, name: offer.skill.name, slots: heroicSlots(actor) };
   } catch (e) {

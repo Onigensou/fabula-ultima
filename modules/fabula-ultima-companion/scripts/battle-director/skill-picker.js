@@ -507,6 +507,31 @@ async function buildCandidate(uuid, actor, opts) {
 
 // Restrict the picker to a specific set of skill_type values (lowercase).
 // Skill action → ["active"]; Spell action → ["spell"]; null → everything.
+// Skill CLASS filters a free action's allow-list can carry (`kind:<k>`):
+//   offensive / non_offensive — the spell's own "Offensive Spell" flag
+//   (`isOffensiveSpell`, the ⚡ in the Spell menu). Paladin Armor: "you may cast
+//   a non-offensive spell". An unknown kind matches nothing (fails closed: a
+//   typo must not widen a restricted grant).
+const SKILL_KINDS = {
+  offensive:     (p) => !!p?.isOffensiveSpell,
+  non_offensive: (p) => !p?.isOffensiveSpell,
+};
+export function splitKindRefs(refs) {
+  const kinds = [];
+  const rest = [];
+  for (const r of Array.isArray(refs) ? refs : []) {
+    const s = String(r ?? "").trim();
+    if (!s) continue;
+    if (/^kind:/i.test(s)) { const k = s.slice(5).trim().toLowerCase().replace(/[\s-]+/g, "_"); if (k) kinds.push(k); }
+    else rest.push(s);
+  }
+  return { kinds, refs: rest };
+}
+// `subject` is a picker candidate ({ isOffensiveSpell }) or an item's props.
+export function matchesSkillKinds(subject, kinds) {
+  return (kinds ?? []).every((k) => SKILL_KINDS[k]?.(subject) === true);
+}
+
 export function filterBySkillTypes(candidates, allowedTypes) {
   if (!allowedTypes) return candidates ?? [];
   const set = new Set(allowedTypes.map((t) => String(t).toLowerCase()));
@@ -686,6 +711,12 @@ export async function pickSkill({
   focusValue = null,
 }) {
   const all = await gatherSkillsForActor(actor, { freeOfCost });
+  // `kind:<k>` entries are a CLASS filter, not a list of skills: they narrow the
+  // ordinary menu instead of replacing it (Paladin Armor's "a non-offensive
+  // spell" → `kind:non_offensive`). Split them off so a kind-only grant still
+  // drops reaction-only and menu-hidden skills like a normal turn does.
+  const { kinds: wantKinds, refs: listRefs } = splitKindRefs(allowedRefs);
+  allowedRefs = listRefs.length ? listRefs : null;
   // Drop reaction-only items: they carry a skill_type label ("Active"/"Spell")
   // but their behavior is entirely triggered (reaction_config_table, no active
   // body), so they aren't turn-actions and would be a no-op if picked.
@@ -727,6 +758,7 @@ export async function pickSkill({
     // Listed but only ever fires as a reaction (Verónica): shown, never pickable.
     for (const c of candidates) if (c.isReactionOnly && !c._unavailable) c._unavailable = "Reaction only";
   }
+  if (wantKinds.length) candidates = candidates.filter((c) => matchesSkillKinds(c, wantKinds));
   if (excludeIntents && excludeIntents.size) {
     for (const c of candidates) {
       if (excludeIntents.has(c.intent)) c._intentDisabled = excludeIntents.get(c.intent) || "Disabled";

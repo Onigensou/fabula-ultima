@@ -44,11 +44,18 @@ export function diffCandidates(prev, next) {
 //                                              attack's only target
 //   - checkTotal → ATTACK_CHECK_RESULT (even-number gate)
 //   - weaponRange → ATTACK_IS_RANGED
+//   - subjectActorUuid / subjectTokenUuid → the creature the completed skill
+//     acted FOR (Protect: the ally it took the place of), read by the
+//     `trigger_subject` target ref. Null when the skill has no such creature.
+//     Paladin Armor: "when you Protect another creature, you may cast a
+//     non-offensive spell targeting that creature".
 export function buildCompletionPayload(entry, cardCtx) {
   return {
     sourceSkillName:   entry?.skillName ?? null,
     sourceActorUuid:   entry?.reactorActorUuid ?? null,
     sourceTokenUuid:   entry?.reactorTokenUuid ?? null,
+    subjectActorUuid:  entry?.subjectActorUuid ?? null,
+    subjectTokenUuid:  entry?.subjectTokenUuid ?? null,
     attackerActorUuid: cardCtx?.attackerActorUuid ?? null,
     attackerTokenUuid: cardCtx?.attackerTokenUuid ?? null,
     checkTotal:        cardCtx?.checkTotal ?? null,

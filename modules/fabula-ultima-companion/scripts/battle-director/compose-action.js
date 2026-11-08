@@ -1016,7 +1016,7 @@ async function composeHinder({ director, snap, eligible, cancelSentinel }) {
 // so the Item action targets identically. Returns { cancelled, targetUuids,
 // reason }. `actor` is the caster doc (for SL/HAS_SKILL formula identifiers in
 // the target-count resolver). `eligible` = { allies, enemies }.
-export async function resolveTargetsForSource({ director, snap, actor, eligible, source, cancelSentinel, maxMpCost = null }) {
+export async function resolveTargetsForSource({ director, snap, actor, eligible, source, cancelSentinel, maxMpCost = null, lockedTargetTokenUuid = null }) {
   // target_sequence skills do their multi-step picking at the TARGET phase
   // (state-handlers resolveActionTargets), NOT here in the compose pre-target.
   // Defer with empty targets so TARGET doesn't see pre-composed uuids and runs
@@ -1028,6 +1028,20 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
   // `HAS_SKILL_PILLAGE` matched case-sensitively. Category regex below is /i.
   const skillTargetText = String(source?.system?.props?.skill_target ?? "").trim();
   const isSelf = !skillTargetText || /^self$/i.test(skillTargetText);
+  // A locked target (free spell "targeting that creature") the chosen spell
+  // cannot reach is refused as a STEP BACK ("target-cancelled"), so the player
+  // lands on the spell list again and picks one that can.
+  const lockedName = () => {
+    const all = [...(eligible?.allies ?? []), ...(eligible?.enemies ?? [])];
+    return all.find((e) => e.tokenUuid === lockedTargetTokenUuid)?.name ?? "that creature";
+  };
+  const refuseLocked = (why) => {
+    ui.notifications?.warn(`${source.name} ${why}: this free spell must target ${lockedName()}.`);
+    return { cancelled: true, reason: "target-cancelled" };
+  };
+  if (isSelf && lockedTargetTokenUuid && lockedTargetTokenUuid !== snap.tokenUuid) {
+    return refuseLocked("can only target its caster");
+  }
   if (isSelf) {
     // Obvious target (self) — still enter the picker with the caster locked so
     // the player gets a confirm/cancel pass (no-consequence back-out).
@@ -1103,6 +1117,9 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
   // Evasion: a multi-target HARMFUL skill/spell cannot select an `area` bearer.
   targetList = applyAreaGate(targetList, { skill: source, skillTargetText, intent });
 
+  if (lockedTargetTokenUuid && !targetList.some((e) => e.tokenUuid === lockedTargetTokenUuid)) {
+    return refuseLocked(`can't target ${lockedName()}`);
+  }
   if (!targetList.length) {
     ui.notifications?.warn(`No eligible ${categoryLabel} for ${source.name}.`);
     return { cancelled: true, reason: "no targets" };
@@ -1115,6 +1132,10 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
   const sourceRange = String(source?.system?.props?.skill_range ?? "").trim().toLowerCase() || "any";
   const mandatoryTokenUuids = collectForcedIncludeTargets(targetList, sourceRange, actor, pinActionKindForSkill(source))
     .map((e) => e.tokenUuid);
+  // The locked target is pinned like a taunt: always in, spare slots stay free.
+  if (lockedTargetTokenUuid && !mandatoryTokenUuids.includes(lockedTargetTokenUuid)) {
+    mandatoryTokenUuids.unshift(lockedTargetTokenUuid);
+  }
 
   // Single-source target plan (mode + count + ×T affordability cap), shared with
   // the GM-side resolveActionTargets. Random → GM-side roulette (player sends
@@ -1314,7 +1335,13 @@ async function composeSkill({ director, snap, eligible, cancelSentinel, isSpell,
   // prior inline block, now reused so Item targets exactly like Skill.
   // Pass the free-action MP cap (isSpell-gated, same as the picker) so a free ×T
   // spell auto-clamps its target count to fit the cap during targeting.
-  const tr = await resolveTargetsForSource({ director, snap, actor, eligible, source: skill, cancelSentinel, maxMpCost });
+  // A free SPELL granted with a locked target must target that creature
+  // (Paladin Armor: "a non-offensive spell targeting that creature"). Spell only:
+  // the one Skill grant with a lock, Counter Pass, has a conditional rule ("if
+  // the Pass targets an enemy …") this does not model, so Skills keep the
+  // ordinary picker.
+  const lockedTargetTokenUuid = isSpell ? (grant?.lockedTargetTokenUuid ?? null) : null;
+  const tr = await resolveTargetsForSource({ director, snap, actor, eligible, source: skill, cancelSentinel, maxMpCost, lockedTargetTokenUuid });
   if (tr.cancelled) {
     return { cancelled: true, reason: tr.reason ?? "target-cancelled", picked: pick };
   }

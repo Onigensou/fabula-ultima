@@ -1,0 +1,131 @@
+{
+  "_id": "eBt14mvEG7wMMh4V",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1794121950219,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.6.4"
+    },
+    "fucompanion": {
+      "itemMigratorBackup": {
+        "category": "skill",
+        "detectedType": "spellcard_v1",
+        "fromTemplate": "XfUpjwaovj4v9AjI",
+        "itemId": "Z8lYzAkZuLYqnK5t",
+        "itemName": "Death",
+        "pickedOldProps": {
+          "class": "Necromancer",
+          "cost": "30 MP",
+          "damage": "0",
+          "description": "<p>You invoke death on the target, Reduce target <strong>Non-Undead, Non-Champion </strong>creature to 0 HP, have 20% chance to success</p>",
+          "discipline": "spiritism",
+          "duration": "Instantaneous",
+          "id": "Z8lYzAkZuLYqnK5t",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213202.763.png",
+          "name": "Death",
+          "target": "One Creature",
+          "type_damage": "",
+          "uuid": "Item.Z8lYzAkZuLYqnK5t"
+        },
+        "ts": 1770021428490
+      }
+    }
+  },
+  "folder": "ft3358qUh5ZDldYQ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213202.763.png",
+  "name": "Death",
+  "ownership": {
+    "2vy7wrEUqBy0kzsU": 3,
+    "6DmgigM5jq76r0Gd": 3,
+    "7hKw8KGsimboeDif": 3,
+    "9sFgrDy4MvAgoCmQ": 3,
+    "Am7qxPOavfKeDGPd": 3,
+    "JQGNzKpDPHJmcUIW": 3,
+    "JvF9tXvr7aaiS06m": 3,
+    "KD5d0efqHETPpIux": 3,
+    "LT3Z8EnRdMVk5ncQ": 3,
+    "MwTL6zXFCEpVBTpI": 3,
+    "NozW36XIGEGx7oVH": 3,
+    "NpGkA7uxaarkPiwS": 3,
+    "ULBTZPjtza939Mvy": 3,
+    "WQGFvLStTZeWGpak": 3,
+    "default": 3,
+    "eGu3tuw7HwJd2bpx": 3,
+    "iLeUVmwqnze8ulOI": 3,
+    "mE5aEkDlrQJIYyhG": 3,
+    "nSGZ1sz1rdKao0kz": 3,
+    "nXC7OD7u5Zw5UDDU": 3,
+    "t41knaXNbgCEygM5": 3,
+    "tz9BP9MKfNGf2P3n": 3,
+    "wNzPmItLYCKE1I8t": 3,
+    "yL2PQxh3R9ddt0te": 3,
+    "yUfwoVmEPVdFG3AY": 3
+  },
+  "sort": 0,
+  "system": {
+    "container": "KvWeGBF2wU1tjm7D",
+    "props": {
+      "action_command": "spell",
+      "active_effect_config_table": {},
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "default",
+      "animation_script": "",
+      "check_bonus": "0",
+      "class": "Necromancer",
+      "cost": "30 MP",
+      "damage_bonus": "0",
+      "defense_target_type": "def",
+      "description": "<p>You invoke death on the target, Reduce target <strong>Non-Undead, Non-Champion </strong>creature to 0 HP, have 20% chance to success</p>",
+      "duration": "Instantaneous",
+      "effect_table": {
+        "0": {
+          "$deleted": false,
+          "condition_formula": "chance(20)",
+          "consume_amount": "999999",
+          "consume_can_defeat": true,
+          "consume_resource": "hp",
+          "effect_kind": "consume_resource",
+          "effect_label": "death_drop",
+          "on_empty": "drain",
+          "target_ref": "action_targets"
+        }
+      },
+      "heroic_requirement": "",
+      "ignore_hr": false,
+      "isCheck": false,
+      "isFacet": false,
+      "isHeroic": false,
+      "isOffensiveSpell": false,
+      "isReaction": false,
+      "isZeroPower": false,
+      "level": "1",
+      "max_level": "1",
+      "name": "Death",
+      "on_activate_effect_ref": "death_drop",
+      "optional_params": {},
+      "reaction_config_table": {},
+      "rolled_atr1": "-",
+      "rolled_atr2": "-",
+      "skill_animation_default": "",
+      "skill_animation_mode": "default",
+      "skill_information": "",
+      "skill_range": "",
+      "skill_target": "One Creature",
+      "skill_type": "Spell",
+      "target_eligibility": "SPECIES_IS_UNDEAD == 0 && RANK_IS_CHAMPION == 0",
+      "type_damage": "",
+      "use_optional_params": false
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": false,
+    "uniqueId": "eBt14mvEG7wMMh4V"
+  },
+  "type": "equippableItem"
+}

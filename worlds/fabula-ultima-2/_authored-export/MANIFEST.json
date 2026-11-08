@@ -4859,6 +4859,12 @@
         "effects": 0
       },
       {
+        "id": "eBt14mvEG7wMMh4V",
+        "name": "Death",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "FwWbV9Ig4LEvmA1o",
         "name": "Death Scythe",
         "type": "equippableItem",
@@ -6161,6 +6167,12 @@
         "effects": 0
       },
       {
+        "id": "YPuC5X6cDNWbafg9",
+        "name": "Fulgur",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "RZJCu7gqGQL3qQkE",
         "name": "Fulgur Alta",
         "type": "equippableItem",
@@ -6419,7 +6431,19 @@
         "effects": 0
       },
       {
+        "id": "QOuHXusMLYWKk8w9",
+        "name": "Glacies",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "IYIFDBNpDiCiPeMl",
+        "name": "Glacies Alta",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "mUfDnan5Z57SR8un",
         "name": "Glacies Alta",
         "type": "equippableItem",
         "effects": 0
@@ -7139,6 +7163,12 @@
         "effects": 0
       },
       {
+        "id": "GkGzE00BEuDEqyi7",
+        "name": "Hex",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "2jmr67iRKcFu0YwU",
         "name": "High or Low",
         "type": "equippableItem",
@@ -7512,6 +7542,12 @@
       },
       {
         "id": "EJ8qEpVDNMA0I1fi",
+        "name": "Ignis",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "HaY8OVuOkjX4g3qx",
         "name": "Ignis",
         "type": "equippableItem",
         "effects": 0
@@ -9710,7 +9746,7 @@
         "id": "oQuaoYmMq9vsbgUf",
         "name": "Paladin Armor",
         "type": "equippableItem",
-        "effects": 3
+        "effects": 4
       },
       {
         "id": "8xmL5DAYFpSozzhz",

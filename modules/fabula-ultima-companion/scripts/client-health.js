@@ -18,6 +18,8 @@
 //   - Reports each scene draw (time, memory before/after), draws that stall,
 //     memory samples after a scene change (every minute for 10 min, then every
 //     5), tab hide/show, and socket disconnects with their reason.
+//   - Reports every warning / error toast with the stack that raised it
+//     ("notice"), so a toast nobody can find in the code names its source.
 //   - Reports the canvas frame rate about once a minute of visible time ("fps"):
 //     average, worst frame and how many frames ran slow, with the Battle depth
 //     setting, so a report of low frame rate has numbers per player and scene.
@@ -142,6 +144,45 @@
     if (!q.length || !game.socket?.connected || !game.users?.activeGM) return;
     game.socket.emit(SOCKET_NS, { type: MSG_TYPE, entries: q });
     store.set(keyQueue(), []);
+  }
+
+  // ── Warning toasts ─────────────────────────────────────────────────────────
+  // 2026-11-07 bug list item 4: a player saw "FX: please select at least one
+  // token" during Bimagus. That text is in no file in this repo, the world or
+  // its packs, and the console line never reached us. Every warning / error
+  // toast is now recorded with the code that raised it, so the next one names
+  // its source in the GM's client-health log ("notice" entries).
+  const NOTICE_FRAMES = 6;
+  const NOTICE_REPEAT_MS = 5000;   // the same text again this soon is not news
+  const lastNoticeAt = new Map();
+
+  function callerFrames() {
+    return String(new Error().stack ?? "").split("\n").slice(1)
+      .map(l => l.trim())
+      .filter(l => l && !/client-health\.js|\/scripts\/foundry\.js/.test(l))
+      .slice(0, NOTICE_FRAMES)
+      .map(l => l.replace(/https?:\/\/[^/]+\//g, "").slice(0, 200));
+  }
+
+  function tapNotices() {
+    const n = globalThis.ui?.notifications;
+    if (!n || typeof n.notify !== "function" || n.__fucHealthTap) return;
+    const orig = n.notify;
+    n.notify = function (message, type = "info", options) {
+      try {
+        if (type === "warning" || type === "error") {
+          const msg = String(message ?? "").slice(0, CONSOLE_CHARS);
+          const now = Date.now();
+          if (now - (lastNoticeAt.get(msg) ?? 0) > NOTICE_REPEAT_MS) {
+            lastNoticeAt.set(msg, now);
+            if (lastNoticeAt.size > 200) lastNoticeAt.clear();
+            push("notice", { type, msg, from: callerFrames(), ...sceneInfo() });
+          }
+        }
+      } catch (_) { /* a health probe never breaks a toast */ }
+      return orig.call(this, message, type, options);
+    };
+    n.__fucHealthTap = true;
   }
 
   // ── Heartbeat ──────────────────────────────────────────────────────────────
@@ -479,6 +520,7 @@
 
     reportBoot();
     booted = true;
+    tapNotices();
     watchFrames();
     // the first scene usually drew before ready (canvasReady already set these)
     lastDrawAt ??= canvas?.ready ? Date.now() : null;

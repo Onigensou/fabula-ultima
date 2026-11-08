@@ -8462,6 +8462,35 @@ export async function postActionCard({ director, kind, payload }) {
       log(`seedInjectedReactions: ${accepted.length} injected reaction(s) accepted [${accepted.map((c) => c.carrierName).join(", ")}]`);
       runAutoReactionPass(accepted);
     }
+    // The creature an accepted redirect acted FOR — the ally Protect took the
+    // place of (its picked redirect source; the scan-time subject before the
+    // pick). Only a redirect has one; every other ledger entry stays subject-less,
+    // so the cascades that existed before (Bullet Break) see the same payload.
+    // Read by `trigger_subject` (Paladin Armor's "cast a spell targeting that
+    // creature"). Token from the card's ORIGINAL targets: after the redirect the
+    // ally is no longer in the live target list.
+    function cascadeSubjectOf(p) {
+      let picked = Array.isArray(p?.pickedSubjectActorUuids) && p.pickedSubjectActorUuids.length
+        ? p.pickedSubjectActorUuids[0]
+        : (p?.pickedSubjectActorUuid ?? null);
+      // A redirect whose pick fell back to the scan-time subject caches nothing:
+      // a "when ANOTHER creature is targeted" reaction's subject is that creature.
+      let tokenUuid = null;
+      if (!picked && String(p?.phaseTrigger ?? "") === "creature_targeted_by_action") {
+        const subA = p?.payloadAtFire?.subjectActorUuid ?? p?.subjectActorUuid ?? null;
+        if (subA && subA !== p?.reactorActorUuid) {
+          picked = subA;
+          tokenUuid = p?.payloadAtFire?.subjectTokenUuid ?? p?.subjectTokenUuid ?? null;
+        }
+      }
+      if (!picked) return {};
+      const hit = (payload?.targets ?? []).find((t) => t?.actorUuid === picked);
+      tokenUuid = tokenUuid ?? hit?.tokenUuid ?? null;
+      if (!tokenUuid) {
+        try { tokenUuid = fromUuidSync(picked)?.getActiveTokens?.()?.[0]?.document?.uuid ?? null; } catch (_) { tokenUuid = null; }
+      }
+      return { subjectActorUuid: picked, subjectTokenUuid: tokenUuid };
+    }
     async function injectCascadeReactions() {
       try {
         const rd = await import("./reaction-derive.js?cb=" + Date.now());
@@ -8474,6 +8503,7 @@ export async function postActionCard({ director, kind, payload }) {
             reactorActorUuid: p.reactorActorUuid ?? payload?.attackerActor?.uuid ?? null,
             reactorTokenUuid: p.reactorTokenUuid ?? null,
             skillName: p.carrierName,
+            ...cascadeSubjectOf(p),
           });
         }
         if (!ledger.length) return;
@@ -11061,15 +11091,23 @@ export async function postActionCard({ director, kind, payload }) {
           // policy for yet.
           SimMode.setElementFallback(bestElementForCard(cardAr, director));
 
-          const decisions = decideReactions({
-            cardReactions,
-            ar: cardAr,
-            director,
-            decided: new Set(reactionDecisionMap.keys()),
-          });
-          for (const d of decisions) {
-            if (d.hint) SimMode.setPickHint(d.hint);   // WHICH ally to cover
-            await recordPillDecision(d.rowKey, d.carrierUuid, d.decision);
+          // Re-ask until nothing new appears: an applied reaction can inject a
+          // cascade pill into THIS card (Paladin Armor after Protect, Bullet Break
+          // after Crossfire), and a pill nobody decides snapshots as "skip".
+          const asked = new Set();
+          for (let pass = 0; pass < 4; pass++) {
+            const decisions = decideReactions({
+              cardReactions,
+              ar: cardAr,
+              director,
+              decided: new Set([...reactionDecisionMap.keys(), ...asked]),
+            });
+            if (!decisions.length) break;
+            for (const d of decisions) {
+              asked.add(`${d.rowKey}:${d.carrierUuid}`);
+              if (d.hint) SimMode.setPickHint(d.hint);   // WHICH ally to cover
+              await recordPillDecision(d.rowKey, d.carrierUuid, d.decision);
+            }
           }
         } catch (e) {
           warn("[SIM] reaction brain threw — confirming without reactions", e);

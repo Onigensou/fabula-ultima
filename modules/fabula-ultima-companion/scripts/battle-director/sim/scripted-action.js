@@ -27,6 +27,7 @@ import { canAffordItem } from "./cost.js";
 import { attrDieSize, readPropNum } from "../snapshot.js";
 import { getLinkedSkillUuid } from "../item-resource.js";
 import { freeActions } from "../free-actions.js";
+import { splitKindRefs, matchesSkillKinds } from "../skill-picker.js";
 
 // Strip the sim clone's " [SIM]" suffix so a directive keyed by the real actor name
 // matches the clone on the field. Mirrors profiles.js `profileFor`.
@@ -370,14 +371,23 @@ export async function scriptedBundleFor(director, snap) {
   // Step aside WITHOUT exhausting the directive; the real turn comes next.
   try {
     const grant = freeActions.get?.(snap?.actorId) ?? null;
+    // `free: true` — this directive is FOR a free-action frame (Paladin Armor's
+    // spell after a Protect): on an ordinary turn it steps aside unspent.
+    if (directive.free && !grant) {
+      SimMode.note("scripted", `"${directive.skill}" waits for a free-action frame — the brain takes ${baseName(actorDoc.name)}'s turn`);
+      return null;
+    }
     if (grant) {
       const label = commandLabelFor(item);
       const labels = Array.isArray(grant.enabledLabels) ? grant.enabledLabels : [];
-      // `allowedSkillRefs` narrows further ("tag:dance", a skill name or uuid).
-      const refs = Array.isArray(grant.allowedSkillRefs) ? grant.allowedSkillRefs.map((r) => String(r).trim().toLowerCase()).filter(Boolean) : [];
+      // `allowedSkillRefs` narrows further ("tag:dance", a skill name or uuid,
+      // and the `kind:` class filters the real picker applies).
+      const { kinds, refs: listRefs } = splitKindRefs(grant.allowedSkillRefs);
+      const refs = listRefs.map((r) => String(r).trim().toLowerCase()).filter(Boolean);
       const itemTags = String(item.system?.props?.skill_tags ?? "").split(/[\s,]+/).map((t) => t.trim().toLowerCase().split("@")[0]).filter(Boolean);
-      const refAdmits = !refs.length || refs.some((r) => r === item.uuid.toLowerCase() || r === String(item.name).trim().toLowerCase()
-        || (r.startsWith("tag:") && itemTags.includes(r.slice(4))));
+      const refAdmits = (!refs.length || refs.some((r) => r === item.uuid.toLowerCase() || r === String(item.name).trim().toLowerCase()
+        || (r.startsWith("tag:") && itemTags.includes(r.slice(4)))))
+        && (!kinds.length || matchesSkillKinds(item.system?.props ?? {}, kinds));
       if (!refAdmits || (labels.length && !labels.includes(label))) {
         SimMode.note("scripted", `free-action frame (${grant.sourceLabel ?? "grant"}) does not admit ${label} "${item.name}" — holding the directive for the real turn`);
         return null;

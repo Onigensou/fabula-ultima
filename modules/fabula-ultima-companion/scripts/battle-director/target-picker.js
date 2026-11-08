@@ -407,7 +407,11 @@ export function requestTargeting({ director, eligible, mode = "exact", count = 1
       // meaningful answer.
       picked = eligible;
     } else {
-      picked = eligible.slice(0, Math.max(1, Math.min(count, eligible.length)));
+      // A mandatory target (a taunt; a free spell locked onto one creature) is
+      // in the selection the real picker would allow — take those first.
+      const must = new Set(Array.isArray(mandatoryTokenUuids) ? mandatoryTokenUuids : []);
+      const ordered = [...eligible.filter((e) => must.has(e.tokenUuid)), ...eligible.filter((e) => !must.has(e.tokenUuid))];
+      picked = ordered.slice(0, Math.max(1, Math.min(count, ordered.length)));
     }
     return Promise.resolve({
       ok: true,
