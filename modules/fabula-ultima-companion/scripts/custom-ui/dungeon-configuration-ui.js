@@ -716,13 +716,13 @@
             <label>Dungeon Zoom (tiles)</label>
             <div class="form-fields">
               <input type="number" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${ZOOM_TILES_KEY}"
-                     placeholder="3" min="1" max="12" step="0.5" />
+                     placeholder="1.5" min="1" max="12" step="0.5" />
             </div>
             <p class="notes">
               Dungeon mode: how many tile steps the players see above and below the party. The zoom is fixed
               at this (the mouse wheel does nothing outside Scan Mode). One step = the typical distance between
-              linked tiles on this map. A small map is also capped so no more than about a third of it shows.
-              Blank = 3.
+              linked tiles on this map. Never closer than 2.5×; a small map is also capped so no more than
+              about a third of it shows. Blank = 1.5.
             </p>
           </div>
 

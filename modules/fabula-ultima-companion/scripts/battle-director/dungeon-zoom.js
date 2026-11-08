@@ -24,7 +24,7 @@
 //
 // The maps are also small next to a 1080p screen: at 3 tiles about half of
 // them would already show 60-100% of the map, and Scan would have nothing
-// left to reveal. So each zoom is also capped by how much of the MAP's area
+// left to reveal (the cap matters for per-scene overrides above ~2 tiles). So each zoom is also capped by how much of the MAP's area
 // may be on screen at once, and whichever of the two is closer wins:
 //
 //   scale >= sqrt(visible area / (cap * map area))
@@ -41,9 +41,15 @@ import { viewportOf } from "./director-camera.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
-/** Defaults; each of the three tile counts can be overridden per scene. */
+/**
+ * Defaults; each of the three tile counts can be overridden per scene.
+ * Tuned live by the user 2026-11-08 (spectator client, tour of the converted
+ * LockView dungeons): normalTiles 1.5, everything else as first proposed.
+ * At 1.5 most maps (step < ~135 px) sit at the 2.5x ceiling, close to the 3x
+ * the LockView scenes were authored at.
+ */
 export const DEFAULTS = Object.freeze({
-  normalTiles: 3,      // steps visible above/below the party outside Scan
+  normalTiles: 1.5,    // steps visible above/below the party outside Scan
   normalCap: 0.35,     // at most this share of the map on screen outside Scan
   scanTiles: 6,        // Scan may zoom out to this many steps ...
   scanCap: 0.60,       // ... but never past this share of the map
