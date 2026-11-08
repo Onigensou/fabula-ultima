@@ -345,7 +345,7 @@
   margin: 8px 0 7px;
 }
 .oni-travel-category:first-child { margin-top: 2px; }
-/* Bookmark tabs: Dungeons | Towns & Open Areas */
+/* Bookmark tabs: Dungeons | Towns */
 .oni-travel-tabs {
   display: flex;
   gap: 4px;
@@ -832,7 +832,7 @@
     // Two bookmark tabs:
     //   Dungeons             — every region with a dungeon map (Valley, Wyrmwood…),
     //                          its Dungeon maps first, then its Places;
-    //   Towns & Open Areas   — towns, the world map, and regions made only of
+    //   Towns                — towns, the world map, and regions made only of
     //                          places (Eisendrache, Midgard…).
     const dungeonRegions = new Set(maps.filter(m => m.kind === "dungeon").map(m => m.regionId));
     const tabOf = (m) => (!m.world && dungeonRegions.has(m.regionId)) ? "dungeon" : "town";
@@ -881,7 +881,7 @@
       `<button type="button" class="oni-travel-tab${tab === startTab ? " active" : ""}" data-tab="${tab}"${panel[tab] ? "" : " disabled"} tabindex="-1">` +
       `<i class="fas ${icon}"></i> ${label}</button>`;
     const content =
-      `<div class="oni-travel-tabs">${tabBtn("dungeon", "fa-dungeon", "Dungeons")}${tabBtn("town", "fa-city", "Towns & Open Areas")}</div>` +
+      `<div class="oni-travel-tabs">${tabBtn("dungeon", "fa-dungeon", "Dungeons")}${tabBtn("town", "fa-city", "Towns")}</div>` +
       `<div class="oni-travel-list" data-panel="dungeon" style="padding:2px 0;${startTab === "dungeon" ? "" : "display:none;"}">${panel.dungeon}</div>` +
       `<div class="oni-travel-list" data-panel="town" style="padding:2px 0;${startTab === "town" ? "" : "display:none;"}">${panel.town}</div>`;
 
