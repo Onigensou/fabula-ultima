@@ -544,8 +544,8 @@
         }
       },
       "LockView": {
-        "lockPan": true,
-        "lockPanInit": true,
+        "lockPan": false,
+        "lockPanInit": false,
         "lockZoom": false,
         "lockZoomInit": false,
         "boundingBox": false,
