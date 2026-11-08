@@ -226,12 +226,38 @@ export function tuneDungeonZoom(partial) {
   return { ...DEFAULTS, ...sceneTuning(globalThis.canvas?.scene), ..._tuning };
 }
 
+/**
+ * The rule runs inside _constrainView, i.e. only when something moves the
+ * camera. A scene opens at its authored initial zoom (3x on some dungeons) and,
+ * until the party token is placed, nothing pans, so that zoom would stand.
+ * Settle it explicitly a moment after load, and again once LockView's 2 s
+ * initial-view window and Camera Authority's party refocus have passed.
+ */
+function settleDungeonZoom() {
+  try {
+    const c = globalThis.canvas;
+    if (!c?.ready || !dungeonZoomActive(c.scene)) return;
+    const want = applyZoomRule(c.stage.scale.x, dungeonZoomLimits(c.scene), isScanning());
+    if (Math.abs(want - c.stage.scale.x) < 1e-3) return;
+    c.pan({ x: c.stage.pivot.x, y: c.stage.pivot.y, scale: want });
+  } catch { /* canvas tearing down */ }
+}
+
 export function installDungeonZoomHooks() {
-  Hooks.on("canvasReady", invalidateDungeonStep);
+  Hooks.on("canvasReady", () => {
+    invalidateDungeonStep();
+    for (const ms of [600, 2600]) setTimeout(settleDungeonZoom, ms);
+  });
   Hooks.on("updateScene", (s) => { if (s?.id === _stepCache.sceneId) invalidateDungeonStep(); });
   for (const h of ["createTile", "updateTile", "deleteTile"]) {
     Hooks.on(h, (t) => { if (t?.parent?.id === _stepCache.sceneId) invalidateDungeonStep(); });
   }
+  // The window or the chat sidebar changing size changes the visible area the
+  // zoom is solved for.
+  let t = null;
+  const later = (ms) => { clearTimeout(t); t = setTimeout(settleDungeonZoom, ms); };
+  window.addEventListener("resize", () => later(250));
+  Hooks.on("collapseSidebar", () => later(50));
 }
 
 export const DungeonZoomApi = {
