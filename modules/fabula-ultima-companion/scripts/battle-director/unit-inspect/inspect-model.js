@@ -329,7 +329,7 @@ export function buildInspectModel(token, { side = null, asPlayer = false, capBes
       pct: s.pct, rate: s.pct == null ? "" : pctText(s.pct), amounts: s.pct == null ? "" : `Steal rate ${pctText(s.pct)}`,
       life: "", count: 0, gmOnly: gm && !!s.hidden,
     })),
-    empty: entry.stealEmpty == null ? "" : pctText(entry.stealEmpty),
+    empty: Number(entry.stealEmpty) > 0 ? pctText(entry.stealEmpty) : "",   // a 0% "Nothing" row is noise
     gmOnly: gm && !tiers.identity,
   } : null;
 
