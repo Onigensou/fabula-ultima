@@ -54,7 +54,7 @@ visited 3 camps, the Ancient Mural and the Nether Bridge. Two causes:
 | File | Change |
 |---|---|
 | `teleporter-system/tp-api.js` | `teleportToken` calls `DungeonPathing.FastTravel.markArrival(sceneId, tileId, x, y)` before moving the token (marks the landing tile visited on dungeon maps). |
-| `teleporter-system/tp-bootstrap.js` | New `TeleporterSystem.offerTeleport(tileDoc, tokenDoc)`: the same prompt + teleport a dungeon turn ending on the door runs, **without** firing `dungeonPathing.turnEnd` (no AE tick, no step counted). |
+| `teleporter-system/tp-bootstrap.js` | New `TeleporterSystem.offerTeleport(tileDoc, tokenDoc)`: the same prompt + teleport a dungeon turn ending on the door runs, **without** firing `dungeonPathing.turnEnd` (no AE tick, no step counted). New `TeleporterSystem.canOperate()` exposes the doors' operator rule; Fast Travel and the Travel button now use it, so a GM can drive them while no online player holds control. |
 | `dungeon-pathing-system/dp-links.js` | New read-only `LinkLayer.playerLinks(scene)`: a player's view of any scene's paths (same `lookOf` rules), for drawing off the canvas. |
 | `dungeon-pathing-system/dp-fog.js` | `DP.Fog` now also exposes `getFogMode` and `TEXTURES` (read-only). |
 | `dungeon-pathing-system/dp-tile-config.js` | Fast Travel checkbox replaced by the Auto / Always / Never select; rules come from `DP.FastTravel`. |
