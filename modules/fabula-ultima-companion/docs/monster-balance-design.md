@@ -306,6 +306,19 @@ Pressure     = EnemyActions × AvgDamage × HitRate / PartyHP
 > **Elites take one turn per round.** Only Champions act multiple times. Getting
 > `TurnsPerEnemy` wrong is the fastest way to a wrong Pressure number.
 
+### Early KOs are acceptable — targeting is diluted at the table
+
+A first KO in rounds 1–2 is **not** a fairness flag on its own (designer ruling,
+2026-11-09, from the Deva balance pass). Sims and hand estimates that pick targets
+from the four PCs overstate how often a squishy PC drops early, because at the table:
+
+- **This game has a lot of summoned actors** (phantasms, summons, decoys), and enemy
+  AI can pick them as targets. Every summon on the field spreads the incoming damage.
+- **Blanche's and Hina's Protect** redirect single-target attacks away from squishy PCs.
+
+Still flag the hard checks: one-shots from ≥90% HP, a KO before the PC ever acts,
+and a wipe in one round from ≥50% party HP.
+
 ### The AoE choice gate
 
 **AoE kills nothing.** Spreading damage means every monster survives to the end,
