@@ -134,14 +134,17 @@
         if (!isEnabledTeleporter(tile)) continue;
         const dest = tile.flags[MODULE_ID].teleporter.destination;
         if (!dest.sceneId || dest.sceneId === src.id) continue;
+        // known: the party has used / seen this door. Dungeon maps only offer
+        // known entrances; a fixed-landing map (exploration, camp) only needs
+        // to be visited itself — e.g. Eisendrache Kingdom, where the party
+        // started, before its Overworld door could ever be marked.
         const known = srcMode === "dungeon"
           ? !!DP.TileState?.isVisited?.(src, tile.id)
           : isSceneVisited(src);
-        if (!known) continue;
         const p = resolveDest(dest);
         if (!p) continue;
         const list = idx.get(p.scene.id) ?? [];
-        list.push({ x: p.x, y: p.y, tileId: p.tileId, fromSceneId: src.id });
+        list.push({ x: p.x, y: p.y, tileId: p.tileId, fromSceneId: src.id, known, srcTileId: tile.id });
         idx.set(p.scene.id, list);
       }
     }
@@ -170,13 +173,29 @@
       pts.push(p);
     };
 
-    if (sceneModeOf(scene) === "dungeon") {
+    if (DP.isWorldMap?.(scene)) {
+      // World map: ONE fixed landing point — the location node that leads
+      // into the area the party is in now (Valley Underground → "Valley of
+      // the Dragon - Entrance"), i.e. where they stood before entering it.
+      // Prefer a visited node; else any visited location; else none.
+      const hereRegion = regionOf(canvas?.scene);
+      const nodes = (scene.tiles ?? []).filter(t => isEnabledTeleporter(t));
+      const visited = (t) => !!DP.TileState?.isVisited?.(scene, t.id);
+      const intoHere = nodes.filter(t => {
+        const dest = game.scenes.get(t.flags[MODULE_ID].teleporter.destination?.sceneId);
+        return dest && hereRegion && regionOf(dest) === hereRegion;
+      });
+      const pick = intoHere.find(visited) ?? intoHere[0] ?? nodes.find(visited)
+        ?? (scene.tiles ?? []).find(t => FT?.isLandmark?.(scene, t) && visited(t));
+      if (pick) add({ ...tilePoint(scene, pick, region), label: shortName(FT?.landmarkLabel?.(scene, pick) ?? "World Map", region) });
+    } else if (sceneModeOf(scene) === "dungeon") {
       for (const tile of scene.tiles ?? []) {
         if (!FT?.isLandmark?.(scene, tile)) continue;
         if (!DP.TileState?.isVisited?.(scene, tile.id)) continue;
         add(tilePoint(scene, tile, region));
       }
       for (const a of arrivals) {
+        if (!a.known) continue;
         const tile = (a.tileId && scene.tiles?.get?.(a.tileId)) || FT?.tileAtPoint?.(scene, a.x, a.y);
         if (!tile) continue;
         const t = FT?.landmarkType?.(scene, tile);
@@ -185,17 +204,18 @@
       }
     } else {
       // Exploration / camp map: ONE fixed landing point, like a town — no
-      // choosing. Listed only once the party knows a way in: a door from a
-      // dungeon map (incl. the world map); a shop / inn reached from inside a
-      // town is not a travel point. Where to land, in order:
+      // choosing. The map itself being visited is enough; its landing spot
+      // comes from a door into it from a dungeon map (incl. the world map) —
+      // a shop / inn reached only from inside a town is not a travel point.
+      // Where to land, in order:
       //   1. the map's spawn point, if set;
       //   2. the entrance from the world map (Valley Entrance: "from Overworld");
-      //   3. the first known entrance.
-      const known = arrivals.filter(a => sceneModeOf(game.scenes.get(a.fromSceneId)) === "dungeon");
-      if (known.length) {
-        const fromWorld = known.find(a => DP.isWorldMap?.(game.scenes.get(a.fromSceneId)));
+      //   3. a door the party has used, else any door from a dungeon map.
+      const doors = arrivals.filter(a => sceneModeOf(game.scenes.get(a.fromSceneId)) === "dungeon");
+      if (doors.length) {
+        const fromWorld = doors.find(a => DP.isWorldMap?.(game.scenes.get(a.fromSceneId)));
         const sp  = general(scene).spawnPoint ? getSpawnPoint(scene) : null;
-        const pick = sp ?? fromWorld ?? known[0];
+        const pick = sp ?? fromWorld ?? doors.find(a => a.known) ?? doors[0];
         add({ tileId: null, x: pick.x, y: pick.y, isDoor: false, label: "Entrance" });
       } else if (general(scene).spawnPoint) {
         const sp = getSpawnPoint(scene);
@@ -224,16 +244,19 @@
       if (scene.id === excludeSceneId) continue;
       if (!isSceneVisited(scene) || isTownScene(scene)) continue;
       if (!REGION_MODES.has(sceneModeOf(scene))) continue;
-      const rid = regionOf(scene);
+      const world = !!DP.isWorldMap?.(scene);
+      // The world map is its own section ("World Map"), not its scene folder.
+      const rid = world ? "__worldmap__" : regionOf(scene);
       if (regionId !== undefined && rid !== regionId) continue;
-      const rName  = regionName(rid);
+      const rName  = world ? "World Map" : regionName(rid);
       const points = pointsForScene(scene, arrivals.get(scene.id) ?? [], rName);
       if (!points.length) continue;
-      maps.push({ scene, id: scene.id, name: shortName(getNavigationName(scene), rName), regionId: rid, regionName: rName, points });
+      maps.push({ scene, id: scene.id, name: shortName(getNavigationName(scene), rName), regionId: rid, regionName: rName, points, world });
     }
-    // The region the party is in comes first, then the rest A→Z.
+    // World map first, then the region the party is in, then the rest A→Z.
     const hereRegion = regionOf(canvas?.scene);
     maps.sort((a, b) =>
+      (b.world - a.world) ||
       ((b.regionId === hereRegion) - (a.regionId === hereRegion)) ||
       a.regionName.localeCompare(b.regionName) ||
       String(a.scene.name).localeCompare(String(b.scene.name), undefined, { numeric: true }));
@@ -857,8 +880,8 @@
     if (selectedId == null) return;
     const dest = dests[Number(selectedId)];
     if (!dest) return;
-    if (dest.map && sceneModeOf(dest.map.scene) !== "dungeon") {
-      // Exploration / camp map: fixed landing point, straight to the confirm.
+    if (dest.map && (dest.map.world || sceneModeOf(dest.map.scene) !== "dungeon")) {
+      // World map / exploration / camp map: fixed landing point, straight to the confirm.
       return confirmAndTravel(dest.sceneId, dest.map.points[0], dest.map.name);
     }
     if (dest.map) {
