@@ -56,9 +56,6 @@
   // the whole Fabula tab. Keep typed values inert in markup.
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
-  // Tile types that default to fast-travel eligible when the per-tile
-  // flag hasn't been explicitly set by the developer yet.
-  const FT_ELIGIBLE_TYPES = new Set(["camp", "event", "story", "final"]);
 
   // ── CSS ────────────────────────────────────────────────────────
   function ensureStyle() {
@@ -355,11 +352,10 @@
       const cgTriggerOn   = tileDoc?.getFlag(MODULE_ID, `${cgKey}.triggerOn`)   ?? "failure";
       const cgLabel       = tileDoc?.getFlag(MODULE_ID, `${cgKey}.label`)       ?? "";
 
-      // eligibleForFastTravel: explicit tile flag, or type-based default when unset
-      const rawEligible = tileDoc?.getFlag?.(MODULE_ID, `${pathingKey}.eligibleForFastTravel`);
-      const isEligible  = (rawEligible === null || rawEligible === undefined)
-        ? FT_ELIGIBLE_TYPES.has(initialType)
-        : (rawEligible === true || rawEligible === "true" || rawEligible === 1);
+      // Fast Travel: auto | always | never (rules live in dp-fast-travel.js)
+      const ftMode    = DP.FastTravel?.fastTravelMode?.(tileDoc) ?? "auto";
+      const ftAutoOn  = (scene && tileDoc) ? (DP.FastTravel?.isAutoLandmark?.(scene, tileDoc) ?? false) : false;
+      const ftOpt = (v, label) => `<option value="${v}" ${ftMode === v ? "selected" : ""}>${label}</option>`;
 
       // World-map Travel tile threat — blank = the scene's Threat Level
       const travelThreat = tileDoc?.getFlag?.(MODULE_ID, `${pathingKey}.travelThreat`) ?? "";
@@ -376,7 +372,7 @@
       const threatOpt = (v, label) =>
         `<option value="${v}" ${travelThreat === v ? "selected" : ""}>${label}</option>`;
 
-      dbg("Tile flags read", { persistFlag, skipConfirmFlag, initialType, currentType, visitedTile, rawEligible, isEligible, fogMode, isShroudRevealed });
+      dbg("Tile flags read", { persistFlag, skipConfirmFlag, initialType, currentType, visitedTile, ftMode, ftAutoOn, fogMode, isShroudRevealed });
 
       // Build shroud state section HTML separately to avoid deeply nested template literals
       const shroudStateHtml = (() => {
@@ -525,16 +521,17 @@
         <h3 style="margin: 10px 0 6px;"><i class="fas fa-map-marked-alt"></i> Fast Travel</h3>
 
         <div class="form-group">
-          <label>Eligible</label>
+          <label>Destination</label>
           <div class="form-fields">
-            <input type="checkbox"
-                   name="flags.${MODULE_ID}.${pathingKey}.eligibleForFastTravel"
-                   data-dtype="Boolean"
-                   ${isEligible ? "checked" : ""} />
+            <select name="flags.${MODULE_ID}.${pathingKey}.fastTravelMode">
+              ${ftOpt("auto",   `Auto (${ftAutoOn ? "yes" : "no"} for this tile)`)}
+              ${ftOpt("always", "Always")}
+              ${ftOpt("never",  "Never")}
+            </select>
           </div>
           <p class="notes">
-            When ON and the tile has been visited, it appears as a Fast Travel destination.
-            Defaults to <b>ON</b> for Camp, Event, Story, and Final tiles.
+            A visited destination appears in Fast Travel. <b>Auto</b>: Camp, Event, Story,
+            Final Story, and any tile with a working teleporter (door / exit / warp).
           </p>
         </div>
 

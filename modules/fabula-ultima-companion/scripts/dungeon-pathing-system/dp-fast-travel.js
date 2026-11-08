@@ -2,7 +2,9 @@
 // Dungeon Pathing System — Fast Travel Mode
 //
 // Lets the Main Controller teleport the party token to any previously-visited
-// landmark tile (Camp, Event, Story, Final Story).
+// landmark tile: Camp, Event, Story, Final Story, and any door / exit / warp
+// (enabled teleporter). Per-tile override: fastTravelMode auto|always|never.
+// Landing on a door offers that door's own "Enter <place>?" prompt.
 //
 // Flow:
 //   1. Controller clicks 🦅  → enter() checks controller status + visited nodes
@@ -366,62 +368,91 @@
     return { token, pickupGuardId };
   }
 
+  // A tile with a working teleporter: a door / exit / warp that leads somewhere.
   function isLocationNode(tileDoc) {
-    const f = tileDoc.getFlag?.(MODULE_ID, "teleporter");
-    return f?.enabled === true || f?.enabled === "true";
+    const f = tileDoc?.getFlag?.(MODULE_ID, "teleporter");
+    return (f?.enabled === true || f?.enabled === "true") && !!f?.destination;
   }
 
+  // ── Landmark rules (shared with Tile Config) ─────────────────────────────────
+  // Per-tile setting `fastTravelMode`: "auto" (default) | "always" | "never".
+  // Legacy boolean `eligibleForFastTravel`: true still means Always, but false
+  // is IGNORED — the tile presets stamped false on every tile they placed, so it
+  // never recorded a GM's choice (it hid every camp of preset-built dungeons).
+  const FT_MODES = new Set(["auto", "always", "never"]);
+
+  function fastTravelMode(tileDoc) {
+    const key  = DP.PATHING_ROOT_KEY ?? "dungeonPathing";
+    const mode = tileDoc?.getFlag?.(MODULE_ID, `${key}.fastTravelMode`);
+    if (FT_MODES.has(mode)) return mode;
+    const legacy = tileDoc?.getFlag?.(MODULE_ID, `${key}.eligibleForFastTravel`);
+    return (legacy === true || legacy === "true") ? "always" : "auto";
+  }
+
+  // The tile's type as built (a looted Camp is still a Camp).
+  function landmarkType(scene, tileDoc) {
+    let t = DP.TileState?.getInitialType?.(scene, tileDoc.id) ?? "";
+    if (!t || t === "unknown") {
+      t = DP.TileState?.resolveType?.(tileDoc) ?? "";
+    }
+    return t || "";
+  }
+
+  // Auto rule: Camp, Event, Story, Final Story, and any tile that leads
+  // somewhere (door, exit, warp — an enabled teleporter).
+  function isAutoLandmark(scene, tileDoc) {
+    return FT_TYPES.has(landmarkType(scene, tileDoc)) || isLocationNode(tileDoc);
+  }
+
+  /** Is this tile a Fast Travel point (ignoring visited)? */
+  function isLandmark(scene, tileDoc) {
+    const mode = fastTravelMode(tileDoc);
+    if (mode === "never")  return false;
+    if (mode === "always") return true;
+    return isAutoLandmark(scene, tileDoc);
+  }
+
+  const TYPE_LABEL = { camp: "Camp", event: "Event", story: "Story", final: "Final Story" };
+
+  // Name players see: where a door leads (its prompt name / destination map),
+  // else the tile's type ("Camp").
+  function landmarkLabel(scene, tileDoc) {
+    if (isLocationNode(tileDoc)) {
+      const destId = tileDoc.getFlag(MODULE_ID, "teleporter")?.destination?.sceneId;
+      const sameMap = !destId || destId === scene?.id;
+      const custom  = tileDoc.getFlag(MODULE_ID, "teleporter")?.promptName?.trim?.();
+      if (custom) return custom;
+      if (!sameMap) return DP.locationName?.(tileDoc) || "Exit";
+      return "Warp Door";
+    }
+    const t = landmarkType(scene, tileDoc);
+    return TYPE_LABEL[t] || t || "Landmark";
+  }
 
   // ── Build eligible node list ─────────────────────────────────────────────────
-  // Scans all tiles in the current scene for FT-eligible + visited tiles.
-  // Eligibility is determined by the per-tile flag first, falling back to the
-  // hardcoded FT_TYPES set for tiles that haven't been configured yet.
-  function resolveEligibleNodes() {
+  // Every visited landmark on this map except the tile the party stands on.
+  // With { explain: true } also returns why each candidate was skipped (GM log).
+  function resolveEligibleNodes({ explain = false } = {}) {
     const scene = canvas?.scene;
-    if (!scene) return [];
+    if (!scene) return explain ? { nodes: [], skipped: [] } : [];
 
-    const pathingKey = DP.PATHING_ROOT_KEY ?? "dungeonPathing";
-    const tileDocs   = scene.tiles?.contents ?? [];
-    const result     = [];
-    const worldMap   = DP.isWorldMap?.(scene) ?? false;
+    const tileDocs = scene.tiles?.contents ?? [];
+    const result   = [];
+    const skipped  = [];
+    const hereId   = globalThis.__ONI_DUNGEON_PATHING__?.state?.currentNode?.nodeId ?? null;
 
     for (const tileDoc of tileDocs) {
       const tileId = tileDoc.id;
+      if (!isLandmark(scene, tileDoc)) continue;
 
-      // Must have been visited first
-      const isVisited = DP.TileState?.isVisited(scene, tileId) ?? false;
-      if (!isVisited) continue;
-
-      // Read explicit eligibleForFastTravel flag; fall back to type-based default
-      const rawEligible = tileDoc.getFlag?.(MODULE_ID, `${pathingKey}.eligibleForFastTravel`);
-      let isEligible;
-      if (rawEligible === null || rawEligible === undefined) {
-        // Flag not yet set — infer from tile type (backward compatibility)
-        let initialType = DP.TileState?.getInitialType(scene, tileId) ?? "";
-        if (!initialType && tileDoc.name) {
-          const low = String(tileDoc.name).toLowerCase();
-          if      (low.includes("camp"))  initialType = "camp";
-          else if (low.includes("event")) initialType = "event";
-          else if (low.includes("final")) initialType = "final";
-          else if (low.includes("story")) initialType = "story";
-        }
-        isEligible = FT_TYPES.has(initialType)
-          // World map: every location node (a tile with an enabled teleporter —
-          // a town or dungeon entrance) is a landing spot once visited.
-          || (worldMap && isLocationNode(tileDoc));
-      } else {
-        isEligible = !!rawEligible;
+      const label = landmarkLabel(scene, tileDoc);
+      if (!(DP.TileState?.isVisited(scene, tileId) ?? false)) {
+        if (explain) skipped.push({ tileId, label, reason: "not visited yet" });
+        continue;
       }
-      if (!isEligible) continue;
-
-      // Read type for display label
-      let initialType = DP.TileState?.getInitialType(scene, tileId) ?? "";
-      if (!initialType && tileDoc.name) {
-        const low = String(tileDoc.name).toLowerCase();
-        if      (low.includes("camp"))  initialType = "camp";
-        else if (low.includes("event")) initialType = "event";
-        else if (low.includes("final")) initialType = "final";
-        else if (low.includes("story")) initialType = "story";
+      if (tileId === hereId) {
+        if (explain) skipped.push({ tileId, label, reason: "party is standing here" });
+        continue;
       }
 
       const x = Number(tileDoc.x ?? 0);
@@ -431,14 +462,15 @@
 
       result.push({
         nodeId:   tileId,
-        name:     (worldMap && isLocationNode(tileDoc) && DP.locationName(tileDoc)) || tileDoc.name || initialType,
-        tileType: initialType,
+        name:     label,
+        tileType: landmarkType(scene, tileDoc),
+        isDoor:   isLocationNode(tileDoc),
         center:   { x: x + w / 2, y: y + h / 2 },
         bounds:   { left: x, right: x + w, top: y, bottom: y + h },
       });
     }
 
-    return result;
+    return explain ? { nodes: result, skipped } : result;
   }
 
   // ── PIXI sprites on eligible tiles ───────────────────────────────────────────
@@ -734,10 +766,21 @@
       try { if (!token.destroyed) showMesh(token); } catch {}
       _traveling = false;
       exit({ silent: true }); // land sound already played; suppress the close sfx
-      setTimeout(() => {
-        globalThis.__ONI_DUNGEON_PATHING__?.rebuild?.().catch(() => {});
+      setTimeout(async () => {
+        await globalThis.__ONI_DUNGEON_PATHING__?.rebuild?.().catch(() => {});
+        // Landed on a door / exit: offer its own "Enter <place>?" prompt, so
+        // travelling to an exit is one step from going through it.
+        if (node.isDoor) offerDoorAfterLanding(node).catch(e => console.warn(TAG, "door offer:", e));
       }, 250);
     }
+  }
+
+  async function offerDoorAfterLanding(node) {
+    const scene   = canvas?.scene;
+    const tileDoc = scene?.tiles?.get?.(node.nodeId);
+    const tokenDoc = globalThis.__ONI_DUNGEON_PATHING__?.state?.partyToken?.document ?? null;
+    if (!tileDoc || !tokenDoc) return;
+    await globalThis.TeleporterSystem?.offerTeleport?.(tileDoc, tokenDoc);
   }
 
   // ── ESC key ───────────────────────────────────────────────────────────────────
@@ -783,10 +826,12 @@
       return;
     }
 
-    _eligible = resolveEligibleNodes();
+    const { nodes, skipped } = resolveEligibleNodes({ explain: true });
+    _eligible = nodes;
     console.debug(TAG, "enter(): eligible nodes=", _eligible.length, _eligible.map(n => n.name));
     if (!_eligible.length) {
-      ui.notifications?.info?.("No visited landmarks to travel to. Explore the dungeon first!");
+      ui.notifications?.info?.("No fast travel points yet. Visit a Camp or a map exit first!");
+      if (game.user?.isGM) console.info(TAG, "No eligible landmarks on this map. Skipped:", skipped);
       return;
     }
 
@@ -847,6 +892,14 @@
   // ── Public API ────────────────────────────────────────────────────────────────
   DP.FastTravel = {
     get active() { return _active; },
+    /** Landmark rules — shared with Tile Config and multi-map travel. */
+    fastTravelMode,
+    isLandmark,
+    isAutoLandmark,
+    landmarkLabel,
+    landmarkType,
+    isLocationNode,
+    resolveEligibleNodes,
     enter,
     exit,
     toggle,

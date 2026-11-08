@@ -780,6 +780,20 @@
     }
   }
 
+  // Fast Travel landed the party on this door: run the same prompt + teleport
+  // a dungeon turn ending here would, without firing turnEnd (that also ticks
+  // party effects and counts a step).
+  TP.offerTeleport = async (tileDoc, tokenDoc) => {
+    if (getSceneMode() !== "dungeon") return;
+    if (!tileDoc || !tokenDoc || !isTeleporterEnabled(tileDoc)) return;
+    const flags  = getFlags(tileDoc);
+    const toTile = flags?.destination?.type === "tile";
+    await triggerTeleporter(tileDoc, tokenDoc, {
+      applyDpOffset: toTile,
+      forcedNodeId:  toTile ? (flags.destination.tileId ?? null) : null,
+    });
+  };
+
   // ── DUNGEON MODE — hook on turnEnd ────────────────────────────────────────────
 
   Hooks.on("dungeonPathing.turnEnd", async ({ tokenDoc, node } = {}) => {
