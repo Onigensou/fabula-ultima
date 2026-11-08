@@ -7,7 +7,7 @@ reporter: onigensou
 assignee:
 component: several (see each item)
 introduced_in:
-fixed_in:
+fixed_in: 1.0.564-1.0.568 (16 of 17; item 4 still open)
 ---
 
 # Bugs and to-dos from the 2026-11-07 session
@@ -57,8 +57,8 @@ traced in code.
   The stance effect (for example Throwing Stance) is applied, but nobody could see it. This answers the dossier's
   open question "is the stance readable at the table" with a no. Also, a GM-applied **Weak** (Rakshasa is RS to
   Weak) disappeared shortly after it was applied. Check whether Form Shift or something else removes it.
-- [ ] **10. Keren's Life Transference formula may be wrong.** The player is **not sure**, so verify the formula
-  against the skill text first.
+- [x] **10. Keren's Life Transference formula may be wrong.** The player is **not sure**, so verify the formula
+  against the skill text first. Checked: no bug (see Notes).
 - [x] **11. Study no longer shows the enemy's stealable items. This is a regression.**
   Check the Study card's read of steal data, and whether the 11-06 change that made Valley gacha items unstealable
   (`e9aed725`) touched the list it reads.
@@ -66,8 +66,8 @@ traced in code.
 ## Items and equipment
 
 - [x] **12. Potion Rain does nothing.** No MP was restored. The GM gave the MP by hand.
-- [ ] **13. Maid Cap plus Zarg's heroic skill should make Create Elixir cost 1 IP. It charged 2.**
-  Check how Create cost reductions stack.
+- [x] **13. Maid Cap plus Zarg's heroic skill should make Create Elixir cost 1 IP. It charged 2.**
+  Check how Create cost reductions stack. Checked: no bug, the Maid Cap wasn't equipped (see Notes).
 - [x] **14. Glacial Staff's spell isn't linked (data gap).**
   The description says "You may cast Icicle Lance", but the staff has no linked `_skill`, so equipping it adds
   nothing to the Spell menu. The world Glacial Staff (`FRwmrAhwe8xSLEXZ`) is missing the link. Zarg's copy was
@@ -116,3 +116,8 @@ traced in code.
 - 2026-11-08 onigensou (Claude): #11: both of us built "Can be stolen" in the same spot. The merge keeps my version (9e9f9bdd, 58a3aab7) because the host asked for the steal rate: icon, name, base rate %, a "Nothing" row for the (Empty) share (hidden at 0%), and the item text in the keyword hover instead of inline. Your `steal` line in inspect-model and `stealSection` in inspect-render were replaced by it. Gated at Identity 7+ the same way. Base odds only (Andvaranaut's shift depends on the stealer).
 - 2026-11-08 onigensou (Claude): not on the list. Holding Alt in battle no longer brings back Foundry's icons and bars (562c46e7). Battle tokens hide them from spawn, so the entrance no longer flashes them (562c46e7). Spectator Alt-to-inspect is hardened (85a7d9a0): Alt falls back to the sprite under the pointer, and a client that missed the GM's "settled" broadcast asks again (new `resyncBattlePhase` in director-player-hud.js). sarunphat: these touch your Battle Inspect and player HUD files.
 - 2026-11-08 onigensou (Claude): world, scenes only (bdb4c11f): 45 loot tiles looted under the old roulette (art blanked, `trTileConsumed` set, state still loot) were marked spent the way clearTile does now. Hideout_Map003 21, AncientTemple_Map008 7, AncientTemple_Map009 3, Wyrmwood 14. Script: `tools/safe-edit/bin/_mark-legacy-looted-tiles-spent.js`.
+- 2026-11-08 sarunphat (Claude), where the list stands. Last pass shipped as `6ab4d75b` (v1.0.568, code) and `09bc8242` (world: the Paladin Armor AE and the six gear-spell links). 10 and 13 are ticked as checked with no bug (details in the "rest of the list" note above). Only **4** is open; its cause is still unknown, and the client-health "notice" log will show it next time. Follow-ups that are not list items:
+  - Nightmare Scepter has no spell linked. The engine needs damage equal to 15% of the target's max HP, and damage that doesn't wake a sleeping target.
+  - Hex and Death count as "aid", so Protect and other "an enemy harms an ally" reactions don't fire against them. Changing that rule changes 19 shipped skills, so it needs its own pass.
+  - Roselie's Hypno Pendulum copy has no Sleep linked (the world item does).
+  - Not tested yet: Paladin Armor on a player's own screen in a two-client battle, which creature the spell locks onto when one Protect covers several allies, Death refusing an Undead or Champion target, and Glacies Alta's MP cost (the harness reports no cost).
