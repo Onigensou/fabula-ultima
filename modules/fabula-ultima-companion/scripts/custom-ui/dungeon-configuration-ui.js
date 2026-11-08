@@ -50,6 +50,7 @@
   const IS_OVERWORLD_KEY   = "isOverworld";         // boolean: scene is an overworld map
   const IS_TOWN_KEY        = "isTown";              // boolean: scene is a town map
   const IS_DUNGEON_KEY     = "isDungeon";           // boolean: scene is a dungeon map
+  const NO_TRAVEL_KEY      = "noTravelDestination"; // boolean: never listed in the Travel dialog
   const SCENE_VISITED_KEY       = "sceneVisited";         // boolean: set true when scene activated once
   const SPAWN_POINT_KEY         = "spawnPoint";           // { x, y } — manual spawn for scene travel
   const NAV_NAME_KEY            = "navigationName";       // string: display name in Travel dialog
@@ -984,6 +985,14 @@
           </div>
 
           <div class="form-group">
+            <label>Not a Travel Destination</label>
+            <div class="form-fields">
+              <input type="checkbox" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${NO_TRAVEL_KEY}" data-dtype="Boolean" />
+            </div>
+            <p class="notes">Never listed in the Travel dialog, even once visited (joke, secret or one-off maps).</p>
+          </div>
+
+          <div class="form-group">
             <label>Navigation Name</label>
             <div class="form-fields">
               <input type="text" name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${NAV_NAME_KEY}"
@@ -1390,6 +1399,8 @@
       if (overworldCb) overworldCb.checked = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${IS_OVERWORLD_KEY}`, false), false);
       if (townCb)      townCb.checked      = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${IS_TOWN_KEY}`,      false), false);
       if (dungeonCb)   dungeonCb.checked   = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${IS_DUNGEON_KEY}`,   false), false);
+      const noTravelCb  = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${NO_TRAVEL_KEY}"]`);
+      if (noTravelCb)  noTravelCb.checked  = normalizeBoolean(safeGet(fabulaData, `${GENERAL_KEY}.${NO_TRAVEL_KEY}`, false), false);
 
       // Navigation Name prefill
       const navNameInput = generalPanel?.querySelector(`input[name="flags.${MODULE_ID}.${FABULA_ROOT_KEY}.${GENERAL_KEY}.${NAV_NAME_KEY}"]`);

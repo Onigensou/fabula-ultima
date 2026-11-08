@@ -97,6 +97,8 @@
 
   function sceneModeOf(scene) { return general(scene).sceneMode ?? null; }
   function isTownScene(scene) { const v = general(scene).isTown; return v === true || v === "true"; }
+  // Scene Config "Not a Travel Destination" (joke / secret / one-off maps, e.g. Misty Field).
+  function isNoTravel(scene) { const v = general(scene).noTravelDestination; return v === true || v === "true"; }
   function regionOf(scene) { return scene?.folder?.id ?? scene?.folder ?? null; }
   function regionName(id) { return (id && game.folders?.get(id)?.name) || "Other Places"; }
 
@@ -242,7 +244,7 @@
     const maps = [];
     for (const scene of game.scenes ?? []) {
       if (scene.id === excludeSceneId) continue;
-      if (!isSceneVisited(scene) || isTownScene(scene)) continue;
+      if (!isSceneVisited(scene) || isTownScene(scene) || isNoTravel(scene)) continue;
       if (!REGION_MODES.has(sceneModeOf(scene))) continue;
       const world = !!DP.isWorldMap?.(scene);
       // The world map is its own section ("World Map"), not its scene folder.
@@ -251,14 +253,18 @@
       const rName  = world ? "World Map" : regionName(rid);
       const points = pointsForScene(scene, arrivals.get(scene.id) ?? [], rName);
       if (!points.length) continue;
-      maps.push({ scene, id: scene.id, name: shortName(getNavigationName(scene), rName), regionId: rid, regionName: rName, points, world });
+      // dungeon = the party chooses where to land (map preview); place = fixed landing.
+      const kind = (!world && sceneModeOf(scene) === "dungeon") ? "dungeon" : "place";
+      maps.push({ scene, id: scene.id, name: shortName(getNavigationName(scene), rName), regionId: rid, regionName: rName, points, world, kind });
     }
-    // World map first, then the region the party is in, then the rest A→Z.
+    // World map first, then the region the party is in, then the rest A→Z;
+    // inside a region, dungeon maps before places.
     const hereRegion = regionOf(canvas?.scene);
     maps.sort((a, b) =>
       (b.world - a.world) ||
       ((b.regionId === hereRegion) - (a.regionId === hereRegion)) ||
       a.regionName.localeCompare(b.regionName) ||
+      ((a.kind === "dungeon" ? 0 : 1) - (b.kind === "dungeon" ? 0 : 1)) ||
       String(a.scene.name).localeCompare(String(b.scene.name), undefined, { numeric: true }));
     return maps;
   }
@@ -268,7 +274,7 @@
     const towns = [];
     for (const scene of game.scenes ?? []) {
       if (scene.id === current?.id) continue;
-      if (!isSceneVisited(scene) || !isTownScene(scene)) continue;
+      if (!isSceneVisited(scene) || !isTownScene(scene) || isNoTravel(scene)) continue;
       towns.push({ id: scene.id, name: scene.name, scene, type: "town" });
     }
     return { towns, maps: getRegionMaps() };
@@ -336,6 +342,17 @@
   margin: 8px 0 7px;
 }
 .oni-travel-category:first-child { margin-top: 2px; }
+/* Dungeon / Places sub-group inside a region */
+.oni-travel-sub {
+  font-family: serif;
+  font-size: 11px;
+  font-weight: 700;
+  font-style: italic;
+  color: #7a3c12;
+  letter-spacing: 1px;
+  padding: 2px 4px 4px 10px;
+  margin: 2px 0 4px;
+}
 
 /* Destination panel buttons */
 .oni-travel-dest {
@@ -775,11 +792,19 @@
       }
     }
 
-    let lastRegion = null;
+    // Each region: "Dungeon" maps (choose where to land on the preview) first,
+    // then "Places" (fixed landing). The world map is one section by itself.
+    let lastRegion = null, lastKind = null;
     for (const m of maps) {
       if (m.regionId !== lastRegion) {
-        lastRegion = m.regionId;
+        lastRegion = m.regionId; lastKind = null;
         content += `<div class="oni-travel-category"><i class="fas fa-map"></i> ${esc(m.regionName)}</div>`;
+      }
+      if (!m.world && m.kind !== lastKind) {
+        lastKind = m.kind;
+        content += m.kind === "dungeon"
+          ? `<div class="oni-travel-sub"><i class="fas fa-dungeon"></i> Dungeon</div>`
+          : `<div class="oni-travel-sub"><i class="fas fa-location-dot"></i> Places</div>`;
       }
       // Same panel button as before, one per map; the landing point is
       // chosen on the map preview that opens next.
@@ -880,7 +905,7 @@
     if (selectedId == null) return;
     const dest = dests[Number(selectedId)];
     if (!dest) return;
-    if (dest.map && (dest.map.world || sceneModeOf(dest.map.scene) !== "dungeon")) {
+    if (dest.map && dest.map.kind !== "dungeon") {
       // World map / exploration / camp map: fixed landing point, straight to the confirm.
       return confirmAndTravel(dest.sceneId, dest.map.points[0], dest.map.name);
     }
