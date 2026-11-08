@@ -104,9 +104,31 @@ function actionsPane(m, ui) {
   return `<div class="fui-filters">${chips}<span class="fui-seen">${esc(m.seenText)} seen</span></div>${groups}`;
 }
 
+// What it carries (Identity 7+), base steal odds. Rows hover the keyword card
+// like effect rows (data-eff "steal:N"). Lives in the scrolling pane, so the
+// card never grows (FRAME_H rule).
+function stealRow(s) {
+  return `<div class="fui-eff fui-steal${s.gmOnly ? " is-gmonly" : ""}" data-eff="${esc(s.id)}">
+    <img class="fui-ico" src="${esc(s.img)}" alt="" onerror="this.style.visibility='hidden'">
+    <div class="fui-en"><b>${esc(s.name)}</b>${s.rate ? `<span class="fui-chip tone-neutral">${esc(s.rate)}</span>` : ""}</div>
+  </div>`;
+}
+
+function stealBlock(m) {
+  if (!m.enemy) return "";
+  if (!m.steal) return `<div class="fui-label">Can be stolen</div><div class="fui-lock"><i class="fas fa-lock"></i><span>Study 7+ reveals what it carries.</span></div>`;
+  const rows = m.steal.rows;
+  if (!rows.length) return `<div class="fui-label">Can be stolen</div><div class="fui-note">Nothing worth stealing.</div>`;
+  const none = m.steal.empty ? `<div class="fui-eff fui-steal is-nothing${m.steal.gmOnly ? " is-gmonly" : ""}">
+    <span class="fui-ico fui-noico"><i class="fas fa-ban"></i></span>
+    <div class="fui-en"><b>Nothing</b><span class="fui-chip tone-neutral">${esc(m.steal.empty)}</span></div></div>` : "";
+  return `<div class="fui-label">Can be stolen</div><div class="fui-grid">${rows.map(stealRow).join("")}${none}</div>`;
+}
+
 function notesPane(m) {
   const hint = safeHtml(m.hint);
   return `${plain(hint) ? `<div class="fui-label fui-label-first">Description</div><div class="fui-hint">${hint}</div>` : `<div class="fui-note fui-note-top">Study 7+ to read what the party knows about this creature.</div>`}
+    ${stealBlock(m)}
     <div class="fui-label">Study progress</div>
     <div class="fui-steps">${m.steps.map((s) => `<div class="fui-step${s.done ? " done" : ""}"><b>${esc(s.n)}</b><span>${esc(s.text)}</span><em>${s.done ? "Known" : "—"}</em></div>`).join("")}</div>`;
 }
@@ -394,6 +416,9 @@ body.fu-inspecting .fu-inspect-dim{filter:brightness(.42) saturate(.5);transitio
 #${ROOT_ID} .fui-eff.is-inactive{opacity:.55}
 #${ROOT_ID} .fui-ico{width:28px;height:28px;border-radius:6px;background:#2a2118;object-fit:cover;box-shadow:0 0 0 1px rgba(122,106,85,.6)}
 #${ROOT_ID} .fui-effbody{min-width:0}
+#${ROOT_ID} .fui-steal{min-height:36px}
+#${ROOT_ID} .fui-steal.is-nothing{cursor:default;opacity:.7}
+#${ROOT_ID} .fui-noico{display:flex;align-items:center;justify-content:center;color:#8a7d6a;background:rgba(59,42,25,.08);box-shadow:none}
 #${ROOT_ID} .fui-en{display:flex;align-items:center;gap:6px;min-width:0}
 #${ROOT_ID} .fui-en b{font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 #${ROOT_ID} .fui-el{font-size:11px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

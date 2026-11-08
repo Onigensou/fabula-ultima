@@ -319,6 +319,20 @@ export function buildInspectModel(token, { side = null, asPlayer = false, capBes
   }) : [];
   const seen = actions.filter((a) => a.known).length;
 
+  // ── steal (enemies, Identity 7+; base table odds) ──
+  // Shaped like an effect row so the Notes pane's rows reuse the keyword hover
+  // card (id "steal:N" → onEffectHover). null = locked or no Encyclopedia entry.
+  const pctText = (n) => `${Math.round(Number(n) * 10) / 10}%`;
+  const steal = enemy && Array.isArray(entry?.steal) ? {
+    rows: entry.steal.map((s, i) => ({
+      id: `steal:${i}`, name: s.name, img: s.img, desc: s.description ?? "", kicker: "Stealable",
+      pct: s.pct, rate: s.pct == null ? "" : pctText(s.pct), amounts: s.pct == null ? "" : `Steal rate ${pctText(s.pct)}`,
+      life: "", count: 0, gmOnly: gm && !!s.hidden,
+    })),
+    empty: entry.stealEmpty == null ? "" : pctText(entry.stealEmpty),
+    gmOnly: gm && !tiers.identity,
+  } : null;
+
   return {
     tokenId: token.id, tokenUuid: token.document?.uuid ?? null, actorUuid: actor.uuid,
     // Champions carry a ⭐️ in their authored name; the crest does that job here.
@@ -334,6 +348,7 @@ export function buildInspectModel(token, { side = null, asPlayer = false, capBes
     affs, affNote, conds,
     groups,
     actions, seenText: `${seen} of ${actions.length}`,
+    steal,
     hint: enemy ? (idOK ? (entry?.identity?.description ?? "") : "") : "",
     steps: [[7, "Identity: level, rank, turns, HP, DEF, traits"], [8, "Attribute dice"], [13, "Affinities, weapon efficiency, immunities, passives"]]
       .map(([n, text], i) => ({ n: `${n}+`, text, done: tierN > i })),

@@ -825,7 +825,7 @@ function onEffectHover(ev) {
   const id = ev.target?.closest?.("[data-eff]")?.dataset.eff ?? null;
   if (!id || !S.model) { if (_tipFor) hideEffectTip(); return; }
   if (id === _tipFor) { moveKeywordHover(ev.clientX, ev.clientY); return; }
-  const row = Object.values(S.model.groups).flat().find((e) => e.id === id);
+  const row = [...Object.values(S.model.groups).flat(), ...(S.model.steal?.rows ?? [])].find((e) => e.id === id);
   if (!row) { hideEffectTip(); return; }
   _tipFor = id;
   showKeywordHover(effectTipEntry(row), { x: ev.clientX, y: ev.clientY, scale: hudScale() });

@@ -470,6 +470,27 @@
   }
 
   /**
+   * Base steal odds from `steal_percentage_table` (rows matched to the loot
+   * catalog by NAME, see roll_loot_table in skill-effects.js). Base only: the
+   * caster-side Andvaranaut shift depends on who steals. Returns
+   * { byName: Map<name, pct>, empty: pct } or null when the table is empty.
+   */
+  function readStealRates(p) {
+    const rows = objectToList(p?.steal_percentage_table).filter((r) => r && r.$deleted !== true && r.$deleted !== "true");
+    if (!rows.length) return null;
+    const byName = new Map();
+    let empty = 0;
+    for (const r of rows) {
+      const name = String(r.loot_id ?? "").trim();
+      const pct = Number(r.loot_percentage) || 0;
+      if (!name) continue;
+      if (isEmptyLootEntry({ name })) { empty += pct; continue; }
+      byName.set(name, (byName.get(name) ?? 0) + pct);
+    }
+    return { byName, empty };
+  }
+
+  /**
    * Resolve an entry from `attack_list` / `skill_active_list` to the embedded
    * Item document. The entry's `.id` field is the literal CSB template string
    * "${item.id}" until expanded, so we ignore it and use the uuid suffix.
@@ -1554,6 +1575,7 @@
     const show = (t) => peek || tiers[t];
     const by = getFlag(page, "bestResultBy");
     const tier = tiers.details ? "Details" : tiers.stats ? "Stats" : tiers.identity ? "Identity" : "Unstudied";
+    const stealRates = readStealRates(p);
     const affinities = [];
     for (let i = 1; i <= 9; i++) affinities.push({ el: AFFINITY_NAME[i], code: String(p[`affinity_${i}`] ?? "") || "NA" });
     // Per-element knowledge, ALWAYS present: Details reveals every element, a hit
@@ -1600,8 +1622,12 @@
       } : null,
       steal: show("identity") ? objectToList(p.stealable_loot ?? p.stealable_equipment ?? {}).filter((e) => !isEmptyLootEntry(e)).map((e) => {
         const embedded = actor?.items?.get?.(String(e?.uuid ?? "").split(".").pop());
-        return { name: String(e?.name ?? "?"), img: embedded?.img || STEAL_ICON, description: sanitizeRichHtml(e?.loot_description ?? e?.description ?? "") };
+        const name = String(e?.name ?? "?");
+        return { name, img: embedded?.img || STEAL_ICON, description: sanitizeRichHtml(e?.loot_description ?? e?.description ?? ""),
+          pct: stealRates?.byName.get(name.trim()) ?? null, hidden: !tiers.identity };
       }) : null,
+      // Base odds of "(Empty)" — stole nothing. null when the table has no rows.
+      stealEmpty: show("identity") ? (stealRates?.empty ?? null) : null,
       actions: actor ? actionData(actor, p, getWitnessedActions(page), tiers.details, peek) : [],
       affinityRow,
       learnedAffinities: Array.from(learned),
