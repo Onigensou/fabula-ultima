@@ -106,7 +106,10 @@
   function shortName(name, region) {
     const n = String(name ?? "").trim();
     const r = String(region ?? "").trim();
-    if (r && n.toLowerCase().startsWith(r.toLowerCase() + " - ")) return n.slice(r.length + 3).trim() || n;
+    // "The Wyrmwood" region also strips a plain "Wyrmwood - " prefix.
+    for (const pre of [r, r.replace(/^the\s+/i, "")]) {
+      if (pre && n.toLowerCase().startsWith(pre.toLowerCase() + " - ")) return n.slice(pre.length + 3).trim() || n;
+    }
     return n;
   }
 
@@ -342,6 +345,35 @@
   margin: 8px 0 7px;
 }
 .oni-travel-category:first-child { margin-top: 2px; }
+/* Bookmark tabs: Dungeons | Towns & Open Areas */
+.oni-travel-tabs {
+  display: flex;
+  gap: 4px;
+  margin: -2px 0 6px;
+  border-bottom: 2px solid #8b5a2b;
+}
+.oni-travel-tab {
+  flex: 1;
+  height: 32px;
+  margin: 0;
+  border: 2px solid #8b5a2b;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  background: linear-gradient(180deg, rgba(200,170,120,0.55) 0%, rgba(170,135,85,0.55) 100%);
+  font-family: serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #6b3410;
+  cursor: pointer;
+  line-height: 1;
+}
+.oni-travel-tab:hover:not(:disabled) { filter: brightness(1.08); }
+.oni-travel-tab.active {
+  background: linear-gradient(180deg, #fbf0d2 0%, #f0e2bb 100%);
+  color: #3d1f00;
+  box-shadow: 0 -2px 6px rgba(0,0,0,0.15);
+}
+.oni-travel-tab:disabled { opacity: 0.45; cursor: default; }
 /* Dungeon / Places sub-group inside a region */
 .oni-travel-sub {
   font-family: serif;
@@ -440,7 +472,7 @@
 }
 
 /* Long lists scroll instead of running off screen */
-.oni-travel-list { max-height: 62vh; overflow-y: auto; padding-right: 4px !important; }
+.oni-travel-list { max-height: 62vh; overflow-y: auto; overflow-x: hidden; padding-right: 4px !important; }
     `;
     document.head.appendChild(s);
   }
@@ -449,21 +481,40 @@
   // The same destination list, display only, with the controller's focus.
   const ST_MIRROR_KIND = "dp.sceneTravel";
 
+  // Show one bookmark tab's list; returns that list's destination buttons.
+  function showTab(container, tab) {
+    container.querySelectorAll(".oni-travel-tab").forEach(t => t.classList.toggle("active", t.dataset.tab === tab));
+    let btns = [];
+    container.querySelectorAll(".oni-travel-list[data-panel]").forEach(p => {
+      const on = p.dataset.panel === tab;
+      p.style.display = on ? "" : "none";
+      if (on) btns = Array.from(p.querySelectorAll(".oni-travel-dest"));
+    });
+    return btns;
+  }
+
   function registerWatcher() {
     globalThis.FUCompanion?.api?.MirrorPrompt?.register?.(ST_MIRROR_KIND, {
       show(ctx) {
         if (!ctx.payload?.content) return null;
         injectTravelStyles();
-        let btns = [];
+        let root = null, btns = [];
         const setFocus = (idx) => btns.forEach((b, i) => b.classList.toggle("oni-travel-focused", i === idx));
+        const apply = (state) => {
+          if (!root) return;
+          if (state?.tab) { btns = showTab(root, state.tab); try { d.setPosition({ height: "auto" }); } catch {} }
+          if (Number.isInteger(state?.focus)) setFocus(state.focus);
+        };
         const d = new Dialog(
           {
             title:   `🗺️ Travel — ${ctx.operatorName} is choosing…`,
             content: ctx.payload.content,
             buttons: {},
             render:  (html) => {
-              btns = Array.from(html[0].querySelectorAll(".oni-travel-dest"));
-              btns.forEach(b => { b.disabled = true; b.style.pointerEvents = "none"; });
+              root = html[0];
+              root.querySelectorAll(".oni-travel-dest, .oni-travel-tab").forEach(b => { b.disabled = true; b.style.pointerEvents = "none"; });
+              const first = root.querySelector(".oni-travel-tab.active")?.dataset.tab ?? "dungeon";
+              btns = showTab(root, ctx.state?.tab ?? first);
               setFocus(ctx.state?.focus ?? 0);
             },
           },
@@ -471,7 +522,7 @@
         );
         d.render(true);
         return {
-          patch: (state) => { if (Number.isInteger(state?.focus)) setFocus(state.focus); },
+          patch: (state) => apply(state),
           close: () => { d.close().catch?.(() => {}); },
         };
       },
@@ -778,44 +829,61 @@
       return thumb ? `<div class="oni-dest-thumb" style="background-image:url('${thumb}');"></div>` : "";
     };
 
-    let content = `<div class="oni-travel-list" style="padding:2px 0;">`;
+    // Two bookmark tabs:
+    //   Dungeons             — every region with a dungeon map (Valley, Wyrmwood…),
+    //                          its Dungeon maps first, then its Places;
+    //   Towns & Open Areas   — towns, the world map, and regions made only of
+    //                          places (Eisendrache, Midgard…).
+    const dungeonRegions = new Set(maps.filter(m => m.kind === "dungeon").map(m => m.regionId));
+    const tabOf = (m) => (!m.world && dungeonRegions.has(m.regionId)) ? "dungeon" : "town";
+    const panel = { dungeon: "", town: "" };
+    const button = (i, name, scene) => `
+      <button type="button" class="oni-travel-dest" data-dest="${i}" tabindex="-1">
+        <div class="oni-dest-left"><div class="oni-dest-name">${esc(name)}</div></div>
+        ${thumbOf(scene)}
+      </button>`;
 
     if (towns.length) {
-      content += `<div class="oni-travel-category"><i class="fas fa-city"></i> Towns</div>`;
+      panel.town += `<div class="oni-travel-category"><i class="fas fa-city"></i> Towns</div>`;
       for (const e of towns) {
         const i = dests.push({ sceneId: e.id, point: null, label: getNavigationName(e.scene) }) - 1;
-        content += `
-          <button type="button" class="oni-travel-dest" data-dest="${i}" tabindex="-1">
-            <div class="oni-dest-left"><div class="oni-dest-name">${esc(getNavigationName(e.scene))}</div></div>
-            ${thumbOf(e.scene)}
-          </button>`;
+        panel.town += button(i, getNavigationName(e.scene), e.scene);
       }
     }
 
-    // Each region: "Dungeon" maps (choose where to land on the preview) first,
-    // then "Places" (fixed landing). The world map is one section by itself.
     let lastRegion = null, lastKind = null;
     for (const m of maps) {
+      const tab = tabOf(m);
       if (m.regionId !== lastRegion) {
         lastRegion = m.regionId; lastKind = null;
-        content += `<div class="oni-travel-category"><i class="fas fa-map"></i> ${esc(m.regionName)}</div>`;
+        panel[tab] += `<div class="oni-travel-category"><i class="fas fa-map"></i> ${esc(m.regionName)}</div>`;
       }
-      if (!m.world && m.kind !== lastKind) {
+      // Dungeon / Places sub-groups only where a region has both kinds.
+      if (tab === "dungeon" && m.kind !== lastKind) {
         lastKind = m.kind;
-        content += m.kind === "dungeon"
+        panel[tab] += m.kind === "dungeon"
           ? `<div class="oni-travel-sub"><i class="fas fa-dungeon"></i> Dungeon</div>`
           : `<div class="oni-travel-sub"><i class="fas fa-location-dot"></i> Places</div>`;
       }
-      // Same panel button as before, one per map; the landing point is
-      // chosen on the map preview that opens next.
+      // One button per map; a dungeon map's landing point is chosen on the
+      // map preview that opens next.
       const i = dests.push({ sceneId: m.id, map: m }) - 1;
-      content += `
-        <button type="button" class="oni-travel-dest" data-dest="${i}" tabindex="-1">
-          <div class="oni-dest-left"><div class="oni-dest-name">${esc(m.name)}</div></div>
-          ${thumbOf(m.scene)}
-        </button>`;
+      panel[tab] += button(i, m.name, m.scene);
     }
-    content += `</div>`;
+
+    // Open on the tab for where the party is now (else whichever has entries).
+    const hereRegion = regionOf(currentScene);
+    let startTab = (dungeonRegions.has(hereRegion) || (sceneModeOf(currentScene) === "dungeon" && !DP.isWorldMap?.(currentScene)))
+      ? "dungeon" : "town";
+    if (!panel[startTab]) startTab = startTab === "dungeon" ? "town" : "dungeon";
+
+    const tabBtn = (tab, icon, label) =>
+      `<button type="button" class="oni-travel-tab${tab === startTab ? " active" : ""}" data-tab="${tab}"${panel[tab] ? "" : " disabled"} tabindex="-1">` +
+      `<i class="fas ${icon}"></i> ${label}</button>`;
+    const content =
+      `<div class="oni-travel-tabs">${tabBtn("dungeon", "fa-dungeon", "Dungeons")}${tabBtn("town", "fa-city", "Towns & Open Areas")}</div>` +
+      `<div class="oni-travel-list" data-panel="dungeon" style="padding:2px 0;${startTab === "dungeon" ? "" : "display:none;"}">${panel.dungeon}</div>` +
+      `<div class="oni-travel-list" data-panel="town" style="padding:2px 0;${startTab === "town" ? "" : "display:none;"}">${panel.town}</div>`;
 
     // Everyone else watches the destination list read-only, focus echoed.
     const mirror = globalThis.FUCompanion?.api?.MirrorPrompt?.open?.(ST_MIRROR_KIND, { content }) ?? null;
@@ -841,23 +909,34 @@
           default: "cancel",
           render:  (html) => {
             const container = html[0];
-            const btns = Array.from(container.querySelectorAll(".oni-travel-dest"));
-            if (!btns.length) return;
+            let tab  = startTab;
+            let btns = showTab(container, tab);
 
             const setFocus = (idx, sound = true) => {
+              if (!btns.length) return;
               btns.forEach(b => b.classList.remove("oni-travel-focused"));
               focusedIdx = ((idx % btns.length) + btns.length) % btns.length;
               btns[focusedIdx]?.classList.add("oni-travel-focused");
               btns[focusedIdx]?.scrollIntoView?.({ block: "nearest" });
-              mirror?.patch({ focus: focusedIdx });
+              mirror?.patch({ tab, focus: focusedIdx });
               if (sound) DP.Sound?.playHover?.();
+            };
+            const switchTab = (next) => {
+              if (next === tab || !panel[next]) return;
+              tab  = next;
+              btns = showTab(container, tab);
+              try { d.setPosition({ height: "auto" }); } catch {}   // fit the shorter / longer list
+              DP.Sound?.playFastTravelCycle?.();
+              setFocus(0, false);
             };
 
             // Auto-select first button (no sound on init)
             setFocus(0, false);
 
-            btns.forEach((btn, i) => {
-              btn.addEventListener("mouseenter", () => setFocus(i));
+            container.querySelectorAll(".oni-travel-tab").forEach(t =>
+              t.addEventListener("click", () => switchTab(t.dataset.tab)));
+            container.querySelectorAll(".oni-travel-dest").forEach((btn) => {
+              btn.addEventListener("mouseenter", () => { const i = btns.indexOf(btn); if (i >= 0) setFocus(i); });
               btn.addEventListener("click", () => {
                 if (resolved) return;
                 resolved = true;
@@ -868,6 +947,12 @@
             });
 
             keyHandler = (ev) => {
+              // Tab / Q / E switch the bookmark tab.
+              if (ev.key === "Tab" || ev.key === "q" || ev.key === "e" || ev.key === "Q" || ev.key === "E") {
+                ev.preventDefault(); ev.stopPropagation();
+                switchTab(tab === "dungeon" ? "town" : "dungeon");
+                return;
+              }
               if (ev.key === "ArrowDown" || ev.key === "ArrowRight") {
                 ev.preventDefault(); ev.stopPropagation();
                 setFocus(focusedIdx + 1);
