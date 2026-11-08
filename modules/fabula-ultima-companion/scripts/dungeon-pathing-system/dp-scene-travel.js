@@ -184,19 +184,23 @@
         add(tilePoint(scene, tile, region));
       }
     } else {
-      // Only doors from a dungeon map (incl. the world map) make an entrance:
-      // a shop / inn reached from inside a town is not a travel point, and a
-      // town is not listed once per shop door.
-      for (const a of arrivals) {
-        if (sceneModeOf(game.scenes.get(a.fromSceneId)) !== "dungeon") continue;
-        const from = shortName(getNavigationName(game.scenes.get(a.fromSceneId)), region);
-        add({ tileId: null, x: a.x, y: a.y, isDoor: false, label: `Entrance from ${from}` });
-      }
-      if (!pts.length && general(scene).spawnPoint) {
+      // Exploration / camp map: ONE fixed landing point, like a town — no
+      // choosing. Listed only once the party knows a way in: a door from a
+      // dungeon map (incl. the world map); a shop / inn reached from inside a
+      // town is not a travel point. Where to land, in order:
+      //   1. the map's spawn point, if set;
+      //   2. the entrance from the world map (Valley Entrance: "from Overworld");
+      //   3. the first known entrance.
+      const known = arrivals.filter(a => sceneModeOf(game.scenes.get(a.fromSceneId)) === "dungeon");
+      if (known.length) {
+        const fromWorld = known.find(a => DP.isWorldMap?.(game.scenes.get(a.fromSceneId)));
+        const sp  = general(scene).spawnPoint ? getSpawnPoint(scene) : null;
+        const pick = sp ?? fromWorld ?? known[0];
+        add({ tileId: null, x: pick.x, y: pick.y, isDoor: false, label: "Entrance" });
+      } else if (general(scene).spawnPoint) {
         const sp = getSpawnPoint(scene);
         add({ tileId: null, x: sp.x, y: sp.y, isDoor: false, label: "Entrance" });
       }
-      if (pts.length === 1) pts[0].label = "Entrance";
     }
     // Two "Camp"s on one map → "Camp 1", "Camp 2".
     const count = {};
@@ -853,8 +857,12 @@
     if (selectedId == null) return;
     const dest = dests[Number(selectedId)];
     if (!dest) return;
+    if (dest.map && sceneModeOf(dest.map.scene) !== "dungeon") {
+      // Exploration / camp map: fixed landing point, straight to the confirm.
+      return confirmAndTravel(dest.sceneId, dest.map.points[0], dest.map.name);
+    }
     if (dest.map) {
-      // Pick the landing point on the map preview; Esc / No = back to the list.
+      // Dungeon map: pick the landing point on the map preview; Esc = back.
       const point = await pickPointOnMap(dest.map);
       if (!point) return showDialog();
       const went = await confirmAndTravel(dest.sceneId, point, `${dest.map.name} — ${point.label}`);
