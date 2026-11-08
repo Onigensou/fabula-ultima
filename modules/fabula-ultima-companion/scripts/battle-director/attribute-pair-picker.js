@@ -252,6 +252,14 @@ export async function pickAttributePair({
   defaults = null,
   includeDL = false,
   defaultDL = 10,
+  // Set when the picker renders on a client with no director (a player answering
+  // through remote-pick.js).
+  combatId = null,
+  tag = "GM: CONFIGURE CHECK",
+  // At least one of the pair must be one of these. A player has no GM reading the
+  // pair over their shoulder, so a rule like Break Free's has to be enforced here.
+  requireAnyOf = null,
+  externalCancel = null,
 } = {}) {
   // Sim harness: this is the GM's judgement call on a Hinder check (RAW Core
   // p.71 — the GM picks the pair that matches the described approach). With
@@ -268,8 +276,9 @@ export async function pickAttributePair({
   ensureStyles();
 
   // Despawn any prior.
-  const prior = _overlays.get(director.combatId);
-  if (prior) { try { prior.cleanup(); } catch {} _overlays.delete(director.combatId); }
+  const overlayKey = director?.combatId ?? combatId ?? "remote";
+  const prior = _overlays.get(overlayKey);
+  if (prior) { try { prior.cleanup(); } catch {} _overlays.delete(overlayKey); }
 
   const a1Buttons = ATTRS.map((a) => `
     <div class="fud-app-attr-btn ${defaults?.A1 === a.key ? "is-selected" : ""}"
@@ -307,7 +316,7 @@ export async function pickAttributePair({
   root.id = ROOT_ID;
   root.innerHTML = `
     <div class="fud-app-card" role="dialog" aria-label="Attribute Pair">
-      <div class="fud-app-tag">GM: CONFIGURE CHECK</div>
+      <div class="fud-app-tag">${escapeHtml(tag)}</div>
       <div class="fud-app-title">${escapeHtml(titleText)}</div>
       ${subtitle ? `<div class="fud-app-hint">${subtitle}</div>` : ""}
       <div class="fud-app-row">
@@ -349,9 +358,10 @@ export async function pickAttributePair({
     const confirmBtn = root.querySelector(".fud-app-btn.confirm");
     const dlInput = root.querySelector('[data-fud-dl-input="1"]');
 
+    const pairAllowed = () => !requireAnyOf?.length || requireAnyOf.includes(selected.A1) || requireAnyOf.includes(selected.A2);
     function refreshConfirmEnabled() {
       const dlOk = !includeDL || (Number.isFinite(Number(selected.dl)) && Number(selected.dl) >= 1);
-      if (selected.A1 && selected.A2 && dlOk) confirmBtn.classList.remove("is-disabled");
+      if (selected.A1 && selected.A2 && dlOk && pairAllowed()) confirmBtn.classList.remove("is-disabled");
       else confirmBtn.classList.add("is-disabled");
     }
     refreshConfirmEnabled();
@@ -387,7 +397,7 @@ export async function pickAttributePair({
       root.classList.add("is-resolving");
       despawnTid = setTimeout(() => {
         try { root.remove(); } catch {}
-        _overlays.delete(director.combatId);
+        _overlays.delete(overlayKey);
       }, 200);
       if (keyListener) {
         try { window.removeEventListener("keydown", keyListener, true); } catch {}
@@ -434,9 +444,11 @@ export async function pickAttributePair({
         finish(buildResult(false));
       } else if (action === "confirm") {
         if (actionBtn.classList.contains("is-disabled")) {
-          ui.notifications?.warn(includeDL
-            ? "Pick one attribute from each row, and a Difficulty Level."
-            : "Pick one attribute from each row.");
+          ui.notifications?.warn(selected.A1 && selected.A2 && !pairAllowed()
+            ? `The pair must include ${requireAnyOf.join(" or ")}.`
+            : includeDL
+              ? "Pick one attribute from each row, and a Difficulty Level."
+              : "Pick one attribute from each row.");
           return;
         }
         finish(buildResult(true));
@@ -464,7 +476,7 @@ export async function pickAttributePair({
       else if (ev.key === "Enter") {
         ev.preventDefault();
         ev.stopImmediatePropagation();
-        if (selected.A1 && selected.A2) finish(buildResult(true));
+        if (selected.A1 && selected.A2 && pairAllowed()) finish(buildResult(true));
       }
     };
     window.addEventListener("keydown", keyListener, true);
@@ -473,14 +485,17 @@ export async function pickAttributePair({
       try { clearTimeout(despawnTid); } catch {}
       try { window.removeEventListener("keydown", keyListener, true); } catch {}
       try { root.remove(); } catch {}
-      _overlays.delete(director.combatId);
+      _overlays.delete(overlayKey);
       if (!resolved) {
         resolved = true;
         resolve({ ok: false, cancelled: true });
       }
     };
 
-    _overlays.set(director.combatId, { cleanup, root });
+    _overlays.set(overlayKey, { cleanup, root });
+    if (externalCancel && typeof externalCancel.then === "function") {
+      externalCancel.then(() => finish(buildResult(false))).catch(() => {});
+    }
   });
 }
 

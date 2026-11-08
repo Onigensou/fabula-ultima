@@ -746,14 +746,15 @@
               "lifetimeMode": "persistent_counter"
             }
           },
-          "img": null,
+          "img": "icons/weapons/bows/longbow-recurve.webp",
           "name": "Bow Stance",
           "origin": "Actor.Rk5haXsaDemonAAA.Item.RkFormShift01AAA",
           "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
-              "rakshasa_stance"
+              "rakshasa_stance",
+              "buff"
             ]
           },
           "tint": "#ffffff",
@@ -789,14 +790,15 @@
               "lifetimeMode": "persistent_counter"
             }
           },
-          "img": null,
+          "img": "icons/weapons/maces/flail-ball-grey.webp",
           "name": "Flail Stance",
           "origin": "Actor.Rk5haXsaDemonAAA.Item.RkFormShift01AAA",
           "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
-              "rakshasa_stance"
+              "rakshasa_stance",
+              "buff"
             ]
           },
           "tint": "#ffffff",
@@ -832,14 +834,15 @@
               "lifetimeMode": "persistent_counter"
             }
           },
-          "img": null,
+          "img": "icons/weapons/swords/sword-broad-worn.webp",
           "name": "Sword Stance",
           "origin": "Actor.Rk5haXsaDemonAAA.Item.RkFormShift01AAA",
           "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
-              "rakshasa_stance"
+              "rakshasa_stance",
+              "buff"
             ]
           },
           "tint": "#ffffff",
@@ -875,14 +878,15 @@
               "lifetimeMode": "persistent_counter"
             }
           },
-          "img": null,
+          "img": "icons/weapons/thrown/dagger-ringed-grey.webp",
           "name": "Throwing Stance",
           "origin": "Actor.Rk5haXsaDemonAAA.Item.RkFormShift01AAA",
           "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
-              "rakshasa_stance"
+              "rakshasa_stance",
+              "buff"
             ]
           },
           "tint": "#ffffff",
@@ -1019,14 +1023,15 @@
               "lifetimeMode": "persistent_counter"
             }
           },
-          "img": null,
+          "img": "icons/weapons/maces/flail-ball-grey.webp",
           "name": "Flail and Throwing Stance",
           "origin": "Actor.Rk5haXsaDemonAAA.Item.RkFormShiftCris1",
           "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
-              "rakshasa_combo"
+              "rakshasa_combo",
+              "buff"
             ]
           },
           "tint": "#ffffff",
@@ -1062,14 +1067,15 @@
               "lifetimeMode": "persistent_counter"
             }
           },
-          "img": null,
+          "img": "icons/weapons/swords/sword-broad-worn.webp",
           "name": "Sword and Bow Stance",
           "origin": "Actor.Rk5haXsaDemonAAA.Item.RkFormShiftCris1",
           "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
-              "rakshasa_combo"
+              "rakshasa_combo",
+              "buff"
             ]
           },
           "tint": "#ffffff",
@@ -1105,14 +1111,15 @@
               "lifetimeMode": "persistent_counter"
             }
           },
-          "img": null,
+          "img": "icons/weapons/swords/sword-broad-worn.webp",
           "name": "Sword and Flail Stance",
           "origin": "Actor.Rk5haXsaDemonAAA.Item.RkFormShiftCris1",
           "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
-              "rakshasa_combo"
+              "rakshasa_combo",
+              "buff"
             ]
           },
           "tint": "#ffffff",

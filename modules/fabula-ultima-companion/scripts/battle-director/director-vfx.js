@@ -683,6 +683,17 @@ export function playStatusImmuneVfx({ tokenUuid, statusName = "" } = {}) {
   }
 }
 
+// ── Status-resisted VFX (condition shortened by RS condition affinity) ─────
+// "<STATUS> RESISTED": the condition still lands, but for one turn only.
+export function playStatusResistVfx({ tokenUuid, statusName = "" } = {}) {
+  try {
+    emitDamageNumber({ kind: "status-resisted", tokenUuid, statusName });
+    throttledSfx(IMMUNE_SFX_URL, 0.5);
+  } catch (e) {
+    warn("playStatusResistVfx threw", e);
+  }
+}
+
 // ── Absorb VFX (AB affinity flips damage to healing) ──────────────────────
 //
 // Distinct from a plain heal so an absorb doesn't masquerade as one: a cyan

@@ -32,6 +32,7 @@ export const REMOTE_PICK_KINDS = Object.freeze({
   LIST:   "reaction-pick-list",    // list-picker.pickFromList
   TARGET: "reaction-pick-target",  // target-picker.requestTargeting
   NUMBER: "reaction-pick-number",  // number-picker.promptNumberDialog
+  ATTRIBUTE_PAIR: "reaction-pick-attribute-pair", // attribute-pair-picker.pickAttributePair
 });
 
 // Every kind renderLocalPick knows how to draw. The player-side responder
@@ -80,6 +81,23 @@ async function renderLocalPick({ kind, spec = {}, externalCancel = null }) {
       step: spec.step ?? 1,
       def: spec.def,
       title: spec.title,
+      externalCancel,
+    });
+  }
+  if (kind === REMOTE_PICK_KINDS.ATTRIBUTE_PAIR) {
+    const { pickAttributePair } = await import("./attribute-pair-picker.js");
+    return await pickAttributePair({
+      director: null,
+      combatId: spec.combatId ?? null,
+      titleText: spec.titleText,
+      subtitle: spec.subtitle ?? null,
+      tag: spec.tag,
+      defaults: spec.defaults ?? null,
+      // The Difficulty Level is the GM's call: the GM's racing copy can change it,
+      // the player's copy does not offer it and the caller's default stands.
+      includeDL: !!spec.includeDL && !!game.user?.isGM,
+      defaultDL: spec.defaultDL,
+      requireAnyOf: spec.requireAnyOf ?? null,
       externalCancel,
     });
   }

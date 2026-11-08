@@ -539,6 +539,17 @@ function fireDefeatOnHit(opts) {
 // Status-immune counterpart — violet "<STATUS> NULLIFIED" float when a
 // condition AE is refused by IM condition affinity (deliberately distinct
 // from the damage IMMUNE slab). Same lazy fire-and-forget contract.
+// RS counterpart: "<STATUS> RESISTED" when a condition lands shortened.
+function fireStatusResistVfx(opts) {
+  try {
+    import("./director-vfx.js")
+      .then((m) => m.playStatusResistVfx?.(opts))
+      .catch((e) => warn("fireStatusResistVfx import failed", e));
+  } catch (e) {
+    warn("fireStatusResistVfx threw", e);
+  }
+}
+
 function fireStatusImmuneVfx(opts) {
   try {
     import("./director-vfx.js")
@@ -2594,6 +2605,14 @@ export async function firePreAcceptedCandidate({ director, casterActor, candidat
     appliedByActorUuid,
     appliedByTokenUuid,
   });
+  // The trigger this candidate answers, read off its reaction row. free_action
+  // reads it to order the free-action queue (free-action-queue.js nextIndex).
+  try {
+    const rcTable = candidate.carrierKind === "item"
+      ? carrier.system?.props?.reaction_config_table
+      : (aeReactionCfg?.reaction_config_table ?? null);
+    ctx.reactionTrigger = String(rcTable?.[candidate.rowKey]?.reaction_trigger ?? "").trim() || null;
+  } catch { ctx.reactionTrigger = null; }
   // Show the passive card for auto-fire rows (on / force); ask-mode rows
   // already have a blade menu as visual feedback. FIRE-AND-FORGET: the game
   // flow never blocks on the card. Passive card v2 (2026-11-03):
@@ -8025,6 +8044,11 @@ async function applyApplyAeEffect(row, ctx) {
       flagsNS, explicitRounds: explicit, lifetimeMode, affinity: conditionAffinity, sceneLong,
       existingCharges: data.flags[FLAG_NS].charges,
     });
+    // RS cut it short: show it, so a status gone after one turn reads as resisted.
+    if (conditionAffinity === "RS" && rowCount == null && seededCharges === 1) {
+      const full = computeConditionCharges({ flagsNS, explicitRounds: explicit, lifetimeMode, affinity: null, sceneLong, existingCharges: data.flags[FLAG_NS].charges });
+      if (Number(full) > 1) fireStatusResistVfx({ tokenUuid: token?.document?.uuid ?? token?.uuid ?? null, statusName: template.name });
+    }
     // applier_turn_end ("until the end of YOUR next turn"): the authored count
     // assumes it was applied on the applier's own turn (that turn's end is the
     // first tick). Applied OFF-turn (Emergency Item in Crisis, a reaction) the
@@ -10958,7 +10982,11 @@ async function applyFreeActionEffect(row, ctx) {
     // on one). open_action_menu free_mode grants are extra ACTIONS (High Speed)
     // and do not set this, so they keep two-weapon.
     freeAttack: true,
+    // A follow-up to a spell the performer just finished runs after the reactions
+    // to that spell (see free-action-queue.js nextIndex).
+    afterReactions: ctx.reactionTrigger === "creature_completes_spell",
   });
+  if (ctx.reactionTrigger === "creature_completes_spell") log(`free_action: "${sourceLabel}" waits for the reactions to the spell`);
   log(`free_action: enqueued "${sourceLabel}" for ${performer.name} — ${preset ? `preset ${preset.command} (${presetItem?.name})` : `compose [${enabledLabels.join(", ") || "any"}]`} (+${checkBonus} check / +${damageBonus} dmg)`);
   return { ok: true, kind: "free_action", queued: true, freeMode: true, applied: [{ actor: performer.uuid, sourceLabel, enabledLabels, checkBonus, damageBonus, preset: preset ? preset.command : null }] };
 }

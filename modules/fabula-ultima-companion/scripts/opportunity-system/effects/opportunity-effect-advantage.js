@@ -163,8 +163,17 @@
       async pre(ctx) {
         console.debug(TAG, "[entry]", { actorUuid: ctx.actorUuid, actorName: ctx.actorName });
 
-        const { pickToken } = window["oni.OppEffectUtils"] ?? {};
+        const { pickToken, isInBattle, pickPartyMember } = window["oni.OppEffectUtils"] ?? {};
         if (!pickToken) { console.error(TAG, "[pre] OppEffectUtils not loaded"); return null; }
+
+        // Outside a battle the target is a PARTY MEMBER, not a canvas token: in
+        // dungeon mode the whole party is one token, so the token picker could
+        // never offer anyone but the leader (bug list 11-08 #16).
+        if (pickPartyMember && !isInBattle?.()) {
+          const actor = await pickPartyMember({ title: "Advantage — Choose Target", sourceActorUuid: ctx.actorUuid, includeSource: true });
+          if (!actor) { console.debug(TAG, "[pre] party picker cancelled"); return null; }
+          return { actorUuid: actor.uuid };
+        }
 
         console.debug(TAG, "[pre] opening ally target picker...");
         const token = await pickToken({
@@ -183,15 +192,23 @@
 
       // ── Post phase: AE application + FX (runs AFTER the banner) ──────────
       async post(ctx, preResult) {
-        const { tokenId, tokenUuid } = preResult ?? {};
+        const { tokenId, tokenUuid, actorUuid } = preResult ?? {};
 
-        // Resolve live PlaceableToken from the pre-phase reference
-        const token = (canvas?.tokens?.placeables ?? []).find(t =>
-          (tokenUuid && t.document?.uuid === tokenUuid) || t.id === tokenId
-        );
-        if (!token) { console.error(TAG, "[post] token not found on canvas", { tokenId, tokenUuid }); return; }
-
-        const targetActor = token.actor;
+        // Out of battle the pick is an ACTOR (party member); its token, if it has
+        // one on this canvas, only drives the FX.
+        let token = null, targetActor = null;
+        if (actorUuid) {
+          targetActor = await fromUuid(actorUuid).catch(() => null);
+          if (!targetActor) { console.error(TAG, "[post] picked actor not found", { actorUuid }); return; }
+          token = targetActor.getActiveTokens?.()?.[0] ?? null;
+        } else {
+          // Resolve live PlaceableToken from the pre-phase reference
+          token = (canvas?.tokens?.placeables ?? []).find(t =>
+            (tokenUuid && t.document?.uuid === tokenUuid) || t.id === tokenId
+          );
+          if (!token) { console.error(TAG, "[post] token not found on canvas", { tokenId, tokenUuid }); return; }
+          targetActor = token.actor;
+        }
         if (!targetActor) { console.error(TAG, "[post] token has no actor"); return; }
 
         console.debug(TAG, "[post] applying Advantage AE to:", targetActor.name);
@@ -240,7 +257,7 @@
 
         // Audio + visual feedback
         playSound(SFX_APPLY, 0.8);
-        playBuffFX(token);
+        if (token) playBuffFX(token);
 
         console.debug(TAG, "[done]");
       },

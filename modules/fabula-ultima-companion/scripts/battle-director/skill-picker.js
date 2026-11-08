@@ -689,9 +689,11 @@ export async function pickSkill({
   // Drop reaction-only items: they carry a skill_type label ("Active"/"Spell")
   // but their behavior is entirely triggered (reaction_config_table, no active
   // body), so they aren't turn-actions and would be a no-op if picked.
-  let candidates = filterBySkillTypes(all, allowedSkillTypes)
-    .filter((c) => !c.isReactionOnly);
   const hasAllowList = Array.isArray(allowedRefs) && allowedRefs.length > 0;
+  // A free action with an allow-list shows EVERY listed skill (Counter Pass lists
+  // its Passes), so a reaction-only one stays in the list, disabled, below.
+  let candidates = filterBySkillTypes(all, allowedSkillTypes)
+    .filter((c) => hasAllowList || !c.isReactionOnly);
   // Sub-action-only skills (menu_hidden / dance-tagged) are hidden from the
   // UNRESTRICTED menu. A free action carries an allowedRefs allow-list and still
   // surfaces them via the name/uuid/tag match below — so the drop is scoped to the
@@ -722,6 +724,8 @@ export async function pickSkill({
       }
       return false;
     });
+    // Listed but only ever fires as a reaction (Verónica): shown, never pickable.
+    for (const c of candidates) if (c.isReactionOnly && !c._unavailable) c._unavailable = "Reaction only";
   }
   if (excludeIntents && excludeIntents.size) {
     for (const c of candidates) {

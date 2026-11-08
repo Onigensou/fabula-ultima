@@ -310,9 +310,66 @@
     });
   }
 
+  /**
+   * Is a Battle Director battle running? Outside one, "an ally" means a party
+   * member, not a canvas token: in dungeon mode the whole party is ONE token, so a
+   * token picker can never offer the other members (bug list 11-08 #16).
+   */
+  function isInBattle() {
+    try { return !!globalThis.FUCompanion?.api?.experimental?.battleDirector?.isRunning?.(); }
+    catch { return false; }
+  }
+
+  /** The current game's party (member_id_1..8 on the game DB actor), as Actors. */
+  async function getPartyMemberActors() {
+    const out = [];
+    try {
+      const data = await globalThis.FUCompanion?.api?.getCurrentGameDb?.();
+      const props = data?.db?.system?.props ?? null;
+      for (let i = 1; i <= 8 && props; i++) {
+        const raw = String(props[`member_id_${i}`] ?? "").trim();
+        if (!raw) continue;
+        const actor = await fromUuid(raw.includes(".") ? raw : `Actor.${raw}`).catch(() => null);
+        if (actor && !out.some(a => a.uuid === actor.uuid)) out.push(actor);
+      }
+    } catch (e) { console.error(TAG, "[getPartyMemberActors] failed:", e); }
+    return out;
+  }
+
+  /**
+   * Pick one party member (out-of-battle counterpart of pickToken).
+   * Returns the chosen Actor, or null if cancelled / no party.
+   */
+  async function pickPartyMember({ title = "Choose a party member", sourceActorUuid = null, includeSource = true } = {}) {
+    let members = await getPartyMemberActors();
+    if (!includeSource && sourceActorUuid) members = members.filter(a => a.uuid !== sourceActorUuid);
+    if (!members.length) {
+      ui.notifications?.warn("[Opportunity] No party members found for the current game.");
+      return null;
+    }
+    const esc  = s => String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+    const preIdx = Math.max(0, members.findIndex(a => a.uuid === sourceActorUuid));
+    const opts = members.map((a, i) => `<option value="${i}"${i === preIdx ? " selected" : ""}>${esc(a.name)}</option>`).join("");
+    const body = `<select id="oni-pm-sel" style="width:100%;padding:6px;background:#1a1208;color:#e8d8a0;border:1px solid #6b4c1a;border-radius:4px;font-family:inherit;">${opts}</select>`;
+    return new Promise(resolve => {
+      _oniModal({
+        title,
+        bodyHtml: body,
+        onConfirm: (el) => {
+          const idx = parseInt(el.querySelector("#oni-pm-sel")?.value ?? "0", 10);
+          resolve(members[Number.isFinite(idx) ? idx : 0] ?? null);
+        },
+        onCancel: () => resolve(null),
+      });
+    });
+  }
+
   window["oni.OppEffectUtils"] = Object.freeze({
     resolveActor,
     pickToken,
+    isInBattle,
+    getPartyMemberActors,
+    pickPartyMember,
     resolveOwnerUserId,
     gmTextPrompt,
     pickItem,

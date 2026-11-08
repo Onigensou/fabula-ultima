@@ -37,6 +37,18 @@ import { log, warn } from "./logger.js";
 
 const _queue = [];
 
+// FIFO, except that a request marked `afterReactions` waits behind every request
+// without the mark. That mark is set on a caster's own follow-up to a spell it
+// just finished (Bimagus's second spell, fired from creature_completes_spell).
+// That follow-up is queued at the card, before the spell's damage triggers
+// anything, so plain FIFO ran the second spell ahead of the reactions to the
+// first. Ripples then saw the hex still up and fired a second time, and the
+// second spell got the hex bonus that Ripples should already have ended.
+function nextIndex() {
+  const i = _queue.findIndex((r) => !r?.afterReactions);
+  return i < 0 ? 0 : i;
+}
+
 export const freeActionQueue = {
   enqueue(request) {
     if (!request?.reactorActorId) {
@@ -48,12 +60,12 @@ export const freeActionQueue = {
   },
 
   peek() {
-    return _queue[0] ?? null;
+    return _queue[nextIndex()] ?? null;
   },
 
   dequeue() {
     if (_queue.length === 0) return null;
-    const popped = _queue.shift();
+    const [popped] = _queue.splice(nextIndex(), 1);
     log(`freeActionQueue: dequeued "${popped.sourceLabel ?? "?"}" for ${popped.reactorActorId} (len ${_queue.length})`);
     return popped;
   },

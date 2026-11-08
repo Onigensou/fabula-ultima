@@ -15,6 +15,14 @@
 (() => {
   const DP      = globalThis.DungeonPathing ??= {};
   const MOD     = DP.MODULE_ID;
+  // Spent = cleared to blank (consumed stamp on the tile doc, or the scene state's
+  // current type). Expired Story tiles are NOT spent: they keep working.
+  function isSpentTile(scene, tileDoc) {
+    if (!tileDoc) return false;
+    const c = tileDoc.getFlag?.(MOD, `${DP.PATHING_ROOT_KEY}.consumed`);
+    if (c === true || c === "true") return true;
+    try { return DP.TileState?.getCurrentType?.(scene, tileDoc.id) === DP.TILE_TYPES.BLANK; } catch { return false; }
+  }
   const TAG     = "[DungeonPathing][Bootstrap]";
   const GLOBAL  = "__ONI_DUNGEON_PATHING__";
 
@@ -374,18 +382,6 @@
     return {};
   }
 
-  // Use button gate. The `usable` flag is authored per tile and survives a clear
-  // (resetDungeon re-arms the tile, so the flag must stay); a tile the party has
-  // spent — blank in tileStates or stamped `consumed` on the doc — offers no Use.
-  // Session 2026-11-07: a dug Dirt mound still showed Use on re-entry.
-  function isTileUsable(scene, tileDoc) {
-    const flag = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.usable`);
-    if (!(flag === true || flag === "true")) return false;
-    const consumed = tileDoc.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.consumed`);
-    if (consumed === true || consumed === "true") return false;
-    return DP.TileState.getCurrentType(scene, tileDoc.id) !== DP.TILE_TYPES.BLANK;
-  }
-
   async function processArrivalAt(node, token, scene, fromNode) {
     state._arrivalDepth++;
     if (state._arrivalDepth > _MAX_ARRIVAL_DEPTH) {
@@ -410,7 +406,11 @@
 
       // — Resolve tile doc and flags —
       const tileDoc            = scene.tiles.get(node.nodeId) ?? null;
-      const isUsable           = isTileUsable(scene, tileDoc);
+      const usableFlag         = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.usable`);
+      // A SPENT tile (cleared to blank: a dug-up Dirt mound, looted treasure) keeps
+      // its `usable` flag so a dungeon reset re-arms it, but must not offer Use
+      // again in the meantime (bug list 11-08 #17).
+      const isUsable           = (usableFlag === true || usableFlag === "true") && !isSpentTile(scene, tileDoc);
       const skipConfirmFlag    = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.skipConfirm`);
       // Vertigo auto-confirms every step: the party is stumbling blind, so they
       // land and the tile resolves with no chance to take the move back.
@@ -643,7 +643,11 @@
 
       // — Resolve tile doc before dialog so we can check the usable / skipConfirm flags —
       const tileDoc            = scene.tiles.get(clicked.nodeId) ?? null;
-      const isUsable           = isTileUsable(scene, tileDoc);
+      const usableFlag         = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.usable`);
+      // A SPENT tile (cleared to blank: a dug-up Dirt mound, looted treasure) keeps
+      // its `usable` flag so a dungeon reset re-arms it, but must not offer Use
+      // again in the meantime (bug list 11-08 #17).
+      const isUsable           = (usableFlag === true || usableFlag === "true") && !isSpentTile(scene, tileDoc);
       const skipConfirmFlag    = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.skipConfirm`);
       // Vertigo auto-confirms every step — see processArrivalAt above.
       const skipConfirm        = skipConfirmFlag === true || skipConfirmFlag === "true"

@@ -8746,6 +8746,12 @@ export async function postActionCard({ director, kind, payload }) {
       }
     }
 
+    // Runtime-only candidate fields (pick routing, the in-flight subject pick):
+    // NON-enumerable, so a candidate that is cloned or serialized (mirror
+    // broadcasts, persistence) never carries the live IntentChannel or a Promise.
+    function setCandRuntime(cand, key, value) {
+      Object.defineProperty(cand, key, { value, writable: true, configurable: true, enumerable: false });
+    }
     async function recordPillDecision(rowKey, carrierUuid, decision, routeUserId = null) {
       decisionsInFlight++;
       try { return await runPillDecision(rowKey, carrierUuid, decision, routeUserId); }
@@ -8772,7 +8778,8 @@ export async function postActionCard({ director, kind, payload }) {
       // Player applied but their pill is mid-flight ("submitting" — pending=0,
       // buttons dimmed): if the secondary pick is cancelled, tell THEIR client
       // to restore the actionable pill (revert). No-op for GM-local picks.
-      const revertRemotePill = () => {
+      // `notice`: why the Apply did nothing, shown on the player's screen.
+      const revertRemotePill = (notice = null) => {
         if (!remotePrompt) return;
         try {
           director.intentChannel?.broadcastMenuOpen({
@@ -8782,6 +8789,7 @@ export async function postActionCard({ director, kind, payload }) {
               combatId: director.combatId,
               rowKey, carrierUuid,
               decision: "revert",
+              ...(notice ? { notice } : {}),
             },
           });
         } catch (e) { warn("recordPillDecision: revert broadcast threw", e); }
@@ -8820,7 +8828,8 @@ export async function postActionCard({ director, kind, payload }) {
           catch (e) { warn("recordPillDecision: onAddTargetApply threw", e); }
           if (!res?.ok) {
             clearReactionDecision(`${rowKey}:${carrierUuid}`);
-            revertRemotePill();
+            revertRemotePill(res?.notice ?? null);
+            if (res?.notice && !remotePrompt) ui.notifications?.warn(res.notice);
             log(`recordPillDecision: add_target apply ${res?.cancelled ? "cancelled" : "failed"} for ${rowKey}:${carrierUuid} — pill stays pending`);
             return;
           }
@@ -8889,6 +8898,11 @@ export async function postActionCard({ director, kind, payload }) {
         const cand = (cardReactions ?? []).find(
           (p) => String(p.rowKey) === String(rowKey) && String(p.carrierUuid) === String(carrierUuid)
         );
+        // The routing rides on the CANDIDATE, not just this recompute: any other
+        // recompute (a Skip, an Invoke) that reaches this reaction's still-open
+        // pick first must open it on the same screen. Read by card-mutations'
+        // pickRouteFor. Without it the pick opened GM-only (bug list 11-08 #2).
+        if (cand) { setCandRuntime(cand, "_remotePrompt", remotePrompt); setCandRuntime(cand, "_subjectPick", null); }
         if (cand) {
           try {
             const se = await import("./skill-effects.js?cb=" + Date.now());
@@ -8935,7 +8949,9 @@ export async function postActionCard({ director, kind, payload }) {
         }
         if (cancelled) {
           clearReactionDecision(`${rowKey}:${carrierUuid}`);
-          if (cand) { cand.chosenMenuPicks = null; cand.previewEffects = null; cand.previewDamageNullified = false; }
+          // `_subjectPick` holds the cancelled pick so overlapping recomputes
+          // don't re-prompt; the decision is rewound now, so drop it.
+          if (cand) { cand.chosenMenuPicks = null; cand.previewEffects = null; cand.previewDamageNullified = false; setCandRuntime(cand, "_subjectPick", null); setCandRuntime(cand, "_remotePrompt", null); }
           revertRemotePill();
           log(`recordPillDecision: ${rowKey}:${carrierUuid} apply cancelled — pill stays pending`);
           return;
@@ -11473,6 +11489,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     // clear the in-flight flags. (Skip never reverts — it opens no picker — so a
     // revert always lands on an apply-path pill whose buttons are intact.)
     if (menuSpec.decision === "revert") {
+      if (menuSpec.notice) { try { ui.notifications?.warn(String(menuSpec.notice)); } catch {} }
       // A GM CLEARING a manual verdict is a different revert: the pill is not
       // mid-flight, it is sitting on a status chip this client painted from the
       // GM's earlier force/suppress. Rebuild its controls (and take the host's

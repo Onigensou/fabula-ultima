@@ -122,6 +122,16 @@ export function resolveDamageNumberStyle(payload = {}) {
       spec.fontPx = 34;
       break;
 
+    case "status-resisted":
+      // A condition that landed SHORTENED by RS condition affinity (1 turn), so a
+      // status that vanishes after one turn reads as resisted, not as a bug.
+      spec.tag = String(payload.statusName ?? "STATUS").toUpperCase();
+      spec.tagVariant = "resist";
+      spec.bigWord = "RESISTED";
+      spec.color = "#a9c1de";
+      spec.fontPx = 34;
+      break;
+
     case "absorb":
       // Green number to mirror the heal pattern (an absorb IS a heal), but keep
       // the ABSORB tag so it never reads as a plain heal.
