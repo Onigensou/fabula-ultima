@@ -11,8 +11,14 @@
 //    effect icons show only what matters mid-fight: real statuses (the status
 //    hub's conditions), anything tagged buff / debuff, and anything with a
 //    duration. Permanent markers (camp results, meals, passive "ready" flags…)
-//    hide. Hold Alt to see every icon. The filter wraps Token#_drawEffects:
-//    a token's FIRST draw calls _drawEffects directly, not drawEffects.
+//    hide. The filter wraps Token#_drawEffects: a token's FIRST draw calls
+//    _drawEffects directly, not drawEffects.
+//    Alt no longer brings the core look back (user, 2026-11-08): Alt is the
+//    Battle Inspect key, and the old "hold Alt to see every icon" swapped the
+//    screen to Foundry's chrome mid-inspect (session 2026-11-07).
+//    A director-spawned token is quiet from its first draw, before the battle
+//    is marked started: the entrance plays before dCombat.start(), so waiting
+//    for the scene flag / 1 s poll showed core icons + bars during the run-in.
 //    Token status plan "G + E" (2026-10-27): in a battle NO token draws core
 //    effect icons. Player characters' statuses live in their HUD card;
 //    NPCs and monsters wear the status strip under their feet
@@ -101,7 +107,6 @@ export function openTool(name) {
 }
 
 // ── quiet tokens ─────────────────────────────────────────────────────────────
-let _alt = false;
 let _battle = false;
 
 function battleHere() {
@@ -142,8 +147,13 @@ export function keepIconInBattle(_actor, _e) { return false; }
 /** Is a battle running on this scene (as Battle Focus sees it)? */
 export function battleActive() { return _battle; }
 
-function quietOn() { return _battle && !_alt; }
-export function iconState() { return { battle: _battle, alt: _alt, here: battleHere() }; }
+// Battle tokens carry this flag from creation (director-init spawnTokensHidden /
+// spawnLiveDirectorTokens) and are deleted at battle end.
+function battleSpawned(t) {
+  try { return !!t?.document?.flags?.[NS]?.directorSpawned; } catch { return false; }
+}
+function quietFor(t) { return _battle || battleSpawned(t); }
+export function iconState() { return { battle: _battle, here: battleHere() }; }
 
 // Foundry reads actor.temporaryEffects synchronously at the top of
 // _drawEffects, so the filtered list is an own property for exactly that
@@ -154,7 +164,7 @@ function wrapDrawEffects() {
   if (typeof orig !== "function" || orig.__fuQuiet) return;
   const wrapped = function (...args) {
     const actor = this.actor;
-    if (!actor || !quietOn()) return orig.apply(this, args);
+    if (!actor || !quietFor(this)) return orig.apply(this, args);
     let all;
     try { all = actor.temporaryEffects; } catch { return orig.apply(this, args); }
     const kept = all.filter((e) => keepIconInBattle(actor, e));
@@ -175,15 +185,15 @@ function redrawIcons() {
 }
 
 // ── battle token chrome ──────────────────────────────────────────────────────
-// While a battle runs (and Alt is not held) the token draws no bars and NPCs no
+// While a battle runs (or on a battle-spawned token) the token draws no bars and NPCs no
 // Foundry nameplate: HP / MP live in the HUD cards and the GM desk, the shield
 // and the name in our own unit label (npc-status-strip.js). Bar Brawl draws
 // into token.bars, so hiding that container covers it. Re-applied after every
 // token refresh; redrawIcons() asks for a bars + nameplate refresh whenever the
-// battle starts / ends or Alt changes, so Foundry restores them on its own.
+// battle starts / ends, so Foundry restores them on its own.
 // Deferred (user, 2026-10-27): replacing Bar Brawl outright; see memory.
 function applyBattleChrome(t) {
-  if (!t || t.destroyed || !quietOn()) return;
+  if (!t || t.destroyed || !quietFor(t)) return;
   try { if (t.bars) t.bars.visible = false; } catch { /* */ }
   try { if (t.nameplate && isNpcActor(t.actor)) t.nameplate.visible = false; } catch { /* */ }
 }
@@ -194,24 +204,12 @@ function syncBattle() {
   redrawIcons();
   Hooks.callAll("fuBattleFocusChanged", _battle);
 }
-function typing(ev) {
-  const t = ev.target;
-  return !!t && (t.isContentEditable || /^(input|textarea|select)$/i.test(t.tagName ?? ""));
-}
-function setAlt(on) {
-  if (_alt === on) return;
-  _alt = on;
-  if (_battle) redrawIcons();
-}
 
 Hooks.once("ready", () => {
   wrapDrawEffects();
   Hooks.on("refreshToken", applyBattleChrome);
   _battle = battleHere();
   Hooks.callAll("fuBattleFocusChanged", _battle);
-  window.addEventListener("keydown", (ev) => { if (ev.key === "Alt" && !ev.repeat && !typing(ev)) setAlt(true); }, true);
-  window.addEventListener("keyup", (ev) => { if (ev.key === "Alt") setAlt(false); }, true);
-  window.addEventListener("blur", () => setAlt(false));
   // The scene's tokens drew BEFORE canvasReady fires, with the previous scene's
   // battle state: a battle scene must redraw them quiet.
   Hooks.on("canvasReady", () => {
