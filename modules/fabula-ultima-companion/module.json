@@ -351,6 +351,7 @@
     "scripts/event-system/event-rows-fabula.js",
     "scripts/event-system/event-rows-offer.js",
     "scripts/event-system/event-rows-items.js",
+    "scripts/event-system/event-rows-story.js",
     "scripts/event-system/event-gmChip.js",
     "scripts/event-system/event-lint.js",
     "scripts/event-system/event-configUI.js",

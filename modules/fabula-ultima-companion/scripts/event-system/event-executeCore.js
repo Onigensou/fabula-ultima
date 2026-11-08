@@ -94,6 +94,9 @@
   // Runtime execution state
   // ------------------------------------------------------------
   const gmActiveExecutions = new Set();
+  // GM: the runtime context of each event it runs, so a travelling event can
+  // point it at the new scene (Core.reannounce).
+  const runtimeContexts = new Map();
   const clientRunningTiles = new Set();
 
   // ------------------------------------------------------------
@@ -473,6 +476,7 @@
         partyToken
       });
       context.sourceDoc = tileDoc;
+      runtimeContexts.set(safeTileId, context);
 
       window.oni.EventSystem.WorldFx?.preloadEvent?.(safeTileId, data.eventRows);
 
@@ -607,6 +611,7 @@
     } finally {
       if (started) {
         gmActiveExecutions.delete(safeTileId);
+        runtimeContexts.delete(safeTileId);
         unmarkTileRunning(safeTileId);
         window.oni.EventSystem.Flow?.end(safeTileId);
       }
@@ -635,6 +640,27 @@
   const core = {
     installed: true,
     running: false,
+
+    // A travelling event (Flow.travel / Flow.arrive) is now on another scene:
+    // once the players there have drawn the map, tell them it is in progress
+    // here, as at its start, so they get its lock and its presses.
+    async reannounce(sourceId, sceneId) {
+      const id = String(sourceId || "");
+      const scene = String(sceneId || canvas?.scene?.id || "");
+      if (!id || !scene) return;
+      const ctx = runtimeContexts.get(id);
+      if (ctx) {
+        const party = await resolvePartyToken().catch(() => null);
+        ctx.sceneId = scene;
+        ctx.partyToken = party ?? null;
+        ctx.tokenId = party?.id ?? null;
+        ctx.actorId = party?.actor?.id ?? null;
+        ctx.partyActor = party?.actor ?? null;
+      }
+      await waitForPlayersOnScene(scene);
+      emitSocketMessage(MSG_EXECUTE_START, { sceneId: scene, tileId: id, requesterId: null, gmUserId: game.user?.id ?? null });
+      announceExecution("start", scene, id, game.user?.id ?? null);
+    },
 
     ui: null,
     _hooks: [],

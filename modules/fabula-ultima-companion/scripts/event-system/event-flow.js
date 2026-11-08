@@ -340,8 +340,35 @@
       aborted: false,
       aborters: new Set(),
       held: 0,
-      progress: null
+      progress: null,
+      travelling: false
     });
+  }
+
+  // ------------------------------------------------------------
+  // An event that changes scene (Start Battle, Change Scene)
+  // ------------------------------------------------------------
+  // Normally the GM leaving the scene ends its events (below). A row that moves
+  // the party on purpose marks its event as travelling first; it survives the
+  // teardown, and once the GM's canvas is on the new scene, arrive() makes it
+  // an event of that scene: players there get its lock and its presses again.
+  function travel(sourceId) {
+    const run = state.running.get(String(sourceId || ""));
+    if (run) run.travelling = true;
+  }
+
+  async function arrive(sourceId) {
+    const id = String(sourceId || "");
+    const run = state.running.get(id);
+    if (!run) return false;
+    run.travelling = false;
+    run.sceneId = String(canvas?.scene?.id || "");
+    run.bubbleId = null;
+    await window.oni.EventSystem.Core?.reannounce?.(id, run.sceneId);
+    // The lock as it stood before the move.
+    setMovement(id, run.locked);
+    if (run.held > 0) broadcastHeld(id, true);
+    return true;
   }
 
   function end(sourceId) {
@@ -609,6 +636,8 @@
 
     begin,
     end,
+    travel,
+    arrive,
     isRunningHere,
     shouldWaitForInput,
     setActiveBubble,
@@ -635,7 +664,10 @@
   // on a map nobody is looking at (and a line of text would wait for a press
   // that cannot come), so the event ends here.
   Hooks.on("canvasTearDown", () => {
-    for (const sourceId of [...state.running.keys()]) abort(sourceId);
+    for (const [sourceId, run] of [...state.running]) {
+      if (run.travelling) continue;
+      abort(sourceId);
+    }
   });
 
   // The GM running an event has dropped out (closed, reloaded, lost the

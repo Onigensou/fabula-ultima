@@ -69,7 +69,7 @@
   function withVariables(text) {
     const state = gameState();
     if (!state?.getVariable) return String(text ?? "");
-    return Logic.substituteVars(text, (name) => state.getVariable(name));
+    return Logic.substituteVars(text, (name) => (state.getVariableText ?? state.getVariable)(name));
   }
 
   function prepare(row) {

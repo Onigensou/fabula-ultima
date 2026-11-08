@@ -248,6 +248,32 @@
     return next;
   }
 
+  // The value as written on the sheet, text included (a party name from Name
+  // Input). getVariable still reads numbers for conditions and maths.
+  function getVariableText(name) {
+    const tbl = table(VARIABLE_TABLE);
+    const key = Logic.findTableKey(tbl, VARIABLE_NAME, name);
+    return key === null ? "" : String(tbl[key]?.[VARIABLE_VALUE] ?? "");
+  }
+
+  // Store text as it is. Returns the text, or null.
+  async function setVariableText(name, text) {
+    const label = String(name ?? "").trim();
+    const actor = await writableActor();
+    if (!actor || !label) return null;
+    const value = String(text ?? "");
+    const tbl = table(VARIABLE_TABLE);
+    const key = Logic.findTableKey(tbl, VARIABLE_NAME, label);
+    if (key === null) {
+      await actor.update({
+        [`system.props.${VARIABLE_TABLE}.${Logic.nextTableKey(tbl)}`]: { $deleted: false, [VARIABLE_NAME]: label, [VARIABLE_VALUE]: value }
+      });
+    } else if (String(tbl[key]?.[VARIABLE_VALUE] ?? "") !== value) {
+      await actor.update({ [`system.props.${VARIABLE_TABLE}.${key}.${VARIABLE_VALUE}`]: value });
+    }
+    return value;
+  }
+
   function memoryPath(sceneId, sourceId) {
     return `flags.${MODULE_ID}.${MEMORY_FLAG}.${sceneId}.${sourceId}`;
   }
@@ -395,6 +421,8 @@
 
     getSwitch,
     getVariable,
+    getVariableText,
+    setVariableText,
     switchNames,
     variableNames,
     getMemory,

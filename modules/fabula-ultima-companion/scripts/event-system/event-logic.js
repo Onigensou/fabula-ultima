@@ -387,9 +387,13 @@
   // ------------------------------------------------------------
   // Text: {var:name} prints a variable
   // ------------------------------------------------------------
+  // A number prints as a number (blank → 0, as before); text prints as written
+  // (a party name stored by Name Input).
   function substituteVars(text, getVariable) {
     return String(text ?? "").replace(/\{var:([^}]+)\}/gi, (_, name) => {
       const value = getVariable(String(name).trim());
+      const raw = String(value ?? "").trim();
+      if (raw && !Number.isFinite(Number(raw))) return raw;
       return String(toNumber(value, 0));
     });
   }

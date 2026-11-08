@@ -304,6 +304,8 @@ check("nameKey: spacing, case and underscores are one name",
     Logic.offerAllows({ mode: "type", itemType: "key" }, { type: "key" }) && !Logic.offerAllows({ mode: "type", itemType: "key" }, { type: "weapon" }) && Logic.offerAllows({ mode: "free" }, { type: "weapon" }));
 }
 
+check("substituteVars: text prints as written, numbers as numbers",
+  Logic.substituteVars("Go, {var:Party Name}! ({var:Wins} wins, {var:None})", (n) => ({ "Party Name": "EXFURSION", Wins: "2" })[n] ?? "") === "Go, EXFURSION! (2 wins, 0)");
 check("substituteVars: prints a variable, 0 when unset",
   Logic.substituteVars("Score {var:Festival Score}, lost {VAR:nope}.", (n) => (Logic.nameKey(n) === "festivalscore" ? "25" : undefined)) === "Score 25, lost 0.");
 

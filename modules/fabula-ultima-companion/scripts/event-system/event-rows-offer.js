@@ -622,7 +622,7 @@
     const f = flow();
     if (!sourceId || !f) return { ok: false, reason: "noFlow" };
 
-    const withVars = (t) => Logic.substituteVars(t, (n) => gameState()?.getVariable?.(n));
+    const withVars = (t) => Logic.substituteVars(t, (n) => (gameState()?.getVariableText ?? gameState()?.getVariable)?.(n));
     const bag = bagForBox();
     const rule = { mode: row.mode, names: row.names, itemType: row.itemType };
     const box = {

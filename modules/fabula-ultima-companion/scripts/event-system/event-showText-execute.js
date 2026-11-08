@@ -89,7 +89,7 @@
     const logic = window.oni?.EventSystem?.Logic;
     const state = window.oni?.EventSystem?.GameState;
     if (!logic?.substituteVars || !state?.getVariable) return text;
-    return logic.substituteVars(text, (name) => state.getVariable(name));
+    return logic.substituteVars(text, (name) => (state.getVariableText ?? state.getVariable)(name));
   }
 
   function normalizeRow(row = {}) {

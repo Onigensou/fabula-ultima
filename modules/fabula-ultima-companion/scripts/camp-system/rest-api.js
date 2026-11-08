@@ -346,6 +346,29 @@
         CAMP.SleepUI?.fadeIn?.();
       }
     },
+
+    /**
+     * Quiet recovery: full HP & MP and status ailments cured, like the inn's
+     * Short Rest, with no curtain, jingle or chat card. For story events that
+     * bring the party back after a scripted loss (Event System "Recover All",
+     * Start Battle "recover after a defeat"). Primary GM only.
+     */
+    async recoverParty() {
+      if (!globalThis.FUCompanion?.isPrimaryGM?.()) return 0;
+      const { isDebuffEffect } = await import(
+        `/modules/${CAMP.MODULE_ID}/scripts/healing-system/healing-cleanse.js`
+      );
+      const actors = await _getPartyActors();
+      for (const actor of actors) {
+        await _restoreResources(actor, { ignoreOuch: true });
+        const cured = actor.effects.filter(e => isDebuffEffect(e)).map(e => e.id);
+        if (cured.length) {
+          try { await actor.deleteEmbeddedDocuments("ActiveEffect", cured); }
+          catch (e) { console.warn(TAG, `Could not cure ${actor.name}:`, e.message); }
+        }
+      }
+      return actors.length;
+    },
   };
 
   // ---------------------------------------------------------------------------
