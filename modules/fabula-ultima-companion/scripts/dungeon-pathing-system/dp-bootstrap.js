@@ -374,6 +374,18 @@
     return {};
   }
 
+  // Use button gate. The `usable` flag is authored per tile and survives a clear
+  // (resetDungeon re-arms the tile, so the flag must stay); a tile the party has
+  // spent — blank in tileStates or stamped `consumed` on the doc — offers no Use.
+  // Session 2026-11-07: a dug Dirt mound still showed Use on re-entry.
+  function isTileUsable(scene, tileDoc) {
+    const flag = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.usable`);
+    if (!(flag === true || flag === "true")) return false;
+    const consumed = tileDoc.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.consumed`);
+    if (consumed === true || consumed === "true") return false;
+    return DP.TileState.getCurrentType(scene, tileDoc.id) !== DP.TILE_TYPES.BLANK;
+  }
+
   async function processArrivalAt(node, token, scene, fromNode) {
     state._arrivalDepth++;
     if (state._arrivalDepth > _MAX_ARRIVAL_DEPTH) {
@@ -398,8 +410,7 @@
 
       // — Resolve tile doc and flags —
       const tileDoc            = scene.tiles.get(node.nodeId) ?? null;
-      const usableFlag         = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.usable`);
-      const isUsable           = usableFlag === true || usableFlag === "true";
+      const isUsable           = isTileUsable(scene, tileDoc);
       const skipConfirmFlag    = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.skipConfirm`);
       // Vertigo auto-confirms every step: the party is stumbling blind, so they
       // land and the tile resolves with no chance to take the move back.
@@ -632,8 +643,7 @@
 
       // — Resolve tile doc before dialog so we can check the usable / skipConfirm flags —
       const tileDoc            = scene.tiles.get(clicked.nodeId) ?? null;
-      const usableFlag         = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.usable`);
-      const isUsable           = usableFlag === true || usableFlag === "true";
+      const isUsable           = isTileUsable(scene, tileDoc);
       const skipConfirmFlag    = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.skipConfirm`);
       // Vertigo auto-confirms every step — see processArrivalAt above.
       const skipConfirm        = skipConfirmFlag === true || skipConfirmFlag === "true"
