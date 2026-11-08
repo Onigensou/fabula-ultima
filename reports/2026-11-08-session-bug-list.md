@@ -31,7 +31,7 @@ traced in code.
   design decision: should it go to the grappled actor's owner, with the GM as fallback?
 - [x] **2. Hina's Protect prompt went to the GM instead of her player (cause found).**
   Another pill's re-check reached Protect's pick before the Apply's own and opened it without routing. See Notes.
-- [ ] **3. Ripple triggered twice on one Bimagus cast. It should trigger once.**
+- [x] **3. Ripple triggered twice on one Bimagus cast. It should trigger once.**
   Likely Ripple reacts to each `creature_completes_spell`, and Bimagus casts two spells. It probably needs a
   once-per-action guard.
 - [ ] **4. Bimagus showed a "FX: please select at least one token" notification and seemed stuck.**
@@ -105,3 +105,4 @@ traced in code.
   - 3: still open. The Ripples free attack carries the "end the hex" step on every code path I traced, and I could not trigger Ripples headless. The two reports are probably one bug: if the hex isn't removed, the second Bimagus spell qualifies again. The warning data-92 added will say which part was missing next time.
   - 15: not started. There is no trigger for "after you Protect someone". It needs a new one, plus a free non-offensive spell locked onto that creature. Waiting for the host's go.
   - Regression check clean (494), formulas clean.
+- 2026-11-08 sarunphat (Claude): 3 fixed locally, not committed. Reproduced in a real battle on the Snapshot Runner and on the Staging World (Hina's Bimagus, Iceberg then Glacies, at a hexed Test Target Enemy, with Blanche's Ripples). Bimagus queued its second spell at the card, before the first spell's damage set off Ripples, so the second spell went first: it got the hex bonus, Ripples queued a second time, and only then did the first Ripples attack end the hex. Fix: `free-action-queue.js` lets a free action that follows a finished spell (`creature_completes_spell`; Bimagus is the only one in the world) wait behind the reactions to that spell. Now: Ripples once, hex ends, Glacies without the hex bonus and with no second Ripples. If the Ripples attack misses, the hex stays and Glacies can set Ripples off again; that is the rule. Regression check clean (494), formulas clean.
