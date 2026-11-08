@@ -780,6 +780,10 @@
     }
   }
 
+  // Who may drive travel (doors, Fast Travel, the Travel button): the Main
+  // Controller; a GM only while no online player holds control.
+  TP.canOperate = () => canOperateTeleporter();
+
   // Fast Travel landed the party on this door: run the same prompt + teleport
   // a dungeon turn ending here would, without firing turnEnd (that also ticks
   // party effects and counts a step).

@@ -804,8 +804,12 @@
     }
 
     const api = globalThis.__ONI_MOVEMENT_CONTROL_API__;
-    if (api?.isCurrentUserMainController) {
-      const isCtrl = await api.isCurrentUserMainController().catch(() => false);
+    // Main Controller; a GM may drive while no online player holds control
+    // (same rule as doors — TeleporterSystem.canOperate).
+    const canOperate = globalThis.TeleporterSystem?.canOperate
+      ?? (api?.isCurrentUserMainController ? () => api.isCurrentUserMainController() : null);
+    if (canOperate) {
+      const isCtrl = await canOperate().catch(() => false);
       if (!isCtrl) {
         ui.notifications?.warn?.("Travel is only available to the Main Controller.");
         return;

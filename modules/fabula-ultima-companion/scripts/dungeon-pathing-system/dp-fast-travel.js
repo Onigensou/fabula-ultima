@@ -863,8 +863,13 @@
       ui.notifications?.warn?.("Movement Control system not ready.");
       return;
     }
-    const isController = await api.isCurrentUserMainController();
-    console.debug(TAG, "enter(): isController=", isController);
+    // Main Controller; a GM may drive while no online player holds control
+    // (same rule as doors — TeleporterSystem.canOperate).
+    const canOperate = globalThis.TeleporterSystem?.canOperate;
+    const isController = canOperate
+      ? await canOperate().catch(() => false)
+      : await api.isCurrentUserMainController();
+    console.debug(TAG, "enter(): may operate=", isController);
     if (!isController) {
       ui.notifications?.warn?.("Fast Travel is only available to the Main Controller.");
       return;
