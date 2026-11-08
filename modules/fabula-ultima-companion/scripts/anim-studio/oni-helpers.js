@@ -719,6 +719,62 @@ export function buildOni(ctx, env) {
     return { sprite: spr, video: vid, ended };
   }
 
+  // A layered pixelfx clip (E:\…\Animation\pixelfx\foundry\manifest.json): <base>_back.webm
+  // behind the battlers, <base>_front.webm over them, <base>_light.webm over them with ADD
+  // (the glow as real light, not a grey haze on bright floors). `clip` is a manifest entry
+  // ({ base | forge, width, anchor }) or a base URL string with { size, anchor } in opts.
+  // With `token`, it stands on the token's DRAWN feet (3D stage) and scales with its depth.
+  async function pxfx(clip, {
+    token = null, x = null, y = null, size = null, anchor = null, k = 1,
+    layers = ["back", "front", "light"], alpha = 1, mirror = false, rate = 1,
+  } = {}) {
+    const base = typeof clip === "string" ? clip : (clip.forge ?? clip.base);
+    const an = anchor ?? clip?.anchor ?? { x: 0.5, y: 0.85 };
+    let px = x, py = y, m = 1;
+    if (token) {
+      const t = token.object ?? token;
+      const b = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnMeshBounds?.(t);
+      if (b && Number.isFinite(b.x)) {
+        const p = canvas.stage.worldTransform.applyInverse(new PIXI.Point(b.x + b.width / 2, b.y + b.height));
+        px = p.x; py = p.y; m = b.width / Math.abs(t.mesh?.width || b.width || 1);
+      } else { px = t.center.x; py = t.y + t.h; }
+    }
+    const w = (size ?? clip?.width ?? 400) * k * m;
+    const parts = await Promise.all(layers.map(async (l) => {
+      const fx = await vfx(`${base}_${l}.webm`, {
+        x: px, y: py, size: w, alpha, mirror,
+        parent: l === "back" ? canvas.primary : null,
+        blend: l === "light" ? PIXI.BLEND_MODES.ADD : null,
+        zIndex: l === "light" ? 95010 : 95000,
+      });
+      if (!fx) return null;
+      fx.sprite.anchor.set(mirror ? 1 - an.x : an.x, an.y);
+      fx.sprite.position.set(px, py);
+      if (l === "back") underTokens(fx.sprite);
+      return fx;
+    }));
+    const live = parts.filter(Boolean);
+    for (const fx of live) { try { fx.video.currentTime = 0; fx.video.playbackRate = rate; } catch {} fx.video.play?.().catch(() => {}); }
+    return { parts: live, ended: Promise.all(live.map((f) => f.ended)), at: { x: px, y: py } };
+  }
+
+  // Keep a sprite inside canvas.primary just below the first Token (see sceneDim).
+  function underTokens(spr) {
+    const primary = canvas?.primary;
+    if (!primary || !ticker) return;
+    const tick = () => {
+      if (spr.destroyed || !spr.parent) { ticker.remove(tick); return; }
+      const kids = primary.children;
+      const first = kids.findIndex((c) => typeof c?.name === "string" && c.name.startsWith("Token."));
+      const want = first < 0 ? kids.length - 1 : Math.max(0, first - 1);
+      const cur = kids.indexOf(spr);
+      if (cur >= 0 && cur !== want) { try { primary.setChildIndex(spr, Math.min(want, kids.length - 1)); } catch {} }
+    };
+    tick();
+    // Not on _disposers: a vfx outlives the script, so this lives exactly as long as the sprite.
+    ticker.add(tick);
+  }
+
   // ── Particle emitter ─────────────────────────────────────────────────────
   //
   // One emitter covers the three shapes every template in this pass needs:
@@ -935,7 +991,7 @@ export function buildOni(ctx, env) {
     // perspective: where/how big a body at a 2D floor point is drawn; keep a 2D-animated copy on it
     depthAt, depthFollow,
     // textures / media
-    gradientTexture, radialTexture, webmSprite, webm, vfx,
+    gradientTexture, radialTexture, webmSprite, webm, vfx, pxfx,
     // full-screen fx (PIXI helpers are WORLD space; dom* are camera-proof)
     whiteout, blackout, dim, screenshake,
     domSheet, domDim, domFlash, sceneDim,

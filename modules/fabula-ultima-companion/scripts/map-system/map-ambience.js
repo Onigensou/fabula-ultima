@@ -25,6 +25,13 @@
  *                                                    drops falling from these ceiling points,
  *                                                    landing min..max px lower in a dust puff
  *                                                    (Cave Dwelling) or rings
+ *       clips:  [{ base, x, y, w, alpha }]           looping pixelfx decor clips (fireflies…):
+ *                                                    <base>_back.webm behind tokens,
+ *                                                    <base>_front.webm over them,
+ *                                                    <base>_light.webm over them, blend ADD.
+ *                                                    x, y = the clip's bottom-centre on the map,
+ *                                                    w = width in map px. A single file instead:
+ *                                                    { src, x, y, w, alpha, blend: "add", front }
  *     }
  *   spores/puffs/drips spawn from the surface FX mask
  *   (assets/surface-fx/<background>.webp, see map-surface-fx.js).
@@ -81,7 +88,8 @@ void main() {
 }`;
 
   const state = { cfg: null, root: null, glowLayer: null, frontLayer: null, wisp: null, glows: [], motes: [], tick: null, t0: performance.now(), last: performance.now(),
-    cand: null, spores: [], puffs: [], drips: [], dripGfx: null, puffT: 0, dripT: 0, buildId: 0 };
+    cand: null, spores: [], puffs: [], drips: [], dripGfx: null, puffT: 0, dripT: 0, buildId: 0,
+    clipVideos: [], clipTextures: [] };
   let dotTex = null, glowTex = null, sporeTex = null, puffTex = null;
 
   // Numbers from the Underground Decor mockup (stepParticles / drawFx).
@@ -192,6 +200,9 @@ void main() {
     if (state.tick) { try { canvas.app.ticker.remove(state.tick); } catch (_) {} state.tick = null; }
     for (const c of [state.glowLayer, state.frontLayer, state.wisp]) { try { c?.parent?.removeChild(c); c?.destroy({ children: true }); } catch (_) {} }
     state.glowLayer = state.frontLayer = state.wisp = null;
+    for (const v of state.clipVideos) { try { v.pause(); v.removeAttribute("src"); v.load(); } catch (_) {} }
+    for (const t of state.clipTextures) { try { t.destroy(true); } catch (_) {} }
+    state.clipVideos = []; state.clipTextures = [];
     state.glows = []; state.motes = []; state.cfg = null;
     state.spores = []; state.puffs = []; state.drips = []; state.dripGfx = null; state.cand = null; state.buildId++;
   }
@@ -283,9 +294,49 @@ void main() {
       if (cfg.drips) { state.dripGfx = new PIXI.Graphics(); state.glowLayer.addChild(state.dripGfx); }
     }
 
+    // looping decor clips (pixelfx exports)
+    if (!still && Array.isArray(cfg.clips) && cfg.clips.length) loadClips(cfg.clips, state.buildId);
+
     state.last = performance.now();
     state.tick = tick;
     canvas.app.ticker.add(state.tick);
+  }
+
+  // One looping webm as a sprite with its own <video> (a clone of Foundry's cached
+  // texture, so nothing else that shows this file is yanked around).
+  async function loopSprite(url, id) {
+    const tex = await loadTexture(url);
+    const src = tex?.baseTexture?.resource?.source;
+    if (id !== state.buildId || !(src instanceof HTMLVideoElement) || !game.video?.cloneTexture) return null;
+    const texture = await game.video.cloneTexture(src);
+    const video = texture?.baseTexture?.resource?.source;
+    if (id !== state.buildId || !video) { try { texture?.destroy(true); } catch (_) {} return null; }
+    video.muted = true; video.loop = true;
+    state.clipVideos.push(video); state.clipTextures.push(texture);
+    return { sprite: new PIXI.Sprite(texture), video };
+  }
+
+  async function loadClips(list, id) {
+    for (const c of list) {
+      const parts = c.src
+        ? [{ url: c.src, front: c.front !== false, add: c.blend === "add" }]
+        : [{ url: `${c.base}_back.webm`, front: false }, { url: `${c.base}_front.webm`, front: true }, { url: `${c.base}_light.webm`, front: true, add: true }];
+      try {
+        const made = (await Promise.all(parts.map(async (p) => ({ p, s: await loopSprite(p.url, id) })))).filter((m) => m.s);
+        if (id !== state.buildId) return;
+        for (const { p, s } of made) {
+          const tex = s.sprite.texture, w = Number(c.w) || tex.width;
+          s.sprite.anchor.set(0.5, 1);
+          s.sprite.width = w; s.sprite.height = w * (tex.height / (tex.width || 1));
+          s.sprite.position.set(Number(c.x) || 0, Number(c.y) || 0);
+          s.sprite.alpha = c.alpha ?? 1;
+          if (p.add) s.sprite.blendMode = PIXI.BLEND_MODES.ADD;
+          (p.front ? state.frontLayer : state.glowLayer)?.addChild(s.sprite);
+        }
+        // start the layers of one clip together so they stay in step
+        for (const { s } of made) { try { s.video.currentTime = 0; } catch (_) {} s.video.play().catch(() => {}); }
+      } catch (e) { console.warn(TAG, "clip failed", c, e); }
+    }
   }
 
   // The mock's stepParticles + drawFx, on PIXI sprites. Map px throughout.
