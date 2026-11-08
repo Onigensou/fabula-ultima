@@ -429,6 +429,30 @@
     return TYPE_LABEL[t] || t || "Landmark";
   }
 
+  // ── Arrival = visited ────────────────────────────────────────────────────────
+  // Walking onto a tile marks it visited (dp-bootstrap); arriving by teleport
+  // or travel did not, so the door the party came in by never unlocked. Mark
+  // the landing tile of a dungeon map. An unplayed Story / Final Story tile is
+  // left alone: landing there is not playing the beat.
+  function tileAtPoint(scene, x, y) {
+    if (x == null || y == null) return null;
+    return (scene?.tiles?.contents ?? []).find(t =>
+      x >= t.x && x <= t.x + t.width && y >= t.y && y <= t.y + t.height) ?? null;
+  }
+
+  async function markArrival(sceneOrId, tileId = null, x = null, y = null) {
+    const scene = typeof sceneOrId === "string" ? game.scenes?.get(sceneOrId) : sceneOrId;
+    if (!scene) return;
+    const mode = scene.flags?.[MODULE_ID]?.[DP.FABULA_ROOT_KEY ?? "oniFabula"]?.[DP.GENERAL_KEY ?? "general"]?.sceneMode;
+    if (mode !== "dungeon") return;
+    const tileDoc = (tileId && scene.tiles?.get?.(tileId)) || tileAtPoint(scene, x, y);
+    if (!tileDoc) return;
+    if (DP.TileState?.isVisited?.(scene, tileDoc.id)) return;
+    const t = landmarkType(scene, tileDoc);
+    if ((t === "story" || t === "final") && !DP.TileState?.isExpired?.(scene, tileDoc.id)) return;
+    await DP.Socket?.markVisited?.(scene, tileDoc.id);
+  }
+
   // ── Build eligible node list ─────────────────────────────────────────────────
   // Every visited landmark on this map except the tile the party stands on.
   // With { explain: true } also returns why each candidate was skipped (GM log).
@@ -900,6 +924,8 @@
     landmarkType,
     isLocationNode,
     resolveEligibleNodes,
+    markArrival,
+    tileAtPoint,
     enter,
     exit,
     toggle,

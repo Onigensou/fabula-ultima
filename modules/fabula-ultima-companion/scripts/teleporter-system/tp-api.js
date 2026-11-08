@@ -338,6 +338,14 @@
     // awaiting it would stall the teleport by 300–800 ms unnecessarily.
     playTeleportSfx(sfxUrl).catch(() => {});
 
+    // The door the party comes out of counts as visited (a Fast Travel point),
+    // the same as a tile they walked onto. Marked before a cross-scene switch.
+    globalThis.DungeonPathing?.FastTravel?.markArrival?.(
+      resolved.sceneId,
+      destination.type === "tile" ? destination.tileId : null,
+      resolved.x, resolved.y,
+    )?.catch?.(e => console.warn(TAG, "markArrival:", e));
+
     const currentSceneId = tokenDoc.parent?.id ?? canvas?.scene?.id;
     if (resolved.sceneId && resolved.sceneId !== currentSceneId) {
       await crossSceneTeleport(tokenDoc, resolved);
