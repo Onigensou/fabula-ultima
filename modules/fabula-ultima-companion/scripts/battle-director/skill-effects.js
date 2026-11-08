@@ -10954,7 +10954,9 @@ async function applyFreeActionEffect(row, ctx) {
   const onHitEffectRefs = String(row.on_hit_effect_refs ?? "")
     .split(/[,\n]/).map((s) => s.trim()).filter(Boolean);
 
-  const sourceLabel = ctx.skill?.name ?? row.effect_label ?? "Free Action";
+  // An AE carrier has no ctx.skill (Paladin Armor's transfer AE): its row names
+  // itself with source_label, else the window showed the raw effect_label.
+  const sourceLabel = ctx.skill?.name ?? (String(row.source_label ?? "").trim() || row.effect_label) ?? "Free Action";
   freeActionQueue.enqueue({
     reactorActorId:   performer.id,
     reactorActorUuid: performer.uuid,

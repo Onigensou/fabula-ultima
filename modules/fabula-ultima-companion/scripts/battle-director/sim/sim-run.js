@@ -482,6 +482,9 @@ export async function run({
   enemyZp = null,        // Zero Power to charge a boss with — number (all foes) or {ref: value}
   guests = true,         // field the deployed guest roster (cloned, like the party)
   scripts = null,        // skill-under-test directives — force a caster's action(s)
+  // Reactions (carrier names) the sim always USES, skipping its own judgement — for
+  // a test whose subject sits behind one (Paladin Armor rides on Protect).
+  forceReactions = null,
   // Conflict event (scene-selected additional rule — a dungeon hazard, an arena
   // gimmick). A sim runs on Training Ground, which is not a conflict scene and
   // carries no selection, so without this a hazard-bearing encounter is balanced
@@ -538,7 +541,7 @@ export async function run({
   let result = null;
 
   try {
-    SimMode.begin({ pace, reactions, expectedRounds, maxRounds });
+    SimMode.begin({ pace, reactions, expectedRounds, maxRounds, forceReactions });
     // Skill-under-test directives: resolve each caster to { name, uuid } so the
     // hands-free hook can match it on the field (PC clones carry a " [SIM]" suffix,
     // which the matcher strips). Registered AFTER begin() clears prior state.
@@ -802,6 +805,8 @@ async function normalizeScripts(scripts) {
       cover: !!d.cover,
       // A main-hand Attack on `targets` instead of casting (skill is a label too).
       attack: !!d.attack,
+      // Only inside a free-action frame; an ordinary turn goes to the brain.
+      free: !!d.free,
     });
   }
   return out;

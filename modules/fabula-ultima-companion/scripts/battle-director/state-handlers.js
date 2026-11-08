@@ -5241,6 +5241,13 @@ const Compute = {
           if (wantTags.length && !byNameOrUuid && !actionTags.some((t) => wantTags.includes(t))) {
             refusal = `${skill?.name ?? "That action"}: this free action allows only ${wantTags.join(" / ")} — the chosen option does not qualify`;
           }
+          // `kind:` class filters (Paladin Armor → kind:non_offensive) hold on
+          // EVERY pick, listed or not — same predicate as the picker.
+          const { splitKindRefs, matchesSkillKinds } = await import("./skill-picker.js");
+          const { kinds: wantKinds } = splitKindRefs(allowRefs);
+          if (!refusal && wantKinds.length && !matchesSkillKinds(skill?.system?.props ?? {}, wantKinds)) {
+            refusal = `${skill?.name ?? "That action"}: this free action allows only a ${wantKinds.join(" / ").replace(/_/g, "-")} ${/spell/i.test(String(skill?.system?.props?.skill_type ?? "")) ? "spell" : "skill"}`;
+          }
         }
         if (refusal) {
           log(`Skill COMPUTE: REFUSED — ${refusal}; nothing spent`);

@@ -473,6 +473,13 @@ export function decideReactions({ cardReactions, ar, director, decided }) {
     }
 
     const name = norm(p.carrierName);
+    // A test can pin a reaction ON (sim.run forceReactions) when its subject sits
+    // behind one: Paladin Armor needs Blanche to actually Protect.
+    if ((SimMode.config?.forceReactions ?? []).some((n) => norm(n) === name)) {
+      SimMode.note("reaction", `${reactorActor.name}: USES ${p.carrierName} — forced by the run`);
+      out.push({ rowKey: p.rowKey, carrierUuid: p.carrierUuid, decision: "apply" });
+      continue;
+    }
     const policy = POLICIES[name];
 
     if (!policy) {
