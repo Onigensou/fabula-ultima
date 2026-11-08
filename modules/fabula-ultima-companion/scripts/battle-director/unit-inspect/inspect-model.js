@@ -335,6 +335,8 @@ export function buildInspectModel(token, { side = null, asPlayer = false, capBes
     groups,
     actions, seenText: `${seen} of ${actions.length}`,
     hint: enemy ? (idOK ? (entry?.identity?.description ?? "") : "") : "",
+    // What a Steal can take: an Identity fact, as in the Party Menu bestiary. null = not known yet.
+    steal: enemy ? (idOK ? (entry?.steal ?? []) : null) : null,
     steps: [[7, "Identity: level, rank, turns, HP, DEF, traits"], [8, "Attribute dice"], [13, "Affinities, weapon efficiency, immunities, passives"]]
       .map(([n, text], i) => ({ n: `${n}+`, text, done: tierN > i })),
     hasEntry: !!entry,

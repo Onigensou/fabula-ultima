@@ -539,6 +539,17 @@ function fireDefeatOnHit(opts) {
 // Status-immune counterpart — violet "<STATUS> NULLIFIED" float when a
 // condition AE is refused by IM condition affinity (deliberately distinct
 // from the damage IMMUNE slab). Same lazy fire-and-forget contract.
+// RS counterpart: "<STATUS> RESISTED" when a condition lands shortened.
+function fireStatusResistVfx(opts) {
+  try {
+    import("./director-vfx.js")
+      .then((m) => m.playStatusResistVfx?.(opts))
+      .catch((e) => warn("fireStatusResistVfx import failed", e));
+  } catch (e) {
+    warn("fireStatusResistVfx threw", e);
+  }
+}
+
 function fireStatusImmuneVfx(opts) {
   try {
     import("./director-vfx.js")
@@ -8025,6 +8036,11 @@ async function applyApplyAeEffect(row, ctx) {
       flagsNS, explicitRounds: explicit, lifetimeMode, affinity: conditionAffinity, sceneLong,
       existingCharges: data.flags[FLAG_NS].charges,
     });
+    // RS cut it short: show it, so a status gone after one turn reads as resisted.
+    if (conditionAffinity === "RS" && rowCount == null && seededCharges === 1) {
+      const full = computeConditionCharges({ flagsNS, explicitRounds: explicit, lifetimeMode, affinity: null, sceneLong, existingCharges: data.flags[FLAG_NS].charges });
+      if (Number(full) > 1) fireStatusResistVfx({ tokenUuid: token?.document?.uuid ?? token?.uuid ?? null, statusName: template.name });
+    }
     // applier_turn_end ("until the end of YOUR next turn"): the authored count
     // assumes it was applied on the applier's own turn (that turn's end is the
     // first tick). Applied OFF-turn (Emergency Item in Crisis, a reaction) the

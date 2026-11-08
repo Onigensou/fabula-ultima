@@ -540,6 +540,25 @@ async function resolveTargetingRow(row, ctx) {
     });
   }
 
+  // 3d-bis. Provoked (must_include_applier) on the creature PERFORMING this skill:
+  // a row of its own action that reaches its enemies may target only the
+  // provoker. Without this, a Self-typed skill whose damage row picks its own
+  // victims (the Roper's Reel: every Grappled enemy) never met the action-level
+  // pin and hit someone else while Provoked. No provoker in the pool means the
+  // row cannot be aimed legally, so it gets nobody. Rows of reactions and of
+  // other creatures' actions are untouched; so are rows that reach no enemy.
+  if (candidateSource === "combat" && ctx?.reactorActor) {
+    const { getMustIncludeAppliers } = await import("./snapshot.js");
+    const pins = getMustIncludeAppliers(ctx.reactorActor);
+    if (pins.size && isOwnPerformedAction(ctx) && pool.some((t) => matchesCategory(t, "enemy", ctx))) {
+      const isPin = (t) => pins.has(String(t?.actor?.uuid ?? "")) || pins.has(String(t?.document?.actor?.uuid ?? ""));
+      const before = pool.length;
+      pool = mode === "all" && pool.some(isPin) ? pool : pool.filter((t) => isPin(t) || !matchesCategory(t, "enemy", ctx));
+      if (pool.length !== before) log(`skill-targeting: ${ctx.reactorActor.name} is Provoked, row "${row.effect_label ?? "?"}" narrowed ${before} -> ${pool.length}`);
+      if (!pool.length) return emptyResult();
+    }
+  }
+
   // 3e. focus_max_formula — narrow the pool to the candidate(s) with the MAXIMUM
   // score of a per-candidate formula (e.g. "AE_CHARGES_BURN" → the highest-Burn
   // creature on the field). Ties keep ALL max-scorers, so a downstream
@@ -716,6 +735,21 @@ async function promptBdPick({ row, pool, n, mode, ctx, locked = false }) {
 }
 
 // ── Candidate pool builders ──────────────────────────────────────────────
+
+// Is this row part of the action its reactor is performing right now: the skill
+// RESOLVE chain, or the skill on the director's current action result?
+function isOwnPerformedAction(ctx) {
+  if (!ctx?.skill) return false;
+  // The skill RESOLVE builds its chain ctx with the skill view's fire points and
+  // isPassive:false; a reaction's ctx carries neither.
+  if (ctx.isPassive === false && ctx.firePoints != null) return true;
+  const ar = ctx?.director?.ctx?.actionResult ?? null;
+  if (!ar) return false;
+  const sameSkill = String(ar.skillUuid ?? "") === String(ctx.skill.uuid ?? "")
+    || String(ar.skillUuid ?? "").endsWith(`.Item.${ctx.skill.id}`);
+  const actorId = String(ar.attacker?.actorId ?? "");
+  return sameSkill && !!actorId && (actorId === String(ctx.reactorActor?.id ?? ""));
+}
 
 async function buildCandidatePool(source, ctx) {
   // Kind-scoped persistent-summon refs, resolved by PREFIX so a new summon type

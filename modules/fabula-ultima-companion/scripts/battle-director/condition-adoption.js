@@ -34,7 +34,7 @@ import {
   resolveCanonicalConditionTemplate,
   buildAdoptedConditionData,
 } from "./skill-effects.js";
-import { playStatusImmuneVfx } from "./director-vfx.js";
+import { playStatusImmuneVfx, playStatusResistVfx } from "./director-vfx.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -96,6 +96,9 @@ export function installConditionAdoptionWatcher({ getActiveDirector } = {}) {
       const template = resolveCanonicalConditionTemplate(effect.statuses) ?? effect.toObject();
       const bdData = buildAdoptedConditionData(template, { affinity: "RS" });
       effect.updateSource(bdData);
+      // It lands, but for one turn: say so, or it just seems to vanish.
+      try { playStatusResistVfx({ tokenUuid: bearerTokenUuid(bearer), statusName: effect.name }); }
+      catch (e) { console.warn("[condition-adoption] RS cue threw", e); }
     } catch (e) {
       console.warn("[condition-adoption] preCreateActiveEffect hook threw", e);
     }

@@ -1370,6 +1370,12 @@ async function resolveAction(director, ar, opts = {}) {
         const _hitTokenUuids = struck.filter((r) => r.hit).map((r) => r.tokenUuid);
         const _srcSkill = (_hitTokenUuids.length && ar.freeActionGrant?.sourceItemUuid)
           ? await fromUuid(ar.freeActionGrant.sourceItemUuid).catch(() => null) : null;
+        // A rider that never runs leaves no trace otherwise (Ripples kept its hex at
+        // the 11-07 table, not reproduced headless): say which half was missing.
+        if (!_srcSkill) {
+          warn(`RESOLVE: free-action on-hit refs [${_onHitRefs.join(", ")}] from "${ar.freeActionGrant?.sourceLabel ?? "?"}" skipped: `
+            + (!_hitTokenUuids.length ? "no genuine hit" : `source skill ${ar.freeActionGrant?.sourceItemUuid ?? "(none)"} did not resolve`));
+        }
         if (_srcSkill) {
           const riderCtx = {
             director, skill: _srcSkill, reactorActor: casterActor,
@@ -2388,7 +2394,10 @@ const RoundStart = {
 // Check using any attribute pair that contains at least one MIG or DEX die;
 // success removes Grappled. Mirrors the Hinder check flow: the GM picks the
 // pair + DL via pickAttributePair, we roll 1dA+1dB with the same crit/fumble
-// semantics, and the dice land in chat (a free check has no action card).
+// semantics, and the result lands in chat (a free check has no action card).
+// The picker goes to the grappled character's player, racing a GM copy so an
+// away player cannot wedge the turn; with no online owner it is GM-local. The
+// player's copy holds DL at 10 and refuses a pair with neither MIG nor DEX.
 //
 // Optional: Cancel on the picker = the unit declines the attempt. The DL 10
 // check stays free — it does NOT consume a turn action. The Objective-action
@@ -2413,15 +2422,31 @@ async function maybeRunBreakFree(director, snap) {
       return;
     }
 
-    const _bfPromise = pickAttributePair({
-      director,
+    const _bfInterrupt = director?._battleEndInterruptPromise ?? null;
+    const _bfSpec = {
       titleText: `${snap.name}: Break Free?`,
       subtitle: `Free action. DL 10 Check — the pair must include at least one MIG or DEX die (RAW). Cancel to skip.`,
       defaults: { A1: "MIG", A2: "DEX" },
       includeDL: true,
       defaultDL: 10,
-    });
-    const _bfInterrupt = director?._battleEndInterruptPromise ?? null;
+      requireAnyOf: ["MIG", "DEX"],
+    };
+    // SimMode has nobody to answer: pickAttributePair auto-answers it, so never route out.
+    const _bfOwner = game.user?.isGM && !SimMode.active ? ownerUserIdForActor(actor) : null;
+    const _bfChannel = director?.intentChannel ?? null;
+    let _bfPromise;
+    if (_bfOwner && _bfChannel) {
+      const { remotePick, REMOTE_PICK_KINDS } = await import("./remote-pick.js");
+      _bfPromise = remotePick({
+        channel: _bfChannel, targetUserId: _bfOwner, combatId: director?.combatId ?? null,
+        kind: REMOTE_PICK_KINDS.ATTRIBUTE_PAIR,
+        spec: { ..._bfSpec, combatId: director?.combatId ?? null, tag: "FREE CHECK", label: `${snap.name}: Break Free?` },
+        externalCancel: _bfInterrupt,
+        onTimeoutValue: { ok: false, cancelled: true },
+      });
+    } else {
+      _bfPromise = pickAttributePair({ director, ..._bfSpec });
+    }
     const cfg = _bfInterrupt
       ? await Promise.race([_bfPromise, _bfInterrupt.then(() => ({ ok: false }))])
       : await _bfPromise;
@@ -2455,11 +2480,8 @@ async function maybeRunBreakFree(director, snap) {
       `${A1} (d${dA}) + ${A2} (d${dB}) = <strong>${total}</strong> vs DL ${DL}<br>` +
       `<em>${outcome}</em>`;
     try {
-      await rollObj.toMessage(
-        { speaker: ChatMessage.getSpeaker?.({ actor }) ?? undefined, flavor },
-        { rollMode: game.settings?.get?.("core", "rollMode") },
-      );
-    } catch (e) { warn("Break Free: toMessage failed", e); }
+      await ChatMessage.create({ speaker: ChatMessage.getSpeaker?.({ actor }) ?? undefined, content: flavor });
+    } catch (e) { warn("Break Free: chat message failed", e); }
   } catch (e) {
     warn("Break Free: maybeRunBreakFree threw", e);
   }
@@ -6956,8 +6978,13 @@ const Confirm = {
               try { resH = await firePreAcceptedCandidate({ director, casterActor: attackerActor, candidate: cand, payload: probeH, remotePrompt }); }
               catch (e) { warn("CONFIRM onAddTargetApply(heal): chain threw", e); return { ok: false }; }
               if (!resH?.ok) {
-                log(`CONFIRM onAddTargetApply(heal): chain ${resH?.cancelled ? "cancelled" : "returned not-ok"} — pill stays pending`);
-                return { ok: false, cancelled: !!resH?.cancelled };
+                log(`CONFIRM onAddTargetApply(heal): chain ${resH?.cancelled ? "cancelled" : "returned not-ok"} (${resH?.reason ?? "?"}) — pill stays pending`);
+                // Nobody the spread may reach (every ally is already a target, or
+                // none is targetable): the Apply used to revert with no word, which
+                // reads as "Potion Rain does nothing" (bug list 11-08 #12). Say why.
+                const noOne = /no-candidates|no-targets|no-eligible/.test(String(resH?.reason ?? ""));
+                return { ok: false, cancelled: !!resH?.cancelled,
+                  notice: noOne ? `${cand?.carrierName ?? "Reaction"}: there is no other ally ${baseArH.skillName ?? "this"} can reach.` : null };
               }
               // Resolve the picked allies into target snapshots. Build the pool
               // fresh from the combat (any side) — director.ctx.eligibleTargets is

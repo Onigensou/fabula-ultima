@@ -322,7 +322,21 @@ async function rederiveTargetRow(ar, targetSnap) {
 // re-recompute (e.g. another pill toggled afterwards) doesn't re-prompt.
 // The legacy single-uuid cache (`pickedSubjectActorUuid`) is preserved
 // for snapshotReactionDecisions round-trip when N === 1.
-async function resolveRedirectSubjects({ cand, row, reactor, reactorTok, ctx }) {
+//
+// SINGLE-FLIGHT per candidate (`cand._subjectPick`). Every recompute re-walks
+// EVERY accepted reaction, and recomputes overlap: the action card only waits
+// for the one in flight, so two queued recomputes (another pill's Skip, an
+// Invoke, then the Apply's own) run side by side. Both used to reach this pick
+// for the same still-unpicked Protect and open TWO pickers — and the one owned
+// by the recompute that was not the Apply carried no routing, so it opened on
+// the GM only. Measured 2026-11-08 (bug list item 2): Rinri applied Hina's
+// Protect, the GM held two pickers, Rinri got none until the GM's answered.
+// Now the first caller opens the one picker and every other caller awaits it.
+// A cancel stays sticky until action-card rewinds the decision (clears
+// `_subjectPick`), so a queued recompute cannot re-prompt a player who just
+// backed out.
+async function resolveRedirectSubjects(args) {
+  const { cand } = args;
   if (Array.isArray(cand.pickedSubjectActorUuids) && cand.pickedSubjectActorUuids.length) {
     return cand.pickedSubjectActorUuids;
   }
@@ -330,15 +344,42 @@ async function resolveRedirectSubjects({ cand, row, reactor, reactorTok, ctx }) 
     // Backwards-compat: prior session cached a single-target pick.
     return [cand.pickedSubjectActorUuid];
   }
+  if (!cand._subjectPick) {
+    const p = pickRedirectSubjects(args).catch((e) => {
+      warn(`redirect: subject pick threw for ${cand.carrierName}`, e);
+      return { uuids: cand.subjectActorUuid ? [cand.subjectActorUuid] : [], cancelled: false };
+    });
+    Object.defineProperty(cand, "_subjectPick", { value: p, writable: true, configurable: true, enumerable: false });
+    // Success leaves the answer in the pick cache above; only a cancel is kept.
+    p.then((r) => { if (!r.cancelled && cand._subjectPick === p) cand._subjectPick = null; });
+  }
+  const r = await cand._subjectPick;
+  if (r.cancelled) { cand._pickerCancelled = true; return []; }
+  return r.uuids;
+}
+
+// Whose screen a candidate's picks open on. The routing belongs to the
+// CANDIDATE — action-card stamps `_remotePrompt` when a player applies it — not
+// to whichever recompute happens to resolve it (another pill's Skip, an Invoke,
+// the CONFIRM commit all recompute with no routing of their own). Falls back to
+// the pass's routing, then local.
+function pickRouteFor(cand, ctx) {
+  return cand?._remotePrompt ?? ctx?.remotePrompt ?? null;
+}
+
+// The pick itself: { uuids, cancelled }. Called only through
+// resolveRedirectSubjects (single-flight).
+async function pickRedirectSubjects({ cand, row, reactor, reactorTok, ctx }) {
+  const done = (uuids) => ({ uuids, cancelled: false });
   const targetRef = String(row?.target_ref ?? "").trim();
   if (!targetRef) {
     warn(`redirect: row "${row?.effect_label}" missing target_ref; falling back to scan-time subject`);
-    return cand.subjectActorUuid ? [cand.subjectActorUuid] : [];
+    return done(cand.subjectActorUuid ? [cand.subjectActorUuid] : []);
   }
   const item = await fromUuid(cand.carrierUuid);
   if (!item) {
     warn(`redirect: cannot resolve carrier item ${cand.carrierUuid}; falling back`);
-    return cand.subjectActorUuid ? [cand.subjectActorUuid] : [];
+    return done(cand.subjectActorUuid ? [cand.subjectActorUuid] : []);
   }
   // Build a BD-native chain ctx. `action_targets` candidate_source reads
   // ctx.actionTargetUuids; we feed the action's full target list from
@@ -358,7 +399,7 @@ async function resolveRedirectSubjects({ cand, row, reactor, reactorTok, ctx }) 
       sourceActorUuid: ctx.ar?.attackerActorRef ?? null,
     },
     isPassive: false,
-    remotePrompt: ctx.remotePrompt ?? null,
+    remotePrompt: pickRouteFor(cand, ctx),
   });
   // The redirect runs at the card-mutation phase — OUTSIDE applyEffectRow's
   // _skipTargetConfirm scope — so without this an ASSURED redirect source
@@ -372,25 +413,24 @@ async function resolveRedirectSubjects({ cand, row, reactor, reactorTok, ctx }) 
   if (!resolved?.ok || !resolved.tokens?.length) {
     if (resolved?.cancelled) {
       log(`redirect: player cancelled target pick for ${cand.carrierName}`);
-      cand._pickerCancelled = true;
-      return [];
+      return { uuids: [], cancelled: true };
     }
     warn(`redirect: BD target resolver failed (${resolved?.reason}); falling back to scan-time subject`);
-    return cand.subjectActorUuid ? [cand.subjectActorUuid] : [];
+    return done(cand.subjectActorUuid ? [cand.subjectActorUuid] : []);
   }
   const pickedUuids = resolved.tokens
     .map((t) => t?.actor?.uuid)
     .filter(Boolean);
   if (!pickedUuids.length) {
     warn(`redirect: resolver returned tokens with no actor uuids`);
-    return cand.subjectActorUuid ? [cand.subjectActorUuid] : [];
+    return done(cand.subjectActorUuid ? [cand.subjectActorUuid] : []);
   }
   // Cache so the next recompute pass doesn't re-prompt. Mirror the
   // single-uuid field when N === 1 so snapshotReactionDecisions'
   // existing round-trip continues to work for Protect.
   cand.pickedSubjectActorUuids = pickedUuids;
   if (pickedUuids.length === 1) cand.pickedSubjectActorUuid = pickedUuids[0];
-  return pickedUuids;
+  return done(pickedUuids);
 }
 
 // Apply a single redirect_target mutation to ctx.
@@ -460,7 +500,7 @@ async function applyRedirectTargetMutation(ctx, cand, row) {
           attackerTokenUuid: ctx.ar?.attacker?.tokenUuid ?? null,
         },
         isPassive: false,   // a real choice — prompt when ambiguous
-        remotePrompt: ctx.remotePrompt ?? null,
+        remotePrompt: pickRouteFor(cand, ctx),
       });
       // Assured destination (pool ≤ count: Protect's dest = the Guardian itself)
       // auto-resolves without a redundant locked Confirm; an ambiguous pick
@@ -577,7 +617,7 @@ async function applyShieldRedirectMutation(ctx, cand, row) {
       actionTargetUuids: (ctx.ar?.targets ?? []).map((t) => t?.tokenUuid).filter(Boolean),
       payload: { sourceActorUuid: ctx.ar?.attackerActorRef ?? null },
       isPassive: false,   // a real choice — prompt when more than one phantasm
-      remotePrompt: ctx.remotePrompt ?? null,
+      remotePrompt: pickRouteFor(cand, ctx),
     });
     // A single own-phantasm (the assured case) auto-resolves without a redundant
     // locked Confirm; >1 phantasm still prompts. See the redirect SOURCE site.
@@ -1613,7 +1653,7 @@ async function applyAddTargetMutation(ctx, cand, row, effectTable) {
     runtimeEffectTable: effectTable ?? null,
     payload: { attackerActorUuid, attackerTokenUuid },
     isPassive: true,
-    remotePrompt: ctx.remotePrompt ?? null,
+    remotePrompt: pickRouteFor(cand, ctx),
   });
   // Assured add_target (pool ≤ count) auto-resolves without a redundant locked
   // Confirm; a genuine extra-target pick (pool > count) still prompts. Consistent

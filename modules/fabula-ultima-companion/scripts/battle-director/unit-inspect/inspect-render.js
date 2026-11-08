@@ -104,9 +104,21 @@ function actionsPane(m, ui) {
   return `<div class="fui-filters">${chips}<span class="fui-seen">${esc(m.seenText)} seen</span></div>${groups}`;
 }
 
+// What a Steal can take (Study 7+). Same rule as the Party Menu bestiary's loot page.
+function stealSection(m) {
+  if (!m.enemy) return "";
+  if (!m.steal) return `<div class="fui-label">Can be stolen</div><div class="fui-note">Study 7+ to see what can be stolen.</div>`;
+  if (!m.steal.length) return `<div class="fui-label">Can be stolen</div><div class="fui-note">Nothing worth stealing.</div>`;
+  return `<div class="fui-label">Can be stolen</div><div class="fui-grid">${m.steal.map((s) => `<div class="fui-eff" data-steal="${esc(s.name)}">
+    <img class="fui-ico" src="${esc(s.img)}" alt="" onerror="this.style.visibility='hidden'">
+    <div class="fui-effbody"><div class="fui-en"><b>${esc(s.name)}</b></div>${plain(s.description) ? `<div class="fui-el">${safeHtml(s.description)}</div>` : ""}</div>
+  </div>`).join("")}</div>`;
+}
+
 function notesPane(m) {
   const hint = safeHtml(m.hint);
   return `${plain(hint) ? `<div class="fui-label fui-label-first">Description</div><div class="fui-hint">${hint}</div>` : `<div class="fui-note fui-note-top">Study 7+ to read what the party knows about this creature.</div>`}
+    ${stealSection(m)}
     <div class="fui-label">Study progress</div>
     <div class="fui-steps">${m.steps.map((s) => `<div class="fui-step${s.done ? " done" : ""}"><b>${esc(s.n)}</b><span>${esc(s.text)}</span><em>${s.done ? "Known" : "—"}</em></div>`).join("")}</div>`;
 }

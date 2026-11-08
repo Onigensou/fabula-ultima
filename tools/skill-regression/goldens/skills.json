@@ -234,7 +234,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 55,
+          "damage": 75,
           "grant": null,
           "grantRes": null,
           "hit": true,
@@ -4517,7 +4517,7 @@
       "perTarget": [
         {
           "affinity": "NE",
-          "damage": 55,
+          "damage": 75,
           "grant": null,
           "grantRes": null,
           "hit": true,
