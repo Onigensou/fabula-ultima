@@ -6,7 +6,7 @@
 //
 //   burn      flames rising off the body, warm underlight at the feet   + warm wash
 //   blind     smoky black fog over the eyes, wisps curling off (FF9 Darkness)
-//   poison    green bubbles rising and popping (Poisoned, Envenomed)  + green wash
+//   poison    green bubbles rising and popping (Envenomed)            + green wash
 //   wet       drops falling from the head and shoulders, ripples at the feet + cool wash
 //   paralyze  yellow sparks crackling around the body                 + pale-yellow wash
 //   silence   speech bubble beside the head with "…" filling in
@@ -166,7 +166,7 @@ function rng(seed) {
 }
 const px = (v) => `${Math.round(v)}px`;
 
-/** The cue ids active on an actor (deduped; Poisoned + Envenomed share one). */
+/** The cue ids active on an actor (deduped). */
 export function cuesOf(actor) {
   const out = new Set();
   try {

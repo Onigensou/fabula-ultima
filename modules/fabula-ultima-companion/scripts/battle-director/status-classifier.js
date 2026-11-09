@@ -51,7 +51,7 @@ const ALIASES = {
 
 // Status → token cue id. Everything not listed draws nothing on the token.
 export const STATUS_CUES = Object.freeze({
-  burn: "burn", blind: "blind", poisoned: "poison", envenomed: "poison", wet: "wet",
+  burn: "burn", blind: "blind", envenomed: "poison", wet: "wet",
   paralyzed: "paralyze", silence: "silence", provoked: "provoked", sleep: "sleep",
 });
 
