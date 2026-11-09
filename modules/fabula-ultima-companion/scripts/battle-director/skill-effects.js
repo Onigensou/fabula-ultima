@@ -1163,8 +1163,16 @@ async function passesMatchFilters(row, item, reactorActor, payload) {
   //     carries originLabel "Burn" (the carrier AE name); a skill that explicitly
   //     "triggers Burn" (Flame Claw / Meteor) labels its detonation row
   //     attacker_name "Burn" so it counts too.
+  //     A leading "!" negates it: "!Solar Beam" = any origin EXCEPT Solar Beam (a
+  //     charge that must not feed itself from its own release).
   const wantOrigin = String(row.reaction_origin_filter ?? "").trim().toLowerCase();
-  if (wantOrigin && String(payload?.originLabel ?? "").trim().toLowerCase() !== wantOrigin) {
+  const gotOrigin = String(payload?.originLabel ?? "").trim().toLowerCase();
+  if (wantOrigin.startsWith("!")) {
+    if (gotOrigin === wantOrigin.slice(1).trim()) {
+      log(`passive ${item.name}: origin filter failed — excluded="${wantOrigin}" got="${payload?.originLabel}"`);
+      return false;
+    }
+  } else if (wantOrigin && gotOrigin !== wantOrigin) {
     log(`passive ${item.name}: origin filter failed — want="${wantOrigin}" got="${payload?.originLabel}"`);
     return false;
   }
@@ -2009,6 +2017,10 @@ function effectRefUsesAddTarget(effectTable, ref, depth = 0) {
 //                              one tick). All of a carrier's rows on this scope share
 //                              ONE quota: a kill reports both a defeat and an HP loss,
 //                              and that is one event for the rule being capped.
+//   action                   — N per damage instance, whoever was hit: one Lux on three
+//                              enemies is ONE instance. Keyed by payload.damageInstance
+//                              (the action card, else the single event). Sunflower
+//                              Staff: "one Solar Charge per instance of Light damage".
 //
 // Why here and not a new mechanism: Study's once-per-target rule already exists as
 // a hand-rolled `studyLog` Map on DirectorCombat (markStudied / hasStudied), which
@@ -2017,7 +2029,7 @@ function effectRefUsesAddTarget(effectTable, ref, depth = 0) {
 // gear and the built-in action can share one notion of "already did this to you".
 // (Study itself still uses studyLog; it needs the list of spent targets to grey
 // out picker entries, not just a yes/no, so migrating it is a separate job.)
-const REACTION_MAX_SCOPES = new Set(["round", "battle", "target", "target_round", "target_action"]);
+const REACTION_MAX_SCOPES = new Set(["round", "battle", "target", "target_round", "target_action", "action"]);
 // Player-facing reason on a capped pill — must name the scope, or "once per
 // target" reads as a bug ("why is this greyed out, it hasn't fired this round?").
 const CAP_REASONS = Object.freeze({
@@ -2026,6 +2038,7 @@ const CAP_REASONS = Object.freeze({
   target:       "Already used against this target",
   target_round: "Already used against this target this round",
   target_action: "Already used against this target by this action",
+  action:       "Already used for this action",
 });
 // Inherent action keywords declared on a skill's own `action_keywords` prop
 // (comma/newline list, case-insensitive) — the same parse action-profile.js
@@ -2081,6 +2094,7 @@ function capActionRef(payload) {
   return subject && instance ? `${subject}@${instance}` : "";
 }
 function capRefFor(scope, payload, reactorUuid) {
+  if (scope === "action") return String(payload?.damageInstance ?? "").trim();
   return scope === "target_action" ? capActionRef(payload) : capSubjectRef(payload, reactorUuid);
 }
 // A target-scoped row with NO resolvable subject must not silently collapse every
@@ -2092,6 +2106,7 @@ function capRefFor(scope, payload, reactorUuid) {
 const CAP_NO_SUBJECT = "\u0000nosubject";
 export function reactionRoundCountKey(carrierUuid, rowKey, scope, round, subjectRef) {
   if (scope === "target_action") return `${carrierUuid}::action::${subjectRef}`;
+  if (scope === "action") return `${carrierUuid}::${rowKey}::a:${subjectRef}`;
   const bucket = scope === "battle" ? "all"
     : scope === "target" ? `t:${subjectRef}`
     : scope === "target_round" ? `t:${subjectRef}@${round}`
@@ -2115,7 +2130,7 @@ function reactionRoundCapReached(row, carrierUuid, rowKey, payload, reactorUuid 
   const scope = readReactionMaxScope(row);
   const subjectRef = capRefFor(scope, payload, reactorUuid);
   // Target-scoped with nothing to key on: never cap (see CAP_NO_SUBJECT).
-  if ((scope === "target" || scope === "target_round" || scope === "target_action") && !subjectRef) return false;
+  if ((scope === "target" || scope === "target_round" || scope === "target_action" || scope === "action") && !subjectRef) return false;
   return reactionRoundCount(director, carrierUuid, rowKey, scope, subjectRef) >= max;
 }
 // Increment the fire count for a capped row after it actually fires.

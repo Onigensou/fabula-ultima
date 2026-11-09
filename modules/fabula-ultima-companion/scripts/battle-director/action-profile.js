@@ -1364,7 +1364,13 @@ function flattenRow(r, kind) {
     rawDamage: dmg.preAffinity ?? 0, damage: dmg.value ?? 0,
   };
   if (kind === "Attack") out.pierceMiss = !!o.pierceMiss;
-  else out.resource = dmg.resource ?? "hp";
+  else {
+    out.resource = dmg.resource ?? "hp";
+    // A Pierce spell/skill (Icicle Lance) that misses still lands half: RESOLVE reads
+    // r.pierceMiss for ANY action, so carry it here too. Only set when true, so every
+    // other Skill/Spell row keeps its exact shape.
+    if (o.pierceMiss) out.pierceMiss = true;
+  }
   // Reaction-fold artifacts (element override / applied keywords / numeric-op
   // breakdown) — only present when an accepted reaction touched this row, so the
   // no-reaction COMPUTE row stays byte-identical to before.

@@ -957,6 +957,7 @@ export const REACTION_CONFIG_REQUIRED_COLUMNS = [
     { key: "target",       value: "Per target, whole battle (once per creature)" },
     { key: "target_round", value: "Per target, per round" },
     { key: "target_action", value: "Per target, per action card or tick (rows share it)" },
+    { key: "action",        value: "Per action card or tick, whoever was hit" },
   ], { tooltip: "What the Max Fires quota resets against. Per round = the classic cap. Per battle = N times all fight. Per target = N times against EACH creature for the whole fight (\"this effect triggers once per target\"). Per target, per round = both. Ignored when Max Fires is blank/0.", defaultValue: "round" }),
   // Weapon-USED gate (the gear `_skill`-inside-a-WEAPON model). When CHECKED, this
   // row only fires if the weapon backing the carrier is the one ACTUALLY USED in the
