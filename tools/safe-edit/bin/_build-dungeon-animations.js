@@ -32,6 +32,7 @@ const G = require(path.join(ANIM_LIB, "lib", "dungeon-signatures.js"));
 const RK = require(path.join(ANIM_LIB, "lib", "rakshasa-signatures.js"));
 const FF = require(path.join(ANIM_LIB, "lib", "fafnir-signatures.js"));
 const KR = require(path.join(ANIM_LIB, "lib", "kirin-signatures.js"));
+const DV = require(path.join(ANIM_LIB, "lib", "deva-signatures.js"));
 const { encode, validate } = require(path.join(ANIM_LIB, "lib", "encode.js"));
 
 /* ── Palette ─────────────────────────────────────────────────────────────── */
@@ -303,6 +304,17 @@ const REGISTRY = {
                sfxShift: "Wind3", sfxShiftVol: 0.45,
                sfx: "Magic2", sfxVol: 0.5, sfxImpact: "Absorb1", sfxImpactVol: 0.6 },
       }),
+    },
+  },
+
+  // ── Deva ───────────────────────────────────────────────────────────────
+  "amxILxU7mqQ0jKhZ": {
+    actorName: "Deva",
+    items: {
+      // Tuned in the mockup (artifact C7wZxC2jSAo15AAsJfQxRb v16); numbers live in
+      // deva-signatures.js. Each writes its own offset gate + preload list.
+      "Fists of Fury": () => DV.fistsBarrage({ key: "deva-fists-of-fury", name: "Fists of Fury", form: "fury" }),
+      "Fists of Focus": () => DV.fistsBarrage({ key: "deva-fists-of-focus", name: "Fists of Focus", form: "focus" }),
     },
   },
 
