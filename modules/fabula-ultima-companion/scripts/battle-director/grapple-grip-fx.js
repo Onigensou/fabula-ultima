@@ -60,7 +60,7 @@ function refresh({ instant = false } = {}) {
   if (!canvas?.ready || !canvas.tokens) return;
   const want = new Map();
   for (const t of canvas.tokens.placeables) {
-    if (t.destroyed || !t.actor || !isGrappled(t.actor)) continue;
+    if (t.destroyed || !t.actor || !isGrappled(t.actor) || isDown(t)) continue;   // a downed unit is not held
     const g = grapplerTokenOf(t.actor);
     if (g) want.set(t.id, g);
   }
@@ -103,18 +103,21 @@ function dispose(grip) {
 }
 
 // ───────── depth: same keys as the held mesh, back right before it, front right after
+// A new child sorts BEFORE everything with equal keys (its _lastSortedIndex is
+// 0), so insertion order does not hold: the halves sit a hair either side of the
+// mesh on zIndex instead (measured 2026-11-10: both landed behind the body).
+const Z_EPS = 0.001;
 function place(grip) {
   const mesh = grip.token?.mesh, prim = canvas.primary;
   if (!mesh || mesh.destroyed || !prim) return;
-  for (const o of [grip.back, grip.front]) copyKeys(o, mesh);
-  const i = prim.children.indexOf(mesh);
-  if (i >= 0) { prim.addChildAt(grip.back, i); prim.addChildAt(grip.front, prim.children.indexOf(mesh) + 1); }
-  else { prim.addChild(grip.back); prim.addChild(grip.front); }
+  copyKeys(grip.back, mesh, -Z_EPS); copyKeys(grip.front, mesh, Z_EPS);
+  prim.addChild(grip.back); prim.addChild(grip.front);
   prim.sortDirty = true;
 }
-function copyKeys(o, mesh) {
-  if (o.elevation !== mesh.elevation || o.sortLayer !== mesh.sortLayer || o.sort !== mesh.sort || o.zIndex !== mesh.zIndex) {
-    o.elevation = mesh.elevation; o.sortLayer = mesh.sortLayer; o.sort = mesh.sort; o.zIndex = mesh.zIndex;
+function copyKeys(o, mesh, dz) {
+  const z = (mesh.zIndex ?? 0) + dz;
+  if (o.elevation !== mesh.elevation || o.sortLayer !== mesh.sortLayer || o.sort !== mesh.sort || o.zIndex !== z) {
+    o.elevation = mesh.elevation; o.sortLayer = mesh.sortLayer; o.sort = mesh.sort; o.zIndex = z;
     if (canvas.primary) canvas.primary.sortDirty = true;
   }
 }
@@ -184,7 +187,7 @@ function drawGrip(grip, now) {
   const show = battleActive() && !_hidden && R && meshShown(token);
   back.visible = grip.front.visible = !!show;
   if (!show) return;
-  copyKeys(back, token.mesh); copyKeys(grip.front, token.mesh);
+  copyKeys(back, token.mesh, -Z_EPS); copyKeys(grip.front, token.mesh, Z_EPS);
   const K = grip.skin, t = now - grip.t0, s = R.h / REF_H;
   let alpha = 1, limp = 0;
   if (grip.exit) { const u = (now - grip.exit.t0) / (grip.exit.kind === "snap" ? SNAP_MS : SLACK_MS);
@@ -244,7 +247,7 @@ export function installGrappleGripFx() {
   if (_installed) return;
   _installed = true;
   const soon = foundry.utils.debounce(() => { try { refresh(); } catch (e) { warn("[grapple-grip] refresh threw", e); } }, 30);
-  for (const h of ["createActiveEffect", "deleteActiveEffect", "updateActiveEffect", "createToken", "deleteToken"]) Hooks.on(h, soon);
+  for (const h of ["createActiveEffect", "deleteActiveEffect", "updateActiveEffect", "createToken", "deleteToken", "updateActor"]) Hooks.on(h, soon);
   Hooks.on("canvasReady", () => { for (const g of [...G.values()]) dispose(g); stopTicker(); try { refresh({ instant: true }); } catch (e) { warn("[grapple-grip] refresh threw", e); } });
   Hooks.on("canvasTearDown", () => { for (const g of [...G.values()]) dispose(g); stopTicker(); });
   // the 3D camera has just moved the meshes to their drawn spot: redraw on them

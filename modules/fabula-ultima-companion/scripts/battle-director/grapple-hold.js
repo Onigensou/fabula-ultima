@@ -49,16 +49,27 @@ const isHost = () => !!game.user?.isGM && !!_getDirector?.();
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const isGrappledAE = (e) => String(e?.name ?? "").trim().toLowerCase() === GRAPPLED;
 const holdOf = (doc) => doc?.getFlag?.(NS, HOLD_FLAG) ?? null;
+// Knocked out / defeated (HP 0): never held (ruling 2026-11-10: a KO releases).
+const isDown = (actor) => { const hp = Number(actor?.system?.props?.current_hp); return Number.isFinite(hp) && hp <= 0; };
 
-// Drawn sprite size + where its feet are, in 2D scene px. The mesh is read
-// outside a render, so the 3D camera's displacement is not in it.
+// Where a token really is: its saved position. While Foundry animates a move,
+// doc.x / doc.y are the in-between values (measured 2026-11-10), so a follow
+// read from them lands one move behind.
+const posOf = (doc) => ({ x: Number(doc?._source?.x ?? doc?.x), y: Number(doc?._source?.y ?? doc?.y) });
+
+// Drawn sprite size + where its feet are, in 2D scene px. From the texture
+// ("contain" in the token box × texture scale), not the mesh: the idle bounce
+// squashes the mesh, which made slots jitter by a few px.
 function geometry(doc) {
   const grid = doc.parent?.grid?.size ?? canvas?.dimensions?.size ?? 100;
   const boxW = doc.width * grid, boxH = doc.height * grid;
-  let spriteW = boxW * Math.abs(doc.texture?.scaleX ?? 1), spriteH = boxH * Math.abs(doc.texture?.scaleY ?? 1);
-  const mesh = doc.object?.mesh;
-  if (mesh && !mesh.destroyed && Math.abs(mesh.width) > 1 && Math.abs(mesh.height) > 1) { spriteW = Math.abs(mesh.width); spriteH = Math.abs(mesh.height); }
-  const cx = doc.x + boxW / 2, cy = doc.y + boxH / 2;
+  const sx = Math.abs(doc.texture?.scaleX ?? 1), sy = Math.abs(doc.texture?.scaleY ?? 1);
+  let spriteW = boxW * sx, spriteH = boxH * sy;
+  const tex = doc.object?.mesh?.texture;
+  const tw = Number(tex?.width), th = Number(tex?.height);
+  if (tw > 1 && th > 1) { const k = Math.min(boxW / tw, boxH / th); spriteW = tw * k * sx; spriteH = th * k * sy; }
+  const p = posOf(doc);
+  const cx = p.x + boxW / 2, cy = p.y + boxH / 2;
   return { grid, boxW, boxH, spriteW, spriteH, cx, feetY: cy + spriteH / 2 };
 }
 
@@ -105,6 +116,7 @@ function moveOpts(ms, easing = "easeInOutCosine") {
 /** Move a held token into its slot beside `grapplerDoc`. */
 export async function pull(heldDoc, grapplerDoc, { ms = PULL_MS, easing = "easeInCircle" } = {}) {
   if (!heldDoc || !grapplerDoc || heldDoc.parent !== grapplerDoc.parent) return false;
+  if (isDown(heldDoc.actor)) return false;
   // A bigger body than its grappler is not carried off (a giant stays put; the grip still shows).
   if (heldDoc.width > grapplerDoc.width || heldDoc.height > grapplerDoc.height) return false;
   const scene = heldDoc.parent;
@@ -114,9 +126,10 @@ export async function pull(heldDoc, grapplerDoc, { ms = PULL_MS, easing = "easeI
   const slot = same && Number.isInteger(hold.slot) ? hold.slot : freeSlot(taken);
   // Home: where it stood before any hold; if it was on its turn-step spot, the spot behind that.
   const step = heldDoc.getFlag?.(NS, STEP_FLAG);
-  const home = hold?.home ?? (step && Number.isFinite(Number(step.x)) ? { x: Number(step.x), y: Number(step.y) } : { x: heldDoc.x, y: heldDoc.y });
+  const home = hold?.home ?? (step && Number.isFinite(Number(step.x)) ? { x: Number(step.x), y: Number(step.y) } : posOf(heldDoc));
   const pos = slotFor(heldDoc, grapplerDoc, slot, home);
-  if (same && isAt(heldDoc, pos)) return false;
+  // 12 px: a pose swap changes the texture shape a little; never nudge a held unit for that.
+  if (same && isAt(posOf(heldDoc), pos, 12)) return false;
   const change = { x: pos.x, y: pos.y, [`flags.${NS}.${HOLD_FLAG}`]: { home, slot, by: grapplerDoc.uuid } };
   if (step) change[`flags.${NS}.-=${STEP_FLAG}`] = null;
   await heldDoc.update(change, moveOpts(ms, easing));
@@ -145,7 +158,7 @@ export async function reconcileGrapples(scene, { ms = 300 } = {}) {
   for (const doc of scene.tokens?.contents ?? []) {
     try {
       const actor = doc.actor;
-      const held = actor && isGrappled(actor);
+      const held = actor && isGrappled(actor) && !isDown(actor);
       const g = held ? grapplerTokenOf(actor, scene) : null;
       if (g) { if (await pull(doc, g, { ms, easing: "easeInOutCosine" })) n++; }
       else if (holdOf(doc)) { if (await release(doc, { ms })) n++; }
