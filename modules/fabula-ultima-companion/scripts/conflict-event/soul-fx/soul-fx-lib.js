@@ -232,13 +232,63 @@ export function silFire(p, sil, ox, oy, tt, src, o = {}) {
  *   drawBack(p, t, bobAt, k, flare)  behind the sprite
  *   draw(p, t, bobAt, k, flare, glowK) in front of it
  * t: clock; bobAt(t): its hover offset then; k 0..1 how lit; flare 0..1 absorbing.
+ * setWind(w, t) / setOrigin(x, t): change the breeze / move the fire while it burns (t = the clock you
+ *   draw with). o.motion: a makeFlameMotion() to share that history between flames that take over from
+ *   one another; o.trailPad: extra px of frame round it for the trail a moving fire leaves.
+ * o.cover: the fire burns ON the silhouette instead of round it (a fire bed over its
+ * pixels, tongues and licks drawn across it). Off by default (a body hides its pixels).
  * o.gpuGlow: leave the big soft glows (wash, column, body, floor pool) out of the
  * pixel buffers; glows(t, k, flare, glowK) lists them for the runtime to draw.
  * Loops every LOOP seconds (all of it is a function of t % LOOP).
  */
 export const FLAME_LOOP = 2;
+/** A value over time, sampled each frame: at(t) interpolates, int(t) integrates (both linear). Keeps 3 s. */
+function timeTrack() {
+  const h = [];   // [t, v, integral of v from the first entry to t]
+  const find = (tau) => { let lo = 0, hi = h.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (h[m][0] <= tau) lo = m; else hi = m - 1; } return lo; };
+  return {
+    get size() { return h.length; },
+    clear() { h.length = 0; },
+    push(t, v) {
+      if (h.length && t < h[h.length - 1][0]) h.length = 0;   // the clock went back: start over
+      const q = h[h.length - 1];
+      if (q && t === q[0]) { q[1] = v; return; }
+      h.push([t, v, q ? q[2] + (q[1] + v) / 2 * (t - q[0]) : 0]);
+      while (h.length > 2 && h[1][0] < t - 3) h.shift();   // particles live under 3 s
+    },
+    at(tau) {
+      if (tau <= h[0][0]) return h[0][1];
+      const i = find(tau), a = h[i], b = h[i + 1];
+      return b ? a[1] + (b[1] - a[1]) * (tau - a[0]) / (b[0] - a[0]) : a[1];
+    },
+    int(tau) {
+      if (tau <= h[0][0]) return h[0][1] * (tau - h[0][0]);
+      const i = find(tau), a = h[i], b = h[i + 1];
+      const v = b ? a[1] + (b[1] - a[1]) * (tau - a[0]) / (b[0] - a[0]) : a[1];
+      return a[2] + (a[1] + v) / 2 * (tau - a[0]);
+    },
+  };
+}
+/** The wind and place history of a moving flame; pass as o.motion to share it between flames. */
+export function makeFlameMotion() { return { wind: timeTrack(), origin: timeTrack() }; }
 export function makeSoulFlame(F, o = {}) {
-  const D = FLAME_LOOP, NL = noiseFor(D), S = o.seed ?? 4, gpuGlow = !!o.gpuGlow;
+  const D = FLAME_LOOP, NL = noiseFor(D), S = o.seed ?? 4, gpuGlow = !!o.gpuGlow, SMOKY = o.smoke !== false, COVER = !!o.cover;
+  // o.wind: a steady breeze, + = to the right (0 = none, ~1 = strong). Leans the tongues and carries the licks, puffs and embers.
+  // The wind and the place can change while it burns (o.motion, shared between flames that take over from
+  // one another). setWind(w, t): tongues lean with the wind NOW; a puff, lick or ember is carried by the wind
+  // AVERAGED over its own life, so a change never makes the particles jump. setOrigin(x, t): where the
+  // silhouette sits along x (screen px); what is already in the air stays where it was let go, so a moving
+  // fire leaves its licks and embers behind it. Steady wind, no origin set: draws exactly as before.
+  const MO = o.motion ?? makeFlameMotion();
+  let WIND = Number(o.wind) || 0, PULL = Math.max(0, 1 - Math.abs(WIND) * 0.8);   // the wind wins over the draw to the centre
+  const windOver = (t, age) => (MO.wind.size && age > 1e-3 ? (MO.wind.int(t) - MO.wind.int(t - age)) / age : WIND);
+  const leftBehind = (t, age) => (MO.origin.size && age > 0 ? MO.origin.at(t) - MO.origin.at(t - age) : 0);
+  function setWind(w, t) {
+    WIND = Number(w) || 0; PULL = Math.max(0, 1 - Math.abs(WIND) * 0.8);
+    if (t == null) MO.wind.clear(); else MO.wind.push(t, WIND);
+  }
+  function setOrigin(x, t) { MO.origin.push(t, x); }
+  const PAD = 40 + Math.max(0, o.trailPad ?? 0);   // how far round the silhouette it can draw (more for a moving fire's trail)
   const K = o.k ?? 1.8;
   const LIFT = o.lift ?? 15 * K;
   const GX0 = -18, GY0 = -64, GW = F.w + 36, GH = F.h + 70;
@@ -292,12 +342,12 @@ export function makeSoulFlame(F, o = {}) {
     }
 
   const fla = (tt) => 0.74 + 0.16 * NL(tt, 7.3, S + 1) + 0.1 * NL(tt, 19, S + 2);
-  const lean = (tt) => NL(tt, 0.67, S + 90) * 0.12;
+  const lean = (tt) => NL(tt, 0.67, S + 90) * 0.12 + WIND;
   const height = (q, tt, s, m) => {
     const n = q.n + s, leap = Math.max(0, NL(tt, 2.6, n + 70) - 0.55) * 1.4, h = 2 + LIFT * q.env * q.hMul;
     return (h + 0.25 * h * NL(tt, 3.3, n) + h * leap) * (0.9 + 0.1 * fla(tt)) * m;
   };
-  const sweep = (q, tt, h, s) => NL(tt, 2.2, q.n + s + 40) * (1 + h * 0.08) + lean(tt) * h * 0.9 - clamp((q.bx - cxF) * 0.08, -2.5, 2.5);
+  const sweep = (q, tt, h, s) => NL(tt, 2.2, q.n + s + 40) * (1 + h * 0.08) + lean(tt) * h * 0.9 - clamp((q.bx - cxF) * 0.08, -2.5, 2.5) * PULL;
   const tip = (q, tt, s, m) => { const h = height(q, tt, s, m); return [q.bx + sweep(q, tt, h, s) * K * 0.85, q.by - h * 0.88 + 2, h]; };
   const centreW = (x) => 1 - 0.35 * Math.pow(Math.min(1, Math.abs(x - cxF) / (F.w * 0.6)), 1.5);
 
@@ -313,6 +363,8 @@ export function makeSoulFlame(F, o = {}) {
         const rise = up < 1 ? 0.65 + 0.6 * NL(tt, 6, s + 9, (y + tt * 45) * 0.22 + x * 0.4) : 1;
         add(x, y, (0.26 + 0.42 * up) * (1 - (d - 1) / (sh + 0.5)) * centreW(x) * rise);
       }
+    // o.cover: a flickering fire bed on the silhouette itself
+    if (COVER) for (let y = 0; y < F.h; y++) for (let x = 0; x < F.w; x++) if (F.in(x, y)) add(x, y, (0.42 + 0.3 * NL(tt, 9, s + 13, x * 0.8 + (y + tt * 40) * 0.6)) * centreW(x));
     for (const q of list) {
       const h = height(q, tt, s, m), sx = sweep(q, tt, h, s), n = q.n + s;
       if (h < 1) continue;
@@ -333,7 +385,7 @@ export function makeSoulFlame(F, o = {}) {
         const v = heat[j * GW + i];
         if (v < 0.06) continue;
         const x = i + GX0, y = j + GY0;
-        if (F.in(x, y)) continue;
+        if (!COVER && F.in(x, y)) continue;
         if (v < 0.2 && NL(tt, 8, s + 61, x * 0.9 + (y + tt * 30) * 0.7) > 0.3) continue;
         const edge = at(i, j - 1) < 0.06 || at(i - 1, j) < 0.06 || at(i + 1, j) < 0.06;
         const c = edge ? ramp[6] : v > 0.86 ? ramp[0] : v > 0.66 ? ramp[1] : v > 0.48 ? ramp[2] : v > 0.32 ? ramp[3] : v > 0.18 ? ramp[4] : ramp[5];
@@ -342,18 +394,18 @@ export function makeSoulFlame(F, o = {}) {
   }
   function flow(p, t, bobAt, back, m, flare) {
     const tt = t % D, list = back ? BACK_T : FRONT_T, s = back ? S + 50 : S, HH = back ? FHB : FH, E = back ? EMB_B : EMB;
-    const Wx = (x) => F.x + x, Wy = (y, age) => F.y + y + bobAt(t - age);
+    const Wx = (x, age = 0) => F.x + x - leftBehind(t, age), Wy = (y, age) => F.y + y + bobAt(t - age);
     const DRAW_IN = 0.9, KV = Math.sqrt(K) * 1.1;
     const puff = (z, age, x0, y0) => {
-      const [x, y, vx, vy] = drift(x0 + z.ox, y0 + z.oy, z.vx - (x0 - cxF) * DRAW_IN, z.vy, Math.min(age, z.fire), 0, -95 * KV, 5, 3.2);
-      if (age < z.fire) return firePuff(p, Wx(x), Wy(y, age), 1 - age / z.fire, z.sz, z.f, HH);
-      if (!z.smokes || age - z.fire > z.sl) return;
+      const [x, y, vx, vy] = drift(x0 + z.ox, y0 + z.oy, z.vx + windOver(t, age) * z.wx - (x0 - cxF) * DRAW_IN, z.vy, Math.min(age, z.fire), 0, -95 * KV, 5, 3.2);
+      if (age < z.fire) return firePuff(p, Wx(x, age), Wy(y, age), 1 - age / z.fire, z.sz, z.f, HH);
+      if (!SMOKY || !z.smokes || age - z.fire > z.sl) return;
       const [sx, sy] = drift(x, y, vx * 0.6, vy * 0.6 - 6, age - z.fire, 3, -16, 1.6, 1.2);
-      smokePuff(p, Wx(sx), Wy(sy, age), 1 - (age - z.fire) / z.sl, z.sz * 0.75, SMOKE);
+      smokePuff(p, Wx(sx, age), Wy(sy, age), 1 - (age - z.fire) / z.sl, z.sz * 0.75, SMOKE);
     };
     const mk = (r, env) => {
       const fire = r.range(0.14, 0.3), smokes = r.chance(0.45);
-      return { back: r.chance(0.4), fire, smokes, sl: r.range(0.8, 1.3), ox: r.range(-1, 1) * K, oy: r.range(0, 3) * K, vx: r.range(-4, 4) * KV, vy: -r.range(15, 30) * KV, sz: r.range(0.8, 1.6) * (0.8 + 0.6 * env) * K * 1.1, f: r.next(), life: fire + (smokes ? 1.3 : 0), g: r.next() };
+      return { back: r.chance(0.4), fire, smokes, sl: r.range(0.8, 1.3), ox: r.range(-1, 1) * K, oy: r.range(0, 3) * K, vx: r.range(-4, 4) * KV, wx: 45 * KV, vy: -r.range(15, 30) * KV, sz: r.range(0.8, 1.6) * (0.8 + 0.6 * env) * K * 1.1, f: r.next(), life: fire + (smokes ? 1.3 : 0), g: r.next() };
     };
     const gate = (z) => z.g < 0.5 || z.g < 0.5 + 0.5 * flare;
     looped(tt, D, Math.round(list.length * 8 * D * 1.6), s + 200, (r, j) => ({ ...mk(r, list[j % list.length].env), q: list[j % list.length] }), (z, age) => {
@@ -365,21 +417,21 @@ export function makeSoulFlame(F, o = {}) {
       if (z.back !== back || !gate(z)) return;
       puff(z, age, z.x0, z.y0);
     });
-    looped(tt, D, list.length * 8, s + 220, (r, j) => ({ q: list[j % list.length], back: r.chance(0.4), vx: r.range(-3, 3) * KV, vy: -r.range(12, 22) * KV, sz: r.range(0.9, 1.5) * (0.7 + 0.5 * list[j % list.length].env) * K, life: 0.26 }), (z, age) => {
+    looped(tt, D, list.length * 8, s + 220, (r, j) => ({ q: list[j % list.length], back: r.chance(0.4), vx: r.range(-3, 3) * KV, wx: 30 * KV, vy: -r.range(12, 22) * KV, sz: r.range(0.9, 1.5) * (0.7 + 0.5 * list[j % list.length].env) * K, life: 0.26 }), (z, age) => {
       if (z.back !== back) return;
-      const [tx, ty] = tip(z.q, tt - age, s, m), lx = tx + z.vx * age, ly = ty - 2 + z.vy * age;
-      if (!back && F.in(Math.round(lx), Math.round(ly))) return;
-      lick(p, Wx(lx), Wy(ly, age), 1 - age / z.life, z.sz, HH);
+      const [tx, ty] = tip(z.q, tt - age, s, m), lx = tx + (z.vx + windOver(t, age) * z.wx) * age, ly = ty - 2 + z.vy * age;
+      if (!back && !COVER && F.in(Math.round(lx), Math.round(ly))) return;
+      lick(p, Wx(lx, age), Wy(ly, age), 1 - age / z.life, z.sz, HH);
     });
-    if (back) looped(tt, D, 12 * D, s + 300, (r) => ({ x: cxF + r.range(-6, 6), y: top - LIFT * 0.7 - r.range(0, 8), vx: r.range(-2, 2), vy: -r.range(10, 17), life: r.range(1.6, 2.4), sz: r.range(2.4, 3.6) * K }), (z, age) => {
+    if (back && SMOKY) looped(tt, D, 12 * D, s + 300, (r) => ({ x: cxF + r.range(-6, 6), y: top - LIFT * 0.7 - r.range(0, 8), vx: r.range(-2, 2), vy: -r.range(10, 17), life: r.range(1.6, 2.4), sz: r.range(2.4, 3.6) * K }), (z, age) => {
       const [x, y] = drift(z.x, z.y, z.vx * KV, z.vy * KV, age, 4, -20 * KV, 1.6, 1);
-      smokePuff(p, Wx(x + NL(tt - age, 0.5, s + 60) * (2 + 3 * age)), Wy(y, age), 1 - age / z.life, z.sz, SMOKE, false, 0.8);
+      smokePuff(p, Wx(x + NL(tt - age, 0.5, s + 60) * (2 + 3 * age), age), Wy(y, age), 1 - age / z.life, z.sz, SMOKE, false, 0.8);
     });
-    looped(tt, D, 14 * D, s + 500, (r) => { const f = fuel[Math.floor(r.next() * fuel.length)]; return { x: f[0], back: r.chance(0.4), y: f[1] - r.range(2, 10), vx: r.range(-15, 15), vy: -r.range(25, 55), life: r.range(1, 1.9), sz: r.chance(0.15) ? 2 : r.range(1, 1.6), a: r.range(0, 6.3), b: r.range(0, 6.3) }; }, (z, age) => {
+    looped(tt, D, 14 * D, s + 500, (r) => { const f = fuel[Math.floor(r.next() * fuel.length)]; return { x: f[0], back: r.chance(0.4), y: f[1] - r.range(2, 10), vx: r.range(-15, 15), wx: 60, vy: -r.range(25, 55), life: r.range(1, 1.9), sz: r.chance(0.15) ? 2 : r.range(1, 1.6), a: r.range(0, 6.3), b: r.range(0, 6.3) }; }, (z, age) => {
       if (z.back !== back) return;
-      const [x, y] = drift(z.x, z.y, z.vx, z.vy, age, 0, -30, 1.6, 1.6);
-      if (!back && F.in(Math.round(x), Math.round(y))) return;
-      ember(p, Wx(x + 7 * (Math.sin(age * 2.3 + z.a) - Math.sin(z.a))), Wy(y + 2 * (Math.sin(age * 3 + z.b) - Math.sin(z.b)), age), 1 - age / z.life, z.sz, E, age * 40 + z.a);
+      const [x, y] = drift(z.x, z.y, z.vx + windOver(t, age) * z.wx, z.vy, age, 0, -30, 1.6, 1.6);
+      if (!back && !COVER && F.in(Math.round(x), Math.round(y))) return;
+      ember(p, Wx(x + 7 * (Math.sin(age * 2.3 + z.a) - Math.sin(z.a)), age), Wy(y + 2 * (Math.sin(age * 3 + z.b) - Math.sin(z.b)), age), 1 - age / z.life, z.sz, E, age * 40 + z.a);
     });
   }
   /** Keep the bloom off the body: its own pixels carry its brightness. */
@@ -410,9 +462,9 @@ export function makeSoulFlame(F, o = {}) {
     return out;
   }
   return {
-    D, glows, dimLightOnBody,
+    D, glows, dimLightOnBody, setWind, setOrigin,
     /** Where it can draw, local to the silhouette's top-left (for sizing frames). */
-    extent: { x0: -40, y0: -Math.ceil(LIFT * 2 + 150), x1: F.w + 40, y1: F.h + 16 },
+    extent: { x0: -PAD, y0: -Math.ceil(LIFT * 2 + 150), x1: F.w + PAD, y1: F.h + 16 },
     drawBack(p, t, bobAt, k = 1, flare = 0) {
       if (k <= 0.02) return;
       const tt = t % D, by = bobAt(t), m = k * (1 + 0.8 * flare), fl = fla(tt), lx = lean(tt) * 12;

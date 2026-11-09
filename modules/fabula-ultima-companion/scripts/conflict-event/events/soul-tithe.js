@@ -76,16 +76,19 @@ const FRAGMENT_DEFEAT_STYLE = "soul_release";
 const SHOW_STAGGER_S = 0.18;
 
 /**
- * Where fragments stand, as fractions of the STAGE (token-centre coordinates):
- * the middle of the stage, one slot per player in party order so a fragment keeps
- * its place across rounds and two can never land on one spot. Staggered, because in
- * one column each HP badge sat on the name of the fragment above it.
+ * Where fragments stand, as fractions of the STAGE (token-centre coordinates): on the
+ * enemy side, just in front of the enemy line (the user, 2026-11-09: the middle of the
+ * stage read as no one's), one slot per player in party order so a fragment keeps its
+ * place across rounds and two can never land on one spot. Staggered, because in one
+ * column each HP badge sat on the name of the fragment above it. For scale: the enemy
+ * zone (formation.js ENEMY_ZONE) ends at x 0.39 and its front lane stands at x 0.28;
+ * the party's line starts at x 0.71.
  */
 const ANCHORS = [
-  { x: 0.37, y: 0.27 },
-  { x: 0.5, y: 0.42 },
-  { x: 0.37, y: 0.57 },
-  { x: 0.5, y: 0.72 },
+  { x: 0.33, y: 0.27 },
+  { x: 0.40, y: 0.42 },
+  { x: 0.33, y: 0.57 },
+  { x: 0.40, y: 0.72 },
 ];
 
 // ── Pure rules (exported for the bare-Node harness) ─────────────────────────
