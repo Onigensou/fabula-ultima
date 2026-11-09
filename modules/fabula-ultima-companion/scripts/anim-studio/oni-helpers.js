@@ -748,7 +748,11 @@ export function buildOni(ctx, env) {
         zIndex: l === "light" ? 95010 : 95000,
       });
       if (!fx) return null;
-      fx.sprite.anchor.set(mirror ? 1 - an.x : an.x, an.y);
+      // vfx() mirrors by flipping scale.x, which already turns the clip around its anchor,
+      // so the anchor stays on the clip's own point (a beam's source, an arrow's tip).
+      // Moving it to 1 - x as well mirrored it twice: an asymmetric clip landed on the
+      // wrong side of its point (Solar Beam fired into the party, 2026-11-10).
+      fx.sprite.anchor.set(an.x, an.y);
       fx.sprite.position.set(px, py);
       if (l === "back") underTokens(fx.sprite);
       return fx;
