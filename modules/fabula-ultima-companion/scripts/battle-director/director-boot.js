@@ -892,7 +892,9 @@ async function resumeFromSavedState({ scene, state, animateBanner = true }) {
       warn("resume: failed to restore pendingAction — falling back to TURN_START", e);
       resumeAt = STATES.TURN_START;
     }
-  } else if ((dCombat.round ?? 0) === 0) {
+  } else if ((dCombat.round ?? 0) === 0 && !dCombat.freeRound) {
+    // (A Free Round is round 0 too, but a round is running: it falls through
+    // to the turn routing below like any other round.)
     // "Battle Start" rewind / cold resume — conflict_start hasn't
     // completed yet. dCombat.start() leaves round=0 as the pre-combat
     // phase marker; ROUND_START.onEnter bumps to 1 only when entering

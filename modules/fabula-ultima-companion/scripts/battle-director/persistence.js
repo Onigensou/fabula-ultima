@@ -331,6 +331,17 @@ export async function saveDirectorState(director, opts = {}) {
       initiativeMode: dc.initiativeMode,
       engagement: dc.engagement,
       initiativeThisRound: dc.initiativeThisRound ?? null,
+      // Free Round (Ambush / Advantage). round=0 alone means "Battle Start" to
+      // the resume router; `freeRound` tells it a round is actually running.
+      freeRoundPending: !!dc.freeRoundPending,
+      freeRound: !!dc.freeRound,
+      freeRoundSide: dc.freeRoundSide ?? null,
+      // Summon free actions waiting for the end of their Quicken/Delay phase.
+      // The request is plain data (ids, numbers, the preset bundle).
+      heldSummonActions: (() => {
+        try { return JSON.parse(JSON.stringify(dc.heldSummonActions ?? [])); }
+        catch (e) { warn("save: heldSummonActions not serializable — dropped", e); return []; }
+      })(),
       // currentCombatantId is preserved so resume re-picks the same
       // actor whose turn it was. Resume rewinds to TURN_START which
       // re-enters DECLARE — the player re-makes their pick.
@@ -352,6 +363,10 @@ export async function saveDirectorState(director, opts = {}) {
         turnsPerRound: c.turnsPerRound,
         turnsRemaining: c.turnsRemaining,
         defeated: c.defeated,
+        // Speed-phase lock for this round ({ round, tier }) — without it a
+        // reload would re-read a status landed after the creature's first turn
+        // and move its remaining activations.
+        phaseLock: c.phaseLock ?? null,
         // Full token document data so the rewind tool can RECREATE a token
         // that was deleted since this save (an Illusionist Phantasm shattered,
         // a `destroy_summon`'d drake, a GM-reaped corpse). For unlinked summon
@@ -883,6 +898,12 @@ export async function reconstructDirectorCombat(state, scene) {
   dc.initiativeMode = state.dCombat.initiativeMode ?? "rolled";
   dc.engagement = state.dCombat.engagement ?? "normal";
   dc.initiativeThisRound = state.dCombat.initiativeThisRound ?? null;
+  // Free Round + held summon actions. A save from before the Free Round
+  // existed has none of these: such a fight simply has no Free Round.
+  dc.freeRoundPending = !!state.dCombat.freeRoundPending;
+  dc.freeRound = !!state.dCombat.freeRound;
+  dc.freeRoundSide = state.dCombat.freeRoundSide ?? null;
+  dc.heldSummonActions = Array.isArray(state.dCombat.heldSummonActions) ? state.dCombat.heldSummonActions : [];
   // Preserve `currentCombatantId` from the saved snapshot so the resume
   // lands on the SAME combatant whose turn it was. We validate it after
   // combatants are loaded below (and fall back to null — forcing a re-
@@ -932,6 +953,7 @@ export async function reconstructDirectorCombat(state, scene) {
     combatant.id = sc.id;
     combatant.turnsRemaining = sc.turnsRemaining ?? combatant.turnsPerRound;
     combatant.defeated = !!sc.defeated;
+    combatant.phaseLock = sc.phaseLock ?? null;
     dc.combatants.push(combatant);
   }
 

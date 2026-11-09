@@ -2252,13 +2252,20 @@ const Prep = {
 // (persisted via dCombat.initiativeThisRound + firstSide/currentSide).
 //
 // Modes:
-//   • Ambush / Advantage — ROUND 1 only: the favoured side is forced first (the
-//     consecutive surprise round is enforced by dCombat.nextTurn); flash
-//     "AMBUSH!" / "ADVANTAGE!".
+//   • Ambush / Advantage no longer pass through here: they add a Free Round
+//     (round 0) BEFORE Round 1, which ROUND_START handles on its own. Round 1
+//     is resolved like any other round.
 //   • rolled       — every round: backend Initiative Group Check
 //     (director-initiative.js); the winner acts first; flash
 //     "Player/Enemy Initiative".
 //   • sidePriority — legacy fixed rule (firstSide set at build); no roll, no flash.
+// The round bar's text for the Free Round ("AMBUSH" / "ADVANTAGE"), in place of
+// "ROUND 0". Exported through the banner payload so player clients and resume
+// draw the same words.
+function freeRoundLabel(dc) {
+  return dc?.engagement === "ambush" ? "Ambush" : "Advantage";
+}
+
 async function resolveRoundInitiative(director, roundNo) {
   const dc = director?.dCombat;
   if (!dc) return null;
@@ -2271,15 +2278,6 @@ async function resolveRoundInitiative(director, roundNo) {
     dc.firstSide = side;
     dc.currentSide = side;
     return null;
-  }
-
-  // Round 1 Ambush / Advantage — forced surprise side, no check.
-  if (roundNo === 1 && (dc.engagement === "ambush" || dc.engagement === "advantage")) {
-    const side = dc.engagement === "ambush" ? "enemy" : "party";
-    dc.firstSide = side;
-    dc.currentSide = side;
-    dc.initiativeThisRound = { round: roundNo, side, forced: true, engagement: dc.engagement };
-    return { kind: dc.engagement };
   }
 
   // Rolled mode — backend Initiative Group Check every round.
@@ -2312,7 +2310,8 @@ const RoundStart = {
     // A pending wrap means a round just finished and its round_end reactions have
     // settled: the conflict event's round-end beat. (The first ROUND_START has no
     // wrap pending, so this never fires before Round 1.) No-ops without an event.
-    if (director.dCombat?.pendingRoundWrap) {
+    // Not after the Free Round: round-level rules wait for Round 1.
+    if (director.dCombat?.pendingRoundWrap && !director.dCombat?.freeRound) {
       try {
         const { dispatchConflictEventRoundEnd } = await import("../conflict-event/conflict-event-runtime.js");
         await dispatchConflictEventRoundEnd(director);
@@ -2328,11 +2327,33 @@ const RoundStart = {
     if (director.dCombat?.beginPendingRound?.()) {
       log(`ROUND_START — applied the deferred wrap into round ${director.dCombat.round}`);
     }
+    // Free Round (Ambush / Advantage). The first ROUND_START of such a fight
+    // enters it instead of Round 1: round stays 0, only the favoured side has
+    // turns. Round-level rules wait for Round 1 — no initiative roll, no
+    // Dominance, no round_start reactions or conflict-event round beat. The
+    // plate reads AMBUSH! / ADVANTAGE! instead of a round number.
+    if (director.dCombat?.freeRoundPending && (director.dCombat.round ?? 0) === 0) {
+      const dc = director.dCombat;
+      dc.enterFreeRound();
+      dc.initiativeThisRound = { round: 0, side: dc.freeRoundSide, forced: true, engagement: dc.engagement, freeRound: true };
+      log(`ROUND_START — Free Round (${dc.engagement}): ${dc.freeRoundSide} acts`);
+      director.ctx.initiativeBannerDone = playRoundBanner({
+        round: 0, followup: { kind: dc.engagement }, label: freeRoundLabel(dc),
+      });
+      // Turn-level rules run as usual, so the window still opens (it releases
+      // held summon actions and drains free actions) — but with no trigger.
+      director.ctx.standaloneTrigger = "none";
+      director.ctx.standaloneAfter   = STATES.TURN_START;
+      director.ctx.standalonePayload = null;
+      director.enqueue({ type: INTENTS.INTERNAL_DONE });
+      return;
+    }
     // First-round bump. dCombat.start() leaves round=0 (the pre-combat
     // / conflict_start phase). The first ROUND_START transitions us
     // into Round 1; subsequent ROUND_STARTs arrive with the wrap just
-    // applied above and leave it alone.
-    if (director.dCombat && (director.dCombat.round ?? 0) === 0) {
+    // applied above (which also turns the Free Round into Round 1) and
+    // leave it alone.
+    if (director.dCombat && (director.dCombat.round ?? 0) === 0 && !director.dCombat.freeRound) {
       director.dCombat.round = 1;
     }
     const roundNo = director.dCombat?.round ?? director.combat?.round ?? 0;
@@ -2522,13 +2543,15 @@ const TurnStart = {
       // prior TURN_END cleared it).
       if (!dc.currentCombatantId) {
         let eligible = dc.eligibleOnSide(dc.currentSide);
-        // Defensive: if the active side has no eligible, try the other side
-        // (handles unusual mid-combat defeats not yet seen by nextTurn).
+        // The active side has nobody to act in the phase being played → the
+        // other side goes. Routine with speed phases (the initiative winner has
+        // no Quickened creature; a status moved someone mid-round), and still
+        // the guard for mid-combat defeats nextTurn hasn't seen.
         if (eligible.length === 0) {
           const other = dc._otherSide(dc.currentSide);
           const otherE = dc.eligibleOnSide(other);
           if (otherE.length > 0) {
-            warn(`TURN_START: ${dc.currentSide} side has no eligible, swapping to ${other}`);
+            log(`TURN_START: ${dc.currentSide} side has nobody in this phase, swapping to ${other}`);
             dc.currentSide = other;
             eligible = otherE;
           }
@@ -2752,6 +2775,9 @@ const TurnStart = {
         }
       }
       const current = dc.current;
+      // Lock its speed phase for the rest of the round (first turn only): a
+      // Quicken/Delay it picks up during this turn applies next round.
+      if (current) dc.lockPhase(current);
       if (current) {
         try {
           publishTurnStatus({
@@ -8373,7 +8399,7 @@ const TurnEnd = {
           ? `Combat Ended`
           : director.ctx.endOfRound
             ? `Round ${teRoundEnded + 1} · Round Start`
-            : `Round ${teNewRound} · ${teNewSide} Pick Next Turn`,
+            : `${director.dCombat.freeRound ? "Free Round" : `Round ${teNewRound}`} · ${teNewSide} Pick Next Turn`,
         description: teDescParts.join(" · "),
       }).catch((e) => warn("TURN_END: saveDirectorState failed", e));
 
@@ -8459,7 +8485,10 @@ const RoundEnd = {
     // Hand off to STANDALONE_REACTION_WINDOW for round_end. The transition
     // rule branches on endOfCombat (combat over → STOPPED, otherwise →
     // STANDALONE_REACTION_WINDOW → ROUND_START).
-    director.ctx.standaloneTrigger = "round_end";
+    // The Free Round's end fires no round_end reactions (a Late Actor's dive
+    // included): round-level rules wait for Round 1. The window still opens
+    // with no trigger, for the free-action drain.
+    director.ctx.standaloneTrigger = director.dCombat?.freeRound ? "none" : "round_end";
     director.ctx.standaloneAfter   = STATES.ROUND_START;
     director.ctx.standalonePayload = null;
     director.enqueue({ type: INTENTS.INTERNAL_DONE });
@@ -8506,6 +8535,10 @@ const StandaloneReactionWindow = {
       return;
     }
     log(`STANDALONE_REACTION_WINDOW: ${trigger} (final target ${finalTarget}, depth ${stackDepth(ctx)})`);
+    // "none" — a window with no lifecycle trigger (the Free Round's start and
+    // end: round-level rules wait for Round 1). It dispatches nothing but still
+    // releases held summon actions and drains the free-action queue below.
+    const NO_TRIGGER = trigger === "none";
     // Transactional instance frame — EVERY standalone lifecycle trigger now runs
     // as a transaction: a deterministic FORCED pass (ticks like Burn commit +
     // forced grants enqueue) → settleInstance drains the resource ledger to
@@ -8524,7 +8557,9 @@ const StandaloneReactionWindow = {
     // this handler is a standalone trigger, so this set covers all of them.
     const PHASED = STANDALONE_TRIGGERS.has(trigger);
     try {
-      if (PHASED) {
+      if (NO_TRIGGER) {
+        // nothing to dispatch
+      } else if (PHASED) {
         if (!wasReentry) {
           // Crisis reconcile BEFORE the forced dispatch. The event-driven crisis
           // reactor only fires on HP CHANGES, so it misses (a) a creature already
@@ -8663,6 +8698,22 @@ const StandaloneReactionWindow = {
     } catch (e) {
       warn(`STANDALONE_REACTION_WINDOW: ${trigger} dispatch threw`, e);
     }
+    // Held summon free actions (a turn-less summon under Quicken/Delay acts at
+    // the END of its phase — dCombat.takeDueHeldActions). Every phase end
+    // passes through a standalone window: the last Quicken turn's turn_end, the
+    // round's last turn_end (pending wrap), and the next round's round_start.
+    // Released into the free-action queue, so the detour below runs them.
+    try {
+      const due = director.dCombat && !director.dCombat.ended && !ctx.endOfCombat
+        ? (director.dCombat.takeDueHeldActions?.() ?? []) : [];
+      if (due.length) {
+        const { freeActionQueue } = await import("./free-action-queue.js");
+        for (const h of due) {
+          log(`STANDALONE_REACTION_WINDOW: releasing ${h.name || "summon"}'s held free action (end of the ${h.tier > 0 ? "Quicken" : "Delay"} phase)`);
+          freeActionQueue.enqueue(h.request);
+        }
+      }
+    } catch (e) { warn("STANDALONE_REACTION_WINDOW: held summon action release threw", e); }
     // If any reaction enqueued a free-action grant (open_action_menu
     // free_mode), push a continuation frame capturing where we'll
     // resume after the queue drains, then route to FAW. FAW's exit

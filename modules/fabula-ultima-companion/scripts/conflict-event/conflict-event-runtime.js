@@ -201,6 +201,11 @@ export async function dispatchConflictEventLifecycle(director, trigger) {
   const handlerName = LIFECYCLE_HANDLERS[trigger];
   if (!handlerName) return;
   if (!game.user?.isGM) return;
+  // The Free Round (Ambush / Advantage, round 0) is not a counted round: the
+  // event's beats — the Lightning Crystal's countdown, the Storm's strikes —
+  // wait for Round 1 (user ruling, 2026-11-09). conflict_start already ran
+  // before the Free Round began, so it is unaffected.
+  if (director?.dCombat?.freeRound && trigger !== "conflict_start") return;
 
   const active = activeConflictEvent(director);
   if (!active) return;

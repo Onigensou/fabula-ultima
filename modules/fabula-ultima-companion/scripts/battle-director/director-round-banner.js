@@ -29,6 +29,7 @@ import { deskUnits } from "./gm-desk.js";
 import { setTurnGlow } from "./turn-glow.js";
 import { turnCueWillRun, isTurnCueEnabled, CUE_LANDED_HOOK } from "./turn-start-cue.js";
 import { playRoundPlateLocal, SEAL_AT_MS } from "./round-plate.js";
+import { speedTierOf } from "./speed-phase.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const ACTION_PLAY = "FU_DIRECTOR_ROUND_PLAY";
@@ -505,6 +506,19 @@ function ensureStyle() {
 #${LAYER_ID} .fu-rb-ta-icon:hover .fu-rb-ta-book-mini { opacity: 0; }
 /* On the mirrored (left) side, put the badge at the visual bottom-RIGHT (local
    left) and un-mirror the glyph. */
+/* Speed phase tag (Quicken / Delay) at the top corner. The left group is
+   mirrored, so the tag sits at its visual top-left and un-mirrors its letter. */
+#${LAYER_ID} .fu-rb-ta-speed {
+  position: absolute; top: 0.4vh; left: 0.6vh; z-index: 4; pointer-events: none;
+  display: none; min-width: 2.2vh; height: 2.2vh; padding: 0 0.35vh; border-radius: 3px;
+  font: 800 1.45vh/2.2vh "Signika", sans-serif; text-align: center; color: #10130f;
+  box-shadow: 0 1px 3px rgba(0,0,0,.6);
+}
+#${LAYER_ID} .fu-rb-ta-icon.speed-q .fu-rb-ta-speed { display: block; background: #6fd49a; }
+#${LAYER_ID} .fu-rb-ta-icon.speed-q .fu-rb-ta-speed::after { content: "Q"; }
+#${LAYER_ID} .fu-rb-ta-icon.speed-d .fu-rb-ta-speed { display: block; background: #f2ad52; }
+#${LAYER_ID} .fu-rb-ta-icon.speed-d .fu-rb-ta-speed::after { content: "D"; }
+#${LAYER_ID} .fu-rb-ta-group.left .fu-rb-ta-speed { left: auto; right: 0.6vh; transform: scaleX(-1); }
 #${LAYER_ID} .fu-rb-ta-group.left .fu-rb-ta-book-mini { right: auto; left: 0.5vh; }
 #${LAYER_ID} .fu-rb-ta-group.left .fu-rb-ta-book-mini i { transform: scaleX(-1); }
 /* ── Active-turn spotlight ──────────────────────────────────────────────────
@@ -618,10 +632,11 @@ const sleep = pWait;
 // Place the bar at its docked spot (top-centre, docked scale) with ROUND N at
 // its resting transform. Nothing is revealed here; callers either snap it on
 // (instant) or assemble it (assembleDockedBar).
-function placeDockedBar(fu, { round, dockTopPct, dockScale, dockBgOpacity }) {
+function placeDockedBar(fu, { round, label = null, dockTopPct, dockScale, dockBgOpacity }) {
   const { band, bg, lt, lb, tx } = fu;
   for (const el of [band, bg, lt, lb, tx]) el.getAnimations?.().forEach((a) => a.cancel());
-  tx.textContent = `ROUND ${round}`;
+  // `label` replaces "ROUND N" — the Free Round reads AMBUSH / ADVANTAGE.
+  tx.textContent = label ? String(label).toUpperCase() : `ROUND ${round}`;
   band.style.top = `${dockTopPct}%`;
   band.style.transform = `translateY(0%) scale(${dockScale})`;
   bg.style.opacity = String(dockBgOpacity);
@@ -640,9 +655,9 @@ function activateLayer(layer) {
 // ROUND N under it, then the creature icons fill in from the middle out and the
 // side that won the initiative breathes in its colour. Resolves once the frame
 // is complete (the icon wave + glow carry on by themselves).
-async function assembleDockedBar(layer, { round, side = null, dockTopPct, dockScale, dockBgOpacity }) {
+async function assembleDockedBar(layer, { round, label = null, side = null, dockTopPct, dockScale, dockBgOpacity }) {
   const fu = layer.__fu;
-  placeDockedBar(fu, { round, dockTopPct, dockScale, dockBgOpacity });
+  placeDockedBar(fu, { round, label, dockTopPct, dockScale, dockBgOpacity });
   const { lt, lb, tx, spotlight } = fu;
   tx.style.opacity = "0";
   lt.style.transform = "scaleX(0)";
@@ -731,8 +746,11 @@ async function playRoundBannerLocal(payload = {}) {
       instant = false,
       // Optional initiative ({ kind, side }) carried on the plate as a seal.
       followup = null,
+      // Optional text in place of "Round N" (the Free Round: "Ambush" /
+      // "Advantage"). The plate then carries a "Free Round" seal.
+      label = null,
     } = payload;
-    const dock = { round, dockTopPct, dockScale, dockBgOpacity };
+    const dock = { round, label, dockTopPct, dockScale, dockBgOpacity };
     // Players have no live combat object: this is how a client knows the round
     // (the merge status's Quick Summoning line reads it).
     try { globalThis.__fudDisplayRound = round; Hooks.callAll("fud.displayRound", round); } catch { /* sandbox */ }
@@ -760,7 +778,9 @@ async function playRoundBannerLocal(payload = {}) {
 
     const spec = resolveFollowupSpec(followup);
     if (sfx) playRoundSfx(ROUND_SFX_URL, sfxVol);
-    const plate = playRoundPlateLocal({ title: `Round ${round}`, seal: spec ? { side: spec.side, text: spec.text } : null });
+    const plate = label
+      ? playRoundPlateLocal({ title: `${plateTitle(label)}!`, seal: spec ? { side: spec.side, text: "Free Round" } : null })
+      : playRoundPlateLocal({ title: `Round ${round}`, seal: spec ? { side: spec.side, text: spec.text } : null });
     // The side's initiative cue lands with the seal (cached buffer → in sync).
     if (spec && sfx) sleep(SEAL_AT_MS).then(() => playRoundSfx(spec.sfx, 0.7));
 
@@ -803,10 +823,17 @@ export function previewInitiativeBanner(followup = { kind: "initiative", side: "
   return playRoundPlateLocal({ title: `Round ${round}`, seal: spec ? { side: spec.side, text: spec.text } : null }).done;
 }
 
+// The bar text during a Free Round ("Ambush" / "Advantage"), else null. Reads a
+// live dCombat or its saved shape (both carry freeRound + engagement).
+function freeRoundBarLabel(dc) {
+  if (!dc?.freeRound) return null;
+  return dc.engagement === "ambush" ? "Ambush" : "Advantage";
+}
+
 // ── public: fire from ROUND_START ─────────────────────────────────────────
 // Render on THIS (GM) client + broadcast to all OTHERS. Fire-and-forget so the
 // FSM is not blocked by the ~2.5s cinematic.
-export function playRoundBanner({ round = 0, followup = null } = {}) {
+export function playRoundBanner({ round = 0, followup = null, label = null } = {}) {
   try {
     // Populate the icons from the LIVE combat before revealing them. The
     // dCombat start()/nextTurn turn-action hook normally builds them, but after
@@ -816,7 +843,7 @@ export function playRoundBanner({ round = 0, followup = null } = {}) {
     // in the normal path (re-snapshots the same data). GM-only inside.
     try { globalThis.FUCompanion?.api?.experimental?.battleDirector?.refreshTurnActions?.(); }
     catch (_e) {}
-    const payload = { round, ...(followup ? { followup } : {}) };
+    const payload = { round, ...(followup ? { followup } : {}), ...(label ? { label } : {}) };
     // Capture the GM-local completion so the caller (ROUND_START) can hand the
     // director a signal to gate the enemy autopilot on. Still non-blocking: the
     // broadcast + return happen immediately; only the RETURNED promise waits.
@@ -841,7 +868,8 @@ export function playRoundBanner({ round = 0, followup = null } = {}) {
 export async function showRoundBannerForResume(dCombat, { animate = true } = {}) {
   try {
     const round = Number(dCombat?.round) || 0;
-    if (round < 1) {
+    const label = freeRoundBarLabel(dCombat);
+    if (round < 1 && !label) {
       // Rewound to before Round 1 (start of conflict, round 0). There's no
       // round to show — clear any stale docked banner + icons so the old
       // ROUND N HUD doesn't linger. It re-appears when Round 1 actually
@@ -852,7 +880,7 @@ export async function showRoundBannerForResume(dCombat, { animate = true } = {})
     // Populate the icons FIRST so they're present when the band docks. GM-only
     // inside refreshTurnActions; it also broadcasts the icon snapshot.
     refreshTurnActions(dCombat);
-    const payload = { round, instant: !animate };
+    const payload = { round, instant: !animate, ...(label ? { label } : {}) };
     try { _socket?.executeForOthers?.(ACTION_PLAY, payload); }
     catch (e) { warn("showRoundBannerForResume: broadcast failed", e); }
     await playRoundBannerLocal(payload);
@@ -888,6 +916,14 @@ async function buildSnapshotFromState(dc) {
       crisis: combatantInCrisis(shim),
       defeated: combatantDefeated(shim),
       tokenUuid: sc.tokenUuid ?? null,
+      // Same rule as DirectorCombat.speedTierOf: the saved lock for this round,
+      // else the live statuses on the token's actor.
+      speed: (() => {
+        try {
+          if (sc.phaseLock && sc.phaseLock.round === dc.round) return Number(sc.phaseLock.tier) || 0;
+          return speedTierOf(td?.actor ?? baseActor ?? null);
+        } catch { return 0; }
+      })(),
       focus: normalizeIconFocus(baseActor?.getFlag?.(MODULE_ID, "iconFocus")),
     });
   }
@@ -904,11 +940,13 @@ export async function showRoundBannerForResumeFromState(state, { animate = false
   try {
     const dc = state?.dCombat;
     const round = Number(dc?.round) || 0;
-    // Nothing to show unless a round is actually in progress.
-    if (!dc || !dc.started || dc.ended || round < 1) return;
+    const label = freeRoundBarLabel(dc);
+    // Nothing to show unless a round is actually in progress (the Free Round
+    // is round 0 but counts).
+    if (!dc || !dc.started || dc.ended || (round < 1 && !label)) return;
     const snap = await buildSnapshotFromState(dc);
     renderTurnActionsLocal(snap);          // local-only renderer (no broadcast)
-    await playRoundBannerLocal({ round, instant: !animate }); // local-only
+    await playRoundBannerLocal({ round, instant: !animate, ...(label ? { label } : {}) }); // local-only
   } catch (e) {
     warn("showRoundBannerForResumeFromState threw", e);
   }
@@ -973,11 +1011,13 @@ export function applyIconFocusStyle(media, focus) {
 
 function buildTurnActionIcon(c) {
   const icon = document.createElement("div");
-  icon.className = "fu-rb-ta-icon" + (c.crisis ? " crisis" : "") + (c.defeated ? " defeated" : "");
+  icon.className = "fu-rb-ta-icon" + (c.crisis ? " crisis" : "") + (c.defeated ? " defeated" : "")
+    + (c.speed > 0 ? " speed-q" : c.speed < 0 ? " speed-d" : "");
+  if (c.speed) icon.title = `${c.name ?? ""} — ${c.speed > 0 ? "Quicken" : "Delay"}`;
   // Unique per activation icon (id#activationIndex) so multi-activation creatures
   // get one addressable icon each.
   icon.dataset.cid = `${c.id}#${c._act ?? 0}`;
-  icon.title = c.name ?? "";
+  if (!c.speed) icon.title = c.name ?? "";
   let media;
   if (isVideoSrc(c.img)) {
     media = document.createElement("video");
@@ -997,6 +1037,11 @@ function buildTurnActionIcon(c) {
   wrap.appendChild(media);
   frame.appendChild(wrap);
   icon.appendChild(frame);
+  // Quicken / Delay tag — always present, shown by the speed-q / speed-d class
+  // so a status change mid-round is a class toggle on the existing icon.
+  const speedTag = document.createElement("div");
+  speedTag.className = "fu-rb-ta-speed";
+  icon.appendChild(speedTag);
   // Enemy icons open that monster in the Party Menu Bestiary on click; a book
   // badge fades in on hover as the affordance (see CSS, keyed off .left group).
   if (c.side === "enemy" && c.tokenUuid) {
@@ -1254,6 +1299,8 @@ function renderTurnActionsLocal(combatants = [], opts = {}) {
         if (!icon) continue;
         icon.classList.toggle("crisis", !!c.crisis); // crisis warning tint
         icon.classList.toggle("defeated", !!c.defeated); // HP-0 grey + skull
+        icon.classList.toggle("speed-q", c.speed > 0);    // Quicken phase tag
+        icon.classList.toggle("speed-d", c.speed < 0);    // Delay phase tag
         // Re-apply focus too, so a focal-point change (tuner Save) updates the
         // existing icons even though membership is unchanged.
         const media = icon.querySelector(".fu-rb-ta-media");
@@ -1426,6 +1473,8 @@ function buildTurnActionSnapshot(dCombat) {
       tokenId: td?.id ?? c.tokenId ?? null,
       actorId: td?.actorId ?? c.actorId ?? null,
       turnsPerRound: Number(c.turnsPerRound ?? 1),
+      // Speed phase this round: +1 Quicken, -1 Delay, 0 Normal (lock-aware).
+      speed: (() => { try { return dCombat?.speedTierOf?.(c) ?? 0; } catch { return 0; } })(),
       focus: normalizeIconFocus(baseActor?.getFlag?.(MODULE_ID, "iconFocus")),
     });
   }

@@ -10957,7 +10957,7 @@ async function applyFreeActionEffect(row, ctx) {
   // An AE carrier has no ctx.skill (Paladin Armor's transfer AE): its row names
   // itself with source_label, else the window showed the raw effect_label.
   const sourceLabel = ctx.skill?.name ?? (String(row.source_label ?? "").trim() || row.effect_label) ?? "Free Action";
-  freeActionQueue.enqueue({
+  const request = {
     reactorActorId:   performer.id,
     reactorActorUuid: performer.uuid,
     reactorTokenUuid: performerToken?.uuid ?? ctx.reactorToken?.uuid ?? null,
@@ -10987,10 +10987,59 @@ async function applyFreeActionEffect(row, ctx) {
     // A follow-up to a spell the performer just finished runs after the reactions
     // to that spell (see free-action-queue.js nextIndex).
     afterReactions: ctx.reactionTrigger === "creature_completes_spell",
-  });
+  };
+
+  // A summon with no turn of its own (Birth of the Cruel's Minion) under
+  // Quicken or Delay acts at the END of its phase instead of right now (user
+  // ruling, 2026-11-09): the request is held on the combat and released by the
+  // standalone window when that phase ends. Without either status — or with
+  // both — it acts right after the turn that granted it, as before.
+  const held = holdSummonFreeAction({ request, ctx, reactor, performer, performerToken, chain: request.chain });
+  if (held) {
+    return { ok: true, kind: "free_action", queued: true, held: true, freeMode: true, applied: [{ actor: performer.uuid, sourceLabel, enabledLabels, held: held.tier > 0 ? "quicken" : "delay" }] };
+  }
+
+  freeActionQueue.enqueue(request);
   if (ctx.reactionTrigger === "creature_completes_spell") log(`free_action: "${sourceLabel}" waits for the reactions to the spell`);
   log(`free_action: enqueued "${sourceLabel}" for ${performer.name} — ${preset ? `preset ${preset.command} (${presetItem?.name})` : `compose [${enabledLabels.join(", ") || "any"}]`} (+${checkBonus} check / +${damageBonus} dmg)`);
   return { ok: true, kind: "free_action", queued: true, freeMode: true, applied: [{ actor: performer.uuid, sourceLabel, enabledLabels, checkBonus, damageBonus, preset: preset ? preset.command : null }] };
+}
+
+// Hold a free action for a turn-less summon under Quicken/Delay (see the call
+// site in applyFreeActionEffect). Returns the held entry, or null when the
+// action should be queued now. Only a summon GRANTED an action by someone else
+// (its summoner) qualifies — a creature's own free action (a guest's Late Actor)
+// already has its place in the round. Phantasms act inside their summoner's
+// own action, and Chain strikes are part of the action that triggered them.
+function holdSummonFreeAction({ request, ctx, reactor, performer, performerToken, chain }) {
+  try {
+    if (chain) return null;
+    const dc = ctx?.dCombat
+      ?? ctx?.director?.dCombat
+      ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()?.dCombat
+      ?? null;
+    if (!dc?.started || dc.ended || typeof dc.holdSummonAction !== "function") return null;
+    if (!performer || performer === reactor || performer.uuid === reactor?.uuid) return null;
+    const tokDoc = performerToken?.document ?? performerToken ?? null;
+    const flags = tokDoc?.flags?.["fabula-ultima-companion"] ?? {};
+    if (!flags.isSummon || flags.isPhantasm) return null;
+    const c = dc.combatants.find((x) => x.tokenUuid === tokDoc?.uuid) ?? null;
+    if (!c || Number(c.turnsPerRound) > 0) return null;
+    const tier = dc.speedTierOf(c);
+    if (!tier) return null;
+    // The phase of the turn that granted it (the summoner's, locked at its
+    // turn start), so "end of the Quicken phase" means THIS round's when the
+    // summoner was Quickened too.
+    const reactorTokUuid = ctx?.reactorToken?.uuid ?? ctx?.reactorToken?.document?.uuid ?? null;
+    const src = dc.combatants.find((x) => (reactorTokUuid && x.tokenUuid === reactorTokUuid) || x.actorUuid === reactor?.uuid) ?? null;
+    return dc.holdSummonAction({
+      request, tier, performerTokenUuid: tokDoc.uuid, name: performer.name,
+      sourcePhase: src ? dc.speedTierOf(src) : undefined,
+    });
+  } catch (e) {
+    warn("skill-effects.free_action: summon hold check threw — acting now", e);
+    return null;
+  }
 }
 
 function freeActionPresentation(item, performer, { source = "", freeOfCost = false } = {}) {

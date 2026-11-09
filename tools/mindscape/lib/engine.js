@@ -1347,10 +1347,31 @@ function orderedRound(state, order) {
 // an activation left acts (enemy-autopilot rankEnemyCombatants; the sim drives the
 // party the same way). Monsters with several activations therefore spread them
 // across the round instead of taking them in one block.
+//
+// Speed phases (BD 2026-11-09, director-combat.js eligibleOnSide): the round plays
+// QUICKEN → NORMAL → DELAY. Only the earliest phase that still has a turn left is
+// eligible, and the alternation carries across a phase border. Quicken + Delay
+// together act Normal. A creature's phase locks at its first turn of the round.
+function speedTier(c) {
+  const named = (re) => (c.aes ?? []).some((a) => re.test(String(a?.name ?? "")));
+  const quicken = named(/^quicken(ed)?$/i);
+  const delay = !!c.delay || named(/^delay(ed)?$/i);
+  return (quicken ? 1 : 0) - (delay ? 1 : 0);
+}
+
 function alternatingRound(state) {
   const left = new Map();
   for (const c of state.combatants) if (c.alive && c.joinedRound !== state.round) left.set(c, c.baseTurns);
-  const eligible = (side) => [...left.keys()].filter((c) => c.side === side && c.alive && left.get(c) > 0);
+  const lock = new Map();
+  const tierOf = (c) => (lock.has(c) ? lock.get(c) : speedTier(c));
+  const phase = () => {
+    const live = [...left.keys()].filter((c) => c.alive && left.get(c) > 0).map(tierOf);
+    return live.length ? Math.max(...live) : null;
+  };
+  const eligible = (side) => {
+    const p = phase();
+    return [...left.keys()].filter((c) => c.side === side && c.alive && left.get(c) > 0 && tierOf(c) === p);
+  };
   let side = rollInitiative(state);
   state.initiativeSide = side;
   for (let guard = 0; guard < 200; guard++) {
@@ -1364,6 +1385,7 @@ function alternatingRound(state) {
       .map((x) => ({ x, score: initiativeScore(x) + state.rng.float() * 2 - 1 }))
       .sort((a, b) => b.score - a.score)[0].x;
     const t = c.baseTurns - left.get(c);
+    if (!lock.has(c)) lock.set(c, speedTier(c));
     left.set(c, left.get(c) - 1);
     actOnce(state, c, t);
     if (left.get(c) === 0 && c.alive) grantedTurns(state, c);
