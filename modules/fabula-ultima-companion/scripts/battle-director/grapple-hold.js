@@ -113,8 +113,15 @@ function moveOpts(ms, easing = "easeInOutCosine") {
     : { oniBypassGate: true, fuGrapple: true, animate: false };
 }
 
+// Pulls and releases run one at a time: a multi-target grab lands several Grappled
+// AEs at once, and parallel pulls each read the slots before the others saved theirs
+// (two units got slot 0, 2026-11-10).
+let _serial = Promise.resolve();
+function serial(fn) { const p = _serial.then(fn, fn); _serial = p.catch(() => {}); return p; }
+
 /** Move a held token into its slot beside `grapplerDoc`. */
-export async function pull(heldDoc, grapplerDoc, { ms = PULL_MS, easing = "easeInCircle" } = {}) {
+export function pull(heldDoc, grapplerDoc, opts = {}) { return serial(() => pullNow(heldDoc, grapplerDoc, opts)); }
+async function pullNow(heldDoc, grapplerDoc, { ms = PULL_MS, easing = "easeInCircle" } = {}) {
   if (!heldDoc || !grapplerDoc || heldDoc.parent !== grapplerDoc.parent) return false;
   if (isDown(heldDoc.actor)) return false;
   // A bigger body than its grappler is not carried off (a giant stays put; the grip still shows).
@@ -137,7 +144,8 @@ export async function pull(heldDoc, grapplerDoc, { ms = PULL_MS, easing = "easeI
 }
 
 /** Walk a token with a saved home back to it and drop the hold flag. */
-export async function release(heldDoc, { ms = RELEASE_MS } = {}) {
+export function release(heldDoc, opts = {}) { return serial(() => releaseNow(heldDoc, opts)); }
+async function releaseNow(heldDoc, { ms = RELEASE_MS } = {}) {
   const hold = holdOf(heldDoc);
   if (!hold) return false;
   const change = { [`flags.${NS}.-=${HOLD_FLAG}`]: null };

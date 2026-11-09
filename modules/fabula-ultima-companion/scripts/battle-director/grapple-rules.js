@@ -34,7 +34,9 @@ export function resolveSkin(flagValue) {
 // Where a held unit stands, in the reference stage px the mockup was tuned in
 // (grid 110). Slot 0 is in front of the grappler's body; a multi-target grab
 // fans the others out around it. [dx toward the held side, dy down-screen].
-export const SLOTS = Object.freeze([[0, 18], [92, -74], [-14, 84], [120, 6]]);
+// v2 (user, 2026-11-10): slot 1 sat ~90 px from slot 0 and the front unit hid most of it; spread so no two
+// held bodies share more than a sliver (slot 2 tucks in front of the grappler's body, slot 3 goes out wide).
+export const SLOTS = Object.freeze([[0, 18], [150, -70], [-95, 92], [255, -10]]);
 export const MAX_SLOTS = SLOTS.length;
 export const REF_GRID = 110;
 export const DEFAULT_OVERLAP = 0.3;   // share of the held unit's width inside the grappler's space

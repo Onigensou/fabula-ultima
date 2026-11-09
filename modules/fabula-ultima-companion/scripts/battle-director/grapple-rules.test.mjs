@@ -34,7 +34,7 @@ t("left side mirrors, grid scales the slot offsets", () => {
   const l = slotPosition({ grappler: g, held: h, side: -1, index: 1, grid: 220 });
   assert.equal((r.x + 50) - 1000, 1000 - (l.x + 50));
   assert.equal(r.y, l.y);
-  assert.equal((r.y + 50 + 75) - 500, -148);   // slot 1 dy -74 at grid 220
+  assert.equal((r.y + 50 + 75) - 500, -140);   // slot 1 dy -70 at grid 220
 });
 
 t("side + isAt", () => {
