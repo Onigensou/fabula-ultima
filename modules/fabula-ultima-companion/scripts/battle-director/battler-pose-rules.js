@@ -115,7 +115,29 @@ export function statePoseSrc(effects, failed = null) {
     const src = effectPoseArt(e);
     if (src && !(failed && failed.has(src))) return src;
   }
-  return null;
+  return comboPoseArt(list, failed);
+}
+
+// Effects that only make sense TOGETHER (Asura's four element Marks: each lights
+// one blade, and the token shows the one sprite for the exact set held) carry
+// `flags.<ns>.poseCombo = { key, order: [...keys], art: { "<bits>": url } }`.
+// The bits follow `order`: "1010" = the 1st and 3rd keys are held. Every effect
+// of the set carries the same order/art table, so whichever is read first works.
+export function poseComboOf(e) {
+  if (!e || e.disabled === true) return null;
+  const c = e.flags?.[NS]?.poseCombo;
+  return c && String(c.key ?? "").trim() && Array.isArray(c.order) ? c : null;
+}
+
+export function comboPoseArt(effects, failed = null) {
+  const list = Array.isArray(effects) ? effects : [...(effects ?? [])];
+  const live = list.map(poseComboOf).filter(Boolean);
+  if (!live.length) return null;
+  const have = new Set(live.map((c) => String(c.key).trim()));
+  const spec = live[0];
+  const bits = spec.order.map((k) => (have.has(String(k).trim()) ? "1" : "0")).join("");
+  const src = String(spec.art?.[bits] ?? "").trim();
+  return src && !(failed && failed.has(src)) ? src : null;
 }
 
 // The lasting pose for an actor's effects: KO beats Guard beats an effect's own
@@ -125,7 +147,7 @@ export function lastingPose(effects) {
   const list = Array.isArray(effects) ? effects : [...(effects ?? [])];
   if (list.some(isKoEffect)) return "ko";
   if (list.some(isGuardEffect)) return "guard";
-  if (list.some(effectPoseArt)) return "state";
+  if (list.some(effectPoseArt) || comboPoseArt(list)) return "state";
   if (list.some(isCrisisEffect)) return "crisis";
   return "idle";
 }

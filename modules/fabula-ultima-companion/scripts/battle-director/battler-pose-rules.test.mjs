@@ -160,4 +160,27 @@ t("statePoseSrc reads the effect, skips failed art", () => {
   assert.equal(effectPoseArt(crisis), null);
 });
 
+console.log("combo art (Asura's element Marks)");
+const ORDER = ["fire", "bolt", "ice", "air"];
+const ART = { "1000": "f.webm", "1010": "fi.webm", "1111": "all.webm" };
+const mark = (key, extra = {}) => ({ name: `${key} Mark`, flags: { [NS]: { poseCombo: { key, order: ORDER, art: ART } } }, ...extra });
+t("one mark -> its single art, state pose", () => {
+  assert.equal(lastingPose([mark("fire")]), "state");
+  assert.equal(statePoseSrc([mark("fire")]), "f.webm");
+});
+t("the exact set picks the art, in any effect order", () => {
+  assert.equal(statePoseSrc([mark("ice"), mark("fire")]), "fi.webm");
+  assert.equal(statePoseSrc([mark("air"), mark("ice"), crisis, mark("bolt"), mark("fire")]), "all.webm");
+});
+t("a disabled mark drops out of the set", () => {
+  assert.equal(statePoseSrc([mark("fire"), mark("ice", { disabled: true })]), "f.webm");
+});
+t("a set with no art (or failed art) -> idle, not a blank state", () => {
+  assert.equal(lastingPose([mark("bolt")]), "idle");
+  assert.equal(statePoseSrc([mark("fire")], new Set(["f.webm"])), null);
+});
+t("a direct poseArt effect still wins over a combo", () => {
+  assert.equal(statePoseSrc([mark("fire"), artFx("a.png")]), "a.png");
+});
+
 console.log(`\n${n} passed`);

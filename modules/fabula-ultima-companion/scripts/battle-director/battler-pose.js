@@ -185,6 +185,7 @@ function onTokenDrawn(token) {
   entry.applied = null;
   for (const src of declaredPoseSrcs(propsOf(token))) loadArt(token, src);
   entry.lasting = lastingPose(effectsOf(token));
+  entry.stateArt = entry.lasting === "state" ? statePoseSrc(effectsOf(token), _failedSrcs) : null;
   render(token, { fresh: true });
 }
 
@@ -201,10 +202,15 @@ function onEffectChanged(effect) {
   for (const token of tokensOfActor(actor)) {
     if (!inScope(token)) continue;
     const entry = entryFor(token);
-    const next = lastingPose(effectsOf(token));
-    if (next === entry.lasting) continue;
+    const effects = effectsOf(token);
+    const next = lastingPose(effects);
+    // A state can stay a state while its ART changes (Sword Stance -> Sword and
+    // Flail Stance, one lit Asura blade -> two): re-render on the art too.
+    const nextArt = next === "state" ? statePoseSrc(effects, _failedSrcs) : null;
+    if (next === entry.lasting && nextArt === (entry.stateArt ?? null)) continue;
     const prev = entry.lasting;
     entry.lasting = next;
+    entry.stateArt = nextArt;
     trace(token, "lasting", { from: prev, to: next, effect: effect.name });
     log(`battler-pose: ${token.name} ${prev} -> ${next}`);
     // Entering KO plays the fall from the start; anything else just switches.
