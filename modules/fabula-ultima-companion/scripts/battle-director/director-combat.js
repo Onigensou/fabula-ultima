@@ -22,11 +22,23 @@
 //   - Dynamic turn order within a side: caller (TurnStart) picks via
 //     turn-picker UI when multiple eligible; auto-picks when only one.
 //
-// Future phases:
-//   - Phase 3: activation counters fully here (drop Lancer flag dependency)
-//   - Phase 4: reload survival (persist to world flag)
+// Speed phases (2026-11-09): every round plays QUICKEN → NORMAL → DELAY
+// (speed-phase.js). eligibleOnSide() only offers the earliest phase that still
+// has turns, so the turn picker AND the enemy autopilot follow it without
+// knowing phases exist. The side alternation is untouched and carries straight
+// across a phase border. A creature's phase locks at its first turn of the
+// round (a status landing after that applies next round); an un-acted creature
+// reads its statuses live, so Quicken/Delay applied mid-round move it at once.
+//
+// Free Round (2026-11-09): an Ambush / Player Advantage engagement gives the
+// favoured side ONE extra round, before Round 1, with all of its activations.
+// It is round 0 with `freeRound` set: ROUND reads 0, enemy patterns keyed to
+// "Round No. 1" still open Round 1, and round-level rules (round_start /
+// round_end triggers, conflict-event beats, the initiative roll, Dominance)
+// wait for Round 1. Turn-level rules run as usual. See enterFreeRound().
 
 import { log, warn } from "./logger.js";
+import { speedTierOf as actorSpeedTier, PHASE_ORDER, tierName } from "./speed-phase.js";
 
 // Base activation count from actor (Champions/Elites can have >1; PCs default 1).
 // Mirrors the legacy `readDesiredActivations` in `Battle Initiator`.
@@ -144,6 +156,12 @@ export class DirectorCombatant {
     this.initiative = initiative;
     this.defeated = false;
 
+    // Speed-phase lock: { round, tier } stamped when this creature takes its
+    // FIRST turn of a round. While it matches the live round, the creature
+    // stays in that phase for the rest of the round (all its activations move
+    // together); a Quicken/Delay landing after that applies next round.
+    this.phaseLock = null;
+
     // Free-form flags slot.
     this.flags = Object.create(null);
   }
@@ -202,11 +220,28 @@ export class DirectorCombat {
     //                    enemies act first all fight; else the party acts first.
     //                    No roll, no initiative banner.
     this.initiativeMode = "rolled";
-    // engagement: "normal" | "ambush" | "advantage". Ambush/Advantage only alter
-    // ROUND 1: the favoured side takes ALL of its turns CONSECUTIVELY before the
-    // other side acts (JRPG surprise-round). From round 2 on, normal rules
-    // (initiativeMode) resume. See _alternationPolicyForRound / nextTurn.
+    // engagement: "normal" | "ambush" | "advantage". Ambush/Advantage add a Free
+    // Round BEFORE Round 1: only the favoured side acts, with all its
+    // activations. Round 1 onward is a normal round (initiativeMode decides who
+    // leads). See enterFreeRound().
     this.engagement = "normal";
+    // Free Round state. `freeRoundPending` is set at start() for an
+    // Ambush/Advantage fight and consumed by the first ROUND_START, which calls
+    // enterFreeRound(). `freeRound` is true for the whole Free Round (round 0),
+    // including its round-end phase, and cleared by beginPendingRound() as Round
+    // 1 begins. `freeRoundSide` is the side that acts in it.
+    this.freeRoundPending = false;
+    this.freeRound = false;
+    this.freeRoundSide = null;
+
+    // Held summon free actions (Quicken/Delay on a summon with no turn of its
+    // own — Birth of the Cruel's Minion). A held action waits for the END of its
+    // phase: Delay → the end of the round; Quicken → the end of the Quicken
+    // phase (next round's, when this round's is already over). Released by
+    // takeDueHeldActions() from the standalone reaction window. Shape:
+    //   { request, tier, round, heldAtPhase, performerTokenUuid, name }
+    // `request` is the FreeActionRequest exactly as it would have been queued.
+    this.heldSummonActions = [];
     // Per-round initiative result, committed by ROUND_START's resolver so a
     // mid-round reload doesn't re-roll and flip sides. Shape:
     //   { round, side, leaderName?, leaderTotal?, dl?, bonus?, forced? }
@@ -424,10 +459,52 @@ export class DirectorCombat {
     return this.combatants.find((c) => c.id === id) ?? null;
   }
 
-  // Eligible combatants on a side = un-defeated with turnsRemaining > 0.
+  // Un-defeated with turnsRemaining > 0, on either side, ignoring phases.
+  _hasTurnsLeft(c) {
+    return !c.isDefeatedLive() && c.turnsRemaining > 0;
+  }
+
+  // The phase tier this combatant acts in THIS round: its lock if it has
+  // already taken a turn this round, else its live Quicken/Delay statuses.
+  // The token's actor first — an unlinked NPC's statuses live on its synthetic
+  // actor, not the base actor `actorDoc` may point at.
+  speedTierOf(c) {
+    if (c?.phaseLock && c.phaseLock.round === this.round) return c.phaseLock.tier;
+    try { return actorSpeedTier(c?.tokenDoc?.actor ?? c?.actorDoc ?? null); }
+    catch (e) { warn(`speedTierOf(${c?.name}) threw — treating as Normal`, e); return 0; }
+  }
+
+  // The phase being played: the earliest phase (Quicken → Normal → Delay) that
+  // still has a combatant with turns left on EITHER side. null = nobody left.
+  currentPhaseTier() {
+    const live = this.combatants.filter((c) => this._hasTurnsLeft(c));
+    if (!live.length) return null;
+    const tiers = new Set(live.map((c) => this.speedTierOf(c)));
+    for (const t of PHASE_ORDER) if (tiers.has(t)) return t;
+    return null;
+  }
+
+  // Stamp the combatant's phase for the rest of this round. Called when its
+  // turn is picked (TURN_START), so a status it lands on itself during that
+  // turn does not move its remaining activations. Idempotent within a round.
+  lockPhase(c) {
+    if (!c) return;
+    if (c.phaseLock && c.phaseLock.round === this.round) return;
+    const tier = this.speedTierOf(c);
+    c.phaseLock = { round: this.round, tier };
+    if (tier !== 0) log(`phase: ${c.name} acts in the ${tierName(tier)} phase this round`);
+  }
+
+  // Eligible combatants on a side = un-defeated, turnsRemaining > 0, AND in the
+  // phase currently being played. Everything that picks a turn (TURN_START's
+  // picker, the enemy autopilot, nextTurn's side choice) reads this, so the
+  // phases need no other wiring. An empty list for one side while the other
+  // still has turns in the phase is normal — the side alternation moves on.
   eligibleOnSide(side) {
+    const phase = this.currentPhaseTier();
+    if (phase === null) return [];
     return this.combatants.filter((c) =>
-      c.side === side && !c.isDefeatedLive() && c.turnsRemaining > 0
+      c.side === side && this._hasTurnsLeft(c) && this.speedTierOf(c) === phase
     );
   }
 
@@ -435,19 +512,94 @@ export class DirectorCombat {
     return side === "party" ? "enemy" : "party";
   }
 
-  // Turn-ordering policy for a given round:
-  //   "consecutive" — the leading side takes ALL its turns before the other side
-  //                   acts (no alternation). Used for ROUND 1 under an Ambush /
-  //                   Advantage engagement (JRPG surprise round).
-  //   "alternate"   — the RAW side-by-side alternation (default every round, and
-  //                   every round ≥ 2 even after an ambush/advantage round 1).
-  // nextTurn() reads this each turn so the ordering rule is always derived from
-  // live state (engagement + round), never cached.
-  _alternationPolicyForRound(round) {
-    if (round === 1 && (this.engagement === "ambush" || this.engagement === "advantage")) {
-      return "consecutive";
-    }
+  // Turn-ordering policy. Always the RAW side-by-side alternation now: the old
+  // "consecutive" Ambush/Advantage round 1 is replaced by the Free Round, where
+  // only the favoured side has turns at all. Kept as a method so nextTurn reads
+  // one place if a policy ever returns.
+  _alternationPolicyForRound(_round) {
     return "alternate";
+  }
+
+  // ── Free Round ──────────────────────────────────────────────────────
+
+  // Enter the Free Round (round 0). Called by the first ROUND_START when
+  // freeRoundPending is set. The favoured side gets all of its activations;
+  // the other side gets none (its reactions still work — they don't use turns).
+  enterFreeRound() {
+    if (!this.freeRoundPending) return false;
+    this.freeRoundPending = false;
+    const side = this.engagement === "ambush" ? "enemy" : "party";
+    this.freeRound = true;
+    this.freeRoundSide = side;
+    this.round = 0;
+    this.turn = 0;
+    this._turnsTakenThisRound = 0;
+    for (const c of this.combatants) {
+      const perRound = this._effectiveActivation(c);
+      c.turnsPerRound = perRound;
+      c.turnsRemaining = (c.side === side && !c.isDefeatedLive()) ? perRound : 0;
+    }
+    this.currentSide = side;
+    this.currentCombatantId = null;
+    log(`Free Round (${this.engagement}): ${side} acts with all activations`);
+    this._notifyTurnActions();
+    return true;
+  }
+
+  // ── Held summon free actions ────────────────────────────────────────
+
+  // Hold a summon's free action until the end of its phase. `entry` carries the
+  // queued FreeActionRequest plus the performer's tier (+1 / -1).
+  // `sourcePhase` = the phase of the turn that granted it (the summoner's,
+  // read off its lock). Without it, the phase in play now is used — but by a
+  // turn_end window nextTurn() has already run, so when the summoner was the
+  // LAST Quickened creature the live phase has moved on to Normal and the
+  // action would wait a whole extra round.
+  holdSummonAction({ request, tier, performerTokenUuid = null, name = "", sourcePhase = undefined }) {
+    const entry = {
+      request, tier, round: this.round,
+      // A Quicken action held after this round's Quicken phase is over waits
+      // for next round's.
+      heldAtPhase: sourcePhase === undefined ? this.currentPhaseTier() : sourcePhase,
+      performerTokenUuid, name,
+    };
+    this.heldSummonActions.push(entry);
+    log(`held ${name || "summon"}'s free action until the end of the ${tierName(tier)} phase (round ${this.round})`);
+    return entry;
+  }
+
+  // Remove and return every held action whose phase has ended. Dead/removed
+  // performers are dropped (their action never happens).
+  //   Delay   → due once this round's turns are all spent (the round-end
+  //             phase), or any later point.
+  //   Quicken → due once the Quicken phase it is waiting for is over: this
+  //             round's if it was held DURING it, else the next round's.
+  takeDueHeldActions() {
+    if (!this.heldSummonActions.length) return [];
+    const phase = this.currentPhaseTier();
+    const roundOver = this.pendingRoundWrap || phase === null;
+    const due = [];
+    const keep = [];
+    for (const h of this.heldSummonActions) {
+      const performer = this.combatants.find((c) => c.tokenUuid === h.performerTokenUuid) ?? null;
+      if (!performer || performer.isDefeatedLive()) {
+        log(`held action for ${h.name || "?"} dropped — performer gone`);
+        continue;
+      }
+      let isDue = false;
+      if (h.tier < 0) {
+        isDue = this.round > h.round || (this.round === h.round && roundOver);
+      } else {
+        // The round wrap is deferred, so `this.round` is still the old round
+        // through its round-end phase: an action held after this round's
+        // Quicken phase stays put until the next round's has played out.
+        const quickenOver = phase === null || phase < 1;
+        isDue = quickenOver && (this.round > h.round || h.heldAtPhase === 1);
+      }
+      (isDue ? due : keep).push(h);
+    }
+    this.heldSummonActions = keep;
+    return due;
   }
 
   // ── Mutators ────────────────────────────────────────────────────────
@@ -564,10 +716,17 @@ export class DirectorCombat {
     for (const c of this.combatants) {
       c.turnsPerRound = this._effectiveActivation(c);
       c.turnsRemaining = c.isDefeatedLive() ? 0 : c.turnsPerRound;
+      c.phaseLock = null;
     }
+    // Ambush / Advantage → a Free Round before Round 1. The first ROUND_START
+    // enters it (enterFreeRound), after conflict_start has fully played out.
+    this.freeRoundPending = (this.engagement === "ambush" || this.engagement === "advantage");
+    this.freeRound = false;
+    this.freeRoundSide = null;
+    this.heldSummonActions = [];
     this.currentSide = this.firstSide;
     this.currentCombatantId = null; // resolved by the first TurnStart pick
-    log(`DirectorCombat started: ${this.combatants.length} combatants on ${this.scene?.name ?? "?"}, firstSide=${this.firstSide}`);
+    log(`DirectorCombat started: ${this.combatants.length} combatants on ${this.scene?.name ?? "?"}, firstSide=${this.firstSide}${this.freeRoundPending ? `, Free Round (${this.engagement}) first` : ""}`);
     this._notifyTurnActions();
   }
 
@@ -648,6 +807,11 @@ export class DirectorCombat {
   beginPendingRound() {
     if (!this.pendingRoundWrap) return false;
     this.pendingRoundWrap = false;
+    // The Free Round is round 0, so the bump below lands on Round 1 exactly.
+    if (this.freeRound) {
+      log(`Free Round over — Round 1 begins`);
+      this.freeRound = false;
+    }
     this.round++;
     this.turn = 0;
     this._resetRoundCounters();
@@ -714,10 +878,9 @@ export class DirectorCombat {
     let sameEligible = this.eligibleOnSide(sameSide);
     let otherEligible = this.eligibleOnSide(otherSide);
 
-    // Ordering policy for the CURRENT round. "consecutive" (Ambush/Advantage
-    // round 1) prefers STAYING on the leading side until it is exhausted, then
-    // hands the whole turn block to the other side. "alternate" (default) flips
-    // sides each turn per RAW.
+    // Ordering policy for the CURRENT round — always "alternate" now (see
+    // _alternationPolicyForRound). The eligible lists above are phase-filtered,
+    // so this same alternation carries across a Quicken → Normal → Delay border.
     const consecutive = this._alternationPolicyForRound(this.round) === "consecutive";
 
     let wrappedRound = false;
@@ -810,6 +973,10 @@ export class DirectorCombat {
       currentSide: this.currentSide,
       initiativeMode: this.initiativeMode,
       engagement: this.engagement,
+      freeRound: this.freeRound,
+      freeRoundPending: this.freeRoundPending,
+      phase: this.currentPhaseTier(),
+      heldSummonActions: this.heldSummonActions.map((h) => ({ name: h.name, tier: h.tier, round: h.round })),
       initiativeThisRound: this.initiativeThisRound,
       currentCombatantId: this.currentCombatantId,
       started: this.started,
@@ -824,6 +991,7 @@ export class DirectorCombat {
         rank: c.rank,
         turnsPerRound: c.turnsPerRound,
         turnsRemaining: c.turnsRemaining,
+        speedTier: this.speedTierOf(c),
         disposition: c.disposition,
         tokenId: c.tokenId,
         defeated: c.isDefeatedLive(),
@@ -835,15 +1003,14 @@ export class DirectorCombat {
 // Build a DirectorCombat from a list of TokenDocument arrays. Used by
 // PrepState directly (no Foundry Combat doc is created in director mode).
 //
-// First-side rule depends on the chosen initiativeMode + engagement:
-//   • engagement "ambush"    → enemies lead round 1 (consecutive surprise round).
-//   • engagement "advantage" → party leads round 1 (consecutive surprise round).
-//   • engagement "normal":
-//       – initiativeMode "rolled"       → provisional (party); the round-1
-//         Initiative Group Check at ROUND_START (director-initiative.js) rolls
-//         and OVERRIDES firstSide/currentSide before the first turn is picked.
-//       – initiativeMode "sidePriority" → legacy fixed rule: any enemy
-//         Villain/Boss present → enemies first; else party first.
+// First-side rule (who leads Round 1 onward) depends on initiativeMode only:
+//   • "rolled"       → provisional (party); each round's Initiative Group Check
+//     at ROUND_START (director-initiative.js) rolls and OVERRIDES
+//     firstSide/currentSide before the first turn is picked.
+//   • "sidePriority" → legacy fixed rule: any enemy Villain/Boss present →
+//     enemies first; else party first.
+// Ambush / Advantage no longer touch it: they add a Free Round BEFORE Round 1
+// (DirectorCombat.enterFreeRound), and Round 1 is a normal round.
 // True if `actor` carries a live `prevent_ambush` AE change. A gear carrier
 // (accessory / armor / weapon / shield) only counts while equipped — the same
 // rule snapshot.js applies to the other raw rule keys, restated here because
@@ -887,11 +1054,7 @@ export function buildDirectorCombat({
   }
 
   const villainPresent = dc.combatants.some((c) => c.side === "enemy" && (c.isVillain || c.isBoss));
-  if (dc.engagement === "ambush") {
-    dc.firstSide = "enemy";       // enemies get the drop, act first (round 1)
-  } else if (dc.engagement === "advantage") {
-    dc.firstSide = "party";       // party gets the drop, act first (round 1)
-  } else if (dc.initiativeMode === "sidePriority") {
+  if (dc.initiativeMode === "sidePriority") {
     dc.firstSide = villainPresent ? "enemy" : "party";
   } else {
     // rolled + normal: provisional; ROUND_START round-1 resolver sets the real side.
