@@ -12,7 +12,9 @@
 //   - A soot mark on the paper sits round the fire, with the fire's green light on it.
 //   - Changes: a Tithe or a Calling burns the front left; a refund (fragment destroyed)
 //     pushes it back right and the fire disperses into pixels that fly on with the
-//     front's momentum; the end of the fight puts the fire out and the char cools.
+//     front's momentum; at the end of the fight the fire breaks into its pixels on the
+//     breeze, the char turns to black ash, and the ash lifts off a flake at a time and
+//     drifts away right (the user's pick "A · Ash drifts off", mockup v8, 2026-11-09).
 //
 // The HUD (director-player-hud.js) lazy-loads this file the first time a bar has
 // anything taken, and calls syncSoulBurn(card, { v, m, stolen }, first) from its
@@ -43,7 +45,6 @@ export const BURN = Object.freeze({
   },
   TITHE_DUR: 0.5, CALL_DUR: 0.6, REST_DUR: 0.5,
   BREAK_AT: 0.9,                      // the refund's fire disperses once 90% of the way is covered
-  COOL_OUT: 0.4, COOL_CHAR: 0.9,      // the end of the fight: fire out, then the char cools
   REFUND_WAIT: 0.25,                  // a Max that comes back first waits this long for its HP
   REFUND_SEEN: 1.5,                   // an HP rise this recent counts as the refund's (HP first)
   SCORCH_K: 0.78, LIGHT_K: 0.62,      // soot and light radii, as shares of the v5 scorch size
@@ -51,11 +52,25 @@ export const BURN = Object.freeze({
   MOM_TAU: 0.35, DUST_CARRY: 0.35, DUST_MAX: 160,
   TRAIL_PAD: 74,                      // room each side of the fire for the trail it leaves
   IDLE_HZ: 30,                        // a fire that is only burning; changes use the FX rate
+  // The end of the fight: the char is black ash that lifts off and drifts away (mockup v8, "A").
+  // A pixel lets go REL_AT + REL_SPREAD·u + REL_RAND·random − REL_TOP·(1−v) s after the end
+  // (u: 0 at the fire, 1 at the bar's end; v: 0 top row, 1 bottom), then flies as a flake.
+  ASH: Object.freeze({
+    ASHEN: 0.25,                      // the embers die: soul char → ash colours
+    REL_AT: 0.18, REL_SPREAD: 0.5, REL_RAND: 0.45, REL_TOP: 0.06,
+    VX: [12, 22], VY: [4, 11],        // flake speed: base + random span, art px/s (VY up, × the kind's scale)
+    ACC: 14, GRAV: 6, FLUTTER: 1.2,   // sideways push (px/s²), fall (px/s²), flutter (px)
+    LIFE: [0.8, 0.6],                 // s: base + random span
+    BREEZE: 80,                       // the fire's disperse at the end: a breeze push (× DUST_CARRY) for the momentum
+    MAX: 3.2,                         // fallback: a bar nobody drew (off screen) ends its ash by then
+  }),
 });
+// ash colours (RGB): the char's three tones, then the steps a flake pales through as it flies
+const ASH_TONE = { dark: [30, 29, 33], mid: [50, 48, 53], fleck: [84, 80, 86] };
+const ASH_STEPS = [[96, 92, 98], [140, 135, 140], [190, 184, 182]];
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const lerp = (a, b, k) => a + (b - a) * k;
-const ease = (u) => (u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2);
 /** The split's motion: quartic ease out, fastest at the start (the user's pick). */
 export const move = (u) => 1 - Math.pow(1 - clamp(u, 0, 1), 4);
 
@@ -83,10 +98,13 @@ export class SoulBurnModel {
     this.vRoseT = -1e9;      // when the HP last went up
     this.pending = null;     // a Max that came back with no HP yet: { t, to }
     this.fillTo = 1;         // the fill's target (for the regrow flash)
+    this.ash = null;         // the end of the fight: { t0 } while the char's ash blows away (the renderer ends it)
+    this.ashen = 0;          // how far the char has turned to ash (0..1)
+    this.breeze = false;     // the fire's disperse is pushed by the breeze, not the front's momentum
     this.now = 0;
   }
 
-  later(t, at, dur, run) { this.anims.push({ t0: t + at, dur, run }); }
+  later(t, at, dur, run) { const a = { t0: t + at, dur, run }; this.anims.push(a); return a; }
   busy() { return this.anims.length > 0 || this.pending != null; }
 
   /**
@@ -123,7 +141,7 @@ export class SoulBurnModel {
 
   snap(to, lit, t, mode) {
     this.inited = true;
-    this.anims = []; this.pending = null;
+    this.anims = []; this.pending = null; this.ash = null; this.ashen = 0; this.breeze = false;
     this.split = to; this.splitTo = to; this.k = lit ? 1 : 0; this.flare = 0; this.cool = 0; this.out = !lit; this.breakNow = false;
     this.mode = mode;
     this.events.push({ kind: "reset", t });
@@ -135,6 +153,7 @@ export class SoulBurnModel {
     this.splitTo = to;
     this.mode = calling ? "calling" : "tithe";
     this.out = false; this.cool = 0;
+    if (this.ash) { this.ash = null; this.ashen = 0; this.anims = this.anims.filter((a) => !a.ash); }   // a new Tithe while ash still flies
     if (calling) this.k = 1; else this.later(t, 0, 0.12, (u) => { this.k = Math.max(this.k, u); });
     const dur = calling ? BURN.CALL_DUR : BURN.TITHE_DUR;
     this.later(t, 0, dur, (u) => { this.split = lerp(from, this.splitTo, move(u)); });
@@ -157,26 +176,37 @@ export class SoulBurnModel {
     if (whole) this.later(t, BURN.REST_DUR + 0.1, 0.01, () => { this.k = 0; this.out = true; });
   }
 
-  /** The end of the fight (Max back, HP not): the fire goes out and the char cools. */
+  /**
+   * The end of the fight (Max back, HP not): the fire breaks into its pixels on the breeze, the
+   * char turns to black ash, and the renderer blows the ash away a flake at a time, then calls
+   * ashDone(). The split holds where it was until then.
+   */
   end(to, t) {
     const from = this.split;
     this.splitTo = to;
     this.mode = "end";
     if (to >= 0.999) {
-      this.events.push({ kind: "burst", at: from, n: 6, t });
-      const k0 = this.k;
-      this.later(t, 0, BURN.COOL_OUT, (u) => { this.k = k0 * (1 - u); });
-      this.later(t, 0, BURN.COOL_CHAR, (u) => { this.cool = ease(u); });
-      this.later(t, BURN.COOL_CHAR + 0.02, 0.01, () => {
-        this.split = 1; this.splitTo = 1; this.cool = 0; this.k = 0; this.out = true; this.events.push({ kind: "reset", t: this.now });
-      });
+      this.ash = { t0: t };
+      if (this.k > 0.02) { this.breakNow = true; this.breeze = true; } else { this.k = 0; this.out = true; }
+      this.later(t, 0, BURN.ASH.ASHEN, (u) => { this.ashen = Math.max(this.ashen, u); }).ash = true;
+      // fallback: a bar nobody drew (off screen, a closed desk) still ends
+      this.later(t, BURN.ASH.MAX, 0.01, () => { if (this.ash) this.ashDone(); }).ash = true;
     } else {
       this.later(t, 0, BURN.REST_DUR, (u) => { this.split = lerp(from, this.splitTo, move(u)); });
     }
   }
 
   /** The renderer dispersed the fire (or the front reached the end with the fire up). */
-  dispersed() { this.breakNow = false; this.k = 0; this.out = true; }
+  dispersed() { this.breakNow = false; this.breeze = false; this.k = 0; this.out = true; }
+
+  /** The last of the ash has gone (the renderer, or the fallback): an ordinary empty bar. */
+  ashDone() {
+    if (!this.ash) return;
+    this.ash = null; this.ashen = 0; this.breakNow = false; this.breeze = false;
+    this.anims = this.anims.filter((a) => !a.ash);
+    this.split = 1; this.splitTo = 1; this.cool = 0; this.k = 0; this.out = true;
+    this.events.push({ kind: "reset", t: this.now });
+  }
 
   step(t) {
     this.now = t;
@@ -213,6 +243,7 @@ class SoulBar {
     this.flames = new Map();
     this.charT = null; this.flash = null;
     this.sparks = []; this.dust = [];
+    this.ashRel = null; this.ashGone = null; this.ashLeft = 0; this.flakes = [];   // the end of the fight's ash
     this.wind = BURN.FIRE.wind; this.wSplit = 1; this.wT = -1; this.mom = 0;
     this.lastFlame = null;
     this.geom = null; this.dirty = true; this.lastDraw = -1; this.clean = true; this.lastMeasure = 0;
@@ -221,7 +252,7 @@ class SoulBar {
     this.overCv = document.createElement("canvas");
     this.overCv.className = "fu-soulburn-over";
     this.restoreFillT = 0;
-    this.stats = { dispersed: 0, dustMax: 0, sparksMax: 0, frames: 0, costAvg: 0, costMax: 0 };
+    this.stats = { dispersed: 0, dustMax: 0, sparksMax: 0, flakesMax: 0, ashDone: 0, frames: 0, costAvg: 0, costMax: 0 };
   }
 
   get alive() { return !!this.bar?.isConnected; }
@@ -263,6 +294,7 @@ class SoulBar {
       this.charT = new Float64Array(w).fill(-1e9);
       this.flash = new Float64Array(w).fill(-1e9);
       this.flames.clear();
+      this.ashRel = null; this.ashGone = null;   // a running ash restarts on the new grid
       this.markChar(nowS(), true);
     }
     return true;
@@ -291,7 +323,22 @@ class SoulBar {
   /** Whether anything moves; idle bars are left alone until the next sync. */
   active() {
     const m = this.model;
-    return m.k > 0.02 || m.busy() || m.cool > 0 || this.sparks.length > 0 || this.dust.length > 0 || m.breakNow;
+    return m.k > 0.02 || m.busy() || m.cool > 0 || this.sparks.length > 0 || this.dust.length > 0 || m.breakNow
+      || m.ash != null || this.flakes.length > 0;
+  }
+
+  /** The end of the fight: every char pixel gets the moment it lets go (see BURN.ASH). */
+  startAsh() {
+    const g = this.geom, m = this.model, A = BURN.ASH;
+    const x0 = Math.round(m.split * g.w), lost = g.w - x0;
+    this.ashRel = new Float64Array(g.w * g.h).fill(Infinity);
+    this.ashGone = new Uint8Array(g.w * g.h);
+    this.ashLeft = 0;
+    for (let x = x0; x < g.w; x++) for (let y = 0; y < g.h; y++) {
+      const u = lost > 1 ? (x - x0) / (lost - 1) : 0, v = g.h > 1 ? y / (g.h - 1) : 0;
+      this.ashRel[y * g.w + x] = m.ash.t0 + Math.max(0.05, A.REL_AT + A.REL_SPREAD * u + A.REL_RAND * Math.random() - A.REL_TOP * (1 - v));
+      this.ashLeft++;
+    }
   }
 
   frame(t) {
@@ -306,11 +353,13 @@ class SoulBar {
         for (let x = Math.floor(e.from * g.w); x < Math.ceil(e.to * g.w); x++) if (x >= 0 && x < g.w) this.flash[x] = t;
       }
     }
+    if (m.ash && !this.ashRel) this.startAsh();
+    else if (!m.ash && this.ashRel) { this.ashRel = null; this.ashGone = null; }   // a new change took over (the flakes fly on)
     if (!this.active()) {
       if (!this.clean) { this.drawChar(t); this.overCv.getContext("2d").clearRect(0, 0, this.overCv.width, this.overCv.height); this.clean = true; }
       return;
     }
-    const moving = m.anims.length > 0 || this.sparks.length > 0 || this.dust.length > 0 || m.breakNow;
+    const moving = m.anims.length > 0 || this.sparks.length > 0 || this.dust.length > 0 || m.breakNow || this.flakes.length > 0;
     const hz = moving ? fxHz() : BURN.IDLE_HZ;
     if (this.lastDraw >= 0 && t - this.lastDraw < 1 / hz - 0.002) return;
     this.lastDraw = t;
@@ -318,9 +367,11 @@ class SoulBar {
     const c0 = performance.now();
     this.drawChar(t);
     this.drawOver(t);
+    // the last of the ash has gone
+    if (this.ashRel && this.ashLeft <= 0 && !this.flakes.length) { this.ashRel = null; this.ashGone = null; m.ashDone(); this.stats.ashDone++; }
     const st = this.stats, ms = performance.now() - c0;
     st.frames++; st.costAvg += (ms - st.costAvg) / Math.min(st.frames, 120); st.costMax = Math.max(st.costMax, ms);
-    st.dustMax = Math.max(st.dustMax, this.dust.length); st.sparksMax = Math.max(st.sparksMax, this.sparks.length);
+    st.dustMax = Math.max(st.dustMax, this.dust.length); st.sparksMax = Math.max(st.sparksMax, this.sparks.length); st.flakesMax = Math.max(st.flakesMax, this.flakes.length);
   }
 
   /** The taken part: char with a burning edge, the just-burned glow, the regrow flash. */
@@ -332,7 +383,7 @@ class SoulBar {
     const splitW = Math.round(m.split * g.w), lost = g.w - splitW;
     for (let x = splitW; x < g.w; x++) if (this.charT[x] < -1e8) this.charT[x] = t;
     for (let x = 0; x < splitW; x++) this.charT[x] = -1e9;
-    const edgeW = g.h >= 6 ? 2 : 1;
+    const edgeW = g.h >= 6 ? 2 : 1, ash = this.ashRel, A = BURN.ASH;
     for (let x = 0; x < lost; x++) {
       const age = t - this.charT[splitW + x];
       for (let y = 0; y < g.h; y++) {
@@ -343,6 +394,20 @@ class SoulBar {
         else if (age < 0.26) c = SOUL[4];
         else if (age < 0.45) c = SOUL[3];
         else { const h = cinder(this.seed, splitW + x, y); c = h > 0.9 && y > 0 ? SOUL[3] : h > 0.62 ? SOUL[1] : SOUL[0]; }
+        if (ash) {
+          // the end of the fight: black ash; each pixel lets go at its moment and flies off as a flake
+          const q = y * g.w + splitW + x;
+          if (this.ashGone[q]) continue;   // gone: the bar's own empty track shows
+          const h = cinder(this.seed, splitW + x, y), tone = h > 0.9 && y > 0 ? ASH_TONE.fleck : h > 0.62 ? ASH_TONE.mid : ASH_TONE.dark;
+          const rgb = rgbOf(c).map((v, j) => Math.round(lerp(v, tone[j], m.ashen)));
+          if (t >= ash[q]) {
+            this.ashGone[q] = 1; this.ashLeft--;
+            this.flakes.push({ x: splitW + x, y, c: rgb, t0: t, ph: Math.random() * 6.283,
+              vx: A.VX[0] + Math.random() * A.VX[1], vy: -(A.VY[0] + Math.random() * A.VY[1]) * this.cfg.s, life: A.LIFE[0] + Math.random() * A.LIFE[1] });
+            continue;
+          }
+          c = (rgb[2] << 16) | (rgb[1] << 8) | rgb[0];
+        }
         // cooling at the end of the fight: the char fades and the bar's own empty track shows through
         const a = Math.round(255 * (1 - m.cool));
         d[y * g.w + splitW + x] = ((a << 24) | (c & 0xffffff)) >>> 0;
@@ -435,6 +500,16 @@ class SoulBar {
       ctx.fillStyle = css(rgbOf(f < 0.2 ? q.c : f < 0.45 ? SOUL[4] : f < 0.7 ? SOUL[3] : SOUL[2]));
       ctx.fillRect(x, y, 1, 1);
     }
+    // ash flakes (the end of the fight): carried right by the breeze, fluttering, paling in steps until gone
+    const A = BURN.ASH;
+    this.flakes = this.flakes.filter((q) => t - q.t0 < q.life);
+    for (const q of this.flakes) {
+      const a = t - q.t0, f = a / q.life;
+      const x = Math.round(q.x + q.vx * a + 0.5 * A.ACC * a * a + Math.sin(q.ph + a * 5) * A.FLUTTER * 0.6);
+      const y = Math.round(q.y + q.vy * a + 0.5 * A.GRAV * a * a + Math.sin(q.ph + a * 8) * A.FLUTTER);
+      ctx.fillStyle = css(f < 0.35 ? q.c : f < 0.6 ? ASH_STEPS[0] : f < 0.85 ? ASH_STEPS[1] : ASH_STEPS[2]);
+      ctx.fillRect(x, y, 1, 1);
+    }
     // sparks, carried right by the breeze
     this.sparks = this.sparks.filter((s) => t - s.t0 < s.life);
     for (const s of this.sparks) {
@@ -465,7 +540,8 @@ class SoulBar {
     if (!pts.length) return;
     this.stats.dispersed++;
     const cx = sx / pts.length, cy = sy / pts.length, span = Math.max(1, maxY - minY);
-    const carry = clamp(this.mom * BURN.DUST_CARRY, -BURN.DUST_MAX, BURN.DUST_MAX);
+    // the front's momentum; at the end of the fight (nothing moving) the breeze pushes instead
+    const carry = clamp((this.model.breeze ? BURN.ASH.BREEZE : this.mom) * BURN.DUST_CARRY, -BURN.DUST_MAX, BURN.DUST_MAX);
     for (const [x, y, c] of pts) {
       const up = 1 - (y - minY) / span;
       this.dust.push({ x, y, c, t0: t, vx: carry * (0.6 + 0.6 * Math.random() + 0.3 * up) + (x - cx) * 1.2 + (Math.random() - 0.5) * 10, vy: -(8 + Math.random() * 20) * this.cfg.s + (y - cy) * 0.6, life: 0.35 + Math.random() * 0.4 });
@@ -528,6 +604,7 @@ export function soulBurnStatus() {
   return [...bars].map((b) => ({
     actorId: b.card.el?.dataset?.actorId, kind: b.kind, mode: b.model.mode, split: b.model.split, k: b.model.k,
     cool: b.model.cool, out: b.model.out, busy: b.model.busy(), dust: b.dust.length, sparks: b.sparks.length,
+    ash: !!b.model.ash, ashen: b.model.ashen, ashLeft: b.ashRel ? b.ashLeft : 0, flakes: b.flakes.length,
     wind: b.wind, mom: b.mom, geom: b.geom && { w: b.geom.w, h: b.geom.h, u: b.geom.u }, stats: { ...b.stats },
   }));
 }

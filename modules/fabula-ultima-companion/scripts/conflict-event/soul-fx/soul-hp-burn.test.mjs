@@ -82,25 +82,48 @@ function run(m, from, to, log = null) {
   ok("refund hp-first lands full", near(m.split, 1) && m.out);
 }
 
-// ── the end of the fight: Max back, HP stays → the fire goes out and the char cools ──
+// ── the end of the fight: Max back, HP stays → the fire disperses on the breeze, the char turns
+//    to black ash and blows away (the renderer ends it with ashDone; a fallback ends an undrawn bar) ──
 {
   const m = new SoulBurnModel();
   m.sync({ v: 60, m: 60, stolen: 60 }, 0, true);
   m.sync({ v: 60, m: 120, stolen: 0 }, 2, false);
   const log = [];
-  run(m, 2, 2 + BURN.REFUND_WAIT + 0.02, log);
+  let breezeAtBreak = null;
+  for (let t = 2; t <= 2 + BURN.REFUND_WAIT + 0.02 + 1e-9; t += 1 / 60) {
+    m.step(t); log.push({ t, broke: m.breakNow });
+    if (m.breakNow) { breezeAtBreak = m.breeze; m.dispersed(); }
+  }
   ok("end after the wait", m.mode === "end", m.mode);
-  ok("end keeps the split while it cools", m.split < 0.6, m.split);
-  ok("end bursts sparks", m.events.some((e) => e.kind === "burst"));
-  run(m, 2.3, 3.6);
-  ok("end: fire out, char gone", m.k === 0 && m.cool === 0 && near(m.split, 1) && m.out);
-  ok("end never dispersed", !log.some((r) => r.broke));
+  ok("end disperses the fire at once", log.some((r) => r.broke) && m.k === 0 && m.out);
+  ok("...pushed by the breeze", breezeAtBreak === true && m.breeze === false);
+  ok("end holds the split while the ash blows away", m.split < 0.6 && m.ash != null, m.split);
+  run(m, 2.3, 2.6);
+  ok("the char has turned to ash", m.ashen === 1, m.ashen);
+  ok("the ash waits for the renderer", m.ash != null && m.busy());
+  m.ashDone();
+  ok("ash gone: an ordinary empty bar", m.ash == null && m.ashen === 0 && near(m.split, 1) && m.k === 0 && m.out && m.events.some((e) => e.kind === "reset"));
+  ok("ash gone: nothing left running", !m.busy());
+  // a bar nobody draws (off screen) still ends by the fallback
+  const f = new SoulBurnModel();
+  f.sync({ v: 60, m: 60, stolen: 60 }, 0, true);
+  f.sync({ v: 60, m: 120, stolen: 0 }, 2, false);
+  run(f, 2, 2.3 + BURN.ASH.MAX - 0.1);
+  ok("undrawn ash still there before the fallback", f.ash != null);
+  run(f, 2.3 + BURN.ASH.MAX - 0.1, 2.4 + BURN.ASH.MAX);
+  ok("undrawn ash ends by the fallback", f.ash == null && near(f.split, 1));
+  // a new Tithe while the ash still flies: the ash lets go, the Tithe plays
+  const n = new SoulBurnModel();
+  n.sync({ v: 60, m: 60, stolen: 60 }, 0, true);
+  n.sync({ v: 60, m: 120, stolen: 0 }, 1, false);
+  run(n, 1, 1.6);
+  ok("a Tithe during the ash plays", n.sync({ v: 60, m: 60, stolen: 60 }, 1.7, false) === "tithe" && n.ash == null && n.ashen === 0);
   // a refund while the owner is KO'd pays Max only: the same as an end
   const ko = new SoulBurnModel();
   ko.sync({ v: 0, m: 40, stolen: 80 }, 0, true);
   ko.sync({ v: 0, m: 120, stolen: 0 }, 1, false);
   run(ko, 1, 1.4);
-  ok("KO'd owner's refund cools, no disperse", ko.mode === "end");
+  ok("KO'd owner's refund is an end (ash)", ko.mode === "end" && ko.ash != null);
 }
 
 // ── found in the real game (2026-11-09) ──
@@ -122,8 +145,8 @@ function run(m, from, to, log = null) {
   e.sync({ v: 46, m: 46, stolen: 20 }, 0, true);
   e.sync({ v: 46, m: 66, stolen: 0 }, 1, false);
   ok("a touch while waiting is not a snap", e.sync({ v: 46, m: 66, stolen: 0 }, 1.02, false) === null && e.pending != null);
-  run(e, 1.02, 2.4);
-  ok("...and it ends", e.mode === "end" && near(e.split, 1) && e.k === 0);
+  run(e, 1.02, 1.6);
+  ok("...and it ends", e.mode === "end" && e.ash != null && e.k === 0);
 }
 
 // ── nothing changed: no new work ──

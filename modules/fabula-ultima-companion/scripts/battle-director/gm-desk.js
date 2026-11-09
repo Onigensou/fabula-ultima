@@ -42,7 +42,7 @@
 import { log, warn } from "./logger.js";
 import { playUiHoverSfx, playUiClickSfx, playUiOpenSfx, playUiBackSfx } from "./director-ui-sfx.js";
 import { ensureDrawerStyles, escapeHtml as esc, pickDocked } from "./drawer-views.js";
-import { rightEdgeReserve, hudScale, readUnitInfo, hudCostPreview } from "./director-player-hud.js";
+import { rightEdgeReserve, hudScale, readUnitInfo, hudCostPreview, soulStolenOf, syncSoul } from "./director-player-hud.js";
 import { publishDeskWatch } from "./ally-watch.js";
 import { tabAlert, tabAlertClear } from "./tab-alert.js";
 import { TIER } from "./status-classifier.js";
@@ -1238,7 +1238,16 @@ function paintRow(r) {
   r.q(".mp").textContent = mp ? `${Math.round(mp.v)}` : "";
   r.q(".mp").title = mp ? `MP ${Math.round(mp.v)} / ${Math.round(mp.m)}` : "";
   const fl = r.q(".bar .fl"), tr = r.q(".bar .tr");
-  const w = hp ? pctOf(hp.v, hp.m) : "0%";
+  // Soul Tithe: the bar keeps its full length (Max now + what a Soul Fragment holds) and the
+  // taken part burns at its right end, as on the players' cards (soul-hp-burn.js). Before the
+  // fill moves: a refund sets the fill's ease first.
+  const stolen = hp && actor ? soulStolenOf(actor) : 0;
+  if (hp) {
+    if (r.el.dataset.actorId !== actor.id) { r.el.dataset.actorId = actor.id; r.soul = null; }
+    r.soul ??= { el: r.el, kind: "card", hpFill: fl };
+    syncSoul(r.soul, hp, stolen, false);
+  }
+  const w = hp ? pctOf(hp.v, hp.m + stolen) : "0%";
   if (fl.style.width !== w) fl.style.width = w;
   const prevW = parseFloat(tr.style.width || "0");
   // The trail drops slowly behind a loss and jumps up with a heal. Only on a change: the jump
