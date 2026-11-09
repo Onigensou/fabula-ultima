@@ -453,6 +453,12 @@
         "parent": null
       },
       {
+        "id": "CoNFLiCToBJeCT01",
+        "name": "Conflict Objects",
+        "type": "Actor",
+        "parent": "oVRjRmlshSvb68gK"
+      },
+      {
         "id": "o9WySAlpwzaM9KDB",
         "name": "Consumable Skill",
         "type": "Item",

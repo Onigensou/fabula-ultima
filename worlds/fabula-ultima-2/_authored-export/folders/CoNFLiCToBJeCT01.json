@@ -1,0 +1,19 @@
+{
+  "_id": "CoNFLiCToBJeCT01",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1794182725865,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "Templates the conflict events spawn (Lightning Crystal, Soul Fragment). Not monsters; players never own them.",
+  "flags": {},
+  "folder": "oVRjRmlshSvb68gK",
+  "name": "Conflict Objects",
+  "sort": 50000,
+  "sorting": "a",
+  "type": "Actor"
+}
