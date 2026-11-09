@@ -148,8 +148,11 @@ run(async ({ changes }) => {
     isCheck: false, isOffensiveSpell: false, isReaction: false, cost: "-", duration: "Instantaneous",
     details_roller: "Show", action_keywords: "", ...props,
   });
-  // an on-hit status rider: per hit target for Attack actions, aimed at that target only
-  const rider = (skillName, ref) => react("creature_deals_damage", ref, { reaction_source_skill: skillName, condition_formula: "HP_DEALT > 0" });
+  // an on-hit rider: for Attack actions creature_deals_damage fires once per STRUCK
+  // target (hit or pierce), aimed at that target only. No HP_DEALT gate: the
+  // per-target Attack payload carries no finalValue, so HP_DEALT reads 0 there
+  // and a gate on it blocks every rider (found live 2026-11-09).
+  const rider = (skillName, ref) => react("creature_deals_damage", ref, { reaction_source_skill: skillName });
 
   // ── Celestial Discipline: the round clock, the stacks, Provoked immunity ──
   const D = IDS.DISC;
@@ -165,7 +168,9 @@ run(async ({ changes }) => {
       react("round_start", "guard", { reaction_source: "", condition_formula: ODD_FRESH }),
       react("round_start", "to_strike", { reaction_source: "", condition_formula: `${EVEN_FRESH} && ${PICK_STRIKE}` }),
       react("round_start", "to_magic", { reaction_source: "", condition_formula: `${EVEN_FRESH} && !${PICK_STRIKE}` }),
-      react("creature_status_applied", "no_provoke", { reaction_status_filter: "Provoked" }),
+      // every Provoke variant is its own AE name ("Provoked (Thread the Horns)"…), so
+      // no status filter; the removal names them all (live 2026-11-09)
+      react("creature_status_applied", "no_provoke"),
     ]),
     effect_table: table([
       applyAe("st_strike", "Strike Stack", { ae_duplicate_mode: "add_charges", ae_initial_charges: "1" }),
@@ -184,7 +189,7 @@ run(async ({ changes }) => {
       applyAe("m_form", "Magic Form"), applyAe("m_open", "Magic Opener"), removeAe("m_mem", "Last Form Strike"),
       removeTag("o_reset", "deva_stack"),
       applyAe("o_enl", "Enlightenment Ready", { condition_formula: "ROUND % 4 == 0" }),
-      removeAe("no_provoke", "Provoked"),
+      removeAe("no_provoke", "Provoked,Provoked (Thread the Horns),Provoked (Capote),Provoked (Peacock Dance)"),
     ]),
   });
   disc.effects = [];
@@ -282,7 +287,9 @@ run(async ({ changes }) => {
     reaction_config_table: table([rider("Fists of Focus", "fo_drain")]),
     effect_table: table([
       removeAe("fo_spend", "Magic Fists"),
-      put("fo_drain", "deal_damage", { damage_amount: "3 * HP_DEALT", damage_resource: "mp", damage_element: "dark", damage_cause: "damage", target_ref: "trigger_subject" }),
+      // the per-target payload has the roll's HR but no damage value, so 3x the
+      // unmodified hit (HR + 12); affinities and Guard are not reflected
+      put("fo_drain", "deal_damage", { damage_amount: "3 * (HR + 12)", damage_resource: "mp", damage_element: "dark", damage_cause: "damage", target_ref: "trigger_subject" }),
     ]),
   }), "NEW item — Fists of Focus (all enemies, Dark, MP loss = 3x damage)"]);
   changes.push([ik(A, IDS.KALA), attack(IDS.KALA, "Kala Strike", {

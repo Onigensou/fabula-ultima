@@ -515,7 +515,7 @@
             },
             "19": {
               "$deleted": false,
-              "ae_template_ref": "Provoked",
+              "ae_template_ref": "Provoked,Provoked (Thread the Horns),Provoked (Capote),Provoked (Peacock Dance)",
               "count": "all",
               "effect_kind": "remove_ae",
               "effect_label": "no_provoke",
@@ -613,7 +613,6 @@
               "reaction_passive_mode": "force",
               "reaction_resource_filter": "",
               "reaction_source": "self",
-              "reaction_status_filter": "Provoked",
               "reaction_trigger": "creature_status_applied"
             }
           },
@@ -704,7 +703,6 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "condition_formula": "HP_DEALT > 0",
               "reaction_cause_filter": "",
               "reaction_effect_ref": "sl_shaken",
               "reaction_isPassive": true,
@@ -1096,7 +1094,7 @@
             },
             "1": {
               "$deleted": false,
-              "damage_amount": "3 * HP_DEALT",
+              "damage_amount": "3 * (HR + 12)",
               "damage_cause": "damage",
               "damage_element": "dark",
               "damage_resource": "mp",
@@ -1123,7 +1121,6 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "condition_formula": "HP_DEALT > 0",
               "reaction_cause_filter": "",
               "reaction_effect_ref": "fo_drain",
               "reaction_isPassive": true,
@@ -1356,7 +1353,6 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "condition_formula": "HP_DEALT > 0",
               "reaction_cause_filter": "",
               "reaction_effect_ref": "gs_slow",
               "reaction_isPassive": true,
@@ -1489,7 +1485,6 @@
             },
             "1": {
               "$deleted": false,
-              "condition_formula": "HP_DEALT > 0",
               "reaction_cause_filter": "",
               "reaction_effect_ref": "ks_wipe",
               "reaction_isPassive": true,
@@ -1907,7 +1902,6 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "condition_formula": "HP_DEALT > 0",
               "reaction_cause_filter": "",
               "reaction_effect_ref": "sp_blind",
               "reaction_isPassive": true,
