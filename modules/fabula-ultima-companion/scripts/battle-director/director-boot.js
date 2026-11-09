@@ -84,6 +84,7 @@ import { initBattleStageAmbient } from "./battle-stage-ambient.js";
 import { initLightningRodCursor } from "../conflict-event/lightning-rod-cursor.js";
 import { initLightningCrystalCountdown } from "../conflict-event/lightning-crystal-countdown.js";
 import { initSoulFragmentBadge } from "../conflict-event/soul-fragment-badge.js";
+import { initSoulFx } from "../conflict-event/soul-fx/soul-fx-runtime.js";
 import { initLightningCrystalFx } from "../conflict-event/lightning-crystal-fx.js";
 import { initLightningStormFx } from "../conflict-event/lightning-storm-strike-fx.js";
 import { initConflictEventPanel, registerConflictEventPanelSettings } from "../conflict-event/conflict-event-panel.js";
@@ -2040,6 +2041,8 @@ Hooks.once("ready", () => {
   catch (e) { warn("initLightningCrystalCountdown on ready threw", e); }
   try { initSoulFragmentBadge(); }
   catch (e) { warn("initSoulFragmentBadge on ready threw", e); }
+  try { initSoulFx(); }
+  catch (e) { warn("initSoulFx on ready threw", e); }
   try { initLightningCrystalFx(); }
   catch (e) { warn("initLightningCrystalFx on ready threw", e); }
   try { initLightningStormFx(); }

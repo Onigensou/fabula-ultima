@@ -35,8 +35,10 @@
   const ACTOR_FLAG_KEY = "idleAnimation";          // flags.<module>.idleAnimation
   const TOKEN_OVERRIDE_FLAG_KEY = "idleAnimToken"; // flags.<module>.idleAnimToken (per-token override)
 
+  // hover: lifted off the floor like a flyer, ground shadow left behind. Cosmetic only (no
+  // Flying status, no rules); drawn by sprite-shadow-airborne.js with its fudFlyLift filter.
   function normalizeConfig(cfg) {
-    return { float: !!cfg?.float, bounce: !!cfg?.bounce };
+    return { float: !!cfg?.float, bounce: !!cfg?.bounce, hover: !!cfg?.hover };
   }
 
   // --------------------------------------------------------------------------
@@ -77,7 +79,7 @@
 
   function configKey(cfg) {
     const c = normalizeConfig(cfg);
-    return `F:${c.float ? 1 : 0}|B:${c.bounce ? 1 : 0}`;
+    return `F:${c.float ? 1 : 0}|B:${c.bounce ? 1 : 0}|H:${c.hover ? 1 : 0}`;
   }
 
   // ----------------------------
@@ -255,6 +257,72 @@
       err("Failed to remove Float", e);
     } finally {
       st.floatLock = false;
+    }
+  }
+
+  // ==========================================================================
+  // DUPLICATE FILTER HEAL (TokenMagic race)
+  // TokenMagic rebuilds a token's filters from its flags 250 ms after any update
+  // that renames or re-images it, and adds a filter the moment its flag lands.
+  // When a token is spawned and renamed while a filter is being added (Soul
+  // Tithe's fragment: drawToken -> Float apply, then name + texture update), both
+  // paths fire and the mesh carries TWO instances of one filterId, each with its
+  // own animation phase: two Floats out of step partly cancel, so the body
+  // jitters instead of floating. Render state only (the flag holds one entry),
+  // so every client checks its own mesh and rebuilds that filterId from flags.
+  // ==========================================================================
+  function healDuplicateFilters(token) {
+    const TM = globalThis.TokenMagic;
+    if (!TM?._clearImgFiltersByPlaceable || !TM?._assignFilters) return 0;
+    if (!token?.mesh || token.destroyed || !token.document) return 0;
+    const counts = new Map();
+    for (const f of token.mesh.filters ?? []) {
+      if (f?.filterId) counts.set(f.filterId, (counts.get(f.filterId) ?? 0) + 1);
+    }
+    const flags = token.document.getFlag?.("tokenmagic", "filters") ?? [];
+    let healed = 0;
+    for (const [id, n] of counts) {
+      const want = flags.filter((x) => x?.tmFilters?.tmFilterId === id);
+      if (n <= Math.max(1, want.length)) continue;
+      try {
+        TM._clearImgFiltersByPlaceable(token, id);
+        const anime = TM._getAnimeMap?.();
+        if (anime) for (const [k, a] of anime) if (a?.puppet?.placeableId === token.id && a.puppet.filterId === id) anime.delete(k);
+        if (want.length) TM._assignFilters(token, want);
+        healed++;
+        dbg("Duplicate TokenMagic filter healed", { token: token.name, tokenId: token.id, filterId: id, had: n, flags: want.length });
+      } catch (e) {
+        err("healDuplicateFilters failed", e);
+      }
+    }
+    return healed;
+  }
+
+  // The other way the same race goes: TokenMagic writes a token's WHOLE filter array, so a second
+  // writer that read the flags before the Float landed (the hover lift, any TokenMagic macro)
+  // overwrites it. The flag is the truth; if Float is configured but gone from it, put it back.
+  function syncEffectiveConfig(token) {
+    const doc = token?.document;
+    const over = doc?.getFlag?.(MODULE_ID, TOKEN_OVERRIDE_FLAG_KEY);
+    if (over) return normalizeConfig(over);
+    return normalizeConfig(game.actors?.get(doc?.actorId)?.getFlag?.(MODULE_ID, ACTOR_FLAG_KEY));
+  }
+  async function healLostFloat(token) {
+    if (!token?.document || token.destroyed || !hasTokenMagic() || !isFloatAuthority()) return false;
+    const st = getTokenState(token.id);
+    if (st.floatLock || !syncEffectiveConfig(token).float || floatFilterPresent(token)) return false;
+    dbg("Float configured but missing from the flags (overwritten) — re-applying", { token: token.name, tokenId: token.id });
+    st.floatOn = false;
+    await applyFloatOnce(token);
+    return true;
+  }
+
+  function scheduleHeal(tokenId, delays = [700, 1800]) {
+    for (const ms of delays) {
+      setTimeout(async () => {
+        try { const t = getTokenById(tokenId); if (t) { await healLostFloat(t); healDuplicateFilters(t); } }
+        catch (e) { err("scheduled heal failed", e); }
+      }, ms);
     }
   }
 
@@ -462,6 +530,10 @@
     // Bounce
     if (config.bounce) startBounceOnce(token);
     else stopBounceOnce(token);
+
+    // Hover lives in sprite-shadow-airborne.js (it owns the lift filter); tell it to look now.
+    try { globalThis.FUCompanion?.api?.spriteShadow?.airborne?.reconcile?.(token); } catch (e) { err("hover reconcile failed", e); }
+    scheduleHeal(token.id);
   }
 
   async function applyEffectiveConfigToToken(token, reason = "unknown") {
@@ -569,6 +641,15 @@
       applyOnSpawn(tokenObj);
     });
 
+    // A rename / re-image makes TokenMagic rebuild filters from flags; heal any double it leaves.
+    Hooks.on("updateToken", (doc, changed) => {
+      try {
+        if (doc?.parent?.id !== canvas?.scene?.id) return;
+        if (!("name" in (changed ?? {})) && !("texture" in (changed ?? {})) && !changed?.flags?.tokenmagic) return;
+        scheduleHeal(doc.id, [900, 2200, 4000]);
+      } catch (e) { err("updateToken heal hook failed", e); }
+    });
+
     Hooks.on("refreshToken", (token) => {
       // Only bounce needs mesh refresh; DO NOT re-apply float here (prevents spam)
       try { refreshBounceToken(token); }
@@ -609,6 +690,9 @@
     applyConfigToToken,
     applyEffectiveConfigToToken,
     applyActorToAllTokens,
+
+    // TokenMagic double-filter repair (render state, any client)
+    healDuplicateFilters,
 
     // bounce coordination for other mesh-scale writers (see setBounceBaseScale)
     getBounceEntry,

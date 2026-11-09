@@ -878,7 +878,7 @@ async function spawnTokensHidden({ scene, layout, disposition }) {
 // Placement first asks formation.js (liveFormation) for a clash-free spot and
 // only falls back to the grid below when it has none. `casterTokenId` tells a
 // party-side summon which PC it belongs to.
-export async function spawnLiveDirectorTokens({ scene, actorUuids, disposition, anchor = null, casterTokenId = null, exactCenter = null }) {
+export async function spawnLiveDirectorTokens({ scene, actorUuids, disposition, anchor = null, casterTokenId = null, exactCenter = null, tokenData = null }) {
   if (!scene || !Array.isArray(actorUuids) || !actorUuids.length) return [];
   const grid = scene.grid?.size ?? 100;
   const step = grid * 1.15;
@@ -963,6 +963,9 @@ export async function spawnLiveDirectorTokens({ scene, actorUuids, disposition, 
     const joinStyle = SimMode.active ? DEFAULT_ENTRANCE_STYLE : entranceStyleFromFlags(actor.flags);
     td.alpha = joinStyle === DEFAULT_ENTRANCE_STYLE ? 1 : 0;
     td.flags = { ...(td.flags ?? {}), [FLAG_NS]: { ...(td.flags?.[FLAG_NS] ?? {}), [FLAG_DIRECTOR_SPAWNED]: true } };
+    // `tokenData`: the caller's own look and flags, in the creation itself, so the token is
+    // never drawn as the template first (a Soul Fragment is born hidden in its owner's art).
+    if (tokenData && typeof tokenData === "object") foundry.utils.mergeObject(td, foundry.utils.deepClone(tokenData));
     hideStockBars(td);
     const [created] = await scene.createEmbeddedDocuments("Token", [td]);
     if (created) {

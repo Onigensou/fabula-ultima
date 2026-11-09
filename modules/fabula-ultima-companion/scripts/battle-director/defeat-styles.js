@@ -39,6 +39,17 @@ const DEATH_SFX = { url: SFX_BASE + "Enemy_Death.ogg", volume: 0.6 };
 const RED = 0xff2a2a;
 
 export const DEFEAT_STYLES = {
+  // Played by someone else (defeat-fx registerExternalDefeat): this style only times
+  // the removal, which waits for the named player on each client. `soul_release` is
+  // the Soul Fragment's Destroyed show (conflict-event/soul-fx), started by its event
+  // on the killing blow; totalMs covers it (soul-fx DESTROY.END, ~2.5 s) for a GM who
+  // does not draw while players watch.
+  soul_release: {
+    label: "Soul release (Soul Fragment)",
+    internal: true,
+    external: "soul-release",
+    totalMs: 2700,
+  },
   ff7_soldier: {
     label: "FF7 fade (Soldier)",
     internal: true,
