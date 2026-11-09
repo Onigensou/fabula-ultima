@@ -745,7 +745,7 @@
               "charges": 1,
               "crossScene": false,
               "lifetimeMode": "persistent_counter",
-              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa/Rakshasa_Stance_bow.webm"
+              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa/Rakshasa_Stance_bow.webm?v=2"
             }
           },
           "img": "icons/weapons/bows/longbow-recurve.webp",
@@ -790,7 +790,7 @@
               "charges": 1,
               "crossScene": false,
               "lifetimeMode": "persistent_counter",
-              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa/Rakshasa_Stance_flail.webm"
+              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa/Rakshasa_Stance_flail.webm?v=2"
             }
           },
           "img": "icons/weapons/maces/flail-ball-grey.webp",
@@ -835,7 +835,7 @@
               "charges": 1,
               "crossScene": false,
               "lifetimeMode": "persistent_counter",
-              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa/Rakshasa_Stance_sword.webm"
+              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa/Rakshasa_Stance_sword.webm?v=2"
             }
           },
           "img": "icons/weapons/swords/sword-broad-worn.webp",
@@ -880,7 +880,7 @@
               "charges": 1,
               "crossScene": false,
               "lifetimeMode": "persistent_counter",
-              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa/Rakshasa_Stance_throwing.webm"
+              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa/Rakshasa_Stance_throwing.webm?v=2"
             }
           },
           "img": "icons/weapons/thrown/dagger-ringed-grey.webp",
@@ -1026,7 +1026,7 @@
               "charges": 1,
               "crossScene": false,
               "lifetimeMode": "persistent_counter",
-              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa/Rakshasa_Stance_flail_throwing.webm"
+              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa/Rakshasa_Stance_flail_throwing.webm?v=2"
             }
           },
           "img": "icons/weapons/maces/flail-ball-grey.webp",
@@ -1071,7 +1071,7 @@
               "charges": 1,
               "crossScene": false,
               "lifetimeMode": "persistent_counter",
-              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa/Rakshasa_Stance_sword_bow.webm"
+              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa/Rakshasa_Stance_sword_bow.webm?v=2"
             }
           },
           "img": "icons/weapons/swords/sword-broad-worn.webp",
@@ -1116,7 +1116,7 @@
               "charges": 1,
               "crossScene": false,
               "lifetimeMode": "persistent_counter",
-              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa/Rakshasa_Stance_sword_flail.webm"
+              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa/Rakshasa_Stance_sword_flail.webm?v=2"
             }
           },
           "img": "icons/weapons/swords/sword-broad-worn.webp",
