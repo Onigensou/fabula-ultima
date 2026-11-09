@@ -63,7 +63,10 @@ const C = cfg.t;
 const K = TOK.k, kf = feet(K);
 const PC = { x: PARTY.reduce((s, k) => s + TOK[k].x, 0) / PARTY.length, y: PARTY.reduce((s, k) => s + TOK[k].y, 0) / PARTY.length };
 const DIR = PC.x >= K.x ? 1 : -1;                                   // toward the party
-const DEST = { x: kf.x + DIR * cfg.step * KP, y: kf.y + 8 * KP };   // her feet after the blink
+// her feet after the blink: the mockup gap in front of the nearest party member (formations differ
+// per scene, so a fixed step from home lands short on a wide one), never behind her own spot
+const NEAR = DIR > 0 ? Math.min(...PARTY.map((k) => TOK[k].x)) : Math.max(...PARTY.map((k) => TOK[k].x));
+const DEST = { x: DIR > 0 ? Math.max(kf.x, NEAR - cfg.gap * KP) : Math.min(kf.x, NEAR + cfg.gap * KP), y: kf.y + 8 * KP };
 const DS = tl.depthRatio(kf, DEST);                                 // her size there
 const center = (k) => { const Tk = TOK[k], f = feet(Tk); return { x: f.x, y: f.y - Tk.h * 0.5 }; };
 const hgt = (k) => TOK[k].h;

@@ -50,6 +50,8 @@ function fistsBarrage(opts = {}) {
   const tune = {
     dur: 4000, rate: 9, cone: 66, size: 120, grow: 2.4, flight: 410, trail: 3, aim: 10, spark: 1,
     lines: 140, ticks: 30, jolt: 5, step: 230, tp: 220, zoom: 1.35, zoomMs: 450,
+    // the mockup step of 230 left her 485 px short of the front party member; kept as a gap so it holds on any formation
+    gap: 485,
   };
   // the beat clock, derived exactly as the mockup's beats run back to back
   const t = {};
