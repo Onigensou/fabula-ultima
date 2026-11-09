@@ -13,6 +13,7 @@
       "version": "4.8.5"
     },
     "fabula-ultima-companion": {
+      "grappleSkin": "tentacle",
       "layoutRef": "a90e8fa4f8147c2b",
       "spriteShadow": true
     }
