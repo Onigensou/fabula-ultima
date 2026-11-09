@@ -779,7 +779,7 @@
           "custom_logic_resolution": "<p>(async () =&gt; {</p><p>  const TAG = \"[CL-RES][DraconicRoar]\";</p><p>  const DEBUG = true;</p><p>  const p = globalThis.__PAYLOAD;</p><p>  if (!p) return console.warn(TAG, \"Missing __PAYLOAD\");</p><p>  const args = p.__confirmArgs || {}; // applyDamage-button injects this :contentReference[oaicite:4]{index=4}</p><p>  // ---------- helpers ----------</p><p>  const num = (v) =&gt; {</p><p>    const n = Number(v);</p><p>    return Number.isFinite(n) ? n : null;</p><p>  };</p><p>  const getLevel = (actor) =&gt;</p><p>    Number(actor?.system?.props?.level ?? actor?.system?.level ?? 0) || 0;</p><p>  // Prefer your pipeline snapshot first (fast + consistent)</p><p>  const getMDefFromSnapshot = (targetUuid) =&gt; {</p><p>    const list = p?.meta?.defenseSnapshot?.perTarget;</p><p>    if (!Array.isArray(list)) return null;</p><p>    const row = list.find(r =&gt; r?.uuid === targetUuid);</p><p>    return num(row?.mdef);</p><p>  };</p><p>  // Fallback: read from actor data directly</p><p>  const readMagicDefense = (actor) =&gt; {</p><p>    const props = actor?.system?.props ?? actor?.system ?? {};</p><p>    return (</p><p>      num(props.magic_defense) ??</p><p>      num(props.current_mdef) ??</p><p>      num(props.mdef) ??</p><p>      0</p><p>    );</p><p>  };</p><p>  const pickRandom = (arr) =&gt; arr[Math.floor(Math.random() * arr.length)];</p><p>  // ---------- resolve caster ----------</p><p>  const attackerUuid =</p><p>    p?.meta?.attackerUuid ??</p><p>    args?.attackerUuid ??</p><p>    null;</p><p>  const attackerDoc = attackerUuid ? await fromUuid(attackerUuid).catch(() =&gt; null) : null;</p><p>  const casterActor = attackerDoc?.actor ?? attackerDoc;</p><p>  if (!casterActor) return console.warn(TAG, \"Could not resolve caster actor.\");</p><p>  const casterLevel = getLevel(casterActor);</p><p>  // ---------- accuracy total (best sources) ----------</p><p>  // 1) payload.accuracy.total (from ActionDataComputation)</p><p>  // 2) confirm args accuracyTotal (from CreateActionCard button)</p><p>  const accTotal =</p><p>    num(p?.accuracy?.total) ??</p><p>    num(args?.accuracyTotal) ??</p><p>    null;</p><p>  const hasAccuracy =</p><p>    (typeof args?.hasAccuracy === \"boolean\") ? args.hasAccuracy : !!p?.accuracy;</p><p>  // auto-hit rules (match your confirm behavior style)</p><p>  const autoHit = !!(args?.autoHit || p?.advPayload?.autoHit || p?.accuracy?.isCrit);</p><p>  const targets = Array.isArray(p.targets) ? p.targets : [];</p><p>  if (!targets.length) return console.warn(TAG, \"No targets in payload.\");</p><p>  // ---------- debuff pools ----------</p><p>  const BASIC_DEBUFF_POOL = [</p><p>    \"Item.XVOWOq9oUmEECGrU.ActiveEffect.nGDTBPQ9omhKG3rM\",</p><p>    \"Item.XVOWOq9oUmEECGrU.ActiveEffect.GbLFOJUgTjJnaM4V\",</p><p>    \"Item.XVOWOq9oUmEECGrU.ActiveEffect.u6SHYfoeExl1etSf\",</p><p>    \"Item.XVOWOq9oUmEECGrU.ActiveEffect.dnzpUdhxjd6H3ktJ\",</p><p>    \"Item.XVOWOq9oUmEECGrU.ActiveEffect.h3M2iAUzB26A4zNo\",</p><p>    \"Item.XVOWOq9oUmEECGrU.ActiveEffect.62gUkhQExwD9DvaI\"</p><p>  ];</p><p>  const STRONG_DEBUFF_POOL = [</p><p>    \"Item.XVOWOq9oUmEECGrU.ActiveEffect.3LvW5XEm1E1dYrZa\",</p><p>    \"Item.XVOWOq9oUmEECGrU.ActiveEffect.owA4mhwuMM1Gh18f\",</p><p>    \"Item.XVOWOq9oUmEECGrU.ActiveEffect.y5YpJbxvkHnHA1Fc\",</p><p>    \"Item.XVOWOq9oUmEECGrU.ActiveEffect.OYLYpaZMWDFRMPgk\",</p><p>    \"Item.XVOWOq9oUmEECGrU.ActiveEffect.6TmDCjk1jdit5YtZ\"</p><p>  ];</p><p>  if (DEBUG) {</p><p>    console.log(TAG, \"START\", {</p><p>      caster: casterActor.name,</p><p>      casterLevel,</p><p>      hasAccuracy,</p><p>      accTotal,</p><p>      autoHit,</p><p>      targetsCount: targets.length,</p><p>      hasDefenseSnapshot: !!p?.meta?.defenseSnapshot</p><p>    });</p><p>  }</p><p>  // ---------- per target ----------</p><p>  for (const tuuid of targets) {</p><p>    const tDoc = await fromUuid(tuuid).catch(() =&gt; null);</p><p>    const targetActor = tDoc?.actor ?? tDoc;</p><p>    if (!targetActor) continue;</p><p>    const targetLevel = getLevel(targetActor);</p><p>    // Your rule: compare accuracy total vs Magic Defense</p><p>    const mdef =</p><p>      getMDefFromSnapshot(tuuid) ??</p><p>      readMagicDefense(targetActor);</p><p>    let isHit = true;</p><p>    if (!hasAccuracy) {</p><p>      isHit = true; // no check =&gt; always apply</p><p>    } else if (autoHit) {</p><p>      isHit = true;</p><p>    } else if (accTotal === null) {</p><p>      // This was your exact failure case before.</p><p>      isHit = false;</p><p>      console.warn(TAG, \"Missing accTotal even though hasAccuracy=true -&gt; treating as MISS\", {</p><p>        target: targetActor.name,</p><p>        mdef,</p><p>        pHasAccuracyObj: !!p?.accuracy,</p><p>        argsAccuracyTotal: args?.accuracyTotal</p><p>      });</p><p>    } else {</p><p>      isHit = (accTotal &gt;= mdef);</p><p>    }</p><p>    if (!isHit) {</p><p>      if (DEBUG) console.log(TAG, \"MISS -&gt; no debuff\", { target: targetActor.name, accTotal, mdef });</p><p>      continue;</p><p>    }</p><p>    const strongUpgrade = (casterLevel - targetLevel) &gt;= 5;</p><p>    const pool = strongUpgrade ? STRONG_DEBUFF_POOL : BASIC_DEBUFF_POOL;</p><p>    const chosenUuid = pickRandom(pool);</p><p>    const sourceEffect = await fromUuid(chosenUuid).catch(() =&gt; null);</p><p>    if (!sourceEffect) {</p><p>      console.warn(TAG, \"Could not resolve source ActiveEffect:\", chosenUuid);</p><p>      continue;</p><p>    }</p><p>    const effectData = foundry.utils.deepClone(sourceEffect.toObject());</p><p>    delete effectData._id;</p><p>    delete effectData.id;</p><p>    // optional: prevent duplicate by name</p><p>    const existing = targetActor.effects?.find(e =&gt; e?.name === effectData.name);</p><p>    if (existing) await existing.delete();</p><p>    await targetActor.createEmbeddedDocuments(\"ActiveEffect\", [effectData]);</p><p>    if (DEBUG) console.log(TAG, \"APPLIED\", {</p><p>      target: targetActor.name,</p><p>      targetLevel,</p><p>      casterLevel,</p><p>      strongUpgrade,</p><p>      chosenUuid,</p><p>      effectName: effectData.name</p><p>    });</p><p>  }</p><p>  if (DEBUG) console.log(TAG, \"DONE\");</p><p>})();</p>",
           "damage_bonus": "13",
           "defense_target_type": "mdef",
-          "description": "<p>Unleash a terrifying roar, Deals <strong>【HR+13】Non-Elemental </strong>damage to all enemies and  inflicted them with a random <strong>Basic Debuff</strong></p><p>Enemy with Levels lower than you are afflicted by even <strong>stronger debuff</strong></p>",
+          "description": "<p>Deals <strong>【HR + 13】</strong> non-elemental damage to all enemies and inflicts each with a random <strong>basic debuff</strong>. An enemy whose level is lower than yours suffers a <strong>stronger debuff</strong> instead.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {},
@@ -1079,7 +1079,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li><p><strong>+1 DEF / +1 MDEF</strong></p></li><li><p>You may perform the skill 【💥Draconic Roar】</p></li></ul>",
+          "description": "<ul><li><p><strong>+1 DEF / +1 MDEF</strong></p></li><li><p>You may perform the skill 【💥<strong>@UUID[Item.hIiWUGkuayYqQNeb]{Draconic Roar}</strong>】</p></li></ul>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -1113,7 +1113,7 @@
               "id": "${item.id}",
               "name": "Draconic Roar",
               "skill_cost": "30 MP",
-              "skill_description": "<p>Unleash a terrifying roar, Deals <strong>【HR+13】Non-Elemental </strong>damage to all enemies and  inflicted them with a random <strong>Basic Debuff</strong></p><p>Enemy with Levels lower than you are afflicted by even <strong>stronger debuff</strong></p>",
+              "skill_description": "<p>Deals <strong>【HR + 13】</strong> non-elemental damage to all enemies and inflicts each with a random <strong>basic debuff</strong>. An enemy whose level is lower than yours suffers a <strong>stronger debuff</strong> instead.</p>",
               "skill_maxLevel": 1,
               "uuid": "Item.hIiWUGkuayYqQNeb"
             },
@@ -1121,7 +1121,7 @@
               "id": "${item.id}",
               "name": "Draconic Roar",
               "skill_cost": "30 MP",
-              "skill_description": "<p>Unleash a terrifying roar, Deals <strong>【HR+13】Non-Elemental </strong>damage to all enemies and  inflicted them with a random <strong>Basic Debuff</strong></p><p>Enemy with Levels lower than you are afflicted by even <strong>stronger debuff</strong></p>",
+              "skill_description": "<p>Deals <strong>【HR + 13】</strong> non-elemental damage to all enemies and inflicts each with a random <strong>basic debuff</strong>. An enemy whose level is lower than yours suffers a <strong>stronger debuff</strong> instead.</p>",
               "skill_maxLevel": 1,
               "uuid": "Item.hIiWUGkuayYqQNeb"
             }
@@ -1136,20 +1136,20 @@
             "fARmlVMFFUwniWXE": {
               "id": "${item.id}",
               "name": "Draconic Roar",
-              "related_item_description": "<p>Unleash a terrifying roar, Deals <strong>【HR+13】Non-Elemental </strong>damage to all enemies and  inflicted them with a random <strong>Basic Debuff</strong></p><p>Enemy with Levels lower than you are afflicted by even <strong>stronger debuff</strong></p>",
+              "related_item_description": "<p>Deals <strong>【HR + 13】</strong> non-elemental damage to all enemies and inflicts each with a random <strong>basic debuff</strong>. An enemy whose level is lower than yours suffers a <strong>stronger debuff</strong> instead.</p>",
               "uuid": "Item.hIiWUGkuayYqQNeb"
             },
             "hIiWUGkuayYqQNeb": {
               "id": "${item.id}",
               "name": "Draconic Roar",
-              "related_item_description": "<p>Unleash a terrifying roar, Deals <strong>【HR+13】Non-Elemental </strong>damage to all enemies and  inflicted them with a random <strong>Basic Debuff</strong></p><p>Enemy with Levels lower than you are afflicted by even <strong>stronger debuff</strong></p>",
+              "related_item_description": "<p>Deals <strong>【HR + 13】</strong> non-elemental damage to all enemies and inflicts each with a random <strong>basic debuff</strong>. An enemy whose level is lower than yours suffers a <strong>stronger debuff</strong> instead.</p>",
               "uuid": "Item.hIiWUGkuayYqQNeb"
             }
           },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
-          "set_name": "<Set Name>",
+          "set_name": "",
           "soldier_ef": "100",
           "spirit_ef": "100",
           "type_damage": "Physical",

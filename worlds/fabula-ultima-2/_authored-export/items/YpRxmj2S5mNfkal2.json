@@ -239,7 +239,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p><strong>+1 DEF / +1 MDEF</strong></p></li><li><p>You may perform the skill 【💥Draconic Roar】</p></li></ul>",
+      "description": "<ul><li><p><strong>+1 DEF / +1 MDEF</strong></p></li><li><p>You may perform the skill 【💥<strong>@UUID[Item.hIiWUGkuayYqQNeb]{Draconic Roar}</strong>】</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -275,7 +275,7 @@
           "id": "${item.id}",
           "name": "Draconic Roar",
           "skill_cost": "30 MP",
-          "skill_description": "<p>Unleash a terrifying roar, Deals <strong>【HR+13】Non-Elemental </strong>damage to all enemies and  inflicted them with a random <strong>Basic Debuff</strong></p><p>Enemy with Levels lower than you are afflicted by even <strong>stronger debuff</strong></p>",
+          "skill_description": "<p>Deals <strong>【HR + 13】</strong> non-elemental damage to all enemies and inflicts each with a random <strong>basic debuff</strong>. An enemy whose level is lower than yours suffers a <strong>stronger debuff</strong> instead.</p>",
           "skill_maxLevel": 1,
           "uuid": "Item.hIiWUGkuayYqQNeb"
         }
@@ -292,14 +292,14 @@
         "hIiWUGkuayYqQNeb": {
           "id": "${item.id}",
           "name": "Draconic Roar",
-          "related_item_description": "<p>Unleash a terrifying roar, Deals <strong>【HR+13】Non-Elemental </strong>damage to all enemies and  inflicted them with a random <strong>Basic Debuff</strong></p><p>Enemy with Levels lower than you are afflicted by even <strong>stronger debuff</strong></p>",
+          "related_item_description": "<p>Deals <strong>【HR + 13】</strong> non-elemental damage to all enemies and inflicts each with a random <strong>basic debuff</strong>. An enemy whose level is lower than yours suffers a <strong>stronger debuff</strong> instead.</p>",
           "uuid": "Item.hIiWUGkuayYqQNeb"
         }
       },
       "reptilian_ef": "100",
       "rolled_atr1": "DEX",
       "rolled_atr2": "DEX",
-      "set_name": "<Set Name>",
+      "set_name": "",
       "soldier_ef": "100",
       "spirit_ef": "100",
       "type_damage": "Physical",

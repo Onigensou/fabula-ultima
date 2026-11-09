@@ -25,7 +25,7 @@
     "container": "pl3WqLGgAKPapUWh",
     "props": {
       "cost": "",
-      "description": "<ul>\n<li>This weapon deals&nbsp;<strong>5&nbsp;</strong>bonus damage for&nbsp;<strong>each&nbsp;</strong>debuff you are&nbsp;<strong>inflicted&nbsp;</strong>with</li>\n</ul>",
+      "description": "<ul><li><p>This weapon deals <strong>5</strong> extra damage for each debuff you are suffering from.</p></li></ul>",
       "effect_table": {
         "0": {
           "damage_amount": "STATUS_COUNT * 5",
@@ -51,7 +51,7 @@
           "reaction_trigger": "creature_will_deal_damage"
         }
       },
-      "skill_description": "<ul>\n<li>This weapon deals&nbsp;<strong>5&nbsp;</strong>bonus damage for&nbsp;<strong>each&nbsp;</strong>debuff you are&nbsp;<strong>inflicted&nbsp;</strong>with</li>\n</ul>",
+      "skill_description": "<ul><li><p>This weapon deals <strong>5</strong> extra damage for each debuff you are suffering from.</p></li></ul>",
       "skill_target": "Self",
       "skill_type": "Passive",
       "type_damage": "",

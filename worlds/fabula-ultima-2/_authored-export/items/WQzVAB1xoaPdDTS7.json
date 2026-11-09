@@ -110,109 +110,71 @@
     "props": {
       "action_command": "spell",
       "active_effect_config_table": {},
-      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_offset": 0,
       "animation_damage_timing_options": "default",
+      "animation_preload_urls": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/pixelfx/pxfx_light_solar_charge_front.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/pixelfx/pxfx_light_solar_charge_light.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/pixelfx/pxfx_light_solar_cannon_front.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/pixelfx/pxfx_light_solar_cannon_light.webm",
+      "animation_script": "<p>// @desc Sunflower Staff Solar Beam: a sun swells at the staff, a fixed horizontal beam of sunlight swells across the field until the screen whites out to the enemies' silhouettes (pixelfx originals)</p><p>\"use strict\";</p><p>// Solar Beam (Sunflower Staff, All Enemy, 75 Light at 5 Solar Charge, split). Approved on the review mockup</p><p>// 2026-11-09/10 (rounds 3-5). Our own pixel effects: fu/solar-charge (pxfx_light_solar_charge) and</p><p>// fu/solar-cannon (pxfx_light_solar_cannon: one 1920x400 clip, the beam swells and burns white).</p><p>//</p><p>// Beats: sun swells at the staff | the beam fires straight across toward the enemies (fixed horizontal, not</p><p>// aimed) and keeps swelling, the field rumbles | the screen slowly whites out, every enemy left as a black</p><p>// silhouette — DAMAGE lands at full white | the white drains away.</p><p>//</p><p>// DAMAGE TIMING: \"default\" → gate = oni:animationEnd, fired at full white (oni.fireDone()).</p><p>(async () =&gt; {</p><p>  const FORGE = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/\";</p><p>  const PX = FORGE + \"Animation/pixelfx/\";</p><p>  const CFG = {</p><p>    S: FORGE + \"Sound/\",</p><p>    charge: { base: PX + \"pxfx_light_solar_charge\", width: 256, anchor: { x: 0.5, y: 0.5 } },</p><p>    cannon: { base: PX + \"pxfx_light_solar_cannon\", width: 1920, anchor: { x: 0.0167, y: 0.5 } },</p><p>    chargeK: 0.85,      // charge sun size on top of the caster's depth scale</p><p>    chargePeakMs: 1150, // the charge clip's peak: the beam fires here</p><p>    whiteAtMs: 1700,    // after the beam fires, the screen starts whiting out</p><p>    whiteMs: 1150,      // slow whiteout</p><p>    silFrom: 0.5,       // silhouettes appear from this whiteness</p><p>    holdMs: 650,        // full white + silhouettes</p><p>    backMs: 700,        // white drains away</p><p>    chest: 0.55, staffFwd: 22,</p><p>    volume: 0.8,</p><p>  };</p><p></p><p>  const P = payload ?? globalThis.__PAYLOAD ?? {};</p><p>  const casterUuid = P.casterTokenUuid ?? P.sourceTokenUuid ?? null;</p><p>  const targetUuids = (P.targetTokenUuids ?? (P.targets ?? []).map((t) =&gt; t.tokenUuid) ?? []).filter(Boolean);</p><p>  const doneHook = \"oni:done:\" + foundry.utils.randomID(8);</p><p>  const onceHook = (name, ms) =&gt; new Promise((resolve) =&gt; {</p><p>    const id = Hooks.once(name, () =&gt; { clearTimeout(t); resolve(); });</p><p>    const t = setTimeout(() =&gt; { Hooks.off(name, id); resolve(); }, ms);</p><p>  });</p><p></p><p>  Hooks.callAll(\"oni:animationStart\", { local: true, world: false });</p><p></p><p>  // INNER (every client). No backticks and no dollar-brace inside.</p><p>  const scriptSource = String.raw`</p><p>    const cfg = ctx.params.cfg;</p><p>    const caster = oni.caster;</p><p>    const targets = oni.targets || [];</p><p>    if (!caster) { oni.fireDone(); return; }</p><p>    const st = globalThis.__ONI_BATTLE_STAGE_3D__;</p><p>    const bounds = (t) =&gt; { const b = st &amp;&amp; st.drawnMeshBounds ? st.drawnMeshBounds(t) : null; return b &amp;&amp; Number.isFinite(b.x) ? b : null; };</p><p>    const drawn = (t) =&gt; {</p><p>      const b = bounds(t);</p><p>      if (b) {</p><p>        const W = canvas.stage.worldTransform;</p><p>        const feet = W.applyInverse(new PIXI.Point(b.x + b.width / 2, b.y + b.height));</p><p>        const top = W.applyInverse(new PIXI.Point(b.x + b.width / 2, b.y));</p><p>        return { feet: feet, chest: { x: feet.x, y: feet.y + (top.y - feet.y) * cfg.chest }, m: b.width / Math.abs(t.mesh.width || b.width) };</p><p>      }</p><p>      return { feet: { x: t.center.x, y: t.y + t.h }, chest: { x: t.center.x, y: t.center.y }, m: 1 };</p><p>    };</p><p>    const A = drawn(caster);</p><p>    // which way the enemies are: the average of the targets (party fires left, enemies fire right)</p><p>    let tx = 0; for (const t of targets) tx += drawn(t).chest.x;</p><p>    const dir = targets.length ? ((tx / targets.length) &gt;= A.chest.x ? 1 : -1) : -1, mirror = dir &lt; 0;</p><p>    const sx = A.chest.x + dir * cfg.staffFwd * A.m, sy = A.chest.y;</p><p></p><p>    // 1. The sun swells at the staff.</p><p>    oni.sfx(cfg.S + 'Soundboard/Absorb1.ogg', { volume: cfg.volume * 0.4 });</p><p>    const charge = await oni.pxfx(cfg.charge, { x: sx, y: sy, k: cfg.chargeK * A.m });</p><p>    await oni.wait(cfg.chargePeakMs);</p><p></p><p>    // 2. The beam: fixed horizontal from the staff, sized to reach past the far edge of the screen.</p><p>    const sc = oni.screen();</p><p>    const left = sc.S2W(0, 0).x, right = sc.S2W(1, 0).x;</p><p>    const far = dir &lt; 0 ? sx - left : right - sx;</p><p>    const k = Math.max(1, (far * 1.08) / (cfg.cannon.width * (1 - cfg.cannon.anchor.x)));</p><p>    oni.sfx(cfg.S + 'Soundboard/Saint5.ogg', { volume: cfg.volume * 0.5 });</p><p>    const cannon = await oni.pxfx(cfg.cannon, { x: sx, y: sy, mirror: mirror, k: k });</p><p>    setTimeout(() =&gt; { for (const f of (charge.parts || [])) { try { f.sprite.destroy(); } catch (e) {} } }, 300);</p><p>    oni.screenshake({ duration: cfg.whiteAtMs + cfg.whiteMs, intensity: 4 });</p><p>    await oni.wait(240);</p><p>    oni.sfx(cfg.S + 'Soundboard/Flash1.ogg', { volume: cfg.volume * 0.45 });</p><p>    await oni.wait(Math.max(0, cfg.whiteAtMs - 240));</p><p></p><p>    // 3. Whiteout: a screen-locked white sheet, the enemies as black silhouettes over it.</p><p>    const L = oni.layer({ zIndex: 100000 });</p><p>    const white = new PIXI.Graphics();</p><p>    const tl = sc.S2W(0, 0);</p><p>    white.beginFill(0xffffff, 1).drawRect(tl.x, tl.y, sc.wLen(sc.W), sc.wLen(sc.H)).endFill();</p><p>    white.alpha = 0; L.addChild(white);</p><p>    const sils = [];</p><p>    for (const t of targets) {</p><p>      const b = bounds(t), mesh = t.mesh;</p><p>      if (!mesh || !mesh.texture) continue;</p><p>      const spr = new PIXI.Sprite(mesh.texture);</p><p>      spr.tint = 0x000000; spr.alpha = 0; spr.zIndex = 10;</p><p>      if (b) {</p><p>        const p0 = canvas.stage.worldTransform.applyInverse(new PIXI.Point(b.x, b.y));</p><p>        spr.position.set(p0.x, p0.y); spr.width = b.width / sc.zoom; spr.height = b.height / sc.zoom;</p><p>      } else {</p><p>        spr.anchor.set(0.5, 0.5); spr.position.set(mesh.x, mesh.y); spr.width = Math.abs(mesh.width); spr.height = Math.abs(mesh.height);</p><p>      }</p><p>      if ((mesh.scale &amp;&amp; mesh.scale.x) &lt; 0) { spr.anchor.x = 1 - spr.anchor.x; spr.scale.x *= -1; if (b) spr.x += 0; }</p><p>      L.addChild(spr); sils.push(spr);</p><p>    }</p><p>    await oni.tween({ duration: cfg.whiteMs, ease: (u) =&gt; u * u, onUpdate: (u) =&gt; {</p><p>      white.alpha = u;</p><p>      const s = Math.max(0, (u - cfg.silFrom) / (1 - cfg.silFrom));</p><p>      for (const spr of sils) spr.alpha = s;</p><p>    } });</p><p></p><p>    // full white: the damage lands; the beam is gone when it drains</p><p>    oni.sfx(cfg.S + 'Soundboard/Flash1.ogg', { volume: cfg.volume * 0.5 });</p><p>    oni.fireDone();</p><p>    for (const f of (cannon.parts || [])) { try { f.video.pause(); f.sprite.destroy(); } catch (e) {} }</p><p>    await oni.wait(cfg.holdMs);</p><p></p><p>    // 4. The white drains away.</p><p>    await oni.tween({ duration: cfg.backMs, ease: (u) =&gt; 1 - (1 - u) * (1 - u), onUpdate: (u) =&gt; {</p><p>      white.alpha = 1 - u;</p><p>      for (const spr of sils) spr.alpha = Math.max(0, 1 - u * 2);</p><p>    } });</p><p>  `;</p><p></p><p>  game.ONI.pseudo.play({</p><p>    scriptId: \"anim-studio/sunflower-solar-beam\",</p><p>    scriptSource,</p><p>    casterTokenUuid: casterUuid,</p><p>    targetTokenUuids: targetUuids,</p><p>    params: { doneHook, cfg: CFG },</p><p>  });</p><p></p><p>  await onceHook(doneHook, CFG.chargePeakMs + CFG.whiteAtMs + CFG.whiteMs + 8000);</p><p>  Hooks.callAll(\"oni:animationEnd\", { local: true, world: false });</p><p>})();</p><p></p>",
+      "availability_formula": "AE_COUNT_SOLAR_CHARGE > 0",
+      "availability_reason": "No Solar Charge",
       "check_bonus": "0",
       "class": "Floralist",
       "cost": "10 MP",
       "damage_bonus": "0",
       "defense_target_type": "mdef",
-      "description": "<p>When you cast this spell, create a <strong>6-section Solar Beam clock </strong>with this effect if you didn't have one already</p><blockquote><p>Whenever you take <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\">Light</a>&nbsp;damage, Fill 1 section of your Solar Beam clock</p></blockquote><p>then, <strong>choose one:</strong></p><ul><li><p><strong>Fill 1 section </strong>of your <strong>Solar Beam </strong>clock</p></li><li><p><strong>Consume </strong>all filled section and deal 【<strong>50 x The number of consumed section</strong>】<a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\">Light</a>&nbsp;damage to target creature</p></li></ul>",
+      "description": "<p>Consume all your <strong>Solar Charge</strong>. Deal <strong>【15 × Solar Charge consumed】</strong><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: inherit; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(202, 189, 154) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Light</span></strong></a></span></span>&nbsp;damage, divided evenly among all enemies (rounded down). You can't cast this spell without Solar Charge.</p>",
       "duration": "Instantaneous",
       "effect_table": {
         "0": {
-          "effect_kind": "open_action_menu",
-          "effect_label": "solar_menu",
-          "menu_option_refs": "solar_fill, solar_fire",
-          "menu_pick_count": "1",
-          "menu_subtitle": "Choose one",
-          "menu_title": "Solar Beam"
+          "chain_steps": "solar_dmg_1, solar_dmg_2, solar_dmg_3, solar_dmg_4, solar_dmg_5, solar_spend",
+          "effect_kind": "chain",
+          "effect_label": "solar_fire"
         },
         "1": {
-          "ae_duplicate_mode": "add_charges",
-          "ae_initial_charges": "1",
-          "ae_initial_charges_max": "6",
-          "ae_template_ref": "Item.WQzVAB1xoaPdDTS7.ActiveEffect.RQxY4Y3L9lvsPGCJ",
-          "effect_kind": "apply_ae",
-          "effect_label": "solar_fill",
-          "menu_description": "Fill 1 section of your Solar Beam clock.",
-          "menu_label": "Gather light",
-          "target_ref": "self"
-        },
-        "2": {
-          "ae_duplicate_mode": "add_charges",
-          "ae_initial_charges": "1",
-          "ae_initial_charges_max": "6",
-          "ae_template_ref": "Item.WQzVAB1xoaPdDTS7.ActiveEffect.RQxY4Y3L9lvsPGCJ",
-          "effect_kind": "apply_ae",
-          "effect_label": "solar_absorb",
-          "target_ref": "self"
-        },
-        "3": {
-          "chain_steps": "solar_dmg_1, solar_dmg_2, solar_dmg_3, solar_dmg_4, solar_dmg_5, solar_dmg_6, solar_spend",
-          "condition_formula": "AE_CHARGES_SOLAR_CHARGE > 0",
-          "disable_ui_type": "disabled",
-          "disabled_reason": "No sections filled",
-          "effect_kind": "chain",
-          "effect_label": "solar_fire",
-          "menu_description": "Consume every filled section and deal Light damage to the target.",
-          "menu_label": "Fire"
-        },
-        "4": {
           "condition_formula": "AE_CHARGES_SOLAR_CHARGE == 1",
-          "damage_amount": "50",
+          "damage_amount": "floor(15 / max(1, ACTION_TARGET_COUNT))",
           "damage_cause": "damage",
           "damage_element": "light",
           "effect_kind": "deal_damage",
           "effect_label": "solar_dmg_1",
           "target_ref": "action_targets"
         },
-        "5": {
+        "2": {
           "condition_formula": "AE_CHARGES_SOLAR_CHARGE == 2",
-          "damage_amount": "100",
+          "damage_amount": "floor(30 / max(1, ACTION_TARGET_COUNT))",
           "damage_cause": "damage",
           "damage_element": "light",
           "effect_kind": "deal_damage",
           "effect_label": "solar_dmg_2",
           "target_ref": "action_targets"
         },
-        "6": {
+        "3": {
           "condition_formula": "AE_CHARGES_SOLAR_CHARGE == 3",
-          "damage_amount": "150",
+          "damage_amount": "floor(45 / max(1, ACTION_TARGET_COUNT))",
           "damage_cause": "damage",
           "damage_element": "light",
           "effect_kind": "deal_damage",
           "effect_label": "solar_dmg_3",
           "target_ref": "action_targets"
         },
-        "7": {
+        "4": {
           "condition_formula": "AE_CHARGES_SOLAR_CHARGE == 4",
-          "damage_amount": "200",
+          "damage_amount": "floor(60 / max(1, ACTION_TARGET_COUNT))",
           "damage_cause": "damage",
           "damage_element": "light",
           "effect_kind": "deal_damage",
           "effect_label": "solar_dmg_4",
           "target_ref": "action_targets"
         },
-        "8": {
-          "condition_formula": "AE_CHARGES_SOLAR_CHARGE == 5",
-          "damage_amount": "250",
+        "5": {
+          "condition_formula": "AE_CHARGES_SOLAR_CHARGE >= 5",
+          "damage_amount": "floor(75 / max(1, ACTION_TARGET_COUNT))",
           "damage_cause": "damage",
           "damage_element": "light",
           "effect_kind": "deal_damage",
           "effect_label": "solar_dmg_5",
           "target_ref": "action_targets"
         },
-        "9": {
-          "condition_formula": "AE_CHARGES_SOLAR_CHARGE >= 6",
-          "damage_amount": "300",
-          "damage_cause": "damage",
-          "damage_element": "light",
-          "effect_kind": "deal_damage",
-          "effect_label": "solar_dmg_6",
-          "target_ref": "action_targets"
-        },
-        "10": {
+        "6": {
           "ae_template_ref": "Solar Charge",
           "count": "all",
           "effect_kind": "remove_ae",
@@ -227,32 +189,22 @@
       "isCheck": false,
       "isFacet": false,
       "isHeroic": false,
-      "isOffensiveSpell": false,
-      "isReaction": true,
+      "isOffensiveSpell": true,
+      "isReaction": false,
       "isZeroPower": false,
       "level": "1",
       "max_level": "1",
       "name": "Solar Beam",
-      "on_activate_effect_ref": "solar_menu",
+      "on_activate_effect_ref": "solar_fire",
       "optional_params": {},
-      "reaction_config_table": {
-        "0": {
-          "condition_formula": "TRIGGER_DAMAGE_IS_LIGHT == 1 && AE_COUNT_SOLAR_CHARGE > 0",
-          "reaction_cause_filter": "damage",
-          "reaction_effect_ref": "solar_absorb",
-          "reaction_passive_mode": "force",
-          "reaction_resource_filter": "hp",
-          "reaction_source": "self",
-          "reaction_trigger": "creature_lose_resource"
-        }
-      },
+      "reaction_config_table": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",
       "skill_animation_default": "",
       "skill_animation_mode": "default",
       "skill_information": "",
       "skill_range": "Range",
-      "skill_target": "One Creature",
+      "skill_target": "All Enemy",
       "skill_type": "Spell",
       "type_damage": "",
       "use_optional_params": false
