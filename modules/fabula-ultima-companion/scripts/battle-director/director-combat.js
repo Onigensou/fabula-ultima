@@ -1035,7 +1035,11 @@ export function buildDirectorCombat({
 } = {}) {
   const dc = new DirectorCombat({ scene, sourceSceneId });
   dc.initiativeMode = (initiativeMode === "sidePriority") ? "sidePriority" : "rolled";
-  dc.engagement = (engagement === "ambush" || engagement === "advantage") ? engagement : "normal";
+  // "preemptive" is the Event System's name for Advantage (event-rows-story.js);
+  // it used to fall through to "normal", so a "Party strikes first" event
+  // battle silently ran as a plain fight.
+  const eng = engagement === "preemptive" ? "advantage" : engagement;
+  dc.engagement = (eng === "ambush" || eng === "advantage") ? eng : "normal";
   for (const td of (partyTokens ?? [])) {
     if (!td) continue;
     dc.addCombatant({ tokenDoc: td, side: "party", disposition: 1 });

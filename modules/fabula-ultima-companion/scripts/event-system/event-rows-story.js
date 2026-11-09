@@ -152,7 +152,9 @@
   // ------------------------------------------------------------
   // Start Battle
   // ------------------------------------------------------------
-  const ENGAGEMENTS = [["normal", "Normal"], ["ambush", "Enemies strike first (ambush)"], ["preemptive", "Party strikes first"]];
+  // "preemptive" is kept as the saved key (existing rows use it); the Battle
+  // Director reads it as "advantage".
+  const ENGAGEMENTS = [["normal", "Normal"], ["ambush", "Ambush: enemies get a Free Round"], ["preemptive", "Advantage: party gets a Free Round"]];
   let battleSeq = 0;
 
   function prepareBattle(row) {

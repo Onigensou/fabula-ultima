@@ -496,6 +496,10 @@ export async function run({
   // Lightning Crystal spawn roll, so a balance run measures a KNOWN hazard
   // rather than whichever of 0/1/2 the dice happened to give it.
   conflictEventOptions = null,
+  // "normal" | "ambush" | "advantage". Ambush / Advantage add a Free Round before
+  // Round 1 (only the favoured side acts, with all its activations), so a balance
+  // run of a surprise start has to say so.
+  engagement = "normal",
 } = {}) {
   const a = api();
   if (!a?.start) { ui.notifications?.error("[SIM] Battle Director API not ready."); return null; }
@@ -597,7 +601,9 @@ export async function run({
       },
       encounterPlan: { mode: "manual", manualPicks },
       party: { members },
+      ...(engagement === "ambush" || engagement === "advantage" ? { battlePlan: { engagement } } : {}),
     };
+    if (engagement === "ambush" || engagement === "advantage") SimMode.note("start", `engagement: ${engagement} (Free Round first)`);
 
     const foeLabel = manualPicks.map((p) => `${p.name}×${p.quantity}`).join(" + ");
     SimMode.note("start", `${members.filter((m) => !m.isGuest).length} PC(s) vs ${foeLabel}`);

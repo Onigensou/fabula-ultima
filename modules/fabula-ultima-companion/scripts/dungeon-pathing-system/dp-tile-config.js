@@ -597,8 +597,8 @@
             <select name="flags.${MODULE_ID}.${pathingKey}.fixedEngagement" data-dtype="String">
               ${engOpt("", "— Roll as usual —")}
               ${engOpt("normal", "Normal")}
-              ${engOpt("advantage", "Advantage — the party strikes first")}
-              ${engOpt("ambush", "Ambush — the enemies strike first")}
+              ${engOpt("advantage", "Advantage — the party gets a Free Round")}
+              ${engOpt("ambush", "Ambush — the enemies get a Free Round")}
             </select>
           </div>
           <p class="notes">Fixed battles only. Blank rolls the Current Game's ambush / advantage odds.</p>
