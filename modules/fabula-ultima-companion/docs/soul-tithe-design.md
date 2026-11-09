@@ -238,7 +238,7 @@ local only).
   | Soul Tithe | at the tear, 0.5 s | The fire lights at the bar's end with a flare and burns left across the empty part to current HP. Burned pixels glow `SOUL[5]`→`[4]`→`[3]` over 0.45 s, then char. Max counts down. |
   | Calling | at the first bead, 0.6 s | The front burns further left. If HP is above the new Max it eats into the fill, and both numbers count down. |
   | Fragment destroyed | at the first flamelet, 0.5 s | The front is pushed right in one ease-out move, the flame leaning back against it. The fill regrows with a pale flash. Once 90% of the way is covered (about 0.22 s in, while the front is still fast, not after the ease out's slow crawl), the flame **disperses** in the same frame: that frame's pixels replace the flame, all move at once (no hold; the top a little faster) and fly on to the right with the front's momentum (35% of it, at most 160 px/s; the momentum takes the front's speed and dies away over 0.35 s), rising a little, then cool `SOUL[4]`→`[3]`→`[2]` and go out over 0.35–0.75 s, with 4 sparks. |
-  | Battle ends | 0.4 s + 0.9 s | The fire goes out with a few sparks. The char cools to the empty-track colour, because current HP stays. |
+  | Battle ends | at once, gone by ~2.2 s | (Mockup v8, the user's pick "A · Ash drifts off", 2026-11-09; was: fire out 0.4 s + char cools 0.9 s.) The fire **disperses** at once like the refund's, pushed right by the breeze (80 px/s × 35%) since the front is still, with 4 sparks. Over 0.25 s the char's soul colours turn to **black ash** (three tones from the same cinder hash: dark / mid / fleck). Each ash pixel then lets go at 0.18 + 0.5·u + 0.45·random − 0.06·(1 − v) s (u: 0 at the fire, 1 at the bar's end; v: row, 0 top), so the part by the fire goes first and the top rows a little earlier. A flake drifts right (12–34 art px/s, + 14 px/s² push), lifts (4–15 px/s × the kind's scale, 6 px/s² fall), flutters ±1.2 px, and pales through three greys over 0.8–1.4 s before it is gone; the bar's own empty track shows where the ash left, because current HP stays. A bar nobody draws ends its ash after 3.2 s. |
 
 - `makeSoulFlame` gained, for this: `smoke` and `wind` options, `cover` (burn on the
   silhouette, not round it), `setWind(w, t)` (a live wind: tongues lean with the wind
@@ -268,6 +268,11 @@ local only).
   starts slower, which showed a gap of empty track behind the front).
 - Tests: `node scripts/conflict-event/soul-fx/soul-hp-burn.test.mjs` (the model and the
   flame options); real HUD: `tools/staging-world/soul-hp-burn-hud.mjs`.
+- Also on the **GM desk** (2026-11-09): its unit rows call the same `syncSoul` with a
+  row handle `{ el, kind: "card", hpFill: .bar .fl }`, and scale the fill and trail to
+  Max + taken (`gm-desk.js` `paintRow`); rig `tools/staging-world/soul-hp-burn-desk.mjs`.
+  The desk's Take Turn tiles are not covered. **Spectators** get all-compact party cards,
+  which run `syncSoul` like any player's.
 
 ---
 

@@ -177,7 +177,7 @@ const readHP = a => pair(a, P_HP_V, P_HP_M);
 // Soul Tithe: the Max HP a Soul Fragment holds (the Soul-Torn AE's total; its max_hp change
 // already lowered max_hp). The HP bar keeps its full length, Max now + this, and the taken
 // part burns at its right end (soul-hp-burn.js, loaded the first time anything is taken).
-const soulStolenOf = (a) => {
+export const soulStolenOf = (a) => {
   try {
     const e = a?.effects?.find?.((x) => x?.flags?.[MODULE_ID]?.soulTorn === true && !x.disabled);
     const n = Math.floor(Number(e?.flags?.[MODULE_ID]?.soulStolen) || 0);
@@ -185,7 +185,12 @@ const soulStolenOf = (a) => {
   } catch { return 0; }
 };
 let _soulBurn = null, _soulBurnLoad = null;
-function syncSoul(card, hp, stolen, first) {
+/**
+ * A bar's HP numbers were (re)read: hand them to the burn (loaded the first time anything is
+ * taken). Also used by the GM desk's unit rows (gm-desk.js) with a handle { el, kind, hpFill }.
+ * Call it BEFORE the fill moves, so a refund can set the fill's ease first.
+ */
+export function syncSoul(card, hp, stolen, first) {
   if (!card?.hpFill) return;
   if (!stolen && !card._soulBar && !card._soulQueued) { card._soulSeen = true; return; }
   const state = { v: hp.v, m: hp.m, stolen };
