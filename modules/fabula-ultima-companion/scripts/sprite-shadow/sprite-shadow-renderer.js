@@ -121,8 +121,63 @@ function liftFor(token) {
 // ---------------------------------------------------------------------------
 // Geometry from the alpha map (texture space, cached per alpha-data object)
 // ---------------------------------------------------------------------------
-function bodyGeometry(texture) {
+// Foundry caches the alpha map per base texture FOREVER. A video sampled before
+// its first frame reached the GPU (a webm battle idle swapped in at battle
+// start) is cached blank, so the shadow never appeared (found 2026-11-09 on the
+// Valley elites; older video idles happened to be sampled late enough). For a
+// playing video whose cached map is blank, take our own sample, same format.
+const _videoAlpha = new WeakMap();   // baseTexture -> alpha data
+const blankAlpha = (ad) => !ad || ad.maxX <= ad.minX || ad.maxY <= ad.minY;
+function videoSourceOf(texture) {
+  const src = texture?.baseTexture?.resource?.source;
+  return src?.tagName === "VIDEO" ? src : null;
+}
+function sampleAlpha(texture, resolution) {
+  const width = Math.ceil(Math.round(texture.width * texture.resolution) * resolution);
+  const height = Math.ceil(Math.round(texture.height * texture.resolution) * resolution);
+  const sprite = new PIXI.Sprite(texture);
+  sprite.width = width; sprite.height = height; sprite.anchor.set(0, 0);
+  const rt = PIXI.RenderTexture.create({ width, height });
+  canvas.app.renderer.render(sprite, { renderTexture: rt });
+  sprite.destroy(false);
+  const pixels = canvas.app.renderer.extract.pixels(rt);
+  rt.destroy(true);
+  let minX = width, minY = height, maxX = 0, maxY = 0;
+  for (let i = 3, y = 0; y < height; y++) for (let x = 0; x < width; x++, i += 4) {
+    if (pixels[i] === 0) continue;
+    if (x < minX) minX = x; if (x >= maxX) maxX = x + 1; if (y < minY) minY = y; if (y >= maxY) maxY = y + 1;
+  }
+  if (minX > maxX) minX = minY = maxX = maxY = 0;
+  const data = new Uint8Array(Math.max(0, (maxX - minX) * (maxY - minY)));
+  for (let i = 0, y = minY; y < maxY; y++) for (let x = minX; x < maxX; x++, i++) data[i] = pixels[((width * y) + x) * 4 + 3];
+  return { width, height, minX, minY, maxX, maxY, data };
+}
+function alphaDataOf(texture) {
   const ad = TextureLoader.getTextureAlphaData(texture, 0.25);
+  if (!blankAlpha(ad)) return ad;
+  const video = videoSourceOf(texture);
+  if (!video || video.readyState < 2) return ad;          // no frame decoded yet: nothing to sample
+  const base = texture.baseTexture;
+  const have = _videoAlpha.get(base);
+  if (have && !blankAlpha(have)) return have;
+  const fresh = sampleAlpha(texture, 0.25);
+  if (!blankAlpha(fresh)) _videoAlpha.set(base, fresh);
+  return fresh;
+}
+// A token whose video had no frame yet gets synced again once one arrives.
+const _retry = new Map();   // tokenId -> attempts
+function retryLater(token) {
+  const video = videoSourceOf(token?.mesh?.texture);
+  if (!video) return;
+  const n = (_retry.get(token.id) ?? 0) + 1;
+  if (n > 10) return;
+  _retry.set(token.id, n);
+  if (video.readyState < 2) video.addEventListener("loadeddata", () => { try { syncToken(token); } catch (_) {} }, { once: true });
+  setTimeout(() => { try { if (!token.destroyed) syncToken(token); } catch (_) {} }, 400);
+}
+
+function bodyGeometry(texture) {
+  const ad = alphaDataOf(texture);
   if (!ad || ad.maxX <= ad.minX || ad.maxY <= ad.minY) return null;
   let g = _geom.get(ad);
   if (g && g.key === styleKey()) return g;
@@ -318,7 +373,8 @@ export function syncToken(token) {
     if (paintedUrl) { syncPainted(token, paintedUrl); return; }
     const mesh = token.mesh, tex = mesh.texture;
     const g = bodyGeometry(tex);
-    if (!g) { removeShadow(token.id); return; }
+    if (!g) { removeShadow(token.id); retryLater(token); return; }
+    _retry.delete(token.id);
     const b = bake(tex, g);
 
     let s = _shadows.get(token.id);
