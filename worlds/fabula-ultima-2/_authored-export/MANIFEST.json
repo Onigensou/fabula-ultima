@@ -17317,7 +17317,56 @@
         "id": "amxILxU7mqQ0jKhZ",
         "name": "Deva",
         "type": "character",
-        "items": [],
+        "items": [
+          {
+            "id": "DvDisciplineP001",
+            "name": "Celestial Discipline"
+          },
+          {
+            "id": "DvDoubleSlap0001",
+            "name": "Double Slap"
+          },
+          {
+            "id": "DvEnlighten00001",
+            "name": "Enlightenment"
+          },
+          {
+            "id": "DvFistsOfFocus01",
+            "name": "Fists of Focus"
+          },
+          {
+            "id": "DvFistsOfFury001",
+            "name": "Fists of Fury"
+          },
+          {
+            "id": "DvGroundSlam0001",
+            "name": "Ground Slam"
+          },
+          {
+            "id": "DvKalaStrike0001",
+            "name": "Kala Strike"
+          },
+          {
+            "id": "DvMissileFist001",
+            "name": "Missile Fist"
+          },
+          {
+            "id": "DvMudraLance0001",
+            "name": "Mudra Lance"
+          },
+          {
+            "id": "DvRahuEclipse001",
+            "name": "Rahu's Eclipse"
+          },
+          {
+            "id": "DvSuryaPalm00001",
+            "name": "Surya Palm"
+          },
+          {
+            "id": "DvVajraFist00001",
+            "name": "Vajra Fist"
+          }
+        ],
         "effects": 0
       },
       {
@@ -22155,6 +22204,26 @@
         "name": "Miles",
         "type": "character",
         "items": [],
+        "effects": 0
+      },
+      {
+        "id": "MsFistSummon0001",
+        "name": "Missile Fist",
+        "type": "character",
+        "items": [
+          {
+            "id": "MsFistDetonate01",
+            "name": "Detonate"
+          },
+          {
+            "id": "MsFistFuseClock1",
+            "name": "Fuse"
+          },
+          {
+            "id": "MsFistHover00001",
+            "name": "Hover"
+          }
+        ],
         "effects": 0
       },
       {

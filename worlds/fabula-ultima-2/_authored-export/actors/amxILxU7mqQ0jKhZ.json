@@ -18,6 +18,2002 @@
   },
   "folder": "4gMC1IxdJlF59BSi",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Deva/Deva_Standard.png",
+  "items": [
+    {
+      "_id": "DvDisciplineP001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "DvAeEnlReady0001",
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "hidden": true,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "name": "Enlightenment Ready",
+          "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "deva_offense"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "DvAeFistReady001",
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "hidden": true,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "name": "Fist Ready",
+          "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "deva_guard"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "DvAeGuardRound01",
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "hidden": true,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "name": "Guard Round",
+          "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "deva_guard"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "DvAeLastStrike01",
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "hidden": true,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "name": "Last Form Strike",
+          "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "deva_memory"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "DvAeMagicForm001",
+          "changes": [],
+          "description": "<p>Focus: her arms burn blue.</p>",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter",
+              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Deva/Deva_Focus_Battle_Idle.webm"
+            }
+          },
+          "name": "Magic Form",
+          "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "deva_offense"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "DvAeMagicOpen001",
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "hidden": true,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "name": "Magic Opener",
+          "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "deva_offense"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "DvAeMagicStack01",
+          "changes": [],
+          "description": "<p>Attacks aimed at her Magic Defense.</p>",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "name": "Magic Stack",
+          "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "deva_stack"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "DvAeMayaStance01",
+          "changes": [
+            {
+              "key": "magic_defense",
+              "mode": 2,
+              "priority": 20,
+              "value": "2"
+            }
+          ],
+          "description": "<p>A violet rim of light. Her Magic Defense is higher.</p>",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "name": "Maya Stance",
+          "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "deva_guard"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "DvAeStrikeForm01",
+          "changes": [],
+          "description": "<p>Fury: her arms burn red.</p>",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter",
+              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Deva/Deva_Fury_Battle_Idle.webm"
+            }
+          },
+          "name": "Strike Form",
+          "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "deva_offense"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "DvAeStrikeOpen01",
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "hidden": true,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "name": "Strike Opener",
+          "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "deva_offense"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "DvAeStrikeStack1",
+          "changes": [],
+          "description": "<p>Attacks aimed at her Defense.</p>",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "name": "Strike Stack",
+          "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "deva_stack"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "DvAeVajraStance1",
+          "changes": [
+            {
+              "key": "defense",
+              "mode": 2,
+              "priority": 20,
+              "value": "2"
+            }
+          ],
+          "description": "<p>A gold rim of light. Her Defense is higher.</p>",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "name": "Vajra Stance",
+          "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "deva_guard"
+            ]
+          },
+          "transfer": false
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+      "name": "Celestial Discipline",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>On odd rounds Deva guards in one of two stances, drawn at random: <strong>Vajra</strong> (higher Defense) or <strong>Maya</strong> (higher Magic Defense).</p><p>Every attack aimed at her, hit or miss, adds a <strong>Strike</strong> stack if it checked her Defense or a <strong>Magic</strong> stack if it checked her Magic Defense. On even rounds she takes the form the larger stack calls for, <strong>Fury</strong> or <strong>Focus</strong>, and the stacks reset.</p><p>She cannot be <a class=\"content-link\" data-uuid=\"JournalEntry.c4sYPClmvld4TEK8\" data-id=\"c4sYPClmvld4TEK8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Provoked</strong></a>.</p>",
+          "details_roller": "Show",
+          "duration": "Scene",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_duplicate_mode": "add_charges",
+              "ae_initial_charges": "1",
+              "ae_template_ref": "Strike Stack",
+              "effect_kind": "apply_ae",
+              "effect_label": "st_strike",
+              "target_ref": "self"
+            },
+            "1": {
+              "$deleted": false,
+              "ae_duplicate_mode": "add_charges",
+              "ae_initial_charges": "1",
+              "ae_template_ref": "Magic Stack",
+              "effect_kind": "apply_ae",
+              "effect_label": "st_magic",
+              "target_ref": "self"
+            },
+            "2": {
+              "$deleted": false,
+              "chain_steps": "g_clear_off,g_clear_st,g_mark,g_stance,g_fist",
+              "effect_kind": "chain",
+              "effect_label": "guard"
+            },
+            "3": {
+              "$deleted": false,
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "g_clear_off",
+              "filter_tag": "deva_offense",
+              "include_persistent": "true",
+              "target_ref": "self"
+            },
+            "4": {
+              "$deleted": false,
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "g_clear_st",
+              "filter_tag": "deva_guard",
+              "include_persistent": "true",
+              "target_ref": "self"
+            },
+            "5": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Guard Round",
+              "effect_kind": "apply_ae",
+              "effect_label": "g_mark",
+              "target_ref": "self"
+            },
+            "6": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_name_pool": "Vajra Stance,Maya Stance",
+              "effect_kind": "apply_ae",
+              "effect_label": "g_stance",
+              "target_ref": "self"
+            },
+            "7": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Fist Ready",
+              "effect_kind": "apply_ae",
+              "effect_label": "g_fist",
+              "target_ref": "self"
+            },
+            "8": {
+              "$deleted": false,
+              "chain_steps": "o_clear,s_form,s_open,s_mem,o_reset,o_enl",
+              "effect_kind": "chain",
+              "effect_label": "to_strike"
+            },
+            "9": {
+              "$deleted": false,
+              "chain_steps": "o_clear,m_form,m_open,m_mem,o_reset,o_enl",
+              "effect_kind": "chain",
+              "effect_label": "to_magic"
+            },
+            "10": {
+              "$deleted": false,
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "o_clear",
+              "filter_tag": "deva_guard",
+              "include_persistent": "true",
+              "target_ref": "self"
+            },
+            "11": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Strike Form",
+              "effect_kind": "apply_ae",
+              "effect_label": "s_form",
+              "target_ref": "self"
+            },
+            "12": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Strike Opener",
+              "effect_kind": "apply_ae",
+              "effect_label": "s_open",
+              "target_ref": "self"
+            },
+            "13": {
+              "$deleted": false,
+              "ae_duplicate_mode": "skip",
+              "ae_template_ref": "Last Form Strike",
+              "effect_kind": "apply_ae",
+              "effect_label": "s_mem",
+              "target_ref": "self"
+            },
+            "14": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Magic Form",
+              "effect_kind": "apply_ae",
+              "effect_label": "m_form",
+              "target_ref": "self"
+            },
+            "15": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Magic Opener",
+              "effect_kind": "apply_ae",
+              "effect_label": "m_open",
+              "target_ref": "self"
+            },
+            "16": {
+              "$deleted": false,
+              "ae_template_ref": "Last Form Strike",
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "m_mem",
+              "include_persistent": "true",
+              "target_ref": "self"
+            },
+            "17": {
+              "$deleted": false,
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "o_reset",
+              "filter_tag": "deva_stack",
+              "include_persistent": "true",
+              "target_ref": "self"
+            },
+            "18": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Enlightenment Ready",
+              "condition_formula": "ROUND % 4 == 0",
+              "effect_kind": "apply_ae",
+              "effect_label": "o_enl",
+              "target_ref": "self"
+            },
+            "19": {
+              "$deleted": false,
+              "ae_template_ref": "Provoked",
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "no_provoke",
+              "include_persistent": "true",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Celestial Discipline",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "SUBJECT_IS_SELF == 1 && ATTACK_VS_DEF == 1",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "st_strike",
+              "reaction_isPassive": true,
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_targeted_by_action"
+            },
+            "1": {
+              "$deleted": false,
+              "condition_formula": "SUBJECT_IS_SELF == 1 && ATTACK_VS_MDEF == 1",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "st_magic",
+              "reaction_isPassive": true,
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_targeted_by_action"
+            },
+            "2": {
+              "$deleted": false,
+              "condition_formula": "(ROUND % 2 == 1 || ROUND == 0) && AE_COUNT_GUARD_ROUND == 0",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "guard",
+              "reaction_isPassive": true,
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            },
+            "3": {
+              "$deleted": false,
+              "condition_formula": "(ROUND % 2 == 1 || ROUND == 0) && AE_COUNT_GUARD_ROUND == 0",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "guard",
+              "reaction_isPassive": true,
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "",
+              "reaction_source": "",
+              "reaction_trigger": "round_start"
+            },
+            "4": {
+              "$deleted": false,
+              "condition_formula": "ROUND % 2 == 0 && AE_COUNT_STRIKE_FORM + AE_COUNT_MAGIC_FORM == 0 && (AE_CHARGES_STRIKE_STACK > AE_CHARGES_MAGIC_STACK || (AE_CHARGES_STRIKE_STACK == AE_CHARGES_MAGIC_STACK && AE_COUNT_LAST_FORM_STRIKE == 0))",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "to_strike",
+              "reaction_isPassive": true,
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "",
+              "reaction_source": "",
+              "reaction_trigger": "round_start"
+            },
+            "5": {
+              "$deleted": false,
+              "condition_formula": "ROUND % 2 == 0 && AE_COUNT_STRIKE_FORM + AE_COUNT_MAGIC_FORM == 0 && !(AE_CHARGES_STRIKE_STACK > AE_CHARGES_MAGIC_STACK || (AE_CHARGES_STRIKE_STACK == AE_CHARGES_MAGIC_STACK && AE_COUNT_LAST_FORM_STRIKE == 0))",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "to_magic",
+              "reaction_isPassive": true,
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "",
+              "reaction_source": "",
+              "reaction_trigger": "round_start"
+            },
+            "6": {
+              "$deleted": false,
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "no_provoke",
+              "reaction_isPassive": true,
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "",
+              "reaction_source": "self",
+              "reaction_status_filter": "Provoked",
+              "reaction_trigger": "creature_status_applied"
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "-",
+          "skill_target": "-",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "vdEX0eAROfOYjHED"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "DvDoubleSlap0001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Double Slap",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_command": "attack",
+          "action_keywords": "multi",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "4",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "25",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Multi (2)</strong></a></p></li></ul><p>She slaps the insolent aside. Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage and inflict <a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Shaken</strong></a>.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Shaken",
+              "effect_kind": "apply_ae",
+              "effect_label": "sl_shaken",
+              "target_ref": "trigger_subject"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Double Slap",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "HP_DEALT > 0",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "sl_shaken",
+              "reaction_isPassive": true,
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "Double Slap",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "Up to two creatures",
+          "skill_type": "Attack",
+          "type_damage": "Physical",
+          "use_optional_params": false,
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvDoubleSlap0001"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "A87i0WJvlVD1w3E7"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "DvEnlighten00001",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "DvAeEnMagicFrm01",
+          "changes": [],
+          "description": "<p>Focus: her arms burn blue.</p>",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter",
+              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Deva/Deva_Focus_Battle_Idle.webm"
+            }
+          },
+          "name": "Magic Form",
+          "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvEnlighten00001",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "deva_offense"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "DvAeEnMagicOpn01",
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "hidden": true,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "name": "Magic Opener",
+          "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvEnlighten00001",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "deva_offense"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "DvAeEnStrikeFrm1",
+          "changes": [],
+          "description": "<p>Fury: her arms burn red.</p>",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter",
+              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Deva/Deva_Fury_Battle_Idle.webm"
+            }
+          },
+          "name": "Strike Form",
+          "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvEnlighten00001",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "deva_offense"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "DvAeEnStrikeOpn1",
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "hidden": true,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "name": "Strike Opener",
+          "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvEnlighten00001",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "deva_offense"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "DvAeSwapToMagic1",
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "hidden": true,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "name": "Swap To Magic",
+          "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvEnlighten00001",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "deva_swap"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "DvAeSwapToStrik1",
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "hidden": true,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "name": "Swap To Strike",
+          "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvEnlighten00001",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "deva_swap"
+            ]
+          },
+          "transfer": false
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213946.309.png",
+      "name": "Enlightenment",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_command": "spell",
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>Deva sees through the enemies' plan and changes her form: Fury becomes Focus, or Focus becomes Fury. She does this at the start of every second offensive round.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "en_ready,en_pm,en_ps,en_clear,en_m1,en_m2,en_s1,en_s2,en_done",
+              "effect_kind": "chain",
+              "effect_label": "en_chain"
+            },
+            "1": {
+              "$deleted": false,
+              "ae_template_ref": "Enlightenment Ready",
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "en_ready",
+              "include_persistent": "true",
+              "target_ref": "self"
+            },
+            "2": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Swap To Magic",
+              "condition_formula": "AE_COUNT_STRIKE_FORM > 0",
+              "effect_kind": "apply_ae",
+              "effect_label": "en_pm",
+              "target_ref": "self"
+            },
+            "3": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Swap To Strike",
+              "condition_formula": "AE_COUNT_MAGIC_FORM > 0",
+              "effect_kind": "apply_ae",
+              "effect_label": "en_ps",
+              "target_ref": "self"
+            },
+            "4": {
+              "$deleted": false,
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "en_clear",
+              "filter_tag": "deva_offense",
+              "include_persistent": "true",
+              "target_ref": "self"
+            },
+            "5": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Magic Form",
+              "condition_formula": "AE_COUNT_SWAP_TO_MAGIC > 0",
+              "effect_kind": "apply_ae",
+              "effect_label": "en_m1",
+              "target_ref": "self"
+            },
+            "6": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Magic Opener",
+              "condition_formula": "AE_COUNT_SWAP_TO_MAGIC > 0",
+              "effect_kind": "apply_ae",
+              "effect_label": "en_m2",
+              "target_ref": "self"
+            },
+            "7": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Strike Form",
+              "condition_formula": "AE_COUNT_SWAP_TO_STRIKE > 0",
+              "effect_kind": "apply_ae",
+              "effect_label": "en_s1",
+              "target_ref": "self"
+            },
+            "8": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Strike Opener",
+              "condition_formula": "AE_COUNT_SWAP_TO_STRIKE > 0",
+              "effect_kind": "apply_ae",
+              "effect_label": "en_s2",
+              "target_ref": "self"
+            },
+            "9": {
+              "$deleted": false,
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "en_done",
+              "filter_tag": "deva_swap",
+              "include_persistent": "true",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213946.309.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Enlightenment",
+          "on_activate_effect_ref": "en_chain",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "-",
+          "skill_target": "Self",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvEnlighten00001"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "DvFistsOfFocus01",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Fists of Focus",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_command": "attack",
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "4",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "12",
+          "defense_target_type": "def",
+          "description": "<p>A wall of dark fists slams across the whole field. Deal <strong>light</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;damage to all enemies; each one hit also loses MP equal to three times the damage it took. Focus form.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_template_ref": "Magic Fists",
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "fo_spend",
+              "include_persistent": "true",
+              "target_ref": "self"
+            },
+            "1": {
+              "$deleted": false,
+              "damage_amount": "3 * HP_DEALT",
+              "damage_cause": "damage",
+              "damage_element": "dark",
+              "damage_resource": "mp",
+              "effect_kind": "deal_damage",
+              "effect_label": "fo_drain",
+              "target_ref": "trigger_subject"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Fists of Focus",
+          "on_activate_effect_ref": "fo_spend",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "HP_DEALT > 0",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "fo_drain",
+              "reaction_isPassive": true,
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "Fists of Focus",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "DEX",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "All Enemies",
+          "skill_type": "Attack",
+          "type_damage": "Dark",
+          "use_optional_params": false,
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvFistsOfFocus01"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "A87i0WJvlVD1w3E7"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "DvFistsOfFury001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Fists of Fury",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_command": "attack",
+          "action_keywords": "chain 12",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "4",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "28",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.ChnStrikeKeyw0rd\" data-id=\"ChnStrikeKeyw0rd\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Chain (12)</strong></a></p></li></ul><p>A wall of fists slams across the whole field. Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to all enemies. Fury form.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_template_ref": "Strike Fists",
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "ff_spend",
+              "include_persistent": "true",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Fists of Fury",
+          "on_activate_effect_ref": "ff_spend",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "DEX",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "All Enemies",
+          "skill_type": "Attack",
+          "type_damage": "Physical",
+          "use_optional_params": false,
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvFistsOfFury001"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "A87i0WJvlVD1w3E7"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "DvGroundSlam0001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "DvAeStrikeFists1",
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "hidden": true,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "name": "Strike Fists",
+          "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvGroundSlam0001",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "deva_offense"
+            ]
+          },
+          "transfer": false
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Ground Slam",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_command": "attack",
+          "action_keywords": "overflow",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "4",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "30",
+          "defense_target_type": "def",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a></p></li></ul><p>She drives both fists into the ground. Deal <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Earth</strong></a>&nbsp;damage to all enemies and inflict <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Slow</strong></a>. Fury form.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Slow",
+              "effect_kind": "apply_ae",
+              "effect_label": "gs_slow",
+              "target_ref": "trigger_subject"
+            },
+            "1": {
+              "$deleted": false,
+              "chain_steps": "gs_spend,gs_fists",
+              "effect_kind": "chain",
+              "effect_label": "gs_next"
+            },
+            "2": {
+              "$deleted": false,
+              "ae_template_ref": "Strike Opener",
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "gs_spend",
+              "include_persistent": "true",
+              "target_ref": "self"
+            },
+            "3": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Strike Fists",
+              "effect_kind": "apply_ae",
+              "effect_label": "gs_fists",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Ground Slam",
+          "on_activate_effect_ref": "gs_next",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "HP_DEALT > 0",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "gs_slow",
+              "reaction_isPassive": true,
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "Ground Slam",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "DEX",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "All Enemies",
+          "skill_type": "Attack",
+          "type_damage": "Earth",
+          "use_optional_params": false,
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvGroundSlam0001"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "A87i0WJvlVD1w3E7"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "DvKalaStrike0001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Kala Strike",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_command": "attack",
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "4",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "25",
+          "defense_target_type": "mdef",
+          "description": "<p>She brings a blackened fist down on one enemy. Deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;damage, more the more MP the target is missing; if it hits, the target loses all its remaining MP and is inflicted with <a class=\"content-link\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Curse</strong></a>. Focus form.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "damage_amount": "floor((TARGET_MAX_MP - TARGET_CURRENT_MP) * 0.3)",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "ks_bonus"
+            },
+            "1": {
+              "$deleted": false,
+              "chain_steps": "ks_mp,ks_curse",
+              "effect_kind": "chain",
+              "effect_label": "ks_wipe"
+            },
+            "2": {
+              "$deleted": false,
+              "damage_amount": "CUR_MP",
+              "damage_cause": "damage",
+              "damage_element": "dark",
+              "damage_resource": "mp",
+              "effect_kind": "deal_damage",
+              "effect_label": "ks_mp",
+              "target_ref": "trigger_subject"
+            },
+            "3": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Cursed",
+              "effect_kind": "apply_ae",
+              "effect_label": "ks_curse",
+              "target_ref": "trigger_subject"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Kala Strike",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "ks_bonus",
+              "reaction_isPassive": true,
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "Kala Strike",
+              "reaction_trigger": "creature_will_deal_damage"
+            },
+            "1": {
+              "$deleted": false,
+              "condition_formula": "HP_DEALT > 0",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "ks_wipe",
+              "reaction_isPassive": true,
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "Kala Strike",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
+          "rolled_atr1": "INS",
+          "rolled_atr2": "DEX",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Attack",
+          "type_damage": "Dark",
+          "use_optional_params": false,
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvKalaStrike0001"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "A87i0WJvlVD1w3E7"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "DvMissileFist001",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "name": "Missile Fist",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_command": "spell",
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>Two of her fists burn into being and hover over the field. Each one detonates on a random enemy on its second turn, dealing <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage, unless it is broken first.</p><p>Each fist breaks after taking damage three times.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "mf_spend,mf_summon",
+              "effect_kind": "chain",
+              "effect_label": "mf_chain"
+            },
+            "1": {
+              "$deleted": false,
+              "ae_template_ref": "Fist Ready",
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "mf_spend",
+              "include_persistent": "true",
+              "target_ref": "self"
+            },
+            "2": {
+              "$deleted": false,
+              "effect_kind": "summon",
+              "effect_label": "mf_summon",
+              "summon_act_this_round": false,
+              "summon_actor": "Actor.MsFistSummon0001",
+              "summon_count": "2",
+              "summon_max": "2"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Missile Fist",
+          "on_activate_effect_ref": "mf_chain",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "-",
+          "skill_target": "Self",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvMissileFist001"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "DvMudraLance0001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Mudra Lance",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_command": "attack",
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "4",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "38",
+          "defense_target_type": "mdef",
+          "description": "<p>A violet hand forms a mudra and a lance of light leaves the palm. Deal <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Light</strong></a>&nbsp;damage to one creature. Only usable in Maya Stance.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Mudra Lance",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "INS",
+          "rolled_atr2": "DEX",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Range",
+          "skill_target": "One Creature",
+          "skill_type": "Attack",
+          "type_damage": "Light",
+          "use_optional_params": false,
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvMudraLance0001"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "A87i0WJvlVD1w3E7"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "DvRahuEclipse001",
+      "_stats": {
+        "compendiumSource": "Item.yWlkWZC2vLf4J5Pv",
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "DvAeMagicFists01",
+          "changes": [],
+          "description": "",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "hidden": true,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "name": "Magic Fists",
+          "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvRahuEclipse001",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "deva_offense"
+            ]
+          },
+          "transfer": false
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213409.361.png",
+      "name": "Rahu's Eclipse",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_command": "spell",
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "",
+          "defense_target_type": "def",
+          "description": "<p>Rahu's black sun rises over the field and swallows the enemies' magic. Each enemy loses 40% of its current MP, then takes <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;damage equal to 40% of the MP it lost. This cannot miss. Focus form.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "re_hp,re_mp,re_spend,re_fists",
+              "effect_kind": "chain",
+              "effect_label": "re_chain"
+            },
+            "1": {
+              "$deleted": false,
+              "damage_amount": "floor(floor(CUR_MP * 0.4) * 0.4)",
+              "damage_cause": "damage",
+              "damage_element": "dark",
+              "effect_kind": "deal_damage",
+              "effect_label": "re_hp",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "$deleted": false,
+              "damage_amount": "floor(CUR_MP * 0.4)",
+              "damage_cause": "damage",
+              "damage_element": "dark",
+              "damage_resource": "mp",
+              "effect_kind": "deal_damage",
+              "effect_label": "re_mp",
+              "target_ref": "action_targets"
+            },
+            "3": {
+              "$deleted": false,
+              "ae_template_ref": "Magic Opener",
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "re_spend",
+              "include_persistent": "true",
+              "target_ref": "self"
+            },
+            "4": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Magic Fists",
+              "effect_kind": "apply_ae",
+              "effect_label": "re_fists",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213409.361.png",
+          "isCheck": false,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Rahu's Eclipse",
+          "on_activate_effect_ref": "re_chain",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Any",
+          "skill_target": "All Enemies",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false,
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvRahuEclipse001"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "yWlkWZC2vLf4J5Pv"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "DvSuryaPalm00001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Surya Palm",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_command": "attack",
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "4",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "62",
+          "defense_target_type": "def",
+          "description": "<p>She plants a palm of blazing light on one enemy. Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Light</strong></a>&nbsp;damage and inflict <a class=\"content-link\" data-uuid=\"JournalEntry.rBnvYhLfmrVZDdoW\" data-id=\"rBnvYhLfmrVZDdoW\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Blind</strong></a>. Fury form.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Blind",
+              "effect_kind": "apply_ae",
+              "effect_label": "sp_blind",
+              "target_ref": "trigger_subject"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Surya Palm",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "HP_DEALT > 0",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "sp_blind",
+              "reaction_isPassive": true,
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "Surya Palm",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "DEX",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Attack",
+          "type_damage": "Light",
+          "use_optional_params": false,
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvSuryaPalm00001"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "A87i0WJvlVD1w3E7"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "DvVajraFist00001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+      "name": "Vajra Fist",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 100000,
+      "system": {
+        "props": {
+          "action_command": "attack",
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "4",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "38",
+          "defense_target_type": "def",
+          "description": "<p>A golden fist of energy forms at her side and drives into one enemy. Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature. Only usable in Vajra Stance.</p>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {},
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213340.615.png",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": false,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Vajra Fist",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {},
+          "rolled_atr1": "MIG",
+          "rolled_atr2": "DEX",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Attack",
+          "type_damage": "Physical",
+          "use_optional_params": false,
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvVajraFist00001"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "A87i0WJvlVD1w3E7"
+      },
+      "type": "equippableItem"
+    }
+  ],
   "name": "Deva",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
@@ -211,94 +2207,94 @@
       "action_pattern_table": {
         "0": {
           "$deleted": false,
-          "action_pattern_condition": "effect_stacks",
-          "action_pattern_cooldown": "3",
+          "action_pattern_condition": "self_has_status",
+          "action_pattern_cooldown": "0",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Asura Strike",
-          "action_pattern_priority": "6",
-          "action_pattern_string": "Ascension",
+          "action_pattern_name": "Enlightenment",
+          "action_pattern_priority": "14",
+          "action_pattern_string": "Enlightenment Ready",
           "action_pattern_target_focus": "auto",
-          "action_pattern_value_1": "4",
-          "action_pattern_value_2": "0"
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
         },
         "1": {
           "$deleted": false,
-          "action_pattern_condition": "self_lacks_status",
+          "action_pattern_condition": "self_has_status",
           "action_pattern_cooldown": "0",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Sword Enchant - Fire",
-          "action_pattern_priority": "5",
-          "action_pattern_string": "Fire Mark",
+          "action_pattern_name": "Missile Fist",
+          "action_pattern_priority": "12",
+          "action_pattern_string": "Fist Ready",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
-          "action_pattern_value_2": "0"
+          "action_pattern_value_2": "100"
         },
         "2": {
           "$deleted": false,
-          "action_pattern_condition": "self_lacks_status",
+          "action_pattern_condition": "self_has_status",
           "action_pattern_cooldown": "0",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Sword Enchant - Bolt",
-          "action_pattern_priority": "5",
-          "action_pattern_string": "Bolt Mark",
+          "action_pattern_name": "Ground Slam",
+          "action_pattern_priority": "11",
+          "action_pattern_string": "Strike Opener",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
-          "action_pattern_value_2": "0"
+          "action_pattern_value_2": "100"
         },
         "3": {
           "$deleted": false,
-          "action_pattern_condition": "self_lacks_status",
+          "action_pattern_condition": "self_has_status",
           "action_pattern_cooldown": "0",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Sword Enchant - Ice",
-          "action_pattern_priority": "5",
-          "action_pattern_string": "Ice Mark",
+          "action_pattern_name": "Rahu's Eclipse",
+          "action_pattern_priority": "11",
+          "action_pattern_string": "Magic Opener",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
-          "action_pattern_value_2": "0"
+          "action_pattern_value_2": "100"
         },
         "4": {
           "$deleted": false,
-          "action_pattern_condition": "self_lacks_status",
+          "action_pattern_condition": "self_has_status",
           "action_pattern_cooldown": "0",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Sword Enchant - Air",
-          "action_pattern_priority": "5",
-          "action_pattern_string": "Air Mark",
+          "action_pattern_name": "Fists of Fury",
+          "action_pattern_priority": "11",
+          "action_pattern_string": "Strike Fists",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
-          "action_pattern_value_2": "0"
+          "action_pattern_value_2": "100"
         },
         "5": {
           "$deleted": false,
           "action_pattern_condition": "self_has_status",
-          "action_pattern_cooldown": "2",
+          "action_pattern_cooldown": "0",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Elemental Slash: Overflow",
-          "action_pattern_priority": "5",
-          "action_pattern_string": "Fire Aspect",
+          "action_pattern_name": "Fists of Focus",
+          "action_pattern_priority": "11",
+          "action_pattern_string": "Magic Fists",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
           "action_pattern_value_2": "100"
         },
         "6": {
           "$deleted": false,
-          "action_pattern_condition": "self_lacks_status",
+          "action_pattern_condition": "self_has_status",
           "action_pattern_cooldown": "0",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Elemental Slash",
-          "action_pattern_priority": "4",
-          "action_pattern_string": "Enchanted",
+          "action_pattern_name": "Surya Palm",
+          "action_pattern_priority": "6",
+          "action_pattern_string": "Strike Form",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
-          "action_pattern_value_2": "0"
+          "action_pattern_value_2": "100"
         },
         "7": {
           "$deleted": false,
@@ -306,9 +2302,48 @@
           "action_pattern_cooldown": "0",
           "action_pattern_hp_ceiling": "0",
           "action_pattern_hp_reserve": "0",
-          "action_pattern_name": "Elemental Slash (Enchanted)",
-          "action_pattern_priority": "4",
-          "action_pattern_string": "Enchanted",
+          "action_pattern_name": "Kala Strike",
+          "action_pattern_priority": "6",
+          "action_pattern_string": "Magic Form",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "8": {
+          "$deleted": false,
+          "action_pattern_condition": "self_has_status",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Double Slap",
+          "action_pattern_priority": "6",
+          "action_pattern_string": "Guard Round",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "9": {
+          "$deleted": false,
+          "action_pattern_condition": "self_has_status",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Vajra Fist",
+          "action_pattern_priority": "6",
+          "action_pattern_string": "Vajra Stance",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "10": {
+          "$deleted": false,
+          "action_pattern_condition": "self_has_status",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Mudra Lance",
+          "action_pattern_priority": "6",
+          "action_pattern_string": "Maya Stance",
           "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
           "action_pattern_value_2": "100"
@@ -316,53 +2351,103 @@
       },
       "activation": "4",
       "affinity_1": "NA",
-      "affinity_2": "VU",
-      "affinity_3": "VU",
+      "affinity_2": "NA",
+      "affinity_3": "NA",
       "affinity_4": "NA",
       "affinity_5": "NA",
-      "affinity_6": "VU",
-      "affinity_7": "VU",
+      "affinity_6": "NA",
+      "affinity_7": "NA",
       "affinity_8": "NA",
       "affinity_9": "NA",
       "animation_table": {},
       "arcane_ef": "100",
       "attack_list": {
-        "KRyhs4RfM7AK7DUJ": {
-          "active_target": "All Enemy",
-          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a></p></li></ul><p>Deal <strong>light</strong> <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;damage to all enemies.</p>",
+        "DvDoubleSlap0001": {
+          "active_target": "Up to two creatures",
+          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Gm3upxgpUVoLSK5u\" data-id=\"Gm3upxgpUVoLSK5u\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Multi (2)</strong></a></p></li></ul><p>She slaps the insolent aside. Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage and inflict <a class=\"content-link\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Shaken</strong></a>.</p>",
           "attribute_die1": "DEX",
           "attribute_die2": "MIG",
           "id": "${item.id}",
-          "name": "Elemental Slash: Overflow",
+          "name": "Double Slap",
           "roll": "",
-          "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.KRyhs4RfM7AK7DUJ"
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvDoubleSlap0001"
         },
-        "NkLZkuMIVqAZJgXl": {
-          "active_target": "One Creature",
-          "attack_description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p><p>The strike takes on the Asura's current Aspect:</p><ul><li><p><a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Paralyzed</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;— the strike gains <a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.MM2SvLRyVhazkNq3\" data-id=\"MM2SvLRyVhazkNq3\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Disarmed</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.Q8FTFPsXVpNj2zxT\" data-id=\"Q8FTFPsXVpNj2zxT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Silence</strong></a>d.</p></li></ul>",
-          "attribute_die1": "DEX",
-          "attribute_die2": "MIG",
+        "DvFistsOfFocus01": {
+          "active_target": "All Enemies",
+          "attack_description": "<p>A wall of dark fists slams across the whole field. Deal <strong>light</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;damage to all enemies; each one hit also loses MP equal to three times the damage it took. Focus form.</p>",
+          "attribute_die1": "MIG",
+          "attribute_die2": "DEX",
           "id": "${item.id}",
-          "name": "Elemental Slash (Enchanted)",
+          "name": "Fists of Focus",
           "roll": "",
-          "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.NkLZkuMIVqAZJgXl"
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvFistsOfFocus01"
         },
-        "ohrbXuZkGB4hNrPp": {
-          "active_target": "One Creature",
-          "attack_description": "<p>Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature.</p><p>The strike takes on the Asura's current Aspect:</p><ul><li><p><a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.GqqgHkKOs0hkghdG\" data-id=\"GqqgHkKOs0hkghdG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Paralyzed</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;— the strike gains <a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.MM2SvLRyVhazkNq3\" data-id=\"MM2SvLRyVhazkNq3\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Disarmed</strong></a>.</p></li><li><p><a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;— the target is left <a class=\"content-link\" data-uuid=\"JournalEntry.Q8FTFPsXVpNj2zxT\" data-id=\"Q8FTFPsXVpNj2zxT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Silence</strong></a>d.</p></li></ul>",
-          "attribute_die1": "DEX",
-          "attribute_die2": "MIG",
+        "DvFistsOfFury001": {
+          "active_target": "All Enemies",
+          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.ChnStrikeKeyw0rd\" data-id=\"ChnStrikeKeyw0rd\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Chain (12)</strong></a></p></li></ul><p>A wall of fists slams across the whole field. Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to all enemies. Fury form.</p>",
+          "attribute_die1": "MIG",
+          "attribute_die2": "DEX",
           "id": "${item.id}",
-          "name": "Elemental Slash",
+          "name": "Fists of Fury",
           "roll": "",
-          "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.ohrbXuZkGB4hNrPp"
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvFistsOfFury001"
+        },
+        "DvGroundSlam0001": {
+          "active_target": "All Enemies",
+          "attack_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.NUaxIAIPUu5Qnk8l\" data-id=\"NUaxIAIPUu5Qnk8l\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Overflow</strong></a></p></li></ul><p>She drives both fists into the ground. Deal <a class=\"content-link\" data-uuid=\"Item.ZyOMe6IkUTlBzfjw\" data-id=\"ZyOMe6IkUTlBzfjw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Earth</strong></a>&nbsp;damage to all enemies and inflict <a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Slow</strong></a>. Fury form.</p>",
+          "attribute_die1": "MIG",
+          "attribute_die2": "DEX",
+          "id": "${item.id}",
+          "name": "Ground Slam",
+          "roll": "",
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvGroundSlam0001"
+        },
+        "DvKalaStrike0001": {
+          "active_target": "One Creature",
+          "attack_description": "<p>She brings a blackened fist down on one enemy. Deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;damage, more the more MP the target is missing; if it hits, the target loses all its remaining MP and is inflicted with <a class=\"content-link\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Curse</strong></a>. Focus form.</p>",
+          "attribute_die1": "INS",
+          "attribute_die2": "DEX",
+          "id": "${item.id}",
+          "name": "Kala Strike",
+          "roll": "",
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvKalaStrike0001"
+        },
+        "DvMudraLance0001": {
+          "active_target": "One Creature",
+          "attack_description": "<p>A violet hand forms a mudra and a lance of light leaves the palm. Deal <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Light</strong></a>&nbsp;damage to one creature. Only usable in Maya Stance.</p>",
+          "attribute_die1": "INS",
+          "attribute_die2": "DEX",
+          "id": "${item.id}",
+          "name": "Mudra Lance",
+          "roll": "",
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvMudraLance0001"
+        },
+        "DvSuryaPalm00001": {
+          "active_target": "One Creature",
+          "attack_description": "<p>She plants a palm of blazing light on one enemy. Deal <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Light</strong></a>&nbsp;damage and inflict <a class=\"content-link\" data-uuid=\"JournalEntry.rBnvYhLfmrVZDdoW\" data-id=\"rBnvYhLfmrVZDdoW\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Blind</strong></a>. Fury form.</p>",
+          "attribute_die1": "MIG",
+          "attribute_die2": "DEX",
+          "id": "${item.id}",
+          "name": "Surya Palm",
+          "roll": "",
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvSuryaPalm00001"
+        },
+        "DvVajraFist00001": {
+          "active_target": "One Creature",
+          "attack_description": "<p>A golden fist of energy forms at her side and drives into one enemy. Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage to one creature. Only usable in Vajra Stance.</p>",
+          "attribute_die1": "MIG",
+          "attribute_die2": "DEX",
+          "id": "${item.id}",
+          "name": "Vajra Fist",
+          "roll": "",
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvVajraFist00001"
         }
       },
       "attribute": "",
       "battle_facing_direction": "left",
       "bonus_hp": 0,
       "bonus_mp": 0,
-      "bow_ef": "150",
+      "bow_ef": "100",
       "brawling_ef": "100",
       "check_mod_all": 0,
       "check_mod_magic": 0,
@@ -380,9 +2465,9 @@
       "condition_dazed": "NA",
       "condition_delayed": "NA",
       "condition_despair": "NA",
-      "condition_disarmed": "IM",
+      "condition_disarmed": "NA",
       "condition_doom": "NA",
-      "condition_enraged": "RS",
+      "condition_enraged": "NA",
       "condition_envenomed": "NA",
       "condition_fatigue": "IM",
       "condition_frightened": "IM",
@@ -397,7 +2482,7 @@
       "condition_poisoned": "NA",
       "condition_shaken": "NA",
       "condition_silence": "NA",
-      "condition_slow": "RS",
+      "condition_slow": "NA",
       "condition_stagger": "NA",
       "condition_suppress": "NA",
       "condition_turbulence": "NA",
@@ -408,13 +2493,13 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "900",
+      "current_hp": "1000",
       "current_ip": "0",
-      "current_mp": "0",
-      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
-      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
+      "current_mp": "100",
+      "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Deva/Deva_Standard.png",
+      "cut_in_fumble": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Deva/Deva_Standard.png",
       "cut_in_offset_y": "",
-      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
+      "cut_in_zero_power": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Deva/Deva_Standard.png",
       "dagger_ef": "100",
       "damage_receiving_mod_air": 0,
       "damage_receiving_mod_all": 0,
@@ -428,9 +2513,9 @@
       "damage_receiving_mod_physical": 0,
       "damage_receiving_mod_poison": 0,
       "damage_receiving_mod_range": 0,
-      "def_mod": "+5",
+      "def_mod": "+2",
       "default_facing_direction": "right",
-      "defense": 15,
+      "defense": 12,
       "dex_base": "10",
       "dex_current": 10,
       "enmity": 100,
@@ -465,10 +2550,10 @@
       "icon_offset_x": "",
       "icon_offset_y": "",
       "icon_scale": "",
-      "id": "0AwQ7wEDz4ISA9mA",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
-      "init": "13",
-      "ins_base": "8",
+      "id": "amxILxU7mqQ0jKhZ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Deva/Deva_Standard.png",
+      "init": "12",
+      "ins_base": "10",
       "ins_current": 8,
       "isAlmighty": false,
       "isAwake": false,
@@ -494,22 +2579,22 @@
       "isUnyielding": false,
       "isVillain": false,
       "isWeak": false,
-      "level": "38",
+      "level": "40",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
-      "magic_defense": 13,
+      "magic_defense": 12,
       "manadrain_percentage": 0,
       "manadrain_value": 0,
-      "max_hp": "900",
+      "max_hp": "1000",
       "max_ip": "0",
-      "max_mp": "60",
+      "max_mp": "100",
       "max_zero": "6",
-      "mdef_mod": "+5",
+      "mdef_mod": "+2",
       "mig_base": "10",
       "mig_current": 10,
       "mimic": false,
       "minimum_critical_dice": 6,
-      "name": "Asura",
+      "name": "Deva",
       "normal_spell_list": {},
       "npc_rank": "elite",
       "override_all_damage_type": "None",
@@ -529,115 +2614,68 @@
       "shield_value": "0",
       "showMacro": false,
       "skill_active_list": {
-        "NFruWlBHrgfNSJmM": {
-          "active_cost": "60 MP",
-          "active_description": "<p>The Asura's four blades fall in a single flurry. Deal <strong>devastating</strong> <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>, <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>, <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;and <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;damage — four separate strikes, each landing automatically on a random foe.</p><p>Afterwards the Asura loses all of its Aspects and lit blades, and is <strong>Vulnerable</strong> to all four elements again.</p>",
-          "active_duration": "Instantaneous",
-          "active_target": "Self",
-          "id": "${item.id}",
-          "name": "Asura Strike",
-          "roll": "",
-          "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.NFruWlBHrgfNSJmM"
-        },
-        "ZAKzWPxyVEz9MvYH": {
+        "DvEnlighten00001": {
           "active_cost": "-",
-          "active_description": "<p>The Asura runs a blade across its own arm. It suffers 10 <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;damage, gains <strong>Awake</strong>, and recovers 15 MP.</p><p>Only one blade may be sharpened each round.</p>",
+          "active_description": "<p>Deva sees through the enemies' plan and changes her form: Fury becomes Focus, or Focus becomes Fury. She does this at the start of every second offensive round.</p>",
           "active_duration": "Instantaneous",
           "active_target": "Self",
           "id": "${item.id}",
-          "name": "Sword Enchant - Air",
+          "name": "Enlightenment",
           "roll": "",
-          "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.ZAKzWPxyVEz9MvYH"
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvEnlighten00001"
         },
-        "ZpFMS4l2FcHKz89q": {
+        "DvMissileFist001": {
           "active_cost": "-",
-          "active_description": "<p>The Asura runs a blade across its own arm. It suffers 10 <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>&nbsp;damage, gains <strong>Strong</strong>, and recovers 15 MP.</p><p>Only one blade may be sharpened each round.</p>",
+          "active_description": "<p>Two of her fists burn into being and hover over the field. Each one detonates on a random enemy on its second turn, dealing <strong>heavy</strong>&nbsp;<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage, unless it is broken first.</p><p>Each fist breaks after taking damage three times.</p>",
           "active_duration": "Instantaneous",
           "active_target": "Self",
           "id": "${item.id}",
-          "name": "Sword Enchant - Fire",
+          "name": "Missile Fist",
           "roll": "",
-          "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.ZpFMS4l2FcHKz89q"
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvMissileFist001"
         },
-        "aGPAPP5VKu0e8yLg": {
+        "DvRahuEclipse001": {
           "active_cost": "-",
-          "active_description": "<p>The Asura runs a blade across its own arm. It suffers 10 <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>&nbsp;damage, gains <strong>Swift</strong>, and recovers 15 MP.</p><p>Only one blade may be sharpened each round.</p>",
+          "active_description": "<p>Rahu's black sun rises over the field and swallows the enemies' magic. Each enemy loses 40% of its current MP, then takes <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Dark</strong></a>&nbsp;damage equal to 40% of the MP it lost. This cannot miss. Focus form.</p>",
           "active_duration": "Instantaneous",
-          "active_target": "Self",
+          "active_target": "All Enemies",
           "id": "${item.id}",
-          "name": "Sword Enchant - Bolt",
+          "name": "Rahu's Eclipse",
           "roll": "",
-          "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.aGPAPP5VKu0e8yLg"
-        },
-        "vhv7GLSTsduE1KLU": {
-          "active_cost": "-",
-          "active_description": "<p>The Asura runs a blade across its own arm. It suffers 10 <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;damage, gains <strong>Focus</strong>, and recovers 15 MP.</p><p>Only one blade may be sharpened each round.</p>",
-          "active_duration": "Instantaneous",
-          "active_target": "Self",
-          "id": "${item.id}",
-          "name": "Sword Enchant - Ice",
-          "roll": "",
-          "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.vhv7GLSTsduE1KLU"
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvRahuEclipse001"
         }
       },
       "skill_passive_list": {
-        "0bN7A6pXFG2cX2q9": {
+        "DvDisciplineP001": {
           "id": "${item.id}",
-          "name": "Ascension",
-          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When the Asura suffers <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Fire</strong></a>, <a class=\"content-link\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Bolt</strong></a>, <a class=\"content-link\" data-uuid=\"Item.Osq3NN3QCtiW7otU\" data-id=\"Osq3NN3QCtiW7otU\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Ice</strong></a>&nbsp;or <a class=\"content-link\" data-uuid=\"Item.imkMQLnCLaFbaS6Y\" data-id=\"imkMQLnCLaFbaS6Y\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Air</strong></a>&nbsp;damage.</p></li></ul><p>The Asura lights the blade of that element permanently. It is <strong>Vulnerable</strong> to each element until that blade is lit, and <strong>Resistant</strong> to it afterwards. Its Elemental Slash deals <strong>8</strong> extra damage for each lit blade.</p><p>Its own Sword Enchants light blades the same way an enemy's damage does. With all four blades lit, the Asura can use <strong>Asura Strike</strong>.</p>",
+          "name": "Celestial Discipline",
+          "passive_description": "<p>On odd rounds Deva guards in one of two stances, drawn at random: <strong>Vajra</strong> (higher Defense) or <strong>Maya</strong> (higher Magic Defense).</p><p>Every attack aimed at her, hit or miss, adds a <strong>Strike</strong> stack if it checked her Defense or a <strong>Magic</strong> stack if it checked her Magic Defense. On even rounds she takes the form the larger stack calls for, <strong>Fury</strong> or <strong>Focus</strong>, and the stacks reset.</p><p>She cannot be <a class=\"content-link\" data-uuid=\"JournalEntry.c4sYPClmvld4TEK8\" data-id=\"c4sYPClmvld4TEK8\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Provoked</strong></a>.</p>",
           "roll": "",
-          "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.0bN7A6pXFG2cX2q9"
-        },
-        "nYbYx0X2yfIdteZ7": {
-          "id": "${item.id}",
-          "name": "Elemental Aspect",
-          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;When the Asura takes elemental damage.</p></li></ul><p>The Asura gains the Aspect of the triggering element, replacing any Aspect it currently holds.</p>",
-          "roll": "",
-          "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.nYbYx0X2yfIdteZ7"
-        },
-        "wUfS7SWAocoznK0n": {
-          "id": "${item.id}",
-          "name": "Four-Armed Fury",
-          "passive_description": "<p>The Asura acts four times each round and enters every conflict with no MP. While in <a class=\"content-link\" data-uuid=\"JournalEntry.GJevbCPM8cffm1QM\" data-id=\"GJevbCPM8cffm1QM\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Crisis</strong></a>, its Elemental Slash deals <strong>20</strong> extra damage.</p>",
-          "roll": "",
-          "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.wUfS7SWAocoznK0n"
+          "uuid": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001"
         }
       },
       "spear_ef": "100",
-      "species": "DEMON",
+      "species": "Humanoid",
       "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Deva_Battle_Idle.webm",
-      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
-      "steal_percentage_table": {
-        "0": {
-          "$deleted": false,
-          "loot_id": "Demongrin",
-          "loot_percentage": "100"
-        }
-      },
-      "stealable_loot": {
-        "ll1QCriD5ganoy1h": {
-          "id": "${item.id}",
-          "loot_description": "<ul>\n<li>After a creature hits you with a <strong>melee attack</strong>, you deal 5<strong> fire damage</strong> to that<br>creature<em> (after the attack has been resolved).</em></li>\n</ul>",
-          "name": "Demongrin",
-          "roll": "",
-          "uuid": "Actor.0AwQ7wEDz4ISA9mA.Item.ll1QCriD5ganoy1h"
-        }
-      },
-      "study_text": "<p>Not a demon — a <strong>demi-god</strong>, and it will say so between blows. Strike it with an element and one of its four blades takes the flame: it will never be caught by that element twice, but a blade it has not yet lit is still an open wound. In this valley the <strong>storm</strong> lights one for it before the fight even starts. When all four burn at once, step back — and when they go out, that is your moment.</p>",
+      "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Deva/Deva_Standard.png",
+      "steal_percentage_table": {},
+      "stealable_loot": {},
+      "study_text": "A deva of the high places who chose to kneel to Fafnir, and has never once explained why. She fights with fists of light that are not attached to anything, and she watches how you fight her before she decides how to fight you. Hit her with steel and she answers with steel. Hit her with spells and she takes the spells away.",
       "subtype": "Sub-Type",
-      "subtype_list": "DEMI-HUMAN",
-      "sword_ef": "50",
+      "subtype_list": "",
+      "sword_ef": "100",
       "tactic_notes": "",
       "thrown_ef": "100",
       "token_option_persist": false,
-      "traits": "Four-Armed Duelist",
+      "traits": "Arrogant · Devoted to Fafnir · Respects strength · Reads how you fight",
       "ultima_point": "0",
+      "ultima_points": "3",
       "unique": false,
-      "uuid": "Actor.0AwQ7wEDz4ISA9mA",
-      "wlp_base": "6",
+      "uuid": "Actor.amxILxU7mqQ0jKhZ",
+      "wlp_base": "8",
       "wlp_current": 6,
-      "zenit_reward_max": "900",
-      "zenit_reward_min": "700",
+      "zenit_reward_max": "1400",
+      "zenit_reward_min": "1400",
       "zero_power_value": ""
     },
     "statusEffects": {},
