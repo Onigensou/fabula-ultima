@@ -16,6 +16,15 @@
 // Everything else draws nothing: the HUD pips, the unit label and the pop text
 // carry it (see the fallback rules on the mockup page).
 //
+// CLIP CUES (data-driven, any effect): an effect can carry its own looping clip
+// in flags.fabula-ultima-companion.cueClip = { src, x, y, size, angle, ax, ay,
+// period, opacity } — x/y = 0..1 of the sprite as drawn facing right, size =
+// clip height as a share of the sprite height, angle in degrees, (ax, ay) the
+// clip's own anchor, period = ms between plays. First user: Asura's four element
+// Marks, each playing RPG Maker MV's elemental slash along its own blade
+// (approved 2026-11-09). When every member of the effects' poseCombo set is held
+// (all four Marks = Asura Strike ready) the clips play faster.
+//
 // HOW
 //   - Particles / marks: one DOM layer per token, docked every frame to the
 //     RENDERED sprite rect (unit-anchors.js), the same pattern as brand-mark /
@@ -136,6 +145,8 @@ function ensureStyles() {
   text-shadow: 1px 0 0 #34407a, -1px 0 0 #34407a, 0 1px 0 #34407a, 0 -1px 0 #34407a, 0 0 4px rgba(52,64,122,.7); }
 @keyframes fuCueZ { 0% { opacity: 0; transform: translate(0,0) rotate(-8deg) scale(.6); } 20% { opacity: 1; }
   100% { opacity: 0; transform: translate(calc(26px * var(--k)), calc(-38px * var(--k))) rotate(10deg) scale(1.15); } }
+/* clip cues (an effect's own looping clip, e.g. Asura's blade slashes) */
+.fu-cue video.clip { position: absolute; display: block; pointer-events: none; object-fit: contain; }
 @media (prefers-reduced-motion: reduce) { .fu-cue * { animation-play-state: paused !important; } }
 `;
   document.head.appendChild(st);
@@ -167,6 +178,57 @@ export function cuesOf(actor) {
   } catch { /* */ }
   return out;
 }
+
+/** The clip cues on an actor: [{ key, src, x, y, size, angle, ax, ay, period, opacity }]. */
+export function clipCuesOf(actor) {
+  const out = [];
+  try {
+    for (const e of actor?.appliedEffects ?? actor?.effects ?? []) {
+      if (e?.disabled) continue;
+      const c = e.flags?.[NS]?.cueClip;
+      const src = String(c?.src ?? "").trim();
+      if (!src) continue;
+      out.push({ key: `${e.name}|${src}`, src, x: +c.x || 0.5, y: +c.y || 0.5, size: +c.size || 0.25, angle: +c.angle || 0,
+        ax: c.ax ?? 0.5, ay: c.ay ?? 0.5, period: Math.max(200, +c.period || 1000), opacity: c.opacity ?? 1 });
+    }
+  } catch { /* */ }
+  return out.sort((a, b) => a.key.localeCompare(b.key));
+}
+
+/** True when the actor holds every member of an effect combo set (all four Asura Marks). */
+function comboComplete(actor) {
+  try {
+    const held = new Set(); let order = null;
+    for (const e of actor?.appliedEffects ?? actor?.effects ?? []) {
+      const c = e?.disabled ? null : e?.flags?.[NS]?.poseCombo;
+      if (!c?.key || !Array.isArray(c.order)) continue;
+      held.add(String(c.key)); order ??= c.order;
+    }
+    return !!order && order.every((k) => held.has(String(k)));
+  } catch { return false; }
+}
+
+function clipHTML(token, clips, w, H) {
+  const flip = (token.mesh?.scale?.x ?? 1) < 0;
+  return clips.map((c, i) => {
+    const h = H * c.size, x = w * (flip ? 1 - c.x : c.x), y = H * c.y, ang = flip ? -c.angle : c.angle;
+    return `<video class="clip" data-i="${i}" muted playsinline preload="auto" src="${c.src}" style="height:${px(h)};left:${px(x)};top:${px(y)};opacity:${c.opacity};`
+      + `transform:translate(${(-c.ax * 100).toFixed(1)}%, ${(-c.ay * 100).toFixed(1)}%) rotate(${ang}deg)${flip ? " scaleX(-1)" : ""};transform-origin:${(c.ax * 100).toFixed(1)}% ${(c.ay * 100).toFixed(1)}%"></video>`;
+  }).join("");
+}
+
+// Each clip replays every `period` ms (faster when the combo set is complete).
+function startClips(rec, clips, fast) {
+  stopClips(rec);
+  const rate = fast ? 1.6 : 1;
+  rec.el.querySelectorAll("video.clip").forEach((v) => {
+    const c = clips[Number(v.dataset.i)]; if (!c) return;
+    const play = () => { try { v.currentTime = 0; v.playbackRate = rate; v.play()?.catch?.(() => {}); } catch { /* */ } };
+    play();
+    rec.timers.push(setInterval(play, Math.round(c.period / rate)));
+  });
+}
+function stopClips(rec) { for (const t of rec?.timers ?? []) clearInterval(t); if (rec) rec.timers = []; }
 
 function headFrac(token) {
   let x = 0.5, y = EYE_Y;
@@ -240,29 +302,33 @@ function cueHTML(token, cues, w, H) {
 
 function wants(token) { return !!(battleActive() && token?.actor && !token.destroyed); }
 
-function drop(id) { const r = S.recs.get(id); if (r) { r.el.remove(); S.recs.delete(id); } }
+function drop(id) { const r = S.recs.get(id); if (r) { stopClips(r); r.el.remove(); S.recs.delete(id); } }
 
 /** (Re)build one token's cue layer. */
 export function renderCues(token) {
   if (!token) return;
   const cues = wants(token) ? cuesOf(token.actor) : new Set();
-  if (!cues.size) { drop(token.id); return; }
+  const clips = wants(token) ? clipCuesOf(token.actor) : [];
+  if (!cues.size && !clips.length) { drop(token.id); return; }
   const rect = spriteRect(token);
   if (!rect) return;
-  const sig = [...cues].sort().join(",");
+  const fast = clips.length ? comboComplete(token.actor) : false;
+  const flip = (token.mesh?.scale?.x ?? 1) < 0;
+  const sig = [...cues].sort().join(",") + "|" + clips.map((c) => c.key).join(",") + (fast ? "|fast" : "") + (flip ? "|flip" : "");
   let rec = S.recs.get(token.id);
   if (!rec) {
     const el = document.createElement("div");
     el.className = "fu-cue";
     if (S.hidden) el.classList.add("is-anim-hidden");
     ensureRoot().appendChild(el);
-    rec = { el, sig: "", w: 0, h: 0 };
+    rec = { el, sig: "", w: 0, h: 0, timers: [] };
     S.recs.set(token.id, rec);
   }
   if (rec.sig !== sig || Math.abs(rect.height - rec.h) > rec.h * 0.08 || Math.abs(rect.width - rec.w) > rec.w * 0.08) {
     rec.el.style.setProperty("--k", (rect.height / REF_H).toFixed(3));
-    rec.el.innerHTML = cueHTML(token, cues, rect.width, rect.height);
+    rec.el.innerHTML = cueHTML(token, cues, rect.width, rect.height) + clipHTML(token, clips, rect.width, rect.height);
     rec.sig = sig; rec.w = rect.width; rec.h = rect.height;
+    if (clips.length) startClips(rec, clips, fast); else stopClips(rec);
   }
   place(token, rec, rect);
 }
@@ -345,6 +411,6 @@ export function initStatusCues() {
   if (canvas?.ready) { S.ticker = tick; canvas.app.ticker.add(S.ticker); renderAllCues(); }
   globalThis.FUCompanion = globalThis.FUCompanion || {};
   globalThis.FUCompanion.api = globalThis.FUCompanion.api || {};
-  globalThis.FUCompanion.api.statusCues = { renderAll: renderAllCues, cuesOf, count: () => S.recs.size };
+  globalThis.FUCompanion.api.statusCues = { renderAll: renderAllCues, cuesOf, clipCuesOf, count: () => S.recs.size };
   log("[StatusCues] ready");
 }
