@@ -30,6 +30,7 @@ import { pickAttributePair, AttributePairPicker } from "./attribute-pair-picker.
 import { runDirectorInit } from "./director-init.js";
 import { destroyDirectorHud, publishTurnStatus } from "./director-player-hud.js";
 import { startTurnCue, returnSteppedTokens } from "./turn-start-cue.js";
+import { releaseAllGrapples } from "./grapple-hold.js";
 import { playStudyVfx, playActionNamecard, playMissVfx, playBlockVfx, playResourceSpendVfx } from "./director-vfx.js";
 import { playCritCutin } from "./director-cutin.js";
 import { playRoundBanner, hideRoundBanner } from "./director-round-banner.js";
@@ -9087,6 +9088,8 @@ const BattleEnding = {
     try { hideRoundBanner(); } catch (e) { warn("BATTLE_ENDING: hideRoundBanner threw", e); }
     try { await returnSteppedTokens(director.dCombat?.scene ?? canvas?.scene ?? null); }
     catch (e) { warn("BATTLE_ENDING: step home threw", e); }
+    try { await releaseAllGrapples(director.dCombat?.scene ?? canvas?.scene ?? null); }
+    catch (e) { warn("BATTLE_ENDING: grapple release threw", e); }
     try {
       const scene = director.dCombat?.scene ?? canvas?.scene ?? null;
       await destroyDirectorHud(scene);

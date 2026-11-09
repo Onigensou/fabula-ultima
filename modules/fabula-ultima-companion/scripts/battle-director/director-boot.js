@@ -17,6 +17,8 @@ import { log, warn } from "./logger.js";
 import { BattleDirector } from "./director.js";
 import { STATE_HANDLERS, installGuardHpWatcher, installApplierReaperWatcher, installSideWipeWatcher, checkSideWipe } from "./state-handlers.js";
 import { installGrappledCoverWatcher } from "./grappled.js";
+import { installGrappleHold, releaseAllGrapples } from "./grapple-hold.js";
+import { installGrappleGripFx } from "./grapple-grip-fx.js";
 import { installConditionAdoptionWatcher } from "./condition-adoption.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
@@ -490,6 +492,9 @@ async function stopNow({ reason = "manual", clearFlags = true, cleanupTokens = t
   // A creature still on its turn spot (turn-start-cue.js short step) goes home.
   try { await returnSteppedTokens(battleScene, { animate: false }); }
   catch (e) { warn("stop: step home threw", e); }
+  // A unit still held by a grappler (grapple-hold.js) goes home too.
+  try { await releaseAllGrapples(battleScene, { animate: false }); }
+  catch (e) { warn("stop: grapple release threw", e); }
 
   // Detach the director from the per-client IntentChannel singleton, but
   // KEEP it installed — players still need it to receive future MENU_OPEN
@@ -1186,6 +1191,10 @@ Hooks.once("ready", () => {
   // Session-global, idempotent — install once here (path-independent of
   // fresh-start vs resume). See [[project_grappled_advanced_debuff]].
   installGrappledCoverWatcher();
+  // Grappled hold: the held token moves into its grappler's space (host GM),
+  // and the grip (chain / tentacle skin) is drawn between them (every client).
+  try { installGrappleHold({ getActiveDirector }); } catch (e) { warn("installGrappleHold threw", e); }
+  try { installGrappleGripFx(); } catch (e) { warn("installGrappleGripFx threw", e); }
   // Condition immunity/resistance for conditions applied INSIDE a battle by a
   // non-BD path (AEM UI, token-HUD, macros): IM blocks, RS reshapes into a
   // charge/turn-clamped BD condition so it expires. Only touches AEs whose
