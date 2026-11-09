@@ -28,7 +28,14 @@
 //    the bob — the coupling that sells height. Zero when the body dips below
 //    its ground line.
 //
-//   FUCompanion.api.spriteShadow.airborne = { FLY, isAirborne, reconcile, reconcileAll }
+// 3. HOVER (cosmetic). The idle-animation config's `hover` (actor default
+//    `flags.<ns>.idleAnimation.hover`, or the token override `idleAnimToken`)
+//    asks for the same lift with no Flying status and no rules: a spirit or a
+//    conjured object that should read as airborne. It applies to floaters too
+//    (asking for it is the point): an actor with its own Float gets the static
+//    bias only, and the Float bobs on top of it.
+//
+//   FUCompanion.api.spriteShadow.airborne = { FLY, isAirborne, wantsHover, reconcile, reconcileAll }
 // ============================================================================
 
 import { registerLiftProvider } from "./sprite-shadow-renderer.js";
@@ -72,6 +79,16 @@ export function isAirborne(token) {
   try { return !!(_targetIsFlying ?? fallbackIsFlying)(actor); } catch (_) { return false; }
 }
 
+/** The token's effective idle-animation config (token override, else its source actor's default). */
+function idleConfig(token) {
+  const doc = token?.document;
+  if (!doc) return null;
+  const over = doc.flags?.[MODULE_ID]?.idleAnimToken;
+  if (over) return over;
+  return game.actors?.get(doc.actorId)?.flags?.[MODULE_ID]?.idleAnimation ?? null;
+}
+export function wantsHover(token) { return !!idleConfig(token)?.hover; }
+
 // ── TokenMagic plumbing ──────────────────────────────────────────────────────
 const TM = () => globalThis.TokenMagic;
 function isAuthority() {
@@ -87,7 +104,8 @@ function paddingFor(token) {
   return Math.max(FLY.minPadding, Math.ceil((t * h) / Math.max(0.2, 1 - 2 * t)) + 16);
 }
 function flyParams(token) {
-  const ownFloat = hasFilter(token, FLOAT_FILTER_ID);
+  // The config as well as the filter: on a fresh spawn the Float may land a moment after this.
+  const ownFloat = hasFilter(token, FLOAT_FILTER_ID) || !!idleConfig(token)?.float;
   const p = { filterType: "transform", filterId: FLY_FILTER_ID, padding: paddingFor(token), translationY: FLY.sign * FLY.bias };
   if (!ownFloat) {
     p.animated = { translationY: { animType: "cosOscillation", val1: FLY.sign * (FLY.bias - FLY.bob), val2: FLY.sign * (FLY.bias + FLY.bob), loopDuration: FLY.bobMs } };
@@ -96,13 +114,22 @@ function flyParams(token) {
 }
 
 const _locks = new Set();
+const _waits = new Map();   // tokenId -> retries spent waiting for the idle Float to land
 export async function reconcile(token) {
   if (!token?.document || token.destroyed || !canvas?.ready) return;
   const fly = isAirborne(token);
   const has = hasFilter(token, FLY_FILTER_ID);
   if (!TM() || !isAuthority() || _locks.has(token.id)) return;
-  const want = fly && (FLY.liftForFloaters || !hasFilter(token, FLOAT_FILTER_ID));
-  if (want === has) return;
+  const want = wantsHover(token) || (fly && (FLY.liftForFloaters || !hasFilter(token, FLOAT_FILTER_ID)));
+  if (want === has) { _waits.delete(token.id); return; }
+  // TokenMagic rewrites the token's whole filter array from what it read. Adding the lift while
+  // the idle Float is still being written (both start on drawToken) overwrote the Float: wait
+  // for it to land in the flags first, up to ~6 s.
+  if (want && !has && idleConfig(token)?.float && !hasFilter(token, FLOAT_FILTER_ID)) {
+    const n = _waits.get(token.id) ?? 0;
+    if (n < 15) { _waits.set(token.id, n + 1); setTimeout(() => reconcile(token), 400); return; }
+  }
+  _waits.delete(token.id);
   _locks.add(token.id);
   try {
     if (want) await TM().addUpdateFilters(token, [flyParams(token)]);
@@ -166,6 +193,12 @@ Hooks.once("ready", async () => {
     Hooks.on(h, (item) => scheduleActor(actorOfDoc(item?.parent)));
   }
   Hooks.on("updateActor", (actor) => scheduleActor(actor));
+  // A token's own idle override (hover on/off) changes nothing on the actor.
+  Hooks.on("updateToken", (doc, changed) => {
+    if (changed?.flags?.[MODULE_ID] === undefined) return;
+    const t = canvas?.tokens?.get?.(doc.id);
+    if (t) setTimeout(() => reconcile(t), 50);
+  });
   Hooks.on("drawToken", (token) => setTimeout(() => reconcile(token), 250));
   Hooks.on("canvasReady", () => setTimeout(reconcileAll, 800));
   if (canvas?.ready) setTimeout(reconcileAll, 800);
@@ -173,5 +206,5 @@ Hooks.once("ready", async () => {
   globalThis.FUCompanion = globalThis.FUCompanion || {};
   globalThis.FUCompanion.api = globalThis.FUCompanion.api || {};
   const api = (globalThis.FUCompanion.api.spriteShadow ||= {});
-  api.airborne = { FLY, isAirborne, reconcile, reconcileAll, liftOf, FLY_FILTER_ID };
+  api.airborne = { FLY, isAirborne, wantsHover, reconcile, reconcileAll, liftOf, FLY_FILTER_ID };
 });

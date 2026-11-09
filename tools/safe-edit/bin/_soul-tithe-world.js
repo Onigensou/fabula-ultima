@@ -62,8 +62,11 @@ async function buildActor(write) {
     p.img = ICON;
     a.prototypeToken.texture.src = ICON;
     for (const k of ["sprite_battle", "sprite_standard", "cut_in_critical", "cut_in_fumble", "cut_in_zero_power"]) p[k] = "";
-    for (let i = 1; i <= 9; i++) if (`affinity_${i}` in p) p[`affinity_${i}`] = "NA";
+    for (let i = 1; i <= 9; i++) if (`affinity_${i}` in p) p[`affinity_${i}`] = "NA"; // then Physical RS below
     a.prototypeToken.name = "Soul Fragment";
+    // Folder, Physical RS + 50% non-Arcane weapons, float: _soul-fragment-folder-defense.js (2026-11-08).
+    a.folder = "CoNFLiCToBJeCT01";
+    require("./_soul-fragment-folder-defense.js").applyFragmentDefense(a);
     console.log(`actor: ${a.name} (${a._id}) DEF ${p.defense} MDEF ${p.magic_defense} activation ${p.activation}, cloned from ${crystal.name}`);
     if (write) await db.put(`!actors!${FRAGMENT_ID}`, a);
   } finally { await db.close(); }

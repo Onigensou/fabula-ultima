@@ -36,7 +36,7 @@ amount of current HP.
 | Fragment destroyed while its owner is KO'd | Max HP returns. The owner stays down. |
 | Who is affected | Player characters only, not guests or summons. |
 | All real enemies die, fragments remain | Victory. Fragments vanish and Max HP returns; current HP stays where it is. |
-| Fragment defenses | DEF 6 / MDEF 6, no affinities, immune to statuses. |
+| Fragment defenses | DEF 6 / MDEF 6, immune to statuses. Resists Physical, and every weapon family except Arcane is 50% efficiency; the user chose to stack them (2026-11-08), so a non-Arcane physical weapon hit lands at 25% and an Arcane one at 50%. |
 | On-kill passives | Do not trigger. A fragment is not a creature. |
 | Rank totals | Damage dealt to a fragment counts. The user ruled this 2026-11-08, and no code excludes it. |
 
@@ -117,7 +117,8 @@ just ended and everything in it has settled. It does not run if the fight ended.
 ### The fragment
 
 An actor flagged `conflictObject: "soul-fragment"`, `bdObject: true` and
-`bdObjectHpBar: true`, spawned mid-stage with one staggered slot per player
+`bdObjectHpBar: true`, kept with the Lightning Crystal in the `Conflict Objects` Actor folder
+(players own neither), floating through the standard `idleAnimation.float` flag, spawned mid-stage with one staggered slot per player
 (`exactCenter`, since the enemy formation would otherwise pick the spot and stack them
 in one column). Its token takes the owner's sprite, tinted and translucent.
 

@@ -93,7 +93,9 @@ function tick() {
     const b = spriteClientBounds(token);
     rec.el.style.left = `${b.left + b.width / 2}px`;
     rec.el.style.top = `${b.top - BADGE_GAP}px`;
-    rec.el.style.opacity = token.visible === false ? "0" : "1";
+    // hidden with its token while the Soul Tithe show has not revealed it yet (soul-fx)
+    const held = globalThis.__FU_SOUL_FX__?.isHeld?.(tokenId) === true;
+    rec.el.style.opacity = token.visible === false || held ? "0" : "1";
   }
 }
 

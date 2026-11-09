@@ -144,6 +144,14 @@
           </div>
 
           <div class="form-group">
+            <label>Hover</label>
+            <div class="form-fields">
+              <input type="checkbox" name="oniIdleAnim.hover" data-oni-idle-field="hover"/>
+            </div>
+            <p class="hint">Lifted off the floor like a flyer; its ground shadow stays behind. Looks only: no Flying status.</p>
+          </div>
+
+          <div class="form-group">
             <label>Bounce</label>
             <div class="form-fields">
               <input type="checkbox" name="oniIdleAnim.bounce" data-oni-idle-field="bounce"/>
@@ -224,6 +232,7 @@
 
       $panel.find('[data-oni-idle-field="float"]').prop("checked", !!prefill?.float);
       $panel.find('[data-oni-idle-field="bounce"]').prop("checked", !!prefill?.bounce);
+      $panel.find('[data-oni-idle-field="hover"]').prop("checked", !!prefill?.hover);
 
       // Reset override
       if (ctx.normalMode) {
@@ -250,7 +259,8 @@
           try {
             const next = api.normalizeConfig({
               float: $panel.find('[data-oni-idle-field="float"]').is(":checked"),
-              bounce: $panel.find('[data-oni-idle-field="bounce"]').is(":checked")
+              bounce: $panel.find('[data-oni-idle-field="bounce"]').is(":checked"),
+              hover: $panel.find('[data-oni-idle-field="hover"]').is(":checked")
             });
 
             if (ctx.prototypeMode) {

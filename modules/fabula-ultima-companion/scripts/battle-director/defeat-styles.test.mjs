@@ -72,6 +72,8 @@ for (const [key, s] of Object.entries(DEFEAT_STYLES)) {
   ok(`${key}: has a label`, typeof s.label === "string" && s.label.length);
   ok(`${key}: totalMs is a positive number`, Number.isFinite(s.totalMs) && s.totalMs > 0);
   ok(`${key}: totalMs within the 3 s a defeat may hold the battle`, s.totalMs <= 3000);
+  // played by someone else: this entry only times the removal
+  if (s.external) { ok(`${key}: external player named`, typeof s.external === "string" && s.external.length > 0); ok(`${key}: external is never offered`, s.internal === true); continue; }
   ok(`${key}: body fade finishes inside totalMs`,
      (s.body?.delayMs ?? 0) + (s.body?.fadeMs ?? 0) <= s.totalMs);
   const cues = Array.isArray(s.sfx) ? s.sfx : [{ atMs: 0, ...s.sfx }];

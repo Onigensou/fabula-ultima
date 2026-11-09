@@ -78,6 +78,13 @@ export async function playDefeatFx({ tokenUuid, style, causeTokenUuid = null, fi
   else if (hasOtherViewers()) await new Promise((r) => setTimeout(r, cfg.totalMs));
 }
 
+// Players for the `external` styles: name -> ({ tokenUuid, token }) => Promise that
+// resolves when the creature may be removed. Registered on every client.
+const _external = new Map();
+export function registerExternalDefeat(name, fn) {
+  if (name && typeof fn === "function") _external.set(String(name), fn);
+}
+
 // Playbacks told to stop (a defeat begun on the hit that did not stand). The
 // renderer checks it every frame; a new playback of the token clears it.
 const _aborted = new Set();
@@ -130,6 +137,15 @@ export function playDefeatLocal({ tokenUuid, style, causeTokenUuid = null, finis
     let settled = false;
     const finish = () => { if (!settled) { settled = true; resolve(); } };
     const failsafe = setTimeout(finish, cfg.totalMs + FAILSAFE_MS);
+    // Someone else plays this one (the style only times the removal): wait for them.
+    if (cfg.external) {
+      const fn = _external.get(cfg.external);
+      Promise.resolve()
+        .then(() => (fn ? fn({ tokenUuid, token, causeTokenUuid }) : null))
+        .catch((e) => warn(`defeat-fx: external "${cfg.external}" threw`, e))
+        .finally(() => { clearTimeout(failsafe); finish(); });
+      return;
+    }
     let cause = null;
     try { cause = causeTokenUuid ? (fromUuidSync(causeTokenUuid)?.object ?? null) : null; } catch { cause = null; }
     _aborted.delete(tokenUuid);

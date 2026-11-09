@@ -50,6 +50,16 @@ export const OPTION_GROUPS = [
         ],
       },
       {
+        key: "fxFrameRate",
+        label: "Effects frame rate",
+        hint: "How often the Soul Tithe effects redraw (the Soul Tithe, the Calling, a fragment destroyed). A fragment's idle fire always loops at 30 fps.",
+        default: "60",
+        choices: [
+          { value: "60", label: "60 fps", hint: "The Soul Tithe effects redraw 60 times a second: smoother, a little heavier while one plays. A fragment's idle fire stays at 30." },
+          { value: "30", label: "30 fps", hint: "The Soul Tithe effects redraw 30 times a second. Lighter on slower machines." },
+        ],
+      },
+      {
         key: "walkParallax",
         label: "Walk-map parallax",
         hint: "Depth on painted walk maps that support it (map-system/exploration-parallax.js).",

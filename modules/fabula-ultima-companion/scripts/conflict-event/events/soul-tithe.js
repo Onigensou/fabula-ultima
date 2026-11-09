@@ -61,9 +61,19 @@ export const TORN_AE_NAME = "Soul-Torn";
 const ACTION_NAME = "Calling";
 const TORN_ICON = "icons/svg/aura.svg";
 
-/** The look of a fragment: its owner's sprite, drained of colour. */
-const FRAGMENT_TINT = "#7dffb0";
-const FRAGMENT_ALPHA = 0.72;
+/**
+ * The look of a fragment: its owner's sprite, turned the Sealed Cavern's green.
+ * Tint multiplies, so it can only darken: the approved brighter body (FX mockup v12,
+ * FRAG_BRIGHT 0.55) is a lighter tint here plus a 1.6x lift that every client puts on
+ * the mesh (soul-fx-runtime FRAGMENT_LOOK, which must match these two). Its fire is
+ * the glow; there is no blur filter. One place to retune: here and FRAGMENT_LOOK.
+ */
+const FRAGMENT_TINT = "#a6ff9c";
+const FRAGMENT_ALPHA = 0.9;
+/** The defeat it plays: the Destroyed show (soul-fx), which the removal waits for. */
+const FRAGMENT_DEFEAT_STYLE = "soul_release";
+/** Seconds between two players' shows in one beat (the user's "simultaneous with a slight offset"). */
+const SHOW_STAGGER_S = 0.18;
 
 /**
  * Where fragments stand, as fractions of the STAGE (token-centre coordinates):
@@ -264,7 +274,7 @@ function markAeData(round) {
   };
 }
 
-async function spawnFragment(ctx, owner, slot, amount, round) {
+async function spawnFragment(ctx, owner, slot, amount, round, { hold = false } = {}) {
   const template = findFragmentTemplate();
   if (!template) {
     ctx.warn(`no world actor is flagged conflictObject "${FRAGMENT_OBJECT_ID}" — ${owner.actorDoc?.name} gets no fragment`);
@@ -275,15 +285,29 @@ async function spawnFragment(ctx, owner, slot, amount, round) {
   const stage = stageOf(ctx.scene);
   const frac = ANCHORS[slot % ANCHORS.length];
   const anchor = { x: stage.x + stage.w * frac.x, y: stage.y + stage.h * frac.y };
-  const [tokenDoc] = await spawnLiveDirectorTokens({
-    // exactCenter: the enemy formation would otherwise pick the spot and ignore the slot.
-    scene: ctx.scene, actorUuids: [template.uuid], disposition: -1, exactCenter: anchor,
-  });
-  if (!tokenDoc) { ctx.warn("fragment spawn produced no token"); return null; }
-
   const name = fragmentName(owner.actorDoc?.name);
   const ownerTexture = owner.tokenDoc?.texture ?? owner.actorDoc?.prototypeToken?.texture ?? null;
   const ownerSprite = owner.actorDoc?.system?.props?.sprite_battle || ownerTexture?.src || "";
+  const look = {
+    alpha: FRAGMENT_ALPHA,
+    texture: {
+      tint: FRAGMENT_TINT,
+      ...(ownerTexture?.src ? { src: ownerTexture.src, scaleX: -Math.abs(ownerTexture.scaleX ?? 1), scaleY: ownerTexture.scaleY ?? 1 } : {}),
+    },
+  };
+  const [tokenDoc] = await spawnLiveDirectorTokens({
+    // exactCenter: the enemy formation would otherwise pick the spot and ignore the slot.
+    scene: ctx.scene, actorUuids: [template.uuid], disposition: -1, exactCenter: anchor,
+    // Born in its owner's look and, with an audience, hidden on every client until its
+    // own arrival shows it. The hold is a server-time deadline, so an F5 or a missed
+    // broadcast only delays it; nothing has to clear it.
+    tokenData: {
+      ...look,
+      flags: { [FLAG_NS]: { soulFragment: true, ...(hold ? { soulFxHoldUntil: serverTime() + 9000 } : {}) } },
+    },
+  });
+  if (!tokenDoc) { ctx.warn("fragment spawn produced no token"); return null; }
+
   await tokenDoc.update({
     name,
     alpha: FRAGMENT_ALPHA,
@@ -308,6 +332,7 @@ async function spawnFragment(ctx, owner, slot, amount, round) {
     "system.props.current_hp": amount,
     "system.props.default_facing_direction": owner.actorDoc?.system?.props?.default_facing_direction ?? "left",
     ...(ownerSprite ? { "system.props.sprite_battle": ownerSprite, "system.props.sprite_standard": ownerSprite } : {}),
+    [`flags.${FLAG_NS}.defeatStyle`]: FRAGMENT_DEFEAT_STYLE,
   });
   await tokenDoc.actor.createEmbeddedDocuments("ActiveEffect", [markAeData(round)]);
   const c = ctx.dCombat.addCombatant({ tokenDoc, actorDoc: tokenDoc.actor, side: "enemy", disposition: -1 });
@@ -428,6 +453,33 @@ async function saveNow(ctx) {
 // ── Presentation ────────────────────────────────────────────────────────────
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+const serverTime = () => { try { return game.time.serverTime; } catch { return Date.now(); } };
+
+/** Will anyone see the show: this window, or another client's. */
+async function watched() {
+  try {
+    const { shouldRender, hasOtherViewers } = await import("../../battle-director/presentation-clock.js");
+    return shouldRender() || hasOtherViewers();
+  } catch { return false; }
+}
+
+/**
+ * Start a show on every client (soul-fx-runtime) and return its clock:
+ * { at(i, s), done, T } — or null when nobody watches, and the rules then run at
+ * once as before. Skip the show, never the rules.
+ */
+async function present(ctx, kind, items) {
+  try {
+    if (!items.length) return null;
+    const fx = await import("../soul-fx/soul-fx-runtime.js");
+    const { TITHE, CALLING, DESTROY } = await import("../soul-fx/soul-fx-effects.js");
+    const clock = fx.presentSoulFx({ kind, sceneId: ctx.scene?.id ?? null, items });
+    return clock ? { ...clock, T: { TITHE, CALLING, DESTROY } } : null;
+  } catch (e) {
+    ctx.warn(`the ${kind} show threw — the rules run without it`, e);
+    return null;
+  }
+}
 
 async function showing() {
   try {
@@ -468,7 +520,13 @@ async function runCallings(ctx, round) {
   if (!callers.length) return;
 
   await announceCalling(ctx);
-  for (const { c, owner } of callers) {
+  // One namecard, then every tether together, each steal written as its first bead lands.
+  const show = await present(ctx, "calling", callers.map(({ c, owner }, i) => ({
+    ownerTokenId: owner.tokenDoc?.id, fragTokenId: c.tokenDoc?.id, delay: i * SHOW_STAGGER_S,
+  })));
+  for (let i = 0; i < callers.length; i++) {
+    const { c, owner } = callers[i];
+    if (show) await show.at(i, show.T.CALLING.WRITE);
     const actor = owner.actorDoc;
     const r = resolveCalling({
       ownerMax: propNum(actor, "max_hp"),
@@ -485,10 +543,13 @@ async function runCallings(ctx, round) {
     await setFragmentHp(c, r.fragmentHp, stolenFrom(actor));
     ctx.log(`${c.actorDoc.name} Calls — steals ${r.stolen}, ${actor.name} is ${r.ownerHp}/${r.ownerMax}, fragment ${r.fragmentHp}/${r.fragmentMax}`);
   }
+  if (show) await show.done;
 }
 
 async function runLock(ctx, round) {
   const party = players(ctx);
+  const audience = await watched();
+  const locks = [];
   let spawned = false;
   for (let slot = 0; slot < party.length; slot++) {
     const owner = party[slot];
@@ -497,14 +558,24 @@ async function runLock(ctx, round) {
     if (wound <= 0) continue;
 
     // The fragment first: a player must never lose Max HP to something that is not
-    // on the field to be destroyed.
+    // on the field to be destroyed. Spawns stay one at a time.
     let frag = fragmentCombatants(ctx).find((c) => ownerUuidOf(c) === actor.uuid && propNum(c.actorDoc, "current_hp") > 0) ?? null;
     const isNew = !frag;
     if (isNew) {
-      frag = await spawnFragment(ctx, owner, slot, stolenFrom(actor) + wound, round);
+      frag = await spawnFragment(ctx, owner, slot, stolenFrom(actor) + wound, round, { hold: audience });
       if (!frag) continue;
       spawned = true;
     }
+    locks.push({ owner, actor, wound, frag, isNew });
+  }
+  // The show: every tear a beat after the last, in party order, and each player's
+  // loss written at their own tear, so the bar drops with the soul leaving.
+  const show = audience ? await present(ctx, "tithe", locks.map((l, i) => ({
+    ownerTokenId: l.owner.tokenDoc?.id, fragTokenId: l.frag.tokenDoc?.id, merge: !l.isNew, delay: i * SHOW_STAGGER_S,
+  }))) : null;
+  for (let i = 0; i < locks.length; i++) {
+    const { actor, wound, frag, isNew } = locks[i];
+    if (show) await show.at(i, show.T.TITHE.TEAR);
     await addStolen(actor, wound);
     await touchActor(actor);
     const max = stolenFrom(actor);
@@ -513,6 +584,7 @@ async function runLock(ctx, round) {
     ctx.log(`${actor.name} locked — lost ${wound} Max HP, now ${propNum(actor, "current_hp")}/${propNum(actor, "max_hp")}`);
   }
   if (spawned) await refreshRoster(ctx);
+  if (show) await show.done;
 }
 
 /**
@@ -616,7 +688,31 @@ registerConflictEvent({
 
   async onObjectDestroyed(ctx, { actor, tokenDoc, firedKeys }) {
     if (!isFragmentActor(actor)) return;
-    await returnToOwner(ctx, actor, tokenDoc, firedKeys);
+    // The claim is taken here, whichever way it pays, so a multi-hit kill plays once.
+    const key = `soul-return:${tokenDoc?.id}`;
+    if (firedKeys?.has?.(key)) return;
+    firedKeys?.add?.(key);
+    // Watched: the Destroyed show plays and the refund lands with its first flamelet.
+    // Not awaited: the action's settle goes on, and the removal waits for the show (its
+    // defeat style). An F5 before the payment leaves a 0 HP fragment on the field,
+    // which the round-end sweep pays out of, so nothing is lost.
+    const ownerUuid = tokenDoc?.flags?.[FLAG_NS]?.soulFragmentOwner ?? null;
+    const owner = players(ctx).find((p) => p.actorDoc?.uuid === ownerUuid);
+    const show = owner?.tokenDoc?.id && tokenDoc?.id && (await watched())
+      ? await present(ctx, "destroy", [{ ownerTokenId: owner.tokenDoc.id, fragTokenId: tokenDoc.id }])
+      : null;
+    if (!show) { await returnToOwner(ctx, actor, tokenDoc, null); return; }
+    // By the first flamelet the documents may have moved on: a round end can sweep (and
+    // pay out of) the 0 HP fragment first, and an unlinked token's actor is rebuilt on
+    // every token update. So pay from the LIVE token and actor; a token that is gone was
+    // already paid by whoever removed it (the sweep, the conflict end).
+    show.at(0, show.T.DESTROY.FIRST)
+      .then(() => {
+        const live = tokenDoc?.parent?.tokens?.get?.(tokenDoc.id) ?? null;
+        if (!live?.actor) { ctx.log(`${actor?.name}: gone before its first flamelet — already paid by the sweep`); return; }
+        return returnToOwner(ctx, live.actor, live, null);
+      })
+      .catch((e) => ctx.warn(`${actor?.name}: the refund after the show threw — the round-end sweep pays it`, e));
   },
 
   // Max HP comes back; current HP stays where the fight left it.
