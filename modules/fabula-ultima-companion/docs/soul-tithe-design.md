@@ -189,11 +189,92 @@ own attack at a fragment, and the refund, all read on the player's page.
 
 ---
 
+## HUD: the burned Max HP (design chosen 2026-11-09, not built yet)
+
+The player panel's HP bar (`battle-director/director-player-hud.js`, the plate's
+`.dhud-hp` and each ally card's) shows what the Soul Tithe took. Mockup, playable:
+https://claude.ai/artifact/Bv2PgqZ4PSggFumPJP7j2A (source `tools/soul-tithe-fx-mock/hp-burn/`,
+local only).
+
+- **Scale.** The bar keeps its full length: Max HP now + what was taken. The green fill
+  is current HP. The taken part sits at the right end. The numbers stay as today
+  (current / Max now).
+- **The taken part** is charred: near-black soul green (`SOUL[0]`/`SOUL[1]`) with a few
+  `SOUL[3]` cinders fixed in place. It holds still. A bright `SOUL[5]` edge, 2 px on the
+  plate and 1 px on a card, marks where the Max HP still held ends.
+- **The fire: "Burning front".** One narrow soul fire (`makeSoulFlame`) sits on the first
+  few px of the taken part, at the split, and is drawn **over** the bar (`cover: true`: a
+  fire bed on the bar, tongues and sparks across it). Width: **4 px** (the user's pick,
+  2026-11-09). Breeze to the right:
+  `{ wind: 0.5, smoke: false, cover: true, k: 1.6, lift: 14 }`, k and lift scaled ×0.6 on
+  the ally cards. A soot mark on the paper sits behind it: an ellipse round the front,
+  0.78 of the v5 size (horizontal radius `0.78 × max(front/2 + 6, up + 4)`, height ×
+  `(up + 6) / that`, `up = 14 × scale + 4`), so it stays a little larger than the light.
+- **The fire's light on the scorch.** A soft `SOUL[5]` wash over the inner part of the
+  soot (radius 0.62 of the v5 scorch size, so inside the 0.78 soot, round the flame's base, 3 px × wind downwind): 100% at
+  the centre, 78% at 0.35, 32% at 0.7, 0 at the rim. It must be easily seen (the user's
+  call after two fainter passes), flickering 0.78–1.0 with the fire and up to ×1.6 with a flare.
+  It is painted as a tint (source-over), never added: additive light on the pale paper
+  read as grey discs.
+- **The wind follows the front.** While the split moves, the wind blows against the way it
+  moves, so the flame trails behind it: wind = 0.5 − 0.8 × (split speed in bar widths per
+  second), clamped to ±1.5 and smoothed over 0.06 s, set each frame with
+  `flame.setWind(w, t)`. The Tithe and the Calling push it to about 1.2 (hard right); the
+  Destroyed push swings it to about −0.4 (left). It settles back to 0.5 in about 0.3 s.
+- **The trail.** The flame's place is fed each frame with `flame.setOrigin(x, t)`, so a
+  lick, puff or ember stays where it was let go while the front moves on: the trail shows
+  on the side opposite the movement. One `makeFlameMotion()` per bar is shared by the
+  flames that take over as the front narrows (`o.motion`), and `trailPad: 70` widens the
+  frame so the trail is not cut off.
+- **Motion.** The split and the numbers move with a quartic ease out
+  (`1 − (1 − u)^4`): fastest at the start, then slowing.
+- **On the light panel**, unlike the battlefield: no light layer (it is additive light
+  and showed as grey discs), no smoke, and the fire's two coolest teals (`FH[7]`,
+  `FH[8]`) and pixels under alpha 160 are dropped.
+- **Changes:**
+
+  | Change | Starts | What the bar does |
+  |---|---|---|
+  | Soul Tithe | at the tear, 0.5 s | The fire lights at the bar's end with a flare and burns left across the empty part to current HP. Burned pixels glow `SOUL[5]`→`[4]`→`[3]` over 0.45 s, then char. Max counts down. |
+  | Calling | at the first bead, 0.6 s | The front burns further left. If HP is above the new Max it eats into the fill, and both numbers count down. |
+  | Fragment destroyed | at the first flamelet, 0.5 s | The front is pushed right in one ease-out move, the flame leaning back against it. The fill regrows with a pale flash. Once 90% of the way is covered (about 0.22 s in, while the front is still fast, not after the ease out's slow crawl), the flame **disperses** in the same frame: that frame's pixels replace the flame, all move at once (no hold; the top a little faster) and fly on to the right with the front's momentum (35% of it, at most 160 px/s; the momentum takes the front's speed and dies away over 0.35 s), rising a little, then cool `SOUL[4]`→`[3]`→`[2]` and go out over 0.35–0.75 s, with 4 sparks. |
+  | Battle ends | 0.4 s + 0.9 s | The fire goes out with a few sparks. The char cools to the empty-track colour, because current HP stays. |
+
+- `makeSoulFlame` gained, for this: `smoke` and `wind` options, `cover` (burn on the
+  silhouette, not round it), `setWind(w, t)` (a live wind: tongues lean with the wind
+  now, particles drift with the wind averaged over their own life, so a change never makes
+  them jump), `setOrigin(x, t)` (a moving fire leaves its particles behind), `motion`
+  (`makeFlameMotion()`, shared history) and `trailPad`. All are off by default, and a
+  still fire in a steady wind draws exactly as before.
+
+### Built (2026-11-09)
+
+- `scripts/conflict-event/soul-fx/soul-hp-burn.js`. The HUD loads it the first time a
+  bar has anything taken (`director-player-hud.js` `syncSoul`), so other fights never
+  load the fire code. The HUD reads the taken amount from the Soul-Torn AE
+  (`soulStolen`), scales the bar, the damage trail and the cost preview to Max + taken,
+  glides the Max number, and calls `syncSoulBurn(card, { v, m, stolen }, first)` before it
+  moves the fill. A first read (page load, F5, a rebuilt card) shows the bar as it is.
+- Which change a read is: more taken → Tithe (fire was out) or Calling (it was lit).
+  Less taken with the HP up in the last 1.5 s, or within 0.25 s after → refund (the rules
+  pay HP and Max in either order to keep Crisis from flickering). Less taken and no HP
+  → the end of the fight (also a refund to a KO'd owner, whose HP stays at 0).
+- Two canvases per bar on the art grid (6 art px on the plate, 4 on a card, at any
+  screen size): the char inside the bar (its rounded border clips it), and the soot,
+  light, fire, sparks and disperse over the card (`z-index: 4`, no pointer events).
+  One rAF loop for every bar; asleep when nothing burns. Changes redraw at the
+  "Effects frame rate" option, a bar that is only burning at 30 fps.
+- A refund grows the fill with the front's own ease out (the bar's usual 240 ms ease
+  starts slower, which showed a gap of empty track behind the front).
+- Tests: `node scripts/conflict-event/soul-fx/soul-hp-burn.test.mjs` (the model and the
+  flame options); real HUD: `tools/staging-world/soul-hp-burn-hud.mjs`.
+
+---
+
 ## Open
 
 - **Balance.** Damage output against a full party's wounds is the main question.
-- **Presentation.** Calling is the action namecard and a moving HP number, with no
-  effect of its own yet. The ruling panel's pages have no images yet.
+- **Presentation.** The ruling panel's pages have no images yet.
 - **Nidhogg.** The user ruled 2026-11-08 that Nidhogg uses Soul Tithe. Nidhogg is not
   built yet and is fought on `Valley_Battlemap003` (The Great Seal). That scene also
   hosts The Great Seal's random battles, which stay on Lightning Crystal, so the scene

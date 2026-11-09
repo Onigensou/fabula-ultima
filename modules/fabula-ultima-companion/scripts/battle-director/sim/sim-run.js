@@ -496,6 +496,10 @@ export async function run({
   // Lightning Crystal spawn roll, so a balance run measures a KNOWN hazard
   // rather than whichever of 0/1/2 the dice happened to give it.
   conflictEventOptions = null,
+  // The battle scene, by name or uuid (default Training Ground). A conflict scene brings
+  // its own backdrop and stage, e.g. "Valley_Battlemap004" (the Sealed Cavern) for a
+  // Soul Tithe watch-through; pass `conflictEvent` too, a sim does not read the selection.
+  scene: sceneRef = null,
 } = {}) {
   const a = api();
   if (!a?.start) { ui.notifications?.error("[SIM] Battle Director API not ready."); return null; }
@@ -521,7 +525,9 @@ export async function run({
   }
   if (!manualPicks.length) { ui.notifications?.error("[SIM] none of the enemies resolved."); return null; }
 
-  const scene = game.scenes?.find((s) => s.name === SCENE_NAME) ?? game.scenes?.active ?? canvas?.scene ?? null;
+  const pickScene = (ref) => (ref ? (game.scenes?.get?.(String(ref).replace(/^Scene\./, "")) ?? game.scenes?.find((s) => s.name === ref || s.uuid === ref)) : null);
+  if (sceneRef && !pickScene(sceneRef)) { ui.notifications?.error(`[SIM] no scene "${sceneRef}".`); return null; }
+  const scene = pickScene(sceneRef) ?? game.scenes?.find((s) => s.name === SCENE_NAME) ?? game.scenes?.active ?? canvas?.scene ?? null;
   if (!scene) { ui.notifications?.error("[SIM] no scene to launch on."); return null; }
 
   // The party defaults to whoever the DB actor says the party IS — never to

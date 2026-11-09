@@ -174,6 +174,34 @@ const pair = (a, vp, mp) => {
   return { v, m };
 };
 const readHP = a => pair(a, P_HP_V, P_HP_M);
+// Soul Tithe: the Max HP a Soul Fragment holds (the Soul-Torn AE's total; its max_hp change
+// already lowered max_hp). The HP bar keeps its full length, Max now + this, and the taken
+// part burns at its right end (soul-hp-burn.js, loaded the first time anything is taken).
+const soulStolenOf = (a) => {
+  try {
+    const e = a?.effects?.find?.((x) => x?.flags?.[MODULE_ID]?.soulTorn === true && !x.disabled);
+    const n = Math.floor(Number(e?.flags?.[MODULE_ID]?.soulStolen) || 0);
+    return n > 0 ? n : 0;
+  } catch { return 0; }
+};
+let _soulBurn = null, _soulBurnLoad = null;
+function syncSoul(card, hp, stolen, first) {
+  if (!card?.hpFill) return;
+  if (!stolen && !card._soulBar && !card._soulQueued) { card._soulSeen = true; return; }
+  const state = { v: hp.v, m: hp.m, stolen };
+  const isFirst = first || card._soulSeen !== true;
+  card._soulSeen = true;
+  if (_soulBurn) { _soulBurn.syncSoulBurn(card, state, isFirst); return; }
+  // first use: load it, then replay the newest numbers (a first read stays a first read)
+  card._soulQueued = { state, first: isFirst || card._soulQueued?.first === true };
+  _soulBurnLoad ??= import("../conflict-event/soul-fx/soul-hp-burn.js")
+    .then((m) => { _soulBurn = m; })
+    .catch((e) => warn("[DirectorHud] soul HP burn unavailable", e));
+  _soulBurnLoad.then(() => {
+    const q = card._soulQueued; card._soulQueued = null;
+    if (q && _soulBurn) _soulBurn.syncSoulBurn(card, q.state, q.first);
+  });
+}
 /** { v, m } HP of any actor, the way the HUD reads it (the drawer's target rows). */
 export const readActorHp = (a) => { try { return readHP(a); } catch { return null; } };
 const readMP = a => pair(a, P_MP_V, P_MP_M) ?? { v: 0, m: 1 };
@@ -287,8 +315,11 @@ function effBelongsToActor(eff, actorId) {
 
 function glideNumber(node, from, to, ms = 420) {
   if (!node) return;
+  // a newer glide (or a plain set that bumps _glideId) takes the number over from an older one
+  const id = (node._glideId = (node._glideId || 0) + 1);
   const t0 = performance.now(), d = to - from;
   function loop(t) {
+    if (node._glideId !== id) return;
     const n = Math.min(1, (t - t0) / ms);
     const e = n < 0.5 ? 2 * n * n : 1 - Math.pow(-2 * n + 2, 2) / 2;
     node.textContent = nice(from + d * e);
@@ -1011,11 +1042,13 @@ function cardHandle(el, kind) {
 // then shrinks to the new one, so a big hit is readable even if you looked
 // away; a heal moves both at once.
 function setHpBar(card, hp) {
-  const f = clamp(hp.v / hp.m, 0, 1);
+  // the bar's scale: Max HP now, plus what the Soul Tithe holds (it burns at the right end)
+  const full = hp.m + (hp.stolen || 0);
+  const f = clamp(hp.v / full, 0, 1);
   const prev = card._hpFrac;
   card._hpFrac = f;
   tintHp(card.hpFill, hp.v, hp.m);
-  card.hpFill.style.width = pct(hp.v, hp.m);
+  card.hpFill.style.width = pct(hp.v, full);
   const tr = card.hpTrail;
   if (!tr) return;
   clearTimeout(card._trailT);
@@ -1025,11 +1058,11 @@ function setHpBar(card, hp) {
     tr.style.width = `${(shown * 100).toFixed(4)}%`;
     card._trailT = setTimeout(() => {
       tr.style.transition = "width 650ms cubic-bezier(.4,0,.6,1)";
-      tr.style.width = pct(hp.v, hp.m);
+      tr.style.width = pct(hp.v, full);
     }, 550);
   } else {
     tr.style.transition = "none";
-    tr.style.width = pct(hp.v, hp.m);
+    tr.style.width = pct(hp.v, full);
   }
 }
 
@@ -1059,6 +1092,7 @@ function paintExtras(card, actor) {
 
 function paintStats(card, actor) {
   const hp = readHP(actor), mp = readMP(actor), zp = readZP(actor);
+  if (hp) { hp.stolen = soulStolenOf(actor); syncSoul(card, hp, hp.stolen, true); }
   setHpBar(card, hp); flash(card.hpFill);
   card.mpFill.style.width = pct(mp.v, mp.m); flash(card.mpFill);
   card.zpFill.style.width = pct(zp.v, zp.m); flash(card.zpFill);
@@ -1158,7 +1192,15 @@ function updateCard(card, actor) {
   if (hp) {
     const prev = Number(card.hpCur?.textContent?.replace(/,/g, "")) || 0;
     glideNumber(card.hpCur, prev, hp.v, 420);
-    if (card.hpMax) card.hpMax.textContent = nice(hp.m);
+    hp.stolen = soulStolenOf(actor);
+    if (card.hpMax) {
+      // the Max counts down when the Soul Tithe takes it, in step with the burning front; when
+      // it comes back it shows at once, so the HP gliding up never reads above it
+      const was = Number(card.hpMax.textContent?.replace(/,/g, ""));
+      if (Number.isFinite(was) && hp.m < was && hp.stolen > 0) glideNumber(card.hpMax, was, hp.m, 500);
+      else { card.hpMax._glideId = (card.hpMax._glideId || 0) + 1; card.hpMax.textContent = nice(hp.m); }
+    }
+    syncSoul(card, hp, hp.stolen, false);   // before the fill moves: a refund sets its ease first
     setHpBar(card, hp);
     flash(card.hpFill);
     const before = card.el.classList.contains("is-ko") ? "ko" : "";
@@ -1203,8 +1245,9 @@ function paintCost(card) {
     const r = actor ? read(actor) : null;
     if (!need || !r) { el.classList.remove("is-on"); continue; }
     const spend = Math.min(need, Math.max(0, r.v));
-    el.style.left = pct(Math.max(0, r.v - spend), r.m);
-    el.style.width = pct(Math.max(spend, r.m * 0.012), r.m);
+    const full = r.m + (key === "hp" ? soulStolenOf(actor) : 0);   // the HP bar's own scale
+    el.style.left = pct(Math.max(0, r.v - spend), full);
+    el.style.width = pct(Math.max(spend, r.m * 0.012), full);
     el.classList.toggle("is-short", need > r.v);
     el.classList.add("is-on");
   }
@@ -2224,6 +2267,16 @@ function previewPlate(actorId = null) {
 // ── self-registration (runs on every client via side-effect import) ───────────
 Hooks.once("ready", () => {
   ensureSocket();
+  // A GM can be shown a player's plate by another GM (a watch party, a remote playtest):
+  // the user flag `hudPreviewPlate` = an actor id is this client's previewPlate, followed live.
+  if (game.user?.isGM) {
+    const want = () => game.user?.getFlag?.(MODULE_ID, "hudPreviewPlate") || null;
+    if (want()) _previewPlateActorId = String(want());
+    Hooks.on("updateUser", (u, diff) => {
+      if (u?.id !== game.user?.id || !foundry.utils.hasProperty(diff ?? {}, `flags.${MODULE_ID}`)) return;
+      if ((want() ?? null) !== _previewPlateActorId) previewPlate(want());
+    });
+  }
   tryReloadRecovery("ready");
   Hooks.on("fuStatusFlash", onStatusFlash);
 
