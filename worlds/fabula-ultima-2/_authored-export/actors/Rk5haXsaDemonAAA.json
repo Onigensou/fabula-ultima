@@ -13,7 +13,8 @@
       "version": "4.8.5"
     },
     "fabula-ultima-companion": {
-      "layoutRef": "a90e8fa4f8147c2b"
+      "layoutRef": "a90e8fa4f8147c2b",
+      "spriteShadow": true
     }
   },
   "folder": "4gMC1IxdJlF59BSi",
@@ -743,7 +744,8 @@
             "fabula-ultima-companion": {
               "charges": 1,
               "crossScene": false,
-              "lifetimeMode": "persistent_counter"
+              "lifetimeMode": "persistent_counter",
+              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa/Rakshasa_Stance_bow.webm"
             }
           },
           "img": "icons/weapons/bows/longbow-recurve.webp",
@@ -787,7 +789,8 @@
             "fabula-ultima-companion": {
               "charges": 1,
               "crossScene": false,
-              "lifetimeMode": "persistent_counter"
+              "lifetimeMode": "persistent_counter",
+              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa/Rakshasa_Stance_flail.webm"
             }
           },
           "img": "icons/weapons/maces/flail-ball-grey.webp",
@@ -831,7 +834,8 @@
             "fabula-ultima-companion": {
               "charges": 1,
               "crossScene": false,
-              "lifetimeMode": "persistent_counter"
+              "lifetimeMode": "persistent_counter",
+              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa/Rakshasa_Stance_sword.webm"
             }
           },
           "img": "icons/weapons/swords/sword-broad-worn.webp",
@@ -875,7 +879,8 @@
             "fabula-ultima-companion": {
               "charges": 1,
               "crossScene": false,
-              "lifetimeMode": "persistent_counter"
+              "lifetimeMode": "persistent_counter",
+              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa/Rakshasa_Stance_throwing.webm"
             }
           },
           "img": "icons/weapons/thrown/dagger-ringed-grey.webp",
@@ -1020,7 +1025,8 @@
             "fabula-ultima-companion": {
               "charges": 1,
               "crossScene": false,
-              "lifetimeMode": "persistent_counter"
+              "lifetimeMode": "persistent_counter",
+              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa/Rakshasa_Stance_flail_throwing.webm"
             }
           },
           "img": "icons/weapons/maces/flail-ball-grey.webp",
@@ -1064,7 +1070,8 @@
             "fabula-ultima-companion": {
               "charges": 1,
               "crossScene": false,
-              "lifetimeMode": "persistent_counter"
+              "lifetimeMode": "persistent_counter",
+              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa/Rakshasa_Stance_sword_bow.webm"
             }
           },
           "img": "icons/weapons/swords/sword-broad-worn.webp",
@@ -1108,7 +1115,8 @@
             "fabula-ultima-companion": {
               "charges": 1,
               "crossScene": false,
-              "lifetimeMode": "persistent_counter"
+              "lifetimeMode": "persistent_counter",
+              "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa/Rakshasa_Stance_sword_flail.webm"
             }
           },
           "img": "icons/weapons/swords/sword-broad-worn.webp",
@@ -2136,7 +2144,7 @@
       },
       "spear_ef": "100",
       "species": "Demon",
-      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa_Standard.png",
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa_Battle_Idle.webm",
       "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa_Standard.png",
       "steal_percentage_table": {},
       "stealable_loot": {},

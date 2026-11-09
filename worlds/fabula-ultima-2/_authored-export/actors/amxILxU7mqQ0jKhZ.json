@@ -11,10 +11,13 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "spriteShadow": true
     }
   },
   "folder": "4gMC1IxdJlF59BSi",
-  "img": "session-temp/Deva_Standard.png",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Deva/Deva_Standard.png",
   "name": "Deva",
   "ownership": {
     "JQGNzKpDPHJmcUIW": 3,
@@ -196,7 +199,7 @@
       "rotation": 0,
       "scaleX": 2.25,
       "scaleY": 2.25,
-      "src": "session-temp/Deva_Standard.png",
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Deva_Battle_Idle.webm",
       "tint": "#ffffff"
     },
     "width": 1
@@ -602,7 +605,7 @@
       },
       "spear_ef": "100",
       "species": "DEMON",
-      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Deva_Battle_Idle.webm",
       "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
       "steal_percentage_table": {
         "0": {

@@ -13,7 +13,8 @@
       "version": "4.8.5"
     },
     "fabula-ultima-companion": {
-      "layoutRef": "a90e8fa4f8147c2b"
+      "layoutRef": "a90e8fa4f8147c2b",
+      "spriteShadow": true
     }
   },
   "folder": "4gMC1IxdJlF59BSi",
@@ -64,7 +65,44 @@
               "charges": 1,
               "chargesMax": 1,
               "crossScene": false,
-              "lifetimeMode": "persistent_counter"
+              "cueClip": {
+                "angle": 79.1,
+                "ax": 0.5,
+                "ay": 0.5,
+                "opacity": 0.95,
+                "period": 1090,
+                "size": 0.258,
+                "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/010_slash_thunder.webm",
+                "x": 0.665,
+                "y": 0.065
+              },
+              "lifetimeMode": "persistent_counter",
+              "poseCombo": {
+                "art": {
+                  "1000": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1000.webm",
+                  "1001": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1001.webm",
+                  "1010": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1010.webm",
+                  "1011": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1011.webm",
+                  "1100": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1100.webm",
+                  "1101": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1101.webm",
+                  "1110": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1110.webm",
+                  "1111": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1111.webm",
+                  "0001": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0001.webm",
+                  "0010": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0010.webm",
+                  "0011": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0011.webm",
+                  "0100": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0100.webm",
+                  "0101": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0101.webm",
+                  "0110": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0110.webm",
+                  "0111": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0111.webm"
+                },
+                "key": "bolt",
+                "order": [
+                  "fire",
+                  "bolt",
+                  "ice",
+                  "air"
+                ]
+              }
             }
           },
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Shock.png",
@@ -159,7 +197,44 @@
               "charges": 1,
               "chargesMax": 1,
               "crossScene": false,
-              "lifetimeMode": "persistent_counter"
+              "cueClip": {
+                "angle": 0,
+                "ax": 0.5,
+                "ay": 0.85,
+                "opacity": 0.85,
+                "period": 1300,
+                "size": 0.285,
+                "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/091_wind_one_1.webm",
+                "x": 0.722,
+                "y": 0.474
+              },
+              "lifetimeMode": "persistent_counter",
+              "poseCombo": {
+                "art": {
+                  "1000": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1000.webm",
+                  "1001": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1001.webm",
+                  "1010": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1010.webm",
+                  "1011": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1011.webm",
+                  "1100": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1100.webm",
+                  "1101": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1101.webm",
+                  "1110": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1110.webm",
+                  "1111": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1111.webm",
+                  "0001": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0001.webm",
+                  "0010": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0010.webm",
+                  "0011": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0011.webm",
+                  "0100": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0100.webm",
+                  "0101": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0101.webm",
+                  "0110": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0110.webm",
+                  "0111": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0111.webm"
+                },
+                "key": "air",
+                "order": [
+                  "fire",
+                  "bolt",
+                  "ice",
+                  "air"
+                ]
+              }
             }
           },
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Wind.png",
@@ -210,7 +285,44 @@
               "charges": 1,
               "chargesMax": 1,
               "crossScene": false,
-              "lifetimeMode": "persistent_counter"
+              "cueClip": {
+                "angle": -10.7,
+                "ax": 0.5,
+                "ay": 0.5,
+                "opacity": 0.95,
+                "period": 1180,
+                "size": 0.35,
+                "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/009_slash_ice.webm",
+                "x": 0.222,
+                "y": 0.365
+              },
+              "lifetimeMode": "persistent_counter",
+              "poseCombo": {
+                "art": {
+                  "1000": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1000.webm",
+                  "1001": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1001.webm",
+                  "1010": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1010.webm",
+                  "1011": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1011.webm",
+                  "1100": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1100.webm",
+                  "1101": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1101.webm",
+                  "1110": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1110.webm",
+                  "1111": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1111.webm",
+                  "0001": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0001.webm",
+                  "0010": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0010.webm",
+                  "0011": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0011.webm",
+                  "0100": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0100.webm",
+                  "0101": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0101.webm",
+                  "0110": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0110.webm",
+                  "0111": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0111.webm"
+                },
+                "key": "ice",
+                "order": [
+                  "fire",
+                  "bolt",
+                  "ice",
+                  "air"
+                ]
+              }
             }
           },
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Freeze.png",
@@ -261,7 +373,44 @@
               "charges": 1,
               "chargesMax": 1,
               "crossScene": false,
-              "lifetimeMode": "persistent_counter"
+              "cueClip": {
+                "angle": 5.5,
+                "ax": 0.5,
+                "ay": 0.5,
+                "opacity": 0.95,
+                "period": 1000,
+                "size": 0.253,
+                "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/008_slash_fire.webm",
+                "x": 0.283,
+                "y": 0.05
+              },
+              "lifetimeMode": "persistent_counter",
+              "poseCombo": {
+                "art": {
+                  "1000": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1000.webm",
+                  "1001": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1001.webm",
+                  "1010": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1010.webm",
+                  "1011": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1011.webm",
+                  "1100": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1100.webm",
+                  "1101": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1101.webm",
+                  "1110": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1110.webm",
+                  "1111": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_1111.webm",
+                  "0001": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0001.webm",
+                  "0010": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0010.webm",
+                  "0011": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0011.webm",
+                  "0100": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0100.webm",
+                  "0101": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0101.webm",
+                  "0110": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0110.webm",
+                  "0111": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura/Asura_Blades_0111.webm"
+                },
+                "key": "fire",
+                "order": [
+                  "fire",
+                  "bolt",
+                  "ice",
+                  "air"
+                ]
+              }
             }
           },
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Burn.png",
@@ -3285,7 +3434,7 @@
       "rotation": 0,
       "scaleX": 2.25,
       "scaleY": 2.25,
-      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Battle_Idle.webm",
       "tint": "#ffffff"
     },
     "width": 1
@@ -3691,7 +3840,7 @@
       },
       "spear_ef": "100",
       "species": "DEMON",
-      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Battle_Idle.webm",
       "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Asura_Standard.png",
       "steal_percentage_table": {
         "0": {
