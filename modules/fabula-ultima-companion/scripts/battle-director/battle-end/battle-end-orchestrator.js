@@ -19,6 +19,8 @@ import { runBattleEndResourceReset } from "./battle-end-cleanup.js";
 import { evaluateFollowups, mergeRewardSnapshots } from "./battle-followup.js";
 import { evaluateUndying } from "./undying/undying.js";
 import { flushBattleLog, readBattleRecord, clearBattleRecord } from "../director-battle-log.js";
+import { clearTally } from "../battle-grade/grade-tally.js";
+import { applyBattleGrade, clearBoardOnLoss } from "../battle-grade/grade-state.js";
 import { isRewardRecipient } from "./battle-end-rewards.js";
 
 function detectOutcome(director) {
@@ -174,6 +176,7 @@ export async function runBattleEndSequence(director) {
     director.ctx.battleEndPromptResult = null;
     // The ambush is a new conflict with its own grade: start its record fresh.
     try { await clearBattleRecord(); } catch (e) { warn("[BattleEnd] clearBattleRecord threw", e); }
+    try { await clearTally(); } catch (e) { warn("[BattleEnd] clearTally threw", e); }
     // Skip the prompt, FX, summary, transition, and resource reset — the won
     // fight is not "over"; it continues as the boss conflict.
     return;
@@ -212,11 +215,18 @@ export async function runBattleEndSequence(director) {
   if (endCtx.outcome === "victory" && !endCtx.debug) {
     await runBattleEndSummaryLogic(endCtx);
     await runBattleEndRank(endCtx);
+    // Battle Grade v2: move the Bonus Board, pay the MVP Prize on S. Before the
+    // summary UI so the screen shows the result.
+    try { await applyBattleGrade(endCtx); } catch (e) { warn("[BattleEnd] applyBattleGrade threw", e); }
     await runBattleEndSummaryUI(endCtx); // awaited: transition only starts after GM's animation finishes
+  } else if (!endCtx.debug) {
+    // A wipe or fleeing clears the Bonus Board.
+    try { await clearBoardOnLoss(endCtx.outcome); } catch (e) { warn("[BattleEnd] clearBoardOnLoss threw", e); }
   }
 
   // The battle is over (any outcome): its record has been read, drop it.
   try { await clearBattleRecord(); } catch (e) { warn("[BattleEnd] clearBattleRecord threw", e); }
+  try { await clearTally(); } catch (e) { warn("[BattleEnd] clearTally threw", e); }
 
   await runBattleEndTransition(endCtx);
 

@@ -70,10 +70,19 @@ export async function computeBattleEndRewards(dCombat, isBoss) {
   // from the Current Game DB inside exp-core, so a balance change is still a
   // DB edit rather than a code edit. A normal battle takes the default mult,
   // floor and cap; only a discounted source (a stealth takedown) overrides them.
+  // Bonus Board EXP perk (Battle Grade v2): +5/+10/+15% while the party holds
+  // 3/6/10 slots. Read here, at PREP, so it pays the board as it stood when the
+  // fight began; this fight's own result moves the board for the next one.
+  let boardMult = 1;
+  try {
+    const { boardExpMultiplier } = await import("../battle-grade/grade-state.js");
+    boardMult = await boardExpMultiplier();
+  } catch (e) { warn("[BattleEnd:Rewards] board EXP multiplier unavailable — using 1", e); }
   const { expByActorId: expMap } = await computeExpAward({
     partyActors,
     enemyActors,
     isBoss: !!isBoss,
+    mult: boardMult,
   });
   Object.assign(expByActorId, expMap);
 

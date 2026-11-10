@@ -66,7 +66,9 @@ async function resolveDbActor() {
   return null;
 }
 
-export async function runBattleEndRank(endCtx) {
+// The pre-v2 score (Speed 50 + Damage 20 + …). Kept for one tuning round so the
+// log shows old vs new side by side; the Victory screen uses the v2 grade.
+async function legacyRank(endCtx) {
   const { isBoss, totalRounds, summaryResults } = endCtx;
   const cfg = isBoss ? CFG.boss : CFG.normal;
 
@@ -241,5 +243,31 @@ export async function runBattleEndRank(endCtx) {
     rates:  { missRate, dodgeRate, weakRate, resistRate, absorbRate, immuneRate, effRate },
   };
 
-  log(`[BattleEnd:Rank] ${rankLetter} (${rankScore.toFixed(1)}) — R=${R} D=${D} H=${H}`);
+  log(`[BattleEnd:Rank] legacy ${rankLetter} (${rankScore.toFixed(1)}) — R=${R} D=${D} H=${H}`);
+  return rows;
+}
+
+// Battle Grade v2 (battle-director/battle-grade/). Writes endCtx.grade (the full
+// grade), endCtx.gradeTally (roster + events) and endCtx.rank (letter + score,
+// what the Victory screen reads), with the legacy score under rank.legacy.
+export async function runBattleEndRank(endCtx) {
+  let rows = [];
+  try { rows = (await legacyRank(endCtx)) ?? []; } catch (e) { warn("[BattleEnd:Rank] legacy rank threw", e); }
+  const legacy = endCtx.rank ?? null;
+  try {
+    const { readTally } = await import("../battle-grade/grade-tally.js");
+    const { computeGrade } = await import("../battle-grade/grade-core.js");
+    const tally = await readTally();
+    if (!Object.keys(tally?.roster ?? {}).length) {
+      warn("[BattleEnd:Rank] no grade tally (battle not run by the director?) — keeping the legacy rank");
+      return;
+    }
+    const grade = computeGrade({ roster: tally.roster, events: tally.events, rows, rounds: endCtx.totalRounds });
+    endCtx.grade = grade;
+    endCtx.gradeTally = { roster: tally.roster };
+    endCtx.rank = { isBoss: endCtx.isBoss, score: grade.score, letter: grade.letter, legacy };
+    log(`[BattleEnd:Rank] v2 ${grade.letter} (${grade.score}) threat=${grade.threat} par=${grade.par} rounds=${grade.rounds} gauges=${JSON.stringify(grade.gauges)} board${grade.boardDelta >= 0 ? "+" : ""}${grade.boardDelta} mvp=${grade.mvp}`);
+  } catch (e) {
+    warn("[BattleEnd:Rank] v2 grade threw — keeping the legacy rank", e);
+  }
 }

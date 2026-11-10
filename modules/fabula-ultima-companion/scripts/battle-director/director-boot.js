@@ -15,6 +15,7 @@
 
 import { log, warn } from "./logger.js";
 import { clearBattleRecord } from "./director-battle-log.js";
+import { gradeTallyReactor, clearTally } from "./battle-grade/grade-tally.js";
 import { BattleDirector } from "./director.js";
 import { STATE_HANDLERS, installGuardHpWatcher, installApplierReaperWatcher, installSideWipeWatcher, checkSideWipe } from "./state-handlers.js";
 import { installGrappledCoverWatcher } from "./grappled.js";
@@ -438,11 +439,15 @@ async function start(arg) {
   // event's rule reads the battlefield. No-ops unless the conflict scene
   // selects an event. See [[conflict-event]].
   registerBuiltinReactor(conflictEventReactor);
+  // Battle Grade v2 tally: read-only, counts hits / damage / heals / Guard for
+  // the Victory screen's grade. Last, so it sees the settled event.
+  registerBuiltinReactor(gradeTallyReactor);
 
   // A fresh battle starts its own record (rank + totals read it at the end). A
   // battle stopped without reaching battle end would otherwise leave its rows
   // for this one. Resume never comes through here, so a resumed battle keeps its.
   try { await clearBattleRecord(); } catch (e) { warn("start: clearBattleRecord threw", e); }
+  try { await clearTally(); } catch (e) { warn("start: clearTally threw", e); }
 
   _instance = director;
   announceHost();
@@ -819,6 +824,9 @@ async function resumeFromSavedState({ scene, state, animateBanner = true }) {
   // Conflict event — same reasoning: without this a mid-conflict F5 silently
   // switches the scene's hazard off for the rest of the fight.
   registerBuiltinReactor(conflictEventReactor);
+  // Battle Grade v2 tally: read-only, counts hits / damage / heals / Guard for
+  // the Victory screen's grade. Last, so it sees the settled event.
+  registerBuiltinReactor(gradeTallyReactor);
 
   _instance = director;
   announceHost();

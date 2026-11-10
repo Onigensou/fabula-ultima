@@ -31,13 +31,43 @@ export async function runBattleEndSummaryUI(endCtx) {
     if (row?.actorId) zenitById[row.actorId] = row.zenit ?? { before: 0, gained: 0, after: 0 };
   }
 
+  // Battle Grade v2 block (null when the battle had no tally → the screen falls
+  // back to the shipped look). Titles / MVP are keyed by world actor id, the
+  // same key as the cards.
+  let gradeUi = null;
+  let tallyHealing = 0;
+  try {
+    const g = endCtx.grade, gr = endCtx.gradeResult, roster = endCtx.gradeTally?.roster ?? {};
+    if (g) {
+      const { G, TITLE_LABEL } = await import("../battle-grade/grade-core.js");
+      const idOf = (key) => {
+        const r = roster[key];
+        const m = String(r?.actorUuid ?? "").match(/^Actor\.([^.]+)$/);
+        return m ? m[1] : (r ? (fromUuidSync?.(r.actorUuid ?? r.tokenUuid)?.id ?? null) : null);
+      };
+      const titles = {};
+      for (const [k, t] of Object.entries(g.titles ?? {})) { const id = idOf(k); if (id) titles[id] = TITLE_LABEL[t] ?? t; }
+      tallyHealing = Object.values(g.stats ?? {}).reduce((s, x) => s + (Number(x.healsTotal) || 0), 0);
+      gradeUi = {
+        letter: g.letter, score: g.score,
+        gauges: g.gauges, max: G.MAX, stars: g.stars, crosses: g.crosses,
+        mvpActorId: idOf(g.mvp), titles,
+        board: gr ? { before: gr.before, after: gr.after, delta: gr.delta, perkPct: gr.perkPct, next: gr.next } : null,
+        prize: gr?.prize ? { kind: gr.prize.kind, amount: gr.prize.amount ?? 1 } : null,
+        couponImg: gr?.prize?.kind === "coupon" ? (game.items?.get?.("pcVQKM3teguaitRy")?.img ?? null) : null,
+      };
+    }
+  } catch (e) { warn("[BattleEnd:SummaryUI] grade block failed (screen falls back to the shipped look)", e); }
+
   const uiPayload = {
     runId:        `sum_${Date.now()}`,
     lockInteractions: true,
     holdMs:       5000,
     totalRounds:  totalRounds ?? null,
     totalDamage:  combatTotals?.totalDamage ?? null,
-    totalHealing: combatTotals?.totalHealing ?? null,
+    // Most heals write no battle-log row, so the tally's count is the fuller one.
+    totalHealing: Math.max(Number(combatTotals?.totalHealing ?? 0) || 0, Math.floor(tallyHealing)) || (combatTotals?.totalHealing ?? null),
+    grade:        gradeUi,
     rank: {
       letter: rank?.letter ?? "S",
       score:  rank?.score  ?? null,

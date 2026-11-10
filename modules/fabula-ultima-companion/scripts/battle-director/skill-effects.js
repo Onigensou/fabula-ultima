@@ -3242,7 +3242,7 @@ function isTruthyRowFlag(v) {
   return v === true || String(v ?? "").trim().toLowerCase() === "true";
 }
 
-export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource, direction, amount, cause, subjectSnapshot = null, isDamage = false, damageInstance = null, source = {}, element = null, originLabel = null, originUuid = null, weaponType = null, weaponRange = null, actionKind = null, actionIntent = null, isCrit = null, isFumble = null, accuracyTotal = null, highRoll = null, pierce = null, appliedEffectTags = [], chainStrike = null, chainStrikes = null, chainRepeat = false }) {
+export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource, direction, amount, cause, subjectSnapshot = null, isDamage = false, damageInstance = null, source = {}, element = null, originLabel = null, originUuid = null, weaponType = null, weaponRange = null, actionKind = null, actionIntent = null, isCrit = null, isFumble = null, accuracyTotal = null, highRoll = null, pierce = null, appliedEffectTags = [], chainStrike = null, chainStrikes = null, chainRepeat = false, extra = null }) {
   if (!director?.ctx || !actor || !resource || !(amount > 0)) return;
   if (direction !== "loss" && direction !== "recover") return;
   if (!Array.isArray(director.ctx._postResolveTriggers)) director.ctx._postResolveTriggers = [];
@@ -3317,6 +3317,10 @@ export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource
       // repeat lines (`chainRepeat`) fire automatic reactions only
       // (dispatchReactionMenu).
       ...(chainStrike ? { chainStrike, chainStrikes: chainStrikes ?? null, chainRepeat: !!chainRepeat } : {}),
+      // Caller-specific read-only context (additive, never read by the matcher).
+      // grantApply passes { requested, preValue } so the Battle Grade tally can
+      // tell overheal and "healed an ally in Crisis". See battle-grade/grade-tally.js.
+      ...(extra && typeof extra === "object" ? extra : {}),
     },
   });
 }
@@ -6376,6 +6380,7 @@ async function grantApply(row, ctx, { resource, targetRef, amount }) {
               source: { actorUuid: ctx.reactorActor?.uuid ?? null, tokenUuid: ctx.reactorToken?.uuid ?? null },
               originLabel: ctx.sourceLabel ?? ctx.skill?.name ?? row.effect_label ?? "Grant",
               originUuid: ctx.sourceUuid ?? ctx.skill?.uuid ?? null,
+              extra: { requested: Math.abs(Number(recipAmount) || 0), preValue: result.newValue - result.applied },
             });
           } catch (e) { warn("skill-effects.grant: ledger emit threw", e); }
         }

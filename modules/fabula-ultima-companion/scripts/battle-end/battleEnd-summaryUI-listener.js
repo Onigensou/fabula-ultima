@@ -890,6 +890,84 @@ Hooks.once("ready", () => {
         min-width: 64px;
         text-align: right;
       }
+
+      /* ==========================================================
+         BATTLE GRADE v2 (compact layout; all left of the token zone)
+      ========================================================== */
+      .oni-sum-trow { height: 20px; margin: -6px 0 6px; }
+      .oni-sum-ttl {
+        display: inline-flex; align-items: center; gap: 5px; max-width: 100%;
+        font-size: 11.5px; font-weight: 800; letter-spacing: .4px; color: var(--oni-sum-text);
+        padding: 1px 8px 1px 6px; border-radius: 999px;
+        background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.22);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        opacity: 0; transform: scale(.6); transform-origin: left center;
+        transition: opacity 260ms ease, transform 260ms cubic-bezier(.3,1.6,.5,1);
+      }
+      .oni-sum-ttl.is-in { opacity: 1; transform: scale(1); }
+      .oni-sum-ttl svg { width: 12px; height: 12px; }
+      .oni-sum-card.is-mvp {
+        border-color: rgba(255,210,120,0.85);
+        box-shadow: 0 0 0 1px rgba(255,210,120,0.35), 0 0 24px rgba(255,210,120,0.28), var(--oni-sum-shadow);
+      }
+      .oni-sum-mvp {
+        position: absolute; top: -10px; right: 10px; z-index: 4;
+        font-weight: 900; font-size: 12px; letter-spacing: 1.6px; color: #2a1a00;
+        background: linear-gradient(180deg, #ffe7a8, #e3ae4a); padding: 1px 9px; border-radius: 5px;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.55); opacity: 0; transform: translateY(-12px);
+        transition: opacity 300ms ease, transform 420ms cubic-bezier(.3,1.5,.5,1);
+      }
+      .oni-sum-mvp.is-in { opacity: 1; transform: none; }
+      .oni-sum-res { position: absolute; right: 64px; top: -12px; z-index: 4; display: flex; gap: 6px; }
+      .oni-sum-pill {
+        display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 900;
+        padding: 2px 10px 2px 6px; border-radius: 999px; border: 1px solid;
+        opacity: 0; transform: scale(.5); transition: opacity 240ms ease, transform 340ms cubic-bezier(.3,1.6,.5,1);
+      }
+      .oni-sum-pill.is-in { opacity: 1; transform: none; }
+      .oni-sum-pill svg, .oni-sum-pill img { width: 16px; height: 16px; object-fit: contain; }
+      .oni-sum-pill.fp { color: #bff5ee; background: #0d2b28; border-color: #14b8a6; }
+      .oni-sum-pill.zp { color: #ffdcc0; background: #3a1606; border-color: #ff7a1a; box-shadow: 0 0 10px rgba(255,122,26,0.35); }
+      .oni-sum-pill.cp { color: #ffe9c2; background: #3a2410; border-color: #f0a94a; }
+      .oni-sum-pill.zn { color: #fff2c4; background: #33290c; border-color: #ffd700; }
+      .oni-sum-sprite.is-hop { animation: oniSumHop 520ms ease; }
+      @keyframes oniSumHop { 0%,100% { transform: none; } 35% { transform: translateY(-14px); } 60% { transform: translateY(0); } 78% { transform: translateY(-5px); } }
+
+      .oni-sum-radar { position: absolute; left: -6px; top: -4px; width: 224px; height: 180px; opacity: 0; transition: opacity 420ms ease; }
+      .oni-sum-footer.is-in .oni-sum-radar { opacity: 1; }
+      .oni-sum-radar text { font-family: "Signika", sans-serif; font-weight: 900; font-size: 10.5px; fill: rgba(255,255,255,0.8); letter-spacing: .3px; paint-order: stroke; stroke: rgba(0,0,0,0.85); stroke-width: 2.5px; }
+      .oni-sum-radar tspan.st { fill: #ffd278; opacity: 0; transition: opacity 220ms ease; }
+      .oni-sum-radar tspan.x { fill: #ff8a8a; opacity: 0; transition: opacity 220ms ease; }
+      .oni-sum-radar tspan.is-in { opacity: 1; }
+
+      .oni-sum-strip {
+        position: absolute; left: 28px; width: 520px; z-index: 2; pointer-events: none;
+        display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: end;
+        opacity: 0; transform: translateY(8px); transition: opacity 420ms ease, transform 420ms ease;
+      }
+      .oni-sum-strip.is-in { opacity: 1; transform: none; }
+      .oni-sum-strip.is-out { opacity: 0; transition: opacity 280ms ease; }
+      .oni-sum-board { background: var(--oni-sum-bg); border: 1px solid var(--oni-sum-border); border-radius: 10px; box-shadow: var(--oni-sum-shadow); padding: 7px 10px; }
+      .oni-sum-board-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+      .oni-sum-gold { font-weight: 900; font-size: 12px; letter-spacing: 1.2px; color: #ffd278; text-transform: uppercase; }
+      .oni-sum-delta { font-weight: 900; font-size: 12px; margin-left: 6px; }
+      .oni-sum-delta.up { color: #9ff0c0; } .oni-sum-delta.dn { color: #ff9a9a; }
+      .oni-sum-slots { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; }
+      .oni-sum-slot { height: 16px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.22); background: rgba(255,255,255,0.05); }
+      .oni-sum-slot.on { background: linear-gradient(180deg, #ffe3a1, #d79c35); border-color: #ffe3a1; }
+      .oni-sum-slot.new { animation: oniSumSlotIn 420ms cubic-bezier(.3,1.6,.5,1); }
+      .oni-sum-slot.lost { animation: oniSumSlotLost 600ms ease forwards; }
+      @keyframes oniSumSlotIn { 0% { transform: scale(1.8); filter: brightness(2); } 100% { transform: none; } }
+      @keyframes oniSumSlotLost { 0% { background: #ff7a7a; border-color: #ff7a7a; transform: scale(1.3); } 100% { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.22); transform: none; } }
+      .oni-sum-perk { font-size: 11.5px; font-weight: 800; color: var(--oni-sum-sub); display: flex; justify-content: space-between; gap: 8px; margin-top: 5px; }
+      .oni-sum-perk b { color: #ffd278; }
+      .oni-sum-prize { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+      .oni-sum-reel { width: 178px; height: 40px; border-radius: 10px; background: var(--oni-sum-bg); border: 1px solid rgba(255,210,120,0.6); box-shadow: inset 0 0 12px rgba(0,0,0,0.6); overflow: hidden; position: relative; }
+      .oni-sum-reel-strip { position: absolute; left: 0; right: 0; top: 0; }
+      .oni-sum-reel-it { height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 10px; font-weight: 900; font-size: 13.5px; color: var(--oni-sum-text); white-space: nowrap; }
+      .oni-sum-reel-it img, .oni-sum-reel-it svg { width: 22px; height: 22px; flex: none; object-fit: contain; }
+      .oni-sum-reel.is-won { animation: oniSumReelWin 700ms ease; }
+      @keyframes oniSumReelWin { 0% { box-shadow: 0 0 0 0 rgba(255,210,120,0.9); } 100% { box-shadow: 0 0 0 14px rgba(255,210,120,0); } }
     `;
 
     const style = document.createElement("style");
@@ -1011,7 +1089,7 @@ Hooks.once("ready", () => {
     return "";
   }
 
-  function buildCard(entry, zenitIconSrc) {
+  function buildCard(entry, zenitIconSrc, grade = null) {
     const item = document.createElement("div");
     item.className = "oni-sum-item";
 
@@ -1046,6 +1124,30 @@ Hooks.once("ready", () => {
     header.appendChild(name);
     header.appendChild(lv);
     card.appendChild(header);
+
+    // Battle Grade v2: a title row under the name (reserved, so nothing moves
+    // when the title pops in). Ribbon + prize badge hang on the ITEM, because
+    // the card clips its overflow.
+    let ttlEl = null, mvpEl = null, resEl = null;
+    if (grade) {
+      const id = String(entry.actorId ?? "");
+      const trow = document.createElement("div");
+      trow.className = "oni-sum-trow";
+      ttlEl = document.createElement("div");
+      ttlEl.className = "oni-sum-ttl";
+      const crown = id && id === grade.mvpActorId
+        ? '<svg viewBox="0 0 24 24"><path fill="#ffd278" d="M3 7l4.5 4L12 4l4.5 7L21 7l-2 11H5z"/></svg>' : "";
+      ttlEl.innerHTML = crown + escapeHtml(grade.titles?.[id] ?? "");
+      trow.appendChild(ttlEl);
+      card.appendChild(trow);
+      mvpEl = document.createElement("div");
+      mvpEl.className = "oni-sum-mvp";
+      mvpEl.textContent = "MVP";
+      resEl = document.createElement("div");
+      resEl.className = "oni-sum-res";
+      item.appendChild(mvpEl);
+      item.appendChild(resEl);
+    }
 
     const expRow = document.createElement("div");
     expRow.className = "oni-sum-exp-row";
@@ -1089,7 +1191,110 @@ Hooks.once("ready", () => {
 
     item.appendChild(card);
     // Return cached element refs so animation helpers avoid querySelector in the RAF hot path.
-    return { item, card, sprite, levelUp, fillEl: fill, pctEl: pct, lvNumEl, zenitEl: zNum };
+    return { item, card, sprite, levelUp, fillEl: fill, pctEl: pct, lvNumEl, zenitEl: zNum, ttlEl, mvpEl, resEl };
+  }
+
+  function escapeHtml(s) {
+    return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  // ---------------------------------------------------------------------------
+  // Battle Grade v2: radar (inside the footer, left of the totals) + the strip
+  // under the footer (Bonus Board, MVP Prize reel)
+  // ---------------------------------------------------------------------------
+  const GRADE_KEYS = ["tempo", "exploit", "precision", "guard", "teamwork"];
+  const GRADE_LABEL = { tempo: "TEMPO", exploit: "EXPLOIT", precision: "PRECISION", guard: "GUARD", teamwork: "TEAMWORK" };
+  const RC = { cx: 112, cy: 94, r: 56 };
+  const PRIZE_SFX = {
+    fp: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula_Point.ogg",
+    zp: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Heal3.ogg",
+    coupon: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/UI_SEWorldDollar.wav",
+    zenit: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/UI_SEWorldDollar.wav",
+  };
+  const MVP_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Heal3.ogg";
+  const ICON_STAR = '<svg viewBox="0 0 24 24"><path fill="#14b8a6" d="M12 2.5l2.9 6.2 6.6.7-5 4.5 1.4 6.6L12 17.2l-5.9 3.3 1.4-6.6-5-4.5 6.6-.7z"/></svg>';
+  const ICON_BOLT = '<svg viewBox="0 0 24 24"><path fill="#ff7a1a" d="M13.5 2L4.5 13.5h6l-1.5 8.5 9.5-12h-6.2z"/></svg>';
+
+  function playOnce(src, volume = 0.6) {
+    try { const a = new Audio(src); a.volume = volume; a.play().catch(() => {}); } catch {}
+  }
+
+  function radarPts(vals) {
+    return vals.map((v, i) => {
+      const ang = -Math.PI / 2 + i * 2 * Math.PI / 5, rr = RC.r * v;
+      return [RC.cx + rr * Math.cos(ang), RC.cy + rr * Math.sin(ang)];
+    });
+  }
+
+  function buildRadar(grade) {
+    const wrap = document.createElement("div");
+    wrap.className = "oni-sum-radar";
+    const ring = (f) => radarPts([f, f, f, f, f]).map((p) => p.join(",")).join(" ");
+    const axes = radarPts([1, 1, 1, 1, 1]).map(([x, y]) => `<line x1="${RC.cx}" y1="${RC.cy}" x2="${x}" y2="${y}" stroke="rgba(255,255,255,.18)"/>`).join("");
+    const labels = radarPts([1.3, 1.3, 1.3, 1.3, 1.3]).map(([x, y], i) =>
+      `<text x="${x}" y="${y + 4}" text-anchor="middle"><tspan class="st">✦</tspan><tspan class="x">✗</tspan> ${GRADE_LABEL[GRADE_KEYS[i]]}</text>`).join("");
+    wrap.innerHTML = `<svg viewBox="0 0 224 180" width="224" height="180">
+      <polygon points="${ring(1)}" fill="rgba(8,10,14,.55)" stroke="rgba(255,255,255,.35)"/>
+      <polygon points="${ring(0.5)}" fill="none" stroke="rgba(255,255,255,.14)"/>${axes}
+      <polygon class="shape" points="${ring(0)}" fill="rgba(255,210,120,.42)" stroke="#ffd278" stroke-width="2"/>${labels}</svg>`;
+    const shape = wrap.querySelector(".shape");
+    const fracs = GRADE_KEYS.map((k) => Math.max(0, Math.min(1, Number(grade.gauges?.[k] ?? 0) / Number(grade.max?.[k] || 1))));
+    const fill = (u) => shape.setAttribute("points", radarPts(fracs.map((f) => f * u)).map((p) => p.join(",")).join(" "));
+    const texts = Array.from(wrap.querySelectorAll("text"));
+    return {
+      wrap, fill,
+      stars: texts.map((t) => t.querySelector("tspan.st")),
+      crosses: texts.map((t) => t.querySelector("tspan.x")),
+    };
+  }
+
+  function prizeItemHtml(kind, couponImg, zenitIconSrc) {
+    if (kind === "fp") return `${ICON_STAR}<span>Fabula +1</span>`;
+    if (kind === "zp") return `${ICON_BOLT}<span>Zero Power +1</span>`;
+    if (kind === "coupon") return `${couponImg ? `<img src="${couponImg}" alt="">` : ""}<span>Hako Coupon</span>`;
+    return `<img src="${zenitIconSrc}" alt=""><span>Zenit bonus</span>`;
+  }
+
+  function prizePillHtml(prize, couponImg, zenitIconSrc) {
+    if (prize.kind === "fp") return ["fp", `${ICON_STAR}+1 Fabula`];
+    if (prize.kind === "zp") return ["zp", `${ICON_BOLT}+1 Zero Power`];
+    if (prize.kind === "coupon") return ["cp", `${couponImg ? `<img src="${couponImg}" alt="">` : ""}Hako Coupon ×1`];
+    return ["zn", `<img src="${zenitIconSrc}" alt="">+${Number(prize.amount || 0).toLocaleString()} Zenit`];
+  }
+
+  function buildStrip(grade, zenitIconSrc) {
+    const strip = document.createElement("div");
+    strip.className = "oni-sum-strip";
+    const b = grade.board ?? { before: 0, after: 0, delta: 0 };
+    const slots = Array.from({ length: 10 }, (_, i) => `<span class="oni-sum-slot${i < b.before ? " on" : ""}"></span>`).join("");
+    const isS = grade.letter === "S" && grade.prize;
+    strip.innerHTML = `
+      <div class="oni-sum-board">
+        <div class="oni-sum-board-top"><span class="oni-sum-gold">Bonus Board</span><span class="oni-sum-foot-label" data-k="bc">${b.before}/10</span></div>
+        <div class="oni-sum-slots">${slots}</div>
+        <div class="oni-sum-perk" data-k="perk"></div>
+      </div>
+      <div class="oni-sum-prize" style="visibility:${isS ? "visible" : "hidden"}">
+        <span class="oni-sum-gold">MVP Prize</span>
+        <div class="oni-sum-reel"><div class="oni-sum-reel-strip"></div></div>
+      </div>`;
+    return {
+      strip,
+      slots: Array.from(strip.querySelectorAll(".oni-sum-slot")),
+      bc: strip.querySelector('[data-k="bc"]'),
+      perk: strip.querySelector('[data-k="perk"]'),
+      reel: strip.querySelector(".oni-sum-reel"),
+      reelStrip: strip.querySelector(".oni-sum-reel-strip"),
+    };
+  }
+
+  const PERK_STEPS = [[3, 5], [6, 10], [10, 15]];
+  function setBoardText(sb, n, delta = null) {
+    let pct = 0; for (const [min, p] of PERK_STEPS) if (n >= min) pct = p;
+    const nx = PERK_STEPS.find(([min]) => n < min);
+    const d = delta == null ? "" : `<span class="oni-sum-delta ${delta >= 0 ? "up" : "dn"}">${delta > 0 ? "+" + delta : delta === 0 ? "±0" : delta}</span>`;
+    sb.bc.innerHTML = `${n}/10${d}`;
+    sb.perk.innerHTML = `<span>${pct ? `Active: <b>EXP +${pct}%</b>` : "No perk yet"}</span><span>${nx ? `Next at ${nx[0]}: EXP +${nx[1]}%` : "Board full"}</span>`;
   }
 
   function buildFooter({ totalDamage, totalHealing, totalZenit, totalRounds, rankLetter }) {
@@ -1279,6 +1484,94 @@ Hooks.once("ready", () => {
   }
 
   // ---------------------------------------------------------------------------
+  // Battle Grade v2 beats (after EXP + Zenit, before the hold)
+  // ---------------------------------------------------------------------------
+  function tickOnce() {
+    try {
+      const a = __TICK_POOL__[__TICK_POOL_IDX__];
+      __TICK_POOL_IDX__ = (__TICK_POOL_IDX__ + 1) % __TICK_POOL__.length;
+      a.pause(); a.currentTime = 0; a.play().catch(() => {});
+    } catch {}
+  }
+
+  async function playGradeBeats({ grade, cards, radar, sb, footerBuilt, footerData, zenitIconSrc }) {
+    // Titles, one by one
+    await sleep(250);
+    for (const c of cards) {
+      if (!c.ttlEl || !c.ttlEl.textContent) continue;
+      c.ttlEl.classList.add("is-in"); tickOnce();
+      await sleep(150);
+    }
+
+    // MVP: gold edge + ribbon + chime (no bounce here; the bounce belongs to the prize)
+    await sleep(350);
+    const mvp = cards.find((c) => String(c.entry?.actorId ?? "") === String(grade.mvpActorId ?? ""));
+    if (mvp) { mvp.card.classList.add("is-mvp"); mvp.mvpEl?.classList.add("is-in"); playOnce(MVP_SFX, 0.6); }
+    await sleep(600);
+
+    // ✦ / ✗ on the radar
+    if (radar) {
+      for (let i = 0; i < GRADE_KEYS.length; i++) {
+        const k = GRADE_KEYS[i];
+        if (grade.stars?.[k]) radar.stars[i]?.classList.add("is-in");
+        else if (grade.crosses?.[k]) radar.crosses[i]?.classList.add("is-in");
+        else continue;
+        tickOnce();
+        await sleep(200);
+      }
+    }
+
+    // Board: light or drain slot by slot to the new total
+    if (sb && grade.board) {
+      await sleep(200);
+      const target = Math.max(0, Math.min(10, Number(grade.board.after) || 0));
+      let n = Math.max(0, Math.min(10, Number(grade.board.before) || 0));
+      while (n < target) { sb.slots[n].classList.add("on", "new"); n++; setBoardText(sb, n); tickOnce(); await sleep(220); }
+      while (n > target) {
+        n--; const s = sb.slots[n];
+        s.classList.remove("on", "new"); void s.offsetWidth; s.classList.add("lost");
+        setBoardText(sb, n); tickOnce(); await sleep(260);
+      }
+      setBoardText(sb, target, Number(grade.board.delta) || 0);
+    }
+
+    // MVP Prize (S only): reel, then the badge lands on the MVP's card + bounce
+    if (grade.letter === "S" && grade.prize && sb) {
+      await sleep(300);
+      const keys = ["fp", "zp", "coupon", "zenit"], seq = [];
+      for (let i = 0; i < 15; i++) seq.push(keys[i % 4]);
+      seq.push(grade.prize.kind);
+      sb.reelStrip.innerHTML = seq.map((k) => `<div class="oni-sum-reel-it">${prizeItemHtml(k, grade.couponImg, zenitIconSrc)}</div>`).join("");
+      const total = (seq.length - 1) * 40;
+      let last = -1;
+      await runSafeRafTween(1900, (u) => {
+        const y = total * (1 - Math.pow(1 - u, 3));
+        sb.reelStrip.style.transform = `translateY(${-y}px)`;
+        const idx = Math.floor(y / 40);
+        if (idx !== last) { last = idx; tickOnce(); }
+      }, { label: "gradeReel" });
+      sb.reel.classList.add("is-won");
+      await sleep(300);
+      if (mvp?.resEl) {
+        const [cls, html] = prizePillHtml(grade.prize, grade.couponImg, zenitIconSrc);
+        const pill = document.createElement("span");
+        pill.className = `oni-sum-pill ${cls}`;
+        pill.innerHTML = html;
+        mvp.resEl.appendChild(pill);
+        requestAnimationFrame(() => pill.classList.add("is-in"));
+        mvp.sprite?.classList.remove("is-hop"); void mvp.sprite?.offsetWidth; mvp.sprite?.classList.add("is-hop");
+        playOnce(PRIZE_SFX[grade.prize.kind] ?? MVP_SFX, 0.7);
+        if (grade.prize.kind === "zenit") {
+          const add = Number(grade.prize.amount) || 0;
+          const z0 = safeInt(mvp.entry?.zenitAfter, 0);
+          animateCountUp(mvp.zenitEl, z0, z0 + add, 700);
+          animateNumber(footerBuilt.zenitValueEl, footerData.totalZenit + add, { from: footerData.totalZenit, duration: 700, formatter: (n) => Number(n).toLocaleString() });
+        }
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
   // Outro teardown
   // ---------------------------------------------------------------------------
   async function teardownAnimated(root) {
@@ -1298,6 +1591,8 @@ Hooks.once("ready", () => {
     for (const s of sprites) s.classList.add("is-out");
     for (const c of cards) c.classList.add("is-out");
     for (const lu of levelUps) lu.style.opacity = "0";
+    for (const g of root.querySelectorAll(".oni-sum-mvp, .oni-sum-res")) { g.style.transition = "opacity 300ms ease"; g.style.opacity = "0"; }
+    root.querySelector(".oni-sum-strip")?.classList.add("is-out");
 
     await sleep(Math.max(TITLE_OUT_MS, 360));
     try { root.remove(); } catch {}
@@ -1356,8 +1651,10 @@ const footerData = {
     const shown = entries.slice(0, 4);
     const cards = [];
 
+    const grade = (data?.grade && typeof data.grade === "object") ? data.grade : null;
+
     for (const e of shown) {
-      const built = buildCard(e, zenitIconSrc);
+      const built = buildCard(e, zenitIconSrc, grade);
       grid.appendChild(built.item);
       cards.push({ ...built, entry: e });
     }
@@ -1366,9 +1663,27 @@ const footerData = {
     const footerBuilt = buildFooter(footerData);
     uiWrap.appendChild(footerBuilt.footer);
 
+    // Battle Grade v2: radar inside the footer, board + prize strip under it.
+    let radar = null, sb = null;
+    if (grade) {
+      try {
+        radar = buildRadar(grade);
+        footerBuilt.footer.appendChild(radar.wrap);
+        sb = buildStrip(grade, zenitIconSrc);
+        uiWrap.appendChild(sb.strip);
+        setBoardText(sb, Number(grade.board?.before ?? 0));
+      } catch (err) { console.warn(`${tag} grade UI build failed`, err); radar = null; sb = null; }
+    }
+    const positionStrip = () => {
+      if (!sb) return;
+      const f = footerBuilt.footer;
+      sb.strip.style.top = `${(parseFloat(f.style.top) || 0) + (f.offsetHeight || 170) + 12}px`;
+    };
+
     // Position footer once layout exists
     await sleep(0);
     positionFooterUnderGrid(grid, footerBuilt.footer, 16);
+    positionStrip();
 
     // Autoplay unlock attempt for videos (webm) on first user input
     const unlock = () => {
@@ -1402,10 +1717,13 @@ const footerData = {
 
     // Re-position footer (grid height might change slightly after assets load)
     positionFooterUnderGrid(grid, footerBuilt.footer, 16);
+    positionStrip();
 
     // Footer ease in (after panels)
     await sleep(FOOTER_AFTER_PANELS_MS);
     footerBuilt.footer.classList.add("is-in");
+    if (radar) setTimeout(() => { runSafeRafTween(1400, (u) => radar.fill(1 - Math.pow(1 - u, 3)), { label: "gradeRadar" }); }, 300);
+    if (sb) setTimeout(() => sb.strip.classList.add("is-in"), 400);
 
     // Footer number rolls (Damage/Healing are dummy, Zenit is real)
     await sleep(40);
@@ -1458,6 +1776,12 @@ const footerData = {
     } finally {
       stopTickMetronome(tickMetro);
       tickMetro = null;
+    }
+
+    // 2b) Battle Grade v2 beats: titles → MVP → ✦/✗ → board → MVP Prize (S)
+    if (grade) {
+      try { await playGradeBeats({ grade, cards, radar, sb, footerBuilt, footerData, zenitIconSrc }); }
+      catch (err) { console.warn(`${tag} grade beats failed`, err); }
     }
 
     // 3) Hold AFTER animations (silent)
