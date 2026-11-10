@@ -18,8 +18,10 @@
 //
 // DEFERRED, deliberately, per the direction plan: Fafnir, Hilde-Fafnir, Flame
 // Drake, Lightning Drake (boss tier), Iron Colossus, Dire Orc, Dragon Guard
-// (design not settled). Passives are skipped except the two that are real board
-// events — Volt Counter and Electro Explosion.
+// (design not settled). Passives are skipped except the real board events —
+// Volt Counter, Static Buildup (its third-charge discharge) and Electro Explosion.
+// A passive's shot only plays from a play_animation row in its own chain
+// (Volt Counter / Static Buildup: _wire-volt-static-passive-anims.js).
 // ============================================================================
 
 const fs = require("fs");
@@ -33,6 +35,7 @@ const RK = require(path.join(ANIM_LIB, "lib", "rakshasa-signatures.js"));
 const FF = require(path.join(ANIM_LIB, "lib", "fafnir-signatures.js"));
 const KR = require(path.join(ANIM_LIB, "lib", "kirin-signatures.js"));
 const DV = require(path.join(ANIM_LIB, "lib", "deva-signatures.js"));
+const PS = require(path.join(ANIM_LIB, "lib", "passive-pxfx-signatures.js"));
 const { encode, validate } = require(path.join(ANIM_LIB, "lib", "encode.js"));
 
 /* ── Palette ─────────────────────────────────────────────────────────────── */
@@ -432,6 +435,10 @@ const REGISTRY = {
                sfxImpact: "Hit_Lightning", sfxImpactVol: 0.65,
                sfxImpactFade: 800, sfxImpactFadeMs: 500 },
       }),
+      // The third-charge discharge: three static balls fly to the victim and
+      // blow (pixelfx, approved mockup 2026-11-10). The orbit while charges
+      // build is a charge cue on the Static AE, not a script.
+      "Static Buildup": () => PS.staticDischarge({ key: "skizzik-static-discharge", name: "Static Buildup" }),
     },
   },
 
@@ -490,12 +497,9 @@ const REGISTRY = {
         cfg: { spread: true, count: 26, travelMs: 1400, radiateRadius: 460,
                sfx: "SE_WATER", sfxVol: 0.55, sfxPop: "Water_Drop", sfxPopVol: 0.35 },
       }),
-      "Volt Counter": () => T.burst({
-        key: "ampere-volt-counter", name: "Volt Counter",
-        cfg: { color: C.bolt, count: 26, radius: 190, size: 11, life: 700,
-               ring: true, ringMs: 700, ringRadius: 230, ringWidth: 5,
-               sfx: SFX.paralyze3, sfxVol: 0.6 },
-      }),
+      // pixelfx ripple rings (approved mockup 2026-11-10); replaced the T.burst
+      // particle ring, which no chain ever played
+      "Volt Counter": () => PS.voltCounter({ key: "ampere-volt-counter", name: "Volt Counter" }),
     },
   },
 

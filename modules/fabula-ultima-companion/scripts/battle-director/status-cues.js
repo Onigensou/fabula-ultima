@@ -58,6 +58,7 @@ import { cueOf } from "./status-classifier.js";
 import { battleActive } from "./battle-focus.js";
 import { spriteRect } from "./unit-anchors.js";
 import { setStatusTintProvider, syncActorTint } from "./token-tint.js";
+import { installChargeOrbitFx } from "./charge-orbit-fx.js";
 
 const NS = "fabula-ultima-companion";
 const ROOT_ID = "fu-status-cue-root";
@@ -439,6 +440,9 @@ function actorOfEffect(eff) {
 
 export function initStatusCues() {
   setStatusTintProvider(statusTint);
+  // Charge cues that must pass BEHIND the body (Skizzik's Static orbit) can't live in
+  // this DOM layer, which sits over the whole canvas; they are PIXI, in their own module.
+  try { installChargeOrbitFx(); } catch (e) { warn("[StatusCues] charge orbit install threw", e); }
   const onAE = (eff) => {
     const actor = actorOfEffect(eff);
     if (!actor) return;
