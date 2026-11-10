@@ -41,6 +41,7 @@ import { getIntentChannel } from "./intent-channel.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { INTENTS } from "./intents.js";
 import { NAME as CODE_BACKED_NAME } from "../shared/code-backed-content.js";
+import { potionRainHalves } from "../healing-system/potion-rain.js";
 import { boundSummonRef } from "../shared/summon-bindings.js";
 import { classifyEffect, isStatusTier } from "./status-classifier.js";
 
@@ -6176,6 +6177,14 @@ async function applyAdjustGrantEffect(row, ctx) {
     value: Number(evaluateFormula(a.amountFormula, resolver, 0)) || 0,
     round: a.round,
   };
+  // Apothecary Robes: the wearer's Potion Rain is not halved. Only Potion Rain's
+  // own row is skipped; any other adjust_grant on any other skill is untouched.
+  if (shortSkillName(ctx.skill).toLowerCase() === CODE_BACKED_NAME.POTION_RAIN.toLowerCase()
+      && !potionRainHalves(ctx.reactorActor)) {
+    sink.grantAdjust = null;
+    log(`skill-effects.adjust_grant: "${row.effect_label}" skipped — ${ctx.reactorActor?.name} wears ${CODE_BACKED_NAME.APOTHECARY_ROBES} (Potion Rain not halved)`);
+    return { ok: true, kind: "adjust_grant", applied: [], reason: "apothecary-robes" };
+  }
   sink.grantAdjust = adjust;
   log(`skill-effects.adjust_grant: queued restore ${adjust.op} ${adjust.value} (round ${adjust.round}) for the add_target window`);
   return { ok: true, kind: "adjust_grant", adjust };

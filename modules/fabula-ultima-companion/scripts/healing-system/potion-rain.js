@@ -58,3 +58,27 @@ export function getPotionRain(actor) {
 export function halveHeal(amount) {
   return Math.max(0, Math.ceil(Number(amount || 0) / 2));
 }
+
+// Apothecary Robes (armor): "When you use the Potion Rain Skill, the restoring
+// effect is not halved." Code-backed by name (see shared/code-backed-content.js).
+// Matches the worn copy whatever its refinement ("+4 Apothecary Robes").
+// Read by BOTH spread paths so they can't disagree: the out-of-combat healing
+// socket (skips halveHeal) and the battle chain's adjust_grant row (skill-effects
+// applyAdjustGrantEffect skips Potion Rain's × 0.5).
+export const APOTHECARY_ROBES_NAME = CODE_BACKED_NAME.APOTHECARY_ROBES;
+
+export function wearsApothecaryRobes(actor) {
+  const want = String(APOTHECARY_ROBES_NAME).toLowerCase();
+  const items = actor?.items?.contents ?? (Array.isArray(actor?.items) ? actor.items : []);
+  return items.some((it) => {
+    const p = it?.system?.props ?? {};
+    if (p.isEquipped !== true) return false;
+    const base = String(it?.name ?? "").trim().replace(/^\+\d+\s+/, "").toLowerCase();
+    return base === want;
+  });
+}
+
+// Is a Potion Rain spread from this caster halved? (false while wearing the robes)
+export function potionRainHalves(actor) {
+  return !wearsApothecaryRobes(actor);
+}

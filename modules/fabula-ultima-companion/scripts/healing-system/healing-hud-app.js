@@ -22,7 +22,7 @@ import { injectHealingStyles } from "./healing-hud-styles.js";
 import { gatherHealingActions } from "./healing-actions.js";
 import { requestApply, broadcastHealFeedback } from "./healing-socket.js";
 import { actorDebuffs } from "./healing-cleanse.js";
-import { getPotionRain } from "./potion-rain.js";
+import { getPotionRain, potionRainHalves } from "./potion-rain.js";
 import { HealingFeedback } from "./healing-feedback.js";
 
 const CATEGORY_ORDER = [HEAL_CATEGORY.SKILL, HEAL_CATEGORY.SPELL, HEAL_CATEGORY.ITEM, HEAL_CATEGORY.CREATE];
@@ -100,7 +100,7 @@ const HealingHUD = {
     }
 
     this._actions = await gatherHealingActions(caster);
-    this._potionRain = getPotionRain(caster);
+    this._potionRain = { ...getPotionRain(caster), halves: potionRainHalves(caster) };
     this._potionRainOn = false;
     this._multiSelected = new Set();
     // Start on the first tab that has entries.
@@ -580,8 +580,8 @@ const HealingHUD = {
     else if (this._targetMode === "multi") {
       const n = this._multiSelected.size, cap = this._potionRainCap();
       tail = n > 0
-        ? `🌧 ${n}/${cap} chosen${n > 1 ? " · ½ each" : ""} — click a chosen ally to confirm · X / right-click removes`
-        : `🌧 Potion Rain — pick up to ${cap} allies (each extra heals half)`;
+        ? `🌧 ${n}/${cap} chosen${n > 1 ? (this._potionRain?.halves === false ? " · full each" : " · ½ each") : ""} — click a chosen ally to confirm · X / right-click removes`
+        : `🌧 Potion Rain — pick up to ${cap} allies (${this._potionRain?.halves === false ? "full heal each — Apothecary Robes" : "each extra heals half"})`;
     }
     else if (this._targetMode === "all") tail = "confirm to apply to all";
     else if (a.targeting === "self") tail = "confirm on self";
