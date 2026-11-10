@@ -31,7 +31,14 @@ try {
   await toggle("MagcBreakStatId1", true);  out.both = chips();
   await toggle("ArmrBreakStatId1", false); out.magicOnly = chips();
   await toggle("MagcBreakStatId1", false); out.cleared = chips();
-  out.cuesApi = FUCompanion.api.statusCues ? [...FUCompanion.api.statusCues.cuesOf(a)] : "no api";
+  // Rakshasa's Crippled (its own item AE, not a CONFIG status) draws the same DEF word; with
+  // Armor Break also held it still draws ONE DEF word.
+  const [crip] = await a.createEmbeddedDocuments("ActiveEffect", [{ name: "Crippled", statuses: ["crippled"], system: { tags: ["cleansable", "rakshasa_debuff", "debuff"] },
+    changes: [{ key: "defense", mode: 1, value: "0.5", priority: 50 }], flags: { [NS]: { roundUp: ["defense"] } } }]);
+  await new Promise((r) => setTimeout(r, 300)); out.crippled = chips();
+  await toggle("ArmrBreakStatId1", true); out.crippledPlusArmor = chips();
+  await toggle("ArmrBreakStatId1", false); await crip.delete(); await new Promise((r) => setTimeout(r, 300)); out.crippledCleared = chips();
+  out.cuesApi =FUCompanion.api.statusCues ? [...FUCompanion.api.statusCues.cuesOf(a)] : "no api";
   await tok.delete();
   await scene.unsetFlag(NS, "directorState");
 } catch (e) { out.errors.push(e.message); }

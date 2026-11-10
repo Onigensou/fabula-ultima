@@ -54,6 +54,7 @@ export const STATUS_CUES = Object.freeze({
   burn: "burn", blind: "blind", envenomed: "poison", wet: "wet",
   paralyzed: "paralyze", silence: "silence", provoked: "provoked", sleep: "sleep",
   "armor break": "armorbreak", "magic break": "magicbreak",
+  crippled: "armorbreak",   // Rakshasa's own DEF cut (×0.5, kept apart for its fight): same DEF cue
 });
 
 // `dispellable` = a spell's buff (Elemental Weapon, Mirror…); dances are buffs.

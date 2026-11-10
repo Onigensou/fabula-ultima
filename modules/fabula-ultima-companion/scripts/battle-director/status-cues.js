@@ -14,7 +14,8 @@
 //   sleep     three Zs drifting up from the head
 //   armorbreak / magicbreak   beside the chest on the unit's back side, just outside the
 //             frame: the word DEF / MDEF + a small bobbing down arrow, no tile or frame,
-//             orange = DEF (Armor Break), blue = M.DEF (Magic Break); both held = stacked.
+//             orange = DEF (Armor Break, and Rakshasa's Crippled), blue = M.DEF (Magic
+//             Break); both held = stacked.
 //             Font = the damage-number tag face. Replaced a cracked-cuirass silhouette
 //             (user pick, 2026-11-10): the word reads without learning an icon.
 //
