@@ -265,6 +265,14 @@ export async function runBattleEndRank(endCtx) {
     const grade = computeGrade({ roster: tally.roster, events: tally.events, rows, rounds: endCtx.totalRounds });
     endCtx.grade = grade;
     endCtx.gradeTally = { roster: tally.roster };
+    // Last battle's inputs + result, for "why did we get B?" from the console
+    // (FUCompanion.api.battleGrade.last) and for re-scoring when tuning.
+    try {
+      const api = (globalThis.FUCompanion.api.battleGrade ??= {});
+      api.last = { at: Date.now(), rounds: endCtx.totalRounds, roster: tally.roster, events: tally.events,
+        rows: rows.map((r) => ({ attacker: r.attacker, apply_mode: r.apply_mode, value_type: r.value_type, affinity: r.affinity, efficiency: r.efficiency, _chain: r._chain })),
+        grade: { letter: grade.letter, score: grade.score, gauges: grade.gauges, threat: grade.threat, par: grade.par, stats: grade.stats } };
+    } catch { /* debug aid only */ }
     endCtx.rank = { isBoss: endCtx.isBoss, score: grade.score, letter: grade.letter, legacy };
     log(`[BattleEnd:Rank] v2 ${grade.letter} (${grade.score}) threat=${grade.threat} par=${grade.par} rounds=${grade.rounds} gauges=${JSON.stringify(grade.gauges)} board${grade.boardDelta >= 0 ? "+" : ""}${grade.boardDelta} mvp=${grade.mvp}`);
   } catch (e) {

@@ -28,7 +28,10 @@ export const G = Object.freeze({
   HP_WEIGHT: 9,                // Guard lost at 100% of party max HP taken
   GUARD_BONUS_CAP: 4,          // Guard/Cover (+1 each) and Crisis heals (+1.5 each)
   TEAM: { buff: 2, mp: 1, item: 1.5, cover: 2 },
-  THREAT_BONUS: 5,             // Hard / Boss
+  // Hard / Boss. Was 5: in the 2026-11-11 sandbox calibration (7 real BD fights,
+  // sim party) +5 lifted a 2-round, 10-Precision Imp fight to S. At +3 one fight
+  // in 7 is S, the clean one; real players exploit less than the sim, so lower.
+  THREAT_BONUS: 3,
   S_MIN: 92,
   LETTERS: [[80, "A"], [70, "B"], [60, "C"], [50, "D"], [40, "E"]],
   STAR: 0.9, CROSS: 0.5,       // ✦ at 90%+, ✗ under 50%
