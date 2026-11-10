@@ -132,8 +132,21 @@ function play(payload = {}) {
   const token = partyToken(tokenId);
   const head = token ? headPoint(token) : null;
   if (head) list.forEach((r, i) => setTimeout(() => spawnNumber(head, r, i), DELAY_MS + i * STAGGER_MS));
-  try { globalThis.DungeonPathing?.StatusHUD?.pulse?.(list, { delay: DELAY_MS, stagger: STAGGER_MS }); }
-  catch (e) { console.warn(TAG, "HUD pulse failed", e); }
+
+  // The dungeon HUD reports it. A map without that HUD (an older trap tile
+  // running the "Trap Damage" macro on a walk map) gets the Resource Panel.
+  const hud = document.getElementById("oni-dp-status-hud");
+  if (hud?.classList.contains("dp-hud-visible")) {
+    try { globalThis.DungeonPathing?.StatusHUD?.pulse?.(list, { delay: DELAY_MS, stagger: STAGGER_MS }); }
+    catch (e) { console.warn(TAG, "HUD pulse failed", e); }
+  } else if (list.length) {
+    const rows = list.map((r) => ({
+      name: r.name, img: r.face, resource: "hp", before: r.before, after: r.after, max: r.max,
+      tags: [r.immune && "immune", !r.immune && r.resisted && "resist", r.dr > 0 && `dr:${r.dr}`, r.held && "held"].filter(Boolean),
+    }));
+    try { globalThis.FU?.ResourcePanel?.show?.({ rows }); }
+    catch (e) { console.warn(TAG, "Resource Panel failed", e); }
+  }
 }
 
 globalThis.DungeonPathing ??= {};
