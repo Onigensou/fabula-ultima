@@ -12,9 +12,9 @@
 //   silence   speech bubble beside the head with "…" filling in
 //   provoked  throbbing red anger vein at the temple (taunts too)
 //   sleep     three Zs drifting up from the head
-//   armorbreak / magicbreak   a small chip beside the chest on the unit's back
-//             side: a cracked breastplate, orange = DEF (Armor Break), blue =
-//             M.DEF (Magic Break); both held = two chips stacked. Armor, not a
+//   armorbreak / magicbreak   beside the chest on the unit's back side: a cracked
+//             cuirass silhouette + a small down arrow, no tile or frame, orange =
+//             DEF (Armor Break), blue = M.DEF (Magic Break); both held = stacked. Armor, not a
 //             shield: the shield already means Shield points (the NPC label's
 //             heraldic badge) and guard/absorb (damage numbers). 2026-11-10.
 //
@@ -150,22 +150,21 @@ function ensureStyles() {
   text-shadow: 1px 0 0 #34407a, -1px 0 0 #34407a, 0 1px 0 #34407a, 0 -1px 0 #34407a, 0 0 4px rgba(52,64,122,.7); }
 @keyframes fuCueZ { 0% { opacity: 0; transform: translate(0,0) rotate(-8deg) scale(.6); } 20% { opacity: 1; }
   100% { opacity: 0; transform: translate(calc(26px * var(--k)), calc(-38px * var(--k))) rotate(10deg) scale(1.15); } }
-/* armor break / magic break: cracked-breastplate chip beside the chest */
-.fu-cue .brk { width: var(--c); height: var(--c); margin: calc(var(--c) * -.5) 0 0 calc(var(--c) * -.5); border-radius: calc(var(--c) * .22);
-  background: linear-gradient(#2b2520, #15110e); border: max(1.5px, calc(var(--c) * .07)) solid var(--hue);
-  box-shadow: 0 0 calc(var(--c) * .28) var(--glow), 0 1px 2px rgba(0,0,0,.6); animation: fuCueBrkIn .45s cubic-bezier(.3,1.6,.5,1) both, fuCueBrkGlow 2.4s ease-in-out .45s infinite; }
-.fu-cue .brk svg { left: 8%; top: 8%; width: 84%; height: 84%; overflow: visible; }
-.fu-cue .brk .plate { stroke: rgba(0,0,0,.55); stroke-width: .9; stroke-linejoin: round; }
-.fu-cue .brk .ridge { fill: none; stroke: rgba(255,255,255,.35); stroke-width: .8; stroke-linecap: round; }
-.fu-cue .brk .crack { fill: none; stroke: #120b07; stroke-width: 1.7; stroke-linejoin: round; stroke-linecap: round;
-  stroke-dasharray: 20; stroke-dashoffset: 20; animation: fuCueBrkCrack .35s ease-out .2s forwards; }
-.fu-cue .brk .crackhi { fill: none; stroke: rgba(255,255,255,.75); stroke-width: .6; stroke-linejoin: round; stroke-linecap: round; transform: translate(.7px, .2px);
-  stroke-dasharray: 20; stroke-dashoffset: 20; animation: fuCueBrkCrack .35s ease-out .2s forwards; }
-.fu-cue .brk.def { --hue: #ff9a3c; --glow: rgba(255,140,40,.55); }
-.fu-cue .brk.mdef { --hue: #5fb4ff; --glow: rgba(70,150,255,.55); }
+/* armor break / magic break: a floating cuirass silhouette with a crack cut through it and
+   a small down arrow beside it (a status visual on the body, not an icon tile) */
+.fu-cue .brk { width: calc(var(--c) * 1.34); height: var(--c); margin: calc(var(--c) * -.5) 0 0 calc(var(--c) * -.67);
+  filter: drop-shadow(0 0 1px rgba(0,0,0,.95)) drop-shadow(0 0 1px rgba(0,0,0,.8)) drop-shadow(0 0 calc(var(--c) * .14) var(--glow));
+  animation: fuCueBrkIn .45s cubic-bezier(.3,1.6,.5,1) both, fuCueBrkGlow 2.4s ease-in-out .45s infinite; }
+.fu-cue .brk svg { left: 0; top: 0; width: 100%; height: 100%; overflow: visible; }
+.fu-cue .brk .crack { fill: none; stroke: #140c06; stroke-width: 2.3; stroke-linejoin: round; stroke-linecap: round;
+  stroke-dasharray: 22; stroke-dashoffset: 22; animation: fuCueBrkCrack .35s ease-out .2s forwards; }
+.fu-cue .brk .arrow { animation: fuCueBrkArrow 1.2s ease-in-out .45s infinite; }
+.fu-cue .brk.def { --glow: rgba(255,140,40,.75); }
+.fu-cue .brk.mdef { --glow: rgba(70,150,255,.75); }
 @keyframes fuCueBrkIn { 0% { transform: scale(.4); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-@keyframes fuCueBrkGlow { 50% { box-shadow: 0 0 calc(var(--c) * .5) var(--glow), 0 1px 2px rgba(0,0,0,.6); } }
+@keyframes fuCueBrkGlow { 50% { filter: drop-shadow(0 0 1px rgba(0,0,0,.95)) drop-shadow(0 0 1px rgba(0,0,0,.8)) drop-shadow(0 0 calc(var(--c) * .3) var(--glow)); } }
 @keyframes fuCueBrkCrack { to { stroke-dashoffset: 0; } }
+@keyframes fuCueBrkArrow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(1.6px); } }
 /* clip cues (an effect's own looping clip, e.g. Asura's blade slashes) */
 .fu-cue video.clip { position: absolute; display: block; pointer-events: none; object-fit: contain; }
 @media (prefers-reduced-motion: reduce) { .fu-cue * { animation-play-state: paused !important; } }
@@ -261,24 +260,20 @@ function headFrac(token) {
   return { x, y };
 }
 
-// Cracked cuirass (24×24): two rounded pauldrons with rivets, the chest plate with a
-// gorget line and a chest curve, two belly lames, and a jagged crack down the chest.
-// Orange plate for DEF, blue for M.DEF.
-const BRK_GRAD = { armorbreak: ["#ffe0a8", "#ff9a3c", "#b84c14"], magicbreak: ["#dcefff", "#5fb4ff", "#2452b8"] };
-const BRK_CRACK = "14.8,5.4 12.7,8.9 14.3,10.5 11.5,13.2 12.7,14.8 11,18.4";
+// Cracked cuirass SILHOUETTE (viewBox 32×24): one solid shape — pauldrons + chest plate —
+// with a jagged crack cut through it, and a small down arrow to its right.
+// Orange = DEF (Armor Break), blue = M.DEF (Magic Break).
+const BRK_GRAD = { armorbreak: ["#ffd79a", "#ff9a3c", "#d0601c"], magicbreak: ["#d6ecff", "#5fb4ff", "#2c62cc"] };
+const BRK_BODY = "M1.6 9.8 Q1.2 4.6 7 3.8 Q12 7.2 17 3.8 Q22.8 4.6 22.4 9.8 Q20 8.9 18 9.3 Q18.4 13.2 17.3 15.4 L16.3 20.6 Q12 22.2 7.7 20.6 L6.7 15.4 Q5.6 13.2 6 9.3 Q4 8.9 1.6 9.8 Z";
+const BRK_CRACK = "14.6,5.6 12.4,9.4 14.2,11.2 11.2,14.2 12.6,16 10.8,20.4";
+const BRK_ARROW = "M26 11.5 L29 11.5 L29 16 L31.4 16 L27.5 21.2 L23.6 16 L26 16 Z";
 function brkSVG(cue) {
   const [a, b, c] = BRK_GRAD[cue];
-  const f = `fill="url(#fuBrk-${cue})"`;
-  return `<svg viewBox="0 0 24 24"><defs><linearGradient id="fuBrk-${cue}" x1="0" y1="0" x2="0" y2="1">`
+  return `<svg viewBox="0 0 32 24"><defs><linearGradient id="fuBrk-${cue}" x1="0" y1="0" x2="0" y2="1">`
     + `<stop offset="0" stop-color="${a}"/><stop offset=".5" stop-color="${b}"/><stop offset="1" stop-color="${c}"/></linearGradient></defs>`
-    + `<path class="plate" ${f} d="M7.4 4.4 Q12 7.4 16.6 4.4 L17.9 9.4 Q18.2 12.8 17.2 15.1 L6.8 15.1 Q5.8 12.8 6.1 9.4 Z"/>`
-    + `<path class="plate" ${f} d="M1.9 9.6 Q1.6 5 6.9 4.1 L8.3 8.6 Q4.6 8.4 1.9 9.6 Z"/>`
-    + `<path class="plate" ${f} d="M22.1 9.6 Q22.4 5 17.1 4.1 L15.7 8.6 Q19.4 8.4 22.1 9.6 Z"/>`
-    + `<path class="plate" ${f} d="M7 15.7 L17 15.7 L16.4 17.8 L7.6 17.8 Z"/>`
-    + `<path class="plate" ${f} d="M7.8 18.4 L16.2 18.4 L15.4 20.6 Q12 21.7 8.6 20.6 Z"/>`
-    + `<path class="ridge" d="M9 3.5 Q12 5.6 15 3.5 M8.4 9.2 Q12 11.6 15.6 9.2"/>`
-    + `<circle cx="4.6" cy="6.4" r=".75" fill="rgba(255,255,255,.7)"/><circle cx="19.4" cy="6.4" r=".75" fill="rgba(255,255,255,.7)"/>`
-    + `<polyline class="crack" points="${BRK_CRACK}"/><polyline class="crackhi" points="${BRK_CRACK}"/></svg>`;
+    + `<path fill="url(#fuBrk-${cue})" d="${BRK_BODY}"/>`
+    + `<polyline class="crack" points="${BRK_CRACK}"/>`
+    + `<path class="arrow" fill="url(#fuBrk-${cue})" d="${BRK_ARROW}"/></svg>`;
 }
 
 function cueHTML(token, cues, w, H) {
@@ -338,10 +333,10 @@ function cueHTML(token, cues, w, H) {
     // Beside the chest on the unit's BACK side (the side away from where it faces), so it
     // stays clear of the head cues, the waist passive card and the feet status strip.
     const flip = (token.mesh?.scale?.x ?? 1) < 0;          // drawn facing right unless flipped
-    const c = Math.max(18, 24 * k);
+    const c = Math.max(26, 36 * k);
     const x = w * (flip ? 0.86 : 0.14);
     brk.forEach((cue, i) => {
-      h += `<span class="brk ${cue === "armorbreak" ? "def" : "mdef"}" style="--c:${px(c)};left:${px(x)};top:${px(H * 0.4 + i * (c + 4))}">${brkSVG(cue)}</span>`;
+      h += `<span class="brk ${cue === "armorbreak" ? "def" : "mdef"}" style="--c:${px(c)};left:${px(x)};top:${px(H * 0.4 + i * (c + 3))}">${brkSVG(cue)}</span>`;
     });
   }
   if (cues.has("sleep")) {

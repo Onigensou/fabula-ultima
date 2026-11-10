@@ -1,4 +1,4 @@
-// Armor Break / Magic Break token cue (status-cues.js): a cracked-cuirass chip beside the
+// Armor Break / Magic Break token cue (status-cues.js): a cracked-cuirass silhouette + down arrow beside the
 // chest, orange = DEF, blue = M.DEF, stacked when both are held, gone when removed.
 // Runner only: fakes "a battle is running" through the scene's directorState flag
 // (battle-focus.js battleHere), creates a token and toggles the statuses.
