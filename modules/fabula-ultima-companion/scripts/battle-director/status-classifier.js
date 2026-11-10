@@ -53,6 +53,7 @@ const ALIASES = {
 export const STATUS_CUES = Object.freeze({
   burn: "burn", blind: "blind", envenomed: "poison", wet: "wet",
   paralyzed: "paralyze", silence: "silence", provoked: "provoked", sleep: "sleep",
+  "armor break": "armorbreak", "magic break": "magicbreak",
 });
 
 // `dispellable` = a spell's buff (Elemental Weapon, Mirror…); dances are buffs.

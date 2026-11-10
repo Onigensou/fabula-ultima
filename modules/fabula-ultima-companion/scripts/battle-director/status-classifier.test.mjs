@@ -75,6 +75,9 @@ t("cues: only the registered statuses draw on the token", () => {
   assert.equal(cueOf(fx({ name: "Provoked (Thread the Horns)" }), CFG), "provoked");
   assert.equal(cueOf(fx({ name: "Berserk" }), CFG), null);
   assert.equal(cueOf(fx({ name: "Slow" }), CFG), null);
+  assert.equal(cueOf(fx({ name: "Armor Break" }), CFG), "armorbreak");
+  assert.equal(cueOf(fx({ name: "Magic Break" }), CFG), "magicbreak");
+  assert.equal(cueOf(fx({ name: "Break" }), CFG), null);
 });
 
 t("baseSlug strips the parenthesised source and maps aliases", () => {

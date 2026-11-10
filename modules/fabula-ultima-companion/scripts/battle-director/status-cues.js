@@ -12,6 +12,11 @@
 //   silence   speech bubble beside the head with "…" filling in
 //   provoked  throbbing red anger vein at the temple (taunts too)
 //   sleep     three Zs drifting up from the head
+//   armorbreak / magicbreak   a small chip beside the chest on the unit's back
+//             side: a cracked breastplate, orange = DEF (Armor Break), blue =
+//             M.DEF (Magic Break); both held = two chips stacked. Armor, not a
+//             shield: the shield already means Shield points (the NPC label's
+//             heraldic badge) and guard/absorb (damage numbers). 2026-11-10.
 //
 // Everything else draws nothing: the HUD pips, the unit label and the pop text
 // carry it (see the fallback rules on the mockup page).
@@ -145,6 +150,22 @@ function ensureStyles() {
   text-shadow: 1px 0 0 #34407a, -1px 0 0 #34407a, 0 1px 0 #34407a, 0 -1px 0 #34407a, 0 0 4px rgba(52,64,122,.7); }
 @keyframes fuCueZ { 0% { opacity: 0; transform: translate(0,0) rotate(-8deg) scale(.6); } 20% { opacity: 1; }
   100% { opacity: 0; transform: translate(calc(26px * var(--k)), calc(-38px * var(--k))) rotate(10deg) scale(1.15); } }
+/* armor break / magic break: cracked-breastplate chip beside the chest */
+.fu-cue .brk { width: var(--c); height: var(--c); margin: calc(var(--c) * -.5) 0 0 calc(var(--c) * -.5); border-radius: calc(var(--c) * .22);
+  background: linear-gradient(#2b2520, #15110e); border: max(1.5px, calc(var(--c) * .07)) solid var(--hue);
+  box-shadow: 0 0 calc(var(--c) * .28) var(--glow), 0 1px 2px rgba(0,0,0,.6); animation: fuCueBrkIn .45s cubic-bezier(.3,1.6,.5,1) both, fuCueBrkGlow 2.4s ease-in-out .45s infinite; }
+.fu-cue .brk svg { left: 8%; top: 8%; width: 84%; height: 84%; overflow: visible; }
+.fu-cue .brk .plate { stroke: rgba(0,0,0,.55); stroke-width: .9; stroke-linejoin: round; }
+.fu-cue .brk .ridge { fill: none; stroke: rgba(255,255,255,.35); stroke-width: .8; stroke-linecap: round; }
+.fu-cue .brk .crack { fill: none; stroke: #120b07; stroke-width: 1.7; stroke-linejoin: round; stroke-linecap: round;
+  stroke-dasharray: 20; stroke-dashoffset: 20; animation: fuCueBrkCrack .35s ease-out .2s forwards; }
+.fu-cue .brk .crackhi { fill: none; stroke: rgba(255,255,255,.75); stroke-width: .6; stroke-linejoin: round; stroke-linecap: round; transform: translate(.7px, .2px);
+  stroke-dasharray: 20; stroke-dashoffset: 20; animation: fuCueBrkCrack .35s ease-out .2s forwards; }
+.fu-cue .brk.def { --hue: #ff9a3c; --glow: rgba(255,140,40,.55); }
+.fu-cue .brk.mdef { --hue: #5fb4ff; --glow: rgba(70,150,255,.55); }
+@keyframes fuCueBrkIn { 0% { transform: scale(.4); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes fuCueBrkGlow { 50% { box-shadow: 0 0 calc(var(--c) * .5) var(--glow), 0 1px 2px rgba(0,0,0,.6); } }
+@keyframes fuCueBrkCrack { to { stroke-dashoffset: 0; } }
 /* clip cues (an effect's own looping clip, e.g. Asura's blade slashes) */
 .fu-cue video.clip { position: absolute; display: block; pointer-events: none; object-fit: contain; }
 @media (prefers-reduced-motion: reduce) { .fu-cue * { animation-play-state: paused !important; } }
@@ -240,6 +261,26 @@ function headFrac(token) {
   return { x, y };
 }
 
+// Cracked cuirass (24×24): two rounded pauldrons with rivets, the chest plate with a
+// gorget line and a chest curve, two belly lames, and a jagged crack down the chest.
+// Orange plate for DEF, blue for M.DEF.
+const BRK_GRAD = { armorbreak: ["#ffe0a8", "#ff9a3c", "#b84c14"], magicbreak: ["#dcefff", "#5fb4ff", "#2452b8"] };
+const BRK_CRACK = "14.8,5.4 12.7,8.9 14.3,10.5 11.5,13.2 12.7,14.8 11,18.4";
+function brkSVG(cue) {
+  const [a, b, c] = BRK_GRAD[cue];
+  const f = `fill="url(#fuBrk-${cue})"`;
+  return `<svg viewBox="0 0 24 24"><defs><linearGradient id="fuBrk-${cue}" x1="0" y1="0" x2="0" y2="1">`
+    + `<stop offset="0" stop-color="${a}"/><stop offset=".5" stop-color="${b}"/><stop offset="1" stop-color="${c}"/></linearGradient></defs>`
+    + `<path class="plate" ${f} d="M7.4 4.4 Q12 7.4 16.6 4.4 L17.9 9.4 Q18.2 12.8 17.2 15.1 L6.8 15.1 Q5.8 12.8 6.1 9.4 Z"/>`
+    + `<path class="plate" ${f} d="M1.9 9.6 Q1.6 5 6.9 4.1 L8.3 8.6 Q4.6 8.4 1.9 9.6 Z"/>`
+    + `<path class="plate" ${f} d="M22.1 9.6 Q22.4 5 17.1 4.1 L15.7 8.6 Q19.4 8.4 22.1 9.6 Z"/>`
+    + `<path class="plate" ${f} d="M7 15.7 L17 15.7 L16.4 17.8 L7.6 17.8 Z"/>`
+    + `<path class="plate" ${f} d="M7.8 18.4 L16.2 18.4 L15.4 20.6 Q12 21.7 8.6 20.6 Z"/>`
+    + `<path class="ridge" d="M9 3.5 Q12 5.6 15 3.5 M8.4 9.2 Q12 11.6 15.6 9.2"/>`
+    + `<circle cx="4.6" cy="6.4" r=".75" fill="rgba(255,255,255,.7)"/><circle cx="19.4" cy="6.4" r=".75" fill="rgba(255,255,255,.7)"/>`
+    + `<polyline class="crack" points="${BRK_CRACK}"/><polyline class="crackhi" points="${BRK_CRACK}"/></svg>`;
+}
+
 function cueHTML(token, cues, w, H) {
   const k = H / REF_H;
   const id = token.id;
@@ -291,6 +332,17 @@ function cueHTML(token, cues, w, H) {
   if (cues.has("silence")) h += `<span class="sil" style="left:${px(hx + 12 * k)};top:${px(hy - 50 * k)}"><i></i><i></i><i></i></span>`;
   if (cues.has("provoked")) {
     h += `<svg class="vein" viewBox="0 0 24 24" style="left:${px(hx - w * 0.18)};top:${px(hy - 16 * k)}"><path d="M9 3 Q9 9 3 9"/><path d="M15 3 Q15 9 21 9"/><path d="M9 21 Q9 15 3 15"/><path d="M15 21 Q15 15 21 15"/></svg>`;
+  }
+  const brk = ["armorbreak", "magicbreak"].filter((c) => cues.has(c));
+  if (brk.length) {
+    // Beside the chest on the unit's BACK side (the side away from where it faces), so it
+    // stays clear of the head cues, the waist passive card and the feet status strip.
+    const flip = (token.mesh?.scale?.x ?? 1) < 0;          // drawn facing right unless flipped
+    const c = Math.max(18, 24 * k);
+    const x = w * (flip ? 0.86 : 0.14);
+    brk.forEach((cue, i) => {
+      h += `<span class="brk ${cue === "armorbreak" ? "def" : "mdef"}" style="--c:${px(c)};left:${px(x)};top:${px(H * 0.4 + i * (c + 4))}">${brkSVG(cue)}</span>`;
+    });
   }
   if (cues.has("sleep")) {
     h += `<span class="zz" style="left:${px(hx + 8 * k)};top:${px(hy - 22 * k)}">`
