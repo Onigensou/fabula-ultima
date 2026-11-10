@@ -25,6 +25,7 @@
     "container": null,
     "props": {
       "action_command": "spell",
+      "action_keywords": "crush",
       "active_effect_config_table": {},
       "check_bonus": "99",
       "class": "Pyromancer",
