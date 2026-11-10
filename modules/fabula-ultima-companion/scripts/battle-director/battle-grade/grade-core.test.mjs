@@ -49,6 +49,28 @@ check("clean fight: precision full", S.gauges.precision === 15);
 check("clean fight: grade S", S.letter === "S", { score: S.score, g: S.gauges });
 check("clean fight: board +", S.boardDelta >= 1, { d: S.boardDelta, stars: S.stars });
 
+// ── One-turn wipe: Teamwork counts full when not everyone got a turn ────────
+function openerWipe(allAct) {
+  const R = roster(...party4, ...three);
+  const events = [act("zarg", 0)];
+  if (allAct) for (const p of ["keren", "blanche", "hina"]) events.push(act(p, 1));
+  events.push(dmg("zarg", "e1", 120), dmg("zarg", "e2", 120), dmg("zarg", "e3", 120));
+  return C.computeGrade({ roster: R, events, rows: [row("Zarg", "Vulnerable"), row("Zarg", "Vulnerable"), row("Zarg", "Vulnerable")], rounds: 0 });
+}
+check("opener wipe (others never acted): Teamwork full", openerWipe(false).gauges.teamwork === C.G.MAX.teamwork, openerWipe(false).gauges);
+check("opener wipe: S", openerWipe(false).letter === "S", openerWipe(false).score);
+check("everyone acted, no support: Teamwork earned (0)", openerWipe(true).gauges.teamwork === 0);
+check("a long fight where someone never acted does NOT get it", (() => {
+  const R = roster(...party4, ...three);
+  const ev = ["keren", "blanche", "zarg"].map((p) => act(p, 2));
+  return C.computeGrade({ roster: R, events: ev, rows: [], rounds: 3 }).gauges.teamwork === 0;
+})());
+check("guests not acting don't trigger it", (() => {
+  const R = roster(...party4, PC("kalina", { recipient: false }), ...three);
+  const ev = ["keren", "blanche", "zarg", "hina"].map((p) => act(p));
+  return C.computeGrade({ roster: R, events: ev, rows: [], rounds: 1 }).gauges.teamwork === 0;
+})());
+
 // ── KO blocks S, trivial caps at B ──────────────────────────────────────────
 check("letter: 95 with a KO = A", C.letterOf(95, { kos: 1, threat: "even" }) === "A");
 check("letter: 95 trivial = B", C.letterOf(95, { kos: 0, threat: "trivial" }) === "B");

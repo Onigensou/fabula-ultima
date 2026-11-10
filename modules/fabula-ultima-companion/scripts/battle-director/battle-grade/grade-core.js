@@ -177,7 +177,7 @@ const sumOf = (stats, f) => Object.values(stats).reduce((s, x) => s + num(f(x)),
 
 // ── Gauges + rank ───────────────────────────────────────────────────────────
 
-export function computeGauges({ stats, rounds, par, partyMaxHp, expectedHits }) {
+export function computeGauges({ stats, rounds, par, partyMaxHp, expectedHits, actedKeys = null }) {
   const M = G.MAX;
   const R = Math.max(1, num(rounds, 1));
   const tempo = R <= par ? M.tempo : M.tempo * Math.pow(G.TEMPO_DECAY, R - par);
@@ -200,7 +200,19 @@ export function computeGauges({ stats, rounds, par, partyMaxHp, expectedHits }) 
     + bonus, 0, M.guard);
 
   const T = G.TEAM;
-  const teamwork = clamp(sumOf(stats, (s) => T.buff * s.buffsGiven + T.mp * s.mpGiven + T.item * s.itemsOnAllies + T.cover * s.covers), 0, M.teamwork);
+  // A fight won before every party member got a turn left no time to support
+  // anyone (Zarg's High Speed opener, a one-turn wipe): Teamwork counts full
+  // rather than holding a flawless fight at A (user, 2026-11-11). Farming is
+  // still shut by the Trivial cap and the S gates. `actedKeys` = the reward
+  // recipients (guests and summons don't count).
+  // Only a fight over within round 1 qualifies: a long fight where someone was
+  // knocked out before their turn is not "no time to support" (sandbox: a
+  // 3-round, 3-KO Ampere fight read Teamwork full without this).
+  const endedEarly = num(rounds, 1) <= 1;
+  const allActed = !endedEarly || !actedKeys?.length || actedKeys.every((k) => (stats[k]?.actions ?? 0) > 0);
+  const teamwork = allActed
+    ? clamp(sumOf(stats, (s) => T.buff * s.buffsGiven + T.mp * s.mpGiven + T.item * s.itemsOnAllies + T.cover * s.covers), 0, M.teamwork)
+    : M.teamwork;
 
   const round1 = (x) => Math.round(x * 10) / 10;
   return { tempo: round1(tempo), exploit: round1(exploit), precision: round1(precision), guard: round1(guard), teamwork: round1(teamwork) };
@@ -372,7 +384,8 @@ export function computeGrade({ roster, events, rows, rounds }) {
   const expectedHits = Math.max(1, enemyActsPerRound * par);
 
   const { stats, lastKill } = aggregate({ roster, events, rows });
-  const gauges = computeGauges({ stats, rounds, par, partyMaxHp, expectedHits });
+  const actedKeys = recipients.map((c) => c.key).filter((k) => stats[k]);
+  const gauges = computeGauges({ stats, rounds, par, partyMaxHp, expectedHits, actedKeys });
   const m = marks(gauges);
   const kos = sumOf(stats, (s) => s.kos);
   const raw = GAUGE_KEYS.reduce((s, k) => s + gauges[k], 0);
