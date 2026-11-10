@@ -110,12 +110,26 @@ const CU = {
 // were dead — two Forge GIFs (a .gif never binds as a PIXI texture at all) and
 // a core icon whose real filename differs. A Form Shift whose icon 404s still
 // runs, but the announcement loses half its point.
-const ICON_W = {
-  sword:   "icons/weapons/swords/greatsword-guard-gold-worn.webp",
-  bow:     "icons/weapons/bows/shortbow-recurve.webp",
-  chakram: "icons/weapons/thrown/shuriken-blue.webp",
-  mace:    "icons/weapons/maces/mace-round-spiked-black.webp",
+//
+// 2026-11-10: the Foundry core icons above the head were replaced by real item
+// art (FF Brave Exvius icons already on the Forge, byte-identical to the local
+// library copies) in the user-approved "Spin in" mockup
+// (https://claude.ai/artifact/DxK4hxKR9CuB8weRHTW3Ey, v3 defaults). `base` is the
+// angle the art is drawn at (these icons are already diagonal = 45); `h` is the
+// weapon's height as a fraction of the caster's mesh height. The Morning Star
+// path is DOUBLE-encoded (%2528 = "(") — that is how the file is named on the
+// Forge, same as the world's other FFBE refs (%2527 for an apostrophe).
+const FFBE_W = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/";
+const RAK_WEAPONS = {
+  sword:   { img: FFBE_W + "Sword/Icon-Falchion.webp",                  base: 45, h: 0.57 },
+  bow:     { img: FFBE_W + "Bow/Icon-Dark_Gandiva.webp",                base: 45, h: 0.57 },
+  chakram: { img: FFBE_W + "Throw/Icon-Chakram.webp",                   base: 45, h: 0.46, round: true },
+  mace:    { img: FFBE_W + "Mace/Icon-Morning_Star_%2528Item%2529.webp", base: 45, h: 0.58 },
 };
+// Stance colours = the stance pose auras already in game (rak-stance.js TINT).
+const RAK_TINT = { sword: 0x8cc8ff, bow: 0x6eeb78, chakram: 0x46e1ff, mace: 0xffaf3c,
+                   swordBow: 0xa0e6be, flailChakram: 0xb4d28c, verdict: 0xff463c };
+const RAK_SPARK = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Disgaea%205/VFX/03340_00.png";
 
 const SFX = {
   windWalk: SND + "WindWalk.wav",
@@ -666,24 +680,27 @@ const REGISTRY = {
           // Keyed by the stance AE Form Shift just applied — the animation
           // reads the result rather than re-rolling the pool.
           forms: {
-            "Sword Stance":    { label: "Sword",    icon: ICON_W.sword },
-            "Bow Stance":      { label: "Bow",      icon: ICON_W.bow },
-            "Throwing Stance": { label: "Chakram",  icon: ICON_W.chakram },
-            "Flail Stance":    { label: "Mace",     icon: ICON_W.mace },
+            "Sword Stance":    { label: "Sword",    weapons: ["sword"],   tint: RAK_TINT.sword },
+            "Bow Stance":      { label: "Bow",      weapons: ["bow"],     tint: RAK_TINT.bow },
+            "Throwing Stance": { label: "Chakram",  weapons: ["chakram"], tint: RAK_TINT.chakram },
+            "Flail Stance":    { label: "Mace",     weapons: ["mace"],    tint: RAK_TINT.mace },
           },
+          weapons: RAK_WEAPONS, sparkImg: RAK_SPARK,
           sfx: "Cursor2", sfxVol: 0.5,
         },
       }),
-      // The Crisis shift announces a PAIR, so the medallion takes two icons.
+      // The Crisis shift announces a PAIR: both weapons spin in, leaning apart.
+      // Sword and Flail is the Severing Verdict telegraph — red, with a shake.
       "Form Shift (Dual)": () => RK.formShift({
         key: "rakshasa-form-shift-dual", name: "Form Shift (Dual)",
         cfg: {
           verb: "arms",
           forms: {
-            "Sword and Bow Stance":      { label: "Sword and Bow",      icon: [ICON_W.sword, ICON_W.bow] },
-            "Flail and Throwing Stance": { label: "Flail and Chakram",  icon: [ICON_W.mace, ICON_W.chakram] },
-            "Sword and Flail Stance":    { label: "Sword and Flail",    icon: [ICON_W.sword, ICON_W.mace] },
+            "Sword and Bow Stance":      { label: "Sword and Bow",      weapons: ["sword", "bow"],     tint: RAK_TINT.swordBow },
+            "Flail and Throwing Stance": { label: "Flail and Chakram",  weapons: ["mace", "chakram"],  tint: RAK_TINT.flailChakram },
+            "Sword and Flail Stance":    { label: "Sword and Flail",    weapons: ["sword", "mace"],    tint: RAK_TINT.verdict, verdict: true },
           },
+          weapons: RAK_WEAPONS, sparkImg: RAK_SPARK,
           sfx: "Cursor2", sfxVol: 0.55,
         },
       }),
