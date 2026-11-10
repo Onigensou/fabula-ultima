@@ -6,15 +6,15 @@ severity: info
 reporter: onigensou
 assignee: sarunphat
 component: battle-director (battle-end orchestrator/rank/summary, director-battle-log, director-boot, skill-effects grantApply payload, new battle-grade/*), scripts/battle-end summary UI listener
-introduced_in: (in progress, branch feat/battle-grade-v2)
+introduced_in: v1.0.586
 fixed_in:
 ---
 
-# Battle Grade v2: what is changing in code you also work in
+# Battle Grade v2: what changed in code you also work in
 
-Written for sarunphat and the Claude session that runs the pull. This is a heads-up before the build;
-nothing here needs action unless you object to a shared-file change below. It will be updated with the
-final file list when the branch is pushed.
+Written for sarunphat and the Claude session that runs the pull. Nothing here needs action unless you
+object to a shared-file change in section 2. Sections 1–4 were written before the build; section 5 is
+what shipped.
 
 ## 1. What it does
 
@@ -70,3 +70,31 @@ New files: `battle-director/battle-grade/` (pure grade math + tests, the per-bat
 - Most heals write no battle-log row; only AB-absorb and Drain do. Total Healing on the Victory screen has
   therefore under-counted spells like Heal/Cure. v2's tally counts them.
 - A rewind does not trim `battleLogPending`, so undone actions stay in the battle log.
+
+## 5. As shipped (v1.0.586)
+
+**Numbers that changed during the build** (all constants in `battle-grade/grade-core.js` `G`):
+- Guard: -10 per ally KO; up to -6 as enemy hits land, measured as a share of the hits expected for the
+  fight (enemy activations x Par), not a flat -1 per hit (that made S impossible); up to -9 for damage
+  taken vs party max HP; up to +4 back from Guard/Cover and heals on allies in Crisis.
+- Only Tempo, Precision and Guard can get a cross (under 50%). Exploit and Teamwork only earn stars.
+- Hard/Boss bonus +3 (was +5 in the plan): calibrated on real sandbox fights.
+- Teamwork counts full when a fight ends within round 1 before every party member acted (a one-turn
+  wipe has no time for support). Guests / summons don't count.
+- MVP support-lane weight = support share of actions, capped 0.6.
+- Effects applied before the first action (conflict-start passives) are not counted.
+
+**Also shipped:**
+- `battleEnd-summaryUI-listener.js`: while the Victory screen plays, `body.oni-sum-focus` hides
+  #hotbar / #players / #controls / #logo / #navigation / dev tools. BATTLE_ENDING destroys the GM desk
+  (and Battle Focus) before the summary runs, so they came back under the screen. On a window shorter
+  than ~1000 px the overlay scales down so the board strip stays in view (1080p unchanged).
+- Console: `FUCompanion.api.battleGrade` = `{ readTally, clearTally, readBoard, boardExpMultiplier, last }`.
+  `last` holds the last battle's roster, events, rows and grade ("why did we get B?").
+
+**Verification:** 50 node tests (`node scripts/battle-director/battle-grade/grade-core.test.mjs`).
+16 real Battle Director fights in a private sandbox with the full battle end (sim party, prompt
+auto-confirmed): grades, board moves, all four prize types, titles, the Victory screen (watched on GPU).
+Checked: a new Ledger session resets the board; fleeing clears it with no rank; F5 mid-battle keeps the
+tally. Not yet seen live: a rewind trimming the tally, a player client's view, two GMs (the prize is
+paid on the BD host; FP goes through the Ledger's own primary-GM forward).
