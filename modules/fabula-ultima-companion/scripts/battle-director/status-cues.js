@@ -12,11 +12,11 @@
 //   silence   speech bubble beside the head with "…" filling in
 //   provoked  throbbing red anger vein at the temple (taunts too)
 //   sleep     three Zs drifting up from the head
-//   armorbreak / magicbreak   beside the chest on the unit's back side: a cracked
-//             cuirass silhouette + a small down arrow, no tile or frame, orange =
-//             DEF (Armor Break), blue = M.DEF (Magic Break); both held = stacked. Armor, not a
-//             shield: the shield already means Shield points (the NPC label's
-//             heraldic badge) and guard/absorb (damage numbers). 2026-11-10.
+//   armorbreak / magicbreak   beside the chest on the unit's back side, just outside the
+//             frame: the word DEF / MDEF + a small bobbing down arrow, no tile or frame,
+//             orange = DEF (Armor Break), blue = M.DEF (Magic Break); both held = stacked.
+//             Font = the damage-number tag face. Replaced a cracked-cuirass silhouette
+//             (user pick, 2026-11-10): the word reads without learning an icon.
 //
 // Everything else draws nothing: the HUD pips, the unit label and the pop text
 // carry it (see the fallback rules on the mockup page).
@@ -150,21 +150,24 @@ function ensureStyles() {
   text-shadow: 1px 0 0 #34407a, -1px 0 0 #34407a, 0 1px 0 #34407a, 0 -1px 0 #34407a, 0 0 4px rgba(52,64,122,.7); }
 @keyframes fuCueZ { 0% { opacity: 0; transform: translate(0,0) rotate(-8deg) scale(.6); } 20% { opacity: 1; }
   100% { opacity: 0; transform: translate(calc(26px * var(--k)), calc(-38px * var(--k))) rotate(10deg) scale(1.15); } }
-/* armor break / magic break: a floating cuirass silhouette with a crack cut through it and
-   a small down arrow beside it (a status visual on the body, not an icon tile) */
-.fu-cue .brk { width: calc(var(--c) * 1.34); height: var(--c); margin: calc(var(--c) * -.5) 0 0 calc(var(--c) * -.67);
-  filter: drop-shadow(0 0 1px rgba(0,0,0,.95)) drop-shadow(0 0 1px rgba(0,0,0,.8)) drop-shadow(0 0 calc(var(--c) * .14) var(--glow));
-  animation: fuCueBrkIn .45s cubic-bezier(.3,1.6,.5,1) both, fuCueBrkGlow 2.4s ease-in-out .45s infinite; }
-.fu-cue .brk svg { left: 0; top: 0; width: 100%; height: 100%; overflow: visible; }
-.fu-cue .brk .crack { fill: none; stroke: #140c06; stroke-width: 2.3; stroke-linejoin: round; stroke-linecap: round;
-  stroke-dasharray: 22; stroke-dashoffset: 22; animation: fuCueBrkCrack .35s ease-out .2s forwards; }
-.fu-cue .brk .arrow { animation: fuCueBrkArrow 1.2s ease-in-out .45s infinite; }
-.fu-cue .brk.def { --glow: rgba(255,140,40,.75); }
-.fu-cue .brk.mdef { --glow: rgba(70,150,255,.75); }
-@keyframes fuCueBrkIn { 0% { transform: scale(.4); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-@keyframes fuCueBrkGlow { 50% { filter: drop-shadow(0 0 1px rgba(0,0,0,.95)) drop-shadow(0 0 1px rgba(0,0,0,.8)) drop-shadow(0 0 calc(var(--c) * .3) var(--glow)); } }
-@keyframes fuCueBrkCrack { to { stroke-dashoffset: 0; } }
-@keyframes fuCueBrkArrow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(1.6px); } }
+/* armor break / magic break: the word DEF / MDEF + a small down arrow that bobs (a status
+   visual beside the body, not an icon tile). --c = the word's font size. */
+.fu-cue .brk { display: flex; align-items: center; gap: calc(var(--c) * .08); white-space: nowrap;
+  transform: translateY(-50%); animation: fuCueBrkIn .45s cubic-bezier(.3,1.6,.5,1) both; }
+.fu-cue .brk b { position: relative; font: 400 var(--c)/1 'Bebas Neue', 'Oswald', 'Haettenschweiler', 'Impact', sans-serif;
+  letter-spacing: .02em; color: transparent; background: var(--g); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-stroke: calc(var(--c) * .035) rgba(20,10,4,.9); paint-order: stroke fill;
+  filter: drop-shadow(0 0 1px rgba(0,0,0,.9)) drop-shadow(0 0 calc(var(--c) * .14) var(--glow));
+  animation: fuCueBrkGlow 2.4s ease-in-out .45s infinite; }
+.fu-cue .brk i { position: relative; width: calc(var(--c) * .42); height: calc(var(--c) * .6);
+  filter: drop-shadow(0 0 1px rgba(0,0,0,.95)) drop-shadow(0 0 1px rgba(0,0,0,.8));
+  animation: fuCueBrkArrow 1.3s ease-in-out .45s infinite; }
+.fu-cue .brk i svg { position: static; width: 100%; height: 100%; overflow: visible; }
+.fu-cue .brk.def { --g: linear-gradient(#ffe0a8, #ff9a3c 55%, #d0601c); --glow: rgba(255,140,40,.7); }
+.fu-cue .brk.mdef { --g: linear-gradient(#e0f0ff, #5fb4ff 55%, #2c62cc); --glow: rgba(70,150,255,.7); }
+@keyframes fuCueBrkIn { 0% { opacity: 0; transform: translateY(-50%) scale(.5); } 100% { opacity: 1; transform: translateY(-50%) scale(1); } }
+@keyframes fuCueBrkGlow { 50% { filter: drop-shadow(0 0 1px rgba(0,0,0,.9)) drop-shadow(0 0 calc(var(--c) * .28) var(--glow)); } }
+@keyframes fuCueBrkArrow { 0%, 100% { transform: translateY(-6%); } 50% { transform: translateY(14%); } }
 /* clip cues (an effect's own looping clip, e.g. Asura's blade slashes) */
 .fu-cue video.clip { position: absolute; display: block; pointer-events: none; object-fit: contain; }
 @media (prefers-reduced-motion: reduce) { .fu-cue * { animation-play-state: paused !important; } }
@@ -260,20 +263,15 @@ function headFrac(token) {
   return { x, y };
 }
 
-// Cracked cuirass SILHOUETTE (viewBox 32×24): one solid shape — pauldrons + chest plate —
-// with a jagged crack cut through it, and a small down arrow to its right.
+// The word + a chunky down arrow (viewBox 10×13) in the same gradient.
 // Orange = DEF (Armor Break), blue = M.DEF (Magic Break).
-const BRK_GRAD = { armorbreak: ["#ffd79a", "#ff9a3c", "#d0601c"], magicbreak: ["#d6ecff", "#5fb4ff", "#2c62cc"] };
-const BRK_BODY = "M1.6 9.8 Q1.2 4.6 7 3.8 Q12 7.2 17 3.8 Q22.8 4.6 22.4 9.8 Q20 8.9 18 9.3 Q18.4 13.2 17.3 15.4 L16.3 20.6 Q12 22.2 7.7 20.6 L6.7 15.4 Q5.6 13.2 6 9.3 Q4 8.9 1.6 9.8 Z";
-const BRK_CRACK = "14.6,5.6 12.4,9.4 14.2,11.2 11.2,14.2 12.6,16 10.8,20.4";
-const BRK_ARROW = "M26 11.5 L29 11.5 L29 16 L31.4 16 L27.5 21.2 L23.6 16 L26 16 Z";
-function brkSVG(cue) {
+const BRK_GRAD = { armorbreak: ["#ffe0a8", "#ff9a3c", "#d0601c"], magicbreak: ["#e0f0ff", "#5fb4ff", "#2c62cc"] };
+const BRK_WORD = { armorbreak: "DEF", magicbreak: "MDEF" };
+function brkHTML(cue) {
   const [a, b, c] = BRK_GRAD[cue];
-  return `<svg viewBox="0 0 32 24"><defs><linearGradient id="fuBrk-${cue}" x1="0" y1="0" x2="0" y2="1">`
-    + `<stop offset="0" stop-color="${a}"/><stop offset=".5" stop-color="${b}"/><stop offset="1" stop-color="${c}"/></linearGradient></defs>`
-    + `<path fill="url(#fuBrk-${cue})" d="${BRK_BODY}"/>`
-    + `<polyline class="crack" points="${BRK_CRACK}"/>`
-    + `<path class="arrow" fill="url(#fuBrk-${cue})" d="${BRK_ARROW}"/></svg>`;
+  return `<b>${BRK_WORD[cue]}</b><i><svg viewBox="0 0 10 13"><defs><linearGradient id="fuBrk-${cue}" x1="0" y1="0" x2="0" y2="1">`
+    + `<stop offset="0" stop-color="${a}"/><stop offset=".55" stop-color="${b}"/><stop offset="1" stop-color="${c}"/></linearGradient></defs>`
+    + `<path fill="url(#fuBrk-${cue})" d="M3 0 H7 V6 H10 L5 13 L0 6 H3 Z"/></svg></i>`;
 }
 
 function cueHTML(token, cues, w, H) {
@@ -333,13 +331,14 @@ function cueHTML(token, cues, w, H) {
     // Beside the chest on the unit's BACK side (the side away from where it faces), so it
     // stays clear of the head cues, the waist passive card and the feet status strip.
     const flip = (token.mesh?.scale?.x ?? 1) < 0;          // drawn facing right unless flipped
-    const c = Math.max(26, 36 * k);
-    // Centre just OUTSIDE the frame edge (the icon box is 1.34c wide, centred on x): PC
-    // battler frames are narrow and the body fills them, so an inset spot sat on the body.
-    const half = c * 0.67, edge = w * 0.06;
-    const x = flip ? w - edge + half : edge - half;
+    const c = Math.max(22, 30 * k);                         // word font size
+    // Anchored just OUTSIDE the frame edge and growing away from the body: PC battler
+    // frames are narrow and the body fills them, so an inset spot sat on the body.
+    // MDEF is wider than DEF, so anchor the near edge rather than the centre.
+    const edge = w * 0.06;
+    const side = flip ? `left:${px(w - edge)}` : `right:${px(w - edge)}`;
     brk.forEach((cue, i) => {
-      h += `<span class="brk ${cue === "armorbreak" ? "def" : "mdef"}" style="--c:${px(c)};left:${px(x)};top:${px(H * 0.4 + i * (c + 3))}">${brkSVG(cue)}</span>`;
+      h += `<span class="brk ${cue === "armorbreak" ? "def" : "mdef"}" style="--c:${px(c)};${side};top:${px(H * 0.4 + i * (c + 4))}">${brkHTML(cue)}</span>`;
     });
   }
   if (cues.has("sleep")) {

@@ -1,4 +1,4 @@
-// Armor Break / Magic Break token cue (status-cues.js): a cracked-cuirass silhouette + down arrow beside the
+// Armor Break / Magic Break token cue (status-cues.js): the word DEF / MDEF + a bobbing down arrow beside the
 // chest, orange = DEF, blue = M.DEF, stacked when both are held, gone when removed.
 // Runner only: fakes "a battle is running" through the scene's directorState flag
 // (battle-focus.js battleHere), creates a token and toggles the statuses.
@@ -8,7 +8,14 @@ const scene = canvas.scene;
 const waitFor = async (fn, ms = 4000) => { const t0 = Date.now(); while (Date.now() - t0 < ms) { const v = fn(); if (v) return v; await new Promise((r) => setTimeout(r, 50)); } return fn(); };
 const chips = (tok) => {
   const root = document.getElementById("fu-status-cue-root");
-  return [...(root?.querySelectorAll(".fu-cue .brk") ?? [])].map((e) => ({ cls: e.className, left: e.style.left, top: e.style.top, size: e.style.getPropertyValue("--c") }));
+  return [...(root?.querySelectorAll(".fu-cue .brk") ?? [])].map((e) => {
+    const box = e.parentElement.getBoundingClientRect(), wb = e.querySelector("b")?.getBoundingClientRect(), ab = e.querySelector("i")?.getBoundingClientRect();
+    return { cls: e.className, word: e.querySelector("b")?.textContent, left: e.style.left, right: e.style.right, top: e.style.top, size: e.style.getPropertyValue("--c"),
+      display: getComputedStyle(e).display, font: getComputedStyle(e.querySelector("b")).fontFamily,
+      arrowRightOfWord: !!(wb && ab && ab.left >= wb.right - 1 && Math.abs((ab.top + ab.bottom) / 2 - (wb.top + wb.bottom) / 2) < wb.height * 0.5),
+      outsideFrame: !!(wb && (wb.left >= box.right - box.width * 0.07 || wb.right <= box.left + box.width * 0.07)),
+      wordW: Math.round(wb?.width ?? 0), wordH: Math.round(wb?.height ?? 0) };
+  });
 };
 try {
   await scene.setFlag(NS, "directorState", { dCombat: { started: true, ended: false, combatants: [{ id: "x" }] } });
