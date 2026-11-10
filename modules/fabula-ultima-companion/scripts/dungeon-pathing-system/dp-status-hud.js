@@ -138,6 +138,55 @@
 
 .oni-dp-hud-bar-hp { background: linear-gradient(90deg, #2a6, #4d4); }
 .oni-dp-hud-bar-mp { background: linear-gradient(90deg, #338, #56c); }
+/* Crisis colours, same bands as the battle HP bar: yellow at half, red at a quarter */
+.oni-dp-hud-bar-hp.is-crisis { background: linear-gradient(90deg, #b8901c, #e8c33a); }
+.oni-dp-hud-bar-hp.is-low    { background: linear-gradient(90deg, #a82a1e, #e84b3a); }
+
+/* ── Damage pulse (trap hits): ghost under the HP fill + slide-out readout ── */
+.oni-dp-hud-row { position: relative; transition: border-color 300ms ease, box-shadow 300ms ease; }
+.oni-dp-hud-row.is-struck {
+  border-color: rgba(255,110,90,0.75);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5), 0 0 8px rgba(255,70,50,0.35);
+  transition: none;
+}
+.oni-dp-hud-bar-wrap.is-hp { position: relative; }
+.oni-dp-hud-bar-wrap.is-hp .oni-dp-hud-bar-fill { position: relative; z-index: 1; }
+.oni-dp-hud-bar-ghost {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 0;
+  border-radius: 2px; background: linear-gradient(90deg, #d92c1e, #ff6a55);
+}
+.oni-dp-hud-read {
+  position: absolute; left: 100%; top: 50%; margin-left: 5px;
+  display: flex; align-items: center; gap: 7px; white-space: nowrap;
+  padding: 5px 9px; border-radius: 8px;
+  border: 1px solid rgba(200,160,80,0.28); background: rgba(14,10,4,0.88);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  opacity: 0; pointer-events: none;
+  transform: translate(-10px, -50%);
+  clip-path: inset(0 100% 0 0 round 8px);
+  transition: opacity 160ms ease-out, transform 220ms cubic-bezier(.2,.8,.2,1), clip-path 220ms cubic-bezier(.2,.8,.2,1);
+}
+.oni-dp-hud-read.is-on { opacity: 1; transform: translate(0, -50%); clip-path: inset(0 0 0 0 round 8px); }
+.oni-dp-hud-read.no-anim { transition: none; }
+.oni-dp-hud-read-n {
+  font: italic 900 17px/1 "Arial Black", "Segoe UI", sans-serif; color: #ff8f7d;
+  transform: skewX(-8deg); font-variant-numeric: tabular-nums;
+}
+.oni-dp-hud-read-n.is-zero { color: #bcd2e8; }
+.oni-dp-hud-read-hp {
+  font: 700 13px/1 "Palatino Linotype", Palatino, Georgia, serif; color: #e8dcc0;
+  font-variant-numeric: tabular-nums;
+}
+.oni-dp-hud-read-hp small { font-size: .8em; color: rgba(232,220,192,0.6); font-weight: 600; }
+.oni-dp-hud-chip { font: 700 10px/1 "Signika", sans-serif; padding: 3px 5px; border-radius: 3px; letter-spacing: .03em; }
+.oni-dp-hud-chip.rs  { background: #3a5b80; color: #fff; }
+.oni-dp-hud-chip.im  { background: #2a3140; color: #fff; }
+.oni-dp-hud-chip.dr  { background: rgba(200,160,80,0.18); color: #e8c870; border: 1px solid rgba(200,160,80,0.35); }
+.oni-dp-hud-chip.cr  { background: #e8c33a; color: #3a2a00; }
+.oni-dp-hud-chip.one { background: #8a4b22; color: #fff4e0; }
+@media (prefers-reduced-motion: reduce) {
+  .oni-dp-hud-read { transition: none; }
+}
 
 .oni-dp-hud-pips {
   display: flex;
@@ -467,6 +516,136 @@
     return Math.min(100, Math.max(0, Math.round((c / m) * 100)));
   }
 
+  // Same bands as the battle HP bar (dp-trap-rules hpBand): >50% green,
+  // >25% yellow (Crisis), else red. Ghost and fill sit at the current value
+  // at rest; a pulse moves them.
+  function hpBandClass(current, max) {
+    const f = (parseInt(current) || 0) / Math.max(1, Number(max) || 1);
+    return f > 0.5 ? "" : f > 0.25 ? " is-crisis" : " is-low";
+  }
+
+  // ── Damage pulse (dungeon traps) ────────────────────────────────────────────
+  // pulse(rows) is called on every client by dp-trap-fx.js with the outcome
+  // the GM previewed. Each member's row, staggered to match the floating
+  // numbers: the edge glows, the HP bar drops with a red ghost that drains,
+  // and a readout (−N, HP now / max, DR / Resist / Crisis / Held at 1) slides
+  // out to the right, then folds back. The HP writes land on their own clock
+  // (CSB recompute); a redraw from them is held back until the drop has played,
+  // and a pulse still showing is re-applied after any redraw.
+  const PULSE_STRUCK_MS = 120;
+  const PULSE_GHOST_DELAY_MS = 400;
+  const PULSE_GHOST_MS = 600;
+  const PULSE_READ_MS = 2800;
+  const PULSE_SETTLE_MS = PULSE_GHOST_DELAY_MS + PULSE_GHOST_MS + 100;
+
+  const _pulses = new Map();   // actorId → { row, at }
+  let _busyUntil = 0;          // no HP-driven redraw before this (performance.now)
+
+  const _pct = (v, m) => Math.min(100, Math.max(0, ((Number(v) || 0) / Math.max(1, Number(m) || 1)) * 100));
+  const _esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  function readoutHtml(r) {
+    const chips = [];
+    if (r.immune) chips.push(`<span class="oni-dp-hud-chip im">Immune</span>`);
+    else if (r.resisted) chips.push(`<span class="oni-dp-hud-chip rs">Resist</span>`);
+    if (r.dr > 0) chips.push(`<span class="oni-dp-hud-chip dr">DR −${Number(r.dr)}</span>`);
+    if (r.held) chips.push(`<span class="oni-dp-hud-chip one">Held at 1</span>`);
+    else if (r.crisisCross) chips.push(`<span class="oni-dp-hud-chip cr">Crisis</span>`);
+    const n = Number(r.shown) || 0;
+    return `<span class="oni-dp-hud-read-n${n ? "" : " is-zero"}">${n ? "−" + n : "0"}</span>`
+      + `<span class="oni-dp-hud-read-hp">${Number(r.after) || 0} <small>/ ${Number(r.max) || 0}</small></span>`
+      + chips.join("");
+  }
+
+  function rowEl(actorId) {
+    return document.querySelector(`#${PANEL_ID} .oni-dp-hud-row[data-actor-id="${CSS.escape(String(actorId))}"]`);
+  }
+
+  function readEl(row) {
+    let read = row.querySelector(".oni-dp-hud-read");
+    if (!read) {
+      read = document.createElement("div");
+      read.className = "oni-dp-hud-read";
+      row.appendChild(read);
+    }
+    return read;
+  }
+
+  function playPulse(r) {
+    const row = rowEl(r.actorId);
+    if (!row) return;
+    _pulses.set(String(r.actorId), { row: r, at: performance.now() });
+
+    const fill  = row.querySelector(".oni-dp-hud-bar-hp");
+    const ghost = row.querySelector(".oni-dp-hud-bar-ghost");
+    const b = _pct(r.before, r.max), a = _pct(r.after, r.max);
+    if (fill && ghost) {
+      fill.style.transition = "none"; ghost.style.transition = "none";
+      fill.style.width = b + "%"; ghost.style.width = b + "%";
+      void fill.offsetWidth;
+      fill.style.transition = "width 180ms cubic-bezier(.2,.8,.2,1)";
+      fill.style.width = a + "%";
+      fill.className = "oni-dp-hud-bar-fill oni-dp-hud-bar-hp" + hpBandClass(r.after, r.max);
+      setTimeout(() => {
+        const g = rowEl(r.actorId)?.querySelector(".oni-dp-hud-bar-ghost");
+        if (!g) return;
+        g.style.transition = `width ${PULSE_GHOST_MS}ms ease-in`;
+        g.style.width = a + "%";
+      }, PULSE_GHOST_DELAY_MS);
+    }
+
+    row.classList.add("is-struck");
+    setTimeout(() => rowEl(r.actorId)?.classList.remove("is-struck"), PULSE_STRUCK_MS);
+
+    const read = readEl(row);
+    read.classList.remove("no-anim");
+    read.innerHTML = readoutHtml(r);
+    void read.offsetWidth;
+    read.classList.add("is-on");
+    setTimeout(() => {
+      const p = _pulses.get(String(r.actorId));
+      if (!p || p.row !== r) return;
+      _pulses.delete(String(r.actorId));
+      const el = rowEl(r.actorId)?.querySelector(".oni-dp-hud-read");
+      el?.classList.remove("is-on", "no-anim");
+    }, PULSE_READ_MS);
+  }
+
+  // After an innerHTML rebuild: a readout still on show stays on show.
+  function reapplyPulses() {
+    const now = performance.now();
+    for (const [id, p] of _pulses) {
+      if (now - p.at >= PULSE_READ_MS) { _pulses.delete(id); continue; }
+      const row = rowEl(id);
+      if (!row) continue;
+      const read = readEl(row);
+      read.classList.add("no-anim", "is-on");
+      read.innerHTML = readoutHtml(p.row);
+    }
+  }
+
+  function pulse(rows, { delay = 60, stagger = 120 } = {}) {
+    const list = Array.isArray(rows) ? rows : [];
+    if (!list.length) return;
+    _busyUntil = performance.now() + delay + stagger * list.length + PULSE_SETTLE_MS;
+    list.forEach((r, i) => setTimeout(() => {
+      try { playPulse(r); } catch (e) { console.warn(TAG, "pulse failed", e); }
+    }, delay + i * stagger));
+  }
+
+  // HP / MP / IP changed on a party member: redraw, but not over a drop that
+  // is still playing.
+  let _hpRedrawTimer = null;
+  function onActorResourceChange(actor, change) {
+    const p = change?.system?.props;
+    if (!p || !(("current_hp" in p) || ("current_mp" in p) || ("current_ip" in p) || ("max_hp" in p))) return;
+    if (!rowEl(actor?.id)) return;
+    const wait = _busyUntil - performance.now();
+    if (wait <= 0) { scheduleRender(); return; }
+    clearTimeout(_hpRedrawTimer);
+    _hpRedrawTimer = setTimeout(scheduleRender, wait);
+  }
+
   // ── Row HTML builders ───────────────────────────────────────────────────────
 
   function renderResources(actor) {
@@ -484,10 +663,13 @@
     const mpLabel = `MP ${parseInt(p.current_mp)||0} / ${Number(p.max_mp)||0}`;
     const ipLabel = `IP ${curIp} / ${maxIp}`;
 
+    const band = hpBandClass(p.current_hp, p.max_hp);
+
     return `
       <div class="oni-dp-hud-resources">
-        <div class="oni-dp-hud-bar-wrap" title="${hpLabel}">
-          <div class="oni-dp-hud-bar-fill oni-dp-hud-bar-hp" style="width:${hpPct}%"></div>
+        <div class="oni-dp-hud-bar-wrap is-hp" title="${hpLabel}">
+          <div class="oni-dp-hud-bar-ghost" style="width:${hpPct}%"></div>
+          <div class="oni-dp-hud-bar-fill oni-dp-hud-bar-hp${band}" style="width:${hpPct}%"></div>
         </div>
         <div class="oni-dp-hud-bar-wrap" title="${mpLabel}">
           <div class="oni-dp-hud-bar-fill oni-dp-hud-bar-mp" style="width:${mpPct}%"></div>
@@ -573,7 +755,7 @@
         : "";
 
       return `
-        <div class="oni-dp-hud-row">
+        <div class="oni-dp-hud-row" data-actor-id="${_esc(actor.id)}">
           <img class="oni-dp-hud-portrait" src="${portrait}" alt="${name}" title="${name}">
           ${renderResources(actor)}${aesSection}
         </div>`;
@@ -585,6 +767,7 @@
     const turnChip = DP.TurnStart?.chipEl?.();
     if (turnChip) panel.prepend(turnChip);
 
+    reapplyPulses();
     panel.classList.add("dp-hud-visible");
   }
 
@@ -625,6 +808,9 @@
       _on("updateActiveEffect", scheduleRender);
       _on("deleteActiveEffect", scheduleRender);
       _on(DP.HOOKS.STANDBY_START, scheduleRender);
+      // Bars used to go stale until the next effect change (a heal tile left
+      // them where they were); redraw on the member's own resource changes.
+      _on("updateActor", onActorResourceChange);
 
       _resizeHandler = () => scheduleRender();
       window.addEventListener("resize", _resizeHandler);
@@ -658,6 +844,10 @@
     },
 
     refresh() { scheduleRender(); },
+
+    // Damage pulse on the member rows (dp-trap-fx.js). rows: [{ actorId, before,
+    // after, max, shown, dr, resisted, immune, held, crisisCross }]
+    pulse,
   };
 
   console.debug(TAG, "Loaded.");

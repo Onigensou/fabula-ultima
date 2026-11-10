@@ -227,6 +227,7 @@
       sway: null,       // { tokenId, dx, dy, lastX, lastY }
       walkShown: null,  // { tokenId, src, slot, art, idleTexture }
       standShown: null, // { tokenId, src, slot, art, idleTexture }
+      flash: null,      // a short pose on a dungeon token (trap hurt): { src, art, until }
       standDirty: true, // its standing art needs choosing (again); a new walker stands the way its last walk ended
       walkIntent: null, // the keyboard direction of the last move, { x, y }, or null
       walkRate: 1,      // walk-art playback speed for the last move (a run plays faster)
@@ -1481,6 +1482,119 @@
         if (src) loadWalkArt(src, token.mesh?.texture);
       }
     }
+    // The hurt pose a trap shows (flashPose), so the first trap is not missed
+    // while the clip loads.
+    const hurt = cleanString(props[FLASH_FIELD_DEFAULT]);
+    if (hurt) loadFlashArt(hurt, token.mesh?.texture);
+  }
+
+  // ------------------------------------------------------------
+  // Flash pose (dungeon traps)
+  // ------------------------------------------------------------
+  // For a moment the dungeon party token wears a pose from the character it is
+  // showing (sprite_hurt for a trap), with a white hit flash, then goes back to
+  // its idle art. Local to this client, like everything here: dp-trap-fx.js
+  // calls it on every client. The clip gets a video of its own (looping at its
+  // own speed), so the idle walk's slower clip is not touched.
+  const FLASH_FIELD_DEFAULT = "sprite_hurt";
+  const FLASH_MS_DEFAULT = 1000;
+  // White hit flash on the sprite: [startMs, endMs, brightness] steps.
+  const HIT_FLASH_STEPS = [[0, 90, 3.2], [145, 200, 2.2]];
+
+  function loadFlashArt(src, idleTexture) {
+    if (!isVideoSrc(src)) return loadWalkArt(src, idleTexture);
+    const key = "flash:" + src;
+    dropIfDead(key);
+    let art = state.walkArt.get(key);
+    if (art) return art;
+
+    art = { kind: "video", texture: null, frames: null, video: null, failed: false, ready: false };
+    state.walkArt.set(key, art);
+    const video = document.createElement("video");
+    video.crossOrigin = "anonymous";
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.preload = "auto";
+    video.addEventListener("loadeddata", () => {
+      try {
+        art.texture = PIXI.Texture.from(video, { resourceOptions: { autoPlay: false } });
+        art.video = video;
+        art.ready = true;
+      } catch (err) {
+        art.failed = true;
+        console.warn("[SpriteFacing] Could not use pose art", src, err);
+      }
+    }, { once: true });
+    video.addEventListener("error", () => {
+      art.failed = true;
+      console.warn("[SpriteFacing] Could not load pose art", src);
+    }, { once: true });
+    video.src = src;
+    return art;
+  }
+
+  function hitFlash(token) {
+    const mesh = token?.mesh;
+    if (!mesh || mesh.destroyed || !PIXI.ColorMatrixFilter) return;
+    const filter = new PIXI.ColorMatrixFilter();
+    const set = (b) => {
+      if (b) filter.brightness(b, false); else filter.reset();
+    };
+    const add = () => {
+      if (mesh.destroyed) return;
+      mesh.filters = [...(mesh.filters ?? []).filter(f => f !== filter), filter];
+    };
+    const remove = () => {
+      if (mesh.destroyed) return;
+      const rest = (mesh.filters ?? []).filter(f => f !== filter);
+      mesh.filters = rest.length ? rest : null;
+    };
+    add();
+    for (const [start, end, b] of HIT_FLASH_STEPS) {
+      setTimeout(() => set(b), start);
+      setTimeout(() => set(0), end);
+    }
+    setTimeout(remove, HIT_FLASH_STEPS[HIT_FLASH_STEPS.length - 1][1] + 20);
+  }
+
+  // Returns true when the pose (or at least the hit flash) was started.
+  function flashPose(token, { field = FLASH_FIELD_DEFAULT, ms = FLASH_MS_DEFAULT, hitFlash: withHit = true } = {}) {
+    if (!state.active || !state.dungeon || !token?.mesh || token.mesh.destroyed) return false;
+    if (withHit) hitFlash(token);
+    const src = cleanString(sourceActorFor(token)?.system?.props?.[field]);
+    if (!src) return withHit;
+    const w = walkerFor(token);
+    const art = loadFlashArt(src, token.mesh.texture);
+    if (w.flash?.art?.video && w.flash.art !== art) { try { w.flash.art.video.pause(); } catch (_) {} }
+    // The dungeon party token is always a walker (movingWalkerTokens), so the
+    // tick picks this up on its next frame.
+    w.flash = { src, art, until: performance.now() + Math.max(100, Number(ms) || FLASH_MS_DEFAULT), started: false };
+    return true;
+  }
+
+  // Tick: hold the pose while it lasts. Returns true while the pose is on show.
+  function holdFlash(token, w, now) {
+    const f = w.flash;
+    if (!f) return false;
+    if (now >= f.until || f.art.failed || isArtDead(f.art)) {
+      w.flash = null;
+      try { f.art.video?.pause(); } catch (_) {}
+      w.standDirty = true;      // choose the idle art again (showStandArt clears the old one)
+      return false;
+    }
+    if (!f.art.ready) return false;
+    const frame = f.art.kind === "strip" ? f.art.frames?.[0] : f.art.texture;
+    if (!frame?.valid) return false;
+    if (!f.started && f.art.video) {
+      f.started = true;
+      try { f.art.video.currentTime = 0; } catch (_) {}
+    }
+    if (f.art.video?.paused && !game.paused) {
+      try { const p = f.art.video.play(); if (p?.catch) p.catch(() => {}); } catch (_) {}
+    }
+    if (token.mesh.texture !== frame) setMeshTexture(token, frame);
+    return true;
   }
 
   // A step is one move on its own, so its direction is the plain slice it
@@ -1619,6 +1733,8 @@
       // At rest, a walker wears the standing art of its direction.
       const w = walkerFor(token);
       if (w.walking) continue;
+      // A trap's hurt pose (flashPose) wins over the standing art while it lasts.
+      if (holdFlash(token, w, now)) continue;
       if (w.standDirty) {
         w.standDirty = false;
         if (state.dungeon) preloadArt(token);
@@ -1730,6 +1846,10 @@
 
     // Dungeon steps (dp-movement.js): the walk art for a step of dx, dy.
     dungeonStepBegin(token, dx, dy) { return state.active && state.dungeon ? dungeonStepBegin(token, dx, dy) : null; },
+
+    // Dungeon traps (dp-trap-fx.js): the party token wears a pose for a moment
+    // (default sprite_hurt, 1 s) with a white hit flash. This client only.
+    flashPose(token, options) { return flashPose(token, options); },
 
     // Pose spots (event-system/pose-spots): the pose art a token's character
     // has for "sit" or "sleep" ("" when none), and whether a pose is on show.
