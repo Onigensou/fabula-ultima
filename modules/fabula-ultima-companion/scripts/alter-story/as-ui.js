@@ -141,7 +141,7 @@ body.as-hold #board{filter:saturate(.55) brightness(.85);transition:filter .6s e
 #${LAYER_ID} .chk{display:flex;gap:5px;align-items:center;cursor:pointer}
 #${LAYER_ID} .chk input{accent-color:#0f766e;margin:0}
 
-#${LAYER_ID} .as-consent{right:20px;top:12px;width:470px;padding:12px 14px 14px 92px;display:flex;flex-direction:column;gap:8px}
+#${LAYER_ID} .as-consent{right:72px;top:12px;width:470px;padding:12px 14px 14px 92px;display:flex;flex-direction:column;gap:8px}
 #${LAYER_ID} .as-consent img.sp{position:absolute;left:6px;bottom:0;height:104px;object-fit:contain;object-position:bottom}
 #${LAYER_ID} .as-consent .q{font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-size:16.5px;line-height:1.3}
 
