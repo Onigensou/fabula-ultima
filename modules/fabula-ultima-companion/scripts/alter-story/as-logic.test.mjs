@@ -84,7 +84,12 @@ const long = L.reduce(base(), { type: "submit", text: "y".repeat(300) }).req;
 check("recap fits Party Talk", L.recapLine(long).length <= 110 && L.recapLine(long).endsWith("…"));
 check("recap short stays whole", L.recapLine(g) === "Fate altered by Keren: t");
 const sp = L.reduce(base(), { type: "submit", spoken: true }).req;
-check("spoken recap uses summary", L.recapLine(sp, "An old comrade hides us") === "Fate altered by Keren: An old comrade hides us");
+const spA = L.reduce(sp, { type: "approve", summary: "An old comrade hides us" }).req;
+check("spoken: GM summary becomes the statement", spA.text === "An old comrade hides us");
+check("spoken recap uses summary", L.recapLine(spA) === "Fate altered by Keren: An old comrade hides us");
+const spB = L.reduce(sp, { type: "approve" }).req;
+check("spoken without summary", L.cineText(spB) === "Told at the table." && /told aloud/.test(L.recapLine(spB)));
+check("summary ignored for written requests", L.reduce(g, { type: "approve", summary: "zzz" }).req.text === "t");
 check("cine quotes text", L.cineText(g) === "“t”");
 
 console.log(fail ? `\n${fail} FAILED` : "\nall passed");

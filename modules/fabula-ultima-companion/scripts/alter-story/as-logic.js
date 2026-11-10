@@ -108,7 +108,10 @@
       }
       case "approve": {
         if (req.phase !== PHASE.GM) return ignored;
-        return { req: bump(req, { phase: PHASE.FATE, note: str(ev.note, NOTE_MAX) }, now), effect: "spend" };
+        // A request told on voice carries no text: the GM's one-line summary
+        // becomes the statement (cinematic, log, recap).
+        const summary = req.spoken ? str(ev.summary, TEXT_MAX) : "";
+        return { req: bump(req, { phase: PHASE.FATE, note: str(ev.note, NOTE_MAX), ...(summary ? { text: summary } : {}) }, now), effect: "spend" };
       }
       case "deny": {
         if (req.phase !== PHASE.GM) return ignored;
@@ -143,8 +146,8 @@
   }
 
   /** The one Party Talk line after a fate (narrator, action mode). */
-  function recapLine(req, spokenSummary = "") {
-    const body = req.spoken ? (str(spokenSummary, TEXT_MAX) || "a new truth, told aloud") : req.text;
+  function recapLine(req) {
+    const body = req.text || "a new truth, told aloud";
     const head = `Fate altered by ${req.actorName}: `;
     const room = Math.max(10, RECAP_MAX - head.length);
     const cut = body.length > room ? body.slice(0, room - 1).trimEnd() + "…" : body;
@@ -153,8 +156,7 @@
 
   /** Statement shown in the cinematic. */
   function cineText(req) {
-    if (req.spoken) return req.note ? "" : "Told at the table.";
-    return `“${req.text}”`;
+    return req.text ? `“${req.text}”` : "Told at the table.";
   }
 
   const Logic = { PHASE, OPEN_PHASES, KINDS, COST, TEXT_MAX, NOTE_MAX, canOpen, create, validateSubmit, reduce, mayAct, recapLine, cineText };
