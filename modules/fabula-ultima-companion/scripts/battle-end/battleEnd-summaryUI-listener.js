@@ -1678,6 +1678,12 @@ const footerData = {
       if (!sb) return;
       const f = footerBuilt.footer;
       sb.strip.style.top = `${(parseFloat(f.style.top) || 0) + (f.offsetHeight || 170) + 12}px`;
+      // The strip is the lowest thing on screen. On a short window (under ~1000 px)
+      // shrink the whole overlay just enough to keep it in view; at 1080p this is
+      // a no-op and the shipped scale stays.
+      const bottom = (parseFloat(sb.strip.style.top) || 0) + (sb.strip.offsetHeight || 70) + 12;
+      const room = window.innerHeight / PANEL_SCALE;
+      uiWrap.style.transform = bottom > room ? `scale(${(PANEL_SCALE * room / bottom).toFixed(4)})` : "";
     };
 
     // Position footer once layout exists
