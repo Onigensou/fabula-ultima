@@ -154,7 +154,8 @@ async function applyHeal(payload, requesterUserId = game.user?.id) {
   // The count is the targets actually sent — a Potion Rain spread is one use —
   // never a client-reported number.
   const targetCount = (potionRain && targets.length > 1) ? 1 : targets.length;
-  const resolved = resolveHealAction({ caster, effectItem, costItem, targetCount: Math.max(1, targetCount) });
+  // Inventory action = a Create preset or a consumable (same rule as the HUD descriptor).
+  const resolved = resolveHealAction({ caster, effectItem, costItem, targetCount: Math.max(1, targetCount), isItemUse: isCreate || !!consumableUuid });
   if (!isCleanse && !resolved.ok) return { ok: false, reason: resolved.reason ?? "no-heal" };
   if (!resolved.affordable) return { ok: false, reason: "unaffordable", missing: resolved.missing };
 

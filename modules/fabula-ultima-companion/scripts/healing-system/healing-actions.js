@@ -93,7 +93,7 @@ function stripHtml(html) {
 // restores nothing. For a cleanse action (cleanseInfo present), the heal grants
 // are optional — cost/affordability still resolve from the cost string.
 function buildDescriptor({ caster, category, displayItem, effectItem, costItem, source, sourceItemName = null, consumableUuid = null, quantity = null, cleanseInfo = null }) {
-  const resolved = resolveHealAction({ caster, effectItem, costItem, targetCount: 1 });
+  const resolved = resolveHealAction({ caster, effectItem, costItem, targetCount: 1, isItemUse: !!consumableUuid });
   const isCleanse = !!cleanseInfo;
   if (!isCleanse && !resolved.ok) return null;   // pure heal must restore something
 
@@ -137,6 +137,47 @@ function isAid(item) {
 // "crafted" on use: spend IP, apply its heal immediately, nothing is consumed
 // from inventory. Heal source is the preset's linked action (or the carrier);
 // cleanse presets (Tonic) are shown as a placeholder with no resource grant yet.
+function reducedIpCost(base, actor) {
+  const shared = globalThis.FUCompanion?.api?.itemCreate?.utils?.buildReducedIpCost;
+  if (typeof shared === "function") return Number(shared(base, actor)?.finalIpCost ?? base) || 0;
+  const red = Math.max(0, Math.trunc(Number(actor?.system?.props?.ip_reduction_value) || 0));
+  return base > 0 ? Math.max(1, base - red) : 0;
+}
+
+// Out-of-battle Create price = what the battle Create menu charges:
+//   1. Deep Pockets (ip_reduction_value) via reducedIpCost.
+//   2. FORCED creature_uses_item passives whose adjust_cost rows touch IP (Maid Cap:
+//      "SKILL_HAS_TAG_POTION || SKILL_HAS_TAG_MAGISPHERE" → −1 IP). Found and priced
+//      by the battle engine's own finder/composer, so equip gating, tag gates and
+//      the row data stay in one place. Ask-mode reactions are a player choice, so
+//      they are not applied here.
+//   3. Floor 1 for a real IP cost (state-handlers' Create floor).
+async function createIpCost(caster, carrier, effectItem, base) {
+  let ip = reducedIpCost(base, caster);
+  if (!(base > 0) || !caster) return ip;
+  try {
+    const se = await import("../battle-director/skill-effects.js");
+    const { computeEffectiveCost } = await import("../battle-director/skill-cost.js");
+    const tags = [effectItem, carrier].map((i) => String(i?.system?.props?.skill_tags ?? "")).filter(Boolean).join(", ");
+    const cands = await se.findPassiveCandidates({
+      casterActor: caster, trigger: "creature_uses_item",
+      payload: { actionKind: "Item", itemMode: "create", skillTags: tags, sourceActorUuid: caster.uuid,
+        actionName: carrier?.name ?? null, sourceSkillName: carrier?.name ?? null, skillUuid: effectItem?.uuid ?? null },
+    });
+    for (const c of cands ?? []) {
+      if (c?.kind !== "passive" || c?.available === false || !c?.ref) continue;
+      const doc = await fromUuid(c.carrierUuid).catch(() => null);
+      const table = doc?.system?.props?.effect_table;
+      if (!table) continue;
+      const ov = await se.precomposeChainCostAdjustments({ skill: doc, effectTable: table, startLabel: c.ref, actor: caster });
+      if (ov) ip = Number(computeEffectiveCost({ ip }, ov).ip ?? ip) || 0;
+    }
+  } catch (e) {
+    console.warn(HEAL_TAG, "createIpCost: passive cost scan failed, using the Deep Pockets price", e);
+  }
+  return Math.max(1, ip);
+}
+
 async function gatherCreateActions(caster) {
   const list = [];
   const casterIp = Number(caster?.system?.props?.current_ip ?? 0) || 0;
@@ -144,21 +185,25 @@ async function gatherCreateActions(caster) {
   for (const preset of HEAL_CREATE_PRESETS) {
     const carrier = await fromUuid(preset.uuid).catch(() => null);
     if (!carrier) { console.warn(HEAL_TAG, "create preset missing", preset.uuid); continue; }
-    const ipCost = Number(carrier.system?.props?.ip_cost ?? 0) || 0;
+    const baseIpCost = Number(carrier.system?.props?.ip_cost ?? 0) || 0;
 
     // Resolve the heal: try linked action(s) first, then the carrier itself.
     let effectItem = null, resolved = null;
     for (const u of grantedActionUuids(carrier)) {
       const li = await fromUuid(u).catch(() => null);
       if (!li) continue;
-      const r = resolveHealAction({ caster, effectItem: li, costItem: li, targetCount: 1 });
+      const r = resolveHealAction({ caster, effectItem: li, costItem: li, targetCount: 1, isItemUse: true });
       if (r.ok) { effectItem = li; resolved = r; break; }
     }
     if (!resolved) {
-      const r = resolveHealAction({ caster, effectItem: carrier, costItem: carrier, targetCount: 1 });
+      const r = resolveHealAction({ caster, effectItem: carrier, costItem: carrier, targetCount: 1, isItemUse: true });
       if (r.ok) { effectItem = carrier; resolved = r; }
     }
     if (!resolved) { effectItem = carrier; resolved = { grants: [] }; }  // cleanse / placeholder
+
+    // Same price as the battle Create menu (Deep Pockets + forced passives like
+    // Maid Cap). The GM apply charges this descriptor's ipCost, so label == spend.
+    const ipCost = await createIpCost(caster, carrier, effectItem, baseIpCost);
 
     const cleanseInfo = getCleanseInfoForItem(carrier);   // Tonic → cleanse "one"
     const grants = resolved.grants ?? [];
