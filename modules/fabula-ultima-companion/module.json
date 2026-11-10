@@ -446,6 +446,7 @@
     "scripts/shared/exp-core.js",
     "scripts/shared/code-backed-content.js",
     "scripts/shared/identifier-registry.js",
+    "scripts/shared/system-message.js",
     "scripts/linked-text/lt-boot.js",
     "scripts/shop-system/shopOpen-bootstrap.js",
     "scripts/shop-system/shopPurchase-handler.js",

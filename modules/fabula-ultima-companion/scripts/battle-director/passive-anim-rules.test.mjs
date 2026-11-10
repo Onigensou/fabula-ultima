@@ -1,7 +1,7 @@
 // node scripts/battle-director/passive-anim-rules.test.mjs
 // Passive fallback beats (mockup v4, 2026-11-04).
 import assert from "node:assert/strict";
-import { composePassiveBeats, mergeBeats, hitElement } from "./passive-anim-rules.js";
+import { composePassiveBeats, mergeBeats, hitElement, weaponReadLines } from "./passive-anim-rules.js";
 
 let n = 0;
 const t = (name, fn) => { fn(); n++; console.log("  ok", name); };
@@ -86,5 +86,47 @@ t("repeat fires merge: three Lightning Charges = one MP beat", () => {
 t("elements normalize; unknown → physical", () => {
   assert.equal(hitElement("Lightning"), "bolt");
   assert.equal(hitElement(""), "physical");
+});
+
+// ── Adaptive Defense (weapon_read) → beats + System Message lines (2026-11-10) ──
+const RK = "Actor.rakshasa";
+const read = (res) => ({ kind: "weapon_read", row: {}, res: { ok: true, kind: "weapon_read", ...res } });
+const lines = (beats) => weaponReadLines("Rakshasa A", beats).map((l) => [beats[l.beat].k, l.text]);
+
+t("first read: rising lines + 'increased' only — nothing to decrease yet", () => {
+  const r = composePassiveBeats([read({ family: "sword", raised: true, maxed: false, lowered: [] })], { ownerActorUuid: RK });
+  assert.deepEqual(r.beats.map((b) => [b.k, b.recipients]), [["buff", [RK]]]);
+  assert.deepEqual(lines(r.beats), [["buff", "Rakshasa A's resistance to {w:Swords} {up:increased}!"]]);
+});
+t("same weapon again: no lines, just 'won't go any higher'", () => {
+  const r = composePassiveBeats([read({ family: "sword", raised: false, maxed: true, lowered: [] })], { ownerActorUuid: RK });
+  assert.deepEqual(r.beats.map((b) => b.k), ["note"]);
+  assert.deepEqual(lines(r.beats), [["note", "Rakshasa A's resistance to {w:Swords} won't go any higher!"]]);
+});
+t("new weapon after two reads: rise THEN fall, in that order", () => {
+  const r = composePassiveBeats([read({ family: "bow", raised: true, maxed: false, lowered: ["sword", "spear"] })], { ownerActorUuid: RK });
+  assert.deepEqual(lines(r.beats), [
+    ["buff", "Rakshasa A's resistance to {w:Bows} {up:increased}!"],
+    ["debuff", "Rakshasa A's resistance to {w:Swords} and {w:Spears} {down:decreased}!"],
+  ]);
+});
+t("three or more recover: 'other weapons'", () => {
+  const r = composePassiveBeats([read({ family: "dagger", raised: true, lowered: ["sword", "spear", "bow"] })], { ownerActorUuid: RK });
+  assert.equal(lines(r.beats)[1][1], "Rakshasa A's resistance to other weapons {down:decreased}!");
+});
+t("a multi-hit action merges into one rise + one fall; a lane that rose is not also 'decreased'", () => {
+  const a = composePassiveBeats([read({ family: "bow", raised: true, lowered: ["sword"] })], { ownerActorUuid: RK }).beats;
+  const b = composePassiveBeats([read({ family: "sword", raised: true, lowered: ["bow"] })], { ownerActorUuid: RK }).beats;
+  const m = mergeBeats(a, b);
+  assert.deepEqual(m.map((x) => x.k), ["buff", "debuff"]);
+  assert.deepEqual(lines(m), [["buff", "Rakshasa A's resistance to {w:Bows} and {w:Swords} {up:increased}!"]]);
+});
+t("a failed read (no weapon family) shows nothing", () => {
+  const r = composePassiveBeats([{ kind: "weapon_read", row: {}, res: { ok: false, kind: "weapon_read", reason: "no_family" } }], { ownerActorUuid: RK });
+  assert.equal(r.skipped, "nothing-visible");
+});
+t("other passives carry no message lines", () => {
+  const r = composePassiveBeats([rec("grant", [{ actorUuid: OWNER, resource: "mp", delta: 4 }])], { ownerActorUuid: OWNER });
+  assert.deepEqual(weaponReadLines("Kirin", r.beats), []);
 });
 console.log(`\n${n} passed`);

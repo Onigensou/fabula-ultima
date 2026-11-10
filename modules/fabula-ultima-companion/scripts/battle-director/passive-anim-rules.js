@@ -62,6 +62,12 @@ export function composePassiveBeats(records, { ownerActorUuid = null, sameSide =
     if (!b) { b = { k, recipients: [], ...extra }; beats.push(b); }
     if (!b.recipients.includes(actorUuid)) b.recipients.push(actorUuid);
   };
+  // a beat on the owner that also carries a System Message line
+  const say = (k, item) => {
+    add(k, ownerActorUuid);
+    const b = beats.find((x) => x.k === k && (x.element ?? null) === null);
+    b.say = mergeSay(b.say, [item]);
+  };
   const friendly = (uuid) => (uuid && uuid === ownerActorUuid) || (typeof sameSide === "function" && sameSide(uuid));
   for (const rec of list) {
     if (!rec?.res?.ok || rec.res.skipped) continue;
@@ -95,6 +101,16 @@ export function composePassiveBeats(records, { ownerActorUuid = null, sameSide =
         if (!e?.actorUuid || !(amt > 0) || lc(e?.direction) === "gain") continue;
         add(redirect ? "redirect" : "damage", e.actorUuid, { element: hitElement(e.element) });
       }
+    } else if (kind === "weapon_read") {
+      // Adaptive Defense (Rakshasa). Efficiency DOWN = resistance UP: the read
+      // lane rises, earlier reads recover. Shown on the owner as rising then
+      // falling lines, each with its System Message line (weaponReadLines).
+      const fam = lc(rec.res.family);
+      if (!ownerActorUuid || !fam) continue;
+      if (rec.res.raised) say("buff", { t: "raise", fams: [fam] });
+      else if (rec.res.maxed) say("note", { t: "maxed", fams: [fam] });
+      const lowered = (Array.isArray(rec.res.lowered) ? rec.res.lowered : []).map(lc).filter(Boolean);
+      if (lowered.length) say("debuff", { t: "lower", fams: lowered });
     } else if (kind === "remove_tagged_ae") {
       const tag = lc(rec.row?.filter_tag);
       for (const e of applied) {
@@ -106,17 +122,71 @@ export function composePassiveBeats(records, { ownerActorUuid = null, sameSide =
     }
   }
   if (!beats.length) return { beats: [], skipped: "nothing-visible" };
-  return { beats: beats.slice(0, MAX_BEATS), skipped: null };
+  return { beats: orderSayBeats(beats).slice(0, MAX_BEATS), skipped: null };
+}
+
+// Lines read rise → no-change → fall, whatever order the records came in.
+const SAY_ORDER = { buff: 0, note: 1, debuff: 2 };
+function orderSayBeats(beats) {
+  if (!beats.some((b) => b.say)) return beats;
+  return [...beats].sort((x, y) => (x.say ? SAY_ORDER[x.k] ?? 3 : 3) - (y.say ? SAY_ORDER[y.k] ?? 3 : 3));
+}
+
+function mergeSay(a, b) {
+  const out = (a ?? []).map((s) => ({ ...s, fams: [...s.fams] }));
+  for (const s of b ?? []) {
+    const ex = out.find((x) => x.t === s.t);
+    if (!ex) { out.push({ ...s, fams: [...s.fams] }); continue; }
+    for (const f of s.fams) if (!ex.fams.includes(f)) ex.fams.push(f);
+  }
+  return out;
 }
 
 // Repeat fires of one passive inside one action collapse into one beat set
 // (Lightning Charge firing once per creature a Bolt spell hits).
 export function mergeBeats(a, b) {
-  const out = (a ?? []).map((x) => ({ ...x, recipients: [...x.recipients] }));
+  const out = (a ?? []).map((x) => ({ ...x, recipients: [...x.recipients], ...(x.say ? { say: mergeSay(x.say, []) } : {}) }));
   for (const nb of b ?? []) {
     const ex = out.find((x) => x.k === nb.k && (x.element ?? null) === (nb.element ?? null));
-    if (!ex) { out.push({ ...nb, recipients: [...nb.recipients] }); continue; }
+    if (!ex) { out.push({ ...nb, recipients: [...nb.recipients], ...(nb.say ? { say: mergeSay(nb.say, []) } : {}) }); continue; }
     for (const r of nb.recipients) if (!ex.recipients.includes(r)) ex.recipients.push(r);
+    if (nb.say) ex.say = mergeSay(ex.say, nb.say);
   }
-  return out.slice(0, MAX_BEATS);
+  return orderSayBeats(out).slice(0, MAX_BEATS);
+}
+
+// ── System Message lines for weapon_read beats ───────────────────────────
+// Plural, as a resistance line reads them. Spells count as Arcane (the
+// engine's own rule, resolveWeaponReadFamily).
+export const WEAPON_FAMILY_NAME = Object.freeze({
+  arcane: "Arcane", bow: "Bows", brawling: "Brawling", dagger: "Daggers", firearm: "Firearms",
+  flail: "Flails", heavy: "Heavy weapons", spear: "Spears", sword: "Swords", thrown: "Thrown weapons",
+});
+const famName = (f) => WEAPON_FAMILY_NAME[f] ?? (f.charAt(0).toUpperCase() + f.slice(1));
+function famList(fams) {
+  const w = fams.map((f) => `{w:${famName(f)}}`);
+  return w.length <= 1 ? (w[0] ?? "") : `${w.slice(0, -1).join(", ")} and ${w[w.length - 1]}`;
+}
+
+// beats → [{ text, beat }] in play order; `beat` indexes `beats`.
+// User wording, 2026-11-10: "resistance to" + increased / decreased.
+export function weaponReadLines(ownerName, beats) {
+  const who = String(ownerName || "It");
+  const out = [];
+  const raised = new Set();
+  (beats ?? []).forEach((b) => { if (b.k === "buff") for (const s of b.say ?? []) if (s.t === "raise") s.fams.forEach((f) => raised.add(f)); });
+  (beats ?? []).forEach((b, i) => {
+    for (const s of b.say ?? []) {
+      // a lane both read and recovered inside one merged action only rose
+      const fams = s.t === "raise" ? s.fams : s.fams.filter((f) => !raised.has(f));
+      if (!fams.length) continue;
+      if (s.t === "raise") out.push({ beat: i, text: `${who}'s resistance to ${famList(fams)} {up:increased}!` });
+      else if (s.t === "maxed") out.push({ beat: i, text: `${who}'s resistance to ${famList(fams)} won't go any higher!` });
+      else if (s.t === "lower") {
+        const what = fams.length >= 3 ? "other weapons" : famList(fams);
+        out.push({ beat: i, text: `${who}'s resistance to ${what} {down:decreased}!` });
+      }
+    }
+  });
+  return out;
 }

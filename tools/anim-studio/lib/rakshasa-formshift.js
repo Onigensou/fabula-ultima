@@ -11,13 +11,11 @@
 
 const { shell, inner } = require("./dungeon-templates.js");
 
-// Two beats at once: a Final Fantasy style system panel slides in and announces
-// the switch, and the weapon's icon flashes over the Rakshasa's head.
-//
-// The panel is DOM, not PIXI. It has to sit above the canvas in crisp screen
-// space at any zoom, and it is text — PIXI text at canvas scale goes soft the
-// moment the camera moves. The icon is PIXI, because it is anchored to a token
-// and must track it.
+// Two beats at once: the shared System Message Panel (FU.SystemMessage,
+// modules/fabula-ultima-companion/scripts/shared/system-message.js) announces
+// the switch, and the weapon's icon flashes over the Rakshasa's head. The panel
+// is text-only here (user, 2026-11-10: icon over the head only). The icon is
+// PIXI, because it is anchored to a token and must track it.
 //
 // Which weapon it announces is read from the ACTOR at run time (the stance AE
 // Form Shift just applied), never passed in — the animation must not need to
@@ -39,17 +37,6 @@ function formShift(opts = {}) {
     forms: {},
     // How long to wait for RESOLVE to apply the drawn stance.
     stanceWaitMs: 2500, stancePollMs: 50,
-    panelMs: 380, panelHoldMs: 1500, panelOutMs: 340,
-    panelTop: 0.11, panelSlide: 46,
-    // Battle Director house theme — the same tokens turn-ui.js defines and
-    // action-card.js paints its panels with, so an announcement reads as part
-    // of the system rather than as a separate overlay that happens to be on
-    // screen at the same time. Warm parchment field, gold-brown stroke, ink
-    // text; the accent is the gold the BD uses for its own header bars.
-    parchmentTop: "#f6f1e6", parchmentBot: "#ebe3d0",
-    strokeColor: "#7a6a55",
-    textColor: "#3a3228", accentColor: "#8a4b22",
-    fontSize: 26, panelPadX: 34, panelPadY: 16,
     medallionBg: 0x15111f, medallionRim: 0xffcf5c,
     iconSize: 128, iconRise: 62, iconInMs: 260, iconHoldMs: 620, iconOutMs: 320,
     iconBlinks: 3,
@@ -96,49 +83,14 @@ function formShift(opts = {}) {
     "",
     "playSfx('sfx', 'sfxVol');",
     "",
-    "// ── The panel (DOM, screen space) ──────────────────────────────────────",
-    "const view = canvas.app && canvas.app.view;",
-    "const rect = view && view.getBoundingClientRect ? view.getBoundingClientRect() : null;",
-    "const panel = document.createElement('div');",
-    "panel.className = 'oni-anim-formshift';",
-    "panel.style.cssText = [",
-    "  'position: fixed',",
-    "  'pointer-events: none',",
-    "  'z-index: 90',",
-    "  'left: ' + ((rect ? rect.left + rect.width / 2 : window.innerWidth / 2)) + 'px',",
-    "  'top: ' + ((rect ? rect.top + rect.height * cfg.panelTop : window.innerHeight * cfg.panelTop)) + 'px',",
-    "  'transform: translate(-50%, 0)',",
-    "  'padding: ' + cfg.panelPadY + 'px ' + cfg.panelPadX + 'px',",
-    "  'background: linear-gradient(180deg, ' + cfg.parchmentTop + ', ' + cfg.parchmentBot + ')',",
-    "  'border: 2px solid ' + cfg.strokeColor,",
-    "  'border-radius: 14px',",
-    "  // Same two-part shadow the action card uses: a deep drop to lift it off",
-    "  // the canvas, plus a 1px inset highlight that gives the parchment an edge.",
-    "  'box-shadow: 0 16px 48px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.5) inset',",
-    "  'color: ' + cfg.textColor,",
-    "  'font-family: \"Inter\", \"Signika\", \"Segoe UI\", system-ui, sans-serif',",
-    "  'font-size: ' + cfg.fontSize + 'px',",
-    "  'font-weight: 600',",
-    "  'letter-spacing: 0.2px',",
-    "  'white-space: nowrap',",
-    "  'opacity: 0',",
-    "].join('; ');",
-    "// The weapon name is the one word the player needs, so it is the only",
-    "// coloured token in the line. Ink-on-parchment needs a DARK accent to stay",
-    "// legible — the gold that reads well on the BD's dark header bars would be",
-    "// near-invisible here.",
-    "const accent = document.createElement('span');",
-    "accent.style.cssText = 'color: ' + cfg.accentColor + '; font-weight: 800';",
-    "accent.textContent = formName;",
-    "panel.appendChild(document.createTextNode(who + ' ' + cfg.verb + ' its '));",
-    "panel.appendChild(accent);",
-    "document.body.appendChild(panel);",
-    "",
-    "// Slide + fade together, in and out.",
-    "const slideIn = oni.tween({ from: 0, to: 1, duration: cfg.panelMs, ease: E.outCubic, onUpdate: (v) => {",
-    "  panel.style.opacity = String(v);",
-    "  panel.style.transform = 'translate(-50%, ' + ((1 - v) * -cfg.panelSlide) + 'px)';",
-    "} });",
+    "// ── The line: the shared System Message Panel (FU.SystemMessage) ────────",
+    "// Every client runs this script, so the line is shown locally. Each weapon",
+    "// name is highlighted (a Dual label is two names joined by \"and\").",
+    "const named = String(formName).split(' and ').map((w) => '{w:' + w + '}').join(' and ');",
+    "try {",
+    "  const SM = globalThis.FU && globalThis.FU.SystemMessage;",
+    "  if (SM) SM.show(who + ' ' + cfg.verb + ' its ' + named + '!');",
+    "} catch (e) {}",
     "",
     "// ── The weapon icon (PIXI, anchored over the head) ─────────────────────",
     "//",
@@ -226,22 +178,11 @@ function formShift(opts = {}) {
     "  await wait(cfg.iconInMs + cfg.iconHoldMs);",
     "}",
     "",
-    "await slideIn;",
-    "",
-    "await wait(cfg.panelHoldMs);",
-    "",
-    "const outs = [];",
-    "outs.push(oni.tween({ from: 1, to: 0, duration: cfg.panelOutMs, ease: E.inQuad, onUpdate: (v) => {",
-    "  panel.style.opacity = String(v);",
-    "  panel.style.transform = 'translate(-50%, ' + ((1 - v) * -cfg.panelSlide * 0.6) + 'px)';",
-    "} }));",
     "if (iconGroup) {",
-    "  outs.push(oni.tween({ from: 1, to: 0, duration: cfg.iconOutMs, ease: E.inQuad,",
-    "    onUpdate: (v) => { iconGroup.alpha = v; placeIcon(1 + (1 - v) * 0.4); } }));",
+    "  await oni.tween({ from: 1, to: 0, duration: cfg.iconOutMs, ease: E.inQuad,",
+    "    onUpdate: (v) => { iconGroup.alpha = v; placeIcon(1 + (1 - v) * 0.4); } });",
     "}",
-    "await Promise.all(outs);",
     "",
-    "try { panel.remove(); } catch (e) {}",
     "try { if (iconGroup) iconGroup.destroy({ children: true }); } catch (e) {}",
     "done();",
   ].join("\n");

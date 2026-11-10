@@ -5223,6 +5223,7 @@ async function applyWeaponReadEffect(row, ctx) {
   const evict = !(evictRaw === "0" || evictRaw === "false" || evictRaw === "no");
 
   const counters = { ...(actor.getFlag?.(FLAG_NS, "weaponReads") ?? {}) };
+  const before = Object.fromEntries(Object.entries(counters).map(([k, n]) => [k, weaponReadEfficiency(n, window, curve)]));
   if (evict) {
     for (const k of Object.keys(counters)) {
       if (k !== family && counters[k] > 0) counters[k] -= 1;
@@ -5250,7 +5251,17 @@ async function applyWeaponReadEffect(row, ctx) {
     + `${evict ? "" : " (FROZEN — nothing recovers)"}`
     + `  [${Object.entries(counters).map(([k, n]) => `${k}:${n}`).join(" ")}]`);
 
-  return { ok: true, kind: "weapon_read", family, efficiency: shown, frozen: !evict };
+  // What the table did, for the passive fallback's beats and System Message
+  // lines (passive-anim-rules.js): efficiency DOWN = the owner's resistance UP.
+  //   raised  — the read lane dropped (a new read, or a lane read again before it cleared)
+  //   maxed   — read again while already at the floor: nothing changed
+  //   lowered — the OTHER lanes that recovered a step (resistance down)
+  const was = before[family] ?? 100;
+  const raised = shown < was;
+  const lowered = Object.keys(counters).filter((k) => k !== family && WEAPON_READ_FAMILIES.includes(k)
+    && weaponReadEfficiency(counters[k], window, curve) > (before[k] ?? 100));
+  return { ok: true, kind: "weapon_read", family, efficiency: shown, frozen: !evict,
+    raised, maxed: !raised, lowered };
 }
 
 const EFFECT_KIND_DISPATCH = {
