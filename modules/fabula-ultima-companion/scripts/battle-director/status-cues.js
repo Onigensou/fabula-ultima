@@ -334,7 +334,10 @@ function cueHTML(token, cues, w, H) {
     // stays clear of the head cues, the waist passive card and the feet status strip.
     const flip = (token.mesh?.scale?.x ?? 1) < 0;          // drawn facing right unless flipped
     const c = Math.max(26, 36 * k);
-    const x = w * (flip ? 0.86 : 0.14);
+    // Centre just OUTSIDE the frame edge (the icon box is 1.34c wide, centred on x): PC
+    // battler frames are narrow and the body fills them, so an inset spot sat on the body.
+    const half = c * 0.67, edge = w * 0.06;
+    const x = flip ? w - edge + half : edge - half;
     brk.forEach((cue, i) => {
       h += `<span class="brk ${cue === "armorbreak" ? "def" : "mdef"}" style="--c:${px(c)};left:${px(x)};top:${px(H * 0.4 + i * (c + 3))}">${brkSVG(cue)}</span>`;
     });
