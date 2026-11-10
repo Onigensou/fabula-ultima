@@ -14,6 +14,7 @@
 // the full v1 scope + caveats.
 
 import { log, warn } from "./logger.js";
+import { clearBattleRecord } from "./director-battle-log.js";
 import { BattleDirector } from "./director.js";
 import { STATE_HANDLERS, installGuardHpWatcher, installApplierReaperWatcher, installSideWipeWatcher, checkSideWipe } from "./state-handlers.js";
 import { installGrappledCoverWatcher } from "./grappled.js";
@@ -437,6 +438,11 @@ async function start(arg) {
   // event's rule reads the battlefield. No-ops unless the conflict scene
   // selects an event. See [[conflict-event]].
   registerBuiltinReactor(conflictEventReactor);
+
+  // A fresh battle starts its own record (rank + totals read it at the end). A
+  // battle stopped without reaching battle end would otherwise leave its rows
+  // for this one. Resume never comes through here, so a resumed battle keeps its.
+  try { await clearBattleRecord(); } catch (e) { warn("start: clearBattleRecord threw", e); }
 
   _instance = director;
   announceHost();

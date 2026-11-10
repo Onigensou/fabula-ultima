@@ -18,7 +18,7 @@ import { runBattleEndTransition } from "./battle-end-transition.js";
 import { runBattleEndResourceReset } from "./battle-end-cleanup.js";
 import { evaluateFollowups, mergeRewardSnapshots } from "./battle-followup.js";
 import { evaluateUndying } from "./undying/undying.js";
-import { flushBattleLog } from "../director-battle-log.js";
+import { flushBattleLog, readBattleRecord, clearBattleRecord } from "../director-battle-log.js";
 import { isRewardRecipient } from "./battle-end-rewards.js";
 
 function detectOutcome(director) {
@@ -65,6 +65,9 @@ export async function runBattleEndSequence(director) {
       .map(c => c.actorDoc?.id)
       .filter(Boolean))],
     totalRounds: dc?.round ?? 0,
+    // Every row of this battle (the sheet table keeps only the last 30). Rank +
+    // totals read this; empty → they fall back to the DB actor's table.
+    battleRows: (() => { try { return readBattleRecord(); } catch { return []; } })(),
     isBoss: !!(payload?.battlePlan?.isBoss) ||
             String(payload?.battlePlan?.type ?? "").toLowerCase() === "boss",
     battleType: String(payload?.battlePlan?.type ?? "default").toLowerCase(),
@@ -169,6 +172,8 @@ export async function runBattleEndSequence(director) {
     // Consume any pre-filled (sword-button) prompt result so it can't leak
     // into the follow-up battle's own Battle-End prompt later.
     director.ctx.battleEndPromptResult = null;
+    // The ambush is a new conflict with its own grade: start its record fresh.
+    try { await clearBattleRecord(); } catch (e) { warn("[BattleEnd] clearBattleRecord threw", e); }
     // Skip the prompt, FX, summary, transition, and resource reset — the won
     // fight is not "over"; it continues as the boss conflict.
     return;
@@ -209,6 +214,9 @@ export async function runBattleEndSequence(director) {
     await runBattleEndRank(endCtx);
     await runBattleEndSummaryUI(endCtx); // awaited: transition only starts after GM's animation finishes
   }
+
+  // The battle is over (any outcome): its record has been read, drop it.
+  try { await clearBattleRecord(); } catch (e) { warn("[BattleEnd] clearBattleRecord threw", e); }
 
   await runBattleEndTransition(endCtx);
 

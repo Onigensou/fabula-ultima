@@ -105,20 +105,27 @@ export async function runBattleEndRank(endCtx) {
     return partyNames.has(n) || friendlyTokenNames.has(n);
   }
 
-  // Parse battle_log_table
-  const table = dbActor?.system?.props?.battle_log_table ?? {};
-  const rawRows = Object.values(table);
-  // A Chain action logs ONE row per target for all its strikes; the strike
-  // counts ride the matching JSON entry (`battle_log`, appended in lockstep and
-  // capped together, so index i ↔ row i). Read them so a Chain counts per strike.
-  let chainEntries = null;
-  try {
-    const parsed = JSON.parse(String(dbActor?.system?.props?.battle_log ?? "[]"));
-    if (Array.isArray(parsed) && parsed.length === rawRows.length) chainEntries = parsed;
-  } catch (_) { chainEntries = null; }
-  const rows = rawRows
-    .map((r, i) => (r && chainEntries?.[i]?.chain ? { ...r, _chain: chainEntries[i].chain } : r))
-    .filter(r => r && r.$deleted !== true);
+  // The whole battle's rows (endCtx.battleRows, each carrying its own `_chain`).
+  // Fallback when the BD logged nothing (legacy macro fights, harness capture):
+  // the DB actor's table, which holds only the last 30 rows.
+  let rows;
+  if (Array.isArray(endCtx.battleRows) && endCtx.battleRows.length) {
+    rows = endCtx.battleRows.filter(r => r && r.$deleted !== true);
+  } else {
+    const table = dbActor?.system?.props?.battle_log_table ?? {};
+    const rawRows = Object.values(table);
+    // A Chain action logs ONE row per target for all its strikes; the strike
+    // counts ride the matching JSON entry (`battle_log`, appended in lockstep and
+    // capped together, so index i ↔ row i). Read them so a Chain counts per strike.
+    let chainEntries = null;
+    try {
+      const parsed = JSON.parse(String(dbActor?.system?.props?.battle_log ?? "[]"));
+      if (Array.isArray(parsed) && parsed.length === rawRows.length) chainEntries = parsed;
+    } catch (_) { chainEntries = null; }
+    rows = rawRows
+      .map((r, i) => (r && chainEntries?.[i]?.chain ? { ...r, _chain: chainEntries[i].chain } : r))
+      .filter(r => r && r.$deleted !== true);
+  }
 
   let partyHits = 0, partyMiss = 0;
   let weakHits = 0, resistHits = 0, absorbHits = 0, immuneHits = 0;

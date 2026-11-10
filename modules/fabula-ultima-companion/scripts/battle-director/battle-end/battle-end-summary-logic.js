@@ -129,7 +129,10 @@ export async function runBattleEndSummaryLogic(endCtx) {
       };
 
       let totalDamage = 0, totalHealing = 0;
-      const rows = extractBattleLogRows(dbProps.battle_log_table);
+      // Whole battle when the BD logged it; else the table (last 30 rows only).
+      const rows = (Array.isArray(endCtx.battleRows) && endCtx.battleRows.length)
+        ? endCtx.battleRows
+        : extractBattleLogRows(dbProps.battle_log_table);
 
       for (const row of rows) {
         if (!row || typeof row !== "object") continue;
