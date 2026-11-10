@@ -6576,8 +6576,8 @@ function describeDealDamage(row, ctx = {}) {
     damageResource: String(row.damage_resource ?? "hp").trim().toLowerCase() || "hp",
     // Action keywords carried by THIS damage instance (comma/newline list) —
     // the effect-damage counterpart of a weapon's `action_keywords` prop and of
-    // an `apply_action_keyword` reaction. Currently only `crush` is read by the
-    // incoming ruleset ("cannot be Reduce and ignore immunity"), which is what
+    // an `apply_action_keyword` reaction. `crush` and `expose` are read by the
+    // incoming ruleset (Crush: bypasses Immunity + damage reduction; Expose: affinity one stage lower), which is what
     // lets a curse/drain land past DR and Immunity.
     damageKeywords: String(row.damage_keywords ?? "").trim(),
     // HP-only damage that ignores the victim's Shield (see applyDamageToTarget's
