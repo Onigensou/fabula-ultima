@@ -108,6 +108,7 @@ import { initKeywordSuggest } from "./keyword-suggest.js";
 import { initDevToolsMenu, registerDevTool } from "./dev-tools-menu.js";
 import { registerAutopilotSetting, registerAutopilotDevTool } from "./enemy-autopilot.js";
 import { registerSummonAutopilotSetting, registerSummonAutopilotDevTool } from "./summon-autopilot.js";
+import { isRewardRecipient } from "./battle-end/battle-end-rewards.js";
 import { initDirectorSurfaces, getActiveSurfaces, hasSurface, countSurfaces, clearAllSurfaces } from "./director-surfaces.js";
 import { sweepTransientAEsAtSceneEnd, sweepRetainedSummonsAtSceneEnd, clearQuickSummonLocks, firePassiveTriggers, installRiderAeLinkage, installOnRemoveFollowup, fireResourceChangeTrigger } from "./skill-effects.js";
 import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
@@ -1642,7 +1643,8 @@ Hooks.once("ready", () => {
       const promptEndCtx = {
         outcome:      detectedOutcome,
         sourceSceneId: dc?.sourceSceneId ?? null,
-        partyActorIds: party.map(c => c.actorDoc?.id).filter(Boolean),
+        // Party's own characters only — no guest, no summon (see isRewardRecipient).
+        partyActorIds: [...new Set(party.filter(isRewardRecipient).map(c => c.actorDoc?.id).filter(Boolean))],
         defaultRewards: {
           expByActorId:   _bdSnap.expByActorId   ?? {},
           zenitByActorId: _bdSnap.zenitByActorId ?? {},

@@ -19,6 +19,7 @@ import { runBattleEndResourceReset } from "./battle-end-cleanup.js";
 import { evaluateFollowups, mergeRewardSnapshots } from "./battle-followup.js";
 import { evaluateUndying } from "./undying/undying.js";
 import { flushBattleLog } from "../director-battle-log.js";
+import { isRewardRecipient } from "./battle-end-rewards.js";
 
 function detectOutcome(director) {
   const dc = director.dCombat;
@@ -58,10 +59,11 @@ export async function runBattleEndSequence(director) {
     outcome:      detectOutcome(director),
     sourceSceneId: dc?.sourceSceneId ?? null,
     battleSceneId: dc?.scene?.id ?? canvas?.scene?.id ?? null,
-    partyActorIds: (dc?.combatants ?? [])
-      .filter(c => c.side === "party")
+    // Party's own characters only — no guest, no summon (see isRewardRecipient).
+    partyActorIds: [...new Set((dc?.combatants ?? [])
+      .filter(isRewardRecipient)
       .map(c => c.actorDoc?.id)
-      .filter(Boolean),
+      .filter(Boolean))],
     totalRounds: dc?.round ?? 0,
     isBoss: !!(payload?.battlePlan?.isBoss) ||
             String(payload?.battlePlan?.type ?? "").toLowerCase() === "boss",

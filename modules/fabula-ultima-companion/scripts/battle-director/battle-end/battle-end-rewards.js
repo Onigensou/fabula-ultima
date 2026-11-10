@@ -20,6 +20,17 @@
 import { log, warn } from "../logger.js";
 import { computeExpAward } from "../../shared/exp-core.js";
 import { isBattlefieldObject } from "../battlefield-object.js";
+import { isSummonCombatant } from "../summon-autopilot.js";
+
+// Who the victory rewards are FOR: the party's own characters. Party-side is
+// not enough — a GUEST (Kalina) and a SUMMON stand on the party side too, and
+// counting them gave the guest a reward-prompt row, real EXP/Zenit on her
+// actor, and one of the four Victory-screen panels. isSummonCombatant folds
+// the guest marker (bdGuest) in, so this one check drops both.
+// Every battle-end list of party actors (snapshot, prompt, award) reads this.
+export function isRewardRecipient(c) {
+  return c?.side === "party" && !!c.actorDoc && !isSummonCombatant(c);
+}
 
 function randIntInclusive(min, max) {
   const lo = Math.min(Math.floor(Number(min)), Math.floor(Number(max)));
@@ -41,7 +52,7 @@ export async function computeBattleEndRewards(dCombat, isBoss) {
 
   if (!dCombat) return { expByActorId, zenitByActorId };
 
-  const partyCombatants = dCombat.combatants.filter(c => c.side === "party" && c.actorDoc);
+  const partyCombatants = dCombat.combatants.filter(isRewardRecipient);
   // A battlefield object (a Lightning Crystal) is on the enemy side but is not
   // an enemy — it is worth no EXP and carries no Zenit.
   const enemyCombatants = dCombat.combatants.filter(c => c.side === "enemy" && c.actorDoc && !isBattlefieldObject(c.actorDoc));
