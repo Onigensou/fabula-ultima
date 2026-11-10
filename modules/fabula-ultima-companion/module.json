@@ -447,6 +447,7 @@
     "scripts/shared/code-backed-content.js",
     "scripts/shared/identifier-registry.js",
     "scripts/shared/system-message.js",
+    "scripts/shared/resource-panel.js",
     "scripts/dungeon-pathing-system/dp-trap-rules.js",
     "scripts/dungeon-pathing-system/dp-trap-fx.js",
     "scripts/linked-text/lt-boot.js",
