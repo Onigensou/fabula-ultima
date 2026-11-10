@@ -66,6 +66,9 @@ const DATA = [
   ["Shaken",      "ImFKpNNGjstom7Q9", BF + "MAGIC%20ATTACK%20DOWN.png",  "status"],
   ["Enraged",     "XkuOy0BFvKJTewGS", BF + "DEFENSE%20DOUBLE%20DOWN.png","status"],
   ["Poisoned",    "JltwIqzHbBKhkD45", BF + "ATK%20DOUBLE%20DOWN.png",    "status"],
+  // Armor Break / Magic Break added 2026-11-10 (journals created by
+  // tools/safe-edit/bin/_build-break-statuses.js, not by a re-harvest).
+  ["Armor Break", "ArmrBreakStatus1", SK + "07_MNK/rockbreaker.png",     "status"],
   ["Bane",        "SNK1IJTKfxjAy2NS", SK + "BLU/basic_instinct.png",     "status"],
   ["Berserk",     "aPF9gzkqnUkcQmIC", SK + "02_WAR/infuriate.png",       "status"],
   ["Bleed",       "GePNxftPupElcCWp", SK + "RPR/cross_reaping.png",      "status"],
@@ -89,6 +92,7 @@ const DATA = [
   ["Hypothermia", "QgECPH7ZhbRhag3K", SK + "BLU/northerlies.png",        "status"],
   ["Isolate",     "yE84jvVXyebDulAP", SK + "RPR/enshroud.png",           "status"],
   ["KO",          "Fes171ebnXnTSVdd", BF + "Incapacitate.png",           "status"],
+  ["Magic Break", "MagcBreakStatus1", SK + "17_PCT/Role_Actions/Addle.png", "status"],
   ["Obscure",     "ZdBbIFKzxQQcY71T", SK + "BLU/cold_fog.png",           "status"],
   ["Oil",         "Vnd1QB9lYQMYvIDF", SK + "BLU/self-destruct.png",      "status"],
   ["Panic",       "vf421bQSPCjLAvBW", BF + "Stun.png",                   "status"],
@@ -209,6 +213,8 @@ const DESC = {
   "ImFKpNNGjstom7Q9": "<p>Decrease this creature <strong>【WLP】</strong>die size by one stage.</p><table border=\"1\"><tbody><tr><td><strong>Advance Condition</strong></td></tr><tr><th>Wither</th></tr><tr><td>Despair</td></tr><tr><td>Panic</td></tr></tbody></table>",
   "XkuOy0BFvKJTewGS": "<p>Decrease this creature <strong>【DEX】</strong>and <strong>【INS】</strong>by one stage.</p><table border=\"1\"><tbody><tr><td><strong>Advance Condition</strong></td></tr><tr><th> Berserk</th></tr><tr><td> Burn</td></tr><tr><td> Blind</td></tr></tbody></table>",
   "JltwIqzHbBKhkD45": "<p>Decrease this creature 【<strong>MIG】</strong> and 【<strong>WLP】</strong> die by one stage.</p><table border=\"1\"><tbody><tr><td><strong>Advance Condition</strong></td></tr><tr><th> Bleed</th></tr><tr><td><strong>Envenomed</strong></td></tr><tr><td><strong>Curse</strong></td></tr></tbody></table>",
+  "ArmrBreakStatus1": "<p>Reduce <strong>DEF</strong> by 25% <em>(Rounded Up)</em></p><p><em>The remaining DEF is rounded up: 19 DEF becomes 15.</em></p><p><strong>Basic Condition:</strong></p><p>Slow</p>",
+  "MagcBreakStatus1": "<p>Reduce <strong>M.DEF</strong> by 25% <em>(Rounded Up)</em></p><p><em>The remaining M.DEF is rounded up: 15 M.DEF becomes 12.</em></p><p><strong>Basic Condition:</strong></p><p>Dazed</p>",
   "SNK1IJTKfxjAy2NS": "<p>Reduce all damage dealt by <strong>Basic Attacks</strong> by 50% <em>(Rounded Down)</em></p><p><em>Reduction is calculated after Damage resistance and Immunity.</em></p><p><strong>Basic Condition:</strong></p><p>Weak</p>",
   "aPF9gzkqnUkcQmIC": "<p>Increase all damage dealt by this creature by <strong>2 times</strong> but disable all action except for the <strong>【Attack】</strong>action.</p><p><strong>Basic Condition:</strong></p><p>Enraged</p>",
   "GePNxftPupElcCWp": "<p>Reduce effectiveness of healing effects on this creature by 50%</p><p><strong>Basic Condition:</strong></p><p>Poisoned</p>",
