@@ -23,12 +23,22 @@ const { shell, inner } = require("./dungeon-templates.js");
 // Form Shift just applied), never passed in — the animation must not need to
 // know which branch the pool drew. That is also why the SAME function serves
 // both shifts: the Crisis one differs only in which stance names it maps.
+//
+// ⚠ TIMING. The Battle Director plays ANIMATION before RESOLVE, and RESOLVE is
+// where the pool draw applies the stance AE. Reading the actor at the top of
+// the script therefore sees the stance from BEFORE the shift — usually none,
+// since the strike spends it — and the panel said "draws its weapon" (session
+// 2026-11-09). So the script opens the gate FIRST (Form Shift deals no damage,
+// nothing lands early), then waits for a stance that was not on the actor when
+// it started, and only then announces it. If none appears it announces
+// nothing: a generic or stale weapon name is a wrong telegraph.
 function formShift(opts = {}) {
   const cfg = Object.assign({
     verb: "draws",
     // stance AE name -> [display name, icon url]. Filled by the build script.
     forms: {},
-    fallbackForm: "weapon",
+    // How long to wait for RESOLVE to apply the drawn stance.
+    stanceWaitMs: 2500, stancePollMs: 50,
     panelMs: 380, panelHoldMs: 1500, panelOutMs: 340,
     panelTop: 0.11, panelSlide: 46,
     // Battle Director house theme — the same tokens turn-ui.js defines and
@@ -52,18 +62,36 @@ function formShift(opts = {}) {
     "const host = oni.layer({ zIndex: 94000 });",
     "",
     "// Which stance is the Rakshasa actually holding? Read it off the actor so",
-    "// the animation follows the pool draw instead of duplicating it.",
+    "// the animation follows the pool draw instead of duplicating it. The draw",
+    "// is applied in RESOLVE, AFTER this script opens the gate, so: note what is",
+    "// held now, open the gate, then wait for a stance that is NEW.",
+    "function heldStances() {",
+    "  const out = [];",
+    "  try {",
+    "    const eff = caster.actor && caster.actor.effects ? Array.from(caster.actor.effects) : [];",
+    "    for (const e of eff) {",
+    "      const nm = String((e && (e.name || e.label)) || '').trim();",
+    "      if (nm && cfg.forms[nm]) out.push(nm);",
+    "    }",
+    "  } catch (e) {}",
+    "  return out;",
+    "}",
+    "const before = heldStances();",
+    "done();",
     "let formKey = null;",
-    "try {",
-    "  const eff = caster.actor && caster.actor.effects ? Array.from(caster.actor.effects) : [];",
-    "  for (const e of eff) {",
-    "    const nm = String((e && (e.name || e.label)) || '').trim();",
-    "    if (nm && cfg.forms[nm]) { formKey = nm; break; }",
-    "  }",
-    "} catch (e) {}",
-    "const form = formKey ? cfg.forms[formKey] : null;",
-    "const formName = form ? form.label : cfg.fallbackForm;",
-    "const formIcon = form ? form.icon : null;",
+    "const waitEnd = Date.now() + cfg.stanceWaitMs;",
+    "while (!formKey) {",
+    "  const fresh = heldStances().filter((nm) => before.indexOf(nm) < 0);",
+    "  if (fresh.length) { formKey = fresh[0]; break; }",
+    "  if (Date.now() >= waitEnd) break;",
+    "  await wait(cfg.stancePollMs);",
+    "}",
+    "// No new stance = nothing trustworthy to announce. Stay silent rather than",
+    "// name a weapon the Rakshasa is not holding.",
+    "if (!formKey) { done(); return; }",
+    "const form = cfg.forms[formKey];",
+    "const formName = form.label;",
+    "const formIcon = form.icon;",
     "const who = (caster.document && caster.document.name) || (caster.actor && caster.actor.name) || 'The Rakshasa';",
     "",
     "playSfx('sfx', 'sfxVol');",
@@ -199,9 +227,6 @@ function formShift(opts = {}) {
     "}",
     "",
     "await slideIn;",
-    "// Form Shift deals no damage, but the gate still has to open or BD waits",
-    "// out the whole timeout before the next activation.",
-    "done();",
     "",
     "await wait(cfg.panelHoldMs);",
     "",
