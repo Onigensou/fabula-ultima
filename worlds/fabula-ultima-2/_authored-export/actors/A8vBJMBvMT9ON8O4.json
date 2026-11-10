@@ -270,6 +270,7 @@
     "fabula-ultima-companion": {
       "affinity_class_magic": "NA",
       "affinity_class_strike": "NA",
+      "campFloat": true,
       "check_mod_dex": 0,
       "check_mod_ins": 0,
       "check_mod_mig": 0,

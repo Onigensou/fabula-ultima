@@ -31,6 +31,9 @@
 //
 // Optional per actor: flags.<module>.campSprite = image used at camp instead
 // of the prototype token art (Crysta's token art is her battle animation).
+// Optional per actor: flags.<module>.campFloat = true/false, whether the
+// summon idles with a float at camp. Unset → the actor's own idle setting
+// (flags.<module>.idleAnimation.float). Walkers (Leichi, Leilan) stay grounded.
 
 import { companionsOf } from "../party-menu/party-menu-companions.js";
 import { getPartyRoster } from "../party-menu/party-menu-core.js";
@@ -41,6 +44,7 @@ const CHANNEL = `module.${MOD}`;
 export const FLAG = "campSummon";
 export const SKILL_FLAG = "campSummons";
 const SPRITE_FLAG = "campSprite";
+const FLOAT_FLAG = "campFloat";
 const RETURN_FLAG = "campSummonsReturn";   // scene flag: who comes back in the Sleep lobby
 export const MSG = Object.freeze({
   REQ: "campSummon:req",     // player → primary GM { op, userId, ownerActorId, key }
@@ -87,6 +91,13 @@ function actorFrom(ref) {
 /** The image a summon wears at camp. */
 export function campSpriteOf(actor) {
   return str(actor?.getFlag?.(MOD, SPRITE_FLAG)) || actor?.prototypeToken?.texture?.src || actor?.img || "";
+}
+
+/** Whether a summon idles with a float at camp. */
+export function campFloatOf(actor) {
+  const own = actor?.getFlag?.(MOD, FLOAT_FLAG);
+  if (typeof own === "boolean") return own;
+  return !!actor?.getFlag?.(MOD, "idleAnimation")?.float;
 }
 
 /**
@@ -257,7 +268,7 @@ async function spawnGroup(scene, owner, userId, group) {
     d.flags[MOD] = {
       ...(d.flags[MOD] ?? {}),
       [FLAG]: { ownerActorId: owner.id, ownerUserId: userId, key: group.key, order: i },
-      idleAnimToken: { float: true, bounce: false },
+      idleAnimToken: { float: campFloatOf(actor), bounce: false },
       walkThrough: true,
     };
     Object.assign(d, {
