@@ -192,6 +192,10 @@ function isShown(el) {
 function place() {
   const root = document.getElementById(ROOT_ID);
   if (!root) return;
+  // HudDock's right stack (2026-11-11) shares the space above the dice with
+  // the Alter the Story button; the old measuring below is the no-dock fallback.
+  const slot = globalThis.oni?.HudDock?.rightSlot?.("conflict-emblem");
+  if (slot) { root.style.left = `${slot.left}px`; root.style.top = `${slot.top}px`; return; }
   const SIZE = 46;
   // The desk's root covers the whole screen; its panels (and the fold tab and
   // "waiting on" strip above them) are what take room. The left tool column
@@ -234,6 +238,7 @@ function showEmblem(id, event) {
   root.addEventListener("click", (ev) => { ev.preventDefault(); ev.stopPropagation(); S.open ? closeTutorial() : openTutorial(); });
   document.body.appendChild(root);
   place();
+  globalThis.oni?.HudDock?.registerRight?.("conflict-emblem", { order: 10, size: 46, present: () => !!document.getElementById(ROOT_ID) });
   S.placeTimer = setInterval(place, PLACE_EVERY_MS);
   preloadPages();
   log(`emblem up — ${id}`);
