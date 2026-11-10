@@ -22,10 +22,13 @@ const STYLE_ID = "oni-trap-fx-style";
 const DELAY_MS = 60;
 const STAGGER_MS = 120;
 const LIFETIME_MS = 1150;
-// Cascade like a chain hit (director-damage-numbers CASCADE_STEPS), spread
-// wider sideways so the faces do not overlap.
-const CASCADE = [[-42, -54], [-14, -36], [14, -18], [42, 0]];
-const SPREAD_X = 1.6;
+// One row per member, first member on top, with a slight diagonal like a
+// chain hit. A face + number is ~110 px wide, so the battle's tighter
+// diagonal steps overlapped at full size (staging, 2026-11-10). Earlier rows
+// start rising first, so the gaps only grow.
+const ROW_GAP = 36;
+const CASCADE = [[-24, -3 * ROW_GAP], [-8, -2 * ROW_GAP], [8, -ROW_GAP], [24, 0]];
+const SPREAD_X = 1;
 const SFX_VOLUME = 0.8;
 
 function ensureStyle() {
