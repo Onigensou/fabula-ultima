@@ -489,6 +489,13 @@
     actionContext      = null,
     actionCardMsgId    = null,
     accuracy           = null,
+    // HP damage never takes a living target below this (0 = no floor). A target
+    // already at 0 stays at 0. Dungeon traps pass 1: they hurt, never knock out.
+    hpFloor            = 0,
+    // Run the whole pipeline but write nothing and play nothing: returns the
+    // same record with the projected from/to values. Lets a caller show the
+    // outcome before the (slow, CSB-recompute) writes land.
+    dryRun             = false,
   } = {}) {
     if (!targetActor) throw new Error("[applyDamage] targetActor is required");
 
@@ -644,7 +651,9 @@
         }
         postShield = shield;
         postHP     = Math.max(startHP - remaining, 0);
-        await targetActor.update({
+        const floor = Math.max(0, _num(hpFloor));
+        if (floor > 0 && startHP > 0 && postHP < floor) postHP = Math.min(startHP, floor);
+        if (!dryRun) await targetActor.update({
           "system.props.shield_value": postShield,
           "system.props.current_hp":   postHP,
         }, _reactionDedupeOpts);
@@ -653,34 +662,45 @@
       case "hpRecovery": {
         const amt = Math.abs(finalValue || resolvedBase);
         postHP = Math.min(startHP + amt, _num(props.max_hp));
-        await targetActor.update({ "system.props.current_hp": postHP }, _reactionDedupeOpts);
+        if (!dryRun) await targetActor.update({ "system.props.current_hp": postHP }, _reactionDedupeOpts);
         break;
       }
       case "mpReduction": {
         postMP = Math.max(startMP - finalValue, 0);
-        await targetActor.update({ "system.props.current_mp": postMP });
+        if (!dryRun) await targetActor.update({ "system.props.current_mp": postMP });
         break;
       }
       case "mpRecovery": {
         const amt = Math.abs(finalValue || resolvedBase);
         postMP = Math.min(startMP + amt, _num(props.max_mp));
-        await targetActor.update({ "system.props.current_mp": postMP });
+        if (!dryRun) await targetActor.update({ "system.props.current_mp": postMP });
         break;
       }
       case "shieldReduction": {
         if (finalValue > 0 && startShield > 0 && startShield <= finalValue) shieldBreak = true;
         postShield = Math.max(startShield - finalValue, 0);
-        await targetActor.update({ "system.props.shield_value": postShield });
+        if (!dryRun) await targetActor.update({ "system.props.shield_value": postShield });
         break;
       }
       case "shieldRecovery": {
         postShield = Math.max(finalValue, startShield);
-        await targetActor.update({ "system.props.shield_value": postShield });
+        if (!dryRun) await targetActor.update({ "system.props.shield_value": postShield });
         break;
       }
     }
 
     const affected = (postHP !== startHP) || (postMP !== startMP) || (postShield !== startShield);
+
+    if (dryRun) {
+      return {
+        finalValue, resolvedBase, changeKey: currentChangeKey, valueType,
+        damageClass: resolvedDamageClass, affinity, weaponEfficiencyUsed,
+        preAffinityBreakdown, shieldBreak, affected, verbosity, dryRun: true,
+        hp:     { from: startHP,     to: postHP     },
+        mp:     { from: startMP,     to: postMP     },
+        shield: { from: startShield, to: postShield },
+      };
+    }
     const isHeal   = currentChangeKey.endsWith("Recovery");
     const { effectFile, textColor, damageIcon, audioFile } = _resolveAV(valueType, isHeal, affinity);
     const displayAmt = Math.abs(finalValue || resolvedBase);
