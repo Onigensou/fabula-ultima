@@ -5714,70 +5714,6 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "effects": [
-        {
-          "_id": "Cv3qjVD4rtSDeihL",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [
-            {
-              "key": "ip_reduction_value",
-              "mode": 2,
-              "priority": 20,
-              "value": "1"
-            }
-          ],
-          "description": "<p><em>Deep Pockets:</em> spend 1 less Inventory Point (minimum 1).</p>",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": 298800,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "WLWFfxV0AePMiIQB",
-              "originalParentId": "04XUHlRJhyvJIaGb",
-              "originalUuid": "Item.04XUHlRJhyvJIaGb.ActiveEffect.WLWFfxV0AePMiIQB"
-            },
-            "fabula-ultima-companion": {
-              "category": "buff"
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Elsword/Lithia/FortuneFinderPassive1.png",
-          "name": "Deep Pockets",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": [
-              "buff"
-            ]
-          },
-          "tint": "#ffffff",
-          "transfer": true,
-          "type": "base"
-        }
-      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -5801,7 +5737,7 @@
           "cost": "",
           "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<p>When you spend Inventory Points, you spend 1 less Inventory Point <em>(to a minimum of 1).</em></p>",
+          "description": "<p>Equipped passive: potions and magispheres you create cost 1 less IP (minimum 1).</p>",
           "duration": "",
           "effect_table": {
             "0": {
@@ -5813,11 +5749,11 @@
               "effect_label": "mc_disc"
             }
           },
-          "heroic_requirement": "You must have mastered the Tinkerer Class.",
+          "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
           "isFacet": false,
-          "isHeroic": true,
+          "isHeroic": false,
           "isOffensiveSpell": false,
           "isReaction": true,
           "isZeroPower": false,
