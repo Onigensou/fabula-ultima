@@ -891,6 +891,15 @@ Hooks.once("ready", () => {
         text-align: right;
       }
 
+      /* While the Victory screen is up, Foundry's chrome stays away, as Battle
+         Focus kept it during the fight (the battle end tears the GM desk, and
+         with it Battle Focus, down before this screen plays). Players already
+         have these hidden by Hide Player UI. */
+      body.oni-sum-focus #hotbar, body.oni-sum-focus #players,
+      body.oni-sum-focus #controls, body.oni-sum-focus #logo,
+      body.oni-sum-focus #navigation, body.oni-sum-focus #fud-devtools-btn,
+      body.oni-sum-focus #fud-devtools-children { display: none !important; }
+
       /* ==========================================================
          BATTLE GRADE v2 (compact layout; all left of the token zone)
       ========================================================== */
@@ -1596,6 +1605,7 @@ Hooks.once("ready", () => {
 
     await sleep(Math.max(TITLE_OUT_MS, 360));
     try { root.remove(); } catch {}
+    document.body.classList.remove("oni-sum-focus");
   }
 
   // ---------------------------------------------------------------------------
@@ -1646,6 +1656,9 @@ const footerData = {
     };
 
     const { root, dim, uiWrap, title, grid } = buildRoot({ runId, lockInteractions });
+    document.body.classList.add("oni-sum-focus");
+    // Safety: if this run dies half-way, never leave the chrome hidden.
+    setTimeout(() => { if (!document.querySelector(".oni-sum-root")) document.body.classList.remove("oni-sum-focus"); }, 90000);
 
     // Build cards (max 4, 2x2)
     const shown = entries.slice(0, 4);
