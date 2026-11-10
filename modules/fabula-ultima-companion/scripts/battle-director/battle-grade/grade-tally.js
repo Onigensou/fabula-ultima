@@ -202,6 +202,10 @@ Hooks.on("createActiveEffect", (eff) => {
     if (!by?.reactorActorUuid) return;
     const name = String(eff.name ?? eff.label ?? "").trim().toLowerCase();
     if (SKIP_AE.has(name)) return;
+    // Conflict-start passives (Protect, Prophetic Defender, …) fire on their own
+    // before anyone acts; they are not play, so they don't feed the grade. A
+    // Free Round's actions log "act" first, so their effects still count.
+    if (!load().events.some((e) => e.k === "act")) return;
     const a = keyOf(by.reactorActorUuid) ?? keyOf(by.reactorTokenUuid);
     const host = eff.parent;
     const t = keyOf(host?.uuid) ?? keyOf(host?.token?.uuid ?? null);
