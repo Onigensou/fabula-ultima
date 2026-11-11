@@ -354,6 +354,23 @@ inventing something. 590 configured skills, 416 reaction rows, 1808 effect rows.
   edits, build the declarative knob first. No per-skill custom JS, no engine
   branching on skill name / UUID.
 
+- **H3 — Animation code frees what it creates.** A skill's `animation_script`, and
+  any module code that draws, plays clips or schedules frames, must release every
+  texture, video, ticker callback, timer and display object it makes, on every
+  exit path (finished, errored, cancelled, scene change). Prefer the `oni` helpers
+  (`oni.layer`, `oni.particles`, `oni.radialTexture` / `gradientTexture`,
+  `oni.vfx` / `pxfx`): they clean up on `oni.dispose()`. A script's own
+  `PIXI.Texture.from(<canvas|video>)` is swept after the run once nothing shows it
+  (`pseudo-animation/texture-sweep.js`), **unless the script writes a
+  `globalThis` / `window` store** (then nothing is swept; it must free its own) or
+  carries `// oni:keep-textures`. Free child sprites' textures BEFORE destroying
+  their container (a container destroy with `texture:false` leaves nothing to
+  free). Check with the leak check, which also runs by itself at the end of a turn
+  that edited animation code: `tools/snapshot-runner/checks/fx-leak.js` (README:
+  `tools/snapshot-runner/README.md`). *(2026-11-12: sprite-shadow bakes, `oni`
+  gradient textures, Soul Tithe fire, pose videos, the HUD curtain and Glacies
+  Finis' ice videos all leaked per use.)*
+
 ## I. Process
 
 - **I1 — RAW text comes from `reference/skills.json` first** — never re-grep the

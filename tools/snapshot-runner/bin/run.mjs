@@ -136,6 +136,25 @@ try {
     const code = readFileSync(resolve(process.cwd(), process.argv[ei + 1]), "utf8");
     // Main-thread busy time over the eval (CDP Performance metrics): busy vs waiting, in real seconds.
     const cdp = await page.context().newCDPSession(page); await cdp.send("Performance.enable");
+    // window.__runnerGC(): force a full GC and return the used JS heap (bytes), for leak checks (checks/fx-leak.js)
+    await page.exposeFunction("__runnerGC", async () => { await cdp.send("HeapProfiler.collectGarbage"); return (await cdp.send("Runtime.getHeapUsage")).usedSize; }).catch(() => {});
+    // window.__runnerHeapSampling("start" | "stop"): V8's sampling heap profiler. "stop" returns the allocation
+    // sites of what is STILL ALIVE (after a GC), heaviest first: who holds the heap that grew.
+    await page.exposeFunction("__runnerHeapSampling", async (op) => {
+      if (op === "start") { await cdp.send("HeapProfiler.enable"); await cdp.send("HeapProfiler.startSampling", { samplingInterval: 16384 }); return true; }
+      await cdp.send("HeapProfiler.collectGarbage");
+      const { profile } = await cdp.send("HeapProfiler.stopSampling");
+      const by = new Map();
+      const walk = (n, trail) => {
+        const f = n.callFrame, here = f.url ? `${f.functionName || "(anon)"} ${f.url.replace(/^https?:\/\/[^/]+\//, "").replace(/\?.*$/, "")}:${f.lineNumber + 1}` : null;
+        // charge each sample to the nearest frame from our own code (or the deepest frame with a url)
+        const mine = here && /modules\/fabula-ultima-companion|worlds\//.test(here) ? here : trail;
+        if (n.selfSize) { const k = mine ?? here ?? "(native)"; by.set(k, (by.get(k) ?? 0) + n.selfSize); }
+        for (const c of n.children ?? []) walk(c, mine ?? here ?? trail);
+      };
+      walk(profile.head, null);
+      return [...by].sort((a, b) => b[1] - a[1]).slice(0, 20).map(([k, b]) => `${(b / 1048576).toFixed(2)} MB  ${k}`);
+    }).catch(() => {});
     const metrics = async () => Object.fromEntries((await cdp.send("Performance.getMetrics")).metrics.map((m) => [m.name, m.value]));
     const m0 = await metrics();
     const tEval = Date.now();

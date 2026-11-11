@@ -15,6 +15,7 @@
 
 import { buildOni } from "../anim-studio/oni-helpers.js";
 import { frameMeter } from "../action-animation/animation-stage.js";
+import { sweepAllowed, scopedPixi, sweepWhenUnused } from "./texture-sweep.js";
 
 // A pseudo script runs on EVERY client, so a Sequencer call inside it must play
 // only here. Sequencer's default is to also push to every other client, which
@@ -108,11 +109,17 @@ try {
 
 const Seq = typeof globalThis.Sequence === "function" ? LocalSequence : undefined;
 const meter = frameMeter(`pseudo:${ctx?.msg?.scriptId ?? "?"}`);
+// Textures the script makes from its own canvases / videos are freed once nothing shows them
+// (texture-sweep.js: they used to stay in PIXI's cache for the session, one set per cast).
+const made = new Set();
+let pixi = PIXI;
+if (sweepAllowed(scriptSource)) { try { pixi = scopedPixi(PIXI, made); } catch (e) { warn("texture sweep scope failed", e); } }
 try {
-  return await fn(ctx, canvas, PIXI, audio, loadTexture, fromUuid, wait, foundry, oni, Seq);
+  return await fn(ctx, canvas, pixi, audio, loadTexture, fromUuid, wait, foundry, oni, Seq);
 } finally {
   try { oni?.dispose?.(); } catch (e) { warn("oni.dispose threw", e); }
   meter.stop();
+  if (made.size) sweepWhenUnused(made, { root: () => canvas?.app?.stage }).catch((e) => warn("texture sweep threw", e));
 }
   }
 

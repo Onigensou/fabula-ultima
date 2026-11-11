@@ -1,0 +1,1 @@
+{ "_comment": "fx-leak check (checks/fx-leak.js): Training Ground + EVERY actor, so any party member's or enemy's animation can be played. node bin/build-snapshot.mjs --profile leak --snapshot snap-leak", "scenes": ["Training Ground"], "viewScene": "Training Ground", "actors": { "all": true } }

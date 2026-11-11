@@ -143,6 +143,25 @@ client, so player-routed prompts and socket broadcasts are untested here.
 - `write-cost.js` — median ms of an HP update on each party member (what a battle pays per write).
 - `template-edit.js` — a template layout edit must reach an instance after `reloadTemplate`.
 - `aem-registry.js` — the Active Effect registry as built at startup + refresh time (A/B it).
+- `fx-leak.js` — memory-leak check for animations. Plays workloads (`anim` = party skill animation
+  scripts, `hud` = HUD curtain hold, `battle` = a sim battle, `scene` = canvas redraw) several times
+  and fails on any counter that rises on every repeat after the warm-up: GPU textures, PIXI cache
+  entries, videos still holding media, pending frames/timers, ticker listeners, DOM, heap after a
+  forced GC. Attribution per workload: `kept` (cached per-use textures never freed), `gpuKept` (GPU
+  textures added since the warm-up, drawn vs idle, with the creating line), `domKept` (DOM growth by
+  container; chat is excluded, it is content), `heapSites` (allocation sites of the heap still alive,
+  V8 sampling profiler). The heap is a SOFT signal (`notes`, never fails the check): in the runner it
+  also holds the fake server's database (`runner/fake-io.js`, ~2 MB per battle of written documents).
+  Needs `--canvas low` (textures reach the GPU only when something renders); `--code HEAD` A/Bs a fix.
+  `run.mjs` exposes `window.__runnerGC()` (CDP GC + heap) for it. Build once with
+  `build-snapshot --profile leak --snapshot snap-leak` (every actor, so enemies can cast too).
+  `__FX_LEAK_OPTS.casters`: `party` (default), `enemies`, `all`, or actor names; `skills` picks by name.
+  **Runs by itself** on a machine that wires it: `hooks/fx-leak-hook.js` (local, gitignored, like
+  `.claude/settings.json` that wires it) marks any edit to
+  animation code (anim-studio, pseudo-animation, sprite-shadow, soul-fx, sealing-crystal, battler-pose,
+  status-cues, hud-curtain, map-ambience …) and, at the end of that turn, runs the anim workload (4 party
+  + 4 enemy animations) and the hud workload (~90 s, port 30104), after the skill-regression gate's process has finished. Leaks come back as a
+  Stop-hook message. `FX_LEAK_HOOK=0` turns it off; the battle workload stays manual.
 
 `--world-setting ns.key=<json>` overrides a world setting for one boot (A/B a kill switch).
 `bin/profile-boot.mjs <out>` profiles a runner load (phase marks + CPU profile);
