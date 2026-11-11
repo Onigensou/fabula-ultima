@@ -61,7 +61,7 @@ import { makeChainContext, resolveTargetRef } from "./skill-targeting.js";
 // the SE() accessor at every use site (see call sites below) — a destructured
 // `const { fn } = SE()` would re-freeze the binding and defeat the point.
 import * as _seStatic from "./skill-effects.js";
-import { registerHotModule } from "./hot-reload.js";
+import { registerHotModule, hotUrl } from "./hot-reload.js";
 const SE = registerHotModule(
   "battle-director/skill-effects.js",
   (t) => import(`./skill-effects.js?cb=${t}`),
@@ -104,7 +104,7 @@ import { emitMarksHidden } from "./brand-mark.js";
 let _seExtraModule = null;
 async function getSkillEffectsExtras() {
   if (_seExtraModule) return _seExtraModule;
-  _seExtraModule = await import("./skill-effects.js?cb=" + Date.now());
+  _seExtraModule = await import(hotUrl("./skill-effects.js"));
   return _seExtraModule;
 }
 import { getRuntimeSkillView, getRuntimeActionView } from "./skill-recipes.js";
@@ -4290,7 +4290,7 @@ const Target = {
         const casterToken = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === attackerActor.uuid)
           ?? null;
         if (casterToken) {
-          const stMod = await import("./standalone-reactions.js?cb=" + Date.now());
+          const stMod = await import(hotUrl("./standalone-reactions.js"));
           let decision;
           try {
             decision = await stMod.dispatchReactionMenu({
@@ -6808,7 +6808,7 @@ const Confirm = {
       const forceAdds = (cardReactions ?? []).filter(
         (p) => (p.mode === "force" || p.mode === "on") && !p._addTarget);
       if (forceAdds.length) {
-        const { applyAddTargetSplices } = await import("./card-mutations.js?cb=" + Date.now());
+        const { applyAddTargetSplices } = await import(hotUrl("./card-mutations.js"));
         const r = await applyAddTargetSplices(ar, forceAdds);
         if (r.mutationsApplied > 0) {
           cardTargets = r.targets;
@@ -6952,7 +6952,7 @@ const Confirm = {
               if (addedCount != null) {
                 cand.payloadAtFire = { ...(cand.payloadAtFire ?? {}), _addedTargetCount: addedCount };
               }
-              const { composeCostOverride } = await import("./card-mutations.js?cb=" + Date.now());
+              const { composeCostOverride } = await import(hotUrl("./card-mutations.js"));
               const surcharge = await composeCostOverride(arNow, [cand]).catch((e) => {
                 warn("CONFIRM onAddTargetApply: surcharge compose threw", e); return null;
               });
@@ -7417,7 +7417,7 @@ const Confirm = {
       // See the stamp below — null until the mutation pass reports what it ran.
       let acceptedAfterGm = null;
       try {
-        const { applyTargetSetMutation, buildCheckAdjustedEvents } = await import("./card-mutations.js?cb=" + Date.now());
+        const { applyTargetSetMutation, buildCheckAdjustedEvents } = await import(hotUrl("./card-mutations.js"));
         const r = await applyTargetSetMutation({
           ar: liveAr, accepted: applied, costOnlyAccepted: costOnly,
           attackerActor, round: director.dCombat?.round ?? 0,
@@ -7601,7 +7601,7 @@ const Confirm = {
       // COMPUTE pre-stamped. Here we write ONLY the fields the GM layer owns.
       const liveAr = director.ctx.actionResult ?? ar;
       try {
-        const { applyTargetSetMutation } = await import("./card-mutations.js?cb=" + Date.now());
+        const { applyTargetSetMutation } = await import(hotUrl("./card-mutations.js"));
         const r = await applyTargetSetMutation({
           ar: liveAr, accepted: [],
           attackerActor, round: director.dCombat?.round ?? 0,

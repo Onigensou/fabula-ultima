@@ -145,6 +145,7 @@ import "./_test-harness-director.js";
 // reload-gate canvasReady hook on every client (not just the GM).
 import "./director-player-hud.js";
 import { destroyDirectorHud } from "./director-player-hud.js";
+import { hotUrl } from "./hot-reload.js";
 // Reaction hand — the "Card" Reaction UI (Party Menu › Config). Side-effect
 // import: watches the action card mirror on player clients.
 import "./reaction-hand.js";
@@ -1735,7 +1736,7 @@ Hooks.once("ready", () => {
       const token = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === actor.uuid) ?? null;
       if (!token) return;
       const trigger = eqChange ? "creature_equips_item" : "creature_unequips_item";
-      const { dispatchReactionMenu } = await import("./standalone-reactions.js?cb=" + Date.now());
+      const { dispatchReactionMenu } = await import(hotUrl("./standalone-reactions.js"));
       await dispatchReactionMenu({
         director, reactor: actor, token, trigger,
         payload: {

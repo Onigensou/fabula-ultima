@@ -33,6 +33,7 @@ import { SimMode } from "./sim/sim-mode.js";
 import { Journal } from "./sim/sim-journal.js";
 import { INTENTS } from "./intents.js";
 import { readEnemyInitScore } from "./director-initiative.js";
+import { hotUrl } from "./hot-reload.js";
 
 // ── Idempotency persistence (A) ─────────────────────────────────────
 //
@@ -205,13 +206,13 @@ async function appendFired(scene, scopeKey, entry) {
 let _seExtraModule = null;
 async function getSkillEffectsExtras() {
   if (_seExtraModule) return _seExtraModule;
-  _seExtraModule = await import("./skill-effects.js?cb=" + Date.now());
+  _seExtraModule = await import(hotUrl("./skill-effects.js"));
   return _seExtraModule;
 }
 let _rmModule = null;
 async function getReactionMenu() {
   if (_rmModule) return _rmModule.ReactionMenu;
-  _rmModule = await import("./reaction-menu.js?cb=" + Date.now());
+  _rmModule = await import(hotUrl("./reaction-menu.js"));
   return _rmModule.ReactionMenu;
 }
 
@@ -1457,7 +1458,7 @@ export async function clearAllStandaloneMenus() {
   const ReactionMenu = await getReactionMenu();
   try { ReactionMenu.despawnAll(); } catch {}
   try {
-    const ri = await import("./reaction-indicator.js?cb=" + Date.now());
+    const ri = await import(hotUrl("./reaction-indicator.js"));
     ri.ReactionIndicator.despawnAll();
   } catch (e) { warn("clearAllStandaloneMenus: indicator despawn threw", e); }
 }

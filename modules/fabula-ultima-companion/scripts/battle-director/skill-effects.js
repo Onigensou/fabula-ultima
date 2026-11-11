@@ -44,6 +44,7 @@ import { NAME as CODE_BACKED_NAME } from "../shared/code-backed-content.js";
 import { potionRainHalves } from "../healing-system/potion-rain.js";
 import { boundSummonRef } from "../shared/summon-bindings.js";
 import { classifyEffect, isStatusTier } from "./status-classifier.js";
+import { hotUrl } from "./hot-reload.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -1056,7 +1057,7 @@ function subjectMatchesSource(wantSource, subjectActorUuid, reactorActor) {
 let _formulaModulePromise = null;
 async function getSkillFormulas() {
   if (_formulaModulePromise) return _formulaModulePromise;
-  _formulaModulePromise = import("./skill-formulas.js?cb=" + Date.now());
+  _formulaModulePromise = import(hotUrl("./skill-formulas.js"));
   return _formulaModulePromise;
 }
 
@@ -3425,7 +3426,7 @@ export async function firePassiveTriggers({ director, casterActor, trigger, payl
 
   // Dynamic import preserves the existing cache-bust pattern this module
   // uses for cross-module hops.
-  const mod = await import("./standalone-reactions.js?cb=" + Date.now());
+  const mod = await import(hotUrl("./standalone-reactions.js"));
   const result = await mod.dispatchReactionMenu({
     director,
     reactor: casterActor,
