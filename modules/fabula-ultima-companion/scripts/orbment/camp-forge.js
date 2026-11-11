@@ -41,6 +41,7 @@ import { injectAttuneStyles, burstAtSocket, spriteSrc, spriteHTML } from "./alch
 import { CraftPanel } from "../crafting-system/crafting-window.js";
 import { executeCraft, craftFailText } from "../crafting-system/crafting-craft.js";
 import { readConfig } from "../crafting-system/crafting-data.js";
+import { announce } from "../crafting-system/crafting-feedback.js";
 
 const TAG = "[Orbment][CampForge]";
 const CHANNEL = "module.fabula-ultima-companion";
@@ -151,7 +152,7 @@ export async function runCampForge(actor) {
       const cfg = readConfig();
       const [res] = await Promise.all([
         executeCraft({ bookId: cfg.campBookId, blueprintId: req.blueprintId, place: "camp", actorId: actor.id, qty: 1,
-          requesterUserId: start.ownerUserId ?? game.user.id, internal: true }),
+          requesterUserId: start.ownerUserId ?? game.user.id, internal: true, quiet: true }),
         wait(MIN_SPIN_MS),
       ]);
       const pub = { craft: true, ...res, text: res?.ok ? null : craftFailText(res) };
@@ -160,6 +161,8 @@ export async function runCampForge(actor) {
         _live.result = pub;
         emit("result", { opId, result: pub });
         CampForgeWindow.result({ opId, result: pub });
+        // The party banner, after the window's own reveal (camp crafts announce too).
+        announce({ actorName: res.actorName, actorImg: res.actorImg, outputs: res.outputs });
         await waitFor("proceed", opId, WAIT_MS);
         req = null;
         break;

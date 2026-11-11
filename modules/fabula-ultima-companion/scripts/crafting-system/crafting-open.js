@@ -52,12 +52,15 @@ async function controller() {
   try { return (await globalThis.FUCompanion?.api?.MovementControl?.getCurrentControllerUser?.()) ?? null; } catch { return null; }
 }
 
-async function partyMemberIds() {
-  const rt = cameraRuntime();
-  if (rt?.state?.partyMemberIds?.size) return new Set(rt.state.partyMemberIds);
+// The party's actor ids: the four members AND the party database actor, whose
+// central token is what walks on exploration maps (the Alchemist's rule).
+async function partyMemberIds({ withParty = false } = {}) {
   const ids = new Set();
+  const rt = cameraRuntime();
+  if (rt?.state?.partyMemberIds?.size) for (const id of rt.state.partyMemberIds) ids.add(id);
   try {
     const r = await window.FUCompanion?.api?.getCurrentGameDb?.();
+    if (withParty && r?.db?.id) ids.add(r.db.id);
     const props = r?.source?.system?.props ?? r?.db?.system?.props ?? {};
     for (const [k, v] of Object.entries(props)) {
       if (!/^member_id_\d+$/i.test(k) || typeof v !== "string") continue;
@@ -230,7 +233,7 @@ class NpcButtons {
       if (await canOperate()) {
         const now = Date.now();
         for (const [id, o] of this.pos) if (now - o.ts > 800) this.pos.delete(id);
-        const party = await partyMemberIds();
+        const party = await partyMemberIds({ withParty: true });
         const tokens = canvas.tokens?.placeables ?? [];
         const crafters = tokens.filter((t) => t?.actor && !isTokenHidden(t) && isCrafterActor(t.actor));
         const members = tokens.filter((t) => t?.actor && !isTokenHidden(t) && party.has(t.actor.id));
@@ -281,7 +284,8 @@ class SpotButtons {
 
   walker() {
     const rt = cameraRuntime();
-    const t = rt?.getFollowToken?.();
+    // A GM walks nothing; the token they have selected stands in, so a GM can try a spot.
+    const t = rt?.getFollowToken?.() ?? (game.user.isGM && canvas.tokens?.controlled?.length === 1 ? canvas.tokens.controlled[0] : null);
     if (!t || t.mesh?.destroyed) return null;
     if (game.user.isGM) return t;
     if (!t.document?.isOwner) return null;

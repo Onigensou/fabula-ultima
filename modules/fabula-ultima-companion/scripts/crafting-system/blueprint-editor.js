@@ -33,9 +33,11 @@ const newId = () => foundry.utils.randomID(12);
 function pickableItems() {
   return (game.items?.contents ?? []).filter((i) => !i.system?.container && !i.name.startsWith("_"));
 }
+// A recipe item can share its name with the item it makes ("Remedy"): prefer the real item.
 function findItemByName(name) {
   const n = String(name ?? "").trim().toLowerCase();
-  return pickableItems().find((i) => i.name.toLowerCase() === n) ?? null;
+  const all = pickableItems().filter((i) => i.name.toLowerCase() === n);
+  return all.find((i) => String(i.system?.props?.item_type ?? "").toLowerCase() !== "recipe") ?? all[0] ?? null;
 }
 
 export class BlueprintEditor {
@@ -74,7 +76,7 @@ export class BlueprintEditor {
         <div class="fu-bp-main"></div>
         <div class="fu-bp-bar"></div>
       </div>
-      <datalist id="${LIST_ID}">${pickableItems().map((i) => `<option value="${esc(i.name)}"></option>`).join("")}</datalist>`;
+      <datalist id="${LIST_ID}">${[...new Set(pickableItems().map((i) => i.name))].sort().map((n) => `<option value="${esc(n)}"></option>`).join("")}</datalist>`;
     document.body.appendChild(el);
     this.el = el;
     el.querySelector(".fu-bp-x").addEventListener("click", () => this.close());
@@ -501,7 +503,10 @@ function injectStyles() {
 .fu-bp-win input[type="text"], .fu-bp-win input[type="number"], .fu-bp-win select { background: rgba(255,255,255,.75); border: 1px solid #b89940; border-radius: 6px; color: #2c1f0e; height: 26px; padding: 0 6px; }
 .fu-bp-check { display: inline-flex; gap: 6px; align-items: center; color: #3a2408; }
 .fu-bp-check input { margin: 0; }
-.fu-bp-rule { width: 100%; border-collapse: collapse; margin: 2px 0; }
+.fu-bp-win input::placeholder { color: #a08a68; font-style: italic; opacity: 1; }
+.fu-bp-rule { width: 100%; border-collapse: collapse; margin: 2px 0; background: transparent; border: 0; }
+.fu-bp-rule thead, .fu-bp-rule tr, .fu-bp-rule tr:nth-child(odd), .fu-bp-rule tr:nth-child(even) { background: transparent !important; text-shadow: none; }
+.fu-bp-rule thead th { border-bottom: 1px solid rgba(184,153,64,.55); }
 .fu-bp-rule th, .fu-bp-rule td { padding: 3px 4px; text-align: left; border: 0; background: transparent; }
 .fu-bp-rule thead th { font-size: 11px; color: #6b4c2a; font-weight: 600; }
 .fu-bp-rule tbody th { color: #3a2408; font-weight: 600; white-space: nowrap; }

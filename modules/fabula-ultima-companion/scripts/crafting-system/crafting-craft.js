@@ -23,6 +23,7 @@ import { announce } from "./crafting-feedback.js";
 
 export const CRAFT_MSG = Object.freeze({ REQ: "crafting:craft:req", RES: "crafting:craft:res" });
 const TIMEOUT_MS = 20000;
+const ANNOUNCE_DELAY_MS = 1000;
 const _pending = new Map();          // reqId → resolve (requesting client)
 const _busy = new Set();             // actorIds being crafted for (GM)
 
@@ -115,7 +116,10 @@ export async function executeCraft({ bookId, blueprintId, place, actorId, qty = 
     }
 
     const out = { ok: true, place, bookId, blueprintId, title: blueprintTitle(bp), qty: q, actorId: actor.id, actorName: actor.name, actorImg: actor.img, outputs, cost: ev.cost };
-    if (!quiet) announce({ actorName: actor.name, actorImg: actor.img, outputs });
+    // The banner lands just after the crafter's own window shows the result
+    // (its "working" beat is MIN_WORK_MS), so the reveal isn't spoiled and the
+    // "done" cue plays once. Camp Forge passes quiet and announces itself.
+    if (!quiet) setTimeout(() => announce({ actorName: actor.name, actorImg: actor.img, outputs }), ANNOUNCE_DELAY_MS);
     console.log(TAG, "crafted", out);
     return out;
   } catch (e) {
