@@ -51,6 +51,25 @@ function ensureShakeStyle() {
   document.head.appendChild(el);
 }
 
+// Generated gradient textures, ONE per look for the session (2026-11-12). They are pure functions of their
+// arguments, so every call with the same look shares one canvas + GPU upload. Before: PIXI.Texture.from(canvas)
+// cached a NEW canvas per call under a fresh id forever (oni.particles alone leaked 60 per battle); making them
+// uncached instead still re-uploaded ~40 GPU textures per battle until texture GC. Each call gets its own
+// Texture wrapper, so a sprite destroyed with {texture:true} frees only the wrapper; a base destroyed outright
+// (destroy(true) / baseTexture:true) is rebuilt on the next call.
+const _genBases = new Map();   // look key -> BaseTexture
+function generatedTexture(key, paint) {
+  let base = _genBases.get(key);
+  if (!base || base.destroyed) {
+    base = new PIXI.BaseTexture(paint());   // not Texture.from: that would also put it in PIXI's global cache
+    _genBases.set(key, base);
+    // a script that varies its colours per cast must not grow this forever; a dropped base is only
+    // forgotten (sprites still using it keep it), never destroyed
+    if (_genBases.size > 256) _genBases.delete(_genBases.keys().next().value);
+  }
+  return new PIXI.Texture(base);
+}
+
 export function buildOni(ctx, env) {
   const { canvas, PIXI, wait, loadTexture } = env;
   const app = canvas?.app ?? null;
@@ -224,26 +243,30 @@ export function buildOni(ctx, env) {
 
   // Vertical gradient (e.g. sky). stops = [[offset0..1, "#rrggbb"], …].
   function gradientTexture(stops, { width = 8, height = 256 } = {}) {
-    const cv = document.createElement("canvas");
-    cv.width = width; cv.height = height;
-    const g2 = cv.getContext("2d");
-    const grad = g2.createLinearGradient(0, 0, 0, height);
-    for (const [off, col] of stops) grad.addColorStop(off, col);
-    g2.fillStyle = grad; g2.fillRect(0, 0, width, height);
-    return PIXI.Texture.from(cv);
+    return generatedTexture(`g|${width}x${height}|${JSON.stringify(stops)}`, () => {
+      const cv = document.createElement("canvas");
+      cv.width = width; cv.height = height;
+      const g2 = cv.getContext("2d");
+      const grad = g2.createLinearGradient(0, 0, 0, height);
+      for (const [off, col] of stops) grad.addColorStop(off, col);
+      g2.fillStyle = grad; g2.fillRect(0, 0, width, height);
+      return cv;
+    });
   }
 
   // Radial gradient (glow / soft shadow). Use blendMode ADD for light.
   function radialTexture(inner = "rgba(255,255,255,1)", outer = "rgba(255,255,255,0)", { size = 256 } = {}) {
-    const cv = document.createElement("canvas");
-    cv.width = cv.height = size;
-    const g2 = cv.getContext("2d");
-    const r = size / 2;
-    const grad = g2.createRadialGradient(r, r, 0, r, r, r);
-    grad.addColorStop(0, inner);
-    grad.addColorStop(1, outer);
-    g2.fillStyle = grad; g2.fillRect(0, 0, size, size);
-    return PIXI.Texture.from(cv);
+    return generatedTexture(`r|${size}|${inner}|${outer}`, () => {
+      const cv = document.createElement("canvas");
+      cv.width = cv.height = size;
+      const g2 = cv.getContext("2d");
+      const r = size / 2;
+      const grad = g2.createRadialGradient(r, r, 0, r, r, r);
+      grad.addColorStop(0, inner);
+      grad.addColorStop(1, outer);
+      g2.fillStyle = grad; g2.fillRect(0, 0, size, size);
+      return cv;
+    });
   }
 
   // webm as a sprite — fresh <video> per use (never mutate Foundry's shared
@@ -257,7 +280,8 @@ export function buildOni(ctx, env) {
     spr.anchor.set(0.5);
     (parent ?? canvas.stage).addChild(spr);
     if (autoplay) vid.play?.().catch(() => {});
-    track(() => { try { spr.destroy(); } catch {} try { vid.pause(); vid.src = ""; } catch {} });
+    // the texture too: Texture.from(video) cached it for the session, and the sprite alone does not free it
+    track(() => { try { spr.destroy(); } catch {} try { vid.pause(); vid.src = ""; } catch {} try { tex.destroy(true); } catch {} });
     return { sprite: spr, video: vid };
   }
 

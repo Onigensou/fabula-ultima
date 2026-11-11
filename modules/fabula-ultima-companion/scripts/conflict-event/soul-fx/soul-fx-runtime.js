@@ -445,8 +445,12 @@ class FragmentFire {
     return true;
   }
   destroy() {
-    for (const c of [this.back, this.front]) { try { c?.parent?.removeChild(c); c?.destroy({ children: true, texture: false, baseTexture: false }); } catch { /* gone */ } }
+    // The frame sprites first, with their own textures: they are children of back/front, and once the container
+    // destroy has run they have no texture left to free (a second destroy throws inside the try), so their
+    // 4 buffer textures leaked until texture GC (found 2026-11-12). The containers keep texture:false because the
+    // glow sprites share the singleton glow textures.
     destroySprites(this.spBack); destroySprites(this.spFront);
+    for (const c of [this.back, this.front]) { try { c?.parent?.removeChild(c); c?.destroy({ children: true, texture: false, baseTexture: false }); } catch { /* gone */ } }
     try { dropFilter(this.token?.mesh, this.filter); } catch { /* gone */ }
     this.built = false;
   }

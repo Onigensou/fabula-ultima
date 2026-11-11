@@ -575,7 +575,9 @@ function loadArt(token, src) {
     video.muted = true;
     video.playsInline = true;
     video.preload = "auto";
+    art.el = video;   // so a release while this is still loading can stop it (releaseArt)
     video.addEventListener("loadeddata", () => {
+      if (art.released) return;   // released mid-load: never make the cached texture nobody would free
       try {
         art.texture = PIXI.Texture.from(video, { resourceOptions: { autoPlay: false } });
         art.video = video;
@@ -648,8 +650,10 @@ function releaseArt(key) {
   if (!art) return;
   _arts.delete(key);
   art.released = true;
-  if (art.kind === "video") {
-    try { art.video.pause(); art.video.removeAttribute("src"); art.video.load(); } catch {}
+  art.waiters.length = 0;   // their token is going; each already has its own load-wait timeout
+  const video = art.video ?? art.el;   // art.video is set only once loaded; art.el from the start
+  if (video) {
+    try { video.pause(); video.removeAttribute("src"); video.load(); } catch {}
     try { art.texture?.destroy(true); } catch {}
   }
 }
