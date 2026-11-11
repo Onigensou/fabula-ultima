@@ -3,7 +3,7 @@
 // The field darkens; the camera zooms onto him as his four blades ignite one by one (motes drift in, the
 // in-game lit-blade slash starts on each blade, a trickle of element particles); the fourth lights and all
 // four overcharge (lit-blade slashes x4 with a glow at the combo tempo) while copies of him swell off his
-// body in the four colours; he roars (Zero Power cut-in), crouches, then blinks beside each party member for
+// body in the four colours; he roars, crouches, then blinks beside each party member for
 // a cut that hangs in the air (camera zooms in among the party). He lands behind them; silence; the cuts
 // release: an impact frame, a whiteout, four element bursts (the damage), a storm of screen-wide tapered
 // blades while the camera snaps back out, the screen burns white; he leaps home and his blades go dark.
@@ -22,7 +22,7 @@ const tokens = { k: { token: caster, foot: cfg.casterFoot, poses: null } };
 const PARTY = [];
 foes.forEach((t, i) => { const k = 't' + i; PARTY.push(k); tokens[k] = { token: t, foot: cfg.partyFoot }; });
 const CL = A.clips || {};
-const tl = oni.timeline({ tokens, clips: CL, images: { cutin: A.cutin }, poses: { k: { dark: { url: A.darkIdle } } } });
+const tl = oni.timeline({ tokens, clips: CL, poses: { k: { dark: { url: A.darkIdle } } } });
 await tl.load();
 const E = tl.E, seg = tl.seg, lerp = tl.lerp, clamp01 = tl.clamp01, TOK = tl.TOK, feet = tl.feet, glow = tl.draw.glowCircle;
 const KP = (tl.STAGE.w || 1682) / 1682;
@@ -182,16 +182,11 @@ const ghostOf = (el) => { if (ghostCache[el]) return ghostCache[el]; const art =
       g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = al; g.translate(piv.x, piv.y); g.scale(sx, sy);
       const k = K.w / gh.w; g.drawImage(gh.c, -K.w / 2 - gh.pad * k, -K.h * 0.7 - gh.pad * k, (gh.w + 2 * gh.pad) * k, (gh.h + 2 * gh.pad) * k); g.restore(); } }); }); } }
 
-// ── roar + the Zero Power cut-in (the shipped style: full body, 92% of the screen height, slide in from the left) ──
+// ── roar (no cut-in: the boss line carries the "boss moment" on the first cast — user 2026-11-11) ──
 S_(C.roar, 'monster5', 0.7); m.shake(C.roar, 600, 10 * KP);
 m.clip('powerup', C.roar, { x: kf.x, y: kf.y, w: CL.powerup.w * 1.4 * CL.powerup.k * KP, z: 3, filter: cfg.redF });
 m.clip('burst02', C.roar, { x: kf.x, y: kf.y - K.h * 0.5, w: CL.burst02.w * 1.4 * CL.burst02.k * KP, z: 32, add: true, filter: cfg.redF });
 ELS.forEach((el) => gatherTo(C.roar, el, () => ({ x: kf.x, y: kf.y - K.h * 0.5 }), 8, 600));
-S_(C.roar, 'overdrive', 0.9);
-m.hold(C.roar, C.roar + 2150, (tt, S) => { const img = tl.IMG.cutin; if (!img) return; S.over.push({ draw: (g) => {
-  const h = g.H * 0.92, w = h * (img.naturalWidth || img.width) / (img.naturalHeight || img.height);
-  const x = tt < 650 ? lerp(-1.2 * g.W, 0, E.outC(tt / 650)) : tt < 1500 ? 0 : lerp(0, 1.2 * g.W, E.inQ((tt - 1500) / 650));
-  g.save(); g.imageSmoothingEnabled = false; g.drawImage(img, x, g.H - h, w, h); g.restore(); } }); });
 
 // ── crouch ──
 S_(C.crouch, 'swingF', 0.5);

@@ -92,8 +92,8 @@ function asuraStrike(opts = {}) {
   const t = {};
   t.ign0 = 700;                                   // darken, then the first blade
   t.full = t.ign0 + 4 * tune.ignite;              // all four overcharge, the aura bursts out
-  t.roar = t.full + 900;                          // roar + the Zero Power cut-in (650 in / 850 hold / 650 out)
-  t.crouch = t.roar + 2150;
+  t.roar = t.full + 900;                          // the roar (cut-in removed 2026-11-11: the boss line carries that beat)
+  t.crouch = t.roar + 800;
   t.cuts = t.crouch + tune.crouch;                // the four blink cuts
   t.land = t.cuts + 4 * tune.cut;                 // behind the party
   t.release = t.land + tune.hush + 240;           // impact frame
@@ -111,7 +111,7 @@ function asuraStrike(opts = {}) {
   const inner = fs.readFileSync(path.join(__dirname, "asura-shots", "asura-strike.inner.js"), "utf8");
   const assets = ASSETS();
   const script = shell({ key: opts.key, name: opts.name, cfg, assets, inner, timeout: cfg.totalTimeoutMs, startOnReady: true });
-  const preload = [assets.cutin, assets.darkIdle, ...Object.values(assets.clips).map((c) => c.url).filter((u) => u.startsWith("http"))];
+  const preload = [assets.darkIdle, ...Object.values(assets.clips).map((c) => c.url).filter((u) => u.startsWith("http"))];
   // damage gate just after the fourth burst (each burst reveals its Chain strike via oni.hit)
   return { script, timing: { mode: "offset", offset: t.bursts + 3 * 110 + 60 }, preload };
 }

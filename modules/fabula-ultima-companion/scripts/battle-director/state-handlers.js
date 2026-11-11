@@ -7664,6 +7664,12 @@ const Confirm = {
     // action card. Fire-and-forget: the ~2s banner runs while RESOLVE executes.
     // Only on the first pass (no duplicate banner per multi-hit pass).
     if (result.confirmed && (ar.passIndex ?? 1) <= 1) {
+      // A boss line ("Feel my battle prowess!") speaks BEFORE the name banner,
+      // once per playthrough (boss-line.js). Awaited, capped; no line = no wait.
+      try {
+        const { playBossLine } = await import("./boss-line.js");
+        await playBossLine(ar);
+      } catch (e) { warn("CONFIRM: playBossLine threw", e); }
       playActionNamecard(ar).catch((e) => warn("CONFIRM: playActionNamecard threw", e));
     }
 
