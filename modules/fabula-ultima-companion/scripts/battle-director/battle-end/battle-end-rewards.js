@@ -43,8 +43,11 @@ export async function computeBattleEndRewards(dCombat, isBoss) {
 
   const partyCombatants = dCombat.combatants.filter(c => c.side === "party" && c.actorDoc);
   // A battlefield object (a Lightning Crystal) is on the enemy side but is not
-  // an enemy — it is worth no EXP and carries no Zenit.
-  const enemyCombatants = dCombat.combatants.filter(c => c.side === "enemy" && c.actorDoc && !isBattlefieldObject(c.actorDoc));
+  // an enemy — it is worth no EXP and carries no Zenit. Nor is an actor flagged
+  // `noRewards` (Nidhogg's crystal body: it counts as a foe for the side wipe,
+  // but the dragon is what pays).
+  const enemyCombatants = dCombat.combatants.filter(c => c.side === "enemy" && c.actorDoc && !isBattlefieldObject(c.actorDoc)
+    && c.actorDoc.flags?.["fabula-ultima-companion"]?.noRewards !== true);
 
   if (!partyCombatants.length || !enemyCombatants.length) {
     warn("[BattleEnd:Rewards] Missing party or enemy combatants — snapshot will be empty");

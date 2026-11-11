@@ -23,6 +23,7 @@
 //   ROUND_START → playRoundBanner({round}) renders locally + broadcasts.
 
 import { log, warn } from "./logger.js";
+import { isOutOfPlay } from "./out-of-play.js";
 import { registerSurface, unregisterSurface } from "./director-surfaces.js";
 import { pWait } from "./presentation-clock.js";
 import { deskUnits } from "./gm-desk.js";
@@ -1450,6 +1451,8 @@ function buildTurnActionSnapshot(dCombat) {
   const out = [];
   const activeId = dCombat?.currentCombatantId ?? null;
   for (const c of (dCombat?.combatants ?? [])) {
+    // Out of play (out-of-play.js): not on the field, so no turn bar icon and no GM desk tile.
+    if (isOutOfPlay(c.actorDoc)) continue;
     const td = c.tokenDoc;
     // Focal point is stored on the BASE (world) actor so every copy of a
     // monster shares one setting — read it from there, not the per-token

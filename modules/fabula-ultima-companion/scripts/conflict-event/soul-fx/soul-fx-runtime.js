@@ -46,6 +46,9 @@ import { getClientOption } from "../../shared/client-options.js";
 import { createFrame, clearFrame, painterFor } from "../../battle-director/pixel-entrance/pixelfx/core/index.js";
 import { makeSil, placeSil, makeSoulFlame, FLAME_LOOP, SOUL } from "./soul-fx-lib.js";
 import { makeTithe, makeCalling, makeDestroy, TITHE, CALLING, DESTROY } from "./soul-fx-effects.js";
+import { SOUL_SFX, SOUL_SFX_URLS, STACK_VOL } from "./soul-fx-sfx.js";
+import { makeCueTrack } from "../../shared/sfx-cues.js";
+import { playSfx, preloadSfx } from "../../battle-director/director-sfx.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const ACTION_PLAY = "FU_SOUL_FX_PLAY";
@@ -445,8 +448,12 @@ class FragmentFire {
     return true;
   }
   destroy() {
-    for (const c of [this.back, this.front]) { try { c?.parent?.removeChild(c); c?.destroy({ children: true, texture: false, baseTexture: false }); } catch { /* gone */ } }
+    // The frame sprites first, with their own textures: they are children of back/front, and once the container
+    // destroy has run they have no texture left to free (a second destroy throws inside the try), so their
+    // 4 buffer textures leaked until texture GC (found 2026-11-12). The containers keep texture:false because the
+    // glow sprites share the singleton glow textures.
     destroySprites(this.spBack); destroySprites(this.spFront);
+    for (const c of [this.back, this.front]) { try { c?.parent?.removeChild(c); c?.destroy({ children: true, texture: false, baseTexture: false }); } catch { /* gone */ } }
     try { dropFilter(this.token?.mesh, this.filter); } catch { /* gone */ }
     this.built = false;
   }
@@ -609,6 +616,8 @@ class Run {
     for (const it of this.items) {
       const local = el - it.delay;
       if (local < 0) { if (it.preHide) it.applyState({ frag: { hideMesh: true, flameK: 0 } }); continue; }
+      // its sounds, on the show's own clock (soul-fx-sfx.js); a second show of the batch plays them quieter
+      it.cues?.step(local, (c, url) => playSfx(url, c.vol * (it.n ? STACK_VOL : 1)));
       if (isTick || !it.started) {
         it.started = true;
         // the simulation sub-steps at 1/120 s whatever the frame rate
@@ -649,6 +658,7 @@ function makeItem(kind, row, D, owner, frag) {
   let ownerFilter = null;
   const it = {
     fx, owner, frag, delay: Math.max(0, Number(row.delay) || 0), t: 0, started: false, dyn: new Map(),
+    cues: makeCueTrack(SOUL_SFX[kind] ?? []),
     preHide: kind === "tithe" && !row.merge,
     applyState(st) {
       const f = fire();
@@ -760,6 +770,7 @@ export function initSoulFx() {
   if (_hooked) return;
   _hooked = true;
   applyRateOption();
+  preloadSfx(SOUL_SFX_URLS).catch(() => {});
   Hooks.on("fuClientOptionChanged", ({ key } = {}) => { if (key === "fxFrameRate") applyRateOption(); });
   registerExternalDefeat("soul-release", ({ tokenUuid }) => awaitSoulRelease(tokenUuid));
   const later = () => setTimeout(() => { try { syncFires(); } catch (e) { warn("soul-fx: sync threw", e); } }, 0);

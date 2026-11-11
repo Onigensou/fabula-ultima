@@ -60,6 +60,42 @@ function emitCameraReset(sceneId, x, y, scale, durationMs = 0) {
   }
 }
 
+// The party's token actor: the current game's database actor (its prototype is
+// the party token every scene change places), else the event system's view of it.
+async function partyActorId() {
+  try {
+    const db = (await globalThis.FUCompanion?.api?.getCurrentGameDb?.())?.db ?? null;
+    if (db?.id) return db.id;
+  } catch (_) {}
+  try { return globalThis.oni?.EventSystem?.GameState?.partyActor?.()?.id ?? null; }
+  catch (_) { return null; }
+}
+
+// The battle's own return point (endCtx.returnTo, from payload context.return),
+// when the GM kept its scene in the prompt: the party token goes there, the way a
+// door would put it (teleporter cross-scene: token made at the point, scene
+// activated, the token on the scene left behind removed). Returns true when the
+// scene was activated this way.
+async function warpParty(endCtx, returnScene) {
+  const point = endCtx.returnTo?.point;
+  if (!point || !returnScene || endCtx.returnTo.sceneId !== returnScene.id) return false;
+  const TP = globalThis.TeleporterSystem?.api;
+  if (typeof TP?.executeCrossSceneTeleport !== "function") {
+    warn("[BattleEnd:Transition] Teleporter API missing — return scene activated without moving the party");
+    return false;
+  }
+  const actorId = await partyActorId();
+  if (!actorId) { warn("[BattleEnd:Transition] No party actor — return scene activated without moving the party"); return false; }
+  try {
+    await TP.executeCrossSceneTeleport(actorId, endCtx.sourceSceneId ?? null, returnScene.id, point.x, point.y);
+    log(`[BattleEnd:Transition] Party moved to ${returnScene.name} (${Math.round(point.x)}, ${Math.round(point.y)})`);
+    return true;
+  } catch (e) {
+    warn("[BattleEnd:Transition] Moving the party threw — activating the return scene instead:", e);
+    return false;
+  }
+}
+
 export async function runBattleEndTransition(endCtx) {
   const { promptResult, battleSceneId, preBattleCamera, battleSceneViewport } = endCtx;
   const { returnSceneId, bgm, outcome } = promptResult;
@@ -102,11 +138,14 @@ export async function runBattleEndTransition(endCtx) {
   if (!returnScene) {
     warn("[BattleEnd:Transition] No return scene found for id:", returnSceneId);
   } else {
-    try {
-      await returnScene.activate();
-      log("[BattleEnd:Transition] Return scene activated:", returnScene.name);
-    } catch (e) {
-      warn("[BattleEnd:Transition] scene.activate() threw:", e);
+    const warped = await warpParty(endCtx, returnScene);
+    if (!warped) {
+      try {
+        await returnScene.activate();
+        log("[BattleEnd:Transition] Return scene activated:", returnScene.name);
+      } catch (e) {
+        warn("[BattleEnd:Transition] scene.activate() threw:", e);
+      }
     }
 
     // 5) Wait for canvas to finish loading the new scene
@@ -125,7 +164,22 @@ export async function runBattleEndTransition(endCtx) {
     // 7) Restore pre-battle viewport — only if the stored sceneId matches where we landed.
     //    If missing or mismatched, skip (let Foundry restore whatever it has).
     const cam = (preBattleCamera?.sceneId === returnSceneId) ? preBattleCamera : null;
-    if (cam) {
+    const landing = warped ? endCtx.returnTo.point : null;
+    if (landing) {
+      // Moved somewhere new: look at where the party stands now.
+      let { x, y } = landing, scale = canvas?.stage?.scale?.x ?? 1;
+      try {
+        const v = clampToCanvas({ x, y, scale });
+        if (v) ({ x, y, scale } = v);
+      } catch (_) {}
+      try {
+        canvas.animatePan({ x, y, scale, duration: 0 });
+        if (canvas.scene) canvas.scene._viewPosition = { x, y, scale };
+      } catch (e) {
+        warn("[BattleEnd:Transition] Landing camera threw:", e);
+      }
+      emitCameraReset(returnSceneId, x, y, scale, 0);
+    } else if (cam) {
       // Clamp before restoring. The stored viewport is a live pivot captured
       // on this scene, so it is normally already legal — but it was captured
       // on the GM's window, and a player restoring it on a smaller one can

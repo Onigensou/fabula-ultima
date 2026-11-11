@@ -85,6 +85,12 @@ import { initLightningRodCursor } from "../conflict-event/lightning-rod-cursor.j
 import { initLightningCrystalCountdown } from "../conflict-event/lightning-crystal-countdown.js";
 import { initSoulFragmentBadge } from "../conflict-event/soul-fragment-badge.js";
 import { initSoulFx } from "../conflict-event/soul-fx/soul-fx-runtime.js";
+import { initSealingCrystal } from "../sealing-crystal/crystal-runtime.js";
+import { initHudCurtain } from "../shared/hud-curtain.js";
+import { initNidhoggFall } from "../sealing-crystal/nidhogg-fall-show.js";
+import { initOutOfPlayRender } from "./out-of-play-render.js";
+// Boss rules register themselves on import (boss-rules/boss-rules.js reads them at its seams).
+import { initBossCycle } from "./boss-rules/boss-cycle.js";
 import { initLightningCrystalFx } from "../conflict-event/lightning-crystal-fx.js";
 import { initLightningStormFx } from "../conflict-event/lightning-storm-strike-fx.js";
 import { initConflictEventPanel, registerConflictEventPanelSettings } from "../conflict-event/conflict-event-panel.js";
@@ -2045,6 +2051,19 @@ Hooks.once("ready", () => {
   catch (e) { warn("initSoulFragmentBadge on ready threw", e); }
   try { initSoulFx(); }
   catch (e) { warn("initSoulFx on ready threw", e); }
+  // The HUD curtain: cutscenes hide the battle HUD through it (ref-counted, every client, safety release).
+  try { initHudCurtain(); }
+  catch (e) { warn("initHudCurtain on ready threw", e); }
+  // The Sealing Crystal (Nidhogg): any token flagged sealingCrystal is drawn as the 3D pixel crystal.
+  try { initSealingCrystal(); }
+  catch (e) { warn("initSealingCrystal on ready threw", e); }
+  // Nidhogg's fall -> his crystal (the show, every client) and the out-of-play drawing (any boss may use it).
+  try { initNidhoggFall(); }
+  catch (e) { warn("initNidhoggFall on ready threw", e); }
+  try { initOutOfPlayRender(); }
+  catch (e) { warn("initOutOfPlayRender on ready threw", e); }
+  try { initBossCycle(); }
+  catch (e) { warn("initBossCycle on ready threw", e); }
   try { initLightningCrystalFx(); }
   catch (e) { warn("initLightningCrystalFx on ready threw", e); }
   try { initLightningStormFx(); }

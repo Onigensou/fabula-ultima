@@ -46,12 +46,32 @@ function detectOutcome(director) {
   return "victory";
 }
 
+// Where the party goes after this battle, when its payload says so (an event's
+// Start Battle "Return to"; the Sealing Crystal's battle sends the party out of
+// that part of the dungeon). `context.return = { sceneId, x, y }`: the scene is
+// the prompt's default return scene, and the point is where the party token is
+// put there. Missing / unknown scene → null (back where the party came from).
+export function resolveReturnTo(payload, scenes = globalThis.game?.scenes) {
+  const r = payload?.context?.return;
+  const id = String(r?.sceneId ?? "").trim();
+  if (!id) return null;
+  const scene = scenes?.get?.(id) ?? null;
+  if (!scene) return null;
+  const x = Number(r?.x), y = Number(r?.y);
+  const point = (r?.x != null && r?.y != null && Number.isFinite(x) && Number.isFinite(y)) ? { x, y } : null;
+  return { sceneId: scene.id, point };
+}
+
 export async function runBattleEndSequence(director) {
   // The battle's log rows wait in a setting until now (director-battle-log.js);
   // rank + summary read them from the DB actor, so write them there first.
   try { await flushBattleLog(); } catch (e) { warn("battle-end: flushBattleLog threw", e); }
   const dc = director.dCombat;
   const payload = director.ctx.payload;
+  // The battle end a defeat style asked for (defeat-reactor noteBattleEndStyle:
+  // the Sealing Crystal's quiet ending on black). Read once.
+  const ending = director.ctx.battleEndStyle ?? null;
+  director.ctx.battleEndStyle = null;
 
   const endCtx = {
     director,
@@ -72,6 +92,11 @@ export async function runBattleEndSequence(director) {
     promptResult:   null,
     summaryResults: null,
     rank:           null,
+    // { style, quiet } — quiet: no victory music, no camera pan, no level-up
+    // sound on the result screen, the prompt drawn above the ending's black.
+    ending,
+    // { sceneId, point|null } | null — the battle's own return point
+    returnTo: resolveReturnTo(payload),
   };
 
   // Read snapshots pre-computed at PREP time. bdRewardSnapshot is THIS battle's
@@ -100,7 +125,7 @@ export async function runBattleEndSequence(director) {
     catch { return null; }
   })();
 
-  log("[BattleEnd] Starting sequence", { outcome: endCtx.outcome, rounds: endCtx.totalRounds });
+  log("[BattleEnd] Starting sequence", { outcome: endCtx.outcome, rounds: endCtx.totalRounds, ending: ending?.style ?? null, returnTo: endCtx.returnTo?.sceneId ?? null });
 
   // ── Undying interception (e.g. Geist's Zero Power: The Blackest Night) ───
   // Runs FIRST — before the prompt, the victory cinematic, and follow-up
@@ -232,6 +257,8 @@ export async function runBattleEndSequence(director) {
     Hooks.callAll("fu.battleEnd", {
       outcome:        endCtx.outcome,
       sourceSceneId:  endCtx.sourceSceneId,
+      // where the party landed (the prompt's return scene; may differ from the source)
+      returnSceneId:  endCtx.promptResult?.returnSceneId || null,
       battleSceneId:  endCtx.battleSceneId,
       partyActorIds:  endCtx.partyActorIds,
       totalRounds:    endCtx.totalRounds,

@@ -718,6 +718,42 @@ registerConflictEvent({
       .catch((e) => ctx.warn(`${actor?.name}: the refund after the show threw — the round-end sweep pays it`, e));
   },
 
+  actions: {
+    /**
+     * Every fragment destroyed at once — a boss's hold on the souls breaking (Nidhogg's
+     * fall: his Boss Cycle's onDown, boss-rules/boss-cycle.js; design doc §2b). The ordinary destroy:
+     * each owner gets the stolen Max HP back plus the same HP, with the Destroyed show's
+     * first flamelet when anyone watches, at once when nobody does. Resolves once every
+     * refund is paid and every fragment is off the field (the show is ~2.4 s).
+     */
+    async destroyAllFragments(ctx) {
+      const frags = fragmentCombatants(ctx);
+      if (!frags.length) return;
+      const pl = players(ctx);
+      const rows = frags.map((c) => ({ c, owner: pl.find((p) => p.actorDoc?.uuid === ownerUuidOf(c)) ?? null }));
+      const shown = rows.filter((r) => r.owner?.tokenDoc?.id && r.c.tokenDoc?.id);
+      const show = shown.length && (await watched())
+        ? await present(ctx, "destroy", shown.map((r, i) => ({ ownerTokenId: r.owner.tokenDoc.id, fragTokenId: r.c.tokenDoc.id, delay: i * 0.08 })))
+        : null;
+      // Pay from the LIVE token and actor (an unlinked token's actor is rebuilt on every update).
+      const pay = (c) => {
+        const td = c.tokenDoc, live = td?.parent?.tokens?.get?.(td.id) ?? null;
+        return live?.actor ? returnToOwner(ctx, live.actor, live, null) : null;
+      };
+      const paid = rows.map((r) => {
+        const i = shown.indexOf(r);
+        const when = show && i >= 0 ? show.at(i, show.T.DESTROY.FIRST) : Promise.resolve();
+        return when.then(() => pay(r.c)).catch((e) => ctx.warn(`${r.c.actorDoc?.name}: the refund threw`, e));
+      });
+      await Promise.all(paid);
+      // Off the field before the fall's black (a slow local draw must not keep them standing in it).
+      if (show) await Promise.race([show.done.catch(() => {}), wait((show.T.DESTROY.END + shown.length * 0.08 + 0.3) * 1000)]);
+      for (const r of rows) await removeFragment(ctx, r.c);
+      ctx.log(`every Soul Fragment destroyed (${rows.length})`);
+      await saveNow(ctx);
+    },
+  },
+
   // Max HP comes back; current HP stays where the fight left it.
   async onConflictEnd(ctx) {
     for (const c of fragmentCombatants(ctx)) await removeFragment(ctx, c);

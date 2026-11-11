@@ -6,7 +6,8 @@
   "scenes": [
     "Training Ground",
     "Valley_Battlemap004",
-    "Valley_Battlemap002"
+    "Valley_Battlemap002",
+    "Valley_Battlemap003"
   ],
   "activeScene": "Training Ground",
   "actors": {
@@ -34,7 +35,9 @@
       "Hellhound",
       "Imp",
       "Soul Fragment",
-      "Lightning Crystal"
+      "Lightning Crystal",
+      "🌟 Nidhogg, Dragon King",
+      "Nidhogg"
     ]
   },
   "followRefs": {

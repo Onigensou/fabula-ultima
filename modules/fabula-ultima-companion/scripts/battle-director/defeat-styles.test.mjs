@@ -71,7 +71,10 @@ eq("throwing flags → standard", defeatStyleFromFlags(hostile), "standard");
 for (const [key, s] of Object.entries(DEFEAT_STYLES)) {
   ok(`${key}: has a label`, typeof s.label === "string" && s.label.length);
   ok(`${key}: totalMs is a positive number`, Number.isFinite(s.totalMs) && s.totalMs > 0);
-  ok(`${key}: totalMs within the 3 s a defeat may hold the battle`, s.totalMs <= 3000);
+  // The one exception: the Sealing Crystal's death IS the boss fight's ending, a ~26 s cinematic by design (ruled
+  // 2026-11-10/11); crystal.test.mjs keeps its totalMs in step with the show instead.
+  if (key === "crystal_death") ok(`${key}: totalMs within the cinematic's 30 s`, s.totalMs <= 30000);
+  else ok(`${key}: totalMs within the 3 s a defeat may hold the battle`, s.totalMs <= 3000);
   // played by someone else: this entry only times the removal
   if (s.external) { ok(`${key}: external player named`, typeof s.external === "string" && s.external.length > 0); ok(`${key}: external is never offered`, s.internal === true); continue; }
   ok(`${key}: body fade finishes inside totalMs`,
@@ -217,7 +220,9 @@ eq("launched reads as a style", defeatStyleFromFlags(withStyle("launched")), "la
   eq("on-hit: removal gates fail (champion, auto-defeat off, secret) waits", defeatStartsOnHit({ ...go, willRemove: false }), false);
   eq("on-hit: its own defeat reaction waits", defeatStartsOnHit({ ...go, ownReaction: true }), false);
   eq("on-hit: unknown reaction state waits", defeatStartsOnHit({ ...go, ownReaction: undefined }), false);
-  for (const [key, st] of Object.entries(DEFEAT_STYLES)) if (key !== "launched") ok(`on-hit: ${key} keeps the settle timing`, !st.startOnHit);
+  ok("on-hit: crystal_death opts in (the Sealing Crystal's ending)", DEFEAT_STYLES.crystal_death.startOnHit === true);
+  for (const [key, st] of Object.entries(DEFEAT_STYLES)) if (key !== "launched" && key !== "crystal_death") ok(`on-hit: ${key} keeps the settle timing`, !st.startOnHit);
+  for (const [key, st] of Object.entries(DEFEAT_STYLES)) if (key !== "crystal_death") ok(`${key}: does not stop the music or change the battle end`, !st.stopsBgm && !st.battleEnd);
 
   const row = (trigger, extra = {}) => ({ reaction_trigger: trigger, ...extra });
   const item = (rows) => ({ system: { props: { reaction_config_table: rows } } });

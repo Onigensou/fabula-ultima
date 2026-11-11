@@ -460,7 +460,7 @@ function planFlamelets(R) {
 export const DESTROY = (() => {
   const L = planFlamelets(new Rng(DESTROY_SEED)), arr = L.map((l) => l.home + l.T);
   const FIRST = Math.min(...arr), LAST = Math.max(...arr);
-  return Object.freeze({ HIT: 0.06, BURST: 0.42, FIRST, LAST, END: LAST + 0.8 });
+  return Object.freeze({ HIT: 0.06, BURST: 0.42, FIRST, LAST, END: LAST + 0.8, LANDINGS: Object.freeze([...arr].sort((a, b) => a - b)) });
 })();
 
 export function makeDestroy(S, o = {}) {

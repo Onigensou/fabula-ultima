@@ -12,7 +12,8 @@ import {
   PRESETS, backdropKey, resolvePreset, buildCamera, physicalRatio, tokenScaleAt, battlerScaleAt,
   floorDisparityAt, floorToWorld, worldToCanvas, parallaxUniforms, shiftUV,
   buildProjector, restPxPerMetre, rigCamera, liveBattler, projectNearFoot, stageModeFor,
-  reliefDepth, reliefPoint, floorDepth, projectLive, paintedLive, paintedParallax,
+  reliefDepth, reliefPoint, floorDepth, projectLive, paintedLive, paintedParallax, floorPoint3, placedCamera,
+  battlerDrawScale, orbitPath,
 } from "./battle-stage-3d-rules.js";
 
 let pass = 0, fail = 0;
@@ -164,6 +165,86 @@ for (const [key, stage] of [["Eisendrache_Battlemap001_v2", V2_STAGE], ["Eisendr
   const off = (r) => { const b = liveBattler({ x: 1280, y: 980 }, P, r); return Math.hypot(b.x - 1280, b.y - 980); };
   ok("neutral 0.5 sits between free and neutral", off(half) > 1e-3 && off(half) < off(free) && Math.abs(half.yaw) < Math.abs(free.yaw), `${off(half)} vs ${off(free)}`);
   ok("neutral is clamped", rigCamera({ ...busy, neutral: 3 }, P, cfg).yaw === 0 && rigCamera({ ...busy, neutral: -1 }, P, cfg).yaw === free.yaw);
+
+  // Placed shot: the camera stands in the arena and looks at a point
+  const standFoot = { x: 1600, y: 700 }, lookFoot = { x: 800, y: 640 };
+  const place = { standX: standFoot.x, standY: standFoot.y, eye: 2.2, lookX: lookFoot.x, lookY: lookFoot.y, lookH: 3, lens: 0.5 };
+  const placed = rigCamera({ view: rest, rest, shot: { ...place, stand: 1 }, sway: false }, P, cfg);
+  const sp3 = floorPoint3(standFoot, P), lp3 = floorPoint3(lookFoot, P);
+  ok("placed: the camera stands on its floor point at eye height", Math.abs(placed.C[0] - sp3.X) < 1e-9 && Math.abs(placed.C[1] - 2.2) < 1e-9 && Math.abs(placed.C[2] - sp3.Z) < 1e-9);
+  const lookAt = projectLive({ X: lp3.X, Y: 3, Z: lp3.Z }, placed);
+  ok("placed: the look point is drawn at the view centre", Math.abs(lookAt.x - rest.x) < 1e-6 && Math.abs(lookAt.y - rest.y) < 1e-6, `${lookAt.x},${lookAt.y}`);
+  near("placed: lens scales the painted focal length", placed.f, P.f * 0.5, 1e-9);
+  ok("placed: looking from the right toward the left swings yaw positive", placed.yaw > 30 && placed.yaw < 150, `${placed.yaw}`);
+  ok("placed: the camera stands level (upright things stay upright)", placed.tilt === 0, `${placed.tilt}`);
+  const plain = rigCamera({ view: rest, rest, sway: false }, P, cfg), off0 = rigCamera({ view: rest, rest, shot: { ...place, stand: 0 }, sway: false }, P, cfg);
+  ok("placed: stand 0 = the camera it would be without it", off0.C.every((v, i) => v === plain.C[i]) && off0.yaw === plain.yaw && off0.f === plain.f && off0.c0.x === plain.c0.x);
+  const halfway = rigCamera({ view: rest, rest, shot: { ...place, stand: 0.5 }, sway: false }, P, cfg);
+  ok("placed: stand 0.5 is between the two cameras", halfway.C[1] < plain.C[1] && halfway.C[1] > placed.C[1] && halfway.yaw > plain.yaw && halfway.yaw < placed.yaw);
+  // On the way in: a real camera on a straight line, level, its subject crossing the screen in a straight line
+  const L3 = { X: lp3.X, Y: 3, Z: lp3.Z }, startS = projectLive(L3, plain);
+  const along = [0.1, 0.25, 0.5, 0.75, 0.9].map((u) => ({ u, r: rigCamera({ view: rest, rest, shot: { ...place, stand: u }, sway: false }, P, cfg) }));
+  ok("placed: on the way the camera only ever comes down (never rises first)", along.every((a, i) => a.r.C[1] < (i ? along[i - 1].r.C[1] : plain.C[1])), along.map((a) => a.r.C[1].toFixed(1)).join(" "));
+  ok("placed: on the way the camera never tips (no up-and-down swing)", along.every((a) => Math.abs(a.r.tilt) < 1e-9));
+  ok("placed: the look point crosses the screen in a straight line from where it was to the view centre", along.every(({ u, r }) => {
+    const q = projectLive(L3, r);
+    return Math.abs(q.x - (startS.x + (rest.x - startS.x) * u)) < 1e-6 && Math.abs(q.y - (startS.y + (rest.y - startS.y) * u)) < 1e-6;
+  }));
+  {
+    // ONE movement (the user, 11o: a straight line read as a dive, then a swing): the camera travels round the look
+    // point, its bearing, height angle and distance (geometric) all in step with stand
+    const Lw = { X: lp3.X, Y: 3, Z: lp3.Z };
+    const polar = (C) => { const dx = C[0] - Lw.X, dy = C[1] - Lw.Y, dz = C[2] - Lw.Z, h = Math.hypot(dx, dz); return { az: Math.atan2(dx, dz), el: Math.atan2(dy, h), r: Math.hypot(h, dy) }; };
+    const a = polar(plain.C), b = polar(placed.C);
+    ok("placed: the camera travels round the look point, angle, height angle and distance in step", along.every(({ u, r }) => {
+      const p = polar(r.C);
+      return Math.abs(p.az - (a.az + (b.az - a.az) * u)) < 1e-9 && Math.abs(p.el - (a.el + (b.el - a.el) * u)) < 1e-9 && Math.abs(Math.log(p.r) - (Math.log(a.r) + (Math.log(b.r) - Math.log(a.r)) * u)) < 1e-9;
+    }));
+    const mid = along.find((x) => x.u === 0.5).r, turn = (mid.yaw - plain.yaw) / (placed.yaw - plain.yaw);
+    ok("placed: half way, about half the turn is done (not all saved for the end)", turn > 0.3 && turn < 0.7, `${turn}`);
+    ok("placed: orbitPath ends exactly at both cameras", orbitPath(plain.C, placed.C, Lw, 0).every((v, i) => v === plain.C[i]) && orbitPath(plain.C, placed.C, Lw, 1).every((v, i) => v === placed.C[i]));
+  }
+  ok("placed: neutral 1 still folds everything out (exact 2D)", feet.every((f) => {
+    const b = liveBattler(f, P, rigCamera({ view: rest, rest, shot: { ...place, stand: 1 }, sway: false, neutral: 1 }, P, cfg));
+    return Math.abs(b.x - f.x) < 1e-6 && Math.abs(b.y - f.y) < 1e-6 && Math.abs(b.scale - 1) < 1e-9;
+  }));
+  ok("placed: needs both points (half a shot is ignored)", rigCamera({ view: rest, rest, shot: { stand: 1, standX: 1600, standY: 700 }, sway: false }, P, cfg).C.every((v, i) => v === plain.C[i]));
+  const nearLook = liveBattler({ x: 1300, y: 680 }, P, placed), farLook = liveBattler({ x: 900, y: 650 }, P, placed);
+  ok("placed: nearer the camera is drawn larger", nearLook.scale > farLook.scale && farLook.depth > nearLook.depth, `${nearLook.scale} ${farLook.scale}`);
+  // A face point: the heading squared to it, the look point still centred (shift lens)
+  const faceFoot = { x: 900, y: 760 };
+  const faced = rigCamera({ view: rest, rest, shot: { ...place, faceX: faceFoot.x, faceY: faceFoot.y, stand: 1 }, sway: false }, P, cfg);
+  const fp3 = floorPoint3(faceFoot, P), wantFace = (Math.atan2(-(fp3.X - sp3.X), -(fp3.Z - sp3.Z)) * 180) / Math.PI;
+  near("face: the camera heads at the face point", faced.yaw, wantFace, 1e-9);
+  ok("face: it differs from facing the look point", Math.abs(faced.yaw - placed.yaw) > 3, `${faced.yaw} vs ${placed.yaw}`);
+  const lookF = projectLive({ X: lp3.X, Y: 3, Z: lp3.Z }, faced);
+  ok("face: the look point is still drawn at the view centre", Math.abs(lookF.x - rest.x) < 1e-6 && Math.abs(lookF.y - rest.y) < 1e-6, `${lookF.x},${lookF.y}`);
+  ok("face: still level", faced.tilt === 0);
+  {
+    // a row of battlers squared to the heading (same depth along it) lands on one straight level line
+    const hy = (faced.yaw * Math.PI) / 180, fwd = [-Math.sin(hy), -Math.cos(hy)], side = [Math.cos(hy), -Math.sin(hy)];
+    const row = [-2, -0.7, 0.6, 1.9].map((a) => projectLive({ X: sp3.X + fwd[0] * 6 + side[0] * a, Y: 0, Z: sp3.Z + fwd[1] * 6 + side[1] * a }, faced));
+    ok("face: a row squared to the heading is drawn on one level line", row.every((p) => Math.abs(p.y - row[0].y) < 1e-6) && row[3].x > row[0].x, row.map((p) => p.y.toFixed(3)).join(" "));
+  }
+  const facedHalf = rigCamera({ view: rest, rest, shot: { ...place, faceX: faceFoot.x, faceY: faceFoot.y, stand: 0.5 }, sway: false }, P, cfg);
+  const lookH5 = projectLive({ X: lp3.X, Y: 3, Z: lp3.Z }, facedHalf), lookP5 = projectLive({ X: lp3.X, Y: 3, Z: lp3.Z }, halfway);
+  ok("face: on the way the look point follows the same screen path as without it", Math.abs(lookH5.x - lookP5.x) < 1e-6 && Math.abs(lookH5.y - lookP5.y) < 1e-6);
+  {
+    // the subject's size on screen (f / its depth) changes steadily: no swell-and-dip on the way (the user, 11l)
+    const Lp = { X: lp3.X, Y: 3, Z: lp3.Z }, size = (r) => r.f / projectLive(Lp, r).depth;
+    for (const [tag, extra] of [["placed", {}], ["face", { faceX: faceFoot.x, faceY: faceFoot.y }]]) {
+      const r0 = plain, r1 = rigCamera({ view: rest, rest, shot: { ...place, ...extra, stand: 1 }, sway: false }, P, cfg);
+      const errs = [0.1, 0.3, 0.5, 0.7, 0.9].map((u) => {
+        const r = rigCamera({ view: rest, rest, shot: { ...place, ...extra, stand: u }, sway: false }, P, cfg);
+        return Math.abs(size(r) - (size(r0) + (size(r1) - size(r0)) * u));
+      });
+      ok(`${tag}: the subject's size on screen changes steadily from start to end`, errs.every((e) => e < 1e-9), errs.join(" "));
+    }
+  }
+  ok("face: a face point AT the look point changes nothing", rigCamera({ view: rest, rest, shot: { ...place, faceX: lookFoot.x, faceY: lookFoot.y, stand: 1 }, sway: false }, P, cfg).yaw === placed.yaw);
+  ok("draw scale: the orbit camera holds a battler to 0.2..4", battlerDrawScale(9, plain) === 4 && battlerDrawScale(0.05, plain) === 0.2 && battlerDrawScale(2, plain) === 2);
+  ok("draw scale: a placed camera draws one it walks past at its real size", battlerDrawScale(9, placed) === 9 && battlerDrawScale(0.05, placed) === 0.2);
+  ok("draw scale: no rig = the orbit cap", battlerDrawScale(9, null) === 4 && battlerDrawScale(NaN, null) === 1);
 
   // Arena points near a battler (entrance paths)
   const f0 = { x: 1500, y: 700 }, ppm0 = restPxPerMetre(f0.y, P);

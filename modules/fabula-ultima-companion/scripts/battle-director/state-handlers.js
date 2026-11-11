@@ -121,6 +121,7 @@ import { emitBattlerPose } from "./battler-pose.js";
 import { actionPose } from "./battler-pose-rules.js";
 import { witnessNpcAbility, witnessFiredCandidate, witnessAffinityHits } from "./encyclopedia-witness.js";
 import { SimMode } from "./sim/sim-mode.js";
+import { runBossPendingBeat, runBossConflictStart, runBossRoundBoundary, bossRoundEndTrigger, bossSkipsRoundEndSweep, bossHoldsConflictEvent } from "./boss-rules/boss-rules.js";
 
 // Install a director-scoped watcher that releases Guard / Covered AEs
 // when their associated actor drops to 0 HP. RAW Core p.70:
@@ -2307,11 +2308,19 @@ async function resolveRoundInitiative(director, roundNo) {
 const RoundStart = {
   async onEnter(director) {
     if (routeEndedCombat(director, "ROUND_START")) return;
+    // Boss rules (boss-rules.js): a fall that came at the round's end (a round_end
+    // DoT) plays here, before anything of the next round.
+    if (director.dCombat?.pendingRoundWrap) {
+      try { await runBossPendingBeat(director, "round_start"); }
+      catch (e) { warn("ROUND_START: boss-rule beat threw", e); }
+      if (routeEndedCombat(director, "ROUND_START")) return;
+    }
     // A pending wrap means a round just finished and its round_end reactions have
     // settled: the conflict event's round-end beat. (The first ROUND_START has no
     // wrap pending, so this never fires before Round 1.) No-ops without an event.
-    // Not after the Free Round: round-level rules wait for Round 1.
-    if (director.dCombat?.pendingRoundWrap && !director.dCombat?.freeRound) {
+    // Not after the Free Round: round-level rules wait for Round 1. Not while a
+    // boss rule holds it (Nidhogg's Soul Tithe is suspended while he is down).
+    if (director.dCombat?.pendingRoundWrap && !director.dCombat?.freeRound && !bossHoldsConflictEvent(director)) {
       try {
         const { dispatchConflictEventRoundEnd } = await import("../conflict-event/conflict-event-runtime.js");
         await dispatchConflictEventRoundEnd(director);
@@ -2319,6 +2328,13 @@ const RoundStart = {
     }
     director.ctx.endOfRound = false;
     director.ctx.endOfCombat = false;
+    // Boss rules: the round boundary, before the new round's turns are dealt
+    // (Nidhogg: the Crystal Round begins, or the dragon returns). May name the round.
+    director.ctx.bossRoundLabel = null;
+    if (director.dCombat?.pendingRoundWrap) {
+      try { director.ctx.bossRoundLabel = (await runBossRoundBoundary(director))?.label ?? null; }
+      catch (e) { warn("ROUND_START: boss-rule round boundary threw", e); }
+    }
     // Deferred wrap: the last TURN_END of the previous round only MARKED the
     // wrap (so the round-end phase — round_end reactions, Late Actor free
     // actions — played out inside that round). Apply it now: round++, refill
@@ -2391,7 +2407,7 @@ const RoundStart = {
     // keeping the sequencing owned + tracked by the director rather than a loose
     // global. Reset to null when there's no banner (no round yet).
     director.ctx.initiativeBannerDone = (roundNo > 0)
-      ? playRoundBanner({ round: roundNo, followup })
+      ? playRoundBanner({ round: roundNo, followup, ...(director.ctx.bossRoundLabel ? { label: director.ctx.bossRoundLabel } : {}) })
       : null;
 
     // Boss Dominance accrual — every enemy boss banks 1 Dominance Point on
@@ -2535,6 +2551,21 @@ function summonTurnKey(director, snapLike) {
 const TurnStart = {
   async onEnter(director) {
     if (routeEndedCombat(director, "TURN_START")) return;
+    // Boss rules: a fall between turns (a turn_end reaction, a free action) plays
+    // here. A rule that cut the round (every turn spent) wraps it now.
+    if (director.dCombat && !director.dCombat.currentCombatantId) {
+      let cut = false;
+      try { ({ cut } = await runBossPendingBeat(director, "turn_start")); }
+      catch (e) { warn("TURN_START: boss-rule beat threw", e); }
+      if (routeEndedCombat(director, "TURN_START")) return;
+      if (cut) {
+        director.dCombat.pendingRoundWrap = true;
+        director.ctx.endOfRound = true;
+        log("TURN_START — a boss rule cut the round: to ROUND_END");
+        await director.transitionTo(STATES.ROUND_END);
+        return;
+      }
+    }
     // Authoritative path — DirectorCombat owns turn order.
     let snap = null;
     if (director.dCombat) {
@@ -8363,6 +8394,12 @@ const TurnEnd = {
         catch (e) { warn("TURN_END: tickDirectorAEsForApplier(end) threw", e); }
       }
 
+      // Boss rules: a fall plays at the end of the turn that caused it, after the
+      // action and its reactions have settled (Nidhogg, ruling 2c.1). A rule may
+      // spend every turn left in the round, so nextTurn below wraps it.
+      try { await runBossPendingBeat(director, "turn_end"); }
+      catch (e) { warn("TURN_END: boss-rule beat threw", e); }
+
       try {
         const r = director.dCombat.nextTurn();
         director.ctx.endOfRound = !!r.wrappedRound;
@@ -8464,7 +8501,9 @@ const RoundEnd = {
     // mechanic et al.) — they expire at the end of any round, ahead of
     // the standalone reaction window so round_end-triggered reactions
     // see a clean slate.
-    try {
+    // (A boss rule that cut the round keeps them: "until the end of the round"
+    // effects carry over into the next one — Nidhogg's fall, ruling 2026-11-12.)
+    if (!bossSkipsRoundEndSweep(director)) try {
       // Pass the combatants' TOKEN actors — unlinked NPC bearers (e.g. a boss's
       // Domination State) carry their AEs on the token-synthetic actor, which
       // the sweep's world-actor walk can't see.
@@ -8488,7 +8527,8 @@ const RoundEnd = {
     // The Free Round's end fires no round_end reactions (a Late Actor's dive
     // included): round-level rules wait for Round 1. The window still opens
     // with no trigger, for the free-action drain.
-    director.ctx.standaloneTrigger = director.dCombat?.freeRound ? "none" : "round_end";
+    // A boss rule's cut round fires none either (Nidhogg's fall: no round_end beats).
+    director.ctx.standaloneTrigger = bossRoundEndTrigger(director) ?? (director.dCombat?.freeRound ? "none" : "round_end");
     director.ctx.standaloneAfter   = STATES.ROUND_START;
     director.ctx.standalonePayload = null;
     director.enqueue({ type: INTENTS.INTERNAL_DONE });
@@ -8622,6 +8662,12 @@ const StandaloneReactionWindow = {
                 await fieldApi.seedFromScene(fieldApi.currentScene(director), { reason: "conflict_start" });
               }
             } catch (e) { warn("STANDALONE_REACTION_WINDOW: field seed threw", e); }
+          }
+          // Boss rules (boss-rules.js) — a boss's own setup at conflict start (Nidhogg
+          // spawns his hidden crystal), before the conflict event and any turn.
+          if (trigger === "conflict_start") {
+            try { await runBossConflictStart(director); }
+            catch (e) { warn("STANDALONE_REACTION_WINDOW: boss-rule conflict start threw", e); }
           }
           // Conflict event (scene-selected additional rule) — seeds at
           // conflict_start, re-seeds / upkeeps at round_start. Runs AFTER the

@@ -33,6 +33,9 @@ export async function runBattleEndSummaryUI(endCtx) {
 
   const uiPayload = {
     runId:        `sum_${Date.now()}`,
+    // The quiet ending (the Sealing Crystal): no level-up sound; the running
+    // EXP ticks stay. The victory music is the prompt's (off by default there).
+    quiet:        !!endCtx.ending?.quiet,
     lockInteractions: true,
     holdMs:       5000,
     totalRounds:  totalRounds ?? null,

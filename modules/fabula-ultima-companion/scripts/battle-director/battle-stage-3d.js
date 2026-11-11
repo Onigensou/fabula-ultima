@@ -106,6 +106,7 @@ const state = {
   ticking: false,
   camera3d: null,
   holds: new Map(),     // id -> reason; explicit holds on the 3D camera
+  claims: new Map(),    // id -> reason; a cinematic driving the camera itself: holds do not apply
   holdSeq: 0,
   free: false,          // debug: ignore every hold (the shot tour)
 };
@@ -143,7 +144,7 @@ function waitingOnUnportedInput() {
 
 /** Why the 3D camera is held at neutral right now ([] = free). */
 function cameraHolds() {
-  if (state.free) return [];
+  if (state.free || state.claims.size) return [];
   const out = [];
   if (waitingOnUnportedInput()) out.push("input");
   if (isCameraSuspended()) out.push("cinematic");
@@ -546,6 +547,39 @@ export const BattleStage3dApi = {
     free(on = true) { state.free = !!on; return cameraHolds(); },
     /** Tween {yaw, tilt (degrees), push (<1 = closer)}; resolves on arrival. Held = stays neutral. */
     go: (partial, ms) => state.camera3d?.go(partial, ms) ?? Promise.resolve(),
+    /**
+     * Placed shot: the camera stands on the floor at canvas point `at` {x, y}, `eye` m up, and looks at the point
+     * `lookH` m above canvas floor point `look` {x, y}; `lens` < 1 is wider; `face` {x, y} (optional) = the floor point it
+     * faces when that is not the look point (the look point stays centred by a lens shift). Tweens in over `ms`; stand(null, ms)
+     * eases back to the orbit camera. Resolves on arrival. Held = stays neutral. curve: "inOut" (default) | "in"
+     * (keeps speeding up: a pull-away) | "out".
+     */
+    stand: (o, ms, curve) => {
+      const cam = state.camera3d;
+      if (!cam) return Promise.resolve();
+      if (!o) return cam.go({ stand: 0 }, ms, curve);
+      return cam.go({ stand: 1, standX: o.at.x, standY: o.at.y, eye: o.eye ?? 1.7, lookX: o.look.x, lookY: o.look.y, lookH: o.lookH ?? 1, lens: o.lens ?? 1, faceX: (o.face ?? o.look).x, faceY: (o.face ?? o.look).y }, ms, curve);
+    },
+    /**
+     * A cinematic that drives the camera itself (camera.set every frame): while claimed, no hold applies, so the
+     * camera stays live through input waits and other cinematics' suspensions. Returns the release (once).
+     */
+    claim(reason = "claim") {
+      const id = ++state.holdSeq;
+      state.claims.set(id, String(reason));
+      return () => { state.claims.delete(id); };
+    },
+    /** Set the scripted shot now, no tween (see Stage3dCamera.set). */
+    set: (partial) => state.camera3d?.set(partial),
+    /** The live camera's model for planning a shot: { P, cfg, rest, view } (rest / view = {x, y, scale}); null when not running. */
+    model() {
+      const c = state.camera3d;
+      if (!c?.running) return null;
+      const st = canvas.stage;
+      return { P: c.P, cfg: c.cfg, rest: c.restView(), view: { x: st.pivot.x, y: st.pivot.y, scale: st.scale.x } };
+    },
+    /** The rig this frame was drawn with (rules rigCamera output), or null when flat / off. */
+    rig: () => { const c = state.camera3d; return c?.running && !c.flat ? c.lastRig : null; },
     /** Named shot: painted, left, right, low, high. */
     shot: (name, ms) => (SHOTS[name] ? state.camera3d?.go(SHOTS[name], ms) : null) ?? Promise.resolve(),
     shots: () => Object.keys(SHOTS),

@@ -93,6 +93,12 @@ export const PRESETS = Object.freeze({
   Eisendrache_Battlemap002: { horizon: 175.3, strength: 0.178, orbitX: 8, orbitY: 2, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
   // Valley of the Dragon - Battle (v2)
   Valley_Battlemap001: { horizon: 52.0, strength: 0.386, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  // The Great Seal (Battle) — the Nidhogg fight (docs/nidhogg-boss-design.md). Horizon from two independent
+  // reads that agree: the depth model's floor fit (encode.py: -67 with the back wall as "far", -75 with zero
+  // shift; residual 0.028) and the seal's concentric rings fitted as floor circles through the painted camera
+  // (fov 40: the two best-fitting rings give -80 and -86). The cave wall and its rock pillars have real depth, so
+  // a relief model like the other Valley maps, not a flat wall. Strength by the usual rule (back row ~0.72).
+  Valley_Battlemap003: { horizon: -78, strength: 0.583, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
   // Valley of the Dragon - Underground Area (Battle). `ambient` = the scene effects
   // pinned to the painting (battle-stage-ambient.js), in canvas px on this image.
   Valley_Battlemap002: {
@@ -418,6 +424,18 @@ function camSlope(p, rig) {
  * view   {x, y, scale}   PIXI camera (stage pivot + scale)
  * rest   {x, y, scale}   the director's rest framing
  * shot   {yaw, tilt, push}  scripted extras (degrees, degrees, distance factor)
+ *        + a placed shot, blended in by `stand` 0..1 (see placedCamera):
+ *        {stand, standX, standY, eye, lookX, lookY, lookH, lens} — the camera
+ *        stands on the floor at canvas point (standX, standY), `eye` metres up,
+ *        and looks at the point `lookH` metres above floor point (lookX, lookY);
+ *        `lens` scales the painted focal length (<1 = wider). Optional
+ *        (faceX, faceY): the floor point it FACES, when that is not the look
+ *        point; the look point is then held at the view centre by shifting the
+ *        lens sideways (a shift lens), so the camera's heading can be squared
+ *        to something (a line of battlers seen straight on). The orbit shot
+ *        above can only swing round the view centre at the painted camera's
+ *        distance; this puts the camera anywhere in the arena (in front of the
+ *        party, looking at a boss).
  * t      seconds (idle sway); sway false holds it
  * neutral  0..1: how far to fold every 3D move back out (1 = the painted
  *        camera behind the 2D view, i.e. exact 2D: no truck, no dolly, no pan
@@ -444,19 +462,128 @@ export function rigCamera({ view, rest, shot = {}, t = 0, sway = true, neutral =
 
   const panNorm = (viewC.x - restC.x) / P.stageW;
   const ph = (2 * Math.PI * t) / cfg.swayPeriod;
-  const yaw = ((Number(shot.yaw) || 0) + cfg.panYaw * panNorm + (sway ? cfg.swayYaw * Math.sin(ph) : 0)) * live;
-  const tilt = ((Number(shot.tilt) || 0) + (sway ? cfg.swayTilt * Math.sin(ph * 0.73 + 1.1) : 0)) * live;
+  let yaw = ((Number(shot.yaw) || 0) + cfg.panYaw * panNorm + (sway ? cfg.swayYaw * Math.sin(ph) : 0)) * live;
+  let tilt = ((Number(shot.tilt) || 0) + (sway ? cfg.swayTilt * Math.sin(ph * 0.73 + 1.1) : 0)) * live;
 
   const R = rotYX(yaw, tilt);
   const off = mulRv(R, [(0 - T0.X) * k, (P.Hp - 0) * k, (0 - T0.Z) * k]);
   const C = [Tc.X + off[0], Math.max(0.3, Tc.Y + off[1]), Tc.Z + off[2]];
-  const rig = { C, R, yaw, tilt, k };
   // The dolly part is lens-compensated (framing kept, perspective changes);
   // a scripted push is not (it really moves in).
-  rig.f = P.f * kD;
+  const rig = { C, R, yaw, tilt, k, stand: 0, f: P.f * kD };
   const s = camSlope(Tv, rig);
   rig.c0 = { x: viewC.x - rig.f * s.sx, y: viewC.y + rig.f * s.sy };
+
+  const pl = placedCamera(shot, P);
+  const stand = pl ? clamp(Number(shot.stand) || 0, 0, 1) * live : 0;
+  return stand > 0 ? placedRig(rig, pl, stand, viewC) : rig;
+}
+
+/**
+ * The camera on its way into a placed shot (stand 0..1 from `from`, the camera
+ * it leaves). A real camera, like the painted one: it travels ROUND the look
+ * point from where it was to where it stands, its angle around it, its height
+ * angle and its distance (in proportion) all moving together, so the move reads
+ * as ONE movement. (A straight line read as two: from far away it barely
+ * changes the angle to the subject, so it dove in first and did all its turning
+ * and dropping in the last moment.) It stays LEVEL (it turns, it never
+ * tips up or down, so upright things stay upright and the view never swings up
+ * and back down), and keeps its subject in view: it pans so the look point
+ * moves in a straight line across the screen from where it was to the view
+ * centre, and its lens shifts up or down to hold the look point at that
+ * height. The lens follows the look point's depth, so the subject's size on
+ * screen changes steadily from start to end.
+ */
+function placedRig(from, pl, stand, viewC) {
+  const L = pl.L;
+  const dist = (c) => Math.hypot(L.X - c[0], L.Y - c[1], L.Z - c[2]);
+  const S0 = projectLive(L, from);
+  const S = { x: S0.x + (viewC.x - S0.x) * stand, y: S0.y + (viewC.y - S0.y) * stand };
+  const C = orbitPath(from.C, pl.C, L, stand);
+  C[1] = Math.max(0.3, C[1]);
+  const per0 = from.f / dist(from.C);
+  const f = (per0 + (pl.f / dist(pl.C) - per0) * stand) * dist(C);
+  const tilt = from.tilt * (1 - stand);
+  // Pan: the look point's bearing from the camera, turned by the angle that
+  // puts it at S.x on screen (no sideways lens shift by the end).
+  const c0x = from.c0.x + (viewC.x - from.c0.x) * stand;
+  const az = (Math.atan2(-(L.X - C[0]), -(L.Z - C[2])) * 180) / Math.PI;
+  const want = az + (Math.atan((S.x - c0x) / f) * 180) / Math.PI;
+  let yaw = from.yaw + (((((want - from.yaw) % 360) + 540) % 360) - 180);
+  // A face point turns the heading away from the look point by the end; the
+  // lens shift below keeps the look point where it was going on screen.
+  if (pl.face != null) yaw += (((((pl.face - pl.yaw) % 360) + 540) % 360) - 180) * stand;
+  // The lens, final: the subject's size on screen is f over its DEPTH along the
+  // camera's view (not its straight-line distance, which drifts from the depth
+  // as the camera turns), so blend that ratio from start to end: the subject
+  // grows or shrinks steadily, never swells and dips on the way.
+  const R = rotYX(yaw, tilt);
+  const d0 = camSlope(L, from).d, d1 = camSlope(L, { C: pl.C, R: rotYX(pl.face ?? pl.yaw, 0) }).d, dC = camSlope(L, { C, R }).d;
+  const fL = (from.f / d0 + (pl.f / d1 - from.f / d0) * stand) * dC;
+  const rig = { C, R, yaw, tilt, k: from.k, stand, f: fL };
+  const s = camSlope(L, rig);
+  rig.c0 = { x: S.x - fL * s.sx, y: S.y + fL * s.sy };
   return rig;
+}
+
+/**
+ * A point u (0..1) of the way from camera position A to B, travelling round L:
+ * the bearing around L (the short way), the height angle seen from L, and the
+ * distance from L (geometrically, so it closes in at a steady rate) all move in
+ * step. u 0 = A, u 1 = B exactly.
+ */
+export function orbitPath(A, B, L, u) {
+  if (u <= 0) return [...A];
+  if (u >= 1) return [...B];
+  const polar = (C) => {
+    const dx = C[0] - L.X, dy = C[1] - L.Y, dz = C[2] - L.Z, h = Math.hypot(dx, dz);
+    return { az: Math.atan2(dx, dz), el: Math.atan2(dy, h), r: Math.max(1e-3, Math.hypot(h, dy)) };
+  };
+  const a = polar(A), b = polar(B);
+  let dAz = b.az - a.az;
+  dAz = Math.atan2(Math.sin(dAz), Math.cos(dAz));
+  const az = a.az + dAz * u, el = a.el + (b.el - a.el) * u, r = a.r * Math.pow(b.r / a.r, u);
+  return [L.X + r * Math.cos(el) * Math.sin(az), L.Y + r * Math.sin(el), L.Z + r * Math.cos(el) * Math.cos(az)];
+}
+
+/**
+ * The placed part of a shot, or null when it does not name both points: the
+ * camera at (standX, standY) on the floor, `eye` m up (default 1.7), looking at
+ * the point `lookH` m (default 1) above floor point (lookX, lookY), with the
+ * painted focal length times `lens` (default 1). Returns { C, yaw, f, L, face }:
+ * the camera stands level, facing the look point (the look point's height is
+ * framed by the lens, see placedRig), or facing floor point (faceX, faceY)
+ * when given (face = that heading in degrees, else null).
+ */
+export function placedCamera(shot, P) {
+  if (!shot) return null;
+  const sx = Number(shot.standX), sy = Number(shot.standY), lx = Number(shot.lookX), ly = Number(shot.lookY);
+  if (![sx, sy, lx, ly].every(finite)) return null;
+  const at = floorPoint3({ x: sx, y: Math.max(sy, P.hz + 2) }, P), lf = floorPoint3({ x: lx, y: Math.max(ly, P.hz + 2) }, P);
+  const eye = finite(Number(shot.eye)) ? Math.max(0.3, Number(shot.eye)) : 1.7;
+  const lookH = finite(Number(shot.lookH)) ? Number(shot.lookH) : 1;
+  const C = [at.X, eye, at.Z], L = { X: lf.X, Y: lookH, Z: lf.Z };
+  const a = lookAngles(C, L);
+  if (!a) return null;
+  const lens = finite(Number(shot.lens)) && Number(shot.lens) > 0 ? Number(shot.lens) : 1;
+  const fx = Number(shot.faceX), fy = Number(shot.faceY);
+  let face = null;
+  if (finite(fx) && finite(fy)) {
+    const fp = floorPoint3({ x: fx, y: Math.max(fy, P.hz + 2) }, P), fa = lookAngles(C, { X: fp.X, Y: eye, Z: fp.Z });
+    if (fa) face = fa.yaw;
+  }
+  return { C, yaw: a.yaw, f: P.f * lens, L, face };
+}
+
+/** The rig's {yaw, tilt} (degrees) for a camera at C looking at point L, or null when they coincide. */
+function lookAngles(C, L) {
+  const d = [L.X - C[0], L.Y - C[1], L.Z - C[2]], len = Math.hypot(d[0], d[1], d[2]);
+  if (!(len > 1e-6)) return null;
+  // Forward is -Z of the camera: (-sin yaw cos t', -sin t', -cos yaw cos t') with t' = -tilt.
+  return {
+    yaw: (Math.atan2(-d[0], -d[2]) * 180) / Math.PI,
+    tilt: (-Math.asin(clamp(d[1] / len, -1, 1)) * 180) / Math.PI,
+  };
 }
 
 /** World point -> canvas point through the live camera. */
@@ -476,6 +603,18 @@ export function liveBattler(foot, P, rig) {
   const b = projectLive({ X: p.X, Y: 1, Z: p.Z }, rig);
   const ppm = Math.hypot(b.x - a.x, b.y - a.y);
   return { x: a.x, y: a.y, scale: ppm / restPxPerMetre(y, P), depth: a.depth };
+}
+
+/**
+ * How much larger than at rest a battler is DRAWN, from liveBattler's scale.
+ * The orbit camera holds it to 0.2..4. A placed shot is a real camera standing
+ * among the battlers: one it walks past is drawn as large as it really is (one
+ * nearer than the camera's near limit is hidden instead), so only the floor
+ * of 0.2 stays.
+ */
+export function battlerDrawScale(scale, rig) {
+  const s = finite(scale) ? scale : 1;
+  return Math.max(0.2, rig && rig.stand > 0 ? s : Math.min(4, s));
 }
 
 /**

@@ -10,7 +10,10 @@
  *                  its battle map; the event waits, comes back with the party
  *                  and runs Victory or Defeat. "Story loss": a defeat does not
  *                  end the event (the tournament, Fafnir). "Recover after a
- *                  defeat": the party is back to full HP and MP.
+ *                  defeat": the party is back to full HP and MP. "Return to":
+ *                  the party comes back somewhere else (a door tile, a marker
+ *                  or a point on another scene) instead of where it stood —
+ *                  Nidhogg's fight sends it out of the Great Seal.
  * - Change Scene   move the party to another scene, at a marker token or a
  *                  point, and carry on with the rest of this event there. A
  *                  theatre scene (no party token) is fine.
@@ -86,6 +89,30 @@
       out.push(m ? { x: Number(m[1]), y: Number(m[2]) } : { mark: raw });
     }
     return out;
+  }
+
+  // Where "Return to" puts the party on `scene`: "x, y", a tile id on that scene
+  // (its centre; on a dungeon map a node is landed on as a walk does, with the
+  // party token offset, so the map finds the node), a marker token's name, or
+  // blank for the scene's spawn point (else its centre). null: nothing matched.
+  function returnPoint(scene, at) {
+    if (!scene) return null;
+    const raw = String(at ?? "").trim();
+    const m = raw.match(/^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/);
+    if (m) return { x: Number(m[1]), y: Number(m[2]) };
+    if (raw) {
+      const tile = scene.tiles?.get?.(raw);
+      if (tile) {
+        const dungeon = scene.flags?.[MODULE_ID]?.oniFabula?.general?.sceneMode === "dungeon";
+        const off = dungeon ? (globalThis.DungeonPathing?.UI?.TOKEN_OFFSET ?? { x: 0, y: 0 }) : { x: 0, y: 0 };
+        return { x: tile.x + tile.width / 2 + Number(off.x ?? 0), y: tile.y + tile.height / 2 + Number(off.y ?? 0) };
+      }
+      const mark = tokensNamed(scene, raw)[0];
+      return mark ? centerOf(mark, scene) : null;
+    }
+    const sp = scene.flags?.[MODULE_ID]?.oniFabula?.general?.spawnPoint;
+    if (sp && Number.isFinite(Number(sp.x)) && Number.isFinite(Number(sp.y))) return { x: Number(sp.x), y: Number(sp.y) };
+    return { x: (scene.width ?? 1000) / 2, y: (scene.height ?? 1000) / 2 };
   }
 
   // Which list runs after a fight.
@@ -165,6 +192,8 @@
     row.engagement = ENGAGEMENTS.some(([k]) => k === row.engagement) ? row.engagement : "normal";
     row.storyLoss = row.storyLoss === true;
     row.recoverOnDefeat = row.recoverOnDefeat === true;
+    row.returnScene = String(row.returnScene ?? "");
+    row.returnAt = String(row.returnAt ?? "");
     if (!Array.isArray(row.victoryRows)) row.victoryRows = [];
     if (!Array.isArray(row.defeatRows)) row.defeatRows = [];
   }
@@ -191,9 +220,19 @@
     const members = await partyMembers();
     if (!members.length) return { ok: false, reason: "noParty" };
 
+    // "Return to": the battle end's default return scene, and where the party is put there.
+    const ret = { enabled: true };
+    if (row.returnScene) {
+      const to = sceneByRef(row.returnScene);
+      const at = to ? returnPoint(to, row.returnAt) : null;
+      if (!to) console.warn(INSTALL_TAG, `Start Battle: no return scene "${row.returnScene}" — the party comes back where it was.`);
+      else if (!at) console.warn(INSTALL_TAG, `Start Battle: nothing called "${row.returnAt}" on ${to.name} — the party comes back where it was.`);
+      else Object.assign(ret, { sceneId: to.id, x: at.x, y: at.y });
+    }
+
     const tag = `event-battle-${id}-${++battleSeq}-${Date.now()}`;
     const payload = {
-      context: { battleSceneUuid: battleScene.uuid, sourceSceneId: source?.id, sourceSceneUuid: source?.uuid, return: { enabled: true } },
+      context: { battleSceneUuid: battleScene.uuid, sourceSceneId: source?.id, sourceSceneUuid: source?.uuid, return: ret },
       encounterPlan: { mode: "manual", manualPicks: picks },
       party: { members },
       battlePlan: { type: "default", isBoss: row.isBoss, initiativeMode: "rolled", engagement: row.engagement },
@@ -222,8 +261,9 @@
       const info = await ended;
       if (!info) return { ok: true, type: "startBattle", aborted: true };
 
-      // fu.battleEnd fires after the transition home; wait for the GM's canvas.
-      if (source?.id) await waitForCanvas(source.id);
+      // fu.battleEnd fires after the transition home (or to the return point); wait for the GM's canvas.
+      const home = info.returnSceneId || source?.id;
+      if (home) await waitForCanvas(home);
       await f?.arrive?.(id);
 
       const branch = battleBranch(info.outcome, row.storyLoss);
@@ -245,7 +285,7 @@
     type: "startBattle",
     label: "Start Battle",
     category: "Story",
-    defaultData: { type: "startBattle", enemies: "", battleMap: "", bgm: "", isBoss: false, engagement: "normal", storyLoss: false, recoverOnDefeat: false, victoryRows: [], defeatRows: [] },
+    defaultData: { type: "startBattle", enemies: "", battleMap: "", bgm: "", isBoss: false, engagement: "normal", storyLoss: false, recoverOnDefeat: false, returnScene: "", returnAt: "", victoryRows: [], defeatRows: [] },
     prepare: prepareBattle,
     childLists: (row) => [{ label: "Victory", rows: row.victoryRows }, { label: "Defeat", rows: row.defeatRows }],
     summary: (row) => `${String(row?.enemies || "(no enemies)").slice(0, 40)}${row?.storyLoss ? " · story loss" : ""}`,
@@ -263,7 +303,10 @@
         kit.field("If the party loses", `<div class="oni-event-inline-row">
             <label><input type="checkbox" class="oni-sb-storyloss" ${row.storyLoss ? "checked" : ""} /> story loss: carry on with Defeat</label>
             <label><input type="checkbox" class="oni-sb-recover" ${row.recoverOnDefeat ? "checked" : ""} /> recover the party (full HP / MP)</label>
-          </div>`, "Without story loss a defeat ends the event after the Defeat rows.")
+          </div>`, "Without story loss a defeat ends the event after the Defeat rows."),
+        kit.field("Return to", `<input type="text" class="oni-sb-retscene oni-grow" value="${kit.escapeHTML(row.returnScene)}" placeholder="Scene name or id (blank = back where the party was)" />`,
+          "After the battle the party is put here instead (the GM's prompt still shows it and can change it)."),
+        kit.field("Arrive at", `<input type="text" class="oni-sb-retat oni-grow" value="${kit.escapeHTML(row.returnAt)}" placeholder="Door tile id, marker token name, or x, y (blank = spawn point)" />`)
       );
       body.appendChild(kit.subList("victory", "Victory", row.victoryRows));
       body.appendChild(kit.subList("defeat", "Defeat", row.defeatRows));
@@ -277,6 +320,8 @@
       isBoss: !!kit.own(rowEl, ".oni-sb-boss")?.checked,
       storyLoss: !!kit.own(rowEl, ".oni-sb-storyloss")?.checked,
       recoverOnDefeat: !!kit.own(rowEl, ".oni-sb-recover")?.checked,
+      returnScene: kit.readText(rowEl, ".oni-sb-retscene", "").trim(),
+      returnAt: kit.readText(rowEl, ".oni-sb-retat", "").trim(),
       victoryRows: kit.readSubList(rowEl, "victory"),
       defeatRows: kit.readSubList(rowEl, "defeat")
     })
@@ -674,6 +719,6 @@
     collectFields: () => ({})
   });
 
-  window.oni.EventSystem.RowsStory = { installed: true, parseEnemyList, parseWaypoints, battleBranch, loopStep };
+  window.oni.EventSystem.RowsStory = { installed: true, parseEnemyList, parseWaypoints, battleBranch, loopStep, returnPoint };
   console.debug(INSTALL_TAG, "Installed.");
 })();

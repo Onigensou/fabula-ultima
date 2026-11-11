@@ -45,6 +45,27 @@ check("loop: End Event inside still ends the event", S.loopStep({ ok: true, stop
 const battle = registered.find(d => d.type === "startBattle");
 const row = { type: "startBattle" }; battle.prepare(row);
 check("start battle defaults", row.engagement === "normal" && Array.isArray(row.victoryRows) && Array.isArray(row.defeatRows) && row.storyLoss === false);
+check("start battle: no return point by default", row.returnScene === "" && row.returnAt === "");
+
+// "Return to": where the party is put on the return scene
+const doorScene = {
+  grid: { size: 100 }, width: 2000, height: 1600,
+  tiles: { get: (id) => (id === "door1" ? { x: 1000, y: 2800, width: 100, height: 120 } : null) },
+  tokens: { contents: [{ name: "Exit Mark", x: 300, y: 400, width: 1, height: 1, actor: null }] },
+  flags: {}
+};
+const rp = (at, sc = doorScene) => JSON.stringify(S.returnPoint(sc, at));
+check("return point: x, y", rp("1036, 2860") === JSON.stringify({ x: 1036, y: 2860 }));
+check("return point: a door tile's centre", rp("door1") === JSON.stringify({ x: 1050, y: 2860 }));
+check("return point: a marker token's centre", rp("Exit Mark") === JSON.stringify({ x: 350, y: 450 }));
+check("return point: nothing by that name", S.returnPoint(doorScene, "Nowhere") === null);
+check("return point: blank = the scene centre without a spawn point", rp("") === JSON.stringify({ x: 1000, y: 800 }));
+check("return point: blank = the spawn point", rp("", { ...doorScene, flags: { "fabula-ultima-companion": { oniFabula: { general: { spawnPoint: { x: 5, y: 6 } } } } } }) === JSON.stringify({ x: 5, y: 6 }));
+check("return point: no scene", S.returnPoint(null, "1, 2") === null);
+globalThis.DungeonPathing = { UI: { TOKEN_OFFSET: { x: 0, y: -20 } } };
+const dungeonScene = { ...doorScene, flags: { "fabula-ultima-companion": { oniFabula: { general: { sceneMode: "dungeon" } } } } };
+check("return point: a node on a dungeon map lands with the party token offset, as a walk does", rp("door1", dungeonScene) === JSON.stringify({ x: 1050, y: 2840 }));
+check("return point: off a dungeon map, no offset", rp("door1") === JSON.stringify({ x: 1050, y: 2860 }));
 
 console.log(fail ? `\n${fail} FAILED` : "\nall passed");
 process.exit(fail ? 1 : 0);

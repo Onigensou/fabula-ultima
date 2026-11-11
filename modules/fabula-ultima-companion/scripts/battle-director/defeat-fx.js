@@ -53,10 +53,11 @@ export const FINISHER_PACE = 1.5;
 const FINISHER_DIM = { alpha: 0.3, inMs: 250, outFromMs: null, outMs: 400 };
 
 // The style's table entry as it will play: slowed for the finisher, which also
-// dims the field if the style does not already.
+// dims the field if the style does not already. An external style is never
+// scaled: its player keeps its own pace, and totalMs only times the removal.
 function styleConfig(style, finisher) {
   const base = DEFEAT_STYLES[style];
-  if (!base || !finisher) return base;
+  if (!base || !finisher || base.external) return base;
   const cfg = scaleDefeatTimings(base, FINISHER_PACE);
   if (!cfg.screenDim && !cfg.launch) cfg.screenDim = { ...FINISHER_DIM, outFromMs: cfg.totalMs - FINISHER_DIM.outMs };
   return cfg;
@@ -65,20 +66,23 @@ function styleConfig(style, finisher) {
 /**
  * GM: play `style` for the token on every client. Resolves when the creature
  * can be removed. Never throws. `finisher` — the last foe's defeat — plays it
- * slower under a dimmed field.
+ * slower under a dimmed field. `lastFoe` — this defeat empties the enemy side —
+ * only reaches the external players (the Sealing Crystal ends the battle on
+ * black); it changes nothing else, so an on-hit defeat can carry it without
+ * taking the finisher's pace.
  */
-export async function playDefeatFx({ tokenUuid, style, causeTokenUuid = null, finisher = false } = {}) {
+export async function playDefeatFx({ tokenUuid, style, causeTokenUuid = null, finisher = false, lastFoe = finisher } = {}) {
   const cfg = styleConfig(style, finisher);
   if (!cfg || !tokenUuid) return;
-  try { _socket?.executeForOthers?.(ACTION_PLAY, { tokenUuid, style, causeTokenUuid, finisher }); }
+  try { _socket?.executeForOthers?.(ACTION_PLAY, { tokenUuid, style, causeTokenUuid, finisher, lastFoe }); }
   catch (e) { warn("defeat-fx: broadcast failed", e); }
-  if (shouldRender()) await playDefeatLocal({ tokenUuid, style, causeTokenUuid, finisher });
+  if (shouldRender()) await playDefeatLocal({ tokenUuid, style, causeTokenUuid, finisher, lastFoe });
   // A hidden GM draws nothing, but the broadcast has left: hold the removal
   // for the style's length so the token is not deleted under everyone else.
   else if (hasOtherViewers()) await new Promise((r) => setTimeout(r, cfg.totalMs));
 }
 
-// Players for the `external` styles: name -> ({ tokenUuid, token }) => Promise that
+// Players for the `external` styles: name -> ({ tokenUuid, token, causeTokenUuid, lastFoe }) => Promise that
 // resolves when the creature may be removed. Registered on every client.
 const _external = new Map();
 export function registerExternalDefeat(name, fn) {
@@ -125,7 +129,7 @@ function restoreDefeatLocal({ tokenUuid } = {}) {
  * skipped). `causeTokenUuid` — whoever landed the killing blow — only steers
  * the styles that care which way the hit came from ("launched").
  */
-export function playDefeatLocal({ tokenUuid, style, causeTokenUuid = null, finisher = false } = {}) {
+export function playDefeatLocal({ tokenUuid, style, causeTokenUuid = null, finisher = false, lastFoe = finisher } = {}) {
   return new Promise((resolve) => {
     const cfg = styleConfig(style, finisher);
     let token = null;
@@ -141,7 +145,7 @@ export function playDefeatLocal({ tokenUuid, style, causeTokenUuid = null, finis
     if (cfg.external) {
       const fn = _external.get(cfg.external);
       Promise.resolve()
-        .then(() => (fn ? fn({ tokenUuid, token, causeTokenUuid }) : null))
+        .then(() => (fn ? fn({ tokenUuid, token, causeTokenUuid, lastFoe: !!lastFoe }) : null))
         .catch((e) => warn(`defeat-fx: external "${cfg.external}" threw`, e))
         .finally(() => { clearTimeout(failsafe); finish(); });
       return;

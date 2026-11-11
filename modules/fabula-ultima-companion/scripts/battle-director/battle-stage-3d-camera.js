@@ -42,7 +42,7 @@
 // ============================================================================
 
 import { log, warn } from "./logger.js";
-import { rigCamera, liveBattler, projectNearFoot, floorDepth, reliefDepth, reliefPoint } from "./battle-stage-3d-rules.js";
+import { rigCamera, liveBattler, battlerDrawScale, projectNearFoot, floorDepth, reliefDepth, reliefPoint } from "./battle-stage-3d-rules.js";
 import { shadowSpriteFor } from "../sprite-shadow/sprite-shadow-renderer.js";
 
 const THREE_SRC = "modules/fabula-ultima-companion/assets/vendor/three-r128.min.js";
@@ -160,11 +160,19 @@ function buildReliefGeometry(THREE, P, rect, depthAt) {
 }
 
 const ease = (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
+// A tween's speed curve: "inOut" (default) starts and lands gently; "in"
+// starts gently and keeps speeding up to the end (a pull-away that is cut off
+// by something else, e.g. a white-out); "out" leaves fast and lands gently.
+const EASES = { inOut: ease, in: (u) => u * u * u, out: (u) => 1 - Math.pow(1 - u, 3) };
 
 // Easing into neutral is quick (whatever was held is about to need 2D); back
 // out to the free camera is slower.
 const NEUTRAL_IN_MS = 450;
 const NEUTRAL_OUT_MS = 900;
+
+// A battler nearer the camera than this (metres along its view) is not drawn:
+// only a placed shot gets the camera this close.
+const NEAR_CAMERA_M = 1.5;
 
 // Fired after every frame that moved the drawn battlers (and once on settling
 // back to plain 2D), so DOM overlays placed from drawnBox() can follow them.
@@ -326,11 +334,27 @@ export class Stage3dCamera {
     this.#announce();
   }
 
-  /** Tween the scripted part of the camera. Resolves when it lands. */
-  go(partial = {}, ms = 1400) {
+  /**
+   * Set the scripted part of the camera NOW, no tween (a running tween is dropped, its promise resolved). For a
+   * cinematic that computes its own camera every frame from its own clock, so it can be seeked and stepped
+   * (the Sealing Crystal's death). Keys left out keep their value.
+   */
+  set(partial = {}) {
+    const tw = this.tween;
+    this.tween = null;
+    tw?.done?.();
+    for (const [k, v] of Object.entries(partial)) if (Number.isFinite(v)) this.shot[k] = v;
+  }
+
+  /** Tween the scripted part of the camera. Resolves when it lands. curve: "inOut" | "in" | "out" (EASES). */
+  go(partial = {}, ms = 1400, curve = "inOut") {
     const from = { ...this.shot };
     const to = { ...from, ...partial };
-    return new Promise((resolve) => { this.tween = { from, to, t0: performance.now(), ms: Math.max(1, ms), done: resolve }; });
+    // A key the current shot does not have yet (a placed shot's points) starts
+    // at its target, so only what has a "from" travels; `stand` starts at 0.
+    for (const k of Object.keys(to)) if (!Number.isFinite(from[k])) from[k] = k === "stand" ? 0 : to[k];
+    const fn = EASES[curve] ?? ease;
+    return new Promise((resolve) => { this.tween = { from, to, t0: performance.now(), ms: Math.max(1, ms), fn, done: resolve }; });
   }
 
   /**
@@ -358,7 +382,7 @@ export class Stage3dCamera {
     const st = this.tokens.get(token);
     const foot = { x: st.bx + token.w / 2, y: st.by + token.h };
     const b = liveBattler(foot, this.P, rig);
-    const m = Math.max(0.2, Math.min(4, b.scale));
+    const m = battlerDrawScale(b.scale, rig);
     return { x: b.x + (p.x - foot.x) * m, y: b.y + (p.y - foot.y) * m, m };
   }
 
@@ -370,7 +394,7 @@ export class Stage3dCamera {
   projectFoot(foot) {
     if (!this.running || this.flat || !this.lastRig || !foot) return null;
     const b = liveBattler(foot, this.P, this.lastRig);
-    return { x: b.x, y: b.y, m: Math.max(0.2, Math.min(4, b.scale)) };
+    return { x: b.x, y: b.y, m: battlerDrawScale(b.scale, this.lastRig) };
   }
 
   /**
@@ -410,7 +434,7 @@ export class Stage3dCamera {
     const tw = this.tween;
     if (!tw) return;
     const u = Math.min(1, (now - tw.t0) / tw.ms);
-    const e = ease(u);
+    const e = (tw.fn ?? ease)(u);
     for (const k of Object.keys(tw.to)) this.shot[k] = tw.from[k] + (tw.to[k] - tw.from[k]) * e;
     if (u >= 1) { this.tween = null; tw.done?.(); }
   }
@@ -429,6 +453,7 @@ export class Stage3dCamera {
       if (m.destroyed) continue;
       m.position.set(s.x, s.y);
       m.scale.set(s.sx, s.sy);
+      if (s.r !== undefined) m.renderable = s.r;
     }
     saves.length = 0;
   }
@@ -524,7 +549,8 @@ export class Stage3dCamera {
       const w = token.w, h = token.h;
       const foot = { x: st.bx + w / 2, y: st.by + h };
       const b = liveBattler(foot, this.P, rig);
-      const m = Math.max(0.2, Math.min(4, b.scale));
+      // a placed camera draws one it walks past at its real size (battlerDrawScale)
+      const m = battlerDrawScale(b.scale, rig);
       const nx = b.x - (w / 2) * m, ny = b.y - h * m;
       token.position.set(nx, ny);
       token.scale.set(m, m);
@@ -533,15 +559,21 @@ export class Stage3dCamera {
 
       const mesh = token.mesh;
       if (mesh.destroyed) continue;
-      this.meshSaves.push({ mesh, x: mesh.position.x, y: mesh.position.y, sx: mesh.scale.x, sy: mesh.scale.y });
+      // A placed shot can stand the camera among the battlers: one at or behind
+      // it is not drawn this frame (it would fill the screen, or project
+      // through the lens from behind).
+      const hide = !(b.depth > NEAR_CAMERA_M);
+      this.meshSaves.push({ mesh, x: mesh.position.x, y: mesh.position.y, sx: mesh.scale.x, sy: mesh.scale.y, r: mesh.renderable });
       mesh.position.set(b.x + (mesh.position.x - foot.x) * m, b.y + (mesh.position.y - foot.y) * m);
       mesh.scale.set(mesh.scale.x * m, mesh.scale.y * m);
+      if (hide) mesh.renderable = false;
       // Its ground shadow (sprite-shadow) is placed from the 2D mesh: carry it along.
       const sh = shadowSpriteFor(token.id);
       if (sh && !sh.destroyed) {
-        this.meshSaves.push({ mesh: sh, x: sh.position.x, y: sh.position.y, sx: sh.scale.x, sy: sh.scale.y });
+        this.meshSaves.push({ mesh: sh, x: sh.position.x, y: sh.position.y, sx: sh.scale.x, sy: sh.scale.y, r: sh.renderable });
         sh.position.set(b.x + (sh.position.x - foot.x) * m, b.y + (sh.position.y - foot.y) * m);
         sh.scale.set(sh.scale.x * m, sh.scale.y * m);
+        if (hide) sh.renderable = false;
       }
     }
     for (const [token] of this.tokens) if (token.destroyed) this.tokens.delete(token);

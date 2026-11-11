@@ -47,6 +47,8 @@ import { DEFEAT_STYLES, defeatStyleFromFlags, defeatStartsOnHit, ownsDefeatReact
 import { playDefeatFx, restoreDefeatFx } from "./defeat-fx.js";
 import { isBattlefieldObject } from "./battlefield-object.js";
 import { KNOCKOUT_TRIGGER, holdsKnockoutRevive, markReviveTried, clearReviveTried, isKnockoutReviveEffect } from "./knockout-revive.js";
+import { bossRuleOwnsFall } from "./boss-rules/boss-rules.js";
+import { isOutOfPlay } from "./out-of-play.js";
 
 // Property paths — kept identical to the legacy auto-defeat hook.
 const PATH_DB_OPTION = "system.props.option_autoDefeat";
@@ -245,9 +247,18 @@ export async function startDefeatOnHit({ tokenUuid, actor, hpAfter, causeTokenUu
       const willRemove = passesActorGates(actor) && [-1, 0, 1].includes(getDisposition(tokenDoc)) && (await autoDefeatEnabledCached());
       if (!defeatStartsOnHit({ style, hp: hpAfter, inBattle, willRemove, ownReaction: ownsDefeatReaction(actor) })) return no();
 
-      entry.playing = playDefeatFx({ tokenUuid, style, causeTokenUuid }).catch(() => {});
+      // Does this blow empty the enemy side? Only an external player reads it (the
+      // Sealing Crystal then ends on black); the pace stays the on-hit one.
+      const director = bd?.getActiveDirector?.() ?? null;
+      let lastFoe = false;
+      try { lastFoe = !!director && isLastFoe(director, tokenUuid); } catch { lastFoe = false; }
+      entry.style = style;
+      entry.lastFoe = lastFoe;
+      // the music first: the playback's own start-up (a cinematic's) must not queue the cut behind it
+      stopBgmForDefeat(director, style, tokenUuid);
+      entry.playing = playDefeatFx({ tokenUuid, style, causeTokenUuid, lastFoe }).catch(() => {});
       decide(true);
-      log(`defeat-reactor: ${actor.name} — "${style}" begun on the killing blow (checks took ${Math.round(performance.now() - t0)} ms)`);
+      log(`defeat-reactor: ${actor.name} — "${style}" begun on the killing blow (checks took ${Math.round(performance.now() - t0)} ms${lastFoe ? ", last foe" : ""})`);
       // Safety net: if the removal never comes, the token must not stay hidden.
       entry.playing.then(() => setTimeout(() => {
         if (_defeatPlaying.get(tokenUuid) !== entry) return;   // performDefeat took it
@@ -255,6 +266,7 @@ export async function startDefeatOnHit({ tokenUuid, actor, hpAfter, causeTokenUu
         if (fromUuidSync(tokenUuid)) {
           warn(`defeat-reactor: ${actor.name} — defeat begun on the hit was never followed by a removal; showing the token again`);
           restoreDefeatFx(tokenUuid);
+          resumeBgmAfterUndoneDefeat(tokenUuid);
         }
       }, ON_HIT_REMOVAL_GRACE_MS));
       return true;
@@ -277,6 +289,46 @@ function cancelDefeatOnHit(actor, tokenUuid) {
   _defeatPlaying.delete(tokenUuid);
   log(`defeat-reactor: ${actor?.name} is back up (HP ${hp}) — undoing the defeat begun on the hit`);
   restoreDefeatFx(tokenUuid);
+  resumeBgmAfterUndoneDefeat(tokenUuid);
+}
+
+// ── Music on the killing blow ──────────────────────────────────────────────
+//
+// A style with `stopsBgm` (the Sealing Crystal) cuts the battle music the moment
+// its defeat begins — on the hit when it starts there, the beat the last damage
+// number pops (the user, 2026-11-11). Only once nothing can change the outcome
+// (the same gates as the on-hit start), so the rare undo is the only way back:
+// then the battle track is started again.
+let _bgmStoppedBy = null;   // { tokenUuid, payload }
+function directorPayload(director) {
+  return director?.ctx?.payload ?? director?.payload ?? null;
+}
+function stopBgmForDefeat(director, style, tokenUuid) {
+  if (!DEFEAT_STYLES[style]?.stopsBgm || !game.user?.isGM) return;
+  const payload = directorPayload(director);
+  _bgmStoppedBy = { tokenUuid, payload };
+  import("./director-vfx.js")
+    .then((m) => m.stopBattleBgm?.(payload?.battleConfig?.bgm))
+    .then(() => log(`defeat-reactor: battle music stopped on the defeat ("${style}")`))
+    .catch((e) => warn("defeat-reactor: stopping the battle music threw", e));
+}
+function resumeBgmAfterUndoneDefeat(tokenUuid) {
+  if (!_bgmStoppedBy || _bgmStoppedBy.tokenUuid !== tokenUuid) return;
+  const { payload } = _bgmStoppedBy;
+  _bgmStoppedBy = null;
+  if (!payload) return;
+  import("./director-vfx.js")
+    .then((m) => m.playBattleBgm?.(payload))
+    .catch((e) => warn("defeat-reactor: restarting the battle music threw", e));
+}
+
+// The battle end that follows a style with `battleEnd` (the Sealing Crystal's
+// quiet ending): read once by battle-end-orchestrator.js. GM-local, on the
+// running director — a later battle never sees it.
+function noteBattleEndStyle(director, style) {
+  const be = DEFEAT_STYLES[style]?.battleEnd;
+  if (!be || !director?.ctx) return;
+  director.ctx.battleEndStyle = { style, label: DEFEAT_STYLES[style]?.label ?? style, ...be };
 }
 
 // Tokens whose removal is claimed — playing or about to. One defeat per token:
@@ -325,9 +377,10 @@ async function logDefeat(name, disposition, payload) {
 
 // Play `actor`'s defeat on every client. KO art (sprite_ko) falls first, holds,
 // then the style plays over the fallen frame. Resolves when it has finished.
-async function playDefeatFor(tokenDoc, actor, payload, { finisher = false } = {}) {
+async function playDefeatFor(tokenDoc, actor, payload, { finisher = false, director = null } = {}) {
   const tokenUuid = tokenDoc.uuid;
   const style = defeatStyleFor(actor, payload);
+  if (director) stopBgmForDefeat(director, style, tokenUuid);
   if (style.startsWith("ff7_")) {
     let koMs = 0;
     try { koMs = playDefeatPose(tokenDoc); }
@@ -392,6 +445,7 @@ async function performDefeat(director, tokenDoc, actor, payload = null, { delayM
     const begun = entry && (await entry.decided) ? entry : null;
     let style = null;
     if (begun) {
+      style = begun.style ?? null;
       await begun.playing;
     } else if (placeable) {
       if (delayMs > 0) await new Promise((r) => setTimeout(r, delayMs));
@@ -400,7 +454,7 @@ async function performDefeat(director, tokenDoc, actor, payload = null, { delayM
       // token sees it playing and stands down.
       const own = { decided: Promise.resolve(true), playing: null };
       _defeatPlaying.set(tokenUuid, own);
-      own.playing = playDefeatFor(tokenDoc, actor, payload, { finisher }).then((s) => { style = s; });
+      own.playing = playDefeatFor(tokenDoc, actor, payload, { finisher, director }).then((s) => { style = s; });
       await own.playing;
     }
     _defeatPlaying.delete(tokenUuid);
@@ -409,8 +463,11 @@ async function performDefeat(director, tokenDoc, actor, payload = null, { delayM
     if (!isActorDefeated(actor)) {
       log(`defeat-reactor: ${name} is back up before its removal — kept`);
       restoreDefeatFx(tokenUuid);
+      resumeBgmAfterUndoneDefeat(tokenUuid);
       return;
     }
+    if (style) noteBattleEndStyle(director, style);
+    if (_bgmStoppedBy?.tokenUuid === tokenUuid) _bgmStoppedBy = null;   // it stood: the music stays off
     await remove();
     await logDefeat(name, disposition, payload);
     log(`defeat-reactor: removed ${name} (HP 0, gates passed${style ? `, style "${style}"` : ""})`);
@@ -677,7 +734,7 @@ function isPlayerCharacter(actor) {
 // isActorDefeated), matching the emitCreatureDefeated dynamic-import pattern.
 // GM-only, mirroring performDefeat. The caller fires this only on the KO
 // transition edge (no existing KO AE yet), so it runs once per KO.
-async function cleanseBuffsDebuffsOnKO(actor) {
+export async function cleanseBuffsDebuffsOnKO(actor) {
   if (!game.user?.isGM || !actor) return;
   let isBuffOrDebuffAE;
   try {
@@ -772,19 +829,22 @@ export async function defeatReactor(director, cfg, extra) {
   // knocked out like any survivor — KO status, cleanse, KO pose — and NOT removed
   // yet, so its creature_knocked_out reaction can raise it.
   const reviving = down && holdsKnockoutRevive(actor);
+  // A boss rule that plays this creature's fall itself (boss-rules.js ownsFall: Nidhogg's dragon turns into smoke):
+  // no removal, no Champion fall, no Defeated status here. The on-defeat emit above still fired (the fall is a real 0).
+  const ruleFall = down && !reviving && bossRuleOwnsFall(actor, director);
   // The removal is scheduled, not awaited: several deaths from one action play
   // together (staggered) and the settle pass waits for them at its end.
-  let removed = reviving ? false : await evaluateDefeat(director, actor, payload, { defer: true });
+  let removed = reviving || ruleFall ? false : await evaluateDefeat(director, actor, payload, { defer: true });
   if (!removed) {
     try { cancelDefeatOnHit(actor, (await resolveDefeatedToken(actor, payload))?.uuid ?? null); }
     catch (e) { warn("defeat-reactor: cancelDefeatOnHit threw", e); }
   }
   // A Champion stays on the field, but falls first — before its KO status lands.
-  if (!removed && down && !reviving) await playChampionFall(actor, payload);
+  if (!removed && down && !reviving && !ruleFall) await playChampionFall(actor, payload);
   // Survivors (not physically removed) get the visible, reversible Defeated
   // status; recovery (HP > 0) reconciles it off on the same reactor. Removed
-  // creatures are gone — skip.
-  if (!removed) await evaluateDefeatStatus(actor);
+  // creatures are gone — skip. (A rule-owned fall: the rule handles it.)
+  if (!removed && !ruleFall) await evaluateDefeatStatus(actor);
 
   if (reviving) {
     await emitKnockedOut(director, actor, payload, extra?.firedKeys);
@@ -849,6 +909,10 @@ export async function sweepDefeat(director) {
   for (const c of combatants) {
     const actor = c.actor ?? (c.actorUuid ? await fromUuid(c.actorUuid).catch(() => null) : null);
     if (!actor) continue;
+    // Not on the field (out-of-play.js), or a boss rule plays this creature's fall (boss-rules.js ownsFall — a Boss
+    // Cycle boss down for its core's round): no removal and no Defeated status from a sweep either. This sweep runs
+    // at every turn_start, so without this it put "KO" on Nidhogg's dragon in each Crystal Round.
+    if (isOutOfPlay(actor) || bossRuleOwnsFall(actor, director)) continue;
     const removed = await evaluateDefeat(director, actor, { subjectTokenUuid: c.tokenUuid ?? null });
     if (!removed) await evaluateDefeatStatus(actor);
   }

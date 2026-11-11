@@ -38,6 +38,7 @@
 // wait for Round 1. Turn-level rules run as usual. See enterFreeRound().
 
 import { log, warn } from "./logger.js";
+import { isOutOfPlay } from "./out-of-play.js";
 import { speedTierOf as actorSpeedTier, PHASE_ORDER, tierName } from "./speed-phase.js";
 
 // Base activation count from actor (Champions/Elites can have >1; PCs default 1).
@@ -751,6 +752,8 @@ export class DirectorCombat {
   // changing `activation`/`bonus_activation` is picked up at the next round.
   _effectiveActivation(c) {
     if (this.soloPlayerActorUuid && c.actorUuid !== this.soloPlayerActorUuid) return 0;
+    // Out of play (out-of-play.js): in the conflict, not on the field — no turns.
+    if (isOutOfPlay(c.actorDoc)) return 0;
     // Phantasms (Illusionist summons) never take their own turn — they act on
     // the summoner's turn (FU summon rules). 0 turns/round, recomputed every
     // round + after reload from persistent state (actor prop or token flag).

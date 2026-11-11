@@ -53,6 +53,7 @@
 import { log, warn } from "../logger.js";
 import { registerAnimation } from "../director-surfaces.js";
 import { isBattlefieldObject } from "../battlefield-object.js";
+import { isOutOfPlay } from "../out-of-play.js";
 import { feetPoint } from "../unit-anchors.js";
 
 const MODULE_ID = "fabula-ultima-companion";
@@ -206,6 +207,8 @@ export function emitNpcHpBar({ tokenUuid, actor = null, hpBefore, hpAfter, maxHp
     // Most objects have no HP worth showing. One flagged bdObjectHpBar is destroyed
     // by HP (a Soul Fragment), so its bar is the point and needs no Study.
     const objectActor = actor ?? tokenDoc.actor;
+    // Out of play (out-of-play.js): not on the field, so no bar.
+    if (isOutOfPlay(objectActor)) { log(`hp-bar: gated out (out of play) — ${who}`); return; }
     const isObject = isBattlefieldObject(objectActor);
     if (isObject && objectActor?.flags?.["fabula-ultima-companion"]?.bdObjectHpBar !== true) { log(`hp-bar: gated out (battlefield object) — ${who}`); return; }
     if (!isObject && !isStudiedMonster(tokenDoc, actor)) { log(`hp-bar: gated out (not studied) — ${who}`); return; }

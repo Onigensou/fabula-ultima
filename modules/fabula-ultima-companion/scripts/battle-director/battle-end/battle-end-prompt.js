@@ -34,8 +34,26 @@ function safeInt(v, fallback = 0) {
   return Math.floor(safeNumber(v, fallback));
 }
 
+// The Sealing Crystal's ending holds every screen black (crystal-death-show.js,
+// DOM overlay z-index 10050) while this prompt is up: the GM must see it above
+// that. Foundry restacks a window by writing an inline z-index on focus, which
+// an !important rule outranks, so a click on the dialog cannot sink it.
+const ABOVE_BLACK_CLASS = "fud-battle-end-above-black";
+function ensureAboveBlackStyle() {
+  const id = "fud-battle-end-prompt-style";
+  if (document.getElementById(id)) return;
+  const st = document.createElement("style");
+  st.id = id;
+  st.textContent = `.${ABOVE_BLACK_CLASS} { z-index: 10060 !important; }`;
+  document.head.appendChild(st);
+}
+
 export async function showBattleEndPrompt(endCtx) {
   const { outcome: detectedOutcome, sourceSceneId, partyActorIds, defaultRewards } = endCtx;
+  // A quiet ending (the defeat style asked for it): the music and the camera pan
+  // start unticked, and the dialog sits above the ending's black.
+  const quiet = !!endCtx.ending?.quiet;
+  const returnTo = endCtx.returnTo ?? null;
   const defaultExpByActorId   = defaultRewards?.expByActorId   ?? {};
   const defaultZenitByActorId = defaultRewards?.zenitByActorId ?? {};
 
@@ -49,8 +67,14 @@ export async function showBattleEndPrompt(endCtx) {
   // no rank, no rewards. Getting away is not winning.
   const isEscaped = defaultMode === "escaped";
 
-  const returnScene = sourceSceneId ? game.scenes?.get?.(sourceSceneId) : null;
+  // The battle's own return point (payload context.return) wins over where the
+  // party came from; the transition then puts the party token at its point.
+  const returnScene = (returnTo?.sceneId ? game.scenes?.get?.(returnTo.sceneId) : null)
+    ?? (sourceSceneId ? game.scenes?.get?.(sourceSceneId) : null);
   const defaultReturnSceneId = returnScene?.id ?? "";
+  const returnFrom = (returnTo?.sceneId && returnScene?.id === returnTo.sceneId)
+    ? "this battle's return point — the party is moved there"
+    : "from battle source scene";
 
   const scenes = (game.scenes?.contents ?? [])
     .slice()
@@ -129,7 +153,7 @@ export async function showBattleEndPrompt(endCtx) {
                 ${sceneOptionsHtml}
               </select>
               <div id="bd_returnSceneLabel" style="opacity:0.75;font-size:12px;margin-top:4px;">
-                Default: ${existingReturnName} — from battle source scene.
+                Default: ${existingReturnName} — ${returnFrom}.
               </div>
             </div>
             <div style="border:1px solid rgba(255,255,255,0.15);border-radius:10px;overflow:hidden;">
@@ -146,14 +170,15 @@ export async function showBattleEndPrompt(endCtx) {
           <div style="font-weight:800;margin-bottom:6px;">Victory BGM &amp; FX</div>
           <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
             <label style="display:flex;gap:6px;align-items:center;">
-              <input type="checkbox" name="playMusic" checked />
+              <input type="checkbox" name="playMusic" ${quiet ? "" : "checked"} />
               <span>Play Music</span>
             </label>
             <label style="display:flex;gap:6px;align-items:center;">
-              <input type="checkbox" name="playAnimation" checked />
+              <input type="checkbox" name="playAnimation" ${quiet ? "" : "checked"} />
               <span>Play Animation</span>
             </label>
           </div>
+          ${quiet ? `<div style="opacity:0.75;font-size:12px;margin-top:4px;">Quiet ending (${endCtx.ending?.label ?? endCtx.ending?.style ?? "defeat style"}): no victory music, no camera pan, and the result screen plays without the level-up sound. The players are on a black screen.</div>` : ""}
           <div style="margin-top:8px;">
             <div style="opacity:0.75;font-size:12px;margin-bottom:4px;">BGM Name (searched across all playlists)</div>
             <input type="text" name="bgmName" value="${defaultBgmName}" style="width:100%;" />
@@ -248,7 +273,8 @@ export async function showBattleEndPrompt(endCtx) {
       },
       default: "confirm",
       close: () => settleWith({ ok: false }),
-    });
+    }, quiet ? { classes: ["dialog", ABOVE_BLACK_CLASS] } : {});
+    if (quiet) ensureAboveBlackStyle();
 
     dlg.render(true);
 
@@ -290,8 +316,8 @@ export async function showBattleEndPrompt(endCtx) {
       function applyMode(mode) {
         const debug = mode === "debug";
         const noRewards = debug || mode === "escaped";
-        if (music) { music.checked = !debug; music.disabled = debug; }
-        if (anim)  { anim.checked  = !debug; anim.disabled  = debug; }
+        if (music) { music.checked = !debug && !quiet; music.disabled = debug; }
+        if (anim)  { anim.checked  = !debug && !quiet; anim.disabled  = debug; }
         rewardInputs.forEach(inp => {
           inp.disabled = noRewards;
           if (noRewards) inp.value = "0";

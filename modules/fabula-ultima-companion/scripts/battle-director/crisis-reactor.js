@@ -21,6 +21,7 @@
  */
 import { log, warn } from "./logger.js";
 import { isBattlefieldObject } from "./battlefield-object.js";
+import { isOutOfPlay } from "./out-of-play.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 // Canonical Crisis AE template (name "Crisis", marker status). Same source the
@@ -75,6 +76,8 @@ export async function evaluateCrisis(actor) {
   if (!actor) return { changed: false, direction: null };
   // Crisis is a creature's state; a Soul Fragment's low HP is not one.
   if (isBattlefieldObject(actor)) return { changed: false, direction: null };
+  // Out of play (out-of-play.js): not on the field. Whoever brings it back reconciles it (evaluateCrisis).
+  if (isOutOfPlay(actor)) return { changed: false, direction: null };
   const cur = num(actor.system?.props?.current_hp);
   const threshold = crisisThreshold(actor);
   if (cur == null || threshold == null) return { changed: false, direction: null };

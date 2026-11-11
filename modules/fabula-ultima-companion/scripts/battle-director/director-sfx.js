@@ -111,6 +111,41 @@ export function playSfx(url, vol = 0.6) {
 // Register the socket on EVERY client (call once at boot, after socketlib is
 // up). Idempotent: socketlib.registerModule returns the module's shared socket,
 // so coexisting with the cut-in / round-banner registrations is fine.
+/**
+ * A BED: a sound that runs under an effect, its volume driven every frame by the effect's own envelope (fade in,
+ * fade out), looping when the file is shorter than the bed. `offset` (s) starts it part-way in, so a bed joined late
+ * (a client that came in mid-effect) is where it would be. Returns { setVolume(v), stop() }; never throws.
+ */
+export function playBed(url, { vol = 0, offset = 0, loop = true } = {}) {
+  const handle = {
+    stopped: false, src: null, gain: null, vol: Math.max(0, Number(vol) || 0),
+    setVolume(v) { this.vol = Math.max(0, Number(v) || 0); try { if (this.gain) this.gain.gain.value = this.vol; } catch { /* gone */ } },
+    stop() { this.stopped = true; try { this.src?.stop(); } catch { /* not started / ended */ } },
+  };
+  try {
+    if (!url) return handle;
+    const c = ctx();
+    if (c.state === "suspended") { c.resume().catch(() => {}); }
+    const start = (buf) => {
+      if (handle.stopped) return;
+      const src = c.createBufferSource(), gain = c.createGain();
+      handle.src = src; handle.gain = gain;
+      gain.gain.value = handle.vol;
+      src.buffer = buf; src.loop = !!loop;
+      src.connect(gain).connect(c.destination);
+      src.onended = () => { try { src.disconnect(); gain.disconnect(); } catch { /* already gone */ } };
+      const d = buf.duration || 1, off = Math.max(0, Number(offset) || 0);
+      src.start(0, loop ? off % d : Math.min(off, d));
+    };
+    const cached = _audio.buffers.get(url);
+    if (cached) start(cached);
+    else decode(url).then(start).catch((e) => warn(`playBed: ${url} failed`, e));
+  } catch (e) {
+    warn("playBed threw", e);
+  }
+  return handle;
+}
+
 export function initDirectorSfx() {
   try {
     if (typeof socketlib === "undefined" || !game.modules.get("socketlib")?.active) {

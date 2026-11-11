@@ -1221,7 +1221,7 @@ Hooks.once("ready", () => {
     });
   }
 
-  async function playCardExpAnimation({ fillEl, pctEl, lvNumEl, levelUpEl }, entry, rule) {
+  async function playCardExpAnimation({ fillEl, pctEl, lvNumEl, levelUpEl }, entry, rule, { quiet = false } = {}) {
     const expStart = Number(rule?.expStart ?? 1);
     const levelUpAt = Number(rule?.levelUpAt ?? 10);
 
@@ -1253,7 +1253,8 @@ Hooks.once("ready", () => {
       await animateSegment(fillEl, pctEl, fromPct, toPct, dur);
 
       if (seg?.levelUp === true) {
-        playLevelUpSfx();
+        // the quiet ending keeps the LEVEL UP flash but not its sound
+        if (!quiet) playLevelUpSfx();
         flashLevelUp(levelUpEl);
 
         currentLevel += 1;
@@ -1450,7 +1451,7 @@ const footerData = {
 
       // 1) EXP animations (parallel) — pass cached element refs, no querySelector in hot path
       await Promise.all(cards.map(({ fillEl, pctEl, lvNumEl, levelUp, entry }) =>
-        playCardExpAnimation({ fillEl, pctEl, lvNumEl, levelUpEl: levelUp }, entry, rule)));
+        playCardExpAnimation({ fillEl, pctEl, lvNumEl, levelUpEl: levelUp }, entry, rule, { quiet: data?.quiet === true })));
 
       // 2) Per-actor Zenit animations (parallel) — AFTER EXP finishes
       await Promise.all(cards.map(({ zenitEl, entry }) => playCardZenitAnimation({ zenitEl }, entry)));

@@ -33,6 +33,7 @@ export const SKILL_FORMULAS_SCHEMA = 12;
 import { log, warn } from "./logger.js";
 import { crisisThreshold } from "./crisis-reactor.js";
 import { orbmentReduction } from "../orbment/orbment-dr.js";
+import { bossStage } from "./boss-rules/boss-rules.js";
 
 // snapshot.getBlockedActionLabels, registered by snapshot.js at load (it already
 // imports this module, so a static import back would be a cycle). Read by the
@@ -1058,6 +1059,14 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "TRIGGER_AMOUNT": return Math.max(0, Number(payload?.amount ?? 0) || 0);
       // Combat state
       case "ROUND": return Math.max(0, Number(round ?? 0) || 0);
+      // The fight's stage as a boss rule counts it (boss-rules/boss-rules.js stage()):
+      // Nidhogg = his crystal's crack stage, 0 intact, 1 / 2 / 3 at or below 75 / 50 /
+      // 25 % of its HP (design doc §3: each crack unlocks a harder pattern). 0 in any
+      // battle no rule claims, so a "BOSS_STAGE >= 2" gate is simply off elsewhere.
+      case "BOSS_STAGE": {
+        try { return bossStage(globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.() ?? null); }
+        catch { return 0; }
+      }
       // 1 when the acting skill's PRINTED target is a single creature ("One
       // creature", "One Enemy", "Single", "One Random Creature"), else 0. Reads
       // payload.skillTarget (the skill_target text on the CONFIRM actionBase).

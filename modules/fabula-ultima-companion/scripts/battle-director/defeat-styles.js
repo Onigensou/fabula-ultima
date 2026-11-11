@@ -50,6 +50,25 @@ export const DEFEAT_STYLES = {
     external: "soul-release",
     totalMs: 2700,
   },
+  // Nidhogg's death: his crystal body (the Sealing Crystal is his actual body, ruled 2026-11-11) shatters
+  // (scripts/sealing-crystal/crystal-death-show.js): a ~28 s cinematic on every
+  // client. As the battle's last foe (the ending, ruled 2026-11-11) it starts on the killing blow, the battle music
+  // stops on that blow, and the white holds then fades to black: the removal waits for the black
+  // (crystal-death.js ENDING_BLACK_AT 26.3 s), so the battle end runs on black. Not the last foe, the white clears
+  // onto the arena (DEATH.whiteGone 22.4 s) and the fight goes on. totalMs covers the longer of the two for a GM who
+  // does not draw (crystal.test.mjs keeps it in step).
+  crystal_death: {
+    label: "Nidhogg's crystal body shatters",
+    internal: true,
+    external: "crystal-death",
+    totalMs: 26800,
+    startOnHit: true,
+    // the GM stops the battle BGM the moment the defeat begins (on the hit when it starts there)
+    stopsBgm: true,
+    // the battle end that follows: no victory music or camera pan, the result screen without the level-up sound,
+    // the prompt drawn above the black (battle-end-orchestrator.js reads it)
+    battleEnd: { quiet: true },
+  },
   ff7_soldier: {
     label: "FF7 fade (Soldier)",
     internal: true,
