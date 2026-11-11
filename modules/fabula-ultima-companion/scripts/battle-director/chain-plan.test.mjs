@@ -210,6 +210,39 @@ eq("row: element falls back to the action's", ev({ hit: true, damage: 5 }, { dam
   eq("an end for another action is ignored", hc.state.active, false);
 }
 
+// ── per-strike elements (Asura Strike) ────────────────────────────────────────
+{
+  const { strikeElementsOf, strikeArFor } = await import("./chain-plan.js");
+  const flagged = (kw, els) => ({ system: { props: { action_keywords: kw } }, flags: { "fabula-ultima-companion": { chainElements: els } } });
+  eq("elements: array", strikeElementsOf(flagged("", ["Bolt", "Fire", "ICE", "air"])), ["bolt", "fire", "ice", "air"]);
+  eq("elements: comma string", strikeElementsOf(flagged("", "bolt, fire,ice  air")), ["bolt", "fire", "ice", "air"]);
+  eq("elements: none", strikeElementsOf(skill("chain 4 seek")), null);
+  eq("elements: empty", strikeElementsOf(flagged("", "")), null);
+  eq("spec carries elements (seek)", chainSpecFor({ kind: "Skill", skillItem: flagged("pierce, chain 4 seek", ["bolt", "fire", "ice", "air"]), isCheck: true, hasDamage: true }),
+    { count: 4, mode: "seek", elements: ["bolt", "fire", "ice", "air"] });
+  eq("one-roll chain ignores elements", chainSpecFor({ kind: "Skill", skillItem: flagged("chain 4", ["bolt", "fire"]), isCheck: true, hasDamage: true }), { count: 4, mode: "single" });
+  const ar = { damageType: "Bolt", x: 1 }, spec = { count: 4, mode: "seek", elements: ["bolt", "fire", "ice", "air"] };
+  eq("strike 1 keeps the card", strikeArFor(ar, spec, 1), ar);
+  eq("strike 2 = fire", strikeArFor(ar, spec, 2), { damageType: "fire", x: 1, _strikeElement: "fire" });
+  eq("strike 4 = air", strikeArFor(ar, spec, 4), { damageType: "air", x: 1, _strikeElement: "air" });
+  eq("short list repeats its last", strikeArFor(ar, { elements: ["bolt", "fire"] }, 4), { damageType: "fire", x: 1, _strikeElement: "fire" });
+  eq("no list = card", strikeArFor(ar, { count: 4 }, 3), ar);
+  eq("strike element names the outcome", _test.evaluateRow({ hit: true, damage: 40, element: "bolt", affinity: "RS" }, strikeArFor(ar, spec, 3)).element, "ice");
+  // RESOLVE view: a duplicate card row resolves once; mixed absorb + damage writes the net
+  const plan = { perTarget: {
+    a: { landed: 2, hitsLanded: 2, crits: 0, damage: 20 + 87 + 172, hpLoss: 192, shieldLoss: 0, hpGain: 87 },
+    b: { landed: 1, hitsLanded: 1, crits: 0, damage: 40, hpLoss: 40, shieldLoss: 0, hpGain: 0 },
+    c: { landed: 2, hitsLanded: 2, crits: 0, damage: 100, hpLoss: 10, shieldLoss: 0, hpGain: 90 },
+  } };
+  const view = chainHitsView(plan, [{ tokenUuid: "a", affinity: "RS" }, { tokenUuid: "b", affinity: "RS" }, { tokenUuid: "b", affinity: "RS" }, { tokenUuid: "c", affinity: "NE" }]);
+  eq("duplicate row resolves once", view.map((r) => r.tokenUuid), ["a", "b", "c"]);
+  eq("mixed absorb nets a loss", [view[0].damage, view[0].affinity], [105, "NE"]);
+  eq("plain target unchanged", [view[1].damage, view[1].affinity], [40, "RS"]);
+  eq("mixed absorb nets a heal", [view[2].damage, view[2].affinity], [80, "AB"]);
+  const only = chainHitsView({ perTarget: { h: { landed: 1, hitsLanded: 1, crits: 0, damage: 87, hpLoss: 0, shieldLoss: 0, hpGain: 87 } } }, [{ tokenUuid: "h", affinity: "RS" }]);
+  eq("only an absorbed strike heals (card affinity ignored)", [only[0].damage, only[0].affinity], [87, "AB"]);
+}
+
 console.log(`chain-plan: ${passed} passed, ${failed} failed`);
 if (failed) process.exitCode = 1;
 process.exit();

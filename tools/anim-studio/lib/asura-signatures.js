@@ -113,8 +113,8 @@ function asuraStrike(opts = {}) {
   const assets = ASSETS();
   const script = shell({ key: opts.key, name: opts.name, cfg, assets, inner, timeout: cfg.totalTimeoutMs, startOnReady: true });
   const preload = [assets.cutin, assets.darkIdle, ...Object.values(assets.clips).map((c) => c.url).filter((u) => u.startsWith("http"))];
-  // damage gate at the bursts (offset from animationStart, which the inner emits on its first frame)
-  return { script, timing: { mode: "offset", offset: t.bursts }, preload };
+  // damage gate just after the fourth burst (each burst reveals its Chain strike via oni.hit)
+  return { script, timing: { mode: "offset", offset: t.bursts + 3 * 110 + 60 }, preload };
 }
 
 module.exports = { asuraStrike, EL };

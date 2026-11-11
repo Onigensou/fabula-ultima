@@ -48,8 +48,18 @@ const DIR = PC.x >= K.x ? 1 : -1;
 const center = (k) => { const Tk = TOK[k], f = feet(Tk); return { x: f.x, y: f.y - Tk.h * 0.5 }; };
 const FAR = PARTY.length ? (DIR > 0 ? Math.max(...PARTY.map((k) => TOK[k].x)) : Math.min(...PARTY.map((k) => TOK[k].x))) : PC.x;
 const BEHIND = { x: FAR + DIR * cfg.behind * KP, y: PC.y + 20 * KP };
-// one cut per element, each on its own party member
-const HITS = ELS.map((el, i) => ({ el, k: PARTY.length ? PARTY[i % PARTY.length] : null })).filter((h) => h.k);
+// one cut per strike. A Chain cast (Chain 4 seek) hands us the planned strikes: each cut goes to that
+// strike's real target (a seek redirect included) and remembers how it landed; a preview (no plan) spreads
+// the four cuts over the foes on the board.
+const keyOfUuid = (u) => PARTY.find((k) => TOK[k].token && TOK[k].token.document && TOK[k].token.document.uuid === u) || null;
+const STRIKES = Array.isArray(oni.strikes) ? oni.strikes : [];
+const HITS = ELS.map((el, i) => {
+  const s = STRIKES[i], o = s && s.outcomes ? (s.outcomes.find((x) => x && x.kind !== 'lost') || s.outcomes[0]) : null;
+  const k = (o && keyOfUuid(o.tokenUuid)) || (PARTY.length ? PARTY[i % PARTY.length] : null);
+  const kind = o ? o.kind : 'hit';
+  return { el, k, kind, pierce: !!(o && o.pierce), landed: !o || kind === 'hit' || kind === 'absorb' || kind === 'immune' || kind === 'block' };
+}).filter((h) => h.k);
+if (!HITS.length) { oni.fireDone(); return; }
 const side = (i) => (i % 2 ? 1 : -1);                       // which side of the target he lands on
 const cutSpot = (i) => { const k = HITS[i].k, f = feet(TOK[k]); return { x: f.x + side(i) * DIR * TOK[k].w * 0.9, y: f.y + 6 * KP }; };
 const cutAt = (i) => C.cuts + i * cfg.cut;
@@ -99,8 +109,8 @@ m.hold(0, C.total + 1, (t, S) => {
   if (t >= C.leap) dim = Math.min(dim, lerp(0.25, 0.15, seg(t, C.leap, C.leap + 500)));
   if (t >= C.landHome + 300) dim = lerp(0.15, 0, seg(t, C.landHome + 300, C.landHome + 1100));
   S.dim = Math.max(S.dim, dim);
-  // the struck hold their hurt loop through the bursts
-  if (t >= C.bursts && t < C.bursts + 900) for (const h of HITS) S.tok[h.k].hurt = true;
+  // the struck hold their hurt loop through the bursts (a strike that missed outright does not)
+  if (t >= C.bursts && t < C.bursts + 900) for (const h of HITS) if (h.landed) S.tok[h.k].hurt = true;
   // rumble: storm rumble while he charges, the release rumble through the blades
   if (t < C.land) S.shake = Math.max(S.shake, 1.5 * KP);
   if (t >= C.bursts && t < C.wout + cfg.wbuild) S.shake = Math.max(S.shake, 4 * KP);
@@ -237,14 +247,18 @@ const impactPhase = (from, to, bg, fg) => m.hold(from, to, (tt, S) => S.over.pus
 impactPhase(C.release, C.release + 70, '#000', '#fff'); impactPhase(C.release + 70, C.release + 140, '#fff', '#000');
 // white: in 50 ms, hold, out 380 ms
 m.hold(C.release + 140, C.release + 140 + 50 + cfg.white + 380, (tt, S) => { const a = tt < 50 ? tt / 50 : tt < 50 + cfg.white ? 1 : 1 - (tt - 50 - cfg.white) / 380; S.white = Math.max(S.white, a); });
-// the four bursts, 110 ms apart, on the four cut targets (the real numbers come from the resolve side at the gate)
+// the four bursts, 110 ms apart, on the four strike targets. Each one reveals its strike (oni.hit: number,
+// flinch, HP bar from the Chain presenter). A Pierce half-hit gets a smaller burst; a clean miss only a puff.
 HITS.forEach((h, i) => { const at = C.bursts + i * 110, e = EL[h.el], c = center(h.k), f = feet(TOK[h.k]);
-  m.clip('px_' + h.el, at, { x: c.x - 40 * KP, y: c.y + 40 * KP, w: CL['px_' + h.el].w * 2.6 * CL['px_' + h.el].k * KP, z: 44, rot: rnd(-15, 15) * Math.PI / 180, flip: R() < 0.5 });
-  m.clip('mv_' + h.el, at, { x: c.x, y: c.y, w: CL['mv_' + h.el].w * 1.5 * CL['mv_' + h.el].k * KP, z: 45 });
-  m.clip('ro_' + h.el, at, { x: f.x, y: h.el === 'fire' ? f.y : c.y, w: CL['ro_' + h.el].w * (h.el === 'fire' ? 0.7 : 1) * CL['ro_' + h.el].k * KP, z: 43, add: true });
-  m.clip('hit_' + h.el, at, { x: c.x, y: c.y, w: CL['hit_' + h.el].w * 1.2 * CL['hit_' + h.el].k * KP, z: 46, add: true });
-  shards(at, c, e.rgb, 18, 0.6); shards(at, c, '255,255,255', 8, 0.45);
-  m.flash(at, 20, 110, 'rgb(' + e.rgb + ')', 0.35); S_(at, e.s1, 0.55); });
+  once(at, () => oni.hit({ numbersOnly: true }));
+  if (!h.landed) { m.clip('smoke11', at, { x: c.x, y: c.y + 20 * KP, w: CL.smoke11.w * 0.8 * CL.smoke11.k * KP, z: 44, add: true, alpha: () => 0.5 }); S_(at, 'swingC', 0.4); return; }
+  const big = h.pierce ? 0.6 : 1;
+  m.clip('px_' + h.el, at, { x: c.x - 40 * KP, y: c.y + 40 * KP, w: CL['px_' + h.el].w * 2.6 * big * CL['px_' + h.el].k * KP, z: 44, rot: rnd(-15, 15) * Math.PI / 180, flip: R() < 0.5 });
+  m.clip('mv_' + h.el, at, { x: c.x, y: c.y, w: CL['mv_' + h.el].w * 1.5 * big * CL['mv_' + h.el].k * KP, z: 45 });
+  if (!h.pierce) m.clip('ro_' + h.el, at, { x: f.x, y: h.el === 'fire' ? f.y : c.y, w: CL['ro_' + h.el].w * (h.el === 'fire' ? 0.7 : 1) * CL['ro_' + h.el].k * KP, z: 43, add: true });
+  m.clip('hit_' + h.el, at, { x: c.x, y: c.y, w: CL['hit_' + h.el].w * 1.2 * big * CL['hit_' + h.el].k * KP, z: 46, add: true });
+  shards(at, c, e.rgb, h.pierce ? 9 : 18, 0.6); shards(at, c, '255,255,255', h.pierce ? 4 : 8, 0.45);
+  m.flash(at, 20, 110, 'rgb(' + e.rgb + ')', 0.35 * big); S_(at, e.s1, 0.55 * big); });
 m.shake(C.bursts, Math.max(900, cfg.seq * 0.6), cfg.shake * KP);
 // the screen-wide blades: the first four cross at once (one per element), the rest keep cutting through the release
 for (let n = 0; n < cfg.strokes; n++) { const el = ELS[n % 4], at = C.release + 140 + (n < 4 ? 0 : cfg.seq * (n - 3) / Math.max(1, cfg.strokes - 3) * rnd(0.85, 1));
@@ -264,7 +278,7 @@ for (let i = 0; i < 2; i++) { const x = kf.x + (i ? 40 : -40) * KP; for (let j =
 S_(C.landHome + 80, 'darkness5', 0.35);
 for (let i = 0; i < 40; i++) { const el = pick(ELS); particle({ t0: C.landHome + 80 + rnd(0, 300), life: rnd(1600, 2800), x: kf.x + rnd(-260, 260) * KP, y: kf.y - rnd(200, 420) * KP, vx: rnd(-0.04, 0.04), vy: rnd(0.02, 0.07), r: rnd(2, 4), rgb: EL[el].rgb }); }
 
-// the damage resolves at the bursts (the gate); the shot keeps running to the end
-once(C.bursts, () => oni.fireDone());
+// the damage gate sits just after the fourth burst's reveal; the shot keeps running to the end
+once(C.bursts + 3 * 110 + 60, () => oni.fireDone());
 await tl.run(T, { total: C.total, sfx, onStart: () => { const h = ctx.params.readyHook; if (h) { try { Hooks.callAll(h); } catch (e) {} } } });
 oni.fireDone();

@@ -50,13 +50,38 @@ export function chainSpecFor({ kind = null, skillItem = null, weapon = null, isC
   const parsed = parseChainKeyword(lists.join(","));
   // An auto-hit action (no Check) can only be a ONE-ROLL Chain: its card already hit
   // every target, so the ticks just split that damage. Strikes that each roll need a check.
-  const spec = parsed && !isCheck && parsed.mode !== "single" ? null : parsed;
+  let spec = parsed && !isCheck && parsed.mode !== "single" ? null : parsed;
   if (spec && spec.formula != null) {
     if (typeof evalCount !== "function") return null;
     let v = 0; try { v = evalCount(spec.formula); } catch { v = 0; }
-    return resolveChainCount(spec, v);
+    spec = resolveChainCount(spec, v);
   }
-  return spec;
+  // Per-strike elements (a separate Chain only; a one-roll Chain is one hit of one element).
+  const elements = spec && spec.mode !== "single" ? strikeElementsOf(skillItem) : null;
+  return elements ? { ...spec, elements } : spec;
+}
+
+// ── per-strike elements ──────────────────────────────────────────────────────
+// A separate Chain can give each strike its own element (Asura Strike: Bolt, Fire,
+// Ice, Air). Authored on the skill as the flag `chainElements` — an array or a
+// comma/space list, strike 1 first. Strike 1 IS the card, so it keeps the card's
+// own damage type (author the item's type to match the list's first entry);
+// strikes 2..N re-derive damage and affinity with their own element. A short list
+// repeats its last entry; an empty / missing list leaves every strike on the card's type.
+const CHAIN_FLAG_NS = "fabula-ultima-companion";
+export function strikeElementsOf(skillItem) {
+  const raw = skillItem?.flags?.[CHAIN_FLAG_NS]?.chainElements;
+  const list = (Array.isArray(raw) ? raw : String(raw ?? "").split(/[\s,]+/))
+    .map((e) => String(e ?? "").trim().toLowerCase()).filter(Boolean);
+  return list.length ? list : null;
+}
+// The action record strike k (1-based) is re-derived from: the card's own for strike 1
+// or when no element is set for k; else the card with that strike's damage type.
+export function strikeArFor(ar, spec, k) {
+  const list = Array.isArray(spec?.elements) ? spec.elements : null;
+  if (!list || k <= 1) return ar;
+  const el = list[Math.min(k, list.length) - 1];
+  return el ? { ...ar, damageType: el, _strikeElement: el } : ar;
 }
 
 // Random and pick modes assign each strike's target when the action is
@@ -196,7 +221,8 @@ function evaluateRow(row, ar) {
   const struck = !!row.hit || !!row.pierceMiss;
   if (!struck) return { hit: false, kind: "miss", defense };
   const amount = Math.max(0, Math.floor(Number(row.damage) || 0));
-  const element = String(row.element ?? ar?.damage?.element ?? ar?.damageType ?? "elementless");
+  // a per-strike element (strikeArFor) names the strike; the re-derived row can still carry the card's
+  const element = String(ar?._strikeElement ?? row.element ?? ar?.damage?.element ?? ar?.damageType ?? "elementless");
   if (row.damageOverride && isBlockingOverride(row.damageOverride) && amount <= 0) {
     return { hit: true, kind: "block", blockedBy: row.damageOverride.via ?? row.damageOverride.reactorName ?? null, defense };
   }
@@ -265,12 +291,14 @@ export async function buildChainPlan(director, ar, rng = Math.random) {
       // so the presenter and the animation follow the redirect).
       if (spec.mode === "seek") targets = redirectSeek(targets, cardTargets, (u) => walker.standing(u), rng);
       let rows = cardRows, roll = ar.roll;
+      // strike k's own element (per-strike Chain elements), else the card's
+      const arK = strikeArFor(ar, spec, k);
       if (k > 1) {
         const standing = targets.filter((u) => walker.standing(u));
         if (standing.length) {
           for (const u of standing) setTally(u);
           const dice = await rollStrikeDice(ar, k);
-          const res = await recomputeStrike({ ar, dice, targetUuids: standing, states, round });
+          const res = await recomputeStrike({ ar: arK, dice, targetUuids: standing, states, round });
           rows = res.rows;
           roll = res.roll ?? { ...ar.roll, rA: dice.rA, rB: dice.rB };
         } else {
@@ -279,7 +307,7 @@ export async function buildChainPlan(director, ar, rng = Math.random) {
         }
       }
       const byUuid = new Map((rows ?? []).map((r) => [r?.tokenUuid, r]));
-      walker.step({ index: k, roll: rollLite(roll), targets }, (strike, uuid) => evaluateRow(byUuid.get(uuid), ar));
+      walker.step({ index: k, roll: rollLite(roll), targets }, (strike, uuid) => evaluateRow(byUuid.get(uuid), arK));
     }
   } finally {
     if (useTally) for (const [key, val] of tallyBase) {
@@ -412,13 +440,31 @@ export function chainTargetOf(plan, tokenUuid) {
 // dealt damage (pierce included), and its damage is the strikes' total.
 export function chainHitsView(plan, rows = []) {
   if (!plan) return rows;
-  return rows.map((r) => {
-    const t = plan.perTarget?.[r?.tokenUuid];
-    if (!t) return { ...r, hit: false, pierceMiss: false, crit: false, damage: 0 };
+  // A creature can sit on the card twice (Protect took over a strike aimed at an ally): its
+  // strikes are already ONE per-target total, so it resolves once.
+  const seen = new Set();
+  const out = [];
+  for (const r of rows) {
+    const u = r?.tokenUuid;
+    if (u && seen.has(u)) continue;
+    if (u) seen.add(u);
+    const t = plan.perTarget?.[u];
+    if (!t) { out.push({ ...r, hit: false, pierceMiss: false, crit: false, damage: 0 }); continue; }
     const pierceOnly = t.landed > 0 && t.hitsLanded === 0;
     const { damageOverride, ...rest } = r;
-    return { ...rest, hit: t.hitsLanded > 0, pierceMiss: pierceOnly, crit: t.crits > 0, damage: t.damage };
-  });
+    const view = { ...rest, hit: t.hitsLanded > 0, pierceMiss: pierceOnly, crit: t.crits > 0, damage: t.damage };
+    // Per-strike elements can mix an absorbed strike with damaging ones on one target (Hina:
+    // Fire heals, Ice hurts). The write is the NET change: damage when it nets a loss, a heal
+    // (affinity AB, which the shared write flips) when it nets a gain.
+    const loss = (Number(t.hpLoss) || 0) + (Number(t.shieldLoss) || 0), gain = Number(t.hpGain) || 0;
+    if (gain > 0) {
+      const net = loss - gain;
+      out.push({ ...view, damage: Math.abs(net), affinity: net >= 0 ? "NE" : "AB" });
+      continue;
+    }
+    out.push(view);
+  }
+  return out;
 }
 
 // Each strike that MISSED this target, with its own roll — a Chain reports
