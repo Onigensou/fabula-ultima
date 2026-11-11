@@ -241,6 +241,14 @@ eq("row: element falls back to the action's", ev({ hit: true, damage: 5 }, { dam
   eq("mixed absorb nets a heal", [view[2].damage, view[2].affinity], [80, "AB"]);
   const only = chainHitsView({ perTarget: { h: { landed: 1, hitsLanded: 1, crits: 0, damage: 87, hpLoss: 0, shieldLoss: 0, hpGain: 87 } } }, [{ tokenUuid: "h", affinity: "RS" }]);
   eq("only an absorbed strike heals (card affinity ignored)", [only[0].damage, only[0].affinity], [87, "AB"]);
+  // Provoke on a drawn Chain: one strike on the provoker satisfies it
+  const { pinProvokerStrike } = await import("./chain-plan.js");
+  const seek = (st) => ({ spec: { count: 4, mode: "seek", strikeTargets: st }, keep: null });
+  eq("provoker already struck: unchanged", pinProvokerStrike(seek([["h"], ["b"], ["k"], ["z"]]), ["b"]).spec.strikeTargets, [["h"], ["b"], ["k"], ["z"]]);
+  eq("provoker missed by the draw: strike 1 moves to it", pinProvokerStrike(seek([["h"], ["k"], ["k"], ["z"]]), ["b"]).spec.strikeTargets, [["b"], ["k"], ["k"], ["z"]]);
+  eq("no provoker: unchanged", pinProvokerStrike(seek([["h"], ["k"]]), []).spec.strikeTargets, [["h"], ["k"]]);
+  eq("random mode keeps the provoker on the card", pinProvokerStrike({ spec: { count: 2, mode: "random", strikeTargets: [["h"], ["h"]] }, keep: ["h"] }, ["b"]).keep, ["h", "b"]);
+  eq("pick mode untouched (the author chose)", pinProvokerStrike({ spec: { count: 2, mode: "pick", strikeTargets: [["h"], ["k"]] }, keep: ["h", "k"] }, ["b"]).spec.strikeTargets, [["h"], ["k"]]);
 }
 
 console.log(`chain-plan: ${passed} passed, ${failed} failed`);

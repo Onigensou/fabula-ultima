@@ -115,7 +115,7 @@ import { isSummonAutopilotEnabled, isAutomatedSummon, isAutomatedSummonTurn, sum
 import { isBattlefieldObject } from "./battlefield-object.js";
 import { holdsKnockoutRevive } from "./knockout-revive.js";
 import { resolveAnimationSpec, playDirectorAnimation, prestageAnimation } from "./director-animation.js";
-import { chainSpecFor, drawChainTargets, narrowToTargets, buildChainPlan, chainTargetOf, chainHitsView, chainMissesOf, chainCombinedLine, chainCombinedMissOf } from "./chain-plan.js";
+import { chainSpecFor, drawChainTargets, pinProvokerStrike, narrowToTargets, buildChainPlan, chainTargetOf, chainHitsView, chainMissesOf, chainCombinedLine, chainCombinedMissOf } from "./chain-plan.js";
 import { wasPresented, presentChainWithoutAnimation } from "./chain-presenter.js";
 import { beginHitCounter, endHitCounter } from "./hit-counter.js";
 import { emitBattlerPose } from "./battler-pose.js";
@@ -5454,11 +5454,14 @@ const Compute = {
       const _chainCasterActor = attacker?.actorUuid ? await fromUuid(attacker.actorUuid).catch(() => null) : null;
       const _chainEval = (f) => evaluateFormula(String(f), buildSkillResolver({ actor: _chainCasterActor, payload: {}, skill, round: director.dCombat?.round ?? 0, vars: { CASTER_LEVEL: Number(_chainCasterActor?.system?.props?.level ?? 0) || 0 } }), 0);
       const _chainSpec = chainSpecFor({ kind: "Skill", skillItem: skill, isCheck: !!skillProj?.roll, hasDamage: !!skillProj?.hasDamage, evalCount: _chainEval });
-      const _chainDraw = _chainSpec ? drawChainTargets(_chainSpec, allTargets.map((t) => t?.tokenUuid).filter(Boolean)) : null;
+      // Provoked: one strike of a drawn Chain goes to the provoker (chain-plan.js pinProvokerStrike). The plain
+      // pin covers attacks/spells only; a damaging Chain that rolls a check counts whatever the skill type.
+      const _chainProvokers = _chainSpec ? collectForcedIncludeTargets(allTargets, "", _chainCasterActor, "attack").map((e) => e.tokenUuid) : [];
+      const _chainDraw = _chainSpec ? pinProvokerStrike(drawChainTargets(_chainSpec, allTargets.map((t) => t?.tokenUuid).filter(Boolean)), _chainProvokers) : null;
       const _chainNarrow = _chainDraw?.keep
         ? narrowToTargets({ targets: allTargets, perTargetResults: skillProj.perTargetResults ?? [], hitTokenUuids: skillProj.hitTokenUuids ?? null }, _chainDraw.keep)
         : null;
-      if (_chainDraw) log(`COMPUTE: Chain ${_chainDraw.spec.count} (${_chainDraw.spec.mode}) on ${ar.skillName ?? skill?.name ?? "?"}`);
+      if (_chainDraw) log(`COMPUTE: Chain ${_chainDraw.spec.count} (${_chainDraw.spec.mode}) on ${ar.skillName ?? skill?.name ?? "?"}` + (_chainDraw.spec.provokePinned ? " — strike 1 pinned to the provoker" : ""));
       director.ctx.actionResult = freezeActionResult({
         ...arForProfile,
         ...skillProj,
@@ -5575,7 +5578,8 @@ const Compute = {
         // loop, so it never chains on top of it.
         const _chainSpec = String(director.ctx.attackMode ?? "").startsWith("two-weapon")
           ? null : chainSpecFor({ kind: "Attack", weapon, isCheck: true, hasDamage: true });
-        const _chainDraw = _chainSpec ? drawChainTargets(_chainSpec, targetSnapshots.map((t) => t?.tokenUuid).filter(Boolean)) : null;
+        const _chainProvokers = _chainSpec ? collectForcedIncludeTargets(targetSnapshots, "", liveActor, "attack").map((e) => e.tokenUuid) : [];
+        const _chainDraw = _chainSpec ? pinProvokerStrike(drawChainTargets(_chainSpec, targetSnapshots.map((t) => t?.tokenUuid).filter(Boolean)), _chainProvokers) : null;
         const _chainNarrow = _chainDraw?.keep
           ? narrowToTargets({ targets: targetSnapshots, perTargetResults: delta.perTargetResults ?? [], hitTokenUuids: delta.hitTokenUuids ?? null }, _chainDraw.keep)
           : null;

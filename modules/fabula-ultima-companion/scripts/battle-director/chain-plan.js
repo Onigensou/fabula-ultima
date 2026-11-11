@@ -102,6 +102,23 @@ export function drawChainTargets(spec, targetUuids, rng = Math.random) {
   return { spec: { ...spec, strikeTargets }, keep: spec.mode === "seek" ? null : cardTargets };
 }
 
+// Provoked (must_include_applier) + a drawn Chain (random / seek): the card is ONE action, so the pin is
+// met when at least ONE strike goes to the provoker (user rule, 2026-11-11), never all of them. When no
+// drawn strike landed on a provoker that is on the card, strike 1 is moved onto it; the rest stay as drawn.
+// Applies to any damaging Chain that rolls a check, whatever the skill's type (Asura Strike is an Active
+// skill, which the plain attack/spell pin would skip). `draw` = drawChainTargets' result.
+export function pinProvokerStrike(draw, provokerUuids = []) {
+  const spec = draw?.spec;
+  if (!spec || !(spec.mode === "random" || spec.mode === "seek")) return draw;
+  const list = Array.isArray(spec.strikeTargets) ? spec.strikeTargets : null;
+  const pins = (provokerUuids ?? []).filter(Boolean);
+  if (!list?.length || !pins.length) return draw;
+  if (list.some((tgts) => (tgts ?? []).some((u) => pins.includes(u)))) return draw;
+  const strikeTargets = list.map((t, i) => (i === 0 ? [pins[0]] : t));
+  const keep = Array.isArray(draw.keep) ? [...new Set([...draw.keep, pins[0]])] : draw.keep;
+  return { spec: { ...spec, strikeTargets, provokePinned: pins[0] }, keep };
+}
+
 // Narrow COMPUTE's target-aligned fields to the drawn set (random mode).
 export function narrowToTargets({ targets = [], perTargetResults = [], hitTokenUuids = null } = {}, keep = null) {
   if (!Array.isArray(keep)) return { targets, perTargetResults, hitTokenUuids };
