@@ -204,6 +204,7 @@
               "originalUuid": "Actor.2Tf75KJiBUQwWGiL.Item.6cTszJo67Yroy1oi.ActiveEffect.JTESbh9ZpVUn1OC4"
             },
             "fabula-ultima-companion": {
+              "activeWhileCarried": true,
               "category": "buff",
               "reactionConfig": {
                 "effect_table": {
@@ -270,6 +271,7 @@
                   "0": {
                     "reaction_damage_outcome": "would_reduce_to_zero",
                     "reaction_effect_ref": "lc_save",
+                    "reaction_last_resort": true,
                     "reaction_passive_mode": "force",
                     "reaction_source": "self",
                     "reaction_trigger": "creature_takes_damage"

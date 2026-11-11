@@ -383,6 +383,10 @@
   // same split is 592 / 1 / 543, but 565 of those sit on world items the load
   // never touches.)
   const isEquipLinked = (e) => {
+    // A carried trinket (Life Charm) works while merely held: never equip-linked
+    // (mirror of isCarriedEffect in equipment-swap.js).
+    const carried = e.flags?.[MOD]?.activeWhileCarried;
+    if (carried === true || carried === "true") return false;
     if (e.transfer === true) return true;
     // The reactor's equip gate is OPT-OUT (`requireEquipped !== false`), and the
     // spec may be an array, so read it rather than testing for its presence: a

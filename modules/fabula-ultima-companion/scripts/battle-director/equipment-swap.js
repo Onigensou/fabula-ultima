@@ -627,10 +627,20 @@ function findOwnedEffectMatch(item, ref) {
 // AEs are transfer:false and all but one are templates or status containers, so
 // the untargeted fallback below was flipping ~48% of the corpus for no reason.
 export function isEquipLinkedEffect(e) {
+  // A carried trinket (Life Charm: "used automatically when HP reaches 0" while in the
+  // inventory) works without being equipped: its transfer AE is never equip-linked.
+  if (isCarriedEffect(e)) return false;
   if (e?.transfer === true) return true;
   const spec = e?.flags?.[FLAG_NS]?.deriveStatus;
   if (!spec) return false;
   return (Array.isArray(spec) ? spec : [spec]).some((r) => r?.requireEquipped !== false);
+}
+
+// flags.fabula-ultima-companion.activeWhileCarried — the AE stays on while the item is
+// merely carried; no equip path may disable it.
+export function isCarriedEffect(e) {
+  const v = e?.flags?.[FLAG_NS]?.activeWhileCarried;
+  return v === true || v === "true";
 }
 
 function resolveItemEffectDocs(item) {
@@ -644,7 +654,7 @@ function resolveItemEffectDocs(item) {
   const out = new Map();
   for (const ref of refs) {
     const live = findOwnedEffectMatch(item, ref);
-    if (live) out.set(live.id, live);
+    if (live && !isCarriedEffect(live)) out.set(live.id, live);
   }
   return out.size ? [...out.values()] : owned.filter(isEquipLinkedEffect);
 }

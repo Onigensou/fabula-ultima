@@ -2254,7 +2254,7 @@
           },
           "changes": [],
           "description": "",
-          "disabled": true,
+          "disabled": false,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -2272,6 +2272,7 @@
               "originalUuid": "Actor.Z4CFy505cD3nzl1W.Item.7EGpAPJU0BSBxeWK.ActiveEffect.qI8JLyuTHWzgcGaH"
             },
             "fabula-ultima-companion": {
+              "activeWhileCarried": true,
               "category": "buff",
               "reactionConfig": {
                 "effect_table": {
@@ -2338,6 +2339,7 @@
                   "0": {
                     "reaction_damage_outcome": "would_reduce_to_zero",
                     "reaction_effect_ref": "lc_save",
+                    "reaction_last_resort": true,
                     "reaction_passive_mode": "force",
                     "reaction_source": "self",
                     "reaction_trigger": "creature_takes_damage"

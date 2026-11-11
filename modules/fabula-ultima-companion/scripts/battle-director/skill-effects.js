@@ -373,16 +373,33 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
   // when equipment-swap disables it on unequip. Direct actor AEs (Mercy) are
   // a subset of appliedEffects, so no regression. appliedEffects already
   // excludes disabled, but keep the guard for the rare direct-disabled case.
-  for (const ae of (target.appliedEffects ?? target.effects?.contents ?? Array.from(target.effects ?? []))) {
-    if (ae.disabled) continue;
-    if (_skipAe && _skipAe.has(String(ae.name ?? "").trim().toLowerCase())) continue;
+  // LAST-RESORT rows (`reaction_last_resort: true` — Life Charm) run after every other
+  // reaction and only when the hit is STILL lethal at that point: another death-save that
+  // already capped it (Beyond the Realms of Death), or an auto-revive waiting on the KO
+  // (a `creature_knocked_out` reaction on the victim), means the consumable is not spent
+  // on a stacked save (user rule, 2026-11-11).
+  const _allAes = (target.appliedEffects ?? target.effects?.contents ?? Array.from(target.effects ?? []))
+    .filter((ae) => !ae.disabled && !(_skipAe && _skipAe.has(String(ae.name ?? "").trim().toLowerCase())));
+  const _rowsOf = (ae) => Object.values(ae.flags?.[FLAG_NS]?.reactionConfig?.reaction_config_table ?? {});
+  const _isLast = (r) => r?.reaction_last_resort === true || r?.reaction_last_resort === "true";
+  const _pendingKoRevive = _allAes.some((ae) => _rowsOf(ae).some((r) => !_isLast(r)
+    && r?.reaction_trigger === "creature_knocked_out" && String(r?.reaction_passive_mode ?? "").toLowerCase() !== "off"
+    && ["self", "", undefined].includes(r?.reaction_source)));
+  let _deathSaveFired = false;
+  const _passes = [[false], [true]];   // ordinary rows first, then the last-resort ones
+  for (const [_lastPass] of _passes)
+  for (const ae of _allAes) {
     const cfg = ae.flags?.[FLAG_NS]?.reactionConfig;
     if (!cfg || typeof cfg !== "object") continue;
-    const triggerRows = Object.values(cfg.reaction_config_table ?? {});
+    const triggerRows = Object.values(cfg.reaction_config_table ?? {}).filter((r) => _isLast(r) === _lastPass);
     const effectTable = cfg.effect_table ?? {};
 
     for (const tRow of triggerRows) {
       if (tRow.reaction_trigger !== "creature_takes_damage") continue;
+      if (_lastPass) {
+        if ((curHp - dmg) > 0) { log(`damage-reaction: ${target.name} "${ae.name}" (last resort) not needed — the hit is no longer lethal`); continue; }
+        if (_deathSaveFired || _pendingKoRevive) { log(`damage-reaction: ${target.name} "${ae.name}" (last resort) held — another save ${_deathSaveFired ? "already fired" : "waits on the KO"}`); continue; }
+      }
       // reaction_source defaults to "self" — reactor IS the damage target.
       const src = tRow.reaction_source ?? "self";
       if (src !== "self" && src !== "all" && src !== "") continue;
@@ -479,6 +496,7 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
       const before = dmg;
       dmg = Math.max(0, Math.floor(applyDamageOp(dmg, op, amount)));
       if (dmg !== before) {
+        if (outcome === "would_reduce_to_zero") _deathSaveFired = true;
         log(`damage-reaction: ${target.name} ${op} ${amount} → damage ${before} → ${dmg} via AE "${ae.name}"`);
         result.fired.push({ aeId: ae.id, aeName: ae.name, op, amount, from: before, to: dmg });
         if (effRow.consume_self && !result.consumedAeIds.includes(ae.id)) {
