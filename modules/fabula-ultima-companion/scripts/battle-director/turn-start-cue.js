@@ -39,6 +39,8 @@ import { log, warn } from "./logger.js";
 import { playSfx, preloadSfx } from "./director-sfx.js";
 import { registerAnimation } from "./director-surfaces.js";
 import { pWait, interval, isDwellSuppressed, shouldRender, hasOtherViewers } from "./presentation-clock.js";
+import { isGrappled } from "./grappled.js";
+import { reconcileGrapples } from "./grapple-hold.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const SETTING_KEY = "bdTurnStartCues";
@@ -545,6 +547,8 @@ async function stepOut(dCombat, current) {
   if (!td || !game.user?.isGM) return;
   // Already forward (a resume / rewind into its own turn): stay there.
   if (td.getFlag?.(MODULE_ID, HOME_FLAG)) return;
+  // Held by a grappler (grapple-hold.js): it acts from where it is held.
+  if (td.actor && isGrappled(td.actor)) return;
   const dx = Math.round(stepDirection(dCombat, current) * stepDistance());
   await moveToken(td, { x: td.x + dx, [`flags.${MODULE_ID}.${HOME_FLAG}`]: { x: td.x, y: td.y } });
 }
@@ -615,6 +619,9 @@ export async function startTurnCue(director) {
     // A token left forward by a rewind / reload / crash goes home first.
     await returnSteppedTokens(dc?.scene, { except: current?.tokenDoc?.id ?? null });
   } catch (e) { warn("startTurnCue: return home threw", e); }
+  // Held units in their grappler's space, freed ones home (rewind / reload / save-load).
+  try { if (game.user?.isGM) await reconcileGrapples(dc?.scene); }
+  catch (e) { warn("startTurnCue: grapple reconcile threw", e); }
 
   const nobodyWatching = !shouldRender() && !hasOtherViewers();
   if (!current || !turnCueWillRun() || nobodyWatching) { cueLanded(); return NO_CUE; }

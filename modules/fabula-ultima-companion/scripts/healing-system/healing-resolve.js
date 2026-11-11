@@ -13,7 +13,7 @@
 
 import { HEAL_TAG, HEAL_RESOURCE } from "./healing-const.js";
 import { parseSkillCost, resolveCost, checkAffordable } from "../battle-director/skill-cost.js";
-import { buildSkillResolver, evaluateFormula } from "../battle-director/skill-formulas.js";
+import { buildSkillResolver, evaluateFormula, resolveRestoreParts, sumRestoreParts } from "../battle-director/skill-formulas.js";
 
 const HEAL_RESOURCES = new Set(["hp", "mp", "ip"]);
 
@@ -96,7 +96,12 @@ function grantsFromTypeDamage(item, caster) {
 // `targetCount` defaults to 1 (out-of-combat heals resolve one target per cast,
 // so "10 × T MP" → 10 MP). HP/MP recovery clamping to the target's max happens
 // at apply time, not here (this is caster-relative).
-export function resolveHealAction({ caster, effectItem, costItem = null, targetCount = 1 } = {}) {
+//
+// `isItemUse`: the heal is an Inventory action (a consumable, or a Create preset).
+// Caster-side restore bonuses come from the battle helper (resolveRestoreParts), so
+// both systems add the same thing: item_restore_mod (Secret Formula) on item use,
+// spell_restore_mod (Healing Up) on a spell's HP restore.
+export function resolveHealAction({ caster, effectItem, costItem = null, targetCount = 1, isItemUse = false } = {}) {
   if (!effectItem) return { ok: false, grants: [], costMap: new Map(), affordable: false, missing: [], reason: "no-effect-item" };
 
   // Heal amounts: prefer the explicit effect_table; fall back to type_damage.
@@ -105,7 +110,14 @@ export function resolveHealAction({ caster, effectItem, costItem = null, targetC
 
   const grants = [];
   for (const resource of ["hp", "mp", "ip"]) {
-    const amount = merged[resource] ?? 0;
+    let amount = merged[resource] ?? 0;
+    if (amount > 0 && (resource === "hp" || resource === "mp") && caster) {
+      const bonus = sumRestoreParts(resolveRestoreParts({
+        actor: caster, kind: isItemUse ? "Item" : null,
+        skillType: effectItem?.system?.props?.skill_type ?? null, resource,
+      }));
+      if (bonus > 0) amount += bonus;
+    }
     if (amount > 0) grants.push({ resource, amount, label: HEAL_RESOURCE[resource]?.label ?? resource.toUpperCase() });
   }
 

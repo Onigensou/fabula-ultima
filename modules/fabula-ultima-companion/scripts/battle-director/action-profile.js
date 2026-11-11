@@ -22,8 +22,8 @@ import {
 } from "./skill-formulas.js";
 import { applyAffinityToDamage, readWeaponEfficiency, snapshotTargetForToken, resolvesVsMagicDefense,
          attackerHitRuleInverted } from "./snapshot.js";
-import { applyClassAffinityAndMult, crushAffinity,
-  bypassAffinity, affinityBypassRank, aeOutgoingActionKeywords } from "./damage-ruleset.js";
+import { applyClassAffinityAndMult, applyKeywordAffinity, hasCrush, hasExpose,
+  aeOutgoingActionKeywords } from "./damage-ruleset.js";
 import { resolveResourceDef } from "./resources.js";
 import { deriveCheck, decideHit, buildCheckDistribution, checkHitChance } from "./check.js";
 import { applyGmDamageInput, gmDamageInput, applyGmPrimaryOverrides } from "./gm-card-override.js";
@@ -127,7 +127,7 @@ function makeStudiedGate(attacker) {
 // same damage-calc effects. (Stale until 2026-08-04: this used to say
 // "pierce → Resistance treated as neutral". Pierce has been miss-for-half ONLY
 // since the 2026-08-02 keyword split; resistance-bypass is `ignore_resistance`
-// / `crush` — see bypassAffinity + crushAffinity in damage-ruleset.js.)
+// / `crush` / `expose` — see applyKeywordAffinity in damage-ruleset.js.)
 // True when the attack MODE zeroes the High Roll: every two-weapon style pass does,
 // except a multi-attack grant that keeps it (a weapon Chain — ctx.multiAttackKeepHr,
 // stamped at TARGET from the grant).
@@ -623,7 +623,9 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
     // special-cased here — the Guard AE overrides the affinity props directly
     // (see 2026-06-09-guard-affinity-rs migration), so `e.affinities` already
     // reflects it. Single source of truth = the actor's affinity data.
-    const computeAffinity = () => {
+    // `withKeywords` false = the raw target affinity (the hit branch applies the
+    // keyword pass itself, once, AFTER a reaction element override).
+    const computeAffinity = (withKeywords = true) => {
       if (primary.isMpDamage) return "NE";
       let aff = e.affinities?.[primary.element] ?? "NE";
       // Status-forced vulnerability is a property of the TARGET + the incoming element,
@@ -638,15 +640,10 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       // also downgraded RS→NE, so every canon-Pierce action (Iceberg, Rail
       // Stream, Create Phantasm: Strike) silently ignored Resistance too — a buff
       // nobody authored. Resistance-bypass now belongs to `crush` alone.
-      // Inherent Crush keyword: step affinity DOWN one level on NE < RS < IM < AB
-      // (AB→IM, IM→RS, RS→NE; NE is the floor, VU untouched).
-      if (primary.keywords?.includes("crush")) aff = crushAffinity(aff);
-      // "Damage dealt by this spell ignores Resistances" (Iceberg) — a CLAMP to
-      // NE for everything up to the named rung, unlike crush's one-rung step.
-      // Same helper the apply path uses (damage-ruleset), so the previewed
-      // number and the dealt number cannot drift.
-      aff = bypassAffinity(aff, affinityBypassRank(primary.keywords));
-      return aff;
+      // Crush (RS/IM/AB → NE) → Expose (one rung down, NE → VU) → "ignores
+      // Resistances" clamps (Iceberg). Same helper the effect ruleset uses, so
+      // the previewed number and the dealt number cannot drift.
+      return withKeywords ? applyKeywordAffinity(aff, primary.keywords) : aff;
     };
 
     if (primary.mode === "damage" && isPreRoll) {
@@ -691,11 +688,20 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       // once and reused (null for MP damage, which skips the incoming layer).
       const liveTarget = (!primary.isMpDamage) ? await fromUuid(e.actorUuid).catch(() => null) : null;
 
+      // Every keyword riding THIS hit: inherent / AE-granted (primary.keywords)
+      // plus reaction-granted (apply_action_keyword ops, folded on a hit only —
+      // same gate as the op fold below). Known up front, so a reaction-granted
+      // Crush skips DR + a reducing efficiency exactly like an inherent one.
+      const hitKeywords = [
+        ...(primary.keywords ?? []),
+        ...(hit ? targetOps.filter((o) => o.op === "keyword").map((o) => o.keyword) : []),
+      ];
+      const crushHit = hasCrush(hitKeywords);
+      const exposeHit = hasExpose(hitKeywords);
+
       if (!primary.isMpDamage) {
-        // Crush skips damage reduction entirely ("cannot be Reduce"). Checked
-        // against the action's inherent keywords here; a reaction-granted crush
-        // is folded in below alongside the reaction pierce.
-        const red = primary.keywords?.includes("crush")
+        // Crush skips damage reduction entirely ("bypasses damage reduction effects").
+        const red = crushHit
           ? { value: rawDamage, parts: [] }
           : resolveIncomingReduction({
               actor: liveTarget, elementType: primary.element, range: primary.rangeKind ?? null, raw: rawDamage,
@@ -720,7 +726,8 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       // source of truth for the weapon-affinity axis.
       if (primary.weaponKey && liveTarget) {
         const effPct = readWeaponEfficiency(liveTarget, primary.weaponKey);
-        if (effPct !== 100) {
+        // Crush ignores an efficiency that would REDUCE; a >100% one still applies.
+        if (effPct !== 100 && !(crushHit && effPct < 100)) {
           const before = rawDamage;
           rawDamage = Math.ceil(rawDamage * (effPct / 100));
           if (rawDamage !== before) damageModParts.push({ source: `${primary.weaponKey} efficiency ${effPct}%`, amount: rawDamage - before });
@@ -777,16 +784,15 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
       // else the native element's affinity. A reaction-granted `pierce` no longer
       // touches affinity (see the inherent path above): affinity-bypass is
       // `crush`, pierce is the miss-for-half rule only.
-      affinityCode = computeAffinity();
+      affinityCode = computeAffinity(false);
       if (reactionElement) {
         const eop = [...targetOps].reverse().find((o) => o.op === "element" && o.element === reactionElement);
         affinityCode = (eop && eop.affinity != null) ? String(eop.affinity) : String(e.affinities?.[reactionElement] ?? "NE");
       }
-      // Reaction-granted Crush — same one-level step as the inherent one above.
-      if (reactionKeywords?.includes("crush")) affinityCode = crushAffinity(affinityCode);
-      // Clamp keywords (inherent/AE-granted + reaction-granted) also cover a
-      // reaction ELEMENT override, which replaced computeAffinity's result above.
-      affinityCode = bypassAffinity(affinityCode, affinityBypassRank([...(primary.keywords ?? []), ...(reactionKeywords ?? [])]));
+      // ONE keyword pass (Crush → Expose → clamps) over inherent/AE-granted +
+      // reaction-granted keywords, AFTER a reaction element override so it
+      // covers the replaced element too. MP damage stays NE.
+      if (!primary.isMpDamage) affinityCode = applyKeywordAffinity(affinityCode, hitKeywords);
       damageVal = applyAffinityToDamage(rawDamage, affinityCode);
 
       // Damage-class affinity (strike/magic) + universal damage_taken_mult — the
@@ -809,6 +815,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
         const cm = applyClassAffinityAndMult(liveTarget, damageVal, {
           damageClass: dmgClass,
           elementAbsorbed: affinityCode === "AB",
+          noReduction: crushHit, expose: exposeHit,
         });
         damageVal = cm.value;
         if (cm.absorbed && affinityCode !== "AB") affinityCode = "AB";
@@ -847,6 +854,7 @@ async function buildPerTarget({ view, ar, attacker, primary, check, targets, liv
           damageVal = applyClassAffinityAndMult(liveTarget, damageVal, {
             damageClass: check.required ? (vsMDef ? "magic" : "strike") : null,
             elementAbsorbed: affinityCode === "AB",
+            noReduction: crushHit, expose: exposeHit,
           }).value;
         }
         if (reactionBreakdown) {
@@ -1364,7 +1372,13 @@ function flattenRow(r, kind) {
     rawDamage: dmg.preAffinity ?? 0, damage: dmg.value ?? 0,
   };
   if (kind === "Attack") out.pierceMiss = !!o.pierceMiss;
-  else out.resource = dmg.resource ?? "hp";
+  else {
+    out.resource = dmg.resource ?? "hp";
+    // A Pierce spell/skill (Icicle Lance) that misses still lands half: RESOLVE reads
+    // r.pierceMiss for ANY action, so carry it here too. Only set when true, so every
+    // other Skill/Spell row keeps its exact shape.
+    if (o.pierceMiss) out.pierceMiss = true;
+  }
   // Reaction-fold artifacts (element override / applied keywords / numeric-op
   // breakdown) — only present when an accepted reaction touched this row, so the
   // no-reaction COMPUTE row stays byte-identical to before.

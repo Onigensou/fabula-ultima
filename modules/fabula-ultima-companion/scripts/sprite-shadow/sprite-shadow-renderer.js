@@ -242,7 +242,7 @@ function bake(texture, g) {
   const base = texture.baseTexture;
   let b = _bakes.get(base);
   if (b && b.key === g.key && !b.rt.baseTexture?.destroyed) return b;
-  if (b) { try { b.rt.destroy(true); } catch (_) {} }
+  if (b) dropBake(b.rt);
 
   const { cx, cy, w, h } = g.ell;
   const bandH = Math.max(0, g.footY - g.groundTopY);
@@ -277,7 +277,19 @@ function bake(texture, g) {
 
   b = { key: g.key, rt, x0, y0, w: W, h: H };
   _bakes.set(base, b);
+  // The bake outlives its source otherwise: _bakes is weak on the BASE, but the RenderTexture stays in the
+  // renderer's managed textures and texture GC never collects render textures. Battle poses make a fresh
+  // video base per pose per battle, so every shown pose leaked one bake per battle (found 2026-11-12).
+  base.once?.("destroyed", () => dropBake(rt));
   return b;
+}
+function dropBake(rt) {
+  if (!rt || rt.destroyed || rt.baseTexture?.destroyed) return;
+  // a sprite still showing the bake must not render a destroyed texture before its token re-syncs
+  for (const s of _shadows.values()) {
+    if (s && !s.destroyed && s.texture === rt) { s.texture = PIXI.Texture.EMPTY; s.visible = false; }
+  }
+  try { rt.destroy(true); } catch (_) {}
 }
 
 // The bake's shaders (the smooth-graphics ellipse, the blur passes) compiled at the first

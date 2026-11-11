@@ -20,6 +20,17 @@
 import { log, warn } from "../logger.js";
 import { computeExpAward } from "../../shared/exp-core.js";
 import { isBattlefieldObject } from "../battlefield-object.js";
+import { isSummonCombatant } from "../summon-autopilot.js";
+
+// Who the victory rewards are FOR: the party's own characters. Party-side is
+// not enough — a GUEST (Kalina) and a SUMMON stand on the party side too, and
+// counting them gave the guest a reward-prompt row, real EXP/Zenit on her
+// actor, and one of the four Victory-screen panels. isSummonCombatant folds
+// the guest marker (bdGuest) in, so this one check drops both.
+// Every battle-end list of party actors (snapshot, prompt, award) reads this.
+export function isRewardRecipient(c) {
+  return c?.side === "party" && !!c.actorDoc && !isSummonCombatant(c);
+}
 
 function randIntInclusive(min, max) {
   const lo = Math.min(Math.floor(Number(min)), Math.floor(Number(max)));
@@ -41,7 +52,7 @@ export async function computeBattleEndRewards(dCombat, isBoss) {
 
   if (!dCombat) return { expByActorId, zenitByActorId };
 
-  const partyCombatants = dCombat.combatants.filter(c => c.side === "party" && c.actorDoc);
+  const partyCombatants = dCombat.combatants.filter(isRewardRecipient);
   // A battlefield object (a Lightning Crystal) is on the enemy side but is not
   // an enemy — it is worth no EXP and carries no Zenit. Nor is an actor flagged
   // `noRewards` (Nidhogg's crystal body: it counts as a foe for the side wipe,
@@ -62,10 +73,19 @@ export async function computeBattleEndRewards(dCombat, isBoss) {
   // from the Current Game DB inside exp-core, so a balance change is still a
   // DB edit rather than a code edit. A normal battle takes the default mult,
   // floor and cap; only a discounted source (a stealth takedown) overrides them.
+  // Bonus Board EXP perk (Battle Grade v2): +5/+10/+15% while the party holds
+  // 3/6/10 slots. Read here, at PREP, so it pays the board as it stood when the
+  // fight began; this fight's own result moves the board for the next one.
+  let boardMult = 1;
+  try {
+    const { boardExpMultiplier } = await import("../battle-grade/grade-state.js");
+    boardMult = await boardExpMultiplier();
+  } catch (e) { warn("[BattleEnd:Rewards] board EXP multiplier unavailable — using 1", e); }
   const { expByActorId: expMap } = await computeExpAward({
     partyActors,
     enemyActors,
     isBoss: !!isBoss,
+    mult: boardMult,
   });
   Object.assign(expByActorId, expMap);
 

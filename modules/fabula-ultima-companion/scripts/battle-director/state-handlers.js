@@ -30,6 +30,7 @@ import { pickAttributePair, AttributePairPicker } from "./attribute-pair-picker.
 import { runDirectorInit } from "./director-init.js";
 import { destroyDirectorHud, publishTurnStatus } from "./director-player-hud.js";
 import { startTurnCue, returnSteppedTokens } from "./turn-start-cue.js";
+import { releaseAllGrapples } from "./grapple-hold.js";
 import { playStudyVfx, playActionNamecard, playMissVfx, playBlockVfx, playResourceSpendVfx } from "./director-vfx.js";
 import { playCritCutin } from "./director-cutin.js";
 import { playRoundBanner, hideRoundBanner } from "./director-round-banner.js";
@@ -60,7 +61,7 @@ import { makeChainContext, resolveTargetRef } from "./skill-targeting.js";
 // the SE() accessor at every use site (see call sites below) — a destructured
 // `const { fn } = SE()` would re-freeze the binding and defeat the point.
 import * as _seStatic from "./skill-effects.js";
-import { registerHotModule } from "./hot-reload.js";
+import { registerHotModule, hotUrl } from "./hot-reload.js";
 const SE = registerHotModule(
   "battle-director/skill-effects.js",
   (t) => import(`./skill-effects.js?cb=${t}`),
@@ -103,7 +104,7 @@ import { emitMarksHidden } from "./brand-mark.js";
 let _seExtraModule = null;
 async function getSkillEffectsExtras() {
   if (_seExtraModule) return _seExtraModule;
-  _seExtraModule = await import("./skill-effects.js?cb=" + Date.now());
+  _seExtraModule = await import(hotUrl("./skill-effects.js"));
   return _seExtraModule;
 }
 import { getRuntimeSkillView, getRuntimeActionView } from "./skill-recipes.js";
@@ -114,7 +115,7 @@ import { isSummonAutopilotEnabled, isAutomatedSummon, isAutomatedSummonTurn, sum
 import { isBattlefieldObject } from "./battlefield-object.js";
 import { holdsKnockoutRevive } from "./knockout-revive.js";
 import { resolveAnimationSpec, playDirectorAnimation, prestageAnimation } from "./director-animation.js";
-import { chainSpecFor, drawChainTargets, narrowToTargets, buildChainPlan, chainTargetOf, chainHitsView, chainMissesOf, chainCombinedLine, chainCombinedMissOf } from "./chain-plan.js";
+import { chainSpecFor, drawChainTargets, pinProvokerStrike, narrowToTargets, buildChainPlan, chainTargetOf, chainHitsView, chainMissesOf, chainCombinedLine, chainCombinedMissOf } from "./chain-plan.js";
 import { wasPresented, presentChainWithoutAnimation } from "./chain-presenter.js";
 import { beginHitCounter, endHitCounter } from "./hit-counter.js";
 import { emitBattlerPose } from "./battler-pose.js";
@@ -4320,7 +4321,7 @@ const Target = {
         const casterToken = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === attackerActor.uuid)
           ?? null;
         if (casterToken) {
-          const stMod = await import("./standalone-reactions.js?cb=" + Date.now());
+          const stMod = await import(hotUrl("./standalone-reactions.js"));
           let decision;
           try {
             decision = await stMod.dispatchReactionMenu({
@@ -5484,11 +5485,14 @@ const Compute = {
       const _chainCasterActor = attacker?.actorUuid ? await fromUuid(attacker.actorUuid).catch(() => null) : null;
       const _chainEval = (f) => evaluateFormula(String(f), buildSkillResolver({ actor: _chainCasterActor, payload: {}, skill, round: director.dCombat?.round ?? 0, vars: { CASTER_LEVEL: Number(_chainCasterActor?.system?.props?.level ?? 0) || 0 } }), 0);
       const _chainSpec = chainSpecFor({ kind: "Skill", skillItem: skill, isCheck: !!skillProj?.roll, hasDamage: !!skillProj?.hasDamage, evalCount: _chainEval });
-      const _chainDraw = _chainSpec ? drawChainTargets(_chainSpec, allTargets.map((t) => t?.tokenUuid).filter(Boolean)) : null;
+      // Provoked: one strike of a drawn Chain goes to the provoker (chain-plan.js pinProvokerStrike). The plain
+      // pin covers attacks/spells only; a damaging Chain that rolls a check counts whatever the skill type.
+      const _chainProvokers = _chainSpec ? collectForcedIncludeTargets(allTargets, "", _chainCasterActor, "attack").map((e) => e.tokenUuid) : [];
+      const _chainDraw = _chainSpec ? pinProvokerStrike(drawChainTargets(_chainSpec, allTargets.map((t) => t?.tokenUuid).filter(Boolean)), _chainProvokers) : null;
       const _chainNarrow = _chainDraw?.keep
         ? narrowToTargets({ targets: allTargets, perTargetResults: skillProj.perTargetResults ?? [], hitTokenUuids: skillProj.hitTokenUuids ?? null }, _chainDraw.keep)
         : null;
-      if (_chainDraw) log(`COMPUTE: Chain ${_chainDraw.spec.count} (${_chainDraw.spec.mode}) on ${ar.skillName ?? skill?.name ?? "?"}`);
+      if (_chainDraw) log(`COMPUTE: Chain ${_chainDraw.spec.count} (${_chainDraw.spec.mode}) on ${ar.skillName ?? skill?.name ?? "?"}` + (_chainDraw.spec.provokePinned ? " — strike 1 pinned to the provoker" : ""));
       director.ctx.actionResult = freezeActionResult({
         ...arForProfile,
         ...skillProj,
@@ -5605,7 +5609,8 @@ const Compute = {
         // loop, so it never chains on top of it.
         const _chainSpec = String(director.ctx.attackMode ?? "").startsWith("two-weapon")
           ? null : chainSpecFor({ kind: "Attack", weapon, isCheck: true, hasDamage: true });
-        const _chainDraw = _chainSpec ? drawChainTargets(_chainSpec, targetSnapshots.map((t) => t?.tokenUuid).filter(Boolean)) : null;
+        const _chainProvokers = _chainSpec ? collectForcedIncludeTargets(targetSnapshots, "", liveActor, "attack").map((e) => e.tokenUuid) : [];
+        const _chainDraw = _chainSpec ? pinProvokerStrike(drawChainTargets(_chainSpec, targetSnapshots.map((t) => t?.tokenUuid).filter(Boolean)), _chainProvokers) : null;
         const _chainNarrow = _chainDraw?.keep
           ? narrowToTargets({ targets: targetSnapshots, perTargetResults: delta.perTargetResults ?? [], hitTokenUuids: delta.hitTokenUuids ?? null }, _chainDraw.keep)
           : null;
@@ -6834,7 +6839,7 @@ const Confirm = {
       const forceAdds = (cardReactions ?? []).filter(
         (p) => (p.mode === "force" || p.mode === "on") && !p._addTarget);
       if (forceAdds.length) {
-        const { applyAddTargetSplices } = await import("./card-mutations.js?cb=" + Date.now());
+        const { applyAddTargetSplices } = await import(hotUrl("./card-mutations.js"));
         const r = await applyAddTargetSplices(ar, forceAdds);
         if (r.mutationsApplied > 0) {
           cardTargets = r.targets;
@@ -6978,7 +6983,7 @@ const Confirm = {
               if (addedCount != null) {
                 cand.payloadAtFire = { ...(cand.payloadAtFire ?? {}), _addedTargetCount: addedCount };
               }
-              const { composeCostOverride } = await import("./card-mutations.js?cb=" + Date.now());
+              const { composeCostOverride } = await import(hotUrl("./card-mutations.js"));
               const surcharge = await composeCostOverride(arNow, [cand]).catch((e) => {
                 warn("CONFIRM onAddTargetApply: surcharge compose threw", e); return null;
               });
@@ -7443,7 +7448,7 @@ const Confirm = {
       // See the stamp below — null until the mutation pass reports what it ran.
       let acceptedAfterGm = null;
       try {
-        const { applyTargetSetMutation, buildCheckAdjustedEvents } = await import("./card-mutations.js?cb=" + Date.now());
+        const { applyTargetSetMutation, buildCheckAdjustedEvents } = await import(hotUrl("./card-mutations.js"));
         const r = await applyTargetSetMutation({
           ar: liveAr, accepted: applied, costOnlyAccepted: costOnly,
           attackerActor, round: director.dCombat?.round ?? 0,
@@ -7627,7 +7632,7 @@ const Confirm = {
       // COMPUTE pre-stamped. Here we write ONLY the fields the GM layer owns.
       const liveAr = director.ctx.actionResult ?? ar;
       try {
-        const { applyTargetSetMutation } = await import("./card-mutations.js?cb=" + Date.now());
+        const { applyTargetSetMutation } = await import(hotUrl("./card-mutations.js"));
         const r = await applyTargetSetMutation({
           ar: liveAr, accepted: [],
           attackerActor, round: director.dCombat?.round ?? 0,
@@ -7690,6 +7695,12 @@ const Confirm = {
     // action card. Fire-and-forget: the ~2s banner runs while RESOLVE executes.
     // Only on the first pass (no duplicate banner per multi-hit pass).
     if (result.confirmed && (ar.passIndex ?? 1) <= 1) {
+      // A boss line ("Feel my battle prowess!") speaks BEFORE the name banner,
+      // once per playthrough (boss-line.js). Awaited, capped; no line = no wait.
+      try {
+        const { playBossLine } = await import("./boss-line.js");
+        await playBossLine(ar);
+      } catch (e) { warn("CONFIRM: playBossLine threw", e); }
       playActionNamecard(ar).catch((e) => warn("CONFIRM: playActionNamecard threw", e));
     }
 
@@ -9133,6 +9144,8 @@ const BattleEnding = {
     try { hideRoundBanner(); } catch (e) { warn("BATTLE_ENDING: hideRoundBanner threw", e); }
     try { await returnSteppedTokens(director.dCombat?.scene ?? canvas?.scene ?? null); }
     catch (e) { warn("BATTLE_ENDING: step home threw", e); }
+    try { await releaseAllGrapples(director.dCombat?.scene ?? canvas?.scene ?? null); }
+    catch (e) { warn("BATTLE_ENDING: grapple release threw", e); }
     try {
       const scene = director.dCombat?.scene ?? canvas?.scene ?? null;
       await destroyDirectorHud(scene);

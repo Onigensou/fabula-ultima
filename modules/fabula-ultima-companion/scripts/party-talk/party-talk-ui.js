@@ -867,6 +867,16 @@ Hooks.once("ready", () => {
         sendTalk("line", { line: { id: foundry.utils.randomID(), userId: game.user.id, mode, text: clampUnits(String(text)), ts: Date.now(), speaker } });
         return true;
       },
+      /**
+       * GM only: one narrator line for everyone (systems use it for a short
+       * recap, e.g. Alter the Story). Sent only where Talk runs; returns false
+       * elsewhere so the caller knows it was skipped.
+       */
+      narrate(text, mode = "action") {
+        if (!game.user?.isGM || !talkAllowedHere() || !MODES.includes(mode)) return false;
+        sendTalk("line", { line: { id: foundry.utils.randomID(), userId: game.user.id, mode, text: clampUnits(String(text)), ts: Date.now(), speaker: narrator() } });
+        return true;
+      },
       _state: S,
     };
     console.debug(TAG, "ready");

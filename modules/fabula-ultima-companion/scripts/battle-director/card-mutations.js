@@ -41,6 +41,7 @@ import { log, warn } from "./logger.js";
 import { resolveTargetRef as resolveBdTargetRef, makeChainContext as makeBdChainContext } from "./skill-targeting.js";
 import { deriveCheck, decideHit, checkHitChance } from "./check.js";
 import { resolvesVsMagicDefense } from "./snapshot.js";
+import { applyKeywordAffinity } from "./damage-ruleset.js";
 import {
   composeGmRoll, gmDamageInput, composeGmDefenseOverrides, gmHitOverrideMap,
   applyGmDamageOverrides, recomputeHitTokenUuids, gmOverrideDeltaRows, isGmOverrideEmpty,
@@ -198,11 +199,14 @@ function recomputePerTargetForRedirect({ ar, reactor, reactorTok, applyAffinityT
   });
   // Exploit keyword (weapon or skill `action_keywords`): the redirected check
   // targets the lower of the new target's DEF / MDEF, same as the hit test.
-  const _kwOf = (raw) => String(raw ?? "").split(/[,\n]+/).map((s) => s.trim().toLowerCase());
-  let _exploit = _kwOf(ar.weapon?.actionKeywords).includes("exploit");
-  if (!_exploit && ar.skillUuid) {
-    try { _exploit = _kwOf(globalThis.fromUuidSync?.(ar.skillUuid)?.system?.props?.action_keywords).includes("exploit"); } catch (_) {}
+  const _kwOf = (raw) => String(raw ?? "").split(/[,\n]+/).map((s) => s.trim().toLowerCase()).filter(Boolean);
+  // The action's inherent keywords (weapon + skill item) — Exploit below, and
+  // Crush / Expose / the "ignores X" clamps on the redirected hit's affinity.
+  const _actionKw = _kwOf(ar.weapon?.actionKeywords);
+  if (ar.skillUuid) {
+    try { _actionKw.push(..._kwOf(globalThis.fromUuidSync?.(ar.skillUuid)?.system?.props?.action_keywords)); } catch (_) {}
   }
+  const _exploit = _actionKw.includes("exploit");
   const _mdefVal = Number(props.magic_defense ?? props.base_magic_defense ?? 10);
   const _defVal = Number(props.defense ?? props.base_defense ?? 10);
   const newDef = _exploit ? Math.min(_defVal, _mdefVal) : (isMagicCheck ? _mdefVal : _defVal);
@@ -224,7 +228,8 @@ function recomputePerTargetForRedirect({ ar, reactor, reactorTok, applyAffinityT
   const rawAff = slot ? String(props[`affinity_${slot}`] ?? "NA") : "NA";
   // CSB stores "NA" for "no special affinity"; the rest of the engine
   // reads "NE" (Neutral). Normalize.
-  const affinityCode = (rawAff === "NA" || rawAff === "" || rawAff == null) ? "NE" : rawAff;
+  const affinityCode = applyKeywordAffinity(
+    (rawAff === "NA" || rawAff === "" || rawAff == null) ? "NE" : rawAff, _actionKw);
 
   const damageBonus = Number(ar.damage?.base ?? 0);
   const ignoreHR   = !!ar.damage?.ignoreHR;

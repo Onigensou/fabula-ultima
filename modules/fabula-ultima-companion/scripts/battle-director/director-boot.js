@@ -14,9 +14,13 @@
 // the full v1 scope + caveats.
 
 import { log, warn } from "./logger.js";
+import { clearBattleRecord } from "./director-battle-log.js";
+import { gradeTallyReactor, clearTally } from "./battle-grade/grade-tally.js";
 import { BattleDirector } from "./director.js";
 import { STATE_HANDLERS, installGuardHpWatcher, installApplierReaperWatcher, installSideWipeWatcher, checkSideWipe } from "./state-handlers.js";
 import { installGrappledCoverWatcher } from "./grappled.js";
+import { installGrappleHold, releaseAllGrapples } from "./grapple-hold.js";
+import { installGrappleGripFx } from "./grapple-grip-fx.js";
 import { installConditionAdoptionWatcher } from "./condition-adoption.js";
 import { STATES } from "./states.js";
 import { INTENTS } from "./intents.js";
@@ -112,6 +116,7 @@ import { initKeywordSuggest } from "./keyword-suggest.js";
 import { initDevToolsMenu, registerDevTool } from "./dev-tools-menu.js";
 import { registerAutopilotSetting, registerAutopilotDevTool } from "./enemy-autopilot.js";
 import { registerSummonAutopilotSetting, registerSummonAutopilotDevTool } from "./summon-autopilot.js";
+import { isRewardRecipient } from "./battle-end/battle-end-rewards.js";
 import { initDirectorSurfaces, getActiveSurfaces, hasSurface, countSurfaces, clearAllSurfaces } from "./director-surfaces.js";
 import { sweepTransientAEsAtSceneEnd, sweepRetainedSummonsAtSceneEnd, clearQuickSummonLocks, firePassiveTriggers, installRiderAeLinkage, installOnRemoveFollowup, fireResourceChangeTrigger } from "./skill-effects.js";
 import { LEGACY_BRIDGED_TRIGGERS } from "./director-triggers.js";
@@ -146,6 +151,7 @@ import "./_test-harness-director.js";
 // reload-gate canvasReady hook on every client (not just the GM).
 import "./director-player-hud.js";
 import { destroyDirectorHud } from "./director-player-hud.js";
+import { hotUrl } from "./hot-reload.js";
 // Reaction hand — the "Card" Reaction UI (Party Menu › Config). Side-effect
 // import: watches the action card mirror on player clients.
 import "./reaction-hand.js";
@@ -440,6 +446,15 @@ async function start(arg) {
   // event's rule reads the battlefield. No-ops unless the conflict scene
   // selects an event. See [[conflict-event]].
   registerBuiltinReactor(conflictEventReactor);
+  // Battle Grade v2 tally: read-only, counts hits / damage / heals / Guard for
+  // the Victory screen's grade. Last, so it sees the settled event.
+  registerBuiltinReactor(gradeTallyReactor);
+
+  // A fresh battle starts its own record (rank + totals read it at the end). A
+  // battle stopped without reaching battle end would otherwise leave its rows
+  // for this one. Resume never comes through here, so a resumed battle keeps its.
+  try { await clearBattleRecord(); } catch (e) { warn("start: clearBattleRecord threw", e); }
+  try { await clearTally(); } catch (e) { warn("start: clearTally threw", e); }
 
   _instance = director;
   announceHost();
@@ -496,6 +511,9 @@ async function stopNow({ reason = "manual", clearFlags = true, cleanupTokens = t
   // A creature still on its turn spot (turn-start-cue.js short step) goes home.
   try { await returnSteppedTokens(battleScene, { animate: false }); }
   catch (e) { warn("stop: step home threw", e); }
+  // A unit still held by a grappler (grapple-hold.js) goes home too.
+  try { await releaseAllGrapples(battleScene, { animate: false }); }
+  catch (e) { warn("stop: grapple release threw", e); }
 
   // Detach the director from the per-client IntentChannel singleton, but
   // KEEP it installed — players still need it to receive future MENU_OPEN
@@ -813,6 +831,9 @@ async function resumeFromSavedState({ scene, state, animateBanner = true }) {
   // Conflict event — same reasoning: without this a mid-conflict F5 silently
   // switches the scene's hazard off for the rest of the fight.
   registerBuiltinReactor(conflictEventReactor);
+  // Battle Grade v2 tally: read-only, counts hits / damage / heals / Guard for
+  // the Victory screen's grade. Last, so it sees the settled event.
+  registerBuiltinReactor(gradeTallyReactor);
 
   _instance = director;
   announceHost();
@@ -1192,6 +1213,10 @@ Hooks.once("ready", () => {
   // Session-global, idempotent — install once here (path-independent of
   // fresh-start vs resume). See [[project_grappled_advanced_debuff]].
   installGrappledCoverWatcher();
+  // Grappled hold: the held token moves into its grappler's space (host GM),
+  // and the grip (chain / tentacle skin) is drawn between them (every client).
+  try { installGrappleHold({ getActiveDirector }); } catch (e) { warn("installGrappleHold threw", e); }
+  try { installGrappleGripFx(); } catch (e) { warn("installGrappleGripFx threw", e); }
   // Condition immunity/resistance for conditions applied INSIDE a battle by a
   // non-BD path (AEM UI, token-HUD, macros): IM blocks, RS reshapes into a
   // charge/turn-clamped BD condition so it expires. Only touches AEs whose
@@ -1223,6 +1248,12 @@ Hooks.once("ready", () => {
   import("../orbment/orbment-bootstrap.js")
     .then((m) => m.initOrbment())
     .catch((e) => warn("initOrbment failed to load", e));
+  // Crafting System (Blueprints): Crafter NPCs, crafting-table Regions, the
+  // GM Blueprint Editor and Camp Forge → Craft. Self-contained under
+  // scripts/crafting-system/. See [[project_crafting_system]].
+  import("../crafting-system/crafting-bootstrap.js")
+    .then((m) => m.initCrafting())
+    .catch((e) => warn("initCrafting failed to load", e));
   // Inner Wellspring (Invoker heroic): camp picker + first-pick window + the
   // rest-time self-AE. Self-contained under scripts/inner-wellspring/.
   import("../inner-wellspring/inner-wellspring-bootstrap.js")
@@ -1639,7 +1670,8 @@ Hooks.once("ready", () => {
       const promptEndCtx = {
         outcome:      detectedOutcome,
         sourceSceneId: dc?.sourceSceneId ?? null,
-        partyActorIds: party.map(c => c.actorDoc?.id).filter(Boolean),
+        // Party's own characters only — no guest, no summon (see isRewardRecipient).
+        partyActorIds: [...new Set(party.filter(isRewardRecipient).map(c => c.actorDoc?.id).filter(Boolean))],
         defaultRewards: {
           expByActorId:   _bdSnap.expByActorId   ?? {},
           zenitByActorId: _bdSnap.zenitByActorId ?? {},
@@ -1716,7 +1748,7 @@ Hooks.once("ready", () => {
       const token = canvas?.tokens?.placeables?.find((t) => t.actor?.uuid === actor.uuid) ?? null;
       if (!token) return;
       const trigger = eqChange ? "creature_equips_item" : "creature_unequips_item";
-      const { dispatchReactionMenu } = await import("./standalone-reactions.js?cb=" + Date.now());
+      const { dispatchReactionMenu } = await import(hotUrl("./standalone-reactions.js"));
       await dispatchReactionMenu({
         director, reactor: actor, token, trigger,
         payload: {

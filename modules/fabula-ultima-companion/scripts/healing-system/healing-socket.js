@@ -28,7 +28,7 @@ import { actorDebuffs } from "./healing-cleanse.js";
 import { HealingFeedback } from "./healing-feedback.js";
 import { debitCost } from "../battle-director/skill-cost.js";
 import { consumeOne, spendIp } from "../battle-director/item-resource.js";
-import { getPotionRain, isPotionItem, halveHeal } from "./potion-rain.js";
+import { getPotionRain, isPotionItem, halveHeal, potionRainHalves } from "./potion-rain.js";
 import { gatherHealingActions } from "./healing-actions.js";
 
 const CHANNEL = "module.fabula-ultima-companion";
@@ -154,7 +154,8 @@ async function applyHeal(payload, requesterUserId = game.user?.id) {
   // The count is the targets actually sent — a Potion Rain spread is one use —
   // never a client-reported number.
   const targetCount = (potionRain && targets.length > 1) ? 1 : targets.length;
-  const resolved = resolveHealAction({ caster, effectItem, costItem, targetCount: Math.max(1, targetCount) });
+  // Inventory action = a Create preset or a consumable (same rule as the HUD descriptor).
+  const resolved = resolveHealAction({ caster, effectItem, costItem, targetCount: Math.max(1, targetCount), isItemUse: isCreate || !!consumableUuid });
   if (!isCleanse && !resolved.ok) return { ok: false, reason: resolved.reason ?? "no-heal" };
   if (!resolved.affordable) return { ok: false, reason: "unaffordable", missing: resolved.missing };
 
@@ -204,7 +205,9 @@ async function applyHeal(payload, requesterUserId = game.user?.id) {
     // cost — then commit them all in a single batched Actor.updateDocuments call.
     // Each actor.update triggers heavy synchronous CSB prepareData, so paying it
     // once for the whole group (instead of per target + per cost) is the win.
-    const spreadGrants = spread ? resolved.grants.map((g) => ({ ...g, amount: halveHeal(g.amount) })) : resolved.grants;
+    // Apothecary Robes: the caster's spread is not halved.
+    const halve = spread && potionRainHalves(caster);
+    const spreadGrants = halve ? resolved.grants.map((g) => ({ ...g, amount: halveHeal(g.amount) })) : resolved.grants;
     const HEAL_PROP = { hp: "current_hp", mp: "current_mp", ip: "current_ip" };
     const HEAL_MAX = { hp: "max_hp", mp: "max_mp", ip: "max_ip" };
     const plan = new Map();   // actorId → { doc, update }

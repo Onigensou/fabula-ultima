@@ -46,6 +46,7 @@
   "sort": 0,
   "system": {
     "props": {
+      "action_keywords": "crush",
       "active_effect_config_table": {},
       "aquatic_ef": "100",
       "automaton_ef": "100",

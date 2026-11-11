@@ -368,6 +368,15 @@
             </div>
             <div class="form-group" data-oni-ec-damage-only="1"
                  ${cfg.resourceType === "damage" ? "" : 'style="display:none"'}>
+              <label>Trap tier</label>
+              <select name="${fl("trapTier")}">
+                <option value="minor" ${sel("minor", cfg.trapTier)}>Minor (default)</option>
+                <option value="heavy" ${sel("heavy", cfg.trapTier)}>Heavy (×1.5)</option>
+              </select>
+              <p class="notes">Trap tiles only. A Trap tile ignores Amount: it deals 5 + Party Level ÷ 4 physical damage (×1.5 when Heavy), never below 1 HP.</p>
+            </div>
+            <div class="form-group" data-oni-ec-damage-only="1"
+                 ${cfg.resourceType === "damage" ? "" : 'style="display:none"'}>
               <label>Element</label>
               <select name="${fl("elementType")}">
                 <option value="elementless" ${sel("elementless", cfg.elementType)}>— None —</option>
@@ -715,6 +724,7 @@
         vfxFlashTint:      String(raw.vfxFlashTint    ?? "#ff0000"),
         vfxFlashAlpha:     Number(raw.vfxFlashAlpha   ?? 0.5),
         sfxUrl:            String(raw.sfxUrl          ?? ""),
+        trapTier:          String(raw.trapTier        ?? "minor"),
       };
 
       // Sub-nav button

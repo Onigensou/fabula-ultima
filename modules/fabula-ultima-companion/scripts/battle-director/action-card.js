@@ -50,6 +50,7 @@ import { mergeGmOverride, normalizeGmOverride, describeGmEditors, isGmEditableRo
 import { SimMode } from "./sim/sim-mode.js";
 import { decideReactions, bestElementForCard } from "./sim/reaction-brain.js";
 import { simInvoke } from "./sim/invoke-brain.js";
+import { hotUrl } from "./hot-reload.js";
 
 // Resolve which active player client decides for the given actor doc. Returns
 // userId or null. Delegates to the shared Spectator helper so a spectator
@@ -8493,8 +8494,8 @@ export async function postActionCard({ director, kind, payload }) {
     }
     async function injectCascadeReactions() {
       try {
-        const rd = await import("./reaction-derive.js?cb=" + Date.now());
-        const se = await import("./skill-effects.js?cb=" + Date.now());
+        const rd = await import(hotUrl("./reaction-derive.js"));
+        const se = await import(hotUrl("./skill-effects.js"));
         // Ledger = accepted candidates that represent a completed skill.
         const ledger = [];
         for (const p of cardReactions) {
@@ -8684,8 +8685,8 @@ export async function postActionCard({ director, kind, payload }) {
     // it cannot come from the CONFIRM-time snapshot.
     async function injectTargetedReactionsForNewTargets(mutTargets, originalRows, recomputedRows) {
       try {
-        const rd = await import("./reaction-derive.js?cb=" + Date.now());
-        const se = await import("./skill-effects.js?cb=" + Date.now());
+        const rd = await import(hotUrl("./reaction-derive.js"));
+        const se = await import(hotUrl("./skill-effects.js"));
         const origActorUuids = new Set((originalRows ?? []).map((r) => r?.actorUuid).filter(Boolean));
         // Predicted damage per subject, keyed by token then actor — same shape
         // and same miss/heal-means-zero rule as the CONFIRM scan, so a beneficial
@@ -8935,7 +8936,7 @@ export async function postActionCard({ director, kind, payload }) {
         if (cand) { setCandRuntime(cand, "_remotePrompt", remotePrompt); setCandRuntime(cand, "_subjectPick", null); }
         if (cand) {
           try {
-            const se = await import("./skill-effects.js?cb=" + Date.now());
+            const se = await import(hotUrl("./skill-effects.js"));
             const reactorActor = cand.reactorActorUuid
               ? await fromUuid(cand.reactorActorUuid).catch(() => null)
               : (payload?.attackerActor ?? null);
@@ -9091,8 +9092,8 @@ export async function postActionCard({ director, kind, payload }) {
           // Lazy-import — cross-module cache-bust pattern. card-mutations owns the
           // target-set mutation + recompute (applyTargetSetMutation); skill-effects
           // is still needed for applyDamageOp in the headline breakdown below.
-          const sk = await import("./skill-effects.js?cb=" + Date.now());
-          const cm = await import("./card-mutations.js?cb=" + Date.now());
+          const sk = await import(hotUrl("./skill-effects.js"));
+          const cm = await import(hotUrl("./card-mutations.js"));
 
           // Phase 1: card-mutations (redirect_target). Computes the
           // post-mutation target list against a synthetic ar built from
@@ -9734,7 +9735,7 @@ export async function postActionCard({ director, kind, payload }) {
           if (reactionDecisionMap.get(`${p.rowKey}:${p.carrierUuid}`) !== "apply") continue;
           if (Array.isArray(p.chosenMenuPicks)) continue;   // already resolved
           try {
-            const se = await import("./skill-effects.js?cb=" + Date.now());
+            const se = await import(hotUrl("./skill-effects.js"));
             const reactorActor = p.reactorActorUuid
               ? await fromUuid(p.reactorActorUuid).catch(() => null)
               : (payload?.attackerActor ?? null);
@@ -9807,7 +9808,7 @@ export async function postActionCard({ director, kind, payload }) {
       // succession): wait for it, or the stash predates the reaction just applied.
       if (_previewInFlight) { try { await _previewInFlight; } catch {} }
       if (!cardAr?.roll || !lastRollMutation?.rollChangers?.length) return cardAr;
-      const { bakeReactionRoll } = await import("./card-mutations.js?cb=" + Date.now());
+      const { bakeReactionRoll } = await import(hotUrl("./card-mutations.js"));
       return bakeReactionRoll(cardAr, lastRollMutation);
     };
     // After an invoke commits: the stash described the pre-invoke base, and the
@@ -9959,7 +9960,7 @@ export async function postActionCard({ director, kind, payload }) {
       try {
         const hud = await import("./invoke/invoke-hud.js");
         await hud.animateInvokeReroll({ choice, rA: roll.rA, rB: roll.rB, dA: roll.dA, dB: roll.dB, intense, concealed });
-        const worker = await import(`./invoke/invoke-worker.js?cb=${Date.now()}`);
+        const worker = await import(hotUrl("./invoke/invoke-worker.js"));
         worker.patchCardDom(root, newAr, invokeState);
         // The up/down chime says whether the reroll improved the total — audible,
         // and just as much a reveal as printing it. Silent under concealment.
@@ -10110,7 +10111,7 @@ export async function postActionCard({ director, kind, payload }) {
             let ok = false;      // truthy on success (trait: choice string, bond: true)
             let oldTotal = cardAr?.roll?.total ?? 0;
             try {
-              const worker = await import(`./invoke/invoke-worker.js?cb=${Date.now()}`);
+              const worker = await import(hotUrl("./invoke/invoke-worker.js"));
               const invokeAr = await arForInvoke();
               oldTotal = invokeAr?.roll?.total ?? oldTotal;
               if (type === "trait") {
@@ -10512,7 +10513,7 @@ export async function postActionCard({ director, kind, payload }) {
               ui.notifications?.warn("This action is no longer active — invoke can't be applied.");
               return;
             }
-            const worker = await import(`./invoke/invoke-worker.js?cb=${Date.now()}`);
+            const worker = await import(hotUrl("./invoke/invoke-worker.js"));
             const ar = await arForInvoke();
             const oldTotal = ar?.roll?.total ?? 0;
             // GM is the actor → open the read-only spectator HUD on everyone
@@ -11361,7 +11362,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     const wrapper = document.getElementById(MIRROR_ROOT_ID);
     if (!wrapper) return;
     clearInvokeSubmitTimers(wrapper); // GM responded — stop the no-response net
-    import(`./invoke/invoke-worker.js?cb=${Date.now()}`).then((w) => {
+    import(hotUrl("./invoke/invoke-worker.js")).then((w) => {
       w.patchCardDom(wrapper, playerAr, playerInvokeState);
     }).catch((e) => warn("action-card-invoke-update: patchCardDom threw", e));
   });
@@ -11411,7 +11412,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
         await hud.animateInvokeReroll({ choice: menuSpec.choice, rA: r.rA, rB: r.rB, dA: r.dA, dB: r.dB, intense: !!menuSpec.intense, concealed: isConcealedRoll(r) });
         const wrapper = document.getElementById(MIRROR_ROOT_ID);
         if (wrapper) {
-          const w = await import(`./invoke/invoke-worker.js?cb=${Date.now()}`);
+          const w = await import(hotUrl("./invoke/invoke-worker.js"));
           w.patchCardDom(wrapper, playerAr, playerInvokeState);
         }
         if (!isConcealedRoll(r)) hud.playTraitResultChime(menuSpec.oldTotal, r.total);   // see presentTraitReroll

@@ -164,13 +164,72 @@
     return () => slots.delete(String(id));
   }
 
+  // ── the right stack, above the dice ───────────────────────────────────────
+  // Bottom-right, from the dice button (#oni-cr-button) up: Conflict Event
+  // emblem (order 10, battle only), Alter the Story (order 20). On the GM the
+  // stack starts above the GM desk's right end instead. A member registers
+  // { order, size, present } and asks rightSlot(id) for its { left, top } each
+  // time it places itself; an absent member takes no room. Added 2026-11-11 so
+  // the emblem and the Alter button stop measuring each other.
+  const RIGHT_GAP = 8;
+  const rightMembers = new Map();   // id -> { order, size, present }
+
+  const shown = (el) => {
+    if (!el) return false;
+    const r = el.getBoundingClientRect();
+    if (r.width <= 0 || r.height <= 0) return false;
+    const cs = getComputedStyle(el);
+    return cs.display !== "none" && cs.visibility !== "hidden" && Number(cs.opacity) > 0.05;
+  };
+
+  /** Where the stack starts: { x, top, align } (align "center": x is the centre line; "right": x is the right edge). */
+  function rightBase() {
+    const doc = root.document;
+    const desk = doc?.getElementById("fud-gm-desk");
+    const parts = desk
+      ? [...desk.children].filter((c) => !c.classList.contains("gmd-bar") && shown(c)).map((c) => c.getBoundingClientRect())
+      : [];
+    if (parts.length) return { x: Math.max(...parts.map((b) => b.right)), top: Math.min(...parts.map((b) => b.top)), align: "right" };
+    const dice = doc?.getElementById("oni-cr-button");
+    if (dice && shown(dice)) { const r = dice.getBoundingClientRect(); return { x: r.left + r.width / 2, top: r.top, align: "center" }; }
+    return { x: (root.innerWidth ?? 1600) - 330, top: (root.innerHeight ?? 900) - 110, align: "right" };
+  }
+
+  /** Pure stacking. items: [{ id, order, size, present }] → { id: { left, top } } for present items. */
+  function stackRight(items, base, gap = RIGHT_GAP) {
+    let top = base.top;
+    const out = {};
+    for (const it of [...items].filter((i) => i.present)
+      .sort((a, b) => (a.order - b.order) || String(a.id).localeCompare(String(b.id)))) {
+      const size = Number(it.size) || 46;
+      top = top - gap - size;
+      const left = base.align === "right" ? base.x - size : base.x - size / 2;
+      out[it.id] = { left: Math.round(left), top: Math.round(top) };
+    }
+    return out;
+  }
+
+  function registerRight(id, { order = 50, size = 46, present = () => true } = {}) {
+    rightMembers.set(String(id), { order: Number(order) || 0, size, present });
+    return () => rightMembers.delete(String(id));
+  }
+
+  /** This member's { left, top } now, or null when it is not present / not registered. */
+  function rightSlot(id) {
+    if (!rightMembers.has(String(id))) return null;
+    const items = [...rightMembers].map(([mid, m]) => ({ id: mid, order: m.order, size: m.size, present: safe(() => !!m.present(), false) }));
+    return stackRight(items, rightBase())[String(id)] ?? null;
+  }
+
   root.oni.HudDock = {
     installed: true,
     GAP,
     register, unregister, registerRow, relayout, stackTop, onChange, layout, rowGeometry,
     registerSlot, relayoutRow, packRow,
+    registerRight, rightSlot, stackRight, rightBase,
     _members: members,
     _slots: slots,
+    _right: rightMembers,
   };
 
   if (root.Hooks?.on) {

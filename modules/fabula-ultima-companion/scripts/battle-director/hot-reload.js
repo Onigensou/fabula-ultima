@@ -51,6 +51,29 @@ export function currentHotToken() {
 }
 
 /**
+ * Cache-bust URL for a "fresh copy" dynamic import:
+ *   await import(hotUrl("./skill-effects.js"))
+ * Returns `<spec>?cb=<page-load stamp>-<hot token>`. Pass the RELATIVE spec
+ * and keep the import() in the consuming file — a dynamic import resolves
+ * against the file the import() call is written in, not this one.
+ *
+ * Why not `"?cb=" + Date.now()` (the old pattern at these sites): every new URL
+ * is a NEW module instance and the browser never unloads one. Per-call stamps
+ * kept one more copy of skill-effects.js (~0.9 MB each) for every action card
+ * and reaction — measured ~500 MB kept per boss fight, and a Staging page ran
+ * out of memory (2026-11-11, reports/2026-11-11-bd-module-copy-leak.md).
+ *
+ * This keeps what the stamp was for: the page-load stamp still forces a fetch
+ * past a stale browser cache (one fresh copy per page load), and the harness /
+ * reloadHot() token bump still yields new code. It just stops making a new
+ * copy on every call.
+ */
+const LOAD_STAMP = (globalThis.__FU_LOAD_CB ??= Date.now());
+export function hotUrl(spec) {
+  return `${spec}?cb=${LOAD_STAMP}-${currentHotToken()}`;
+}
+
+/**
  * Register a hot-reloadable dependency and get back a synchronous accessor.
  *
  * @param {string}   key      Stable identity for this edge (e.g. the dep's

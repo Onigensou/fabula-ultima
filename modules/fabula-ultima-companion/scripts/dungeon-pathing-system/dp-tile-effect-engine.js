@@ -80,7 +80,74 @@
       vfxFlashTint:      String(raw.vfxFlashTint       ?? "#ff0000"),
       vfxFlashAlpha:     Number(raw.vfxFlashAlpha      ?? 0.5),
       sfxUrl:            String(raw.sfxUrl             ?? ""),
+      // Trap tiles only: "minor" (default) or "heavy" (×1.5). See dp-trap-rules.js.
+      trapTier:          String(raw.trapTier           ?? "minor"),
     };
+  }
+
+  // ── Trap tiles (2026-11-10 rework) ─────────────────────────────────────────
+  // A Trap tile's damage no longer uses the tile's resourceValue: it is
+  // 5 + floor(Party Level / 4) physical (×1.5 on a Heavy tile), through the
+  // normal damage pipeline, never below 1 HP. The GM previews every member
+  // (applyDamage dryRun), sends the outcome to every client at once
+  // (dp-trap-fx.js: hurt pose, face + −N numbers, HUD pulse), THEN writes the
+  // HP one member at a time. No chat card and no screen flash on traps.
+  const MSG_TRAP_FX = "DP_TRAP_FX";
+  const Rules = () => DP.TrapRules;
+  const Fx    = () => DP.TrapFx;
+
+  function isTrap(cfg, ctx) {
+    return ctx?.typeKey === "trap" && cfg.useResourceChange && cfg.resourceType === "damage";
+  }
+
+  async function runTrapGM(actors, cfg, { tokenId = null, sceneId = null, triggerUserId = null } = {}) {
+    const R = Rules();
+    const dmgApi = globalThis.FUCompanion?.api?.applyDamage?.applyToActor;
+    if (!R || !dmgApi) {
+      console.warn(TAG, "Trap: rules or applyDamage missing; falling back to the plain tile path.");
+      return applyToActors(actors, cfg);
+    }
+
+    const level = R.partyLevel(actors.map(a => a.system?.props?.level));
+    const opts = {
+      baseDamage:   R.trapBase(level, cfg.trapTier),
+      elementType:  R.TRAP_ELEMENT,
+      weaponType:   cfg.weaponType || "none_ef",
+      valueType:    "hp",
+      ignoreDR:     cfg.ignoreReduction,
+      attackerName: "Trap",
+      sourceType:   "Tile",
+      verbosity:    "silent",
+      hpFloor:      R.TRAP_HP_FLOOR,
+    };
+
+    // 1. Preview (no writes): what every client shows.
+    const rows = [];
+    for (const actor of actors) {
+      try {
+        const rec = await dmgApi({ ...opts, targetActor: actor, dryRun: true });
+        const max = Number(actor.system?.props?.max_hp ?? 0);
+        rows.push({ actorId: actor.id, name: actor.name, face: actor.img ?? "", ...R.describeHit(rec, max) });
+      } catch (e) {
+        console.error(TAG, `Trap preview failed for ${actor.name}:`, e);
+      }
+    }
+
+    // 2. Show it everywhere.
+    if (!cfg.silent) {
+      const payload = { sceneId, tokenId, sfxUrl: cfg.sfxUrl, rows, triggerUserId };
+      try { game.socket.emit(SOCKET_CH, { type: MSG_TRAP_FX, payload }); } catch (e) { console.warn(TAG, "Trap FX emit failed:", e); }
+      try { Fx()?.play(payload); } catch (e) { console.warn(TAG, "Trap FX failed:", e); }
+    }
+
+    // 3. Write, one member at a time (see applyToActors on why it yields).
+    for (let i = 0; i < actors.length; i++) {
+      await dmgApi({ ...opts, targetActor: actors[i] })
+        .catch(e => console.error(TAG, `Trap damage failed for ${actors[i].name}:`, e));
+      if (i < actors.length - 1) await new Promise(r => setTimeout(r, 0));
+    }
+    console.debug(TAG, `Trap: Lv ${level} ${R.normalizeTier(cfg.trapTier)} base ${opts.baseDamage}`, rows);
+    return rows;
   }
 
   // ── Party member resolution ────────────────────────────────────────────────
@@ -481,13 +548,18 @@
         // would survive into the next turn (see DP.gmSerialize).
         await (DP.gmSerialize ?? (fn => fn()))(async () => {
         try {
-          const { actorUuids, cfg, tileLabel, tokenId, sceneId } = msg.payload ?? {};
+          const { actorUuids, cfg, tileLabel, tokenId, sceneId, trap, triggerUserId } = msg.payload ?? {};
           const actors = [];
           for (const uuid of (actorUuids ?? [])) {
             const a = await fromUuid(uuid).catch(() => null);
             if (a) actors.push(a);
           }
           if (!actors.length) { console.warn(TAG, "GM: no actors resolved."); return; }
+
+          if (trap) {
+            await runTrapGM(actors, cfg, { tokenId, sceneId, triggerUserId });
+            return;
+          }
 
           const results = await applyToActors(actors, cfg);
           if (!cfg.silent) await createChatCard(results, cfg, tileLabel);
@@ -500,6 +572,12 @@
           console.error(TAG, "MSG_APPLY handler failed:", e);
         }
         });
+        return;
+      }
+
+      // ── All clients: a trap's outcome (numbers, HUD pulse, hurt pose) ──────
+      if (msg?.type === MSG_TRAP_FX) {
+        try { Fx()?.play(msg.payload ?? {}); } catch (e) { console.warn(TAG, "Trap FX failed:", e); }
         return;
       }
 
@@ -516,7 +594,7 @@
   }
 
   // ── Main run() ─────────────────────────────────────────────────────────────
-  async function run(cfg, tileDoc, tokenDoc, scene) {
+  async function run(cfg, tileDoc, tokenDoc, scene, ctx = {}) {
     if (!cfg.enabled) return;
     if (!cfg.useResourceChange && !cfg.useActiveEffect && !cfg.useRemoveEffect
         && cfg.vfxType === "none" && !cfg.sfxUrl) return;
@@ -525,6 +603,29 @@
     const targets    = selectTargets(allMembers, cfg.targetMode);
     const tileLabel  = tileDoc?.name ?? "Tile Event";
     const sceneId    = scene?.id ?? canvas.scene?.id ?? null;
+
+    // Trap tile: the hit plays here at once (sound + hurt pose); the numbers
+    // and HUD pulse follow from the GM's preview. Its own AE rows, if any,
+    // still apply through the plain path below.
+    if (isTrap(cfg, ctx)) {
+      const tokenId = tokenDoc?.id ?? null;
+      if (!cfg.silent) {
+        try { Fx()?.impact({ tokenId, sfxUrl: cfg.sfxUrl }); } catch (e) { console.warn(TAG, "Trap impact failed:", e); }
+      }
+      if (!targets.length) { console.warn(TAG, "Trap: no party members resolved."); return; }
+      if (game.user?.isGM) {
+        await runTrapGM(targets, cfg, { tokenId, sceneId, triggerUserId: game.user.id });
+      } else {
+        game.socket.emit(SOCKET_CH, {
+          type: MSG_APPLY,
+          payload: { actorUuids: targets.map(a => a.uuid).filter(Boolean), cfg, tileLabel, tokenId, sceneId, trap: true, triggerUserId: game.user?.id ?? null },
+        });
+      }
+      if (cfg.useActiveEffect || cfg.useRemoveEffect) {
+        return run({ ...cfg, useResourceChange: false, vfxType: "none", sfxUrl: "" }, tileDoc, tokenDoc, scene);
+      }
+      return;
+    }
 
     // VFX/SFX plays locally on the triggering client immediately.
     if (!cfg.silent) { playVfx(cfg, tokenDoc); playSfx(cfg); }
@@ -571,7 +672,7 @@
       const result = await _orig(typeKey, tileDoc, tokenDoc, scene, context);
       const cfg    = readConfig(tileDoc);
       if (cfg.enabled) {
-        await run(cfg, tileDoc, tokenDoc, scene)
+        await run(cfg, tileDoc, tokenDoc, scene, { typeKey })
           .catch(e => console.error(TAG, "post-dispatch run() error:", e));
       }
       return result;
@@ -579,8 +680,23 @@
     console.debug(TAG, "TileEventRegistry.dispatch patched.");
   }
 
+  // ── Trap from a macro (older tiles that run the "Trap Damage" macro via
+  // Monk's Active Tiles instead of an effectConfig) ──────────────────────────
+  async function runTrap({ sfxUrl = "", tier = "minor", tokenId = null } = {}) {
+    const st = globalThis.__ONI_DUNGEON_PATHING__?.state;
+    const id = tokenId ?? st?.partyToken?.id ?? st?.partyTokenId ?? null;
+    const tokenDoc = (id ? canvas.tokens?.get(id)?.document : null) ?? { id };
+    const cfg = {
+      enabled: true, useResourceChange: true, resourceType: "damage", resourceValue: 0,
+      elementType: "physical", weaponType: "none_ef", ignoreReduction: false,
+      useActiveEffect: false, activeEffects: [], useRemoveEffect: false, removeEffects: [],
+      targetMode: "all", silent: false, vfxType: "none", vfxFile: "", sfxUrl, trapTier: tier,
+    };
+    return run(cfg, null, tokenDoc, canvas.scene, { typeKey: "trap" });
+  }
+
   // ── Public API ─────────────────────────────────────────────────────────────
-  DP.TileEffectEngine = { run, readConfig, resolvePartyMembers, selectTargets, RESOURCE_TYPES };
+  DP.TileEffectEngine = { run, runTrap, readConfig, resolvePartyMembers, selectTargets, RESOURCE_TYPES };
 
   Hooks.once("ready", () => {
     setupSocket();

@@ -18,8 +18,10 @@
 //
 // DEFERRED, deliberately, per the direction plan: Fafnir, Hilde-Fafnir, Flame
 // Drake, Lightning Drake (boss tier), Iron Colossus, Dire Orc, Dragon Guard
-// (design not settled). Passives are skipped except the two that are real board
-// events — Volt Counter and Electro Explosion.
+// (design not settled). Passives are skipped except the real board events —
+// Volt Counter, Static Buildup (its third-charge discharge) and Electro Explosion.
+// A passive's shot only plays from a play_animation row in its own chain
+// (Volt Counter / Static Buildup: _wire-volt-static-passive-anims.js).
 // ============================================================================
 
 const fs = require("fs");
@@ -33,6 +35,8 @@ const RK = require(path.join(ANIM_LIB, "lib", "rakshasa-signatures.js"));
 const FF = require(path.join(ANIM_LIB, "lib", "fafnir-signatures.js"));
 const KR = require(path.join(ANIM_LIB, "lib", "kirin-signatures.js"));
 const DV = require(path.join(ANIM_LIB, "lib", "deva-signatures.js"));
+const AS = require(path.join(ANIM_LIB, "lib", "asura-signatures.js"));
+const PS = require(path.join(ANIM_LIB, "lib", "passive-pxfx-signatures.js"));
 const { encode, validate } = require(path.join(ANIM_LIB, "lib", "encode.js"));
 
 /* ── Palette ─────────────────────────────────────────────────────────────── */
@@ -110,12 +114,26 @@ const CU = {
 // were dead — two Forge GIFs (a .gif never binds as a PIXI texture at all) and
 // a core icon whose real filename differs. A Form Shift whose icon 404s still
 // runs, but the announcement loses half its point.
-const ICON_W = {
-  sword:   "icons/weapons/swords/greatsword-guard-gold-worn.webp",
-  bow:     "icons/weapons/bows/shortbow-recurve.webp",
-  chakram: "icons/weapons/thrown/shuriken-blue.webp",
-  mace:    "icons/weapons/maces/mace-round-spiked-black.webp",
+//
+// 2026-11-10: the Foundry core icons above the head were replaced by real item
+// art (FF Brave Exvius icons already on the Forge, byte-identical to the local
+// library copies) in the user-approved "Spin in" mockup
+// (https://claude.ai/artifact/DxK4hxKR9CuB8weRHTW3Ey, v3 defaults). `base` is the
+// angle the art is drawn at (these icons are already diagonal = 45); `h` is the
+// weapon's height as a fraction of the caster's mesh height. The Morning Star
+// path is DOUBLE-encoded (%2528 = "(") — that is how the file is named on the
+// Forge, same as the world's other FFBE refs (%2527 for an apostrophe).
+const FFBE_W = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/";
+const RAK_WEAPONS = {
+  sword:   { img: FFBE_W + "Sword/Icon-Falchion.webp",                  base: 45, h: 0.57 },
+  bow:     { img: FFBE_W + "Bow/Icon-Dark_Gandiva.webp",                base: 45, h: 0.57 },
+  chakram: { img: FFBE_W + "Throw/Icon-Chakram.webp",                   base: 45, h: 0.46, round: true },
+  mace:    { img: FFBE_W + "Mace/Icon-Morning_Star_%2528Item%2529.webp", base: 45, h: 0.58 },
 };
+// Stance colours = the stance pose auras already in game (rak-stance.js TINT).
+const RAK_TINT = { sword: 0x8cc8ff, bow: 0x6eeb78, chakram: 0x46e1ff, mace: 0xffaf3c,
+                   swordBow: 0xa0e6be, flailChakram: 0xb4d28c, verdict: 0xff463c };
+const RAK_SPARK = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Disgaea%205/VFX/03340_00.png";
 
 const SFX = {
   windWalk: SND + "WindWalk.wav",
@@ -220,51 +238,15 @@ const REGISTRY = {
   "0AwQ7wEDz4ISA9mA": {
     actorName: "Asura",
     items: {
-      "Elemental Slash": () => sweep({
-        key: "asura-elemental-slash", name: "Elemental Slash",
-        aspectTinted: true,
-        cfg: { sweeps: 1, sweepMs: 620, dashMs: 460, dashBackMs: 520, explosion: false,
-               sfxSweep: "Attack2", sfxSweepVol: 0.55 },
-      }),
-      "Elemental Slash (Enchanted)": () => sweep({
-        key: "asura-elemental-slash-ench", name: "Elemental Slash (Enchanted)",
-        aspectTinted: true,
-        cfg: { sweeps: 2, sweepMs: 600, betweenMs: 140, dashMs: 460, dashBackMs: 520,
-               explosion: false, sfxSweep: "Attack3", sfxSweepVol: 0.6 },
-      }),
-      "Elemental Slash: Overflow": () => sweep({
-        key: "asura-elemental-slash-overflow", name: "Elemental Slash: Overflow",
-        aspectTinted: true,
-        cfg: { sweeps: 3, sweepMs: 640, betweenMs: 160, dashMs: 500, dashBackMs: 560,
-               explosion: true, shakeMs: 620, sfxSweep: "Attack3", sfxSweepVol: 0.6,
-               sfxExplosion: "Explosion1", sfxExplosionVol: 0.6 },
-      }),
-      "Asura Strike": () => G.quadElementalSlash({
-        key: "asura-quad-elemental-slash", name: "Asura Strike",
-        cfg: { sfxCharge: "ChargeAttack", sfxChargeVol: 0.6,
-               sfxSlash: "Attack3", sfxSlashVol: 0.55,
-               sfxImpact: "Explosion2", sfxImpactVol: 0.85 },
-      }),
-      "Sword Enchant - Fire": () => T.burst({
-        key: "asura-enchant-fire", name: "Sword Enchant - Fire",
-        cfg: { color: C.fire, gatherMs: 620, count: 44, radius: 200, life: 1000,
-               sfx: "Fire1", sfxVol: 0.5 },
-      }),
-      "Sword Enchant - Bolt": () => T.burst({
-        key: "asura-enchant-bolt", name: "Sword Enchant - Bolt",
-        cfg: { color: C.bolt, gatherMs: 620, count: 44, radius: 200, life: 1000,
-               sfx: "Thunder1", sfxVol: 0.5 },
-      }),
-      "Sword Enchant - Ice": () => T.burst({
-        key: "asura-enchant-ice", name: "Sword Enchant - Ice",
-        cfg: { color: C.ice, gatherMs: 620, count: 44, radius: 200, life: 1000,
-               sfx: "Ice1", sfxVol: 0.5 },
-      }),
-      "Sword Enchant - Air": () => T.burst({
-        key: "asura-enchant-air", name: "Sword Enchant - Air",
-        cfg: { color: C.air, gatherMs: 620, count: 44, radius: 200, life: 1000,
-               sfx: "Wind1", sfxVol: 0.5 },
-      }),
+      // Approved mockup (artifact Ebj65AytDRWSo1MydXYpFe, 2026-11-11); numbers live in asura-signatures.js.
+      "Elemental Slash": () => AS.asuraMove({ key: "asura-elemental-slash", name: "Elemental Slash", move: "slash" }),
+      "Elemental Slash (Enchanted)": () => AS.asuraMove({ key: "asura-elemental-slash-ench", name: "Elemental Slash (Enchanted)", move: "slash" }),
+      "Elemental Slash: Overflow": () => AS.asuraMove({ key: "asura-elemental-slash-overflow", name: "Elemental Slash: Overflow", move: "overflow" }),
+      "Asura Strike": () => AS.asuraStrike({ key: "asura-strike", name: "Asura Strike" }),
+      "Sword Enchant - Fire": () => AS.asuraMove({ key: "asura-enchant-fire", name: "Sword Enchant - Fire", move: "enchant", element: "fire" }),
+      "Sword Enchant - Bolt": () => AS.asuraMove({ key: "asura-enchant-bolt", name: "Sword Enchant - Bolt", move: "enchant", element: "bolt" }),
+      "Sword Enchant - Ice": () => AS.asuraMove({ key: "asura-enchant-ice", name: "Sword Enchant - Ice", move: "enchant", element: "ice" }),
+      "Sword Enchant - Air": () => AS.asuraMove({ key: "asura-enchant-air", name: "Sword Enchant - Air", move: "enchant", element: "air" }),
     },
   },
 
@@ -418,6 +400,10 @@ const REGISTRY = {
                sfxImpact: "Hit_Lightning", sfxImpactVol: 0.65,
                sfxImpactFade: 800, sfxImpactFadeMs: 500 },
       }),
+      // The third-charge discharge: three static balls fly to the victim and
+      // blow (pixelfx, approved mockup 2026-11-10). The orbit while charges
+      // build is a charge cue on the Static AE, not a script.
+      "Static Buildup": () => PS.staticDischarge({ key: "skizzik-static-discharge", name: "Static Buildup" }),
     },
   },
 
@@ -476,12 +462,9 @@ const REGISTRY = {
         cfg: { spread: true, count: 26, travelMs: 1400, radiateRadius: 460,
                sfx: "SE_WATER", sfxVol: 0.55, sfxPop: "Water_Drop", sfxPopVol: 0.35 },
       }),
-      "Volt Counter": () => T.burst({
-        key: "ampere-volt-counter", name: "Volt Counter",
-        cfg: { color: C.bolt, count: 26, radius: 190, size: 11, life: 700,
-               ring: true, ringMs: 700, ringRadius: 230, ringWidth: 5,
-               sfx: SFX.paralyze3, sfxVol: 0.6 },
-      }),
+      // pixelfx ripple rings (approved mockup 2026-11-10); replaced the T.burst
+      // particle ring, which no chain ever played
+      "Volt Counter": () => PS.voltCounter({ key: "ampere-volt-counter", name: "Volt Counter" }),
     },
   },
 
@@ -666,24 +649,27 @@ const REGISTRY = {
           // Keyed by the stance AE Form Shift just applied — the animation
           // reads the result rather than re-rolling the pool.
           forms: {
-            "Sword Stance":    { label: "Sword",    icon: ICON_W.sword },
-            "Bow Stance":      { label: "Bow",      icon: ICON_W.bow },
-            "Throwing Stance": { label: "Chakram",  icon: ICON_W.chakram },
-            "Flail Stance":    { label: "Mace",     icon: ICON_W.mace },
+            "Sword Stance":    { label: "Sword",    weapons: ["sword"],   tint: RAK_TINT.sword },
+            "Bow Stance":      { label: "Bow",      weapons: ["bow"],     tint: RAK_TINT.bow },
+            "Throwing Stance": { label: "Chakram",  weapons: ["chakram"], tint: RAK_TINT.chakram },
+            "Flail Stance":    { label: "Mace",     weapons: ["mace"],    tint: RAK_TINT.mace },
           },
+          weapons: RAK_WEAPONS, sparkImg: RAK_SPARK,
           sfx: "Cursor2", sfxVol: 0.5,
         },
       }),
-      // The Crisis shift announces a PAIR, so the medallion takes two icons.
+      // The Crisis shift announces a PAIR: both weapons spin in, leaning apart.
+      // Sword and Flail is the Severing Verdict telegraph — red, with a shake.
       "Form Shift (Dual)": () => RK.formShift({
         key: "rakshasa-form-shift-dual", name: "Form Shift (Dual)",
         cfg: {
           verb: "arms",
           forms: {
-            "Sword and Bow Stance":      { label: "Sword and Bow",      icon: [ICON_W.sword, ICON_W.bow] },
-            "Flail and Throwing Stance": { label: "Flail and Chakram",  icon: [ICON_W.mace, ICON_W.chakram] },
-            "Sword and Flail Stance":    { label: "Sword and Flail",    icon: [ICON_W.sword, ICON_W.mace] },
+            "Sword and Bow Stance":      { label: "Sword and Bow",      weapons: ["sword", "bow"],     tint: RAK_TINT.swordBow },
+            "Flail and Throwing Stance": { label: "Flail and Chakram",  weapons: ["mace", "chakram"],  tint: RAK_TINT.flailChakram },
+            "Sword and Flail Stance":    { label: "Sword and Flail",    weapons: ["sword", "mace"],    tint: RAK_TINT.verdict, verdict: true },
           },
+          weapons: RAK_WEAPONS, sparkImg: RAK_SPARK,
           sfx: "Cursor2", sfxVol: 0.55,
         },
       }),

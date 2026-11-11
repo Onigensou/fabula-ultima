@@ -1044,6 +1044,86 @@
       "type": "base"
     },
     {
+      "_id": "ArmrBreakAE00001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1794297806506,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "defense",
+          "mode": 1,
+          "priority": 50,
+          "value": "0.75"
+        }
+      ],
+      "description": "<p>Reduce <strong>DEF</strong> by 25% <em>(Rounded Up)</em></p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "ArmrBreakAE00001",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.ArmrBreakAE00001"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-armor-break",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "armor_break",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end",
+          "roundUp": [
+            "defense"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/rockbreaker.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/07_MNK/rockbreaker.png",
+      "name": "Armor Break",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "ArmrBreakStatId1"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "b9CUFlPnwLKgxE30",
       "_stats": {
         "compendiumSource": null,
@@ -2836,6 +2916,86 @@
       ],
       "system": {
         "tags": []
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "MagcBreakAE00001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1794297806506,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "magic_defense",
+          "mode": 1,
+          "priority": 50,
+          "value": "0.75"
+        }
+      ],
+      "description": "<p>Reduce <strong>M.DEF</strong> by 25% <em>(Rounded Up)</em></p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": 3,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "MagcBreakAE00001",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.MagcBreakAE00001"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "ce-magic-break",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "chargeKey": "magic_break",
+          "charges": 3,
+          "chargesMax": 3,
+          "lifetimeMode": "target_turn_end",
+          "roundUp": [
+            "magic_defense"
+          ]
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/17_PCT/Role_Actions/Addle.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/17_PCT/Role_Actions/Addle.png",
+      "name": "Magic Break",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "MagcBreakStatId1"
+      ],
+      "system": {
+        "tags": [
+          "debuff"
+        ]
       },
       "tint": "#ffffff",
       "transfer": false,

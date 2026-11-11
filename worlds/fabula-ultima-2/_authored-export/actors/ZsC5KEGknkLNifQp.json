@@ -1042,6 +1042,7 @@
       "system": {
         "container": null,
         "props": {
+          "action_keywords": "crush",
           "check_bonus": "99",
           "class": "Pyromancer",
           "cost": "50 MP",

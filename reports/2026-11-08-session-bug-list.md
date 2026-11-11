@@ -78,6 +78,10 @@ traced in code.
   The picker only offers tokens on the canvas, and in dungeon mode the whole party is one token. The GM applied
   the effect by hand. Suggested fix: outside battle, pick from the party's members instead of canvas tokens.
 
+- [x] **18. Potion Rain still halved with Zarg's Apothecary Robes (found later, on the session VOD).**
+  The +4 Apothecary Robes say "When you use the Potion Rain Skill, the restoring effect is not halved", but nothing
+  read that line, so both spread paths always halved. Fixed in v1.0.583 (see Notes).
+
 ## Dungeon
 
 - [x] **17. A cleared Dirt tile still shows the Use button when the party steps back on.**
@@ -121,3 +125,8 @@ traced in code.
   - Hex and Death count as "aid", so Protect and other "an enemy harms an ally" reactions don't fire against them. Changing that rule changes 19 shipped skills, so it needs its own pass.
   - Roselie's Hypno Pendulum copy has no Sleep linked (the world item does).
   - Not tested yet: Paladin Armor on a player's own screen in a two-client battle, which creature the spell locks onto when one Protect covers several allies, Death refusing an Undead or Champion target, and Glacies Alta's MP cost (the harness reports no cost).
+- 2026-11-10 onigensou (Claude): #18 added and fixed, plus the potion gaps found while fixing it. v1.0.583, `b3d5259a` + `69e56199` (code) and a world commit. sarunphat: two of these touch your files.
+  - #18, `b3d5259a`: Apothecary Robes are code-backed by name (declared in `shared/code-backed-content.js`). `healing-system/potion-rain.js` has `potionRainHalves(actor)`, which is false while the caster wears the robes at any refinement. In battle, `skill-effects.js` `applyAdjustGrantEffect` skips **only Potion Rain's own** adjust_grant row (`pr_halve`) for that caster; every other adjust_grant is unchanged. Out of battle, `healing-socket.js` skips `halveHeal`. Staging World: battle sim Elixir spread 70/70 with the robes, 35/35 without.
+  - `69e56199`, healing window (out of battle) now heals and prices potions the same as battle. (a) `healing-resolve.js` `resolveHealAction` adds the caster-side restore bonus through your `resolveRestoreParts`: Secret Formula on a consumable or Create preset, Healing Up on a spell's HP. Zarg's Create Elixir went from 50 to 70 MP, matching battle. (b) The Create price applies Deep Pockets (`buildReducedIpCost`) and forced `creature_uses_item` passives (Maid Cap) through `findPassiveCandidates` + `precomposeChainCostAdjustments`, with a floor of 1. Elixir: 3 IP base, 2 with Deep Pockets, 1 with the cap; the IP spent equals the label. Ask-mode reactions are not applied there.
+  - World (#13 side note): Zarg's own "Maid cap (Passive)" copy (`gVovemTOophkXbck`) was a stale Deep Pockets copy: Deep Pockets' text, isHeroic + "mastered Tinkerer", and a second `ip_reduction_value` AE. Its text now matches the world item, it is not heroic, and the AE is deleted. The cap's real discount rows are unchanged. Checked before and after on Staging: the AE never applied (ip_reduction_value stays 1 with the cap on), and the discounts still read 2 / 1 IP. Script: `tools/safe-edit/bin/_clean-zarg-maid-cap-passive.js`.
+  - Not done: Maid / Butler Uniform restore bonuses are battle reactions the healing window doesn't run (nobody owns either). #12 (Potion Rain did nothing at the table) is still unexplained.

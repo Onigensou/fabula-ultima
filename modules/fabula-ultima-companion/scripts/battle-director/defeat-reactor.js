@@ -46,6 +46,7 @@ import { playDefeatPose } from "./battler-pose.js";
 import { DEFEAT_STYLES, defeatStyleFromFlags, defeatStartsOnHit, ownsDefeatReaction, resolveDefeatStyle } from "./defeat-styles.js";
 import { playDefeatFx, restoreDefeatFx } from "./defeat-fx.js";
 import { isBattlefieldObject } from "./battlefield-object.js";
+import { releaseGrappleOnDown } from "./grapple-hold.js";
 import { KNOCKOUT_TRIGGER, holdsKnockoutRevive, markReviveTried, clearReviveTried, isKnockoutReviveEffect } from "./knockout-revive.js";
 import { bossRuleOwnsFall } from "./boss-rules/boss-rules.js";
 import { isOutOfPlay } from "./out-of-play.js";
@@ -815,6 +816,10 @@ export async function defeatReactor(director, cfg, extra) {
   // on-defeat or on-kill reaction reads it (a Soul Fragment must not farm them).
   if (down && !isBattlefieldObject(actor)) {
     await emitCreatureDefeated(director, actor, payload, extra?.firedKeys, extra?.batch);
+    // Grappled (rulings 2026-11-10): a creature that goes down is released, and
+    // a grappler that goes down releases everyone it holds (grapple-hold.js).
+    try { await releaseGrappleOnDown(actor); }
+    catch (e) { warn("defeat-reactor: grapple release threw", e); }
   }
   // Its event hears about it here, ahead of the removal below, which can land at
   // once on a path with nothing to animate.

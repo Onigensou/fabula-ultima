@@ -65,9 +65,19 @@ export function popOnToken(token, { text, img, tier = TIER.BUFF, off = false } =
   const el = document.createElement("div");
   el.className = `fu-spop t-${tier}${off ? " is-off" : ""}`;
   el.innerHTML = `${img ? `<img src="${esc(img)}" alt="">` : ""}<span>${esc(text)}</span>`;
+  const lift = 6 + (n - 1) * STACK_PX;
   el.style.left = `${Math.round(pt.x)}px`;
-  el.style.top = `${Math.round(pt.y - 6 - (n - 1) * STACK_PX)}px`;
+  el.style.top = `${Math.round(pt.y - lift)}px`;
   root.appendChild(el);
+  // Ride on the token while it shows, so a pop follows a unit being moved
+  // (a Grappled unit dragged to its grappler, grapple-hold.js).
+  const follow = () => {
+    if (!el.isConnected || token.destroyed) return;
+    const p = headPoint(token);
+    if (p) { el.style.left = `${Math.round(p.x)}px`; el.style.top = `${Math.round(p.y - lift)}px`; }
+    requestAnimationFrame(follow);
+  };
+  requestAnimationFrame(follow);
   setTimeout(() => el.remove(), POP_MS + 100);
 }
 

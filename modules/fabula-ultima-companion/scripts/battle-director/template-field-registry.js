@@ -242,7 +242,7 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // [[feedback_csb_template_gating]].
   textCol("damage_element", "Damage Element", { tooltip: "deal_damage element: fire/ice/bolt/earth/air/light/dark/physical/poison (default elementless).", vis: DEAL_VIS }),
   checkboxCol("damage_ignore_affinity", "Ignore Affinity", { tooltip: "deal_damage lands flat — skips RS/VU/IM/AB + condition-forced VU (for fixed/'true' damage like an opposed-check consequence). DR/shield still apply.", vis: DEAL_VIS }),
-  textCol("damage_keywords", "Damage Keywords", { tooltip: "Comma-separated action keywords carried by THIS damage instance (the effect-damage counterpart of a weapon's action_keywords). Read today: crush = damage cannot be reduced (skips flat + % DR, a reducing weapon-efficiency, and a <1 damage_taken_mult) AND steps affinity down exactly ONE rung (AB→IM→RS→NE), so Crush into Immune is still Resistant, not full. For a real bypass use the CLAMP keywords instead — ignore_resistance (RS→NE), ignore_immunity (RS+IM→NE), ignore_absorption (RS+IM+AB→NE); they collapse everything at or below the named rung and compose after crush. ignore_affinity collapses EVERY affinity incl. VU to NE (\"ignore Affinities\"). The others never touch VU (a bypass strips defence, it must not cancel a vulnerability) and none bypass shields.", vis: DEAL_VIS }),
+  textCol("damage_keywords", "Damage Keywords", { tooltip: "Comma-separated action keywords carried by THIS damage instance (the effect-damage counterpart of a weapon's action_keywords). Read today: crush = bypasses Immunity and damage reduction (skips flat + % DR, a reducing weapon-efficiency and a <1 damage_taken_mult; RS/IM/AB read as NE, VU stays VU). expose = affinity one stage lower for this hit (AB→IM→RS→NE→VU). Crush applies first, then Expose. The CLAMP keywords — ignore_resistance (RS→NE), ignore_immunity (RS+IM→NE), ignore_absorption (RS+IM+AB→NE) — collapse everything at or below the named rung, compose after both, and do not skip DR. ignore_affinity collapses EVERY affinity incl. VU to NE (\"ignore Affinities\"). The others never touch VU (a bypass strips defence, it must not cancel a vulnerability) and none bypass shields.", vis: DEAL_VIS }),
   checkboxCol("consume_can_defeat", "Can Defeat Target", { tooltip: "consume_resource: report an HP debit from this row to the battle director so the settle's Crisis and Defeat reactors fire — i.e. this loss can knock the target out. A plain consume writes HP silently, so it can empty the HP bar without ever KO-ing (Crisis still lands via the standing updateActor hook; Defeat does not, because auto-defeat is NPC-only). Turn ON for 'you lose X HP' curses (Cursed Sword); leave OFF for ordinary costs, which should never defeat their payer. To also let the debit take the LAST points instead of refusing when the target is short, set On Empty = drain — that is a separate control.", vis: CONSUME_RES_VIS }),
   // consume_item config — which carried item gets spent. Default subject is the
   // firing skill's container (a gear's linked _skill consumes its own gear), but
@@ -402,13 +402,14 @@ export const EFFECT_TABLE_REQUIRED_COLUMNS = [
   // `action_keywords` prop instead.
   selectCol("action_keyword", "Action Keyword", [
     { key: "drain",  value: "Drain (heal user 50% of damage dealt)" },
-    { key: "crush",  value: "Crush (step affinity down one level)" },
+    { key: "crush",  value: "Crush (bypass Immunity + damage reduction)" },
+    { key: "expose", value: "Expose (target affinity one stage lower)" },
     // `benign` was already authored on 2 live rows (The Tormentor) and IS read
     // at damage recompute (action-profile.js:681, reactionKeywords), but was
     // missing from this list — so the next sheet save would have silently
     // dropped a value outside the options and killed the behaviour.
     { key: "benign", value: "Benign (cannot reduce the target below 1 HP)" },
-  ], { tooltip: "apply_action_keyword: the keyword applied to this hit. Drain = the attacker recovers HP equal to half the HP damage this hit deals (Tinkerer Vampire infusion; matches the Keyword Repository). Crush = damage cannot be reduced (skips flat + % DR, a reducing weapon-efficiency, and a <1 damage_taken_mult) AND steps the target affinity DOWN one level on NE < RS < IM < AB (AB→IM, IM→RS, RS→NE; NE is the floor, VU untouched). Shields still absorb. NO DEFAULT ON PURPOSE — an unset row applies no keyword. The old default was 'pierce', which is how the Tinkerer's Vampire infusion silently shipped as ignore-Resistance instead of Drain: the author never touched the dropdown.", vis: KEYWORD_VIS, defaultValue: "" }),
+  ], { tooltip: "apply_action_keyword: the keyword applied to this hit. Drain = the attacker recovers HP equal to half the HP damage this hit deals (Tinkerer Vampire infusion; matches the Keyword Repository). Crush = bypasses Immunity and damage reduction effects: skips flat + % DR, a reducing weapon-efficiency and a <1 damage_taken_mult, and reads RS / IM / AB as NE (VU stays VU). Expose = the target's affinity counts one stage lower for this hit (AB→IM→RS→NE→VU; VU is the floor); a strike/magic class defence also drops one stage but never below NE. Crush + Expose = VU against anything. Shields still absorb both. NO DEFAULT ON PURPOSE — an unset row applies no keyword. The old default was 'pierce', which is how the Tinkerer's Vampire infusion silently shipped as ignore-Resistance instead of Drain: the author never touched the dropdown.", vis: KEYWORD_VIS, defaultValue: "" }),
   // GENERIC row gate — a non-empty formula gates this row at dispatch (falsy →
   // skip the row, chain continues) AND, when the row is a menu option
   // (referenced by an open_action_menu), drops the option from the menu entirely.
@@ -957,6 +958,7 @@ export const REACTION_CONFIG_REQUIRED_COLUMNS = [
     { key: "target",       value: "Per target, whole battle (once per creature)" },
     { key: "target_round", value: "Per target, per round" },
     { key: "target_action", value: "Per target, per action card or tick (rows share it)" },
+    { key: "action",        value: "Per action card or tick, whoever was hit" },
   ], { tooltip: "What the Max Fires quota resets against. Per round = the classic cap. Per battle = N times all fight. Per target = N times against EACH creature for the whole fight (\"this effect triggers once per target\"). Per target, per round = both. Ignored when Max Fires is blank/0.", defaultValue: "round" }),
   // Weapon-USED gate (the gear `_skill`-inside-a-WEAPON model). When CHECKED, this
   // row only fires if the weapon backing the carrier is the one ACTUALLY USED in the

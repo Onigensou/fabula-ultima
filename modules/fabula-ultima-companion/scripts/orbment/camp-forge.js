@@ -7,8 +7,14 @@
 //   • every marked socket rolls at once, each with its own HIDDEN DEX + INS
 //     check that decides Polished- or Rough-grade odds (orbment-attune "field");
 //   • then the activity is over for this rest.
-// The rulebook's Repair / Craft basic gear / Salvage options show greyed out and
-// locked ("Soon") until they're built.
+// CRAFT (Crafting System, 2026-11-12): the second option. The attuner crafts ONE
+// item from the camp Blueprint book (crafting-system/, "Camp book" in the
+// Blueprint Editor), paying the book's camp cost; then the activity is over.
+// One rest = Attune OR Craft. The craft runs on the primary GM (executeCraft,
+// place "camp", internal — the activity is the permission) and is announced to
+// the party with the crafting result banner. A refused craft (materials gone
+// meanwhile) goes back to picking instead of ending the activity.
+// Repair / Salvage still show greyed out and locked ("Soon").
 //
 // OPERATOR + SPECTATORS (the camp minigame rule): the attuning player drives the
 // window; everyone else sees the same window live, read-only — marks landing,
@@ -32,6 +38,10 @@ import { resolveAugment } from "./augment-registry.js";
 import { rarityKey } from "./orbment-roll-tables.js";
 import { executeAttune, attuneFailText } from "./orbment-attune.js";
 import { injectAttuneStyles, burstAtSocket, spriteSrc, spriteHTML } from "./alchemist-window.js";
+import { CraftPanel } from "../crafting-system/crafting-window.js";
+import { executeCraft, craftFailText } from "../crafting-system/crafting-craft.js";
+import { readConfig } from "../crafting-system/crafting-data.js";
+import { announce } from "../crafting-system/crafting-feedback.js";
 
 const TAG = "[Orbment][CampForge]";
 const CHANNEL = "module.fabula-ultima-companion";
@@ -59,7 +69,8 @@ const OPTIONS = [
     desc: "Attune any number of sockets on one piece of your gear, by your own hand. One attempt, free." },
   // Placeholders: greyed out and locked until they're built.
   { key: "repair", name: "Repair", tag: "Soon", soon: true, icon: "icons/svg/shield.svg", desc: "Repair a damaged item." },
-  { key: "create", name: "Craft basic gear", tag: "Soon", soon: true, icon: "icons/svg/sword.svg", desc: "Create a basic weapon, armor or shield without paying its cost." },
+  { key: "craft", name: "Craft", tag: "New", icon: `${ASSET}Item%20Icon/book.png`,
+    desc: "Craft one item from your camp Blueprints. Materials and costs still apply." },
   { key: "salvage", name: "Salvage", tag: "Soon", soon: true, icon: `${ASSET}Item%20Icon/Crystal.png`, desc: "Destroy equipment to obtain a material of equal value." },
 ];
 // The attuner reacts like the shop Alchemist does, in their own voice.
@@ -71,6 +82,8 @@ const LINES = {
   new: ["There. Not empty anymore."],
 };
 const IDLE_LINE = "Mark the sockets I want to work on.";
+const CRAFT_LINE = "What should I make tonight?";
+const CRAFT_DONE_LINES = ["There. Good as any shop's.", "Done! Not bad for a campfire.", "Hah. Didn't even burn a finger."];
 const SPIN_LINE = "Steady… steady…";
 const POSE = { jackpot: "fu-aw-wiggle", better: "fu-aw-bob", worse: "fu-aw-slump", new: "fu-aw-nod", sidegrade: "" };
 const HAMMER_SVG = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffd27a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 12-8.5 8.5a2.1 2.1 0 0 1-3-3L12 9"/><path d="M17.6 6.4 14 10l-2-2 3.6-3.6a1.4 1.4 0 0 1 2 0 1.4 1.4 0 0 1 0 2z"/><path d="M20 4 18 6"/></svg>`;
@@ -130,7 +143,35 @@ export async function runCampForge(actor) {
     emit("start", start);
     CampForgeWindow.open(start);
 
-    const req = await waitFor("attune", opId, WAIT_MS);
+    let req = await waitFor("attune", opId, WAIT_MS);
+    // Craft: one item from the camp book. A refused craft returns to picking.
+    while (req?.craft) {
+      _live.phase = "rolling";
+      emit("rolling", { opId, craft: true });
+      CampForgeWindow.rolling({ opId, craft: true });
+      const cfg = readConfig();
+      const [res] = await Promise.all([
+        executeCraft({ bookId: cfg.campBookId, blueprintId: req.blueprintId, place: "camp", actorId: actor.id, qty: 1,
+          requesterUserId: start.ownerUserId ?? game.user.id, internal: true, quiet: true }),
+        wait(MIN_SPIN_MS),
+      ]);
+      const pub = { craft: true, ...res, text: res?.ok ? null : craftFailText(res) };
+      if (res?.ok) {
+        _live.phase = "done";
+        _live.result = pub;
+        emit("result", { opId, result: pub });
+        CampForgeWindow.result({ opId, result: pub });
+        // The party banner, after the window's own reveal (camp crafts announce too).
+        announce({ actorName: res.actorName, actorImg: res.actorImg, outputs: res.outputs });
+        await waitFor("proceed", opId, WAIT_MS);
+        req = null;
+        break;
+      }
+      _live.phase = "pick";
+      emit("result", { opId, result: pub });
+      CampForgeWindow.result({ opId, result: pub });
+      req = await waitFor("attune", opId, WAIT_MS);
+    }
     if (req?.itemUuid && Array.isArray(req.slots) && req.slots.length) {
       _live.phase = "rolling";
       emit("rolling", { opId });
@@ -162,7 +203,7 @@ function replayTo(userId) {
   const to = { toUserId: userId };
   emit("start", { ...start, ...to });
   if (state) emit("state", { ...state, ...to, restore: true });
-  if (phase === "rolling") emit("rolling", { opId: start.opId, ...to });
+  if (phase === "rolling") emit("rolling", { opId: start.opId, craft: state?.option === "craft", ...to });
   if (phase === "done") emit("result", { opId: start.opId, result, ...to });
 }
 
@@ -232,6 +273,67 @@ class CampForgeWindow {
     this.lead = null;
     this.failText = null;
     this.line = IDLE_LINE;
+    this.option = "attune";        // attune | craft (the operator's pick, mirrored)
+    this.craftEl = null;           // the crafting panel's own node, kept across renders
+    this.craftPanel = null;
+  }
+
+  // The crafting panel (camp book, camp costs), built once and re-mounted.
+  ensureCraftPanel() {
+    if (!this.craftEl) {
+      this.craftEl = document.createElement("div");
+      this.craftEl.className = "fu-cf-craft";
+      this.craftPanel = new CraftPanel({
+        root: this.craftEl, place: "camp", bookId: readConfig().campBookId, actor: this.actor, readOnly: !this.isOperator,
+        onCraft: (id) => this.submitCraft(id),
+        onChange: () => this.sync(),
+      });
+      this.craftPanel.refresh();
+    }
+    this.craftPanel.o.readOnly = !this.isOperator || this.sent || this.phase !== "pick";
+    return this.craftPanel;
+  }
+
+  // Craft the chosen Blueprint (operator).
+  submitCraft(blueprintId) {
+    if (this.phase !== "pick" || this.sent || !blueprintId) return;
+    this.sent = true;
+    this.failText = null;
+    const req = { opId: this.op.opId, craft: true, blueprintId };
+    if (isPrimaryGM()) resolveWaiter("attune", this.op.opId, req);
+    else emit("attune", req);
+    this.render();
+  }
+
+  renderCraft(root) {
+    const op = this.isOperator;
+    const name = esc(this.op.actorName);
+    const picking = this.phase === "pick";
+    let button = "", skip = "";
+    if (picking && op) skip = `<button type="button" class="fu-cf-skip" ${this.sent ? "disabled" : ""}>Leave without crafting</button>`;
+    else if (picking) button = `<button type="button" class="fu-aw-attune" disabled>${name} is choosing…</button>`;
+    else if (this.phase === "rolling") button = `<button type="button" class="fu-aw-attune" disabled>Crafting…</button>`;
+    else if (op) button = `<button type="button" class="fu-aw-attune fu-cf-proceed" ${this.sent ? "disabled" : ""}>Click to Proceed</button>`;
+    else button = `<button type="button" class="fu-aw-attune" disabled>Camp Forge done for this rest</button>`;
+    root.innerHTML = `
+      <div class="fu-cf-head"><b>Craft</b><span>One item from your camp Blueprints. Materials come from ${name}'s bag first, then the party stash. That ends the activity for this rest.</span></div>
+      <div class="fu-cf-crafthost"></div>
+      ${this.failText ? `<div class="fu-aw-warn">${esc(this.failText)}</div>` : ""}
+      ${picking && !op ? `<div class="fu-aw-hint">Everyone at camp sees this window as ${name} works. Only they can touch it.</div>` : ""}
+      <div class="fu-aw-grow"></div>
+      ${button}${skip}`;
+    const panel = this.ensureCraftPanel();
+    root.querySelector(".fu-cf-crafthost").appendChild(this.craftEl);
+    panel.render();
+    if (!op) return;
+    root.querySelector(".fu-cf-skip")?.addEventListener("click", () => this.submit(true));
+    root.querySelector(".fu-cf-proceed")?.addEventListener("click", () => {
+      if (this.sent) return;
+      this.sent = true;
+      if (isPrimaryGM()) resolveWaiter("proceed", this.op.opId, true);
+      else emit("proceed", { opId: this.op.opId });
+      this.render();
+    });
   }
 
   // All of the attuner's weapons, armor and shields (accessories take no Orbments).
@@ -281,8 +383,10 @@ class CampForgeWindow {
   }
 
   renderLeft(root) {
+    const canPick = this.isOperator && this.phase === "pick" && !this.sent;
     const opts = OPTIONS.map((o) => `
-      <button type="button" class="fu-cf-opt${o.key === "attune" ? " is-on" : ""}" ${o.soon ? "disabled" : ""}>
+      <button type="button" class="fu-cf-opt${o.key === this.option ? " is-on" : ""}${canPick && !o.soon ? " is-pick" : ""}" data-opt="${o.key}" ${o.soon ? "disabled" : ""}
+        ${!o.soon && !canPick ? 'aria-disabled="true"' : ""}>
         <span class="fu-cf-opt-ic"><img src="${esc(o.icon)}" alt=""></span>
         <span class="fu-cf-opt-txt"><span class="fu-cf-opt-head"><b>${esc(o.name)}</b><span class="fu-cf-tag${o.soon ? " is-soon" : ""}">${esc(o.tag)}</span></span>
           <span>${esc(o.desc)}</span></span>
@@ -303,9 +407,18 @@ class CampForgeWindow {
         <span class="fu-aw-npc-fig">${spriteHTML(this.sprite(), `fu-aw-npc-img ${pose}`, this.op.actorName)}<span class="fu-aw-emote" aria-hidden="true">${emote}</span></span>
         <p class="fu-aw-line${lead === "jackpot" ? " is-jack" : ""}">“${esc(line)}”</p>
       </div>`;
+    if (!canPick) return;
+    root.querySelectorAll(".fu-cf-opt.is-pick").forEach((b) => b.addEventListener("click", () => {
+      if (b.dataset.opt === this.option || this.phase !== "pick" || this.sent) return;
+      this.option = b.dataset.opt;
+      this.failText = null;
+      if (this.line === IDLE_LINE || this.line === CRAFT_LINE) this.line = this.option === "craft" ? CRAFT_LINE : IDLE_LINE;
+      sfx("select"); this.sync(); this.render();
+    }));
   }
 
   renderMain(root) {
+    if (this.option === "craft") return this.renderCraft(root);
     const op = this.isOperator;
     const name = esc(this.op.actorName);
     const picking = this.phase === "pick";
@@ -416,7 +529,7 @@ class CampForgeWindow {
   // Operator → everyone: what's chosen and marked right now.
   sync() {
     const it = this.item();
-    const state = { opId: this.op.opId, itemId: this.itemId, marks: it ? this.marksFor(it) : [] };
+    const state = { opId: this.op.opId, itemId: this.itemId, marks: it ? this.marksFor(it) : [], option: this.option, craft: this.craftPanel?.state() ?? null };
     if (isPrimaryGM() && _live?.start.opId === state.opId) _live.state = state;   // a GM operator's own emit never echoes back
     emit("state", state);
   }
@@ -425,6 +538,16 @@ class CampForgeWindow {
   // operator gets its own last state back (`restore`).
   mirror(p) {
     if (this.isOperator && !p.restore) return;
+    if (p.option && p.option !== this.option) {
+      this.option = p.option;
+      this.line = this.option === "craft" ? CRAFT_LINE : IDLE_LINE;
+      if (!p.restore) sfx("select");
+    }
+    if (this.option === "craft") {
+      this.render();
+      if (p.craft) this.craftPanel?.mirror(p.craft);
+      return;
+    }
     const before = this.markCount();
     if (p.itemId && this.actor?.items?.get(p.itemId)) this.itemId = p.itemId;
     const it = this.item();
@@ -452,11 +575,13 @@ class CampForgeWindow {
 
   toRolling() {
     this.phase = "rolling";
+    if (this.option === "craft") { this.ensureCraftPanel().toWorking(); this.render(); return; }
     sfx("spin");
     this.render();
   }
 
   toResult(res) {
+    if (res?.craft) return this.toCraftResult(res);
     this.phase = "done";
     this.sent = false;
     if (!res?.ok) {
@@ -478,6 +603,29 @@ class CampForgeWindow {
       const wrap = this.el?.querySelector(`.fu-aw-sock-wrap[data-i="${r.index}"]`);
       if (wrap) burstAtSocket(wrap, r.verdict === "jackpot", res.lead === "jackpot");
     }
+  }
+
+  // A craft landed (done; Proceed ends the activity) or was refused (back to picking).
+  toCraftResult(res) {
+    this.option = "craft";
+    this.sent = false;
+    const panel = this.ensureCraftPanel();
+    if (res.ok) {
+      this.phase = "done";
+      this.failText = null;
+      const seed = [...String(this.op.opId)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+      this.line = CRAFT_DONE_LINES[seed % CRAFT_DONE_LINES.length];
+      this.lead = "better";
+      panel.toResult(res);
+    } else {
+      this.phase = "pick";
+      this.failText = res.text ?? "That didn't work.";
+      this.line = "…Huh. That didn't work.";
+      sfx("unmark");
+      panel.toPick();
+      panel.refresh();
+    }
+    this.render();
   }
 
   destroy(instant = false) {
@@ -514,6 +662,11 @@ function injectCampForgeStyles() {
   border-radius: 12px; border: 2px solid #d6c49c; background: #faf6ee; color: #3a1e06; width: 100%; cursor: default; }
 .fu-cf-opt.is-on { border-color: #c9a44a; background: #fff8e4; box-shadow: 0 0 0 2px #7a4e20; }
 .fu-cf-opt:disabled { opacity: .5; filter: grayscale(1); cursor: not-allowed; background: #ece4d2; }
+.fu-cf-opt.is-pick { cursor: pointer; }
+.fu-cf-opt.is-pick:not(.is-on):hover { border-color: #c9a44a; background: #fffaf0; }
+.fu-cf-crafthost { min-height: 0; }
+.fu-cf-craft { border-radius: 12px; overflow: hidden; border: 1px solid rgba(122,78,32,.35); }
+.fu-cf-craft .fu-craft-list { max-height: 230px; }
 .fu-cf-opt-ic { width: 40px; height: 40px; border-radius: 10px; background: #2b1d10; display: grid; place-items: center; }
 .fu-cf-opt-ic img { width: 30px; height: 30px; object-fit: contain; image-rendering: pixelated; }
 .fu-cf-opt-txt { display: flex; flex-direction: column; gap: 2px; font-size: 12.5px; line-height: 1.35; color: #6b4a26; }

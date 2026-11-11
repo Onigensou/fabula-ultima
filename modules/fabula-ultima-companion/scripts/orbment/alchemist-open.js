@@ -13,8 +13,9 @@
 // Behaviour mirrors the Blacksmith exactly: a ⚗ button appears over the NPC
 // when a party token stands at its feet (the shared window.oni.Interact rule),
 // hidden NPC tokens get no button, keyboard Confirm offers it on walk maps.
-// Placement: right of the shop button (+44), or +88 when the same NPC is also a
-// Blacksmith so the two never overlap.
+// Placement: a first guess right of the shop button (+44, or +88 when the same
+// NPC is also a Blacksmith); keyboard-interact.js then lines it up in the NPC's
+// overhead row every frame (Talk, Shop, Refine, Alchemist, Craft, Inn).
 
 const TAG = "[Orbment][Alchemist]";
 const FLAG_NS = "fabula-ultima-companion";

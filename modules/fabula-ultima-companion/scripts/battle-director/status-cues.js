@@ -12,6 +12,12 @@
 //   silence   speech bubble beside the head with "…" filling in
 //   provoked  throbbing red anger vein at the temple (taunts too)
 //   sleep     three Zs drifting up from the head
+//   armorbreak / magicbreak   beside the chest on the unit's back side, just outside the
+//             frame: the word DEF / MDEF + a small bobbing down arrow, no tile or frame,
+//             orange = DEF (Armor Break, and Rakshasa's Crippled), blue = M.DEF (Magic
+//             Break); both held = stacked.
+//             Font = the damage-number tag face. Replaced a cracked-cuirass silhouette
+//             (user pick, 2026-11-10): the word reads without learning an icon.
 //
 // Everything else draws nothing: the HUD pips, the unit label and the pop text
 // carry it (see the fallback rules on the mockup page).
@@ -52,6 +58,7 @@ import { cueOf } from "./status-classifier.js";
 import { battleActive } from "./battle-focus.js";
 import { spriteRect } from "./unit-anchors.js";
 import { setStatusTintProvider, syncActorTint } from "./token-tint.js";
+import { installChargeOrbitFx } from "./charge-orbit-fx.js";
 
 const NS = "fabula-ultima-companion";
 const ROOT_ID = "fu-status-cue-root";
@@ -145,6 +152,24 @@ function ensureStyles() {
   text-shadow: 1px 0 0 #34407a, -1px 0 0 #34407a, 0 1px 0 #34407a, 0 -1px 0 #34407a, 0 0 4px rgba(52,64,122,.7); }
 @keyframes fuCueZ { 0% { opacity: 0; transform: translate(0,0) rotate(-8deg) scale(.6); } 20% { opacity: 1; }
   100% { opacity: 0; transform: translate(calc(26px * var(--k)), calc(-38px * var(--k))) rotate(10deg) scale(1.15); } }
+/* armor break / magic break: the word DEF / MDEF + a small down arrow that bobs (a status
+   visual beside the body, not an icon tile). --c = the word's font size. */
+.fu-cue .brk { display: flex; align-items: center; gap: calc(var(--c) * .08); white-space: nowrap;
+  transform: translateY(-50%); animation: fuCueBrkIn .45s cubic-bezier(.3,1.6,.5,1) both; }
+.fu-cue .brk b { position: relative; font: 400 var(--c)/1 'Bebas Neue', 'Oswald', 'Haettenschweiler', 'Impact', sans-serif;
+  letter-spacing: .02em; color: transparent; background: var(--g); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-stroke: calc(var(--c) * .035) rgba(20,10,4,.9); paint-order: stroke fill;
+  filter: drop-shadow(0 0 1px rgba(0,0,0,.9)) drop-shadow(0 0 calc(var(--c) * .14) var(--glow));
+  animation: fuCueBrkGlow 2.4s ease-in-out .45s infinite; }
+.fu-cue .brk i { position: relative; width: calc(var(--c) * .42); height: calc(var(--c) * .6);
+  filter: drop-shadow(0 0 1px rgba(0,0,0,.95)) drop-shadow(0 0 1px rgba(0,0,0,.8));
+  animation: fuCueBrkArrow 1.3s ease-in-out .45s infinite; }
+.fu-cue .brk i svg { position: static; width: 100%; height: 100%; overflow: visible; }
+.fu-cue .brk.def { --g: linear-gradient(#ffe0a8, #ff9a3c 55%, #d0601c); --glow: rgba(255,140,40,.7); }
+.fu-cue .brk.mdef { --g: linear-gradient(#e0f0ff, #5fb4ff 55%, #2c62cc); --glow: rgba(70,150,255,.7); }
+@keyframes fuCueBrkIn { 0% { opacity: 0; transform: translateY(-50%) scale(.5); } 100% { opacity: 1; transform: translateY(-50%) scale(1); } }
+@keyframes fuCueBrkGlow { 50% { filter: drop-shadow(0 0 1px rgba(0,0,0,.9)) drop-shadow(0 0 calc(var(--c) * .28) var(--glow)); } }
+@keyframes fuCueBrkArrow { 0%, 100% { transform: translateY(-6%); } 50% { transform: translateY(14%); } }
 /* clip cues (an effect's own looping clip, e.g. Asura's blade slashes) */
 .fu-cue video.clip { position: absolute; display: block; pointer-events: none; object-fit: contain; }
 @media (prefers-reduced-motion: reduce) { .fu-cue * { animation-play-state: paused !important; } }
@@ -240,6 +265,17 @@ function headFrac(token) {
   return { x, y };
 }
 
+// The word + a chunky down arrow (viewBox 10×13) in the same gradient.
+// Orange = DEF (Armor Break), blue = M.DEF (Magic Break).
+const BRK_GRAD = { armorbreak: ["#ffe0a8", "#ff9a3c", "#d0601c"], magicbreak: ["#e0f0ff", "#5fb4ff", "#2c62cc"] };
+const BRK_WORD = { armorbreak: "DEF", magicbreak: "MDEF" };
+function brkHTML(cue) {
+  const [a, b, c] = BRK_GRAD[cue];
+  return `<b>${BRK_WORD[cue]}</b><i><svg viewBox="0 0 10 13"><defs><linearGradient id="fuBrk-${cue}" x1="0" y1="0" x2="0" y2="1">`
+    + `<stop offset="0" stop-color="${a}"/><stop offset=".55" stop-color="${b}"/><stop offset="1" stop-color="${c}"/></linearGradient></defs>`
+    + `<path fill="url(#fuBrk-${cue})" d="M3 0 H7 V6 H10 L5 13 L0 6 H3 Z"/></svg></i>`;
+}
+
 function cueHTML(token, cues, w, H) {
   const k = H / REF_H;
   const id = token.id;
@@ -291,6 +327,21 @@ function cueHTML(token, cues, w, H) {
   if (cues.has("silence")) h += `<span class="sil" style="left:${px(hx + 12 * k)};top:${px(hy - 50 * k)}"><i></i><i></i><i></i></span>`;
   if (cues.has("provoked")) {
     h += `<svg class="vein" viewBox="0 0 24 24" style="left:${px(hx - w * 0.18)};top:${px(hy - 16 * k)}"><path d="M9 3 Q9 9 3 9"/><path d="M15 3 Q15 9 21 9"/><path d="M9 21 Q9 15 3 15"/><path d="M15 21 Q15 15 21 15"/></svg>`;
+  }
+  const brk = ["armorbreak", "magicbreak"].filter((c) => cues.has(c));
+  if (brk.length) {
+    // Beside the chest on the unit's BACK side (the side away from where it faces), so it
+    // stays clear of the head cues, the waist passive card and the feet status strip.
+    const flip = (token.mesh?.scale?.x ?? 1) < 0;          // drawn facing right unless flipped
+    const c = Math.max(22, 30 * k);                         // word font size
+    // Anchored just OUTSIDE the frame edge and growing away from the body: PC battler
+    // frames are narrow and the body fills them, so an inset spot sat on the body.
+    // MDEF is wider than DEF, so anchor the near edge rather than the centre.
+    const edge = w * 0.06;
+    const side = flip ? `left:${px(w - edge)}` : `right:${px(w - edge)}`;
+    brk.forEach((cue, i) => {
+      h += `<span class="brk ${cue === "armorbreak" ? "def" : "mdef"}" style="--c:${px(c)};${side};top:${px(H * 0.4 + i * (c + 4))}">${brkHTML(cue)}</span>`;
+    });
   }
   if (cues.has("sleep")) {
     h += `<span class="zz" style="left:${px(hx + 8 * k)};top:${px(hy - 22 * k)}">`
@@ -389,6 +440,9 @@ function actorOfEffect(eff) {
 
 export function initStatusCues() {
   setStatusTintProvider(statusTint);
+  // Charge cues that must pass BEHIND the body (Skizzik's Static orbit) can't live in
+  // this DOM layer, which sits over the whole canvas; they are PIXI, in their own module.
+  try { installChargeOrbitFx(); } catch (e) { warn("[StatusCues] charge orbit install threw", e); }
   const onAE = (eff) => {
     const actor = actorOfEffect(eff);
     if (!actor) return;

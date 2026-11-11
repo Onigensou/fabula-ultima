@@ -13,9 +13,10 @@
 //     group, every actor of a group is called together (Keren's Stubborn
 //     Scion: Leichi & Leilan). Nothing else reads that flag.
 //
-// When: Free Roam and the Sleep lobby (the two free-time slots), on the
-// active camp scene. Any other phase dismisses every summon; rest does too.
-// Summons out when activities start come back when the Sleep lobby opens.
+// When: Free Roam, the Sleep lobby and the Set Out lobby (the free-time slots),
+// on the active camp scene. Any other phase dismisses every summon; rest does too.
+// Summons out when activities start come back when the Sleep lobby opens;
+// summons out when the party goes to sleep come back when the Set Out lobby opens.
 // One group out per player at a time.
 //
 // Tokens: unlinked copies of the actors (the actor and any battle state stay
@@ -31,6 +32,9 @@
 //
 // Optional per actor: flags.<module>.campSprite = image used at camp instead
 // of the prototype token art (Crysta's token art is her battle animation).
+// Optional per actor: flags.<module>.campFloat = true/false, whether the
+// summon idles with a float at camp. Unset → the actor's own idle setting
+// (flags.<module>.idleAnimation.float). Walkers (Leichi, Leilan) stay grounded.
 
 import { companionsOf } from "../party-menu/party-menu-companions.js";
 import { getPartyRoster } from "../party-menu/party-menu-core.js";
@@ -41,13 +45,20 @@ const CHANNEL = `module.${MOD}`;
 export const FLAG = "campSummon";
 export const SKILL_FLAG = "campSummons";
 const SPRITE_FLAG = "campSprite";
-const RETURN_FLAG = "campSummonsReturn";   // scene flag: who comes back in the Sleep lobby
+const FLOAT_FLAG = "campFloat";
+const RETURN_FLAG = "campSummonsReturn";   // scene flag: who comes back in the Sleep / Set Out lobby
 export const MSG = Object.freeze({
   REQ: "campSummon:req",     // player → primary GM { op, userId, ownerActorId, key }
   RES: "campSummon:res",     // primary GM → all   { userId, ok, reason }
   FADE: "campSummon:fade",   // primary GM → all   { tokenIds } just before they are deleted
 });
-export const OPEN_PHASES = new Set(["free_roam", "sleep_lobby"]);
+export const OPEN_PHASES = new Set(["free_roam", "sleep_lobby", "set_out_lobby"]);
+// Closed phases that keep the "who comes back" list: activities → Sleep lobby,
+// and the night (rest + save ceremony) → Set Out lobby.
+const KEEP_RETURN_PHASES = new Set([
+  "activity_resolve", "bond_update", "bond_summary",
+  "rest_save_prompt", "rest_saving", "rest_title_prompt",
+]);
 export const FADE_MS = 700;
 const OFFLINE_GRACE_MS = 20000;
 const ASSET = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/";
@@ -87,6 +98,13 @@ function actorFrom(ref) {
 /** The image a summon wears at camp. */
 export function campSpriteOf(actor) {
   return str(actor?.getFlag?.(MOD, SPRITE_FLAG)) || actor?.prototypeToken?.texture?.src || actor?.img || "";
+}
+
+/** Whether a summon idles with a float at camp. */
+export function campFloatOf(actor) {
+  const own = actor?.getFlag?.(MOD, FLOAT_FLAG);
+  if (typeof own === "boolean") return own;
+  return !!actor?.getFlag?.(MOD, "idleAnimation")?.float;
 }
 
 /**
@@ -257,7 +275,7 @@ async function spawnGroup(scene, owner, userId, group) {
     d.flags[MOD] = {
       ...(d.flags[MOD] ?? {}),
       [FLAG]: { ownerActorId: owner.id, ownerUserId: userId, key: group.key, order: i },
-      idleAnimToken: { float: true, bounce: false },
+      idleAnimToken: { float: campFloatOf(actor), bounce: false },
       walkThrough: true,
     };
     Object.assign(d, {
@@ -338,11 +356,15 @@ async function onPhase(phase) {
   _lastPhase = phase;
   if (!scene || !isCampScene(scene)) return;
   if (OPEN_PHASES.has(phase)) {
-    if (phase === "sleep_lobby" && prev !== "sleep_lobby") await bringBack(scene);
+    // Summons sent away for activities / the night come back when free time resumes.
+    if ((phase === "sleep_lobby" || phase === "set_out_lobby") && prev !== phase) await bringBack(scene);
+    // A fresh Free Roam starts clean: drop any return list left by a camp that never woke.
+    else if (phase === "free_roam" && prev !== phase && scene.getFlag(MOD, RETURN_FLAG)) await scene.unsetFlag(MOD, RETURN_FLAG);
     return;
   }
-  if (phase === "activity_select" && prev === "free_roam") await rememberReturning(scene);
-  else if (phase !== "activity_resolve" && phase !== "bond_update" && phase !== "bond_summary") {
+  if ((phase === "activity_select" && prev === "free_roam") || (phase === "sleeping" && prev === "sleep_lobby")) {
+    await rememberReturning(scene);
+  } else if (!KEEP_RETURN_PHASES.has(phase)) {
     if (scene.getFlag(MOD, RETURN_FLAG)) await scene.unsetFlag(MOD, RETURN_FLAG);
   }
   await dismissAll(scene);

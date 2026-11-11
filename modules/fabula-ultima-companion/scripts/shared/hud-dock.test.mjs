@@ -95,5 +95,21 @@ const eq = (label, got, want) => {
     .packRow([{ id: "a", order: 1, present: true }, { id: "b", order: 2, present: true }]), { a: 30, b: 90 });
 }
 
+// ── right stack: above the dice ────────────────────────────────────────────
+{
+  const D = fresh();
+  const dice = { x: 1000, top: 800, align: "center" };
+  // the emblem alone sits where it always did: 8px above the dice, centred
+  eq("emblem alone = old place()", D.stackRight([{ id: "emblem", order: 10, size: 46, present: true }], dice), { emblem: { left: 977, top: 746 } });
+  eq("alter climbs above the emblem",
+    D.stackRight([{ id: "alter", order: 20, size: 46, present: true }, { id: "emblem", order: 10, size: 46, present: true }], dice),
+    { emblem: { left: 977, top: 746 }, alter: { left: 977, top: 692 } });
+  eq("no emblem: alter takes its place",
+    D.stackRight([{ id: "alter", order: 20, size: 46, present: true }, { id: "emblem", order: 10, size: 46, present: false }], dice),
+    { alter: { left: 977, top: 746 } });
+  eq("GM desk: right-aligned = old desk place()",
+    D.stackRight([{ id: "emblem", order: 10, size: 46, present: true }], { x: 1200, top: 700, align: "right" }), { emblem: { left: 1154, top: 646 } });
+}
+
 console.log(`hud-dock: ${pass} passed, ${fail} failed`);
 if (fail) process.exit(1);

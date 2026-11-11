@@ -18,7 +18,10 @@ import { runBattleEndTransition } from "./battle-end-transition.js";
 import { runBattleEndResourceReset } from "./battle-end-cleanup.js";
 import { evaluateFollowups, mergeRewardSnapshots } from "./battle-followup.js";
 import { evaluateUndying } from "./undying/undying.js";
-import { flushBattleLog } from "../director-battle-log.js";
+import { flushBattleLog, readBattleRecord, clearBattleRecord } from "../director-battle-log.js";
+import { clearTally } from "../battle-grade/grade-tally.js";
+import { applyBattleGrade, clearBoardOnLoss } from "../battle-grade/grade-state.js";
+import { isRewardRecipient } from "./battle-end-rewards.js";
 
 function detectOutcome(director) {
   const dc = director.dCombat;
@@ -78,11 +81,15 @@ export async function runBattleEndSequence(director) {
     outcome:      detectOutcome(director),
     sourceSceneId: dc?.sourceSceneId ?? null,
     battleSceneId: dc?.scene?.id ?? canvas?.scene?.id ?? null,
-    partyActorIds: (dc?.combatants ?? [])
-      .filter(c => c.side === "party")
+    // Party's own characters only — no guest, no summon (see isRewardRecipient).
+    partyActorIds: [...new Set((dc?.combatants ?? [])
+      .filter(isRewardRecipient)
       .map(c => c.actorDoc?.id)
-      .filter(Boolean),
+      .filter(Boolean))],
     totalRounds: dc?.round ?? 0,
+    // Every row of this battle (the sheet table keeps only the last 30). Rank +
+    // totals read this; empty → they fall back to the DB actor's table.
+    battleRows: (() => { try { return readBattleRecord(); } catch { return []; } })(),
     isBoss: !!(payload?.battlePlan?.isBoss) ||
             String(payload?.battlePlan?.type ?? "").toLowerCase() === "boss",
     battleType: String(payload?.battlePlan?.type ?? "default").toLowerCase(),
@@ -192,6 +199,9 @@ export async function runBattleEndSequence(director) {
     // Consume any pre-filled (sword-button) prompt result so it can't leak
     // into the follow-up battle's own Battle-End prompt later.
     director.ctx.battleEndPromptResult = null;
+    // The ambush is a new conflict with its own grade: start its record fresh.
+    try { await clearBattleRecord(); } catch (e) { warn("[BattleEnd] clearBattleRecord threw", e); }
+    try { await clearTally(); } catch (e) { warn("[BattleEnd] clearTally threw", e); }
     // Skip the prompt, FX, summary, transition, and resource reset — the won
     // fight is not "over"; it continues as the boss conflict.
     return;
@@ -230,8 +240,18 @@ export async function runBattleEndSequence(director) {
   if (endCtx.outcome === "victory" && !endCtx.debug) {
     await runBattleEndSummaryLogic(endCtx);
     await runBattleEndRank(endCtx);
+    // Battle Grade v2: move the Bonus Board, pay the MVP Prize on S. Before the
+    // summary UI so the screen shows the result.
+    try { await applyBattleGrade(endCtx); } catch (e) { warn("[BattleEnd] applyBattleGrade threw", e); }
     await runBattleEndSummaryUI(endCtx); // awaited: transition only starts after GM's animation finishes
+  } else if (!endCtx.debug) {
+    // A wipe or fleeing clears the Bonus Board.
+    try { await clearBoardOnLoss(endCtx.outcome); } catch (e) { warn("[BattleEnd] clearBoardOnLoss threw", e); }
   }
+
+  // The battle is over (any outcome): its record has been read, drop it.
+  try { await clearBattleRecord(); } catch (e) { warn("[BattleEnd] clearBattleRecord threw", e); }
+  try { await clearTally(); } catch (e) { warn("[BattleEnd] clearTally threw", e); }
 
   await runBattleEndTransition(endCtx);
 

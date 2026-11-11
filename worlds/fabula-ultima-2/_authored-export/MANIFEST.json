@@ -4886,7 +4886,7 @@
         "id": "XVOWOq9oUmEECGrU",
         "name": "Debuff",
         "type": "activeEffectContainer",
-        "effects": 60
+        "effects": 62
       },
       {
         "id": "ZnzHJ5RiISPz0Bll",
@@ -12289,6 +12289,12 @@
       {
         "id": "xvzmpqg8yVtkNoJg",
         "name": "Sunflower Staff",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "sQHr84bvUjSIMLXO",
+        "name": "Sunflower Staff (Passive)",
         "type": "equippableItem",
         "effects": 0
       },
@@ -20441,6 +20447,10 @@
           {
             "id": "5APIz8XJeNABtSG2",
             "name": "Sunflower Staff"
+          },
+          {
+            "id": "MiubBGsMjclX0IGa",
+            "name": "Sunflower Staff (Passive)"
           },
           {
             "id": "snNmx2IBNqTF9IAO",

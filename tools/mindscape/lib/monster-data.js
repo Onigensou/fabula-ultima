@@ -180,6 +180,10 @@ function toTemplate(eff) {
   return {
     name: s(eff.name),
     changes: (eff.changes ?? []).map((c) => ({ key: s(c.key), value: s(c.value), mode: Number(c.mode) })),
+    // Props the game rounds UP after the AE applies (csb-ae-round-up.js): Crippled,
+    // Armor Break, Magic Break. Array or comma string, like the module reads it.
+    roundUp: (Array.isArray(f.roundUp) ? f.roundUp : String(f.roundUp ?? "").split(","))
+      .map((k) => s(k).trim()).filter(Boolean),
     lifetime: norm(f.lifetimeMode),
     charges: f.charges == null || f.charges === "" ? null : Number(f.charges),
     chargesMax: f.chargesMax == null || f.chargesMax === "" ? null : Number(f.chargesMax),
@@ -400,7 +404,8 @@ function defense(c, lane) {
     if (!(lane === "mdef" ? isMdef : isDef)) continue;
     const n = Number(ch.value);
     if (!Number.isFinite(n)) continue;
-    if (ch.mode === 1 || (ch.mode !== 2 && ch.mode !== 5 && n > 0 && n < 1)) v = Math.floor(v * n);
+    const up = (ch.ae?.template?.roundUp ?? []).includes(ch.key);
+    if (ch.mode === 1 || (ch.mode !== 2 && ch.mode !== 5 && n > 0 && n < 1)) v = up ? Math.ceil(v * n) : Math.floor(v * n);
     else if (ch.mode === 5) v = n;
     else v += n;
   }

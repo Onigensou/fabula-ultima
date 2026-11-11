@@ -15,7 +15,7 @@
 // ============================================================================
 
 import { log, warn } from "./logger.js";
-import { composePassiveBeats, mergeBeats, LINE_STYLE, PASSIVE_HIT_CLIP } from "./passive-anim-rules.js";
+import { composePassiveBeats, mergeBeats, weaponReadLines, LINE_STYLE, PASSIVE_HIT_CLIP } from "./passive-anim-rules.js";
 import { MV_CLIPS, clipUrl } from "./action-anim-rules.js";
 
 const NS = "fabula-ultima-companion";
@@ -121,29 +121,44 @@ async function PASSIVE_INNER() {
   }
 
   const pending = [];
+  async function playBeat(beat) {
+    const targets = (beat.recipients || []).map(tok).filter(function (t) { return t && t.center; });
+    if (!targets.length) return false;
+    if (beat.k === "redirect" && owner) {
+      sfx(cfg.reflectSfx);
+      const m = mirror(owner, targets[0].center);
+      pending.push(m.done);
+      await wait(260);
+      await Promise.all(targets.map(function (t, i) {
+        return wait(i * 90).then(function () { return ricochet(m.from, t.center, 170); });
+      }));
+      pending.push(Promise.all(targets.map(function (t) { return hit(beat.clip, t); })));
+    } else if (beat.k === "damage") {
+      pending.push(Promise.all(targets.map(function (t, i) { return wait(i * 110).then(function () { return hit(beat.clip, t); }); })));
+    } else {
+      const st = cfg.styles[beat.k];
+      if (!st) return false;
+      sfx(st.sfx);
+      pending.push(Promise.all(targets.map(function (t, i) { return wait(i * 110).then(function () { return lines(t, st); }); })));
+    }
+    return true;
+  }
   try {
-    for (let b = 0; b < (cfg.beats || []).length; b++) {
-      const beat = cfg.beats[b];
-      const targets = (beat.recipients || []).map(tok).filter(function (t) { return t && t.center; });
-      if (!targets.length) continue;
-      if (beat.k === "redirect" && owner) {
-        sfx(cfg.reflectSfx);
-        const m = mirror(owner, targets[0].center);
-        pending.push(m.done);
-        await wait(260);
-        await Promise.all(targets.map(function (t, i) {
-          return wait(i * 90).then(function () { return ricochet(m.from, t.center, 170); });
-        }));
-        pending.push(Promise.all(targets.map(function (t) { return hit(beat.clip, t); })));
-      } else if (beat.k === "damage") {
-        pending.push(Promise.all(targets.map(function (t, i) { return wait(i * 110).then(function () { return hit(beat.clip, t); }); })));
-      } else {
-        const st = cfg.styles[beat.k];
-        if (!st) continue;
-        sfx(st.sfx);
-        pending.push(Promise.all(targets.map(function (t, i) { return wait(i * 110).then(function () { return lines(t, st); }); })));
-      }
-      if (b < cfg.beats.length - 1) await wait(150);
+    // Beats that carry a System Message line play AS their line appears, one
+    // line after another (Adaptive Defense: rise, then fall). The rest play
+    // first, the usual way. No panel on this client → the beats alone.
+    const msgs = Array.isArray(cfg.messages) ? cfg.messages : [];
+    const SM = globalThis.FU && globalThis.FU.SystemMessage;
+    const spoken = new Set(SM ? msgs.map(function (m) { return m.beat; }) : []);
+    const plain = (cfg.beats || []).filter(function (b, i) { return !spoken.has(i); });
+    for (let b = 0; b < plain.length; b++) {
+      const played = await playBeat(plain[b]);
+      if (played && b < plain.length - 1) await wait(150);
+    }
+    if (SM && msgs.length) {
+      await SM.queue(msgs.map(function (m) { return m.text; }), {
+        onShow: function (i) { const beat = cfg.beats[msgs[i].beat]; if (beat) pending.push(playBeat(beat)); },
+      });
     }
     await Promise.all(pending);
   } catch (e) {
@@ -160,7 +175,7 @@ export function passiveInnerBody() {
 }
 
 // beats with token uuids → the inner script's cfg
-export function buildPassiveCfg({ beats, ownerTokenUuid }) {
+export function buildPassiveCfg({ beats, ownerTokenUuid, messages = [] }) {
   const clips = {};
   const out = beats.map((b) => {
     const clip = (b.k === "damage" || b.k === "redirect") ? (PASSIVE_HIT_CLIP[b.element] ?? PASSIVE_HIT_CLIP.physical) : null;
@@ -175,7 +190,7 @@ export function buildPassiveCfg({ beats, ownerTokenUuid }) {
   // the reflect cue (mockup: Reflection, 0.55 × the 0.7 tuning); only the
   // mirror beat plays it — the hit itself still sounds through BD's number
   const reflectSfx = out.some((b) => b.k === "redirect") ? "Soundboard/Reflection.ogg" : null;
-  return { ownerTokenUuid, beats: out, clips, styles, sfxBase: SFX_BASE, vol: SFX_VOL, clipScale: CLIP_SCALE, reflectSfx };
+  return { ownerTokenUuid, beats: out, clips, styles, sfxBase: SFX_BASE, vol: SFX_VOL, clipScale: CLIP_SCALE, reflectSfx, messages };
 }
 
 // ── runtime glue (Foundry) ─────────────────────────────────────────────
@@ -227,7 +242,10 @@ function broadcast(ownerDoc, beats, label) {
     recipients: b.recipients.map((a) => tokenDocOfActorUuid(a)?.uuid).filter(Boolean),
   })).filter((b) => b.recipients.length);
   if (!withTokens.length) return;
-  const cfg = buildPassiveCfg({ beats: withTokens, ownerTokenUuid });
+  // System Message lines (Adaptive Defense), named after the token, so two
+  // Rakshasas read as "Rakshasa A" / "Rakshasa B".
+  const messages = weaponReadLines(ownerDoc?.name ?? ownerDoc?.actor?.name, withTokens);
+  const cfg = buildPassiveCfg({ beats: withTokens, ownerTokenUuid, messages });
   log(`[PassiveAnim] ${label}: ${withTokens.map((b) => `${b.k}×${b.recipients.length}`).join(" + ")}`);
   try {
     game.ONI?.pseudo?.play?.({
@@ -250,10 +268,16 @@ export function playPassiveFallback({ ctx, carrierName = "passive", redirect = f
     const ownerActor = ctx.reactorActor ?? null;
     const ownerDoc = ctx.reactorToken?.document ?? ctx.reactorToken ?? (ownerActor ? tokenDocOfActorUuid(ownerActor.uuid) : null);
     const disp = Number(ownerDoc?.disposition ?? 1);
-    if (!sideAllowed(disp)) return;
+    const animAllowed = sideAllowed(disp);
     const sameSide = (actorUuid) => Number(tokenDocOfActorUuid(actorUuid)?.disposition ?? 0) === disp;
-    const { beats, skipped } = composePassiveBeats(rec.records, { ownerActorUuid: ownerActor?.uuid ?? null, sameSide, aeTagOf: aeTagFor, redirect });
+    let { beats, skipped } = composePassiveBeats(rec.records, { ownerActorUuid: ownerActor?.uuid ?? null, sameSide, aeTagOf: aeTagFor, redirect });
     if (skipped) return;
+    // A System Message line is information, not decoration: it still shows
+    // when the "default action animations" setting hides this side's lines.
+    if (!animAllowed) {
+      beats = beats.filter((b) => b.say).map((b) => ({ ...b, k: "note" }));
+      if (!beats.length) return;
+    }
     // a hit has to land with BD's number — no merge window for damage
     if (beats.some((b) => b.k === "damage" || b.k === "redirect")) { broadcast(ownerDoc, beats, carrierName); return; }
     const key = `${ownerDoc?.uuid ?? ownerActor?.uuid}|${carrierName}`;

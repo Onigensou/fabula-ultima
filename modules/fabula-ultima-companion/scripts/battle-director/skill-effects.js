@@ -41,8 +41,10 @@ import { getIntentChannel } from "./intent-channel.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { INTENTS } from "./intents.js";
 import { NAME as CODE_BACKED_NAME } from "../shared/code-backed-content.js";
+import { potionRainHalves } from "../healing-system/potion-rain.js";
 import { boundSummonRef } from "../shared/summon-bindings.js";
 import { classifyEffect, isStatusTier } from "./status-classifier.js";
+import { hotUrl } from "./hot-reload.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -372,16 +374,33 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
   // when equipment-swap disables it on unequip. Direct actor AEs (Mercy) are
   // a subset of appliedEffects, so no regression. appliedEffects already
   // excludes disabled, but keep the guard for the rare direct-disabled case.
-  for (const ae of (target.appliedEffects ?? target.effects?.contents ?? Array.from(target.effects ?? []))) {
-    if (ae.disabled) continue;
-    if (_skipAe && _skipAe.has(String(ae.name ?? "").trim().toLowerCase())) continue;
+  // LAST-RESORT rows (`reaction_last_resort: true` — Life Charm) run after every other
+  // reaction and only when the hit is STILL lethal at that point: another death-save that
+  // already capped it (Beyond the Realms of Death), or an auto-revive waiting on the KO
+  // (a `creature_knocked_out` reaction on the victim), means the consumable is not spent
+  // on a stacked save (user rule, 2026-11-11).
+  const _allAes = (target.appliedEffects ?? target.effects?.contents ?? Array.from(target.effects ?? []))
+    .filter((ae) => !ae.disabled && !(_skipAe && _skipAe.has(String(ae.name ?? "").trim().toLowerCase())));
+  const _rowsOf = (ae) => Object.values(ae.flags?.[FLAG_NS]?.reactionConfig?.reaction_config_table ?? {});
+  const _isLast = (r) => r?.reaction_last_resort === true || r?.reaction_last_resort === "true";
+  const _pendingKoRevive = _allAes.some((ae) => _rowsOf(ae).some((r) => !_isLast(r)
+    && r?.reaction_trigger === "creature_knocked_out" && String(r?.reaction_passive_mode ?? "").toLowerCase() !== "off"
+    && ["self", "", undefined].includes(r?.reaction_source)));
+  let _deathSaveFired = false;
+  const _passes = [[false], [true]];   // ordinary rows first, then the last-resort ones
+  for (const [_lastPass] of _passes)
+  for (const ae of _allAes) {
     const cfg = ae.flags?.[FLAG_NS]?.reactionConfig;
     if (!cfg || typeof cfg !== "object") continue;
-    const triggerRows = Object.values(cfg.reaction_config_table ?? {});
+    const triggerRows = Object.values(cfg.reaction_config_table ?? {}).filter((r) => _isLast(r) === _lastPass);
     const effectTable = cfg.effect_table ?? {};
 
     for (const tRow of triggerRows) {
       if (tRow.reaction_trigger !== "creature_takes_damage") continue;
+      if (_lastPass) {
+        if ((curHp - dmg) > 0) { log(`damage-reaction: ${target.name} "${ae.name}" (last resort) not needed — the hit is no longer lethal`); continue; }
+        if (_deathSaveFired || _pendingKoRevive) { log(`damage-reaction: ${target.name} "${ae.name}" (last resort) held — another save ${_deathSaveFired ? "already fired" : "waits on the KO"}`); continue; }
+      }
       // reaction_source defaults to "self" — reactor IS the damage target.
       const src = tRow.reaction_source ?? "self";
       if (src !== "self" && src !== "all" && src !== "") continue;
@@ -478,6 +497,7 @@ export async function resolveDamageReactions({ target, curHp, rawDamage, sourceA
       const before = dmg;
       dmg = Math.max(0, Math.floor(applyDamageOp(dmg, op, amount)));
       if (dmg !== before) {
+        if (outcome === "would_reduce_to_zero") _deathSaveFired = true;
         log(`damage-reaction: ${target.name} ${op} ${amount} → damage ${before} → ${dmg} via AE "${ae.name}"`);
         result.fired.push({ aeId: ae.id, aeName: ae.name, op, amount, from: before, to: dmg });
         if (effRow.consume_self && !result.consumedAeIds.includes(ae.id)) {
@@ -1037,7 +1057,7 @@ function subjectMatchesSource(wantSource, subjectActorUuid, reactorActor) {
 let _formulaModulePromise = null;
 async function getSkillFormulas() {
   if (_formulaModulePromise) return _formulaModulePromise;
-  _formulaModulePromise = import("./skill-formulas.js?cb=" + Date.now());
+  _formulaModulePromise = import(hotUrl("./skill-formulas.js"));
   return _formulaModulePromise;
 }
 
@@ -1163,8 +1183,16 @@ async function passesMatchFilters(row, item, reactorActor, payload) {
   //     carries originLabel "Burn" (the carrier AE name); a skill that explicitly
   //     "triggers Burn" (Flame Claw / Meteor) labels its detonation row
   //     attacker_name "Burn" so it counts too.
+  //     A leading "!" negates it: "!Solar Beam" = any origin EXCEPT Solar Beam (a
+  //     charge that must not feed itself from its own release).
   const wantOrigin = String(row.reaction_origin_filter ?? "").trim().toLowerCase();
-  if (wantOrigin && String(payload?.originLabel ?? "").trim().toLowerCase() !== wantOrigin) {
+  const gotOrigin = String(payload?.originLabel ?? "").trim().toLowerCase();
+  if (wantOrigin.startsWith("!")) {
+    if (gotOrigin === wantOrigin.slice(1).trim()) {
+      log(`passive ${item.name}: origin filter failed — excluded="${wantOrigin}" got="${payload?.originLabel}"`);
+      return false;
+    }
+  } else if (wantOrigin && gotOrigin !== wantOrigin) {
     log(`passive ${item.name}: origin filter failed — want="${wantOrigin}" got="${payload?.originLabel}"`);
     return false;
   }
@@ -2009,6 +2037,10 @@ function effectRefUsesAddTarget(effectTable, ref, depth = 0) {
 //                              one tick). All of a carrier's rows on this scope share
 //                              ONE quota: a kill reports both a defeat and an HP loss,
 //                              and that is one event for the rule being capped.
+//   action                   — N per damage instance, whoever was hit: one Lux on three
+//                              enemies is ONE instance. Keyed by payload.damageInstance
+//                              (the action card, else the single event). Sunflower
+//                              Staff: "one Solar Charge per instance of Light damage".
 //
 // Why here and not a new mechanism: Study's once-per-target rule already exists as
 // a hand-rolled `studyLog` Map on DirectorCombat (markStudied / hasStudied), which
@@ -2017,7 +2049,7 @@ function effectRefUsesAddTarget(effectTable, ref, depth = 0) {
 // gear and the built-in action can share one notion of "already did this to you".
 // (Study itself still uses studyLog; it needs the list of spent targets to grey
 // out picker entries, not just a yes/no, so migrating it is a separate job.)
-const REACTION_MAX_SCOPES = new Set(["round", "battle", "target", "target_round", "target_action"]);
+const REACTION_MAX_SCOPES = new Set(["round", "battle", "target", "target_round", "target_action", "action"]);
 // Player-facing reason on a capped pill — must name the scope, or "once per
 // target" reads as a bug ("why is this greyed out, it hasn't fired this round?").
 const CAP_REASONS = Object.freeze({
@@ -2026,6 +2058,7 @@ const CAP_REASONS = Object.freeze({
   target:       "Already used against this target",
   target_round: "Already used against this target this round",
   target_action: "Already used against this target by this action",
+  action:       "Already used for this action",
 });
 // Inherent action keywords declared on a skill's own `action_keywords` prop
 // (comma/newline list, case-insensitive) — the same parse action-profile.js
@@ -2081,6 +2114,7 @@ function capActionRef(payload) {
   return subject && instance ? `${subject}@${instance}` : "";
 }
 function capRefFor(scope, payload, reactorUuid) {
+  if (scope === "action") return String(payload?.damageInstance ?? "").trim();
   return scope === "target_action" ? capActionRef(payload) : capSubjectRef(payload, reactorUuid);
 }
 // A target-scoped row with NO resolvable subject must not silently collapse every
@@ -2092,6 +2126,7 @@ function capRefFor(scope, payload, reactorUuid) {
 const CAP_NO_SUBJECT = "\u0000nosubject";
 export function reactionRoundCountKey(carrierUuid, rowKey, scope, round, subjectRef) {
   if (scope === "target_action") return `${carrierUuid}::action::${subjectRef}`;
+  if (scope === "action") return `${carrierUuid}::${rowKey}::a:${subjectRef}`;
   const bucket = scope === "battle" ? "all"
     : scope === "target" ? `t:${subjectRef}`
     : scope === "target_round" ? `t:${subjectRef}@${round}`
@@ -2115,7 +2150,7 @@ function reactionRoundCapReached(row, carrierUuid, rowKey, payload, reactorUuid 
   const scope = readReactionMaxScope(row);
   const subjectRef = capRefFor(scope, payload, reactorUuid);
   // Target-scoped with nothing to key on: never cap (see CAP_NO_SUBJECT).
-  if ((scope === "target" || scope === "target_round" || scope === "target_action") && !subjectRef) return false;
+  if ((scope === "target" || scope === "target_round" || scope === "target_action" || scope === "action") && !subjectRef) return false;
   return reactionRoundCount(director, carrierUuid, rowKey, scope, subjectRef) >= max;
 }
 // Increment the fire count for a capped row after it actually fires.
@@ -3226,7 +3261,7 @@ function isTruthyRowFlag(v) {
   return v === true || String(v ?? "").trim().toLowerCase() === "true";
 }
 
-export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource, direction, amount, cause, subjectSnapshot = null, isDamage = false, damageInstance = null, source = {}, element = null, originLabel = null, originUuid = null, weaponType = null, weaponRange = null, actionKind = null, actionIntent = null, isCrit = null, isFumble = null, accuracyTotal = null, highRoll = null, pierce = null, appliedEffectTags = [], chainStrike = null, chainStrikes = null, chainRepeat = false }) {
+export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource, direction, amount, cause, subjectSnapshot = null, isDamage = false, damageInstance = null, source = {}, element = null, originLabel = null, originUuid = null, weaponType = null, weaponRange = null, actionKind = null, actionIntent = null, isCrit = null, isFumble = null, accuracyTotal = null, highRoll = null, pierce = null, appliedEffectTags = [], chainStrike = null, chainStrikes = null, chainRepeat = false, extra = null }) {
   if (!director?.ctx || !actor || !resource || !(amount > 0)) return;
   if (direction !== "loss" && direction !== "recover") return;
   if (!Array.isArray(director.ctx._postResolveTriggers)) director.ctx._postResolveTriggers = [];
@@ -3301,6 +3336,10 @@ export function fireResourceChangeTrigger({ director, actor, tokenUuid, resource
       // repeat lines (`chainRepeat`) fire automatic reactions only
       // (dispatchReactionMenu).
       ...(chainStrike ? { chainStrike, chainStrikes: chainStrikes ?? null, chainRepeat: !!chainRepeat } : {}),
+      // Caller-specific read-only context (additive, never read by the matcher).
+      // grantApply passes { requested, preValue } so the Battle Grade tally can
+      // tell overheal and "healed an ally in Crisis". See battle-grade/grade-tally.js.
+      ...(extra && typeof extra === "object" ? extra : {}),
     },
   });
 }
@@ -3387,7 +3426,7 @@ export async function firePassiveTriggers({ director, casterActor, trigger, payl
 
   // Dynamic import preserves the existing cache-bust pattern this module
   // uses for cross-module hops.
-  const mod = await import("./standalone-reactions.js?cb=" + Date.now());
+  const mod = await import(hotUrl("./standalone-reactions.js"));
   const result = await mod.dispatchReactionMenu({
     director,
     reactor: casterActor,
@@ -5208,6 +5247,7 @@ async function applyWeaponReadEffect(row, ctx) {
   const evict = !(evictRaw === "0" || evictRaw === "false" || evictRaw === "no");
 
   const counters = { ...(actor.getFlag?.(FLAG_NS, "weaponReads") ?? {}) };
+  const before = Object.fromEntries(Object.entries(counters).map(([k, n]) => [k, weaponReadEfficiency(n, window, curve)]));
   if (evict) {
     for (const k of Object.keys(counters)) {
       if (k !== family && counters[k] > 0) counters[k] -= 1;
@@ -5235,7 +5275,17 @@ async function applyWeaponReadEffect(row, ctx) {
     + `${evict ? "" : " (FROZEN — nothing recovers)"}`
     + `  [${Object.entries(counters).map(([k, n]) => `${k}:${n}`).join(" ")}]`);
 
-  return { ok: true, kind: "weapon_read", family, efficiency: shown, frozen: !evict };
+  // What the table did, for the passive fallback's beats and System Message
+  // lines (passive-anim-rules.js): efficiency DOWN = the owner's resistance UP.
+  //   raised  — the read lane dropped (a new read, or a lane read again before it cleared)
+  //   maxed   — read again while already at the floor: nothing changed
+  //   lowered — the OTHER lanes that recovered a step (resistance down)
+  const was = before[family] ?? 100;
+  const raised = shown < was;
+  const lowered = Object.keys(counters).filter((k) => k !== family && WEAPON_READ_FAMILIES.includes(k)
+    && weaponReadEfficiency(counters[k], window, curve) > (before[k] ?? 100));
+  return { ok: true, kind: "weapon_read", family, efficiency: shown, frozen: !evict,
+    raised, maxed: !raised, lowered };
 }
 
 const EFFECT_KIND_DISPATCH = {
@@ -6150,6 +6200,14 @@ async function applyAdjustGrantEffect(row, ctx) {
     value: Number(evaluateFormula(a.amountFormula, resolver, 0)) || 0,
     round: a.round,
   };
+  // Apothecary Robes: the wearer's Potion Rain is not halved. Only Potion Rain's
+  // own row is skipped; any other adjust_grant on any other skill is untouched.
+  if (shortSkillName(ctx.skill).toLowerCase() === CODE_BACKED_NAME.POTION_RAIN.toLowerCase()
+      && !potionRainHalves(ctx.reactorActor)) {
+    sink.grantAdjust = null;
+    log(`skill-effects.adjust_grant: "${row.effect_label}" skipped — ${ctx.reactorActor?.name} wears ${CODE_BACKED_NAME.APOTHECARY_ROBES} (Potion Rain not halved)`);
+    return { ok: true, kind: "adjust_grant", applied: [], reason: "apothecary-robes" };
+  }
   sink.grantAdjust = adjust;
   log(`skill-effects.adjust_grant: queued restore ${adjust.op} ${adjust.value} (round ${adjust.round}) for the add_target window`);
   return { ok: true, kind: "adjust_grant", adjust };
@@ -6341,6 +6399,7 @@ async function grantApply(row, ctx, { resource, targetRef, amount }) {
               source: { actorUuid: ctx.reactorActor?.uuid ?? null, tokenUuid: ctx.reactorToken?.uuid ?? null },
               originLabel: ctx.sourceLabel ?? ctx.skill?.name ?? row.effect_label ?? "Grant",
               originUuid: ctx.sourceUuid ?? ctx.skill?.uuid ?? null,
+              extra: { requested: Math.abs(Number(recipAmount) || 0), preValue: result.newValue - result.applied },
             });
           } catch (e) { warn("skill-effects.grant: ledger emit threw", e); }
         }
@@ -6536,8 +6595,8 @@ function describeDealDamage(row, ctx = {}) {
     damageResource: String(row.damage_resource ?? "hp").trim().toLowerCase() || "hp",
     // Action keywords carried by THIS damage instance (comma/newline list) —
     // the effect-damage counterpart of a weapon's `action_keywords` prop and of
-    // an `apply_action_keyword` reaction. Currently only `crush` is read by the
-    // incoming ruleset ("cannot be Reduce and ignore immunity"), which is what
+    // an `apply_action_keyword` reaction. `crush` and `expose` are read by the
+    // incoming ruleset (Crush: bypasses Immunity + damage reduction; Expose: affinity one stage lower), which is what
     // lets a curse/drain land past DR and Immunity.
     damageKeywords: String(row.damage_keywords ?? "").trim(),
     // HP-only damage that ignores the victim's Shield (see applyDamageToTarget's

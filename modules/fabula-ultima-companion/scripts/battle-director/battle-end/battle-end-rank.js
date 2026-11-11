@@ -66,7 +66,9 @@ async function resolveDbActor() {
   return null;
 }
 
-export async function runBattleEndRank(endCtx) {
+// The pre-v2 score (Speed 50 + Damage 20 + …). Kept for one tuning round so the
+// log shows old vs new side by side; the Victory screen uses the v2 grade.
+async function legacyRank(endCtx) {
   const { isBoss, totalRounds, summaryResults } = endCtx;
   const cfg = isBoss ? CFG.boss : CFG.normal;
 
@@ -105,20 +107,27 @@ export async function runBattleEndRank(endCtx) {
     return partyNames.has(n) || friendlyTokenNames.has(n);
   }
 
-  // Parse battle_log_table
-  const table = dbActor?.system?.props?.battle_log_table ?? {};
-  const rawRows = Object.values(table);
-  // A Chain action logs ONE row per target for all its strikes; the strike
-  // counts ride the matching JSON entry (`battle_log`, appended in lockstep and
-  // capped together, so index i ↔ row i). Read them so a Chain counts per strike.
-  let chainEntries = null;
-  try {
-    const parsed = JSON.parse(String(dbActor?.system?.props?.battle_log ?? "[]"));
-    if (Array.isArray(parsed) && parsed.length === rawRows.length) chainEntries = parsed;
-  } catch (_) { chainEntries = null; }
-  const rows = rawRows
-    .map((r, i) => (r && chainEntries?.[i]?.chain ? { ...r, _chain: chainEntries[i].chain } : r))
-    .filter(r => r && r.$deleted !== true);
+  // The whole battle's rows (endCtx.battleRows, each carrying its own `_chain`).
+  // Fallback when the BD logged nothing (legacy macro fights, harness capture):
+  // the DB actor's table, which holds only the last 30 rows.
+  let rows;
+  if (Array.isArray(endCtx.battleRows) && endCtx.battleRows.length) {
+    rows = endCtx.battleRows.filter(r => r && r.$deleted !== true);
+  } else {
+    const table = dbActor?.system?.props?.battle_log_table ?? {};
+    const rawRows = Object.values(table);
+    // A Chain action logs ONE row per target for all its strikes; the strike
+    // counts ride the matching JSON entry (`battle_log`, appended in lockstep and
+    // capped together, so index i ↔ row i). Read them so a Chain counts per strike.
+    let chainEntries = null;
+    try {
+      const parsed = JSON.parse(String(dbActor?.system?.props?.battle_log ?? "[]"));
+      if (Array.isArray(parsed) && parsed.length === rawRows.length) chainEntries = parsed;
+    } catch (_) { chainEntries = null; }
+    rows = rawRows
+      .map((r, i) => (r && chainEntries?.[i]?.chain ? { ...r, _chain: chainEntries[i].chain } : r))
+      .filter(r => r && r.$deleted !== true);
+  }
 
   let partyHits = 0, partyMiss = 0;
   let weakHits = 0, resistHits = 0, absorbHits = 0, immuneHits = 0;
@@ -234,5 +243,39 @@ export async function runBattleEndRank(endCtx) {
     rates:  { missRate, dodgeRate, weakRate, resistRate, absorbRate, immuneRate, effRate },
   };
 
-  log(`[BattleEnd:Rank] ${rankLetter} (${rankScore.toFixed(1)}) — R=${R} D=${D} H=${H}`);
+  log(`[BattleEnd:Rank] legacy ${rankLetter} (${rankScore.toFixed(1)}) — R=${R} D=${D} H=${H}`);
+  return rows;
+}
+
+// Battle Grade v2 (battle-director/battle-grade/). Writes endCtx.grade (the full
+// grade), endCtx.gradeTally (roster + events) and endCtx.rank (letter + score,
+// what the Victory screen reads), with the legacy score under rank.legacy.
+export async function runBattleEndRank(endCtx) {
+  let rows = [];
+  try { rows = (await legacyRank(endCtx)) ?? []; } catch (e) { warn("[BattleEnd:Rank] legacy rank threw", e); }
+  const legacy = endCtx.rank ?? null;
+  try {
+    const { readTally } = await import("../battle-grade/grade-tally.js");
+    const { computeGrade } = await import("../battle-grade/grade-core.js");
+    const tally = await readTally();
+    if (!Object.keys(tally?.roster ?? {}).length) {
+      warn("[BattleEnd:Rank] no grade tally (battle not run by the director?) — keeping the legacy rank");
+      return;
+    }
+    const grade = computeGrade({ roster: tally.roster, events: tally.events, rows, rounds: endCtx.totalRounds });
+    endCtx.grade = grade;
+    endCtx.gradeTally = { roster: tally.roster };
+    // Last battle's inputs + result, for "why did we get B?" from the console
+    // (FUCompanion.api.battleGrade.last) and for re-scoring when tuning.
+    try {
+      const api = (globalThis.FUCompanion.api.battleGrade ??= {});
+      api.last = { at: Date.now(), rounds: endCtx.totalRounds, roster: tally.roster, events: tally.events,
+        rows: rows.map((r) => ({ attacker: r.attacker, apply_mode: r.apply_mode, value_type: r.value_type, affinity: r.affinity, efficiency: r.efficiency, _chain: r._chain })),
+        grade: { letter: grade.letter, score: grade.score, gauges: grade.gauges, threat: grade.threat, par: grade.par, stats: grade.stats } };
+    } catch { /* debug aid only */ }
+    endCtx.rank = { isBoss: endCtx.isBoss, score: grade.score, letter: grade.letter, legacy };
+    log(`[BattleEnd:Rank] v2 ${grade.letter} (${grade.score}) threat=${grade.threat} par=${grade.par} rounds=${grade.rounds} gauges=${JSON.stringify(grade.gauges)} board${grade.boardDelta >= 0 ? "+" : ""}${grade.boardDelta} mvp=${grade.mvp}`);
+  } catch (e) {
+    warn("[BattleEnd:Rank] v2 grade threw — keeping the legacy rank", e);
+  }
 }

@@ -36,6 +36,26 @@ const MAX = 30;
 const NS = "fabula-ultima-companion";
 const PENDING_SETTING = "battleLogPending";
 
+// The BATTLE RECORD: every row of the current battle, in a compact shape, kept
+// beside the capped queue in the same setting (`pending.record`). The sheet table
+// only ever holds the last MAX rows, and the battle-end rank + totals used to read
+// that table, so a long fight was graded on its last ~30 hits. The record is what
+// they read now. It is NOT emptied by flushBattleLog (an undying revive flushes
+// and then the same fight goes on); the orchestrator clears it once the battle is
+// truly over, and clearPendingBattleLog (battle-start clear) empties it too.
+// RECORD_MAX is only a runaway guard: ~150 bytes a row.
+const RECORD_MAX = 2000;
+function _toRecord(row, entry) {
+  if (!row) return null;
+  const rec = {
+    attacker: row.attacker, attack_target: row.attack_target,
+    apply_mode: row.apply_mode, value_type: row.value_type, value: row.value,
+    affinity: row.affinity, efficiency: row.efficiency,
+  };
+  if (entry?.chain) rec._chain = entry.chain;
+  return rec;
+}
+
 Hooks.once("init", () => {
   try {
     game.settings.register(NS, PENDING_SETTING, {
@@ -136,10 +156,13 @@ export async function appendBattleLog(records) {
   const pending = _readPending();
   pending.entries.push(...entries);
   pending.rows.push(...rows);
+  // A record pairs its row with its own entry (the Chain counts ride the entry).
+  for (const r of records) { const rec = _toRecord(r?.row, r?.entry); if (rec) pending.record.push(rec); }
   try {
     await game.settings.set(NS, PENDING_SETTING, {
       entries: pending.entries.slice(-MAX),
       rows: pending.rows.slice(-MAX),
+      record: pending.record.slice(-RECORD_MAX),
     });
     log(`battle-log: queued ${entries.length} entr${entries.length === 1 ? "y" : "ies"} / ${rows.length} row(s)`);
   } catch (e) { warn("appendBattleLog: pending setting write failed", e); }
@@ -153,14 +176,33 @@ export async function flushBattleLog() {
   if (!pending.entries.length && !pending.rows.length) return { ok: true, flushed: 0 };
   const ok = await _writeToDbActor(pending.entries, pending.rows);
   // Empty the queue only once the actor holds the rows: a failed write keeps them.
-  if (ok) await clearPendingBattleLog();
+  // The battle record stays (see RECORD_MAX).
+  if (ok) {
+    try { await game.settings.set(NS, PENDING_SETTING, { entries: [], rows: [], record: pending.record }); }
+    catch (e) { warn("flushBattleLog: emptying the queue failed", e); }
+  }
   return { ok, flushed: Math.max(pending.entries.length, pending.rows.length) };
 }
 
 export async function clearPendingBattleLog() {
   if (!game.user?.isGM) return;
-  try { await game.settings.set(NS, PENDING_SETTING, { entries: [], rows: [] }); }
+  try { await game.settings.set(NS, PENDING_SETTING, { entries: [], rows: [], record: [] }); }
   catch (e) { warn("clearPendingBattleLog: setting write failed", e); }
+}
+
+// Every row of the current battle (row shape + `_chain`), for the battle-end
+// rank and totals. Empty when no BD row was logged this battle.
+export function readBattleRecord() {
+  return _readPending().record;
+}
+
+// The battle is over: drop its record, keep any queued rows.
+export async function clearBattleRecord() {
+  if (!game.user?.isGM) return;
+  const pending = _readPending();
+  if (!pending.record.length) return;
+  try { await game.settings.set(NS, PENDING_SETTING, { entries: pending.entries, rows: pending.rows, record: [] }); }
+  catch (e) { warn("clearBattleRecord: setting write failed", e); }
 }
 
 function _readPending() {
@@ -169,6 +211,7 @@ function _readPending() {
   return {
     entries: Array.isArray(v?.entries) ? v.entries.slice() : [],
     rows: Array.isArray(v?.rows) ? v.rows.slice() : [],
+    record: Array.isArray(v?.record) ? v.record.slice() : [],
   };
 }
 

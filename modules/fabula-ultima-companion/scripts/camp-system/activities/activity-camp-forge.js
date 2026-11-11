@@ -1,10 +1,12 @@
 // ============================================================================
 // Camp Activity — Camp Forge
 // Target: Yourself
-// Effect: Field Attune — attune any number of sockets on one piece of your own
-//         gear, free, one attempt (Orbment v3: scripts/orbment/camp-forge.js).
-//         The rulebook's Repair / Craft basic gear / Salvage options show as
-//         locked placeholders in the same window until they're built.
+// Effect: ONE of
+//         Field Attune — attune any number of sockets on one piece of your own
+//         gear, free, one attempt (Orbment v3: scripts/orbment/camp-forge.js);
+//         Craft — make one item from the camp Blueprint book (Crafting System,
+//         scripts/crafting-system/), paying its camp cost.
+//         Repair / Salvage show as locked placeholders until they're built.
 // ============================================================================
 (() => {
   const CAMP = globalThis.CampSystem ??= {};
