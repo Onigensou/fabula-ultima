@@ -45,6 +45,33 @@ The item says "used automatically when HP reaches 0", but it never fired. Its tr
 - **World data:** the Life Charm world item and the 5 actor copies have `activeWhileCarried: true` and `reaction_last_resort: true`.
 - **Verified in a sim:** an Asura Strike Chain would have killed Zarg. Life Charm left him at 1 HP, then was used up (removed from the inventory).
 
+## Boss line (new, reusable: `boss-line.js`, one hook in `state-handlers.js` CONFIRM)
+
+A monster can say a line before its signature move, once per playthrough. The order is the JRPG one: speech box, then the action name banner, then the attack. Add it to any skill item as a flag:
+
+```js
+flags.fabula-ultima-companion.bossLine = {
+  text: "Feel my battle prowess!",   // System Message markup allowed
+  switch: "Asura Battle Line",       // event switch that remembers "said it"
+  speaker: "Asura",                  // optional, defaults to the caster's name
+  hold: 2200,                        // optional ms
+}
+```
+
+- **Where it runs:** at CONFIRM, before `playActionNamecard`, GM side only. The wait is capped at 9 s, and any failure just skips the line.
+- **"Once" is an ordinary event switch** on the current party's database, so:
+  - a save/load puts it back to what the save held;
+  - a new party starts without it;
+  - a GM can turn it off in the sheet's switch table.
+
+  Without a switch name, the line plays on every cast.
+- **Tests:** `boss-line.test.mjs` passes 19/19.
+- **First use:** Asura Strike. Its animation lost its Zero Power style cut-in, because the line carries that moment now.
+
+## Memory leak fix (shared code)
+
+The dynamic imports with `?cb=` + `Date.now()` kept one new module copy per card. That came to about 500 MB per boss fight on the GM page, and a tab ran out of memory. They now use `hotUrl()` from `hot-reload.js`: one fresh copy per page load, plus a new one whenever the hot token is bumped. **After editing one of these modules, run `FUCompanion.api.test.reloadHot()`.** Full details: `reports/2026-11-11-bd-module-copy-leak.md`.
+
 ## Things to know
 
 - Magic Mirror may have the same "disabled because it's not equipped" problem. I didn't check or change it.
