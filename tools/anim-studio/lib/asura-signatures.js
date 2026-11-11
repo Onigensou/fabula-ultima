@@ -17,10 +17,9 @@ const MV = FORGE + "Animation/RPG%20Maker%20MV/";
 const RO = FORGE + "Animation/Ragnarok%20Online/";
 const GGW = FORGE + "Animation/Guilty%20Gear%20Strive/webm/";
 const SB = FORGE + "Sound/Soundboard/";
-// Our own exports (pixelfx recolours + the 60 fps lit-blade clips) are NOT on Forge yet:
-// served from the git-ignored Data/_local-art-test/asura/ for Staging playtests.
-// ⚠ Before any push: upload them to Forge and point LOCAL at that folder.
-const LOCAL = "_local-art-test/asura/";
+// Our own exports (pixelfx recolours + the 60 fps lit-blade clips), uploaded 2026-11-11.
+// Graphic update = overwrite the same Forge path + bump ?v=N on the refs.
+const LOCAL = FORGE + "Animation/pixelfx/asura/";
 
 // clip defs: w/h = source px, ax/ay = anchor, dur ms, add = draw additive (GG masks / glows), k = the
 // mockup's size factor (MV/pixelfx .55, RO 1.1) so a mockup "scale" multiplies straight through
