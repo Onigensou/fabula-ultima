@@ -156,6 +156,12 @@ client, so player-routed prompts and socket broadcasts are untested here.
   `run.mjs` exposes `window.__runnerGC()` (CDP GC + heap) for it. Build once with
   `build-snapshot --profile leak --snapshot snap-leak` (every actor, so enemies can cast too).
   `__FX_LEAK_OPTS.casters`: `party` (default), `enemies`, `all`, or actor names; `skills` picks by name.
+  `tour` workload (build `--profile tour --snapshot snap-tour`): visits the 8 scenes real sessions use most
+  and comes back, one repeat per tour. For heap growth: `__FX_LEAK_OPTS.snapshotAt: [2, 5]` writes full heap
+  snapshots (`window.__runnerHeapSnapshot`, ~1 GB each), then `node --max-old-space-size=14000
+  bin/heap-diff.mjs <a> <b>` (what grew, biggest strings) and `bin/heap-retainers.mjs <file> "<string prefix>"`
+  (who holds it). ⚠ The runner's DevTools/CDP console keeps every logged error object alive: a heap that
+  grows by logged errors is the harness, not the game (2026-11-12).
   **Runs by itself** on a machine that wires it: `hooks/fx-leak-hook.js` (local, gitignored, like
   `.claude/settings.json` that wires it) marks any edit to
   animation code (anim-studio, pseudo-animation, sprite-shadow, soul-fx, sealing-crystal, battler-pose,

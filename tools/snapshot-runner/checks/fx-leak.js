@@ -9,12 +9,13 @@
 //
 // --canvas low (not off): textures only reach the GPU when something renders. A/B the code with
 // --code <gitref>. Options: prepend `globalThis.__FX_LEAK_OPTS = {...};` in a wrapper file.
-//   workloads  which to run (default all): anim, hud, battle, scene
+//   workloads  which to run (default all): anim, hud, battle, scene; plus `tour` (needs --profile tour)
 //   reps       repeats per workload (default 4; the first is the warm-up)
 //   casters    "party" (default), "enemies", "all" (half each), or a list of actor names
 //   skills     animation skill names, looked up on the casters (default casters "all" when given;
 //              default skills: ones whose script makes textures / particles / clips)
 //   maxSkills  how many animations per repeat (default 4)
+//   snapshotAt repeats after which to write a full heap snapshot, e.g. [2, 5] (bin/heap-diff.mjs)
 //   heapSites  attribute the live heap to allocation sites (V8 sampling profiler; default true)
 // Returns { ok, leaks: [...], workloads: { name: { samples, verdict } } }.
 const O = Object.assign({ workloads: ["anim", "hud", "battle", "scene"], reps: 4, skills: null, maxSkills: 4, heapSites: true }, globalThis.__FX_LEAK_OPTS ?? {});
@@ -54,7 +55,7 @@ const P = globalThis.__fxLeakProbe ??= (() => {
       if (src && typeof src === "object" && t?.baseTexture && !t.baseTexture.__fxBy) {
         const lines = String(new Error().stack).split("\n").slice(2);
         const f = lines.find((l) => !/fx-leak|pixi/.test(l)) ?? lines[0] ?? "";
-        t.baseTexture.__fxBy = f.replace(/^\s*at\s+/, "").replace(/https?:\/\/[^/]+\//, "").replace(/\?[^:)]*/, "").slice(0, 140);
+        t.baseTexture.__fxBy = own(f.replace(/^\s*at\s+/, "").replace(/https?:\/\/[^/]+\//, "").replace(/\?[^:)]*/, "").slice(0, 140));
       }
     } catch { /* probe only */ }
     return t;
@@ -68,10 +69,13 @@ const P = globalThis.__fxLeakProbe ??= (() => {
   };
   return { to, iv, raf, videos };
 })();
+// A substring of a stack trace keeps the WHOLE stack string alive (V8 sliced strings): the probe's own
+// labels once held ~33 MB over 5 animation repeats and read as a leak in the heap (2026-11-12). Copy.
+function own(str) { return Array.from(String(str)).join(""); }
 function creator() {
   const lines = String(new Error().stack).split("\n").slice(3)
     .filter((l) => !/fx-leak|pixi\.|\/pixi|<anonymous>:\d+:\d+\)$/.test(l));
-  return lines.slice(0, 2).map((l) => l.replace(/^\s*at\s+/, "").replace(/https?:\/\/[^/]+\//, "").replace(/\?[^:)]*/, "").slice(0, 110)).join(" < ");
+  return own(lines.slice(0, 2).map((l) => l.replace(/^\s*at\s+/, "").replace(/https?:\/\/[^/]+\//, "").replace(/\?[^:)]*/, "").slice(0, 110)).join(" < "));
 }
 // GPU textures + DOM, by origin: what a workload added after its warm-up that is still there
 function gpuSet() { return new Set(canvas.app?.renderer?.texture?.managedTextures ?? []); }
@@ -126,6 +130,9 @@ async function sample() {
   return {
     gpuTextures: R?.texture?.managedTextures?.length ?? null,
     framebuffers: R?.framebuffer?.managedFramebuffers?.length ?? null,
+    // per-frame callbacks hung on the PIXI renderer itself (not the ticker): an orphaned 3D camera keeps drawing
+    rendererListeners: (R?.listenerCount?.("prerender") ?? 0) + (R?.listenerCount?.("postrender") ?? 0),
+    webglCanvases: [...document.querySelectorAll("canvas")].length,
     cachedTextures: Object.keys(PIXI.utils.TextureCache).length,
     cachedBaseTextures: Object.keys(PIXI.utils.BaseTextureCache).length,
     liveVideos,
@@ -169,7 +176,7 @@ function survivors(sinceSample) {
   return Object.entries(by).sort((a, b) => b[1] - a[1]).map(([what, n]) => `${n}x ${what}`);
 }
 // growth that counts as a leak, per repeat after the warm-up
-const MIN = { hookEvents: 1, gpuTextures: 1, framebuffers: 1, cachedTextures: 1, cachedBaseTextures: 1, liveVideos: 1, pendingFrames: 1,
+const MIN = { rendererListeners: 1, hookEvents: 1, gpuTextures: 1, framebuffers: 1, cachedTextures: 1, cachedBaseTextures: 1, liveVideos: 1, pendingFrames: 1,
   shortTimeouts: 2, intervals: 1, tickerListeners: 1, hooks: 1, mediaInDom: 1, domNodes: 25, stageChildren: 1, heapMB: 2 };
 function verdict(samples) {
   const out = {};
@@ -287,6 +294,21 @@ const WORKLOADS = {
       },
     };
   },
+  // Visit every scene in the snapshot (or O.tourScenes) and come back to the first: one repeat = one tour.
+  // Catches what a scene change leaves behind (backgrounds, tiles, ambience, place states, events).
+  async tour() {
+    const start = canvas.scene;
+    const names = O.tourScenes ?? game.scenes.contents.map((s) => s.name);
+    const list = names.map((n) => game.scenes.getName(n)).filter((s) => s && s.id !== start?.id);
+    if (!list.length) return { skipped: "only one scene in this snapshot (build-snapshot --profile tour)" };
+    const visit = async (sc) => {
+      const ready = new Promise((r) => Hooks.once("canvasReady", r));
+      await sc.view();
+      await Promise.race([ready, settle(30000)]);
+      await settle(1500);
+    };
+    return { label: [start?.name, ...list.map((s) => s.name)], async rep() { for (const sc of list) await visit(sc); await visit(start); } };
+  },
   async scene() {
     return { async rep() { await canvas.draw(); } };
   },
@@ -306,6 +328,8 @@ for (const name of O.workloads) {
       const t0 = Date.now();
       await wl.rep();
       w.samples.push({ rep: i + 1, ms: Date.now() - t0, ...(await sample()) });
+      // full heap snapshots at chosen repeats (run.mjs writes them; diff with bin/heap-diff.mjs)
+      if ((O.snapshotAt ?? []).includes(i + 1) && typeof window.__runnerHeapSnapshot === "function") (w.snapshots ??= []).push(await window.__runnerHeapSnapshot(`${name}-rep${i + 1}`));
       if (i === 0) {
         warmSample = _nSamples; w._gpu0 = gpuSet(); w._dom0 = domCounts();
         if (O.heapSites && typeof window.__runnerHeapSampling === "function") w._sampling = await window.__runnerHeapSampling("start");

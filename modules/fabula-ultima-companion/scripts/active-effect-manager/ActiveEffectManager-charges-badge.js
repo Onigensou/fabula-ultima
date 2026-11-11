@@ -173,6 +173,11 @@ Hooks.once("ready", () => {
 
       iconSprite.sortableChildren = true;
       iconSprite.addChild(badge);
+      // Foundry redraws a token's effect icons with `c.destroy()` (no children), which
+      // orphaned the badge: a PIXI.Text keeps its own canvas texture in PIXI's cache, so
+      // every effect redraw on a charged token leaked one (found by checks/fx-leak.js,
+      // 2026-11-12). Free it with its icon.
+      iconSprite.once?.("destroyed", () => { try { if (!badge.destroyed) badge.destroy(); } catch (_e) {} });
     }
 
     function collectChargedEffects(actor) {

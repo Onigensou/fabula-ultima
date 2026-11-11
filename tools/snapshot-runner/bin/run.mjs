@@ -138,6 +138,21 @@ try {
     const cdp = await page.context().newCDPSession(page); await cdp.send("Performance.enable");
     // window.__runnerGC(): force a full GC and return the used JS heap (bytes), for leak checks (checks/fx-leak.js)
     await page.exposeFunction("__runnerGC", async () => { await cdp.send("HeapProfiler.collectGarbage"); return (await cdp.send("Runtime.getHeapUsage")).usedSize; }).catch(() => {});
+    // window.__runnerHeapSnapshot(label): full V8 heap snapshot (after a GC) streamed to
+    // <snapshot dir>/heap-<label>.heapsnapshot; returns the path. Diff two with bin/heap-diff.mjs.
+    await page.exposeFunction("__runnerHeapSnapshot", async (label) => {
+      const { createWriteStream } = await import("node:fs");
+      const file = resolve(OUT, `heap-${String(label).replace(/[^\w.-]/g, "_")}.heapsnapshot`);
+      const out = createWriteStream(file);
+      const onChunk = (e) => out.write(e.chunk);
+      cdp.on("HeapProfiler.addHeapSnapshotChunk", onChunk);
+      await cdp.send("HeapProfiler.enable");
+      await cdp.send("HeapProfiler.collectGarbage");
+      await cdp.send("HeapProfiler.takeHeapSnapshot", { reportProgress: false });
+      cdp.off("HeapProfiler.addHeapSnapshotChunk", onChunk);
+      await new Promise((r) => out.end(r));
+      return file;
+    }).catch(() => {});
     // window.__runnerHeapSampling("start" | "stop"): V8's sampling heap profiler. "stop" returns the allocation
     // sites of what is STILL ALIVE (after a GC), heaviest first: who holds the heap that grew.
     await page.exposeFunction("__runnerHeapSampling", async (op) => {
@@ -145,12 +160,13 @@ try {
       await cdp.send("HeapProfiler.collectGarbage");
       const { profile } = await cdp.send("HeapProfiler.stopSampling");
       const by = new Map();
-      const walk = (n, trail) => {
+      // charge each sample to the deepest frame from our own code on its stack; with none, to the
+      // allocating frame itself (not the first frame from the root, which is always a wrapper)
+      const walk = (n, ours) => {
         const f = n.callFrame, here = f.url ? `${f.functionName || "(anon)"} ${f.url.replace(/^https?:\/\/[^/]+\//, "").replace(/\?.*$/, "")}:${f.lineNumber + 1}` : null;
-        // charge each sample to the nearest frame from our own code (or the deepest frame with a url)
-        const mine = here && /modules\/fabula-ultima-companion|worlds\//.test(here) ? here : trail;
-        if (n.selfSize) { const k = mine ?? here ?? "(native)"; by.set(k, (by.get(k) ?? 0) + n.selfSize); }
-        for (const c of n.children ?? []) walk(c, mine ?? here ?? trail);
+        const o = here && /modules\/fabula-ultima-companion|worlds\//.test(here) ? here : ours;
+        if (n.selfSize) { const k = o ?? here ?? "(native)"; by.set(k, (by.get(k) ?? 0) + n.selfSize); }
+        for (const c of n.children ?? []) walk(c, o);
       };
       walk(profile.head, null);
       return [...by].sort((a, b) => b[1] - a[1]).slice(0, 20).map(([k, b]) => `${(b / 1048576).toFixed(2)} MB  ${k}`);

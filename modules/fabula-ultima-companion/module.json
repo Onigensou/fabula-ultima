@@ -2,7 +2,7 @@
   "id": "fabula-ultima-companion",
   "title": "FabulaUltimaCompanion",
   "description": "Adds custom hooks and cool functionality.",
-  "version": "1.0.592",
+  "version": "1.0.593",
   "compatibility": {
     "minimum": "12",
     "verified": "12"
@@ -447,6 +447,7 @@
     "scripts/battle-director/rewind-button.js"
   ],
   "esmodules": [
+    "scripts/shared/third-party-leak-fixes.js",
     "scripts/shared/exp-core.js",
     "scripts/shared/code-backed-content.js",
     "scripts/shared/identifier-registry.js",

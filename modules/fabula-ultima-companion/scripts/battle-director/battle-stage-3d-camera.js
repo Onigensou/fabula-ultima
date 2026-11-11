@@ -215,7 +215,7 @@ export class Stage3dCamera {
   async start() {
     const THREE = await loadThree();
     const depthAt = this.P.relief ? await loadDepthField(this.cfg.depthMap) : null;
-    if (canvas?.scene?.id !== this.sceneId) return false;
+    if (this.cancelled || canvas?.scene?.id !== this.sceneId) return false;
     const bg = canvas.primary?.background;
     const src = bg?.texture?.baseTexture?.resource?.source ?? null;
     if (!src) throw new Error("no background image to project");
@@ -309,10 +309,15 @@ export class Stage3dCamera {
   }
 
   stop() {
+    // A stop that lands while start() is still loading (three.js, the depth map) must cancel it: otherwise
+    // start() finishes afterwards and nobody ever stops what it built (a WebGL renderer, its texture).
+    this.cancelled = true;
     if (!this.running && !this.renderer) return;
     this.running = false;
     try { canvas.app.renderer.off("prerender", this._pre); canvas.app.renderer.off("postrender", this._post); } catch {}
-    this.#postrender();
+    // Every step below is independent: one that throws mid-teardown (a token mesh already gone) used to skip
+    // the rest, leaving the camera's texture and WebGL renderer alive (found by checks/fx-leak.js `tour`).
+    try { this.#postrender(); } catch (e) { warn("battle-stage-3d: camera postrender on stop failed", e); }
     for (const [token] of this.tokens) {
       if (token.destroyed) continue;
       try {
@@ -450,7 +455,7 @@ export class Stage3dCamera {
     const saves = this.meshSaves;
     for (const s of saves) {
       const m = s.mesh;
-      if (m.destroyed) continue;
+      if (!m || m.destroyed || !m.transform) continue;
       m.position.set(s.x, s.y);
       m.scale.set(s.sx, s.sy);
       if (s.r !== undefined) m.renderable = s.r;

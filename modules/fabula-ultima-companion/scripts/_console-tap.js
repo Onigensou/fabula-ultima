@@ -66,7 +66,9 @@
   function push(level, args) {
     try {
       let msg = Array.from(args).map(safeStringify).join(" ");
-      if (msg.length > MAX_MSG_LENGTH) msg = msg.slice(0, MAX_MSG_LENGTH) + `…[truncated +${msg.length - MAX_MSG_LENGTH}]`;
+      // A slice of a big string can keep the WHOLE original alive (V8 sliced strings), so 500 truncated
+      // entries held ~15 MB in a leak run (2026-11-12). Copy the kept part out of the original.
+      if (msg.length > MAX_MSG_LENGTH) msg = Array.from(msg.slice(0, MAX_MSG_LENGTH)).join("") + `…[truncated +${msg.length - MAX_MSG_LENGTH}]`;
       logs.push({ seq: ++seq, ts: Date.now(), level, msg });
       while (logs.length > LOG_BUFFER_MAX) { logs.shift(); dropped++; }
     } catch {
