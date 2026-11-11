@@ -14650,6 +14650,13 @@
         "effects": 0
       },
       {
+        "id": "UfL16aNJqFM6Zw55",
+        "name": "🌟 Nidhogg, Dragon King",
+        "type": "character",
+        "items": [],
+        "effects": 0
+      },
+      {
         "id": "IfNhgMkJ1pEYaaBY",
         "name": "Ace of Cards",
         "type": "character",
@@ -22555,6 +22562,13 @@
       {
         "id": "UfkgFFDxTzflNEpk",
         "name": "Nibbler",
+        "type": "character",
+        "items": [],
+        "effects": 0
+      },
+      {
+        "id": "nR6asin3do1U1eLj",
+        "name": "Nidhogg",
         "type": "character",
         "items": [],
         "effects": 0
