@@ -117,4 +117,45 @@ function asuraStrike(opts = {}) {
   return { script, timing: { mode: "offset", offset: t.bursts + 3 * 110 + 60 }, preload };
 }
 
-module.exports = { asuraStrike, EL };
+// ── the filler moves (approved mockup v1 moves): Elemental Slash (+ Enchanted), Overflow, Sword Enchant ──
+const MOVE_ASSETS = () => ({
+  clips: {
+    slash_phys: clip(MV + "006_slash_physical.webm", 378, 378, 333, 0.4683, 0.5794, 0.55),
+    ggslash3: clip(GGW + "slashanim03.webm", 128, 256, 400, 0.5, 0.5, 0.55, true),
+    mv_fire: clip(MV + "008_slash_fire.webm", 408, 408, 600, 0.4706, 0.6471, 0.55),
+    mv_ice: clip(MV + "009_slash_ice.webm", 408, 408, 600, 0.4706, 0.6471, 0.55),
+    mv_bolt: clip(MV + "010_slash_thunder.webm", 408, 408, 600, 0.4706, 0.6471, 0.55),
+    mv_air: clip(MV + "091_wind_one_1.webm", 508, 510, 1000, 0.5, 0.8529, 0.55),
+    px_fire: clip(LOCAL + "px_double-slash_fire.webm", 492, 324, 833, 0.2683, 0.8519, 0.55),
+    px_bolt: clip(LOCAL + "px_double-slash_bolt.webm", 492, 324, 833, 0.2683, 0.8519, 0.55),
+    px_ice: clip(LOCAL + "px_double-slash_ice.webm", 492, 324, 833, 0.2683, 0.8519, 0.55),
+    px_air: clip(LOCAL + "px_double-slash_air.webm", 492, 324, 833, 0.2683, 0.8519, 0.55),
+    enc_fire: clip(RO + "enc_fire.webm", 354, 354, 667, 0.5, 0.613, 1.1, true),
+    enc_ice: clip(RO + "enc_ice.webm", 204, 204, 833, 0.5, 0.7451, 1.1, true),
+    enc_air: clip(RO + "enc_wind.webm", 304, 278, 717, 0.5, 0.6439, 1.1, true),
+    enc_bolt: clip(RO + "lightning.webm", 184, 346, 2150, 0.5, 0.9191, 1.1, true),
+    smoke11: clip(GGW + "smoke_anim11.webm", 170, 204, 1500, 0.5, 0.5, 0.55, true),
+    fire_expn: clip(RO + "tetravortex__tetra_01_fire_expn.webm", 334, 1034, 750, 0.5, 0.9255, 1.1, true),
+    fire_all: clip(MV + "068_fire_all_1.webm", 1234, 704, 1000, 0.487, 0.5355, 0.55),
+    firewall: clip(RO + "firewall.webm", 128, 346, 667, 0.4531, 0.8584, 1.1, true),
+    hit_fire: clip(MV + "003_hit_fire.webm", 488, 488, 667, 0.5, 0.5, 0.55, true),
+    powerup: clip(MV + "051_powerup_1.webm", 508, 790, 867, 0.5, 0.543, 0.55),
+  },
+  sfx: Object.assign(ASSETS().sfx, { fire1: SB + "Fire1.ogg", sword2: SB + "Sword2.ogg" }),
+});
+// move: "slash" | "overflow" | "enchant"; element: the enchant's element. Each owns its damage gate.
+function asuraMove(opts = {}) {
+  const tune = { walk: 650, windup: 380, stop: 110, rise: 520, wave: 140, drag: 420 };   // mockup defaults (approved)
+  const cfg = Object.assign({ move: opts.move, element: opts.element ?? null, ...tune, el: EL, casterFoot: 0.95, partyFoot: 0.97, seed: 991, volume: 0.9, totalTimeoutMs: 20000 }, opts.cfg || {});
+  let gate = 0;
+  if (cfg.move === "slash") gate = cfg.walk + cfg.windup + 80 + cfg.stop;
+  else if (cfg.move === "overflow") gate = 400 + cfg.rise + 160 + 150;
+  else gate = cfg.drag;
+  const inner = fs.readFileSync(path.join(__dirname, "asura-shots", "asura-moves.inner.js"), "utf8");
+  const assets = MOVE_ASSETS();
+  const script = shell({ key: opts.key, name: opts.name, cfg, assets, inner, timeout: cfg.totalTimeoutMs, startOnReady: true });
+  const preload = Object.values(assets.clips).map((c) => c.url).filter((u) => u.startsWith("http"));
+  return { script, timing: { mode: "offset", offset: gate }, preload };
+}
+
+module.exports = { asuraStrike, asuraMove, EL };

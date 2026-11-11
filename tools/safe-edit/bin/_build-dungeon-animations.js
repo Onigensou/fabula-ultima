@@ -238,47 +238,15 @@ const REGISTRY = {
   "0AwQ7wEDz4ISA9mA": {
     actorName: "Asura",
     items: {
-      "Elemental Slash": () => sweep({
-        key: "asura-elemental-slash", name: "Elemental Slash",
-        aspectTinted: true,
-        cfg: { sweeps: 1, sweepMs: 620, dashMs: 460, dashBackMs: 520, explosion: false,
-               sfxSweep: "Attack2", sfxSweepVol: 0.55 },
-      }),
-      "Elemental Slash (Enchanted)": () => sweep({
-        key: "asura-elemental-slash-ench", name: "Elemental Slash (Enchanted)",
-        aspectTinted: true,
-        cfg: { sweeps: 2, sweepMs: 600, betweenMs: 140, dashMs: 460, dashBackMs: 520,
-               explosion: false, sfxSweep: "Attack3", sfxSweepVol: 0.6 },
-      }),
-      "Elemental Slash: Overflow": () => sweep({
-        key: "asura-elemental-slash-overflow", name: "Elemental Slash: Overflow",
-        aspectTinted: true,
-        cfg: { sweeps: 3, sweepMs: 640, betweenMs: 160, dashMs: 500, dashBackMs: 560,
-               explosion: true, shakeMs: 620, sfxSweep: "Attack3", sfxSweepVol: 0.6,
-               sfxExplosion: "Explosion1", sfxExplosionVol: 0.6 },
-      }),
-      // Approved mockup (artifact Ebj65AytDRWSo1MydXYpFe v3.12, 2026-11-11); numbers live in asura-signatures.js.
+      // Approved mockup (artifact Ebj65AytDRWSo1MydXYpFe, 2026-11-11); numbers live in asura-signatures.js.
+      "Elemental Slash": () => AS.asuraMove({ key: "asura-elemental-slash", name: "Elemental Slash", move: "slash" }),
+      "Elemental Slash (Enchanted)": () => AS.asuraMove({ key: "asura-elemental-slash-ench", name: "Elemental Slash (Enchanted)", move: "slash" }),
+      "Elemental Slash: Overflow": () => AS.asuraMove({ key: "asura-elemental-slash-overflow", name: "Elemental Slash: Overflow", move: "overflow" }),
       "Asura Strike": () => AS.asuraStrike({ key: "asura-strike", name: "Asura Strike" }),
-      "Sword Enchant - Fire": () => T.burst({
-        key: "asura-enchant-fire", name: "Sword Enchant - Fire",
-        cfg: { color: C.fire, gatherMs: 620, count: 44, radius: 200, life: 1000,
-               sfx: "Fire1", sfxVol: 0.5 },
-      }),
-      "Sword Enchant - Bolt": () => T.burst({
-        key: "asura-enchant-bolt", name: "Sword Enchant - Bolt",
-        cfg: { color: C.bolt, gatherMs: 620, count: 44, radius: 200, life: 1000,
-               sfx: "Thunder1", sfxVol: 0.5 },
-      }),
-      "Sword Enchant - Ice": () => T.burst({
-        key: "asura-enchant-ice", name: "Sword Enchant - Ice",
-        cfg: { color: C.ice, gatherMs: 620, count: 44, radius: 200, life: 1000,
-               sfx: "Ice1", sfxVol: 0.5 },
-      }),
-      "Sword Enchant - Air": () => T.burst({
-        key: "asura-enchant-air", name: "Sword Enchant - Air",
-        cfg: { color: C.air, gatherMs: 620, count: 44, radius: 200, life: 1000,
-               sfx: "Wind1", sfxVol: 0.5 },
-      }),
+      "Sword Enchant - Fire": () => AS.asuraMove({ key: "asura-enchant-fire", name: "Sword Enchant - Fire", move: "enchant", element: "fire" }),
+      "Sword Enchant - Bolt": () => AS.asuraMove({ key: "asura-enchant-bolt", name: "Sword Enchant - Bolt", move: "enchant", element: "bolt" }),
+      "Sword Enchant - Ice": () => AS.asuraMove({ key: "asura-enchant-ice", name: "Sword Enchant - Ice", move: "enchant", element: "ice" }),
+      "Sword Enchant - Air": () => AS.asuraMove({ key: "asura-enchant-air", name: "Sword Enchant - Air", move: "enchant", element: "air" }),
     },
   },
 
