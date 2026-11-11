@@ -422,14 +422,15 @@
   // the square and are zoomed large, so that landed on the NPC's head. Here,
   // after they have placed theirs, every frame, all of one NPC's buttons are
   // lined up in one centred row just above the top of its drawn sprite.
-  const ROW_SELECTOR = ".oni-event-btn.is-talk, .fu-shop-btn, .fu-refine-prox-btn, .fu-inn-prox-btn";
+  const ROW_SELECTOR = ".oni-event-btn.is-talk, .fu-shop-btn, .fu-refine-prox-btn, .fu-alch-prox-btn, .fu-craft-prox-btn, .fu-inn-prox-btn";
   // Every one of those buttons is mounted inside one of these layers (event-runtimeUI,
-  // shopOpen-ui, innOpen-ui, refineOpen-ui). Searching the layers instead of the whole
-  // page matters because this runs every frame: on the GM's ~24k-element page the
-  // document-wide search took 14–22% of the main thread, on battle maps with no NPC
-  // button at all (docs/investigations/frame-rate/CASE.md, 2026-11-01).
-  const ROW_LAYER_IDS = ["oni-event-ui-layer", "fu-shopopen-layer-v1", "fu-innopen-layer-v1", "fu-refineopen-layer-v1"];
-  const ROW_ORDER = ["is-talk", "fu-shop-btn", "fu-refine-prox-btn", "fu-inn-prox-btn"];
+  // shopOpen-ui, innOpen-ui, refineOpen-ui, orbment/alchemist-open, crafting-open).
+  // Searching the layers instead of the whole page matters because this runs every
+  // frame: on the GM's ~24k-element page the document-wide search took 14–22% of the
+  // main thread, on battle maps with no NPC button at all
+  // (docs/investigations/frame-rate/CASE.md, 2026-11-01).
+  const ROW_LAYER_IDS = ["oni-event-ui-layer", "fu-shopopen-layer-v1", "fu-innopen-layer-v1", "fu-refineopen-layer-v1", "fu-alchemist-layer-v1", "fu-craft-layer-v1"];
+  const ROW_ORDER = ["is-talk", "fu-shop-btn", "fu-refine-prox-btn", "fu-alch-prox-btn", "fu-craft-prox-btn", "fu-inn-prox-btn"];
   const ROW_SLOT_PX = 44;
   const ROW_LIFT_PX = 8;
 
@@ -493,7 +494,8 @@
     { layerId: "oni-event-ui-layer", selector: ".oni-event-btn.is-visible:not(.is-talk):not(.is-hiding)", rank: 0 },
     { id: "oni-tp-hud-btn", rank: 1 },
     { layerId: "oni-pose-spot-layer", selector: ".oni-pose-btn.is-visible", rank: 2 },
-    { layerId: "oni-fishing-spot-layer", selector: ".oni-fish-spot-btn.is-visible", rank: 3 }
+    { layerId: "oni-fishing-spot-layer", selector: ".oni-fish-spot-btn.is-visible", rank: 3 },
+    { layerId: "oni-craft-spot-layer", selector: ".oni-craft-spot-btn.is-visible", rank: 4 }
   ];
   const FREE_GAP_PX = 8;
 

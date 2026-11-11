@@ -1242,6 +1242,12 @@ Hooks.once("ready", () => {
   import("../orbment/orbment-bootstrap.js")
     .then((m) => m.initOrbment())
     .catch((e) => warn("initOrbment failed to load", e));
+  // Crafting System (Blueprints): Crafter NPCs, crafting-table Regions, the
+  // GM Blueprint Editor and Camp Forge → Craft. Self-contained under
+  // scripts/crafting-system/. See [[project_crafting_system]].
+  import("../crafting-system/crafting-bootstrap.js")
+    .then((m) => m.initCrafting())
+    .catch((e) => warn("initCrafting failed to load", e));
   // Inner Wellspring (Invoker heroic): camp picker + first-pick window + the
   // rest-time self-AE. Self-contained under scripts/inner-wellspring/.
   import("../inner-wellspring/inner-wellspring-bootstrap.js")

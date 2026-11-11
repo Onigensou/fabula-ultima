@@ -255,7 +255,7 @@
       target:        "Yourself",
       icon:          "fas fa-hammer",
       requiredClass: ["Merchant", "Tinkerer", "Pilot"],
-      desc:          "Attune any number of sockets on one piece of your own gear, free. Each marked socket gets a new random Orbment.",
+      desc:          "Attune any number of sockets on one piece of your own gear for free, or craft one item from your camp Blueprints.",
     },
     {
       key:           "cartography",
