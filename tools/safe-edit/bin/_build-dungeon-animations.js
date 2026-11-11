@@ -35,6 +35,7 @@ const RK = require(path.join(ANIM_LIB, "lib", "rakshasa-signatures.js"));
 const FF = require(path.join(ANIM_LIB, "lib", "fafnir-signatures.js"));
 const KR = require(path.join(ANIM_LIB, "lib", "kirin-signatures.js"));
 const DV = require(path.join(ANIM_LIB, "lib", "deva-signatures.js"));
+const AS = require(path.join(ANIM_LIB, "lib", "asura-signatures.js"));
 const PS = require(path.join(ANIM_LIB, "lib", "passive-pxfx-signatures.js"));
 const { encode, validate } = require(path.join(ANIM_LIB, "lib", "encode.js"));
 
@@ -256,12 +257,8 @@ const REGISTRY = {
                explosion: true, shakeMs: 620, sfxSweep: "Attack3", sfxSweepVol: 0.6,
                sfxExplosion: "Explosion1", sfxExplosionVol: 0.6 },
       }),
-      "Asura Strike": () => G.quadElementalSlash({
-        key: "asura-quad-elemental-slash", name: "Asura Strike",
-        cfg: { sfxCharge: "ChargeAttack", sfxChargeVol: 0.6,
-               sfxSlash: "Attack3", sfxSlashVol: 0.55,
-               sfxImpact: "Explosion2", sfxImpactVol: 0.85 },
-      }),
+      // Approved mockup (artifact Ebj65AytDRWSo1MydXYpFe v3.12, 2026-11-11); numbers live in asura-signatures.js.
+      "Asura Strike": () => AS.asuraStrike({ key: "asura-strike", name: "Asura Strike" }),
       "Sword Enchant - Fire": () => T.burst({
         key: "asura-enchant-fire", name: "Sword Enchant - Fire",
         cfg: { color: C.fire, gatherMs: 620, count: 44, radius: 200, life: 1000,

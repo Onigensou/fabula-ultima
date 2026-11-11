@@ -46,6 +46,7 @@ doomsday clock, "ever-increasing strength" lore and the elemental theme at once.
 | 2026-10-20 | Removed from the Valley Encounter table | standalone story elite | user | — |
 | 2026-10-31 | Display rename: Quad-Elemental Slash → Asura Strike | User naming pass; no mechanical change | user | name-only diff proved |
 | 2026-10-31 | IM Charm | solo elite rule: a charmed solo monster has its gameplan shut down | user | — |
+| 2026-11-11 | Story-elite retune: Asura Strike 45 → 90 per strike; Elemental Slash + (Enchanted) 42 → 48; Overflow 20 → 25; HP 900 → 1200. Asura Strike cooldown kept at 3 for playtesting | Fight read trivial (sim 11-11: win r3 at 85% party HP; Strike fired every round for ~140 real damage per cast after affinities). New target for this story elite: party ends at 25–45% HP, 4–5 rounds, 2 Strikes. User: "Asura Strike is the signature — filler moves meet the condition, then a devastating Strike". Cadence left alone on purpose: "if the party can make an active choice not to give him these elements, it's fine" | user | pending playtest |
 
 ```json dossier
 {
