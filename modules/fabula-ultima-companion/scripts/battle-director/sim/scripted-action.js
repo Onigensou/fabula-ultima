@@ -235,10 +235,14 @@ function scriptedBundle(item, targetUuids) {
   const isConsumable = String(p.item_type ?? "").trim().toLowerCase() === "consumable";
   // A UUID STRING (what composeItem passes): DECLARE runs it through fromUuid().
   const linked = isConsumable ? getLinkedSkillUuid(item) : null;
-  if (isConsumable && linked) {
+  // A consumable WITHOUT a linked skill is still an Item action: the real Item
+  // menu (gatherConsumables) lists every consumable and DECLARE's Item branch
+  // falls back to the consumable itself (a Polymorph Potion is one). Before,
+  // these were scripted as a Skill and skipped the Item path entirely.
+  if (isConsumable) {
     return {
       command: "Item", skillUuid: item.uuid, sourceItemUuid: item.uuid,
-      linkedSkillUuid: linked, itemMode: "use", itemKey: item.id, itemCost: 0,
+      linkedSkillUuid: linked ?? null, itemMode: "use", itemKey: item.id, itemCost: 0,
       targetUuids, _name: item.name, _scripted: true,
     };
   }
