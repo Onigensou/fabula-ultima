@@ -984,6 +984,15 @@ async function resolveAction(director, ar, opts = {}) {
         const valueDirection = dmgRes.valueDirection;
         const damageTypeForPayload = valueDirection === "recover" ? "healing" : ar.damageType;
 
+        // Rider cosmetics (rider-cosmetic.js): a damage rider folded into this hit
+        // (Giant Killer's +2n, Lockdown's cut) plays its carrier's own shot on the
+        // struck creature now, at impact. Display only, never awaited.
+        if (r.bonusBreakdown?.ops?.length) {
+          import("./rider-cosmetic.js")
+            .then((m) => m.playRiderCosmetics({ attackerActor: casterActor, attackerTokenUuid: ar.attacker?.tokenUuid ?? null, row: r }))
+            .catch((e) => warn("resolveAction: rider cosmetic threw", e));
+        }
+
         // Roll-up for the per-action creature_completes_action trigger: record
         // any target whose HP actually dropped (positive HP loss).
         if (valueType === "hp" && valueDirection === "loss" && finalValue > 0) {

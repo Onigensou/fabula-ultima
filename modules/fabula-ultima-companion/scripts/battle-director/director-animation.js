@@ -469,6 +469,7 @@ async function executeAnimationScript({
   timeoutMs = 35000,
   stageJob = undefined,
   strikes = null,
+  variant = null,
 }) {
   // Backgrounded window with nobody else connected: don't run the script at
   // all. Sequencer would only queue effects that burst-replay on refocus — the
@@ -517,6 +518,9 @@ async function executeAnimationScript({
     // reads it as `oni.strikes` — e.g. whiff on a miss, gold flash on a crit.
     // null when the action is not a Chain.
     strikes: strikes ?? null,
+    // Which take of a multi-take script to play: the `#variant` suffix of a
+    // play_animation row's action_ref ("Bane Oils#slow:beast"). null = default take.
+    variant: variant ?? null,
   };
 
   const fn = compileScript(script);
@@ -828,7 +832,7 @@ function warnUncuedChain(script, plan, presenter, ar) {
 // hit land at the script's impact moment, exactly like a turn action. Reuses
 // resolveAnimationSpec (spec from the item's props) + executeAnimationScript
 // (script run + selection bridge + gate). Returns { played: bool, reason? }.
-export async function playSkillAnimation({ skillUuid, casterTokenUuid, targetTokenUuids = [] } = {}) {
+export async function playSkillAnimation({ skillUuid, casterTokenUuid, targetTokenUuids = [], variant = null } = {}) {
   if (!skillUuid) return { played: false, reason: "no-skill" };
   const spec = await resolveAnimationSpec({ skillUuid });
   if (!spec.hasScript) return { played: false, reason: "no-script" };
@@ -857,6 +861,7 @@ export async function playSkillAnimation({ skillUuid, casterTokenUuid, targetTok
     targetTokenUuids,
     abortPromise: null,
     timeoutMs: 35000,
+    variant,
   });
   // Fast-forwarded (hidden window, nobody else watching): the script never ran,
   // so no emit is coming — settle now instead of holding round_end on the
@@ -874,7 +879,10 @@ export async function playSkillAnimation({ skillUuid, casterTokenUuid, targetTok
 // the same fallback the weapon path reads. Cosmetic only: nothing waits on it,
 // no battler pose, the wearer is the "caster". Returns { played, reason? }.
 const CARRIER_STAGE_CAP_MS = 250;
-export async function playCarrierAnimation({ item, casterTokenUuid } = {}) {
+// Optional (rider cosmetics, rider-cosmetic.js): `targetTokenUuids` for the
+// creature the rider struck, `variant` (which take) and `amount` (the rider's
+// own number, e.g. Giant Killer's +4) reach the script's payload.
+export async function playCarrierAnimation({ item, casterTokenUuid, targetTokenUuids = [], variant = null, amount = null } = {}) {
   try {
     if (!item || !casterTokenUuid) return { played: false, reason: "no-item" };
     const p = item.system?.props ?? {};
@@ -897,15 +905,19 @@ export async function playCarrierAnimation({ item, casterTokenUuid } = {}) {
     // only (the full cap is seconds); a cold client catches up in the shot's own load.
     const staged = await Promise.race([waitStaged(stageScript(spec.script)), new Promise((r) => setTimeout(() => r({ capped: true }), CARRIER_STAGE_CAP_MS))]);
     if (staged?.capped || staged?.timedOut) log("[BD Anim] carrier animation: playing before every client acked staging");
+    const tUuids = Array.isArray(targetTokenUuids) ? targetTokenUuids.filter(Boolean) : [];
+    const tTokens = tUuids.map((u) => canvas?.tokens?.get?.(String(u).split(".Token.").pop()) ?? null).filter(Boolean);
     const payload = {
       sourceTokenUuid: casterTokenUuid, casterTokenUuid,
-      targetTokenUuids: [], targetTokenIds: [], targets: [],
+      targetTokenUuids: tUuids, targetTokenIds: tUuids,
+      targets: tUuids.map((u) => ({ tokenUuid: u, tokenId: String(u).split(".Token.").pop() })),
       animationScriptRaw: spec.script, outcomes: null, strikes: null,
+      variant: variant ?? null, amount: amount ?? null,
     };
     const prevPayload = globalThis.__PAYLOAD, prevTargets = globalThis.__TARGETS;
-    globalThis.__PAYLOAD = payload; globalThis.__TARGETS = [];
+    globalThis.__PAYLOAD = payload; globalThis.__TARGETS = tTokens;
     let result;
-    try { result = fn(payload, []); }
+    try { result = fn(payload, tTokens); }
     finally { globalThis.__PAYLOAD = prevPayload; globalThis.__TARGETS = prevTargets; }
     if (result && typeof result.then === "function") await result;
     return { played: true };

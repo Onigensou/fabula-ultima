@@ -5005,7 +5005,12 @@ async function applyDelayEffect(row, ctx) {
 async function applyPlayAnimationEffect(row, ctx) {
   if (ctx?.captureMode || ctx?.mode === "preview") return { ok: true, kind: "play_animation", skipped: true };
   const reactor = ctx.reactorActor ?? null;
-  const ref = String(row.action_ref ?? "").trim();
+  // "<skill>#<variant>" picks one take of a multi-take script (Bane Oils#slow:beast);
+  // the script reads it as payload.variant. No "#" = the default take, as before.
+  const rawRef = String(row.action_ref ?? "").trim();
+  const hashAt = rawRef.indexOf("#");
+  const ref = hashAt >= 0 ? rawRef.slice(0, hashAt).trim() : rawRef;
+  const variant = hashAt >= 0 ? rawRef.slice(hashAt + 1).trim() || null : null;
   let skillUuid = /Item\./.test(ref) ? ref : null;
   if (!skillUuid && ref && reactor) skillUuid = reactor.items?.getName?.(ref)?.uuid ?? null;
   if (!skillUuid) return { ok: true, kind: "play_animation", skipped: true, reason: "no-skill-ref" };
@@ -5048,7 +5053,7 @@ async function applyPlayAnimationEffect(row, ctx) {
 
   try {
     const anim = await import("./director-animation.js");
-    const res = await anim.playSkillAnimation({ skillUuid, casterTokenUuid, targetTokenUuids });
+    const res = await anim.playSkillAnimation({ skillUuid, casterTokenUuid, targetTokenUuids, variant });
     // playSkillAnimation RETURNS at the damage gate (drop-stop) so a following
     // deal_damage lands at impact. But the full cinematic (return-home motion) is
     // still playing — stash its end-promise so the reaction dispatcher waits for
