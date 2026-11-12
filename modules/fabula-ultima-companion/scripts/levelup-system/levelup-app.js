@@ -516,7 +516,7 @@ const LevelUpApp = {
   // and the point counter as three updates, and re-rendering between them
   // showed a drift warning for the instant the books didn't balance. Batching
   // means the window never observes a half-applied spend.
-  _pending: [],         // [{ op:"spend"|"refund"|"heroic"|"unlearn", classKey, skillUuid, skillKey, benefit }]
+  _pending: [],         // [{ op:"spend"|"refund"|"heroic"|"unlearn"|"choose", classKey, skillUuid, skillKey, benefit, facetUuids, choiceKeys }]
   _applying: false,
   _onClose: null,       // one-shot, set by open(); see open()
 
@@ -688,7 +688,7 @@ const LevelUpApp = {
     const bump = (m, k, d) => m.set(k, (m.get(k) ?? 0) + d);
 
     for (const p of this._pending) {
-      if (p.op === "heroic" || p.op === "unlearn") continue;   // no points move
+      if (p.op === "heroic" || p.op === "unlearn" || p.op === "choose") continue;   // no points move
       const d = p.op === "spend" ? 1 : -1;
       bump(classDelta, p.classKey, d);
       bump(skillDelta, p.skillUuid, d);
@@ -1097,7 +1097,8 @@ const LevelUpApp = {
         cls: `${atMax ? "max" : ""} ${lvl === 0 ? "miss" : ""}`,
         detail: {
           name: sk.name, img: sk.img, cost: sk.cost,
-          meta: `${lvl} / ${sk.maxLevel}${sk.facetGrant ? ` · grants ${sk.facetGrant} Facet${sk.facetGrant === 1 ? "" : "s"} per level` : ""}`,
+          meta: `${lvl} / ${sk.maxLevel}${sk.facetGrant ? ` · grants ${sk.facetGrant} Facet${sk.facetGrant === 1 ? "" : "s"} per level` : ""}${
+            sk.choice ? ` · ${sk.choice.label}: ${sk.choice.options.filter((o) => o.held).map((o) => o.label).join(", ") || "none chosen"}` : ""}`,
           description: sk.description,
         },
         // The − only exists in Reset mode; the + stays put but goes inert, so
@@ -1109,6 +1110,7 @@ const LevelUpApp = {
             ? `<button class="lu-btn sell" data-act="refund" data-key="${esc(cls.key)}" data-uuid="${esc(sk.uuid)}"
                 ${canRefund ? "" : "disabled"} title="${esc(refundTitle)}">−</button>`
             : "") +
+          this._choiceOwedBtn(sk) +
           `<span class="lu-pips ${moved ? "moved" : ""}">${lvl} / ${sk.maxLevel}</span>` +
           this._facetEditBtn(sk) +
           `<button class="lu-btn buy" data-act="spend" data-key="${esc(cls.key)}" data-uuid="${esc(sk.uuid)}"
@@ -1131,15 +1133,32 @@ const LevelUpApp = {
       ${skills || `<div class="lu-empty">This class has no skills authored.</div>`}`;
   },
 
+  /**
+   * Per-level choices a held skill still owes ("Choose Species (2)"). Shown with
+   * no point to spend: the choice was owed by levels already taken — a character
+   * who held the skill before the window asked, or one who skipped the ask.
+   */
+  _choiceOwedBtn(sk) {
+    if (this._creation || !sk.choice || sk.level < 1) return "";
+    const staged = this._pending
+      .filter((p) => p.op === "choose" && p.skillKey === sk.key)
+      .reduce((n, p) => n + (p.choiceKeys?.length ?? 0), 0);
+    const left = sk.choice.owed - staged;
+    if (left <= 0) return "";
+    return `<button class="lu-btn" style="width:auto;padding:2px 10px" data-act="choose" data-uuid="${esc(sk.uuid)}"
+      data-key="${esc(sk.key)}" title="${esc(`${sk.name} still owes ${left} ${sk.choice.noun} — no point needed`)}">Choose ${esc(sk.choice.label)} (${left})</button>`;
+  },
+
   // Revisit a Facet choice that is staged but not yet written. Only offered
   // while the batch is unconfirmed — afterwards the items exist on the sheet
   // and are the GM's to manage.
   _facetEditBtn(sk) {
     const idx = this._pending.findIndex(
-      (p) => p.skillUuid === sk.uuid && Array.isArray(p.facetUuids) && p.facetUuids.length
+      (p) => p.skillUuid === sk.uuid
+        && ((Array.isArray(p.facetUuids) && p.facetUuids.length) || (Array.isArray(p.choiceKeys) && p.choiceKeys.length))
     );
     if (idx < 0) return "";
-    const n = this._pending[idx].facetUuids.length;
+    const n = (this._pending[idx].facetUuids?.length || 0) + (this._pending[idx].choiceKeys?.length || 0);
     return `<button class="lu-btn edit" data-act="facetedit" data-idx="${idx}"
       title="Change the ${n === 1 ? "chosen one" : `${n} chosen`}">✎</button>`;
   },
@@ -1183,8 +1202,13 @@ const LevelUpApp = {
     const facetsOut = this._pending.filter((p) => p.op === "refund").flatMap((p) => p.facetUuids ?? []).length;
     if (facetsIn) bits.push(`+${facetsIn} facet${facetsIn === 1 ? "" : "s"}`);
     if (facetsOut) bits.push(`−${facetsOut} facet${facetsOut === 1 ? "" : "s"}`);
+    const choicesIn = this._pending.filter((p) => p.op === "spend" || p.op === "choose").flatMap((p) => p.choiceKeys ?? []).length;
+    const choicesOut = this._pending.filter((p) => p.op === "refund").flatMap((p) => p.choiceKeys ?? []).length;
+    if (choicesIn) bits.push(`+${choicesIn} chosen`);
+    if (choicesOut) bits.push(`−${choicesOut} given back`);
     const spent = s.points.stored - proj.points;
-    const cost = spent > 0 ? `${spent} point${spent === 1 ? "" : "s"} spent` : `${-spent} point${spent === -1 ? "" : "s"} returned`;
+    const cost = spent > 0 ? `${spent} point${spent === 1 ? "" : "s"} spent`
+      : spent < 0 ? `${-spent} point${spent === -1 ? "" : "s"} returned` : "no points used";
     return `${bits.join(" · ")}  —  ${cost}`;
   },
 
@@ -1648,6 +1672,9 @@ const LevelUpApp = {
       // Confirm — a batch that stops to ask questions halfway through is worse
       // than one that asked up front. The picker stages the operation itself.
       if (this._openFacetPicker(act, btn.dataset.key, btn.dataset.uuid)) return;
+      // Skills that ask for a choice each level (Bane Oils' species) — same
+      // overlay, same rule: asked up front, staged with the level.
+      if (this._openChoicePicker(act, btn.dataset.key, btn.dataset.uuid)) return;
 
       this._pending.push({ op: act, classKey: btn.dataset.key, skillUuid: btn.dataset.uuid });
       return this.render();
@@ -1685,7 +1712,15 @@ const LevelUpApp = {
     if (act === "facetok") {
       const f = this._facet;
       this._facet = null;
-      if (f) {
+      if (f?.mode === "choice") {
+        if (f.editIndex >= 0) this._pending[f.editIndex].choiceKeys = f.selected;
+        else if (f.act === "choose") this._pending.push({
+          op: "choose", skillKey: f.skillKey, skillUuid: f.skillUuid, name: f.skillName, choiceKeys: f.selected,
+        });
+        else this._pending.push({
+          op: f.act, classKey: f.classKey, skillUuid: f.skillUuid, choiceKeys: f.selected,
+        });
+      } else if (f) {
         if (f.editIndex >= 0) this._pending[f.editIndex].facetUuids = f.selected;
         else this._pending.push({
           op: f.act, classKey: f.classKey, skillUuid: f.skillUuid, facetUuids: f.selected,
@@ -1696,7 +1731,14 @@ const LevelUpApp = {
     if (act === "facetedit") {
       const idx = Number(btn.dataset.idx);
       const p = this._pending[idx];
-      if (p) this._openFacetPicker(p.op, p.classKey, p.skillUuid, idx);
+      if (p?.choiceKeys?.length) this._openChoicePicker(p.op, p.classKey, p.skillUuid, idx);
+      else if (p) this._openFacetPicker(p.op, p.classKey, p.skillUuid, idx);
+      return;
+    }
+
+    if (act === "choose") {
+      sfx("stageUp");
+      this._openChoicePicker("choose", null, btn.dataset.uuid);
       return;
     }
 
@@ -1762,6 +1804,7 @@ const LevelUpApp = {
       ...this._pending.filter((p) => p.op === "unlearn"),
       ...this._pending.filter((p) => p.op === "refund"),
       ...this._pending.filter((p) => p.op === "spend"),
+      ...this._pending.filter((p) => p.op === "choose"),
       ...this._pending.filter((p) => p.op === "heroic"),
     ];
 
@@ -1779,16 +1822,19 @@ const LevelUpApp = {
         } else if (p.op === "refund") {
           res = await A.refundPoint({
             actorUuid: this._actorUuid, classKey: p.classKey, skillUuid: p.skillUuid,
-            facetUuids: p.facetUuids,
+            facetUuids: p.facetUuids, choiceKeys: p.choiceKeys,
           });
           if (res?.ok) lost.push(p.skillUuid);
         } else if (p.op === "spend") {
           res = await A.spendPoint({
             actorUuid: this._actorUuid, classKey: p.classKey, skillUuid: p.skillUuid,
             benefit: p.benefit ?? this._benefitFor(p.classKey),
-            facetUuids: p.facetUuids,
+            facetUuids: p.facetUuids, choiceKeys: p.choiceKeys,
           });
           if (res?.ok && res.mastered) mastered = true;
+          if (res?.ok) gained.push(p.skillUuid);
+        } else if (p.op === "choose") {
+          res = await A.chooseOptions({ actorUuid: this._actorUuid, skillKey: p.skillKey, choiceKeys: p.choiceKeys });
           if (res?.ok) gained.push(p.skillUuid);
         } else {
           res = await A.pickHeroic({ actorUuid: this._actorUuid, skillUuid: p.skillUuid });
@@ -1876,6 +1922,57 @@ const LevelUpApp = {
       selected: editIndex >= 0 ? [...(this._pending[editIndex].facetUuids ?? [])] : [],
       // Auto-advance to the confirmation only ever fires from a toggle, so
       // opening the editor on an already-complete choice stays on the picker.
+      stage: "pick",
+    };
+    this.render();
+    return true;
+  },
+
+  /**
+   * Open the per-level choice picker (levelup-choices.js) for a spend, a refund,
+   * a catch-up ("choose"), or to edit a staged choice. Reuses the Facet overlay
+   * and its `_facet` state, with `mode: "choice"`; a pool entry's `uuid` is the
+   * choice key. Returns false when there is nothing to ask, so a plain level is
+   * staged as normal.
+   */
+  _openChoicePicker(act, classKey, skillUuid, editIndex = -1) {
+    const s = this._readState();
+    let cls = null, sk = null;
+    for (const c of s?.classes ?? []) {
+      if (classKey && c.key !== classKey) continue;
+      const hit = c.skills.find((k) => k.uuid === skillUuid);
+      if (hit) { cls = c; sk = hit; break; }
+    }
+    const ch = sk?.choice;
+    if (!cls || !ch) return false;
+
+    // Where this skill stands once the OTHER staged operations land.
+    const others = this._pending.filter((p, i) => i !== editIndex && p.skillUuid === skillUuid);
+    const levelNow = sk.level
+      + others.filter((p) => p.op === "spend").length
+      - others.filter((p) => p.op === "refund").length;
+    const pickedByOthers = new Set(others.filter((p) => p.op !== "refund").flatMap((p) => p.choiceKeys ?? []));
+    const givenByOthers = new Set(others.filter((p) => p.op === "refund").flatMap((p) => p.choiceKeys ?? []));
+    const heldNow = ch.options.filter((o) => (o.held && !givenByOthers.has(o.key)) || pickedByOthers.has(o.key));
+
+    let pool, need;
+    if (act === "refund") {
+      pool = heldNow;
+      need = Math.max(0, heldNow.length - Math.max(0, levelNow - 1) * ch.perLevel);
+    } else {
+      pool = ch.options.filter((o) => !heldNow.includes(o));
+      const reach = act === "spend" ? levelNow + 1 : levelNow;   // "choose" settles what is owed now
+      need = Math.max(0, reach * ch.perLevel - heldNow.length);
+    }
+    need = Math.min(need, pool.length);
+    if (!need) return false;
+
+    this._facet = {
+      mode: "choice", act, classKey: cls.key, skillUuid, skillKey: sk.key, editIndex,
+      className: cls.name, skillName: sk.name, noun: ch.noun,
+      need,
+      pool: pool.map((o) => ({ uuid: o.key, name: o.label, img: o.img, cost: "", description: "" })),
+      selected: editIndex >= 0 ? [...(this._pending[editIndex].choiceKeys ?? [])] : [],
       stage: "pick",
     };
     this.render();
@@ -2250,8 +2347,9 @@ const LevelUpApp = {
   _facetOverlay() {
     const f = this._facet;
     if (!f) return "";
-    const noun = this._facetNoun(f.className);
-    const plural = (n) => `${noun}${n === 1 ? "" : "s"}`;
+    const noun = f.noun ?? this._facetNoun(f.className);
+    // "species" is its own plural.
+    const plural = (n) => (f.noun ? noun : `${noun}${n === 1 ? "" : "s"}`);
 
     if (f.stage === "confirm") {
       const chosen = f.selected
@@ -2259,10 +2357,10 @@ const LevelUpApp = {
         .filter(Boolean);
       return `<div class="lu-facet"><div class="lu-panel lu-facetpanel lu-confirmpanel">
         <div class="lu-head"><div>
-          <div class="lu-name">${f.act === "spend" ? "Confirm your choice" : "Confirm what you give back"}</div>
+          <div class="lu-name">${f.act !== "refund" ? "Confirm your choice" : "Confirm what you give back"}</div>
           <div class="lu-sub">${esc(f.skillName)}</div></div></div>
         <div class="lu-main">
-          <p class="lu-lore">${f.act === "spend"
+          <p class="lu-lore">${f.act !== "refund"
             ? `You will learn ${chosen.length === 1 ? "this" : "these"} ${plural(chosen.length)}:`
             : `You will unlearn ${chosen.length === 1 ? "this" : "these"} ${plural(chosen.length)}:`}</p>
           ${chosen.map((c) => `<div class="lu-fbtn is-on" style="cursor:default">
@@ -2282,9 +2380,9 @@ const LevelUpApp = {
     return `<div class="lu-facet"><div class="lu-panel lu-facetpanel">
       <div class="lu-head"><div>
         <div class="lu-name">${esc(f.skillName)}</div>
-        <div class="lu-sub">${f.act === "spend"
+        <div class="lu-sub">${f.act !== "refund"
           ? `Choose ${f.need} ${plural(f.need)}`
-          : `Choose 1 ${noun} to give back`} — ${left > 0 ? `${left} to go` : "ready"}</div></div>
+          : `Choose ${f.need} ${plural(f.need)} to give back`} — ${left > 0 ? `${left} to go` : "ready"}</div></div>
         <button class="lu-x" data-act="facetcancel" title="Back to the skill tree">×</button>
       </div>
       <div class="lu-main">
@@ -2299,7 +2397,7 @@ const LevelUpApp = {
       </div>
       <div class="lu-foot">
         <span class="lu-foottext">${f.selected.length} of ${f.need} chosen${
-          f.editIndex >= 0 ? "" : " — the level is not taken unless you choose"}</span>
+          f.editIndex >= 0 || f.act === "choose" ? "" : " — the level is not taken unless you choose"}</span>
         <button class="lu-cta ghost" data-act="facetcancel">${
           f.editIndex >= 0 ? "Keep as is" : "Cancel"}</button>
       </div>

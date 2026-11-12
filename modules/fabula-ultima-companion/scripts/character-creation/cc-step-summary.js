@@ -261,12 +261,18 @@ function classCard(d) {
       else skills.push({ uuid: r.skillUuid, name: r.skillName, n: 1 });
     }
     const facets = rows.flatMap((r) => r.facetUuids ?? []).length;
+    // Per-level choices (Bane Oils' species) are named, not counted: they are
+    // what the skill will actually do in play.
+    for (const r of rows) {
+      const s = skills.find((x) => x.uuid === r.skillUuid);
+      (r.choiceKeys ?? []).forEach((k, i) => (s.choices ??= []).push(r.choiceLabels?.[i] ?? k));
+    }
     return `
       <div class="cc-row" style="margin-top:6px">
         <strong style="color:#3a1e06">${esc(name)}</strong>
         <span class="r">level ${levels[key]}${benefit ? ` · ${esc(BENEFIT[benefit] ?? benefit)}` : ""}</span>
       </div>
-      <div class="cc-sub">${skills.map((s) => `${esc(s.name)} ${s.n}`).join(" · ")}${
+      <div class="cc-sub">${skills.map((s) => `${esc(s.name)} ${s.n}${s.choices?.length ? ` (${esc(s.choices.join(", "))})` : ""}`).join(" · ")}${
         facets ? ` · ${facets} learned` : ""}</div>`;
   }).join("");
 

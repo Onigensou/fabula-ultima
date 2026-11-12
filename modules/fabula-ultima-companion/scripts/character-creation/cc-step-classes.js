@@ -106,7 +106,7 @@ export function facetNeed(d, cls, skill) {
 }
 
 /** Append one spend. Assumes canSpend already said yes. */
-export function applySpend(d, cls, skill, { benefit = null, facetUuids = [] } = {}) {
+export function applySpend(d, cls, skill, { benefit = null, facetUuids = [], choiceKeys = [], choiceLabels = [] } = {}) {
   d.classes.push({
     classKey: cls.key,
     className: cls.name,
@@ -122,6 +122,11 @@ export function applySpend(d, cls, skill, { benefit = null, facetUuids = [] } = 
     // API ignores it on rows after the first in a class.
     benefit: benefit ?? cls.benefit ?? null,
     facetUuids: [...facetUuids],
+    // Per-level choices this level made (Bane Oils' species — levelup-choices.js).
+    // They ride the row, so removing the level gives them back with it, exactly
+    // as a Facet does; labels are carried for the summaries.
+    choiceKeys: [...choiceKeys],
+    choiceLabels: [...choiceLabels],
   });
 }
 
@@ -497,11 +502,13 @@ function summaryHTML(d) {
     for (const r of rows) {
       let hit = skills.find((x) => x.uuid === r.skillUuid);
       if (!hit) {
-        hit = { uuid: r.skillUuid, name: r.skillName, img: r.skillImg ?? "", n: 0, facets: [] };
+        hit = { uuid: r.skillUuid, name: r.skillName, img: r.skillImg ?? "", n: 0, facets: [], choices: [] };
         skills.push(hit);
       }
       hit.n++;
       for (const fu of r.facetUuids ?? []) if (!hit.facets.includes(fu)) hit.facets.push(fu);
+      // Per-level choices (Bane Oils' species), by label, under the skill like a facet.
+      (r.choiceKeys ?? []).forEach((k, i) => hit.choices.push(r.choiceLabels?.[i] ?? k));
     }
     const mastered = rows.length >= MAX_CLASS_LEVEL;
 
@@ -518,13 +525,20 @@ function summaryHTML(d) {
         <div class="cc-cl-skills">
           ${skills.map((sk) => {
             const blurb = blurbs.get(sk.uuid) ?? "";
+            const total = sk.facets.length + sk.choices.length;
             const facetRows = sk.facets.map((fu, i) => {
               const info = facets.get(fu) ?? { name: fu, img: "" };
-              const last = i === sk.facets.length - 1;
+              const last = i === total - 1;
               return `<div class="cc-cl-facet ${last ? "is-last" : ""}">
                 <span class="cc-cl-elbow"></span>
                 <img src="${esc(info.img || CC.DEFAULT_IMG)}" alt="">
                 <span class="cc-cl-fname">${esc(info.name)}</span>
+              </div>`;
+            }).join("") + sk.choices.map((label, i) => {
+              const last = sk.facets.length + i === total - 1;
+              return `<div class="cc-cl-facet ${last ? "is-last" : ""}">
+                <span class="cc-cl-elbow"></span>
+                <span class="cc-cl-fname">${esc(label)}</span>
               </div>`;
             }).join("");
             return `<div class="cc-cl-skillrow">
@@ -719,6 +733,14 @@ async function onPanelClick(ev, v, d, ctx) {
     // worth having even when its list is exhausted.
     if (openFacetPicker(v, d, cls, skill, benefit)) return;
 
+    // Skills that ask for a choice each level (Bane Oils: "each time you take
+    // this Skill, choose a creature Species"). The level-up window's own
+    // picker, and its rule: no choice, no level.
+    if (v._openChoicePicker("spend", cls.key, skill.uuid)) {
+      v._facet.ccBenefit = benefit;
+      return;
+    }
+
     sfx("stageUp");
     commit((dd) => applySpend(dd, cls, skill, { benefit }));
     return;
@@ -766,6 +788,11 @@ async function onPanelClick(ev, v, d, ctx) {
     const skill = cls?.skills.find((x) => x.uuid === f.skillUuid);
     if (!cls || !skill) { v.render(); return; }
     sfx("stageUp");
+    if (f.mode === "choice") {
+      const labels = f.selected.map((k) => f.pool.find((o) => o.uuid === k)?.name ?? k);
+      commit((dd) => applySpend(dd, cls, skill, { benefit: f.ccBenefit, choiceKeys: f.selected, choiceLabels: labels }));
+      return;
+    }
     commit((dd) => applySpend(dd, cls, skill, { benefit: f.ccBenefit, facetUuids: f.selected }));
   }
 }

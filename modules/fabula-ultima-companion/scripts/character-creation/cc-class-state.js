@@ -34,6 +34,7 @@ import { LEVELUP } from "../levelup-system/levelup-const.js";
 import {
   draftPointPool, draftPointsSpent, draftPointsLeft, draftLevel,
 } from "./cc-draft.js";
+import { choiceSpecFor, choiceViewOf } from "../levelup-system/levelup-choices.js";
 
 /** Levels taken in each class, keyed by class key. */
 function classLevels(draft) {
@@ -50,6 +51,22 @@ function skillLevels(draft) {
 }
 
 /** Every facet uuid the draft has claimed. */
+/** Per-level choice keys (Bane Oils' species) the draft has made for a skill. */
+export function draftChoiceKeys(draft, skillUuid) {
+  return (draft?.classes ?? []).filter((c) => c.skillUuid === skillUuid).flatMap((c) => c.choiceKeys ?? []);
+}
+
+/**
+ * getState's `skill.choice` for a draft skill. The options come from the class
+ * copy (every choice disabled there); what counts as held is what the draft's
+ * picks recorded. null for a skill that asks no per-level choice.
+ */
+function draftChoice(draft, s, level) {
+  if (!choiceSpecFor(s.name)) return null;
+  const item = typeof fromUuidSync === "function" ? fromUuidSync(s.uuid) : null;
+  return choiceViewOf(item, level, draftChoiceKeys(draft, s.uuid));
+}
+
 function heldFacets(draft) {
   return new Set((draft?.classes ?? []).flatMap((c) => c.facetUuids ?? []));
 }
@@ -104,6 +121,7 @@ export function draftState(draft) {
           level: lvl,
           atMax: lvl >= s.maxLevel,
           facetGrant: cls.facets.length ? s.facetGrant : 0,
+          choice: draftChoice(draft, s, lvl),
         };
       }),
       facets: cls.facets.map((f) => ({

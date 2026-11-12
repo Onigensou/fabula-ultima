@@ -30,6 +30,7 @@ import {
   isContained, readStash, stashUuid,
 } from "./requirement-eval.js";
 import { gateState } from "./levelup-gate.js";
+import { readChoices, checkPicks, checkGiveBack, setPicks, choiceViewOf } from "./levelup-choices.js";
 import { isActingGM, registerHandler, request, installNet } from "../advancement/advancement-net.js";
 import { isAdvancementSubject, subjectFailure } from "../advancement/advancement-subject.js";
 
@@ -344,6 +345,9 @@ export function getState(actorUuid) {
           // >0 → taking a level also awards this many Facets. Zero when the
           // class has none authored, so Pilot's Personal Vehicle never prompts.
           facetGrant: cls.facets.length ? s.facetGrant : 0,
+          // "Each time you take this Skill, choose …" (levelup-choices.js). The
+          // options come from the character's copy when held, else the class's.
+          choice: choiceView(h ? h.item : (typeof fromUuidSync === "function" ? fromUuidSync(s.uuid) : null), h ? h.level : 0),
         };
       }),
       facets: cls.facets.map((f) => ({
@@ -401,6 +405,9 @@ export function getState(actorUuid) {
   };
 }
 
+/** The window's view of a skill's per-level choice, or null. */
+const choiceView = (item, level) => choiceViewOf(item, level);
+
 // ── validation ─────────────────────────────────────────────────────────────
 
 function validateSpend(actor, cls, skill) {
@@ -431,7 +438,7 @@ function validateSpend(actor, cls, skill) {
 
 // ── mutations (GM-side) ────────────────────────────────────────────────────
 
-async function applySpend({ actorUuid, classKey, skillUuid, benefit, facetUuids, requesterUserId }) {
+async function applySpend({ actorUuid, classKey, skillUuid, benefit, facetUuids, choiceKeys, requesterUserId }) {
   const gate = gateState();
   if (!gate.open) return fail("gate_closed", { gate });
 
@@ -473,6 +480,11 @@ async function applySpend({ actorUuid, classKey, skillUuid, benefit, facetUuids,
   const skillData = heldBefore ? null : await skillDataFor(actor, skill.key, skill.uuid);
   if (!heldBefore && !skillData) return fail("skill_source_missing");
 
+  // Per-level choices (Bane Oils' species), validated against the copy the
+  // character will end up with: theirs if held, else the data about to be made.
+  const choiceCheck = checkPicks(readChoices(heldBefore ? heldBefore.item : skillData, v.skillLevel), choiceKeys, v.skillLevel + 1);
+  if (!choiceCheck.ok) return fail(choiceCheck.reason, { need: choiceCheck.need, key: choiceCheck.key });
+
   let rowKey = null;
   try {
     // 1. Class row — create or increment. CSB dynamicTables are keyed objects,
@@ -510,6 +522,12 @@ async function applySpend({ actorUuid, classKey, skillUuid, benefit, facetUuids,
       await clearStash(actor, [skill.key]);
     }
     rowKey = null;   // the skill landed, so the class row now stands
+
+    // 2a. The level's choice — switched on the character's copy, which on a
+    //     first take is the item just created.
+    if (choiceCheck.picks.length) {
+      await setPicks(indexActorSkills(actor).get(skill.key)?.item, choiceCheck.picks, true);
+    }
 
     // 2b. Companion skills that come WITH this one (see grantCompanions). Runs
     //     on a raise as well as a first take, so a character who took the parent
@@ -550,7 +568,7 @@ async function applySpend({ actorUuid, classKey, skillUuid, benefit, facetUuids,
     });
 
     log(`spend: ${actor.name} → ${cls.name} ${v.classLevel + 1}, ${skill.name} ${v.skillLevel + 1}`);
-    await recordLedger(actor, `spent a Skill Point: ${cls.name} ${v.classLevel + 1}, ${skill.name} SL ${v.skillLevel + 1}`, requesterUserId);
+    await recordLedger(actor, `spent a Skill Point: ${cls.name} ${v.classLevel + 1}, ${skill.name} SL ${v.skillLevel + 1}${choiceCheck.picks.length ? ` (chose ${choiceCheck.picks.map((p) => p.label).join(", ")})` : ""}`, requesterUserId);
     return {
       ok: true,
       classLevel: v.classLevel + 1,
@@ -576,7 +594,7 @@ async function applySpend({ actorUuid, classKey, skillUuid, benefit, facetUuids,
   }
 }
 
-async function applyRefund({ actorUuid, classKey, skillUuid, facetUuids, requesterUserId }) {
+async function applyRefund({ actorUuid, classKey, skillUuid, facetUuids, choiceKeys, requesterUserId }) {
   const gate = gateState();
   if (!gate.open) return fail("gate_closed", { gate });
 
@@ -610,6 +628,10 @@ async function applyRefund({ actorUuid, classKey, skillUuid, facetUuids, request
   const facetsOwed = Math.min(skill.facetGrant ?? 0, facetsHeld);
   if (facetsBack.length !== facetsOwed) return fail("facet_count", { need: facetsOwed });
 
+  // Per-level choices go back with the level, exactly as many as it can no longer hold.
+  const choiceBack = checkGiveBack(readChoices(held.item, held.level), choiceKeys, held.level - 1);
+  if (!choiceBack.ok) return fail(choiceBack.reason, { need: choiceBack.need, key: choiceBack.key });
+
   // Refuse rather than cascade. A player who unlearns one skill should never
   // watch three others disappear with it.
   const { broken, slotsOver, earned, used } = changeBlockers(actor, {
@@ -626,6 +648,10 @@ async function applyRefund({ actorUuid, classKey, skillUuid, facetUuids, request
   if (nutsBefore < 1) return fail("no_nuts", { have: nutsBefore, need: 1 });
 
   try {
+    // 00. Choices handed back — switched off BEFORE the stash copy is taken, so
+    //     a skill refunded to zero is stashed with nothing chosen.
+    if (choiceBack.picks.length) await setPicks(held.item, choiceBack.picks, false);
+
     // 0. Keep a copy of whatever is about to leave the sheet (see the stash).
     const leaving = facetsBack.map((f) => heldSkills.get(f.key).item);
     await stashItems(actor, held.level <= 1 ? [...leaving, held.item] : leaving);
@@ -663,7 +689,7 @@ async function applyRefund({ actorUuid, classKey, skillUuid, facetUuids, request
     });
 
     log(`refund: ${actor.name} → ${cls.name} ${mine.level - 1}, ${skill.name} ${held.level - 1} (nut paid: ${paid})`);
-    await recordLedger(actor, `refunded a Skill Point: ${cls.name} ${mine.level - 1}, ${skill.name} SL ${held.level - 1}${paid ? " (1 nut paid)" : ""}`, requesterUserId);
+    await recordLedger(actor, `refunded a Skill Point: ${cls.name} ${mine.level - 1}, ${skill.name} SL ${held.level - 1}${paid ? " (1 nut paid)" : ""}${choiceBack.picks.length ? ` (gave back ${choiceBack.picks.map((p) => p.label).join(", ")})` : ""}`, requesterUserId);
     return {
       ok: true,
       classLevel: mine.level - 1,
@@ -727,6 +753,42 @@ async function applyUnlearn({ actorUuid, skillKey, requesterUserId }) {
   }
 }
 
+/**
+ * Catch-up: make the per-level choices a held skill still owes, with no point
+ * spent. For a character who had the skill before choices were asked at
+ * level-up (Zarg's Bane Oils SL 2 with no species), or who skipped the ask.
+ */
+async function applyChoose({ actorUuid, skillKey, choiceKeys, requesterUserId }) {
+  const gate = gateState();
+  if (!gate.open) return fail("gate_closed", { gate });
+
+  const actor = resolveActor(actorUuid);
+  if (!actor) return fail("actor_not_found");
+
+  const wrongSubject = subjectFailure(actor) ?? requesterFailure(actor, requesterUserId);
+  if (wrongSubject) return fail(wrongSubject);
+
+  const held = indexActorSkills(actor).get(skillKey);
+  if (!held || held.level < 1) return fail("skill_not_held");
+
+  const choices = readChoices(held.item, held.level);
+  if (!choices) return fail("choice_not_offered");
+  if (!Array.isArray(choiceKeys) || !choiceKeys.length) return fail("choice_count", { need: choices.owed });
+  const check = checkPicks(choices, choiceKeys, held.level);
+  if (!check.ok) return fail(check.reason, { need: check.need, key: check.key });
+
+  try {
+    await setPicks(held.item, check.picks, true);
+    const names = check.picks.map((p) => p.label).join(", ");
+    log(`choose: ${actor.name} → ${held.item.name}: ${names}`);
+    await recordLedger(actor, `chose ${choices.spec.label} for ${held.item.name}: ${names}`, requesterUserId);
+    return { ok: true, name: held.item.name, chosen: check.picks.map((p) => p.label), owed: readChoices(held.item, held.level)?.owed ?? 0 };
+  } catch (e) {
+    err("applyChoose threw", e);
+    return fail("error", { message: String(e?.message ?? e) });
+  }
+}
+
 async function applyHeroic({ actorUuid, skillUuid, requesterUserId }) {
   const gate = gateState();
   if (!gate.open) return fail("gate_closed", { gate });
@@ -784,6 +846,7 @@ registerHandler(LEVELUP.MSG.SPEND_REQ,  LEVELUP.MSG.SPEND_RES,  applySpend);
 registerHandler(LEVELUP.MSG.REFUND_REQ, LEVELUP.MSG.REFUND_RES, applyRefund);
 registerHandler(LEVELUP.MSG.HEROIC_REQ, LEVELUP.MSG.HEROIC_RES, applyHeroic);
 registerHandler(LEVELUP.MSG.UNLEARN_REQ, LEVELUP.MSG.UNLEARN_RES, applyUnlearn);
+registerHandler(LEVELUP.MSG.CHOOSE_REQ, LEVELUP.MSG.CHOOSE_RES, applyChoose);
 
 const REQ_OPTS = { timeoutMs: LEVELUP.REQUEST_TIMEOUT_MS };
 
@@ -824,6 +887,7 @@ export const spendPoint  = (p) => request(LEVELUP.MSG.SPEND_REQ,  p, REQ_OPTS);
 export const refundPoint = (p) => request(LEVELUP.MSG.REFUND_REQ, p, REQ_OPTS);
 export const pickHeroic  = (p) => request(LEVELUP.MSG.HEROIC_REQ, p, REQ_OPTS);
 export const unlearnHeroic = (p) => request(LEVELUP.MSG.UNLEARN_REQ, p, REQ_OPTS);
+export const chooseOptions = (p) => request(LEVELUP.MSG.CHOOSE_REQ, p, REQ_OPTS);
 
 /**
  * What would refuse this change? Pure read, for the window's − buttons.
@@ -848,7 +912,7 @@ function registerApi() {
   globalThis.FUCompanion = globalThis.FUCompanion ?? {};
   globalThis.FUCompanion.api = globalThis.FUCompanion.api ?? {};
   globalThis.FUCompanion.api.levelUp = {
-    getState, spendPoint, refundPoint, pickHeroic, unlearnHeroic, previewChange, healPoints,
+    getState, spendPoint, refundPoint, pickHeroic, unlearnHeroic, chooseOptions, previewChange, healPoints,
     heroicSlots, gateState, invalidateRegistry,
     // The companion backfill lever — see reconcileCompanions. Exposed because
     // declaring a companion on an already-held skill reaches nobody otherwise,

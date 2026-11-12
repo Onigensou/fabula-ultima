@@ -212,6 +212,8 @@ async function replaySpends(actor, draft, requesterUserId) {
       skillUuid: pick.skillUuid,
       benefit: pick.benefit ?? null,
       facetUuids: pick.facetUuids ?? [],
+      // Bane Oils' species: switched on by applySpend on the new actor's copy.
+      choiceKeys: pick.choiceKeys ?? [],
       requesterUserId,
     });
     if (!res?.ok) {

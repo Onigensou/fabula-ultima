@@ -52,7 +52,7 @@ export function createDraft() {
     },
 
     /** One entry per Skill Point spent, in the order spent. */
-    classes: [], // { classKey, className, skillUuid, skillName, benefit, facetUuids[] }
+    classes: [], // { classKey, className, skillUuid, skillName, benefit, facetUuids[], choiceKeys[], choiceLabels[] }
 
     equipment: {
       picks: [], // { uuid, name, cost, itemType, isMartial, category, handSlots }

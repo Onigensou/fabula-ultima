@@ -26,6 +26,8 @@ export const LEVELUP = Object.freeze({
     HEROIC_RES: "levelup.heroic.res",
     UNLEARN_REQ: "levelup.unlearn.req",
     UNLEARN_RES: "levelup.unlearn.res",
+    CHOOSE_REQ: "levelup.choose.req",
+    CHOOSE_RES: "levelup.choose.res",
   }),
 
   // Actor flag holding the copies of skills given back, keyed by idKey(name).
