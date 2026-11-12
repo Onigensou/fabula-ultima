@@ -27,7 +27,7 @@
 //      multipliers, conflict counter). Read by every consumer via getForm().
 //
 // RULES live in polymorph-math.js (user decisions 2026-11-12). Not here yet:
-// battle action menu, token/sprite visuals (horizontal squash), party menu /
+// battle action menu, token/sprite visuals (smoke poof), party menu /
 // sheet / HUD, potion item wiring — later phases.
 //
 // WRITES run on ONE GM (game.users.activeGM). A player call is relayed over the
@@ -39,7 +39,7 @@ import {
   counterOnConflictStart, tickOnTurnEnd, readFormProfile, formTags,
   AFFINITY_KEYS, ATTR_KEYS, FORM_TURNS_IN_CONFLICT,
 } from "./polymorph-math.js";
-import { broadcastSquash, SQUASH_OUT_MS } from "./polymorph-fx.js";
+import { broadcastPoof, FX_SWAP_MS } from "./polymorph-fx.js";
 import { formNameForItem, isPolymorphPotion, findFormActor } from "./polymorph-potions.js";
 import { polymorphSuppressesEffect } from "./polymorph-gates.js";
 import "./polymorph-ui.js";   // Form Plate (HUD) + sheet banner — side-effect module
@@ -336,11 +336,11 @@ async function transformGM(actorRef, formRef, opts = {}) {
 
   const changes = buildChanges(profile, hp.max, mp.max, props(form));
 
-  // Visuals: every client squashes the current art out while the layer is
-  // built; the new art is written once the squash has closed.
+  // Visuals: every client plays the smoke poof over the current art while the layer is
+  // built; the new art is written once the cloud covers the token.
   const tokens = tokensOf(actor);
   const fxStart = Date.now();
-  const squashed = opts.noFx ? 0 : broadcastSquash(tokens);
+  const poofed = opts.noFx ? 0 : broadcastPoof(tokens);
 
   const [effect] = await actor.createEmbeddedDocuments("ActiveEffect", [{
     name: `Polymorph: ${form.name}`,
@@ -376,7 +376,7 @@ async function transformGM(actorRef, formRef, opts = {}) {
     tokenArt.push({ uuid: t.uuid, src: t.texture?.src ?? null, scaleX: t.texture?.scaleX ?? 1, scaleY: t.texture?.scaleY ?? 1 });
     swaps.push({ token: t, ...nt });
   }
-  if (squashed) await sleep(Math.max(0, SQUASH_OUT_MS - (Date.now() - fxStart)));
+  if (poofed) await sleep(Math.max(0, FX_SWAP_MS - (Date.now() - fxStart)));
   await writeTokenArt(swaps);
 
   const c = opts.conflict ?? liveConflictFor(actor);
@@ -430,7 +430,7 @@ async function revertGM(actorRef, { reason = "voluntary", quiet = false, noFx = 
   try {
     const p = props(actor);
     const formCur = { hp: num(p.current_hp), mp: num(p.current_mp) };
-    // Token art back (with the squash). A token that no longer exists (battle
+    // Token art back (with the poof). A token that no longer exists (battle
     // tokens after a battle, a deleted token) is skipped.
     const restore = [];
     for (const o of (Array.isArray(state?.tokenArt) ? state.tokenArt : [])) {
@@ -439,7 +439,7 @@ async function revertGM(actorRef, { reason = "voluntary", quiet = false, noFx = 
       if (t && o?.src) restore.push({ token: t, src: o.src, scaleX: o.scaleX, scaleY: o.scaleY });
     }
     const fxStart = Date.now();
-    const squashed = (noFx || !restore.length) ? 0 : broadcastSquash(restore.map((r) => r.token));
+    const poofed = (noFx || !restore.length) ? 0 : broadcastPoof(restore.map((r) => r.token));
     if (kit.length) {
       try { await actor.deleteEmbeddedDocuments("Item", kit.map((i) => i.id)); }
       catch (e) { warn(`removing form items from ${actor.name} failed`, e); }
@@ -447,7 +447,7 @@ async function revertGM(actorRef, { reason = "voluntary", quiet = false, noFx = 
     if (strays.length) {
       await actor.deleteEmbeddedDocuments("ActiveEffect", strays.map((e) => e.id), { fuNoFollowup: true });
     }
-    if (squashed) await sleep(Math.max(0, SQUASH_OUT_MS - (Date.now() - fxStart)));
+    if (poofed) await sleep(Math.max(0, FX_SWAP_MS - (Date.now() - fxStart)));
     await writeTokenArt(restore);
     const update = { [`flags.${NS}.-=${FLAG}`]: null };
     let hpBack = null, mpBack = null;
