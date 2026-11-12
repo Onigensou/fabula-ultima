@@ -2829,11 +2829,14 @@
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
+        },
+        "fabula-ultima-companion": {
+          "terrarium": "blank"
         }
       },
       "folder": "ft3358qUh5ZDldYQ",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png",
-      "name": "Terrain Destroyer",
+      "name": "Terrarium: Blank",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
         "default": 2
@@ -2845,7 +2848,10 @@
           "consumable_cost": "150",
           "consumable_description": "<ul><li><p>Turn target <strong>adjacent</strong> <strong>tile</strong> into a <strong>blank tile</strong></p></li></ul>",
           "consumable_ip": "",
-          "name": "Terrain Destroyer"
+          "description": "<ul><li><p>Turn target <strong>adjacent</strong> <strong>tile</strong> into a <strong>Blank Tile</strong>.</p></li><li><p>Dungeon only. Doesn't use a step or end the turn.</p></li></ul>",
+          "item_cost": "150",
+          "item_rarity": "Common",
+          "name": "Terrarium: Blank"
         },
         "template": "xdZPhVF8AnmwQEPM",
         "templateSystemUniqueVersion": 3725551061,
@@ -4760,9 +4766,9 @@
           "uuid": "Actor.BqBoJEye80GAm9fX.Item.p7nfKdsU641H2n4k"
         },
         "pPcJ4sB3Vjxd1rIA": {
-          "consume_description": "<ul><li><p>Turn target <strong>adjacent</strong> <strong>tile</strong> into a <strong>blank tile</strong></p></li></ul>",
+          "consume_description": "<ul><li><p>Turn target <strong>adjacent</strong> <strong>tile</strong> into a <strong>Blank Tile</strong>.</p></li><li><p>Dungeon only. Doesn't use a step or end the turn.</p></li></ul>",
           "id": "${item.id}",
-          "name": "Terrain Destroyer",
+          "name": "Terrarium: Blank",
           "roll": "",
           "uuid": "Actor.BqBoJEye80GAm9fX.Item.pPcJ4sB3Vjxd1rIA"
         },

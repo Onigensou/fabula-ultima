@@ -12678,19 +12678,31 @@
       },
       {
         "id": "k1ws4o2xY7qXkfaf",
-        "name": "Terrain Destroyer",
+        "name": "Terrarium: Blank",
         "type": "equippableItem",
         "effects": 0
       },
       {
-        "id": "GSggw21CziniktM7",
-        "name": "Terrain Generator: Saferoom",
+        "id": "TerrariumCamp001",
+        "name": "Terrarium: Camp",
         "type": "equippableItem",
         "effects": 0
       },
       {
         "id": "535RjElIC0JJRvm6",
-        "name": "Terrain Generator: Terrarium",
+        "name": "Terrarium: Gathering",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "GSggw21CziniktM7",
+        "name": "Terrarium: Healing",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "TerrariumRBattle",
+        "name": "Terrarium: Random Battle",
         "type": "equippableItem",
         "effects": 0
       },
@@ -25046,7 +25058,7 @@
           },
           {
             "id": "pPcJ4sB3Vjxd1rIA",
-            "name": "Terrain Destroyer"
+            "name": "Terrarium: Blank"
           },
           {
             "id": "IfUaLrXP2NFXhi4b",

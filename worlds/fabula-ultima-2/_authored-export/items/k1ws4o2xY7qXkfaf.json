@@ -11,11 +11,14 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.6.4"
+    },
+    "fabula-ultima-companion": {
+      "terrarium": "blank"
     }
   },
   "folder": "VzpCG9mySsd9sQSL",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png",
-  "name": "Terrain Destroyer",
+  "name": "Terrarium: Blank",
   "ownership": {
     "2vy7wrEUqBy0kzsU": 3,
     "6DmgigM5jq76r0Gd": 3,
@@ -59,7 +62,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>Turn target <strong>adjacent</strong> <strong>tile</strong> into a <strong>blank tile</strong></p></li></ul>",
+      "description": "<ul><li><p>Turn target <strong>adjacent</strong> <strong>tile</strong> into a <strong>Blank Tile</strong>.</p></li><li><p>Dungeon only. Doesn't use a step or end the turn.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",
@@ -90,7 +93,7 @@
       "item_type": "consumable",
       "mimic_ef": "100",
       "monster_ef": "100",
-      "name": "Terrain Destroyer",
+      "name": "Terrarium: Blank",
       "optional_params": {},
       "plant_ef": "100",
       "reptilian_ef": "100",
