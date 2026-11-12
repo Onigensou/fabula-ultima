@@ -627,6 +627,11 @@
     {
       "key": "2026-11-03-template-options-knocked-out",
       "path": "data-migrations/2026-11-03-template-options-knocked-out.js"
+    },
+    {
+      "key": "2026-11-12-polymorph-revert-objective",
+      "path": "data-migrations/2026-11-12-polymorph-revert-objective.js",
+      "idempotent": true
     }
   ]
 }

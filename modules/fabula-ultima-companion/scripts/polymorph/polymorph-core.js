@@ -47,7 +47,8 @@ const CHANNEL = `module.${NS}`;
 const T_REQ = "polymorph.req";
 const T_RES = "polymorph.res";
 const PRIORITY = 200;                 // above every gear/status change in the world (max seen: 90)
-const MODE = { ADD: 2, OVERRIDE: 5 };
+const MODE = { CUSTOM: 0, ADD: 2, OVERRIDE: 5 };
+export const REVERT_OBJECTIVE_ID = "revert_form";
 
 const log = (...a) => console.log(TAG, ...a);
 const warn = (...a) => console.warn(TAG, ...a);
@@ -130,7 +131,70 @@ function buildChanges(profile, maxHp, maxMp) {
   for (const k of AFFINITY_KEYS) ov(k, profile.affinities[k]);
   ov("max_hp", maxHp);
   ov("max_mp", maxMp);
+  // The free "Revert" Objective is grant-only (objectiveScope "none"); the form
+  // grants it to its bearer. CUSTOM mode: the objectives reader reads the row,
+  // CSB writes nothing.
+  ch.push({ key: "grant_objective", mode: MODE.CUSTOM, priority: PRIORITY, value: REVERT_OBJECTIVE_ID });
   return ch;
+}
+
+// ── Form items ───────────────────────────────────────────────────────────────
+// The form's kit is COPIED onto the bearer (dnd5e Wild Shape style): every
+// Battle Director path — cost, cooldown, formulas, reactions — then runs on the
+// bearer's own items, and nothing is ever written to the monster template.
+// Removed again on revert. Skipped: items without a skill_type (gear, loot) and
+// anything tagged `no_polymorph` (boss phases, stances, clocks that only make
+// sense on the real monster) — as a prop, a skill_tags entry or a flag.
+
+const formItems = (actor) => (actor?.items?.contents ?? []).filter((i) => i?.flags?.[NS]?.polymorphItem === true);
+
+function excludedFromForm(item) {
+  const p = item?.system?.props ?? {};
+  if (p.no_polymorph === true || String(p.no_polymorph ?? "").trim().toLowerCase() === "true") return true;
+  if (item?.flags?.[NS]?.noPolymorph === true) return true;
+  const tags = String(p.skill_tags ?? "").split(/[\s,]+/).map((t) => t.trim().toLowerCase());
+  return tags.includes("no_polymorph");
+}
+
+async function copyFormItems(actor, form) {
+  const taken = new Set((actor.items?.contents ?? []).map((i) => i.id));
+  const keep = [], fresh = [];
+  for (const it of form.items?.contents ?? []) {
+    if (!String(it.system?.props?.skill_type ?? "").trim()) continue;
+    if (excludedFromForm(it)) continue;
+    const data = it.toObject();
+    data.flags = foundry.utils.mergeObject(data.flags ?? {}, {
+      [NS]: { polymorphItem: true, polymorphSourceUuid: it.uuid },
+    });
+    // Keep ids so container links between the form's own items survive the copy;
+    // a (vanishingly rare) id clash with the bearer's items gets a fresh id.
+    (taken.has(it.id) ? fresh : keep).push(data);
+    if (taken.has(it.id)) delete data._id;
+  }
+  const made = [];
+  if (keep.length) made.push(...(await actor.createEmbeddedDocuments("Item", keep, { keepId: true })));
+  if (fresh.length) made.push(...(await actor.createEmbeddedDocuments("Item", fresh)));
+  return made.length;
+}
+
+// ── Live conflict context ────────────────────────────────────────────────────
+// A form that starts mid-battle needs the round and "has the bearer already
+// acted / is acting this round" (drink turn excluded). Read off the live
+// Battle Director: the current combatant, or a phaseLock stamped this round
+// (set on a creature's first turn of the round).
+function liveConflictFor(actor) {
+  try {
+    const d = globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.();
+    const dc = d?.dCombat;
+    if (!dc || dc.ended) return null;
+    const round = Number(dc.round ?? 0);
+    const c = (dc.combatants ?? []).find((x) => x?.actorUuid === actor.uuid
+      || x?.tokenDoc?.actor?.uuid === actor.uuid || (x?.actorId && x.actorId === actor.id));
+    if (!c) return { round, bearerActedOrActing: false };
+    const acting = dc.current === c || dc.current?.id === c.id;
+    const acted = c.phaseLock?.round === round;
+    return { round, bearerActedOrActing: !!(acting || acted) };
+  } catch (e) { warn("liveConflictFor failed", e); return null; }
 }
 
 // ── transform (GM) ───────────────────────────────────────────────────────────
@@ -172,9 +236,15 @@ async function transformGM(actorRef, formRef, opts = {}) {
     transfer: false,
     changes,
     description: `Transformed into ${form.name}. Lasts until the end of the scene or your next ${FORM_TURNS_IN_CONFLICT} turns during a conflict.`,
-    flags: { [NS]: { [FLAG]: true, directorPermanent: true, formActorUuid: form.uuid } },
+    // uncleansable: a tag / "*" dispel never ends a form — only revert() or a
+    // row that names it. Remedy-style cleanses don't touch it (it isn't a status).
+    flags: { [NS]: { [FLAG]: true, directorPermanent: true, uncleansable: true, formActorUuid: form.uuid } },
   }]);
   if (!effect) return { ok: false, reason: "effect-create-failed" };
+
+  let itemCount = 0;
+  try { itemCount = await copyFormItems(actor, form); }
+  catch (e) { warn(`copying ${form.name}'s items onto ${actor.name} failed`, e); }
 
   const gotMax = { hp: num(props(actor).max_hp), mp: num(props(actor).max_mp) };
   if (gotMax.hp !== hp.max || gotMax.mp !== mp.max) {
@@ -182,7 +252,7 @@ async function transformGM(actorRef, formRef, opts = {}) {
   }
   const formMax = { hp: gotMax.hp || hp.max, mp: gotMax.mp || mp.max };
 
-  const c = opts.conflict;
+  const c = opts.conflict ?? liveConflictFor(actor);
   const state = {
     formActorUuid: form.uuid,
     formName: form.name,
@@ -191,6 +261,7 @@ async function transformGM(actorRef, formRef, opts = {}) {
     tags: formTags(form.flags?.[NS]?.polymorphTags, profile.species),
     species: profile.species,
     effectId: effect.id,
+    itemCount,
     sourceUuid: opts.sourceUuid ?? null,
     sceneId: canvas?.scene?.id ?? game.scenes?.active?.id ?? null,
     appliedAt: Date.now(),
@@ -224,12 +295,17 @@ async function revertGM(actorRef, { reason = "voluntary", quiet = false } = {}) 
   if (_reverting.has(actor.uuid)) return { ok: true, reason: "already-reverting" };
   const state = getForm(actor);
   const strays = formEffects(actor);
-  if (!state && !strays.length) return { ok: true, reason: "not-transformed" };
+  const kit = formItems(actor);
+  if (!state && !strays.length && !kit.length) return { ok: true, reason: "not-transformed" };
 
   _reverting.add(actor.uuid);
   try {
     const p = props(actor);
     const formCur = { hp: num(p.current_hp), mp: num(p.current_mp) };
+    if (kit.length) {
+      try { await actor.deleteEmbeddedDocuments("Item", kit.map((i) => i.id)); }
+      catch (e) { warn(`removing form items from ${actor.name} failed`, e); }
+    }
     if (strays.length) {
       await actor.deleteEmbeddedDocuments("ActiveEffect", strays.map((e) => e.id), { fuNoFollowup: true });
     }

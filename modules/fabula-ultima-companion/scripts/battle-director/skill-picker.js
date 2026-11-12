@@ -21,6 +21,7 @@ import { getMaxActionTargets, skillTargetIsMulti, skillTargetIsUpTo, skillDeclar
 // One pure predicate, so the flag name cannot drift between the tool that sets
 // it and the engine that honours it.
 import { isDraft } from "../skill-forge/publish.js";
+import { isPolymorphed, polymorphItemInPlay } from "../polymorph/polymorph-gates.js";
 
 // Cost badge labels for the config-derived (effect-chain) cost map.
 const COST_RES_LABEL = { hp: "HP", mp: "MP", ip: "IP", fp: "FP", zenit: "Zenit", zero_power: "ZP", enmity: "Enmity" };
@@ -192,9 +193,13 @@ export async function gatherSkillsForActor(actor, { freeOfCost = false } = {}) {
   // directly catches every skill / spell the actor knows regardless of which
   // summary bucket the CSB template put them in.
   const items = Array.from(actor.items ?? []);
+  // Polymorph: a transformed creature uses the FORM's kit only — its own class
+  // skills and every gear grant (the SECONDARY source below) are out of play.
+  const transformed = isPolymorphed(actor);
   for (const item of items) {
     const skillType = String(item.system?.props?.skill_type ?? "").trim();
     if (!skillType) continue;
+    if (!polymorphItemInPlay(item, actor)) continue;
     // Linked `_skills` (a real `container` back-ref → they belong to a gear /
     // consumable shell, CSB container model) must NOT surface as standalone
     // actor skills. They reach the menu only through their container's
@@ -228,7 +233,7 @@ export async function gatherSkillsForActor(actor, { freeOfCost = false } = {}) {
   const knownNames = new Set(
     candidates.map((c) => String(c.name ?? "").trim().toLowerCase()).filter(Boolean),
   );
-  for (const item of items) {
+  for (const item of (transformed ? [] : items)) {
     // isEquipped lives at system.props.isEquipped (CSB prop), NOT system.isEquipped.
     const isEquipped = item.system?.props?.isEquipped ?? false;
     // NOT an early `continue`: the `Versatile` keyword (Keyword Repository

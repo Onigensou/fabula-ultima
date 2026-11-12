@@ -22,6 +22,7 @@ import { watchGone } from "./player-presence.js";
 import { stageOf } from "./director-camera.js";
 import { shortSkillName, evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, applyHealReceiving, applyMpReceiving, arcanumQuickSummonLock } from "./skill-formulas.js";
 import { pickFromList } from "./list-picker.js";
+import { polymorphItemInPlay } from "../polymorph/polymorph-gates.js";
 // The amount selector lives in its own leaf module so remote-pick can render it
 // on a player's client without dragging the effect engine along. Re-exported
 // below for the existing importers of `promptNumberDialog`.
@@ -1750,6 +1751,11 @@ export function isActionCreatingReactionForAE(ae, reactionRow) {
 //
 // Non-weapon carriers (skills, equipment, accessories, AEs) are never gated.
 export function weaponReactionInPlay(item, payload, casterActor) {
+  // Polymorph: while transformed only the FORM's copied items carry live
+  // reactions — the bearer's class passives and gear are dormant. Sits here
+  // because this is the one item-carrier gate every trigger scan and the
+  // reaction deck already call; AE-borne reactions are unaffected.
+  if (!polymorphItemInPlay(item, casterActor)) return false;
   if (String(item?.system?.props?.item_type ?? "").toLowerCase() !== "weapon") return true;
   const usedUuid = payload?.weaponUuid ?? null;
   const actingActorUuid = payload?.sourceActorUuid ?? null;
@@ -4589,6 +4595,35 @@ async function applyBreakFreeEffect(row, ctx) {
   return { ok: true, kind: "break_free", applied };
 }
 
+// ── polymorph_revert — end a Polymorph form (the "Revert" Objective) ───────
+//
+// Delegates to FUCompanion.api.polymorph.revert, which carries HP/MP back,
+// removes the copied form items and clears the state. Awaited here so the free
+// return to the action menu (skill_free_action on the Revert option) re-reads a
+// creature that is already back in its own body. NOT a `remove_ae` on the Form
+// effect: that would leave the HP/item cleanup to an un-awaited delete hook.
+//
+//   { effect_kind: "polymorph_revert", target_ref: "self" }
+async function applyPolymorphRevertEffect(row, ctx) {
+  const tr = await resolveTargetRef(row.target_ref || "self", ctx);
+  if (!tr.ok || !tr.tokens.length) {
+    return { ok: false, kind: "polymorph_revert", reason: tr.reason ?? "no-targets", cancelled: !!tr.cancelled };
+  }
+  const api = globalThis.FUCompanion?.api?.polymorph;
+  if (!api?.revert) return { ok: false, kind: "polymorph_revert", reason: "no-polymorph-api" };
+  const applied = [];
+  for (const token of tr.tokens) {
+    const actor = token?.actor;
+    if (!actor || !api.isTransformed(actor)) continue;
+    try {
+      const r = await api.revert(actor, { reason: row.effect_label ?? "objective" });
+      if (r?.ok) applied.push(actor.uuid);
+    } catch (e) { warn(`skill-effects.polymorph_revert: threw on ${actor?.name}`, e); }
+  }
+  log(`skill-effects.polymorph_revert: reverted ${applied.length} creature(s)`);
+  return { ok: true, kind: "polymorph_revert", applied };
+}
+
 // ── clock_advance — move a Clock System clock from inside an action ────────
 //
 // The ONLY sanctioned way the Battle Director writes a clock. The Clock System
@@ -5323,6 +5358,7 @@ const EFFECT_KIND_DISPATCH = {
   clock_advance:       applyClockAdvanceEffect,
   conflict_event_action: applyConflictEventActionEffect,
   break_free:          applyBreakFreeEffect,
+  polymorph_revert:    applyPolymorphRevertEffect,
   destroy_summon:      applyDestroySummonEffect,
   add_target:          applyAddTargetEffect,
   save_check:          applySaveCheckEffect,
@@ -5480,6 +5516,7 @@ export const EFFECT_KIND_LABELS = {
   clock_advance:       "Clock Advance (move a Clock System clock — roll mode commits this action's own check)",
   conflict_event_action: "Conflict Event Action (ask the active conflict event to act — adjust a Crystal's countdown, reveal an impostor)",
   break_free:          "Break Free (end a Grapple, incl. the grappler-side Grappling cleanup)",
+  polymorph_revert:    "Polymorph Revert (end the target's Polymorph form; HP/MP carry back)",
   destroy_summon:      "Destroy Summon (shatter/despawn one of my summons)",
   add_target:          "Add Target",
   save_check:          "Save Check (each target rolls vs a DL; failures → save_failed_targets)",
@@ -5701,6 +5738,7 @@ const EFFECT_KIND_PREVIEW = {
   clock_advance: () => null,
   conflict_event_action: () => null,
   break_free: () => null,
+  polymorph_revert: () => null,
   destroy_summon: () => null,
 
   // chain recurses; the profile builder expands sub-steps. No standalone card row.

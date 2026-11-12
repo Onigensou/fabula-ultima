@@ -8405,6 +8405,21 @@ const TurnEnd = {
         catch (e) { warn("TURN_END: tickDirectorAEsForApplier(end) threw", e); }
       }
 
+      // Polymorph: "your next 3 turns during a conflict". Its own counter, not
+      // an AE charge (those tick per activation and seed 3 by default) — the
+      // rules (drink turn excluded, at most one tick per round) live in
+      // polymorph-math.js. The token's actor first, so an unlinked token's
+      // synthetic actor is the one read. Awaited: an expiring form must be back
+      // in its own body before the next turn snapshots it.
+      {
+        const poly = globalThis.FUCompanion?.api?.polymorph;
+        const ref = endingTokenUuid ?? endingActorUuid;
+        if (poly?.noteTurnEnded && ref) {
+          try { await poly.noteTurnEnded(ref, { round: teRoundEnded }); }
+          catch (e) { warn("TURN_END: polymorph turn tick threw", e); }
+        }
+      }
+
       // Boss rules: a fall plays at the end of the turn that caused it, after the
       // action and its reactions have settled (Nidhogg, ruling 2c.1). A rule may
       // spend every turn left in the round, so nextTurn below wraps it.

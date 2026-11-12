@@ -13,6 +13,8 @@
 // touches Attack. Snapshot, compose-action, state-handlers, and skill-cost
 // all read the kind to branch.
 
+import { isPolymorphed, polymorphItemInPlay } from "../polymorph/polymorph-gates.js";
+
 const SKILL_TYPE_ATTACK = "attack";
 
 // Returns "pc" | "npc" | "unknown".
@@ -31,6 +33,9 @@ const SKILL_TYPE_ATTACK = "attack";
 // world-data drift (corrupted props). Caller decides whether to default
 // to PC behavior or refuse the action.
 export function getActorKind(actor) {
+  // Polymorph: a transformed PC attacks with the FORM's Attack items (copied
+  // onto it at transform time), never its equipped weapons — NPC attack path.
+  if (isPolymorphed(actor)) return "npc";
   const props = actor?.system?.props ?? actor?.system ?? {};
   const hasWeaponShape =
     (props.weapon_list && typeof props.weapon_list === "object") ||
@@ -75,6 +80,8 @@ export function getNpcAttackItems(actor) {
     // directly. Preset paths resolve the item by UUID and are unaffected;
     // this only hides it from the Attack picker + sheet-facing lists.
     if (String(it?.system?.container ?? "").trim()) return false;
+    // Polymorph: only the form's own attacks while transformed.
+    if (!polymorphItemInPlay(it, actor)) return false;
     const p = it?.system?.props ?? {};
     const t = String(p.skill_type ?? "").trim().toLowerCase();
     if (t === SKILL_TYPE_ATTACK) return true;
