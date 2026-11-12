@@ -26,7 +26,7 @@ export const SFX_LAND = `${FORGE}/Sound/Soundboard/Door1.ogg`;
 const PUFF_URL = `${FORGE}/Animation/Guilty%20Gear%20Strive/webm/smoke_anim08.webm`;
 
 const T = Object.freeze({ LIFT: 380, HOLD: 520, THROW: 620, JELLY: 680 });
-const PUFF_RATE = 0.7, PUFF_END_S = 0.4, PUFF_FADE_MS = 140, PUFF_SIZE = 1.8;
+const PUFF_RATE = 0.7, PUFF_END_S = 0.4, PUFF_FADE_MS = 140, PUFF_SIZE = 2.1;
 const ARC_LIFT = 85;          // px above the higher end of the throw
 const RESTORE_TIMEOUT_MS = 4000;
 const Z = 999997;             // above tokens, like the turn-start pulse
@@ -184,8 +184,11 @@ export async function play(fx = {}) {
           puff = p;
           const size = Math.max(w, h) * PUFF_SIZE;
           p.s.width = p.s.height = size;
-          p.s.position.set(cx, cy);
-          root.addChild(p.s);
+          // Behind the landing tile and a little low, so it billows out around the
+          // tile's edges and the jelly squash stays visible on top (checked live:
+          // in front, the cloud hid the whole bounce).
+          p.s.position.set(cx, cy + h * 0.12);
+          root.addChildAt(p.s, root.getChildIndex(jelly));
         });
       }
       // 5 · jelly + puff

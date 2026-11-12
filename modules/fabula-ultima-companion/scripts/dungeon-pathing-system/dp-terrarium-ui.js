@@ -197,6 +197,13 @@ const Board = {
 const View = {
   fan: null, bubble: null, hint: null, panel: null, wait: null, raf: null,
   buttonLeft() { return document.getElementById(BTN_ID)?.style.left || "168px"; },
+  // Above everything HudDock stacks over the button row (the controller badge
+  // sits there on dungeon maps, unlike camp), never lower than the camp fan's 160.
+  fanBottom() {
+    let top = 0;
+    try { top = Number(globalThis.oni?.HudDock?.stackTop?.()) || 0; } catch {}
+    return Math.max(160, Math.round(top + 10));
+  },
 
   showFan(list, focus, { watching = false, onPick = null, onFocus = null } = {}) {
     injectStyles();
@@ -205,6 +212,7 @@ const View = {
     el.className = "oni-tr-fan" + (watching ? " is-watching" : "");
     el.setAttribute("role", "menu"); el.setAttribute("aria-label", "Terrarium");
     el.style.left = this.buttonLeft();
+    el.style.bottom = `${this.fanBottom()}px`;
     el.innerHTML = list.map((o, i) => `
       <button type="button" class="oni-tr-item${o.block ? " is-off" : ""}" role="menuitem" data-k="${o.kind}" style="animation-delay:${i * 45}ms"
         aria-label="${esc(KIND_NAME[o.kind])}" title="${esc(o.block || KIND_NAME[o.kind])}">
@@ -231,7 +239,7 @@ const View = {
     injectStyles();
     this.wait?.remove();
     const w = document.createElement("div"); w.className = "oni-tr-wait"; w.textContent = text;
-    w.style.left = this.buttonLeft(); w.style.bottom = "238px";
+    w.style.left = this.buttonLeft(); w.style.bottom = `${this.fanBottom() + 98}px`;
     document.body.appendChild(w); this.wait = w;
   },
 
