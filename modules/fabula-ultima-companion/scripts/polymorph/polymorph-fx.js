@@ -125,7 +125,9 @@ export async function playPoof(tokenId) {
     const oldTex = mesh0.texture;
     const box0 = drawnBox(mesh0);
     // the cloud keeps the size it started with (the old body), at least the new one's
-    let puffW = Math.max(box0.w, box0.h) * PUFF_SIZE;
+    let puffW = Math.max(box0.w, box0.h) * PUFF_SIZE;   // target size
+    let puffCur = puffW;                                  // drawn size, eased toward the target
+    let lastEl = 0;
     let puff = null;
     if (puffTex) {
       puff = addPrimary(puffTex, mesh0, 3, "oniPolymorphPoof");
@@ -166,7 +168,13 @@ export async function playPoof(tokenId) {
           const b = drawnBox(mesh);
           const depth = Math.abs(mesh.scale.y) / Math.abs(mesh0.scale.y || 1);
           puff.position.set(b.x, b.y);
-          puff.width = puffW * depth; puff.height = puffW * depth;
+          // grow smoothly to a bigger form's size (no jump), and while the clip is
+          // held on its densest frame the cloud keeps billowing instead of freezing
+          const dt = Math.min(100, el - lastEl);
+          puffCur += (puffW - puffCur) * Math.min(1, dt / 120);
+          const breathe = held ? 1 + 0.045 * Math.sin(el / 85) : 1;
+          puff.width = puffCur * depth * breathe; puff.height = puffCur * depth * (held ? 1 + 0.045 * Math.sin(el / 85 + 1.3) : 1);
+          if (held) puff.rotation = 0.05 * Math.sin(el / 160);
           // fade over the last 30% of the first puff
           const u = vt / PUFF_END_S;
           puff.alpha = u > 0.7 ? Math.max(0, (1 - u) / 0.3) : 1;
@@ -203,6 +211,7 @@ export async function playPoof(tokenId) {
           flash.alpha = 0.6 * Math.max(0, 1 - pe / FLASH_MS);
           if (u >= 1 && pe >= FLASH_MS && !puff) return finish(true);
         }
+        lastEl = el;
         if (el > SWAP_WAIT_MS + 3000) return finish(false);   // hard stop, whatever happened
       } catch (e) {
         console.warn(TAG, "frame failed; dropping the effect", e);

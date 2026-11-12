@@ -339,8 +339,23 @@ async function transformGM(actorRef, formRef, opts = {}) {
   // Visuals: every client plays the smoke poof over the current art while the layer is
   // built; the new art is written once the cloud covers the token.
   const tokens = tokensOf(actor);
-  const fxStart = Date.now();
+  // A LIST, never an object keyed by uuid: a flag update expands the dots in
+  // "Scene.x.Token.y" into nested paths (runner 2026-11-12: revert found nothing).
+  const tokenArt = [];
+  const swaps = [];
+  for (const t of tokens) {
+    const nt = formTextureFor(t, form);
+    if (!nt) continue;
+    tokenArt.push({ uuid: t.uuid, src: t.texture?.src ?? null, scaleX: t.texture?.scaleX ?? 1, scaleY: t.texture?.scaleY ?? 1 });
+    swaps.push({ token: t, ...nt });
+  }
   const poofed = opts.noFx ? 0 : broadcastPoof(tokens);
+  // The new art goes on as soon as the cloud covers the token, IN PARALLEL with
+  // the layer build below (the item copies take ~1 s; waiting made the cloud hang).
+  const artDone = (async () => {
+    if (poofed) await sleep(FX_SWAP_MS);
+    await writeTokenArt(swaps);
+  })().catch((e) => warn("token art write failed", e));
 
   const [effect] = await actor.createEmbeddedDocuments("ActiveEffect", [{
     name: `Polymorph: ${form.name}`,
@@ -353,7 +368,7 @@ async function transformGM(actorRef, formRef, opts = {}) {
     // uncleansable: a tag / "*" dispel never ends a form — only revert() or a
     // row that names it. Remedy-style cleanses don't touch it (it isn't a status).
     flags: { [NS]: { [FLAG]: true, directorPermanent: true, uncleansable: true, formActorUuid: form.uuid } },
-  }]);
+  }], { animate: false });   // no core "+(Polymorph: X)" scrolling text over the poof
   if (!effect) return { ok: false, reason: "effect-create-failed" };
 
   let itemCount = 0;
@@ -366,18 +381,7 @@ async function transformGM(actorRef, formRef, opts = {}) {
   }
   const formMax = { hp: gotMax.hp || hp.max, mp: gotMax.mp || mp.max };
 
-  // A LIST, never an object keyed by uuid: a flag update expands the dots in
-  // "Scene.x.Token.y" into nested paths (runner 2026-11-12: revert found nothing).
-  const tokenArt = [];
-  const swaps = [];
-  for (const t of tokens) {
-    const nt = formTextureFor(t, form);
-    if (!nt) continue;
-    tokenArt.push({ uuid: t.uuid, src: t.texture?.src ?? null, scaleX: t.texture?.scaleX ?? 1, scaleY: t.texture?.scaleY ?? 1 });
-    swaps.push({ token: t, ...nt });
-  }
-  if (poofed) await sleep(Math.max(0, FX_SWAP_MS - (Date.now() - fxStart)));
-  await writeTokenArt(swaps);
+  await artDone;
 
   const c = opts.conflict ?? liveConflictFor(actor);
   const state = {
@@ -438,17 +442,20 @@ async function revertGM(actorRef, { reason = "voluntary", quiet = false, noFx = 
       try { t = fromUuidSync(o?.uuid); } catch { t = null; }
       if (t && o?.src) restore.push({ token: t, src: o.src, scaleX: o.scaleX, scaleY: o.scaleY });
     }
-    const fxStart = Date.now();
     const poofed = (noFx || !restore.length) ? 0 : broadcastPoof(restore.map((r) => r.token));
+    // own art back as soon as the cloud covers the token, in parallel with the teardown
+    const artDone = (async () => {
+      if (poofed) await sleep(FX_SWAP_MS);
+      await writeTokenArt(restore);
+    })().catch((e) => warn("token art restore failed", e));
     if (kit.length) {
       try { await actor.deleteEmbeddedDocuments("Item", kit.map((i) => i.id)); }
       catch (e) { warn(`removing form items from ${actor.name} failed`, e); }
     }
     if (strays.length) {
-      await actor.deleteEmbeddedDocuments("ActiveEffect", strays.map((e) => e.id), { fuNoFollowup: true });
+      await actor.deleteEmbeddedDocuments("ActiveEffect", strays.map((e) => e.id), { fuNoFollowup: true, animate: false });
     }
-    if (poofed) await sleep(Math.max(0, FX_SWAP_MS - (Date.now() - fxStart)));
-    await writeTokenArt(restore);
+    await artDone;
     const update = { [`flags.${NS}.-=${FLAG}`]: null };
     let hpBack = null, mpBack = null;
     if (state) {
