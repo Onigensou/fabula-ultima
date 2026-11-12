@@ -73,6 +73,12 @@
     // rebuild rather than racing the scene switch. Cleared on activate().
     battleLaunching: false,
 
+    // A Usable tile the party landed on with Confirm (not Use): clicking the tile
+    // the party stands on offers Use · Cancel, free (2026-11-12). Cleared by
+    // any move, by Use, and on scene change. Lives on the client that pressed
+    // Confirm; after a reload the party walks off and back as before.
+    pendingUse:   null,   // { sceneId, tileId } | null
+
     isMainController: false, // cached: may THIS client drive dungeon movement?
     _mcUnsubs:        [],    // Movement Control socket unsubscribe fns
     _spectateNoticeAt: 0,    // throttle timestamp for the spectator notice
@@ -424,6 +430,8 @@
       const blockGoBackFlag    = fromTileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.blockGoBack`);
       const blockGoBack        = blockGoBackFlag === true || blockGoBackFlag === "true";
 
+      state.pendingUse = null;   // the party moved: an earlier unused landing is gone
+
       // — Confirmation (or skip if flagged) —
       let confirmed;
       let keyOffer = null;
@@ -431,10 +439,12 @@
         confirmed = true;
       } else {
         keyOffer = await skeletalKeyOffer(scene, tileDoc, node);
-        confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable, showRevertButton: !disableGoBack && !blockGoBack, keyButton: keyOffer });
+        confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable, showRevertButton: !disableGoBack && !blockGoBack, keyButton: keyOffer,
+          useType: tileDoc ? DP.TileState.getCurrentType(scene, tileDoc.id) : null });
       }
 
       if (confirmed === false) return;
+      if (confirmed === true && isUsable && tileDoc) state.pendingUse = { sceneId: scene.id, tileId: tileDoc.id };
 
       // — Resolve tile type (same override logic as handleClick) —
       const _storedType   = (tileDoc && DP.TileState.getCurrentType(scene, tileDoc.id))
@@ -469,6 +479,67 @@
 
     } finally {
       state._arrivalDepth--;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Use the tile the party stands on (2026-11-12)
+  // ---------------------------------------------------------------------------
+  // The party landed on a Usable tile with Confirm instead of Use. Clicking the
+  // tile it stands on reopens the panel as Use · Cancel. It is the same Use the
+  // player meant to press, so it is FREE: no step is counted and no turn ends
+  // (dungeon debuffs tick at TURN_END, so a second turn would tick them twice).
+  // Only while that landing is still unused; forced tiles never get here.
+  function isPendingUseTile(node) {
+    const p = state.pendingUse;
+    const scene = canvas.scene;
+    if (!p || !node || p.sceneId !== scene?.id || p.tileId !== node.nodeId) return false;
+    const tileDoc = scene.tiles.get(node.nodeId) ?? null;
+    const f = tileDoc?.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.usable`);
+    if (!(f === true || f === "true") || isSpentTile(scene, tileDoc)) { state.pendingUse = null; return false; }
+    return true;
+  }
+
+  async function useTileInPlace(node) {
+    if (state.busy) { ui.notifications?.info?.("Movement in progress…"); return; }
+    const scene   = canvas.scene;
+    const token   = state.partyToken;
+    const tileDoc = scene?.tiles.get(node.nodeId) ?? null;
+    if (!token || !tileDoc) return;
+
+    state.busy = true;
+    DP.HelperMode.hide();
+    DP.Overlay.clearHover?.();
+    DP.ScanMode?.hide();
+    try {
+      const typeNow  = DP.TileState.getCurrentType(scene, tileDoc.id);
+      const keyOffer = await skeletalKeyOffer(scene, tileDoc, node);
+      const choice   = await DP.ConfirmDialog.ask(token, {
+        showUseButton: true, showRevertButton: true, showConfirmButton: false,
+        revertLabel: "✕  Cancel", keyButton: keyOffer, useType: typeNow,
+      });
+      if (choice !== "use" && choice !== "key") return;   // Cancel: nothing happens
+
+      state.pendingUse = null;
+      const stored   = typeNow ?? node.tileType ?? DP.TILE_TYPES.UNKNOWN;
+      const fmDir    = tileDoc.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.forceMoveDirection`) ?? "";
+      const tileType = (fmDir && DP.Direction?.DIRS?.[fmDir]) ? DP.TILE_TYPES.FORCE_MOVE : stored;
+      console.debug(TAG, `[useTileInPlace] tileType="${tileType}" at "${node.name}" (no turn)`);
+
+      DP.Events.tileEvent(token.document, node, tileDoc, tileType);
+      const { cleared } = await DP.TileEventRegistry.dispatch(
+        tileType, tileDoc, token.document, scene, skeletalKeyContext(choice, keyOffer)
+      );
+      const persistFlag = tileDoc.getFlag(MOD, `${DP.PATHING_ROOT_KEY}.persistAfterTrigger`);
+      const shouldClear = (persistFlag === true || persistFlag === "true") ? false : cleared;
+      if (shouldClear) await DP.Socket.clearTile(scene, tileDoc.id);
+    } catch (e) {
+      console.error(TAG, "Use-in-place error", e);
+      ui.notifications?.error?.("Dungeon Pathing: unexpected error. See console.");
+    } finally {
+      DP.ConfirmDialog.forceClose?.();
+      if (!state.battleLaunching) await rebuild();
+      state.busy = false;
     }
   }
 
@@ -560,7 +631,14 @@
     const isCurrent  = state.currentNode?.nodeId === clicked.nodeId;
     const isNeighbor = state.neighborIds.has(clicked.nodeId);
 
-    if (isCurrent)   { ui.notifications?.info?.("You are already on this tile."); return; }
+    if (isCurrent) {
+      if (isPendingUseTile(clicked) && (game.user?.isGM || state.isMainController)) {
+        ev.preventDefault(); ev.stopPropagation();
+        return useTileInPlace(clicked);
+      }
+      ui.notifications?.info?.("You are already on this tile.");
+      return;
+    }
     if (!isNeighbor) {
       // A neighbour behind a lock or the wrong way of a one-way link: let the link
       // rules answer (bump + hint, Use Key, Roll). When the way opens, move as normal.
@@ -607,6 +685,10 @@
     if (!token) return;
     const scene     = canvas.scene;
     const tTurnStart = performance.now();
+    // The party leaves its tile: an unused landing there is gone, unless the
+    // move doesn't happen or the player presses Go Back onto it again.
+    const _pendingBefore = state.pendingUse;
+    state.pendingUse = null;
 
     try {
       // — Turn Start —
@@ -624,7 +706,7 @@
       const tAnim = performance.now();
       state.forcedNodeId = clicked.nodeId;
       const moved = await DP.Movement.moveToNode(token, clicked);
-      if (!moved) { state.forcedNodeId = null; return; }
+      if (!moved) { state.forcedNodeId = null; state.pendingUse = _pendingBefore; return; }
       perf(`turn | animation: ${(performance.now()-tAnim).toFixed(1)}ms`);
 
       // Refresh token reference after real doc update
@@ -669,7 +751,8 @@
         perf(`turn | confirm dialog SKIPPED (skipConfirm flag): ${(performance.now()-tConfirm).toFixed(1)}ms`);
       } else {
         keyOffer = await skeletalKeyOffer(scene, tileDoc, clicked);
-        confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable, showRevertButton: !disableGoBack && !blockGoBack, keyButton: keyOffer });
+        confirmed = await DP.ConfirmDialog.ask(freshToken, { showUseButton: isUsable, showRevertButton: !disableGoBack && !blockGoBack, keyButton: keyOffer,
+          useType: tileDoc ? DP.TileState.getCurrentType(scene, tileDoc.id) : null });
         perf(`turn | confirm dialog (player wait): ${(performance.now()-tConfirm).toFixed(1)}ms → ${confirmed === "key" ? "KEY" : confirmed === "use" ? "USED" : confirmed ? "CONFIRMED" : "REVERTED"}`);
       }
 
@@ -679,9 +762,14 @@
         state.forcedNodeId = fromNode.nodeId;
         await DP.Movement.revertToPosition(freshToken, savedPos);
         DP.Events.turnReverted(freshToken.document, fromNode, clicked);
+        state.pendingUse = _pendingBefore;
         perf(`turn | revert: ${(performance.now()-tRevert).toFixed(1)}ms`);
         return; // finally block handles rebuild and clears busy
       }
+
+      // Landed with Confirm on a Usable tile: remember it, so a click on the
+      // tile the party stands on can still offer Use (free, no new turn).
+      if (confirmed === true && isUsable && tileDoc) state.pendingUse = { sceneId: scene.id, tileId: tileDoc.id };
 
       // — Confirmed (land + optionally use) —
       state.turnPhase = DP.TURN_PHASE.RESOLUTION;
@@ -830,6 +918,7 @@
     state.currentNode = null;
     state.neighborIds.clear();
     state.forcedNodeId = null;
+    state.pendingUse  = null;
     removeClickListener();
     removeHoverHandler();
     DP.FastTravel?.exit?.();

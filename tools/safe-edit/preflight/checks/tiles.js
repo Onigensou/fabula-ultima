@@ -24,6 +24,15 @@ const TITLE = "Dungeon tile validity";
 // Types that mean "the engine treats this tile as doing nothing".
 const INERT = new Set(["blank", "unknown"]);
 
+// Beneficial tiles get a Use button; forced ones (battle, trap, skill check,
+// story, …) fire on Confirm. Decided 2026-11-12.
+const LOOT_TYPES = ["gold", "consumable", "item", "weapon", "armor", "accessory", "treasure"];
+const USABLE_TYPES = new Set(["camp", "dirt", "healing", "gathering", "fishing", ...LOOT_TYPES]);
+// Loot / gathering drawn with the Blank texture are hidden surprises: forced.
+const HIDDEN_OK = new Set(["gathering", ...LOOT_TYPES]);
+// Come back after a rest (a new day).
+const RESET_ON_REST_TYPES = new Set(["healing", "fishing"]);
+
 function run(world) {
   const out = [];
 
@@ -47,16 +56,30 @@ function run(world) {
         { doc: "scene", id: scene._id, extra: tile._id }));
     }
 
-    // Camp without the Usable flag: Confirm sends the whole party to camp and
-    // there is no Use button, so the party can't walk across the tile.
+    // Beneficial tiles without the Usable flag (2026-11-12 rule): Confirm fires
+    // them at once and there is no Use button, so the party can't walk across.
+    // Judged on the tile's ORIGINAL type, so a spent tile that a reset will
+    // re-arm is checked too. Hidden surprises (loot / gathering drawn with the
+    // Blank texture) are forced on purpose and are left alone.
     for (const tile of tiles) {
-      const type = states[tile._id]?.currentType ?? inferType(tile);
-      if (type !== "camp") continue;
-      const usable = tile.flags?.[MODULE_ID]?.[PATHING_ROOT_KEY]?.usable;
-      if (usable === true || usable === "true") continue;
-      out.push(finding(ID, SEVERITY.WARN,
-        `Scene "${scene.name}": Camp tile ${tile._id} is not Usable — no Use button, and Confirm goes straight to camp`,
-        { doc: "scene", id: scene._id, extra: tile._id }));
+      const st = states[tile._id];
+      const type = st?.initialType || st?.currentType || inferType(tile);
+      if (!USABLE_TYPES.has(type)) continue;
+      const dp = tile.flags?.[MODULE_ID]?.[PATHING_ROOT_KEY] ?? {};
+      const on = (v) => v === true || v === "true";
+      // Hidden = authored on the Blank texture. Judge by the ORIGINAL texture:
+      // a spent tile's art is blank whether or not it was a surprise.
+      const hidden = HIDDEN_OK.has(type) && /blank/i.test(String(st?.initialTexture || tile.texture?.src || ""));
+      if (!hidden && !on(dp.usable)) {
+        out.push(finding(ID, SEVERITY.WARN,
+          `Scene "${scene.name}": ${type} tile ${tile._id} is not Usable — no Use button, and Confirm sets it off`,
+          { doc: "scene", id: scene._id, extra: tile._id }));
+      }
+      if (RESET_ON_REST_TYPES.has(type) && !on(dp.resetOnRest)) {
+        out.push(finding(ID, SEVERITY.WARN,
+          `Scene "${scene.name}": ${type} tile ${tile._id} has no "Reset on rest" — once used it never comes back`,
+          { doc: "scene", id: scene._id, extra: tile._id }));
+      }
     }
 
     // 2. Walk the state entries. Collapse harmless orphans into one summary.

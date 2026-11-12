@@ -15,6 +15,12 @@
 //
 //   DungeonPathing.TrapFx.impact({ tokenId, sfxUrl })
 //   DungeonPathing.TrapFx.play({ sceneId, tokenId, sfxUrl, rows, triggerUserId })
+//
+// Healing tiles (kind: "heal", 2026-11-12, mockup
+// https://claude.ai/artifact/Hzuo1CwmWMRzdqDzW5JWrk) use the same beats:
+// Heal3.ogg (battle heal sound) + the MV 041 heal clip at the token's feet +
+// a green tint flash, then a face + green +N per member (FULL / KO tags) and
+// the HUD row fills up (dp-status-hud gain pulse).
 // ============================================================================
 
 const TAG = "[DungeonPathing][TrapFx]";
@@ -30,6 +36,16 @@ const ROW_GAP = 36;
 const CASCADE = [[-24, -3 * ROW_GAP], [-8, -2 * ROW_GAP], [8, -ROW_GAP], [24, 0]];
 const SPREAD_X = 1;
 const SFX_VOLUME = 0.8;
+const FORGE = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb";
+const HEAL_SFX = `${FORGE}/Sound/Heal3.ogg`;
+const HEAL_SFX_VOLUME = 0.6;
+const HEAL_CLIP = `${FORGE}/Animation/RPG%20Maker%20MV/041_heal_one_1.webm`;
+// 041_heal_one_1 is 546×548 with its ground at y 0.885 (action-anim-rules.js).
+const HEAL_CLIP_ANCHOR = { x: 0.5, y: 0.885 };
+const HEAL_CLIP_SCALE = 1.65;   // × token width
+const HEAL_COLOR = "#52e36a";   // damage-number-style.js heal green
+const HEAL_TINT = 0x9effb0;
+const HEAL_TINT_MS = 260;
 
 function ensureStyle() {
   if (document.getElementById(STYLE_ID)) return;
@@ -50,6 +66,7 @@ function ensureStyle() {
   letter-spacing: 1.5px; font-size: 16px; line-height: 1.1; color: #fff; padding: 1px 9px 2px; transform: skewX(-9deg);
   text-shadow: 0 2px 0 rgba(0,0,0,.5); box-shadow: 0 2px 0 rgba(0,0,0,.35); background: #3a5b80; }
 .oni-trap-dn-tag.is-zero { background: #2a3140; }
+.oni-trap-dn-tag.is-heal { background: #2f7a45; }
 @keyframes oni-trap-rise { 0% { transform: translateY(10px); } 16% { transform: translateY(0); } 100% { transform: translateY(-54px); } }
 @keyframes oni-trap-fade { 0%, 68% { opacity: 1; } 100% { opacity: 0; } }
 @keyframes oni-trap-pop { 0% { transform: scale(.25); } 62% { transform: scale(1.16); } 100% { transform: scale(1); } }
@@ -103,17 +120,63 @@ function spawnNumber(head, r, i) {
   setTimeout(() => el.remove(), LIFETIME_MS + 100);
 }
 
-function playSfx(src) {
+function spawnHealNumber(head, r, i) {
+  const [dx, dy] = CASCADE[i % CASCADE.length];
+  const gain = Number(r.gain) || 0;
+  const size = Math.round(30 + Math.min(26, gain / 7));
+  const tag = r.ko ? `<span class="oni-trap-dn-tag is-zero">KO</span>`
+    : r.full ? `<span class="oni-trap-dn-tag${gain ? " is-heal" : " is-zero"}">FULL</span>` : "";
+  const face = r.face ? `<img class="oni-trap-dn-face" alt="" src="${esc(r.face)}">` : "";
+  const color = gain ? HEAL_COLOR : "#bcd2e8";
+  const el = document.createElement("div");
+  el.className = "oni-trap-dn";
+  el.style.left = `${head.x + dx * SPREAD_X}px`;
+  el.style.top = `${head.y - 24 + dy}px`;
+  el.innerHTML = `<div class="oni-trap-dn-riser"><div class="oni-trap-dn-inner">${tag}<div class="oni-trap-dn-row">${face}`
+    + `<span class="oni-trap-dn-num" style="--s:${size}px;--c:${color}">${r.ko ? "—" : "+" + gain}</span></div></div></div>`;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), LIFETIME_MS + 100);
+}
+
+// The heal clip at the token's feet (Sequencer, the way tile VFX already play).
+function playHealClip(token) {
+  if (!token || !game.modules.get("sequencer")?.active) return;
+  try {
+    const w = Math.abs(token.w || token.mesh?.width || 100) * HEAL_CLIP_SCALE;
+    const feet = { x: token.center.x, y: token.y + Math.abs(token.h || 100) };
+    new Sequence().effect().file(HEAL_CLIP).atLocation(feet).anchor(HEAL_CLIP_ANCHOR)
+      .size({ width: w, height: w * 548 / 546 }).aboveLighting().play();
+  } catch (e) { console.warn(TAG, "heal clip failed", e); }
+}
+
+// A short green flash on the party token.
+function tintFlash(token) {
+  const mesh = token?.mesh;
+  if (!mesh) return;
+  const prev = mesh.tint;
+  try { mesh.tint = HEAL_TINT; } catch (e) { return; }
+  setTimeout(() => { try { if (!mesh.destroyed) mesh.tint = prev ?? 0xffffff; } catch (e) {} }, HEAL_TINT_MS);
+}
+
+function playSfx(src, volume = SFX_VOLUME) {
   if (!src) return;
   try {
     const AH = foundry?.audio?.AudioHelper ?? globalThis.AudioHelper;
-    AH?.play?.({ src, volume: SFX_VOLUME, autoplay: true, loop: false }, false);
+    AH?.play?.({ src, volume, autoplay: true, loop: false }, false);
   } catch (e) { console.warn(TAG, "SFX failed", e); }
 }
 
-// The hit itself: sound + hurt pose. Played at once on the client that stepped
-// on the tile, and from play() everywhere else.
-function impact({ tokenId, sfxUrl } = {}) {
+// The hit itself: sound + hurt pose (trap) or heal sound + clip + green flash
+// (heal). Played at once on the client that stepped on the tile, and from
+// play() everywhere else.
+function impact({ kind = "trap", tokenId, sfxUrl } = {}) {
+  if (kind === "heal") {
+    playSfx(sfxUrl || HEAL_SFX, sfxUrl ? SFX_VOLUME : HEAL_SFX_VOLUME);
+    const token = partyToken(tokenId);
+    playHealClip(token);
+    tintFlash(token);
+    return;
+  }
   playSfx(sfxUrl);
   const token = partyToken(tokenId);
   if (token) {
@@ -123,15 +186,17 @@ function impact({ tokenId, sfxUrl } = {}) {
 }
 
 function play(payload = {}) {
-  const { sceneId, tokenId, sfxUrl, rows = [], triggerUserId } = payload;
+  const { kind = "trap", sceneId, tokenId, sfxUrl, rows = [], triggerUserId } = payload;
   if (sceneId && canvas?.scene?.id !== sceneId) return;
   ensureStyle();
-  if (triggerUserId !== game.user?.id) impact({ tokenId, sfxUrl });
+  if (triggerUserId !== game.user?.id) impact({ kind, tokenId, sfxUrl });
 
-  const list = Array.isArray(rows) ? rows : [];
+  const heal = kind === "heal";
+  const list = (Array.isArray(rows) ? rows : []).map((r) => (heal ? { ...r, kind: "heal" } : r));
   const token = partyToken(tokenId);
   const head = token ? headPoint(token) : null;
-  if (head) list.forEach((r, i) => setTimeout(() => spawnNumber(head, r, i), DELAY_MS + i * STAGGER_MS));
+  const spawn = heal ? spawnHealNumber : spawnNumber;
+  if (head) list.forEach((r, i) => setTimeout(() => spawn(head, r, i), DELAY_MS + i * STAGGER_MS));
 
   // The dungeon HUD reports it. A map without that HUD (an older trap tile
   // running the "Trap Damage" macro on a walk map) gets the Resource Panel.
@@ -142,7 +207,7 @@ function play(payload = {}) {
   } else if (list.length) {
     const rows = list.map((r) => ({
       name: r.name, img: r.face, resource: "hp", before: r.before, after: r.after, max: r.max,
-      tags: [r.immune && "immune", !r.immune && r.resisted && "resist", r.dr > 0 && `dr:${r.dr}`, r.held && "held"].filter(Boolean),
+      tags: heal ? [] : [r.immune && "immune", !r.immune && r.resisted && "resist", r.dr > 0 && `dr:${r.dr}`, r.held && "held"].filter(Boolean),
     }));
     try { globalThis.FU?.ResourcePanel?.show?.({ rows }); }
     catch (e) { console.warn(TAG, "Resource Panel failed", e); }
