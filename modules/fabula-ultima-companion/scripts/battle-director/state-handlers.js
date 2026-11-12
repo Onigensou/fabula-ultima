@@ -90,6 +90,7 @@ import {
   DOMINATION_STATE_AE_NAME,
 } from "./domination.js";
 import { collectObjectives, validateObjectivePick, findObjectiveItem } from "./objectives.js";
+import { polymorphItemInPlay } from "../polymorph/polymorph-gates.js";
 import { canPay as canPayUltima, payPoint as payUltimaPoint } from "./invoke/invoke-core.js";
 import { emitCrestsHidden } from "./domination-crest.js";
 import { emitAurasHidden } from "./aspect-aura.js";
@@ -3608,6 +3609,27 @@ const Declare = {
       director.ctx.objectiveRow = row;
     } else {
       director.ctx.objectiveRow = null;
+    }
+
+    // Polymorph backstop. A transformed creature acts with its FORM's kit only
+    // (the menus already hide everything else — skill-picker / actor-shape),
+    // but a bundle can name an item directly: a stale menu, a macro, the sim's
+    // name-keyed rotations. Refuse an OWN skill/attack item that isn't part of
+    // the form. Never the Item command: consumables (and their linked _skills)
+    // stay usable in any body. World-level core-action items (Guard, Objective
+    // options) have no actor parent and pass untouched.
+    if (winnerBundle.command !== "Item" && winnerBundle.command !== "Objective") {
+      const pRef = winnerBundle.skillUuid ?? winnerBundle.npcAttackItemUuid ?? null;
+      if (pRef) {
+        const pItem = await fromUuid(pRef).catch(() => null);
+        const pActor = pItem?.parent instanceof Actor ? pItem.parent : null;
+        if (pActor && !polymorphItemInPlay(pItem, pActor)) {
+          warn(`DECLARE: "${pItem.name}" refused for ${snap.name} — not part of their Polymorph form`);
+          ui.notifications?.warn(`${pItem.name} can't be used while transformed.`);
+          director.enqueue({ type: INTENTS.TIMEOUT });
+          return;
+        }
+      }
     }
 
     log(`DECLARE: winner=${winnerSource}, command=${winnerBundle.command}`);

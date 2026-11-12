@@ -24,7 +24,8 @@
 // See [[project_action_pattern_ai]] and [[project_enemy_autopilot]].
 
 import { log, warn } from "../logger.js";
-import { profileFor, mpItemPolicy, hpItemPolicy, revivePolicy, refreshFocus, TUNING } from "./profiles.js";
+import { profileFor, GENERIC_PROFILE, mpItemPolicy, hpItemPolicy, revivePolicy, refreshFocus, TUNING } from "./profiles.js";
+import { isPolymorphed, polymorphItemInPlay } from "../../polymorph/polymorph-gates.js";
 import { SimMode } from "./sim-mode.js";
 import { Journal } from "./sim-journal.js";
 import { canAffordItem, parseCost } from "./cost.js";
@@ -95,6 +96,9 @@ const tokenUuidOf = (dc) => dc?.tokenUuid ?? dc?.tokenDoc?.uuid ?? null;
 //     virtual attack   → "virtual:N"   (Blanche's Twin Shields)
 //     nothing at all   → null → Guard
 function resolveAttackMode(actorDoc) {
+  // Polymorph: the form attacks with its own Attack items (bestNpcAttack), never
+  // the bearer's equipped weapon — same as actor-shape.getActorKind → "npc".
+  if (isPolymorphed(actorDoc)) return null;
   try {
     if (resolveAttackerWeapon(actorDoc, { which: "main" })) return "main";
     if (resolveAttackerWeapon(actorDoc, { which: "off" })) return "off";
@@ -284,6 +288,8 @@ function bestNpcAttack(actorDoc, foes, focusUuid = null) {
       // container's preset, never as a basic-attack pick — mirrors
       // actor-shape.getNpcAttackItems.
       && !String(i?.system?.container ?? "").trim()
+      // Polymorph: only the form's attacks while transformed.
+      && polymorphItemInPlay(i, actorDoc)
   );
   if (!attacks.length) return null;
 
@@ -744,7 +750,10 @@ export async function decidePlayerAction(director, snap, blocked = new Set(), gr
   const actorDoc = self?.actorDoc ?? null;
   if (!actorDoc) return null;
 
-  const profile = profileFor(actorDoc.name);
+  // A transformed PC is not playing its own class: its name-keyed rotation would
+  // name skills the form doesn't have (DECLARE refuses them). Generic profile →
+  // the form's own attacks.
+  const profile = isPolymorphed(actorDoc) ? GENERIC_PROFILE : profileFor(actorDoc.name);
   const { foes } = sides(director, snap);
   const isBlocked = (name) => blocked.has(String(name ?? "").trim().toLowerCase());
 
