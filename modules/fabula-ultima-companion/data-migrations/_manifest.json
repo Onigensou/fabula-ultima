@@ -632,6 +632,11 @@
       "key": "2026-11-12-polymorph-revert-objective",
       "path": "data-migrations/2026-11-12-polymorph-revert-objective.js",
       "idempotent": true
+    },
+    {
+      "key": "2026-11-12-polymorph-potion-wording",
+      "path": "data-migrations/2026-11-12-polymorph-potion-wording.js",
+      "idempotent": true
     }
   ]
 }
