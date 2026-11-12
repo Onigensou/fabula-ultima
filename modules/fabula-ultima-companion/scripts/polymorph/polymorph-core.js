@@ -19,7 +19,7 @@
 //        bonus_defense / bonus_magic_defense OVERRIDE the form's offset over
 //                     DEX / INS — which also drops every gear DEF/MDEF add
 //        affinity_1..9 OVERRIDE the form's affinities (beats gear floors/caps)
-//        skill_hp / skill_mp ADD — tuned so max HP/MP = own max × m
+//        max_hp / max_mp OVERRIDE own max × m
 //      Flagged directorPermanent so the Battle Director's scene/turn sweeps
 //      leave it alone: only revert() may end a form, because only revert()
 //      carries HP/MP back.
@@ -118,20 +118,19 @@ export const listTransformed = () => allBearers().filter(isTransformed);
 
 // ── Effect construction ──────────────────────────────────────────────────────
 
-function buildChanges(own, profile, hpAdd, mpAdd) {
+// max_hp / max_mp are sheet LABELS (level + 5·MIG + …). A label override lands
+// (affinity_N are labels too) — an ADD on skill_hp/skill_mp does NOT (measured
+// 2026-11-12 in the runner: ignored), so the maxima are overridden outright.
+function buildChanges(profile, maxHp, maxMp) {
   const ch = [];
   const ov = (key, value) => ch.push({ key, mode: MODE.OVERRIDE, priority: PRIORITY, value: String(value) });
   for (const a of ATTR_KEYS) ov(`${a}_base`, profile.attrs[a]);
   ov("bonus_defense", profile.defOffset);
   ov("bonus_magic_defense", profile.mdefOffset);
   for (const k of AFFINITY_KEYS) ov(k, profile.affinities[k]);
-  ch.push({ key: "skill_hp", mode: MODE.ADD, priority: PRIORITY, value: String(hpAdd) });
-  ch.push({ key: "skill_mp", mode: MODE.ADD, priority: PRIORITY, value: String(mpAdd) });
+  ov("max_hp", maxHp);
+  ov("max_mp", maxMp);
   return ch;
-}
-
-function setAdd(changes, key, value) {
-  return changes.map((c) => (c.key === key ? { ...c, value: String(value) } : c));
 }
 
 // ── transform (GM) ───────────────────────────────────────────────────────────
@@ -163,12 +162,7 @@ async function transformGM(actorRef, formRef, opts = {}) {
   const hp = scaleIntoForm(own.curHp, own.maxHp, m.hp);
   const mp = scaleIntoForm(own.curMp, own.maxMp, m.mp);
 
-  // max_hp = level + 5·mig_base + … + skill_hp, so the MIG/WLP swap moves max
-  // too. First guess cancels it; one measured correction pass absorbs anything
-  // the guess cannot see (other AEs, class benefits).
-  let hpAdd = hp.max - own.maxHp - 5 * (profile.attrs.mig - own.attrs.mig);
-  let mpAdd = mp.max - own.maxMp - 5 * (profile.attrs.wlp - own.attrs.wlp);
-  let changes = buildChanges(own, profile, hpAdd, mpAdd);
+  const changes = buildChanges(profile, hp.max, mp.max);
 
   const [effect] = await actor.createEmbeddedDocuments("ActiveEffect", [{
     name: `Polymorph: ${form.name}`,
@@ -182,14 +176,6 @@ async function transformGM(actorRef, formRef, opts = {}) {
   }]);
   if (!effect) return { ok: false, reason: "effect-create-failed" };
 
-  for (let pass = 0; pass < 2; pass++) {
-    const dHp = hp.max - num(props(actor).max_hp);
-    const dMp = mp.max - num(props(actor).max_mp);
-    if (!dHp && !dMp) break;
-    hpAdd += dHp; mpAdd += dMp;
-    changes = setAdd(setAdd(changes, "skill_hp", hpAdd), "skill_mp", mpAdd);
-    await effect.update({ changes });
-  }
   const gotMax = { hp: num(props(actor).max_hp), mp: num(props(actor).max_mp) };
   if (gotMax.hp !== hp.max || gotMax.mp !== mp.max) {
     warn(`max did not land for ${actor.name}: HP ${gotMax.hp}/${hp.max}, MP ${gotMax.mp}/${mp.max} — using what landed`);
