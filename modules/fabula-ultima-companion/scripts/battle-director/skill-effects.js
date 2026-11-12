@@ -2877,7 +2877,12 @@ export async function computeSenderDamageBonuses({
       if (!carrier) continue;
       const cfg = carrier.flags?.[FLAG_NS]?.reactionConfig ?? {};
       runtimeEffectTable = cfg.effect_table ?? cfg.reaction_effect_table ?? {};
-      carrierSkill = null;
+      // An AE carrier has no level of its own, so with no skill SL read 1 here
+      // (Lockdown SL 2 cut 2, not SL × 2 = 4). Use the skill that APPLIED the AE,
+      // as card-mutations.js already does for AE carriers.
+      const appliedBySkill = carrier.flags?.[FLAG_NS]?.directorAppliedBy?.skillUuid;
+      carrierSkill = (appliedBySkill ? await fromUuid(appliedBySkill).catch(() => null) : null)
+        ?? (carrier.parent?.documentName === "Item" ? carrier.parent : null);
     }
     // Walk from cand.ref through the effect table, summing every
     // add_damage row reachable via chain steps. Handles both the simple
