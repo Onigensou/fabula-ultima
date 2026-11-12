@@ -67,7 +67,20 @@ New migration `2026-11-12-polymorph-revert-objective` (idempotent) authors `Batt
   - Keren casts Psychokinesis and transforms after her turn (counter starts next round).
   - She uses Blast Breath ×3 in rounds 2–4, then reverts with reason `turns`.
 
-## Transform visual: smoke POOF (Oni, 2026-11-12; replaces the squash below)
+## Transform-into visual: white-silhouette MORPH (Oni, 2026-11-12)
+
+- **What it looks like:**
+  1. The bearer's sprite turns white (320 ms).
+  2. The white silhouette morphs into the form's silhouette (950 ms, ease in-out, a soft blurred glow).
+  3. The white overlay fades off the creature (420 ms).
+- **How the morph works:** `polymorph-sdf.js` (pure, with 6 offline tests) gives each alpha mask a signed distance field on one shared grid (360 cells on the long side, exact EDT). Each frame draws the zero line of the blended field, so it works for any pair of sprites with no setup.
+- **Fallbacks:**
+  - If the art can't be read (CORS), the effect is a plain white fade.
+  - If no new art arrives, the token simply shows again.
+- **Sound:** `Sound/Magic4.ogg` is a PLACEHOLDER until Oni picks one.
+- **Revert keeps the smoke poof below.**
+
+## Revert visual: smoke POOF (Oni, 2026-11-12; replaces the squash below)
 
 - **What it looks like:** an anime transformation poof. Guilty Gear `smoke_anim08` (Ninja Log's clip: the first puff only, 0.7x, about 1.4x the body) swallows the token with `Sound/SmokeBomb.wav`.
 - **The swap:** the art swaps under the cloud. The clip holds its densest frame, breathing gently, if the new art is late.
