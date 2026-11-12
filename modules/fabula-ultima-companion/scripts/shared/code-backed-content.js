@@ -165,6 +165,14 @@ const DELEGATED = [
     // "fix" a variant-named skill that looks unmatched here.
     namesFrom: (d) => Object.values(d ?? {}).flatMap((x) => x?.itemNames ?? []),
   },
+  {
+    what: "Polymorph Potions (any item named \"Polymorph Potion: <Monster>\")",
+    module: "scripts/polymorph/polymorph-potions.js", symbol: "POTION_PREFIX",
+    note: "Name PREFIX family: using one transforms the target into the world NPC actor named <Monster> (polymorph-core usePotion; BD Item RESOLVE). No such actor → refused, not consumed.",
+    // A prefix, not a list: every "Polymorph Potion: X" item (world and embedded
+    // copies) is covered, so there are no names to enumerate here.
+    namesFrom: () => [],
+  },
 ];
 
 // ── Name constants for consumers ────────────────────────────────────────────

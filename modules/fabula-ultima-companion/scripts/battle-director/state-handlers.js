@@ -91,6 +91,7 @@ import {
 } from "./domination.js";
 import { collectObjectives, validateObjectivePick, findObjectiveItem } from "./objectives.js";
 import { polymorphItemInPlay } from "../polymorph/polymorph-gates.js";
+import { potionTargetText, isPolymorphPotion, findFormActor, formNameForItem } from "../polymorph/polymorph-potions.js";
 import { canPay as canPayUltima, payPoint as payUltimaPoint } from "./invoke/invoke-core.js";
 import { emitCrestsHidden } from "./domination-crest.js";
 import { emitAurasHidden } from "./aspect-aura.js";
@@ -3618,6 +3619,17 @@ const Declare = {
     // the form. Never the Item command: consumables (and their linked _skills)
     // stay usable in any body. World-level core-action items (Guard, Objective
     // options) have no actor parent and pass untouched.
+    // A Polymorph Potion whose monster does not exist (yet) is refused HERE, before
+    // resolveAction could use it up.
+    if (winnerBundle.command === "Item" && winnerBundle.skillUuid) {
+      const potion = await fromUuid(winnerBundle.sourceItemUuid ?? winnerBundle.skillUuid).catch(() => null);
+      if (potion && isPolymorphPotion(potion) && !findFormActor(potion)) {
+        warn(`DECLARE: ${potion.name} refused — no monster actor named "${formNameForItem(potion)}"`);
+        ui.notifications?.warn(`${potion.name}: the ${formNameForItem(potion)} form isn't available yet.`);
+        director.enqueue({ type: INTENTS.TIMEOUT });
+        return;
+      }
+    }
     if (winnerBundle.command !== "Item" && winnerBundle.command !== "Objective") {
       const pRef = winnerBundle.skillUuid ?? winnerBundle.npcAttackItemUuid ?? null;
       if (pRef) {
@@ -4636,7 +4648,8 @@ const Target = {
         else warn(`Item TARGET: linked skill ${linkedUuid} not resolvable; using item as activation`);
       }
       const view = getRuntimeActionView(activation);
-      const skillTargetText = String(activation.system?.props?.skill_target ?? "").trim();
+      // Polymorph Potions author no target: "One Ally" (drink or give).
+      const skillTargetText = potionTargetText(activation, activation.system?.props?.skill_target);
       const itemTargeting = await resolveActionTargets(director, attackerSnap, {
         skillTargetText,
         attackerActor,
@@ -7883,7 +7896,32 @@ const Resolve = {
       // lives on ar.costSerialized (read for LAST_SPELL_MP in resolveAction §7).
       const skillGrant = freeActions.get(ar.attacker?.actorId ?? null);
       const freeCast = !!(skillGrant?.freeOfCost && topIsFreeAction(director.ctx));
-      await resolveAction(director, ar, freeCast ? { skipCost: true } : {});
+      // Polymorph Potion (code-backed by name — polymorph-potions.js): transform
+      // the target(s) FIRST, and only use the potion up when at least one
+      // transform landed (a KO'd / Guest / monster target leaves it in the bag).
+      // resolveAction then pays the item as for any consumable.
+      let potionRefused = false;
+      if (ar.kind === "Item") {
+        try {
+          const potion = ar.sourceItemUuid ? await fromUuid(ar.sourceItemUuid).catch(() => null) : null;
+          const poly = globalThis.FUCompanion?.api?.polymorph;
+          if (potion && poly?.usePotion && isPolymorphPotion(potion)) {
+            const refs = (ar.targets ?? []).map((t) => t?.tokenUuid).filter(Boolean);
+            if (!refs.length) refs.push(ar.attacker?.tokenUuid ?? ar.attackerActorRef);
+            let landed = 0;
+            for (const ref of refs) {
+              const r = await poly.usePotion({ item: potion, target: ref, consume: false });
+              if (r?.ok) landed += 1;
+              else warn(`RESOLVE: ${potion.name} on ${ref} refused (${r?.reason ?? "?"})`);
+            }
+            if (!landed) {
+              potionRefused = true;
+              ui.notifications?.warn(`${potion.name} had no effect — it was not used up.`);
+            }
+          }
+        } catch (e) { warn("RESOLVE: Polymorph Potion threw", e); }
+      }
+      if (!potionRefused) await resolveAction(director, ar, freeCast ? { skipCost: true } : {});
     } else if (ar.kind === "Hinder") {
       // Success-gating + fail/fumble Miss VFX stay here (presentation); on a
       // success, resolveAction fires Common/Hinder's open_action_menu, which

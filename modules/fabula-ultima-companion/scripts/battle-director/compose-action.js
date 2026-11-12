@@ -51,6 +51,7 @@ import { getNpcAttackItems } from "./actor-shape.js";
 import { buildUltimaMenuSpec } from "./domination.js";
 import { buildObjectiveMenuSpec } from "./objectives.js";
 import { pickFromList } from "./list-picker.js";
+import { potionTargetText } from "../polymorph/polymorph-potions.js";
 import { applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, pinActionKindForSkill, snapshotEligibleTargetsFromDCombat,
          attackRangeBlockedBy, applyMultiOffensiveGate, applySingleTargetGate, applyAreaGate, targetsKnockedOut } from "./snapshot.js";
 
@@ -1026,7 +1027,8 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
   }
   // Preserve original case — skill_target may contain formula identifiers like
   // `HAS_SKILL_PILLAGE` matched case-sensitively. Category regex below is /i.
-  const skillTargetText = String(source?.system?.props?.skill_target ?? "").trim();
+  // Polymorph Potions author no target: "One Ally" (drink or give) — see potionTargetText.
+  const skillTargetText = potionTargetText(source, source?.system?.props?.skill_target);
   const isSelf = !skillTargetText || /^self$/i.test(skillTargetText);
   // A locked target (free spell "targeting that creature") the chosen spell
   // cannot reach is refused as a STEP BACK ("target-cancelled"), so the player

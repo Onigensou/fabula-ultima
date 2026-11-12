@@ -39,6 +39,22 @@ import {
   counterOnConflictStart, tickOnTurnEnd, readFormProfile, formTags,
   AFFINITY_KEYS, ATTR_KEYS, FORM_TURNS_IN_CONFLICT,
 } from "./polymorph-math.js";
+import { broadcastSquash, SQUASH_OUT_MS } from "./polymorph-fx.js";
+import { formNameForItem, isPolymorphPotion, findFormActor } from "./polymorph-potions.js";
+
+// Sheet art the sprite systems read OFF THE ACTOR (battler-pose-rules POSES →
+// sprite_<pose>; sprite-facing-runtime DIR_FIELDS walk/stand; camp poses). The
+// form overrides every one with the monster's own value or "" — blank falls
+// back to the token image, which is the form's art. Without this a transformed
+// PC would flash its own walk/attack/hurt sprites.
+const SPRITE_PROP_KEYS = Object.freeze([
+  "sprite_idle", "sprite_hurt", "sprite_ko", "sprite_crisis", "sprite_guard",
+  "sprite_attack", "sprite_cast", "sprite_leap", "sprite_fly",
+  "sprite_standard", "sprite_walk",
+  "sprite_walk_down", "sprite_stand_down", "sprite_walk_left", "sprite_stand_left",
+  "sprite_walk_up_left", "sprite_stand_up_left", "sprite_walk_up", "sprite_stand_up",
+  "sprite_sit", "sprite_sleep", "sprite_onsen",
+]);
 
 const NS = "fabula-ultima-companion";
 const FLAG = "polymorph";
@@ -122,9 +138,10 @@ export const listTransformed = () => allBearers().filter(isTransformed);
 // max_hp / max_mp are sheet LABELS (level + 5·MIG + …). A label override lands
 // (affinity_N are labels too) — an ADD on skill_hp/skill_mp does NOT (measured
 // 2026-11-12 in the runner: ignored), so the maxima are overridden outright.
-function buildChanges(profile, maxHp, maxMp) {
+function buildChanges(profile, maxHp, maxMp, formProps = {}) {
   const ch = [];
   const ov = (key, value) => ch.push({ key, mode: MODE.OVERRIDE, priority: PRIORITY, value: String(value) });
+  for (const k of SPRITE_PROP_KEYS) ov(k, String(formProps?.[k] ?? "").trim());
   for (const a of ATTR_KEYS) ov(`${a}_base`, profile.attrs[a]);
   ov("bonus_defense", profile.defOffset);
   ov("bonus_magic_defense", profile.mdefOffset);
@@ -197,6 +214,54 @@ function liveConflictFor(actor) {
   } catch (e) { warn("liveConflictFor failed", e); return null; }
 }
 
+// ── Token art ────────────────────────────────────────────────────────────────
+// Modes with a token on screen: the token takes the form's art. The FOOTPRINT
+// (width/height) stays the bearer's, so dungeon pathing / walls / formation are
+// untouched; the texture scale absorbs the size difference, so a 2×2 monster
+// still LOOKS 2×2. The facing sign (mirrored scaleX) is kept. Originals are
+// stored in the state and restored on revert. Theatre mode has no token: the
+// party menu / sheet carry the form there.
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+function tokensOf(actor) {
+  const out = [];
+  const scenes = new Set([canvas?.scene, game.scenes?.active].filter(Boolean));
+  for (const sc of scenes) {
+    for (const t of sc.tokens ?? []) {
+      const mine = t.actorLink ? t.actorId === actor.id : t.actor?.uuid === actor.uuid;
+      if (mine) out.push(t);
+    }
+  }
+  return out;
+}
+
+function formTextureFor(token, form) {
+  const pt = form.prototypeToken ?? {};
+  const src = pt.texture?.src || form.img;
+  if (!src) return null;
+  const sign = Math.sign(Number(token.texture?.scaleX ?? 1)) || 1;
+  const kx = Math.abs(Number(pt.texture?.scaleX ?? 1)) || 1;
+  const ky = Math.abs(Number(pt.texture?.scaleY ?? 1)) || 1;
+  const fw = Number(pt.width ?? 1) || 1, fh = Number(pt.height ?? 1) || 1;
+  const tw = Number(token.width ?? 1) || 1, th = Number(token.height ?? 1) || 1;
+  return { src, scaleX: sign * kx * (fw / tw), scaleY: ky * (fh / th) };
+}
+
+async function writeTokenArt(updates) {
+  const byScene = new Map();
+  for (const u of updates) {
+    const sc = u.token?.parent;
+    if (!sc) continue;
+    if (!byScene.has(sc)) byScene.set(sc, []);
+    byScene.get(sc).push({ _id: u.token.id, "texture.src": u.src, "texture.scaleX": u.scaleX, "texture.scaleY": u.scaleY });
+  }
+  for (const [sc, rows] of byScene) {
+    try { await sc.updateEmbeddedDocuments("Token", rows); }
+    catch (e) { warn(`token art write failed on ${sc.name}`, e); }
+  }
+}
+
 // ── transform (GM) ───────────────────────────────────────────────────────────
 
 async function transformGM(actorRef, formRef, opts = {}) {
@@ -210,7 +275,7 @@ async function transformGM(actorRef, formRef, opts = {}) {
   if (actor.id === form.id) return { ok: false, reason: "same-actor" };
 
   // A new potion replaces the current form (never stacks).
-  if (isTransformed(actor) || formEffects(actor).length) await revertGM(actor, { reason: "replaced", quiet: true });
+  if (isTransformed(actor) || formEffects(actor).length) await revertGM(actor, { reason: "replaced", quiet: true, noFx: true });
 
   const p = props(actor);
   const own = {
@@ -226,7 +291,13 @@ async function transformGM(actorRef, formRef, opts = {}) {
   const hp = scaleIntoForm(own.curHp, own.maxHp, m.hp);
   const mp = scaleIntoForm(own.curMp, own.maxMp, m.mp);
 
-  const changes = buildChanges(profile, hp.max, mp.max);
+  const changes = buildChanges(profile, hp.max, mp.max, props(form));
+
+  // Visuals: every client squashes the current art out while the layer is
+  // built; the new art is written once the squash has closed.
+  const tokens = tokensOf(actor);
+  const fxStart = Date.now();
+  const squashed = opts.noFx ? 0 : broadcastSquash(tokens);
 
   const [effect] = await actor.createEmbeddedDocuments("ActiveEffect", [{
     name: `Polymorph: ${form.name}`,
@@ -252,6 +323,17 @@ async function transformGM(actorRef, formRef, opts = {}) {
   }
   const formMax = { hp: gotMax.hp || hp.max, mp: gotMax.mp || mp.max };
 
+  const tokenArt = {};
+  const swaps = [];
+  for (const t of tokens) {
+    const nt = formTextureFor(t, form);
+    if (!nt) continue;
+    tokenArt[t.uuid] = { src: t.texture?.src ?? null, scaleX: t.texture?.scaleX ?? 1, scaleY: t.texture?.scaleY ?? 1 };
+    swaps.push({ token: t, ...nt });
+  }
+  if (squashed) await sleep(Math.max(0, SQUASH_OUT_MS - (Date.now() - fxStart)));
+  await writeTokenArt(swaps);
+
   const c = opts.conflict ?? liveConflictFor(actor);
   const state = {
     formActorUuid: form.uuid,
@@ -262,6 +344,7 @@ async function transformGM(actorRef, formRef, opts = {}) {
     species: profile.species,
     effectId: effect.id,
     itemCount,
+    tokenArt,
     sourceUuid: opts.sourceUuid ?? null,
     sceneId: canvas?.scene?.id ?? game.scenes?.active?.id ?? null,
     appliedAt: Date.now(),
@@ -289,7 +372,7 @@ async function transformGM(actorRef, formRef, opts = {}) {
 
 // ── revert (GM) ──────────────────────────────────────────────────────────────
 
-async function revertGM(actorRef, { reason = "voluntary", quiet = false } = {}) {
+async function revertGM(actorRef, { reason = "voluntary", quiet = false, noFx = false } = {}) {
   const actor = await resolveActor(actorRef);
   if (!actor) return { ok: false, reason: "no-actor" };
   if (_reverting.has(actor.uuid)) return { ok: true, reason: "already-reverting" };
@@ -302,6 +385,16 @@ async function revertGM(actorRef, { reason = "voluntary", quiet = false } = {}) 
   try {
     const p = props(actor);
     const formCur = { hp: num(p.current_hp), mp: num(p.current_mp) };
+    // Token art back (with the squash). A token that no longer exists (battle
+    // tokens after a battle, a deleted token) is skipped.
+    const restore = [];
+    for (const [uuid, o] of Object.entries(state?.tokenArt ?? {})) {
+      let t = null;
+      try { t = fromUuidSync(uuid); } catch { t = null; }
+      if (t && o?.src) restore.push({ token: t, src: o.src, scaleX: o.scaleX, scaleY: o.scaleY });
+    }
+    const fxStart = Date.now();
+    const squashed = (noFx || !restore.length) ? 0 : broadcastSquash(restore.map((r) => r.token));
     if (kit.length) {
       try { await actor.deleteEmbeddedDocuments("Item", kit.map((i) => i.id)); }
       catch (e) { warn(`removing form items from ${actor.name} failed`, e); }
@@ -309,6 +402,8 @@ async function revertGM(actorRef, { reason = "voluntary", quiet = false } = {}) 
     if (strays.length) {
       await actor.deleteEmbeddedDocuments("ActiveEffect", strays.map((e) => e.id), { fuNoFollowup: true });
     }
+    if (squashed) await sleep(Math.max(0, SQUASH_OUT_MS - (Date.now() - fxStart)));
+    await writeTokenArt(restore);
     const update = { [`flags.${NS}.-=${FLAG}`]: null };
     let hpBack = null, mpBack = null;
     if (state) {
@@ -333,6 +428,41 @@ async function revertAllGM({ reason = "scene" } = {}) {
   for (const a of list) out.push(await revertGM(a, { reason }));
   if (list.length) log(`revertAll(${reason}): ${list.length} form(s) ended`);
   return { ok: true, count: list.length, results: out };
+}
+
+// ── Polymorph Potions ────────────────────────────────────────────────────────
+// "Polymorph Potion: <Monster>" (polymorph-potions.js). Used on yourself or a
+// willing ally (user ruling 2026-11-12). Out of battle this consumes the potion
+// itself; the Battle Director's Item action consumes it in resolveAction and
+// calls with consume:false. A missing monster or a refused transform (KO'd,
+// a Guest, a monster as target) leaves the potion unused.
+
+/** Read-only: what a potion would do. { isPotion, formName, form } */
+export function potionInfo(item) {
+  const formName = formNameForItem(item);
+  return { isPotion: !!formName, formName, form: formName ? findFormActor(item) : null };
+}
+
+async function usePotionGM({ item: itemRef, target = null, consume = true, opts = {} } = {}) {
+  const item = itemRef instanceof Item ? itemRef : await fromUuid(String(itemRef ?? "")).catch(() => null);
+  if (!item) return { ok: false, reason: "no-item" };
+  if (!isPolymorphPotion(item)) return { ok: false, reason: "not-a-polymorph-potion" };
+  const form = findFormActor(item);
+  if (!form) return { ok: false, reason: "form-missing", formName: formNameForItem(item) };
+  const holder = item.parent instanceof Actor ? item.parent : null;
+  const bearer = await resolveActor(target ?? holder);
+  if (!bearer) return { ok: false, reason: "no-target" };
+  const r = await transformGM(bearer, form, { ...opts, sourceUuid: item.uuid });
+  if (!r.ok) return r;
+  let consumed = false;
+  if (consume && holder) {
+    try {
+      const { consumeOne } = await import("../battle-director/item-resource.js");
+      const c = await consumeOne(holder, item);
+      consumed = c?.ok !== false;
+    } catch (e) { warn(`consuming ${item.name} failed`, e); }
+  }
+  return { ...r, consumed };
 }
 
 // ── Conflict turn counting (called by the Battle Director in phase 2) ───────
@@ -366,6 +496,7 @@ const OPS = {
   revertAll: (args) => revertAllGM(args.opts ?? {}),
   noteTurnEnded: (args) => noteTurnEndedGM(args.actor, args.opts ?? {}),
   noteConflictStart: (args) => noteConflictStartGM(args.opts ?? {}),
+  usePotion: (args) => usePotionGM(args.opts ?? {}),
 };
 
 /** A player may transform / revert only an actor they own. Everything else is GM-only. */
@@ -373,6 +504,15 @@ async function authorize(op, args, senderId) {
   const user = game.users?.get(senderId);
   if (!user) return false;
   if (user.isGM) return true;
+  // A potion: the player must own whoever HOLDS it (they may give it to a
+  // willing ally; transformGM still refuses monsters, Guests and the KO'd).
+  // Out of battle only — in battle the Battle Director drives it as the GM.
+  if (op === "usePotion") {
+    const ref = args.opts?.item;
+    const item = ref ? await fromUuid(String(ref)).catch(() => null) : null;
+    const holder = item?.parent instanceof Actor ? item.parent : null;
+    return !!(args.opts?.consume !== false && holder?.testUserPermission?.(user, "OWNER"));
+  }
   if (op !== "transform" && op !== "revert") return false;
   const actor = await resolveActor(args.actor);
   return !!actor?.testUserPermission?.(user, "OWNER");
@@ -391,7 +531,9 @@ async function run(op, args) {
 /** Documents do not survive the socket; send uuids. */
 function serializeArgs(args) {
   const toRef = (v) => (v?.uuid ? v.uuid : v);
-  return { ...args, actor: toRef(args.actor), form: toRef(args.form) };
+  const opts = args.opts ? { ...args.opts } : args.opts;
+  if (opts) { if ("item" in opts) opts.item = toRef(opts.item); if ("target" in opts) opts.target = toRef(opts.target); }
+  return { ...args, actor: toRef(args.actor), form: toRef(args.form), opts };
 }
 
 function onSocket(msg, senderId) {
@@ -421,10 +563,12 @@ export const revert = (actor, opts = {}) => run("revert", { actor, opts });
 export const revertAll = (opts = {}) => run("revertAll", { opts });
 export const noteTurnEnded = (actor, opts = {}) => run("noteTurnEnded", { actor, opts });
 export const noteConflictStart = (opts = {}) => run("noteConflictStart", { opts });
+/** Use a Polymorph Potion: `{ item, target?, consume = true }`. */
+export const usePotion = (opts = {}) => run("usePotion", { opts });
 
 const API = Object.freeze({
   transform, revert, revertAll, getForm, isTransformed, hasTag, listTransformed,
-  noteTurnEnded, noteConflictStart,
+  noteTurnEnded, noteConflictStart, usePotion, potionInfo, isPolymorphPotion,
 });
 
 // ── Wiring ───────────────────────────────────────────────────────────────────
