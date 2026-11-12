@@ -39,6 +39,10 @@
           "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.87e9F5jSDBO9HNxQ"
         },
         "fabula-ultima-companion": {
+          "aeCue": {
+            "kind": "oilDrip",
+            "rgb": "226,38,72"
+          },
           "aeFamily": "bane-oil",
           "category": "buff",
           "reactionConfig": {
@@ -48,7 +52,7 @@
                 "effect_kind": "open_action_menu",
                 "effect_label": "bo_hit",
                 "menu_option_labels": "Slow|Weak|Lose a Resistance",
-                "menu_option_refs": "bo_slow, bo_weak, bo_res",
+                "menu_option_refs": "bo_slow_go, bo_weak_go, bo_res",
                 "menu_subtitle": "The demon bane oil bites. Choose one.",
                 "menu_title": "Bane Oils"
               },
@@ -74,7 +78,7 @@
                 "effect_kind": "open_action_menu",
                 "effect_label": "bo_res",
                 "menu_option_labels": "Physical|Air|Bolt|Dark|Earth|Fire|Ice|Light|Poison",
-                "menu_option_refs": "bo_r_physical, bo_r_air, bo_r_bolt, bo_r_dark, bo_r_earth, bo_r_fire, bo_r_ice, bo_r_light, bo_r_poison",
+                "menu_option_refs": "bo_r_physical_go, bo_r_air_go, bo_r_bolt_go, bo_r_dark_go, bo_r_earth_go, bo_r_fire_go, bo_r_ice_go, bo_r_light_go, bo_r_poison_go",
                 "menu_subtitle": "Choose the damage Resistance the creature loses until the end of the scene.",
                 "menu_title": "Bane Oils: Resistance"
               },
@@ -167,6 +171,158 @@
                 "effect_kind": "apply_ae",
                 "effect_label": "bo_r_poison",
                 "target_ref": "trigger_subject"
+              },
+              "13": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#slow:demon",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_slow_anim",
+                "target_ref": "trigger_subject"
+              },
+              "14": {
+                "$deleted": false,
+                "chain_steps": "bo_slow_anim, bo_slow",
+                "effect_kind": "chain",
+                "effect_label": "bo_slow_go"
+              },
+              "15": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#weak:demon",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_weak_anim",
+                "target_ref": "trigger_subject"
+              },
+              "16": {
+                "$deleted": false,
+                "chain_steps": "bo_weak_anim, bo_weak",
+                "effect_kind": "chain",
+                "effect_label": "bo_weak_go"
+              },
+              "17": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:demon:physical",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_physical_anim",
+                "target_ref": "trigger_subject"
+              },
+              "18": {
+                "$deleted": false,
+                "chain_steps": "bo_r_physical_anim, bo_r_physical",
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_physical_go"
+              },
+              "19": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:demon:air",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_air_anim",
+                "target_ref": "trigger_subject"
+              },
+              "20": {
+                "$deleted": false,
+                "chain_steps": "bo_r_air_anim, bo_r_air",
+                "condition_formula": "TARGET_AFFINITY_AIR == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_air_go"
+              },
+              "21": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:demon:bolt",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_bolt_anim",
+                "target_ref": "trigger_subject"
+              },
+              "22": {
+                "$deleted": false,
+                "chain_steps": "bo_r_bolt_anim, bo_r_bolt",
+                "condition_formula": "TARGET_AFFINITY_BOLT == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_bolt_go"
+              },
+              "23": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:demon:dark",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_dark_anim",
+                "target_ref": "trigger_subject"
+              },
+              "24": {
+                "$deleted": false,
+                "chain_steps": "bo_r_dark_anim, bo_r_dark",
+                "condition_formula": "TARGET_AFFINITY_DARK == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_dark_go"
+              },
+              "25": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:demon:earth",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_earth_anim",
+                "target_ref": "trigger_subject"
+              },
+              "26": {
+                "$deleted": false,
+                "chain_steps": "bo_r_earth_anim, bo_r_earth",
+                "condition_formula": "TARGET_AFFINITY_EARTH == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_earth_go"
+              },
+              "27": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:demon:fire",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_fire_anim",
+                "target_ref": "trigger_subject"
+              },
+              "28": {
+                "$deleted": false,
+                "chain_steps": "bo_r_fire_anim, bo_r_fire",
+                "condition_formula": "TARGET_AFFINITY_FIRE == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_fire_go"
+              },
+              "29": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:demon:ice",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_ice_anim",
+                "target_ref": "trigger_subject"
+              },
+              "30": {
+                "$deleted": false,
+                "chain_steps": "bo_r_ice_anim, bo_r_ice",
+                "condition_formula": "TARGET_AFFINITY_ICE == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_ice_go"
+              },
+              "31": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:demon:light",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_light_anim",
+                "target_ref": "trigger_subject"
+              },
+              "32": {
+                "$deleted": false,
+                "chain_steps": "bo_r_light_anim, bo_r_light",
+                "condition_formula": "TARGET_AFFINITY_LIGHT == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_light_go"
+              },
+              "33": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:demon:poison",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_poison_anim",
+                "target_ref": "trigger_subject"
+              },
+              "34": {
+                "$deleted": false,
+                "chain_steps": "bo_r_poison_anim, bo_r_poison",
+                "condition_formula": "TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_poison_go"
               }
             },
             "name": "Bane Oils",
@@ -795,6 +951,10 @@
           "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.luzL0iuRktQYbOUQ"
         },
         "fabula-ultima-companion": {
+          "aeCue": {
+            "kind": "oilDrip",
+            "rgb": "116,204,64"
+          },
           "aeFamily": "bane-oil",
           "category": "buff",
           "reactionConfig": {
@@ -804,7 +964,7 @@
                 "effect_kind": "open_action_menu",
                 "effect_label": "bo_hit",
                 "menu_option_labels": "Slow|Weak|Lose a Resistance",
-                "menu_option_refs": "bo_slow, bo_weak, bo_res",
+                "menu_option_refs": "bo_slow_go, bo_weak_go, bo_res",
                 "menu_subtitle": "The plant bane oil bites. Choose one.",
                 "menu_title": "Bane Oils"
               },
@@ -830,7 +990,7 @@
                 "effect_kind": "open_action_menu",
                 "effect_label": "bo_res",
                 "menu_option_labels": "Physical|Air|Bolt|Dark|Earth|Fire|Ice|Light|Poison",
-                "menu_option_refs": "bo_r_physical, bo_r_air, bo_r_bolt, bo_r_dark, bo_r_earth, bo_r_fire, bo_r_ice, bo_r_light, bo_r_poison",
+                "menu_option_refs": "bo_r_physical_go, bo_r_air_go, bo_r_bolt_go, bo_r_dark_go, bo_r_earth_go, bo_r_fire_go, bo_r_ice_go, bo_r_light_go, bo_r_poison_go",
                 "menu_subtitle": "Choose the damage Resistance the creature loses until the end of the scene.",
                 "menu_title": "Bane Oils: Resistance"
               },
@@ -923,6 +1083,158 @@
                 "effect_kind": "apply_ae",
                 "effect_label": "bo_r_poison",
                 "target_ref": "trigger_subject"
+              },
+              "13": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#slow:plant",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_slow_anim",
+                "target_ref": "trigger_subject"
+              },
+              "14": {
+                "$deleted": false,
+                "chain_steps": "bo_slow_anim, bo_slow",
+                "effect_kind": "chain",
+                "effect_label": "bo_slow_go"
+              },
+              "15": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#weak:plant",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_weak_anim",
+                "target_ref": "trigger_subject"
+              },
+              "16": {
+                "$deleted": false,
+                "chain_steps": "bo_weak_anim, bo_weak",
+                "effect_kind": "chain",
+                "effect_label": "bo_weak_go"
+              },
+              "17": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:plant:physical",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_physical_anim",
+                "target_ref": "trigger_subject"
+              },
+              "18": {
+                "$deleted": false,
+                "chain_steps": "bo_r_physical_anim, bo_r_physical",
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_physical_go"
+              },
+              "19": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:plant:air",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_air_anim",
+                "target_ref": "trigger_subject"
+              },
+              "20": {
+                "$deleted": false,
+                "chain_steps": "bo_r_air_anim, bo_r_air",
+                "condition_formula": "TARGET_AFFINITY_AIR == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_air_go"
+              },
+              "21": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:plant:bolt",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_bolt_anim",
+                "target_ref": "trigger_subject"
+              },
+              "22": {
+                "$deleted": false,
+                "chain_steps": "bo_r_bolt_anim, bo_r_bolt",
+                "condition_formula": "TARGET_AFFINITY_BOLT == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_bolt_go"
+              },
+              "23": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:plant:dark",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_dark_anim",
+                "target_ref": "trigger_subject"
+              },
+              "24": {
+                "$deleted": false,
+                "chain_steps": "bo_r_dark_anim, bo_r_dark",
+                "condition_formula": "TARGET_AFFINITY_DARK == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_dark_go"
+              },
+              "25": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:plant:earth",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_earth_anim",
+                "target_ref": "trigger_subject"
+              },
+              "26": {
+                "$deleted": false,
+                "chain_steps": "bo_r_earth_anim, bo_r_earth",
+                "condition_formula": "TARGET_AFFINITY_EARTH == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_earth_go"
+              },
+              "27": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:plant:fire",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_fire_anim",
+                "target_ref": "trigger_subject"
+              },
+              "28": {
+                "$deleted": false,
+                "chain_steps": "bo_r_fire_anim, bo_r_fire",
+                "condition_formula": "TARGET_AFFINITY_FIRE == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_fire_go"
+              },
+              "29": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:plant:ice",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_ice_anim",
+                "target_ref": "trigger_subject"
+              },
+              "30": {
+                "$deleted": false,
+                "chain_steps": "bo_r_ice_anim, bo_r_ice",
+                "condition_formula": "TARGET_AFFINITY_ICE == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_ice_go"
+              },
+              "31": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:plant:light",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_light_anim",
+                "target_ref": "trigger_subject"
+              },
+              "32": {
+                "$deleted": false,
+                "chain_steps": "bo_r_light_anim, bo_r_light",
+                "condition_formula": "TARGET_AFFINITY_LIGHT == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_light_go"
+              },
+              "33": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:plant:poison",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_poison_anim",
+                "target_ref": "trigger_subject"
+              },
+              "34": {
+                "$deleted": false,
+                "chain_steps": "bo_r_poison_anim, bo_r_poison",
+                "condition_formula": "TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_poison_go"
               }
             },
             "name": "Bane Oils",
@@ -1115,6 +1427,10 @@
           "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.PrxzNH7NIvLDs1Or"
         },
         "fabula-ultima-companion": {
+          "aeCue": {
+            "kind": "oilDrip",
+            "rgb": "56,228,196"
+          },
           "aeFamily": "bane-oil",
           "category": "buff",
           "reactionConfig": {
@@ -1124,7 +1440,7 @@
                 "effect_kind": "open_action_menu",
                 "effect_label": "bo_hit",
                 "menu_option_labels": "Slow|Weak|Lose a Resistance",
-                "menu_option_refs": "bo_slow, bo_weak, bo_res",
+                "menu_option_refs": "bo_slow_go, bo_weak_go, bo_res",
                 "menu_subtitle": "The elemental bane oil bites. Choose one.",
                 "menu_title": "Bane Oils"
               },
@@ -1150,7 +1466,7 @@
                 "effect_kind": "open_action_menu",
                 "effect_label": "bo_res",
                 "menu_option_labels": "Physical|Air|Bolt|Dark|Earth|Fire|Ice|Light|Poison",
-                "menu_option_refs": "bo_r_physical, bo_r_air, bo_r_bolt, bo_r_dark, bo_r_earth, bo_r_fire, bo_r_ice, bo_r_light, bo_r_poison",
+                "menu_option_refs": "bo_r_physical_go, bo_r_air_go, bo_r_bolt_go, bo_r_dark_go, bo_r_earth_go, bo_r_fire_go, bo_r_ice_go, bo_r_light_go, bo_r_poison_go",
                 "menu_subtitle": "Choose the damage Resistance the creature loses until the end of the scene.",
                 "menu_title": "Bane Oils: Resistance"
               },
@@ -1243,6 +1559,158 @@
                 "effect_kind": "apply_ae",
                 "effect_label": "bo_r_poison",
                 "target_ref": "trigger_subject"
+              },
+              "13": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#slow:elemental",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_slow_anim",
+                "target_ref": "trigger_subject"
+              },
+              "14": {
+                "$deleted": false,
+                "chain_steps": "bo_slow_anim, bo_slow",
+                "effect_kind": "chain",
+                "effect_label": "bo_slow_go"
+              },
+              "15": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#weak:elemental",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_weak_anim",
+                "target_ref": "trigger_subject"
+              },
+              "16": {
+                "$deleted": false,
+                "chain_steps": "bo_weak_anim, bo_weak",
+                "effect_kind": "chain",
+                "effect_label": "bo_weak_go"
+              },
+              "17": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:elemental:physical",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_physical_anim",
+                "target_ref": "trigger_subject"
+              },
+              "18": {
+                "$deleted": false,
+                "chain_steps": "bo_r_physical_anim, bo_r_physical",
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_physical_go"
+              },
+              "19": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:elemental:air",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_air_anim",
+                "target_ref": "trigger_subject"
+              },
+              "20": {
+                "$deleted": false,
+                "chain_steps": "bo_r_air_anim, bo_r_air",
+                "condition_formula": "TARGET_AFFINITY_AIR == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_air_go"
+              },
+              "21": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:elemental:bolt",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_bolt_anim",
+                "target_ref": "trigger_subject"
+              },
+              "22": {
+                "$deleted": false,
+                "chain_steps": "bo_r_bolt_anim, bo_r_bolt",
+                "condition_formula": "TARGET_AFFINITY_BOLT == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_bolt_go"
+              },
+              "23": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:elemental:dark",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_dark_anim",
+                "target_ref": "trigger_subject"
+              },
+              "24": {
+                "$deleted": false,
+                "chain_steps": "bo_r_dark_anim, bo_r_dark",
+                "condition_formula": "TARGET_AFFINITY_DARK == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_dark_go"
+              },
+              "25": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:elemental:earth",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_earth_anim",
+                "target_ref": "trigger_subject"
+              },
+              "26": {
+                "$deleted": false,
+                "chain_steps": "bo_r_earth_anim, bo_r_earth",
+                "condition_formula": "TARGET_AFFINITY_EARTH == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_earth_go"
+              },
+              "27": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:elemental:fire",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_fire_anim",
+                "target_ref": "trigger_subject"
+              },
+              "28": {
+                "$deleted": false,
+                "chain_steps": "bo_r_fire_anim, bo_r_fire",
+                "condition_formula": "TARGET_AFFINITY_FIRE == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_fire_go"
+              },
+              "29": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:elemental:ice",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_ice_anim",
+                "target_ref": "trigger_subject"
+              },
+              "30": {
+                "$deleted": false,
+                "chain_steps": "bo_r_ice_anim, bo_r_ice",
+                "condition_formula": "TARGET_AFFINITY_ICE == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_ice_go"
+              },
+              "31": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:elemental:light",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_light_anim",
+                "target_ref": "trigger_subject"
+              },
+              "32": {
+                "$deleted": false,
+                "chain_steps": "bo_r_light_anim, bo_r_light",
+                "condition_formula": "TARGET_AFFINITY_LIGHT == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_light_go"
+              },
+              "33": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:elemental:poison",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_poison_anim",
+                "target_ref": "trigger_subject"
+              },
+              "34": {
+                "$deleted": false,
+                "chain_steps": "bo_r_poison_anim, bo_r_poison",
+                "condition_formula": "TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_poison_go"
               }
             },
             "name": "Bane Oils",
@@ -1371,6 +1839,10 @@
           "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.rrnrsMrw4f3hn5cP"
         },
         "fabula-ultima-companion": {
+          "aeCue": {
+            "kind": "oilDrip",
+            "rgb": "84,186,255"
+          },
           "aeFamily": "bane-oil",
           "category": "buff",
           "reactionConfig": {
@@ -1380,7 +1852,7 @@
                 "effect_kind": "open_action_menu",
                 "effect_label": "bo_hit",
                 "menu_option_labels": "Slow|Weak|Lose a Resistance",
-                "menu_option_refs": "bo_slow, bo_weak, bo_res",
+                "menu_option_refs": "bo_slow_go, bo_weak_go, bo_res",
                 "menu_subtitle": "The construct bane oil bites. Choose one.",
                 "menu_title": "Bane Oils"
               },
@@ -1406,7 +1878,7 @@
                 "effect_kind": "open_action_menu",
                 "effect_label": "bo_res",
                 "menu_option_labels": "Physical|Air|Bolt|Dark|Earth|Fire|Ice|Light|Poison",
-                "menu_option_refs": "bo_r_physical, bo_r_air, bo_r_bolt, bo_r_dark, bo_r_earth, bo_r_fire, bo_r_ice, bo_r_light, bo_r_poison",
+                "menu_option_refs": "bo_r_physical_go, bo_r_air_go, bo_r_bolt_go, bo_r_dark_go, bo_r_earth_go, bo_r_fire_go, bo_r_ice_go, bo_r_light_go, bo_r_poison_go",
                 "menu_subtitle": "Choose the damage Resistance the creature loses until the end of the scene.",
                 "menu_title": "Bane Oils: Resistance"
               },
@@ -1499,6 +1971,158 @@
                 "effect_kind": "apply_ae",
                 "effect_label": "bo_r_poison",
                 "target_ref": "trigger_subject"
+              },
+              "13": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#slow:construct",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_slow_anim",
+                "target_ref": "trigger_subject"
+              },
+              "14": {
+                "$deleted": false,
+                "chain_steps": "bo_slow_anim, bo_slow",
+                "effect_kind": "chain",
+                "effect_label": "bo_slow_go"
+              },
+              "15": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#weak:construct",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_weak_anim",
+                "target_ref": "trigger_subject"
+              },
+              "16": {
+                "$deleted": false,
+                "chain_steps": "bo_weak_anim, bo_weak",
+                "effect_kind": "chain",
+                "effect_label": "bo_weak_go"
+              },
+              "17": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:construct:physical",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_physical_anim",
+                "target_ref": "trigger_subject"
+              },
+              "18": {
+                "$deleted": false,
+                "chain_steps": "bo_r_physical_anim, bo_r_physical",
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_physical_go"
+              },
+              "19": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:construct:air",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_air_anim",
+                "target_ref": "trigger_subject"
+              },
+              "20": {
+                "$deleted": false,
+                "chain_steps": "bo_r_air_anim, bo_r_air",
+                "condition_formula": "TARGET_AFFINITY_AIR == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_air_go"
+              },
+              "21": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:construct:bolt",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_bolt_anim",
+                "target_ref": "trigger_subject"
+              },
+              "22": {
+                "$deleted": false,
+                "chain_steps": "bo_r_bolt_anim, bo_r_bolt",
+                "condition_formula": "TARGET_AFFINITY_BOLT == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_bolt_go"
+              },
+              "23": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:construct:dark",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_dark_anim",
+                "target_ref": "trigger_subject"
+              },
+              "24": {
+                "$deleted": false,
+                "chain_steps": "bo_r_dark_anim, bo_r_dark",
+                "condition_formula": "TARGET_AFFINITY_DARK == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_dark_go"
+              },
+              "25": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:construct:earth",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_earth_anim",
+                "target_ref": "trigger_subject"
+              },
+              "26": {
+                "$deleted": false,
+                "chain_steps": "bo_r_earth_anim, bo_r_earth",
+                "condition_formula": "TARGET_AFFINITY_EARTH == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_earth_go"
+              },
+              "27": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:construct:fire",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_fire_anim",
+                "target_ref": "trigger_subject"
+              },
+              "28": {
+                "$deleted": false,
+                "chain_steps": "bo_r_fire_anim, bo_r_fire",
+                "condition_formula": "TARGET_AFFINITY_FIRE == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_fire_go"
+              },
+              "29": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:construct:ice",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_ice_anim",
+                "target_ref": "trigger_subject"
+              },
+              "30": {
+                "$deleted": false,
+                "chain_steps": "bo_r_ice_anim, bo_r_ice",
+                "condition_formula": "TARGET_AFFINITY_ICE == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_ice_go"
+              },
+              "31": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:construct:light",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_light_anim",
+                "target_ref": "trigger_subject"
+              },
+              "32": {
+                "$deleted": false,
+                "chain_steps": "bo_r_light_anim, bo_r_light",
+                "condition_formula": "TARGET_AFFINITY_LIGHT == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_light_go"
+              },
+              "33": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:construct:poison",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_poison_anim",
+                "target_ref": "trigger_subject"
+              },
+              "34": {
+                "$deleted": false,
+                "chain_steps": "bo_r_poison_anim, bo_r_poison",
+                "condition_formula": "TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_poison_go"
               }
             },
             "name": "Bane Oils",
@@ -1633,6 +2257,10 @@
           "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.sUl3Bw219GQQn6dL"
         },
         "fabula-ultima-companion": {
+          "aeCue": {
+            "kind": "oilDrip",
+            "rgb": "168,124,255"
+          },
           "aeFamily": "bane-oil",
           "category": "buff",
           "reactionConfig": {
@@ -1642,7 +2270,7 @@
                 "effect_kind": "open_action_menu",
                 "effect_label": "bo_hit",
                 "menu_option_labels": "Slow|Weak|Lose a Resistance",
-                "menu_option_refs": "bo_slow, bo_weak, bo_res",
+                "menu_option_refs": "bo_slow_go, bo_weak_go, bo_res",
                 "menu_subtitle": "The undead bane oil bites. Choose one.",
                 "menu_title": "Bane Oils"
               },
@@ -1668,7 +2296,7 @@
                 "effect_kind": "open_action_menu",
                 "effect_label": "bo_res",
                 "menu_option_labels": "Physical|Air|Bolt|Dark|Earth|Fire|Ice|Light|Poison",
-                "menu_option_refs": "bo_r_physical, bo_r_air, bo_r_bolt, bo_r_dark, bo_r_earth, bo_r_fire, bo_r_ice, bo_r_light, bo_r_poison",
+                "menu_option_refs": "bo_r_physical_go, bo_r_air_go, bo_r_bolt_go, bo_r_dark_go, bo_r_earth_go, bo_r_fire_go, bo_r_ice_go, bo_r_light_go, bo_r_poison_go",
                 "menu_subtitle": "Choose the damage Resistance the creature loses until the end of the scene.",
                 "menu_title": "Bane Oils: Resistance"
               },
@@ -1761,6 +2389,158 @@
                 "effect_kind": "apply_ae",
                 "effect_label": "bo_r_poison",
                 "target_ref": "trigger_subject"
+              },
+              "13": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#slow:undead",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_slow_anim",
+                "target_ref": "trigger_subject"
+              },
+              "14": {
+                "$deleted": false,
+                "chain_steps": "bo_slow_anim, bo_slow",
+                "effect_kind": "chain",
+                "effect_label": "bo_slow_go"
+              },
+              "15": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#weak:undead",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_weak_anim",
+                "target_ref": "trigger_subject"
+              },
+              "16": {
+                "$deleted": false,
+                "chain_steps": "bo_weak_anim, bo_weak",
+                "effect_kind": "chain",
+                "effect_label": "bo_weak_go"
+              },
+              "17": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:undead:physical",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_physical_anim",
+                "target_ref": "trigger_subject"
+              },
+              "18": {
+                "$deleted": false,
+                "chain_steps": "bo_r_physical_anim, bo_r_physical",
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_physical_go"
+              },
+              "19": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:undead:air",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_air_anim",
+                "target_ref": "trigger_subject"
+              },
+              "20": {
+                "$deleted": false,
+                "chain_steps": "bo_r_air_anim, bo_r_air",
+                "condition_formula": "TARGET_AFFINITY_AIR == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_air_go"
+              },
+              "21": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:undead:bolt",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_bolt_anim",
+                "target_ref": "trigger_subject"
+              },
+              "22": {
+                "$deleted": false,
+                "chain_steps": "bo_r_bolt_anim, bo_r_bolt",
+                "condition_formula": "TARGET_AFFINITY_BOLT == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_bolt_go"
+              },
+              "23": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:undead:dark",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_dark_anim",
+                "target_ref": "trigger_subject"
+              },
+              "24": {
+                "$deleted": false,
+                "chain_steps": "bo_r_dark_anim, bo_r_dark",
+                "condition_formula": "TARGET_AFFINITY_DARK == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_dark_go"
+              },
+              "25": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:undead:earth",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_earth_anim",
+                "target_ref": "trigger_subject"
+              },
+              "26": {
+                "$deleted": false,
+                "chain_steps": "bo_r_earth_anim, bo_r_earth",
+                "condition_formula": "TARGET_AFFINITY_EARTH == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_earth_go"
+              },
+              "27": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:undead:fire",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_fire_anim",
+                "target_ref": "trigger_subject"
+              },
+              "28": {
+                "$deleted": false,
+                "chain_steps": "bo_r_fire_anim, bo_r_fire",
+                "condition_formula": "TARGET_AFFINITY_FIRE == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_fire_go"
+              },
+              "29": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:undead:ice",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_ice_anim",
+                "target_ref": "trigger_subject"
+              },
+              "30": {
+                "$deleted": false,
+                "chain_steps": "bo_r_ice_anim, bo_r_ice",
+                "condition_formula": "TARGET_AFFINITY_ICE == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_ice_go"
+              },
+              "31": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:undead:light",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_light_anim",
+                "target_ref": "trigger_subject"
+              },
+              "32": {
+                "$deleted": false,
+                "chain_steps": "bo_r_light_anim, bo_r_light",
+                "condition_formula": "TARGET_AFFINITY_LIGHT == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_light_go"
+              },
+              "33": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:undead:poison",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_poison_anim",
+                "target_ref": "trigger_subject"
+              },
+              "34": {
+                "$deleted": false,
+                "chain_steps": "bo_r_poison_anim, bo_r_poison",
+                "condition_formula": "TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_poison_go"
               }
             },
             "name": "Bane Oils",
@@ -1831,6 +2611,10 @@
           "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.VQmx7LT1dPQxnQXM"
         },
         "fabula-ultima-companion": {
+          "aeCue": {
+            "kind": "oilDrip",
+            "rgb": "236,140,48"
+          },
           "aeFamily": "bane-oil",
           "category": "buff",
           "reactionConfig": {
@@ -1840,7 +2624,7 @@
                 "effect_kind": "open_action_menu",
                 "effect_label": "bo_hit",
                 "menu_option_labels": "Slow|Weak|Lose a Resistance",
-                "menu_option_refs": "bo_slow, bo_weak, bo_res",
+                "menu_option_refs": "bo_slow_go, bo_weak_go, bo_res",
                 "menu_subtitle": "The beast bane oil bites. Choose one.",
                 "menu_title": "Bane Oils"
               },
@@ -1866,7 +2650,7 @@
                 "effect_kind": "open_action_menu",
                 "effect_label": "bo_res",
                 "menu_option_labels": "Physical|Air|Bolt|Dark|Earth|Fire|Ice|Light|Poison",
-                "menu_option_refs": "bo_r_physical, bo_r_air, bo_r_bolt, bo_r_dark, bo_r_earth, bo_r_fire, bo_r_ice, bo_r_light, bo_r_poison",
+                "menu_option_refs": "bo_r_physical_go, bo_r_air_go, bo_r_bolt_go, bo_r_dark_go, bo_r_earth_go, bo_r_fire_go, bo_r_ice_go, bo_r_light_go, bo_r_poison_go",
                 "menu_subtitle": "Choose the damage Resistance the creature loses until the end of the scene.",
                 "menu_title": "Bane Oils: Resistance"
               },
@@ -1959,6 +2743,158 @@
                 "effect_kind": "apply_ae",
                 "effect_label": "bo_r_poison",
                 "target_ref": "trigger_subject"
+              },
+              "13": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#slow:beast",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_slow_anim",
+                "target_ref": "trigger_subject"
+              },
+              "14": {
+                "$deleted": false,
+                "chain_steps": "bo_slow_anim, bo_slow",
+                "effect_kind": "chain",
+                "effect_label": "bo_slow_go"
+              },
+              "15": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#weak:beast",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_weak_anim",
+                "target_ref": "trigger_subject"
+              },
+              "16": {
+                "$deleted": false,
+                "chain_steps": "bo_weak_anim, bo_weak",
+                "effect_kind": "chain",
+                "effect_label": "bo_weak_go"
+              },
+              "17": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:beast:physical",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_physical_anim",
+                "target_ref": "trigger_subject"
+              },
+              "18": {
+                "$deleted": false,
+                "chain_steps": "bo_r_physical_anim, bo_r_physical",
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_physical_go"
+              },
+              "19": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:beast:air",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_air_anim",
+                "target_ref": "trigger_subject"
+              },
+              "20": {
+                "$deleted": false,
+                "chain_steps": "bo_r_air_anim, bo_r_air",
+                "condition_formula": "TARGET_AFFINITY_AIR == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_air_go"
+              },
+              "21": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:beast:bolt",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_bolt_anim",
+                "target_ref": "trigger_subject"
+              },
+              "22": {
+                "$deleted": false,
+                "chain_steps": "bo_r_bolt_anim, bo_r_bolt",
+                "condition_formula": "TARGET_AFFINITY_BOLT == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_bolt_go"
+              },
+              "23": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:beast:dark",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_dark_anim",
+                "target_ref": "trigger_subject"
+              },
+              "24": {
+                "$deleted": false,
+                "chain_steps": "bo_r_dark_anim, bo_r_dark",
+                "condition_formula": "TARGET_AFFINITY_DARK == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_dark_go"
+              },
+              "25": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:beast:earth",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_earth_anim",
+                "target_ref": "trigger_subject"
+              },
+              "26": {
+                "$deleted": false,
+                "chain_steps": "bo_r_earth_anim, bo_r_earth",
+                "condition_formula": "TARGET_AFFINITY_EARTH == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_earth_go"
+              },
+              "27": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:beast:fire",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_fire_anim",
+                "target_ref": "trigger_subject"
+              },
+              "28": {
+                "$deleted": false,
+                "chain_steps": "bo_r_fire_anim, bo_r_fire",
+                "condition_formula": "TARGET_AFFINITY_FIRE == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_fire_go"
+              },
+              "29": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:beast:ice",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_ice_anim",
+                "target_ref": "trigger_subject"
+              },
+              "30": {
+                "$deleted": false,
+                "chain_steps": "bo_r_ice_anim, bo_r_ice",
+                "condition_formula": "TARGET_AFFINITY_ICE == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_ice_go"
+              },
+              "31": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:beast:light",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_light_anim",
+                "target_ref": "trigger_subject"
+              },
+              "32": {
+                "$deleted": false,
+                "chain_steps": "bo_r_light_anim, bo_r_light",
+                "condition_formula": "TARGET_AFFINITY_LIGHT == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_light_go"
+              },
+              "33": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:beast:poison",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_poison_anim",
+                "target_ref": "trigger_subject"
+              },
+              "34": {
+                "$deleted": false,
+                "chain_steps": "bo_r_poison_anim, bo_r_poison",
+                "condition_formula": "TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_poison_go"
               }
             },
             "name": "Bane Oils",
@@ -2151,6 +3087,10 @@
           "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.y4x7BX8a9u6aZmsg"
         },
         "fabula-ultima-companion": {
+          "aeCue": {
+            "kind": "oilDrip",
+            "rgb": "255,208,80"
+          },
           "aeFamily": "bane-oil",
           "category": "buff",
           "reactionConfig": {
@@ -2160,7 +3100,7 @@
                 "effect_kind": "open_action_menu",
                 "effect_label": "bo_hit",
                 "menu_option_labels": "Slow|Weak|Lose a Resistance",
-                "menu_option_refs": "bo_slow, bo_weak, bo_res",
+                "menu_option_refs": "bo_slow_go, bo_weak_go, bo_res",
                 "menu_subtitle": "The humanoid bane oil bites. Choose one.",
                 "menu_title": "Bane Oils"
               },
@@ -2186,7 +3126,7 @@
                 "effect_kind": "open_action_menu",
                 "effect_label": "bo_res",
                 "menu_option_labels": "Physical|Air|Bolt|Dark|Earth|Fire|Ice|Light|Poison",
-                "menu_option_refs": "bo_r_physical, bo_r_air, bo_r_bolt, bo_r_dark, bo_r_earth, bo_r_fire, bo_r_ice, bo_r_light, bo_r_poison",
+                "menu_option_refs": "bo_r_physical_go, bo_r_air_go, bo_r_bolt_go, bo_r_dark_go, bo_r_earth_go, bo_r_fire_go, bo_r_ice_go, bo_r_light_go, bo_r_poison_go",
                 "menu_subtitle": "Choose the damage Resistance the creature loses until the end of the scene.",
                 "menu_title": "Bane Oils: Resistance"
               },
@@ -2279,6 +3219,158 @@
                 "effect_kind": "apply_ae",
                 "effect_label": "bo_r_poison",
                 "target_ref": "trigger_subject"
+              },
+              "13": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#slow:humanoid",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_slow_anim",
+                "target_ref": "trigger_subject"
+              },
+              "14": {
+                "$deleted": false,
+                "chain_steps": "bo_slow_anim, bo_slow",
+                "effect_kind": "chain",
+                "effect_label": "bo_slow_go"
+              },
+              "15": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#weak:humanoid",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_weak_anim",
+                "target_ref": "trigger_subject"
+              },
+              "16": {
+                "$deleted": false,
+                "chain_steps": "bo_weak_anim, bo_weak",
+                "effect_kind": "chain",
+                "effect_label": "bo_weak_go"
+              },
+              "17": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:humanoid:physical",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_physical_anim",
+                "target_ref": "trigger_subject"
+              },
+              "18": {
+                "$deleted": false,
+                "chain_steps": "bo_r_physical_anim, bo_r_physical",
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_physical_go"
+              },
+              "19": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:humanoid:air",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_air_anim",
+                "target_ref": "trigger_subject"
+              },
+              "20": {
+                "$deleted": false,
+                "chain_steps": "bo_r_air_anim, bo_r_air",
+                "condition_formula": "TARGET_AFFINITY_AIR == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_air_go"
+              },
+              "21": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:humanoid:bolt",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_bolt_anim",
+                "target_ref": "trigger_subject"
+              },
+              "22": {
+                "$deleted": false,
+                "chain_steps": "bo_r_bolt_anim, bo_r_bolt",
+                "condition_formula": "TARGET_AFFINITY_BOLT == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_bolt_go"
+              },
+              "23": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:humanoid:dark",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_dark_anim",
+                "target_ref": "trigger_subject"
+              },
+              "24": {
+                "$deleted": false,
+                "chain_steps": "bo_r_dark_anim, bo_r_dark",
+                "condition_formula": "TARGET_AFFINITY_DARK == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_dark_go"
+              },
+              "25": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:humanoid:earth",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_earth_anim",
+                "target_ref": "trigger_subject"
+              },
+              "26": {
+                "$deleted": false,
+                "chain_steps": "bo_r_earth_anim, bo_r_earth",
+                "condition_formula": "TARGET_AFFINITY_EARTH == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_earth_go"
+              },
+              "27": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:humanoid:fire",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_fire_anim",
+                "target_ref": "trigger_subject"
+              },
+              "28": {
+                "$deleted": false,
+                "chain_steps": "bo_r_fire_anim, bo_r_fire",
+                "condition_formula": "TARGET_AFFINITY_FIRE == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_fire_go"
+              },
+              "29": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:humanoid:ice",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_ice_anim",
+                "target_ref": "trigger_subject"
+              },
+              "30": {
+                "$deleted": false,
+                "chain_steps": "bo_r_ice_anim, bo_r_ice",
+                "condition_formula": "TARGET_AFFINITY_ICE == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_ice_go"
+              },
+              "31": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:humanoid:light",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_light_anim",
+                "target_ref": "trigger_subject"
+              },
+              "32": {
+                "$deleted": false,
+                "chain_steps": "bo_r_light_anim, bo_r_light",
+                "condition_formula": "TARGET_AFFINITY_LIGHT == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_light_go"
+              },
+              "33": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:humanoid:poison",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_poison_anim",
+                "target_ref": "trigger_subject"
+              },
+              "34": {
+                "$deleted": false,
+                "chain_steps": "bo_r_poison_anim, bo_r_poison",
+                "condition_formula": "TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_poison_go"
               }
             },
             "name": "Bane Oils",
@@ -2465,6 +3557,10 @@
           "originalUuid": "Item.2t9fQihUfuKxSR7Z.ActiveEffect.ZkC1BDjIsaJiwvzu"
         },
         "fabula-ultima-companion": {
+          "aeCue": {
+            "kind": "oilDrip",
+            "rgb": "255,104,206"
+          },
           "aeFamily": "bane-oil",
           "category": "buff",
           "reactionConfig": {
@@ -2474,7 +3570,7 @@
                 "effect_kind": "open_action_menu",
                 "effect_label": "bo_hit",
                 "menu_option_labels": "Slow|Weak|Lose a Resistance",
-                "menu_option_refs": "bo_slow, bo_weak, bo_res",
+                "menu_option_refs": "bo_slow_go, bo_weak_go, bo_res",
                 "menu_subtitle": "The monster bane oil bites. Choose one.",
                 "menu_title": "Bane Oils"
               },
@@ -2500,7 +3596,7 @@
                 "effect_kind": "open_action_menu",
                 "effect_label": "bo_res",
                 "menu_option_labels": "Physical|Air|Bolt|Dark|Earth|Fire|Ice|Light|Poison",
-                "menu_option_refs": "bo_r_physical, bo_r_air, bo_r_bolt, bo_r_dark, bo_r_earth, bo_r_fire, bo_r_ice, bo_r_light, bo_r_poison",
+                "menu_option_refs": "bo_r_physical_go, bo_r_air_go, bo_r_bolt_go, bo_r_dark_go, bo_r_earth_go, bo_r_fire_go, bo_r_ice_go, bo_r_light_go, bo_r_poison_go",
                 "menu_subtitle": "Choose the damage Resistance the creature loses until the end of the scene.",
                 "menu_title": "Bane Oils: Resistance"
               },
@@ -2593,6 +3689,158 @@
                 "effect_kind": "apply_ae",
                 "effect_label": "bo_r_poison",
                 "target_ref": "trigger_subject"
+              },
+              "13": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#slow:monster",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_slow_anim",
+                "target_ref": "trigger_subject"
+              },
+              "14": {
+                "$deleted": false,
+                "chain_steps": "bo_slow_anim, bo_slow",
+                "effect_kind": "chain",
+                "effect_label": "bo_slow_go"
+              },
+              "15": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#weak:monster",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_weak_anim",
+                "target_ref": "trigger_subject"
+              },
+              "16": {
+                "$deleted": false,
+                "chain_steps": "bo_weak_anim, bo_weak",
+                "effect_kind": "chain",
+                "effect_label": "bo_weak_go"
+              },
+              "17": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:monster:physical",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_physical_anim",
+                "target_ref": "trigger_subject"
+              },
+              "18": {
+                "$deleted": false,
+                "chain_steps": "bo_r_physical_anim, bo_r_physical",
+                "condition_formula": "TARGET_AFFINITY_PHYSICAL == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_physical_go"
+              },
+              "19": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:monster:air",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_air_anim",
+                "target_ref": "trigger_subject"
+              },
+              "20": {
+                "$deleted": false,
+                "chain_steps": "bo_r_air_anim, bo_r_air",
+                "condition_formula": "TARGET_AFFINITY_AIR == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_air_go"
+              },
+              "21": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:monster:bolt",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_bolt_anim",
+                "target_ref": "trigger_subject"
+              },
+              "22": {
+                "$deleted": false,
+                "chain_steps": "bo_r_bolt_anim, bo_r_bolt",
+                "condition_formula": "TARGET_AFFINITY_BOLT == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_bolt_go"
+              },
+              "23": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:monster:dark",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_dark_anim",
+                "target_ref": "trigger_subject"
+              },
+              "24": {
+                "$deleted": false,
+                "chain_steps": "bo_r_dark_anim, bo_r_dark",
+                "condition_formula": "TARGET_AFFINITY_DARK == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_dark_go"
+              },
+              "25": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:monster:earth",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_earth_anim",
+                "target_ref": "trigger_subject"
+              },
+              "26": {
+                "$deleted": false,
+                "chain_steps": "bo_r_earth_anim, bo_r_earth",
+                "condition_formula": "TARGET_AFFINITY_EARTH == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_earth_go"
+              },
+              "27": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:monster:fire",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_fire_anim",
+                "target_ref": "trigger_subject"
+              },
+              "28": {
+                "$deleted": false,
+                "chain_steps": "bo_r_fire_anim, bo_r_fire",
+                "condition_formula": "TARGET_AFFINITY_FIRE == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_fire_go"
+              },
+              "29": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:monster:ice",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_ice_anim",
+                "target_ref": "trigger_subject"
+              },
+              "30": {
+                "$deleted": false,
+                "chain_steps": "bo_r_ice_anim, bo_r_ice",
+                "condition_formula": "TARGET_AFFINITY_ICE == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_ice_go"
+              },
+              "31": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:monster:light",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_light_anim",
+                "target_ref": "trigger_subject"
+              },
+              "32": {
+                "$deleted": false,
+                "chain_steps": "bo_r_light_anim, bo_r_light",
+                "condition_formula": "TARGET_AFFINITY_LIGHT == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_light_go"
+              },
+              "33": {
+                "$deleted": false,
+                "action_ref": "Item.2t9fQihUfuKxSR7Z#res:monster:poison",
+                "effect_kind": "play_animation",
+                "effect_label": "bo_r_poison_anim",
+                "target_ref": "trigger_subject"
+              },
+              "34": {
+                "$deleted": false,
+                "chain_steps": "bo_r_poison_anim, bo_r_poison",
+                "condition_formula": "TARGET_AFFINITY_POISON == 1",
+                "effect_kind": "chain",
+                "effect_label": "bo_r_poison_go"
               }
             },
             "name": "Bane Oils",
@@ -2650,6 +3898,10 @@
   "system": {
     "container": null,
     "props": {
+      "animation_damage_timing_offset": "0",
+      "animation_damage_timing_options": "resolve",
+      "animation_preload_urls": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/051_powerup_1.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/054_powerdown_1.webm\nhttps://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/055_powerdown_2.webm",
+      "animation_script": "<p>// Bane Oils — generated by tools/anim-studio/lib/dungeon-templates.js</p><p>// Re-run tools/safe-edit/bin/_build-dungeon-animations.js to regenerate.</p><p>(async () =&gt; {</p><p></p><p>const CFG = {\"totalTimeoutMs\":9000};</p><p>const ASSETS = {};</p><p>const ANIM_KEY = \"oni.dungeon.slayer-bane-oils\";</p><p>const TAG = \"[ONI][Anim][Bane Oils]\";</p><p></p><p>const P = globalThis.__PAYLOAD ?? payload ?? {};</p><p>function tokFromUuid(u) { try { const d = fromUuidSync?.(u); return d?.object ?? null; } catch (_) { return null; } }</p><p>function resolveSource() {</p><p>  for (const c of [P?.casterTokenUuid, P?.sourceTokenUuid, P?.tokenUuid]) { const t = tokFromUuid(c); if (t) return t; }</p><p>  return canvas?.tokens?.controlled?.[0] ?? null;</p><p>}</p><p>function resolveTargets() {</p><p>  const out = [];</p><p>  const arg = Array.isArray(targets) ? targets : [];</p><p>  for (const t of arg) if (t?.center) out.push(t);</p><p>  if (!out.length &amp;&amp; Array.isArray(globalThis.__TARGETS)) for (const t of globalThis.__TARGETS) if (t?.center) out.push(t);</p><p>  return out;</p><p>}</p><p>const sourceToken  = resolveSource();</p><p>const partyTargets = resolveTargets();</p><p></p><p>const doneHook = 'oni.anim.' + ANIM_KEY + '.' + (foundry?.utils?.randomID?.(8) ?? String(Date.now()));</p><p>const readyHook = doneHook + '.ready';</p><p>function onceHook(hookName, timeoutMs) {</p><p>  return new Promise((resolve) =&gt; {</p><p>    let settled = false;</p><p>    const timer = setTimeout(() =&gt; { if (settled) return; settled = true; Hooks.off(hookName, h); resolve({ ok: false, timeout: true }); }, timeoutMs);</p><p>    const h = (d) =&gt; { if (settled) return; settled = true; clearTimeout(timer); Hooks.off(hookName, h); resolve(d ?? { ok: true }); };</p><p>    Hooks.on(hookName, h);</p><p>  });</p><p>}</p><p>function emitLocal(n, d) { try { Hooks.callAll(n, d); } catch (_) {} }</p><p></p><p>const scriptSource = String.raw`</p><p>// Slayer · Bane Oils (inner script, every client). Approved mockup v3: claude.ai/artifact/H7kodjsPFBHdSeufy2CqNM.</p><p>// One script, several takes, picked by the play_animation row's \"#variant\" (battle-director/slayer-fx.js draws them):</p><p>//   apply:&lt;species&gt;                 vial, uncork, the oil runs along the weapon (or is lobbed onto an ally's), sheen</p><p>//   slow:&lt;species&gt; / weak:&lt;species&gt; the bane bites: sludge drags down / the colour drains</p><p>//   res:&lt;species&gt;:&lt;element&gt;         a ward in the element's colour cracks and shatters</p><p>// The gate fires when the take is done, so the next row (the free attack, the debuff) lands after it.</p><p>// No backticks and no dollar-brace in this file.</p><p>const fx = globalThis.FUCompanion &amp;&amp; globalThis.FUCompanion.api &amp;&amp; globalThis.FUCompanion.api.slayerFx;</p><p>const v = String((ctx.params &amp;&amp; ctx.params.variant) || \"apply:beast\").split(\":\");</p><p>const caster = ctx.casterToken;</p><p>const target = (ctx.targetTokens &amp;&amp; ctx.targetTokens[0]) || caster;</p><p>try {</p><p>  if (!fx || !caster) { /* nothing to draw */ }</p><p>  else if (v[0] === \"apply\") await fx.baneApply({ oni: oni, caster: caster, target: target, species: v[1] || \"beast\" });</p><p>  else await fx.baneProc({ oni: oni, target: target, kind: v[0], species: v[1] || \"beast\", element: v[2] || \"physical\" });</p><p>} catch (e) { console.warn(\"[Bane Oils anim]\", e); }</p><p>oni.fireDone();</p><p></p><p>`;</p><p></p><p>try {</p><p>  emitLocal('oni:animationStart', { type: ANIM_KEY, sceneId: canvas.scene?.id ?? null, sourceTokenId: sourceToken?.id ?? null });</p><p>  const waitDone = onceHook(doneHook, CFG.totalTimeoutMs || 9000);</p><p>  await game.ONI.pseudo.play({</p><p>    scriptId: ANIM_KEY,</p><p>    scriptSource,</p><p>    casterTokenUuid: sourceToken?.document?.uuid ?? null,</p><p>    targetTokenUuids: partyTargets.map(t =&gt; t.document.uuid),</p><p>    params: { doneHook, readyHook, cfg: CFG, assets: ASSETS, strikes: Array.isArray(P?.strikes) ? P.strikes : [], variant: P?.variant ?? null, amount: P?.amount ?? null },</p><p>    meta: { source: \"Bane Oils\" },</p><p>  });</p><p>  // (animationStart emitted above)</p><p>  const result = await waitDone;</p><p>  if (!result?.ok) console.warn(TAG, 'pseudo non-OK / timeout', result);</p><p>} catch (err) {</p><p>  console.error(TAG, 'orchestration crashed', err);</p><p>} finally {</p><p>  emitLocal('oni:animationEnd', { type: ANIM_KEY, timestamp: Date.now(), sourceTokenId: sourceToken?.id ?? null });</p><p>}</p><p></p><p>})();</p>",
       "availability_formula": "FLAG_BANE_OIL_BEAST + FLAG_BANE_OIL_CONSTRUCT + FLAG_BANE_OIL_DEMON + FLAG_BANE_OIL_ELEMENTAL + FLAG_BANE_OIL_HUMANOID + FLAG_BANE_OIL_MONSTER + FLAG_BANE_OIL_PLANT + FLAG_BANE_OIL_UNDEAD >= 1",
       "availability_reason": "Choose a Species first: enable a 'Bane Oils: <Species>' effect on this Skill.",
       "check_bonus": "0",
@@ -2670,56 +3922,56 @@
         },
         "1": {
           "$deleted": false,
-          "chain_steps": "bo_ae_beast, bo_free",
+          "chain_steps": "bo_anim_beast, bo_ae_beast, bo_free",
           "condition_formula": "FLAG_BANE_OIL_BEAST == 1",
           "effect_kind": "chain",
           "effect_label": "bo_beast"
         },
         "2": {
           "$deleted": false,
-          "chain_steps": "bo_ae_construct, bo_free",
+          "chain_steps": "bo_anim_construct, bo_ae_construct, bo_free",
           "condition_formula": "FLAG_BANE_OIL_CONSTRUCT == 1",
           "effect_kind": "chain",
           "effect_label": "bo_construct"
         },
         "3": {
           "$deleted": false,
-          "chain_steps": "bo_ae_demon, bo_free",
+          "chain_steps": "bo_anim_demon, bo_ae_demon, bo_free",
           "condition_formula": "FLAG_BANE_OIL_DEMON == 1",
           "effect_kind": "chain",
           "effect_label": "bo_demon"
         },
         "4": {
           "$deleted": false,
-          "chain_steps": "bo_ae_elemental, bo_free",
+          "chain_steps": "bo_anim_elemental, bo_ae_elemental, bo_free",
           "condition_formula": "FLAG_BANE_OIL_ELEMENTAL == 1",
           "effect_kind": "chain",
           "effect_label": "bo_elemental"
         },
         "5": {
           "$deleted": false,
-          "chain_steps": "bo_ae_humanoid, bo_free",
+          "chain_steps": "bo_anim_humanoid, bo_ae_humanoid, bo_free",
           "condition_formula": "FLAG_BANE_OIL_HUMANOID == 1",
           "effect_kind": "chain",
           "effect_label": "bo_humanoid"
         },
         "6": {
           "$deleted": false,
-          "chain_steps": "bo_ae_monster, bo_free",
+          "chain_steps": "bo_anim_monster, bo_ae_monster, bo_free",
           "condition_formula": "FLAG_BANE_OIL_MONSTER == 1",
           "effect_kind": "chain",
           "effect_label": "bo_monster"
         },
         "7": {
           "$deleted": false,
-          "chain_steps": "bo_ae_plant, bo_free",
+          "chain_steps": "bo_anim_plant, bo_ae_plant, bo_free",
           "condition_formula": "FLAG_BANE_OIL_PLANT == 1",
           "effect_kind": "chain",
           "effect_label": "bo_plant"
         },
         "8": {
           "$deleted": false,
-          "chain_steps": "bo_ae_undead, bo_free",
+          "chain_steps": "bo_anim_undead, bo_ae_undead, bo_free",
           "condition_formula": "FLAG_BANE_OIL_UNDEAD == 1",
           "effect_kind": "chain",
           "effect_label": "bo_undead"
@@ -2811,6 +4063,62 @@
           "effect_kind": "open_action_menu",
           "effect_label": "bo_free",
           "free_mode": true
+        },
+        "18": {
+          "$deleted": false,
+          "action_ref": "Item.2t9fQihUfuKxSR7Z#apply:beast",
+          "effect_kind": "play_animation",
+          "effect_label": "bo_anim_beast",
+          "target_ref": "action_targets"
+        },
+        "19": {
+          "$deleted": false,
+          "action_ref": "Item.2t9fQihUfuKxSR7Z#apply:construct",
+          "effect_kind": "play_animation",
+          "effect_label": "bo_anim_construct",
+          "target_ref": "action_targets"
+        },
+        "20": {
+          "$deleted": false,
+          "action_ref": "Item.2t9fQihUfuKxSR7Z#apply:demon",
+          "effect_kind": "play_animation",
+          "effect_label": "bo_anim_demon",
+          "target_ref": "action_targets"
+        },
+        "21": {
+          "$deleted": false,
+          "action_ref": "Item.2t9fQihUfuKxSR7Z#apply:elemental",
+          "effect_kind": "play_animation",
+          "effect_label": "bo_anim_elemental",
+          "target_ref": "action_targets"
+        },
+        "22": {
+          "$deleted": false,
+          "action_ref": "Item.2t9fQihUfuKxSR7Z#apply:humanoid",
+          "effect_kind": "play_animation",
+          "effect_label": "bo_anim_humanoid",
+          "target_ref": "action_targets"
+        },
+        "23": {
+          "$deleted": false,
+          "action_ref": "Item.2t9fQihUfuKxSR7Z#apply:monster",
+          "effect_kind": "play_animation",
+          "effect_label": "bo_anim_monster",
+          "target_ref": "action_targets"
+        },
+        "24": {
+          "$deleted": false,
+          "action_ref": "Item.2t9fQihUfuKxSR7Z#apply:plant",
+          "effect_kind": "play_animation",
+          "effect_label": "bo_anim_plant",
+          "target_ref": "action_targets"
+        },
+        "25": {
+          "$deleted": false,
+          "action_ref": "Item.2t9fQihUfuKxSR7Z#apply:undead",
+          "effect_kind": "play_animation",
+          "effect_label": "bo_anim_undead",
+          "target_ref": "action_targets"
         }
       },
       "heroic_requirement": "",
@@ -2829,7 +4137,7 @@
       "reaction_config_table": {},
       "rolled_atr1": "-",
       "rolled_atr2": "-",
-      "skill_animation_mode": "default",
+      "skill_animation_mode": "custom",
       "skill_range": "Any",
       "skill_target": "One Weapon",
       "skill_type": "Active",
