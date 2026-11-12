@@ -235,7 +235,7 @@ export async function playPoof(tokenId) {
 //   (wait)              the new art lands under it (GM writes at FX_SWAP_MS)
 //   MORPH_MS            white silhouette old → new (ease in-out), soft glow
 //   REVEAL_MS           the creature shows; its white copy fades to nothing
-export const MORPH_SFX = `${FORGE}/Sound/Magic4.ogg`;   // placeholder pick, user to confirm
+export const MORPH_SFX = `${FORGE}/Sound/Charm.ogg`;    // user pick 2026-11-12
 const WHITE_IN_MS = 320;
 const MORPH_MS = 950;
 const REVEAL_MS = 420;

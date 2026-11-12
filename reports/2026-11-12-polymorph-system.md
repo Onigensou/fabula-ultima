@@ -77,7 +77,7 @@ New migration `2026-11-12-polymorph-revert-objective` (idempotent) authors `Batt
 - **Fallbacks:**
   - If the art can't be read (CORS), the effect is a plain white fade.
   - If no new art arrives, the token simply shows again.
-- **Sound:** `Sound/Magic4.ogg` is a PLACEHOLDER until Oni picks one.
+- **Sound:** `Sound/Charm.ogg` (Oni's pick).
 - **Revert keeps the smoke poof below.**
 
 ## Revert visual: smoke POOF (Oni, 2026-11-12; replaces the squash below)
