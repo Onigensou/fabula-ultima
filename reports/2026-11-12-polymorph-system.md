@@ -145,3 +145,28 @@ New migration `2026-11-12-polymorph-revert-objective` (idempotent) authors `Batt
 - **Missing form monsters (7 of 12 potions):** Ice Ring, Lava Golem, Walrog, Hunger, Crazy Merman, Scaldra, Centauros. These are Oni's to design.
 - **Traversal tags** (`aquatic`, `flying`…) come from `flags.fabula-ultima-companion.polymorphTags` on the monster plus its species. No monster has the flag yet, so only species tags (beast, elemental…) exist until someone authors them.
 - **Never seen with real eyes:** the squash on a real GPU canvas or in the 3D battle stage, the walk-sprite fallback while moving, the party-menu picker clicked by a player, and a 2-GM table.
+
+## Polymorph forms: the old-campaign monsters (Oni, 2026-11-12, v1.0.597 + world)
+
+- **Six legacy monsters from The Winterlands Witch Trials were reconstructed** (not ported) from the archive world's record. They're in the new folder Monster / Polymorph Forms:
+  - Ice Ring, Lava Golem, Walrog, Hunger, Crazy Merman, Scaldra.
+  - The build script is `tools/safe-edit/bin/_build-wwt-forms.js` (`--rebuild` rewrites them).
+  - Polymorph traversal tags: `aquatic` on Walrog and Crazy Merman; `lava` on Lava Golem and Scaldra.
+- **Potion fix:** the "Centauros" potion is now "Polymorph Potion: Centuaros", matching the Wyrmwood elite's actor name. That actor's own texts are aligned to the same spelling.
+- **ENGINE (`skill-formulas.js`): two new identifiers**, `TARGET_RANK_IS_<X>` and `TARGET_ATTRIBUTE_IS_<X>`.
+  - They read the trigger subject's `npc_rank` and `attribute`. They're twins of `TARGET_SPECIES_IS_<X>`: PCs answer 0, and an unresolvable subject answers 0.
+  - They're only used by Walrog's food, Food, FOOD. That passive has three guards so a transformed PC never eats its own summons (party summons are rank `soldier` too):
+    - `no_polymorph`,
+    - `IS_NPC == 1` on the eater,
+    - `TARGET_RANK_IS_SOLDIER` on the victim.
+- **Legacy rules, as automated:**
+  - **Stun** is not a status. It's built into Crazy Merman's Bash: 25% chance, then `modify_turns -1`.
+  - **Fire Shield** became a plain 20 Shield (`grant shield`) on Scaldra's kill.
+  - **Melting Body** uses Imp's Strip Weapon steps (`hide_item weapon` + Weapon Stripped). It's gated on `USED_WEAPON_IS_EQUIPPED`, so it does nothing against monsters.
+  - **Starvation** fires on `turn_start` with `TARGET_AE_COUNT_BERSERK/ENRAGED`.
+  - **IT'S A SHARK!!!** is an Unleash passive: `conflict_start` → free Swift Chomp.
+  - **food, Food, FOOD:** `Imbued <El>` + `change_damage_element`, the Asura pattern.
+- **Runner-verified:**
+  - PC not eaten; ally Soldier eaten → Imbued Dark, +50/+50, and its Head Butt then dealt Dark (Undead Gigas showed IM).
+  - Scaldra kill → 20 Shield + a second Chomp; Unleash at battle start.
+  - Bash −1 turn; Starvation 85 → 64; Melting Body silent vs a monster; Lava Slam grapple; Drill Stab → Drill Spin; transformed Keren has no food passive and reads `IS_NPC` 0.

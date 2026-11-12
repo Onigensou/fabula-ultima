@@ -2420,6 +2420,28 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
             .trim();
           return species && species === needle ? 1 : 0;
         }
+        // Dynamic TARGET_RANK_IS_<X> / TARGET_ATTRIBUTE_IS_<X> — the trigger
+        // SUBJECT's NPC rank (`system.props.npc_rank`: soldier / elite / champion)
+        // and element (`system.props.attribute`: FIRE, ICE, WIND, LIGHTNING…).
+        // Twins of TARGET_SPECIES_IS_<X>, same rules: case-insensitive, underscores
+        // → spaces, PCs carry neither prop so they answer 0 (a "== 1" gate can never
+        // pick a PC). Added 2026-11-12 for Walrog's "food, Food, FOOD" (eat an ally
+        // SOLDIER, take on its element). Unresolvable subject → 0.
+        if (name.startsWith("TARGET_RANK_IS_") || name.startsWith("TARGET_ATTRIBUTE_IS_")) {
+          const isRank = name.startsWith("TARGET_RANK_IS_");
+          const needle = name
+            .slice((isRank ? "TARGET_RANK_IS_" : "TARGET_ATTRIBUTE_IS_").length)
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .trim();
+          const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+          if (!subjectUuid) return 0;
+          const subject = _resolveActorByUuidSync(subjectUuid);
+          if (!subject) return 0;
+          const raw = isRank ? subject?.system?.props?.npc_rank : subject?.system?.props?.attribute;
+          const val = String(raw ?? "").replace(/_/g, " ").toLowerCase().trim();
+          return val && val === needle ? 1 : 0;
+        }
         // Dynamic SUBTYPE_IS_<X> / TARGET_SUBTYPE_IS_<X> — the SUB-species twins of
         // SPECIES_IS_<X> / TARGET_SPECIES_IS_<X>, reading `system.props.subtype_list`
         // instead of `species`. Needed because the FU species field is coarse: every
