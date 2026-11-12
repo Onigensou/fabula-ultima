@@ -163,7 +163,7 @@
       "reaction_config_table": {
         "0": {
           "$deleted": false,
-          "condition_formula": "ACTION_IS_ATTACK == 1 && CUR_MP >= 10",
+          "condition_formula": "ACTION_IS_ATTACK == 1 && CUR_MP >= 10 && TARGET_CURRENT_HP > 0",
           "reaction_action_intent": "",
           "reaction_action_kind": "",
           "reaction_action_target": "",

@@ -249,7 +249,7 @@
                 "reaction_config_table": {
                   "0": {
                     "$deleted": false,
-                    "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_HUMANOID == 1",
+                    "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_HUMANOID == 1 && TARGET_CURRENT_HP > 0",
                     "reaction_effect_ref": "bo_hit",
                     "reaction_passive_mode": "ask",
                     "reaction_source": "self",
@@ -511,7 +511,7 @@
                 "reaction_config_table": {
                   "0": {
                     "$deleted": false,
-                    "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_CONSTRUCT == 1",
+                    "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_CONSTRUCT == 1 && TARGET_CURRENT_HP > 0",
                     "reaction_effect_ref": "bo_hit",
                     "reaction_passive_mode": "ask",
                     "reaction_source": "self",
@@ -831,7 +831,7 @@
                 "reaction_config_table": {
                   "0": {
                     "$deleted": false,
-                    "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_PLANT == 1",
+                    "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_PLANT == 1 && TARGET_CURRENT_HP > 0",
                     "reaction_effect_ref": "bo_hit",
                     "reaction_passive_mode": "ask",
                     "reaction_source": "self",
@@ -1029,7 +1029,7 @@
                 "reaction_config_table": {
                   "0": {
                     "$deleted": false,
-                    "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_ELEMENTAL == 1",
+                    "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_ELEMENTAL == 1 && TARGET_CURRENT_HP > 0",
                     "reaction_effect_ref": "bo_hit",
                     "reaction_passive_mode": "ask",
                     "reaction_source": "self",
@@ -1343,7 +1343,7 @@
                 "reaction_config_table": {
                   "0": {
                     "$deleted": false,
-                    "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_UNDEAD == 1",
+                    "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_UNDEAD == 1 && TARGET_CURRENT_HP > 0",
                     "reaction_effect_ref": "bo_hit",
                     "reaction_passive_mode": "ask",
                     "reaction_source": "self",
@@ -1663,7 +1663,7 @@
                 "reaction_config_table": {
                   "0": {
                     "$deleted": false,
-                    "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_DEMON == 1",
+                    "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_DEMON == 1 && TARGET_CURRENT_HP > 0",
                     "reaction_effect_ref": "bo_hit",
                     "reaction_passive_mode": "ask",
                     "reaction_source": "self",
@@ -1989,7 +1989,7 @@
                 "reaction_config_table": {
                   "0": {
                     "$deleted": false,
-                    "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_BEAST == 1",
+                    "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_BEAST == 1 && TARGET_CURRENT_HP > 0",
                     "reaction_effect_ref": "bo_hit",
                     "reaction_passive_mode": "ask",
                     "reaction_source": "self",
@@ -2367,7 +2367,7 @@
                 "reaction_config_table": {
                   "0": {
                     "$deleted": false,
-                    "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_MONSTER == 1",
+                    "condition_formula": "ACTION_IS_ATTACK == 1 && TARGET_SPECIES_IS_MONSTER == 1 && TARGET_CURRENT_HP > 0",
                     "reaction_effect_ref": "bo_hit",
                     "reaction_passive_mode": "ask",
                     "reaction_source": "self",
@@ -3233,7 +3233,7 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "condition_formula": "ACTION_IS_ATTACK == 1 && CUR_MP >= 10",
+              "condition_formula": "ACTION_IS_ATTACK == 1 && CUR_MP >= 10 && TARGET_CURRENT_HP > 0",
               "reaction_action_intent": "",
               "reaction_action_kind": "",
               "reaction_action_target": "",
