@@ -558,6 +558,7 @@
       if (game.user?.isGM && !isPlayLayerActive()) return;
       if (state.neighborIds.size === 0) return;
       if (DP.ConfirmDialog?.isOpen) return;
+      if (DP.TerrariumUI?.isOpen) return;   // the Terrarium picker owns the board
 
       // Throttle: only evaluate every ~80 ms
       if (state.hoverTimer) return;
@@ -620,6 +621,8 @@
 
     // If the in-canvas confirm buttons are showing, let PIXI handle pointer events
     if (DP.ConfirmDialog?.isOpen) return;
+    // The Terrarium picker handles its own clicks; the party must not walk meanwhile.
+    if (DP.TerrariumUI?.isOpen) return;
 
     const graph = state.graph;
     if (!graph) return;
@@ -946,9 +949,11 @@
       // Sync FT button visibility (flag may have changed since last activate)
       DP.ScanMode?.updateFtBtnVisibility?.();
       DP.ScanMode?.showHealBtn?.();
+      DP.TerrariumUI?.showButton?.();   // 🌱 Terrarium — dungeon mode only
       DP.ScanMode?.showRitualBtn?.("dungeon");
     } else {
       if (state.active) deactivate();
+      DP.TerrariumUI?.hideButton?.();
       // Exploration mode: show travel button if FT is enabled; hide otherwise
       if (mode === DP.SCENE_MODE.EXPLORATION) {
         const ftRaw = effectiveScene?.flags?.[MOD]?.[DP.FABULA_ROOT_KEY]?.[DP.GENERAL_KEY]?.fastTravelEnabled;
@@ -1107,6 +1112,12 @@
     deactivate,
     rebuild,
     processArrivalAt,
+
+    /** Rebuild the graph from the current tile states (Terrarium uses it after a tile changes). */
+    async rebuild() {
+      if (!state.active || state.busy) return false;
+      return rebuild();
+    },
 
     async resetDungeon() {
       await DP.Socket.resetDungeon(canvas.scene);

@@ -293,10 +293,22 @@ registerHandler(MSG.MOVE_REQ, MSG.MOVE_RES, performMove);
 // it?" picker and goes through FUCompanion.api.polymorph.usePotion (GM-relayed).
 // Anything else (an Elemental Shard) is a battle action and says so.
 
+const terrariumKind = (item) => globalThis.DungeonPathing?.Terrarium?.itemKind?.(item) ?? null;
+
 /** Why `user` can't start using `item` from this bag, or "". Cheap; no item lookup. */
 export function useRefusal({ user = game.user, item, roster }) {
   if (!item || itemType(item) !== "consumable") return "not-consumable";
   const owner = item.parent;
+  // Terrarium (2026-11-12): a party action like moving. Usable from any active
+  // member's bag or the Party Bag; the main-controller check is async (useItem).
+  if (terrariumKind(item)) {
+    const inParty = owner && (owner.id === roster?.db?.id || (roster?.active ?? []).some((a) => a.id === owner.id));
+    if (!inParty) return "not-active";
+    if (conflictLive()) return "in-combat-use";
+    if (!item.system?.props?.isUnique && quantityOf(item) <= 0) return "none-left";
+    if (!globalThis.DungeonPathing?.Terrarium?.isDungeon?.(canvas?.scene)) return "terrarium-not-dungeon";
+    return "";
+  }
   if (!owner || owner.id === roster?.db?.id) return "in-party-bag";
   // The Healing HUD's target grid is the ACTIVE party; a reserve caster could not
   // even target themselves there.
@@ -316,6 +328,20 @@ export async function useItem(item) {
   const roster = await getPartyRoster();
   const refusal = useRefusal({ item, roster });
   if (refusal) return { ok: false, reason: refusal };
+  const tKind = terrariumKind(item);
+  if (tKind) {
+    const T = globalThis.DungeonPathing?.Terrarium, TUI = globalThis.DungeonPathing?.TerrariumUI;
+    if (!T || !TUI?.startWith) return { ok: false, reason: "terrarium-missing" };
+    const why = await T.clientRefusal();
+    if (why) return { ok: false, reason: `terrarium-${why}` };
+    return {
+      ok: true,
+      open: async () => {
+        const r = await TUI.startWith({ kind: tKind, itemUuid: item.uuid });
+        if (!r?.ok) ui.notifications?.warn(r?.why || T.REASON[r?.reason] || "That Terrarium can't be used right now.");
+      },
+    };
+  }
   const owner = item.parent;
   if (isPolymorphPotion(item)) {
     if (!findFormActor(item)) return { ok: false, reason: "polymorph-form-missing" };

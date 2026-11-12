@@ -178,10 +178,62 @@
     return true;
   }
 
+  // ── Terrarium (2026-11-12) ──────────────────────────────────────────────────
+  // A Terrarium changes a tile's CURRENT type and look; the origin
+  // (initialType / initialTexture) is never written. The tile's behaviour flags
+  // (Use button, effectConfig…) live on the TILE DOCUMENT, so the placed type's
+  // behaviour is swapped in there and the old values are kept in a stamp on the
+  // same document: `dungeonPathing.terrarium = { kind, originTexture, backup, … }`.
+  // Like `consumed`, the stamp survives a lost scene-flag entry, so ensure()
+  // rebuilds a placed tile as what was placed, not what its Monk's name says.
+  // Every path back to origin (dungeon reset, reset on rest) undoes the swap.
+  // A Load needs nothing: the save restores tile documents and tileStates
+  // together. Rules: dp-terrarium-rules.js.
+  const trKey = () => `${DP.PATHING_ROOT_KEY}.terrarium`;
+  function terrariumOf(tileDoc) {
+    const s = tileDoc?.getFlag?.(DP.MODULE_ID, trKey());
+    return s && typeof s === "object" && s.kind ? s : null;
+  }
+
+  // Delete keys first, then set: Foundry merges nested objects on update, so an
+  // effectConfig written over another would keep the old one's extra keys.
+  async function writeBehaviour(td, { set = {}, unset = [], actions = null, extra = {}, extraDel = [] } = {}) {
+    const root = `flags.${DP.MODULE_ID}.${DP.PATHING_ROOT_KEY}`;
+    const del = {};
+    for (const k of new Set([...unset, ...Object.keys(set)])) del[`${root}.-=${k}`] = null;
+    for (const k of extraDel) del[k] = null;
+    if (actions) del["flags.monks-active-tiles.actions"] = actions;
+    await td.update(del, { dungeonPathing: true });
+    const put = { ...extra };
+    for (const [k, v] of Object.entries(set)) put[`${root}.${k}`] = v;
+    if (Object.keys(put).length) await td.update(put, { dungeonPathing: true });
+  }
+
+  // Undo a Terrarium on one tile's document: behaviour flags and Monk's actions
+  // back from the stamp, stamp removed. Texture / type are the caller's job (the
+  // reset paths already restore initialTexture / initialType). Must run as GM.
+  async function unTerrarium(scene, tileId) {
+    const td = scene?.tiles?.get(tileId);
+    const stamp = terrariumOf(td);
+    if (!stamp) return false;
+    const R = DP.TerrariumRules;
+    const r = R?.buildRestore ? R.buildRestore(stamp.backup) : { set: {}, unset: [], actions: null };
+    // Every behaviour key the placed type wrote must go, even ones the old tile never had.
+    const placed = Object.keys(R?.PROFILES?.[stamp.kind] ?? {});
+    await writeBehaviour(td, {
+      set: r.set,
+      unset: [...new Set([...r.unset, ...placed])],
+      actions: r.actions,
+      extraDel: [`flags.${DP.MODULE_ID}.${DP.PATHING_ROOT_KEY}.-=terrarium`],
+    }).catch(e => console.warn(TAG, "unTerrarium failed", tileId, e));
+    return true;
+  }
+
   // Shared body of resetDungeon / resetTiles for one tile: re-arm it, restore its
   // look, and return the entry to write back (without the `expired` marker —
   // unexpire() already deleted it, and setStates merges so it must not reappear).
   async function restoreEntry(scene, id, entry) {
+    await unTerrarium(scene, id);
     await unstampConsumed(scene, id);
     const wasExpired = await unexpire(scene, id);
     // An untouched story tile keeps its current texture: its `initialTexture` is
@@ -220,12 +272,15 @@
       // the state entry, rebuild, and currentType came back as `consumable`.
       const consumedRaw = tileDoc.getFlag?.(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.consumed`);
       const isConsumed  = consumedRaw === true || consumedRaw === "true";
-      const initialTexture = tileDoc.texture?.src ?? null;
+      // A Terrarium-placed tile: its texture is the placed art, its Monk's name the
+      // origin's. The stamp knows the origin look and what was placed.
+      const placed = terrariumOf(tileDoc);
+      const initialTexture = placed?.originTexture ?? tileDoc.texture?.src ?? null;
 
       // Write only this tile's entry — avoids broadcasting the full 129-tile object.
       const entry = {
         initialType:    inferredType,
-        currentType:    isConsumed ? DP.TILE_TYPES.BLANK : inferredType,
+        currentType:    isConsumed ? DP.TILE_TYPES.BLANK : (placed?.kind ?? inferredType),
         initialTexture,
       };
       // Same durability for an expired story tile: the tile-doc marker survives
@@ -538,11 +593,13 @@
 
           // Nothing to do if the tile is already at its initial state.
           if (entry.currentType === entry.initialType) {
+            if (terrariumOf(tileDoc)) await unTerrarium(scene, id);
             if (visited[id]) { delete visited[id]; visitedHit = true; }
             continue;
           }
 
           updated[id] = { ...entry, currentType: entry.initialType };
+          await unTerrarium(scene, id);   // a new day undoes a Terrarium here (origin wins)
           await unstampConsumed(scene, id);
           touched = true;
           total++;
@@ -611,6 +668,54 @@
 
     /** Resolve a tile's type (explicit flag, else name/texture inference). */
     resolveType(tileDoc) { return resolveType(tileDoc); },
+
+    /** The Terrarium stamp on a tile document, or null. */
+    terrariumOf(tileDoc) { return terrariumOf(tileDoc); },
+
+    /**
+     * Place a Terrarium: the tile's current type and look become `kind`, its
+     * behaviour flags become that type's (old ones kept in the stamp). The
+     * origin is untouched. Must run as GM; the caller validates.
+     * → { ok, fromType?, reason? }
+     */
+    async terraform(scene, tileId, kind, { by = "", byUserId = null, item = "" } = {}) {
+      if (!game.user?.isGM) return { ok: false, reason: "not-gm" };
+      const R  = DP.TerrariumRules;
+      const td = scene?.tiles?.get(tileId);
+      if (!R?.PROFILES?.[kind] || !td) return { ok: false, reason: "missing" };
+      const root  = `flags.${DP.MODULE_ID}.${DP.PATHING_ROOT_KEY}`;
+      const entry = getStates(scene)[tileId] ?? {};
+      const prev  = terrariumOf(td);
+      const dp    = foundry.utils.deepClone(td.getFlag(DP.MODULE_ID, DP.PATHING_ROOT_KEY) ?? {});
+      const acts  = foundry.utils.deepClone(td.getFlag("monks-active-tiles", "actions") ?? []);
+      const swap  = R.buildSwap(kind, dp, acts);
+      // Placed on a placed tile: keep the FIRST backup (the authored behaviour).
+      const stamp = {
+        kind, by, byUserId, item,
+        fromType:      entry.currentType ?? null,
+        originTexture: prev?.originTexture ?? entry.initialTexture ?? td.texture?.src ?? null,
+        at:            Date.now(),
+        backup:        prev?.backup ?? swap.backup,
+      };
+      const unset = [...new Set([...swap.unset, ...Object.keys(R.PROFILES[prev?.kind] ?? {})])];
+      try {
+        await writeBehaviour(td, {
+          set: swap.set, unset, actions: swap.actions,
+          extraDel: [`${root}.-=terrarium`, `${root}.-=consumed`],
+          extra: { [`${root}.terrarium`]: stamp, "texture.src": R.KIND_TEXTURE[kind] },
+        });
+        await scene.setFlag(DP.MODULE_ID, `${DP.PATHING_ROOT_KEY}.tileStates.${tileId}`, {
+          ...entry, currentType: kind,
+        });
+      } catch (e) {
+        console.error(TAG, "terraform failed", tileId, e);
+        return { ok: false, reason: "write-failed" };
+      }
+      return { ok: true, fromType: entry.currentType ?? null };
+    },
+
+    /** Undo a Terrarium's behaviour swap on one tile (type/texture left to the caller). GM. */
+    async unTerrarium(scene, tileId) { return unTerrarium(scene, tileId); },
 
     /** Raw dump of all tile states for debugging. */
     dump(scene) {

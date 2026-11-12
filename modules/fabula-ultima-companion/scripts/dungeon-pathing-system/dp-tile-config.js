@@ -536,6 +536,36 @@
         </div>
 
         <hr class="oni-fabula-section-divider" />
+        <h3 style="margin: 10px 0 6px;"><i class="fas fa-seedling"></i> Terrarium</h3>
+        ${(() => {
+          const rule   = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.terrariumRule`) ?? "";
+          const placed = DP.TileState?.terrariumOf?.(tileDoc) ?? null;
+          const opt = (v, label) => `<option value="${v}" ${rule === v ? "selected" : ""}>${label}</option>`;
+          const placedNote = placed
+            ? `<p class="notes"><b>Now:</b> ${foundry.utils.escapeHTML?.(placed.by || "Someone") ?? placed.by} placed a
+               ${DP.TerrariumRules?.typeLabel?.(placed.kind) ?? placed.kind} here. A dungeon reset (or a new day, if
+               this tile resets on rest) puts the original back.</p>`
+            : "";
+          return `
+        <div class="form-group">
+          <label>Can be changed</label>
+          <div class="form-fields">
+            <select name="flags.${MODULE_ID}.${pathingKey}.terrariumRule" data-dtype="String">
+              ${opt("", "Default")}
+              ${opt("lock", "Always lock")}
+              ${opt("allow", "Always allow")}
+            </select>
+          </div>
+          <p class="notes">
+            Whether a Terrarium may change this tile. <b>Default</b> locks Doors, teleporters,
+            Story, Event, Travel, Camp, Fishing and Settlement tiles, and authored fights.
+            Use <b>Always lock</b> for a puzzle tile.
+          </p>
+          ${placedNote}
+        </div>`;
+        })()}
+
+        <hr class="oni-fabula-section-divider" />
         <h3 style="margin: 10px 0 6px;"><i class="fas fa-route"></i> Travel</h3>
 
         <div class="form-group">

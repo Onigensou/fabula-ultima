@@ -412,6 +412,9 @@
 
   // The tile's type as built (a looted Camp is still a Camp).
   function landmarkType(scene, tileDoc) {
+    // A Camp placed with a Terrarium is a Camp landmark while it stands (user, 2026-11-12).
+    if (DP.TileState?.terrariumOf?.(tileDoc)?.kind === "camp"
+        && DP.TileState?.getCurrentType?.(scene, tileDoc.id) === "camp") return "camp";
     let t = DP.TileState?.getInitialType?.(scene, tileDoc.id) ?? "";
     if (!t || t === "unknown") {
       t = DP.TileState?.resolveType?.(tileDoc) ?? "";
