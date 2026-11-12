@@ -1,6 +1,18 @@
+---
+id: 2026-11-12-reaction-recompute-module-copies
+title: Fixed — reaction recompute loaded a new skill-effects/action-profile copy every time (~120 MB/fight GM leak)
+status: verified
+severity: major
+reporter: onigensou
+assignee: sarunphat
+component: battle-director/action-card.js (reaction recompute → card-mutations applyTargetSetMutation _cb)
+introduced_in: 2282cf1b (2026-06-18, Fafnir T4–T5)
+fixed_in: v1.0.595 (f3562cf6)
+---
+
 # Fix report: the reaction recompute made a new module copy every time (v1.0.595)
 
-**Date:** 2026-11-12 · **Area:** Battle Director, `action-card.js` · **Status:** fixed
+**Date:** 2026-11-12 · **Area:** Battle Director, `action-card.js` · **Status:** fixed and verified on the Staging World
 
 Heads-up for sarunphat: this removes one line you wrote on 2026-06-18 (`2282cf1b`, Fafnir T4–T5). Nothing else changes.
 
@@ -41,6 +53,21 @@ Removed `_cb: Date.now()` from that call and corrected the comment above it. The
 - `checks/fx-leak.js` on the fix: ok, 0 leaks.
 - Battle Director unit tests: 29/30. `crisis-keywords.test.mjs` fails the same way without the fix (`Hooks is not defined` under Node).
 - The runner draws less than a real GM page, so its per-fight numbers are smaller than the Staging World's. The removed growth is the module copies, which are the same on both.
+
+## Verified on the Staging World (real server, GM page in Edge, GPU)
+
+Same setup as the 11-11 report: cache-bypassing reload, then Asura sims back to back (Valley_Battlemap002, lightning-storm, Kalina as guest). Heap after a forced cleanup. All fights were wins.
+
+| | v1.0.593 (before) | v1.0.595 (fix) |
+|---|---|---|
+| Fresh page | 228 MB | 228 MB |
+| After fight 1 | 361 (+133) | 272 (+44) |
+| After fight 2 | 462 (+101) | 278 (**+6**) |
+| After fight 3 | 548 (+86) | 291 (**+17**) |
+| `?cb=` module copies per fight | 99 each | **0** |
+| Peak during a fight | 538 / 580 MB | 530 / 457 MB |
+
+Fight 1 still adds ~44 MB: the first-time cache of animation clips and textures (videos 6 → 85, then flat). After that, a fight keeps roughly 5–20 MB instead of ~100–130 MB. At that rate the GM page's ~4.4 GB limit is out of reach for any real session.
 
 ## Gameplay impact: none
 

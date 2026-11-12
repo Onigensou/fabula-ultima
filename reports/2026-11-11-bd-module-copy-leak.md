@@ -162,6 +162,10 @@ Evidence from fight 5:
 - Base textures level off the same way (226 → 231). WebGL textures went down (83 → 62).
 - PIXI `Texture` objects still climb (155 → 1602 → 2264, ~+660 per fight), as many small wrappers around a few clips (e.g. 92 for `twinkle_anim02.webm`, ~40 per Asura `px_double-slash_*`). They're small, but they're a second, smaller growth worth a look after the module copies are fixed.
 
-### Suggested fix (not applied)
+### Fix: APPLIED in v1.0.595 (f3562cf6)
+
+Staging after the fix: +44 / +6 / +17 MB over 3 fights, 0 module copies. Details: `reports/2026-11-12-reaction-recompute-module-copies.md`.
+
+Original suggestion:
 
 Remove `_cb: Date.now()` from `action-card.js:9205` (or pass it only under the test harness). Then add the parameter form to the "How to check" grep, e.g. `grep -rn '_cb: *Date.now()\|cb: *Date.now()' modules/fabula-ultima-companion/scripts`.
