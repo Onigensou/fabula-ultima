@@ -36,7 +36,7 @@ const K = {
   bleed: J("GePNxftPupElcCWp", "Bleed"), enraged: J("XkuOy0BFvKJTewGS", "Enraged"), slow: J("HHmYmj7xffQMqtzT", "Slow"),
   zombie: J("RZIAnKw95vY6yh2W", "Zombie"), crisis: J("GJevbCPM8cffm1QM", "Crisis"),
   overflow: J("NUaxIAIPUu5Qnk8l", "Overflow"), pierce: J("2hNU23YLpCcZCCmf", "Pierce"), drain: J("CRPjA4dHUYLSAh0M", "Drain"),
-  trigger: J("P7eaFojxra2gTRTG", "Trigger"), unleash: J("UqXGUQM31kWc7BTc", "Unleash"), fireShield: J("wrw2ENSwzCBjztvt", "Fire Shield"),
+  trigger: J("P7eaFojxra2gTRTG", "Trigger"), unleash: J("UqXGUQM31kWc7BTc", "Unleash"), shield: J("wrw2ENSwzCBjztvt", "Shield"),
 };
 const ul = (...items) => `<ul>${items.map((x) => `<li><p>${x}</p></li>`).join("")}</ul>`;
 const P = (s) => `<p>${s}</p>`;
@@ -184,13 +184,19 @@ function monsters(don) {
             "2": { $deleted: false, effect_kind: "apply_ae", effect_label: "slam_mark", ae_template_ref: "Grappling", target_ref: "self", ae_duplicate_mode: "skip" },
           },
         }),
-      // Legacy: the weapon is "temporarily damaged until the end of the scene". The
-      // nearest live status is Disarmed — flagged to the user in the report.
+      // Legacy: the weapon is "temporarily damaged until the end of the scene".
+      // User 2026-11-12: Imp's Strip Weapon logic — hide the weapon slot + the
+      // "Weapon Stripped" marker, back at the end of the battle. A monster has no
+      // weapon, so against one it does nothing.
       passive(A, IDS.LAVA_MELT, "Melting Body",
-        ul(trig(`a melee attack hits this creature with an Accuracy Check below <strong>10</strong>`)) + P(`The weapon melts in the lava: the attacker becomes ${K.disarmed}.`), {
+        ul(trig(`a melee attack hits this creature with an Accuracy Check below <strong>10</strong>`)) + P(`The weapon melts in the lava: the attacker can't use it until the end of the battle.`), {
           isReaction: true,
-          reaction_config_table: { "0": { $deleted: false, reaction_trigger: "creature_hit_by_action", reaction_source: "self", reaction_damage_source: "enemy", reaction_action_intent: "harmful", reaction_passive_mode: "force", condition_formula: "ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT < 10", reaction_effect_ref: "melt" } },
-          effect_table: { "0": { $deleted: false, effect_kind: "apply_ae", effect_label: "melt", ae_template_ref: "Disarmed", target_ref: "trigger_attacker", ae_duplicate_mode: "skip" } },
+          reaction_config_table: { "0": { $deleted: false, reaction_trigger: "creature_hit_by_action", reaction_source: "self", reaction_damage_source: "enemy", reaction_action_intent: "harmful", reaction_passive_mode: "force", condition_formula: "ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT < 10 && USED_WEAPON_IS_EQUIPPED == 1", reaction_effect_ref: "melt_chain" } },
+          effect_table: {
+            "0": { $deleted: false, effect_kind: "chain", effect_label: "melt_chain", chain_steps: "melt_take,melt_mark" },
+            "1": { $deleted: false, effect_kind: "hide_item", effect_label: "melt_take", hide_item_slot: "weapon", target_ref: "trigger_attacker" },
+            "2": { $deleted: false, effect_kind: "apply_ae", effect_label: "melt_mark", ae_template_ref: "Weapon Stripped", target_ref: "trigger_attacker", ae_duplicate_mode: "replace" },
+          },
         }),
       passive(A, IDS.LAVA_EMBRACE, "Melting Embrace",
         ul(trig(`this creature starts its turn while Grappling`)) + P(`Every creature it holds becomes ${K.burn}.`), {
@@ -260,8 +266,55 @@ function monsters(don) {
       spin(IDS.WAL_ROCK, "Rock Spin", "Earth", K.earth, "Petrify", K.petrify),
       spin(IDS.WAL_ICE, "Ice Spin", "Ice", K.ice, "Wet", K.wet),
       spin(IDS.WAL_GALE, "Gale Spin", "Air", K.air, "Turbulence", K.turbulence),
-      passive(A, IDS.WAL_FOOD, "food, Food, FOOD",
-        ul(trig(`a soldier ally falls below <strong>30</strong> Hit Points`)) + P(`This creature eats it, recovers <strong>50</strong> Hit Points and <strong>50</strong> Mind Points, and its attacks take on the eaten creature's element until its Mind Points run out.`), NOPOLY),
+      // User 2026-11-12 (simplified): eat an ally SOLDIER under 30 HP, recover
+      // 50 HP / 50 MP; if the eaten creature has an element (props.attribute), the
+      // attacks take it on for the rest of the battle (Asura's Elemental Aspect
+      // pattern: an "Imbued <El>" status + change_damage_element). Three guards so a
+      // TRANSFORMED PC can never eat its own summons (they are rank soldier too):
+      // no_polymorph (never copied onto a PC) + IS_NPC == 1 on the eater (polymorph
+      // never writes npc_rank/species onto a PC) + TARGET_RANK_IS_SOLDIER on the
+      // victim (PCs carry no rank). The imbue is applied BEFORE the kill, while the
+      // victim's sheet can still be read.
+      (() => {
+        const EL = [
+          ["Fire", "fire", "TARGET_ATTRIBUTE_IS_FIRE > 0", "zQO0zLuji9j9gpR5"],
+          ["Ice", "ice", "TARGET_ATTRIBUTE_IS_ICE > 0", "ag2HSGal5oKlNi8G"],
+          ["Earth", "earth", "TARGET_ATTRIBUTE_IS_EARTH > 0", "qr7sSLaIPqNxzfPT"],
+          ["Dark", "dark", "TARGET_ATTRIBUTE_IS_DARK > 0", "JvPFbjTudacJ1xDJ"],
+          ["Light", "light", "TARGET_ATTRIBUTE_IS_LIGHT > 0", "pNjB83jeSYpMJ4Sw"],
+          ["Poison", "poison", "TARGET_ATTRIBUTE_IS_POISON > 0", "9HsMvgUHfyDzrZxr"],
+          ["Air", "air", "(TARGET_ATTRIBUTE_IS_WIND + TARGET_ATTRIBUTE_IS_AIR) > 0", "GR7ahYPYNwizPsZP"],
+          ["Bolt", "bolt", "(TARGET_ATTRIBUTE_IS_LIGHTNING + TARGET_ATTRIBUTE_IS_BOLT) > 0", "tlvPxmE6gDELaOcF"],
+        ];
+        const rc = {
+          "0": { $deleted: false, reaction_trigger: "creature_lose_resource", reaction_resource_filter: "hp", reaction_cause_filter: "", reaction_source: "ally",
+                 reaction_passive_mode: "force", reaction_max_per_round: "1", reaction_effect_ref: "food_chain",
+                 condition_formula: "IS_NPC == 1 && SUBJECT_IS_SELF == 0 && SUBJECT_IS_ALLY == 1 && TARGET_RANK_IS_SOLDIER == 1 && TARGET_CURRENT_HP > 0 && TARGET_CURRENT_HP < 30" },
+        };
+        const et = {
+          "0": { $deleted: false, effect_kind: "chain", effect_label: "food_chain", chain_steps: ["food_clear", ...EL.map(([n]) => `imbue_${n.toLowerCase()}`), "food_hp", "food_mp", "food_eat"].join(",") },
+          "1": { $deleted: false, effect_kind: "remove_tagged_ae", effect_label: "food_clear", filter_tag: "walrog_imbue", count: "all", target_ref: "self" },
+          "2": { $deleted: false, effect_kind: "grant", effect_label: "food_hp", grant_resource: "hp", grant_amount: "50", target_ref: "self" },
+          "3": { $deleted: false, effect_kind: "grant", effect_label: "food_mp", grant_resource: "mp", grant_amount: "50", target_ref: "self" },
+          "4": { $deleted: false, effect_kind: "deal_damage", effect_label: "food_eat", damage_amount: "99999", damage_element: "elementless", damage_ignore_affinity: true, damage_cause: "hazard", damage_verbosity: "full", attacker_name: "food, Food, FOOD", target_ref: "trigger_subject" },
+        };
+        let r = 1, e = 5;
+        const aes = [];
+        for (const [n, el, cond, aeId] of EL) {
+          et[String(e++)] = { $deleted: false, effect_kind: "apply_ae", effect_label: `imbue_${n.toLowerCase()}`, ae_template_ref: `Imbued ${n}`, target_ref: "self", ae_duplicate_mode: "replace", ae_duration_rounds: "scene", condition_formula: cond, on_condition_fail: "skip" };
+          et[String(e++)] = { $deleted: false, effect_kind: "change_damage_element", effect_label: `food_el_${el}`, change_element: el };
+          rc[String(r++)] = { $deleted: false, reaction_trigger: "creature_will_deal_damage", reaction_source: "self", reaction_action_kind: "Attack", reaction_passive_mode: "force", condition_formula: `AE_COUNT_IMBUED_${n.toUpperCase()} > 0`, reaction_effect_ref: `food_el_${el}` };
+          aes.push({ _id: aeId, name: `Imbued ${n}`, img: ICON.passive, icon: ICON.passive, transfer: false, disabled: false, statuses: [], changes: [],
+            description: `<p>Walrog's attacks deal ${n} damage until the end of the battle.</p>`, duration: {}, origin: `Actor.${A}.Item.${IDS.WAL_FOOD}`,
+            system: { tags: ["walrog_imbue"] }, flags: { [NS]: { crossScene: false } } });
+        }
+        const it = passive(A, IDS.WAL_FOOD, "food, Food, FOOD",
+          ul(trig(`a Soldier ally falls below <strong>30</strong> Hit Points`)) + P(`This creature eats it and recovers <strong>50</strong> Hit Points and <strong>50</strong> Mind Points. If the eaten creature had an element, this creature's attacks deal that element until the end of the battle.`),
+          { isReaction: true, ...NOPOLY, reaction_config_table: rc, effect_table: et });
+        it.effects = aes.map((x) => x._id);
+        it._aes = aes;
+        return it;
+      })(),
       passive(A, IDS.WAL_HUNGER, "Hunger", P(`This creature only comes out when it is hungry.`), NOPOLY),
     ];
     out.push({
@@ -305,7 +358,12 @@ function monsters(don) {
         reaction_config_table: { "0": { $deleted: false, reaction_trigger: "conflict_start", reaction_source: "", reaction_passive_mode: "force", reaction_effect_ref: "und_z" } },
         effect_table: { "0": { $deleted: false, effect_kind: "apply_ae", effect_label: "und_z", ae_template_ref: "Zombie", target_ref: "self", ae_duplicate_mode: "skip" } },
       }),
-      passive(A, IDS.HUN_STARVE, "Starvation", P(`A creature that is ${K.enraged}&nbsp;or ${K.berserk}&nbsp;loses a quarter of its current Hit Points at the start of its turn.`), NOPOLY),
+      // Every creature's turn start; TARGET_* reads the creature whose turn it is.
+      passive(A, IDS.HUN_STARVE, "Starvation", ul(trig(`a creature that is ${K.enraged}&nbsp;or ${K.berserk}&nbsp;starts its turn`)) + P(`It loses a quarter of its current Hit Points.`), {
+        isReaction: true, ...NOPOLY,
+        reaction_config_table: { "0": { $deleted: false, reaction_trigger: "turn_start", reaction_source: "", reaction_passive_mode: "force", condition_formula: "IS_NPC == 1 && (TARGET_AE_COUNT_BERSERK + TARGET_AE_COUNT_ENRAGED) > 0 && TARGET_CURRENT_HP > 0", reaction_effect_ref: "starve" } },
+        effect_table: { "0": { $deleted: false, effect_kind: "deal_damage", effect_label: "starve", damage_amount: "floor(TARGET_CURRENT_HP / 4)", damage_element: "elementless", damage_ignore_affinity: true, damage_cause: "hazard", damage_verbosity: "full", attacker_name: "Starvation", target_ref: "trigger_subject" } },
+      }),
       passive(A, IDS.HUN_INSATIABLE, "Insatiable",
         ul(trig(`this creature is in ${K.crisis}&nbsp;and misses with Chomp`)) + P(`It attacks with Chomp once more.`), {
           isReaction: true,
@@ -337,9 +395,18 @@ function monsters(don) {
         P(`Deal <strong>light</strong> ${K.physical}&nbsp;damage to one creature, with a <strong>70%</strong> chance to inflict ${K.dazed}.`), rider("Tuna Slap", [["Dazed", 70]])),
       atk(A, IDS.MER_GUARD, "Guard Breaker", { a1: "MIG", a2: "MIG", check: 3, dmg: 0, el: "Physical" },
         P(`Deal <strong>light</strong> ${K.physical}&nbsp;damage to one creature and inflict ${K.stagger}.`), rider("Guard Breaker", [["Stagger", 100]])),
-      // Legacy Bash also had a 25% Stun; Stun does not exist in this game (flagged).
+      // Legacy "Stun" (user 2026-11-12): NOT a status — "remove 1 turn activation
+      // from the target", like Stop. Built into Bash only (Maids Pocketwatch's
+      // modify_turns -1), behind a 25% chance row.
       spell(A, IDS.MER_BASH, "Bash", { a1: "MIG", a2: "MIG", check: 0, dmg: 15, el: "Physical", cost: "20 MP" },
-        P(`Deal <strong>light</strong> ${K.physical}&nbsp;damage to one creature.`)),
+        P(`Deal <strong>light</strong> ${K.physical}&nbsp;damage to one creature, with a <strong>25%</strong> chance that it loses <strong>1</strong> turn this round.`), {
+          isReaction: true,
+          reaction_config_table: { "0": { $deleted: false, reaction_trigger: "creature_deals_damage", reaction_source: "self", reaction_source_skill: "Bash", reaction_passive_mode: "force", reaction_effect_ref: "bash_roll" } },
+          effect_table: {
+            "0": { $deleted: false, effect_kind: "chance", effect_label: "bash_roll", chance_percent: "25", chance_then_ref: "bash_stun" },
+            "1": { $deleted: false, effect_kind: "modify_turns", effect_label: "bash_stun", target_ref: "trigger_subject", turns_delta: "-1", turns_floor: "0" },
+          },
+        }),
       active(A, IDS.MER_RAGE, "Rage", { target: "Self" }, P(`This creature becomes ${K.berserk}.`), {
         on_activate_effect_ref: "rage",
         effect_table: { "0": { $deleted: false, effect_kind: "apply_ae", effect_label: "rage", ae_template_ref: "Berserk", target_ref: "self", ae_duplicate_mode: "skip" } },
@@ -366,7 +433,7 @@ function monsters(don) {
     const A = IDS.SCA;
     const items = [
       atk(A, IDS.SCA_CHOMP, "Swift Chomp", { a1: "MIG", a2: "DEX", check: 3, dmg: 25, el: "Physical" },
-        P(`Always targets the creature with the lowest Hit Points. Deal ${K.physical}&nbsp;damage and inflict ${K.bleed}. If this defeats the target, this creature gains <strong>20</strong> ${K.fireShield}&nbsp;and acts again at once.`), {
+        P(`Always targets the creature with the lowest Hit Points. Deal ${K.physical}&nbsp;damage and inflict ${K.bleed}. If this defeats the target, this creature gains <strong>20</strong> ${K.shield}&nbsp;and acts again at once.`), {
           isReaction: true,
           reaction_config_table: {
             "0": { $deleted: false, reaction_trigger: "creature_deals_damage", reaction_source: "self", reaction_source_skill: "Swift Chomp", reaction_passive_mode: "force", reaction_effect_ref: "sc_bleed" },
@@ -374,10 +441,20 @@ function monsters(don) {
           },
           effect_table: {
             "0": { $deleted: false, effect_kind: "apply_ae", effect_label: "sc_bleed", ae_template_ref: "Bleed", target_ref: "hit_action_targets", ae_duplicate_mode: "skip" },
-            "1": { $deleted: false, effect_kind: "modify_turns", effect_label: "sc_again", target_ref: "self", turns_delta: "1", turns_floor: "0" },
+            // Legacy "Fire Shield" (user 2026-11-12): Elemental Shields were cut to
+            // plain "Shield"; Scaldra already has Fire IM, so it is an elementless 20.
+            "1": { $deleted: false, effect_kind: "chain", effect_label: "sc_again", chain_steps: "sc_shield,sc_turn" },
+            "2": { $deleted: false, effect_kind: "grant", effect_label: "sc_shield", grant_resource: "shield", grant_amount: "20", target_ref: "self" },
+            "3": { $deleted: false, effect_kind: "modify_turns", effect_label: "sc_turn", target_ref: "self", turns_delta: "1", turns_floor: "0" },
           },
         }),
-      passive(A, IDS.SCA_SHARK, "IT'S A SHARK!!!", ul(K.unleash) + P(`This creature attacks with Swift Chomp.`), NOPOLY),
+      // Unleash = activates once, automatically, at the start of the conflict
+      // (Wandering Flame's Explosive Entrance pattern). A passive, not a Zero Power.
+      passive(A, IDS.SCA_SHARK, "IT'S A SHARK!!!", ul(K.unleash) + P(`This creature attacks with Swift Chomp.`), {
+        isReaction: true, ...NOPOLY,
+        reaction_config_table: { "0": { $deleted: false, reaction_trigger: "conflict_start", reaction_source: "", reaction_passive_mode: "force", reaction_effect_ref: "shark_go" } },
+        effect_table: { "0": { $deleted: false, effect_kind: "free_action", effect_label: "shark_go", action_ref: "Swift Chomp", max_mp_cost: "0" } },
+      }),
       passive(A, IDS.SCA_WAVER, "Lava Waver", ul(trig(`this creature ends its turn`)) + P(`It slips under the lava and becomes ${K.hidden}.`), {
         isReaction: true,
         reaction_config_table: { "0": { $deleted: false, reaction_trigger: "turn_end", reaction_source: "", reaction_passive_mode: "force", condition_formula: "SUBJECT_IS_SELF == 1 && HAS_STATUS_CRISIS == 0", reaction_effect_ref: "wv_hide" } },
@@ -437,7 +514,9 @@ if (mode === "folder") {
     };
     if (!don.actor || !don.atk || !don.pas || !don.spell) throw new Error("missing donor doc");
     for (const m of monsters(don)) {
-      if (await getByKey("actors", `!actors!${m.A}`)) throw new Error(`${m.name} already built (${m.A})`);
+      // --rebuild rewrites a built monster whole (the run keeps any authored
+      // animation fields; backups are taken by run()).
+      if (!process.argv.includes("--rebuild") && await getByKey("actors", `!actors!${m.A}`)) throw new Error(`${m.name} already built (${m.A}) — pass --rebuild`);
       const a = blankActor(don.actor, m.A, m.name, FOLDER_FORMS, m.art, m.scale);
       const p = a.system.props;
       Object.assign(p, {
@@ -448,7 +527,13 @@ if (mode === "folder") {
       a.flags = a.flags ?? {};
       a.flags[NS] = { ...(a.flags[NS] ?? {}), polymorphTags: m.tags, wwtLegacySource: "fabula-ultima-2-archive (The Winterlands Witch Trials)" };
       a.items = m.items.map((i) => i._id);
-      for (const it of m.items) changes.push([`!actors.items!${m.A}.${it._id}`, it, `${m.name} / ${it.name} (${it.system.props.skill_type})`]);
+      for (const it of m.items) {
+        const aes = it._aes ?? [];
+        delete it._aes;
+        changes.push([`!actors.items!${m.A}.${it._id}`, it, `${m.name} / ${it.name} (${it.system.props.skill_type})`]);
+        // Embedded AEs live at their own key; the item's effects[] lists their ids.
+        for (const ae of aes) changes.push([`!actors.items.effects!${m.A}.${it._id}.${ae._id}`, ae, `${m.name} / ${it.name} / AE ${ae.name}`]);
+      }
       changes.push([`!actors!${m.A}`, a, `NEW actor — ${m.name} (L${m.props.level} ${m.props.npc_rank}, ${m.props.species}${m.props.subtype_list ? "/" + m.props.subtype_list : ""}, tags: ${m.tags.join(",") || "-"})`]);
     }
   }, "WWT polymorph forms — six legacy monsters reconstructed");

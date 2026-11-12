@@ -132,13 +132,199 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "9HsMvgUHfyDzrZxr",
+          "changes": [],
+          "description": "<p>Walrog's attacks deal Poison damage until the end of the battle.</p>",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "crossScene": false
+            }
+          },
+          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "name": "Imbued Poison",
+          "origin": "Actor.C0SAjRdzVnQldsVn.Item.MOR6wAiBiIadZEua",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "walrog_imbue"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "ag2HSGal5oKlNi8G",
+          "changes": [],
+          "description": "<p>Walrog's attacks deal Ice damage until the end of the battle.</p>",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "crossScene": false
+            }
+          },
+          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "name": "Imbued Ice",
+          "origin": "Actor.C0SAjRdzVnQldsVn.Item.MOR6wAiBiIadZEua",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "walrog_imbue"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "GR7ahYPYNwizPsZP",
+          "changes": [],
+          "description": "<p>Walrog's attacks deal Air damage until the end of the battle.</p>",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "crossScene": false
+            }
+          },
+          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "name": "Imbued Air",
+          "origin": "Actor.C0SAjRdzVnQldsVn.Item.MOR6wAiBiIadZEua",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "walrog_imbue"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "JvPFbjTudacJ1xDJ",
+          "changes": [],
+          "description": "<p>Walrog's attacks deal Dark damage until the end of the battle.</p>",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "crossScene": false
+            }
+          },
+          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "name": "Imbued Dark",
+          "origin": "Actor.C0SAjRdzVnQldsVn.Item.MOR6wAiBiIadZEua",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "walrog_imbue"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "pNjB83jeSYpMJ4Sw",
+          "changes": [],
+          "description": "<p>Walrog's attacks deal Light damage until the end of the battle.</p>",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "crossScene": false
+            }
+          },
+          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "name": "Imbued Light",
+          "origin": "Actor.C0SAjRdzVnQldsVn.Item.MOR6wAiBiIadZEua",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "walrog_imbue"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "qr7sSLaIPqNxzfPT",
+          "changes": [],
+          "description": "<p>Walrog's attacks deal Earth damage until the end of the battle.</p>",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "crossScene": false
+            }
+          },
+          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "name": "Imbued Earth",
+          "origin": "Actor.C0SAjRdzVnQldsVn.Item.MOR6wAiBiIadZEua",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "walrog_imbue"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "tlvPxmE6gDELaOcF",
+          "changes": [],
+          "description": "<p>Walrog's attacks deal Bolt damage until the end of the battle.</p>",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "crossScene": false
+            }
+          },
+          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "name": "Imbued Bolt",
+          "origin": "Actor.C0SAjRdzVnQldsVn.Item.MOR6wAiBiIadZEua",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "walrog_imbue"
+            ]
+          },
+          "transfer": false
+        },
+        {
+          "_id": "zQO0zLuji9j9gpR5",
+          "changes": [],
+          "description": "<p>Walrog's attacks deal Fire damage until the end of the battle.</p>",
+          "disabled": false,
+          "duration": {},
+          "flags": {
+            "fabula-ultima-companion": {
+              "crossScene": false
+            }
+          },
+          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "name": "Imbued Fire",
+          "origin": "Actor.C0SAjRdzVnQldsVn.Item.MOR6wAiBiIadZEua",
+          "statuses": [],
+          "system": {
+            "tags": [
+              "walrog_imbue"
+            ]
+          },
+          "transfer": false
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.4"
         }
       },
       "folder": null,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
       "name": "food, Food, FOOD",
       "ownership": {
         "default": 0
@@ -159,19 +345,198 @@
           "cost": "-",
           "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;a soldier ally falls below <strong>30</strong> Hit Points</p></li></ul><p>This creature eats it, recovers <strong>50</strong> Hit Points and <strong>50</strong> Mind Points, and its attacks take on the eaten creature's element until its Mind Points run out.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;a Soldier ally falls below <strong>30</strong> Hit Points</p></li></ul><p>This creature eats it and recovers <strong>50</strong> Hit Points and <strong>50</strong> Mind Points. If the eaten creature had an element, this creature's attacks deal that element until the end of the battle.</p>",
           "details_roller": "Show",
           "duration": "-",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "food_clear,imbue_fire,imbue_ice,imbue_earth,imbue_dark,imbue_light,imbue_poison,imbue_air,imbue_bolt,food_hp,food_mp,food_eat",
+              "effect_kind": "chain",
+              "effect_label": "food_chain"
+            },
+            "1": {
+              "$deleted": false,
+              "count": "all",
+              "effect_kind": "remove_tagged_ae",
+              "effect_label": "food_clear",
+              "filter_tag": "walrog_imbue",
+              "target_ref": "self"
+            },
+            "2": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "food_hp",
+              "grant_amount": "50",
+              "grant_resource": "hp",
+              "target_ref": "self"
+            },
+            "3": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "food_mp",
+              "grant_amount": "50",
+              "grant_resource": "mp",
+              "target_ref": "self"
+            },
+            "4": {
+              "$deleted": false,
+              "attacker_name": "food, Food, FOOD",
+              "damage_amount": "99999",
+              "damage_cause": "hazard",
+              "damage_element": "elementless",
+              "damage_ignore_affinity": true,
+              "damage_verbosity": "full",
+              "effect_kind": "deal_damage",
+              "effect_label": "food_eat",
+              "target_ref": "trigger_subject"
+            },
+            "5": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "scene",
+              "ae_template_ref": "Imbued Fire",
+              "condition_formula": "TARGET_ATTRIBUTE_IS_FIRE > 0",
+              "effect_kind": "apply_ae",
+              "effect_label": "imbue_fire",
+              "on_condition_fail": "skip",
+              "target_ref": "self"
+            },
+            "6": {
+              "$deleted": false,
+              "change_element": "fire",
+              "effect_kind": "change_damage_element",
+              "effect_label": "food_el_fire"
+            },
+            "7": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "scene",
+              "ae_template_ref": "Imbued Ice",
+              "condition_formula": "TARGET_ATTRIBUTE_IS_ICE > 0",
+              "effect_kind": "apply_ae",
+              "effect_label": "imbue_ice",
+              "on_condition_fail": "skip",
+              "target_ref": "self"
+            },
+            "8": {
+              "$deleted": false,
+              "change_element": "ice",
+              "effect_kind": "change_damage_element",
+              "effect_label": "food_el_ice"
+            },
+            "9": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "scene",
+              "ae_template_ref": "Imbued Earth",
+              "condition_formula": "TARGET_ATTRIBUTE_IS_EARTH > 0",
+              "effect_kind": "apply_ae",
+              "effect_label": "imbue_earth",
+              "on_condition_fail": "skip",
+              "target_ref": "self"
+            },
+            "10": {
+              "$deleted": false,
+              "change_element": "earth",
+              "effect_kind": "change_damage_element",
+              "effect_label": "food_el_earth"
+            },
+            "11": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "scene",
+              "ae_template_ref": "Imbued Dark",
+              "condition_formula": "TARGET_ATTRIBUTE_IS_DARK > 0",
+              "effect_kind": "apply_ae",
+              "effect_label": "imbue_dark",
+              "on_condition_fail": "skip",
+              "target_ref": "self"
+            },
+            "12": {
+              "$deleted": false,
+              "change_element": "dark",
+              "effect_kind": "change_damage_element",
+              "effect_label": "food_el_dark"
+            },
+            "13": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "scene",
+              "ae_template_ref": "Imbued Light",
+              "condition_formula": "TARGET_ATTRIBUTE_IS_LIGHT > 0",
+              "effect_kind": "apply_ae",
+              "effect_label": "imbue_light",
+              "on_condition_fail": "skip",
+              "target_ref": "self"
+            },
+            "14": {
+              "$deleted": false,
+              "change_element": "light",
+              "effect_kind": "change_damage_element",
+              "effect_label": "food_el_light"
+            },
+            "15": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "scene",
+              "ae_template_ref": "Imbued Poison",
+              "condition_formula": "TARGET_ATTRIBUTE_IS_POISON > 0",
+              "effect_kind": "apply_ae",
+              "effect_label": "imbue_poison",
+              "on_condition_fail": "skip",
+              "target_ref": "self"
+            },
+            "16": {
+              "$deleted": false,
+              "change_element": "poison",
+              "effect_kind": "change_damage_element",
+              "effect_label": "food_el_poison"
+            },
+            "17": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "scene",
+              "ae_template_ref": "Imbued Air",
+              "condition_formula": "(TARGET_ATTRIBUTE_IS_WIND + TARGET_ATTRIBUTE_IS_AIR) > 0",
+              "effect_kind": "apply_ae",
+              "effect_label": "imbue_air",
+              "on_condition_fail": "skip",
+              "target_ref": "self"
+            },
+            "18": {
+              "$deleted": false,
+              "change_element": "air",
+              "effect_kind": "change_damage_element",
+              "effect_label": "food_el_air"
+            },
+            "19": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_duration_rounds": "scene",
+              "ae_template_ref": "Imbued Bolt",
+              "condition_formula": "(TARGET_ATTRIBUTE_IS_LIGHTNING + TARGET_ATTRIBUTE_IS_BOLT) > 0",
+              "effect_kind": "apply_ae",
+              "effect_label": "imbue_bolt",
+              "on_condition_fail": "skip",
+              "target_ref": "self"
+            },
+            "20": {
+              "$deleted": false,
+              "change_element": "bolt",
+              "effect_kind": "change_damage_element",
+              "effect_label": "food_el_bolt"
+            }
+          },
           "heroic_requirement": "",
           "id": "${item.id}",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": false,
+          "isReaction": true,
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
@@ -179,7 +544,91 @@
           "no_polymorph": true,
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "IS_NPC == 1 && SUBJECT_IS_SELF == 0 && SUBJECT_IS_ALLY == 1 && TARGET_RANK_IS_SOLDIER == 1 && TARGET_CURRENT_HP > 0 && TARGET_CURRENT_HP < 30",
+              "reaction_cause_filter": "",
+              "reaction_effect_ref": "food_chain",
+              "reaction_max_per_round": "1",
+              "reaction_passive_mode": "force",
+              "reaction_resource_filter": "hp",
+              "reaction_source": "ally",
+              "reaction_trigger": "creature_lose_resource"
+            },
+            "1": {
+              "$deleted": false,
+              "condition_formula": "AE_COUNT_IMBUED_FIRE > 0",
+              "reaction_action_kind": "Attack",
+              "reaction_effect_ref": "food_el_fire",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            },
+            "2": {
+              "$deleted": false,
+              "condition_formula": "AE_COUNT_IMBUED_ICE > 0",
+              "reaction_action_kind": "Attack",
+              "reaction_effect_ref": "food_el_ice",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            },
+            "3": {
+              "$deleted": false,
+              "condition_formula": "AE_COUNT_IMBUED_EARTH > 0",
+              "reaction_action_kind": "Attack",
+              "reaction_effect_ref": "food_el_earth",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            },
+            "4": {
+              "$deleted": false,
+              "condition_formula": "AE_COUNT_IMBUED_DARK > 0",
+              "reaction_action_kind": "Attack",
+              "reaction_effect_ref": "food_el_dark",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            },
+            "5": {
+              "$deleted": false,
+              "condition_formula": "AE_COUNT_IMBUED_LIGHT > 0",
+              "reaction_action_kind": "Attack",
+              "reaction_effect_ref": "food_el_light",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            },
+            "6": {
+              "$deleted": false,
+              "condition_formula": "AE_COUNT_IMBUED_POISON > 0",
+              "reaction_action_kind": "Attack",
+              "reaction_effect_ref": "food_el_poison",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            },
+            "7": {
+              "$deleted": false,
+              "condition_formula": "AE_COUNT_IMBUED_AIR > 0",
+              "reaction_action_kind": "Attack",
+              "reaction_effect_ref": "food_el_air",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            },
+            "8": {
+              "$deleted": false,
+              "condition_formula": "AE_COUNT_IMBUED_BOLT > 0",
+              "reaction_action_kind": "Attack",
+              "reaction_effect_ref": "food_el_bolt",
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "creature_will_deal_damage"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -1365,7 +1814,7 @@
         "MOR6wAiBiIadZEua": {
           "id": "${item.id}",
           "name": "food, Food, FOOD",
-          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;a soldier ally falls below <strong>30</strong> Hit Points</p></li></ul><p>This creature eats it, recovers <strong>50</strong> Hit Points and <strong>50</strong> Mind Points, and its attacks take on the eaten creature's element until its Mind Points run out.</p>",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;a Soldier ally falls below <strong>30</strong> Hit Points</p></li></ul><p>This creature eats it and recovers <strong>50</strong> Hit Points and <strong>50</strong> Mind Points. If the eaten creature had an element, this creature's attacks deal that element until the end of the battle.</p>",
           "roll": "",
           "uuid": "Actor.C0SAjRdzVnQldsVn.Item.MOR6wAiBiIadZEua"
         },

@@ -61,6 +61,32 @@ if (which === "items") {
       changes.push([ak, owner, `${a.name}: ${n} mirror/steal-table field(s) → ${NEW}`]);
     }
   }, "Centuaros potion rename — actor copies", "actors");
+} else if (which === "texts") {
+  // User 2026-11-12 ("keep it consistent"): the monster's OWN texts too — study
+  // text, skill descriptions and their sheet mirrors on the Centuaros actor and
+  // its embedded items. Animation scripts are left alone (code, not prose).
+  const { openCollection } = require("../lib/db");
+  const ACTOR = "7FB6x9kD38cX5SGB";
+  const SKIP = new Set(["animation_script"]);
+  const deep = (o, path, hits) => {
+    if (typeof o === "string") return o.includes(OLD) ? (hits.push(path), fix(o)) : o;
+    if (Array.isArray(o)) return o.map((v, i) => deep(v, `${path}[${i}]`, hits));
+    if (o && typeof o === "object") { const r = {}; for (const [k, v] of Object.entries(o)) r[k] = SKIP.has(k) ? v : deep(v, `${path}.${k}`, hits); return r; }
+    return o;
+  };
+  run(async ({ changes }) => {
+    const db = await openCollection("actors");
+    const docs = [];
+    try {
+      for await (const [k, v] of db.iterator({ gte: `!actors!${ACTOR}`, lte: `!actors!${ACTOR}` })) docs.push([k, v]);
+      for await (const [k, v] of db.iterator({ gte: `!actors.items!${ACTOR}.`, lt: `!actors.items!${ACTOR}/` })) docs.push([k, v]);
+    } finally { await db.close(); }
+    for (const [k, v] of docs) {
+      const hits = [];
+      const next = deep(v, v.name, hits);
+      if (hits.length) changes.push([k, next, `${v.name}: ${hits.length} field(s) — ${hits.map((h) => h.split(".").slice(-1)[0]).join(", ")}`]);
+    }
+  }, "Centuaros spelling — the monster's own texts", "actors");
 } else {
-  console.log("usage: node bin/_rename-centuaros-potion.js items|actors [--apply]");
+  console.log("usage: node bin/_rename-centuaros-potion.js items|actors|texts [--apply]");
 }

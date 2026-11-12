@@ -245,7 +245,7 @@
         }
       },
       "folder": null,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
       "name": "IT'S A SHARK!!!",
       "ownership": {
         "default": 0
@@ -269,16 +269,24 @@
           "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.UqXGUQM31kWc7BTc\" data-id=\"UqXGUQM31kWc7BTc\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Unleash</strong></a></p></li></ul><p>This creature attacks with Swift Chomp.</p>",
           "details_roller": "Show",
           "duration": "-",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "action_ref": "Swift Chomp",
+              "effect_kind": "free_action",
+              "effect_label": "shark_go",
+              "max_mp_cost": "0"
+            }
+          },
           "heroic_requirement": "",
           "id": "${item.id}",
           "ignore_hr": false,
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": false,
+          "isReaction": true,
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
@@ -286,7 +294,15 @@
           "no_polymorph": true,
           "on_activate_effect_ref": "",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "reaction_effect_ref": "shark_go",
+              "reaction_passive_mode": "force",
+              "reaction_source": "",
+              "reaction_trigger": "conflict_start"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
@@ -344,7 +360,7 @@
           "cost": "-",
           "damage_bonus": "25",
           "defense_target_type": "def",
-          "description": "<p>Always targets the creature with the lowest Hit Points. Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage and inflict <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Bleed</strong></a>. If this defeats the target, this creature gains <strong>20</strong> <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Fire Shield</strong></a>&nbsp;and acts again at once.</p>",
+          "description": "<p>Always targets the creature with the lowest Hit Points. Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage and inflict <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Bleed</strong></a>. If this defeats the target, this creature gains <strong>20</strong> <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Shield</strong></a>&nbsp;and acts again at once.</p>",
           "details_roller": "Show",
           "duration": "Instantaneous",
           "effect_table": {
@@ -358,8 +374,22 @@
             },
             "1": {
               "$deleted": false,
+              "chain_steps": "sc_shield,sc_turn",
+              "effect_kind": "chain",
+              "effect_label": "sc_again"
+            },
+            "2": {
+              "$deleted": false,
+              "effect_kind": "grant",
+              "effect_label": "sc_shield",
+              "grant_amount": "20",
+              "grant_resource": "shield",
+              "target_ref": "self"
+            },
+            "3": {
+              "$deleted": false,
               "effect_kind": "modify_turns",
-              "effect_label": "sc_again",
+              "effect_label": "sc_turn",
               "target_ref": "self",
               "turns_delta": "1",
               "turns_floor": "0"
@@ -641,7 +671,7 @@
       "attack_list": {
         "UINbFAjA3RG1rY0z": {
           "active_target": "One Creature",
-          "attack_description": "<p>Always targets the creature with the lowest Hit Points. Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage and inflict <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Bleed</strong></a>. If this defeats the target, this creature gains <strong>20</strong> <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Fire Shield</strong></a>&nbsp;and acts again at once.</p>",
+          "attack_description": "<p>Always targets the creature with the lowest Hit Points. Deal <a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\" data-tooltip=\"Item\"><strong>Physical</strong></a>&nbsp;damage and inflict <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Bleed</strong></a>. If this defeats the target, this creature gains <strong>20</strong> <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Shield</strong></a>&nbsp;and acts again at once.</p>",
           "attribute_die1": "MIG",
           "attribute_die2": "DEX",
           "id": "${item.id}",

@@ -170,16 +170,29 @@
           "cost": "-",
           "damage_bonus": "0",
           "defense_target_type": "def",
-          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;a melee attack hits this creature with an Accuracy Check below <strong>10</strong></p></li></ul><p>The weapon melts in the lava: the attacker becomes <a class=\"content-link\" data-uuid=\"JournalEntry.MM2SvLRyVhazkNq3\" data-id=\"MM2SvLRyVhazkNq3\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Disarmed</strong></a>.</p>",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;a melee attack hits this creature with an Accuracy Check below <strong>10</strong></p></li></ul><p>The weapon melts in the lava: the attacker can't use it until the end of the battle.</p>",
           "details_roller": "Show",
           "duration": "-",
           "effect_table": {
             "0": {
               "$deleted": false,
-              "ae_duplicate_mode": "skip",
-              "ae_template_ref": "Disarmed",
+              "chain_steps": "melt_take,melt_mark",
+              "effect_kind": "chain",
+              "effect_label": "melt_chain"
+            },
+            "1": {
+              "$deleted": false,
+              "effect_kind": "hide_item",
+              "effect_label": "melt_take",
+              "hide_item_slot": "weapon",
+              "target_ref": "trigger_attacker"
+            },
+            "2": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Weapon Stripped",
               "effect_kind": "apply_ae",
-              "effect_label": "melt",
+              "effect_label": "melt_mark",
               "target_ref": "trigger_attacker"
             }
           },
@@ -202,10 +215,10 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "condition_formula": "ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT < 10",
+              "condition_formula": "ATTACK_IS_MELEE == 1 && ATTACK_CHECK_RESULT < 10 && USED_WEAPON_IS_EQUIPPED == 1",
               "reaction_action_intent": "harmful",
               "reaction_damage_source": "enemy",
-              "reaction_effect_ref": "melt",
+              "reaction_effect_ref": "melt_chain",
               "reaction_passive_mode": "force",
               "reaction_source": "self",
               "reaction_trigger": "creature_hit_by_action"
@@ -1000,7 +1013,7 @@
         "orTNnkfw2nylQahx": {
           "id": "${item.id}",
           "name": "Melting Body",
-          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;a melee attack hits this creature with an Accuracy Check below <strong>10</strong></p></li></ul><p>The weapon melts in the lava: the attacker becomes <a class=\"content-link\" data-uuid=\"JournalEntry.MM2SvLRyVhazkNq3\" data-id=\"MM2SvLRyVhazkNq3\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Disarmed</strong></a>.</p>",
+          "passive_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Trigger</strong></a>&nbsp;a melee attack hits this creature with an Accuracy Check below <strong>10</strong></p></li></ul><p>The weapon melts in the lava: the attacker can't use it until the end of the battle.</p>",
           "roll": "",
           "uuid": "Actor.1Ua5E4XOPy3oS7nA.Item.orTNnkfw2nylQahx"
         },
