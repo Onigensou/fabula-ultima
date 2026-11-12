@@ -39,7 +39,7 @@ import {
   counterOnConflictStart, tickOnTurnEnd, readFormProfile, formTags,
   AFFINITY_KEYS, ATTR_KEYS, FORM_TURNS_IN_CONFLICT,
 } from "./polymorph-math.js";
-import { broadcastPoof, FX_SWAP_MS } from "./polymorph-fx.js";
+import { broadcastPoof, broadcastMorph, FX_SWAP_MS } from "./polymorph-fx.js";
 import { formNameForItem, isPolymorphPotion, findFormActor } from "./polymorph-potions.js";
 import { polymorphSuppressesEffect } from "./polymorph-gates.js";
 import "./polymorph-ui.js";   // Form Plate (HUD) + sheet banner — side-effect module
@@ -350,7 +350,7 @@ async function transformGM(actorRef, formRef, opts = {}) {
     tokenArt.push({ uuid: t.uuid, src: t.texture?.src ?? null, scaleX: t.texture?.scaleX ?? 1, scaleY: t.texture?.scaleY ?? 1 });
     swaps.push({ token: t, ...nt });
   }
-  const poofed = opts.noFx ? 0 : broadcastPoof(tokens, swaps.map((s) => s.src));
+  const poofed = opts.noFx ? 0 : broadcastMorph(tokens, swaps.map((s) => s.src));
   // The new art goes on as soon as the cloud covers the token, IN PARALLEL with
   // the layer build below (the item copies take ~1 s; waiting made the cloud hang).
   const artDone = (async () => {

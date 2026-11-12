@@ -1,5 +1,6 @@
 // ============================================================================
-// Polymorph — the "POOF" transform (user ruling 2026-11-12, replaces the
+// Polymorph visuals. TRANSFORM INTO = white-silhouette morph (playMorph, below).
+// REVERT = the "POOF" (user ruling 2026-11-12, replaces the
 // horizontal squash): an anime transformation poof. A Guilty Gear smoke puff
 // (smoke_anim08, the same clip and size as Ninja Log's substitution) swallows
 // the token, the art swaps under the cloud, and the new body POPS out as the
@@ -21,6 +22,8 @@
 // Every frame is guarded: a throw drops the effect and restores the mesh (a
 // ticker throw would stop PIXI's whole frame loop).
 // ============================================================================
+
+import { signedField, maskFromRGBA, paintBlend } from "./polymorph-sdf.js";
 
 const NS = "fabula-ultima-companion";
 const CHANNEL = `module.${NS}`;
@@ -223,34 +226,213 @@ export async function playPoof(tokenId) {
   });
 }
 
-function playBatch(ids, preload = []) {
-  // Start fetching the art the token is about to switch to NOW, under the cloud:
-  // a cold Forge download made the cloud hang ~1 s waiting for the redraw.
+// ── TRANSFORM INTO: the white-silhouette MORPH (user ruling 2026-11-12) ─────
+// The bearer's sprite turns white; the white silhouette MORPHS into the form's
+// silhouette (signed-distance-field blend, polymorph-sdf.js); when the shape is
+// the form's, the white overlay fades off to reveal the creature. The smoke
+// poof stays for revert.
+//   0 → WHITE_IN_MS     a white copy of the old sprite fades in over it
+//   (wait)              the new art lands under it (GM writes at FX_SWAP_MS)
+//   MORPH_MS            white silhouette old → new (ease in-out), soft glow
+//   REVEAL_MS           the creature shows; its white copy fades to nothing
+export const MORPH_SFX = `${FORGE}/Sound/Magic4.ogg`;   // placeholder pick, user to confirm
+const WHITE_IN_MS = 320;
+const MORPH_MS = 950;
+const REVEAL_MS = 420;
+const FIELD_CELLS = 360;                                 // long side of the morph grid
+
+const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+/** The mesh's drawn rectangle in world px (handles a mirrored sprite). */
+function worldRect(mesh) {
+  const w = Math.abs(mesh.width), h = Math.abs(mesh.height), flip = (mesh.scale.x ?? 1) < 0;
+  const left = flip ? mesh.x - (1 - mesh.anchor.x) * w : mesh.x - mesh.anchor.x * w;
+  return { left, top: mesh.y - mesh.anchor.y * h, w, h, flip };
+}
+
+/** Rasterise a texture, drawn at world rect `r`, into the grid box → alpha mask. */
+function maskOf(texture, r, box, k, gw, gh) {
+  const c = document.createElement("canvas");
+  c.width = gw; c.height = gh;
+  const g = c.getContext("2d", { willReadFrequently: true });
+  const src = texture?.baseTexture?.resource?.source;
+  if (!src) return null;
+  const fr = texture.frame;
+  const dx = (r.left - box.left) * k, dy = (r.top - box.top) * k, dw = r.w * k, dh = r.h * k;
+  g.save();
+  if (r.flip) { g.translate(dx + dw, dy); g.scale(-1, 1); g.drawImage(src, fr.x, fr.y, fr.width, fr.height, 0, 0, dw, dh); }
+  else g.drawImage(src, fr.x, fr.y, fr.width, fr.height, dx, dy, dw, dh);
+  g.restore();
+  return maskFromRGBA(g.getImageData(0, 0, gw, gh).data, gw, gh);   // throws if the art is CORS-tainted
+}
+
+/** Play the transform-into morph on one token on this client. Resolves when finished. */
+export async function playMorph(tokenId) {
+  if (document.visibilityState === "hidden" || !canvas?.ready) return false;
+  const mesh0 = liveMesh(tokenId);
+  if (!mesh0?.texture?.valid || !canvas.primary) return false;
+  _running.get(tokenId)?.();
+
+  return new Promise((resolve) => {
+    const ticker = canvas.app.ticker;
+    const oldTex = mesh0.texture;
+    const rectA = worldRect(mesh0);
+    const t0 = performance.now();
+    const white = makeCopy(mesh0, 2, "oniPolymorphWhite");
+    white.filters = [whiteFilter()];
+    white.alpha = 0;
+    let hidden = null, phase = "white", phaseAt = 0, failed = false;
+    let morph = null, glow = null, field = null, reveal = null;
+
+    const finish = (ok = true) => {
+      ticker.remove(tick);
+      _running.delete(tokenId);
+      for (const s of [white, morph, glow, reveal]) { try { if (s && !s.destroyed) s.destroy({ texture: s === morph || s === glow }); } catch {} }
+      const m = liveMesh(tokenId);
+      if (m && !m.destroyed) m.renderable = true;
+      if (hidden && !hidden.destroyed) hidden.renderable = true;
+      resolve(ok && !failed);
+    };
+    const hide = (mesh) => {
+      if (mesh !== hidden) { if (hidden && !hidden.destroyed) hidden.renderable = true; hidden = mesh; }
+      mesh.renderable = false;
+    };
+
+    // Both silhouettes on one grid covering both rectangles, then their fields.
+    const buildField = (meshB) => {
+      const rectB = worldRect(meshB);
+      const pad = 0.06 * Math.max(rectA.w, rectA.h, rectB.w, rectB.h);
+      const box = {
+        left: Math.min(rectA.left, rectB.left) - pad, top: Math.min(rectA.top, rectB.top) - pad,
+      };
+      box.w = Math.max(rectA.left + rectA.w, rectB.left + rectB.w) + pad - box.left;
+      box.h = Math.max(rectA.top + rectA.h, rectB.top + rectB.h) + pad - box.top;
+      const k = FIELD_CELLS / Math.max(box.w, box.h);
+      const gw = Math.max(8, Math.round(box.w * k)), gh = Math.max(8, Math.round(box.h * k));
+      const mA = maskOf(oldTex, rectA, box, k, gw, gh);
+      const mB = maskOf(meshB.texture, rectB, box, k, gw, gh);
+      if (!mA || !mB) return null;
+      const cv = document.createElement("canvas");
+      cv.width = gw; cv.height = gh;
+      const ctx = cv.getContext("2d");
+      const img = ctx.createImageData(gw, gh);
+      return { box, k, gw, gh, A: signedField(mA, gw, gh), B: signedField(mB, gw, gh), cv, ctx, img };
+    };
+    const paint = (u) => {
+      paintBlend(field.A, field.B, u, field.img.data);
+      field.ctx.putImageData(field.img, 0, 0);
+      morph.texture.baseTexture.update();
+    };
+    const placeGrid = (s) => {
+      s.position.set(field.box.left, field.box.top);
+      s.scale.set(field.box.w / field.gw, field.box.h / field.gh);
+    };
+
+    const tick = () => {
+      try {
+        const mesh = liveMesh(tokenId);
+        if (!mesh) return finish(false);
+        const el = performance.now() - t0;
+        const swapped = mesh.texture?.valid && mesh.texture !== oldTex && mesh.texture.baseTexture !== oldTex.baseTexture;
+
+        if (phase === "white") {
+          // the old sprite turns white (the copy follows the live mesh: bounce, depth)
+          const u = Math.min(1, el / WHITE_IN_MS);
+          if (white.texture !== oldTex) white.texture = oldTex;
+          follow(white, mesh0.destroyed ? mesh : mesh0, 1, 1);
+          white.alpha = u;
+          if (u >= 1) hide(mesh);
+          if (u >= 1 && (swapped || el >= SWAP_WAIT_MS)) {
+            if (!swapped) { failed = true; return finish(false); }   // no new art: just show the token again
+            hide(mesh);
+            try { field = buildField(mesh); } catch (e) { console.warn(TAG, "morph field failed (art not readable?)", e); field = null; }
+            if (!field) { phase = "reveal"; phaseAt = el; reveal = white; reveal.texture = mesh.texture; return; }
+            const tex = PIXI.Texture.from(field.cv);
+            morph = addPrimary(tex, mesh, 2, "oniPolymorphMorph");
+            morph.anchor.set(0, 0);
+            glow = addPrimary(PIXI.Texture.from(field.cv), mesh, 1, "oniPolymorphGlow");
+            glow.anchor.set(0, 0);
+            glow.filters = [new PIXI.BlurFilter(10, 3)];
+            glow.alpha = 0.55;
+            placeGrid(morph); placeGrid(glow);
+            paint(0);
+            white.visible = false;
+            phase = "morph"; phaseAt = el;
+          }
+          return;
+        }
+
+        if (phase === "morph") {
+          hide(mesh);
+          const u = Math.min(1, (el - phaseAt) / MORPH_MS);
+          paint(easeInOut(u));
+          glow.texture.baseTexture.update();
+          if (u >= 1) {
+            phase = "reveal"; phaseAt = el;
+            reveal = makeCopy(mesh, 2, "oniPolymorphReveal");
+            reveal.filters = [whiteFilter()];
+            follow(reveal, mesh, 1, 1);
+            morph.visible = false;
+          }
+          return;
+        }
+
+        // reveal: the creature itself, its white copy fading off
+        const u = Math.min(1, (el - phaseAt) / REVEAL_MS);
+        mesh.renderable = true;
+        if (hidden === mesh) hidden = null;
+        if (reveal.texture !== mesh.texture) reveal.texture = mesh.texture;
+        follow(reveal, mesh, 1, 1);
+        reveal.alpha = 1 - u * u;
+        if (glow && !glow.destroyed) glow.alpha = 0.55 * (1 - u);
+        if (u >= 1) return finish(true);
+      } catch (e) {
+        console.warn(TAG, "morph frame failed; dropping the effect", e);
+        finish(false);
+      }
+    };
+    _running.set(tokenId, () => finish(false));
+    ticker.add(tick);
+  });
+}
+
+function playBatch(ids, preload = [], kind = "poof") {
+  // Start fetching the art the token is about to switch to NOW, under the cloud /
+  // white: a cold Forge download made the effect hang ~1 s waiting for the redraw.
   for (const src of new Set((preload ?? []).filter(Boolean))) loadTexture(src).catch(() => {});
   if (!ids?.length || document.visibilityState === "hidden") return;
+  if (kind === "morph") {
+    try { (foundry?.audio?.AudioHelper ?? globalThis.AudioHelper)?.play?.({ src: MORPH_SFX, volume: SFX_VOLUME, autoplay: true, loop: false }, false); } catch {}
+    for (const id of ids) playMorph(id);
+    return;
+  }
   playSfx();
   for (const id of ids) playPoof(id);
 }
 
-/** GM side: tell every client (and this one) to poof these tokens; `preload` = the art they switch to. */
-export function broadcastPoof(tokenDocs, preload = []) {
+function broadcastFx(tokenDocs, preload, kind) {
   const sceneId = canvas?.scene?.id ?? null;
   const ids = (tokenDocs ?? []).filter((t) => t?.parent?.id === sceneId).map((t) => t.id);
   if (!ids.length) return 0;
-  try { game.socket.emit(CHANNEL, { type: "polymorph.fx", sceneId, tokenIds: ids, preload }); } catch {}
-  playBatch(ids, preload);
+  try { game.socket.emit(CHANNEL, { type: "polymorph.fx", sceneId, tokenIds: ids, preload, kind }); } catch {}
+  playBatch(ids, preload, kind);
   return ids.length;
 }
+
+/** GM side: smoke-poof these tokens on every client (revert); `preload` = the art they switch to. */
+export const broadcastPoof = (tokenDocs, preload = []) => broadcastFx(tokenDocs, preload, "poof");
+/** GM side: white-silhouette morph on every client (transform into a form). */
+export const broadcastMorph = (tokenDocs, preload = []) => broadcastFx(tokenDocs, preload, "morph");
 
 Hooks.once("ready", () => {
   game.socket.on(CHANNEL, (msg) => {
     if (msg?.type !== "polymorph.fx" || msg.sceneId !== canvas?.scene?.id) return;
-    playBatch(msg.tokenIds ?? [], msg.preload ?? []);
+    playBatch(msg.tokenIds ?? [], msg.preload ?? [], msg.kind ?? "poof");
   });
   // warm the clip and the sound so the first poof is not late (27 KB + one wav)
   poofTexture().catch(() => {});
-  try { (foundry?.audio?.AudioHelper ?? globalThis.AudioHelper)?.preloadSound?.(POOF_SFX); } catch {}
+  try { for (const s of [POOF_SFX, MORPH_SFX]) (foundry?.audio?.AudioHelper ?? globalThis.AudioHelper)?.preloadSound?.(s); } catch {}
   globalThis.FUCompanion = globalThis.FUCompanion || {};
   globalThis.FUCompanion.api = globalThis.FUCompanion.api || {};
-  globalThis.FUCompanion.api.polymorphFx = { playPoof };
+  globalThis.FUCompanion.api.polymorphFx = { playPoof, playMorph };
 });
