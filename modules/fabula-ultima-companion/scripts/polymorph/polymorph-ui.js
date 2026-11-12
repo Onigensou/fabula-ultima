@@ -90,6 +90,10 @@ const Plate = {
   el: null,
   _unreg: null,
   refresh() {
+    // In a live battle the form shows in the battle UI's own language instead:
+    // a buff pip with its turns left (status-classifier + AELifetime), and
+    // Revert in the Objective menu. The plate would sit on the GM desk.
+    if (battleLive()) return this.hide();
     const lines = (api()?.listTransformed?.() ?? [])
       .filter((a) => !isNpc(a) && (a.hasPlayerOwner || game.user?.isGM))
       .map(formLine).filter(Boolean);
@@ -145,7 +149,7 @@ function bannerHtml(actor) {
 }
 
 Hooks.once("ready", () => {
-  for (const h of ["fuPolymorphTransformed", "fuPolymorphReverted", "canvasReady", "deleteCombat", "fu-director-stopped"]) Hooks.on(h, refreshSoon);
+  for (const h of ["fuPolymorphTransformed", "fuPolymorphReverted", "canvasReady", "deleteCombat", "fu-director-started", "fu-director-stopped"]) Hooks.on(h, refreshSoon);
   Hooks.on("updateActor", (a, ch) => { if (ch?.flags?.[NS] || ch?.system?.props?.current_hp !== undefined) refreshSoon(); });
   Hooks.on("renderActorSheet", (app, html) => {
     try {

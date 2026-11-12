@@ -122,6 +122,9 @@ export function classifyEffect(eff, statusConfig) {
   const tags = tagsOf(eff);
   if (eff.flags?.[NS]?.hidden || tags.includes("hidden")) return TIER.HIDDEN;
   if (tags.includes("resource") || tags.includes("points")) return TIER.RESOURCE;
+  // A Polymorph form shows as a buff pip with its turns left (battle HUD + GM
+  // desk). Display only: no "buff" tag, so buff counts / dispels never see it.
+  if (eff.flags?.[NS]?.polymorph === true) return TIER.BUFF;
   const slugs = slugsOf(eff, statusConfig);
   if ([...slugs].some((s) => POSE_STATE_SLUGS.has(s))) return TIER.HIDDEN;
   if (tags.includes("ready") || /\bready$/i.test(String(eff.name ?? "").trim())) return TIER.READY;

@@ -147,6 +147,16 @@
         ? out(true, "rest", `Until ${plural(restCharges + 1, "rest")} from now`, plural(restCharges + 1, "rest"))
         : out(true, "rest", "Until the next rest", "Rest");
     }
+    // Polymorph form: its own clock lives on the bearer's polymorph flag (once-
+    // per-round turn counter), not on the effect. In a running battle → "N turns
+    // left" (a turns pip on the battle HUD); otherwise "Until the scene ends".
+    if (f.polymorph === true) {
+      const left = Number(eff?.parent?.flags?.[FLAG_NS]?.polymorph?.counter?.turnsLeft);
+      let live = false;
+      try { live = !!globalThis.FUCompanion?.api?.experimental?.battleDirector?.isRunning?.(); } catch { live = false; }
+      if (live && Number.isFinite(left) && left > 0) return out(true, "turns", `${plural(left, "turn")} left in this form`, plural(left, "turn"));
+      return out(true, "scene", "Until the scene ends", "Scene");
+    }
     if (isRestBound(eff) || isDirectorPermanent(eff)) return out(false, "permanent", "Stays until removed", counter ?? "");
 
     const across = f.crossScene === true ? " (carries across scenes)" : "";
