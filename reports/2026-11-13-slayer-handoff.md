@@ -44,6 +44,27 @@ When the hit kills the target, neither one prompts any more. Before, the player 
 
 Trinio picked **Beast + Monster** for Bane Oils. Those two effects are on in the world data, and Oni's slot 1 is patched to match.
 
+## 5. Animations (v1.0.602 + follow-up, shared engine additions)
+
+This ports the approved mockup (https://claude.ai/artifact/H7kodjsPFBHdSeufy2CqNM). Oni watched it in a real battle on the Staging World and approved it.
+
+- **`battle-director/slayer-fx.js` (new):** procedural PIXI shots.
+  - Bane Oils: apply, or lob to an ally; the Slow / Weak / Lose-a-Resistance procs.
+  - Giant Killer: the hit flash and notches.
+  - Lockdown: bind and flare.
+  - Lingering cues driven by AE flags (`aeCue` `oilDrip` / `chainRing`). The chains break apart when the AE ends.
+  - Installed from `status-cues.js` (one import + one call).
+- **Shared: `play_animation` variants.** An `action_ref` can end in `#<variant>`, which the script reads as `payload.variant`, e.g. `Bane Oils#slow:beast`. Without `#` nothing changes.
+  - Touches `skill-effects.js` `applyPlayAnimationEffect`, `director-animation.js` `playSkillAnimation` / `executeAnimationScript`, and `playCarrierAnimation`, which gains optional `targetTokenUuids` / `variant` / `amount`.
+- **Shared: rider cosmetics.** `rider-cosmetic.js` is new, with one call in `state-handlers.js` `resolveAction` after each target's damage write.
+  - A `creature_will_deal_damage` rider folds into the card and never reaches a chain, so it couldn't animate before.
+  - It now plays when its carrier (item or AE) has `flags.fabula-ultima-companion.riderCosmetic = { variant }`. The shot is that skill's `animation_script`, with `payload.variant` and `payload.amount`.
+  - Display only: the call isn't awaited, and a failure never touches the hit.
+  - Giant Killer and Lockdown's cut use it. Any other rider can opt in.
+- **3D stage, same trap for any sprite-copy effect.** The mesh holds the flat 2D spot, and the 3D stage draws it displaced and rescaled. Everything is placed through `__ONI_BATTLE_STAGE_3D__.drawnMap` (`p → b + (p − f)·m`), including flash or desaturate copies of the battler sprite. Without that they show as a ghost beside the body.
+- **World data:** `animation_script` + chain `play_animation` rows + `riderCosmetic` flags on the world item, the Slayer class copy and Zarg's copy of all three skills. Written by `tools/safe-edit/bin/_build-slayer-animations.js`, which is idempotent.
+- **Assets:** all already on Forge (Soundboard, RPG Maker MV, Disgaea 4). Nothing new was uploaded.
+
 ## Not changed (rulings)
 
 - **Lockdown** stays as written: only **Attack** and **Spell** actions can be locked. "Active" moves are Skills and don't count.
