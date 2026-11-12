@@ -7,8 +7,9 @@
 //       ratio = form max ÷ own max
 //       m     = 1 + (ratio − 1) / 2, clamped to [1, 2]
 //     Form max = own max × m. The bar keeps its FILL: current is scaled by the
-//     same %, and on revert the % carries back (rounded up). Transforming can
-//     therefore never heal you and never hurt you.
+//     same %. On revert only what CHANGED in form carries back (scaled by
+//     own max ÷ form max; damage rounds in the player's favour, healing rounds
+//     down; full → full, 0 → 0). Transforming can never heal or hurt you.
 //   • Duration: until the GM activates a new map, or "your next 3 turns during
 //     a conflict". The drink turn does not count. The counter ticks AT MOST
 //     ONCE PER ROUND, at the end of the first turn the bearer takes that round,
@@ -52,11 +53,21 @@ export function scaleIntoForm(ownCur, ownMax, m) {
  * on the way in cannot drift. Rounded UP (player-friendly); 0 stays 0, a living
  * form never reverts to 0.
  */
-export function scaleOutOfForm(formCur, formMax, ownMax) {
+export function scaleOutOfForm(formCur, formMax, ownMax, anchor = null) {
   const fMax = num(formMax), oMax = Math.max(0, Math.round(num(ownMax)));
   const fCur = Math.max(0, num(formCur));
   if (fMax <= 0 || oMax <= 0) return clamp(Math.round(fCur), 0, oMax);
   if (fCur <= 0) return 0;
+  if (fCur >= fMax) return oMax;
+  // Anchored (normal case): carry back only what CHANGED in form, scaled by
+  // ownMax/formMax. Damage rounds toward the player (ceil of a negative),
+  // healing rounds down — so an untouched form returns the exact value you
+  // drank at, and repeated transform/revert can never farm HP.
+  if (anchor && Number.isFinite(Number(anchor.ownStart)) && Number.isFinite(Number(anchor.formStart))) {
+    const delta = (fCur - num(anchor.formStart)) * oMax / fMax;
+    const carried = delta < 0 ? Math.ceil(delta - 1e-9) : Math.floor(delta + 1e-9);
+    return clamp(num(anchor.ownStart) + carried, 1, oMax);
+  }
   return clamp(Math.ceil(fCur * oMax / fMax - 1e-9), 1, oMax);
 }
 

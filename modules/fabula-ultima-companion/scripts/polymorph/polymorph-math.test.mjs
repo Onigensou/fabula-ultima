@@ -36,6 +36,22 @@ eq("out: 1 HP in form never reverts to 0", scaleOutOfForm(1, 120, 60), 1);
 eq("in: m=1 is identity", scaleIntoForm(33, 60, 1), { cur: 33, max: 60 });
 eq("out: m=1 is identity", scaleOutOfForm(33, 60, 60), 33);
 
+// Anchored revert (what core uses): only the change made in form carries back.
+eq("anchored: untouched form returns exact start (63 → 84/113 → 63)",
+  scaleOutOfForm(84, 113, 85, { ownStart: 63, formStart: 84 }), 63);
+eq("anchored: 40 damage in form → 30 on the PC (ceil of −30.09)",
+  scaleOutOfForm(44, 113, 85, { ownStart: 63, formStart: 84 }), 33);
+eq("anchored: healed to full → full", scaleOutOfForm(113, 113, 85, { ownStart: 63, formStart: 84 }), 85);
+eq("anchored: small heal rounds down", scaleOutOfForm(86, 113, 85, { ownStart: 63, formStart: 84 }), 64);
+eq("anchored: KO → 0", scaleOutOfForm(0, 113, 85, { ownStart: 63, formStart: 84 }), 0);
+eq("anchored: alive never reverts to 0", scaleOutOfForm(1, 200, 10, { ownStart: 1, formStart: 20 }), 1);
+let farm = 0;
+for (let max = 1; max <= 120; max++) for (let cur = 1; cur <= max; cur++) for (const m of [1, 1.25, 1.5, 1.75, 2]) {
+  const f = scaleIntoForm(cur, max, m);
+  if (scaleOutOfForm(f.cur, f.max, max, { ownStart: cur, formStart: f.cur }) !== cur) farm++;
+}
+eq("anchored round-trip is exact for every pool/fill/m", farm, 0);
+
 // No free healing: round-trip with no damage never ends above where it started.
 let heals = 0;
 for (let max = 1; max <= 120; max++) for (let cur = 0; cur <= max; cur++) for (const m of [1, 1.25, 1.5, 1.75, 2]) {

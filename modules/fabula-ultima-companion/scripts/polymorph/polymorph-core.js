@@ -197,6 +197,11 @@ async function transformGM(actorRef, formRef, opts = {}) {
     m,
     own: { maxHp: own.maxHp, maxMp: own.maxMp },
     form: { maxHp: formMax.hp, maxMp: formMax.mp },
+    // Revert anchors: only what changes in form carries back (polymorph-math).
+    start: {
+      ownHp: own.curHp, ownMp: own.curMp,
+      formHp: Math.min(hp.cur, formMax.hp), formMp: Math.min(mp.cur, formMax.mp),
+    },
     counter: c ? newConflictCounter({ round: c.round, bearerActedOrActing: !!c.bearerActedOrActing }) : null,
   };
 
@@ -231,8 +236,9 @@ async function revertGM(actorRef, { reason = "voluntary", quiet = false } = {}) 
     const update = { [`flags.${NS}.-=${FLAG}`]: null };
     let hpBack = null, mpBack = null;
     if (state) {
-      hpBack = scaleOutOfForm(formCur.hp, state.form?.maxHp, state.own?.maxHp);
-      mpBack = scaleOutOfForm(formCur.mp, state.form?.maxMp, state.own?.maxMp);
+      const s = state.start ?? null;
+      hpBack = scaleOutOfForm(formCur.hp, state.form?.maxHp, state.own?.maxHp, s && { ownStart: s.ownHp, formStart: s.formHp });
+      mpBack = scaleOutOfForm(formCur.mp, state.form?.maxMp, state.own?.maxMp, s && { ownStart: s.ownMp, formStart: s.formMp });
       update["system.props.current_hp"] = hpBack;
       update["system.props.current_mp"] = mpBack;
     }
@@ -261,7 +267,7 @@ async function noteTurnEndedGM(actorRef, { round } = {}) {
   if (!state) return { ok: true, reason: "not-transformed" };
   const base = state.counter ?? counterOnConflictStart({ round });
   const { counter, ticked, expired } = tickOnTurnEnd(base, round);
-  if (expired) return { ...(await revertGM(actor, { reason: "turns" })), ticked, expired };
+  if (expired) return { ...(await revertGM(actor, { reason: "turns" })), ticked, expired, turnsLeft: 0 };
   if (ticked || !state.counter) await actor.update({ [`flags.${NS}.${FLAG}.counter`]: counter });
   return { ok: true, ticked, expired, turnsLeft: counter.turnsLeft };
 }
