@@ -300,7 +300,8 @@ async function writeTokenArt(updates) {
     byScene.get(sc).push({ _id: u.token.id, "texture.src": u.src, "texture.scaleX": u.scaleX, "texture.scaleY": u.scaleY });
   }
   for (const [sc, rows] of byScene) {
-    try { await sc.updateEmbeddedDocuments("Token", rows); }
+    // animate:false: no core 1 s texture crossfade (it fought the poof: the cloud hung waiting for it)
+    try { await sc.updateEmbeddedDocuments("Token", rows, { animate: false }); }
     catch (e) { warn(`token art write failed on ${sc.name}`, e); }
   }
 }
