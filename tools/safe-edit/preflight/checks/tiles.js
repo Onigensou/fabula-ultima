@@ -67,7 +67,9 @@ function run(world) {
       if (!USABLE_TYPES.has(type)) continue;
       const dp = tile.flags?.[MODULE_ID]?.[PATHING_ROOT_KEY] ?? {};
       const on = (v) => v === true || v === "true";
-      const hidden = HIDDEN_OK.has(type) && /blank/i.test(String(tile.texture?.src ?? ""));
+      // Hidden = authored on the Blank texture. Judge by the ORIGINAL texture:
+      // a spent tile's art is blank whether or not it was a surprise.
+      const hidden = HIDDEN_OK.has(type) && /blank/i.test(String(st?.initialTexture || tile.texture?.src || ""));
       if (!hidden && !on(dp.usable)) {
         out.push(finding(ID, SEVERITY.WARN,
           `Scene "${scene.name}": ${type} tile ${tile._id} is not Usable — no Use button, and Confirm sets it off`,
