@@ -972,7 +972,7 @@
       },
       "folder": "ft3358qUh5ZDldYQ",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Potion/Grade_2_Tincture_of_Dexterity_from_Final_Fantasy_XIV_icon%20(1).webp",
-      "name": "Polymorph Potion: Centauros",
+      "name": "Polymorph Potion: Centuaros",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
         "default": 3
@@ -992,7 +992,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li><p>Transform into the <strong>Centauros </strong>until the end of the scene</p></li></ul>",
+          "description": "<ul><li><p>Transform into the <strong>Centuaros </strong>until the end of the scene</p></li></ul>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
@@ -1023,7 +1023,7 @@
           "item_type": "consumable",
           "mimic_ef": "100",
           "monster_ef": "100",
-          "name": "Polymorph Potion: Centauros",
+          "name": "Polymorph Potion: Centuaros",
           "optional_params": {},
           "plant_ef": "100",
           "refine_count": "0",
@@ -6242,10 +6242,10 @@
         "9osWqShXiM6c2Sin": {
           "consumable_buy": "",
           "consumable_cost": 250,
-          "consumable_descriptions": "<ul><li><p>Transform into the <strong>Centauros </strong>until the end of the scene</p></li></ul>",
+          "consumable_descriptions": "<ul><li><p>Transform into the <strong>Centuaros </strong>until the end of the scene</p></li></ul>",
           "consumable_quantity": 1,
           "id": "${item.id}",
-          "name": "Polymorph Potion: Centauros",
+          "name": "Polymorph Potion: Centuaros",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.9osWqShXiM6c2Sin"
         },
         "Amcbpmv2ehsSOozh": {
@@ -7031,8 +7031,8 @@
         },
         "9osWqShXiM6c2Sin": {
           "id": "${item.id}",
-          "loot_description": "<ul><li><p>Transform into the <strong>Centauros </strong>until the end of the scene</p></li></ul>",
-          "name": "Polymorph Potion: Centauros",
+          "loot_description": "<ul><li><p>Transform into the <strong>Centuaros </strong>until the end of the scene</p></li></ul>",
+          "name": "Polymorph Potion: Centuaros",
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.9osWqShXiM6c2Sin"
         },

@@ -1587,6 +1587,12 @@
         "parent": "yIXRZeBsb9OQyi02"
       },
       {
+        "id": "PolymorphForms01",
+        "name": "Polymorph Forms",
+        "type": "Actor",
+        "parent": "Nd8LnosrPid1eX1r"
+      },
+      {
         "id": "2AeMdFaayOxsueAv",
         "name": "Polymorph Potion",
         "type": "Item",
@@ -10098,7 +10104,7 @@
       },
       {
         "id": "wWrePzzYfpE3bEVV",
-        "name": "Polymorph Potion: Centauros",
+        "name": "Polymorph Potion: Centuaros",
         "type": "equippableItem",
         "effects": 0
       },
@@ -16438,7 +16444,7 @@
           },
           {
             "id": "bnDWRuQ4F9ZunDNN",
-            "name": "Polymorph Potion: Centauros"
+            "name": "Polymorph Potion: Centuaros"
           },
           {
             "id": "qvRwGsufgGWVLUuI",
@@ -16983,6 +16989,34 @@
           {
             "id": "6gQmCi9bkRJh1clN",
             "name": "Twin Shield"
+          }
+        ],
+        "effects": 0
+      },
+      {
+        "id": "ZJehqVHDbsh8ngNC",
+        "name": "Crazy Merman",
+        "type": "character",
+        "items": [
+          {
+            "id": "gBu5XZAvK2iwbIhV",
+            "name": "Bash"
+          },
+          {
+            "id": "j6nBTVh1n4xdpxML",
+            "name": "Craziness"
+          },
+          {
+            "id": "GnQbQZwL4e2cbduZ",
+            "name": "Guard Breaker"
+          },
+          {
+            "id": "o8TSW61J3Hk7ZKbw",
+            "name": "Rage"
+          },
+          {
+            "id": "hfXrt4lKTNBiP3r8",
+            "name": "Tuna Slap"
           }
         ],
         "effects": 0
@@ -19787,7 +19821,7 @@
           },
           {
             "id": "9osWqShXiM6c2Sin",
-            "name": "Polymorph Potion: Centauros"
+            "name": "Polymorph Potion: Centuaros"
           },
           {
             "id": "83MCg7ideKxStmop",
@@ -20524,6 +20558,42 @@
         "effects": 0
       },
       {
+        "id": "az20eSM6K9FJTpsN",
+        "name": "Hunger",
+        "type": "character",
+        "items": [
+          {
+            "id": "xi8cj2zCq2E6XAa0",
+            "name": "Bane"
+          },
+          {
+            "id": "XUkLPKJqfDwHEBiX",
+            "name": "Chomp"
+          },
+          {
+            "id": "lzLLpLV6cC20nMQ4",
+            "name": "Ethereal"
+          },
+          {
+            "id": "SdoZ3pFU1B0C1LoC",
+            "name": "Insatiable"
+          },
+          {
+            "id": "MpPE3igCrHa4mCKh",
+            "name": "Starvation"
+          },
+          {
+            "id": "nrvTbDucWQq3Li3E",
+            "name": "Thirst"
+          },
+          {
+            "id": "eIwdK4nO8vfttyZs",
+            "name": "Undead"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "kJZlpeknuISvPB9w",
         "name": "Hunter",
         "type": "character",
@@ -20627,6 +20697,26 @@
           {
             "id": "c7VIxNOsQhUREUHe",
             "name": "Wild Reflexes"
+          }
+        ],
+        "effects": 0
+      },
+      {
+        "id": "706pcXzVf41lQNI2",
+        "name": "Ice Ring",
+        "type": "character",
+        "items": [
+          {
+            "id": "EoJQS2IrAOqNieL3",
+            "name": "Danger Sensitivity"
+          },
+          {
+            "id": "P3BfwaAOtPli0Xpr",
+            "name": "Glacies Finis"
+          },
+          {
+            "id": "95GjvRCmTmi9Tdh8",
+            "name": "Magna Glacies Alta"
           }
         ],
         "effects": 0
@@ -21769,6 +21859,34 @@
           {
             "id": "XW3aitvnVbzJ0EIY",
             "name": "Test Spell"
+          }
+        ],
+        "effects": 0
+      },
+      {
+        "id": "1Ua5E4XOPy3oS7nA",
+        "name": "Lava Golem",
+        "type": "character",
+        "items": [
+          {
+            "id": "PXeusfx7qkT1aM6R",
+            "name": "Lava Hug"
+          },
+          {
+            "id": "ErPNReZ3DHn06V4m",
+            "name": "Lava Slam"
+          },
+          {
+            "id": "orTNnkfw2nylQahx",
+            "name": "Melting Body"
+          },
+          {
+            "id": "pmI0JQ2GhaOfC8w9",
+            "name": "Melting Embrace"
+          },
+          {
+            "id": "rsCswNNcAqhiQ9Mt",
+            "name": "Solidifying Death"
           }
         ],
         "effects": 0
@@ -24061,6 +24179,30 @@
         "effects": 0
       },
       {
+        "id": "4iuVZBcU2zuBxGTQ",
+        "name": "Scaldra",
+        "type": "character",
+        "items": [
+          {
+            "id": "6jECFEkPEXVt1cxV",
+            "name": "Bloodlust"
+          },
+          {
+            "id": "FVgKOydTJNOmBnKq",
+            "name": "IT'S A SHARK!!!"
+          },
+          {
+            "id": "chRpDT7tvj0Tv6Kc",
+            "name": "Lava Waver"
+          },
+          {
+            "id": "UINbFAjA3RG1rY0z",
+            "name": "Swift Chomp"
+          }
+        ],
+        "effects": 0
+      },
+      {
         "id": "smzY4fRlH1BcoGRR",
         "name": "Sergei?",
         "type": "character",
@@ -25768,6 +25910,50 @@
         "name": "Wagon Driver",
         "type": "character",
         "items": [],
+        "effects": 0
+      },
+      {
+        "id": "C0SAjRdzVnQldsVn",
+        "name": "Walrog",
+        "type": "character",
+        "items": [
+          {
+            "id": "tHb3FPfUdXQPpcjE",
+            "name": "Drill Shot"
+          },
+          {
+            "id": "Vjw5bMeEzH9jfsyj",
+            "name": "Drill Spin"
+          },
+          {
+            "id": "TTCpho4uIwlMpG8p",
+            "name": "Drill Stab"
+          },
+          {
+            "id": "MOR6wAiBiIadZEua",
+            "name": "food, Food, FOOD"
+          },
+          {
+            "id": "wJZC1nFcjEQMXFq7",
+            "name": "Gale Spin"
+          },
+          {
+            "id": "LNaivOOfn3nisQ9u",
+            "name": "Head Butt"
+          },
+          {
+            "id": "u4eVp1Oe7Q5vxFwA",
+            "name": "Hunger"
+          },
+          {
+            "id": "zeLgWjHipdbLc8Eg",
+            "name": "Ice Spin"
+          },
+          {
+            "id": "UzvUjfguKJBJJAde",
+            "name": "Rock Spin"
+          }
+        ],
         "effects": 0
       },
       {
