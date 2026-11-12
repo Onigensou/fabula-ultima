@@ -9189,8 +9189,13 @@ export async function postActionCard({ director, kind, payload }) {
           // rewrite the slots, will_deal_damage subjects re-resolve vs the mutated
           // set, then ALL per-target rows re-derive through buildPerTarget with the
           // accepted reactions folded in (accuracy override re-applied). Shared with
-          // the CONFIRM recompute so the preview + commit CANNOT drift. `_cb` keeps
-          // its internal imports on this file's cross-module cache-bust pattern.
+          // the CONFIRM recompute so the preview + commit CANNOT drift. No `_cb`
+          // here: it is a test-only token, and `_cb: Date.now()` made
+          // card-mutations import skill-effects.js + action-profile.js under a NEW
+          // URL on every recompute — a new module copy each time, never freed
+          // (~99 of each per boss fight, the ~120 MB/fight GM leak; see
+          // reports/2026-11-12-reaction-recompute-module-copies.md). Omitting it
+          // uses the same boot-cached modules as the CONFIRM path.
           // When the pick is routed to a player (remotePrompt), the picker is
           // on THEIR screen — keep the GM card visible. Hide only for local picks.
           // Card visibility is driven by the picker-overlay hooks
@@ -9202,7 +9207,6 @@ export async function postActionCard({ director, kind, payload }) {
             accepted,
             attackerActor: payload.attackerActor,
             round: director?.dCombat?.round ?? 0,
-            _cb: Date.now(),
             remotePrompt,
           });
           if (mutationResult?.cancelled) {
