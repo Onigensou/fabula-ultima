@@ -10793,6 +10793,12 @@
         "effects": 0
       },
       {
+        "id": "FiAWsGVksq83pduw",
+        "name": "Revert",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "RmpXclOKyB3JyeNO",
         "name": "Revolver",
         "type": "equippableItem",
@@ -26479,6 +26485,10 @@
             "name": "Bandit Gloves (gear skill)"
           },
           {
+            "id": "7M8gnAI2ITODlmfi",
+            "name": "Bane Oils"
+          },
+          {
             "id": "mv4dNcGM84BH46mZ",
             "name": "Barrage"
           },
@@ -26555,12 +26565,20 @@
             "name": "Follow my lead"
           },
           {
+            "id": "8Ic27O1AXzjMC1Vc",
+            "name": "Forget me Nut"
+          },
+          {
             "id": "wZMRHOYm2Qnwy3HB",
             "name": "Frenetic Footwork"
           },
           {
             "id": "H663NG14lmAbBtzp",
             "name": "Gadgets"
+          },
+          {
+            "id": "vvoZh0LfIu51mdgp",
+            "name": "Giant Killer"
           },
           {
             "id": "mAQopLhkj1OlePlj",
@@ -26617,6 +26635,10 @@
           {
             "id": "RJUqK88OOv4WUmKH",
             "name": "Lion Dance"
+          },
+          {
+            "id": "3yhTiccdnMjRtRfT",
+            "name": "Lockdown"
           },
           {
             "id": "A3VqPJRBDW8c1NnH",
@@ -26707,14 +26729,6 @@
             "name": "See you later"
           },
           {
-            "id": "BIhtvvOe8tu627BB",
-            "name": "Set Trap"
-          },
-          {
-            "id": "Qbwt0J1raYuj2Jh8",
-            "name": "Siren Trap"
-          },
-          {
             "id": "quQU5EZb9TSIxJYp",
             "name": "Skull Orb"
           },
@@ -26747,10 +26761,6 @@
             "name": "Tincture of Strength"
           },
           {
-            "id": "zu0GeHNBzF1M0xQr",
-            "name": "Tripwire Trap"
-          },
-          {
             "id": "2BZz3nOhR6wvv6Th",
             "name": "Turbo Tonic"
           },
@@ -26775,10 +26785,6 @@
             "name": "Vampire Cloak (Passive)"
           },
           {
-            "id": "Rcw6CZAu9TNFEtxG",
-            "name": "Vital Strike"
-          },
-          {
             "id": "kTZD5WHGBnT9JJi1",
             "name": "Warning Shot"
           },
@@ -26789,10 +26795,6 @@
           {
             "id": "Zetumwu6pSXvHeHT",
             "name": "Warrior Emblem (Passive)"
-          },
-          {
-            "id": "XLpwRBfaOqNgs0qT",
-            "name": "Wild Reflexes"
           },
           {
             "id": "NwH4UInAFxCn958U",

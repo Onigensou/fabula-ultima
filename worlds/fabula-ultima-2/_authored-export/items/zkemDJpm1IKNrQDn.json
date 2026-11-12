@@ -36,7 +36,7 @@
       "damage_bonus": "0",
       "demiHuman_ef": "100",
       "demon_ef": "100",
-      "description": "<ul><li><p>Transform into the <strong>Bandit </strong>until the end of the scene</p></li></ul>",
+      "description": "<ul><li><p>Transform into the <strong>Bandit</strong>. Lasts until the end of the scene or your next 3 turns during a conflict.</p></li></ul>",
       "dragon_ef": "100",
       "elemental_ef": "100",
       "enforcer_ef": "100",

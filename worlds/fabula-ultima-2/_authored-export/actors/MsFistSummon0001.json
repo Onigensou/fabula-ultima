@@ -35,6 +35,7 @@
         }
       },
       "folder": null,
+      "img": "icons/svg/item-bag.svg",
       "name": "Detonate",
       "ownership": {
         "default": 0
@@ -138,10 +139,26 @@
       "effects": [
         {
           "_id": "MsAeFuse00000001",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>Counting down.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -149,15 +166,19 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Fuse",
           "origin": "Actor.MsFistSummon0001.Item.MsFistFuseClock1",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "deva_fuse"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         }
       ],
       "flags": {
@@ -280,6 +301,7 @@
         }
       },
       "folder": null,
+      "img": "icons/svg/item-bag.svg",
       "name": "Hover",
       "ownership": {
         "default": 0
@@ -344,7 +366,6 @@
     "default": 0
   },
   "prototypeToken": {
-    "actorId": "MsFistSummon0001",
     "actorLink": false,
     "alpha": 1,
     "appendNumber": false,

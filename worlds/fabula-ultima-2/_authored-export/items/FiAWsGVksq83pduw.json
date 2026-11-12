@@ -1,0 +1,58 @@
+{
+  "_id": "FiAWsGVksq83pduw",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1794495723055,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "coreAction": "objective:revert_form",
+      "objectiveScope": "none"
+    }
+  },
+  "folder": null,
+  "img": "icons/svg/regen.svg",
+  "name": "Revert",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "cost": "",
+      "description": "<p>Shed your Polymorph form and return to your own body. <strong>Free</strong> — you still take your action this turn.</p><p>Your HP and MP carry back in proportion to what happened while transformed.</p>",
+      "details_roller": "Show",
+      "effect_table": {
+        "0": {
+          "effect_kind": "polymorph_revert",
+          "effect_label": "revert_form_root",
+          "target_ref": "self"
+        }
+      },
+      "id": "FiAWsGVksq83pduw",
+      "img": "icons/svg/regen.svg",
+      "isCheck": false,
+      "isReaction": false,
+      "max_level": "1",
+      "name": "Revert",
+      "on_activate_effect_ref": "revert_form_root",
+      "skill_free_action": true,
+      "skill_target": "Self",
+      "skill_type": "Active",
+      "uuid": "Item.FiAWsGVksq83pduw"
+    },
+    "template": "j0F5Msw5RZ8aIB3j",
+    "templateSystemUniqueVersion": 2125250754,
+    "unique": true,
+    "uniqueId": "FiAWsGVksq83pduw"
+  },
+  "type": "equippableItem"
+}

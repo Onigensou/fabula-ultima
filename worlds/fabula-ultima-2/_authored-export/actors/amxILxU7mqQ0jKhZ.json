@@ -32,10 +32,26 @@
       "effects": [
         {
           "_id": "DvAeEnlReady0001",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -44,22 +60,42 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Enlightenment Ready",
           "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "deva_offense"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "DvAeFistReady001",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -68,22 +104,42 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Fist Ready",
           "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "deva_guard"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "DvAeGuardRound01",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -92,22 +148,42 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Guard Round",
           "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "deva_guard"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "DvAeLastStrike01",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -116,22 +192,42 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Last Form Strike",
           "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "deva_memory"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "DvAeMagicForm001",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>Focus: her arms burn blue.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -140,22 +236,42 @@
               "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Deva/Deva_Focus_Battle_Idle.webm"
             }
           },
+          "img": null,
           "name": "Magic Form",
           "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "deva_offense"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "DvAeMagicOpen001",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -164,22 +280,42 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Magic Opener",
           "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "deva_offense"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "DvAeMagicStack01",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>Attacks aimed at her Magic Defense.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -187,18 +323,30 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Magic Stack",
           "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "deva_stack"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "DvAeMayaStance01",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [
             {
               "key": "magic_defense",
@@ -209,7 +357,15 @@
           ],
           "description": "<p>A violet rim of light. Her Magic Defense is higher.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -217,22 +373,42 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Maya Stance",
           "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "deva_guard"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "DvAeStrikeForm01",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>Fury: her arms burn red.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -241,22 +417,42 @@
               "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Deva/Deva_Fury_Battle_Idle.webm"
             }
           },
+          "img": null,
           "name": "Strike Form",
           "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "deva_offense"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "DvAeStrikeOpen01",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -265,22 +461,42 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Strike Opener",
           "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "deva_offense"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "DvAeStrikeStack1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>Attacks aimed at her Defense.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -288,18 +504,30 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Strike Stack",
           "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "deva_stack"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "DvAeVajraStance1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [
             {
               "key": "defense",
@@ -310,7 +538,15 @@
           ],
           "description": "<p>A gold rim of light. Her Defense is higher.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -318,15 +554,19 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Vajra Stance",
           "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvDisciplineP001",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "deva_guard"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         }
       ],
       "flags": {
@@ -745,10 +985,26 @@
       "effects": [
         {
           "_id": "DvAeEnMagicFrm01",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>Focus: her arms burn blue.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -757,22 +1013,42 @@
               "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Deva/Deva_Focus_Battle_Idle.webm"
             }
           },
+          "img": null,
           "name": "Magic Form",
           "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvEnlighten00001",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "deva_offense"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "DvAeEnMagicOpn01",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -781,22 +1057,42 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Magic Opener",
           "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvEnlighten00001",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "deva_offense"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "DvAeEnStrikeFrm1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>Fury: her arms burn red.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -805,22 +1101,42 @@
               "poseArt": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Deva/Deva_Fury_Battle_Idle.webm"
             }
           },
+          "img": null,
           "name": "Strike Form",
           "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvEnlighten00001",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "deva_offense"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "DvAeEnStrikeOpn1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -829,22 +1145,42 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Strike Opener",
           "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvEnlighten00001",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "deva_offense"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "DvAeSwapToMagic1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -853,22 +1189,42 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Swap To Magic",
           "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvEnlighten00001",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "deva_swap"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "DvAeSwapToStrik1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -877,15 +1233,19 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Swap To Strike",
           "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvEnlighten00001",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "deva_swap"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         }
       ],
       "flags": {
@@ -1251,10 +1611,26 @@
       "effects": [
         {
           "_id": "DvAeStrikeFists1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -1263,15 +1639,19 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Strike Fists",
           "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvGroundSlam0001",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "deva_offense"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         }
       ],
       "flags": {
@@ -1532,6 +1912,7 @@
         }
       },
       "folder": null,
+      "img": "icons/svg/item-bag.svg",
       "name": "Missile Fist",
       "ownership": {
         "default": 0
@@ -1704,10 +2085,26 @@
       "effects": [
         {
           "_id": "DvAeMagicFists01",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "charges": 1,
@@ -1716,15 +2113,19 @@
               "lifetimeMode": "persistent_counter"
             }
           },
+          "img": null,
           "name": "Magic Fists",
           "origin": "Actor.amxILxU7mqQ0jKhZ.Item.DvRahuEclipse001",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "deva_offense"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         }
       ],
       "flags": {

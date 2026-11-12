@@ -135,187 +135,331 @@
       "effects": [
         {
           "_id": "9HsMvgUHfyDzrZxr",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>Walrog's attacks deal Poison damage until the end of the battle.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "crossScene": false
             }
           },
-          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
           "name": "Imbued Poison",
           "origin": "Actor.C0SAjRdzVnQldsVn.Item.MOR6wAiBiIadZEua",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "walrog_imbue"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "ag2HSGal5oKlNi8G",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>Walrog's attacks deal Ice damage until the end of the battle.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "crossScene": false
             }
           },
-          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
           "name": "Imbued Ice",
           "origin": "Actor.C0SAjRdzVnQldsVn.Item.MOR6wAiBiIadZEua",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "walrog_imbue"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "GR7ahYPYNwizPsZP",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>Walrog's attacks deal Air damage until the end of the battle.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "crossScene": false
             }
           },
-          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
           "name": "Imbued Air",
           "origin": "Actor.C0SAjRdzVnQldsVn.Item.MOR6wAiBiIadZEua",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "walrog_imbue"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "JvPFbjTudacJ1xDJ",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>Walrog's attacks deal Dark damage until the end of the battle.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "crossScene": false
             }
           },
-          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
           "name": "Imbued Dark",
           "origin": "Actor.C0SAjRdzVnQldsVn.Item.MOR6wAiBiIadZEua",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "walrog_imbue"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "pNjB83jeSYpMJ4Sw",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>Walrog's attacks deal Light damage until the end of the battle.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "crossScene": false
             }
           },
-          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
           "name": "Imbued Light",
           "origin": "Actor.C0SAjRdzVnQldsVn.Item.MOR6wAiBiIadZEua",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "walrog_imbue"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "qr7sSLaIPqNxzfPT",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>Walrog's attacks deal Earth damage until the end of the battle.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "crossScene": false
             }
           },
-          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
           "name": "Imbued Earth",
           "origin": "Actor.C0SAjRdzVnQldsVn.Item.MOR6wAiBiIadZEua",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "walrog_imbue"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "tlvPxmE6gDELaOcF",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>Walrog's attacks deal Bolt damage until the end of the battle.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "crossScene": false
             }
           },
-          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
           "name": "Imbued Bolt",
           "origin": "Actor.C0SAjRdzVnQldsVn.Item.MOR6wAiBiIadZEua",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "walrog_imbue"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         },
         {
           "_id": "zQO0zLuji9j9gpR5",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
           "changes": [],
           "description": "<p>Walrog's attacks deal Fire damage until the end of the battle.</p>",
           "disabled": false,
-          "duration": {},
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
           "flags": {
             "fabula-ultima-companion": {
               "crossScene": false
             }
           },
-          "icon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
           "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Tree%20of%20Savior/Archer/icon_arch_burrow.png",
           "name": "Imbued Fire",
           "origin": "Actor.C0SAjRdzVnQldsVn.Item.MOR6wAiBiIadZEua",
+          "sort": 0,
           "statuses": [],
           "system": {
             "tags": [
               "walrog_imbue"
             ]
           },
-          "transfer": false
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
         }
       ],
       "flags": {
@@ -1315,7 +1459,6 @@
     "default": 0
   },
   "prototypeToken": {
-    "actorId": "C0SAjRdzVnQldsVn",
     "actorLink": false,
     "alpha": 1,
     "appendNumber": false,

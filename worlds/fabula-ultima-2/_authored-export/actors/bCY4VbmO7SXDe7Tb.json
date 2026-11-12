@@ -660,7 +660,7 @@
           "item_cost": "50",
           "item_def_bonus": "0",
           "item_mdef_bonus": "0",
-          "item_quantity": "99",
+          "item_quantity": 89,
           "item_rarity": "Common",
           "item_type": "consumable",
           "mimic_ef": "100",
@@ -2452,6 +2452,7 @@
       "uuid": "Actor.bCY4VbmO7SXDe7Tb",
       "wlp_base": "8",
       "wlp_current": 8,
+      "zenit": 500,
       "zenit_reward_max": "100",
       "zenit_reward_min": "50",
       "zero_power_value": ""
