@@ -21,6 +21,7 @@
 import { registerHandler, request, installNet, isActingGM } from "../advancement/advancement-net.js";
 import { canUseCommand } from "./party-menu-access.js";
 import { gatherHealingActions } from "../healing-system/healing-actions.js";
+import { isPolymorphPotion, findFormActor } from "../polymorph/polymorph-potions.js";
 import {
   getPartyRoster, actorFromRef, ACTIVE_SLOTS, BENCH_SLOTS, AWAY_SLOTS, MODULE_ID, conflictLive,
 } from "./party-menu-core.js";
@@ -287,8 +288,10 @@ registerHandler(MSG.MOVE_REQ, MSG.MOVE_RES, performMove);
 //
 // Outside a conflict the game has ONE consume-and-apply path for items: the
 // out-of-combat Healing HUD (HP/MP/IP restoratives and cleansers, GM-relayed).
-// "Use" hands the item to it; anything else (a Polymorph Potion, an Elemental
-// Shard) is a battle action and says so. No second item engine is built here.
+// "Use" hands the item to it. The one exception is a Polymorph Potion — its
+// whole point is the roleplay moment out of battle — which opens a "who drinks
+// it?" picker and goes through FUCompanion.api.polymorph.usePotion (GM-relayed).
+// Anything else (an Elemental Shard) is a battle action and says so.
 
 /** Why `user` can't start using `item` from this bag, or "". Cheap; no item lookup. */
 export function useRefusal({ user = game.user, item, roster }) {
@@ -314,12 +317,51 @@ export async function useItem(item) {
   const refusal = useRefusal({ item, roster });
   if (refusal) return { ok: false, reason: refusal };
   const owner = item.parent;
+  if (isPolymorphPotion(item)) {
+    if (!findFormActor(item)) return { ok: false, reason: "polymorph-form-missing" };
+    return { ok: true, open: () => openPotionPicker(item, roster) };
+  }
   const actions = await gatherHealingActions(owner);
   const usable = Object.values(actions).flat().some((d) => d.consumableUuid === item.uuid);
   if (!usable) return { ok: false, reason: "battle-only" };
   const api = globalThis.FUCompanion?.api?.healing;
   if (!api?.open) return { ok: false, reason: "no-healing-hud" };
   return { ok: true, open: () => api.open({ casterActorId: owner.id, focusItemUuid: item.uuid }) };
+}
+
+/**
+ * "Who drinks it?" — the active party (the holder first). A KO'd member is
+ * shown greyed. The pick goes to the GM, which transforms and uses up one potion;
+ * a refusal (KO'd, a Guest) leaves the potion in the bag.
+ */
+async function openPotionPicker(item, roster) {
+  const holder = item.parent;
+  const form = findFormActor(item);
+  const party = [...(roster?.active ?? [])].sort((a, b) => (b.id === holder?.id) - (a.id === holder?.id));
+  const hpOf = (a) => Number(a?.system?.props?.current_hp ?? 0);
+  // Lazy: the Battle Director's picker UI only loads when a potion is used.
+  const { pickFromList } = await import("../battle-director/list-picker.js");
+  const pick = await pickFromList({
+    title: item.name,
+    subtitle: `Who becomes the ${form?.name ?? "creature"}?`,
+    options: party.map((a) => ({
+      value: a.id,
+      primary: a.id === holder?.id ? `${a.name} (drink it)` : a.name,
+      secondary: hpOf(a) <= 0 ? "Knocked out" : (globalThis.FUCompanion?.api?.polymorph?.getForm?.(a)?.formName
+        ? `Already a ${globalThis.FUCompanion.api.polymorph.getForm(a).formName} — this replaces it` : ""),
+      imageUrl: a.img,
+      disabled: hpOf(a) <= 0,
+    })),
+    zIndex: 120,
+  });
+  if (!pick) return null;
+  const target = party.find((a) => a.id === pick) ?? null;
+  const api = globalThis.FUCompanion?.api?.polymorph;
+  if (!api?.usePotion || !target) return null;
+  const res = await api.usePotion({ item, target, consume: true });
+  if (res?.ok) ui.notifications?.info(`${target.name} becomes the ${res.form?.formName ?? form?.name}!`);
+  else ui.notifications?.warn(`${item.name}: no effect (${res?.reason ?? "refused"}). It was not used up.`);
+  return res;
 }
 
 // ── equipment ─────────────────────────────────────────────────────────────────

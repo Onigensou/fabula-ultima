@@ -41,6 +41,7 @@ import {
 } from "./polymorph-math.js";
 import { broadcastSquash, SQUASH_OUT_MS } from "./polymorph-fx.js";
 import { formNameForItem, isPolymorphPotion, findFormActor } from "./polymorph-potions.js";
+import "./polymorph-ui.js";   // Form Plate (HUD) + sheet banner — side-effect module
 
 // Sheet art the sprite systems read OFF THE ACTOR (battler-pose-rules POSES →
 // sprite_<pose>; sprite-facing-runtime DIR_FIELDS walk/stand; camp poses). The

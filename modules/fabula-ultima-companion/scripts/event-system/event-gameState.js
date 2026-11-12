@@ -142,8 +142,27 @@
       itemCount: (name) => bagCount(name),
       offering: () => getMemory(sceneId, sourceId).offering,
       zenit: (source) => zenitOf(source, controller),
-      member: (name) => isMember(name)
+      member: (name) => isMember(name),
+      formTag: (tag, who) => partyFormTag(tag, who)
     };
+  }
+
+  // Polymorph: is any / every active party member in a form carrying `tag`?
+  // Blank tag = any form at all. Read through FUCompanion.api.polymorph.
+  function partyFormTag(tag, who = "any") {
+    const poly = globalThis.FUCompanion?.api?.polymorph;
+    if (!poly) return false;
+    const props = partyActor()?.system?.props ?? {};
+    const members = [];
+    for (let i = 1; i <= 4; i += 1) {
+      const id = String(props[`member_id_${i}`] ?? "").replace(/^Actor\./, "").trim();
+      const a = id ? game.actors?.get(id) : null;
+      if (a) members.push(a);
+    }
+    if (!members.length) return false;
+    const t = String(tag ?? "").trim().toLowerCase();
+    const has = (a) => (t ? poly.hasTag(a, t) : poly.isTransformed(a));
+    return who === "all" ? members.every(has) : members.some(has);
   }
 
   // ------------------------------------------------------------

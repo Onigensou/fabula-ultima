@@ -397,6 +397,7 @@
       [K.VARIABLE, "Variable"],
       [K.SELF, "This event's switch"],
       [K.HAS_RUN, "This event has run"],
+      [K.FORM, "Polymorph form"],
       ...(extended ? [
         [K.FABULA, "Controller's Fabula Points"],
         [K.HAS_ITEM, "Party has item"],
@@ -434,6 +435,13 @@
 
       <span data-kind="${K.HAS_RUN}" class="oni-event-inline-row">
         <select class="oni-cond-run-want">${options([["yes", "at least once"], ["no", "never"]], cond.want ?? "yes")}</select>
+      </span>
+
+      <span data-kind="${K.FORM}" class="oni-event-inline-row oni-grow">
+        <select class="oni-cond-form-who">${options([["any", "Any party member"], ["all", "Every party member"]], val(K.FORM, "who", "any"))}</select>
+        <select class="oni-cond-form-want">${options([["yes", "is in"], ["no", "is not in"]], val(K.FORM, "want", "yes"))}</select>
+        <span>a form tagged</span>
+        <input type="text" class="oni-cond-form-tag oni-grow" value="${escapeHTML(val(K.FORM, "tag", ""))}" placeholder="aquatic / flying / beast — blank = any form" />
       </span>
 
       ${extended ? `
@@ -584,6 +592,8 @@
         return Logic.normalizeCondition({ kind, source: get(".oni-cond-zenit-source"), op: get(".oni-cond-zenit-op"), value: get(".oni-cond-zenit-value") });
       case K.MEMBER:
         return Logic.normalizeCondition({ kind, name: get(".oni-cond-member-name"), want: get(".oni-cond-member-want") });
+      case K.FORM:
+        return Logic.normalizeCondition({ kind, tag: get(".oni-cond-form-tag"), who: get(".oni-cond-form-who"), want: get(".oni-cond-form-want") });
       default:
         return { kind: K.NONE };
     }

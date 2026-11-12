@@ -30,6 +30,7 @@ const REASONS = {
   "in-combat-use": "Use items with the Item action during a conflict.",
   "none-left": "There are none left.",
   "battle-only": "This item is used in battle, with the Item action.",
+  "polymorph-form-missing": "That form isn't available yet.",
   "no-healing-hud": "The healing menu isn't loaded.",
   "no-bag": "That bag is gone.",
   "transfer-failed": "The move failed — the item may have changed. Try again.",

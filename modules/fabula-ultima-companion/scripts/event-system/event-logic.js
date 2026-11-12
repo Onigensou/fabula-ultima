@@ -152,8 +152,10 @@
     OFFERING: "offering",   // this event's last offering (Offer Item row)
     VERDICT: "verdict",     // the outcome of this event's last offering
     ZENIT: "zenit",
-    MEMBER: "member"        // a character is in the party
+    MEMBER: "member",       // a character is in the party
+    FORM: "form"            // a party member's Polymorph form has a tag (aquatic, flying…)
   });
+  const FORM_WHO = Object.freeze(["any", "all"]);
 
   // What the Offering check tests.
   const OFFERING_TESTS = Object.freeze(["contains", "exactly", "count", "type"]);
@@ -213,6 +215,10 @@
     } else if (kind === CONDITION_KINDS.MEMBER) {
       cond.name = String(raw?.name ?? "").trim();
       cond.want = raw?.want === "out" ? "out" : "in";
+    } else if (kind === CONDITION_KINDS.FORM) {
+      cond.tag = String(raw?.tag ?? "").trim().toLowerCase();
+      cond.who = FORM_WHO.includes(raw?.who) ? raw.who : "any";
+      cond.want = raw?.want === "no" ? "no" : "yes";
     }
 
     return cond;
@@ -319,6 +325,9 @@
         return compare(call("zenit", cond.source), cond.op, cond.value);
       case CONDITION_KINDS.MEMBER:
         return !!call("member", cond.name) === (cond.want === "in");
+      case CONDITION_KINDS.FORM:
+        // reader.formTag(tag, who) — "" tag = any Polymorph form at all.
+        return !!call("formTag", cond.tag, cond.who) === (cond.want === "yes");
       default:
         return true;
     }
@@ -341,6 +350,11 @@
       case CONDITION_KINDS.VERDICT: return `Last offering's verdict is "${cond.name}"`;
       case CONDITION_KINDS.ZENIT: return `Zenit (${cond.source}) ${cond.op} ${cond.value}`;
       case CONDITION_KINDS.MEMBER: return `"${cond.name}" is ${cond.want === "in" ? "in" : "not in"} the party`;
+      case CONDITION_KINDS.FORM: {
+        const what = cond.tag ? `a "${cond.tag}" form` : "a Polymorph form";
+        const who = cond.who === "all" ? "Every party member is in" : "A party member is in";
+        return cond.want === "yes" ? `${who} ${what}` : `Not: ${who.toLowerCase()} ${what}`;
+      }
       default: return "Always";
     }
   }
