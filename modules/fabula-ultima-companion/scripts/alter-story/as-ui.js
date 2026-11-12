@@ -199,18 +199,17 @@ body.as-hold #board{filter:saturate(.55) brightness(.85);transition:filter .6s e
     el.id = LAYER_ID;
     el.innerHTML = `
       <div class="as-veil"></div>
-      <div class="as-holdbar" role="status"><img alt=""><span class="quill">${QUILL}</span>
-        <div><div class="t1"></div><div class="t2"></div></div><span class="act"></span></div>
       <div class="as-parch as-composer" role="dialog" aria-label="Alter the Story"></div>
       <div class="as-parch as-consent" role="dialog" aria-label="Alter the Story: your OK"></div>
       <div class="as-parch as-gm" role="dialog" aria-label="Alter the Story: GM"></div>
-      <div class="as-toast"></div>
       <div class="as-cine"><div class="flash"></div><div class="dim"></div><canvas></canvas>
         <div class="center"><div class="who"></div><div class="rule r1"></div><div class="head"></div><div class="rule r2"></div><div class="what"></div><div class="note"></div></div></div>`;
     document.body.appendChild(el);
     D.layer = el;
-    D.veil = $(".as-veil", el); D.hold = $(".as-holdbar", el); D.comp = $(".as-composer", el);
-    D.consent = $(".as-consent", el); D.gm = $(".as-gm", el); D.toast = $(".as-toast", el); D.cine = $(".as-cine", el);
+    // The hold bar and toast are NOT built here: they live off the top edge when idle and
+    // their edges peeked onto the screen (v1.0.585). They are spawned on call instead.
+    D.veil = $(".as-veil", el); D.hold = null; D.comp = $(".as-composer", el);
+    D.consent = $(".as-consent", el); D.gm = $(".as-gm", el); D.toast = null; D.cine = $(".as-cine", el);
     fit();
     return el;
   }
@@ -271,12 +270,26 @@ body.as-hold #board{filter:saturate(.55) brightness(.85);transition:filter .6s e
   }
 
   // ── toast ──────────────────────────────────────────────────────────────────
+  // Spawned on call, removed once it has slid back out (transition .4s). A new toast
+  // during the slide-out reuses the same element and slides it back in.
+  const SLIDE_OUT_MS = 600;
   function toast(html, ms = 2600) {
     layer();
-    D.toast.innerHTML = html;
-    D.toast.classList.add("on");
+    let el = D.toast;
+    if (!el?.isConnected) {
+      el = document.createElement("div");
+      el.className = "as-toast";
+      D.layer.appendChild(el);
+      void el.offsetWidth;          // start from the off-screen spot so it slides in
+      D.toast = el;
+    }
     clearTimeout(D.toastT);
-    D.toastT = setTimeout(() => D.toast.classList.remove("on"), ms);
+    el.innerHTML = html;
+    el.classList.add("on");
+    D.toastT = setTimeout(() => {
+      el.classList.remove("on");
+      D.toastT = setTimeout(() => { el.remove(); if (D.toast === el) D.toast = null; }, SLIDE_OUT_MS);
+    }, ms);
   }
 
   // ── party members to tag ───────────────────────────────────────────────────
@@ -414,7 +427,31 @@ body.as-hold #board{filter:saturate(.55) brightness(.85);transition:filter .6s e
 
   // ── hold bar ───────────────────────────────────────────────────────────────
   const DOTS = `<span class="dots"><i></i><i></i><i></i></span>`;
+  // Spawned when a hold starts (in its off-screen spot, so the .hold class slides it in),
+  // removed after it has slid back out. A new hold during the slide-out keeps the element.
+  function holdEl() {
+    clearTimeout(D.holdT); D.holdT = 0;
+    if (D.hold?.isConnected) return D.hold;
+    const el = document.createElement("div");
+    el.className = "as-holdbar"; el.setAttribute("role", "status");
+    el.innerHTML = `<img alt=""><span class="quill">${QUILL}</span>
+      <div><div class="t1"></div><div class="t2"></div></div><span class="act"></span>`;
+    D.layer.appendChild(el);
+    void el.offsetWidth;
+    D.hold = el;
+    return el;
+  }
+  function dropHold() {
+    const el = D.hold;
+    if (!el || D.holdT) return;
+    D.holdT = setTimeout(() => {
+      D.holdT = 0;
+      if (D.layer?.classList.contains("hold")) return;
+      el.remove(); if (D.hold === el) D.hold = null;
+    }, SLIDE_OUT_MS);
+  }
   function drawHold(req) {
+    holdEl();
     const me = game.user, writer = req.userId === me.id, gm = me.isGM, primary = api().isPrimaryGM();
     const name = esc(req.actorName);
     let t1 = "", t2 = "Hold your actions for a moment.", act = "";
@@ -513,9 +550,10 @@ body.as-hold #board{filter:saturate(.55) brightness(.85);transition:filter .6s e
     const me = game.user, writer = req?.userId === me.id;
     const open = !!req && L.OPEN_PHASES.has(req.phase);
     const holding = open && !(writer && req.phase === L.PHASE.WRITING);
+    if (holding) holdEl();          // exists in its off spot BEFORE .hold, so it slides in
     D.layer.classList.toggle("hold", holding);
     document.body.classList.toggle("as-hold", holding);
-    if (holding) drawHold(req);
+    if (holding) drawHold(req); else dropHold();
 
     // composer
     const showComp = open && writer && req.phase === L.PHASE.WRITING;
