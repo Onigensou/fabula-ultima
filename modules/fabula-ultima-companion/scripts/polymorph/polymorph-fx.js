@@ -223,26 +223,29 @@ export async function playPoof(tokenId) {
   });
 }
 
-function playBatch(ids) {
+function playBatch(ids, preload = []) {
+  // Start fetching the art the token is about to switch to NOW, under the cloud:
+  // a cold Forge download made the cloud hang ~1 s waiting for the redraw.
+  for (const src of new Set((preload ?? []).filter(Boolean))) loadTexture(src).catch(() => {});
   if (!ids?.length || document.visibilityState === "hidden") return;
   playSfx();
   for (const id of ids) playPoof(id);
 }
 
-/** GM side: tell every client (and this one) to poof these tokens. */
-export function broadcastPoof(tokenDocs) {
+/** GM side: tell every client (and this one) to poof these tokens; `preload` = the art they switch to. */
+export function broadcastPoof(tokenDocs, preload = []) {
   const sceneId = canvas?.scene?.id ?? null;
   const ids = (tokenDocs ?? []).filter((t) => t?.parent?.id === sceneId).map((t) => t.id);
   if (!ids.length) return 0;
-  try { game.socket.emit(CHANNEL, { type: "polymorph.fx", sceneId, tokenIds: ids }); } catch {}
-  playBatch(ids);
+  try { game.socket.emit(CHANNEL, { type: "polymorph.fx", sceneId, tokenIds: ids, preload }); } catch {}
+  playBatch(ids, preload);
   return ids.length;
 }
 
 Hooks.once("ready", () => {
   game.socket.on(CHANNEL, (msg) => {
     if (msg?.type !== "polymorph.fx" || msg.sceneId !== canvas?.scene?.id) return;
-    playBatch(msg.tokenIds ?? []);
+    playBatch(msg.tokenIds ?? [], msg.preload ?? []);
   });
   // warm the clip and the sound so the first poof is not late (27 KB + one wav)
   poofTexture().catch(() => {});

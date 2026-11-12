@@ -349,7 +349,7 @@ async function transformGM(actorRef, formRef, opts = {}) {
     tokenArt.push({ uuid: t.uuid, src: t.texture?.src ?? null, scaleX: t.texture?.scaleX ?? 1, scaleY: t.texture?.scaleY ?? 1 });
     swaps.push({ token: t, ...nt });
   }
-  const poofed = opts.noFx ? 0 : broadcastPoof(tokens);
+  const poofed = opts.noFx ? 0 : broadcastPoof(tokens, swaps.map((s) => s.src));
   // The new art goes on as soon as the cloud covers the token, IN PARALLEL with
   // the layer build below (the item copies take ~1 s; waiting made the cloud hang).
   const artDone = (async () => {
@@ -442,7 +442,7 @@ async function revertGM(actorRef, { reason = "voluntary", quiet = false, noFx = 
       try { t = fromUuidSync(o?.uuid); } catch { t = null; }
       if (t && o?.src) restore.push({ token: t, src: o.src, scaleX: o.scaleX, scaleY: o.scaleY });
     }
-    const poofed = (noFx || !restore.length) ? 0 : broadcastPoof(restore.map((r) => r.token));
+    const poofed = (noFx || !restore.length) ? 0 : broadcastPoof(restore.map((r) => r.token), restore.map((r) => r.src));
     // own art back as soon as the cloud covers the token, in parallel with the teardown
     const artDone = (async () => {
       if (poofed) await sleep(FX_SWAP_MS);
