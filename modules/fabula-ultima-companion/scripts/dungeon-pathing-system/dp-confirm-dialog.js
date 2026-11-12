@@ -285,7 +285,14 @@
   const KEY_OF    = (r) => r === true ? "confirm" : r === false ? "revert" : String(r);
   const RESULT_OF = { confirm: true, use: "use", key: "key", revert: false };
 
-  function buildPanel({ showUseButton, showRevertButton, keyCount }, onPick, onHover) {
+  // Use button glyph per tile type (2026-11-12). Today's tent stays on Camp.
+  const USE_GLYPH = {
+    healing: "✚", camp: "⛺", dirt: "⛏", gathering: "⛏", fishing: "🎣",
+    treasure: "✦", gold: "✦", weapon: "✦", armor: "✦", accessory: "✦", consumable: "✦", item: "✦",
+  };
+  const useGlyph = (type) => USE_GLYPH[String(type ?? "")] ?? "✦";
+
+  function buildPanel({ showUseButton, showRevertButton, keyCount, showConfirmButton = true, useType = null, revertLabel = null }, onPick, onHover) {
     const cfg = DP.UI?.BUTTON ?? { WIDTH: 130, HEIGHT: 42, GAP: 5, OFFSET_X: 14, FONT_SIZE: "13px" };
     const panel = document.createElement("div");
     panel.id = "oni-dp-confirm-panel";
@@ -316,21 +323,27 @@
       panel.appendChild(gap);
     };
 
-    panel.appendChild(makeBtn("✔  Confirm", "oni-dp-btn-confirm", true));
+    let first = true;
+    const gapIfNeeded = () => { if (!first) addGap(); first = false; };
+
+    if (showConfirmButton !== false) {
+      gapIfNeeded();
+      panel.appendChild(makeBtn("✔  Confirm", "oni-dp-btn-confirm", true));
+    }
 
     if (showUseButton) {
-      addGap();
-      panel.appendChild(makeBtn("⛺  Use", "oni-dp-btn-use", "use"));
+      gapIfNeeded();
+      panel.appendChild(makeBtn(`${useGlyph(useType)}  Use`, "oni-dp-btn-use", "use"));
     }
 
     if (keyCount != null) {
-      addGap();
+      gapIfNeeded();
       panel.appendChild(makeBtn(`🗝  Use Key ×${keyCount}`, "oni-dp-btn-key", "key"));
     }
 
     if (showRevertButton) {
-      addGap();
-      panel.appendChild(makeBtn("⟲  Go Back", "oni-dp-btn-revert", false));
+      gapIfNeeded();
+      panel.appendChild(makeBtn(revertLabel || "⟲  Go Back", "oni-dp-btn-revert", false));
     }
     return { panel, btns };
   }
@@ -403,13 +416,21 @@
      *   When set, a "Use Key ×N" button is added for a loot tile the party can
      *   open with a Skeletal Key. The caller decides when it applies.
      *
+     * @param {string|null} [options.useType=null]
+     *   Tile type, picks the Use button's glyph (✚ Healing, ⛺ Camp, …).
+     * @param {boolean} [options.showConfirmButton=true]
+     * @param {string|null} [options.revertLabel=null]
+     *   The "use the tile you're standing on" panel passes
+     *   { showConfirmButton:false, revertLabel:"✕  Cancel" }: Use · Cancel.
+     *
      * Returns Promise<true|"use"|"key"|false>:
      *   true  = Confirm pressed  (land without triggering tile event)
      *   "use" = Use pressed      (land AND trigger tile event)
      *   "key" = Use Key pressed  (land AND open the loot with a Skeletal Key)
-     *   false = Go Back pressed  (revert movement)
+     *   false = Go Back pressed  (revert movement) / Cancel
      */
-    ask(token, { showUseButton = false, showRevertButton = true, keyButton = null } = {}) {
+    ask(token, { showUseButton = false, showRevertButton = true, keyButton = null,
+                 useType = null, showConfirmButton = true, revertLabel = null } = {}) {
       this.forceClose();
       this.isOpen = true;
 
@@ -420,6 +441,9 @@
           showUseButton: !!showUseButton,
           showRevertButton: !!showRevertButton,
           keyCount: keyButton ? Math.max(0, Math.floor(Number(keyButton.count) || 0)) : null,
+          showConfirmButton: showConfirmButton !== false,
+          useType: useType ?? null,
+          revertLabel: revertLabel ?? null,
         };
 
         // Everyone else watches these buttons; a GM watcher may answer for us.
@@ -431,6 +455,7 @@
               if (result === false && !spec.showRevertButton) return;
               if (result === "use" && !spec.showUseButton) return;
               if (result === "key" && spec.keyCount == null) return;
+              if (result === true && !spec.showConfirmButton) return;
               this._resolve(result);
             } }) ?? null;
         this._mirror = mirror;

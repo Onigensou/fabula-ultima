@@ -365,6 +365,7 @@
               <label>Amount</label>
               <input type="number" name="${fl("resourceValue")}"
                      data-dtype="Number" min="0" value="${cfg.resourceValue}" />
+              <p class="notes">A Healing tile ignores Amount: each member heals 35% of their max HP (at least 10), skipping anyone at 0 HP.</p>
             </div>
             <div class="form-group" data-oni-ec-damage-only="1"
                  ${cfg.resourceType === "damage" ? "" : 'style="display:none"'}>

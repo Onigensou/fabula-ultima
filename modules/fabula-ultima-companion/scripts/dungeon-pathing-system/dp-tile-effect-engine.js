@@ -150,6 +150,66 @@
     return rows;
   }
 
+  // ── Healing tiles (2026-11-12 rework) ──────────────────────────────────────
+  // Same pipeline as the Trap: the tile's resourceValue is ignored; each member
+  // heals 35% of their own max HP (dp-heal-rules.js), a member at 0 HP is
+  // skipped. The GM previews, sends the outcome to every client at once
+  // (dp-trap-fx.js kind "heal": green numbers, heal clip, HUD fill), THEN
+  // writes. No chat card and no screen flash.
+  const HealRules = () => DP.HealRules;
+
+  function isHeal(cfg, ctx) {
+    return ctx?.typeKey === "healing" && cfg.useResourceChange && cfg.resourceType === "healing";
+  }
+
+  async function runHealGM(actors, cfg, { tokenId = null, sceneId = null, triggerUserId = null } = {}) {
+    const R = HealRules();
+    const dmgApi = globalThis.FUCompanion?.api?.applyDamage?.applyToActor;
+    if (!R || !dmgApi) {
+      console.warn(TAG, "Heal: rules or applyDamage missing; falling back to the plain tile path.");
+      return applyToActors(actors, cfg);
+    }
+    const optsFor = (actor) => ({
+      baseDamage:   R.healAmount(actor.system?.props?.max_hp),
+      valueType:    "hp",
+      isRecovery:   true,
+      targetActor:  actor,
+      attackerName: "Healing",
+      sourceType:   "Tile",
+      verbosity:    "silent",
+    });
+
+    // 1. Preview (no writes).
+    const rows = [];
+    for (const actor of actors) {
+      const props = actor.system?.props ?? {};
+      const before = Number(props.current_hp ?? 0), max = Number(props.max_hp ?? 0);
+      let rec = null;
+      if (before > 0) {
+        try { rec = await dmgApi({ ...optsFor(actor), dryRun: true }); }
+        catch (e) { console.error(TAG, `Heal preview failed for ${actor.name}:`, e); }
+      }
+      rows.push({ actorId: actor.id, name: actor.name, face: actor.img ?? "", ...R.describeHeal(before, max, rec) });
+    }
+
+    // 2. Show it everywhere.
+    if (!cfg.silent) {
+      const payload = { kind: "heal", sceneId, tokenId, sfxUrl: cfg.sfxUrl, rows, triggerUserId };
+      try { game.socket.emit(SOCKET_CH, { type: MSG_TRAP_FX, payload }); } catch (e) { console.warn(TAG, "Heal FX emit failed:", e); }
+      try { Fx()?.play(payload); } catch (e) { console.warn(TAG, "Heal FX failed:", e); }
+    }
+
+    // 3. Write, one member at a time; KO'd and full members are left alone.
+    for (let i = 0; i < actors.length; i++) {
+      if (!rows[i] || rows[i].ko || rows[i].gain <= 0) continue;
+      await dmgApi(optsFor(actors[i]))
+        .catch(e => console.error(TAG, `Heal failed for ${actors[i].name}:`, e));
+      if (i < actors.length - 1) await new Promise(r => setTimeout(r, 0));
+    }
+    console.debug(TAG, "Heal:", rows);
+    return rows;
+  }
+
   // ── Party member resolution ────────────────────────────────────────────────
   async function resolvePartyMembers() {
     const api = window.FUCompanion?.api;
@@ -548,7 +608,7 @@
         // would survive into the next turn (see DP.gmSerialize).
         await (DP.gmSerialize ?? (fn => fn()))(async () => {
         try {
-          const { actorUuids, cfg, tileLabel, tokenId, sceneId, trap, triggerUserId } = msg.payload ?? {};
+          const { actorUuids, cfg, tileLabel, tokenId, sceneId, trap, heal, triggerUserId } = msg.payload ?? {};
           const actors = [];
           for (const uuid of (actorUuids ?? [])) {
             const a = await fromUuid(uuid).catch(() => null);
@@ -558,6 +618,10 @@
 
           if (trap) {
             await runTrapGM(actors, cfg, { tokenId, sceneId, triggerUserId });
+            return;
+          }
+          if (heal) {
+            await runHealGM(actors, cfg, { tokenId, sceneId, triggerUserId });
             return;
           }
 
@@ -619,6 +683,28 @@
         game.socket.emit(SOCKET_CH, {
           type: MSG_APPLY,
           payload: { actorUuids: targets.map(a => a.uuid).filter(Boolean), cfg, tileLabel, tokenId, sceneId, trap: true, triggerUserId: game.user?.id ?? null },
+        });
+      }
+      if (cfg.useActiveEffect || cfg.useRemoveEffect) {
+        return run({ ...cfg, useResourceChange: false, vfxType: "none", sfxUrl: "" }, tileDoc, tokenDoc, scene);
+      }
+      return;
+    }
+
+    // Healing tile: heal sound + clip here at once; numbers and HUD fill follow
+    // from the GM's preview. Its own AE rows, if any, use the plain path.
+    if (isHeal(cfg, ctx)) {
+      const tokenId = tokenDoc?.id ?? null;
+      if (!cfg.silent) {
+        try { Fx()?.impact({ kind: "heal", tokenId, sfxUrl: cfg.sfxUrl }); } catch (e) { console.warn(TAG, "Heal impact failed:", e); }
+      }
+      if (!targets.length) { console.warn(TAG, "Heal: no party members resolved."); return; }
+      if (game.user?.isGM) {
+        await runHealGM(targets, cfg, { tokenId, sceneId, triggerUserId: game.user.id });
+      } else {
+        game.socket.emit(SOCKET_CH, {
+          type: MSG_APPLY,
+          payload: { actorUuids: targets.map(a => a.uuid).filter(Boolean), cfg, tileLabel, tokenId, sceneId, heal: true, triggerUserId: game.user?.id ?? null },
         });
       }
       if (cfg.useActiveEffect || cfg.useRemoveEffect) {

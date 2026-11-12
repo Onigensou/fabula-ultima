@@ -184,6 +184,17 @@
 .oni-dp-hud-chip.dr  { background: rgba(200,160,80,0.18); color: #e8c870; border: 1px solid rgba(200,160,80,0.35); }
 .oni-dp-hud-chip.cr  { background: #e8c33a; color: #3a2a00; }
 .oni-dp-hud-chip.one { background: #8a4b22; color: #fff4e0; }
+/* Heal pulse (Healing tile): green edge, pale-green lead, +N readout */
+.oni-dp-hud-row.is-healed {
+  border-color: rgba(120,240,150,0.8);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5), 0 0 9px rgba(80,230,120,0.4);
+  transition: none;
+}
+.oni-dp-hud-bar-ghost.is-gain { background: linear-gradient(90deg, #c8ffd2, #7be38e); }
+.oni-dp-hud-read-n.is-gain { color: #7be38e; }
+.oni-dp-hud-chip.full { background: #2f7a45; color: #eaffef; }
+.oni-dp-hud-chip.ok   { background: rgba(120,240,150,0.16); color: #9be8ae; border: 1px solid rgba(120,240,150,0.35); }
+.oni-dp-hud-chip.ko   { background: #4a2a2a; color: #f0c8c0; }
 @media (prefers-reduced-motion: reduce) {
   .oni-dp-hud-read { transition: none; }
 }
@@ -537,6 +548,8 @@
   const PULSE_GHOST_MS = 600;
   const PULSE_READ_MS = 2800;
   const PULSE_SETTLE_MS = PULSE_GHOST_DELAY_MS + PULSE_GHOST_MS + 100;
+  const PULSE_HEAL_FILL_DELAY_MS = 140;
+  const PULSE_HEAL_GLOW_MS = 700;
 
   const _pulses = new Map();   // actorId → { row, at }
   let _busyUntil = 0;          // no HP-driven redraw before this (performance.now)
@@ -545,6 +558,15 @@
   const _esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
   function readoutHtml(r) {
+    if (r.kind === "heal") {
+      const g = Number(r.gain) || 0;
+      const chip = r.ko ? `<span class="oni-dp-hud-chip ko">KO</span>`
+        : r.full ? `<span class="oni-dp-hud-chip full">Full</span>`
+        : r.cleared ? `<span class="oni-dp-hud-chip ok">Crisis cleared</span>` : "";
+      return `<span class="oni-dp-hud-read-n${g ? " is-gain" : " is-zero"}">${r.ko ? "—" : "+" + g}</span>`
+        + `<span class="oni-dp-hud-read-hp">${Number(r.after) || 0} <small>/ ${Number(r.max) || 0}</small></span>`
+        + chip;
+    }
     const chips = [];
     if (r.immune) chips.push(`<span class="oni-dp-hud-chip im">Immune</span>`);
     else if (r.resisted) chips.push(`<span class="oni-dp-hud-chip rs">Resist</span>`);
@@ -579,6 +601,40 @@
     const fill  = row.querySelector(".oni-dp-hud-bar-hp");
     const ghost = row.querySelector(".oni-dp-hud-bar-ghost");
     const b = _pct(r.before, r.max), a = _pct(r.after, r.max);
+    ghost?.classList.toggle("is-gain", r.kind === "heal");
+
+    // Heal: the pale-green lead jumps to the new HP, the fill catches up.
+    if (r.kind === "heal") {
+      if (fill && ghost && a > b) {
+        fill.style.transition = "none"; ghost.style.transition = "none";
+        fill.style.width = b + "%"; ghost.style.width = b + "%";
+        void fill.offsetWidth;
+        ghost.style.transition = "width 160ms cubic-bezier(.2,.8,.2,1)";
+        ghost.style.width = a + "%";
+        setTimeout(() => {
+          const f = rowEl(r.actorId)?.querySelector(".oni-dp-hud-bar-hp");
+          if (!f) return;
+          f.style.transition = `width ${PULSE_GHOST_MS}ms cubic-bezier(.3,.7,.3,1)`;
+          f.style.width = a + "%";
+          f.className = "oni-dp-hud-bar-fill oni-dp-hud-bar-hp" + hpBandClass(r.after, r.max);
+        }, PULSE_HEAL_FILL_DELAY_MS);
+        row.classList.add("is-healed");
+        setTimeout(() => rowEl(r.actorId)?.classList.remove("is-healed"), PULSE_HEAL_GLOW_MS);
+      }
+      const read = readEl(row);
+      read.classList.remove("no-anim");
+      read.innerHTML = readoutHtml(r);
+      void read.offsetWidth;
+      read.classList.add("is-on");
+      setTimeout(() => {
+        const p = _pulses.get(String(r.actorId));
+        if (!p || p.row !== r) return;
+        _pulses.delete(String(r.actorId));
+        rowEl(r.actorId)?.querySelector(".oni-dp-hud-read")?.classList.remove("is-on", "no-anim");
+      }, PULSE_READ_MS);
+      return;
+    }
+
     if (fill && ghost) {
       fill.style.transition = "none"; ghost.style.transition = "none";
       fill.style.width = b + "%"; ghost.style.width = b + "%";
