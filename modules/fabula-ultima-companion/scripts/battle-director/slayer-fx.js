@@ -96,8 +96,16 @@ function rectOf(token) {
   try {
     const b = mesh.getBounds(false);
     if (!b || !(b.width > 0) || !(b.height > 0)) return null;
-    const tl = prim.worldTransform.applyInverse(new PIXI.Point(b.x, b.y));
-    const br = prim.worldTransform.applyInverse(new PIXI.Point(b.x + b.width, b.y + b.height));
+    let tl = prim.worldTransform.applyInverse(new PIXI.Point(b.x, b.y));
+    let br = prim.worldTransform.applyInverse(new PIXI.Point(b.x + b.width, b.y + b.height));
+    // The mesh holds the flat 2D spot; the 3D battle stage DRAWS the body
+    // displaced + rescaled from it (camera sway / parallax). Map the box through
+    // drawnMap (p -> b + (p - f) * m) so effects sit on the sprite the player sees.
+    const dm = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnMap?.(t);
+    if (dm && Number.isFinite(dm.m)) {
+      const map = (p) => ({ x: dm.bx + (p.x - dm.fx) * dm.m, y: dm.by + (p.y - dm.fy) * dm.m });
+      tl = map(tl); br = map(br);
+    }
     const w = br.x - tl.x, h = br.y - tl.y;
     return { x: tl.x, y: tl.y, w, h, cx: tl.x + w / 2, cy: tl.y + h / 2, feet: br.y, k: h / FRAME_H, flip: (mesh.scale?.x ?? 1) < 0 ? -1 : 1 };
   } catch { return null; }
@@ -239,19 +247,64 @@ async function clipAt(oni, c, x, y, width, { alpha = 1, tint = null, add = false
 // these shots never move the mesh: the call is kept where the mockup flinched, as a no-op.
 async function jolt() { /* intentionally empty: see above */ }
 // a white (or tinted) copy of the battler flashed on top of it
-function bodyFlash(H, token, rgb, ms, peak = 0.9) {
+// A copy of the battler's sprite laid exactly over the one the player SEES: the mesh
+// holds the flat 2D spot, the 3D stage draws it displaced + rescaled (drawnMap), so the
+// copy is mapped the same way or it shows as a ghost beside the body.
+function overlayCopy(token) {
   const t = tokOf(token), m = t?.mesh; if (!m?.texture) return null;
-  const spr = new PIXI.Sprite(m.texture); spr.eventMode = "none"; spr.blendMode = PIXI.BLEND_MODES.ADD; spr.tint = hex(rgb);
+  const spr = new PIXI.Sprite(m.texture); spr.eventMode = "none";
   canvas.primary?.addChild(spr);
+  const sync = (dz = Z_EPS * 2, grow = 1) => {
+    spr.anchor.copyFrom(m.anchor); spr.rotation = m.rotation;
+    const dm = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnMap?.(t);
+    if (dm && Number.isFinite(dm.m)) {
+      spr.position.set(dm.bx + (m.position.x - dm.fx) * dm.m, dm.by + (m.position.y - dm.fy) * dm.m);
+      spr.scale.set(m.scale.x * dm.m * grow, m.scale.y * dm.m * grow);
+    } else { spr.position.copyFrom(m.position); spr.scale.set(m.scale.x * grow, m.scale.y * grow); }
+    copyKeys(spr, m, dz);
+  };
+  return { spr, m, sync };
+}
+// alphaAt(u) -> 0..1 over the life; set up the look on oc.spr before or after
+function runOverlay(H, oc, ms, alphaAt, { dz = Z_EPS * 2, grow = 1 } = {}) {
   const t0 = performance.now();
   H.layers.push(() => {
-    if (spr.destroyed) return;
+    const { spr, m } = oc; if (spr.destroyed) return;
     const u = (performance.now() - t0) / ms;
-    if (u >= 1 || m.destroyed) { try { spr.destroy(); } catch { /* */ } return; }
-    spr.anchor.copyFrom(m.anchor); spr.position.copyFrom(m.position); spr.scale.copyFrom(m.scale); spr.rotation = m.rotation;
-    copyKeys(spr, m, Z_EPS * 2); spr.alpha = peak * (u < 0.2 ? u / 0.2 : 1 - (u - 0.2) / 0.8);
+    if (u >= 1 || m.destroyed) { try { spr.destroy({ children: true }); } catch { /* */ } return; }
+    oc.sync(dz, grow); spr.alpha = alphaAt(u);
   });
-  return spr;
+  return oc.spr;
+}
+function bodyFlash(H, token, rgb, ms, peak = 0.9) {
+  const oc = overlayCopy(token); if (!oc) return null;
+  oc.spr.blendMode = PIXI.BLEND_MODES.ADD; oc.spr.tint = hex(rgb);
+  return runOverlay(H, oc, ms, (u) => peak * (u < 0.2 ? u / 0.2 : 1 - (u - 0.2) / 0.8));
+}
+// The mockup's CSS drop-shadow: a soft crimson silhouette just behind the body.
+function rimGlow(H, token, rgb, ms, peak) {
+  const oc = overlayCopy(token); if (!oc) return null;
+  oc.spr.tint = hex(rgb); oc.spr.blendMode = PIXI.BLEND_MODES.ADD;
+  oc.spr.filters = [new PIXI.BlurFilter(6, 2)];
+  return runOverlay(H, oc, ms, (u) => peak * (u < 0.85 ? 1 : 1 - (u - 0.85) / 0.15), { dz: -Z_EPS * 2, grow: 1.04 });
+}
+// The mockup's Weak: saturate(1 -> .25) brightness(1 -> .82) over 600 ms, hold 500, back over 700.
+// A desaturated copy faded in over the body gives the same read without touching the mesh.
+function drainColour(H, token) {
+  const oc = overlayCopy(token); if (!oc) return null;
+  const cm = new PIXI.ColorMatrixFilter(); cm.desaturate(); cm.brightness(0.82, true);
+  oc.spr.filters = [cm];
+  const ms = 1800, a = (u) => { const t = u * ms; return 0.75 * (t < 600 ? Math.sin((t / 600) * Math.PI / 2) : t < 1100 ? 1 : Math.cos(((t - 1100) / 700) * Math.PI / 2)); };
+  return runOverlay(H, oc, ms, a);
+}
+// The mockup's full-screen colour flash, very low alpha (CSS flash()).
+function screenFlash(rgb, peak, inMs, outMs) {
+  try {
+    const d = document.createElement("div");
+    d.style.cssText = `position:fixed;inset:0;pointer-events:none;z-index:60;background:rgb(${rgb});opacity:0;transition:opacity ${inMs}ms linear`;
+    document.body.appendChild(d);
+    requestAnimationFrame(() => { d.style.opacity = String(peak); setTimeout(() => { d.style.transition = `opacity ${outMs}ms linear`; d.style.opacity = "0"; setTimeout(() => d.remove(), outMs + 50); }, inMs); });
+  } catch { /* */ }
 }
 
 // ═════════ BANE OILS
@@ -362,8 +415,8 @@ export async function baneProc({ oni = null, target, kind = "slow", species = "b
         const x = R.cx + rnd(-0.35, 0.35) * R.w, y = R.feet - R.h * rnd(0.15, 0.85), rr = rnd(2, 3.4) * R.k;
         H.add({ x, y, vx: rnd(-0.015, 0.015), vy: rnd(-0.07, -0.03), life: rnd(700, 1200), draw: (g, p, u) => glow(g, p.x, p.y, rr * 3, u < 0.3 ? rgb : "200,200,210", Math.sin(u * Math.PI) * 0.8) });
       }
-      // the colour drains: a grey wash over the body (a dimmed copy), then back
-      const spr = bodyFlash(H, T, "120,120,135", 1800, 0.55); if (spr) spr.blendMode = PIXI.BLEND_MODES.MULTIPLY;
+      // the colour drains out of the body and comes back (mockup: saturate/brightness filter)
+      drainColour(H, T);
       await wait(1800);
     } else {
       // Lose a Resistance: a ward in the element's colour shows, cracks, and shatters
@@ -372,16 +425,21 @@ export async function baneProc({ oni = null, target, kind = "slow", species = "b
         for (let j = 0; j < 5; j++) { const a = a0 + rnd(-0.55, 0.55); x += Math.cos(a) * -0.24; y += Math.sin(a) * 0.24; pts.push([x, y]); } return pts; });
       H.layers.push((G, R2) => {
         if (!w.on || !R2 || w.a <= 0.01) return; const g = G.front, c = hex(erb);
-        const RX = (R2.w * 0.8 * 0.62 + 12 * R2.k) * w.sc, RY = R2.h * 0.6 * 0.62 * w.sc, cx = R2.cx, cy = R2.feet - R2.h * 0.45;
-        g.beginFill(c, 0.10 * w.a); g.drawEllipse(cx, cy, RX, RY); g.endFill();
-        g.beginFill(c, 0.08 * w.a); g.drawEllipse(cx, cy, RX * 0.8, RY * 0.8); g.endFill();
+        // mockup wardShell: RX = body w * .8 + 12, RY = body h * .6, centred mid-body
+        const RX = (R2.w * 0.8 + 12 * R2.k) * w.sc, RY = R2.h * 0.6 * w.sc, cx = R2.cx, cy = R2.feet - R2.h * 0.5;
+        // its radial gradient: clear inside 30 %, .1 at 75 %, .45 at the rim — as stacked bands
+        for (const [f, al] of [[1, 0.12], [0.94, 0.1], [0.86, 0.07], [0.75, 0.05], [0.6, 0.03], [0.45, 0.015]]) {
+          g.beginFill(c, al * w.a); g.drawEllipse(cx, cy, RX * f, RY * f); g.endFill();
+        }
         const hs = 13 * R2.k; g.lineStyle(1.2, c, 0.32 * w.a);
         for (let row = 0, yy = -RY; yy < RY; yy += hs * 1.5, row++) for (let xx = -RX + (row % 2) * hs * 0.866; xx < RX; xx += hs * 1.732) {
-          if ((xx * xx) / (RX * RX) + (yy * yy) / (RY * RY) > 0.8) continue;
-          const pts = []; for (let k = 0; k < 6; k++) { const a = Math.PI / 6 + k * Math.PI / 3; pts.push(cx + xx + Math.cos(a) * hs * 0.9, cy + yy + Math.sin(a) * hs * 0.9); }
+          if ((xx * xx) / (RX * RX) + (yy * yy) / (RY * RY) > 0.9) continue;   // mockup clips the grid to the ellipse
+          const pts = []; for (let k = 0; k < 6; k++) { const a = Math.PI / 6 + k * Math.PI / 3; pts.push(cx + xx + Math.cos(a) * hs, cy + yy + Math.sin(a) * hs); }
           g.drawPolygon(pts);
         }
-        g.lineStyle(7 * R2.k, c, 0.25 * w.a); g.drawEllipse(cx, cy, RX, RY);
+        // the rim's shadowBlur 12 glow, as soft wide strokes under the line
+        g.lineStyle(14 * R2.k, c, 0.08 * w.a); g.drawEllipse(cx, cy, RX, RY);
+        g.lineStyle(8 * R2.k, c, 0.18 * w.a); g.drawEllipse(cx, cy, RX, RY);
         g.lineStyle(2.6 * R2.k, c, 0.95 * w.a); g.drawEllipse(cx, cy, RX, RY); g.lineStyle(0);
         if (w.crack > 0) { const ox = cx + RX * 0.55, oy = cy - RY * 0.1; g.lineStyle(2 * R2.k, 0xffffff, 0.95 * w.a);
           for (const cr of cracks) { const n = (cr.length - 1) * w.crack; g.moveTo(ox, oy);
@@ -391,9 +449,9 @@ export async function baneProc({ oni = null, target, kind = "slow", species = "b
       sfx(oni, SFX.magic, 0.35, 1.3);
       await tween(220, EASE.outBack, (u) => { w.a = clamp(u, 0, 1); w.sc = 0.9 + 0.1 * u; }); await wait(160);
       sfx(oni, SFX.crack, 0.7); await tween(260, EASE.outCubic, (u) => { w.crack = u; }); await wait(90);
-      w.on = false; R = rectOf(T) ?? R; const c0 = { x: R.cx, y: R.feet - R.h * 0.45 }; sfx(oni, SFX.brk, 0.85);
+      w.on = false; R = rectOf(T) ?? R; const c0 = { x: R.cx, y: R.feet - R.h * 0.5 }; sfx(oni, SFX.brk, 0.85); screenFlash(erb, 0.12, 30, 160);
       shards(H, c0, erb, 26, 0.55); shards(H, c0, "255,255,255", 10, 0.45);
-      clipAt(oni, CLIP.ring, c0.x, c0.y, R.h * 0.9, { tint: hex(erb), add: true });
+      clipAt(oni, CLIP.ring, c0.x, c0.y, R.h * 1.5, { tint: hex(erb), add: true });   // mockup: 2.6 x the 82 px ring
       jolt(T, 6, 200); await wait(260);
       clipAt(oni, CLIP.powerdown, R.cx, R.feet, R.h * 1.1, { alpha: 0.8 }); sfx(oni, SFX.down, 0.3);
       await wait(800);
@@ -410,13 +468,14 @@ export async function giantKiller({ oni = null, target, n = 2 } = {}) {
   const H = new Host(T);
   try {
     // hit-stop: the body flashes white with a crimson rim for 50 + 12n ms (the game can't freeze, so the flash holds the beat)
+    // mockup: brightness(2.4) + a crimson drop-shadow on the sprite itself for the stop
     const stop = 50 + 12 * n;
-    H.layers.push((G, R2) => { if (!R2 || H.stopEnd < performance.now()) return; glow(G.back, R2.cx, R2.feet - R2.h * 0.5, R2.h * 0.55, CRIMSON, 0.5 + n * 0.05); });
-    H.stopEnd = performance.now() + stop;
     bodyFlash(H, T, "255,255,255", stop + 60, 0.85);
+    rimGlow(H, T, CRIMSON, stop + 60, 0.9);
     await wait(stop);
     jolt(T, n >= 4 ? 9 : 6, 200);
     sfx(oni, SFX.slashS, 0.14 + 0.015 * n, 1.15);
+    screenFlash(CRIMSON, 0.05 + n * 0.025, 20, 170);
     try { oni?.screenshake?.({ duration: 150 + 25 * n, intensity: 3 + 2.2 * n }); } catch { /* */ }
     const gap = Math.min(42, 190 / n);
     for (let i = 0; i < n; i++) {
