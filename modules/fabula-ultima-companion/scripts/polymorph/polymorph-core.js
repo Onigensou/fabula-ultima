@@ -121,6 +121,19 @@ function allBearers() {
 const formEffects = (actor) => (actor?.effects?.contents ?? [...(actor?.effects ?? [])])
   .filter((e) => e?.flags?.[NS]?.[FLAG] === true);
 
+/** Prop keys the Form effect writes (bare CSB keys, e.g. "dex_base"). */
+function formOverriddenKeys(actor) {
+  const out = new Set();
+  for (const e of formEffects(actor)) {
+    for (const c of e.changes ?? []) {
+      if (c?.mode === MODE.CUSTOM) continue;
+      const k = String(c?.key ?? "").replace(/^system\.props\./, "").trim();
+      if (k) out.add(k);
+    }
+  }
+  return out;
+}
+
 // ── Read API (any client) ────────────────────────────────────────────────────
 
 export function getForm(actor) {
@@ -324,12 +337,14 @@ async function transformGM(actorRef, formRef, opts = {}) {
   }
   const formMax = { hp: gotMax.hp || hp.max, mp: gotMax.mp || mp.max };
 
-  const tokenArt = {};
+  // A LIST, never an object keyed by uuid: a flag update expands the dots in
+  // "Scene.x.Token.y" into nested paths (runner 2026-11-12: revert found nothing).
+  const tokenArt = [];
   const swaps = [];
   for (const t of tokens) {
     const nt = formTextureFor(t, form);
     if (!nt) continue;
-    tokenArt[t.uuid] = { src: t.texture?.src ?? null, scaleX: t.texture?.scaleX ?? 1, scaleY: t.texture?.scaleY ?? 1 };
+    tokenArt.push({ uuid: t.uuid, src: t.texture?.src ?? null, scaleX: t.texture?.scaleX ?? 1, scaleY: t.texture?.scaleY ?? 1 });
     swaps.push({ token: t, ...nt });
   }
   if (squashed) await sleep(Math.max(0, SQUASH_OUT_MS - (Date.now() - fxStart)));
@@ -389,9 +404,9 @@ async function revertGM(actorRef, { reason = "voluntary", quiet = false, noFx = 
     // Token art back (with the squash). A token that no longer exists (battle
     // tokens after a battle, a deleted token) is skipped.
     const restore = [];
-    for (const [uuid, o] of Object.entries(state?.tokenArt ?? {})) {
+    for (const o of (Array.isArray(state?.tokenArt) ? state.tokenArt : [])) {
       let t = null;
-      try { t = fromUuidSync(uuid); } catch { t = null; }
+      try { t = fromUuidSync(o?.uuid); } catch { t = null; }
       if (t && o?.src) restore.push({ token: t, src: o.src, scaleX: o.scaleX, scaleY: o.scaleY });
     }
     const fxStart = Date.now();
@@ -599,6 +614,29 @@ Hooks.once("ready", () => {
     const actor = effect.parent;
     if (!(actor instanceof Actor) || _reverting.has(actor.uuid) || !getForm(actor)) return;
     revertGM(actor, { reason: "effect-removed" }).catch((e) => warn("effect-removed revert failed", e));
+  });
+
+  // BAKE-IN GUARD (runs on every client, before the write leaves it). A CSB
+  // sheet submits its inputs on close, and an input shows the AE-applied value
+  // — so closing a transformed PC's sheet wrote the FORM's DEX/MIG/max HP/
+  // affinities/blank sprite art into the PC's real data, permanently (runner,
+  // 2026-11-12: Keren kept DEX 10, MIG 12, max HP 132 after reverting). While a
+  // form is on, a write to any key the Form effect overrides is dropped; HP/MP
+  // and everything else go through untouched.
+  Hooks.on("preUpdateActor", (actor, changes) => {
+    if (!getForm(actor) || _reverting.has(actor.uuid)) return;
+    const keys = formOverriddenKeys(actor);
+    if (!keys.size) return;
+    const nested = changes?.system?.props;
+    let dropped = 0;
+    if (nested && typeof nested === "object") {
+      for (const k of Object.keys(nested)) if (keys.has(k)) { delete nested[k]; dropped++; }
+    }
+    for (const k of Object.keys(changes ?? {})) {
+      const m = k.match(/^system\.props\.(.+)$/);
+      if (m && keys.has(m[1])) { delete changes[k]; dropped++; }
+    }
+    if (dropped) log(`${actor.name}: kept ${dropped} form-overridden field(s) out of a save (sheet submit while transformed)`);
   });
 
   // Knocked out in form → the form ends; the bearer stays at 0 (normal KO /
