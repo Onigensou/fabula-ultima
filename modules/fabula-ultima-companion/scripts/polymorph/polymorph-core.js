@@ -41,7 +41,33 @@ import {
 } from "./polymorph-math.js";
 import { broadcastSquash, SQUASH_OUT_MS } from "./polymorph-fx.js";
 import { formNameForItem, isPolymorphPotion, findFormActor } from "./polymorph-potions.js";
+import { polymorphSuppressesEffect } from "./polymorph-gates.js";
 import "./polymorph-ui.js";   // Form Plate (HUD) + sheet banner — side-effect module
+
+// GEAR SUSPENDED (user ruling 2026-11-12). While transformed, the PC's own
+// item-transferred effects (gear stat bonuses, quirk / passive reactions) are
+// SUPPRESSED, the switch Foundry reserves for this: `effect.active` goes false,
+// so the change never applies and the effect is left out of `appliedEffects`,
+// which every reaction scan walks. Nothing is written: the equip system's
+// `disabled` flags stay as they are, and reverting (flag gone → re-prepare)
+// brings everything back. Installed at module load, before any actor prepares.
+// CSB does not override `isSuppressed` (checked 2026-11-12), so the base getter
+// covers its effect class too.
+(() => {
+  const proto = globalThis.ActiveEffect?.prototype;
+  if (!proto || proto.__oniPolymorphSuppress) return;
+  let owner = proto, desc = null;
+  while (owner && !(desc = Object.getOwnPropertyDescriptor(owner, "isSuppressed"))) owner = Object.getPrototypeOf(owner);
+  const base = desc?.get ?? null;
+  Object.defineProperty(proto, "isSuppressed", {
+    configurable: true,
+    get() {
+      try { if (polymorphSuppressesEffect(this)) return true; } catch { /* never break effect prep */ }
+      return base ? base.call(this) : false;
+    },
+  });
+  Object.defineProperty(proto, "__oniPolymorphSuppress", { value: true });
+})();
 
 // Sheet art the sprite systems read OFF THE ACTOR (battler-pose-rules POSES →
 // sprite_<pose>; sprite-facing-runtime DIR_FIELDS walk/stand; camp poses). The

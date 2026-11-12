@@ -35,3 +35,20 @@ export function polymorphItemInPlay(item, actor) {
   if (!isPolymorphed(owner)) return true;
   return isFormItem(item);
 }
+
+/**
+ * Gear suspended (user ruling 2026-11-12): while transformed, every effect an
+ * actor gets FROM ITS OWN ITEMS (equipment, quirks, class passives — the
+ * item-transferred AEs) is out of play: no stat bonuses, no reactions. Effects
+ * sitting on the actor itself (statuses, buffs cast on it, the Form effect) stay
+ * live. The form's copied items keep theirs. Read by the ActiveEffect
+ * `isSuppressed` patch in polymorph-core.js, so Foundry's own `active` /
+ * `appliedEffects` (and every BD scan built on them) drop these effects.
+ */
+export function polymorphSuppressesEffect(effect) {
+  const item = effect?.parent;
+  if (!item || item.documentName !== "Item") return false;
+  const actor = item.parent;
+  if (!actor || actor.documentName !== "Actor") return false;
+  return isPolymorphed(actor) && !isFormItem(item);
+}
