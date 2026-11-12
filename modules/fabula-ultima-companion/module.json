@@ -536,6 +536,7 @@
     "scripts/battle-director/battle-end/battle-end-cleanup.js",
     "scripts/battle-director/battle-end/battle-end-rewards.js",
     "scripts/guest-roster/guest-roster-core.js",
+    "scripts/polymorph/polymorph-core.js",
     "scripts/guest-roster/guest-roster-ui.js",
     "scripts/party-menu/party-menu-core.js",
     "scripts/item-transfer/carry-limit.js",
