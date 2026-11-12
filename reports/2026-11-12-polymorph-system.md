@@ -67,11 +67,46 @@ New migration `2026-11-12-polymorph-revert-objective` (idempotent) authors `Batt
   - Keren casts Psychokinesis and transforms after her turn (counter starts next round).
   - She uses Blast Breath ×3 in rounds 2–4, then reverts with reason `turns`.
 
+## Phases 3–5 (same branch): visuals, UI, potions
+
+- **Horizontal squash** (`polymorph-fx.js`), Oni's ruling.
+  - Every client squashes a copy of the token mesh to scaleX 0, the art swaps, and the new mesh stretches back.
+  - The copy follows the live mesh every frame, so 3D-stage depth scaling works.
+  - It's guarded per frame and always restores the mesh. Verified at 2.5 FPS headless: it finishes with no leftover copies.
+- **Token art:** the form's texture is written after the squash closes.
+  - The footprint (width/height) stays the bearer's. The texture scale absorbs the size difference, and the facing sign is kept.
+  - Originals are stored as a **list** (uuid-keyed objects get their dots expanded by flag updates) and restored on revert.
+- **Sprite props:** the Form effect overrides every `sprite_*` prop that the pose, walk and camp sprite systems read, so a transformed PC never flashes their own art.
+- ⚠ **Sheet bake-in guard:** a CSB sheet submits its inputs on close, and those inputs hold the effect-applied values.
+  - Closing a transformed PC's sheet wrote DEX 10 / MIG 12 / max HP 132 / AB / blank sprites into the PC's **source** permanently (runner-proven).
+  - `preUpdateActor` (every client) now drops writes to form-overridden keys while the form is on.
+  - **Possibly pre-existing for equipment AEs too:** Keren's source `bonus_defense` was already 3. Worth a look.
+- **Polymorph Potions:** code-backed **by name** (`Polymorph Potion: <Monster>`, declared in `code-backed-content.js`), so world items and every handed-out copy work.
+  - There are 12 potions, and only 5 monsters exist (Inferex, Drakoza, Bandit Berserker, Mist Dragon, Bandit). A missing form is refused and the potion isn't used up.
+  - **Party menu → Use** (outside battle) opens a "who becomes the X?" picker over the active party, then calls `polymorph.usePotion` (GM-relayed; the holder's owner may give it to a willing ally).
+  - **BD Item action:**
+    - `potionTargetText` gives the potion "One Ally" (compose + TARGET).
+    - DECLARE refuses a missing form.
+    - RESOLVE transforms first and consumes only if a transform landed.
+  - `sim/scripted-action.js`: a scripted consumable with no linked skill is now an Item action (it mirrors the real menu).
+- **UI** (`polymorph-ui.js`):
+  - **Form Plate** in the HudDock stack (order 25, every mode including Theatre): form art with the PC's face, time left, "Reverts to X/Y HP", and Revert (owner/GM, outside battle).
+  - The same line as a banner on the actor sheet.
+- **Event system:** new condition **"Polymorph form"**: any or every party member is / is not in a form tagged X (blank = any form). It's also offered in "Available when".
+- **Wording migration** `2026-11-12-polymorph-potion-wording` (idempotent): rewrites only the duration line to Oni's sentence on world items, actor copies and unlinked token copies.
+  - In the runner, 21/22 copies were updated. The copy on "St. Reefesia" has no description prop, so it was left alone.
+
+**Verified (runner):**
+- Squash seen; art and props swapped and restored; the plate and banner render.
+- Potion used up 2→1. The Walrog potion was refused and kept.
+- Event condition: beast yes / aquatic no / all-beast no.
+- **In-battle potion through the real Item action:** Keren drinks → transform (counter from next round) → Blast Breath ×3 → reverts with reason `turns`. Potion 2→1.
+- **Regression:** skill fingerprints are 486/486 identical between main and the branch. The seeded sim battle is identical on main and the branch (10 actions, same resource and effect counts).
+
 ## Not done yet / not verified
 
 - **Revert picked from the real Octopath menu** (the free return to the menu) is not run end to end. It uses the same `skill_free_action` path as BotC Dismiss.
 - Gear that raises attributes (`bonus_<attr>`) still applies. Species is not overridden, on purpose (the PC/NPC discriminator); read `getForm().species`.
-- **Later phases:**
-  - token/sprite visuals (horizontal squash), party menu / sheet / HUD / Theatre ribbon,
-  - potion item wiring (out-of-battle Use, using it on an ally), event-system tag condition.
-- **World data:** there are no "Lava Golem" or "Ice Ring" monster actors yet.
+- **Missing form monsters (7 of 12 potions):** Ice Ring, Lava Golem, Walrog, Hunger, Crazy Merman, Scaldra, Centauros. These are Oni's to design.
+- **Traversal tags** (`aquatic`, `flying`…) come from `flags.fabula-ultima-companion.polymorphTags` on the monster plus its species. No monster has the flag yet, so only species tags (beast, elemental…) exist until someone authors them.
+- **Never seen with real eyes:** the squash on a real GPU canvas or in the 3D battle stage, the walk-sprite fallback while moving, the party-menu picker clicked by a player, and a 2-GM table.
