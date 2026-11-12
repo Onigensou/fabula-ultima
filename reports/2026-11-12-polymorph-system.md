@@ -67,9 +67,19 @@ New migration `2026-11-12-polymorph-revert-objective` (idempotent) authors `Batt
   - Keren casts Psychokinesis and transforms after her turn (counter starts next round).
   - She uses Blast Breath ×3 in rounds 2–4, then reverts with reason `turns`.
 
+## Transform visual: smoke POOF (Oni, 2026-11-12; replaces the squash below)
+
+- **What it looks like:** an anime transformation poof. Guilty Gear `smoke_anim08` (Ninja Log's clip: the first puff only, 0.7x, about 1.4x the body) swallows the token with `Sound/SmokeBomb.wav`.
+- **The swap:** the art swaps under the cloud. The clip holds its densest frame, breathing gently, if the new art is late.
+- **The reveal:** the new body pops out as the smoke breaks up: 0.78 → 1.07 → 1 with a stretch wobble, under a white flash that fades over 320 ms. About 0.7 s in total. Revert plays the same beat.
+- **Two speed traps fixed** (the cloud hung for about 1 s):
+  - Token art is written with `animate: false`, because Foundry v12 otherwise crossfades a token's texture over about 1 s.
+  - The art is written in parallel with the form build, and every client starts loading the incoming art when the poof starts (`preload` in the socket message).
+- The Form effect is created and deleted with `animate: false` too, so there's no core "+(Polymorph: X)" scrolling text.
+
 ## Phases 3–5 (same branch): visuals, UI, potions
 
-- **Horizontal squash** (`polymorph-fx.js`), Oni's ruling.
+- ~~**Horizontal squash**~~ (`polymorph-fx.js`), since REPLACED by the poof above.
   - Every client squashes a copy of the token mesh to scaleX 0, the art swaps, and the new mesh stretches back.
   - The copy follows the live mesh every frame, so 3D-stage depth scaling works.
   - It's guarded per frame and always restores the mesh. Verified at 2.5 FPS headless: it finishes with no leftover copies.
