@@ -138,7 +138,7 @@
           "general": {
             "cameraFollowToken": false,
             "sceneMode": "conflict",
-            "conflictEvent": "lightning-crystal",
+            "conflictEvent": "soul-tithe",
             "sceneVisited": false,
             "scanRadius": null,
             "fastTravelEnabled": true,
