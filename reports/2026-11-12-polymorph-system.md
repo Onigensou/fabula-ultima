@@ -103,10 +103,22 @@ New migration `2026-11-12-polymorph-revert-objective` (idempotent) authors `Batt
 - **In-battle potion through the real Item action:** Keren drinks → transform (counter from next round) → Blast Breath ×3 → reverts with reason `turns`. Potion 2→1.
 - **Regression:** skill fingerprints are 486/486 identical between main and the branch. The seeded sim battle is identical on main and the branch (10 actions, same resource and effect counts).
 
+## Demo follow-ups (Oni, 2026-11-12)
+
+- **Gear suspended, for real.** The item gate missed reactions that ride an item's *transferred* effect: Keren's Stubborn Scion (a quirk) still fired on the Inferex when it was targeted.
+  - Now every effect transferred from one of the bearer's own items is **suppressed** while a form is on. This is a patch on `ActiveEffect#isSuppressed` in `polymorph-core.js` (rule in `polymorph-gates.polymorphSuppressesEffect`).
+  - Gear stat bonuses and quirk/passive reactions are off. Statuses on the actor, the Form effect and the form's own items stay live.
+  - It writes nothing (the equip system's `disabled` flags are untouched), and revert re-prepares the actor.
+  - **Runner:** Keren as Inferex reads DEX 10 / MIG 12 / DEF 15 / MDEF 12, exactly the Inferex. 20 → 0 live item effects, all back after revert. Scion stays quiet in battle.
+- **In battle the Form Plate hides** (it sat on the GM desk). The form shows as a **buff pip with its turns left** on the GM desk and the player HUD:
+  - `status-classifier` returns BUFF for the polymorph effect (display only, no `buff` tag);
+  - `ae-lifetime.describe` reports "N turns left in this form" from the bearer's counter.
+- ⚠ The pip tooltip lists the Form effect's raw changes. "DEF set to 5" is the offset over DEX, not the final DEF. It's cosmetic.
+
 ## Not done yet / not verified
 
 - **Revert picked from the real Octopath menu** (the free return to the menu) is not run end to end. It uses the same `skill_free_action` path as BotC Dismiss.
-- Gear that raises attributes (`bonus_<attr>`) still applies. Species is not overridden, on purpose (the PC/NPC discriminator); read `getForm().species`.
+- Gear stat bonuses are now suspended (see above). Gear checked BY NAME in code (not via effects) is not covered. Species is not overridden, on purpose (the PC/NPC discriminator); read `getForm().species`.
 - **Missing form monsters (7 of 12 potions):** Ice Ring, Lava Golem, Walrog, Hunger, Crazy Merman, Scaldra, Centauros. These are Oni's to design.
 - **Traversal tags** (`aquatic`, `flying`…) come from `flags.fabula-ultima-companion.polymorphTags` on the monster plus its species. No monster has the flag yet, so only species tags (beast, elemental…) exist until someone authors them.
 - **Never seen with real eyes:** the squash on a real GPU canvas or in the 3D battle stage, the walk-sprite fallback while moving, the party-menu picker clicked by a player, and a 2-GM table.
