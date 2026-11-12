@@ -54,7 +54,10 @@ import "./polymorph-ui.js";   // Form Plate (HUD) + sheet banner — side-effect
 // CSB does not override `isSuppressed` (checked 2026-11-12), so the base getter
 // covers its effect class too.
 (() => {
-  const proto = globalThis.ActiveEffect?.prototype;
+  // `ActiveEffect` is a top-level class in Foundry's classic scripts: a global
+  // BINDING, not a globalThis property (globalThis.ActiveEffect is undefined).
+  // eslint-disable-next-line no-undef
+  const proto = (typeof ActiveEffect !== "undefined" ? ActiveEffect : null)?.prototype;
   if (!proto || proto.__oniPolymorphSuppress) return;
   let owner = proto, desc = null;
   while (owner && !(desc = Object.getOwnPropertyDescriptor(owner, "isSuppressed"))) owner = Object.getPrototypeOf(owner);
