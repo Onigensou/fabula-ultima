@@ -462,7 +462,7 @@
     castSfx(level);
     q("#f2-angler").className = "f2-angler cast"; q("#f2-hold").hidden = true;
     msg(str >= 97 ? "A perfect cast!" : `Cast power ${str}.`);
-    const t0 = tip(), bob = q("#f2-bob"); bob.className = "f2-bob on"; const dur = 650, start = performance.now();
+    const t0 = tip(), bob = q("#f2-bob"); resetBob(); bob.className = "f2-bob on"; const dur = 650, start = performance.now();
     const f = ts => { const k = Math.min(1, (ts - start) / dur); const x = t0.x + (lx - t0.x) * k, y = t0.y + (SURF - t0.y) * k - Math.sin(k * Math.PI) * 90;
       bob.style.left = x + "px"; bob.style.top = y + "px"; line(t0, { x, y }, 10 * (1 - k)); drawRod();
       if (k < 1) { raf = requestAnimationFrame(f); return; }
@@ -501,23 +501,39 @@
     const start = performance.now(), t0 = tip(), id = st.lureId;
     // Sinks for 0.9 s, then idles for the whole lure: a slow bob and sway, the
     // underwater line waving with it; a nibble dips it, a hooked fish jerks it.
-    st.baitDip = 0;
-    const l2 = q("#f2-line2");
+    st.baitDip = 0; st.bobSub = 0; st.bobRing = 0;
+    const l2 = q("#f2-line2"), bobEl = q("#f2-bob");
     const sink = ts => {
       if (st.lureId !== id || st.phase !== "lure") return;
       const t = (ts - start) / 1000, k = Math.min(1, t / .9);
-      let x = lx, y = SURF + (hookY - SURF) * k, rot = 0, sway = 0;
+      let x = lx, y = SURF + (hookY - SURF) * k, rot = 0, sway = 0, surf = 0, bobTilt = 0;
       if (k >= 1) {
         const it = t - .9, ease = Math.min(1, it / .8);            // fade the idle in after the sink
-        y += Math.sin(it * 2.85) * 2 * ease;                        // ~2.2 s bob, ±2 px
-        sway = Math.sin(it * 1.7 + .6) * 3 * ease;                  // line drifts ±3 px
+        y += Math.sin(it * 2.85) * 2 * ease;                        // ~2.2 s bob, ±2 px (Oni: good as is)
+        sway = Math.sin(it * 1.7 + .6) * 3 * ease;                  // line drifts ±3 px (Oni: keep)
         x += sway * .6; rot = Math.sin(it * 2.1) * 6 * ease;
         const dip = Math.max(0, 1 - (ts - st.baitDip) / 450); y += Math.sin(dip * Math.PI) * 5;
-        if (q("#f2-bang")) { x += (Math.random() - .5) * 3; y += (Math.random() - .5) * 2.5; rot += (Math.random() - .5) * 14; }
+        // The float, like a real one (Oni, 11-13): rides ABOVE the water with a gentle bob and tilt;
+        // a nibble pulls it half under for a beat; a hooked fish drags it UNDER and keeps it there.
+        const hooked = !!q("#f2-bang");
+        const sub = st.bobSub = (st.bobSub ?? 0) + ((hooked ? 1 : 0) - (st.bobSub ?? 0)) * Math.min(1, .016 * 14);
+        surf = -3 + (Math.sin(it * 4.4) * 2.2 + Math.sin(it * 1.3) * .8) * ease * (1 - sub)   // above the surface, ~1.4 s bob
+             + Math.sin(dip * Math.PI) * 7                                                     // nibble: half under
+             + sub * (15 + (Math.random() - .5) * 3);                                          // hooked: under, twitching
+        bobTilt = Math.sin(it * 3.1) * 7 * ease * (1 - sub) + sub * (Math.random() - .5) * 20;
+        if (!hooked && sub < .1 && ts - (st.bobRing ?? 0) > 2600) { st.bobRing = ts; ring(lx); }
+        if (hooked) { x += (Math.random() - .5) * 3; y += (Math.random() - .5) * 2.5; rot += (Math.random() - .5) * 14; }
       }
       hook.style.left = x + "px"; hook.style.top = y + "px"; hook.style.transform = rot ? `rotate(${rot.toFixed(1)}deg)` : "";
-      line(t0, { x: lx, y: SURF }, 14);
-      if (l2) { const my = (SURF + 4 + y) / 2; l2.setAttribute("d", `M${lx},${SURF + 4} Q${(lx + sway * 1.6).toFixed(1)},${my.toFixed(1)} ${x.toFixed(1)},${y.toFixed(1)}`); }
+      const by = SURF + surf;
+      if (bobEl) {
+        const sub = st.bobSub ?? 0;
+        bobEl.style.animation = "none";   // the CSS float/dip/under loops would stack on this
+        bobEl.style.top = by + "px"; bobEl.style.transform = `rotate(${bobTilt.toFixed(1)}deg)`;
+        bobEl.style.opacity = String(1 - sub * .55); bobEl.style.filter = sub > .05 ? `saturate(${1 - sub * .6}) hue-rotate(${-sub * 25}deg) brightness(${1 - sub * .25})` : "";
+      }
+      line(t0, { x: lx, y: by }, 14);
+      if (l2) { const my = (by + 4 + y) / 2; l2.setAttribute("d", `M${lx},${(by + 4).toFixed(1)} Q${(lx + sway * 1.6).toFixed(1)},${my.toFixed(1)} ${x.toFixed(1)},${y.toFixed(1)}`); }
       raf = requestAnimationFrame(sink);
     };
     raf = requestAnimationFrame(sink);
@@ -567,11 +583,12 @@
     ["#f2-lhud", "#f2-bang"].forEach(s => q(s)?.remove());
     if (st.v?.e) st.v.e.remove(); st.v = null;
     const hook = q("#f2-hook"); if (hook) { hook.className = "f2-hook"; hook.style.transform = ""; }
-    const bob = q("#f2-bob"); if (bob) bob.className = "f2-bob";
+    const bob = q("#f2-bob"); if (bob) bob.className = "f2-bob"; resetBob();
     line(null); line(null, null, 0, "#f2-line2"); drawRod();
     const a = q("#f2-angler"); if (a) a.className = "f2-angler";
     stop(waitLoop); waitLoop = null;
   }
+  function resetBob() { const b = q("#f2-bob"); if (b) for (const p of ["animation", "transform", "opacity", "filter"]) b.style[p] = ""; }
   function lureOut() {
     const v = st.v; if (v && v.state !== "gone") swimOff(v, 700);
     st.lureId++; st.phase = "end"; stop(waitLoop); waitLoop = null; q("#f2-lhud")?.remove(); q("#f2-bang")?.remove(); q("#f2-hold").hidden = true;
@@ -682,6 +699,7 @@
 
   // Lane, meter, reel and HUD — owner and spectators draw the same thing.
   function battleVisual({ tier, barH, timeout, advKey }) {
+    st.fSub = 0;
     const K = LANE_H / T().H, lx = st.lx;
     const lane = fx(`<div class="f2-zone" id="f2-zone"></div><div class="f2-chest" id="f2-chest"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="19" fill="none" stroke="rgba(0,0,0,.45)" stroke-width="3"/><circle id="f2-carc" cx="22" cy="22" r="19" fill="none" stroke="#ffd66b" stroke-width="3" stroke-dasharray="119.4" stroke-dashoffset="119.4" transform="rotate(-90 22 22)"/></svg><div class="bob"><img class="base" src="${IMG.chest}" alt=""><img class="tint" src="${IMG.chest}" alt=""><img class="shade" src="${IMG.chest}" alt=""></div></div>`, lx - 40, LANE_TOP - 6, "f2-lane");
     lane.id = "f2-lane"; lane.style.height = (LANE_H + 12) + "px";
@@ -716,6 +734,20 @@
       }
     }
     const mouth = { x: fxp + (s.dir || 1) * st.len * .32, y: fy }; const t = drawRod(s.held ? 22 : 10, mouth); line(t, mouth, s.held ? 2 : 10);
+    // The float stays on the line where it meets the water (Oni, 11-13, real fishing): it rides the
+    // surface while the fish is in the bar, and is dragged under while the fish is out of it or running.
+    const bob = q("#f2-bob");
+    if (bob && mouth.y > SURF && t.y < SURF) {
+      const u = (SURF - t.y) / (mouth.y - t.y), bx = t.x + u * (mouth.x - t.x);
+      const want = (!s.inZone || s.running) ? 1 : 0;
+      const sub = st.fSub = (st.fSub ?? 0) + (want - (st.fSub ?? 0)) * .12;
+      const by = SURF - 3 + Math.sin(ts / 1000 * 4.4) * 2.2 * (1 - sub) + sub * (14 + (Math.random() - .5) * 3);
+      bob.className = "f2-bob on"; bob.style.animation = "none";
+      bob.style.left = bx + "px"; bob.style.top = by + "px";
+      bob.style.transform = `rotate(${(Math.sin(ts / 1000 * 3.1) * 7 * (1 - sub) + sub * (Math.random() - .5) * 20).toFixed(1)}deg)`;
+      bob.style.opacity = String(1 - sub * .55);
+      bob.style.filter = sub > .05 ? `saturate(${1 - sub * .6}) hue-rotate(${-sub * 25}deg) brightness(${1 - sub * .25})` : "";
+    }
   }
 
   function startBattle() {
@@ -780,6 +812,7 @@
   function end(won) {
     cancelAnimationFrame(raf); raf = 0; held = false; st.phase = "end"; stop(reelLoop); reelLoop = null; q("#f2-hold").hidden = true;
     ["#f2-lane", "#f2-meter", "#f2-hud", "#f2-chesthud", "#f2-reel"].forEach(s => q(s)?.remove());
+    { const b = q("#f2-bob"); if (b) b.className = "f2-bob"; resetBob(); }
     const fe = st.fe; if (!fe) return;
     const sx = parseFloat(fe.style.left) + st.len / 2, sy = parseFloat(fe.style.top) + st.len / 4;
     if (st.owner) lure("end", { won });
@@ -1059,7 +1092,7 @@
 #oni-camp-fish-ovl .btn.ghost{background:transparent;color:var(--sm-ink);box-shadow:none}
 #oni-camp-fish-ovl .key{display:inline-block;padding:0 7px;margin:0 2px;border-radius:5px;border:1px solid var(--sm-gold-2);border-bottom-width:3px;background:#fffaf0;font:700 11px var(--f-ui);color:var(--sm-ink)}
 #oni-camp-fish-ovl .f2{position:absolute;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(3,8,18,.55);font-family:var(--f-blue);user-select:none;-webkit-user-select:none;animation:fsh-f2in .35s ease}
-@keyframes f2in{from{opacity:0}}
+@keyframes fsh-f2in{from{opacity:0}}
 #oni-camp-fish-ovl .f2-shell{width:820px;display:flex;flex-direction:column;gap:6px}
 #oni-camp-fish-ovl .f2-head{display:flex;align-items:center;gap:12px;padding:6px 14px;flex:none}
 #oni-camp-fish-ovl .f2-title{font:800 18px var(--f-blue);letter-spacing:.06em}
@@ -1078,13 +1111,13 @@
 #oni-camp-fish-ovl .f2-caus{position:absolute;inset:-40px;opacity:.09;mix-blend-mode:screen;filter:blur(2px);
   background:radial-gradient(circle at 20% 30%,transparent 0 14px,rgba(200,255,255,.9) 15px 16px,transparent 17px) 0 0/58px 46px,radial-gradient(circle at 70% 60%,transparent 0 10px,rgba(200,255,255,.8) 11px 12px,transparent 13px) 0 0/44px 38px;
   animation:fsh-caus 7s linear infinite;-webkit-mask-image:linear-gradient(180deg,#000,transparent 55%);mask-image:linear-gradient(180deg,#000,transparent 55%)}
-@keyframes caus{to{transform:translate(58px,46px)}}
+@keyframes fsh-caus{to{transform:translate(58px,46px)}}
 #oni-camp-fish-ovl .f2-rays{position:absolute;inset:0;background:repeating-linear-gradient(100deg,rgba(170,255,250,.08) 0 26px,transparent 26px 80px);-webkit-mask-image:linear-gradient(180deg,#000,transparent 80%);mask-image:linear-gradient(180deg,#000,transparent 80%);animation:fsh-rays 10s ease-in-out infinite alternate}
-@keyframes rays{from{transform:translateX(-30px)}to{transform:translateX(30px)}}
+@keyframes fsh-rays{from{transform:translateX(-30px)}to{transform:translateX(30px)}}
 #oni-camp-fish-ovl .f2-surf{position:absolute;left:0;right:0;top:124px;height:8px;background:linear-gradient(180deg,rgba(220,255,255,0),rgba(220,255,255,.75) 45%,rgba(120,230,240,0));filter:blur(.4px)}
 #oni-camp-fish-ovl .f2-mote{position:absolute;width:3px;height:3px;border-radius:50%;background:#bff;box-shadow:0 0 6px #8ff;animation:fsh-mote linear infinite;opacity:0}
 #oni-camp-fish-ovl .f2-mote.v{background:#e2c6ff;box-shadow:0 0 6px #b58cff}
-@keyframes mote{0%{opacity:0;transform:translateY(0)}20%{opacity:.85}100%{opacity:0;transform:translateY(-110px)}}
+@keyframes fsh-mote{0%{opacity:0;transform:translateY(0)}20%{opacity:.85}100%{opacity:0;transform:translateY(-110px)}}
 #oni-camp-fish-ovl .f2-crys{position:absolute;bottom:0;width:22px;background:linear-gradient(180deg,#d6b8ff,#7a4fd0 60%,#3a1f78);clip-path:polygon(50% 0,100% 30%,85% 100%,15% 100%,0 30%);opacity:.75;filter:drop-shadow(0 0 8px rgba(181,140,255,.8))}
 #oni-camp-fish-ovl .f2-ledge{position:absolute;left:0;top:118px;width:210px;bottom:0;
   background:radial-gradient(40px 26px at 30% 22%,rgba(255,255,255,.10),transparent 70%),radial-gradient(60px 30px at 62% 48%,rgba(181,140,255,.16),transparent 70%),radial-gradient(50px 24px at 22% 70%,rgba(0,0,0,.25),transparent 70%),linear-gradient(180deg,#6a6078 0,#463c58 26%,#2a2238 60%,#17121f);
@@ -1097,27 +1130,27 @@
 #oni-camp-fish-ovl .f2-angler.reel{animation:fsh-a-reel .6s ease-in-out infinite}
 #oni-camp-fish-ovl .f2-angler.yank{animation:fsh-a-yank .9s cubic-bezier(.3,.7,.3,1)}
 #oni-camp-fish-ovl .f2-angler.lose{animation:fsh-a-lose .7s ease forwards}
-@keyframes a-cast{25%{transform:scaleX(-1) translateY(-6px) rotate(8deg)}60%{transform:scaleX(-1) translateY(2px) rotate(-5deg)}}
-@keyframes a-wait{50%{transform:scaleX(-1) translateY(2px) rotate(-2deg)}}
-@keyframes a-reel{50%{transform:scaleX(-1) translateX(-2px) rotate(4deg)}}
-@keyframes a-yank{12%{transform:scaleX(-1) translateX(-8px) rotate(14deg)}35%{transform:scaleX(-1) translateY(-22px) rotate(-6deg)}55%{transform:scaleX(-1)}72%{transform:scaleX(-1) translateY(-10px)}86%{transform:scaleX(-1)}}
-@keyframes a-lose{to{transform:scaleX(-1) translateY(6px) rotate(14deg);opacity:.8}}
+@keyframes fsh-a-cast{25%{transform:scaleX(-1) translateY(-6px) rotate(8deg)}60%{transform:scaleX(-1) translateY(2px) rotate(-5deg)}}
+@keyframes fsh-a-wait{50%{transform:scaleX(-1) translateY(2px) rotate(-2deg)}}
+@keyframes fsh-a-reel{50%{transform:scaleX(-1) translateX(-2px) rotate(4deg)}}
+@keyframes fsh-a-yank{12%{transform:scaleX(-1) translateX(-8px) rotate(14deg)}35%{transform:scaleX(-1) translateY(-22px) rotate(-6deg)}55%{transform:scaleX(-1)}72%{transform:scaleX(-1) translateY(-10px)}86%{transform:scaleX(-1)}}
+@keyframes fsh-a-lose{to{transform:scaleX(-1) translateY(6px) rotate(14deg);opacity:.8}}
 #oni-camp-fish-ovl .f2-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:6}
 #oni-camp-fish-ovl .f2-bob{position:absolute;width:12px;height:14px;margin:-7px 0 0 -6px;z-index:7;display:none}
 #oni-camp-fish-ovl .f2-bob::before{content:"";position:absolute;inset:0;border-radius:50% 50% 45% 45%;background:linear-gradient(180deg,#fff 0 40%,#ff4d3d 41%);box-shadow:0 0 6px rgba(255,90,70,.7)}
 #oni-camp-fish-ovl .f2-bob.on{display:block}
 #oni-camp-fish-ovl .f2-bob.float{animation:fsh-bob 1.4s ease-in-out infinite}
 #oni-camp-fish-ovl .f2-bob.dip{animation:fsh-dip .32s ease-in-out 2}
-@keyframes bob{50%{transform:translateY(-3px)}}
-@keyframes dip{50%{transform:translateY(8px)}}
+@keyframes fsh-bob{50%{transform:translateY(-3px)}}
+@keyframes fsh-dip{50%{transform:translateY(8px)}}
 #oni-camp-fish-ovl .f2-hook{position:absolute;width:16px;height:16px;margin:-4px 0 0 -8px;z-index:7;display:none;image-rendering:pixelated}
 #oni-camp-fish-ovl .f2-hook.on{display:block}
 #oni-camp-fish-ovl .f2-ring{position:absolute;width:44px;height:10px;margin:-5px 0 0 -22px;border:1.5px solid rgba(220,255,255,.75);border-radius:50%;z-index:6;animation:fsh-ring 1.4s ease-out forwards;pointer-events:none}
-@keyframes ring{from{transform:scale(.25);opacity:.9}to{transform:scale(1.9);opacity:0}}
+@keyframes fsh-ring{from{transform:scale(.25);opacity:.9}to{transform:scale(1.9);opacity:0}}
 #oni-camp-fish-ovl .f2-drop{position:absolute;width:5px;height:5px;border-radius:50%;background:#dff;z-index:8;animation:fsh-drop .6s ease-out forwards;pointer-events:none}
-@keyframes drop{to{transform:translate(var(--dx),var(--dy));opacity:0}}
+@keyframes fsh-drop{to{transform:translate(var(--dx),var(--dy));opacity:0}}
 #oni-camp-fish-ovl .f2-bub{position:absolute;width:6px;height:6px;border-radius:50%;border:1px solid rgba(220,255,255,.8);z-index:6;animation:fsh-bub 1.1s ease-out forwards;pointer-events:none}
-@keyframes bub{to{transform:translate(var(--dx),-50px);opacity:0}}
+@keyframes fsh-bub{to{transform:translate(var(--dx),-50px);opacity:0}}
 #oni-camp-fish-ovl .f2-fish{position:absolute;z-index:6;transform-origin:50% 50%;pointer-events:none;will-change:transform,left,top;opacity:.82}
 #oni-camp-fish-ovl .f2-fish img{display:block;width:100%;height:100%;image-rendering:pixelated;filter:blur(.3px)}
 #oni-camp-fish-ovl .f2-fish.amb{opacity:.34}
@@ -1130,21 +1163,21 @@
   background:linear-gradient(180deg,#ff5a4a,#c41e1e);box-shadow:0 0 12px rgba(255,90,70,.8);animation:fsh-mk .28s ease backwards;text-shadow:0 1px 0 #600}
 #oni-camp-fish-ovl .f2-mark:nth-child(2){animation-delay:.07s}
 #oni-camp-fish-ovl .f2-mark:nth-child(3){animation-delay:.14s}
-@keyframes mk{from{transform:translateY(-10px) scale(1.6);opacity:0}}
+@keyframes fsh-mk{from{transform:translateY(-10px) scale(1.6);opacity:0}}
 #oni-camp-fish-ovl .f2-bob.under{animation:fsh-under .5s ease-in-out infinite}
-@keyframes under{0%,100%{transform:translateY(10px)}50%{transform:translateY(14px) translateX(2px)}}
+@keyframes fsh-under{0%,100%{transform:translateY(10px)}50%{transform:translateY(14px) translateX(2px)}}
 #oni-camp-fish-ovl .f2-bang{position:absolute;z-index:11;pointer-events:none;transform:translate(-50%,-100%)}
 #oni-camp-fish-ovl .f2-bang b{position:relative;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:#fff;color:#e0331f;font:900 28px/1 var(--f-blue);
   border:2px solid #0b1640;box-shadow:0 3px 0 rgba(0,0,0,.35);text-shadow:none;animation:fsh-bangPop .3s cubic-bezier(.3,1.7,.5,1),fsh-bangWob .5s ease-in-out .3s infinite}
 #oni-camp-fish-ovl .f2-bang b::after{content:"";position:absolute;left:9px;bottom:-9px;border-left:5px solid transparent;border-right:7px solid transparent;border-top:11px solid #fff;filter:drop-shadow(0 2px 0 #0b1640)}
-@keyframes bangPop{from{transform:scale(.2) translateY(14px);opacity:0}}
-@keyframes bangWob{50%{transform:rotate(-7deg) scale(1.06)}}
+@keyframes fsh-bangPop{from{transform:scale(.2) translateY(14px);opacity:0}}
+@keyframes fsh-bangWob{50%{transform:rotate(-7deg) scale(1.06)}}
 #oni-camp-fish-ovl .f2-bang i{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;border:3px solid rgba(255,214,107,.95);box-sizing:border-box}
 #oni-camp-fish-ovl .f2-bang i.zone{border-color:#fff;box-shadow:0 0 10px 2px rgba(255,214,107,.9)}
 #oni-camp-fish-ovl .f2-advfx{position:absolute;z-index:12;pointer-events:none;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;border:4px solid #ffd66b;animation:fsh-advRing .55s ease-out forwards}
-@keyframes advRing{from{transform:scale(1);opacity:1}to{transform:scale(3.4);opacity:0}}
+@keyframes fsh-advRing{from{transform:scale(1);opacity:1}to{transform:scale(3.4);opacity:0}}
 #oni-camp-fish-ovl .f2-advtx{position:absolute;z-index:12;pointer-events:none;transform:translate(-50%,-100%);font:900 15px var(--f-blue);letter-spacing:.08em;color:#ffe9a8;white-space:nowrap;text-shadow:0 2px 0 #7a4a00,0 0 8px rgba(255,214,107,.9);animation:fsh-advTx .9s ease-out forwards}
-@keyframes advTx{0%{transform:translate(-50%,-60%) scale(.6);opacity:0}20%{transform:translate(-50%,-100%) scale(1.1);opacity:1}100%{transform:translate(-50%,-160%);opacity:0}}
+@keyframes fsh-advTx{0%{transform:translate(-50%,-60%) scale(.6);opacity:0}20%{transform:translate(-50%,-100%) scale(1.1);opacity:1}100%{transform:translate(-50%,-160%);opacity:0}}
 #oni-camp-fish-ovl .f2-advfx.nice{border-color:#bfe6ff;border-width:3px;animation-duration:.45s}
 #oni-camp-fish-ovl .f2-advtx.nice{font-size:13px;color:#e6f6ff;text-shadow:0 2px 0 #1a4a7a,0 0 7px rgba(140,210,255,.85)}
 #oni-camp-fish-ovl .f2-hud .adv.nice{background:linear-gradient(180deg,#e6f6ff,#7fbbe8);color:#0b2a4a}
@@ -1168,9 +1201,9 @@
 #oni-camp-fish-ovl .f2-zone.in{background:linear-gradient(90deg,rgba(130,240,110,.5),rgba(220,255,200,.72) 50%,rgba(130,240,110,.5));box-shadow:0 0 18px rgba(160,255,160,.7);border-color:#fff}
 #oni-camp-fish-ovl .f2-chest{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;z-index:4;display:none}
 #oni-camp-fish-ovl .f2-chest.on{display:block;animation:fsh-ch-sink 1s ease-out both}
-@keyframes ch-sink{from{opacity:0;transform:translateY(-26px)}to{opacity:1;transform:none}}
+@keyframes fsh-ch-sink{from{opacity:0;transform:translateY(-26px)}to{opacity:1;transform:none}}
 #oni-camp-fish-ovl .f2-chest .bob{position:absolute;inset:0;animation:fsh-ch-bob 2.6s ease-in-out infinite}
-@keyframes ch-bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-3px) rotate(3deg)}}
+@keyframes fsh-ch-bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-3px) rotate(3deg)}}
 #oni-camp-fish-ovl .f2-chest .bob img{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
 #oni-camp-fish-ovl .f2-chest .base{filter:brightness(.82) saturate(.7)}
 #oni-camp-fish-ovl .f2-chest .tint{filter:brightness(0) invert(1) sepia(1) hue-rotate(165deg) saturate(4);opacity:.34;mix-blend-mode:multiply}
@@ -1179,7 +1212,7 @@
 #oni-camp-fish-ovl .f2-chest svg{position:absolute;inset:-6px;width:46px;height:46px;opacity:0;transition:opacity .4s ease 1.5s}
 #oni-camp-fish-ovl .f2-chest.revealed svg{opacity:1}
 #oni-camp-fish-ovl .f2-chest.on.got{animation:fsh-ch-got .7s ease forwards}
-@keyframes ch-got{to{transform:translateY(-40px) scale(1.2);opacity:0}}
+@keyframes fsh-ch-got{to{transform:translateY(-40px) scale(1.2);opacity:0}}
 #oni-camp-fish-ovl .f2-meter{position:absolute;width:24px;z-index:8;border-radius:12px;padding:3px}
 #oni-camp-fish-ovl .f2-mtrack{position:relative;width:100%;height:100%;border-radius:9px;background:#050a26;overflow:hidden}
 #oni-camp-fish-ovl .f2-mfill{position:absolute;left:0;right:0;bottom:0;border-radius:9px;will-change:height}
@@ -1267,14 +1300,14 @@
 #oni-camp-fish-ovl .f2-result.wg .f2-lost{font:400 13px var(--f-ui);color:var(--sm-ink-soft)}
 #oni-camp-fish-ovl .f2-fxc{position:absolute;inset:0;width:900px;height:600px;z-index:60;pointer-events:none}
 #oni-camp-fish-ovl .f2-flash{position:absolute;inset:0;z-index:70;background:#fff;pointer-events:none;animation:fsh-flash .45s ease-out forwards}
-@keyframes flash{0%{opacity:0}18%{opacity:1}100%{opacity:0}}
+@keyframes fsh-flash{0%{opacity:0}18%{opacity:1}100%{opacity:0}}
 #oni-camp-fish-ovl .f2-result{width:380px;padding:14px 16px;align-items:center;text-align:center;animation:fsh-pop .35s cubic-bezier(.3,1.4,.5,1)}
-@keyframes pop{from{transform:scale(.85);opacity:0}}
+@keyframes fsh-pop{from{transform:scale(.85);opacity:0}}
 #oni-camp-fish-ovl .f2-rh{font:800 14px var(--f-blue);letter-spacing:.2em;color:var(--gold)}
 #oni-camp-fish-ovl .f2-slot{width:96px;height:96px;padding:6px;border-radius:10px;border:2px solid #fff;background:linear-gradient(180deg,#0a1238,#1a2c78);box-shadow:inset 0 0 0 2px #050a26,0 0 18px rgba(127,230,255,.4)}
 #oni-camp-fish-ovl .f2-slot img{width:100%;height:100%;border-radius:5px;display:block;animation:fsh-rv .7s ease}
 #oni-camp-fish-ovl .f2-slot.lost img{image-rendering:pixelated;object-fit:contain;filter:brightness(0) drop-shadow(0 0 1px #7fe6ff);animation:none;opacity:.8}
-@keyframes rv{0%{filter:brightness(4);transform:scale(.6)}100%{filter:none;transform:none}}
+@keyframes fsh-rv{0%{filter:brightness(4);transform:scale(.6)}100%{filter:none;transform:none}}
 #oni-camp-fish-ovl .f2-rn{font:800 20px var(--f-blue)}
 #oni-camp-fish-ovl .f2-tags{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
 #oni-camp-fish-ovl .f2-tg{font:800 11px var(--f-blue);padding:2px 8px;border-radius:6px;border:1px solid rgba(255,255,255,.6);background:rgba(0,0,0,.25)}

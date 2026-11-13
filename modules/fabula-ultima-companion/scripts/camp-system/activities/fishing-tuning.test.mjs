@@ -150,5 +150,19 @@ if (MOCK && existsSync(MOCK)) {
   }
 } else console.log("(mockup source not given: set FISH_MOCKUP=<template4.html> to diff the painter against it)");
 
+// ── UI CSS: every animation the overlay names must have its @keyframes ─────
+// (the first port renamed the references to fsh-* but not the keyframes, which
+// silently killed every CSS animation in the screen)
+{
+  const ui = readFileSync(new URL("./activity-fishing-ui.js", import.meta.url), "utf8");
+  const kf = new Set([...ui.matchAll(/@keyframes ([\w-]+)\{/g)].map(m => m[1]));
+  const refs = new Set();
+  for (const m of ui.matchAll(/animation:([^;}`]*)/g)) for (const part of m[1].split(",")) {
+    const w = part.trim().split(/\s+/)[0]; if (w && w !== "none" && !/^[\d.]/.test(w) && !w.startsWith("$")) refs.add(w);
+  }
+  eq("every CSS animation has its keyframes", [...refs].filter(r => !kf.has(r)), []);
+  ok("keyframes are scoped (fsh-)", [...kf].every(k => k.startsWith("fsh-")));
+}
+
 console.log(`${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
