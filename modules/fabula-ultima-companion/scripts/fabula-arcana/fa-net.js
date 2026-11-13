@@ -1,0 +1,31 @@
+// scripts/fabula-arcana/fa-net.js
+// Socket transport. Every message is addressed: { type: MSG, op, from, to, sid, data }.
+//   to = a user id (only that client acts) or null (everyone). A message to yourself is delivered locally
+//   (Foundry never echoes a socket emit back to its sender).
+//
+// Ops — client → host:  hello-client, challenge-npc, challenge-pvp, accept, decline, hello, duel, spectate
+//       host → client:  open, duel, close, invite, status, notify
+
+import { SOCKET, MSG, TAG } from "./fa-const.js";
+
+const handlers = new Map();
+export const on = (op, fn) => handlers.set(op, fn);
+
+function dispatch(env) {
+  if (!env || env.type !== MSG) return;
+  if (env.to && env.to !== game.user.id) return;
+  const fn = handlers.get(env.op);
+  if (!fn) return;
+  Promise.resolve().then(() => fn(env.data ?? {}, env)).catch((e) => console.error(TAG, `handler ${env.op}`, e));
+}
+
+export function send(to, op, data = {}, sid = null) {
+  const env = { type: MSG, op, from: game.user.id, to: to ?? null, sid, data };
+  if (to === game.user.id) return dispatch(env);
+  game.socket.emit(SOCKET, env);
+  if (to === null) dispatch(env);   // broadcasts reach this client too
+}
+
+export function install() {
+  game.socket.on(SOCKET, dispatch);
+}

@@ -587,7 +587,8 @@
     "scripts/party-talk/party-talk-ui.js",
     "scripts/party-talk/party-talk-input.js",
     "scripts/pause-screen/pause-clock.js",
-    "scripts/pause-screen/pause-screen.js"
+    "scripts/pause-screen/pause-screen.js",
+    "scripts/fabula-arcana/fa-boot.js"
   ],
   "styles": [
     "styles/style.css",

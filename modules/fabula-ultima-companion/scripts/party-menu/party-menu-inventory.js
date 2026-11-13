@@ -59,6 +59,7 @@ export const ITEM_TYPES = {
   recipe: { order: 5, label: "Recipes", icon: "fa-scroll" },
   material: { order: 6, label: "Materials", icon: "fa-gem" },
   key: { order: 7, label: "Key Items", icon: "fa-key" },
+  card: { order: 7.5, label: "Arcana Cards", icon: "fa-diamond" },   // Fabula Arcana cards (scripts/fabula-arcana)
   other: { order: 8, label: "Other", icon: "fa-box" },
 };
 
@@ -69,6 +70,7 @@ export const ITEM_FILTERS = [
   { id: "recipe", label: "Recipe", icon: "fa-scroll" },
   { id: "material", label: "Material", icon: "fa-gem" },
   { id: "key", label: "Key", icon: "fa-key" },
+  { id: "card", label: "Cards", icon: "fa-diamond" },
 ];
 
 export function itemType(item) {
