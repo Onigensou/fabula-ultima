@@ -64,7 +64,7 @@
     wlp: "Adds one WLP stage on top: more reel time and a stronger pull toward rare fish.",
   };
   const ROD_REEL = { mig: 6, dex: 4, ins: 5, wlp: 5 };
-  const PLAIN_ROD = { id: "plain", name: "Plain Rod", attr: null, col: "#b98a52", desc: "Your everyday rod. No bonus." };
+  const PLAIN_ROD = { id: "plain", name: "Plain Rod", attr: null, col: "#9a7a55", img: FORGE + "Item%20Icon/Fishing%20Rod/Wilderness_Rod.png", desc: "Your everyday rod. No bonus." };
 
   // Fight lane geometry (scene px). The rules run in a 300 px lane (T().H); the lane drawn is 220 px.
   const SURF = 128, LANE_TOP = 140, LANE_H = 220;
@@ -144,17 +144,17 @@
   // ── tackle data ───────────────────────────────────────────────────────────
   function rodSVG(col, reel) { return `<svg viewBox="0 0 56 56"><path d="M10 48 L46 9" stroke="#1a0f06" stroke-width="5" stroke-linecap="round"/><path d="M10 48 L46 9" stroke="${col}" stroke-width="3" stroke-linecap="round"/><path d="M10 48 L18 39" stroke="#3a2414" stroke-width="5" stroke-linecap="round"/><circle cx="19" cy="42" r="${reel}" fill="#e8dcc4" stroke="#3a2a1c" stroke-width="2"/><circle cx="19" cy="42" r="2" fill="#3a2a1c"/><path d="M46 9 Q52 26 44 40" stroke="#f6f1e6" stroke-width="1" fill="none"/><path d="M44 40 q3 4 -1 6" stroke="#f6f1e6" stroke-width="1.5" fill="none"/></svg>`; }
   const NONE_SVG = `<svg viewBox="0 0 56 56"><path d="M30 10 V34 q0 10 -9 10 q-8 0 -8 -8" stroke="#f6f1e6" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M13 36 l-4 -4" stroke="#f6f1e6" stroke-width="3" stroke-linecap="round"/></svg>`;
-  const thumb = o => o.img ? `<img src="${esc(o.img)}" alt="">` : o.svg;
+  const thumb = o => o.img ? `<img src="${esc(o.img)}" alt=""${o.art ? ' class="art"' : ""}>` : o.svg;
 
   function _loadTackle(actor) {
-    rods = [{ ...PLAIN_ROD, svg: rodSVG(PLAIN_ROD.col, 5) }];
+    rods = [{ ...PLAIN_ROD, art: true, svg: rodSVG(PLAIN_ROD.col, 5) }];
     const seenRod = new Set();
     for (const it of actor?.items ?? []) {
       const f = it.getFlag?.(MODULE_ID, "fishingRod") ?? it.flags?.[MODULE_ID]?.fishingRod;
       if (!f || !T().ROD_ATTRS.includes(f.attr) || seenRod.has(it.name)) continue;
       seenRod.add(it.name);
       const col = f.color || "#b98a52";
-      rods.push({ id: it.id, name: it.name, attr: f.attr, col, svg: rodSVG(col, ROD_REEL[f.attr] ?? 5), desc: ROD_DESC[f.attr] });
+      rods.push({ id: it.id, name: it.name, attr: f.attr, col, img: it.img, art: true, svg: rodSVG(col, ROD_REEL[f.attr] ?? 5), desc: ROD_DESC[f.attr] });
     }
     const describe = globalThis.FUCompanion?.api?.cooking?.describeItem;
     baits = [{ ...T().BARE_HOOK, svg: NONE_SVG, q: "∞" }];
@@ -170,7 +170,7 @@
       const isFish = st.fishNames?.has(it.name) || !!it.flags?.[MODULE_ID]?.fish;
       baits.push({ id: it.id, ids: [it.id], name: it.name, img: it.img, q: qty, rarity: d.rarity, ...T().baitEffect({ taste: d.taste, rarity: d.rarity, isFish }) });
     }
-    for (const b of baits) preload(b.img);
+    for (const o of [...rods, ...baits]) preload(o.img);
     const last = lastPick[st.actorId] ?? {};
     rodI  = Math.max(0, rods.findIndex(r => r.name === last.rod));
     baitI = Math.max(0, baits.findIndex(b => b.name === last.bait));
@@ -257,7 +257,7 @@
   const msg = h => { const e = q("#f2-msg"); if (e) e.innerHTML = h; };
   function renderMini() {
     const a = q("#f2-mrod"), b = q("#f2-mbait");
-    if (a) a.innerHTML = st.owner || st.tackle ? `${st.owner ? rod().svg : st.tackle.rodSvg}${esc(st.owner ? rod().name : st.tackle.rod)}` : "";
+    if (a) a.innerHTML = st.owner || st.tackle ? `${st.owner ? thumb(rod()) : st.tackle.rodSvg}${esc(st.owner ? rod().name : st.tackle.rod)}` : "";
     if (b) b.innerHTML = st.owner || st.tackle ? `${st.owner ? thumb(bait()) : st.tackle.baitThumb}${esc(st.owner ? bait().name : st.tackle.bait)}` : "";
     for (const e of [a, b]) if (e) e.style.visibility = e.innerHTML ? "" : "hidden";
   }
@@ -443,7 +443,7 @@
     renderMini();
     msg(`Press <span class="f2-key">SPACE</span> to cast. Higher means farther, and bigger fish.`);
     send(CAMP.MSG.FISHING_BEGIN, { actorId: st.actorId, round: st.round, gaugeSpeed: d.gaugeSpeed, marks,
-      tackle: { rod: rod().name, rodCol: rod().col, rodSvg: rod().svg, bait: bait().name, baitThumb: thumb(bait()) } });
+      tackle: { rod: rod().name, rodCol: rod().col, rodSvg: thumb(rod()), bait: bait().name, baitThumb: thumb(bait()) } });
     runGauge(d.gaugeSpeed);
   }
   function lockCast() {
@@ -499,7 +499,27 @@
     hook.src = img; hook.className = "f2-hook on";
     msg(lim ? "Strike when you see <b>!</b>" : `Strike when you see <b>!</b> · <span class="f2-key">ESC</span> reels in`);
     const start = performance.now(), t0 = tip(), id = st.lureId;
-    const sink = ts => { if (st.lureId !== id) return; const k = Math.min(1, (ts - start) / 900); const y = SURF + (hookY - SURF) * k; hook.style.left = lx + "px"; hook.style.top = y + "px"; line(t0, { x: lx, y: SURF }, 14); line({ x: lx, y: SURF + 4 }, { x: lx, y }, 0, "#f2-line2"); if (k < 1) raf = requestAnimationFrame(sink); };
+    // Sinks for 0.9 s, then idles for the whole lure: a slow bob and sway, the
+    // underwater line waving with it; a nibble dips it, a hooked fish jerks it.
+    st.baitDip = 0;
+    const l2 = q("#f2-line2");
+    const sink = ts => {
+      if (st.lureId !== id || st.phase !== "lure") return;
+      const t = (ts - start) / 1000, k = Math.min(1, t / .9);
+      let x = lx, y = SURF + (hookY - SURF) * k, rot = 0, sway = 0;
+      if (k >= 1) {
+        const it = t - .9, ease = Math.min(1, it / .8);            // fade the idle in after the sink
+        y += Math.sin(it * 2.85) * 2 * ease;                        // ~2.2 s bob, ±2 px
+        sway = Math.sin(it * 1.7 + .6) * 3 * ease;                  // line drifts ±3 px
+        x += sway * .6; rot = Math.sin(it * 2.1) * 6 * ease;
+        const dip = Math.max(0, 1 - (ts - st.baitDip) / 450); y += Math.sin(dip * Math.PI) * 5;
+        if (q("#f2-bang")) { x += (Math.random() - .5) * 3; y += (Math.random() - .5) * 2.5; rot += (Math.random() - .5) * 14; }
+      }
+      hook.style.left = x + "px"; hook.style.top = y + "px"; hook.style.transform = rot ? `rotate(${rot.toFixed(1)}deg)` : "";
+      line(t0, { x: lx, y: SURF }, 14);
+      if (l2) { const my = (SURF + 4 + y) / 2; l2.setAttribute("d", `M${lx},${SURF + 4} Q${(lx + sway * 1.6).toFixed(1)},${my.toFixed(1)} ${x.toFixed(1)},${y.toFixed(1)}`); }
+      raf = requestAnimationFrame(sink);
+    };
     raf = requestAnimationFrame(sink);
     st.lureLim = lim; st.lureEnd = lim ? performance.now() + 900 + lim * 1000 : 0;
     lureHud();
@@ -546,7 +566,7 @@
   function clearLure() {
     ["#f2-lhud", "#f2-bang"].forEach(s => q(s)?.remove());
     if (st.v?.e) st.v.e.remove(); st.v = null;
-    const hook = q("#f2-hook"); if (hook) hook.className = "f2-hook";
+    const hook = q("#f2-hook"); if (hook) { hook.className = "f2-hook"; hook.style.transform = ""; }
     const bob = q("#f2-bob"); if (bob) bob.className = "f2-bob";
     line(null); line(null, null, 0, "#f2-line2"); drawRod();
     const a = q("#f2-angler"); if (a) a.className = "f2-angler";
@@ -587,7 +607,7 @@
   }
   function nibbleVisual() {
     const bob = q("#f2-bob"); if (!bob) return;
-    bob.className = "f2-bob on dip"; sfx("nibble", .55);
+    bob.className = "f2-bob on dip"; sfx("nibble", .55); st.baitDip = performance.now();
     later(() => { if (bob && st.phase === "lure" && !q("#f2-bang")) bob.className = "f2-bob on float"; }, 650);
   }
   function nibbles(v, n) {
@@ -1274,6 +1294,10 @@
 #${OVL_ID} button{width:auto;height:auto;min-width:0;line-height:normal;margin:0;font-family:inherit}
 #${OVL_ID} img{border:0;max-width:none}
 #${OVL_ID} .f2-fish.spec{transition:left .1s linear,top .1s linear}
+#${OVL_ID} img.art{image-rendering:auto}
+#${OVL_ID} .f2-circ img.art{width:68px;height:68px}
+#${OVL_ID} .f2-cell .f2-circ img.art{width:44px;height:44px}
+#${OVL_ID} .f2-mini img.art{background:#2a1d12}
 @media (prefers-reduced-motion:reduce){#${OVL_ID} *,#${OVL_ID} *::before,#${OVL_ID} *::after{animation-duration:.01ms!important;animation-iteration-count:1!important}}
 `;
 
