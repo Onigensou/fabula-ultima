@@ -182,16 +182,16 @@
     .oni-cook-dice{display:inline-flex;gap:4px;vertical-align:middle;margin:0 2px}
     .oni-cook-dice b{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:4px;background:#fff8e6;border:1px solid #8a6440;font-style:normal;color:#3d1a00;font-size:11px}
     /* results */
-    .oni-cook-results-overlay{position:absolute;inset:0;z-index:10;background:rgba(20,10,5,.95);border-radius:14px;display:flex;align-items:center;justify-content:center}
+    .oni-cook-results-overlay{position:absolute;inset:0;z-index:10;background:rgba(20,10,5,.95);border-radius:14px;display:flex;align-items:center;justify-content:center;overflow:auto}
     @keyframes oni-cook-burst{0%{transform:scale(.3) rotate(-4deg);opacity:0}55%{transform:scale(1.12) rotate(2deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}
     @keyframes oni-cook-flash{0%,100%{background:rgba(20,10,5,.95)}18%{background:rgba(184,153,64,.25)}38%{background:rgba(20,10,5,.95)}}
     .oni-cook-results-overlay.bursting{animation:oni-cook-flash .7s ease}
-    .oni-cook-results-inner{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 20px;text-align:center}
+    .oni-cook-results-inner{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 18px;text-align:center;max-height:100%;box-sizing:border-box}
     .oni-cook-results-inner.burst-in{animation:oni-cook-burst .75s cubic-bezier(.34,1.56,.64,1) both}
-    .oni-cook-results-img{width:96px;height:96px;object-fit:contain;border:none!important;filter:drop-shadow(0 0 20px rgba(220,180,50,.8))}
+    .oni-cook-results-img{width:72px;height:72px;flex-shrink:0;object-fit:contain;border:none!important;filter:drop-shadow(0 0 20px rgba(220,180,50,.8))}
     .oni-cook-results-img.spoiled{filter:drop-shadow(0 0 16px rgba(160,40,40,.7)) saturate(.6)}
     .oni-cook-results-kind{font-size:12px;color:#d4a844;font-style:italic}
-    .oni-cook-results-name{font-size:22px;font-weight:900;color:#ffd700;text-shadow:0 0 22px rgba(255,215,0,.5),0 2px 4px rgba(0,0,0,.9);letter-spacing:.05em}
+    .oni-cook-results-name{font-size:20px;line-height:1.15;font-weight:900;color:#ffd700;text-shadow:0 0 22px rgba(255,215,0,.5),0 2px 4px rgba(0,0,0,.9);letter-spacing:.05em}
     .oni-cook-results-name.spoiled{color:#c9a27a;text-shadow:none}
     .oni-cook-results-tier{font-size:13px;color:#ffd700;letter-spacing:.2em}
     .oni-cook-results-tier.spoiled{color:#e57373;letter-spacing:.08em;font-weight:900}
@@ -199,15 +199,15 @@
     .oni-cook-results-new{font-size:10.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#1b1206;background:#ffd700;border-radius:999px;padding:2px 10px}
     .oni-cook-results-who{display:flex;gap:10px;justify-content:center}
     .oni-cook-who{display:flex;flex-direction:column;align-items:center;gap:1px;font-size:9.5px;color:#e8d8a0;width:72px}
-    .oni-cook-who img{width:38px;height:38px;object-fit:contain;border-radius:8px;background:rgba(255,255,255,.06);padding:2px;border:none!important}
+    .oni-cook-who img{width:32px;height:32px;object-fit:contain;border-radius:8px;background:rgba(255,255,255,.06);padding:2px;border:none!important}
     .oni-cook-who .w-name{font-weight:800;color:#c8a864}
     .oni-cook-who.feat img{box-shadow:0 0 0 2px #ffd700,0 0 10px rgba(255,215,0,.6)}
     .oni-cook-who.feat .w-item{color:#ffd700;font-weight:800}
     .oni-cook-results-check{font-size:12px;color:#c8a864;font-style:italic}
-    .oni-cook-results-effect{font-size:11.5px;color:#e8d8a0;max-width:380px;line-height:1.65;background:rgba(255,255,255,.07);border:1px solid rgba(220,180,50,.25);border-radius:6px;padding:7px 12px;text-align:left}
+    .oni-cook-results-effect{font-size:11.5px;color:#e8d8a0;max-width:400px;line-height:1.5;background:rgba(255,255,255,.07);border:1px solid rgba(220,180,50,.25);border-radius:6px;padding:5px 12px;text-align:left}
     .oni-cook-results-effect small{display:block;color:#b8a070;font-size:10.5px;margin-top:2px}
     .oni-cook-results-hint{font-size:11px;color:#a5d6a7;font-style:italic;max-width:380px}
-    .oni-cook-proceed-btn{margin-top:4px;padding:10px 30px;background:linear-gradient(180deg,#4caf50,#2e7d32);color:#fff;font-size:14px;font-weight:800;border:2px solid #2e7d32;border-radius:8px;cursor:pointer;letter-spacing:.04em;transition:filter .12s,transform .1s;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+    .oni-cook-proceed-btn{margin-top:2px;padding:7px 26px;width:auto;flex-shrink:0;background:linear-gradient(180deg,#4caf50,#2e7d32);color:#fff;font-size:14px;font-weight:800;border:2px solid #2e7d32;border-radius:8px;cursor:pointer;letter-spacing:.04em;transition:filter .12s,transform .1s;box-shadow:0 4px 12px rgba(0,0,0,.3)}
     .oni-cook-proceed-btn:hover{filter:brightness(1.12);transform:translateY(-1px)}
     .oni-cook-fly-ing{position:fixed;width:52px;height:52px;object-fit:contain;pointer-events:none!important;z-index:9999!important;border:none!important;border-radius:8px}
     /* layout + picker */
@@ -241,7 +241,7 @@
     .oni-cook-skip-slot:hover .oni-cook-skip-icon,.oni-cook-skip-slot.selected .oni-cook-skip-icon{color:rgba(180,60,60,.8)}
     .oni-cook-skip-label{font-size:9px;color:rgba(91,63,38,.5);font-weight:700;pointer-events:none}
     /* header: cookbook + Yaminabe switch */
-    .oni-cook-book-btn{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:22px;height:22px;padding:0;line-height:1;border:none;background:transparent;font-size:14px;cursor:pointer;opacity:.6;transition:opacity .15s}
+    .oni-cook-book-btn{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:auto;height:auto;min-height:0;padding:2px 4px;margin:0;line-height:1;border:none!important;background:none!important;box-shadow:none!important;color:#5a3800;font-size:13px;cursor:pointer;opacity:.55;transition:opacity .15s}
     .oni-cook-book-btn:hover{opacity:1}
     .oni-cook-mode-slot{position:absolute;right:8px;top:50%;transform:translateY(-50%)}
     .oni-cook-mode-pill{display:inline-block;font-size:9.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:#5a3800;color:#f6ebd3}
@@ -271,7 +271,9 @@
     .ob-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
     .ob-head b{font-size:13px;color:#5a3800}
     .ob-head button{width:auto;line-height:1.2;padding:1px 8px;font-size:11px;border-radius:6px;border:1px solid rgba(91,63,38,.4);background:rgba(255,255,255,.5);cursor:pointer}
-    .ob-grid{border-collapse:collapse;width:100%;margin-bottom:8px}
+    .ob-grid{border-collapse:collapse;width:100%;margin-bottom:8px;background:none;border:none}
+    .ob-grid thead,.ob-grid tr,.ob-grid tr:nth-child(odd),.ob-grid tr:nth-child(even){background:none!important;text-shadow:none}
+    .ob-grid thead th{background:none!important;color:#7a5000!important;text-shadow:none!important;border-bottom:1px solid rgba(91,63,38,.3)}
     .ob-grid th,.ob-grid td{padding:2px 4px;border-bottom:1px solid rgba(91,63,38,.12);text-align:left;font-size:10.5px}
     .ob-grid th{color:#7a5000;font-weight:800}
     .ob-grid td.miss{opacity:.4}
@@ -366,7 +368,7 @@
     body.oni-cook-yami .oni-cook-tt-desc{color:#b4b4ba}
     body.oni-cook-yami .oni-cook-dice b{background:#2c2c30;border-color:#55555c;color:#f2f2f4}
     body.oni-cook-yami .oni-cook-status-bar [style*="color"],body.oni-cook-yami .oni-cook-tt-meta [style*="color"]{filter:brightness(1.7) saturate(1.1)}
-    body.oni-cook-yami .oni-cook-book-btn{filter:invert(1)}
+    body.oni-cook-yami .oni-cook-book-btn{color:#ececee}
   `;
 
   // ── CookingMainPanel ───────────────────────────────────────────────────────
@@ -429,7 +431,7 @@
       return `<div class="oni-cook-layout">
         <div id="oni-cook-picker-slot"></div>
         <div class="oni-cook-main-panel">
-          <div class="oni-cook-panel-header"><button class="oni-cook-book-btn" title="Cookbook">📖</button>🍲 Party Hot-Pot<span class="oni-cook-mode-slot"></span></div>
+          <div class="oni-cook-panel-header"><button class="oni-cook-book-btn" title="Cookbook"><i class="fas fa-book-open"></i></button>🍲 Party Hot-Pot<span class="oni-cook-mode-slot"></span></div>
           <div class="oni-cook-board">
             <div class="oni-cook-dark"></div>
             ${corners}
@@ -944,7 +946,7 @@
         const p = o.parts, sg = v => v >= 0 ? `+ ${v}` : `− ${-v}`;
         line += `${line ? " · " : ""}Potency ${p.rarity} ${sg(p.check)} check${p.resonance ? ` + ${p.resonance} resonance` : ""}${p.harm ? ` + ${p.harm} harmony` : ""}${p.clash ? ` − ${p.clash} clash` : ""}${p.yami ? ` + ${p.yami} yaminabe` : ""} = <b>${o.potency}</b>`;
       }
-      const effect = o.dishEffect ? `Everyone who eats: <b>${esc(o.dishEffect)}</b>${o.baseDishName ? `<small>Same buff as ${esc(o.baseDishName)}.</small>` : ""}` : "";
+      const effect = o.dishEffect ? `<b>${esc(o.dishEffect)}</b>${o.baseDishName ? `<small>Same buff as ${esc(o.baseDishName)}.</small>` : ""}` : "";
       overlay.innerHTML = `<div class="oni-cook-results-inner burst-in">
         <img class="oni-cook-results-img ${o.kind === "spoiled" ? "spoiled" : ""}" src="${o.dishImg || "icons/svg/item-bag.svg"}">
         <div class="oni-cook-results-kind">${esc(o.label ?? "")}</div>

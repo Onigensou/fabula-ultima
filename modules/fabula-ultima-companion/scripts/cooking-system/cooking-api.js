@@ -598,6 +598,9 @@
       : outcome.kind === "spoiled" ? `Muddled · ${outcome.distinct} tastes fought in the pot`
       : outcome.label ?? "";
     const rawEffect = String(dishItem?.system?.props?.description ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+    // v1 dish descriptions mix lore and effect in one paragraph; the card shows only the effect sentence.
+    const effAt = rawEffect.search(/\b(Everyone who|Grants|Increases|Widens|At the start|Immune|Reduces)\b/);
+    const effectOnly = effAt > 0 ? rawEffect.slice(effAt) : rawEffect;
     const zpLines = _zpLines(applied);
     const featuredId = outcome.featured?.actorId ?? null;
     let hint = null;
@@ -609,7 +612,7 @@
       tier: outcome.tier ?? null,
       cookerCheck,
       potency: outcome.potency ?? null, parts: outcome.parts ?? null,
-      dishEffect: zpLines.length ? `${rawEffect} — Zero Power: ${zpLines.join(", ")}` : rawEffect,
+      dishEffect: zpLines.length ? `${effectOnly} — Zero Power: ${zpLines.join(", ")}` : effectOnly,
       baseDishName: outcome.displayName ? (dishItem?.name ?? null) : null,
       zpLines,
       contributors: picks.map(p => ({ actorId: p.entry.actorId, actorName: p.entry.actor.name, itemName: p.item.name, itemImg: p.item.img, featured: p.entry.actorId === featuredId })),
@@ -646,23 +649,29 @@
         lockOne(e, r); allResults.push({ e, ...r });
       }
     } else {
-      const waits = [];
+      // Online players pick in parallel on their own clients. The GM picks for everyone else
+      // ONE AT A TIME: there is a single docked picker, so concurrent GM pickers would replace
+      // each other and the earlier picks would never resolve.
+      const waits = [], local = [];
       for (const e of entries) {
         const uid = e.userId && game.users?.get(e.userId)?.active ? e.userId : null;
-        if (uid && uid !== game.user.id) {
-          waits.push(_waitForLock(sessionId, e.actorId, cfg.pickTimeoutMs).then(r => ({ e, ...r })));
-        } else {
-          waits.push((async () => {
-            const choices = _materialChoices(e.actor);
-            const itemId = await globalThis.CookingUI?.openPicker(sessionId, e.actorId, choices, e.actor.name) ?? null;
-            const item = itemId ? e.actor.items.get(itemId) : null;
-            const r = { itemId, itemImg: item?.img ?? null, itemName: item?.name ?? null };
-            lockOne(e, r);
-            return { e, ...r };
-          })());
-        }
+        if (uid && uid !== game.user.id) waits.push(_waitForLock(sessionId, e.actorId, cfg.pickTimeoutMs).then(r => ({ e, ...r })));
+        else local.push(e);
       }
-      allResults = await Promise.all(waits);
+      const localChain = (async () => {
+        const out = [];
+        for (const e of local) {
+          const choices = _materialChoices(e.actor);
+          const itemId = await globalThis.CookingUI?.openPicker(sessionId, e.actorId, choices, e.actor.name) ?? null;
+          const item = itemId ? e.actor.items.get(itemId) : null;
+          const r = { itemId, itemImg: item?.img ?? null, itemName: item?.name ?? null };
+          lockOne(e, r); out.push({ e, ...r });
+        }
+        return out;
+      })();
+      const [remote, mineLocal] = await Promise.all([Promise.all(waits), localChain]);
+      const byActor = new Map([...remote, ...mineLocal].map(r => [r.e.actorId, r]));
+      allResults = entries.map(e => byActor.get(e.actorId)).filter(Boolean);   // keep party order for the throws
     }
     state.closedForMode = true;
     const mode = state.mode;
