@@ -208,10 +208,14 @@
     return null;
   }
 
-  async function _rollChest(scene) {
+  async function _rollChest(actor, scene) {
     const T = CAMP.FishingTuning;
     const cats = [];
+    // An angler whose IP is already full would get "+0 IP": skip that category.
+    const p = actor?.system?.props ?? {};
+    const ipFull = (parseInt(p.max_ip) || 0) > 0 && (parseInt(p.current_ip) || 0) >= (parseInt(p.max_ip) || 0);
     for (const c of T?.CHEST_LOOT ?? []) {
+      if (c.key === "item" && ipFull) continue;
       const table = await _findTable(_lootTableRef(scene, c.key));
       if (table?.results?.size) cats.push({ ...c, table });
     }
@@ -230,7 +234,7 @@
   }
 
   async function _awardChest(actor, scene) {
-    const roll = await _rollChest(scene);
+    const roll = await _rollChest(actor, scene);
     if (!roll) return null;
     const { cat, reward } = roll;
     const dispatcher = window["oni.TreasureRoulette.AwardDispatcher"];
@@ -400,7 +404,8 @@
         // only (a camp spot: the others keep roaming).
         const audience = Array.isArray(opts?.audience) ? opts.audience : null;
         _sessionFish.set(actor.id, pools.flat());
-        const fishPools = pools.map(pool => pool.map(f => ({ name: f.name, weight: f.weight, sh: f.sh, sz: f.sz, likes: f.likes, ex: !!f.ex })));
+        // img rides along only so clients can preload the reveal picture at the strike.
+        const fishPools = pools.map(pool => pool.map(f => ({ name: f.name, weight: f.weight, img: f.img, sh: f.sh, sz: f.sz, likes: f.likes, ex: !!f.ex })));
         // Every fish item in the world: a caught fish used as bait plays as "mooch".
         const fishFolder = game.folders?.find(f => f.type === "Item" && f.name === "Fish");
         const fishNames  = fishFolder ? game.items.filter(i => i.folder?.id === fishFolder.id).map(i => i.name) : pools.flat().map(f => f.name);

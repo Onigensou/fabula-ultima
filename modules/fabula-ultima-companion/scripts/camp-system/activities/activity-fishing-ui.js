@@ -83,6 +83,8 @@
   const rod  = () => rods[rodI] ?? PLAIN_ROD;
   const bait = () => baits[baitI] ?? T().BARE_HOOK;
   const isPrimaryGM = () => globalThis.FUCompanion?.isPrimaryGM?.() ?? !!game.user?.isGM;
+  const _preloaded = new Set();
+  const preload = src => { if (!src || _preloaded.has(src)) return; _preloaded.add(src); try { const i = new Image(); i.src = src; } catch {} };
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
   // ── audio ─────────────────────────────────────────────────────────────────
@@ -163,6 +165,7 @@
       const isFish = st.fishNames?.has(it.name) || !!it.flags?.[MODULE_ID]?.fish;
       baits.push({ id: it.id, name: it.name, img: it.img, q: qty, rarity: d.rarity, ...T().baitEffect({ taste: d.taste, rarity: d.rarity, isFish }) });
     }
+    for (const b of baits) preload(b.img);
     const last = lastPick[st.actorId] ?? {};
     rodI  = Math.max(0, rods.findIndex(r => r.name === last.rod));
     baitI = Math.max(0, baits.findIndex(b => b.name === last.bait));
@@ -624,7 +627,8 @@
       const off = performance.now() - v.hookT0 - T().HIT_T, adv = T().strikeTiming(off); st.adv = adv;
       v.state = "struck"; st.lureId++; st.phase = "bite"; st.tier = v.tier; st.fish = v.fish; st.len = v.len; st.fe = v.e; st.fe.style.opacity = "";
       if (st._vSent) { lure("v", { x: Math.round(v.x), y: Math.round(v.y), len: v.len, dir: v.dir, sh: v.fish?.sh, legend: v.tier === 3, tilt: 0, op: 1 }); }
-      strikeVisual(adv); lure("strike", { adv: adv?.key ?? null });
+      preload(v.fish?.img);   // the result window reveals it: have it ready
+      strikeVisual(adv); lure("strike", { adv: adv?.key ?? null, img: v.fish?.img ?? null });
       later(startBattle, adv ? 750 : 450); return;
     }
     if (v && (v.state === "come" || v.state === "near")) {  // too soon: the fish bolts, the lure goes on
@@ -693,7 +697,8 @@
     const now = performance.now();
     Object.assign(st, { cruise: fp.cruise, burst: fp.burst, bmin: fp.bmin, bmax: fp.bmax,
       y: T().H * .35, vel: 0, burstEnd: 0, barY: T().H / 2 - d.barH / 2, hp: T().START_HP + (st.adv ? st.adv.hp : 0), heldMs: 0, t0: now, last: now, perfect: true, dir: 1, crankA: 0, crankV: 0, spoolA: 0,
-      chestWill: Math.random() < T().chestChance(st.bait), chestOn: false, chestP: 0, chestGot: false, chestY: 0 });
+      // _forceChest / _forceChestPattern: test hooks (staging runs), never set by the game.
+      chestWill: !!CAMP.FishingUI._forceChest || Math.random() < T().chestChance(st.bait), chestOn: false, chestP: 0, chestGot: false, chestY: 0 });
     st.vel = st.cruise; st.next = st.t0 + st.bmin + Math.random() * (st.bmax - st.bmin); st.hp0 = st.hp;
     st.chestPat = st.chestWill ? T().rollChestPattern(Math.random, CAMP.FishingUI._forceChestPattern ?? null) : null;
     st.chestAt = st.chestPat?.at ? st.chestPat.at[0] + Math.random() * (st.chestPat.at[1] - st.chestPat.at[0]) : null;
@@ -865,6 +870,7 @@
       case "unhook": $("f2-bang")?.remove(); { const b = q("#f2-bob"); if (b) b.className = "f2-bob on float"; } break;
       case "strike": {
         const adv = p.adv ? T().TIMING.find(t => t.key === p.adv) : null;
+        preload(p.img);
         st.phase = "bite"; st.fe = st.v?.e ?? null; if (st.fe) { st.fe.classList.remove("spec"); st.fe.style.opacity = ""; st.len = st.v.len; }
         st.v = null; strikeVisual(adv); break;
       }
