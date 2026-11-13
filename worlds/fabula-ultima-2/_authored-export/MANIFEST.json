@@ -1941,6 +1941,12 @@
         "parent": "Bh30MRdF5PnQZJu1"
       },
       {
+        "id": "FishTackleFolder",
+        "name": "Tackle",
+        "type": "Item",
+        "parent": "3kZfXVrONQZyTxO3"
+      },
+      {
         "id": "Sypglcm85sjY8KNe",
         "name": "Tactician",
         "type": "Item",
@@ -7829,6 +7835,12 @@
         "effects": 0
       },
       {
+        "id": "FishRodIronwood1",
+        "name": "Ironwood Rod",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "gZd0tjjo5y0GNzBs",
         "name": "Ishtingar",
         "type": "equippableItem",
@@ -11321,6 +11333,12 @@
         "effects": 0
       },
       {
+        "id": "FishRodSeers0001",
+        "name": "Seer's Rod",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "Gixyg4DKrK3zSZt4",
         "name": "Seething Blight",
         "type": "equippableItem",
@@ -12197,6 +12215,12 @@
         "effects": 0
       },
       {
+        "id": "FishRodStillwat1",
+        "name": "Stillwater Rod",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
         "id": "ERzcQeWTbaPdQrIY",
         "name": "Sting Thing Trap",
         "type": "equippableItem",
@@ -12403,6 +12427,12 @@
       {
         "id": "o6uG6sr3yp6WbDCA",
         "name": "Swift Swimmers — Equipment Set",
+        "type": "equippableItem",
+        "effects": 0
+      },
+      {
+        "id": "FishRodSwiftlin1",
+        "name": "Swiftline Rod",
         "type": "equippableItem",
         "effects": 0
       },

@@ -11,6 +11,13 @@
   "flags": {
     "custom-system-builder": {
       "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "fish": {
+        "likes": "umami",
+        "shape": "long",
+        "size": 1.05
+      }
     }
   },
   "folder": "M5VOqokm97pmFqrA",

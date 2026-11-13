@@ -1,0 +1,19 @@
+{
+  "_id": "FishTackleFolder",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": null,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "color": null,
+  "description": "",
+  "flags": {},
+  "folder": "3kZfXVrONQZyTxO3",
+  "name": "Tackle",
+  "sort": 0,
+  "sorting": "a",
+  "type": "Item"
+}
