@@ -500,7 +500,7 @@
     _renderModeSlot() {
       const el = this.$(".oni-cook-mode-slot"); if (!el) return;
       if (this.mode === "dark") { el.innerHTML = `<span class="oni-cook-mode-pill">🌑 Yaminabe</span>`; return; }
-      if (!this._isCook()) { el.innerHTML = ""; return; }
+      if (!this._isCook() || this._busy) { el.innerHTML = ""; return; }
       const can = this._canSwitch();
       el.innerHTML = `<button class="oni-cook-yami-btn" ${can ? "" : "disabled"} title="${can ? "Only the cook can do this" : "Too late: someone already locked in an ingredient"}">🌑 Yaminabe <small>cook only</small></button>`;
       el.querySelector("button").addEventListener("click", () => {
