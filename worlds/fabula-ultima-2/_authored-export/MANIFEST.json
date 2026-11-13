@@ -2435,6 +2435,12 @@
         "effects": 0
       },
       {
+        "id": "CkV2DarkSalty000",
+        "name": "Abyssal Crab Roast",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "jlPwgwAQkOBCNg6K",
         "name": "Acceleration",
         "type": "equippableItem",
@@ -3893,6 +3899,12 @@
         "effects": 0
       },
       {
+        "id": "CkV2DarkUmami000",
+        "name": "Bottomless Jewel Broth",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "Kq1SPcfl8zNwegqj",
         "name": "Brainwave Discharge",
         "type": "equippableItem",
@@ -4139,6 +4151,12 @@
         "effects": 1
       },
       {
+        "id": "CkV2SpoilUmami00",
+        "name": "Canned Surprise",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "mPnznou5f7WIMz3U",
         "name": "Cannon",
         "type": "equippableItem",
@@ -4281,6 +4299,12 @@
         "name": "Charred Bone",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "CkV2SpoilBitter0",
+        "name": "Charred Phantasm",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "9cHSgi4ag97uKGW7",
@@ -4665,6 +4689,12 @@
         "name": "Crowd Favorite",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "CkV2SpoilSweet00",
+        "name": "Crushed Candy Sludge",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "7YFY3XwQ0HQSWvMr",
@@ -8915,6 +8945,12 @@
         "effects": 0
       },
       {
+        "id": "CkV2DarkBitter00",
+        "name": "Midnight Root Elixir",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "3n2Y4FEZx1wQgGdn",
         "name": "Milk",
         "type": "equippableItem",
@@ -9759,6 +9795,12 @@
         "name": "Overload Burst",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "CkV2SpoilSalty00",
+        "name": "Oversalted Fish",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "Uo4iOf0EFG1z8AU2",
@@ -11939,6 +11981,12 @@
         "effects": 1
       },
       {
+        "id": "CkV2SpoilSour000",
+        "name": "Sour Mishap",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
         "id": "RhyNri0zzevBR5R8",
         "name": "Spare Bullet",
         "type": "equippableItem",
@@ -12141,6 +12189,12 @@
         "name": "Starfall",
         "type": "equippableItem",
         "effects": 0
+      },
+      {
+        "id": "CkV2DarkSweet000",
+        "name": "Starfall Macarons",
+        "type": "equippableItem",
+        "effects": 1
       },
       {
         "id": "zF6faTFO5nlTBVt8",
@@ -12895,6 +12949,12 @@
       {
         "id": "2qhIJG9OTmyPYMFB",
         "name": "Thunder Vulcan",
+        "type": "equippableItem",
+        "effects": 1
+      },
+      {
+        "id": "CkV2DarkSour0000",
+        "name": "Thunder-Lemon Braise",
         "type": "equippableItem",
         "effects": 1
       },

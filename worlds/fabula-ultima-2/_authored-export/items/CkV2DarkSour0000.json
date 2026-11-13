@@ -1,0 +1,121 @@
+{
+  "_id": "CkV2DarkSour0000",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1794589780455,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "CkV2AeDkSour0000",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1794589780455,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "extra_damage_mod_all",
+          "mode": 2,
+          "priority": null,
+          "value": "7"
+        }
+      ],
+      "description": "<p>Everyone who eats gains <strong>+7 bonus damage</strong> until the next rest.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "CkV2AeDkSour0000",
+          "originalParentId": "CkV2DarkSour0000",
+          "originalUuid": "Item.CkV2DarkSour0000.ActiveEffect.CkV2AeDkSour0000"
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Wuthering%20Wave/Item_Lemon-Braised_Pork.webp",
+      "name": "Thunder-Lemon Braise",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "food"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "cookingDish": {
+        "family": "sour",
+        "group": "dark",
+        "instant": {},
+        "tier": 4
+      }
+    }
+  },
+  "folder": "UNuBsFNeuyDDZ5AZ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Wuthering%20Wave/Item_Lemon-Braised_Pork.webp",
+  "name": "Thunder-Lemon Braise",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "description": "<ul><li><p>Everyone who eats gains <strong>+7 bonus damage</strong> until the next rest.</p></li></ul>",
+      "effect_table": {},
+      "flavor_text": "<p><em>Sharp enough to make your teeth hum. The pot crackled while it cooked, and so do you.</em></p>",
+      "id": "CkV2DarkSour0000",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Wuthering%20Wave/Item_Lemon-Braised_Pork.webp",
+      "ingredient_taste": "",
+      "ingredient_taste2": "",
+      "ip_cost": "0",
+      "isEquipped": false,
+      "isIngredient": false,
+      "isKey": false,
+      "isMartial": false,
+      "isModule": false,
+      "isRelatedItem": false,
+      "isSet": false,
+      "isUnique": false,
+      "item_cost": "0",
+      "item_quantity": "1",
+      "item_rarity": "Common",
+      "item_type": "consumable",
+      "name": "Thunder-Lemon Braise",
+      "optional_params": {},
+      "recipe_dish_uuid": "",
+      "recipe_kind": "",
+      "set_name": "",
+      "uuid": "Item.CkV2DarkSour0000"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 3202566307,
+    "unique": false,
+    "uniqueId": "CkV2DarkSour0000"
+  },
+  "type": "equippableItem"
+}

@@ -14,7 +14,82 @@
     },
     "fabula-ultima-companion": {
       "cookingConfig": {
+        "darkDishIds": {
+          "bitter": "CkV2DarkBitter00",
+          "salty": "CkV2DarkSalty000",
+          "sour": "CkV2DarkSour0000",
+          "sweet": "CkV2DarkSweet000",
+          "umami": "CkV2DarkUmami000"
+        },
         "goopDishId": "Vp2ssK4jo3hm2gp0",
+        "ingredientKinds": {
+          "Animal Fang": "meat",
+          "Ash": "monster",
+          "Bean Paste": "pantry",
+          "Blade Angler": "sea",
+          "Bolt Eel": "sea",
+          "Brinebloom Coral": "sea",
+          "Cabbage": "garden",
+          "Cauliflower": "garden",
+          "Charred Bone": "monster",
+          "Cheese": "pantry",
+          "Clear Liquid": "pantry",
+          "Cooking Oil": "pantry",
+          "Cucumber": "garden",
+          "Darkroot Herb": "garden",
+          "Dewdrop": "garden",
+          "Draconic Essence": "arcane",
+          "Egg": "pantry",
+          "Ember Petal": "garden",
+          "Eyeball": "meat",
+          "Fish Fin": "sea",
+          "Flame Essence": "arcane",
+          "Flame Salmon": "sea",
+          "Flour": "pantry",
+          "Fresh Milk": "pantry",
+          "Frill": "meat",
+          "Fugu": "sea",
+          "Golden Koi": "sea",
+          "Golem Heart": "monster",
+          "Hearty Cod": "sea",
+          "Honey": "garden",
+          "Ice Pike": "sea",
+          "Insect Stinger": "monster",
+          "Jellopy": "monster",
+          "Keystone Ray": "sea",
+          "Lightning Essence": "arcane",
+          "Lucky Loach": "sea",
+          "Magnificent Mahi-mahi": "sea",
+          "Mead": "pantry",
+          "Meat": "meat",
+          "Mindful Sole": "sea",
+          "Moonfish": "sea",
+          "Moonshroom": "garden",
+          "Mudfish": "sea",
+          "Mystic Horn": "monster",
+          "Nibbers": "monster",
+          "Prime Steak": "meat",
+          "Prophet Tuna": "sea",
+          "Regret": "monster",
+          "Rice": "pantry",
+          "River Trout": "sea",
+          "Rock Salt": "pantry",
+          "Shadow Sturgeon": "sea",
+          "Shine Herring": "sea",
+          "Silt Catfish": "sea",
+          "Spore": "monster",
+          "Starfruit": "garden",
+          "Stash Gar": "sea",
+          "Tempest Manta": "sea",
+          "Tentacle": "meat",
+          "Toxic Puffer": "sea",
+          "Turnip": "garden",
+          "Urchin": "sea",
+          "Venom Jellyfish": "sea",
+          "Wandering Shark": "sea",
+          "Wind Bass": "sea"
+        },
+        "link": 2,
         "matrix": {
           "bitter": {
             "1": "Q5UDJVTGRDxoLCGQ",
@@ -42,6 +117,7 @@
             "3": "H45kwofTyj8J4OVf"
           }
         },
+        "muddledAt": 4,
         "mysteryDishId": "spYAfHOWI0OG5M9X",
         "recipes": [
           {
@@ -194,8 +270,7 @@
               }
             ],
             "dishId": "Un1qD1shDragonSt",
-            "name": "Dragon Stew",
-            "priority": 5
+            "name": "Dragon Stew"
           },
           {
             "core": [
@@ -207,8 +282,7 @@
               }
             ],
             "dishId": "Un1qD1shMantaSas",
-            "name": "Manta Sashimi",
-            "priority": 10
+            "name": "Manta Sashimi"
           },
           {
             "core": [
@@ -250,10 +324,20 @@
               }
             ],
             "dishId": "ZpD1shSaehrimnir",
-            "name": "Sæhrímnir Feast",
-            "priority": 10
+            "name": "Sæhrímnir Feast"
           }
-        ]
+        ],
+        "spoiledDishIds": {
+          "bitter": "CkV2SpoilBitter0",
+          "salty": "CkV2SpoilSalty00",
+          "sour": "CkV2SpoilSour000",
+          "sweet": "CkV2SpoilSweet00",
+          "umami": "CkV2SpoilUmami00"
+        },
+        "yaminabe": {
+          "bonus": 2,
+          "darkAt": 15
+        }
       }
     }
   },

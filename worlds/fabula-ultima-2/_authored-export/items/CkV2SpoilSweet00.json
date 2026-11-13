@@ -1,0 +1,121 @@
+{
+  "_id": "CkV2SpoilSweet00",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1794589780467,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "effects": [
+    {
+      "_id": "CkV2AeSpSweet000",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1794589780467,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "max_mp",
+          "mode": 2,
+          "priority": null,
+          "value": "-10"
+        }
+      ],
+      "description": "<p>Everyone who eats suffers <strong>−10 Maximum MP</strong> until the next rest.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "CkV2AeSpSweet000",
+          "originalParentId": "CkV2SpoilSweet00",
+          "originalUuid": "Item.CkV2SpoilSweet00.ActiveEffect.CkV2AeSpSweet000"
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Wuthering%20Wave/Item_Crushed_Candy.webp",
+      "name": "Crushed Candy Sludge",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "food"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    }
+  ],
+  "flags": {
+    "custom-system-builder": {
+      "version": "4.8.5"
+    },
+    "fabula-ultima-companion": {
+      "cookingDish": {
+        "family": "sweet",
+        "group": "spoiled",
+        "instant": {},
+        "tier": 0
+      }
+    }
+  },
+  "folder": "UNuBsFNeuyDDZ5AZ",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Wuthering%20Wave/Item_Crushed_Candy.webp",
+  "name": "Crushed Candy Sludge",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "sort": 0,
+  "system": {
+    "props": {
+      "active_effect_config_table": {},
+      "description": "<ul><li><p>Everyone who eats suffers <strong>−10 Maximum MP</strong> until the next rest.</p></li></ul>",
+      "effect_table": {},
+      "flavor_text": "<p><em>Sugar melted into everything and everything melted into sugar. Your head is sticky.</em></p>",
+      "id": "CkV2SpoilSweet00",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Wuthering%20Wave/Item_Crushed_Candy.webp",
+      "ingredient_taste": "",
+      "ingredient_taste2": "",
+      "ip_cost": "0",
+      "isEquipped": false,
+      "isIngredient": false,
+      "isKey": false,
+      "isMartial": false,
+      "isModule": false,
+      "isRelatedItem": false,
+      "isSet": false,
+      "isUnique": false,
+      "item_cost": "0",
+      "item_quantity": "1",
+      "item_rarity": "Common",
+      "item_type": "consumable",
+      "name": "Crushed Candy Sludge",
+      "optional_params": {},
+      "recipe_dish_uuid": "",
+      "recipe_kind": "",
+      "set_name": "",
+      "uuid": "Item.CkV2SpoilSweet00"
+    },
+    "template": "ZoiV53VaLzeRsEps",
+    "templateSystemUniqueVersion": 3202566307,
+    "unique": false,
+    "uniqueId": "CkV2SpoilSweet00"
+  },
+  "type": "equippableItem"
+}
