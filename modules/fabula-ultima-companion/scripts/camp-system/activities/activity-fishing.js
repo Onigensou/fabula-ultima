@@ -9,11 +9,10 @@
 // Runs for 3 rounds per camp activity usage.
 // Reward: fish items, drawn from the scene's fish RollTable (see below).
 //
-// Stat influences (read from actor.system.props):
-//   MIG → HP fill rate in battle phase
-//   DEX → gauge speed (casting) + bar up-speed (battle)
-//   INS → fishing bar height
-//   WLP → catch chance + fish tier thresholds
+// v2 (2026-11-13): tackle (rod + bait), a lure phase, rank-based fights and a
+// sunken treasure chest. The rules live in fishing-tuning.js; the screen in
+// activity-fishing-ui.js. This file is the GM side: what can bite, the awards
+// (fish, Perfect-catch bonus, chest loot) and the round flow.
 // ============================================================================
 (() => {
   const CAMP      = globalThis.CampSystem ??= {};
@@ -69,8 +68,12 @@
       const weight = Math.max(0, Number(row.weight) || 0);
       if (!weight) continue;
       const known = tiers[tier].find(e => e.id === item.id);
-      if (known) known.weight += weight;
-      else tiers[tier].push({ id: item.id, name: item.name, weight });
+      if (known) { known.weight += weight; continue; }
+      // Per-fish data (flag fabula-ultima-companion.fish): silhouette shape,
+      // size within its rank, liked bait taste. Missing = defaults.
+      const fd = CAMP.FishingTuning?.fishData?.(item.getFlag?.(MODULE_ID, "fish")) ?? { shape: "std", size: 1, likes: null };
+      tiers[tier].push({ id: item.id, name: item.name, weight, img: item.img,
+        cost: Number(item.system?.props?.item_cost) || 0, sh: fd.shape, sz: fd.size, likes: fd.likes });
     }
     return tiers.some(pool => pool.length) ? tiers : null;
   }
@@ -87,7 +90,13 @@
   async function _resolveFishPools(tableRef) {
     const ref   = String(tableRef ?? "").trim();
     const pools = _readPools(await _findTable(ref));
-    if (pools) return pools;
+    if (pools) {
+      // This area's own fish (not in the generic table) — bitter bait favours them.
+      const generic = _readPools(await _findTable(DEFAULT_FISH_TABLE) ?? game.tables?.getName(DEFAULT_FISH_TABLE_NAME) ?? null);
+      const common  = new Set((generic ?? []).flat().map(f => f.id));
+      if (generic) for (const f of pools.flat()) f.ex = !common.has(f.id);
+      return pools;
+    }
     if (ref) console.warn(TAG, "Fish table missing or empty, using the generic one:", ref);
     const fallback = await _findTable(DEFAULT_FISH_TABLE) ?? game.tables?.getName(DEFAULT_FISH_TABLE_NAME) ?? null;
     return _readPools(fallback);
@@ -106,31 +115,12 @@
     };
   }
 
-  // WLP: catch chance bonus/penalty
-  function _catchChance(castStrength, wlp) {
-    if (castStrength >= 97) return 100;              // Perfect cast → guaranteed bite
-    const wlpBonus = (wlp - 8) * 2;                  // WLP nudges the odds (flavor)
-    return Math.min(100, Math.max(25, castStrength + 10 + wlpBonus));
-  }
-
-  // WLP: fish tier given cast strength
-  function _fishTier(castStrength, wlp) {
-    const shift = (wlp - 8) * 1.5;
-    const t4 = Math.max(50, 97 - shift);
-    const t3 = Math.max(20, 66 - shift);
-    const t2 = Math.max(5,  33 - shift);
-    if (castStrength >= t4) return 3;   // 0-indexed
-    if (castStrength >= t3) return 2;
-    if (castStrength >= t2) return 1;
-    return 0;
-  }
-
   // ---------------------------------------------------------------------------
   // Award fish — looks the name up in this session's pools for the world item id.
   // The id-less branch below only fires if the owner's client sent a name that
   // is not in the table the GM resolved for this session.
   // ---------------------------------------------------------------------------
-  async function _awardFish(actor, fishName) {
+  async function _awardFish(actor, fishName, quantity = 1) {
     const entry = (_sessionFish.get(actor.id) ?? []).find(e => e.name === fishName) ?? { name: fishName };
     if (entry.id) {
       const worldItem = game.items.get(entry.id);
@@ -146,6 +136,7 @@
         ? core.prepareItemCopyData(worldItem)
         : (() => { const d = worldItem.toObject(); delete d._id; delete d.items;
                    d.system = d.system ?? {}; d.system.container = null; return d; })();
+      if (quantity > 1) foundry.utils.setProperty(data, "system.props.item_quantity", String(quantity));
       const [created] = await actor.createEmbeddedDocuments("Item", [data]);
 
       // A bare embedded create yields a CHILDLESS parent — CSB only walks
@@ -158,32 +149,161 @@
           console.warn(TAG, `sub-item copy failed for ${fishName}`, e);
         }
       }
-      console.debug(TAG, `${actor.name} received: ${fishName}`);
+      console.debug(TAG, `${actor.name} received: ${fishName} ×${quantity}`);
+      return worldItem;
     } else {
       console.warn(TAG, `No item id for "${fishName}" — not in this session's fish table.`);
     }
+    return null;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Item tooltip detail, in the shape TreasureRoulette's UIKit tooltip reads
+  // (gear → equipment-swap candidate, anything else → kind:"item").
+  // ---------------------------------------------------------------------------
+  async function _tipFor(item) {
+    if (!item) return null;
+    const p = item.system?.props ?? {};
+    const type = String(p.item_type ?? "").trim().toLowerCase();
+    if (["weapon", "shield", "armor", "accessory"].includes(type)) {
+      try {
+        const cand = await globalThis.ONI?.TreasureRoulette?.Flow?._debug?.describeGear?.(item);
+        if (cand) return { kind: "gear", cand };
+      } catch {}
+    }
+    return { kind: "item", name: item.name, img: item.img, rarity: p.item_rarity ?? "", itemType: type, description: String(p.description ?? "") };
+  }
+
+  // ---------------------------------------------------------------------------
+  // Sunken chest — a category by weight (IP 35 / Consumable 25 / Zenit 18 /
+  // Accessory 9 / Armor 6 / Weapon 5 / Treasure 2), rolled on this area's own
+  // loot tables (Dungeon Configuration, the same tables its loot tiles use).
+  // "It's Empty" / "Junk" rows re-roll. Awarded straight to the angler — no
+  // recipient screen; the fishing result panel shows it.
+  // ---------------------------------------------------------------------------
+  function _lootTableRef(scene, key) {
+    try {
+      const d = window.oni?.FabulaConfig?.readDungeon?.(scene) ?? scene?.getFlag?.(MODULE_ID, "oniDungeon") ?? {};
+      return String(d?.loot?.[key] ?? "").trim();
+    } catch { return ""; }
+  }
+
+  // A table row → a reward, or null for a row that gives nothing (re-roll).
+  function _rowReward(key, row) {
+    const text = String(row?.text ?? row?.name ?? "");
+    if (row?.documentCollection === "Item" && row?.documentId) {
+      const item = game.items.get(row.documentId);
+      return item ? { kind: "item", item } : null;
+    }
+    if (key === "zenit") {
+      const m = text.match(/(\d[\d,]*)/);
+      const n = m ? parseInt(m[1].replace(/,/g, ""), 10) : 0;
+      return n > 0 ? { kind: "zenit", amount: n } : null;
+    }
+    if (key === "item") {
+      if (/refill/i.test(text) && /\bIP\b/i.test(text)) return { kind: "itempoint", fillToMax: true, text };
+      const m = text.match(/\+\s*(\d+)\s*IP\b/i);
+      return m && +m[1] > 0 ? { kind: "itempoint", amount: +m[1], text } : null;
+    }
+    return null;
+  }
+
+  async function _rollChest(scene) {
+    const T = CAMP.FishingTuning;
+    const cats = [];
+    for (const c of T?.CHEST_LOOT ?? []) {
+      const table = await _findTable(_lootTableRef(scene, c.key));
+      if (table?.results?.size) cats.push({ ...c, table });
+    }
+    if (!cats.length) { console.warn(TAG, "Chest: this area has no loot tables."); return null; }
+    for (let tries = 0; tries < 8; tries++) {
+      let r = Math.random() * cats.reduce((a, c) => a + c.w, 0);
+      const cat = cats.find(c => (r -= c.w) < 0) ?? cats[0];
+      const rows = cat.table.results.contents.filter(x => (Number(x.weight) || 0) > 0);
+      if (!rows.length) continue;
+      let rr = Math.random() * rows.reduce((a, x) => a + (Number(x.weight) || 0), 0);
+      const row = rows.find(x => (rr -= (Number(x.weight) || 0)) < 0) ?? rows[rows.length - 1];
+      const reward = _rowReward(cat.key, row);
+      if (reward) return { cat, reward };
+    }
+    return null;
+  }
+
+  async function _awardChest(actor, scene) {
+    const roll = await _rollChest(scene);
+    if (!roll) return null;
+    const { cat, reward } = roll;
+    const dispatcher = window["oni.TreasureRoulette.AwardDispatcher"];
+    const packet = { requestId: foundry.utils.randomID(), meta: { source: "fishing-chest" }, roller: { userId: game.user?.id } };
+    let loot;
+    if (reward.kind === "item") {
+      packet.reward = { kind: "item", itemUuid: reward.item.uuid, quantity: 1 };
+      packet.winner = { uuid: reward.item.uuid, name: reward.item.name, img: reward.item.img };
+      loot = { cat: cat.label, name: reward.item.name, img: reward.item.img, tip: await _tipFor(reward.item) };
+    } else if (reward.kind === "zenit") {
+      packet.reward = { kind: "zenit", amount: reward.amount };
+      packet.winner = { name: "Zenit", img: "icons/svg/coins.svg" };
+      loot = { cat: cat.label, name: `${reward.amount} zenit`, img: null, tip: { kind: "text", name: `${reward.amount} Zenit` } };
+    } else {
+      packet.reward = { kind: "itempoint", amount: reward.amount ?? 0, fillToMax: !!reward.fillToMax };
+      packet.winner = { name: "Inventory Points", img: null };
+      loot = { cat: cat.label, name: reward.text || "Supply", img: null, tip: { kind: "text", name: reward.text || "Supply" } };
+    }
+    try {
+      const res = await dispatcher?.award?.({ packet, recipientActorUuid: actor.uuid, postChat: true, showTransferCard: false, note: "sunken chest" });
+      if (!res?.ok) { console.warn(TAG, "Chest award failed:", res?.reason); return null; }
+    } catch (e) { console.error(TAG, "Chest award threw:", e); return null; }
+    return loot;
+  }
+
+  // First catch of a fish by this character (the NEW! tag).
+  async function _markCaught(actor, fishName) {
+    const seen = actor.getFlag?.(MODULE_ID, "fishCaught") ?? [];
+    if (seen.includes(fishName)) return false;
+    try { await actor.setFlag(MODULE_ID, "fishCaught", [...seen, fishName]); } catch {}
+    return true;
   }
 
   // ---------------------------------------------------------------------------
   // Pending resolver pattern — GM awaits owner's per-round result
   // ---------------------------------------------------------------------------
+  // The lure can be unlimited (map spots), so a round has no fixed length: it
+  // times out after IDLE_MS with no message at all from the angler.
+  const IDLE_MS = 120_000;
   function _waitForRound(actor) {
     return new Promise(resolve => {
       CAMP.FishingUI ??= {};
       CAMP.FishingUI.roundResolvers ??= {};
+      CAMP.FishingUI.roundTouch ??= {};
 
-      const timer = setTimeout(() => {
-        if (CAMP.FishingUI.roundResolvers[actor.id]) {
-          console.warn(TAG, "Round timeout — defaulting to no catch for", actor.name);
-          delete CAMP.FishingUI.roundResolvers[actor.id];
-          resolve({ fishName: null });
-        }
-      }, 120_000);   // 2 min: covers Click to Begin + cast + wait + 60s battle
-
+      let timer = null;
+      const arm = () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          if (CAMP.FishingUI.roundResolvers[actor.id]) {
+            console.warn(TAG, "Round idle timeout — defaulting to no catch for", actor.name);
+            delete CAMP.FishingUI.roundResolvers[actor.id];
+            delete CAMP.FishingUI.roundTouch[actor.id];
+            resolve({ fishName: null });
+          }
+        }, IDLE_MS);
+      };
+      arm();
+      CAMP.FishingUI.roundTouch[actor.id] = arm;
       CAMP.FishingUI.roundResolvers[actor.id] = (result) => {
         clearTimeout(timer);
+        delete CAMP.FishingUI.roundTouch[actor.id];
         resolve(result);
       };
+    });
+  }
+
+  // Between rounds: the owner's CONTINUE on the result window.
+  function _waitForContinue(actor) {
+    return new Promise(resolve => {
+      CAMP.FishingUI ??= {};
+      CAMP.FishingUI.continueResolvers ??= {};
+      CAMP.FishingUI.continueResolvers[actor.id] = resolve;
     });
   }
 
@@ -201,11 +321,13 @@
   // ---------------------------------------------------------------------------
   // Chat summary
   // ---------------------------------------------------------------------------
-  async function _postChatResult(actor, catches) {
+  async function _postChatResult(actor, catches, loot = []) {
     const hasCatch = catches.length > 0;
+    loot = loot ?? [];
     const fishList = catches.length === 0
       ? "<em style='opacity:.6'>Nothing caught this session.</em>"
-      : catches.map(f => `<li>🐟 <strong>${f}</strong></li>`).join("");
+      : catches.map(f => `<li>🐟 <strong>${f}</strong></li>`).join("")
+        + loot.map(l => `<li>🧰 <strong>${l.name}</strong> <em style="opacity:.7">(sunken chest)</em></li>`).join("");
 
     const headerColor = hasCatch ? "#3a7a35" : "#7a5010";
     const headline    = hasCatch
@@ -278,23 +400,33 @@
         // only (a camp spot: the others keep roaming).
         const audience = Array.isArray(opts?.audience) ? opts.audience : null;
         _sessionFish.set(actor.id, pools.flat());
-        const fishPools = pools.map(pool => pool.map(f => ({ name: f.name, weight: f.weight })));
+        const fishPools = pools.map(pool => pool.map(f => ({ name: f.name, weight: f.weight, sh: f.sh, sz: f.sz, likes: f.likes, ex: !!f.ex })));
+        // Every fish item in the world: a caught fish used as bait plays as "mooch".
+        const fishFolder = game.folders?.find(f => f.type === "Item" && f.name === "Fish");
+        const fishNames  = fishFolder ? game.items.filter(i => i.folder?.id === fishFolder.id).map(i => i.name) : pools.flat().map(f => f.name);
+        // Lure time: camp activity + dungeon tile 20 s; a fishing spot on a map has no limit.
+        const lureLimit  = fromSpot ? 0 : (CAMP.FishingTuning?.LURE_LIMIT?.camp ?? 20);
+        const lootScene  = _scene ?? canvas?.scene ?? null;
 
         CAMP.Sound?.play(CAMP.SFX?.CAMP_START);
 
         // Broadcast START with stats so all clients can display them
         const stats = _getStats(actor);
-        const BATTLE_TIMEOUT = 15;   // seconds — fish escapes if not caught in time
-        CAMP.Socket.broadcast(CAMP.MSG.FISHING_START, {
-          actorId:      actor.id,
-          actorName:    actor.name,
+        const BATTLE_TIMEOUT = 15;   // kept for old listeners; v2 derives the fight timer per angler
+        const startPayload = {
+          actorId:       actor.id,
+          actorName:     actor.name,
           stats,
           battleTimeout: BATTLE_TIMEOUT,
           totalRounds,
           fishPools,
+          fishNames,
+          lureLimit,
+          source:        fromSpot ? "spot" : "camp",
           audience,
-        });
-        CAMP.FishingUI?.show(actor.id, actor.name, stats, { battleTimeout: BATTLE_TIMEOUT, totalRounds, fishPools });
+        };
+        CAMP.Socket.broadcast(CAMP.MSG.FISHING_START, startPayload);
+        CAMP.FishingUI?.show(actor.id, actor.name, stats, startPayload);
 
         await new Promise(r => setTimeout(r, 300));
 
@@ -302,10 +434,11 @@
         // Round loop (default 3; overridable via opts.totalRounds)
         // ------------------------------------------------------------------
         const catches = [];   // fish names earned this session
+        const loots   = [];   // chest rewards this session
 
         for (let round = 1; round <= totalRounds; round++) {
-          // Round 1 is gated by the owner's "Cast Line" button (already shown in show()).
-          // Rounds 2+ need a broadcast so all clients (including owner) transition.
+          // Round 1 starts from show() (the owner's Tackle). Later rounds need
+          // a broadcast so every client goes back to the Tackle / wait line.
           if (round > 1) {
             CAMP.Socket.broadcast(CAMP.MSG.FISHING_NEXT_ROUND, {
               actorId:     actor.id,
@@ -315,19 +448,35 @@
             CAMP.FishingUI?.beginRound(actor.id, round, totalRounds); // GM direct
           }
 
-          // Wait for owner to complete this round (cast + optional battle)
-          const { fishName, castStrength } = await _waitForRound(actor);
+          // Wait for the owner to finish this round (tackle, cast, lure, fight).
+          const result   = await _waitForRound(actor);
+          const fishName = result?.fishName ?? null;
 
-          // Determine actual fish based on cast strength + WLP
+          const extra = { escaped: !!result?.escaped, shape: result?.shape ?? "std", len: Number(result?.len) || 0, chestLost: !!result?.chestLost };
           let awardedFish = null;
-          if (fishName) {
-            // fishName was pre-resolved in UI using stats — just trust it
+          if (fishName && (_sessionFish.get(actor.id) ?? []).some(e => e.name === fishName)) {
+            // The owner's client picked the fish (shipped trust model); the GM
+            // only awards names in this session's table.
+            const entry = (_sessionFish.get(actor.id) ?? []).find(e => e.name === fishName);
+            const tier  = pools.findIndex(pool => pool.some(e => e.name === fishName));
+            // Perfect catch (never left the bar): +1 of the same fish, not for Legendary.
+            const bonus = !!result?.perfect && tier >= 0 && tier < 3;
             awardedFish = fishName;
             catches.push(awardedFish);
-            await _awardFish(actor, awardedFish);
+            const worldItem = await _awardFish(actor, awardedFish, bonus ? 2 : 1);
+            const isNew = worldItem ? await _markCaught(actor, fishName) : false;
+            Object.assign(extra, { tier: Math.max(0, tier), img: entry?.img ?? worldItem?.img ?? null, cost: entry?.cost ?? 0,
+              bonus, isNew, fishTip: await _tipFor(worldItem) });
+            // The chest is kept only when the fish lands (Stardew rule).
+            if (result?.chest) {
+              const loot = await _awardChest(actor, lootScene);
+              if (loot) { extra.loot = loot; loots.push(loot); }
+            }
             // Fish land round by round, before the Proceed wait. A GM reload must
             // not restart the rounds and award them again.
             if (!fromSpot) await CAMP.State.markResolved(actor.id);
+          } else if (fishName) {
+            console.warn(TAG, `"${fishName}" is not in this session's fish table — not awarded.`);
           }
 
           // Broadcast round result to all clients
@@ -336,19 +485,18 @@
             round,
             fishName: awardedFish,
             catches:  [...catches],
+            ...extra,
           });
-          CAMP.FishingUI?.applyResult(actor.id, round, awardedFish, [...catches]);
+          CAMP.FishingUI?.applyResult(actor.id, round, awardedFish, [...catches], extra);
 
-          // Brief pause between rounds (except after the last one)
-          if (round < totalRounds) {
-            await new Promise(r => setTimeout(r, 2200));
-          }
+          // Between rounds the owner reads the result and presses CONTINUE.
+          if (round < totalRounds) await _waitForContinue(actor);
         }
 
         // ------------------------------------------------------------------
         // End of session — show summary, wait for Proceed
         // ------------------------------------------------------------------
-        await _postChatResult(actor, catches);
+        await _postChatResult(actor, catches, loots);
         await _waitForProceed(actor);
         _sessionFish.delete(actor.id);
 

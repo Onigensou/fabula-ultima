@@ -454,13 +454,15 @@
           // on their screen and do nothing).
           const audience = Array.isArray(payload?.audience) ? payload.audience : null;
           if (audience && !game.user?.isGM && !audience.includes(game.user?.id)) return;
-          CAMP.FishingUI?.show(payload?.actorId, payload?.actorName, payload?.stats,
-            { battleTimeout: payload?.battleTimeout ?? 0, totalRounds: payload?.totalRounds,
-              fishPools: payload?.fishPools });
+          CAMP.FishingUI?.show(payload?.actorId, payload?.actorName, payload?.stats, payload ?? {});
           return;
         }
         if (type === CAMP.MSG.FISHING_BEGIN) {
-          CAMP.FishingUI?.spectateBegin(payload?.actorId);
+          CAMP.FishingUI?.spectateBegin(payload);
+          return;
+        }
+        if (type === CAMP.MSG.FISHING_LURE) {
+          CAMP.FishingUI?.onLure(payload);
           return;
         }
         if (type === CAMP.MSG.FISHING_CAST) {
@@ -473,7 +475,7 @@
         }
         if (type === CAMP.MSG.FISHING_RESULT && payload?.round != null) {
           // Full result from GM — round reveal
-          CAMP.FishingUI?.applyResult(payload.actorId, payload.round, payload.fishName ?? null, payload.catches ?? []);
+          CAMP.FishingUI?.applyResult(payload.actorId, payload.round, payload.fishName ?? null, payload.catches ?? [], payload);
           return;
         }
         if (type === CAMP.MSG.FISHING_NEXT_ROUND) {
@@ -717,7 +719,11 @@
             break;
 
           case CAMP.MSG.FISHING_RESULT:   // owner → GM: round result submitted
-            CAMP.FishingUI?.resolveRound(payload?.actorId, { fishName: payload?.fishName ?? null });
+            CAMP.FishingUI?.resolveRound(payload?.actorId, payload ?? { fishName: null });
+            break;
+
+          case CAMP.MSG.FISHING_CONTINUE: // owner → GM: next round (v2)
+            CAMP.FishingUI?.resolveContinue?.(payload?.actorId);
             break;
 
           case CAMP.MSG.FISHING_PROCEED:

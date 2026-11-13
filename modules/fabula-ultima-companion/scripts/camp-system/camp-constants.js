@@ -219,6 +219,8 @@
     FISHING_HIT:     "CAMP_FISHING_HIT",     // owner → all (battle heartbeat: { actorId, fishY, barY, fishHp, inZone })
     FISHING_RESULT:  "CAMP_FISHING_RESULT",  // owner → GM (round done) / GM → all (round+fishName+round#)
     FISHING_NEXT_ROUND: "CAMP_FISHING_NEXT_ROUND", // GM → all (start cast for round 2/3: { actorId, round, totalRounds })
+    FISHING_LURE:    "CAMP_FISHING_LURE",    // owner → all (v2 lure + end-animation events: { actorId, ev, … })
+    FISHING_CONTINUE: "CAMP_FISHING_CONTINUE", // owner → GM (v2: next round after the result window)
     FISHING_PROCEED: "CAMP_FISHING_PROCEED", // owner → GM
     FISHING_DONE:    "CAMP_FISHING_DONE",    // GM → all
     // Planning minigame (Pairing Quiz)
