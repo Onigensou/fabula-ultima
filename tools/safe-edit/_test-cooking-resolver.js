@@ -1,33 +1,43 @@
-// Offline unit test of FUCompanion.api.cooking.resolve (pure resolver).
+// Offline unit test of FUCompanion.api.cooking.resolve (pure resolver) — cooking v2.
+//   node tools/safe-edit/_test-cooking-resolver.js
+// Covers: flavor links (resonance / harmony / clash), muddled → spoiled, Yaminabe +2 and the
+// Dark Delicacy tier, taste + recipe wheels, named > pattern recipes, rarity-weighted recipe wheel,
+// near-miss hints, goop, and the invariant that the pip animation (left-to-right fusing) always
+// adds up to the same link total as the resolver.
 globalThis.window = globalThis;
 globalThis.Hooks = { once() {} };
 globalThis.game = {};
-globalThis.foundry = { utils: {} };
+globalThis.foundry = { utils: { mergeObject: (a, b) => ({ ...a, ...b }), deepClone: x => JSON.parse(JSON.stringify(x)) } };
 require("../../modules/fabula-ultima-companion/scripts/cooking-system/cooking-api.js");
 const cooking = globalThis.FUCompanion.api.cooking;
+const { rel, TASTES } = cooking._internals;
 
 const CFG = {
-  matrix: {
-    sour: { 1: "sour1", 2: "sour2", 3: "sour3" },
-    salty: { 1: "salty1", 2: "salty2", 3: "salty3" },
-    umami: { 1: "umami1", 2: "umami2", 3: "umami3" },
-    sweet: { 1: "sweet1", 2: "sweet2", 3: "sweet3" },
-    bitter: { 1: "bitter1", 2: "bitter2", 3: "bitter3" },
-  },
-  mysteryDishId: "mystery", goopDishId: "goop",
-  tierBreakpoints: [8, 12], weirdThreshold: 2,
+  matrix: Object.fromEntries(["bitter", "sweet", "sour", "salty", "umami"].map(t => [t, { 1: t + "1", 2: t + "2", 3: t + "3" }])),
+  recipes: [
+    { name: "Rice Ball", dishId: "riceball", core: [{ name: "Rice" }, { name: "Rock Salt" }] },
+    { name: "Moon Custard", dishId: "custard", core: [{ name: "Egg" }, { name: "Fresh Milk" }] },
+    { name: "Manta Sashimi", dishId: "manta", core: [{ name: "Tempest Manta" }, { name: "Rock Salt" }] },
+    { name: "Sweet Mush", dishId: "mush", core: [{ taste: "sweet", qty: 2 }] },
+    { name: "Meatballs", dishId: "meatballs", core: [{ kind: "monster", qty: 3 }] },
+  ],
+  goopDishId: "goop",
+  darkDishIds: { bitter: "dark_bitter", sweet: "dark_sweet", sour: "dark_sour", salty: "dark_salty", umami: "dark_umami" },
+  spoiledDishIds: { bitter: "sp_bitter", sweet: "sp_sweet", sour: "sp_sour", salty: "sp_salty", umami: "sp_umami" },
+  ingredientKinds: { "Charred Bone": "monster", "Ash": "monster", "Turnip": "garden", "Animal Fang": "meat", "Ember Petal": "garden",
+    "Golden Koi": "sea", "Honey": "garden", "Starfruit": "garden", "Jellopy": "monster", "Fish Fin": "sea", "Rice": "pantry",
+    "Rock Salt": "pantry", "Egg": "pantry", "Fresh Milk": "pantry", "Tempest Manta": "sea", "Golem Heart": "monster" },
+  tierBreakpoints: [8, 12], weirdThreshold: 2, link: 2, muddledAt: 4,
+  yaminabe: { bonus: 2, darkAt: 15 },
   tastePoints: { primary: 2, secondary: 1 },
   rarityPotency: { Common: 1, Uncommon: 2, Rare: 3, Legendary: 4 },
-  cookerCheck: {
-    attrA: "INS", attrB: "DEX", helperDl: 10,
-    bands: [{ max: 6, potency: -1 }, { max: 12, potency: 0 }, { max: 15, potency: 1 }, { max: 9999, potency: 2 }],
-    critPotency: 2, fumbleWeird: 1,
-  },
-  pickTimeoutMs: 1,
+  cookerCheck: { attrA: "INS", attrB: "DEX", helperDl: 10,
+    bands: [{ max: 6, potency: -1 }, { max: 12, potency: 0 }, { max: 15, potency: 1 }, { max: 9999, potency: 2 }], critPotency: 2, fumbleWeird: 1 },
 };
-
-const ing = (name, taste, rarity = "Common", isIngredient = true, taste2 = "") =>
-  ({ name, taste, taste2, rarity, isIngredient });
+const RARITY = { "Tempest Manta": "Legendary", "Golden Koi": "Legendary", "Honey": "Uncommon", "Starfruit": "Uncommon" };
+const ing = (name, taste, rarity = "Common", extra = {}) => ({ name, taste, rarity, isIngredient: true, actorId: "a_" + name, actorName: "P_" + name, ...extra });
+const CFG_NP = { ...CFG, recipes: CFG.recipes.filter(x => !x.core.some(e => !e.name)) };
+const opts = (extra = {}) => ({ config: CFG_NP, rng: () => 0, rarityOf: n => RARITY[n] ?? "Common", ...extra });
 
 let failures = 0;
 function expect(label, actual, expected) {
@@ -36,200 +46,97 @@ function expect(label, actual, expected) {
   else console.log(`ok   ${label}`);
 }
 
-const opts = (extra = {}) => ({ config: CFG, rng: () => 0.0, ...extra });
+// 1. resonance + harmony: Bitter ×3 + Ember Petal (Sweet, Bitter's neighbour) → 4 + 4 + 2 = 10 → T2
+let r = cooking.resolve([ing("Charred Bone", "bitter"), ing("Ash", "bitter"), ing("Turnip", "bitter"), ing("Ember Petal", "sweet")], opts());
+expect("resonance + harmony → T2", [r.kind, r.family, r.tier, r.potency, r.parts.resonance, r.parts.harm, r.parts.clash], ["dish", "bitter", 2, 10, 4, 2, 0]);
+expect("style + featured name", [r.key, r.displayName], ["dish:bitter:monster", "Hearty Smoky Charred Bone Hot-Pot"]);
 
-// 1. Dominant sour, 4 commons → potency 4, tier 1
-let r = cooking.resolve([ing("A", "sour"), ing("B", "sour"), ing("C", "sweet"), ing("D", "umami")], opts());
-expect("sour T1", [r.kind, r.dishId, r.tier, r.potency], ["dish", "sour1", 1, 4]);
+// 2. clash: same pot with Animal Fang (Sour, across the chart) → 4 + 4 − 2 = 6 → T1
+r = cooking.resolve([ing("Charred Bone", "bitter"), ing("Ash", "bitter"), ing("Turnip", "bitter"), ing("Animal Fang", "sour")], opts());
+expect("clash → T1", [r.tier, r.potency, r.parts.clash], [1, 6, 2]);
 
-// 2. Same pot + good check (13) → potency 5, still T1
-r = cooking.resolve([ing("A", "sour"), ing("B", "sour"), ing("C", "sweet"), ing("D", "umami")],
-  opts({ cookerCheck: { total: 13, isCrit: false, isFumble: false } }));
-expect("sour T1 +check", [r.kind, r.tier, r.potency], ["dish", 1, 5]);
+// 3. mixed: Golden Koi + Honey (Sweet) + Starfruit (Sour) + Charred Bone (Bitter) → 9 + 2 + 4 − 2 = 13 → T3
+r = cooking.resolve([ing("Golden Koi", "sweet", "Legendary"), ing("Honey", "sweet", "Uncommon"), ing("Starfruit", "sour", "Uncommon"), ing("Charred Bone", "bitter")], opts());
+expect("mixed links → T3", [r.family, r.tier, r.potency, r.parts.harm, r.parts.clash], ["sweet", 3, 13, 4, 2]);
+expect("featured = rarest of the winning taste", r.featured?.name, "Golden Koi");
 
-// 3. Rare+Legendary sour pot → potency 3+4+1+1=9 → tier 2; crit → 11 → still T2; 16+ band +2 → 11
-r = cooking.resolve([ing("A", "sour", "Rare"), ing("B", "sour", "Legendary"), ing("C", "sour"), ing("D", "umami")], opts());
-expect("sour T2", [r.kind, r.dishId, r.tier, r.potency], ["dish", "sour2", 2, 9]);
+// 4. muddled: four different tastes → spoiled, taste wheel decides whose taste ruined it
+r = cooking.resolve([ing("Honey", "sweet", "Uncommon"), ing("Fish Fin", "umami"), ing("Rock Salt", "salty", "Common", { name: "Salt X" }), ing("Charred Bone", "bitter")], opts());
+expect("muddled → spoiled", [r.kind, r.tier, r.wheel?.type, r.wheel?.segments.length, r.dishId], ["spoiled", 0, "taste", 4, "sp_" + r.family]);
 
-// 4. Crit pushes over tier 3 breakpoint: base 10+2=12
-r = cooking.resolve([ing("A", "sour", "Rare"), ing("B", "sour", "Legendary"), ing("C", "sour", "Uncommon"), ing("D", "umami")],
-  opts({ cookerCheck: { total: 14, isCrit: true, isFumble: false } }));
-expect("crit → T3", [r.kind, r.dishId, r.tier, r.potency], ["dish", "sour3", 3, 12]);
+// 5. 2-2 tie → taste wheel (weighted by rarity) + fusion name; rng 0 → first candidate in wheel order
+r = cooking.resolve([ing("Honey", "sweet", "Uncommon"), ing("Jellopy", "sweet"), ing("Fish Fin", "umami"), ing("Golem Heart", "umami")], opts());
+expect("tie → taste wheel", [r.wheel?.type, r.wheel?.segments.map(s => s.taste), r.family, r.key], ["taste", ["sweet", "umami"], "sweet", "fusion:sweet+umami"]);
+expect("tie weights 3:2", r.wheel.segments.map(s => Math.round(s.p * 100)), [60, 40]);
+expect("fusion display name", /Honeyed-Savory/.test(r.displayName), true);
+r = cooking.resolve([ing("Honey", "sweet", "Uncommon"), ing("Jellopy", "sweet"), ing("Fish Fin", "umami"), ing("Golem Heart", "umami")], opts({ rng: () => 0.99 }));
+expect("tie wheel rng high → second", r.family, "umami");
 
-// 5. Burnt: check ≤6 → −1 potency
-r = cooking.resolve([ing("A", "umami"), ing("B", "umami"), ing("C", "umami"), ing("D", "umami")],
-  opts({ cookerCheck: { total: 5, isCrit: false, isFumble: false } }));
-expect("burnt −1", [r.kind, r.dishId, r.potency], ["dish", "umami1", 3]);
+// 6. Yaminabe +2, Dark Delicacy at 15+
+r = cooking.resolve([ing("Golden Koi", "sweet", "Legendary"), ing("Honey", "sweet", "Uncommon"), ing("Starfruit", "sour", "Uncommon"), ing("Charred Bone", "bitter")],
+  opts({ mode: "dark", cookerCheck: { total: 16, isCrit: false, isFumble: false } }));
+expect("yaminabe +2 & dark tier", [r.kind, r.tier, r.potency, r.parts.yami, r.dishId], ["dark", 4, 17, 2, "dark_sweet"]);
+r = cooking.resolve([ing("Golden Koi", "sweet", "Legendary"), ing("Honey", "sweet", "Uncommon"), ing("Starfruit", "sour", "Uncommon"), ing("Charred Bone", "bitter")],
+  opts({ cookerCheck: { total: 16, isCrit: false, isFumble: false } }));
+expect("hot pot never reaches the dark tier", [r.kind, r.tier, r.potency], ["dish", 3, 15]);
 
-// 6. Two weird → goop (one coin + one weird-tagged ingredient)
-r = cooking.resolve([ing("Gold Bar", "", "Rare", false), ing("Eyeball", "weird"), ing("C", "sweet"), ing("D", "sweet")], opts());
-expect("goop", [r.kind, r.dishId, r.weirdness], ["goop", "goop", 2]);
+// 7. fumble → goop (even over a recipe)
+r = cooking.resolve([ing("Rice", "sweet"), ing("Rock Salt", "salty")], opts({ cookerCheck: { total: 2, isCrit: false, isFumble: true } }));
+expect("fumble → goop", [r.kind, r.dishId], ["goop", "goop"]);
 
-// 7. One weird tolerated → still a dish
-r = cooking.resolve([ing("Gold Bar", "", "Rare", false), ing("B", "sweet"), ing("C", "sweet"), ing("D", "umami")], opts());
-expect("1 weird ok", [r.kind, r.dishId, r.weirdness], ["dish", "sweet1", 1]);
+// 8. named beats pattern (Sweet ×2 also fits)
+r = cooking.resolve([ing("Rice", "sweet"), ing("Rock Salt", "salty"), ing("Honey", "sweet", "Uncommon"), ing("Turnip", "bitter")], opts({ config: CFG }));
+expect("named > pattern", [r.kind, r.recipeName, r.wheel], ["recipe", "Rice Ball", null]);
 
-// 8. Fumble adds weirdness: 1 weird + fumble → goop
-r = cooking.resolve([ing("Gold Bar", "", "Rare", false), ing("B", "sweet"), ing("C", "sweet"), ing("D", "umami")],
-  opts({ cookerCheck: { total: 2, isCrit: false, isFumble: true } }));
-expect("fumble → goop", [r.kind, r.weirdness], ["goop", 2]);
+// 9. two named recipes → recipe wheel, 50/50 for equal rarity
+r = cooking.resolve([ing("Rice", "sweet"), ing("Rock Salt", "salty"), ing("Egg", "umami"), ing("Fresh Milk", "sweet")], opts());
+expect("recipe wheel", [r.wheel?.type, r.wheel?.segments.map(s => s.name), r.wheel?.segments.map(s => Math.round(s.p * 100))], ["recipe", ["Rice Ball", "Moon Custard"], [50, 50]]);
 
-// 9. Tie → mystery, redirect to tier-1 of rng-picked leader (rng 0 → first leader alphabetic order of TASTES filter)
-r = cooking.resolve([ing("A", "sour"), ing("B", "sour"), ing("C", "sweet"), ing("D", "sweet")], opts());
-expect("clash → mystery", [r.kind, r.dishId, r.redirectFamily, r.redirectDishId], ["mystery", "mystery", "sour", "sour1"]);
+// 10. rarity weights replace priority: Manta (Legendary 4 + 1) vs Rice Ball (1 + 1) → 5:2
+r = cooking.resolve([ing("Tempest Manta", "salty", "Legendary"), ing("Rock Salt", "salty"), ing("Rice", "sweet")], opts());
+expect("rarity-weighted recipe wheel", r.wheel?.segments.map(s => [s.name, Math.round(s.p * 100)]), [["Rice Ball", 29], ["Manta Sashimi", 71]]);
 
-// 10. Recipe exact match bypasses goop
-r = cooking.resolve([ing("Gold Bar", "", "Rare", false), ing("Golem Heart", "weird"), ing("Jellopy", "sweet"), ing("Spore", "bitter")],
-  opts({ knownRecipes: [{ name: "Golem-Heart Fondue", dishUuid: "Item.fondue", ingredientNames: ["Golem Heart", "Gold Bar", "Jellopy", "Spore"] }] }));
-expect("recipe bypass", [r.kind, r.dishId], ["recipe", "Item.fondue"]);
+// 11. pattern recipe (kind) when no named recipe fits
+r = cooking.resolve([ing("Charred Bone", "bitter"), ing("Ash", "bitter"), ing("Golem Heart", "salty"), ing("Turnip", "bitter")], opts({ config: CFG }));
+expect("pattern recipe", [r.kind, r.recipeName, r.pattern], ["recipe", "Meatballs", true]);
 
-// 11. Recipe must be exact multiset — different 4th ingredient falls through to goop
-r = cooking.resolve([ing("Gold Bar", "", "Rare", false), ing("Golem Heart", "weird"), ing("Jellopy", "sweet"), ing("Nibbers", "umami")],
-  opts({ knownRecipes: [{ name: "Golem-Heart Fondue", dishUuid: "Item.fondue", ingredientNames: ["Golem Heart", "Gold Bar", "Jellopy", "Spore"] }] }));
-expect("recipe strict", r.kind, "goop");
+// 12. near miss → hint data (named recipes only)
+r = cooking.resolve([ing("Rice", "sweet"), ing("Turnip", "bitter"), ing("Ember Petal", "sweet", "Common", { name: "Petal B" })], opts({ config: { ...CFG, recipes: CFG.recipes.filter(x => x.name !== "Sweet Mush") } }));
+expect("near miss", r.near.map(n => [n.name, n.have]), [["Rice Ball", ["Rice"]]]);
 
-// 12. taste2 half weight: 2×sour primary vs sour secondary ×1 + sweet... verify secondary counts
-r = cooking.resolve([ing("A", "sweet", "Common", true, "sour"), ing("B", "sweet", "Common", true, "sour"), ing("C", "sour"), ing("D", "sour")], opts());
-// sweet 4, sour 2+4=6 → sour dominant, potency 4 → T1
-expect("taste2 weights", [r.kind, r.dishId, r.points.sour, r.points.sweet], ["dish", "sour1", 6, 4]);
+// 13. weirdness ≥ 2 → goop
+r = cooking.resolve([ing("Coin", "", "Common", { isIngredient: false }), ing("Ore", "", "Common", { isIngredient: false }), ing("Honey", "sweet", "Uncommon")], opts());
+expect("weird → goop", r.kind, "goop");
 
-// 13. Empty/unknown taste on flagged ingredient counts weird (misconfigured)
-r = cooking.resolve([ing("A", ""), ing("B", "sweet"), ing("C", "sweet"), ing("D", "umami")], opts());
-expect("blank taste = weird", [r.kind, r.weirdness], ["dish", 1]);
+// 14. single ingredient → T1, no links
+r = cooking.resolve([ing("Fish Fin", "umami")], opts());
+expect("single", [r.kind, r.tier, r.potency, r.parts.resonance + r.parts.harm + r.parts.clash], ["dish", 1, 1, 0]);
 
-// ── Config-borne unique recipes (Giga Pudding: Jellopy x4) ──────────────────
-const CFG_R = {
-  ...CFG,
-  recipes: [{ name: "Giga Pudding", dishId: "gigapudding", ingredients: [{ name: "Jellopy", qty: 4 }] }],
-};
-const optsR = (extra = {}) => ({ config: CFG_R, rng: () => 0.0, ...extra });
-const jellopy = () => ing("Jellopy", "sweet");
+// 15. chart wheel: neighbours harmonize, across clashes
+expect("flavor wheel", [rel("bitter", "sweet"), rel("sweet", "sour"), rel("sour", "salty"), rel("salty", "umami"), rel("umami", "bitter"), rel("bitter", "sour"), rel("sweet", "umami")],
+  ["harm", "harm", "harm", "harm", "harm", "clash", "clash"]);
 
-// 14. 4x Jellopy → Giga Pudding (counted recipe, nobody has to "know" it)
-r = cooking.resolve([jellopy(), jellopy(), jellopy(), jellopy()], optsR());
-expect("giga pudding x4", [r.kind, r.dishId, r.recipeName], ["recipe", "gigapudding", "Giga Pudding"]);
+// 16. invariant: the pip show (fuse left→right, bounce on clash) adds up to the resolver's links
+let mismatch = 0, runs = 0;
+const pool = [["A", "bitter"], ["B", "sweet"], ["C", "sour"], ["D", "salty"], ["E", "umami"]];
+for (let i = 0; i < 4000; i++) {
+  const n = 2 + Math.floor(Math.random() * 3);
+  const pot = Array.from({ length: n }, (_, k) => { const [nm, t] = pool[Math.floor(Math.random() * 5)]; return ing(nm + k, t); });
+  const res = cooking.resolve(pot, opts({ config: { ...CFG, recipes: [] } }));
+  if (res.kind !== "dish") continue;
+  runs++;
+  const blobs = [], tastes = []; let total = 0;
+  for (const c of pot) {
+    if (tastes.includes(c.taste)) { total += 2; continue; }
+    tastes.push(c.taste);
+    let fuse = null;
+    for (const b of blobs) { let cl = false; for (const x of b) { if (rel(x, c.taste) === "harm") total += 2; else { total -= 2; cl = true; } } if (!cl && !fuse) fuse = b; }
+    if (fuse) fuse.push(c.taste); else blobs.push([c.taste]);
+    if (blobs.some(b => b.length > 2)) mismatch++;           // a blob never holds 3 tastes
+  }
+  if (total !== res.parts.resonance + res.parts.harm - res.parts.clash) mismatch++;
+}
+expect(`pip show == resolver links (${runs} pots)`, mismatch, 0);
 
-// 15. Only 3 Jellopy → no match, falls through to normal sweet taste math
-r = cooking.resolve([jellopy(), jellopy(), jellopy()], optsR());
-expect("3x jellopy = no recipe", [r.kind, r.dishId], ["dish", "sweet1"]);
-
-// 16. 3 Jellopy + 1 other → no match (exact multiset, not a subset)
-r = cooking.resolve([jellopy(), jellopy(), jellopy(), ing("Nibbers", "umami")], optsR());
-expect("3x jellopy + other", [r.kind, r.dishId], ["dish", "sweet1"]);
-
-// 17. Fumble ruins even the unique recipe — and yields the REAL goop dish id
-r = cooking.resolve([jellopy(), jellopy(), jellopy(), jellopy()],
-  optsR({ cookerCheck: { total: 2, isCrit: false, isFumble: true } }));
-expect("fumble beats recipe", [r.kind, r.dishId], ["goop", "goop"]);
-
-// 18. Fumble on a plain dish now goops properly (previously kept the dish id)
-r = cooking.resolve([ing("A", "umami"), ing("B", "umami"), ing("C", "umami"), ing("D", "umami")],
-  optsR({ cookerCheck: { total: 3, isCrit: false, isFumble: true } }));
-expect("fumble goops dish", [r.kind, r.dishId], ["goop", "goop"]);
-
-// ── core + filler partial matching ──────────────────────────────────────────
-// `core` = ingredients the pot must CONTAIN; every other slot is free filler.
-const CFG_C = {
-  ...CFG,
-  recipes: [
-    { name: "Giga Pudding",  dishId: "gigapudding", ingredients: [{ name: "Jellopy", qty: 4 }] },
-    { name: "Moon Custard",  dishId: "custard",     core: [{ name: "Egg" }, { name: "Fresh Milk" }] },
-    { name: "Lucky Omelette",dishId: "omelette",    core: [{ name: "Egg" }, { name: "Lucky Loach" }] },
-    { name: "Grand Omelette",dishId: "grand",       core: [{ name: "Egg" }, { name: "Lucky Loach" }, { name: "Rice" }] },
-    { name: "Soufflé",       dishId: "souffle",     core: [{ name: "Regret", qty: 2 }] },
-  ],
-};
-const optsC = (extra = {}) => ({ config: CFG_C, rng: () => 0.0, ...extra });
-const egg   = () => ing("Egg", "umami");
-const milk  = () => ing("Fresh Milk", "sweet");
-const loach = () => ing("Lucky Loach", "sweet", "Uncommon");
-const rice  = () => ing("Rice", "sweet");
-
-// 19. Core met + 2 filler → the unique dish, filler ignored
-r = cooking.resolve([egg(), milk(), ing("A", "sour"), ing("B", "bitter")], optsC());
-expect("core+2 filler", [r.kind, r.dishId, r.recipeName], ["recipe", "custard", "Moon Custard"]);
-
-// 20. Core met with NO filler (pot exactly the core) still matches
-r = cooking.resolve([egg(), milk()], optsC());
-expect("core exact, no filler", [r.kind, r.dishId], ["recipe", "custard"]);
-
-// 21. Half the core → no match, falls through to taste math, flags a near-miss
-r = cooking.resolve([egg(), ing("A", "sour"), ing("B", "sour"), ing("C", "sour")], optsC());
-expect("1 short → near-miss", [r.kind, r.nearMiss], ["dish", true]);
-
-// 22. Nothing close → no near-miss tease
-r = cooking.resolve([ing("A", "sour"), ing("B", "sour"), ing("C", "sour"), ing("D", "umami")], optsC());
-expect("no near-miss", [r.kind, r.nearMiss], ["dish", false]);
-
-// 23. Specificity: Egg+Loach+Rice satisfies BOTH omelettes — the 3-core wins
-r = cooking.resolve([egg(), loach(), rice(), ing("F", "sour")], optsC());
-expect("most specific core wins", [r.kind, r.dishId], ["recipe", "grand"]);
-
-// 24. Drop the Rice and the 2-core one takes over
-r = cooking.resolve([egg(), loach(), ing("F", "sour")], optsC());
-expect("2-core fallback", [r.kind, r.dishId], ["recipe", "omelette"]);
-
-// 25. Counted core: 1 Regret is not enough, 2 is
-r = cooking.resolve([ing("Regret", "bitter"), ing("A", "sour"), ing("B", "sour")], optsC());
-expect("1 Regret insufficient", r.kind, "dish");
-r = cooking.resolve([ing("Regret", "bitter"), ing("Regret", "bitter"), ing("A", "sour")], optsC());
-expect("2 Regret matches", [r.kind, r.dishId], ["recipe", "souffle"]);
-
-// 26. Exact full-pot recipe still outranks a core match sharing the pot
-const CFG_X = { ...CFG, recipes: [
-  { name: "Core Dish",  dishId: "core",  core: [{ name: "Jellopy", qty: 2 }] },
-  { name: "Giga Pudding", dishId: "gigapudding", ingredients: [{ name: "Jellopy", qty: 4 }] },
-]};
-r = cooking.resolve([jellopy(), jellopy(), jellopy(), jellopy()], { config: CFG_X, rng: () => 0.0 });
-expect("exact outranks core", [r.kind, r.dishId], ["recipe", "gigapudding"]);
-
-// 27. …but 3 Jellopy (no longer exact) falls to the core recipe
-r = cooking.resolve([jellopy(), jellopy(), jellopy()], { config: CFG_X, rng: () => 0.0 });
-expect("core catches non-exact", [r.kind, r.dishId], ["recipe", "core"]);
-
-// 28. Fumble ruins a core recipe too, and suppresses the near-miss tease
-r = cooking.resolve([egg(), milk(), ing("A", "sour"), ing("B", "sour")],
-  optsC({ cookerCheck: { total: 2, isCrit: false, isFumble: true } }));
-expect("fumble beats core recipe", [r.kind, r.dishId], ["goop", "goop"]);
-
-// 29. Weird ingredients can be filler — a core match bypasses the goop gate
-r = cooking.resolve([egg(), milk(), ing("Coin", "", "Common", false), ing("Nail", "", "Common", false)], optsC());
-expect("core bypasses goop", [r.kind, r.dishId], ["recipe", "custard"]);
-
-// 30. Determinism — the same pot must always cook the same dish
-const potD = [egg(), loach(), rice(), ing("F", "sour")];
-const a = cooking.resolve(potD, { config: CFG_C, rng: () => 0.99 });
-const b = cooking.resolve(potD, { config: CFG_C, rng: () => 0.01 });
-expect("deterministic across rng", [a.dishId, b.dishId], ["grand", "grand"]);
-
-// 31–36. Zero Power dishes (_populate-zp-dishes.js), declared AFTER the older
-// recipes exactly as in the live config, so declaration order is not on their side.
-const CFG_ZP = { ...CFG, recipes: [
-  { name: "Grilled-Hog Steak", dishId: "hog",     core: [{ name: "Meat" }, { name: "Cooking Oil" }] },
-  { name: "Moon Custard",      dishId: "custard", core: [{ name: "Egg" }, { name: "Fresh Milk" }] },
-  { name: "Herbal Tea",        dishId: "tea",     core: [{ name: "Darkroot Herb" }, { name: "Honey" }] },
-  { name: "Rice Ball",         dishId: "riceball", core: [{ name: "Rice" }, { name: "Rock Salt" }] },
-  { name: "Katsudon",          dishId: "katsudon", core: [{ name: "Meat" }, { name: "Egg" }, { name: "Rice" }] },
-  { name: "Manna Cake",        dishId: "manna",   core: [{ name: "Flour" }, { name: "Honey" }, { name: "Dewdrop" }] },
-  { name: "Sæhrímnir Feast",   dishId: "feast",   core: [{ name: "Prime Steak" }, { name: "Mead" }], priority: 10 },
-]};
-const optsZ = (extra = {}) => ({ config: CFG_ZP, rng: () => 0.0, ...extra });
-const meat = () => ing("Meat", "umami"), riceZ = () => ing("Rice", "sweet"), eggZ = () => ing("Egg", "umami");
-const salt = () => ing("Rock Salt", "salty"), oil = () => ing("Cooking Oil", "umami");
-const steak = () => ing("Prime Steak", "umami", "Rare"), mead = () => ing("Mead", "sweet", "Rare");
-
-r = cooking.resolve([meat(), eggZ(), riceZ(), salt()], optsZ());
-expect("Katsudon beats Rice Ball", [r.kind, r.dishId], ["recipe", "katsudon"]);
-r = cooking.resolve([meat(), eggZ(), riceZ(), oil()], optsZ());
-expect("Katsudon beats Grilled-Hog Steak", [r.kind, r.dishId], ["recipe", "katsudon"]);
-r = cooking.resolve([ing("Flour", "sweet"), ing("Honey", "sweet", "Uncommon"), ing("Dewdrop", "sweet"), ing("Darkroot Herb", "bitter", "Uncommon")], optsZ());
-expect("Manna Cake beats Herbal Tea", [r.kind, r.dishId], ["recipe", "manna"]);
-r = cooking.resolve([steak(), mead(), riceZ(), salt()], optsZ());
-expect("Feast beats Rice Ball (priority)", [r.kind, r.dishId], ["recipe", "feast"]);
-r = cooking.resolve([steak(), ing("A", "sour"), ing("B", "sour"), ing("C", "sour")], optsZ());
-expect("Feast 1 short → near-miss", [r.kind, r.nearMiss], ["dish", true]);
-r = cooking.resolve([meat(), eggZ(), ing("A", "sour"), ing("B", "umami")], optsZ());
-expect("Katsudon 1 short → near-miss", [r.kind, r.nearMiss], ["dish", true]);
-
-console.log(failures ? `\n${failures} FAILURES` : "\nALL PASS");
+console.log(failures ? `\n${failures} FAILED` : "\nall passed");
 process.exit(failures ? 1 : 0);

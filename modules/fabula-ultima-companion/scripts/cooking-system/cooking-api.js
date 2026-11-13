@@ -1,24 +1,30 @@
 // ============================================================================
-// Cooking System — API
+// Cooking System — API  (v2: flavor links, Yaminabe, recipe/taste wheels, cookbook)
 //
 // Public API:  FUCompanion.api.cooking
 //   .getConfig()                            → resolved config
-//   .resolve(contributions, opts)           → pure resolver, no side effects
-//   .applyDish(dishUuid, targetActorUuids)  → food-AE slot logic (GM context)
+//   .resolve(contributions, opts)           → pure resolver, no side effects (wheels use opts.rng)
+//   .applyDish(dishUuid, targets, opts)     → food-AE slot logic (GM context); opts.displayName names the AE
 //   .start(options)                         → full hot-pot session (GM context)
-//   .describeItem(item)                     → contribution descriptor
+//   .describeItem(item, actorUuid, extra)   → contribution descriptor
 //   .proceed(sessionId)                     → resolve a waiting proceed gate
+//   .requestYaminabe(sessionId)             → cook asks to switch this pot to Yaminabe (one way)
+//   .devSim(opts)                           → GM-only local run of the full loop
 //
 // Socket messages (cooking-ui.js handles the visual side):
-//   GM → ALL:    COOKING_PANEL_OPEN  { sessionId, entries, cookerActorId }
-//   PLAYER → ALL: COOKING_HOVER     { sessionId, actorId, itemImg, itemName, itemTaste, itemTaste2, isSelect? }
-//   PLAYER → GM:  COOKING_LOCK      { sessionId, actorId, itemId, itemImg, itemName }
-//   GM → ALL:    COOKING_STATE      { sessionId, slots, tasteValues }
-//   GM → ALL:    COOKING_ANIMATE    { sessionId, contributions }
-//   GM → ALL:    COOKING_RESULTS    { sessionId, outcome }
-//   GM → ALL:    COOKING_CLOSE      { sessionId }
-//   GM → ALL:    COOKING_SFX        { sessionId, sfx: "START"|"EAT" }
-//   PLAYER → GM: COOKING_PROCEED    { sessionId, userId }
+//   GM → ALL:     COOKING_PANEL_OPEN  { sessionId, entries, cookerActorId, cookerUserId, mode, view }
+//   PLAYER → ALL: COOKING_HOVER       { sessionId, actorId, itemImg, itemName, itemTaste, itemTaste2, isSelect? }  (Hot Pot only)
+//   PLAYER → GM:  COOKING_LOCK        { sessionId, actorId, itemId, itemImg, itemName }
+//   GM → ALL:     COOKING_STATE       { sessionId, slots, tasteValues }   (redacted while the pot is Yaminabe)
+//   ANY → GM:     COOKING_MODE_REQ    { sessionId, userId }
+//   GM → ALL:     COOKING_MODE        { sessionId, mode, byName }
+//   GM → ALL:     COOKING_MODE_DENIED { sessionId, userId, reason }
+//   GM → ALL:     COOKING_ANIMATE     { sessionId, contributions, mode }
+//   GM → ALL:     COOKING_RESOLVE     { sessionId, contributions, mode, wheel }
+//   GM → ALL:     COOKING_RESULTS     { sessionId, outcome }
+//   GM → ALL:     COOKING_CLOSE       { sessionId }
+//   GM → ALL:     COOKING_SFX         { sessionId, sfx }
+//   PLAYER → GM:  COOKING_PROCEED     { sessionId, userId }
 // ============================================================================
 (() => {
   const MODULE_ID = "fabula-ultima-companion";
@@ -28,16 +34,32 @@
   if (window[GUARD]) return;
   window[GUARD] = true;
 
-  const TASTES = ["bitter", "salty", "sour", "sweet", "umami"];
+  // Flavor wheel order: neighbours harmonize, tastes across the chart clash.
+  // Bitter–Sweet (dark chocolate) · Sweet–Sour · Sour–Salty (pickles) · Salty–Umami (broth) · Umami–Bitter (char)
+  const TASTES = ["bitter", "sweet", "sour", "salty", "umami"];
+  const TASTE_LABEL = { bitter: "Bitter", sweet: "Sweet", sour: "Sour", salty: "Salty", umami: "Umami" };
+  const TASTE_ADJ   = { bitter: "Smoky", sweet: "Honeyed", sour: "Tangy", salty: "Brined", umami: "Savory" };
+  const STYLES = {
+    sea: { label: "Sea", noun: "Chowder" }, meat: { label: "Meat", noun: "Skewers" },
+    monster: { label: "Monster", noun: "Hot-Pot" }, garden: { label: "Garden", noun: "Stir-fry" },
+    pantry: { label: "Pantry", noun: "Porridge" }, arcane: { label: "Arcane", noun: "Elixir Broth" },
+  };
+  const STYLE_KEYS = Object.keys(STYLES);
 
   // ── Config ─────────────────────────────────────────────────────────────────
   const DEFAULT_CONFIG = {
     matrix: {},
     recipes: [],
-    mysteryDishId: null,
+    mysteryDishId: null,           // v1 only; v2 never cooks the Mysterious Hot-Pot
     goopDishId: null,
+    darkDishIds: {},               // taste → dish id (Yaminabe only, potency ≥ yaminabe.darkAt)
+    spoiledDishIds: {},            // taste → dish id (muddled pot: 4+ different tastes)
+    ingredientKinds: {},           // ingredient name → sea|meat|monster|garden|pantry|arcane
     tierBreakpoints: [8, 12],
     weirdThreshold: 2,
+    link: 2,                       // resonance / harmony +link, clash −link
+    muddledAt: 4,
+    yaminabe: { bonus: 2, darkAt: 15 },
     tastePoints: { primary: 2, secondary: 1 },
     rarityPotency: { Common: 1, Uncommon: 2, Rare: 3, Legendary: 4 },
     cookerCheck: {
@@ -49,16 +71,21 @@
       critPotency: 2, fumbleWeird: 1,
     },
     pickTimeoutMs: 120_000,
+    discovered: [],                // v1 recipe discoveries (kept)
+    cookbook: [],                  // v2 cookbook entry keys
+    tasted: [],                    // ingredient names that have been in a pot (picker ✦)
+    hints: [],                     // recipe names with an unlocked hint
   };
 
   function getConfig() {
-    const item = game.items?.find?.(i => i.name === "_Cooking Config");
+    const item = _configItem();
     const flags = item?.getFlag?.(MODULE_ID, "cookingConfig") ?? {};
     return foundry.utils.mergeObject(foundry.utils.deepClone(DEFAULT_CONFIG), flags, { inplace: false });
   }
+  function _configItem() { return game.items?.find?.(i => i.name === "_Cooking Config") ?? null; }
 
   // ── Descriptors ────────────────────────────────────────────────────────────
-  function describeItem(item, actorUuid = null) {
+  function describeItem(item, actorUuid = null, extra = {}) {
     let p = item?.system?.props ?? {};
     if (!p.isIngredient) {
       const world = game.items?.find?.(i => i.name === item?.name && i.system?.props?.item_type === "material");
@@ -72,6 +99,8 @@
       isIngredient: !!p.isIngredient,
       actorUuid,
       itemUuid: item?.uuid ?? null,
+      img: item?.img ?? null,
+      ...extra,
     };
   }
 
@@ -96,164 +125,206 @@
       });
   }
 
+  // ── Small pure helpers ─────────────────────────────────────────────────────
+  const rel = (a, b) => {
+    if (a === b) return "same";
+    const d = Math.abs(TASTES.indexOf(a) - TASTES.indexOf(b));
+    return d === 1 || d === TASTES.length - 1 ? "harm" : "clash";
+  };
+  function _pickWeighted(cands, rng) {
+    const tot = cands.reduce((s, c) => s + c.w, 0) || 1;
+    let r = rng() * tot;
+    for (let i = 0; i < cands.length; i++) { r -= cands[i].w; if (r < 0) return i; }
+    return cands.length - 1;
+  }
+  const _kindOf = (cfg, name) => STYLES[cfg.ingredientKinds?.[name]] ? cfg.ingredientKinds[name] : "monster";
+
   // ── Recipes ────────────────────────────────────────────────────────────────
-  // A recipe entry accepts either an already-flat name list (`ingredientNames`,
-  // used by recipe ITEMS whose CSB itemContainer can only hold one row per item)
-  // or a counted list (`ingredients: [{ name, qty }]`, used by _Cooking Config).
-  // Counted entries expand to repeated names so a pot of 4 Jellopy can match a
-  // "Jellopy x4" recipe — `ingredients` compares an EXACT multiset.
-  //
-  // `core: [{ name, qty }]` is the partial-match spelling: the pot must CONTAIN
-  // the core, and every remaining slot is free filler. Exact recipes consume the
-  // whole pot, so they can only ever fire for one party size — a 4-slot
-  // "Jellopy x4" is dead the moment a fifth member joins. Core+filler is what
-  // makes a recipe discoverable: two staples plus whatever else was on hand.
+  // `ingredients` / `ingredientNames` = exact full pot. `core` = the pot must CONTAIN it, the rest is filler.
+  // A core entry is { name, qty } (named) or { taste, qty } / { kind, qty } (pattern).
   function _expandCounted(rows) {
     return (rows ?? []).flatMap(row => {
-      const name = row?.name;
       const qty = Math.max(1, parseInt(row?.qty) || 1);
-      return name ? Array(qty).fill(name) : [];
+      return (row?.name || row?.taste || row?.kind) ? Array(qty).fill(row) : [];
     });
   }
-
-  function _recipeIngredientNames(r) {
-    if (Array.isArray(r?.ingredients) && r.ingredients.length) return _expandCounted(r.ingredients);
+  function _recipeExactNames(r) {
+    if (Array.isArray(r?.ingredients) && r.ingredients.length) return _expandCounted(r.ingredients).map(x => x.name).filter(Boolean);
     return [...(r?.ingredientNames ?? [])].filter(Boolean);
   }
-
-  function _recipeCoreNames(r) {
-    return Array.isArray(r?.core) ? _expandCounted(r.core) : [];
+  const _isPattern = r => Array.isArray(r?.core) && r.core.some(e => !e?.name);
+  function _slotOk(e, c) {
+    if (e.name) return c.name === e.name;
+    if (e.taste) return c.taste === String(e.taste).toLowerCase();
+    if (e.kind) return c.kind === e.kind;
+    return false;
   }
-
-  // How many entries of the multiset `req` the pot does NOT cover. 0 = contained.
-  function _missingFrom(potCounts, req) {
-    const need = {};
-    for (const n of req) need[n] = (need[n] ?? 0) + 1;
-    let missing = 0;
-    for (const [n, c] of Object.entries(need)) missing += Math.max(0, c - (potCounts[n] ?? 0));
-    return missing;
+  // distinct-item assignment (≤ party size, so brute force is fine)
+  function _coreMissing(core, contribs) {
+    const slots = _expandCounted(core);
+    let best = slots.length;
+    const used = Array(contribs.length).fill(false);
+    const go = (i, missing) => {
+      if (missing >= best) return;
+      if (i === slots.length) { best = missing; return; }
+      let placed = false;
+      for (let j = 0; j < contribs.length; j++) {
+        if (!used[j] && _slotOk(slots[i], contribs[j])) { placed = true; used[j] = true; go(i + 1, missing); used[j] = false; if (best === 0) return; }
+      }
+      go(i + 1, missing + 1);
+      void placed;
+    };
+    go(0, 0);
+    return best;
   }
+  // Recipe-wheel weight. Named: rarity of the named items (rarer recipes win more often; replaces `priority`).
+  // Pattern: specificity (name 2, kind 1.5, taste 1 per slot). `weight` multiplies, `priority` adds.
+  function _recipeWeight(r, cfg, rarityOf) {
+    const slots = Array.isArray(r.core) && r.core.length ? _expandCounted(r.core) : _recipeExactNames(r).map(n => ({ name: n }));
+    let w = _isPattern(r)
+      ? slots.reduce((s, e) => s + (e.name ? 2 : e.kind ? 1.5 : 1), 0)
+      : slots.reduce((s, e) => s + (cfg.rarityPotency[rarityOf?.(e.name) ?? "Common"] ?? 1), 0);
+    w = w * (Number(r.weight) || 1) + (Number(r.priority) || 0);
+    return Math.max(0.01, w);
+  }
+  const _coreText = r => (Array.isArray(r.core) && r.core.length ? r.core : (r.ingredients ?? (r.ingredientNames ?? []).map(n => ({ name: n }))))
+    .map(e => `${e.name ?? (e.taste ? `any ${TASTE_LABEL[String(e.taste).toLowerCase()] ?? e.taste}` : `any ${STYLES[e.kind]?.label ?? e.kind}`)}${(parseInt(e.qty) || 1) > 1 ? ` ×${e.qty}` : ""}`)
+    .join(" + ");
 
   // ── Pure resolver ──────────────────────────────────────────────────────────
+  // contributions: describeItem() descriptors (+ actorName/actorId). opts: { config, rng, cookerCheck, knownRecipes, mode, rarityOf }
   function resolve(contributions, opts = {}) {
     const cfg = opts.config ?? getConfig();
     const rng = opts.rng ?? Math.random;
     const check = opts.cookerCheck ?? null;
-    // Config recipes are intrinsic to the system (nobody has to "know" them);
-    // knownRecipes are the actor-owned recipe-item path.
+    const dark = opts.mode === "dark";
+    const rarityOf = opts.rarityOf ?? (() => "Common");
+    const L = Number(cfg.link) || 2;
     const recipes = [...(cfg.recipes ?? []), ...(opts.knownRecipes ?? [])];
-    const contribs = (contributions ?? []).filter(Boolean);
+    const contribs = (contributions ?? []).filter(Boolean).map(c => ({ ...c, kind: c.kind ?? _kindOf(cfg, c.name) }));
     const breakdown = [];
 
-    let potencyMod = 0, fumbleWeird = 0;
-    if (check) {
-      if (check.isFumble) {
-        // A fumble always ruins the pot (see the goop gate below), so the
-        // weirdness bump is bookkeeping only — don't narrate it twice.
-        fumbleWeird = cfg.cookerCheck.fumbleWeird;
-      } else if (check.isCrit) {
-        potencyMod = cfg.cookerCheck.critPotency;
-        breakdown.push(`Critical cooking! +${potencyMod} potency`);
-      } else {
+    let checkMod = 0;
+    if (check && !check.isFumble) {
+      if (check.isCrit) { checkMod = cfg.cookerCheck.critPotency; breakdown.push(`Critical cooking! +${checkMod} potency`); }
+      else {
         const band = cfg.cookerCheck.bands.find(b => check.total <= b.max);
-        potencyMod = band?.potency ?? 0;
-        if (potencyMod) breakdown.push(`Cooker check ${check.total} → ${potencyMod > 0 ? "+" : ""}${potencyMod} potency`);
+        checkMod = band?.potency ?? 0;
+        if (checkMod) breakdown.push(`Cooker check ${check.total} → ${checkMod > 0 ? "+" : ""}${checkMod} potency`);
       }
     }
+    const base = { checkMod, mode: dark ? "dark" : "open" };
+    const goop = (why) => {
+      breakdown.push(why);
+      return { ...base, kind: "goop", dishId: cfg.goopDishId, key: "special:Goop", potency: null, breakdown, wheel: null, near: [] };
+    };
+    if (!contribs.length) return goop("Nothing went into the pot");
+    if (check?.isFumble) return goop("Cooker fumbled — the pot is ruined");
 
-    // Recipe match (bypasses the taste math and the weirdness/goop check).
-    // A fumbled cooker check ruins even a unique recipe, so skip matching there.
+    // ── recipes: exact full pot > named core > pattern core; several hits in one layer → recipe wheel ──
     const potNames = contribs.map(c => c.name).sort();
-    const potCounts = {};
-    for (const n of potNames) potCounts[n] = (potCounts[n] ?? 0) + 1;
-
-    // "One ingredient short of something" — the discovery tease. Reported on the
-    // result card WITHOUT naming the dish, so a near-miss invites another pot
-    // instead of handing over the answer.
-    let nearMiss = false;
-
-    if (!check?.isFumble) {
-      const exact = [];
-      const partial = [];
-      recipes.forEach((r, idx) => {
-        const req = _recipeIngredientNames(r).sort();
-        if (req.length && req.length === potNames.length && req.every((n, i) => n === potNames[i])) {
-          exact.push({ r, idx });
-          return;
-        }
-        const core = _recipeCoreNames(r);
-        if (!core.length) return;
-        const missing = _missingFrom(potCounts, core);
-        if (missing === 0) partial.push({ r, idx, size: core.length });
-        else if (missing === 1 && core.length >= 2) nearMiss = true;
-      });
-
-      // An exact full-pot recipe outranks any core+filler one. Among core
-      // matches the MOST SPECIFIC wins — most core items, then author
-      // `priority`, then declaration order. Never rng: the same pot must always
-      // cook the same dish or players can't learn a recipe by repeating it.
-      partial.sort((a, b) =>
-        (b.size - a.size) ||
-        ((b.r.priority ?? 0) - (a.r.priority ?? 0)) ||
-        (a.idx - b.idx));
-      const hit = exact[0] ?? partial[0];
-
-      if (hit) {
-        const r = hit.r;
-        const filler = potNames.length - (hit.size ?? potNames.length);
-        breakdown.push(`Recipe match: ${r.name}${filler > 0 ? ` (+${filler} filler)` : ""}`);
-        const dishId = r.dishUuid ?? r.dishId ?? null;
-        return { kind: "recipe", dishId, recipeName: r.name, potency: null, weirdness: 0, breakdown };
-      }
+    const exact = [], named = [], pattern = [], near = [];
+    recipes.forEach(r => {
+      const req = _recipeExactNames(r).sort();
+      if (req.length && req.length === potNames.length && req.every((n, i) => n === potNames[i])) { exact.push(r); return; }
+      if (!Array.isArray(r.core) || !r.core.length) return;
+      const missing = _coreMissing(r.core, contribs);
+      if (missing === 0) (_isPattern(r) ? pattern : named).push(r);
+      else if (missing === 1 && !_isPattern(r) && _expandCounted(r.core).length >= 2) near.push(r);
+    });
+    const layer = exact.length ? exact : named.length ? named : pattern;
+    if (layer.length) {
+      const cands = layer.map(r => ({ r, w: _recipeWeight(r, cfg, rarityOf) }));
+      const idx = cands.length > 1 ? _pickWeighted(cands, rng) : 0;
+      const r = cands[idx].r;
+      const tot = cands.reduce((s, c) => s + c.w, 0);
+      const wheel = cands.length > 1 ? {
+        type: "recipe", title: "Which recipe?", landIdx: idx,
+        segments: cands.map(c => ({ key: "recipe:" + c.r.name, name: c.r.name, p: c.w / tot, dishId: c.r.dishUuid ?? c.r.dishId ?? null })),
+      } : null;
+      breakdown.push(`Recipe match: ${r.name}${wheel ? ` (wheel of ${cands.length})` : ""}`);
+      return { ...base, kind: "recipe", dishId: r.dishUuid ?? r.dishId ?? null, recipeName: r.name, key: "recipe:" + r.name,
+        pattern: _isPattern(r), coreText: _coreText(r), potency: null, breakdown, wheel, near: [] };
     }
 
-    let weirdness = fumbleWeird;
-    const points = Object.fromEntries(TASTES.map(t => [t, 0]));
-    let potency = potencyMod;
-    for (const c of contribs) {
-      const rp = cfg.rarityPotency[c.rarity] ?? 1;
-      potency += rp;
-      if (!c.isIngredient || c.taste === "weird" || !TASTES.includes(c.taste)) {
-        weirdness += 1;
-        breakdown.push(`${c.name}: weird (+1 weirdness, +${rp} potency)`);
-        continue;
-      }
-      points[c.taste] += cfg.tastePoints.primary;
-      let line = `${c.name}: ${c.taste} +${cfg.tastePoints.primary}`;
-      if (c.taste2 && TASTES.includes(c.taste2)) {
-        points[c.taste2] += cfg.tastePoints.secondary;
-        line += `, ${c.taste2} +${cfg.tastePoints.secondary}`;
-      }
-      breakdown.push(`${line} (+${rp} potency)`);
+    // ── weirdness (non-ingredients) ──
+    const weird = contribs.filter(c => !c.isIngredient || !TASTES.includes(c.taste));
+    const weirdness = weird.length;
+    if (weirdness >= cfg.weirdThreshold) return goop(`Weirdness ${weirdness} ≥ ${cfg.weirdThreshold} — the pot is ruined`);
+    const tasted = contribs.filter(c => c.isIngredient && TASTES.includes(c.taste));
+    const nearOut = near.map(r => ({ name: r.name, have: _expandCounted(r.core).map(e => e.name).filter(n => contribs.some(c => c.name === n)) }));
+    if (!tasted.length) return goop("No taste in the pot");
+
+    // ── taste math ──
+    const cnt = Object.fromEntries(TASTES.map(t => [t, 0])), rar = Object.fromEntries(TASTES.map(t => [t, 0]));
+    let rarityBase = 0;
+    for (const c of contribs) rarityBase += cfg.rarityPotency[c.rarity] ?? 1;
+    for (const c of tasted) { cnt[c.taste]++; rar[c.taste] += cfg.rarityPotency[c.rarity] ?? 1; }
+    const present = TASTES.filter(t => cnt[t] > 0);
+    const wheelOf = (ts, title) => {
+      const cands = ts.map(t => ({ t, w: Math.max(0.01, rar[t]) }));
+      const idx = cands.length > 1 ? _pickWeighted(cands, rng) : 0;
+      const tot = cands.reduce((s, c) => s + c.w, 0);
+      return { fam: cands[idx].t, wheel: cands.length > 1 ? { type: "taste", title, landIdx: idx, segments: cands.map(c => ({ key: c.t, taste: c.t, name: TASTE_LABEL[c.t], p: c.w / tot })) } : null };
+    };
+    const featuredOf = fam => tasted.filter(c => c.taste === fam)
+      .slice().sort((a, b) => (cfg.rarityPotency[b.rarity] ?? 1) - (cfg.rarityPotency[a.rarity] ?? 1))[0] ?? null;
+
+    // muddled: 4+ different tastes fight → spoiled; the taste wheel decides whose taste ruined it
+    if (present.length >= (cfg.muddledAt ?? 4)) {
+      const { fam, wheel } = wheelOf(present, "Whose taste ruined it?");
+      const featured = featuredOf(fam);
+      breakdown.push(`${present.length} different tastes — muddled, the pot spoils (${TASTE_LABEL[fam]})`);
+      return { ...base, kind: "spoiled", family: fam, tier: 0, dishId: cfg.spoiledDishIds?.[fam] ?? cfg.goopDishId, key: "spoiled:" + fam,
+        featured, distinct: present.length, potency: null, breakdown, wheel, near: nearOut, weirdness };
     }
 
-    if (check?.isFumble || weirdness >= cfg.weirdThreshold) {
-      breakdown.push(check?.isFumble
-        ? "Cooker fumbled — the pot is ruined"
-        : `Weirdness ${weirdness} ≥ ${cfg.weirdThreshold} — the pot is ruined`);
-      return { kind: "goop", dishId: cfg.goopDishId, potency, weirdness, points, breakdown, nearMiss };
-    }
+    const max = Math.max(...Object.values(cnt));
+    const lead = TASTES.filter(t => cnt[t] === max);
+    const { fam, wheel } = lead.length > 1 ? wheelOf(lead, "Which taste wins?") : { fam: lead[0], wheel: null };
+    if (wheel) breakdown.push(`Taste tie: ${lead.map(t => TASTE_LABEL[t]).join(" vs ")} → ${TASTE_LABEL[fam]}`);
 
-    const max = Math.max(...Object.values(points));
-    const leaders = TASTES.filter(t => points[t] === max && max > 0);
-    if (leaders.length !== 1) {
-      breakdown.push(leaders.length === 0 ? "No taste dominates" : `Taste clash: ${leaders.join(" vs ")}`);
-      const family = leaders.length ? leaders[Math.floor(rng() * leaders.length)] : TASTES[Math.floor(rng() * TASTES.length)];
-      return {
-        kind: "mystery", dishId: cfg.mysteryDishId,
-        redirectDishId: cfg.matrix?.[family]?.[1] ?? null,
-        redirectFamily: family, potency, weirdness, points, breakdown, nearMiss,
-      };
+    const resonance = L * (tasted.length - present.length);
+    let harm = 0, clash = 0;
+    for (let i = 0; i < present.length; i++) for (let j = i + 1; j < present.length; j++) {
+      if (rel(present[i], present[j]) === "harm") harm++; else clash++;
     }
+    const links = L * (harm - clash);
+    const yami = dark ? (Number(cfg.yaminabe?.bonus) || 0) : 0;
+    const potency = rarityBase + checkMod + resonance + links + yami;
+    const [b2, b3] = cfg.tierBreakpoints;
+    const darkAt = Number(cfg.yaminabe?.darkAt) || 15;
+    const tier = dark && potency >= darkAt && cfg.darkDishIds?.[fam] ? 4 : potency >= b3 ? 3 : potency >= b2 ? 2 : 1;
+    if (resonance) breakdown.push(`Resonance +${resonance}`);
+    if (harm) breakdown.push(`Harmony +${harm * L}`);
+    if (clash) breakdown.push(`Clash −${clash * L}`);
+    if (yami) breakdown.push(`Yaminabe +${yami}`);
+    breakdown.push(`${TASTE_LABEL[fam]} — potency ${potency} → ${tier === 4 ? "Dark Delicacy" : `tier ${tier}`}`);
 
-    const family = leaders[0];
-    const tier = potency >= cfg.tierBreakpoints[1] ? 3 : potency >= cfg.tierBreakpoints[0] ? 2 : 1;
-    breakdown.push(`Dominant taste: ${family} — potency ${potency} → tier ${tier}`);
-    return { kind: "dish", dishId: cfg.matrix?.[family]?.[tier] ?? null, family, tier, potency, weirdness, points, breakdown, nearMiss };
+    const featured = featuredOf(fam);
+    const kc = {}; for (const c of contribs) kc[c.kind] = (kc[c.kind] ?? 0) + 1;
+    const kmax = Math.max(...Object.values(kc));
+    const style = featured && kc[featured.kind] === kmax ? featured.kind : STYLE_KEYS.find(s => kc[s] === kmax) ?? "monster";
+    const fname = String(featured?.name ?? "").replace(/^Magnificent /, "");
+    const tw = tier === 3 ? "Grand " : tier === 2 ? "Hearty " : "";
+    let displayName = null, key, label;
+    if (tier === 4) { key = "dark:" + fam; label = `Dark Delicacy · ${TASTE_LABEL[fam]} · Yaminabe only`; }
+    else if (lead.length === 2) {
+      const [a, b] = lead;
+      displayName = `${tw}${TASTE_ADJ[a]}-${TASTE_ADJ[b]} ${fname} ${STYLES[style].noun}`;
+      key = "fusion:" + a + "+" + b; label = `Fusion · ${TASTE_LABEL[a]} + ${TASTE_LABEL[b]} · ${STYLES[style].label} style`;
+    } else {
+      displayName = `${tw}${TASTE_ADJ[fam]} ${fname} ${STYLES[style].noun}`;
+      key = `dish:${fam}:${style}`; label = `${TASTE_LABEL[fam]} · ${STYLES[style].label} style`;
+    }
+    const dishId = tier === 4 ? cfg.darkDishIds[fam] : (cfg.matrix?.[fam]?.[tier] ?? null);
+    return { ...base, kind: tier === 4 ? "dark" : "dish", family: fam, tier, dishId, key, label, displayName, style, featured,
+      potency, parts: { rarity: rarityBase, check: checkMod, resonance, harm: harm * L, clash: clash * L, yami },
+      distinct: present.length, weirdness, breakdown, wheel, near: nearOut };
   }
 
   // ── applyDish ──────────────────────────────────────────────────────────────
-  async function applyDish(dishUuid, targetActorUuids) {
+  async function applyDish(dishUuid, targetActorUuids, opts = {}) {
     if (!game.user?.isGM) throw new Error(`${TAG} applyDish requires GM context`);
     const dishId = String(dishUuid).replace(/^Item\./, "");
     const dish = game.items?.get(dishId) ?? await fromUuid(String(dishUuid)).catch(() => null);
@@ -263,6 +334,7 @@
     const srcAe = dish.effects?.contents?.[0] ?? null;
     const zpGain = Number(meta.instant?.zp ?? 0) || 0;
     const zp = [];
+    const aeName = opts.displayName || dish.name;
 
     for (const uuid of targetActorUuids) {
       const actor = await fromUuid(String(uuid).startsWith("Actor.") ? String(uuid) : `Actor.${uuid}`).catch(() => null);
@@ -282,7 +354,7 @@
       const conflictShield = Number(meta.conflictStart?.shield ?? 0) || 0;
 
       await actor.createEmbeddedDocuments("ActiveEffect", [{
-        name: dish.name, img: dish.img,
+        name: aeName, img: dish.img,
         description: srcAe?.description ?? "",
         origin: dish.uuid, disabled: false, transfer: false,
         changes: foundry.utils.deepClone(srcAe?.changes ?? []),
@@ -316,7 +388,7 @@
         if (r) zp.push(r);
       }
     }
-    return { dishId: dish.id, dishName: dish.name, targets: targetActorUuids.length, zp };
+    return { dishId: dish.id, dishName: dish.name, aeName, targets: targetActorUuids.length, zp };
   }
 
   // Raise Zero Power by `n`, stopping at the actor's max (hard cap 6); the
@@ -362,13 +434,13 @@
     _pendingProceed.get(sessionId)?.(game.user?.id);
   }
 
-  // ── Taste values helper (GM session state) ─────────────────────────────────
-  const _sessionStates = new Map(); // sessionId → { entries, slots }
+  // ── Session state (GM) ─────────────────────────────────────────────────────
+  const _sessionStates = new Map(); // sessionId → { entries, slots, mode, cookerId, cookerUserId, broadcast }
 
   function _computeTastes(sessionId, cfg) {
     const state = _sessionStates.get(sessionId);
-    if (!state) return Object.fromEntries(TASTES.map(t => [t, 0]));
     const values = Object.fromEntries(TASTES.map(t => [t, 0]));
+    if (!state || state.mode === "dark") return values;      // Yaminabe: nothing about the pot leaks
     for (const [actorId, slot] of Object.entries(state.slots)) {
       if (!slot.locked || !slot.itemId) continue;
       const entry = state.entries.find(e => e.actorId === actorId);
@@ -381,6 +453,43 @@
       }
     }
     return values;
+  }
+  // what every client may see of the slots: in Yaminabe only "locked", never the item
+  function _publicSlots(state) {
+    if (state.mode !== "dark") return state.slots;
+    return Object.fromEntries(Object.entries(state.slots).map(([id, s]) => [id, { locked: !!s.locked, hidden: true, itemId: null, itemImg: null, itemName: null }]));
+  }
+  function _broadcastState(sessionId, cfg) {
+    const state = _sessionStates.get(sessionId);
+    if (!state) return;
+    const slots = _publicSlots(state), tv = _computeTastes(sessionId, cfg);
+    if (state.broadcast) game.socket.emit(SOCKET_CH, { type: "COOKING_STATE", sessionId, slots, tasteValues: tv });
+    globalThis.CookingUI?.applyState(sessionId, slots, tv);
+  }
+
+  // Yaminabe: one way, cook only, and only before anyone has locked an ingredient
+  // (Hot Pot picks are public, so a late switch would hide nothing).
+  function _modeRequest(sessionId, userId) {
+    const state = _sessionStates.get(sessionId);
+    const deny = reason => {
+      if (state?.broadcast) game.socket.emit(SOCKET_CH, { type: "COOKING_MODE_DENIED", sessionId, userId, reason });
+      if (userId === game.user?.id) ui.notifications?.warn(reason);
+    };
+    if (!state) return;
+    if (state.mode === "dark") return;
+    const user = game.users?.get(userId);
+    const isCook = !!user && (user.isGM || userId === state.cookerUserId || game.actors?.get(state.cookerId)?.testUserPermission?.(user, "OWNER"));
+    if (!isCook) return deny("Only the cook can turn off the lights.");
+    if (state.closedForMode || Object.values(state.slots).some(s => s.locked)) return deny("Too late — someone already locked in an ingredient.");
+    state.mode = "dark";
+    const byName = game.actors?.get(state.cookerId)?.name ?? "The cook";
+    if (state.broadcast) game.socket.emit(SOCKET_CH, { type: "COOKING_MODE", sessionId, mode: "dark", byName });
+    globalThis.CookingUI?.setMode?.(sessionId, "dark", { animate: true, byName });
+    console.log(TAG, `session ${sessionId}: Yaminabe engaged by ${user?.name}`);
+  }
+  function requestYaminabe(sessionId) {
+    if (game.user?.isGM) return _modeRequest(sessionId, game.user.id);
+    game.socket?.emit(SOCKET_CH, { type: "COOKING_MODE_REQ", sessionId, userId: game.user?.id });
   }
 
   // ── Misc helpers ───────────────────────────────────────────────────────────
@@ -416,232 +525,249 @@
     else await item.delete();
   }
 
-  // ── Discovery ──────────────────────────────────────────────────────────────
-  // Unique recipes are never taught, only stumbled into, so the FIRST time a
-  // combination lands we mark it and the card celebrates. Persisted on the
-  // config item so the "new!" banner survives a reload and doesn't re-fire.
-  async function _markDiscovered(recipeName) {
-    if (!recipeName || !game.user?.isGM) return false;
-    const item = game.items?.find?.(i => i.name === "_Cooking Config");
-    if (!item) return false;
-    const seen = item.getFlag(MODULE_ID, "cookingConfig")?.discovered ?? [];
-    if (seen.includes(recipeName)) return false;
-    try {
-      await item.setFlag(MODULE_ID, "cookingConfig.discovered", [...seen, recipeName]);
-      return true;
-    } catch (e) { console.warn(TAG, "could not record discovery", e); return false; }
+  const _rarityOf = name => {
+    const w = game.items?.find?.(i => i.name === name && i.system?.props?.item_type === "material");
+    return String(w?.system?.props?.item_rarity ?? "Common");
+  };
+
+  // ── Cookbook (party-wide, persisted on the config item) ────────────────────
+  const COOKBOOK_TOTAL = cfg => TASTES.length * STYLE_KEYS.length
+    + (TASTES.length * (TASTES.length - 1)) / 2
+    + (cfg.recipes ?? []).length + 1                                  // + Goop
+    + Object.keys(cfg.darkDishIds ?? {}).length + Object.keys(cfg.spoiledDishIds ?? {}).length;
+
+  // A view model the UI can render without reading the (GM-only) config item.
+  function _cookbookView(cfg) {
+    const got = new Set([...(cfg.cookbook ?? []), ...(cfg.discovered ?? []).map(n => "recipe:" + n)]);
+    const hints = new Set(cfg.hints ?? []);
+    const dishName = id => (id ? game.items?.get(String(id).replace(/^Item\./, ""))?.name : null) ?? null;
+    const dishImg  = id => (id ? game.items?.get(String(id).replace(/^Item\./, ""))?.img : null) ?? null;
+    return {
+      total: COOKBOOK_TOTAL(cfg),
+      found: got.size,
+      matrix: TASTES.map(t => ({ taste: t, label: TASTE_LABEL[t], adj: TASTE_ADJ[t],
+        styles: STYLE_KEYS.map(s => ({ style: s, label: STYLES[s].label, noun: STYLES[s].noun, got: got.has(`dish:${t}:${s}`) })) })),
+      fusions: TASTES.flatMap((a, i) => TASTES.slice(i + 1).map(b => ({ a, b, label: `${TASTE_ADJ[a]}-${TASTE_ADJ[b]}`, hint: `${TASTE_LABEL[a]} + ${TASTE_LABEL[b]}`, got: got.has(`fusion:${a}+${b}`) }))),
+      recipes: (cfg.recipes ?? []).map(r => {
+        const g = got.has("recipe:" + r.name), id = r.dishUuid ?? r.dishId;
+        const first = _expandCounted(r.core ?? r.ingredients ?? [])[0];
+        const firstText = first ? (first.name ?? (first.taste ? `any ${TASTE_LABEL[first.taste]}` : `any ${STYLES[first.kind]?.label}`)) : "?";
+        return { name: g ? r.name : null, img: g ? dishImg(id) : null, got: g, pattern: _isPattern(r),
+          hint: g ? null : (_isPattern(r) ? _coreText(r) : hints.has(r.name) ? `${firstText} + ?` : null) };
+      }),
+      specials: [
+        ...TASTES.filter(t => cfg.darkDishIds?.[t]).map(t => ({ group: "dark", taste: t, name: got.has("dark:" + t) ? dishName(cfg.darkDishIds[t]) : null, img: got.has("dark:" + t) ? dishImg(cfg.darkDishIds[t]) : null, got: got.has("dark:" + t) })),
+        ...TASTES.filter(t => cfg.spoiledDishIds?.[t]).map(t => ({ group: "spoiled", taste: t, name: got.has("spoiled:" + t) ? dishName(cfg.spoiledDishIds[t]) : null, img: got.has("spoiled:" + t) ? dishImg(cfg.spoiledDishIds[t]) : null, got: got.has("spoiled:" + t) })),
+        { group: "goop", name: got.has("special:Goop") ? "Goop" : null, img: got.has("special:Goop") ? dishImg(cfg.goopDishId) : null, got: got.has("special:Goop") },
+      ],
+    };
   }
 
-  // Shared result-card payload for start() and devSim() — one definition, so a
-  // tweak to the card can't drift between the real flow and the dev harness.
-  const NEAR_MISS_HINT = "…something in that pot almost came together.";
+  // Record the entry (+ an unlocked hint for a near miss). Returns { isNew, hint }.
+  async function _markCookbook(outcome, cfg, ingredientNames = []) {
+    const res = { isNew: false, hint: null };
+    if (!game.user?.isGM) return res;
+    const item = _configItem();
+    if (!item) return res;
+    const tasted = new Set([...(cfg.tasted ?? []), ...ingredientNames]);
+    const book = new Set(cfg.cookbook ?? []);
+    const disc = new Set(cfg.discovered ?? []);
+    const hints = new Set(cfg.hints ?? []);
+    const had = book.has(outcome.key) || (outcome.kind === "recipe" && disc.has(outcome.recipeName));
+    res.isNew = !!outcome.key && !had;
+    if (outcome.key) book.add(outcome.key);
+    if (outcome.kind === "recipe") disc.add(outcome.recipeName);
+    const nearNew = (outcome.near ?? []).find(n => !book.has("recipe:" + n.name) && !disc.has(n.name));
+    if (nearNew) { hints.add(nearNew.name); res.hint = nearNew.have; }
+    try {
+      await item.setFlag(MODULE_ID, "cookingConfig.cookbook", [...book]);
+      await item.setFlag(MODULE_ID, "cookingConfig.discovered", [...disc]);
+      await item.setFlag(MODULE_ID, "cookingConfig.hints", [...hints]);
+      await item.setFlag(MODULE_ID, "cookingConfig.tasted", [...tasted]);
+    } catch (e) { console.warn(TAG, "could not record cookbook entry", e); }
+    return res;
+  }
 
-  function _buildResultsPayload({ outcome, applied, cfg, picks, cookerCheck, firstDiscovery }) {
-    const dishItem = applied ? game.items.get(applied.dishId) : null;
-    const isMystery = outcome.kind === "mystery";
-    const dishName = isMystery ? "Mysterious Hot-Pot" : (dishItem?.name ?? "???");
-    const dishImg = (isMystery ? game.items.get(String(cfg.mysteryDishId))?.img : dishItem?.img) ?? "icons/svg/item-bag.svg";
-    const tierStars = outcome.tier ? `<span style="color:#ffd700;font-size:1.25em;letter-spacing:2px">${"★".repeat(outcome.tier)}</span>` : "";
-    let kindLabel = outcome.kind === "dish"    ? `${outcome.family.charAt(0).toUpperCase() + outcome.family.slice(1)} ${tierStars}`
-                  : isMystery                  ? "🎲 Mystery Pot!"
-                  : outcome.kind === "goop"    ? "💀 Abyssal Goop"
-                  : "📖 Recipe Match";
-    if (firstDiscovery) {
-      kindLabel = `<span style="color:#ffd700;font-weight:700;letter-spacing:1px">✦ NEW DISH DISCOVERED ✦</span><br>${kindLabel}`;
-    }
-    // Deliberately never names the dish — a tease that gave the answer away
-    // would end the guessing instead of starting it.
-    if (outcome.nearMiss) {
-      kindLabel += `<br><span style="opacity:.75;font-style:italic;font-size:.85em">${NEAR_MISS_HINT}</span>`;
-    }
-    const rawEffect = dishItem?.system?.props?.description ?? "";
+  // ── Results payload (one definition for start() and devSim()) ──────────────
+  function _buildResultsPayload({ outcome, applied, cfg, picks, cookerCheck, book }) {
+    const dishItem = applied ? game.items.get(applied.dishId) : (outcome.dishId ? game.items.get(String(outcome.dishId).replace(/^Item\./, "")) : null);
+    const dishName = outcome.displayName || (outcome.kind === "goop" ? "Goop" : dishItem?.name) || "???";
+    const dishImg = dishItem?.img ?? "icons/svg/item-bag.svg";
+    const label = outcome.kind === "recipe" ? (outcome.pattern ? "★ Pattern recipe" : "★ Unique recipe")
+      : outcome.kind === "goop" ? (cookerCheck?.isFumble ? "Fumble! The pot is ruined" : "The pot is ruined")
+      : outcome.kind === "spoiled" ? `Muddled · ${outcome.distinct} tastes fought in the pot`
+      : outcome.label ?? "";
+    const rawEffect = String(dishItem?.system?.props?.description ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
     const zpLines = _zpLines(applied);
-    const effectText = rawEffect.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
-    // `payload` is what crosses the socket — plain data only, never a Document.
-    const payload = {
-      dishName, dishImg, kindLabel,
+    const featuredId = outcome.featured?.actorId ?? null;
+    let hint = null;
+    if (book?.hint?.length) hint = `So close! A recipe uses ${[...new Set(book.hint)].join(" + ")} and one more ingredient. Hint added to the Cookbook.`;
+    // `payload` crosses the socket — plain data only, never a Document.
+    return {
+      kind: outcome.kind, mode: outcome.mode,
+      dishName, dishImg, label,
+      tier: outcome.tier ?? null,
       cookerCheck,
-      dishEffect: zpLines.length ? `${effectText} — Zero Power: ${zpLines.join(", ")}` : effectText,
+      potency: outcome.potency ?? null, parts: outcome.parts ?? null,
+      dishEffect: zpLines.length ? `${rawEffect} — Zero Power: ${zpLines.join(", ")}` : rawEffect,
+      baseDishName: outcome.displayName ? (dishItem?.name ?? null) : null,
       zpLines,
-      ingredientNames: picks.map(p => ({ actorName: p.entry.actor.name, itemName: p.item.name })),
-      kind: outcome.kind,
-      nearMiss: !!outcome.nearMiss,
-      firstDiscovery: !!firstDiscovery,
+      contributors: picks.map(p => ({ actorId: p.entry.actorId, actorName: p.entry.actor.name, itemName: p.item.name, itemImg: p.item.img, featured: p.entry.actorId === featuredId })),
+      isNew: !!book?.isNew, hint,
+      sfx: outcome.kind === "spoiled" ? "FAIL" : outcome.kind === "goop" ? "GOOP" : "RESULTS",
       breakdown: outcome.breakdown,
     };
-    return { payload, dishItem, isMystery };
   }
 
-  // ── devSim ─────────────────────────────────────────────────────────────────
-  // Simulates a complete cooking loop from a single GM client.
-  // GM picks ingredients one character at a time via the normal picker UI.
-  // Uses the real group check flow; ingredients NOT consumed by default.
-  // opts: { consume:false, apply:true, cookerUuid }
-  async function devSim(opts = {}) {
-    if (!game.user?.isGM) { ui.notifications?.error("devSim: GM only"); return; }
+  // ── The session (shared by start() and devSim()) ───────────────────────────
+  async function _runSession({ entries, cookerId, broadcast, sequentialPicks = false, consume = true, apply = true, label = "🍲 Cooking", devTag = null }) {
     const cfg = getConfig();
-    const hasDishes = Object.values(cfg.matrix ?? {}).some(t => Object.values(t ?? {}).some(Boolean));
-    if (!hasDishes) { ui.notifications?.warn("Cooking: no dish content configured."); return; }
-
     const sessionId = foundry.utils.randomID();
-    ui.notifications?.info("🍲 devSim: pick ingredients for each character…");
+    const cooker = game.actors.get(cookerId);
+    const cookerEntry = entries.find(e => e.actorId === cookerId);
+    const state = { entries, slots: {}, mode: "open", cookerId, cookerUserId: cookerEntry?.userId ?? null, broadcast };
+    _sessionStates.set(sessionId, state);
+    const emit = msg => { if (broadcast) game.socket.emit(SOCKET_CH, { ...msg, sessionId }); };
 
-    // --- gather party entries ---
-    let entries = (await globalThis.CampSystem?.Party?.resolve?.()) ?? [];
-    for (const e of entries) {
-      const u = e.userId ? game.users?.get(e.userId) : null;
-      if (!u || u.isGM) e.userId = _ownerUserId(e.actor);
-    }
-    if (!entries.length) { ui.notifications?.error("devSim: no party members found."); return; }
+    const panelEntries = entries.map(e => ({ actorId: e.actorId, userId: e.userId, actorName: e.actor.name, portraitUrl: e.actor.img || "icons/svg/mystery-man.svg" }));
+    const view = { cookbook: _cookbookView(cfg), kinds: cfg.ingredientKinds ?? {}, tasted: cfg.tasted ?? [] };
+    globalThis.CookingUI?.openMainPanel(sessionId, panelEntries, cookerId, { mode: "open", cookerUserId: state.cookerUserId, view });
+    emit({ type: "COOKING_PANEL_OPEN", entries: panelEntries, cookerActorId: cookerId, cookerUserId: state.cookerUserId, mode: "open", view });
 
-    const cookerUuid = String(opts.cookerUuid ?? entries[0].actor.uuid);
-    const cookerId   = cookerUuid.replace(/^Actor\./, "");
-    const cooker     = game.actors.get(cookerId);
-
-    // --- session state ---
-    const sessionState = { entries, slots: {} };
-    _sessionStates.set(sessionId, sessionState);
-
-    const panelEntries = entries.map(e => ({
-      actorId: e.actorId, userId: e.userId,
-      actorName: e.actor.name,
-      portraitUrl: e.actor.img || "icons/svg/mystery-man.svg",
-    }));
-
-    // --- open main panel locally (no broadcast) ---
-    globalThis.CookingUI?.openMainPanel(sessionId, panelEntries, cookerId);
-
-    // --- sequential picker per character ---
-    const allResults = [];
-    for (const e of entries) {
-      const choices = _materialChoices(e.actor);
-      const itemId = await globalThis.CookingUI?.openPicker(sessionId, e.actorId, choices, e.actor.name) ?? null;
-      const item = itemId ? e.actor.items.get(itemId) : null;
-      const r = { e, itemId: itemId ?? null, itemImg: item?.img ?? null, itemName: item?.name ?? null };
-      if (item) {
-        sessionState.slots[e.actorId] = { itemId, itemImg: item.img, itemName: item.name, locked: true };
-        const tv = _computeTastes(sessionId, cfg);
-        globalThis.CookingUI?.applyState(sessionId, sessionState.slots, tv);
+    // ── picks ──
+    const lockOne = (e, r) => { state.slots[e.actorId] = { ...r, locked: true }; _broadcastState(sessionId, cfg); };
+    let allResults = [];
+    if (sequentialPicks) {
+      for (const e of entries) {
+        const choices = _materialChoices(e.actor);
+        const itemId = await globalThis.CookingUI?.openPicker(sessionId, e.actorId, choices, e.actor.name) ?? null;
+        const item = itemId ? e.actor.items.get(itemId) : null;
+        const r = { itemId: itemId ?? null, itemImg: item?.img ?? null, itemName: item?.name ?? null };
+        lockOne(e, r); allResults.push({ e, ...r });
       }
-      allResults.push(r);
+    } else {
+      const waits = [];
+      for (const e of entries) {
+        const uid = e.userId && game.users?.get(e.userId)?.active ? e.userId : null;
+        if (uid && uid !== game.user.id) {
+          waits.push(_waitForLock(sessionId, e.actorId, cfg.pickTimeoutMs).then(r => ({ e, ...r })));
+        } else {
+          waits.push((async () => {
+            const choices = _materialChoices(e.actor);
+            const itemId = await globalThis.CookingUI?.openPicker(sessionId, e.actorId, choices, e.actor.name) ?? null;
+            const item = itemId ? e.actor.items.get(itemId) : null;
+            const r = { itemId, itemImg: item?.img ?? null, itemName: item?.name ?? null };
+            lockOne(e, r);
+            return { e, ...r };
+          })());
+        }
+      }
+      allResults = await Promise.all(waits);
     }
+    state.closedForMode = true;
+    const mode = state.mode;
 
     const picks = allResults
-      .filter(r => r.itemId)
-      .map(r => ({ entry: r.e, item: r.e.actor.items.get(r.itemId), itemImg: r.itemImg, itemName: r.itemName }))
+      .map(r => ({ entry: r.e, item: r.itemId ? r.e.actor.items.get(r.itemId) : null }))
       .filter(p => p.item);
-
     if (!picks.length) {
-      ui.notifications?.warn("devSim: nobody contributed an ingredient.");
+      ui.notifications?.warn("Cooking: nobody put anything in the pot.");
+      emit({ type: "COOKING_CLOSE" });
       globalThis.CookingUI?.closeAll();
       _sessionStates.delete(sessionId);
       return null;
     }
 
-    // --- animate ---
-    const contributions = picks.map(p => ({
-      actorId: p.entry.actorId,
-      itemImg: p.itemImg || p.item?.img || "icons/svg/item-bag.svg",
-      itemName: p.itemName || p.item?.name || "?",
+    // ── throws (+ flavor pips in Hot Pot) ──
+    const descs = picks.map(p => describeItem(p.item, p.entry.actor.uuid, { actorId: p.entry.actorId, actorName: p.entry.actor.name, kind: _kindOf(cfg, p.item.name) }));
+    const contributions = picks.map((p, i) => ({
+      actorId: p.entry.actorId, actorName: p.entry.actor.name,
+      itemImg: p.item.img || "icons/svg/item-bag.svg", itemName: p.item.name,
+      taste: TASTES.includes(descs[i].taste) ? descs[i].taste : null, rarity: descs[i].rarity, kind: descs[i].kind,
     }));
-    await globalThis.CookingUI?.runAnimation(sessionId, contributions) ?? new Promise(r => setTimeout(r, 1600));
-    await new Promise(r => setTimeout(r, 4000));
+    emit({ type: "COOKING_ANIMATE", contributions, mode });
+    await (globalThis.CookingUI?.runAnimation(sessionId, contributions, mode) ?? new Promise(r => setTimeout(r, 1600)));
+    await new Promise(r => setTimeout(r, 1500));
 
-    // --- real group check ---
+    // ── cooker group check ──
     let cookerCheck = null;
     try {
       const gc = await globalThis.ONI?.GroupCheck?.request?.({
-        leaderUuid: cooker?.uuid ?? cookerUuid,
+        leaderUuid: cooker?.uuid ?? `Actor.${cookerId}`,
         participantMode: "open",
         allActorUuids: entries.map(e => e.actor.uuid),
         attrA: cfg.cookerCheck.attrA, attrB: cfg.cookerCheck.attrB,
         helperDl: cfg.cookerCheck.helperDl, helperBonus: 1, hiddenDl: true,
-        label: "🍲 Cooking (Dev Sim)",
+        label,
       });
-      if (gc?.leaderResult) {
-        cookerCheck = { total: gc.leaderResult.total, isCrit: !!gc.leaderResult.isCrit, isFumble: !!gc.leaderResult.isFumble };
-      }
-    } catch (err) { console.warn(TAG, "devSim group check skipped:", err); }
+      if (gc?.leaderResult) cookerCheck = { total: gc.leaderResult.total, isCrit: !!gc.leaderResult.isCrit, isFumble: !!gc.leaderResult.isFumble };
+    } catch (err) { console.warn(TAG, "Group check skipped:", err); }
 
-    // --- play cooking start sfx for all clients (fires after group check) ---
-    game.socket.emit(SOCKET_CH, { type: "COOKING_SFX", sfx: "START", sessionId });
+    emit({ type: "COOKING_SFX", sfx: "START" });
     globalThis.CookingUI?.playSfx?.("START");
 
-    // --- resolve ---
-    const contribDescs = picks.map(p => describeItem(p.item, p.entry.actor.uuid));
+    // ── resolve (the host decides every wheel; clients only replay it) ──
     const knownRecipes = _gatherKnownRecipes(entries.map(e => e.actor));
-    const outcome = resolve(contribDescs, { config: cfg, cookerCheck, knownRecipes });
+    const outcome = resolve(descs, { config: cfg, cookerCheck, knownRecipes, mode, rarityOf: _rarityOf });
+    const wheel = outcome.wheel ? {
+      ...outcome.wheel,
+      segments: outcome.wheel.segments.map(s => {
+        if (outcome.wheel.type !== "recipe") return s;
+        const seen = (cfg.cookbook ?? []).includes(s.key) || (cfg.discovered ?? []).includes(s.name);
+        const dish = s.dishId ? game.items.get(String(s.dishId).replace(/^Item\./, "")) : null;
+        return { ...s, name: seen ? s.name : "???", img: seen ? (dish?.img ?? null) : null };
+      }),
+    } : null;
+    emit({ type: "COOKING_RESOLVE", contributions, mode, wheel });
+    await (globalThis.CookingUI?.runResolve?.(sessionId, contributions, mode, wheel) ?? Promise.resolve());
 
-    // --- consume (default: false for dev safety) ---
-    if (opts.consume === true) {
-      for (const p of picks) await _consume(p.entry.actor, p.item);
-    }
-
-    // --- apply dish ---
-    const applyId = outcome.kind === "mystery" ? (outcome.redirectDishId ?? outcome.dishId) : outcome.dishId;
+    // ── consume + apply ──
+    if (consume) for (const p of picks) await _consume(p.entry.actor, p.item);
     let applied = null;
-    if (opts.apply !== false && applyId) {
-      applied = await applyDish(applyId, entries.map(e => e.actor.uuid));
-    }
+    if (apply && outcome.dishId) applied = await applyDish(outcome.dishId, entries.map(e => e.actor.uuid), { displayName: outcome.displayName });
 
-    // --- build results payload ---
-    const firstDiscovery = outcome.kind === "recipe" ? await _markDiscovered(outcome.recipeName) : false;
-    const { payload: resultsPayload, dishItem, isMystery: isMyster } =
-      _buildResultsPayload({ outcome, applied, cfg, picks, cookerCheck, firstDiscovery });
-    const { dishName, dishImg } = resultsPayload;
-
-    // --- show results locally ---
+    const book = await _markCookbook(outcome, cfg, picks.map(p => p.item.name));
+    const resultsPayload = _buildResultsPayload({ outcome, applied, cfg, picks, cookerCheck, book });
+    resultsPayload.cookbook = _cookbookView(getConfig());
+    emit({ type: "COOKING_RESULTS", outcome: resultsPayload });
     globalThis.CookingUI?.showResults(sessionId, resultsPayload);
 
-    // --- wait for proceed ---
     await _waitForProceed(sessionId);
-
-    // --- cleanup ---
     _sessionStates.delete(sessionId);
+    emit({ type: "COOKING_CLOSE" });
     globalThis.CookingUI?.closeAll();
 
-    // --- chat card ---
+    // ── chat card ──
     const contribLines = picks.map(p => `<li><b>${p.entry.actor.name}</b> — ${p.item.name}</li>`).join("");
+    const detail = outcome.breakdown.map(b => `<div style="opacity:.7;font-size:.85em">${b}</div>`).join("");
+    const { dishName, dishImg } = resultsPayload;
     await ChatMessage.create({
       speaker: { alias: "Camp Cooking" },
       content: `<div style="border:1px solid #8a4b2d;border-radius:6px;padding:8px">
-        <div style="background:rgba(200,100,0,.15);font-size:.72em;font-weight:700;color:#b85c00;padding:2px 6px;border-radius:4px;margin-bottom:6px;display:inline-block">⚙️ DEV SIM — ingredients ${opts.consume === true ? "consumed" : "NOT consumed"}</div>
+        ${devTag ? `<div style="background:rgba(200,100,0,.15);font-size:.72em;font-weight:700;color:#b85c00;padding:2px 6px;border-radius:4px;margin-bottom:6px;display:inline-block">${devTag}</div>` : ""}
+        ${mode === "dark" ? `<div style="font-size:.75em;font-weight:700;color:#555;margin-bottom:4px">🌑 Yaminabe</div>` : ""}
         <div style="display:flex;align-items:center;gap:8px">
           <img src="${dishImg}" width="36" height="36" style="border:none">
           <div>
-            <div style="font-weight:bold">${dishName}${isMyster && dishItem ? ` → ${dishItem.name}` : ""}</div>
-            <div style="font-size:.85em;opacity:.8">Cooked by ${cooker?.name ?? "?"}${cookerCheck ? ` (check ${cookerCheck.total}${cookerCheck.isCrit ? ", CRIT!" : cookerCheck.isFumble ? ", FUMBLE" : ""})` : " (no check)"}</div>
+            <div style="font-weight:bold">${dishName}</div>
+            <div style="font-size:.85em;opacity:.8">${resultsPayload.label}${resultsPayload.baseDishName ? ` (${resultsPayload.baseDishName})` : ""}</div>
+            <div style="font-size:.85em;opacity:.8">Cooked by ${cooker?.name ?? "?"}${cookerCheck ? ` (check ${cookerCheck.total}${cookerCheck.isCrit ? ", CRIT!" : cookerCheck.isFumble ? ", FUMBLE" : ""})` : ""}</div>
           </div>
         </div>
         <ul style="margin:6px 0">${contribLines}</ul>
         ${resultsPayload.zpLines.length ? `<div style="color:#b061ff;font-weight:700;margin:4px 0">Zero Power</div><ul style="margin:2px 0 6px">${resultsPayload.zpLines.map(l => `<li>${l}</li>`).join("")}</ul>` : ""}
-        ${firstDiscovery ? `<div style="color:#b8860b;font-weight:700;margin:4px 0">✦ New dish discovered: ${dishName}</div>` : ""}
-        ${outcome.nearMiss ? `<div style="font-style:italic;opacity:.75;margin:4px 0">${NEAR_MISS_HINT}</div>` : ""}
+        ${book.isNew ? `<div style="color:#b8860b;font-weight:700;margin:4px 0">✦ New in the Cookbook: ${dishName}</div>` : ""}
+        ${detail}
       </div>`,
     });
-
-    console.log(TAG, "devSim complete:", outcome);
-    return { ...outcome, appliedDishId: applied?.dishId ?? null, firstDiscovery, sessionId };
+    return { ...outcome, appliedDishId: applied?.dishId ?? null, isNew: book.isNew, sessionId };
   }
 
-  // ── start ──────────────────────────────────────────────────────────────────
-  async function start(options = {}) {
-    if (!game.user?.isGM) throw new Error(`${TAG} start() must run on the GM client`);
-    const cfg = getConfig();
-
-    const hasDishes = Object.values(cfg.matrix ?? {}).some(t => Object.values(t ?? {}).some(Boolean));
-    if (!hasDishes) {
-      ui.notifications?.warn("Cooking: no dish content configured — skipping.");
-      return null;
-    }
-
-    const sessionId = foundry.utils.randomID();
-
-    // --- gather entries ---
+  async function _partyEntries(participants) {
     let entries;
-    if (Array.isArray(options.participants) && options.participants.length) {
+    if (Array.isArray(participants) && participants.length) {
       entries = [];
-      for (const u of options.participants) {
+      for (const u of participants) {
         const actor = await fromUuid(String(u).startsWith("Actor.") ? String(u) : `Actor.${u}`).catch(() => null);
         if (actor) entries.push({ actor, actorId: actor.id, userId: _ownerUserId(actor) });
       }
@@ -652,155 +778,31 @@
       const u = e.userId ? game.users?.get(e.userId) : null;
       if (!u || u.isGM) e.userId = _ownerUserId(e.actor);
     }
+    return entries;
+  }
+  const _hasDishes = cfg => Object.values(cfg.matrix ?? {}).some(t => Object.values(t ?? {}).some(Boolean));
+
+  // ── start / devSim ─────────────────────────────────────────────────────────
+  async function start(options = {}) {
+    if (!game.user?.isGM) throw new Error(`${TAG} start() must run on the GM client`);
+    if (!_hasDishes(getConfig())) { ui.notifications?.warn("Cooking: no dish content configured — skipping."); return null; }
+    const entries = await _partyEntries(options.participants);
     if (!entries.length) throw new Error(`${TAG} no participants`);
+    const cookerId = String(options.cookerUuid ?? entries[0].actor.uuid).replace(/^Actor\./, "");
+    return _runSession({ entries, cookerId, broadcast: true });
+  }
 
-    const cookerUuid = String(options.cookerUuid ?? entries[0].actor.uuid);
-    const cookerId   = cookerUuid.replace(/^Actor\./, "");
-    const cooker     = game.actors.get(cookerId);
-
-    // --- session state ---
-    const sessionState = { entries, slots: {} };
-    _sessionStates.set(sessionId, sessionState);
-
-    const panelEntries = entries.map(e => ({
-      actorId: e.actorId, userId: e.userId,
-      actorName: e.actor.name,
-      portraitUrl: e.actor.img || "icons/svg/mystery-man.svg",
-    }));
-
-    // --- open GM's main panel (socket doesn't echo to self) ---
-    globalThis.CookingUI?.openMainPanel(sessionId, panelEntries, cookerId);
-
-    // --- register pending locks for active player entries BEFORE broadcasting ---
-    const lockWaits = [];
-    for (const e of entries) {
-      const uid = e.userId && game.users?.get(e.userId)?.active ? e.userId : null;
-      if (uid && uid !== game.user.id) {
-        lockWaits.push(
-          _waitForLock(sessionId, e.actorId, cfg.pickTimeoutMs)
-            .then(r => ({ e, ...r }))
-        );
-      }
-    }
-
-    // --- broadcast PANEL_OPEN to all clients ---
-    game.socket.emit(SOCKET_CH, { type: "COOKING_PANEL_OPEN", sessionId, entries: panelEntries, cookerActorId: cookerId });
-
-    // --- GM opens pickers locally for offline / GM-owned entries ---
-    const gmPickWaits = [];
-    for (const e of entries) {
-      const uid = e.userId && game.users?.get(e.userId)?.active ? e.userId : null;
-      if (!uid || uid === game.user.id) {
-        const choices = _materialChoices(e.actor);
-        gmPickWaits.push((async () => {
-          const itemId = await globalThis.CookingUI?.openPicker(sessionId, e.actorId, choices, e.actor.name) ?? null;
-          const item = itemId ? e.actor.items.get(itemId) : null;
-          const r = { itemId, itemImg: item?.img ?? null, itemName: item?.name ?? null };
-          // Update session state + broadcast STATE
-          sessionState.slots[e.actorId] = { ...r, locked: true };
-          const tv = _computeTastes(sessionId, cfg);
-          game.socket.emit(SOCKET_CH, { type: "COOKING_STATE", sessionId, slots: sessionState.slots, tasteValues: tv });
-          globalThis.CookingUI?.applyState(sessionId, sessionState.slots, tv);
-          return { e, ...r };
-        })());
-      }
-    }
-
-    const allResults = await Promise.all([...lockWaits, ...gmPickWaits]);
-
-    const picks = allResults
-      .map(r => ({ entry: r.e, item: r.itemId ? r.e.actor.items.get(r.itemId) : null, itemImg: r.itemImg, itemName: r.itemName }))
-      .filter(p => p.item);
-
-    if (!picks.length) {
-      ui.notifications?.warn("Cooking: nobody put anything in the pot.");
-      game.socket.emit(SOCKET_CH, { type: "COOKING_CLOSE", sessionId });
-      globalThis.CookingUI?.closeAll();
-      _sessionStates.delete(sessionId);
-      return null;
-    }
-
-    // --- animate ---
-    const contributions = picks.map(p => ({ actorId: p.entry.actorId, itemImg: p.itemImg || p.item?.img || "icons/svg/item-bag.svg", itemName: p.itemName || p.item?.name || "?" }));
-    game.socket.emit(SOCKET_CH, { type: "COOKING_ANIMATE", sessionId, contributions });
-    await globalThis.CookingUI?.runAnimation(sessionId, contributions) ?? new Promise(r => setTimeout(r, 1600));
-
-    // 4-second anticipation pause
-    await new Promise(r => setTimeout(r, 4000));
-
-    // --- cooker group check ---
-    let cookerCheck = null;
-    try {
-      const gc = await globalThis.ONI?.GroupCheck?.request?.({
-        leaderUuid: cooker?.uuid ?? cookerUuid,
-        participantMode: "open",
-        allActorUuids: entries.map(e => e.actor.uuid),
-        attrA: cfg.cookerCheck.attrA, attrB: cfg.cookerCheck.attrB,
-        helperDl: cfg.cookerCheck.helperDl, helperBonus: 1, hiddenDl: true,
-        label: "🍲 Cooking",
-      });
-      if (gc?.leaderResult) {
-        cookerCheck = { total: gc.leaderResult.total, isCrit: !!gc.leaderResult.isCrit, isFumble: !!gc.leaderResult.isFumble };
-      }
-    } catch (err) { console.warn(TAG, "Group check skipped:", err); }
-
-    // --- play cooking start sfx for all clients (fires after group check) ---
-    game.socket.emit(SOCKET_CH, { type: "COOKING_SFX", sfx: "START", sessionId });
-    globalThis.CookingUI?.playSfx?.("START");
-
-    // --- resolve ---
-    const contribDescs = picks.map(p => describeItem(p.item, p.entry.actor.uuid));
-    const knownRecipes = _gatherKnownRecipes(entries.map(e => e.actor));
-    const outcome = resolve(contribDescs, { config: cfg, cookerCheck, knownRecipes });
-
-    // --- consume ---
-    for (const p of picks) await _consume(p.entry.actor, p.item);
-
-    // --- apply ---
-    const applyId = outcome.kind === "mystery" ? (outcome.redirectDishId ?? outcome.dishId) : outcome.dishId;
-    let applied = null;
-    if (applyId) applied = await applyDish(applyId, entries.map(e => e.actor.uuid));
-
-    // --- build results payload ---
-    const firstDiscovery = outcome.kind === "recipe" ? await _markDiscovered(outcome.recipeName) : false;
-    const { payload: resultsPayload, dishItem, isMystery: isMyster } =
-      _buildResultsPayload({ outcome, applied, cfg, picks, cookerCheck, firstDiscovery });
-    const { dishName, dishImg } = resultsPayload;
-
-    // --- show results ---
-    game.socket.emit(SOCKET_CH, { type: "COOKING_RESULTS", sessionId, outcome: resultsPayload });
-    globalThis.CookingUI?.showResults(sessionId, resultsPayload);
-
-    // --- wait for proceed ---
-    await _waitForProceed(sessionId);
-
-    // --- cleanup + close ---
-    _sessionStates.delete(sessionId);
-    game.socket.emit(SOCKET_CH, { type: "COOKING_CLOSE", sessionId });
-    globalThis.CookingUI?.closeAll();
-
-    // --- chat card ---
-    const contribLines = picks.map(p => `<li><b>${p.entry.actor.name}</b> — ${p.item.name}</li>`).join("");
-    const detail = outcome.breakdown.map(b => `<div style="opacity:.7;font-size:.85em">${b}</div>`).join("");
-    await ChatMessage.create({
-      speaker: { alias: "Camp Cooking" },
-      content: `<div style="border:1px solid #8a4b2d;border-radius:6px;padding:8px">
-        <div style="display:flex;align-items:center;gap:8px">
-          <img src="${dishImg}" width="36" height="36" style="border:none">
-          <div>
-            <div style="font-weight:bold">${dishName}${isMyster && dishItem ? ` → ${dishItem.name}` : ""}</div>
-            <div style="font-size:.85em;opacity:.8">Cooked by ${cooker?.name ?? "?"}${cookerCheck ? ` (check ${cookerCheck.total}${cookerCheck.isCrit ? ", CRIT!" : cookerCheck.isFumble ? ", FUMBLE" : ""})` : ""}</div>
-          </div>
-        </div>
-        <ul style="margin:6px 0">${contribLines}</ul>
-        ${resultsPayload.zpLines.length ? `<div style="color:#b061ff;font-weight:700;margin:4px 0">Zero Power</div><ul style="margin:2px 0 6px">${resultsPayload.zpLines.map(l => `<li>${l}</li>`).join("")}</ul>` : ""}
-        ${firstDiscovery ? `<div style="color:#b8860b;font-weight:700;margin:4px 0">✦ New dish discovered: ${dishName}</div>` : ""}
-        ${outcome.nearMiss ? `<div style="font-style:italic;opacity:.75;margin:4px 0">${NEAR_MISS_HINT}</div>` : ""}
-        ${detail}
-      </div>`,
-    });
-
-    return { ...outcome, appliedDishId: applied?.dishId ?? null, firstDiscovery, sessionId };
+  // GM-only local run: the GM picks for everyone in turn; nothing is broadcast.
+  // opts: { consume:false, apply:true, cookerUuid }
+  async function devSim(opts = {}) {
+    if (!game.user?.isGM) { ui.notifications?.error("devSim: GM only"); return; }
+    if (!_hasDishes(getConfig())) { ui.notifications?.warn("Cooking: no dish content configured."); return; }
+    const entries = await _partyEntries(opts.participants);
+    if (!entries.length) { ui.notifications?.error("devSim: no party members found."); return; }
+    ui.notifications?.info("🍲 devSim: pick ingredients for each character…");
+    const cookerId = String(opts.cookerUuid ?? entries[0].actor.uuid).replace(/^Actor\./, "");
+    return _runSession({ entries, cookerId, broadcast: false, sequentialPicks: true, consume: opts.consume === true, apply: opts.apply !== false,
+      label: "🍲 Cooking (Dev Sim)", devTag: `⚙️ DEV SIM — ingredients ${opts.consume === true ? "consumed" : "NOT consumed"}` });
   }
 
   // ── Socket handler ─────────────────────────────────────────────────────────
@@ -814,48 +816,42 @@
         if (type === "COOKING_LOCK") {
           const key = `${sessionId}:${msg.actorId}`;
           _pendingLocks.get(key)?.({ itemId: msg.itemId ?? null, itemImg: msg.itemImg ?? null, itemName: msg.itemName ?? null });
-          // Update session state + broadcast STATE
           const state = _sessionStates.get(sessionId);
           if (state && msg.actorId) {
             state.slots[msg.actorId] = { itemId: msg.itemId ?? null, itemImg: msg.itemImg ?? null, itemName: msg.itemName ?? null, locked: true };
-            const tv = _computeTastes(sessionId, getConfig());
-            game.socket.emit(SOCKET_CH, { type: "COOKING_STATE", sessionId, slots: state.slots, tasteValues: tv });
-            globalThis.CookingUI?.applyState(sessionId, state.slots, tv);
+            _broadcastState(sessionId, getConfig());
           }
           return;
         }
-        if (type === "COOKING_PROCEED") {
-          _pendingProceed.get(sessionId)?.(msg.userId ?? null);
-          return;
-        }
+        if (type === "COOKING_PROCEED") { _pendingProceed.get(sessionId)?.(msg.userId ?? null); return; }
+        if (type === "COOKING_MODE_REQ") { _modeRequest(sessionId, msg.userId); return; }
       }
 
       // All clients
       if (type === "COOKING_PANEL_OPEN") {
-        globalThis.CookingUI?.openMainPanel(sessionId, msg.entries, msg.cookerActorId);
-        // Player opens picker for their character
+        globalThis.CookingUI?.openMainPanel(sessionId, msg.entries, msg.cookerActorId, { mode: msg.mode, cookerUserId: msg.cookerUserId, view: msg.view });
         const myEntry = msg.entries?.find(e => e.userId === game.user?.id);
         if (myEntry && !game.user?.isGM) {
           const actor = game.actors?.get(myEntry.actorId);
           const choices = _materialChoices(actor);
           const itemId = await globalThis.CookingUI?.openPicker(sessionId, myEntry.actorId, choices) ?? null;
           const item = actor?.items?.get(itemId);
-          game.socket.emit(SOCKET_CH, {
-            type: "COOKING_LOCK", sessionId,
-            actorId: myEntry.actorId,
-            itemId: itemId ?? null,
-            itemImg: item?.img ?? null,
-            itemName: item?.name ?? null,
-          });
+          game.socket.emit(SOCKET_CH, { type: "COOKING_LOCK", sessionId, actorId: myEntry.actorId, itemId: itemId ?? null, itemImg: item?.img ?? null, itemName: item?.name ?? null });
         }
       } else if (type === "COOKING_SFX") {
         globalThis.CookingUI?.playSfx?.(msg.sfx);
       } else if (type === "COOKING_HOVER") {
-        globalThis.CookingUI?._applyHover(msg.actorId, msg.itemImg, msg.itemName, msg.itemTaste||null, msg.itemTaste2||null, msg.isSelect||false);
+        globalThis.CookingUI?._applyHover(msg.actorId, msg.itemImg, msg.itemName, msg.itemTaste || null, msg.itemTaste2 || null, msg.isSelect || false);
       } else if (type === "COOKING_STATE") {
         globalThis.CookingUI?.applyState(sessionId, msg.slots, msg.tasteValues);
+      } else if (type === "COOKING_MODE") {
+        globalThis.CookingUI?.setMode?.(sessionId, msg.mode, { animate: true, byName: msg.byName });
+      } else if (type === "COOKING_MODE_DENIED") {
+        if (msg.userId === game.user?.id) ui.notifications?.warn(msg.reason);
       } else if (type === "COOKING_ANIMATE") {
-        await globalThis.CookingUI?.runAnimation(sessionId, msg.contributions);
+        await globalThis.CookingUI?.runAnimation(sessionId, msg.contributions, msg.mode);
+      } else if (type === "COOKING_RESOLVE") {
+        await globalThis.CookingUI?.runResolve?.(sessionId, msg.contributions, msg.mode, msg.wheel);
       } else if (type === "COOKING_RESULTS") {
         globalThis.CookingUI?.showResults(sessionId, msg.outcome);
       } else if (type === "COOKING_CLOSE") {
@@ -868,5 +864,8 @@
   // ── Register API ───────────────────────────────────────────────────────────
   globalThis.FUCompanion ??= {};
   globalThis.FUCompanion.api ??= {};
-  globalThis.FUCompanion.api.cooking = { getConfig, resolve, applyDish, start, describeItem, proceed, devSim };
+  globalThis.FUCompanion.api.cooking = {
+    getConfig, resolve, applyDish, start, describeItem, proceed, devSim, requestYaminabe,
+    _internals: { rel, TASTES, STYLES, TASTE_LABEL, TASTE_ADJ, _cookbookView },
+  };
 })();
