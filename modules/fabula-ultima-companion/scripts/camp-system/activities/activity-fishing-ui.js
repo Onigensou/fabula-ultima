@@ -71,20 +71,22 @@
 
   // ── module state ──────────────────────────────────────────────────────────
   let root = null, ovl = null, st = {}, raf = 0, held = false, keyH = null, reelLoop = null, waitLoop = null, ambience = null;
-  let timers = [], rafs = new Set();
+  const timers = new Set(), rafs = new Set();
   let rods = [PLAIN_ROD], baits = [], rodI = 0, baitI = 0, focusRow = 0, picker = null;
   let _fitH = null;
   const lastPick = {};   // actorId → { rod, bait } (names), so the next round keeps the tackle
 
-  const later = (fn, ms) => { const t = setTimeout(fn, ms); timers.push(t); return t; };
+  const later = (fn, ms) => { const t = setTimeout(() => { timers.delete(t); fn(); }, ms); timers.add(t); return t; };
   const frame = fn => { const id = requestAnimationFrame(ts => { rafs.delete(id); fn(ts); }); rafs.add(id); return id; };
   const q  = s => root?.querySelector(s);
   const $  = id => root?.querySelector("#" + id) ?? null;
   const rod  = () => rods[rodI] ?? PLAIN_ROD;
   const bait = () => baits[baitI] ?? T().BARE_HOOK;
   const isPrimaryGM = () => globalThis.FUCompanion?.isPrimaryGM?.() ?? !!game.user?.isGM;
-  const _preloaded = new Set();
-  const preload = src => { if (!src || _preloaded.has(src)) return; _preloaded.add(src); try { const i = new Image(); i.src = src; } catch {} };
+  // Preloaded pictures keep their Image element: the result window adopts the
+  // loaded element itself, so the reveal never waits on a second fetch.
+  const _preloaded = new Map();
+  const preload = src => { if (!src || _preloaded.has(src)) return; try { const i = new Image(); i.src = src; _preloaded.set(src, i); } catch {} };
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
   // ── audio ─────────────────────────────────────────────────────────────────
@@ -161,9 +163,12 @@
       if (String(p.item_type ?? "").toLowerCase() !== "material") continue;
       const qty = parseInt(p.item_quantity) || 0;
       if (qty <= 0) continue;
+      // Same-name stacks (each caught fish lands as its own item) show as one bait.
+      const same = baits.find(b => b.name === it.name);
+      if (same) { same.q += qty; same.ids.push(it.id); continue; }
       const d = describe ? describe(it) : { taste: String(p.ingredient_taste ?? "").toLowerCase(), rarity: p.item_rarity };
       const isFish = st.fishNames?.has(it.name) || !!it.flags?.[MODULE_ID]?.fish;
-      baits.push({ id: it.id, name: it.name, img: it.img, q: qty, rarity: d.rarity, ...T().baitEffect({ taste: d.taste, rarity: d.rarity, isFish }) });
+      baits.push({ id: it.id, ids: [it.id], name: it.name, img: it.img, q: qty, rarity: d.rarity, ...T().baitEffect({ taste: d.taste, rarity: d.rarity, isFish }) });
     }
     for (const b of baits) preload(b.img);
     const last = lastPick[st.actorId] ?? {};
@@ -241,7 +246,7 @@
 
   function _teardown() {
     try { globalThis.ONI?.TreasureRoulette?.UIKit?.tooltip?.hide(); } catch {}
-    timers.forEach(clearTimeout); timers = [];
+    timers.forEach(clearTimeout); timers.clear();
     rafs.forEach(cancelAnimationFrame); rafs.clear(); cancelAnimationFrame(raf); raf = 0;
     held = false; stop(reelLoop); stop(waitLoop); stop(ambience); reelLoop = waitLoop = ambience = null;
     if (keyH) { document.removeEventListener("keydown", keyH, true); document.removeEventListener("keyup", keyH, true); keyH = null; }
@@ -469,7 +474,8 @@
     const b = st.bait; if (!b || b.id === "none") return;
     b.q = Math.max(0, (Number(b.q) || 0) - 1);
     try {
-      const item = game.actors?.get(st.actorId)?.items?.get(b.id);
+      const items = game.actors?.get(st.actorId)?.items;
+      const item = (b.ids ?? [b.id]).map(id => items?.get(id)).find(i => (parseInt(i?.system?.props?.item_quantity) || 0) > 0);
       if (!item) return;
       const qty = parseInt(item.system?.props?.item_quantity) || 0;
       if (qty > 1) await item.update({ "system.props.item_quantity": String(qty - 1) });
@@ -560,6 +566,7 @@
   }
   function visit() {
     if (timeUp()) return;
+    st._visits = (st._visits ?? 0) + 1;
     const tier = T().visitorTier(T().tierOf(st.str, st.stats, st.rod.attr, st.bait));
     const { fish, tier: t } = T().pickFish(st.fishPools, tier, st.bait);
     if (!fish) { lateL(visit, T().gapMs(false, st.str, st.bait)); return; }
@@ -836,6 +843,8 @@
       html = `<div class="f2-win f2-result wg"><span class="plate f2-wt">No catch</span><div class="f2-lost">Nothing took the hook in time. Bait makes fish take it more often, and a stronger cast brings the first one sooner.</div>${trip}${btn}</div>`;
     }
     v.innerHTML = html; root.appendChild(v);
+    const pre = fishName && x.img ? _preloaded.get(x.img) : null;
+    if (pre) { _preloaded.delete(x.img); pre.alt = ""; v.querySelector("#f2-fslot img")?.replaceWith(pre); }
     if (fishName) { bindItemTip($("f2-fslot"), x.fishTip); if (x.loot) bindItemTip($("f2-lootrow"), x.loot.tip ?? { kind: "text", name: x.loot.name, img: x.loot.img || IMG.chest }); }
     q("#f2-hold").hidden = true;
     msg(st.owner ? (fishName ? "Landed." : "Round over.") : `${esc(st.actorName)}${fishName ? " landed a fish." : "'s round is over."}`);
@@ -973,6 +982,9 @@
       // Spectators may still be mid-splash; let the flash land first.
       if (!st.owner && fishName && st.phase === "end") later(go, 650); else go();
     },
+
+    // Read-only snapshot for tests and console debugging.
+    _debug() { return { phase: st.phase, lureId: st.lureId, owner: st.owner, visitor: st.v ? { state: st.v.state, tier: st.v.tier, kind: st.v.kind } : null, visits: st._visits ?? 0, timers: timers.size, lureEnd: st.lureEnd }; },
 
     // ── GM side ──
     touch(actorId) { const f = this.roundTouch?.[actorId]; if (typeof f === "function") f(); },
