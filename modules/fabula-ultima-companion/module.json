@@ -51,6 +51,8 @@
     "scripts/alter-story/as-logic.js",
     "scripts/alter-story/as-core.js",
     "scripts/alter-story/as-ui.js",
+    "scripts/fabula-arcana/fa-catalog.js",
+    "scripts/fabula-arcana/fa-engine.js",
     "scripts/client-health.js",
     "scripts/db-resolver.js",
     "scripts/party-sync/party-sync-core.js",
