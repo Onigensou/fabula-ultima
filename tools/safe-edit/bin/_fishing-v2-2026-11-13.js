@@ -20,16 +20,18 @@ const MOD = "fabula-ultima-companion";
 const KEY_FOLDER = "3kZfXVrONQZyTxO3";      // 🔑 Key Item
 const TACKLE = "FishTackleFolder";
 const FISH_FOLDER = "M5VOqokm97pmFqrA";
-const DONOR = "!items!";                    // + Gryphon Whistle's id, looked up by name
+// Rod art (Oni, 2026-11-13): Genshin fishing-rod icons on Forge, Item Icon/Fishing Rod/ (all 10 uploaded;
+// the Plain Rod in the UI uses Wilderness_Rod.png). Colours match the art (scene rod + reel tint).
+const R = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Fishing%20Rod/";
 
 const RODS = [
-  { id: "FishRodIronwood1", name: "Ironwood Rod",   attr: "mig", color: "#d0603e", img: "icons/tools/fishing/rod-brown-gold.webp",
+  { id: "FishRodIronwood1", name: "Ironwood Rod",   attr: "mig", color: "#e08a3a", img: R + "Flowhorn_Flounderfinder.png",
     text: "While fishing, your <strong>MIG</strong> counts as one die size higher: the bar rises faster and the catch meter fills faster." },
-  { id: "FishRodSwiftlin1", name: "Swiftline Rod",  attr: "dex", color: "#6fcf5a", img: "icons/tools/fishing/rod-simple-bamboo.webp",
+  { id: "FishRodSwiftlin1", name: "Swiftline Rod",  attr: "dex", color: "#3fbfa8", img: R + "Windtangler.png",
     text: "While fishing, your <strong>DEX</strong> counts as one die size higher: a more nimble bar and a slower cast gauge." },
-  { id: "FishRodSeers0001", name: "Seer's Rod",     attr: "ins", color: "#5f8fd8", img: "icons/tools/fishing/rod-wood-blue-tan.webp",
+  { id: "FishRodSeers0001", name: "Seer's Rod",     attr: "ins", color: "#4f8fe0", img: R + "Scepter_of_the_Snow_Angler_King.png",
     text: "While fishing, your <strong>INS</strong> counts as one die size higher: a taller catch bar." },
-  { id: "FishRodStillwat1", name: "Stillwater Rod", attr: "wlp", color: "#a77be0", img: "icons/tools/fishing/rod-simple-stick-brown-white.webp",
+  { id: "FishRodStillwat1", name: "Stillwater Rod", attr: "wlp", color: "#8a5fc0", img: R + "Narukawa_Ukai.png",
     text: "While fishing, your <strong>WLP</strong> counts as one die size higher: more reel time and a stronger pull toward rare fish." },
 ];
 

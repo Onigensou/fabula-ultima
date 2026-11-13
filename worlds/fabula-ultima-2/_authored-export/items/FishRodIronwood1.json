@@ -15,12 +15,12 @@
     "fabula-ultima-companion": {
       "fishingRod": {
         "attr": "mig",
-        "color": "#d0603e"
+        "color": "#e08a3a"
       }
     }
   },
   "folder": "FishTackleFolder",
-  "img": "icons/tools/fishing/rod-brown-gold.webp",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Fishing%20Rod/Flowhorn_Flounderfinder.png",
   "name": "Ironwood Rod",
   "ownership": {
     "default": 0
@@ -53,7 +53,7 @@
       "hand_slots": "One-handed",
       "human_ef": "100",
       "humanoid_ef": "100",
-      "img": "icons/tools/fishing/rod-brown-gold.webp",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Fishing%20Rod/Flowhorn_Flounderfinder.png",
       "insect_ef": "100",
       "ip_cost": "",
       "isEquipped": false,

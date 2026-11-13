@@ -15,12 +15,12 @@
     "fabula-ultima-companion": {
       "fishingRod": {
         "attr": "wlp",
-        "color": "#a77be0"
+        "color": "#8a5fc0"
       }
     }
   },
   "folder": "FishTackleFolder",
-  "img": "icons/tools/fishing/rod-simple-stick-brown-white.webp",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Fishing%20Rod/Narukawa_Ukai.png",
   "name": "Stillwater Rod",
   "ownership": {
     "default": 0
@@ -53,7 +53,7 @@
       "hand_slots": "One-handed",
       "human_ef": "100",
       "humanoid_ef": "100",
-      "img": "icons/tools/fishing/rod-simple-stick-brown-white.webp",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Fishing%20Rod/Narukawa_Ukai.png",
       "insect_ef": "100",
       "ip_cost": "",
       "isEquipped": false,
