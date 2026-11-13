@@ -346,6 +346,13 @@
         const c = aiChoose(me, op, prof); return { action:c.action, target:c.target };
       });
     },
+    // Surrender: the conceding seat loses this game at once (any phase except ended).
+    concede(state, seat){
+      if (state.phase === 'ended') return false;
+      state.result = seat === 0 ? 'LOSS' : 'WIN'; state.surrendered = seat; state.phase = 'ended'; state.commit = [null, null];
+      state.log.unshift({ head:'SURRENDER', lines:[[`${seatLabel(state, seat)} surrender${third(state, seat)?'s':''}.`, 'k']] });
+      return true;
+    },
     publicView(state, viewer){
       const v = JSON.parse(JSON.stringify(state));
       v.commit = v.commit.map((c, s) => c && s !== viewer ? { hidden:true } : c);
@@ -390,8 +397,46 @@
     },
   };
 
+  // ===================== seat views (every player sees the board from seat 0) =====================
+  // The duel window always draws "you" at the bottom (seat 0). For the player in seat 1 the host mirrors
+  // the state and each resolved round: two-sided arrays swap, side numbers flip, WIN/LOSS swap.
+  const flip = s => (s === 0 ? 1 : s === 1 ? 0 : s);
+  const swap2 = a => (Array.isArray(a) && a.length === 2 ? [a[1], a[0]] : a);
+  const flipResult = r => (r === 'WIN' ? 'LOSS' : r === 'LOSS' ? 'WIN' : r);
+  const View = {
+    // state as seen by `viewer` (0, 1, or null for spectators: seat-0 perspective, both picks hidden)
+    forSeat(state, viewer){
+      const v = Match.publicView(state, viewer);
+      if (viewer !== 1) return v;
+      v.p = swap2(v.p); v.commit = swap2(v.commit); v.names = v.names ? swap2(v.names) : v.names;
+      v.result = flipResult(v.result); v.tiebreak = v.tiebreak ? swap2(v.tiebreak) : v.tiebreak;
+      if (v.surrendered != null) v.surrendered = flip(v.surrendered);
+      const st = v.stats || {}; for (const k of ['acts','switches','forced']) if (st[k]) st[k] = swap2(st[k]);
+      return v;
+    },
+    // a resolved step ({ kind, choices, L, ev }) as seen by `viewer`
+    resolvedForSeat(res, viewer){
+      const r = JSON.parse(JSON.stringify(res));
+      if (viewer !== 1) return r;
+      r.choices = swap2(r.choices);
+      const ev = r.ev; if (!ev) return r;
+      for (const k of ['enter','switched','items','heal','res','after','ko']) if (ev[k]) ev[k] = swap2(ev[k]);
+      for (const x of ev.res || []) if (x && x.side != null) x.side = flip(x.side);
+      if (ev.seq) ev.seq = ev.seq.map(flip);
+      if (ev.snaps) ev.snaps = ev.snaps.map(swap2);
+      if (ev.denied != null) ev.denied = flip(ev.denied);
+      for (const k of ['direct','entry']) for (const x of ev[k] || []) if (x && x.s != null) x.s = flip(x.s);
+      return r;
+    },
+    seriesForSeat(sr, viewer){
+      if (!sr) return sr; const s = JSON.parse(JSON.stringify(sr));
+      if (viewer === 1){ s.wins = swap2(s.wins); if (s.winner != null) s.winner = flip(s.winner); }
+      return s;
+    },
+  };
+
   const Engine = Object.freeze({
-    Match, Series, IDS, LEGAL_TEAMS, isLegalTeam, teamCost, compKey, randomTeam, elMod,
+    Match, Series, View, IDS, LEGAL_TEAMS, isLegalTeam, teamCost, compKey, randomTeam, elMod,
     setRng(fn){ RNG = typeof fn === 'function' ? fn : Math.random; },
     // low-level hooks for tests and the balance tool (run inside a state)
     _withState: withState, _resolveRound: ch => resolveRound(ch), _calcAttack: (a, d, ctx) => calcAttack(a, d, ctx), _mkPlayer: mkPlayer,

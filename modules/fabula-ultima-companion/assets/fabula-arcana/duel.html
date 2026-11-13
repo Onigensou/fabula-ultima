@@ -1,0 +1,1805 @@
+<title>Fabula Arcana</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Lexend:wght@400;500;600&family=Signika:wght@400;600&display=swap">
+<style>
+/* Layout: a camp card table seen at an angle. Opponent's three cards on top, yours at the bottom, the active card pushed forward with its monster standing on it as a hologram. Picker below, card detail + log on the right. */
+:root{
+  --ground:#1b2a26; --felt:#203a35; --felt2:#16292a; --ember:#e8914a;
+  --win1:#2c4596; --win2:#121d52; --rim:#d7dcf0;
+  --ink:#f3f1ea; --mute:#a9b3d6; --gold:#f4c95d; --hurt:#ff6f6f; --heal:#7ee29a; --holo:#7fe9ff;
+  --parch:#efe2c4; --parch-ink:#2b2318; --wood:#6b5432;
+  --e-phys:#cfc8b8; --e-air:#7fd88f; --e-bolt:#f5d547; --e-dark:#9a7ae6; --e-earth:#c9925a; --e-fire:#ff6a3d; --e-ice:#8fdcff; --e-light:#fff1a6; --e-poison:#d26fc0;
+  --font-d:"Pixelify Sans","Courier New",monospace; --font-b:"Lexend",system-ui,sans-serif;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:radial-gradient(ellipse at 50% 115%,#4a2c18 0%,var(--ground) 55%) fixed,var(--ground);color:var(--ink);font-family:var(--font-b);font-size:14px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px;box-sizing:border-box}
+*{box-sizing:border-box}
+h1,h2,h3{font-family:var(--font-d);font-weight:700;margin:0;text-wrap:balance;letter-spacing:.02em}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.win{background:linear-gradient(180deg,var(--win1),var(--win2));border:2px solid var(--rim);border-radius:8px;box-shadow:0 0 0 2px #0a0f2a,0 6px 18px #0008;padding:12px 14px}
+.label{font-family:var(--font-d);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:0 auto 12px;max-width:1260px}
+.top h1{font-size:26px;color:var(--gold);text-shadow:2px 2px 0 #5a2a10}
+.top .sub{color:var(--mute);font-size:13px}
+.btn{background:linear-gradient(180deg,#3a57b8,#1c2a72);border:2px solid var(--rim);border-radius:6px;padding:8px 14px;font-family:var(--font-d);font-size:15px;letter-spacing:.04em}
+.btn:hover:not(:disabled){filter:brightness(1.18)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.go{background:linear-gradient(180deg,#d98a3e,#8d4518);border-color:#ffe2b0}
+.btn.ghost{background:transparent}
+.wrap{max-width:1260px;margin:0 auto}
+.hint{font-size:12.5px;color:var(--mute)} .hint b{color:var(--gold);font-weight:600}
+
+/* element pill */
+.el{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-d);font-size:11px;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:0 7px;background:#0008;color:var(--c);border:1px solid var(--c);white-space:nowrap}
+.el::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c)}
+.affs{display:flex;flex-wrap:wrap;gap:3px}
+.aff{font-size:10.5px;border-radius:4px;padding:0 5px;font-family:var(--font-d);border:1px solid var(--c);color:var(--c);background:#0006;white-space:nowrap}
+.aff b{color:var(--ink);font-weight:500;margin-left:3px}
+
+/* ---- full card (setup + detail) ---- */
+.card{position:relative;background:var(--parch);color:var(--parch-ink);border:3px solid var(--wood);border-radius:8px;box-shadow:inset 0 0 0 2px #fff6dd,0 3px 0 #0006;display:flex;flex-direction:column;overflow:hidden}
+.card .art{height:104px;background:radial-gradient(circle at 50% 60%,#fff 0%,#e8dcc0 70%);display:flex;align-items:center;justify-content:center;border-bottom:2px solid var(--wood);position:relative}
+.card .art img{image-rendering:pixelated;max-width:90%;max-height:90%;object-fit:contain}
+.card .art .el{position:absolute;left:6px;top:6px}
+.card .nm{font-family:var(--font-d);font-weight:700;font-size:15px;padding:4px 8px 0;line-height:1.1}
+.card .role{font-size:11px;color:#7a6440;padding:0 8px;letter-spacing:.06em;text-transform:uppercase}
+.stats{display:flex;gap:4px;padding:4px 8px}
+.st{font-family:var(--font-d);font-size:13px;background:#2b2318;color:var(--parch);border-radius:4px;padding:1px 6px;font-variant-numeric:tabular-nums}
+.st b{color:var(--gold);font-weight:500;margin-right:3px;font-size:11px}
+.card .affs{padding:2px 8px}
+.card .aff{background:#2b2318}
+.ab{font-size:11.5px;line-height:1.35;padding:4px 8px 8px} .ab b{font-weight:600}
+
+/* ---- setup ---- */
+.setup{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:14px}
+.pickgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:10px}
+.pickgrid .card{cursor:pointer;transition:transform .12s}
+.pickgrid .card.sel{border-color:var(--gold);box-shadow:inset 0 0 0 2px #fff6dd,0 0 0 3px var(--gold),0 3px 0 #0006;transform:translateY(-3px)}
+.pickgrid .card .tick{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:var(--gold);color:#2b2318;font-family:var(--font-d);display:none;align-items:center;justify-content:center;z-index:2}
+.pickgrid .card.sel .tick{display:flex}
+.side{display:flex;flex-direction:column;gap:12px}
+.seg{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.seg button{flex:1;min-width:110px;text-align:left;padding:8px 10px;border-radius:6px;border:2px solid #6f7cb0;background:#0f1846}
+.seg button.on{border-color:var(--gold);background:#24306d}
+.seg small{display:block;color:var(--mute);font-size:11.5px;font-family:var(--font-b)}
+.rules{font-size:12.5px} .rules ol{margin:6px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:4px} .rules b{color:var(--gold);font-weight:600}
+
+/* ---- board ---- */
+.board{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:14px;align-items:start}
+.sidebar{display:flex;flex-direction:column;gap:10px;position:sticky;top:max(10px,env(safe-area-inset-top,0px))}
+.mainc{display:flex;flex-direction:column;gap:10px;min-width:0}
+
+.table{position:relative;border:3px solid #4a3520;border-radius:14px;background:radial-gradient(ellipse at 50% 50%,var(--felt) 0%,var(--felt2) 80%);box-shadow:inset 0 0 40px #000a,0 8px 20px #0009;padding:8px 10px 12px;overflow:hidden}
+.table::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%,#e8914a33,transparent 60%);pointer-events:none}
+.side-row{position:relative;display:flex;align-items:flex-end;justify-content:center;gap:clamp(8px,2.5vw,26px);padding-top:122px}
+.side-head{position:absolute;left:4px;top:4px;display:flex;flex-direction:column;gap:4px;z-index:1}
+.side-head h2{font-size:16px}
+.itemrow{display:flex;gap:4px}
+.itemrow .ii{width:24px;height:24px;border-radius:5px;background:#0b1238;border:1px solid #6f7cb0;display:flex;align-items:center;justify-content:center}
+.itemrow .ii img{width:20px;height:20px;object-fit:contain;image-rendering:pixelated}
+.itemrow .ii.used{opacity:.25;filter:grayscale(1)}
+.alive{font-family:var(--font-d);font-size:12px;color:var(--mute)}
+
+/* slot */
+.slot{position:relative;width:clamp(92px,15vw,138px);display:flex;flex-direction:column;align-items:center;transition:transform .45s cubic-bezier(.3,1.4,.5,1);z-index:2}
+.slot.mine.fwd{transform:translateY(-22px) scale(1.08)}
+.slot.theirs.fwd{transform:translateY(16px) scale(1.08)}
+.flat{width:100%;perspective:520px}
+.flatcard{position:relative;transform:rotateX(14deg);transform-origin:50% 100%;background:var(--parch);color:var(--parch-ink);border:3px solid var(--wood);border-radius:8px;box-shadow:inset 0 0 0 2px #fff6dd,0 10px 10px #0009;overflow:hidden;transition:filter .3s, box-shadow .3s}
+.flatcard .fa{height:clamp(54px,8vw,74px);display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 60%,#fff 0%,#e8dcc0 70%);border-bottom:2px solid var(--wood)}
+.flatcard .fa img{max-height:90%;max-width:88%;image-rendering:pixelated;object-fit:contain}
+.flatcard .fn{font-family:var(--font-d);font-size:clamp(11px,1.5vw,13.5px);padding:2px 6px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.flatcard .fs{display:flex;gap:3px;padding:1px 5px 5px;font-family:var(--font-d);font-size:11px;flex-wrap:wrap}
+.flatcard .cost{position:absolute;top:3px;right:4px;font-size:11px;color:#c08a1a;text-shadow:0 1px 0 #fff;letter-spacing:-1px}
+.flatcard .elb{position:absolute;top:3px;left:3px}
+.flatcard .fs span{background:#2b2318;color:var(--parch);border-radius:3px;padding:0 4px}
+.slot.fwd .flatcard{box-shadow:inset 0 0 0 2px #fff6dd,0 0 0 3px var(--holo),0 0 22px #7fe9ff88,0 10px 10px #0009}
+.slot.ko .flatcard{filter:grayscale(1) brightness(.45)}
+.slot.ko .flat::after{content:"KO";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:30px;color:var(--hurt);text-shadow:2px 2px 0 #000;z-index:3}
+.slot .flat{position:relative}
+.hpl{width:100%;margin-top:6px;display:flex;flex-direction:column;gap:2px;align-items:stretch}
+.hpl .t{font-family:var(--font-d);font-size:12px;text-align:center;font-variant-numeric:tabular-nums}
+.hpbar{height:8px;border-radius:4px;background:#3a2c1c;overflow:hidden;border:1px solid #000}
+.hpbar i{display:block;height:100%;background:linear-gradient(90deg,#4fbf6c,#9be58a);transition:width .5s}
+.hpbar.low i{background:linear-gradient(90deg,#d94b3b,#f08a5a)}
+.slot.pickable{cursor:pointer}
+.slot.pickable .flatcard{box-shadow:inset 0 0 0 2px #fff6dd,0 0 0 3px var(--gold),0 10px 10px #0009;animation:pulse 1.2s infinite}
+.slot.picked .flatcard{box-shadow:inset 0 0 0 2px #fff6dd,0 0 0 4px var(--heal),0 0 18px var(--heal)}
+@keyframes pulse{50%{filter:brightness(1.15)}}
+
+/* hologram */
+.holo{position:absolute;left:50%;bottom:calc(100% - 52px);width:150%;height:122px;transform:translateX(-50%);pointer-events:none;display:flex;align-items:flex-end;justify-content:center;z-index:4}
+.holo .beam{position:absolute;left:18%;right:18%;bottom:6px;height:0;background:linear-gradient(0deg,#7fe9ffaa,#7fe9ff00);clip-path:polygon(18% 100%,82% 100%,100% 0,0 0);opacity:0}
+.holo .base{position:absolute;bottom:0;left:50%;width:70%;height:16px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse,#7fe9ff99,#7fe9ff00 70%);opacity:0}
+.holo .spr{position:relative;max-height:112px;max-width:100%;image-rendering:pixelated;object-fit:contain;opacity:0;transform:translateY(24px) scaleY(.1);transform-origin:50% 100%;filter:drop-shadow(0 0 6px #7fe9ffaa)}
+.holo .scan{position:absolute;inset:0;background:repeating-linear-gradient(0deg,#7fe9ff14 0 2px,transparent 2px 4px);mix-blend-mode:screen;opacity:0;pointer-events:none}
+.holo.on .spr{opacity:1;transform:none;transition:transform .5s cubic-bezier(.2,1.5,.4,1) .15s,opacity .2s .15s;animation:bob 2.4s ease-in-out .7s infinite,flick 4s steps(1) 1s infinite}
+.holo.on .base{opacity:1;transition:opacity .3s}
+.holo.on .scan{opacity:1}
+.holo.on .beam{animation:beam .8s ease-out}
+.holo.off .spr{transition:transform .3s,opacity .3s;opacity:0;transform:translateY(20px) scaleY(.1)}
+@keyframes beam{0%{height:0;opacity:.9}40%{height:120px;opacity:.9}100%{height:120px;opacity:0}}
+@keyframes bob{50%{translate:0 -4px}}
+@keyframes flick{0%,100%{opacity:1}92%{opacity:.55}93%{opacity:1}}
+.slot.theirs .holo .spr{scale:-1 1}
+
+/* buffs */
+.slot.b-str .holo .spr{filter:drop-shadow(0 0 6px #ff5a2a) drop-shadow(0 0 12px #ffae3a) brightness(1.15)}
+.slot.b-shard .holo .spr{filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 12px #c9a8ff) saturate(.4) brightness(1.2)}
+.slot.b-smoke .holo .spr{filter:drop-shadow(0 0 8px #9aa0a8) contrast(.9) brightness(.9)}
+.barrier{position:absolute;left:50%;bottom:4px;width:96px;height:112px;transform:translateX(-50%);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:linear-gradient(160deg,#ffe2b055,#c9925a33 40%,#7fe9ff44);box-shadow:inset 0 0 18px #fff;animation:barrierIn .4s ease-out;z-index:5}
+.barrier::after{content:"";position:absolute;inset:4px;clip-path:inherit;border:0;background:repeating-linear-gradient(60deg,#fff3 0 2px,transparent 2px 14px)}
+.barrier.crack{animation:barrierHit .4s}
+.barrier.shatter{animation:shatter .45s forwards}
+@keyframes barrierIn{0%{transform:translateX(-50%) scale(.2);opacity:0}70%{transform:translateX(-50%) scale(1.1);opacity:1}100%{transform:translateX(-50%) scale(1)}}
+@keyframes barrierHit{50%{filter:brightness(2.4)}}
+@keyframes shatter{0%{opacity:1}100%{opacity:0;transform:translateX(-50%) scale(1.5);filter:blur(3px) brightness(2)}}
+
+/* cost + chart */
+.stars{color:#c08a1a;letter-spacing:-1px;font-size:13px}
+.card .cost{position:absolute;right:6px;top:6px;font-family:var(--font-d);font-size:14px;color:#c08a1a;text-shadow:0 1px 0 #fff;z-index:1}
+.pickgrid .card.dis{opacity:.45;cursor:not-allowed}
+.teambar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.budget{display:flex;gap:3px}
+.budget i{width:18px;height:18px;border-radius:4px;border:2px solid var(--rim);background:#0b1238}
+.budget i.on{background:var(--gold);box-shadow:0 0 6px var(--gold)}
+.budget i.over{background:var(--hurt)}
+.chart svg{width:100%;height:auto;display:block}
+.chart .pairs{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;font-size:12px}
+.chart .pairs span{display:inline-flex;align-items:center;gap:4px}
+.card .stats{flex-wrap:wrap}
+/* v0.5: element-coloured borders */
+.card[style*="--ec"]{border-color:var(--ec);box-shadow:inset 0 0 0 2px #fff6dd,0 0 0 1px #0006,0 3px 0 #0006,0 0 10px color-mix(in srgb,var(--ec) 35%,transparent)}
+.slot .flatcard{border-color:var(--ec,var(--wood))}
+.flatcard .fs .spd{background:#3b2a5c;color:#e9dcff}
+/* v0.5: hover lifts a card a little; a selected/played card lifts further; the active card never lifts on hover */
+.pickgrid .card{transition:transform .16s ease, box-shadow .16s}
+.pickgrid .card:not(.dis):not(.sel):hover{transform:translateY(-5px)}
+.pickgrid .card.sel{transform:translateY(-11px)}
+.slot .flat{transition:transform .16s ease}
+.slot:not(.fwd):not(.ko):hover .flat{transform:translateY(-7px)}
+.slot.picked .flat{transform:translateY(-16px)}
+.act{transition:transform .15s ease, box-shadow .15s}
+.act:not(:disabled):not(.on):hover{transform:translateY(-5px)}
+.act.on{transform:translateY(-12px)}
+.slot.downed .flatcard{filter:grayscale(1) brightness(.5)}
+/* v0.5: face-down action slots */
+.flip.empty .face.back{background:transparent;border:2px dashed #6f7cb0}
+.flip .cb{width:26px;height:26px;border-radius:50%;border:2px solid var(--rim);background:radial-gradient(circle,#f4c95d 0 30%,transparent 32%)}
+.flip.drop0{animation:drop0 .45s cubic-bezier(.2,1.3,.4,1)}
+.flip.drop1{animation:drop1 .45s cubic-bezier(.2,1.3,.4,1)}
+@keyframes drop0{0%{transform:translateY(90px) rotate(-10deg) scale(.8);opacity:0}100%{transform:none;opacity:1}}
+@keyframes drop1{0%{transform:translateY(-90px) rotate(10deg) scale(.8);opacity:0}100%{transform:none;opacity:1}}
+.ftag{font-size:11px;color:var(--mute);min-height:15px}
+.lane .mid{display:flex;flex-direction:column;align-items:center;gap:2px}
+.timer{display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:2px}
+.timer span{font-family:var(--font-d);font-size:16px;color:var(--ink);font-variant-numeric:tabular-nums}
+.timer span.low{color:var(--hurt)}
+.tbar{width:70px;height:4px;border-radius:2px;background:#0b1238;overflow:hidden}
+.tbar i{display:block;height:100%;background:var(--gold);transition:width .25s linear}
+.seatbar{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.seatbar button{border:1px solid #6f7cb0;background:#0f1846;border-radius:6px;padding:4px 10px;font-family:var(--font-d);font-size:13px}
+.seatbar button.on{background:var(--gold);color:#2b2318;border-color:var(--gold)}
+.placedrow{display:flex;align-items:center;gap:12px}
+.cbmini{width:44px;height:60px;border-radius:6px;border:2px solid var(--rim);background:repeating-linear-gradient(45deg,#2a3c8c 0 8px,#1b2768 8px 16px);flex:none;animation:drop0 .45s cubic-bezier(.2,1.3,.4,1)}
+.ctrlbox{display:flex;flex-direction:column;gap:6px}
+/* particles + pops */
+.fxl{position:absolute;inset:0;pointer-events:none;z-index:20;overflow:visible}
+.pt{position:absolute;width:var(--sz,6px);height:var(--sz,6px);border-radius:50%;background:var(--pc);box-shadow:0 0 8px var(--pc);animation:pt var(--d,.9s) ease-out forwards}
+@keyframes pt{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
+.puff{position:absolute;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle,#c9ced6dd,#8a909a66 60%,transparent 70%);animation:puff 1s ease-out forwards}
+@keyframes puff{0%{transform:translate(-50%,-50%) scale(.3);opacity:.9}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.6);opacity:0}}
+.ipop{position:absolute;width:44px;height:44px;transform:translate(-50%,-50%);animation:ipop .75s ease-out forwards;filter:drop-shadow(0 0 8px #fff)}
+.ipop img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+@keyframes ipop{0%{transform:translate(-50%,0) scale(.3);opacity:0}30%{transform:translate(-50%,-60%) scale(1.25);opacity:1}70%{transform:translate(-50%,-60%) scale(1)}100%{transform:translate(-50%,-10%) scale(.4);opacity:0}}
+.flash{position:absolute;width:30px;height:30px;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,#fff 0%,var(--pc) 40%,transparent 70%);animation:flash .45s ease-out forwards}
+@keyframes flash{0%{transform:translate(-50%,-50%) scale(.3);opacity:1}100%{transform:translate(-50%,-50%) scale(7);opacity:0}}
+.ring{position:absolute;width:40px;height:40px;border-radius:50%;transform:translate(-50%,-50%);border:4px solid var(--pc);animation:ring .5s ease-out forwards}
+@keyframes ring{0%{transform:translate(-50%,-50%) scale(.2);opacity:1}100%{transform:translate(-50%,-50%) scale(4);opacity:0;border-width:1px}}
+.ray{position:absolute;width:4px;height:44px;transform-origin:50% 100%;background:linear-gradient(0deg,transparent,#fff,var(--pc));animation:ray .38s ease-out forwards}
+@keyframes ray{0%{opacity:1;scale:1 .2}60%{opacity:1;scale:1 1.2}100%{opacity:0;scale:1 1.4}}
+.pop{position:absolute;transform:translate(-50%,0);font-family:var(--font-d);font-size:30px;font-weight:700;text-shadow:2px 2px 0 #000,0 0 6px #000;pointer-events:none;animation:pop 1.3s ease-out forwards;text-align:center;line-height:1;white-space:nowrap}
+.pop small{display:block;font-size:12px;margin-top:3px}
+.pop.dmg{color:var(--hurt)} .pop.heal{color:var(--heal)} .pop.zero{color:#fff}
+@keyframes pop{0%{opacity:0;transform:translate(-50%,10px) scale(.6)}18%{opacity:1;transform:translate(-50%,-8px) scale(1.2)}80%{opacity:1;transform:translate(-50%,-26px) scale(1)}100%{opacity:0;transform:translate(-50%,-40px)}}
+.shake{animation:shake .32s}
+@keyframes shake{0%,100%{translate:0 0}20%{translate:-6px 2px}40%{translate:6px -2px}60%{translate:-4px 1px}80%{translate:3px 0}}
+
+/* lane */
+.lane{position:relative;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin:34px auto 4px;max-width:440px;z-index:1}
+.rslot{display:flex;flex-direction:column;align-items:center;gap:3px}
+.flip{width:104px;height:62px;perspective:600px}
+.flip .in{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.flip.open .in{transform:rotateY(180deg)}
+.flip .face{position:absolute;inset:0;backface-visibility:hidden;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px solid var(--rim);font-family:var(--font-d);text-align:center;line-height:1.1;padding:2px}
+.flip .back{background:repeating-linear-gradient(45deg,#2a3c8c 0 8px,#1b2768 8px 16px);font-size:13px;color:var(--mute)}
+.flip .front{transform:rotateY(180deg);background:var(--parch);color:var(--parch-ink);font-size:13.5px}
+.flip .front small{font-family:var(--font-b);font-size:10.5px;color:#7a6440}
+.vs{font-family:var(--font-d);font-size:20px;color:var(--ember);text-shadow:2px 2px 0 #3a1a08;text-align:center}
+.status{font-size:13px;color:var(--ink);text-align:center;min-height:20px}
+
+/* picker */
+.picker h3{font-size:16px;margin-bottom:8px}
+.actgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}
+.act{position:relative;background:var(--parch);color:var(--parch-ink);border:3px solid var(--wood);border-radius:8px;padding:6px 5px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0}
+.act img{width:34px;height:34px;object-fit:contain;image-rendering:pixelated}
+.act .ico{width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:22px;color:#5a4a30}
+.act .t{font-family:var(--font-d);font-size:13.5px;font-weight:700;line-height:1.1}
+.act .k{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#7a6440}
+.act .d{font-size:10.5px;line-height:1.25;color:#5a4a30}
+.act.on{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold);transform:translateY(-3px)}
+.act:disabled{opacity:.35;cursor:not-allowed}
+.act.used::after{content:"USED";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:18px;color:var(--hurt);transform:rotate(-14deg)}
+.lockrow{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:10px}
+
+/* sidebar */
+.detail .card{border-width:2px}
+.log{max-height:360px;overflow:auto;display:flex;flex-direction:column;gap:8px;font-size:12.5px}
+.log .r{border-top:1px solid #4a5aa0;padding-top:6px} .log .r:first-child{border-top:0;padding-top:0}
+.log .rh{font-family:var(--font-d);color:var(--gold);font-size:13px}
+.log .ln.m{color:var(--mute)} .log .ln.k{color:var(--hurt)} .log .ln.g{color:var(--heal)}
+.log b{color:var(--gold);font-weight:600}
+.prize{display:flex;gap:10px;align-items:center}
+.prize img{image-rendering:pixelated;height:52px;width:52px;object-fit:contain;background:var(--parch);border-radius:6px;border:2px solid var(--wood)}
+
+/* end */
+.end{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center}
+.end h2{font-size:30px;color:var(--gold)}
+.survey{display:flex;flex-direction:column;gap:8px;text-align:left;width:100%}
+.q{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;font-size:13px}
+.q .opts{display:flex;gap:4px}
+.q .opts button{border:1px solid #6f7cb0;background:#0f1846;border-radius:4px;padding:3px 8px;font-size:12px}
+.q .opts button.on{background:var(--gold);color:#2b2318;border-color:var(--gold)}
+textarea{width:100%;min-height:70px;background:#0b1238;color:var(--ink);border:1px solid #6f7cb0;border-radius:6px;padding:8px;font:inherit;font-size:12.5px}
+.statgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;width:100%}
+.statgrid div{background:#0b1238;border:1px solid #4a5aa0;border-radius:6px;padding:6px}
+.statgrid b{display:block;font-family:var(--font-d);font-size:20px;color:var(--gold);font-variant-numeric:tabular-nums}
+.statgrid span{font-size:11px;color:var(--mute)}
+
+@media (max-width:1000px){.board,.setup{grid-template-columns:minmax(0,1fr)}.sidebar{position:static}}
+@media (max-width:820px){.actgrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:620px){
+  .actgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .statgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .side-row{padding-top:132px}
+  .holo{height:100px}.holo .spr{max-height:92px}
+  .flip{width:88px;height:56px}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
+
+/* ===== v0.6 board-game skin: the game's own system-UI family (Save/Healing/Shop): parchment, thin gold + wood rings, Signika ===== */
+:root{
+  --ground:#24170c; --ink:#3a1e06; --mute:#7f6140; --gold:#9a6512; --rim:#c9a44a; --wood:#7a4e20; --wood2:#b8865a;
+  --hurt:#d9412f; --heal:#3fae5c; --parch:#fbf4dc; --parch-ink:#3a1e06;
+  --font-b:"Signika","Lexend",system-ui,sans-serif; --font-d:"Signika","Lexend",system-ui,sans-serif; --font-n:"Pixelify Sans","Courier New",monospace;
+}
+body{background:radial-gradient(ellipse at 50% -10%,#5a3a1e 0%,#2d1c0e 55%,#1d1208 100%) fixed,#1d1208;color:var(--ink)}
+h1,h2,h3{font-weight:600;letter-spacing:0}
+.top h1{color:#f4d58a;text-shadow:0 2px 0 #3a1e06;font-size:28px}
+.top .sub{color:#d9c49a}
+.top .btn.ghost{color:#f4e3b8;border:1px solid var(--wood2);background:#3a1e0699}
+.top .btn.surr.armed{background:linear-gradient(180deg,#a8402e,#7a2416);border-color:#f1c27a;color:#fff3d0;animation:surrpulse .9s ease-in-out infinite}
+.top .btn.surr:disabled{opacity:.45;cursor:not-allowed}
+/* ===== finish + series overlays ===== */
+.ovl{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;overflow:hidden;cursor:pointer;animation:ovlIn .25s ease-out both}
+.ovl.out{animation:ovlOut .45s ease-in forwards}
+@keyframes ovlIn{from{opacity:0}to{opacity:1}} @keyframes ovlOut{to{opacity:0}}
+.ovl .bigt{font-family:var(--font-d);font-weight:900;letter-spacing:.08em;line-height:1;font-size:clamp(52px,12vw,132px);position:relative;z-index:2;text-align:center}
+.ovl .subt{font-family:var(--font-b);font-weight:700;font-size:clamp(15px,2.2vw,22px);letter-spacing:.14em;text-transform:uppercase;position:relative;z-index:2;opacity:0;animation:subIn .4s .55s ease-out forwards}
+@keyframes subIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.ovl .pips{display:flex;align-items:center;gap:18px;position:relative;z-index:2;opacity:0;animation:subIn .4s .75s ease-out forwards}
+.ovl .pips .pside{display:flex;align-items:center;gap:7px;font-family:var(--font-b);font-weight:700;font-size:14px;letter-spacing:.1em;text-transform:uppercase}
+.ovl .pip{width:18px;height:18px;border-radius:50%;border:2px solid currentColor;opacity:.55}
+.ovl .pip.on{background:currentColor;opacity:1;box-shadow:0 0 10px currentColor}
+.ovl .pip.new{animation:pipPop .55s 1.05s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes pipPop{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
+.ovl .dash{font-family:var(--font-d);font-size:22px;opacity:.7}
+/* Victory: gold, punch-in, rays + sparkles */
+.ovl.v-win{background:radial-gradient(ellipse at center,#3a250ccc 0%,#120a03ee 70%);color:#f4d27a}
+.ovl.v-win .bigt{background:linear-gradient(180deg,#fffbe6 0%,#ffe08a 38%,#e0a83a 62%,#9a6a16 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 0 #5a3a0a) drop-shadow(0 0 22px #f4c95d99);animation:vicIn .7s cubic-bezier(.2,1.4,.35,1) both}
+@keyframes vicIn{0%{transform:scale(2.6);opacity:0;filter:blur(8px)}55%{transform:scale(.9);opacity:1}100%{transform:scale(1)}}
+.ovl .rays{position:absolute;left:50%;top:50%;width:170vmax;height:170vmax;margin:-85vmax 0 0 -85vmax;z-index:1;opacity:.0;background:repeating-conic-gradient(from 0deg,#f4c95d22 0 6deg,transparent 6deg 18deg);animation:raysIn .8s .15s ease-out forwards,raysSpin 14s linear infinite;mask:radial-gradient(circle,#000 0,transparent 55%);-webkit-mask:radial-gradient(circle,#000 0,transparent 55%)}
+@keyframes raysIn{to{opacity:1}} @keyframes raysSpin{to{transform:rotate(360deg)}}
+.ovl .spark{position:absolute;left:50%;top:50%;width:8px;height:8px;border-radius:2px;z-index:1;background:#ffe08a;box-shadow:0 0 8px #ffd25e;animation:sparkFly 1.3s var(--d,0s) cubic-bezier(.15,.7,.3,1) forwards;opacity:0}
+@keyframes sparkFly{0%{transform:translate(-50%,-50%) rotate(0) scale(.4);opacity:1}100%{transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) rotate(var(--r)) scale(1);opacity:0}}
+/* Defeat: heavy drop, desaturated board, slump */
+.ovl.v-lose{background:radial-gradient(ellipse at center,#1a0c0acc 0%,#050202f2 75%);color:#b9a89a;backdrop-filter:grayscale(1) brightness(.7);-webkit-backdrop-filter:grayscale(1) brightness(.7)}
+.ovl.v-lose .bigt{background:linear-gradient(180deg,#e9e2d8 0%,#a89a8c 50%,#5e5249 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 5px 0 #1d1310) drop-shadow(0 0 18px #6a1d1466);animation:defIn .75s cubic-bezier(.5,0,.75,0) both,defSlump 2.2s .9s ease-in-out forwards}
+@keyframes defIn{0%{transform:translateY(-70vh);opacity:0}70%{transform:translateY(0);opacity:1}82%{transform:translateY(-10px)}100%{transform:translateY(0)}}
+@keyframes defSlump{to{transform:translateY(6px) rotate(-2deg);letter-spacing:.14em}}
+.ovl.v-lose .crack{position:absolute;left:0;right:0;top:50%;height:2px;z-index:1;background:linear-gradient(90deg,transparent,#8a2a1c 20%,#c0392b 50%,#8a2a1c 80%,transparent);transform:scaleX(0);animation:crack .35s .62s ease-out forwards;box-shadow:0 0 12px #c0392b}
+@keyframes crack{to{transform:scaleX(1)}}
+.ovl.shake{animation:ovlIn .25s ease-out both,shake .35s .62s linear}
+@keyframes shake{20%{transform:translate(-6px,2px)}40%{transform:translate(5px,-3px)}60%{transform:translate(-3px,2px)}80%{transform:translate(2px,-1px)}}
+/* Draw: silver */
+.ovl.v-draw{background:radial-gradient(ellipse at center,#1d2230cc 0%,#07080cf0 75%);color:#cfd6e4}
+.ovl.v-draw .bigt{background:linear-gradient(180deg,#ffffff,#c6cedc 50%,#7b8496);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 0 #2a2f3a);animation:drawIn .6s ease-out both}
+@keyframes drawIn{0%{transform:scaleX(0);opacity:0}100%{transform:scaleX(1);opacity:1}}
+/* Game-start banner (series) */
+.ovl.v-game{background:linear-gradient(180deg,transparent 30%,#120a03d9 42%,#120a03d9 58%,transparent 70%);color:#f4d27a;cursor:default;pointer-events:none}
+.ovl.v-game .bigt{font-size:clamp(44px,9vw,96px);color:#f8ecc8;text-shadow:0 3px 0 #5a3a0a,0 0 18px #f4c95d88;animation:gameIn 1.9s cubic-bezier(.2,.9,.3,1) both}
+@keyframes gameIn{0%{transform:translateX(-60vw);opacity:0}22%{transform:translateX(0);opacity:1}78%{transform:translateX(0);opacity:1}100%{transform:translateX(60vw);opacity:0}}
+.ovl.v-game .tag{font-family:var(--font-b);font-weight:800;letter-spacing:.24em;font-size:15px;color:#ffb35c;text-shadow:0 0 10px #ff7a2a;animation:tagBlink .5s .3s ease-in-out 3 alternate both}
+@keyframes tagBlink{from{opacity:.35}to{opacity:1}}
+@media (prefers-reduced-motion: reduce){ .ovl *, .ovl{animation-duration:.01s !important;animation-delay:0s !important} .ovl .rays,.ovl .spark{display:none} }
+.end .series{font-family:var(--font-b);font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:13px;color:#7a5a3a;margin:2px 0 6px}
+@keyframes surrpulse{50%{box-shadow:0 0 0 3px #f1c27a66}}
+.win{background:repeating-linear-gradient(0deg,transparent 0 25px,#7a4e200d 25px 26px),linear-gradient(180deg,#f8f0d4,#ede0b0);border:2px solid var(--rim);
+  box-shadow:0 0 0 2px var(--wood),0 0 0 4px var(--wood2),0 10px 22px #000a;border-radius:10px;color:var(--ink)}
+.label{font-family:var(--font-b);color:#8a6a3a;letter-spacing:.08em;font-size:11.5px;font-weight:600}
+.hint{color:var(--mute)} .hint b,.rules b{color:#7a3e08;font-weight:600}
+.btn{font-family:var(--font-b);background:linear-gradient(180deg,#7a5230,#5c3818);border:1px solid #3a1e06;color:#f8f0d4;box-shadow:inset 0 1px 0 #ffffff26,0 2px 0 #0005;font-size:15px;letter-spacing:.01em}
+.btn.go{border:2px solid var(--rim);box-shadow:inset 0 1px 0 #ffffff26,0 0 10px #c9a44a77}
+.win .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--wood)}
+.seg button,.seatbar button,.q .opts button{background:#f3e6c2;border:1px solid var(--wood2);color:var(--ink);font-family:var(--font-b)}
+.seg button.on,.seatbar button.on,.q .opts button.on{background:linear-gradient(180deg,#7a5230,#5c3818);color:#f8f0d4;border-color:var(--rim)}
+.seg small{color:#8a6a3a} .seg button.on small{color:#e8d6a8}
+.itemrow .ii{background:#f3e6c2;border:1px solid var(--wood2)}
+.budget i{background:#f3e6c2;border-color:var(--wood)} .budget i.on{background:#d9a640;box-shadow:0 0 6px #d9a640}
+.statgrid div{background:#f3e6c2;border:1px solid var(--rim)} .statgrid b{color:#7a3e08;font-family:var(--font-n)} .statgrid span{color:var(--mute)}
+textarea{background:#fffaf0;color:var(--ink);border:1px solid var(--wood2)}
+.log .r{border-top:1px solid #c9a44a66} .log .rh{color:#7a3e08;font-family:var(--font-b);font-weight:600} .log .ln.m{color:var(--mute)} .log .ln.k{color:#a8301e} .log .ln.g{color:#2e7a3e} .log b{color:#7a3e08}
+.status{color:var(--ink);font-weight:600;text-shadow:0 1px 0 #fff8}
+.vs{color:#8a3a10;text-shadow:0 1px 0 #fff8;font-family:var(--font-b);font-weight:600}
+.side-head h2{color:var(--ink);text-shadow:0 1px 0 #fff8;font-size:15px}
+.alive{color:var(--mute)}
+.end h2{color:#7a3e08}
+.pop{font-family:var(--font-n)}
+/* board */
+.table{background:url("board.webp") center/100% 100% no-repeat;border:0;border-radius:6px;box-shadow:0 14px 34px #000c;padding:3.2% 5.5% 3.6%;user-select:none;-webkit-user-select:none}
+.table img{-webkit-user-drag:none;user-drag:none}
+.table::before{display:none}
+.lane{margin-top:22px}
+.flip .back{background:radial-gradient(circle at 50% 50%,#c9a44a 0 9%,transparent 10%),repeating-linear-gradient(45deg,#8a3420 0 6px,#6a2414 6px 12px);border:2px solid var(--rim);box-shadow:0 0 0 1px #3a1e06}
+.flip.empty .face.back{background:#fbf4dc55;border:2px dashed var(--wood2);box-shadow:none}
+.flip .front{background:var(--parch);color:var(--ink);border:2px solid var(--rim)}
+.ftag{color:var(--mute);font-weight:600}
+.timer span{color:var(--ink)} .tbar{background:#e0cc9a} .tbar i{background:#9a6512}
+.cbmini{background:radial-gradient(circle at 50% 50%,#c9a44a 0 9%,transparent 10%),repeating-linear-gradient(45deg,#8a3420 0 6px,#6a2414 6px 12px);border:2px solid var(--rim)}
+.hpl .t{color:var(--ink);font-family:var(--font-n);text-shadow:0 1px 0 #fff8}
+/* ===== v0.6.1 element frames: thick coloured frame + glow + tinted art window ===== */
+.slot .flatcard{border:4px solid var(--ec);box-shadow:0 0 0 1px #3a1e06,0 0 5px color-mix(in srgb,var(--ec) 35%,transparent),0 10px 10px #0009}
+.slot .flatcard .fa{background:radial-gradient(circle at 50% 60%,#fff 0%,#efe3c6 72%);border-bottom:2px solid var(--ec)}
+.slot.fwd .flatcard{box-shadow:0 0 0 1px #3a1e06,0 0 0 3px var(--holo),0 0 16px #7fe9ff77,0 10px 10px #0009}
+.card[style*="--ec"]{border:4px solid var(--ec);box-shadow:0 0 0 1px #3a1e06,0 0 5px color-mix(in srgb,var(--ec) 35%,transparent),0 3px 0 #0006}
+.card[style*="--ec"] .art{background:radial-gradient(circle at 50% 60%,#fff 0%,#efe3c6 72%);border-bottom:2px solid var(--ec)}
+/* element labels with a prefix icon */
+.el{background:#fffaf0;color:#3a1e06;border:1.5px solid var(--c);gap:4px;padding:1px 7px 1px 5px;font-family:var(--font-b);font-weight:600;letter-spacing:.02em}
+.el::before{display:none}
+.el .eico,.elt .eico{width:14px;height:14px;image-rendering:pixelated;flex:none;border-radius:2px}
+.el svg,.elt svg{width:12px;height:12px;flex:none}
+.flatcard .fs .elt{display:inline-flex;align-items:center;gap:3px;background:#fffaf0;color:#3a1e06;border:1.5px solid var(--ec);font-family:var(--font-b);font-weight:600;font-size:10.5px;letter-spacing:.02em}
+.elswitch{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.topswitches{display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+.elswitch span{color:#d9c49a;font-size:12px;margin-right:2px}
+.elswitch button{border:1px solid var(--wood2);background:#3a1e0699;color:#f4e3b8;border-radius:6px;padding:5px 9px;font-size:12.5px;font-family:var(--font-b)}
+.elswitch button.on{background:linear-gradient(180deg,#7a5230,#5c3818);border-color:var(--rim);color:#fff3d0}
+/* cost = old-Yu-Gi-Oh level stars: desaturated red ball, pale-gold star */
+.cost{letter-spacing:0 !important;text-shadow:none !important;line-height:1}
+.lvstars{display:inline-flex;gap:2px;align-items:center}
+.lv{display:inline-block;width:auto;height:auto;background:none;box-shadow:none}
+.lv::before{content:"★";color:#b0473a;font-size:19px;line-height:1;font-style:normal;text-shadow:0 1px 0 #fff9,0 0 1px #5e231c}
+.lvstars{gap:0}
+.card .cost{top:6px;right:7px}
+.flatcard .cost{top:3px;right:4px} .flatcard .lv::before{font-size:14px}
+/* star style variants */
+.costn{display:none;margin-left:auto;padding-left:6px;flex:none}
+.card .nm{display:flex;align-items:center} .flatcard .fn{display:flex;align-items:center} .flatcard .fn .fnt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+/* 1 outline: parchment stroke around the red star */
+body.star-stroke .lv::before{text-shadow:1.5px 0 0 #fbf4dc,-1.5px 0 0 #fbf4dc,0 1.5px 0 #fbf4dc,0 -1.5px 0 #fbf4dc,1.1px 1.1px 0 #fbf4dc,-1.1px 1.1px 0 #fbf4dc,1.1px -1.1px 0 #fbf4dc,-1.1px -1.1px 0 #fbf4dc,0 2px 3px #0003}
+/* 2 corner tab: a parchment tab hanging off the top-right edge (mirrors the element coin) */
+body.star-tab .card .art{overflow:visible}
+body.star-tab .card .cost{top:-13px;right:10px;background:#fffaf0;border:2px solid #c9a44a;border-radius:11px;padding:2px 6px 1px;box-shadow:0 2px 3px #0005}
+body.star-tab .flatcard .cost{top:-10px;right:6px;background:#fffaf0;border:1.5px solid #c9a44a;border-radius:9px;padding:1px 4px 0;box-shadow:0 1px 2px #0005}
+body.star-tab .lv::before{font-size:15px;text-shadow:none} body.star-tab .flatcard .lv::before{font-size:11px}
+/* 3 name row: stars at the end of the name line, off the art */
+body.star-name .art .cost,body.star-name .flatcard > .cost{display:none}
+body.star-name .costn{display:inline-flex}
+body.star-name .costn .lv::before{font-size:15px;text-shadow:none} body.star-name .flatcard .costn .lv::before{font-size:11px}
+/* 4 gold: classic gold level stars with a dark-brown outline */
+body.star-gold .lv::before{color:#e0b13a;text-shadow:1px 0 0 #4a2a10,-1px 0 0 #4a2a10,0 1px 0 #4a2a10,0 -1px 0 #4a2a10,.8px .8px 0 #4a2a10,-.8px .8px 0 #4a2a10,.8px -.8px 0 #4a2a10,-.8px -.8px 0 #4a2a10,0 2px 3px #0004}
+.starswitch{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.starswitch span{color:#d9c49a;font-size:12px;margin-right:2px}
+.starswitch button{border:1px solid var(--wood2);background:#3a1e0699;color:#f4e3b8;border-radius:6px;padding:5px 9px;font-size:12.5px;font-family:var(--font-b)}
+.starswitch button.on{background:linear-gradient(180deg,#7a5230,#5c3818);border-color:var(--rim);color:#fff3d0}
+/* stat icons (sword ATK, heart HP, shield DEF, boot SPD) */
+.st,.flatcard .fs span{display:inline-flex;align-items:center;gap:3px}
+.sti img,.hpico{width:14px;height:14px;object-fit:contain;image-rendering:pixelated;flex:none;filter:drop-shadow(0 1px 0 #0008)}
+.flatcard .fs .sti img{width:12px;height:12px}
+.hpico{width:13px;height:13px;vertical-align:-2px;margin-right:3px}
+.sti{cursor:help}
+.st.sti,.flatcard .fs .sti{background:transparent;border:0;box-shadow:none;color:#5a3417;font-family:var(--font-b);font-weight:600;padding:0 6px 0 0;gap:4px}
+.st.sti{font-size:14px} .st.sti b{color:#8a5a2b;font-size:11px;letter-spacing:.04em}
+.card .stats{gap:2px 6px}
+.sti img{filter:none;width:21px;height:21px}
+.sti svg{width:16px;height:16px;flex:none}
+.flatcard .fs .sti{font-size:11.5px;gap:3px;padding:0 4px 0 0} .flatcard .fs .sti img{width:17px;height:17px} .flatcard .fs .sti svg{width:13px;height:13px}
+.flatcard .fs{gap:1px 4px}
+.hpico{width:17px;height:17px} .hpl .t svg{width:13px;height:13px;margin-right:3px;vertical-align:-2px}
+.elcoin{top:-15px;left:-15px;width:38px;height:38px;border-width:3px} .elcoin svg{width:18px;height:18px} .elcoin .eico{width:24px;height:24px}
+.flatcard .elcoin{top:-12px;left:-12px;width:30px;height:30px;border-width:2.5px} .flatcard .elcoin svg{width:14px;height:14px} .flatcard .elcoin .eico{width:19px;height:19px}
+/* badge placements */
+.card{overflow:visible} .card .art{border-radius:5px 5px 0 0;overflow:hidden}
+.flatcard{overflow:visible} .flatcard .fa{position:relative;border-radius:5px 5px 0 0;overflow:hidden}
+.elcoin{position:absolute;top:-11px;left:-11px;width:27px;height:27px;border-radius:50%;background:#fffaf0;border:2.5px solid var(--c);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 3px #0006;z-index:4}
+.elcoin svg{width:13px;height:13px} .elcoin .eico{width:17px;height:17px;border-radius:3px}
+.flatcard .elcoin{top:-9px;left:-9px;width:23px;height:23px;border-width:2px} .flatcard .elcoin svg{width:11px;height:11px} .flatcard .elcoin .eico{width:14px;height:14px}
+.elname{display:inline-flex;align-items:center;margin-right:4px;vertical-align:-1px}
+.elname svg{width:12px;height:12px} .elname .eico{width:14px;height:14px;border-radius:2px}
+.st.elst{display:inline-flex;align-items:center;gap:3px;background:#fffaf0;color:#3a1e06;border:1.5px solid var(--c);font-family:var(--font-b);font-weight:600;font-size:11.5px}
+.st.elst svg{width:11px;height:11px} .st.elst .eico{width:13px;height:13px}
+.flatcard .fa .el{position:absolute;left:3px;top:3px;font-size:9.5px;padding:0 5px 0 3px}
+.flatcard .fa .el svg{width:10px;height:10px} .flatcard .fa .el .eico{width:12px;height:12px}
+.card .role .elword{font-weight:600}
+/* option A = the game's own element colours (linked-text/lt-terms.js DAMAGE) */
+body.elA{--e-phys:#555555;--e-air:#48c774;--e-bolt:#9b59b6;--e-dark:#4b0082;--e-earth:#8b5e3c;--e-fire:#e25822;--e-ice:#5ab3d4;--e-light:#a38b50;--e-poison:#2e8b57}
+/* ===== hands (fanned, GITCG / Hearthstone style) ===== */
+.pickgrid .card.sel{box-shadow:0 0 0 1px #3a1e06,0 0 0 4px #f4c95d,0 0 18px #f4c95d}
+/* ===== reveal slots are card-shaped and show the art ===== */
+.flip{width:92px;height:124px}
+.flip .front{justify-content:flex-start;gap:3px;padding:7px 5px;font-size:12px;line-height:1.1;font-weight:600}
+.flip .front img{width:62px;height:62px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 2px 2px #0004)}
+.flip .front .fi{width:62px;height:62px;display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--wood)}
+/* reveal flip: lift, turn edge-on, land face-up */
+@keyframes cardflip{0%{transform:translateY(0) rotateY(0) scale(1)}45%{transform:translateY(-14px) rotateY(95deg) scale(1.14)}100%{transform:translateY(0) rotateY(180deg) scale(1)}}
+.flip.flipping .in{animation:cardflip .62s cubic-bezier(.3,.75,.3,1) forwards}
+.flip.flipping .face{box-shadow:0 10px 18px #0006}
+@keyframes flipglint{0%{opacity:0}55%{opacity:.85}100%{opacity:0}}
+.flip.flipping .front::after{content:"";position:absolute;inset:0;border-radius:7px;background:linear-gradient(115deg,transparent 30%,#fff8 48%,transparent 66%);animation:flipglint .62s ease-out forwards;pointer-events:none}
+@media (max-width:620px){ .flip{width:74px;height:100px} .flip .front img,.flip .front .fi{width:46px;height:46px} }
+/* item hologram rising from the played card (Yu-Gi-Oh style) */
+.iholo{position:absolute;width:74px;height:74px;transform:translate(-50%,-50%);pointer-events:none;z-index:25}
+.iholo img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 0 8px #7fe9ff) drop-shadow(0 0 16px #ffffff88)}
+.iholo::before{content:"";position:absolute;left:50%;bottom:-46px;width:58px;height:70px;transform:translateX(-50%);background:linear-gradient(0deg,#7fe9ffaa,#7fe9ff00);clip-path:polygon(30% 100%,70% 100%,100% 0,0 0);opacity:var(--beam,1);transition:opacity .2s}
+.iholo::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,#7fe9ff22 0 2px,transparent 2px 4px);mix-blend-mode:screen}
+/* ===== hands (fanned, GITCG / Hearthstone style) ===== */
+.hand{position:relative;display:flex;justify-content:center;align-items:flex-end;z-index:6;pointer-events:none}
+.hand.mine{height:132px;margin-top:2px}
+.hand.theirs{height:44px;margin-bottom:-6px;align-items:flex-start}
+.hcard{pointer-events:auto;position:relative;width:84px;height:116px;margin:0 -5px;border-radius:9px;background:linear-gradient(180deg,#fffaf0,#f1e2b8);border:2px solid var(--rim);
+  box-shadow:0 0 0 1px var(--wood),0 8px 14px #0007;display:flex;flex-direction:column;align-items:center;gap:1px;padding:7px 5px 5px;text-align:center;
+  transform:translateY(var(--y,0px)) rotate(var(--r,0deg));transform-origin:50% 120%;transition:transform .2s cubic-bezier(.2,.9,.3,1.2),box-shadow .2s;cursor:grab;touch-action:none;user-select:none}
+.hcard img{width:38px;height:38px;object-fit:contain;image-rendering:pixelated;pointer-events:none}
+.hcard .ico{width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--wood)}
+.hcard .t{font-size:11.5px;font-weight:600;line-height:1.05;color:var(--ink)}
+.hcard .k{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:#8a6a3a}
+.hcard .d{font-size:9.5px;line-height:1.15;color:#5a4028}
+.hcard.pass{background:linear-gradient(180deg,#efe4c4,#dcc898)}
+.hcard:not(.off):hover,.hcard:not(.off):focus-visible{transform:translateY(-16px) rotate(0deg) scale(1.06);z-index:3;box-shadow:0 0 0 1px var(--wood),0 14px 20px #0008}
+.hcard.sel{transform:translateY(-30px) rotate(0deg) scale(1.08);z-index:4;box-shadow:0 0 0 2px #f4c95d,0 0 16px #f4c95d,0 16px 22px #0008}
+.hcard.off{cursor:default;filter:saturate(.6) brightness(.92)}
+.hcard.dragging{opacity:.25}
+.hback{width:34px;height:46px;margin:0 -7px;border-radius:5px;transform:rotate(var(--r,0deg));transform-origin:50% -60%;
+  background:radial-gradient(circle at 50% 50%,#c9a44a 0 9%,transparent 10%),repeating-linear-gradient(45deg,#8a3420 0 5px,#6a2414 5px 10px);border:2px solid var(--rim);box-shadow:0 0 0 1px #3a1e06,0 4px 6px #0006}
+/* drag, drop zones, flights */
+.dragghost{position:fixed;z-index:9999;pointer-events:none;margin:0;transition:none;transform-origin:50% 50%;box-shadow:0 22px 30px #000a !important}
+.dropok{outline:3px dashed #c9a44a;outline-offset:5px;border-radius:10px}
+.dropover{outline:3px solid #f4c95d;outline-offset:5px;box-shadow:0 0 22px #f4c95d}
+.side-row.dropok,.side-row.dropover{outline-offset:-2px}
+.flycard{position:fixed;z-index:9998;pointer-events:none;border-radius:7px;transform-origin:0 0;border:2px solid var(--rim);
+  background:radial-gradient(circle at 50% 50%,#c9a44a 0 9%,transparent 10%),repeating-linear-gradient(45deg,#8a3420 0 6px,#6a2414 6px 12px);box-shadow:0 14px 22px #0009}
+.slot.mine .flat,.slot.theirs .flat{touch-action:none}
+.actionbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.actionbar .hint{flex:1;min-width:220px}
+</style>
+
+<div class="top">
+  <div><h1>Fabula Arcana</h1><div class="sub">Drag a card from your hand onto your slot · knock out all three to win</div></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn ghost" id="btnSound" type="button" aria-pressed="true">Sound: on</button><button class="btn ghost" id="btnMusic" type="button" aria-pressed="true">Music: on</button><button class="btn ghost surr" id="btnSurrender" type="button" hidden title="Concede this match">🏳 Surrender</button><button class="btn ghost" id="btnRestart" type="button">New match</button></div>
+</div>
+<div class="wrap" id="app"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/solid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/fontawesome.min.js"></script>
+<script>window.FA_NET_MODE = new URLSearchParams(location.search).has("net");</script>
+<script src="../../scripts/fabula-arcana/fa-catalog.js"></script>
+<script src="duel-assets.js"></script>
+<script>
+
+// ===================== CONFIG (all [TUNE]) =====================
+const CFG = { TEAM:3, BUDGET:5, ROUND_CAP:20, STR:2, GOLEM:3, REMEDY:3, SHARD:1, ADV:2, DIS:2, AB_HEAL:2, AI_NOISE:0.25, TIMER:30, PYRE_N:1, PYRE_BURST:4, VORACIOUS:3, ENTRY:2, CHARM:2, KNIFE:9999, VENOM:2, KCHARGE:3, TAILWIND:3, TW_ALL:0, ROO_LEAVE:1, ROO_MARK:0, ROO_BENCH:2, ROO_GOLEM:0, ROO_STEPS:2 };   // ROO_BENCH: 0 per-victim, 1 walks on bench, 2 field only
+// v0.5 AI profiles: difficulty sets noise + random-pick chance; style multiplies action weights (ChatGPT v0.5 §6)
+const AI_DIFF = { casual:{noise:0.25, rand:0.15, speed:false}, skilled:{noise:0.10, rand:0.03, speed:true, lookahead:true} };
+const AI_STYLE = {
+  aggressive:{ STRENGTH:1.5, SHARD:1.3, SMOKE:1.2, SWITCH:0.6, GOLEM:0.8, REMEDY:0.8, rand:0 },
+  defensive:{ GOLEM:1.5, REMEDY:1.5, SWITCH:1.4, STRENGTH:0.75, SHARD:0.9, rand:0 },
+  trickster:{ SMOKE:1.8, SHARD:1.5, PASS:1.1, rand:0.08 },
+};
+const EL = { phys:'Physical', air:'Air', bolt:'Bolt', dark:'Dark', earth:'Earth', fire:'Fire', ice:'Ice', light:'Light', poison:'Poison', none:'Elementless' };
+// v0.3 universal chart: Ice > Fire > Air > Earth > Bolt > Ice; Light <> Dark and Poison <> Physical are mutual.
+const BEATS = { ice:'fire', fire:'air', air:'earth', earth:'bolt', bolt:'ice', light:'dark', dark:'light', poison:'phys', phys:'poison' };
+function elMod(a, d){ if (a==='none'||d==='none') return 0; if (BEATS[a]===d) return CFG.ADV; if (BEATS[d]===a) return -CFG.DIS; return 0; }
+// element label icons: A = in-game Font Awesome (party-menu ELEMENT_ICON / linked-text), B = asset-library Buff Icon tiles (the Elemental Type items)
+const EL_FA = { phys:'fa-hand-fist', air:'fa-wind', bolt:'fa-bolt', dark:'fa-moon', earth:'fa-mountain', fire:'fa-fire', ice:'fa-snowflake', light:'fa-sun', poison:'fa-skull-crossbones', none:'fa-circle-dot' };
+let EL_STYLE = 'A';   // locked 2026-11-13: in-game Font Awesome element icons
+const elIco = e => EL_STYLE==='A' ? `<i class="fa-solid ${EL_FA[e]||EL_FA.none}" style="color:var(--e-${e==='none'?'phys':e})"></i>` : (ART['el_'+e] ? `<img class="eico" src="${ART['el_'+e]}" alt="">` : '');
+const elPill = e => `<span class="el" style="--c:var(--e-${e==='none'?'phys':e})">${elIco(e)}${EL[e]}</span>`;
+const ST_STYLE = 'both';   // user's pick: icon + text, no chip panel
+let ST_ICONS = 'fa';   // locked 2026-11-13: FA stat icons
+const STAT_FA = { atk:['fa-burst','#c0392b'], hp:['fa-heart','#d6336c'], def:['fa-shield-halved','#3c6e9f'], spd:['fa-shoe-prints','#8a5a2b'] };
+const STAT = { atk:{l:'ATK', art:'st_atk', tip:'ATK · Attack: damage before the target\'s DEF'}, hp:{l:'HP', art:'st_hp', tip:'HP · Hit Points: knocked out at 0'}, def:{l:'DEF', art:'st_def', tip:'DEF · Defense: subtracted from each hit taken (damage is never below 1)'}, spd:{l:'SPD', art:'st_spd', tip:'SPD · Speed: the faster monster strikes first; ties hit at the same time'} };
+// one stat chip in the chosen style; flat = small field-card chip
+function statChip(k, v, flat){ const s=STAT[k], ico = ST_ICONS==='fa' ? `<i class="fa-solid ${STAT_FA[k][0]}" style="color:${STAT_FA[k][1]}"></i>` : `<img src="${ART[s.art]}" alt="${s.l}">`;
+  if (ST_STYLE==='text') return flat ? `<span title="${s.tip}">${s.l} ${v}</span>` : `<span class="st" title="${s.tip}"><b>${s.l}</b>${v}</span>`;
+  const inner = ST_STYLE==='both' ? `${ico}<b>${s.l}</b>${v}` : `${ico}${v}`;
+  return flat ? `<span class="sti" title="${s.tip}">${inner.replace(/<\/?b>/g,'')}</span>` : `<span class="st sti" title="${s.tip}">${inner}</span>`; }
+const EL_PLACE = 'coin';   // user's pick (2026-11-13): corner coin
+// one badge per card, at the chosen spot ('art' pill over the art, 'coin' on the top-left corner, 'name' icon before the name, 'stats' first stat chip, 'none')
+function elBadge(e, where, flat){ if (EL_PLACE!==where) return ''; const c=`--c:var(--e-${e})`;
+  if (where==='art') return elPill(e);
+  if (where==='coin') return `<span class="elcoin" style="${c}" title="${EL[e]}">${elIco(e)}</span>`;
+  if (where==='name') return `<span class="elname" title="${EL[e]}">${elIco(e)}</span>`;
+  if (where==='stats') return flat ? `<span class="elt">${elIco(e)}${EL[e]}</span>` : `<span class="st elst" style="${c}">${elIco(e)}${EL[e]}</span>`;
+  return ''; }
+const starStr = n => `<span class="lvstars">${'<i class="lv"></i>'.repeat(n)}</span>`;   // classic level-star balls
+const AFFN = { ADV:'Strong', DIS:'Weak', AB:'Absorb', NONE:'Elementless', N:'Neutral' };
+
+// ===================== CARDS (ChatGPT v0.2 starter set, real affinities from the world data) =====================
+// Roles = descriptive tags only (ChatGPT v2). Rank (cost) is separate: soldier ★, elite ★★, boss ★★★.
+const ROLES = {
+  Striker:  'Consistent attack pressure or a reliable damage bonus.',
+  Hunter:   'Strong against weakened targets or finishing KOs.',
+  Guardian: 'Durability and damage mitigation.',
+  Survivor: 'Stays active or avoids defeat.',
+  Combo:    'Builds toward a burst, or rewards a specific sequence.',
+  Pivot:    'Gains value from switching and repositioning.',
+  Punisher: "Capitalises on the opponent's choices or on being attacked.",
+  Support:  'Sets up or empowers the rest of your team.',
+};
+const CARDS = {
+  // ---- launch pool v2 (16, all met in the bestiary) ----
+  skizzik:  {name:'Skizzik', el:'bolt', cost:1, role:'Combo', atk:3, hp:8, def:0, ab:'Static Buildup', txt:'Each damaging attack banks 1 Static. Its third damaging attack deals +3 damage and clears Static.'},
+  pyrefly:  {name:'Pyrefly', el:'fire', cost:1, role:'Combo', atk:2, hp:8, def:0, ab:'Funeral Pyre', txt:'Its damaging attack puts Burn on the target. Its next attack on a Burning target consumes it for +4 ATK.'},
+  salamander:{name:'Salamander', el:'fire', cost:1, role:'Guardian', atk:3, hp:10, def:1, ab:'Pyrophagy', txt:'The first Fire attack that would damage it deals 2 less. Once per match.'},
+  manaray:  {name:'Mana Ray', el:'bolt', cost:1, role:'Punisher', atk:3, hp:9, def:0, ab:'Mana Catcher', txt:'+1 ATK in a round the opponent plays an item.'},
+  hellhound:{name:'Hellhound', el:'dark', cost:1, role:'Hunter', atk:4, hp:8, def:0, ab:'On the Hunt', txt:'+1 ATK against a monster at half its max HP or less.'},
+  scorpion: {name:'Bandit Scorpion', el:'poison', cost:1, role:'Striker', atk:3, hp:9, def:0, ab:'Venom Sting', txt:'The first time its attack deals damage, +2 damage. Once per match.'},
+  archer:   {name:'Bandit Archer', el:'phys', cost:1, role:'Striker', atk:3, hp:8, def:1, ab:'Double Strafe', txt:'Whenever it attacks, it also deals 1 damage to a random benched enemy (ignores DEF, items and elements).'},
+  wolf:     {name:'Wolf', el:'phys', cost:1, role:'Combo', atk:3, hp:10, def:0, ab:'Howl', txt:'After it Passes, its next attack gets +1 ATK (does not stack).'},
+  obsidrax: {name:'Obsidrax', el:'earth', cost:1, role:'Guardian', atk:3, hp:9, def:1, ab:'Earthen Wire', txt:'The first Bolt attack that would damage it is grounded: it takes none, and that damage hits a random enemy instead. Once per match.'},
+  fulgimite:{name:'Fulgimite', el:'bolt', cost:2, role:'Pivot', atk:4, hp:9, def:0, ab:'Evasion', txt:'Takes 2 less attack damage in a round it enters by voluntary Switch.'},
+  kirin:    {name:'Kirin', el:'bolt', cost:2, role:'Punisher', atk:2, hp:10, def:1, ab:'Lightning Charge', txt:'When an attack damages it, it charges: +3 ATK on its attack next round.'},
+  cryo:     {name:'Cryo Gorger', el:'ice', cost:1, role:'Punisher', atk:3, hp:9, def:0, ab:'Cryo Explosion', txt:'When an attack KOs it, it bursts: 2 damage to the attacker.'},
+  inferex:  {name:'Inferex', el:'fire', cost:2, role:'Hunter', atk:4, hp:9, def:0, ab:'Voracious', txt:'When its attack KOs the enemy active monster and it survives, 3 damage to a random benched enemy.'},
+  roper:    {name:'Roper', el:'phys', cost:2, role:'Punisher', atk:3, hp:11, def:1, ab:'Entangle', txt:'+1 ATK against a monster that entered by voluntary Switch this round.'},
+  rgolem:   {name:'Rock Golem', el:'earth', cost:2, role:'Guardian', atk:2, hp:9, def:2, ab:'Wind Up', txt:'After it Passes, its next attack is an Earthquake: it also deals 1 damage to every benched enemy (does not stack).'},
+  gigas:    {name:'Gigas', el:'earth', cost:3, role:'Striker', atk:4, hp:9, def:1, ab:'Crushing Blow', txt:'+1 ATK against a monster with printed DEF 1 or more.'},
+  flame:    {name:'Wandering Flame', el:'fire', cost:3, role:'Pivot', atk:5, hp:11, def:0, ab:'Dynamic Entry', txt:'When it enters by voluntary Switch, it deals 2 Fire damage to the enemy active monster (ignores DEF and items).'},
+  // ---- future unlocks / retired (never in the launch pool) ----
+  roo:      {name:'Roo', el:'dark', cost:1, role:'Combo', atk:0, hp:12, def:2, ab:"Chef's Knife", txt:'It does not hurry and it does not stop: +1 step at the end of each round it stays on the field (steps reset if it leaves). On its 3rd round on the field it draws the knife: 9999 damage, then Roo walks away and leaves the duel.'},
+  walrog:   {name:'Walrog', el:'ice', cost:3, role:'Guardian', atk:4, hp:12, def:1, ab:'Thick Skin', txt:'The first attack that would damage it deals 3 less. Once per match.'},
+  broo:     {future:true, retired:true, name:'Bandit Roo', el:'dark', cost:1, role:'Pivot', atk:3, hp:9, def:0, ab:'Soft Landing', txt:'Takes 2 less attack damage in a round it enters by voluntary Switch.'},
+  gorger:   {name:'Aero Gorger', el:'air', cost:1, role:'Punisher', atk:3, hp:9, def:0, ab:'Aero Explosion', txt:'When an attack KOs it, it bursts: 2 damage to the attacker.'},
+  succubus: {name:'Succubus', el:'dark', cost:2, role:'Pivot', atk:4, hp:10, def:0, ab:'Charm', txt:'When it enters by voluntary Switch, the enemy active monster is Charmed: −2 ATK this round and next round.'},
+  carlbero: {future:true, name:'Carlbero', el:'poison', cost:1, role:'Guardian', atk:3, hp:10, def:1, ab:'Fortify', txt:'When its owner uses Golem Fragment, takes 1 less damage (even through Smoke Bomb).'},
+  life:     {future:true, name:'Life Gorger', el:'light', cost:1, role:'Survivor', atk:3, hp:10, def:0, ab:'Renewal', txt:'The first time it survives an attack at 4 HP or less, restore 2 HP. Once per match.'},
+  sylph:    {name:'Sylph', el:'air', cost:1, role:'Support', atk:3, hp:8, def:0, ab:'Tailwind', txt:'When Sylph attacks, it raises a Tailwind: for the next 3 rounds your Air monsters have +1 SPD (max 4), even after Sylph leaves.'},
+};
+const IDS = Object.keys(CARDS).filter(k=>!CARDS[k].future);   // launch pool
+// v0.5 Speed = DEX die tier (d6=1, d8=2, d10=3, d12=4) from the world sheets
+const SPD = { gigas:1, gorger:2, carlbero:2, kirin:2, flame:2, cryo:2, sylph:2, fulgimite:3, broo:3, life:3, pyrefly:4, skizzik:4,
+  salamander:2, manaray:3, hellhound:3, scorpion:2, archer:2, wolf:2, inferex:3, roper:2, obsidrax:2, roo:1, walrog:1, succubus:3, rgolem:1 };   // Roo SPD 1 by design (slow Tonberry), not its DEX die
+for (const k of Object.keys(CARDS)) CARDS[k].spd = SPD[k];
+const ITEMS = {
+  STRENGTH:{t:'Tincture of Strength', k:'Attack', d:`+${CFG.STR} ATK this round`, art:'i_strength'},
+  GOLEM:{t:'Golem Fragment', k:'Guard', d:`−${CFG.GOLEM} damage taken`, art:'i_golem'},
+  REMEDY:{t:'Remedy', k:'Recover', d:`Heal ${CFG.REMEDY} HP before attacks`, art:'i_remedy'},
+  SMOKE:{t:'Smoke Bomb', k:'Trick', d:'Your attack ignores Golem Fragment', art:'i_smoke'},
+  SHARD:{t:'Elemental Shard', k:'Neutralize', d:`Attack turns Elementless, +${CFG.SHARD} ATK`, art:'i_shard'},
+  CAFE:{t:'Café au Lait', k:'Swift', d:'+1 SPD this round (max 4)', art:'i_cafe'},
+};
+const ACT_T = { ...Object.fromEntries(Object.entries(ITEMS).map(([k,v])=>[k,v.t])), PASS:'Pass', SWITCH:'Switch' };
+
+// ===================== helpers =====================
+const $ = s => document.querySelector(s);
+const RM = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){ return false; } };
+const sleep = ms => new Promise(r=>setTimeout(r, RM() ? Math.min(ms,60) : ms));
+const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const esc = s => String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const store = { get(k,d){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } }, set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} } };
+const N = cid => CARDS[cid].name;
+
+// ===================== SFX (WebAudio, unlocked on first click) =====================
+
+const SND = { on: store.get('ccd.sound', true), vol: 0.55, ctx: null, buf: {}, last: {} };
+const MUS = { on: store.get('ccd.music', true), vol: 0.32, buf: {}, gain: null, src: [], playing: false };
+function sndInit(){
+  if (SND.ctx || (!SND.on && !MUS.on)) return;
+  try { SND.ctx = new (window.AudioContext||window.webkitAudioContext)(); } catch(e){ return; }
+  if (typeof BGMDATA!=='undefined' && BGMDATA) for (const [k,u] of Object.entries(BGMDATA)){
+    try { const b=atob(u.split(',')[1]); const a=new Uint8Array(b.length); for (let i=0;i<b.length;i++) a[i]=b.charCodeAt(i);
+      SND.ctx.decodeAudioData(a.buffer).then(x=>{ MUS.buf[k]=x; if (MUS.buf.intro && MUS.buf.loop) musicStart(); }, ()=>{}); } catch(e){} }
+  for (const [k,u] of Object.entries(SFXDATA)){
+    try { const b=atob(u.split(',')[1]); const a=new Uint8Array(b.length); for (let i=0;i<b.length;i++) a[i]=b.charCodeAt(i);
+      SND.ctx.decodeAudioData(a.buffer).then(x=>{ SND.buf[k]=x; }, ()=>{}); } catch(e){}
+  }
+}
+const SFX_ALIAS = { book:'nav' };   // 'nav' holds Book1 (card played / flipped); 'cursor' holds BattleCursor_2 (selection + menus)
+function sfx(k, v=1, gap=60){
+  k = SFX_ALIAS[k] || k;
+  if (!SND.on || !SND.ctx) return; const now=performance.now(); if (SND.last[k] && now-SND.last[k]<gap) return; SND.last[k]=now;
+  const b=SND.buf[k]; if (!b) return;
+  try { if (SND.ctx.state==='suspended') SND.ctx.resume(); const s=SND.ctx.createBufferSource(), g=SND.ctx.createGain(); g.gain.value=SND.vol*v; s.buffer=b; s.connect(g).connect(SND.ctx.destination); s.start(); } catch(e){}
+}
+function musicStart(){ if (!MUS.on || MUS.playing || !SND.ctx || !MUS.buf.loop) return;
+  try { const c=SND.ctx; if (c.state==='suspended') c.resume(); MUS.gain=c.createGain(); MUS.gain.gain.value=MUS.vol; MUS.gain.connect(c.destination);
+    const t0=c.currentTime+0.05; let tLoop=t0;
+    if (MUS.buf.intro){ const i=c.createBufferSource(); i.buffer=MUS.buf.intro; i.connect(MUS.gain); i.start(t0); MUS.src.push(i); tLoop=t0+MUS.buf.intro.duration; }
+    const l=c.createBufferSource(); l.buffer=MUS.buf.loop; l.loop=true; l.connect(MUS.gain); l.start(tLoop); MUS.src.push(l); MUS.playing=true; } catch(e){} }
+function musicStop(){ for (const s of MUS.src) try{ s.stop(); }catch(e){} MUS.src=[]; MUS.playing=false; if (MUS.gain) try{ MUS.gain.disconnect(); }catch(e){} MUS.gain=null; }
+function musicDuck(on){ if (!MUS.gain || !SND.ctx) return; const t=SND.ctx.currentTime; MUS.gain.gain.cancelScheduledValues(t); MUS.gain.gain.setTargetAtTime(on?MUS.vol*0.25:MUS.vol, t, on?0.08:0.6); }
+const HITSND = { fire:'hit_fire', bolt:'hit_bolt', ice:'hit_ice', air:'hit_wind', earth:'hit_earth', dark:'hit_dark', light:'hit_light', poison:'hit_poison' };
+document.addEventListener('pointerdown', sndInit, { capture:true });
+document.addEventListener('keydown', sndInit, { capture:true });
+
+
+// ===================== state =====================
+let S = null;
+let SERIES = null;
+let UI = { bestOf: store.get('ccd.bestof', 1), pick: store.get('ccd3.team', null), matchType:'prize', busy:false, survey:{}, notes:'', inspect:null,
+  opp: store.get('ccd5.opp', { ctrl:'ai', diff:'casual', style:'aggressive' }),   // NPC seat: AI profile or GM
+  seat:0, drafts:[{sel:null,target:null,replace:null},{sel:null,target:null,replace:null}] };
+// UI.sel / UI.target / UI.replace read and write the draft of the seat being operated (seat 1 only when the GM controls the NPC)
+for (const k of ['sel','target','replace']) Object.defineProperty(UI, k, { get(){ return UI.drafts[UI.seat][k]; }, set(v){ UI.drafts[UI.seat][k]=v; } });
+const clearDrafts = () => { UI.drafts=[{sel:null,target:null,replace:null},{sel:null,target:null,replace:null}]; };
+let seatName = s => s===0 ? 'You' : (S && S.ctrl==='gm' ? 'GM (NPC)' : 'NPC');
+const blankSession = () => ({ v:4, comps:{}, picks:{}, mutualFinal:0, tiebroken:0, frost:[0,0], matches:0, wins:0, losses:0, draws:0, capEnds:0, capDraws:0, rounds:0, roundList:[], ms:0, switches:0, forced:0,
+  items:{STRENGTH:0,GOLEM:0,REMEDY:0,SMOKE:0,SHARD:0,CAFE:0}, itemsLeft:0, aff:{}, cards:{} });
+let SESSION = store.get('ccd6.session', blankSession());
+let BINDER = store.get('ccd3.binder', []);
+
+function mkPlayer(ids){
+  return { roster: ids.map((cid,i)=>({ i, cid, hp:CARDS[cid].hp, ko:false, abilityUsed:false, attacked:false, activeRounds:0 })),
+           active:null, items:{STRENGTH:1,GOLEM:1,REMEDY:1,SMOKE:1,SHARD:1,CAFE:1}, pending:false };
+}
+const mon = (pl, idx) => idx==null ? null : pl.roster[idx];
+const living = pl => pl.roster.filter(m=>!m.ko);
+const benchOptions = pl => pl.roster.filter(m => !m.ko && m.i!==pl.active);
+const teamCost = ids => ids.reduce((a,id)=>a+CARDS[id].cost,0);
+const LEGAL_TEAMS = (()=>{ const out=[]; for (let a=0;a<IDS.length;a++) for (let b=a+1;b<IDS.length;b++) for (let c=b+1;c<IDS.length;c++){ const t=[IDS[a],IDS[b],IDS[c]]; if (teamCost(t)<=CFG.BUDGET) out.push(t); } return out; })();
+const randomTeam = () => shuffle(LEGAL_TEAMS[Math.floor(Math.random()*LEGAL_TEAMS.length)]);
+const compKey = ids => ids.map(id=>CARDS[id].cost).sort((a,b)=>b-a).join('+');
+
+// ===================== rules engine (v0.2) =====================
+// ctx: {attItem, defItem, defSwitchedIn}
+function calcAttack(att, def, ctx){
+  const A=CARDS[att.cid], D=CARDS[def.cid];
+  const ael = ctx.attItem==='SHARD' ? 'none' : A.el;
+  let atk=A.atk; const parts=[`${A.atk} ATK`];
+  if (ctx.attItem==='STRENGTH'){ atk+=CFG.STR; parts.push(`+${CFG.STR} Strength`); }
+  if (ctx.attItem==='SHARD'){ atk+=CFG.SHARD; parts.push(`+${CFG.SHARD} Shard`); }
+  const pyre = att.cid==='pyrefly' && ((att.burn||{})[def.i]||0)>=CFG.PYRE_N; if (pyre){ atk+=CFG.PYRE_BURST; parts.push(`+${CFG.PYRE_BURST} Funeral Pyre`); }
+  const kcharge = att.cid==='kirin' && !!(att.chg && att.chg[S.round]); if (kcharge){ atk+=CFG.KCHARGE; parts.push(`+${CFG.KCHARGE} Lightning Charge`); }
+  if (att.cid==='gigas' && D.def>=1){ atk+=1; parts.push('+1 Crushing Blow'); }
+  if (att.cid==='manaray' && ITEMS[ctx.defItem]){ atk+=1; parts.push('+1 Mana Catcher'); }
+  if (att.cid==='hellhound' && def.hp*2<=D.hp){ atk+=1; parts.push('+1 On the Hunt'); }
+  if (att.cid==='roper' && ctx.defSwitchedIn){ atk+=1; parts.push('+1 Entangle'); }
+  const howl = att.cid==='wolf' && !!att.howl; if (howl){ atk+=1; parts.push('+1 Howl'); }
+  if ((att.charm||0)>=S.round){ atk=Math.max(0,atk-CFG.CHARM); parts.push(`−${CFG.CHARM} Charm`); }
+  const head = `${parts.join(' ')} = ${atk} ${EL[ael]}`;
+  // absorption ability: checked before damage (fires even if Guard would zero it)
+  if (D.absorb && D.absorb===ael && !def.abilityUsed)
+    return { dmg:0, heal:CFG.AB_HEAL, aff:'AB', line:`${head} · ${N(def.cid)}'s <b>${D.ab}</b> negates it (+${CFG.AB_HEAL} HP)`, usedAbsorb:true, howl, pyre, kcharge, ael };
+  let d = Math.max(1, atk - D.def); let line = head + (D.def?` − DEF ${D.def}`:'') + ` = ${d}`;
+  const mod = elMod(ael, D.el); let aff = ael==='none' ? 'NONE' : 'N';
+  if (mod>0){ d=Math.max(1,d+mod); aff='ADV'; line+=` · <b>Strong</b> vs ${EL[D.el]} +${mod} = ${d}`; }
+  if (mod<0){ d=Math.max(1,d+mod); aff='DIS'; line+=` · <b>Weak</b> vs ${EL[D.el]} ${mod} = ${d}`; }
+  const red=[]; let r=0;
+  if (ctx.defItem==='GOLEM'){
+    if (ctx.attItem==='SMOKE') red.push('Golem Fragment pierced by Smoke Bomb'); else { r+=CFG.GOLEM; red.push(`Golem Fragment −${CFG.GOLEM}`); }
+    if (def.cid==='carlbero'){ r+=1; red.push('Fortify −1'); }
+  }
+  if (def.cid==='broo' && ctx.defSwitchedIn){ r+=2; red.push('Soft Landing −2'); }
+  if (def.cid==='fulgimite' && ctx.defSwitchedIn){ r+=2; red.push('Evasion −2'); }
+  d = Math.max(0, d-r);
+  let usedFirst=false;
+  let prevented=0;
+  if (def.cid==='walrog' && !def.abilityUsed && d>0){ prevented=Math.min(3,d); d=Math.max(0,d-3); usedFirst=true; red.push('Thick Skin −3'); }
+  if (def.cid==='salamander' && !def.abilityUsed && ael==='fire' && d>0){ prevented=Math.min(2,d); d=Math.max(0,d-2); usedFirst=true; red.push('Pyrophagy −2'); }
+  let usedOwn=false;
+  if (att.cid==='scorpion' && !att.abilityUsed && d>=1){ d+=CFG.VENOM; usedOwn=true; red.push(`Venom Sting +${CFG.VENOM}`); }
+  let zap=false; if (att.cid==='skizzik' && (att.static||0)>=2 && d>0){ d+=3; zap=true; red.push('Static Buildup +3'); }
+  let knife=false; if (att.cid==='roo' && CFG.ROO_BENCH ? (att.walk||0)>=(CFG.ROO_BENCH===2?CFG.ROO_STEPS:3) && !(CFG.ROO_GOLEM && ctx.defItem==='GOLEM') : att.cid==='roo' && (CFG.ROO_MARK ? ((att.marks||{})[def.i]||0)>=2 : (att.steps && att.steps.t===def.i && att.steps.n>=2))){ d+=CFG.KNIFE; knife=true; red.push(`Chef's Knife +${CFG.KNIFE}`); }
+  let wire=0; if (def.cid==='obsidrax' && !def.abilityUsed && ael==='bolt' && d>0){ wire=d; d=0; usedFirst=true; red.push('Earthen Wire grounds it'); }
+  if (red.length) line += ` · ${red.join(', ')}`;
+  return { dmg:d, heal:0, aff, line, usedFirst, usedOwn, howl, pyre, kcharge, zap, knife, wire, ael, prevented, pierced: ctx.defItem==='GOLEM' && ctx.attItem==='SMOKE' };
+}
+
+function resolveRound(ch){
+  const P=S.p, L=[], ev={ enter:[null,null], switched:[false,false], items:[null,null], heal:[0,0], res:[null,null], after:[[],[]], ko:[false,false] };
+  const who = s => s===0?'You':'NPC';
+  for (const s of [0,1]) if (P[s].pending){
+    P[s].active=ch[s].replace; P[s].pending=false; S.stats.forced[s]++; ev.enter[s]='forced';
+    L.push([`${who(s)} send${s?'s':''} in ${N(mon(P[s],P[s].active).cid)}.`,'m']);
+  }
+  for (const s of [0,1]) if (ch[s].action==='SWITCH'){
+    const out=mon(P[s],P[s].active); if (CFG.ROO_BENCH===2 && out.cid==='roo' && out.walk){ out.walk=0; L.push(['Roo leaves the field and loses its steps.','m']); } P[s].active=ch[s].target; ev.switched[s]=true; ev.enter[s]='switch'; S.stats.switches[s]++;
+    L.push([`${who(s)} switch${s?'es':''} ${N(out.cid)} out for ${N(mon(P[s],P[s].active).cid)}. It skips its attack.`,'m']);
+  }
+  for (const s of [0,1]) if (ev.switched[s] && mon(P[s],P[s].active).cid==='succubus'){ const t=mon(P[1-s],P[1-s].active); if (t && t.hp>0){ t.charm=S.round+1; S.stats.charm=(S.stats.charm||0)+1; L.push([`Charm: ${N(t.cid)} is Charmed (−${CFG.CHARM} ATK this round and next).`,'m']); } }
+  for (const s of [0,1]) if (ev.switched[s] && mon(P[s],P[s].active).cid==='flame'){ const t=mon(P[1-s],P[1-s].active); if (t && t.hp>0){ const b=t.hp; t.hp=Math.max(0,t.hp-CFG.ENTRY); (ev.entry=ev.entry||[]).push({s:1-s,amt:b-t.hp}); S.stats.entry=(S.stats.entry||0)+1;
+      L.push([`Dynamic Entry: Wandering Flame bursts in, ${b-t.hp} Fire damage to ${N(t.cid)} (${t.hp} HP).`,'']); } }
+  for (const s of [0,1]){ const a=ch[s].action; S.stats.acts[s][a]=(S.stats.acts[s][a]||0)+1; if (ITEMS[a]){ P[s].items[a]=0; ev.items[s]=a; } }
+  for (const s of [0,1]) if (ch[s].action==='PASS'){ const m=mon(P[s],P[s].active); if (m.cid==='wolf' && !m.howl){ m.howl=true; L.push(['Wolf howls: its next attack gets +1 ATK.','m']); }
+    if (m.cid==='rgolem' && !m.windup){ m.windup=true; L.push(['Rock Golem winds up: its next attack will be an Earthquake.','m']); } }
+  const startHP=[0,1].map(s=>mon(P[s],P[s].active).hp);
+  for (const s of [0,1]) if (ch[s].action==='REMEDY'){
+    const m=mon(P[s],P[s].active), amt=CFG.REMEDY, b=m.hp;
+    m.hp=Math.min(CARDS[m.cid].hp, m.hp+amt); ev.heal[s]=m.hp-b;
+    L.push([`${N(m.cid)} drinks a Remedy: +${ev.heal[s]} HP → ${m.hp}.`,'g']);
+  }
+  for (const s of [0,1]) if (['STRENGTH','GOLEM','SMOKE','SHARD'].includes(ch[s].action)) L.push([`${who(s)} use${s?'s':''} ${ITEMS[ch[s].action].t}.`,'m']);
+  for (const s of [0,1]){ const m=mon(P[s],P[s].active); m.activeRounds++; }
+  const preHP=[0,1].map(s=>mon(P[s],P[s].active).hp); // v0.4 tiebreak snapshot (after Remedy, before impact)
+  // ---- attack phase (v0.5): equal Speed = simultaneous; otherwise the faster attack fully resolves first ----
+  const directHit = (s, amt, src, withActive) => { const pl=P[s]; const c=pl.roster.filter(m=>!m.ko && m.hp>0 && (withActive || m.i!==pl.active)); if (!c.length) return null;
+    const m=c[Math.floor(Math.random()*c.length)]; m.hp=Math.max(0,m.hp-amt); (ev.direct=ev.direct||[]).push({s,i:m.i,amt,src}); S.stats.direct=S.stats.direct||{}; S.stats.direct[src]=(S.stats.direct[src]||0)+1;
+    const bench=m.i!==pl.active; L.push([`${src}: ${amt} damage to ${bench?'benched ':''}${N(m.cid)} (${m.hp} HP).`,'']);
+    if (m.hp===0 && bench){ m.ko=true; ev.benchKO=(ev.benchKO||0)+1; S.stats.kos.push(m.cid); L.push([`${N(m.cid)} is knocked out on the bench!`,'k']); }
+    return m; };
+  const calcFor = s => { const o=1-s, a=mon(P[s],P[s].active), d=mon(P[o],P[o].active);
+    return { ...calcAttack(a,d,{attItem:ch[s].action, defItem:ch[o].action, defSwitchedIn:ev.switched[o]}), a, d, side:s }; };
+  const applyHit = r => {
+    if (r.heal){ const b=r.d.hp; r.d.hp=Math.min(CARDS[r.d.cid].hp, r.d.hp+r.heal); r.healed=r.d.hp-b; }
+    else r.d.hp=Math.max(0, r.d.hp-r.dmg);
+    r.a.attacked=true; if (r.usedOwn) r.a.abilityUsed=true; if (r.howl){ r.a.howl=false; S.stats.howl=(S.stats.howl||0)+1; }
+    if (r.a.cid==='pyrefly'){ r.a.burn=r.a.burn||{}; if (r.pyre){ r.a.burn[r.d.i]=0; S.stats.pyre=(S.stats.pyre||0)+1; } else if (r.dmg>0) r.a.burn[r.d.i]=Math.min(CFG.PYRE_N,(r.a.burn[r.d.i]||0)+1); if (r.d.hp===0) delete r.a.burn[r.d.i]; }
+    if (r.a.cid==='skizzik' && r.dmg>0){ r.a.static = r.zap ? 0 : Math.min(2,(r.a.static||0)+1); if (r.zap) S.stats.zap=(S.stats.zap||0)+1; }
+    if (r.a.cid==='roo' && CFG.ROO_BENCH){ if (r.knife){ r.a.walk=0; r.a.leaving=!!CFG.ROO_LEAVE; S.stats.knife=(S.stats.knife||0)+1; } else if (CFG.ROO_GOLEM && (r.a.walk||0)>=(CFG.ROO_BENCH===2?CFG.ROO_STEPS:3)){ r.a.walk=0; L.push(['Golem Fragment turns the knife aside!','m']); } }
+    else if (r.a.cid==='roo'){ if (r.knife){ r.a.steps=null; if (r.a.marks) r.a.marks[r.d.i]=0; r.a.leaving=!!CFG.ROO_LEAVE; S.stats.knife=(S.stats.knife||0)+1; }
+      else { if (CFG.ROO_MARK){ r.a.marks=r.a.marks||{}; r.a.marks[r.d.i]=(r.a.marks[r.d.i]||0)+1; }
+        const st=r.a.steps; r.a.steps = (st && st.t===r.d.i) ? {t:r.d.i, n:st.n+1} : {t:r.d.i, n:(CFG.ROO_MARK?r.a.marks[r.d.i]:1)}; L.push([`Roo takes a step toward ${N(r.d.cid)} (${r.a.steps.n}/3).`,'m']); } }
+    if (r.kcharge){ delete r.a.chg[S.round]; S.stats.kcharge=(S.stats.kcharge||0)+1; }
+    if (r.d.cid==='kirin' && r.dmg>0 && r.d.hp>0 && !r.heal){ r.d.chg=r.d.chg||{}; r.d.chg[S.round+1]=true; L.push([`Lightning Charge: Kirin is charged (+${CFG.KCHARGE} ATK next round).`,'m']); }
+    if (false && r.a.cid==='sylph' && r.dmg>0 && r.d.hp>0){ r.d.slowRound=S.round+1; S.stats.gust=(S.stats.gust||0)+1; L.push([`Gust: ${N(r.d.cid)} will be −1 SPD next round.`,'m']); }
+    if (r.a.cid==='sylph'){ P[r.side].twFrom=S.round+1; P[r.side].twUntil=S.round+CFG.TAILWIND; S.stats.twSet=(S.stats.twSet||0)+1; L.push([`Tailwind: ${CFG.TW_ALL?'your monsters':'your Air monsters'} get +1 SPD for ${CFG.TAILWIND} rounds.`,'m']); }
+    if (r.a.cid==='archer') directHit(1-r.side, 1, 'Double Strafe', false);
+    if (r.a.cid==='rgolem' && r.a.windup){ r.a.windup=false; S.stats.quake=(S.stats.quake||0)+1; const pl=P[1-r.side]; L.push(['Earthquake!','m']);
+      for (const m of pl.roster) if (!m.ko && m.hp>0 && m.i!==pl.active){ m.hp=Math.max(0,m.hp-1); (ev.direct=ev.direct||[]).push({s:1-r.side,i:m.i,amt:1,src:'Earthquake'}); L.push([`Earthquake: 1 damage to benched ${N(m.cid)} (${m.hp} HP).`,'']);
+        if (m.hp===0){ m.ko=true; ev.benchKO=(ev.benchKO||0)+1; S.stats.kos.push(m.cid); L.push([`${N(m.cid)} is knocked out on the bench!`,'k']); } } }
+    if (r.wire) directHit(r.side, r.wire, 'Earthen Wire', true); if (r.usedFirst||r.usedAbsorb) r.d.abilityUsed=true;
+    if (r.d.cid==='cryo' && r.usedFirst){ S.stats.frost=S.stats.frost||[0,0]; S.stats.frost[0]++; S.stats.frost[1]+=r.prevented; }
+    S.stats.aff[r.aff]=S.stats.aff[r.aff]||[0,0]; S.stats.aff[r.aff][0]++; S.stats.aff[r.aff][1]+=r.dmg;
+    L.push([`${N(r.a.cid)}: ${r.line} → ${r.heal?`<b>heals ${r.healed}</b>`:`<b>${r.dmg}</b> damage`} (${N(r.d.cid)} ${r.d.hp} HP).`,'']);
+    if (r.undying) L.push(['Undying Flame: Inferex refuses to fall and stays at 1 HP.','g']);
+  };
+  const afterHit = r => { const s=r.side;
+    if ((r.d.cid==='cryo'||r.d.cid==='gorger') && r.d.hp===0 && !r.heal && r.a.hp>0){ const b=r.a.hp; r.a.hp=Math.max(0,r.a.hp-2); S.stats.cryoX=(S.stats.cryoX||0)+1; ev.after[1-s].push(['burst',b-r.a.hp]); L.push([`${r.d.cid==='cryo'?'Cryo':'Aero'} Explosion: ${N(r.a.cid)} takes ${b-r.a.hp} → ${r.a.hp} HP.`,'k']); }
+    if (false && r.a.cid==='gorger' && r.d.hp===0 && r.a.hp>0){ const b=r.a.hp; r.a.hp=Math.min(CARDS.gorger.hp,r.a.hp+2); if (r.a.hp>b){ ev.after[s].push(['heal',r.a.hp-b]); L.push([`Devour: Aero Gorger +${r.a.hp-b} HP → ${r.a.hp}.`,'g']); } }
+    if (r.d.cid==='life' && !r.d.abilityUsed && r.dmg>0 && r.d.hp>0 && r.d.hp<=4){ const b=r.d.hp; r.d.hp=Math.min(CARDS.life.hp,r.d.hp+2); r.d.abilityUsed=true; ev.after[1-s].push(['heal',r.d.hp-b]); L.push([`Renewal: Life Gorger +${r.d.hp-b} HP → ${r.d.hp}.`,'g']); }
+  };
+  const snap = () => [0,1].map(s=>mon(P[s],P[s].active).hp);
+  const canAtk=[0,1].map(s=>!ev.switched[s] && mon(P[s],P[s].active).hp>0);
+  if (!canAtk[0]&&!canAtk[1]) L.push(['Both sides switched. No attacks this round.','m']);
+  const baseSp=[0,1].map(s=>{ const m=mon(P[s],P[s].active); const tw = (CFG.TW_ALL || CARDS[m.cid].el==='air') && P[s].twFrom<=S.round && S.round<=P[s].twUntil ? 1 : 0;
+    if (tw){ S.stats.tailwind=(S.stats.tailwind||0)+1; } return Math.min(4, Math.max(1, CARDS[m.cid].spd + tw - (m.slowRound===S.round?1:0))); });
+  const sp=[0,1].map(s=>Math.min(4, baseSp[s] + (ch[s].action==='CAFE'?1:0)));   // Café au Lait: +1 SPD this round, cap 4
+  for (const s of [0,1]) if (ch[s].action==='CAFE'){ const changed=(Math.sign(baseSp[s]-baseSp[1-s])!==Math.sign(sp[s]-baseSp[1-s])); S.stats.cafe=S.stats.cafe||{used:0,changed:0,capped:0}; S.stats.cafe.used++; if (changed) S.stats.cafe.changed++; if (baseSp[s]>=4) S.stats.cafe.capped++;
+    L.push([`${N(mon(P[s],P[s].active).cid)} drinks Café au Lait: SPD ${baseSp[s]} → ${sp[s]}${baseSp[s]>=4?' (already at max)':''}.`,'m']); }
+  if (canAtk[0]&&canAtk[1]&&sp[0]!==sp[1]){
+    const first=sp[0]>sp[1]?0:1, second=1-first;
+    ev.seq=[]; ev.snaps=[];
+    L.push([`${N(mon(P[first],P[first].active).cid)} is faster (SPD ${sp[first]} vs ${sp[second]}) and strikes first.`,'m']);
+    const r1=calcFor(first); ev.res[first]=r1; applyHit(r1); afterHit(r1); ev.seq.push(first); ev.snaps.push(snap());
+    if (mon(P[second],P[second].active).hp>0){ const r2=calcFor(second); ev.res[second]=r2; applyHit(r2); afterHit(r2); ev.seq.push(second); ev.snaps.push(snap()); }
+    else { ev.denied=second; S.stats.firstStrike=(S.stats.firstStrike||0)+1; L.push([`${N(mon(P[second],P[second].active).cid)} falls before it can strike back.`,'k']); }
+  } else {
+    for (const s of [0,1]) if (canAtk[s]) ev.res[s]=calcFor(s);   // computed on the shared pre-impact state
+    for (const s of [0,1]) if (ev.res[s]) applyHit(ev.res[s]);
+    for (const s of [0,1]) if (ev.res[s]) afterHit(ev.res[s]);
+  }
+  for (const s of [0,1]){ const r=ev.res[s]; if (r && r.a.cid==='inferex' && r.d.hp===0 && r.a.hp>0 && !r.heal) directHit(1-s, CFG.VORACIOUS, 'Voracious', false); }
+  // zero-progress round classification (ChatGPT metric)
+  { const z=S.stats.zero; const totalDmg=[0,1].reduce((a,s)=>a+(ev.res[s]?ev.res[s].dmg:0),0);
+    const netLoss=[0,1].map(s=>startHP[s]-mon(P[s],P[s].active).hp);
+    if (ev.switched[0]&&ev.switched[1]) z.bothSwitch++;
+    else if (totalDmg===0) z.noHpLost++;
+    else if (netLoss[0]<=0 && netLoss[1]<=0) z.healedBack++; }
+  if (CFG.ROO_BENCH) for (const s of [0,1]) for (const m of P[s].roster) if (m.cid==='roo' && !m.ko && m.hp>0 && !m.leaving && (CFG.ROO_BENCH!==2 || m.i===P[s].active)){
+    const need = CFG.ROO_BENCH===2 ? CFG.ROO_STEPS : 3; const b=m.walk||0; m.walk=Math.min(need,b+1);
+    if (m.walk!==b) L.push([`Roo takes a step (${m.walk}/${need})${m.walk===need?': its next attack draws the knife.':'.'}`,'m']); }
+  for (const s of [0,1]){ const m=mon(P[s],P[s].active); if (m && m.leaving){ m.leaving=false; const oppLeft=P[1-s].roster.some(x=>!x.ko && x.hp>0);
+      if (oppLeft){ m.hp=0; L.push(['Roo puts the knife away, walks off, and is gone from the duel.','m']); } } }
+  // KO
+  for (const s of [0,1]){ const m=mon(P[s],P[s].active); if (m.hp<=0 && !m.ko){ m.ko=true; ev.ko[s]=true; S.stats.kos.push(m.cid); L.push([`${N(m.cid)} is knocked out!`,'k']); } }
+  const out0=living(P[0]).length===0, out1=living(P[1]).length===0;
+  if (out0&&out1){
+    S.stats.mutualFinal=true;
+    if (preHP[0]!==preHP[1]){ S.result = preHP[0]>preHP[1]?'WIN':'LOSS'; S.tiebreak=preHP; S.stats.tiebroken=true;
+      L.push([`Both last monsters fall together. Tiebreak on HP before impact: ${preHP[0]} vs ${preHP[1]} → <b>${preHP[0]>preHP[1]?'You win':'NPC wins'}</b>.`,'m']); }
+    else { S.result='DRAW'; L.push([`Both last monsters fall together with equal HP (${preHP[0]}). It's a draw.`,'m']); }
+  }
+  else if (out0||out1){ S.result = out1?'WIN':'LOSS'; }
+  else {
+    for (const s of [0,1]) if (mon(P[s],P[s].active).ko) P[s].pending=true;
+    if (S.round>=CFG.ROUND_CAP){
+      const a=living(P[0]).length, b=living(P[1]).length; S.capEnd=true;
+      S.result = a>b?'WIN':a<b?'LOSS':'DRAW';
+      L.push([`Round ${CFG.ROUND_CAP} limit: ${a} vs ${b} monsters standing.`,'m']);
+    }
+  }
+  return { L, ev };
+}
+
+// ===================== NPC AI (public info only, commits before reading the player's pick) =====================
+function est(att, def, attItem='PASS', defItem='PASS', defSwitchedIn=false){ const r=calcAttack(att,def,{attItem,defItem,defSwitchedIn}); return r.dmg - r.heal; }
+function aiChoose(me, op, prof={diff:'casual', style:null}){
+  const D=AI_DIFF[prof.diff]||AI_DIFF.casual, ST=AI_STYLE[prof.style]||{};
+  const noise=()=>1-D.noise*1.6+Math.random()*D.noise*3.2;
+  const choice={action:'PASS'};
+  let opMon=mon(op,op.active);
+  if (!opMon||opMon.ko) opMon=[...living(op)].sort((a,b)=>CARDS[b.cid].atk-CARDS[a.cid].atk)[0];
+  // Skilled AI reasons about Speed: a faster monster that KOs first takes no counter-hit
+  const faster = m => D.speed && CARDS[m.cid].spd>CARDS[opMon.cid].spd;
+  const slower = m => D.speed && CARDS[m.cid].spd<CARDS[opMon.cid].spd;
+  const score = m => { const o=est(m,opMon), i=est(opMon,m); return o*1.2 - ((faster(m)&&o>=opMon.hp)?0:i) + m.hp*0.2 + (D.speed?(CARDS[m.cid].spd-CARDS[opMon.cid].spd)*0.4:0); };
+  if (me.pending){ let best=null,bs=-1e9; for (const m of benchOptions(me)){ const sc=score(m)*noise(); if (sc>bs){bs=sc;best=m;} } choice.replace=best.i; }
+  const my = me.pending ? me.roster[choice.replace] : mon(me,me.active);
+  const max=CARDS[my.cid].hp, out=est(my,opMon);
+  const killsFirst = faster(my) && out>=opMon.hp;           // incoming damage never lands
+  const inc = killsFirst ? 0 : est(opMon,my);
+  const incS = killsFirst ? 0 : est(opMon,my, op.items.STRENGTH?'STRENGTH':'PASS');
+  const w={ PASS:1 + (killsFirst?2.5:0) };
+  if (my.cid==='wolf' && !my.howl) w.PASS+=0.8;
+  if (my.cid==='rgolem' && !my.windup) w.PASS+=0.8;
+  const twOn = me.twUntil>=S.round+1;   // Tailwind still up next round
+  if (slower(my) && my.hp<=incS) w.PASS*=0.6;                // about to be KO'd with no reply
+  if (me.items.STRENGTH){ const outS=est(my,opMon,'STRENGTH'); w.STRENGTH = 0.6 + (opMon.hp>out && opMon.hp<=outS ? 3 : 0) + (my.cid==='fulgimite'?0.6:0) - (out<=0?0.6:0); }
+  if (me.items.GOLEM) w.GOLEM = 0.4 + (my.hp<=incS && incS>0 ? 2.4 : 0) + (my.cid==='carlbero'?0.5:0) - (inc<=0?0.4:0);
+  if (me.items.REMEDY) w.REMEDY = my.hp>=max-1 ? 0 : 0.3 + (my.hp<=max/2?1.8:0) + (my.hp<=incS && my.hp+CFG.REMEDY>incS ? 1.2 : 0) + (my.cid==='kirin'?0.4:0);
+  if (me.items.SMOKE) w.SMOKE = 0.1 + (op.items.GOLEM && opMon.hp<=out+1 && out>0 ? 2 : 0);
+  if (me.items.CAFE){ const ms=CARDS[my.cid].spd, os=CARDS[opMon.cid].spd; w.CAFE = 0.2 + (ms<4 && ms+1>os && ms<=os && out>=opMon.hp ? 2.6 : 0) + (ms<4 && ms+1===os && my.hp<=incS ? 0.8 : 0); }
+  if (me.items.SHARD){ const outX=est(my,opMon,'SHARD'); w.SHARD = 0.3 + Math.max(0,outX-out)*0.9 + (opMon.hp>out && opMon.hp<=outX ? 2 : 0); }
+  if (!me.pending){
+    const bench=benchOptions(me);
+    if (bench.length){
+      let best=null,bs=-1e9;
+      for (const m of bench){ const ci=est(opMon,m,'PASS','PASS',true); const sc=(est(m,opMon)*1.0 - ci*1.3 + (ci<m.hp?1:-3))*noise(); if (sc>bs){bs=sc;best=m;} }
+      const ci=est(opMon,best,'PASS','PASS',true);
+      w.SWITCH = 0.08 + (my.hp<=inc && ci<best.hp ? 1.1 : 0) + Math.max(0,(inc-ci))*0.2 + (out<=0?1.5:0) + Math.max(0, est(best,opMon)-out)*0.15;
+      if (best.cid==='flame') w.SWITCH += 0.5;
+      if (best.cid==='succubus') w.SWITCH += 0.5;
+      if (my.cid==='sylph' && twOn && (CFG.TW_ALL || CARDS[best.cid].el==='air')) w.SWITCH += 0.9;   // set up, then switch
+      if (op.active!=null && mon(op,op.active).cid==='roo' && mon(op,op.active).steps && mon(op,op.active).steps.t===my.i && mon(op,op.active).steps.n>=2) w.SWITCH += 3;   // dodge the knife
+      choice.target=best.i;
+    }
+  }
+  for (const k of Object.keys(w)) w[k]=Math.max(0,w[k])*(ST[k]||1);
+  const keys=Object.keys(w).filter(k=>w[k]>0);
+  let pick;
+  if (Math.random()<D.rand+(ST.rand||0)) pick=keys[Math.floor(Math.random()*keys.length)];
+  else { const ws=keys.map(k=>w[k]*noise()); let tot=ws.reduce((a,b)=>a+Math.max(0,b),0), r=Math.random()*tot; pick=keys[keys.length-1]; for (let i=0;i<keys.length;i++){ r-=Math.max(0,ws[i]); if (r<=0){pick=keys[i];break;} } }
+  choice.action=pick; if (pick==='SWITCH'&&choice.target==null) choice.action='PASS';
+  if (D.lookahead && S) return lookaheadPick(me, op, D, ST, choice);
+  return choice;
+}
+// Skilled AI: one-round lookahead. Plays each of its legal moves against every legal opponent move on a copy of the
+// board (public info only: the opponent's move is unknown, so all are weighed equally) and keeps the best average.
+function legalMoves(pl, replace){
+  const out=[{action:'PASS', replace}];
+  for (const k of Object.keys(pl.items)) if (pl.items[k]) out.push({action:k, replace});
+  if (!pl.pending) for (const m of benchOptions(pl)) out.push({action:'SWITCH', target:m.i});
+  return out;
+}
+function boardValue(sm, so){ const hp=pl=>pl.roster.reduce((a,m)=>a+(m.ko?0:m.hp),0), ko=pl=>pl.roster.filter(m=>m.ko).length;
+  return hp(sm)-hp(so) + 6*(ko(so)-ko(sm)); }
+function lookaheadPick(me, op, D, ST, fallback){
+  const si = S.p[0]===me ? 0 : 1;
+  const mine = legalMoves(me, fallback.replace);
+  const theirs = legalMoves(op, op.pending ? autoPickMonster(op) : undefined);
+  const saved=S, v0=boardValue(me, op);
+  let best=fallback, bs=-1e9;
+  for (const c of mine){
+    let tot=0;
+    for (const o of theirs){
+      const clone=JSON.parse(JSON.stringify(saved)); clone.log=[]; S=clone;
+      try { resolveRound(si===0?[c,o]:[o,c]); } catch(e){}
+      const sm=clone.p[si], so=clone.p[1-si];
+      let v=boardValue(sm, so)-v0;
+      if (clone.result){ const won=(clone.result==='WIN')===(si===0); v += clone.result==='DRAW'?0:(won?60:-60); }
+      tot+=v; S=saved;
+    }
+    let sc = tot/theirs.length;
+    if (ITEMS[c.action]) sc -= 0.9;                                  // spending a one-use item has a cost
+    sc *= 1; sc += ((ST[c.action]||1)-1)*1.5;                         // play-style bias
+    sc += (Math.random()-0.5)*D.noise*6;                              // decision noise
+    if (sc>bs){ bs=sc; best=c; }
+  }
+  S=saved;
+  return { ...best, replace: fallback.replace };
+}
+function aiOpening(me, prof={diff:'casual'}){ const sk=(AI_DIFF[prof.diff]||{}).speed; let best=0,bs=-1e9; for (const m of me.roster){ const c=CARDS[m.cid]; const sc=(c.atk*1.4+c.hp*0.35+c.def+(sk?c.spd*0.6:0))*(0.7+Math.random()*0.6); if (sc>bs){bs=sc;best=m.i;} } return best; }
+// v0.5 timeout auto-pick: highest current HP, then highest max HP, then roster order (deterministic)
+function autoPickMonster(pl){ const c=pl.roster.filter(m=>!m.ko && m.i!==pl.active); c.sort((a,b)=>(b.hp-a.hp)||(CARDS[b.cid].hp-CARDS[a.cid].hp)||(a.i-b.i)); return c[0].i; }
+
+// ===================== match flow =====================
+function newMatch(next){
+  let mine=(UI.pick||[]).filter(id=>CARDS[id]); if (mine.length!==CFG.TEAM || teamCost(mine)>CFG.BUDGET) mine=randomTeam();
+  if (!next || !SERIES || SERIES.over){ const npc0=randomTeam(); SERIES={ bestOf:UI.bestOf||1, need:Math.ceil((UI.bestOf||1)/2), wins:[0,0], game:0, draws:0, npc:npc0, over:false,
+      prize: UI.matchType==='prize' ? npc0[Math.floor(Math.random()*npc0.length)] : null }; }
+  SERIES.game++; const npc=SERIES.npc;
+  S={ phase:'opening', round:0, p:[mkPlayer(mine), mkPlayer(npc)], log:[], result:null, capEnd:false,
+      prize: SERIES.prize,
+      ctrl: UI.opp.ctrl, ctrlQueued:null, prof:{ diff:UI.opp.diff, style:UI.opp.style==='random'?shuffle(Object.keys(AI_STYLE))[0]:UI.opp.style },
+      commit:[null,null], justPlaced:null, deadline:null, timeouts:0, takeovers:0,
+      t0:Date.now(), stats:{ acts:[{},{}], switches:[0,0], forced:[0,0], kos:[], aff:{}, zero:{bothSwitch:0,noHpLost:0,healedBack:0} } };
+  clearDrafts(); Object.assign(UI,{busy:false,survey:{},notes:'',inspect:{s:0,i:0},seat:0});
+  addLog('SETUP',[[`Both teams are public. Opponent: ${S.ctrl==='gm'?'GM-controlled NPC (30s timer)':`AI · ${S.prof.diff} · ${S.prof.style}`}. Click one of your cards to choose your opening monster.`,'m']]);
+  render(); beginDecision(); if (SERIES.bestOf>1) gameBanner();
+}
+function addLog(head, lines){ S.log.unshift({head, lines}); }
+
+// ===================== decisions: each seat commits a face-down card; both committed → reveal =====================
+let timed = () => S && S.ctrl==='gm';     // v0.5: timer only when a human (GM) controls the NPC seat
+let TICK=null, AITIMER=null;
+function beginDecision(){
+  if (S.ctrlQueued){ S.ctrl=S.ctrlQueued; S.ctrlQueued=null; S.takeovers++;
+    addLog('CONTROL',[[S.ctrl==='gm'?'The GM takes control of the NPC from this decision.':'The NPC returns to AI control from this decision.','m']]); }
+  S.commit=[null,null]; clearDrafts(); UI.seat=0;
+  clearInterval(TICK); clearTimeout(AITIMER); S.deadline=null;
+  if (S.ctrl==='ai'){            // AI decides from public info only, after a short "thinking" pause, then places face down
+    AITIMER=setTimeout(()=>{ if (!S||S.phase==='ended') return;
+      const c = S.phase==='opening' ? { replace: aiOpening(S.p[1], S.prof) } : S.phase==='replace' ? { replace: aiChoose(S.p[1], S.p[0], S.prof).replace } : aiChoose(S.p[1], S.p[0], S.prof);
+      commit(1, c); }, 700+Math.random()*1300);
+  }
+  if (S.phase==='replace') for (const s of [0,1]) if (!S.p[s].pending){ S.commit[s]={skip:true}; if (s===1) clearTimeout(AITIMER); }
+  if (S.phase==='replace' && S.commit[UI.seat] && !S.commit[1-UI.seat] && S.ctrl==='gm') UI.seat=1-UI.seat;
+  if (timed()){ S.deadline=Date.now()+CFG.TIMER*1000; TICK=setInterval(tickTimer, 250); }
+  render();
+}
+function tickTimer(){
+  if (!S || !S.deadline) return clearInterval(TICK);
+  const left=Math.max(0, S.deadline-Date.now()); const el=$('#timer');
+  if (el){ el.textContent=`0:${String(Math.ceil(left/1000)).padStart(2,'0')}`; el.classList.toggle('low', left<10000); const bar=$('#timerbar'); if (bar) bar.style.width=(100*left/(CFG.TIMER*1000))+'%'; }
+  if (left<=0){ clearInterval(TICK); S.deadline=null;
+    for (const s of [0,1]) if (!S.commit[s]){ S.timeouts++;
+      const pl=S.p[s]; const c = (S.phase==='opening'||S.phase==='replace') ? { replace:autoPickMonster(pl) } : { action:'PASS', replace: pl.pending?autoPickMonster(pl):undefined };
+      addLog('TIMEOUT',[[`${seatName(s)} ran out of time: ${S.phase==='opening'?'opening monster auto-picked':S.phase==='replace'?'replacement auto-picked (highest HP)':'auto-Pass'}.`,'m']]);
+      commit(s, c); }
+  }
+}
+function canLock(){ const me=S.p[UI.seat]; if (S.commit[UI.seat]) return false;
+  if (S.phase==='opening' || S.phase==='replace') return UI.replace!=null;
+  if (!UI.sel) return false; if (me.pending&&UI.replace==null) return false; if (UI.sel==='SWITCH'&&UI.target==null) return false; return true; }
+function lockFromUI(fromRect){
+  if (UI.busy||!canLock()) return;
+  const c = (S.phase==='opening'||S.phase==='replace') ? { replace:UI.replace } : { action:UI.sel, target:UI.target };
+  const s=UI.seat; commit(s, c, fromRect);
+  if (S.ctrl==='gm' && !S.commit[1-s] && S.phase!=='anim') { UI.seat=1-s; render(); }   // hot-seat: hand over to the other side
+}
+async function commit(s, c, fromRect){
+  if (S.commit[s] || S.phase==='anim' || S.phase==='ended') return;
+  if (c.skip){ S.commit[s]=c; return; }
+  S.flying=S.flying||[false,false]; if (S.flying[s]) return; S.flying[s]=true;
+  // the card travels from that side's hand (or from where it was dropped) to its action slot, face down
+  if (!fromRect){ const hd=$('#hand'+s), sel=s===UI.seat && $(`#hand${s} .hcard.sel`); const r=(sel||hd) && (sel||hd).getBoundingClientRect(); if (r) fromRect = sel ? r : { left:r.left+r.width/2-30, top:r.top, width:60, height:84 }; }
+  updateField();
+  if (s===UI.seat && c.action){ const hc=document.querySelector(`#hand${s} [data-hand="${c.action}"]`); if (hc) hc.style.visibility='hidden'; }   // the played card leaves the hand at once
+  await flyTo(fromRect, s);
+  S.flying[s]=false; if (S.commit[s] || S.phase==='anim' || S.phase==='ended') return;
+  S.commit[s]=c; S.justPlaced=null; sfx('book', 0.9, 0);      // Book1 = a card is played face down
+  if (S.commit[0] && S.commit[1]) { clearInterval(TICK); S.deadline=null; S.phase==='opening' ? revealOpening() : S.phase==='replace' ? revealReplacement() : revealRound(); }
+  else render();
+}
+async function revealOpening(){
+  UI.busy=true; const [a,b]=S.commit;
+  S.reveal={ a:[N(S.p[0].roster[a.replace].cid),'opening',ART[S.p[0].roster[a.replace].cid]], b:[N(S.p[1].roster[b.replace].cid),'opening',ART[S.p[1].roster[b.replace].cid]], open:false };
+  S.phase='anim'; render(); await sleep(450); S.reveal.open=true; sfx('book'); renderLane(); await sleep(700);
+  S.p[0].active=a.replace; S.p[1].active=b.replace;
+  updateField(); await sleep(900);
+  addLog('OPENING',[[`You open with ${N(S.p[0].roster[S.p[0].active].cid)}. ${seatName(1)} opens with ${N(S.p[1].roster[S.p[1].active].cid)}.`,'']]);
+  S.round=1; S.phase='choose'; S.reveal=null; UI.busy=false; beginDecision();
+}
+async function revealReplacement(){
+  UI.busy=true; const C=S.commit, P=S.p;
+  const face = s => C[s].skip ? ['—','no change',null] : [N(P[s].roster[C[s].replace].cid), 'replacement', ART[P[s].roster[C[s].replace].cid]];
+  S.reveal={ a:face(0), b:face(1), open:false };
+  S.phase='anim'; render(); await sleep(400); S.reveal.open=true; sfx('book'); renderLane(); await sleep(650);
+  const L=[];
+  for (const s of [0,1]) if (!C[s].skip){ P[s].active=C[s].replace; P[s].pending=false; S.stats.forced[s]++; L.push([`${seatName(s)} send${s?'s':''} in ${N(P[s].roster[P[s].active].cid)}.`,'m']); }
+  updateField(); await sleep(850);
+  addLog('REPLACEMENT', L);
+  S.reveal=null; UI.busy=false; S.round++; S.phase='choose'; beginDecision();
+}
+async function revealRound(){
+  UI.busy=true; const [mine,npc]=S.commit;
+  const sub=(s,c)=> c.action==='SWITCH' ? `→ ${N(S.p[s].roster[c.target].cid)}` : (ITEMS[c.action]?ITEMS[c.action].k:'');
+  const artOf=(s,c)=> c.action==='SWITCH' ? ART[S.p[s].roster[c.target].cid] : ITEMS[c.action] ? ART[ITEMS[c.action].art] : null;
+  S.reveal={ a:[ACT_T[mine.action], sub(0,mine), artOf(0,mine)], b:[ACT_T[npc.action], sub(1,npc), artOf(1,npc)], open:false };
+  S.phase='anim'; render();
+  await sleep(450); S.reveal.open=true; sfx('book'); renderLane(); await sleep(800);
+  const before=S.p.map(pl=>pl.roster.map(m=>m.hp));
+  const r=resolveRound([mine,npc]);
+  await playRound(r.ev, before);
+  addLog(`ROUND ${S.round} · You: ${ACT_T[mine.action]} · ${seatName(1)}: ${ACT_T[npc.action]}`, r.L);
+  S.reveal=null; UI.busy=false; clearBuffs();
+  if (S.result){ endMatch(); render(); }
+  else if (S.p[0].pending || S.p[1].pending){ S.phase='replace'; beginDecision(); }
+  else { S.round++; S.phase='choose'; beginDecision(); }
+}
+function requestControl(to){   // GM takeover / hand-back: queued to the next decision boundary (v0.5 §7)
+  if (!S || S.phase==='ended') return;
+  S.ctrlQueued = to; sfx('cursor');
+  addLog('CONTROL',[[to==='gm'?'GM takeover requested. It applies from the next decision; anything already committed stays locked.':'Hand-back to AI requested. It applies from the next decision.','m']]);
+  renderSidebar();
+}
+
+function endMatch(){
+  if (SERIES){ if (S.result==='WIN') SERIES.wins[0]++; else if (S.result==='LOSS') SERIES.wins[1]++; else SERIES.draws++;
+    SERIES.over = SERIES.wins[0]>=SERIES.need || SERIES.wins[1]>=SERIES.need; S.series={...SERIES, wins:[...SERIES.wins]}; }
+  setTimeout(()=>finishBanner(), 380);
+  S.phase='ended'; S.t1=Date.now(); clearInterval(TICK); clearTimeout(AITIMER); S.deadline=null;
+  document.querySelectorAll('.downed').forEach(e=>e.classList.remove('downed'));
+  const X=SESSION; X.matches++; X.rounds+=S.round; X.roundList.push(S.round); X.ms+=S.t1-S.t0;
+  if (S.result==='WIN') X.wins++; else if (S.result==='LOSS') X.losses++; else X.draws++;
+  if (S.capEnd){ X.capEnds++; if (S.result==='DRAW') X.capDraws++; }
+  X.switches+=S.stats.switches[0]+S.stats.switches[1]; X.forced+=S.stats.forced[0]+S.stats.forced[1];
+  for (const s of [0,1]) for (const [k,v] of Object.entries(S.stats.acts[s])) if (X.items[k]!=null) X.items[k]+=v;
+  for (const s of [0,1]) X.itemsLeft+=Object.values(S.p[s].items).reduce((a,b)=>a+b,0);
+  for (const [k,v] of Object.entries(S.stats.aff)){ X.aff[k]=X.aff[k]||[0,0]; X.aff[k][0]+=v[0]; X.aff[k][1]+=v[1]; }
+  X.zero=X.zero||{bothSwitch:0,noHpLost:0,healedBack:0}; for (const k in S.stats.zero) X.zero[k]+=S.stats.zero[k];
+  const ws = S.result==='WIN'?0:S.result==='LOSS'?1:null;
+  for (const s of [0,1]) for (const m of S.p[s].roster){ const c=X.cards[m.cid] ||= {roster:0,w:0,l:0,d:0,activeRounds:0,ko:0}; c.roster++; if (ws==null) c.d++; else if (s===ws) c.w++; else c.l++; c.activeRounds+=m.activeRounds; if (m.ko) c.ko++; }
+  if (S.prize && SERIES && SERIES.over && SERIES.wins[0]>=SERIES.need){ BINDER.push(S.prize); store.set('ccd3.binder',BINDER); }
+  X.comps=X.comps||{}; X.picks=X.picks||{};
+  for (const s of [0,1]){ const ids=S.p[s].roster.map(m=>m.cid); const k=compKey(ids); const c=X.comps[k] ||= {n:0,w:0,l:0,d:0}; c.n++; if (ws==null) c.d++; else if (s===ws) c.w++; else c.l++; }
+  for (const m of S.p[0].roster) X.picks[m.cid]=(X.picks[m.cid]||0)+1;
+  if (S.stats.mutualFinal) X.mutualFinal=(X.mutualFinal||0)+1; if (S.stats.tiebroken) X.tiebroken=(X.tiebroken||0)+1;
+  if (S.stats.frost){ X.frost=X.frost||[0,0]; X.frost[0]+=S.stats.frost[0]; X.frost[1]+=S.stats.frost[1]; }
+  if (S.stats.cafe){ X.cafe=X.cafe||{used:0,changed:0,capped:0}; for (const k in S.stats.cafe) X.cafe[k]+=S.stats.cafe[k]; }
+  X.firstStrike=(X.firstStrike||0)+(S.stats.firstStrike||0); X.timeouts=(X.timeouts||0)+S.timeouts; X.takeovers=(X.takeovers||0)+S.takeovers;
+  const pk = S.ctrl==='gm' ? 'GM' : `AI ${S.prof.diff}/${S.prof.style}`; X.vs=X.vs||{}; const v=X.vs[pk] ||= {n:0,w:0,l:0,d:0}; v.n++; if (S.result==='WIN') v.w++; else if (S.result==='LOSS') v.l++; else v.d++;
+  store.set('ccd6.session',X);
+  const t=S.result==='WIN'?'You win the duel!':S.result==='LOSS'?'The NPC wins the duel.':'Draw.';
+  setTimeout(()=>sfx(S.result==='WIN'?'win':S.result==='LOSS'?'lose':'draw',0.9,0), 250);
+  addLog('MATCH OVER',[[t+(S.result==='WIN'&&S.prize?` You take ${N(S.prize)} as your prize card.`:''), S.result==='WIN'?'g':S.result==='LOSS'?'k':'m']]);
+}
+
+// ===================== field (persistent DOM so moves animate) =====================
+function fieldHTML(){
+  const row = s => `<div class="side-row" id="row${s}" data-drop="front" data-s="${s}">
+      <div class="side-head"><h2>${esc(seatName(s))}</h2><div class="itemrow" id="items${s}"></div><div class="alive" id="alive${s}"></div></div>
+      ${S.p[s].roster.map(m=>slotHTML(s,m)).join('')}
+    </div>`;
+  return `<div class="table" id="table"><div class="hand theirs" id="hand1"></div>${row(1)}
+    <div class="lane" id="lane"></div><div class="status" id="status"></div>
+    ${row(0)}<div class="hand mine" id="hand0"></div><div class="fxl" id="fxl"></div></div>`;
+}
+function slotHTML(s,m){
+  const c=CARDS[m.cid];
+  return `<div class="slot ${s?'theirs':'mine'}" id="slot${s}_${m.i}" data-s="${s}" data-i="${m.i}" tabindex="0" style="--ec:var(--e-${c.el})">
+    <div class="holo" id="holo${s}_${m.i}"><div class="beam"></div><div class="base"></div><img class="spr" src="${ART[m.cid]}" alt=""><div class="scan"></div></div>
+    <div class="flat"><div class="flatcard" style="--c:var(--e-${c.el})"><div class="fa"><img src="${ART[m.cid]}" alt="">${elBadge(c.el,'art',true)}</div>${elBadge(c.el,'coin',true)}
+      <div class="fn">${elBadge(c.el,'name',true)}<span class="fnt">${esc(c.name)}</span><span class="costn">${starStr(c.cost)}</span></div>
+      <div class="fs">${elBadge(c.el,'stats',true)}${statChip('atk',c.atk,true)}${statChip('def',c.def,true)}${statChip('spd',c.spd,true)}</div><span class="cost">${starStr(c.cost)}</span></div></div>
+    <div class="hpl"><div class="t" id="hpt${s}_${m.i}"></div><div class="hpbar" id="hpb${s}_${m.i}"><i></i></div></div>
+  </div>`;
+}
+function setHP(s,i,hp){
+  const m=S.p[s].roster[i], max=CARDS[m.cid].hp, pct=Math.round(100*hp/max);
+  const t=$(`#hpt${s}_${i}`), b=$(`#hpb${s}_${i}`); if (!t) return;
+  const hpI = ST_ICONS==='fa' ? `<i class="fa-solid fa-heart hpfa" style="color:${STAT_FA.hp[1]}" title="${STAT.hp.tip}"></i>` : `<img class="hpico" src="${ART.st_hp}" alt="HP" title="${STAT.hp.tip}">`;
+  t.innerHTML = `${hpI}${hp} / ${max} HP`; b.firstElementChild.style.width=pct+'%'; b.classList.toggle('low',pct<=35);
+}
+function updateField(){
+  if (!$('#table')) return;
+  const sv=UI.seat, me=S.p[sv];
+  const picking = !UI.busy && !S.commit[sv] && !(S.flying&&S.flying[sv]) && (S.phase==='opening' || (S.phase==='replace' && me.pending) || (S.phase==='choose' && benchOptions(me).length>0));
+  for (const s of [0,1]) for (const m of S.p[s].roster){
+    const el=$(`#slot${s}_${m.i}`), holo=$(`#holo${s}_${m.i}`);
+    const act = S.p[s].active===m.i && !m.ko;
+    el.classList.toggle('fwd',act); el.classList.toggle('ko',m.ko);
+    if (act){ if (!holo.classList.contains('on')){ holo.classList.remove('off'); void holo.offsetWidth; holo.classList.add('on'); sfx('summon',0.6,200); } }
+    else if (holo.classList.contains('on')){ holo.classList.remove('on'); holo.classList.add('off'); }
+    const can = s===sv && picking && !m.ko && !act;
+    el.classList.toggle('pickable',can);
+    const picked = s===sv && ((S.phase==='opening'||S.phase==='replace') ? UI.replace===m.i : UI.target===m.i);
+    el.classList.toggle('picked',picked);
+    setHP(s,m.i,m.hp);
+  }
+  for (const s of [0,1]){
+    $(`#items${s}`).innerHTML = Object.keys(ITEMS).map(k=>`<span class="ii ${S.p[s].items[k]?'':'used'}" title="${ITEMS[k].t}${S.p[s].items[k]?'':' (used)'}"><img src="${ART[ITEMS[k].art]}" alt="${ITEMS[k].t}"></span>`).join('');
+    $(`#alive${s}`).textContent = `${living(S.p[s]).length} / ${CFG.TEAM} standing`;
+  }
+  renderLane(); renderHands();
+}
+function renderLane(){
+  const lane=$('#lane'); if (!lane) return; const rv=S.reveal;
+  // each side's action slot: empty → face-down card placed (slides in from that side) → flipped open on reveal
+  const face=(s,x)=>{ const placed=!!(S.commit&&S.commit[s]) || !!rv; const drop=S.justPlaced===s;
+    const flipNow = rv && rv.open && !rv.flipped;   // first render after reveal: draw closed, then animate the flip
+    const state = rv&&rv.open ? (flipNow?'placed':'open') : placed ? 'placed' : 'empty';
+    const tag = state==='empty' ? (S.phase==='ended'?'':(s===UI.seat?'your pick':'thinking…')) : state==='placed' && !flipNow ? 'card placed' : '';
+    return `<div class="rslot"><span class="label">${seatName(s)}</span>
+      <div class="flip ${state} ${drop?'drop'+s:''}" id="act${s}" data-drop="act" data-s="${s}"><div class="in"><div class="face back">${state==='empty'?'':'<span class="cb"></span>'}</div><div class="face front">${rv?(x[2]?`<img src="${x[2]}" alt="">`:`<span class="fi">⟳</span>`):''}${rv?esc(x[0]):''}<small>${rv?esc(x[1]||''):''}</small></div></div></div>
+      <span class="ftag">${tag}</span></div>`; };
+  lane.innerHTML=`${face(0,rv?rv.a:['',''])}<div class="mid"><div class="vs">VS</div><div class="label">${S.round?`Round ${S.round}/${CFG.ROUND_CAP}`:'Opening'}</div>
+    ${timed()&&S.deadline?`<div class="timer"><span id="timer">0:${CFG.TIMER}</span><div class="tbar"><i id="timerbar"></i></div></div>`:''}</div>${face(1,rv?rv.b:['',''])}`;
+  S.justPlaced=null;
+  if (rv && rv.open && !rv.flipped){ rv.flipped=true; const raf = typeof requestAnimationFrame==='function' ? requestAnimationFrame : (f=>setTimeout(f,16));
+    raf(()=>raf(()=>{ for (const s of [0,1]) setTimeout(()=>{ const el=$('#act'+s); if (!el || !el.classList) return; if (RM()) { el.classList.add('open'); return; }
+      el.classList.add('flipping'); setTimeout(()=>{ el.classList.remove('flipping'); el.classList.add('open'); }, 640); }, s*110); })); }
+  let st='';
+  const me=S.p[UI.seat];
+  if (S.phase==='opening') st = S.commit[UI.seat] ? `Waiting for ${seatName(1-UI.seat)}…` : 'Choose your opening monster. Both reveal together.';
+  else if (S.phase==='replace') st = me.pending && !S.commit[UI.seat] ? 'Replacement step: drag a monster up to take the fallen one’s place.' : 'Replacement step…';
+  else if (S.phase==='choose') st = S.commit[UI.seat] ? `Your card is face down. Waiting for ${seatName(1-UI.seat)}…` : me.pending?'Your monster fell. Pick a replacement card, then an item or Pass.':'Pick an item, Pass, or Switch in secret.';
+  else if (S.phase==='anim') st=rv&&rv.open?'':'Both cards are down…';
+  else if (S.phase==='ended') st='Match over.';
+  $('#status').textContent=st;
+  if (S.deadline) tickTimer();
+}
+
+// ===================== VFX =====================
+function centerOf(el, layer){ const a=el.getBoundingClientRect(), b=layer.getBoundingClientRect(); return { x:a.left-b.left+a.width/2, y:a.top-b.top+a.height/2, w:a.width, h:a.height }; }
+function spriteCenter(s){ const m=S.p[s].active; const spr=$(`#holo${s}_${m} .spr`); const L=$('#fxl'); return centerOf(spr && spr.getBoundingClientRect().height>4 ? spr : $(`#slot${s}_${m}`), L); }
+function add(cls, x, y, vars={}, html=''){ const L=$('#fxl'); const e=document.createElement('div'); e.className=cls; e.style.left=x+'px'; e.style.top=y+'px'; for (const [k,v] of Object.entries(vars)) e.style.setProperty(k,v); e.innerHTML=html; L.appendChild(e); setTimeout(()=>e.remove(), 1600); return e; }
+function particles(x,y,n,color,opt={}){ for (let k=0;k<n;k++){ const a=opt.up? (-Math.PI/2 + (Math.random()-.5)*1.2) : Math.random()*Math.PI*2, r=(opt.r||50)*(0.5+Math.random()); add('pt', x+(opt.spread?(Math.random()-.5)*opt.spread:0), y+(opt.spreadY?(Math.random()-.5)*opt.spreadY:0), {'--pc':color,'--dx':Math.cos(a)*r+'px','--dy':Math.sin(a)*r+'px','--sz':(3+Math.random()*5)+'px','--d':(0.6+Math.random()*0.6)+'s'}); } }
+function popNum(s, text, cls, sub=''){ const c=spriteCenter(s); add('pop '+cls, c.x, c.y-c.h*0.2, {}, `${text}${sub?`<small>${sub}</small>`:''}`); }
+
+async function fxItem(s, item){
+  const c=spriteCenter(s), slot=$(`#slot${s}_${S.p[s].active}`), L=$('#fxl'), act=$('#act'+s);
+  const from = act && act.getBoundingClientRect && act.getBoundingClientRect().width ? centerOf(act, L) : { x:c.x, y:c.y+40 };
+  const ho=add('iholo', from.x, from.y, {}, `<img src="${ART[ITEMS[item].art]}" alt="">`);
+  particles(from.x, from.y+20, 10, '#7fe9ff', { up:true, r:50, spread:40 });
+  if (ho.animate){ const dx=c.x-from.x, dy=(c.y-20)-from.y;
+    const a1=ho.animate([{transform:'translate(-50%,-10%) scale(.3)',opacity:0},{transform:'translate(-50%,-110%) scale(1.15)',opacity:1,offset:.45},{transform:'translate(-50%,-115%) scale(1)',opacity:1}],{duration:RM()?1:520,easing:'cubic-bezier(.2,1.2,.4,1)',fill:'forwards'});
+    await a1.finished.catch(()=>{}); ho.style.setProperty('--beam',0);
+    const a2=ho.animate([{transform:'translate(-50%,-115%) scale(1)'},{transform:`translate(calc(-50% + ${dx}px), calc(-115% + ${dy+40}px)) scale(.75)`,opacity:.95}],{duration:RM()?1:360,easing:'cubic-bezier(.5,0,.3,1)',fill:'forwards'});
+    await a2.finished.catch(()=>{}); }
+  ho.remove();
+  sfx(item.toLowerCase(), 0.9, 0);
+  if (item==='STRENGTH'){ slot.classList.add('b-str'); particles(c.x,c.y+30,22,'#ff7a2a',{up:true,r:90,spread:60}); particles(c.x,c.y,10,'#ffd36a',{r:50}); add('ring',c.x,c.y,{'--pc':'#ff7a2a'}); }
+  if (item==='GOLEM'){ const h=$(`#holo${s}_${S.p[s].active}`); const b=document.createElement('div'); b.className='barrier'; b.id='barrier'+s; h.appendChild(b); particles(c.x,c.y,14,'#e8c38a',{r:60}); }
+  if (item==='REMEDY'){ particles(c.x,c.y+30,24,'#7ee29a',{up:true,r:80,spread:70}); add('ring',c.x,c.y,{'--pc':'#7ee29a'}); }
+  if (item==='SHARD'){ slot.classList.add('b-shard'); particles(c.x,c.y,24,'#ffffff',{r:70}); particles(c.x,c.y,14,'#c9a8ff',{r:50}); add('ring',c.x,c.y,{'--pc':'#e9dcff'}); }
+  if (item==='CAFE'){ slot.classList.add('b-str'); for (let k=0;k<14;k++){ add('pt', c.x+(Math.random()-.5)*60, c.y+20, {'--pc':'#ffe9a8','--dx':(Math.random()<.5?-1:1)*(60+Math.random()*40)+'px','--dy':(Math.random()-.5)*20+'px','--sz':'3px','--d':'.5s'}); } add('ring',c.x,c.y,{'--pc':'#ffe9a8'}); }
+  if (item==='SMOKE'){ slot.classList.add('b-smoke'); for (let k=0;k<7;k++){ const a=Math.random()*Math.PI*2; add('puff', c.x+Math.cos(a)*20, c.y+20+Math.sin(a)*10, {'--dx':Math.cos(a)*40+'px','--dy':(Math.sin(a)*20-20)+'px'}); } }
+}
+function clearBuffs(){ document.querySelectorAll('.slot').forEach(e=>e.classList.remove('b-str','b-smoke','b-shard')); document.querySelectorAll('.barrier').forEach(e=>e.remove()); }
+
+async function fxClash(ev){
+  const att=[0,1].filter(s=>ev.res[s]); if (!att.length) return;
+  const L=$('#fxl'), table=$('#table');
+  const slots=[0,1].map(s=>$(`#slot${s}_${S.p[s].active}`));
+  const c=[0,1].map(s=>centerOf(slots[s],L));
+  const dy=c[0].y-c[1].y, dx=c[0].x-c[1].x;
+  const both=att.length===2; const dur=RM()?60:950;
+  setTimeout(()=>sfx('swing',0.7), dur*0.3);
+  const anims=[];
+  for (const s of [0,1]){
+    const sign = s===0 ? -1 : 1; // toward the other side
+    const charging = !!ev.res[s];
+    const reach = both ? 0.5 : (charging ? 0.82 : 0);
+    const tx = (s===0?-dx:dx)*reach*0.5, ty = sign*Math.abs(dy)*reach - sign*(both?28:40)*(reach?1:0);
+    const base = slots[s].classList.contains('fwd') ? (s===0?'translateY(-22px) scale(1.08)':'translateY(16px) scale(1.08)') : '';
+    slots[s].style.zIndex=10;
+    if (charging){
+      anims.push(slots[s].animate([
+        {transform:`${base}`},
+        {transform:`${base} translate(0px,${-sign*22}px) scale(.94) rotate(${sign*-3}deg)`, offset:.35},
+        {transform:`${base} translate(${tx}px,${ty}px) scale(1.05)`, offset:.58, easing:'cubic-bezier(.6,0,1,1)'},
+        {transform:`${base} translate(${tx*0.9}px,${ty*0.9}px) scale(1.02)`, offset:.66},
+        {transform:`${base}`}
+      ],{duration:dur, easing:'ease-out'}));
+    } else {
+      anims.push(slots[s].animate([{transform:base},{transform:base,offset:.58},{transform:`${base} translate(0,${-sign*-14}px) rotate(${sign*4}deg)`,offset:.68},{transform:base}],{duration:dur}));
+    }
+  }
+  await sleep(dur*0.58);
+  // impact point
+  let ix, iy;
+  if (both){ ix=(c[0].x+c[1].x)/2; iy=(c[0].y+c[1].y)/2; }
+  else { const d=att[0]===0?1:0; const sc=spriteCenter(d); ix=sc.x; iy=sc.y+10; }
+  const colors=att.map(s=>ev.res[s].aff==='NONE'?'#ffffff':`var(--e-${CARDS[ev.res[s].a.cid].el})`);
+  add('flash',ix,iy,{'--pc':colors[0]});
+  add('ring',ix,iy,{'--pc':colors[colors.length-1]});
+  for (let k=0;k<12;k++){ add('ray',ix-2,iy-44,{'--pc':colors[k%colors.length],transform:`rotate(${k*30+Math.random()*12}deg)`}); }
+  particles(ix,iy,26,colors[0],{r:90}); if (colors[1]) particles(ix,iy,18,colors[1],{r:80});
+  table.classList.remove('shake'); void table.offsetWidth; table.classList.add('shake');
+  sfx('hit', 0.9, 0); for (const s of att){ const r=ev.res[s]; if (r.aff!=='NONE' && !r.usedAbsorb) sfx(HITSND[CARDS[r.a.cid].el]||'hit', 0.8, 0); else if (r.aff==='NONE') sfx('shard',0.6,0); }
+  for (const s of [0,1]){ const b=$('#barrier'+s); const r=ev.res[1-s]; if (b&&r){ b.classList.add(r.pierced?'shatter':'crack'); sfx(r.pierced?'shatter':'parry',0.8,0); } }
+  await Promise.all(anims.map(a=>a.finished.catch(()=>{})));
+  slots.forEach(e=>{ e.style.zIndex=''; });
+}
+
+function popFor(s, r){   // popup on defender side s for attack r
+  if (r.heal){ popNum(s,'+'+(r.healed||0),'heal','Absorb'); sfx('absorb',0.9,0); }
+  else popNum(s, r.dmg?('−'+r.dmg):'0', r.dmg?'dmg':'zero', r.aff==='ADV'?'Strong':r.aff==='DIS'?'Weak':r.aff==='NONE'?'Elementless':'');
+}
+async function playRound(ev, before){
+  // 1. monster changes: show new actives (holograms summon)
+  // temporarily display pre-resolution HP/KO
+  for (const s of [0,1]) for (const m of S.p[s].roster){ m._hp=m.hp; m._ko=m.ko; m.hp=before[s][m.i]; m.ko=before[s][m.i]<=0; }
+  updateField();
+  if (ev.enter[0]||ev.enter[1]) await sleep(900);
+  // 2. items
+  const it=[0,1].filter(s=>ev.items[s]);
+  await Promise.all(it.map(s=>fxItem(s, ev.items[s])));
+  if (it.length) await sleep(450);
+  for (const s of [0,1]) if (ev.heal[s]){ const m=mon(S.p[s],S.p[s].active); m.hp=Math.min(CARDS[m.cid].hp, m.hp+ev.heal[s]); setHP(s,m.i,m.hp); popNum(s,'+'+ev.heal[s],'heal','Remedy'); }
+  if (ev.heal[0]||ev.heal[1]) await sleep(550);
+  // 3. clash: simultaneous when Speed ties, otherwise one strike at a time (faster first)
+  if (ev.seq){
+    for (let k=0;k<ev.seq.length;k++){
+      const s=ev.seq[k], one={res:[null,null]}; one.res[s]=ev.res[s];
+      await fxClash(one); popFor(1-s, ev.res[s]);
+      const sn=ev.snaps[k]; for (const q of [0,1]) setHP(q, S.p[q].active, sn[q]);
+      if (k<ev.seq.length-1) await sleep(420);
+    }
+    if (ev.denied!=null){ const d=$(`#slot${ev.denied}_${S.p[ev.denied].active}`); if (d){ d.classList.add('downed'); } await sleep(250); }
+  } else {
+    await fxClash(ev);
+    for (const s of [0,1]){ const r=ev.res[1-s]; if (r) popFor(s, r); }
+  }
+  // restore true state
+  for (const s of [0,1]) for (const m of S.p[s].roster){ m.hp=m._hp; m.ko=m._ko; delete m._hp; delete m._ko; }
+  updateField();
+  await sleep(500);
+  for (const s of [0,1]) for (const [k,v] of ev.after[s]) if (k==='heal') popNum(s,'+'+v,'heal');
+  if (ev.after[0].length||ev.after[1].length) await sleep(600);
+  if (ev.ko[0]||ev.ko[1]){ sfx('ko',0.9,0); for (const s of [0,1]) if (ev.ko[s]){ const sc=centerOf($(`#slot${s}_${S.p[s].active}`),$('#fxl')); particles(sc.x,sc.y-30,30,'#ff6f6f',{r:70}); } await sleep(700); }
+  else await sleep(300);
+}
+
+// ===================== render =====================
+function chartHTML(){
+  const cyc=['ice','fire','air','earth','bolt']; const R=58, cx=110, cy=78;
+  const pts=cyc.map((e,i)=>{ const a=-Math.PI/2+i*2*Math.PI/5; return [cx+R*Math.cos(a), cy+R*Math.sin(a)]; });
+  let arrows=''; for (let i=0;i<5;i++){ const [x1,y1]=pts[i], [x2,y2]=pts[(i+1)%5]; const dx=x2-x1, dy=y2-y1, L=Math.hypot(dx,dy), ux=dx/L, uy=dy/L; const sx=x1+ux*20, sy=y1+uy*20, ex=x2-ux*22, ey=y2-uy*22;
+    arrows+=`<line x1="${sx}" y1="${sy}" x2="${ex}" y2="${ey}" stroke="#7a4e20" stroke-width="2" marker-end="url(#ah)"/>`; }
+  const nodes=cyc.map((e,i)=>`<g><circle cx="${pts[i][0]}" cy="${pts[i][1]}" r="17" fill="#fbf4dc" stroke="var(--e-${e})" stroke-width="3"/><text x="${pts[i][0]}" y="${pts[i][1]+4}" text-anchor="middle" font-family="Signika, sans-serif" font-size="11" font-weight="600" fill="#3a1e06">${EL[e]}</text></g>`).join('');
+  return `<div class="win chart"><div class="label" style="margin-bottom:4px">Element chart · arrow = strong against (+2), reverse = weak (−2)</div>
+    <svg viewBox="0 0 220 156" role="img" aria-label="Ice beats Fire, Fire beats Air, Air beats Earth, Earth beats Bolt, Bolt beats Ice"><defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7a4e20"/></marker></defs>${arrows}${nodes}</svg>
+    <div class="pairs"><span>${elPill('light')}⇄${elPill('dark')}</span><span>${elPill('poison')}⇄${elPill('phys')}</span><span class="hint">each strong vs the other</span></div></div>`;
+}
+function cardHTML(cid, extra=''){
+  const c=CARDS[cid];
+  return `<div class="art"><img src="${ART[cid]}" alt="">${elBadge(c.el,'art')}<span class="cost" title="Team cost ${c.cost}">${starStr(c.cost)}</span></div>${elBadge(c.el,'coin')}
+    <div class="nm">${elBadge(c.el,'name')}<span>${esc(c.name)}</span><span class="costn" title="Team cost ${c.cost}">${starStr(c.cost)}</span></div><div class="role">${EL_PLACE==='name'?`<span class="elword" style="color:var(--e-${c.el})">${EL[c.el]}</span> · `:''}<span title="${esc(ROLES[c.role]||'')}">${esc(c.role)}</span></div>
+    <div class="stats">${elBadge(c.el,'stats')}${statChip('atk',c.atk)}${statChip('hp',c.hp)}${statChip('def',c.def)}${statChip('spd',c.spd)}</div>
+    ${extra}
+    <div class="ab"><b>${esc(c.ab)}:</b> ${esc(c.txt)}</div>`;
+}
+function rulesHTML(){
+  return `<div class="win rules"><div class="label">How a round works</div><ol>
+    <li>Build a team of 3 within <b>5★</b>. Each round both players secretly play <b>one</b> card: an item, <b>Pass</b>, or <b>Switch</b>. You get one of each of the 6 items per match.</li>
+    <li>Reveal. Replacements and switches happen, then <b>Remedy</b> heals.</li>
+    <li>The monster with higher <b>SPD</b> strikes first; if that KOs the other, it can't strike back. Equal SPD hits at the same time. Damage = ATK − DEF (min 1), then the element chart: <b>strong +2</b>, <b>weak −2</b> (never below 1). <b>Elemental Shard</b> makes an attack Elementless.</li>
+    <li>A monster that switched in skips its attack but still gets hit.</li>
+    <li>When a monster falls, the round pauses for a quick <b>Replacement step</b>: drag one monster up. Knock out all <b>3</b> to win. If both last monsters fall together, the one with more HP before the hit wins.</li>
+  </ol></div>`;
+}
+function pipsHTML(sr, newSide){ if (!sr || sr.bestOf<=1) return '';
+  const row=(s,label)=>`<span class="pside">${s===1?label:''}${Array.from({length:sr.need},(_,k)=>`<i class="pip ${k<sr.wins[s]?'on':''} ${newSide===s&&k===sr.wins[s]-1?'new':''}"></i>`).join('')}${s===0?label:''}</span>`;
+  return `<div class="pips">${row(0,'You')}<span class="dash">–</span>${row(1,esc(seatName(1)))}</div>`; }
+function showOverlay(cls, inner, ms, onDone){ if (typeof document==='undefined' || !document.body || !document.body.appendChild) return;
+  document.querySelectorAll('.ovl').forEach(o=>o.remove());
+  const o=document.createElement('div'); o.className='ovl '+cls; o.innerHTML=inner; document.body.appendChild(o);
+  let gone=false; const close=()=>{ if (gone) return; gone=true; o.classList.add('out'); setTimeout(()=>{ o.remove(); if (onDone) onDone(); }, 450); };
+  o.addEventListener('click', close); setTimeout(close, RM()?900:ms); }
+function gameBanner(){ const sr=SERIES; if (!sr) return; const mp=sr.wins.map(w=>w===sr.need-1);
+  const tag = mp[0]&&mp[1] ? 'FINAL GAME' : (mp[0]||mp[1]) ? 'MATCH POINT' : `BEST OF ${sr.bestOf}`;
+  sfx('summon',0.8);
+  showOverlay('v-game', `<div class="tag">${tag}</div><div class="bigt">GAME ${sr.game}</div>${pipsHTML(sr,-1)}`, 1900); }
+function finishBanner(){ if (!S) return; const r=S.result, sr=S.series, series=sr&&sr.bestOf>1;
+  const cls = r==='WIN'?'v-win':r==='LOSS'?'v-lose shake':'v-draw';
+  const big = r==='DRAW' ? 'DRAW' : series && !sr.over ? (r==='WIN'?'GAME WON':'GAME LOST') : (r==='WIN'?'VICTORY':'DEFEAT');
+  const why = S.surrendered!=null ? (S.surrendered===UI.seat?'You surrendered':`${seatName(S.surrendered)} surrendered`) : S.capEnd ? 'Round limit' : S.tiebreak ? 'Decided on HP' : '';
+  const sub = series ? (sr.over ? `Series ${sr.wins[0]} – ${sr.wins[1]}${why?' · '+why:''}` : `Game ${sr.game} · First to ${sr.need}${why?' · '+why:''}`) : why;
+  let fx=''; if (r==='WIN'){ fx='<div class="rays"></div>'; for (let k=0;k<26;k++){ const a=Math.random()*Math.PI*2, d=180+Math.random()*320;
+    fx+=`<i class="spark" style="--x:${Math.cos(a)*d}px;--y:${Math.sin(a)*d}px;--r:${Math.random()*540-270}deg;--d:${(0.25+Math.random()*0.35).toFixed(2)}s;${k%3?'':'background:#fff6d0;'}"></i>`; } }
+  if (r==='LOSS') fx='<div class="crack"></div>';
+  sfx(r==='WIN'?'win':r==='LOSS'?'lose':'decide', 1);
+  musicDuck(true); setTimeout(()=>musicDuck(false), (r==='LOSS'?3200:3000)+300);
+  showOverlay(cls, `${fx}<div class="bigt">${big}</div>${sub?`<div class="subt">${esc(sub)}</div>`:''}${series?pipsHTML(sr, r==='WIN'?0:r==='LOSS'?1:-1):''}`, r==='LOSS'?3200:3000); }
+function syncSurrender(){ const b=$('#btnSurrender'); if (!b || !b.classList) return; const live = !!S && S.phase!=='ended';
+  b.hidden=!live; b.disabled = !live || S.phase==='anim';
+  if (!live && b.classList.contains('armed')){ b.classList.remove('armed'); b.textContent='🏳 Surrender'; } }
+function surrender(s){ if (!S || S.phase==='ended' || S.phase==='anim') return; S.result = s===0 ? 'LOSS' : 'WIN'; S.surrendered=s; UI.busy=false; sfx('cancel'); endMatch(); render(); }
+function render(){ syncSurrender();
+  const app=$('#app');
+  if (!S){ app.innerHTML=setupHTML(); bindSetup(); return; }
+  if (!$('#table') || S._built!==S.t0){
+    app.innerHTML=`<div class="board"><div class="mainc">${fieldHTML()}<div id="picker"></div></div><div class="sidebar" id="sidebar"></div></div>`;
+    S._built=S.t0; bindField();
+  }
+  updateField(); renderPicker(); renderSidebar();
+}
+function setupHTML(){
+  const sel=UI.pick||[];
+  return `<div class="setup">
+    <div class="win"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><h2>Choose your team of three</h2><div class="teambar"><span class="label">${sel.length} / ${CFG.TEAM} picked</span><span class="budget" title="Team cost">${Array.from({length:CFG.BUDGET},(_,i)=>`<i class="${i<teamCost(sel)?'on':''}"></i>`).join('')}</span><span class="label">${teamCost(sel)} / ${CFG.BUDGET} ★</span></div></div>
+      <div class="hint" style="margin-top:4px">Team budget is ${CFG.BUDGET}★. Commons cost ★, elites ★★, bosses ★★★. One boss means two commons.</div>
+      <div class="pickgrid">${IDS.map(id=>`<div class="card ${sel.includes(id)?'sel':''} ${!sel.includes(id)&&(sel.length>=CFG.TEAM||teamCost([...sel,id])>CFG.BUDGET)?'dis':''}" style="--ec:var(--e-${CARDS[id].el})" tabindex="0" role="button" aria-pressed="${sel.includes(id)}" data-pick="${id}"><span class="tick">✓</span>${cardHTML(id)}</div>`).join('')}</div></div>
+    <div class="side">
+      <div class="win"><div class="label">Match type</div><div class="seg">
+        <button type="button" class="${UI.matchType==='friendly'?'on':''}" data-mt="friendly">Friendly duel<small>No cards change hands</small></button>
+        <button type="button" class="${UI.matchType==='prize'?'on':''}" data-mt="prize">NPC prize match<small>NPC shows one prize card. Win it, keep it</small></button></div></div>
+      <div class="win"><div class="label">Format</div><div class="seg">
+        ${[1,3,5].map(n=>`<button type="button" class="${UI.bestOf===n?'on':''}" data-bo="${n}">Best of ${n}<small>${n===1?'One game':`First to ${Math.ceil(n/2)} wins`}</small></button>`).join('')}</div></div>
+      <div class="win"><div class="label">Who plays the NPC</div><div class="seg">
+        <button type="button" class="${UI.opp.ctrl==='ai'?'on':''}" data-opp="ctrl:ai">AI<small>No timer. Take as long as you like</small></button>
+        <button type="button" class="${UI.opp.ctrl==='gm'?'on':''}" data-opp="ctrl:gm">GM takes control<small>Hot-seat demo. 30s timer per decision</small></button></div>
+        <div class="label" style="margin-top:10px">AI difficulty</div><div class="seg">
+        ${['casual','skilled'].map(d=>`<button type="button" class="${UI.opp.diff===d?'on':''}" data-opp="diff:${d}">${d[0].toUpperCase()+d.slice(1)}<small>${d==='casual'?'Reasonable, often loose':'Reads Speed, matchups, items'}</small></button>`).join('')}</div>
+        <div class="label" style="margin-top:10px">AI play style</div><div class="seg">
+        ${['aggressive','defensive','trickster','random'].map(d=>`<button type="button" class="${UI.opp.style===d?'on':''}" data-opp="style:${d}">${d[0].toUpperCase()+d.slice(1)}</button>`).join('')}</div>
+        <div class="hint" style="margin-top:6px">The GM can also take over an AI-run NPC mid-match from the sidebar.</div></div>
+      ${rulesHTML()}${chartHTML()}
+      <div class="win" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" type="button" id="btnRand">Random team</button><button class="btn go" type="button" id="btnStart" ${sel.length===CFG.TEAM&&teamCost(sel)<=CFG.BUDGET?'':'disabled'}>Challenge the NPC</button></div>
+      ${BINDER.length?`<div class="win"><div class="label">Prize cards won</div><div style="margin-top:6px">${BINDER.map(id=>esc(N(id))).join(', ')}</div></div>`:''}
+    </div></div>`;
+}
+function bindSetup(){
+  document.querySelectorAll('[data-pick]').forEach(el=>{ const f=()=>{ const id=el.dataset.pick; let s=[...(UI.pick||[])]; const n0=s.length; setTimeout(()=>{ const n1=(UI.pick||[]).length; sfx(n1>n0?'cursor':'cancel'); },0); if (s.includes(id)) s=s.filter(x=>x!==id); else if (s.length<CFG.TEAM && teamCost([...s,id])<=CFG.BUDGET) s.push(id); UI.pick=s; store.set('ccd3.team',s); render(); };
+    el.onclick=f; el.onkeydown=e=>{ if (e.key==='Enter'||e.key===' '){ e.preventDefault(); f(); } }; el.onmouseenter=()=>sfx('cursor',0.45,90); });
+  document.querySelectorAll('[data-mt]').forEach(b=>b.onclick=()=>{ sfx('cursor'); UI.matchType=b.dataset.mt; render(); });
+  document.querySelectorAll('[data-bo]').forEach(b=>b.onclick=()=>{ sfx('cursor'); UI.bestOf=+b.dataset.bo; store.set('ccd.bestof',UI.bestOf); render(); });
+  document.querySelectorAll('[data-opp]').forEach(b=>b.onclick=()=>{ sfx('cursor'); const [k,v]=b.dataset.opp.split(':'); UI.opp[k]=v; store.set('ccd5.opp',UI.opp); render(); });
+  document.querySelectorAll('.seg button, .btn').forEach(b=>b.addEventListener('mouseenter',()=>sfx('cursor',0.35,90)));
+  $('#btnRand').onclick=()=>{ sfx('cursor'); UI.pick=randomTeam(); store.set('ccd3.team',UI.pick); render(); };
+  $('#btnStart').onclick=()=>{ sfx('cursor'); newMatch(); };
+}
+function bindField(){
+  document.querySelectorAll('.slot').forEach(el=>{
+    const s=+el.dataset.s, i=+el.dataset.i;
+    const inspect=()=>{ UI.inspect={s,i}; renderSidebar(); };
+    el.addEventListener('mouseenter',()=>{ inspect(); if (!el.classList.contains('fwd')) sfx('cursor',0.4,90); }); el.addEventListener('focus',inspect);
+    const act=()=>{ inspect(); if (!el.classList.contains('pickable')) return; const me=S.p[UI.seat];
+      if (S.phase==='opening'||S.phase==='replace') UI.replace=i; else { if (UI.sel==='SWITCH'&&UI.target===i){ UI.sel=null; UI.target=null; } else { UI.sel='SWITCH'; UI.target=i; } } sfx('cursor'); updateField(); renderPicker(); };
+    el.addEventListener('pointerdown',e=>{ if (!el.classList.contains('pickable')) return; startDrag(e, el.querySelector('.flat'), {kind:'monster', s, i}, act); });
+    el.addEventListener('keydown',e=>{ if (e.key==='Enter'||e.key===' '){ e.preventDefault(); act(); } });
+  });
+}
+function renderPicker(){
+  const box=$('#picker'); if (!box) return;
+  if (S.phase==='ended'){ box.innerHTML=endHTML(); bindEnd(); return; }
+  const seatBar = S.ctrl==='gm' && S.phase!=='anim' ? `<div class="seatbar">${[0,1].map(s=>`<button type="button" class="${UI.seat===s?'on':''}" data-seat="${s}">${s?'GM (NPC side)':'You'}${S.commit[s]?' · placed':''}</button>`).join('')}</div>` : '';
+  const sv=UI.seat, me=S.p[sv];
+  let hint, can=canLock()&&!UI.busy, btn='Play face down';
+  if (S.phase==='anim') { hint='Cards are being revealed…'; can=false; }
+  else if (S.commit[sv]) { hint=`Your card is face down. Waiting for <b>${esc(seatName(1-sv))}</b>${timed()?' (their timer keeps running)':''}.`; can=false; }
+  else if (S.phase==='opening') hint = UI.replace==null ? '<b>Drag a monster</b> up into your row, or click one, to choose your opener.' : `Opener: <b>${esc(N(me.roster[UI.replace].cid))}</b>. Drag it to the row or press Play.`;
+  else if (S.phase==='replace') hint = me.pending ? (UI.replace==null ? 'Your monster fell. <b>Drag a replacement</b> up into your row. That is all you do this step.' : `Replacement: <b>${esc(N(me.roster[UI.replace].cid))}</b>. Drag it up or press Play.`) : `Waiting for <b>${esc(seatName(1-sv))}</b> to choose a replacement…`;
+  else if (me.pending) hint = UI.replace==null ? 'Your monster fell. <b>Drag a standby monster</b> into your row, then play a card from your hand.' : (UI.sel ? `Replacement <b>${esc(N(me.roster[UI.replace].cid))}</b> + <b>${esc(ACT_T[UI.sel])}</b>. Press Play or drag the card to your slot.` : `Replacement: <b>${esc(N(me.roster[UI.replace].cid))}</b>. Now drag a card from your hand onto your slot.`);
+  else if (UI.sel==='SWITCH') hint = `Switch in <b>${esc(N(me.roster[UI.target].cid))}</b>; it skips its attack this round.`;
+  else if (UI.sel) hint = `<b>${esc(ACT_T[UI.sel])}</b> selected. Drag it onto your slot or press Play.`;
+  else hint = '<b>Drag a card</b> from your hand onto your slot to play it face down. Drag a standby monster into your row to switch.';
+  box.innerHTML=`<div class="win picker">${seatBar}<div class="actionbar"><span class="hint">${hint}</span>
+    <button class="btn go" id="btnLock" type="button" ${can?'':'disabled'}>${btn}</button></div></div>`;
+  $('#btnLock').onclick=()=>lockFromUI(); bindSeat();
+}
+// ===================== hands, drag & drop, flights =====================
+function handCards(s){ const pl=S.p[s], played=S.commit&&S.commit[s]&&S.commit[s].action; return [...Object.keys(ITEMS).filter(k=>pl.items[k] && k!==played), 'PASS']; }   // a played card has left the hand
+function renderHands(){
+  for (const s of [0,1]){ const box=$('#hand'+s); if (!box) continue;
+    const keys=handCards(s), n=keys.length, faceUp = s===UI.seat;
+    const live = faceUp && S.phase==='choose' && !S.commit[s] && !UI.busy && !(S.flying&&S.flying[s]);
+    if (!faceUp){ box.innerHTML = keys.map((k,i)=>`<div class="hback" style="--r:${((n-1)/2-i)*6}deg"></div>`).join(''); box.className='hand theirs'; continue; }
+    box.className = s===0 ? 'hand mine' : 'hand mine gmhand';
+    box.innerHTML = keys.map((k,i)=>{ const it=ITEMS[k], r=(i-(n-1)/2)*4, y=Math.abs(i-(n-1)/2)*5;
+      return `<div class="hcard ${k==='PASS'?'pass':''} ${UI.sel===k?'sel':''} ${live?'':'off'}" data-hand="${k}" style="--r:${r}deg;--y:${y}px" tabindex="${live?0:-1}" title="${esc(ACT_T[k])}">${it?`<img src="${ART[it.art]}" alt=""><span class="t">${it.t}</span><span class="k">${it.k}</span><span class="d">${it.d}</span>`:`<span class="ico">⟳</span><span class="t">Pass</span><span class="k">Unlimited</span><span class="d">Attack normally, keep your items</span>`}</div>`; }).join('');
+    if (!live) continue;
+    box.querySelectorAll('.hcard').forEach(el=>{
+      const k=el.dataset.hand;
+      const pick=()=>{ sfx('cursor'); if (UI.sel===k){ UI.sel=null; } else { UI.sel=k; UI.target=null; } updateField(); renderPicker(); };
+      el.addEventListener('mouseenter',()=>sfx('cursor',0.4,90));
+      el.addEventListener('pointerdown',e=>startDrag(e, el, {kind:'card', k, s}, pick));
+      el.addEventListener('keydown',e=>{ if (e.key==='Enter'||e.key===' '){ e.preventDefault(); pick(); } });
+    });
+  }
+}
+// valid drop zones for a payload
+// lenient hit test: exact hit first, then the zone the pointer is near (padded), then the zone the dragged card overlaps most
+function pickZone(d, x, y){ if (!d.zones.length) return null;
+  const hit=document.elementFromPoint(x, y); const exact=hit && d.zones.find(z=>z===hit||z.contains(hit)); if (exact) return exact;
+  const pad = d.payload.kind==='monster' ? 56 : 24; let best=null, bestScore=0;
+  const g = d.ghost && d.ghost.getBoundingClientRect(); const gArea = g ? Math.max(1, g.width*g.height) : 1;
+  for (const z of d.zones){ const r=z.getBoundingClientRect(); if (!r.width) continue;
+    const inPad = x>=r.left-pad && x<=r.right+pad && y>=r.top-pad && y<=r.bottom+pad;
+    const ov = g ? Math.max(0, Math.min(g.right,r.right)-Math.max(g.left,r.left)) * Math.max(0, Math.min(g.bottom,r.bottom)-Math.max(g.top,r.top)) / gArea : 0;
+    const score = (inPad?1:0) + ov; if ((inPad || ov>=0.2) && score>bestScore){ bestScore=score; best=z; } }
+  return best; }
+function dropZones(p){
+  const s=UI.seat, me=S.p[s], z=[];
+  if (p.kind==='card' && S.phase==='choose') { const a=$('#act'+s); if (a) z.push(a); }
+  if (p.kind==='monster' && (S.phase==='opening' || S.phase==='replace' || S.phase==='choose')){ const row=$('#row'+s), a=$('#act'+s); if (row) z.push(row); if (a) z.push(a); }
+  return z;
+}
+let DRAG=null;
+function startDrag(e, el, payload, onClick){
+  if (e.button!==undefined && e.button!==0) return;
+  if (UI.busy || S.commit[UI.seat]) return;
+  e.preventDefault();                                   // no text selection / native drag while dragging a card
+  const r0=el.getBoundingClientRect();
+  DRAG={ el, payload, onClick, x0:e.clientX, y0:e.clientY, ox:e.clientX-r0.left, oy:e.clientY-r0.top, r0, ghost:null, zones:[], over:null, lastX:e.clientX };
+  const move=ev=>{
+    const d=DRAG; if (!d) return;
+    if (!d.ghost){ if (Math.hypot(ev.clientX-d.x0, ev.clientY-d.y0)<7) return;
+      d.ghost=el.cloneNode(true); d.ghost.classList.remove('sel','pickable','picked'); d.ghost.classList.add('dragghost');
+      Object.assign(d.ghost.style,{ left:d.r0.left+'px', top:d.r0.top+'px', width:d.r0.width+'px', height:d.r0.height+'px' });
+      document.body.appendChild(d.ghost); el.classList.add('dragging');
+      d.zones=dropZones(payload); d.zones.forEach(z=>z.classList.add('dropok')); sfx('cursor',0.6,0); }
+    const tilt=Math.max(-14,Math.min(14,(ev.clientX-d.lastX)*1.2)); d.lastX=ev.clientX;
+    d.ghost.style.left=(ev.clientX-d.ox)+'px'; d.ghost.style.top=(ev.clientY-d.oy)+'px'; d.ghost.style.transform=`rotate(${tilt}deg) scale(1.08)`;
+    const zone=pickZone(d, ev.clientX, ev.clientY);
+    if (zone!==d.over){ if (d.over) d.over.classList.remove('dropover'); d.over=zone||null; if (d.over) d.over.classList.add('dropover'); }
+  };
+  const up=async ev=>{
+    window.removeEventListener('pointermove',move); window.removeEventListener('pointerup',up); window.removeEventListener('pointercancel',up);
+    const d=DRAG; DRAG=null; if (!d) return;
+    if (!d.ghost){ if (d.onClick) d.onClick(); return; }        // a click, not a drag
+    d.zones.forEach(z=>z.classList.remove('dropok','dropover'));
+    const gr=d.ghost.getBoundingClientRect();
+    if (d.over){ d.ghost.remove(); el.classList.remove('dragging'); handleDrop(d.payload, gr); }
+    else {                                                        // snap back home with easing
+      const a=d.ghost.animate([{left:gr.left+'px',top:gr.top+'px'},{left:d.r0.left+'px',top:d.r0.top+'px',transform:'none'}],{duration:RM()?1:220,easing:'cubic-bezier(.3,.8,.3,1)'});
+      await a.finished.catch(()=>{}); d.ghost.remove(); el.classList.remove('dragging'); sfx('cancel',0.5,0);
+    }
+  };
+  window.addEventListener('pointermove',move); window.addEventListener('pointerup',up); window.addEventListener('pointercancel',up);
+}
+function handleDrop(p, fromRect){
+  const s=UI.seat, me=S.p[s];
+  if (p.kind==='card'){
+    UI.sel=p.k; UI.target=null;
+    if (canLock()) return lockFromUI(fromRect);
+    sfx('cursor'); updateField(); renderPicker(); return;          // e.g. replacement still missing
+  }
+  if (p.kind==='monster'){
+    if (S.phase==='opening' || S.phase==='replace'){ UI.replace=p.i; return lockFromUI(fromRect); }
+    if (me.pending){ UI.replace=p.i; if (UI.sel && canLock()) return lockFromUI(fromRect); sfx('cursor'); updateField(); renderPicker(); return; }
+    UI.sel='SWITCH'; UI.target=p.i; return lockFromUI(fromRect);
+  }
+}
+async function flyTo(fromRect, s){
+  const slot=$('#act'+s); if (!slot || !fromRect || !slot.getBoundingClientRect) return;
+  const to=slot.getBoundingClientRect(); if (!to.width) return;
+  const f=document.createElement('div'); f.className='flycard';
+  Object.assign(f.style,{ left:fromRect.left+'px', top:fromRect.top+'px', width:fromRect.width+'px', height:fromRect.height+'px' });
+  document.body.appendChild(f);
+  const dx=to.left-fromRect.left, dy=to.top-fromRect.top, sx=to.width/fromRect.width, sy=to.height/fromRect.height, lift=s===0?-50:50;
+  const a=f.animate([
+    { transform:'translate(0,0) rotate(0deg) scale(1,1)' },
+    { transform:`translate(${dx*0.5}px,${dy*0.5+lift}px) rotate(${s?-10:10}deg) scale(${(1+sx)/2*1.1},${(1+sy)/2*1.1})`, offset:.55 },
+    { transform:`translate(${dx}px,${dy}px) rotate(0deg) scale(${sx},${sy})` }
+  ],{ duration:RM()?1:480, easing:'cubic-bezier(.22,.75,.25,1)' });
+  await a.finished.catch(()=>{}); f.remove();
+}
+function bindSeat(){ document.querySelectorAll('[data-seat]').forEach(b=>b.onclick=()=>{ sfx('cursor'); UI.seat=+b.dataset.seat; render(); }); }
+function renderSidebar(){
+  const sb=$('#sidebar'); if (!sb) return;
+  const ins=UI.inspect||{s:0,i:0}; const m=S.p[ins.s].roster[ins.i];
+  const extra=`<div class="stats"><span class="st"><b>NOW</b>${m.ko?'KO':m.hp+' HP'}</span>${(['life','flame','salamander','scorpion','obsidrax','walrog'].includes(m.cid))?`<span class="st">${m.abilityUsed?'ability used':'ability ready'}</span>`:''}${m.cid==='skizzik'?`<span class="st">Static ${m.static||0}/2</span>`:''}${m.cid==='roo'?`<span class="st">Steps ${m.steps?m.steps.n:0}/3</span>`:''}${m.cid==='kirin'&&m.chg&&m.chg[S.round]?'<span class="st">Charged +2</span>':''}${m.cid==='pyrefly'&&m.burn&&Object.values(m.burn).some(v=>v)?`<span class="st">Burn ${Object.values(m.burn).join('/')}</span>`:''}${m.cid==='wolf'&&m.howl?'<span class="st">Howl ready</span>':''}</div>`;
+  const ctrlTxt = S.ctrl==='gm' ? 'GM-controlled (30s timer)' : `AI · ${S.prof.diff} · ${S.prof.style}`;
+  const ctrlBtn = S.phase==='ended' ? '' : S.ctrlQueued ? `<div class="hint">Switching to ${S.ctrlQueued==='gm'?'GM':'AI'} control at the next decision…</div>`
+    : S.ctrl==='ai' ? `<button class="btn" type="button" id="btnCtrl" data-to="gm">GM: take control</button>` : `<button class="btn" type="button" id="btnCtrl" data-to="ai">Return NPC to AI</button>`;
+  sb.innerHTML=`<div class="win ctrlbox"><div class="label">NPC controller</div><div><b>${esc(ctrlTxt)}</b></div>${ctrlBtn}</div>
+    <div class="win detail"><div class="label" style="margin-bottom:6px">${ins.s?'NPC card':'Your card'} · hover a card to inspect</div><div class="card" style="--ec:var(--e-${CARDS[m.cid].el})">${cardHTML(m.cid, extra)}</div></div>
+    ${chartHTML()}
+    ${S.prize?`<div class="win prize"><img src="${ART[S.prize]}" alt=""><div><div class="label">NPC prize card</div><b>${esc(N(S.prize))}</b><div class="hint">Win the duel to take it.</div></div></div>`:''}
+    <div class="win"><div class="label" style="margin-bottom:6px">Combat log</div><div class="log">${S.log.map(e=>`<div class="r"><div class="rh">${esc(e.head)}</div>${e.lines.map(([t,c])=>`<div class="ln ${c}">${t}</div>`).join('')}</div>`).join('')}</div></div>`;
+  const cb=$('#btnCtrl'); if (cb) cb.onclick=()=>requestControl(cb.dataset.to);
+}
+const Q=['Did the Replacement step keep the one-drag rhythm (no more getting stuck)?','Did Café au Lait create satisfying Speed moments?','Was Café au Lait ever an automatic best play?','Were element colours easy to tell apart now?','Did the item hologram + effect read clearly?'];
+function endHTML(){
+  const mins=((S.t1-S.t0)/60000).toFixed(1);
+  const sr=S.series, series=sr&&sr.bestOf>1, more=series&&!sr.over;
+  const t= S.result==='DRAW' ? 'Draw' : more ? (S.result==='WIN'?'Game won':'Game lost') : (S.result==='WIN'?'Victory':'Defeat');
+  return `<div class="win end"><h2>${t}</h2>${series?`<div class="series">Best of ${sr.bestOf} · You ${sr.wins[0]} – ${sr.wins[1]} ${esc(seatName(1))}${more?` · next: Game ${sr.game+1}`:sr.wins[0]>=sr.need?' · series won':' · series lost'}</div>`:''}
+    <div>${S.surrendered!=null?(S.surrendered===UI.seat?'You surrendered. ':`${esc(seatName(S.surrendered))} surrendered. `):''}${S.capEnd?`Round limit reached. `:''}${S.tiebreak?`Both last monsters fell together; decided on HP before impact (${S.tiebreak[0]} vs ${S.tiebreak[1]}). `:''}${S.result==='WIN'&&S.prize?`You take <b>${esc(N(S.prize))}</b> as your prize card.`:S.prize&&S.result!=='WIN'?'The prize card stays with the NPC.':'No cards change hands.'}</div>
+    <div class="statgrid"><div><b>${S.round}</b><span>rounds</span></div><div><b>${mins}</b><span>minutes</span></div><div><b>${compKey(S.p[0].roster.map(m=>m.cid))}★</b><span>your team</span></div><div><b>${Object.values(S.p[0].items).reduce((a,b)=>a+b,0)}</b><span>items unused</span></div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">${more?`<button class="btn go" type="button" id="btnNextGame">Next game (Game ${sr.game+1})</button>`:`<button class="btn go" type="button" id="btnRematch">${series?'New series':'Rematch'}</button>`}<button class="btn" type="button" id="btnBack">Change team</button></div>
+    <div class="survey"><div class="label">Playtest questions (v0.6)</div>
+      ${Q.map((q,i)=>`<div class="q"><span>${i+1}. ${q}</span><span class="opts">${['No','Somewhat','Yes'].map(o=>`<button type="button" data-q="${i}" data-o="${o}" class="${UI.survey[i]===o?'on':''}">${o}</button>`).join('')}</span></div>`).join('')}
+      <label class="label" for="notes">Notes</label><textarea id="notes" placeholder="Anything that felt off, too strong, confusing…">${esc(UI.notes)}</textarea>
+      <div class="lockrow"><span class="hint" id="copyMsg">Copies your answers plus this session's stats, ready to paste back to Claude.</span><button class="btn" type="button" id="btnCopy">Copy playtest report</button></div>
+      <textarea id="reportBox" readonly hidden></textarea></div></div>`;
+}
+function bindEnd(){
+  if ($('#btnRematch')) $('#btnRematch').onclick=()=>newMatch();
+  if ($('#btnNextGame')) $('#btnNextGame').onclick=()=>newMatch(true);
+  $('#btnBack').onclick=()=>{ S=null; SERIES=null; render(); };
+  document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{ UI.survey[b.dataset.q]=b.dataset.o; UI.notes=$('#notes').value; renderPicker(); });
+  $('#notes').oninput=e=>{ UI.notes=e.target.value; };
+  $('#btnCopy').onclick=()=>{ UI.notes=$('#notes').value; const txt=reportText(), box=$('#reportBox');
+    const fb=()=>{ box.hidden=false; box.value=txt; box.focus(); box.select(); $('#copyMsg').textContent='Copy is blocked here. The report is selected below; press Ctrl+C.'; };
+    try { navigator.clipboard.writeText(txt).then(()=>{ $('#copyMsg').textContent='Copied. Paste it back to Claude.'; }, fb); } catch(e){ fb(); } };
+}
+function reportText(){
+  const X=SESSION, n=X.matches||1, rl=[...X.roundList].sort((a,b)=>a-b), med=rl.length?(rl.length%2?rl[(rl.length-1)/2]:(rl[rl.length/2-1]+rl[rl.length/2])/2):0;
+  const aff=Object.entries(X.aff).map(([k,[c,d]])=>`${AFFN[k]||k} ${c} hits / ${d} dmg`).join(', ');
+  const comps=Object.entries(X.comps||{}).map(([k,v])=>`${k}★: ${v.n} teams → W ${v.w} / L ${v.l} / D ${v.d}`).join('\n  ');
+  const picks=Object.entries(X.picks||{}).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${N(k)} ${v}`).join(', ');
+  const cards=Object.entries(X.cards).sort((a,b)=>b[1].w/b[1].roster-a[1].w/a[1].roster).map(([k,v])=>`${N(k)}: in ${v.roster} teams → W ${v.w} / L ${v.l} / D ${v.d} · active rounds ${v.activeRounds} · KO'd ${v.ko}`).join('\n  ');
+  const vs=Object.entries(X.vs||{}).map(([k,v])=>`${k}: ${v.n} → W ${v.w} / L ${v.l} / D ${v.d}`).join(' · ');
+  return `CAMP CARD DUEL — playtest report (ruleset v0.6)
+Matches: ${X.matches} (W ${X.wins} / L ${X.losses} / D ${X.draws})
+Opponents: ${vs||'(none)'}
+Café au Lait: used ${(X.cafe||{}).used||0} · changed attack order ${(X.cafe||{}).changed||0} · used at SPD 4 ${(X.cafe||{}).capped||0}
+Speed: first-strike KOs (no counter-attack) ${X.firstStrike||0} · Timer timeouts ${X.timeouts||0} · GM/AI control changes ${X.takeovers||0}
+Rounds: avg ${(X.rounds/n).toFixed(1)}, median ${med} · Avg length ${(X.ms/n/60000).toFixed(1)} min
+Round-limit endings: ${X.capEnds} (${X.capDraws} draws)
+Final mutual KOs: ${X.mutualFinal||0} · decided by HP tiebreak ${X.tiebroken||0} · genuine draws ${(X.mutualFinal||0)-(X.tiebroken||0)}
+Cryo Gorger Frost Shell: ${(X.frost||[0,0])[0]} activations, ${(X.frost||[0,0])[1]} damage prevented
+Voluntary switches: ${X.switches} · Forced replacements: ${X.forced} (both sides)
+Items used: ${Object.entries(X.items).map(([k,v])=>`${ITEMS[k].t} ${v}`).join(', ')} · items left at end (avg of 12): ${(X.itemsLeft/n).toFixed(1)}
+Hits by element matchup: ${aff}
+Zero-progress rounds (of ${X.rounds}): both switched ${X.zero?X.zero.bothSwitch:0} · attacks but no HP lost ${X.zero?X.zero.noHpLost:0} · damage healed back same round ${X.zero?X.zero.healedBack:0}
+Team cost compositions (both sides):
+  ${comps}
+Your picks: ${picks}
+Caveat: no Physical attacker in the starter set, so Poison/Physical is untested.
+Cards:
+  ${cards}
+Survey (latest match):
+${Q.map((q,i)=>`  ${i+1}. ${q} — ${UI.survey[i]||'(no answer)'}`).join('\n')}
+Notes: ${UI.notes||'(none)'}`;
+}
+
+$('#btnRestart').onclick=()=>{ sfx('cancel'); S=null; SERIES=null; document.querySelectorAll('.ovl').forEach(o=>o.remove()); render(); };
+{ let armT=null; const b=$('#btnSurrender'); if (b) b.onclick=()=>{ if (!S || S.phase==='ended' || S.phase==='anim') return;
+    if (!b.classList.contains('armed')){ sfx('cursor'); b.classList.add('armed'); b.textContent='Click again to surrender'; clearTimeout(armT); armT=setTimeout(()=>{ b.classList.remove('armed'); b.textContent='🏳 Surrender'; }, 3000); return; }
+    clearTimeout(armT); b.classList.remove('armed'); b.textContent='🏳 Surrender'; surrender(UI.seat); }; }
+const STAR_STYLE = 'stroke';   // locked 2026-11-14: red star with parchment outline
+function applyElStyle(){ if (document.body){ for (const k of ['stroke','tab','name','gold']) document.body.classList.toggle('star-'+k, STAR_STYLE===k); }
+  document.querySelectorAll('[data-star]').forEach(b=>b.classList.toggle('on', b.dataset.star===STAR_STYLE));
+  if (document.body) document.body.classList.toggle('elA', EL_STYLE==='A'); document.querySelectorAll('[data-els]').forEach(b=>b.classList.toggle('on', b.dataset.els===EL_STYLE)); document.querySelectorAll('[data-elp]').forEach(b=>b.classList.toggle('on', b.dataset.elp===EL_PLACE)); document.querySelectorAll('[data-sti]').forEach(b=>b.classList.toggle('on', b.dataset.sti===ST_ICONS)); }
+document.querySelectorAll('[data-sti]').forEach(b=>b.onclick=()=>{ sfx('cursor'); ST_ICONS=b.dataset.sti; try{ localStorage.setItem('ccd.staticons',ST_ICONS); }catch(e){} applyElStyle(); if (S) S._built=null; render(); });
+document.querySelectorAll('[data-sts]').forEach(b=>b.onclick=()=>{ sfx('cursor'); ST_STYLE=b.dataset.sts; try{ localStorage.setItem('ccd.statstyle',ST_STYLE); }catch(e){} applyElStyle(); if (S) S._built=null; render(); });
+document.querySelectorAll('[data-elp]').forEach(b=>b.onclick=()=>{ sfx('cursor'); EL_PLACE=b.dataset.elp; try{ localStorage.setItem('ccd.elplace',EL_PLACE); }catch(e){} applyElStyle(); if (S) S._built=null; render(); });
+document.querySelectorAll('[data-els]').forEach(b=>b.onclick=()=>{ sfx('cursor'); EL_STYLE=b.dataset.els; try{ localStorage.setItem('ccd.elstyle',EL_STYLE); }catch(e){} applyElStyle(); if (S) S._built=null; render(); });
+applyElStyle();
+const sndBtn=()=>{ const b=$('#btnSound'); b.textContent='Sound: '+(SND.on?'on':'off'); b.setAttribute('aria-pressed', SND.on); };
+$('#btnSound').onclick=()=>{ SND.on=!SND.on; store.set('ccd.sound', SND.on); if (SND.on){ sndInit(); sfx('cursor'); } sndBtn(); }; sndBtn();
+const musBtn=()=>{ const b=$('#btnMusic'); if (!b||!b.setAttribute) return; b.textContent='Music: '+(MUS.on?'on':'off'); b.setAttribute('aria-pressed', MUS.on); };
+if ($('#btnMusic')) $('#btnMusic').onclick=()=>{ MUS.on=!MUS.on; store.set('ccd.music', MUS.on); if (MUS.on){ sndInit(); musicStart(); } else musicStop(); musBtn(); }; musBtn();
+if (!window.FA_NET_MODE) render();
+</script>
+<script>
+// ===================== Fabula Arcana · in-game (net) mode =====================
+// Runs after the duel page's main script. With ?net=1 this page is the in-game duel window:
+// the GM host owns the match (scripts/fabula-arcana/fa-engine.js) and sends every client a view
+// from its own seat (you are always seat 0, at the bottom). This page only sends choices and
+// replays what the host resolved, with the same animations as the standalone mockup.
+// Parent bridge: window.parent.FabulaArcanaBridge.fromDuel(msg)   ·   inbound: window.FA_NET.receive(msg)
+(() => {
+  if (!window.FA_NET_MODE) return;
+  const NET = window.FA_NETSTATE = { role:'player', myName:'You', oppName:'Opponent', names:null, lobby:null, ready:false,
+    gameKey:null, nextSent:false, reward:null, spectators:0 };
+  const spectator = () => NET.role === 'spectator';
+  const send = msg => { try { window.parent.FabulaArcanaBridge.fromDuel(msg); } catch (e) { console.error('[Fabula Arcana duel] send failed', e); } };
+
+  // one source of truth for card data: the module catalog (loaded before the main script)
+  const Cat = globalThis.FabulaArcana && globalThis.FabulaArcana.Catalog;
+  if (Cat){ for (const k of Object.keys(Cat.CARDS)) { if (CARDS[k]) Object.assign(CARDS[k], Cat.CARDS[k]); else CARDS[k] = { ...Cat.CARDS[k] }; } Object.assign(CFG, Cat.CFG); }
+
+  seatName = s => spectator() ? ((NET.names && NET.names[s]) || (s ? 'Right' : 'Left')) : (s === 0 ? 'You' : NET.oppName);
+  timed = () => !!(S && S.deadline);
+  newMatch = () => {};
+  beginDecision = () => decision();
+  requestControl = () => {};
+
+  // ---------- top bar ----------
+  const rb = $('#btnRestart'); if (rb){ rb.textContent = 'Leave'; rb.onclick = () => { sfx('cancel'); send({ t:'leave' }); }; }
+  surrender = function(){ if (!S || S.phase === 'ended' || S.phase === 'anim' || spectator()) return; sfx('cancel'); send({ t:'surrender' }); };
+  const _sync = syncSurrender;
+  syncSurrender = function(){ _sync(); if (spectator()){ const b = $('#btnSurrender'); if (b) b.hidden = true; } };
+
+  // ---------- lobby (team pick from the cards you own) ----------
+  const _render = render;
+  render = function(){
+    if (S) return _render();
+    syncSurrender(); const app = $('#app');
+    if (!NET.lobby){ app.innerHTML = `<div class="setup"><div class="win"><h2>Fabula Arcana</h2><div class="hint">Connecting to the duel…</div></div></div>`; return; }
+    if (spectator()){ app.innerHTML = `<div class="setup"><div class="win"><h2>${esc(seatName(0))} vs ${esc(seatName(1))}</h2><div class="hint">Both sides are choosing their teams. The duel appears here when it starts.</div></div></div>`; return; }
+    const owned = (NET.lobby.owned || []).filter(id => CARDS[id]);
+    UI.pick = (UI.pick || []).filter(id => owned.includes(id));
+    const saved = IDS.splice(0); IDS.push(...owned);
+    try { app.innerHTML = setupHTML(); } finally { IDS.splice(0); IDS.push(...saved); }
+    const side = $('.setup .side'); if (side) side.innerHTML = lobbySide(owned);
+    bindSetup();
+    if (NET.ready) document.querySelectorAll('[data-pick]').forEach(el => { el.onclick = null; el.onkeydown = null; el.classList.add('dis'); });
+    const br = $('#btnRand'); if (br) br.onclick = () => { if (NET.ready) return; sfx('cursor'); const legal = LEGAL_FROM(owned); if (legal.length){ UI.pick = legal[Math.floor(Math.random()*legal.length)]; render(); } };
+    const bs = $('#btnStart'); if (bs) bs.onclick = () => { const sel = UI.pick || []; if (NET.ready || sel.length !== CFG.TEAM || teamCost(sel) > CFG.BUDGET) return; sfx('book'); NET.ready = true; send({ t:'team', team:[...sel] }); render(); };
+  };
+  const LEGAL_FROM = ids => { const out = []; for (let a=0;a<ids.length;a++) for (let b=a+1;b<ids.length;b++) for (let c=b+1;c<ids.length;c++){ const t=[ids[a],ids[b],ids[c]]; if (teamCost(t) <= CFG.BUDGET) out.push(t); } return out; };
+  function lobbySide(owned){
+    const L = NET.lobby || {}, sel = UI.pick || [], legal = sel.length === CFG.TEAM && teamCost(sel) <= CFG.BUDGET, bo = L.bestOf || 1;
+    const opp = L.oppTeam && L.oppTeam.length ? `<div class="hint" style="margin-top:6px">Their team: <b>${L.oppTeam.map(id => esc(N(id))).join(' · ')}</b></div>`
+      : `<div class="hint" style="margin-top:6px">${L.oppReady ? `${esc(NET.oppName)} is ready.` : `${esc(NET.oppName)} is choosing a team.`}</div>`;
+    const enough = LEGAL_FROM(owned).length > 0;
+    return `<div class="win"><div class="label">Fabula Arcana</div><h2 style="margin:4px 0">${esc(NET.myName)} vs ${esc(NET.oppName)}</h2>
+        ${L.quote ? `<div class="hint">“${esc(L.quote)}”</div>` : ''}${opp}
+        <div class="hint" style="margin-top:6px">Format: <b>Best of ${bo}</b>${bo > 1 ? ` · first to ${Math.ceil(bo/2)} wins` : ''}</div></div>
+      ${L.prize ? `<div class="win prize"><img src="${ART[L.prize] || ''}" alt=""><div><div class="label">${esc(L.prizeLabel || 'Prize card')}</div><b>${esc(N(L.prize))}</b><div class="hint">${esc(L.prizeHint || 'Win the duel to take it.')}</div></div></div>` : ''}
+      ${enough ? '' : `<div class="win"><div class="hint">You need three cards that fit the ${CFG.BUDGET}★ budget to play.</div></div>`}
+      ${rulesHTML()}${chartHTML()}
+      <div class="win" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" type="button" id="btnRand" ${NET.ready || !enough ? 'disabled' : ''}>Random team</button>
+        <button class="btn go" type="button" id="btnStart" ${legal && !NET.ready ? '' : 'disabled'}>${NET.ready ? (L.oppReady ? 'Starting…' : `Waiting for ${esc(NET.oppName)}…`) : 'Ready'}</button></div>`;
+  }
+
+  // ---------- match state from the host ----------
+  function fromView(v, m){
+    const sameGame = S && m.gameKey && m.gameKey === NET.gameKey;
+    NET.gameKey = m.gameKey || NET.gameKey;
+    const o = { ...v, ctrl:'net', prof:{ diff:'', style:'' }, timeouts:0, takeovers:0, t0: sameGame ? S.t0 : Date.now(), _built: sameGame ? S._built : null,
+      justPlaced:null, reveal:null, flying:[false,false], deadline: m.msLeft ? Date.now() + m.msLeft : null, prize: (NET.lobby && NET.lobby.prize) || null,
+      series: m.series || (S && S.series) || null };
+    if (o.phase === 'replace') for (const s of [0,1]) if (!o.p[s].pending && !o.commit[s]) o.commit[s] = { skip:true };
+    if (spectator()) o.commit = o.commit.map(c => c ? { hidden:true } : c);
+    return o;
+  }
+  function decision(){
+    clearInterval(TICK); clearDrafts(); UI.seat = 0; UI.busy = false;
+    if (S && S.deadline) TICK = setInterval(tick, 250);
+    render();
+  }
+  function tick(){
+    if (!S || !S.deadline) return clearInterval(TICK);
+    const left = Math.max(0, S.deadline - Date.now()); const el = $('#timer');
+    if (el){ el.textContent = `0:${String(Math.ceil(left/1000)).padStart(2,'0')}`; el.classList.toggle('low', left < 10000); const bar = $('#timerbar'); if (bar) bar.style.width = (100*left/(CFG.TIMER*1000)) + '%'; }
+    if (left <= 0) clearInterval(TICK);
+  }
+  function start(m){
+    NET.ready = false; NET.nextSent = false; NET.reward = null;
+    document.querySelectorAll('.ovl').forEach(o => o.remove());
+    S = fromView(m.view, m); SERIES = S.series; S._built = null;
+    decision();
+    if (SERIES && SERIES.bestOf > 1) gameBanner();
+  }
+  function applyState(m){
+    if (!m.view) return;
+    S = fromView(m.view, m); SERIES = S.series || SERIES;
+    if (S.phase === 'ended') return ended(m);
+    decision();
+  }
+  const handFrom = s => { const hd = $('#hand' + s); const r = hd && hd.getBoundingClientRect(); return r ? { left:r.left + r.width/2 - 30, top:r.top, width:60, height:84 } : null; };
+
+  commit = async function(s, c, fromRect){
+    if (spectator() || s !== 0 || !S) return;
+    if (S.commit[0] || S.phase === 'anim' || S.phase === 'ended') return;
+    S.flying = S.flying || [false,false]; if (S.flying[0]) return; S.flying[0] = true;
+    if (!fromRect){ const sel = $('#hand0 .hcard.sel'); fromRect = sel ? sel.getBoundingClientRect() : handFrom(0); }
+    updateField();
+    if (c.action){ const hc = document.querySelector(`#hand0 [data-hand="${c.action}"]`); if (hc) hc.style.visibility = 'hidden'; }
+    await flyTo(fromRect, 0);
+    S.flying[0] = false; if (S.commit[0] || S.phase === 'anim' || S.phase === 'ended') return;
+    S.commit[0] = c; S.justPlaced = null; sfx('book', 0.9, 0);
+    send({ t:'commit', choice:c });
+    render();
+  };
+  async function opponentCommitted(seat){
+    if (!S || S.commit[seat] || S.phase === 'ended') return;
+    S.flying = S.flying || [false,false]; S.flying[seat] = true; updateField();
+    await flyTo(handFrom(seat), seat);
+    S.flying[seat] = false;
+    if (S && !S.commit[seat]){ S.commit[seat] = { hidden:true }; S.justPlaced = null; sfx('book', 0.9, 0); }
+    render();
+  }
+  async function reveal(m){
+    const res = m.res; if (!S || !res) return applyState(m);
+    UI.busy = true; clearInterval(TICK); S.deadline = null;
+    const P = S.p, C = res.choices;
+    if (res.kind === 'opening' || res.kind === 'replace'){
+      const face = s => !C[s] ? ['—', 'no change', null] : [N(P[s].roster[C[s].replace].cid), res.kind === 'opening' ? 'opening' : 'replacement', ART[P[s].roster[C[s].replace].cid]];
+      S.commit = [C[0] || { skip:true }, C[1] || { skip:true }];
+      S.reveal = { a:face(0), b:face(1), open:false }; S.phase = 'anim'; render();
+      await sleep(420); S.reveal.open = true; sfx('book'); renderLane(); await sleep(680);
+      const rv = S.reveal; S = fromView(m.view, m); S.reveal = rv; const ph = S.phase; S.phase = 'anim';
+      updateField(); await sleep(res.kind === 'opening' ? 900 : 850);
+      S.reveal = null; S.phase = ph; return after(m);
+    }
+    const sub = (s, c) => c.action === 'SWITCH' ? `→ ${N(P[s].roster[c.target].cid)}` : (ITEMS[c.action] ? ITEMS[c.action].k : '');
+    const artOf = (s, c) => c.action === 'SWITCH' ? ART[P[s].roster[c.target].cid] : ITEMS[c.action] ? ART[ITEMS[c.action].art] : null;
+    S.commit = [C[0], C[1]];
+    S.reveal = { a:[ACT_T[C[0].action], sub(0, C[0]), artOf(0, C[0])], b:[ACT_T[C[1].action], sub(1, C[1]), artOf(1, C[1])], open:false };
+    S.phase = 'anim'; render();
+    await sleep(450); S.reveal.open = true; sfx('book'); renderLane(); await sleep(800);
+    const before = S.p.map(pl => pl.roster.map(q => q.hp));
+    const rv = S.reveal; S = fromView(m.view, m); const ph = S.phase; S.reveal = rv; S.phase = 'anim'; S.commit = [C[0], C[1]];
+    await playRound(res.ev, before);
+    S.reveal = null; clearBuffs(); S.phase = ph; S.commit = fromView(m.view, m).commit;
+    return after(m);
+  }
+  function after(m){ UI.busy = false; if (S.phase === 'ended') return ended(m); decision(); }
+  function ended(m){
+    S.phase = 'ended'; S.t1 = S.t1 || Date.now(); if (m.series) S.series = m.series; SERIES = S.series;
+    NET.reward = m.reward || NET.reward; clearInterval(TICK); S.deadline = null;
+    document.querySelectorAll('.downed').forEach(e => e.classList.remove('downed'));
+    setTimeout(() => finishBanner(), 380);
+    render();
+  }
+
+  // ---------- spectators: read-only board ----------
+  const _canLock = canLock; canLock = function(){ return !spectator() && _canLock(); };
+  const _startDrag = startDrag; startDrag = function(...a){ if (spectator()) return; return _startDrag(...a); };
+  const _rh = renderHands; renderHands = function(){ if (!spectator()) return _rh(); const s0 = UI.seat; UI.seat = -1; try { _rh(); } finally { UI.seat = s0; } };
+  const _rp = renderPicker;
+  renderPicker = function(){
+    if (!S || !spectator() || S.phase === 'ended') return _rp();
+    const box = $('#picker'); if (box) box.innerHTML = `<div class="win picker"><div class="actionbar"><span class="hint">Watching <b>${esc(seatName(0))}</b> vs <b>${esc(seatName(1))}</b>${S.phase === 'anim' ? ' · revealing…' : ''}</span></div></div>`;
+  };
+  const _rs = renderSidebar;
+  renderSidebar = function(){
+    _rs();
+    const cb = document.querySelector('#sidebar .ctrlbox'); if (!cb || !S) return;
+    const sr = S.series;
+    cb.innerHTML = `<div class="label">${esc(seatName(0))} vs ${esc(seatName(1))}</div><div><b>${sr && sr.bestOf > 1 ? `Best of ${sr.bestOf} · ${sr.wins[0]} – ${sr.wins[1]}` : 'Single game'}</b></div>${NET.spectators ? `<div class="hint">${NET.spectators} watching</div>` : ''}`;
+  };
+  const _fb = finishBanner;
+  finishBanner = function(){
+    if (!S || !spectator() || S.result === 'DRAW') return _fb();
+    const w = S.result === 'WIN' ? 0 : 1, sr = S.series, series = sr && sr.bestOf > 1;
+    musicDuck(true); setTimeout(() => musicDuck(false), 3300);
+    showOverlay('v-win', `<div class="bigt">${esc(seatName(w))} WINS</div>${series ? `<div class="subt">Series ${sr.wins[0]} – ${sr.wins[1]}</div>` + pipsHTML(sr, w) : ''}`, 3000);
+  };
+
+  // ---------- end panel ----------
+  endHTML = function(){
+    const sr = S.series, series = sr && sr.bestOf > 1, more = series && !sr.over, sp = spectator();
+    const t = S.result === 'DRAW' ? 'Draw' : sp ? `${esc(seatName(S.result === 'WIN' ? 0 : 1))} wins` : more ? (S.result === 'WIN' ? 'Game won' : 'Game lost') : (S.result === 'WIN' ? 'Victory' : 'Defeat');
+    const why = S.surrendered != null ? (S.surrendered === 0 && !sp ? 'You surrendered. ' : `${esc(seatName(S.surrendered))} surrendered. `) : '';
+    const score = series ? `<div class="series">Best of ${sr.bestOf} · ${esc(seatName(0))} ${sr.wins[0]} – ${sr.wins[1]} ${esc(seatName(1))}${more ? ` · next: Game ${sr.game + 1}` : ''}</div>` : '';
+    const reward = !sp && NET.reward && NET.reward.cid ? `<div style="margin-top:6px">You won the <b>${esc(N(NET.reward.cid))}</b> card!</div>` : '';
+    const btns = sp ? `<button class="btn" id="btnLeave" type="button">Close</button>`
+      : more ? (NET.nextSent ? `<button class="btn go" type="button" disabled>Waiting for ${esc(NET.oppName)}…</button>` : `<button class="btn go" type="button" id="btnNextGame">Next game (Game ${sr.game + 1})</button>`) + `<button class="btn" id="btnLeave" type="button">Leave</button>`
+      : `<button class="btn go" id="btnLeave" type="button">Leave</button>`;
+    return `<div class="win end"><h2>${t}</h2>${score}<div>${why}${S.capEnd ? 'Round limit reached. ' : ''}${S.tiebreak ? `Both last monsters fell together; decided on HP before impact (${S.tiebreak[0]} vs ${S.tiebreak[1]}). ` : ''}</div>${reward}
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px">${btns}</div></div>`;
+  };
+  bindEnd = function(){
+    const n = $('#btnNextGame'); if (n) n.onclick = () => { sfx('cursor'); NET.nextSent = true; send({ t:'next' }); renderPicker(); };
+    const l = $('#btnLeave'); if (l) l.onclick = () => { sfx('cancel'); send({ t:'leave' }); };
+  };
+
+  // ---------- sounds + music from Forge (sound effects first; theme = intro once, then a gapless loop) ----------
+  let musicUrls = (typeof FA_BGM !== 'undefined') ? FA_BGM : null, musicLoading = false, sfxLoading = false;
+  const fetchBuf = async u => SND.ctx.decodeAudioData(await (await fetch(u)).arrayBuffer());
+  async function trySfx(){
+    if (sfxLoading || !SND.ctx || typeof SFXURL === 'undefined') return; sfxLoading = true;
+    await Promise.all(Object.entries(SFXURL).map(async ([k, u]) => { if (SND.buf[k]) return; try { SND.buf[k] = await fetchBuf(u); } catch (e) { console.warn('[Fabula Arcana duel] sfx', k, e); } }));
+  }
+  async function tryMusic(){
+    trySfx();
+    if (!musicUrls || musicLoading || !SND.ctx || MUS.buf.loop || !MUS.on) return;
+    musicLoading = true;
+    try { for (const k of ['intro','loop']) if (musicUrls[k]) MUS.buf[k] = await fetchBuf(musicUrls[k]);
+      musicStart(); } catch (e) { console.warn('[Fabula Arcana duel] music', e); }
+    musicLoading = false;
+  }
+  document.addEventListener('pointerdown', () => setTimeout(tryMusic, 60), { capture:true });
+  document.addEventListener('keydown', () => setTimeout(tryMusic, 60), { capture:true });
+
+  // ---------- inbound messages ----------
+  async function handle(m){
+    switch (m.t){
+      case 'init':
+        NET.role = m.role || 'player'; NET.myName = m.myName || 'You'; NET.oppName = m.oppName || 'Opponent'; NET.names = m.names || null;
+        NET.lobby = m.lobby || null; NET.ready = !!m.ready; NET.spectators = m.spectators || 0;
+        if (m.vol){ SND.vol = 0.55 * (m.vol.sfx ?? 1); MUS.vol = 0.32 * (m.vol.music ?? 1); }
+        if (m.music){ musicUrls = m.music; tryMusic(); }
+        if (NET.lobby && NET.lobby.suggest && !(UI.pick || []).length) UI.pick = NET.lobby.suggest.slice();
+        if (m.view) return m.view.phase === 'ended' ? applyState(m) : start(m);
+        S = null; render(); return;
+      case 'lobby': NET.lobby = { ...(NET.lobby || {}), ...m.lobby }; if (!S) render(); return;
+      case 'start': return start(m);
+      case 'committed': return opponentCommitted(m.seat);
+      case 'reveal': return reveal(m);
+      case 'state': return applyState(m);
+      case 'spectators': NET.spectators = m.n || 0; if (S) renderSidebar(); return;
+      case 'toast': { const st = $('#status'); if (st) st.textContent = m.text || ''; return; }
+    }
+  }
+  const queue = []; let busy = false;
+  async function pump(){ if (busy) return; busy = true; while (queue.length){ const m = queue.shift(); try { await handle(m); } catch (e) { console.error('[Fabula Arcana duel]', e); } } busy = false; }
+  window.FA_NET = { receive(m){ queue.push(m); pump(); } };
+  render();
+  send({ t:'hello' });
+})();
+
+</script>

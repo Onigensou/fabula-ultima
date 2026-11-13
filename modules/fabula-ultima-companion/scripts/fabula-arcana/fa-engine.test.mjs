@@ -228,5 +228,23 @@ const blank = blankStats;
   E.Series.record(sr,"WIN"); E.Series.record(sr,"WIN"); ok(sr.over && sr.winner===0 && sr.wins.join("-")==="2-1", "Best of 3: first to 2 wins the series");
 }
 
+// ===== Seat views (seat 1 sees the board mirrored) + surrender =====
+{
+  const M = E.Match, V = E.View;
+  const m = M.create({ teams:[["kirin","roper","pyrefly"], ["hellhound","cryo","gigas"]], names:["Keren","Zarg"] });
+  M.submit(m,0,{replace:0}); M.submit(m,1,{replace:0});
+  M.submit(m,0,{action:"STRENGTH"});
+  const v1 = V.forSeat(m, 1);
+  ok(v1.p[0].roster[0].cid==="hellhound" && v1.p[1].roster[0].cid==="kirin" && v1.names[0]==="Zarg", "seat 1's view puts its own team at seat 0");
+  ok(v1.commit[1] && v1.commit[1].hidden && !v1.commit[0], "seat 1 sees the opponent's face-down card as hidden, mirrored to the top");
+  const r = M.submit(m,1,{action:"PASS"}).resolved; const r1 = V.resolvedForSeat(r, 1);
+  ok(r1.choices[0].action==="PASS" && r1.choices[1].action==="STRENGTH", "resolved choices mirror for seat 1");
+  ok(r1.ev.res[0] && r1.ev.res[0].side===0 && r1.ev.res[0].a.cid==="hellhound", "attack results mirror and their side flips");
+  ok(!r.ev.seq || JSON.stringify(r1.ev.seq)===JSON.stringify(r.ev.seq.map(s=>1-s)), "strike order mirrors");
+  ok(V.forSeat(m, 0).p[0].roster[0].cid==="kirin" && V.forSeat(m, null).p[0].roster[0].cid==="kirin", "seat 0 and spectators keep the host's orientation");
+  ok(M.concede(m, 1) && m.result==="WIN" && m.phase==="ended" && V.forSeat(m,1).result==="LOSS" && V.forSeat(m,1).surrendered===0, "surrender ends the game; the mirrored view shows the conceder's LOSS");
+  const sr = E.Series.create(3); E.Series.record(sr,"WIN"); ok(V.seriesForSeat(sr,1).wins.join("-")==="0-1", "series score mirrors for seat 1");
+}
+
 console.log(fails ? fails + " FAILED" : "ALL PASS");
 process.exit(fails ? 1 : 0);
