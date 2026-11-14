@@ -228,7 +228,7 @@
         const last = ps[ps.length - 1];
         el.innerHTML = `<span class="gm">GM</span>
           <h3>Skill Check · <b>${esc(area)}</b></h3>
-          <div class="sub">${theatre ? `${presets.length} preset${presets.length === 1 ? "" : "s"} on <b>${esc(theatre.navName || theatre.name)}</b> · ${unplayed} not played on this save` : "This map has no theatre scene: the event runs here on the map."}</div>
+          <div class="sub">${theatre ? `${presets.length} preset${presets.length === 1 ? "" : "s"} on <b>${esc(theatre.name)}</b> · ${unplayed} not played on this save` : "This map has no theatre scene: the event runs here on the map."}</div>
           ${presets.length ? `<div class="list">${ordered.map(p => {
             const n = plays(p).length;
             return `<div class="row ${n ? "played" : ""} ${p.id === selId ? "sel" : ""}" data-id="${p.id}">

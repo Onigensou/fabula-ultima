@@ -198,7 +198,7 @@
         kit.field("Lasts", `<div class="oni-event-inline-row">
             <select class="oni-st-timing">${kit.options(TIMINGS, row.timing)}</select>
             <span class="oni-st-steps-wrap">${kit.numberInput("oni-st-steps", row.steps, { min: 1, max: 20, step: 1 })} steps</span>
-            <span class="oni-st-turns-wrap">${kit.numberInput("oni-st-turns", row.turns, { min: 0, max: 10, step: 1 })} turns in battle (0 = the status's usual)</span>
+            <span class="oni-st-turns-wrap">${kit.numberInput("oni-st-turns", row.turns, { min: 0, max: 10, step: 1 })} battle turns (0 = usual)</span>
           </div>`,
           "Next battle: it does not count down while exploring; it starts counting on their turns in their next battle and is gone when that battle ends. A Rest cures it either way."),
         kit.field("Source", `<input type="text" class="oni-st-source oni-grow" value="${kit.escapeHTML(row.source)}" placeholder="For the GM's list, e.g. Collapsing Bridge" />`)

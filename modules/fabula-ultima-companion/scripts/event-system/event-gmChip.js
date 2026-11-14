@@ -170,7 +170,9 @@
     if (token) return token.name || "NPC";
 
     const tile = scene?.tiles?.get(sourceId);
-    return tile?.flags?.["fabula-ultima-companion"]?.draftName || "Event tile";
+    return tile?.flags?.["fabula-ultima-companion"]?.draftName
+      || String(tile?.flags?.["monks-active-tiles"]?.name ?? "").trim()
+      || "Event tile";
   }
 
   function add(sourceId) {

@@ -706,7 +706,7 @@
             <select name="flags.${MODULE_ID}.${pathingKey}.skillCheckPreset" data-dtype="String">${options.join("")}</select>
           </div>
           <p class="notes">
-            Skill Check tiles only. Pins one preset from ${theatre ? `<b>${esc(theatre.navName || theatre.name)}</b>` : "this map's theatre scene (none found in its Scene Network)"}
+            Skill Check tiles only. Pins one preset from ${theatre ? `<b>${esc(theatre.name)}</b>` : "this map's theatre scene (none found in its Scene Network)"}
             so it comes preselected when the party lands here; the GM can still pick another.
           </p>
         </div>`;
