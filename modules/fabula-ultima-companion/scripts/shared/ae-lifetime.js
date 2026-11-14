@@ -90,9 +90,19 @@
    * True only for ordinary turn-bound effects — the ones a dungeon step should
    * count down. This is the single gate dp-ae-lifecycle and dp-status-hud use.
    */
+  /**
+   * "Inflicted until your next battle" (shared/held-status.js): waits, unticked,
+   * until the battle start converts it. A Rest still cures it (rest-api clears
+   * it as an ordinary actor-origin temporary effect).
+   */
+  function isBattleHeld(eff) {
+    return _flags(eff).heldUntilBattle === true;
+  }
+
   function isDungeonTickable(eff) {
     if (!eff) return false;
-    return !isDirectorPermanent(eff)
+    return !isBattleHeld(eff)
+        && !isDirectorPermanent(eff)
         && !isRestBound(eff)
         && !isItemTransferred(eff)
         && !isChargeGoverned(eff);
@@ -140,6 +150,8 @@
     });
 
     if (eff?.parent?.documentName === "Item") return out(false, "item", "Lasts while the source is held");
+
+    if (isBattleHeld(eff)) return out(true, "held", "Carried into your next battle, then wears off there · a Rest cures it", "Next battle");
 
     const restCharges = num(f.campRestCharges);
     if (restCharges != null) {
@@ -196,6 +208,7 @@
     isRestBound,
     isItemTransferred,
     isChargeGoverned,
+    isBattleHeld,
     isDungeonTickable,
     describe,
   };
