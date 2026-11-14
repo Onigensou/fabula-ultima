@@ -181,7 +181,7 @@ const blank = blankStats;
   go({action:'SWITCH',target:0},P); r=go(P,P); ok(dmg0()<9999, 'Roo (field mode): back on the field it has to walk again (no knife yet)');
   // Rock Golem Wind Up → Earthquake
   S = duel(A('rgolem'), ['hellhound','kirin','cryo'], {hp:[30,30]}); r=go(P,P); const q1=S.p[1].roster[1].hp+S.p[1].roster[2].hp; r=go({action:'GOLEM'},P); const q2=S.p[1].roster[1].hp+S.p[1].roster[2].hp;
-  ok(q1===17 && q2===17 && S.p[0].roster[0].windup===false, 'Rock Golem: Pass arms Wind Up, same-round attack is an Earthquake (19 → 17 bench HP); next non-Pass attack has none (got '+q1+'/'+q2+')');
+  ok(q1===19 && q2===17 && S.p[0].roster[0].windup===false, 'Rock Golem (WINDUP_NEXT=1): a Pass arms Wind Up for the NEXT attack (bench stays 19), the next attack is the Earthquake (17) and clears it (got '+q1+'/'+q2+')');
 
   S = duel(A('roo'), B('walrog'), {hp:[30,30]}); r=go({action:'STRENGTH'},P);
   ok(dmg0()===0 && !S.p[1].roster[0].abilityUsed, 'Roo: an ordinary attack deals 0 even with Strength, and does not spend Thick Skin');
