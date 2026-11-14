@@ -5,6 +5,7 @@
 //
 // Ops — client → host:  hello-client, challenge-npc, challenge-pvp, accept, decline, duel-in (duel window → host), spectate, cancel-all
 //       host → client:  open, duel (host → duel window), close, invite, invite-close, invite-result, status, notify
+//       duel-window messages from the host include opp-away / opp-back / opp-gone (PvP disconnect grace, fa-host.js)
 // One handler per op: the GM client is both host and player, so the two directions must not share a name.
 
 import { SOCKET, MSG, TAG } from "./fa-const.js";

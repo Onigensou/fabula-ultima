@@ -598,6 +598,11 @@ em.sv.sv-flash{animation:fuNstFlash .9s ease-out}
 @keyframes fxRoo{50%{filter:drop-shadow(0 0 10px #8a3fe0) drop-shadow(0 0 22px #3a0f66) brightness(.85)}}
 @media (max-width:620px){ .fxt{width:20px;height:20px} }
 @media (prefers-reduced-motion: reduce){ .fxt,.holo .cue *,.slot .holo.on .spr{animation:none !important} }
+/* ===== opponent disconnected strip ===== */
+#awaybar{position:fixed;left:50%;top:78px;transform:translateX(-50%);z-index:9600;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;max-width:calc(100vw - 32px);
+  padding:9px 16px;border-radius:10px;background:linear-gradient(180deg,#3a1e06f2,#24130af2);border:2px solid #ff8a1f;color:#f8e3c8;font-family:var(--font-b);font-size:14px;box-shadow:0 8px 20px #000a;animation:subIn .3s ease-out both}
+#awaybar b{color:#ffd9a8} #awaybar .n{font-variant-numeric:tabular-nums;color:#ffb35c}
+#awaybar .dot{width:10px;height:10px;border-radius:50%;background:#ff8a1f;box-shadow:0 0 8px #ff8a1f;animation:rdyDot 1s ease-in-out infinite}
 /* ===== passive card band (battle mode's Bravely Default II band) ===== */
 .pband{position:absolute;left:0;top:0;transform:translate(-50%,-50%);pointer-events:none;display:grid;gap:3px;padding:5px 34px;z-index:24;
   background:linear-gradient(90deg,rgba(6,5,4,0),rgba(6,5,4,.84) 16%,rgba(6,5,4,.84) 84%,rgba(6,5,4,0));color:#fff;font-family:'Signika','Palatino Linotype',serif;white-space:nowrap;
@@ -1773,7 +1778,7 @@ function gameBanner(){ const sr=SERIES; if (!sr) return; const mp=sr.wins.map(w=
 function finishBanner(){ if (!S) return; const r=S.result, sr=S.series, series=sr&&sr.bestOf>1;
   const cls = r==='WIN'?'v-win':r==='LOSS'?'v-lose shake':'v-draw';
   const big = r==='DRAW' ? 'DRAW' : series && !sr.over ? (r==='WIN'?'GAME WON':'GAME LOST') : (r==='WIN'?'VICTORY':'DEFEAT');
-  const why = S.surrendered!=null ? (S.surrendered===UI.seat?'You surrendered':`${seatName(S.surrendered)} surrendered`) : S.capEnd ? 'Round limit' : S.tiebreak ? 'Decided on HP' : '';
+  const why = S.forfeitText ? S.forfeitText : S.surrendered!=null ? (S.surrendered===UI.seat?'You surrendered':`${seatName(S.surrendered)} surrendered`) : S.capEnd ? 'Round limit' : S.tiebreak ? 'Decided on HP' : '';
   const sub = series ? (sr.over ? `Series ${sr.wins[0]} – ${sr.wins[1]}${why?' · '+why:''}` : `Game ${sr.game} · First to ${sr.need}${why?' · '+why:''}`) : why;
   let fx=''; if (r==='WIN'){ fx='<div class="rays"></div>'; for (let k=0;k<26;k++){ const a=Math.random()*Math.PI*2, d=180+Math.random()*320;
     fx+=`<i class="spark" style="--x:${Math.cos(a)*d}px;--y:${Math.sin(a)*d}px;--r:${Math.random()*540-270}deg;--d:${(0.25+Math.random()*0.35).toFixed(2)}s;${k%3?'':'background:#fff6d0;'}"></i>`; } }
@@ -2131,7 +2136,7 @@ if (!window.FA_NET_MODE) render();
     NET.gameKey = m.gameKey || NET.gameKey;
     const o = { ...v, ctrl:'net', prof:{ diff:'', style:'' }, timeouts:0, takeovers:0, t0: sameGame ? S.t0 : Date.now(), _built: sameGame ? S._built : null,
       justPlaced:null, reveal:null, flying:[false,false], deadline: m.msLeft ? Date.now() + m.msLeft : null, prize: (NET.lobby && NET.lobby.prize) || null,
-      series: m.series || (S && S.series) || null };
+      series: m.series || (S && S.series) || null, forfeitText: NET.oppGone ? `${NET.oppGone} disconnected` : null };
     if (o.phase === 'replace') for (const s of [0,1]) if (!o.p[s].pending && !o.commit[s]) o.commit[s] = { skip:true };
     if (spectator()) o.commit = o.commit.map(c => c ? { hidden:true } : c);
     return o;
@@ -2146,6 +2151,9 @@ if (!window.FA_NET_MODE) render();
     const left = Math.max(0, S.deadline - Date.now()); drawFuse();
     if (left <= 0) clearInterval(TICK);
   }
+  // the standalone tickTimer auto-plays a Pass at 0; in-game the HOST owns timeouts, so a window that redraws after the
+  // deadline (lag, a reconnect) must never send its own Pass (it used to land in the NEXT round)
+  tickTimer = tick;
   function start(m, fresh){
     NET.ready = false; NET.nextSent = false; NET.reward = null;
     document.querySelectorAll('.ovl').forEach(o => o.remove());
@@ -2262,7 +2270,7 @@ if (!window.FA_NET_MODE) render();
   endHTML = function(){
     const sr = S.series, series = sr && sr.bestOf > 1, more = series && !sr.over, sp = spectator();
     const t = S.result === 'DRAW' ? 'Draw' : sp ? `${esc(seatName(S.result === 'WIN' ? 0 : 1))} wins` : more ? (S.result === 'WIN' ? 'Game won' : 'Game lost') : (S.result === 'WIN' ? 'Victory' : 'Defeat');
-    const why = S.surrendered != null ? (S.surrendered === 0 && !sp ? 'You surrendered. ' : `${esc(seatName(S.surrendered))} surrendered. `) : '';
+    const why = S.forfeitText ? esc(S.forfeitText) + '. ' : S.surrendered != null ? (S.surrendered === 0 && !sp ? 'You surrendered. ' : `${esc(seatName(S.surrendered))} surrendered. `) : '';
     const score = series ? `<div class="series">Best of ${sr.bestOf} · ${esc(seatName(0))} ${sr.wins[0]} – ${sr.wins[1]} ${esc(seatName(1))}${more ? ` · next: Game ${sr.game + 1}` : ''}</div>` : '';
     const reward = !sp && NET.reward && NET.reward.cid ? `<div style="margin-top:6px">You won the <b>${esc(N(NET.reward.cid))}</b> card!</div>` : '';
     // the same buttons as the result screen, so "View the board" never strands anyone
@@ -2295,6 +2303,17 @@ if (!window.FA_NET_MODE) render();
   document.addEventListener('pointerdown', () => setTimeout(tryMusic, 60), { capture:true });
   document.addEventListener('keydown', () => setTimeout(tryMusic, 60), { capture:true });
 
+  // ---------- opponent disconnected: a strip with the grace countdown (the round clock is stopped meanwhile) ----------
+  let AWAY_T = null;
+  function awayHide(){ clearInterval(AWAY_T); AWAY_T = null; const el = document.getElementById('awaybar'); if (el) el.remove(); }
+  function awayShow(name, until){
+    awayHide();
+    const el = document.createElement('div'); el.id = 'awaybar'; el.setAttribute('role', 'status'); document.body.appendChild(el);
+    const draw = () => { const left = Math.max(0, Math.ceil((until - Date.now()) / 1000));
+      el.innerHTML = `<i class="dot"></i><b>${esc(name)} disconnected</b><span>The round is paused. They forfeit in <b class="n">${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}</b> if they don't come back.</span>`;
+      if (!left) clearInterval(AWAY_T); };
+    draw(); AWAY_T = setInterval(draw, 500);
+  }
   // ---------- inbound messages ----------
   async function handle(m){
     switch (m.t){
@@ -2304,7 +2323,7 @@ if (!window.FA_NET_MODE) render();
         if (m.vol){ SND.vol = 0.55 * (m.vol.sfx ?? 1); MUS.vol = 0.32 * (m.vol.music ?? 1); }
         if (m.music){ musicUrls = m.music; tryMusic(); }
         if (NET.lobby && NET.lobby.suggest && !(UI.pick || []).length) UI.pick = NET.lobby.suggest.slice();
-        NET.rematch = { me:false, opp:false, oppLeft:false }; NET.nextSent = false;
+        NET.rematch = { me:false, opp:false, oppLeft:false }; NET.nextSent = false; NET.oppGone = null; awayHide();
         if (m.view) return m.view.phase === 'ended' ? applyState(m) : start(m);
         document.querySelectorAll('.ovl, .annc').forEach(o => o.remove());
         S = null; SERIES = null; render(); return;
@@ -2320,6 +2339,9 @@ if (!window.FA_NET_MODE) render();
         fillEndButtons(); if (S && S.phase === 'ended') renderPicker(); return;
       }
       case 'banner': return announce(m.text || '', { sub: m.sub, tone: m.tone, ms: m.ms });
+      case 'opp-away': awayShow(m.name, m.until); announce(`${m.name} disconnected`, { tone:'warn', sub:'Waiting for them to come back' }); return;
+      case 'opp-back': awayHide(); announce(`${m.name} is back!`, { tone:'good' }); return;
+      case 'opp-gone': awayHide(); NET.oppGone = m.name; return;
       case 'start': return start(m, true);
       case 'committed': return opponentCommitted(m.seat);
       case 'reveal': return reveal(m);

@@ -97,8 +97,9 @@ export function restore() {
   try { saved = game.settings.get(MODULE_ID, SETTING_SESSIONS) || {}; } catch { saved = {}; }
   for (const s of Object.values(saved)) {
     if (!s?.sid || sessions.has(s.sid)) continue;
-    s.hostId = game.user.id; s.deadline = null; sessions.set(s.sid, s);
+    s.hostId = game.user.id; s.deadline = null; s.away = null; sessions.set(s.sid, s);
     if (s.match && s.match.phase !== "ended") decide(s);
+    if (s.kind === "pvp" && !s.over) s.seats.forEach((t, i) => { if (t.userId && !game.users.get(t.userId)?.active) goAway(s, i); });
   }
   if (sessions.size) { console.log(TAG, `restored ${sessions.size} duel session(s)`); pushStatus(); }
 }
@@ -119,7 +120,7 @@ function decide(s, extra = 0) {
   });
   // decision timer only when two humans play (v0.5: no timer against the AI)
   const humans = s.seats.filter((t) => t.kind === "human").length;
-  if (humans === 2 && s.seats.some((t, i) => M.needs(m, i))) {
+  if (humans === 2 && !awayAny(s) && s.seats.some((t, i) => M.needs(m, i))) {
     s.deadline = Date.now() + extra + CFG().TIMER * 1000;
     r.timer = setTimeout(() => {
       if (s.match !== m || m.phase === "ended") return;
@@ -243,6 +244,73 @@ async function leave(s, seat, userId) {
   if (!s.seats.some((x) => x.userId)) closeSession(s);
   else { pushStatus(); save(); }
 }
+// ------------------------------------------------------------------ PvP disconnect: 60 s grace, then forfeit
+// A seated player whose client drops (Foundry "userConnected") gets GRACE_MS to come back. Meanwhile the round clock
+// stops (no auto-play for the empty seat) and the opponent's window shows a countdown. Back in time: "X is back", a
+// fresh round clock, play on (their window reopens through hello-client as before). Not back: they forfeit the
+// series and the opponent wins. NPC duels are untouched (they simply resume when the player returns).
+const GRACE_MS = 60000;
+const awayAny = (s) => !!(s.away && Object.keys(s.away).length);
+function onPresence(userId, connected) {
+  for (const s of [...sessions.values()]) {
+    if (s.over) continue;
+    if (!connected && s.spectators.includes(userId)) { s.spectators = s.spectators.filter((u) => u !== userId); broadcast(s, () => ({ t: "spectators", n: s.spectators.length })); save(); }
+    if (s.kind !== "pvp") continue;
+    const seat = viewerOf(s, userId); if (seat === null) continue;
+    if (s.pending) {                        // an open invite: withdraw it
+      if (connected) continue;
+      const other = s.seats[1 - seat];
+      clearTimeout(rt(s.sid).inviteTimer); sessions.delete(s.sid);
+      send(s.seats[1].userId, "invite-close", { reason: "offline" }, s.sid);
+      if (other.userId) notify(other.userId, `${s.seats[seat].name} went offline.`);
+      continue;
+    }
+    if (connected) comeBack(s, seat); else goAway(s, seat);
+  }
+}
+function goAway(s, seat) {
+  if (s.away && s.away[seat]) return;
+  const t = s.seats[seat], other = s.seats[1 - seat];
+  s.away = s.away || {}; s.away[seat] = Date.now() + GRACE_MS;
+  clearTimers(s); s.deadline = null;
+  const r = rt(s.sid); r.awayT = r.awayT || {}; clearTimeout(r.awayT[seat]); r.awayT[seat] = setTimeout(() => forfeit(s, seat), GRACE_MS);
+  if (other.userId && !(s.away[1 - seat])) {
+    notify(other.userId, `${t.name} disconnected. Waiting ${GRACE_MS / 1000} s for them to come back.`, "warn");
+    toDuel(s, other.userId, { t: "opp-away", name: t.name, until: s.away[seat] });
+    if (s.match) toDuel(s, other.userId, { t: "state", ...payload(s, 1 - seat) });   // drops the round clock on their side
+  }
+  console.log(TAG, `${t.name} disconnected from a duel; forfeit in ${GRACE_MS / 1000} s unless they return`);
+  save();
+}
+function comeBack(s, seat) {
+  if (!s.away || !s.away[seat]) return;
+  const t = s.seats[seat], other = s.seats[1 - seat];
+  delete s.away[seat]; clearTimeout(rt(s.sid).awayT?.[seat]);
+  if (other.userId && !s.away[1 - seat]) { notify(other.userId, `${t.name} is back.`); toDuel(s, other.userId, { t: "opp-back", name: t.name }); }
+  if (!awayAny(s)) { s.away = null; if (s.match && s.match.phase !== "ended") { decide(s); broadcast(s, (v) => ({ t: "state", ...payload(s, v) })); } }
+  save();
+}
+async function forfeit(s, seat) {
+  if (!sessions.has(s.sid) || s.over || !s.away || !s.away[seat]) return;
+  const t = s.seats[seat], other = s.seats[1 - seat];
+  delete s.away[seat];
+  const otherAway = !!s.away[1 - seat];
+  if (!s.match || otherAway) {               // still in team select, or both gone: nobody to award; end it
+    if (other.userId && !otherAway) notify(other.userId, `${t.name} didn't come back. The duel is cancelled.`);
+    return closeSession(s);
+  }
+  if (s.match.phase !== "ended") { E().Match.concede(s.match, seat); await onGameEnd(s); }
+  if (!s.series.over) { s.series.over = true; s.series.winner = 1 - seat; }
+  s.over = true; s.away = null; clearTimers(s);
+  if (other.userId) {
+    notify(other.userId, `${t.name} didn't come back. You win by forfeit.`);
+    toDuel(s, other.userId, { t: "opp-gone", name: t.name });
+    toDuel(s, other.userId, { t: "state", ...payload(s, 1 - seat) });
+  }
+  t.userId = null; t.left = true;
+  console.log(TAG, `${t.name} forfeited a duel (disconnected for ${GRACE_MS / 1000} s)`);
+  pushStatus(); save();
+}
 function dropSpectator(s, userId) {
   s.spectators = s.spectators.filter((u) => u !== userId);
   send(userId, "close", {}, s.sid);
@@ -250,7 +318,7 @@ function dropSpectator(s, userId) {
   save();
 }
 function closeSession(s) {
-  clearTimers(s); clearTimeout(rt(s.sid).inviteTimer);
+  clearTimers(s); clearTimeout(rt(s.sid).inviteTimer); for (const k of Object.keys(rt(s.sid).awayT || {})) clearTimeout(rt(s.sid).awayT[k]);
   for (const p of participants(s)) send(p.uid, "close", {}, s.sid);
   sessions.delete(s.sid); runtime.delete(s.sid);
   pushStatus(); save();
@@ -363,6 +431,7 @@ export function installHost() {
       if (v !== null || s.spectators.includes(env.from)) send(env.from, "open", { role: v === null ? "spectator" : "player", hostId: s.hostId }, s.sid);
     }
   });
+  Hooks.on("userConnected", (user, connected) => { try { onPresence(user?.id, !!connected); } catch (e) { console.error(TAG, "presence", e); } });
   Hooks.on("fabula.restPerformed", () => {
     if (!game.user.isGM || hostGM()?.id !== game.user.id) return;
     for (const u of game.users) if (u.getFlag(MODULE_ID, FLAG_BLOCK)) u.unsetFlag(MODULE_ID, FLAG_BLOCK).catch((e) => console.warn(TAG, "clear blocks", e));
