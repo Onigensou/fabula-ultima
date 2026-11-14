@@ -95,8 +95,8 @@
     const marks = att.cid==='jack', ddef = (smoke || marks) ? 0 : pdef;
     let d = Math.max(1, atk - ddef); let line = head + (ddef?` − DEF ${ddef}${landD?' (landing)':''}`:'') + (smoke && (pdef || golem) ? ' · <b>Smoke Bomb</b> ignores DEF' : '') + (marks && !smoke && pdef ? ' · <b>Deadly Marksmanship</b> ignores DEF' : '') + (slip && ddef ? ' (Slipstream +' + CFG.SLIPSTREAM + ')' : '') + ` = ${d}`;
     const mod = elMod(ael, D.el); let aff = ael==='none' ? 'NONE' : 'N';
-    if (mod>0){ d=Math.max(1,d+mod); aff='ADV'; line+=` · <b>Strong</b> vs ${EL[D.el]} +${mod} = ${d}`; }
-    if (mod<0){ d=Math.max(1,d+mod); aff='DIS'; line+=` · <b>Weak</b> vs ${EL[D.el]} ${mod} = ${d}`; }
+    if (mod>0){ d=Math.max(1,d+mod); aff='ADV'; line+=` · <b>Weak</b>: ${EL[D.el]} takes +${mod} from ${EL[ael]} = ${d}`; }
+    if (mod<0){ d=Math.max(1,d+mod); aff='DIS'; line+=` · <b>Resist</b>: ${EL[D.el]} takes −${-mod} from ${EL[ael]} = ${d}`; }
     // Roo (playtest 11-14): its ordinary attacks deal nothing (no min-1 floor, no element bonus); only the knife hurts.
     // Zeroed BEFORE shields so a Roo poke never spends Thick Skin / Pyrophagy / Earthen Wire.
     if (att.cid==='roo' && d>0){ d=0; line+=' · Roo does not hurry: 0'; }

@@ -213,7 +213,7 @@ const blank = blankStats;
   S = duel(['kirin','hilde','cryo'], B('wolf'), {hp:[30,30]}); S.p[0].roster[2].hp=4; r=go(P,P); ok(!r.ev.grace && S.p[0].roster[2].hp===4, 'Royal Grace: no heal while Hilde is benched');
   S = duel(A('carlbero'), B('wolf'), {hp:[30,30]}); r=go(P,{action:'STRENGTH'}); const brd=R.getS().round;
   ok(S.p[1].roster[0].breath===brd+1, 'Stinking Breath: a damaging hit applies the breath for 3 rounds');
-  r=go(P,P); ok(r.ev.res[1].dmg===4, 'Stinking Breath: Wolf −1 ATK (3 +1 Howl −1 = 3 − DEF 1 = 2, +2 Strong = 4; 5 without the breath)');
+  r=go(P,P); ok(r.ev.res[1].dmg===4, 'Stinking Breath: Wolf −1 ATK (3 +1 Howl −1 = 3 − DEF 1 = 2, +2 Weak = 4; 5 without the breath)');
   S = duel(A('hellhound'), B('kirin'), {hp:[30,30]}); S.p[1].roster[0].breath=R.getS().round+1; r=go(P,P); ok(dmg0()===4, 'Stinking Breath: −1 DEF on the target (Hellhound 4 vs Kirin DEF 1−1 = 4)');
   // ---- Blanche + Keren (11-15) ----
   S = duel(['blanche','kirin','cryo'], B('wolf'), {hp:[30,30]}); S.p[0].roster[1].hp=4; S.p[0].roster[2].hp=6; r=go(P,P);

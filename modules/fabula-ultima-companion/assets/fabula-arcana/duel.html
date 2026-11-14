@@ -205,10 +205,10 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold);outl
 .pop{position:absolute;transform:translate(-50%,0);font-family:var(--font-d);font-size:30px;font-weight:700;text-shadow:2px 2px 0 #000,0 0 6px #000;pointer-events:none;animation:pop 1.3s ease-out forwards;text-align:center;line-height:1;white-space:nowrap}
 .pop small{display:block;font-size:12px;margin-top:3px}
 .pop.dmg{color:var(--hurt)} .pop.heal{color:var(--heal)} .pop.zero{color:#fff}
-/* affinity feedback (11-15): Strong = big hot number + red ▲ badge; Weak = small grey number + slate "Resist" badge */
-.pop.strong{font-size:44px;text-shadow:2px 2px 0 #000,0 0 10px #ff8a00,0 0 20px #ff5a2a99}
-.pop.dmg.strong{color:#ff5a2a}
-.pop.weak{font-size:22px} .pop.dmg.weak{color:#b9c6d6}
+/* affinity feedback (11-15): the target is Weak (+2) = big hot number + red "Weak" badge; it Resists (−2) = small grey number + slate "Resist" badge */
+.pop.vu{font-size:44px;text-shadow:2px 2px 0 #000,0 0 10px #ff8a00,0 0 20px #ff5a2a99}
+.pop.dmg.vu{color:#ff5a2a}
+.pop.rs{font-size:22px} .pop.dmg.rs{color:#b9c6d6}
 .pop .afb{display:inline-block;padding:2px 8px;border-radius:9px;font-family:var(--font-b);font-weight:700;font-size:14px;line-height:1.1;color:#fff;text-shadow:0 1px 0 #0008}
 .pop .afb.up{background:#c8321e;box-shadow:0 0 8px #ff6a3a} .pop .afb.dn{background:#4a5b70;box-shadow:0 0 4px #0008}
 .slot.hurtflash .holo .spr{animation:hurtFlash .5s ease-out}
@@ -703,7 +703,7 @@ function elBadge(e, where, flat){ if (EL_PLACE!==where) return ''; const c=`--c:
   if (where==='stats') return flat ? `<span class="elt">${elIco(e)}${EL[e]}</span>` : `<span class="st elst" style="${c}">${elIco(e)}${EL[e]}</span>`;
   return ''; }
 const starStr = n => `<span class="lvstars">${'<i class="lv"></i>'.repeat(n)}</span>`;   // classic level-star balls
-const AFFN = { ADV:'Strong', DIS:'Weak', AB:'Absorb', NONE:'Elementless', N:'Neutral' };
+const AFFN = { ADV:'Weak', DIS:'Resist', AB:'Absorb', NONE:'Elementless', N:'Neutral' };
 
 // ===================== CARDS (ChatGPT v0.2 starter set, real affinities from the world data) =====================
 // Roles = descriptive tags only (ChatGPT v2). Rank (cost) is separate: soldier ★, elite ★★, boss ★★★.
@@ -857,8 +857,8 @@ function calcAttack(att, def, ctx){
     return { dmg:0, heal:CFG.AB_HEAL, aff:'AB', line:`${head} · ${N(def.cid)}'s <b>${D.ab}</b> negates it (+${CFG.AB_HEAL} HP)`, usedAbsorb:true, howl, pyre, kcharge, ael };
   let d = Math.max(1, atk - D.def); let line = head + (D.def?` − DEF ${D.def}`:'') + ` = ${d}`;
   const mod = elMod(ael, D.el); let aff = ael==='none' ? 'NONE' : 'N';
-  if (mod>0){ d=Math.max(1,d+mod); aff='ADV'; line+=` · <b>Strong</b> vs ${EL[D.el]} +${mod} = ${d}`; }
-  if (mod<0){ d=Math.max(1,d+mod); aff='DIS'; line+=` · <b>Weak</b> vs ${EL[D.el]} ${mod} = ${d}`; }
+  if (mod>0){ d=Math.max(1,d+mod); aff='ADV'; line+=` · <b>Weak</b>: ${EL[D.el]} takes +${mod} from ${EL[ael]} = ${d}`; }
+  if (mod<0){ d=Math.max(1,d+mod); aff='DIS'; line+=` · <b>Resist</b>: ${EL[D.el]} takes −${-mod} from ${EL[ael]} = ${d}`; }
   const red=[]; let r=0;
   if (ctx.defItem==='GOLEM'){
     if (ctx.attItem==='SMOKE') red.push('Golem Fragment pierced by Smoke Bomb'); else { r+=CFG.GOLEM; red.push(`Golem Fragment −${CFG.GOLEM}`); }
@@ -1738,23 +1738,23 @@ async function fxClash(ev){
   add('ring',ix,iy,{'--pc':colors[colors.length-1]});
   for (let k=0;k<12;k++){ add('ray',ix-2,iy-44,{'--pc':colors[k%colors.length],transform:`rotate(${k*30+Math.random()*12}deg)`}); }
   particles(ix,iy,26,colors[0],{r:90}); if (colors[1]) particles(ix,iy,18,colors[1],{r:80});
-  // Affinity feel (11-15): a Strong hit lands heavy (hit-stop, hard shake, defender flashes red, critical SFX);
-  // a Weak hit glances off (no shake, grey spark, guard clink instead of the element sound). Neutral = unchanged.
-  const isStrong = r => r.aff==='ADV' && r.dmg>0, isWeak = r => r.aff==='DIS';
-  const anyStrong = att.some(s=>isStrong(ev.res[s])), allWeak = att.every(s=>isWeak(ev.res[s]));
+  // Affinity feel (11-15): a hit the target is Weak to lands heavy (hit-stop, hard shake, defender flashes red, critical SFX);
+  // a hit it Resists glances off (no shake, grey spark, guard clink instead of the element sound). Neutral = unchanged.
+  const isVu = r => r.aff==='ADV' && r.dmg>0, isRs = r => r.aff==='DIS';
+  const anyVu = att.some(s=>isVu(ev.res[s])), allRs = att.every(s=>isRs(ev.res[s]));
   table.classList.remove('shake','shake-hard'); void table.offsetWidth;
-  if (anyStrong) table.classList.add('shake-hard'); else if (!allWeak) table.classList.add('shake');
+  if (anyVu) table.classList.add('shake-hard'); else if (!allRs) table.classList.add('shake');
   for (const s of att){ const r=ev.res[s], d=1-s, dc=spriteCenter(d);
-    if (isStrong(r)){ const sl=$(`#slot${d}_${S.p[d].active}`); if (sl){ sl.classList.remove('hurtflash'); void sl.offsetWidth; sl.classList.add('hurtflash'); setTimeout(()=>sl.classList.remove('hurtflash'), 600); }
+    if (isVu(r)){ const sl=$(`#slot${d}_${S.p[d].active}`); if (sl){ sl.classList.remove('hurtflash'); void sl.offsetWidth; sl.classList.add('hurtflash'); setTimeout(()=>sl.classList.remove('hurtflash'), 600); }
       add('flash',dc.x,dc.y,{'--pc':'#ff5a2a'}); particles(dc.x,dc.y,14,'#ffb347',{r:70}); }
-    else if (isWeak(r)){ add('ring',dc.x,dc.y,{'--pc':'#a9b6c6'}); particles(dc.x,dc.y,8,'#c7d0dc',{r:40}); } }
-  if (!allWeak) sfx('hit', 0.9, 0);
+    else if (isRs(r)){ add('ring',dc.x,dc.y,{'--pc':'#a9b6c6'}); particles(dc.x,dc.y,8,'#c7d0dc',{r:40}); } }
+  if (!allRs) sfx('hit', 0.9, 0);
   for (const s of att){ const r=ev.res[s];
-    if (isWeak(r)) sfx('weak', 0.85, 0);
+    if (isRs(r)) sfx('aff_resist', 0.85, 0);
     else if (r.aff!=='NONE' && !r.usedAbsorb) sfx(HITSND[CARDS[r.a.cid].el]||'hit', 0.8, 0); else if (r.aff==='NONE') sfx('shard',0.6,0);
-    if (isStrong(r)) sfx('strong', 0.9, 0); }
+    if (isVu(r)) sfx('aff_weak', 0.9, 0); }
   for (const s of [0,1]){ const b=$('#barrier'+s); const r=ev.res[1-s]; if (b&&r){ b.classList.add(r.pierced?'shatter':'crack'); sfx(r.pierced?'shatter':'parry',0.8,0); } }
-  if (anyStrong && !RM()){ anims.forEach(a=>{ try{ a.pause(); }catch(e){} }); await sleep(120); anims.forEach(a=>{ try{ a.play(); }catch(e){} }); }   // hit-stop
+  if (anyVu && !RM()){ anims.forEach(a=>{ try{ a.pause(); }catch(e){} }); await sleep(120); anims.forEach(a=>{ try{ a.play(); }catch(e){} }); }   // hit-stop
   await Promise.all(anims.map(a=>a.finished.catch(()=>{})));
   slots.forEach(e=>{ e.style.zIndex=''; });
 }
@@ -1803,8 +1803,8 @@ const reviveAt = (ev, s, i) => (ev.revive||[]).some(v=>v.s===s && v.i===i);
 const burstOn = (ev, gSide) => { const e=((ev.after&&ev.after[gSide])||[]).find(x=>x[0]==='burst'); return e ? e[1] : 0; };
 function popFor(s, r){   // popup on defender side s for attack r
   if (r.heal){ popNum(s,'+'+(r.healed||0),'heal','Absorb'); sfx('absorb',0.9,0); }
-  else if (r.aff==='ADV') popNum(s, r.dmg?('−'+r.dmg):'0', (r.dmg?'dmg':'zero')+' strong', `<span class="afb up">▲ +${CFG.ADV}</span>`);
-  else if (r.aff==='DIS') popNum(s, r.dmg?('−'+r.dmg):'0', (r.dmg?'dmg':'zero')+' weak', `<span class="afb dn">Resist</span>`);
+  else if (r.aff==='ADV') popNum(s, r.dmg?('−'+r.dmg):'0', (r.dmg?'dmg':'zero')+' vu', `<span class="afb up">Weak</span>`);
+  else if (r.aff==='DIS') popNum(s, r.dmg?('−'+r.dmg):'0', (r.dmg?'dmg':'zero')+' rs', `<span class="afb dn">Resist</span>`);
   else popNum(s, r.dmg?('−'+r.dmg):'0', r.dmg?'dmg':'zero', r.aff==='NONE'?'Elementless':'');
 }
 async function playRound(ev, before){
@@ -1867,9 +1867,9 @@ function chartHTML(){
   let arrows=''; for (let i=0;i<5;i++){ const [x1,y1]=pts[i], [x2,y2]=pts[(i+1)%5]; const dx=x2-x1, dy=y2-y1, L=Math.hypot(dx,dy), ux=dx/L, uy=dy/L; const sx=x1+ux*20, sy=y1+uy*20, ex=x2-ux*22, ey=y2-uy*22;
     arrows+=`<line x1="${sx}" y1="${sy}" x2="${ex}" y2="${ey}" stroke="#7a4e20" stroke-width="2" marker-end="url(#ah)"/>`; }
   const nodes=cyc.map((e,i)=>`<g><circle cx="${pts[i][0]}" cy="${pts[i][1]}" r="17" fill="#fbf4dc" stroke="var(--e-${e})" stroke-width="3"/><text x="${pts[i][0]}" y="${pts[i][1]+4}" text-anchor="middle" font-family="Signika, sans-serif" font-size="11" font-weight="600" fill="#3a1e06">${EL[e]}</text></g>`).join('');
-  return `<div class="win chart"><div class="label" style="margin-bottom:4px">Element chart · arrow = strong against (+2), reverse = weak (−2)</div>
+  return `<div class="win chart"><div class="label" style="margin-bottom:4px">Element chart · the arrow points at the element that is Weak to it (+2); the other way round it Resists (−2)</div>
     <svg viewBox="0 0 220 156" role="img" aria-label="Ice beats Fire, Fire beats Air, Air beats Earth, Earth beats Bolt, Bolt beats Ice"><defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7a4e20"/></marker></defs>${arrows}${nodes}</svg>
-    <div class="pairs"><span>${elPill('light')}⇄${elPill('dark')}</span><span>${elPill('poison')}⇄${elPill('phys')}</span><span class="hint">each strong vs the other</span></div></div>`;
+    <div class="pairs"><span>${elPill('light')}⇄${elPill('dark')}</span><span>${elPill('poison')}⇄${elPill('phys')}</span><span class="hint">each is Weak to the other</span></div></div>`;
 }
 function cardHTML(cid, extra=''){
   const c=CARDS[cid];
@@ -1883,7 +1883,7 @@ function rulesHTML(){
   return `<div class="win rules"><div class="label">How a round works</div><ol>
     <li>Build a team of 3 within <b>5★</b>. Each round both players secretly play <b>one</b> card: an item, <b>Pass</b>, or <b>Switch</b>. You get one of each of the 6 items per match.</li>
     <li>Reveal. Replacements and switches happen, then <b>Remedy</b> heals.</li>
-    <li>The monster with higher <b>SPD</b> strikes first; if that KOs the other, it can't strike back. Equal SPD hits at the same time. Damage = ATK − DEF (min 1), then the element chart: <b>strong +2</b>, <b>weak −2</b> (never below 1). <b>Elemental Shard</b> makes an attack Elementless.</li>
+    <li>The monster with higher <b>SPD</b> strikes first; if that KOs the other, it can't strike back. Equal SPD hits at the same time. Damage = ATK − DEF (min 1), then the element chart: a target <b>Weak</b> to the attack takes <b>+2</b>, one that <b>Resists</b> it takes <b>−2</b> (never below 1). <b>Elemental Shard</b> makes an attack Elementless.</li>
     <li>A monster that switched in skips its attack but still gets hit.</li>
     <li>When a monster falls, the round pauses for a quick <b>Replacement step</b>: drag one monster up. Knock out all <b>3</b> to win. If both last monsters fall together, the one with more HP before the hit wins.</li>
   </ol></div>`;
