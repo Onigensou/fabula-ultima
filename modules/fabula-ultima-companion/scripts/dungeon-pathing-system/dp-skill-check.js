@@ -6,18 +6,21 @@
 //      Random Battle does). Players see nothing yet.
 //   2. The main GM gets the picker: this dungeon's PRESET events, unplayed
 //      first, played ones greyed with their count (picking one again asks
-//      first), a tile's PINNED preset preselected, plus Freeform and Skip.
+//      first), a tile's PINNED preset preselected. The last row of every list
+//      is "Custom Event" (the GM improvises: spark ideas + the GM chip).
+//      Buttons: Random new one, Skip tile, Play.
 //   3. Trip: the dungeon map's theatre scene (first theatre entry in its Scene
 //      Network) is activated. The dungeon's party token is NOT touched, so the
 //      board comes back exactly where it was. Scene activation already plays
 //      the game's black fade on every client (screen-transition.js).
 //   4. The event: a preset is an ordinary event authored in Event Config on a
 //      hidden "slate" tile on that theatre scene (Fabula tab → Skill Check
-//      preset). Freeform = the GM narrates; a GM chip requests the check and
+//      preset). Custom Event = the GM narrates; a GM chip requests the check and
 //      offers quick consequences.
 //   5. Finish: EXP to the whole party (1 by default, pass or fail unless the
-//      preset says pass-only), a row in the played log on the party database
-//      actor (saved per slot), the tile cleared to Blank, then back to the map.
+//      preset says pass-only) and a row in the played log on the party database
+//      actor (saved per slot). Then back to the map; once everyone sees it, the
+//      tile clears to Blank with the Clear Tile macro's smoke puff + door sound.
 //      Ending early: no EXP, no log, the tile stays.
 //   No theatre scene for this map: the same thing runs in place on the map.
 //
@@ -40,6 +43,11 @@
   const LOG_CAP = 300;
   const EXP_HOLD_MS = 3800;      // let the EXP panel play before leaving the theatre
   const PLAYER_DRAW_WAIT_MS = 20000;
+  const CLEAR_SETTLE_MS = 900;   // players' canvases draw after viewedScene flips
+  const CUSTOM_ID = "__custom";
+  // The manual "Clear Tile" macro's feedback (Macro pfssndYCmaliG6Wn).
+  const CLEAR_FX  = "modules/JB2A_DnD5e/Library/Generic/Smoke/SmokePuffRing01_02_Regular_White_400x400.webm";
+  const CLEAR_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Door1.ogg";
 
   const sleep = (ms) => new Promise(r => setTimeout(r, ms));
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -177,7 +185,6 @@
 #${PANEL_ID} button.hot{box-shadow:0 0 0 2px #c9a44a}
 #${PANEL_ID} button:disabled{opacity:.45;cursor:default;box-shadow:none}
 #${PANEL_ID} .warn{background:rgba(122,46,24,.1);border:1px solid #b5471f;border-radius:7px;padding:6px 9px;margin:0 0 8px;font-size:13px}
-#${PANEL_ID} .empty{color:#6b4a26;font-style:italic;padding:6px 2px}
 #${PANEL_ID} .spark{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:4px 0 8px}
 #${PANEL_ID} .spark div{border:1px dashed #b8865a;border-radius:6px;padding:4px 7px;background:rgba(255,255,255,.35);font-size:13px}
 #${PANEL_ID} .spark b{display:block;font-size:11px;color:#6b4a26;font-weight:600}
@@ -213,11 +220,13 @@
   const opt = (list, v) => list.map(x => { const [k, l] = Array.isArray(x) ? x : [x, x]; return `<option value="${esc(k)}" ${String(k) === String(v) ? "selected" : ""}>${esc(l)}</option>`; }).join("");
 
   // Picker → { action: "play", preset } | { action: "freeform", form } | { action: "skip" }
+  // Every list ends with the Custom Event row (CUSTOM_ID); Play on it opens the
+  // custom setup panel.
   function pick({ scene, tileDoc, theatre, presets, pinId, log }) {
     return new Promise((resolve) => {
       const plays = (p) => playsOf(log, theatre?.id, p.id);
       const ordered = [...presets].sort((a, b) => (plays(a).length > 0) - (plays(b).length > 0));
-      let selId = presets.some(p => p.id === pinId) ? pinId : (ordered.find(p => !plays(p).length)?.id ?? ordered[0]?.id ?? null);
+      let selId = presets.some(p => p.id === pinId) ? pinId : (ordered.find(p => !plays(p).length)?.id ?? ordered[0]?.id ?? CUSTOM_ID);
       let confirmReplay = false;
       const area = scene.navName || scene.name;
       const unplayed = presets.filter(p => !plays(p).length).length;
@@ -229,19 +238,20 @@
         el.innerHTML = `<span class="gm">GM</span>
           <h3>Skill Check · <b>${esc(area)}</b></h3>
           <div class="sub">${theatre ? `${presets.length} preset${presets.length === 1 ? "" : "s"} on <b>${esc(theatre.name)}</b> · ${unplayed} not played on this save` : "This map has no theatre scene: the event runs here on the map."}</div>
-          ${presets.length ? `<div class="list">${ordered.map(p => {
+          <div class="list">${ordered.map(p => {
             const n = plays(p).length;
             return `<div class="row ${n ? "played" : ""} ${p.id === selId ? "sel" : ""}" data-id="${p.id}">
               <span>${esc(p.title)}${p.id === pinId ? `<span class="tag pin">Pinned to this tile</span>` : ""}</span>
               <span class="att">${esc(p.summary)}${p.exp !== 1 ? ` · ${p.exp} EXP` : ""}</span>
               <span class="tag ${n ? "pl" : "new"}">${n ? `Played ${n}×` : "New"}</span></div>`;
-          }).join("")}</div>` : `<div class="empty">${theatre ? "No presets yet. Mark a hidden event tile on the theatre scene as a Skill Check preset (Fabula tab)." : ""}</div>`}
+          }).join("")}
+            <div class="row ${selId === CUSTOM_ID ? "sel" : ""}" data-id="${CUSTOM_ID}">
+              <span>Custom Event</span><span class="att">you run it: spark ideas, your own check</span><span></span></div></div>
           ${confirmReplay && last ? `<div class="warn">Already played on this save${last.mapName ? ` (${esc(last.mapName)}` : " ("}${last.result ? `, ${esc(last.result === "success" ? "Pass" : last.result === "failure" ? "Fail" : last.result)}` : ""}). Play it again?</div>` : ""}
           <div class="foot">
             ${presets.length ? `<button data-a="random" ${unplayed ? "" : "disabled"}>Random new one</button>` : ""}
-            <button data-a="free">Freeform…</button>
             <button data-a="skip" class="red">Skip tile</button>
-            ${presets.length ? (confirmReplay ? `<button data-a="back">No</button><button data-a="play" class="hot">Play again</button>` : `<button data-a="play" class="hot" ${sel ? "" : "disabled"}>Play</button>`) : ""}
+            ${confirmReplay ? `<button data-a="back">No</button><button data-a="play" class="hot">Play again</button>` : `<button data-a="play" class="hot" ${sel || selId === CUSTOM_ID ? "" : "disabled"}>Play</button>`}
           </div>`;
         el.querySelectorAll(".row").forEach(r => r.addEventListener("click", () => { selId = r.dataset.id; confirmReplay = false; renderList(el); }));
         el.querySelectorAll("button").forEach(b => b.addEventListener("click", () => act(b.dataset.a, el)));
@@ -251,7 +261,7 @@
         const sp = sparkLists(theatre);
         form.sparks ??= { hazard: deal(sp.hazard), stakes: deal(sp.stakes), twist: deal(sp.twist) };
         el.innerHTML = `<span class="gm">GM</span>
-          <h3>Skill Check · <b>Freeform</b></h3>
+          <h3>Skill Check · <b>Custom Event</b></h3>
           <div class="sub">${esc(area)} · you narrate; the title is only for the played log</div>
           <div class="spark"><div><b>Hazard</b>${esc(form.sparks.hazard)}</div><div><b>Stakes</b>${esc(form.sparks.stakes)}</div><div><b>Twist</b>${esc(form.sparks.twist)}</div></div>
           <div class="grid">
@@ -260,7 +270,7 @@
             <span class="lbl">Who rolls</span><select id="scx-who">${opt([["group", "Group Check (the party picks a leader)"], ["each", "Everyone rolls"]], form.who)}</select>
             <span class="lbl">EXP</span><span class="inl"><input type="number" id="scx-exp" min="0" max="9" value="${form.exp}" /><label class="lbl"><input type="checkbox" id="scx-passonly" ${form.passOnly ? "checked" : ""} style="height:auto" /> only on a pass</label></span>
           </div>
-          <div class="foot"><button data-a="reroll">Deal new sparks</button>${presets.length ? `<button data-a="list">Back to presets</button>` : ""}<button data-a="skip" class="red">Skip tile</button><button data-a="start" class="hot">Start</button></div>`;
+          <div class="foot"><button data-a="reroll">Deal new sparks</button><button data-a="list">Back to list</button><button data-a="skip" class="red">Skip tile</button><button data-a="start" class="hot">Start</button></div>`;
         const read = () => {
           form.title = el.querySelector("#scx-title").value.trim();
           form.attrA = el.querySelector("#scx-a").value; form.attrB = el.querySelector("#scx-b").value;
@@ -283,7 +293,6 @@
       const finish = (v) => { closePanel(); resolve(v); };
       const act = (a, el) => {
         if (a === "skip") return finish({ action: "skip" });
-        if (a === "free") { mode = "free"; return renderFree(el, freeForm); }
         if (a === "back") { confirmReplay = false; return renderList(el); }
         if (a === "random") {
           const pool = presets.filter(p => !plays(p).length);
@@ -291,6 +300,7 @@
           return finish({ action: "play", preset: pool[Math.floor(Math.random() * pool.length)] });
         }
         if (a === "play") {
+          if (selId === CUSTOM_ID) { mode = "free"; return renderFree(el, freeForm); }
           const sel = presets.find(p => p.id === selId);
           if (!sel) return;
           if (plays(sel).length && !confirmReplay) { confirmReplay = true; return renderList(el); }
@@ -299,7 +309,7 @@
       };
 
       const el = openPanel("picker", "");
-      if (presets.length) renderList(el); else { mode = "free"; renderFree(el, freeForm); }
+      renderList(el);
     });
   }
 
@@ -318,12 +328,23 @@
     while (behind().length && Date.now() < end) await sleep(200);
   }
 
+  // Clear the tile with the Clear Tile macro's smoke puff + door sound
+  // (Sequencer plays it on every client).
+  async function clearWithFx(scene, tileId) {
+    await DP.Socket.clearTile(scene, tileId).catch(e => console.warn(TAG, "clearTile failed", e));
+    try {
+      const tileObj = canvas?.scene?.id === scene.id ? canvas.tiles?.get(tileId) : null;
+      if (!tileObj || !globalThis.Sequence) return;
+      await new Sequence().effect().file(CLEAR_FX).atLocation(tileObj).sound().file(CLEAR_SFX).play();
+    } catch (e) { console.warn(TAG, "clear FX failed", e); }
+  }
+
   // ── freeform: GM chip ──────────────────────────────────────────────────────
   // Resolves { finished: bool, outcome: "success"|"failure"|null }.
   function runFreeform(form, actors) {
     return new Promise((resolve) => {
       const st = { outcome: null, failers: [], busy: false, note: "" };
-      const title = form.title || "Freeform";
+      const title = form.title || "Custom Event";
       const statusNames = globalThis.FUCompanion?.api?.heldStatus?.statusNames?.() ?? [];
       const ELEMENTS = window.oni?.EventSystem?.RowsPartyEffects?.ELEMENTS ?? [["physical", "Physical"]];
       const el = openPanel("chip", "");
@@ -331,7 +352,7 @@
       const render = () => {
         const res = st.outcome == null ? "" : `<div class="res">Result: <b class="${st.outcome === "success" ? "ok" : "no"}">${st.outcome === "success" ? "Passed" : "Failed"}</b>${st.failers.length && form.who === "each" ? ` · failed: ${esc(st.failers.map(a => a.name).join(", "))}` : ""}</div>`;
         el.innerHTML = `<span class="gm">GM</span>
-          <h3>Freeform · <b>${esc(title)}</b></h3>
+          <h3>Custom Event · <b>${esc(title)}</b></h3>
           <div class="sub">${esc(form.attrA)} + ${esc(form.attrB)} · DL ${form.dl} · ${form.who === "group" ? "Group Check" : "everyone rolls"} · ${form.exp} EXP${form.passOnly ? " on a pass" : ""}</div>
           ${res}${st.note ? `<div class="lbl" style="margin-bottom:6px">${esc(st.note)}</div>` : ""}
           <div class="foot" style="justify-content:flex-start">
@@ -440,6 +461,7 @@
 
     (async () => {
       let travelled = false;
+      let clearIt = false;
       try {
         const theatre = theatreFor(scene);
         const presets = presetsOn(theatre);
@@ -469,7 +491,7 @@
           if (result.error) ui.notifications?.warn?.(`Skill Check: the preset "${title}" did not run (${result.error}).`);
         } else {
           ({ title, exp, passOnly } = choice.form);
-          title = title || "Freeform";
+          title = title || "Custom Event";
           result = await runFreeform(choice.form, actors);
         }
 
@@ -481,7 +503,7 @@
             });
             await sleep(EXP_HOLD_MS);
           }
-          await DP.Socket.clearTile(scene, tileId).catch(e => console.warn(TAG, "clearTile failed", e));
+          clearIt = true;
           await appendLog({
             presetId, theatreId: theatre?.id ?? null, title, freeform: choice.action !== "play",
             result: result.outcome ?? null, exp: exp > 0 && (!passOnly || pass) ? exp : 0,
@@ -496,6 +518,15 @@
         closePanel();
         if (travelled) {
           await scene.activate().catch(e => console.error(TAG, "could not return to the map", e));
+        }
+        // The tile clears in front of everyone, back on the map.
+        if (clearIt) {
+          if (travelled) {
+            await waitForCanvas(scene.id);
+            await waitForPlayers(scene.id);
+            await sleep(CLEAR_SETTLE_MS);
+          }
+          await clearWithFx(scene, tileId);
         }
         _active = null;
         reply({ ok: true, travelling: travelled });
