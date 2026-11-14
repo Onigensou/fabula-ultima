@@ -6,7 +6,11 @@
 //   await hs.inflict({ actors: [zarg], status: "Dazed", turns: 2 });
 //   hs.list();                       // every party member's held statuses
 //   hs.list(zarg);                   // one actor
-//   await hs.release({ actors: "party", status: "slow" });  // cure by hand
+//   await hs.release({ actors: "party", status: "slow" });  // cure held ones by hand
+//   await hs.remove({ actors: "party", status: "slow" });   // cleanse: held or not
+//
+// Every write reports to the feedback layer (FU.Feedback.status → one batched
+// System Message line on every screen) unless the caller passes feedback: "none".
 //   await hs.activate([zarg]);       // convert now (battle start does this)
 //
 // Story meaning: the actor IS inflicted now (status icon, Party Menu, and the
@@ -42,6 +46,27 @@ const RELAY_TIMEOUT_MS = 15000;
 
 const log = (...a) => console.log(TAG, ...a);
 const warn = (...a) => console.warn(TAG, ...a);
+
+// ── feedback (FU.Feedback, shared/feedback.js) ─────────────────────────────
+// The status's container item ("Buff" / "Debuff") says which wording it gets.
+function isBuffStatus(statusId) {
+  for (const it of game.items ?? []) {
+    if (it.type !== "activeEffectContainer") continue;
+    if (!(it.effects ?? []).some(eff => statusIdsOf(eff).includes(statusId))) continue;
+    const n = String(it.name ?? "").toLowerCase();
+    return n.includes("buff") && !n.includes("debuff");
+  }
+  return false;
+}
+function report(feedback, kind, entry, applied = [], skipped = []) {
+  if (feedback === "none" || !entry) return;
+  const out = [];
+  const k = kind === "inflict" && isBuffStatus(entry.id) ? "buff" : kind;
+  for (const a of applied) out.push({ actorId: idOf(a), actorName: a.name, status: entry.name, kind: k });
+  for (const s of skipped) if (s.reason === "immune") out.push({ actorId: idOf(s), actorName: s.name, status: entry.name, kind: "immune" });
+  if (out.length) globalThis.FU?.Feedback?.status?.(out);
+}
+const idOf = (row) => String(row?.actorUuid ?? "").split(".").pop() || row?.name;
 
 const isPrimaryGM = () => globalThis.FUCompanion?.isPrimaryGM?.() ?? !!game.user?.isGM;
 
@@ -95,7 +120,7 @@ function findStatusEffects(actor, statusId) {
 }
 
 // ── GM-side operations ─────────────────────────────────────────────────────
-async function gmInflict({ actors, status, source = "", turns = null } = {}) {
+async function gmInflict({ actors, status, source = "", turns = null, feedback = "show" } = {}) {
   const entry = matchStatus(statusEntries(), status);
   if (!entry) return { ok: false, error: "UNKNOWN_STATUS", status: String(status ?? "") };
 
@@ -135,6 +160,7 @@ async function gmInflict({ actors, status, source = "", turns = null } = {}) {
     }
   }
   log(`inflict ${entry.id}${source ? ` (${source})` : ""}: ${applied.length} held, ${skipped.length} skipped`);
+  report(feedback, "held", entry, applied, skipped);
   return { ok: applied.length > 0, status: entry.id, applied, skipped };
 }
 
@@ -151,7 +177,7 @@ function conditionRegistryId(statusId) {
 // An ordinary status inflicted outside battle, landed the way dungeon tiles land
 // theirs (dp-tile-effect-engine buildEffectRefs): registry entry + a dungeon step
 // count + the landing-turn grace. Not held: it counts down while exploring.
-async function gmApplyNow({ actors, status, steps = null, source = "" } = {}) {
+async function gmApplyNow({ actors, status, steps = null, source = "", feedback = "show" } = {}) {
   const entry = matchStatus(statusEntries(), status);
   if (!entry) return { ok: false, error: "UNKNOWN_STATUS", status: String(status ?? "") };
   const aem = globalThis.FUCompanion?.api?.activeEffectManager;
@@ -181,6 +207,7 @@ async function gmApplyNow({ actors, status, steps = null, source = "" } = {}) {
     }
   }
   log(`applyNow ${entry.id}${source ? ` (${source})` : ""}: ${applied.length} applied, ${skipped.length} skipped`);
+  report(feedback, "inflict", entry, applied, skipped);
   return { ok: applied.length > 0, status: entry.id, applied, skipped };
 }
 
@@ -195,6 +222,22 @@ async function gmRelease({ actors, status = null } = {}) {
     removed.push({ actorUuid: actor.uuid, name: actor.name, count: ids.length });
   }
   return { ok: true, removed };
+}
+
+// Cleanse: every effect carrying this status, held or not. Only members who
+// actually had it are reported ("Hina and Zarg recover from Slow!").
+async function gmRemove({ actors, status, feedback = "show" } = {}) {
+  const entry = matchStatus(statusEntries(), status);
+  if (!entry) return { ok: false, error: "UNKNOWN_STATUS", status: String(status ?? "") };
+  const removed = [];
+  for (const actor of await resolveActors(actors)) {
+    const ids = findStatusEffects(actor, entry.id).map(e => e.id);
+    if (!ids.length) continue;
+    await actor.deleteEmbeddedDocuments("ActiveEffect", ids);
+    removed.push({ actorUuid: actor.uuid, name: actor.name, count: ids.length });
+  }
+  report(feedback, "removed", entry, removed);
+  return { ok: removed.length > 0, status: entry.id, removed };
 }
 
 // Convert every held status on these actors into a battle condition. The
@@ -224,7 +267,7 @@ async function gmActivate(actors) {
 }
 
 // ── relay (player client → primary GM) ─────────────────────────────────────
-const OPS = { inflict: gmInflict, applyNow: gmApplyNow, release: gmRelease, activate: (args) => gmActivate(args?.actors) };
+const OPS = { inflict: gmInflict, applyNow: gmApplyNow, release: gmRelease, remove: gmRemove, activate: (args) => gmActivate(args?.actors) };
 const _pending = new Map();
 
 function relay(op, args) {
@@ -292,6 +335,8 @@ const api = {
   statusNames: () => statusEntries().map(e => e.name),
   /** Remove held statuses (all, or one status) — a cure outside battle. */
   release: (args = {}) => run("release", args),
+  /** Cleanse a status, held or not. Reports "X recovers from Y!" unless feedback: "none". */
+  remove: (args = {}) => run("remove", args),
   /** Convert held statuses into battle conditions now. GM / tests. */
   activate: (actors) => run("activate", { actors }),
   /**

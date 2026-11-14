@@ -27,6 +27,10 @@ t("caller tags: resist, immune, held, dr:N; junk dropped", () => {
   const r = normalizeRow({ before: 50, after: 49, max: 60, tags: ["resist", "dr:5", "dr:0", "nope", "held"] });
   assert.deepEqual(r.chips.map((c) => c.label), ["Resist", "DR −5", "Held at 1"]);
 });
+t("caller tags: absorb and weak", () => {
+  assert.deepEqual(normalizeRow({ before: 50, after: 56, max: 60, tags: ["absorb"] }).chips.map((c) => c.kind), ["ab"]);
+  assert.deepEqual(normalizeRow({ before: 58, after: 40, max: 60, tags: ["weak"] }).chips.map((c) => c.label), ["Weak"]);
+});
 t("Crisis is worked out on an HP loss that crosses half max", () => {
   assert.deepEqual(normalizeRow({ before: 80, after: 64, max: 145 }).chips.map((c) => c.kind), ["cr"]);
   assert.equal(normalizeRow({ before: 60, after: 49, max: 157 }).chips.length, 0);

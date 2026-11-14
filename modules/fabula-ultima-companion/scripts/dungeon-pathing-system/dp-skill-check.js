@@ -195,7 +195,16 @@
 #${PANEL_ID} .res{margin:4px 0 8px;font-size:13.5px}
 #${PANEL_ID} .res b.ok{color:#2e6a2a}#${PANEL_ID} .res b.no{color:#8a2416}
 #${PANEL_ID} hr{border:0;border-top:1px solid rgba(122,82,48,.35);margin:8px 0}
-#${PANEL_ID} .lbl{font-size:12px;color:#6b4a26}`;
+#${PANEL_ID} .lbl{font-size:12px;color:#6b4a26}
+#${PANEL_ID} .btns{display:flex;flex-wrap:wrap;gap:6px}
+#${PANEL_ID} .btns + .btns{margin-top:6px}
+#${PANEL_ID} .state{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid #b8865a;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.35);margin:2px 0 4px}
+#${PANEL_ID} .state span{text-align:center;font-size:12.5px;padding:3px 0;color:#6b4a26;cursor:pointer;user-select:none}
+#${PANEL_ID} .state span + span{border-left:1px solid rgba(122,82,48,.3)}
+#${PANEL_ID} .state span:focus-visible{outline:2px solid #c9a44a;outline-offset:-2px}
+#${PANEL_ID} .state span.on{font-weight:700;color:#fff3df}
+#${PANEL_ID} .state span.on.pend{background:#8a7a62} #${PANEL_ID} .state span.on.pass{background:#2e6a2a} #${PANEL_ID} .state span.on.fail{background:#8a2416}
+#${PANEL_ID} .rolled{font-size:12px;color:#6b4a26;margin-bottom:10px}`;
     document.head.appendChild(s);
   }
   function openPanel(cls, html) {
@@ -216,7 +225,6 @@
     setTimeout(() => el.remove(), 260);
   }
 
-  const opt = (list, v) => list.map(x => { const [k, l] = Array.isArray(x) ? x : [x, x]; return `<option value="${esc(k)}" ${String(k) === String(v) ? "selected" : ""}>${esc(l)}</option>`; }).join("");
 
   // Picker → { action: "play", preset } | { action: "freeform", form } | { action: "skip" }
   // Every list ends with the Custom Event row (CUSTOM_ID); Play on it opens the
@@ -337,40 +345,56 @@
   // Resolves { finished: bool, outcome: "success"|"failure"|null }.
   // Request check opens the Request Check dialog (ONI.CheckRequester.openDialog,
   // check-requester/cr-sidebar-button.js) — the GM sets attributes, DL, Single or
-  // Group there. Apply status opens the Active Effect Manager
-  // (activeEffectManager.ui.open) with the targets ticked; its Timing choice
-  // holds a status until the next battle.
+  // Group there — and fills the Result switch (Not rolled / Passed / Failed),
+  // which the GM can also flip by hand. Deal damage… and Apply status… open the
+  // small FU.EffectsMenu menus beside the panel (shared/effects-menus.js), with
+  // those who failed ticked and marked; the APIs report to FU.Feedback.
   function runFreeform(form, actors) {
     return new Promise((resolve) => {
-      const st = { outcome: null, failers: [], rolled: null, busy: false, note: "" };
+      const st = { outcome: null, failers: [], rolled: null, how: "", busy: false, note: "" };
       const title = form.title || "Custom Event";
-      const ELEMENTS = window.oni?.EventSystem?.RowsPartyEffects?.ELEMENTS ?? [["physical", "Physical"]];
       const el = openPanel("chip", "");
 
+      // The event's state is a switch, not buttons (user 11-14): Request check
+      // sets it from the roll; the GM can flip it by hand.
+      const RESULT = [[null, "Not rolled", "pend"], ["success", "Passed", "pass"], ["failure", "Failed", "fail"]];
       const render = () => {
-        const res = st.outcome == null ? "" : `<div class="res">Result: <b class="${st.outcome === "success" ? "ok" : "no"}">${st.outcome === "success" ? "Passed" : "Failed"}</b>${st.failers.length ? ` · failed: ${esc(st.failers.map(a => a.name).join(", "))}` : ""}</div>`;
+        const how = st.outcome == null ? (st.note || "No roll yet")
+          : `${st.how || "Set by the GM"}${st.failers.length ? ` · failed: ${st.failers.map(a => a.name).join(", ")}` : ""}`;
         el.innerHTML = `<span class="gm">GM</span>
           <h3>Custom Event · <b>${esc(title)}</b></h3>
           <div class="sub">${st.rolled ? `${esc(st.rolled)} · ` : ""}${form.exp} EXP${form.passOnly ? " on a pass" : ""}</div>
-          ${res}${st.note ? `<div class="lbl" style="margin-bottom:6px">${esc(st.note)}</div>` : ""}
-          <div class="foot" style="justify-content:flex-start">
-            <button data-a="check" ${st.busy ? "disabled" : ""} class="${st.outcome == null ? "hot" : ""}">${st.outcome == null ? "Request check" : "Roll again"}</button>
-            <button data-a="pass" ${st.busy ? "disabled" : ""}>Pass</button><button data-a="fail" ${st.busy ? "disabled" : ""}>Fail</button>
-          </div>
+          <div class="lbl">Result</div>
+          <div class="state" role="radiogroup" aria-label="Result">${RESULT.map(([v, l, c]) =>
+            `<span role="radio" tabindex="0" aria-checked="${st.outcome === v}" data-r="${c}" class="${c} ${st.outcome === v ? "on" : ""}">${l}</span>`).join("")}</div>
+          <div class="rolled">${esc(how)}</div>
+          <div class="btns"><button data-a="check" ${st.busy ? "disabled" : ""} class="${st.outcome == null ? "hot" : ""}">${st.outcome == null ? "Request check" : "Roll again"}</button></div>
+          <div class="btns"><button data-a="dmg" ${st.busy ? "disabled" : ""}>Deal damage…</button><button data-a="status" ${st.busy ? "disabled" : ""}>Apply status…</button></div>
           <hr>
-          <div class="inl" style="margin-bottom:6px"><span class="lbl">Damage</span><input type="number" id="scx-dmg" min="0" max="999" value="10" /><select id="scx-el">${opt(ELEMENTS, "physical")}</select></div>
-          <div class="inl" style="margin-bottom:8px"><span class="lbl">To</span><select id="scx-to">${opt([["all", "everyone"], ...(st.failers.length ? [["failed", "those who failed"]] : [])], st.failers.length ? "failed" : "all")}</select>
-            <button data-a="dmg" ${st.busy ? "disabled" : ""}>Deal damage</button><button data-a="status" ${st.busy ? "disabled" : ""} title="Opens the Active Effect Manager with these targets ticked">Apply status…</button></div>
-          <div class="foot"><button data-a="end" class="red">End (no EXP, tile stays)</button><button data-a="finish" class="hot" ${st.busy ? "disabled" : ""}>Finish</button></div>`;
+          <div class="foot"><button data-a="end" class="red" title="No EXP; the tile stays">End</button><button data-a="finish" class="hot" ${st.busy ? "disabled" : ""}>Finish</button></div>`;
         el.querySelectorAll("button").forEach(b => b.addEventListener("click", () => act(b.dataset.a).catch(e => console.error(TAG, e))));
+        el.querySelectorAll("[data-r]").forEach(r => {
+          const pick = () => {
+            const v = RESULT.find(x => x[2] === r.dataset.r)?.[0] ?? null;
+            if (v === st.outcome) return;
+            st.outcome = v; st.how = "Set by the GM";
+            if (v !== "failure") st.failers = [];
+            render();
+          };
+          r.addEventListener("click", pick);
+          r.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
+        });
       };
-      const targets = () => (el.querySelector("#scx-to")?.value === "failed" && st.failers.length) ? st.failers : actors;
+      // The menus open beside this panel, with those who failed ticked + marked.
+      const menuOpts = () => ({
+        source: title, targets: actors, anchor: el,
+        preselect: (st.failers.length ? st.failers : actors).map(a => a.uuid),
+        marked: st.failers.map(a => a.uuid),
+      });
 
       const act = async (a) => {
-        if (a === "pass") { st.outcome = "success"; st.failers = []; return render(); }
-        if (a === "fail") { st.outcome = "failure"; return render(); }
-        if (a === "end") { closePanel(); return resolve({ finished: false, outcome: st.outcome }); }
-        if (a === "finish") { closePanel(); return resolve({ finished: true, outcome: st.outcome }); }
+        if (a === "end") { globalThis.FU?.EffectsMenu?.close?.(); closePanel(); return resolve({ finished: false, outcome: st.outcome }); }
+        if (a === "finish") { globalThis.FU?.EffectsMenu?.close?.(); closePanel(); return resolve({ finished: true, outcome: st.outcome }); }
         if (a === "check") {
           const openDialog = globalThis.ONI?.CheckRequester?.openDialog;
           if (!openDialog) { st.note = "Request Check is not loaded."; return render(); }
@@ -386,6 +410,7 @@
                 st.outcome = (r.results.leaderPass === true || lr.isCrit) && !lr.isFumble ? "success" : "failure";
                 st.failers = [];
                 st.rolled = `Group Check · ${lr.attrA} + ${lr.attrB} · DL ${lr.dl}`;
+                st.how = `${lr.actorName ?? "The leader"} led, rolled ${lr.total ?? "?"}`;
               }
               st.note = "";
             } else {
@@ -395,32 +420,18 @@
                 st.outcome = st.failers.length ? "failure" : "success";
                 const x0 = results[0];
                 st.rolled = `${results.length === 1 ? x0.actorName : `${results.length} roll`} · ${x0.attrA} + ${x0.attrB} · DL ${x0.dl}`;
+                st.how = results.length === 1 ? `${x0.actorName} rolled ${x0.total ?? "?"}` : `${results.length - st.failers.length} of ${results.length} passed`;
               }
               st.note = "";
             }
           } catch (e) { st.note = "The check was cancelled."; console.debug(TAG, "custom event check aborted", e); }
           st.busy = false; return render();
         }
-        if (a === "dmg") {
-          const amount = Math.max(0, Number(el.querySelector("#scx-dmg").value) || 0);
-          const element = el.querySelector("#scx-el").value;
-          const to = targets();
-          st.busy = true; render();
-          for (const actor of to) {
-            await globalThis.FUCompanion?.api?.applyDamage?.applyToActor?.({
-              baseDamage: amount, elementType: element, valueType: "hp", isRecovery: false,
-              targetActor: actor, attackerName: title, sourceType: "Tile", verbosity: "fx",
-            }).catch(e => console.warn(TAG, "damage failed", e));
-          }
-          st.busy = false; st.note = `${amount} ${element} damage to ${to.map(x => x.name).join(", ")}.`; return render();
-        }
-        if (a === "status") {
-          const aemUi = globalThis.FUCompanion?.api?.activeEffectManager?.ui;
-          if (!aemUi?.open) { st.note = "Active Effect Manager is not loaded."; return render(); }
-          const to = targets();
-          await aemUi.open({ targetActorUuids: to.map(x => x.uuid), source: title });
-          st.note = `Active Effect Manager opened for ${to.map(x => x.name).join(", ")}.`;
-          return render();
+        if (a === "dmg" || a === "status") {
+          const menu = globalThis.FU?.EffectsMenu;
+          if (!menu) { ui.notifications?.warn?.("Skill Check: the effects menus are not loaded."); return; }
+          if (a === "dmg") menu.damage(menuOpts()); else menu.status(menuOpts());
+          return;
         }
       };
       render();

@@ -47,7 +47,8 @@
   ];
   const TIMINGS = [
     ["now", "Now (counts down while exploring)"],
-    ["held", "Carried into their next battle"]
+    ["held", "Carried into their next battle"],
+    ["remove", "Remove it (cleanse, held ones too)"]
   ];
 
   const readTargets = (rowEl, kit, fallback) => kit.ownAll(rowEl, ".oni-check-target").map((el) => ({
@@ -104,7 +105,9 @@
     if (aborted) return { ok: true, type: "dealDamage", aborted: true };
     if (!actors.length) return { ok: false, reason: "noTargets" };
     const hit = [];
-    for (const actor of actors) {
+    // One row = one batch: one flash, one sound, one Resource Panel for everyone hit.
+    const asOneBatch = globalThis.FU?.Feedback?.group ?? ((f) => f());
+    await asOneBatch(async () => { for (const actor of actors) {
       try {
         await dmg({
           baseDamage: row.amount,
@@ -114,13 +117,16 @@
           targetActor: actor,
           attackerName: row.source || "Event",
           sourceType: "Tile",
-          verbosity: "fx",
+          // Every screen: one element flash + one sound + the Resource Panel
+          // for the whole row (FU.Feedback, shared/feedback.js).
+          verbosity: "silent",
+          feedback: "show",
         });
         hit.push(actor.name);
       } catch (e) {
         console.warn(INSTALL_TAG, `Deal Damage failed on ${actor.name}`, e);
       }
-    }
+    } });
     return { ok: true, type: "dealDamage", hit };
   }
 
@@ -173,12 +179,15 @@
     const { actors, aborted } = await Check.resolveTargets(row, context);
     if (aborted) return { ok: true, type: "applyStatus", aborted: true };
     if (!actors.length) return { ok: false, reason: "noTargets" };
-    const res = row.timing === "held"
-      ? await api.inflict({ actors, status: row.status, source: row.source, turns: row.turns || null })
-      : await api.applyNow({ actors, status: row.status, steps: row.steps, source: row.source });
+    // Each call reports to FU.Feedback: one batched System Message line on every screen.
+    const res = row.timing === "remove"
+      ? await api.remove({ actors, status: row.status })
+      : row.timing === "held"
+        ? await api.inflict({ actors, status: row.status, source: row.source, turns: row.turns || null })
+        : await api.applyNow({ actors, status: row.status, steps: row.steps, source: row.source });
     if (res?.error) console.warn(INSTALL_TAG, `Apply Status: ${res.error}`, row.status);
-    // Everyone immune is not a broken event: carry on.
-    return { ok: res?.error ? false : true, type: "applyStatus", applied: (res?.applied ?? []).map(a => a.name), skipped: res?.skipped ?? [] };
+    // Everyone immune (or nobody had it to remove) is not a broken event: carry on.
+    return { ok: res?.error ? false : true, type: "applyStatus", applied: (res?.applied ?? res?.removed ?? []).map(a => a.name), skipped: res?.skipped ?? [] };
   }
 
   EventRegistry.register({
@@ -187,7 +196,7 @@
     category: "Party",
     defaultData: { type: "applyStatus", targets: [{ kind: "party", slot: 1, name: "" }], status: "", timing: "now", steps: 3, turns: 0, source: "" },
     prepare: prepareStatus,
-    summary: (row) => `${row?.status || "(no status)"}${row?.timing === "held" ? " · next battle" : ""} → ${Check.describeTargets(row ?? {})}`.slice(0, 60),
+    summary: (row) => `${row?.timing === "remove" ? "Remove " : ""}${row?.status || "(no status)"}${row?.timing === "held" ? " · next battle" : ""} → ${Check.describeTargets(row ?? {})}`.slice(0, 60),
     execute: executeStatus,
     buildFields: (row, kit) => {
       const names = held()?.statusNames?.() ?? [];

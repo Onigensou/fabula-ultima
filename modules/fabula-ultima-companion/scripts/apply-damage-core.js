@@ -496,6 +496,11 @@
     // same record with the projected from/to values. Lets a caller show the
     // outcome before the (slow, CSB-recompute) writes land.
     dryRun             = false,
+    // "show" reports the result to the feedback layer (FU.Feedback.damage,
+    // shared/feedback.js): calls within 250 ms make ONE element-coloured screen
+    // flash, ONE sound and ONE Resource Panel on every screen. Default "none":
+    // callers with their own output (battle, tiles) are unchanged.
+    feedback           = "none",
   } = {}) {
     if (!targetActor) throw new Error("[applyDamage] targetActor is required");
 
@@ -876,6 +881,16 @@
       } catch (err) {
         console.warn("[applyDamage] BattleLog failed:", err);
       }
+    }
+
+    if (feedback === "show") {
+      try {
+        const res = valueType === "mp" ? "mp" : "hp";
+        globalThis.FU?.Feedback?.damage?.([{
+          actor: targetActor, resource: res,
+          before: res === "mp" ? startMP : startHP, after: res === "mp" ? postMP : postHP, affinity,
+        }], { label: attackerName, element: elementType, kind: isHeal ? "heal" : "damage" });
+      } catch (err) { console.warn("[applyDamage] feedback failed:", err); }
     }
 
     return {

@@ -18,6 +18,12 @@ t("markup: names, up, down, flat; plain text between", () => {
   ]);
   assert.deepEqual(parseMarkup("{down:decreased}{flat:x}").map((p) => p.cls), ["down", "flat"]);
 });
+t("markup: {st:} is a status name with an icon, {p:} the party", () => {
+  assert.deepEqual(parseMarkup("{p:The party} is inflicted with {st:Slow}!"), [
+    { t: "The party", cls: "party" }, { t: " is inflicted with " }, { t: "Slow", cls: "kw", status: "Slow" }, { t: "!" },
+  ]);
+  assert.equal(plainText("{p:The party} gains {st:Swift}!"), "The party gains Swift!");
+});
 t("markup: an unknown tag or a stray brace stays literal", () => {
   assert.equal(plainText("a {b:c} {w:d"), "a {b:c} {w:d");
 });

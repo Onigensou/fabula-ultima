@@ -460,6 +460,8 @@
     "scripts/shared/identifier-registry.js",
     "scripts/shared/system-message.js",
     "scripts/shared/resource-panel.js",
+    "scripts/shared/feedback.js",
+    "scripts/shared/effects-menus.js",
     "scripts/dungeon-pathing-system/dp-trap-rules.js",
     "scripts/dungeon-pathing-system/dp-heal-rules.js",
     "scripts/dungeon-pathing-system/dp-trap-fx.js",

@@ -18,7 +18,7 @@
 //   FU.ResourcePanel.clear()
 //
 // A row names its member by `actor` (an Actor), `actorId`, or plain
-// `name` + `img` (+ `max`). Tags: "resist", "immune", "held", "dr:N"; Crisis
+// `name` + `img` (+ `max`). Tags: "resist", "immune", "absorb", "weak", "held", "dr:N"; Crisis
 // is worked out from before / after / max. Loss = red −N with a draining red
 // ghost; gain = green +N and the bar sweeps up; MP uses the blue bar.
 //
@@ -95,6 +95,7 @@ function ensureStyles() {
 #${HOST_ID} .chip.dr { background:#e2d8c2; color:#5b4a33; } #${HOST_ID} .chip.rs { background:#3a5b80; color:#fff; }
 #${HOST_ID} .chip.im { background:#2a3140; color:#fff; } #${HOST_ID} .chip.cr { background:#e8c33a; color:#3a2a00; }
 #${HOST_ID} .chip.one { background:#8a4b22; color:#fff4e0; }
+#${HOST_ID} .chip.ab { background:#2f7a45; color:#fff; } #${HOST_ID} .chip.vu { background:#a3261b; color:#fff; }
 @media (prefers-reduced-motion: reduce) { #${HOST_ID} .rp { transition:none; } }
 `;
   document.head.appendChild(css);

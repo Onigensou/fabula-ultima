@@ -14,7 +14,9 @@
 //   FU.SystemMessage.configure({ widthPct, topPct, enter, … })
 //
 // Markup: {w:…} name (umber) · {up:…} increase (warm ▲) · {down:…} decrease
-// (cool ▼) · {flat:…} muted. Text is set with textContent — never HTML.
+// (cool ▼) · {flat:…} muted · {st:Slow} a status, its icon in front (the line
+// waits up to 300 ms for icons to load) · {p:The party} the whole party.
+// Text is set with textContent — never HTML.
 //
 // Kinds: system (default) · speech (name plate, italic) · alert (crimson
 // hairline + seal) · narration (types letter by letter by default).
@@ -53,7 +55,7 @@ function ensureStyles() {
 #${HOST_ID} {
   --sm-parch-top:#f6f1e6; --sm-parch-bot:#ebe3d0; --sm-ink:#3a3228; --sm-ink-soft:#6b5d4b;
   --sm-gold-1:#d5b67a; --sm-gold-2:#b7935a; --sm-wood-1:#a87649; --sm-wood-2:#8d5f38; --sm-wood-3:#6f4526;
-  --sm-accent:#8a4b22; --sm-up:#b4580f; --sm-down:#4c45a8; --sm-alert:#9b2a1f;
+  --sm-accent:#8a4b22; --sm-up:#b4580f; --sm-down:#4c45a8; --sm-alert:#9b2a1f; --sm-party:#7a2e18;
   position:fixed; left:50%; transform:translateX(-50%); z-index:90; pointer-events:none;
   top:calc(var(--sm-top) * 1vh); width:calc(var(--sm-w) * 1vw);
   font-size:calc(var(--sm-fs) / 1920 * 100vw);
@@ -76,6 +78,8 @@ function ensureStyles() {
 #${HOST_ID} .sm .down { color:var(--sm-down); font-weight:800; }
 #${HOST_ID} .sm .down::after { content:" \\25BC"; font-size:.7em; vertical-align:.05em; }
 #${HOST_ID} .sm .flat { color:var(--sm-ink-soft); font-weight:700; }
+#${HOST_ID} .sm .party { color:var(--sm-party); font-weight:800; }
+#${HOST_ID} .sm .ico { width:1.25em; height:1.25em; vertical-align:-.28em; margin-right:.18em; border:0; border-radius:.2em; object-fit:contain; }
 #${HOST_ID} .sm .plate { position:absolute; left:1.2em; top:-.95em; z-index:2; padding:.18em .9em .22em; border-radius:.45em;
   background:var(--sm-ink); color:var(--sm-parch-top); border:.12em solid var(--sm-gold-2); box-shadow:0 .18em 0 rgba(41,33,24,.55);
   font:900 .78em/1.2 "Cinzel",Georgia,serif; letter-spacing:.12em; text-transform:uppercase; white-space:nowrap; }
@@ -142,6 +146,37 @@ function blip(ch) {
   } catch (e) { /* no sound is fine */ }
 }
 
+// ── status icons ({st:Name}) ────────────────────────────────────────────
+// By the status's shown name or its id, from the game's own status list.
+function statusIcon(name) {
+  const key = String(name ?? "").trim().toLowerCase();
+  if (!key) return null;
+  for (const s of CONFIG?.statusEffects ?? []) {
+    const label = String(game?.i18n?.localize?.(s.name ?? s.label ?? "") ?? s.name ?? "").trim().toLowerCase();
+    if (label === key || String(s.id ?? "").toLowerCase() === key) return s.img ?? s.icon ?? null;
+  }
+  return null;
+}
+
+// A line waits (briefly) for its icons, so they never pop in after the text.
+const ICON_WAIT_MS = 300;
+const _iconReady = new Map();   // src → Promise
+function iconsReady(text) {
+  const srcs = parseMarkup(text).filter((p) => p.status).map((p) => statusIcon(p.status)).filter(Boolean);
+  if (!srcs.length) return Promise.resolve();
+  const loads = srcs.map((src) => {
+    if (!_iconReady.has(src)) {
+      _iconReady.set(src, new Promise((resolve) => {
+        const img = new Image();
+        img.onload = img.onerror = () => resolve();
+        img.src = src;
+      }));
+    }
+    return _iconReady.get(src);
+  });
+  return Promise.race([Promise.all(loads), sleep(ICON_WAIT_MS)]);
+}
+
 // ── one box ─────────────────────────────────────────────────────────────
 function buildBox(enter) {
   const el = document.createElement("div");
@@ -163,6 +198,9 @@ function fillBox(el, msg) {
   const chars = [];
   for (const seg of parseMarkup(msg.text)) {
     const holder = seg.cls ? Object.assign(document.createElement("span"), { className: seg.cls }) : text;
+    // {st:Name}: the status icon goes in with the line, in front of the name.
+    const icon = seg.status ? statusIcon(seg.status) : null;
+    if (icon) holder.appendChild(Object.assign(document.createElement("img"), { className: "ico", src: icon, alt: "" }));
     for (const ch of seg.t) {
       const c = document.createElement("span");
       c.className = "c"; c.textContent = ch;
@@ -220,6 +258,7 @@ async function pump() {
       if (msg.advance !== "press" && Date.now() - item.at > cfg.maxQueueAgeMs) { item.resolve(); continue; }
       const ctl = { aborted: false, onabort: null };
       state.abort = () => { ctl.aborted = true; try { ctl.onabort?.(); } catch (e) {} };
+      await iconsReady(msg.text);
       if (!state.el) {
         state.el = buildBox(msg.enter);
         host.appendChild(state.el);

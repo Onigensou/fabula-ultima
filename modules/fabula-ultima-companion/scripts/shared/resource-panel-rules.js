@@ -25,11 +25,13 @@ export function widthPct(count) {
 
 function num(v, d = 0) { const n = Number(v); return Number.isFinite(n) ? n : d; }
 
-// Tags a caller may pass: "resist", "immune", "held", "dr:N".
+// Tags a caller may pass: "resist", "immune", "absorb", "weak", "held", "dr:N".
 function parseTag(t) {
   const s = String(t ?? "").trim().toLowerCase();
   if (s === "resist") return { kind: "rs", label: "Resist" };
   if (s === "immune") return { kind: "im", label: "Immune" };
+  if (s === "absorb") return { kind: "ab", label: "Absorb" };
+  if (s === "weak") return { kind: "vu", label: "Weak" };
   if (s === "held") return { kind: "one", label: "Held at 1" };
   const m = /^dr:(\d+)$/.exec(s);
   if (m && Number(m[1]) > 0) return { kind: "dr", label: `DR −${Number(m[1])}` };

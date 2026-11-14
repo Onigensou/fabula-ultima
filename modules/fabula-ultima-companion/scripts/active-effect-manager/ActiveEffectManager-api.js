@@ -90,8 +90,15 @@
     matchByStatus: false,
 
     // Later chat/fx scripts can hook into these.
-    renderChat: true,
+    // Chat card is opt-in since 2026-11-14: the feedback layer's System Message
+    // line (feedback below) replaced it by default — a card per apply grew the
+    // world's message database. Pass renderChat: true for a lasting record.
+    renderChat: false,
     playFx: true,
+
+    // "show" | "none". Unset = shown unless silent. Reports the results to
+    // FU.Feedback.status (shared/feedback.js): one batched line on every screen.
+    feedback: null,
 
     silent: false,
 
@@ -1225,6 +1232,51 @@
     return null;
   }
 
+  // Results → FU.Feedback.status entries. Buff or not comes from the effect's
+  // category, else from its status's container item ("Buff" / "Debuff").
+  function isBuffRow(row) {
+    const cat = String(row?.effect?.identity?.category ?? row?.effect?.category ?? "").toLowerCase();
+    if (cat) return cat === "buff";
+    const statuses = row?.effect?.identity?.statuses ?? [];
+    const name = String(row?.effect?.name ?? "").toLowerCase();
+    for (const it of game.items ?? []) {
+      if (it.type !== "activeEffectContainer") continue;
+      const hit = (it.effects ?? []).some(e => [...(e.statuses ?? [])].some(s => statuses.includes(s)) || String(e.name ?? "").toLowerCase() === name);
+      if (!hit) continue;
+      const n = String(it.name ?? "").toLowerCase();
+      return n.includes("buff") && !n.includes("debuff");
+    }
+    return false;
+  }
+
+  function maybeReportFeedback(report, options = {}) {
+    const mode = options.feedback ?? (options.silent ? "none" : "show");
+    if (mode !== "show") return;
+    const fb = globalThis.FU?.Feedback;
+    if (!fb?.status) return;
+    const entries = [];
+    for (const row of report?.results ?? []) {
+      if (row?.ok === false || !row?.actor) continue;
+      const status = String(row.status ?? "").toLowerCase();
+      // removeEffects rows name what went in row.removed (compact docs)
+      if (status === "removed" && !row.effect?.name) {
+        for (const doc of row.removed ?? []) {
+          if (doc?.name) entries.push({ actorId: row.actor.id, actorName: row.actor.name, status: doc.name, kind: "removed" });
+        }
+        continue;
+      }
+      if (!row.effect?.name) continue;
+      let kind = null;
+      if (status === "removed") kind = "removed";
+      else if (["applied", "replaced", "stacked"].includes(status)) kind = isBuffRow(row) ? "buff" : "inflict";
+      if (!kind) continue;
+      entries.push({ actorId: row.actor.id, actorName: row.actor.name, status: row.effect.name, kind });
+    }
+    if (entries.length) {
+      try { fb.status(entries); } catch (e) { warn("Feedback report failed.", e); }
+    }
+  }
+
   function emitEvent(eventName, report) {
     try {
       Hooks.callAll(eventName, report);
@@ -1628,6 +1680,7 @@
 
     await maybePlayFx(report, options);
     await maybeRenderChat(report, options);
+    maybeReportFeedback(report, options);
 
     log("applyEffects complete.", {
       optimized: true,
@@ -1809,6 +1862,7 @@
     emitEvent("oni:activeEffectRemoved", report);
 
     await maybeRenderChat(report, options);
+    maybeReportFeedback(report, options);
 
     log("removeEffects complete.", {
       runId,
@@ -1934,6 +1988,7 @@
 
     await maybePlayFx(report, options);
     await maybeRenderChat(report, options);
+    maybeReportFeedback(report, options);
 
     log("toggleEffects complete.", {
       runId,

@@ -522,7 +522,7 @@
       duplicateMode: state.duplicateMode,
       duration,
       silent: state.silent,
-      renderChat: true,
+
       playFx: true
     });
 
