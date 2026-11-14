@@ -659,6 +659,59 @@
           </p>
         </div>
 
+        ${(() => {
+          // Skill Check (dp-skill-check.js). A dungeon tile can pin one preset;
+          // a tile on a THEATRE scene can be a preset (a hidden event "slate").
+          const SC = DP.SkillCheck;
+          const isTheatre = scene?.flags?.[MODULE_ID]?.oniFabula?.general?.sceneMode === "theatre";
+          if (isTheatre) {
+            const slate = (v => v === true || v === "true")(tileDoc?.getFlag(MODULE_ID, `${pathingKey}.skillCheckSlate`));
+            const expRaw = tileDoc?.getFlag(MODULE_ID, `${pathingKey}.skillCheckExp`);
+            const exp = Number.isFinite(Number(expRaw)) && expRaw !== "" && expRaw != null ? Number(expRaw) : 1;
+            const passOnly = (v => v === true || v === "true")(tileDoc?.getFlag(MODULE_ID, `${pathingKey}.skillCheckPassOnly`));
+            return `
+        <hr class="oni-fabula-section-divider" />
+        <h3 style="margin: 10px 0 6px;"><i class="fas fa-dice"></i> Skill Check preset</h3>
+        <div class="form-group">
+          <label>Use as a preset</label>
+          <div class="form-fields">
+            <input type="checkbox" name="flags.${MODULE_ID}.${pathingKey}.skillCheckSlate" data-dtype="Boolean" ${slate ? "checked" : ""} />
+          </div>
+          <p class="notes">
+            This tile's event (Events tab) becomes a Skill Check preset for every dungeon map that lists this
+            theatre scene. Keep the tile <b>hidden</b>; its name (Monk's tab) is the preset's title. Build it as:
+            text → <b>Run Check</b> → what happens under Success / Failure. The trip, the EXP and clearing the
+            tile are added for you.
+          </p>
+        </div>
+        <div class="form-group">
+          <label>EXP</label>
+          <div class="form-fields">
+            <input type="number" name="flags.${MODULE_ID}.${pathingKey}.skillCheckExp" data-dtype="Number" min="0" max="9" value="${exp}" />
+            <label style="flex:2"><input type="checkbox" name="flags.${MODULE_ID}.${pathingKey}.skillCheckPassOnly" data-dtype="Boolean" ${passOnly ? "checked" : ""} /> only on a pass</label>
+          </div>
+          <p class="notes">Given to the whole party when the event finishes. Default: 1, pass or fail.</p>
+        </div>`;
+          }
+          const pin = String(tileDoc?.getFlag(MODULE_ID, `${pathingKey}.skillCheckPreset`) ?? "");
+          const theatre = SC?.theatreFor?.(scene) ?? null;
+          const presets = SC?.presetsOn?.(theatre) ?? [];
+          const options = [`<option value="" ${!pin ? "selected" : ""}>— none: the GM picks from the list —</option>`]
+            .concat(presets.map(p => `<option value="${p.id}" ${p.id === pin ? "selected" : ""}>${esc(p.title)} (${esc(p.summary)})</option>`));
+          if (pin && !presets.some(p => p.id === pin)) options.push(`<option value="${esc(pin)}" selected>(missing preset ${esc(pin)})</option>`);
+          return `
+        <div class="form-group">
+          <label>Skill Check preset</label>
+          <div class="form-fields">
+            <select name="flags.${MODULE_ID}.${pathingKey}.skillCheckPreset" data-dtype="String">${options.join("")}</select>
+          </div>
+          <p class="notes">
+            Skill Check tiles only. Pins one preset from ${theatre ? `<b>${esc(theatre.navName || theatre.name)}</b>` : "this map's theatre scene (none found in its Scene Network)"}
+            so it comes preselected when the party lands here; the GM can still pick another.
+          </p>
+        </div>`;
+        })()}
+
         <hr class="oni-fabula-section-divider" />
         <h3 style="margin: 10px 0 6px;"><i class="fas fa-arrows-alt"></i> Force Move Settings</h3>
         <p class="notes" style="margin: 0 0 8px; font-style: italic;">

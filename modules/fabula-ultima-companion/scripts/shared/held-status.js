@@ -138,6 +138,52 @@ async function gmInflict({ actors, status, source = "", turns = null } = {}) {
   return { ok: applied.length > 0, status: entry.id, applied, skipped };
 }
 
+// The canonical condition's own effect on its container item (the "Debuff"
+// container), as a registry id the Active Effect Manager understands.
+function conditionRegistryId(statusId) {
+  for (const it of game.items ?? []) {
+    if (it.type !== "activeEffectContainer") continue;
+    for (const eff of it.effects ?? []) if (statusIdsOf(eff).includes(statusId)) return eff.uuid;
+  }
+  return null;
+}
+
+// An ordinary status inflicted outside battle, landed the way dungeon tiles land
+// theirs (dp-tile-effect-engine buildEffectRefs): registry entry + a dungeon step
+// count + the landing-turn grace. Not held: it counts down while exploring.
+async function gmApplyNow({ actors, status, steps = null, source = "" } = {}) {
+  const entry = matchStatus(statusEntries(), status);
+  if (!entry) return { ok: false, error: "UNKNOWN_STATUS", status: String(status ?? "") };
+  const aem = globalThis.FUCompanion?.api?.activeEffectManager;
+  if (!aem?.applyEffects) return { ok: false, error: "NO_AEM" };
+  const turns = Number.isFinite(Number(steps)) && Number(steps) > 0 ? Math.floor(Number(steps)) : 3;
+  const regId = conditionRegistryId(entry.id);
+  const flags = { [FLAG_NS]: { dungeonTurnsRemaining: turns, dungeonTickGrace: true } };
+  const ref = regId ? { registryId: regId, overrides: { flags } } : { name: entry.name, img: entry.img, statuses: [entry.id], flags };
+
+  const targets = await resolveActors(actors);
+  const applied = [];
+  const skipped = [];
+  const ok = [];
+  for (const actor of targets) {
+    if (getConditionAffinityFor(actor, { statuses: [entry.id], name: entry.name }) === "IM") {
+      skipped.push({ actorUuid: actor.uuid, name: actor.name, reason: "immune" });
+    } else ok.push(actor);
+  }
+  if (ok.length) {
+    await aem.applyEffects({ actorUuids: ok.map(a => a.uuid), effects: [ref], silent: true });
+    // Re-landing refreshes the count, as a tile does.
+    for (const actor of ok) {
+      const ups = (actor.effects ?? []).filter(e => statusIdsOf(e).includes(entry.id) && !isHeld(e))
+        .map(e => ({ _id: e.id, [`flags.${FLAG_NS}.dungeonTurnsRemaining`]: turns, [`flags.${FLAG_NS}.dungeonTickGrace`]: true }));
+      if (ups.length) await actor.updateEmbeddedDocuments("ActiveEffect", ups);
+      applied.push({ actorUuid: actor.uuid, name: actor.name });
+    }
+  }
+  log(`applyNow ${entry.id}${source ? ` (${source})` : ""}: ${applied.length} applied, ${skipped.length} skipped`);
+  return { ok: applied.length > 0, status: entry.id, applied, skipped };
+}
+
 async function gmRelease({ actors, status = null } = {}) {
   const statusId = status ? matchStatus(statusEntries(), status)?.id : null;
   if (status && !statusId) return { ok: false, error: "UNKNOWN_STATUS", status: String(status) };
@@ -178,7 +224,7 @@ async function gmActivate(actors) {
 }
 
 // ── relay (player client → primary GM) ─────────────────────────────────────
-const OPS = { inflict: gmInflict, release: gmRelease, activate: (args) => gmActivate(args?.actors) };
+const OPS = { inflict: gmInflict, applyNow: gmApplyNow, release: gmRelease, activate: (args) => gmActivate(args?.actors) };
 const _pending = new Map();
 
 function relay(op, args) {
@@ -237,6 +283,13 @@ function installBattleHook() {
 const api = {
   /** Inflict a status that waits for the actor's next battle. */
   inflict: (args = {}) => run("inflict", args),
+  /**
+   * An ordinary status landed now, outside battle, the way a dungeon tile lands
+   * one: counts down `steps` dungeon steps (default 3). Not held.
+   */
+  applyNow: (args = {}) => run("applyNow", args),
+  /** Status names this world knows, for pickers. */
+  statusNames: () => statusEntries().map(e => e.name),
   /** Remove held statuses (all, or one status) — a cure outside battle. */
   release: (args = {}) => run("release", args),
   /** Convert held statuses into battle conditions now. GM / tests. */

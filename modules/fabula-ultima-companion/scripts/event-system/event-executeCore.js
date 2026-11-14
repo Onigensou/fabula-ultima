@@ -371,7 +371,15 @@
   // ------------------------------------------------------------
   // GM execution
   // ------------------------------------------------------------
-  async function gmExecuteEventTile({ sceneId, tileId, requesterId }) {
+  // `opts` is for callers inside this client only (never a socket payload):
+  //   preset       run a stored event on demand — the Skill Check tile's preset
+  //                slates (hidden tiles on a theatre scene). Skips the hidden,
+  //                availability, party-token and range gates; does not mark the
+  //                event as run (presets replay; the tile keeps its own log).
+  //   onRowResult  (row, result) after every row, nested rows included.
+  async function gmExecuteEventTile({ sceneId, tileId, requesterId }, opts = {}) {
+    const preset = opts?.preset === true;
+    const onRowResult = typeof opts?.onRowResult === "function" ? opts.onRowResult : null;
     const safeTileId = String(tileId || "");
     const safeSceneId = String(sceneId || "");
 
@@ -398,7 +406,7 @@
         return { ok: false, reason: "tileNotFound", tileId: safeTileId };
       }
 
-      if (tileDoc.hidden) {
+      if (tileDoc.hidden && !preset) {
         DBG.warn(DEBUG_SCOPE, "Execution blocked because tile is hidden.", { tileId: safeTileId });
         return { ok: false, reason: "tileHidden", tileId: safeTileId };
       }
@@ -415,7 +423,7 @@
         return { ok: false, reason: "noEventRows", tileId: safeTileId };
       }
 
-      if (!isEventAvailable(tileDoc, data)) {
+      if (!preset && !isEventAvailable(tileDoc, data)) {
         DBG.warn(DEBUG_SCOPE, "Execution blocked because the event is not available.", { tileId: safeTileId });
         return { ok: false, reason: "notAvailable", tileId: safeTileId };
       }
@@ -425,13 +433,14 @@
         return { ok: false, reason: "alreadyExecuting", tileId: safeTileId };
       }
 
-      const partyToken = await resolvePartyToken();
-      if (!partyToken) {
+      // A preset plays on a theatre scene, where the party has no token.
+      const partyToken = await resolvePartyToken().catch(() => null);
+      if (!partyToken && !preset) {
         DBG.warn(DEBUG_SCOPE, "Execution blocked because no party token could be resolved.", { tileId: safeTileId });
         return { ok: false, reason: "noPartyToken", tileId: safeTileId };
       }
 
-      if (String(partyToken.id) === safeTileId) {
+      if (partyToken && String(partyToken.id) === safeTileId) {
         DBG.warn(DEBUG_SCOPE, "Execution blocked because the event token is the party token.", { tileId: safeTileId });
         return { ok: false, reason: "sourceIsPartyToken", tileId: safeTileId };
       }
@@ -440,7 +449,7 @@
       // walk is still catching up over the network, and a moving token could
       // be refused for a tile it has already reached.
       const stepIn = data.startMode === Logic?.START_MODES?.STEP_IN;
-      if (!stepIn) {
+      if (!stepIn && !preset) {
         const proximity = await checkProximityForTile(tileDoc, partyToken, null);
         if (!proximity.ok) {
           DBG.warn(DEBUG_SCOPE, "Execution blocked by proximity check.", {
@@ -535,6 +544,7 @@
           });
 
           DBG.verboseLog(DEBUG_SCOPE, "Row result:", result);
+          if (onRowResult) { try { onRowResult(row, result); } catch (e) { DBG.warn(DEBUG_SCOPE, "onRowResult threw.", e); } }
           return result;
         }
       });
@@ -568,7 +578,7 @@
 
       // An event ended early by the GM has not run: it stays available.
       const state = window.oni.EventSystem.GameState;
-      if (!outcome.aborted && state?.markRun
+      if (!preset && !outcome.aborted && state?.markRun
         && Logic.usesRunMemory(data.eventRows, data, (type) => EventRegistry.peek(type))) {
         await state.markRun(safeSceneId, safeTileId);
       }
@@ -589,7 +599,8 @@
       return {
         ok: true,
         tileId: safeTileId,
-        sceneId: safeSceneId
+        sceneId: safeSceneId,
+        endedEarly: !!outcome.aborted
       };
     } catch (e) {
       DBG.error(DEBUG_SCOPE, "GM execution failed.", e);
@@ -1228,6 +1239,12 @@
   // Publish API
   // ------------------------------------------------------------
   core.readEventData = readEventData;
+  // GM only: play a stored event on demand (Skill Check presets). See the
+  // `opts` note on gmExecuteEventTile.
+  core.runPreset = ({ sceneId, tileId, requesterId = null, onRowResult = null } = {}) => {
+    if (!game.user?.isGM) return Promise.resolve({ ok: false, reason: "notGM" });
+    return gmExecuteEventTile({ sceneId, tileId, requesterId: requesterId ?? game.user.id }, { preset: true, onRowResult });
+  };
   window.oni.EventSystem.Core = core;
 
   // ------------------------------------------------------------
