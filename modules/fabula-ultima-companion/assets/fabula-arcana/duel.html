@@ -125,6 +125,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold);outl
 @keyframes bob{50%{translate:0 -4px}}
 @keyframes flick{0%,100%{opacity:1}92%{opacity:.55}93%{opacity:1}}
 .slot.theirs .holo .spr{scale:-1 1}
+.holo .spr.fl{scale:-1 1}.slot.theirs .holo .spr.fl{scale:1 1}
 
 /* buffs */
 .slot.b-str .holo .spr{filter:drop-shadow(0 0 6px #ff5a2a) drop-shadow(0 0 12px #ffae3a) brightness(1.15)}
@@ -1122,7 +1123,11 @@ function tickTimer(){
       commit(s, c); }
   }
 }
-function canLock(){ const me=S.p[UI.seat]; if (S.commit[UI.seat]) return false;
+const foreWait = sv => S && S.phase==='choose' && fxForeSeat()===sv && !S.commit[1-sv];
+const foreSeen = sv => { if (!S || S.phase!=='choose' || fxForeSeat()!==sv) return null; const c=S.commit[1-sv]; return c && c.action ? c : null; };
+function foreLabel(sv, c){ const P=S.p[1-sv]; return c.action==='SWITCH' ? 'Switch → '+N(P.roster[c.target].cid) : (ACT_T[c.action]||c.action); }
+function foreArt(sv, c){ const P=S.p[1-sv]; return c.action==='SWITCH' ? ART[P.roster[c.target].cid] : ITEMS[c.action] ? ART[ITEMS[c.action].art] : null; }
+function canLock(){ const me=S.p[UI.seat]; if (S.commit[UI.seat]) return false; if (foreWait(UI.seat)) return false;
   if (S.phase==='opening' || S.phase==='replace') return UI.replace!=null;
   if (!UI.sel) return false; if (me.pending&&UI.replace==null) return false; if (UI.sel==='SWITCH'&&UI.target==null) return false; return true; }
 function lockFromUI(fromRect){
@@ -1232,7 +1237,7 @@ function fieldHTML(){
 function slotHTML(s,m){
   const c=CARDS[m.cid];
   return `<div class="slot ${s?'theirs':'mine'}" id="slot${s}_${m.i}" data-s="${s}" data-i="${m.i}" tabindex="0" style="--ec:var(--e-${c.el})">
-    <div class="holo" id="holo${s}_${m.i}"><div class="beam"></div><div class="base"></div><img class="spr" src="${ART[m.cid]}" alt=""><div class="scan"></div><div class="cue" id="cue${s}_${m.i}"></div></div>
+    <div class="holo" id="holo${s}_${m.i}"><div class="beam"></div><div class="base"></div>${(typeof HOLO_VIDEO!=='undefined' && HOLO_VIDEO[m.cid]) ? `<video class="spr fl" src="${HOLO_VIDEO[m.cid]}" poster="${ART[m.cid]}" autoplay loop muted playsinline></video>` : `<img class="spr" src="${ART[m.cid]}" alt="">`}<div class="scan"></div><div class="cue" id="cue${s}_${m.i}"></div></div>
     <div class="flat"><div class="flatcard" style="--c:var(--e-${c.el})"><div class="fa"><img src="${ART[m.cid]}" alt="">${elBadge(c.el,'art',true)}</div>${elBadge(c.el,'coin',true)}
       <div class="fn">${elBadge(c.el,'name',true)}<span class="fnt">${esc(c.name)}</span><span class="costn">${starStr(c.cost)}</span></div>
       <div class="fs" id="fs${s}_${m.i}">${elBadge(c.el,'stats',true)}${statChip('atk',c.atk,true)}${statChip('def',c.def,true)}${statChip('spd',c.spd,true)}</div><span class="cost">${starStr(c.cost)}</span></div></div>
@@ -1272,12 +1277,14 @@ function updateField(){
 function renderLane(){
   const lane=$('#lane'); if (!lane) return; const rv=S.reveal;
   // each side's action slot: empty → face-down card placed (slides in from that side) → flipped open on reveal
-  const face=(s,x)=>{ const placed=!!(S.commit&&S.commit[s]) || !!rv; const drop=S.justPlaced===s;
+  const fc = !rv ? foreSeen(UI.seat) : null;   // Foretell: the opponent's card shows face up to the Foretelling seat only
+  const face=(s,x)=>{ if (fc && s===1-UI.seat) x=[foreLabel(UI.seat, fc), 'foretold', foreArt(UI.seat, fc)];
+    const seen = !!fc && s===1-UI.seat; const placed=!!(S.commit&&S.commit[s]) || !!rv; const drop=S.justPlaced===s;
     const flipNow = rv && rv.open && !rv.flipped;   // first render after reveal: draw closed, then animate the flip
-    const state = rv&&rv.open ? (flipNow?'placed':'open') : placed ? 'placed' : 'empty';
-    const tag = state==='empty' ? (S.phase==='ended'?'':(s===UI.seat?'your pick':'thinking…')) : state==='placed' && !flipNow ? 'card placed' : '';
+    const state = seen ? 'open' : rv&&rv.open ? (flipNow?'placed':'open') : placed ? 'placed' : 'empty';
+    const tag = seen ? 'Foretold' : state==='empty' ? (S.phase==='ended'?'':(s===UI.seat?(foreWait(s)?'Foretell: waiting':'your pick'):'thinking…')) : state==='placed' && !flipNow ? 'card placed' : '';
     return `<div class="rslot"><span class="label">${seatName(s)}</span>
-      <div class="flip ${state} ${drop?'drop'+s:''}" id="act${s}" data-drop="act" data-s="${s}"><div class="in"><div class="face back">${state==='empty'?'':'<span class="cb"></span>'}</div><div class="face front">${rv?(x[2]?`<img src="${x[2]}" alt="">`:`<span class="fi">⟳</span>`):''}${rv?esc(x[0]):''}<small>${rv?esc(x[1]||''):''}</small></div></div></div>
+      <div class="flip ${state} ${drop?'drop'+s:''}" id="act${s}" data-drop="act" data-s="${s}"><div class="in"><div class="face back">${state==='empty'?'':'<span class="cb"></span>'}</div><div class="face front">${rv||seen?(x[2]?`<img src="${x[2]}" alt="">`:`<span class="fi">⟳</span>`):''}${rv||seen?esc(x[0]):''}<small>${rv||seen?esc(x[1]||''):''}</small></div></div></div>
       <span class="ftag">${tag}</span></div>`; };
   lane.innerHTML=`${face(0,rv?rv.a:['',''])}<div class="mid"><div class="vs">VS</div><div class="label">${S.round?`Round ${S.round}/${CFG.ROUND_CAP}`:'Opening'}</div></div>${face(1,rv?rv.b:['',''])}`;
   S.justPlaced=null;
@@ -1291,6 +1298,8 @@ function renderLane(){
   const me=S.p[UI.seat];
   if (S.phase==='opening') st = S.commit[UI.seat] ? `Waiting for ${seatName(1-UI.seat)}…` : 'Choose your opening monster. Both reveal together.';
   else if (S.phase==='replace') st = me.pending && !S.commit[UI.seat] ? 'Replacement step: drag a monster up to take the fallen one’s place.' : 'Replacement step…';
+  else if (S.phase==='choose' && foreWait(UI.seat)) st = `Foretell: ${seatName(1-UI.seat)} chooses first…`;
+  else if (S.phase==='choose' && foreSeen(UI.seat) && !S.commit[UI.seat]) st = `Foretold: ${seatName(1-UI.seat)} played ${foreLabel(UI.seat, foreSeen(UI.seat))}.`;
   else if (S.phase==='choose') st = S.commit[UI.seat] ? `Your card is face down. Waiting for ${seatName(1-UI.seat)}…` : me.pending?'Your monster fell. Pick a replacement card, then an item or Pass.':'Pick an item, Pass, or Switch in secret.';
   else if (S.phase==='anim') st=rv&&rv.open?'':'Both cards are down…';
   else if (S.phase==='ended') st='Match over.';
@@ -1331,6 +1340,10 @@ const FX_ONCE = ['walrog','salamander','obsidrax','scorpion','life'];      // on
 const FX_KIND = { debuff:'Debuff', buff:'Buff', ready:'Ready', spent:'Ready' };
 const FX_ORDER = { debuff:0, buff:1, ready:2, spent:3 };
 const fxNeedRoo = () => CFG.ROO_BENCH===2 ? CFG.ROO_STEPS : 3;
+// Hina's Foretell (same rule as fa-engine.js foretellSeat): the seat whose active card is Hina chooses second; both = normal round
+function fxForeSeat(){ if (!S || !S.p || (S.phase!=='choose' && S.phase!=='anim')) return null;
+  const h=[0,1].filter(s=>{ const pl=S.p[s], m=pl.active==null?null:pl.roster[pl.active]; return !!m && !m.ko && m.hp>0 && m.cid==='hina'; });
+  return h.length===1 ? h[0] : null; }
 const fxAttr = v => String(v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 // battle tooltip highlighter (status-tip.js formatRulesText, trimmed): +N gold, −N red, element words coloured
 const FX_EL = /\b(Fire|Ice|Bolt|Air|Earth|Light|Dark|Poison|Physical)\b/g;
@@ -1357,6 +1370,9 @@ function fxStats(s, m){
   if (fxTwOn(s, m)){ out.spd.why.push('+1 Tailwind'); out.spd.v+=1; }
   if (m.slowRound===S.round){ out.spd.v-=1; out.spd.why.push('−1 Slowed'); }
   out.spd.v=Math.min(4, Math.max(1, out.spd.v));
+  if (m.cid==='raubens' && (m.loot||0)>0){ out.atk.v+=m.loot; out.atk.why.push(`+${m.loot} Bandit King`); }
+  if (m.cid==='kalina' && m.land===S.round && S.phase!=='ended'){ const a=out.atk.v, d=out.def.v; out.atk.v=c.def+(a-c.atk); out.def.v=c.atk+(d-c.def);
+    out.atk.why.push(`Jump landing: ATK and DEF swap (${c.atk} ↔ ${c.def})`); out.def.why.push(`Jump landing: ATK and DEF swap (${c.atk} ↔ ${c.def})`); }
   return out;
 }
 // every status on one monster: { k, tier, icon (ART key), name, num, short, life, desc, when }
@@ -1380,6 +1396,16 @@ function fxList(s, m){
   if ((m.charm||0)>=S.round && S.round>0){ const left=m.charm-S.round+1;
     add({ k:'charm', tier:'debuff', icon:'fx_charm', name:'Charmed', num:left, short:`${left} round${left>1?'s':''}`, life: left>1 ? 'This round and next.' : 'Ends after this round.', desc:`−${CFG.CHARM} ATK.` }); }
   if (m.slowRound===S.round) add({ k:'slow', tier:'debuff', icon:'fx_slow', name:'Slowed', num:1, short:'this round', desc:'−1 SPD this round.' });
+  // ---- character cards ----
+  if (m.cid==='raubens' && (m.loot||0)>0) add({ k:'loot', tier:'buff', icon:'fx_loot', name:'Bandit King', num:m.loot, short:`+${m.loot} ATK`,
+    desc:`+${m.loot} ATK for the rest of the match. +1 more each time the opponent uses an item while Raubens is the active card.` });
+  if (m.cid==='kalina' && m.land===S.round) add({ k:'land', tier:'ready', icon:'fx_jump', name:'Jump: landing', short:'this round',
+    desc:`She lands this round: ATK ${c.def}, DEF ${c.atk} (ATK and DEF swapped).`, when:'This round. Then she is back on the ground.' });
+  if (m.cid==='geist'){ const used=!!m.bn;
+    add({ k:'bn', tier: used?'spent':'ready', icon:'fx_revive', name:'The Blackest Night', short: used ? 'second life' : '1 extra life', desc:esc(c.txt),
+      when: used ? 'Spent. The next time he falls, he is defeated.' : 'Ready: the first time he would fall, he rises at full HP.' }); }
+  if (m.cid==='hina' && fxForeSeat()===s) add({ k:'foretell', tier:'buff', icon:'fx_foretell', name:'Foretell', short:'you choose second',
+    desc:`While Hina is the active card, ${esc(seatName(1-s))} chooses first and ${esc(seatName(s))} sees that card before choosing.` });
   if (FX_ONCE.includes(m.cid) || c.absorb){ const used=!!m.abilityUsed;
     add({ k:'once', tier: used?'spent':'ready', icon: m.cid==='scorpion' ? 'fx_venom' : 'fx_shield', name:c.ab, short:'once per match', desc:esc(c.txt),
       when: used ? 'Spent. It does not come back this match.' : 'Available now.' }); }
@@ -1418,7 +1444,7 @@ function fxCues(s, m){
   const out=[];
   if (m.cid==='skizzik' && (m.static||0)>0) out.push((m.static||0)>=2 ? 'st2' : 'st1');
   for (const p of S.p[1-s].roster) if (p.cid==='pyrefly' && !p.ko && ((p.burn||{})[m.i]||0)>=CFG.PYRE_N){ out.push('burn'); break; }
-  if ((m.cid==='wolf' && m.howl) || (m.cid==='kirin' && m.chg && m.chg[S.round]) || (m.cid==='rgolem' && m.windup)) out.push('pow');
+  if ((m.cid==='wolf' && m.howl) || (m.cid==='kirin' && m.chg && m.chg[S.round]) || (m.cid==='rgolem' && m.windup) || (m.cid==='kalina' && m.land===S.round)) out.push('pow');
   if (m.cid==='roo' && (m.walk||0)>=fxNeedRoo()) out.push('roo');
   return m.ko ? [] : out;
 }
@@ -1472,9 +1498,10 @@ const PB_ICON = { 'Howl':'fx_howl', 'Funeral Pyre':'fx_burn', 'Lightning Charge'
   'On the Hunt':'fx_howl', 'Entangle':'fx_howl', 'Venom Sting':'fx_venom', 'Static Buildup':'fx_static', "Chef's Knife":'fx_approach',
   'Thick Skin':'fx_shield', 'Pyrophagy':'fx_shield', 'Earthen Wire':'fx_windup', 'Evasion':'fx_guard', 'Soft Landing':'fx_guard', 'Fortify':'fx_guard',
   'Earthquake':'fx_windup', 'Double Strafe':'fx_pierce', 'Voracious':'fx_pierce', 'Dynamic Entry':'fx_burn', 'Charm':'fx_charm', 'Tailwind':'fx_wind',
-  'Cryo Explosion':'fx_freeze', 'Aero Explosion':'fx_wind', 'Renewal':'fx_heal', 'Undying Flame':'fx_return' };
+  'Cryo Explosion':'fx_freeze', 'Aero Explosion':'fx_wind', 'Renewal':'fx_heal', 'Undying Flame':'fx_return',
+  'Barrage':'fx_pierce', 'Bandit King':'fx_loot', 'Jump landing':'fx_jump', 'The Blackest Night':'fx_revive' };
 // attack-breakdown text (calcAttack's line) → ability names, per side of the hit
-const PB_OFF = ['Howl','Funeral Pyre','Lightning Charge','Crushing Blow','Mana Catcher','On the Hunt','Entangle','Venom Sting','Static Buildup',"Chef's Knife"];
+const PB_OFF = ['Howl','Funeral Pyre','Lightning Charge','Crushing Blow','Mana Catcher','On the Hunt','Entangle','Venom Sting','Static Buildup',"Chef's Knife",'Bandit King','Jump landing'];
 const PB_DEF = ['Thick Skin','Pyrophagy','Earthen Wire','Evasion','Soft Landing','Fortify'];
 const PBAND = [null, null];
 function passiveBand(s, lines){
@@ -1519,7 +1546,7 @@ function pbAfter(ev){
   for (const s of [0,1]){
     const r=ev.res && ev.res[s]; if (!r) continue;
     const srcs=new Set((ev.direct||[]).filter(d=>d.s===1-s).map(d=>d.src));
-    const off=['Earthquake','Double Strafe','Voracious'].filter(n=>srcs.has(n)).map(name=>({ name, tier:'offense' }));
+    const off=['Earthquake','Double Strafe','Voracious','Barrage'].filter(n=>srcs.has(n)).map(name=>({ name, tier:'offense' }));
     if (r.a && r.a.cid==='sylph') off.push({ name:'Tailwind', tier:'support' });
     if (off.length) passiveBand(s, off);
   }
@@ -1527,6 +1554,7 @@ function pbAfter(ev){
     const m=S.p[s].roster[S.p[s].active]; if (!m) continue;
     if (k==='heal' && m.cid==='life') passiveBand(s, [{ name:'Renewal', tier:'support' }]);
   }
+  for (const v of (ev.revive||[])) passiveBand(v.s, [{ name:'The Blackest Night', tier:'defense' }]);
   for (const s of [0,1]) for (const [k] of (ev.after[1-s]||[])) if (k==='burst'){
     const r=ev.res[s]; const fallen=r && r.d; if (fallen) passiveBand(1-s, [{ name: CARDS[fallen.cid].ab, tier:'offense', icon: fallen.cid==='cryo'?'fx_freeze':'fx_wind' }]);
   }
@@ -1854,6 +1882,8 @@ function renderPicker(){
   let hint, can=canLock()&&!UI.busy, btn='Play face down';
   if (S.phase==='anim') { hint='Cards are being revealed…'; can=false; }
   else if (S.commit[sv]) { hint=`Your card is face down. Waiting for <b>${esc(seatName(1-sv))}</b>${timed()?' (their timer keeps running)':''}.`; can=false; }
+  else if (foreWait(sv)) { hint=`<b>Foretell:</b> ${esc(seatName(1-sv))} chooses first. You will see their card, then choose.`; can=false; }
+  else if (foreSeen(sv) && !UI.sel) hint=`<b>Foretold:</b> ${esc(seatName(1-sv))} played <b>${esc(foreLabel(sv, foreSeen(sv)))}</b>. Now pick your answer.`;
   else if (S.phase==='opening') hint = UI.replace==null ? '<b>Drag a monster</b> up into your row, or click one, to choose your opener.' : `Opener: <b>${esc(N(me.roster[UI.replace].cid))}</b>. Drag it to the row or press Play.`;
   else if (S.phase==='replace') hint = me.pending ? (UI.replace==null ? 'Your monster fell. <b>Drag a replacement</b> up into your row. That is all you do this step.' : `Replacement: <b>${esc(N(me.roster[UI.replace].cid))}</b>. Drag it up or press Play.`) : `Waiting for <b>${esc(seatName(1-sv))}</b> to choose a replacement…`;
   else if (me.pending) hint = UI.replace==null ? 'Your monster fell. <b>Drag a standby monster</b> into your row, then play a card from your hand.' : (UI.sel ? `Replacement <b>${esc(N(me.roster[UI.replace].cid))}</b> + <b>${esc(ACT_T[UI.sel])}</b>. Press Play or drag the card to your slot.` : `Replacement: <b>${esc(N(me.roster[UI.replace].cid))}</b>. Now drag a card from your hand onto your slot.`);

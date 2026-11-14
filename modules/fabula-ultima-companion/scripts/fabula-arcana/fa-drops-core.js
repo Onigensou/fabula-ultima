@@ -57,7 +57,7 @@ export function matchCard({ flag, images = [], name = "" }, cards, artFiles) {
   if (flag === false || flag === "none") return null;
   if (typeof flag === "string" && flag && cards[flag]) return flag;
   const base = (p) => { try { return decodeURIComponent(String(p ?? "").split("?")[0].split("/").pop() || "").toLowerCase(); } catch { return String(p ?? "").split("/").pop().toLowerCase(); } };
-  const playable = (cid) => cards[cid] && !cards[cid].future && !cards[cid].retired;
+  const playable = (cid) => cards[cid] && !cards[cid].future && !cards[cid].retired && !cards[cid].character;   // character cards never drop from monsters
   const imgs = images.map(base).filter(Boolean);
   for (const [cid, file] of Object.entries(artFiles ?? {})) if (playable(cid) && imgs.includes(base(file))) return cid;
   const norm = (s) => String(s ?? "").toLowerCase().replace(/[^a-z]/g, "");

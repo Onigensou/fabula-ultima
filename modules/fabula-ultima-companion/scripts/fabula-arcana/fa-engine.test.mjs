@@ -150,7 +150,7 @@ const blank = blankStats;
   S = duel(A('hellhound'), ['roper','flame','kirin'], {hp:[30,1]}); r=go(P,P); S.p[1].pending=true; r=go(P,{replace:1,action:'PASS'});
   ok(S.p[1].active===1 && !(r.ev.entry||[]).length, 'Dynamic Entry does not trigger on a forced replacement');
   // pool
-  ok(R.IDS.length===22 && ['obsidrax','roo','walrog','gorger','sylph','succubus'].every(k=>R.IDS.includes(k)) && !R.IDS.some(k=>['broo','carlbero','life'].includes(k)), 'pool = 22 cards (+Roo, Walrog, Aero Gorger, Sylph, Succubus; Bandit Roo retired)');
+  ok(R.IDS.length===27 && ['obsidrax','roo','walrog','gorger','sylph','succubus','hina','zarg','raubens','geist','kalina'].every(k=>R.IDS.includes(k)) && !R.IDS.some(k=>['broo','carlbero','life'].includes(k)), 'pool = 27 cards (22 + 5 character cards; Bandit Roo retired)');
   // Succubus Charm
   S = duel(A('hellhound'), ['roper','succubus','kirin'], {hp:[30,30]}); S.p[1].roster[1].hp=30; r=go(P,{action:'SWITCH',target:1});
   const c1=dmg0(); r=go(P,P); const c2=dmg0(); r=go(P,P); const c3=dmg0();
@@ -185,6 +185,46 @@ const blank = blankStats;
 
   // Aero Gorger burst
   S = duel(A('hellhound'), B('gorger'), {hp:[8,2]}); r=go(P,P); ok(S.p[0].roster[0].hp===6, 'Aero Gorger: Aero Explosion 2 to the attacker');
+
+  // ---- character cards (playtest v1) ----
+  ok(['hina','zarg','raubens','geist','kalina'].every(k=>R.CARDS[k].cost===3 && R.CARDS[k].character), 'character cards are ★★★ and flagged character');
+  // Zarg Barrage: 2 to the benched enemy with the lowest HP
+  S = duel(A('zarg'), B('hellhound'), {hp:[30,30]}); S.p[1].roster[1].hp=5; S.p[1].roster[2].hp=9; r=go(P,P);
+  ok(S.p[1].roster[1].hp===3 && S.p[1].roster[2].hp===9, 'Zarg: Barrage hits the lowest-HP benched enemy for 2 (5 → 3, the other untouched)');
+  S = duel(A('zarg'), B('hellhound'), {hp:[30,30]}); S.p[1].roster[1].hp=2; r=go(P,P);
+  ok(S.p[1].roster[1].ko, 'Zarg: Barrage can KO on the bench');
+  // Raubens Bandit King: +1 per enemy item while he is active, same round, permanent
+  S = duel(A('raubens'), B('wolf'), {hp:[30,30]}); r=go(P,{action:'REMEDY'}); const rb1=dmg0(); r=go(P,P); const rb2=dmg0();
+  ok(rb1===4 && rb2===4 && S.p[0].roster[0].loot===1, 'Raubens: an enemy item while he is active = +1 ATK at once and for the rest of the match (4, 4)');
+  S = duel(['hellhound','raubens','cryo'], B('wolf'), {hp:[30,30]}); r=go(P,{action:'GOLEM'});
+  ok(!S.p[0].roster[1].loot, 'Raubens: items used while he is benched do not count');
+  // Geist The Blackest Night: first 0 HP → full HP (overflow lost), second → KO; also on the bench
+  S = duel(['geist','kirin','cryo'], B('hellhound'), {hp:[2,30]}); r=go(P,P);
+  ok(S.p[0].roster[0].hp===5 && S.p[0].roster[0].bn && !S.p[0].roster[0].ko, 'Geist: first lethal hit → rises at full HP 5, not KO');
+  S.p[0].roster[0].hp=1; r=go(P,P); ok(S.p[0].roster[0].ko, 'Geist: second lethal hit → falls for real');
+  S = duel(A('zarg'), ['hellhound','geist','cryo'], {hp:[30,30]}); S.p[1].roster[1].hp=1; r=go(P,P);
+  ok(S.p[1].roster[1].hp===5 && !S.p[1].roster[1].ko, 'Geist: Blackest Night also saves him on the bench (Barrage)');
+  // Kalina Jump: Pass → attacks normally (ATK 1 / DEF 5), lands next round swapped (ATK 5 / DEF 1), then grounded again
+  S = duel(A('kalina'), B('wolf'), {hp:[30,30]}); r=go(P,{action:'STRENGTH'}); const k1=dmg0(), t1=r.ev.res[1].dmg;
+  r=go({action:'CAFE'},{action:'SHARD'}); const k2=dmg0(), t2=r.ev.res[1].dmg; r=go(P,P); const k3=dmg0();
+  ok(k1===1 && t1===1 && k2===5 && t2===3 && k3===1, 'Kalina: Jump round 1 dmg & DEF 5 (5−5→1), landing ATK 5 & DEF 1 (Shard 4−1=3), jumps again (got '+[k1,t1,k2,t2,k3]+')');
+  S = duel(A('kalina'), B('wolf'), {hp:[30,30]}); r=go(P,P); r=go(P,P); ok(S.p[0].roster[0].land===4 && dmg0()===5, 'Kalina: a Pass on the landing round does not jump again');
+  S = duel(['kalina','hellhound','cryo'], B('wolf'), {hp:[30,30]}); r=go(P,P); r=go({action:'SWITCH',target:1},P); ok(!S.p[0].roster[0].land, 'Kalina: switching out cancels the landing');
+}
+
+// ===== Hina Foretell (match flow) =====
+{
+  const M = E.Match;
+  const m = M.create({ teams:[["hina","pyrefly","wolf"], ["kirin","roper","pyrefly"]] });
+  M.submit(m,0,{replace:0}); M.submit(m,1,{replace:0});
+  ok(m.phase==='choose' && E.foretellSeat(m)===0 && !M.needs(m,0) && M.needs(m,1), 'Foretell: Hina side waits, the other side chooses first');
+  ok(!M.submit(m,0,{action:'PASS'}).ok, 'Foretell: Hina side cannot commit before the opponent');
+  M.submit(m,1,{action:'STRENGTH'});
+  ok(M.needs(m,0) && M.publicView(m,0).commit[1].action==='STRENGTH', "Foretell: after the opponent commits, Hina's side sees the card");
+  ok(M.publicView(m,1).commit[0]===null && M.publicView(m,null).commit[1].hidden, 'Foretell: spectators still see it hidden');
+  const c = M.aiChoice(m,0,{diff:'skilled'}); ok(!M.validate(m,0,c), 'Foretell: AI holding Hina answers with a legal move ('+c.action+')');
+  const m2 = M.create({ teams:[["hina","pyrefly","wolf"], ["hina","pyrefly","wolf"]] }); M.submit(m2,0,{replace:0}); M.submit(m2,1,{replace:0});
+  ok(E.foretellSeat(m2)===null && M.needs(m2,0) && M.needs(m2,1), 'Foretell: both sides Foretelling = a normal simultaneous round');
 }
 
 // ===== Match flow (pure state machine) =====

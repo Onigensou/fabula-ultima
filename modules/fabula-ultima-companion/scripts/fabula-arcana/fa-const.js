@@ -61,6 +61,12 @@ const ART = {   // exact library paths (matched by content hash to the duel wind
   broo: "Beastiary/BanditRoo_Standard.png",
   carlbero: "Beastiary/Carlbero_Standard.png",
   life: "Beastiary/Life Eater.png",
+  // character cards: a still of each battle sprite (the duel hologram plays the animated .webm)
+  hina: "Fabula Arcana/Character Cards/Hina.png",
+  zarg: "Fabula Arcana/Character Cards/Zarg.png",
+  raubens: "Fabula Arcana/Character Cards/Raubens.png",
+  geist: "Fabula Arcana/Character Cards/Geist.png",
+  kalina: "Fabula Arcana/Character Cards/Kalina.png",
 };
 export const artUrl = (cid) => (ART[cid] ? FORGE + ART[cid].split("/").map(encodeURIComponent).join("/") : "icons/svg/card-joker.svg");
 export const artFiles = () => ({ ...ART });   // cid → library path (card drops match monster art against these)

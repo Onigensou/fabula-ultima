@@ -29,6 +29,14 @@
   let RNG = Math.random;
   let S = null;                       // the match being resolved (set by withState)
 
+  const isLanding = m => !!m && m.cid==='kalina' && !!S && m.land===S.round;
+  // Hina's Foretell: the seat whose active card is Hina chooses SECOND and sees the other seat's card.
+  // Only in the action step, and only when exactly one side has Hina up front (both = a normal round).
+  function foretellSeat(state){
+    if (!state || state.phase!=='choose') return null;
+    const h=[0,1].filter(s=>{ const pl=state.p[s], m=pl.active==null?null:pl.roster[pl.active]; return !!m && !m.ko && m.hp>0 && m.cid==='hina'; });
+    return h.length===1 ? h[0] : null;
+  }
   function elMod(a, d){ if (a==='none'||d==='none') return 0; if (BEATS[a]===d) return CFG.ADV; if (BEATS[d]===a) return -CFG.DIS; return 0; }
   const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(RNG()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
   const N = cid => CARDS[cid].name;
@@ -49,7 +57,10 @@
   function calcAttack(att, def, ctx){
     const A=CARDS[att.cid], D=CARDS[def.cid];
     const ael = ctx.attItem==='SHARD' ? 'none' : A.el;
-    let atk=A.atk; const parts=[`${A.atk} ATK`];
+    // Kalina's Jump landing: ATK and DEF swap for the landing round
+    const landA = isLanding(att), landD = isLanding(def);
+    let atk = landA ? A.def : A.atk; const parts=[landA ? `${atk} ATK (Jump landing)` : `${A.atk} ATK`];
+    if (att.cid==='raubens' && (att.loot||0)>0){ atk+=att.loot; parts.push(`+${att.loot} Bandit King`); }
     if (ctx.attItem==='STRENGTH'){ atk+=CFG.STR; parts.push(`+${CFG.STR} Strength`); }
     if (ctx.attItem==='SHARD'){ atk+=CFG.SHARD; parts.push(`+${CFG.SHARD} Shard`); }
     const pyre = att.cid==='pyrefly' && ((att.burn||{})[def.i]||0)>=CFG.PYRE_N; if (pyre){ atk+=CFG.PYRE_BURST; parts.push(`+${CFG.PYRE_BURST} Funeral Pyre`); }
@@ -64,7 +75,8 @@
     // absorption ability: checked before damage (fires even if Guard would zero it)
     if (D.absorb && D.absorb===ael && !def.abilityUsed)
       return { dmg:0, heal:CFG.AB_HEAL, aff:'AB', line:`${head} · ${N(def.cid)}'s <b>${D.ab}</b> negates it (+${CFG.AB_HEAL} HP)`, usedAbsorb:true, howl, pyre, kcharge, ael };
-    let d = Math.max(1, atk - D.def); let line = head + (D.def?` − DEF ${D.def}`:'') + ` = ${d}`;
+    const ddef = landD ? D.atk : D.def;
+    let d = Math.max(1, atk - ddef); let line = head + (ddef?` − DEF ${ddef}${landD?' (landing)':''}`:'') + ` = ${d}`;
     const mod = elMod(ael, D.el); let aff = ael==='none' ? 'NONE' : 'N';
     if (mod>0){ d=Math.max(1,d+mod); aff='ADV'; line+=` · <b>Strong</b> vs ${EL[D.el]} +${mod} = ${d}`; }
     if (mod<0){ d=Math.max(1,d+mod); aff='DIS'; line+=` · <b>Weak</b> vs ${EL[D.el]} ${mod} = ${d}`; }
@@ -91,19 +103,30 @@
 
   function resolveRound(ch){
     const P=S.p, L=[], ev={ enter:[null,null], switched:[false,false], items:[null,null], heal:[0,0], res:[null,null], after:[[],[]], ko:[false,false] };
+    // Geist's Blackest Night: the first time he would reach 0 HP (any source, active or benched) he rises at full HP; overflow is lost
+    const BN = m => { if (m && m.cid==='geist' && m.hp<=0 && !m.ko && !m.bn){ m.bn=true; m.hp=CARDS.geist.hp; S.stats.bn=(S.stats.bn||0)+1;
+      (ev.revive=ev.revive||[]).push({ s: P[0].roster.includes(m)?0:1, i:m.i });
+      L.push(['The Blackest Night: Geist rises again at full HP!','g']); } };
     const who = s => (S.names && S.names[s]) || (s===0?'You':'NPC'); const third = s => !!(S.names && S.names[s]) || s===1;
     for (const s of [0,1]) if (P[s].pending){
       P[s].active=ch[s].replace; P[s].pending=false; S.stats.forced[s]++; ev.enter[s]='forced';
       L.push([`${who(s)} send${third(s)?'s':''} in ${N(mon(P[s],P[s].active).cid)}.`,'m']);
     }
     for (const s of [0,1]) if (ch[s].action==='SWITCH'){
-      const out=mon(P[s],P[s].active); if (CFG.ROO_BENCH===2 && out.cid==='roo' && out.walk){ out.walk=0; L.push(['Roo leaves the field and loses its steps.','m']); } P[s].active=ch[s].target; ev.switched[s]=true; ev.enter[s]='switch'; S.stats.switches[s]++;
+      const out=mon(P[s],P[s].active); if (CFG.ROO_BENCH===2 && out.cid==='roo' && out.walk){ out.walk=0; L.push(['Roo leaves the field and loses its steps.','m']); }
+      if (out.cid==='kalina' && out.land){ out.land=0; L.push(['Kalina leaves the field; her Jump is cancelled.','m']); } P[s].active=ch[s].target; ev.switched[s]=true; ev.enter[s]='switch'; S.stats.switches[s]++;
       L.push([`${who(s)} switch${third(s)?'es':''} ${N(out.cid)} out for ${N(mon(P[s],P[s].active).cid)}. It skips its attack.`,'m']);
     }
     for (const s of [0,1]) if (ev.switched[s] && mon(P[s],P[s].active).cid==='succubus'){ const t=mon(P[1-s],P[1-s].active); if (t && t.hp>0){ t.charm=S.round+1; S.stats.charm=(S.stats.charm||0)+1; L.push([`Charm: ${N(t.cid)} is Charmed (−${CFG.CHARM} ATK this round and next).`,'m']); } }
-    for (const s of [0,1]) if (ev.switched[s] && mon(P[s],P[s].active).cid==='flame'){ const t=mon(P[1-s],P[1-s].active); if (t && t.hp>0){ const b=t.hp; t.hp=Math.max(0,t.hp-CFG.ENTRY); (ev.entry=ev.entry||[]).push({s:1-s,amt:b-t.hp}); S.stats.entry=(S.stats.entry||0)+1;
+    for (const s of [0,1]) if (ev.switched[s] && mon(P[s],P[s].active).cid==='flame'){ const t=mon(P[1-s],P[1-s].active); if (t && t.hp>0){ const b=t.hp; t.hp=Math.max(0,t.hp-CFG.ENTRY); BN(t); (ev.entry=ev.entry||[]).push({s:1-s,amt:b-t.hp}); S.stats.entry=(S.stats.entry||0)+1;
         L.push([`Dynamic Entry: Wandering Flame bursts in, ${b-t.hp} Fire damage to ${N(t.cid)} (${t.hp} HP).`,'']); } }
     for (const s of [0,1]){ const a=ch[s].action; S.stats.acts[s][a]=(S.stats.acts[s][a]||0)+1; if (ITEMS[a]){ P[s].items[a]=0; ev.items[s]=a; } }
+    // Raubens' Bandit King: an item used while he is the opposing active card = +1 ATK for the rest of the match (counts this round)
+    for (const s of [0,1]) if (ITEMS[ch[s].action]){ const r=mon(P[1-s],P[1-s].active); if (r && r.cid==='raubens' && r.hp>0){ r.loot=(r.loot||0)+1; S.stats.loot=(S.stats.loot||0)+1;
+      L.push([`Bandit King: Raubens takes his cut of the ${ITEMS[ch[s].action].t} (+1 ATK, now +${r.loot}).`,'m']); } }
+    // Kalina's Jump: a Pass (not on her landing round) = she jumps; she lands NEXT round with ATK and DEF swapped
+    for (const s of [0,1]) if (ch[s].action==='PASS'){ const m=mon(P[s],P[s].active); if (m && m.cid==='kalina' && m.land!==S.round){ m.land=S.round+1; S.stats.jump=(S.stats.jump||0)+1;
+      L.push(['Kalina Jumps! She lands next round (ATK and DEF swap for that round).','m']); } }
     // Howl / Wind Up timing, per card (CFG.HOWL_NEXT / CFG.WINDUP_NEXT): 0 = armed on the Pass and used by that same round's
     // attack; 1 = armed at the END of the round it Passed, so it powers the NEXT attack (visible for a whole decision; can stack
     // with an item); 2 = ability off (balance sims only). Live rules (2026-11-14 sim): Wolf 0, Rock Golem 1.
@@ -122,7 +145,8 @@
     const preHP=[0,1].map(s=>mon(P[s],P[s].active).hp); // v0.4 tiebreak snapshot (after Remedy, before impact)
     // ---- attack phase (v0.5): equal Speed = simultaneous; otherwise the faster attack fully resolves first ----
     const directHit = (s, amt, src, withActive) => { const pl=P[s]; const c=pl.roster.filter(m=>!m.ko && m.hp>0 && (withActive || m.i!==pl.active)); if (!c.length) return null;
-      const m=c[Math.floor(RNG()*c.length)]; m.hp=Math.max(0,m.hp-amt); (ev.direct=ev.direct||[]).push({s,i:m.i,amt,src}); S.stats.direct=S.stats.direct||{}; S.stats.direct[src]=(S.stats.direct[src]||0)+1;
+      const m=c[Math.floor(RNG()*c.length)]; return hitOne(s, m, amt, src); };
+    const hitOne = (s, m, amt, src) => { const pl=P[s]; m.hp=Math.max(0,m.hp-amt); BN(m); (ev.direct=ev.direct||[]).push({s,i:m.i,amt,src}); S.stats.direct=S.stats.direct||{}; S.stats.direct[src]=(S.stats.direct[src]||0)+1;
       const bench=m.i!==pl.active; L.push([`${src}: ${amt} damage to ${bench?'benched ':''}${N(m.cid)} (${m.hp} HP).`,'']);
       if (m.hp===0 && bench){ m.ko=true; ev.benchKO=(ev.benchKO||0)+1; S.stats.kos.push(m.cid); L.push([`${N(m.cid)} is knocked out on the bench!`,'k']); }
       return m; };
@@ -130,7 +154,7 @@
       return { ...calcAttack(a,d,{attItem:ch[s].action, defItem:ch[o].action, defSwitchedIn:ev.switched[o]}), a, d, side:s }; };
     const applyHit = r => {
       if (r.heal){ const b=r.d.hp; r.d.hp=Math.min(CARDS[r.d.cid].hp, r.d.hp+r.heal); r.healed=r.d.hp-b; }
-      else r.d.hp=Math.max(0, r.d.hp-r.dmg);
+      else { r.d.hp=Math.max(0, r.d.hp-r.dmg); BN(r.d); }
       r.a.attacked=true; if (r.usedOwn) r.a.abilityUsed=true; if (r.howl){ r.a.howl=false; S.stats.howl=(S.stats.howl||0)+1; }
       if (r.a.cid==='pyrefly'){ r.a.burn=r.a.burn||{}; if (r.pyre){ r.a.burn[r.d.i]=0; S.stats.pyre=(S.stats.pyre||0)+1; } else if (r.dmg>0) r.a.burn[r.d.i]=Math.min(CFG.PYRE_N,(r.a.burn[r.d.i]||0)+1); if (r.d.hp===0) delete r.a.burn[r.d.i]; }
       if (r.a.cid==='skizzik' && r.dmg>0){ r.a.static = r.zap ? 0 : Math.min(2,(r.a.static||0)+1); if (r.zap) S.stats.zap=(S.stats.zap||0)+1; }
@@ -143,8 +167,10 @@
       if (false && r.a.cid==='sylph' && r.dmg>0 && r.d.hp>0){ r.d.slowRound=S.round+1; S.stats.gust=(S.stats.gust||0)+1; L.push([`Gust: ${N(r.d.cid)} will be −1 SPD next round.`,'m']); }
       if (r.a.cid==='sylph'){ P[r.side].twFrom=S.round+1; P[r.side].twUntil=S.round+CFG.TAILWIND; S.stats.twSet=(S.stats.twSet||0)+1; L.push([`Tailwind: ${CFG.TW_ALL?'your monsters':'your Air monsters'} get +1 SPD for ${CFG.TAILWIND} rounds.`,'m']); }
       if (r.a.cid==='archer') directHit(1-r.side, 1, 'Double Strafe', false);
+      if (r.a.cid==='zarg'){ const pl=P[1-r.side]; const b=pl.roster.filter(m=>!m.ko && m.hp>0 && m.i!==pl.active).sort((x,y)=>x.hp-y.hp);
+        if (b.length){ const low=b.filter(m=>m.hp===b[0].hp); S.stats.barrage=(S.stats.barrage||0)+1; hitOne(1-r.side, low[Math.floor(RNG()*low.length)], CFG.BARRAGE, 'Barrage'); } }
       if (r.a.cid==='rgolem' && r.a.windup){ r.a.windup=false; S.stats.quake=(S.stats.quake||0)+1; const pl=P[1-r.side]; L.push(['Earthquake!','m']);
-        for (const m of pl.roster) if (!m.ko && m.hp>0 && m.i!==pl.active){ m.hp=Math.max(0,m.hp-1); (ev.direct=ev.direct||[]).push({s:1-r.side,i:m.i,amt:1,src:'Earthquake'}); L.push([`Earthquake: 1 damage to benched ${N(m.cid)} (${m.hp} HP).`,'']);
+        for (const m of pl.roster) if (!m.ko && m.hp>0 && m.i!==pl.active){ m.hp=Math.max(0,m.hp-1); BN(m); (ev.direct=ev.direct||[]).push({s:1-r.side,i:m.i,amt:1,src:'Earthquake'}); L.push([`Earthquake: 1 damage to benched ${N(m.cid)} (${m.hp} HP).`,'']);
           if (m.hp===0){ m.ko=true; ev.benchKO=(ev.benchKO||0)+1; S.stats.kos.push(m.cid); L.push([`${N(m.cid)} is knocked out on the bench!`,'k']); } } }
       if (r.wire) directHit(r.side, r.wire, 'Earthen Wire', true); if (r.usedFirst||r.usedAbsorb) r.d.abilityUsed=true;
       if (r.d.cid==='cryo' && r.usedFirst){ S.stats.frost=S.stats.frost||[0,0]; S.stats.frost[0]++; S.stats.frost[1]+=r.prevented; }
@@ -153,7 +179,7 @@
       if (r.undying) L.push(['Undying Flame: Inferex refuses to fall and stays at 1 HP.','g']);
     };
     const afterHit = r => { const s=r.side;
-      if ((r.d.cid==='cryo'||r.d.cid==='gorger') && r.d.hp===0 && !r.heal && r.a.hp>0){ const b=r.a.hp; r.a.hp=Math.max(0,r.a.hp-2); S.stats.cryoX=(S.stats.cryoX||0)+1; ev.after[1-s].push(['burst',b-r.a.hp]); L.push([`${r.d.cid==='cryo'?'Cryo':'Aero'} Explosion: ${N(r.a.cid)} takes ${b-r.a.hp} → ${r.a.hp} HP.`,'k']); }
+      if ((r.d.cid==='cryo'||r.d.cid==='gorger') && r.d.hp===0 && !r.heal && r.a.hp>0){ const b=r.a.hp; r.a.hp=Math.max(0,r.a.hp-2); BN(r.a); S.stats.cryoX=(S.stats.cryoX||0)+1; ev.after[1-s].push(['burst',b-r.a.hp]); L.push([`${r.d.cid==='cryo'?'Cryo':'Aero'} Explosion: ${N(r.a.cid)} takes ${b-r.a.hp} → ${r.a.hp} HP.`,'k']); }
       if (false && r.a.cid==='gorger' && r.d.hp===0 && r.a.hp>0){ const b=r.a.hp; r.a.hp=Math.min(CARDS.gorger.hp,r.a.hp+2); if (r.a.hp>b){ ev.after[s].push(['heal',r.a.hp-b]); L.push([`Devour: Aero Gorger +${r.a.hp-b} HP → ${r.a.hp}.`,'g']); } }
       if (r.d.cid==='life' && !r.d.abilityUsed && r.dmg>0 && r.d.hp>0 && r.d.hp<=4){ const b=r.d.hp; r.d.hp=Math.min(CARDS.life.hp,r.d.hp+2); r.d.abilityUsed=true; ev.after[1-s].push(['heal',r.d.hp-b]); L.push([`Renewal: Life Gorger +${r.d.hp-b} HP → ${r.d.hp}.`,'g']); }
     };
@@ -234,6 +260,7 @@
     const w={ PASS:1 + (killsFirst?2.5:0) };
     if (my.cid==='wolf' && !my.howl) w.PASS+=0.8;
     if (my.cid==='rgolem' && !my.windup) w.PASS+=0.8;
+    if (my.cid==='kalina' && my.land!==S.round && my.land!==S.round+1) w.PASS+=1.2;
     const twOn = me.twUntil>=S.round+1;   // Tailwind still up next round
     if (slower(my) && my.hp<=incS) w.PASS*=0.6;                // about to be KO'd with no reply
     if (me.items.STRENGTH){ const outS=est(my,opMon,'STRENGTH'); w.STRENGTH = 0.6 + (opMon.hp>out && opMon.hp<=outS ? 3 : 0) + (my.cid==='fulgimite'?0.6:0) - (out<=0?0.6:0); }
@@ -300,6 +327,19 @@
     S=saved;
     return { ...best, replace: fallback.replace };
   }
+  // AI holding Hina: it knows the other side's card, so it plays the best one-round answer to THAT card
+  function foretellPick(state, si, theirs, prof){
+    const D=AI_DIFF[prof.diff]||AI_DIFF.casual, pl=state.p[si];
+    const moves=[{action:'PASS'}]; for (const k of Object.keys(pl.items)) if (pl.items[k]) moves.push({action:k});
+    for (const m of benchOptions(pl)) moves.push({action:'SWITCH', target:m.i});
+    const v0=boardValue(state.p[si], state.p[1-si]); let best=moves[0], bs=-1e9;
+    for (const c of moves){ const clone=JSON.parse(JSON.stringify(state)); clone.log=[]; const saved=S; S=clone;
+      try { resolveRound(si===0?[c,theirs]:[theirs,c]); } catch(e){} S=saved;
+      let v=boardValue(clone.p[si], clone.p[1-si])-v0; if (clone.result){ const won=(clone.result==='WIN')===(si===0); v += clone.result==='DRAW'?0:(won?60:-60); }
+      if (ITEMS[c.action]) v-=0.9; v += (RNG()-0.5)*D.noise*6;
+      if (v>bs){ bs=v; best=c; } }
+    return { action:best.action, target:best.target };
+  }
   function aiOpening(me, prof={diff:'casual'}){ const sk=(AI_DIFF[prof.diff]||{}).speed; let best=0,bs=-1e9; for (const m of me.roster){ const c=CARDS[m.cid]; const sc=(c.atk*1.4+c.hp*0.35+c.def+(sk?c.spd*0.6:0))*(0.7+RNG()*0.6); if (sc>bs){bs=sc;best=m.i;} } return best; }
   // v0.5 timeout auto-pick: highest current HP, then highest max HP, then roster order (deterministic)
   function autoPickMonster(pl){ const c=pl.roster.filter(m=>!m.ko && m.i!==pl.active); c.sort((a,b)=>(b.hp-a.hp)||(CARDS[b.cid].hp-CARDS[a.cid].hp)||(a.i-b.i)); return c[0].i; }
@@ -321,6 +361,7 @@
       if (state.phase === 'ended') return false;
       if (state.commit[seat]) return false;
       if (state.phase === 'replace') return !!state.p[seat].pending;
+      if (foretellSeat(state) === seat && !state.commit[1 - seat]) return false;   // Foretell: the other side chooses first
       return true;
     },
     validate(state, seat, c){
@@ -351,6 +392,7 @@
         const me = state.p[seat], op = state.p[1 - seat];
         if (state.phase === 'opening') return { replace: aiOpening(me, prof) };
         if (state.phase === 'replace') return { replace: aiChoose(me, op, prof).replace };
+        if (foretellSeat(state) === seat && state.commit[1 - seat]) return foretellPick(state, seat, state.commit[1 - seat], prof);
         const c = aiChoose(me, op, prof); return { action:c.action, target:c.target };
       });
     },
@@ -363,7 +405,8 @@
     },
     publicView(state, viewer){
       const v = JSON.parse(JSON.stringify(state));
-      v.commit = v.commit.map((c, s) => c && s !== viewer ? { hidden:true } : c);
+      const fs = foretellSeat(state);   // the Foretelling seat sees the other side's card
+      v.commit = v.commit.map((c, s) => c && s !== viewer && !(viewer === fs && s === 1 - fs) ? { hidden:true } : c);
       return v;
     },
   };
@@ -444,7 +487,7 @@
   };
 
   const Engine = Object.freeze({
-    Match, Series, View, IDS, LEGAL_TEAMS, isLegalTeam, teamCost, compKey, randomTeam, elMod,
+    Match, Series, View, foretellSeat, IDS, LEGAL_TEAMS, isLegalTeam, teamCost, compKey, randomTeam, elMod,
     setRng(fn){ RNG = typeof fn === 'function' ? fn : Math.random; },
     // low-level hooks for tests and the balance tool (run inside a state)
     _withState: withState, _resolveRound: ch => resolveRound(ch), _calcAttack: (a, d, ctx) => calcAttack(a, d, ctx), _mkPlayer: mkPlayer,

@@ -10,7 +10,7 @@
  * ITEMS[*].art are asset keys the UI maps to icons.
  */
 (() => {
-  const CFG = { TEAM:3, BUDGET:5, ROUND_CAP:20, STR:2, GOLEM:3, REMEDY:3, SHARD:1, ADV:2, DIS:2, AB_HEAL:2, AI_NOISE:0.25, TIMER:30, PYRE_N:1, PYRE_BURST:4, VORACIOUS:3, ENTRY:2, CHARM:2, KNIFE:9999, VENOM:2, KCHARGE:3, TAILWIND:3, TW_ALL:0, ROO_LEAVE:1, ROO_MARK:0, ROO_BENCH:2, ROO_GOLEM:0, ROO_STEPS:2, HOWL_NEXT:0, WINDUP_NEXT:1 };   // ROO_BENCH: 0 per-victim, 1 walks on bench, 2 field only
+  const CFG = { TEAM:3, BUDGET:5, ROUND_CAP:20, STR:2, GOLEM:3, REMEDY:3, SHARD:1, ADV:2, DIS:2, AB_HEAL:2, AI_NOISE:0.25, TIMER:30, PYRE_N:1, PYRE_BURST:4, VORACIOUS:3, ENTRY:2, CHARM:2, KNIFE:9999, VENOM:2, KCHARGE:3, TAILWIND:3, TW_ALL:0, ROO_LEAVE:1, ROO_MARK:0, ROO_BENCH:2, ROO_GOLEM:0, ROO_STEPS:2, HOWL_NEXT:0, WINDUP_NEXT:1, BARRAGE:2 };   // ROO_BENCH: 0 per-victim, 1 walks on bench, 2 field only
   const AI_DIFF = { casual:{noise:0.25, rand:0.15, speed:false}, skilled:{noise:0.10, rand:0.03, speed:true, lookahead:true} };
   const AI_STYLE = {
     aggressive:{ STRENGTH:1.5, SHARD:1.3, SMOKE:1.2, SWITCH:0.6, GOLEM:0.8, REMEDY:0.8, rand:0 },
@@ -59,10 +59,18 @@
     carlbero: {future:true, name:'Carlbero', el:'poison', cost:1, role:'Guardian', atk:3, hp:10, def:1, ab:'Fortify', txt:'When its owner uses Golem Fragment, takes 1 less damage (even through Smoke Bomb).'},
     life:     {future:true, name:'Life Gorger', el:'light', cost:1, role:'Survivor', atk:3, hp:10, def:0, ab:'Renewal', txt:'The first time it survives an attack at 4 HP or less, restore 2 HP. Once per match.'},
     sylph:    {name:'Sylph', el:'air', cost:1, role:'Support', atk:3, hp:8, def:0, ab:'Tailwind', txt:'When Sylph attacks, it raises a Tailwind: for the next 3 rounds your Air monsters have +1 SPD (max 4), even after Sylph leaves.'},
+    // ---- character cards (★★★ PCs / NPCs / bosses; playtest v1 2026-11-14, sim: 40-62% with all five in the pool) ----
+    // character:true = never drops from monsters (fa-drops-core matchCard) and is never a starter gift.
+    hina:     {character:true, name:'Hina', el:'light', cost:3, role:'Support', atk:4, hp:11, def:1, ab:'Foretell', txt:'While Hina is your active card, your opponent chooses first and you see their card before you choose (you get your own timer). Both sides Foretelling = a normal round.'},
+    zarg:     {character:true, name:'Zarg', el:'phys', cost:3, role:'Hunter', atk:3, hp:10, def:0, ab:'Barrage', txt:'Whenever he attacks, he also deals 2 damage to the benched enemy with the lowest HP (ignores DEF, items and elements).'},
+    raubens:  {character:true, name:'Raubens', el:'none', cost:3, role:'Striker', atk:3, hp:10, def:1, ab:'Bandit King', txt:'Whenever the opponent uses an item while Raubens is your active card, he gains +1 ATK for the rest of the match.'},
+    geist:    {character:true, name:'Geist', el:'dark', cost:3, role:'Guardian', atk:3, hp:5, def:1, ab:'The Blackest Night', txt:'The first time he would fall to 0 HP (anywhere, any source), he rises again at full HP; extra damage is lost. The second time, he falls for real.'},
+    kalina:   {character:true, name:'Kalina', el:'air', cost:3, role:'Combo', atk:1, hp:10, def:5, ab:'Jump', txt:'When she Passes, she Jumps: she still attacks this round, then lands next round with her ATK and DEF swapped for that round.'},
   };
   // v0.5 Speed = DEX die tier (d6=1, d8=2, d10=3, d12=4) from the world sheets
   const SPD = { gigas:1, gorger:2, carlbero:2, kirin:2, flame:2, cryo:2, sylph:2, fulgimite:3, broo:3, life:3, pyrefly:4, skizzik:4,
-    salamander:2, manaray:3, hellhound:3, scorpion:2, archer:2, wolf:2, inferex:3, roper:2, obsidrax:2, roo:1, walrog:1, succubus:3, rgolem:1 };   // Roo SPD 1 by design (slow Tonberry), not its DEX die
+    salamander:2, manaray:3, hellhound:3, scorpion:2, archer:2, wolf:2, inferex:3, roper:2, obsidrax:2, roo:1, walrog:1, succubus:3, rgolem:1,
+    hina:1, zarg:4, raubens:2, geist:3, kalina:3 };   // characters: their sheets' DEX dice (Hina d6, Zarg d12, Rauben d8, Geist d10, Kalina d10)   // Roo SPD 1 by design (slow Tonberry), not its DEX die
   for (const k of Object.keys(CARDS)) CARDS[k].spd = SPD[k];
   const ITEMS = {
     STRENGTH:{t:'Tincture of Strength', k:'Attack', d:`+${CFG.STR} ATK this round`, art:'i_strength'},

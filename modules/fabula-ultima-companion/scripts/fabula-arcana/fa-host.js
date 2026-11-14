@@ -157,11 +157,17 @@ async function submit(s, seat, choice) {
   const t = s.seats[seat];
   if (!r.ok) { if (t.userId) { notify(t.userId, `That move isn't possible: ${r.error}.`, "warn"); toDuel(s, t.userId, { t: "state", ...payload(s, seat) }); } return; }
   if (!r.resolved) {
+    // Hina's Foretell: the other side just chose → the Foretelling seat now chooses, on a fresh clock, seeing that card
+    const fs = m.phase === "choose" ? E().foretellSeat(m) : null;
+    const foretold = fs !== null && fs === 1 - seat && M.needs(m, fs);
+    if (foretold) decide(s);
     for (const p of participants(s)) {
       if (p.viewer === seat) continue;
+      if (foretold && p.viewer === fs) { toDuel(s, p.uid, { t: "state", ...payload(s, fs) }); continue; }
       const shown = p.viewer === 1 ? 1 - seat : seat;      // seat as that viewer sees it
       toDuel(s, p.uid, { t: "committed", seat: shown });
     }
+    if (foretold) for (const p of participants(s)) if (p.viewer === seat) toDuel(s, p.uid, { t: "state", ...payload(s, seat) });   // the new deadline
     save(); return;
   }
   if (m.phase === "ended") await onGameEnd(s);

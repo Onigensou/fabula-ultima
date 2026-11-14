@@ -15,7 +15,8 @@ if (SEED) { let s = SEED; E.setRng(() => { s |= 0; s = s + 0x6D2B79F5 | 0; let t
 // log text that proves a repeatable / triggered ability fired; others use the once-per-match abilityUsed flag
 const FIRED = { skizzik:/Static Buildup/, pyrefly:/Funeral Pyre/, kirin:/[+][0-9]+ Lightning Charge/, cryo:/Cryo Explosion/, gorger:/Aero Explosion/, inferex:/Voracious/,
   archer:/Double Strafe/, fulgimite:/Evasion/, obsidrax:/Earthen Wire/, manaray:/Mana Catcher/, hellhound:/On the Hunt/, roper:/Entangle/, wolf:/[+]1 Howl/,
-  gigas:/Crushing Blow/, flame:/Dynamic Entry/, sylph:/Tailwind:/, succubus:/Charm:/, roo:/Chef.s Knife [+]/, rgolem:/Earthquake!/ };
+  gigas:/Crushing Blow/, flame:/Dynamic Entry/, sylph:/Tailwind:/, succubus:/Charm:/, roo:/Chef.s Knife [+]/, rgolem:/Earthquake!/,
+  zarg:/Barrage:/, raubens:/Bandit King:/, geist:/Blackest Night:/, kalina:/Kalina Jumps/ };
 const FULL = E.LEGAL_TEAMS.filter(t => E.teamCost(t) === 5);
 const pick = () => FULL[Math.floor(Math.random() * FULL.length)];
 const shape = t => t.map(id => CARDS[id].cost).sort((a, b) => b - a).join("+");

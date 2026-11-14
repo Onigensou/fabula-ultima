@@ -45,6 +45,16 @@ const ART = {
  "st_def": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/shield.png",
  "st_atk": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
  "walrog": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Walrog.png",
+ // character cards (stills of the battle sprites; HOLO_VIDEO below = the animated battlers for the board hologram)
+ "hina": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Hina.png",
+ "zarg": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Zarg.png",
+ "raubens": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Raubens.png",
+ "geist": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Geist.png",
+ "kalina": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Kalina.png",
+ "fx_foretell": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Holy.png",
+ "fx_revive": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Zombie.png",
+ "fx_loot": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/AttackUp.png",
+ "fx_jump": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Wind.png",
  // status-effect tiles (battle-mode Buff Icon art)
  "fx_static": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Shock.png",
  "fx_approach": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Fear.png",
@@ -63,6 +73,14 @@ const ART = {
  "fx_freeze": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Freeze.png",
  "fx_heal": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Potion_IconC.png",
  "fx_return": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Return.png"
+};
+// animated battle sprites for character-card holograms (they face LEFT, the bestiary art faces right → mirrored in the window)
+const HOLO_VIDEO = {
+ "hina": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hina/Hina_Battler002.webm",
+ "zarg": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Battler002.webm",
+ "raubens": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Rauber/Rauben_Battle.webm",
+ "geist": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/Geist_Battle.webm",
+ "kalina": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Kalina/Kalina_Battler001.webm"
 };
 const SFXDATA = {};
 const SFXURL = {
