@@ -22,7 +22,8 @@ const CFG = () => Catalog().CFG;
 export const listSessions = () => [...sessions.values()];
 const inSession = (userId) => [...sessions.values()].find((s) => !s.over && (s.seats.some((t) => t.userId === userId)));
 const notify = (userId, text, level = "info") => userId && send(userId, "notify", { text, level });
-const INVITE_MS = 20000;                 // a PvP challenge stays open this long, then closes itself on both sides
+const INVITE_MS = 20000;
+const INTRO_MS = 2400;                   // duel.html playIntro(): monsters slide in, hands are dealt, then "Battle Start!"                 // a PvP challenge stays open this long, then closes itself on both sides
 const blockedBy = (target, fromUserId) => !game.users.get(fromUserId)?.isGM && !!target?.getFlag?.(MODULE_ID, FLAG_BLOCK)?.[fromUserId];
 
 // ------------------------------------------------------------------ views
@@ -105,7 +106,8 @@ export function restore() {
 // ------------------------------------------------------------------ game flow
 function clearTimers(s) { const r = rt(s.sid); clearTimeout(r.timer); r.timer = null; r.ai.forEach((t) => clearTimeout(t)); r.ai = [null, null]; }
 
-function decide(s) {
+// extra: ms to add before the first decision of a game (the duel window plays its start animation first)
+function decide(s, extra = 0) {
   clearTimers(s); s.deadline = null;
   const M = E().Match, m = s.match;
   if (!m || m.phase === "ended") return;
@@ -113,16 +115,16 @@ function decide(s) {
   s.seats.forEach((t, i) => {
     if (t.kind !== "ai" || !M.needs(m, i)) return;
     const [a, b] = [700, 1900];
-    r.ai[i] = setTimeout(() => { if (s.match === m && M.needs(m, i)) submit(s, i, M.aiChoice(m, i, t.ai || { diff: "casual" })); }, a + Math.random() * (b - a));
+    r.ai[i] = setTimeout(() => { if (s.match === m && M.needs(m, i)) submit(s, i, M.aiChoice(m, i, t.ai || { diff: "casual" })); }, extra + a + Math.random() * (b - a));
   });
   // decision timer only when two humans play (v0.5: no timer against the AI)
   const humans = s.seats.filter((t) => t.kind === "human").length;
   if (humans === 2 && s.seats.some((t, i) => M.needs(m, i))) {
-    s.deadline = Date.now() + CFG().TIMER * 1000;
+    s.deadline = Date.now() + extra + CFG().TIMER * 1000;
     r.timer = setTimeout(() => {
       if (s.match !== m || m.phase === "ended") return;
       s.seats.forEach((t, i) => { if (t.kind === "human" && M.needs(m, i)) { notify(t.userId, "Time ran out — an automatic choice was made for you."); submit(s, i, M.autoChoice(m, i)); } });
-    }, CFG().TIMER * 1000 + 250);
+    }, extra + CFG().TIMER * 1000 + 250);
   }
 }
 
@@ -131,7 +133,7 @@ async function startGame(s) {
   s.match = E().Match.create({ teams, names: s.seats.map((t) => t.name) });
   s.gameKey = uid(); s.reward = null;
   s.seats.forEach((t) => { t.next = false; t.lastTeam = t.team; });
-  decide(s);
+  decide(s, INTRO_MS + (s.bestOf > 1 ? 1900 : 0));      // the window plays its start animation (+ the series GAME n banner)
   broadcast(s, (v) => ({ t: "start", ...payload(s, v) }));
   pushStatus(); save();
 }
