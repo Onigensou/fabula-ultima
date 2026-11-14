@@ -48,9 +48,17 @@ export function matchStatus(entries, query) {
   const q = String(query ?? "").trim().toLowerCase();
   if (!q) return null;
   const list = Array.isArray(entries) ? entries : [];
-  return list.find(e => String(e?.id ?? "").toLowerCase() === q)
-      ?? list.find(e => String(e?.name ?? "").toLowerCase() === q)
-      ?? null;
+  const exact = list.find(e => String(e?.id ?? "").toLowerCase() === q)
+      ?? list.find(e => String(e?.name ?? "").toLowerCase() === q);
+  if (exact) return exact;
+  // Story wording: "Paralyzed" → Paralyze, "Slowed" → Slow. Longest name the
+  // query starts with, names of 4+ letters only so "Oil"/"KO" never catch words.
+  let best = null;
+  for (const e of list) {
+    const n = String(e?.name ?? "").toLowerCase();
+    if (n.length >= 4 && q.startsWith(n) && q.length - n.length <= 3 && (!best || n.length > best.name.length)) best = e;
+  }
+  return best;
 }
 
 /**

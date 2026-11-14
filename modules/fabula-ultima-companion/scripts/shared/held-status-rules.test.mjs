@@ -22,6 +22,12 @@ t("matchStatus by id and by name, case-insensitive", () => {
   assert.equal(matchStatus(list, "dazed").id, "dazed");
   assert.equal(matchStatus(list, "Dazed").id, "dazed");
   assert.equal(matchStatus(list, "nope"), null);
+  const real = [{ id: "a", name: "Paralyze" }, { id: "b", name: "Slow" }, { id: "c", name: "Oil" }, { id: "d", name: "Burn" }];
+  assert.equal(matchStatus(real, "Paralyzed").id, "a");
+  assert.equal(matchStatus(real, "slowed").id, "b");
+  assert.equal(matchStatus(real, "Burning").id, "d");
+  assert.equal(matchStatus(real, "oily"), null, "short names never prefix-match");
+  assert.equal(matchStatus(real, "slowpoke"), null, "too far from the name");
   assert.equal(matchStatus(list, ""), null);
 });
 
