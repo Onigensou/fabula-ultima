@@ -37,21 +37,28 @@ export const DEFAULTS = Object.freeze({
 // messages (stat changes, "draws its X") read best all at once.
 export const KIND_REVEAL = Object.freeze({ system: "instant", speech: "instant", alert: "instant", narration: "type" });
 
-const CLS = Object.freeze({ w: "kw", up: "up", down: "down", flat: "flat", st: "kw", p: "party" });
+const CLS = Object.freeze({ w: "kw", up: "up", down: "down", flat: "flat", st: "kw", p: "party", it: "kw it" });
 
 // "{w:Swords} {up:increased}!" → [{ t, cls? }]. Unknown tags stay literal, so
 // a stray brace in authored text never eats words.
 // {st:Slow}      a status: its name (umber) with the status icon in front. The
 //                segment carries status: "Slow"; the runtime looks the icon up.
 // {p:The party}  the whole party, in its own colour.
+// {it:uuid|Name} an item: icon + name as an item link (hover = the item card,
+//                click = the Item Window); the segment carries item: uuid.
 export function parseMarkup(text) {
   const s = String(text ?? "");
   const out = [];
-  const re = /\{(w|up|down|flat|st|p):([^{}]*)\}/g;
+  const re = /\{(w|up|down|flat|st|p|it):([^{}]*)\}/g;
   let i = 0, m;
   while ((m = re.exec(s))) {
     if (m.index > i) out.push({ t: s.slice(i, m.index) });
-    out.push(m[1] === "st" ? { t: m[2], cls: CLS.st, status: m[2] } : { t: m[2], cls: CLS[m[1]] });
+    if (m[1] === "it") {
+      const bar = m[2].indexOf("|");
+      const uuid = bar >= 0 ? m[2].slice(0, bar).trim() : "";
+      const label = bar >= 0 ? m[2].slice(bar + 1) : m[2];
+      out.push(uuid ? { t: label, cls: CLS.it, item: uuid } : { t: label, cls: CLS.w });
+    } else out.push(m[1] === "st" ? { t: m[2], cls: CLS.st, status: m[2] } : { t: m[2], cls: CLS[m[1]] });
     i = re.lastIndex;
   }
   if (i < s.length) out.push({ t: s.slice(i) });

@@ -1,6 +1,6 @@
 // node scripts/shared/feedback-rules.test.mjs
 import assert from "node:assert/strict";
-import { statusLines, statusSound, damageSound, flashKey, affinityTag, DAMAGE_SFX } from "./feedback-rules.js";
+import { statusLines, statusSound, itemLines, damageSound, flashKey, affinityTag, DAMAGE_SFX } from "./feedback-rules.js";
 
 let n = 0;
 const t = (name, fn) => { fn(); n++; console.log("  ok", name); };
@@ -49,6 +49,19 @@ t("status sound: battle's generic beats, inflicted wins, immune-only silent", ()
   assert.equal(statusSound(["buff", "immune"]), "up");
   assert.equal(statusSound(["removed"]), "up");
   assert.equal(statusSound(["immune"]), null);
+});
+t("items: <who> obtained <item>, quantities merge, zenit last", () => {
+  const ob = (rid, name, party, itemName, qty, extra = {}) => ({ receiverId: rid, receiverName: name, party, kind: "obtain", itemUuid: itemName ? `Item.${itemName}` : null, itemName, qty, ...extra });
+  assert.deepEqual(itemLines([ob("z", "Zarg", false, "Moonstone", 1)]), ["Zarg obtained {it:Item.Moonstone|Moonstone}!"]);
+  assert.deepEqual(itemLines([ob("db", "Party", true, "Potion", 1), ob("db", "Party", true, "Potion", 1), ob("db", "Party", true, "Ether", 1), ob("db", "Party", true, null, 0, { zenit: 300 })]),
+    ["{p:The party} obtained {it:Item.Potion|Potion} ×2, {it:Item.Ether|Ether} and {w:300 zenit}!"]);
+});
+t("items: a take reads handed over; each receiver gets a line; no uuid = plain name", () => {
+  const lines = itemLines([
+    { receiverId: "z", receiverName: "Zarg", kind: "lose", itemName: "Old Key", itemUuid: null },
+    { receiverId: "h", receiverName: "Hina", kind: "obtain", itemName: "Ether", itemUuid: "Item.e" },
+  ]);
+  assert.deepEqual(lines, ["Hina obtained {it:Item.e|Ether}!", "Zarg handed over {w:Old Key}."]);
 });
 t("damage sound: one per batch, strongest result wins", () => {
   assert.equal(damageSound({ affinities: ["NE", "VU"] }), DAMAGE_SFX.weak);

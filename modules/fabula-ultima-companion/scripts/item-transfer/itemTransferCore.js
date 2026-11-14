@@ -24,6 +24,14 @@
 //   // If true/undefined => receiver will see "Obtained X Item" card.
 //   // If false => do not show the transfer card UI.
 //   showTransferCard?: boolean
+//
+//   // Announcement (2026-11-14): when FU.Feedback is loaded, a gain is told to
+//   // EVERY screen as the System Message line "Zarg obtained Moonstone!" (item
+//   // name hoverable, obtain chime) instead of the receiver-only popup card;
+//   // showTransferCard: false still silences it.
+//   announce?: boolean,   // actorToGm (a take) and adjustZenit announce only when true
+//   chatCard?: boolean,   // also post the house "Obtain" chat card (default off)
+//   announceSound?: boolean // false: no obtain chime (the caller plays its own)
 // }
 //
 // Modes:
@@ -628,6 +636,32 @@
     }
   }
 
+  // --------------------------------------------------------------------------
+  // Announcement (FU.Feedback.items, shared/feedback.js)
+  // --------------------------------------------------------------------------
+  // One entry per gain / loss; the feedback layer batches them into lines
+  // ("The party obtained Potion ×2 and Ether!"), plays the obtain chime and,
+  // when asked, posts the "Obtain" chat card. Returns false when the feedback
+  // layer is missing, so the caller can fall back to the old popup.
+  function announceItem({ kind = "obtain", actor, item, itemUuid, qty, zenit, name, img, chatCard, sound = true }) {
+    const fb = globalThis.FU?.Feedback;
+    if (!fb?.items) return false;
+    // Hover needs a uuid every viewer can read: a world / compendium item
+    // (no parent) as it is, else the receiver's copy.
+    const linkUuid = item && !item.parent ? item.uuid : (itemUuid ?? item?.uuid ?? null);
+    try {
+      fb.items([{
+        receiverId: actor?.id ?? null, receiverName: actor?.name ?? "",
+        kind, itemUuid: zenit ? null : linkUuid, itemName: zenit ? null : (name ?? item?.name ?? ""),
+        img: zenit ? null : (img ?? item?.img ?? null), qty, zenit: zenit ?? null,
+      }], { chatCard: !!chatCard, sound });
+      return true;
+    } catch (err) {
+      console.warn("[ItemTransferCore] announce failed:", err);
+      return false;
+    }
+  }
+
     // --------------------------------------------------------------------------
   // Zenit helpers (currency)
   // --------------------------------------------------------------------------
@@ -871,10 +905,11 @@
       transferredQty: transferQty
     };
 
-    // NEW: Transfer Card UI (receiver-only)
-    // Default behavior: show card unless explicitly disabled.
+    // Announce to every screen (FU.Feedback); the receiver-only card is the
+    // fallback when the feedback layer is missing. showTransferCard: false = quiet.
     const showTransferCard = payload?.showTransferCard !== false;
-    if (showTransferCard) {
+    if (showTransferCard && !announceItem({ actor: receiverActor, item: sourceItem.parent ? null : sourceItem, img: sourceItem.img, itemUuid: receiverItemUuid,
+      qty: transferQty, name: payload?.cardItemName || sourceItem.name, chatCard: payload?.chatCard, sound: payload?.announceSound !== false })) {
       emitTransferCardToRecipients({
         receiverActor,
         quantity: transferQty,
@@ -1066,6 +1101,10 @@
 
     await actor.update(makeZenitUpdate(after));
 
+    if (payload.announce === true && after !== before) {
+      announceItem({ kind: after > before ? "obtain" : "lose", actor, zenit: Math.abs(after - before), chatCard: payload.chatCard, sound: payload.announceSound !== false });
+    }
+
     console.log("[ItemTransferCore] adjustActorZenit complete.", {
       actorUuid: actor.uuid,
       before,
@@ -1182,9 +1221,10 @@
       grantedQty: grantQty
     };
 
-    // NEW: Transfer Card UI (receiver-only)
+    // Announce to every screen (FU.Feedback); popup only as the fallback.
     const showTransferCard = payload?.showTransferCard !== false;
-    if (showTransferCard) {
+    if (showTransferCard && !announceItem({ actor: receiverActor, item: templateItem, itemUuid: receiverItemUuid,
+      qty: grantQty, name: payload?.cardItemName || templateItem.name, chatCard: payload?.chatCard, sound: payload?.announceSound !== false })) {
       emitTransferCardToRecipients({
         receiverActor,
         quantity: grantQty,
@@ -1287,6 +1327,11 @@
           count: childNodesToRemove.length
         });
       }
+    }
+
+    // A take is announced only when the caller asks (a shop sale is not news).
+    if (payload?.announce === true) {
+      announceItem({ kind: "lose", actor: senderActor, item: null, itemUuid: null, qty: removeQty, name: sourceItem.name, img: sourceItem.img, chatCard: payload?.chatCard, sound: payload?.announceSound !== false });
     }
 
     return {

@@ -84,6 +84,55 @@ export function statusSound(kinds = []) {
   return null;
 }
 
+/**
+ * Items gained or handed over (FF-style "Received Moonstone!", user 11-14:
+ * "<Actor> obtained <Item>").
+ * entries: [{ receiverId, receiverName, party, kind: "obtain" | "lose",
+ *             itemUuid, itemName, qty, zenit }]   (zenit entries carry no item)
+ * → System Message lines; items as {it:uuid|Name} (hoverable link + icon).
+ *
+ *   Zarg obtained Moonstone!
+ *   The party obtained Potion ×2 and Ether!
+ *   The party obtained 300 zenit!
+ *   Zarg handed over Old Key.
+ */
+export const ITEM_KINDS = Object.freeze(["obtain", "lose"]);
+export function itemLines(entries = []) {
+  const groups = new Map();   // kind|receiver → { who, party, kind, items: Map }
+  for (const e of entries ?? []) {
+    const kind = ITEM_KINDS.includes(e?.kind) ? e.kind : "obtain";
+    const rid = String(e?.receiverId ?? e?.receiverName ?? "");
+    if (!rid) continue;
+    const key = `${kind}|${rid}`;
+    if (!groups.has(key)) groups.set(key, { who: String(e.receiverName ?? rid), party: !!e.party, kind, items: new Map() });
+    const g = groups.get(key);
+    const zenit = Math.floor(Number(e.zenit) || 0);
+    if (zenit > 0) { g.zenit = (g.zenit ?? 0) + zenit; continue; }
+    const name = String(e.itemName ?? "").trim();
+    if (!name) continue;
+    const ik = e.itemUuid ? `u:${e.itemUuid}` : `n:${name}`;
+    const it = g.items.get(ik) ?? { name, uuid: e.itemUuid ?? null, qty: 0 };
+    it.qty += Math.max(1, Math.floor(Number(e.qty) || 1));
+    g.items.set(ik, it);
+  }
+  const lines = [];
+  for (const kind of ITEM_KINDS) {
+    for (const g of groups.values()) {
+      if (g.kind !== kind) continue;
+      const parts = [...g.items.values()].map((it) =>
+        `${it.uuid ? `{it:${it.uuid}|${it.name}}` : `{w:${it.name}}`}${it.qty > 1 ? ` ×${it.qty}` : ""}`);
+      if (g.zenit) parts.push(`{w:${g.zenit} zenit}`);
+      if (!parts.length) continue;
+      const who = g.party ? "{p:The party}" : g.who;
+      lines.push(kind === "lose" ? `${who} handed over ${join(parts)}.` : `${who} obtained ${join(parts)}!`);
+    }
+  }
+  return lines;
+}
+
+// The obtain chime — the ItemAwarder macro's (Soundboard/Item3.ogg).
+export const ITEM_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Item3.ogg";
+
 // Damage sounds: the damage API's own set (apply-damage-core.js _SFX).
 const SFX_ROOT = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
 export const DAMAGE_SFX = Object.freeze({

@@ -63,7 +63,6 @@
   const POS_OVERRIDE_TTL_MS = 800;
 
   const ASSET = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb";
-  const ZENIT_ICON = `${ASSET}/Item%20Icon/GP.png`;
 
   const SFX = {
     bag:    `${ASSET}/Sound/Soundboard/Item3.ogg`,
@@ -445,41 +444,8 @@
     }
   }
 
-  // ─────────────────────────────────────────────────────────────
-  // Chat cards
-  // ─────────────────────────────────────────────────────────────
-  const postObtainCard = async ({ iconImg, text }) => {
-    const html = `
-<div class="oni-obtain-card">
-  <div class="oni-obtain-row">
-    <img class="oni-obtain-icon" src="${escapeHTML(iconImg ?? "")}" alt="">
-    <div class="oni-obtain-text">${text}</div>
-  </div>
-</div>`;
-
-    await ChatMessage.create({
-      user: game.user.id,
-      speaker: null,
-      type: CONST.CHAT_MESSAGE_TYPES.OTHER,
-      content: html,
-      flags: { core: { cssClass: "oni-obtain-msg" } }
-    });
-  };
-
-  const postObtainCard_Item = ({ iconImg, qty, name, linkUuid }) => {
-    const safeName = escapeHTML(name ?? "Unknown Item");
-    const qtyPrefix = (qty > 1) ? `${qty} ` : "";
-    const nameLink = linkUuid
-      ? `<a class="content-link" data-uuid="${escapeHTML(linkUuid)}"><span class="oni-obtain-name">${safeName}</span></a>`
-      : `<span class="oni-obtain-name">${safeName}</span>`;
-    return postObtainCard({ iconImg, text: `Obtain ${escapeHTML(qtyPrefix)}${nameLink}!` });
-  };
-
-  const postObtainCard_Zenit = ({ amount }) =>
-    postObtainCard({
-      iconImg: ZENIT_ICON,
-      text: `Obtain <span class="oni-obtain-name">${escapeHTML(amount)}</span> Zenit!`
-    });
+  // The "Obtain X!" chat card + the on-screen line now come from the item
+  // transfer core's announcement (FU.Feedback.items, shared/feedback.js).
 
   // ─────────────────────────────────────────────────────────────
   // GM open logic
@@ -494,11 +460,14 @@
     const ITC = window["oni.ItemTransferCore"];
     const fn = ITC?.adjustZenit ?? ITC?.adjustActorZenit;
     if (typeof fn !== "function") throw new Error("ItemTransferCore.adjustZenit missing.");
-    await fn.call(ITC, { actorUuid: db.uuid, delta: amount, requestedByUserId: requesterId });
-    await postObtainCard_Zenit({ amount });
+    // The core announces it ("The party obtained 300 zenit!" + the house card);
+    // the chest's own fanfare already played, so no chime.
+    await fn.call(ITC, { actorUuid: db.uuid, delta: amount, requestedByUserId: requesterId,
+      announce: true, chatCard: true, announceSound: false });
   }
 
-  // Straight into the party's inventory, with the house "Obtain X!" card.
+  // Straight into the party's inventory. The core announces it on every
+  // screen ("The party obtained Moonstone!") and posts the house "Obtain" card.
   async function awardItemToParty({ db, itemUuid, item, qty, requesterId, fallback }) {
     const ITC = window["oni.ItemTransferCore"];
     if (!ITC?.transfer) throw new Error('ItemTransferCore missing: window["oni.ItemTransferCore"].transfer');
@@ -508,15 +477,11 @@
       quantity: qty,
       receiverActorUuid: db.uuid,
       requestedByUserId: requesterId,
-      showTransferCard: false
+      chatCard: true,
+      announceSound: false,   // the chest's own fanfare already played
+      cardItemName: item?.name ?? fallback.name,
     });
-    const receiverItemUuid = result?.receiverItemUuid || result?.receiver?.itemUuid || null;
-    await postObtainCard_Item({
-      iconImg: item?.img ?? fallback.img,
-      qty,
-      name: item?.name ?? fallback.name,
-      linkUuid: receiverItemUuid || itemUuid
-    });
+    return result;
   }
 
   const gmOpenChest = async ({ sceneId, tileId, requesterId }) => {

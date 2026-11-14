@@ -24,6 +24,13 @@ t("markup: {st:} is a status name with an icon, {p:} the party", () => {
   ]);
   assert.equal(plainText("{p:The party} gains {st:Swift}!"), "The party gains Swift!");
 });
+t("markup: {it:uuid|Name} is an item link; no uuid falls back to a plain name", () => {
+  assert.deepEqual(parseMarkup("Zarg obtained {it:Item.abc|Moonstone}!"), [
+    { t: "Zarg obtained " }, { t: "Moonstone", cls: "kw it", item: "Item.abc" }, { t: "!" },
+  ]);
+  assert.deepEqual(parseMarkup("{it:Moonstone}"), [{ t: "Moonstone", cls: "kw" }]);
+  assert.equal(plainText("{it:Item.a|Potion} ×2"), "Potion ×2");
+});
 t("markup: an unknown tag or a stray brace stays literal", () => {
   assert.equal(plainText("a {b:c} {w:d"), "a {b:c} {w:d");
 });

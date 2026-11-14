@@ -9,6 +9,7 @@
 //
 //   FU.EffectsMenu.damage({ source, targets, preselect, marked, anchor })
 //   FU.EffectsMenu.status({ source, targets, preselect, marked, anchor })
+//   FU.EffectsMenu.items({ source, targets, anchor })   give / take items + zenit
 //     source     shown under the title, and the name damage is dealt by
 //     targets    Actors to offer (default: the party)
 //     preselect  actor uuids ticked when it opens (default: all)
@@ -19,6 +20,8 @@
 //   Damage → FUCompanion.api.applyDamage.applyToActor (feedback: "show")
 //   Status → FUCompanion.api.heldStatus.applyNow / inflict / remove
 //   "Full manager…" → the Active Effect Manager window, same targets.
+//   Items  → window["oni.ItemTransferCore"] (gmToActor / actorToGm / adjustZenit,
+//            announce + chatCard): "The party obtained Potion ×2!" on every screen.
 //
 // Draggable by the title; the spot is remembered per menu on this browser.
 // Mockup: https://claude.ai/artifact/Ng4yf9Eiss65fjwtKRBDcs
@@ -79,6 +82,12 @@ function ensureStyle() {
 .fu-fxm .icons button span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fu-fxm .icons img{width:22px;height:22px;border:0;flex:none}
 .fu-fxm .icons button.on{border-color:#c9a44a;background:rgba(201,164,74,.35);box-shadow:0 0 0 1px #c9a44a inset}
+.fu-fxm .ilist{grid-template-columns:repeat(2,1fr);max-height:150px}
+.fu-fxm .picked{display:flex;flex-direction:column;gap:3px;margin-bottom:8px}
+.fu-fxm .prow{display:grid;grid-template-columns:22px 1fr 56px 22px;gap:6px;align-items:center;font-size:12.5px}
+.fu-fxm .prow img{width:22px;height:22px;border:0}
+.fu-fxm .prow input{width:56px;height:24px}
+.fu-fxm .prow .x{padding:0;width:22px;height:22px;line-height:1;background:none;border:0;box-shadow:none;color:#8a2416;font-size:16px}
 .fu-fxm .hint{font-size:12px;color:#6b4a26;margin-top:6px}`;
   document.head.appendChild(s);
 }
@@ -273,10 +282,97 @@ function status(opts = {}) {
   });
 }
 
+// ── Give / Take Items ───────────────────────────────────────────────────
+const ITEM_TYPES = new Set(["weapon", "accessory", "consumable", "armor", "shield", "material", "key", "recipe", "misc"]);
+const itemType = (i) => String(i?.system?.props?.item_type ?? "").trim().toLowerCase();
+const itemQty = (i) => Math.max(1, Number(i?.system?.props?.item_quantity ?? 1) || 1);
+
+async function partyBag() {
+  try { return (await globalThis.FUCompanion?.api?.getCurrentGameDb?.())?.db ?? null; } catch { return null; }
+}
+
+async function items(opts = {}) {
+  const bag = await partyBag();
+  const s = { mode: "give", holder: bag?.uuid ?? null, q: "", picked: [], zenit: 0 };   // picked: [{ uuid, name, img, qty, max }]
+  const world = (game.items?.contents ?? []).filter((i) => ITEM_TYPES.has(itemType(i)))
+    .map((i) => ({ uuid: i.uuid, name: i.name, img: i.img, type: itemType(i) })).sort((a, b) => a.name.localeCompare(b.name));
+  return openMenu("items", opts, (ctx) => {
+    const holders = [...(bag ? [{ uuid: bag.uuid, name: "Party Bag" }] : []), ...ctx.actors.map((a) => ({ uuid: a.uuid, name: a.name }))];
+    if (!s.holder && holders.length) s.holder = holders[0].uuid;
+    const holder = () => (holders.some((h) => h.uuid === s.holder) ? fromUuidSync(s.holder) : null);
+    const pool = () => {
+      if (s.mode === "give") return world;
+      const a = holder();
+      return (a?.items?.contents ?? []).filter((i) => ITEM_TYPES.has(itemType(i)))
+        .map((i) => ({ uuid: i.uuid, name: i.name, img: i.img, type: itemType(i), max: itemQty(i) })).sort((x, y) => x.name.localeCompare(y.name));
+    };
+    ctx.bind = () => {
+      const el = ctx.el;
+      el.querySelectorAll("[data-md]").forEach((b) => b.onclick = () => { s.mode = b.dataset.md; s.picked = []; ctx.render(); });
+      el.querySelector("#fu-fxm-holder").onchange = (e) => { s.holder = e.target.value; s.picked = []; ctx.render(); };
+      const q = el.querySelector("#fu-fxm-iq");
+      q.oninput = () => { s.q = q.value; const pos = q.selectionStart; ctx.render(); const n = ctx.el.querySelector("#fu-fxm-iq"); n.focus(); n.setSelectionRange(pos, pos); };
+      el.querySelectorAll("[data-pick]").forEach((b) => b.onclick = () => {
+        const it = pool().find((x) => x.uuid === b.dataset.pick);
+        if (!it || s.picked.some((p) => p.uuid === it.uuid)) return;
+        s.picked.push({ ...it, qty: 1 }); ctx.render();
+      });
+      el.querySelectorAll("[data-qty]").forEach((inp) => inp.onchange = () => {
+        const p = s.picked.find((x) => x.uuid === inp.dataset.qty);
+        if (p) p.qty = Math.max(1, Math.min(p.max ?? 999, Number(inp.value) || 1));
+        ctx.render();
+      });
+      el.querySelectorAll("[data-unpick]").forEach((b) => b.onclick = () => { s.picked = s.picked.filter((x) => x.uuid !== b.dataset.unpick); ctx.render(); });
+      el.querySelector("#fu-fxm-zen").onchange = (e) => { s.zenit = Math.max(0, Math.floor(Number(e.target.value) || 0)); ctx.render(); };
+      el.querySelector("[data-apply]").onclick = async () => {
+        if (ctx.st.busy || (!s.picked.length && !s.zenit) || !s.holder) return;
+        ctx.st.busy = true; ctx.render();
+        const core = window["oni.ItemTransferCore"];
+        await asOneBatch(async () => {
+          for (const p of s.picked) {
+            try {
+              if (s.mode === "give") {
+                await core.transfer({ mode: "gmToActor", itemUuid: p.uuid, quantity: p.qty, receiverActorUuid: s.holder,
+                  requestedByUserId: game.user.id, chatCard: true });
+              } else {
+                await core.transfer({ mode: "actorToGm", itemUuid: p.uuid, quantity: p.qty, senderActorUuid: s.holder,
+                  requestedByUserId: game.user.id, announce: true, chatCard: true });
+              }
+            } catch (e) { console.warn(TAG, `item ${p.name} failed`, e); }
+          }
+          if (s.zenit > 0) {
+            try {
+              await core.adjustZenit({ actorUuid: s.holder, delta: s.mode === "give" ? s.zenit : -s.zenit,
+                requestedByUserId: game.user.id, announce: true, chatCard: true });
+            } catch (e) { console.warn(TAG, "zenit failed", e); }
+          }
+        });
+        ctx.finish();
+      };
+    };
+    const giving = s.mode === "give";
+    const q = s.q.trim().toLowerCase();
+    const list = pool().filter((x) => !q || x.name.toLowerCase().includes(q)).slice(0, 60);
+    const empty = giving ? (q ? "No item by that name." : "") : "Nothing to take here.";
+    return `<h3 title="Drag to move">Give / Take Items</h3><div class="sub">${esc(ctx.opts.source ?? "")}</div>
+      <div class="fld" style="margin-bottom:8px">
+        <span class="lbl">Action</span><span class="seg">${[["give", "Give"], ["take", "Take"]].map(([k, l]) => `<button type="button" data-md="${k}" class="${s.mode === k ? "on" : ""}">${l}</button>`).join("")}</span>
+        <span class="lbl">${giving ? "To" : "From"}</span><select id="fu-fxm-holder">${holders.map((h) => `<option value="${esc(h.uuid)}" ${h.uuid === s.holder ? "selected" : ""}>${esc(h.name)}</option>`).join("")}</select>
+      </div>
+      <input type="search" id="fu-fxm-iq" placeholder="${giving ? `Search ${world.length} items` : "Search what they hold"}" value="${esc(s.q)}" aria-label="Search items">
+      <div class="icons ilist">${list.length ? list.map((x) => `<button type="button" data-pick="${esc(x.uuid)}" class="${s.picked.some((p) => p.uuid === x.uuid) ? "on" : ""}" title="${esc(x.name)} · ${esc(x.type)}${x.max ? ` · holds ${x.max}` : ""}"><img src="${esc(x.img)}" alt=""><span>${esc(x.name)}</span></button>`).join("")
+        : `<span class="lbl">${empty}</span>`}</div>
+      <div class="picked">${s.picked.map((p) => `<div class="prow"><img src="${esc(p.img)}" alt=""><span>${esc(p.name)}</span>
+        <input type="number" min="1" max="${p.max ?? 999}" value="${p.qty}" data-qty="${esc(p.uuid)}" aria-label="Quantity of ${esc(p.name)}"><button type="button" class="x" data-unpick="${esc(p.uuid)}" title="Remove">×</button></div>`).join("")}</div>
+      <div class="fld"><span class="lbl">Zenit</span><input type="number" id="fu-fxm-zen" min="0" max="999999" value="${s.zenit}"></div>
+      <div class="foot"><button type="button" data-close>Cancel</button><button type="button" class="hot" data-apply ${ctx.st.busy || (!s.picked.length && !s.zenit) ? "disabled" : ""}>${giving ? "Give" : "Take"}</button></div>`;
+  });
+}
+
 function close(kind) {
   if (kind) open.get(kind)?.done(false);
   else for (const m of [...open.values()]) m.done(false);
 }
 
 globalThis.FU = globalThis.FU ?? {};
-globalThis.FU.EffectsMenu = Object.freeze({ damage, status, close });
+globalThis.FU.EffectsMenu = Object.freeze({ damage, status, items, close });

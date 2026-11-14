@@ -378,7 +378,7 @@
             `<span role="radio" tabindex="0" aria-checked="${st.outcome === v}" data-r="${c}" class="${c} ${st.outcome === v ? "on" : ""}">${l}</span>`).join("")}</div>
           <div class="rolled">${esc(how)}</div>
           <div class="btns"><button data-a="check" ${st.busy ? "disabled" : ""} class="${st.outcome == null ? "hot" : ""}">${st.outcome == null ? "Request check" : "Roll again"}</button></div>
-          <div class="btns"><button data-a="dmg" ${st.busy ? "disabled" : ""}>Deal damage…</button><button data-a="status" ${st.busy ? "disabled" : ""}>Apply status…</button></div>
+          <div class="btns"><button data-a="dmg" ${st.busy ? "disabled" : ""}>Deal damage…</button><button data-a="status" ${st.busy ? "disabled" : ""}>Apply status…</button><button data-a="items" ${st.busy ? "disabled" : ""}>Give / take items…</button></div>
           <hr>
           <div class="foot"><button data-a="end" class="red" title="No EXP; the tile stays">End</button><button data-a="finish" class="hot" ${st.busy ? "disabled" : ""}>Finish</button></div>`;
         el.querySelectorAll("button").forEach(b => b.addEventListener("click", () => act(b.dataset.a).catch(e => console.error(TAG, e))));
@@ -436,10 +436,12 @@
           } catch (e) { st.note = "The check was cancelled."; console.debug(TAG, "custom event check aborted", e); }
           st.busy = false; return render();
         }
-        if (a === "dmg" || a === "status") {
+        if (a === "dmg" || a === "status" || a === "items") {
           const menu = globalThis.FU?.EffectsMenu;
           if (!menu) { ui.notifications?.warn?.("Skill Check: the effects menus are not loaded."); return; }
-          if (a === "dmg") menu.damage(menuOpts()); else menu.status(menuOpts());
+          if (a === "dmg") menu.damage(menuOpts());
+          else if (a === "status") menu.status(menuOpts());
+          else menu.items({ source: title, targets: actors, anchor: el });
           return;
         }
       };

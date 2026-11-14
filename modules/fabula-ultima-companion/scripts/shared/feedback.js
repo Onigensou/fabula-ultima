@@ -14,6 +14,12 @@
 //                      { label, element, kind: "damage" | "heal" })
 //       → one element-coloured screen flash + one sound + one Resource Panel
 //         on every screen, per batch
+//   FU.Feedback.items([{ receiverId, receiverName, kind: "obtain" | "lose",
+//                        itemUuid, itemName, img, qty, zenit }], { chatCard })
+//       → batched "Zarg obtained Moonstone!" lines (item names hoverable) +
+//         ONE obtain chime; chatCard: true also posts the house "Obtain" chat
+//         card (world CSS .oni-obtain-card) once per batch. The Party Bag (the
+//         database actor) reads "The party".
 //   FU.Feedback.flash(key)          this client only (the socket calls it)
 //   await FU.Feedback.group(async () => { …several API calls… })
 //       everything reported inside is ONE batch, however long the writes take
@@ -25,7 +31,7 @@
 // Runs on the calling client and broadcasts from there.
 // ============================================================================
 
-import { BATCH_MS, BATCH_MAX_MS, statusLines, statusSound, damageSound, flashKey, affinityTag } from "./feedback-rules.js";
+import { BATCH_MS, BATCH_MAX_MS, statusLines, statusSound, itemLines, ITEM_SFX, damageSound, flashKey, affinityTag } from "./feedback-rules.js";
 import { ELEMENT_COLORS } from "../battle-director/damage-numbers/damage-number-style.js";
 import { SFX as BATTLE_SFX, sfxUrl } from "../battle-director/action-anim-rules.js";
 
@@ -91,6 +97,57 @@ async function flushStatus(batch) {
   } catch (e) { console.warn(TAG, "status lines failed", e); }
 }
 
+// ── items ───────────────────────────────────────────────────────────────
+let itemBatch = null;
+const ZENIT_ICON = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/GP.png";
+function items(entries = [], opts = {}) {
+  const list = (Array.isArray(entries) ? entries : [entries]).filter(Boolean);
+  if (!list.length) return;
+  itemBatch ??= makeBatch(flushItems);
+  itemBatch.items.push(...list);
+  if (opts.chatCard) itemBatch.chatCard = true;
+  if (opts.sound === false) itemBatch.noSound = true;   // the caller plays its own (a chest's fanfare)
+  itemBatch.touch();
+}
+async function partyBagId() {
+  try { return (await globalThis.FUCompanion?.api?.getCurrentGameDb?.())?.db?.id ?? null; } catch { return null; }
+}
+const escHtml = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+// The house "Obtain" chat card, one row per item (styled by the world's custom CSS).
+function itemCardHtml(list) {
+  const rows = list.map((e) => {
+    const who = e.party ? "The party" : (e.receiverName ?? "");
+    const verb = e.kind === "lose" ? "handed over" : "obtained";
+    const zenit = Math.floor(Number(e.zenit) || 0);
+    const what = zenit > 0
+      ? `<span class="oni-obtain-name">${zenit}</span> Zenit`
+      : `${(e.qty ?? 1) > 1 ? `${e.qty} ` : ""}${e.itemUuid
+          ? `<a class="content-link" data-uuid="${escHtml(e.itemUuid)}"><span class="oni-obtain-name">${escHtml(e.itemName)}</span></a>`
+          : `<span class="oni-obtain-name">${escHtml(e.itemName)}</span>`}`;
+    const img = e.img ?? (zenit > 0 ? ZENIT_ICON : null);
+    return `<div class="oni-obtain-row">${img ? `<img class="oni-obtain-icon" src="${escHtml(img)}" alt="">` : ""}`
+      + `<div class="oni-obtain-text">${escHtml(who)} ${verb} ${what}${e.kind === "lose" ? "." : "!"}</div></div>`;
+  });
+  return `<div class="oni-obtain-card">${rows.join("")}</div>`;
+}
+async function flushItems(batch) {
+  if (itemBatch === batch) itemBatch = null;
+  if (!batch?.items.length) return;
+  try {
+    const bag = await partyBagId();
+    const list = batch.items.map((e) => ({ ...e, party: e.party ?? (!!bag && e.receiverId === bag) }));
+    const lines = itemLines(list);
+    if (lines.length) globalThis.FU?.SystemMessage?.broadcast?.(lines);
+    if (!batch.noSound && list.some((e) => e.kind !== "lose")) playAll(ITEM_SFX, 0.9);
+    if (batch.chatCard) {
+      await ChatMessage.create({
+        user: game.user.id, speaker: null, type: CONST.CHAT_MESSAGE_TYPES.OTHER,
+        content: itemCardHtml(list), flags: { core: { cssClass: "oni-obtain-msg" } },
+      });
+    }
+  } catch (e) { console.warn(TAG, "item feedback failed", e); }
+}
+
 // ── damage ──────────────────────────────────────────────────────────────
 const damageBatches = new Map();   // key → batch { items: rows, opts }
 function damage(rows = [], opts = {}) {
@@ -132,7 +189,7 @@ async function group(fn) {
   try { return await fn(); }
   finally {
     groupDepth = Math.max(0, groupDepth - 1);
-    if (!groupDepth) { statusBatch?.touch(); for (const b of damageBatches.values()) b.touch(); }
+    if (!groupDepth) { statusBatch?.touch(); itemBatch?.touch(); for (const b of damageBatches.values()) b.touch(); }
   }
 }
 
@@ -164,4 +221,4 @@ Hooks.once("ready", () => {
 });
 
 globalThis.FU = globalThis.FU ?? {};
-globalThis.FU.Feedback = Object.freeze({ status, damage, flash, group });
+globalThis.FU.Feedback = Object.freeze({ status, damage, items, flash, group });

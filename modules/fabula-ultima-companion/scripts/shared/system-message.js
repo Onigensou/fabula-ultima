@@ -15,7 +15,9 @@
 //
 // Markup: {w:…} name (umber) · {up:…} increase (warm ▲) · {down:…} decrease
 // (cool ▼) · {flat:…} muted · {st:Slow} a status, its icon in front (the line
-// waits up to 300 ms for icons to load) · {p:The party} the whole party.
+// waits up to 300 ms for icons to load) · {p:The party} the whole party ·
+// {it:uuid|Name} an item: icon + hoverable item link (the line stays up while
+// the pointer is on it).
 // Text is set with textContent — never HTML.
 //
 // Kinds: system (default) · speech (name plate, italic) · alert (crimson
@@ -79,6 +81,9 @@ function ensureStyles() {
 #${HOST_ID} .sm .down::after { content:" \\25BC"; font-size:.7em; vertical-align:.05em; }
 #${HOST_ID} .sm .flat { color:var(--sm-ink-soft); font-weight:700; }
 #${HOST_ID} .sm .party { color:var(--sm-party); font-weight:800; }
+#${HOST_ID} .sm a.it { pointer-events:auto; cursor:help; text-decoration:none; border-radius:.2em; padding:0 .1em; }
+#${HOST_ID} .sm a.it:hover { background:rgba(201,164,74,.28); }
+#${HOST_ID} .sm a.it::before, #${HOST_ID} .sm a.it::after { content:none !important; }
 #${HOST_ID} .sm .ico { width:1.25em; height:1.25em; vertical-align:-.28em; margin-right:.18em; border:0; border-radius:.2em; object-fit:contain; }
 #${HOST_ID} .sm .plate { position:absolute; left:1.2em; top:-.95em; z-index:2; padding:.18em .9em .22em; border-radius:.45em;
   background:var(--sm-ink); color:var(--sm-parch-top); border:.12em solid var(--sm-gold-2); box-shadow:0 .18em 0 rgba(41,33,24,.55);
@@ -158,11 +163,17 @@ function statusIcon(name) {
   return null;
 }
 
+// {it:uuid|Name}: the item's own picture (world items resolve synchronously).
+function itemIcon(uuid) {
+  try { return globalThis.fromUuidSync?.(uuid)?.img ?? null; } catch { return null; }
+}
+const segIcon = (seg) => seg.status ? statusIcon(seg.status) : seg.item ? itemIcon(seg.item) : null;
+
 // A line waits (briefly) for its icons, so they never pop in after the text.
 const ICON_WAIT_MS = 300;
 const _iconReady = new Map();   // src → Promise
 function iconsReady(text) {
-  const srcs = parseMarkup(text).filter((p) => p.status).map((p) => statusIcon(p.status)).filter(Boolean);
+  const srcs = parseMarkup(text).map(segIcon).filter(Boolean);
   if (!srcs.length) return Promise.resolve();
   const loads = srcs.map((src) => {
     if (!_iconReady.has(src)) {
@@ -197,9 +208,14 @@ function fillBox(el, msg) {
   text.textContent = "";
   const chars = [];
   for (const seg of parseMarkup(msg.text)) {
-    const holder = seg.cls ? Object.assign(document.createElement("span"), { className: seg.cls }) : text;
-    // {st:Name}: the status icon goes in with the line, in front of the name.
-    const icon = seg.status ? statusIcon(seg.status) : null;
+    // {it:}: an item link — linked-text (lt-card.js) gives every a.fu-lt[data-uuid]
+    // the hover item card and click-to-pin Item Window, on every screen.
+    const holder = seg.item
+      ? Object.assign(document.createElement("a"), { className: `fu-lt ${seg.cls}` })
+      : seg.cls ? Object.assign(document.createElement("span"), { className: seg.cls }) : text;
+    if (seg.item) holder.dataset.uuid = seg.item;
+    // {st:} / {it:}: the icon goes in with the line, in front of the name.
+    const icon = segIcon(seg);
     if (icon) holder.appendChild(Object.assign(document.createElement("img"), { className: "ico", src: icon, alt: "" }));
     for (const ch of seg.t) {
       const c = document.createElement("span");
@@ -243,7 +259,13 @@ function waitLine(el, msg, signal) {
     });
   }
   const ms = msg.hold ?? holdMs(msg.text, cfg);
-  return Promise.race([sleep(ms), new Promise((r) => { signal.onabort = r; })]);
+  // A line the pointer is on stays up (time to read an item's card), as the
+  // Refinement / Orbment banners do.
+  const held = async () => {
+    await sleep(ms);
+    while (!signal.aborted && el.matches(":hover")) await sleep(200);
+  };
+  return Promise.race([held(), new Promise((r) => { signal.onabort = r; })]);
 }
 
 async function pump() {
