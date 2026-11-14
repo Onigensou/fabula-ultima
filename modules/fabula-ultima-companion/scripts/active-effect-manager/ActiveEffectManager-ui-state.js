@@ -331,6 +331,10 @@
       state.silent
     );
 
+    state.timing =
+      root.querySelector?.('[name="timing"]')?.value ??
+      state.timing;
+
     state.durationRounds =
       root.querySelector?.('[name="durationRounds"]')?.value ??
       state.durationRounds;
@@ -530,6 +534,8 @@
       durationRounds: 3,
       durationTurns: 0,
       silent: false,
+      // "now" | "nextBattle" (held until the actor's next battle — statuses only)
+      timing: "now",
 
       // Custom builder defaults
       customName: "Custom Active Effect",
@@ -574,6 +580,7 @@
     merged.duplicateMode = safeString(merged.duplicateMode, "skip");
     merged.overrideDuration = !!merged.overrideDuration;
     merged.silent = !!merged.silent;
+    merged.timing = merged.timing === "nextBattle" ? "nextBattle" : "now";
 
     merged.durationRounds = merged.durationRounds ?? 3;
     merged.durationTurns = merged.durationTurns ?? 0;

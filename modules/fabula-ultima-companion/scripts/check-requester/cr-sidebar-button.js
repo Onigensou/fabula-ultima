@@ -187,7 +187,7 @@ Hooks.once("ready", () => {
     };
 
     // ── Dialog HTML ───────────────────────────────────────────────────────
-    const buildDialogContent = (partyActors, preSelectedUuids, stateA, stateB) => {
+    const buildDialogContent = (partyActors, preSelectedUuids, stateA, stateB, ctxValue = "") => {
       const scCards    = partyActors.map(a => buildScActorCard(a, preSelectedUuids.has(a.uuid))).join("");
       const gcCards    = partyActors.map(buildGcActorCard).join("");
       const emptyNote  = `<div class="oni-creq-empty">No active party members found in Database Actor.</div>`;
@@ -450,7 +450,7 @@ Hooks.once("ready", () => {
               </div>
               <div class="oni-creq-field">
                 <div class="oni-creq-field-lbl">Context (optional)</div>
-                <input type="text" id="oni-creq-ctx" name="context" placeholder="e.g. Escape the collapsing bridge…">
+                <input type="text" id="oni-creq-ctx" name="context" value="${Handlebars.escapeExpression(ctxValue)}" placeholder="e.g. Escape the collapsing bridge…">
               </div>
             </div>
 
@@ -641,20 +641,27 @@ Hooks.once("ready", () => {
     };
 
     // ── Open dialog ───────────────────────────────────────────────────────
-    const openDialog = async () => {
+    // prefill (optional, for other tools — see ONI.CheckRequester.openDialog
+    // below): { label, actorUuids, mode: "skill-check" | "group-check" }.
+    const openDialog = async (prefill = {}) => {
       const partyActors = await loadPartyActors()
         ?? (game.actors?.contents ?? []).filter(a => a.type === "character");
 
       const preSelectedUuids = new Set(
-        (canvas?.tokens?.controlled ?? [])
-          .map(t => t.actor?.uuid)
-          .filter(Boolean)
+        Array.isArray(prefill.actorUuids)
+          ? prefill.actorUuids
+          : (canvas?.tokens?.controlled ?? []).map(t => t.actor?.uuid).filter(Boolean)
       );
 
       return new Promise(resolve => {
         const d = new Dialog({
           title:   "🎯 Request Check",
-          content: buildDialogContent(partyActors, preSelectedUuids, "DEX", "MIG"),
+          content: buildDialogContent(partyActors, preSelectedUuids, "DEX", "MIG", String(prefill.label ?? "")),
+          render:  html => {
+            if (prefill.mode !== "group-check") return;
+            const root = html[0] ?? html;
+            root.querySelector?.('.oni-creq-mode-tab[data-mode="group-check"]')?.click();
+          },
           buttons: {
             confirm: {
               icon:  '<i class="fas fa-check"></i>',
@@ -789,6 +796,22 @@ Hooks.once("ready", () => {
         d.render(true);
       });
     };
+
+    // ── Public: open this dialog from another tool ────────────────────────
+    // ONI.CheckRequester.openDialog({ label, actorUuids, mode })
+    //   → { mode: "skill-check", results: CheckResult[] }
+    //   | { mode: "group-check", results: GroupCheckResult }
+    //   | null (cancelled / closed)
+    // The GM picks everything else in the dialog (attributes, DL, buffs, roles).
+    // Used by the Skill Check tile's Custom Event chip (dp-skill-check.js).
+    {
+      const CR = ((globalThis.ONI ??= {}).CheckRequester ??= {});
+      CR.openDialog = async (prefill = {}) => {
+        const r = await openDialog(prefill);
+        if (r == null) return null;
+        return Array.isArray(r) ? { mode: "skill-check", results: r } : { mode: "group-check", results: r };
+      };
+    }
 
     // ── Floating button CSS ───────────────────────────────────────────────
     const ensureStyle = () => {

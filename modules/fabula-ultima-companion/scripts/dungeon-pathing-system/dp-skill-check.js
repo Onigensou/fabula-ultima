@@ -216,7 +216,6 @@
     setTimeout(() => el.remove(), 260);
   }
 
-  const ATTRS = ["DEX", "INS", "MIG", "WLP"];
   const opt = (list, v) => list.map(x => { const [k, l] = Array.isArray(x) ? x : [x, x]; return `<option value="${esc(k)}" ${String(k) === String(v) ? "selected" : ""}>${esc(l)}</option>`; }).join("");
 
   // Picker → { action: "play", preset } | { action: "freeform", form } | { action: "skip" }
@@ -262,20 +261,15 @@
         form.sparks ??= { hazard: deal(sp.hazard), stakes: deal(sp.stakes), twist: deal(sp.twist) };
         el.innerHTML = `<span class="gm">GM</span>
           <h3>Skill Check · <b>Custom Event</b></h3>
-          <div class="sub">${esc(area)} · you narrate; the title is only for the played log</div>
+          <div class="sub">${esc(area)} · you narrate; the check is set in Request Check · the title is only for the played log</div>
           <div class="spark"><div><b>Hazard</b>${esc(form.sparks.hazard)}</div><div><b>Stakes</b>${esc(form.sparks.stakes)}</div><div><b>Twist</b>${esc(form.sparks.twist)}</div></div>
           <div class="grid">
             <span class="lbl">Title</span><input type="text" id="scx-title" value="${esc(form.title)}" placeholder="e.g. Crumbling Floor" />
-            <span class="lbl">Check</span><span class="inl"><select id="scx-a">${opt(ATTRS, form.attrA)}</select> + <select id="scx-b">${opt(ATTRS, form.attrB)}</select> DL <input type="number" id="scx-dl" min="1" max="30" value="${form.dl}" /></span>
-            <span class="lbl">Who rolls</span><select id="scx-who">${opt([["group", "Group Check (the party picks a leader)"], ["each", "Everyone rolls"]], form.who)}</select>
             <span class="lbl">EXP</span><span class="inl"><input type="number" id="scx-exp" min="0" max="9" value="${form.exp}" /><label class="lbl"><input type="checkbox" id="scx-passonly" ${form.passOnly ? "checked" : ""} style="height:auto" /> only on a pass</label></span>
           </div>
           <div class="foot"><button data-a="reroll">Deal new sparks</button><button data-a="list">Back to list</button><button data-a="skip" class="red">Skip tile</button><button data-a="start" class="hot">Start</button></div>`;
         const read = () => {
           form.title = el.querySelector("#scx-title").value.trim();
-          form.attrA = el.querySelector("#scx-a").value; form.attrB = el.querySelector("#scx-b").value;
-          form.dl = Math.max(1, Number(el.querySelector("#scx-dl").value) || 10);
-          form.who = el.querySelector("#scx-who").value;
           form.exp = Math.max(0, Number(el.querySelector("#scx-exp").value) || 0);
           form.passOnly = el.querySelector("#scx-passonly").checked;
         };
@@ -289,7 +283,7 @@
       };
 
       let mode = "list";
-      const freeForm = { title: "", attrA: "DEX", attrB: "MIG", dl: 10, who: "group", exp: 1, passOnly: false, sparks: null };
+      const freeForm = { title: "", exp: 1, passOnly: false, sparks: null };
       const finish = (v) => { closePanel(); resolve(v); };
       const act = (a, el) => {
         if (a === "skip") return finish({ action: "skip" });
@@ -341,19 +335,23 @@
 
   // ── freeform: GM chip ──────────────────────────────────────────────────────
   // Resolves { finished: bool, outcome: "success"|"failure"|null }.
+  // Request check opens the Request Check dialog (ONI.CheckRequester.openDialog,
+  // check-requester/cr-sidebar-button.js) — the GM sets attributes, DL, Single or
+  // Group there. Apply status opens the Active Effect Manager
+  // (activeEffectManager.ui.open) with the targets ticked; its Timing choice
+  // holds a status until the next battle.
   function runFreeform(form, actors) {
     return new Promise((resolve) => {
-      const st = { outcome: null, failers: [], busy: false, note: "" };
+      const st = { outcome: null, failers: [], rolled: null, busy: false, note: "" };
       const title = form.title || "Custom Event";
-      const statusNames = globalThis.FUCompanion?.api?.heldStatus?.statusNames?.() ?? [];
       const ELEMENTS = window.oni?.EventSystem?.RowsPartyEffects?.ELEMENTS ?? [["physical", "Physical"]];
       const el = openPanel("chip", "");
 
       const render = () => {
-        const res = st.outcome == null ? "" : `<div class="res">Result: <b class="${st.outcome === "success" ? "ok" : "no"}">${st.outcome === "success" ? "Passed" : "Failed"}</b>${st.failers.length && form.who === "each" ? ` · failed: ${esc(st.failers.map(a => a.name).join(", "))}` : ""}</div>`;
+        const res = st.outcome == null ? "" : `<div class="res">Result: <b class="${st.outcome === "success" ? "ok" : "no"}">${st.outcome === "success" ? "Passed" : "Failed"}</b>${st.failers.length ? ` · failed: ${esc(st.failers.map(a => a.name).join(", "))}` : ""}</div>`;
         el.innerHTML = `<span class="gm">GM</span>
           <h3>Custom Event · <b>${esc(title)}</b></h3>
-          <div class="sub">${esc(form.attrA)} + ${esc(form.attrB)} · DL ${form.dl} · ${form.who === "group" ? "Group Check" : "everyone rolls"} · ${form.exp} EXP${form.passOnly ? " on a pass" : ""}</div>
+          <div class="sub">${st.rolled ? `${esc(st.rolled)} · ` : ""}${form.exp} EXP${form.passOnly ? " on a pass" : ""}</div>
           ${res}${st.note ? `<div class="lbl" style="margin-bottom:6px">${esc(st.note)}</div>` : ""}
           <div class="foot" style="justify-content:flex-start">
             <button data-a="check" ${st.busy ? "disabled" : ""} class="${st.outcome == null ? "hot" : ""}">${st.outcome == null ? "Request check" : "Roll again"}</button>
@@ -361,9 +359,8 @@
           </div>
           <hr>
           <div class="inl" style="margin-bottom:6px"><span class="lbl">Damage</span><input type="number" id="scx-dmg" min="0" max="999" value="10" /><select id="scx-el">${opt(ELEMENTS, "physical")}</select></div>
-          <div class="inl" style="margin-bottom:6px"><span class="lbl">Status</span><select id="scx-st">${opt([["", "(none)"], ...statusNames.map(n => [n, n])], "")}</select><select id="scx-when">${opt([["now", "now"], ["held", "next battle"]], "now")}</select></div>
-          <div class="inl" style="margin-bottom:8px"><span class="lbl">To</span><select id="scx-to">${opt([["all", "everyone"], ...(form.who === "each" ? [["failed", "those who failed"]] : [])], st.failers.length ? "failed" : "all")}</select>
-            <button data-a="dmg" ${st.busy ? "disabled" : ""}>Deal damage</button><button data-a="status" ${st.busy ? "disabled" : ""}>Apply status</button></div>
+          <div class="inl" style="margin-bottom:8px"><span class="lbl">To</span><select id="scx-to">${opt([["all", "everyone"], ...(st.failers.length ? [["failed", "those who failed"]] : [])], st.failers.length ? "failed" : "all")}</select>
+            <button data-a="dmg" ${st.busy ? "disabled" : ""}>Deal damage</button><button data-a="status" ${st.busy ? "disabled" : ""} title="Opens the Active Effect Manager with these targets ticked">Apply status…</button></div>
           <div class="foot"><button data-a="end" class="red">End (no EXP, tile stays)</button><button data-a="finish" class="hot" ${st.busy ? "disabled" : ""}>Finish</button></div>`;
         el.querySelectorAll("button").forEach(b => b.addEventListener("click", () => act(b.dataset.a).catch(e => console.error(TAG, e))));
       };
@@ -371,31 +368,37 @@
 
       const act = async (a) => {
         if (a === "pass") { st.outcome = "success"; st.failers = []; return render(); }
-        if (a === "fail") { st.outcome = "failure"; if (form.who !== "each") st.failers = []; return render(); }
+        if (a === "fail") { st.outcome = "failure"; return render(); }
         if (a === "end") { closePanel(); return resolve({ finished: false, outcome: st.outcome }); }
         if (a === "finish") { closePanel(); return resolve({ finished: true, outcome: st.outcome }); }
         if (a === "check") {
-          st.busy = true; st.note = "Waiting on rolls…"; render();
+          const openDialog = globalThis.ONI?.CheckRequester?.openDialog;
+          if (!openDialog) { st.note = "Request Check is not loaded."; return render(); }
+          st.busy = true; st.note = "Waiting on the check…"; render();
           try {
-            if (form.who === "group") {
-              const r = await globalThis.ONI?.GroupCheck?.request?.({
-                leaderUuid: null, participantMode: "open", allActorUuids: actors.map(x => x.uuid),
-                attrA: form.attrA, attrB: form.attrB, helperDl: 10, leaderDl: form.dl, helperBonus: 1,
-                hiddenDl: true, label: title, postChat: true,
-              });
-              const lr = r?.leaderResult;
-              st.outcome = lr ? ((r.leaderPass === true || lr.isCrit) && !lr.isFumble ? "success" : "failure") : st.outcome;
-              st.failers = [];
+            const r = await openDialog({ label: title, actorUuids: actors.map(x => x.uuid) });
+            const passed = (x) => !x?.isFumble && (x?.isCrit === true || x?.pass === true);
+            if (!r) {
+              st.note = "The check was cancelled.";
+            } else if (r.mode === "group-check") {
+              const lr = r.results?.leaderResult;
+              if (lr) {
+                st.outcome = (r.results.leaderPass === true || lr.isCrit) && !lr.isFumble ? "success" : "failure";
+                st.failers = [];
+                st.rolled = `Group Check · ${lr.attrA} + ${lr.attrB} · DL ${lr.dl}`;
+              }
+              st.note = "";
             } else {
-              const results = await globalThis.ONI?.CheckRequester?.request?.(actors, {
-                attrA: form.attrA, attrB: form.attrB, dl: form.dl, label: title, mode: "interactive", allowInvokes: true, postChat: true, hiddenDl: true,
-              }) ?? [];
-              const passed = (x) => !x?.isFumble && (x?.isCrit === true || x?.pass === true);
-              st.failers = actors.filter(a => !passed(results.find(x => x.actorUuid === a.uuid)));
-              st.outcome = results.length ? (st.failers.length ? "failure" : "success") : st.outcome;
+              const results = Array.isArray(r.results) ? r.results : [];
+              if (results.length) {
+                st.failers = actors.filter(a => { const x = results.find(y => y.actorUuid === a.uuid); return x && !passed(x); });
+                st.outcome = st.failers.length ? "failure" : "success";
+                const x0 = results[0];
+                st.rolled = `${results.length === 1 ? x0.actorName : `${results.length} roll`} · ${x0.attrA} + ${x0.attrB} · DL ${x0.dl}`;
+              }
+              st.note = "";
             }
-            st.note = "";
-          } catch (e) { st.note = "The check was cancelled."; console.debug(TAG, "freeform check aborted", e); }
+          } catch (e) { st.note = "The check was cancelled."; console.debug(TAG, "custom event check aborted", e); }
           st.busy = false; return render();
         }
         if (a === "dmg") {
@@ -412,18 +415,11 @@
           st.busy = false; st.note = `${amount} ${element} damage to ${to.map(x => x.name).join(", ")}.`; return render();
         }
         if (a === "status") {
-          const status = el.querySelector("#scx-st").value;
-          if (!status) return;
-          const when = el.querySelector("#scx-when").value;
+          const aemUi = globalThis.FUCompanion?.api?.activeEffectManager?.ui;
+          if (!aemUi?.open) { st.note = "Active Effect Manager is not loaded."; return render(); }
           const to = targets();
-          const hs = globalThis.FUCompanion?.api?.heldStatus;
-          st.busy = true; render();
-          const r = when === "held"
-            ? await hs?.inflict?.({ actors: to, status, source: title })
-            : await hs?.applyNow?.({ actors: to, status, source: title });
-          const skipped = (r?.skipped ?? []).map(s => `${s.name} (${s.reason})`);
-          st.busy = false;
-          st.note = `${status}${when === "held" ? " (next battle)" : ""} on ${(r?.applied ?? []).map(x => x.name).join(", ") || "nobody"}${skipped.length ? ` · skipped ${skipped.join(", ")}` : ""}.`;
+          await aemUi.open({ targetActorUuids: to.map(x => x.uuid), source: title });
+          st.note = `Active Effect Manager opened for ${to.map(x => x.name).join(", ")}.`;
           return render();
         }
       };

@@ -437,7 +437,8 @@
       target.name === "durationRounds" ||
       target.name === "durationTurns" ||
       target.name === "overrideDuration" ||
-      target.name === "silent"
+      target.name === "silent" ||
+      target.name === "timing"
     ) {
       return;
     }

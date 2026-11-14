@@ -530,6 +530,17 @@
         align-items: end;
       }
 
+      .oni-aem .aem-timing-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 6px;
+      }
+
+      .oni-aem .aem-timing-row select {
+        flex: 1;
+      }
+
       .oni-aem .aem-duration-mini {
         display: grid;
         grid-template-columns: 1fr 1fr;

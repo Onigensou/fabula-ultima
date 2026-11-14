@@ -432,6 +432,14 @@
           ${selectedEffectsHtml(state)}
         </div>
 
+        <label class="aem-timing-row" title="Until next battle: held while exploring, counts down in the next battle and wears off there; a Rest cures it. Statuses only (shared/held-status.js).">
+          <span class="aem-inline-label">Timing</span>
+          <select name="timing">
+            <option value="now" ${state.timing === "nextBattle" ? "" : "selected"}>Now</option>
+            <option value="nextBattle" ${state.timing === "nextBattle" ? "selected" : ""}>Until next battle (statuses)</option>
+          </select>
+        </label>
+
         <div class="aem-actions" style="margin-top:6px;">
           <button type="button" data-aem-action="apply-selected">Apply Selected</button>
           <button type="button" data-aem-action="clear-selected-effects">Clear Effects</button>

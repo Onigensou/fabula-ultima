@@ -506,6 +506,9 @@
       return;
     }
 
+    state.timing = root?.querySelector?.('[name="timing"]')?.value ?? state.timing;
+    if (state.timing === "nextBattle") return applySelectedHeld(root, state);
+
     const effects = state.selectedEffects.map(sel => {
       if (sel.kind === "registry") return sel.registryId;
       return { effectData: clone(sel.effectData, {}) };
@@ -524,6 +527,56 @@
     });
 
     updateOutput(root, state, result);
+  }
+
+  // Timing "Until next battle": each selected STATUS goes through the held-status
+  // API (shared/held-status.js) — held while exploring, converted to a normal
+  // battle condition when the actor's next battle starts, swept at its end; a
+  // Rest cures it; immune actors are skipped. Anything that is not a status
+  // (buffs, custom effects without a status) is skipped and reported.
+  async function applySelectedHeld(root, state) {
+    const held = globalThis.FUCompanion?.api?.heldStatus;
+    if (!held?.inflict) {
+      updateOutput(root, state, { ok: false, reason: "held_status_api_not_found" });
+      return;
+    }
+
+    const statusIds = new Set((CONFIG.statusEffects ?? []).map(e => String(e.id ?? "")).filter(Boolean));
+    const results = [];
+    const notStatus = [];
+
+    for (const sel of state.selectedEffects) {
+      const statuses = sel.kind === "registry"
+        ? (state.registryEntries ?? []).find(e => e.registryId === sel.registryId)?.statuses
+        : sel.effectData?.statuses;
+      const statusId = (Array.isArray(statuses) ? statuses : []).map(String).find(s => statusIds.has(s));
+      if (!statusId) { notStatus.push(sel.name); continue; }
+
+      const r = await held.inflict({
+        actors: state.targetActorUuids,
+        status: statusId,
+        source: state.heldSource || "Active Effect Manager"
+      });
+      results.push({
+        effect: sel.name,
+        status: statusId,
+        ok: !!r?.ok,
+        applied: (r?.applied ?? []).map(a => a.name),
+        skipped: (r?.skipped ?? []).map(s => `${s.name} (${s.reason})`),
+        error: r?.error ?? null
+      });
+    }
+
+    const appliedCount = results.reduce((n, r) => n + r.applied.length, 0);
+    updateOutput(root, state, { ok: appliedCount > 0, timing: "nextBattle", results, notStatus });
+
+    const lines = results.map(r =>
+      `${r.effect}: ${r.applied.length ? r.applied.join(", ") : "nobody"}${r.skipped.length ? ` (skipped ${r.skipped.join(", ")})` : ""}`);
+    if (notStatus.length) lines.push(`Not a status, skipped: ${notStatus.join(", ")}`);
+    if (lines.length) {
+      const notify = appliedCount ? ui.notifications?.info : ui.notifications?.warn;
+      notify?.call(ui.notifications, `Until next battle · ${lines.join(" · ")}`);
+    }
   }
 
   async function openCustomBuilderDialog(state, root) {
@@ -1018,15 +1071,36 @@
       return null;
     }
 
+    // options (for other tools, e.g. the Skill Check tile's Custom Event chip):
+    //   targetActorUuids  preselected targets (must be in the target list)
+    //   timing            "now" | "nextBattle"
+    //   source            label for held statuses ("Rolling Boulder")
+    const preset = Array.isArray(options.targetActorUuids) || options.timing || options.source;
+
     if (ACTIVE_DIALOG) {
-      try {
-        ACTIVE_DIALOG.bringToTop?.();
-        return ACTIVE_DIALOG;
-      } catch (_e) {}
+      if (preset) {
+        try { await ACTIVE_DIALOG.close?.(); } catch (_e) {}
+        ACTIVE_DIALOG = null;
+      } else {
+        try {
+          ACTIVE_DIALOG.bringToTop?.();
+          return ACTIVE_DIALOG;
+        } catch (_e) {}
+      }
     }
 
     const state = createInitialState();
     await bootState(state);
+
+    if (Array.isArray(options.targetActorUuids)) {
+      const listed = new Set((state.targetRows ?? []).map(r => r.actorUuid));
+      state.targetActorUuids = options.targetActorUuids.map(String).filter(u => listed.has(u));
+      const sync = getPart("state.syncTargetRowsSelection");
+      if (typeof sync === "function") sync(state);
+      else state.targetRows = (state.targetRows ?? []).map(r => ({ ...r, selected: state.targetActorUuids.includes(r.actorUuid) }));
+    }
+    if (options.timing) state.timing = options.timing === "nextBattle" ? "nextBattle" : "now";
+    if (options.source) state.heldSource = String(options.source);
 
     const dialog = new Dialog({
       title: CFG.dialogTitle,
