@@ -62,4 +62,7 @@ const ART = {   // exact library paths (matched by content hash to the duel wind
   life: "Beastiary/Life Eater.png",
 };
 export const artUrl = (cid) => (ART[cid] ? FORGE + ART[cid].split("/").map(encodeURIComponent).join("/") : "icons/svg/card-joker.svg");
-export const setArtPaths = (map) => { for (const [k, p] of Object.entries(map || {})) ART[k] = p; };
+export const artFiles = () => ({ ...ART });   // cid → library path (card drops match monster art against these)
+// element frame colours, same as the duel window
+export const EL_COLOR = { phys: "#4a4a4a", air: "#7fd88f", bolt: "#f5d547", dark: "#4b0082", earth: "#8b5e3c", fire: "#e25822", ice: "#5ab3d4", light: "#a38b50", poison: "#2e8b57", none: "#8a7a5a" };
+export const setArtPaths =(map) => { for (const [k, p] of Object.entries(map || {})) ART[k] = p; };

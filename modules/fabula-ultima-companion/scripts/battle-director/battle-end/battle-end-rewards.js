@@ -46,6 +46,16 @@ function getNum(obj, path, fallback = 0) {
   return Number.isFinite(n) ? n : fallback;
 }
 
+// The enemies that pay out (EXP, Zenit, Fabula Arcana card drops).
+// A battlefield object (a Lightning Crystal) is on the enemy side but is not
+// an enemy — it is worth no EXP and carries no Zenit. Nor is an actor flagged
+// `noRewards` (Nidhogg's crystal body: it counts as a foe for the side wipe,
+// but the dragon is what pays).
+export function rewardEnemyCombatants(dCombat) {
+  return (dCombat?.combatants ?? []).filter(c => c.side === "enemy" && c.actorDoc && !isBattlefieldObject(c.actorDoc)
+    && c.actorDoc.flags?.["fabula-ultima-companion"]?.noRewards !== true);
+}
+
 export async function computeBattleEndRewards(dCombat, isBoss) {
   const expByActorId   = {};
   const zenitByActorId = {};
@@ -53,12 +63,7 @@ export async function computeBattleEndRewards(dCombat, isBoss) {
   if (!dCombat) return { expByActorId, zenitByActorId };
 
   const partyCombatants = dCombat.combatants.filter(isRewardRecipient);
-  // A battlefield object (a Lightning Crystal) is on the enemy side but is not
-  // an enemy — it is worth no EXP and carries no Zenit. Nor is an actor flagged
-  // `noRewards` (Nidhogg's crystal body: it counts as a foe for the side wipe,
-  // but the dragon is what pays).
-  const enemyCombatants = dCombat.combatants.filter(c => c.side === "enemy" && c.actorDoc && !isBattlefieldObject(c.actorDoc)
-    && c.actorDoc.flags?.["fabula-ultima-companion"]?.noRewards !== true);
+  const enemyCombatants = rewardEnemyCombatants(dCombat);
 
   if (!partyCombatants.length || !enemyCombatants.length) {
     warn("[BattleEnd:Rewards] Missing party or enemy combatants — snapshot will be empty");

@@ -67,3 +67,26 @@ Bugs found and fixed during the playtest:
 - The proximity buttons and overhead icons on a drawn canvas. The tests ran with the canvas off, so this needs a real-session look.
 - A no-GM NPC duel (the player's client hosts it).
 - The end panel sits below the fold on short windows (about 900 px tall). It is the same layout as the mockup.
+
+## Monster card drops + the Victory screen's Drops page
+
+Defeated monsters can drop their card at the end of a won battle.
+
+- **Rules** (`fa-drops-core.js`, node tests in `fa-drops.test.mjs`):
+  - Chance per roll: soldier 25%, elite 40%, champion 100%.
+  - Pity: guaranteed on the 4th fight against that species without a drop (3rd for elites). Counted per character and per card, in the actor flag `faPity`.
+  - One roll per species, per character, per battle.
+  - A card the character already owns gets no roll.
+  - No drops on flee, wipe or a debug ending. Battlefield objects and `noRewards` enemies don't drop. Steal is untouched.
+- **Which card** (`fa-drops.js`): the actor flag `faCardDrop` decides first (a card id, or `false` for none; set it with `setCardDrop`). Otherwise the enemy's art file is matched to the card's bestiary art, then its name to the card's name. Future and retired cards never drop.
+- **Battle end** (shared code, small touches):
+  - `battle-end-rewards.js`: the enemy filter becomes the exported `rewardEnemyCombatants`. Same filter, used by EXP/Zenit and by drops.
+  - `battle-end-orchestrator.js`: on a victory, after `applyBattleGrade`, it calls `rollCardDrops` and grants the cards.
+  - `battle-end-summary-ui.js`: the payload gains `drops: [{ actorId, kind, name, img, qty, el? }]`.
+- **Victory screen** (`battleEnd-summaryUI-listener.js`): when something dropped, every character panel turns to a second page after the grade beats.
+  - The name and level stay. The title, EXP and Zenit fade out.
+  - A DROPS list comes in row by row: icon, name, ×N. Card rows play Down2; same items stack. Three rows at most, then "+N more"; "No drops" when empty.
+  - The list is generic, so item drops can use it later.
+- **Mockup:** Battle Grade v2 revision 8, https://claude.ai/artifact/BPgneV83ziwzd8UeNfkWoL (Drops page tab).
+- **Tested** with a real sandbox fight against Hellhounds (rank set to champion). The cards were granted to the characters who didn't own one, and the Drops page played on the real Victory screen.
+- **Known gap:** in a follow-up chain (an ambush right after a won fight), only the final battle's monsters roll.

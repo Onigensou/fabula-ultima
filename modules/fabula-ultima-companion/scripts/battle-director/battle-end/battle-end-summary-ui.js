@@ -71,6 +71,10 @@ export async function runBattleEndSummaryUI(endCtx) {
     // Most heals write no battle-log row, so the tally's count is the fuller one.
     totalHealing: Math.max(Number(combatTotals?.totalHealing ?? 0) || 0, Math.floor(tallyHealing)) || (combatTotals?.totalHealing ?? null),
     grade:        gradeUi,
+    // Drops page (the screen's last beat): [{ actorId, kind, name, img, qty, el? }].
+    // Fabula Arcana monster cards today; item drops can join this list later.
+    drops: (Array.isArray(endCtx.cardDrops) ? endCtx.cardDrops : [])
+      .map(d => ({ actorId: d.actorId, kind: "card", name: `${d.name} Card`, img: d.img, qty: 1, el: d.el })),
     rank: {
       letter: rank?.letter ?? "S",
       score:  rank?.score  ?? null,

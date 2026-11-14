@@ -9,6 +9,7 @@
 //   .setDuelist(actor, { teams, diff, style, bestOf, quote, prize, requiresSwitch })   GM: make an NPC challengeable (false = remove)
 //   .grantCard(actor, cid) / .grantStarter(actor) / .ownedCards(actor) / .cardItemData(cid)
 //   .spectate(sid) / .sessions() / .closeAll()    (GM)
+//   .cardForEnemy(actor) / .setCardDrop(actor, cid | false | null) / .rollCardDrops(enemies, recipients)   monster card drops (fa-drops.js)
 //   .Catalog / .Engine
 
 import { TAG, MODULE_ID, SETTING_SESSIONS, Catalog, Engine, isHostGM, hostGM } from "./fa-const.js";
@@ -17,6 +18,7 @@ import { installHost, restore, listSessions, closeAll } from "./fa-host.js";
 import { installClient, currentDuel } from "./fa-client.js";
 import { installEntry, challengeNpc, challengePlayer, spectate, setDuelist } from "./fa-entry.js";
 import { ownedCards, grantCard, grantStarter, cardItemData } from "./fa-collection.js";
+import { cardForEnemy, rollCardDrops, FLAG_DROP } from "./fa-drops.js";
 
 Hooks.once("init", () => {
   game.settings.register(MODULE_ID, SETTING_SESSIONS, { scope: "world", config: false, type: Object, default: {} });
@@ -35,6 +37,11 @@ Hooks.once("ready", () => {
     challengeNpc, challengePlayer, spectate, setDuelist,
     practice: (opts = {}) => challengeNpc(null, { challenger: opts.challenger ?? null, practice: { name: opts.name ?? "Practice Duelist", team: opts.team, diff: opts.diff, style: opts.style, bestOf: opts.bestOf ?? 1, quote: opts.quote ?? "", prize: opts.prize ?? null } }),
     grantCard, grantStarter, ownedCards, cardItemData,
+    // card drops: which card a monster drops; GM override per actor (a card id, or false for none; null clears)
+    cardForEnemy, rollCardDrops,
+    setCardDrop: (actor, cid) => (cid === null || cid === undefined)
+      ? actor?.unsetFlag(MODULE_ID, FLAG_DROP)
+      : actor?.setFlag(MODULE_ID, FLAG_DROP, cid === false ? false : String(cid)),
     sessions: () => listSessions(), closeAll, current: currentDuel,
     Catalog: Catalog(), Engine: Engine(),
   };

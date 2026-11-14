@@ -939,6 +939,25 @@ Hooks.once("ready", () => {
       .oni-sum-pill.zp { color: #ffdcc0; background: #3a1606; border-color: #ff7a1a; box-shadow: 0 0 10px rgba(255,122,26,0.35); }
       .oni-sum-pill.cp { color: #ffe9c2; background: #3a2410; border-color: #f0a94a; }
       .oni-sum-pill.zn { color: #fff2c4; background: #33290c; border-color: #ffd700; }
+      /* Drops page (page 2 of each panel): the panel's content fades out, a list of what it obtained comes in */
+      .oni-sum-card > * { transition: opacity 320ms ease; }
+      .oni-sum-card.is-page2 > *:not(.oni-sum-header):not(.oni-sum-p2) { opacity: 0; }
+      .oni-sum-p2 { position: absolute; left: 61px; right: 14px; bottom: 10px; display: flex; flex-direction: column; gap: 4px; pointer-events: none; }
+      .oni-sum-p2 .lab { font-size: 11px; font-weight: 900; letter-spacing: 1.2px; text-transform: uppercase; color: #ffd278; opacity: 0; transition: opacity 260ms ease;
+        text-shadow: -1px 0 0 rgba(0,0,0,.85), 1px 0 0 rgba(0,0,0,.85), 0 -1px 0 rgba(0,0,0,.85), 0 1px 0 rgba(0,0,0,.85); }
+      .oni-sum-p2 .lab.is-in { opacity: 1; }
+      .oni-sum-dr { display: flex; align-items: center; gap: 8px; height: 24px; opacity: 0; transform: translateX(-10px);
+        transition: opacity 260ms ease, transform 300ms cubic-bezier(.3,1.4,.5,1); }
+      .oni-sum-dr.is-in { opacity: 1; transform: none; }
+      .oni-sum-dr .nm { flex: 1; min-width: 0; color: rgba(255,255,255,0.92); font-weight: 900; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .oni-sum-dr .q { color: rgba(255,255,255,0.92); font-weight: 900; font-size: 15px; font-variant-numeric: tabular-nums; }
+      .oni-sum-dr .ic { width: 22px; height: 22px; flex: none; display: flex; align-items: center; justify-content: center; }
+      .oni-sum-dr .ic > img { max-width: 100%; max-height: 100%; object-fit: contain; }
+      .oni-sum-dr.none .nm, .oni-sum-dr.more .nm { color: rgba(255,255,255,0.72); font-weight: 600; font-size: 13px; }
+      .oni-sum-dr.none .nm { font-style: italic; }
+      .oni-sum-mcard { position: relative; width: 16px; height: 22px; flex: none; border-radius: 3px; border: 2px solid var(--elc, #4a4a4a);
+        background: #fbf4dc; overflow: hidden; box-shadow: 0 0 0 1px #3a1e06; }
+      .oni-sum-mcard img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
       .oni-sum-sprite.is-hop { animation: oniSumHop 520ms ease; }
       @keyframes oniSumHop { 0%,100% { transform: none; } 35% { transform: translateY(-14px); } 60% { transform: translateY(0); } 78% { transform: translateY(-5px); } }
 
@@ -1152,9 +1171,9 @@ Hooks.once("ready", () => {
       mvpEl = document.createElement("div");
       mvpEl.className = "oni-sum-mvp";
       mvpEl.textContent = "MVP";
+      item.appendChild(mvpEl);
       resEl = document.createElement("div");
       resEl.className = "oni-sum-res";
-      item.appendChild(mvpEl);
       item.appendChild(resEl);
     }
 
@@ -1226,6 +1245,65 @@ Hooks.once("ready", () => {
 
   function playOnce(src, volume = 0.6) {
     try { const a = new Audio(src); a.volume = volume; a.play().catch(() => {}); } catch {}
+  }
+
+  // ---------------------------------------------------------------------------
+  // Drops page: near the end, every panel turns to page 2 — the name/level stay,
+  // the rest fades out, and a list of what that character obtained comes in,
+  // row by row (icon · name · ×N). Shown only when something dropped.
+  // payload.drops = [{ actorId, kind: "card" | "item", name, img, qty, el? }]
+  // (Fabula Arcana monster cards today; item drops can fill the same list.)
+  // ---------------------------------------------------------------------------
+  const DROP_CARD_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Down2.ogg";
+  const DROP_ROWS_MAX = 3;
+  function dropRowsHtml(list) {
+    let rows = list;
+    if (list.length > DROP_ROWS_MAX) { rows = list.slice(0, DROP_ROWS_MAX - 1); rows.push({ more: list.length - (DROP_ROWS_MAX - 1) }); }
+    if (!rows.length) return `<div class="oni-sum-dr none"><span class="nm">No drops</span></div>`;
+    return rows.map((d) => {
+      if (d.more) return `<div class="oni-sum-dr more"><span class="ic"></span><span class="nm">+${d.more} more</span><span class="q"></span></div>`;
+      const ic = d.kind === "card"
+        ? `<span class="oni-sum-mcard" style="--elc:${escapeHtml(d.el ?? "#4a4a4a")}"><img src="${escapeHtml(d.img ?? "")}" alt=""></span>`
+        : `<img src="${escapeHtml(d.img ?? "")}" alt="">`;
+      return `<div class="oni-sum-dr" data-kind="${escapeHtml(d.kind ?? "item")}"><span class="ic">${ic}</span><span class="nm">${escapeHtml(d.name ?? "")}</span><span class="q">×${Math.max(1, Number(d.qty) || 1)}</span></div>`;
+    }).join("");
+  }
+  // same item for the same character → one row with the summed quantity
+  function stackDrops(drops, actorId) {
+    const out = [];
+    for (const d of drops) {
+      if (String(d?.actorId ?? "") !== actorId) continue;
+      const key = `${d.kind}|${d.name}|${d.img}`;
+      const hit = out.find((x) => x._k === key);
+      if (hit) hit.qty += Math.max(1, Number(d.qty) || 1);
+      else out.push({ ...d, qty: Math.max(1, Number(d.qty) || 1), _k: key });
+    }
+    return out;
+  }
+  async function playDropsPage(drops, cards) {
+    const pages = [];
+    for (const c of cards) {
+      if (!c.card) continue;
+      const p2 = document.createElement("div");
+      p2.className = "oni-sum-p2";
+      p2.innerHTML = `<div class="lab">Drops</div>${dropRowsHtml(stackDrops(drops, String(c.entry?.actorId ?? "")))}`;
+      const head = c.card.querySelector(".oni-sum-header");
+      p2.style.top = `${(head ? head.offsetTop + head.offsetHeight : 28) + 2}px`;
+      try { const cs = getComputedStyle(c.card); p2.style.left = cs.paddingLeft; p2.style.right = cs.paddingRight; } catch {}
+      c.card.appendChild(p2);
+      c.card.classList.add("is-page2");
+      pages.push(p2);
+    }
+    await sleep(380);
+    for (const p of pages) p.querySelector(".lab")?.classList.add("is-in");
+    await sleep(200);
+    for (const p of pages) {
+      for (const r of p.querySelectorAll(".oni-sum-dr")) {
+        r.classList.add("is-in");
+        if (r.dataset.kind === "card") playOnce(DROP_CARD_SFX, 0.65); else if (!r.classList.contains("none")) tickOnce();
+        await sleep(160);
+      }
+    }
   }
 
   function radarPts(vals) {
@@ -1802,6 +1880,13 @@ const footerData = {
     if (grade) {
       try { await playGradeBeats({ grade, cards, radar, sb, footerBuilt, footerData, zenitIconSrc }); }
       catch (err) { console.warn(`${tag} grade beats failed`, err); }
+    }
+
+    // 2c) Drops page (page 2 of every panel): the last beat, only when something dropped
+    const drops = Array.isArray(data?.drops) ? data.drops.filter((d) => d && d.actorId) : [];
+    if (drops.length) {
+      try { await sleep(grade?.letter === "S" && grade?.prize ? 900 : 500); await playDropsPage(drops, cards); }
+      catch (err) { console.warn(`${tag} drops page failed`, err); }
     }
 
     // 3) Hold AFTER animations (silent)

@@ -243,6 +243,14 @@ export async function runBattleEndSequence(director) {
     // Battle Grade v2: move the Bonus Board, pay the MVP Prize on S. Before the
     // summary UI so the screen shows the result.
     try { await applyBattleGrade(endCtx); } catch (e) { warn("[BattleEnd] applyBattleGrade threw", e); }
+    // Fabula Arcana: the fallen monsters may drop their cards (the Victory screen's Drops page).
+    try {
+      const { rollCardDrops } = await import("../../fabula-arcana/fa-drops.js");
+      const { rewardEnemyCombatants } = await import("./battle-end-rewards.js");
+      const enemies = rewardEnemyCombatants(endCtx.director?.dCombat).map(c => ({ actor: c.actorDoc, token: c.tokenDoc ?? c.token ?? null }));
+      const recipients = endCtx.partyActorIds.map(id => game.actors.get(id)).filter(Boolean);
+      endCtx.cardDrops = await rollCardDrops(enemies, recipients);
+    } catch (e) { warn("[BattleEnd] card drops threw", e); endCtx.cardDrops = []; }
     await runBattleEndSummaryUI(endCtx); // awaited: transition only starts after GM's animation finishes
   } else if (!endCtx.debug) {
     // A wipe or fleeing clears the Bonus Board.
