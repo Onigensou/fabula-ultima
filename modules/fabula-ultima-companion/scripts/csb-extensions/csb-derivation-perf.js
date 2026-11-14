@@ -54,6 +54,26 @@
 
     console.info(`${TAG} script loaded — patches will apply on customSystemBuilderInit.`);
 
+    // ui.notifications stand-in for actor data preparation while the game is still loading
+    // (see AP._safePrepareData): CSB's warnings go to the console instead of throwing.
+    const SETUP_NOTIFY = Object.freeze({
+        info: (m) => console.info(`${TAG} (during load) ${m}`),
+        warn: (m) => console.warn(`${TAG} (during load) ${m}`),
+        error: (m) => console.error(`${TAG} (during load) ${m}`),
+        notify: (m) => console.info(`${TAG} (during load) ${m}`),
+    });
+    // After load, CSB repeats "Item template has been deleted …" as a toast on EVERY prepare of that actor.
+    // Show each one once per session; repeats go to the console.
+    Hooks.once('ready', () => {
+        const n = globalThis.ui?.notifications; if (!n || typeof n.warn !== 'function') return;
+        const seen = new Set(), warn = n.warn.bind(n);
+        n.warn = (message, ...rest) => {
+            const m = String(message ?? '');
+            if (m.startsWith('Item template has been deleted')) { if (seen.has(m)) { console.warn(`${TAG} (repeat) ${m}`); return null; } seen.add(m); }
+            return warn(message, ...rest);
+        };
+    });
+
     // CSB's own predefined `id` hidden column is `'${item.id}'` — note the missing
     // closing `}$`. CSB therefore does NOT interpolate it; it emits the raw literal.
     // We reproduce that literal exactly rather than "fixing" it, so this patch is a
@@ -479,8 +499,14 @@
             // syntax files keep their per-actor effect index here).
             const prevScope = globalThis.__fuActorPrepScope;
             globalThis.__fuActorPrepScope = { actor: this, caches: new Map() };
+            // CSB warns through ui.notifications during prepare (TemplateSystem.getModifiers: "Item template
+            // has been deleted …"). While the game is still loading ui.notifications does not exist yet, so the
+            // warning itself threw and the whole actor failed data preparation (2026-11-14: 32 legacy characters).
+            // Until the UI is built, route those messages to the console instead.
+            const stub = globalThis.ui && !globalThis.ui.notifications;
+            if (stub) globalThis.ui.notifications = SETUP_NOTIFY;
             try { return origActorPrep.apply(this, args); }
-            finally { globalThis.__fuActorPrepScope = prevScope; }
+            finally { globalThis.__fuActorPrepScope = prevScope; if (stub && globalThis.ui.notifications === SETUP_NOTIFY) delete globalThis.ui.notifications; }
         };
         IP._initialize = function (...args) {
             const actor = this.parent;
