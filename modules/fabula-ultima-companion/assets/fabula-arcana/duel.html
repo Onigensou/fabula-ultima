@@ -2196,6 +2196,8 @@ if (!window.FA_NET_MODE) render();
     if (NET.ready) document.querySelectorAll('[data-pick]').forEach(el => { el.onclick = null; el.onkeydown = null; el.classList.add('dis'); });
     const br = $('#btnRand'); if (br) br.onclick = () => { if (NET.ready) return; sfx('cursor'); const legal = LEGAL_FROM(owned); if (legal.length){ UI.pick = legal[Math.floor(Math.random()*legal.length)]; render(); } };
     const bs = $('#btnStart'); if (bs) bs.onclick = () => { const sel = UI.pick || []; if (NET.ready || sel.length !== CFG.TEAM || teamCost(sel) > CFG.BUDGET) return; sfx('book'); NET.ready = true; send({ t:'team', team:[...sel] }); render(); };
+    // Unready: take Ready back while the opponent is still choosing (the host ignores it once the game has started)
+    const bu = $('#btnUnready'); if (bu) bu.onclick = () => { if (!NET.ready || (NET.lobby && NET.lobby.oppReady)) return; sfx('cancel'); NET.ready = false; send({ t:'unready' }); render(); };
   };
   const LEGAL_FROM = ids => { const out = []; for (let a=0;a<ids.length;a++) for (let b=a+1;b<ids.length;b++) for (let c=b+1;c<ids.length;c++){ const t=[ids[a],ids[b],ids[c]]; if (teamCost(t) <= CFG.BUDGET) out.push(t); } return out; };
   function lobbySide(owned){
@@ -2213,7 +2215,8 @@ if (!window.FA_NET_MODE) render();
       ${enough ? '' : `<div class="win"><div class="hint">You need three cards that fit the ${CFG.BUDGET}★ budget to play.</div></div>`}
       ${rulesHTML()}${chartHTML()}
       <div class="win" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" type="button" id="btnRand" ${NET.ready || !enough ? 'disabled' : ''}>Random team</button>
-        <button class="btn go" type="button" id="btnStart" ${legal && !NET.ready ? '' : 'disabled'}>${NET.ready ? (L.oppReady ? 'Starting…' : `Waiting for ${esc(NET.oppName)}…`) : 'Ready'}</button></div>`;
+        <button class="btn go" type="button" id="btnStart" ${legal && !NET.ready ? '' : 'disabled'}>${NET.ready ? (L.oppReady ? 'Starting…' : `Waiting for ${esc(NET.oppName)}…`) : 'Ready'}</button>
+        ${NET.ready && !L.oppReady ? `<button class="btn ghost" type="button" id="btnUnready" title="Take back Ready and change your team">Unready</button>` : ''}</div>`;
   }
 
   // ---------- match state from the host ----------

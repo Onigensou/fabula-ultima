@@ -139,11 +139,27 @@ async function startGame(s) {
   pushStatus(); save();
 }
 
+// The duel is over for good (series won, surrender in the deciding game, a player left, a disconnect forfeit):
+// spectators keep the result on screen for a moment, then their board closes. Players keep theirs (Rematch / Leave).
+const SPECTATOR_CLOSE_MS = 6000;
+function releaseSpectators(s) {
+  const r = rt(s.sid);
+  if (r.specT || !s.spectators.length) return;
+  r.specT = setTimeout(() => {
+    r.specT = null;
+    if (!sessions.has(s.sid)) return;
+    for (const u of s.spectators) { notify(u, "The duel is over."); send(u, "close", {}, s.sid); }
+    s.spectators = [];
+    broadcast(s, () => ({ t: "spectators", n: 0 }));
+    save();
+  }, SPECTATOR_CLOSE_MS);
+}
+
 async function onGameEnd(s) {
   clearTimers(s); s.deadline = null;
   E().Series.record(s.series, s.match.result);
   if (!s.series.over) return;
-  s.over = true;
+  s.over = true; releaseSpectators(s);
   if (s.kind === "npc" && s.series.winner === 0 && s.prize) {
     try { const a = game.actors.get(s.seats[0].actorId); const r = await grantCard(a, s.prize.cid); if (r.ok) s.reward = { cid: s.prize.cid, created: r.created }; }
     catch (e) { console.error(TAG, "ante reward", e); }
@@ -194,6 +210,12 @@ async function onDuel(s, userId, msg) {
       if (s.seats.every((x) => x.ready)) await startGame(s);
       save(); return;
     }
+    case "unready": {                       // take Ready back in team select; too late once the game has started
+      if ((s.match && s.match.phase !== "ended") || !t.ready) return;   // the "start" message is already on its way
+      t.ready = false;
+      const o = s.seats[1 - seat]; if (o.userId) toDuel(s, o.userId, { t: "lobby", lobby: { oppReady: false } });
+      save(); return;
+    }
     case "commit": return submit(s, seat, msg.choice);
     case "surrender": {
       if (!s.match || !E().Match.concede(s.match, seat)) return;
@@ -240,7 +262,7 @@ async function leave(s, seat, userId) {
   if (!s.over) {
     if (s.match && s.match.phase !== "ended") { E().Match.concede(s.match, seat); await onGameEnd(s); }
     if (!s.series.over) { s.series.over = true; s.series.winner = 1 - seat; }
-    s.over = true; clearTimers(s);
+    s.over = true; clearTimers(s); releaseSpectators(s);
     const other = s.seats[1 - seat];
     if (other.userId) { notify(other.userId, `${t.name} left the duel.`); toDuel(s, other.userId, { t: "state", ...payload(s, 1 - seat) }); }
   }
@@ -307,7 +329,7 @@ async function forfeit(s, seat) {
   }
   if (s.match.phase !== "ended") { E().Match.concede(s.match, seat); await onGameEnd(s); }
   if (!s.series.over) { s.series.over = true; s.series.winner = 1 - seat; }
-  s.over = true; s.away = null; clearTimers(s);
+  s.over = true; s.away = null; clearTimers(s); releaseSpectators(s);
   if (other.userId) {
     notify(other.userId, `${t.name} didn't come back. You win by forfeit.`);
     toDuel(s, other.userId, { t: "opp-gone", name: t.name });
@@ -324,7 +346,7 @@ function dropSpectator(s, userId) {
   save();
 }
 function closeSession(s) {
-  clearTimers(s); clearTimeout(rt(s.sid).inviteTimer); for (const k of Object.keys(rt(s.sid).awayT || {})) clearTimeout(rt(s.sid).awayT[k]);
+  clearTimers(s); clearTimeout(rt(s.sid).inviteTimer); clearTimeout(rt(s.sid).specT); for (const k of Object.keys(rt(s.sid).awayT || {})) clearTimeout(rt(s.sid).awayT[k]);
   for (const p of participants(s)) send(p.uid, "close", {}, s.sid);
   sessions.delete(s.sid); runtime.delete(s.sid);
   pushStatus(); save();
