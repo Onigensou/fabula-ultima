@@ -34,6 +34,8 @@
     <h4>Team select (PvP)</h4>
     <div class="rdy"><div class="who"><b>You</b><span id="d-me"></span></div><div class="who"><b>Blanche</b><span id="d-opp"></span></div></div>
     <div class="r"><button type="button" id="d-ready">Blanche readies</button></div>
+    <h4>Formations (deck builder)</h4>
+    <div class="r"><button type="button" id="d-forms">Fill sample formations</button><button type="button" id="d-formsclr">Clear</button></div>
     <h4>During a duel</h4>
     <div class="r"><button type="button" id="d-timed">30 s round timer: on</button><button type="button" id="d-low">Jump to 10 s left</button></div>
     <div class="r"><button type="button" id="d-ko">KO banner</button><button type="button" id="d-ban">Other banner</button></div>
@@ -78,6 +80,13 @@
   $d('d-pb').onclick = () => { if (!S || S.phase === 'opening') return msg('Start a duel and pick your opener first.'); sndInit();
     const sets = [[1, [{ name: 'Howl', tier: 'offense' }]], [0, [{ name: 'Thick Skin', tier: 'defense' }, { name: 'Earthen Wire', tier: 'defense' }]], [0, [{ name: 'Static Buildup', tier: 'offense' }]], [1, [{ name: 'Tailwind', tier: 'support' }]], [1, [{ name: 'Earthquake', tier: 'offense' }, { name: 'Earthquake', tier: 'offense' }]]];
     const [side, lines] = sets[pbi++ % sets.length]; passiveBand(side, lines); };
+
+  // formations: three saved lineups (one over budget, so the warning shows), the first is the default
+  $d('d-forms').onclick = () => { if (S) return msg('Formations live on the team-select screen: leave the duel first.');
+    FORM.set([{ name:'Bolt Rush', team:['skizzik','kirin','fulgimite'], opener:'skizzik', def:true }, { name:'Iron Wall', team:['walrog','obsidrax','salamander'], opener:'walrog', def:false },
+      { name:'Big Hitters', team:['gigas','flame','wolf'], opener:null, def:false }, null, null]);
+    formDefaultLoad(); render(); msg('Click a slot (or press 1–5) to load it. Click a name to rename. ☆ sets the default.'); };
+  $d('d-formsclr').onclick = () => { FORM.set([null,null,null,null,null]); UI.formSlot=null; if (!S) render(); };
 
   $d('d-inv').onclick = () => {
     sndInit();

@@ -617,6 +617,41 @@ em.sv.sv-flash{animation:fuNstFlash .9s ease-out}
 @keyframes fxRoo{50%{filter:drop-shadow(0 0 10px #8a3fe0) drop-shadow(0 0 22px #3a0f66) brightness(.85)}}
 @media (max-width:620px){ .fxt{width:20px;height:20px} }
 @media (prefers-reduced-motion: reduce){ .fxt,.holo .cue *,.slot .holo.on .spr{animation:none !important} }
+/* ===== formations (saved lineups) ===== */
+.forms{margin:10px 0 4px;padding:8px 10px 10px;border-radius:10px;background:#7a4e2010;border:1px solid #c9a44a77}
+.fbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.fbar .hint{flex:1;min-width:160px}
+.fbtns{display:flex;gap:6px}
+.fbtns .btn{font-size:13px;padding:5px 10px}
+.frow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:8px}
+.fslot{position:relative;min-height:104px;border-radius:9px;padding:6px 7px;background:linear-gradient(180deg,#fffaf0,#f1e2b8);border:2px solid var(--wood2);cursor:pointer;display:flex;flex-direction:column;gap:5px;transition:transform .12s,box-shadow .12s}
+.fslot:hover{transform:translateY(-2px);box-shadow:0 4px 10px #0003}
+.fslot.cur{border-color:#d9a640;box-shadow:0 0 0 2px #f4c95d,0 0 12px #f4c95d99}
+.fslot.bad{background:linear-gradient(180deg,#f3ece0,#e2d6bc)}
+.fslot.empty{border-style:dashed;background:#fbf4dc66;cursor:default;align-items:center;justify-content:center;color:var(--mute)}
+.fslot.empty .fnum{position:absolute;left:7px;top:5px}
+.fempty{font-size:12px}
+.fhead{display:flex;align-items:center;gap:5px;min-width:0}
+.fnum{font-family:var(--font-n);font-size:11px;color:#fff;background:var(--wood);border-radius:4px;padding:0 5px;flex:none}
+.fname{flex:1;min-width:0;font-weight:700;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:text;border-bottom:1px dashed transparent}
+.fname:hover{border-bottom-color:#9a6512}
+.fname-in{flex:1;min-width:0;font:inherit;font-weight:700;font-size:13px;padding:1px 4px;border:1px solid #9a6512;border-radius:4px;background:#fffaf0;color:var(--ink)}
+.fstar,.fdel{flex:none;background:none;border:0;padding:0 2px;font-size:15px;line-height:1;color:#9a6512;cursor:pointer}
+.fstar.on{color:#e0a020;text-shadow:0 0 6px #f4c95d}
+.fdel{font-size:12px;color:#a07a50}
+.fdel.armed{color:#fff;background:#b8321f;border-radius:4px;padding:1px 5px;font-size:11px;font-weight:700}
+.fcards{display:flex;gap:4px}
+.fc{position:relative;flex:1;aspect-ratio:1;border-radius:6px;border:2px solid var(--ec);background:radial-gradient(circle at 50% 60%,#fff 0%,#e8dcc0 70%);overflow:hidden;display:flex;align-items:center;justify-content:center}
+.fc img{width:92%;height:92%;object-fit:contain;image-rendering:pixelated;max-width:none}
+.fc.gone{filter:grayscale(1);opacity:.45}
+.fc.op::after{content:"◆";position:absolute;left:2px;top:0;font-size:11px;color:#e0a020;text-shadow:0 0 3px #fff,0 0 2px #000}
+.fstat{font-size:11.5px;color:#7f6140;min-height:15px}
+.fstat .stars{font-size:12px}
+.fstat b{color:#b3261e;font-weight:700}
+.opmark{position:absolute;left:6px;bottom:6px;z-index:3;font-family:var(--font-b);font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;border:1px solid #c9a44a;background:#fffaf0e6;color:#7a5a3a;cursor:pointer}
+.opmark.on{background:linear-gradient(180deg,#f4c95d,#c08a1a);color:#3a1e06;border-color:#7a4e20;box-shadow:0 0 8px #f4c95d}
+@media (max-width:760px){ .frow{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:460px){ .frow{grid-template-columns:repeat(2,minmax(0,1fr))} }
 /* ===== opponent disconnected strip ===== */
 #awaybar{position:fixed;left:50%;top:78px;transform:translateX(-50%);z-index:9600;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;max-width:calc(100vw - 32px);
   padding:9px 16px;border-radius:10px;background:linear-gradient(180deg,#3a1e06f2,#24130af2);border:2px solid #ff8a1f;color:#f8e3c8;font-family:var(--font-b);font-size:14px;box-shadow:0 8px 20px #000a;animation:subIn .3s ease-out both}
@@ -811,7 +846,7 @@ document.addEventListener('keydown', sndInit, { capture:true });
 // ===================== state =====================
 let S = null;
 let SERIES = null;
-let UI = { bestOf: store.get('ccd.bestof', 1), pick: store.get('ccd3.team', null), matchType:'prize', busy:false, survey:{}, notes:'', inspect:null,
+let UI = { formSlot:null, openerCid:null, bestOf: store.get('ccd.bestof', 1), pick: store.get('ccd3.team', null), matchType:'prize', busy:false, survey:{}, notes:'', inspect:null,
   opp: store.get('ccd5.opp', { ctrl:'ai', diff:'casual', style:'aggressive' }),   // NPC seat: AI profile or GM
   seat:0, drafts:[{sel:null,target:null,replace:null},{sel:null,target:null,replace:null}] };
 // UI.sel / UI.target / UI.replace read and write the draft of the seat being operated (seat 1 only when the GM controls the NPC)
@@ -1129,6 +1164,7 @@ function beginDecision(){
   if (S.phase==='replace') for (const s of [0,1]) if (!S.p[s].pending){ S.commit[s]={skip:true}; if (s===1) clearTimeout(AITIMER); }
   if (S.phase==='replace' && S.commit[UI.seat] && !S.commit[1-UI.seat] && S.ctrl==='gm') UI.seat=1-UI.seat;
   if (timed()){ S.deadline=Date.now()+CFG.TIMER*1000; TICK=setInterval(tickTimer, 250); }
+  preselectOpener();
   render();
 }
 function tickTimer(){
@@ -1941,12 +1977,94 @@ function render(){ syncSurrender();
   }
   updateField(); renderPicker(); renderSidebar();
 }
+// ===================== formations: saved 3-card lineups (deck builder) =====================
+// Up to FORM_SLOTS named lineups: { name, team:[cid,cid,cid], opener:cid|null, def:bool } (null = empty slot).
+// FORM is the storage: this page keeps them in the browser; the in-game window swaps FORM for the character
+// (actor flag faTeams, written by the player's own client). The ★ default loads when team select opens; a slot
+// whose cards no longer fit shows why; the opener mark preselects the opening monster (still confirmed each match).
+const FORM_SLOTS = 5;
+let FORM = {
+  get(){ const v = store.get('fa.formations', null); return Array.from({length:FORM_SLOTS}, (_,i)=> (Array.isArray(v) && v[i]) || null); },
+  set(list){ store.set('fa.formations', list); },
+};
+const formCheck = (f) => {        // { ok, why, team } against the cards you can field now (IDS = owned in-game)
+  if (!f) return { ok:false, why:'', team:[] };
+  const team = f.team.filter(c => CARDS[c] && IDS.includes(c));
+  const missing = f.team.filter(c => !team.includes(c));
+  if (missing.length) return { ok:false, why:`${missing.map(c => CARDS[c] ? N(c) : c).join(', ')} missing`, team };
+  if (teamCost(team) > CFG.BUDGET) return { ok:false, why:`${teamCost(team)}★, over budget`, team };
+  return { ok:true, why:'', team };
+};
+function formLoad(i, quiet){
+  const f = FORM.get()[i]; if (!f) return;
+  const c = formCheck(f); const team = []; for (const cid of c.team) if (team.length < CFG.TEAM && teamCost([...team, cid]) <= CFG.BUDGET) team.push(cid);
+  UI.pick = team; UI.openerCid = f.opener && team.includes(f.opener) ? f.opener : null; UI.formSlot = i;
+  store.set('ccd3.team', team); if (!quiet) sfx('book', 0.8, 0);
+}
+function formDefaultLoad(){ const i = FORM.get().findIndex(f => f && f.def); if (i >= 0) formLoad(i, true); return i; }
+function formSave(i){
+  const sel = UI.pick || []; if (sel.length !== CFG.TEAM || teamCost(sel) > CFG.BUDGET) return;
+  const list = FORM.get(); const prev = list[i];
+  list[i] = { name: prev ? prev.name : `Team ${i+1}`, team:[...sel], opener: UI.openerCid && sel.includes(UI.openerCid) ? UI.openerCid : null, def: prev ? !!prev.def : !list.some(f => f && f.def) };
+  FORM.set(list); UI.formSlot = i; sfx('decide', 0.8, 0);
+}
+function formsHTML(){
+  const list = FORM.get(), sel = UI.pick || [], legal = sel.length === CFG.TEAM && teamCost(sel) <= CFG.BUDGET;
+  const free = list.findIndex(f => !f), cur = UI.formSlot != null && list[UI.formSlot] ? UI.formSlot : null;
+  const tile = (f, i) => {
+    if (!f) return `<div class="fslot empty" data-fslot="${i}"><span class="fnum">${i+1}</span><span class="fempty">Empty slot</span></div>`;
+    const c = formCheck(f);
+    return `<div class="fslot ${cur===i?'cur':''} ${c.ok?'':'bad'}" data-fslot="${i}" tabindex="0" role="button" aria-label="Load formation ${esc(f.name)}" title="${c.ok?'Load this formation':esc(c.why)}">
+      <div class="fhead"><span class="fnum">${i+1}</span><span class="fname" data-fname="${i}" title="Rename">${esc(f.name)}</span>
+        <button type="button" class="fstar ${f.def?'on':''}" data-fstar="${i}" title="${f.def?'Default: loads when team select opens':'Make this the default'}">${f.def?'★':'☆'}</button>
+        <button type="button" class="fdel" data-fdel="${i}" title="Delete">✕</button></div>
+      <div class="fcards">${f.team.map(cid => `<span class="fc ${IDS.includes(cid)?'':'gone'} ${f.opener===cid?'op':''}" style="--ec:var(--e-${CARDS[cid] ? CARDS[cid].el : 'phys'})" title="${esc(CARDS[cid] ? N(cid) : cid)}${f.opener===cid?' · opener':''}"><img src="${ART[cid]||''}" alt=""></span>`).join('')}</div>
+      <div class="fstat">${c.ok ? `${starStr(teamCost(f.team))}` : `<b>⚠ ${esc(c.why)}</b>`}</div></div>`;
+  };
+  return `<div class="forms"><div class="fbar"><span class="label">Formations</span><span class="hint">Click to load · 1–5 on the keyboard · ★ = loads first</span>
+      <span class="fbtns"><button type="button" class="btn ghost" id="fSave" ${legal && cur!=null ? '' : 'disabled'} title="Overwrite the selected formation with the current pick">Save</button>
+      <button type="button" class="btn ghost" id="fSaveNew" ${legal && free>=0 ? '' : 'disabled'} title="${free<0?'All 5 slots are used':'Save the current pick in the next empty slot'}">+ Save as new</button></span></div>
+    <div class="frow">${list.map(tile).join('')}</div></div>`;
+}
+let FDEL_ARM = null;
+function bindForms(){
+  document.querySelectorAll('[data-fslot]').forEach(el => {
+    const i = +el.dataset.fslot;
+    el.onclick = (e) => { if (e.target.closest('[data-fstar],[data-fdel],[data-fname],input')) return; if (!FORM.get()[i]) { sfx('cancel', 0.5); return; } formLoad(i); render(); };
+    el.onkeydown = (e) => { if ((e.key==='Enter'||e.key===' ') && e.target===el){ e.preventDefault(); el.onclick(e); } };
+  });
+  document.querySelectorAll('[data-fstar]').forEach(b => b.onclick = (e) => { e.stopPropagation(); const i=+b.dataset.fstar, list=FORM.get(); const on=!list[i].def;
+    list.forEach(f => { if (f) f.def = false; }); list[i].def = on; FORM.set(list); sfx('cursor'); render(); });
+  document.querySelectorAll('[data-fdel]').forEach(b => b.onclick = (e) => { e.stopPropagation(); const i=+b.dataset.fdel;
+    if (FDEL_ARM !== i){ FDEL_ARM = i; b.classList.add('armed'); b.textContent = 'Delete?'; sfx('cursor'); setTimeout(()=>{ if (FDEL_ARM===i){ FDEL_ARM=null; b.classList.remove('armed'); b.textContent='✕'; } }, 3000); return; }
+    FDEL_ARM = null; const list=FORM.get(); const wasDef = list[i] && list[i].def; list[i] = null;
+    if (wasDef){ const j=list.findIndex(f=>f); if (j>=0) list[j].def = true; } FORM.set(list); if (UI.formSlot===i) UI.formSlot=null; sfx('cancel'); render(); });
+  document.querySelectorAll('[data-fname]').forEach(sp => sp.onclick = (e) => { e.stopPropagation(); const i=+sp.dataset.fname;
+    const inp=document.createElement('input'); inp.className='fname-in'; inp.maxLength=18; inp.value=FORM.get()[i].name; sp.replaceWith(inp); inp.focus(); inp.select();
+    let done=false; const commit=(save)=>{ if (done) return; done=true; if (save){ const list=FORM.get(); const v=inp.value.trim(); if (v && list[i]){ list[i].name=v; FORM.set(list); sfx('cursor'); } } render(); };
+    inp.onkeydown=(ev)=>{ ev.stopPropagation(); if (ev.key==='Enter') commit(true); else if (ev.key==='Escape') commit(false); }; inp.onblur=()=>commit(true); inp.onclick=(ev)=>ev.stopPropagation(); });
+  const s=$('#fSave'); if (s) s.onclick=()=>{ if (UI.formSlot!=null) { formSave(UI.formSlot); render(); } };
+  const n=$('#fSaveNew'); if (n) n.onclick=()=>{ const i=FORM.get().findIndex(f=>!f); if (i>=0){ formSave(i); render(); } };
+  document.querySelectorAll('[data-opener]').forEach(b => b.onclick = (e) => { e.stopPropagation(); const id=b.dataset.opener; UI.openerCid = UI.openerCid===id ? null : id; sfx('cursor'); render(); });
+}
+// keys 1–5 load a formation while team select is open
+if (typeof document!=='undefined' && document.addEventListener) document.addEventListener('keydown', (e) => {
+  if (S || e.ctrlKey || e.metaKey || e.altKey || /input|textarea/i.test((e.target && e.target.tagName) || '')) return;
+  const k = +e.key; if (k>=1 && k<=FORM_SLOTS && FORM.get()[k-1]){ formLoad(k-1); render(); }
+});
+// the opening pick starts on the preferred opener (the player still plays it)
+function preselectOpener(){
+  if (!S || S.phase!=='opening' || !UI.openerCid) return;
+  const i = S.p[0].roster.findIndex(m => m.cid===UI.openerCid); if (i>=0 && UI.replace==null) UI.replace = i;
+}
+
 function setupHTML(){
   const sel=UI.pick||[];
   return `<div class="setup">
     <div class="win"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><h2>Choose your team of three</h2><div class="teambar"><span class="label">${sel.length} / ${CFG.TEAM} picked</span><span class="budget" title="Team cost">${Array.from({length:CFG.BUDGET},(_,i)=>`<i class="${i<teamCost(sel)?'on':''}"></i>`).join('')}</span><span class="label">${teamCost(sel)} / ${CFG.BUDGET} ★</span></div></div>
       <div class="hint" style="margin-top:4px">Team budget is ${CFG.BUDGET}★. Commons cost ★, elites ★★, bosses ★★★. One boss means two commons.</div>
-      <div class="pickgrid">${IDS.map(id=>`<div class="card ${sel.includes(id)?'sel':''} ${!sel.includes(id)&&(sel.length>=CFG.TEAM||teamCost([...sel,id])>CFG.BUDGET)?'dis':''}" style="--ec:var(--e-${CARDS[id].el})" tabindex="0" role="button" aria-pressed="${sel.includes(id)}" data-pick="${id}"><span class="tick">✓</span>${cardHTML(id)}</div>`).join('')}</div></div>
+      ${formsHTML()}
+      <div class="pickgrid">${IDS.map(id=>`<div class="card ${sel.includes(id)?'sel':''} ${!sel.includes(id)&&(sel.length>=CFG.TEAM||teamCost([...sel,id])>CFG.BUDGET)?'dis':''}" style="--ec:var(--e-${CARDS[id].el})" tabindex="0" role="button" aria-pressed="${sel.includes(id)}" data-pick="${id}"><span class="tick">✓</span>${sel.includes(id)?`<button type="button" class="opmark ${UI.openerCid===id?'on':''}" data-opener="${id}" title="${UI.openerCid===id?'Preferred opener (click to clear)':'Make this the preferred opener'}">◆ ${UI.openerCid===id?'Opener':'Opener?'}</button>`:''}${cardHTML(id)}</div>`).join('')}</div></div>
     <div class="side">
       <div class="win"><div class="label">Match type</div><div class="seg">
         <button type="button" class="${UI.matchType==='friendly'?'on':''}" data-mt="friendly">Friendly duel<small>No cards change hands</small></button>
@@ -1967,7 +2085,8 @@ function setupHTML(){
     </div></div>`;
 }
 function bindSetup(){
-  document.querySelectorAll('[data-pick]').forEach(el=>{ const f=()=>{ const id=el.dataset.pick; let s=[...(UI.pick||[])]; const n0=s.length; setTimeout(()=>{ const n1=(UI.pick||[]).length; sfx(n1>n0?'cursor':'cancel'); },0); if (s.includes(id)) s=s.filter(x=>x!==id); else if (s.length<CFG.TEAM && teamCost([...s,id])<=CFG.BUDGET) s.push(id); UI.pick=s; store.set('ccd3.team',s); render(); };
+  bindForms();
+  document.querySelectorAll('[data-pick]').forEach(el=>{ const f=()=>{ const id=el.dataset.pick; let s=[...(UI.pick||[])]; const n0=s.length; setTimeout(()=>{ const n1=(UI.pick||[]).length; sfx(n1>n0?'cursor':'cancel'); },0); if (s.includes(id)) s=s.filter(x=>x!==id); else if (s.length<CFG.TEAM && teamCost([...s,id])<=CFG.BUDGET) s.push(id); UI.pick=s; if (UI.openerCid && !s.includes(UI.openerCid)) UI.openerCid=null; store.set('ccd3.team',s); render(); };
     el.onclick=f; el.onkeydown=e=>{ if (e.key==='Enter'||e.key===' '){ e.preventDefault(); f(); } }; el.onmouseenter=()=>sfx('cursor',0.45,90); });
   document.querySelectorAll('[data-mt]').forEach(b=>b.onclick=()=>{ sfx('cursor'); UI.matchType=b.dataset.mt; render(); });
   document.querySelectorAll('[data-bo]').forEach(b=>b.onclick=()=>{ sfx('cursor'); UI.bestOf=+b.dataset.bo; store.set('ccd.bestof',UI.bestOf); render(); });
@@ -2205,7 +2324,7 @@ applyElStyle();
   ss.onchange=()=>{ if (SND.on){ sndInit(); sfx('book', 1, 0); } };       // a test sound when you let go
   show();
 })();
-if (!window.FA_NET_MODE) render();
+if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
 </script>
 <script>
 // ===================== Fabula Arcana · in-game (net) mode =====================
