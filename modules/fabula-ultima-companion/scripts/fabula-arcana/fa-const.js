@@ -11,6 +11,7 @@ export const MSG = "ONI_FABULA_ARCANA_V1";
 export const FLAG_CARD = "faCard";
 export const FLAG_DUELIST = "faDuelist";
 export const SETTING_SESSIONS = "faSessions";
+export const FLAG_BLOCK = "faBlock";        // User flag: { [challengerUserId]: time } — "Block tonight" (cleared when the party rests)
 
 export const ASSET_BASE = `modules/${MODULE_ID}/assets/fabula-arcana/`;
 export const GEAR_TEMPLATE = "ZoiV53VaLzeRsEps";   // CSB "_Item Template" (every carried item)
@@ -33,7 +34,7 @@ export function hostGM() {
 export const isHostGM = () => !!game.user?.isGM && hostGM()?.id === game.user.id;
 
 // Forge art for a card (same files the duel window shows).
-const FORGE = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/";
+export const FORGE = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/";
 const ART = {   // exact library paths (matched by content hash to the duel window art)
   skizzik: "Beastiary/Skizzik_Standard.png",
   pyrefly: "Beastiary/Pyrefly_Standard.png",

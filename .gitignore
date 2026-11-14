@@ -65,6 +65,8 @@
 
 !/tools/
 /tools/*
+!/tools/fabula-arcana-mockup/
+!/tools/fabula-arcana-mockup/**
 !/tools/check-esm.js
 !/tools/camp-landing-phase-check.js
 !/tools/random-battle-novelty-check.js

@@ -9,7 +9,7 @@
 //     deadline, prize:{cid,label,hint}|null, quote, npc:{actorId,tokenUuid}, pending, over, reward }
 //   seat: { userId|null, actorId, name, kind:'human'|'ai', ai:{diff,style}, team, ready, next, lastTeam }
 
-import { TAG, MODULE_ID, FLAG_DUELIST, SETTING_SESSIONS, Engine, Catalog, hostGM, uid } from "./fa-const.js";
+import { TAG, MODULE_ID, FLAG_DUELIST, FLAG_BLOCK, SETTING_SESSIONS, Engine, Catalog, hostGM, uid } from "./fa-const.js";
 import { send, on } from "./fa-net.js";
 import { ownedCards, grantCard, grantStarter, canPlay } from "./fa-collection.js";
 
@@ -22,6 +22,8 @@ const CFG = () => Catalog().CFG;
 export const listSessions = () => [...sessions.values()];
 const inSession = (userId) => [...sessions.values()].find((s) => !s.over && (s.seats.some((t) => t.userId === userId)));
 const notify = (userId, text, level = "info") => userId && send(userId, "notify", { text, level });
+const INVITE_MS = 20000;                 // a PvP challenge stays open this long, then closes itself on both sides
+const blockedBy = (target, fromUserId) => !game.users.get(fromUserId)?.isGM && !!target?.getFlag?.(MODULE_ID, FLAG_BLOCK)?.[fromUserId];
 
 // ------------------------------------------------------------------ views
 function viewerOf(s, userId) { const i = s.seats.findIndex((t) => t.userId === userId); return i >= 0 ? i : null; }
@@ -197,8 +199,31 @@ async function onDuel(s, userId, msg) {
       if (s.seats.every((x) => x.kind === "ai" || x.next)) await startGame(s);
       return save();
     }
+    case "rematch": return rematch(s, seat);
     case "leave": return leave(s, seat, userId);
   }
+}
+
+// Rematch from the result screen: PvP waits for both players; against the AI it starts at once.
+// Back to team select (last team preselected), a fresh series, the NPC prize re-checked (you may own it now).
+async function rematch(s, seat) {
+  if (!s.over || !s.series.over) return;
+  const t = s.seats[seat], o = s.seats[1 - seat];
+  if (t.left || !t.userId) return;
+  t.rematch = true;
+  if (o.kind === "human" && (!o.userId || o.left)) return toDuel(s, t.userId, { t: "rematch", me: true, opp: false, oppLeft: true });
+  if (!s.seats.every((x) => x.kind === "ai" || x.rematch)) {
+    toDuel(s, t.userId, { t: "rematch", me: true, opp: false });
+    if (o.userId) toDuel(s, o.userId, { t: "rematch", me: false, opp: true });
+    return;
+  }
+  clearTimers(s);
+  s.over = false; s.match = null; s.gameKey = null; s.deadline = null; s.reward = null;
+  s.series = E().Series.create(s.bestOf);
+  for (const x of s.seats) { x.rematch = false; x.next = false; if (x.kind === "human") { x.ready = false; x.team = null; } }
+  if (s.kind === "npc" && s.prize) { const a = game.actors.get(s.seats[0].actorId); if (a && ownedCards(a).includes(s.prize.cid)) s.prize = null; }
+  for (const x of s.seats) if (x.userId) sendInit(s, x.userId);
+  pushStatus(); save();
 }
 
 async function leave(s, seat, userId) {
@@ -210,6 +235,7 @@ async function leave(s, seat, userId) {
     const other = s.seats[1 - seat];
     if (other.userId) { notify(other.userId, `${t.name} left the duel.`); toDuel(s, other.userId, { t: "state", ...payload(s, 1 - seat) }); }
   }
+  else { const other = s.seats[1 - seat]; if (other.userId && other.kind === "human") toDuel(s, other.userId, { t: "rematch", me: !!other.rematch, opp: false, oppLeft: true }); }
   send(userId, "close", {}, s.sid);
   t.userId = null; t.left = true;
   if (!s.seats.some((x) => x.userId)) closeSession(s);
@@ -273,6 +299,7 @@ async function createPvp(userId, { fromActorId, toActorId, bestOf }) {
   if (!target) return notify(userId, `${to.name}'s player isn't online.`, "warn");
   if (target.id === userId) return;
   if (inSession(userId) || inSession(target.id)) return notify(userId, "One of you is already in a card duel.", "warn");
+  if (blockedBy(target, userId)) return notify(userId, `${to.name} isn't taking challenges tonight.`);
   const bo = [1, 3, 5].includes(Number(bestOf)) ? Number(bestOf) : 1;
   const s = {
     sid: uid(), kind: "pvp", hostId: game.user.id, createdAt: Date.now(), bestOf: bo, series: E().Series.create(bo),
@@ -283,15 +310,21 @@ async function createPvp(userId, { fromActorId, toActorId, bestOf }) {
     spectators: [], match: null, gameKey: null, deadline: null, quote: "", prize: null, npc: null, pending: true, over: false, reward: null,
   };
   sessions.set(s.sid, s);
-  send(target.id, "invite", { fromName: from.name, fromUser: game.users.get(userId)?.name ?? "", toName: to.name, bestOf: bo }, s.sid);
+  send(target.id, "invite", { fromName: from.name, fromUser: userId, toName: to.name, bestOf: bo, img: from.img || "", expiresAt: Date.now() + INVITE_MS }, s.sid);
   notify(userId, `Challenge sent to ${to.name}.`);
-  rt(s.sid).inviteTimer = setTimeout(() => { if (sessions.get(s.sid)?.pending) { notify(userId, `${to.name} didn't answer the challenge.`); sessions.delete(s.sid); } }, 60000);
+  rt(s.sid).inviteTimer = setTimeout(() => {
+    if (!sessions.get(s.sid)?.pending) return;
+    sessions.delete(s.sid);
+    send(target.id, "invite-close", { reason: "timeout" }, s.sid);
+    notify(userId, `${to.name} didn't answer the challenge.`); send(userId, "invite-result", { ok: false }, s.sid);
+  }, INVITE_MS + 400);
 }
 
 async function acceptPvp(s, userId) {
   if (!s?.pending || s.seats[1].userId !== userId) return;
   clearTimeout(rt(s.sid).inviteTimer);
   s.pending = false;
+  send(s.seats[0].userId, "invite-result", { ok: true }, s.sid);
   for (const t of s.seats) {
     const a = game.actors.get(t.actorId);
     if (a && !canPlay(ownedCards(a))) { const g = await grantStarter(a); if (g.length) notify(t.userId, `${a.name} received a starter set of ${g.length} Fabula Arcana cards.`); }
@@ -307,7 +340,10 @@ export function installHost() {
   on("accept", (d, env) => acceptPvp(sessions.get(env.sid), env.from));
   on("decline", (d, env) => {
     const s = sessions.get(env.sid); if (!s?.pending) return;
-    notify(s.seats[0].userId, `${s.seats[1].name} declined the card duel.`); clearTimeout(rt(s.sid).inviteTimer); sessions.delete(s.sid);
+    if (s.seats[1].userId !== env.from) return;
+    notify(s.seats[0].userId, d.block ? `${s.seats[1].name} isn't taking challenges tonight.` : `${s.seats[1].name} declined the card duel.`);
+    send(s.seats[0].userId, "invite-result", { ok: false }, s.sid);
+    clearTimeout(rt(s.sid).inviteTimer); sessions.delete(s.sid);
   });
   on("duel-in", (d, env) => { const s = sessions.get(env.sid); if (!s) return send(env.from, "close", { reason: "gone" }, env.sid); return onDuel(s, env.from, d.msg || {}); });
   on("spectate", (d, env) => {
@@ -324,6 +360,10 @@ export function installHost() {
       const v = viewerOf(s, env.from);
       if (v !== null || s.spectators.includes(env.from)) send(env.from, "open", { role: v === null ? "spectator" : "player", hostId: s.hostId }, s.sid);
     }
+  });
+  Hooks.on("fabula.restPerformed", () => {
+    if (!game.user.isGM || hostGM()?.id !== game.user.id) return;
+    for (const u of game.users) if (u.getFlag(MODULE_ID, FLAG_BLOCK)) u.unsetFlag(MODULE_ID, FLAG_BLOCK).catch((e) => console.warn(TAG, "clear blocks", e));
   });
   on("cancel-all", (d, env) => { if (!game.users.get(env.from)?.isGM) return; for (const s of [...sessions.values()]) closeSession(s); });
 }

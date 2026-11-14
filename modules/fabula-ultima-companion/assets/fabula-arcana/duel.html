@@ -479,6 +479,59 @@ body.elA{--e-phys:#555555;--e-air:#48c774;--e-bolt:#9b59b6;--e-dark:#4b0082;--e-
 .dropok{outline:3px dashed #c9a44a;outline-offset:5px;border-radius:10px}
 .dropover{outline:3px solid #f4c95d;outline-offset:5px;box-shadow:0 0 22px #f4c95d}
 .side-row.dropok,.side-row.dropover{outline-offset:-2px}
+/* ===== round timer: a full-width fuse across the middle of the board (above the board art, below every card / UI) ===== */
+.fuse{position:absolute;left:1.5%;right:1.5%;height:12px;margin-top:-6px;z-index:0;pointer-events:none;opacity:0;transition:opacity .3s}
+.fuse.on{opacity:1}
+.fuse .trk{position:absolute;inset:0;border-radius:6px;background:#0e1a2acc;box-shadow:inset 0 1px 3px #000c,0 0 0 1px #ffffff22}
+.fuse .fill{position:absolute;inset:2px;border-radius:4px;transform-origin:50% 50%;transform:scaleX(1);transition:transform .25s linear,background .4s,box-shadow .4s;
+  background:linear-gradient(90deg,#1fb6ff,#7ff3ff 50%,#1fb6ff);box-shadow:0 0 10px #3fd4ff,0 0 22px #3fd4ff88}
+.fuse .fill::before,.fuse .fill::after{content:"";position:absolute;top:50%;width:14px;height:14px;margin-top:-7px;border-radius:50%;background:radial-gradient(circle,#fff 0 30%,#bff6ff 45%,transparent 70%);filter:blur(.3px)}
+.fuse .fill::before{left:-7px} .fuse .fill::after{right:-7px}
+.fuse.warn .fill{background:linear-gradient(90deg,#ff8a1f,#ffd36b 50%,#ff8a1f);box-shadow:0 0 12px #ff9a2f,0 0 26px #ff8a1f99}
+.fuse.crit{height:18px;margin-top:-9px}
+.fuse.crit .fill{background:linear-gradient(90deg,#ff2d2d,#ff9a7a 50%,#ff2d2d);animation:fusePulse .5s ease-in-out infinite}
+.fuse.crit .trk{box-shadow:inset 0 1px 3px #000c,0 0 0 2px #ff3b3b88,0 0 18px #ff2d2d66}
+.fuse.shake{animation:fuseShake .18s linear infinite}
+@keyframes fusePulse{0%,100%{box-shadow:0 0 12px #ff3b3b,0 0 26px #ff2d2daa;filter:brightness(1)}50%{box-shadow:0 0 22px #ff5b5b,0 0 46px #ff2d2dee;filter:brightness(1.35)}}
+@keyframes fuseShake{0%{transform:translate(0,0)}25%{transform:translate(-1.5px,1px)}50%{transform:translate(1.5px,-1px)}75%{transform:translate(-1px,-1px)}100%{transform:translate(0,0)}}
+.table.urgent{box-shadow:0 14px 34px #000c,0 0 0 3px #ff3b3b55,0 0 30px #ff2d2d55}
+/* ===== announcement banner (FA_BANNER): a horizontal strip, text slides in ===== */
+.annc{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);z-index:30;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 0;
+  background:linear-gradient(90deg,transparent 0%,#1a0f05e6 14%,#1a0f05f2 50%,#1a0f05e6 86%,transparent 100%);border-top:2px solid #c9a44a;border-bottom:2px solid #c9a44a;
+  animation:anncIn .32s cubic-bezier(.2,.9,.3,1) both}
+.annc.out{animation:anncOut .35s ease-in forwards}
+.annc .at{font-family:var(--font-d);font-weight:800;font-size:clamp(22px,4vw,38px);letter-spacing:.04em;color:#fbe6b0;text-shadow:0 2px 0 #4a2a08,0 0 14px #f4c95d66;white-space:nowrap;animation:anncTxt .5s .08s cubic-bezier(.15,.9,.25,1.05) both}
+.annc .as{font-family:var(--font-b);font-weight:700;font-size:clamp(12px,1.6vw,15px);letter-spacing:.16em;text-transform:uppercase;color:#e8cf98;margin-top:4px;animation:anncTxt .5s .2s cubic-bezier(.15,.9,.25,1.05) both}
+.annc::before{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 35%,#fff3 50%,transparent 65%);background-size:250% 100%;animation:anncShine .9s .15s ease-out both}
+.annc.t-bad{border-color:#d9412f} .annc.t-bad .at{color:#ffd2c4;text-shadow:0 2px 0 #4a0f08,0 0 14px #ff5b4b88}
+.annc.t-good{border-color:#7fd08a} .annc.t-good .at{color:#e6ffd8;text-shadow:0 2px 0 #12360f,0 0 14px #7fe29a88}
+.annc.t-warn{border-color:#ff8a1f} .annc.t-warn .at{color:#ffe2b8;text-shadow:0 2px 0 #4a2008,0 0 14px #ff9a2f88}
+@keyframes anncIn{0%{clip-path:inset(48% 0 48% 0);opacity:.2}100%{clip-path:inset(0 0 0 0);opacity:1}}
+@keyframes anncOut{0%{clip-path:inset(0 0 0 0);opacity:1}100%{clip-path:inset(50% 0 50% 0);opacity:0}}
+@keyframes anncTxt{0%{transform:translateX(-46vw) skewX(-18deg);opacity:0}70%{transform:translateX(1.5vw) skewX(4deg);opacity:1}100%{transform:translateX(0) skewX(0);opacity:1}}
+@keyframes anncShine{0%{background-position:120% 0}100%{background-position:-60% 0}}
+@media (prefers-reduced-motion: reduce){ .annc,.annc *,.annc::before{animation-duration:.01s !important;animation-delay:0s !important} .fuse.shake{animation:none} }
+/* ===== result screen buttons (Rematch / Next game / Leave on the VICTORY / DEFEAT screen itself) ===== */
+.ovl.keep{cursor:default}
+.ovl .obtns{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:14px;opacity:0;animation:subIn .4s 1.1s ease-out forwards}
+.ovl .obtns .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.ovl .obtns .btn{min-width:150px;font-size:16px;padding:9px 18px}
+.ovl .obtns .onote{font-family:var(--font-b);font-weight:700;font-size:14px;letter-spacing:.06em;color:#f4e3b8;min-height:18px;text-shadow:0 1px 2px #000}
+.ovl .obtns .onote.hot{color:#ffd36b;animation:tagBlink .6s ease-in-out infinite alternate}
+.ovl .obtns .btn.glow{box-shadow:0 0 0 2px #ffd36b,0 0 18px #ffd36b;animation:surrpulse .9s ease-in-out infinite}
+.ovl .obtns .vb{background:none;border:0;color:#e8d9b8;opacity:.75;font-family:var(--font-b);font-size:12.5px;text-decoration:underline;cursor:pointer;padding:2px 6px}
+.ovl .obtns .vb:hover{opacity:1}
+/* ===== lobby: both players' ready status ===== */
+.rdy{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.rdy .who{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 10px;border-radius:8px;background:#7a4e2014;border:1px solid #c9a44a66}
+.rdy .who b{font-size:15px}
+.rdy .chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-b);font-weight:800;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:999px}
+.rdy .chip.wait{background:#efe2c4;color:#7a5a3a;border:1px solid #c9a44a}
+.rdy .chip.wait i{width:8px;height:8px;border-radius:50%;background:#c08a1a;animation:rdyDot 1s ease-in-out infinite}
+.rdy .chip.ok{background:linear-gradient(180deg,#5cc46e,#2f8f45);color:#fff;border:1px solid #1f6a30;box-shadow:0 0 10px #5cc46e88}
+.rdy .chip.rpop{animation:rdyPop .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes rdyDot{50%{opacity:.25;transform:scale(.7)}}
+@keyframes rdyPop{0%{transform:scale(.6)}100%{transform:scale(1)}}
 .flycard{position:fixed;z-index:9998;pointer-events:none;border-radius:7px;transform-origin:0 0;border:2px solid var(--rim);
   background:radial-gradient(circle at 50% 50%,#c9a44a 0 9%,transparent 10%),repeating-linear-gradient(45deg,#8a3420 0 6px,#6a2414 6px 12px);box-shadow:0 14px 22px #0009}
 .slot.mine .flat,.slot.theirs .flat{touch-action:none}
@@ -952,8 +1005,7 @@ function beginDecision(){
 }
 function tickTimer(){
   if (!S || !S.deadline) return clearInterval(TICK);
-  const left=Math.max(0, S.deadline-Date.now()); const el=$('#timer');
-  if (el){ el.textContent=`0:${String(Math.ceil(left/1000)).padStart(2,'0')}`; el.classList.toggle('low', left<10000); const bar=$('#timerbar'); if (bar) bar.style.width=(100*left/(CFG.TIMER*1000))+'%'; }
+  const left=Math.max(0, S.deadline-Date.now()); drawFuse();
   if (left<=0){ clearInterval(TICK); S.deadline=null;
     for (const s of [0,1]) if (!S.commit[s]){ S.timeouts++;
       const pl=S.p[s]; const c = (S.phase==='opening'||S.phase==='replace') ? { replace:autoPickMonster(pl) } : { action:'PASS', replace: pl.pending?autoPickMonster(pl):undefined };
@@ -987,7 +1039,7 @@ async function commit(s, c, fromRect){
 async function revealOpening(){
   UI.busy=true; const [a,b]=S.commit;
   S.reveal={ a:[N(S.p[0].roster[a.replace].cid),'opening',ART[S.p[0].roster[a.replace].cid]], b:[N(S.p[1].roster[b.replace].cid),'opening',ART[S.p[1].roster[b.replace].cid]], open:false };
-  S.phase='anim'; render(); await sleep(450); S.reveal.open=true; sfx('book'); renderLane(); await sleep(700);
+  S.phase='anim'; render(); await sleep(450); S.reveal.open=true; renderLane(); await sleep(700);
   S.p[0].active=a.replace; S.p[1].active=b.replace;
   updateField(); await sleep(900);
   addLog('OPENING',[[`You open with ${N(S.p[0].roster[S.p[0].active].cid)}. ${seatName(1)} opens with ${N(S.p[1].roster[S.p[1].active].cid)}.`,'']]);
@@ -997,7 +1049,7 @@ async function revealReplacement(){
   UI.busy=true; const C=S.commit, P=S.p;
   const face = s => C[s].skip ? ['—','no change',null] : [N(P[s].roster[C[s].replace].cid), 'replacement', ART[P[s].roster[C[s].replace].cid]];
   S.reveal={ a:face(0), b:face(1), open:false };
-  S.phase='anim'; render(); await sleep(400); S.reveal.open=true; sfx('book'); renderLane(); await sleep(650);
+  S.phase='anim'; render(); await sleep(400); S.reveal.open=true; renderLane(); await sleep(650);
   const L=[];
   for (const s of [0,1]) if (!C[s].skip){ P[s].active=C[s].replace; P[s].pending=false; S.stats.forced[s]++; L.push([`${seatName(s)} send${s?'s':''} in ${N(P[s].roster[P[s].active].cid)}.`,'m']); }
   updateField(); await sleep(850);
@@ -1010,7 +1062,7 @@ async function revealRound(){
   const artOf=(s,c)=> c.action==='SWITCH' ? ART[S.p[s].roster[c.target].cid] : ITEMS[c.action] ? ART[ITEMS[c.action].art] : null;
   S.reveal={ a:[ACT_T[mine.action], sub(0,mine), artOf(0,mine)], b:[ACT_T[npc.action], sub(1,npc), artOf(1,npc)], open:false };
   S.phase='anim'; render();
-  await sleep(450); S.reveal.open=true; sfx('book'); renderLane(); await sleep(800);
+  await sleep(450); S.reveal.open=true; renderLane(); await sleep(800);
   const before=S.p.map(pl=>pl.roster.map(m=>m.hp));
   const r=resolveRound([mine,npc]);
   await playRound(r.ev, before);
@@ -1064,7 +1116,7 @@ function fieldHTML(){
       <div class="side-head"><h2>${esc(seatName(s))}</h2><div class="itemrow" id="items${s}"></div><div class="alive" id="alive${s}"></div></div>
       ${S.p[s].roster.map(m=>slotHTML(s,m)).join('')}
     </div>`;
-  return `<div class="table" id="table"><div class="hand theirs" id="hand1"></div>${row(1)}
+  return `<div class="table" id="table"><div class="fuse" id="fuse"><div class="trk"></div><div class="fill" id="fusefill"></div></div><div class="hand theirs" id="hand1"></div>${row(1)}
     <div class="lane" id="lane"></div><div class="status" id="status"></div>
     ${row(0)}<div class="hand mine" id="hand0"></div><div class="fxl" id="fxl"></div></div>`;
 }
@@ -1116,12 +1168,14 @@ function renderLane(){
     return `<div class="rslot"><span class="label">${seatName(s)}</span>
       <div class="flip ${state} ${drop?'drop'+s:''}" id="act${s}" data-drop="act" data-s="${s}"><div class="in"><div class="face back">${state==='empty'?'':'<span class="cb"></span>'}</div><div class="face front">${rv?(x[2]?`<img src="${x[2]}" alt="">`:`<span class="fi">⟳</span>`):''}${rv?esc(x[0]):''}<small>${rv?esc(x[1]||''):''}</small></div></div></div>
       <span class="ftag">${tag}</span></div>`; };
-  lane.innerHTML=`${face(0,rv?rv.a:['',''])}<div class="mid"><div class="vs">VS</div><div class="label">${S.round?`Round ${S.round}/${CFG.ROUND_CAP}`:'Opening'}</div>
-    ${timed()&&S.deadline?`<div class="timer"><span id="timer">0:${CFG.TIMER}</span><div class="tbar"><i id="timerbar"></i></div></div>`:''}</div>${face(1,rv?rv.b:['',''])}`;
+  lane.innerHTML=`${face(0,rv?rv.a:['',''])}<div class="mid"><div class="vs">VS</div><div class="label">${S.round?`Round ${S.round}/${CFG.ROUND_CAP}`:'Opening'}</div></div>${face(1,rv?rv.b:['',''])}`;
   S.justPlaced=null;
+  // reveal: each card turns over a beat apart, with its own page-flip sound (Book1) as it turns
   if (rv && rv.open && !rv.flipped){ rv.flipped=true; const raf = typeof requestAnimationFrame==='function' ? requestAnimationFrame : (f=>setTimeout(f,16));
-    raf(()=>raf(()=>{ for (const s of [0,1]) setTimeout(()=>{ const el=$('#act'+s); if (!el || !el.classList) return; if (RM()) { el.classList.add('open'); return; }
-      el.classList.add('flipping'); setTimeout(()=>{ el.classList.remove('flipping'); el.classList.add('open'); }, 640); }, s*110); })); }
+    raf(()=>raf(()=>{ for (const s of [0,1]) setTimeout(()=>{ const el=$('#act'+s); if (!el || !el.classList) return; sfx('book', 0.95, 0); if (RM()) { el.classList.add('open'); return; }
+      el.classList.add('flipping'); setTimeout(()=>{ el.classList.remove('flipping'); el.classList.add('open'); }, 640); }, s*180); })); }
+  placeFuse(); drawFuse();
+  maybeAnnounce();
   let st='';
   const me=S.p[UI.seat];
   if (S.phase==='opening') st = S.commit[UI.seat] ? `Waiting for ${seatName(1-UI.seat)}…` : 'Choose your opening monster. Both reveal together.';
@@ -1131,6 +1185,52 @@ function renderLane(){
   else if (S.phase==='ended') st='Match over.';
   $('#status').textContent=st;
   if (S.deadline) tickTimer();
+}
+
+// ===================== round timer fuse =====================
+// A full-width bar across the board's middle (behind the lane cards). It shrinks toward the centre; calm blue,
+// orange under 10 s, red + pulsing under 5 s, shaking in the last 3 s. No number: the bar tells the story.
+function placeFuse(){ const f=$('#fuse'), lane=$('#lane'), t=$('#table'); if (!f || !lane || !t || !f.style) return;
+  f.style.top = (lane.offsetTop + lane.offsetHeight/2) + 'px'; }
+function drawFuse(){
+  const f=$('#fuse'), fill=$('#fusefill'), t=$('#table'); if (!f || !fill || !f.classList) return;
+  const on = !!(S && S.deadline && timed() && S.phase!=='anim' && S.phase!=='ended');
+  f.classList.toggle('on', on);
+  if (!on){ f.classList.remove('warn','crit','shake'); if (t && t.classList) t.classList.remove('urgent'); return; }
+  const left=Math.max(0, S.deadline-Date.now()), frac=Math.min(1, left/(CFG.TIMER*1000));
+  fill.style.transform = `scaleX(${frac.toFixed(4)})`;
+  f.classList.toggle('warn', left<10000 && left>=5000); f.classList.toggle('crit', left<5000); f.classList.toggle('shake', left<3000 && left>0);
+  if (t && t.classList) t.classList.toggle('urgent', left<5000);
+  if (left<10000 && left>0 && LOW_KEY!==S.t0){ LOW_KEY=S.t0; announce("Time's almost up!", { tone:'warn', ms:1300 }); }   // once per game
+}
+
+// ===================== announcement banner (also the API for other game status: FA_BANNER(text, opts)) =====================
+// opts: { sub, tone:'info'|'good'|'bad'|'warn', ms, sound:false }
+let ANNC_T=null, ANNC_KEY=null, LOW_KEY=null;
+function announce(text, opts={}){
+  if (typeof document==='undefined' || !document.body || !document.body.appendChild) return;
+  const host=$('#table') || document.body;
+  document.querySelectorAll('.annc').forEach(e=>e.remove()); clearTimeout(ANNC_T);
+  const b=document.createElement('div'); b.className='annc t-'+(opts.tone||'info');
+  if (host===document.body){ b.style.position='fixed'; }
+  b.innerHTML=`<div class="at">${esc(text)}</div>${opts.sub?`<div class="as">${esc(opts.sub)}</div>`:''}`;
+  host.appendChild(b);
+  if (opts.sound!==false) sfx('whoosh', 0.85, 0);
+  ANNC_T=setTimeout(()=>{ b.classList.add('out'); setTimeout(()=>b.remove(), 380); }, RM()?900:(opts.ms||1700));
+}
+window.FA_BANNER = announce;
+// KO → replacement step: say who fell and what happens next (once per replacement step)
+function maybeAnnounce(){
+  if (!S || S.phase!=='replace') return;
+  const key=`${S.t0}:${S.round}`; if (ANNC_KEY===key) return; ANNC_KEY=key;
+  const me=UI.seat<0?0:UI.seat, op=1-me, down=[0,1].filter(s=>S.p[s].pending);
+  if (!down.length) return;
+  const fell = s => { const pl=S.p[s], m=pl.roster[pl.active]; return m ? N(m.cid) : 'A monster'; };
+  const spec = !!(window.FA_NETSTATE && window.FA_NETSTATE.role==='spectator');
+  if (down.length===2) return announce('Both front monsters are down!', { tone:'bad', sub: spec ? 'Both sides choose a replacement' : 'Choose your replacement' });
+  const s=down[0];
+  if (s===me && !spec) announce(`${fell(s)} is down!`, { tone:'bad', sub:'Drag a monster up to replace it' });
+  else announce(`${seatName(s)}'s ${fell(s)} is down!`, { tone:'good', sub:`${seatName(s)} is choosing a replacement` });
 }
 
 // ===================== VFX =====================
@@ -1280,7 +1380,23 @@ function showOverlay(cls, inner, ms, onDone){ if (typeof document==='undefined' 
   document.querySelectorAll('.ovl').forEach(o=>o.remove());
   const o=document.createElement('div'); o.className='ovl '+cls; o.innerHTML=inner; document.body.appendChild(o);
   let gone=false; const close=()=>{ if (gone) return; gone=true; o.classList.add('out'); setTimeout(()=>{ o.remove(); if (onDone) onDone(); }, 450); };
-  o.addEventListener('click', close); setTimeout(close, RM()?900:ms); }
+  if (!ms){ o.classList.add('keep'); o._close=close; return o; }     // ms 0: stays up until one of its own buttons closes it
+  o.addEventListener('click', close); setTimeout(close, RM()?900:ms); return o; }
+// Buttons on the VICTORY / DEFEAT / DRAW screen itself (net mode replaces endButtons with its own)
+function endButtons(){
+  const sr=S&&S.series, more=sr&&sr.bestOf>1&&!sr.over;
+  return { note:'', btns:[ more ? { id:'ob-next', label:`Next game (Game ${sr.game+1})`, go:true, act:()=>{ closeEndOverlay(); newMatch(); } }
+                             : { id:'ob-again', label: sr&&sr.bestOf>1 ? 'New series' : 'Rematch', go:true, act:()=>{ closeEndOverlay(); newMatch(); } },
+                         { id:'ob-team', label:'Change team', act:()=>{ closeEndOverlay(); S=null; SERIES=null; render(); } }] };
+}
+function fillEndButtons(){
+  const box=document.querySelector('.ovl .obtns'); if (!box || !S || S.phase!=='ended') return;
+  const { note, hot, btns } = endButtons();
+  box.innerHTML=`<div class="onote ${hot?'hot':''}">${note?esc(note):''}</div><div class="row">${btns.map(b=>`<button class="btn ${b.go?'go':''} ${b.glow?'glow':''}" type="button" id="${b.id}" ${b.disabled?'disabled':''}>${esc(b.label)}</button>`).join('')}</div><button class="vb" type="button" id="ob-view">View the board</button>`;
+  for (const b of btns){ const el=document.getElementById(b.id); if (el && b.act) { el.onclick=()=>{ sfx(b.cancel?'cancel':'cursor'); b.act(); }; el.onmouseenter=()=>sfx('cursor',0.35,90); } }
+  const v=document.getElementById('ob-view'); if (v) v.onclick=()=>{ sfx('cancel',0.6); closeEndOverlay(); };
+}
+function closeEndOverlay(){ document.querySelectorAll('.ovl.keep').forEach(o=>o._close ? o._close() : o.remove()); }
 function gameBanner(){ const sr=SERIES; if (!sr) return; const mp=sr.wins.map(w=>w===sr.need-1);
   const tag = mp[0]&&mp[1] ? 'FINAL GAME' : (mp[0]||mp[1]) ? 'MATCH POINT' : `BEST OF ${sr.bestOf}`;
   sfx('summon',0.8);
@@ -1295,7 +1411,8 @@ function finishBanner(){ if (!S) return; const r=S.result, sr=S.series, series=s
   if (r==='LOSS') fx='<div class="crack"></div>';
   sfx(r==='WIN'?'win':r==='LOSS'?'lose':'decide', 1);
   musicDuck(true); setTimeout(()=>musicDuck(false), (r==='LOSS'?3200:3000)+300);
-  showOverlay(cls, `${fx}<div class="bigt">${big}</div>${sub?`<div class="subt">${esc(sub)}</div>`:''}${series?pipsHTML(sr, r==='WIN'?0:r==='LOSS'?1:-1):''}`, r==='LOSS'?3200:3000); }
+  showOverlay(cls, `${fx}<div class="bigt">${big}</div>${sub?`<div class="subt">${esc(sub)}</div>`:''}${series?pipsHTML(sr, r==='WIN'?0:r==='LOSS'?1:-1):''}<div class="obtns"></div>`, 0);
+  fillEndButtons(); }
 function syncSurrender(){ const b=$('#btnSurrender'); if (!b || !b.classList) return; const live = !!S && S.phase!=='ended';
   b.hidden=!live; b.disabled = !live || S.phase==='anim';
   if (!live && b.classList.contains('armed')){ b.classList.remove('armed'); b.textContent='🏳 Surrender'; } }
@@ -1610,8 +1727,11 @@ if (!window.FA_NET_MODE) render();
   const LEGAL_FROM = ids => { const out = []; for (let a=0;a<ids.length;a++) for (let b=a+1;b<ids.length;b++) for (let c=b+1;c<ids.length;c++){ const t=[ids[a],ids[b],ids[c]]; if (teamCost(t) <= CFG.BUDGET) out.push(t); } return out; };
   function lobbySide(owned){
     const L = NET.lobby || {}, sel = UI.pick || [], legal = sel.length === CFG.TEAM && teamCost(sel) <= CFG.BUDGET, bo = L.bestOf || 1;
-    const opp = L.oppTeam && L.oppTeam.length ? `<div class="hint" style="margin-top:6px">Their team: <b>${L.oppTeam.map(id => esc(N(id))).join(' · ')}</b></div>`
-      : `<div class="hint" style="margin-top:6px">${L.oppReady ? `${esc(NET.oppName)} is ready.` : `${esc(NET.oppName)} is choosing a team.`}</div>`;
+    // both players' status, always visible: "Choosing…" (pulsing dot) or "✓ Ready"
+    const chip = (ok, pop) => ok ? `<span class="chip ok ${pop ? 'rpop' : ''}">✓ Ready</span>` : `<span class="chip wait"><i></i>Choosing…</span>`;
+    const opp = `<div class="rdy"><div class="who"><b>${esc(NET.myName)}</b>${chip(NET.ready, false)}</div><div class="who"><b>${esc(NET.oppName)}</b>${chip(!!L.oppReady, NET.oppPop)}</div></div>`
+      + (L.oppTeam && L.oppTeam.length ? `<div class="hint" style="margin-top:6px">Their team: <b>${L.oppTeam.map(id => esc(N(id))).join(' · ')}</b></div>` : '');
+    NET.oppPop = false;
     const enough = LEGAL_FROM(owned).length > 0;
     return `<div class="win"><div class="label">Fabula Arcana</div><h2 style="margin:4px 0">${esc(NET.myName)} vs ${esc(NET.oppName)}</h2>
         ${L.quote ? `<div class="hint">“${esc(L.quote)}”</div>` : ''}${opp}
@@ -1641,8 +1761,7 @@ if (!window.FA_NET_MODE) render();
   }
   function tick(){
     if (!S || !S.deadline) return clearInterval(TICK);
-    const left = Math.max(0, S.deadline - Date.now()); const el = $('#timer');
-    if (el){ el.textContent = `0:${String(Math.ceil(left/1000)).padStart(2,'0')}`; el.classList.toggle('low', left < 10000); const bar = $('#timerbar'); if (bar) bar.style.width = (100*left/(CFG.TIMER*1000)) + '%'; }
+    const left = Math.max(0, S.deadline - Date.now()); drawFuse();
     if (left <= 0) clearInterval(TICK);
   }
   function start(m){
@@ -1689,7 +1808,7 @@ if (!window.FA_NET_MODE) render();
       const face = s => !C[s] ? ['—', 'no change', null] : [N(P[s].roster[C[s].replace].cid), res.kind === 'opening' ? 'opening' : 'replacement', ART[P[s].roster[C[s].replace].cid]];
       S.commit = [C[0] || { skip:true }, C[1] || { skip:true }];
       S.reveal = { a:face(0), b:face(1), open:false }; S.phase = 'anim'; render();
-      await sleep(420); S.reveal.open = true; sfx('book'); renderLane(); await sleep(680);
+      await sleep(420); S.reveal.open = true; renderLane(); await sleep(680);
       const rv = S.reveal; S = fromView(m.view, m); S.reveal = rv; const ph = S.phase; S.phase = 'anim';
       updateField(); await sleep(res.kind === 'opening' ? 900 : 850);
       S.reveal = null; S.phase = ph; return after(m);
@@ -1699,7 +1818,7 @@ if (!window.FA_NET_MODE) render();
     S.commit = [C[0], C[1]];
     S.reveal = { a:[ACT_T[C[0].action], sub(0, C[0]), artOf(0, C[0])], b:[ACT_T[C[1].action], sub(1, C[1]), artOf(1, C[1])], open:false };
     S.phase = 'anim'; render();
-    await sleep(450); S.reveal.open = true; sfx('book'); renderLane(); await sleep(800);
+    await sleep(450); S.reveal.open = true; renderLane(); await sleep(800);
     const before = S.p.map(pl => pl.roster.map(q => q.hp));
     const rv = S.reveal; S = fromView(m.view, m); const ph = S.phase; S.reveal = rv; S.phase = 'anim'; S.commit = [C[0], C[1]];
     await playRound(res.ev, before);
@@ -1736,7 +1855,23 @@ if (!window.FA_NET_MODE) render();
     if (!S || !spectator() || S.result === 'DRAW') return _fb();
     const w = S.result === 'WIN' ? 0 : 1, sr = S.series, series = sr && sr.bestOf > 1;
     musicDuck(true); setTimeout(() => musicDuck(false), 3300);
-    showOverlay('v-win', `<div class="bigt">${esc(seatName(w))} WINS</div>${series ? `<div class="subt">Series ${sr.wins[0]} – ${sr.wins[1]}</div>` + pipsHTML(sr, w) : ''}`, 3000);
+    showOverlay('v-win', `<div class="bigt">${esc(seatName(w))} WINS</div>${series ? `<div class="subt">Series ${sr.wins[0]} – ${sr.wins[1]}</div>` + pipsHTML(sr, w) : ''}<div class="obtns"></div>`, 0);
+    fillEndButtons();
+  };
+  // VICTORY / DEFEAT screen buttons: Next game · Rematch (PvP: both must press it) · Leave
+  NET.rematch = { me:false, opp:false, oppLeft:false };
+  endButtons = function(){
+    const sr = S.series, more = sr && sr.bestOf > 1 && !sr.over, R = NET.rematch;
+    const leave = { id:'ob-leave', label: spectator() ? 'Close' : 'Leave', cancel:true, act:() => send({ t:'leave' }) };
+    if (spectator()) return { note:'', btns:[leave] };
+    if (more) return { note:'', btns:[
+      NET.nextSent ? { id:'ob-next', label:`Waiting for ${NET.oppName}…`, go:true, disabled:true } : { id:'ob-next', label:`Next game (Game ${sr.game + 1})`, go:true, act:() => { NET.nextSent = true; send({ t:'next' }); fillEndButtons(); renderPicker(); } }, leave] };
+    const lbl = sr && sr.bestOf > 1 ? 'New series' : 'Rematch';
+    const again = R.oppLeft ? { id:'ob-again', label:lbl, go:true, disabled:true }
+      : R.me ? { id:'ob-again', label:`Waiting for ${NET.oppName}…`, go:true, disabled:true }
+      : { id:'ob-again', label:lbl, go:true, glow:R.opp, act:() => { NET.rematch.me = true; send({ t:'rematch' }); fillEndButtons(); renderPicker(); } };
+    const note = R.oppLeft ? `${NET.oppName} left the duel.` : R.opp && !R.me ? `${NET.oppName} wants a rematch!` : '';
+    return { note, hot: R.opp && !R.me && !R.oppLeft, btns:[again, leave] };
   };
 
   // ---------- end panel ----------
@@ -1746,15 +1881,15 @@ if (!window.FA_NET_MODE) render();
     const why = S.surrendered != null ? (S.surrendered === 0 && !sp ? 'You surrendered. ' : `${esc(seatName(S.surrendered))} surrendered. `) : '';
     const score = series ? `<div class="series">Best of ${sr.bestOf} · ${esc(seatName(0))} ${sr.wins[0]} – ${sr.wins[1]} ${esc(seatName(1))}${more ? ` · next: Game ${sr.game + 1}` : ''}</div>` : '';
     const reward = !sp && NET.reward && NET.reward.cid ? `<div style="margin-top:6px">You won the <b>${esc(N(NET.reward.cid))}</b> card!</div>` : '';
-    const btns = sp ? `<button class="btn" id="btnLeave" type="button">Close</button>`
-      : more ? (NET.nextSent ? `<button class="btn go" type="button" disabled>Waiting for ${esc(NET.oppName)}…</button>` : `<button class="btn go" type="button" id="btnNextGame">Next game (Game ${sr.game + 1})</button>`) + `<button class="btn" id="btnLeave" type="button">Leave</button>`
-      : `<button class="btn go" id="btnLeave" type="button">Leave</button>`;
+    // the same buttons as the result screen, so "View the board" never strands anyone
+    const E = endButtons();
+    const btns = E.btns.map(b => `<button class="btn ${b.go ? 'go' : ''}" type="button" id="e${b.id}" ${b.disabled ? 'disabled' : ''}>${esc(b.label)}</button>`).join('');
     return `<div class="win end"><h2>${t}</h2>${score}<div>${why}${S.capEnd ? 'Round limit reached. ' : ''}${S.tiebreak ? `Both last monsters fell together; decided on HP before impact (${S.tiebreak[0]} vs ${S.tiebreak[1]}). ` : ''}</div>${reward}
+      ${E.note ? `<div style="margin-top:6px"><b>${esc(E.note)}</b></div>` : ''}
       <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px">${btns}</div></div>`;
   };
   bindEnd = function(){
-    const n = $('#btnNextGame'); if (n) n.onclick = () => { sfx('cursor'); NET.nextSent = true; send({ t:'next' }); renderPicker(); };
-    const l = $('#btnLeave'); if (l) l.onclick = () => { sfx('cancel'); send({ t:'leave' }); };
+    for (const b of endButtons().btns){ const el = document.getElementById('e' + b.id); if (el && b.act) el.onclick = () => { sfx(b.cancel ? 'cancel' : 'cursor'); b.act(); }; }
   };
 
   // ---------- sounds + music from Forge (sound effects first; theme = intro once, then a gapless loop) ----------
@@ -1784,9 +1919,22 @@ if (!window.FA_NET_MODE) render();
         if (m.vol){ SND.vol = 0.55 * (m.vol.sfx ?? 1); MUS.vol = 0.32 * (m.vol.music ?? 1); }
         if (m.music){ musicUrls = m.music; tryMusic(); }
         if (NET.lobby && NET.lobby.suggest && !(UI.pick || []).length) UI.pick = NET.lobby.suggest.slice();
+        NET.rematch = { me:false, opp:false, oppLeft:false }; NET.nextSent = false;
         if (m.view) return m.view.phase === 'ended' ? applyState(m) : start(m);
-        S = null; render(); return;
-      case 'lobby': NET.lobby = { ...(NET.lobby || {}), ...m.lobby }; if (!S) render(); return;
+        document.querySelectorAll('.ovl, .annc').forEach(o => o.remove());
+        S = null; SERIES = null; render(); return;
+      case 'lobby': {
+        const was = !!(NET.lobby && NET.lobby.oppReady);
+        NET.lobby = { ...(NET.lobby || {}), ...m.lobby };
+        if (!was && NET.lobby.oppReady){ NET.oppPop = true; sfx('decide', 0.7, 0); }
+        if (!S) render(); return;
+      }
+      case 'rematch': {
+        NET.rematch = { me: !!m.me, opp: !!m.opp, oppLeft: !!m.oppLeft };
+        if (m.opp && !m.me && !m.oppLeft) sfx('decide', 0.7, 0);
+        fillEndButtons(); if (S && S.phase === 'ended') renderPicker(); return;
+      }
+      case 'banner': return announce(m.text || '', { sub: m.sub, tone: m.tone, ms: m.ms });
       case 'start': return start(m);
       case 'committed': return opponentCommitted(m.seat);
       case 'reveal': return reveal(m);

@@ -4,7 +4,8 @@
 // (who is dueling — used for the overhead icon and the Watch button).
 // While a duel window is open, this client's scene music is silenced locally (the duel has its own theme).
 
-import { TAG, ASSET_BASE } from "./fa-const.js";
+import { TAG, ASSET_BASE, MODULE_ID, FORGE, FLAG_BLOCK } from "./fa-const.js";
+import { showInvitePanel } from "./fa-invite-ui.js";
 import { send, on } from "./fa-net.js";
 
 const W = { sid: null, hostId: null, role: null, el: null, frame: null, queue: [], ready: false, musicGain: null };
@@ -83,16 +84,48 @@ export function installClient() {
   on("close", (d, env) => { if (env.sid === W.sid) closeWindow(); });
   on("status", (d) => { status.sessions = d.sessions || []; status.hostId = d.hostId || null; Hooks.callAll("fabulaArcanaStatus", status.sessions); });
   on("notify", (d) => ui.notifications?.[d.level === "warn" ? "warn" : "info"]?.(`Fabula Arcana | ${d.text}`));
-  on("invite", async (d, env) => {
-    const bo = Number(d.bestOf) > 1 ? ` (best of ${d.bestOf})` : "";
-    let yes = false;
-    try {
-      yes = await Dialog.confirm({
-        title: "Fabula Arcana",
-        content: `<p><strong>${foundry.utils.escapeHTML?.(d.fromName) ?? d.fromName}</strong> challenges ${foundry.utils.escapeHTML?.(d.toName) ?? d.toName} to a card duel${bo}.</p><p>Accept?</p>`,
-        defaultYes: true,
-      });
-    } catch { yes = false; }
-    send(env.from, yes ? "accept" : "decline", {}, env.sid);
+  // PvP challenge: our own panel with a countdown (fa-invite-ui.js). It closes itself when the time runs out;
+  // the host also withdraws it ("invite-close") so a late click can never answer a dead challenge.
+  on("invite", (d, env) => {
+    invite = { sid: env.sid, host: env.from };
+    const ms = Math.max(3000, (Number(d.expiresAt) || Date.now() + 20000) - Date.now());
+    invite.panel = showInvitePanel({
+      fromName: d.fromName, toName: d.toName, bestOf: d.bestOf, img: d.img || "", ms, sound: playUi,
+      onAnswer: async (answer) => {
+        const mine = invite?.sid === env.sid; if (mine) invite = null;
+        if (answer === "timeout") return;                  // the host times it out on its side too
+        if (answer === "block") await blockUser(d.fromUser);
+        send(env.from, answer === "accept" ? "accept" : "decline", { block: answer === "block" }, env.sid);
+      },
+    });
   });
+  on("invite-close", (d, env) => { if (invite?.sid === env.sid) { invite.panel?.close(d.reason || "closed"); invite = null; } });
+  // the challenger hears the answer
+  on("invite-result", (d) => playUi(d.ok ? "accept" : "decline"));
+}
+
+let invite = null;
+
+// UI sounds outside the duel window (challenge panel), at the player's interface volume
+const UI_SFX = {
+  appear: "Sound/Soundboard/Bell3.ogg",
+  accept: "Sound/Soundboard/Item1.ogg",
+  decline: "Sound/Soundboard/Down1.ogg",
+  timeout: "Sound/Soundboard/Down1.ogg",
+  cursor: "Sound/BattleCursor_2.wav",
+};
+export function playUi(key) {
+  const p = UI_SFX[key]; if (!p) return;
+  try {
+    const AH = foundry.audio?.AudioHelper ?? globalThis.AudioHelper;
+    const v = Number(game.settings.get("core", "globalInterfaceVolume") ?? 0.5);
+    AH?.play({ src: FORGE + p, volume: Math.min(1, 0.9 * v + 0.1), autoplay: true, loop: false }, false);
+  } catch (e) { console.warn(TAG, "ui sound", key, e); }
+}
+
+// "Block tonight": no more challenges from that player until the party rests (cleared by the GM on fabula.restPerformed)
+async function blockUser(userId) {
+  if (!userId || game.users.get(userId)?.isGM) return;
+  try { await game.user.setFlag(MODULE_ID, FLAG_BLOCK, { ...(game.user.getFlag(MODULE_ID, FLAG_BLOCK) || {}), [userId]: Date.now() }); }
+  catch (e) { console.warn(TAG, "block", e); }
 }
