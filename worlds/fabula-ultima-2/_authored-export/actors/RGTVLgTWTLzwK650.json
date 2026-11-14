@@ -10,76 +10,11 @@
   },
   "effects": [
     {
-      "_id": "3HA2ma809CifuO8D",
+      "_id": "3ahh2kNUOPwckNoM",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1794078520141,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "flags.fabula-ultima-companion.wellspring_bolt",
-          "mode": 5,
-          "priority": 20,
-          "value": "1"
-        }
-      ],
-      "description": "<p>The <strong>Lightning</strong> wellspring is present. Invokers may draw bolt invocations from it.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "3HA2ma809CifuO8D",
-          "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.3HA2ma809CifuO8D"
-        },
-        "fabula-ultima-companion": {
-          "directorPermanent": true,
-          "fieldOrigin": "scene",
-          "fieldSceneId": "T0Eo2forSEruOgO0",
-          "wellspring": "bolt"
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/magic/lightning/bolt-strike-blue.webp",
-      "name": "Lightning Wellspring",
-      "origin": null,
-      "sort": 0,
-      "statuses": [],
-      "system": {
-        "tags": [
-          "wellspring"
-        ]
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "7K77FTLybEoiN2PN",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1794078520141,
+        "createdTime": 1794655695815,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -106,9 +41,9 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "7K77FTLybEoiN2PN",
+          "originalId": "3ahh2kNUOPwckNoM",
           "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.7K77FTLybEoiN2PN"
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.3ahh2kNUOPwckNoM"
         },
         "fabula-ultima-companion": {
           "directorPermanent": true,
@@ -140,24 +75,24 @@
       "type": "base"
     },
     {
-      "_id": "itKbjc3Xu8K4ovDz",
+      "_id": "aFbZ4RC7vjDinfMS",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1794078520141,
+        "createdTime": 1794655695815,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "changes": [
         {
-          "key": "flags.fabula-ultima-companion.wellspring_earth",
+          "key": "flags.fabula-ultima-companion.wellspring_air",
           "mode": 5,
           "priority": 20,
           "value": "1"
         }
       ],
-      "description": "<p>The <strong>Earth</strong> wellspring is present. Invokers may draw earth invocations from it.</p>",
+      "description": "<p>The <strong>Air</strong> wellspring is present. Invokers may draw air invocations from it.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -171,15 +106,15 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "itKbjc3Xu8K4ovDz",
+          "originalId": "aFbZ4RC7vjDinfMS",
           "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.itKbjc3Xu8K4ovDz"
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.aFbZ4RC7vjDinfMS"
         },
         "fabula-ultima-companion": {
           "directorPermanent": true,
           "fieldOrigin": "scene",
           "fieldSceneId": "T0Eo2forSEruOgO0",
-          "wellspring": "earth"
+          "wellspring": "air"
         },
         "statuscounter": {
           "config": {
@@ -190,8 +125,8 @@
           "visible": false
         }
       },
-      "img": "icons/magic/earth/projectile-boulder-dust.webp",
-      "name": "Earth Wellspring",
+      "img": "icons/magic/air/wind-stream-blue-gray.webp",
+      "name": "Air Wellspring",
       "origin": null,
       "sort": 0,
       "statuses": [],
@@ -205,11 +140,11 @@
       "type": "base"
     },
     {
-      "_id": "rP8gO1mSMh4Obyuk",
+      "_id": "BwWTBpNQnzLugYXg",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1794078520141,
+        "createdTime": 1794655695815,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -236,9 +171,9 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "rP8gO1mSMh4Obyuk",
+          "originalId": "BwWTBpNQnzLugYXg",
           "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.rP8gO1mSMh4Obyuk"
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.BwWTBpNQnzLugYXg"
         },
         "fabula-ultima-companion": {
           "directorPermanent": true,
@@ -270,24 +205,24 @@
       "type": "base"
     },
     {
-      "_id": "SmQR0UfjMKxSb1tj",
+      "_id": "rX9BZ9Zk7kscta3j",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1794078520141,
+        "createdTime": 1794655695815,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "changes": [
         {
-          "key": "flags.fabula-ultima-companion.wellspring_air",
+          "key": "flags.fabula-ultima-companion.wellspring_bolt",
           "mode": 5,
           "priority": 20,
           "value": "1"
         }
       ],
-      "description": "<p>The <strong>Air</strong> wellspring is present. Invokers may draw air invocations from it.</p>",
+      "description": "<p>The <strong>Lightning</strong> wellspring is present. Invokers may draw bolt invocations from it.</p>",
       "disabled": false,
       "duration": {
         "combat": null,
@@ -301,15 +236,15 @@
       "flags": {
         "custom-system-builder": {
           "isFromTemplate": false,
-          "originalId": "SmQR0UfjMKxSb1tj",
+          "originalId": "rX9BZ9Zk7kscta3j",
           "originalParentId": "RGTVLgTWTLzwK650",
-          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.SmQR0UfjMKxSb1tj"
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.rX9BZ9Zk7kscta3j"
         },
         "fabula-ultima-companion": {
           "directorPermanent": true,
           "fieldOrigin": "scene",
           "fieldSceneId": "T0Eo2forSEruOgO0",
-          "wellspring": "air"
+          "wellspring": "bolt"
         },
         "statuscounter": {
           "config": {
@@ -320,8 +255,73 @@
           "visible": false
         }
       },
-      "img": "icons/magic/air/wind-stream-blue-gray.webp",
-      "name": "Air Wellspring",
+      "img": "icons/magic/lightning/bolt-strike-blue.webp",
+      "name": "Lightning Wellspring",
+      "origin": null,
+      "sort": 0,
+      "statuses": [],
+      "system": {
+        "tags": [
+          "wellspring"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "ycsIqweBzWu690Lw",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1794655695815,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.wellspring_earth",
+          "mode": 5,
+          "priority": 20,
+          "value": "1"
+        }
+      ],
+      "description": "<p>The <strong>Earth</strong> wellspring is present. Invokers may draw earth invocations from it.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "ycsIqweBzWu690Lw",
+          "originalParentId": "RGTVLgTWTLzwK650",
+          "originalUuid": "Actor.RGTVLgTWTLzwK650.ActiveEffect.ycsIqweBzWu690Lw"
+        },
+        "fabula-ultima-companion": {
+          "directorPermanent": true,
+          "fieldOrigin": "scene",
+          "fieldSceneId": "T0Eo2forSEruOgO0",
+          "wellspring": "earth"
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/earth/projectile-boulder-dust.webp",
+      "name": "Earth Wellspring",
       "origin": null,
       "sort": 0,
       "statuses": [],
