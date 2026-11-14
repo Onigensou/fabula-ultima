@@ -532,6 +532,45 @@ body.elA{--e-phys:#555555;--e-air:#48c774;--e-bolt:#9b59b6;--e-dark:#4b0082;--e-
 .rdy .chip.rpop{animation:rdyPop .45s cubic-bezier(.2,1.6,.4,1)}
 @keyframes rdyDot{50%{opacity:.25;transform:scale(.7)}}
 @keyframes rdyPop{0%{transform:scale(.6)}100%{transform:scale(1)}}
+/* ===== volume popover ===== */
+.volwrap{position:relative}
+.volpop{position:absolute;right:0;top:calc(100% + 6px);z-index:9500;width:260px;padding:10px 12px;background:linear-gradient(180deg,#f8f0d4,#ede0b0);border:2px solid var(--rim);border-radius:10px;box-shadow:0 0 0 2px var(--wood),0 10px 22px #000a;color:var(--ink)}
+.volpop[hidden]{display:none}
+.volpop label{display:grid;grid-template-columns:50px 1fr 44px;align-items:center;gap:8px;font-weight:600;font-size:13.5px;margin:5px 0}
+.volpop input{width:100%;accent-color:#9a6512;cursor:pointer}
+.volpop b{text-align:right;font-variant-numeric:tabular-nums;font-size:12.5px}
+.volhint{font-size:11.5px;color:var(--mute);margin-top:4px}
+/* ===== status-effect badges (actor), field strip, coloured stats, tooltip ===== */
+.fxrow{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;min-height:26px;margin-top:5px;position:relative;z-index:3}
+.fxb{--fc:#7a4e20;position:relative;width:25px;height:25px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#fffaf0;border:2px solid var(--fc);color:var(--fc);box-shadow:0 1px 3px #0007;font-size:12px;cursor:help;flex:none}
+.fxb svg{width:12px;height:12px}
+.fxb.t-stack{--fc:#7b3fbf} .fxb.t-buff{--fc:#2f8f45} .fxb.t-debuff{--fc:#c0392b} .fxb.t-shield{--fc:#2f6fa3} .fxb.t-used{--fc:#8a7a6a;opacity:.45;filter:grayscale(1)}
+.fxb.dim{opacity:.6}
+.fxb .pp{position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);display:flex;gap:2px}
+.fxb .pp b,.ffb .pp b{width:7px;height:7px;border-radius:50%;background:#fffaf0;border:1.5px solid var(--fc)}
+.fxb .pp b.on{background:var(--fc)}
+.fxb em{position:absolute;top:-7px;right:-8px;min-width:15px;height:15px;border-radius:8px;background:var(--fc);color:#fff;font-size:10px;font-style:normal;font-weight:800;line-height:15px;text-align:center;padding:0 3px;font-family:var(--font-b)}
+.fxb.rdy{animation:fxGlow 1.1s ease-in-out infinite}
+.fxb.gain{animation:fxGain .55s cubic-bezier(.2,1.7,.4,1)}
+.fxb.rdy.gain{animation:fxGain .55s cubic-bezier(.2,1.7,.4,1),fxGlow 1.1s .55s ease-in-out infinite}
+@keyframes fxGlow{50%{box-shadow:0 0 0 3px color-mix(in srgb,var(--fc) 40%,transparent),0 0 14px var(--fc)}}
+@keyframes fxGain{0%{transform:scale(.5)}60%{transform:scale(1.35)}100%{transform:scale(1)}}
+.fxb:focus-visible,.ffb:focus-visible{outline:2px solid #f4c95d;outline-offset:2px}
+.ffx{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px}
+.ffb{--fc:#1f86b8;display:inline-flex;align-items:center;gap:5px;padding:2px 8px 2px 7px;border-radius:999px;background:#eef9ff;border:1.5px solid var(--fc);color:#0f4f6e;font-family:var(--font-b);font-size:12px;font-weight:700;cursor:help;box-shadow:0 1px 3px #0005}
+.ffb svg{width:12px;height:12px}
+.ffb .pp{display:inline-flex;gap:2px;margin-left:2px}
+.ffb .pp b.on{background:var(--fc)}
+.ffb.pend{border-style:dashed;opacity:.8}
+.ffb.last{animation:fxLast 1.2s ease-in-out infinite}
+@keyframes fxLast{50%{opacity:.5}}
+em.sv{font-style:normal;font-weight:900;font-size:1.12em;border-radius:4px;padding:0 3px;cursor:help;box-shadow:inset 0 0 0 1px currentColor}
+em.sv.up{color:#0f7a33;background:#c8f0d1}
+em.sv.down{color:#b3261e;background:#ffd3cc}
+#fxtip{position:fixed;left:0;top:0;z-index:10050;max-width:270px;padding:8px 10px;border-radius:8px;background:#2b1a0b;color:#f8ecc8;border:1px solid #c9a44a;font-family:var(--font-b);font-size:12.5px;line-height:1.38;box-shadow:0 8px 18px #000a;pointer-events:none;opacity:0;transition:opacity .12s}
+#fxtip.on{opacity:1} #fxtip b{color:#ffd36b} #fxtip .tt{font-weight:700;font-size:13.5px;margin-bottom:3px;color:#fff3d0} #fxtip .tn{color:#d9c49a;font-weight:600}
+@media (max-width:620px){ .fxb{width:21px;height:21px} .fxb svg{width:10px;height:10px} .fxrow{gap:4px} }
+@media (prefers-reduced-motion: reduce){ .fxb,.ffb{animation:none !important} }
 .flycard{position:fixed;z-index:9998;pointer-events:none;border-radius:7px;transform-origin:0 0;border:2px solid var(--rim);
   background:radial-gradient(circle at 50% 50%,#c9a44a 0 9%,transparent 10%),repeating-linear-gradient(45deg,#8a3420 0 6px,#6a2414 6px 12px);box-shadow:0 14px 22px #0009}
 .slot.mine .flat,.slot.theirs .flat{touch-action:none}
@@ -541,7 +580,9 @@ body.elA{--e-phys:#555555;--e-air:#48c774;--e-bolt:#9b59b6;--e-dark:#4b0082;--e-
 
 <div class="top">
   <div><h1>Fabula Arcana</h1><div class="sub">Drag a card from your hand onto your slot · knock out all three to win</div></div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn ghost" id="btnSound" type="button" aria-pressed="true">Sound: on</button><button class="btn ghost" id="btnMusic" type="button" aria-pressed="true">Music: on</button><button class="btn ghost surr" id="btnSurrender" type="button" hidden title="Concede this match">🏳 Surrender</button><button class="btn ghost" id="btnRestart" type="button">New match</button></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><div class="volwrap"><button class="btn ghost" id="btnVol" type="button" aria-expanded="false" aria-controls="volpop">🔊 Volume</button>
+    <div class="volpop" id="volpop" hidden><label><span>Music</span><input type="range" id="volMusic" min="0" max="150" step="5"><b id="volMusicV"></b></label>
+      <label><span>Sound</span><input type="range" id="volSfx" min="0" max="150" step="5"><b id="volSfxV"></b></label><div class="volhint">0 = off · saved for your next duels</div></div></div><button class="btn ghost surr" id="btnSurrender" type="button" hidden title="Concede this match">🏳 Surrender</button><button class="btn ghost" id="btnRestart" type="button">New match</button></div>
 </div>
 <div class="wrap" id="app"></div>
 
@@ -659,6 +700,10 @@ const N = cid => CARDS[cid].name;
 
 const SND = { on: store.get('ccd.sound', true), vol: 0.55, ctx: null, buf: {}, last: {} };
 const MUS = { on: store.get('ccd.music', true), vol: 0.32, buf: {}, gain: null, src: [], playing: false };
+// Volume sliders: LV = 0..1.5 per channel (1 = the default mix). SND.vol / MUS.vol read base × level; writes set the base.
+const LV = Object.assign({ sfx:1, music:1 }, store.get('fa.vol', {}) || {});
+for (const [o, k, b] of [[SND,'sfx',0.55],[MUS,'music',0.32]]) { let base=b; Object.defineProperty(o, 'vol', { get(){ return base*LV[k]; }, set(v){ base=v; }, configurable:true }); }
+SND.on = SND.on && LV.sfx > 0; MUS.on = MUS.on && LV.music > 0;
 function sndInit(){
   if (SND.ctx || (!SND.on && !MUS.on)) return;
   try { SND.ctx = new (window.AudioContext||window.webkitAudioContext)(); } catch(e){ return; }
@@ -1113,7 +1158,7 @@ function endMatch(){
 // ===================== field (persistent DOM so moves animate) =====================
 function fieldHTML(){
   const row = s => `<div class="side-row" id="row${s}" data-drop="front" data-s="${s}">
-      <div class="side-head"><h2>${esc(seatName(s))}</h2><div class="itemrow" id="items${s}"></div><div class="alive" id="alive${s}"></div></div>
+      <div class="side-head"><h2>${esc(seatName(s))}</h2><div class="itemrow" id="items${s}"></div><div class="alive" id="alive${s}"></div><div class="ffx" id="ffx${s}"></div></div>
       ${S.p[s].roster.map(m=>slotHTML(s,m)).join('')}
     </div>`;
   return `<div class="table" id="table"><div class="fuse" id="fuse"><div class="trk"></div><div class="fill" id="fusefill"></div></div><div class="hand theirs" id="hand1"></div>${row(1)}
@@ -1126,8 +1171,9 @@ function slotHTML(s,m){
     <div class="holo" id="holo${s}_${m.i}"><div class="beam"></div><div class="base"></div><img class="spr" src="${ART[m.cid]}" alt=""><div class="scan"></div></div>
     <div class="flat"><div class="flatcard" style="--c:var(--e-${c.el})"><div class="fa"><img src="${ART[m.cid]}" alt="">${elBadge(c.el,'art',true)}</div>${elBadge(c.el,'coin',true)}
       <div class="fn">${elBadge(c.el,'name',true)}<span class="fnt">${esc(c.name)}</span><span class="costn">${starStr(c.cost)}</span></div>
-      <div class="fs">${elBadge(c.el,'stats',true)}${statChip('atk',c.atk,true)}${statChip('def',c.def,true)}${statChip('spd',c.spd,true)}</div><span class="cost">${starStr(c.cost)}</span></div></div>
+      <div class="fs" id="fs${s}_${m.i}">${elBadge(c.el,'stats',true)}${statChip('atk',c.atk,true)}${statChip('def',c.def,true)}${statChip('spd',c.spd,true)}</div><span class="cost">${starStr(c.cost)}</span></div></div>
     <div class="hpl"><div class="t" id="hpt${s}_${m.i}"></div><div class="hpbar" id="hpb${s}_${m.i}"><i></i></div></div>
+    <div class="fxrow" id="fx${s}_${m.i}"></div>
   </div>`;
 }
 function setHP(s,i,hp){
@@ -1156,6 +1202,7 @@ function updateField(){
     $(`#items${s}`).innerHTML = Object.keys(ITEMS).map(k=>`<span class="ii ${S.p[s].items[k]?'':'used'}" title="${ITEMS[k].t}${S.p[s].items[k]?'':' (used)'}"><img src="${ART[ITEMS[k].art]}" alt="${ITEMS[k].t}"></span>`).join('');
     $(`#alive${s}`).textContent = `${living(S.p[s]).length} / ${CFG.TEAM} standing`;
   }
+  renderEffects();
   renderLane(); renderHands();
 }
 function renderLane(){
@@ -1203,6 +1250,102 @@ function drawFuse(){
   if (t && t.classList) t.classList.toggle('urgent', left<5000);
   if (left<10000 && left>0 && LOW_KEY!==S.t0){ LOW_KEY=S.t0; announce("Time's almost up!", { tone:'warn', ms:1300 }); }   // once per game
 }
+
+// ===================== status effects: badges + coloured stats =====================
+// Actor effects sit under each monster (round badge, pips for stacks, glow when ready); field effects (Tailwind)
+// sit in a strip by the side's name. ATK/SPD on the board cards show the CURRENT value: green = raised, red = lowered.
+// Hover (or tap) any badge or coloured number for what it does. Built from the match state only, so the same code
+// draws the standalone duel and the in-game (net) window.
+const FX_ONCE = ['walrog','salamander','obsidrax','scorpion','life'];      // once-per-match abilities shown while unused
+const fxNeedRoo = () => CFG.ROO_BENCH===2 ? CFG.ROO_STEPS : 3;
+const fxAttr = v => String(v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+// a Tailwind re-raised while one is still up stays shown as active (not "starts next round")
+const FX_TW = {};
+function fxTailwind(s){ const pl=S.p[s]; if (pl.twUntil==null || pl.twFrom==null || pl.twUntil<S.round) return null;
+  const key=`${S.t0}:${s}`; let pending = pl.twFrom>S.round; if (!pending) FX_TW[key]=S.round; else if (FX_TW[key]===S.round) pending=false;
+  const left = Math.min(CFG.TAILWIND, pl.twUntil - (pending ? pl.twFrom : S.round) + 1); return { pending, left }; }
+function fxTwOn(s, m){ const pl=S.p[s]; return (CFG.TW_ALL || CARDS[m.cid].el==='air') && pl.twFrom!=null && pl.twFrom<=S.round && S.round<=pl.twUntil; }
+// the numbers the card would use this round, with the reasons
+function fxStats(s, m){
+  const c=CARDS[m.cid], out={ atk:{v:c.atk, why:[]}, def:{v:c.def, why:[]}, spd:{v:c.spd, why:[]} };
+  if (m.cid==='wolf' && m.howl){ out.atk.v+=1; out.atk.why.push('+1 Howl (next attack)'); }
+  if (m.cid==='kirin' && m.chg && m.chg[S.round]){ out.atk.v+=CFG.KCHARGE; out.atk.why.push(`+${CFG.KCHARGE} Lightning Charge (this round)`); }
+  if ((m.charm||0)>=S.round && S.round>0){ out.atk.v=Math.max(0,out.atk.v-CFG.CHARM); out.atk.why.push(`−${CFG.CHARM} Charmed`); }
+  if (fxTwOn(s, m)){ out.spd.why.push('+1 Tailwind'); out.spd.v+=1; }
+  if (m.slowRound===S.round){ out.spd.v-=1; out.spd.why.push('−1 Slowed'); }
+  out.spd.v=Math.min(4, Math.max(1, out.spd.v));
+  return out;
+}
+function fxList(s, m){
+  if (m.ko) return [];
+  const c=CARDS[m.cid], L=[];
+  const add=(o)=>L.push(o);
+  if (m.cid==='skizzik'){ const n=m.static||0; add({ k:'static', ico:'fa-bolt', tone:'stack', n, max:2, ready:n>=2, name:'Static',
+    desc: n>=2 ? 'Charged! Its next damaging attack deals <b>+3</b> and clears the Static.' : `Each damaging attack banks 1 Static. At 2 Static, the next damaging attack deals <b>+3</b>.`, stat:`${n} / 2` }); }
+  if (m.cid==='roo'){ const need=fxNeedRoo(), n=Math.min(need, m.walk||0); add({ k:'walk', ico:'fa-shoe-prints', tone:'stack', n, max:need, ready:n>=need, name:'Approach',
+    desc: n>=need ? 'It has arrived. Its next attack draws the <b>Chef’s Knife</b>.' : `+1 step at the end of each round it stays on the field. At ${need} steps its next attack draws the knife. Leaving the field loses the steps.`, stat:`${n} / ${need} steps` }); }
+  if (m.cid==='wolf' && m.howl) add({ k:'howl', ico:'fa-volume-high', tone:'buff', name:'Howl', desc:'Its next attack gets <b>+1 ATK</b>.', ready:true });
+  if (m.cid==='rgolem' && m.windup) add({ k:'windup', ico:'fa-hand-fist', tone:'buff', name:'Wind Up', desc:'Its next attack is an <b>Earthquake</b>: 1 damage to every benched enemy too.', ready:true });
+  if (m.cid==='kirin' && m.chg && m.chg[S.round]) add({ k:'chg', ico:'fa-bolt-lightning', tone:'buff', name:'Charged', desc:`<b>+${CFG.KCHARGE} ATK</b> on its attack this round.`, ready:true });
+  if (m.cid==='kirin' && m.chg && m.chg[S.round+1] && !m.chg[S.round]) add({ k:'chgn', ico:'fa-bolt-lightning', tone:'buff', name:'Charging', desc:`<b>+${CFG.KCHARGE} ATK</b> on its attack next round.` });
+  // Burn: shown on the TARGET (the enemy Pyrefly's next attack on it consumes the Burn)
+  for (const p of S.p[1-s].roster) if (p.cid==='pyrefly' && !p.ko && ((p.burn||{})[m.i]||0)>=CFG.PYRE_N)
+    add({ k:'burn', ico:'fa-fire', tone:'debuff', name:'Burning', desc:`${esc(seatName(1-s))}'s Pyrefly consumes the Burn on its next attack on this monster for <b>+${CFG.PYRE_BURST} ATK</b>.` });
+  if ((m.charm||0)>=S.round && S.round>0){ const left=m.charm-S.round+1; add({ k:'charm', ico:'fa-heart', tone:'debuff', name:'Charmed', n:left, count:true, desc:`<b>−${CFG.CHARM} ATK</b>. ${left>1?`${left} rounds left (this one and next).`:'Ends after this round.'}` }); }
+  if (m.slowRound===S.round) add({ k:'slow', ico:'fa-hourglass-half', tone:'debuff', name:'Slowed', desc:'<b>−1 SPD</b> this round.' });
+  if (FX_ONCE.includes(m.cid) || c.absorb) add({ k:'once', ico: m.cid==='scorpion' ? 'fa-skull-crossbones' : 'fa-shield-halved', tone: m.abilityUsed ? 'used' : 'shield', name:c.ab,
+    desc: `${esc(c.txt)}<br><span class="tn">${m.abilityUsed ? 'Already used this match.' : 'Ready (once per match).'}</span>` });
+  return L;
+}
+let FX_PREV = {}, FX_T0 = null;
+function fxBadge(s, m, e){
+  const key=`${s}:${m.i}:${e.k}`, prev=FX_PREV[key]; const val = e.n!=null ? e.n : (e.tone==='used'?-1:1);
+  const gain = prev!=null && val>prev && e.tone!=='used'; FX_PREV[key]=val;
+  if (gain) sfx('cursor', 0.5, 0);
+  const pips = e.max ? `<span class="pp">${'<b class="on"></b>'.repeat(e.n||0)}${'<b></b>'.repeat(Math.max(0,e.max-(e.n||0)))}</span>` : '';
+  const cnt = e.count && e.n ? `<em>${e.n}</em>` : '';
+  const tip = `<div class="tt">${esc(e.name)}${e.stat?` <span class="tn">· ${e.stat}</span>`:''}</div>${e.desc}`;
+  return `<span class="fxb t-${e.tone} ${e.ready?'rdy':''} ${e.max&&!e.n?'dim':''} ${gain?'gain':''}" tabindex="0" data-tip="${fxAttr(tip)}" aria-label="${fxAttr(e.name)}"><i class="fa-solid ${e.ico}"></i>${pips}${cnt}</span>`;
+}
+function fxStatRow(s, m){
+  const c=CARDS[m.cid], st=fxStats(s, m);
+  const v=(k)=>{ const d=st[k].v-c[k]; if (!d) return st[k].v;
+    const tip=`<div class="tt">${STAT[k].l} ${st[k].v}</div>${c[k]} printed ${st[k].why.map(w=>'· '+esc(w)).join(' ')}`;
+    return `<em class="sv ${d>0?'up':'down'}" data-tip="${fxAttr(tip)}">${st[k].v}</em>`; };
+  return `${elBadge(c.el,'stats',true)}${statChip('atk',v('atk'),true)}${statChip('def',v('def'),true)}${statChip('spd',v('spd'),true)}`;
+}
+function renderEffects(){
+  if (!S || !$('#table')) return;
+  if (FX_T0!==S.t0){ FX_PREV={}; FX_T0=S.t0; }
+  for (const s of [0,1]){
+    for (const m of S.p[s].roster){
+      const row=$(`#fx${s}_${m.i}`); if (row){ const h=fxList(s,m).map(e=>fxBadge(s,m,e)).join(''); if (row._h!==h){ row._h=h; row.innerHTML=h; } }
+      const fsr=$(`#fs${s}_${m.i}`); if (fsr){ const h=fxStatRow(s,m); if (fsr._h!==h){ fsr._h=h; fsr.innerHTML=h; } }
+    }
+    const ff=$(`#ffx${s}`); if (ff){ const tw=fxTailwind(s); let h='';
+      if (tw){ const max=CFG.TAILWIND, left=Math.min(max,tw.left);
+        const tip=`<div class="tt">Tailwind <span class="tn">· field</span></div>${CFG.TW_ALL?'Your monsters':'Your <b>Air</b> monsters'} have <b>+1 SPD</b> (max 4). ${tw.pending?`Starts next round, lasts ${max} rounds.`:`${left} round${left>1?'s':''} left, including this one.`}`;
+        h=`<span class="ffb ${tw.pending?'pend':''} ${!tw.pending&&left===1?'last':''}" tabindex="0" data-tip="${fxAttr(tip)}"><i class="fa-solid fa-wind"></i>Tailwind<span class="pp">${'<b class="on"></b>'.repeat(left)}${'<b></b>'.repeat(Math.max(0,max-left))}</span></span>`; }
+      if (ff._h!==h){ ff._h=h; ff.innerHTML=h; } }
+  }
+}
+// one shared tooltip for badges / coloured stats (hover, focus, or tap)
+(function fxTip(){
+  if (typeof document==='undefined' || !document.body || !document.addEventListener) return;
+  const tip=document.createElement('div'); tip.id='fxtip'; tip.setAttribute('role','tooltip'); document.body.appendChild(tip);
+  let cur=null;
+  const show=(el)=>{ cur=el; tip.innerHTML=el.getAttribute('data-tip'); tip.classList.add('on');
+    const r=el.getBoundingClientRect(), w=tip.offsetWidth, h=tip.offsetHeight;
+    let x=r.left+r.width/2-w/2, y=r.top-h-8; if (y<6) y=r.bottom+8; x=Math.max(6, Math.min(window.innerWidth-w-6, x));
+    tip.style.left=x+'px'; tip.style.top=y+'px'; };
+  const hide=()=>{ cur=null; tip.classList.remove('on'); };
+  document.addEventListener('pointerover', (e)=>{ const el=e.target.closest && e.target.closest('[data-tip]'); if (el && e.pointerType!=='touch') show(el); });
+  document.addEventListener('pointerout', (e)=>{ const el=e.target.closest && e.target.closest('[data-tip]'); if (el && el===cur && !el.contains(e.relatedTarget)) hide(); });
+  document.addEventListener('focusin', (e)=>{ const el=e.target.closest && e.target.closest('[data-tip]'); if (el) show(el); });
+  document.addEventListener('focusout', hide);
+  // capture: a tap on a badge shows its tip and does not also pick the monster under it
+  document.addEventListener('click', (e)=>{ const el=e.target.closest && e.target.closest('[data-tip]'); if (el){ if (cur===el) hide(); else show(el); if (el.classList.contains('fxb') || el.classList.contains('ffb')) e.stopPropagation(); } else if (cur) hide(); }, true);
+})();
 
 // ===================== announcement banner (also the API for other game status: FA_BANNER(text, opts)) =====================
 // opts: { sub, tone:'info'|'good'|'bad'|'warn', ms, sound:false }
@@ -1671,10 +1814,23 @@ document.querySelectorAll('[data-sts]').forEach(b=>b.onclick=()=>{ sfx('cursor')
 document.querySelectorAll('[data-elp]').forEach(b=>b.onclick=()=>{ sfx('cursor'); EL_PLACE=b.dataset.elp; try{ localStorage.setItem('ccd.elplace',EL_PLACE); }catch(e){} applyElStyle(); if (S) S._built=null; render(); });
 document.querySelectorAll('[data-els]').forEach(b=>b.onclick=()=>{ sfx('cursor'); EL_STYLE=b.dataset.els; try{ localStorage.setItem('ccd.elstyle',EL_STYLE); }catch(e){} applyElStyle(); if (S) S._built=null; render(); });
 applyElStyle();
-const sndBtn=()=>{ const b=$('#btnSound'); b.textContent='Sound: '+(SND.on?'on':'off'); b.setAttribute('aria-pressed', SND.on); };
-$('#btnSound').onclick=()=>{ SND.on=!SND.on; store.set('ccd.sound', SND.on); if (SND.on){ sndInit(); sfx('cursor'); } sndBtn(); }; sndBtn();
-const musBtn=()=>{ const b=$('#btnMusic'); if (!b||!b.setAttribute) return; b.textContent='Music: '+(MUS.on?'on':'off'); b.setAttribute('aria-pressed', MUS.on); };
-if ($('#btnMusic')) $('#btnMusic').onclick=()=>{ MUS.on=!MUS.on; store.set('ccd.music', MUS.on); if (MUS.on){ sndInit(); musicStart(); } else musicStop(); musBtn(); }; musBtn();
+// ---------- volume popover: Music + Sound sliders (0 = off), saved per browser
+(function bindVolume(){
+  const btn=$('#btnVol'), pop=$('#volpop'); if (!btn || !pop || !pop.querySelector) return;
+  const ms=$('#volMusic'), ss=$('#volSfx'), mv=$('#volMusicV'), sv=$('#volSfxV');
+  const show=()=>{ ms.value=Math.round(LV.music*100); ss.value=Math.round(LV.sfx*100); mv.textContent=ms.value+'%'; sv.textContent=ss.value+'%';
+    btn.textContent = (LV.sfx>0||LV.music>0) ? '🔊 Volume' : '🔇 Volume'; };
+  const save=()=>{ store.set('fa.vol', { sfx:LV.sfx, music:LV.music }); store.set('ccd.sound', LV.sfx>0); store.set('ccd.music', LV.music>0); };
+  const toggle=(open)=>{ pop.hidden=!open; btn.setAttribute('aria-expanded', open); };
+  btn.onclick=(e)=>{ e.stopPropagation(); toggle(pop.hidden); if (!pop.hidden){ sndInit(); sfx('cursor'); } };
+  document.addEventListener('pointerdown', (e)=>{ if (!pop.hidden && !pop.contains(e.target) && e.target!==btn) toggle(false); });
+  ms.oninput=()=>{ LV.music=ms.value/100; MUS.on=LV.music>0; sndInit();
+    if (!MUS.on) musicStop(); else if (!MUS.playing) { if (typeof tryMusicNet==='function') tryMusicNet(); musicStart(); }
+    if (MUS.gain && SND.ctx) MUS.gain.gain.setTargetAtTime(MUS.vol, SND.ctx.currentTime, 0.05); show(); save(); };
+  ss.oninput=()=>{ LV.sfx=ss.value/100; SND.on=LV.sfx>0; show(); save(); };
+  ss.onchange=()=>{ if (SND.on){ sndInit(); sfx('book', 1, 0); } };       // a test sound when you let go
+  show();
+})();
 if (!window.FA_NET_MODE) render();
 </script>
 <script>
@@ -1907,6 +2063,7 @@ if (!window.FA_NET_MODE) render();
       musicStart(); } catch (e) { console.warn('[Fabula Arcana duel] music', e); }
     musicLoading = false;
   }
+  window.tryMusicNet = () => tryMusic();
   document.addEventListener('pointerdown', () => setTimeout(tryMusic, 60), { capture:true });
   document.addEventListener('keydown', () => setTimeout(tryMusic, 60), { capture:true });
 

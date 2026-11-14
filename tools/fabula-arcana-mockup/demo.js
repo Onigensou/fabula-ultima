@@ -38,6 +38,8 @@
     <div class="r"><button type="button" id="d-timed">30 s round timer: on</button><button type="button" id="d-low">Jump to 10 s left</button></div>
     <div class="r"><button type="button" id="d-ko">KO banner</button><button type="button" id="d-ban">Other banner</button></div>
     <div class="r">Banner sound <select id="d-wh"><option value="whoosh">Evasion2</option><option value="alt_wind3">Wind3</option><option value="alt_wind4">Wind4</option><option value="alt_wind7">Wind7</option></select></div>
+    <h4>Status effects</h4>
+    <div class="r"><button type="button" id="d-fx">Set up effects</button><button type="button" id="d-fx1">+1 Static / step</button></div>
     <h4>Result screen</h4>
     <div class="r"><button type="button" id="d-win">Win now</button><button type="button" id="d-lose">Lose now</button></div>
     <div class="r"><button type="button" id="d-rem">PvP: Blanche wants a rematch</button></div>
@@ -49,6 +51,26 @@
   const chip = (ok, pop) => ok ? `<span class="chip ok ${pop ? 'rpop' : ''}">✓ Ready</span>` : `<span class="chip wait"><i></i>Choosing…</span>`;
   const chips = (pop) => { $d('d-me').innerHTML = chip(false); $d('d-opp').innerHTML = chip(DEMO.oppReady, pop); };
   chips(false);
+
+  // Status effects: rebuild the board with Skizzik / Roo / Sylph vs Wolf / Pyrefly / Walrog and switch the effects on
+  const mk = (cid, i) => ({ cid, i, hp: CARDS[cid].hp, ko: false, activeRounds: 0 });
+  $d('d-fx').onclick = () => {
+    if (!live() || S.phase === 'anim') return msg('Start a duel and wait for your pick, then press this.');
+    if (S.phase === 'opening' || S.phase === 'replace') return msg('Pick your opening monster first, then press this.');
+    S.p[0].roster = ['skizzik', 'roo', 'sylph'].map(mk); S.p[1].roster = ['wolf', 'pyrefly', 'walrog'].map(mk);
+    S.p[0].active = 0; S.p[1].active = 0; S.p[0].pending = false; S.p[1].pending = false;
+    S.p[0].roster[0].static = 1; S.p[0].roster[1].walk = 1;
+    S.p[0].twFrom = S.round; S.p[0].twUntil = S.round + CFG.TAILWIND - 1;          // Tailwind up: Sylph SPD shows green
+    S.p[1].roster[0].howl = true; S.p[1].roster[0].charm = S.round + 1;           // Wolf: Howl (+1) and Charmed (−2) → ATK red
+    S.p[1].roster[1].burn = { 0: 1 };                                             // their Pyrefly has Burned your Skizzik
+    S._built = null; render();
+    msg('Hover a badge or a coloured number. +1 Static / step shows a stack being gained.');
+  };
+  $d('d-fx1').onclick = () => {
+    if (!S || !S.p[0].roster.some((m) => m.cid === 'skizzik')) return msg('Press Set up effects first.');
+    for (const m of S.p[0].roster) { if (m.cid === 'skizzik') m.static = Math.min(2, (m.static || 0) + 1); if (m.cid === 'roo') m.walk = Math.min(CFG.ROO_STEPS, (m.walk || 0) + 1); }
+    updateField();
+  };
 
   $d('d-inv').onclick = () => {
     sndInit();
