@@ -205,6 +205,24 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold);outl
 .pop{position:absolute;transform:translate(-50%,0);font-family:var(--font-d);font-size:30px;font-weight:700;text-shadow:2px 2px 0 #000,0 0 6px #000;pointer-events:none;animation:pop 1.3s ease-out forwards;text-align:center;line-height:1;white-space:nowrap}
 .pop small{display:block;font-size:12px;margin-top:3px}
 .pop.dmg{color:var(--hurt)} .pop.heal{color:var(--heal)} .pop.zero{color:#fff}
+/* affinity feedback (11-15): Strong = big hot number + red ▲ badge; Weak = small grey number + slate ▼ badge */
+.pop.strong{font-size:44px;text-shadow:2px 2px 0 #000,0 0 10px #ff8a00,0 0 20px #ff5a2a99}
+.pop.dmg.strong{color:#ff5a2a}
+.pop.weak{font-size:22px} .pop.dmg.weak{color:#b9c6d6}
+.pop .afb{display:inline-block;padding:2px 8px;border-radius:9px;font-family:var(--font-b);font-weight:700;font-size:14px;line-height:1.1;color:#fff;text-shadow:0 1px 0 #0008}
+.pop .afb.up{background:#c8321e;box-shadow:0 0 8px #ff6a3a} .pop .afb.dn{background:#4a5b70;box-shadow:0 0 4px #0008}
+.slot.hurtflash .holo .spr{animation:hurtFlash .5s ease-out}
+@keyframes hurtFlash{0%,50%{filter:brightness(1.8) sepia(1) saturate(8) hue-rotate(-35deg)}25%,75%{filter:brightness(1.3)}100%{filter:none}}
+.table.shake-hard{animation:shakeHard .45s}
+@keyframes shakeHard{0%,100%{translate:0 0}12%{translate:-13px 4px}28%{translate:12px -5px}44%{translate:-9px 3px}60%{translate:7px -2px}78%{translate:-3px 1px}}
+/* matchup pill (11-15): straddles the card's bottom-right corner (empty SPD-row space); ✊ = this monster's attack vs the enemy active, 🛡 = the enemy active's attack on it */
+.mu{position:absolute;right:0;bottom:0;transform:translate(30%,45%);display:flex;flex-direction:row;gap:3px;z-index:4;pointer-events:auto}
+.mu:empty{display:none}
+.mu span{display:flex;align-items:center;gap:2px;padding:2px 4px;border-radius:7px;font-size:11px;font-weight:700;color:#fff;line-height:1;box-shadow:0 0 0 1px #3a1e06,0 2px 3px #0007;white-space:nowrap}
+.mu span svg,.mu span i{width:10px;height:10px}
+.mu .good{background:#2f8f4e} .mu .bad{background:#c8321e}
+.slot.fwd .mu span{font-size:12px;padding:3px 5px}
+.slot.ko .mu{display:none}
 /* Geist's Blackest Night (duel short version of the battle cinematic): fall, heartbeats, flash, aura rise */
 .slot.bn-down .holo .spr{filter:grayscale(1) brightness(.35) !important;translate:0 10px;transition:filter .25s,translate .25s}
 .slot.bn-down .flatcard{filter:grayscale(1) brightness(.5)}
@@ -1249,7 +1267,7 @@ function slotHTML(s,m){
     <div class="holo" id="holo${s}_${m.i}"><div class="beam"></div><div class="base"></div>${(typeof HOLO_VIDEO!=='undefined' && HOLO_VIDEO[m.cid]) ? `<video class="spr fl" src="${HOLO_VIDEO[m.cid]}" poster="${ART[m.cid]}" autoplay loop muted playsinline></video>` : `<img class="spr${(typeof FACE_LEFT!=='undefined' && FACE_LEFT.includes(m.cid))?' fl':''}" src="${ART[m.cid]}" alt="">`}<div class="scan"></div><div class="cue" id="cue${s}_${m.i}"></div></div>
     <div class="flat"><div class="flatcard" style="--c:var(--e-${c.el})"><div class="fa"><img src="${ART[m.cid]}" alt="">${elBadge(c.el,'art',true)}</div>${elBadge(c.el,'coin',true)}
       <div class="fn">${elBadge(c.el,'name',true)}<span class="fnt">${esc(c.name)}</span><span class="costn">${starStr(c.cost)}</span></div>
-      <div class="fs" id="fs${s}_${m.i}">${elBadge(c.el,'stats',true)}${statChip('atk',c.atk,true)}${statChip('def',c.def,true)}${statChip('spd',c.spd,true)}</div><span class="cost">${starStr(c.cost)}</span></div></div>
+      <div class="fs" id="fs${s}_${m.i}">${elBadge(c.el,'stats',true)}${statChip('atk',c.atk,true)}${statChip('def',c.def,true)}${statChip('spd',c.spd,true)}</div><span class="cost">${starStr(c.cost)}</span></div><div class="mu" id="mu${s}_${m.i}"></div></div>
     <div class="hpl"><div class="t" id="hpt${s}_${m.i}"></div><div class="hpbar" id="hpb${s}_${m.i}"><i></i></div></div>
     <div class="fxrow" id="fx${s}_${m.i}"></div>
   </div>`;
@@ -1280,8 +1298,24 @@ function updateField(){
     $(`#items${s}`).innerHTML = Object.keys(ITEMS).map(k=>`<span class="ii ${S.p[s].items[k]?'':'used'}" title="${ITEMS[k].t}${S.p[s].items[k]?'':' (used)'}"><img src="${ART[ITEMS[k].art]}" alt="${ITEMS[k].t}"></span>`).join('');
     $(`#alive${s}`).textContent = `${living(S.p[s]).length} / ${CFG.TEAM} standing`;
   }
+  renderMatchups();
   renderEffects();
   renderLane(); renderHands();
+}
+// Matchup pill (11-15): element chart vs the enemy's active monster, base elements only (public info).
+// Shown on both actives, and on your own benched monsters while you can switch / replace. Neutral rows are hidden.
+function renderMatchups(){
+  const sv=UI.seat;
+  for (const s of [0,1]){ const op=S.p[1-s], foe=op.active!=null ? op.roster[op.active] : null;
+    for (const m of S.p[s].roster){ const box=$(`#mu${s}_${m.i}`); if (!box) continue;
+      const act = S.p[s].active===m.i && !m.ko, bench = s===sv && !m.ko && !act && S.phase!=='ended';
+      if (!foe || foe.ko || foe.hp<=0 || S.phase==='opening' || !(act || bench)){ box.dataset.k=''; box.innerHTML=''; continue; }
+      const me=CARDS[m.cid], them=CARDS[foe.cid], dealt=elMod(me.el, them.el), taken=elMod(them.el, me.el), E=x=>EL[x]||x;
+      const row=(cls, icon, up, tip)=>`<span class="${cls}" title="${esc(tip)}"><i class="fa-solid fa-${icon}"></i>${up?'▲':'▼'}</span>`;
+      let h='';
+      if (dealt) h+=row(dealt>0?'good':'bad', 'hand-fist', dealt>0, `${me.name}'s attacks are ${dealt>0?'Strong':'Weak'} vs ${E(them.el)} (${dealt>0?'+':'−'}${Math.abs(dealt)} damage to ${them.name})`);
+      if (taken) h+=row(taken>0?'bad':'good', 'shield-halved', taken>0, `${them.name}'s attacks are ${taken>0?'Strong':'Weak'} vs ${E(me.el)} (${taken>0?'+':'−'}${Math.abs(taken)} damage to ${me.name})`);
+      if (box.dataset.k!==h){ box.dataset.k=h; box.innerHTML=h; } } }   // FA swaps <i> for <svg>, so compare the source string, not innerHTML
 }
 function renderLane(){
   const lane=$('#lane'); if (!lane) return; const rv=S.reveal;
@@ -1728,9 +1762,23 @@ async function fxClash(ev){
   add('ring',ix,iy,{'--pc':colors[colors.length-1]});
   for (let k=0;k<12;k++){ add('ray',ix-2,iy-44,{'--pc':colors[k%colors.length],transform:`rotate(${k*30+Math.random()*12}deg)`}); }
   particles(ix,iy,26,colors[0],{r:90}); if (colors[1]) particles(ix,iy,18,colors[1],{r:80});
-  table.classList.remove('shake'); void table.offsetWidth; table.classList.add('shake');
-  sfx('hit', 0.9, 0); for (const s of att){ const r=ev.res[s]; if (r.aff!=='NONE' && !r.usedAbsorb) sfx(HITSND[CARDS[r.a.cid].el]||'hit', 0.8, 0); else if (r.aff==='NONE') sfx('shard',0.6,0); }
+  // Affinity feel (11-15): a Strong hit lands heavy (hit-stop, hard shake, defender flashes red, critical SFX);
+  // a Weak hit glances off (no shake, grey spark, guard clink instead of the element sound). Neutral = unchanged.
+  const isStrong = r => r.aff==='ADV' && r.dmg>0, isWeak = r => r.aff==='DIS';
+  const anyStrong = att.some(s=>isStrong(ev.res[s])), allWeak = att.every(s=>isWeak(ev.res[s]));
+  table.classList.remove('shake','shake-hard'); void table.offsetWidth;
+  if (anyStrong) table.classList.add('shake-hard'); else if (!allWeak) table.classList.add('shake');
+  for (const s of att){ const r=ev.res[s], d=1-s, dc=spriteCenter(d);
+    if (isStrong(r)){ const sl=$(`#slot${d}_${S.p[d].active}`); if (sl){ sl.classList.remove('hurtflash'); void sl.offsetWidth; sl.classList.add('hurtflash'); setTimeout(()=>sl.classList.remove('hurtflash'), 600); }
+      add('flash',dc.x,dc.y,{'--pc':'#ff5a2a'}); particles(dc.x,dc.y,14,'#ffb347',{r:70}); }
+    else if (isWeak(r)){ add('ring',dc.x,dc.y,{'--pc':'#a9b6c6'}); particles(dc.x,dc.y,8,'#c7d0dc',{r:40}); } }
+  if (!allWeak) sfx('hit', 0.9, 0);
+  for (const s of att){ const r=ev.res[s];
+    if (isWeak(r)) sfx('weak', 0.85, 0);
+    else if (r.aff!=='NONE' && !r.usedAbsorb) sfx(HITSND[CARDS[r.a.cid].el]||'hit', 0.8, 0); else if (r.aff==='NONE') sfx('shard',0.6,0);
+    if (isStrong(r)) sfx('strong', 0.9, 0); }
   for (const s of [0,1]){ const b=$('#barrier'+s); const r=ev.res[1-s]; if (b&&r){ b.classList.add(r.pierced?'shatter':'crack'); sfx(r.pierced?'shatter':'parry',0.8,0); } }
+  if (anyStrong && !RM()){ anims.forEach(a=>{ try{ a.pause(); }catch(e){} }); await sleep(120); anims.forEach(a=>{ try{ a.play(); }catch(e){} }); }   // hit-stop
   await Promise.all(anims.map(a=>a.finished.catch(()=>{})));
   slots.forEach(e=>{ e.style.zIndex=''; });
 }
@@ -1779,7 +1827,9 @@ const reviveAt = (ev, s, i) => (ev.revive||[]).some(v=>v.s===s && v.i===i);
 const burstOn = (ev, gSide) => { const e=((ev.after&&ev.after[gSide])||[]).find(x=>x[0]==='burst'); return e ? e[1] : 0; };
 function popFor(s, r){   // popup on defender side s for attack r
   if (r.heal){ popNum(s,'+'+(r.healed||0),'heal','Absorb'); sfx('absorb',0.9,0); }
-  else popNum(s, r.dmg?('−'+r.dmg):'0', r.dmg?'dmg':'zero', r.aff==='ADV'?'Strong':r.aff==='DIS'?'Weak':r.aff==='NONE'?'Elementless':'');
+  else if (r.aff==='ADV') popNum(s, r.dmg?('−'+r.dmg):'0', (r.dmg?'dmg':'zero')+' strong', `<span class="afb up">▲ +${CFG.ADV}</span>`);
+  else if (r.aff==='DIS') popNum(s, r.dmg?('−'+r.dmg):'0', (r.dmg?'dmg':'zero')+' weak', `<span class="afb dn">▼ −${CFG.DIS}</span>`);
+  else popNum(s, r.dmg?('−'+r.dmg):'0', r.dmg?'dmg':'zero', r.aff==='NONE'?'Elementless':'');
 }
 async function playRound(ev, before){
   // 1. monster changes: show new actives (holograms summon)
