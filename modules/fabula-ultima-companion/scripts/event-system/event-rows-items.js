@@ -101,7 +101,8 @@
     };
     const before = left();
     try {
-      await core().removeItemFromActor({ itemUuid: item.uuid, quantity: qty, senderActorUuid: owner.uuid, requestedByUserId: game.user?.id });
+      // announce: every screen reads "Keren handed over Old Bell." (FU.Feedback.items)
+      await core().removeItemFromActor({ itemUuid: item.uuid, quantity: qty, senderActorUuid: owner.uuid, requestedByUserId: game.user?.id, announce: true });
     } catch (e) {
       console.warn(INSTALL_TAG, `Item transfer reported an error taking ${item.name} from ${owner?.name}; counting what actually left.`, e);
     }
@@ -113,7 +114,14 @@
     if (taken.length) console.log(INSTALL_TAG, "Taken:", taken.map(t => `${t.qty}× ${t.name} from ${t.from}`).join(", "));
   };
 
+  // One row = one batch of feedback: whatever it adds or takes (stash and bags)
+  // reads as one set of lines — "The party obtained …!", "Keren handed over …."
   async function execute(row, context) {
+    const group = globalThis.FU?.Feedback?.group ?? ((f) => f());
+    return group(() => executeRow(row, context));
+  }
+
+  async function executeRow(row, context) {
     const party = await gameState()?.refresh?.();
     if (!party) return { ok: false, reason: "noParty" };
     if (!core()) return { ok: false, reason: "noItemTransferCore" };
@@ -121,7 +129,7 @@
     try {
       if (row.what === "zenit") {
         const delta = row.op === "remove" ? -row.amount : row.amount;
-        await core().adjustZenit({ actorUuid: party.uuid, delta, requestedByUserId: game.user?.id });
+        await core().adjustZenit({ actorUuid: party.uuid, delta, requestedByUserId: game.user?.id, announce: true });
         return { ok: true, type: "changeItems", delta };
       }
 
