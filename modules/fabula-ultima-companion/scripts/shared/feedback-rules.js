@@ -71,6 +71,19 @@ export function statusLines(entries = [], partyIds = []) {
   return lines;
 }
 
+/**
+ * ONE sound for a status batch — battle's generic beats (action-anim-rules.js
+ * SFX: buff/cleanse = "up" Powerup, debuff = "down" Down2). Anything inflicted
+ * wins; immune-only batches are silent.
+ * → "down" | "up" | null
+ */
+export function statusSound(kinds = []) {
+  const k = new Set(kinds ?? []);
+  if (k.has("inflict") || k.has("held")) return "down";
+  if (k.has("buff") || k.has("removed")) return "up";
+  return null;
+}
+
 // Damage sounds: the damage API's own set (apply-damage-core.js _SFX).
 const SFX_ROOT = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
 export const DAMAGE_SFX = Object.freeze({

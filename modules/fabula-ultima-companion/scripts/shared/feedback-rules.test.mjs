@@ -1,6 +1,6 @@
 // node scripts/shared/feedback-rules.test.mjs
 import assert from "node:assert/strict";
-import { statusLines, damageSound, flashKey, affinityTag, DAMAGE_SFX } from "./feedback-rules.js";
+import { statusLines, statusSound, damageSound, flashKey, affinityTag, DAMAGE_SFX } from "./feedback-rules.js";
 
 let n = 0;
 const t = (name, fn) => { fn(); n++; console.log("  ok", name); };
@@ -42,6 +42,13 @@ t("removed: recover from", () => {
 t("three names use commas; no party list = never The party; junk dropped", () => {
   assert.deepEqual(statusLines([e("h", "Hina", "Slow"), e("k", "Keren", "Slow"), e("b", "Blanche", "Slow"), e("x", "", ""), null], []),
     ["Hina, Keren and Blanche are inflicted with {st:Slow}!"]);
+});
+t("status sound: battle's generic beats, inflicted wins, immune-only silent", () => {
+  assert.equal(statusSound(["buff", "inflict"]), "down");
+  assert.equal(statusSound(["held"]), "down");
+  assert.equal(statusSound(["buff", "immune"]), "up");
+  assert.equal(statusSound(["removed"]), "up");
+  assert.equal(statusSound(["immune"]), null);
 });
 t("damage sound: one per batch, strongest result wins", () => {
   assert.equal(damageSound({ affinities: ["NE", "VU"] }), DAMAGE_SFX.weak);

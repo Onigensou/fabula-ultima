@@ -9,6 +9,7 @@
 //   FU.Feedback.status([{ actorId, actorName, status, kind }])
 //       kind: "inflict" | "held" | "buff" | "immune" | "removed"
 //       → batched System Message lines on every screen (feedback-rules.js)
+//         + ONE sound per batch: battle's generic debuff / buff beat
 //   FU.Feedback.damage([{ actor, resource, before, after, affinity }],
 //                      { label, element, kind: "damage" | "heal" })
 //       → one element-coloured screen flash + one sound + one Resource Panel
@@ -24,8 +25,9 @@
 // Runs on the calling client and broadcasts from there.
 // ============================================================================
 
-import { BATCH_MS, BATCH_MAX_MS, statusLines, damageSound, flashKey, affinityTag } from "./feedback-rules.js";
+import { BATCH_MS, BATCH_MAX_MS, statusLines, statusSound, damageSound, flashKey, affinityTag } from "./feedback-rules.js";
 import { ELEMENT_COLORS } from "../battle-director/damage-numbers/damage-number-style.js";
+import { SFX as BATTLE_SFX, sfxUrl } from "../battle-director/action-anim-rules.js";
 
 const NS = "fabula-ultima-companion";
 const SOCKET = `module.${NS}`;
@@ -53,6 +55,15 @@ function makeBatch(onFlush) {
   return b;
 }
 
+// Every client hears it (AudioHelper push = true).
+function playAll(src, volume = 0.8) {
+  if (!src) return;
+  try {
+    const AH = foundry?.audio?.AudioHelper ?? globalThis.AudioHelper;
+    AH?.play?.({ src, volume, autoplay: true, loop: false }, true);
+  } catch (e) { console.warn(TAG, "sound failed", e); }
+}
+
 async function partyIds() {
   try {
     const p = await globalThis.CampSystem?.Party?.resolve?.();
@@ -75,6 +86,8 @@ async function flushStatus(batch) {
   try {
     const lines = statusLines(batch.items, await partyIds());
     if (lines.length) globalThis.FU?.SystemMessage?.broadcast?.(lines);
+    const key = statusSound(batch.items.map((e) => e.kind));
+    if (key) playAll(sfxUrl(key), BATTLE_SFX[key]?.vol ?? 0.35);
   } catch (e) { console.warn(TAG, "status lines failed", e); }
 }
 
@@ -103,11 +116,7 @@ function flushDamage(key, batch) {
     const fk = flashKey(opts);
     try { game.socket?.emit(SOCKET, { type: MSG_FLASH, key: fk }); } catch (e) {}
     flash(fk);
-    const sfx = damageSound({ kind: opts.kind, resource: opts.resource, affinities: rows.map((r) => r.affinity) });
-    if (sfx) {
-      const AH = foundry?.audio?.AudioHelper ?? globalThis.AudioHelper;
-      AH?.play?.({ src: sfx, volume: 0.8, autoplay: true, loop: false }, true);   // true = every client
-    }
+    playAll(damageSound({ kind: opts.kind, resource: opts.resource, affinities: rows.map((r) => r.affinity) }));
     globalThis.FU?.ResourcePanel?.broadcast?.({
       label: opts.label ?? "",
       rows: rows.map((r) => ({

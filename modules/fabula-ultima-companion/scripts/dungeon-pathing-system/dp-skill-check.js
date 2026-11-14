@@ -185,9 +185,14 @@
 #${PANEL_ID} button.hot{box-shadow:0 0 0 2px #c9a44a}
 #${PANEL_ID} button:disabled{opacity:.45;cursor:default;box-shadow:none}
 #${PANEL_ID} .warn{background:rgba(122,46,24,.1);border:1px solid #b5471f;border-radius:7px;padding:6px 9px;margin:0 0 8px;font-size:13px}
-#${PANEL_ID} .spark{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:4px 0 8px}
-#${PANEL_ID} .spark div{border:1px dashed #b8865a;border-radius:6px;padding:4px 7px;background:rgba(255,255,255,.35);font-size:13px}
-#${PANEL_ID} .spark b{display:block;font-size:11px;color:#6b4a26;font-weight:600}
+#${PANEL_ID} .ideas{opacity:.6;transition:opacity .15s;margin:2px 0 10px}
+#${PANEL_ID} .ideas:hover,#${PANEL_ID} .ideas:focus-within{opacity:1}
+#${PANEL_ID} .ideas-hd{display:flex;align-items:baseline;gap:6px;font-size:12px;color:#6b4a26;margin-bottom:4px}
+#${PANEL_ID} .ideas-hd i{font-style:italic}
+#${PANEL_ID} .ideas-hd button.link{margin-left:auto;background:none;border:0;box-shadow:none;color:#7a4e20;text-decoration:underline;padding:0 2px;font-size:12px}
+#${PANEL_ID} .spark{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+#${PANEL_ID} .spark div{border:1px dashed #b8865a;border-radius:6px;padding:4px 7px;background:rgba(255,255,255,.25);font-size:12.5px}
+#${PANEL_ID} .spark b{display:block;font-size:10.5px;color:#6b4a26;font-weight:600}
 #${PANEL_ID} .grid{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center;margin-bottom:8px}
 #${PANEL_ID} input,#${PANEL_ID} select{font-family:inherit;font-size:13px;background:#fffaf0;border:1px solid #c9a44a;border-radius:5px;color:#3a1e06;height:26px}
 #${PANEL_ID} input[type=number]{width:60px}
@@ -253,7 +258,7 @@
               <span class="tag ${n ? "pl" : "new"}">${n ? `Played ${n}×` : "New"}</span></div>`;
           }).join("")}
             <div class="row ${selId === CUSTOM_ID ? "sel" : ""}" data-id="${CUSTOM_ID}">
-              <span>Custom Event</span><span class="att">you run it: spark ideas, your own check</span><span></span></div></div>
+              <span>Custom Event</span><span class="att">you run it, with your own check</span><span></span></div></div>
           ${confirmReplay && last ? `<div class="warn">Already played on this save${last.mapName ? ` (${esc(last.mapName)}` : " ("}${last.result ? `, ${esc(last.result === "success" ? "Pass" : last.result === "failure" ? "Fail" : last.result)}` : ""}). Play it again?</div>` : ""}
           <div class="foot">
             ${presets.length ? `<button data-a="random" ${unplayed ? "" : "disabled"}>Random new one</button>` : ""}
@@ -270,12 +275,15 @@
         el.innerHTML = `<span class="gm">GM</span>
           <h3>Skill Check · <b>Custom Event</b></h3>
           <div class="sub">${esc(area)} · you narrate; the check is set in Request Check · the title is only for the played log</div>
-          <div class="spark"><div><b>Hazard</b>${esc(form.sparks.hazard)}</div><div><b>Stakes</b>${esc(form.sparks.stakes)}</div><div><b>Twist</b>${esc(form.sparks.twist)}</div></div>
+          <div class="ideas" title="Optional. Only a prompt if you need one; ignore it otherwise.">
+            <div class="ideas-hd"><b>Need an idea?</b><i>Optional, ignore it if you have your own.</i><button type="button" class="link" data-a="reroll">Other ideas</button></div>
+            <div class="spark"><div><b>Hazard</b>${esc(form.sparks.hazard)}</div><div><b>Stakes</b>${esc(form.sparks.stakes)}</div><div><b>Twist</b>${esc(form.sparks.twist)}</div></div>
+          </div>
           <div class="grid">
             <span class="lbl">Title</span><input type="text" id="scx-title" value="${esc(form.title)}" placeholder="e.g. Crumbling Floor" />
             <span class="lbl">EXP</span><span class="inl"><input type="number" id="scx-exp" min="0" max="9" value="${form.exp}" /><label class="lbl"><input type="checkbox" id="scx-passonly" ${form.passOnly ? "checked" : ""} style="height:auto" /> only on a pass</label></span>
           </div>
-          <div class="foot"><button data-a="reroll">Deal new sparks</button><button data-a="list">Back to list</button><button data-a="skip" class="red">Skip tile</button><button data-a="start" class="hot">Start</button></div>`;
+          <div class="foot"><button data-a="list">Back to list</button><button data-a="skip" class="red">Skip tile</button><button data-a="start" class="hot">Start</button></div>`;
         const read = () => {
           form.title = el.querySelector("#scx-title").value.trim();
           form.exp = Math.max(0, Number(el.querySelector("#scx-exp").value) || 0);

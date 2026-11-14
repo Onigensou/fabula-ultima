@@ -1215,6 +1215,10 @@
 
   async function maybePlayFx(report, options = {}) {
     if (options.silent || options.playFx === false) return null;
+    // The feedback layer's line + battle's generic buff/debuff sound replace this
+    // flash + Dispel Magic, so an apply never plays two sounds.
+    const fbMode = options.feedback ?? (options.silent ? "none" : "show");
+    if (fbMode === "show" && globalThis.FU?.Feedback?.status) return null;
 
     const fxApi =
       globalThis.FUCompanion?.api?.activeEffectManager?.fx ??
