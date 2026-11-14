@@ -127,8 +127,10 @@ Hooks.once("ready", () => {
 
       #${DOM.BTN_ID} .oni-cr-tip {
         position: absolute;
-        right: 0;
-        bottom: calc(100% + 10px);
+        /* Left of the button, vertically centered — the slot above is the
+           Fabula Point (feather) button, which covered the old top tip. */
+        right: calc(100% + 10px);
+        top: 50%;
         background: rgba(10,10,12,0.92);
         border: 1px solid rgba(255,255,255,0.18);
         border-radius: 10px;
@@ -137,7 +139,7 @@ Hooks.once("ready", () => {
         color: rgba(255,255,255,0.9);
         white-space: nowrap;
         opacity: 0;
-        transform: translateY(4px);
+        transform: translate(4px, -50%);
         transition: opacity 120ms ease, transform 120ms ease;
         pointer-events: none;
         box-shadow: 0 10px 24px rgba(0,0,0,0.35);
@@ -145,7 +147,7 @@ Hooks.once("ready", () => {
 
       #${DOM.BTN_ID}:hover .oni-cr-tip {
         opacity: 1;
-        transform: translateY(0);
+        transform: translate(0, -50%);
       }
 
       #${DOM.BTN_ID}[data-disabled="1"] {
