@@ -598,6 +598,26 @@ em.sv.sv-flash{animation:fuNstFlash .9s ease-out}
 @keyframes fxRoo{50%{filter:drop-shadow(0 0 10px #8a3fe0) drop-shadow(0 0 22px #3a0f66) brightness(.85)}}
 @media (max-width:620px){ .fxt{width:20px;height:20px} }
 @media (prefers-reduced-motion: reduce){ .fxt,.holo .cue *,.slot .holo.on .spr{animation:none !important} }
+/* ===== passive card band (battle mode's Bravely Default II band) ===== */
+.pband{position:absolute;left:0;top:0;transform:translate(-50%,-50%);pointer-events:none;display:grid;gap:3px;padding:5px 34px;z-index:24;
+  background:linear-gradient(90deg,rgba(6,5,4,0),rgba(6,5,4,.84) 16%,rgba(6,5,4,.84) 84%,rgba(6,5,4,0));color:#fff;font-family:'Signika','Palatino Linotype',serif;white-space:nowrap;
+  animation:pbIn 280ms cubic-bezier(.22,1,.36,1) both;--tc:#e2c27e;--tg:transparent}
+.pband.out{animation:pbOut 260ms ease-in forwards}
+.pband::before,.pband::after{content:"";position:absolute;left:14%;right:14%;height:1px;background:linear-gradient(90deg,transparent,var(--tc),transparent);filter:drop-shadow(0 0 3px var(--tg))}
+.pband::before{top:0} .pband::after{bottom:0}
+.pband[data-tier="offense"],.pband [data-tier="offense"]{--tc:#ff5a6e;--tg:rgba(255,80,105,.75)}
+.pband[data-tier="defense"],.pband [data-tier="defense"]{--tc:#62b6ff;--tg:rgba(80,170,255,.75)}
+.pband[data-tier="support"],.pband [data-tier="support"]{--tc:#5fdc8f;--tg:rgba(80,220,140,.7)}
+.pb-row{display:flex;align-items:center;gap:7px;font-size:16px;line-height:1.15;letter-spacing:.01em;text-shadow:0 1px 0 rgba(0,0,0,.65),0 0 6px rgba(0,0,0,.6)}
+.pb-row.is-added{animation:pbLine 300ms cubic-bezier(.22,1,.36,1) both}
+.pb-img{flex:none;width:20px;height:20px;border-radius:5px;border:1.5px solid var(--tc);overflow:hidden;background:#3a3228;box-shadow:0 0 6px var(--tg)}
+.pb-img img{display:block;width:100%;height:100%;object-fit:cover;max-width:none}
+.pb-x{color:#ffd780;font-weight:700;font-size:.9em}
+.pb-x:empty{display:none}
+@keyframes pbIn{0%{opacity:0;transform:translate(-62%,-50%)}100%{opacity:1;transform:translate(-50%,-50%)}}
+@keyframes pbOut{0%{opacity:1;transform:translate(-50%,-50%)}100%{opacity:0;transform:translate(-38%,-50%)}}
+@keyframes pbLine{0%{opacity:0;transform:translateX(-10px)}100%{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){ .pband,.pb-row{animation-duration:.01s !important} }
 /* ===== start-of-game intro ===== */
 .table.intro{pointer-events:none}
 .table.intro-pre .slot,.table.intro-pre .hcard,.table.intro-pre .hback{opacity:0}
@@ -624,7 +644,7 @@ em.sv.sv-flash{animation:fuNstFlash .9s ease-out}
 <script>
 
 // ===================== CONFIG (all [TUNE]) =====================
-const CFG = { TEAM:3, BUDGET:5, ROUND_CAP:20, STR:2, GOLEM:3, REMEDY:3, SHARD:1, ADV:2, DIS:2, AB_HEAL:2, AI_NOISE:0.25, TIMER:30, PYRE_N:1, PYRE_BURST:4, VORACIOUS:3, ENTRY:2, CHARM:2, KNIFE:9999, VENOM:2, KCHARGE:3, TAILWIND:3, TW_ALL:0, ROO_LEAVE:1, ROO_MARK:0, ROO_BENCH:2, ROO_GOLEM:0, ROO_STEPS:2 };   // ROO_BENCH: 0 per-victim, 1 walks on bench, 2 field only
+const CFG = { TEAM:3, BUDGET:5, ROUND_CAP:20, STR:2, GOLEM:3, REMEDY:3, SHARD:1, ADV:2, DIS:2, AB_HEAL:2, AI_NOISE:0.25, TIMER:30, PYRE_N:1, PYRE_BURST:4, VORACIOUS:3, ENTRY:2, CHARM:2, KNIFE:9999, VENOM:2, KCHARGE:3, TAILWIND:3, TW_ALL:0, ROO_LEAVE:1, ROO_MARK:0, ROO_BENCH:2, ROO_GOLEM:0, ROO_STEPS:2, HOWL_NEXT:0, WINDUP_NEXT:1 };   // ROO_BENCH: 0 per-victim, 1 walks on bench, 2 field only
 // v0.5 AI profiles: difficulty sets noise + random-pick chance; style multiplies action weights (ChatGPT v0.5 §6)
 const AI_DIFF = { casual:{noise:0.25, rand:0.15, speed:false}, skilled:{noise:0.10, rand:0.03, speed:true, lookahead:true} };
 const AI_STYLE = {
@@ -682,14 +702,14 @@ const CARDS = {
   hellhound:{name:'Hellhound', el:'dark', cost:1, role:'Hunter', atk:4, hp:8, def:0, ab:'On the Hunt', txt:'+1 ATK against a monster at half its max HP or less.'},
   scorpion: {name:'Bandit Scorpion', el:'poison', cost:1, role:'Striker', atk:3, hp:9, def:0, ab:'Venom Sting', txt:'The first time its attack deals damage, +2 damage. Once per match.'},
   archer:   {name:'Bandit Archer', el:'phys', cost:1, role:'Striker', atk:3, hp:8, def:1, ab:'Double Strafe', txt:'Whenever it attacks, it also deals 1 damage to a random benched enemy (ignores DEF, items and elements).'},
-  wolf:     {name:'Wolf', el:'phys', cost:1, role:'Combo', atk:3, hp:10, def:0, ab:'Howl', txt:'After it Passes, its next attack gets +1 ATK (does not stack).'},
+  wolf:     {name:'Wolf', el:'phys', cost:1, role:'Combo', atk:3, hp:10, def:0, ab:'Howl', txt:'When it Passes, its attack this round gets +1 ATK.'},
   obsidrax: {name:'Obsidrax', el:'earth', cost:1, role:'Guardian', atk:3, hp:9, def:1, ab:'Earthen Wire', txt:'The first Bolt attack that would damage it is grounded: it takes none, and that damage hits a random enemy instead. Once per match.'},
   fulgimite:{name:'Fulgimite', el:'bolt', cost:2, role:'Pivot', atk:4, hp:9, def:0, ab:'Evasion', txt:'Takes 2 less attack damage in a round it enters by voluntary Switch.'},
   kirin:    {name:'Kirin', el:'bolt', cost:2, role:'Punisher', atk:2, hp:10, def:1, ab:'Lightning Charge', txt:'When an attack damages it, it charges: +3 ATK on its attack next round.'},
   cryo:     {name:'Cryo Gorger', el:'ice', cost:1, role:'Punisher', atk:3, hp:9, def:0, ab:'Cryo Explosion', txt:'When an attack KOs it, it bursts: 2 damage to the attacker.'},
   inferex:  {name:'Inferex', el:'fire', cost:2, role:'Hunter', atk:4, hp:9, def:0, ab:'Voracious', txt:'When its attack KOs the enemy active monster and it survives, 3 damage to a random benched enemy.'},
   roper:    {name:'Roper', el:'phys', cost:2, role:'Punisher', atk:3, hp:11, def:1, ab:'Entangle', txt:'+1 ATK against a monster that entered by voluntary Switch this round.'},
-  rgolem:   {name:'Rock Golem', el:'earth', cost:2, role:'Guardian', atk:2, hp:9, def:2, ab:'Wind Up', txt:'After it Passes, its next attack is an Earthquake: it also deals 1 damage to every benched enemy (does not stack).'},
+  rgolem:   {name:'Rock Golem', el:'earth', cost:2, role:'Guardian', atk:2, hp:9, def:2, ab:'Wind Up', txt:'After a round in which it Passes, its next attack is an Earthquake: it also deals 1 damage to every benched enemy (does not stack).'},
   gigas:    {name:'Gigas', el:'earth', cost:3, role:'Striker', atk:4, hp:9, def:1, ab:'Crushing Blow', txt:'+1 ATK against a monster with printed DEF 1 or more.'},
   flame:    {name:'Wandering Flame', el:'fire', cost:3, role:'Pivot', atk:5, hp:11, def:0, ab:'Dynamic Entry', txt:'When it enters by voluntary Switch, it deals 2 Fire damage to the enemy active monster (ignores DEF and items).'},
   // ---- future unlocks / retired (never in the launch pool) ----
@@ -851,7 +871,10 @@ function resolveRound(ch){
   for (const s of [0,1]) if (ev.switched[s] && mon(P[s],P[s].active).cid==='flame'){ const t=mon(P[1-s],P[1-s].active); if (t && t.hp>0){ const b=t.hp; t.hp=Math.max(0,t.hp-CFG.ENTRY); (ev.entry=ev.entry||[]).push({s:1-s,amt:b-t.hp}); S.stats.entry=(S.stats.entry||0)+1;
       L.push([`Dynamic Entry: Wandering Flame bursts in, ${b-t.hp} Fire damage to ${N(t.cid)} (${t.hp} HP).`,'']); } }
   for (const s of [0,1]){ const a=ch[s].action; S.stats.acts[s][a]=(S.stats.acts[s][a]||0)+1; if (ITEMS[a]){ P[s].items[a]=0; ev.items[s]=a; } }
-  for (const s of [0,1]) if (ch[s].action==='PASS'){ const m=mon(P[s],P[s].active); if (m.cid==='wolf' && !m.howl){ m.howl=true; L.push(['Wolf howls: its next attack gets +1 ATK.','m']); }
+  // Howl same round, Wind Up next attack (per-card timing, same as fa-engine.js)
+  const armNext = m => (m.cid==='wolf' && CFG.HOWL_NEXT===1) || (m.cid==='rgolem' && CFG.WINDUP_NEXT===1);
+  for (const s of [0,1]) if (ch[s].action==='PASS' && armNext(mon(P[s],P[s].active))) (ev.passArm=ev.passArm||[]).push(s);
+  for (const s of [0,1]) if (ch[s].action==='PASS' && !armNext(mon(P[s],P[s].active))){ const m=mon(P[s],P[s].active); if (m.cid==='wolf' && !m.howl){ m.howl=true; L.push(['Wolf howls: +1 ATK on its attack this round.','m']); }
     if (m.cid==='rgolem' && !m.windup){ m.windup=true; L.push(['Rock Golem winds up: its next attack will be an Earthquake.','m']); } }
   const startHP=[0,1].map(s=>mon(P[s],P[s].active).hp);
   for (const s of [0,1]) if (ch[s].action==='REMEDY'){
@@ -931,6 +954,9 @@ function resolveRound(ch){
     if (m.walk!==b) L.push([`Roo takes a step (${m.walk}/${need})${m.walk===need?': its next attack draws the knife.':'.'}`,'m']); }
   for (const s of [0,1]){ const m=mon(P[s],P[s].active); if (m && m.leaving){ m.leaving=false; const oppLeft=P[1-s].roster.some(x=>!x.ko && x.hp>0);
       if (oppLeft){ m.hp=0; L.push(['Roo puts the knife away, walks off, and is gone from the duel.','m']); } } }
+  for (const s of (ev.passArm||[])){ const m=mon(P[s],P[s].active); if (!m || m.hp<=0) continue;
+    if (m.cid==='wolf' && !m.howl){ m.howl=true; L.push(['Wolf howls: its next attack gets +1 ATK.','m']); }
+    if (m.cid==='rgolem' && !m.windup){ m.windup=true; L.push(['Rock Golem winds up: its next attack will be an Earthquake.','m']); } }
   // KO
   for (const s of [0,1]){ const m=mon(P[s],P[s].active); if (m.hp<=0 && !m.ko){ m.ko=true; ev.ko[s]=true; S.stats.kos.push(m.cid); L.push([`${N(m.cid)} is knocked out!`,'k']); } }
   const out0=living(P[0]).length===0, out1=living(P[1]).length===0;
@@ -1430,6 +1456,77 @@ function renderEffects(){
   document.addEventListener('click', (e)=>{ const el=e.target.closest && e.target.closest('[data-tip]'); if (el){ if (cur===el) hide(); else show(el); if (el.classList.contains('fxt')) e.stopPropagation(); } else if (cur) hide(); }, true);
 })();
 
+// ===================== passive card band (ported from battle mode, battle-director/passive-card-ui) =====================
+// When an ability acts on the spot during a round (Howl, Thick Skin, Static discharge, Earthquake…), a Bravely Default II
+// band slides across that monster's waist: soft black band, gold hairlines tinted by tier, the ability's icon in a
+// rounded-square frame, its name in Signika. One line per ability; a second ability on the same monster within 1 s joins
+// the live band (×N for the same one). Hold 1.6 s, slide out. Sound: battle mode's passive_card.wav at 0.3.
+// Tiers (battle colours): offense red · defense blue · support green.
+const PB = { IN:280, OUT:260, HOLD:1600, JOIN:1000 };
+const PB_ICON = { 'Howl':'fx_howl', 'Funeral Pyre':'fx_burn', 'Lightning Charge':'fx_charge', 'Crushing Blow':'fx_howl', 'Mana Catcher':'fx_howl',
+  'On the Hunt':'fx_howl', 'Entangle':'fx_howl', 'Venom Sting':'fx_venom', 'Static Buildup':'fx_static', "Chef's Knife":'fx_approach',
+  'Thick Skin':'fx_shield', 'Pyrophagy':'fx_shield', 'Earthen Wire':'fx_windup', 'Evasion':'fx_guard', 'Soft Landing':'fx_guard', 'Fortify':'fx_guard',
+  'Earthquake':'fx_windup', 'Double Strafe':'fx_pierce', 'Voracious':'fx_pierce', 'Dynamic Entry':'fx_burn', 'Charm':'fx_charm', 'Tailwind':'fx_wind',
+  'Cryo Explosion':'fx_freeze', 'Aero Explosion':'fx_wind', 'Renewal':'fx_heal', 'Undying Flame':'fx_return' };
+// attack-breakdown text (calcAttack's line) → ability names, per side of the hit
+const PB_OFF = ['Howl','Funeral Pyre','Lightning Charge','Crushing Blow','Mana Catcher','On the Hunt','Entangle','Venom Sting','Static Buildup',"Chef's Knife"];
+const PB_DEF = ['Thick Skin','Pyrophagy','Earthen Wire','Evasion','Soft Landing','Fortify'];
+const PBAND = [null, null];
+function passiveBand(s, lines){
+  if (!lines || !lines.length || !S || typeof document==='undefined') return;
+  const L=$('#fxl'), slot=$(`#slot${s}_${S.p[s].active}`); if (!L || !slot || !L.appendChild) return;
+  const now=Date.now(); let b=PBAND[s];
+  if (!b || !b.el.isConnected || now-b.last>PB.JOIN || b.out){
+    const c=spriteCenter(s), el=document.createElement('div');
+    el.className='pband'; el.style.left=c.x+'px'; el.style.top=(c.y+8)+'px';
+    L.appendChild(el); b=PBAND[s]={ el, last:now, rows:{}, t:null, out:false };
+  }
+  for (const ln of lines){
+    const ex=b.rows[ln.name];
+    if (ex){ ex.n++; ex.x.textContent='×'+ex.n; ex.row.classList.remove('is-added'); void ex.row.offsetWidth; ex.row.classList.add('is-added'); }
+    else { const row=document.createElement('div'); row.className='pb-row is-added'; row.dataset.tier=ln.tier;
+      row.innerHTML=`<span class="pb-img"><img src="${fxAttr(ART[ln.icon || PB_ICON[ln.name]] || '')}" alt=""></span><span class="pb-name">${esc(ln.name)}</span><span class="pb-x"></span>`;
+      b.el.appendChild(row); b.rows[ln.name]={ row, n:1, x:row.querySelector('.pb-x') }; }
+    b.el.dataset.tier = b.el.dataset.tier==='offense' ? 'offense' : ln.tier;   // the band takes its highest line's colour
+  }
+  b.last=now; sfx('passive', 0.55, 0);
+  clearTimeout(b.t); const bb=b;
+  b.t=setTimeout(()=>{ bb.out=true; bb.el.classList.add('out'); setTimeout(()=>bb.el.remove(), PB.OUT); }, PB.HOLD);
+}
+function pbFromLine(r, list){ const t=(r && r.line) || ''; return list.filter(n=>t.includes(n)); }
+// what fired in one hit: attacker side (as the strike starts) and defender side (at impact)
+function pbHit(s, r){
+  if (!r) return { off:[], def:[] };
+  const off=pbFromLine(r, PB_OFF).map(name=>({ name, tier:'offense' }));
+  const def=pbFromLine(r, PB_DEF).map(name=>({ name, tier:'defense' }));
+  const D=CARDS[r.d && r.d.cid]; if (r.usedAbsorb && D) def.push({ name:D.ab, tier:'defense', icon:'fx_shield' });
+  if (r.undying) def.push({ name:'Undying Flame', tier:'defense' });
+  return { off, def };
+}
+// on entering: Dynamic Entry (Wandering Flame), Charm (Succubus)
+function pbEnter(ev){
+  for (const s of [0,1]) if (ev.switched && ev.switched[s]){ const m=S.p[s].roster[S.p[s].active]; if (!m) continue;
+    if (m.cid==='flame') passiveBand(s, [{ name:'Dynamic Entry', tier:'offense' }]);
+    if (m.cid==='succubus') passiveBand(s, [{ name:'Charm', tier:'offense' }]); }
+}
+// after the hits: Earthquake / Double Strafe / Voracious (attacker), Explosion / Renewal (the fallen or surviving defender), Tailwind
+function pbAfter(ev){
+  for (const s of [0,1]){
+    const r=ev.res && ev.res[s]; if (!r) continue;
+    const srcs=new Set((ev.direct||[]).filter(d=>d.s===1-s).map(d=>d.src));
+    const off=['Earthquake','Double Strafe','Voracious'].filter(n=>srcs.has(n)).map(name=>({ name, tier:'offense' }));
+    if (r.a && r.a.cid==='sylph') off.push({ name:'Tailwind', tier:'support' });
+    if (off.length) passiveBand(s, off);
+  }
+  for (const s of [0,1]) for (const [k] of (ev.after[s]||[])){
+    const m=S.p[s].roster[S.p[s].active]; if (!m) continue;
+    if (k==='heal' && m.cid==='life') passiveBand(s, [{ name:'Renewal', tier:'support' }]);
+  }
+  for (const s of [0,1]) for (const [k] of (ev.after[1-s]||[])) if (k==='burst'){
+    const r=ev.res[s]; const fallen=r && r.d; if (fallen) passiveBand(1-s, [{ name: CARDS[fallen.cid].ab, tier:'offense', icon: fallen.cid==='cryo'?'fx_freeze':'fx_wind' }]);
+  }
+}
+
 // ===================== start-of-game intro =====================
 // 1) the three monsters of each side slide into place, staggered, both sides together (Book1 per pair)
 // 2) both hands are dealt from the middle of the table at the same time, one card after another (Book1 per card)
@@ -1583,6 +1680,7 @@ async function playRound(ev, before){
   // temporarily display pre-resolution HP/KO
   for (const s of [0,1]) for (const m of S.p[s].roster){ m._hp=m.hp; m._ko=m.ko; m.hp=before[s][m.i]; m.ko=before[s][m.i]<=0; }
   updateField();
+  pbEnter(ev);
   if (ev.enter[0]||ev.enter[1]) await sleep(900);
   // 2. items
   const it=[0,1].filter(s=>ev.items[s]);
@@ -1594,15 +1692,19 @@ async function playRound(ev, before){
   if (ev.seq){
     for (let k=0;k<ev.seq.length;k++){
       const s=ev.seq[k], one={res:[null,null]}; one.res[s]=ev.res[s];
-      await fxClash(one); popFor(1-s, ev.res[s]);
+      const pb=pbHit(s, ev.res[s]); passiveBand(s, pb.off);            // attacker's abilities as it strikes
+      await fxClash(one); popFor(1-s, ev.res[s]); passiveBand(1-s, pb.def);   // defender's at impact
       const sn=ev.snaps[k]; for (const q of [0,1]) setHP(q, S.p[q].active, sn[q]);
       if (k<ev.seq.length-1) await sleep(420);
     }
     if (ev.denied!=null){ const d=$(`#slot${ev.denied}_${S.p[ev.denied].active}`); if (d){ d.classList.add('downed'); } await sleep(250); }
   } else {
+    const pbs=[0,1].map(s=>pbHit(s, ev.res[s])); for (const s of [0,1]) passiveBand(s, pbs[s].off);
     await fxClash(ev);
     for (const s of [0,1]){ const r=ev.res[1-s]; if (r) popFor(s, r); }
+    for (const s of [0,1]) passiveBand(1-s, pbs[s].def);
   }
+  pbAfter(ev);
   // restore true state
   for (const s of [0,1]) for (const m of S.p[s].roster){ m.hp=m._hp; m.ko=m._ko; delete m._hp; delete m._ko; }
   updateField();

@@ -104,8 +104,13 @@
     for (const s of [0,1]) if (ev.switched[s] && mon(P[s],P[s].active).cid==='flame'){ const t=mon(P[1-s],P[1-s].active); if (t && t.hp>0){ const b=t.hp; t.hp=Math.max(0,t.hp-CFG.ENTRY); (ev.entry=ev.entry||[]).push({s:1-s,amt:b-t.hp}); S.stats.entry=(S.stats.entry||0)+1;
         L.push([`Dynamic Entry: Wandering Flame bursts in, ${b-t.hp} Fire damage to ${N(t.cid)} (${t.hp} HP).`,'']); } }
     for (const s of [0,1]){ const a=ch[s].action; S.stats.acts[s][a]=(S.stats.acts[s][a]||0)+1; if (ITEMS[a]){ P[s].items[a]=0; ev.items[s]=a; } }
-    for (const s of [0,1]) if (ch[s].action==='PASS'){ const m=mon(P[s],P[s].active); if (m.cid==='wolf' && !m.howl){ m.howl=true; L.push(['Wolf howls: its next attack gets +1 ATK.','m']); }
-      if (m.cid==='rgolem' && !m.windup){ m.windup=true; L.push(['Rock Golem winds up: its next attack will be an Earthquake.','m']); } }
+    // Howl / Wind Up timing, per card (CFG.HOWL_NEXT / CFG.WINDUP_NEXT): 0 = armed on the Pass and used by that same round's
+    // attack; 1 = armed at the END of the round it Passed, so it powers the NEXT attack (visible for a whole decision; can stack
+    // with an item); 2 = ability off (balance sims only). Live rules (2026-11-14 sim): Wolf 0, Rock Golem 1.
+    const armNext = m => (m.cid==='wolf' && CFG.HOWL_NEXT===1) || (m.cid==='rgolem' && CFG.WINDUP_NEXT===1);
+    for (const s of [0,1]) if (ch[s].action==='PASS' && armNext(mon(P[s],P[s].active))) (ev.passArm=ev.passArm||[]).push(s);
+    for (const s of [0,1]) if (ch[s].action==='PASS' && !armNext(mon(P[s],P[s].active))){ const m=mon(P[s],P[s].active); if (m.cid==='wolf' && CFG.HOWL_NEXT!==2 && !m.howl){ m.howl=true; L.push(['Wolf howls: +1 ATK on its attack this round.','m']); }
+      if (m.cid==='rgolem' && CFG.WINDUP_NEXT!==2 && !m.windup){ m.windup=true; L.push(['Rock Golem winds up: its next attack will be an Earthquake.','m']); } }
     const startHP=[0,1].map(s=>mon(P[s],P[s].active).hp);
     for (const s of [0,1]) if (ch[s].action==='REMEDY'){
       const m=mon(P[s],P[s].active), amt=CFG.REMEDY, b=m.hp;
@@ -184,6 +189,9 @@
       if (m.walk!==b) L.push([`Roo takes a step (${m.walk}/${need})${m.walk===need?': its next attack draws the knife.':'.'}`,'m']); }
     for (const s of [0,1]){ const m=mon(P[s],P[s].active); if (m && m.leaving){ m.leaving=false; const oppLeft=P[1-s].roster.some(x=>!x.ko && x.hp>0);
         if (oppLeft){ m.hp=0; L.push(['Roo puts the knife away, walks off, and is gone from the duel.','m']); } } }
+    for (const s of (ev.passArm||[])){ const m=mon(P[s],P[s].active); if (!m || m.hp<=0) continue;
+      if (m.cid==='wolf' && !m.howl){ m.howl=true; L.push(['Wolf howls: its next attack gets +1 ATK.','m']); }
+      if (m.cid==='rgolem' && !m.windup){ m.windup=true; L.push(['Rock Golem winds up: its next attack will be an Earthquake.','m']); } }
     // KO
     for (const s of [0,1]){ const m=mon(P[s],P[s].active); if (m.hp<=0 && !m.ko){ m.ko=true; ev.ko[s]=true; S.stats.kos.push(m.cid); L.push([`${N(m.cid)} is knocked out!`,'k']); } }
     const out0=living(P[0]).length===0, out1=living(P[1]).length===0;

@@ -56,7 +56,13 @@ const ART = {
  "fx_slow": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Stun.png",
  "fx_shield": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Shield.png",
  "fx_venom": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Poison.png",
- "fx_wind": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Wind.png"
+ "fx_wind": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Wind.png",
+ // passive card band icons
+ "fx_guard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20UP.png",
+ "fx_pierce": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Pierce.png",
+ "fx_freeze": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Freeze.png",
+ "fx_heal": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Potion_IconC.png",
+ "fx_return": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Return.png"
 };
 const SFXDATA = {};
 const SFXURL = {
@@ -89,7 +95,8 @@ const SFXURL = {
  "draw": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Down2.ogg",
  "cursor": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_2.wav",
  "cafe": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Haste.ogg",
- "whoosh": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Evasion2.ogg"
+ "whoosh": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Evasion2.ogg",
+ "passive": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/passive_card.wav"
 };
 const FA_BGM = {
  "intro": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Bravely%20Default%20II/Bind%20and%20Divide%20-%20Intro.ogg",

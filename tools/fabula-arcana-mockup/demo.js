@@ -40,6 +40,7 @@
     <div class="r">Banner sound <select id="d-wh"><option value="whoosh">Evasion2</option><option value="alt_wind3">Wind3</option><option value="alt_wind4">Wind4</option><option value="alt_wind7">Wind7</option></select></div>
     <h4>Status effects</h4>
     <div class="r"><button type="button" id="d-fx">Set up effects</button><button type="button" id="d-fx1">+1 Static / step</button></div>
+    <div class="r"><button type="button" id="d-pb">Passive card band</button></div>
     <h4>Result screen</h4>
     <div class="r"><button type="button" id="d-win">Win now</button><button type="button" id="d-lose">Lose now</button></div>
     <div class="r"><button type="button" id="d-rem">PvP: Blanche wants a rematch</button></div>
@@ -71,6 +72,12 @@
     for (const m of S.p[0].roster) { if (m.cid === 'skizzik') m.static = Math.min(2, (m.static || 0) + 1); if (m.cid === 'roo') m.walk = Math.min(CFG.ROO_STEPS, (m.walk || 0) + 1); }
     updateField();
   };
+
+  // on-the-spot abilities: the battle-mode band across the waist (offense / defense / support)
+  let pbi = 0;
+  $d('d-pb').onclick = () => { if (!S || S.phase === 'opening') return msg('Start a duel and pick your opener first.'); sndInit();
+    const sets = [[1, [{ name: 'Howl', tier: 'offense' }]], [0, [{ name: 'Thick Skin', tier: 'defense' }, { name: 'Earthen Wire', tier: 'defense' }]], [0, [{ name: 'Static Buildup', tier: 'offense' }]], [1, [{ name: 'Tailwind', tier: 'support' }]], [1, [{ name: 'Earthquake', tier: 'offense' }, { name: 'Earthquake', tier: 'offense' }]]];
+    const [side, lines] = sets[pbi++ % sets.length]; passiveBand(side, lines); };
 
   $d('d-inv').onclick = () => {
     sndInit();
