@@ -943,9 +943,6 @@ Hooks.once("ready", () => {
       .oni-sum-card > * { transition: opacity 320ms ease; }
       .oni-sum-card.is-page2 > *:not(.oni-sum-header):not(.oni-sum-p2) { opacity: 0; }
       .oni-sum-p2 { position: absolute; left: 61px; right: 14px; bottom: 10px; display: flex; flex-direction: column; gap: 4px; pointer-events: none; }
-      .oni-sum-p2 .lab { font-size: 11px; font-weight: 900; letter-spacing: 1.2px; text-transform: uppercase; color: #ffd278; opacity: 0; transition: opacity 260ms ease;
-        text-shadow: -1px 0 0 rgba(0,0,0,.85), 1px 0 0 rgba(0,0,0,.85), 0 -1px 0 rgba(0,0,0,.85), 0 1px 0 rgba(0,0,0,.85); }
-      .oni-sum-p2 .lab.is-in { opacity: 1; }
       .oni-sum-dr { display: flex; align-items: center; gap: 8px; height: 24px; opacity: 0; transform: translateX(-10px);
         transition: opacity 260ms ease, transform 300ms cubic-bezier(.3,1.4,.5,1); }
       .oni-sum-dr.is-in { opacity: 1; transform: none; }
@@ -1254,7 +1251,6 @@ Hooks.once("ready", () => {
   // payload.drops = [{ actorId, kind: "card" | "item", name, img, qty, el? }]
   // (Fabula Arcana monster cards today; item drops can fill the same list.)
   // ---------------------------------------------------------------------------
-  const DROP_CARD_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Down2.ogg";
   const DROP_ROWS_MAX = 3;
   function dropRowsHtml(list) {
     let rows = list;
@@ -1286,7 +1282,7 @@ Hooks.once("ready", () => {
       if (!c.card) continue;
       const p2 = document.createElement("div");
       p2.className = "oni-sum-p2";
-      p2.innerHTML = `<div class="lab">Drops</div>${dropRowsHtml(stackDrops(drops, String(c.entry?.actorId ?? "")))}`;
+      p2.innerHTML = dropRowsHtml(stackDrops(drops, String(c.entry?.actorId ?? "")));
       const head = c.card.querySelector(".oni-sum-header");
       p2.style.top = `${(head ? head.offsetTop + head.offsetHeight : 28) + 2}px`;
       try { const cs = getComputedStyle(c.card); p2.style.left = cs.paddingLeft; p2.style.right = cs.paddingRight; } catch {}
@@ -1294,13 +1290,12 @@ Hooks.once("ready", () => {
       c.card.classList.add("is-page2");
       pages.push(p2);
     }
-    await sleep(380);
-    for (const p of pages) p.querySelector(".lab")?.classList.add("is-in");
-    await sleep(200);
+    await sleep(420);
+    // one soft tick per row, the same for every row ("No drops" included)
     for (const p of pages) {
       for (const r of p.querySelectorAll(".oni-sum-dr")) {
         r.classList.add("is-in");
-        if (r.dataset.kind === "card") playOnce(DROP_CARD_SFX, 0.65); else if (!r.classList.contains("none")) tickOnce();
+        tickOnce();
         await sleep(160);
       }
     }

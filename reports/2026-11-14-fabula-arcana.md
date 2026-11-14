@@ -85,7 +85,7 @@ Defeated monsters can drop their card at the end of a won battle.
   - `battle-end-summary-ui.js`: the payload gains `drops: [{ actorId, kind, name, img, qty, el? }]`.
 - **Victory screen** (`battleEnd-summaryUI-listener.js`): when something dropped, every character panel turns to a second page after the grade beats.
   - The name and level stay. The title, EXP and Zenit fade out.
-  - A DROPS list comes in row by row: icon, name, ×N. Card rows play Down2; same items stack. Three rows at most, then "+N more"; "No drops" when empty.
+  - The list comes in row by row (no label): icon, name, ×N, the same soft tick for every row. Same items stack. Three rows at most, then "+N more"; "No drops" when empty.
   - The list is generic, so item drops can use it later.
 - **Mockup:** Battle Grade v2 revision 8, https://claude.ai/artifact/BPgneV83ziwzd8UeNfkWoL (Drops page tab).
 - **Tested** with a real sandbox fight against Hellhounds (rank set to champion). The cards were granted to the characters who didn't own one, and the Drops page played on the real Victory screen.
