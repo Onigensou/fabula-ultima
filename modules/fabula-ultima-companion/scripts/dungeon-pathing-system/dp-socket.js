@@ -16,6 +16,7 @@
     RESET_DUNGEON:          "dungeonPathing.resetDungeon",
     TRIGGER_TREASURE:       "dungeonPathing.triggerTreasure",
     RANDOM_BATTLE:          "dungeonPathing.randomBattle",
+    SKILL_CHECK:            "dungeonPathing.skillCheck",
     TRAVEL:                 "dungeonPathing.travel",
     MARK_VISITED:           "dungeonPathing.markVisited",
     UNMARK_VISITED:         "dungeonPathing.unmarkVisited",
@@ -209,6 +210,20 @@
           return await DP.RandomBattle.run({ sceneId, tileId, tokenId, forced, verdict });
         } catch (e) {
           console.error(TAG, "randomBattle socket handler failed", e);
+          return { ok: false, error: e?.message };
+        }
+      });
+
+      // Run a Skill Check tile (dp-skill-check.js). Same one-GM routing as the
+      // random battle above; the reply comes when the party leaves for the
+      // theatre scene, or when an in-place / skipped check is over.
+      socket.register(HANDLERS.SKILL_CHECK, async (args) => {
+        if (!game.user?.isGM) return { ok: false, error: "Not GM" };
+        if (!DP.SkillCheck?.run) return { ok: false, error: "SkillCheck not loaded" };
+        try {
+          return await DP.SkillCheck.run(args);
+        } catch (e) {
+          console.error(TAG, "skillCheck socket handler failed", e);
           return { ok: false, error: e?.message };
         }
       });
@@ -452,6 +467,18 @@
       const socket = this._socket ?? window.FUCompanionSocket;
       if (!socket) { console.warn(TAG, "Socket not ready for randomBattle"); return { ok: false, error: "Socket not ready" }; }
       return socket.executeAsGM(HANDLERS.RANDOM_BATTLE, args);
+    },
+
+    /** Skill Check tile → the main GM's picker and trip. Resolves { ok, travelling?, skipped?, error? }. */
+    async requestSkillCheck(scene, tileId, tokenId) {
+      const args = { sceneId: scene.id, tileId, tokenId, userId: game.user?.id ?? null };
+      if (game.user?.isGM) {
+        if (!DP.SkillCheck?.run) { console.warn(TAG, "SkillCheck not loaded"); return { ok: false, error: "SkillCheck not loaded" }; }
+        return DP.SkillCheck.run(args);
+      }
+      const socket = this._socket ?? window.FUCompanionSocket;
+      if (!socket) { console.warn(TAG, "Socket not ready for skillCheck"); return { ok: false, error: "Socket not ready" }; }
+      return socket.executeAsGM(HANDLERS.SKILL_CHECK, args);
     },
 
     /**
