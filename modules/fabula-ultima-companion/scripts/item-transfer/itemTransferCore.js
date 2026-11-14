@@ -490,12 +490,33 @@
    * safety net for anything that survived — ids that are already gone are
    * filtered out so the call can't throw.
    */
+  //
+  // CSB's cascade is fire-and-forget (`item.delete()` not awaited), so a child
+  // can still be in the local collection while its delete is in flight; a
+  // second delete then fails on the server with `Item "<id>" does not exist!`.
+  // Delete one at a time and treat "already gone" as done.
   async function deleteChildTreeFromSender(nodes, senderActor) {
     if (!nodes?.length || !senderActor) return;
-    const ids = nodes
-      .map((n) => n.srcId)
-      .filter((id) => id && senderActor.items?.has?.(id));
-    if (ids.length) await senderActor.deleteEmbeddedDocuments("Item", ids);
+    for (const id of nodes.map((n) => n.srcId)) {
+      if (!id || !senderActor.items?.has?.(id)) continue;
+      try {
+        await senderActor.deleteEmbeddedDocuments("Item", [id]);
+      } catch (e) {
+        if (/does not exist/i.test(String(e?.message ?? e))) continue;
+        throw e;
+      }
+    }
+  }
+
+  /**
+   * Delete an item together with its sub-item tree, deepest first, then the
+   * item itself. Nothing is left for CSB's un-awaited cascade to race, so no
+   * double delete. `nodes` = snapshotChildTree(item): pre-order, so reversed
+   * puts every descendant before its ancestor.
+   */
+  async function deleteItemWithTree(item, nodes, senderActor) {
+    await deleteChildTreeFromSender([...(nodes ?? [])].reverse(), senderActor);
+    if (senderActor.items?.has?.(item.id)) await senderActor.deleteEmbeddedDocuments("Item", [item.id]);
   }
 
     // --------------------------------------------------------------------------
@@ -1312,21 +1333,14 @@
         newQty: senderRemaining
       });
     } else {
-      // Snapshot the tree before the parent's deletion breaks the
-      // system.container linkage we use to find it.
+      // Sub-items first (deepest first), then the item: see deleteItemWithTree.
       const childNodesToRemove = snapshotChildTree(sourceItem);
-      await senderActor.deleteEmbeddedDocuments("Item", [sourceItem.id]);
+      await deleteItemWithTree(sourceItem, childNodesToRemove, senderActor);
       console.log("[ItemTransferCore] Deleted sender item (quantity reached 0) in actorToGm.", {
         actorUuid: senderActor.uuid,
-        itemId: sourceItem.id
+        itemId: sourceItem.id,
+        subItems: childNodesToRemove.length
       });
-      if (childNodesToRemove.length) {
-        await deleteChildTreeFromSender(childNodesToRemove, senderActor);
-        console.log("[ItemTransferCore] Deleted sender sub-items along with parent (actorToGm).", {
-          actorUuid: senderActor.uuid,
-          count: childNodesToRemove.length
-        });
-      }
     }
 
     // A take is announced only when the caller asks (a shop sale is not news).

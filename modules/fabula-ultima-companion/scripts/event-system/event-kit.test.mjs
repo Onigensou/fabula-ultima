@@ -976,6 +976,8 @@ await quiet(async () => {
   bag.get = (id) => bag.find(i => i.id === id);
   const oldItems = party.items;
   party.items = bag;
+  // Box ids are "<owner actor id>.<item id>": the stash here.
+  const P = (id) => `${party.id}.${id}`;
 
   users.set("gm2", { id: "gm2", isGM: true, name: "GM II" });
   globalThis.FUCompanion = globalThis.FUCompanion ?? {};
@@ -1002,9 +1004,9 @@ await quiet(async () => {
   });
 
   check("offer: the bag is the party's real items only (no recipes), sorted by type",
-    ES.RowsOffer.bagForBox().map(i => i.id).join() === "whistle,coin,stone,claw", ES.RowsOffer.bagForBox().map(i => i.id).join());
+    ES.RowsOffer.bagForBox().map(i => i.id).join() === "party1.whistle,party1.coin,party1.stone,party1.claw", ES.RowsOffer.bagForBox().map(i => i.id).join());
   check("offer: a stack fills as many slots as it has units, unknown ids and over-use are dropped",
-    ES.RowsOffer.cleanSlots(["stone", "stone", "stone", "nope"], ES.RowsOffer.bagForBox(), { mode: "free" }, 4).join() === "stone,stone,,");
+    ES.RowsOffer.cleanSlots([P("stone"), P("stone"), P("stone"), P("nope")], ES.RowsOffer.bagForBox(), { mode: "free" }, 4).join() === "party1.stone,party1.stone,,");
 
   // GM Prompt: only the main GM's verdict counts.
   let sourceUsed = null;
@@ -1017,11 +1019,11 @@ await quiet(async () => {
         const open = offerSent.find(m => m.kind === "offer.open");
         check("offer: the box opens on every screen with the bag and the GM's presets",
           open?.data.box.count === 2 && open.data.bag.length === 4 && open.data.box.presets.map(p => p.label).join() === "Unsealed,Not satisfied");
-        await offerAsk("gm1", { sourceId, op: "slots", slots: ["coin", "claw"] });
+        await offerAsk("gm1", { sourceId, op: "slots", slots: [P("coin"), P("claw")] });
         check("offer: a GM does not move items for the table", !offerSent.some(m => m.kind === "offer.slots"));
-        await offerAsk("p1", { sourceId, op: "slots", slots: ["coin", "claw"] });
-        check("offer: the controller's slots are told to everyone", offerSent.some(m => m.kind === "offer.slots" && m.data.slots.join() === "coin,claw"));
-        await offerAsk("p1", { sourceId, op: "confirm", slots: ["coin", "claw"] });
+        await offerAsk("p1", { sourceId, op: "slots", slots: [P("coin"), P("claw")] });
+        check("offer: the controller's slots are told to everyone", offerSent.some(m => m.kind === "offer.slots" && m.data.slots.join() === "party1.coin,party1.claw"));
+        await offerAsk("p1", { sourceId, op: "confirm", slots: [P("coin"), P("claw")] });
         check("offer: confirming with GM Prompt waits for the GM", offerSent.some(m => m.kind === "offer.judging") && said.length === 0);
         await offerAsk("gm2", { sourceId, op: "verdict", presetId: "ok" });
         await sleep(20);
@@ -1048,10 +1050,10 @@ await quiet(async () => {
     await runEvent([offer(), text("after")], {
       during: async (sourceId) => {
         await sleep(10);
-        await offerAsk("p1", { sourceId, op: "confirm", slots: ["coin", "whistle"] });
+        await offerAsk("p1", { sourceId, op: "confirm", slots: [P("coin"), P("whistle")] });
         await offerAsk("gm1", { sourceId, op: "verdict", presetId: "__handBack" });
         check("offer: 'hand back' reopens the box with the items still in it",
-          offerSent.some(m => m.kind === "offer.reopen" && m.data.slots.join() === "coin,whistle"));
+          offerSent.some(m => m.kind === "offer.reopen" && m.data.slots.join() === "party1.coin,party1.whistle"));
         await offerAsk("p1", { sourceId, op: "withdraw" });
       }
     });
@@ -1062,8 +1064,8 @@ await quiet(async () => {
   const auto = (extra) => offer({ judge: "auto", mode: "specific", names: "Draconic Claw, Bloodied Coin", acceptedRows: [text("yes")], refusedRows: [text("no")], ...extra });
   await quiet(async () => {
     said.length = 0;
-    await runEvent([auto()], { during: async (sourceId) => { await sleep(10); await offerAsk("p1", { sourceId, op: "confirm", slots: ["coin", "claw"] }); } });
-    await runEvent([auto()], { during: async (sourceId) => { await sleep(10); await offerAsk("p1", { sourceId, op: "confirm", slots: ["coin", "stone"] }); } });
+    await runEvent([auto()], { during: async (sourceId) => { await sleep(10); await offerAsk("p1", { sourceId, op: "confirm", slots: [P("coin"), P("claw")] }); } });
+    await runEvent([auto()], { during: async (sourceId) => { await sleep(10); await offerAsk("p1", { sourceId, op: "confirm", slots: [P("coin"), P("stone")] }); } });
   });
   check("offer: automatic + specific accepts the listed items in any order, refuses others", said.join() === "yes,no", said.join());
 
@@ -1075,11 +1077,11 @@ await quiet(async () => {
         await sleep(10);
         const claw = bag.findIndex(i => i.id === "claw");
         const [gone] = bag.splice(claw, 1);
-        await offerAsk("p1", { sourceId, op: "confirm", slots: ["coin", "claw"] });
+        await offerAsk("p1", { sourceId, op: "confirm", slots: [P("coin"), P("claw")] });
         check("offer: an item no longer in the bag empties its slot instead of being offered",
-          said.length === 0 && offerSent.some(m => m.kind === "offer.slots" && m.data.slots.join() === "coin,"));
+          said.length === 0 && offerSent.some(m => m.kind === "offer.slots" && m.data.slots.join() === "party1.coin,"));
         bag.push(gone);
-        await offerAsk("p1", { sourceId, op: "confirm", slots: ["coin", "claw"] });
+        await offerAsk("p1", { sourceId, op: "confirm", slots: [P("coin"), P("claw")] });
       }
     });
   });
@@ -1098,7 +1100,7 @@ await quiet(async () => {
     await runEvent([offer({ count: 3, presets: [{ id: "ok", label: "Take", rows: [{ type: "changeItems", op: "remove", what: "offered" }] }] })], {
       during: async (sourceId) => {
         await sleep(10);
-        await offerAsk("p1", { sourceId, op: "confirm", slots: ["stone", "stone", "coin"] });
+        await offerAsk("p1", { sourceId, op: "confirm", slots: [P("stone"), P("stone"), P("coin")] });
         await offerAsk("gm1", { sourceId, op: "verdict", presetId: "ok" });
       }
     });
@@ -1112,6 +1114,71 @@ await quiet(async () => {
   });
   check("Change Items: removing by name takes at most what the bag has; zenit goes to the party stash",
     removed[0]?.quantity === 2 && removed[1]?.zenit?.delta === 50 && removed[1].zenit.actorUuid === party.uuid);
+
+  // Members' own bags: tabs, owners, worn gear, stash-first removal.
+  {
+    const keren = members[1];
+    const own = (actor, id, name, type, qty, extra = {}) => ({ id, uuid: `Actor.${actor.id}.Item.${id}`, name, img: "", system: { props: { item_type: type, item_quantity: qty, description: "", ...extra } } });
+    const kBag = [own(keren, "k1", "Golem Soulstone", "consumable", 3), own(keren, "k2", "Iron Sword", "weapon", 1, { isEquipped: true }),
+      own(keren, "k3", "Old Bell", "key", 1), own(keren, "k4", "Empty Flask", "material", "0")];
+    kBag.get = (id) => kBag.find(i => i.id === id);
+    keren.items = kBag;
+    const stashBag = party.items;
+    // A transfer core that really takes the items (and throws after the
+    // delete, like gear with skills inside does).
+    const take = (p) => {
+      for (const list of [stashBag, kBag]) {
+        const it = list.find(i => i.uuid === p.itemUuid);
+        if (!it) continue;
+        const left = Number(it.system.props.item_quantity) - p.quantity;
+        if (left > 0) it.system.props.item_quantity = left;
+        else { list.splice(list.indexOf(it), 1); if (it.id === "k3") throw new Error(`Item "child" does not exist!`); }
+      }
+    };
+    window["oni.ItemTransferCore"].removeItemFromActor = async (p) => { removed.push(p); take(p); return { ok: true, removedQty: p.quantity }; };
+
+    const box = ES.RowsOffer.bagForBox();
+    const owners = ES.RowsOffer.ownersForBox();
+    check("member bags: one tab per owner, the stash first",
+      owners.map(o => o.name).join() === "Party Stash,Hina,Keren,Blanche,Zarg", owners.map(o => o.name).join());
+    check("member bags: a member's items are offered under their name; worn gear and empty (0) stacks are not",
+      box.filter(i => i.owner === "m2").map(i => i.id).sort().join() === "m2.k1,m2.k3" && box.find(i => i.id === "m2.k1")?.ownerName === "Keren",
+      box.filter(i => i.owner === "m2").map(i => i.id).join());
+    const rd = GameState.readerFor("scene1", "x");
+    check("member bags: 'Has item' counts the stash and every member, worn gear too",
+      rd.itemCount("golem soulstone") === 5 && rd.itemCount("Iron Sword") === 1 && rd.itemCount("Empty Flask") === 0);
+
+    let src = null;
+    await quiet(async () => {
+      removed.length = 0; said.length = 0;
+      await runEvent([offer({ count: 2, presets: [{ id: "ok", label: "Take", rows: [{ type: "changeItems", op: "remove", what: "offered" }] }] })], {
+        during: async (sourceId) => {
+          src = sourceId;
+          await sleep(10);
+          await offerAsk("p1", { sourceId, op: "confirm", slots: [P("coin"), "m2.k3"] });
+          await offerAsk("gm1", { sourceId, op: "verdict", presetId: "ok" });
+        }
+      });
+    });
+    const memo = GameState.readerFor("scene1", src).offering();
+    check("member bags: the offering remembers who gave each item",
+      memo?.items.map(i => `${i.name}/${i.from}/${i.fromId}`).join() === "Bloodied Coin/Party Stash/party1,Old Bell/Keren/m2",
+      JSON.stringify(memo?.items));
+    check("member bags: 'the offered items' are taken from whoever gave them (a core error after the delete still counts)",
+      removed.map(r => `${r.itemUuid}@${r.senderActorUuid}`).join() === `Actor.party1.Item.coin@${party.uuid},Actor.m2.Item.k3@Actor.m2`
+      && !kBag.get("k3") && !stashBag.get("coin"),
+      JSON.stringify(removed.map(r => [r.itemUuid, r.senderActorUuid])));
+
+    let res = null;
+    await quiet(async () => {
+      removed.length = 0;
+      res = await ES.EventRegistry.get("changeItems").execute({ type: "changeItems", op: "remove", what: "item", name: "Golem Soulstone", amount: 4 }, { tileId: "x" });
+    });
+    check("member bags: removing by name empties the stash first, then a member's bag, and says whose",
+      res?.removed === 4 && res.taken.map(t => `${t.qty}@${t.from}`).join() === "2@Party Stash,2@Keren" && kBag.get("k1")?.system.props.item_quantity === 1,
+      JSON.stringify(res));
+    delete keren.items;
+  }
 
   party.items = oldItems;
   users.delete("gm2");
