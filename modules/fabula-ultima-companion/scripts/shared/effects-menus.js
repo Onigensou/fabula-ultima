@@ -82,7 +82,9 @@ function ensureStyle() {
 .fu-fxm .icons button span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fu-fxm .icons img{width:22px;height:22px;border:0;flex:none}
 .fu-fxm .icons button.on{border-color:#c9a44a;background:rgba(201,164,74,.35);box-shadow:0 0 0 1px #c9a44a inset}
-.fu-fxm .ilist{grid-template-columns:repeat(2,1fr);max-height:150px}
+.fu-fxm .ilist{grid-template-columns:repeat(2,1fr);max-height:170px}
+.fu-fxm .ilist span{display:flex;flex-direction:column;line-height:1.15}
+.fu-fxm .ilist .ty{font-size:10.5px;color:#8a6a46;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fu-fxm .picked{display:flex;flex-direction:column;gap:3px;margin-bottom:8px}
 .fu-fxm .prow{display:grid;grid-template-columns:22px 1fr 56px 22px;gap:6px;align-items:center;font-size:12.5px}
 .fu-fxm .prow img{width:22px;height:22px;border:0}
@@ -286,6 +288,20 @@ function status(opts = {}) {
 const ITEM_TYPES = new Set(["weapon", "accessory", "consumable", "armor", "shield", "material", "key", "recipe", "misc"]);
 const itemType = (i) => String(i?.system?.props?.item_type ?? "").trim().toLowerCase();
 const itemQty = (i) => Math.max(1, Number(i?.system?.props?.item_quantity ?? 1) || 1);
+// Folder path, root first ("⚔️ Equipments / Prototype Equipments").
+const folderPath = (i) => { const p = []; let f = i?.folder; while (f) { p.unshift(f.name); f = f.folder; } return p; };
+// Not something to hand out: a CSB sub-item (a recipe's / gear's child, kept as
+// a hidden world item in "CSB - Embedded Items Folder", system.container set) or
+// a use-skill filed under the Skill folders (some are tagged item_type "recipe").
+const isGiftable = (i) => ITEM_TYPES.has(itemType(i))
+  && !i.system?.container
+  && !folderPath(i).some((n) => /CSB - Embedded Items Folder/i.test(n) || /^\W*Skill\b/i.test(n));
+// Rows carry their type; a name that is still listed twice also shows its folder.
+function labelRows(rows) {
+  const count = new Map();
+  for (const r of rows) count.set(r.name, (count.get(r.name) ?? 0) + 1);
+  return rows.map((r) => ({ ...r, where: count.get(r.name) > 1 ? r.folder : "" }));
+}
 
 async function partyBag() {
   try { return (await globalThis.FUCompanion?.api?.getCurrentGameDb?.())?.db ?? null; } catch { return null; }
@@ -294,8 +310,9 @@ async function partyBag() {
 async function items(opts = {}) {
   const bag = await partyBag();
   const s = { mode: "give", holder: bag?.uuid ?? null, q: "", picked: [], zenit: 0 };   // picked: [{ uuid, name, img, qty, max }]
-  const world = (game.items?.contents ?? []).filter((i) => ITEM_TYPES.has(itemType(i)))
-    .map((i) => ({ uuid: i.uuid, name: i.name, img: i.img, type: itemType(i) })).sort((a, b) => a.name.localeCompare(b.name));
+  const world = labelRows((game.items?.contents ?? []).filter(isGiftable)
+    .map((i) => ({ uuid: i.uuid, name: i.name, img: i.img, type: itemType(i), folder: folderPath(i).at(-1) ?? "" }))
+    .sort((a, b) => a.name.localeCompare(b.name) || a.type.localeCompare(b.type)));
   return openMenu("items", opts, (ctx) => {
     const holders = [...(bag ? [{ uuid: bag.uuid, name: "Party Bag" }] : []), ...ctx.actors.map((a) => ({ uuid: a.uuid, name: a.name }))];
     if (!s.holder && holders.length) s.holder = holders[0].uuid;
@@ -303,8 +320,10 @@ async function items(opts = {}) {
     const pool = () => {
       if (s.mode === "give") return world;
       const a = holder();
-      return (a?.items?.contents ?? []).filter((i) => ITEM_TYPES.has(itemType(i)))
-        .map((i) => ({ uuid: i.uuid, name: i.name, img: i.img, type: itemType(i), max: itemQty(i) })).sort((x, y) => x.name.localeCompare(y.name));
+      // What they hold, minus sub-items (an item's own skill / variants travel with it).
+      return labelRows((a?.items?.contents ?? []).filter((i) => ITEM_TYPES.has(itemType(i)) && !i.system?.container)
+        .map((i) => ({ uuid: i.uuid, name: i.name, img: i.img, type: itemType(i), max: itemQty(i), folder: "" }))
+        .sort((x, y) => x.name.localeCompare(y.name)));
     };
     ctx.bind = () => {
       const el = ctx.el;
@@ -360,7 +379,7 @@ async function items(opts = {}) {
         <span class="lbl">${giving ? "To" : "From"}</span><select id="fu-fxm-holder">${holders.map((h) => `<option value="${esc(h.uuid)}" ${h.uuid === s.holder ? "selected" : ""}>${esc(h.name)}</option>`).join("")}</select>
       </div>
       <input type="search" id="fu-fxm-iq" placeholder="${giving ? `Search ${world.length} items` : "Search what they hold"}" value="${esc(s.q)}" aria-label="Search items">
-      <div class="icons ilist">${list.length ? list.map((x) => `<button type="button" data-pick="${esc(x.uuid)}" class="${s.picked.some((p) => p.uuid === x.uuid) ? "on" : ""}" title="${esc(x.name)} · ${esc(x.type)}${x.max ? ` · holds ${x.max}` : ""}"><img src="${esc(x.img)}" alt=""><span>${esc(x.name)}</span></button>`).join("")
+      <div class="icons ilist">${list.length ? list.map((x) => `<button type="button" data-pick="${esc(x.uuid)}" class="${s.picked.some((p) => p.uuid === x.uuid) ? "on" : ""}" title="${esc(x.name)} · ${esc(x.type)}${x.max ? ` · holds ${x.max}` : ""}"><img src="${esc(x.img)}" alt=""><span>${esc(x.name)}<small class="ty">${esc(x.type)}${x.where ? ` · ${esc(x.where)}` : ""}${x.max ? ` · ×${x.max}` : ""}</small></span></button>`).join("")
         : `<span class="lbl">${empty}</span>`}</div>
       <div class="picked">${s.picked.map((p) => `<div class="prow"><img src="${esc(p.img)}" alt=""><span>${esc(p.name)}</span>
         <input type="number" min="1" max="${p.max ?? 999}" value="${p.qty}" data-qty="${esc(p.uuid)}" aria-label="Quantity of ${esc(p.name)}"><button type="button" class="x" data-unpick="${esc(p.uuid)}" title="Remove">×</button></div>`).join("")}</div>
