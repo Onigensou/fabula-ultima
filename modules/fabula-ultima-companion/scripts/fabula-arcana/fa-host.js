@@ -41,8 +41,11 @@ function seriesFor(s, viewer) {
 function payload(s, viewer) {
   if (!s.match) return {};
   return { view: E().View.forSeat(s.match, viewer), series: seriesFor(s, viewer), gameKey: s.gameKey,
-    msLeft: s.deadline ? Math.max(0, s.deadline - Date.now()) : 0, reward: viewer === 0 ? s.reward : null };
+    msLeft: msLeftFor(s, viewer), reward: viewer === 0 ? s.reward : null };
 }
+// Hina's Foretell window: the Foretelling seat always gets FORETELL_S after the other side's card lands (s.fore = { seat, at })
+function deadlineFor(s, viewer) { const f = s.fore && s.fore.seat === viewer ? s.fore.at : 0; return s.deadline ? Math.max(s.deadline, f) : 0; }
+function msLeftFor(s, viewer) { const d = deadlineFor(s, viewer); return d ? Math.max(0, d - Date.now()) : 0; }
 const toDuel = (s, uid, msg) => send(uid, "duel", { msg }, s.sid);
 function broadcast(s, build) { for (const p of participants(s)) toDuel(s, p.uid, build(p.viewer)); }
 function names(s, viewer) { const n = s.seats.map((t) => t.name); return viewer === 1 ? [n[1], n[0]] : n; }
@@ -105,7 +108,13 @@ export function restore() {
 }
 
 // ------------------------------------------------------------------ game flow
-function clearTimers(s) { const r = rt(s.sid); clearTimeout(r.timer); r.timer = null; r.ai.forEach((t) => clearTimeout(t)); r.ai = [null, null]; }
+function clearTimers(s) { const r = rt(s.sid); clearTimeout(r.timer); r.timer = null; clearTimeout(r.foreT); r.foreT = null; s.fore = null; r.ai.forEach((t) => clearTimeout(t)); r.ai = [null, null]; }
+const timeUp = (s, i) => { const t = s.seats[i]; notify(t.userId, "Time ran out — an automatic choice was made for you."); submit(s, i, E().Match.autoChoice(s.match, i)); };
+function scheduleAi(s, i, extra = 0) {
+  const M = E().Match, m = s.match, t = s.seats[i], r = rt(s.sid);
+  clearTimeout(r.ai[i]);
+  r.ai[i] = setTimeout(() => { if (s.match === m && M.needs(m, i)) submit(s, i, M.aiChoice(m, i, t.ai || { diff: "casual" })); }, extra + 700 + Math.random() * 1200);
+}
 
 // extra: ms to add before the first decision of a game (the duel window plays its start animation first)
 function decide(s, extra = 0) {
@@ -113,10 +122,11 @@ function decide(s, extra = 0) {
   const M = E().Match, m = s.match;
   if (!m || m.phase === "ended") return;
   const r = rt(s.sid);
+  const fs = m.phase === "choose" ? E().foretellSeat(m) : null;
   s.seats.forEach((t, i) => {
     if (t.kind !== "ai" || !M.needs(m, i)) return;
-    const [a, b] = [700, 1900];
-    r.ai[i] = setTimeout(() => { if (s.match === m && M.needs(m, i)) submit(s, i, M.aiChoice(m, i, t.ai || { diff: "casual" })); }, extra + a + Math.random() * (b - a));
+    if (i === fs && !m.commit[1 - i]) return;          // an AI holding Hina waits for the other card (scheduled in submit)
+    scheduleAi(s, i, extra);
   });
   // decision timer only when two humans play (v0.5: no timer against the AI)
   const humans = s.seats.filter((t) => t.kind === "human").length;
@@ -124,7 +134,14 @@ function decide(s, extra = 0) {
     s.deadline = Date.now() + extra + CFG().TIMER * 1000;
     r.timer = setTimeout(() => {
       if (s.match !== m || m.phase === "ended") return;
-      s.seats.forEach((t, i) => { if (t.kind === "human" && M.needs(m, i)) { notify(t.userId, "Time ran out — an automatic choice was made for you."); submit(s, i, M.autoChoice(m, i)); } });
+      // the Foretelling seat goes LAST: the other side's auto-Pass opens its window first (submit sets s.fore)
+      const order = fs === null ? [0, 1] : [1 - fs, fs];
+      for (const i of order) {
+        if (s.match !== m || m.phase === "ended") return;
+        if (s.seats[i].kind !== "human" || !M.needs(m, i)) continue;
+        if (i === fs && s.fore && s.fore.seat === fs && Date.now() < s.fore.at - 150) continue;   // still inside its Foretell window
+        timeUp(s, i);
+      }
     }, extra + CFG().TIMER * 1000 + 250);
   }
 }
@@ -173,17 +190,26 @@ async function submit(s, seat, choice) {
   const t = s.seats[seat];
   if (!r.ok) { if (t.userId) { notify(t.userId, `That move isn't possible: ${r.error}.`, "warn"); toDuel(s, t.userId, { t: "state", ...payload(s, seat) }); } return; }
   if (!r.resolved) {
-    // Hina's Foretell: the other side just chose → the Foretelling seat now chooses, on a fresh clock, seeing that card
+    // Hina's Foretell window: the other side's card just landed → the Foretelling seat sees it at once and always
+    // gets at least FORETELL_S more (it may also have played first, blind — then there is nothing to show)
     const fs = m.phase === "choose" ? E().foretellSeat(m) : null;
     const foretold = fs !== null && fs === 1 - seat && M.needs(m, fs);
-    if (foretold) decide(s);
+    if (foretold) {
+      if (s.seats[fs].kind === "ai") scheduleAi(s, fs);
+      else if (s.deadline) {
+        const at = Math.max(s.deadline, Date.now() + (CFG().FORETELL_S ?? 10) * 1000);
+        if (at > s.deadline) {
+          const rr = rt(s.sid); s.fore = { seat: fs, at }; clearTimeout(rr.foreT);
+          rr.foreT = setTimeout(() => { if (s.match === m && m.phase === "choose" && M.needs(m, fs)) timeUp(s, fs); }, at - Date.now() + 250);
+        }
+      }
+    }
     for (const p of participants(s)) {
       if (p.viewer === seat) continue;
-      if (foretold && p.viewer === fs) { toDuel(s, p.uid, { t: "state", ...payload(s, fs) }); continue; }
+      if (foretold && p.viewer === fs) { toDuel(s, p.uid, { t: "foretold", choice: { ...m.commit[seat] }, msLeft: msLeftFor(s, fs) }); continue; }
       const shown = p.viewer === 1 ? 1 - seat : seat;      // seat as that viewer sees it
       toDuel(s, p.uid, { t: "committed", seat: shown });
     }
-    if (foretold) for (const p of participants(s)) if (p.viewer === seat) toDuel(s, p.uid, { t: "state", ...payload(s, seat) });   // the new deadline
     save(); return;
   }
   if (m.phase === "ended") await onGameEnd(s);

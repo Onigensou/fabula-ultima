@@ -364,7 +364,6 @@
       if (state.phase === 'ended') return false;
       if (state.commit[seat]) return false;
       if (state.phase === 'replace') return !!state.p[seat].pending;
-      if (foretellSeat(state) === seat && !state.commit[1 - seat]) return false;   // Foretell: the other side chooses first
       return true;
     },
     validate(state, seat, c){

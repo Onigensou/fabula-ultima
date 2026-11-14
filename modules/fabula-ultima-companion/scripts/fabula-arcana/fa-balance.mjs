@@ -26,7 +26,7 @@ function series(prof, n) {
   const add = (o, k, r) => { (o[k] ||= { g:0, w:0 }).g++; o[k].w += r; };
   for (let g = 0; g < n; g++) {
     const teams = [pick(), pick()], m = E.Match.create({ teams }); let text = "", guard = 0;
-    while (m.phase !== "ended" && guard++ < 400) for (const s of [0, 1]) if (E.Match.needs(m, s)) {
+    while (m.phase !== "ended" && guard++ < 400) for (const s of (E.foretellSeat(m) === 0 ? [1, 0] : [0, 1])) if (E.Match.needs(m, s)) {
       const r = E.Match.submit(m, s, E.Match.aiChoice(m, s, prof)); if (r.resolved && r.resolved.L) text += r.resolved.L.map(x => x[0]).join("\n") + "\n"; }
     const r0 = m.result === "WIN" ? 1 : m.result === "DRAW" ? 0.5 : 0;
     T[m.result[0]]++; T.rounds.push(m.round); if (m.capEnd) T.cap++;

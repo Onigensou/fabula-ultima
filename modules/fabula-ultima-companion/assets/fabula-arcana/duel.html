@@ -1131,11 +1131,12 @@ function tickTimer(){
       commit(s, c); }
   }
 }
-const foreWait = sv => S && S.phase==='choose' && fxForeSeat()===sv && !S.commit[1-sv];
+// Foretell window: this seat is watching for the other card (it may still play first, blind)
+const foreWait = sv => S && S.phase==='choose' && fxForeSeat()===sv && !S.commit[1-sv] && !S.commit[sv];
 const foreSeen = sv => { if (!S || S.phase!=='choose' || fxForeSeat()!==sv) return null; const c=S.commit[1-sv]; return c && c.action ? c : null; };
 function foreLabel(sv, c){ const P=S.p[1-sv]; return c.action==='SWITCH' ? 'Switch → '+N(P.roster[c.target].cid) : (ACT_T[c.action]||c.action); }
 function foreArt(sv, c){ const P=S.p[1-sv]; return c.action==='SWITCH' ? ART[P.roster[c.target].cid] : ITEMS[c.action] ? ART[ITEMS[c.action].art] : null; }
-function canLock(){ const me=S.p[UI.seat]; if (S.commit[UI.seat]) return false; if (foreWait(UI.seat)) return false;
+function canLock(){ const me=S.p[UI.seat]; if (S.commit[UI.seat]) return false;
   if (S.phase==='opening' || S.phase==='replace') return UI.replace!=null;
   if (!UI.sel) return false; if (me.pending&&UI.replace==null) return false; if (UI.sel==='SWITCH'&&UI.target==null) return false; return true; }
 function lockFromUI(fromRect){
@@ -1290,7 +1291,7 @@ function renderLane(){
     const seen = !!fc && s===1-UI.seat; const placed=!!(S.commit&&S.commit[s]) || !!rv; const drop=S.justPlaced===s;
     const flipNow = rv && rv.open && !rv.flipped;   // first render after reveal: draw closed, then animate the flip
     const state = seen ? 'open' : rv&&rv.open ? (flipNow?'placed':'open') : placed ? 'placed' : 'empty';
-    const tag = seen ? 'Foretold' : state==='empty' ? (S.phase==='ended'?'':(s===UI.seat?(foreWait(s)?'Foretell: waiting':'your pick'):'thinking…')) : state==='placed' && !flipNow ? 'card placed' : '';
+    const tag = seen ? 'Foretold' : state==='empty' ? (S.phase==='ended'?'':(s===UI.seat?(foreWait(s)?'your pick · Foretell':'your pick'):'thinking…')) : state==='placed' && !flipNow ? 'card placed' : '';
     return `<div class="rslot"><span class="label">${seatName(s)}</span>
       <div class="flip ${state} ${drop?'drop'+s:''}" id="act${s}" data-drop="act" data-s="${s}"><div class="in"><div class="face back">${state==='empty'?'':'<span class="cb"></span>'}</div><div class="face front">${rv||seen?(x[2]?`<img src="${x[2]}" alt="">`:`<span class="fi">⟳</span>`):''}${rv||seen?esc(x[0]):''}<small>${rv||seen?esc(x[1]||''):''}</small></div></div></div>
       <span class="ftag">${tag}</span></div>`; };
@@ -1306,7 +1307,7 @@ function renderLane(){
   const me=S.p[UI.seat];
   if (S.phase==='opening') st = S.commit[UI.seat] ? `Waiting for ${seatName(1-UI.seat)}…` : 'Choose your opening monster. Both reveal together.';
   else if (S.phase==='replace') st = me.pending && !S.commit[UI.seat] ? 'Replacement step: drag a monster up to take the fallen one’s place.' : 'Replacement step…';
-  else if (S.phase==='choose' && foreWait(UI.seat)) st = `Foretell: ${seatName(1-UI.seat)} chooses first…`;
+  else if (S.phase==='choose' && foreWait(UI.seat)) st = `Foretell: ${seatName(1-UI.seat)}'s card flips up here the moment it is placed.`;
   else if (S.phase==='choose' && foreSeen(UI.seat) && !S.commit[UI.seat]) st = `Foretold: ${seatName(1-UI.seat)} played ${foreLabel(UI.seat, foreSeen(UI.seat))}.`;
   else if (S.phase==='choose') st = S.commit[UI.seat] ? `Your card is face down. Waiting for ${seatName(1-UI.seat)}…` : me.pending?'Your monster fell. Pick a replacement card, then an item or Pass.':'Pick an item, Pass, or Switch in secret.';
   else if (S.phase==='anim') st=rv&&rv.open?'':'Both cards are down…';
@@ -1938,7 +1939,7 @@ function renderPicker(){
   let hint, can=canLock()&&!UI.busy, btn='Play face down';
   if (S.phase==='anim') { hint='Cards are being revealed…'; can=false; }
   else if (S.commit[sv]) { hint=`Your card is face down. Waiting for <b>${esc(seatName(1-sv))}</b>${timed()?' (their timer keeps running)':''}.`; can=false; }
-  else if (foreWait(sv)) { hint=`<b>Foretell:</b> ${esc(seatName(1-sv))} chooses first. You will see their card, then choose.`; can=false; }
+  else if (foreWait(sv) && !UI.sel) hint=`<b>Foretell:</b> ${esc(seatName(1-sv))}'s card flips up the moment it is placed, and you get ${CFG.FORETELL_S||10} s after it. Or play now without looking.`;
   else if (foreSeen(sv) && !UI.sel) hint=`<b>Foretold:</b> ${esc(seatName(1-sv))} played <b>${esc(foreLabel(sv, foreSeen(sv)))}</b>. Now pick your answer.`;
   else if (S.phase==='opening') hint = UI.replace==null ? '<b>Drag a monster</b> up into your row, or click one, to choose your opener.' : `Opener: <b>${esc(N(me.roster[UI.replace].cid))}</b>. Drag it to the row or press Play.`;
   else if (S.phase==='replace') hint = me.pending ? (UI.replace==null ? 'Your monster fell. <b>Drag a replacement</b> up into your row. That is all you do this step.' : `Replacement: <b>${esc(N(me.roster[UI.replace].cid))}</b>. Drag it up or press Play.`) : `Waiting for <b>${esc(seatName(1-sv))}</b> to choose a replacement…`;
@@ -2273,6 +2274,17 @@ if (!window.FA_NET_MODE) render();
     send({ t:'commit', choice:c });
     render();
   };
+  // Foretell window: the opponent's card lands face up on the Hina player's side, plus that player's extended clock.
+  // It never resets the player's half-made choice (no decision() call).
+  async function foretoldIn(m){
+    if (!S || S.phase !== 'choose' || S.commit[1] || S.commit[0] || !m.choice) return;
+    S.flying = S.flying || [false,false]; S.flying[1] = true; updateField();
+    await flyTo(handFrom(1), 1); S.flying[1] = false;
+    if (!S || S.phase !== 'choose' || S.commit[1]) return;
+    S.commit[1] = m.choice; S.justPlaced = null; sfx('book', 0.9, 0);
+    if (m.msLeft){ S.deadline = Date.now() + m.msLeft; clearInterval(TICK); TICK = setInterval(tick, 250); }
+    renderLane(); renderPicker(); renderEffects();
+  }
   async function opponentCommitted(seat){
     if (!S || S.commit[seat] || S.phase === 'ended') return;
     S.flying = S.flying || [false,false]; S.flying[seat] = true; updateField();
@@ -2433,6 +2445,7 @@ if (!window.FA_NET_MODE) render();
       case 'opp-gone': awayHide(); NET.oppGone = m.name; return;
       case 'start': return start(m, true);
       case 'committed': return opponentCommitted(m.seat);
+      case 'foretold': return foretoldIn(m);
       case 'reveal': return reveal(m);
       case 'state': return applyState(m);
       case 'spectators': NET.spectators = m.n || 0; if (S) renderSidebar(); return;

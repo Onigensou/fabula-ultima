@@ -219,12 +219,14 @@ const blank = blankStats;
   const M = E.Match;
   const m = M.create({ teams:[["hina","pyrefly","wolf"], ["kirin","roper","pyrefly"]] });
   M.submit(m,0,{replace:0}); M.submit(m,1,{replace:0});
-  ok(m.phase==='choose' && E.foretellSeat(m)===0 && !M.needs(m,0) && M.needs(m,1), 'Foretell: Hina side waits, the other side chooses first');
-  ok(!M.submit(m,0,{action:'PASS'}).ok, 'Foretell: Hina side cannot commit before the opponent');
+  ok(m.phase==='choose' && E.foretellSeat(m)===0 && M.needs(m,0) && M.needs(m,1), 'Foretell window: both sides choose at the same time (no forced wait)');
+  ok(M.publicView(m,0).commit[1]===null, 'Foretell window: nothing to see before the opponent places a card');
   M.submit(m,1,{action:'STRENGTH'});
   ok(M.needs(m,0) && M.publicView(m,0).commit[1].action==='STRENGTH', "Foretell: after the opponent commits, Hina's side sees the card");
   ok(M.publicView(m,1).commit[0]===null && M.publicView(m,null).commit[1].hidden, 'Foretell: spectators still see it hidden');
   const c = M.aiChoice(m,0,{diff:'skilled'}); ok(!M.validate(m,0,c), 'Foretell: AI holding Hina answers with a legal move ('+c.action+')');
+  const m3 = M.create({ teams:[["hina","pyrefly","wolf"], ["kirin","roper","pyrefly"]] }); M.submit(m3,0,{replace:0}); M.submit(m3,1,{replace:0});
+  ok(M.submit(m3,0,{action:'PASS'}).ok && M.needs(m3,1) && M.publicView(m3,1).commit[0].hidden, 'Foretell window: Hina may play first without looking (her card stays hidden)');
   const m2 = M.create({ teams:[["hina","pyrefly","wolf"], ["hina","pyrefly","wolf"]] }); M.submit(m2,0,{replace:0}); M.submit(m2,1,{replace:0});
   ok(E.foretellSeat(m2)===null && M.needs(m2,0) && M.needs(m2,1), 'Foretell: both sides Foretelling = a normal simultaneous round');
 }
