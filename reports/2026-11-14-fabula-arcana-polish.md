@@ -62,4 +62,20 @@ These were rules calls, made by the user after a bot simulation. The sim is kept
 
 - Real session with real players (latency, two GMs).
 - The `fabula.restPerformed` clear in a real camp rest. Only a simulated hook call was tested.
-- Not fixed: when a PvP opponent disconnects mid-duel, the other player isn't told, and the 30 s timer keeps playing the empty seat's turns. Found in the earlier dry run.
+
+## v1.0.607: PvP disconnect + a timer bug
+
+- **Disconnect grace** (`fa-host.js`): the host listens to Foundry's `userConnected` hook.
+  - When a seated PvP player drops, they get 60 s (`GRACE_MS`). The round clock stops in `decide()`, which skips the timer while `s.away` is set, so nobody auto-plays the empty seat.
+  - The opponent's window gets the duel message `opp-away` and shows a countdown strip.
+  - **Back in time:** the opponent gets `opp-back` and a fresh clock, and the player's window reopens through `hello-client` as before.
+  - **Not back:** the player forfeits the series. `opp-gone` makes the result read "X disconnected".
+  - **Other cases:** during team select, or with both players gone, the duel is cancelled. An open invite from a player who goes offline is withdrawn, and a spectator who drops is removed. NPC duels are unchanged.
+  - On a GM host reload, `restore()` restarts the grace for anyone still offline.
+- **Bug fix** (`duel.html`): the in-game window still ran the standalone `tickTimer`, which auto-plays a Pass at 0. A window that redrew after a deadline (lag, a reconnect) sent that Pass, and it counted in the *next* round. The in-game window now uses `tick`, which only draws the fuse; the host owns timeouts.
+- **Tested on the Staging World:**
+  - drop and return at ~20 s;
+  - drop and stay away, with the forfeit at 60 s;
+  - a host submit trace, which shows no stray Pass;
+  - the challenge / block / rematch regression.
+- **Not tested:** a real network drop. The tests close the browser.
