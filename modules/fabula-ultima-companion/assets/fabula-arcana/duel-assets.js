@@ -44,7 +44,19 @@ const ART = {
  "i_cafe": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/potion.png",
  "st_def": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/shield.png",
  "st_atk": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/sword.png",
- "walrog": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Walrog.png"
+ "walrog": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Walrog.png",
+ // status-effect tiles (battle-mode Buff Icon art)
+ "fx_static": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Shock.png",
+ "fx_approach": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Fear.png",
+ "fx_howl": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/AttackUp.png",
+ "fx_windup": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Earth.png",
+ "fx_charge": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/ATTACK%20DOUBLE%20UP.png",
+ "fx_burn": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Burn.png",
+ "fx_charm": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Heart.png",
+ "fx_slow": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Stun.png",
+ "fx_shield": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Shield.png",
+ "fx_venom": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Poison.png",
+ "fx_wind": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Wind.png"
 };
 const SFXDATA = {};
 const SFXURL = {

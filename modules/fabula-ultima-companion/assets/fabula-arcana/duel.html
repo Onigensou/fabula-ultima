@@ -540,37 +540,64 @@ body.elA{--e-phys:#555555;--e-air:#48c774;--e-bolt:#9b59b6;--e-dark:#4b0082;--e-
 .volpop input{width:100%;accent-color:#9a6512;cursor:pointer}
 .volpop b{text-align:right;font-variant-numeric:tabular-nums;font-size:12.5px}
 .volhint{font-size:11.5px;color:var(--mute);margin-top:4px}
-/* ===== status-effect badges (actor), field strip, coloured stats, tooltip ===== */
-.fxrow{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;min-height:26px;margin-top:5px;position:relative;z-index:3}
-.fxb{--fc:#7a4e20;position:relative;width:25px;height:25px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#fffaf0;border:2px solid var(--fc);color:var(--fc);box-shadow:0 1px 3px #0007;font-size:12px;cursor:help;flex:none}
-.fxb svg{width:12px;height:12px}
-.fxb.t-stack{--fc:#7b3fbf} .fxb.t-buff{--fc:#2f8f45} .fxb.t-debuff{--fc:#c0392b} .fxb.t-shield{--fc:#2f6fa3} .fxb.t-used{--fc:#8a7a6a;opacity:.45;filter:grayscale(1)}
-.fxb.dim{opacity:.6}
-.fxb .pp{position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);display:flex;gap:2px}
-.fxb .pp b,.ffb .pp b{width:7px;height:7px;border-radius:50%;background:#fffaf0;border:1.5px solid var(--fc)}
-.fxb .pp b.on{background:var(--fc)}
-.fxb em{position:absolute;top:-7px;right:-8px;min-width:15px;height:15px;border-radius:8px;background:var(--fc);color:#fff;font-size:10px;font-style:normal;font-weight:800;line-height:15px;text-align:center;padding:0 3px;font-family:var(--font-b)}
-.fxb.rdy{animation:fxGlow 1.1s ease-in-out infinite}
-.fxb.gain{animation:fxGain .55s cubic-bezier(.2,1.7,.4,1)}
-.fxb.rdy.gain{animation:fxGain .55s cubic-bezier(.2,1.7,.4,1),fxGlow 1.1s .55s ease-in-out infinite}
-@keyframes fxGlow{50%{box-shadow:0 0 0 3px color-mix(in srgb,var(--fc) 40%,transparent),0 0 14px var(--fc)}}
-@keyframes fxGain{0%{transform:scale(.5)}60%{transform:scale(1.35)}100%{transform:scale(1)}}
-.fxb:focus-visible,.ffb:focus-visible{outline:2px solid #f4c95d;outline-offset:2px}
-.ffx{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px}
-.ffb{--fc:#1f86b8;display:inline-flex;align-items:center;gap:5px;padding:2px 8px 2px 7px;border-radius:999px;background:#eef9ff;border:1.5px solid var(--fc);color:#0f4f6e;font-family:var(--font-b);font-size:12px;font-weight:700;cursor:help;box-shadow:0 1px 3px #0005}
-.ffb svg{width:12px;height:12px}
-.ffb .pp{display:inline-flex;gap:2px;margin-left:2px}
-.ffb .pp b.on{background:var(--fc)}
-.ffb.pend{border-style:dashed;opacity:.8}
-.ffb.last{animation:fxLast 1.2s ease-in-out infinite}
-@keyframes fxLast{50%{opacity:.5}}
+/* ===== status effects, ported from battle mode (npc-status-strip.js / status-tip.js / status-cues.js) ===== */
+.fxrow{display:flex;flex-wrap:nowrap;gap:3px;justify-content:center;min-height:24px;margin-top:5px;position:relative;z-index:3}
+.fxt{--ac:#8a8a8a;position:relative;flex:none;width:23px;height:23px;box-sizing:border-box;border-radius:6px;border:2px solid var(--ac);background:#0d0b09;box-shadow:0 1px 2px rgba(0,0,0,.5);cursor:help}
+.fxt img{display:block;width:100%;height:100%;max-width:none;border:0;border-radius:4px;object-fit:cover;image-rendering:auto}
+.fxt b{position:absolute;right:-3px;bottom:-3px;min-width:11px;height:11px;padding:0 2px;box-sizing:border-box;border-radius:4px 0 3px 0;background:#000;color:#fff;font:700 9px/11px "Signika",sans-serif;text-align:center;pointer-events:none}
+.fxt.t-debuff{--ac:#e05050}
+.fxt.t-buff{--ac:#3fb67c}
+.fxt.t-ready{--ac:#e2b34a;border-width:2px;box-shadow:0 0 0 1px rgba(255,236,170,.5) inset,0 0 8px rgba(226,179,74,.9);animation:fxReady 1.6s ease-in-out infinite}
+.fxt.t-ready::after{content:"";position:absolute;right:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:#ffd45a;box-shadow:0 0 4px #ffb800}
+.fxt.t-spent{--ac:rgba(122,106,85,.6);box-shadow:none;filter:grayscale(1);opacity:.5}
+.fxt.is-flash{animation:fuNstFlash .9s ease-out}
+.fxt.t-ready.is-flash{animation:fuNstFlash .9s ease-out,fxReady 1.6s .9s ease-in-out infinite}
+@keyframes fuNstFlash{0%{box-shadow:0 0 0 0 rgba(255,196,70,1)}100%{box-shadow:0 0 0 12px rgba(255,196,70,0)}}
+@keyframes fxReady{50%{box-shadow:0 0 0 1px rgba(255,236,170,.6) inset,0 0 14px rgba(255,200,80,1)}}
+.fxt:focus-visible{outline:2px solid #f4c95d;outline-offset:2px}
+.ffx{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}
+.ffw{display:inline-flex;align-items:center;gap:5px;padding:2px 8px 2px 2px;border-radius:8px;background:#1a120acc;color:#e9f9ef;font-family:var(--font-b);font-size:12px;font-weight:700;letter-spacing:.02em;box-shadow:0 1px 3px #0006}
+.ffw.pend{opacity:.75}
 em.sv{font-style:normal;font-weight:900;font-size:1.12em;border-radius:4px;padding:0 3px;cursor:help;box-shadow:inset 0 0 0 1px currentColor}
 em.sv.up{color:#0f7a33;background:#c8f0d1}
 em.sv.down{color:#b3261e;background:#ffd3cc}
-#fxtip{position:fixed;left:0;top:0;z-index:10050;max-width:270px;padding:8px 10px;border-radius:8px;background:#2b1a0b;color:#f8ecc8;border:1px solid #c9a44a;font-family:var(--font-b);font-size:12.5px;line-height:1.38;box-shadow:0 8px 18px #000a;pointer-events:none;opacity:0;transition:opacity .12s}
-#fxtip.on{opacity:1} #fxtip b{color:#ffd36b} #fxtip .tt{font-weight:700;font-size:13.5px;margin-bottom:3px;color:#fff3d0} #fxtip .tn{color:#d9c49a;font-weight:600}
-@media (max-width:620px){ .fxb{width:21px;height:21px} .fxb svg{width:10px;height:10px} .fxrow{gap:4px} }
-@media (prefers-reduced-motion: reduce){ .fxb,.ffb{animation:none !important} }
+em.sv.sv-flash{animation:fuNstFlash .9s ease-out}
+/* battle tooltip (status-tip.js) */
+#fxtip{position:fixed;left:0;top:0;z-index:10050;max-width:320px;padding:0;background:rgba(18,15,12,.96);border:1px solid #b7935a;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,.45);pointer-events:none;opacity:0;transition:opacity .12s;text-align:left}
+#fxtip.on{opacity:1}
+.fu-st-tip{--tc:rgba(122,106,85,.5);--tc2:#a8987e;color:#f3eee4;font:13px/1.45 "Signika",sans-serif;overflow:hidden;border-radius:6px}
+.fu-st-tip.t-debuff{--tc:rgba(196,71,58,.5);--tc2:#e0675a} .fu-st-tip.t-buff{--tc:rgba(47,158,107,.5);--tc2:#4fc08d} .fu-st-tip.t-ready{--tc:rgba(226,179,74,.5);--tc2:#e2b34a}
+.fu-st-tip .th{display:grid;grid-template-columns:38px 1fr;gap:10px;align-items:center;padding:8px 11px;background:linear-gradient(90deg,var(--tc),rgba(18,15,12,0) 85%);border-bottom:1px solid rgba(213,182,122,.35)}
+.fu-st-tip .th.nimg{grid-template-columns:1fr}
+.fu-st-tip .th img{width:38px;height:38px;border-radius:7px;border:2px solid var(--tc2);background:#3a3228;object-fit:cover}
+.fu-st-tip .th strong{display:block;font-size:14.5px;color:#fff3d6;line-height:1.2}
+.fu-st-tip .th small{display:block;margin-top:2px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#d8c9ad}
+.fu-st-tip .tb{padding:8px 11px 9px;display:grid;gap:6px}
+.fu-st-tip .life{font-size:11.5px;color:#c9bca6}
+.fu-st-tip .when{font-size:12px;color:#ffe2a8;border-left:2px solid #d5b67a;padding-left:7px}
+.fu-st-k.pos{color:#ffd780;font-weight:700} .fu-st-k.neg{color:#ff9a8a;font-weight:700}
+.fu-st-e{font-weight:700} .fu-st-e.e-fire{color:#ff9a5c} .fu-st-e.e-ice{color:#9fe3ff} .fu-st-e.e-bolt{color:#d7a6ff} .fu-st-e.e-air{color:#7fe0c0} .fu-st-e.e-earth{color:#f5c461} .fu-st-e.e-light{color:#fff2a8} .fu-st-e.e-dark{color:#c49cff} .fu-st-e.e-poison{color:#a6e06a} .fu-st-e.e-physical{color:#e8dcc6}
+/* cues on the hologram (status-cues.js): Static sparks, Burn flames, power glow, Roo arrived */
+.holo .cue{position:absolute;inset:0;pointer-events:none;z-index:2}
+.holo:not(.on) .cue{display:none}
+.holo .cue i,.holo .cue svg{position:absolute;display:block}
+.holo .cue .zp{width:17px;height:27px;overflow:visible;opacity:0;animation:fuCueZap 1.6s steps(1) infinite;filter:drop-shadow(0 0 1px #6a3c00) drop-shadow(0 0 3px #ffd000) drop-shadow(0 0 8px #ff9a00)}
+.holo .cue .zp polyline{fill:none;stroke:#fff36a;stroke-width:2.8;stroke-linejoin:round;stroke-linecap:round}
+@keyframes fuCueZap{0%{opacity:0}8%{opacity:1}13%{opacity:0}17%{opacity:1}22%{opacity:0}100%{opacity:0}}
+.holo .cue .fl{width:var(--s);height:calc(var(--s)*1.5);margin-left:calc(var(--s)*-.5);border-radius:50% 50% 42% 42%/66% 66% 34% 34%;background:radial-gradient(ellipse at 50% 70%,#fffbe0 0,#ffe06a 20%,#ff9a2a 45%,rgba(255,80,10,.85) 60%,rgba(255,60,0,0) 74%);filter:drop-shadow(0 0 4px rgba(255,120,20,.9));opacity:0;animation:fuCueFlame 1.1s ease-out infinite}
+.holo .cue .gl{left:22%;right:22%;bottom:0;height:14%;border-radius:50%;background:radial-gradient(ellipse,rgba(255,150,40,.7),rgba(255,90,0,0) 70%);animation:fuCueFlick .45s steps(2) infinite alternate}
+@keyframes fuCueFlame{0%{transform:translateY(0) scale(.7);opacity:0}14%{opacity:1}100%{transform:translateY(-60px) scale(.15);opacity:0}}
+@keyframes fuCueFlick{to{opacity:.55}}
+.slot.c-st1 .holo.on .spr{filter:drop-shadow(0 0 4px #ffe94a) drop-shadow(0 0 2px #fff6b0)}
+.slot.c-st2 .holo.on .spr{filter:sepia(.35) saturate(1.5) brightness(1.12) drop-shadow(0 0 6px #ffe94a) drop-shadow(0 0 14px #ffb800);animation:bob 2.4s ease-in-out infinite,fxJolt 1.3s steps(1) infinite}
+@keyframes fxJolt{0%,100%{translate:0 0}46%{translate:1px 0}48%{translate:-1px 0}50%{translate:0 0}}
+.slot.c-burn .holo.on .spr{filter:sepia(.45) saturate(1.7) hue-rotate(-14deg) drop-shadow(0 0 6px #ff7a1a)}
+.slot.c-pow .holo.on .spr{filter:drop-shadow(0 0 6px #ff5a2a) drop-shadow(0 0 12px #ffae3a) brightness(1.15);animation:bob 2.4s ease-in-out infinite,fxPow 1.4s ease-in-out infinite}
+@keyframes fxPow{50%{filter:drop-shadow(0 0 9px #ff5a2a) drop-shadow(0 0 20px #ffae3a) brightness(1.25)}}
+.slot.c-roo .holo.on .spr{filter:drop-shadow(0 0 6px #6b2fbf) drop-shadow(0 0 14px #2a0a4a) brightness(.95);animation:bob 2.4s ease-in-out infinite,fxRoo 2s ease-in-out infinite}
+@keyframes fxRoo{50%{filter:drop-shadow(0 0 10px #8a3fe0) drop-shadow(0 0 22px #3a0f66) brightness(.85)}}
+@media (max-width:620px){ .fxt{width:20px;height:20px} }
+@media (prefers-reduced-motion: reduce){ .fxt,.holo .cue *,.slot .holo.on .spr{animation:none !important} }
 .flycard{position:fixed;z-index:9998;pointer-events:none;border-radius:7px;transform-origin:0 0;border:2px solid var(--rim);
   background:radial-gradient(circle at 50% 50%,#c9a44a 0 9%,transparent 10%),repeating-linear-gradient(45deg,#8a3420 0 6px,#6a2414 6px 12px);box-shadow:0 14px 22px #0009}
 .slot.mine .flat,.slot.theirs .flat{touch-action:none}
@@ -1168,7 +1195,7 @@ function fieldHTML(){
 function slotHTML(s,m){
   const c=CARDS[m.cid];
   return `<div class="slot ${s?'theirs':'mine'}" id="slot${s}_${m.i}" data-s="${s}" data-i="${m.i}" tabindex="0" style="--ec:var(--e-${c.el})">
-    <div class="holo" id="holo${s}_${m.i}"><div class="beam"></div><div class="base"></div><img class="spr" src="${ART[m.cid]}" alt=""><div class="scan"></div></div>
+    <div class="holo" id="holo${s}_${m.i}"><div class="beam"></div><div class="base"></div><img class="spr" src="${ART[m.cid]}" alt=""><div class="scan"></div><div class="cue" id="cue${s}_${m.i}"></div></div>
     <div class="flat"><div class="flatcard" style="--c:var(--e-${c.el})"><div class="fa"><img src="${ART[m.cid]}" alt="">${elBadge(c.el,'art',true)}</div>${elBadge(c.el,'coin',true)}
       <div class="fn">${elBadge(c.el,'name',true)}<span class="fnt">${esc(c.name)}</span><span class="costn">${starStr(c.cost)}</span></div>
       <div class="fs" id="fs${s}_${m.i}">${elBadge(c.el,'stats',true)}${statChip('atk',c.atk,true)}${statChip('def',c.def,true)}${statChip('spd',c.spd,true)}</div><span class="cost">${starStr(c.cost)}</span></div></div>
@@ -1251,21 +1278,40 @@ function drawFuse(){
   if (left<10000 && left>0 && LOW_KEY!==S.t0){ LOW_KEY=S.t0; announce("Time's almost up!", { tone:'warn', ms:1300 }); }   // once per game
 }
 
-// ===================== status effects: badges + coloured stats =====================
-// Actor effects sit under each monster (round badge, pips for stacks, glow when ready); field effects (Tailwind)
-// sit in a strip by the side's name. ATK/SPD on the board cards show the CURRENT value: green = raised, red = lowered.
-// Hover (or tap) any badge or coloured number for what it does. Built from the match state only, so the same code
-// draws the standalone duel and the in-game (net) window.
-const FX_ONCE = ['walrog','salamander','obsidrax','scorpion','life'];      // once-per-match abilities shown while unused
+// ===================== status effects (ported from battle mode, token status plan "G + E") =====================
+// Same language as the battle HUD / NPC strip (battle-director/npc-status-strip.js, status-tip.js, status-cues.js),
+// copied and adapted here because the duel window is its own page:
+//   - rounded-square tiles with the game's Buff Icon art, framed by tier: debuff red · buff green · Ready gold + glow
+//     (abilities you plan around: the next attack changes) · spent grey; a black corner numeral for stacks / rounds;
+//     one row, debuffs → buffs → Ready; a gold ring flash when a status starts or changes.
+//   - the battle tooltip: icon header tinted by tier, BUFF / DEBUFF / READY label, rules text with highlights.
+//   - cues on the monster itself: Paralyze's yellow sparks for Static (a few at 1, constant + wash at 2),
+//     Burn's rising flames + warm wash on a Burning monster, a warm power glow for Howl / Charged, a dark pulse
+//     when Roo has arrived.
+// ATK / SPD on the board cards show the CURRENT value (green raised, red lowered) and flash when they change.
+// Built from the match state only, so the standalone and the in-game (net) window draw the same thing.
+const FX_ONCE = ['walrog','salamander','obsidrax','scorpion','life'];      // once-per-match abilities: Ready while unused
+const FX_KIND = { debuff:'Debuff', buff:'Buff', ready:'Ready', spent:'Ready' };
+const FX_ORDER = { debuff:0, buff:1, ready:2, spent:3 };
 const fxNeedRoo = () => CFG.ROO_BENCH===2 ? CFG.ROO_STEPS : 3;
 const fxAttr = v => String(v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+// battle tooltip highlighter (status-tip.js formatRulesText, trimmed): +N gold, −N red, element words coloured
+const FX_EL = /\b(Fire|Ice|Bolt|Air|Earth|Light|Dark|Poison|Physical)\b/g;
+function fxRules(html){ return String(html).replace(/(^|[\s(>])([+\-−]\s?\d+)(?=[\s.,)<]|$)/g, (m,p,v)=>`${p}<span class="fu-st-k ${v.charAt(0)==='+'?'pos':'neg'}">${v}</span>`)
+  .replace(FX_EL, m=>`<span class="fu-st-e e-${m.toLowerCase()}">${m}</span>`); }
+function fxTipHTML(e){
+  const sub=[FX_KIND[e.tier], e.short].filter(Boolean).join(' · ');
+  return `<div class="fu-st-tip t-${e.tier==='spent'?'ready':e.tier}"><div class="th"><img src="${fxAttr(ART[e.icon]||'')}" alt=""><div><strong>${esc(e.name)}</strong><small>${esc(sub)}</small></div></div>`
+    + `<div class="tb">${e.life?`<div class="life">${esc(e.life)}</div>`:''}<div class="desc">${fxRules(e.desc)}</div>`
+    + (e.when ? `<div class="when">${esc(e.when)}</div>` : '') + `</div></div>`;
+}
 // a Tailwind re-raised while one is still up stays shown as active (not "starts next round")
 const FX_TW = {};
 function fxTailwind(s){ const pl=S.p[s]; if (pl.twUntil==null || pl.twFrom==null || pl.twUntil<S.round) return null;
   const key=`${S.t0}:${s}`; let pending = pl.twFrom>S.round; if (!pending) FX_TW[key]=S.round; else if (FX_TW[key]===S.round) pending=false;
   const left = Math.min(CFG.TAILWIND, pl.twUntil - (pending ? pl.twFrom : S.round) + 1); return { pending, left }; }
 function fxTwOn(s, m){ const pl=S.p[s]; return (CFG.TW_ALL || CARDS[m.cid].el==='air') && pl.twFrom!=null && pl.twFrom<=S.round && S.round<=pl.twUntil; }
-// the numbers the card would use this round, with the reasons
+// the numbers the card uses this round, with the reasons
 function fxStats(s, m){
   const c=CARDS[m.cid], out={ atk:{v:c.atk, why:[]}, def:{v:c.def, why:[]}, spd:{v:c.spd, why:[]} };
   if (m.cid==='wolf' && m.howl){ out.atk.v+=1; out.atk.why.push('+1 Howl (next attack)'); }
@@ -1276,60 +1322,91 @@ function fxStats(s, m){
   out.spd.v=Math.min(4, Math.max(1, out.spd.v));
   return out;
 }
+// every status on one monster: { k, tier, icon (ART key), name, num, short, life, desc, when }
 function fxList(s, m){
   if (m.ko) return [];
-  const c=CARDS[m.cid], L=[];
-  const add=(o)=>L.push(o);
-  if (m.cid==='skizzik'){ const n=m.static||0; add({ k:'static', ico:'fa-bolt', tone:'stack', n, max:2, ready:n>=2, name:'Static',
-    desc: n>=2 ? 'Charged! Its next damaging attack deals <b>+3</b> and clears the Static.' : `Each damaging attack banks 1 Static. At 2 Static, the next damaging attack deals <b>+3</b>.`, stat:`${n} / 2` }); }
-  if (m.cid==='roo'){ const need=fxNeedRoo(), n=Math.min(need, m.walk||0); add({ k:'walk', ico:'fa-shoe-prints', tone:'stack', n, max:need, ready:n>=need, name:'Approach',
-    desc: n>=need ? 'It has arrived. Its next attack draws the <b>Chef’s Knife</b>.' : `+1 step at the end of each round it stays on the field. At ${need} steps its next attack draws the knife. Leaving the field loses the steps.`, stat:`${n} / ${need} steps` }); }
-  if (m.cid==='wolf' && m.howl) add({ k:'howl', ico:'fa-volume-high', tone:'buff', name:'Howl', desc:'Its next attack gets <b>+1 ATK</b>.', ready:true });
-  if (m.cid==='rgolem' && m.windup) add({ k:'windup', ico:'fa-hand-fist', tone:'buff', name:'Wind Up', desc:'Its next attack is an <b>Earthquake</b>: 1 damage to every benched enemy too.', ready:true });
-  if (m.cid==='kirin' && m.chg && m.chg[S.round]) add({ k:'chg', ico:'fa-bolt-lightning', tone:'buff', name:'Charged', desc:`<b>+${CFG.KCHARGE} ATK</b> on its attack this round.`, ready:true });
-  if (m.cid==='kirin' && m.chg && m.chg[S.round+1] && !m.chg[S.round]) add({ k:'chgn', ico:'fa-bolt-lightning', tone:'buff', name:'Charging', desc:`<b>+${CFG.KCHARGE} ATK</b> on its attack next round.` });
-  // Burn: shown on the TARGET (the enemy Pyrefly's next attack on it consumes the Burn)
+  const c=CARDS[m.cid], L=[], add=o=>L.push(o);
+  if (m.cid==='skizzik' && (m.static||0)>0){ const n=m.static||0, full=n>=2;
+    add({ k:'static', tier: full?'ready':'buff', icon:'fx_static', name:'Static', num:n, short:`${n} / 2`,
+      desc: full ? 'Fully charged: its next damaging attack deals +3 damage, then the Static clears.' : 'Each damaging attack banks 1 Static. At 2 Static, the next damaging attack deals +3 damage.',
+      when: full ? 'Triggers on its next damaging attack.' : '' }); }
+  if (m.cid==='roo' && (m.walk||0)>0){ const need=fxNeedRoo(), n=Math.min(need, m.walk||0), full=n>=need;
+    add({ k:'walk', tier: full?'ready':'buff', icon:'fx_approach', name:'Approach', num:n, short:`${n} / ${need} steps`,
+      desc: full ? 'It has arrived. Its next attack draws the Chef’s Knife.' : `+1 step at the end of each round it stays on the field. At ${need} steps its next attack draws the knife. Leaving the field loses the steps.`,
+      when: full ? 'Triggers on its next attack.' : '' }); }
+  if (m.cid==='wolf' && m.howl) add({ k:'howl', tier:'ready', icon:'fx_howl', name:'Howl', desc:'Its next attack gets +1 ATK.', when:'Triggers on its next attack.' });
+  if (m.cid==='rgolem' && m.windup) add({ k:'windup', tier:'ready', icon:'fx_windup', name:'Wind Up', desc:'Its next attack is an Earthquake: it also deals 1 damage to every benched enemy.', when:'Triggers on its next attack.' });
+  if (m.cid==='kirin' && m.chg && m.chg[S.round]) add({ k:'chg', tier:'ready', icon:'fx_charge', name:'Lightning Charge', desc:`+${CFG.KCHARGE} ATK on its attack this round.`, when:'This round.' });
+  else if (m.cid==='kirin' && m.chg && m.chg[S.round+1]) add({ k:'chgn', tier:'buff', icon:'fx_charge', name:'Lightning Charge', short:'next round', desc:`+${CFG.KCHARGE} ATK on its attack next round.` });
   for (const p of S.p[1-s].roster) if (p.cid==='pyrefly' && !p.ko && ((p.burn||{})[m.i]||0)>=CFG.PYRE_N)
-    add({ k:'burn', ico:'fa-fire', tone:'debuff', name:'Burning', desc:`${esc(seatName(1-s))}'s Pyrefly consumes the Burn on its next attack on this monster for <b>+${CFG.PYRE_BURST} ATK</b>.` });
-  if ((m.charm||0)>=S.round && S.round>0){ const left=m.charm-S.round+1; add({ k:'charm', ico:'fa-heart', tone:'debuff', name:'Charmed', n:left, count:true, desc:`<b>−${CFG.CHARM} ATK</b>. ${left>1?`${left} rounds left (this one and next).`:'Ends after this round.'}` }); }
-  if (m.slowRound===S.round) add({ k:'slow', ico:'fa-hourglass-half', tone:'debuff', name:'Slowed', desc:'<b>−1 SPD</b> this round.' });
-  if (FX_ONCE.includes(m.cid) || c.absorb) add({ k:'once', ico: m.cid==='scorpion' ? 'fa-skull-crossbones' : 'fa-shield-halved', tone: m.abilityUsed ? 'used' : 'shield', name:c.ab,
-    desc: `${esc(c.txt)}<br><span class="tn">${m.abilityUsed ? 'Already used this match.' : 'Ready (once per match).'}</span>` });
-  return L;
+    add({ k:'burn', tier:'debuff', icon:'fx_burn', name:'Burning', desc:`${esc(seatName(1-s))}'s Pyrefly consumes the Burn on its next attack on this monster for +${CFG.PYRE_BURST} ATK.` });
+  if ((m.charm||0)>=S.round && S.round>0){ const left=m.charm-S.round+1;
+    add({ k:'charm', tier:'debuff', icon:'fx_charm', name:'Charmed', num:left, short:`${left} round${left>1?'s':''}`, life: left>1 ? 'This round and next.' : 'Ends after this round.', desc:`−${CFG.CHARM} ATK.` }); }
+  if (m.slowRound===S.round) add({ k:'slow', tier:'debuff', icon:'fx_slow', name:'Slowed', num:1, short:'this round', desc:'−1 SPD this round.' });
+  if (FX_ONCE.includes(m.cid) || c.absorb){ const used=!!m.abilityUsed;
+    add({ k:'once', tier: used?'spent':'ready', icon: m.cid==='scorpion' ? 'fx_venom' : 'fx_shield', name:c.ab, short:'once per match', desc:esc(c.txt),
+      when: used ? 'Spent. It does not come back this match.' : 'Available now.' }); }
+  return L.sort((a,b)=>FX_ORDER[a.tier]-FX_ORDER[b.tier]);
 }
 let FX_PREV = {}, FX_T0 = null;
-function fxBadge(s, m, e){
-  const key=`${s}:${m.i}:${e.k}`, prev=FX_PREV[key]; const val = e.n!=null ? e.n : (e.tone==='used'?-1:1);
-  const gain = prev!=null && val>prev && e.tone!=='used'; FX_PREV[key]=val;
-  if (gain) sfx('cursor', 0.5, 0);
-  const pips = e.max ? `<span class="pp">${'<b class="on"></b>'.repeat(e.n||0)}${'<b></b>'.repeat(Math.max(0,e.max-(e.n||0)))}</span>` : '';
-  const cnt = e.count && e.n ? `<em>${e.n}</em>` : '';
-  const tip = `<div class="tt">${esc(e.name)}${e.stat?` <span class="tn">· ${e.stat}</span>`:''}</div>${e.desc}`;
-  return `<span class="fxb t-${e.tone} ${e.ready?'rdy':''} ${e.max&&!e.n?'dim':''} ${gain?'gain':''}" tabindex="0" data-tip="${fxAttr(tip)}" aria-label="${fxAttr(e.name)}"><i class="fa-solid ${e.ico}"></i>${pips}${cnt}</span>`;
+function fxTile(key, e, extraCls=''){
+  const sig=`${e.tier}:${e.num??''}`, prev=FX_PREV[key]; FX_PREV[key]=sig;
+  const flash = prev!==sig && e.tier!=='spent';                // a new or changed status flashes (gold ring)
+  if (flash && prev!=null) sfx('cursor', 0.5, 0);
+  return `<span class="fxt t-${e.tier} ${flash?'is-flash':''} ${extraCls}" tabindex="0" data-tip="${fxAttr(fxTipHTML(e))}" aria-label="${fxAttr(e.name)}"><img src="${fxAttr(ART[e.icon]||'')}" alt="">${e.num?`<b>${e.num}</b>`:''}</span>`;
 }
 function fxStatRow(s, m){
   const c=CARDS[m.cid], st=fxStats(s, m);
-  const v=(k)=>{ const d=st[k].v-c[k]; if (!d) return st[k].v;
-    const tip=`<div class="tt">${STAT[k].l} ${st[k].v}</div>${c[k]} printed ${st[k].why.map(w=>'· '+esc(w)).join(' ')}`;
-    return `<em class="sv ${d>0?'up':'down'}" data-tip="${fxAttr(tip)}">${st[k].v}</em>`; };
+  const v=(k)=>{ const d=st[k].v-c[k], key=`sv:${s}:${m.i}:${k}`, prev=FX_PREV[key]; FX_PREV[key]=st[k].v;
+    if (!d) return st[k].v;
+    const flash = prev!=null && prev!==st[k].v;
+    const tip=`<div class="fu-st-tip t-${d>0?'buff':'debuff'}"><div class="th nimg"><div><strong>${STAT[k].l} ${st[k].v}</strong><small>${c[k]} printed</small></div></div><div class="tb"><div class="desc">${st[k].why.map(w=>fxRules(esc(w))).join('<br>')}</div></div></div>`;
+    return `<em class="sv ${d>0?'up':'down'} ${flash?'sv-flash':''}" data-tip="${fxAttr(tip)}">${st[k].v}</em>`; };
   return `${elBadge(c.el,'stats',true)}${statChip('atk',v('atk'),true)}${statChip('def',v('def'),true)}${statChip('spd',v('spd'),true)}`;
+}
+// ---------- cues on the monster (status-cues.js look; only the active monster's hologram is visible)
+function fxRng(seed){ let h=2166136261; for (const ch of String(seed)) h=Math.imul(h^ch.charCodeAt(0),16777619); return ()=>((h=Math.imul(h^(h>>>15),2246822507), h=Math.imul(h^(h>>>13),3266489909), (h^=h>>>16)>>>0)/4294967296); }
+const FX_ZAP = ['10,0 3,12 11,14 5,28', '8,0 13,10 5,15 12,28', '11,0 4,9 12,13 3,20 9,28'];
+function fxCueHTML(kind, seed){
+  const r=fxRng(seed+kind); let h='';
+  if (kind==='st1' || kind==='st2'){ const n = kind==='st2' ? 6 : 2;
+    for (let i=0;i<n;i++){ const d=(kind==='st2'?1.2:2.6)+r()*1.0;
+      h+=`<svg class="zp" viewBox="0 0 18 28" style="left:${(18+r()*58).toFixed(1)}%;top:${(14+r()*58).toFixed(1)}%;transform:rotate(${Math.round(r()*70-35)}deg);animation-duration:${d.toFixed(2)}s;animation-delay:-${(r()*d).toFixed(2)}s"><polyline points="${FX_ZAP[i%3]}"/></svg>`; } }
+  if (kind==='burn'){ h+='<i class="gl"></i>';
+    for (let i=0;i<9;i++){ const d=0.9+r()*0.6;
+      h+=`<i class="fl" style="left:${(28+r()*44).toFixed(1)}%;bottom:${(6+r()*44).toFixed(1)}%;--s:${(10+r()*8).toFixed(1)}px;animation-duration:${d.toFixed(2)}s;animation-delay:-${(r()*d).toFixed(2)}s"></i>`; } }
+  return h;
+}
+function fxCues(s, m){
+  const out=[];
+  if (m.cid==='skizzik' && (m.static||0)>0) out.push((m.static||0)>=2 ? 'st2' : 'st1');
+  for (const p of S.p[1-s].roster) if (p.cid==='pyrefly' && !p.ko && ((p.burn||{})[m.i]||0)>=CFG.PYRE_N){ out.push('burn'); break; }
+  if ((m.cid==='wolf' && m.howl) || (m.cid==='kirin' && m.chg && m.chg[S.round]) || (m.cid==='rgolem' && m.windup)) out.push('pow');
+  if (m.cid==='roo' && (m.walk||0)>=fxNeedRoo()) out.push('roo');
+  return m.ko ? [] : out;
 }
 function renderEffects(){
   if (!S || !$('#table')) return;
   if (FX_T0!==S.t0){ FX_PREV={}; FX_T0=S.t0; }
   for (const s of [0,1]){
     for (const m of S.p[s].roster){
-      const row=$(`#fx${s}_${m.i}`); if (row){ const h=fxList(s,m).map(e=>fxBadge(s,m,e)).join(''); if (row._h!==h){ row._h=h; row.innerHTML=h; } }
+      const row=$(`#fx${s}_${m.i}`); if (row){ const h=fxList(s,m).map(e=>fxTile(`${s}:${m.i}:${e.k}`, e)).join(''); if (row._h!==h){ row._h=h; row.innerHTML=h; } }
       const fsr=$(`#fs${s}_${m.i}`); if (fsr){ const h=fxStatRow(s,m); if (fsr._h!==h){ fsr._h=h; fsr.innerHTML=h; } }
+      const slot=$(`#slot${s}_${m.i}`), cue=$(`#cue${s}_${m.i}`);
+      if (slot && cue && slot.classList){ const cs=fxCues(s,m), key=cs.join(' ');
+        if (cue._k!==key){ cue._k=key; for (const k of ['st1','st2','burn','pow','roo']) slot.classList.toggle('c-'+k, cs.includes(k));
+          cue.innerHTML = cs.filter(k=>k==='st1'||k==='st2'||k==='burn').map(k=>fxCueHTML(k, `${s}:${m.i}`)).join(''); } }
     }
     const ff=$(`#ffx${s}`); if (ff){ const tw=fxTailwind(s); let h='';
-      if (tw){ const max=CFG.TAILWIND, left=Math.min(max,tw.left);
-        const tip=`<div class="tt">Tailwind <span class="tn">· field</span></div>${CFG.TW_ALL?'Your monsters':'Your <b>Air</b> monsters'} have <b>+1 SPD</b> (max 4). ${tw.pending?`Starts next round, lasts ${max} rounds.`:`${left} round${left>1?'s':''} left, including this one.`}`;
-        h=`<span class="ffb ${tw.pending?'pend':''} ${!tw.pending&&left===1?'last':''}" tabindex="0" data-tip="${fxAttr(tip)}"><i class="fa-solid fa-wind"></i>Tailwind<span class="pp">${'<b class="on"></b>'.repeat(left)}${'<b></b>'.repeat(Math.max(0,max-left))}</span></span>`; }
+      if (tw){ const left=Math.min(CFG.TAILWIND,tw.left);
+        const e={ k:'tw', tier:'buff', icon:'fx_wind', name:'Tailwind', num: tw.pending ? null : left, short: tw.pending ? 'starts next round' : `${left} round${left>1?'s':''} left`,
+          life: tw.pending ? `Starts next round and lasts ${CFG.TAILWIND} rounds.` : `${left} round${left>1?'s':''} left, including this one.`,
+          desc: `Field effect: ${CFG.TW_ALL?'your monsters':'your Air monsters'} have +1 SPD (max 4).` };
+        h=`<span class="ffw ${tw.pending?'pend':''}">${fxTile(`${s}:field:tw`, e)}<span>Tailwind</span></span>`; }
       if (ff._h!==h){ ff._h=h; ff.innerHTML=h; } }
   }
 }
-// one shared tooltip for badges / coloured stats (hover, focus, or tap)
+// one shared tooltip for tiles / coloured stats (hover, focus, or tap)
 (function fxTip(){
   if (typeof document==='undefined' || !document.body || !document.addEventListener) return;
   const tip=document.createElement('div'); tip.id='fxtip'; tip.setAttribute('role','tooltip'); document.body.appendChild(tip);
@@ -1343,8 +1420,8 @@ function renderEffects(){
   document.addEventListener('pointerout', (e)=>{ const el=e.target.closest && e.target.closest('[data-tip]'); if (el && el===cur && !el.contains(e.relatedTarget)) hide(); });
   document.addEventListener('focusin', (e)=>{ const el=e.target.closest && e.target.closest('[data-tip]'); if (el) show(el); });
   document.addEventListener('focusout', hide);
-  // capture: a tap on a badge shows its tip and does not also pick the monster under it
-  document.addEventListener('click', (e)=>{ const el=e.target.closest && e.target.closest('[data-tip]'); if (el){ if (cur===el) hide(); else show(el); if (el.classList.contains('fxb') || el.classList.contains('ffb')) e.stopPropagation(); } else if (cur) hide(); }, true);
+  // capture: a tap on a tile shows its tip and does not also pick the monster under it
+  document.addEventListener('click', (e)=>{ const el=e.target.closest && e.target.closest('[data-tip]'); if (el){ if (cur===el) hide(); else show(el); if (el.classList.contains('fxt')) e.stopPropagation(); } else if (cur) hide(); }, true);
 })();
 
 // ===================== announcement banner (also the API for other game status: FA_BANNER(text, opts)) =====================
