@@ -9,7 +9,7 @@
 //     deadline, prize:{cid,label,hint}|null, quote, npc:{actorId,tokenUuid}, pending, over, reward }
 //   seat: { userId|null, actorId, name, kind:'human'|'ai', ai:{diff,style}, team, ready, next, lastTeam }
 
-import { TAG, MODULE_ID, FLAG_DUELIST, FLAG_BLOCK, SETTING_SESSIONS, Engine, Catalog, hostGM, uid } from "./fa-const.js";
+import { TAG, MODULE_ID, FLAG_DUELIST, FLAG_BLOCK, FLAG_TEAMS, SETTING_SESSIONS, Engine, Catalog, hostGM, uid } from "./fa-const.js";
 import { send, on } from "./fa-net.js";
 import { ownedCards, grantCard, grantStarter, canPlay } from "./fa-collection.js";
 
@@ -50,9 +50,16 @@ const toDuel = (s, uid, msg) => send(uid, "duel", { msg }, s.sid);
 function broadcast(s, build) { for (const p of participants(s)) toDuel(s, p.uid, build(p.viewer)); }
 function names(s, viewer) { const n = s.seats.map((t) => t.name); return viewer === 1 ? [n[1], n[0]] : n; }
 
-// the team to preselect: last game's team, or the only legal team when the collection allows just one
-function suggestTeam(seat, owned) {
+// the team to preselect: last game's team (a rematch / next game), else the character's ★ default formation,
+// else the only legal team when the collection allows just one
+const formsOf = (actor) => { const v = actor?.getFlag?.(MODULE_ID, FLAG_TEAMS); return Array.isArray(v) ? v.slice(0, 5) : null; };
+function defaultForm(actor, owned) {
+  const f = (formsOf(actor) || []).find((x) => x && x.def);
+  return f && Array.isArray(f.team) && f.team.every((c) => owned.includes(c)) && E().isLegalTeam(f.team) ? f : null;
+}
+function suggestTeam(seat, owned, actor) {
   if (seat.lastTeam && seat.lastTeam.every((c) => owned.includes(c))) return seat.lastTeam;
+  const d = defaultForm(actor, owned); if (d) return d.team;
   const legal = [];
   for (let a = 0; a < owned.length; a++) for (let b = a + 1; b < owned.length; b++) for (let c = b + 1; c < owned.length; c++) {
     const t = [owned[a], owned[b], owned[c]]; if (E().isLegalTeam(t)) legal.push(t);
@@ -68,7 +75,8 @@ function sendInit(s, userId) {
   const actor = me ? game.actors.get(me.actorId) : null;
   const owned = me ? ownedCards(actor) : [];
   const lobby = me ? {
-    kind: s.kind, owned, suggest: suggestTeam(me, owned), bestOf: s.bestOf, quote: s.quote || "",
+    kind: s.kind, owned, suggest: suggestTeam(me, owned, actor), bestOf: s.bestOf, quote: s.quote || "",
+    actorId: me.actorId, forms: formsOf(actor), suggestOpener: me.lastTeam ? null : (defaultForm(actor, owned)?.opener ?? null),   // a rematch keeps the window's own opener mark
     prize: viewer === 0 && s.prize ? s.prize.cid : null, prizeLabel: s.prize?.label, prizeHint: s.prize?.hint, oppReady: !!opp?.ready,
   } : { kind: s.kind, bestOf: s.bestOf };
   const nm = names(s, viewer);

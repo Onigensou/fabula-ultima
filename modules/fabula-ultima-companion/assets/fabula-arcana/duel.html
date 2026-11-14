@@ -649,6 +649,7 @@ em.sv.sv-flash{animation:fuNstFlash .9s ease-out}
 .fstat .stars{font-size:12px}
 .fstat b{color:#b3261e;font-weight:700}
 .opmark{position:absolute;left:6px;bottom:6px;z-index:3;font-family:var(--font-b);font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;border:1px solid #c9a44a;background:#fffaf0e6;color:#7a5a3a;cursor:pointer}
+.fslot.locked{cursor:default;opacity:.75}
 .opmark.on{background:linear-gradient(180deg,#f4c95d,#c08a1a);color:#3a1e06;border-color:#7a4e20;box-shadow:0 0 8px #f4c95d}
 @media (max-width:760px){ .frow{grid-template-columns:repeat(3,minmax(0,1fr))} }
 @media (max-width:460px){ .frow{grid-template-columns:repeat(2,minmax(0,1fr))} }
@@ -1987,9 +1988,11 @@ let FORM = {
   get(){ const v = store.get('fa.formations', null); return Array.from({length:FORM_SLOTS}, (_,i)=> (Array.isArray(v) && v[i]) || null); },
   set(list){ store.set('fa.formations', list); },
 };
-const formCheck = (f) => {        // { ok, why, team } against the cards you can field now (IDS = owned in-game)
+let FORM_OWNED = () => IDS;       // the cards you can field (in-game: the character's collection)
+const formCheck = (f) => {        // { ok, why, team } against the cards you can field now
   if (!f) return { ok:false, why:'', team:[] };
-  const team = f.team.filter(c => CARDS[c] && IDS.includes(c));
+  const own = FORM_OWNED();
+  const team = f.team.filter(c => CARDS[c] && own.includes(c));
   const missing = f.team.filter(c => !team.includes(c));
   if (missing.length) return { ok:false, why:`${missing.map(c => CARDS[c] ? N(c) : c).join(', ')} missing`, team };
   if (teamCost(team) > CFG.BUDGET) return { ok:false, why:`${teamCost(team)}★, over budget`, team };
@@ -2018,7 +2021,7 @@ function formsHTML(){
       <div class="fhead"><span class="fnum">${i+1}</span><span class="fname" data-fname="${i}" title="Rename">${esc(f.name)}</span>
         <button type="button" class="fstar ${f.def?'on':''}" data-fstar="${i}" title="${f.def?'Default: loads when team select opens':'Make this the default'}">${f.def?'★':'☆'}</button>
         <button type="button" class="fdel" data-fdel="${i}" title="Delete">✕</button></div>
-      <div class="fcards">${f.team.map(cid => `<span class="fc ${IDS.includes(cid)?'':'gone'} ${f.opener===cid?'op':''}" style="--ec:var(--e-${CARDS[cid] ? CARDS[cid].el : 'phys'})" title="${esc(CARDS[cid] ? N(cid) : cid)}${f.opener===cid?' · opener':''}"><img src="${ART[cid]||''}" alt=""></span>`).join('')}</div>
+      <div class="fcards">${f.team.map(cid => `<span class="fc ${FORM_OWNED().includes(cid)?'':'gone'} ${f.opener===cid?'op':''}" style="--ec:var(--e-${CARDS[cid] ? CARDS[cid].el : 'phys'})" title="${esc(CARDS[cid] ? N(cid) : cid)}${f.opener===cid?' · opener':''}"><img src="${ART[cid]||''}" alt=""></span>`).join('')}</div>
       <div class="fstat">${c.ok ? `${starStr(teamCost(f.team))}` : `<b>⚠ ${esc(c.why)}</b>`}</div></div>`;
   };
   return `<div class="forms"><div class="fbar"><span class="label">Formations</span><span class="hint">Click to load · 1–5 on the keyboard · ★ = loads first</span>
@@ -2050,6 +2053,7 @@ function bindForms(){
 // keys 1–5 load a formation while team select is open
 if (typeof document!=='undefined' && document.addEventListener) document.addEventListener('keydown', (e) => {
   if (S || e.ctrlKey || e.metaKey || e.altKey || /input|textarea/i.test((e.target && e.target.tagName) || '')) return;
+  if (window.FA_NETSTATE && (window.FA_NETSTATE.ready || window.FA_NETSTATE.role === 'spectator' || !window.FA_NETSTATE.lobby)) return;
   const k = +e.key; if (k>=1 && k<=FORM_SLOTS && FORM.get()[k-1]){ formLoad(k-1); render(); }
 });
 // the opening pick starts on the preferred opener (the player still plays it)
@@ -2357,6 +2361,14 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
   const _sync = syncSurrender;
   syncSurrender = function(){ _sync(); if (spectator()){ const b = $('#btnSurrender'); if (b) b.hidden = true; } };
 
+  // ---------- formations: saved on the character (the parent client writes the actor flag) ----------
+  NET.forms = null;
+  FORM = {
+    get(){ const v = NET.forms; return Array.from({length:FORM_SLOTS}, (_,i) => (Array.isArray(v) && v[i]) || null); },
+    set(list){ NET.forms = list; send({ t:'forms', actorId: NET.lobby && NET.lobby.actorId, list }); },
+  };
+  FORM_OWNED = () => (NET.lobby && NET.lobby.owned) || [];
+
   // ---------- lobby (team pick from the cards you own) ----------
   const _render = render;
   render = function(){
@@ -2371,6 +2383,7 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
     const side = $('.setup .side'); if (side) side.innerHTML = lobbySide(owned);
     bindSetup();
     if (NET.ready) document.querySelectorAll('[data-pick]').forEach(el => { el.onclick = null; el.onkeydown = null; el.classList.add('dis'); });
+    if (NET.ready) document.querySelectorAll('[data-fslot],[data-fstar],[data-fdel],[data-fname],[data-opener],#fSave,#fSaveNew').forEach(el => { el.onclick = null; el.onkeydown = null; if (el.tagName === 'BUTTON') el.disabled = true; else el.classList.add('locked'); });
     const br = $('#btnRand'); if (br) br.onclick = () => { if (NET.ready) return; sfx('cursor'); const legal = LEGAL_FROM(owned); if (legal.length){ UI.pick = legal[Math.floor(Math.random()*legal.length)]; render(); } };
     const bs = $('#btnStart'); if (bs) bs.onclick = () => { const sel = UI.pick || []; if (NET.ready || sel.length !== CFG.TEAM || teamCost(sel) > CFG.BUDGET) return; sfx('book'); NET.ready = true; send({ t:'team', team:[...sel] }); render(); };
     // Unready: take Ready back while the opponent is still choosing (the host ignores it once the game has started)
@@ -2408,7 +2421,7 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
     return o;
   }
   function decision(){
-    clearInterval(TICK); clearDrafts(); UI.seat = 0; UI.busy = false;
+    clearInterval(TICK); clearDrafts(); UI.seat = 0; UI.busy = false; preselectOpener();
     if (S && S.deadline) TICK = setInterval(tick, 250);
     render();
   }
@@ -2599,7 +2612,9 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
         NET.lobby = m.lobby || null; NET.ready = !!m.ready; NET.spectators = m.spectators || 0;
         if (m.vol){ SND.vol = 0.55 * (m.vol.sfx ?? 1); MUS.vol = 0.32 * (m.vol.music ?? 1); }
         if (m.music){ musicUrls = m.music; tryMusic(); }
-        if (NET.lobby && NET.lobby.suggest && !(UI.pick || []).length) UI.pick = NET.lobby.suggest.slice();
+        if (NET.lobby){ NET.forms = Array.isArray(NET.lobby.forms) ? NET.lobby.forms : null; }
+        if (NET.lobby && NET.lobby.suggest && !(UI.pick || []).length){ UI.pick = NET.lobby.suggest.slice(); UI.openerCid = NET.lobby.suggestOpener || null;
+          const key = [...UI.pick].sort().join(','); const i = FORM.get().findIndex(f => f && [...f.team].sort().join(',') === key); UI.formSlot = i >= 0 ? i : null; }
         NET.rematch = { me:false, opp:false, oppLeft:false }; NET.nextSent = false; NET.oppGone = null; awayHide();
         if (m.view) return m.view.phase === 'ended' ? applyState(m) : start(m);
         document.querySelectorAll('.ovl, .annc').forEach(o => o.remove());

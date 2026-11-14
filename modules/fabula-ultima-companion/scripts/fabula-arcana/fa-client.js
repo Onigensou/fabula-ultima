@@ -4,7 +4,7 @@
 // (who is dueling — used for the overhead icon and the Watch button).
 // While a duel window is open, this client's scene music is silenced locally (the duel has its own theme).
 
-import { TAG, ASSET_BASE, MODULE_ID, FORGE, FLAG_BLOCK } from "./fa-const.js";
+import { TAG, ASSET_BASE, MODULE_ID, FORGE, FLAG_BLOCK, FLAG_TEAMS } from "./fa-const.js";
 import { showInvitePanel } from "./fa-invite-ui.js";
 import { send, on } from "./fa-net.js";
 
@@ -64,6 +64,8 @@ export function closeWindow({ quiet = false } = {}) {
 window.FabulaArcanaBridge = {
   fromDuel(msg) {
     if (!W.sid || !msg) return;
+    // formations are the player's own data: saved on their character here, never sent to the host
+    if (msg.t === "forms") return saveForms(msg.actorId, msg.list);
     if (msg.t === "hello") {
       W.ready = true;
       const q = W.queue.splice(0); for (const m of q) deliver(m);
@@ -105,6 +107,14 @@ export function installClient() {
 }
 
 let invite = null;
+
+// Formations (deck builder): the duel window's team select writes them to the character it plays.
+async function saveForms(actorId, list) {
+  const a = game.actors.get(actorId);
+  if (!a || !a.isOwner || !Array.isArray(list)) return;
+  const clean = list.slice(0, 5).map((f) => f && Array.isArray(f.team) ? { name: String(f.name || "Team").slice(0, 18), team: f.team.slice(0, 3).map(String), opener: f.opener ? String(f.opener) : null, def: !!f.def } : null);
+  try { await a.setFlag(MODULE_ID, FLAG_TEAMS, clean); } catch (e) { console.warn(TAG, "save formations", e); ui.notifications?.warn("Fabula Arcana | Couldn't save the formation."); }
+}
 
 // UI sounds outside the duel window (challenge panel), at the player's interface volume
 const UI_SFX = {

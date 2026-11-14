@@ -11,6 +11,7 @@ export const MSG = "ONI_FABULA_ARCANA_V1";
 export const FLAG_CARD = "faCard";
 export const FLAG_DUELIST = "faDuelist";
 export const SETTING_SESSIONS = "faSessions";
+export const FLAG_TEAMS = "faTeams";       // Actor flag: saved formations [{ name, team:[cid×3], opener, def } | null] × 5 (written by the owner's client)
 export const FLAG_BLOCK = "faBlock";        // User flag: { [challengerUserId]: time } — "Block tonight" (cleared when the party rests)
 
 export const ASSET_BASE = `modules/${MODULE_ID}/assets/fabula-arcana/`;
