@@ -216,8 +216,8 @@ const blank = blankStats;
   // Kalina Jump: Pass → attacks normally (ATK 1 / DEF 5), lands next round swapped (ATK 5 / DEF 1), then grounded again
   S = duel(A('kalina'), B('wolf'), {hp:[30,30]}); r=go(P,{action:'STRENGTH'}); const k1=dmg0(), t1=r.ev.res[1].dmg;
   r=go({action:'CAFE'},{action:'SHARD'}); const k2=dmg0(), t2=r.ev.res[1].dmg; r=go(P,P); const k3=dmg0();
-  ok(k1===1 && t1===1 && k2===5 && t2===3 && k3===1, 'Kalina: Jump round 1 dmg & DEF 5 (5−5→1), landing ATK 5 & DEF 1 (Shard 4−1=3), jumps again (got '+[k1,t1,k2,t2,k3]+')');
-  S = duel(A('kalina'), B('wolf'), {hp:[30,30]}); r=go(P,P); r=go(P,P); ok(S.p[0].roster[0].land===4 && dmg0()===5, 'Kalina: a Pass on the landing round does not jump again');
+  ok(k1===1 && t1===1 && k2===6 && t2===3 && k3===1, 'Kalina: Jump round 1 dmg & DEF 6 (5−6→1), landing ATK 6 & DEF 1 (Shard 4−1=3), jumps again (got '+[k1,t1,k2,t2,k3]+')');
+  S = duel(A('kalina'), B('wolf'), {hp:[30,30]}); r=go(P,P); r=go(P,P); ok(S.p[0].roster[0].land===4 && dmg0()===6, 'Kalina: a Pass on the landing round does not jump again');
   S = duel(['kalina','hellhound','cryo'], B('wolf'), {hp:[30,30]}); r=go(P,P); r=go({action:'SWITCH',target:1},P); ok(!S.p[0].roster[0].land, 'Kalina: switching out cancels the landing');
 }
 

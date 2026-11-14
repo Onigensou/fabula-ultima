@@ -64,8 +64,8 @@
     hina:     {character:true, name:'Hina', el:'light', cost:3, role:'Support', atk:4, hp:11, def:1, ab:'Foretell', txt:'While Hina is your active card, the opponent\x27s card flips face up for you the moment it is placed, and you always get 10 more seconds after it lands. You may also play first without looking. Both sides Foretelling = a normal round.'},
     zarg:     {character:true, name:'Zarg', el:'phys', cost:3, role:'Hunter', atk:3, hp:9, def:0, ab:'Barrage', txt:'Whenever he attacks, he also deals 2 damage to the benched enemy with the lowest HP (ignores DEF, items and elements).'},
     raubens:  {character:true, name:'Raubens', el:'none', cost:3, role:'Striker', atk:3, hp:10, def:1, ab:'Bandit King', txt:'Whenever the opponent uses an item while Raubens is your active card, he gains +1 ATK for the rest of the match.'},
-    geist:    {character:true, name:'Geist', el:'dark', cost:3, role:'Guardian', atk:3, hp:5, def:1, ab:'The Blackest Night', txt:'The first time he would fall to 0 HP (anywhere, any source), he rises again at full HP; extra damage is lost. The second time, he falls for real.'},
-    kalina:   {character:true, name:'Kalina', el:'air', cost:3, role:'Combo', atk:1, hp:10, def:5, ab:'Jump', txt:'When she Passes, she Jumps: she still attacks this round, then lands next round with her ATK and DEF swapped for that round.'},
+    geist:    {character:true, name:'Geist', el:'dark', cost:3, role:'Guardian', atk:3, hp:5, def:2, ab:'The Blackest Night', txt:'The first time he would fall to 0 HP (anywhere, any source), he rises again at full HP; extra damage is lost. The second time, he falls for real.'},
+    kalina:   {character:true, name:'Kalina', el:'air', cost:3, role:'Combo', atk:1, hp:11, def:6, ab:'Jump', txt:'When she Passes, she Jumps: she still attacks this round, then lands next round with her ATK and DEF swapped for that round.'},
   };
   // v0.5 Speed = DEX die tier (d6=1, d8=2, d10=3, d12=4) from the world sheets
   const SPD = { gigas:1, gorger:2, carlbero:2, kirin:2, flame:2, cryo:2, sylph:2, fulgimite:3, broo:3, life:3, pyrefly:4, skizzik:4,
