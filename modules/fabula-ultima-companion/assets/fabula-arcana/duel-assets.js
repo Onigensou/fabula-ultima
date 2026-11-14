@@ -51,6 +51,10 @@ const ART = {
  "raubens": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Raubens.png",
  "geist": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Geist.png",
  "kalina": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Kalina.png",
+ "blanche": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Blanche.png",
+ "keren": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Keren.png",
+ "fx_foxfire": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Burn.png",
+ "fx_tips": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Potion_IconC.png",
  "fx_foretell": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Holy.png",
  "fx_revive": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Zombie.png",
  "fx_loot": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/AttackUp.png",
@@ -80,7 +84,9 @@ const HOLO_VIDEO = {
  "zarg": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Zarg/Zarg_Battler002.webm",
  "raubens": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Rauber/Rauben_Battle.webm",
  "geist": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/Geist_Battle.webm",
- "kalina": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Kalina/Kalina_Battler001.webm"
+ "kalina": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Kalina/Kalina_Battler001.webm",
+ "blanche": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Blanche_Battler002.webm",
+ "keren": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Battler002.webm"
 };
 const SFXDATA = {};
 const SFXURL = {

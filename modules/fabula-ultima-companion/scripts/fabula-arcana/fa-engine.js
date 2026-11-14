@@ -29,6 +29,8 @@
   let RNG = Math.random;
   let S = null;                       // the match being resolved (set by withState)
 
+  // Keren's Fox Fire stack: every KO'd card in the match except herself (both rosters), × CFG.FOXFIRE, capped
+  const foxFire = m => { if (!S || !m || m.cid!=='keren') return 0; let n=0; for (const pl of S.p) for (const x of pl.roster) if (x!==m && x.ko) n++; return Math.min(CFG.FOXFIRE_CAP, n*CFG.FOXFIRE); };
   const isLanding = m => !!m && m.cid==='kalina' && !!S && m.land===S.round;
   // Hina's Foretell: the seat whose active card is Hina chooses SECOND and sees the other seat's card.
   // Only in the action step, and only when exactly one side has Hina up front (both = a normal round).
@@ -60,6 +62,7 @@
     // Kalina's Jump landing: ATK and DEF swap for the landing round
     const landA = isLanding(att), landD = isLanding(def);
     let atk = landA ? A.def : A.atk; const parts=[landA ? `${atk} ATK (Jump landing)` : `${A.atk} ATK`];
+    if (att.cid==='keren'){ const ff=foxFire(att); if (ff){ atk+=ff; parts.push(`+${ff} Fox Fire`); } }
     if (att.cid==='raubens' && (att.loot||0)>0){ atk+=att.loot; parts.push(`+${att.loot} Bandit King`); }
     if (ctx.attItem==='STRENGTH'){ atk+=CFG.STR; parts.push(`+${CFG.STR} Strength`); }
     if (ctx.attItem==='SHARD'){ atk+=CFG.SHARD; parts.push(`+${CFG.SHARD} Shard`); }
@@ -140,6 +143,10 @@
     for (const s of [0,1]) if (ch[s].action==='PASS' && armNext(mon(P[s],P[s].active))) (ev.passArm=ev.passArm||[]).push(s);
     for (const s of [0,1]) if (ch[s].action==='PASS' && !armNext(mon(P[s],P[s].active))){ const m=mon(P[s],P[s].active); if (m.cid==='wolf' && CFG.HOWL_NEXT!==2 && !m.howl){ m.howl=true; L.push(['Wolf howls: +1 ATK on its attack this round.','m']); }
       if (m.cid==='rgolem' && CFG.WINDUP_NEXT!==2 && !m.windup){ m.windup=true; L.push(['Rock Golem winds up: its next attack will be an Earthquake.','m']); } }
+    for (const s of [0,1]) if (ch[s].action==='PASS'){ const m=mon(P[s],P[s].active); if (m && m.cid==='blanche' && m.hp>0){
+      const b=P[s].roster.filter(x=>!x.ko && x.hp>0 && x.i!==P[s].active && x.hp<CARDS[x.cid].hp).sort((x,y)=>(x.hp-y.hp)||((x.hp/CARDS[x.cid].hp)-(y.hp/CARDS[y.cid].hp))||(x.i-y.i));
+      if (b.length){ const x=b[0], was=x.hp; x.hp=Math.min(CARDS[x.cid].hp, x.hp+CFG.TIPS_HEAL); S.stats.tips=(S.stats.tips||0)+(x.hp-was);
+        (ev.tips=ev.tips||[]).push({ s, i:x.i, amt:x.hp-was }); L.push([`Give me tips or 5 stars: Blanche patches up ${N(x.cid)} (+${x.hp-was} HP → ${x.hp}).`,'g']); } } }
     const startHP=[0,1].map(s=>mon(P[s],P[s].active).hp);
     for (const s of [0,1]) if (ch[s].action==='REMEDY'){
       const m=mon(P[s],P[s].active), amt=CFG.REMEDY, b=m.hp;
@@ -256,7 +263,7 @@
     // Skilled AI reasons about Speed: a faster monster that KOs first takes no counter-hit
     const faster = m => D.speed && CARDS[m.cid].spd>CARDS[opMon.cid].spd;
     const slower = m => D.speed && CARDS[m.cid].spd<CARDS[opMon.cid].spd;
-    const score = m => { const o=est(m,opMon), i=est(opMon,m); return o*1.2 - ((faster(m)&&o>=opMon.hp)?0:i) + m.hp*0.2 + (D.speed?(CARDS[m.cid].spd-CARDS[opMon.cid].spd)*0.4:0); };
+    const score = m => { const o=est(m,opMon), i=est(opMon,m); return (m.cid==='keren' && living(me).length>2 ? -50 : 0) + o*1.2 - ((faster(m)&&o>=opMon.hp)?0:i) + m.hp*0.2 + (D.speed?(CARDS[m.cid].spd-CARDS[opMon.cid].spd)*0.4:0); };
     if (me.pending){ let best=null,bs=-1e9; for (const m of benchOptions(me)){ const sc=score(m)*noise(); if (sc>bs){bs=sc;best=m;} } choice.replace=best.i; }
     const my = me.pending ? me.roster[choice.replace] : mon(me,me.active);
     const max=CARDS[my.cid].hp, out=est(my,opMon);
@@ -267,6 +274,7 @@
     if (my.cid==='wolf' && !my.howl) w.PASS+=0.8;
     if (my.cid==='rgolem' && !my.windup) w.PASS+=0.8;
     if (my.cid==='kalina' && my.land!==S.round && my.land!==S.round+1) w.PASS+=1.2;
+    if (my.cid==='blanche' && benchOptions(me).some(x=>x.hp<CARDS[x.cid].hp)) w.PASS+=0.8;
     const twOn = me.twUntil>=S.round+1;   // Tailwind still up next round
     if (slower(my) && my.hp<=incS) w.PASS*=0.6;                // about to be KO'd with no reply
     if (me.items.STRENGTH){ const outS=est(my,opMon,'STRENGTH'); w.STRENGTH = 0.6 + (opMon.hp>out && opMon.hp<=outS ? 3 : 0) + (my.cid==='fulgimite'?0.6:0) - (out<=0?0.6:0); }
@@ -347,7 +355,7 @@
       if (v>bs){ bs=v; best=c; } }
     return { action:best.action, target:best.target };
   }
-  function aiOpening(me, prof={diff:'casual'}){ const sk=(AI_DIFF[prof.diff]||{}).speed; let best=0,bs=-1e9; for (const m of me.roster){ const c=CARDS[m.cid]; const sc=(c.atk*1.4+c.hp*0.35+c.def+(sk?c.spd*0.6:0))*(0.7+RNG()*0.6); if (sc>bs){bs=sc;best=m.i;} } return best; }
+  function aiOpening(me, prof={diff:'casual'}){ const sk=(AI_DIFF[prof.diff]||{}).speed; let best=0,bs=-1e9; for (const m of me.roster){ const c=CARDS[m.cid]; const sc=(c.atk*1.4+c.hp*0.35+c.def+(sk?c.spd*0.6:0))*(0.7+RNG()*0.6) - (m.cid==='keren' ? 100 : 0); if (sc>bs){bs=sc;best=m.i;} } return best; }
   // v0.5 timeout auto-pick: highest current HP, then highest max HP, then roster order (deterministic)
   function autoPickMonster(pl){ const c=pl.roster.filter(m=>!m.ko && m.i!==pl.active); c.sort((a,b)=>(b.hp-a.hp)||(CARDS[b.cid].hp-CARDS[a.cid].hp)||(a.i-b.i)); return c[0].i; }
 
@@ -482,7 +490,7 @@
       if (ev.seq) ev.seq = ev.seq.map(flip);
       if (ev.snaps) ev.snaps = ev.snaps.map(swap2);
       if (ev.denied != null) ev.denied = flip(ev.denied);
-      for (const k of ['direct','entry','revive']) for (const x of ev[k] || []) if (x && x.s != null) x.s = flip(x.s);
+      for (const k of ['direct','entry','revive','tips']) for (const x of ev[k] || []) if (x && x.s != null) x.s = flip(x.s);
       return r;
     },
     seriesForSeat(sr, viewer){
@@ -493,7 +501,7 @@
   };
 
   const Engine = Object.freeze({
-    Match, Series, View, foretellSeat, IDS, LEGAL_TEAMS, isLegalTeam, teamCost, compKey, randomTeam, elMod,
+    Match, Series, View, foretellSeat, foxFire: (state, m) => withState(state, () => foxFire(m)), IDS, LEGAL_TEAMS, isLegalTeam, teamCost, compKey, randomTeam, elMod,
     setRng(fn){ RNG = typeof fn === 'function' ? fn : Math.random; },
     // low-level hooks for tests and the balance tool (run inside a state)
     _withState: withState, _resolveRound: ch => resolveRound(ch), _calcAttack: (a, d, ctx) => calcAttack(a, d, ctx), _mkPlayer: mkPlayer,

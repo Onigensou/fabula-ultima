@@ -150,7 +150,7 @@ const blank = blankStats;
   S = duel(A('hellhound'), ['roper','flame','kirin'], {hp:[30,1]}); r=go(P,P); S.p[1].pending=true; r=go(P,{replace:1,action:'PASS'});
   ok(S.p[1].active===1 && !(r.ev.entry||[]).length, 'Dynamic Entry does not trigger on a forced replacement');
   // pool
-  ok(R.IDS.length===27 && ['obsidrax','roo','walrog','gorger','sylph','succubus','hina','zarg','raubens','geist','kalina'].every(k=>R.IDS.includes(k)) && !R.IDS.some(k=>['broo','carlbero','life'].includes(k)), 'pool = 27 cards (22 + 5 character cards; Bandit Roo retired)');
+  ok(R.IDS.length===29 && ['obsidrax','roo','walrog','gorger','sylph','succubus','hina','zarg','raubens','geist','kalina','blanche','keren'].every(k=>R.IDS.includes(k)) && !R.IDS.some(k=>['broo','carlbero','life'].includes(k)), 'pool = 29 cards (22 + 7 character cards; Bandit Roo retired)');
   // Succubus Charm
   S = duel(A('hellhound'), ['roper','succubus','kirin'], {hp:[30,30]}); S.p[1].roster[1].hp=30; r=go(P,{action:'SWITCH',target:1});
   const c1=dmg0(); r=go(P,P); const c2=dmg0(); r=go(P,P); const c3=dmg0();
@@ -195,6 +195,18 @@ const blank = blankStats;
   ok(gg===1 && gs===30-1-4, 'Golem Fragment: DEF +3 (4 → 1); Smoke Bomb ignores it too (full 4)');
   S = duel(A('scorpion'), B('hellhound'), {hp:[30,30]}); S.p[0].roster[0].abilityUsed=true; r=go(P,{action:'GOLEM'});
   ok(dmg0()===0, 'Golem Fragment can still block a hit to 0 (Scorpion 3 − 3)');
+  // ---- Blanche + Keren (11-15) ----
+  S = duel(['blanche','kirin','cryo'], B('wolf'), {hp:[30,30]}); S.p[0].roster[1].hp=4; S.p[0].roster[2].hp=6; r=go(P,P);
+  ok(S.p[0].roster[1].hp===6 && S.p[0].roster[2].hp===6 && r.ev.tips && r.ev.tips[0].i===1, 'Blanche: a Pass heals the lowest-HP benched ally by 2 (4 → 6), the other untouched');
+  S = duel(['blanche','kirin','cryo'], B('wolf'), {hp:[30,30]}); r=go({action:'GOLEM'},P); ok(!r.ev.tips, 'Blanche: no heal without a Pass');
+  S = duel(['blanche','kirin','cryo'], B('wolf'), {hp:[5,30]}); r=go(P,P); ok(!r.ev.tips && S.p[0].roster[0].hp<5, 'Blanche: never heals herself, and nothing to heal on a full bench');
+  S = duel(['hellhound','keren','cryo'], B('wolf'), {hp:[30,30]}); S.p[0].roster[1].hp=12;
+  ok(E.foxFire(S, S.p[0].roster[1])===0, 'Keren: Fox Fire starts at +0');
+  S.p[0].roster[2].ko=true; S.p[0].roster[2].hp=0; S.p[1].roster[1].ko=true; S.p[1].roster[1].hp=0;
+  ok(E.foxFire(S, S.p[0].roster[1])===4, "Keren: +2 per KO on either side, counted from the bench (ally + enemy = +4)");
+  S.p[0].active=1; r=go(P,P); ok(dmg0()===5, 'Keren: 1 base + 4 Fox Fire = 5 vs Wolf');
+  S.p[1].roster[2].ko=true; S.p[0].roster[0].ko=true; S.p[1].roster[0].ko=true;
+  ok(E.foxFire(S, S.p[0].roster[1])===6, 'Keren: Fox Fire caps at +6');
   // ---- character cards (playtest v1) ----
   ok(['hina','zarg','raubens','geist','kalina'].every(k=>R.CARDS[k].cost===3 && R.CARDS[k].character), 'character cards are ★★★ and flagged character');
   // Zarg Barrage: 2 to the benched enemy with the lowest HP

@@ -67,6 +67,8 @@ const ART = {   // exact library paths (matched by content hash to the duel wind
   raubens: "Fabula Arcana/Character Cards/Raubens.png",
   geist: "Fabula Arcana/Character Cards/Geist.png",
   kalina: "Fabula Arcana/Character Cards/Kalina.png",
+  blanche: "Fabula Arcana/Character Cards/Blanche.png",
+  keren: "Fabula Arcana/Character Cards/Keren.png",
 };
 export const artUrl = (cid) => (ART[cid] ? FORGE + ART[cid].split("/").map(encodeURIComponent).join("/") : "icons/svg/card-joker.svg");
 export const artFiles = () => ({ ...ART });   // cid → library path (card drops match monster art against these)
