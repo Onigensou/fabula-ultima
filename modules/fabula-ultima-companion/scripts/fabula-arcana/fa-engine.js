@@ -75,8 +75,10 @@
     // absorption ability: checked before damage (fires even if Guard would zero it)
     if (D.absorb && D.absorb===ael && !def.abilityUsed)
       return { dmg:0, heal:CFG.AB_HEAL, aff:'AB', line:`${head} · ${N(def.cid)}'s <b>${D.ab}</b> negates it (+${CFG.AB_HEAL} HP)`, usedAbsorb:true, howl, pyre, kcharge, ael };
-    const ddef = landD ? D.atk : D.def;
-    let d = Math.max(1, atk - ddef); let line = head + (ddef?` − DEF ${ddef}${landD?' (landing)':''}`:'') + ` = ${d}`;
+    // Smoke Bomb (11-15): this attack ignores DEF — printed, Jump landing and Golem Fragment's +3
+    const smoke = ctx.attItem==='SMOKE', golem = ctx.defItem==='GOLEM';
+    const pdef = landD ? D.atk : D.def, ddef = smoke ? 0 : pdef;
+    let d = Math.max(1, atk - ddef); let line = head + (ddef?` − DEF ${ddef}${landD?' (landing)':''}`:'') + (smoke && (pdef || golem) ? ' · <b>Smoke Bomb</b> ignores DEF' : '') + ` = ${d}`;
     const mod = elMod(ael, D.el); let aff = ael==='none' ? 'NONE' : 'N';
     if (mod>0){ d=Math.max(1,d+mod); aff='ADV'; line+=` · <b>Strong</b> vs ${EL[D.el]} +${mod} = ${d}`; }
     if (mod<0){ d=Math.max(1,d+mod); aff='DIS'; line+=` · <b>Weak</b> vs ${EL[D.el]} ${mod} = ${d}`; }
@@ -84,8 +86,9 @@
     // Zeroed BEFORE shields so a Roo poke never spends Thick Skin / Pyrophagy / Earthen Wire.
     if (att.cid==='roo' && d>0){ d=0; line+=' · Roo does not hurry: 0'; }
     const red=[]; let r=0;
-    if (ctx.defItem==='GOLEM'){
-      if (ctx.attItem==='SMOKE') red.push('Golem Fragment pierced by Smoke Bomb'); else { r+=CFG.GOLEM; red.push(`Golem Fragment −${CFG.GOLEM}`); }
+    // Golem Fragment = DEF +3 this round. Same numbers as before: it counts after the element bonus, so it can block a hit to 0.
+    if (golem){
+      if (smoke) red.push('Golem Fragment pierced by Smoke Bomb'); else { r+=CFG.GOLEM; red.push(`Golem Fragment DEF +${CFG.GOLEM}`); }
       if (def.cid==='carlbero'){ r+=1; red.push('Fortify −1'); }
     }
     if (def.cid==='broo' && ctx.defSwitchedIn){ r+=2; red.push('Soft Landing −2'); }
@@ -269,7 +272,8 @@
     if (me.items.STRENGTH){ const outS=est(my,opMon,'STRENGTH'); w.STRENGTH = 0.6 + (opMon.hp>out && opMon.hp<=outS ? 3 : 0) + (my.cid==='fulgimite'?0.6:0) - (out<=0?0.6:0); }
     if (me.items.GOLEM) w.GOLEM = 0.4 + (my.hp<=incS && incS>0 ? 2.4 : 0) + (my.cid==='carlbero'?0.5:0) - (inc<=0?0.4:0);
     if (me.items.REMEDY) w.REMEDY = my.hp>=max-1 ? 0 : 0.3 + (my.hp<=max/2?1.8:0) + (my.hp<=incS && my.hp+CFG.REMEDY>incS ? 1.2 : 0) + (my.cid==='kirin'?0.4:0);
-    if (me.items.SMOKE) w.SMOKE = 0.1 + (op.items.GOLEM && opMon.hp<=out+1 && out>0 ? 2 : 0);
+    if (me.items.SMOKE){ const outK=est(my,opMon,'SMOKE'), dK=(opMon && (CARDS[opMon.cid].def||0)) || 0;
+      w.SMOKE = 0.1 + Math.max(0,outK-out)*0.9 + (opMon.hp>out && opMon.hp<=outK ? 2 : 0) + (op.items.GOLEM && opMon.hp<=out+1 && out>0 ? 1.5 : 0) + (dK>=2 ? 0.6 : 0); }
     if (me.items.CAFE){ const ms=CARDS[my.cid].spd, os=CARDS[opMon.cid].spd; w.CAFE = 0.2 + (ms<4 && ms+1>os && ms<=os && out>=opMon.hp ? 2.6 : 0) + (ms<4 && ms+1===os && my.hp<=incS ? 0.8 : 0); }
     if (me.items.SHARD){ const outX=est(my,opMon,'SHARD'); w.SHARD = 0.3 + Math.max(0,outX-out)*0.9 + (opMon.hp>out && opMon.hp<=outX ? 2 : 0); }
     if (!me.pending){

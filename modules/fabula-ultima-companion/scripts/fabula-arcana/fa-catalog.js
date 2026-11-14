@@ -47,8 +47,8 @@
     cryo:     {name:'Cryo Gorger', el:'ice', cost:1, role:'Punisher', atk:3, hp:9, def:0, ab:'Cryo Explosion', txt:'When an attack KOs it, it bursts: 2 damage to the attacker.'},
     inferex:  {name:'Inferex', el:'fire', cost:2, role:'Hunter', atk:4, hp:9, def:0, ab:'Voracious', txt:'When its attack KOs the enemy active monster and it survives, 3 damage to a random benched enemy.'},
     roper:    {name:'Roper', el:'phys', cost:2, role:'Punisher', atk:3, hp:11, def:1, ab:'Entangle', txt:'+1 ATK against a monster that entered by voluntary Switch this round.'},
-    rgolem:   {name:'Rock Golem', el:'earth', cost:2, role:'Guardian', atk:2, hp:9, def:2, ab:'Wind Up', txt:'After a round in which it Passes, its next attack is an Earthquake: it also deals 1 damage to every benched enemy (does not stack).'},
-    gigas:    {name:'Gigas', el:'earth', cost:3, role:'Striker', atk:4, hp:9, def:1, ab:'Crushing Blow', txt:'+1 ATK against a monster with printed DEF 1 or more.'},
+    rgolem:   {name:'Rock Golem', el:'earth', cost:2, role:'Guardian', atk:2, hp:11, def:2, ab:'Wind Up', txt:'After a round in which it Passes, its next attack is an Earthquake: it also deals 1 damage to every benched enemy (does not stack).'},
+    gigas:    {name:'Gigas', el:'earth', cost:3, role:'Striker', atk:5, hp:9, def:1, ab:'Crushing Blow', txt:'+1 ATK against a monster with printed DEF 1 or more.'},
     flame:    {name:'Wandering Flame', el:'fire', cost:3, role:'Pivot', atk:5, hp:11, def:0, ab:'Dynamic Entry', txt:'When it enters by voluntary Switch, it deals 2 Fire damage to the enemy active monster (ignores DEF and items).'},
     // ---- future unlocks / retired (never in the launch pool) ----
     roo:      {name:'Roo', el:'dark', cost:1, role:'Combo', atk:0, hp:12, def:2, ab:"Chef's Knife", txt:'Its ordinary attacks deal no damage. It does not hurry and it does not stop: +1 step at the end of each round it stays on the field (steps reset if it leaves). On its 3rd round on the field it draws the knife: 9999 damage, then Roo walks away and leaves the duel.'},
@@ -74,9 +74,9 @@
   for (const k of Object.keys(CARDS)) CARDS[k].spd = SPD[k];
   const ITEMS = {
     STRENGTH:{t:'Tincture of Strength', k:'Attack', d:`+${CFG.STR} ATK this round`, art:'i_strength'},
-    GOLEM:{t:'Golem Fragment', k:'Guard', d:`−${CFG.GOLEM} damage taken`, art:'i_golem'},
+    GOLEM:{t:'Golem Fragment', k:'Guard', d:`+${CFG.GOLEM} DEF this round (can block a hit to 0)`, art:'i_golem'},
     REMEDY:{t:'Remedy', k:'Recover', d:`Heal ${CFG.REMEDY} HP before attacks`, art:'i_remedy'},
-    SMOKE:{t:'Smoke Bomb', k:'Trick', d:'Your attack ignores Golem Fragment', art:'i_smoke'},
+    SMOKE:{t:'Smoke Bomb', k:'Trick', d:'Your attack ignores DEF this round (Golem Fragment too)', art:'i_smoke'},
     SHARD:{t:'Elemental Shard', k:'Neutralize', d:`Attack turns Elementless, +${CFG.SHARD} ATK`, art:'i_shard'},
     CAFE:{t:'Café au Lait', k:'Swift', d:'+1 SPD this round (max 4)', art:'i_cafe'},
   };

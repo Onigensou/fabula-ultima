@@ -743,9 +743,9 @@ const SPD = { gigas:1, gorger:2, carlbero:2, kirin:2, flame:2, cryo:2, sylph:2, 
 for (const k of Object.keys(CARDS)) CARDS[k].spd = SPD[k];
 const ITEMS = {
   STRENGTH:{t:'Tincture of Strength', k:'Attack', d:`+${CFG.STR} ATK this round`, art:'i_strength'},
-  GOLEM:{t:'Golem Fragment', k:'Guard', d:`−${CFG.GOLEM} damage taken`, art:'i_golem'},
+  GOLEM:{t:'Golem Fragment', k:'Guard', d:`+${CFG.GOLEM} DEF this round (can block a hit to 0)`, art:'i_golem'},
   REMEDY:{t:'Remedy', k:'Recover', d:`Heal ${CFG.REMEDY} HP before attacks`, art:'i_remedy'},
-  SMOKE:{t:'Smoke Bomb', k:'Trick', d:'Your attack ignores Golem Fragment', art:'i_smoke'},
+  SMOKE:{t:'Smoke Bomb', k:'Trick', d:'Your attack ignores DEF this round (Golem Fragment too)', art:'i_smoke'},
   SHARD:{t:'Elemental Shard', k:'Neutralize', d:`Attack turns Elementless, +${CFG.SHARD} ATK`, art:'i_shard'},
   CAFE:{t:'Café au Lait', k:'Swift', d:'+1 SPD this round (max 4)', art:'i_cafe'},
 };
@@ -2167,7 +2167,8 @@ if (!window.FA_NET_MODE) render();
 
   // one source of truth for card data: the module catalog (loaded before the main script)
   const Cat = globalThis.FabulaArcana && globalThis.FabulaArcana.Catalog;
-  if (Cat){ for (const k of Object.keys(Cat.CARDS)) { if (CARDS[k]) Object.assign(CARDS[k], Cat.CARDS[k]); else CARDS[k] = { ...Cat.CARDS[k] }; } Object.assign(CFG, Cat.CFG); }
+  if (Cat){ for (const k of Object.keys(Cat.CARDS)) { if (CARDS[k]) Object.assign(CARDS[k], Cat.CARDS[k]); else CARDS[k] = { ...Cat.CARDS[k] }; } Object.assign(CFG, Cat.CFG);
+    if (Cat.ITEMS) for (const k of Object.keys(Cat.ITEMS)) if (ITEMS[k]) ITEMS[k].d = Cat.ITEMS[k].d; }   // item texts from the catalog too
 
   seatName = s => spectator() ? ((NET.names && NET.names[s]) || (s ? 'Right' : 'Left')) : (s === 0 ? 'You' : NET.oppName);
   timed = () => !!(S && S.deadline);

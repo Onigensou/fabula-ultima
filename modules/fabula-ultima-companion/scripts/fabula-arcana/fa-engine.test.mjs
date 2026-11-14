@@ -188,6 +188,13 @@ const blank = blankStats;
   // Aero Gorger burst
   S = duel(A('hellhound'), B('gorger'), {hp:[8,2]}); r=go(P,P); ok(S.p[0].roster[0].hp===6, 'Aero Gorger: Aero Explosion 2 to the attacker');
 
+  // ---- items 11-15: Smoke Bomb ignores DEF; Golem Fragment = DEF +3 (still blocks to 0) ----
+  S = duel(A('hellhound'), B('rgolem'), {hp:[30,30]}); r=go(P,P); const sm0=dmg0(); r=go({action:'SMOKE'},P); const sm1=dmg0();
+  ok(sm0===2 && sm1===4, 'Smoke Bomb: the attack ignores printed DEF (Hellhound 4 vs Rock Golem DEF 2: 2 → 4)');
+  S = duel(A('hellhound'), B('wolf'), {hp:[30,30]}); r=go(P,{action:'GOLEM'}); const gg=dmg0(); r=go({action:'SMOKE'},{action:'GOLEM'}).ev; const gs=R.getS().p[1].roster[0].hp;
+  ok(gg===1 && gs===30-1-4, 'Golem Fragment: DEF +3 (4 → 1); Smoke Bomb ignores it too (full 4)');
+  S = duel(A('scorpion'), B('hellhound'), {hp:[30,30]}); S.p[0].roster[0].abilityUsed=true; r=go(P,{action:'GOLEM'});
+  ok(dmg0()===0, 'Golem Fragment can still block a hit to 0 (Scorpion 3 − 3)');
   // ---- character cards (playtest v1) ----
   ok(['hina','zarg','raubens','geist','kalina'].every(k=>R.CARDS[k].cost===3 && R.CARDS[k].character), 'character cards are ★★★ and flagged character');
   // Zarg Barrage: 2 to the benched enemy with the lowest HP
