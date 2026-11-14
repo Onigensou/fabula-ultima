@@ -45,6 +45,7 @@
   const PLAYER_DRAW_WAIT_MS = 20000;
   const CLEAR_SETTLE_MS = 900;   // players' canvases draw after viewedScene flips
   const CUSTOM_ID = "__custom";
+  const TRIP_FLAG = "skillCheckTrip";   // on the dungeon map while the table is in the theatre
   // The manual "Clear Tile" macro's feedback (Macro pfssndYCmaliG6Wn).
   const CLEAR_FX  = "modules/JB2A_DnD5e/Library/Generic/Smoke/SmokePuffRing01_02_Regular_White_400x400.webm";
   const CLEAR_SFX = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Door1.ogg";
@@ -491,6 +492,10 @@
           // before the canvas tears down under it.
           reply({ ok: true, travelling: true });
           await sleep(200);
+          // Remember the trip on the map: if this GM page reloads mid-event, the
+          // runner is gone and nobody would bring the table back (user stuck in
+          // the theatre, 11-14). recoverTrip() offers the way back on load.
+          await scene.setFlag(MOD, TRIP_FLAG, { theatreId: theatre.id, tileId, at: Date.now() }).catch(() => {});
           await theatre.activate();
           travelled = true;
           await waitForCanvas(theatre.id);
@@ -533,6 +538,7 @@
         closePanel();
         if (travelled) {
           await scene.activate().catch(e => console.error(TAG, "could not return to the map", e));
+          await scene.unsetFlag(MOD, TRIP_FLAG).catch(() => {});
         }
         // The tile clears in front of everyone, back on the map.
         if (clearIt) {
@@ -551,5 +557,31 @@
     return replyP;
   }
 
-  DP.SkillCheck = { run, theatreFor, presetsOn, readLog, isRunning: () => !!_active };
+  // ── a trip cut short by a reload ───────────────────────────────────────────
+  // On load, the main GM checks every map for a trip that never came back and
+  // gets a small panel to take the table back (no EXP, the tile stays — as End).
+  function recoverTrip() {
+    if (!game.user?.isGM || _active) return;
+    const primary = globalThis.FUCompanion?.isPrimaryGM?.() ?? (game.users?.activeGM?.id === game.user.id);
+    if (!primary) return;
+    const scene = game.scenes?.find(s => s.flags?.[MOD]?.[TRIP_FLAG]);
+    if (!scene) return;
+    const trip = scene.flags[MOD][TRIP_FLAG];
+    const theatre = game.scenes.get(trip.theatreId);
+    const area = scene.navName || scene.name;
+    const el = openPanel("chip", "");
+    el.innerHTML = `<span class="gm">GM</span>
+      <h3>Skill Check · <b>interrupted</b></h3>
+      <div class="sub">This page reloaded during a Skill Check on <b>${esc(area)}</b>${theatre ? `; the table is still in <b>${esc(theatre.name)}</b>` : ""}. The tile stays on the map and no EXP was given.</div>
+      <div class="foot"><button data-a="stay">Stay here</button><button data-a="back" class="hot">Return to ${esc(area)}</button></div>`;
+    el.querySelector('[data-a="stay"]').onclick = async () => { closePanel(); await scene.unsetFlag(MOD, TRIP_FLAG).catch(() => {}); };
+    el.querySelector('[data-a="back"]').onclick = async () => {
+      closePanel();
+      await scene.activate().catch(e => console.error(TAG, "could not return to the map", e));
+      await scene.unsetFlag(MOD, TRIP_FLAG).catch(() => {});
+    };
+  }
+  Hooks.once("ready", () => setTimeout(() => { try { recoverTrip(); } catch (e) { console.warn(TAG, "trip recovery failed", e); } }, 1500));
+
+  DP.SkillCheck = { run, theatreFor, presetsOn, readLog, recoverTrip, isRunning: () => !!_active };
 })();
