@@ -73,17 +73,19 @@ export async function challengeNpc(token, { challenger = null, practice = null }
   const h = hostId() ?? game.user.id;   // no GM online → this client hosts its own NPC duel
   send(h, "challenge-npc", { challengerActorId: actor.id, npcActorId: token?.actor?.id ?? null, npcTokenUuid: token?.document?.uuid ?? null, practice });
 }
-export async function challengePlayer(targetActor, { bestOf = 1 } = {}) {
-  const me = await resolveChallenger();
+export async function challengePlayer(targetActor, { bestOf = 1, challenger = null } = {}) {
+  const me = challenger ?? (await resolveChallenger());
   if (!me || !targetActor) return;
   const h = hostId();
   if (!h) return ui.notifications?.warn("Fabula Arcana | A GM needs to be online to referee a duel between players.");
   send(h, "challenge-pvp", { fromActorId: me.id, toActorId: targetActor.id, bestOf });
 }
 export function spectate(sid) {
+  // the host checks the duel exists; this client's status list may not have caught up yet
   const s = status.sessions.find((x) => x.sid === sid);
-  if (!s) return;
-  send(s.hostId ?? hostId(), "spectate", {}, sid);
+  const h = s?.hostId ?? hostId();
+  if (!sid || !h) return;
+  send(h, "spectate", {}, sid);
 }
 
 // ------------------------------------------------------------------ styles + layers

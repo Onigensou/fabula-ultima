@@ -44,13 +44,25 @@ const toDuel = (s, uid, msg) => send(uid, "duel", { msg }, s.sid);
 function broadcast(s, build) { for (const p of participants(s)) toDuel(s, p.uid, build(p.viewer)); }
 function names(s, viewer) { const n = s.seats.map((t) => t.name); return viewer === 1 ? [n[1], n[0]] : n; }
 
+// the team to preselect: last game's team, or the only legal team when the collection allows just one
+function suggestTeam(seat, owned) {
+  if (seat.lastTeam && seat.lastTeam.every((c) => owned.includes(c))) return seat.lastTeam;
+  const legal = [];
+  for (let a = 0; a < owned.length; a++) for (let b = a + 1; b < owned.length; b++) for (let c = b + 1; c < owned.length; c++) {
+    const t = [owned[a], owned[b], owned[c]]; if (E().isLegalTeam(t)) legal.push(t);
+    if (legal.length > 1) return null;
+  }
+  return legal[0] ?? null;
+}
+
 function sendInit(s, userId) {
   const viewer = viewerOf(s, userId);
   const role = viewer === null ? "spectator" : "player";
   const me = viewer === null ? null : s.seats[viewer], opp = viewer === null ? null : s.seats[1 - viewer];
   const actor = me ? game.actors.get(me.actorId) : null;
+  const owned = me ? ownedCards(actor) : [];
   const lobby = me ? {
-    kind: s.kind, owned: ownedCards(actor), suggest: me.lastTeam || null, bestOf: s.bestOf, quote: s.quote || "",
+    kind: s.kind, owned, suggest: suggestTeam(me, owned), bestOf: s.bestOf, quote: s.quote || "",
     prize: viewer === 0 && s.prize ? s.prize.cid : null, prizeLabel: s.prize?.label, prizeHint: s.prize?.hint, oppReady: !!opp?.ready,
   } : { kind: s.kind, bestOf: s.bestOf };
   const nm = names(s, viewer);
@@ -297,9 +309,9 @@ export function installHost() {
     const s = sessions.get(env.sid); if (!s?.pending) return;
     notify(s.seats[0].userId, `${s.seats[1].name} declined the card duel.`); clearTimeout(rt(s.sid).inviteTimer); sessions.delete(s.sid);
   });
-  on("duel", (d, env) => { const s = sessions.get(env.sid); if (!s) return send(env.from, "close", { reason: "gone" }, env.sid); return onDuel(s, env.from, d.msg || {}); });
+  on("duel-in", (d, env) => { const s = sessions.get(env.sid); if (!s) return send(env.from, "close", { reason: "gone" }, env.sid); return onDuel(s, env.from, d.msg || {}); });
   on("spectate", (d, env) => {
-    const s = sessions.get(env.sid); if (!s || s.over || s.pending) return notify(env.from, "That duel has ended.");
+    const s = sessions.get(env.sid); if (!s || s.over) return notify(env.from, "That duel has ended."); if (s.pending) return notify(env.from, "That duel hasn't started yet.");
     if (viewerOf(s, env.from) !== null) return send(env.from, "open", { role: "player", hostId: s.hostId }, s.sid);
     if (!s.spectators.includes(env.from)) s.spectators.push(env.from);
     send(env.from, "open", { role: "spectator", hostId: s.hostId }, s.sid);

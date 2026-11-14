@@ -67,7 +67,7 @@ window.FabulaArcanaBridge = {
       W.ready = true;
       const q = W.queue.splice(0); for (const m of q) deliver(m);
     }
-    send(W.hostId, "duel", { msg }, W.sid);
+    send(W.hostId, "duel-in", { msg }, W.sid);
     if (msg.t === "leave") closeWindow();
   },
 };
