@@ -61,10 +61,21 @@
     row.amount = Math.max(1, Math.round(Logic.toNumber(row.amount, 1)));
   }
 
+  // A name can match more than the item itself: a CSB sub-item (an item's own
+  // skill / variant, kept as a hidden world item in "CSB - Embedded Items
+  // Folder", system.container set) or a use-skill filed under the Skill folders
+  // ("Remedy" in Consumable Skill). Prefer the real item; the first match took
+  // the Remedy use-skill and gave the party that instead (found 2026-11-14).
+  function folderNames(i) { const out = []; let f = i?.folder; while (f) { out.push(f.name); f = f.folder; } return out; }
+  function isRealItem(i) {
+    return !i.system?.container
+      && !folderNames(i).some(n => /CSB - Embedded Items Folder/i.test(n) || /^\W*Skill\b/i.test(n));
+  }
   function worldItemByName(name) {
     const want = Logic.nameKey(name);
     if (!want) return null;
-    return (game.items?.contents ?? []).find(i => Logic.nameKey(i.name) === want) ?? null;
+    const hits = (game.items?.contents ?? []).filter(i => Logic.nameKey(i.name) === want);
+    return hits.find(isRealItem) ?? hits[0] ?? null;
   }
 
   // Take `amount` units of one name from wherever the party holds it:
