@@ -166,24 +166,73 @@
   }
 
   // ------------------------------------------------------------
-  // The party bag (items on the party database actor)
+  // What the party carries: the shared stash (items on the party database
+  // actor) and each member's own inventory.
   // ------------------------------------------------------------
-  // Only real carried items: no recipes, no skills that live inside gear.
-  function bagItems() {
+  // The party's member characters, in slot order (member_id_1..4).
+  function partyMembers() {
+    const party = partyActor();
+    const props = party?.system?.props ?? {};
     const out = [];
-    for (const item of partyActor()?.items ?? []) {
-      const type = String(item?.system?.props?.item_type ?? "").trim().toLowerCase();
-      if (!Logic.ITEM_TYPES[type]) continue;
-      const qty = Math.max(1, Math.round(Logic.toNumber(item.system?.props?.item_quantity, 1)));
-      out.push({ id: item.id, uuid: item.uuid, name: item.name, type, qty, img: item.img, item });
+    for (let i = 1; i <= 4; i += 1) {
+      const id = String(props[`member_id_${i}`] ?? "").replace(/^Actor\./, "").trim();
+      const a = id ? game.actors?.get(id) : null;
+      if (a && a.id !== party?.id && !out.includes(a)) out.push(a);
     }
     return out;
   }
 
+  // Only real carried items: no recipes, no skills that live inside gear.
+  // Each entry says who holds it: owner (actor id), ownerName, stash (true =
+  // the shared stash), equipped (worn / wielded by a member).
+  // key = "<owner id>.<item id>", unique across the whole party.
+  function itemsOf(actor, stash) {
+    const out = [];
+    for (const item of actor?.items ?? []) {
+      const type = String(item?.system?.props?.item_type ?? "").trim().toLowerCase();
+      if (!Logic.ITEM_TYPES[type]) continue;
+      // Blank quantity = one piece. A stored 0 (or less) = none left: the
+      // transfer core refuses to take it, so it is not offered or counted.
+      const raw = item.system?.props?.item_quantity;
+      const blank = raw === undefined || raw === null || String(raw).trim() === "";
+      if (!blank && !(Logic.toNumber(raw, 1) > 0)) continue;
+      const qty = Math.max(1, Math.round(Logic.toNumber(raw, 1)));
+      out.push({
+        key:`${actor.id}.${item.id}`,
+        id: item.id,
+        uuid: item.uuid,
+        name: item.name,
+        type,
+        qty,
+        img: item.img,
+        owner: actor.id,
+        ownerUuid: actor.uuid,
+        ownerName: stash ? "Party Stash" : actor.name,
+        stash,
+        equipped: !stash && item.system?.props?.isEquipped === true,
+        item
+      });
+    }
+    return out;
+  }
+
+  // The shared stash only.
+  function bagItems() {
+    return itemsOf(partyActor(), true);
+  }
+
+  // The stash, then each member in slot order. Equipped gear included unless
+  // { equipped: false }.
+  function partyItems({ equipped = true } = {}) {
+    const all = [...bagItems(), ...partyMembers().flatMap(a => itemsOf(a, false))];
+    return equipped ? all : all.filter(i => !i.equipped);
+  }
+
+  // "Has item": everything the party owns, stash and every member, worn gear too.
   function bagCount(name) {
     const want = Logic.nameKey(name);
     if (!want) return 0;
-    return bagItems().filter(i => Logic.nameKey(i.name) === want).reduce((n, i) => n + i.qty, 0);
+    return partyItems().filter(i => Logic.nameKey(i.name) === want).reduce((n, i) => n + i.qty, 0);
   }
 
   function zenitOf(source, controller) {
@@ -331,7 +380,13 @@
   // offering: { items: [{ name, type }], verdict }
   async function setOffering(sceneId, sourceId, offering) {
     const items = (Array.isArray(offering?.items) ? offering.items : [])
-      .map(i => ({ name: String(i?.name ?? ""), type: String(i?.type ?? "") }));
+      .map(i => ({
+        name: String(i?.name ?? ""),
+        type: String(i?.type ?? ""),
+        // Who gave it: the member's actor id + name, or the stash.
+        from: String(i?.from ?? ""),
+        fromId: String(i?.fromId ?? "")
+      }));
     return updateMemory(sceneId, sourceId, {
       offering: { items, verdict: String(offering?.verdict ?? ""), at: Date.now() }
     });
@@ -447,6 +502,8 @@
     getMemory,
     readerFor,
     bagItems,
+    partyItems,
+    partyMembers,
     bagCount,
 
     setSwitch,

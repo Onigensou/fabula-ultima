@@ -7,8 +7,10 @@
  *
  * What this does:
  * - Registers the "Offer Item" event action. An offer box opens on every
- *   screen: on the left the slots ("Upon the stone"), on the right the party
- *   bag as a grid of icons sorted by type, with the item's text on hover.
+ *   screen: on the left the slots ("Upon the stone"), on the right what the
+ *   party carries, one tab per owner (Party Stash, then each member; worn
+ *   gear left out), as a grid of icons sorted by type, text on hover. Slots
+ *   may mix owners; each offered item remembers who gave it.
  *   The main controller drags (or clicks) items into the slots and presses
  *   Offer; everyone else watches the same box, read-only.
  * - Who judges, set on the row:
@@ -106,10 +108,17 @@
     return whole ? [whole] : [];
   }
 
+  // Everything the party can offer: the stash and each member's inventory
+  // (worn / wielded gear left out). `id` is "<owner id>.<item id>", so the
+  // same item id on two actors never collides.
   function bagForBox() {
-    const list = gameState()?.bagItems?.() ?? [];
+    const list = gameState()?.partyItems?.({ equipped: false }) ?? [];
     return list.map(i => ({
-      id: i.id,
+      id: i.key,
+      itemId: i.id,
+      owner: i.owner,
+      ownerName: i.ownerName,
+      stash: i.stash,
       name: i.name,
       type: i.type,
       qty: i.qty,
@@ -117,6 +126,16 @@
       fx: textLines(i.item?.system?.props?.description),
       fv: textLines(i.item?.system?.props?.flavor_text).join(" ").slice(0, 260)
     })).sort((a, b) => (TYPE_ORDER.indexOf(a.type) - TYPE_ORDER.indexOf(b.type)) || a.name.localeCompare(b.name));
+  }
+
+  // The box's tabs: the stash first, then each member in slot order (a member
+  // with nothing to offer still gets a tab, so the table sees it is empty).
+  function ownersForBox() {
+    const gs = gameState();
+    const party = gs?.partyActor?.();
+    const out = party ? [{ id: party.id, name: "Party Stash" }] : [];
+    for (const a of gs?.partyMembers?.() ?? []) out.push({ id: a.id, name: a.name });
+    return out;
   }
 
   // Slots hold item ids; a stack can fill as many slots as it has units.
@@ -167,7 +186,13 @@
 #${BOX_ID} .ofr-slot.is-over { border-color: #c9a44a; background: rgba(201,164,74,.25); }
 #${BOX_ID} .ofr-slot .n { position: absolute; bottom: -1px; right: 3px; font-size: 10px; color: #9b7040; }
 #${BOX_ID} .ofr-bag { display: flex; flex-direction: column; gap: 8px; overflow: auto; max-height: min(46vh, 380px); padding-right: 4px; }
-#${BOX_ID} .ofr-cat { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #7a5230; font-weight: 700;
+#${BOX_ID} .ofr-tabs { display: flex; flex-wrap: wrap; gap: 4px; }
+#${BOX_ID} .ofr-tab { flex: 0 0 auto; width: auto; height: auto; margin: 0; border: 1px solid rgba(122,78,32,.55); border-radius: 7px;
+  background: rgba(255,250,230,.6); color: #5c3818; padding: 3px 9px; font-family: inherit; font-size: 12px; cursor: pointer; line-height: 1.3; }
+#${BOX_ID} .ofr-tab:hover { border-color: #c9a44a; }
+#${BOX_ID} .ofr-tab.is-on { background: linear-gradient(180deg, #7a5230 0%, #5c3818 100%); color: #f4e8c0; border-color: #9b7040; }
+#${BOX_ID} .ofr-tab .c { opacity: .7; margin-left: 4px; font-size: 11px; }
+#${BOX_ID} .ofr-cat {font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #7a5230; font-weight: 700;
   display: flex; justify-content: space-between; }
 #${BOX_ID} .ofr-grid { display: grid; grid-template-columns: repeat(auto-fill, 44px); gap: 6px; }
 #${BOX_ID} .ofr-ic { width: 44px; height: 44px; border-radius: 8px; display: grid; place-items: center; position: relative; cursor: grab; box-sizing: border-box;
@@ -227,7 +252,7 @@
     if (!item) return;
     const el = tipEl();
     el.innerHTML = `<div class="nm">${esc(item.name)}</div>
-      <div class="ty">${esc(Logic.ITEM_TYPES[item.type] ?? item.type)}${item.qty > 1 ? ` · ×${item.qty}` : ""}</div>
+      <div class="ty">${esc(Logic.ITEM_TYPES[item.type] ?? item.type)}${item.qty > 1 ? ` · ×${item.qty}` : ""}${item.ownerName ? ` · ${esc(item.ownerName)}` : ""}</div>
       ${item.fx?.length ? `<ul>${item.fx.map(l => `<li>${esc(l)}</li>`).join("")}</ul>` : ""}
       ${item.fv ? `<div class="fv">${esc(item.fv)}</div>` : ""}`;
     el.hidden = false;
@@ -274,12 +299,24 @@
     for (const id of view.slots) if (id) usedCount.set(id, (usedCount.get(id) ?? 0) + 1);
     const full = view.slots.length > 0 && view.slots.every(Boolean);
 
+    // One tab per owner (the stash, then each member). Each screen keeps its
+    // own tab; a box from an older build (no owners) shows one plain list.
+    const owners = Array.isArray(box.owners) && box.owners.length ? box.owners : null;
+    if (owners && !owners.some(o => o.id === view.tab)) view.tab = owners[0].id;
+    const tabItems = owners ? bag.filter(i => i.owner === view.tab) : bag;
+    const tabs = owners
+      ? `<div class="ofr-tabs" role="tablist">${owners.map((o) => {
+          const n = bag.filter(i => i.owner === o.id).length;
+          return `<button type="button" class="ofr-tab ${o.id === view.tab ? "is-on" : ""}" role="tab" data-tab="${esc(o.id)}" aria-selected="${o.id === view.tab}">${esc(o.name)}<span class="c">${n}</span></button>`;
+        }).join("")}</div>`
+      : `<span class="ofr-lbl">Party bag</span>`;
+
     const groups = TYPE_ORDER.map((type) => {
-      const list = bag.filter(i => i.type === type);
+      const list = tabItems.filter(i => i.type === type);
       if (!list.length) return "";
       return `<div><div class="ofr-cat"><span>${esc(Logic.ITEM_TYPES[type])}</span><span>${list.length}</span></div>
         <div class="ofr-grid">${list.map(i => iconHtml(i, ((usedCount.get(i.id) ?? 0) >= i.qty || !Logic.offerAllows(box.rule, i)) ? "is-used" : "")).join("")}</div></div>`;
-    }).join("") || `<div class="ofr-hint">The party bag is empty.</div>`;
+    }).join("") || `<div class="ofr-hint">Nothing to offer here.</div>`;
 
     let banner = "";
     if (view.phase === "judging") banner = "The offering is being weighed…";
@@ -299,7 +336,7 @@
         <div class="ofr-box"><span class="ofr-lbl">${esc(box.slotLabel)}</span>
           <div class="ofr-slots">${view.slots.map((id, k) => `<div class="ofr-slot" data-slot="${k}">${id ? iconHtml(byId.get(id), "", true) : ""}<span class="n">${k + 1}</span></div>`).join("")}</div>
         </div>
-        <div class="ofr-box"><span class="ofr-lbl">Party bag</span><div class="ofr-bag">${groups}</div></div>
+        <div class="ofr-box">${tabs}<div class="ofr-bag">${groups}</div></div>
       </div>
       <div class="ofr-foot"><span class="ofr-hint">${esc(hint)}</span>
         <div class="ofr-btns">
@@ -316,6 +353,15 @@
       ic.addEventListener("pointerleave", hideTip);
       ic.addEventListener("focus", () => { const r = ic.getBoundingClientRect(); showTip(item, r.right, r.top); });
       ic.addEventListener("blur", hideTip);
+    }
+    // Tabs work on every screen, read-only ones too (looking is not acting).
+    for (const tab of el.querySelectorAll(".ofr-tab")) {
+      tab.addEventListener("click", () => {
+        if (view.tab === tab.dataset.tab) return;
+        view.tab = tab.dataset.tab;
+        hideTip();
+        render(sourceId);
+      });
     }
     if (!live) return;
 
@@ -377,7 +423,7 @@
     const byId = new Map(view.bag.map(i => [i.id, i]));
     return `<div class="oni-offer-chip-items">${view.slots.filter(Boolean).map((id) => {
       const it = byId.get(id);
-      return it ? `<div class="oni-offer-chip-item" title="${esc(it.fx?.join(" · ") ?? "")}"><img src="${esc(it.img)}" alt=""><span><b>${esc(it.name)}</b> · ${esc(Logic.ITEM_TYPES[it.type] ?? it.type)}</span></div>` : "";
+      return it ? `<div class="oni-offer-chip-item" title="${esc(it.fx?.join(" · ") ?? "")}"><img src="${esc(it.img)}" alt=""><span><b>${esc(it.name)}</b> · ${esc(Logic.ITEM_TYPES[it.type] ?? it.type)}${it.ownerName ? ` · ${esc(it.ownerName)}` : ""}</span></div>` : "";
     }).join("")}</div>`;
   }
 
@@ -563,7 +609,10 @@
       }
       wait.slots = slots;
       const byId = new Map(freshBag.map(i => [i.id, i]));
-      const items = slots.map(id => ({ name: byId.get(id)?.name ?? "", type: byId.get(id)?.type ?? "" }));
+      const items = slots.map((id) => {
+        const it = byId.get(id);
+        return { name: it?.name ?? "", type: it?.type ?? "", from: it?.ownerName ?? "", fromId: it?.owner ?? "" };
+      });
 
       if (wait.judge === "auto") {
         wait.resolve({ kind: Logic.judgeOffering(wait.rule, items) ? "accepted" : "refused", items });
@@ -631,6 +680,7 @@
       slotLabel: "Offering",
       count: row.count,
       rule,
+      owners: ownersForBox(),
       who: await controllerName(context),
       gmNote: row.judge === "gm" ? withVars(row.gmNote) : "",
       presets: row.judge === "gm" ? row.presets.map(p => ({ id: p.id, label: withVars(p.label) })) : []
@@ -825,8 +875,10 @@
 
   window.oni.EventSystem.RowsOffer = {
     installed: true,
-    // For Change Items: the item ids of this event's last offering.
+    // For Change Items: this event's last offering, one entry per slot, as
+    // "<owner actor id>.<item id>" (the stash or the member who gave it).
     lastOfferedIds: (sourceId) => (lastOffered.get(String(sourceId || "")) ?? []).slice(),
+    ownersForBox,
     // For tests and the console.
     cleanSlots,
     bagForBox,

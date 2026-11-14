@@ -10,10 +10,14 @@
  *   Change Gold): add or remove items in the party bag, or zenit in the
  *   party stash.
  *     An item by name   added from the world's item of that name (stacks
- *                       like any gift), or removed from the bag's stacks.
+ *                       like any gift) to the stash, or removed from
+ *                       wherever the party holds it: stash first, then
+ *                       members' bags, worn gear last.
  *     The offered items removes one of each slot of this event's last
- *                       Offer Item offering (an Offer Item row never
- *                       takes them itself).
+ *                       Offer Item offering, from whoever gave it (an
+ *                       Offer Item row never takes them itself).
+ *   Removals return `taken: [{ name, qty, from, fromId }]` (and log it), so
+ *   a later notice can say whose item went.
  *     Zenit             added to / taken from the party stash.
  * - It goes through the item transfer core (window["oni.ItemTransferCore"]),
  *   the same code as the GM's give / take tools, so stacks and gear with
@@ -63,19 +67,51 @@
     return (game.items?.contents ?? []).find(i => Logic.nameKey(i.name) === want) ?? null;
   }
 
-  // Take `amount` units of the bag's stacks of one name (largest stack first).
-  async function removeByName(party, name, amount) {
+  // Take `amount` units of one name from wherever the party holds it:
+  // the stash first, then members' bags, worn gear last (largest stack first
+  // within each). Returns who it was taken from: [{ name, qty, from, fromId }].
+  async function removeByName(name, amount) {
     const want = Logic.nameKey(name);
-    const stacks = (gameState()?.bagItems?.() ?? []).filter(i => Logic.nameKey(i.name) === want).sort((a, b) => b.qty - a.qty);
+    const rank = (i) => (i.stash ? 0 : i.equipped ? 2 : 1);
+    const stacks = (gameState()?.partyItems?.() ?? [])
+      .filter(i => Logic.nameKey(i.name) === want)
+      .sort((a, b) => (rank(a) - rank(b)) || (b.qty - a.qty));
+    const taken = [];
     let left = amount;
     for (const stack of stacks) {
       if (left <= 0) break;
-      const take = Math.min(stack.qty, left);
-      await core().removeItemFromActor({ itemUuid: stack.uuid, quantity: take, senderActorUuid: party.uuid, requestedByUserId: game.user?.id });
+      const want = Math.min(stack.qty, left);
+      const take = await takeFrom(stack.item, game.actors?.get(stack.owner), want);
+      if (take <= 0) continue;
+      taken.push({ name: stack.name, qty: take, from: stack.ownerName, fromId: stack.owner });
       left -= take;
     }
-    return amount - left;
+    return taken;
   }
+
+  // Take up to `qty` of one item from its owner through the transfer core,
+  // and return how many really left. Measured on the owner, not trusted from
+  // the core's answer: the core refuses a stack at 0, and it can throw AFTER
+  // the item is gone (gear with skills inside: its sub-items are already
+  // deleted when it tries to delete them again: "Item ... does not exist").
+  async function takeFrom(item, owner, qty) {
+    const left = () => {
+      const it = owner?.items?.get(item.id);
+      return it ? Math.max(0, Logic.toNumber(it.system?.props?.item_quantity, 1)) : 0;
+    };
+    const before = left();
+    try {
+      await core().removeItemFromActor({ itemUuid: item.uuid, quantity: qty, senderActorUuid: owner.uuid, requestedByUserId: game.user?.id });
+    } catch (e) {
+      console.warn(INSTALL_TAG, `Item transfer reported an error taking ${item.name} from ${owner?.name}; counting what actually left.`, e);
+    }
+    return Math.max(0, Math.round(before - left()));
+  }
+
+  const sumQty = (taken) => taken.reduce((n, t) => n + t.qty, 0);
+  const logTaken = (taken) => {
+    if (taken.length) console.log(INSTALL_TAG, "Taken:", taken.map(t => `${t.qty}× ${t.name} from ${t.from}`).join(", "));
+  };
 
   async function execute(row, context) {
     const party = await gameState()?.refresh?.();
@@ -94,23 +130,29 @@
           console.warn(INSTALL_TAG, "Change Items: 'the offered items' can only be removed.");
           return { ok: true, type: "changeItems", skipped: true };
         }
+        // Each id is "<owner actor id>.<item id>" (a bare item id = the stash).
         const ids = window.oni.EventSystem.RowsOffer?.lastOfferedIds?.(context?.tileId) ?? [];
         const counts = new Map();
         for (const id of ids) counts.set(id, (counts.get(id) ?? 0) + 1);
-        let removed = 0;
-        for (const [id, qty] of counts) {
-          const item = party.items?.get(id);
+        const taken = [];
+        for (const [key, qty] of counts) {
+          const dot = key.indexOf(".");
+          const owner = dot < 0 ? party : game.actors?.get(key.slice(0, dot));
+          const item = owner?.items?.get(dot < 0 ? key : key.slice(dot + 1));
           if (!item) continue;
-          await core().removeItemFromActor({ itemUuid: item.uuid, quantity: qty, senderActorUuid: party.uuid, requestedByUserId: game.user?.id });
-          removed += qty;
+          const took = await takeFrom(item, owner, qty);
+          if (took <= 0) continue;
+          taken.push({ name: item.name, qty: took, from: owner.id === party.id ? "Party Stash" : owner.name, fromId: owner.id });
         }
-        return { ok: true, type: "changeItems", removed };
+        logTaken(taken);
+        return { ok: true, type: "changeItems", removed: sumQty(taken), taken };
       }
 
       if (!row.name) return { ok: false, reason: "noName" };
       if (row.op === "remove") {
-        const removed = await removeByName(party, row.name, row.amount);
-        return { ok: true, type: "changeItems", removed };
+        const taken = await removeByName(row.name, row.amount);
+        logTaken(taken);
+        return { ok: true, type: "changeItems", removed: sumQty(taken), taken };
       }
 
       const template = worldItemByName(row.name);
