@@ -53,6 +53,16 @@ const ART = {
  "kalina": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Kalina.png",
  "blanche": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Blanche.png",
  "keren": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Keren.png",
+ "gryphon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Gryphon.png",
+ "love": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Love/Love_Standard.png",
+ "jack": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Jack/Jack_Standard.png",
+ "jill": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Jill/Jill_Standard.png",
+ "hilde": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Princess%20Hilde/Hilde_Standard.png",
+ "fx_serenade": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/AttackUp.png",
+ "fx_breath": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Poison.png",
+ "fx_berserk": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/ATTACK%20DOUBLE%20UP.png",
+ "fx_twin": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/AttackUp.png",
+ "fx_slip": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Wind.png",
  "fx_foxfire": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Burn.png",
  "fx_tips": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Potion_IconC.png",
  "fx_foretell": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Holy.png",
@@ -86,8 +96,11 @@ const HOLO_VIDEO = {
  "geist": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Geist/Geist_Battle.webm",
  "kalina": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Kalina/Kalina_Battler001.webm",
  "blanche": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Blanche/Blanche_Battler002.webm",
- "keren": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Battler002.webm"
+ "keren": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Keren/Keren_Battler002.webm",
+ "gryphon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Gryphon/Gryphon_Standard.webm"
 };
+// still art that faces LEFT like the character battlers (mirrored the same way on the board)
+const FACE_LEFT = ['jack','jill','love'];
 const SFXDATA = {};
 const SFXURL = {
  "nav": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Book1.ogg",

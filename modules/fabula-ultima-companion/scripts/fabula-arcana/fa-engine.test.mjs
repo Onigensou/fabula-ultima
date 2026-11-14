@@ -86,7 +86,9 @@ const blank = blankStats;
   S = duel('fulgimite','pyrefly'); r = R.resolveRound([{action:'CAFE'},{action:'PASS'}]);
   ok(!r.ev.seq, 'SPD 3 + Café vs SPD 4 → tie, simultaneous');
   S = duel('pyrefly','fulgimite'); r = R.resolveRound([{action:'CAFE'},{action:'PASS'}]);
-  ok(r.ev.seq && r.ev.seq[0]===0 && S.p[0].items.CAFE===0 && S.stats.cafe.capped===1, 'SPD 4 + Café stays SPD 4, item consumed');
+  ok(r.ev.seq && r.ev.seq[0]===0 && S.p[0].items.CAFE===0 && S.stats.cafe.capped===0, 'SPD 4 + Café → SPD 5 (effects may exceed the printed max of 4), item consumed');
+  S = duel('pyrefly','skizzik'); r = R.resolveRound([{action:'CAFE'},{action:'PASS'}]);
+  ok(r.ev.seq && r.ev.seq[0]===0, 'SPD 4 mirror: the side with Café au Lait (SPD 5) strikes first');
   S = duel('fulgimite','pyrefly',{hp:[3,3],last:true}); R.resolveRound([{action:'CAFE'},{action:'STRENGTH'}]);
   ok(S.stats.mutualFinal && S.result==='DRAW', 'Café creates an equal-Speed final mutual KO → HP tiebreak (equal HP → draw)');
   S = duel('cryo','kirin'); R.resolveRound([{action:'CAFE'},{action:'PASS'}]); r = R.resolveRound([{action:'PASS'},{action:'PASS'}]);
@@ -150,7 +152,7 @@ const blank = blankStats;
   S = duel(A('hellhound'), ['roper','flame','kirin'], {hp:[30,1]}); r=go(P,P); S.p[1].pending=true; r=go(P,{replace:1,action:'PASS'});
   ok(S.p[1].active===1 && !(r.ev.entry||[]).length, 'Dynamic Entry does not trigger on a forced replacement');
   // pool
-  ok(R.IDS.length===29 && ['obsidrax','roo','walrog','gorger','sylph','succubus','hina','zarg','raubens','geist','kalina','blanche','keren'].every(k=>R.IDS.includes(k)) && !R.IDS.some(k=>['broo','carlbero','life'].includes(k)), 'pool = 29 cards (22 + 7 character cards; Bandit Roo retired)');
+  ok(R.IDS.length===35 && ['obsidrax','roo','walrog','gorger','sylph','succubus','hina','zarg','raubens','geist','kalina','blanche','keren','gryphon','love','jack','jill','hilde','carlbero'].every(k=>R.IDS.includes(k)) && !R.IDS.some(k=>['broo','life'].includes(k)), 'pool = 35 cards (23 + 12 character cards; Bandit Roo retired)');
   // Succubus Charm
   S = duel(A('hellhound'), ['roper','succubus','kirin'], {hp:[30,30]}); S.p[1].roster[1].hp=30; r=go(P,{action:'SWITCH',target:1});
   const c1=dmg0(); r=go(P,P); const c2=dmg0(); r=go(P,P); const c3=dmg0();
@@ -195,6 +197,24 @@ const blank = blankStats;
   ok(gg===1 && gs===30-1-4, 'Golem Fragment: DEF +3 (4 → 1); Smoke Bomb ignores it too (full 4)');
   S = duel(A('scorpion'), B('hellhound'), {hp:[30,30]}); S.p[0].roster[0].abilityUsed=true; r=go(P,{action:'GOLEM'});
   ok(dmg0()===0, 'Golem Fragment can still block a hit to 0 (Scorpion 3 − 3)');
+  // ---- batch 3 (11-15): Gryphon, Love, Jack, Jill, Princess Hilde, Carlbero ----
+  S = duel(A('gryphon'), B('hellhound'), {hp:[30,30]}); r=go(P,P); const g1=r.ev.res[1].dmg; r=go(P,{action:'CAFE'}); const g2=r.ev.res[1].dmg;
+  ok(g1===1 && g2===3, 'Gryphon Slipstream: +2 DEF vs a slower attacker (Hellhound 4 vs DEF 3 → 1); Café ties SPD 4 → bonus off (4 − 1 = 3) (got '+g1+'/'+g2+')');
+  S = duel(A('gryphon'), B('skizzik'), {hp:[30,30]}); r=go(P,P); ok(r.ev.res[1].dmg===2, 'Gryphon Slipstream: no bonus against an equally fast attacker (Skizzik 3 − DEF 1)');
+  S = duel(['love','hellhound','cryo'], B('wolf'), {hp:[30,30]}); r=go(P,P);
+  ok(S.p[0].roster[1].ser===S.p[0].roster[2].ser && S.p[0].roster[1].ser>=R.getS().round+3 && !S.p[0].roster[0].ser, 'Love Serenade: attacking buffs both benched allies (not Love)');
+  r=go({action:'SWITCH',target:1},P); r=go(P,P); ok(dmg0()===6, 'Love Serenade: the buffed ally hits with +2 ATK (Hellhound 4+2)');
+  S = duel(['hellhound','love','cryo'], B('wolf'), {hp:[30,30]}); r=go({action:'SWITCH',target:1},P); ok(S.p[0].roster[0].ser && S.p[0].roster[2].ser, 'Love Serenade: also on a voluntary switch-in');
+  S = duel(A('jack'), B('rgolem'), {hp:[30,30]}); r=go(P,P); ok(dmg0()===3, 'Jack: attacks ignore DEF (3 vs Rock Golem DEF 2)');
+  S = duel(['jack','jill','cryo'], B('wolf'), {hp:[30,30]}); S.p[0].roster[1].ko=true; S.p[0].roster[1].hp=0; r=go(P,P); ok(dmg0()===6, 'Twin: Jack +1 ATK once Jill has fallen (3+1, Poison vs Physical +2 = 6)');
+  S = duel(A('jill'), B('kirin'), {hp:[6,30]}); r=go(P,P); ok(dmg0()===5 && r.ev.res[1].dmg===3, 'Jill Berserk at half HP: +3 ATK (6 − Kirin DEF 1 = 5) and takes +1 (Kirin 2 → 3)');
+  S = duel(['hilde','kirin','cryo'], B('wolf'), {hp:[5,30]}); S.p[0].roster[1].hp=4; S.p[0].roster[2].hp=9; r=go(P,P);
+  ok(r.ev.grace && S.p[0].roster[1].hp===6 && S.p[0].roster[2].hp===9 && r.ev.grace[0].heals.some(h=>h.i===0), 'Royal Grace: a Pass heals the whole team incl. Hilde (bench full HP untouched)');
+  S = duel(['hilde','kirin','cryo'], B('wolf'), {hp:[5,30]}); S.p[0].roster[1].hp=4; r=go({action:'GOLEM'},P); ok(!r.ev.grace && S.p[0].roster[1].hp===4, 'Royal Grace: no heal without a Pass');
+  S = duel(A('carlbero'), B('wolf'), {hp:[30,30]}); r=go(P,{action:'STRENGTH'}); const brd=R.getS().round;
+  ok(S.p[1].roster[0].breath===brd+1, 'Stinking Breath: a damaging hit applies the breath for 3 rounds');
+  r=go(P,P); ok(r.ev.res[1].dmg===4, 'Stinking Breath: Wolf −1 ATK (3 +1 Howl −1 = 3 − DEF 1 = 2, +2 Strong = 4; 5 without the breath)');
+  S = duel(A('hellhound'), B('kirin'), {hp:[30,30]}); S.p[1].roster[0].breath=R.getS().round+1; r=go(P,P); ok(dmg0()===4, 'Stinking Breath: −1 DEF on the target (Hellhound 4 vs Kirin DEF 1−1 = 4)');
   // ---- Blanche + Keren (11-15) ----
   S = duel(['blanche','kirin','cryo'], B('wolf'), {hp:[30,30]}); S.p[0].roster[1].hp=4; S.p[0].roster[2].hp=6; r=go(P,P);
   ok(S.p[0].roster[1].hp===6 && S.p[0].roster[2].hp===6 && r.ev.tips && r.ev.tips[0].i===1, 'Blanche: a Pass heals the lowest-HP benched ally by 2 (4 → 6), the other untouched');

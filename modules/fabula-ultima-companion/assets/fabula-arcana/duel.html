@@ -1246,7 +1246,7 @@ function fieldHTML(){
 function slotHTML(s,m){
   const c=CARDS[m.cid];
   return `<div class="slot ${s?'theirs':'mine'}" id="slot${s}_${m.i}" data-s="${s}" data-i="${m.i}" tabindex="0" style="--ec:var(--e-${c.el})">
-    <div class="holo" id="holo${s}_${m.i}"><div class="beam"></div><div class="base"></div>${(typeof HOLO_VIDEO!=='undefined' && HOLO_VIDEO[m.cid]) ? `<video class="spr fl" src="${HOLO_VIDEO[m.cid]}" poster="${ART[m.cid]}" autoplay loop muted playsinline></video>` : `<img class="spr" src="${ART[m.cid]}" alt="">`}<div class="scan"></div><div class="cue" id="cue${s}_${m.i}"></div></div>
+    <div class="holo" id="holo${s}_${m.i}"><div class="beam"></div><div class="base"></div>${(typeof HOLO_VIDEO!=='undefined' && HOLO_VIDEO[m.cid]) ? `<video class="spr fl" src="${HOLO_VIDEO[m.cid]}" poster="${ART[m.cid]}" autoplay loop muted playsinline></video>` : `<img class="spr${(typeof FACE_LEFT!=='undefined' && FACE_LEFT.includes(m.cid))?' fl':''}" src="${ART[m.cid]}" alt="">`}<div class="scan"></div><div class="cue" id="cue${s}_${m.i}"></div></div>
     <div class="flat"><div class="flatcard" style="--c:var(--e-${c.el})"><div class="fa"><img src="${ART[m.cid]}" alt="">${elBadge(c.el,'art',true)}</div>${elBadge(c.el,'coin',true)}
       <div class="fn">${elBadge(c.el,'name',true)}<span class="fnt">${esc(c.name)}</span><span class="costn">${starStr(c.cost)}</span></div>
       <div class="fs" id="fs${s}_${m.i}">${elBadge(c.el,'stats',true)}${statChip('atk',c.atk,true)}${statChip('def',c.def,true)}${statChip('spd',c.spd,true)}</div><span class="cost">${starStr(c.cost)}</span></div></div>
@@ -1379,7 +1379,12 @@ function fxStats(s, m){
   if ((m.charm||0)>=S.round && S.round>0){ out.atk.v=Math.max(0,out.atk.v-CFG.CHARM); out.atk.why.push(`−${CFG.CHARM} Charmed`); }
   if (fxTwOn(s, m)){ out.spd.why.push('+1 Tailwind'); out.spd.v+=1; }
   if (m.slowRound===S.round){ out.spd.v-=1; out.spd.why.push('−1 Slowed'); }
-  out.spd.v=Math.min(4, Math.max(1, out.spd.v));
+  if ((m.breath||0)>=S.round && S.round>0){ out.spd.v-=1; out.spd.why.push('−1 Stinking Breath'); }
+  out.spd.v=Math.min(CFG.SPD_MAX||5, Math.max(1, out.spd.v));
+  if ((m.ser||0)>=S.round && S.round>0){ const v=CFG.SERENADE||2; out.atk.v+=v; out.def.v+=v; out.atk.why.push(`+${v} Love Serenade`); out.def.why.push(`+${v} Love Serenade`); }
+  if ((m.breath||0)>=S.round && S.round>0){ out.atk.v=Math.max(0,out.atk.v-1); out.def.v=Math.max(0,out.def.v-1); out.atk.why.push('−1 Stinking Breath'); out.def.why.push('−1 Stinking Breath'); }
+  if (m.cid==='jill' && m.hp>0 && m.hp*2<=c.hp){ out.atk.v+=(CFG.BERSERK_ATK||3); out.atk.why.push(`+${CFG.BERSERK_ATK||3} Berserk`); }
+  { const tw = m.cid==='jack' ? 'jill' : m.cid==='jill' ? 'jack' : null; if (tw && S.p[s].roster.some(x=>x.cid===tw && x.ko)){ out.atk.v+=(CFG.TWIN||1); out.atk.why.push(`+${CFG.TWIN||1} Twin`); } }
   if (m.cid==='raubens' && (m.loot||0)>0){ out.atk.v+=m.loot; out.atk.why.push(`+${m.loot} Bandit King`); }
   if (m.cid==='keren' && fxFoxFire(m)){ const f=fxFoxFire(m); out.atk.v+=f; out.atk.why.push(`+${f} Fox Fire`); }
   if (m.cid==='kalina' && m.land===S.round && S.phase!=='ended'){ const a=out.atk.v, d=out.def.v; out.atk.v=c.def+(a-c.atk); out.def.v=c.atk+(d-c.def);
@@ -1407,6 +1412,11 @@ function fxList(s, m){
   if ((m.charm||0)>=S.round && S.round>0){ const left=m.charm-S.round+1;
     add({ k:'charm', tier:'debuff', icon:'fx_charm', name:'Charmed', num:left, short:`${left} round${left>1?'s':''}`, life: left>1 ? 'This round and next.' : 'Ends after this round.', desc:`−${CFG.CHARM} ATK.` }); }
   if (m.slowRound===S.round) add({ k:'slow', tier:'debuff', icon:'fx_slow', name:'Slowed', num:1, short:'this round', desc:'−1 SPD this round.' });
+  // ---- batch 3 ----
+  if ((m.ser||0)>=S.round && S.round>0){ const left=m.ser-S.round+1; add({ k:'ser', tier:'buff', icon:'fx_serenade', name:'Love Serenade', num:left, short:`${left} round${left>1?'s':''}`, desc:`+${CFG.SERENADE||2} ATK and +${CFG.SERENADE||2} DEF.` }); }
+  if ((m.breath||0)>=S.round && S.round>0){ const left=m.breath-S.round+1; add({ k:'breath', tier:'debuff', icon:'fx_breath', name:'Stinking Breath', num:left, short:`${left} round${left>1?'s':''}`, desc:'−1 ATK, −1 DEF and −1 SPD.' }); }
+  if (m.cid==='jill' && m.hp>0 && m.hp*2<=c.hp) add({ k:'berserk', tier:'ready', icon:'fx_berserk', name:'Berserk', short:'half HP or less', desc:`+${CFG.BERSERK_ATK||3} ATK, but every hit on her deals +${CFG.BERSERK_TAKE||1} damage.` });
+  { const tw = m.cid==='jack' ? 'jill' : m.cid==='jill' ? 'jack' : null; if (tw && S.p[s].roster.some(x=>x.cid===tw && x.ko)) add({ k:'twin', tier:'buff', icon:'fx_twin', name:'Twin', short:'for the rest of the match', desc:`+${CFG.TWIN||1} ATK: ${tw==='jill'?'Jill':'Jack'} has fallen.` }); }
   // ---- character cards ----
   if (m.cid==='keren'){ const f=fxFoxFire(m), cap=CFG.FOXFIRE_CAP||6;
     add({ k:'foxfire', tier: f>=cap ? 'ready' : f ? 'buff' : 'ready', icon:'fx_foxfire', name:'Fox Fire', num: f||null, short: f ? `+${f} ATK${f>=cap?' (max)':''}` : 'no souls yet',
@@ -1513,10 +1523,10 @@ const PB_ICON = { 'Howl':'fx_howl', 'Funeral Pyre':'fx_burn', 'Lightning Charge'
   'Thick Skin':'fx_shield', 'Pyrophagy':'fx_shield', 'Earthen Wire':'fx_windup', 'Evasion':'fx_guard', 'Soft Landing':'fx_guard', 'Fortify':'fx_guard',
   'Earthquake':'fx_windup', 'Double Strafe':'fx_pierce', 'Voracious':'fx_pierce', 'Dynamic Entry':'fx_burn', 'Charm':'fx_charm', 'Tailwind':'fx_wind',
   'Cryo Explosion':'fx_freeze', 'Aero Explosion':'fx_wind', 'Renewal':'fx_heal', 'Undying Flame':'fx_return',
-  'Barrage':'fx_pierce', 'Bandit King':'fx_loot', 'Fox Fire':'fx_foxfire', 'Give me tips or 5 stars':'fx_tips', 'Jump landing':'fx_jump', 'The Blackest Night':'fx_revive' };
+  'Barrage':'fx_pierce', 'Bandit King':'fx_loot', 'Fox Fire':'fx_foxfire', 'Give me tips or 5 stars':'fx_tips', 'Love Serenade':'fx_serenade', 'Royal Grace':'fx_tips', 'Stinking Breath':'fx_breath', 'Berserk':'fx_berserk', 'Twin':'fx_twin', 'Deadly Marksmanship':'fx_pierce', 'Slipstream':'fx_slip', 'Jump landing':'fx_jump', 'The Blackest Night':'fx_revive' };
 // attack-breakdown text (calcAttack's line) → ability names, per side of the hit
-const PB_OFF = ['Howl','Funeral Pyre','Lightning Charge','Crushing Blow','Mana Catcher','On the Hunt','Entangle','Venom Sting','Static Buildup',"Chef's Knife",'Bandit King','Jump landing','Fox Fire'];
-const PB_DEF = ['Thick Skin','Pyrophagy','Earthen Wire','Evasion','Soft Landing','Fortify'];
+const PB_OFF = ['Howl','Funeral Pyre','Lightning Charge','Crushing Blow','Mana Catcher','On the Hunt','Entangle','Venom Sting','Static Buildup',"Chef's Knife",'Bandit King','Jump landing','Fox Fire','Love Serenade','Berserk','Twin','Deadly Marksmanship'];
+const PB_DEF = ['Slipstream','Thick Skin','Pyrophagy','Earthen Wire','Evasion','Soft Landing','Fortify'];
 const PBAND = [null, null];
 function passiveBand(s, lines){
   if (!lines || !lines.length || !S || typeof document==='undefined') return;
@@ -1556,7 +1566,11 @@ function pbEnter(ev){
     if (m.cid==='succubus') passiveBand(s, [{ name:'Charm', tier:'offense' }]); }
 }
 // after the hits: Earthquake / Double Strafe / Voracious (attacker), Explosion / Renewal (the fallen or surviving defender), Tailwind
+// Love Serenade: a band on Love's side + a warm burst on each buffed benched card
+function fxSerenade(ev){ for (const v of (ev.serenade||[])){ passiveBand(v.s, [{ name:'Love Serenade', tier:'support' }]); sfx('strength',0.7,0);
+  for (const i of v.is){ const sl=$(`#slot${v.s}_${i}`), L=$('#fxl'); if (sl && L){ const c=centerOf(sl, L); particles(c.x,c.y,14,'#ff8fc8',{up:true,r:55,spread:30}); add('ring',c.x,c.y,{'--pc':'#ff8fc8'}); } } } }
 function pbAfter(ev){
+  fxSerenade(ev);
   for (const s of [0,1]){
     const r=ev.res && ev.res[s]; if (!r) continue;
     const srcs=new Set((ev.direct||[]).filter(d=>d.s===1-s).map(d=>d.src));
@@ -1775,6 +1789,10 @@ async function playRound(ev, before){
   if (it.length) await sleep(450);
   for (const s of [0,1]) if (ev.heal[s]){ const m=mon(S.p[s],S.p[s].active); m.hp=Math.min(CARDS[m.cid].hp, m.hp+ev.heal[s]); setHP(s,m.i,m.hp); popNum(s,'+'+ev.heal[s],'heal','Remedy'); }
   if (ev.heal[0]||ev.heal[1]) await sleep(550);
+  for (const g of (ev.grace||[])){ passiveBand(g.s, [{ name:'Royal Grace', tier:'support' }]); sfx('remedy',0.8,0);
+    for (const h of g.heals){ const m=S.p[g.s].roster[h.i]; if (!m) continue; m.hp=Math.min(CARDS[m.cid].hp, m.hp+h.amt); setHP(g.s, h.i, m.hp);
+      const sl=$(`#slot${g.s}_${h.i}`), L=$('#fxl'); if (sl && L){ const c=centerOf(sl, L); add('pop heal', c.x, c.y-20, {}, `+${h.amt}<small>Grace</small>`); particles(c.x,c.y,12,'#fff2a8',{up:true,r:50,spread:30}); } }
+    await sleep(650); }
   for (const t of (ev.tips||[])){ const m=S.p[t.s].roster[t.i]; if (!m) continue; passiveBand(t.s, [{ name:'Give me tips or 5 stars', tier:'support' }]);
     m.hp=Math.min(CARDS[m.cid].hp, m.hp+t.amt); setHP(t.s, t.i, m.hp); sfx('remedy',0.8,0);
     const sl=$(`#slot${t.s}_${t.i}`), L=$('#fxl'); if (sl && L){ const c=centerOf(sl, L); add('pop heal', c.x, c.y-20, {}, `+${t.amt}<small>Tips</small>`); particles(c.x,c.y,12,'#ff9ad5',{up:true,r:50,spread:30}); }

@@ -31,6 +31,11 @@
 
   // Keren's Fox Fire stack: every KO'd card in the match except herself (both rosters), × CFG.FOXFIRE, capped
   const foxFire = m => { if (!S || !m || m.cid!=='keren') return 0; let n=0; for (const pl of S.p) for (const x of pl.roster) if (x!==m && x.ko) n++; return Math.min(CFG.FOXFIRE_CAP, n*CFG.FOXFIRE); };
+  const sideOf = m => S && S.p ? S.p.findIndex(p=>p.roster.includes(m)) : -1;
+  // this round's SPD while a round resolves; printed SPD otherwise (AI estimates)
+  const spdNow = m => { const s=sideOf(m); return (S && S._sp && S._spRound===S.round && s>=0 && S.p[s].roster[S.p[s].active]===m) ? S._sp[s] : CARDS[m.cid].spd; };
+  const berserk = m => !!m && m.cid==='jill' && m.hp*2 <= CARDS.jill.hp && m.hp>0;
+  const twinDown = (m, other) => { const s=sideOf(m); return s>=0 && S.p[s].roster.some(x=>x.cid===other && x.ko); };
   const isLanding = m => !!m && m.cid==='kalina' && !!S && m.land===S.round;
   // Hina's Foretell: the seat whose active card is Hina chooses SECOND and sees the other seat's card.
   // Only in the action step, and only when exactly one side has Hina up front (both = a normal round).
@@ -62,6 +67,11 @@
     // Kalina's Jump landing: ATK and DEF swap for the landing round
     const landA = isLanding(att), landD = isLanding(def);
     let atk = landA ? A.def : A.atk; const parts=[landA ? `${atk} ATK (Jump landing)` : `${A.atk} ATK`];
+    if ((att.ser||0)>=S.round){ atk+=CFG.SERENADE; parts.push(`+${CFG.SERENADE} Love Serenade`); }
+    if ((att.breath||0)>=S.round){ atk=Math.max(0,atk-1); parts.push('−1 Stinking Breath'); }
+    if (berserk(att)){ atk+=CFG.BERSERK_ATK; parts.push(`+${CFG.BERSERK_ATK} Berserk`); }
+    if (att.cid==='jack' && twinDown(att,'jill')){ atk+=CFG.TWIN; parts.push(`+${CFG.TWIN} Twin`); }
+    if (att.cid==='jill' && twinDown(att,'jack')){ atk+=CFG.TWIN; parts.push(`+${CFG.TWIN} Twin`); }
     if (att.cid==='keren'){ const ff=foxFire(att); if (ff){ atk+=ff; parts.push(`+${ff} Fox Fire`); } }
     if (att.cid==='raubens' && (att.loot||0)>0){ atk+=att.loot; parts.push(`+${att.loot} Bandit King`); }
     if (ctx.attItem==='STRENGTH'){ atk+=CFG.STR; parts.push(`+${CFG.STR} Strength`); }
@@ -80,19 +90,21 @@
       return { dmg:0, heal:CFG.AB_HEAL, aff:'AB', line:`${head} · ${N(def.cid)}'s <b>${D.ab}</b> negates it (+${CFG.AB_HEAL} HP)`, usedAbsorb:true, howl, pyre, kcharge, ael };
     // Smoke Bomb (11-15): this attack ignores DEF — printed, Jump landing and Golem Fragment's +3
     const smoke = ctx.attItem==='SMOKE', golem = ctx.defItem==='GOLEM';
-    const pdef = landD ? D.atk : D.def, ddef = smoke ? 0 : pdef;
-    let d = Math.max(1, atk - ddef); let line = head + (ddef?` − DEF ${ddef}${landD?' (landing)':''}`:'') + (smoke && (pdef || golem) ? ' · <b>Smoke Bomb</b> ignores DEF' : '') + ` = ${d}`;
+    const slip = def.cid==='gryphon' && spdNow(att) < spdNow(def);
+    const pdef = Math.max(0, (landD ? D.atk : D.def) + ((def.ser||0)>=S.round ? (CFG.SERENADE_DEF ?? CFG.SERENADE) : 0) - ((def.breath||0)>=S.round ? 1 : 0) + (slip ? CFG.SLIPSTREAM : 0));
+    const marks = att.cid==='jack', ddef = (smoke || marks) ? 0 : pdef;
+    let d = Math.max(1, atk - ddef); let line = head + (ddef?` − DEF ${ddef}${landD?' (landing)':''}`:'') + (smoke && (pdef || golem) ? ' · <b>Smoke Bomb</b> ignores DEF' : '') + (marks && !smoke && pdef ? ' · <b>Deadly Marksmanship</b> ignores DEF' : '') + (slip && ddef ? ' (Slipstream +' + CFG.SLIPSTREAM + ')' : '') + ` = ${d}`;
     const mod = elMod(ael, D.el); let aff = ael==='none' ? 'NONE' : 'N';
     if (mod>0){ d=Math.max(1,d+mod); aff='ADV'; line+=` · <b>Strong</b> vs ${EL[D.el]} +${mod} = ${d}`; }
     if (mod<0){ d=Math.max(1,d+mod); aff='DIS'; line+=` · <b>Weak</b> vs ${EL[D.el]} ${mod} = ${d}`; }
     // Roo (playtest 11-14): its ordinary attacks deal nothing (no min-1 floor, no element bonus); only the knife hurts.
     // Zeroed BEFORE shields so a Roo poke never spends Thick Skin / Pyrophagy / Earthen Wire.
     if (att.cid==='roo' && d>0){ d=0; line+=' · Roo does not hurry: 0'; }
-    const red=[]; let r=0;
+    const red=[]; let r=0; if (berserk(def)){ r-=CFG.BERSERK_TAKE; red.push(`Berserk +${CFG.BERSERK_TAKE} taken`); }
     // Golem Fragment = DEF +3 this round. Same numbers as before: it counts after the element bonus, so it can block a hit to 0.
     if (golem){
       if (smoke) red.push('Golem Fragment pierced by Smoke Bomb'); else { r+=CFG.GOLEM; red.push(`Golem Fragment DEF +${CFG.GOLEM}`); }
-      if (def.cid==='carlbero'){ r+=1; red.push('Fortify −1'); }
+
     }
     if (def.cid==='broo' && ctx.defSwitchedIn){ r+=2; red.push('Soft Landing −2'); }
     if (def.cid==='fulgimite' && ctx.defSwitchedIn){ r+=2; red.push('Evasion −2'); }
@@ -112,6 +124,9 @@
 
   function resolveRound(ch){
     const P=S.p, L=[], ev={ enter:[null,null], switched:[false,false], items:[null,null], heal:[0,0], res:[null,null], after:[[],[]], ko:[false,false] };
+    // Love Serenade: every benched ally of side s gets +SERENADE ATK/DEF for the next SERENADE_ROUNDS rounds
+    const serenade = (s, why) => { const pl=P[s]; const got=[]; for (const m of pl.roster) if (!m.ko && m.hp>0 && m.i!==pl.active){ m.ser=S.round+CFG.SERENADE_ROUNDS; got.push(m.i); }
+      if (got.length){ S.stats.ser=(S.stats.ser||0)+1; (ev.serenade=ev.serenade||[]).push({ s, is:got }); L.push([`Love Serenade: ${got.map(i=>N(pl.roster[i].cid)).join(' and ')} get +${CFG.SERENADE} ATK / +${CFG.SERENADE} DEF for ${CFG.SERENADE_ROUNDS} rounds.`,'g']); } };
     // Geist's Blackest Night: the first time he would reach 0 HP (any source, active or benched) he rises at full HP; overflow is lost
     const BN = m => { if (m && m.cid==='geist' && m.hp<=0 && !m.ko && !m.bn){ m.bn=true; m.hp=CARDS.geist.hp; S.stats.bn=(S.stats.bn||0)+1;
       (ev.revive=ev.revive||[]).push({ s: P[0].roster.includes(m)?0:1, i:m.i });
@@ -126,6 +141,7 @@
       if (out.cid==='kalina' && out.land){ out.land=0; L.push(['Kalina leaves the field; her Jump is cancelled.','m']); } P[s].active=ch[s].target; ev.switched[s]=true; ev.enter[s]='switch'; S.stats.switches[s]++;
       L.push([`${who(s)} switch${third(s)?'es':''} ${N(out.cid)} out for ${N(mon(P[s],P[s].active).cid)}. It skips its attack.`,'m']);
     }
+    for (const s of [0,1]) if (ev.switched[s] && mon(P[s],P[s].active).cid==='love') serenade(s, 'entry');
     for (const s of [0,1]) if (ev.switched[s] && mon(P[s],P[s].active).cid==='succubus'){ const t=mon(P[1-s],P[1-s].active); if (t && t.hp>0){ t.charm=S.round+1; S.stats.charm=(S.stats.charm||0)+1; L.push([`Charm: ${N(t.cid)} is Charmed (−${CFG.CHARM} ATK this round and next).`,'m']); } }
     for (const s of [0,1]) if (ev.switched[s] && mon(P[s],P[s].active).cid==='flame'){ const t=mon(P[1-s],P[1-s].active); if (t && t.hp>0){ const b=t.hp; t.hp=Math.max(0,t.hp-CFG.ENTRY); BN(t); (ev.entry=ev.entry||[]).push({s:1-s,amt:b-t.hp}); S.stats.entry=(S.stats.entry||0)+1;
         L.push([`Dynamic Entry: Wandering Flame bursts in, ${b-t.hp} Fire damage to ${N(t.cid)} (${t.hp} HP).`,'']); } }
@@ -147,6 +163,9 @@
       const b=P[s].roster.filter(x=>!x.ko && x.hp>0 && x.i!==P[s].active && x.hp<CARDS[x.cid].hp).sort((x,y)=>(x.hp-y.hp)||((x.hp/CARDS[x.cid].hp)-(y.hp/CARDS[y.cid].hp))||(x.i-y.i));
       if (b.length){ const x=b[0], was=x.hp; x.hp=Math.min(CARDS[x.cid].hp, x.hp+CFG.TIPS_HEAL); S.stats.tips=(S.stats.tips||0)+(x.hp-was);
         (ev.tips=ev.tips||[]).push({ s, i:x.i, amt:x.hp-was }); L.push([`Give me tips or 5 stars: Blanche patches up ${N(x.cid)} (+${x.hp-was} HP → ${x.hp}).`,'g']); } } }
+    for (const s of [0,1]) if (ch[s].action==='PASS'){ const m=mon(P[s],P[s].active); if (m && m.cid==='hilde' && m.hp>0){ const got=[];
+      for (const x of P[s].roster) if (!x.ko && x.hp>0 && x.hp<CARDS[x.cid].hp && (CFG.GRACE_SELF || x!==m)){ const was=x.hp; x.hp=Math.min(CARDS[x.cid].hp, x.hp+CFG.GRACE_HEAL); got.push({ i:x.i, amt:x.hp-was }); S.stats.grace=(S.stats.grace||0)+(x.hp-was); }
+      if (got.length){ (ev.grace=ev.grace||[]).push({ s, heals:got }); L.push([`Royal Grace: Princess Hilde's prayer heals ${got.map(g=>N(P[s].roster[g.i].cid)+' +'+g.amt).join(', ')}.`,'g']); } } }
     const startHP=[0,1].map(s=>mon(P[s],P[s].active).hp);
     for (const s of [0,1]) if (ch[s].action==='REMEDY'){
       const m=mon(P[s],P[s].active), amt=CFG.REMEDY, b=m.hp;
@@ -180,6 +199,8 @@
       if (false && r.a.cid==='sylph' && r.dmg>0 && r.d.hp>0){ r.d.slowRound=S.round+1; S.stats.gust=(S.stats.gust||0)+1; L.push([`Gust: ${N(r.d.cid)} will be −1 SPD next round.`,'m']); }
       if (r.a.cid==='sylph'){ P[r.side].twFrom=S.round+1; P[r.side].twUntil=S.round+CFG.TAILWIND; S.stats.twSet=(S.stats.twSet||0)+1; L.push([`Tailwind: ${CFG.TW_ALL?'your monsters':'your Air monsters'} get +1 SPD for ${CFG.TAILWIND} rounds.`,'m']); }
       if (r.a.cid==='archer') directHit(1-r.side, 1, 'Double Strafe', false);
+      if (r.a.cid==='carlbero' && r.dmg>0 && r.d.hp>0){ r.d.breath=S.round+(CFG.BREATH_ROUNDS-1); S.stats.breath=(S.stats.breath||0)+1; L.push([`Stinking Breath: ${N(r.d.cid)} reeks (−1 ATK, −1 DEF, −1 SPD for ${CFG.BREATH_ROUNDS} rounds).`,'m']); }
+      if (r.a.cid==='love') serenade(r.side, 'attack');
       if (r.a.cid==='zarg'){ const pl=P[1-r.side]; const b=pl.roster.filter(m=>!m.ko && m.hp>0 && m.i!==pl.active).sort((x,y)=>x.hp-y.hp);
         if (b.length){ const low=b.filter(m=>m.hp===b[0].hp); S.stats.barrage=(S.stats.barrage||0)+1; hitOne(1-r.side, low[Math.floor(RNG()*low.length)], CFG.BARRAGE, 'Barrage'); } }
       if (r.a.cid==='rgolem' && r.a.windup){ r.a.windup=false; S.stats.quake=(S.stats.quake||0)+1; const pl=P[1-r.side]; L.push(['Earthquake!','m']);
@@ -200,10 +221,11 @@
     const canAtk=[0,1].map(s=>!ev.switched[s] && mon(P[s],P[s].active).hp>0);
     if (!canAtk[0]&&!canAtk[1]) L.push(['Both sides switched. No attacks this round.','m']);
     const baseSp=[0,1].map(s=>{ const m=mon(P[s],P[s].active); const tw = (CFG.TW_ALL || CARDS[m.cid].el==='air') && P[s].twFrom<=S.round && S.round<=P[s].twUntil ? 1 : 0;
-      if (tw){ S.stats.tailwind=(S.stats.tailwind||0)+1; } return Math.min(4, Math.max(1, CARDS[m.cid].spd + tw - (m.slowRound===S.round?1:0))); });
-    const sp=[0,1].map(s=>Math.min(4, baseSp[s] + (ch[s].action==='CAFE'?1:0)));   // Café au Lait: +1 SPD this round, cap 4
-    for (const s of [0,1]) if (ch[s].action==='CAFE'){ const changed=(Math.sign(baseSp[s]-baseSp[1-s])!==Math.sign(sp[s]-baseSp[1-s])); S.stats.cafe=S.stats.cafe||{used:0,changed:0,capped:0}; S.stats.cafe.used++; if (changed) S.stats.cafe.changed++; if (baseSp[s]>=4) S.stats.cafe.capped++;
-      L.push([`${N(mon(P[s],P[s].active).cid)} drinks Café au Lait: SPD ${baseSp[s]} → ${sp[s]}${baseSp[s]>=4?' (already at max)':''}.`,'m']); }
+      if (tw){ S.stats.tailwind=(S.stats.tailwind||0)+1; } return Math.min(CFG.SPD_MAX||5, Math.max(1, CARDS[m.cid].spd + tw - (m.slowRound===S.round?1:0) - ((m.breath||0)>=S.round?1:0))); });
+    const sp=[0,1].map(s=>Math.min(CFG.SPD_MAX||5, baseSp[s] + (ch[s].action==='CAFE'?1:0)));   // Café au Lait: +1 SPD this round, cap SPD_MAX (5)
+    S._sp = sp; S._spRound = S.round;   // this round's real SPD (Gryphon's Slipstream reads it)
+    for (const s of [0,1]) if (ch[s].action==='CAFE'){ const changed=(Math.sign(baseSp[s]-baseSp[1-s])!==Math.sign(sp[s]-baseSp[1-s])); S.stats.cafe=S.stats.cafe||{used:0,changed:0,capped:0}; S.stats.cafe.used++; if (changed) S.stats.cafe.changed++; if (baseSp[s]>=(CFG.SPD_MAX||5)) S.stats.cafe.capped++;
+      L.push([`${N(mon(P[s],P[s].active).cid)} drinks Café au Lait: SPD ${baseSp[s]} → ${sp[s]}${baseSp[s]>=(CFG.SPD_MAX||5)?' (already at max)':''}.`,'m']); }
     if (canAtk[0]&&canAtk[1]&&sp[0]!==sp[1]){
       const first=sp[0]>sp[1]?0:1, second=1-first;
       ev.seq=[]; ev.snaps=[];
@@ -275,14 +297,15 @@
     if (my.cid==='rgolem' && !my.windup) w.PASS+=0.8;
     if (my.cid==='kalina' && my.land!==S.round && my.land!==S.round+1) w.PASS+=1.2;
     if (my.cid==='blanche' && benchOptions(me).some(x=>x.hp<CARDS[x.cid].hp)) w.PASS+=0.8;
+    if (my.cid==='hilde' && me.roster.some(x=>!x.ko && x.hp>0 && x.hp<CARDS[x.cid].hp)) w.PASS+=1.0;
     const twOn = me.twUntil>=S.round+1;   // Tailwind still up next round
     if (slower(my) && my.hp<=incS) w.PASS*=0.6;                // about to be KO'd with no reply
     if (me.items.STRENGTH){ const outS=est(my,opMon,'STRENGTH'); w.STRENGTH = 0.6 + (opMon.hp>out && opMon.hp<=outS ? 3 : 0) + (my.cid==='fulgimite'?0.6:0) - (out<=0?0.6:0); }
-    if (me.items.GOLEM) w.GOLEM = 0.4 + (my.hp<=incS && incS>0 ? 2.4 : 0) + (my.cid==='carlbero'?0.5:0) - (inc<=0?0.4:0);
+    if (me.items.GOLEM) w.GOLEM = 0.4 + (my.hp<=incS && incS>0 ? 2.4 : 0) + (inc<=0?0.4:0);
     if (me.items.REMEDY) w.REMEDY = my.hp>=max-1 ? 0 : 0.3 + (my.hp<=max/2?1.8:0) + (my.hp<=incS && my.hp+CFG.REMEDY>incS ? 1.2 : 0) + (my.cid==='kirin'?0.4:0);
     if (me.items.SMOKE){ const outK=est(my,opMon,'SMOKE'), dK=(opMon && (CARDS[opMon.cid].def||0)) || 0;
       w.SMOKE = 0.1 + Math.max(0,outK-out)*0.9 + (opMon.hp>out && opMon.hp<=outK ? 2 : 0) + (op.items.GOLEM && opMon.hp<=out+1 && out>0 ? 1.5 : 0) + (dK>=2 ? 0.6 : 0); }
-    if (me.items.CAFE){ const ms=CARDS[my.cid].spd, os=CARDS[opMon.cid].spd; w.CAFE = 0.2 + (ms<4 && ms+1>os && ms<=os && out>=opMon.hp ? 2.6 : 0) + (ms<4 && ms+1===os && my.hp<=incS ? 0.8 : 0); }
+    if (me.items.CAFE){ const ms=CARDS[my.cid].spd, os=CARDS[opMon.cid].spd; const SM=CFG.SPD_MAX||5; w.CAFE = 0.2 + (ms<SM && ms+1>os && ms<=os && out>=opMon.hp ? 2.6 : 0) + (ms<SM && ms+1===os && my.hp<=incS ? 0.8 : 0); }
     if (me.items.SHARD){ const outX=est(my,opMon,'SHARD'); w.SHARD = 0.3 + Math.max(0,outX-out)*0.9 + (opMon.hp>out && opMon.hp<=outX ? 2 : 0); }
     if (!me.pending){
       const bench=benchOptions(me);
@@ -292,6 +315,8 @@
         const ci=est(opMon,best,'PASS','PASS',true);
         w.SWITCH = 0.08 + (my.hp<=inc && ci<best.hp ? 1.1 : 0) + Math.max(0,(inc-ci))*0.2 + (out<=0?1.5:0) + Math.max(0, est(best,opMon)-out)*0.15;
         if (best.cid==='flame') w.SWITCH += 0.5;
+        if (my.cid==='love' && bench.some(x=>(x.ser||0)>=S.round+1)) w.SWITCH += 1.6;
+        if (best.cid==='love') w.SWITCH += 0.4;
         if (best.cid==='succubus') w.SWITCH += 0.5;
         if (my.cid==='sylph' && twOn && (CFG.TW_ALL || CARDS[best.cid].el==='air')) w.SWITCH += 0.9;   // set up, then switch
         if (op.active!=null && mon(op,op.active).cid==='roo' && mon(op,op.active).steps && mon(op,op.active).steps.t===my.i && mon(op,op.active).steps.n>=2) w.SWITCH += 3;   // dodge the knife
@@ -490,7 +515,7 @@
       if (ev.seq) ev.seq = ev.seq.map(flip);
       if (ev.snaps) ev.snaps = ev.snaps.map(swap2);
       if (ev.denied != null) ev.denied = flip(ev.denied);
-      for (const k of ['direct','entry','revive','tips']) for (const x of ev[k] || []) if (x && x.s != null) x.s = flip(x.s);
+      for (const k of ['direct','entry','revive','tips','serenade','grace']) for (const x of ev[k] || []) if (x && x.s != null) x.s = flip(x.s);
       return r;
     },
     seriesForSeat(sr, viewer){

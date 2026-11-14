@@ -69,6 +69,11 @@ const ART = {   // exact library paths (matched by content hash to the duel wind
   kalina: "Fabula Arcana/Character Cards/Kalina.png",
   blanche: "Fabula Arcana/Character Cards/Blanche.png",
   keren: "Fabula Arcana/Character Cards/Keren.png",
+  gryphon: "Fabula Arcana/Character Cards/Gryphon.png",
+  love: "Campaign/The Legend of Dragonslayer/Image/NPCs/Love/Love_Standard.png",
+  jack: "Campaign/The Legend of Dragonslayer/Image/NPCs/Jack/Jack_Standard.png",
+  jill: "Campaign/The Legend of Dragonslayer/Image/NPCs/Jill/Jill_Standard.png",
+  hilde: "Campaign/The Legend of Dragonslayer/Image/NPCs/Princess Hilde/Hilde_Standard.png",
 };
 export const artUrl = (cid) => (ART[cid] ? FORGE + ART[cid].split("/").map(encodeURIComponent).join("/") : "icons/svg/card-joker.svg");
 export const artFiles = () => ({ ...ART });   // cid → library path (card drops match monster art against these)
