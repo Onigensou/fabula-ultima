@@ -68,7 +68,7 @@
     const landA = isLanding(att), landD = isLanding(def);
     let atk = landA ? A.def : A.atk; const parts=[landA ? `${atk} ATK (Jump landing)` : `${A.atk} ATK`];
     if ((att.ser||0)>=S.round){ atk+=CFG.SERENADE; parts.push(`+${CFG.SERENADE} Love Serenade`); }
-    if ((att.breath||0)>=S.round){ atk=Math.max(0,atk-1); parts.push('−1 Stinking Breath'); }
+    { const ba=CFG.BREATH_ATK ?? 1; if ((att.breath||0)>=S.round && ba){ atk=Math.max(0,atk-ba); parts.push(`−${ba} Stinking Breath`); } }
     if (berserk(att)){ atk+=CFG.BERSERK_ATK; parts.push(`+${CFG.BERSERK_ATK} Berserk`); }
     if (att.cid==='jack' && twinDown(att,'jill')){ atk+=CFG.TWIN; parts.push(`+${CFG.TWIN} Twin`); }
     if (att.cid==='jill' && twinDown(att,'jack')){ atk+=CFG.TWIN; parts.push(`+${CFG.TWIN} Twin`); }
@@ -138,10 +138,14 @@
     }
     for (const s of [0,1]) if (ch[s].action==='SWITCH'){
       const out=mon(P[s],P[s].active); if (CFG.ROO_BENCH===2 && out.cid==='roo' && out.walk){ out.walk=0; L.push(['Roo leaves the field and loses its steps.','m']); }
+      if (out.cid==='hilde' && (CFG.GRACE_MODE||0)===2 && out.hp>0){ const inc=mon(P[s],ch[s].target); if (inc && inc.hp<CARDS[inc.cid].hp){ const was=inc.hp; inc.hp=Math.min(CARDS[inc.cid].hp, inc.hp+CFG.GRACE_HEAL); S.stats.grace=(S.stats.grace||0)+(inc.hp-was);
+        (ev.grace=ev.grace||[]).push({ s, heals:[{ i:inc.i, amt:inc.hp-was }] }); L.push([`Royal Grace: Princess Hilde steps back and tends to ${N(inc.cid)} (+${inc.hp-was} HP).`,'g']); } }
+      if (out.cid==='love' && (CFG.SERENADE_MODE||1)===2 && out.hp>0){ const inc=mon(P[s],ch[s].target); if (inc){ inc.ser=S.round+CFG.SERENADE_ROUNDS; S.stats.ser=(S.stats.ser||0)+1;
+        (ev.serenade=ev.serenade||[]).push({ s, is:[inc.i] }); L.push([`Love Serenade: Love hands the stage to ${N(inc.cid)} (+${CFG.SERENADE} ATK / +${CFG.SERENADE_DEF ?? CFG.SERENADE} DEF for ${CFG.SERENADE_ROUNDS} rounds).`,'g']); } }
       if (out.cid==='kalina' && out.land){ out.land=0; L.push(['Kalina leaves the field; her Jump is cancelled.','m']); } P[s].active=ch[s].target; ev.switched[s]=true; ev.enter[s]='switch'; S.stats.switches[s]++;
       L.push([`${who(s)} switch${third(s)?'es':''} ${N(out.cid)} out for ${N(mon(P[s],P[s].active).cid)}. It skips its attack.`,'m']);
     }
-    for (const s of [0,1]) if (ev.switched[s] && mon(P[s],P[s].active).cid==='love') serenade(s, 'entry');
+    for (const s of [0,1]) if ((CFG.SERENADE_MODE||1)===1 && ev.switched[s] && mon(P[s],P[s].active).cid==='love') serenade(s, 'entry');
     for (const s of [0,1]) if (ev.switched[s] && mon(P[s],P[s].active).cid==='succubus'){ const t=mon(P[1-s],P[1-s].active); if (t && t.hp>0){ t.charm=S.round+1; S.stats.charm=(S.stats.charm||0)+1; L.push([`Charm: ${N(t.cid)} is Charmed (−${CFG.CHARM} ATK this round and next).`,'m']); } }
     for (const s of [0,1]) if (ev.switched[s] && mon(P[s],P[s].active).cid==='flame'){ const t=mon(P[1-s],P[1-s].active); if (t && t.hp>0){ const b=t.hp; t.hp=Math.max(0,t.hp-CFG.ENTRY); BN(t); (ev.entry=ev.entry||[]).push({s:1-s,amt:b-t.hp}); S.stats.entry=(S.stats.entry||0)+1;
         L.push([`Dynamic Entry: Wandering Flame bursts in, ${b-t.hp} Fire damage to ${N(t.cid)} (${t.hp} HP).`,'']); } }
@@ -163,7 +167,13 @@
       const b=P[s].roster.filter(x=>!x.ko && x.hp>0 && x.i!==P[s].active && x.hp<CARDS[x.cid].hp).sort((x,y)=>(x.hp-y.hp)||((x.hp/CARDS[x.cid].hp)-(y.hp/CARDS[y.cid].hp))||(x.i-y.i));
       if (b.length){ const x=b[0], was=x.hp; x.hp=Math.min(CARDS[x.cid].hp, x.hp+CFG.TIPS_HEAL); S.stats.tips=(S.stats.tips||0)+(x.hp-was);
         (ev.tips=ev.tips||[]).push({ s, i:x.i, amt:x.hp-was }); L.push([`Give me tips or 5 stars: Blanche patches up ${N(x.cid)} (+${x.hp-was} HP → ${x.hp}).`,'g']); } } }
-    for (const s of [0,1]) if (ch[s].action==='PASS'){ const m=mon(P[s],P[s].active); if (m && m.cid==='hilde' && m.hp>0){ const got=[];
+    // Royal Grace. GRACE_MODE 0 = Pass heals the team (GRACE_SELF: Hilde too) · 1 = Pass heals the lowest-HP benched ally (random tie)
+    //   · 2 = switching Hilde OUT heals the card coming in (done in the switch step)
+    for (const s of [0,1]) if (ch[s].action==='PASS' && (CFG.GRACE_MODE||0)===1){ const m=mon(P[s],P[s].active); if (m && m.cid==='hilde' && m.hp>0){
+      const b=P[s].roster.filter(x=>!x.ko && x.hp>0 && x!==m && x.hp<CARDS[x.cid].hp); if (b.length){ const lo=Math.min(...b.map(x=>x.hp)); const pool=b.filter(x=>x.hp===lo); const x=pool[Math.floor(RNG()*pool.length)];
+        const was=x.hp; x.hp=Math.min(CARDS[x.cid].hp, x.hp+CFG.GRACE_HEAL); S.stats.grace=(S.stats.grace||0)+(x.hp-was);
+        (ev.grace=ev.grace||[]).push({ s, heals:[{ i:x.i, amt:x.hp-was }] }); L.push([`Royal Grace: Princess Hilde's prayer heals ${N(x.cid)} +${x.hp-was}.`,'g']); } } }
+    for (const s of [0,1]) if (ch[s].action==='PASS' && !(CFG.GRACE_MODE||0)){ const m=mon(P[s],P[s].active); if (m && m.cid==='hilde' && m.hp>0){ const got=[];
       for (const x of P[s].roster) if (!x.ko && x.hp>0 && x.hp<CARDS[x.cid].hp && (CFG.GRACE_SELF || x!==m)){ const was=x.hp; x.hp=Math.min(CARDS[x.cid].hp, x.hp+CFG.GRACE_HEAL); got.push({ i:x.i, amt:x.hp-was }); S.stats.grace=(S.stats.grace||0)+(x.hp-was); }
       if (got.length){ (ev.grace=ev.grace||[]).push({ s, heals:got }); L.push([`Royal Grace: Princess Hilde's prayer heals ${got.map(g=>N(P[s].roster[g.i].cid)+' +'+g.amt).join(', ')}.`,'g']); } } }
     const startHP=[0,1].map(s=>mon(P[s],P[s].active).hp);
@@ -200,7 +210,7 @@
       if (r.a.cid==='sylph'){ P[r.side].twFrom=S.round+1; P[r.side].twUntil=S.round+CFG.TAILWIND; S.stats.twSet=(S.stats.twSet||0)+1; L.push([`Tailwind: ${CFG.TW_ALL?'your monsters':'your Air monsters'} get +1 SPD for ${CFG.TAILWIND} rounds.`,'m']); }
       if (r.a.cid==='archer') directHit(1-r.side, 1, 'Double Strafe', false);
       if (r.a.cid==='carlbero' && r.dmg>0 && r.d.hp>0){ r.d.breath=S.round+(CFG.BREATH_ROUNDS-1); S.stats.breath=(S.stats.breath||0)+1; L.push([`Stinking Breath: ${N(r.d.cid)} reeks (−1 ATK, −1 DEF, −1 SPD for ${CFG.BREATH_ROUNDS} rounds).`,'m']); }
-      if (r.a.cid==='love') serenade(r.side, 'attack');
+      if (r.a.cid==='love' && (CFG.SERENADE_MODE||1)===1) serenade(r.side, 'attack');
       if (r.a.cid==='zarg'){ const pl=P[1-r.side]; const b=pl.roster.filter(m=>!m.ko && m.hp>0 && m.i!==pl.active).sort((x,y)=>x.hp-y.hp);
         if (b.length){ const low=b.filter(m=>m.hp===b[0].hp); S.stats.barrage=(S.stats.barrage||0)+1; hitOne(1-r.side, low[Math.floor(RNG()*low.length)], CFG.BARRAGE, 'Barrage'); } }
       if (r.a.cid==='rgolem' && r.a.windup){ r.a.windup=false; S.stats.quake=(S.stats.quake||0)+1; const pl=P[1-r.side]; L.push(['Earthquake!','m']);
@@ -253,6 +263,10 @@
     for (const s of (ev.passArm||[])){ const m=mon(P[s],P[s].active); if (!m || m.hp<=0) continue;
       if (m.cid==='wolf' && !m.howl){ m.howl=true; L.push(['Wolf howls: its next attack gets +1 ATK.','m']); }
       if (m.cid==='rgolem' && !m.windup){ m.windup=true; L.push(['Rock Golem winds up: its next attack will be an Earthquake.','m']); } }
+    // Royal Grace, GRACE_MODE 3: at the end of the round, if Princess Hilde is the active card (and still standing), every benched ally heals GRACE_HEAL
+    if ((CFG.GRACE_MODE||0)===3) for (const s of [0,1]){ const pl=P[s], h=mon(pl,pl.active); if (!h || h.cid!=='hilde' || h.hp<=0) continue; const got=[];
+      for (const x of pl.roster) if (!x.ko && x.hp>0 && x.i!==pl.active && x.hp<CARDS[x.cid].hp){ const was=x.hp; x.hp=Math.min(CARDS[x.cid].hp, x.hp+CFG.GRACE_HEAL); got.push({ i:x.i, amt:x.hp-was }); S.stats.grace=(S.stats.grace||0)+(x.hp-was); }
+      if (got.length){ (ev.grace=ev.grace||[]).push({ s, heals:got, end:true }); L.push([`Royal Grace: Princess Hilde's prayer heals ${got.map(g=>N(pl.roster[g.i].cid)+' +'+g.amt).join(', ')}.`,'g']); } }
     // KO
     for (const s of [0,1]){ const m=mon(P[s],P[s].active); if (m.hp<=0 && !m.ko){ m.ko=true; ev.ko[s]=true; S.stats.kos.push(m.cid); L.push([`${N(m.cid)} is knocked out!`,'k']); } }
     const out0=living(P[0]).length===0, out1=living(P[1]).length===0;
@@ -297,7 +311,7 @@
     if (my.cid==='rgolem' && !my.windup) w.PASS+=0.8;
     if (my.cid==='kalina' && my.land!==S.round && my.land!==S.round+1) w.PASS+=1.2;
     if (my.cid==='blanche' && benchOptions(me).some(x=>x.hp<CARDS[x.cid].hp)) w.PASS+=0.8;
-    if (my.cid==='hilde' && me.roster.some(x=>!x.ko && x.hp>0 && x.hp<CARDS[x.cid].hp)) w.PASS+=1.0;
+    if (my.cid==='hilde' && (CFG.GRACE_MODE||0)!==2 && (CFG.GRACE_MODE||0)!==3 && me.roster.some(x=>!x.ko && x.hp>0 && x!==my && x.i!==me.active && x.hp<CARDS[x.cid].hp)) w.PASS+=1.0;
     const twOn = me.twUntil>=S.round+1;   // Tailwind still up next round
     if (slower(my) && my.hp<=incS) w.PASS*=0.6;                // about to be KO'd with no reply
     if (me.items.STRENGTH){ const outS=est(my,opMon,'STRENGTH'); w.STRENGTH = 0.6 + (opMon.hp>out && opMon.hp<=outS ? 3 : 0) + (my.cid==='fulgimite'?0.6:0) - (out<=0?0.6:0); }
@@ -315,7 +329,12 @@
         const ci=est(opMon,best,'PASS','PASS',true);
         w.SWITCH = 0.08 + (my.hp<=inc && ci<best.hp ? 1.1 : 0) + Math.max(0,(inc-ci))*0.2 + (out<=0?1.5:0) + Math.max(0, est(best,opMon)-out)*0.15;
         if (best.cid==='flame') w.SWITCH += 0.5;
-        if (my.cid==='love' && bench.some(x=>(x.ser||0)>=S.round+1)) w.SWITCH += 1.6;
+        if (my.cid==='love' && (CFG.SERENADE_MODE||1)===1 && bench.some(x=>(x.ser||0)>=S.round+1)) w.SWITCH += 1.6;
+        // Royal Grace (mode 3) play pattern: a hurt active card retreats behind Princess Hilde; Hilde stays in front while the bench is hurt
+        if ((CFG.GRACE_MODE||0)===3){ const h=bench.find(x=>x.cid==='hilde'); if (h && my.cid!=='hilde' && my.hp*2<=CARDS[my.cid].hp && my.hp>inc){ best=h; w.SWITCH += 1.6; }
+          if (my.cid==='hilde'){ const hurt=bench.some(x=>CARDS[x.cid].hp-x.hp>=2); if (hurt) w.SWITCH = Math.max(0, w.SWITCH-1.5); else if (my.hp*2<=CARDS.hilde.hp) w.SWITCH += 0.8; } }
+        if (my.cid==='love' && (CFG.SERENADE_MODE||1)===2){ best=[...bench].sort((a,b)=>est(b,opMon)-est(a,opMon))[0]; w.SWITCH += 1.4; }
+        if (my.cid==='hilde' && (CFG.GRACE_MODE||0)===2){ const hurt=bench.filter(x=>CARDS[x.cid].hp-x.hp>=2).sort((a,b)=>(CARDS[b.cid].hp-b.hp)-(CARDS[a.cid].hp-a.hp)); if (hurt.length){ best=hurt[0]; w.SWITCH += 1.8; } }
         if (best.cid==='love') w.SWITCH += 0.4;
         if (best.cid==='succubus') w.SWITCH += 0.5;
         if (my.cid==='sylph' && twOn && (CFG.TW_ALL || CARDS[best.cid].el==='air')) w.SWITCH += 0.9;   // set up, then switch

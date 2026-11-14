@@ -1566,7 +1566,12 @@ function pbEnter(ev){
     if (m.cid==='succubus') passiveBand(s, [{ name:'Charm', tier:'offense' }]); }
 }
 // after the hits: Earthquake / Double Strafe / Voracious (attacker), Explosion / Renewal (the fallen or surviving defender), Tailwind
-// Love Serenade: a band on Love's side + a warm burst on each buffed benched card
+// Princess Hilde's Royal Grace: a band + a heal number and soft gold sparkles on each healed card, its HP bar filling
+async function fxGrace(g){ passiveBand(g.s, [{ name:'Royal Grace', tier:'support' }]); sfx('remedy',0.8,0);
+  for (const h of g.heals){ const m=S.p[g.s].roster[h.i]; if (!m) continue; m.hp=Math.min(CARDS[m.cid].hp, m.hp+h.amt); setHP(g.s, h.i, m.hp);
+    const sl=$(`#slot${g.s}_${h.i}`), L=$('#fxl'); if (sl && L){ const c=centerOf(sl, L); add('pop heal', c.x, c.y-20, {}, `+${h.amt}<small>Grace</small>`); particles(c.x,c.y,12,'#fff2a8',{up:true,r:50,spread:30}); } }
+  await sleep(650); }
+// Love Serenade: a band on Love's side + a warm burst on each buffed card
 function fxSerenade(ev){ for (const v of (ev.serenade||[])){ passiveBand(v.s, [{ name:'Love Serenade', tier:'support' }]); sfx('strength',0.7,0);
   for (const i of v.is){ const sl=$(`#slot${v.s}_${i}`), L=$('#fxl'); if (sl && L){ const c=centerOf(sl, L); particles(c.x,c.y,14,'#ff8fc8',{up:true,r:55,spread:30}); add('ring',c.x,c.y,{'--pc':'#ff8fc8'}); } } } }
 function pbAfter(ev){
@@ -1789,10 +1794,7 @@ async function playRound(ev, before){
   if (it.length) await sleep(450);
   for (const s of [0,1]) if (ev.heal[s]){ const m=mon(S.p[s],S.p[s].active); m.hp=Math.min(CARDS[m.cid].hp, m.hp+ev.heal[s]); setHP(s,m.i,m.hp); popNum(s,'+'+ev.heal[s],'heal','Remedy'); }
   if (ev.heal[0]||ev.heal[1]) await sleep(550);
-  for (const g of (ev.grace||[])){ passiveBand(g.s, [{ name:'Royal Grace', tier:'support' }]); sfx('remedy',0.8,0);
-    for (const h of g.heals){ const m=S.p[g.s].roster[h.i]; if (!m) continue; m.hp=Math.min(CARDS[m.cid].hp, m.hp+h.amt); setHP(g.s, h.i, m.hp);
-      const sl=$(`#slot${g.s}_${h.i}`), L=$('#fxl'); if (sl && L){ const c=centerOf(sl, L); add('pop heal', c.x, c.y-20, {}, `+${h.amt}<small>Grace</small>`); particles(c.x,c.y,12,'#fff2a8',{up:true,r:50,spread:30}); } }
-    await sleep(650); }
+  for (const g of (ev.grace||[])) if (!g.end) await fxGrace(g);   // Pass-timed versions heal before attacks; the end-of-round one plays after the clash
   for (const t of (ev.tips||[])){ const m=S.p[t.s].roster[t.i]; if (!m) continue; passiveBand(t.s, [{ name:'Give me tips or 5 stars', tier:'support' }]);
     m.hp=Math.min(CARDS[m.cid].hp, m.hp+t.amt); setHP(t.s, t.i, m.hp); sfx('remedy',0.8,0);
     const sl=$(`#slot${t.s}_${t.i}`), L=$('#fxl'); if (sl && L){ const c=centerOf(sl, L); add('pop heal', c.x, c.y-20, {}, `+${t.amt}<small>Tips</small>`); particles(c.x,c.y,12,'#ff9ad5',{up:true,r:50,spread:30}); }
@@ -1821,6 +1823,7 @@ async function playRound(ev, before){
   // revives off the clash (bench hits: Barrage / Earthquake / Double Strafe / Voracious; Explosion or Entry on Geist)
   for (const v of (ev.revive||[])) if (!(ev._revived||[]).includes(v.s+':'+v.i)){ ev._revived=(ev._revived||[]).concat(v.s+':'+v.i); await fxRevive(v.s, v.i); }
   pbAfter(ev);
+  for (const g of (ev.grace||[])) if (g.end) await fxGrace(g);
   // restore true state
   for (const s of [0,1]) for (const m of S.p[s].roster){ m.hp=m._hp; m.ko=m._ko; delete m._hp; delete m._ko; }
   updateField();
