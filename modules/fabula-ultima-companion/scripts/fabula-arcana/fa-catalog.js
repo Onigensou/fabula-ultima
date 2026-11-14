@@ -51,7 +51,7 @@
     gigas:    {name:'Gigas', el:'earth', cost:3, role:'Striker', atk:4, hp:9, def:1, ab:'Crushing Blow', txt:'+1 ATK against a monster with printed DEF 1 or more.'},
     flame:    {name:'Wandering Flame', el:'fire', cost:3, role:'Pivot', atk:5, hp:11, def:0, ab:'Dynamic Entry', txt:'When it enters by voluntary Switch, it deals 2 Fire damage to the enemy active monster (ignores DEF and items).'},
     // ---- future unlocks / retired (never in the launch pool) ----
-    roo:      {name:'Roo', el:'dark', cost:1, role:'Combo', atk:0, hp:12, def:2, ab:"Chef's Knife", txt:'It does not hurry and it does not stop: +1 step at the end of each round it stays on the field (steps reset if it leaves). On its 3rd round on the field it draws the knife: 9999 damage, then Roo walks away and leaves the duel.'},
+    roo:      {name:'Roo', el:'dark', cost:1, role:'Combo', atk:0, hp:12, def:2, ab:"Chef's Knife", txt:'Its ordinary attacks deal no damage. It does not hurry and it does not stop: +1 step at the end of each round it stays on the field (steps reset if it leaves). On its 3rd round on the field it draws the knife: 9999 damage, then Roo walks away and leaves the duel.'},
     walrog:   {name:'Walrog', el:'ice', cost:3, role:'Guardian', atk:4, hp:12, def:1, ab:'Thick Skin', txt:'The first attack that would damage it deals 3 less. Once per match.'},
     broo:     {future:true, retired:true, name:'Bandit Roo', el:'dark', cost:1, role:'Pivot', atk:3, hp:9, def:0, ab:'Soft Landing', txt:'Takes 2 less attack damage in a round it enters by voluntary Switch.'},
     gorger:   {name:'Aero Gorger', el:'air', cost:1, role:'Punisher', atk:3, hp:9, def:0, ab:'Aero Explosion', txt:'When an attack KOs it, it bursts: 2 damage to the attacker.'},
@@ -62,7 +62,7 @@
     // ---- character cards (★★★ PCs / NPCs / bosses; playtest v1 2026-11-14, sim: 40-62% with all five in the pool) ----
     // character:true = never drops from monsters (fa-drops-core matchCard) and is never a starter gift.
     hina:     {character:true, name:'Hina', el:'light', cost:3, role:'Support', atk:4, hp:11, def:1, ab:'Foretell', txt:'While Hina is your active card, your opponent chooses first and you see their card before you choose (you get your own timer). Both sides Foretelling = a normal round.'},
-    zarg:     {character:true, name:'Zarg', el:'phys', cost:3, role:'Hunter', atk:3, hp:10, def:0, ab:'Barrage', txt:'Whenever he attacks, he also deals 2 damage to the benched enemy with the lowest HP (ignores DEF, items and elements).'},
+    zarg:     {character:true, name:'Zarg', el:'phys', cost:3, role:'Hunter', atk:3, hp:9, def:0, ab:'Barrage', txt:'Whenever he attacks, he also deals 2 damage to the benched enemy with the lowest HP (ignores DEF, items and elements).'},
     raubens:  {character:true, name:'Raubens', el:'none', cost:3, role:'Striker', atk:3, hp:10, def:1, ab:'Bandit King', txt:'Whenever the opponent uses an item while Raubens is your active card, he gains +1 ATK for the rest of the match.'},
     geist:    {character:true, name:'Geist', el:'dark', cost:3, role:'Guardian', atk:3, hp:5, def:1, ab:'The Blackest Night', txt:'The first time he would fall to 0 HP (anywhere, any source), he rises again at full HP; extra damage is lost. The second time, he falls for real.'},
     kalina:   {character:true, name:'Kalina', el:'air', cost:3, role:'Combo', atk:1, hp:10, def:5, ab:'Jump', txt:'When she Passes, she Jumps: she still attacks this round, then lands next round with her ATK and DEF swapped for that round.'},

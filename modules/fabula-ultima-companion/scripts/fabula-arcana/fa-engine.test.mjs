@@ -166,7 +166,7 @@ const blank = blankStats;
   // Roo (per-victim mode checks)
   R.CFG.ROO_BENCH=0;
   S = duel(A('roo'), ['hellhound','kirin','cryo'], {hp:[30,30]}); const rd=[]; for (let k=0;k<3;k++){ r=go(P,P); rd.push(dmg0()); }
-  ok(rd[0]===1 && rd[1]===1 && rd[2]>=9999 && S.p[1].roster[0].ko && S.p[0].roster[0].ko, "Roo: 1, 1, then the Knife (9999) on step 3; then Roo walks away (got "+rd.slice(0,2)+")");
+  ok(rd[0]===0 && rd[1]===0 && rd[2]>=9999 && S.p[1].roster[0].ko && S.p[0].roster[0].ko, "Roo: 0, 0, then the Knife (9999) on step 3; then Roo walks away (got "+rd.slice(0,2)+")");
   S = duel(A('roo'), ['hellhound','kirin','cryo'], {hp:[30,30]}); S.p[1].roster[1].hp=30; go(P,P); go(P,P); r=go(P,{action:'SWITCH',target:1});
   ok(dmg0()<9999 && S.p[0].roster[0].steps.t===1 && S.p[0].roster[0].steps.n===1 && !S.p[0].roster[0].ko, 'Roo: the victim switches out → steps reset on the new target, no knife');
   S = duel(A('roo'), ['hellhound','kirin','cryo'], {hp:[30,30]}); for (const i of [1,2]){ S.p[1].roster[i].ko=true; S.p[1].roster[i].hp=0; } go(P,P); go(P,P); r=go(P,P);
@@ -175,7 +175,7 @@ const blank = blankStats;
   R.CFG.ROO_BENCH=2;
   S = duel(['hellhound','roo','kirin'], B('cryo'), {hp:[30,30]}); for (let k=0;k<3;k++) go(P,P); ok(!S.p[0].roster[1].walk, 'Roo (field mode): no steps while benched');
   S = duel(A('roo'), ['hellhound','kirin','cryo'], {hp:[30,30]}); const fr=[]; for (let k=0;k<3;k++){ r=go(P,P); fr.push(dmg0()); }
-  ok(fr[0]===1 && fr[1]===1 && fr[2]>=9999 && S.p[1].roster[0].ko && S.p[0].roster[0].ko, 'Roo (field mode): 1, 1, knife on its 3rd round on the field, then walks away (got '+fr.slice(0,2)+')');
+  ok(fr[0]===0 && fr[1]===0 && fr[2]>=9999 && S.p[1].roster[0].ko && S.p[0].roster[0].ko, 'Roo (field mode): 0, 0, knife on its 3rd round on the field, then walks away (got '+fr.slice(0,2)+')');
   S = duel(['roo','hellhound','kirin'], B('cryo'), {hp:[30,30]}); S.p[0].roster[1].hp=30; go(P,P); go({action:'SWITCH',target:1},P);
   ok(!S.p[0].roster[0].walk, 'Roo (field mode): switching out resets its steps');
   go({action:'SWITCH',target:0},P); r=go(P,P); ok(dmg0()<9999, 'Roo (field mode): back on the field it has to walk again (no knife yet)');
@@ -183,6 +183,8 @@ const blank = blankStats;
   S = duel(A('rgolem'), ['hellhound','kirin','cryo'], {hp:[30,30]}); r=go(P,P); const q1=S.p[1].roster[1].hp+S.p[1].roster[2].hp; r=go({action:'GOLEM'},P); const q2=S.p[1].roster[1].hp+S.p[1].roster[2].hp;
   ok(q1===17 && q2===17 && S.p[0].roster[0].windup===false, 'Rock Golem: Pass arms Wind Up, same-round attack is an Earthquake (19 → 17 bench HP); next non-Pass attack has none (got '+q1+'/'+q2+')');
 
+  S = duel(A('roo'), B('walrog'), {hp:[30,30]}); r=go({action:'STRENGTH'},P);
+  ok(dmg0()===0 && !S.p[1].roster[0].abilityUsed, 'Roo: an ordinary attack deals 0 even with Strength, and does not spend Thick Skin');
   // Aero Gorger burst
   S = duel(A('hellhound'), B('gorger'), {hp:[8,2]}); r=go(P,P); ok(S.p[0].roster[0].hp===6, 'Aero Gorger: Aero Explosion 2 to the attacker');
 
@@ -191,7 +193,7 @@ const blank = blankStats;
   // Zarg Barrage: 2 to the benched enemy with the lowest HP
   S = duel(A('zarg'), B('hellhound'), {hp:[30,30]}); S.p[1].roster[1].hp=5; S.p[1].roster[2].hp=9; r=go(P,P);
   ok(S.p[1].roster[1].hp===3 && S.p[1].roster[2].hp===9, 'Zarg: Barrage hits the lowest-HP benched enemy for 2 (5 → 3, the other untouched)');
-  S = duel(A('zarg'), B('hellhound'), {hp:[30,30]}); S.p[1].roster[1].hp=2; r=go(P,P);
+  S = duel(A('zarg'), B('hellhound'), {hp:[30,30]}); S.p[1].roster[1].hp=1; r=go(P,P);
   ok(S.p[1].roster[1].ko, 'Zarg: Barrage can KO on the bench');
   // Raubens Bandit King: +1 per enemy item while he is active, same round, permanent
   S = duel(A('raubens'), B('wolf'), {hp:[30,30]}); r=go(P,{action:'REMEDY'}); const rb1=dmg0(); r=go(P,P); const rb2=dmg0();

@@ -205,6 +205,14 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold);outl
 .pop{position:absolute;transform:translate(-50%,0);font-family:var(--font-d);font-size:30px;font-weight:700;text-shadow:2px 2px 0 #000,0 0 6px #000;pointer-events:none;animation:pop 1.3s ease-out forwards;text-align:center;line-height:1;white-space:nowrap}
 .pop small{display:block;font-size:12px;margin-top:3px}
 .pop.dmg{color:var(--hurt)} .pop.heal{color:var(--heal)} .pop.zero{color:#fff}
+/* Geist's Blackest Night (duel short version of the battle cinematic): fall, heartbeats, flash, aura rise */
+.slot.bn-down .holo .spr{filter:grayscale(1) brightness(.35) !important;translate:0 10px;transition:filter .25s,translate .25s}
+.slot.bn-down .flatcard{filter:grayscale(1) brightness(.5)}
+.slot.bn-beat .holo{animation:bnBeat .45s ease-out}
+@keyframes bnBeat{0%{scale:1}30%{scale:1.06}100%{scale:1}}
+.bnaura{position:absolute;pointer-events:none;image-rendering:pixelated;filter:drop-shadow(0 0 10px #be5aff) drop-shadow(0 0 22px #ff3c50)}
+.bnvig{position:absolute;inset:0;pointer-events:none;z-index:5;background:radial-gradient(ellipse at center,transparent 35%,rgba(20,0,30,.75));opacity:0;transition:opacity .35s}
+.bnvig.on{opacity:1}
 @keyframes pop{0%{opacity:0;transform:translate(-50%,10px) scale(.6)}18%{opacity:1;transform:translate(-50%,-8px) scale(1.2)}80%{opacity:1;transform:translate(-50%,-26px) scale(1)}100%{opacity:0;transform:translate(-50%,-40px)}}
 .shake{animation:shake .32s}
 @keyframes shake{0%,100%{translate:0 0}20%{translate:-6px 2px}40%{translate:6px -2px}60%{translate:-4px 1px}80%{translate:3px 0}}
@@ -1554,7 +1562,6 @@ function pbAfter(ev){
     const m=S.p[s].roster[S.p[s].active]; if (!m) continue;
     if (k==='heal' && m.cid==='life') passiveBand(s, [{ name:'Renewal', tier:'support' }]);
   }
-  for (const v of (ev.revive||[])) passiveBand(v.s, [{ name:'The Blackest Night', tier:'defense' }]);
   for (const s of [0,1]) for (const [k] of (ev.after[1-s]||[])) if (k==='burst'){
     const r=ev.res[s]; const fallen=r && r.d; if (fallen) passiveBand(1-s, [{ name: CARDS[fallen.cid].ab, tier:'offense', icon: fallen.cid==='cryo'?'fx_freeze':'fx_wind' }]);
   }
@@ -1703,6 +1710,48 @@ async function fxClash(ev){
   slots.forEach(e=>{ e.style.zIndex=''; });
 }
 
+// ---- Geist: The Blackest Night (reference: battle-director/battle-end/undying/blackest-night-cinematic.js, SHORT sequence) ----
+function bnHeartbeat(){ try { const ctx=SND.ctx; if (!ctx || !SND.on) return; if (ctx.state==='suspended') ctx.resume();
+  const thump=(at,f,d,p)=>{ const o=ctx.createOscillator(), g=ctx.createGain(); o.type='sine'; o.frequency.value=f; g.gain.setValueAtTime(0.0001,at); g.gain.exponentialRampToValueAtTime(Math.max(0.0002,p*SND.vol*2),at+0.02); g.gain.exponentialRampToValueAtTime(0.0001,at+d); o.connect(g).connect(ctx.destination); o.start(at); o.stop(at+d+0.05); };
+  const t=ctx.currentTime; thump(t,58,0.16,0.85); thump(t+0.22,46,0.22,0.6); } catch(e){} }
+async function fxRevive(s, i){
+  const m=S.p[s].roster[i]; if (!m) return; const full=CARDS[m.cid].hp, slot=$(`#slot${s}_${i}`), L=$('#fxl'), table=$('#table');
+  const active = S.p[s].active===i, rm=RM();
+  setHP(s,i,0); if (slot) slot.classList.add('bn-down'); sfx('ko',0.8,0);
+  const vig=document.createElement('div'); vig.className='bnvig'; if (table) table.appendChild(vig); setTimeout(()=>vig.classList.add('on'), 20);
+  passiveBand(s, [{ name:'The Blackest Night', tier:'defense' }]);
+  for (let b=0;b<2;b++){ await sleep(rm?60:520); bnHeartbeat(); if (slot){ slot.classList.remove('bn-beat'); void slot.offsetWidth; slot.classList.add('bn-beat'); } }
+  await sleep(rm?60:520);
+  const c = active ? spriteCenter(s) : (slot ? centerOf(slot, L) : {x:0,y:0,h:80});
+  add('flash', c.x, c.y, {'--pc':'#ffffff'}); sfx('shard',0.8,0);
+  await sleep(rm?30:160);
+  if (slot) slot.classList.remove('bn-down');
+  // the rise: an aura copy of the sprite scales out and fades, violet/red burst, shake
+  const spr = active ? $(`#holo${s}_${i} .spr`) : null;
+  if (spr && !rm && spr.getBoundingClientRect){ const r=spr.getBoundingClientRect(), Lr=L.getBoundingClientRect(); const cl=spr.cloneNode(true); cl.className='bnaura'; cl.removeAttribute('id');
+    const flip = (s===1) !== spr.classList.contains('fl');   // match the hologram's facing
+    Object.assign(cl.style,{ left:(r.left-Lr.left)+'px', top:(r.top-Lr.top)+'px', width:r.width+'px', height:r.height+'px' });
+    L.appendChild(cl); try { if (cl.play) cl.play().catch(()=>{}); } catch(e){}
+    const fx = flip ? -1 : 1;
+    const a=cl.animate([{transform:`scale(${fx},1)`,opacity:.7},{transform:`scale(${3.2*fx},3.2)`,opacity:0}],{duration:950,easing:'cubic-bezier(.2,.7,.3,1)',fill:'forwards'});
+    a.finished.catch(()=>{}).then(()=>cl.remove()); setTimeout(()=>cl.remove(), 1400); }
+  particles(c.x,c.y,26,'#be5aff',{r:110}); particles(c.x,c.y,16,'#ff3c50',{r:90}); add('ring',c.x,c.y,{'--pc':'#be5aff'});
+  sfx('revive',1,0); if (table && !rm){ table.classList.remove('shake'); void table.offsetWidth; table.classList.add('shake'); }
+  setHP(s,i,full); popNum(s,'+'+full,'heal','The Blackest Night');
+  vig.classList.remove('on'); setTimeout(()=>vig.remove(), 400);
+  await sleep(rm?60:650);
+}
+// ---- Cryo / Aero Explosion: the fallen Gorger bursts on its attacker ----
+async function fxBurst(att, amt, gorgerCid, toHp){
+  const c=spriteCenter(att), col = gorgerCid==='cryo' ? '#9fe3ff' : '#9ff0b0';
+  add('flash',c.x,c.y,{'--pc':col}); add('ring',c.x,c.y,{'--pc':col}); particles(c.x,c.y,24,col,{r:80}); particles(c.x,c.y,10,'#ffffff',{r:50});
+  sfx(gorgerCid==='cryo'?'hit_ice':'hit_wind',0.9,0);
+  popNum(att,'−'+amt,'dmg', CARDS[gorgerCid] ? CARDS[gorgerCid].ab : '');
+  if (toHp!=null) setHP(att, S.p[att].active, toHp);
+  await sleep(RM()?60:520);
+}
+const reviveAt = (ev, s, i) => (ev.revive||[]).some(v=>v.s===s && v.i===i);
+const burstOn = (ev, gSide) => { const e=((ev.after&&ev.after[gSide])||[]).find(x=>x[0]==='burst'); return e ? e[1] : 0; };
 function popFor(s, r){   // popup on defender side s for attack r
   if (r.heal){ popNum(s,'+'+(r.healed||0),'heal','Absorb'); sfx('absorb',0.9,0); }
   else popNum(s, r.dmg?('−'+r.dmg):'0', r.dmg?'dmg':'zero', r.aff==='ADV'?'Strong':r.aff==='DIS'?'Weak':r.aff==='NONE'?'Elementless':'');
@@ -1726,7 +1775,10 @@ async function playRound(ev, before){
       const s=ev.seq[k], one={res:[null,null]}; one.res[s]=ev.res[s];
       const pb=pbHit(s, ev.res[s]); passiveBand(s, pb.off);            // attacker's abilities as it strikes
       await fxClash(one); popFor(1-s, ev.res[s]); passiveBand(1-s, pb.def);   // defender's at impact
-      const sn=ev.snaps[k]; for (const q of [0,1]) setHP(q, S.p[q].active, sn[q]);
+      const sn=ev.snaps[k], d=1-s, di=S.p[d].active, bAmt=burstOn(ev, d);
+      if (reviveAt(ev, d, di) && !(ev._revived||[]).includes(d+':'+di)){ await sleep(350); await fxRevive(d, di); ev._revived=(ev._revived||[]).concat(d+':'+di); }
+      for (const q of [0,1]) setHP(q, S.p[q].active, q===s && bAmt ? sn[q]+bAmt : sn[q]);
+      if (bAmt && ev.res[s] && ev.res[s].d){ await sleep(380); await fxBurst(s, bAmt, ev.res[s].d.cid, sn[s]); }
       if (k<ev.seq.length-1) await sleep(420);
     }
     if (ev.denied!=null){ const d=$(`#slot${ev.denied}_${S.p[ev.denied].active}`); if (d){ d.classList.add('downed'); } await sleep(250); }
@@ -1735,7 +1787,11 @@ async function playRound(ev, before){
     await fxClash(ev);
     for (const s of [0,1]){ const r=ev.res[1-s]; if (r) popFor(s, r); }
     for (const s of [0,1]) passiveBand(1-s, pbs[s].def);
+    for (const s of [0,1]){ const i=S.p[s].active; if (reviveAt(ev, s, i)){ await sleep(350); await fxRevive(s, i); ev._revived=(ev._revived||[]).concat(s+':'+i); } }
+    for (const g of [0,1]){ const amt=burstOn(ev, g), r=ev.res[1-g]; if (amt && r && r.d){ await sleep(380); await fxBurst(1-g, amt, r.d.cid, null); } }
   }
+  // revives off the clash (bench hits: Barrage / Earthquake / Double Strafe / Voracious; Explosion or Entry on Geist)
+  for (const v of (ev.revive||[])) if (!(ev._revived||[]).includes(v.s+':'+v.i)){ ev._revived=(ev._revived||[]).concat(v.s+':'+v.i); await fxRevive(v.s, v.i); }
   pbAfter(ev);
   // restore true state
   for (const s of [0,1]) for (const m of S.p[s].roster){ m.hp=m._hp; m.ko=m._ko; delete m._hp; delete m._ko; }

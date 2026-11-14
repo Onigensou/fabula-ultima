@@ -114,7 +114,8 @@ const SFXURL = {
  "cursor": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BattleCursor_2.wav",
  "cafe": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Haste.ogg",
  "whoosh": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Evasion2.ogg",
- "passive": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/passive_card.wav"
+ "passive": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/passive_card.wav",
+ "revive": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/MG_DEATH_BLUR01.wav"
 };
 const FA_BGM = {
  "intro": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Bravely%20Default%20II/Bind%20and%20Divide%20-%20Intro.ogg",
