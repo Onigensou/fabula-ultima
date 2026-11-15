@@ -1203,6 +1203,12 @@
         "parent": "3xHGNagIXPyzukcU"
       },
       {
+        "id": "LegacyTemplates0",
+        "name": "Legacy Templates (do not use)",
+        "type": "Item",
+        "parent": null
+      },
+      {
         "id": "g3Fx4atqvZXStOey",
         "name": "Lesnimir",
         "type": "Macro",
@@ -2395,6 +2401,54 @@
       {
         "id": "Yw7wZVP5LgbHmliu",
         "name": "_Item Template (Copy)",
+        "type": "_equippableItemTemplate",
+        "effects": 0
+      },
+      {
+        "id": "r0yZpLPAK9VXhM2p",
+        "name": "_Legacy · Accessory Equipment",
+        "type": "_equippableItemTemplate",
+        "effects": 0
+      },
+      {
+        "id": "5Z0gKtN5R51ebJOa",
+        "name": "_Legacy · Armor Equipment",
+        "type": "_equippableItemTemplate",
+        "effects": 0
+      },
+      {
+        "id": "xdZPhVF8AnmwQEPM",
+        "name": "_Legacy · Consumeable Template",
+        "type": "_equippableItemTemplate",
+        "effects": 0
+      },
+      {
+        "id": "FZmpKcQRP7hZQqbV",
+        "name": "_Legacy · Offensive Spell",
+        "type": "_equippableItemTemplate",
+        "effects": 0
+      },
+      {
+        "id": "VJCHYWOx1mPsMSip",
+        "name": "_Legacy · Recipe Template",
+        "type": "_equippableItemTemplate",
+        "effects": 0
+      },
+      {
+        "id": "tJixj9vNEQd3F0IO",
+        "name": "_Legacy · Shield Equipment",
+        "type": "_equippableItemTemplate",
+        "effects": 0
+      },
+      {
+        "id": "lUpHsEfBDEY3BeNq",
+        "name": "_Legacy · Support Equipment",
+        "type": "_equippableItemTemplate",
+        "effects": 0
+      },
+      {
+        "id": "gIRU9XGqYeMBwBN9",
+        "name": "_Legacy · Weapon Equipment",
         "type": "_equippableItemTemplate",
         "effects": 0
       },

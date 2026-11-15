@@ -1,0 +1,19 @@
+{
+  "_id": "LegacyTemplates0",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.331",
+    "createdTime": 1794671956396,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.6.4"
+  },
+  "color": null,
+  "description": "CSB item templates restored from the archive world so legacy characters' old items resolve. Do not build new items on these.",
+  "flags": {},
+  "folder": null,
+  "name": "Legacy Templates (do not use)",
+  "sort": 999999,
+  "sorting": "a",
+  "type": "Item"
+}

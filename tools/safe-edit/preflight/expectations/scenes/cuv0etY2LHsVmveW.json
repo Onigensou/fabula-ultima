@@ -11,7 +11,7 @@
     "navigation": false,
     "folder": "cZFr8Jrws41eCfyO",
     "background": {
-      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Battlemap/Wyrmwood_Battlemap002.png",
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Battlemap/Wyrmwood_Battlemap002_v2.webp",
       "anchorX": 0,
       "anchorY": 0,
       "offsetX": 0,
@@ -23,8 +23,8 @@
       "tint": "#ffffff",
       "alphaThreshold": 0
     },
-    "width": 1682,
-    "height": 788,
+    "width": 2560,
+    "height": 1270,
     "padding": 0,
     "backgroundColor": "#000000",
     "tokenVision": false,
@@ -81,9 +81,9 @@
       }
     },
     "initial": {
-      "x": 771,
-      "y": 399,
-      "scale": 1.2687237223069694
+      "x": null,
+      "y": null,
+      "scale": null
     },
     "flags": {
       "fabula-ultima-companion": {
@@ -128,6 +128,15 @@
             "zenit": "",
             "treasure": "",
             "material": ""
+          }
+        },
+        "conflict": {
+          "version": 2,
+          "stage": {
+            "x": 439,
+            "y": 241,
+            "w": 1682,
+            "h": 788
           }
         }
       },
@@ -209,8 +218,102 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1784341929128,
-      "modifiedTime": 1793951027191,
+      "modifiedTime": 1794731374598,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
-    }
+    },
+    "walls": [
+      {
+        "c": [
+          2121,
+          1029,
+          439,
+          1029
+        ],
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "light": 20,
+        "_id": "2BmHFPl0Ix2Eg3ft",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          439,
+          1029,
+          439,
+          241
+        ],
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "light": 20,
+        "_id": "3O5woVoV3v2b0R2O",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          439,
+          241,
+          2121,
+          241
+        ],
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "light": 20,
+        "_id": "ePdwzb3JQdpo0eFk",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      },
+      {
+        "c": [
+          2121,
+          241,
+          2121,
+          1029
+        ],
+        "move": 20,
+        "sight": 20,
+        "sound": 20,
+        "light": 20,
+        "_id": "wEju7DnKQbWBHVwX",
+        "dir": 0,
+        "door": 0,
+        "ds": 0,
+        "threshold": {
+          "light": null,
+          "sight": null,
+          "sound": null,
+          "attenuation": false
+        },
+        "flags": {}
+      }
+    ]
   }
 }
