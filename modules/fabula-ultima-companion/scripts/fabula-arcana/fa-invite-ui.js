@@ -146,14 +146,14 @@ const SETUP_CSS = `
 @media (prefers-reduced-motion: reduce){ #fa-chsetup,#fa-chsetup *{animation:none !important} }
 `;
 let setupOpen = null;
-export function showChallengeSetup({ toName, img = "", bestOf = 1, format = null, onSend = () => {}, onCancel = () => {}, sound = () => {} } = {}) {
+export function showChallengeSetup({ toName, img = "", bestOf = 1, format = null, privatePick = false, onSend = () => {}, onCancel = () => {}, sound = () => {} } = {}) {
   if (setupOpen) setupOpen.close();
   if (!document.getElementById("fa-chsetup-css")) { const st = document.createElement("style"); st.id = "fa-chsetup-css"; st.textContent = SETUP_CSS; document.head.appendChild(st); }
   const f0 = format || {};
   const st = { bo: [1, 3, 5].includes(Number(bestOf)) ? Number(bestOf) : 1,
     mode: ["standard", "open", "cup"].includes(f0.mode) ? f0.mode : "standard",
     pat: Array.isArray(f0.pat) && f0.pat.length === 3 ? f0.pat.map((n) => [0, 1, 2, 3].includes(Number(n)) ? Number(n) : 0) : [1, 1, 2],
-    mirror: f0.mirror !== false, chars: f0.chars !== false };
+    mirror: f0.mirror !== false, chars: f0.chars !== false, priv: !!privatePick };
   const el = document.createElement("div"); el.id = "fa-chsetup"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Card duel challenge setup");
   const seg = (key, opts) => `<div class="fc-seg">${opts.map(([v, l, s]) => `<button type="button" class="${st[key] === v ? "on" : ""}" data-k="${key}" data-v="${v}">${l}<small>${s}</small></button>`).join("")}</div>`;
   const draw = () => {
@@ -167,13 +167,14 @@ export function showChallengeSetup({ toName, img = "", bestOf = 1, format = null
       <div class="fc-sec"><div class="fc-lbl">Mirror cards</div>${seg("mirror", [[true, "Allowed", "Both may field the same card"], [false, "Not allowed", "A shared card clashes: both pick again"]])}</div>
       <div class="fc-sec"><div class="fc-lbl">Character cards</div>${seg("chars", [[true, "Allowed", "Hina, Zarg and friends can play"], [false, "Banned", "Monster cards only"]])}</div>
       <div class="fc-sec"><div class="fc-lbl">Series</div>${seg("bo", [[1, "Best of 1", "One game"], [3, "Best of 3", "First to 2 wins"], [5, "Best of 5", "First to 3 wins"]])}</div>
+      <div class="fc-sec"><div class="fc-lbl">Spectators during team pick</div>${seg("priv", [[false, "See picks live", "Watchers see both teams as they're built"], [true, "Private team pick", "Picks stay hidden until the duel starts"]])}</div>
       <div class="fc-btns"><button type="button" class="fc-go">Send challenge</button><button type="button" class="fc-no">Cancel</button></div></div>`;
     el.querySelectorAll("[data-k]").forEach((b) => b.onclick = () => { const k = b.dataset.k, v = b.dataset.v;
       st[k] = k === "bo" ? Number(v) : (v === "true" ? true : v === "false" ? false : v); sound("cursor"); draw(); });
     el.querySelectorAll("[data-cup]").forEach((b) => b.onclick = () => { st.pat = [...CUPS[+b.dataset.cup].pat]; sound("cursor"); draw(); });
     el.querySelectorAll("[data-pat]").forEach((b) => b.onclick = () => { const i = +b.dataset.pat, cyc = [1, 2, 3, 0]; st.pat = [...st.pat]; st.pat[i] = cyc[(cyc.indexOf(st.pat[i]) + 1) % 4]; sound("cursor"); draw(); });
     el.querySelector(".fc-go").onclick = () => { close(); sound("accept");
-      try { onSend({ bestOf: st.bo, format: { mode: st.mode, pat: st.pat, mirror: st.mirror, chars: st.chars } }); } catch (e) { console.error("[Fabula Arcana] challenge send", e); } };
+      try { onSend({ bestOf: st.bo, format: { mode: st.mode, pat: st.pat, mirror: st.mirror, chars: st.chars }, privatePick: st.priv }); } catch (e) { console.error("[Fabula Arcana] challenge send", e); } };
     el.querySelector(".fc-no").onclick = () => cancel();
   };
   const onKey = (e) => { if (e.key === "Escape") { e.stopPropagation(); cancel(); } };

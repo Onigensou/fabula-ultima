@@ -66,6 +66,27 @@ function suggestTeam(s, seat, owned, actor) {
   return legal.length === 1 ? legal[0] : null;
 }
 
+// ------------------------------------------------------------------ team select as spectators see it
+// A player's window reports its tentative picks while choosing ('draft'); the host keeps them on the seat
+// (seat.draft = { team, opener }) and forwards this view to SPECTATORS ONLY, never to the opponent.
+// Seat 0 is drawn on the left. Private team pick (s.privatePick, the challenger's choice): spectators get only
+// Choosing / Ready, the card count and the ★ total until the duel starts.
+function draftView(s) {
+  const C = Catalog().CARDS, priv = !!s.privatePick;
+  const sides = s.seats.map((t) => {
+    const team = (t.ready && Array.isArray(t.team) ? t.team : t.draft?.team || []).filter((c) => C[c]);
+    const cost = team.reduce((n, c) => n + (C[c].cost || 0), 0);
+    const opener = !priv && t.draft?.opener && team.includes(t.draft.opener) ? t.draft.opener : null;
+    return { name: t.name, kind: t.kind, ready: !!t.ready, n: team.length, cost, team: priv ? null : team, opener };
+  });
+  return { private: priv, sides, format: E().Format.norm(s.format), clash: s.clash || [], bestOf: s.bestOf, quote: s.quote || "", kind: s.kind };
+}
+function pushDraft(s) {
+  if (!s.spectators.length || (s.match && s.match.phase !== "ended")) return;
+  const draft = draftView(s);
+  for (const u of s.spectators) toDuel(s, u, { t: "draft", draft });
+}
+
 function sendInit(s, userId) {
   const viewer = viewerOf(s, userId);
   const role = viewer === null ? "spectator" : "player";
@@ -77,7 +98,8 @@ function sendInit(s, userId) {
     format: E().Format.norm(s.format), formatBy: s.kind === "pvp" ? s.seats[0].name : "", clash: s.clash || [],
     actorId: me.actorId, forms: formsOf(actor), suggestOpener: me.lastTeam ? null : (defaultForm(s, actor, owned)?.opener ?? null),   // a rematch keeps the window's own opener mark
     prize: viewer === 0 && s.prize ? s.prize.cid : null, prizeLabel: s.prize?.label, prizeHint: s.prize?.hint, oppReady: !!opp?.ready,
-  } : { kind: s.kind, bestOf: s.bestOf };
+    privatePick: !!s.privatePick,
+  } : { kind: s.kind, bestOf: s.bestOf, spec: draftView(s) };
   const nm = names(s, viewer);
   toDuel(s, userId, { t: "init", role, myName: nm[0], oppName: nm[1], names: nm, lobby, ready: !!me?.ready, spectators: s.spectators.length, ...payload(s, viewer) });
 }
@@ -244,19 +266,37 @@ async function onDuel(s, userId, msg) {
         const shared = E().Format.norm(s.format).mirror ? [] : s.seats[0].team.filter((c) => s.seats[1].team.includes(c));
         if (shared.length) {        // mirror cards off: reveal only the shared card(s), strike them for this match, both pick again
           s.clash = [...new Set([...(s.clash || []), ...shared])];
-          for (const x of s.seats) { x.ready = false; x.team = null; if (x.userId) toDuel(s, x.userId, { t: "lobby", lobby: { oppReady: false, clash: s.clash, clashNow: shared } }); }
+          for (const x of s.seats) {
+            if (x.kind === "human") { x.ready = false; x.team = null; if (x.draft) x.draft.team = (x.draft.team || []).filter((c) => !shared.includes(c)); }
+            if (x.userId) toDuel(s, x.userId, { t: "lobby", lobby: { oppReady: false, clash: s.clash, clashNow: shared } });
+          }
           for (const u of s.spectators) toDuel(s, u, { t: "banner", text: "Card clash!", sub: "Both teams picked the same card. Both sides pick again.", tone: "warn" });
+          pushDraft(s);
           return save();
         }
+        pushDraft(s);               // spectators see both teams locked in for a moment before the intro
         await startGame(s);
       }
+      else pushDraft(s);
       save(); return;
     }
     case "unready": {                       // take Ready back in team select; too late once the game has started
       if ((s.match && s.match.phase !== "ended") || !t.ready) return;   // the "start" message is already on its way
       t.ready = false;
       const o = s.seats[1 - seat]; if (o.userId) toDuel(s, o.userId, { t: "lobby", lobby: { oppReady: false } });
+      pushDraft(s);
       save(); return;
+    }
+    case "draft": {                         // tentative picks while choosing: for spectators only
+      if ((s.match && s.match.phase !== "ended") || t.ready || t.kind !== "human") return;
+      const C = Catalog().CARDS;
+      const team = (Array.isArray(msg.team) ? msg.team : []).filter((c) => typeof c === "string" && C[c]).slice(0, 3);
+      const opener = typeof msg.opener === "string" && team.includes(msg.opener) ? msg.opener : null;
+      const prev = t.draft;
+      if (prev && prev.opener === opener && prev.team.join() === team.join()) return;
+      t.draft = { team, opener };
+      pushDraft(s);
+      return;                               // no save needed: a reopened window re-sends its picks
     }
     case "commit": return submit(s, seat, msg.choice);
     case "surrender": {
@@ -293,7 +333,7 @@ async function rematch(s, seat) {
   clearTimers(s);
   s.over = false; s.match = null; s.gameKey = null; s.deadline = null; s.reward = null;
   s.series = E().Series.create(s.bestOf); s.clash = [];
-  for (const x of s.seats) { x.rematch = false; x.next = false; if (x.kind === "human") { x.ready = false; x.team = null; } }
+  for (const x of s.seats) { x.rematch = false; x.next = false; if (x.kind === "human") { x.ready = false; x.team = null; x.draft = null; } }
   if (s.kind === "npc" && s.prize) { const a = game.actors.get(s.seats[0].actorId); if (a && ownedCards(a).includes(s.prize.cid)) s.prize = null; }
   for (const x of s.seats) if (x.userId) sendInit(s, x.userId);
   pushStatus(); save();
@@ -440,7 +480,7 @@ function rulesBlocker(format, actors) {
   }
   return "";
 }
-async function createPvp(userId, { fromActorId, toActorId, bestOf, format }) {
+async function createPvp(userId, { fromActorId, toActorId, bestOf, format, privatePick }) {
   const from = game.actors.get(fromActorId), to = game.actors.get(toActorId);
   if (!from || !to) return notify(userId, "That player's character couldn't be found.", "warn");
   const target = game.users.find((u) => !u.isGM && u.active && u.character?.id === to.id)
@@ -453,7 +493,7 @@ async function createPvp(userId, { fromActorId, toActorId, bestOf, format }) {
   const fmt = E().Format.norm(format);
   const block = rulesBlocker(fmt, [from, to]); if (block) return notify(userId, block, "warn");
   const s = {
-    sid: uid(), kind: "pvp", hostId: game.user.id, createdAt: Date.now(), bestOf: bo, format: fmt, clash: [], series: E().Series.create(bo),
+    sid: uid(), kind: "pvp", hostId: game.user.id, createdAt: Date.now(), bestOf: bo, format: fmt, privatePick: !!privatePick, clash: [], series: E().Series.create(bo),
     seats: [
       { userId, actorId: from.id, name: from.name, kind: "human", team: null, ready: false, next: false, lastTeam: null },
       { userId: target.id, actorId: to.id, name: to.name, kind: "human", team: null, ready: false, next: false, lastTeam: null },
@@ -461,7 +501,7 @@ async function createPvp(userId, { fromActorId, toActorId, bestOf, format }) {
     spectators: [], match: null, gameKey: null, deadline: null, quote: "", prize: null, npc: null, pending: true, over: false, reward: null,
   };
   sessions.set(s.sid, s);
-  send(target.id, "invite", { fromName: from.name, fromUser: userId, toName: to.name, bestOf: bo, rules: E().Format.summary(fmt), img: from.img || "", expiresAt: Date.now() + INVITE_MS }, s.sid);
+  send(target.id, "invite", { fromName: from.name, fromUser: userId, toName: to.name, bestOf: bo, rules: E().Format.summary(fmt) + (privatePick ? " · Private team pick" : ""), img: from.img || "", expiresAt: Date.now() + INVITE_MS }, s.sid);
   notify(userId, `Challenge sent to ${to.name}.`);
   rt(s.sid).inviteTimer = setTimeout(() => {
     if (!sessions.get(s.sid)?.pending) return;

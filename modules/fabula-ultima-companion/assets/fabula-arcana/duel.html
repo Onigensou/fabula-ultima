@@ -551,6 +551,45 @@ body.elA{--e-phys:#555555;--e-air:#48c774;--e-bolt:#9b59b6;--e-dark:#4b0082;--e-
 .rdy .chip.rpop{animation:rdyPop .45s cubic-bezier(.2,1.6,.4,1)}
 @keyframes rdyDot{50%{opacity:.25;transform:scale(.7)}}
 @keyframes rdyPop{0%{transform:scale(.6)}100%{transform:scale(1)}}
+.watchline{margin-top:6px} .watchline i{margin-right:4px;color:#8a6a3a}
+/* ===== spectators: both teams during team select (live picks, Choosing / Locked in) ===== */
+.sd{display:flex;flex-direction:column;gap:12px;max-width:1180px;margin:0 auto}
+.sd.sd-leave{animation:sdLeave .6s ease-in forwards}
+.sd-head{text-align:center}
+.sd-head h2{margin:4px 0 6px;font-size:24px} .sd-head h2 .vs{font-size:15px;color:#9a6512;margin:0 8px;letter-spacing:.12em;text-transform:uppercase}
+.sd-head .fmtline{justify-content:center}
+.sd-sides{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:stretch}
+.sd-vs{align-self:center;width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:700;font-size:20px;color:#f8e3a8;background:radial-gradient(circle at 40% 35%,#8a5a2a,#4f2f10);border:2px solid #c9a44a;box-shadow:0 0 0 2px #3a1e06,0 4px 10px #0007}
+.sd-side{position:relative;display:flex;flex-direction:column;gap:8px;transition:box-shadow .3s}
+.sd-side.is-ready{box-shadow:0 0 0 2px #e2b34a,0 0 16px #e2b34a88}
+.sd-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.sd-name{font-family:var(--font-d);font-size:19px}
+.sd-tag{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:1px 7px;border-radius:999px;background:#7a4e2022;color:#7a5a3a;margin-left:6px;vertical-align:middle}
+.sd-meta{display:flex;align-items:center;gap:8px;min-height:22px}
+.sd-slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:start}
+.sd-slot{position:relative;min-height:236px;display:flex;flex-direction:column;gap:5px;perspective:700px}
+.sd-slot>.card{flex:1}
+.sd-side:not(.is-ready) .sd-slot>.card{filter:saturate(.8);opacity:.92}
+.sd-side.is-ready .sd-slot>.card{box-shadow:0 0 0 1px #3a1e06,0 0 0 4px #f4c95d,0 0 14px #f4c95d99}
+.sd-empty{flex:1;border:2px dashed var(--wood2,#9a7046);border-radius:8px;background:#fbf4dc44;display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:30px;color:#9a7046aa}
+.sd-back{flex:1;border-radius:8px;border:2px solid var(--rim);box-shadow:0 0 0 1px #3a1e06,0 4px 6px #0006;background:radial-gradient(circle at 50% 50%,#c9a44a 0 9%,transparent 10%),repeating-linear-gradient(45deg,#8a3420 0 8px,#6a2414 8px 16px)}
+.sd-optag{align-self:center;font-size:12px;font-weight:800;letter-spacing:.06em;padding:1px 9px;border-radius:999px;background:#3a1e06;color:#f4c95d}
+.sd-in{animation:sdFlip .42s cubic-bezier(.2,1.1,.4,1)}
+.sd-out{animation:sdOut .28s ease-in forwards}
+.sd-stamp{position:absolute;right:12px;top:44px;z-index:3;transform:rotate(-9deg);padding:2px 10px;border:3px solid #2f8f45;border-radius:6px;color:#2f8f45;background:#f8f0d4e6;font-family:var(--font-d);font-weight:700;font-size:15px;letter-spacing:.14em;text-transform:uppercase;pointer-events:none}
+.sd-stamp.pop{animation:sdStamp .4s cubic-bezier(.2,1.6,.4,1)}
+.sd-note{text-align:center}
+.sd .chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-b);font-weight:800;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:999px}
+.sd .chip.wait{background:#efe2c4;color:#7a5a3a;border:1px solid #c9a44a}
+.sd .chip.wait i{width:8px;height:8px;border-radius:50%;background:#c08a1a;animation:rdyDot 1s ease-in-out infinite}
+.sd .chip.ok{background:linear-gradient(180deg,#5cc46e,#2f8f45);color:#fff;border:1px solid #1f6a30;box-shadow:0 0 10px #5cc46e88}
+.sd .chip.rpop{animation:rdyPop .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes sdFlip{0%{transform:rotateY(90deg) scale(.92);opacity:.4}100%{transform:none;opacity:1}}
+@keyframes sdOut{to{transform:translateY(10px) scale(.94);opacity:0}}
+@keyframes sdStamp{0%{transform:rotate(-9deg) scale(1.8);opacity:0}100%{transform:rotate(-9deg) scale(1);opacity:1}}
+@keyframes sdLeave{to{opacity:0;transform:scale(.97)}}
+@media (max-width:900px){ .sd-sides{grid-template-columns:minmax(0,1fr)} .sd-vs{justify-self:center} }
+@media (prefers-reduced-motion: reduce){ .sd-in,.sd-out,.sd-stamp.pop,.sd.sd-leave,.sd .chip.rpop{animation:none} }
 /* ===== volume popover ===== */
 .volwrap{position:relative}
 .volpop{position:absolute;right:0;top:calc(100% + 6px);z-index:9500;width:260px;padding:10px 12px;background:linear-gradient(180deg,#f8f0d4,#ede0b0);border:2px solid var(--rim);border-radius:10px;box-shadow:0 0 0 2px var(--wood),0 10px 22px #000a;color:var(--ink)}
@@ -2666,7 +2705,7 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
     if (S) return _render();
     syncSurrender(); const app = $('#app');
     if (!NET.lobby){ app.innerHTML = `<div class="setup"><div class="win"><h2>Fabula Arcana</h2><div class="hint">Connecting to the duel…</div></div></div>`; return; }
-    if (spectator()){ app.innerHTML = `<div class="setup"><div class="win"><h2>${esc(seatName(0))} vs ${esc(seatName(1))}</h2><div class="hint">Both sides are choosing their teams. The duel appears here when it starts.</div></div></div>`; return; }
+    if (spectator()){ app.innerHTML = specDraftHTML(); return; }
     const owned = (NET.lobby.owned || []).filter(id => CARDS[id]);
     UI.pick = (UI.pick || []).filter(id => owned.includes(id));
     const saved = IDS.splice(0); IDS.push(...owned);
@@ -2678,8 +2717,84 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
     const br = $('#btnRand'); if (br) br.onclick = () => { if (NET.ready) return; sfx('cursor'); const legal = LEGAL_FROM(owned); if (legal.length){ UI.pick = legal[Math.floor(Math.random()*legal.length)]; render(); } };
     const bs = $('#btnStart'); if (bs) bs.onclick = () => { const sel = UI.pick || []; if (NET.ready || !teamLegal(sel) || sel.some(c => (UI.clash||[]).includes(c))) return; sfx('book'); NET.ready = true; send({ t:'team', team:[...sel] }); render(); };
     // Unready: take Ready back while the opponent is still choosing (the host ignores it once the game has started)
-    const bu = $('#btnUnready'); if (bu) bu.onclick = () => { if (!NET.ready || (NET.lobby && NET.lobby.oppReady)) return; sfx('cancel'); NET.ready = false; send({ t:'unready' }); render(); };
+    const bu = $('#btnUnready'); if (bu) bu.onclick = () => { if (!NET.ready || (NET.lobby && NET.lobby.oppReady)) return; sfx('cancel'); NET.ready = false; draftKey = null; send({ t:'unready' }); render(); };
+    pushDraft();
   };
+
+  // ---------- team select, spectator side: the host forwards each player's picks as they make them ----------
+  // The player's window reports its tentative team + opener ('draft'); only spectators ever receive it.
+  let draftKey = null, draftT = null;
+  function pushDraft(){
+    if (spectator() || S || !NET.lobby || NET.ready) return;
+    const key = (UI.pick || []).join() + '|' + (UI.openerCid || '');
+    if (key === draftKey) return;
+    draftKey = key; clearTimeout(draftT);
+    draftT = setTimeout(() => { if (S || NET.ready) return; send({ t:'draft', team:(UI.pick || []).slice(0, 3), opener: UI.openerCid || null }); }, 120);
+  }
+  const watchText = () => { const n = NET.spectators || 0; if (!n) return '';
+    return `<i class="fa-solid fa-eye"></i>${n} watching · ${NET.lobby && NET.lobby.privatePick ? 'your picks stay hidden from them until the duel starts' : 'they see your picks as you make them'}`; };
+  function drawWatch(){ const el = document.getElementById('watchline'); if (!el) return; el.innerHTML = watchText(); el.hidden = !NET.spectators; }
+
+  // stable slots per side: a new pick flips into the first free slot, a removed one fades out where it was
+  const SD = { slots:[[null,null,null],[null,null,null]], ready:[false,false], pop:[false,false], seen:false, outT:null };
+  function specUpdate(spec){
+    NET.spec = spec; if (!spec) return;
+    netRules({ format: spec.format, clash: spec.clash }); UI.bestOf = spec.bestOf || 1;
+    let flip = false, lock = false;
+    spec.sides.forEach((side, s) => {
+      const slots = SD.slots[s], team = side.team || [];
+      if (side.team){
+        for (let i = 0; i < 3; i++){ const e = slots[i]; if (e && e.st !== 'out' && !team.includes(e.cid)) slots[i] = { cid:e.cid, st:'out' }; }
+        for (const cid of team){
+          if (slots.some(e => e && e.st !== 'out' && e.cid === cid)) continue;
+          let i = slots.findIndex(e => !e); if (i < 0) i = slots.findIndex(e => e && e.st === 'out'); if (i < 0) continue;
+          slots[i] = { cid, st: SD.seen ? 'in' : 'on' }; flip = flip || SD.seen;
+        }
+      } else SD.slots[s] = [null,null,null];
+      SD.pop[s] = SD.seen && side.ready && !SD.ready[s]; lock = lock || SD.pop[s];
+      SD.ready[s] = side.ready;
+    });
+    if (SD.seen && lock) sfx('decide', 0.7, 0); else if (flip) sfx('book', 0.8, 0);
+    SD.seen = true;
+    if (SD.slots.some(sl => sl.some(e => e && e.st === 'out'))){
+      clearTimeout(SD.outT);
+      SD.outT = setTimeout(() => { SD.slots.forEach(sl => { for (let i = 0; i < 3; i++) if (sl[i] && sl[i].st === 'out') sl[i] = null; }); if (!S && spectator()) render(); }, 300);
+    }
+  }
+  function specSideHTML(side, s){
+    const F = fmt(), priv = !side.team;
+    const meter = F.mode === 'standard'
+      ? `<span class="budget" title="Team cost">${Array.from({length:CFG.BUDGET}, (_,i) => `<i class="${i < side.cost ? 'on' : ''} ${side.cost > CFG.BUDGET && i < side.cost ? 'over' : ''}"></i>`).join('')}</span><span class="label">${side.cost} / ${CFG.BUDGET} ★</span>`
+      : F.mode === 'open' ? `<span class="label">${side.cost} ★ · no budget</span>` : `<span class="label">${esc(cupName(F.pat))} · ${side.cost} ★</span>`;
+    const slot = (e, i) => {
+      if (priv) return `<div class="sd-slot">${i < side.n ? '<div class="sd-back"></div>' : '<div class="sd-empty">?</div>'}</div>`;
+      if (!e) return `<div class="sd-slot"><div class="sd-empty">?</div></div>`;
+      const c = CARDS[e.cid]; if (!c) return `<div class="sd-slot"><div class="sd-empty">?</div></div>`;
+      return `<div class="sd-slot ${e.st === 'in' ? 'sd-in' : e.st === 'out' ? 'sd-out' : ''}" data-sdcid="${e.cid}"><div class="card" style="--ec:var(--e-${c.el})">${cardHTML(e.cid)}</div>${side.opener === e.cid && e.st !== 'out' ? '<div class="sd-optag">◆ Opener</div>' : ''}</div>`;
+    };
+    const chip = side.ready ? `<span class="chip ok ${SD.pop[s] ? 'rpop' : ''}">✓ Ready</span>` : `<span class="chip wait"><i></i>Choosing…</span>`;
+    return `<div class="win sd-side ${side.ready ? 'is-ready' : ''}" data-sdside="${s}">
+      <div class="sd-top"><div><b class="sd-name">${esc(side.name)}</b>${side.kind === 'ai' ? '<span class="sd-tag">NPC</span>' : ''}</div>${chip}</div>
+      <div class="sd-meta">${meter}<span class="label" style="margin-left:auto">${side.n} / ${CFG.TEAM} picked</span></div>
+      <div class="sd-slots">${[0,1,2].map(i => slot(SD.slots[s][i], i)).join('')}</div>
+      ${side.ready ? `<div class="sd-stamp ${SD.pop[s] ? 'pop' : ''}">Locked in</div>` : ''}</div>`;
+  }
+  function specDraftHTML(){
+    const sp = NET.spec;
+    if (!sp) return `<div class="setup"><div class="win"><h2>${esc(seatName(0))} vs ${esc(seatName(1))}</h2><div class="hint">Both sides are choosing their teams. The duel appears here when it starts.</div></div></div>`;
+    const [a, b] = sp.sides, bo = sp.bestOf || 1, clash = sp.clash || [];
+    const html = `<div class="sd">
+      <div class="win sd-head"><div class="label">Fabula Arcana · Team select</div>
+        <h2>${esc(a.name)}<span class="vs">vs</span>${esc(b.name)}</h2>
+        <div class="fmtline"><span class="fmtpill"><i class="fa-solid fa-scroll"></i>${esc(fmtSummary())}</span>${bo > 1 ? `<span class="fmtpill">Best of ${bo} · first to ${Math.ceil(bo/2)}</span>` : ''}${clash.length ? `<span class="fmtpill warn">Clashed: ${clash.map(c => CARDS[c] ? N(c) : c).map(esc).join(', ')}</span>` : ''}${sp.private ? '<span class="fmtpill"><i class="fa-solid fa-eye-slash"></i>Private team pick</span>' : ''}</div>
+        ${sp.quote ? `<div class="hint">“${esc(sp.quote)}”</div>` : ''}
+        ${NET.spectators ? `<div class="hint watchline"><i class="fa-solid fa-eye"></i>${NET.spectators} watching</div>` : ''}</div>
+      <div class="sd-sides">${specSideHTML(a, 0)}<div class="sd-vs">VS</div>${specSideHTML(b, 1)}</div>
+      <div class="hint sd-note">${sp.private ? 'Private team pick: the cards stay face down until the duel starts.' : 'Picks show up as they are made. Dimmed cards can still change; the duel starts when both sides are Ready.'}</div></div>`;
+    // the flip / pop plays once; later redraws show the settled card
+    SD.slots.forEach(sl => sl.forEach(e => { if (e && e.st === 'in') e.st = 'on'; })); SD.pop = [false,false];
+    return html;
+  }
   const LEGAL_FROM = ids => { ids = ids.filter(id => !(UI.clash||[]).includes(id)); const out = []; for (let a=0;a<ids.length;a++) for (let b=a+1;b<ids.length;b++) for (let c=b+1;c<ids.length;c++){ const t=[ids[a],ids[b],ids[c]]; if (fitsFmt(t)) out.push(t); } return out; };
   // the host's rules for this duel (PvP: the challenger's; NPC duels: Standard)
   const netRules = (L) => { const f = (L && L.format) || {}; UI.fmt = { mode: ['standard','open','cup'].includes(f.mode) ? f.mode : 'standard', pat: Array.isArray(f.pat) && f.pat.length===3 ? f.pat.map(Number) : [1,1,2], mirror: f.mirror !== false, chars: f.chars !== false };
@@ -2689,7 +2804,8 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
     // both players' status, always visible: "Choosing…" (pulsing dot) or "✓ Ready"
     const chip = (ok, pop) => ok ? `<span class="chip ok ${pop ? 'rpop' : ''}">✓ Ready</span>` : `<span class="chip wait"><i></i>Choosing…</span>`;
     const opp = `<div class="rdy"><div class="who"><b>${esc(NET.myName)}</b>${chip(NET.ready, false)}</div><div class="who"><b>${esc(NET.oppName)}</b>${chip(!!L.oppReady, NET.oppPop)}</div></div>`
-      + (L.oppTeam && L.oppTeam.length ? `<div class="hint" style="margin-top:6px">Their team: <b>${L.oppTeam.map(id => esc(N(id))).join(' · ')}</b></div>` : '');
+      + (L.oppTeam && L.oppTeam.length ? `<div class="hint" style="margin-top:6px">Their team: <b>${L.oppTeam.map(id => esc(N(id))).join(' · ')}</b></div>` : '')
+      + `<div class="hint watchline" id="watchline" ${NET.spectators ? '' : 'hidden'}>${watchText()}</div>`;
     NET.oppPop = false;
     const enough = LEGAL_FROM(owned).length > 0;
     return `<div class="win"><div class="label">Fabula Arcana</div><h2 style="margin:4px 0">${esc(NET.myName)} vs ${esc(NET.oppName)}</h2>
@@ -2728,7 +2844,10 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
   // the standalone tickTimer auto-plays a Pass at 0; in-game the HOST owns timeouts, so a window that redraws after the
   // deadline (lag, a reconnect) must never send its own Pass (it used to land in the NEXT round)
   tickTimer = tick;
-  function start(m, fresh){
+  async function start(m, fresh){
+    // spectators: the locked-in teams fade out first, then the usual intro deals them onto the board
+    const sd = fresh && spectator() && !S && document.querySelector('#app .sd');
+    if (sd){ await sleep(RM() ? 0 : 700); sd.classList.add('sd-leave'); await sleep(RM() ? 0 : 560); }
     NET.ready = false; NET.nextSent = false; NET.reward = null;
     document.querySelectorAll('.ovl').forEach(o => o.remove());
     S = fromView(m.view, m); SERIES = S.series; S._built = null;
@@ -2911,6 +3030,8 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
         if (NET.lobby && NET.lobby.suggest && !(UI.pick || []).length){ UI.pick = NET.lobby.suggest.slice(); UI.openerCid = NET.lobby.suggestOpener || null;
           const key = [...UI.pick].sort().join(','); const i = FORM.get().findIndex(f => f && [...f.team].sort().join(',') === key); UI.formSlot = i >= 0 ? i : null; }
         NET.rematch = { me:false, opp:false, oppLeft:false }; NET.nextSent = false; NET.oppGone = null; awayHide();
+        draftKey = null; SD.seen = false; SD.slots = [[null,null,null],[null,null,null]]; SD.ready = [false,false];
+        if (NET.role === 'spectator' && NET.lobby && NET.lobby.spec) specUpdate(NET.lobby.spec);
         if (m.view) return m.view.phase === 'ended' ? applyState(m) : start(m);
         document.querySelectorAll('.ovl, .annc').forEach(o => o.remove());
         S = null; SERIES = null; render(); return;
@@ -2940,7 +3061,8 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
       case 'foretold': return foretoldIn(m);
       case 'reveal': return reveal(m);
       case 'state': return applyState(m);
-      case 'spectators': NET.spectators = m.n || 0; if (S) renderSidebar(); return;
+      case 'spectators': NET.spectators = m.n || 0; if (S) renderSidebar(); else if (spectator()) render(); else drawWatch(); return;
+      case 'draft': if (!spectator() || S) return; specUpdate(m.draft); render(); return;
       case 'toast': { const st = $('#status'); if (st) st.textContent = m.text || ''; return; }
     }
   }

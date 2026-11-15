@@ -80,15 +80,15 @@ const lastRules = () => { try { const v = JSON.parse(localStorage.getItem(RULES_
 export function openChallenge(targetActor) {
   if (!targetActor) return;
   const last = lastRules();
-  showChallengeSetup({ toName: targetActor.name, img: targetActor.img || "", bestOf: last.bestOf ?? 1, format: last.format ?? null, sound: playUi,
-    onSend: ({ bestOf, format }) => { try { localStorage.setItem(RULES_KEY, JSON.stringify({ bestOf, format })); } catch {} challengePlayer(targetActor, { bestOf, format }); } });
+  showChallengeSetup({ toName: targetActor.name, img: targetActor.img || "", bestOf: last.bestOf ?? 1, format: last.format ?? null, privatePick: !!last.privatePick, sound: playUi,
+    onSend: ({ bestOf, format, privatePick }) => { try { localStorage.setItem(RULES_KEY, JSON.stringify({ bestOf, format, privatePick })); } catch {} challengePlayer(targetActor, { bestOf, format, privatePick }); } });
 }
-export async function challengePlayer(targetActor, { bestOf = 1, format = null, challenger = null } = {}) {
+export async function challengePlayer(targetActor, { bestOf = 1, format = null, privatePick = false, challenger = null } = {}) {
   const me = challenger ?? (await resolveChallenger());
   if (!me || !targetActor) return;
   const h = hostId();
   if (!h) return ui.notifications?.warn("Fabula Arcana | A GM needs to be online to referee a duel between players.");
-  send(h, "challenge-pvp", { fromActorId: me.id, toActorId: targetActor.id, bestOf, format });
+  send(h, "challenge-pvp", { fromActorId: me.id, toActorId: targetActor.id, bestOf, format, privatePick: !!privatePick });
 }
 export function spectate(sid) {
   // the host checks the duel exists; this client's status list may not have caught up yet
