@@ -378,6 +378,17 @@ function floorPointNearer(f, dzPx, P, ppm) {
     ok(`${key}: back row drawn near 0.72`, Math.abs(back - 0.72) < 0.02, String(back));
   }
   ok("the old legacy Highroad key still resolves (save slots may restore the old URL)", !!resolvePreset(FORGE + "Eisendrache_Battlemap002.png"));
+  // Scenery ambience (battle-stage-ambient-fx.js): every kind is drawable, the budget holds.
+  const { AMBIENT_FX_KINDS } = await import("./battle-stage-ambient-fx.js");
+  for (const [key, p] of Object.entries(PRESETS)) {
+    const fx = p.ambient?.fx;
+    if (!fx) continue;
+    const bad = fx.filter((f) => !AMBIENT_FX_KINDS.includes(f.k) || !(f.n > 0));
+    ok(`${key}: ambient fx kinds are all drawable`, bad.length === 0, JSON.stringify(bad));
+    const sprites = fx.reduce((n, f) => n + f.n * (f.k === "smoke" || f.k === "fogbank" ? 3 : f.k === "gust" || f.k === "bark" || f.k === "shaft" ? 2 : 1), 0);
+    ok(`${key}: ambient stays within the sprite budget (<= 70)`, sprites <= 70, String(sprites));
+  }
+  ok("Highroad stays vanilla (first battlemap)", !PRESETS.Eisendrache_Battlemap002_v2.ambient);
 }
 
 console.log(`\n${pass} passed, ${fail} failed`);

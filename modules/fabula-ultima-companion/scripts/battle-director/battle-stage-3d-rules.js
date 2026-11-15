@@ -107,21 +107,82 @@ export const PRESETS = Object.freeze({
   // Highroad and the Stepped hall are raised 110 px (Waterwheel 120 px) on the v2 canvas so the back row stands on the floor
   // (the old art put the horizon / back ledge at the back-row feet). Horizons measured on the raised art.
   Eisendrache_Battlemap002_v2: { horizon: 65.3, strength: 0.363, orbitX: 8, orbitY: 2, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
-  Eisendrache_Battlemap004_v2: { horizon: 47.1, strength: 0.392, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
-  Hideout_Battlemap001_v2: { horizon: 139.7, strength: 0.242, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  Eisendrache_Battlemap004_v2: { horizon: 47.1, strength: 0.392, stage3d: { relief: true, backRow: 222, frontRow: 547 },
+    ambient: { fx: [
+      {k:"flame",n:12,at:[[140,230,110],[330,420,90],[260,600,70],[560,120,80],[1300,250,120],[1560,250,110],[1800,220,90],[2050,300,110],[2300,420,110],[2450,180,100],[380,640,50],[1900,1010,50]],color:"#ff6a1f"},
+      {k:"embers",n:26,from:[[300,400,300],[2250,400,320],[1430,220,300]],color:"#ff9a3c"},
+      {k:"smoke",n:4,at:[[300,40],[1000,20],[1700,30],[2350,60]],color:"#22140f",alpha:0.4},
+    ] } },
+  Hideout_Battlemap001_v2: { horizon: 139.7, strength: 0.242, stage3d: { relief: true, backRow: 222, frontRow: 547 },
+    ambient: { fx: [
+      {k:"torch",n:6,at:[[585,225,1],[1035,330,0.6],[1965,185,1]],color:"#ffa13d"},
+      {k:"ripple",n:2,at:[[530,1140,60],[1930,1210,60]],color:"#ffcf8a"},
+      {k:"mist",n:3,y0:230,y1:420,x0:1050,x1:1600,speed:10,color:"#6a5a4a",alpha:0.18},
+    ] } },
   // Waterwheel: the cut-off top of the wheel was completed by a second ChatGPT pass (2026-11-15).
-  Hideout_Battlemap002_v2: { horizon: -56.4, strength: 0.551, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  Hideout_Battlemap002_v2: { horizon: -56.4, strength: 0.551, stage3d: { relief: true, backRow: 222, frontRow: 547 },
+    ambient: { fx: [
+      {k:"puff",n:10,at:[[860,430],[990,380],[1640,300],[2370,400]],color:"#e4ecef"},
+      {k:"ripple",n:4,at:[[150,450,80],[380,470,70],[260,520,60],[2400,470,60]],color:"#cfe3ea"},
+      {k:"torch",n:2,at:[[1810,505,0.7]],color:"#ffa13d"},
+      {k:"dust",n:10,from:[[1280,650,700]],color:"#f2e6c8"},
+    ] } },
   // The original's heavy right/bottom vignette was relit from a second ChatGPT pass (stage edge only).
-  Hideout_Battlemap003_v2: { horizon: -171, strength: 0.723, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
-  Hideout_Battlemap004_v2: { horizon: -242.7, strength: 0.831, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
-  Hideout_Battlemap005_v2: { horizon: 69.4, strength: 0.357, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
-  Ruhig_Battlemap001_v2: { horizon: 35.3, strength: 0.41, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  Hideout_Battlemap003_v2: { horizon: -171, strength: 0.723, stage3d: { relief: true, backRow: 222, frontRow: 547 },
+    ambient: { fx: [
+      {k:"wash",n:1,at:[[1250,640,760,260]],color:"#ffd690",alpha:0.13},
+      {k:"wash",n:1,at:[[1000,180,420,130]],color:"#ffcf80",alpha:0.1},
+    ] } },
+  Hideout_Battlemap004_v2: { horizon: -242.7, strength: 0.831, stage3d: { relief: true, backRow: 222, frontRow: 547 },
+    ambient: { fx: [
+      {k:"shaft",n:1,at:[[1250,0,640,760]],color:"#ffd99a",alpha:0.12},
+      {k:"dust",n:16,from:[[1250,350,500]],color:"#e8d6b0",fall:true},
+      {k:"mist",n:3,y0:300,y1:520,speed:8,color:"#6b5a44",alpha:0.16},
+    ] } },
+  Hideout_Battlemap005_v2: { horizon: 69.4, strength: 0.357, stage3d: { relief: true, backRow: 222, frontRow: 547 },
+    ambient: { fx: [
+      {k:"torch",n:9,at:[[440,130,0.5],[470,250,0.5],[530,195,0.5],[560,195,0.5],[1030,265,0.6],[1930,150,0.5],[1970,125,0.5],[2005,150,0.5]],color:"#ffbd55"},
+      {k:"wash",n:1,at:[[1100,470,900,150]],color:"#ffc35a",alpha:0.12},
+      {k:"glint",n:10,x0:300,x1:1950,y0:330,y1:560,color:"#fff4c8"},
+      {k:"dust",n:10,from:[[1100,400,600]],color:"#ffe2a0"},
+    ] } },
+  Ruhig_Battlemap001_v2: { horizon: 35.3, strength: 0.41, stage3d: { relief: true, backRow: 222, frontRow: 547 },
+    ambient: { fx: [
+      {k:"smoke",n:2,at:[[905,95],[1965,125]],color:"#e8e6e2",alpha:0.32,thin:true},
+      {k:"cloud",n:2,speed:22,alpha:0.16},
+      {k:"leaves",n:6,x0:0,x1:520,y0:0,colors:["#8db04a","#b9c95a","#d7c46a"]},
+      {k:"flutter",n:2,at:[[300,520],[2300,560]],colors:["#fff3a8","#d8c4ff"]},
+    ] } },
   // Misty Field is all fog with no readable floor; the fit is soft, so it stays gentle.
-  Ruhig_Battlemap002_v2: { horizon: 150.8, strength: 0.223, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
-  Vastwind_Battlemap001_v2: { horizon: 98.8, strength: 0.31, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
-  Vastwind_Battlemap002_v2: { horizon: 23.4, strength: 0.429, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
-  Wyrmwood_Battlemap001_v2: { horizon: -69.3, strength: 0.57, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
-  Wyrmwood_Battlemap002_v2: { horizon: -68.1, strength: 0.569, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  Ruhig_Battlemap002_v2: { horizon: 150.8, strength: 0.223, stage3d: { relief: true, backRow: 222, frontRow: 547 },
+    ambient: { fx: [
+      {k:"mist",n:14,y0:80,y1:1250,speed:20,color:"#c2bae6",alpha:0.24,big:true},
+      {k:"fogbank",n:3,at:[[560,0.24],[860,0.3],[1150,0.34]],color:"#cfc8ee"},
+    ] } },
+  Vastwind_Battlemap001_v2: { horizon: 98.8, strength: 0.31, stage3d: { relief: true, backRow: 222, frontRow: 547 },
+    ambient: { fx: [
+      {k:"gust",n:6,y0:300,y1:1150,speed:340,alpha:0.13},
+    ] } },
+  Vastwind_Battlemap002_v2: { horizon: 23.4, strength: 0.429, stage3d: { relief: true, backRow: 222, frontRow: 547 },
+    ambient: { fx: [
+      {k:"puff",n:8,x0:950,x1:1500,y:370,color:"#dfe9f2"},
+      {k:"mist",n:6,y0:300,y1:520,speed:26,color:"#9fb4c8",alpha:0.16},
+      {k:"drip",n:3,points:[[300,330],[420,370],[560,300],[700,260],[1640,330],[1760,380],[1900,330],[2080,250],[2200,220]],fall:[280,560]},
+    ] } },
+  Wyrmwood_Battlemap001_v2: { horizon: -69.3, strength: 0.57, stage3d: { relief: true, backRow: 222, frontRow: 547 },
+    ambient: { fx: [
+      {k:"bark",n:8,at:[[150,190,70,170],[95,360,50,120],[230,300,40,110],[470,120,40,90],[1960,120,40,90],[2230,170,55,140],[2410,330,50,130],[2330,90,35,80]],color:"#ff8a2a"},
+      {k:"wash",n:2,at:[[260,560,380,120],[2200,520,360,110]],color:"#ff9a3c",alpha:0.14},
+      {k:"embers",n:14,from:[[150,330,120],[2260,300,140],[480,200,60],[1980,200,60]],color:"#ffb35c"},
+      {k:"leaves",n:14,x0:0,x1:2560,y0:-40,colors:["#d0562a","#e88a2e","#b8431f","#f0b04a"]},
+    ] } },
+  Wyrmwood_Battlemap002_v2: { horizon: -68.1, strength: 0.569, stage3d: { relief: true, backRow: 222, frontRow: 547 },
+    ambient: { fx: [
+      {k:"flame",n:11,at:[[110,240,90],[400,420,60],[600,50,70],[1680,380,70],[1760,420,60],[2100,390,80],[2290,320,90],[2360,110,90],[1960,800,50],[2150,850,55],[430,890,45]],color:"#ff7a26"},
+      {k:"embers",n:22,from:[[300,300,260],[1300,120,700],[2200,300,300],[2100,860,120]],color:"#ffa04a"},
+      {k:"smoke",n:4,at:[[300,60],[1100,30],[1800,50],[2400,80]],color:"#2a1a14",alpha:0.35},
+      {k:"leaves",n:8,x0:0,x1:2560,y0:200,colors:["#f3e2c4","#f6d6b0"],up:true},
+    ] } },
   // Fafnir Castle arenas were already v2 size; depth map + preset only.
   FafnirCastle_Battlemap001: { horizon: -1.9, strength: 0.468, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
   FafnirCastle_Battlemap002: { horizon: -43.2, strength: 0.531, stage3d: { relief: true, backRow: 222, frontRow: 547 } },

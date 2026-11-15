@@ -26,6 +26,11 @@
 import { log, warn } from "./logger.js";
 import { resolvePreset } from "./battle-stage-3d-rules.js";
 import { loadDepthField, DRAWN_HOOK } from "./battle-stage-3d-camera.js";
+import { createAmbientFx } from "./battle-stage-ambient-fx.js";
+
+// Generic scenery effects (`ambient.fx`, battle-stage-ambient-fx.js) that sit OVER the
+// tokens go in their own container, sorted like map-ambience.js's front layer.
+const SORT_FRONT = 1000000;
 
 const STAGE_KEY = "__ONI_BATTLE_STAGE_3D__";
 
@@ -76,6 +81,11 @@ function stop() {
   const r = state.root;
   state.root = null;
   if (r) { try { r.parent?.removeChild(r); r.destroy({ children: true }); } catch (e) { warn("battle-stage-ambient: teardown failed", e); } }
+  const fr = state.front;
+  state.front = null;
+  if (fr) { try { fr.parent?.removeChild(fr); fr.destroy({ children: true }); } catch (e) { warn("battle-stage-ambient: front teardown failed", e); } }
+  try { state.fx?.destroy(); } catch {}
+  state.fx = null;
   for (const k of ["halo", "wash"]) { try { state.tex[k]?.destroy(true); } catch {} }
   for (const f of state.tex.arcFrames ?? []) { try { f.destroy(false); } catch {} }
   state.tex = {};
@@ -95,10 +105,11 @@ async function start(scene) {
   const bg = canvas.primary?.background;
   if (!bg) return;
 
+  const crystals = Array.isArray(a.crystals) && a.crystals.length > 0;
   const [depthAt, arcTex, mistTex] = await Promise.all([
     loadDepthField(cfg.depthMap).catch((e) => { warn(`battle-stage-ambient: depth map missing ${cfg.depthMap}`, e); return null; }),
-    loadTexture(a.arcSheet.src).catch(() => null),
-    loadTexture(a.mistTexture).catch(() => null),
+    crystals && a.arcSheet?.src ? loadTexture(a.arcSheet.src).catch(() => null) : null,
+    crystals && a.mistTexture ? loadTexture(a.mistTexture).catch(() => null) : null,
   ]);
   if (token !== state.starting || canvas?.scene?.id !== scene.id) return;
   if (!depthAt) return;
@@ -117,6 +128,20 @@ async function start(scene) {
   const d = canvas.dimensions;
   state.rect = { x: d.sceneX, y: d.sceneY, w: d.sceneWidth, h: d.sceneHeight };
 
+  state.crystals = crystals;
+  if (Array.isArray(a.fx) && a.fx.length) {
+    const front = new PIXI.Container();
+    front.name = "battleStageAmbientFront";
+    front.elevation = 0;
+    front.sortLayer = PrimaryCanvasGroup.SORT_LAYERS.TOKENS;
+    front.sort = SORT_FRONT;
+    front.eventMode = "none";
+    state.front = front;
+    state.fx = createAmbientFx(a.fx, { back: root, front, pin });
+    canvas.primary.addChild(front);
+  }
+
+  if (crystals) {
   state.tex.halo = radialTexture([[0, "rgba(200,210,255,.95)"], [0.12, "rgba(130,140,255,.7)"], [0.45, "rgba(80,80,235,.22)"], [1, "rgba(60,60,220,0)"]]);
   state.tex.wash = radialTexture([[0, "rgba(120,130,255,.55)"], [0.5, "rgba(90,95,240,.2)"], [1, "rgba(70,70,230,0)"]]);
 
@@ -137,7 +162,8 @@ async function start(scene) {
     const cw = arcTex.width / cols, ch = arcTex.height / rows;
     state.tex.arcFrames = Array.from({ length: frames }, (_, i) => new PIXI.Texture(arcTex.baseTexture, new PIXI.Rectangle((i % cols) * cw, Math.floor(i / cols) * ch, cw, ch)));
     state.arcs = Array.from({ length: 4 }, () => addSprite(state.tex.arcFrames[0], LOOK.arcTint));
-  } else warn(`battle-stage-ambient: no arc sheet ${a.arcSheet.src}`);
+  } else warn(`battle-stage-ambient: no arc sheet ${a.arcSheet?.src}`);
+  }
 
   canvas.primary.addChild(root);
   state.t0 = state.last = performance.now();
@@ -176,6 +202,8 @@ function surgeOf(c) {
 
 function step(dt) {
   const a = state.cfg.ambient, k = state.strength;
+  if (state.fx) state.fx.step(dt * k, (performance.now() - state.t0) / 1000);
+  if (!state.crystals) return;
   const every = (key, [lo, hi], fn) => { state[key] -= dt * k; if (state[key] <= 0) { state[key] = rnd(lo, hi); fn(); } };
   const arcAt = (c, big) => state.noArcs ? 0 : state.arcLive.push({ c, age: 0, dur: a.arcSheet.ms / 1000, rot: rnd(0, Math.PI * 2), big });
   every("tSurge", LOOK.surgeEvery, () => { const c = pick(a.crystals); state.surges.push({ c, age: 0, dur: LOOK.surgeDur }); arcAt(c, 1.5); });
@@ -192,6 +220,8 @@ function step(dt) {
 
 function draw(t) {
   const k = state.strength, r = state.rect;
+  if (state.fx) state.fx.draw(t, k);
+  if (!state.crystals) return;
   for (const m of state.mist) {
     const span = r.w + 240;
     const x = r.x + (((m.x + m.v * t) % span) + span) % span - 120;
@@ -267,7 +297,7 @@ function stopTicking() {
 export const BattleStageAmbientApi = {
   status: () => ({
     on: !!state.root, preset: state.cfg?.key ?? null, strength: state.strength, frames: state.frames,
-    crystals: state.halos.length, mist: state.mist.length, arcs: state.arcs.length, reducedMotion: reducedMotion(),
+    crystals: state.halos.length, mist: state.mist.length, arcs: state.arcs.length, fxSprites: state.fx?.count() ?? 0, reducedMotion: reducedMotion(),
   }),
   refresh: () => start(canvas?.scene),
   /** Session-only: { strength } scales every effect's brightness and rate. */
