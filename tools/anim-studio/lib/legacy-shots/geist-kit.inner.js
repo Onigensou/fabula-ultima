@@ -117,10 +117,14 @@ const ring = (at, pt, o) => { PT.push({ kind: 'ring', z: 2, t0: at, life: o.ms |
 const burst = (at, pt, n, spread, ms, rgb) => { for (let i = 0; i < n; i++) PT.push({ kind: 'burst', t0: at, life: ms, x: pt.x, y: pt.y, an: rnd(0, Math.PI * 2), dd: spread * (0.4 + R() * 0.6), r: (10 + R() * 22) / 2, rgb }); };
 
 // ── clips ──
+// Additive pixelfx _light layers are alpha-less (glow on black). Canvas 'lighter' onto the transparent overlay
+// adds alpha too, so the black would turn into an opaque box: an SVG luminance-to-alpha filter makes black
+// transparent before the add (staging 2026-11-16: Torcleaver / Temper Tantrum black boxes).
+const LUMA_FILTER = (() => { const id = 'oni-luma-alpha'; try { if (!document.getElementById(id)) { const ns = 'http://www.w3.org/2000/svg'; const svg = document.createElementNS(ns, 'svg'); svg.setAttribute('width', '0'); svg.setAttribute('height', '0'); svg.style.position = 'absolute'; svg.style.pointerEvents = 'none'; const f = document.createElementNS(ns, 'filter'); f.setAttribute('id', id); f.setAttribute('color-interpolation-filters', 'sRGB'); const cm = document.createElementNS(ns, 'feColorMatrix'); cm.setAttribute('type', 'matrix'); cm.setAttribute('values', '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 0'); f.appendChild(cm); svg.appendChild(f); document.body.appendChild(svg); } } catch (e) {} return 'url(#' + id + ')'; })();
 const fx = (key, at, pt, w, o) => { if (!CL[key]) return null; return m.clip(key, at, Object.assign({ x: pt.x, y: pt.y, w, z: 40 }, o || {})); };
 // a pixelfx export: back under the battlers, front over them, light added over the front (canvas 'lighter', never a screen-blended video)
 const pxfx = (base, at, pt, w, o) => { o = o || {}; const z = o.z || 40;
-  fx(base + '_back', at, pt, w, Object.assign({}, o, { z: 2 })); fx(base + '_front', at, pt, w, Object.assign({}, o, { z })); fx(base + '_light', at, pt, w, Object.assign({}, o, { z: z + 1, add: true })); };
+  fx(base + '_back', at, pt, w, Object.assign({}, o, { z: 2 })); fx(base + '_front', at, pt, w, Object.assign({}, o, { z })); fx(base + '_light', at, pt, w, Object.assign({}, o, { z: z + 1, add: true, filter: LUMA_FILTER })); };
 const buffBeat = (at) => { const c = CL.powerup; if (c) fx('powerup', at, kf, c.w * 0.55 * KP, { z: 38 }); S_(at, 'powerup', 0.47); };
 
 // ── run: the damage gate fires at gateAt (and again, harmlessly, when the shot ends) ──

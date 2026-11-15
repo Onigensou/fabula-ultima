@@ -24,7 +24,7 @@ const crW = CL.pxfx_dark_crescent_front ? CL.pxfx_dark_crescent_front.w * cfg.cr
 const crLive = () => (tt) => { const v = E.inQ(Math.min(1, tt / cfg.waveTravelMs)); return { x: lerp(d.x, tc.x, v), y: lerp(d.y, tc.y, v), w: crW, rot: ang }; };
 const crAlpha = (u) => 1 - 0.3 * u * u;
 fx('pxfx_dark_crescent_front', DASH, d, crW, { z: 44, loop: true, hold: cfg.waveTravelMs, live: crLive(), alpha: crAlpha });
-fx('pxfx_dark_crescent_light', DASH, d, crW, { z: 45, loop: true, hold: cfg.waveTravelMs, live: crLive(), alpha: crAlpha, add: true });
+fx('pxfx_dark_crescent_light', DASH, d, crW, { z: 45, loop: true, hold: cfg.waveTravelMs, live: crLive(), alpha: crAlpha, add: true, filter: LUMA_FILTER });
 // impact
 S_(FLY, 'darkness4', 0.55); S_(FLY, 'blowL', 0.45);
 pxfx('pxfx_dark_plasma', FLY, tc, (CL.pxfx_dark_plasma_front ? CL.pxfx_dark_plasma_front.w : 672) * 0.55 * cfg.plasmaScale);

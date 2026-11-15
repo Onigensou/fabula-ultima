@@ -181,13 +181,18 @@ function fly(at, from, to, ms, draw, o) {
 function coinsTo(at, from, to, n, ms) { ms = ms || 650; SX(at, 'coin', 0.45); for (let i = 0; i < n; i++) fly(at + i * 70, { x: from.x + rnd(-12, 12) * KP, y: from.y }, to, ms, SHAPE.coin(7), { ease: E.sine, arc: rnd(70, 130), z: 46 }); return at + ms; }
 
 // ── clips (sizes: the mockup's scale × the library factor × KP; depth from the engine) ──
+
+// Additive pixelfx _light layers are alpha-less (glow on black). Canvas 'lighter' onto the transparent overlay
+// adds alpha too, so the black would turn into an opaque box: an SVG luminance-to-alpha filter makes black
+// transparent before the add (staging 2026-11-16: Torcleaver / Temper Tantrum black boxes).
+const LUMA_FILTER = (() => { const id = 'oni-luma-alpha'; try { if (!document.getElementById(id)) { const ns = 'http://www.w3.org/2000/svg'; const svg = document.createElementNS(ns, 'svg'); svg.setAttribute('width', '0'); svg.setAttribute('height', '0'); svg.style.position = 'absolute'; svg.style.pointerEvents = 'none'; const f = document.createElementNS(ns, 'filter'); f.setAttribute('id', id); f.setAttribute('color-interpolation-filters', 'sRGB'); const cm = document.createElementNS(ns, 'feColorMatrix'); cm.setAttribute('type', 'matrix'); cm.setAttribute('values', '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 0'); f.appendChild(cm); svg.appendChild(f); document.body.appendChild(svg); } } catch (e) {} return 'url(#' + id + ')'; })();
 const clipW = (k, scale) => CL[k].w * scale * (CL[k].k || 0.55) * KP;
 const clipAt = (k, at, pt, scale, o) => { if (!CL[k]) return null; return m.clip(k, at, Object.assign({ x: pt.x, y: pt.y, w: clipW(k, scale), z: 40 }, o || {})); };
 // a pixelfx export: back layer under the battlers, front over them, light additive over them
 const pxClip = (base, at, pt, scale, o) => { o = o || {}; const out = [];
   if (CL[base + '_back']) out.push(clipAt(base + '_back', at, pt, scale, { z: 3 }));
   if (CL[base + '_front']) out.push(clipAt(base + '_front', at, pt, scale, { z: o.z || 40 }));
-  if (CL[base + '_light']) out.push(clipAt(base + '_light', at, pt, scale, { z: (o.z || 40) + 1, add: true }));
+  if (CL[base + '_light']) out.push(clipAt(base + '_light', at, pt, scale, { z: (o.z || 40) + 1, add: true, filter: LUMA_FILTER }));
   return out; };
 
 // ── screen: dim, white, the impact frame, radial speed lines, the cut-in ──
