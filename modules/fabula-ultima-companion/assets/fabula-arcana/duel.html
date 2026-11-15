@@ -653,6 +653,80 @@ em.sv.sv-flash{animation:fuNstFlash .9s ease-out}
 .opmark.on{background:linear-gradient(180deg,#f4c95d,#c08a1a);color:#3a1e06;border-color:#7a4e20;box-shadow:0 0 8px #f4c95d}
 @media (max-width:760px){ .frow{grid-template-columns:repeat(3,minmax(0,1fr))} }
 @media (max-width:460px){ .frow{grid-template-columns:repeat(2,minmax(0,1fr))} }
+/* ===== binder tools: sort / search / filter + team tray + match rules ===== */
+.tools{margin-top:10px;padding:8px 10px;border-radius:10px;background:#fffaf0aa;border:1px solid #c9a44a77;display:flex;flex-direction:column;gap:7px}
+.trow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.srch{flex:1 1 220px;min-width:0;position:relative}
+.srch input{width:100%;box-sizing:border-box;font:inherit;font-size:14px;padding:6px 30px 6px 30px;border-radius:7px;border:1px solid var(--wood2);background:#fffaf0;color:var(--ink)}
+.srch input:focus{outline:2px solid #f4c95d;outline-offset:0}
+.srch .fa-magnifying-glass{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#9a7a50;font-size:13px}
+.srch .sx{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;color:#9a7a50;cursor:pointer;font-size:14px;padding:2px 5px}
+.sortw{display:flex;align-items:center;gap:5px;font-size:13px;color:#7f6140}
+.sortw select{font:inherit;font-size:13.5px;padding:5px 6px;border-radius:7px;border:1px solid var(--wood2);background:#fffaf0;color:var(--ink)}
+.sdir{font:inherit;font-size:13px;width:32px;height:31px;border-radius:7px;border:1px solid var(--wood2);background:#f3e6c2;color:var(--ink);cursor:pointer}
+.fchips{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.fchips .lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#9a7a50;margin-right:2px}
+.fch{font:inherit;font-size:12.5px;min-height:26px;padding:2px 8px;border-radius:999px;border:1px solid #c9a44a;background:#fffaf0;color:#5a3417;cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+.fch:hover{border-color:#9a6512}
+.fch.on{background:linear-gradient(180deg,#7a5230,#5c3818);color:#f8f0d4;border-color:#3a1e06}
+.fch.el{width:30px;padding:0;justify-content:center}
+.fch.el.on{background:#fffaf0;box-shadow:0 0 0 2px var(--ec),0 0 8px var(--ec);border-color:var(--ec)}
+.fch .lvstars{transform:scale(.85)}
+.fsep{width:1px;height:20px;background:#c9a44a77;margin:0 4px}
+.fcount{margin-left:auto;font-size:12.5px;color:#7f6140;white-space:nowrap}
+.fclear{font:inherit;font-size:12.5px;border:0;background:none;color:#9a4a12;text-decoration:underline;cursor:pointer;padding:0 2px}
+.pgsep{grid-column:1/-1;display:flex;align-items:center;gap:8px;margin:6px 0 -2px;font-family:var(--font-d);font-size:15px;color:#5a3417}
+.pgsep::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,#c9a44a,#c9a44a00)}
+.pgsep small{font-family:var(--font-b);font-size:12px;color:#9a7a50}
+.pgempty{grid-column:1/-1;padding:26px 10px;text-align:center;color:#7f6140}
+.pickgrid .card .why{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%) rotate(-6deg);z-index:3;white-space:nowrap;font-family:var(--font-b);font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:5px;background:#3a1e06e6;color:#f8e3c8;border:1px solid #c9a44a;pointer-events:none}
+.pickgrid .card .why.clash{background:#8a1e12f0;border-color:#ffb35c}
+.pickgrid .card.dis.ill{opacity:.32;filter:grayscale(.6)}
+.tray{display:flex;gap:6px;align-items:flex-end}
+.tslot{position:relative;width:52px;display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;padding:0;cursor:default;font:inherit}
+.tslot .ti{width:48px;height:48px;border-radius:8px;border:2px dashed #b8946a;background:#fbf4dc88;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.tslot.on{cursor:pointer}
+.tslot.on .ti{border:2px solid var(--ec);background:radial-gradient(circle at 50% 60%,#fff 0%,#e8dcc0 70%)}
+.tslot.on:hover .ti{box-shadow:0 0 0 2px #b8321f}
+.tslot .ti img{width:92%;height:92%;object-fit:contain;image-rendering:pixelated}
+.tslot .tn{font-size:10.5px;color:#7f6140;min-height:14px;line-height:14px}
+.tslot .tn .lvstars{transform:scale(.8)}
+.tslot.need .ti{border-color:#d9a640;background:#f4c95d22}
+.fmtline{margin-top:6px;display:flex;flex-wrap:wrap;gap:5px}
+.fmtpill{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;padding:2px 9px;border-radius:999px;background:#5c3818;color:#f8e3c8;border:1px solid #3a1e06}
+.fmtpill.warn{background:#8a3a12}
+.rulesw .who{font-size:11.5px;color:#8a6a3a;margin-top:2px}
+.patrow{display:flex;gap:6px;margin-top:8px;align-items:center}
+.patrow .lbl{font-size:12px;color:#7f6140;margin-right:2px}
+.pat{flex:1;min-width:0;height:44px;border-radius:8px;border:2px solid var(--wood2);background:#fffaf0;color:#b0473a;cursor:pointer;font:inherit;font-size:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.pat:hover{border-color:#d9a640}
+.pat small{font-size:10px;color:#9a7a50;letter-spacing:.05em}
+.pat .any{font-family:var(--font-b);font-weight:800;color:#5a3417}
+.presets{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.presets .fch{font-size:12px}
+.rofmt{margin-top:6px;font-size:13.5px;line-height:1.5}
+.rofmt b{color:#5a3417}
+@media (max-width:620px){ .fcount{margin-left:0;width:100%} .tslot{width:44px} .tslot .ti{width:40px;height:40px} }
+/* ===== formations menu ===== */
+.shead{position:relative}
+.stitle{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.fopen{display:inline-flex;align-items:center;gap:7px;font:inherit;font-size:14px;padding:6px 12px;border-radius:8px;border:1px solid var(--wood2);background:linear-gradient(180deg,#fffaf0,#f1e2b8);color:var(--ink);cursor:pointer;box-shadow:0 2px 0 #7a4e2055}
+.fopen:hover{border-color:#d9a640}
+.fopen.on{background:linear-gradient(180deg,#7a5230,#5c3818);color:#f8f0d4;border-color:#3a1e06}
+.fopen b{font-weight:700;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-left:7px;border-left:1px solid #c9a44a}
+.fopen.on b{border-left-color:#f8f0d466}
+.fpop{position:absolute;left:0;right:0;top:calc(100% + 8px);z-index:40;padding:10px 12px 12px;border-radius:12px;background:linear-gradient(180deg,#fbf4dc,#f1e2b8);border:2px solid var(--wood2);box-shadow:0 0 0 2px #7a4e2033,0 16px 34px #0007;animation:fpopIn .16s ease-out}
+@keyframes fpopIn{from{opacity:0;transform:translateY(-6px)}}
+.fpop .fx{margin-left:auto;border:0;background:none;font-size:16px;color:#7a5a3a;cursor:pointer;padding:2px 6px}
+.fnamebar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;padding:8px 10px;border-radius:9px;background:#fffaf0;border:1px solid #c9a44a77}
+.fnamebar label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8a6a3a;font-weight:700}
+.fnamebar input{flex:1 1 180px;min-width:0;font:inherit;font-size:14.5px;font-weight:700;padding:6px 9px;border-radius:7px;border:1px solid var(--wood2);background:#fff;color:var(--ink)}
+.fnamebar input:focus{outline:2px solid #f4c95d}
+.fnamebar input:disabled{opacity:.55}
+.fneed{margin-top:6px}
+.fren{flex:none;background:none;border:0;padding:0 2px;font-size:11px;color:#9a6512;cursor:pointer;opacity:.75}
+.fren:hover{opacity:1}
+@media (prefers-reduced-motion: reduce){ .fpop{animation:none} }
 /* ===== opponent disconnected strip ===== */
 #awaybar{position:fixed;left:50%;top:78px;transform:translateX(-50%);z-index:9600;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;max-width:calc(100vw - 32px);
   padding:9px 16px;border-radius:10px;background:linear-gradient(180deg,#3a1e06f2,#24130af2);border:2px solid #ff8a1f;color:#f8e3c8;font-family:var(--font-b);font-size:14px;box-shadow:0 8px 20px #000a;animation:subIn .3s ease-out both}
@@ -782,11 +856,14 @@ const CARDS = {
   life:     {future:true, name:'Life Gorger', el:'light', cost:1, role:'Survivor', atk:3, hp:10, def:0, ab:'Renewal', txt:'The first time it survives an attack at 4 HP or less, restore 2 HP. Once per match.'},
   sylph:    {name:'Sylph', el:'air', cost:1, role:'Support', atk:3, hp:8, def:0, ab:'Tailwind', txt:'When Sylph attacks, it raises a Tailwind: for the next 3 rounds your Air monsters have +1 SPD (max 4), even after Sylph leaves.'},
 };
+// mockup: standalone page also takes the module catalog, so owned character cards show in the binder like in-game
+if (!window.FA_NET_MODE && globalThis.FabulaArcana && globalThis.FabulaArcana.Catalog){ const Cat=globalThis.FabulaArcana.Catalog;
+  for (const k of Object.keys(Cat.CARDS)) { if (CARDS[k]) Object.assign(CARDS[k], Cat.CARDS[k]); else CARDS[k] = { ...Cat.CARDS[k] }; } Object.assign(CFG, Cat.CFG); }
 const IDS = Object.keys(CARDS).filter(k=>!CARDS[k].future);   // launch pool
 // v0.5 Speed = DEX die tier (d6=1, d8=2, d10=3, d12=4) from the world sheets
 const SPD = { gigas:1, gorger:2, carlbero:2, kirin:2, flame:2, cryo:2, sylph:2, fulgimite:3, broo:3, life:3, pyrefly:4, skizzik:4,
   salamander:2, manaray:3, hellhound:3, scorpion:2, archer:2, wolf:2, inferex:3, roper:2, obsidrax:2, roo:1, walrog:1, succubus:3, rgolem:1 };   // Roo SPD 1 by design (slow Tonberry), not its DEX die
-for (const k of Object.keys(CARDS)) CARDS[k].spd = SPD[k];
+for (const k of Object.keys(CARDS)) CARDS[k].spd = SPD[k] ?? CARDS[k].spd;   // mockup: catalog cards keep their own SPD
 const ITEMS = {
   STRENGTH:{t:'Tincture of Strength', k:'Attack', d:`+${CFG.STR} ATK this round`, art:'i_strength'},
   GOLEM:{t:'Golem Fragment', k:'Guard', d:`+${CFG.GOLEM} DEF this round (can block a hit to 0)`, art:'i_golem'},
@@ -868,7 +945,29 @@ const living = pl => pl.roster.filter(m=>!m.ko);
 const benchOptions = pl => pl.roster.filter(m => !m.ko && m.i!==pl.active);
 const teamCost = ids => ids.reduce((a,id)=>a+CARDS[id].cost,0);
 const LEGAL_TEAMS = (()=>{ const out=[]; for (let a=0;a<IDS.length;a++) for (let b=a+1;b<IDS.length;b++) for (let c=b+1;c<IDS.length;c++){ const t=[IDS[a],IDS[b],IDS[c]]; if (teamCost(t)<=CFG.BUDGET) out.push(t); } return out; })();
-const randomTeam = () => shuffle(LEGAL_TEAMS[Math.floor(Math.random()*LEGAL_TEAMS.length)]);
+// ---- match rules (the challenger / host sets them; both sides build under them) ----
+// mode: 'standard' = 5★ budget (today's game) · 'open' = no budget · 'cup' = Constellation: the team must match a star pattern
+// pat: three slots, each 1/2/3 stars or 0 = any. mirror: both sides may field the same card. chars: character cards allowed.
+const FMT_DEF = { mode:'standard', pat:[1,1,2], mirror:true, chars:true };
+const fmt = () => UI.fmt || (UI.fmt = Object.assign({}, FMT_DEF, store.get('ccd.fmt', {})));
+const CUPS = [
+  { id:'commoner', name:"Commoner's Cup", pat:[1,1,1], sub:'Commons only' },
+  { id:'vanguard', name:'Vanguard', pat:[1,1,2], sub:'Two commons + one elite' },
+  { id:'elite', name:'Elite Cup', pat:[2,2,2], sub:'Elites only' },
+  { id:'bossrush', name:'Boss Rush', pat:[3,3,3], sub:'Three bosses' },
+];
+const cupName = p => { const c = CUPS.find(c => c.pat.join() === p.join()); return c ? c.name : 'Custom constellation'; };
+const patText = p => p.map(n => n ? '★'.repeat(n) : 'Any').join(' · ');
+function patFits(sel, pat){ const need={1:0,2:0,3:0}; let any=0; pat.forEach(p => p ? need[p]++ : any++);
+  const have={1:0,2:0,3:0}; sel.forEach(id => have[CARDS[id].cost]++); let over=0; for (const k of [1,2,3]) over += Math.max(0, have[k]-need[k]); return over <= any; }
+function cardAllowed(id, F=fmt()){ const c=CARDS[id]; if (!F.chars && c.character) return false; if (F.mode==='cup' && !F.pat.some(p => !p || p===c.cost)) return false; return true; }
+function fitsFmt(sel, F=fmt()){ if (sel.some(id => !cardAllowed(id, F))) return false;
+  if (F.mode==='standard') return teamCost(sel) <= CFG.BUDGET; if (F.mode==='cup') return patFits(sel, F.pat); return true; }
+const teamLegal = (sel, F=fmt()) => sel.length===CFG.TEAM && fitsFmt(sel, F);
+const canAdd = (sel, id, F=fmt()) => sel.length < CFG.TEAM && fitsFmt([...sel, id], F);
+function legalTeamsFor(F, excl=[]){ const ids = IDS.filter(id => !excl.includes(id) && cardAllowed(id, F)), out=[];
+  for (let a=0;a<ids.length;a++) for (let b=a+1;b<ids.length;b++) for (let c=b+1;c<ids.length;c++){ const t=[ids[a],ids[b],ids[c]]; if (fitsFmt(t, F)) out.push(t); } return out; }
+function randomTeam(F=fmt(), excl=[]){ let L = legalTeamsFor(F, excl); if (!L.length) L = legalTeamsFor(F); if (!L.length) L = LEGAL_TEAMS; return shuffle(L[Math.floor(Math.random()*L.length)]); }
 const compKey = ids => ids.map(id=>CARDS[id].cost).sort((a,b)=>b-a).join('+');
 
 // ===================== rules engine (v0.2) =====================
@@ -1131,8 +1230,8 @@ function autoPickMonster(pl){ const c=pl.roster.filter(m=>!m.ko && m.i!==pl.acti
 
 // ===================== match flow =====================
 function newMatch(next){
-  let mine=(UI.pick||[]).filter(id=>CARDS[id]); if (mine.length!==CFG.TEAM || teamCost(mine)>CFG.BUDGET) mine=randomTeam();
-  if (!next || !SERIES || SERIES.over){ const npc0=randomTeam(); SERIES={ bestOf:UI.bestOf||1, need:Math.ceil((UI.bestOf||1)/2), wins:[0,0], game:0, draws:0, npc:npc0, over:false,
+  let mine=(UI.pick||[]).filter(id=>CARDS[id]); if (!teamLegal(mine)) mine=randomTeam();
+  if (!next || !SERIES || SERIES.over){ const F0=fmt(); const npc0=UI.npcPending || randomTeam(F0, F0.mirror ? [] : [...mine, ...(UI.clash||[])]); UI.npcPending=null; UI.clash=[]; SERIES={ bestOf:UI.bestOf||1, need:Math.ceil((UI.bestOf||1)/2), wins:[0,0], game:0, draws:0, npc:npc0, over:false,
       prize: UI.matchType==='prize' ? npc0[Math.floor(Math.random()*npc0.length)] : null }; }
   SERIES.game++; const npc=SERIES.npc;
   S={ phase:'opening', round:0, p:[mkPlayer(mine), mkPlayer(npc)], log:[], result:null, capEnd:false,
@@ -1918,7 +2017,7 @@ function cardHTML(cid, extra=''){
 }
 function rulesHTML(){
   return `<div class="win rules"><div class="label">How a round works</div><ol>
-    <li>Build a team of 3 within <b>5★</b>. Each round both players secretly play <b>one</b> card: an item, <b>Pass</b>, or <b>Switch</b>. You get one of each of the 6 items per match.</li>
+    <li>Build a team of 3 ${fmtRuleText()}. Each round both players secretly play <b>one</b> card: an item, <b>Pass</b>, or <b>Switch</b>. You get one of each of the 6 items per match.</li>
     <li>Reveal. Replacements and switches happen, then <b>Remedy</b> heals.</li>
     <li>The monster with higher <b>SPD</b> strikes first; if that KOs the other, it can't strike back. Equal SPD hits at the same time. Damage = ATK − DEF (min 1), then the element chart: a target <b>Weak</b> to the attack takes <b>+2</b>, one that <b>Resists</b> it takes <b>−2</b> (never below 1). <b>Elemental Shard</b> makes an attack Elementless.</li>
     <li>A monster that switched in skips its attack but still gets hit.</li>
@@ -1995,45 +2094,56 @@ const formCheck = (f) => {        // { ok, why, team } against the cards you can
   const team = f.team.filter(c => CARDS[c] && own.includes(c));
   const missing = f.team.filter(c => !team.includes(c));
   if (missing.length) return { ok:false, why:`${missing.map(c => CARDS[c] ? N(c) : c).join(', ')} missing`, team };
-  if (teamCost(team) > CFG.BUDGET) return { ok:false, why:`${teamCost(team)}★, over budget`, team };
+  const F = fmt(), bad = team.find(c => !cardAllowed(c, F));
+  if (bad) return { ok:false, why: (!F.chars && CARDS[bad].character) ? `${N(bad)}: character cards banned` : `${N(bad)} not in the pattern`, team };
+  if (!fitsFmt(team, F)) return { ok:false, why: F.mode==='cup' ? "doesn't match the pattern" : `${teamCost(team)}★, over budget`, team };
   return { ok:true, why:'', team };
 };
 function formLoad(i, quiet){
   const f = FORM.get()[i]; if (!f) return;
-  const c = formCheck(f); const team = []; for (const cid of c.team) if (team.length < CFG.TEAM && teamCost([...team, cid]) <= CFG.BUDGET) team.push(cid);
+  const c = formCheck(f); const team = []; for (const cid of c.team) if (canAdd(team, cid) && !(UI.clash||[]).includes(cid)) team.push(cid);
   UI.pick = team; UI.openerCid = f.opener && team.includes(f.opener) ? f.opener : null; UI.formSlot = i;
   store.set('ccd3.team', team); if (!quiet) sfx('book', 0.8, 0);
 }
 function formDefaultLoad(){ const i = FORM.get().findIndex(f => f && f.def); if (i >= 0) formLoad(i, true); return i; }
-function formSave(i){
-  const sel = UI.pick || []; if (sel.length !== CFG.TEAM || teamCost(sel) > CFG.BUDGET) return;
+function formSave(i, name){
+  const sel = UI.pick || []; if (!teamLegal(sel)) return;
   const list = FORM.get(); const prev = list[i];
-  list[i] = { name: prev ? prev.name : `Team ${i+1}`, team:[...sel], opener: UI.openerCid && sel.includes(UI.openerCid) ? UI.openerCid : null, def: prev ? !!prev.def : !list.some(f => f && f.def) };
+  list[i] = { name: (name && name.trim().slice(0,18)) || (prev ? prev.name : `Team ${i+1}`), team:[...sel], opener: UI.openerCid && sel.includes(UI.openerCid) ? UI.openerCid : null, def: prev ? !!prev.def : !list.some(f => f && f.def) };
   FORM.set(list); UI.formSlot = i; sfx('decide', 0.8, 0);
 }
 function formsHTML(){
-  const list = FORM.get(), sel = UI.pick || [], legal = sel.length === CFG.TEAM && teamCost(sel) <= CFG.BUDGET;
+  const list = FORM.get(), sel = UI.pick || [], legal = teamLegal(sel);
   const free = list.findIndex(f => !f), cur = UI.formSlot != null && list[UI.formSlot] ? UI.formSlot : null;
+  const curName = cur != null ? list[cur].name : '';
+  const btn = `<button type="button" class="fopen ${UI.formOpen?'on':''}" id="fOpen" aria-expanded="${!!UI.formOpen}" title="Saved decks · 1–5 on the keyboard"><i class="fa-solid fa-layer-group"></i><span>Formations</span>${curName?`<b>${esc(curName)}</b>`:''}<i class="fa-solid fa-caret-${UI.formOpen?'up':'down'}"></i></button>`;
+  if (!UI.formOpen) return { btn, panel:'' };
+  if (UI.formName == null) UI.formName = curName || (free >= 0 ? `Team ${free+1}` : '');
   const tile = (f, i) => {
     if (!f) return `<div class="fslot empty" data-fslot="${i}"><span class="fnum">${i+1}</span><span class="fempty">Empty slot</span></div>`;
     const c = formCheck(f);
     return `<div class="fslot ${cur===i?'cur':''} ${c.ok?'':'bad'}" data-fslot="${i}" tabindex="0" role="button" aria-label="Load formation ${esc(f.name)}" title="${c.ok?'Load this formation':esc(c.why)}">
       <div class="fhead"><span class="fnum">${i+1}</span><span class="fname" data-fname="${i}" title="Rename">${esc(f.name)}</span>
+        <button type="button" class="fren" data-fren="${i}" title="Rename this deck" aria-label="Rename ${esc(f.name)}"><i class="fa-solid fa-pen"></i></button>
         <button type="button" class="fstar ${f.def?'on':''}" data-fstar="${i}" title="${f.def?'Default: loads when team select opens':'Make this the default'}">${f.def?'★':'☆'}</button>
         <button type="button" class="fdel" data-fdel="${i}" title="Delete">✕</button></div>
       <div class="fcards">${f.team.map(cid => `<span class="fc ${FORM_OWNED().includes(cid)?'':'gone'} ${f.opener===cid?'op':''}" style="--ec:var(--e-${CARDS[cid] ? CARDS[cid].el : 'phys'})" title="${esc(CARDS[cid] ? N(cid) : cid)}${f.opener===cid?' · opener':''}"><img src="${ART[cid]||''}" alt=""></span>`).join('')}</div>
-      <div class="fstat">${c.ok ? `${starStr(teamCost(f.team))}` : `<b>⚠ ${esc(c.why)}</b>`}</div></div>`;
+      <div class="fstat">${c.ok ? `${f.team.map(x=>starStr(CARDS[x].cost)).join(' ')}` : `<b>⚠ ${esc(c.why)}</b>`}</div></div>`;
   };
-  return `<div class="forms"><div class="fbar"><span class="label">Formations</span><span class="hint">Click to load · 1–5 on the keyboard · ★ = loads first</span>
-      <span class="fbtns"><button type="button" class="btn ghost" id="fSave" ${legal && cur!=null ? '' : 'disabled'} title="Overwrite the selected formation with the current pick">Save</button>
-      <button type="button" class="btn ghost" id="fSaveNew" ${legal && free>=0 ? '' : 'disabled'} title="${free<0?'All 5 slots are used':'Save the current pick in the next empty slot'}">+ Save as new</button></span></div>
+  const panel = `<div class="fpop" id="fPop" role="dialog" aria-label="Formations">
+    <div class="fbar"><span class="label">Formations</span><span class="hint">Click a deck to load it · 1–5 on the keyboard · ★ = loads first</span><button type="button" class="fx" id="fClose" title="Close (Esc)">✕</button></div>
+    <div class="fnamebar"><label for="fName">Name this deck</label><input id="fName" maxlength="18" autocomplete="off" spellcheck="false" placeholder="e.g. Bolt Rush, Anti-Fire…" value="${esc(UI.formName||'')}" ${legal?'':'disabled'}>
+      <span class="fbtns"><button type="button" class="btn ghost" id="fSave" ${legal && cur!=null ? '' : 'disabled'} title="${cur!=null?`Overwrite ${esc(curName)} with your current pick and this name`:'Load a deck first to overwrite it'}">Save</button>
+      <button type="button" class="btn go" id="fSaveNew" ${legal && free>=0 ? '' : 'disabled'} title="${free<0?'All 5 slots are used':'Save your current pick under this name in the next empty slot'}">+ Save as new</button></span></div>
+    ${legal ? '' : `<div class="hint fneed">Pick a full legal team of three to save it as a deck.</div>`}
     <div class="frow">${list.map(tile).join('')}</div></div>`;
+  return { btn, panel };
 }
 let FDEL_ARM = null;
 function bindForms(){
   document.querySelectorAll('[data-fslot]').forEach(el => {
     const i = +el.dataset.fslot;
-    el.onclick = (e) => { if (e.target.closest('[data-fstar],[data-fdel],[data-fname],input')) return; if (!FORM.get()[i]) { sfx('cancel', 0.5); return; } formLoad(i); render(); };
+    el.onclick = (e) => { if (e.target.closest('[data-fstar],[data-fdel],[data-fname],[data-fren],input')) return; if (!FORM.get()[i]) { sfx('cancel', 0.5); return; } formLoad(i); UI.formOpen = false; UI.formName = null; render(); };
     el.onkeydown = (e) => { if ((e.key==='Enter'||e.key===' ') && e.target===el){ e.preventDefault(); el.onclick(e); } };
   });
   document.querySelectorAll('[data-fstar]').forEach(b => b.onclick = (e) => { e.stopPropagation(); const i=+b.dataset.fstar, list=FORM.get(); const on=!list[i].def;
@@ -2044,11 +2154,20 @@ function bindForms(){
     if (wasDef){ const j=list.findIndex(f=>f); if (j>=0) list[j].def = true; } FORM.set(list); if (UI.formSlot===i) UI.formSlot=null; sfx('cancel'); render(); });
   document.querySelectorAll('[data-fname]').forEach(sp => sp.onclick = (e) => { e.stopPropagation(); const i=+sp.dataset.fname;
     const inp=document.createElement('input'); inp.className='fname-in'; inp.maxLength=18; inp.value=FORM.get()[i].name; sp.replaceWith(inp); inp.focus(); inp.select();
-    let done=false; const commit=(save)=>{ if (done) return; done=true; if (save){ const list=FORM.get(); const v=inp.value.trim(); if (v && list[i]){ list[i].name=v; FORM.set(list); sfx('cursor'); } } render(); };
+    let done=false; const commit=(save)=>{ if (done) return; done=true; if (save){ const list=FORM.get(); const v=inp.value.trim(); if (v && list[i]){ list[i].name=v; FORM.set(list); sfx('cursor'); UI.formName=null; } } render(); };
     inp.onkeydown=(ev)=>{ ev.stopPropagation(); if (ev.key==='Enter') commit(true); else if (ev.key==='Escape') commit(false); }; inp.onblur=()=>commit(true); inp.onclick=(ev)=>ev.stopPropagation(); });
-  const s=$('#fSave'); if (s) s.onclick=()=>{ if (UI.formSlot!=null) { formSave(UI.formSlot); render(); } };
-  const n=$('#fSaveNew'); if (n) n.onclick=()=>{ const i=FORM.get().findIndex(f=>!f); if (i>=0){ formSave(i); render(); } };
+  const fo=$('#fOpen'); if (fo) fo.onclick=()=>{ UI.formOpen=!UI.formOpen; UI.formName=null; sfx(UI.formOpen?'book':'cancel', 0.8, 0); render(); };
+  const fc=$('#fClose'); if (fc) fc.onclick=()=>{ UI.formOpen=false; UI.formName=null; sfx('cancel'); render(); };
+  const fnm=$('#fName'); if (fnm){ fnm.oninput=()=>{ UI.formName=fnm.value; };
+    fnm.onkeydown=(ev)=>{ ev.stopPropagation(); if (ev.key==='Enter'){ const b = UI.formSlot!=null && FORM.get()[UI.formSlot] ? $('#fSave') : $('#fSaveNew'); if (b && !b.disabled) b.click(); } else if (ev.key==='Escape'){ UI.formOpen=false; UI.formName=null; render(); } }; }
+  const s=$('#fSave'); if (s) s.onclick=()=>{ if (UI.formSlot!=null) { formSave(UI.formSlot, UI.formName); UI.formName=null; render(); } };
+  const n=$('#fSaveNew'); if (n) n.onclick=()=>{ const i=FORM.get().findIndex(f=>!f); if (i>=0){ formSave(i, UI.formName); UI.formName=null; render(); } };
+  document.querySelectorAll('[data-fren]').forEach(b => b.onclick = (e) => { e.stopPropagation(); const sp=document.querySelector(`[data-fname="${b.dataset.fren}"]`); if (sp) sp.click(); });
   document.querySelectorAll('[data-opener]').forEach(b => b.onclick = (e) => { e.stopPropagation(); const id=b.dataset.opener; UI.openerCid = UI.openerCid===id ? null : id; sfx('cursor'); render(); });
+}
+if (typeof document!=='undefined' && document.addEventListener){
+  document.addEventListener('keydown', (e) => { if (!S && UI.formOpen && e.key==='Escape' && !/input/i.test((e.target&&e.target.tagName)||'')){ UI.formOpen=false; UI.formName=null; render(); } });
+  document.addEventListener('pointerdown', (e) => { if (S || !UI.formOpen) return; if (e.target.closest && (e.target.closest('#fPop') || e.target.closest('#fOpen'))) return; UI.formOpen=false; UI.formName=null; render(); });
 }
 // keys 1–5 load a formation while team select is open
 if (typeof document!=='undefined' && document.addEventListener) document.addEventListener('keydown', (e) => {
@@ -2062,19 +2181,140 @@ function preselectOpener(){
   const i = S.p[0].roster.findIndex(m => m.cid===UI.openerCid); if (i>=0 && UI.replace==null) UI.replace = i;
 }
 
+// ===================== team select: binder tools (sort / search / filter) + match rules =====================
+const EL_ORDER = ['ice','fire','air','earth','bolt','light','dark','poison','phys','none'];   // chart order: Ice > Fire > Air > Earth > Bolt > Ice, then the pairs
+const SORTS = {
+  default:{ l:'Binder order' },
+  stars:  { l:'Stars', f:c=>c.cost, dir:1, group:c=>c.cost, gl:v=>`${starStr(v)} <span>${['','Commons','Elites','Bosses'][v]}</span>` },
+  element:{ l:'Element', f:c=>EL_ORDER.indexOf(c.el), dir:1, group:c=>c.el, gl:v=>`${elIco(v)} <span>${EL[v]}</span><small>${BEATS[v]&&v!=='none'?`hits ${EL[BEATS[v]]} for +2`:''}</small>` },
+  spd:    { l:'Speed', f:c=>c.spd, dir:-1 },
+  atk:    { l:'ATK', f:c=>c.atk, dir:-1 },
+  hp:     { l:'HP', f:c=>c.hp, dir:-1 },
+  def:    { l:'DEF', f:c=>c.def, dir:-1 },
+  role:   { l:'Role', f:c=>c.role, dir:1, group:c=>c.role, gl:v=>`<span>${esc(v)}</span><small>${esc(ROLES[v]||'')}</small>` },
+  type:   { l:'Monster / Character', f:c=>c.character?1:0, dir:1, group:c=>c.character?'c':'m', gl:v=>`<span>${v==='c'?'Character cards':'Monster cards'}</span>` },
+  name:   { l:'Name (A–Z)', f:c=>c.name, dir:1 },
+};
+const sortSt = () => UI.sort || (UI.sort = Object.assign({ k:'default', dir:1 }, store.get('ccd.sort', {})));
+const fltSt = () => UI.flt || (UI.flt = { q:'', stars:[], els:[], role:'', type:'', fits:false });
+// search: words match name / ability / text / role / element; stat terms like atk>3, hp>=10, spd=4, def<1 filter numbers
+function matchQuery(c, q){
+  const terms = q.toLowerCase().split(/\s+/).filter(Boolean); if (!terms.length) return true;
+  const hay = `${c.name} ${c.ab} ${c.txt} ${c.role} ${EL[c.el]} ${c.character?'character':'monster'} ${['','common','elite','boss'][c.cost]}`.toLowerCase();
+  return terms.every(t => { const m = t.match(/^(atk|hp|def|spd|stars?|cost)(>=|<=|=|>|<|:)(\d+)$/);
+    if (!m) return hay.includes(t);
+    const v = m[1].startsWith('star')||m[1]==='cost' ? c.cost : c[m[1]], n = +m[3];
+    return m[2]==='>'?v>n : m[2]==='<'?v<n : m[2]==='>='?v>=n : m[2]==='<='?v<=n : v===n; });
+}
+// why a card can't join the current team right now ('' = it can)
+function whyNot(sel, id){ const F=fmt(), c=CARDS[id];
+  if (sel.includes(id)) return '';
+  if ((UI.clash||[]).includes(id)) return 'Clashed';
+  if (!F.chars && c.character) return 'Banned';
+  if (F.mode==='cup' && !F.pat.some(p=>!p||p===c.cost)) return 'Not in pattern';
+  if (sel.length>=CFG.TEAM) return 'full';
+  if (!fitsFmt([...sel,id], F)) return F.mode==='cup' ? `No ${'★'.repeat(c.cost)} slot left` : 'Over budget';
+  return ''; }
+function visibleIds(){ const f=fltSt(), sel=UI.pick||[];
+  return IDS.filter(id => { const c=CARDS[id];
+    if (f.stars.length && !f.stars.includes(c.cost)) return false;
+    if (f.els.length && !f.els.includes(c.el)) return false;
+    if (f.role && c.role!==f.role) return false;
+    if (f.type && (f.type==='c') !== !!c.character) return false;
+    if (f.fits && !sel.includes(id) && whyNot(sel,id)) return false;
+    return matchQuery(c, f.q); }); }
+function sortedIds(ids){ const s=sortSt(), k=SORTS[s.k];
+  if (!k || !k.f) return s.dir<0 ? [...ids].reverse() : ids;
+  return [...ids].sort((a,b)=>{ const A=k.f(CARDS[a]), B=k.f(CARDS[b]); const d=(typeof A==='string' ? A.localeCompare(B) : A-B)*s.dir; if (d) return d;
+    return (CARDS[a].cost-CARDS[b].cost) || (EL_ORDER.indexOf(CARDS[a].el)-EL_ORDER.indexOf(CARDS[b].el)) || CARDS[a].name.localeCompare(CARDS[b].name); }); }
+const fltActive = () => { const f=fltSt(); return !!(f.q || f.stars.length || f.els.length || f.role || f.type || f.fits); };
+
+function toolsHTML(){ const f=fltSt(), s=sortSt();
+  const usedEls = EL_ORDER.filter(e => IDS.some(id=>CARDS[id].el===e));
+  const usedRoles = Object.keys(ROLES).filter(r => IDS.some(id=>CARDS[id].role===r));
+  return `<div class="tools">
+    <div class="trow"><label class="srch"><i class="fa-solid fa-magnifying-glass"></i><input id="fq" type="search" autocomplete="off" spellcheck="false" placeholder="Search name, ability or text…  (try: bench, switch, spd>=3)" value="${esc(f.q)}" aria-label="Search cards">${f.q?'<button type="button" class="sx" id="fqx" title="Clear search">✕</button>':''}</label>
+      <span class="sortw">Sort <select id="fsort" aria-label="Sort cards">${Object.entries(SORTS).map(([k,v])=>`<option value="${k}" ${s.k===k?'selected':''}>${v.l}</option>`).join('')}</select>
+      <button type="button" class="sdir" id="fdir" title="${s.dir>0?'Ascending (click for descending)':'Descending (click for ascending)'}">${s.dir>0?'↑':'↓'}</button></span></div>
+    <div class="trow"><span class="fchips"><span class="lbl">Stars</span>${[1,2,3].map(n=>`<button type="button" class="fch ${f.stars.includes(n)?'on':''}" data-fst="${n}" title="${['','Common','Elite','Boss'][n]} (${n}★)">${'★'.repeat(n)}</button>`).join('')}</span>
+      <span class="fsep"></span>
+      <span class="fchips"><span class="lbl">Element</span>${usedEls.map(e=>`<button type="button" class="fch el ${f.els.includes(e)?'on':''}" style="--ec:var(--e-${e==='none'?'phys':e})" data-fel="${e}" title="${EL[e]}" aria-label="${EL[e]}">${elIco(e)}</button>`).join('')}</span></div>
+    <div class="trow"><span class="fchips"><span class="lbl">Role</span><span class="sortw"><select id="frole" aria-label="Filter by role"><option value="">All roles</option>${usedRoles.map(r=>`<option value="${r}" ${f.role===r?'selected':''}>${r}</option>`).join('')}</select></span></span>
+      <span class="fchips"><span class="lbl">Type</span>${[['','All'],['m','Monsters'],['c','Characters']].map(([k,l])=>`<button type="button" class="fch ${f.type===k?'on':''}" data-fty="${k}">${l}</button>`).join('')}</span>
+      <span class="fchips"><button type="button" class="fch ${f.fits?'on':''}" id="ffits" title="Hide cards that can't join your team right now">✓ Fits my team</button></span>
+      <span class="fcount" id="fcount"></span></div>
+  </div>`; }
+
+function gridHTML(){ const sel=UI.pick||[], s=sortSt(), k=SORTS[s.k];
+  const ids = sortedIds(visibleIds()); let last=null, out='';
+  for (const id of ids){
+    if (k && k.group){ const g=k.group(CARDS[id]); if (g!==last){ last=g; const n=ids.filter(x=>k.group(CARDS[x])===g).length; out+=`<div class="pgsep">${k.gl(g)}<small>${n}</small></div>`; } }
+    const w = whyNot(sel,id), ill = ['Clashed','Banned','Not in pattern'].includes(w);
+    out += `<div class="card ${sel.includes(id)?'sel':''} ${w?'dis':''} ${ill?'ill':''}" style="--ec:var(--e-${CARDS[id].el})" tabindex="0" role="button" aria-pressed="${sel.includes(id)}" data-pick="${id}"><span class="tick">✓</span>${w&&w!=='full'?`<span class="why ${w==='Clashed'?'clash':''}">${esc(w)}</span>`:''}${sel.includes(id)?`<button type="button" class="opmark ${UI.openerCid===id?'on':''}" data-opener="${id}" title="${UI.openerCid===id?'Preferred opener (click to clear)':'Make this the preferred opener'}">◆ ${UI.openerCid===id?'Opener':'Opener?'}</button>`:''}${cardHTML(id)}</div>`;
+  }
+  if (!ids.length) out = `<div class="pgempty">No cards match. <button type="button" class="fclear" data-fclear>Clear search and filters</button></div>`;
+  return { html: out, n: ids.length }; }
+
+// the three picked cards, kept in view whatever the filters hide; Constellation shows each slot's star need
+function trayHTML(){ const F=fmt(), sel=UI.pick||[];
+  const slots = (F.mode==='cup' ? F.pat : [-1,-1,-1]).map(p=>({ p, cid:null })), rest=[...sel];
+  for (const s of slots) if (s.p>0){ const j=rest.findIndex(id=>CARDS[id].cost===s.p); if (j>=0) s.cid=rest.splice(j,1)[0]; }
+  for (const s of slots) if (!s.cid && s.p<=0 && rest.length) s.cid=rest.shift();
+  return `<div class="tray">${slots.map(s=>{ const c=s.cid&&CARDS[s.cid];
+    return `<button type="button" class="tslot ${c?'on':''} ${!c&&s.p>0?'need':''}" ${c?`data-unpick="${s.cid}" title="${esc(c.name)}: click to remove" style="--ec:var(--e-${c.el})"`:'tabindex="-1"'}><span class="ti">${c?`<img src="${ART[s.cid]}" alt="${esc(c.name)}">`:''}</span><span class="tn">${s.p>0?starStr(s.p):s.p===0?'Any':''}</span></button>`; }).join('')}</div>`; }
+
+function budgetHTML(){ const F=fmt(), sel=UI.pick||[];
+  if (F.mode==='standard') return `<span class="budget" title="Team cost">${Array.from({length:CFG.BUDGET},(_,i)=>`<i class="${i<teamCost(sel)?'on':''} ${teamCost(sel)>CFG.BUDGET&&i<teamCost(sel)?'over':''}"></i>`).join('')}</span><span class="label">${teamCost(sel)} / ${CFG.BUDGET} ★</span>`;
+  if (F.mode==='open') return `<span class="label">No budget</span>`;
+  return `<span class="label">${esc(cupName(F.pat))}</span>`; }
+
+function fmtRuleText(){ const F=fmt();
+  return F.mode==='standard' ? `within <b>${CFG.BUDGET}★</b>` : F.mode==='open' ? `with <b>no budget</b> (Open)` : `matching the star pattern <b>${patText(F.pat)}</b>`; }
+function fmtSummary(){ const F=fmt(); const bits=[ F.mode==='standard' ? `Standard (${CFG.BUDGET}★ budget)` : F.mode==='open' ? 'Open (no budget)' : `${cupName(F.pat)} (${patText(F.pat)})` ];
+  if (!F.mirror) bits.push('No mirror cards'); if (!F.chars) bits.push('No character cards'); return bits.join(' · '); }
+function fmtHint(){ const F=fmt();
+  const base = F.mode==='standard' ? `Team budget is ${CFG.BUDGET}★. Commons cost ★, elites ★★, bosses ★★★. One boss means two commons.`
+    : F.mode==='open' ? 'Open format: no budget. Any three cards, three bosses included.'
+    : `Constellation: your three cards must match the pattern <b>${patText(F.pat)}</b>.`;
+  return base + (F.mirror ? '' : ' <b>Mirror cards are off:</b> if both teams hold the same card, it is shown to both and both sides pick again.') + (F.chars ? '' : ' Character cards are banned.'); }
+
+// mirror cards off: a card on both teams is revealed to both players, struck from this match, and both pick again
+function doClash(hit){
+  UI.clash = [...new Set([...(UI.clash||[]), ...hit])]; UI.pick = (UI.pick||[]).filter(c=>!hit.includes(c)); UI.npcPending = null;
+  if (UI.openerCid && !UI.pick.includes(UI.openerCid)) UI.openerCid = null;
+  store.set('ccd3.team', UI.pick); sfx('cancel', 0.9, 0);
+  announce('Card clash!', { tone:'warn', sub:`Both teams picked ${hit.map(N).join(', ')}. Mirror cards are off: both sides pick again.` });
+  render(); }
+
+function rulesPanelHTML(){ const F=fmt();
+  if (UI.fmtGuest) return `<div class="win rulesw"><div class="label">Match rules</div><div class="who">Set by ${esc(UI.fmtBy||'the challenger')}</div>
+    <div class="rofmt"><b>${F.mode==='standard'?'Standard':F.mode==='open'?'Open':esc(cupName(F.pat))}</b>: ${F.mode==='standard'?`${CFG.BUDGET}★ budget`:F.mode==='open'?'no budget':patText(F.pat)}<br>
+    Mirror cards: <b>${F.mirror?'allowed':'not allowed'}</b> · Character cards: <b>${F.chars?'allowed':'banned'}</b><br>Best of <b>${UI.bestOf}</b></div></div>`;
+  const seg = (key, opts) => `<div class="seg">${opts.map(([v,l,s])=>`<button type="button" class="${F[key]===v?'on':''}" data-fmt="${key}:${v}">${l}<small>${s}</small></button>`).join('')}</div>`;
+  return `<div class="win rulesw"><div class="label">Match rules</div><div class="who">You are the challenger: you set these. Your opponent sees them on the challenge and builds under them.</div>
+    ${seg('mode', [['standard','Standard',`${CFG.BUDGET}★ budget (today's game)`],['open','Open','No budget, any 3 cards'],['cup','Constellation','Each side matches a star pattern']])}
+    ${F.mode==='cup' ? `<div class="presets">${CUPS.map(c=>`<button type="button" class="fch ${c.pat.join()===F.pat.join()?'on':''}" data-cup="${c.id}" title="${esc(c.sub)}">${esc(c.name)}</button>`).join('')}</div>
+      <div class="patrow"><span class="lbl">Slots</span>${F.pat.map((p,i)=>`<button type="button" class="pat" data-pat="${i}" title="Click to change: ★ → ★★ → ★★★ → Any">${p?'★'.repeat(p):'<span class="any">Any</span>'}<small>slot ${i+1}</small></button>`).join('')}</div>` : ''}
+    <div class="label" style="margin-top:10px">Mirror cards</div>
+    ${seg('mirror', [[true,'Allowed','Both sides may field the same card'],[false,'Not allowed','A shared card clashes: both pick again']])}
+    <div class="label" style="margin-top:10px">Character cards</div>
+    ${seg('chars', [[true,'Allowed','Hina, Zarg and friends can play'],[false,'Banned','Monster cards only']])}
+    <div class="label" style="margin-top:10px">Series</div><div class="seg">
+      ${[1,3,5].map(n=>`<button type="button" class="${UI.bestOf===n?'on':''}" data-bo="${n}">Best of ${n}<small>${n===1?'One game':`First to ${Math.ceil(n/2)} wins`}</small></button>`).join('')}</div></div>`; }
+
 function setupHTML(){
-  const sel=UI.pick||[];
+  const sel=UI.pick||[], F=fmt();
   return `<div class="setup">
-    <div class="win"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><h2>Choose your team of three</h2><div class="teambar"><span class="label">${sel.length} / ${CFG.TEAM} picked</span><span class="budget" title="Team cost">${Array.from({length:CFG.BUDGET},(_,i)=>`<i class="${i<teamCost(sel)?'on':''}"></i>`).join('')}</span><span class="label">${teamCost(sel)} / ${CFG.BUDGET} ★</span></div></div>
-      <div class="hint" style="margin-top:4px">Team budget is ${CFG.BUDGET}★. Commons cost ★, elites ★★, bosses ★★★. One boss means two commons.</div>
-      ${formsHTML()}
-      <div class="pickgrid">${IDS.map(id=>`<div class="card ${sel.includes(id)?'sel':''} ${!sel.includes(id)&&(sel.length>=CFG.TEAM||teamCost([...sel,id])>CFG.BUDGET)?'dis':''}" style="--ec:var(--e-${CARDS[id].el})" tabindex="0" role="button" aria-pressed="${sel.includes(id)}" data-pick="${id}"><span class="tick">✓</span>${sel.includes(id)?`<button type="button" class="opmark ${UI.openerCid===id?'on':''}" data-opener="${id}" title="${UI.openerCid===id?'Preferred opener (click to clear)':'Make this the preferred opener'}">◆ ${UI.openerCid===id?'Opener':'Opener?'}</button>`:''}${cardHTML(id)}</div>`).join('')}</div></div>
+    ${(()=>{ UI._fm = formsHTML(); return ''; })()}<div class="win"><div class="shead"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-end"><div class="stitle"><h2>Choose your team of three</h2>${UI._fm.btn}</div><div class="teambar">${trayHTML()}<span class="label">${sel.length} / ${CFG.TEAM} picked</span>${budgetHTML()}</div></div>
+      <div class="fmtline"><span class="fmtpill"><i class="fa-solid fa-scroll"></i>${esc(fmtSummary())}</span>${(UI.clash||[]).length?`<span class="fmtpill warn">Clashed: ${UI.clash.map(N).map(esc).join(', ')}</span>`:''}</div>
+      <div class="hint" style="margin-top:4px">${fmtHint()}</div>${UI._fm.panel}</div>
+      ${toolsHTML()}
+      <div class="pickgrid" id="pickgrid"></div></div>
     <div class="side">
+      ${rulesPanelHTML()}
       <div class="win"><div class="label">Match type</div><div class="seg">
         <button type="button" class="${UI.matchType==='friendly'?'on':''}" data-mt="friendly">Friendly duel<small>No cards change hands</small></button>
         <button type="button" class="${UI.matchType==='prize'?'on':''}" data-mt="prize">NPC prize match<small>NPC shows one prize card. Win it, keep it</small></button></div></div>
-      <div class="win"><div class="label">Format</div><div class="seg">
-        ${[1,3,5].map(n=>`<button type="button" class="${UI.bestOf===n?'on':''}" data-bo="${n}">Best of ${n}<small>${n===1?'One game':`First to ${Math.ceil(n/2)} wins`}</small></button>`).join('')}</div></div>
       <div class="win"><div class="label">Who plays the NPC</div><div class="seg">
         <button type="button" class="${UI.opp.ctrl==='ai'?'on':''}" data-opp="ctrl:ai">AI<small>No timer. Take as long as you like</small></button>
         <button type="button" class="${UI.opp.ctrl==='gm'?'on':''}" data-opp="ctrl:gm">GM takes control<small>Hot-seat demo. 30s timer per decision</small></button></div>
@@ -2084,21 +2324,56 @@ function setupHTML(){
         ${['aggressive','defensive','trickster','random'].map(d=>`<button type="button" class="${UI.opp.style===d?'on':''}" data-opp="style:${d}">${d[0].toUpperCase()+d.slice(1)}</button>`).join('')}</div>
         <div class="hint" style="margin-top:6px">The GM can also take over an AI-run NPC mid-match from the sidebar.</div></div>
       ${rulesHTML()}${chartHTML()}
-      <div class="win" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" type="button" id="btnRand">Random team</button><button class="btn go" type="button" id="btnStart" ${sel.length===CFG.TEAM&&teamCost(sel)<=CFG.BUDGET?'':'disabled'}>Challenge the NPC</button></div>
+      <div class="win" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" type="button" id="btnRand">Random team</button><button class="btn go" type="button" id="btnStart" ${teamLegal(sel)?'':'disabled'}>Challenge the NPC</button></div>
       ${BINDER.length?`<div class="win"><div class="label">Prize cards won</div><div style="margin-top:6px">${BINDER.map(id=>esc(N(id))).join(', ')}</div></div>`:''}
     </div></div>`;
 }
+// grid only (search typing keeps focus); the toolbar stays put
+function drawGrid(){ const g=$('#pickgrid'); if (!g) return; const r=gridHTML(); g.innerHTML=r.html;
+  const c=$('#fcount'); if (c) c.innerHTML = `${r.n===IDS.length?`${r.n} cards`:`Showing <b>${r.n}</b> of ${IDS.length}`}${fltActive()?` · <button type="button" class="fclear" data-fclear>Clear</button>`:''}`;
+  bindPicks(); }
+const pickLocked = () => !!(window.FA_NETSTATE && (window.FA_NETSTATE.ready || window.FA_NETSTATE.role==='spectator'));
+function togglePick(id){ if (pickLocked()) return; let s=[...(UI.pick||[])]; const n0=s.length;
+  if (s.includes(id)) s=s.filter(x=>x!==id); else if (!whyNot(s,id)) s.push(id); else { sfx('cancel',0.5,0); return; }
+  sfx(s.length>n0?'cursor':'cancel'); UI.pick=s; if (UI.openerCid && !s.includes(UI.openerCid)) UI.openerCid=null; store.set('ccd3.team',s); render(); }
+function bindPicks(){
+  document.querySelectorAll('#pickgrid [data-pick]').forEach(el=>{ const f=()=>togglePick(el.dataset.pick);
+    el.onclick=(e)=>{ if (e.target.closest('[data-opener]')) return; f(); }; el.onkeydown=e=>{ if (e.key==='Enter'||e.key===' '){ e.preventDefault(); f(); } }; el.onmouseenter=()=>sfx('cursor',0.45,90); });
+  document.querySelectorAll('#pickgrid [data-opener]').forEach(b=>b.onclick=(e)=>{ e.stopPropagation(); if (pickLocked()) return; const id=b.dataset.opener; UI.openerCid = UI.openerCid===id ? null : id; sfx('cursor'); render(); });
+  document.querySelectorAll('[data-fclear]').forEach(b=>b.onclick=()=>{ UI.flt=null; sfx('cancel'); render(); });
+}
 function bindSetup(){
-  bindForms();
-  document.querySelectorAll('[data-pick]').forEach(el=>{ const f=()=>{ const id=el.dataset.pick; let s=[...(UI.pick||[])]; const n0=s.length; setTimeout(()=>{ const n1=(UI.pick||[]).length; sfx(n1>n0?'cursor':'cancel'); },0); if (s.includes(id)) s=s.filter(x=>x!==id); else if (s.length<CFG.TEAM && teamCost([...s,id])<=CFG.BUDGET) s.push(id); UI.pick=s; if (UI.openerCid && !s.includes(UI.openerCid)) UI.openerCid=null; store.set('ccd3.team',s); render(); };
-    el.onclick=f; el.onkeydown=e=>{ if (e.key==='Enter'||e.key===' '){ e.preventDefault(); f(); } }; el.onmouseenter=()=>sfx('cursor',0.45,90); });
+  bindForms(); drawGrid();
+  const f=fltSt(), s=sortSt();
+  const q=$('#fq'); if (q){ q.oninput=()=>{ f.q=q.value; drawGrid(); const x=$('#fqx'); if (!!f.q !== !!x){ const p=q.selectionStart; render(); const q2=$('#fq'); q2.focus(); q2.setSelectionRange(p,p); } };
+    q.onkeydown=e=>{ if (e.key==='Escape'){ f.q=''; render(); } }; }
+  const qx=$('#fqx'); if (qx) qx.onclick=()=>{ f.q=''; render(); const q2=$('#fq'); if (q2) q2.focus(); };
+  $('#fsort').onchange=(e)=>{ s.k=e.target.value; s.dir=(SORTS[s.k].dir||1); store.set('ccd.sort',s); sfx('cursor'); render(); };
+  $('#fdir').onclick=()=>{ s.dir=-s.dir; store.set('ccd.sort',s); sfx('cursor'); render(); };
+  document.querySelectorAll('[data-fst]').forEach(b=>b.onclick=()=>{ const n=+b.dataset.fst; f.stars=f.stars.includes(n)?f.stars.filter(x=>x!==n):[...f.stars,n]; sfx('cursor'); render(); });
+  document.querySelectorAll('[data-fel]').forEach(b=>b.onclick=()=>{ const e=b.dataset.fel; f.els=f.els.includes(e)?f.els.filter(x=>x!==e):[...f.els,e]; sfx('cursor'); render(); });
+  document.querySelectorAll('[data-fty]').forEach(b=>b.onclick=()=>{ f.type=b.dataset.fty; sfx('cursor'); render(); });
+  $('#frole').onchange=(e)=>{ f.role=e.target.value; sfx('cursor'); render(); };
+  $('#ffits').onclick=()=>{ f.fits=!f.fits; sfx('cursor'); render(); };
+  document.querySelectorAll('[data-unpick]').forEach(b=>b.onclick=()=>togglePick(b.dataset.unpick));
+  // match rules (host); a rule change drops picks that no longer fit, newest first
+  const reFit=()=>{ const F=fmt(); store.set('ccd.fmt',F); let sel=[...(UI.pick||[])]; while (sel.length && !fitsFmt(sel,F)) sel.pop(); UI.pick=sel; if (UI.openerCid && !sel.includes(UI.openerCid)) UI.openerCid=null; store.set('ccd3.team',sel); UI.clash=[]; };
+  document.querySelectorAll('[data-fmt]').forEach(b=>b.onclick=()=>{ const [k,v]=b.dataset.fmt.split(':'); const F=fmt(); F[k] = v==='true'?true:v==='false'?false:v; reFit(); sfx('cursor'); render(); });
+  document.querySelectorAll('[data-cup]').forEach(b=>b.onclick=()=>{ const F=fmt(); F.pat=[...CUPS.find(c=>c.id===b.dataset.cup).pat]; reFit(); sfx('cursor'); render(); });
+  document.querySelectorAll('[data-pat]').forEach(b=>b.onclick=()=>{ const F=fmt(), i=+b.dataset.pat; F.pat=[...F.pat]; F.pat[i]=[1,2,3,0][([1,2,3,0].indexOf(F.pat[i])+1)%4]; reFit(); sfx('cursor'); render(); });
   document.querySelectorAll('[data-mt]').forEach(b=>b.onclick=()=>{ sfx('cursor'); UI.matchType=b.dataset.mt; render(); });
   document.querySelectorAll('[data-bo]').forEach(b=>b.onclick=()=>{ sfx('cursor'); UI.bestOf=+b.dataset.bo; store.set('ccd.bestof',UI.bestOf); render(); });
   document.querySelectorAll('[data-opp]').forEach(b=>b.onclick=()=>{ sfx('cursor'); const [k,v]=b.dataset.opp.split(':'); UI.opp[k]=v; store.set('ccd5.opp',UI.opp); render(); });
   document.querySelectorAll('.seg button, .btn').forEach(b=>b.addEventListener('mouseenter',()=>sfx('cursor',0.35,90)));
-  $('#btnRand').onclick=()=>{ sfx('cursor'); UI.pick=randomTeam(); store.set('ccd3.team',UI.pick); render(); };
-  $('#btnStart').onclick=()=>{ sfx('cursor'); newMatch(); };
+  $('#btnRand').onclick=()=>{ sfx('cursor'); UI.pick=randomTeam(fmt(), UI.clash||[]); store.set('ccd3.team',UI.pick); render(); };
+  $('#btnStart').onclick=()=>{ const F=fmt(), sel=UI.pick||[]; if (!teamLegal(sel)) return;
+    if (!F.mirror){ const npc = randomTeam(F, UI.clash||[]); const hit = npc.filter(c=>sel.includes(c)); if (hit.length) return doClash(hit); UI.npcPending = npc; }
+    sfx('cursor'); newMatch(); };
 }
+// "/" jumps to the card search on team select
+if (typeof document!=='undefined' && document.addEventListener) document.addEventListener('keydown', (e) => {
+  if (S || e.key!=='/' || /input|textarea|select/i.test((e.target && e.target.tagName) || '')) return; const q=$('#fq'); if (q){ e.preventDefault(); q.focus(); } });
+
 function bindField(){
   document.querySelectorAll('.slot').forEach(el=>{
     const s=+el.dataset.s, i=+el.dataset.i;
@@ -2383,15 +2658,18 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
     const side = $('.setup .side'); if (side) side.innerHTML = lobbySide(owned);
     bindSetup();
     if (NET.ready) document.querySelectorAll('[data-pick]').forEach(el => { el.onclick = null; el.onkeydown = null; el.classList.add('dis'); });
-    if (NET.ready) document.querySelectorAll('[data-fslot],[data-fstar],[data-fdel],[data-fname],[data-opener],#fSave,#fSaveNew').forEach(el => { el.onclick = null; el.onkeydown = null; if (el.tagName === 'BUTTON') el.disabled = true; else el.classList.add('locked'); });
+    if (NET.ready) document.querySelectorAll('[data-fslot],[data-fstar],[data-fdel],[data-fname],[data-opener],[data-fren],#fSave,#fSaveNew,#fName').forEach(el => { el.onclick = null; el.onkeydown = null; if (el.tagName === 'BUTTON') el.disabled = true; else el.classList.add('locked'); });
     const br = $('#btnRand'); if (br) br.onclick = () => { if (NET.ready) return; sfx('cursor'); const legal = LEGAL_FROM(owned); if (legal.length){ UI.pick = legal[Math.floor(Math.random()*legal.length)]; render(); } };
-    const bs = $('#btnStart'); if (bs) bs.onclick = () => { const sel = UI.pick || []; if (NET.ready || sel.length !== CFG.TEAM || teamCost(sel) > CFG.BUDGET) return; sfx('book'); NET.ready = true; send({ t:'team', team:[...sel] }); render(); };
+    const bs = $('#btnStart'); if (bs) bs.onclick = () => { const sel = UI.pick || []; if (NET.ready || !teamLegal(sel) || sel.some(c => (UI.clash||[]).includes(c))) return; sfx('book'); NET.ready = true; send({ t:'team', team:[...sel] }); render(); };
     // Unready: take Ready back while the opponent is still choosing (the host ignores it once the game has started)
     const bu = $('#btnUnready'); if (bu) bu.onclick = () => { if (!NET.ready || (NET.lobby && NET.lobby.oppReady)) return; sfx('cancel'); NET.ready = false; send({ t:'unready' }); render(); };
   };
-  const LEGAL_FROM = ids => { const out = []; for (let a=0;a<ids.length;a++) for (let b=a+1;b<ids.length;b++) for (let c=b+1;c<ids.length;c++){ const t=[ids[a],ids[b],ids[c]]; if (teamCost(t) <= CFG.BUDGET) out.push(t); } return out; };
+  const LEGAL_FROM = ids => { ids = ids.filter(id => !(UI.clash||[]).includes(id)); const out = []; for (let a=0;a<ids.length;a++) for (let b=a+1;b<ids.length;b++) for (let c=b+1;c<ids.length;c++){ const t=[ids[a],ids[b],ids[c]]; if (fitsFmt(t)) out.push(t); } return out; };
+  // the host's rules for this duel (PvP: the challenger's; NPC duels: Standard)
+  const netRules = (L) => { const f = (L && L.format) || {}; UI.fmt = { mode: ['standard','open','cup'].includes(f.mode) ? f.mode : 'standard', pat: Array.isArray(f.pat) && f.pat.length===3 ? f.pat.map(Number) : [1,1,2], mirror: f.mirror !== false, chars: f.chars !== false };
+    UI.fmtGuest = true; UI.fmtBy = (L && L.formatBy) || 'the challenger'; UI.clash = (L && Array.isArray(L.clash)) ? L.clash.slice() : []; };
   function lobbySide(owned){
-    const L = NET.lobby || {}, sel = UI.pick || [], legal = sel.length === CFG.TEAM && teamCost(sel) <= CFG.BUDGET, bo = L.bestOf || 1;
+    const L = NET.lobby || {}, sel = UI.pick || [], legal = teamLegal(sel) && !sel.some(c => (UI.clash||[]).includes(c)), bo = L.bestOf || 1;
     // both players' status, always visible: "Choosing…" (pulsing dot) or "✓ Ready"
     const chip = (ok, pop) => ok ? `<span class="chip ok ${pop ? 'rpop' : ''}">✓ Ready</span>` : `<span class="chip wait"><i></i>Choosing…</span>`;
     const opp = `<div class="rdy"><div class="who"><b>${esc(NET.myName)}</b>${chip(NET.ready, false)}</div><div class="who"><b>${esc(NET.oppName)}</b>${chip(!!L.oppReady, NET.oppPop)}</div></div>`
@@ -2400,9 +2678,10 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
     const enough = LEGAL_FROM(owned).length > 0;
     return `<div class="win"><div class="label">Fabula Arcana</div><h2 style="margin:4px 0">${esc(NET.myName)} vs ${esc(NET.oppName)}</h2>
         ${L.quote ? `<div class="hint">“${esc(L.quote)}”</div>` : ''}${opp}
-        <div class="hint" style="margin-top:6px">Format: <b>Best of ${bo}</b>${bo > 1 ? ` · first to ${Math.ceil(bo/2)} wins` : ''}</div></div>
+        <div class="hint" style="margin-top:6px">Series: <b>Best of ${bo}</b>${bo > 1 ? ` · first to ${Math.ceil(bo/2)} wins` : ''}</div></div>
+      ${L.kind === 'pvp' ? rulesPanelHTML() : ''}
       ${L.prize ? `<div class="win prize"><img src="${ART[L.prize] || ''}" alt=""><div><div class="label">${esc(L.prizeLabel || 'Prize card')}</div><b>${esc(N(L.prize))}</b><div class="hint">${esc(L.prizeHint || 'Win the duel to take it.')}</div></div></div>` : ''}
-      ${enough ? '' : `<div class="win"><div class="hint">You need three cards that fit the ${CFG.BUDGET}★ budget to play.</div></div>`}
+      ${enough ? '' : `<div class="win"><div class="hint">You need three cards that fit these rules (${esc(fmtSummary())}) to play.</div></div>`}
       ${rulesHTML()}${chartHTML()}
       <div class="win" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" type="button" id="btnRand" ${NET.ready || !enough ? 'disabled' : ''}>Random team</button>
         <button class="btn go" type="button" id="btnStart" ${legal && !NET.ready ? '' : 'disabled'}>${NET.ready ? (L.oppReady ? 'Starting…' : `Waiting for ${esc(NET.oppName)}…`) : 'Ready'}</button>
@@ -2612,7 +2891,7 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
         NET.lobby = m.lobby || null; NET.ready = !!m.ready; NET.spectators = m.spectators || 0;
         if (m.vol){ SND.vol = 0.55 * (m.vol.sfx ?? 1); MUS.vol = 0.32 * (m.vol.music ?? 1); }
         if (m.music){ musicUrls = m.music; tryMusic(); }
-        if (NET.lobby){ NET.forms = Array.isArray(NET.lobby.forms) ? NET.lobby.forms : null; }
+        if (NET.lobby){ NET.forms = Array.isArray(NET.lobby.forms) ? NET.lobby.forms : null; netRules(NET.lobby); }
         if (NET.lobby && NET.lobby.suggest && !(UI.pick || []).length){ UI.pick = NET.lobby.suggest.slice(); UI.openerCid = NET.lobby.suggestOpener || null;
           const key = [...UI.pick].sort().join(','); const i = FORM.get().findIndex(f => f && [...f.team].sort().join(',') === key); UI.formSlot = i >= 0 ? i : null; }
         NET.rematch = { me:false, opp:false, oppLeft:false }; NET.nextSent = false; NET.oppGone = null; awayHide();
@@ -2623,6 +2902,12 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
         const was = !!(NET.lobby && NET.lobby.oppReady);
         NET.lobby = { ...(NET.lobby || {}), ...m.lobby };
         if (!was && NET.lobby.oppReady){ NET.oppPop = true; sfx('decide', 0.7, 0); }
+        if (Array.isArray(m.lobby.clashNow) && m.lobby.clashNow.length){   // mirror cards off: both teams held these, both sides pick again
+          const hit = m.lobby.clashNow; netRules(NET.lobby); NET.ready = false;
+          UI.pick = (UI.pick||[]).filter(c => !hit.includes(c)); if (UI.openerCid && !UI.pick.includes(UI.openerCid)) UI.openerCid = null;
+          sfx('cancel', 0.9, 0); if (!S) render();
+          announce('Card clash!', { tone:'warn', sub:`Both teams picked ${hit.map(c => CARDS[c] ? N(c) : c).join(', ')}. Mirror cards are off: both sides pick again.` });
+          return; }
         if (!S) render(); return;
       }
       case 'rematch': {

@@ -4,7 +4,8 @@
 //
 // API: FUCompanion.api.fabulaArcana
 //   .challengeNpc(token, { challenger? })        walk up to a duelist NPC (same as its Card Duel button)
-//   .challengePlayer(actor, { bestOf? })         camp challenge to another player's character
+//   .challengePlayer(actor, { bestOf?, format? })   camp challenge to another player's character (format = match rules, Engine.Format)
+//   .openChallenge(actor)                          the challenger's setup panel (rules + Best of), then challengePlayer
 //   .practice({ name?, team?, diff?, style?, bestOf?, challenger? })   a duel against a made-up AI challenger (GM / testing)
 //   .setDuelist(actor, { teams, diff, style, bestOf, quote, prize, requiresSwitch })   GM: make an NPC challengeable (false = remove)
 //   .grantCard(actor, cid) / .grantStarter(actor) / .ownedCards(actor) / .cardItemData(cid)
@@ -16,7 +17,7 @@ import { TAG, MODULE_ID, SETTING_SESSIONS, Catalog, Engine, isHostGM, hostGM } f
 import { install as installNet, send } from "./fa-net.js";
 import { installHost, restore, listSessions, closeAll } from "./fa-host.js";
 import { installClient, currentDuel } from "./fa-client.js";
-import { installEntry, challengeNpc, challengePlayer, spectate, setDuelist } from "./fa-entry.js";
+import { installEntry, challengeNpc, challengePlayer, openChallenge, spectate, setDuelist } from "./fa-entry.js";
 import { ownedCards, grantCard, grantStarter, cardItemData } from "./fa-collection.js";
 import { cardForEnemy, rollCardDrops, FLAG_DROP } from "./fa-drops.js";
 
@@ -34,7 +35,7 @@ Hooks.once("ready", () => {
   else if (h) send(h.id, "hello-client", {});
 
   const api = {
-    challengeNpc, challengePlayer, spectate, setDuelist,
+    challengeNpc, challengePlayer, openChallenge, spectate, setDuelist,
     practice: (opts = {}) => challengeNpc(null, { challenger: opts.challenger ?? null, practice: { name: opts.name ?? "Practice Duelist", team: opts.team, diff: opts.diff, style: opts.style, bestOf: opts.bestOf ?? 1, quote: opts.quote ?? "", prize: opts.prize ?? null } }),
     grantCard, grantStarter, ownedCards, cardItemData,
     // card drops: which card a monster drops; GM override per actor (a card id, or false for none; null clears)

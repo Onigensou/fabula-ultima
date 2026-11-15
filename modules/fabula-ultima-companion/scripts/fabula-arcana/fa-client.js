@@ -92,7 +92,7 @@ export function installClient() {
     invite = { sid: env.sid, host: env.from };
     const ms = Math.max(3000, (Number(d.expiresAt) || Date.now() + 20000) - Date.now());
     invite.panel = showInvitePanel({
-      fromName: d.fromName, toName: d.toName, bestOf: d.bestOf, img: d.img || "", ms, sound: playUi,
+      fromName: d.fromName, toName: d.toName, bestOf: d.bestOf, rules: d.rules || "", img: d.img || "", ms, sound: playUi,
       onAnswer: async (answer) => {
         const mine = invite?.sid === env.sid; if (mine) invite = null;
         if (answer === "timeout") return;                  // the host times it out on its side too

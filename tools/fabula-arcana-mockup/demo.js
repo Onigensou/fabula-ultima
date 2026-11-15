@@ -28,12 +28,16 @@
   const el = document.createElement('details'); el.id = 'demo'; el.open = window.innerWidth > 900;
   el.innerHTML = `<summary>Demo · new in this build</summary><div class="db">
     <h4>Challenge panel (map)</h4>
+    <div class="r"><button type="button" id="d-chs">You challenge Blanche (setup)</button></div>
     <div class="r"><button type="button" id="d-inv">Blanche challenges you</button></div>
     <div class="r">Pop-up sound <select id="d-app"><option value="inv_appear">Bell3</option><option value="alt_item3">Item3</option><option value="alt_chest1">Chest1</option><option value="alt_decision2">Decision2</option></select></div>
     <div class="msg" id="d-invmsg"></div>
     <h4>Team select (PvP)</h4>
     <div class="rdy"><div class="who"><b>You</b><span id="d-me"></span></div><div class="who"><b>Blanche</b><span id="d-opp"></span></div></div>
     <div class="r"><button type="button" id="d-ready">Blanche readies</button></div>
+    <h4>Match rules (PvP host)</h4>
+    <div class="r"><button type="button" id="d-guest">See it as the challenged player</button></div>
+    <div class="r"><button type="button" id="d-clash">Mirror clash (needs 3 picked)</button></div>
     <h4>Formations (deck builder)</h4>
     <div class="r"><button type="button" id="d-forms">Fill sample formations</button><button type="button" id="d-formsclr">Clear</button></div>
     <h4>During a duel</h4>
@@ -85,15 +89,25 @@
   $d('d-forms').onclick = () => { if (S) return msg('Formations live on the team-select screen: leave the duel first.');
     FORM.set([{ name:'Bolt Rush', team:['skizzik','kirin','fulgimite'], opener:'skizzik', def:true }, { name:'Iron Wall', team:['walrog','obsidrax','salamander'], opener:'walrog', def:false },
       { name:'Big Hitters', team:['gigas','flame','wolf'], opener:null, def:false }, null, null]);
-    formDefaultLoad(); render(); msg('Click a slot (or press 1–5) to load it. Click a name to rename. ☆ sets the default.'); };
+    formDefaultLoad(); UI.formOpen = true; UI.formName = null; render(); msg('The Formations button opens the menu. Type a name, then Save as new. ✏ renames a deck; ☆ sets the default; 1–5 loads one.'); };
   $d('d-formsclr').onclick = () => { FORM.set([null,null,null,null,null]); UI.formSlot=null; if (!S) render(); };
 
+  $d('d-chs').onclick = () => { sndInit(); showChallengeSetup({ toName: 'Blanche', img: ART.succubus || '', bestOf: UI.bestOf || 1, format: fmt(), sound: invSound,
+      onSend: ({ bestOf, format }) => { UI.bestOf = bestOf; UI.fmt = Object.assign({}, format); store.set('ccd.fmt', UI.fmt); if (!S) render();
+        $d('d-invmsg').textContent = 'Sent: ' + fmtSummary() + (bestOf > 1 ? ' · Best of ' + bestOf : '') + '. Blanche sees these rules on her challenge.'; },
+      onCancel: () => { $d('d-invmsg').textContent = 'Cancelled: nothing was sent.'; } }); };
   $d('d-inv').onclick = () => {
     sndInit();
-    showInvitePanel({ fromName: 'Blanche', toName: 'Hina', bestOf: 1, img: ART.succubus || '', ms: 20000, sound: invSound,
+    showInvitePanel({ fromName: 'Blanche', toName: 'Hina', bestOf: UI.bestOf || 1, rules: fmtSummary(), img: ART.succubus || '', ms: 20000, sound: invSound,
       onAnswer: (a) => { $d('d-invmsg').textContent = a === 'timeout' ? 'Ran out of time: the panel closed itself and Blanche is told you didn’t answer.'
         : a === 'block' ? 'Blocked: no more challenges from Blanche until the party rests.' : a === 'accept' ? 'Accepted: both duel windows open.' : 'Declined: Blanche is told.'; } });
   };
+  $d('d-guest').onclick = () => { if (S) return msg('Leave the duel first: the rules live on team select.'); UI.fmtGuest = !UI.fmtGuest; UI.fmtBy = 'Blanche (the challenger)';
+    $d('d-guest').textContent = UI.fmtGuest ? 'Back to host view' : 'See it as the challenged player'; render();
+    msg(UI.fmtGuest ? 'Challenged player: the rules are read-only and shown above the cards.' : 'Host view: you set the rules.'); };
+  $d('d-clash').onclick = () => { if (S) return msg('Leave the duel first.'); const sel = UI.pick || []; if (sel.length < 3) return msg('Pick three cards first.');
+    if (fmt().mirror) { UI.fmt.mirror = false; store.set('ccd.fmt', UI.fmt); }
+    sndInit(); doClash([sel[Math.floor(Math.random() * sel.length)]]); msg('Both sides lose the clashed card for this match and pick again.'); };
   $d('d-app').onchange = (e) => { DEMO.appear = e.target.value; sndInit(); sfx(DEMO.appear, 1, 0); };
   $d('d-wh').onchange = (e) => { DEMO.whoosh = e.target.value; sndInit(); sfx('whoosh', 1, 0); };
   $d('d-ready').onclick = () => { DEMO.oppReady = !DEMO.oppReady; $d('d-ready').textContent = DEMO.oppReady ? 'Blanche un-readies' : 'Blanche readies'; chips(true); if (DEMO.oppReady) { sndInit(); sfx('decide', 0.7, 0); } };

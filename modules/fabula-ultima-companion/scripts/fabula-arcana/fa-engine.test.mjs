@@ -329,5 +329,29 @@ const blank = blankStats;
   const sr = E.Series.create(3); E.Series.record(sr,"WIN"); ok(V.seriesForSeat(sr,1).wins.join("-")==="0-1", "series score mirrors for seat 1");
 }
 
+// ---- match rules (format): Standard / Open / Constellation, mirror cards, character cards ----
+{
+  const F = E.Format, L = E.isLegalTeam;
+  ok(L(["wolf","pyrefly","kirin"]) && !L(["gigas","flame","walrog"]), "no format = Standard (5★ budget), as before");
+  ok(L(["gigas","flame","walrog"], { mode:"open" }) && !L(["gigas","gigas","flame"], { mode:"open" }), "Open: three bosses legal, duplicates still not");
+  const van = { mode:"cup", pat:[1,1,2] };
+  ok(L(["wolf","pyrefly","kirin"], van) && L(["kirin","wolf","pyrefly"], van), "Constellation ★·★·★★ fits in any order");
+  ok(!L(["wolf","pyrefly","skizzik"], van) && !L(["wolf","kirin","fulgimite"], van), "Constellation rejects the wrong star mix");
+  ok(L(["wolf","kirin","gigas"], { mode:"cup", pat:[1,2,0] }) && !L(["gigas","flame","kirin"], { mode:"cup", pat:[1,2,0] }), "an Any slot takes any star count, the fixed slots still bind");
+  ok(!F.allowed("gigas", van) && F.allowed("wolf", van), "a card whose stars are in no slot is not allowed");
+  ok(!L(["hina","wolf","pyrefly"], { mode:"open", chars:false }) && L(["hina","wolf","pyrefly"], { mode:"open" }), "character cards can be banned");
+  ok(JSON.stringify(F.norm(null)) === JSON.stringify({ mode:"standard", pat:[1,1,2], mirror:true, chars:true }), "norm(null) = Standard");
+  ok(F.norm({ mode:"bogus", pat:[9,"2"], mirror:0 }).mode === "standard" && F.norm({ mode:"cup", pat:[9,"2",1] }).pat.join() === "0,2,1", "norm cleans junk");
+  ok(F.legalTeams(["wolf","pyrefly"], {}).length === 0 && F.why(["wolf","pyrefly","kirin"], {}) === "", "legalTeams / why on owned cards");
+  ok(/^needs 3 × ★★$/.test(F.why(["wolf","pyrefly","kirin","fulgimite"], { mode:"cup", pat:[2,2,2] })) && F.why(["wolf","kirin","fulgimite","roper"], { mode:"cup", pat:[2,2,2] }) === "", "why explains a missing star mix");
+  ok(F.summary({ mode:"cup", pat:[1,1,1], mirror:false, chars:false }) === "Commoner's Cup (★ · ★ · ★) · No mirror cards · No character cards", "summary names the cup and extras");
+  let threw = false; try { E.Match.create({ teams:[["wolf","pyrefly","kirin"],["wolf","skizzik","fulgimite"]], format:{ mirror:false } }); } catch (e) { threw = true; }
+  ok(threw, "mirror cards off: Match.create refuses two teams sharing a card");
+  const m = E.Match.create({ teams:[["gigas","flame","walrog"],["hina","zarg","keren"]], format:{ mode:"open" } });
+  ok(m.format.mode === "open" && m.phase === "opening", "a match keeps its rules");
+  threw = false; try { E.Match.create({ teams:[["gigas","flame","walrog"],["wolf","pyrefly","kirin"]] }); } catch (e) { threw = true; }
+  ok(threw, "three bosses still illegal without a format");
+}
+
 console.log(fails ? fails + " FAILED" : "ALL PASS");
 process.exit(fails ? 1 : 0);

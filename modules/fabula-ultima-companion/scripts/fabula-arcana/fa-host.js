@@ -5,7 +5,8 @@
 // and sends each participant a view from its OWN seat (Engine.View) so every duel window draws "you" at the bottom.
 //
 // Session (plain JSON; saved to a world setting by a GM host so a reload resumes):
-//   { sid, kind:'npc'|'pvp', hostId, bestOf, series, seats:[seat,seat], spectators:[userId], match, gameKey,
+//   { sid, kind:'npc'|'pvp', hostId, bestOf, format, clash, series, seats:[seat,seat], spectators:[userId], match, gameKey,
+//     format = the challenger's match rules (Engine.Format; PvP only, NPC duels stay Standard), clash = cards struck this match (mirror cards off)
 //     deadline, prize:{cid,label,hint}|null, quote, npc:{actorId,tokenUuid}, pending, over, reward }
 //   seat: { userId|null, actorId, name, kind:'human'|'ai', ai:{diff,style}, team, ready, next, lastTeam }
 
@@ -53,19 +54,16 @@ function names(s, viewer) { const n = s.seats.map((t) => t.name); return viewer 
 // the team to preselect: last game's team (a rematch / next game), else the character's ★ default formation,
 // else the only legal team when the collection allows just one
 const formsOf = (actor) => { const v = actor?.getFlag?.(MODULE_ID, FLAG_TEAMS); return Array.isArray(v) ? v.slice(0, 5) : null; };
-function defaultForm(actor, owned) {
+const fieldable = (s, team, owned) => Array.isArray(team) && team.every((c) => owned.includes(c) && !(s.clash || []).includes(c)) && E().isLegalTeam(team, s.format);
+function defaultForm(s, actor, owned) {
   const f = (formsOf(actor) || []).find((x) => x && x.def);
-  return f && Array.isArray(f.team) && f.team.every((c) => owned.includes(c)) && E().isLegalTeam(f.team) ? f : null;
+  return f && fieldable(s, f.team, owned) ? f : null;
 }
-function suggestTeam(seat, owned, actor) {
-  if (seat.lastTeam && seat.lastTeam.every((c) => owned.includes(c))) return seat.lastTeam;
-  const d = defaultForm(actor, owned); if (d) return d.team;
-  const legal = [];
-  for (let a = 0; a < owned.length; a++) for (let b = a + 1; b < owned.length; b++) for (let c = b + 1; c < owned.length; c++) {
-    const t = [owned[a], owned[b], owned[c]]; if (E().isLegalTeam(t)) legal.push(t);
-    if (legal.length > 1) return null;
-  }
-  return legal[0] ?? null;
+function suggestTeam(s, seat, owned, actor) {
+  if (fieldable(s, seat.lastTeam, owned)) return seat.lastTeam;
+  const d = defaultForm(s, actor, owned); if (d) return d.team;
+  const legal = E().Format.legalTeams(owned.filter((c) => !(s.clash || []).includes(c)), s.format);
+  return legal.length === 1 ? legal[0] : null;
 }
 
 function sendInit(s, userId) {
@@ -75,8 +73,9 @@ function sendInit(s, userId) {
   const actor = me ? game.actors.get(me.actorId) : null;
   const owned = me ? ownedCards(actor) : [];
   const lobby = me ? {
-    kind: s.kind, owned, suggest: suggestTeam(me, owned, actor), bestOf: s.bestOf, quote: s.quote || "",
-    actorId: me.actorId, forms: formsOf(actor), suggestOpener: me.lastTeam ? null : (defaultForm(actor, owned)?.opener ?? null),   // a rematch keeps the window's own opener mark
+    kind: s.kind, owned, suggest: suggestTeam(s, me, owned, actor), bestOf: s.bestOf, quote: s.quote || "",
+    format: E().Format.norm(s.format), formatBy: s.kind === "pvp" ? s.seats[0].name : "", clash: s.clash || [],
+    actorId: me.actorId, forms: formsOf(actor), suggestOpener: me.lastTeam ? null : (defaultForm(s, actor, owned)?.opener ?? null),   // a rematch keeps the window's own opener mark
     prize: viewer === 0 && s.prize ? s.prize.cid : null, prizeLabel: s.prize?.label, prizeHint: s.prize?.hint, oppReady: !!opp?.ready,
   } : { kind: s.kind, bestOf: s.bestOf };
   const nm = names(s, viewer);
@@ -156,7 +155,7 @@ function decide(s, extra = 0) {
 
 async function startGame(s) {
   const teams = s.seats.map((t) => t.team);
-  s.match = E().Match.create({ teams, names: s.seats.map((t) => t.name) });
+  s.match = E().Match.create({ teams, names: s.seats.map((t) => t.name), format: s.format });
   s.gameKey = uid(); s.reward = null;
   s.seats.forEach((t) => { t.next = false; t.lastTeam = t.team; });
   decide(s, INTRO_MS + (s.bestOf > 1 ? 1900 : 0));      // the window plays its start animation (+ the series GAME n banner)
@@ -238,10 +237,19 @@ async function onDuel(s, userId, msg) {
       if (s.match && s.match.phase !== "ended") return;
       const team = Array.isArray(msg.team) ? msg.team : [];
       const owned = ownedCards(game.actors.get(t.actorId));
-      if (!E().isLegalTeam(team) || !team.every((c) => owned.includes(c))) { notify(userId, "That team isn't legal (three cards you own, within the budget).", "warn"); t.ready = false; return sendInit(s, userId); }
+      if (!fieldable(s, team, owned)) { notify(userId, `That team isn't legal here (three cards you own: ${E().Format.summary(s.format)}).`, "warn"); t.ready = false; return sendInit(s, userId); }
       t.team = team; t.ready = true;
       const o = s.seats[1 - seat]; if (o.userId) toDuel(s, o.userId, { t: "lobby", lobby: { oppReady: true } });
-      if (s.seats.every((x) => x.ready)) await startGame(s);
+      if (s.seats.every((x) => x.ready)) {
+        const shared = E().Format.norm(s.format).mirror ? [] : s.seats[0].team.filter((c) => s.seats[1].team.includes(c));
+        if (shared.length) {        // mirror cards off: reveal only the shared card(s), strike them for this match, both pick again
+          s.clash = [...new Set([...(s.clash || []), ...shared])];
+          for (const x of s.seats) { x.ready = false; x.team = null; if (x.userId) toDuel(s, x.userId, { t: "lobby", lobby: { oppReady: false, clash: s.clash, clashNow: shared } }); }
+          for (const u of s.spectators) toDuel(s, u, { t: "banner", text: "Card clash!", sub: "Both teams picked the same card. Both sides pick again.", tone: "warn" });
+          return save();
+        }
+        await startGame(s);
+      }
       save(); return;
     }
     case "unready": {                       // take Ready back in team select; too late once the game has started
@@ -284,7 +292,7 @@ async function rematch(s, seat) {
   }
   clearTimers(s);
   s.over = false; s.match = null; s.gameKey = null; s.deadline = null; s.reward = null;
-  s.series = E().Series.create(s.bestOf);
+  s.series = E().Series.create(s.bestOf); s.clash = [];
   for (const x of s.seats) { x.rematch = false; x.next = false; if (x.kind === "human") { x.ready = false; x.team = null; } }
   if (s.kind === "npc" && s.prize) { const a = game.actors.get(s.seats[0].actorId); if (a && ownedCards(a).includes(s.prize.cid)) s.prize = null; }
   for (const x of s.seats) if (x.userId) sendInit(s, x.userId);
@@ -423,7 +431,16 @@ async function createNpc(userId, { challengerActorId, npcActorId, npcTokenUuid, 
   console.log(TAG, `${user?.name} (${actor.name}) challenged ${s.seats[1].name}`);
 }
 
-async function createPvp(userId, { fromActorId, toActorId, bestOf }) {
+// '' = both characters can field a team under these rules; a character with no playable team yet gets the starter
+// set on accept (three commons), so it is checked again then
+function rulesBlocker(format, actors) {
+  for (const a of actors) {
+    const owned = ownedCards(a); if (!canPlay(owned)) continue;
+    const why = E().Format.why(owned, format); if (why) return `${a.name} can't field a team for ${E().Format.summary(format)}: ${why}.`;
+  }
+  return "";
+}
+async function createPvp(userId, { fromActorId, toActorId, bestOf, format }) {
   const from = game.actors.get(fromActorId), to = game.actors.get(toActorId);
   if (!from || !to) return notify(userId, "That player's character couldn't be found.", "warn");
   const target = game.users.find((u) => !u.isGM && u.active && u.character?.id === to.id)
@@ -433,8 +450,10 @@ async function createPvp(userId, { fromActorId, toActorId, bestOf }) {
   if (inSession(userId) || inSession(target.id)) return notify(userId, "One of you is already in a card duel.", "warn");
   if (blockedBy(target, userId)) return notify(userId, `${to.name} isn't taking challenges tonight.`);
   const bo = [1, 3, 5].includes(Number(bestOf)) ? Number(bestOf) : 1;
+  const fmt = E().Format.norm(format);
+  const block = rulesBlocker(fmt, [from, to]); if (block) return notify(userId, block, "warn");
   const s = {
-    sid: uid(), kind: "pvp", hostId: game.user.id, createdAt: Date.now(), bestOf: bo, series: E().Series.create(bo),
+    sid: uid(), kind: "pvp", hostId: game.user.id, createdAt: Date.now(), bestOf: bo, format: fmt, clash: [], series: E().Series.create(bo),
     seats: [
       { userId, actorId: from.id, name: from.name, kind: "human", team: null, ready: false, next: false, lastTeam: null },
       { userId: target.id, actorId: to.id, name: to.name, kind: "human", team: null, ready: false, next: false, lastTeam: null },
@@ -442,7 +461,7 @@ async function createPvp(userId, { fromActorId, toActorId, bestOf }) {
     spectators: [], match: null, gameKey: null, deadline: null, quote: "", prize: null, npc: null, pending: true, over: false, reward: null,
   };
   sessions.set(s.sid, s);
-  send(target.id, "invite", { fromName: from.name, fromUser: userId, toName: to.name, bestOf: bo, img: from.img || "", expiresAt: Date.now() + INVITE_MS }, s.sid);
+  send(target.id, "invite", { fromName: from.name, fromUser: userId, toName: to.name, bestOf: bo, rules: E().Format.summary(fmt), img: from.img || "", expiresAt: Date.now() + INVITE_MS }, s.sid);
   notify(userId, `Challenge sent to ${to.name}.`);
   rt(s.sid).inviteTimer = setTimeout(() => {
     if (!sessions.get(s.sid)?.pending) return;
@@ -460,6 +479,10 @@ async function acceptPvp(s, userId) {
   for (const t of s.seats) {
     const a = game.actors.get(t.actorId);
     if (a && !canPlay(ownedCards(a))) { const g = await grantStarter(a); if (g.length) notify(t.userId, `${a.name} received a starter set of ${g.length} Fabula Arcana cards.`); }
+  }
+  const block = rulesBlocker(s.format, s.seats.map((t) => game.actors.get(t.actorId)).filter(Boolean));
+  if (block) {                 // a fresh starter set can't meet these rules: call the duel off on both sides
+    sessions.delete(s.sid); for (const t of s.seats) notify(t.userId, `Duel called off. ${block}`, "warn"); pushStatus(); return save();
   }
   for (const t of s.seats) send(t.userId, "open", { role: "player", hostId: s.hostId }, s.sid);
   pushStatus(); save();

@@ -39,6 +39,7 @@ must(`<script src="duel-assets.js"></script>`, `<script>\nconst ART = ${JSON.str
 must(`url("board.webp")`, `url("${board}")`);
 const invite = read("scripts/fabula-arcana/fa-invite-ui.js").replace(/^export /gm, "");
 const demo = fs.readFileSync(new URL("./demo.js", import.meta.url), "utf8");
-h += `\n<script>\n(() => {\n${invite}\nwindow.showInvitePanel = showInvitePanel;\n})();\n</script>\n<script>\n${demo}\n</script>\n`;
+h += `\n<script>\n(() => {\n${invite}\nwindow.showInvitePanel = showInvitePanel;
+window.showChallengeSetup = showChallengeSetup;\n})();\n</script>\n<script>\n${demo}\n</script>\n`;
 fs.writeFileSync(OUT, h);
 console.log("wrote", OUT, (fs.statSync(OUT).size / 1048576).toFixed(2), "MB");

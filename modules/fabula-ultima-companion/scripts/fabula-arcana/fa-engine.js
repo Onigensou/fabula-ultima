@@ -11,7 +11,7 @@
  * state at a time (`S`); the Match API sets it for each call, so states never leak between matches.
  *
  * Public API: globalThis.FabulaArcana.Engine
- *   .Match.create({ teams:[ids,ids], names?:[a,b] })   → match state (plain JSON-safe object)
+ *   .Match.create({ teams:[ids,ids], names?:[a,b], format? })   → match state (plain JSON-safe object)
  *   .Match.needs(state, seat)                          → this seat must commit in the current phase
  *   .Match.validate(state, seat, choice)               → null | error string
  *   .Match.submit(state, seat, choice)                 → { ok, error?, resolved? }  (resolves when every needed seat committed)
@@ -19,7 +19,12 @@
  *   .Match.aiChoice(state, seat, prof)                 → AI choice (public info only; never reads the other commit)
  *   .Match.publicView(state, viewerSeat|null)          → copy with hidden commits masked (null = spectator)
  *   .Series.create(bestOf) / .Series.record(series, result) → Best of 1/3/5 bookkeeping (draws are replayed)
- *   .setRng(fn) / .teamCost(ids) / .isLegalTeam(ids) / .randomTeam() / .IDS / .LEGAL_TEAMS
+ *   .setRng(fn) / .teamCost(ids) / .isLegalTeam(ids, format?) / .randomTeam() / .IDS / .LEGAL_TEAMS
+ *   .Format: { STANDARD, CUPS, norm(f), fits(ids, f), allowed(cid, f), legalTeams(ids, f), summary(f), why(owned, f) }
+ *     match rules the challenger sets (PvP). mode 'standard' = CFG.BUDGET★ budget · 'open' = no budget ·
+ *     'cup' = Constellation: the three cards match a star pattern (pat: three slots, 1/2/3 or 0 = any).
+ *     mirror false = a card on both teams clashes (the host strikes it, both re-pick). chars false = no character cards.
+ *     No format = STANDARD, so NPC duels, practice, drops and starter gifts are unchanged.
  *
  * Choices:  opening/replace phase → { replace: rosterIndex }     choose phase → { action, target? }
  *           action ∈ PASS | SWITCH | STRENGTH | GOLEM | REMEDY | SMOKE | SHARD | CAFE
@@ -406,14 +411,51 @@
   // ===================== match flow (pure state machine) =====================
   const withState = (state, fn) => { const prev = S; S = state; try { return fn(); } finally { S = prev; } };
   const blankStats = () => ({ acts:[{},{}], switches:[0,0], forced:[0,0], kos:[], aff:{}, zero:{ bothSwitch:0, noHpLost:0, healedBack:0 } });
-  const isLegalTeam = ids => Array.isArray(ids) && ids.length === CFG.TEAM && new Set(ids).size === ids.length
-    && ids.every(id => CARDS[id] && !CARDS[id].retired) && teamCost(ids) <= CFG.BUDGET;
+  // ---- match rules (format) ----
+  const FORMAT_STD = Object.freeze({ mode:'standard', pat:Object.freeze([1,1,2]), mirror:true, chars:true });
+  const CUPS = Object.freeze([
+    { id:'commoner', name:"Commoner's Cup", pat:[1,1,1], sub:'Commons only' },
+    { id:'vanguard', name:'Vanguard', pat:[1,1,2], sub:'Two commons + one elite' },
+    { id:'elite', name:'Elite Cup', pat:[2,2,2], sub:'Elites only' },
+    { id:'bossrush', name:'Boss Rush', pat:[3,3,3], sub:'Three bosses' },
+  ]);
+  function normFormat(f){
+    if (!f || typeof f !== 'object') return { mode:'standard', pat:[...FORMAT_STD.pat], mirror:true, chars:true };
+    const mode = ['standard','open','cup'].includes(f.mode) ? f.mode : 'standard';
+    const pat = Array.isArray(f.pat) && f.pat.length === CFG.TEAM ? f.pat.map(n => [0,1,2,3].includes(Number(n)) ? Number(n) : 0) : [...FORMAT_STD.pat];
+    return { mode, pat, mirror: f.mirror !== false, chars: f.chars !== false };
+  }
+  const fmtAllowed = (cid, f) => { const c = CARDS[cid]; if (!c) return false; f = normFormat(f);
+    if (!f.chars && c.character) return false; if (f.mode === 'cup' && !f.pat.some(p => !p || p === c.cost)) return false; return true; };
+  function patFits(ids, pat){ const need={1:0,2:0,3:0}; let any=0; pat.forEach(p => p ? need[p]++ : any++);
+    const have={1:0,2:0,3:0}; ids.forEach(id => have[CARDS[id].cost]++); let over=0; for (const k of [1,2,3]) over += Math.max(0, have[k]-need[k]); return over <= any; }
+  const fmtFits = (ids, f) => { f = normFormat(f); if (ids.some(id => !fmtAllowed(id, f))) return false;
+    if (f.mode === 'standard') return teamCost(ids) <= CFG.BUDGET; if (f.mode === 'cup') return patFits(ids, f.pat); return true; };
+  const isLegalTeam = (ids, format) => Array.isArray(ids) && ids.length === CFG.TEAM && new Set(ids).size === ids.length
+    && ids.every(id => CARDS[id] && !CARDS[id].retired) && fmtFits(ids, format);
+  function legalTeamsFor(ids, f){ const pool = [...new Set(ids)].filter(id => CARDS[id] && !CARDS[id].retired && fmtAllowed(id, f)), out=[];
+    for (let a=0;a<pool.length;a++) for (let b=a+1;b<pool.length;b++) for (let c=b+1;c<pool.length;c++){ const t=[pool[a],pool[b],pool[c]]; if (fmtFits(t, f)) out.push(t); } return out; }
+  const patText = p => p.map(n => n ? '★'.repeat(n) : 'Any').join(' · ');
+  const cupName = p => { const c = CUPS.find(c => c.pat.join() === p.join()); return c ? c.name : 'Custom constellation'; };
+  function fmtSummary(f){ f = normFormat(f);
+    const bits = [ f.mode==='standard' ? `Standard (${CFG.BUDGET}★ budget)` : f.mode==='open' ? 'Open (no budget)' : `${cupName(f.pat)} (${patText(f.pat)})` ];
+    if (!f.mirror) bits.push('No mirror cards'); if (!f.chars) bits.push('No character cards'); return bits.join(' · '); }
+  // why these owned cards can't make a team under the rules ('' = they can)
+  function fmtWhy(owned, f){ f = normFormat(f); if (legalTeamsFor(owned, f).length) return '';
+    if (f.mode === 'cup'){ const by = {}; f.pat.filter(Boolean).forEach(n => by[n] = (by[n]||0)+1);
+      const parts = Object.entries(by).map(([n,k]) => `${k} × ${'★'.repeat(+n)}`);
+      return `needs ${parts.join(' + ')}${f.pat.includes(0) ? ' + any' : ''}${f.chars ? '' : ', character cards banned'}`; }
+    return f.mode === 'standard' ? `needs three cards within ${CFG.BUDGET}★` : 'needs three cards'; }
+  const Format = Object.freeze({ STANDARD: FORMAT_STD, CUPS, norm: normFormat, fits: fmtFits, allowed: fmtAllowed, legalTeams: legalTeamsFor, summary: fmtSummary, why: fmtWhy, patText, cupName });
 
   const Match = {
-    create({ teams, names = null } = {}){
+    create({ teams, names = null, format = null } = {}){
       if (!teams || teams.length !== 2) throw new Error('Fabula Arcana: two teams required');
-      for (const t of teams) if (!isLegalTeam(t)) throw new Error('Fabula Arcana: illegal team ' + JSON.stringify(t));
-      return { v:1, phase:'opening', round:0, p:[mkPlayer(teams[0]), mkPlayer(teams[1])], names,
+      const fmt = normFormat(format);
+      for (const t of teams) if (!isLegalTeam(t, fmt)) throw new Error('Fabula Arcana: illegal team ' + JSON.stringify(t));
+      const shared = teams[0].filter(c => teams[1].includes(c));
+      if (!fmt.mirror && shared.length) throw new Error('Fabula Arcana: mirror cards are off but both teams hold ' + shared.join(', '));
+      return { v:1, phase:'opening', round:0, p:[mkPlayer(teams[0]), mkPlayer(teams[1])], names, format: fmt,
         commit:[null,null], result:null, capEnd:false, tiebreak:null, stats:blankStats(), log:[] };
     },
     needs(state, seat){
@@ -545,7 +587,7 @@
   };
 
   const Engine = Object.freeze({
-    Match, Series, View, foretellSeat, foxFire: (state, m) => withState(state, () => foxFire(m)), IDS, LEGAL_TEAMS, isLegalTeam, teamCost, compKey, randomTeam, elMod,
+    Match, Series, View, Format, foretellSeat, foxFire: (state, m) => withState(state, () => foxFire(m)), IDS, LEGAL_TEAMS, isLegalTeam, teamCost, compKey, randomTeam, elMod,
     setRng(fn){ RNG = typeof fn === 'function' ? fn : Math.random; },
     // low-level hooks for tests and the balance tool (run inside a state)
     _withState: withState, _resolveRound: ch => resolveRound(ch), _calcAttack: (a, d, ctx) => calcAttack(a, d, ctx), _mkPlayer: mkPlayer,

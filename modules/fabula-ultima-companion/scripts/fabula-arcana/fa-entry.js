@@ -9,7 +9,8 @@
 
 import { TAG, MODULE_ID, FLAG_DUELIST, gp, isCampScene, cameraRuntime, hostGM } from "./fa-const.js";
 import { send } from "./fa-net.js";
-import { status } from "./fa-client.js";
+import { status, playUi } from "./fa-client.js";
+import { showChallengeSetup } from "./fa-invite-ui.js";
 
 const LAYER_ID = "fa-duel-layer", ICON_LAYER_ID = "fa-duel-icons", STYLE_ID = "fa-duel-style";
 const ANIM_OUT_MS = 140;
@@ -73,12 +74,21 @@ export async function challengeNpc(token, { challenger = null, practice = null }
   const h = hostId() ?? game.user.id;   // no GM online → this client hosts its own NPC duel
   send(h, "challenge-npc", { challengerActorId: actor.id, npcActorId: token?.actor?.id ?? null, npcTokenUuid: token?.document?.uuid ?? null, practice });
 }
-export async function challengePlayer(targetActor, { bestOf = 1, challenger = null } = {}) {
+// camp challenge: the challenger first picks the match rules + Best of (the last ones used come back pre-set)
+const RULES_KEY = "fa.challengeRules";
+const lastRules = () => { try { const v = JSON.parse(localStorage.getItem(RULES_KEY) || "null"); return v && typeof v === "object" ? v : {}; } catch { return {}; } };
+export function openChallenge(targetActor) {
+  if (!targetActor) return;
+  const last = lastRules();
+  showChallengeSetup({ toName: targetActor.name, img: targetActor.img || "", bestOf: last.bestOf ?? 1, format: last.format ?? null, sound: playUi,
+    onSend: ({ bestOf, format }) => { try { localStorage.setItem(RULES_KEY, JSON.stringify({ bestOf, format })); } catch {} challengePlayer(targetActor, { bestOf, format }); } });
+}
+export async function challengePlayer(targetActor, { bestOf = 1, format = null, challenger = null } = {}) {
   const me = challenger ?? (await resolveChallenger());
   if (!me || !targetActor) return;
   const h = hostId();
   if (!h) return ui.notifications?.warn("Fabula Arcana | A GM needs to be online to referee a duel between players.");
-  send(h, "challenge-pvp", { fromActorId: me.id, toActorId: targetActor.id, bestOf });
+  send(h, "challenge-pvp", { fromActorId: me.id, toActorId: targetActor.id, bestOf, format });
 }
 export function spectate(sid) {
   // the host checks the duel exists; this client's status list may not have caught up yet
@@ -185,7 +195,7 @@ async function scan() {
         if (!me || t.id === me.id || !party.has(t.actor.id) || t.actor.isOwner) continue;
         const ownerOnline = game.users.some((u) => !u.isGM && u.active && u.id !== game.user.id && t.actor.testUserPermission(u, "OWNER"));
         if (!ownerOnline || activeDuelOf(t.actor.id)) continue;
-        if (near(me, t)) pvpMap.set(t.id, () => challengePlayer(t.actor));
+        if (near(me, t)) pvpMap.set(t.id, () => openChallenge(t.actor));
       }
     }
     // Watch: duelists (and the NPC they challenged) for anyone not playing
