@@ -12,6 +12,7 @@
 //   silence   speech bubble beside the head with "…" filling in
 //   provoked  throbbing red anger vein at the temple (taunts too)
 //   sleep     three Zs drifting up from the head
+//   berserk   red rage aura: a throbbing red underglow, red streaks ripping up off the body + red wash
 //   armorbreak / magicbreak   beside the chest on the unit's back side, just outside the
 //             frame: the word DEF / MDEF + a small bobbing down arrow, no tile or frame,
 //             orange = DEF (Armor Break, and Rakshasa's Crippled), blue = M.DEF (Magic
@@ -68,9 +69,10 @@ const REF_H = 250;                 // the sprite height the particle sizes were 
 const EYE_Y = 0.15;
 
 // Body washes (multiply, 0..1 strength). One per token: first in this order wins.
-const WASH_ORDER = ["burn", "poison", "wet", "paralyze"];
+const WASH_ORDER = ["burn", "berserk", "poison", "wet", "paralyze"];
 const WASH = {
   burn: { color: "#ffc993", strength: 0.35 },
+  berserk: { color: "#ff9a9a", strength: 0.3 },
   poison: { color: "#a6e58a", strength: 0.42 },
   wet: { color: "#a9c9ff", strength: 0.38 },
   paralyze: { color: "#fff0a6", strength: 0.3 },
@@ -90,6 +92,14 @@ function ensureStyles() {
 .fu-cue { position: absolute; left: 0; top: 0; pointer-events: none; transition: opacity 250ms ease; }
 .fu-cue.is-anim-hidden { opacity: 0 !important; }
 .fu-cue i, .fu-cue b, .fu-cue svg, .fu-cue span { position: absolute; display: block; }
+/* berserk */
+.fu-cue .bz { left: 4%; right: 4%; bottom: 0; height: 16%; border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255,40,30,.75), rgba(200,0,0,0) 70%); animation: fuCueRage .5s ease-in-out infinite alternate; }
+.fu-cue .bs { width: calc(var(--s) * .32); height: var(--s); margin-left: calc(var(--s) * -.16); border-radius: 50%;
+  background: linear-gradient(to top, rgba(255,40,30,0), rgba(255,60,40,.95) 45%, #ffd0c0); filter: drop-shadow(0 0 3px rgba(255,30,20,.9));
+  opacity: 0; animation: fuCueRageUp .7s ease-in infinite; }
+@keyframes fuCueRage { from { opacity: .55; transform: scaleX(.92); } to { opacity: 1; transform: scaleX(1.06); } }
+@keyframes fuCueRageUp { 0% { transform: translateY(0) scaleY(.4); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(var(--rise)) scaleY(1.1); opacity: 0; } }
 /* burn */
 .fu-cue .fl { width: var(--s); height: calc(var(--s) * 1.5); margin-left: calc(var(--s) * -.5); border-radius: 50% 50% 42% 42% / 66% 66% 34% 34%;
   background: radial-gradient(ellipse at 50% 70%, #fffbe0 0, #ffe06a 20%, #ff9a2a 45%, rgba(255,80,10,.85) 60%, rgba(255,60,0,0) 74%);
@@ -290,6 +300,15 @@ function cueHTML(token, cues, w, H) {
     for (let i = 0; i < 10; i++) {
       d = 0.9 + r() * 0.6;
       h += `<i class="fl" style="left:${px(w * (0.22 + r() * 0.56))};bottom:${px(H * (0.06 + r() * 0.5))};--s:${px((13 + r() * 11) * k)};--rise:${px(-74 * k)};animation-duration:${d.toFixed(2)}s;animation-delay:-${(r() * d).toFixed(2)}s"></i>`;
+    }
+  }
+  if (cues.has("berserk")) {
+    r = rng(id + "z");
+    h += `<i class="bz"></i>`;
+    for (let i = 0; i < 9; i++) {
+      d = 0.55 + r() * 0.35;
+      const side = i % 2 ? 1 : 0;
+      h += `<i class="bs" style="left:${px(w * (side ? 0.62 + r() * 0.22 : 0.16 + r() * 0.22))};bottom:${px(H * (0.1 + r() * 0.55))};--s:${px((22 + r() * 16) * k)};--rise:${px(-60 * k)};animation-duration:${d.toFixed(2)}s;animation-delay:-${(r() * d).toFixed(2)}s"></i>`;
     }
   }
   if (cues.has("poison")) {
