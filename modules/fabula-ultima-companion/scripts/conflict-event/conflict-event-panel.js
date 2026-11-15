@@ -277,6 +277,11 @@ function showLabel() {
   document.addEventListener("visibilitychange", onVis);
 }
 
+/** The event the emblem is showing on this client, or null. */
+export function conflictEventEmblemId() {
+  return S.eventId ?? null;
+}
+
 /** One swell + ring in the event's colour. Called by an event's FX on every client. */
 export function pulseConflictEventEmblem() {
   const el = document.getElementById(ROOT_ID);

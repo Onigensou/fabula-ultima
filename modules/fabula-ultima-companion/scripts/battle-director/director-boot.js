@@ -87,6 +87,7 @@ import { initBattleStage3d } from "./battle-stage-3d.js";
 import { initBattleStageAmbient } from "./battle-stage-ambient.js";
 import { initLightningRodCursor } from "../conflict-event/lightning-rod-cursor.js";
 import { initLightningCrystalCountdown } from "../conflict-event/lightning-crystal-countdown.js";
+import { initConflictFieldPulse } from "../conflict-event/conflict-field-pulse.js";
 import { initSoulFragmentBadge } from "../conflict-event/soul-fragment-badge.js";
 import { initSoulFx } from "../conflict-event/soul-fx/soul-fx-runtime.js";
 import { initSealingCrystal } from "../sealing-crystal/crystal-runtime.js";
@@ -2079,6 +2080,8 @@ Hooks.once("ready", () => {
   catch (e) { warn("initLightningRodCursor on ready threw", e); }
   try { initLightningCrystalCountdown(); }
   catch (e) { warn("initLightningCrystalCountdown on ready threw", e); }
+  try { initConflictFieldPulse(); }
+  catch (e) { warn("initConflictFieldPulse on ready threw", e); }
   try { initSoulFragmentBadge(); }
   catch (e) { warn("initSoulFragmentBadge on ready threw", e); }
   try { initSoulFx(); }

@@ -24,6 +24,8 @@ import {
   clearConflictEvents,
   normalizeRuling,
   DEFAULT_RULING_COLOR,
+  normalizeModifiers,
+  statusModifierOf,
 } from "./conflict-event-registry.js";
 
 let pass = 0, fail = 0;
@@ -173,6 +175,31 @@ eq("a ruling with no readable page is no ruling", normalizeRuling({ pages: [page
 eq("a non-object ruling is ignored", normalizeRuling("rules", quiet), null);
 eq("ruling is not mistaken for a typo'd handler",
   (clearConflictEvents(), registerConflictEvent({ id: "r", onConflictStart: noop, ruling: { pages: [page("x")] } }, quiet)), true);
+
+// ── modifiers (Sylphid Blaze) ───────────────────────────────────────────────
+
+const sb = { statusCharges: { Burn: 1 }, statusDamage: { Burn: 1.1 } };
+eq("modifiers normalise to lower-cased status keys",
+  normalizeModifiers(sb, quiet), { statusCharges: { burn: 1 }, statusDamage: { burn: 1.1 } });
+eq("an unknown modifier kind is dropped",
+  normalizeModifiers({ statusHeal: { Burn: 2 } }, quiet), null);
+eq("non-numbers are dropped", normalizeModifiers({ statusCharges: { Burn: "lots" } }, quiet), null);
+eq("a +0 bonus and a ×1 multiplier do nothing, so they are dropped",
+  normalizeModifiers({ statusCharges: { Burn: 0 }, statusDamage: { Burn: 1 } }, quiet), null);
+eq("a modifiers-only event registers without handlers",
+  (clearConflictEvents(), registerConflictEvent({ id: "sb", modifiers: sb }, quiet)), true);
+eq("modifiers is not mistaken for a typo'd handler",
+  (() => { let warned = false; clearConflictEvents();
+    registerConflictEvent({ id: "sb", modifiers: sb }, { warn: () => { warned = true; } }); return warned; })(), false);
+eq("an event with neither handlers nor modifiers is still refused",
+  (clearConflictEvents(), registerConflictEvent({ id: "empty", modifiers: { statusCharges: { Burn: 0 } } }, quiet)), false);
+clearConflictEvents();
+registerConflictEvent({ id: "sb", modifiers: sb }, quiet);
+eq("statusModifierOf: Burn charges +1 (any case)", statusModifierOf(getConflictEvent("sb"), "statusCharges", "BURN"), 1);
+eq("statusModifierOf: Burn damage ×1.1", statusModifierOf(getConflictEvent("sb"), "statusDamage", "Burn"), 1.1);
+eq("statusModifierOf: Poison is neutral (charges 0)", statusModifierOf(getConflictEvent("sb"), "statusCharges", "Poison"), 0);
+eq("statusModifierOf: Poison is neutral (damage 1)", statusModifierOf(getConflictEvent("sb"), "statusDamage", "Poison"), 1);
+eq("statusModifierOf: no event is neutral", statusModifierOf(null, "statusDamage", "Burn"), 1);
 
 console.log(`\n${fail === 0 ? "PASS" : "FAIL"} — ${pass} passed, ${fail} failed`);
 process.exit(fail === 0 ? 0 : 1);

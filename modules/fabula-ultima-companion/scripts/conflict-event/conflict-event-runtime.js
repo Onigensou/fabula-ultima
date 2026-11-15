@@ -36,7 +36,7 @@
 // reads; there is no cache to go stale, and F5-resume works for free.
 // ============================================================================
 
-import { getConflictEvent } from "./conflict-event-registry.js";
+import { getConflictEvent, statusModifierOf } from "./conflict-event-registry.js";
 import { resolveConflictEventId } from "./conflict-event-binding.js";
 
 const TAG = "[FU][ConflictEvent]";
@@ -85,6 +85,28 @@ export function activeConflictEvent(director) {
     return null;
   }
   return { id, event, source };
+}
+
+/**
+ * The active event's `modifiers` value for one status, for BD's executor
+ * (skill-effects.js apply_ae / deal_damage). Synchronous and cheap: a couple of
+ * property reads, no awaits, safe on the hot path. Neutral (0 / 1) with no
+ * director, no live combat, `none`, or an event that names nothing for it.
+ *
+ *   kind: "statusCharges" → extra stacks per application
+ *         "statusDamage"  → damage-tick multiplier
+ */
+export function conflictStatusModifier(director, kind, statusName) {
+  try {
+    // Free Round included, unlike the lifecycle beats: a modifier is a property
+    // of the field, not a hazard that waits for Round 1 to start.
+    if (!director?.dCombat?.started) return statusModifierOf(null, kind, statusName);
+    const active = activeConflictEvent(director);
+    return statusModifierOf(active?.event ?? null, kind, statusName);
+  } catch (e) {
+    warn("conflictStatusModifier failed — neutral value used", e);
+    return statusModifierOf(null, kind, statusName);
+  }
 }
 
 /**

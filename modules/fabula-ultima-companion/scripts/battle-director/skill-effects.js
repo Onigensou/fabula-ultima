@@ -5115,6 +5115,27 @@ async function applyPlayPoseEffect(row, ctx) {
   }
 }
 
+// ── Conflict-event modifiers — a battlefield rule that changes a number ──────
+//
+// The active conflict event's `modifiers` (conflict-event-registry.js), read at
+// the two places a number is decided: apply_ae's stack count and deal_damage's
+// status tick. Sylphid Blaze: { statusCharges: { Burn: 1 }, statusDamage: { Burn: 1.1 } }.
+// Neutral (0 / 1) out of combat, with `none`, or when the event names nothing.
+let _conflictRuntime = null;
+async function conflictEventModifier(ctx, kind, statusName) {
+  const neutral = kind === "statusDamage" ? 1 : 0;
+  try {
+    const bd = globalThis.FUCompanion?.api?.experimental?.battleDirector;
+    const director = ctx?.director ?? bd?.getActiveDirector?.() ?? null;
+    if (!director?.dCombat) return neutral;
+    _conflictRuntime ??= await import("../conflict-event/conflict-event-runtime.js");
+    return _conflictRuntime.conflictStatusModifier(director, kind, statusName);
+  } catch (e) {
+    warn("skill-effects: conflict-event modifier lookup failed — neutral", e);
+    return neutral;
+  }
+}
+
 // ── conflict_event_action — a skill asks the active conflict event to act ────
 //
 //   { effect_kind: "conflict_event_action",
@@ -6733,7 +6754,22 @@ async function dealDamageApply(row, ctx, d) {
       round: ctx.dCombat?.round ?? 0,
       vars: { CASTER_LEVEL: _casterLevel, CASTER_SHIELD: _casterShield },
     });
-    const amount = Math.floor(Number(evaluateFormula(amountFormula, resolver, 0)) || 0);
+    let amount = Math.floor(Number(evaluateFormula(amountFormula, resolver, 0)) || 0);
+    // Conflict-event status-damage multiplier (Sylphid Blaze: Burn ×1.1). Keyed
+    // on `emit_status`, which the status's own tick row carries AND the
+    // trigger_status replay sets (Flame Claw / Meteor run the same tick).
+    // Before affinity, floored — same place the tick's own formula lands.
+    {
+      const tickStatus = String(row.emit_status ?? "").trim();
+      if (tickStatus && amount > 0) {
+        const mult = await conflictEventModifier(ctx, "statusDamage", tickStatus);
+        if (mult !== 1) {
+          const next = Math.floor(amount * mult);
+          log(`skill-effects.deal_damage: conflict event ${tickStatus} ×${mult} on ${actor.name} — ${amount} → ${next}`);
+          amount = next;
+        }
+      }
+    }
     if (amount <= 0) {
       log(`skill-effects.deal_damage: amount ≤ 0 for ${actor.name} (row "${row.effect_label}"); skipping`);
       continue;
@@ -7782,6 +7818,15 @@ async function applyApplyAeEffect(row, ctx) {
           log(`skill-effects.apply_ae add_charges: ${actor.name} resists "${template.name}" — +${addCharges} clamped to +1`);
           addCharges = 1;
         }
+        // Conflict-event stack bonus (Sylphid Blaze: Burn +1). After the RS
+        // clamp — a resisted Burn lands 1, then +1. Only on a real gain.
+        if (addCharges > 0) {
+          const bonus = await conflictEventModifier(ctx, "statusCharges", template.name);
+          if (bonus) {
+            log(`skill-effects.apply_ae add_charges: conflict event "${template.name}" ${bonus > 0 ? "+" : ""}${bonus} on ${actor.name}`);
+            addCharges = Math.max(0, addCharges + bonus);
+          }
+        }
         const maxCharges = (rowChargesMax != null && Number.isFinite(rowChargesMax))
           ? rowChargesMax
           : (Number(existing.flags?.[FLAG_NS]?.chargesMax ?? template.flags?.[FLAG_NS]?.chargesMax ?? 99999) || 99999);
@@ -8242,6 +8287,23 @@ async function applyApplyAeEffect(row, ctx) {
         }
         return true;
       });
+    }
+    // Conflict-event stack bonus on a FRESH application (Sylphid Blaze: a first
+    // Burn of 3 lands as 4). The add_charges branch above covers stacking onto
+    // an existing one. `charges` is final here: row override, RS clamp and the
+    // duration seeding have all run.
+    {
+      const cur = Number(data.flags?.[FLAG_NS]?.charges);
+      if (Number.isFinite(cur) && cur > 0) {
+        const bonus = await conflictEventModifier(ctx, "statusCharges", template.name);
+        if (bonus) {
+          const cap = Number(data.flags[FLAG_NS].chargesMax);
+          const next = Math.max(1, Number.isFinite(cap) && cap > 0 ? Math.min(cap, cur + bonus) : cur + bonus);
+          log(`skill-effects.apply_ae: conflict event "${template.name}" on ${actor.name} — charges ${cur} → ${next}`);
+          data.flags[FLAG_NS].charges = next;
+          if (data.flags?.statuscounter?.visible === true) data.flags.statuscounter.value = next;
+        }
+      }
     }
     if (replaceTarget) {
       // Refresh in place (one write). `data` carries no `_id` (deleted above),

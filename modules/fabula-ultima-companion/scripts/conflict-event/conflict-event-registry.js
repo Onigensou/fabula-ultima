@@ -128,7 +128,69 @@ export const EVENT_HANDLERS = Object.freeze([
 // (conflict-event-panel.js): the emblem by the dice, its battle-start line and
 // the tutorial pages. See normalizeRuling for the shape. An event with no
 // `ruling` shows no emblem at all, which is how a story gimmick stays a surprise.
-const EVENT_META = Object.freeze(["id", "label", "description", "objectives", "actions", "ruling"]);
+//
+// `modifiers` is a battlefield rule that changes a number INSIDE BD's own
+// executor, where no lifecycle handler can reach without racing it:
+//
+//   modifiers: {
+//     statusCharges: { Burn: 1 },     // every application of N stacks lands N+1
+//     statusDamage:  { Burn: 1.1 },   // the status's damage tick, ×1.1, floored
+//   }
+//
+// Read by skill-effects.js (apply_ae, deal_damage) through
+// conflictStatusModifier in conflict-event-runtime.js. Keyed by status NAME,
+// case-insensitive. See normalizeModifiers.
+const EVENT_META = Object.freeze(["id", "label", "description", "objectives", "actions", "ruling", "modifiers"]);
+
+/** The modifier kinds BD knows how to read. */
+export const MODIFIER_KINDS = Object.freeze(["statusCharges", "statusDamage"]);
+
+/**
+ * Validate and freeze an event's `modifiers`. Unknown kinds and non-numeric
+ * values are dropped with a warning; a bonus of 0 or a multiplier of 1 is
+ * dropped silently (it would do nothing). Keys are lower-cased status names.
+ * Returns null when nothing usable is left.
+ */
+export function normalizeModifiers(raw, { id = "?", warn = console.warn } = {}) {
+  if (raw == null) return null;
+  if (typeof raw !== "object") {
+    warn(`[FU][ConflictEvent] "${id}": modifiers must be an object — ignored`);
+    return null;
+  }
+  const out = {};
+  for (const [kind, table] of Object.entries(raw)) {
+    if (!MODIFIER_KINDS.includes(kind)) {
+      warn(`[FU][ConflictEvent] "${id}": unknown modifier "${kind}" — ignored. Known: ${MODIFIER_KINDS.join(", ")}`);
+      continue;
+    }
+    const rows = {};
+    for (const [status, value] of Object.entries(table ?? {})) {
+      const key = String(status ?? "").trim().toLowerCase();
+      const n = Number(value);
+      if (!key || !Number.isFinite(n)) {
+        warn(`[FU][ConflictEvent] "${id}": ${kind}.${status} must be a number — ignored`);
+        continue;
+      }
+      if (kind === "statusCharges" && n === 0) continue;
+      if (kind === "statusDamage" && (n === 1 || n < 0)) continue;
+      rows[key] = n;
+    }
+    if (Object.keys(rows).length) out[kind] = Object.freeze(rows);
+  }
+  return Object.keys(out).length ? Object.freeze(out) : null;
+}
+
+/**
+ * What a registered event's modifier says for one status, or the neutral value
+ * (0 for statusCharges, 1 for statusDamage) when it says nothing.
+ */
+export function statusModifierOf(event, kind, statusName) {
+  const neutral = kind === "statusDamage" ? 1 : 0;
+  const key = String(statusName ?? "").trim().toLowerCase();
+  if (!key) return neutral;
+  const v = event?.modifiers?.[kind]?.[key];
+  return Number.isFinite(v) ? v : neutral;
+}
 
 /** The emblem colour of an event whose `ruling` names none. */
 export const DEFAULT_RULING_COLOR = "#b3261e";
@@ -214,7 +276,11 @@ export function registerConflictEvent(event, { warn = console.warn } = {}) {
     }
   }
 
-  if (!EVENT_HANDLERS.some((key) => typeof event[key] === "function")) {
+  const modifiers = normalizeModifiers(event.modifiers, { id, warn });
+
+  // An event that only carries modifiers (Sylphid Blaze) does its work inside
+  // BD's executor and needs no handler.
+  if (!modifiers && !EVENT_HANDLERS.some((key) => typeof event[key] === "function")) {
     warn(`[FU][ConflictEvent] "${id}": implements no handlers — it would never do anything`);
     return false;
   }
@@ -233,6 +299,7 @@ export function registerConflictEvent(event, { warn = console.warn } = {}) {
     objectives: event.objectives ?? null,
     actions: Object.freeze({ ...(event.actions ?? {}) }),
     ruling: normalizeRuling(event.ruling, { id, warn }),
+    modifiers,
   }));
   return true;
 }

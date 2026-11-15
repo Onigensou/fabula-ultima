@@ -40,6 +40,8 @@ import {
 import "./events/lightning-storm.js";
 import "./events/lightning-crystal.js";
 import "./events/soul-tithe.js";
+import "./events/updraft.js";
+import "./events/sylphid-blaze.js";
 
 const TAG = "[FU][ConflictEvent]";
 
