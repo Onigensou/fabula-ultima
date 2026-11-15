@@ -58,6 +58,11 @@ const ART = {
  "jack": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Jack/Jack_Standard.png",
  "jill": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Jill/Jill_Standard.png",
  "hilde": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Princess%20Hilde/Hilde_Standard.png",
+ "brucev": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Bruce%20V.png",
+ "nullis": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Nullis.png",
+ "gardner": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Gardner.png",
+ "fx_nullguard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20UP.png",
+ "fx_rival": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20UP.png",
  "fx_serenade": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/AttackUp.png",
  "fx_breath": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Poison.png",
  "fx_berserk": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/ATTACK%20DOUBLE%20UP.png",
@@ -100,7 +105,7 @@ const HOLO_VIDEO = {
  "gryphon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Gryphon/Gryphon_Standard.webm"
 };
 // still art that faces LEFT like the character battlers (mirrored the same way on the board)
-const FACE_LEFT = ['jack','jill','love'];
+const FACE_LEFT = ['jack','jill','love','brucev','nullis','gardner'];
 const SFXDATA = {};
 const SFXURL = {
  "nav": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Book1.ogg",

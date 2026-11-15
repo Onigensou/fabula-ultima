@@ -152,7 +152,7 @@ const blank = blankStats;
   S = duel(A('hellhound'), ['roper','flame','kirin'], {hp:[30,1]}); r=go(P,P); S.p[1].pending=true; r=go(P,{replace:1,action:'PASS'});
   ok(S.p[1].active===1 && !(r.ev.entry||[]).length, 'Dynamic Entry does not trigger on a forced replacement');
   // pool
-  ok(R.IDS.length===35 && ['obsidrax','roo','walrog','gorger','sylph','succubus','hina','zarg','raubens','geist','kalina','blanche','keren','gryphon','love','jack','jill','hilde','carlbero'].every(k=>R.IDS.includes(k)) && !R.IDS.some(k=>['broo','life'].includes(k)), 'pool = 35 cards (23 + 12 character cards; Bandit Roo retired)');
+  ok(R.IDS.length===38 && ['obsidrax','roo','walrog','gorger','sylph','succubus','hina','zarg','raubens','geist','kalina','blanche','keren','gryphon','love','jack','jill','hilde','carlbero','brucev','nullis','gardner'].every(k=>R.IDS.includes(k)) && !R.IDS.some(k=>['broo','life'].includes(k)), 'pool = 38 cards (23 + 15 character cards; Bandit Roo retired)');
   // Succubus Charm
   S = duel(A('hellhound'), ['roper','succubus','kirin'], {hp:[30,30]}); S.p[1].roster[1].hp=30; r=go(P,{action:'SWITCH',target:1});
   const c1=dmg0(); r=go(P,P); const c2=dmg0(); r=go(P,P); const c3=dmg0();
@@ -205,7 +205,20 @@ const blank = blankStats;
   r=go({action:'SWITCH',target:1},P); ok(S.p[0].roster[1].ser>=R.getS().round+2 && !S.p[0].roster[2].ser, 'Love Serenade: switching Love out buffs the card coming in (only it)');
   r=go(P,P); ok(dmg0()===6 && r.ev.res[1].dmg===2, 'Love Serenade: the buffed card hits +2 (Hellhound 4+2 = 6) and has +2 DEF (Wolf 3+1 Howl − 2 = 2)');
   S = duel(['hellhound','love','cryo'], B('wolf'), {hp:[30,30]}); r=go({action:'SWITCH',target:1},P); ok(!S.p[0].roster[0].ser && !S.p[0].roster[2].ser, 'Love Serenade: switching Love IN buffs nobody');
-  S = duel(A('jack'), B('rgolem'), {hp:[30,30]}); r=go(P,P); ok(dmg0()===3, 'Jack: attacks ignore DEF (3 vs Rock Golem DEF 2)');
+  // ---- batch 4 (11-16): Jack Thief Bow, Bruce V, Nullis, Gardner, Rival ----
+  S = duel(A('jack'), B('rgolem'), {hp:[30,30]}); r=go(P,P); const tb0=dmg0(); r=go(P,{action:'CAFE'}); const tb1=dmg0();
+  ok(tb0===1 && tb1===3, 'Jack Thief Bow: no longer ignores DEF (3 − 2 = 1); +2 ATK in a round the opponent uses an item (5 − 2 = 3) (got '+tb0+'/'+tb1+')');
+  S = duel(A('jack'), B('manaray'), {hp:[30,30]}); r=go({action:'STRENGTH'},P); ok(dmg0()===5, 'Jack Thief Bow: his OWN item does not trigger it (3 + 2 Strength = 5)');
+  S = duel(A('brucev'), B('rgolem'), {hp:[30,30]}); r=go(P,P); ok(dmg0()===4 && /Teleportation Strike/.test(r.ev.res[0].line), 'Bruce V: ignores 2 DEF (4 vs Rock Golem DEF 2 = 4)');
+  S = duel(A('brucev'), B('wolf'), {hp:[30,30]}); r=go(P,{action:'GOLEM'}); ok(dmg0()===1 && !/Teleportation Strike/.test(r.ev.res[0].line), "Bruce V: Golem Fragment's block is not DEF he can ignore (4 − 3 = 1), no band on DEF 0");
+  S = duel(A('nullis'), B('roper'), {hp:[30,30]}); r=go(P,P); const ng0=r.ev.res[1].dmg; r=go(P,{action:'STRENGTH'}); const ng1=r.ev.res[1].dmg, ngL=r.ev.res[1].line; r=go(P,{action:'SMOKE'}); const ng2=r.ev.res[1].dmg, ngS=r.ev.res[1].line;
+  ok(ng0===2 && ng1===1 && ng2===3 && /Null Guard \+3/.test(ngL) && !/Null Guard/.test(ngS),'Nullis Null Guard: 3 − 1 = 2; vs an item +3 DEF (5 − 4 = 1); Smoke Bomb ignores it (3) (got '+[ng0,ng1,ng2]+')');
+  S = duel(A('gardner'), B('roper'), {hp:[30,30]}); r=go(P,P); const ha0=r.ev.res[1].dmg; const haL=r.ev.res[1].line; r=go(P,{action:'STRENGTH'}); const ha1=r.ev.res[1].dmg;
+  ok(ha0===1 && /Heavy Armor \+2/.test(haL) && ha1===3, 'Gardner Heavy Armor: +2 DEF when the opponent Passes (3 − 4 → 1); not on an item round (5 − 2 = 3) (got '+ha0+'/'+ha1+')');
+  S = duel(A('gardner'), B('brucev'), {hp:[30,30]}); r=go(P,P); ok(r.ev.res[1].dmg===2, 'Bruce V vs Heavy Armor: ignores 2 of the 4 DEF (4 − 2 = 2)');
+  S = duel(['gardner','nullis','cryo'], B('roper'), {hp:[30,30]}); S.p[0].roster[1].ko=true; S.p[0].roster[1].hp=0; r=go(P,{action:'STRENGTH'});
+  ok(r.ev.res[1].dmg===2 && /Rival \+1/.test(r.ev.res[1].line), 'Rival: Gardner +1 DEF once Nullis has fallen (5 − 3 = 2)');
+  S = duel(['nullis','gardner','cryo'], B('roper'), {hp:[30,30]}); r=go(P,{action:'STRENGTH'}); ok(r.ev.res[1].dmg===1 && !/Rival/.test(r.ev.res[1].line), 'Rival: no bonus while Gardner is alive');
   S = duel(['jack','jill','cryo'], B('wolf'), {hp:[30,30]}); S.p[0].roster[1].ko=true; S.p[0].roster[1].hp=0; r=go(P,P); ok(dmg0()===6, 'Twin: Jack +1 ATK once Jill has fallen (3+1, Poison vs Physical +2 = 6)');
   S = duel(A('jill'), B('kirin'), {hp:[6,30]}); r=go(P,P); ok(dmg0()===5 && r.ev.res[1].dmg===3, 'Jill Berserk at half HP: +3 ATK (6 − Kirin DEF 1 = 5) and takes +1 (Kirin 2 → 3)');
   // Royal Grace (GRACE_MODE 4, 11-15): Pass → Regen field; from next round, for 4 rounds, the active card heals 3 at end of round (not Hilde)

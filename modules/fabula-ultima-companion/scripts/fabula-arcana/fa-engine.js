@@ -84,6 +84,7 @@
     const pyre = att.cid==='pyrefly' && ((att.burn||{})[def.i]||0)>=CFG.PYRE_N; if (pyre){ atk+=CFG.PYRE_BURST; parts.push(`+${CFG.PYRE_BURST} Funeral Pyre`); }
     const kcharge = att.cid==='kirin' && !!(att.chg && att.chg[S.round]); if (kcharge){ atk+=CFG.KCHARGE; parts.push(`+${CFG.KCHARGE} Lightning Charge`); }
     if (att.cid==='gigas' && D.def>=1){ atk+=1; parts.push('+1 Crushing Blow'); }
+    if (att.cid==='jack' && ITEMS[ctx.defItem]){ atk+=CFG.THIEF_BOW; parts.push(`+${CFG.THIEF_BOW} Thief Bow`); }
     if (att.cid==='manaray' && ITEMS[ctx.defItem]){ atk+=1; parts.push('+1 Mana Catcher'); }
     if (att.cid==='hellhound' && def.hp*2<=D.hp){ atk+=1; parts.push('+1 On the Hunt'); }
     if (att.cid==='roper' && ctx.defSwitchedIn){ atk+=1; parts.push('+1 Entangle'); }
@@ -97,8 +98,14 @@
     const smoke = ctx.attItem==='SMOKE', golem = ctx.defItem==='GOLEM';
     const slip = def.cid==='gryphon' && spdNow(att) < spdNow(def);
     const pdef = Math.max(0, (landD ? D.atk : D.def) + ((def.ser||0)>=S.round ? (CFG.SERENADE_DEF ?? CFG.SERENADE) : 0) - ((def.breath||0)>=S.round ? 1 : 0) + (slip ? CFG.SLIPSTREAM : 0));
-    const marks = att.cid==='jack', ddef = (smoke || marks) ? 0 : pdef;
-    let d = Math.max(1, atk - ddef); let line = head + (ddef?` − DEF ${ddef}${landD?' (landing)':''}`:'') + (smoke && (pdef || golem) ? ' · <b>Smoke Bomb</b> ignores DEF' : '') + (marks && !smoke && pdef ? ' · <b>Deadly Marksmanship</b> ignores DEF' : '') + (slip && ddef ? ' (Slipstream +' + CFG.SLIPSTREAM + ')' : '') + ` = ${d}`;
+    // batch 4 (11-16): Null Guard (opponent used an item), Heavy Armor (opponent Passed), Rival (+1 once the rival ally fell),
+    // Bruce V's Teleportation Strike (ignores 2 DEF; card DEF only, Golem Fragment's block is separate). Smoke Bomb still ignores all of it.
+    const nullG = def.cid==='nullis' && ITEMS[ctx.attItem] ? CFG.NULL_GUARD : 0, heavy = def.cid==='gardner' && ctx.attItem==='PASS' ? CFG.HEAVY_ARMOR : 0;
+    const rival = (def.cid==='nullis' && twinDown(def,'gardner')) || (def.cid==='gardner' && twinDown(def,'nullis')) ? CFG.RIVAL : 0;
+    const tdef = pdef + nullG + heavy + rival, pierce = att.cid==='brucev' && !smoke ? Math.min(CFG.PIERCE, tdef) : 0;
+    const ddef = smoke ? 0 : tdef - pierce;
+    const defNotes = smoke ? '' : [nullG ? `Null Guard +${nullG}` : '', heavy ? `Heavy Armor +${heavy}` : '', rival ? `Rival +${rival}` : ''].filter(Boolean).join(', ');
+    let d = Math.max(1, atk - ddef); let line = head + (ddef?` − DEF ${ddef}${landD?' (landing)':''}`:'') + (defNotes ? ` (${defNotes})` : '') + (smoke && (tdef || golem) ? ' · <b>Smoke Bomb</b> ignores DEF' : '') + (pierce ? ` · <b>Teleportation Strike</b> ignores ${pierce} DEF` : '') + (slip && ddef ? ' (Slipstream +' + CFG.SLIPSTREAM + ')' : '') + ` = ${d}`;
     const mod = elMod(ael, D.el); let aff = ael==='none' ? 'NONE' : 'N';
     if (mod>0){ d=Math.max(1,d+mod); aff='ADV'; line+=` · <b>Weak</b>: ${EL[D.el]} takes +${mod} from ${EL[ael]} = ${d}`; }
     if (mod<0){ d=Math.max(1,d+mod); aff='DIS'; line+=` · <b>Resist</b>: ${EL[D.el]} takes −${-mod} from ${EL[ael]} = ${d}`; }

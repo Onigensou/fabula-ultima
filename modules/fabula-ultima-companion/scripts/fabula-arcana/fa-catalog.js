@@ -10,7 +10,7 @@
  * ITEMS[*].art are asset keys the UI maps to icons.
  */
 (() => {
-  const CFG = { TEAM:3, BUDGET:5, ROUND_CAP:20, STR:2, GOLEM:3, REMEDY:3, SHARD:1, ADV:2, DIS:2, AB_HEAL:2, AI_NOISE:0.25, TIMER:30, PYRE_N:1, PYRE_BURST:4, VORACIOUS:3, ENTRY:2, CHARM:2, KNIFE:9999, VENOM:2, KCHARGE:3, TAILWIND:3, TW_ALL:0, ROO_LEAVE:1, ROO_MARK:0, ROO_BENCH:2, ROO_GOLEM:0, ROO_STEPS:2, HOWL_NEXT:0, WINDUP_NEXT:1, BARRAGE:2, FORETELL_S:10, TIPS_HEAL:2, FOXFIRE:2, FOXFIRE_CAP:6, SPD_MAX:5, SLIPSTREAM:2, SERENADE:2, SERENADE_ROUNDS:4, BERSERK_ATK:3, BERSERK_TAKE:1, TWIN:1, GRACE_HEAL:2, GRACE_SELF:0, GRACE_MODE:4, REGEN:3, REGEN_ROUNDS:4, SERENADE_DEF:2, SERENADE_MODE:2, BREATH_ATK:1, BREATH_ROUNDS:3 };   // ROO_BENCH: 0 per-victim, 1 walks on bench, 2 field only
+  const CFG = { TEAM:3, BUDGET:5, ROUND_CAP:20, STR:2, GOLEM:3, REMEDY:3, SHARD:1, ADV:2, DIS:2, AB_HEAL:2, AI_NOISE:0.25, TIMER:30, PYRE_N:1, PYRE_BURST:4, VORACIOUS:3, ENTRY:2, CHARM:2, KNIFE:9999, VENOM:2, KCHARGE:3, TAILWIND:3, TW_ALL:0, ROO_LEAVE:1, ROO_MARK:0, ROO_BENCH:2, ROO_GOLEM:0, ROO_STEPS:2, HOWL_NEXT:0, WINDUP_NEXT:1, BARRAGE:2, FORETELL_S:10, TIPS_HEAL:2, FOXFIRE:2, FOXFIRE_CAP:6, SPD_MAX:5, SLIPSTREAM:2, SERENADE:2, SERENADE_ROUNDS:4, BERSERK_ATK:3, BERSERK_TAKE:1, TWIN:1, GRACE_HEAL:2, GRACE_SELF:0, GRACE_MODE:4, REGEN:3, REGEN_ROUNDS:4, SERENADE_DEF:2, SERENADE_MODE:2, BREATH_ATK:1, BREATH_ROUNDS:3, PIERCE:2, THIEF_BOW:2, NULL_GUARD:3, HEAVY_ARMOR:2, RIVAL:1 };   // ROO_BENCH: 0 per-victim, 1 walks on bench, 2 field only
   const AI_DIFF = { casual:{noise:0.25, rand:0.15, speed:false}, skilled:{noise:0.10, rand:0.03, speed:true, lookahead:true} };
   const AI_STYLE = {
     aggressive:{ STRENGTH:1.5, SHARD:1.3, SMOKE:1.2, SWITCH:0.6, GOLEM:0.8, REMEDY:0.8, rand:0 },
@@ -69,15 +69,19 @@
     keren:    {character:true, name:'Keren', el:'fire', cost:3, role:'Striker', atk:1, hp:12, def:0, ab:'Fox Fire', txt:'+2 ATK for every card KO\'d in this match, yours or the opponent\'s (max +6). It counts while she waits on the bench.'},
     gryphon:  {character:true, name:'Gryphon', el:'air', cost:3, role:'Guardian', atk:3, hp:11, def:1, ab:'Slipstream', txt:'+2 DEF against an attacker that is slower than the Gryphon this round (a tie gives no bonus).'},
     love:     {character:true, name:'Love', el:'light', cost:3, role:'Support', atk:1, hp:11, def:2, ab:'Love Serenade', txt:'When Love switches out, the card coming in gets +2 ATK and +2 DEF for the next 4 rounds.'},
-    jack:     {character:true, name:'Jack', el:'poison', cost:2, role:'Hunter', atk:3, hp:10, def:0, ab:'Deadly Marksmanship', txt:'His attacks ignore DEF. Twin: if Jill falls, Jack gets +1 ATK for the rest of the match.'},
+    jack:     {character:true, name:'Jack', el:'poison', cost:2, role:'Hunter', atk:3, hp:11, def:0, ab:'Thief Bow', txt:'+2 ATK in a round the opponent uses an item. Twin: if Jill falls, Jack gets +1 ATK for the rest of the match.'},
     jill:     {character:true, name:'Jill', el:'phys', cost:2, role:'Guardian', atk:3, hp:12, def:0, ab:'Temper Tantrum', txt:'At half HP or less she goes Berserk: +3 ATK, but every hit on her deals +1 damage. Twin: if Jack falls, Jill gets +1 ATK for the rest of the match.'},
+    // ---- batch 4 (2026-11-16): Bruce V (tutorial boss), Nullis + Gardner (rivals) ----
+    brucev:   {character:true, name:'Bruce V', el:'phys', cost:2, role:'Striker', atk:4, hp:10, def:0, ab:'Teleportation Strike', txt:'His attacks ignore 2 DEF.'},
+    nullis:   {character:true, name:'Nullis', el:'light', cost:2, role:'Punisher', atk:3, hp:11, def:1, ab:'Null Guard', txt:'+3 DEF in a round the opponent uses an item. Rival: if Gardner falls, Nullis gets +1 DEF for the rest of the match.'},
+    gardner:  {character:true, name:'Gardner', el:'earth', cost:2, role:'Guardian', atk:3, hp:10, def:2, ab:'Heavy Armor', txt:'+2 DEF in a round the opponent Passes. Rival: if Nullis falls, Gardner gets +1 DEF for the rest of the match.'},
     hilde:    {character:true, name:'Princess Hilde', el:'light', cost:3, role:'Support', atk:2, hp:14, def:1, ab:'Royal Grace', txt:'When Princess Hilde Passes, your side gains Regen for 4 rounds, starting next round: at the end of each round, your active card (not Hilde) heals 3 HP. Passing again restarts it.'},
     kalina:   {character:true, name:'Kalina', el:'air', cost:3, role:'Combo', atk:1, hp:11, def:6, ab:'Jump', txt:'When she Passes, she Jumps: she still attacks this round, then lands next round with her ATK and DEF swapped for that round.'},
   };
   // v0.5 Speed = DEX die tier (d6=1, d8=2, d10=3, d12=4) from the world sheets
   const SPD = { gigas:1, gorger:2, carlbero:2, kirin:2, flame:2, cryo:2, sylph:2, fulgimite:3, broo:3, life:3, pyrefly:4, skizzik:4,
     salamander:2, manaray:3, hellhound:3, scorpion:2, archer:2, wolf:2, inferex:3, roper:2, obsidrax:2, roo:1, walrog:1, succubus:3, rgolem:1,
-    hina:1, zarg:4, raubens:2, geist:3, kalina:3, blanche:2, keren:3, gryphon:4, love:3, jack:3, jill:2, hilde:3 };   // characters: their sheets' DEX dice (Hina d6, Zarg d12, Rauben d8, Geist d10, Kalina d10)   // Roo SPD 1 by design (slow Tonberry), not its DEX die
+    hina:1, zarg:4, raubens:2, geist:3, kalina:3, blanche:2, keren:3, gryphon:4, love:3, jack:3, jill:2, hilde:3, brucev:2, nullis:2, gardner:1 };   // characters: their sheets' DEX dice (Hina d6, Zarg d12, Rauben d8, Geist d10, Kalina d10)   // Roo SPD 1 by design (slow Tonberry), not its DEX die
   for (const k of Object.keys(CARDS)) CARDS[k].spd = SPD[k];
   const ITEMS = {
     STRENGTH:{t:'Tincture of Strength', k:'Attack', d:`+${CFG.STR} ATK this round`, art:'i_strength'},

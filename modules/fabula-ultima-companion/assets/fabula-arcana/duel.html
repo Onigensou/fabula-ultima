@@ -1576,6 +1576,7 @@ function fxStats(s, m){
   if ((m.breath||0)>=S.round && S.round>0){ out.atk.v=Math.max(0,out.atk.v-1); out.def.v=Math.max(0,out.def.v-1); out.atk.why.push('−1 Stinking Breath'); out.def.why.push('−1 Stinking Breath'); }
   if (m.cid==='jill' && m.hp>0 && m.hp*2<=c.hp){ out.atk.v+=(CFG.BERSERK_ATK||3); out.atk.why.push(`+${CFG.BERSERK_ATK||3} Berserk`); }
   { const tw = m.cid==='jack' ? 'jill' : m.cid==='jill' ? 'jack' : null; if (tw && S.p[s].roster.some(x=>x.cid===tw && x.ko)){ out.atk.v+=(CFG.TWIN||1); out.atk.why.push(`+${CFG.TWIN||1} Twin`); } }
+  { const rv = m.cid==='nullis' ? 'gardner' : m.cid==='gardner' ? 'nullis' : null; if (rv && S.p[s].roster.some(x=>x.cid===rv && x.ko)){ out.def.v+=(CFG.RIVAL||1); out.def.why.push(`+${CFG.RIVAL||1} Rival`); } }
   if (m.cid==='raubens' && (m.loot||0)>0){ out.atk.v+=m.loot; out.atk.why.push(`+${m.loot} Bandit King`); }
   if (m.cid==='keren' && fxFoxFire(m)){ const f=fxFoxFire(m); out.atk.v+=f; out.atk.why.push(`+${f} Fox Fire`); }
   if (m.cid==='kalina' && m.land===S.round && S.phase!=='ended'){ const a=out.atk.v, d=out.def.v; out.atk.v=c.def+(a-c.atk); out.def.v=c.atk+(d-c.def);
@@ -1608,6 +1609,7 @@ function fxList(s, m){
   if ((m.breath||0)>=S.round && S.round>0){ const left=m.breath-S.round+1; add({ k:'breath', tier:'debuff', icon:'fx_breath', name:'Stinking Breath', num:left, short:`${left} round${left>1?'s':''}`, desc:'−1 ATK, −1 DEF and −1 SPD.' }); }
   if (m.cid==='jill' && m.hp>0 && m.hp*2<=c.hp) add({ k:'berserk', tier:'ready', icon:'fx_berserk', name:'Berserk', short:'half HP or less', desc:`+${CFG.BERSERK_ATK||3} ATK, but every hit on her deals +${CFG.BERSERK_TAKE||1} damage.` });
   { const tw = m.cid==='jack' ? 'jill' : m.cid==='jill' ? 'jack' : null; if (tw && S.p[s].roster.some(x=>x.cid===tw && x.ko)) add({ k:'twin', tier:'buff', icon:'fx_twin', name:'Twin', short:'for the rest of the match', desc:`+${CFG.TWIN||1} ATK: ${tw==='jill'?'Jill':'Jack'} has fallen.` }); }
+  { const rv = m.cid==='nullis' ? 'gardner' : m.cid==='gardner' ? 'nullis' : null; if (rv && S.p[s].roster.some(x=>x.cid===rv && x.ko)) add({ k:'rival', tier:'buff', icon:'fx_rival', name:'Rival', short:'for the rest of the match', desc:`+${CFG.RIVAL||1} DEF: ${rv==='gardner'?'Gardner':'Nullis'} has fallen.` }); }
   // ---- character cards ----
   if (m.cid==='keren'){ const f=fxFoxFire(m), cap=CFG.FOXFIRE_CAP||6;
     add({ k:'foxfire', tier: f>=cap ? 'ready' : f ? 'buff' : 'ready', icon:'fx_foxfire', name:'Fox Fire', num: f||null, short: f ? `+${f} ATK${f>=cap?' (max)':''}` : 'no souls yet',
@@ -1720,10 +1722,11 @@ const PB_ICON = { 'Howl':'fx_howl', 'Funeral Pyre':'fx_burn', 'Lightning Charge'
   'Thick Skin':'fx_shield', 'Pyrophagy':'fx_shield', 'Earthen Wire':'fx_windup', 'Evasion':'fx_guard', 'Soft Landing':'fx_guard', 'Fortify':'fx_guard',
   'Earthquake':'fx_windup', 'Double Strafe':'fx_pierce', 'Voracious':'fx_pierce', 'Dynamic Entry':'fx_burn', 'Charm':'fx_charm', 'Tailwind':'fx_wind',
   'Cryo Explosion':'fx_freeze', 'Aero Explosion':'fx_wind', 'Renewal':'fx_heal', 'Undying Flame':'fx_return',
-  'Barrage':'fx_pierce', 'Bandit King':'fx_loot', 'Fox Fire':'fx_foxfire', 'Give me tips or 5 stars':'fx_tips', 'Love Serenade':'fx_serenade', 'Royal Grace':'fx_tips', 'Stinking Breath':'fx_breath', 'Berserk':'fx_berserk', 'Twin':'fx_twin', 'Deadly Marksmanship':'fx_pierce', 'Slipstream':'fx_slip', 'Jump landing':'fx_jump', 'The Blackest Night':'fx_revive' };
+  'Barrage':'fx_pierce', 'Bandit King':'fx_loot', 'Fox Fire':'fx_foxfire', 'Give me tips or 5 stars':'fx_tips', 'Love Serenade':'fx_serenade', 'Royal Grace':'fx_tips', 'Stinking Breath':'fx_breath', 'Berserk':'fx_berserk', 'Twin':'fx_twin', 'Deadly Marksmanship':'fx_pierce', 'Slipstream':'fx_slip', 'Jump landing':'fx_jump', 'The Blackest Night':'fx_revive',
+  'Thief Bow':'fx_loot', 'Teleportation Strike':'fx_pierce', 'Null Guard':'fx_nullguard', 'Heavy Armor':'fx_guard', 'Rival':'fx_rival' };
 // attack-breakdown text (calcAttack's line) → ability names, per side of the hit
-const PB_OFF = ['Howl','Funeral Pyre','Lightning Charge','Crushing Blow','Mana Catcher','On the Hunt','Entangle','Venom Sting','Static Buildup',"Chef's Knife",'Bandit King','Jump landing','Fox Fire','Love Serenade','Berserk','Twin','Deadly Marksmanship'];
-const PB_DEF = ['Slipstream','Thick Skin','Pyrophagy','Earthen Wire','Evasion','Soft Landing','Fortify'];
+const PB_OFF = ['Howl','Funeral Pyre','Lightning Charge','Crushing Blow','Mana Catcher','On the Hunt','Entangle','Venom Sting','Static Buildup',"Chef's Knife",'Bandit King','Jump landing','Fox Fire','Love Serenade','Berserk','Twin','Deadly Marksmanship','Thief Bow','Teleportation Strike'];
+const PB_DEF = ['Slipstream','Thick Skin','Pyrophagy','Earthen Wire','Evasion','Soft Landing','Fortify','Null Guard','Heavy Armor','Rival'];
 const PBAND = [null, null];
 function passiveBand(s, lines){
   if (!lines || !lines.length || !S || typeof document==='undefined') return;
