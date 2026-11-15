@@ -15,6 +15,11 @@ Events so far:
   counterpart (spawned battlefield objects with a countdown).
 - [Soul Tithe](soul-tithe-design.md) — the Sealed Cavern hazard (wounds become
   fragments that steal Max HP).
+- Updraft (`events/updraft.js`) — the Vastwind Field hazard: an Air HP loss
+  gives the creature Flying until the end of its next turn.
+- Sylphid Blaze (`events/sylphid-blaze.js`) — the Wyrmwood hazard: Burn lands
+  one extra stack and its damage is ×1.1. The first event built on
+  `modifiers` alone (see below).
 
 ---
 
@@ -55,6 +60,28 @@ Every handler is optional; an event implements only the beats it needs.
 `ctx` carries `director`, `dCombat`, `scene`, `combatants()`, and BD's own
 `applyEffectRow` / `applyEffectByLabel`. Deliberately narrow: an event gets the
 battlefield and BD's executor, and nothing else.
+
+### Modifiers — a rule that changes a number inside BD
+
+Some rules change a number BD decides mid-effect, where no lifecycle handler can
+reach without racing the executor. An event declares those instead:
+
+```js
+modifiers: {
+  statusCharges: { Burn: 1 },     // every application of N stacks lands N+1
+  statusDamage:  { Burn: 1.1 },   // the status's damage tick ×1.1, floored
+}
+```
+
+`skill-effects.js` reads them through `conflictStatusModifier`
+(conflict-event-runtime.js): `statusCharges` in `apply_ae` (a fresh application
+and add_charges onto an existing one, after the Resist clamp), `statusDamage`
+in `deal_damage` on any row carrying `emit_status` (the status's own tick and
+every `trigger_status` replay), before affinity. Keyed by status name,
+case-insensitive. Neutral with `none`, out of combat, or for a status the event
+does not name. They apply in the Free Round too: a modifier is a property of
+the field, not a hazard that waits for Round 1. An event with modifiers needs
+no handler.
 
 Handler names are validated at registration. A typo'd handler would otherwise
 register cleanly and simply never fire — a miserable class of bug to chase at a
