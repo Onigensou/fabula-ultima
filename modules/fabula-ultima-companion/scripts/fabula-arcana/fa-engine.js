@@ -172,6 +172,12 @@
       const b=P[s].roster.filter(x=>!x.ko && x.hp>0 && x.i!==P[s].active && x.hp<CARDS[x.cid].hp).sort((x,y)=>(x.hp-y.hp)||((x.hp/CARDS[x.cid].hp)-(y.hp/CARDS[y.cid].hp))||(x.i-y.i));
       if (b.length){ const x=b[0], was=x.hp; x.hp=Math.min(CARDS[x.cid].hp, x.hp+CFG.TIPS_HEAL); S.stats.tips=(S.stats.tips||0)+(x.hp-was);
         (ev.tips=ev.tips||[]).push({ s, i:x.i, amt:x.hp-was }); L.push([`Give me tips or 5 stars: Blanche patches up ${N(x.cid)} (+${x.hp-was} HP → ${x.hp}).`,'g']); } } }
+    // Royal Grace, GRACE_MODE 4 (live, 11-15): a Pass raises Regen on Hilde's side, a field like Tailwind. From NEXT round, for
+    // REGEN_ROUNDS rounds, the active card heals REGEN at the end of the round (not Hilde herself). Passing again restarts it;
+    // it keeps running after Hilde leaves or falls.
+    if ((CFG.GRACE_MODE||0)===4) for (const s of [0,1]) if (ch[s].action==='PASS'){ const m=mon(P[s],P[s].active); if (m && m.cid==='hilde' && m.hp>0){
+      P[s].rgFrom=S.round+1; P[s].rgUntil=S.round+CFG.REGEN_ROUNDS; S.stats.rgSet=(S.stats.rgSet||0)+1; (ev.regen=ev.regen||[]).push({ s });
+      L.push([`Royal Grace: Princess Hilde raises Regen. From next round, the active card heals ${CFG.REGEN} at the end of each round for ${CFG.REGEN_ROUNDS} rounds (not Princess Hilde).`,'g']); } }
     // Royal Grace. GRACE_MODE 0 = Pass heals the team (GRACE_SELF: Hilde too) · 1 = Pass heals the lowest-HP benched ally (random tie)
     //   · 2 = switching Hilde OUT heals the card coming in (done in the switch step)
     for (const s of [0,1]) if (ch[s].action==='PASS' && (CFG.GRACE_MODE||0)===1){ const m=mon(P[s],P[s].active); if (m && m.cid==='hilde' && m.hp>0){
@@ -268,6 +274,11 @@
     for (const s of (ev.passArm||[])){ const m=mon(P[s],P[s].active); if (!m || m.hp<=0) continue;
       if (m.cid==='wolf' && !m.howl){ m.howl=true; L.push(['Wolf howls: its next attack gets +1 ATK.','m']); }
       if (m.cid==='rgolem' && !m.windup){ m.windup=true; L.push(['Rock Golem winds up: its next attack will be an Earthquake.','m']); } }
+    // Royal Grace, GRACE_MODE 4: the Regen tick on the active card (a card at 0 HP is not healed; Hilde is skipped)
+    if ((CFG.GRACE_MODE||0)===4) for (const s of [0,1]){ const pl=P[s]; if (!(pl.rgFrom<=S.round && S.round<=pl.rgUntil)) continue; const a=mon(pl,pl.active);
+      if (!a || a.ko || a.hp<=0 || a.cid==='hilde' || a.hp>=CARDS[a.cid].hp) continue; const was=a.hp; a.hp=Math.min(CARDS[a.cid].hp, a.hp+CFG.REGEN);
+      S.stats.grace=(S.stats.grace||0)+(a.hp-was); (ev.grace=ev.grace||[]).push({ s, heals:[{ i:a.i, amt:a.hp-was }], end:true, regen:true });
+      L.push([`Royal Grace: Regen heals ${N(a.cid)} +${a.hp-was}.`,'g']); }
     // Royal Grace, GRACE_MODE 3: at the end of the round, if Princess Hilde is the active card (and still standing), every benched ally heals GRACE_HEAL
     if ((CFG.GRACE_MODE||0)===3) for (const s of [0,1]){ const pl=P[s], h=mon(pl,pl.active); if (!h || h.cid!=='hilde' || h.hp<=0) continue; const got=[];
       for (const x of pl.roster) if (!x.ko && x.hp>0 && x.i!==pl.active && x.hp<CARDS[x.cid].hp){ const was=x.hp; x.hp=Math.min(CARDS[x.cid].hp, x.hp+CFG.GRACE_HEAL); got.push({ i:x.i, amt:x.hp-was }); S.stats.grace=(S.stats.grace||0)+(x.hp-was); }
@@ -317,6 +328,9 @@
     if (my.cid==='kalina' && my.land!==S.round && my.land!==S.round+1) w.PASS+=1.2;
     if (my.cid==='blanche' && benchOptions(me).some(x=>x.hp<CARDS[x.cid].hp)) w.PASS+=0.8;
     if (my.cid==='hilde' && (CFG.GRACE_MODE||0)!==2 && (CFG.GRACE_MODE||0)!==3 && me.roster.some(x=>!x.ko && x.hp>0 && x!==my && x.i!==me.active && x.hp<CARDS[x.cid].hp)) w.PASS+=1.0;
+    // Royal Grace (mode 4) play pattern: Hilde Passes to raise Regen, then hands off to the best attacker while it runs
+    const rgOn = (CFG.GRACE_MODE||0)===4 && me.rgUntil>=S.round+1;
+    if ((CFG.GRACE_MODE||0)===4 && my.cid==='hilde' && !rgOn) w.PASS+=1.4;
     const twOn = me.twUntil>=S.round+1;   // Tailwind still up next round
     if (slower(my) && my.hp<=incS) w.PASS*=0.6;                // about to be KO'd with no reply
     if (me.items.STRENGTH){ const outS=est(my,opMon,'STRENGTH'); w.STRENGTH = 0.6 + (opMon.hp>out && opMon.hp<=outS ? 3 : 0) + (my.cid==='fulgimite'?0.6:0) - (out<=0?0.6:0); }
@@ -340,6 +354,7 @@
           if (my.cid==='hilde'){ const hurt=bench.some(x=>CARDS[x.cid].hp-x.hp>=2); if (hurt) w.SWITCH = Math.max(0, w.SWITCH-1.5); else if (my.hp*2<=CARDS.hilde.hp) w.SWITCH += 0.8; } }
         if (my.cid==='love' && (CFG.SERENADE_MODE||1)===2){ best=[...bench].sort((a,b)=>est(b,opMon)-est(a,opMon))[0]; w.SWITCH += 1.4; }
         if (my.cid==='hilde' && (CFG.GRACE_MODE||0)===2){ const hurt=bench.filter(x=>CARDS[x.cid].hp-x.hp>=2).sort((a,b)=>(CARDS[b.cid].hp-b.hp)-(CARDS[a.cid].hp-a.hp)); if (hurt.length){ best=hurt[0]; w.SWITCH += 1.8; } }
+        if (rgOn && my.cid==='hilde'){ best=[...bench].sort((a,b)=>est(b,opMon)-est(a,opMon))[0]; w.SWITCH += 1.4; }
         if (best.cid==='love') w.SWITCH += 0.4;
         if (best.cid==='succubus') w.SWITCH += 0.5;
         if (my.cid==='sylph' && twOn && (CFG.TW_ALL || CARDS[best.cid].el==='air')) w.SWITCH += 0.9;   // set up, then switch
@@ -576,7 +591,7 @@
       if (ev.seq) ev.seq = ev.seq.map(flip);
       if (ev.snaps) ev.snaps = ev.snaps.map(swap2);
       if (ev.denied != null) ev.denied = flip(ev.denied);
-      for (const k of ['direct','entry','revive','tips','serenade','grace']) for (const x of ev[k] || []) if (x && x.s != null) x.s = flip(x.s);
+      for (const k of ['direct','entry','revive','tips','serenade','grace','regen']) for (const x of ev[k] || []) if (x && x.s != null) x.s = flip(x.s);
       return r;
     },
     seriesForSeat(sr, viewer){

@@ -1516,6 +1516,11 @@ const FX_TW = {};
 function fxTailwind(s){ const pl=S.p[s]; if (pl.twUntil==null || pl.twFrom==null || pl.twUntil<S.round) return null;
   const key=`${S.t0}:${s}`; let pending = pl.twFrom>S.round; if (!pending) FX_TW[key]=S.round; else if (FX_TW[key]===S.round) pending=false;
   const left = Math.min(CFG.TAILWIND, pl.twUntil - (pending ? pl.twFrom : S.round) + 1); return { pending, left }; }
+// Princess Hilde's Regen field (Royal Grace, GRACE_MODE 4): same pending / re-raise display rules as Tailwind
+const FX_RG = {};
+function fxRegen(s){ const pl=S.p[s]; if ((CFG.GRACE_MODE||0)!==4 || pl.rgUntil==null || pl.rgFrom==null || pl.rgUntil<S.round) return null;
+  const key=`${S.t0}:${s}`; let pending = pl.rgFrom>S.round; if (!pending) FX_RG[key]=S.round; else if (FX_RG[key]===S.round) pending=false;
+  const left = Math.min(CFG.REGEN_ROUNDS, pl.rgUntil - (pending ? pl.rgFrom : S.round) + 1); return { pending, left }; }
 function fxTwOn(s, m){ const pl=S.p[s]; return (CFG.TW_ALL || CARDS[m.cid].el==='air') && pl.twFrom!=null && pl.twFrom<=S.round && S.round<=pl.twUntil; }
 // the numbers the card uses this round, with the reasons
 function fxStats(s, m){
@@ -1636,6 +1641,12 @@ function renderEffects(){
           life: tw.pending ? `Starts next round and lasts ${CFG.TAILWIND} rounds.` : `${left} round${left>1?'s':''} left, including this one.`,
           desc: `Field effect: ${CFG.TW_ALL?'your monsters':'your Air monsters'} have +1 SPD (max 4).` };
         h=`<span class="ffw ${tw.pending?'pend':''}">${fxTile(`${s}:field:tw`, e)}<span>Tailwind</span></span>`; }
+      const rg=fxRegen(s);
+      if (rg){ const left=rg.left;
+        const e={ k:'rg', tier:'buff', icon:'fx_heal', name:'Regen', num: rg.pending ? null : left, short: rg.pending ? 'starts next round' : `${left} round${left>1?'s':''} left`,
+          life: rg.pending ? `Starts next round and lasts ${CFG.REGEN_ROUNDS} rounds.` : `${left} round${left>1?'s':''} left, including this one.`,
+          desc: `Field effect (Royal Grace): at the end of each round, your active card heals +${CFG.REGEN} HP. Princess Hilde herself is not healed.` };
+        h+=`<span class="ffw ${rg.pending?'pend':''}">${fxTile(`${s}:field:rg`, e)}<span>Regen</span></span>`; }
       if (ff._h!==h){ ff._h=h; ff.innerHTML=h; } }
   }
 }
@@ -1715,8 +1726,12 @@ function pbEnter(ev){
 // Princess Hilde's Royal Grace: a band + a heal number and soft gold sparkles on each healed card, its HP bar filling
 async function fxGrace(g){ passiveBand(g.s, [{ name:'Royal Grace', tier:'support' }]); sfx('remedy',0.8,0);
   for (const h of g.heals){ const m=S.p[g.s].roster[h.i]; if (!m) continue; m.hp=Math.min(CARDS[m.cid].hp, m.hp+h.amt); setHP(g.s, h.i, m.hp);
-    const sl=$(`#slot${g.s}_${h.i}`), L=$('#fxl'); if (sl && L){ const c=centerOf(sl, L); add('pop heal', c.x, c.y-20, {}, `+${h.amt}<small>Grace</small>`); particles(c.x,c.y,12,'#fff2a8',{up:true,r:50,spread:30}); } }
+    const sl=$(`#slot${g.s}_${h.i}`), L=$('#fxl'); if (sl && L){ const c=centerOf(sl, L); add('pop heal', c.x, c.y-20, {}, `+${h.amt}<small>${g.regen?'Regen':'Grace'}</small>`); particles(c.x,c.y,12,'#fff2a8',{up:true,r:50,spread:30}); } }
   await sleep(650); }
+// Royal Grace (mode 4): Hilde Passes and raises Regen: a band + gold rings and sparkles rising off Hilde (the field tile appears after)
+async function fxRegenSet(v){ passiveBand(v.s, [{ name:'Royal Grace', tier:'support' }]); sfx('remedy',0.6,0);
+  const sl=$(`#slot${v.s}_${S.p[v.s].active}`), L=$('#fxl'); if (sl && L){ const c=centerOf(sl, L); add('ring',c.x,c.y,{'--pc':'#fff2a8'}); particles(c.x,c.y,16,'#fff2a8',{up:true,r:60,spread:36}); }
+  await sleep(600); }
 // Love Serenade: a band on Love's side + a warm burst on each buffed card
 function fxSerenade(ev){ for (const v of (ev.serenade||[])){ passiveBand(v.s, [{ name:'Love Serenade', tier:'support' }]); sfx('strength',0.7,0);
   for (const i of v.is){ const sl=$(`#slot${v.s}_${i}`), L=$('#fxl'); if (sl && L){ const c=centerOf(sl, L); particles(c.x,c.y,14,'#ff8fc8',{up:true,r:55,spread:30}); add('ring',c.x,c.y,{'--pc':'#ff8fc8'}); } } } }
@@ -1956,6 +1971,7 @@ async function playRound(ev, before){
   if (it.length) await sleep(450);
   for (const s of [0,1]) if (ev.heal[s]){ const m=mon(S.p[s],S.p[s].active); m.hp=Math.min(CARDS[m.cid].hp, m.hp+ev.heal[s]); setHP(s,m.i,m.hp); popNum(s,'+'+ev.heal[s],'heal','Remedy'); }
   if (ev.heal[0]||ev.heal[1]) await sleep(550);
+  for (const v of (ev.regen||[])) await fxRegenSet(v);
   for (const g of (ev.grace||[])) if (!g.end) await fxGrace(g);   // Pass-timed versions heal before attacks; the end-of-round one plays after the clash
   for (const t of (ev.tips||[])){ const m=S.p[t.s].roster[t.i]; if (!m) continue; passiveBand(t.s, [{ name:'Give me tips or 5 stars', tier:'support' }]);
     m.hp=Math.min(CARDS[m.cid].hp, m.hp+t.amt); setHP(t.s, t.i, m.hp); sfx('remedy',0.8,0);

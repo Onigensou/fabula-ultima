@@ -208,9 +208,20 @@ const blank = blankStats;
   S = duel(A('jack'), B('rgolem'), {hp:[30,30]}); r=go(P,P); ok(dmg0()===3, 'Jack: attacks ignore DEF (3 vs Rock Golem DEF 2)');
   S = duel(['jack','jill','cryo'], B('wolf'), {hp:[30,30]}); S.p[0].roster[1].ko=true; S.p[0].roster[1].hp=0; r=go(P,P); ok(dmg0()===6, 'Twin: Jack +1 ATK once Jill has fallen (3+1, Poison vs Physical +2 = 6)');
   S = duel(A('jill'), B('kirin'), {hp:[6,30]}); r=go(P,P); ok(dmg0()===5 && r.ev.res[1].dmg===3, 'Jill Berserk at half HP: +3 ATK (6 − Kirin DEF 1 = 5) and takes +1 (Kirin 2 → 3)');
-  S = duel(['hilde','kirin','cryo'], B('wolf'), {hp:[10,30]}); S.p[0].roster[1].hp=4; S.p[0].roster[2].hp=5; r=go({action:'GOLEM'},P);
-  ok(r.ev.grace && S.p[0].roster[1].hp===6 && S.p[0].roster[2].hp===7 && S.p[0].roster[0].hp===10, 'Royal Grace: end of round, Hilde active → every benched ally heals 2 (no Pass needed; Hilde herself not healed)');
-  S = duel(['kirin','hilde','cryo'], B('wolf'), {hp:[30,30]}); S.p[0].roster[2].hp=4; r=go(P,P); ok(!r.ev.grace && S.p[0].roster[2].hp===4, 'Royal Grace: no heal while Hilde is benched');
+  // Royal Grace (GRACE_MODE 4, 11-15): Pass → Regen field; from next round, for 4 rounds, the active card heals 3 at end of round (not Hilde)
+  // (a Pass still attacks, so these read the heal events; the bench card's HP shows the field never touches the bench)
+  const rgHeal = () => r.ev.grace && r.ev.grace.length===1 && r.ev.grace[0].regen && r.ev.grace[0].end ? r.ev.grace[0].heals[0] : null;
+  S = duel(['hilde','kirin','cryo'], B('wolf'), {hp:[14,30]}); S.p[0].roster[1].hp=6; S.p[0].roster[2].hp=5; r=go(P,P); const rg0=r.ev.regen && r.ev.regen.length===1;
+  ok(rg0 && !r.ev.grace && S.p[0].rgFrom===R.getS().round, 'Royal Grace: Hilde Passes → Regen raised, no heal on the Pass round (starts next round)');
+  r=go({action:'SWITCH',target:1},P); let hh=rgHeal(); ok(hh && hh.i===1 && hh.amt===3 && S.p[0].roster[1].hp===6-r.ev.res[1].dmg+3, 'Royal Grace: the card switched in heals 3 at the end of its switch round');
+  let ticks=1; for (let k=0;k<3;k++){ S.p[0].roster[1].hp=6; r=go({action:'GOLEM'},P); hh=rgHeal(); if (hh && hh.i===1 && hh.amt===3) ticks++; }
+  ok(ticks===4 && S.p[0].roster[2].hp===5, 'Royal Grace: 4 ticks in all, active card only (bench untouched) (got '+ticks+')');
+  S.p[0].roster[1].hp=6; r=go({action:'GOLEM'},P); ok(!r.ev.grace, 'Royal Grace: Regen ends after 4 rounds');
+  S = duel(['hilde','kirin','cryo'], B('wolf'), {hp:[8,30]}); r=go(P,P); r=go(P,P);
+  ok(!r.ev.grace && S.p[0].rgUntil===R.getS().round-1+4, 'Royal Grace: Hilde never heals herself; Passing again restarts the 4 rounds');
+  S = duel(['hilde','kirin','cryo'], B('wolf'), {hp:[14,30]}); S.p[0].roster[1].hp=6; r=go(P,P); S.p[0].roster[0].hp=0; S.p[0].roster[0].ko=true; S.p[0].active=1; r=go({action:'GOLEM'},P); hh=rgHeal();
+  ok(hh && hh.i===1 && hh.amt===3, 'Royal Grace: Regen keeps running after Hilde has fallen');
+  S = duel(['kirin','hilde','cryo'], B('wolf'), {hp:[5,30]}); r=go(P,P); ok(!r.ev.grace && !r.ev.regen, 'Royal Grace: nothing without a Hilde Pass');
   S = duel(A('carlbero'), B('wolf'), {hp:[30,30]}); r=go(P,{action:'STRENGTH'}); const brd=R.getS().round;
   ok(S.p[1].roster[0].breath===brd+1, 'Stinking Breath: a damaging hit applies the breath for 3 rounds');
   r=go(P,P); ok(r.ev.res[1].dmg===4, 'Stinking Breath: Wolf −1 ATK (3 +1 Howl −1 = 3 − DEF 1 = 2, +2 Weak = 4; 5 without the breath)');

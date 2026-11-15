@@ -10,7 +10,7 @@
  * ITEMS[*].art are asset keys the UI maps to icons.
  */
 (() => {
-  const CFG = { TEAM:3, BUDGET:5, ROUND_CAP:20, STR:2, GOLEM:3, REMEDY:3, SHARD:1, ADV:2, DIS:2, AB_HEAL:2, AI_NOISE:0.25, TIMER:30, PYRE_N:1, PYRE_BURST:4, VORACIOUS:3, ENTRY:2, CHARM:2, KNIFE:9999, VENOM:2, KCHARGE:3, TAILWIND:3, TW_ALL:0, ROO_LEAVE:1, ROO_MARK:0, ROO_BENCH:2, ROO_GOLEM:0, ROO_STEPS:2, HOWL_NEXT:0, WINDUP_NEXT:1, BARRAGE:2, FORETELL_S:10, TIPS_HEAL:2, FOXFIRE:2, FOXFIRE_CAP:6, SPD_MAX:5, SLIPSTREAM:2, SERENADE:2, SERENADE_ROUNDS:4, BERSERK_ATK:3, BERSERK_TAKE:1, TWIN:1, GRACE_HEAL:2, GRACE_SELF:0, GRACE_MODE:3, SERENADE_DEF:2, SERENADE_MODE:2, BREATH_ATK:1, BREATH_ROUNDS:3 };   // ROO_BENCH: 0 per-victim, 1 walks on bench, 2 field only
+  const CFG = { TEAM:3, BUDGET:5, ROUND_CAP:20, STR:2, GOLEM:3, REMEDY:3, SHARD:1, ADV:2, DIS:2, AB_HEAL:2, AI_NOISE:0.25, TIMER:30, PYRE_N:1, PYRE_BURST:4, VORACIOUS:3, ENTRY:2, CHARM:2, KNIFE:9999, VENOM:2, KCHARGE:3, TAILWIND:3, TW_ALL:0, ROO_LEAVE:1, ROO_MARK:0, ROO_BENCH:2, ROO_GOLEM:0, ROO_STEPS:2, HOWL_NEXT:0, WINDUP_NEXT:1, BARRAGE:2, FORETELL_S:10, TIPS_HEAL:2, FOXFIRE:2, FOXFIRE_CAP:6, SPD_MAX:5, SLIPSTREAM:2, SERENADE:2, SERENADE_ROUNDS:4, BERSERK_ATK:3, BERSERK_TAKE:1, TWIN:1, GRACE_HEAL:2, GRACE_SELF:0, GRACE_MODE:4, REGEN:3, REGEN_ROUNDS:4, SERENADE_DEF:2, SERENADE_MODE:2, BREATH_ATK:1, BREATH_ROUNDS:3 };   // ROO_BENCH: 0 per-victim, 1 walks on bench, 2 field only
   const AI_DIFF = { casual:{noise:0.25, rand:0.15, speed:false}, skilled:{noise:0.10, rand:0.03, speed:true, lookahead:true} };
   const AI_STYLE = {
     aggressive:{ STRENGTH:1.5, SHARD:1.3, SMOKE:1.2, SWITCH:0.6, GOLEM:0.8, REMEDY:0.8, rand:0 },
@@ -71,7 +71,7 @@
     love:     {character:true, name:'Love', el:'light', cost:3, role:'Support', atk:1, hp:11, def:2, ab:'Love Serenade', txt:'When Love switches out, the card coming in gets +2 ATK and +2 DEF for the next 4 rounds.'},
     jack:     {character:true, name:'Jack', el:'poison', cost:2, role:'Hunter', atk:3, hp:10, def:0, ab:'Deadly Marksmanship', txt:'His attacks ignore DEF. Twin: if Jill falls, Jack gets +1 ATK for the rest of the match.'},
     jill:     {character:true, name:'Jill', el:'phys', cost:2, role:'Guardian', atk:3, hp:12, def:0, ab:'Temper Tantrum', txt:'At half HP or less she goes Berserk: +3 ATK, but every hit on her deals +1 damage. Twin: if Jack falls, Jill gets +1 ATK for the rest of the match.'},
-    hilde:    {character:true, name:'Princess Hilde', el:'light', cost:3, role:'Support', atk:2, hp:13, def:1, ab:'Royal Grace', txt:'At the end of each round Princess Hilde is your active card, each of your benched allies heals 2 HP.'},
+    hilde:    {character:true, name:'Princess Hilde', el:'light', cost:3, role:'Support', atk:2, hp:14, def:1, ab:'Royal Grace', txt:'When Princess Hilde Passes, your side gains Regen for 4 rounds, starting next round: at the end of each round, your active card (not Hilde) heals 3 HP. Passing again restarts it.'},
     kalina:   {character:true, name:'Kalina', el:'air', cost:3, role:'Combo', atk:1, hp:11, def:6, ab:'Jump', txt:'When she Passes, she Jumps: she still attacks this round, then lands next round with her ATK and DEF swapped for that round.'},
   };
   // v0.5 Speed = DEX die tier (d6=1, d8=2, d10=3, d12=4) from the world sheets
