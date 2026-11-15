@@ -576,7 +576,8 @@ body.elA{--e-phys:#555555;--e-air:#48c774;--e-bolt:#9b59b6;--e-dark:#4b0082;--e-
 .sd-optag{align-self:center;font-size:12px;font-weight:800;letter-spacing:.06em;padding:1px 9px;border-radius:999px;background:#3a1e06;color:#f4c95d}
 .sd-in{animation:sdFlip .42s cubic-bezier(.2,1.1,.4,1)}
 .sd-out{animation:sdOut .28s ease-in forwards}
-.sd-stamp{position:absolute;right:12px;top:44px;z-index:3;transform:rotate(-9deg);padding:2px 10px;border:3px solid #2f8f45;border-radius:6px;color:#2f8f45;background:#f8f0d4e6;font-family:var(--font-d);font-weight:700;font-size:15px;letter-spacing:.14em;text-transform:uppercase;pointer-events:none}
+.sd-st{display:flex;align-items:center;gap:10px}
+.sd-stamp{display:inline-block;transform:rotate(-6deg);padding:1px 8px;border:2px solid #2f8f45;border-radius:5px;color:#2f8f45;background:#f8f0d4;font-family:var(--font-d);font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;pointer-events:none}
 .sd-stamp.pop{animation:sdStamp .4s cubic-bezier(.2,1.6,.4,1)}
 .sd-note{text-align:center}
 .sd .chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-b);font-weight:800;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:999px}
@@ -586,7 +587,7 @@ body.elA{--e-phys:#555555;--e-air:#48c774;--e-bolt:#9b59b6;--e-dark:#4b0082;--e-
 .sd .chip.rpop{animation:rdyPop .45s cubic-bezier(.2,1.6,.4,1)}
 @keyframes sdFlip{0%{transform:rotateY(90deg) scale(.92);opacity:.4}100%{transform:none;opacity:1}}
 @keyframes sdOut{to{transform:translateY(10px) scale(.94);opacity:0}}
-@keyframes sdStamp{0%{transform:rotate(-9deg) scale(1.8);opacity:0}100%{transform:rotate(-9deg) scale(1);opacity:1}}
+@keyframes sdStamp{0%{transform:rotate(-6deg) scale(1.35);opacity:0}100%{transform:rotate(-6deg) scale(1);opacity:1}}
 @keyframes sdLeave{to{opacity:0;transform:scale(.97)}}
 @media (max-width:900px){ .sd-sides{grid-template-columns:minmax(0,1fr)} .sd-vs{justify-self:center} }
 @media (prefers-reduced-motion: reduce){ .sd-in,.sd-out,.sd-stamp.pop,.sd.sd-leave,.sd .chip.rpop{animation:none} }
@@ -2774,10 +2775,9 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
     };
     const chip = side.ready ? `<span class="chip ok ${SD.pop[s] ? 'rpop' : ''}">✓ Ready</span>` : `<span class="chip wait"><i></i>Choosing…</span>`;
     return `<div class="win sd-side ${side.ready ? 'is-ready' : ''}" data-sdside="${s}">
-      <div class="sd-top"><div><b class="sd-name">${esc(side.name)}</b>${side.kind === 'ai' ? '<span class="sd-tag">NPC</span>' : ''}</div>${chip}</div>
+      <div class="sd-top"><div><b class="sd-name">${esc(side.name)}</b>${side.kind === 'ai' ? '<span class="sd-tag">NPC</span>' : ''}</div><div class="sd-st">${side.ready ? `<span class="sd-stamp ${SD.pop[s] ? 'pop' : ''}">Locked in</span>` : ''}${chip}</div></div>
       <div class="sd-meta">${meter}<span class="label" style="margin-left:auto">${side.n} / ${CFG.TEAM} picked</span></div>
-      <div class="sd-slots">${[0,1,2].map(i => slot(SD.slots[s][i], i)).join('')}</div>
-      ${side.ready ? `<div class="sd-stamp ${SD.pop[s] ? 'pop' : ''}">Locked in</div>` : ''}</div>`;
+      <div class="sd-slots">${[0,1,2].map(i => slot(SD.slots[s][i], i)).join('')}</div></div>`;
   }
   function specDraftHTML(){
     const sp = NET.spec;
