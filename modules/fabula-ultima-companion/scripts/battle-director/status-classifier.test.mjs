@@ -73,7 +73,7 @@ t("cues: only the registered statuses draw on the token", () => {
   assert.equal(cueOf(fx({ name: "Envenomed" }), CFG), "poison");
   assert.equal(cueOf(fx({ name: "x", statuses: ["x1"] }), CFG), "paralyze");
   assert.equal(cueOf(fx({ name: "Provoked (Thread the Horns)" }), CFG), "provoked");
-  assert.equal(cueOf(fx({ name: "Berserk" }), CFG), null);
+  assert.equal(cueOf(fx({ name: "Berserk" }), CFG), "berserk");   // red rage aura since 2026-11-16
   assert.equal(cueOf(fx({ name: "Slow" }), CFG), null);
   assert.equal(cueOf(fx({ name: "Armor Break" }), CFG), "armorbreak");
   assert.equal(cueOf(fx({ name: "Magic Break" }), CFG), "magicbreak");
