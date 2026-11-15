@@ -104,13 +104,13 @@ export const PRESETS = Object.freeze({
   // stage rows match the old art. Horizons: floor fit of Depth Anything V2 (the encoder
   // reproduces the shipped Highroad map at r 0.994 when given its 175.3); strength by the
   // usual rule, back row (feet ~row 217) drawn at 0.72. All open/relief models.
-  // Highroad and the Stepped hall are raised 110 px on the v2 canvas so the back row stands on the floor
+  // Highroad and the Stepped hall are raised 110 px (Waterwheel 120 px) on the v2 canvas so the back row stands on the floor
   // (the old art put the horizon / back ledge at the back-row feet). Horizons measured on the raised art.
   Eisendrache_Battlemap002_v2: { horizon: 65.3, strength: 0.363, orbitX: 8, orbitY: 2, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
   Eisendrache_Battlemap004_v2: { horizon: 47.1, strength: 0.392, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
   Hideout_Battlemap001_v2: { horizon: 139.7, strength: 0.242, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
   // Waterwheel: the cut-off top of the wheel was completed by a second ChatGPT pass (2026-11-15).
-  Hideout_Battlemap002_v2: { horizon: 16.5, strength: 0.439, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  Hideout_Battlemap002_v2: { horizon: -56.4, strength: 0.551, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
   // The original's heavy right/bottom vignette was relit from a second ChatGPT pass (stage edge only).
   Hideout_Battlemap003_v2: { horizon: -171, strength: 0.723, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
   Hideout_Battlemap004_v2: { horizon: -242.7, strength: 0.831, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
