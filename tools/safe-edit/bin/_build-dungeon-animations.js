@@ -38,6 +38,7 @@ const DV = require(path.join(ANIM_LIB, "lib", "deva-signatures.js"));
 const AS = require(path.join(ANIM_LIB, "lib", "asura-signatures.js"));
 const PS = require(path.join(ANIM_LIB, "lib", "passive-pxfx-signatures.js"));
 const { encode, validate } = require(path.join(ANIM_LIB, "lib", "encode.js"));
+const { LEGACY_REGISTRY } = require(path.join(ANIM_LIB, "lib", "legacy-boss-registry.js"));
 
 /* ── Palette ─────────────────────────────────────────────────────────────── */
 
@@ -805,6 +806,8 @@ const REGISTRY = {
     },
   },
 };
+// Legacy boss animation pass (2026-11-16): seven bosses, see lib/legacy-boss-registry.js.
+Object.assign(REGISTRY, LEGACY_REGISTRY);
 
 /* ── Runner ──────────────────────────────────────────────────────────────── */
 
