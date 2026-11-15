@@ -360,5 +360,25 @@ function floorPointNearer(f, dzPx, P, ppm) {
   return { x: P.cx + ((f.x - P.cx) * Z0) / Z, y: P.hz + (P.f * P.Hp) / Z };
 }
 
+// ── Retrofitted legacy arenas (2026-11-15) ────────────────────────────────
+{
+  const { existsSync } = await import("node:fs");
+  const { fileURLToPath } = await import("node:url");
+  const moduleRoot = fileURLToPath(new URL("../../", import.meta.url));
+  const missing = Object.keys(PRESETS).filter((k) => !existsSync(moduleRoot + "assets/battle-depth/" + k + ".webp"));
+  ok("every preset ships its depth map", missing.length === 0, missing.join(", "));
+  const RETRO = ["Eisendrache_Battlemap002_v2", "Eisendrache_Battlemap004_v2", "Hideout_Battlemap001_v2", "Hideout_Battlemap002_v2", "Hideout_Battlemap003_v2",
+    "Hideout_Battlemap004_v2", "Hideout_Battlemap005_v2", "Ruhig_Battlemap001_v2", "Ruhig_Battlemap002_v2", "Vastwind_Battlemap001_v2",
+    "Vastwind_Battlemap002_v2", "Wyrmwood_Battlemap001_v2", "Wyrmwood_Battlemap002_v2", "FafnirCastle_Battlemap001", "FafnirCastle_Battlemap002"];
+  for (const key of RETRO) {
+    const cfg = resolvePreset(FORGE + key + ".webp");
+    ok(`${key}: preset resolves with a relief camera`, cfg && cfg.stage3d?.relief === true);
+    const cam = buildCamera(cfg, V2_STAGE, 100);
+    const back = tokenScaleAt(V2_STAGE.y + 217, cam);
+    ok(`${key}: back row drawn near 0.72`, Math.abs(back - 0.72) < 0.02, String(back));
+  }
+  ok("the old legacy Highroad key still resolves (save slots may restore the old URL)", !!resolvePreset(FORGE + "Eisendrache_Battlemap002.png"));
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 if (fail) process.exit(1);

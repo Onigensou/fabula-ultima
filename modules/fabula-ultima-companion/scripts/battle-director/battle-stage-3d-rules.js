@@ -99,6 +99,29 @@ export const PRESETS = Object.freeze({
   // (fov 40: the two best-fitting rings give -80 and -86). The cave wall and its rock pillars have real depth, so
   // a relief model like the other Valley maps, not a flat wall. Strength by the usual rule (back row ~0.72).
   Valley_Battlemap003: { horizon: -78, strength: 0.583, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  // Legacy arenas extended to the v2 canvas (2026-11-15). Each `_v2` image is the ORIGINAL
+  // 1682x788 painting placed unchanged on the stage, with outpainted bleed around it, so the
+  // stage rows match the old art. Horizons: floor fit of Depth Anything V2 (the encoder
+  // reproduces the shipped Highroad map at r 0.994 when given its 175.3); strength by the
+  // usual rule, back row (feet ~row 217) drawn at 0.72. All open/relief models.
+  Eisendrache_Battlemap002_v2: { horizon: 175.3, strength: 0.178, orbitX: 8, orbitY: 2, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  Eisendrache_Battlemap004_v2: { horizon: 47.1, strength: 0.392, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  Hideout_Battlemap001_v2: { horizon: 139.7, strength: 0.242, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  Hideout_Battlemap002_v2: { horizon: 21, strength: 0.432, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  // The original's heavy right/bottom vignette was relit from a second ChatGPT pass (stage edge only).
+  Hideout_Battlemap003_v2: { horizon: -173.7, strength: 0.728, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  Hideout_Battlemap004_v2: { horizon: -242.7, strength: 0.831, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  Hideout_Battlemap005_v2: { horizon: 69.4, strength: 0.357, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  Ruhig_Battlemap001_v2: { horizon: 35.3, strength: 0.41, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  // Misty Field is all fog with no readable floor; the fit is soft, so it stays gentle.
+  Ruhig_Battlemap002_v2: { horizon: 150.8, strength: 0.223, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  Vastwind_Battlemap001_v2: { horizon: 98.8, strength: 0.31, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  Vastwind_Battlemap002_v2: { horizon: 23.4, strength: 0.429, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  Wyrmwood_Battlemap001_v2: { horizon: -69.3, strength: 0.57, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  Wyrmwood_Battlemap002_v2: { horizon: -68.1, strength: 0.569, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  // Fafnir Castle arenas were already v2 size; depth map + preset only.
+  FafnirCastle_Battlemap001: { horizon: -1.9, strength: 0.468, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  FafnirCastle_Battlemap002: { horizon: -43.2, strength: 0.531, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
   // Valley of the Dragon - Underground Area (Battle). `ambient` = the scene effects
   // pinned to the painting (battle-stage-ambient.js), in canvas px on this image.
   Valley_Battlemap002: {
