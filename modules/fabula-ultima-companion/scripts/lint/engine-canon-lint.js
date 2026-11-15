@@ -108,6 +108,8 @@
     "scripts/battle-director/battle-stage-3d.js",
     "scripts/battle-director/battle-stage-3d-rules.js",
     "scripts/battle-director/battle-stage-3d-camera.js",
+    "scripts/battle-director/battle-stage-ambient.js",
+    "scripts/battle-director/battle-stage-ambient-fx.js",
   ]);
 
   // Known intentional violations. Each entry kills one issue. Use sparingly —
