@@ -1066,7 +1066,8 @@
         },
         "oniFabula": {
           "general": {
-            "cameraFollowToken": false
+            "cameraFollowToken": false,
+            "conflictEvent": "updraft"
           },
           "sceneNetwork": "[]"
         },
@@ -1107,7 +1108,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1771010261270,
-      "modifiedTime": 1794731374374,
+      "modifiedTime": 1794738849890,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "environment": {

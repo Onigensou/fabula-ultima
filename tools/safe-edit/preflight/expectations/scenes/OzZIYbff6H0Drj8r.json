@@ -1085,7 +1085,8 @@
             "wellspring_earth": true,
             "wellspring_fire": true,
             "wellspring_bolt": false,
-            "wellspring_ice": false
+            "wellspring_ice": false,
+            "conflictEvent": "sylphid-blaze"
           },
           "sceneNetwork": "[]"
         },
@@ -1127,7 +1128,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1780402685457,
-      "modifiedTime": 1794731374503,
+      "modifiedTime": 1794738850139,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "environment": {
