@@ -1,4 +1,4 @@
-# Fabula Arcana: batch 4 cards (Bruce V, Nullis, Gardner) + Jack's Thief Bow (v1.0.617)
+# Fabula Arcana: batch 4 cards (Bruce V, Nullis, Gardner) + Jack's Thief Bow (v1.0.619)
 
 Three new ★★ character cards and a new ability for Jack. No world data. Branch `feat/fa-batch4`.
 
