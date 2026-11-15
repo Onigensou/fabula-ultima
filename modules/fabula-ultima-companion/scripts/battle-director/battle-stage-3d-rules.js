@@ -109,7 +109,8 @@ export const PRESETS = Object.freeze({
   Eisendrache_Battlemap002_v2: { horizon: 65.3, strength: 0.363, orbitX: 8, orbitY: 2, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
   Eisendrache_Battlemap004_v2: { horizon: 47.1, strength: 0.392, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
   Hideout_Battlemap001_v2: { horizon: 139.7, strength: 0.242, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
-  Hideout_Battlemap002_v2: { horizon: 21, strength: 0.432, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
+  // Waterwheel: the cut-off top of the wheel was completed by a second ChatGPT pass (2026-11-15).
+  Hideout_Battlemap002_v2: { horizon: 16.5, strength: 0.439, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
   // The original's heavy right/bottom vignette was relit from a second ChatGPT pass (stage edge only).
   Hideout_Battlemap003_v2: { horizon: -171, strength: 0.723, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
   Hideout_Battlemap004_v2: { horizon: -242.7, strength: 0.831, stage3d: { relief: true, backRow: 222, frontRow: 547 } },
