@@ -255,12 +255,15 @@
       "channel": "music",
       "fade": null,
       "flags": {
+        "fabula-ultima-companion": {
+          "loopStart": 34.632177
+        },
         "monks-sound-enhancements": {
           "hide-name": true
         }
       },
       "name": "Awaken",
-      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Awaken.mp3",
+      "path": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fabula%20Ultima/BGM/Awaken.mp3?v=2",
       "repeat": true,
       "sort": 0,
       "volume": 0.17
