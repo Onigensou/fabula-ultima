@@ -174,14 +174,25 @@
                 if (String(name ?? "").trim() && !hasToken(scene, name)) add("warn", `Lightning Reveal names "${String(name).trim()}", but no token on this scene has that name.`);
               }
               break;
+            case "startBattle":
+              // Without a battle map the row returns at once and no fight starts.
+              if (!String(row.battleMap ?? "").trim()) add("warn", "Start Battle with no battle map: the fight would not start.");
+              if (!String(row.enemies ?? "").trim()) add("warn", "Start Battle with no enemies.");
+              break;
             case "pauseForGM":
               if ((row.choices ?? []).some(c => !String(c.label ?? "").trim())) add("warn", "Pause for GM has a choice with no text.");
               break;
             case "jumpTo": {
               const lines = String(row.path ?? "").split(/\r?\n/).map(s => s.trim()).filter(Boolean);
-              if (!lines.length) add("warn", "Jump To with no path.");
+              // Leap out needs no path: the token goes straight up and hides.
+              if (!lines.length && row.style !== "leapOut") add("warn", "Jump To with no path.");
+              if (row.target === "token" && String(row.name ?? "").trim() && !hasToken(scene, row.name)) {
+                add("warn", `Jump To moves "${String(row.name).trim()}", but no token on this scene has that name.`);
+              }
               for (const line of lines) {
                 if (/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test(line)) continue;
+                // "party:dx,dy" is where the party stands when the row starts.
+                if (/^party\s*:\s*[+-]?\d+(\.\d+)?\s*,\s*[+-]?\d+(\.\d+)?$/i.test(line)) continue;
                 if (!hasToken(scene, line)) add("warn", `Jump To names the marker "${line}", but no token on this scene has that name. The jump would be skipped.`);
               }
               break;

@@ -333,6 +333,19 @@ export async function playBattleBgm(payload) {
       log("battle BGM: no track name in payload — skipping");
       return;
     }
+    // Already playing (an event started this track before the fight, e.g. a boss
+    // theme): let it carry on instead of restarting it from the top. Everything
+    // else still stops so nothing layers under it.
+    for (const pl of game.playlists ?? []) {
+      const snd = pl.sounds?.getName?.(name);
+      if (!snd?.playing) continue;
+      await Promise.allSettled(
+        (game.playlists ?? []).flatMap((p) => p.sounds.filter((s) => s.playing && s.id !== snd.id).map((s) => p.stopSound(s)))
+      );
+      _currentBgm = { playlistId: pl.id, soundId: snd.id };
+      log(`battle BGM carried on: ${pl.name} / ${snd.name}`);
+      return;
+    }
     // Stop currently-playing playlist sounds so the new BGM doesn't layer.
     await Promise.allSettled(
       (game.playlists ?? [])

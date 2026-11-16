@@ -227,11 +227,12 @@
   }
 
     function getPreferredPortraitSrc(token, actor) {
-    return stringOrEmpty(
-      token?.document?.texture?.src ||
-      token?.texture?.src ||
-      actor?.img
-    ) || null;
+    // The portrait is an <img>: an animated token (a .webm battle idle) cannot show
+    // in it, so a video token falls back to the actor's own picture.
+    const isVideo = (src) => /\.(webm|mp4|m4v|ogv)(\?.*)?$/i.test(String(src || ""));
+    const tokenSrc = token?.document?.texture?.src || token?.texture?.src || "";
+    const pick = [isVideo(tokenSrc) ? "" : tokenSrc, actor?.img, token?.actor?.img].find(s => s && !isVideo(s));
+    return stringOrEmpty(pick) || null;
   }
 
   // ------------------------------------------------------------

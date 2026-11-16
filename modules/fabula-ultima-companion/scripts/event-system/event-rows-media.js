@@ -503,6 +503,7 @@
     ["shake", "Shake"],
     ["dim", "Dim"],
     ["tint", "Tint"],
+    ["untint", "Lift the dim / tint"],
     ["letterboxIn", "Letterbox bars in"],
     ["letterboxOut", "Letterbox bars out"],
     ["clear", "Clear fade, dim, tint and letterbox"]
@@ -642,7 +643,7 @@
     if (effect === "dim") Client.setMarker(info.sourceId, "tint", "screen dimmed");
     if (effect === "letterboxIn") Client.setMarker(info.sourceId, "letterbox", "letterbox");
     if (effect === "fadeIn" || effect === "clear") Client.setMarker(info.sourceId, "fade", null);
-    if (effect === "clear") Client.setMarker(info.sourceId, "tint", null);
+    if (effect === "clear" || effect === "untint") Client.setMarker(info.sourceId, "tint", null);
     if (effect === "letterboxOut" || effect === "clear") Client.setMarker(info.sourceId, "letterbox", null);
 
     if (!info.presents) return;
@@ -666,6 +667,10 @@
         break;
       case "letterboxOut":
         letterboxOut(ms);
+        break;
+      case "untint":
+        // Lifts only a dim or tint: a fade and the letterbox bars stay.
+        dropFill("tint", ms);
         break;
       case "clear":
         clearScreen(ms);
