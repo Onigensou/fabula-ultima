@@ -220,7 +220,7 @@ async function openSession(offer, { isHost, late = false, hold = false } = {}) {
     // which seat a (re)joining user decides for (their linked / owned party character)
     seatFor: (userId) => {
       const actors = offer.roster.map((r) => game.actors.get(r.actorId)).filter(Boolean);
-      return assignSeats(actors, { requireActive: false }).indexOf(userId);
+      return assignSeats(actors, { requireActive: true }).indexOf(userId);
     },
     net: {
       send: (k, d) => send(k, d),

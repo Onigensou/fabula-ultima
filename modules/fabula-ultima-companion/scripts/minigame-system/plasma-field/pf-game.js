@@ -1193,7 +1193,9 @@ export function createPlasmaField(env) {
     G.shots = G.shots.filter(s => s.life > 0 && s.x > 0 && s.x < W && s.y > -100 && s.y < L.WORLD_H);
 
     for (const p of G.players){
-      stepPlayer(p, dt);
+      // one runner's bad state must never stop the frame for everyone else
+      try { stepPlayer(p, dt); }
+      catch (e){ if (!p._stepErr){ p._stepErr = true; console.error(TAG, "runner " + p.name + " reset after an error", e); } p.state = "idle"; p.kb = null; p.st = 0; p.dashT = 0; }
       if (p.local && p.wiggle > 0) p.wiggle -= dt;
       if (p.state === "ko" && (p.cpu || (p.me && env.autopilot)) && p.local){ p.botTap = (p.botTap ?? 0) - dt; if (p.botTap <= 0){ p.botTap = rnd(120, 230); struggleTap(p, p.lastTap === "left" ? "right" : "left"); } }
     }
@@ -1916,6 +1918,16 @@ export function createPlasmaField(env) {
     // drop samples nobody will interpolate from again
     while (p.net.length > 2 && p.net[1].t < rt - 200) p.net.shift();
   }
+  // a runner changing hands carries only what snapshots carry (no knockback vector, no dash timer):
+  // start it clean, with a moment of grace, rather than half-way through someone else's stun
+  function adoptRunner(p){
+    const moving = p.state === "auto" || p.state === "wait";
+    if (!moving) p.state = "idle";
+    p.st = 0; p.kb = null; p.kbDir = { x: 0, y: 1 }; p.kbLen = 0; p.dashT = 0; p.koPending = false; p.stunOverride = 0; p.noKnock = false;
+    if (!(p.hp > 0)) p.hp = p.hpMax;
+    p.grace = Math.max(p.grace || 0, 800); p.inv = 0; p.wiggle = 0;
+    if (!p.dashDir) p.dashDir = { x: 0, y: -1 };
+  }
   function stepRemote(p, dt){
     if (p.pop){ p.pop.t += dt; if (p.pop.t > 1100) p.pop = null; }
   }
@@ -1979,7 +1991,7 @@ export function createPlasmaField(env) {
       p.me = !mine && !p.cpu && !!s.user && s.user === env.userId; if (p.me) mine = true;
       p.local = p.me || (env.isHost && p.cpu);
       p.bot = p.bot || BOT[p.name] || BOT.Same;
-      if (wasLocal !== p.local) p.net = [];
+      if (wasLocal !== p.local){ p.net = []; if (p.local) adoptRunner(p); }
     });
     G.meIdx = G.players.findIndex(p => p.me);
     G.seatSince = env.net.hostNow();
@@ -1992,6 +2004,7 @@ export function createPlasmaField(env) {
         fadeTo(() => { L.pillars.forEach(p => p.shown = 0); startPractice(); G.camY = L.PB - 200; G.inputOk = false; if (isRunner()) showOverview(); });
         break;
       case "endPractice": endPractice(); break;
+      case "seats": applySeats(d.seats); if (!G.tutOpen) G.inputOk = true; renderPracticeBar(); break;
       case "stage": applySeats(d.seats); G.overSent = false; G.nextSent = null; showStageCard(d.s); break;
       case "finish": { const p = G.players[d.i]; if (p && p.running) finish(p, d.place, d.time); break; }
       case "timeUp": timeUp(d.order); break;
@@ -2002,6 +2015,7 @@ export function createPlasmaField(env) {
       case "takeover": {
         const p = G.players[d.i]; if (!p || p.cpu) break;
         const wasMe = p.me; p.cpu = true; p.cpuBy = "drop"; p.me = false; p.local = env.isHost; p.bot = p.bot || BOT[p.name] || BOT.Same; p.net = []; p.goalSent = !p.running;
+        if (p.local) adoptRunner(p);
         if (wasMe){ G.meIdx = -1; toast("Connection hiccup: a CPU runs for you until the next round.", 4000); }
         else toast(p.name + " lost connection: a CPU runs for them until the next round.", 3000);
         break;
@@ -2032,7 +2046,7 @@ export function createPlasmaField(env) {
   }
   // a late (re)joiner gets enough to watch until the next round break
   function syncState(){
-    return { mode: G.mode, stage: G.stage, stageT: Math.round(G.stageT), limit: G.limit === Infinity ? 0 : G.limit, replay: !!G.replay, seats: seats(),
+    return { mode: G.mode, stage: G.stage, stageT: Math.round(G.stageT), limit: G.limit === Infinity ? 0 : G.limit, replay: !!G.replay, seats: G.players.map(p => ({ user: env.roster[p.idx].userId || null, cpu: p.cpu })),
       pts: G.players.map(p => p.stats.points), places: G.players.map(p => p.stats.places), running: G.players.map(p => !!p.running), fin: G.players.map(p => !!p.finished),
       ready: G.players.map(p => !!p.ready), summary: G.mode === "summary" ? G.summary : null, rescuer: G.rescuer?.idx ?? null };
   }
@@ -2114,6 +2128,8 @@ export function createPlasmaField(env) {
           const i = env.seatFor?.(from.id) ?? -1, p = G.players[i];
           if (p && p.cpu){ env.roster[i].userId = from.id; p.cpuBy = "drop"; }
           env.net.send("sync", { ...syncState(), to: from.id });
+          // practice doesn't count: they can have their runner back right away
+          if (p && p.cpu && G.mode === "practice") later(400, () => hostFlow("seats", { seats: seats() }));
         }
         return;
     }
