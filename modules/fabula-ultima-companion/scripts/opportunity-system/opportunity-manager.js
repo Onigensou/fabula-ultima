@@ -840,12 +840,15 @@
     if (!Array.isArray(critPayloads) || !critPayloads.length) return;
 
     for (const cp of critPayloads) {
+      // Lets whoever is waiting on the check say why (the event GM chip).
+      Hooks.callAll("oniOpportunityCheckOffer", { actorName: cp.actorName, actorUuid: cp.actorUuid, open: true });
       await offer({
         actorUuid: cp.actorUuid,
         actorName: cp.actorName,
         source:    "check",
         context:   { checkResult: cp },
       }).catch(e => console.error(TAG, "processCheckCrits offer error:", e));
+      Hooks.callAll("oniOpportunityCheckOffer", { actorName: cp.actorName, actorUuid: cp.actorUuid, open: false });
     }
   }
 

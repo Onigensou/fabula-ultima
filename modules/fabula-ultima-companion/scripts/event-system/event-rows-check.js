@@ -372,6 +372,11 @@
 
     f?.hold?.(sourceId);
     Client.setMarker(sourceId, "check", "rolling a check");
+    // A critical opens an Opportunity picker before the check closes; the event
+    // waits on it, and the GM chip says who is choosing.
+    const oppHook = globalThis.Hooks?.on?.("oniOpportunityCheckOffer", ({ actorName, open } = {}) => {
+      Client.setMarker(sourceId, "check", open ? `Opportunity: ${actorName || "someone"} is choosing` : "rolling a check");
+    });
 
     let outcome;
     let split = { passed: [], failed: [] };
@@ -416,6 +421,7 @@
         split = splitIndividual(results);
       }
     } finally {
+      if (oppHook != null) globalThis.Hooks?.off?.("oniOpportunityCheckOffer", oppHook);
       f?.release?.(sourceId);
       Client.setMarker(sourceId, "check", null);
     }
