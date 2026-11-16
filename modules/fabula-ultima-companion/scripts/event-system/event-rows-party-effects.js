@@ -124,7 +124,9 @@
           // Every screen: one element flash + one sound + the Resource Panel
           // for the whole row (FU.Feedback, shared/feedback.js).
           verbosity: "silent",
-          feedback: "show",
+          // "Show no damage card": the hit lands with no numbers or panel (a
+          // cutscene that lets the picture tell it).
+          feedback: row.quiet === true ? "none" : "show",
         });
         hit.push(actor.name);
       } catch (e) {
@@ -138,7 +140,7 @@
     type: "dealDamage",
     label: "Deal Damage",
     category: "Party",
-    defaultData: { type: "dealDamage", targets: [{ kind: "party", slot: 1, name: "" }], amount: 10, element: "physical", source: "" },
+    defaultData: { type: "dealDamage", targets: [{ kind: "party", slot: 1, name: "" }], amount: 10, element: "physical", source: "", quiet: false },
     prepare: prepareDamage,
     summary: (row) => `${row?.amount ?? 0} ${row?.element ?? ""} → ${Check.describeTargets(row ?? {})}`.slice(0, 60),
     execute: executeDamage,
@@ -149,7 +151,9 @@
             ${kit.numberInput("oni-dmg-amount", row.amount, { min: 0, max: 999, step: 1 })}
             <select class="oni-dmg-element">${kit.options(ELEMENTS, row.element)}</select>
           </div>`, "Affinities, resistances and damage modifiers apply, as for a trap."),
-        kit.field("Source", `<input type="text" class="oni-dmg-source oni-grow" value="${kit.escapeHTML(row.source)}" placeholder="Shown as the attacker, e.g. Rolling Boulder" />`)
+        kit.field("Source", `<input type="text" class="oni-dmg-source oni-grow" value="${kit.escapeHTML(row.source)}" placeholder="Shown as the attacker, e.g. Rolling Boulder" />`),
+        kit.field("Feedback", `<label><input type="checkbox" class="oni-dmg-quiet" ${row.quiet === true ? "checked" : ""} /> show no damage card or numbers</label>`,
+          "For a cutscene where the picture tells it. HP still goes down.")
       );
       wireTargets(body, kit, row, "oni-dmg-targets");
       return body;
@@ -158,7 +162,8 @@
       targets: readTargets(rowEl, kit, "party"),
       amount: Math.max(0, Math.round(kit.readNumber(rowEl, ".oni-dmg-amount", 10))),
       element: kit.readText(rowEl, ".oni-dmg-element", "physical"),
-      source: kit.readText(rowEl, ".oni-dmg-source", "").trim()
+      source: kit.readText(rowEl, ".oni-dmg-source", "").trim(),
+      quiet: !!rowEl.querySelector(".oni-dmg-quiet")?.checked
     })
   });
 

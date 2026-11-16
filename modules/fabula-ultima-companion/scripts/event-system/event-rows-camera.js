@@ -61,7 +61,7 @@
     ["offset", "Offset from the current view"],
     ["source", "This event's tile / token"],
     ["token", "A named token"],
-    ["twoShot", "Two-shot: the party and a named token"],
+    ["twoShot", "Two-shot: the party and a named token (no name: the party alone, held)"],
     ["party", "Back to the party"]
   ];
 
@@ -183,9 +183,12 @@
       point = token ? { x: token.center.x, y: token.center.y } : null;
     } else if (data.mode === "twoShot") {
       const party = partyToken(data);
-      const other = findTokenByName(data.name);
+      // No name: frame the party alone at this row's zoom and hold it there
+      // ("Back to the party" instead hands the camera back to the walk follow).
+      const other = String(data.name ?? "").trim() ? findTokenByName(data.name) : null;
       if (party && other) point = twoShotPoint(spanOf(party), spanOf(other));
       else if (other) point = { x: other.center.x, y: other.center.y };
+      else if (party && !String(data.name ?? "").trim()) point = { x: party.center.x, y: party.center.y };
     }
 
     if (!point) {
@@ -320,7 +323,7 @@
     },
     summary: (row) => {
       const label = TARGETS.find(([value]) => value === row?.mode)?.[1] ?? "";
-      return row?.mode === "twoShot" ? `Two-shot: the party and "${String(row?.name ?? "")}"` : label;
+      return row?.mode === "twoShot" ? (String(row?.name ?? "").trim() ? `Two-shot: the party and "${String(row.name).trim()}"` : "The party, held at this zoom") : label;
     },
     execute: async (row, context) => {
       const durationMs = seconds(row) * 1000;
