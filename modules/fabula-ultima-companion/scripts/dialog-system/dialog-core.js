@@ -98,6 +98,8 @@ async function renderLocal(payload) {
       name = null,
       mode = "normal",       // "normal" | "shout" | "think"
       speed = 28,
+      // a named typing pace in place of speed (dialog-ui.js PACES): "slow"
+      pace = null,
 
       // visuals
       portraitSrc = null,
@@ -139,6 +141,7 @@ async function renderLocal(payload) {
         text: String(text),
         mode,
         speed: Math.max(1, Number(speed) || 28),
+        pace: pace ? String(pace) : null,
         portraitSrc: portraitSrc ?? actor?.img ?? null,
         waitForInput: waitForInput === true,
         maxWaitMs: Number(maxWaitMs) > 0 ? Number(maxWaitMs) : null,
@@ -164,6 +167,7 @@ async function renderLocal(payload) {
       text: String(text),
       mode,
       speed: Math.max(1, Number(speed) || 28),
+      pace: pace ? String(pace) : null,
       portraitSrc: portraitSrc ?? derivePortraitSrc(token),
       waitForInput: waitForInput === true,
       maxWaitMs: Number(maxWaitMs) > 0 ? Number(maxWaitMs) : null,

@@ -17,6 +17,8 @@
  *   member       the member in slot 1-4
  *   pick         the table picks one member from a menu
  *   name         a character by name
+ *   lastFailed   whoever failed the last Run Check of this run of the event
+ *   lastPassed   whoever passed it
  *
  * With more than one roller the row says how their results count:
  *   all     everyone must succeed
@@ -71,8 +73,13 @@
     ["party", "Whole party"],
     ["member", "Party member in slot"],
     ["pick", "The table picks one"],
-    ["name", "Character by name"]
+    ["name", "Character by name"],
+    ["lastFailed", "Failed the last check"],
+    ["lastPassed", "Passed the last check"]
   ];
+
+  // The two kinds that read the last Run Check instead of the party.
+  const LAST_CHECK_KINDS = { lastFailed: "failed", lastPassed: "passed" };
 
   const COMBINE = [
     ["all", "Everyone must succeed"],
@@ -95,6 +102,36 @@
 
   const isAttribute = (value) => ATTRIBUTES.some(([key]) => key === value);
   const isKind = (value) => TARGET_KINDS.some(([key]) => key === value);
+
+  // ------------------------------------------------------------
+  // The last check's result
+  // ------------------------------------------------------------
+  // Who passed and who failed the most recent Run Check, kept for the run of
+  // the event it happened in (so "everyone rolls, then hit those who failed"
+  // works, and a later run or another event starts clean). Every row of one
+  // run, nested lists included, is handed the same runRows, so that is the
+  // key; the memory goes when the run does.
+  const lastChecks = new WeakMap();
+  const runKey = (context) => (typeof context?.runRows === "function" ? context.runRows : null);
+
+  function rememberCheck(context, { passed = [], failed = [] } = {}) {
+    const key = runKey(context);
+    if (key) lastChecks.set(key, { passed: [...passed], failed: [...failed] });
+  }
+
+  // -> { passed: [actor uuid], failed: [actor uuid] }; both empty before any check.
+  function lastCheck(context) {
+    const key = runKey(context);
+    const found = key ? lastChecks.get(key) : null;
+    return { passed: [...(found?.passed ?? [])], failed: [...(found?.failed ?? [])] };
+  }
+
+  // A row whose every target reads the last check: nobody to act on is then a
+  // normal outcome (everyone passed), not a broken event.
+  function onlyLastCheck(row) {
+    const targets = Array.isArray(row?.targets) ? row.targets : [];
+    return targets.length > 0 && targets.every(t => Object.hasOwn(LAST_CHECK_KINDS, t?.kind));
+  }
 
   // ------------------------------------------------------------
   // Who rolls
@@ -173,6 +210,10 @@
         case "name":
           add(actorByName(target.name));
           break;
+        case "lastFailed":
+        case "lastPassed":
+          for (const uuid of lastCheck(context)[LAST_CHECK_KINDS[target.kind]]) add(await actorFromId(uuid));
+          break;
         case "pick": {
           const choices = members.filter(Boolean).filter(m => !out.some(a => a.uuid === m.uuid));
           if (!choices.length) break;
@@ -234,6 +275,29 @@
     return { success, special, successes: helpers + (success ? 1 : 0) };
   }
 
+  // Who passed and who failed, by actor uuid, for the next rows to act on.
+  //   Each roller on their own: their own roll (a critical passes, a fumble fails).
+  //   Group Check: the group passes or fails together, so everyone who took
+  //   part (leader and helpers) counts as the group's result.
+  function splitIndividual(results) {
+    const out = { passed: [], failed: [] };
+    for (const r of Array.isArray(results) ? results : []) {
+      const uuid = String(r?.actorUuid ?? "");
+      if (!uuid || out.passed.includes(uuid) || out.failed.includes(uuid)) continue;
+      (passed(r) ? out.passed : out.failed).push(uuid);
+    }
+    return out;
+  }
+
+  function splitGroup(raw, success) {
+    const uuids = [];
+    for (const r of [raw?.leaderResult, ...(raw?.helperResults ?? [])]) {
+      const uuid = String(r?.actorUuid ?? "");
+      if (uuid && !uuids.includes(uuid)) uuids.push(uuid);
+    }
+    return success ? { passed: uuids, failed: [] } : { passed: [], failed: uuids };
+  }
+
   // Which list of events runs. Critical and Fumble only when the author
   // turned them on and put something under them.
   function branchFor(row, outcome) {
@@ -288,6 +352,10 @@
 
     const { actors, aborted } = await resolveTargets(row, context);
     if (aborted) return { ok: true, type: "runCheck", aborted: true };
+    if (!actors.length && onlyLastCheck(row)) {
+      // "Those who failed roll again" and nobody failed: nothing to roll.
+      return { ok: true, type: "runCheck", ran: false, reason: "nobody" };
+    }
     if (!actors.length) {
       console.warn(INSTALL_TAG, "Run Check: no character to roll. Check the targets and the party sheet.", row.targets);
       return { ok: false, reason: "noRollers" };
@@ -306,6 +374,7 @@
     Client.setMarker(sourceId, "check", "rolling a check");
 
     let outcome;
+    let split = { passed: [], failed: [] };
     try {
       const group = row.combine === "group" && actors.length > 1 && globalThis.ONI?.GroupCheck?.request;
 
@@ -335,19 +404,24 @@
           leaderDl: row.dl,
           helperBonus: 1
         });
-        // No leader result: the lobby was closed without a roll.
-        if (!raw?.leaderResult) return { ok: true, type: "runCheck", ran: false };
+        // No leader result: the lobby was closed without a roll. Nobody
+        // rolled, so nobody is left marked from an earlier check either.
+        if (!raw?.leaderResult) { rememberCheck(context, split); return { ok: true, type: "runCheck", ran: false }; }
         outcome = readGroup(raw);
+        split = splitGroup(raw, outcome.success);
       } else {
         const results = await requester.request(actors, { ...shared, dl: row.dl, mode: "interactive" });
-        if (!results?.length) return { ok: true, type: "runCheck", ran: false };
+        if (!results?.length) { rememberCheck(context, split); return { ok: true, type: "runCheck", ran: false }; }
         outcome = readIndividual(results, row.combine === "any" ? "any" : "all");
+        split = splitIndividual(results);
       }
     } finally {
       f?.release?.(sourceId);
       Client.setMarker(sourceId, "check", null);
     }
 
+    // Before the branch runs, so a Deal Damage under Failure can use it too.
+    rememberCheck(context, split);
     if (row.storeVar) await gameState()?.setVariable?.(row.storeVar, "set", outcome.successes);
 
     const branch = branchFor(row, outcome);
@@ -437,7 +511,8 @@
              <button type="button" class="oni-check-target-add"><i class="fas fa-plus"></i> Add target</button>
            </div>`,
           `Worked out when the event runs. <b>Main controller's character</b> is the character of whoever
-           interacted with the event. A character named twice rolls once.`
+           interacted with the event. A character named twice rolls once. <b>Failed / Passed the last check</b>
+           are the characters of the last Run Check in this event.`
         ),
         kit.field(
           "If several roll",
@@ -531,7 +606,13 @@
     readIndividual,
     readGroup,
     branchFor,
+    splitIndividual,
+    splitGroup,
     resolveTargets,
+    // The last check's result, for this run of the event.
+    lastCheck,
+    rememberCheck,
+    onlyLastCheck,
     // Shared with other actions that pick party members (event-rows-fabula.js).
     TARGET_KINDS,
     MAX_TARGETS,

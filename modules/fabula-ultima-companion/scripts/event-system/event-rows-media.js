@@ -10,9 +10,12 @@
  *     Play Sound       a one-shot sound effect on every client
  *     Play BGM         a playlist track, by default only until the event ends
  *     Stop BGM         stops it with a fade; music it moved aside comes back
- *     Screen Effect    fade out / fade in / flash / shake / tint / clear
+ *     Screen Effect    fade out / fade in / flash / shake / tint / letterbox
+ *                      bars in and out / clear
  *     Play Animation   an image or video, fullscreen or at a point on the map,
- *                      over everything or among the tokens (event-worldFx.js)
+ *                      over everything or among the tokens (event-worldFx.js);
+ *                      "hold the last frame" keeps it up until Stop Animation
+ *     Stop Animation   removes held animations of the event, by hold name
  *
  * How it fits together:
  * - The row runs on the GM, which tells every client to play it
@@ -21,7 +24,8 @@
  * - Screen effects and fullscreen animations sit above the map and tokens
  *   and below dialogue bubbles and the interface, so a line can still be
  *   read over a black screen.
- * - A fade or tint stays until a later row lifts it or the event ends.
+ * - A fade, tint or letterbox stays until a later row lifts it or the event
+ *   ends; so does a held animation.
  * - Shake moves the canvas element, not the camera, so it cannot fight the
  *   follow camera.
  * - A hidden tab draws nothing: one-shots (flash, shake, animations) are
@@ -58,16 +62,19 @@
   const KIND_SCREEN = "screen.effect";
   const KIND_ANIMATION = "screen.animation";
   const KIND_BGM_FADE = "bgm.fade";
+  const KIND_ANIMATION_STOP = "screen.animation.stop";
 
   const STYLE_ID = "oni-event-screen-style";
   const SCREEN_LAYER_ID = "oni-event-screen-layer";
   const WORLD_LAYER_ID = "oni-event-world-layer";
+  const LETTERBOX_LAYER_ID = "oni-event-letterbox-layer";
 
   const SOUND_WAIT_CAP_MS = 15000;
   const ANIMATION_CAP_MS = 30000;
   const IMAGE_DEFAULT_MS = 2000;
   const METADATA_TIMEOUT_MS = 4000;
   const END_FADE_MS = 400;
+  const STOP_DEFAULT_FADE_MS = 150;
   const BGM_END_FADE_MS = 1000;
 
   const flow = () => window.oni.EventSystem.Flow;
@@ -82,6 +89,16 @@
 
   function isVideo(src) {
     return /\.(webm|mp4|m4v|ogv)(\?.*)?$/i.test(String(src || ""));
+  }
+
+  // The name Stop Animation finds a held animation by: the row's own name, or
+  // else the file's, compared without case or extension ("Smoke" finds
+  // ".../smoke.webm"). "" = no name, which Stop Animation reads as "all".
+  function holdKey(name, src = "") {
+    const raw = String(name ?? "").trim() || String(src ?? "").trim().split(/[?#]/)[0].split("/").pop();
+    let key = String(raw || "").trim().toLowerCase();
+    try { key = decodeURIComponent(key); } catch (_) {}
+    return key.replace(/\.(webm|mp4|m4v|ogv|png|jpe?g|gif|webp|apng|avif|svg)$/i, "").trim();
   }
 
   // ------------------------------------------------------------
@@ -183,9 +200,12 @@
     const style = document.createElement("style");
     style.id = STYLE_ID;
     // Above the canvas and the token HUD, below Foundry's interface, our
-    // overhead buttons and the dialogue bubbles.
+    // overhead buttons and the dialogue bubbles. The letterbox bars sit just
+    // over the screen layer (a fullscreen animation plays inside the frame)
+    // and under Floating Text (60), the GM chip (95), the Fabula Point tab
+    // (9000) and the dialogue boxes (100000).
     style.textContent = `
-      #${SCREEN_LAYER_ID}, #${WORLD_LAYER_ID} {
+      #${SCREEN_LAYER_ID}, #${WORLD_LAYER_ID}, #${LETTERBOX_LAYER_ID} {
         position: fixed;
         inset: 0;
         pointer-events: none;
@@ -193,6 +213,17 @@
       }
       #${WORLD_LAYER_ID} { z-index: 24; }
       #${SCREEN_LAYER_ID} { z-index: 25; }
+      #${LETTERBOX_LAYER_ID} { z-index: 26; }
+
+      #${LETTERBOX_LAYER_ID} > .oni-event-letterbox-bar {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 0;
+        background: #000;
+      }
+      #${LETTERBOX_LAYER_ID} > .oni-event-letterbox-bar.top { top: 0; }
+      #${LETTERBOX_LAYER_ID} > .oni-event-letterbox-bar.bottom { bottom: 0; }
 
       #${SCREEN_LAYER_ID} > .oni-event-screen-fill {
         position: absolute;
@@ -472,7 +503,9 @@
     ["shake", "Shake"],
     ["dim", "Dim"],
     ["tint", "Tint"],
-    ["clear", "Clear fade, dim and tint"]
+    ["letterboxIn", "Letterbox bars in"],
+    ["letterboxOut", "Letterbox bars out"],
+    ["clear", "Clear fade, dim, tint and letterbox"]
   ];
 
   const EFFECT_DEFAULT_COLOR = { fadeOut: "#000000", flash: "#ffffff", tint: "#000000" };
@@ -482,6 +515,11 @@
   const DIM_COLOR = "#000000";
   const DIM_DEFAULT_STRENGTH = 0.5;
   const SHAKE_DEFAULT_STRENGTH = 8;
+  // Letterbox: each bar's height as a share of the window (the mockup's 0.11),
+  // and the row's duration when the effect is picked.
+  const LETTERBOX_DEFAULT_STRENGTH = 0.11;
+  const LETTERBOX_MAX_STRENGTH = 0.45;
+  const EFFECT_DEFAULT_SECONDS = { letterboxIn: 0.5, letterboxOut: 0.4 };
 
   // The lasting fills on this client: { fade, tint } elements, or null.
   const fills = { fade: null, tint: null };
@@ -540,6 +578,59 @@
     dropFill("tint", ms);
   }
 
+  // The letterbox bars on this client: { top, bottom } elements, or null.
+  let bars = null;
+
+  // A bar's height to `vh` (a share of the window, 0-1) over ms, eased in
+  // and out; then() once it is there. On a hidden tab it is simply set.
+  function sizeBar(el, share, ms, then = null) {
+    const from = el.getBoundingClientRect().height;
+    const to = `${(share * 100).toFixed(3)}vh`;
+    el.style.height = to;
+
+    if (ms <= 0 || hiddenTab()) {
+      then?.();
+      return;
+    }
+
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      then?.();
+    };
+
+    try {
+      const anim = el.animate([{ height: `${from}px` }, { height: to }], { duration: ms, easing: "ease-in-out" });
+      anim.finished.then(finish, finish);
+    } catch (_) { /* the style above already holds the end state */ }
+
+    // An animation on a tab that gets hidden midway never reports back.
+    setTimeout(finish, ms + 300);
+  }
+
+  function letterboxIn(share, ms) {
+    if (!bars) {
+      const host = layer(LETTERBOX_LAYER_ID);
+      bars = {};
+      for (const side of ["top", "bottom"]) {
+        bars[side] = document.createElement("div");
+        bars[side].className = `oni-event-letterbox-bar ${side}`;
+        host.appendChild(bars[side]);
+      }
+    }
+    sizeBar(bars.top, share, ms);
+    sizeBar(bars.bottom, share, ms);
+  }
+
+  function letterboxOut(ms) {
+    if (!bars) return;
+    const { top, bottom } = bars;
+    bars = null;
+    sizeBar(top, 0, ms, () => top.remove());
+    sizeBar(bottom, 0, ms, () => bottom.remove());
+  }
+
   Client.register(KIND_SCREEN, (data, info) => {
     const effect = String(data.effect || "");
     const ms = Math.max(0, Logic.toNumber(data.durationMs, 800));
@@ -549,8 +640,10 @@
     if (effect === "fadeOut") Client.setMarker(info.sourceId, "fade", "screen faded");
     if (effect === "tint") Client.setMarker(info.sourceId, "tint", "screen tinted");
     if (effect === "dim") Client.setMarker(info.sourceId, "tint", "screen dimmed");
+    if (effect === "letterboxIn") Client.setMarker(info.sourceId, "letterbox", "letterbox");
     if (effect === "fadeIn" || effect === "clear") Client.setMarker(info.sourceId, "fade", null);
     if (effect === "clear") Client.setMarker(info.sourceId, "tint", null);
+    if (effect === "letterboxOut" || effect === "clear") Client.setMarker(info.sourceId, "letterbox", null);
 
     if (!info.presents) return;
 
@@ -567,8 +660,16 @@
       case "dim":
         fadeTo(fillElement("tint", DIM_COLOR), clampNumber(data.strength, 0, 1, DIM_DEFAULT_STRENGTH), ms);
         break;
+      case "letterboxIn":
+        letterboxIn(clampNumber(data.strength, 0.01, LETTERBOX_MAX_STRENGTH, LETTERBOX_DEFAULT_STRENGTH), ms);
+        Client.addCleanup(info.sourceId, "letterbox", ({ sceneGone } = {}) => letterboxOut(sceneGone ? 0 : END_FADE_MS));
+        break;
+      case "letterboxOut":
+        letterboxOut(ms);
+        break;
       case "clear":
         clearScreen(ms);
+        letterboxOut(ms);
         break;
       case "flash":
         flash(color, ms);
@@ -612,7 +713,7 @@
         kit.field(
           "Effect",
           `<select class="oni-event-row-fx-effect">${kit.options(EFFECTS, effect)}</select>`,
-          `A fade, dim or tint stays until a later row lifts it, or the event ends. The GM is not shown screen effects.`
+          `A fade, dim, tint or letterbox stays until a later row lifts it, or the event ends. The GM is not shown screen effects.`
         ),
         `<div class="oni-event-row-fx-color-wrap">${kit.field(
           "Colour",
@@ -621,7 +722,7 @@
         `<div class="oni-event-row-fx-strength-wrap">${kit.field(
           "Strength",
           kit.numberInput("oni-event-row-fx-strength", Logic.toNumber(row.strength, 0) > 0 ? row.strength : "", { min: 0, step: 0.05, placeholder: "default" }),
-          `Dim and Tint: how strong, 0 to 1 (default ${DIM_DEFAULT_STRENGTH} and ${TINT_DEFAULT_STRENGTH}). Shake: how far, in pixels (default ${SHAKE_DEFAULT_STRENGTH}).`
+          `Dim and Tint: how strong, 0 to 1 (default ${DIM_DEFAULT_STRENGTH} and ${TINT_DEFAULT_STRENGTH}). Shake: how far, in pixels (default ${SHAKE_DEFAULT_STRENGTH}). Letterbox: each bar's height as a share of the window (default ${LETTERBOX_DEFAULT_STRENGTH}).`
         )}</div>`,
         kit.field(
           "Duration (s)",
@@ -632,14 +733,17 @@
 
       const effectEl = body.querySelector(".oni-event-row-fx-effect");
       const colorEl = body.querySelector(".oni-event-row-fx-color");
+      const secondsEl = body.querySelector(".oni-event-row-fx-seconds");
       const sync = () => {
         const value = effectEl.value;
         body.querySelector(".oni-event-row-fx-color-wrap").hidden = !(value in EFFECT_DEFAULT_COLOR);
-        body.querySelector(".oni-event-row-fx-strength-wrap").hidden = !(value === "tint" || value === "dim" || value === "shake");
+        body.querySelector(".oni-event-row-fx-strength-wrap").hidden = !(value === "tint" || value === "dim" || value === "shake" || value === "letterboxIn");
       };
       effectEl.addEventListener("change", () => {
         // A flash starts white and a fade black; either can be recoloured after.
         if (effectEl.value in EFFECT_DEFAULT_COLOR) colorEl.value = EFFECT_DEFAULT_COLOR[effectEl.value];
+        // The bars slide in over half a second and out a little faster.
+        if (effectEl.value in EFFECT_DEFAULT_SECONDS && secondsEl) secondsEl.value = EFFECT_DEFAULT_SECONDS[effectEl.value];
         sync();
       });
       sync();
@@ -675,6 +779,9 @@
 
   // Animations playing on this client: sourceId -> Set of stop functions.
   const playing = new Map();
+  // The held ones among them (page elements only; WorldFx keeps its own):
+  // sourceId -> Set of { key, stop }.
+  const held = new Map();
 
   function trackAnimation(sourceId, stop) {
     if (!playing.has(sourceId)) playing.set(sourceId, new Set());
@@ -682,6 +789,7 @@
     Client.addCleanup(sourceId, "animations", ({ sceneGone } = {}) => {
       for (const fn of [...(playing.get(sourceId) ?? [])]) fn(sceneGone ? 0 : 200);
       playing.delete(sourceId);
+      held.delete(sourceId);
     });
   }
 
@@ -736,6 +844,8 @@
 
     const opacity = clampNumber(data.opacity, 0, 1, 1);
     const scale = clampNumber(data.scalePct, 1, 1000, 100) / 100;
+    const hold = data.hold === true;
+    const key = holdKey(data.holdKey, src);
 
     const worldFx = window.oni.EventSystem.WorldFx;
     if (!fullscreen && pickLayer(data.layer) !== "over" && worldFx) {
@@ -756,7 +866,9 @@
         flat: clampNumber(data.flatPct, 5, 100, 100) / 100,
         hue: clampNumber(data.hue, -180, 180, 0),
         spawn: data.spawn === true,
-        durationMs: Math.max(0, Logic.toNumber(data.durationMs, 0))
+        durationMs: Math.max(0, Logic.toNumber(data.durationMs, 0)),
+        hold,
+        holdKey: key
       });
       return;
     }
@@ -766,6 +878,7 @@
     let ticker = null;
     let stopped = false;
     let endTimer = null;
+    const entry = { key, stop: null };
 
     const stop = (fadeMs = 200) => {
       if (stopped) return;
@@ -773,8 +886,10 @@
       if (endTimer) clearTimeout(endTimer);
       if (ticker) { try { canvas.app.ticker.remove(ticker); } catch (_) {} }
       playing.get(info.sourceId)?.delete(stop);
+      held.get(info.sourceId)?.delete(entry);
       fadeTo(el, 0, fadeMs, () => el.remove());
     };
+    entry.stop = stop;
 
     if (fullscreen) {
       el.style.objectFit = data.fit === "cover" ? "cover" : "contain";
@@ -788,16 +903,23 @@
 
       layer(WORLD_LAYER_ID).appendChild(el);
 
-      // Rides the map like a token effect: placed again every frame.
+      // Rides the map like a token effect: placed again every frame. Guarded:
+      // a throw here stops PIXI's frame loop, and a held one can outlive its
+      // token.
       ticker = () => {
-        if (!canvas?.ready) return;
-        const point = anchor();
-        const at = worldToScreen(point.x, point.y);
-        const w = (el.videoWidth || el.naturalWidth || 0) * scale * at.scale;
-        const h = (el.videoHeight || el.naturalHeight || 0) * scale * at.scale;
-        el.style.width = `${w}px`;
-        el.style.height = `${h}px`;
-        el.style.transform = `translate(${at.x - (w / 2)}px, ${at.y - (h / 2)}px)`;
+        try {
+          if (!canvas?.ready) return;
+          const point = anchor();
+          const at = worldToScreen(point.x, point.y);
+          const w = (el.videoWidth || el.naturalWidth || 0) * scale * at.scale;
+          const h = (el.videoHeight || el.naturalHeight || 0) * scale * at.scale;
+          el.style.width = `${w}px`;
+          el.style.height = `${h}px`;
+          el.style.transform = `translate(${at.x - (w / 2)}px, ${at.y - (h / 2)}px)`;
+        } catch (err) {
+          console.warn(INSTALL_TAG, "Play Animation frame failed; it stays where it is.", err);
+          try { canvas.app.ticker.remove(ticker); } catch (_) {}
+        }
       };
       canvas.app.ticker.add(ticker);
     }
@@ -806,6 +928,22 @@
     fadeTo(el, opacity, 200);
 
     const fixedMs = Math.max(0, Logic.toNumber(data.durationMs, 0));
+
+    // Held: no time cap. A video stops on its last frame (or at the row's
+    // duration) and stays, as an image does, until Stop Animation names it or
+    // the event ends.
+    if (hold) {
+      if (!held.has(info.sourceId)) held.set(info.sourceId, new Set());
+      held.get(info.sourceId).add(entry);
+      if (el.tagName === "VIDEO") {
+        const freeze = () => { if (!stopped) { try { el.pause(); } catch (_) {} } };
+        el.addEventListener("ended", freeze, { once: true });
+        el.addEventListener("error", () => stop(0), { once: true });
+        if (fixedMs > 0) endTimer = setTimeout(freeze, fixedMs);
+      }
+      return;
+    }
+
     if (el.tagName === "VIDEO" && fixedMs <= 0) {
       el.addEventListener("ended", () => stop(200), { once: true });
       el.addEventListener("error", () => stop(0), { once: true });
@@ -833,14 +971,20 @@
       hue: 0,
       spawn: false,
       seconds: 0,
+      hold: false,
+      holdName: "",
       wait: true
     },
-    summary: (row) => String(row?.src ?? "").split("/").pop(),
+    summary: (row) => {
+      const file = String(row?.src ?? "").split("/").pop();
+      return row?.hold === true ? `${file} · held as "${holdKey(row?.holdName, row?.src)}"` : file;
+    },
     mediaOf: (row) => [row?.src],
     execute: async (row, context) => {
       const src = String(row?.src || "").trim();
       if (!src) return { ok: false, reason: "noAnimationFile" };
 
+      const hold = row?.hold === true;
       const durationMs = clampNumber(row?.seconds, 0, ANIMATION_CAP_MS / 1000, 0) * 1000;
 
       Client.run(context?.tileId, KIND_ANIMATION, {
@@ -856,13 +1000,17 @@
         flatPct: clampNumber(row?.flatPct, 5, 100, 100),
         hue: clampNumber(row?.hue, -180, 180, 0),
         spawn: row?.spawn === true,
-        durationMs
+        durationMs,
+        hold,
+        holdKey: holdKey(row?.holdName, src)
       });
 
+      // Held: the wait ends on the last frame (no cap), not when it goes;
+      // a held image is there at once.
       if (row?.wait !== false) {
         let ms = durationMs;
-        if (ms <= 0) ms = isVideo(src) ? await mediaDurationMs(src, "video") : IMAGE_DEFAULT_MS;
-        if (ms > 0) await flow()?.wait?.(context?.tileId, Math.min(ANIMATION_CAP_MS, ms));
+        if (ms <= 0) ms = isVideo(src) ? await mediaDurationMs(src, "video") : (hold ? 0 : IMAGE_DEFAULT_MS);
+        if (ms > 0) await flow()?.wait?.(context?.tileId, hold ? ms : Math.min(ANIMATION_CAP_MS, ms));
       }
 
       return { ok: true, type: "playAnimation" };
@@ -912,6 +1060,16 @@
           kit.numberInput("oni-event-row-anim-seconds", Logic.toNumber(row.seconds, 0) > 0 ? row.seconds : "", { min: 0, max: ANIMATION_CAP_MS / 1000, step: 0.1, placeholder: "auto" }),
           `Empty: a video plays to its end, a still image shows for ${IMAGE_DEFAULT_MS / 1000} s.`
         ),
+        kit.field(
+          "",
+          `<label><input type="checkbox" class="oni-event-row-anim-hold" ${row.hold === true ? "checked" : ""} /> hold the last frame</label>`,
+          "On: a video stops on its last frame (or at the duration above) and an image stays, with no time limit, until a Stop Animation row names it or the event ends. Wait then ends on the last frame."
+        ),
+        `<div class="oni-event-row-anim-hold-wrap">${kit.field(
+          "Hold name",
+          `<input type="text" class="oni-event-row-anim-hold-name" value="${kit.escapeHTML(row.holdName ?? "")}" placeholder="Empty: the file name" />`,
+          "What Stop Animation calls it. Case and file extension do not matter."
+        )}</div>`,
         kit.waitField(row, true)
       );
 
@@ -925,7 +1083,11 @@
         body.querySelector(".oni-event-row-anim-floor-wrap").hidden = fullscreen;
       };
       whereEl.addEventListener("change", sync);
+      const holdEl = body.querySelector(".oni-event-row-anim-hold");
+      const syncHold = () => { body.querySelector(".oni-event-row-anim-hold-wrap").hidden = !holdEl.checked; };
+      holdEl.addEventListener("change", syncHold);
       sync();
+      syncHold();
 
       return body;
     },
@@ -942,12 +1104,63 @@
       hue: clampNumber(kit.readNumber(rowEl, ".oni-event-row-anim-hue", 0), -180, 180, 0),
       spawn: !!kit.own(rowEl, ".oni-event-row-anim-spawn")?.checked,
       seconds: Math.max(0, kit.readNumber(rowEl, ".oni-event-row-anim-seconds", 0)),
+      hold: !!kit.own(rowEl, ".oni-event-row-anim-hold")?.checked,
+      holdName: kit.readText(rowEl, ".oni-event-row-anim-hold-name", "").trim(),
       wait: kit.readWait(rowEl, true)
+    })
+  });
+
+  // ------------------------------------------------------------
+  // Stop Animation
+  // ------------------------------------------------------------
+  // Removes held animations of this event, on every client: page elements
+  // here, those among the tokens through WorldFx. key "" = all of them.
+  Client.register(KIND_ANIMATION_STOP, (data, info) => {
+    const key = String(data.key ?? "");
+    const fadeMs = Math.max(0, Logic.toNumber(data.fadeMs, STOP_DEFAULT_FADE_MS));
+    const ms = hiddenTab() ? 0 : fadeMs;
+
+    for (const entry of [...(held.get(info.sourceId) ?? [])]) {
+      if (key && entry.key !== key) continue;
+      entry.stop(ms);
+    }
+    window.oni.EventSystem.WorldFx?.stopHeld?.(info.sourceId, key, ms);
+  });
+
+  EventRegistry.register({
+    type: "stopAnimation",
+    label: "Stop Animation",
+    category: "Screen",
+    defaultData: { type: "stopAnimation", name: "", fadeMs: STOP_DEFAULT_FADE_MS },
+    summary: (row) => holdKey(row?.name) || "every held animation",
+    execute: async (row, context) => {
+      Client.run(context?.tileId, KIND_ANIMATION_STOP, {
+        key: holdKey(row?.name),
+        fadeMs: clampNumber(row?.fadeMs, 0, 10000, STOP_DEFAULT_FADE_MS)
+      });
+      return { ok: true, type: "stopAnimation" };
+    },
+    buildFields: (row, kit) => kit.fields(
+      kit.field(
+        "Name",
+        `<input type="text" class="oni-event-row-anim-stop-name" value="${kit.escapeHTML(row.name ?? "")}" placeholder="Empty: every held animation of this event" />`,
+        "The hold name of a Play Animation with \"hold the last frame\" on (its file name unless one was given)."
+      ),
+      kit.field(
+        "Fade out (ms)",
+        kit.numberInput("oni-event-row-anim-stop-fade", clampNumber(row.fadeMs, 0, 10000, STOP_DEFAULT_FADE_MS), { min: 0, max: 10000, step: 50 })
+      )
+    ),
+    collectFields: (rowEl, kit) => ({
+      name: kit.readText(rowEl, ".oni-event-row-anim-stop-name", "").trim(),
+      fadeMs: clampNumber(kit.readNumber(rowEl, ".oni-event-row-anim-stop-fade", STOP_DEFAULT_FADE_MS), 0, 10000, STOP_DEFAULT_FADE_MS)
     })
   });
 
   window.oni.EventSystem.RowsMedia = {
     installed: true,
+    // Plain helper, also for tests: the name Stop Animation finds a hold by.
+    holdKey,
     // Also used by the config window's preview button.
     playSound,
     preloadSound: (src) => { loadSound(src).catch(() => {}); },

@@ -19,6 +19,8 @@
  *   follow uses keeps the target in the part the player can see.
  * - The player camera clamp still applies, so a pan past the edge of the map
  *   stops at the edge.
+ * - A two-shot frames the party token and a named token together: between
+ *   them across, and from the higher head to the lower feet up and down.
  * - The GM's camera is not moved (see event-client.js). The GM status chip
  *   shows "camera away" instead.
  *
@@ -59,6 +61,7 @@
     ["offset", "Offset from the current view"],
     ["source", "This event's tile / token"],
     ["token", "A named token"],
+    ["twoShot", "Two-shot: the party and a named token"],
     ["party", "Back to the party"]
   ];
 
@@ -116,6 +119,38 @@
     ) ?? null;
   }
 
+  // What a token takes up on the map, by its drawn sprite where there is one
+  // (a sprite scaled past its grid box overhangs it): { x, top, bottom }, x
+  // the token's centre. World px.
+  function spanOf(token) {
+    const x = token.center.x;
+    try {
+      const mesh = token.mesh;
+      const wt = canvas.stage.worldTransform;
+      const b = mesh && !mesh.destroyed ? mesh.getBounds() : null;
+      if (b && b.height > 0 && wt?.d) {
+        return { x, top: (b.y - wt.ty) / wt.d, bottom: (b.y + b.height - wt.ty) / wt.d };
+      }
+    } catch (_) { /* the grid box below */ }
+    return { x, top: token.y, bottom: token.y + token.h };
+  }
+
+  // Plain helper, also for tests. a, b: { x, top, bottom } in world px.
+  // Across: halfway between the two centres. Up and down: halfway between the
+  // higher sprite top and the lower token's feet.
+  function twoShotPoint(a, b) {
+    return {
+      x: (a.x + b.x) / 2,
+      y: (Math.min(a.top, b.top) + Math.max(a.bottom, b.bottom)) / 2
+    };
+  }
+
+  // The party token, as Play Animation's "On the party" finds it (the token
+  // the event was started for), else the one the follow camera is on.
+  function partyToken(data) {
+    return canvas.tokens?.get(data.partyTokenId) ?? followRuntime()?.getFollowToken?.() ?? null;
+  }
+
   // The party view to go back to: live from the follow where there is one.
   function homeView() {
     return followRuntime()?.getFollowTarget?.() ?? view?.home ?? currentView();
@@ -146,6 +181,11 @@
     } else if (data.mode === "token") {
       const token = findTokenByName(data.name);
       point = token ? { x: token.center.x, y: token.center.y } : null;
+    } else if (data.mode === "twoShot") {
+      const party = partyToken(data);
+      const other = findTokenByName(data.name);
+      if (party && other) point = twoShotPoint(spanOf(party), spanOf(other));
+      else if (other) point = { x: other.center.x, y: other.center.y };
     }
 
     if (!point) {
@@ -278,7 +318,10 @@
       motion: "smooth",
       wait: true
     },
-    summary: (row) => (TARGETS.find(([value]) => value === row?.mode)?.[1] ?? ""),
+    summary: (row) => {
+      const label = TARGETS.find(([value]) => value === row?.mode)?.[1] ?? "";
+      return row?.mode === "twoShot" ? `Two-shot: the party and "${String(row?.name ?? "")}"` : label;
+    },
     execute: async (row, context) => {
       const durationMs = seconds(row) * 1000;
 
@@ -287,6 +330,7 @@
         dx: Logic.toNumber(row?.dx, 0),
         dy: Logic.toNumber(row?.dy, 0),
         name: String(row?.name ?? ""),
+        partyTokenId: context?.tokenId ?? null,
         zoom: Logic.toNumber(row?.zoom, 0),
         durationMs,
         motion: pickMotion(row?.motion)
@@ -339,7 +383,7 @@
       const modeEl = body.querySelector(".oni-event-row-cam-mode");
       const sync = () => {
         body.querySelector(".oni-event-row-cam-offset").hidden = modeEl.value !== "offset";
-        body.querySelector(".oni-event-row-cam-token").hidden = modeEl.value !== "token";
+        body.querySelector(".oni-event-row-cam-token").hidden = !(modeEl.value === "token" || modeEl.value === "twoShot");
       };
       modeEl.addEventListener("change", sync);
       sync();
@@ -365,7 +409,8 @@
   window.oni.EventSystem.RowsCamera = {
     installed: true,
     // For checks from the console: is an event holding this client's camera?
-    isHolding: () => !!view
+    isHolding: () => !!view,
+    twoShotPoint
   };
 
   console.debug(INSTALL_TAG, "Installed.");

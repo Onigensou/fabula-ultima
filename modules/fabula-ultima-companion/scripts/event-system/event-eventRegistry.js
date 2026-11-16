@@ -309,6 +309,12 @@
   const SHOW_TEXT = C.EVENT_TYPES?.SHOW_TEXT || "showText";
   const DEFAULT_SPEAKER = C.DEFAULT_SHOW_TEXT_SPEAKER || C.SPECIAL_SPEAKER_SELF || "Self";
 
+  // The box's look (dialog-ui.js draws all three) and how fast it types.
+  const TEXT_STYLES = [["normal", "Normal"], ["shout", "Shout (jagged box)"], ["think", "Think (thought bubble)"]];
+  const TEXT_SPEEDS = [["normal", "Normal"], ["slow", "Slow (stops on each full stop)"]];
+  const pickStyle = (value) => (TEXT_STYLES.some(([key]) => key === value) ? value : "normal");
+  const pickSpeed = (value) => (value === "slow" ? "slow" : "normal");
+
   EventRegistry.register({
     type: SHOW_TEXT,
     label: C.EVENT_TYPE_LABELS?.showText || "Show Text",
@@ -318,7 +324,9 @@
     defaultData: {
       type: SHOW_TEXT,
       speaker: DEFAULT_SPEAKER,
-      text: C.DEFAULT_SHOW_TEXT_MESSAGE || ""
+      text: C.DEFAULT_SHOW_TEXT_MESSAGE || "",
+      bubbleMode: "normal",
+      textSpeed: "normal"
     },
     execute: async (row, context) => {
       return ShowTextExecute.execute(row, context);
@@ -339,11 +347,22 @@
            placeholder="Write the dialog text here...">${kit.escapeHTML(String(row.text ?? ""))}</textarea>`,
         `Wrap a word in <code>&lt;b&gt;…&lt;/b&gt;</code> to highlight it as a hint (bold + colour).
          <code>{var:name}</code> prints a variable.`
+      ),
+      kit.field(
+        "Style",
+        `<div class="oni-event-inline-row">
+           <select class="oni-event-row-text-style">${kit.options(TEXT_STYLES, pickStyle(row.bubbleMode || row.mode))}</select>
+           <span>Text speed</span>
+           <select class="oni-event-row-text-speed">${kit.options(TEXT_SPEEDS, pickSpeed(row.textSpeed))}</select>
+         </div>`,
+        "Shout suits a boss or a yell. Slow types letter by letter and pauses on each full stop."
       )
     ),
     collectFields: (rowEl, kit) => ({
       speaker: String(kit.own(rowEl, ".oni-event-row-speaker")?.value ?? "").trim() || DEFAULT_SPEAKER,
-      text: String(kit.own(rowEl, ".oni-event-row-text")?.value ?? "")
+      text: String(kit.own(rowEl, ".oni-event-row-text")?.value ?? ""),
+      bubbleMode: pickStyle(kit.readText(rowEl, ".oni-event-row-text-style", "normal")),
+      textSpeed: pickSpeed(kit.readText(rowEl, ".oni-event-row-text-speed", "normal"))
     })
   });
 

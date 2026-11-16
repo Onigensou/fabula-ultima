@@ -99,7 +99,9 @@
       speaker: stringOrEmpty(row.speaker || C.DEFAULT_SHOW_TEXT_SPEAKER || C.SPECIAL_SPEAKER_SELF),
       text: withVariables(String(row.text ?? C.DEFAULT_SHOW_TEXT_MESSAGE ?? "")),
       bubbleMode: stringOrEmpty(row.bubbleMode || row.mode || "normal") || "normal",
-      speed: Number.isFinite(Number(row.speed)) ? Number(row.speed) : 28
+      speed: Number.isFinite(Number(row.speed)) ? Number(row.speed) : 28,
+      // "slow": the typewriter's slow pace (dialog-ui.js), in place of speed.
+      textSpeed: row.textSpeed === "slow" ? "slow" : "normal"
     };
   }
 
@@ -116,10 +118,13 @@
     };
   }
 
-  function estimateDialogLifetimeMs(text, speed) {
+  function estimateDialogLifetimeMs(text, speed, pace = null) {
     const cps = Math.max(1, Number(speed) || 28);
-    const chars = String(text ?? "").replace(/<\/?b>/gi, "").length;
-    const typingMs = Math.ceil((chars / cps) * 1000);
+    const plain = String(text ?? "").replace(/<\/?b>/gi, "");
+    // The typewriter's own timing when it is loaded (a slow line stops at each
+    // full stop); the plain characters-per-second count otherwise.
+    const paced = globalThis.FU?.DialogUI?.linePace?.(plain, { speed: cps, pace });
+    const typingMs = Number.isFinite(paced?.typeMs) ? paced.typeMs : Math.ceil((plain.length / cps) * 1000);
     // The bubble stays up after typing for as long again plus a hold
     // (dialog-ui.js: max(1200, typing + 1600)). Counting only the hold let a
     // long line's follow-up start while that line was still showing.
@@ -177,6 +182,7 @@
       bubbleMode: row.bubbleMode,
       mode: row.bubbleMode,
       speed: row.speed,
+      pace: row.textSpeed === "slow" ? "slow" : null,
 
       token,
       actor,
@@ -266,6 +272,7 @@
       name: payload.speakerName,
       mode: payload.mode || "normal",
       speed: payload.speed || 28,
+      pace: payload.pace || null,
       portraitSrc: payload.portraitSrc || null,
       broadcast: true,
       screen,
@@ -279,7 +286,7 @@
     flow?.setActiveBubble?.(context.tileId, bubbleId);
 
     await waitForBubbleToFinish(bubbleId, {
-      timeoutMs: estimateDialogLifetimeMs(payload.text, payload.speed) + (waitForInput ? maxWaitMs : 0)
+      timeoutMs: estimateDialogLifetimeMs(payload.text, payload.speed, payload.pace) + (waitForInput ? maxWaitMs : 0)
     });
 
     flow?.setActiveBubble?.(context.tileId, null);

@@ -19,7 +19,9 @@
  *                 Immune characters are skipped.
  *
  * Who is picked with Run Check's target list (controller / party / slot /
- * table picks / by name). Runs on the GM like every action.
+ * table picks / by name / failed or passed the last Run Check). Runs on the
+ * GM like every action. "Failed the last check" with nobody failed hits
+ * nobody and the event carries on.
  *
  * Requires:
  * - event-logic.js, event-eventRegistry.js, event-rows-check.js
@@ -103,6 +105,8 @@
     if (!row.amount) return { ok: true, type: "dealDamage", skipped: true };
     const { actors, aborted } = await Check.resolveTargets(row, context);
     if (aborted) return { ok: true, type: "dealDamage", aborted: true };
+    // "Failed the last check" and everyone passed: nobody is hit, which is fine.
+    if (!actors.length && Check.onlyLastCheck?.(row)) return { ok: true, type: "dealDamage", hit: [] };
     if (!actors.length) return { ok: false, reason: "noTargets" };
     const hit = [];
     // One row = one batch: one flash, one sound, one Resource Panel for everyone hit.
@@ -178,6 +182,7 @@
     if (!row.status) return { ok: false, reason: "noStatus" };
     const { actors, aborted } = await Check.resolveTargets(row, context);
     if (aborted) return { ok: true, type: "applyStatus", aborted: true };
+    if (!actors.length && Check.onlyLastCheck?.(row)) return { ok: true, type: "applyStatus", applied: [], skipped: [] };
     if (!actors.length) return { ok: false, reason: "noTargets" };
     // Each call reports to FU.Feedback: one batched System Message line on every screen.
     const res = row.timing === "remove"

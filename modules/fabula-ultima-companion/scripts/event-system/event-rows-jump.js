@@ -22,9 +22,18 @@
  *   (event-worldFx.js order), the way Set Token's jump does: the real mesh is
  *   hidden for the hop, so nothing fights the idle bounce or the depth system.
  *   The copy grows or shrinks by the depth factor of the two ends.
- * - A path line is a marker token's name (a hidden one works) or "x, y".
- *   Markers sit on the stones; the last line is where the party lands.
+ * - A path line is a marker token's name (a hidden one works), "x, y", or
+ *   "party:dx,dy": where the party token stands when the row starts, moved by
+ *   dx, dy map px and kept inside the scene. Markers sit on the stones; the last
+ *   line is where the party lands.
  * - Bobbing stones (map-system/tile-bob.js) dip when a foot lands on them.
+ * - Two more styles. Leap out: crouch, then launch straight up out of the
+ *   camera's view, and the token is hidden where it stood (the path is not
+ *   used). Drop in: the token is put on the path's last point while hidden, then
+ *   falls into place from high above and squashes on landing. Leap out, a
+ *   Camera Pan, then Drop in reads as one jump across the map.
+ * - Guilty Gear dust at take-off, landing or both, sized by the jumper's drawn
+ *   height; the clips and colour are Set Token's (event-rows-token.js ggDust).
  *
  * Requires:
  * - event-logic.js, event-eventRegistry.js, event-client.js, event-flow.js,
@@ -70,22 +79,80 @@
     settleMs: 1500
   };
 
+  const KIND_LEAP = "jump.leapOut";
+  const KIND_DROP = "jump.dropIn";
+
+  // Leap out and drop in, from the Asura mockup: a crouch, then up 640 px in
+  // 260 ms eased out, stretched; down from 640 px in 300 ms eased in, a 60 ms
+  // squash and a springy 320 ms back to standing.
+  const LEAP = {
+    crouchMs: 170,
+    launchMs: 260,
+    liftPx: 640,
+    squash: { x: 1.2, y: 0.72 },
+    stretch: { x: 0.88, y: 1.18 },
+    // Share of the launch left when it starts to fade, for a camera zoomed out
+    // far enough to still see 640 px up.
+    fadeFrom: 0.75
+  };
+  const DROP = {
+    liftPx: 640,
+    fallMs: 300,
+    fadeInMs: 120,
+    squashMs: 60,
+    standMs: 320,
+    stretch: { x: 0.88, y: 1.18 },
+    land: { x: 1.25, y: 0.7 },
+    overshoot: 1.6
+  };
+  const LEAP_MS = LEAP.crouchMs + LEAP.launchMs;
+  const DROP_MS = DROP.fallMs + DROP.squashMs + DROP.standMs;
+
   const DEFAULT_TAKEOFF = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_JUMPLANDA.wav";
 
   const TARGETS = [
     ["party", "The party"],
     ["token", "A named token"]
   ];
+  const STYLES = [
+    ["hop", "Hop along the path"],
+    ["leapOut", "Leap out of view, then hide"],
+    ["dropIn", "Drop in from above, at the last point"]
+  ];
+  const DUSTS = [
+    ["none", "None"],
+    ["takeoff", "At take-off"],
+    ["landing", "At landing"],
+    ["both", "Both"]
+  ];
   const pickTarget = (value) => (TARGETS.some(([key]) => key === value) ? value : "party");
+  const pickStyle = (value) => (STYLES.some(([key]) => key === value) ? value : "hop");
+  const pickDust = (value) => (DUSTS.some(([key]) => key === value) ? value : "none");
+  const dustAtTakeoff = (dust) => dust === "takeoff" || dust === "both";
+  const dustAtLanding = (dust) => dust === "landing" || dust === "both";
   const clamp = (v, lo, hi, fallback) => {
     const n = Number(v);
     return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : fallback;
   };
   const mix = (a, b, t) => a + (b - a) * Math.min(1, Math.max(0, t));
+  const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+  const easeIn = (t) => t * t * t;
+  const outBack = (t) => 1 + ((DROP.overshoot + 1) * Math.pow(t - 1, 3)) + (DROP.overshoot * Math.pow(t - 1, 2));
 
   const flow = () => window.oni.EventSystem.Flow;
   const facingApi = () => globalThis.__ONI_SPRITE_FACING_RUNTIME__ ?? null;
   const depthApi = () => globalThis.__ONI_DEPTH_INDEX__ ?? null;
+  const rowsToken = () => window.oni.EventSystem.RowsToken ?? null;
+
+  // Paced on the GM by the event, or a plain timer for a jump with no event.
+  const pace = (sourceId, ms) => (sourceId && flow()?.wait ? flow().wait(sourceId, ms) : new Promise(r => setTimeout(() => r(true), ms)));
+
+  // Guilty Gear dust at a jumper's feet, on this client. heightPx: its drawn height.
+  function dust(x, y, heightPx, landing, sourceId) {
+    const rt = rowsToken();
+    if (!rt?.ggDust) return;
+    try { rt.ggDust(x, y, rt.dustSize(heightPx, landing), landing, sourceId ?? ""); } catch (_) {}
+  }
 
   function tokensNamed(scene, name) {
     const wanted = String(name ?? "").trim().toLowerCase();
@@ -99,8 +166,34 @@
   const pathLines = (raw) => (Array.isArray(raw) ? raw : String(raw ?? "").split(/\r?\n/))
     .map(s => String(s).trim()).filter(Boolean);
 
+  // "party:+86,0" -> { dx: 86, dy: 0 }, or null when the line is not one.
+  function parsePartyOffset(line) {
+    const m = String(line).match(/^\s*party\s*:\s*([+-]?\d+(?:\.\d+)?)\s*,\s*([+-]?\d+(?:\.\d+)?)\s*$/i);
+    return m ? { dx: Number(m[1]), dy: Number(m[2]) } : null;
+  }
+
+  // A point kept inside the scene's own area (not its padding). A scene with no
+  // dimensions to hand leaves the point as it is.
+  function clampToScene(scene, x, y) {
+    const r = scene?.dimensions?.sceneRect;
+    if (!r || !Number.isFinite(r.width) || !Number.isFinite(r.height)) return { x, y };
+    return {
+      x: Math.min(r.x + r.width, Math.max(r.x, x)),
+      y: Math.min(r.y + r.height, Math.max(r.y, y))
+    };
+  }
+
+  const resolvePath = (scene, lines, party = null) => pathLines(lines).map(line => ({ line, at: resolvePoint(scene, line, party) }));
+
   // A path line as a map point (the centre a token lands on), or null.
-  function resolvePoint(scene, line) {
+  // party: the party token's document, for "party:dx,dy" lines.
+  function resolvePoint(scene, line, party = null) {
+    const rel = parsePartyOffset(line);
+    if (rel) {
+      if (!party) return null;
+      const c = centerOf(party);
+      return { ...clampToScene(scene, c.x + rel.dx, c.y + rel.dy), label: line };
+    }
     const m = String(line).match(/^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/);
     if (m) return { x: Number(m[1]), y: Number(m[2]), label: line };
     const mark = tokensNamed(scene, line)[0];
@@ -110,8 +203,46 @@
   }
 
   function centerOf(doc) {
-    const grid = doc.parent.grid.size;
+    const grid = doc.parent?.grid?.size ?? 100;
     return { x: doc.x + (doc.width * grid) / 2, y: doc.y + (doc.height * grid) / 2 };
+  }
+
+  // A copy of a token's sprite among the tokens, at the mesh's scale; not yet
+  // added to the canvas.
+  function copyOf(mesh, texture, name) {
+    const sprite = new PrimarySpriteMesh({ texture, name });
+    sprite.anchor.set(0.5, 1);
+    sprite.tint = mesh.tint;
+    sprite.elevation = 0;
+    sprite.sortLayer = PrimaryCanvasGroup.SORT_LAYERS.TOKENS;
+    sprite.sort = window.oni.EventSystem.WorldFx?.SORT?.COPIES ?? 500000;
+    sprite.scale.set(mesh.scale.x, mesh.scale.y);
+    return sprite;
+  }
+
+  // Where the mesh's feet are, measured from the token's centre: true whether or
+  // not this client has the token's latest move yet.
+  function footOffset(token, mesh) {
+    return {
+      x: mesh.x - token.center.x,
+      y: mesh.y + Math.abs(mesh.height) * (1 - mesh.anchor.y) - token.center.y
+    };
+  }
+
+  // Show the real token again once test() holds (or give up waiting).
+  function revealWhen(mesh, test, ms = HOP.settleMs) {
+    const reveal = () => { if (!mesh.destroyed) mesh.renderable = true; };
+    let ok = false;
+    try { ok = test(); } catch (_) { ok = true; }
+    if (ok) return reveal();
+    const ticker = canvas.app.ticker;
+    const giveUpAt = performance.now() + ms;
+    const wait = () => {
+      try {
+        if (test() || performance.now() > giveUpAt || mesh.destroyed) { ticker.remove(wait); reveal(); }
+      } catch (_) { ticker.remove(wait); reveal(); }
+    };
+    ticker.add(wait);
   }
 
   // ------------------------------------------------------------
@@ -124,6 +255,7 @@
     const host = canvas?.primary;
     const worldFx = window.oni.EventSystem.WorldFx;
     if (!token || !mesh?.texture?.valid || !host || !worldFx) return;
+    rowsToken()?.takeHeld?.(data.tokenId);
 
     const dx = data.to.x - data.from.x;
     const dy = data.to.y - data.from.y;
@@ -145,6 +277,7 @@
     const f0 = Number(depthApi()?.factorAtY?.(from.y)) || 1;
     const f1 = Number(depthApi()?.factorAtY?.(to.y)) || 1;
     const depthEnd = f1 / f0;
+    const heightPx = Math.abs(mesh.height);
 
     const sprite = new PrimarySpriteMesh({ texture: standTex, name: "oniEventJumpHop" });
     sprite.anchor.set(0.5, 1);
@@ -207,6 +340,7 @@
           if (phase === "crouch") {
             phase = "air";
             if (data.takeoffSrc) window.oni.EventSystem.RowsMedia?.playSound?.(data.takeoffSrc, data.takeoffVolume ?? 0.6);
+            if (dustAtTakeoff(data.dust)) dust(from.x, from.y, heightPx, false, info?.sourceId);
           }
           const u = (t - flightAt) / data.flightMs;
           const k = mix(1, depthEnd, u);
@@ -225,6 +359,7 @@
           phase = "land";
           if (data.landSrc) window.oni.EventSystem.RowsMedia?.playSound?.(data.landSrc, data.takeoffVolume ?? 0.6);
           try { window.oni.TileBob?.dip?.(data.to.x, data.to.y); } catch (_) {}
+          if (dustAtLanding(data.dust)) dust(to.x, to.y, heightPx * depthEnd, true, info?.sourceId);
         }
         const e = Math.sin(Math.min(1, (t - landAt) / HOP.landMs) * Math.PI);
         sprite.position.set(to.x, to.y);
@@ -239,6 +374,154 @@
   }
 
   Client.register(KIND_HOP, (data, info) => playHop(data, info));
+
+  // ------------------------------------------------------------
+  // Leap out and drop in, on this client
+  // ------------------------------------------------------------
+  // Leap out: a crouch (from Set Token's crouch, when one is held), then up out
+  // of view. The token itself stays put; the GM hides it at the end.
+  function playLeap(data, info) {
+    if (globalThis.FUCompanion?.api?.vfxSuppressed?.() === true) return;
+    const token = canvas?.tokens?.get(data.tokenId);
+    const mesh = token?.mesh;
+    const host = canvas?.primary;
+    if (!token || !mesh?.texture?.valid || !host) return;
+
+    const start = rowsToken()?.takeHeld?.(data.tokenId) ?? { sx: 1, sy: 1 };
+    const foot = footOffset(token, mesh);
+    const at = { x: token.center.x + foot.x, y: token.center.y + foot.y };
+    const baseX = mesh.scale.x;
+    const baseY = mesh.scale.y;
+    const heightPx = Math.abs(mesh.height);
+    const sprite = copyOf(mesh, mesh.texture, "oniEventJumpLeap");
+    sprite.position.set(at.x, at.y);
+    sprite.scale.set(baseX * start.sx, baseY * start.sy);
+    host.addChild(sprite);
+    mesh.renderable = false;
+
+    const ticker = canvas.app.ticker;
+    const startedAt = performance.now();
+    let launched = false;
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      ticker.remove(tick);
+      if (!sprite.destroyed) sprite.destroy();
+      revealWhen(mesh, () => token.document?.hidden === true);
+    };
+    const tick = () => {
+      try {
+        if (sprite.destroyed || !sprite.parent) return finish();
+        const t = performance.now() - startedAt;
+        if (t >= LEAP_MS) return finish();
+
+        if (t < LEAP.crouchMs) {
+          const e = Math.sin((t / LEAP.crouchMs) * Math.PI / 2);
+          sprite.scale.set(baseX * mix(start.sx, LEAP.squash.x, e), baseY * mix(start.sy, LEAP.squash.y, e));
+          return;
+        }
+        if (!launched) {
+          launched = true;
+          if (data.takeoffSrc) window.oni.EventSystem.RowsMedia?.playSound?.(data.takeoffSrc, data.takeoffVolume ?? 0.6);
+          if (dustAtTakeoff(data.dust)) dust(at.x, at.y, heightPx, false, info?.sourceId);
+        }
+        const u = (t - LEAP.crouchMs) / LEAP.launchMs;
+        sprite.scale.set(baseX * LEAP.stretch.x, baseY * LEAP.stretch.y);
+        sprite.y = at.y - (LEAP.liftPx * easeOut(u));
+        sprite.alpha = u > LEAP.fadeFrom ? 1 - ((u - LEAP.fadeFrom) / (1 - LEAP.fadeFrom)) : 1;
+      } catch (e) {
+        console.warn(INSTALL_TAG, "Leap frame failed; dropping the effect.", e);
+        finish();
+      }
+    };
+    ticker.add(tick);
+    Client.addCleanup(info?.sourceId, `jump.leap.${data.tokenId}`, () => { if (!done) finish(); });
+  }
+
+  // Drop in: the copy falls onto data.to (the token's centre there) from high
+  // above, stretched, and squashes on landing. The GM shows the token at touchdown.
+  function playDrop(data, info) {
+    if (globalThis.FUCompanion?.api?.vfxSuppressed?.() === true) return;
+    const token = canvas?.tokens?.get(data.tokenId);
+    const mesh = token?.mesh;
+    const host = canvas?.primary;
+    if (!token || !mesh?.texture?.valid || !host) return;
+
+    rowsToken()?.takeHeld?.(data.tokenId);
+    const foot = footOffset(token, mesh);
+    const to = { x: data.to.x + foot.x, y: data.to.y + foot.y };
+    // The mesh may still stand where it was: scale it for depth at the landing.
+    const meshFootY = token.center.y + foot.y;
+    const f0 = Number(depthApi()?.factorAtY?.(meshFootY)) || 1;
+    const f1 = Number(depthApi()?.factorAtY?.(to.y)) || 1;
+    const k = f1 / f0;
+    const baseX = mesh.scale.x * k;
+    const baseY = mesh.scale.y * k;
+    const heightPx = Math.abs(mesh.height) * k;
+    const sprite = copyOf(mesh, mesh.texture, "oniEventJumpDrop");
+    sprite.position.set(to.x, to.y - DROP.liftPx);
+    sprite.scale.set(baseX * DROP.stretch.x, baseY * DROP.stretch.y);
+    sprite.alpha = 0;
+    host.addChild(sprite);
+    mesh.renderable = false;
+
+    const ticker = canvas.app.ticker;
+    const startedAt = performance.now();
+    let landed = false;
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      ticker.remove(tick);
+      if (!sprite.destroyed) sprite.destroy();
+      revealWhen(mesh, () => token.document?.hidden === false
+        && Math.hypot(token.center.x - data.to.x, token.center.y - data.to.y) < 2);
+    };
+    const tick = () => {
+      try {
+        if (sprite.destroyed || !sprite.parent) return finish();
+        const t = performance.now() - startedAt;
+        if (t >= DROP_MS) return finish();
+        sprite.tint = mesh.tint;
+
+        if (t < DROP.fallMs) {
+          const u = t / DROP.fallMs;
+          sprite.alpha = Math.min(1, t / DROP.fadeInMs);
+          sprite.y = to.y - (DROP.liftPx * (1 - easeIn(u)));
+          return;
+        }
+        if (!landed) {
+          landed = true;
+          sprite.alpha = 1;
+          sprite.y = to.y;
+          if (data.landSrc) window.oni.EventSystem.RowsMedia?.playSound?.(data.landSrc, data.takeoffVolume ?? 0.6);
+          try { window.oni.TileBob?.dip?.(data.to.x, data.to.y); } catch (_) {}
+          if (dustAtLanding(data.dust)) dust(to.x, to.y, heightPx, true, info?.sourceId);
+        }
+        const s = t - DROP.fallMs;
+        let sx, sy;
+        if (s < DROP.squashMs) {
+          sx = mix(DROP.stretch.x, DROP.land.x, s / DROP.squashMs);
+          sy = mix(DROP.stretch.y, DROP.land.y, s / DROP.squashMs);
+        } else {
+          // Springs back past standing a little; mix() would clip the overshoot.
+          const e = outBack(Math.min(1, (s - DROP.squashMs) / DROP.standMs));
+          sx = DROP.land.x + ((1 - DROP.land.x) * e);
+          sy = DROP.land.y + ((1 - DROP.land.y) * e);
+        }
+        sprite.scale.set(baseX * sx, baseY * sy);
+      } catch (e) {
+        console.warn(INSTALL_TAG, "Drop frame failed; dropping the effect.", e);
+        finish();
+      }
+    };
+    ticker.add(tick);
+    Client.addCleanup(info?.sourceId, `jump.drop.${data.tokenId}`, () => { if (!done) finish(); });
+  }
+
+  Client.register(KIND_LEAP, (data, info) => playLeap(data, info));
+  Client.register(KIND_DROP, (data, info) => playDrop(data, info));
 
   // ------------------------------------------------------------
   // The jump itself (GM side), shared with Run Code
@@ -270,7 +553,8 @@
         face: opts.face !== false,
         takeoffSrc: String(opts.takeoffSrc ?? ""),
         takeoffVolume: clamp(opts.takeoffVolume, 0, 1, 0.6),
-        landSrc: String(opts.landSrc ?? "")
+        landSrc: String(opts.landSrc ?? ""),
+        dust: pickDust(opts.dust)
       });
     }
 
@@ -284,12 +568,68 @@
     return (await wait(HOP.landMs)) !== false;
   }
 
-  /** Hops along a whole path. lines: marker names or "x, y". Returns { ok, reason, missing }. */
+  /**
+   * Leap out: each token in docs that can be seen crouches and launches out of
+   * view, then all of them are hidden where they stand. Returns false if the
+   * event was ended mid-leap. opts: dust, takeoffSrc, takeoffVolume
+   */
+  async function leapOut(docs, opts = {}, sourceId = null) {
+    const list = (Array.isArray(docs) ? docs : [docs]).filter(Boolean);
+    if (!list.length) return true;
+    const scene = list[0].parent;
+    for (const doc of list.filter(d => !d.hidden)) {
+      Client.run(sourceId, KIND_LEAP, {
+        tokenId: doc.id,
+        dust: pickDust(opts.dust),
+        takeoffSrc: String(opts.takeoffSrc ?? ""),
+        takeoffVolume: clamp(opts.takeoffVolume, 0, 1, 0.6)
+      });
+    }
+    if (await pace(sourceId, LEAP_MS) === false) return false;
+    await scene.updateEmbeddedDocuments("Token", list.map(doc => ({ _id: doc.id, hidden: true })));
+    return true;
+  }
+
+  /**
+   * Drop in: each token in docs is put at the point `to` while hidden, falls into
+   * place from above and is shown at touchdown. Returns false if the event was
+   * ended mid-fall. opts: dust, landSrc, takeoffVolume
+   */
+  async function dropIn(docs, to, opts = {}, sourceId = null) {
+    const list = (Array.isArray(docs) ? docs : [docs]).filter(Boolean);
+    if (!list.length || !to) return true;
+    const scene = list[0].parent;
+    const grid = scene.grid.size;
+    await scene.updateEmbeddedDocuments("Token", list.map(doc => ({
+      _id: doc.id,
+      x: to.x - (doc.width * grid) / 2,
+      y: to.y - (doc.height * grid) / 2,
+      hidden: true
+    })), { animate: false, pan: false, oniJump: true });
+    for (const doc of list) {
+      Client.run(sourceId, KIND_DROP, {
+        tokenId: doc.id,
+        to: { x: to.x, y: to.y },
+        dust: pickDust(opts.dust),
+        landSrc: String(opts.landSrc ?? ""),
+        takeoffVolume: clamp(opts.takeoffVolume, 0, 1, 0.6)
+      });
+    }
+    if (await pace(sourceId, DROP.fallMs) === false) return false;
+    await scene.updateEmbeddedDocuments("Token", list.map(doc => ({ _id: doc.id, hidden: false })));
+    return (await pace(sourceId, DROP.squashMs + DROP.standMs)) !== false;
+  }
+
+  /**
+   * Hops along a whole path. lines: marker names, "x, y" or "party:dx,dy".
+   * opts.party: the party token's document, for "party:" lines; they are all
+   * worked out from where it stands now. Returns { ok, reason, missing }.
+   */
   async function jumpPath(docs, lines, opts = {}, sourceId = null) {
     const list = (Array.isArray(docs) ? docs : [docs]).filter(Boolean);
     if (!list.length) return { ok: false, reason: "noToken" };
     const scene = list[0].parent;
-    const points = pathLines(lines).map(line => ({ line, at: resolvePoint(scene, line) }));
+    const points = resolvePath(scene, lines, opts.party ?? null);
     const missing = points.filter(p => !p.at).map(p => p.line);
     if (missing.length) return { ok: false, reason: "missingMarker", missing };
 
@@ -312,7 +652,10 @@
     return String(row?.name ?? "").split(",").map(s => s.trim()).filter(Boolean).flatMap(n => tokensNamed(scene, n));
   }
 
-  window.oni.EventSystem.Jump = { hop, path: jumpPath, resolvePoint, HOP };
+  window.oni.EventSystem.Jump = {
+    hop, path: jumpPath, leapOut, dropIn, resolvePoint, resolvePath, parsePartyOffset, clampToScene,
+    HOP, LEAP, DROP, LEAP_MS, DROP_MS
+  };
 
   // ------------------------------------------------------------
   // The row
@@ -324,13 +667,33 @@
     defaultData: {
       type: "jumpTo", target: "party", name: "", path: "",
       arcPct: 100, hopMs: 640, pauseMs: 220, face: true,
-      takeoffSrc: DEFAULT_TAKEOFF, takeoffVolume: 0.6, landSrc: ""
+      takeoffSrc: DEFAULT_TAKEOFF, takeoffVolume: 0.6, landSrc: "",
+      style: "hop", dust: "none"
     },
-    mediaOf: (row) => [row?.takeoffSrc, row?.landSrc].filter(Boolean),
+    mediaOf: (row) => {
+      const style = pickStyle(row?.style);
+      const media = [style !== "dropIn" ? row?.takeoffSrc : "", style !== "leapOut" ? row?.landSrc : ""].filter(Boolean);
+      const dustKind = pickDust(row?.dust);
+      const rt = rowsToken();
+      if (dustKind === "none" || !rt?.dustPuffs) return media;
+      const puffs = (landing) => rt.dustPuffs(0, 0, 1, landing).map(p => p.src);
+      const hops = style === "hop" ? Math.max(1, pathLines(row?.path).length) : 1;
+      for (let i = 0; i < hops; i++) {
+        if (style !== "dropIn" && dustAtTakeoff(dustKind)) media.push(...puffs(false));
+        if (style !== "leapOut" && dustAtLanding(dustKind)) media.push(...puffs(true));
+      }
+      return media;
+    },
     summary: (row) => {
       const lines = pathLines(row?.path);
       const who = pickTarget(row?.target) === "party" ? "the party" : (String(row?.name ?? "").trim() || "(no token)");
-      return lines.length ? `${who} → ${lines.join(" → ")}` : `${who} (no path)`;
+      const style = pickStyle(row?.style);
+      const dustKind = pickDust(row?.dust);
+      let text;
+      if (style === "leapOut") text = `${who} leaps out of view`;
+      else if (style === "dropIn") text = lines.length ? `${who} drops in at ${lines[lines.length - 1]}` : `${who} drops in (no point)`;
+      else text = lines.length ? `${who} → ${lines.join(" → ")}` : `${who} (no path)`;
+      return dustKind === "none" ? text : `${text}, dust ${dustKind === "both" ? "at take-off and landing" : `at ${dustKind === "takeoff" ? "take-off" : "landing"}`}`;
     },
     execute: async (row, context) => {
       const scene = game.scenes?.get(context?.sceneId) ?? canvas?.scene ?? null;
@@ -340,7 +703,26 @@
         return { ok: false, type: "jumpTo", reason: "notFound" };
       }
       // A row saved before a field existed gets its default; an emptied field stays empty.
-      const result = await jumpPath(docs, row?.path, { takeoffSrc: DEFAULT_TAKEOFF, ...row }, context?.tileId);
+      const opts = { takeoffSrc: DEFAULT_TAKEOFF, ...row, party: scene?.tokens?.get(context?.tokenId) ?? null };
+      const style = pickStyle(row?.style);
+      const sourceId = context?.tileId;
+
+      if (style === "leapOut") {
+        const ok = await leapOut(docs, opts, sourceId);
+        return { ok, type: "jumpTo", reason: ok ? undefined : "ended" };
+      }
+
+      let result;
+      if (style === "dropIn") {
+        const points = resolvePath(scene, row?.path, opts.party);
+        const last = points[points.length - 1];
+        if (!last) result = { ok: false, reason: "noPoint" };
+        else if (!last.at) result = { ok: false, reason: "missingMarker", missing: [last.line] };
+        else result = (await dropIn(docs, last.at, opts, sourceId)) ? { ok: true } : { ok: false, reason: "ended" };
+        if (result.reason === "noPoint") ui.notifications?.warn?.("Event: Jump To (drop in) has no point to land on. The drop was skipped.");
+      } else {
+        result = await jumpPath(docs, row?.path, opts, sourceId);
+      }
       if (result.reason === "missingMarker") {
         ui.notifications?.warn?.(`Event: Jump To has no marker named ${result.missing.join(", ")} on this scene. The jump was skipped.`);
       }
@@ -357,28 +739,40 @@
           `<input type="text" class="oni-event-row-jump-name" value="${kit.escapeHTML(row.name ?? "")}" placeholder="Names of tokens on this scene, separated by commas" />`
         )}</div>`,
         kit.field(
+          "Style",
+          `<select class="oni-event-row-jump-style">${kit.options(STYLES, pickStyle(row.style))}</select>`,
+          "Leap out: crouch, launch straight up out of view, then the token is hidden where it stood. Drop in: the token is put on the path's last point while hidden, then falls into place from above. Leap out, Camera Pan, Drop in: one jump across the map."
+        ),
+        `<div class="oni-event-row-jump-path-wrap">${kit.field(
           "Path, in order",
-          `<textarea class="oni-event-textarea oni-event-row-jump-path" rows="4" placeholder="One per line: a marker token's name (hidden is fine), or x, y">${kit.escapeHTML(pathLines(row.path).join("\n"))}</textarea>`,
-          "One hop per line. Put hidden marker tokens on the stones; the last line is where they land. A line like 845, 562 is a map point."
-        ),
+          `<textarea class="oni-event-textarea oni-event-row-jump-path" rows="4" placeholder="One per line: a marker token's name (hidden is fine), x, y, or party:dx,dy">${kit.escapeHTML(pathLines(row.path).join("\n"))}</textarea>`,
+          "One hop per line. Put hidden marker tokens on the stones; the last line is where they land. A line like 845, 562 is a map point. A line like party:+86,0 is where the party stands when the row starts, moved by that many map px (kept inside the scene)."
+        )}</div>`,
         kit.field(
-          "Arc height (%)",
-          kit.numberInput("oni-event-row-jump-arc", clamp(row.arcPct, 20, 300, 100), { min: 20, max: 300, step: 5 }),
-          "100 = a height that grows with the hop's length."
+          "Dust",
+          `<select class="oni-event-row-jump-dust">${kit.options(DUSTS, pickDust(row.dust))}</select>`,
+          "Guilty Gear dust at the feet, sized to the jumper. In front of tokens, behind any tile at elevation 1."
         ),
-        kit.field(
-          "Time per hop (ms)",
-          kit.numberInput("oni-event-row-jump-ms", clamp(row.hopMs, 150, 3000, 640), { min: 150, max: 3000, step: 10 }),
-          "For a hop of about two grid squares; longer hops take a little longer."
-        ),
-        kit.field(
-          "Pause between hops (ms)",
-          kit.numberInput("oni-event-row-jump-pause", clamp(row.pauseMs, 0, 5000, 220), { min: 0, max: 5000, step: 10 })
-        ),
-        kit.field(
-          "Face",
-          `<label><input type="checkbox" class="oni-event-row-jump-face" ${row.face !== false ? "checked" : ""} /> turn to face each hop</label>`
-        ),
+        `<div class="oni-event-row-jump-hop-wrap">${[
+          kit.field(
+            "Arc height (%)",
+            kit.numberInput("oni-event-row-jump-arc", clamp(row.arcPct, 20, 300, 100), { min: 20, max: 300, step: 5 }),
+            "100 = a height that grows with the hop's length."
+          ),
+          kit.field(
+            "Time per hop (ms)",
+            kit.numberInput("oni-event-row-jump-ms", clamp(row.hopMs, 150, 3000, 640), { min: 150, max: 3000, step: 10 }),
+            "For a hop of about two grid squares; longer hops take a little longer."
+          ),
+          kit.field(
+            "Pause between hops (ms)",
+            kit.numberInput("oni-event-row-jump-pause", clamp(row.pauseMs, 0, 5000, 220), { min: 0, max: 5000, step: 10 })
+          ),
+          kit.field(
+            "Face",
+            `<label><input type="checkbox" class="oni-event-row-jump-face" ${row.face !== false ? "checked" : ""} /> turn to face each hop</label>`
+          )
+        ].join("")}</div>`,
         kit.field("Take-off sound", kit.fileInput("oni-event-row-jump-takeoff", row.takeoffSrc ?? "", "audio", "Sound at each take-off (empty: none)")),
         kit.field(
           "Volume",
@@ -388,10 +782,14 @@
       );
 
       const targetEl = body.querySelector(".oni-event-row-jump-target");
+      const styleEl = body.querySelector(".oni-event-row-jump-style");
       const sync = () => {
         body.querySelector(".oni-event-row-jump-name-wrap").hidden = targetEl.value !== "token";
+        body.querySelector(".oni-event-row-jump-path-wrap").hidden = styleEl.value === "leapOut";
+        body.querySelector(".oni-event-row-jump-hop-wrap").hidden = styleEl.value !== "hop";
       };
       targetEl.addEventListener("change", sync);
+      styleEl.addEventListener("change", sync);
       sync();
       return body;
     },
@@ -405,7 +803,9 @@
       face: !!kit.own(rowEl, ".oni-event-row-jump-face")?.checked,
       takeoffSrc: kit.readText(rowEl, ".oni-event-row-jump-takeoff", "").trim(),
       takeoffVolume: clamp(kit.readNumber(rowEl, ".oni-event-row-jump-volume", 0.6), 0, 1, 0.6),
-      landSrc: kit.readText(rowEl, ".oni-event-row-jump-land", "").trim()
+      landSrc: kit.readText(rowEl, ".oni-event-row-jump-land", "").trim(),
+      style: pickStyle(kit.readText(rowEl, ".oni-event-row-jump-style", "hop")),
+      dust: pickDust(kit.readText(rowEl, ".oni-event-row-jump-dust", "none"))
     })
   });
 

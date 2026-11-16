@@ -26,6 +26,14 @@
 
   // --- UI defaults ---
   const DEFAULT_CPS = 28;
+
+  // Named typing paces a line can ask for (payload.pace) in place of its cps.
+  //   slow   a heavy, deliberate voice: each letter takes charMs, and the line
+  //          stops for stopMs after each full stop (so "..." trails off).
+  const PACES = {
+    slow: { charMs: 55, stopMs: 190 }
+  };
+  const PACE_STOPS = new Set([".", "…"]);
   const HOLD_AFTER_TYPING_MS = 1600;
 
   // A bubble that waits for a press closes by itself after this long, so an
@@ -252,6 +260,49 @@
     return layer;
   }
 
+  // How a line types out: { typeMs, countAt(ms) } where countAt says how many
+  // characters show `ms` after the line started. `text` is the plain text
+  // (markup already taken out). Without a named pace it is the line's own
+  // speed in characters per second, exactly as it always was.
+  function linePace(text, { speed = DEFAULT_CPS, pace = null } = {}) {
+    const chars = Array.from(String(text ?? ""));
+    // Counted in UTF-16 units, as the typewriter slices the string.
+    const units = String(text ?? "").length;
+    const named = PACES[pace];
+
+    if (!named) {
+      const cps = Math.max(1, Number(speed) || DEFAULT_CPS);
+      return {
+        typeMs: Math.ceil((units / cps) * 1000),
+        countAt: (ms) => Math.max(0, Math.min(units, Math.floor((ms * cps) / 1000)))
+      };
+    }
+
+    // at[i]: when the first i+1 units are showing. A stop holds the letter
+    // after it back; nothing waits after the last letter.
+    const at = [];
+    let t = 0;
+    for (const ch of chars) {
+      t += named.charMs;
+      for (let k = 0; k < ch.length; k += 1) at.push(t);
+      if (PACE_STOPS.has(ch)) t += named.stopMs;
+    }
+    const typeMs = at.length ? at[at.length - 1] : 0;
+
+    return {
+      typeMs,
+      countAt: (ms) => {
+        // The count of entries <= ms (at is sorted).
+        let lo = 0, hi = at.length;
+        while (lo < hi) {
+          const mid = (lo + hi) >> 1;
+          if (at[mid] <= ms) lo = mid + 1; else hi = mid;
+        }
+        return lo;
+      }
+    };
+  }
+
   // Type one line and handle its presses. Shared by every style of line (a
   // bubble on a token, floating text), so they all type at the same pace, play
   // the same blip and take a press the same way.
@@ -262,8 +313,6 @@
   // Returns { close, dispose, finished }: dispose() from the caller's own
   // cleanup; finished resolves when the line has closed.
   function runLine({ box, typed, payload, remote, id, leave }) {
-    const cps = Math.max(1, Number(payload.speed) || DEFAULT_CPS);
-
     let lastBeep = 0;
     function blipMaybe(char) {
       if (SKIP_WHITESPACE && /^\s$/.test(char)) return;
@@ -276,7 +325,9 @@
 
     const segments = parseHintMarkup(payload.text);
     const full = segments.map(s => s.text).join("");
-    const typeMs = Math.ceil((full.length / cps) * 1000);
+    // payload.pace ("slow") or the line's own speed in characters per second.
+    const pace = linePace(full, { speed: payload.speed, pace: payload.pace });
+    const typeMs = pace.typeMs;
     const startedAt = performance.now();
 
     // waitForInput: the line stays up until someone presses, then closes.
@@ -327,7 +378,7 @@
     function typeTick() {
       if (!box.isConnected || done) return;
 
-      const target = Math.min(full.length, Math.floor(((performance.now() - startedAt) * cps) / 1000));
+      const target = pace.countAt(performance.now() - startedAt);
       if (target > shown) {
         const ch = full.slice(target - 1, target);
         shown = target;
@@ -662,6 +713,9 @@
     control,
     // For other styles of line (dialog-float.js): the shared typewriter.
     runLine,
+    // How long a line takes to type (Show Text sizes its timeout with it).
+    linePace,
+    PACES,
     randomID,
     isShowing: (bubbleId) => store.bubbles.has(String(bubbleId || "")),
     isDone: (bubbleId) => !!store.bubbles.get(String(bubbleId || ""))?.isDone(),

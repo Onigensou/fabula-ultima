@@ -141,6 +141,8 @@
   // ------------------------------------------------------------
   // Clips playing on this client: sourceId -> Set of stop functions.
   const playing = new Map();
+  // The held ones among them: sourceId -> Set of { key, stop }.
+  const held = new Map();
 
   function track(sourceId, stop) {
     if (!playing.has(sourceId)) playing.set(sourceId, new Set());
@@ -148,6 +150,7 @@
     Client.addCleanup(sourceId, "worldFx", () => {
       for (const fn of [...(playing.get(sourceId) ?? [])]) fn();
       playing.delete(sourceId);
+      held.delete(sourceId);
     });
   }
 
@@ -177,12 +180,16 @@
    *   hue            degrees to turn the colours (a blue circle made violet); 0 = as drawn
    *   spawn          grow in from about half size with a slight overshoot and fade in,
    *                  then fade and shrink over the last moments
+   *   hold           stop on the last frame (or at durationMs) and stay there, with
+   *                  no time cap, until stopHeld() names it or the event ends.
+   *                  Resolves when the frame is reached, not when it is removed.
+   *   holdKey        the name stopHeld() finds it by (RowsMedia.holdKey)
    */
   async function play({
     src, x, y, sourceId,
     width = 0, scale = 1, anchorX = 0.5, anchorY = 0.5,
     sort = SORT.OVER_TOKENS, alpha = 1, tint = null, additive = false, mirror = false,
-    durationMs = 0, flat = 1, hue = 0, spawn = false
+    durationMs = 0, flat = 1, hue = 0, spawn = false, hold = false, holdKey = ""
   } = {}) {
     if (!src || !canvas?.ready || hiddenTab()) return false;
 
@@ -246,7 +253,14 @@
           const total = video ? (video.duration || 0) : (durationMs || IMAGE_DEFAULT_MS) / 1000;
           const elapsed = video ? video.currentTime : (performance.now() - startedAt) / 1000;
           const left = total - elapsed;
-          if (total > 0 && left < SPAWN.outS) {
+          // A held clip stays at full size: it grows in once and is done.
+          if (hold && e >= 1) {
+            mesh.scale.set(baseW, baseH);
+            mesh.alpha = alpha;
+            canvas.app.ticker.remove(spawnTick);
+            return;
+          }
+          if (!hold && total > 0 && left < SPAWN.outS) {
             const o = Math.max(0, left / SPAWN.outS);
             a *= o;
             k *= 0.9 + (0.1 * o);
@@ -264,39 +278,105 @@
     return new Promise((resolve) => {
       let timer = null;
       let stopped = false;
+      let fadeTick = null;
 
-      const stop = () => {
-        if (stopped) return;
-        stopped = true;
-        clearTimeout(timer);
-        if (spawnTick) { try { canvas.app.ticker.remove(spawnTick); } catch (_) {} }
-        playing.get(sourceId)?.delete(stop);
+      const remove = () => {
+        if (fadeTick) { try { canvas.app.ticker.remove(fadeTick); } catch (_) {} }
         try { mesh.destroy(); } catch (_) {}
         if (video) {
           try { video.pause(); } catch (_) {}
           try { texture.destroy(true); } catch (_) {}
           try { video.removeAttribute("src"); video.load(); } catch (_) {}
         }
+      };
+
+      // fadeMs: only Stop Animation passes one; the event's end removes at once.
+      const stop = (fadeMs = 0) => {
+        if (stopped) return;
+        stopped = true;
+        clearTimeout(timer);
+        if (spawnTick) { try { canvas.app.ticker.remove(spawnTick); } catch (_) {} }
+        playing.get(sourceId)?.delete(stop);
+        held.get(sourceId)?.delete(entry);
+        resolve(true);
+
+        if (!(fadeMs > 0) || mesh.destroyed || hiddenTab() || !canvas?.ready) {
+          remove();
+          return;
+        }
+
+        const fromAlpha = mesh.alpha;
+        const fadeStart = performance.now();
+        fadeTick = () => {
+          try {
+            if (mesh.destroyed) { remove(); return; }
+            const u = Math.min(1, (performance.now() - fadeStart) / fadeMs);
+            mesh.alpha = fromAlpha * (1 - u);
+            if (u >= 1) remove();
+          } catch (err) {
+            console.warn(INSTALL_TAG, "Fade-out frame failed; removing it now.", err);
+            remove();
+          }
+        };
+        canvas.app.ticker.add(fadeTick);
+        // A hidden tab stops PIXI's frames: the clip still goes.
+        setTimeout(remove, fadeMs + 300);
+      };
+
+      // Held: the clip stops where it would have ended and stays there.
+      const freeze = () => {
+        if (stopped) return;
+        clearTimeout(timer);
+        if (video) { try { video.pause(); } catch (_) {} }
         resolve(true);
       };
 
+      const entry = { key: String(holdKey || ""), stop };
+
       track(sourceId, stop);
+      if (hold) {
+        if (!held.has(sourceId)) held.set(sourceId, new Set());
+        held.get(sourceId).add(entry);
+      }
 
       if (video) {
-        video.addEventListener("ended", stop, { once: true });
-        video.addEventListener("error", stop, { once: true });
+        video.addEventListener("ended", hold ? freeze : () => stop(), { once: true });
+        video.addEventListener("error", () => stop(), { once: true });
         try { video.currentTime = 0; } catch (_) {}
-        video.play().catch(stop);
+        video.play().catch(() => stop());
+      }
+
+      if (hold) {
+        // A video ends by itself; an image held stays as it is.
+        if (durationMs > 0) timer = setTimeout(freeze, durationMs);
+        else if (!video) resolve(true);
+        return;
       }
 
       timer = setTimeout(stop, Math.min(CAP_MS, durationMs > 0 ? durationMs : (video ? CAP_MS : IMAGE_DEFAULT_MS)));
     });
   }
 
+  /**
+   * Removes held clips of an event on this client. key: a RowsMedia.holdKey,
+   * or "" for every held clip of that event. Returns how many it removed.
+   */
+  function stopHeld(sourceId, key = "", fadeMs = 0) {
+    const wanted = String(key || "");
+    let count = 0;
+    for (const entry of [...(held.get(sourceId) ?? [])]) {
+      if (wanted && entry.key !== wanted) continue;
+      entry.stop(fadeMs);
+      count += 1;
+    }
+    return count;
+  }
+
   window.oni.EventSystem.WorldFx = {
     installed: true,
     SORT,
     play,
+    stopHeld,
     preloadEvent
   };
 

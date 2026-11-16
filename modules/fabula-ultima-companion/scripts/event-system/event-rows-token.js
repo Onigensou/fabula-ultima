@@ -27,6 +27,15 @@
  *   later Show finds it where it stood.
  * - The copy and its take-off smoke draw among the tokens (event-worldFx.js), so
  *   a tile at elevation 1, such as a cliff edge they stand behind, stays in front.
+ * - Show can fade in: every client fades a copy in while it rises into place,
+ *   then the GM shows the token. "Crouch" ends the copy squashed and holds it a
+ *   moment, so a Jump To that leaps out next takes over from the crouch.
+ * - A tint can fade: every client blends the mesh's tint over the time, then the
+ *   GM writes the new tint, so it stays as before.
+ * - Set Facing can turn toward the party or a named token, worked out when the
+ *   row runs: one of eight directions, and a left or right mirror for a token
+ *   with a single picture (straight up or down still mirrors to that side).
+ * - The Guilty Gear dust (ggDust) is shared with Jump To.
  *
  * Requires:
  * - event-logic.js, event-eventRegistry.js, event-client.js, event-flow.js
@@ -52,6 +61,8 @@
   }
 
   const KIND_JUMP = "token.jump";
+  const KIND_SHOW = "token.show";
+  const KIND_TINT = "token.tint";
 
   const VISIBILITY = [
     ["keep", "Leave as it is"],
@@ -96,6 +107,43 @@
     plumeOffsetPx: 28
   };
 
+  // Dust for a leap or a landing, by the jumper's drawn height (map px). The
+  // mockup's sizes: 150 and 175 for a 260 px Asura; the party, about 80.
+  const DUST = {
+    takeoff: 150 / 260,
+    landing: 175 / 260,
+    minPx: 80,
+    // The mockup's puffs, as share of the size: [clip, dx, dy, width, mirror, alpha].
+    // A landing adds two low spikes out to the sides.
+    launch: [
+      ["kick", 0, 0.06, 1.25, false, 0.6],
+      ["plume", -0.42, 0.02, 0.95, true, 0.56],
+      ["plume", 0.42, 0.02, 0.95, false, 0.56]
+    ],
+    land: [
+      ["kick", -0.5, 0.08, 0.8, true, 0.42],
+      ["kick", 0.5, 0.08, 0.8, false, 0.42]
+    ]
+  };
+
+  const dustSize = (heightPx, landing) => Math.max(DUST.minPx, Math.round((Number(heightPx) || 0) * (landing ? DUST.landing : DUST.takeoff)));
+
+  // The clips of one puff of dust at x, y (the jumper's feet), size from dustSize.
+  function dustPuffs(x, y, size, landing) {
+    return [...DUST.launch, ...(landing ? DUST.land : [])].map(([clip, dx, dy, w, mirror, alpha]) => ({
+      src: SMOKE[clip].src, x: x + (dx * size), y: y + (dy * size), width: w * size, mirror, alpha
+    }));
+  }
+
+  // Plays on this client.
+  function ggDust(x, y, size, landing, sourceId = "") {
+    const worldFx = window.oni.EventSystem.WorldFx;
+    if (!worldFx) return;
+    for (const puff of dustPuffs(x, y, size, landing)) {
+      worldFx.play({ ...puff, sourceId, anchorY: SMOKE.anchorY, sort: worldFx.SORT.OVER_TOKENS, tint: SMOKE.tint });
+    }
+  }
+
   const TINT = [
     ["keep", "Leave as it is"],
     ["clear", "Clear (no tint)"],
@@ -105,12 +153,43 @@
   const DEFAULT_COLOR = "#16102a";
   const NO_TINT = "#ffffff";
 
+  // Show with a fade: the copy fades in while it rises into place, eased out.
+  // Crouch: it goes from a deep squash to a crouch, as Asura behind the rubble.
+  const SHOW = {
+    crouchFrom: { x: 1.1, y: 0.6 },
+    crouch: { x: 1.2, y: 0.72 },
+    // A crouch no jump takes over stands back up after this.
+    holdMs: 1500,
+    standMs: 200,
+    // A late token update: keep the real token hidden until it is shown (or give up).
+    settleMs: 1500
+  };
+  const MAX_FADE_MS = 10000;
+  const fadeMsOf = (v) => Math.min(MAX_FADE_MS, Math.max(0, Math.round(Number(v) || 0)));
+  const risePxOf = (v) => Math.min(2000, Math.max(0, Math.round(Number(v) || 0)));
+
   const pick = (list, value) => (list.some(([key]) => key === value) ? value : "keep");
 
   function validColor(raw) {
     const s = String(raw ?? "").trim();
     return /^#[0-9a-f]{6}$/i.test(s) ? s : DEFAULT_COLOR;
   }
+
+  const colorNumber = (hex) => parseInt(String(hex).slice(1), 16);
+
+  // A colour part way from a to b (0xrrggbb numbers), each channel on its own.
+  function mixColor(a, b, t) {
+    const k = Math.min(1, Math.max(0, t));
+    let out = 0;
+    for (const shift of [16, 8, 0]) {
+      const ca = (a >> shift) & 0xff;
+      const cb = (b >> shift) & 0xff;
+      out |= Math.round(ca + (cb - ca) * k) << shift;
+    }
+    return out;
+  }
+
+  const hiddenTab = () => document.visibilityState === "hidden";
 
   const namesIn = (raw) => String(raw ?? "").split(",").map(s => s.trim()).filter(Boolean);
 
@@ -124,6 +203,163 @@
   }
 
   const mix = (a, b, t) => a + (b - a) * t;
+  const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+
+  // A copy of a token's sprite standing where its feet are, among the tokens.
+  // Not yet added to the canvas.
+  function copyOf(mesh, name) {
+    const sprite = new PrimarySpriteMesh({ texture: mesh.texture, name });
+    sprite.anchor.set(0.5, 1);
+    sprite.tint = mesh.tint;
+    sprite.elevation = 0;
+    sprite.sortLayer = PrimaryCanvasGroup.SORT_LAYERS.TOKENS;
+    sprite.sort = window.oni.EventSystem.WorldFx?.SORT?.COPIES ?? 500000;
+    const baseX = mesh.scale.x;
+    const baseY = mesh.scale.y;
+    const footX = mesh.x;
+    const footY = mesh.y + Math.abs(mesh.height) * (1 - mesh.anchor.y);
+    sprite.position.set(footX, footY);
+    sprite.scale.set(baseX, baseY);
+    return { sprite, baseX, baseY, footX, footY };
+  }
+
+  // Copies left crouching by a Show, by token id: a Jump To takes one over.
+  const held = new Map();
+
+  /**
+   * Ends a crouching copy at once, on this client, and gives its squash
+   * ({ sx, sy }), or null when there is none. The real mesh stays unrendered:
+   * the caller draws its own copy from here.
+   */
+  function takeHeld(tokenId) {
+    const h = held.get(tokenId);
+    if (!h) return null;
+    held.delete(tokenId);
+    return h.take();
+  }
+
+  // One token's fade-in on this client: a copy fades in rising into place.
+  function playShow(tokenId, { fadeMs, risePx = 0, crouch = false, sourceId = "" } = {}) {
+    if (hiddenTab()) return;
+    const token = canvas?.tokens?.get(tokenId);
+    const mesh = token?.mesh;
+    const host = canvas?.primary;
+    if (!mesh?.texture?.valid || !host) return;
+
+    takeHeld(tokenId);
+    const { sprite, baseX, baseY, footX, footY } = copyOf(mesh, "oniEventShow");
+    sprite.alpha = 0;
+    host.addChild(sprite);
+    mesh.renderable = false;
+
+    const ticker = canvas.app.ticker;
+    const startedAt = performance.now();
+    let squash = { sx: 1, sy: 1 };
+    let done = false;
+
+    const stop = () => {
+      done = true;
+      ticker.remove(tick);
+      if (held.get(tokenId)?.sprite === sprite) held.delete(tokenId);
+      if (!sprite.destroyed) sprite.destroy();
+    };
+    const finish = () => {
+      if (done) return;
+      stop();
+      // Show the real token once this client has it shown (or give up waiting).
+      const reveal = () => { if (!mesh.destroyed) mesh.renderable = true; };
+      if (!token.document?.hidden) return reveal();
+      const giveUpAt = performance.now() + SHOW.settleMs;
+      const wait = () => {
+        try {
+          if (!token.document?.hidden || performance.now() > giveUpAt || mesh.destroyed) { ticker.remove(wait); reveal(); }
+        } catch (_) { ticker.remove(wait); reveal(); }
+      };
+      ticker.add(wait);
+    };
+    if (crouch) {
+      held.set(tokenId, {
+        sprite,
+        take: () => { const s = { ...squash }; stop(); return s; }
+      });
+    }
+
+    const tick = () => {
+      try {
+        if (sprite.destroyed || !sprite.parent) return finish();
+        const t = performance.now() - startedAt;
+        const u = Math.min(1, t / fadeMs);
+        const e = easeOut(u);
+        sprite.alpha = e;
+        sprite.y = footY + (risePx * (1 - e));
+        sprite.tint = mesh.tint;
+
+        if (!crouch) {
+          if (u >= 1) return finish();
+          return;
+        }
+        if (t < fadeMs + SHOW.holdMs) {
+          squash = { sx: mix(SHOW.crouchFrom.x, SHOW.crouch.x, e), sy: mix(SHOW.crouchFrom.y, SHOW.crouch.y, e) };
+        } else {
+          const s = (t - fadeMs - SHOW.holdMs) / SHOW.standMs;
+          if (s >= 1) return finish();
+          squash = { sx: mix(SHOW.crouch.x, 1, s), sy: mix(SHOW.crouch.y, 1, s) };
+        }
+        sprite.scale.set(baseX * squash.sx, baseY * squash.sy);
+        sprite.x = footX;
+      } catch (e) {
+        console.warn(INSTALL_TAG, "Show frame failed; dropping the effect.", e);
+        finish();
+      }
+    };
+    tick();
+    ticker.add(tick);
+    Client.addCleanup(sourceId, `token.show.${tokenId}`, () => { if (!done) finish(); });
+  }
+
+  // One token's tint fade on this client. The target is held on the mesh until
+  // the token's own tint arrives, so it does not blink back meanwhile.
+  function playTint(tokenId, { to, ms, sourceId = "" } = {}) {
+    const token = canvas?.tokens?.get(tokenId);
+    const mesh = token?.mesh;
+    if (!mesh || !Number.isFinite(to)) return;
+    const was = Number(mesh.tint);
+    const from = Number.isFinite(was) ? was : 0xffffff;
+
+    const ticker = canvas.app.ticker;
+    const startedAt = performance.now();
+    let done = false;
+    const finish = () => { done = true; ticker.remove(tick); };
+    const arrived = () => Number(token.document?.texture?.tint ?? 0xffffff) === to;
+    const tick = () => {
+      try {
+        if (mesh.destroyed) return finish();
+        const t = performance.now() - startedAt;
+        if (t >= ms && (arrived() || t >= ms + SHOW.settleMs)) {
+          mesh.tint = to;
+          return finish();
+        }
+        mesh.tint = mixColor(from, to, t / ms);
+      } catch (e) {
+        console.warn(INSTALL_TAG, "Tint frame failed; dropping the effect.", e);
+        finish();
+      }
+    };
+    ticker.add(tick);
+    Client.addCleanup(sourceId, `token.tint.${tokenId}`, () => { if (!done) finish(); });
+  }
+
+  Client.register(KIND_SHOW, (data, info) => {
+    for (const id of data.tokenIds ?? []) {
+      playShow(id, { fadeMs: fadeMsOf(data.fadeMs) || 1, risePx: risePxOf(data.risePx), crouch: data.crouch === true, sourceId: info.sourceId });
+    }
+  });
+
+  Client.register(KIND_TINT, (data, info) => {
+    for (const id of data.tokenIds ?? []) {
+      playTint(id, { to: Number(data.to), ms: fadeMsOf(data.ms) || 1, sourceId: info.sourceId });
+    }
+  });
 
   // One token's jump on this client. Each frame is guarded: a throw inside a
   // ticker callback would stop PIXI's whole frame loop.
@@ -134,19 +370,9 @@
     const worldFx = window.oni.EventSystem.WorldFx;
     if (!mesh?.texture?.valid || !host || !worldFx) return;
 
-    const sprite = new PrimarySpriteMesh({ texture: mesh.texture, name: "oniEventJump" });
-    sprite.anchor.set(0.5, 1);
-    sprite.tint = mesh.tint;
-    sprite.elevation = 0;
-    sprite.sortLayer = PrimaryCanvasGroup.SORT_LAYERS.TOKENS;
-    sprite.sort = worldFx.SORT.COPIES;
-    const baseX = mesh.scale.x;
-    const baseY = mesh.scale.y;
-    const footX = mesh.x;
-    const footY = mesh.y + Math.abs(mesh.height) * (1 - mesh.anchor.y);
+    takeHeld(tokenId);
+    const { sprite, baseX, baseY, footX, footY } = copyOf(mesh, "oniEventJump");
     const drift = SIDEWAYS[direction] ?? 0;
-    sprite.position.set(footX, footY);
-    sprite.scale.set(baseX, baseY);
     host.addChild(sprite);
     mesh.renderable = false;
 
@@ -209,14 +435,24 @@
     type: "setToken",
     label: "Set Token",
     category: "Token",
-    defaultData: { type: "setToken", name: "", visibility: "show", tint: "keep", color: DEFAULT_COLOR, direction: "up", smoke: false, wait: true },
+    defaultData: {
+      type: "setToken", name: "", visibility: "show", tint: "keep", color: DEFAULT_COLOR, direction: "up", smoke: false, wait: true,
+      fadeMs: 0, risePx: 0, crouch: false, tintFadeMs: 0
+    },
     mediaOf: (row) => (row?.visibility === "jump" && row?.smoke === true
       ? namesIn(row?.name).flatMap(() => [SMOKE.plume.src, SMOKE.kick.src])
       : []),
     summary: (row) => {
       const parts = [String(row?.name ?? "").trim() || "(no token)"];
-      if (pick(VISIBILITY, row?.visibility) !== "keep") parts.push(row.visibility === "jump" ? "jump away" : row.visibility);
-      if (pick(TINT, row?.tint) !== "keep") parts.push(row.tint === "set" ? `tint ${validColor(row.color)}` : "no tint");
+      const visibility = pick(VISIBILITY, row?.visibility);
+      if (visibility !== "keep") parts.push(visibility === "jump" ? "jump away" : visibility);
+      if (visibility === "show" && fadeMsOf(row?.fadeMs) > 0) {
+        parts.push(`fade in ${fadeMsOf(row.fadeMs)} ms${risePxOf(row?.risePx) ? ` rising ${risePxOf(row.risePx)} px` : ""}${row?.crouch === true ? " into a crouch" : ""}`);
+      }
+      if (pick(TINT, row?.tint) !== "keep") {
+        parts.push(row.tint === "set" ? `tint ${validColor(row.color)}` : "no tint");
+        if (visibility !== "jump" && fadeMsOf(row?.tintFadeMs) > 0) parts.push(`tint fade ${fadeMsOf(row.tintFadeMs)} ms`);
+      }
       return parts.join(", ");
     },
     execute: async (row, context) => {
@@ -250,7 +486,36 @@
 
       if (!Object.keys(change).length) return { ok: true, type: "setToken", changed: 0 };
 
-      await scene.updateEmbeddedDocuments("Token", found.map(t => ({ _id: t.id, ...change })));
+      // Fades: every client plays them, then the GM writes what they faded to.
+      // An instant part is written first, so a Show and a tint fade together
+      // shows the token and then blends its tint.
+      const fadeMs = visibility === "show" ? fadeMsOf(row?.fadeMs) : 0;
+      const tintMs = tint !== "keep" ? fadeMsOf(row?.tintFadeMs) : 0;
+      const later = {};
+      if (fadeMs > 0) { later.hidden = false; delete change.hidden; }
+      if (tintMs > 0) {
+        later["texture.tint"] = change["texture.tint"];
+        delete change["texture.tint"];
+        // Hiding after a tint fade: hide at its end, not before it.
+        if (visibility === "hide") { later.hidden = true; delete change.hidden; }
+      }
+
+      if (Object.keys(change).length) {
+        await scene.updateEmbeddedDocuments("Token", found.map(t => ({ _id: t.id, ...change })));
+      }
+      if (!Object.keys(later).length) return { ok: true, type: "setToken", changed: found.length };
+
+      const fading = found.filter(t => t.hidden).map(t => t.id);
+      if (fadeMs > 0 && fading.length) {
+        Client.run(context?.tileId, KIND_SHOW, { tokenIds: fading, fadeMs, risePx: risePxOf(row?.risePx), crouch: row?.crouch === true });
+      }
+      if (tintMs > 0) {
+        Client.run(context?.tileId, KIND_TINT, { tokenIds: found.map(t => t.id), to: colorNumber(later["texture.tint"]), ms: tintMs });
+      }
+      const go = await window.oni.EventSystem.Flow?.wait?.(context?.tileId, Math.max(fading.length ? fadeMs : 0, tintMs));
+      if (go === false) return { ok: false, type: "setToken", reason: "ended" };
+
+      await scene.updateEmbeddedDocuments("Token", found.map(t => ({ _id: t.id, ...later })));
       return { ok: true, type: "setToken", changed: found.length };
     },
     buildFields: (row, kit) => {
@@ -273,6 +538,13 @@
            <label><input type="checkbox" class="oni-event-row-token-wait" ${row.wait !== false ? "checked" : ""} /> wait for it</label>`,
           "For several directions, use one row each with wait off, so they go together. The smoke sits in front of tokens and behind any tile at elevation 1."
         )}</div>`,
+        `<div class="oni-event-row-token-show-wrap">${kit.field(
+          "Fade in (ms)",
+          `${kit.numberInput("oni-event-row-token-fade", fadeMsOf(row.fadeMs), { min: 0, max: MAX_FADE_MS, step: 10 })}
+           rising ${kit.numberInput("oni-event-row-token-rise", risePxOf(row.risePx), { min: 0, max: 2000, step: 5 })} px
+           <label><input type="checkbox" class="oni-event-row-token-crouch" ${row.crouch === true ? "checked" : ""} /> into a crouch</label>`,
+          "0 = shown at once. Otherwise it fades in while it rises into place from that far below, then the row goes on. Into a crouch: it ends squashed, ready for a Jump To that leaps out next (1.5 s, then it stands up)."
+        )}</div>`,
         kit.field(
           "Tint",
           `<select class="oni-event-row-token-tint">${kit.options(TINT, tint)}</select>`,
@@ -281,6 +553,11 @@
         `<div class="oni-event-row-token-color-wrap">${kit.field(
           "Colour",
           `<input type="color" class="oni-event-row-token-color" value="${validColor(row.color)}" />`
+        )}</div>`,
+        `<div class="oni-event-row-token-tint-fade-wrap">${kit.field(
+          "Tint fade (ms)",
+          kit.numberInput("oni-event-row-token-tint-fade", fadeMsOf(row.tintFadeMs), { min: 0, max: MAX_FADE_MS, step: 10 }),
+          "0 = at once. Otherwise the tint blends over this time, then the row goes on: a silhouette cleared over 1200 ms. Not with Jump away."
         )}</div>`
       );
 
@@ -288,7 +565,9 @@
       const visibilityEl = body.querySelector(".oni-event-row-token-visibility");
       const sync = () => {
         body.querySelector(".oni-event-row-token-color-wrap").hidden = tintEl.value !== "set";
+        body.querySelector(".oni-event-row-token-tint-fade-wrap").hidden = tintEl.value === "keep" || visibilityEl.value === "jump";
         body.querySelector(".oni-event-row-token-jump-wrap").hidden = visibilityEl.value !== "jump";
+        body.querySelector(".oni-event-row-token-show-wrap").hidden = visibilityEl.value !== "show";
       };
       tintEl.addEventListener("change", sync);
       visibilityEl.addEventListener("change", sync);
@@ -303,7 +582,11 @@
       color: validColor(kit.readText(rowEl, ".oni-event-row-token-color", DEFAULT_COLOR)),
       direction: pickDirection(kit.readText(rowEl, ".oni-event-row-token-direction", "up")),
       smoke: !!kit.own(rowEl, ".oni-event-row-token-smoke")?.checked,
-      wait: !!kit.own(rowEl, ".oni-event-row-token-wait")?.checked
+      wait: !!kit.own(rowEl, ".oni-event-row-token-wait")?.checked,
+      fadeMs: fadeMsOf(kit.readNumber(rowEl, ".oni-event-row-token-fade", 0)),
+      risePx: risePxOf(kit.readNumber(rowEl, ".oni-event-row-token-rise", 0)),
+      crouch: !!kit.own(rowEl, ".oni-event-row-token-crouch")?.checked,
+      tintFadeMs: fadeMsOf(kit.readNumber(rowEl, ".oni-event-row-token-tint-fade", 0))
     })
   });
 
@@ -328,11 +611,33 @@
     ["down", "Down (facing the screen)"],
     ["downLeft", "Down and left"],
     ["left", "Left"],
-    ["upLeft", "Up and left"]
+    ["upLeft", "Up and left"],
+    ["towardParty", "Toward the party"],
+    ["towardToken", "Toward a named token"]
   ];
   const pickFacing = (value) => (FACINGS.some(([key]) => key === value) ? value : "up");
   const pickFacingTarget = (value) => (FACING_TARGETS.some(([key]) => key === value) ? value : "party");
   const facingApi = () => globalThis.__ONI_SPRITE_FACING_RUNTIME__ ?? null;
+
+  // Toward a point: the eight slices, 0 = right, clockwise on screen (y down).
+  const TOWARD_SLICES = ["right", "downRight", "down", "downLeft", "left", "upLeft", "up", "upRight"];
+  // Straight up or down keeps the side a token had, so a single picture would
+  // not turn at all: past this far to one side, it mirrors that way too.
+  const TOWARD_SIDE_PX = 24;
+
+  /** The named direction from a token toward a point dx, dy away, and a side for up or down; null when on top of it. */
+  function towardFacing(dx, dy) {
+    if (Math.hypot(dx, dy) < 1e-6) return null;
+    const direction = TOWARD_SLICES[((Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) % 8) + 8) % 8];
+    const upright = direction === "up" || direction === "down";
+    const side = upright && Math.abs(dx) > TOWARD_SIDE_PX ? (dx > 0 ? "right" : "left") : null;
+    return { direction, side };
+  }
+
+  function docCenter(doc) {
+    const grid = doc.parent?.grid?.size ?? 100;
+    return { x: doc.x + (doc.width * grid) / 2, y: doc.y + (doc.height * grid) / 2 };
+  }
 
   function facingDocs(row, scene, context) {
     const target = pickFacingTarget(row?.target);
@@ -346,12 +651,46 @@
     return namesIn(row?.name).flatMap(n => tokensNamed(scene, n));
   }
 
+  // data.turns: [{ tokenId, direction, side }], one per token (a toward row turns
+  // each its own way); data.tokenIds + data.direction: all the same way.
   Client.register(KIND_FACING, (data) => {
-    for (const id of data.tokenIds ?? []) {
-      const token = canvas?.tokens?.get(id);
-      if (token) facingApi()?.setDirection?.(token, data.direction);
+    const turns = data.turns ?? (data.tokenIds ?? []).map(tokenId => ({ tokenId, direction: data.direction }));
+    for (const turn of turns) {
+      const token = canvas?.tokens?.get(turn.tokenId);
+      if (!token) continue;
+      const turned = facingApi()?.setDirection?.(token, turn.direction);
+      if (turned && turn.side) facingApi()?.setFacing?.(token, turn.side, { instant: true });
     }
   });
+
+  // Who a toward row turns, and what each looks at. Toward a named token: the
+  // name field holds the token looked at, so the party or this event's token turn.
+  function towardTurns(row, scene, context, direction) {
+    const target = pickFacingTarget(row?.target);
+    let lookAt = null;
+    let docs = [];
+    if (direction === "towardParty") {
+      lookAt = scene?.tokens?.get(context?.tokenId) ?? null;
+      docs = facingDocs(row, scene, context);
+    } else if (target !== "token") {
+      lookAt = tokensNamed(scene, namesIn(row?.name)[0])[0] ?? null;
+      docs = facingDocs(row, scene, context);
+    }
+    if (!lookAt) return [];
+    const at = docCenter(lookAt);
+    return docs.filter(d => d.id !== lookAt.id).map((doc) => {
+      const from = docCenter(doc);
+      const way = towardFacing(at.x - from.x, at.y - from.y);
+      return way ? { doc, ...way } : null;
+    }).filter(Boolean);
+  }
+
+  function facingWho(row) {
+    const target = pickFacingTarget(row?.target);
+    if (target === "source") return "this token";
+    if (target === "party") return "the party";
+    return String(row?.name ?? "").trim() || "(no token)";
+  }
 
   EventRegistry.register({
     type: "setFacing",
@@ -359,30 +698,38 @@
     category: "Token",
     defaultData: { type: "setFacing", target: "party", name: "", direction: "up" },
     summary: (row) => {
-      const who = pickFacingTarget(row?.target) === "token" ? (String(row?.name ?? "").trim() || "(no token)")
-        : (pickFacingTarget(row?.target) === "source" ? "this token" : "the party");
-      return `${who}: ${pickFacing(row?.direction)}`;
+      const direction = pickFacing(row?.direction);
+      if (direction === "towardParty") return `${facingWho(row)}: toward the party`;
+      if (direction === "towardToken") return `${facingWho(row)}: toward ${namesIn(row?.name)[0] ?? "(no token)"}`;
+      return `${facingWho(row)}: ${direction}`;
     },
     execute: async (row, context) => {
       const scene = game.scenes?.get(context?.sceneId) ?? canvas?.scene ?? null;
-      const docs = facingDocs(row, scene, context);
-      if (!docs.length) {
-        console.warn(INSTALL_TAG, "Set Facing: no token to turn; passed over.", row);
+      const direction = pickFacing(row?.direction);
+      const toward = direction === "towardParty" || direction === "towardToken";
+      const turns = toward
+        ? towardTurns(row, scene, context, direction)
+        : facingDocs(row, scene, context).map(doc => ({ doc, direction, side: null }));
+      if (!turns.length) {
+        console.warn(INSTALL_TAG, "Set Facing: no token to turn (or none to turn toward); passed over.", row);
         return { ok: false, type: "setFacing", reason: "notFound" };
       }
 
-      const direction = pickFacing(row?.direction);
-      Client.run(context?.tileId, KIND_FACING, { tokenIds: docs.map(d => d.id), direction });
+      Client.run(context?.tileId, KIND_FACING, {
+        turns: turns.map(t => ({ tokenId: t.doc.id, direction: t.direction, side: t.side }))
+      });
 
       // Saved like the end of a walk, so a reload and a late joiner see it.
-      const named = facingApi()?.NAMED_DIRECTIONS?.[direction];
-      if (named) {
-        const flags = { "flags.fabula-ultima-companion.facingDir": named.dir };
-        if (named.side) flags["flags.fabula-ultima-companion.facing"] = named.side;
-        await scene.updateEmbeddedDocuments("Token", docs.map(d => ({ _id: d.id, ...flags })));
-      }
+      const named = facingApi()?.NAMED_DIRECTIONS ?? {};
+      const updates = turns.filter(t => named[t.direction]).map((t) => {
+        const update = { _id: t.doc.id, "flags.fabula-ultima-companion.facingDir": named[t.direction].dir };
+        const side = named[t.direction].side ?? t.side;
+        if (side) update["flags.fabula-ultima-companion.facing"] = side;
+        return update;
+      });
+      if (updates.length) await scene.updateEmbeddedDocuments("Token", updates);
 
-      return { ok: true, type: "setFacing", changed: docs.length };
+      return { ok: true, type: "setFacing", changed: turns.length };
     },
     buildFields: (row, kit) => {
       const body = kit.fields(
@@ -397,15 +744,17 @@
         kit.field(
           "Direction",
           `<select class="oni-event-row-facing-direction">${kit.options(FACINGS, pickFacing(row.direction))}</select>`,
-          "Stays after the event. If the character has no art for this direction, the nearest one it has is shown; with no direction art at all, it keeps its image and only mirrors left or right."
+          "Stays after the event. If the character has no art for this direction, the nearest one it has is shown; with no direction art at all, it keeps its image and only mirrors left or right. Toward: worked out when the row runs, from where both stand. Toward a named token is for the party or this event's token: put the token to look at in Token names."
         )
       );
 
       const targetEl = body.querySelector(".oni-event-row-facing-target");
+      const directionEl = body.querySelector(".oni-event-row-facing-direction");
       const sync = () => {
-        body.querySelector(".oni-event-row-facing-name-wrap").hidden = targetEl.value !== "token";
+        body.querySelector(".oni-event-row-facing-name-wrap").hidden = targetEl.value !== "token" && directionEl.value !== "towardToken";
       };
       targetEl.addEventListener("change", sync);
+      directionEl.addEventListener("change", sync);
       sync();
 
       return body;
@@ -516,6 +865,16 @@
     })
   });
 
-  window.oni.EventSystem.RowsToken = { installed: true };
+  // Shared with Jump To (event-rows-jump.js) and the tests.
+  window.oni.EventSystem.RowsToken = {
+    installed: true,
+    SMOKE,
+    ggDust,
+    dustSize,
+    dustPuffs,
+    takeHeld,
+    towardFacing,
+    mixColor
+  };
   console.debug(INSTALL_TAG, "Installed.");
 })();
