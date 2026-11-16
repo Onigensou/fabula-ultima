@@ -167,9 +167,12 @@
     .map(s => String(s).trim()).filter(Boolean);
 
   // "party:+86,0" -> { dx: 86, dy: 0 }, or null when the line is not one.
+  // "party:+86,0@Pit Shot": the same, but dx turns round when the party stands
+  // left of the token "Pit Shot" (one path for whichever side they came from).
   function parsePartyOffset(line) {
-    const m = String(line).match(/^\s*party\s*:\s*([+-]?\d+(?:\.\d+)?)\s*,\s*([+-]?\d+(?:\.\d+)?)\s*$/i);
-    return m ? { dx: Number(m[1]), dy: Number(m[2]) } : null;
+    const m = String(line).match(/^\s*party\s*:\s*([+-]?\d+(?:\.\d+)?)\s*,\s*([+-]?\d+(?:\.\d+)?)\s*(?:@\s*(.+?))?\s*$/i);
+    if (!m) return null;
+    return m[3] ? { dx: Number(m[1]), dy: Number(m[2]), mirrorRef: m[3].trim() } : { dx: Number(m[1]), dy: Number(m[2]) };
   }
 
   // A point kept inside the scene's own area (not its padding). A scene with no
@@ -192,7 +195,12 @@
     if (rel) {
       if (!party) return null;
       const c = centerOf(party);
-      return { ...clampToScene(scene, c.x + rel.dx, c.y + rel.dy), label: line };
+      let dx = rel.dx;
+      if (rel.mirrorRef) {
+        const ref = tokensNamed(scene, rel.mirrorRef)[0];
+        if (ref && c.x < centerOf(ref).x) dx = -dx;
+      }
+      return { ...clampToScene(scene, c.x + dx, c.y + rel.dy), label: line };
     }
     const m = String(line).match(/^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/);
     if (m) return { x: Number(m[1]), y: Number(m[2]), label: line };

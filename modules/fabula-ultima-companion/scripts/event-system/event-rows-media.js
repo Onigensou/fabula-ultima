@@ -83,6 +83,19 @@
     return globalThis.FUCompanion?.api?.vfxSuppressed?.() === true;
   }
 
+  // True when the party token stands left of the named token (a marker), so a
+  // picture drawn for one side can be mirrored for the other. Blank = never.
+  function partyLeftOf(name, partyTokenId) {
+    const wanted = String(name ?? "").trim().toLowerCase();
+    if (!wanted || !canvas?.ready) return false;
+    const ref = (canvas.tokens?.placeables ?? []).find(t => String(t.name ?? "").trim().toLowerCase() === wanted);
+    const party = canvas.tokens?.get(partyTokenId)
+      ?? window.oni?.EventSystem?.RowsCamera?.partyToken?.({ partyTokenId })
+      ?? null;
+    if (!ref || !party) return false;
+    return party.center.x < ref.center.x;
+  }
+
   function clampNumber(raw, low, high, fallback) {
     return Math.min(high, Math.max(low, Logic.toNumber(raw, fallback)));
   }
@@ -873,7 +886,8 @@
         spawn: data.spawn === true,
         durationMs: Math.max(0, Logic.toNumber(data.durationMs, 0)),
         hold,
-        holdKey: key
+        holdKey: key,
+        mirror: data.mirror === true
       });
       return;
     }
@@ -920,7 +934,7 @@
           const h = (el.videoHeight || el.naturalHeight || 0) * scale * at.scale;
           el.style.width = `${w}px`;
           el.style.height = `${h}px`;
-          el.style.transform = `translate(${at.x - (w / 2)}px, ${at.y - (h / 2)}px)`;
+          el.style.transform = `translate(${at.x - (w / 2)}px, ${at.y - (h / 2)}px)${data.mirror === true ? " scaleX(-1)" : ""}`;
         } catch (err) {
           console.warn(INSTALL_TAG, "Play Animation frame failed; it stays where it is.", err);
           try { canvas.app.ticker.remove(ticker); } catch (_) {}
@@ -978,6 +992,7 @@
       seconds: 0,
       hold: false,
       holdName: "",
+      mirrorLeftOf: "",
       wait: true
     },
     summary: (row) => {
@@ -994,6 +1009,7 @@
 
       Client.run(context?.tileId, KIND_ANIMATION, {
         src,
+        mirror: partyLeftOf(row?.mirrorLeftOf, context?.tokenId),
         where: PLACES.some(([value]) => value === row?.where) ? row.where : "screen",
         name: String(row?.name ?? ""),
         partyTokenId: context?.tokenId ?? null,
@@ -1075,6 +1091,11 @@
           `<input type="text" class="oni-event-row-anim-hold-name" value="${kit.escapeHTML(row.holdName ?? "")}" placeholder="Empty: the file name" />`,
           "What Stop Animation calls it. Case and file extension do not matter."
         )}</div>`,
+        kit.field(
+          "Mirror",
+          `<input type="text" class="oni-event-row-anim-mirror" value="${kit.escapeHTML(row.mirrorLeftOf ?? "")}" placeholder="Token name (empty: never)" />`,
+          "Mirrored left to right when the party stands left of this token (a marker). Picks the side once, for everyone."
+        ),
         kit.waitField(row, true)
       );
 
@@ -1111,6 +1132,7 @@
       seconds: Math.max(0, kit.readNumber(rowEl, ".oni-event-row-anim-seconds", 0)),
       hold: !!kit.own(rowEl, ".oni-event-row-anim-hold")?.checked,
       holdName: kit.readText(rowEl, ".oni-event-row-anim-hold-name", "").trim(),
+      mirrorLeftOf: kit.readText(rowEl, ".oni-event-row-anim-mirror", "").trim(),
       wait: kit.readWait(rowEl, true)
     })
   });

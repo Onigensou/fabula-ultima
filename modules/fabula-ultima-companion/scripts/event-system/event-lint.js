@@ -192,7 +192,11 @@
               for (const line of lines) {
                 if (/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test(line)) continue;
                 // "party:dx,dy" is where the party stands when the row starts.
-                if (/^party\s*:\s*[+-]?\d+(\.\d+)?\s*,\s*[+-]?\d+(\.\d+)?$/i.test(line)) continue;
+                const rel = line.match(/^party\s*:\s*[+-]?\d+(\.\d+)?\s*,\s*[+-]?\d+(\.\d+)?\s*(?:@\s*(.+))?$/i);
+                if (rel) {
+                  if (rel[3] && !hasToken(scene, rel[3].trim())) add("warn", `Jump To turns "${line}" by the token "${rel[3].trim()}", but no token on this scene has that name.`);
+                  continue;
+                }
                 if (!hasToken(scene, line)) add("warn", `Jump To names the marker "${line}", but no token on this scene has that name. The jump would be skipped.`);
               }
               break;

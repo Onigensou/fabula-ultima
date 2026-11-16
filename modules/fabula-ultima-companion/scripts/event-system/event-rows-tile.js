@@ -193,7 +193,8 @@
 
   // The approved break (mockup breakStatue, slice branch).
   const SLICE = {
-    edge: 0.9,
+    // No outline on the pieces: it traced the picture's square border too (user, 2026-11-16).
+    edge: 0,
     keepMs: 400,
     delayMs: [0, 140],
     slideMs: 520,
@@ -471,7 +472,7 @@
       if (t1 < 0) return { ox: 0, oy: 0, rot: 0, alpha: 1, edge: SLICE.edge };
       if (t1 < SLICE.slideMs) {
         const e = easeIn(t1 / SLICE.slideMs);
-        return { ox: p.slide.ox * e, oy: p.slide.oy * e, rot: p.slide.rot * e, alpha: 1, edge: mix(SLICE.edge, 0.3, e) };
+        return { ox: p.slide.ox * e, oy: p.slide.oy * e, rot: p.slide.rot * e, alpha: 1, edge: mix(SLICE.edge, SLICE.edge / 3, e) };
       }
       if (p.dusted === 0) {
         p.dusted = 1;
@@ -484,7 +485,7 @@
       }
       return {
         ox: mix(p.slide.ox, p.fall.ox, e), oy: mix(p.slide.oy, p.fall.oy, e),
-        rot: mix(p.slide.rot, p.fall.rot, e), alpha: 1 - e, edge: mix(0.3, 0, e)
+        rot: mix(p.slide.rot, p.fall.rot, e), alpha: 1 - e, edge: mix(SLICE.edge / 3, 0, e)
       };
     };
 
