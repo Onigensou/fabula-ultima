@@ -145,18 +145,37 @@ function isTyping(ev) {
 }
 
 // ── Roster: the party, each seat's player (or a CPU), and their art ─────────
+// One seat per player. A player's linked character wins; otherwise the usual
+// decider (explicit owner first), skipping anyone already seated. A player
+// who owns several party members by default ownership still runs only one.
+function assignSeats(actors, { requireActive = true } = {}) {
+  const Sp = globalThis.FUCompanion?.api?.Spectator;
+  const pool = (Sp?.participantUsers?.({ requireActive }) ?? game.users.filter((u) => !u.isGM && (!requireActive || u.active)));
+  const seats = actors.map(() => null), taken = new Set();
+  actors.forEach((a, i) => { const u = pool.find((x) => x.character?.id === a.id && !taken.has(x.id)); if (u) { seats[i] = u.id; taken.add(u.id); } });
+  actors.forEach((a, i) => {
+    if (seats[i]) return;
+    const explicit = pool.filter((u) => !taken.has(u.id) && (a.ownership?.[u.id] ?? 0) >= CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER).sort((x, y) => x.id.localeCompare(y.id));
+    if (explicit[0]) { seats[i] = explicit[0].id; taken.add(explicit[0].id); }
+  });
+  return seats;
+}
+
 async function buildRoster() {
   const res = await globalThis.FUCompanion?.api?.getCurrentGameDb?.();
   const props = res?.db?.system?.props ?? {};
-  const Spectator = globalThis.FUCompanion?.api?.Spectator;
-  const out = [];
+  const actors = [];
   for (let i = 1; i <= 4; i++) {
     const id = clean(props[`member_id_${i}`]).replace(/^Actor\./i, "");
     const actor = id ? game.actors?.get(id) : null;
-    if (!actor) continue;
+    if (actor) actors.push(actor);
+  }
+  const seatUsers = assignSeats(actors);
+  const out = [];
+  for (const [i, actor] of actors.entries()) {
     const p = actor.system?.props ?? {};
     const die = (k) => Math.max(4, Math.min(12, Number(p[`${k}_current`] ?? p[k] ?? 8) || 8));
-    const userId = Spectator?.deciderUserIdForActor?.(actor, { requireActive: true }) ?? null;
+    const userId = seatUsers[i];
     const art = {};
     for (const [slot, f] of Object.entries(ART_FIELDS)) art[slot] = { walk: clean(p[f.walk]) || null, stand: clean(p[f.stand]) || null };
     out.push({
@@ -195,11 +214,13 @@ async function openSession(offer, { isHost, late = false, hold = false } = {}) {
     musicVol: () => vol("globalPlaylistVolume", 0.5),
     isActive: () => !!S && S.sid === offer.sid,
     isTyping, showPerf,
+    // dev/test only: this client's runner plays itself (set FUCompanion.minigameAutopilot = true before the game opens)
+    autopilot: !!globalThis.FUCompanion?.minigameAutopilot,
     maxBackingWidth: () => 2200,
     // which seat a (re)joining user decides for (their linked / owned party character)
     seatFor: (userId) => {
-      const user = game.users.get(userId), Sp = globalThis.FUCompanion?.api?.Spectator;
-      return offer.roster.findIndex((r) => { const a = game.actors.get(r.actorId); return a && Sp?.deciderUserIdForActor?.(a, { requireActive: false }) === user?.id; });
+      const actors = offer.roster.map((r) => game.actors.get(r.actorId)).filter(Boolean);
+      return assignSeats(actors, { requireActive: false }).indexOf(userId);
     },
     net: {
       send: (k, d) => send(k, d),
@@ -305,7 +326,12 @@ function onSocket(msg) {
   if (!S || p.sid !== S.sid) return;
   if (p.u === S.hostId) S.clock.heardHost();
   switch (p.k) {
-    case "ping": if (S.isHost) send("pong", { to: p.u, t0: p.d.t0, ht: performance.now() }); return;
+    case "ping":
+      if (!S.isHost) return;
+      send("pong", { to: p.u, t0: p.d.t0, ht: performance.now() });
+      // the ping keeps running in a background tab: it is how the host knows a player is still here
+      S.instance?.handle("hello", {}, from ? { id: from.id, isGM: from.isGM } : { id: p.u, isGM: false });
+      return;
     case "pong": if (p.d.to === game.user.id) S.clock.pong(p.d); return;
     case "loaded": if (S.isHost) S.loadedFrom.add(p.u); return;
     case "bye": if (p.u === S.hostId) closeSession("host closed"); return;

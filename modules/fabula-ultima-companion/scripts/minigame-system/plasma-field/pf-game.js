@@ -1850,11 +1850,13 @@ export function createPlasmaField(env) {
         helloAcc += dt; if (helloAcc >= 2000){ helloAcc = 0; env.net.send("hello", { seat: env.myIdx }); }
         if (env.isHost){
           worldAcc += dt; if (worldAcc >= WORLD_MS){ worldAcc = 0; sendWorld(now); }
-          // a runner whose player went quiet is taken over by a CPU so the race goes on
+          // a runner whose player is GONE (no snapshot and not even the background clock ping) is taken
+          // over by a CPU so the race goes on; a player who merely tabbed away keeps their seat
           if (isLive() || G.mode === "countdown") for (const p of G.players){
             if (p.cpu || p.local) continue;
-            const seen = Math.max(lastSnapAt.get(p.idx) ?? 0, G.seatSince ?? 0);
-            if (env.net.hostNow() - seen > DROP_MS) hostFlow("takeover", { i: p.idx });
+            const now2 = env.net.hostNow(), user = env.roster[p.idx].userId;
+            const seen = Math.max(lastSnapAt.get(p.idx) ?? 0, G.seatSince ?? 0, user ? (lastHeard.get(user) ?? 0) : 0);
+            if (now2 - seen > DROP_MS) hostFlow("takeover", { i: p.idx });
           }
         }
       },
@@ -1969,16 +1971,17 @@ export function createPlasmaField(env) {
   }
   function applySeats(list){
     if (!Array.isArray(list)) return;
+    let mine = false;   // one runner per player, whatever the seats say
     list.forEach((s, i) => {
       const p = G.players[i]; if (!p) return;
       env.roster[i].userId = s.user; const wasLocal = p.local;
       p.cpu = !!s.cpu; if (!p.cpu) p.cpuBy = null;
-      p.me = !p.cpu && !!s.user && s.user === env.userId;
+      p.me = !mine && !p.cpu && !!s.user && s.user === env.userId; if (p.me) mine = true;
       p.local = p.me || (env.isHost && p.cpu);
       p.bot = p.bot || BOT[p.name] || BOT.Same;
       if (wasLocal !== p.local) p.net = [];
     });
-    const mine = G.players.findIndex(p => p.me); G.meIdx = mine;
+    G.meIdx = G.players.findIndex(p => p.me);
     G.seatSince = env.net.hostNow();
   }
   function applyFlow(type, d){
