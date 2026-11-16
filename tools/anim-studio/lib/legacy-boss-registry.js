@@ -5,8 +5,8 @@
 // (the final per-move spec is the mockup source + its round overrides).
 // Merged into _build-dungeon-animations.js's REGISTRY (actorId -> { actorName,
 // items: { "<item name>": () => { script, timing, preload } } }).
-// Deferred: Geist's Shadowbringers (keeps its July script) and the "imbued by
-// Shadow Strike" attack (generator only, needs a hook decision).
+// Geist's Shadowbringers runs on the full-takeover timeline (camera driven), like Rebellious Wing.
+// Deferred: the "imbued by Shadow Strike" attack (generator only, needs a hook decision).
 // ============================================================================
 
 const LG = require("./legacy-gryphon-signatures.js");
@@ -74,6 +74,7 @@ const LEGACY_REGISTRY = {
     "Shadow Strike": g(LX.shadowStrike, "geist-shadow-strike", "Shadow Strike"),
     "Living Shadow": g(LX.livingShadow, "geist-living-shadow", "Living Shadow"),
     "Dark Missionary": g(LX.darkMissionary, "geist-dark-missionary", "Dark Missionary"),
+    "Shadowbringers": g(LX.shadowbringers, "geist-shadowbringers", "Shadowbringers"),
   } },
 };
 if (LL) LEGACY_REGISTRY.MhEHMx4BGuLoETa8 = { actorName: "⭐️ Love", items: LL.REGISTRY_ITEMS ? LL.REGISTRY_ITEMS(g) : {} };

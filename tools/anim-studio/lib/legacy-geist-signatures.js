@@ -11,6 +11,8 @@
 //   LG.shadowWall / shadowStrike           buffs: gate on the buff beat
 //   LG.livingShadow / darkMissionary       summons: gate when the shade(s) have condensed, on the July
 //                                          spawn-cell prediction, so the real token appears on the shade
+//   LG.shadowbringers                      FULL-TAKEOVER cinematic (cfg.live = false, camera via S.cam, like
+//                                          Rebellious Wing); gate after the buff beat, done again at the end
 //   LG.imbuedAttack                        "Attack (imbued by Shadow Strike)": generator only, not wired
 //
 // Mockup px (1682 px Training Ground stage) are scaled by stage width / 1682 in the inner; values ported
@@ -44,12 +46,22 @@ const CLIPS = {
   pxfx_dark_plasma_back: px("pxfx_dark_plasma", "back", 672, 600, 1733, 0.5, 0.5),
   pxfx_dark_plasma_front: px("pxfx_dark_plasma", "front", 672, 600, 1733, 0.5, 0.5),
   pxfx_dark_plasma_light: px("pxfx_dark_plasma", "light", 672, 600, 1733, 0.5, 0.5),
+  // Shadowbringers (clip.json: implosion 416x368 1700 ms; magic-circle column 600x660 anchor .5/.8727 3933 ms;
+  // fu/dark-vortex 960x960 anchor .5/.9167 2617 ms)
+  pxfx_dark_implosion_front: px("pxfx_dark_implosion", "front", 416, 368, 1700, 0.5, 0.5),
+  pxfx_dark_implosion_light: px("pxfx_dark_implosion", "light", 416, 368, 1700, 0.5, 0.5),
+  pxfx_dark_column_back: px("pxfx_dark_column", "back", 600, 660, 3933, 0.5, 0.8727),
+  pxfx_dark_column_front: px("pxfx_dark_column", "front", 600, 660, 3933, 0.5, 0.8727),
+  pxfx_dark_column_light: px("pxfx_dark_column", "light", 600, 660, 3933, 0.5, 0.8727),
+  pxfx_dark_vortex_front: px("pxfx_dark_vortex", "front", 960, 960, 2617, 0.5, 0.9167),
+  pxfx_dark_vortex_light: px("pxfx_dark_vortex", "light", 960, 960, 2617, 0.5, 0.9167),
 };
 const SFX = {
   swingA: SB + "SE_SWINGA.wav", swingF: SB + "SE_SWINGF.wav", slashL: SB + "SE_BTL_HitSlashL.ogg", blowL: SB + "SE_BTL_HitBlowL.ogg",
   wind7: SB + "Wind7.ogg", magic4: SB + "Magic4.ogg", powerup: SB + "Powerup.ogg",
   darkness1: SB + "Darkness1.ogg", darkness3: SB + "Darkness3.ogg", darkness4: SB + "Darkness4.ogg", darkness5: SB + "Darkness5.ogg",
   hitpierceb: SND + "Hit_PiercingB.ogg", blind: SND + "Blind.ogg", spook: SND + "Spook.mp3",
+  execution: SND + "ExecutionGET.wav", explosion2: SB + "Explosion2.ogg", thunder3: SB + "Thunder3.ogg", thunder8: SB + "Thunder8.ogg",
 };
 
 const KIT = fs.readFileSync(path.join(__dirname, "legacy-shots", "geist-kit.inner.js"), "utf8");
@@ -102,7 +114,28 @@ const imbuedAttack = (opts = {}) => build(opts, "geist-imbued.inner.js", {
   needsTarget: true, lungeMs: 340, backMs: 420, gateAtEnd: false,
 }, ["pxfx_dark_plasma_back", "pxfx_dark_plasma_front", "pxfx_dark_plasma_light"], ["darkness4", "darkness3", "swingF", "slashL"]);
 
-// actor UYAabJiUZJ1uKers item ids -> generator (Shadowbringers and The Blackest Night are not here)
+// ── Shadowbringers (mockup b4/r3b + r6 implosion + r11..r14 vortex burst; approved 11-16) ──
+// FULL-TAKEOVER timeline (cfg.live = false), like Rebellious Wing: the camera pushes in on the implosion and
+// holds a wide shot over the vortex. Beats: implosion (0) -> violet burst (1000) -> beam into the sky (1650) ->
+// dark vortex (2550 = B). Gate at B + 3080 (the mockup's markGate, after the buff beat); the inner fires done
+// again at the end, once the last wisps have faded. Every locked review number is in this cfg.
+const shadowbringers = (opts = {}) => build(opts, "geist-shadowbringers.inner.js", {
+  live: false, totalTimeoutMs: 26000,
+  beatBurst: 1000, beatBeam: 1650, beatVortex: 2550,
+  implodeScale: 1.3, burstScale: 1.6, columnScale: 1.5,       // x GS.s in the mockup (taken as 1, on KP)
+  pushIn: { dx: 120, dy: 140, zoom: 1.18, ms: 1000 },          // beat 1 camera (mockup px off his art-box bottom)
+  wide: { dx: -80, dy: 230, zoom: 0.9, ms: 300 },               // "Wide hold" (sbCamera mode 0): stage centre - 80, his box bottom - 230
+  restMs: 700,
+  fieldDim: 0.82, blastDim: 0.7, topDim: 0.62,
+  plasmaScale: 1.3, vortexScale: 3.2, vortexSx: 1.55,
+  // the black + red DarkWisp ramp (r14 tune, LOCKED 11-16)
+  wisp: { delay: 120, dur: 2300, rate0: 33, rate1: 180, speed: 2.5, size: 1.7, life: 1800, black: 0.45, op: 0.5 },
+  streaks: { delay: 160, dur: 2200, rate: 28, op: 1 },
+}, ["pxfx_dark_implosion_front", "pxfx_dark_implosion_light", "pxfx_dark_plasma_back", "pxfx_dark_plasma_front", "pxfx_dark_plasma_light",
+  "pxfx_dark_column_back", "pxfx_dark_column_front", "pxfx_dark_column_light", "pxfx_dark_vortex_front", "pxfx_dark_vortex_light", "powerup"],
+["darkness5", "execution", "magic4", "explosion2", "darkness4", "thunder3", "thunder8", "darkness3", "powerup"]);
+
+// actor UYAabJiUZJ1uKers item ids -> generator (The Blackest Night is not here)
 const ITEMS = {
   bUu8h4C4kis0z3QL: { name: "Dark Bane", gen: darkBane },
   TNYXBbOxhHCXZZ5S: { name: "Souleater", gen: souleater },
@@ -111,6 +144,7 @@ const ITEMS = {
   S01TD1lW8JUnapHh: { name: "Shadow Strike", gen: shadowStrike },
   tkplYk5nVtf3nu66: { name: "Living Shadow", gen: livingShadow },
   hwRQZH4zxC0vB8wh: { name: "Dark Missionary", gen: darkMissionary },
+  kFPcc3xDPvPXIGum: { name: "Shadowbringers", gen: shadowbringers },
 };
 
-module.exports = { ACTOR: "UYAabJiUZJ1uKers", ITEMS, darkBane, souleater, torcleaver, shadowWall, shadowStrike, livingShadow, darkMissionary, imbuedAttack, CLIPS, SFX };
+module.exports = { ACTOR: "UYAabJiUZJ1uKers", ITEMS, darkBane, souleater, torcleaver, shadowWall, shadowStrike, livingShadow, darkMissionary, shadowbringers, imbuedAttack, CLIPS, SFX };

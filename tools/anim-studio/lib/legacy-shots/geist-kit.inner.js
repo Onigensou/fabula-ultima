@@ -15,7 +15,9 @@ const FOES = [];
 targets.forEach((t, i) => { const k = 't' + i; FOES.push(k); tokens[k] = { token: t, foot: cfg.partyFoot }; });
 if (cfg.needsTarget && !FOES.length) { oni.fireDone(); return; }
 const CL = A.clips || {};
-const tl = oni.timeline({ tokens, clips: CL, live: true, depthRef: 'k' });
+// LIVE board for every move; cfg.live === false = the full-takeover timeline (camera driven through S.cam),
+// used by the Shadowbringers cinematic only
+const tl = oni.timeline({ tokens, clips: CL, live: cfg.live !== false, depthRef: 'k' });
 await tl.load();
 const E = tl.E, seg = tl.seg, lerp = tl.lerp, TOK = tl.TOK, feet = tl.feet, glowC = tl.draw.glowCircle;
 const KP = (tl.STAGE.w || 1682) / 1682;
