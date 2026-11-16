@@ -1,10 +1,359 @@
 {
   "sceneId": "XNTSewM1NcPG59L1",
   "name": "Valley_Map020",
-  "tokens": [],
-  "tokensFull": [],
+  "tokens": [
+    {
+      "name": "Rakshasa",
+      "actorId": "Rk5haXsaDemonAAA",
+      "actorLink": false
+    },
+    {
+      "name": "Pit Shot",
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "actorLink": false
+    }
+  ],
+  "tokensFull": [
+    {
+      "name": "Pit Shot",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/NPC%20Sprite/4_M_RUSMAN2.gif",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 0,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "draftEntrances": "claude-2026-11-16-entrances",
+          "draftName": "Pit Shot",
+          "depthExempt": true
+        }
+      },
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "hidden": true,
+      "_id": "NtKV7RAvHxKRNFXE",
+      "x": 968,
+      "y": 488,
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": []
+    },
+    {
+      "actorLink": false,
+      "alpha": 1,
+      "appendNumber": false,
+      "bar1": {
+        "attribute": "attributeBar.current_hp"
+      },
+      "bar2": {
+        "attribute": "attributeBar.current_mp"
+      },
+      "detectionModes": [],
+      "displayBars": 0,
+      "displayName": 0,
+      "disposition": -1,
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "draftEntrances": "claude-2026-11-16-entrances",
+          "draftName": "Rakshasa"
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "startMode": "button",
+          "lockMovement": true,
+          "onceOnly": false,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Rakshasa Spared",
+            "want": "on"
+          },
+          "eventRows": [
+            {
+              "type": "setFacing",
+              "target": "party",
+              "name": "Rakshasa",
+              "direction": "towardToken",
+              "id": "aQGn1XTPbaatvQTY"
+            },
+            {
+              "type": "setFacing",
+              "target": "token",
+              "name": "Rakshasa",
+              "direction": "towardParty",
+              "id": "qIEcukx1bPgw5GNg"
+            },
+            {
+              "type": "showText",
+              "speaker": "Rakshasa",
+              "text": ".........You.....Food",
+              "bubbleMode": "normal",
+              "textSpeed": "slow",
+              "id": "K1DJi4XAk2uAw9Pj"
+            },
+            {
+              "type": "pauseForGM",
+              "note": "Rakshasa wants to eat them. Roleplay, then pick.",
+              "noEnd": true,
+              "choices": [
+                {
+                  "id": "6wIaF2P62bfduF4y",
+                  "label": "Fight",
+                  "rows": [
+                    {
+                      "type": "startBattle",
+                      "enemies": "Rakshasa",
+                      "battleMap": "Scene.XHe8LfutYAkPuR5B",
+                      "bgm": "Awaken",
+                      "isBoss": true,
+                      "engagement": "normal",
+                      "storyLoss": false,
+                      "recoverOnDefeat": false,
+                      "returnScene": "",
+                      "returnAt": "",
+                      "victoryRows": [
+                        {
+                          "type": "setSwitch",
+                          "scope": "story",
+                          "name": "Rakshasa Spared",
+                          "slot": "A",
+                          "value": "off",
+                          "id": "aYCq2ZnIPEQRkzyv"
+                        },
+                        {
+                          "type": "setSwitch",
+                          "scope": "story",
+                          "name": "Rakshasa Defeated",
+                          "slot": "A",
+                          "value": "on",
+                          "id": "D9hDKJ69mdHV7Vi9"
+                        },
+                        {
+                          "type": "setToken",
+                          "name": "Rakshasa",
+                          "visibility": "hide",
+                          "tint": "keep",
+                          "color": "#16102a",
+                          "direction": "up",
+                          "smoke": false,
+                          "wait": true,
+                          "fadeMs": 0,
+                          "risePx": 0,
+                          "crouch": false,
+                          "tintFadeMs": 0,
+                          "id": "vN0pSQ2yp9Qhe4zo"
+                        }
+                      ],
+                      "defeatRows": [],
+                      "id": "lE4P0RO5RfPAL1HY"
+                    }
+                  ]
+                },
+                {
+                  "id": "RcJUQll4GYYSd2nZ",
+                  "label": "Leave it standing",
+                  "rows": [
+                    {
+                      "type": "setSwitch",
+                      "scope": "story",
+                      "name": "Rakshasa Spared",
+                      "slot": "A",
+                      "value": "on",
+                      "id": "3WPAXRjL1OCmqfZI"
+                    }
+                  ]
+                }
+              ],
+              "id": "oOJp2eVJJfhaECvc"
+            }
+          ]
+        }
+      },
+      "height": 1,
+      "hexagonalShape": 0,
+      "light": {
+        "alpha": 0.5,
+        "angle": 360,
+        "animation": {
+          "intensity": 5,
+          "reverse": false,
+          "speed": 5,
+          "type": null
+        },
+        "attenuation": 0.5,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "contrast": 0,
+        "darkness": {
+          "max": 1,
+          "min": 0
+        },
+        "dim": 0,
+        "luminosity": 0.5,
+        "negative": false,
+        "priority": 0,
+        "saturation": 0,
+        "shadows": 0
+      },
+      "lockRotation": true,
+      "name": "Rakshasa",
+      "occludable": {
+        "radius": 0
+      },
+      "prependAdjective": false,
+      "ring": {
+        "colors": {
+          "background": null,
+          "ring": null
+        },
+        "effects": 1,
+        "enabled": false,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "rotation": 0,
+      "sight": {
+        "angle": 360,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "color": null,
+        "contrast": 0,
+        "enabled": false,
+        "range": 0,
+        "saturation": 0,
+        "visionMode": "basic"
+      },
+      "texture": {
+        "alphaThreshold": 0.75,
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "fit": "contain",
+        "offsetX": 0,
+        "offsetY": 0,
+        "rotation": 0,
+        "scaleX": 3.1,
+        "scaleY": 3.1,
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Rakshasa_Battle_Idle.webm",
+        "tint": "#07060c"
+      },
+      "width": 1,
+      "actorId": "Rk5haXsaDemonAAA",
+      "hidden": true,
+      "_id": "qNxU3dILVw7pqivZ",
+      "x": 968,
+      "y": 387,
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": []
+    }
+  ],
   "notes": [],
-  "tileCount": 2,
+  "tileCount": 3,
   "full": {
     "name": "Valley_Map020",
     "navName": "Feeding Pit",
@@ -122,6 +471,13 @@
             "material": "RollTable.QailcoOmaoZW0v6b",
             "fish": "RollTable.pEHm2gU70pTHQM6v"
           }
+        },
+        "storyBgm": {
+          "when": "Rakshasa Spared",
+          "normalPlaylist": "RQCAKkv2ZbCCuyzP",
+          "normalSound": "Izs2ykIrWPWJZ1e1",
+          "altPlaylist": "VrpdABUTSoREMDR5",
+          "altSound": "N5EBhNpsUKKzWCOG"
         }
       },
       "fxmaster": {
@@ -227,7 +583,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359059497,
-      "modifiedTime": 1791827697710,
+      "modifiedTime": 1794834655948,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [
