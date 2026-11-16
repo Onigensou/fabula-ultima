@@ -126,6 +126,7 @@
       const sceneMode = fab?.general?.sceneMode ?? null;
       if (sceneMode === "dungeon")     return false;
       if (sceneMode === "stealth")     return false;  // stealth owns its own movement + HUD
+      if (sceneMode === "minigame")    return false;  // the minigame overlay owns input and camera
       if (sceneMode === "exploration") return true;
       if (sceneMode === "none")        return false;
 

@@ -285,6 +285,7 @@
     const sceneMode = safeGet(fab, `${GENERAL_KEY}.${SCENE_MODE_KEY}`, null);
     if (sceneMode === "dungeon")     return false;
       if (sceneMode === "stealth")     return false;  // stealth owns its own movement + HUD
+      if (sceneMode === "minigame")    return false;  // the minigame overlay owns input and camera
     if (sceneMode === "exploration") return true;
     if (sceneMode === "camp")        return true;   // each player walks their own member
     if (sceneMode === "none")        return false;
