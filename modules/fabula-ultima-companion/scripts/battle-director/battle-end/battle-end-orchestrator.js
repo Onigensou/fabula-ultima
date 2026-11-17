@@ -96,6 +96,9 @@ export async function runBattleEndSequence(director) {
     // Which follow-up rule (if any) spawned THIS battle — lets a rule avoid
     // chaining off its own ambush battle.
     followupRuleId: payload?.meta?.followupRuleId ?? null,
+    // An event's Start Battle can ask for a silent field after victory
+    // (meta.quietReturn): the transition stops the scene's autoplay music.
+    quietReturn:    payload?.meta?.quietReturn === true,
     promptResult:   null,
     summaryResults: null,
     rank:           null,

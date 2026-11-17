@@ -96,9 +96,28 @@ async function warpParty(endCtx, returnScene) {
   }
 }
 
+// While a quiet return lands, refuse any "start playing" update this client
+// makes. Foundry's scene activation autoplays the scene playlist from the
+// activating (GM) client, so vetoing it here means it never starts; measured
+// before this: the storm played ~0.3 s under the black screen.
+function holdMusicOff() {
+  const veto = (_doc, change) => (change?.playing === true ? false : undefined);
+  const ids = [Hooks.on("preUpdatePlaylistSound", veto), Hooks.on("preUpdatePlaylist", veto)];
+  return () => { Hooks.off("preUpdatePlaylistSound", ids[0]); Hooks.off("preUpdatePlaylist", ids[1]); };
+}
+
+async function silenceAllMusic() {
+  try {
+    await Promise.all((game.playlists?.playing ?? []).map(pl => pl.stopAll()));
+  } catch (e) {
+    warn("[BattleEnd:Transition] Quiet return: stopping music threw (continuing):", e);
+  }
+}
+
 export async function runBattleEndTransition(endCtx) {
   const { promptResult, battleSceneId, preBattleCamera, battleSceneViewport } = endCtx;
   const { returnSceneId, bgm, outcome } = promptResult;
+  const quiet = endCtx.quietReturn === true && outcome === "victory";
 
   // 1) Black out all clients instantly.
   //    raiseCurtain = opaque black overlay; dropCurtain = reveal (fade in).
@@ -133,10 +152,11 @@ export async function runBattleEndTransition(endCtx) {
     }
   }
 
-  // 4) Activate return scene
+  // 4) Activate return scene (a quiet return blocks the scene's autoplay)
+  const releaseMusic = quiet ? holdMusicOff() : null;
   const returnScene = returnSceneId ? game.scenes?.get?.(returnSceneId) : null;
   if (!returnScene) {
-    warn("[BattleEnd:Transition] No return scene found for id:", returnSceneId);
+    warn("[BattleEnd:Transition] No return scene found for id:", returnSceneId); releaseMusic?.();
   } else {
     const warped = await warpParty(endCtx, returnScene);
     if (!warped) {
@@ -148,8 +168,16 @@ export async function runBattleEndTransition(endCtx) {
       }
     }
 
+    // 4b) Quiet return (event Start Battle option): Foundry autoplays the
+    //     return scene's playlist on activation; stop it while the screen is
+    //     still black, and once more after the canvas is up in case playback
+    //     started late. The event brings the scene music back when it ends.
+    if (quiet) await silenceAllMusic();
+
     // 5) Wait for canvas to finish loading the new scene
     await waitForCanvasReady();
+    if (quiet) await silenceAllMusic();
+    releaseMusic?.();
 
     // 6) Pull all online non-GM players to the return scene
     const onlinePlayers = (game.users?.contents ?? []).filter(u => u.active && !u.isGM);

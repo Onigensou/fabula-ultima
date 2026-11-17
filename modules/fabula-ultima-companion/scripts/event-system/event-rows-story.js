@@ -194,6 +194,7 @@
     row.recoverOnDefeat = row.recoverOnDefeat === true;
     row.returnScene = String(row.returnScene ?? "");
     row.returnAt = String(row.returnAt ?? "");
+    row.quietReturn = row.quietReturn === true;
     if (!Array.isArray(row.victoryRows)) row.victoryRows = [];
     if (!Array.isArray(row.defeatRows)) row.defeatRows = [];
   }
@@ -238,13 +239,13 @@
       battlePlan: { type: "default", isBoss: row.isBoss, initiativeMode: "rolled", engagement: row.engagement },
       battleConfig: { bgm: row.bgm, battleSceneUuid: battleScene.uuid },
       options: { battleSystem: "director" },
-      meta: { source: "event-start-battle", tag, sceneId: source?.id, eventId: id }
+      meta: { source: "event-start-battle", tag, sceneId: source?.id, eventId: id, quietReturn: row.quietReturn === true }
     };
 
     f?.hold?.(id);
     f?.travel?.(id);
     Client.setMarker(id, "battle", "in battle");
-    let hookId = null, offAbort = null;
+    let hookId = null, offAbort = null, resumeMusic = false;
     try {
       const ended = new Promise((resolve) => {
         hookId = Hooks.on("fu.battleEnd", (info) => { if (info?.meta?.tag === tag) resolve(info); });
@@ -267,6 +268,9 @@
       await f?.arrive?.(id);
 
       const branch = battleBranch(info.outcome, row.storyLoss);
+      // "Quiet return": the Director silenced the field scene's autoplay on the
+      // way back; its music comes back when the event is done with this battle.
+      resumeMusic = row.quietReturn === true && branch.key === "victory";
       if (branch.key === "defeat" && row.recoverOnDefeat) await recoverParty();
 
       const rows = branch.key === "victory" ? row.victoryRows : row.defeatRows;
@@ -278,6 +282,23 @@
       offAbort?.();
       Client.setMarker(id, "battle", null);
       f?.release?.(id);
+      if (resumeMusic) resumeSceneMusic();
+    }
+  }
+
+  // The scene's own playlist / sound (what Foundry autoplays on activation),
+  // brought back after a quiet return. Skipped if music is already playing.
+  async function resumeSceneMusic() {
+    try {
+      const scene = canvas?.scene;
+      if (!scene || game.playlists?.playing?.length) return;
+      const playlist = scene.playlist;
+      if (!playlist) return;
+      const sound = scene.playlistSound ?? null;
+      if (sound) await playlist.playSound(sound);
+      else await playlist.playAll();
+    } catch (e) {
+      console.warn(INSTALL_TAG, "Start Battle: could not resume the scene music after a quiet return.", e);
     }
   }
 
@@ -285,7 +306,7 @@
     type: "startBattle",
     label: "Start Battle",
     category: "Story",
-    defaultData: { type: "startBattle", enemies: "", battleMap: "", bgm: "", isBoss: false, engagement: "normal", storyLoss: false, recoverOnDefeat: false, returnScene: "", returnAt: "", victoryRows: [], defeatRows: [] },
+    defaultData: { type: "startBattle", enemies: "", battleMap: "", bgm: "", isBoss: false, engagement: "normal", storyLoss: false, recoverOnDefeat: false, returnScene: "", returnAt: "", quietReturn: false, victoryRows: [], defeatRows: [] },
     prepare: prepareBattle,
     childLists: (row) => [{ label: "Victory", rows: row.victoryRows }, { label: "Defeat", rows: row.defeatRows }],
     summary: (row) => `${String(row?.enemies || "(no enemies)").slice(0, 40)}${row?.storyLoss ? " · story loss" : ""}`,
@@ -306,6 +327,8 @@
           </div>`, "Without story loss a defeat ends the event after the Defeat rows."),
         kit.field("Return to", `<input type="text" class="oni-sb-retscene oni-grow" value="${kit.escapeHTML(row.returnScene)}" placeholder="Scene name or id (blank = back where the party was)" />`,
           "After the battle the party is put here instead (the GM's prompt still shows it and can change it)."),
+        kit.field("After victory", `<label><input type="checkbox" class="oni-sb-quiet" ${row.quietReturn ? "checked" : ""} /> no music until the event ends</label>`,
+          "JRPG style: after the victory fanfare the map stays silent through the Victory rows; the scene's own music returns when the event is done."),
         kit.field("Arrive at", `<input type="text" class="oni-sb-retat oni-grow" value="${kit.escapeHTML(row.returnAt)}" placeholder="Door tile id, marker token name, or x, y (blank = spawn point)" />`)
       );
       body.appendChild(kit.subList("victory", "Victory", row.victoryRows));
@@ -322,6 +345,7 @@
       recoverOnDefeat: !!kit.own(rowEl, ".oni-sb-recover")?.checked,
       returnScene: kit.readText(rowEl, ".oni-sb-retscene", "").trim(),
       returnAt: kit.readText(rowEl, ".oni-sb-retat", "").trim(),
+      quietReturn: !!kit.own(rowEl, ".oni-sb-quiet")?.checked,
       victoryRows: kit.readSubList(rowEl, "victory"),
       defeatRows: kit.readSubList(rowEl, "defeat")
     })
