@@ -637,6 +637,10 @@
       "key": "2026-11-12-polymorph-potion-wording",
       "path": "data-migrations/2026-11-12-polymorph-potion-wording.js",
       "idempotent": true
+    },
+    {
+      "key": "2026-11-17-plasma-field-world",
+      "path": "data-migrations/2026-11-17-plasma-field-world.js"
     }
   ]
 }
