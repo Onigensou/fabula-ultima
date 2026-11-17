@@ -307,14 +307,17 @@ export function createPlasmaField(env) {
   }
   function addHaz(h){ h.t = 0; keepInside(h); h.id = h.id || NET.nextId(); G.haz.push(h); NET.hazard(h); if (h.wire && h.wx != null) G.fx.push({ kind:"wire", x:h.wx, y:h.wy, tx:h.x, ty:h.y - 30, t:0, life:520 }); return h; }
   function spawnGround(){
-    const run = G.players.filter(p => active(p) && p.state !== "auto" && p.state !== "wait"); if (!run.length) return;
-    const p = run[Math.floor(Math.random()*run.length)];
+    const run = G.players.filter(p => active(p) && p.state !== "auto" && p.state !== "wait" && pendingOn(p) < CATCHUP.cap && G.t >= (p.aimRest ?? 0)); if (!run.length) return;
+    const least = Math.min(...run.map(pendingOn)), pool = run.filter(q => pendingOn(q) === least);
+    const p = pool[Math.floor(Math.random()*pool.length)], group = NET.nextId();
+    const F = feature(); p.aimRest = G.t + (F.ground[0] + F.ground[1])/2*CATCHUP.rest;
+    const aimed = h => addHaz({ ...h, aim: p.idx, group });
     const ax = clamp(p.x + rnd(-80,80), XMIN+20, XMAX-20), ay = p.y - rnd(0, 140);
     const r = Math.random();
-    if (r < .42) addHaz({ kind:"circle", x:ax, y:ay, r: rnd(120, 175), dur: rnd(1950, 2350) });
-    else if (r < .62) addHaz({ kind:"donut", x:ax, y:ay, r1: rnd(55, 70), r2: rnd(190, 230), dur: rnd(2100, 2400) });
-    else if (r < .82) addHaz({ kind:"lane", x:480, y: ay, hw: rnd(55, 75), x0: XMIN-20, x1: XMAX+20, dur: rnd(2000, 2300) });
-    else { const n = 4 + Math.floor(Math.random()*3); for (let i = 0; i < n; i++) addHaz({ kind:"circle", x: clamp(ax + rnd(-170,170), XMIN, XMAX), y: ay + rnd(-140, 120), r: rnd(62, 80), dur: 1900 + i*220, small:true }); }
+    if (r < .42) aimed({ kind:"circle", x:ax, y:ay, r: rnd(120, 175), dur: rnd(1950, 2350) });
+    else if (r < .62) aimed({ kind:"donut", x:ax, y:ay, r1: rnd(55, 70), r2: rnd(190, 230), dur: rnd(2100, 2400) });
+    else if (r < .82) aimed({ kind:"lane", x:480, y: ay, hw: rnd(55, 75), x0: XMIN-20, x1: XMAX+20, dur: rnd(2000, 2300) });
+    else { const n = 4 + Math.floor(Math.random()*3); for (let i = 0; i < n; i++) aimed({ kind:"circle", x: clamp(ax + rnd(-170,170), XMIN, XMAX), y: ay + rnd(-140, 120), r: rnd(62, 80), dur: 1900 + i*220, small:true }); }
   }
   function hits(h, p){
     if (h.kind === "circle" || h.kind === "plasma" || h.kind === "slam" || h.kind === "gslam") return edist(p, h) < h.r;
@@ -331,7 +334,7 @@ export function createPlasmaField(env) {
     else if (h.kind === "column"){ for (let y = h.y0 + 60; y < h.y1; y += 140) G.bolts.push(bolt(h.x + rnd(-h.hw*.4, h.hw*.4), y, 320)); }
     else if (h.kind === "spikes"){ G.spikeWalls.push({ x0:h.x0, y0:h.y0, x1:h.x1, y1:h.y1, t:0, life:3000 }); if (near) G.shakes = Math.max(G.shakes, 7); }
     else if (h.kind !== "beam" && h.kind !== "gslam") G.bolts.push(bolt(h.x, h.y, 300));
-    if (env.isHost && (h.kind === "circle" || h.kind === "donut" || h.kind === "lane") && !h.wire && G.obsx && G.obsx.state === "up" && Math.hypot(G.obsx.x - (h.kind === "lane" ? G.obsx.x : h.x), G.obsx.y - h.y) < 230){
+    if (env.isHost && (h.kind === "circle" || h.kind === "donut" || h.kind === "lane") && !h.wire && (CATCHUP.mercy.earthenWire || !mercy()) && G.obsx && G.obsx.state === "up" && Math.hypot(G.obsx.x - (h.kind === "lane" ? G.obsx.x : h.x), G.obsx.y - h.y) < 230){
       const ld = leader(); if (ld){ addHaz({ kind:"circle", x: ld.x, y: ld.y, r: 82, dur: 950, wire:true, wx: G.obsx.x, wy: G.obsx.y - 40 }); toastTo(ld, "Earthen Wire! The lightning was thrown at you!", 1300); }
     }
     if (env.isHost && (h.kind === "circle" || h.kind === "donut" || h.kind === "lane") && G.kirin && Math.abs(G.kirin.y - h.y) < 650) G.kirin.charge = Math.min(3, (G.kirin.charge || 0) + 1);
@@ -527,7 +530,7 @@ export function createPlasmaField(env) {
     const ty = Math.max(L.hako.y - 60, lead.y - 250), tx = clamp(lead.x + Math.sin(k.t/900)*120, XMIN + 30, XMAX - 30);   /* ~250 px ahead = on the leader's own screen */
     const vx = (tx - k.x)*Math.min(1, dt/600); k.x += vx; k.y += (ty - k.y)*Math.min(1, dt/(Math.abs(ty - k.y) > 400 ? 220 : 450)); if (Math.abs(vx) > .2) k.face = vx > 0 ? 1 : -1;
     k.cd -= dt;
-    if (k.cd <= 0){ const tgt = randomRunner() || lead; k.cd = rnd(4800, 5800)*crowd(); const ch = k.charge || 0, y0 = tgt.y - 760, y1 = tgt.y + 340;
+    if (k.cd <= 0){ const tgt = randomRunner() || lead; k.cd = rnd(4800, 5800)*(mercy() ? CATCHUP.mercy.kirinCd : 1); const ch = k.charge || 0, y0 = tgt.y - 760, y1 = tgt.y + 340;
       if (!k.alt){
         // Pattern A, Railstream: one huge column on a random runner (a heavy hit); Lightning Charge widens it
         k.charge = 0;
@@ -580,7 +583,7 @@ export function createPlasmaField(env) {
             if (Math.abs(p.y - G.camY) < 420){ G.shakes = Math.max(G.shakes, 8); sfx.tackle(); }
           }
         }
-        if (k >= 1){ z.side = -z.side; z.state = "track"; z.rush = null; z.cd = rnd(2400, 3400)*crowd(); if (env.isHost) z.target = randomRunner(); }
+        if (k >= 1){ z.side = -z.side; z.state = "track"; z.rush = null; z.cd = rnd(2400, 3400)*(mercy() ? CATCHUP.mercy.skizCd : 1); if (env.isHost) z.target = randomRunner(); }
       }
     }
   }
@@ -611,14 +614,14 @@ export function createPlasmaField(env) {
     if (g.state === "chase"){
       g.retarget -= dt; if (g.retarget <= 0 || !g.target || !active(g.target)){ g.target = lead; g.retarget = 600; }
       const p = g.target; if (!p) return;
-      const dx = p.x - g.x, dy = p.y - g.y, d = Math.hypot(dx, dy), sp = MOVE.walk*1.7*dt/1000;   // faster than a run: it will catch up
+      const dx = p.x - g.x, dy = p.y - g.y, d = Math.hypot(dx, dy), sp = MOVE.walk*(mercy() ? CATCHUP.mercy.gigasSpeed : 1.7)*dt/1000;   // faster than a run: it will catch up (slower under MERCY)
       if (d > 1){ g.x += dx/d*Math.min(sp, d); g.y += dy/d*Math.min(sp, d); if (Math.abs(dx) > 2) g.face = dx > 0 ? 1 : -1; g.walk += dt; }
       if (d < 150 && canAct(p)){ g.state = "leap"; g.st = 0; g.jump = { fx:g.x, fy:g.y, tx:p.x, ty:p.y + 4 }; addHaz({ kind:"gslam", x:p.x, y:p.y + 4, r:190, dur:1100 }); }   // wind-up 0.6 s, then the leap lands at 1.1 s
     } else if (g.state === "leap"){
       g.st += dt; const k = Math.min(1, g.st/1100), e = k < .55 ? 0 : (k - .55)/.45;
       g.x = g.jump.fx + (g.jump.tx - g.jump.fx)*e; g.y = g.jump.fy + (g.jump.ty - g.jump.fy)*e; g.air = k < .55 ? -8*(k/.55) : Math.sin(e*Math.PI)*90;
       if (k >= 1){ g.state = "dazed"; g.st = 0; g.air = 0; if (Math.abs(g.y - G.camY) < 420) G.shakes = 12; }
-    } else if (g.state === "dazed"){ g.st += dt; if (g.st > 1700){ g.state = "chase"; g.retarget = 0; } }
+    } else if (g.state === "dazed"){ g.st += dt; if (g.st > (mercy() ? CATCHUP.mercy.gigasDaze : 1700)){ g.state = "chase"; g.retarget = 0; } }
   }
   function struggleTap(p, k){
     if (k === p.lastTap || p.state !== "ko") return;   // must alternate
@@ -757,7 +760,9 @@ export function createPlasmaField(env) {
     if (p.inv > 0) p.inv -= dt; if (p.dashCd > 0) p.dashCd -= dt; if (p.grace > 0) p.grace -= dt; if (p.wet > 0) p.wet -= dt; if (p.boost > 0){ p.boost -= dt; if (p.boost <= 0) p.boostStacks = 0; }
     if (p.pop){ p.pop.t += dt; if (p.pop.t > 1100) p.pop = null; }
     if (p.soot > 0) p.soot = Math.max(0, p.soot - dt/1600);
-    if (p.state !== "shock" && G.t - p.lastSpend > MOVE.regenDelay && p.sta < p.d.maxSta){ p.sta = Math.min(p.d.maxSta, p.sta + p.d.regen*(p.winded ? MOVE.windedRegen : 1)*dt/1000); if (p.winded && p.sta >= p.d.maxSta*MOVE.windedResume){ p.winded = false; if (p.me) sfx.ready(); } }
+    const wind = inLastPlace(p);
+    if (wind && !p.windOn){ p.windOn = true; p.pop = { txt:"Second wind!", good:true, t:0 }; } else if (!wind) p.windOn = false;
+    if (p.state !== "shock" && G.t - p.lastSpend > MOVE.regenDelay*(wind ? CATCHUP.secondWind.delay : 1) && p.sta < p.d.maxSta){ p.sta = Math.min(p.d.maxSta, p.sta + p.d.regen*(p.winded ? MOVE.windedRegen : 1)*(wind ? CATCHUP.secondWind.regen : 1)*dt/1000); if (p.winded && p.sta >= p.d.maxSta*MOVE.windedResume){ p.winded = false; if (p.me) sfx.ready(); } }
     if (p.state === "ko"){   // out of HP: mash left/right (alternating) to get back up with full HP
       p.st += dt;
       if (p.koTaps >= p.koNeed || p.st > 9000){ p.state = "idle"; p.hp = p.hpMax; p.grace = 1500; p.pop = { txt:"Back up!", good:true, t:0 }; }
@@ -1123,7 +1128,24 @@ export function createPlasmaField(env) {
   //               their movement, and every hit they take, so a dash timed on your screen is judged on your screen.
   // Strikes are aimed at a random runner still out, so once others finish the last runner would take
   // every strike meant for four. Pacing stretches with fewer runners out (per-runner pressure stays put).
-  function crowd(){ const n = G.players.filter(p => active(p)).length; return clamp(4/Math.max(1, n), 1, 2.5); }
+  // ── Catch-up rules: the slowest runner must not take the strikes meant for four ──
+  // Ground strikes aim at a runner still out, so each runner has a CAP of strikes on its way at once, and new
+  // ones go to whoever has the fewest and is not resting from the last one. Once half the pack is home, MERCY eases the monsters that hunt a runner,
+  // and the runner in last place gets a SECOND WIND (faster stamina refill). Tune here.
+  const CATCHUP = {
+    cap: 2,                 // ground strikes on their way to one runner at once (a burst counts as one)
+    rest: 3,                // after a strike is aimed at a runner, they rest this many spawn intervals before the next one
+                            // (four runners share the field, so the pack barely notices; a lone runner is no longer every strike's target)
+    mercyAt: .5,            // share of the pack home before MERCY starts
+    mercy: { kirinCd: 2, skizCd: 2, gigasSpeed: 1.3, gigasDaze: 2600, earthenWire: false },
+    secondWind: { regen: 1.35, delay: .6 },   // last place: stamina refills x1.35, and starts refilling after 60% of the usual wait
+  };
+  function mercy(){ return G.mode === "play" && G.players.filter(p => p.finished).length >= Math.ceil(G.players.length*CATCHUP.mercyAt); }
+  function pendingOn(p){ const groups = new Set(); for (const h of G.haz) if (h.aim === p.idx && h.t < h.dur) groups.add(h.group ?? h.id); return groups.size; }
+  function inLastPlace(p){
+    if (G.mode !== "play" || !p.running || G.players.length < 2) return false;
+    return !G.players.some(q => q !== p && q.running && q.y > p.y);
+  }
   function update(dt){
     G.t += dt;
     runLaters(dt);
@@ -1145,7 +1167,7 @@ export function createPlasmaField(env) {
       const F = feature();
       if (G.mode === "play") G.stageT += dt; else G.practiceT += dt;
       if (env.isHost){
-        G.groundNext -= dt; if (G.groundNext <= 0){ G.groundNext = rnd(F.ground[0], F.ground[1])*crowd(); spawnGround(); }
+        G.groundNext -= dt; if (G.groundNext <= 0){ G.groundNext = rnd(F.ground[0], F.ground[1]); spawnGround(); }
         for (const o of L.obs){
           if (o.kind !== "crystal" && o.kind !== "splash") continue;
           if (!G.players.some(p => active(p) && Math.abs(p.y - o.y) < 420)) continue;
@@ -2220,6 +2242,30 @@ export function createPlasmaField(env) {
     },
     perf: perfStats,
     get G(){ return G; }, get L(){ return L; },
+    // A still of the course (ground, rocks, crystals, Hako's cradle): no runners, HUD or rain. It is the
+    // background of the Foundry scene the arrival and thank-you events play on, so that scene looks like the game.
+    // Logical units (the 960-wide course) times `scale` = scene pixels.
+    renderStill({ top = 0, height = 1500, scale = 1.5 } = {}){
+      if (!G) newGame(false, {});
+      const out = document.createElement("canvas"); out.width = Math.round(W*scale); out.height = Math.round(height*scale);
+      const og = out.getContext("2d"), keep = { w: cv.width, h: cv.height, s: SCALE, mode: G.mode };
+      G.mode = "still"; cv.width = out.width; cv.height = Math.round(H*scale); SCALE = scale;
+      try {
+        for (let y0 = top; y0 < top + height; y0 += H){
+          baseTf(); ctx.clearRect(0, 0, W, H); drawGround(y0);
+          ctx.save(); ctx.translate(0, -y0);
+          const list = [];
+          for (const o of L.obs) if (o.y > y0 - 200 && o.y < y0 + H + 200) list.push({ y: o.y, f: () => o.kind === "rock" ? drawRock(o) : o.kind === "splash" ? drawSplash(o) : drawCrystal(o) });
+          for (const pl of L.pillars) if (pl.y > y0 - 400 && pl.y < y0 + H + 400) list.push({ y: pl.y, f: () => drawPillar(pl) });
+          list.push({ y: L.hako.y + 30, f: drawPedestal });
+          list.sort((a, b) => a.y - b.y).forEach(o => o.f());
+          ctx.restore();
+          og.drawImage(cv, 0, Math.round((y0 - top)*scale));
+        }
+      } finally { cv.width = keep.w; cv.height = keep.h; SCALE = keep.s; G.mode = keep.mode; }
+      return out;
+    },
+    layout: () => ({ hako: { ...L.hako }, marks: L.marks(2), T2: L.T[2], START_Y: L.START_Y }),
     debug: { step(dt){ update(dt); drawWorld(); drawHUD(); }, hostFlow, hostCallRound, hostNext, startStage, applySeats, seats },
   };
 }

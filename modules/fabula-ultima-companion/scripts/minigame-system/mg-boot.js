@@ -57,6 +57,7 @@ const ART_FIELDS = {
   up:       { walk: "sprite_walk_up",      stand: "sprite_stand_up" },
 };
 const FP_PROP = "fabula_point", FP_CAP = 10;
+const CURTAIN_HOLD_MS = 900;   // black after the game closes, while the event repositions the party underneath
 
 const isPrimaryGM = () => globalThis.FUCompanion?.isPrimaryGM?.() ?? !!game.user?.isGM;
 const clean = (v) => String(v ?? "").trim();
@@ -123,7 +124,16 @@ function buildOverlay() {
       stage.style.transform = `translate(${x}px, ${y}px) scale(${s})`;
     },
     loaded() { root.querySelector(".fu-mg-loading")?.remove(); },
-    remove() { root.remove(); },
+    // Closing fades the game to black, then a black curtain holds while the event underneath moves the party
+    // and camera, and only then fades away: the scene seems to carry straight on from the game.
+    remove() {
+      root.classList.add("is-closing");
+      setTimeout(() => {
+        root.remove();
+        const c = document.createElement("div"); c.className = "fu-mg-curtain"; document.body.appendChild(c);
+        setTimeout(() => { c.classList.add("is-gone"); setTimeout(() => c.remove(), 700); }, CURTAIN_HOLD_MS);
+      }, 420);
+    },
   };
 }
 
@@ -430,7 +440,13 @@ function ensureStyles() {
 }
 
 const MG_CSS = `
-#fu-mg-root{position:fixed;inset:0;z-index:10000;background:#0b0910;overflow:hidden;
+.fu-mg-curtain{position:fixed;inset:0;z-index:10000;background:#000;pointer-events:none;transition:opacity .6s ease}
+.fu-mg-curtain.is-gone{opacity:0}
+#fu-mg-root > *{transition:opacity .4s ease}
+#fu-mg-root.is-closing > *{opacity:0}
+@keyframes fumgOpen{from{opacity:0}to{opacity:1}}
+#fu-mg-root{animation:fumgOpen .45s ease both}
+#fu-mg-root{position:fixed;inset:0;z-index:10000;background:#000;overflow:hidden;
   --bg:#141019;--panel:#1e1828;--line:#3a2f4d;--ink:#ece6f6;--muted:#a99cc0;--violet:#9b7bff;--bolt:#fff6c8;
   --parch-a:#f8f0d4;--parch-b:#ede0b0;--gold:#c9a44a;--wood:#7a4e20;--wood2:#b8865a;--pink:#3a1e06;--sta:#8fe36b;--go:#5fd38a;
   --ui:"Signika",system-ui,"Segoe UI",sans-serif;color:var(--ink);font-family:var(--ui);color-scheme:dark}
