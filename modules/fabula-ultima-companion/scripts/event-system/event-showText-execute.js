@@ -12,6 +12,31 @@
  * - Waits for the spawned dialog bubble to finish on the executing client
  * - Keeps a simple fallback only if FU.Dialog is unavailable
  *
+ * How a line is shown (row.showAs):
+ *   "bubble"  over the speaker's token, exactly as before: a speaker with no
+ *             token here falls back to the party token, and with no token at
+ *             all to a bubble at the bottom of the screen. A row saved before
+ *             showAs existed (no showAs key) is a bubble, so old events do
+ *             not change.
+ *   "box"     always the message box (dialog-ui.js): the JRPG square window
+ *             at the bottom of the screen, on every client.
+ *   "auto"    (new rows) the box when the resolved speaker has no token on
+ *             this scene (no party-token fallback then), the bubble otherwise.
+ *
+ * Message box fields (only used when the line is a box):
+ *   portrait  ""      the speaker's picture (actor, then token unless video)
+ *             "none"  no portrait column
+ *             a path  that picture (a video path falls back to the default)
+ *   boxLook   "auto" | "parchment" | "overPicture"; auto = overPicture while
+ *             a Show Picture is up (window.oni.EventSystem.Pictures.anyShown)
+ *   row.bubbleMode still applies: shout = jagged box, think = italic text.
+ *
+ * Developer font option (no editor field): row.font = "default" |
+ * "pixelify" | a CSS font-family string, passed to FU.Dialog.show({ font }).
+ *
+ * The pure rules (showAs, portrait, box look) are on Execute.rules and
+ * tested in scripts/dialog-system/message-box.test.mjs.
+ *
  * Exposes API to:
  *   window.oni.EventSystem.ShowText.Execute
  *
@@ -92,6 +117,55 @@
     return logic.substituteVars(text, (name) => (state.getVariableText ?? state.getVariable)(name));
   }
 
+  // ------------------------------------------------------------
+  // Pure rules: how a line is shown, and the message box's portrait
+  // ------------------------------------------------------------
+  const SHOW_AS = ["auto", "bubble", "box"];
+  const BOX_LOOKS = ["auto", "parchment", "overPicture"];
+  const isVideoSrc = (src) => /\.(webm|mp4|m4v|ogv)(\?.*)?$/i.test(String(src || ""));
+
+  // A row with no showAs was saved before it existed: it stays a bubble.
+  function normalizeShowAs(value) {
+    return SHOW_AS.includes(value) ? value : "bubble";
+  }
+
+  // showAs + "does the speaker have a token on this scene" -> "bubble" | "box".
+  function resolveShowAs(showAs, speakerHasTokenHere) {
+    const wanted = normalizeShowAs(showAs);
+    if (wanted === "auto") return speakerHasTokenHere ? "bubble" : "box";
+    return wanted;
+  }
+
+  function normalizeBoxLook(value) {
+    return BOX_LOOKS.includes(value) ? value : "auto";
+  }
+
+  // The portrait field as stored: "" (default), "none", or a path.
+  function normalizePortraitField(value) {
+    const raw = stringOrEmpty(value);
+    return raw.toLowerCase() === "none" ? "none" : raw;
+  }
+
+  // The message box's picture: null = no portrait column.
+  function resolveBoxPortrait(field, { actorImg = "", tokenSrc = "" } = {}) {
+    const raw = normalizePortraitField(field);
+    if (raw === "none") return null;
+    if (raw && !isVideoSrc(raw)) return raw;
+    const pick = [actorImg, isVideoSrc(tokenSrc) ? "" : tokenSrc].find(s => s && !isVideoSrc(s));
+    return stringOrEmpty(pick) || null;
+  }
+
+  // The font option as stored on the row (kept only when set).
+  function normalizeFont(value) {
+    return typeof value === "string" && value.trim() ? value.trim() : null;
+  }
+
+  // Is this token drawn on the scene the executing client is looking at?
+  function tokenIsHere(token) {
+    const id = token?.document?.id || token?.id || null;
+    return !!(id && canvas?.tokens?.get?.(id));
+  }
+
   function normalizeRow(row = {}) {
     return {
       id: stringOrEmpty(row.id) || foundry.utils.randomID(),
@@ -101,7 +175,12 @@
       bubbleMode: stringOrEmpty(row.bubbleMode || row.mode || "normal") || "normal",
       speed: Number.isFinite(Number(row.speed)) ? Number(row.speed) : 28,
       // "slow": the typewriter's slow pace (dialog-ui.js), in place of speed.
-      textSpeed: row.textSpeed === "slow" ? "slow" : "normal"
+      textSpeed: row.textSpeed === "slow" ? "slow" : "normal",
+      // How the line is shown; missing = a bubble (rows from before showAs).
+      showAs: normalizeShowAs(row.showAs),
+      portrait: normalizePortraitField(row.portrait),
+      boxLook: normalizeBoxLook(row.boxLook),
+      font: normalizeFont(row.font)
     };
   }
 
@@ -162,9 +241,17 @@
     });
   }
 
-   function buildDialogPayload(row, speakerResult, context, anchor) {
+   function buildDialogPayload(row, speakerResult, context, anchor, presentation = "bubble") {
     const token = speakerResult?.token || anchor?.token || null;
     const actor = speakerResult?.actor || anchor?.actor || null;
+    const isBox = presentation === "box";
+
+    // In the box, the "Self" placeholder of a party with no token is not a
+    // name worth printing: the name line is left out.
+    const placeholderSelf = !token && !actor && speakerResult?.speakerName === C.SPECIAL_SPEAKER_SELF;
+    const speakerName = isBox && placeholderSelf
+      ? ""
+      : (speakerResult?.speakerName || C.SPECIAL_SPEAKER_SELF);
 
     return {
       rowId: row.id,
@@ -174,7 +261,7 @@
       userId: context.userId || null,
 
       speakerInput: row.speaker,
-      speakerName: speakerResult?.speakerName || C.SPECIAL_SPEAKER_SELF,
+      speakerName,
 
       text: row.text,
       html: row.text,
@@ -192,7 +279,17 @@
       tokenId: anchor?.tokenId || null,
       actorId: anchor?.actorId || null,
 
-      portraitSrc: getPreferredPortraitSrc(token, actor),
+      // The box: the row's portrait field; the bubble: as it always was.
+      portraitSrc: isBox
+        ? resolveBoxPortrait(row.portrait, {
+            actorImg: actor?.img || token?.actor?.img || "",
+            tokenSrc: token?.document?.texture?.src || token?.texture?.src || ""
+          })
+        : getPreferredPortraitSrc(token, actor),
+
+      presentation,
+      boxLook: row.boxLook,
+      font: row.font,
 
       meta: {
         matchedBy: speakerResult?.matchedBy || null,
@@ -218,6 +315,19 @@
       actor,
       tokenId: token?.id || token?.document?.id || context.tokenId || null,
       actorId: actor?.id || context.actorId || null
+    };
+  }
+
+  // The box's speaker: only who the resolver found. No party-token
+  // fallback (a box needs no token to stand on).
+  function buildBoxTarget(speakerResult) {
+    const token = speakerResult?.token || null;
+    const actor = speakerResult?.actor || token?.actor || null;
+    return {
+      token,
+      actor,
+      tokenId: token?.document?.id || token?.id || null,
+      actorId: actor?.id || null
     };
   }
 
@@ -247,6 +357,7 @@
 
     const tokenId = payload.tokenId || null;
     const actorId = payload.actorId || null;
+    const isBox = payload.presentation === "box";
     // Nobody to stand above (a theatre scene with no tokens, an announcer):
     // the line goes in a bubble at the bottom of the screen instead.
     const screen = !tokenId || !canvas?.tokens?.get?.(tokenId);
@@ -256,7 +367,8 @@
       actorId,
       speakerName: payload.speakerName,
       mode: payload.mode,
-      speed: payload.speed
+      speed: payload.speed,
+      presentation: payload.presentation || "bubble"
     });
 
     // A locked event waits on each line for a press; a free one runs on the
@@ -274,9 +386,12 @@
       mode: payload.mode || "normal",
       speed: payload.speed || 28,
       pace: payload.pace || null,
-      portraitSrc: payload.portraitSrc || null,
+      // The box takes the portrait as resolved here ("none" = no column).
+      portraitSrc: isBox ? (payload.portraitSrc || "none") : (payload.portraitSrc || null),
       broadcast: true,
       screen,
+      ...(isBox ? { box: true, boxLook: payload.boxLook || "auto" } : {}),
+      ...(payload.font ? { font: payload.font } : {}),
       sceneId: context.sceneId || canvas?.scene?.id || null,
       waitForInput,
       maxWaitMs,
@@ -414,6 +529,19 @@
   const Execute = {
     installed: true,
 
+    // The pure rules, for tests and for anything that needs the same answer.
+    rules: {
+      SHOW_AS,
+      BOX_LOOKS,
+      normalizeRow,
+      normalizeShowAs,
+      resolveShowAs,
+      normalizeBoxLook,
+      normalizePortraitField,
+      resolveBoxPortrait,
+      normalizeFont
+    },
+
     async execute(rawRow = {}, rawContext = {}) {
       const row = normalizeRow(rawRow);
       const context = buildExecutionContext(rawContext);
@@ -439,13 +567,19 @@
               actorUuid: null
             };
 
-        const anchor = buildAnchorTarget(safeSpeakerResult, context);
-        const payload = buildDialogPayload(row, safeSpeakerResult, context, anchor);
+        // Bubble or message box. "auto" asks whether the speaker the
+        // resolver found has a token on this scene (before any fallback).
+        const presentation = resolveShowAs(row.showAs, tokenIsHere(safeSpeakerResult.token));
+        const anchor = presentation === "box"
+          ? buildBoxTarget(safeSpeakerResult)
+          : buildAnchorTarget(safeSpeakerResult, context);
+        const payload = buildDialogPayload(row, safeSpeakerResult, context, anchor, presentation);
 
         DBG.log(DEBUG_SCOPE, "Final Show Text payload:", {
           rowId: payload.rowId,
           speakerName: payload.speakerName,
           mode: payload.mode,
+          presentation,
           tokenId: payload.tokenId,
           actorId: payload.actorId,
           matchedBy: payload.meta?.matchedBy

@@ -13,7 +13,11 @@
  *
  * An action registers ONCE, here, and brings everything it needs:
  *   type, label, category   what it is and where it sits in the dropdown
- *   defaultData             the fields of a new row
+ *   defaultData             the fields of a new row (also filled into a saved
+ *                           row that lacks them, when rows are normalized)
+ *   newRowData              fields ONLY a brand-new row gets (makeDefaultRow),
+ *                           never filled into a saved row: a new default that
+ *                           must not change rows saved before it existed
  *   execute(row, context)   run it on the GM (context.runRows runs a child list)
  *   buildFields(row, kit)   its fields in the Event Config window
  *   collectFields(el, kit)  read those fields back into a row
@@ -99,7 +103,8 @@
   function cloneDefinition(def) {
     return {
       ...def,
-      defaultData: foundry.utils.deepClone(def.defaultData ?? {})
+      defaultData: foundry.utils.deepClone(def.defaultData ?? {}),
+      newRowData: foundry.utils.deepClone(def.newRowData ?? {})
     };
   }
 
@@ -146,6 +151,7 @@
         supportsSequentialWait: definition.supportsSequentialWait !== false,
         critical: definition.critical === true,
         defaultData: foundry.utils.deepClone(definition.defaultData ?? {}),
+        newRowData: foundry.utils.deepClone(definition.newRowData ?? {}),
         execute: definition.execute,
         buildFields: optionalFn(definition.buildFields),
         collectFields: optionalFn(definition.collectFields),
@@ -237,7 +243,10 @@
 
       const merged = foundry.utils.mergeObject(
         baseRow,
-        foundry.utils.deepClone(def.defaultData ?? {}),
+        {
+          ...foundry.utils.deepClone(def.defaultData ?? {}),
+          ...foundry.utils.deepClone(def.newRowData ?? {})
+        },
         { inplace: false, overwrite: true }
       );
 
@@ -315,6 +324,24 @@
   const pickStyle = (value) => (TEXT_STYLES.some(([key]) => key === value) ? value : "normal");
   const pickSpeed = (value) => (value === "slow" ? "slow" : "normal");
 
+  // Where the line is drawn (event-showText-execute.js). A row saved before
+  // "Show as" existed has no showAs and stays "Over the speaker"; only a new
+  // row starts on Auto (newRowData, not defaultData, so normalizing old rows
+  // does not fill it in).
+  const SHOW_AS = [
+    ["auto", "Auto (box when the speaker has no token here)"],
+    ["bubble", "Over the speaker"],
+    ["box", "Message box"]
+  ];
+  const BOX_LOOKS = [
+    ["auto", "Auto (over a picture when one is up)"],
+    ["parchment", "Parchment"],
+    ["overPicture", "Over a picture (dark, see-through)"]
+  ];
+  const pickShowAs = (value) => (SHOW_AS.some(([key]) => key === value) ? value : "bubble");
+  const pickBoxLook = (value) => (BOX_LOOKS.some(([key]) => key === value) ? value : "auto");
+  const portraitField = (value) => String(value ?? "").trim();
+
   EventRegistry.register({
     type: SHOW_TEXT,
     label: C.EVENT_TYPE_LABELS?.showText || "Show Text",
@@ -328,11 +355,20 @@
       bubbleMode: "normal",
       textSpeed: "normal"
     },
+    // New rows only (see SHOW_AS above). portrait "" = the speaker's picture.
+    newRowData: {
+      showAs: "auto",
+      portrait: "",
+      boxLook: "auto"
+    },
     execute: async (row, context) => {
       return ShowTextExecute.execute(row, context);
     },
     summary: (row) => String(row?.text ?? "").replace(/<\/?b>/gi, "").slice(0, 40),
-    buildFields: (row, kit) => kit.fields(
+    buildFields: (row, kit) => {
+      const portrait = portraitField(row.portrait);
+      const noPortrait = portrait.toLowerCase() === "none";
+      const body = kit.fields(
       kit.field(
         "Speaker",
         `<input type="text" class="oni-event-row-speaker"
@@ -356,14 +392,51 @@
            <select class="oni-event-row-text-speed">${kit.options(TEXT_SPEEDS, pickSpeed(row.textSpeed))}</select>
          </div>`,
         "Shout suits a boss or a yell. Slow types letter by letter and pauses on each full stop."
-      )
-    ),
-    collectFields: (rowEl, kit) => ({
-      speaker: String(kit.own(rowEl, ".oni-event-row-speaker")?.value ?? "").trim() || DEFAULT_SPEAKER,
-      text: String(kit.own(rowEl, ".oni-event-row-text")?.value ?? ""),
-      bubbleMode: pickStyle(kit.readText(rowEl, ".oni-event-row-text-style", "normal")),
-      textSpeed: pickSpeed(kit.readText(rowEl, ".oni-event-row-text-speed", "normal"))
-    })
+      ),
+      kit.field(
+        "Show as",
+        `<select class="oni-event-row-show-as">${kit.options(SHOW_AS, pickShowAs(row.showAs))}</select>`,
+        `<b>Message box</b>: a square text window at the bottom of the screen, seen by everyone.
+         <b>Auto</b> uses it when the speaker has no token on this scene (a voice, a narrator, someone off-stage).`
+      ),
+      `<div class="oni-event-row-box-wrap">${kit.field(
+        "Box portrait",
+        `${kit.fileInput("oni-event-row-portrait", noPortrait ? "" : portrait, "image", "Default: the speaker's picture")}
+         <label><input type="checkbox" class="oni-event-row-no-portrait" ${noPortrait ? "checked" : ""} /> No portrait</label>`,
+        "Only for the message box. Empty: the speaker's own picture."
+      )}${kit.field(
+        "Box look",
+        `<select class="oni-event-row-box-look">${kit.options(BOX_LOOKS, pickBoxLook(row.boxLook))}</select>`,
+        "Only for the message box. Over a picture suits a Show Picture scene."
+      )}</div>`
+      );
+
+      // The box fields only matter when the line can be a box.
+      const showAsEl = body.querySelector(".oni-event-row-show-as");
+      const sync = () => {
+        const wrap = body.querySelector(".oni-event-row-box-wrap");
+        if (wrap) wrap.hidden = showAsEl?.value === "bubble";
+      };
+      showAsEl?.addEventListener("change", sync);
+      sync();
+
+      return body;
+    },
+    collectFields: (rowEl, kit) => {
+      const noPortrait = !!kit.own(rowEl, ".oni-event-row-no-portrait")?.checked;
+      // The developer font option has no field: keep the one the row had.
+      const font = rowEl._rawRow?.font;
+      return {
+        speaker: String(kit.own(rowEl, ".oni-event-row-speaker")?.value ?? "").trim() || DEFAULT_SPEAKER,
+        text: String(kit.own(rowEl, ".oni-event-row-text")?.value ?? ""),
+        bubbleMode: pickStyle(kit.readText(rowEl, ".oni-event-row-text-style", "normal")),
+        textSpeed: pickSpeed(kit.readText(rowEl, ".oni-event-row-text-speed", "normal")),
+        showAs: pickShowAs(kit.readText(rowEl, ".oni-event-row-show-as", "bubble")),
+        portrait: noPortrait ? "none" : portraitField(kit.readText(rowEl, ".oni-event-row-portrait", "")),
+        boxLook: pickBoxLook(kit.readText(rowEl, ".oni-event-row-box-look", "auto")),
+        ...(typeof font === "string" && font.trim() ? { font } : {})
+      };
+    }
   });
 
   // ------------------------------------------------------------

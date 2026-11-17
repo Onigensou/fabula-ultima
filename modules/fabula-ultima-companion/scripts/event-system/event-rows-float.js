@@ -23,6 +23,9 @@
  * - Dimming the screen is not part of this action. Put Screen Effect: Dim
  *   before the passage; the event's end lifts it.
  * - The GM is shown the text (like a speech bubble), not the dim.
+ * - Developer font option: a row may carry `font` ("default" | "pixelify" |
+ *   a CSS font-family string). It goes to every client with the line. There
+ *   is no editor field; saving the row in the editor keeps it.
  *
  * Requires:
  * - event-logic.js, event-eventRegistry.js, event-flow.js, event-gameState.js
@@ -80,6 +83,8 @@
     row.nudgeY = Math.round(Logic.toNumber(row.nudgeY, 0));
     row.startFresh = row.startFresh === true;
     row.autoSeconds = Math.min(AUTO_MAX_SECONDS, Math.max(0, Logic.toNumber(row.autoSeconds, 0)));
+    // The developer font option is only kept when it is set.
+    if (typeof row.font !== "string" || !row.font.trim()) delete row.font;
   }
 
   // Where the line goes, as the dialogue system takes it.
@@ -131,6 +136,7 @@
         holdMs: autoMs > 0 ? autoMs : null,
         controlled: !!f,
         startFresh: row.startFresh,
+        font: typeof row.font === "string" ? row.font : null,
         ...placement(row, context)
       });
 
@@ -229,7 +235,9 @@
       nudgeX: Math.round(kit.readNumber(rowEl, ".oni-float-nudge-x", 0)),
       nudgeY: Math.round(kit.readNumber(rowEl, ".oni-float-nudge-y", 0)),
       startFresh: !!kit.own(rowEl, ".oni-float-fresh")?.checked,
-      autoSeconds: Math.min(AUTO_MAX_SECONDS, Math.max(0, kit.readNumber(rowEl, ".oni-float-auto", 0)))
+      autoSeconds: Math.min(AUTO_MAX_SECONDS, Math.max(0, kit.readNumber(rowEl, ".oni-float-auto", 0))),
+      // No field for the developer font option: keep the one the row had.
+      ...(typeof rowEl._rawRow?.font === "string" && rowEl._rawRow.font.trim() ? { font: rowEl._rawRow.font } : {})
     })
   });
 

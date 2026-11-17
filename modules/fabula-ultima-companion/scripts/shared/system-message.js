@@ -25,12 +25,19 @@
 // Per-line options: reveal "instant"|"type", advance "auto"|"press", enter,
 // hold (ms). Defaults: system-message-rules.js.
 //
+// Developer font option: `font` on a line, or on the call
+//   FU.SystemMessage.show(line, { font })  ·  queue(lines, { onShow, font })
+//   broadcast(lines, { font })
+// = "default" | "pixelify" | a CSS font-family string. It changes that
+// line's text only (an inline --oni-text-font, via FU.DialogUI
+// .applyTextFont); a broadcast sends it, so every client matches.
+//
 // show / queue are LOCAL to this client, which is what an animation script
 // wants (it already runs on every client). broadcast() is the GM-side call.
 // Nothing here gates the battle: a caller may await a line, nobody has to.
 // ============================================================================
 
-import { DEFAULTS, parseMarkup, holdMs, typeMs, normalizeMessage } from "./system-message-rules.js";
+import { DEFAULTS, parseMarkup, holdMs, typeMs, normalizeMessage, withFont } from "./system-message-rules.js";
 
 const NS = "fabula-ultima-companion";
 const SOCKET = `module.${NS}`;
@@ -188,6 +195,16 @@ function iconsReady(text) {
   return Promise.race([Promise.all(loads), sleep(ICON_WAIT_MS)]);
 }
 
+// ── font option ─────────────────────────────────────────────────────────
+// The dialog system's resolver (dialog-ui.js loads first, as a plain script).
+// Without it a line keeps the panel's own font.
+function applyFont(el, font) {
+  const ui = globalThis.FU?.DialogUI;
+  if (typeof ui?.applyTextFont === "function") { ui.applyTextFont(el, font); return; }
+  el.style.removeProperty("--oni-text-font");
+  el.style.removeProperty("font-family");
+}
+
 // ── one box ─────────────────────────────────────────────────────────────
 function buildBox(enter) {
   const el = document.createElement("div");
@@ -206,6 +223,8 @@ function fillBox(el, msg) {
   el.querySelector(".seal").hidden = msg.kind !== "alert";
   const text = el.querySelector(".text");
   text.textContent = "";
+  // The box is reused line to line: set (or clear) this line's font.
+  applyFont(text, msg.font);
   const chars = [];
   for (const seg of parseMarkup(msg.text)) {
     // {it:}: an item link — linked-text (lt-card.js) gives every a.fu-lt[data-uuid]
@@ -316,14 +335,14 @@ function enqueue(input, onShow) {
 }
 
 // ── public API ──────────────────────────────────────────────────────────
-function show(input) {
-  return enqueue(input);
+function show(input, { font } = {}) {
+  return enqueue(withFont(input, font)[0]);
 }
 
 // Lines in one box, in order. onShow(i) fires as line i appears — the hook an
 // animation uses to play its beat with the line. Resolves when the last closes.
-function queue(list, { onShow } = {}) {
-  const lines = Array.isArray(list) ? list : [list];
+function queue(list, { onShow, font } = {}) {
+  const lines = withFont(list, font);
   return Promise.all(lines.map((line, i) => enqueue(line, onShow ? () => onShow(i) : null))).then(() => {});
 }
 
@@ -334,8 +353,8 @@ function clear() {
 }
 
 // Every client, this one included. Lines only — callbacks do not cross the wire.
-function broadcast(list) {
-  const lines = Array.isArray(list) ? list : [list];
+function broadcast(list, { font } = {}) {
+  const lines = withFont(list, font);
   try { game.socket?.emit(SOCKET, { type: MSG_TYPE, lines }); } catch (e) { console.warn(TAG, "emit failed", e); }
   return queue(lines);
 }

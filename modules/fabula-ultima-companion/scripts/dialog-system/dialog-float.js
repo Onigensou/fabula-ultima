@@ -28,6 +28,10 @@
 // All of it stays inside the part of the window the player can see (not
 // under the chat sidebar, the scene controls or the hotbar).
 //
+// Font: Signika by default. payload.font (the developer font option:
+// "default" | "pixelify" | a CSS font-family string) changes that one line,
+// through FU.DialogUI.applyTextFont.
+//
 // API (added to FU.DialogUI):
 //   renderFloat(payload, { remote })   called by dialog-ui.js for mode "float"
 //   clearFloating({ broadcast, sceneId, fadeMs })
@@ -330,6 +334,9 @@
     line.className = "fu-float-line";
     line.id = id;
     line.innerHTML = `<span class="fu-typed"></span><span class="fu-float-next">&#9660;</span>`;
+    // payload.font: the developer font option, on this line only (the layer
+    // keeps its own Signika stack otherwise).
+    ui.applyTextFont?.(line, payload.font);
     stack.el.appendChild(line);
     place(stack);
 

@@ -4,7 +4,32 @@
 // - Installs a socket listener on startup (multi-client)
 // - Injects CSS once
 // - Renders the JRPG speech bubble UI (normal/shout/think)
+// - Renders the message box (payload.box): the JRPG square text window at
+//   the bottom of the screen, for a speaker with no token here
 // - Adds loud console logs so we can verify it loads on every client
+//
+// Three ways a line is drawn (all typed by runLine below, so they type at
+// the same pace, play the same blip and take presses the same way):
+//   bubble        over a speaker token (payload.tokenId), with a tail
+//   screen bubble payload.screenAnchor and no tokenId: the same bubble, no
+//                 tail, bottom of the screen (FU.Dialog.show screen:true)
+//   message box   payload.box = { look }: a square window bottom-centre, with
+//                 a portrait column, the name and a press arrow. Drawn on every
+//                 client of the scene, token or no token.
+//                 look "parchment"   the game's parchment (default)
+//                      "overPicture" dark see-through, for over a Show Picture
+//                 payload.mode still applies: shout = jagged box with a shake,
+//                 think = parchment with italic text.
+//                 It keeps the bubble's lifecycle: the element's id is the
+//                 bubbleId, it leaves the DOM when the line closes, and
+//                 control(bubbleId, "complete" | "close") drives it.
+//
+// Developer font option (payload.font, not in the event editor):
+//   "default" | "pixelify" | any CSS font-family string. resolveTextFont()
+//   turns it into a CSS value; applyTextFont() sets it as an inline
+//   --oni-text-font on the one element drawn, so nothing else changes. It
+//   rides the socket payload, so every client draws the same font.
+//   (styles/game-font.css: Signika is the default, Pixelify ships.)
 // ============================================================================
 
 (() => {
@@ -57,6 +82,80 @@
 
   const STYLE_ID = "fu-dialog-speech-style";
   const LAYER_ID = "fu-dialog-speech-layer";
+
+  // The event letterbox (event-rows-media.js draws it; read from the DOM
+  // only). While its bottom bar is up the message box sits above it.
+  const LETTERBOX_BOTTOM_SELECTOR = "#oni-event-letterbox-layer > .oni-event-letterbox-bar.bottom";
+  const LETTERBOX_POLL_MS = 200;
+
+  // ------------------------------------------------------------
+  // Pure rules (no DOM): the font option and the message box look.
+  // Tested in scripts/dialog-system/message-box.test.mjs.
+  // ------------------------------------------------------------
+
+  // Named fonts a line can ask for. "default" = no override (the game font,
+  // --oni-text-font from styles/game-font.css).
+  const FONT_KEYWORDS = {
+    default: null,
+    pixelify: "var(--oni-text-font-pixelify)"
+  };
+
+  // font option -> a CSS font-family value, or null for "leave it alone".
+  // Anything that is not a keyword is taken as a CSS font-family string
+  // ('"Cinzel", serif'); characters that could end the declaration are dropped.
+  function resolveTextFont(font) {
+    if (font === null || font === undefined || typeof font === "object") return null;
+    const raw = String(font).trim();
+    if (!raw) return null;
+    const key = raw.toLowerCase();
+    if (Object.prototype.hasOwnProperty.call(FONT_KEYWORDS, key)) return FONT_KEYWORDS[key];
+    const safe = raw.replace(/[;{}<>\\]/g, "").trim();
+    return safe || null;
+  }
+
+  // The message box's look. "parchment" and "overPicture" are kept; anything
+  // else ("auto") is overPicture while a picture is up, parchment otherwise.
+  const BOX_LOOKS = ["parchment", "overPicture"];
+  function resolveBoxLook(look, pictureShown = false) {
+    if (BOX_LOOKS.includes(look)) return look;
+    return pictureShown ? "overPicture" : "parchment";
+  }
+
+  // Is a Show Picture up on this client? (event-rows-picture.js adds the
+  // API; without it, no.)
+  function picturesShown() {
+    try { return !!window.oni?.EventSystem?.Pictures?.anyShown?.(); }
+    catch (_) { return false; }
+  }
+
+  // The font option on one element: an inline --oni-text-font (and the
+  // family that reads it), or nothing when the line has no font.
+  function applyTextFont(el, font) {
+    if (!el?.style) return null;
+    const value = resolveTextFont(font);
+    if (!value) {
+      el.style.removeProperty("--oni-text-font");
+      el.style.removeProperty("font-family");
+      el.style.removeProperty("font-variant-ligatures");
+      return null;
+    }
+    el.style.setProperty("--oni-text-font", value);
+    el.style.setProperty("font-family", "var(--oni-text-font)");
+    el.style.setProperty("font-variant-ligatures", "none");
+    return value;
+  }
+
+  // The event letterbox's bottom bar is up (and not on its way out: going
+  // out it is set to height 0 at once, then removed).
+  function letterboxUp() {
+    const bar = document.querySelector(LETTERBOX_BOTTOM_SELECTOR);
+    return !!bar && (parseFloat(bar.style.height) || 0) > 0;
+  }
+
+  const reducedMotion = () => {
+    try { return !!window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches; }
+    catch (_) { return false; }
+  };
 
   const store = (globalThis[STORE_KEY] ??= {
     installed: false,
@@ -246,6 +345,64 @@
 .fu-think-tail .dot.d1 { width:22px; height:22px; }
 .fu-think-tail .dot.d2 { width:16px; height:16px; }
 .fu-think-tail .dot.d3 { width:10px; height:10px; }
+
+/* ===== Message box (payload.box): JRPG square text window ===========
+   Ported from the approved mockup (user, 2026-11-18). Centred with auto
+   margins, so transform stays free for the shout's shake. */
+.fu-mbox { position:absolute; left:0; right:0; margin:0 auto; bottom:5vh; box-sizing:border-box;
+  width:min(74vw, 900px); display:grid; grid-template-columns:auto 1fr; gap:2%; align-items:start;
+  padding:1.2% 1.6%; background:#ece2c6; color:var(--oni-text-ink, #5b4f40);
+  border:3px solid #6a4a26; box-shadow:0 0 0 2px #2a1a0a;
+  font:500 clamp(11px, 1.55vw, 21px)/1.4 var(--oni-text-font, "Signika", sans-serif);
+  font-variant-ligatures:none; cursor:pointer; pointer-events:auto;
+  transition:bottom .25s ease-out; }
+.fu-mbox.no-portrait { grid-template-columns:1fr; }
+.fu-mbox-portrait { display:block; width:clamp(36px, 6.5vw, 92px); aspect-ratio:1; object-fit:cover;
+  object-position:50% 12%; background:#d7c9a3; border:2px solid #6a4a26; image-rendering:pixelated; }
+.fu-mbox-body { min-width:0; }
+.fu-mbox-name { font-weight:700; color:#7a2e18; margin-bottom:2px; }
+.fu-mbox-text { white-space:pre-wrap; overflow-wrap:anywhere; min-height:2.8em; }
+.fu-mbox-next { position:absolute; right:10px; bottom:6px; font-size:.8em; line-height:1; color:#7a5a30;
+  visibility:hidden; pointer-events:none; }
+.fu-mbox.fu-awaiting .fu-mbox-next { visibility:visible; animation:fu-mbox-bob .8s ease-in-out infinite alternate; }
+@keyframes fu-mbox-bob { from { transform:translateY(0) } to { transform:translateY(3px) } }
+
+.fu-mbox-enter { animation:fu-mbox-in .16s ease-out both; }
+.fu-mbox-exit  { animation:fu-mbox-out .15s ease-in both; }
+@keyframes fu-mbox-in  { from { opacity:0 } to { opacity:1 } }
+@keyframes fu-mbox-out { from { opacity:1 } to { opacity:0 } }
+
+/* Think: parchment, italic text. */
+.fu-mbox.mode-think .fu-mbox-text { font-style:italic; }
+
+/* Over a picture: dark and see-through. */
+.fu-mbox.look-over { bottom:3vh; width:min(80vw, 980px); background:rgba(10,8,16,.72); color:#f1ead8;
+  border:1px solid rgba(220,200,160,.45); box-shadow:none; }
+.fu-mbox.look-over .fu-mbox-text { color:#f1ead8; }
+.fu-mbox.look-over .fu-mbox-name { color:#f2cf7a; }
+.fu-mbox.look-over .fu-mbox-portrait { background:rgba(0,0,0,.35); border-color:rgba(220,200,160,.5); }
+.fu-mbox.look-over .fu-mbox-next { color:#e8d7a8; }
+.fu-mbox.look-over .fu-hint { color:#ffd76a; }
+
+/* Shout: a jagged bright box that shakes as it appears. */
+.fu-mbox.mode-shout { background:#fff6dc; border-color:#8a1e10; padding:2.2% 3%;
+  clip-path:polygon(0% 8%, 4% 0%, 9% 9%, 15% 0%, 21% 8%, 28% 0%, 35% 8%, 42% 0%, 49% 9%, 56% 0%, 63% 8%, 70% 0%, 77% 9%, 84% 0%, 91% 8%, 96% 0%, 100% 9%, 98% 50%, 100% 91%, 96% 100%, 91% 92%, 84% 100%, 77% 91%, 70% 100%, 63% 92%, 56% 100%, 49% 91%, 42% 100%, 35% 92%, 28% 100%, 21% 92%, 15% 100%, 9% 91%, 4% 100%, 0% 92%, 2% 50%); }
+.fu-mbox.mode-shout .fu-mbox-text { font-weight:700; color:var(--oni-text-ink, #5b4f40); }
+.fu-mbox.mode-shout .fu-mbox-name { color:#7a2e18; }
+.fu-mbox.mode-shout .fu-mbox-next { color:#7a5a30; }
+.fu-mbox.mode-shout.fu-mbox-enter { animation:fu-mbox-shake .26s linear both; }
+@keyframes fu-mbox-shake {
+  0% { transform:translateX(0) } 15% { transform:translateX(-6px) } 30% { transform:translateX(6px) }
+  45% { transform:translateX(-6px) } 60% { transform:translateX(6px) } 80% { transform:translateX(-3px) }
+  100% { transform:translateX(0) }
+}
+
+/* Above the event letterbox's bottom bar while it is up (after look-over, so it wins). */
+.fu-mbox.fu-mbox-letterbox { bottom:13vh; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fu-mbox, .fu-mbox-next, .fu-mbox.fu-awaiting .fu-mbox-next { animation:none !important; transition:none !important; }
+}
       `;
       document.head.appendChild(css);
       debug("CSS injected", STYLE_ID);
@@ -465,6 +622,8 @@
     if (isShout) box.classList.add("mode-shout");
     if (isThink) box.classList.add("mode-think");
     box.id = id;
+    // payload.font: the developer font option, on this bubble only.
+    applyTextFont(box, payload.font);
 
     box.innerHTML = `
       ${portraitSrc ? `<div class="fu-left"><img alt="portrait" src="${htmlEscape(portraitSrc)}"/></div>` : ""}
@@ -596,6 +755,93 @@
     }
   }
 
+  // The message box (payload.box): a square window at the bottom centre of
+  // the screen. Needs no token, so every client of the scene draws it. The
+  // sender decides everything (look, portrait, name), so all clients match.
+  //   payload.box.look   "parchment" | "overPicture"
+  //   payload.portraitSrc  the picture, or empty for no portrait column
+  //   payload.name         the speaker's name; empty hides the name line
+  function renderMessageBox(payload, { remote = false } = {}) {
+    const layer = ensureLayerAndStyles();
+
+    const mode = payload.mode || "normal";
+    const look = resolveBoxLook(payload.box?.look, false);
+    const id = payload.bubbleId || `fu-bubble-${randomID(8)}`;
+    const portraitSrc = String(payload.portraitSrc || "").trim();
+    const name = String(payload.name || "").trim();
+
+    const box = document.createElement("div");
+    box.className = `fu-mbox fu-mbox-enter ${look === "overPicture" ? "look-over" : "look-parchment"}`;
+    if (mode === "shout") box.classList.add("mode-shout");
+    if (mode === "think") box.classList.add("mode-think");
+    if (!portraitSrc) box.classList.add("no-portrait");
+    box.id = id;
+    applyTextFont(box, payload.font);
+
+    box.innerHTML = `
+      ${portraitSrc ? `<img class="fu-mbox-portrait" alt="" src="${htmlEscape(portraitSrc)}"/>` : ""}
+      <div class="fu-mbox-body">
+        ${name ? `<div class="fu-mbox-name">${htmlEscape(name)}</div>` : ""}
+        <div class="fu-mbox-text"><span class="fu-typed"></span></div>
+      </div>
+      <div class="fu-mbox-next">&#9660;</div>
+    `;
+
+    // A picture that does not load leaves no broken frame: the column goes.
+    const img = box.querySelector(".fu-mbox-portrait");
+    img?.addEventListener("error", () => {
+      img.remove();
+      box.classList.add("no-portrait");
+    }, { once: true });
+
+    // Above the letterbox while it is up; it can come or go mid-line.
+    const syncLetterbox = () => box.classList.toggle("fu-mbox-letterbox", letterboxUp());
+    syncLetterbox();
+    layer.appendChild(box);
+    const letterboxTimer = setInterval(syncLetterbox, LETTERBOX_POLL_MS);
+
+    // Typing, the blip, presses and closing: the same as every other line.
+    const line = runLine({
+      box,
+      typed: box.querySelector(".fu-typed"),
+      payload,
+      remote,
+      id,
+      leave: () => {
+        if (reducedMotion() || document.visibilityState === "hidden") { cleanup(); return; }
+        box.classList.remove("fu-mbox-enter");
+        box.classList.add("fu-mbox-exit");
+
+        const finish = () => {
+          box.removeEventListener("animationend", finish);
+          cleanup();
+        };
+        box.addEventListener("animationend", finish);
+        // A hidden window does not run the exit animation; do not wait on it.
+        setTimeout(finish, 600);
+      }
+    });
+
+    // The box belongs to its scene.
+    const onTearDown = () => line.close();
+    Hooks.on("canvasTearDown", onTearDown);
+
+    let cleaned = false;
+    function cleanup() {
+      if (cleaned) return;
+      cleaned = true;
+      try {
+        line.dispose();
+        clearInterval(letterboxTimer);
+        Hooks.off("canvasTearDown", onTearDown);
+        box.remove();
+
+        const layerEl = document.getElementById(LAYER_ID);
+        if (layerEl && !layerEl.children.length) layerEl.remove();
+      } catch (_) {}
+    }
+  }
+
   function applyControl(bubbleId, action) {
     const id = String(bubbleId || "");
     if (!id) return false;
@@ -681,6 +927,12 @@
           return;
         }
 
+        // The message box needs no token: every client of the scene draws it.
+        if (payload.box) {
+          renderMessageBox(payload, { remote: true });
+          return;
+        }
+
         if (payload.screenAnchor && !payload.tokenId) {
           await renderBubble(null, payload, { remote: true });
           return;
@@ -718,6 +970,14 @@
     linePace,
     PACES,
     randomID,
+    // The developer font option and the message box look (pure; shared with
+    // dialog-core.js, dialog-float.js and FU.SystemMessage).
+    resolveTextFont,
+    applyTextFont,
+    resolveBoxLook,
+    picturesShown,
+    FONT_KEYWORDS,
+    BOX_LOOKS,
     isShowing: (bubbleId) => store.bubbles.has(String(bubbleId || "")),
     isDone: (bubbleId) => !!store.bubbles.get(String(bubbleId || ""))?.isDone(),
     renderFromPayload: async (payload, { remote = false } = {}) => {
@@ -730,6 +990,7 @@
       }
 
       if (!canvas?.scene?.id || canvas.scene.id !== payload.sceneId) return;
+      if (payload?.box) return renderMessageBox(payload, { remote });
       if (payload?.screenAnchor && !payload?.tokenId) return renderBubble(null, payload, { remote });
       if (!payload?.tokenId) return;
 

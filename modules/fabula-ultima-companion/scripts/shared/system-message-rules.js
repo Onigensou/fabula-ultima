@@ -92,5 +92,27 @@ export function normalizeMessage(input, cfg = DEFAULTS) {
     text: String(m.text ?? ""),
     kind, reveal, advance, enter, hold,
     speaker: m.speaker ? String(m.speaker) : (kind === "speech" ? "" : null),
+    font: fontOf(m.font),
   };
+}
+
+// The developer font option ("default" | "pixelify" | a CSS font-family
+// string), kept as given; empty = none. The runtime resolves it with
+// FU.DialogUI.resolveTextFont (dialog-ui.js), the one shared resolver.
+export function fontOf(font) {
+  return typeof font === "string" && font.trim() ? font.trim() : null;
+}
+
+// Lines (strings or objects) with a call-wide font filled in where a line
+// has none of its own. Used by show / queue / broadcast, so a broadcast
+// carries the font over the wire and every client draws the same.
+export function withFont(lines, font) {
+  const f = fontOf(font);
+  const list = Array.isArray(lines) ? lines : [lines];
+  if (!f) return list;
+  return list.map((line) => {
+    const m = typeof line === "string" ? { text: line } : { ...(line ?? {}) };
+    if (!fontOf(m.font)) m.font = f;
+    return m;
+  });
 }

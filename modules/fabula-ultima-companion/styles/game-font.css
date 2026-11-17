@@ -1,8 +1,16 @@
 /* Locked in-game text font (GM + players).
  *
- * Dialogue, examine, event text, pose spots, speech bubbles, party talk,
- * offer box and crafting marks all read --oni-text-font. The font ships
- * with the module so every client has it from startup.
+ * Dialogue, examine, event text, pose spots, speech bubbles, the message box,
+ * party talk, offer box and crafting marks all read --oni-text-font.
+ *
+ * Default (user decision 2026-11-18): Signika, then M PLUS Rounded 1c.
+ * Pixelify Sans still ships with the module (the @font-face below), so every
+ * client has it from startup; it is available per line through the
+ * developer font option (`font: "pixelify"` on FU.Dialog.show, floating
+ * text, a Show Text row's data, FU.SystemMessage), which sets
+ * --oni-text-font on that one element to --oni-text-font-pixelify.
+ * Any other CSS font-family string works there too (dialog-ui.js
+ * resolveTextFont). It is not in the event editor on purpose.
  *
  * Why: those rules used to list "Cinzel" first. Cinzel is only downloaded
  * when a feature like the battle turn cue or fishing opens, so the text
@@ -12,8 +20,8 @@
  * Every rule using it also sets font-variant-ligatures: none. Pixelify's
  * "fi"/"fl" ligatures read as "A" ("first" -> "Arst"), and Chrome ignores
  * font-feature-settings inside @font-face, so it can't be switched off here.
+ * Kept for Signika too, so switching a line to Pixelify needs nothing else.
  *
- * Fallback order = user ranking: Pixelify Sans > Signika > M PLUS Rounded 1c.
  * Pixelify Sans: SIL OFL 1.1, see assets/fonts/PixelifySans-OFL.txt.
  */
 @font-face {
@@ -25,7 +33,9 @@
 }
 
 :root {
-  --oni-text-font: "Pixelify Sans", "Signika", "M PLUS Rounded 1c", system-ui, sans-serif;
+  --oni-text-font: "Signika", "M PLUS Rounded 1c", system-ui, sans-serif;
+  /* The pixel font, for a line that asks for it (font: "pixelify"). */
+  --oni-text-font-pixelify: "Pixelify Sans", "Signika", "M PLUS Rounded 1c", system-ui, sans-serif;
   /* Body ink on parchment boxes: warm brown instead of near-black so the
      pixel strokes read lighter (user pick 11-17). Names stay dark + bold. */
   --oni-text-ink: #5b4f40;

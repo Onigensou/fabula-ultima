@@ -4,6 +4,22 @@
 // - Provides FU.Dialog.show(...) for other scripts to call
 // - No user prompts, no UI building here
 // - UI/rendering is delegated to FU.DialogUI
+//
+// FU.Dialog.show options (besides the speaker / text / timing ones below):
+//   font       developer font option: "default" | "pixelify" | a CSS
+//              font-family string. That line only; every client draws it
+//              (dialog-ui.js resolveTextFont). Not in the event editor.
+//   box        true: the message box (dialog-ui.js), the JRPG square window
+//              at the bottom of the screen. No token is needed or looked for
+//              (no "selected token" guess); tokenId / actorId only supply
+//              the default name and portrait.
+//   boxLook    with box: "auto" (default) | "parchment" | "overPicture".
+//              auto = overPicture while a Show Picture is up on this client.
+//   portraitSrc  null = the default (actor picture, then the token's unless
+//              it is a video); with box, "none" = no portrait column.
+//   screen     true: with no speaker token, the bubble sits at the bottom of
+//              the screen (no tail) instead of warning.
+// FU.Dialog.showFloating takes font too.
 // ============================================================================
 
 (() => {
@@ -52,6 +68,23 @@
       "icons/svg/mystery-man.svg"
     );
   }
+
+  // The portrait is an <img>: a video (an animated token) cannot show in it.
+  const isVideoSrc = (src) => /\.(webm|mp4|m4v|ogv)(\?.*)?$/i.test(String(src || ""));
+
+  // The message box's default portrait: the actor's picture, then the
+  // token's unless it is a video; none at all is fine (the column goes).
+  function boxPortraitSrc(portraitSrc, token, actor) {
+    if (portraitSrc === "none" || portraitSrc === false) return null;
+    const given = String(portraitSrc ?? "").trim();
+    if (given && !isVideoSrc(given)) return given;
+    const tokenSrc = token?.document?.texture?.src || token?.texture?.src || "";
+    return [actor?.img, isVideoSrc(tokenSrc) ? "" : tokenSrc].find(s => s && !isVideoSrc(s)) || null;
+  }
+
+  // The developer font option, kept as given (each client resolves it with
+  // FU.DialogUI.resolveTextFont); empty means none.
+  const fontOption = (font) => (typeof font === "string" && font.trim() ? font.trim() : null);
 
   function debug(...args) {
     const d = globalThis?.FU?.Dialog?.DEBUG;
@@ -114,12 +147,57 @@ async function renderLocal(payload) {
       maxWaitMs = null,
       controlled = false,
 
+      // developer font option (see the header)
+      font = null,
+
+      // the message box (see the header)
+      box = false,
+      boxLook = "auto",
+
       // optional: override sceneId (rare)
       sceneId = canvas?.scene?.id ?? null,
     } = opts;
 
     if (!sceneId) throw new Error("No active sceneId (canvas not ready?).");
     if (!text || !String(text).trim()) return;
+
+    if (box === true) {
+      // Only an explicit speaker: the box must not borrow a selected token.
+      const token = tokenId ? (getTokenOnCanvas(tokenId) ?? null) : null;
+      const actor = (actorId ? game.actors?.get(actorId) : null) ?? token?.actor ?? null;
+      const ui = globalThis.FU?.DialogUI;
+      const look = ui?.resolveBoxLook
+        ? ui.resolveBoxLook(boxLook, ui.picturesShown?.() ?? false)
+        : (boxLook === "overPicture" ? "overPicture" : "parchment");
+      const payload = {
+        bubbleId: `fu-bubble-${randomID(12)}`,
+        sceneId,
+        tokenId: token?.document?.id ?? null,
+        screenAnchor: true,
+        box: { look },
+        actorId: actor?.id ?? null,
+        name: String(name ?? actor?.name ?? ""),
+        text: String(text),
+        mode,
+        speed: Math.max(1, Number(speed) || 28),
+        pace: pace ? String(pace) : null,
+        portraitSrc: boxPortraitSrc(portraitSrc, token, actor),
+        font: fontOption(font),
+        waitForInput: waitForInput === true,
+        maxWaitMs: Number(maxWaitMs) > 0 ? Number(maxWaitMs) : null,
+        controlled: controlled === true,
+        fromUserId: game.user.id,
+        fromUserName: game.user.name,
+        createdAt: Date.now(),
+      };
+      debug("show box payload", payload);
+      await renderLocal(payload);
+      if (broadcast) {
+        try { await emitToSocket(payload); }
+        catch (e) { console.warn("[FU Dialog:Core] broadcast failed:", e); }
+      }
+      return payload;
+    }
 
     const token = pickSpeakerToken({ tokenId, actorId });
     if (!token) {
@@ -143,6 +221,7 @@ async function renderLocal(payload) {
         speed: Math.max(1, Number(speed) || 28),
         pace: pace ? String(pace) : null,
         portraitSrc: portraitSrc ?? actor?.img ?? null,
+        font: fontOption(font),
         waitForInput: waitForInput === true,
         maxWaitMs: Number(maxWaitMs) > 0 ? Number(maxWaitMs) : null,
         controlled: controlled === true,
@@ -169,6 +248,7 @@ async function renderLocal(payload) {
       speed: Math.max(1, Number(speed) || 28),
       pace: pace ? String(pace) : null,
       portraitSrc: portraitSrc ?? derivePortraitSrc(token),
+      font: fontOption(font),
       waitForInput: waitForInput === true,
       maxWaitMs: Number(maxWaitMs) > 0 ? Number(maxWaitMs) : null,
       controlled: controlled === true,
@@ -207,6 +287,7 @@ async function renderLocal(payload) {
   //   target        { kind: "token" | "tile", id } or { kind: "point", x, y }:
   //                 beside that thing on the map, instead of a screen anchor
   //   startFresh    fade whatever is floating before this line
+  //   font          developer font option, as for show()
   //
   // Returns { ...payload, finished }: finished resolves when the line has
   // closed HERE. The line stays on screen after that; FU.DialogUI
@@ -224,6 +305,7 @@ async function renderLocal(payload) {
       nudge = null,
       target = null,
       startFresh = false,
+      font = null,
       sceneId = canvas?.scene?.id ?? null,
     } = opts;
 
@@ -240,6 +322,7 @@ async function renderLocal(payload) {
       maxWaitMs: Number(maxWaitMs) > 0 ? Number(maxWaitMs) : null,
       holdMs: Number(holdMs) > 0 ? Number(holdMs) : null,
       controlled: controlled === true,
+      font: fontOption(font),
       float: {
         anchor: String(anchor || "tc"),
         nudge: nudge ? { x: Number(nudge.x) || 0, y: Number(nudge.y) || 0 } : null,
