@@ -9,7 +9,7 @@
  *     get nothing.
  *  2. Existing dungeon tiles that teleport to an exploration map, per the
  *     user-approved audit and calls (2026-11-17): the Overworld's 7 place
- *     nodes On, Sealed Cavern's way back to the Nether Bridge After visit,
+ *     nodes On, Sealed Cavern's Event (to the Great Seal) After visit,
  *     Winding Trail's Maelstrom Confluence tile (the current one; the old
  *     Waterfall Trail spot became the Plasma Field story tile) On. Exit doors
  *     back to an entrance hub stay off.
@@ -39,7 +39,7 @@ const TILES = [
   ["KvNYZ6DkF9IK3U6h", "xZO7bh6UmJKpMmPk", "on",         "Chain Bridges: Story -> Hatchery"],
   ["iQ026ac7nbWz8Mnr", "DbsLHvAlZZCF5mUX", "on",         "Treasury: Final Story -> Treasure Hoard"],
   // User calls 2026-11-17
-  ["52LLgHZIyAXBrbMq", "7Votn2FymkL4dw9l", "afterVisit", "Sealed Cavern: Event -> Nether Bridge (secret area's way back)"],
+  ["52LLgHZIyAXBrbMq", "7Votn2FymkL4dw9l", "afterVisit", "Sealed Cavern: Event -> The Great Seal (Nidhogg; surprise)"],
   ["8ZqllaT165aEOEOn", "1pGpqDXOEbRuktpc", "on",         "Winding Trail: Story art (named Blank) -> Maelstrom Confluence (current spot)"],
   ["ozujmDgZuATRvJXh", "11zDhVTxp5oA1LxM", "on",         "Overworld: Door -> Wyrmwood - Entrance"],
   ["ozujmDgZuATRvJXh", "9qA6DIADFBc3AeN6", "on",         "Overworld: Door -> Fafnir Castle - Entrance"],

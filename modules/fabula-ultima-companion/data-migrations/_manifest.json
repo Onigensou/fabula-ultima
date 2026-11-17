@@ -649,6 +649,10 @@
     {
       "key": "2026-11-17-place-badge",
       "path": "data-migrations/2026-11-17-place-badge.js"
+    },
+    {
+      "key": "2026-11-17-sealed-cavern-wiring",
+      "path": "data-migrations/2026-11-17-sealed-cavern-wiring.js"
     }
   ]
 }
