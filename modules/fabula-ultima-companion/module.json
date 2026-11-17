@@ -2,7 +2,7 @@
   "id": "fabula-ultima-companion",
   "title": "FabulaUltimaCompanion",
   "description": "Adds custom hooks and cool functionality.",
-  "version": "1.0.622",
+  "version": "1.0.623",
   "compatibility": {
     "minimum": "12",
     "verified": "12"
@@ -356,6 +356,7 @@
     "scripts/event-system/event-rows-jump.js",
     "scripts/event-system/event-rows-code.js",
     "scripts/event-system/event-rows-pause.js",
+    "scripts/event-system/event-rows-minigame.js",
     "scripts/event-system/event-rows-emote.js",
     "scripts/event-system/event-rows-lightning.js",
     "scripts/event-system/event-rows-banner.js",
@@ -586,6 +587,7 @@
     "scripts/stealth-system/sm-bgm.js",
     "scripts/stealth-system/sm-gm-button.js",
     "scripts/stealth-system/sm-boot.js",
+    "scripts/minigame-system/mg-boot.js",
     "scripts/lint/skill-validator-bridge.js",
     "scripts/skill-forge/skill-forge-app.js",
     "scripts/area-panel/area-panel-core.js",

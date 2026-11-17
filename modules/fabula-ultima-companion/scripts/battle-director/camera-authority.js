@@ -293,7 +293,7 @@ function watchSidebar() {
 // anyway; this starts them on the party instead, with the same sidebar offset
 // so the two agree and nothing drifts afterwards.
 
-const NO_PARTY_FOCUS_MODES = new Set(["conflict", "theatre", "stealth", "none"]);
+const NO_PARTY_FOCUS_MODES = new Set(["conflict", "theatre", "stealth", "none", "minigame"]);
 
 async function findPartyToken() {
   const res = await globalThis.FUCompanion?.api?.getCurrentGameDb?.();

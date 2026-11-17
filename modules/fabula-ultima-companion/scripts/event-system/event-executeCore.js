@@ -377,6 +377,20 @@
   //                availability, party-token and range gates; does not mark the
   //                event as run (presets replay; the tile keeps its own log).
   //   onRowResult  (row, result) after every row, nested rows included.
+  // The asking player's own character token on the scene the GM is viewing
+  // (their linked character first, else a party member they own). Null when
+  // the GM is looking at another scene: then there is nothing to measure.
+  function requesterTokenOn(sceneId, requesterId) {
+    if (!requesterId || canvas?.scene?.id !== sceneId) return null;
+    const user = game.users?.get(requesterId);
+    if (!user || user.isGM) return null;
+    const tokens = canvas.tokens?.placeables ?? [];
+    const linked = user.character ? tokens.find(t => t?.actor?.id === user.character.id) : null;
+    if (linked) return linked;
+    const party = globalThis.FUCompanion?.api?.Spectator?.partyActorIds?.() ?? [];
+    return tokens.find(t => t?.actor && party.includes(t.actor.id) && t.actor.testUserPermission?.(user, "OWNER")) ?? null;
+  }
+
   async function gmExecuteEventTile({ sceneId, tileId, requesterId }, opts = {}) {
     const preset = opts?.preset === true;
     const onRowResult = typeof opts?.onRowResult === "function" ? opts.onRowResult : null;
@@ -434,7 +448,10 @@
       }
 
       // A preset plays on a theatre scene, where the party has no token.
-      const partyToken = await resolvePartyToken().catch(() => null);
+      // A camp has none either: each member walks their own token there, so a
+      // player talking to an NPC in camp is judged by their own character's
+      // token (without this every camp Talk was refused as "noPartyToken").
+      const partyToken = (await resolvePartyToken().catch(() => null)) ?? requesterTokenOn(safeSceneId, requesterId);
       if (!partyToken && !preset) {
         DBG.warn(DEBUG_SCOPE, "Execution blocked because no party token could be resolved.", { tileId: safeTileId });
         return { ok: false, reason: "noPartyToken", tileId: safeTileId };
