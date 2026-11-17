@@ -602,7 +602,8 @@
   "styles": [
     "styles/style.css",
     "styles/shop-content-links.css",
-    "styles/linked-text.css"
+    "styles/linked-text.css",
+    "styles/game-font.css"
   ],
   "packs": [],
   "manifest": "https://raw.githubusercontent.com/Onigensou/FabulaUltimaCompanion/refs/heads/main/module.json",

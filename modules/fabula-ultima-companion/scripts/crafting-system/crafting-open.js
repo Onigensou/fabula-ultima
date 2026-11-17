@@ -154,7 +154,7 @@ function injectStyles() {
   transform: translate(-50%, -50%) scale(0.75); transform-origin: 50% 100%; opacity: 0;
   transition: transform 160ms ease-out, opacity 160ms ease-out;
 }
-.oni-craft-spot-btn .mark { font-family: "Cinzel","Signika",var(--font-primary,"Signika"),system-ui,sans-serif;
+.oni-craft-spot-btn .mark { font-family: var(--oni-text-font, "Signika", sans-serif); font-variant-ligatures: none;
   font-weight: 900; font-size: 20px; line-height: 1; color: rgba(20,16,10,0.95); transform: translateY(-1px); }
 .oni-craft-spot-btn.is-visible { transform: translate(-50%, -50%) scale(1); opacity: 1; }
 .oni-craft-spot-btn.is-visible:hover { transform: translate(-50%, -50%) scale(1.06); }

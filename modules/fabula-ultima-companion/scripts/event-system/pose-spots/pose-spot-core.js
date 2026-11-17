@@ -464,7 +464,7 @@
   transition: transform 160ms ease-out, opacity 160ms ease-out;
 }
 .oni-pose-btn .mark {
-  font-family: "Cinzel","Signika",var(--font-primary,"Signika"),system-ui,sans-serif;
+  font-family: var(--oni-text-font, "Signika", sans-serif); font-variant-ligatures: none;
   font-weight: 900; font-size: 20px; line-height: 1; color: rgba(20,16,10,0.95); transform: translateY(-1px);
 }
 .oni-pose-btn.is-visible { transform: translate(-50%, -50%) scale(1); opacity: 1; }

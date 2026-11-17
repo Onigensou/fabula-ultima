@@ -127,7 +127,7 @@
 }
 
 .${C.INTERACT_BUTTON_CLASS || "oni-event-btn"} .mark {
-  font-family: "Cinzel","Signika",var(--font-primary,"Signika"),system-ui,sans-serif;
+  font-family: var(--oni-text-font, "Signika", sans-serif); font-variant-ligatures: none;
   font-weight: 900;
   font-size: 20px;
   line-height: 1;

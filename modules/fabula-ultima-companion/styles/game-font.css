@@ -1,0 +1,29 @@
+/* Locked in-game text font (GM + players).
+ *
+ * Dialogue, examine, event text, pose spots, speech bubbles, party talk,
+ * offer box and crafting marks all read --oni-text-font. The font ships
+ * with the module so every client has it from startup.
+ *
+ * Why: those rules used to list "Cinzel" first. Cinzel is only downloaded
+ * when a feature like the battle turn cue or fishing opens, so the text
+ * silently switched from Signika to all-caps Cinzel mid-session.
+ * Never put Cinzel in this stack.
+ *
+ * Every rule using it also sets font-variant-ligatures: none. Pixelify's
+ * "fi"/"fl" ligatures read as "A" ("first" -> "Arst"), and Chrome ignores
+ * font-feature-settings inside @font-face, so it can't be switched off here.
+ *
+ * Fallback order = user ranking: Pixelify Sans > Signika > M PLUS Rounded 1c.
+ * Pixelify Sans: SIL OFL 1.1, see assets/fonts/PixelifySans-OFL.txt.
+ */
+@font-face {
+  font-family: "Pixelify Sans";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("../assets/fonts/PixelifySans-wght.ttf") format("truetype");
+}
+
+:root {
+  --oni-text-font: "Pixelify Sans", "Signika", "M PLUS Rounded 1c", system-ui, sans-serif;
+}

@@ -123,7 +123,7 @@ Hooks.once("ready", () => {
   transform-origin: 50% 100%;
 }
 .oni-examine-btn .mark{
-  font-family: "Cinzel","Signika",var(--font-primary,"Signika"),system-ui,sans-serif;
+  font-family: var(--oni-text-font, "Signika", sans-serif); font-variant-ligatures: none;
   font-weight: 900; font-size: 20px; line-height: 1;
   color: rgba(20,16,10,0.95);
   transform: translateY(-1px);
@@ -197,7 +197,7 @@ Hooks.once("ready", () => {
         css.id = STYLE_ID;
         css.textContent = `
 #${LAYER_ID} { position: fixed; inset: 0; pointer-events: none; z-index: 100000;
-  font-family: "Cinzel","Signika",var(--font-primary,"Signika"),system-ui,sans-serif; }
+  font-family: var(--oni-text-font, "Signika", sans-serif); font-variant-ligatures: none; }
 .fft-bubble { position: absolute; pointer-events: auto; display: flex; align-items: stretch;
   max-width: min(${MAX_BUBBLE_WIDTH}px, 92vw); min-width: ${MIN_BUBBLE_WIDTH}px; }
 .fft-enter { animation: fft-grow .18s ease-out both; }

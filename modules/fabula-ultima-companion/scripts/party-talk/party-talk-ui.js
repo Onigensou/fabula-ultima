@@ -690,7 +690,7 @@ function injectStyles() {
 .pt-lines p:lang(th), .pt-log span:lang(th) { line-height: 1.6; }
 .pt-lines p:lang(ja), .pt-log span:lang(ja) { line-break: strict; }
 .pt-act-inline { font-style: italic; opacity: .78; }
-.pt-act-name { font-style: normal; font-family: "Cinzel", "Signika", serif; font-weight: 700; font-size: .9em; letter-spacing: .03em; }
+.pt-act-name { font-style: normal; font-family: var(--oni-text-font, "Signika", sans-serif); font-variant-ligatures: none; font-weight: 700; font-size: .9em; letter-spacing: .03em; }
 
 /* modes (Paper shapes; other styles override below) */
 .pt-talk.mode-shout .pt-bg i { border-radius: 0;
@@ -813,13 +813,13 @@ function injectStyles() {
 /* talk log */
 #${LAYER_ID} .pt-log { position: absolute; top: ${u(5)}; left: ${u(1.6)}; bottom: ${u(1.6)}; width: ${u(40)}; pointer-events: auto; display: flex; flex-direction: column;
   border-radius: ${u(0.7)}; background: rgba(18,13,7,.9); box-shadow: 0 0 0 ${u(0.14)} rgba(214,180,106,.4); animation: pt-up .22s cubic-bezier(.16,1,.3,1); }
-.pt-log h3 { margin: 0; padding: ${u(1)} ${u(1.3)} ${u(0.6)}; font-family: "Cinzel", "Signika", serif; font-size: ${u(1.25)}; letter-spacing: .08em; color: var(--gold);
+.pt-log h3 { margin: 0; padding: ${u(1)} ${u(1.3)} ${u(0.6)}; font-family: var(--oni-text-font, "Signika", sans-serif); font-variant-ligatures: none; font-size: ${u(1.25)}; letter-spacing: .08em; color: var(--gold);
   display: flex; justify-content: space-between; align-items: baseline; border: 0; }
 .pt-log h3 span { font-family: "Signika", sans-serif; font-size: .7em; color: #a99d86; letter-spacing: 0; font-weight: 500; }
 .pt-log ol { list-style: none; margin: 0; padding: 0 ${u(1.1)} ${u(1)}; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: ${u(0.6)}; }
 .pt-log li { display: grid; grid-template-columns: ${u(2.6)} 1fr; gap: ${u(0.7)}; align-items: start; color: #efe6d4; font-size: ${u(1.08)}; }
 .pt-log li .pt-face { width: ${u(2.6)}; height: ${u(2.6)}; border-radius: 50%; background: var(--bubble); }
-.pt-log li b { font-family: "Cinzel", "Signika", serif; color: var(--gold); font-size: .95em; margin-right: ${u(0.5)}; }
+.pt-log li b { font-family: var(--oni-text-font, "Signika", sans-serif); font-variant-ligatures: none; color: var(--gold); font-size: .95em; margin-right: ${u(0.5)}; }
 .pt-log li em { color: #8d8270; font-style: normal; font-size: .85em; }
 .pt-log li.shout span { font-weight: 700; }
 .pt-log li.think span { font-style: italic; color: #c9bfae; }

@@ -163,7 +163,7 @@
       css.id = STYLE_ID;
       css.textContent = `
 #${LAYER_ID} { position: fixed; inset: 0; pointer-events: none; z-index: 100000;
-  font-family: "Cinzel","Signika",var(--font-primary,"Signika"),system-ui,sans-serif; }
+  font-family: var(--oni-text-font, "Signika", sans-serif); font-variant-ligatures: none; }
 
 .fu-bubble { position: absolute; pointer-events: auto; display: flex; align-items: stretch;
   max-width: min(${MAX_BUBBLE_WIDTH}px, 92vw); min-width: ${MIN_BUBBLE_WIDTH}px;

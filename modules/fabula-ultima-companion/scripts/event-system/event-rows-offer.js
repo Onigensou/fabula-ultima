@@ -173,7 +173,7 @@
   background: repeating-linear-gradient(0deg, transparent, transparent 23px, rgba(140,90,30,0.04) 23px, rgba(140,90,30,0.04) 24px); }
 #${BOX_ID} > * { position: relative; }
 #${BOX_ID} .ofr-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-#${BOX_ID} .ofr-title { font-family: "Cinzel","Signika",serif; font-weight: 700; font-size: 18px; color: #2a1c0f; }
+#${BOX_ID} .ofr-title { font-family: var(--oni-text-font, "Signika", sans-serif); font-variant-ligatures: none; font-weight: 700; font-size: 18px; color: #2a1c0f; }
 #${BOX_ID} .ofr-ask { font-size: 13px; color: #6a4a26; }
 #${BOX_ID} .ofr-banner { font-size: 12px; background: rgba(58,30,6,.85); color: #f4e8c0; border-radius: 7px; padding: 4px 10px; text-align: center; }
 #${BOX_ID} .ofr-body { display: grid; grid-template-columns: minmax(0, 190px) minmax(0, 1fr); gap: 12px; min-height: 0; }
@@ -214,7 +214,7 @@
 #${TIP_ID} { position: fixed; z-index: 100; width: 270px; pointer-events: none; padding: 10px 12px; box-sizing: border-box;
   border: 2px solid #c9a44a; border-radius: 12px; background: linear-gradient(168deg, #f8f0d4 0%, #ede0b0 100%); color: #3a1e06;
   box-shadow: 0 8px 22px rgba(0,0,0,.5); font: 13px/1.4 "Signika","Noto Sans","Segoe UI",sans-serif; }
-#${TIP_ID} .nm { font-family: "Cinzel","Signika",serif; font-weight: 700; font-size: 14px; color: #2a1c0f; }
+#${TIP_ID} .nm { font-family: var(--oni-text-font, "Signika", sans-serif); font-variant-ligatures: none; font-weight: 700; font-size: 14px; color: #2a1c0f; }
 #${TIP_ID} .ty { font-size: 11px; color: #7a5230; letter-spacing: .08em; text-transform: uppercase; }
 #${TIP_ID} ul { margin: 6px 0 0; padding-left: 16px; }
 #${TIP_ID} .fv { margin-top: 6px; font-style: italic; color: #5a3a1a; }
