@@ -2702,6 +2702,15 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
     set(list){ NET.forms = list; send({ t:'forms', actorId: NET.lobby && NET.lobby.actorId, list }); },
   };
   FORM_OWNED = () => (NET.lobby && NET.lobby.owned) || [];
+  // The grid redraw (filter / search / sort / pick) must list the character's own cards like the full render does,
+  // not the page's built-in launch pool (that dropped every character card: playtest 11-17).
+  const _drawGrid = drawGrid;
+  drawGrid = function(){
+    if (S || !NET.lobby || spectator()) return _drawGrid();
+    const owned = (NET.lobby.owned || []).filter(id => CARDS[id]);
+    const saved = IDS.splice(0); IDS.push(...owned);
+    try { _drawGrid(); } finally { IDS.splice(0); IDS.push(...saved); }
+  };
 
   // ---------- lobby (team pick from the cards you own) ----------
   const _render = render;

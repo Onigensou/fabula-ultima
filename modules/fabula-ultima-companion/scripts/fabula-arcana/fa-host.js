@@ -340,19 +340,18 @@ async function rematch(s, seat) {
 }
 
 async function leave(s, seat, userId) {
-  const t = s.seats[seat];
+  const t = s.seats[seat], other = s.seats[1 - seat];
   if (!s.over) {
     if (s.match && s.match.phase !== "ended") { E().Match.concede(s.match, seat); await onGameEnd(s); }
     if (!s.series.over) { s.series.over = true; s.series.winner = 1 - seat; }
-    s.over = true; clearTimers(s); releaseSpectators(s);
-    const other = s.seats[1 - seat];
-    if (other.userId) { notify(other.userId, `${t.name} left the duel.`); toDuel(s, other.userId, { t: "state", ...payload(s, 1 - seat) }); }
+    s.over = true; clearTimers(s);
   }
-  else { const other = s.seats[1 - seat]; if (other.userId && other.kind === "human") toDuel(s, other.userId, { t: "rematch", me: !!other.rematch, opp: false, oppLeft: true }); }
+  // One player leaving ends the duel for everyone (playtest 11-17): the opponent's window closes with it,
+  // in the lobby, mid-match or on the result screen, instead of sitting on alone.
+  if (other.userId && other.userId !== userId) notify(other.userId, `${t.name} left the duel.`);
   send(userId, "close", {}, s.sid);
   t.userId = null; t.left = true;
-  if (!s.seats.some((x) => x.userId)) closeSession(s);
-  else { pushStatus(); save(); }
+  closeSession(s);
 }
 // ------------------------------------------------------------------ PvP disconnect: 60 s grace, then forfeit
 // A seated player whose client drops (Foundry "userConnected") gets GRACE_MS to come back. Meanwhile the round clock
