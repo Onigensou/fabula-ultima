@@ -42,3 +42,17 @@ Nothing here needs a world import. The world content arrives as a **one-time see
 - If the **GM** reloads mid-game, the game can't resume. Players get "Lost contact with the GM", and the overlay closes after 30 s. Running the event again restarts the game.
 - Stages 2 and 3 reuse the Stage 1 ground art (the ChatGPT ground strip). Separate strips per stage were optional and weren't made.
 - **Balance note:** strikes aim at a random runner still out, so once others finish, the last runner took every strike meant for four. One test straggler needed 6 minutes. Spawn pacing now stretches with fewer runners out (up to 2.5×), keeping per-runner pressure the same.
+
+## Tuning pass (v1.0.624)
+
+- **Catch-up rules** (`CATCHUP` table at the top of the catch-up section in `pf-game.js`, so all the numbers are in one place):
+  - Ground strikes: after a strike is aimed at a runner, they rest for 3 spawn intervals, with at most 2 strikes on the way at once. New strikes go to whoever has the fewest.
+  - Once half the pack is home, "mercy" starts: Kirin and Skizzik attack half as often, the Gigas chases at 1.3× walk speed and rests longer after a slam, and Earthen Wire stops redirecting lightning.
+  - Second wind: the runner in last place refills stamina 1.35× faster and starts refilling sooner.
+  - Headless sim, with one runner held back 40 s in each stage: its running time is 0.92–1.04× the pack's (worst 1.31×, was 1.57×), and it takes no more hits per minute than the pack. With nobody held back, the pack's numbers are unchanged.
+- **The scene looks like the game.** Migration `2026-11-17-plasma-field-scene-v2` makes `course.webp` the scene background. It's a still of the course drawn by the game itself (`renderStill`), at grid 128 so tokens match the runners' size, with rain.
+  - One opening: the arrival event pans up the course, then the game opens straight to practice.
+  - After the race, the party and Hako stand beside the cradle where the finale left them.
+  - The game layer fades to and from black, with a 0.9 s black curtain while the event moves everyone underneath.
+  - The migration only applies while the scene still has the first layout's background.
+- **Hako's in-game sprite** is 96 units instead of 128, so she stands about as tall as a runner (user's call).

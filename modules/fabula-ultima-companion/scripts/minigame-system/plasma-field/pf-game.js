@@ -1633,7 +1633,7 @@ export function createPlasmaField(env) {
   }
   function drawHako(){
     const h = G.hako, im = imgs.Hako; if (!im) return;
-    const S = 128, xray = h.zap > 0 && Math.floor(h.zap/60)%2 === 0, jx = h.zap > 0 ? rnd(-2,2) : 0;
+    const S = 96, xray = h.zap > 0 && Math.floor(h.zap/60)%2 === 0, jx = h.zap > 0 ? rnd(-2,2) : 0;
     if (!h.freed){
       const py = h.y - 40 - 111*h.perch;
       ctx.save(); ctx.globalCompositeOperation = "lighter"; const rg = ctx.createRadialGradient(h.x, py, 10, h.x, py, 95); rg.addColorStop(0,"rgba(170,140,255,.3)"); rg.addColorStop(1,"rgba(170,140,255,0)"); ctx.fillStyle = rg; ctx.fillRect(h.x-110,py-110,220,220); ctx.restore();
