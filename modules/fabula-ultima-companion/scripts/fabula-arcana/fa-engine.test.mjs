@@ -59,9 +59,9 @@ const blank = blankStats;
   S = duel('carlbero','pyrefly',{hp:[3,8]});                    // Carlbero slower, at 3 HP; Pyrefly hits for 4−1=3
   R.resolveRound([{action:'REMEDY'},{action:'PASS'}]);
   ok(S.p[0].roster[0].hp>0, 'Remedy vs faster opponent heals before the faster attack (survives at ' + S.p[0].roster[0].hp + ')');
-  S = duel('carlbero','pyrefly',{hp:[3,8]});
+  S = duel('carlbero','skizzik',{hp:[3,8]});                    // Skizzik 3 vs DEF 1 = 2; with Golem +3 DEF it floors at 1
   R.resolveRound([{action:'GOLEM'},{action:'PASS'}]);
-  ok(S.p[0].roster[0].hp===3, 'Golem Fragment vs faster opponent is active before the attack (took 0)');
+  ok(S.p[0].roster[0].hp===2, 'Golem Fragment vs faster opponent is active before the attack (took 1, not 2)');
   S = duel('carlbero','pyrefly');
   r = R.resolveRound([{action:'SWITCH', target:1},{action:'PASS'}]);
   ok(S.p[0].active===1 && r.ev.res[1] && r.ev.res[1].d.cid==='gorger', 'voluntary Switch vs faster opponent completes before the attack');
@@ -152,7 +152,7 @@ const blank = blankStats;
   S = duel(A('hellhound'), ['roper','flame','kirin'], {hp:[30,1]}); r=go(P,P); S.p[1].pending=true; r=go(P,{replace:1,action:'PASS'});
   ok(S.p[1].active===1 && !(r.ev.entry||[]).length, 'Dynamic Entry does not trigger on a forced replacement');
   // pool
-  ok(R.IDS.length===38 && ['obsidrax','roo','walrog','gorger','sylph','succubus','hina','zarg','raubens','geist','kalina','blanche','keren','gryphon','love','jack','jill','hilde','carlbero','brucev','nullis','gardner'].every(k=>R.IDS.includes(k)) && !R.IDS.some(k=>['broo','life'].includes(k)), 'pool = 38 cards (23 + 15 character cards; Bandit Roo retired)');
+  ok(R.IDS.length===39 && ['obsidrax','roo','walrog','gorger','sylph','succubus','hina','zarg','raubens','geist','kalina','blanche','keren','gryphon','love','jack','jill','hilde','carlbero','brucev','nullis','gardner','hako'].every(k=>R.IDS.includes(k)) && !R.IDS.some(k=>['broo','life'].includes(k)), 'pool = 39 cards (23 + 16 character cards; Bandit Roo retired)');
   // Succubus Charm
   S = duel(A('hellhound'), ['roper','succubus','kirin'], {hp:[30,30]}); S.p[1].roster[1].hp=30; r=go(P,{action:'SWITCH',target:1});
   const c1=dmg0(); r=go(P,P); const c2=dmg0(); r=go(P,P); const c3=dmg0();
@@ -190,13 +190,14 @@ const blank = blankStats;
   // Aero Gorger burst
   S = duel(A('hellhound'), B('gorger'), {hp:[8,2]}); r=go(P,P); ok(S.p[0].roster[0].hp===6, 'Aero Gorger: Aero Explosion 2 to the attacker');
 
-  // ---- items 11-15: Smoke Bomb ignores DEF; Golem Fragment = DEF +3 (still blocks to 0) ----
+  // ---- items 11-15: Smoke Bomb ignores DEF; Golem Fragment = DEF +3 (11-17: a real DEF, so a hit floors at 1) ----
   S = duel(A('hellhound'), B('rgolem'), {hp:[30,30]}); r=go(P,P); const sm0=dmg0(); r=go({action:'SMOKE'},P); const sm1=dmg0();
   ok(sm0===2 && sm1===4, 'Smoke Bomb: the attack ignores printed DEF (Hellhound 4 vs Rock Golem DEF 2: 2 → 4)');
   S = duel(A('hellhound'), B('wolf'), {hp:[30,30]}); r=go(P,{action:'GOLEM'}); const gg=dmg0(); r=go({action:'SMOKE'},{action:'GOLEM'}).ev; const gs=R.getS().p[1].roster[0].hp;
   ok(gg===1 && gs===30-1-4, 'Golem Fragment: DEF +3 (4 → 1); Smoke Bomb ignores it too (full 4)');
   S = duel(A('scorpion'), B('hellhound'), {hp:[30,30]}); S.p[0].roster[0].abilityUsed=true; r=go(P,{action:'GOLEM'});
-  ok(dmg0()===0, 'Golem Fragment can still block a hit to 0 (Scorpion 3 − 3)');
+  ok(dmg0()===1, 'Golem Fragment no longer blocks a hit to 0 (Scorpion 3 − 3 → 1)');
+  S = duel(A('hellhound'), B('kirin'), {hp:[30,30]}); r=go(P,{action:'GOLEM'}); ok(dmg0()===1 && /Golem Fragment \+3/.test(r.ev.res[0].line), 'Golem Fragment stacks with printed DEF (Hellhound 4 − (1 + 3) → 1) and shows in the DEF note');
   // ---- batch 3 (11-15): Gryphon, Love, Jack, Jill, Princess Hilde, Carlbero ----
   S = duel(A('gryphon'), B('hellhound'), {hp:[30,30]}); r=go(P,P); const g1=r.ev.res[1].dmg; r=go(P,{action:'CAFE'}); const g2=r.ev.res[1].dmg;
   ok(g1===1 && g2===3, 'Gryphon Slipstream: +2 DEF vs a slower attacker (Hellhound 4 vs DEF 3 → 1); Café ties SPD 4 → bonus off (4 − 1 = 3) (got '+g1+'/'+g2+')');
@@ -210,7 +211,8 @@ const blank = blankStats;
   ok(tb0===1 && tb1===3, 'Jack Thief Bow: no longer ignores DEF (3 − 2 = 1); +2 ATK in a round the opponent uses an item (5 − 2 = 3) (got '+tb0+'/'+tb1+')');
   S = duel(A('jack'), B('manaray'), {hp:[30,30]}); r=go({action:'STRENGTH'},P); ok(dmg0()===5, 'Jack Thief Bow: his OWN item does not trigger it (3 + 2 Strength = 5)');
   S = duel(A('brucev'), B('rgolem'), {hp:[30,30]}); r=go(P,P); ok(dmg0()===4 && /Teleportation Strike/.test(r.ev.res[0].line), 'Bruce V: ignores 2 DEF (4 vs Rock Golem DEF 2 = 4)');
-  S = duel(A('brucev'), B('wolf'), {hp:[30,30]}); r=go(P,{action:'GOLEM'}); ok(dmg0()===1 && !/Teleportation Strike/.test(r.ev.res[0].line), "Bruce V: Golem Fragment's block is not DEF he can ignore (4 − 3 = 1), no band on DEF 0");
+  S = duel(A('brucev'), B('wolf'), {hp:[30,30]}); r=go(P,{action:'GOLEM'}); ok(dmg0()===3 && /Teleportation Strike/.test(r.ev.res[0].line), "Bruce V: Golem Fragment's +3 is DEF he can pierce (4 − (3 − 2) = 3)");
+  S = duel(A('brucev'), B('wolf'), {hp:[30,30]}); r=go(P,P); ok(dmg0()===4 && !/Teleportation Strike/.test(r.ev.res[0].line), 'Bruce V: no Teleportation Strike note against DEF 0 (Wolf: 4)');
   S = duel(A('nullis'), B('roper'), {hp:[30,30]}); r=go(P,P); const ng0=r.ev.res[1].dmg; r=go(P,{action:'STRENGTH'}); const ng1=r.ev.res[1].dmg, ngL=r.ev.res[1].line; r=go(P,{action:'SMOKE'}); const ng2=r.ev.res[1].dmg, ngS=r.ev.res[1].line;
   ok(ng0===2 && ng1===1 && ng2===3 && /Null Guard \+3/.test(ngL) && !/Null Guard/.test(ngS),'Nullis Null Guard: 3 − 1 = 2; vs an item +3 DEF (5 − 4 = 1); Smoke Bomb ignores it (3) (got '+[ng0,ng1,ng2]+')');
   S = duel(A('gardner'), B('roper'), {hp:[30,30]}); r=go(P,P); const ha0=r.ev.res[1].dmg; const haL=r.ev.res[1].line; r=go(P,{action:'STRENGTH'}); const ha1=r.ev.res[1].dmg;
@@ -269,12 +271,60 @@ const blank = blankStats;
   S.p[0].roster[0].hp=1; r=go(P,P); ok(S.p[0].roster[0].ko, 'Geist: second lethal hit → falls for real');
   S = duel(A('zarg'), ['hellhound','geist','cryo'], {hp:[30,30]}); S.p[1].roster[1].hp=1; r=go(P,P);
   ok(S.p[1].roster[1].hp===5 && !S.p[1].roster[1].ko, 'Geist: Blackest Night also saves him on the bench (Barrage)');
-  // Kalina Jump: Pass → attacks normally (ATK 1 / DEF 5), lands next round swapped (ATK 5 / DEF 1), then grounded again
-  S = duel(A('kalina'), B('wolf'), {hp:[30,30]}); r=go(P,{action:'STRENGTH'}); const k1=dmg0(), t1=r.ev.res[1].dmg;
-  r=go({action:'CAFE'},{action:'SHARD'}); const k2=dmg0(), t2=r.ev.res[1].dmg; r=go(P,P); const k3=dmg0();
-  ok(k1===1 && t1===1 && k2===6 && t2===3 && k3===1, 'Kalina: Jump round 1 dmg & DEF 6 (5−6→1), landing ATK 6 & DEF 1 (Shard 4−1=3), jumps again (got '+[k1,t1,k2,t2,k3]+')');
-  S = duel(A('kalina'), B('wolf'), {hp:[30,30]}); r=go(P,P); r=go(P,P); ok(S.p[0].roster[0].land===4 && dmg0()===6, 'Kalina: a Pass on the landing round does not jump again');
-  S = duel(['kalina','hellhound','cryo'], B('wolf'), {hp:[30,30]}); r=go(P,P); r=go({action:'SWITCH',target:1},P); ok(!S.p[0].roster[0].land, 'Kalina: switching out cancels the landing');
+  // Geist (11-17): +1 ATK for the rest of the match once he has risen
+  S = duel(['geist','kirin','cryo'], B('wolf'), {hp:[30,30]}); r=go(P,P); const gb0=dmg0(); S.p[0].roster[0].bn=true; r=go(P,P);
+  ok(gb0===3 && dmg0()===4 && /\+1 Blackest Night/.test(r.ev.res[0].line), 'Geist: +1 ATK after The Blackest Night (3 → 4 vs Wolf) (got '+gb0+'/'+dmg0()+')');
+  // Kalina Skyfall Dive (11-17): after her attack she always hops out (commit `hop` = who steps in); Dive Ready → 2 on her next switch-in
+  S = duel(['kalina','hellhound','cryo'], B('wolf'), {hp:[30,30]}); r=go({action:'PASS', hop:2},P);   // Kalina SPD 3 > Wolf 2: she strikes first
+  ok(dmg0()===2 && S.p[0].active===2 && S.p[0].roster[0].dive && r.ev.hop && r.ev.hop[0].to===2 && r.ev.hop[0].at===1 && r.ev.res[1].d.cid==='cryo',
+    'Kalina: hits first (2), hops out to the named card, which takes the Wolf\'s attack; Dive Ready');
+  r=go({action:'SWITCH',target:0},P); const dv=(r.ev.dive||[])[0];
+  ok(dv && dv.amt===2 && dv.how==='switch' && !S.p[0].roster[0].dive && S.p[1].roster[0].hp===30-2-2-(r.ev.res[0]?r.ev.res[0].dmg:0), 'Kalina: switched back in → Skyfall Dive 2 (ignores DEF), Dive Ready spent');
+  r=go(P,P); ok(S.p[0].active!==0 && r.ev.hop && !r.ev.dive, 'Kalina: attacks again and hops out again (no dive while in front)');
+  S = duel(['kalina','hellhound','cryo'], B('skizzik'), {hp:[30,30]}); r=go(P,P);   // Skizzik SPD 4 > Kalina 3
+  ok(r.ev.res[1].d.cid==='kalina' && r.ev.hop && r.ev.hop[0].at===2 && S.p[0].active!==0, 'Kalina: when slower she takes the hit first, attacks, then hops');
+  S = duel(['kalina','hellhound','cryo'], B('wolf'), {hp:[30,30]}); for (const i of [1,2]){ S.p[0].roster[i].ko=true; S.p[0].roster[i].hp=0; } r=go(P,P);
+  ok(S.p[0].active===0 && !r.ev.hop && !S.p[0].roster[0].dive, 'Kalina: last card standing → no hop, no Dive Ready');
+  S = duel(['kalina','hellhound','cryo'], B('wolf'), {hp:[30,30]}); r=go({action:'SWITCH',target:1},P); ok(!r.ev.hop && !r.ev.dive && !S.p[0].roster[0].dive, 'Kalina: a plain switch out (no attack) gives no Dive Ready');
+  S = duel(['kalina','hellhound','cryo'], B('rgolem'), {hp:[30,30]}); r=go({action:'PASS', hop:1},{action:'PASS'});
+  ok(S.p[0].active===1, 'Kalina: a hop target that is fine is used (Hellhound)');
+  S = duel(['kalina','hellhound','cryo'], B('wolf'), {hp:[30,30]}); S.p[0].roster[1].ko=true; S.p[0].roster[1].hp=0; r=go({action:'PASS', hop:1},P);
+  ok(S.p[0].active===2, 'Kalina: a stale hop target (KO\'d) falls back to a living ally');
+}
+
+// ===== Kalina forced Dive, hop validation, Hako Trusty Supplier (match flow, 11-17) =====
+{
+  const M = E.Match, P = {action:'PASS'};
+  const m = M.create({ teams:[["kalina","wolf","pyrefly"], ["kirin","roper","pyrefly"]] });
+  M.submit(m,0,{replace:0}); M.submit(m,1,{replace:0});
+  ok(M.validate(m,0,{action:'PASS', hop:0}) && M.validate(m,0,{action:'PASS', hop:7}) && !M.validate(m,0,{action:'PASS', hop:1}), 'hop target must be a living benched card');
+  M.submit(m,0,{action:'STRENGTH', hop:1}); ok(m.commit[0].hop===1, 'the commit keeps the hop target');
+  // forced replacement with Dive Ready: Kalina lands on the enemy card
+  const m2 = M.create({ teams:[["wolf","kalina","pyrefly"], ["kirin","roper","pyrefly"]] });
+  M.submit(m2,0,{replace:0}); M.submit(m2,1,{replace:0});
+  m2.p[0].roster[1].dive=true; m2.p[0].roster[0].hp=0; m2.p[0].roster[0].ko=true; m2.p[0].pending=true; m2.phase='replace';
+  const kh=m2.p[1].roster[0].hp; let res=M.submit(m2,0,{replace:1}).resolved;
+  ok(res && res.ev && res.ev.dive && res.ev.dive[0].how==='replace' && m2.p[1].roster[0].hp===kh-2 && !m2.p[0].roster[1].dive && m2.phase==='choose', 'Kalina sent in after a KO with Dive Ready: 2 damage to the enemy card');
+  const m3 = M.create({ teams:[["wolf","kalina","pyrefly"], ["kirin","roper","pyrefly"]] });
+  M.submit(m3,0,{replace:0}); M.submit(m3,1,{replace:0});
+  m3.p[0].roster[1].dive=true; m3.p[0].roster[0].hp=0; m3.p[0].roster[0].ko=true; m3.p[0].pending=true; m3.phase='replace'; m3.p[1].roster[0].hp=2;
+  res=M.submit(m3,0,{replace:1}).resolved;
+  ok(m3.p[1].roster[0].ko && m3.p[1].pending && m3.phase==='replace' && M.needs(m3,1) && !M.needs(m3,0) && res.ev.dive[0].ko, 'Skyfall Dive can KO on a replacement → the enemy replaces next');
+  const v1 = E.View.resolvedForSeat(res, 1); ok(v1.ev.dive[0].s===1 && v1.ev.dive[0].t===0, 'Dive events mirror for seat 1');
+  // Hako: restock 1 random used item at the start of a round while she is active and 3+ items are used up
+  const h = M.create({ teams:[["hako","wolf","pyrefly"], ["kirin","roper","pyrefly"]] });
+  M.submit(h,0,{replace:0}); M.submit(h,1,{replace:0});
+  h.p[0].items.STRENGTH=0; h.p[0].items.GOLEM=0;
+  res=(M.submit(h,0,P), M.submit(h,1,P)).resolved;
+  ok(!res.ev.supply && Object.values(h.p[0].items).filter(Boolean).length===4, 'Hako: only 2 items used up → no restock');
+  h.p[0].items.REMEDY=0;
+  res=(M.submit(h,0,P), M.submit(h,1,P)).resolved;
+  ok(res.ev.supply && res.ev.supply.length===1 && res.ev.supply[0].s===0 && ['STRENGTH','GOLEM','REMEDY'].includes(res.ev.supply[0].k) && Object.values(h.p[0].items).filter(Boolean).length===4,
+    'Hako: 3 items used up → one of them (random) comes back as the next round begins');
+  ok(E.View.resolvedForSeat(res, 1).ev.supply[0].s===1, 'Hako restock event mirrors for seat 1');
+  const h2 = M.create({ teams:[["wolf","hako","pyrefly"], ["kirin","roper","pyrefly"]] });
+  M.submit(h2,0,{replace:0}); M.submit(h2,1,{replace:0}); for (const k of ['STRENGTH','GOLEM','REMEDY','SMOKE']) h2.p[0].items[k]=0;
+  res=(M.submit(h2,0,P), M.submit(h2,1,P)).resolved; ok(!res.ev.supply, 'Hako: nothing while she waits on the bench');
 }
 
 // ===== Hina Foretell (match flow) =====

@@ -41,7 +41,29 @@
   const spdNow = m => { const s=sideOf(m); return (S && S._sp && S._spRound===S.round && s>=0 && S.p[s].roster[S.p[s].active]===m) ? S._sp[s] : CARDS[m.cid].spd; };
   const berserk = m => !!m && m.cid==='jill' && m.hp*2 <= CARDS.jill.hp && m.hp>0;
   const twinDown = (m, other) => { const s=sideOf(m); return s>=0 && S.p[s].roster.some(x=>x.cid===other && x.ko); };
-  const isLanding = m => !!m && m.cid==='kalina' && !!S && m.land===S.round;
+  // Geist's Blackest Night: the first time he would reach 0 HP (any source, active or benched) he rises at full HP; overflow is lost.
+  // After rising he has +GEIST_BN ATK for the rest of the match (calcAttack).
+  function bnCheck(m, ev, L){ if (m && m.cid==='geist' && m.hp<=0 && !m.ko && !m.bn){ m.bn=true; m.hp=CARDS.geist.hp; S.stats.bn=(S.stats.bn||0)+1;
+    (ev.revive=ev.revive||[]).push({ s: S.p[0].roster.includes(m)?0:1, i:m.i });
+    L.push(['The Blackest Night: Geist rises again at full HP!','g']); } }
+  // Kalina's hop target when the commit named none (or a card that is no longer there): the benched ally that takes the least
+  // from the enemy's attack this round; with no enemy standing, the healthiest one.
+  function hopPick(s, bench){ const o=mon(S.p[1-s],S.p[1-s].active), live=!!o && !o.ko && o.hp>0;
+    return [...bench].sort((x,y)=> (live ? est(o,x,'PASS','PASS',true)-est(o,y,'PASS','PASS',true) : 0) || (y.hp-x.hp) || (x.i-y.i))[0].i; }
+  // Kalina's Skyfall Dive: switched in (by choice or after a KO) with Dive Ready = CFG.DIVE damage to the enemy active card (ignores DEF and items)
+  function diveIn(s, how, ev, L){ const P=S.p, k=mon(P[s],P[s].active); if (!k || k.cid!=='kalina' || !k.dive) return null; k.dive=false;
+    const t=mon(P[1-s],P[1-s].active); if (!t || t.ko || t.hp<=0 || P[1-s].pending) return null;
+    const b=t.hp; t.hp=Math.max(0,t.hp-CFG.DIVE); bnCheck(t, ev, L); S.stats.dive=(S.stats.dive||0)+1;
+    const d={ s, i:k.i, t:1-s, ti:t.i, amt:b-Math.max(0,t.hp), from:b, how }; (ev.dive=ev.dive||[]).push(d);
+    L.push([`Skyfall Dive: Kalina drops on ${N(t.cid)} for ${CFG.DIVE} damage (${t.hp} HP).`,'']); return d; }
+  // Hako's Trusty Supplier: at the start of a round, while Hako is the active card and SUPPLY_MIN+ item cards are used up,
+  // one of them (random) comes back to the hand.
+  function supplyStep(state, L){ const out=[];
+    for (const s of [0,1]){ const pl=state.p[s], m=pl.active==null?null:pl.roster[pl.active]; if (!m || m.cid!=='hako' || m.ko || m.hp<=0) continue;
+      const spent=Object.keys(pl.items).filter(k=>!pl.items[k]); if (spent.length<CFG.SUPPLY_MIN) continue;
+      const k=spent[Math.floor(RNG()*spent.length)]; pl.items[k]=1; state.stats.supply=(state.stats.supply||0)+1; out.push({ s, k });
+      L.push([`Trusty Supplier: Hako restocks ${ITEMS[k].t} for ${seatLabel(state,s)}.`,'g']); }
+    return out; }
   // Hina's Foretell: the seat whose active card is Hina chooses SECOND and sees the other seat's card.
   // Only in the action step, and only when exactly one side has Hina up front (both = a normal round).
   function foretellSeat(state){
@@ -69,15 +91,14 @@
   function calcAttack(att, def, ctx){
     const A=CARDS[att.cid], D=CARDS[def.cid];
     const ael = ctx.attItem==='SHARD' ? 'none' : A.el;
-    // Kalina's Jump landing: ATK and DEF swap for the landing round
-    const landA = isLanding(att), landD = isLanding(def);
-    let atk = landA ? A.def : A.atk; const parts=[landA ? `${atk} ATK (Jump landing)` : `${A.atk} ATK`];
+    let atk = A.atk; const parts=[`${A.atk} ATK`];
     if ((att.ser||0)>=S.round){ atk+=CFG.SERENADE; parts.push(`+${CFG.SERENADE} Love Serenade`); }
     { const ba=CFG.BREATH_ATK ?? 1; if ((att.breath||0)>=S.round && ba){ atk=Math.max(0,atk-ba); parts.push(`−${ba} Stinking Breath`); } }
     if (berserk(att)){ atk+=CFG.BERSERK_ATK; parts.push(`+${CFG.BERSERK_ATK} Berserk`); }
     if (att.cid==='jack' && twinDown(att,'jill')){ atk+=CFG.TWIN; parts.push(`+${CFG.TWIN} Twin`); }
     if (att.cid==='jill' && twinDown(att,'jack')){ atk+=CFG.TWIN; parts.push(`+${CFG.TWIN} Twin`); }
     if (att.cid==='keren'){ const ff=foxFire(att); if (ff){ atk+=ff; parts.push(`+${ff} Fox Fire`); } }
+    if (att.cid==='geist' && att.bn && CFG.GEIST_BN){ atk+=CFG.GEIST_BN; parts.push(`+${CFG.GEIST_BN} Blackest Night`); }
     if (att.cid==='raubens' && (att.loot||0)>0){ atk+=att.loot; parts.push(`+${att.loot} Bandit King`); }
     if (ctx.attItem==='STRENGTH'){ atk+=CFG.STR; parts.push(`+${CFG.STR} Strength`); }
     if (ctx.attItem==='SHARD'){ atk+=CFG.SHARD; parts.push(`+${CFG.SHARD} Shard`); }
@@ -94,18 +115,20 @@
     // absorption ability: checked before damage (fires even if Guard would zero it)
     if (D.absorb && D.absorb===ael && !def.abilityUsed)
       return { dmg:0, heal:CFG.AB_HEAL, aff:'AB', line:`${head} · ${N(def.cid)}'s <b>${D.ab}</b> negates it (+${CFG.AB_HEAL} HP)`, usedAbsorb:true, howl, pyre, kcharge, ael };
-    // Smoke Bomb (11-15): this attack ignores DEF — printed, Jump landing and Golem Fragment's +3
+    // Smoke Bomb (11-15): this attack ignores DEF — printed and Golem Fragment's +3
     const smoke = ctx.attItem==='SMOKE', golem = ctx.defItem==='GOLEM';
     const slip = def.cid==='gryphon' && spdNow(att) < spdNow(def);
-    const pdef = Math.max(0, (landD ? D.atk : D.def) + ((def.ser||0)>=S.round ? (CFG.SERENADE_DEF ?? CFG.SERENADE) : 0) - ((def.breath||0)>=S.round ? 1 : 0) + (slip ? CFG.SLIPSTREAM : 0));
+    const pdef = Math.max(0, D.def + ((def.ser||0)>=S.round ? (CFG.SERENADE_DEF ?? CFG.SERENADE) : 0) - ((def.breath||0)>=S.round ? 1 : 0) + (slip ? CFG.SLIPSTREAM : 0));
     // batch 4 (11-16): Null Guard (opponent used an item), Heavy Armor (opponent Passed), Rival (+1 once the rival ally fell),
-    // Bruce V's Teleportation Strike (ignores 2 DEF; card DEF only, Golem Fragment's block is separate). Smoke Bomb still ignores all of it.
+    // Bruce V's Teleportation Strike (ignores 2 DEF, Golem Fragment's +3 included). Smoke Bomb still ignores all of it.
+    // Golem Fragment (11-17 rule): a real +GOLEM DEF this round, so like any DEF it can only bring a hit down to 1 (no more blocks to 0).
     const nullG = def.cid==='nullis' && ITEMS[ctx.attItem] ? CFG.NULL_GUARD : 0, heavy = def.cid==='gardner' && ctx.attItem==='PASS' ? CFG.HEAVY_ARMOR : 0;
     const rival = (def.cid==='nullis' && twinDown(def,'gardner')) || (def.cid==='gardner' && twinDown(def,'nullis')) ? CFG.RIVAL : 0;
-    const tdef = pdef + nullG + heavy + rival, pierce = att.cid==='brucev' && !smoke ? Math.min(CFG.PIERCE, tdef) : 0;
+    const gdef = golem ? CFG.GOLEM : 0;
+    const tdef = pdef + nullG + heavy + rival + gdef, pierce = att.cid==='brucev' && !smoke ? Math.min(CFG.PIERCE, tdef) : 0;
     const ddef = smoke ? 0 : tdef - pierce;
-    const defNotes = smoke ? '' : [nullG ? `Null Guard +${nullG}` : '', heavy ? `Heavy Armor +${heavy}` : '', rival ? `Rival +${rival}` : ''].filter(Boolean).join(', ');
-    let d = Math.max(1, atk - ddef); let line = head + (ddef?` − DEF ${ddef}${landD?' (landing)':''}`:'') + (defNotes ? ` (${defNotes})` : '') + (smoke && (tdef || golem) ? ' · <b>Smoke Bomb</b> ignores DEF' : '') + (pierce ? ` · <b>Teleportation Strike</b> ignores ${pierce} DEF` : '') + (slip && ddef ? ' (Slipstream +' + CFG.SLIPSTREAM + ')' : '') + ` = ${d}`;
+    const defNotes = smoke ? '' : [gdef ? `Golem Fragment +${gdef}` : '', nullG ? `Null Guard +${nullG}` : '', heavy ? `Heavy Armor +${heavy}` : '', rival ? `Rival +${rival}` : ''].filter(Boolean).join(', ');
+    let d = Math.max(1, atk - ddef); let line = head + (ddef?` − DEF ${ddef}`:'') + (defNotes ? ` (${defNotes})` : '') + (smoke && tdef ? ' · <b>Smoke Bomb</b> ignores DEF' : '') + (pierce ? ` · <b>Teleportation Strike</b> ignores ${pierce} DEF` : '') + (slip && ddef ? ' (Slipstream +' + CFG.SLIPSTREAM + ')' : '') + ` = ${d}`;
     const mod = elMod(ael, D.el); let aff = ael==='none' ? 'NONE' : 'N';
     if (mod>0){ d=Math.max(1,d+mod); aff='ADV'; line+=` · <b>Weak</b>: ${EL[D.el]} takes +${mod} from ${EL[ael]} = ${d}`; }
     if (mod<0){ d=Math.max(1,d+mod); aff='DIS'; line+=` · <b>Resist</b>: ${EL[D.el]} takes −${-mod} from ${EL[ael]} = ${d}`; }
@@ -113,11 +136,7 @@
     // Zeroed BEFORE shields so a Roo poke never spends Thick Skin / Pyrophagy / Earthen Wire.
     if (att.cid==='roo' && d>0){ d=0; line+=' · Roo does not hurry: 0'; }
     const red=[]; let r=0; if (berserk(def)){ r-=CFG.BERSERK_TAKE; red.push(`Berserk +${CFG.BERSERK_TAKE} taken`); }
-    // Golem Fragment = DEF +3 this round. Same numbers as before: it counts after the element bonus, so it can block a hit to 0.
-    if (golem){
-      if (smoke) red.push('Golem Fragment pierced by Smoke Bomb'); else { r+=CFG.GOLEM; red.push(`Golem Fragment DEF +${CFG.GOLEM}`); }
-
-    }
+    if (golem && smoke) red.push('Golem Fragment pierced by Smoke Bomb');
     if (def.cid==='broo' && ctx.defSwitchedIn){ r+=2; red.push('Soft Landing −2'); }
     if (def.cid==='fulgimite' && ctx.defSwitchedIn){ r+=2; red.push('Evasion −2'); }
     d = Math.max(0, d-r);
@@ -139,10 +158,15 @@
     // Love Serenade: every benched ally of side s gets +SERENADE ATK/DEF for the next SERENADE_ROUNDS rounds
     const serenade = (s, why) => { const pl=P[s]; const got=[]; for (const m of pl.roster) if (!m.ko && m.hp>0 && m.i!==pl.active){ m.ser=S.round+CFG.SERENADE_ROUNDS; got.push(m.i); }
       if (got.length){ S.stats.ser=(S.stats.ser||0)+1; (ev.serenade=ev.serenade||[]).push({ s, is:got }); L.push([`Love Serenade: ${got.map(i=>N(pl.roster[i].cid)).join(' and ')} get +${CFG.SERENADE} ATK / +${CFG.SERENADE} DEF for ${CFG.SERENADE_ROUNDS} rounds.`,'g']); } };
-    // Geist's Blackest Night: the first time he would reach 0 HP (any source, active or benched) he rises at full HP; overflow is lost
-    const BN = m => { if (m && m.cid==='geist' && m.hp<=0 && !m.ko && !m.bn){ m.bn=true; m.hp=CARDS.geist.hp; S.stats.bn=(S.stats.bn||0)+1;
-      (ev.revive=ev.revive||[]).push({ s: P[0].roster.includes(m)?0:1, i:m.i });
-      L.push(['The Blackest Night: Geist rises again at full HP!','g']); } };
+    const BN = m => bnCheck(m, ev, L);
+    // Kalina's Skyfall Dive (11-17): after her attack she hops out (forced while a benched ally lives; the commit's `hop` names who
+    // steps in). The card stepping in counts as switched in and takes the enemy's attack if Kalina struck first. She gets Dive Ready.
+    const hopIn=[false,false];
+    const tryHop = s => { const pl=P[s], k=mon(pl,pl.active), r=ev.res[s];
+      if (!r || r.a!==k || k.cid!=='kalina' || k.hp<=0 || k.ko) return; const bench=benchOptions(pl).filter(m=>m.hp>0); if (!bench.length) return;
+      const t = bench.some(m=>m.i===ch[s].hop) ? ch[s].hop : hopPick(s, bench);
+      k.dive=true; pl.active=t; hopIn[s]=true; S.stats.hop=(S.stats.hop||0)+1; (ev.hop=ev.hop||[]).push({ s, from:k.i, to:t, at: ev.seq ? ev.seq.length : null });
+      L.push([`Kalina hops out after her attack; ${N(mon(pl,t).cid)} steps in. Dive Ready.`,'m']); };
     const who = s => (S.names && S.names[s]) || (s===0?'You':'NPC'); const third = s => !!(S.names && S.names[s]) || s===1;
     for (const s of [0,1]) if (P[s].pending){
       P[s].active=ch[s].replace; P[s].pending=false; S.stats.forced[s]++; ev.enter[s]='forced';
@@ -154,20 +178,18 @@
         (ev.grace=ev.grace||[]).push({ s, heals:[{ i:inc.i, amt:inc.hp-was }] }); L.push([`Royal Grace: Princess Hilde steps back and tends to ${N(inc.cid)} (+${inc.hp-was} HP).`,'g']); } }
       if (out.cid==='love' && (CFG.SERENADE_MODE||1)===2 && out.hp>0){ const inc=mon(P[s],ch[s].target); if (inc){ inc.ser=S.round+CFG.SERENADE_ROUNDS; S.stats.ser=(S.stats.ser||0)+1;
         (ev.serenade=ev.serenade||[]).push({ s, is:[inc.i] }); L.push([`Love Serenade: Love hands the stage to ${N(inc.cid)} (+${CFG.SERENADE} ATK / +${CFG.SERENADE_DEF ?? CFG.SERENADE} DEF for ${CFG.SERENADE_ROUNDS} rounds).`,'g']); } }
-      if (out.cid==='kalina' && out.land){ out.land=0; L.push(['Kalina leaves the field; her Jump is cancelled.','m']); } P[s].active=ch[s].target; ev.switched[s]=true; ev.enter[s]='switch'; S.stats.switches[s]++;
+      P[s].active=ch[s].target; ev.switched[s]=true; ev.enter[s]='switch'; S.stats.switches[s]++;
       L.push([`${who(s)} switch${third(s)?'es':''} ${N(out.cid)} out for ${N(mon(P[s],P[s].active).cid)}. It skips its attack.`,'m']);
     }
     for (const s of [0,1]) if ((CFG.SERENADE_MODE||1)===1 && ev.switched[s] && mon(P[s],P[s].active).cid==='love') serenade(s, 'entry');
     for (const s of [0,1]) if (ev.switched[s] && mon(P[s],P[s].active).cid==='succubus'){ const t=mon(P[1-s],P[1-s].active); if (t && t.hp>0){ t.charm=S.round+1; S.stats.charm=(S.stats.charm||0)+1; L.push([`Charm: ${N(t.cid)} is Charmed (−${CFG.CHARM} ATK this round and next).`,'m']); } }
     for (const s of [0,1]) if (ev.switched[s] && mon(P[s],P[s].active).cid==='flame'){ const t=mon(P[1-s],P[1-s].active); if (t && t.hp>0){ const b=t.hp; t.hp=Math.max(0,t.hp-CFG.ENTRY); BN(t); (ev.entry=ev.entry||[]).push({s:1-s,amt:b-t.hp}); S.stats.entry=(S.stats.entry||0)+1;
         L.push([`Dynamic Entry: Wandering Flame bursts in, ${b-t.hp} Fire damage to ${N(t.cid)} (${t.hp} HP).`,'']); } }
+    for (const s of [0,1]) if (ev.switched[s]) diveIn(s, 'switch', ev, L);
     for (const s of [0,1]){ const a=ch[s].action; S.stats.acts[s][a]=(S.stats.acts[s][a]||0)+1; if (ITEMS[a]){ P[s].items[a]=0; ev.items[s]=a; } }
     // Raubens' Bandit King: an item used while he is the opposing active card = +1 ATK for the rest of the match (counts this round)
     for (const s of [0,1]) if (ITEMS[ch[s].action]){ const r=mon(P[1-s],P[1-s].active); if (r && r.cid==='raubens' && r.hp>0){ r.loot=(r.loot||0)+1; S.stats.loot=(S.stats.loot||0)+1;
       L.push([`Bandit King: Raubens takes his cut of the ${ITEMS[ch[s].action].t} (+1 ATK, now +${r.loot}).`,'m']); } }
-    // Kalina's Jump: a Pass (not on her landing round) = she jumps; she lands NEXT round with ATK and DEF swapped
-    for (const s of [0,1]) if (ch[s].action==='PASS'){ const m=mon(P[s],P[s].active); if (m && m.cid==='kalina' && m.land!==S.round){ m.land=S.round+1; S.stats.jump=(S.stats.jump||0)+1;
-      L.push(['Kalina Jumps! She lands next round (ATK and DEF swap for that round).','m']); } }
     // Howl / Wind Up timing, per card (CFG.HOWL_NEXT / CFG.WINDUP_NEXT): 0 = armed on the Pass and used by that same round's
     // attack; 1 = armed at the END of the round it Passed, so it powers the NEXT attack (visible for a whole decision; can stack
     // with an item); 2 = ability off (balance sims only). Live rules (2026-11-14 sim): Wolf 0, Rock Golem 1.
@@ -211,7 +233,7 @@
       if (m.hp===0 && bench){ m.ko=true; ev.benchKO=(ev.benchKO||0)+1; S.stats.kos.push(m.cid); L.push([`${N(m.cid)} is knocked out on the bench!`,'k']); }
       return m; };
     const calcFor = s => { const o=1-s, a=mon(P[s],P[s].active), d=mon(P[o],P[o].active);
-      return { ...calcAttack(a,d,{attItem:ch[s].action, defItem:ch[o].action, defSwitchedIn:ev.switched[o]}), a, d, side:s }; };
+      return { ...calcAttack(a,d,{attItem:ch[s].action, defItem:ch[o].action, defSwitchedIn:ev.switched[o]||hopIn[o]}), a, d, side:s }; };
     const applyHit = r => {
       if (r.heal){ const b=r.d.hp; r.d.hp=Math.min(CARDS[r.d.cid].hp, r.d.hp+r.heal); r.healed=r.d.hp-b; }
       else { r.d.hp=Math.max(0, r.d.hp-r.dmg); BN(r.d); }
@@ -258,13 +280,14 @@
       const first=sp[0]>sp[1]?0:1, second=1-first;
       ev.seq=[]; ev.snaps=[];
       L.push([`${N(mon(P[first],P[first].active).cid)} is faster (SPD ${sp[first]} vs ${sp[second]}) and strikes first.`,'m']);
-      const r1=calcFor(first); ev.res[first]=r1; applyHit(r1); afterHit(r1); ev.seq.push(first); ev.snaps.push(snap());
-      if (mon(P[second],P[second].active).hp>0){ const r2=calcFor(second); ev.res[second]=r2; applyHit(r2); afterHit(r2); ev.seq.push(second); ev.snaps.push(snap()); }
+      const r1=calcFor(first); ev.res[first]=r1; applyHit(r1); afterHit(r1); ev.seq.push(first); ev.snaps.push(snap()); tryHop(first);
+      if (mon(P[second],P[second].active).hp>0){ const r2=calcFor(second); ev.res[second]=r2; applyHit(r2); afterHit(r2); ev.seq.push(second); ev.snaps.push(snap()); tryHop(second); }
       else { ev.denied=second; S.stats.firstStrike=(S.stats.firstStrike||0)+1; L.push([`${N(mon(P[second],P[second].active).cid)} falls before it can strike back.`,'k']); }
     } else {
       for (const s of [0,1]) if (canAtk[s]) ev.res[s]=calcFor(s);   // computed on the shared pre-impact state
       for (const s of [0,1]) if (ev.res[s]) applyHit(ev.res[s]);
       for (const s of [0,1]) if (ev.res[s]) afterHit(ev.res[s]);
+      for (const s of [0,1]) tryHop(s);
     }
     for (const s of [0,1]){ const r=ev.res[s]; if (r && r.a.cid==='inferex' && r.d.hp===0 && r.a.hp>0 && !r.heal) directHit(1-s, CFG.VORACIOUS, 'Voracious', false); }
     // zero-progress round classification (ChatGPT metric)
@@ -322,7 +345,7 @@
     // Skilled AI reasons about Speed: a faster monster that KOs first takes no counter-hit
     const faster = m => D.speed && CARDS[m.cid].spd>CARDS[opMon.cid].spd;
     const slower = m => D.speed && CARDS[m.cid].spd<CARDS[opMon.cid].spd;
-    const score = m => { const o=est(m,opMon), i=est(opMon,m); return (m.cid==='keren' && living(me).length>2 ? -50 : 0) + o*1.2 - ((faster(m)&&o>=opMon.hp)?0:i) + m.hp*0.2 + (D.speed?(CARDS[m.cid].spd-CARDS[opMon.cid].spd)*0.4:0); };
+    const score = m => { const o=est(m,opMon), i=est(opMon,m); return (m.cid==='kalina' && m.dive ? (opMon.hp<=CFG.DIVE ? 8 : CFG.DIVE*0.8) : 0) + (m.cid==='keren' && living(me).length>2 ? -50 : 0) + o*1.2 - ((faster(m)&&o>=opMon.hp)?0:i) + m.hp*0.2 + (D.speed?(CARDS[m.cid].spd-CARDS[opMon.cid].spd)*0.4:0); };
     if (me.pending){ let best=null,bs=-1e9; for (const m of benchOptions(me)){ const sc=score(m)*noise(); if (sc>bs){bs=sc;best=m;} } choice.replace=best.i; }
     const my = me.pending ? me.roster[choice.replace] : mon(me,me.active);
     const max=CARDS[my.cid].hp, out=est(my,opMon);
@@ -332,7 +355,6 @@
     const w={ PASS:1 + (killsFirst?2.5:0) };
     if (my.cid==='wolf' && !my.howl) w.PASS+=0.8;
     if (my.cid==='rgolem' && !my.windup) w.PASS+=0.8;
-    if (my.cid==='kalina' && my.land!==S.round && my.land!==S.round+1) w.PASS+=1.2;
     if (my.cid==='blanche' && benchOptions(me).some(x=>x.hp<CARDS[x.cid].hp)) w.PASS+=0.8;
     if (my.cid==='hilde' && (CFG.GRACE_MODE||0)!==2 && (CFG.GRACE_MODE||0)!==3 && me.roster.some(x=>!x.ko && x.hp>0 && x!==my && x.i!==me.active && x.hp<CARDS[x.cid].hp)) w.PASS+=1.0;
     // Royal Grace (mode 4) play pattern: Hilde Passes to raise Regen, then hands off to the best attacker while it runs
@@ -364,6 +386,13 @@
         if (rgOn && my.cid==='hilde'){ best=[...bench].sort((a,b)=>est(b,opMon)-est(a,opMon))[0]; w.SWITCH += 1.4; }
         if (best.cid==='love') w.SWITCH += 0.4;
         if (best.cid==='succubus') w.SWITCH += 0.5;
+        // Kalina with Dive Ready on the bench: bring her in to finish a card at DIVE HP or less, or when the front card is about to fall
+        { const kd=bench.find(x=>x.cid==='kalina' && x.dive); if (kd){ const lethal=opMon && opMon.hp>0 && opMon.hp<=CFG.DIVE;
+          if (lethal || my.hp<=inc){ best=kd; w.SWITCH += lethal?2.5:0.8; } else { w.SWITCH += 0.3; if (est(opMon,kd,'PASS','PASS',true) < est(opMon,best,'PASS','PASS',true)) best=kd; } } }
+        // Hako: send her in once SUPPLY_MIN+ items are used up; take her out again once the hand is restocked (4+) or she is about to fall
+        { const nIt=Object.values(me.items).filter(Boolean).length, used=Object.keys(me.items).length-nIt, need=CFG.SUPPLY_MIN, hk=bench.find(x=>x.cid==='hako');
+          if (hk && used>=need && nIt<=Object.keys(me.items).length-need && est(opMon,hk,'PASS','PASS',true)<hk.hp){ best=hk; w.SWITCH += 1.2; }
+          if (my.cid==='hako' && (nIt>=4 || my.hp<=inc)){ best=[...bench].sort((a,b)=>est(b,opMon)-est(a,opMon))[0]; w.SWITCH += 1.2; } }
         if (my.cid==='sylph' && twOn && (CFG.TW_ALL || CARDS[best.cid].el==='air')) w.SWITCH += 0.9;   // set up, then switch
         if (op.active!=null && mon(op,op.active).cid==='roo' && mon(op,op.active).steps && mon(op,op.active).steps.t===my.i && mon(op,op.active).steps.n>=2) w.SWITCH += 3;   // dodge the knife
         choice.target=best.i;
@@ -493,6 +522,8 @@
       const pl = state.p[seat];
       if (state.phase === 'opening'){ const m = pl.roster[c.replace]; return m && !m.ko ? null : 'pick one of your monsters'; }
       if (state.phase === 'replace'){ const m = pl.roster[c.replace]; return m && !m.ko && m.hp > 0 && m.i !== pl.active ? null : 'pick a living benched monster'; }
+      // Kalina's hop target (optional; the engine picks one when it is missing): a living benched card
+      if (c.hop != null && c.action !== 'SWITCH'){ const m = pl.roster[c.hop]; if (!(m && !m.ko && m.hp > 0 && m.i !== pl.active)) return 'Kalina hops to a living benched card'; }
       if (c.action === 'PASS') return null;
       if (c.action === 'SWITCH'){ const m = pl.roster[c.target]; return m && !m.ko && m.i !== pl.active ? null : 'switch to a living benched monster'; }
       if (ITEMS[c.action]) return pl.items[c.action] ? null : 'item already used';
@@ -500,7 +531,7 @@
     },
     submit(state, seat, c){
       const err = Match.validate(state, seat, c); if (err) return { ok:false, error:err };
-      state.commit[seat] = state.phase === 'choose' ? { action:c.action, target: c.action === 'SWITCH' ? c.target : undefined } : { replace:c.replace };
+      state.commit[seat] = state.phase === 'choose' ? { action:c.action, target: c.action === 'SWITCH' ? c.target : undefined, hop: c.action !== 'SWITCH' && c.hop != null ? c.hop : undefined } : { replace:c.replace };
       if ([0,1].some(s => Match.needs(state, s))) return { ok:true };
       return { ok:true, resolved: resolve(state) };
     },
@@ -544,8 +575,16 @@
       const L = [];
       for (const s of [0,1]) if (state.p[s].pending && C[s]){ const pl = state.p[s]; pl.active = C[s].replace; pl.pending = false; state.stats.forced[s]++;
         L.push([`${seatLabel(state,s)} send${third(state,s)?'s':''} in ${N(pl.roster[pl.active].cid)}.`, 'm']); }
-      state.log.unshift({ head:'REPLACEMENT', lines:L }); state.round++; state.phase = 'choose';
-      out = { kind:'replace', choices:C, L };
+      // Skyfall Dive: Kalina sent in after a KO with Dive Ready lands on the enemy active card (it can KO it: then that side replaces)
+      const ev = {};
+      withState(state, () => { for (const s of [0,1]) if (C[s]){ const d = diveIn(s, 'replace', ev, L); const op = state.p[1-s], t = d && op.roster[d.ti];
+        if (t && t.hp <= 0 && !t.ko){ t.ko = true; d.ko = true; state.stats.kos.push(t.cid); L.push([`${N(t.cid)} is knocked out!`, 'k']);
+          if (!living(op).length) state.result = s === 0 ? 'WIN' : 'LOSS'; else op.pending = true; } } });
+      state.log.unshift({ head:'REPLACEMENT', lines:L });
+      if (state.result) state.phase = 'ended';
+      else if (state.p[0].pending || state.p[1].pending) state.phase = 'replace';
+      else { state.round++; state.phase = 'choose'; }
+      out = { kind:'replace', choices:C, L, ev };
     } else {
       const r = withState(state, () => resolveRound([C[0], C[1]]));
       state.log.unshift({ head:`ROUND ${state.round} · ${seatLabel(state,0)}: ${ACT_T[C[0].action]} · ${seatLabel(state,1)}: ${ACT_T[C[1].action]}`, lines:r.L });
@@ -554,6 +593,8 @@
       else { state.round++; state.phase = 'choose'; }
       out = { kind:'round', choices:C, L:r.L, ev:r.ev };
     }
+    // Hako's Trusty Supplier fires as the next round begins (lines join the step that just resolved)
+    if (state.phase === 'choose'){ const sup = withState(state, () => supplyStep(state, out.L)); if (sup.length){ out.ev = out.ev || {}; out.ev.supply = sup; } }
     state.commit = [null, null];
     return out;
   }
@@ -598,7 +639,8 @@
       if (ev.seq) ev.seq = ev.seq.map(flip);
       if (ev.snaps) ev.snaps = ev.snaps.map(swap2);
       if (ev.denied != null) ev.denied = flip(ev.denied);
-      for (const k of ['direct','entry','revive','tips','serenade','grace','regen']) for (const x of ev[k] || []) if (x && x.s != null) x.s = flip(x.s);
+      for (const k of ['direct','entry','revive','tips','serenade','grace','regen','hop','dive','supply']) for (const x of ev[k] || []) if (x && x.s != null) x.s = flip(x.s);
+      for (const x of ev.dive || []) if (x && x.t != null) x.t = flip(x.t);
       return r;
     },
     seriesForSeat(sr, viewer){
