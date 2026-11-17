@@ -53,9 +53,9 @@
   // Kalina's Skyfall Dive: switched in (by choice or after a KO) with Dive Ready = CFG.DIVE damage to the enemy active card (ignores DEF and items)
   function diveIn(s, how, ev, L){ const P=S.p, k=mon(P[s],P[s].active); if (!k || k.cid!=='kalina' || !k.dive) return null; k.dive=false;
     const t=mon(P[1-s],P[1-s].active); if (!t || t.ko || t.hp<=0 || P[1-s].pending) return null;
-    const b=t.hp; t.hp=Math.max(0,t.hp-CFG.DIVE); bnCheck(t, ev, L); S.stats.dive=(S.stats.dive||0)+1;
-    const d={ s, i:k.i, t:1-s, ti:t.i, amt:b-Math.max(0,t.hp), from:b, how }; (ev.dive=ev.dive||[]).push(d);
-    L.push([`Skyfall Dive: Kalina drops on ${N(t.cid)} for ${CFG.DIVE} damage (${t.hp} HP).`,'']); return d; }
+    const b=t.hp; t.hp=Math.max(0,t.hp-CFG.DIVE); const d={ s, i:k.i, t:1-s, ti:t.i, amt:b-t.hp, from:b, how }; (ev.dive=ev.dive||[]).push(d);
+    S.stats.dive=(S.stats.dive||0)+1; L.push([`Skyfall Dive: Kalina drops on ${N(t.cid)} for ${d.amt} damage (${t.hp} HP).`,'']);
+    bnCheck(t, ev, L); return d; }
   // Hako's Trusty Supplier: at the start of a round, while Hako is the active card and SUPPLY_MIN+ item cards are used up,
   // one of them (random) comes back to the hand.
   function supplyStep(state, L){ const out=[];

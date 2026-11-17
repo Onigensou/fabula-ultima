@@ -79,6 +79,8 @@ const ART = {   // exact library paths (matched by content hash to the duel wind
   brucev: "Fabula Arcana/Character Cards/Bruce V.png",
   nullis: "Fabula Arcana/Character Cards/Nullis.png",
   gardner: "Fabula Arcana/Character Cards/Gardner.png",
+  // batch 5: shadow-free still (Character/Hako/Hako Standard.png with the baked shadow stripped, 11-17)
+  hako: "Fabula Arcana/Character Cards/Hako.png",
 };
 export const artUrl = (cid) => (ART[cid] ? FORGE + ART[cid].split("/").map(encodeURIComponent).join("/") : "icons/svg/card-joker.svg");
 export const artFiles = () => ({ ...ART });   // cid → library path (card drops match monster art against these)

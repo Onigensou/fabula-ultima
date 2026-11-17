@@ -61,6 +61,7 @@ const ART = {
  "brucev": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Bruce%20V.png",
  "nullis": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Nullis.png",
  "gardner": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Gardner.png",
+ "hako": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Hako.png",
  "fx_nullguard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20UP.png",
  "fx_rival": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/DEFENSE%20UP.png",
  "fx_serenade": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/AttackUp.png",
@@ -105,7 +106,7 @@ const HOLO_VIDEO = {
  "gryphon": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Gryphon/Gryphon_Standard.webm"
 };
 // still art that faces LEFT like the character battlers (mirrored the same way on the board)
-const FACE_LEFT = ['jack','jill','love','brucev','nullis','gardner'];
+const FACE_LEFT = ['jack','jill','love','brucev','nullis','gardner','hako'];
 const SFXDATA = {};
 const SFXURL = {
  "nav": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Book1.ogg",

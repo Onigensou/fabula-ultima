@@ -514,6 +514,22 @@ body.elA{--e-phys:#555555;--e-air:#48c774;--e-bolt:#9b59b6;--e-dark:#4b0082;--e-
 @keyframes fusePulse{0%,100%{box-shadow:0 0 12px #ff3b3b,0 0 26px #ff2d2daa;filter:brightness(1)}50%{box-shadow:0 0 22px #ff5b5b,0 0 46px #ff2d2dee;filter:brightness(1.35)}}
 @keyframes fuseShake{0%{transform:translate(0,0)}25%{transform:translate(-1.5px,1px)}50%{transform:translate(1.5px,-1px)}75%{transform:translate(-1px,-1px)}100%{transform:translate(0,0)}}
 .table.urgent{box-shadow:0 14px 34px #000c,0 0 0 3px #ff3b3b55,0 0 30px #ff2d2d55}
+/* ===== Kalina's hop: who steps in after her attack (asked when her player commits a card; 2+ living allies) ===== */
+.hopask{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 0 12px;
+  background:linear-gradient(90deg,transparent 0%,#1a0f05ee 12%,#1a0f05f6 50%,#1a0f05ee 88%,transparent 100%);border-top:2px solid #9ff0b0;border-bottom:2px solid #9ff0b0;
+  animation:anncIn .28s cubic-bezier(.2,.9,.3,1) both}
+.hopask .at{font-family:var(--font-d);font-weight:800;font-size:clamp(18px,3vw,28px);color:#e6ffef;text-shadow:0 2px 0 #12361f,0 0 12px #9ff0b088}
+.hopask .as{font-family:var(--font-b);font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#cfe9d8}
+.hopask .hb{display:flex;gap:12px;margin-top:4px;flex-wrap:wrap;justify-content:center}
+.hopask .hb button{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:110px;padding:6px 10px 8px;border-radius:10px;border:2px solid #c9a44a;background:#2a1a0a;color:#fbe6b0;cursor:pointer;font-family:var(--font-b);font-weight:700}
+.hopask .hb button:hover,.hopask .hb button:focus-visible{border-color:#9ff0b0;background:#33240f;outline:none;box-shadow:0 0 12px #9ff0b066}
+.hopask .hb img{width:64px;height:64px;object-fit:contain;image-rendering:pixelated}
+.hopask .hb small{font-weight:600;color:#e8cf98;font-size:11px}
+.hopask .hx{margin-top:2px;background:none;border:none;color:#cbb88f;font-family:var(--font-b);font-size:12px;text-decoration:underline;cursor:pointer}
+/* Skyfall Dive: the falling streak onto the enemy card */
+.divestreak{position:absolute;width:8px;height:140px;margin-left:-4px;border-radius:4px;pointer-events:none;z-index:6;
+  background:linear-gradient(180deg,transparent,#e8fff4 60%,#9ff0b0);filter:drop-shadow(0 0 10px #9ff0b0)}
+.supfly{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;pointer-events:none;z-index:7;filter:drop-shadow(0 0 8px #fff2a8)}
 /* ===== announcement banner (FA_BANNER): a horizontal strip, text slides in ===== */
 .annc{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);z-index:30;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 0;
   background:linear-gradient(90deg,transparent 0%,#1a0f05e6 14%,#1a0f05f2 50%,#1a0f05e6 86%,transparent 100%);border-top:2px solid #c9a44a;border-bottom:2px solid #c9a44a;
@@ -906,7 +922,7 @@ const SPD = { gigas:1, gorger:2, carlbero:2, kirin:2, flame:2, cryo:2, sylph:2, 
 for (const k of Object.keys(CARDS)) CARDS[k].spd = SPD[k] ?? CARDS[k].spd;   // mockup: catalog cards keep their own SPD
 const ITEMS = {
   STRENGTH:{t:'Tincture of Strength', k:'Attack', d:`+${CFG.STR} ATK this round`, art:'i_strength'},
-  GOLEM:{t:'Golem Fragment', k:'Guard', d:`+${CFG.GOLEM} DEF this round (can block a hit to 0)`, art:'i_golem'},
+  GOLEM:{t:'Golem Fragment', k:'Guard', d:`+${CFG.GOLEM} DEF this round`, art:'i_golem'},
   REMEDY:{t:'Remedy', k:'Recover', d:`Heal ${CFG.REMEDY} HP before attacks`, art:'i_remedy'},
   SMOKE:{t:'Smoke Bomb', k:'Trick', d:'Your attack ignores DEF this round (Golem Fragment too)', art:'i_smoke'},
   SHARD:{t:'Elemental Shard', k:'Neutralize', d:`Attack turns Elementless, +${CFG.SHARD} ATK`, art:'i_shard'},
@@ -1579,8 +1595,7 @@ function fxStats(s, m){
   { const rv = m.cid==='nullis' ? 'gardner' : m.cid==='gardner' ? 'nullis' : null; if (rv && S.p[s].roster.some(x=>x.cid===rv && x.ko)){ out.def.v+=(CFG.RIVAL||1); out.def.why.push(`+${CFG.RIVAL||1} Rival`); } }
   if (m.cid==='raubens' && (m.loot||0)>0){ out.atk.v+=m.loot; out.atk.why.push(`+${m.loot} Bandit King`); }
   if (m.cid==='keren' && fxFoxFire(m)){ const f=fxFoxFire(m); out.atk.v+=f; out.atk.why.push(`+${f} Fox Fire`); }
-  if (m.cid==='kalina' && m.land===S.round && S.phase!=='ended'){ const a=out.atk.v, d=out.def.v; out.atk.v=c.def+(a-c.atk); out.def.v=c.atk+(d-c.def);
-    out.atk.why.push(`Jump landing: ATK and DEF swap (${c.atk} ↔ ${c.def})`); out.def.why.push(`Jump landing: ATK and DEF swap (${c.atk} ↔ ${c.def})`); }
+  if (m.cid==='geist' && m.bn && (CFG.GEIST_BN||0)){ out.atk.v+=CFG.GEIST_BN; out.atk.why.push(`+${CFG.GEIST_BN} The Blackest Night (risen)`); }
   return out;
 }
 // every status on one monster: { k, tier, icon (ART key), name, num, short, life, desc, when }
@@ -1616,11 +1631,14 @@ function fxList(s, m){
       desc:`+${CFG.FOXFIRE||2} ATK for every card KO'd in this match, on either side (max +${cap}). It builds while Keren waits on the bench.`, when: f>=cap ? 'Fully stoked.' : '' }); }
   if (m.cid==='raubens' && (m.loot||0)>0) add({ k:'loot', tier:'buff', icon:'fx_loot', name:'Bandit King', num:m.loot, short:`+${m.loot} ATK`,
     desc:`+${m.loot} ATK for the rest of the match. +1 more each time the opponent uses an item while Raubens is the active card.` });
-  if (m.cid==='kalina' && m.land===S.round) add({ k:'land', tier:'ready', icon:'fx_jump', name:'Jump: landing', short:'this round',
-    desc:`She lands this round: ATK ${c.def}, DEF ${c.atk} (ATK and DEF swapped).`, when:'This round. Then she is back on the ground.' });
+  if (m.cid==='kalina' && m.dive) add({ k:'dive', tier:'ready', icon:'fx_jump', name:'Dive Ready', short:'next switch-in',
+    desc:`The next time Kalina is switched in (or sent in after a KO), she drops on the enemy card for ${CFG.DIVE||2} damage (ignores DEF and items).`, when:'Triggers when she comes back in.' });
+  if (m.cid==='hako'){ const used=Object.keys(S.p[s].items).filter(k=>!S.p[s].items[k]).length, need=CFG.SUPPLY_MIN||3, on=used>=need;
+    add({ k:'supply', tier: on?'ready':'buff', icon:'fx_loot', name:'Trusty Supplier', num: Math.min(used,need), short: on ? 'restocks next round' : `${used} / ${need} items used`,
+      desc:esc(c.txt), when: on ? 'At the start of each round she is in front, one used item comes back.' : `Needs ${need} used-up items.` }); }
   if (m.cid==='geist'){ const used=!!m.bn;
-    add({ k:'bn', tier: used?'spent':'ready', icon:'fx_revive', name:'The Blackest Night', short: used ? 'second life' : '1 extra life', desc:esc(c.txt),
-      when: used ? 'Spent. The next time he falls, he is defeated.' : 'Ready: the first time he would fall, he rises at full HP.' }); }
+    add({ k:'bn', tier: used?'buff':'ready', icon:'fx_revive', name:'The Blackest Night', short: used ? `risen: +${CFG.GEIST_BN||1} ATK` : '1 extra life', desc:esc(c.txt),
+      when: used ? `Risen: +${CFG.GEIST_BN||1} ATK for the rest of the match. The next time he falls, he is defeated.` : 'Ready: the first time he would fall, he rises at full HP.' }); }
   if (m.cid==='hina' && fxForeSeat()===s) add({ k:'foretell', tier:'buff', icon:'fx_foretell', name:'Foretell', short:'you choose second',
     desc:`While Hina is the active card, ${esc(seatName(1-s))} chooses first and ${esc(seatName(s))} sees that card before choosing.` });
   if (FX_ONCE.includes(m.cid) || c.absorb){ const used=!!m.abilityUsed;
@@ -1661,7 +1679,7 @@ function fxCues(s, m){
   const out=[];
   if (m.cid==='skizzik' && (m.static||0)>0) out.push((m.static||0)>=2 ? 'st2' : 'st1');
   for (const p of S.p[1-s].roster) if (p.cid==='pyrefly' && !p.ko && ((p.burn||{})[m.i]||0)>=CFG.PYRE_N){ out.push('burn'); break; }
-  if ((m.cid==='wolf' && m.howl) || (m.cid==='kirin' && m.chg && m.chg[S.round]) || (m.cid==='rgolem' && m.windup) || (m.cid==='kalina' && m.land===S.round)) out.push('pow');
+  if ((m.cid==='wolf' && m.howl) || (m.cid==='kirin' && m.chg && m.chg[S.round]) || (m.cid==='rgolem' && m.windup)) out.push('pow');
   if (m.cid==='roo' && (m.walk||0)>=fxNeedRoo()) out.push('roo');
   return m.ko ? [] : out;
 }
@@ -1722,10 +1740,10 @@ const PB_ICON = { 'Howl':'fx_howl', 'Funeral Pyre':'fx_burn', 'Lightning Charge'
   'Thick Skin':'fx_shield', 'Pyrophagy':'fx_shield', 'Earthen Wire':'fx_windup', 'Evasion':'fx_guard', 'Soft Landing':'fx_guard', 'Fortify':'fx_guard',
   'Earthquake':'fx_windup', 'Double Strafe':'fx_pierce', 'Voracious':'fx_pierce', 'Dynamic Entry':'fx_burn', 'Charm':'fx_charm', 'Tailwind':'fx_wind',
   'Cryo Explosion':'fx_freeze', 'Aero Explosion':'fx_wind', 'Renewal':'fx_heal', 'Undying Flame':'fx_return',
-  'Barrage':'fx_pierce', 'Bandit King':'fx_loot', 'Fox Fire':'fx_foxfire', 'Give me tips or 5 stars':'fx_tips', 'Love Serenade':'fx_serenade', 'Royal Grace':'fx_tips', 'Stinking Breath':'fx_breath', 'Berserk':'fx_berserk', 'Twin':'fx_twin', 'Deadly Marksmanship':'fx_pierce', 'Slipstream':'fx_slip', 'Jump landing':'fx_jump', 'The Blackest Night':'fx_revive',
+  'Barrage':'fx_pierce', 'Bandit King':'fx_loot', 'Fox Fire':'fx_foxfire', 'Give me tips or 5 stars':'fx_tips', 'Love Serenade':'fx_serenade', 'Royal Grace':'fx_tips', 'Stinking Breath':'fx_breath', 'Berserk':'fx_berserk', 'Twin':'fx_twin', 'Deadly Marksmanship':'fx_pierce', 'Slipstream':'fx_slip', 'Blackest Night':'fx_revive', 'The Blackest Night':'fx_revive', 'Skyfall Dive':'fx_jump', 'Trusty Supplier':'fx_loot',
   'Thief Bow':'fx_loot', 'Teleportation Strike':'fx_pierce', 'Null Guard':'fx_nullguard', 'Heavy Armor':'fx_guard', 'Rival':'fx_rival' };
 // attack-breakdown text (calcAttack's line) → ability names, per side of the hit
-const PB_OFF = ['Howl','Funeral Pyre','Lightning Charge','Crushing Blow','Mana Catcher','On the Hunt','Entangle','Venom Sting','Static Buildup',"Chef's Knife",'Bandit King','Jump landing','Fox Fire','Love Serenade','Berserk','Twin','Deadly Marksmanship','Thief Bow','Teleportation Strike'];
+const PB_OFF = ['Howl','Funeral Pyre','Lightning Charge','Crushing Blow','Mana Catcher','On the Hunt','Entangle','Venom Sting','Static Buildup',"Chef's Knife",'Bandit King','Blackest Night','Fox Fire','Love Serenade','Berserk','Twin','Deadly Marksmanship','Thief Bow','Teleportation Strike'];
 const PB_DEF = ['Slipstream','Thick Skin','Pyrophagy','Earthen Wire','Evasion','Soft Landing','Fortify','Null Guard','Heavy Armor','Rival'];
 const PBAND = [null, null];
 function passiveBand(s, lines){
@@ -1993,6 +2011,60 @@ async function fxBurst(att, amt, gorgerCid, toHp){
   if (toHp!=null) setHP(att, S.p[att].active, toHp);
   await sleep(RM()?60:520);
 }
+// ---- Kalina (11-17): the hop after her attack and the Skyfall Dive landing (reference: her Skyfall Dive / Dragonfire Dive
+// battle animations: leap out of view, a drop-stop onto the target, impact, then back to her spot). No floating words.
+const sprOf = (s, i) => $(`#holo${s}_${i} .spr`);
+async function fxHop(h){
+  const rm=RM(), spr=sprOf(h.s, h.from), L=$('#fxl'), sl=$(`#slot${h.s}_${h.from}`);
+  if (sl && L){ const c=centerOf(sl, L); particles(c.x, c.y+20, 12, '#d9f7e6', {up:true, r:45, spread:40}); }
+  sfx('whoosh', 0.8, 0);
+  if (spr && spr.animate && !rm) await spr.animate([{ translate:'0 0', opacity:1 }, { translate:'0 -36px', opacity:1, offset:.25 }, { translate:'0 -260px', opacity:0 }],
+    { duration:420, easing:'cubic-bezier(.3,.0,.6,1)' }).finished.catch(()=>{});
+  S.p[h.s].active=h.to; updateField();
+  if (spr) setTimeout(()=>{ try { spr.getAnimations().forEach(a=>a.cancel()); } catch(e){} }, 50);
+  await sleep(rm?60:650);
+}
+async function fxDive(d, ev){
+  const rm=RM(), t=S.p[d.t].roster[d.ti], L=$('#fxl'), table=$('#table'); if (!t || !L) return;
+  setHP(d.t, d.ti, d.from); t.hp=d.from;
+  passiveBand(d.s, [{ name:'Skyfall Dive', tier:'offense' }]);
+  const spr=sprOf(d.s, d.i);
+  if (spr && spr.animate && !rm){ sfx('whoosh', 0.8, 0); await spr.animate([{ translate:'0 0', opacity:1 }, { translate:'0 -280px', opacity:0 }], { duration:300, easing:'cubic-bezier(.4,0,.9,.6)', fill:'forwards' }).finished.catch(()=>{}); }
+  const c=spriteCenter(d.t);
+  if (!rm){ const st=document.createElement('div'); st.className='divestreak'; st.style.left=c.x+'px'; st.style.top='0px'; L.appendChild(st);
+    await st.animate([{ transform:`translateY(-160px)`, opacity:.2 }, { transform:`translateY(${Math.max(0,c.y-140)}px)`, opacity:1 }], { duration:240, easing:'cubic-bezier(.6,0,1,1)', fill:'forwards' }).finished.catch(()=>{});
+    st.remove(); }
+  add('flash', c.x, c.y, {'--pc':'#ffffff'}); add('ring', c.x, c.y, {'--pc':'#9ff0b0'}); particles(c.x, c.y, 22, '#9ff0b0', {r:90}); particles(c.x, c.y+24, 14, '#e8dcc0', {r:60, up:true, spread:50});
+  sfx('hit_wind', 0.9, 0); sfx('hit', 0.8, 0);
+  if (table && !rm){ table.classList.remove('shake-hard'); void table.offsetWidth; table.classList.add('shake-hard'); setTimeout(()=>table.classList.remove('shake-hard'), 600); }
+  const after=Math.max(0, d.from-d.amt); t.hp=after; setHP(d.t, d.ti, after); popNum(d.t, '−'+d.amt, 'dmg', 'Skyfall Dive');
+  if (spr && spr.animate && !rm){ try { spr.getAnimations().forEach(a=>a.cancel()); } catch(e){}
+    await spr.animate([{ translate:'0 -220px', opacity:0 }, { translate:'0 8px', opacity:1, offset:.75 }, { translate:'0 0', opacity:1 }], { duration:380, easing:'cubic-bezier(.3,1.4,.5,1)' }).finished.catch(()=>{}); }
+  if (reviveAt(ev, d.t, d.ti) && !(ev._revived||[]).includes(d.t+':'+d.ti)){ await sleep(300); await fxRevive(d.t, d.ti); ev._revived=(ev._revived||[]).concat(d.t+':'+d.ti); }
+  await sleep(rm?60:450);
+}
+// Hako's Trusty Supplier: the restocked item card flies from Hako back to that side's item strip
+async function fxSupply(v){
+  const L=$('#fxl'), it=ITEMS[v.k]; if (!L || !it) return;
+  passiveBand(v.s, [{ name:'Trusty Supplier', tier:'support' }]); sfx('book', 0.9, 0);
+  const a=spriteCenter(v.s), strip=$(`#items${v.s}`), b = strip && strip.getBoundingClientRect && strip.getBoundingClientRect().width ? centerOf(strip, L) : { x:a.x, y:a.y+80 };
+  particles(a.x, a.y, 14, '#fff2a8', {up:true, r:55, spread:30});
+  const img=document.createElement('img'); img.className='supfly'; img.src=ART[it.art]||''; img.style.left=a.x+'px'; img.style.top=a.y+'px'; L.appendChild(img);
+  if (img.animate && !RM()) await img.animate([{ transform:'translate(0,0) scale(.4)', opacity:0 }, { transform:'translate(0,-40px) scale(1.15)', opacity:1, offset:.35 }, { transform:`translate(${b.x-a.x}px,${b.y-a.y}px) scale(.6)`, opacity:.9 }],
+    { duration:900, easing:'cubic-bezier(.3,.7,.4,1)', fill:'forwards' }).finished.catch(()=>{});
+  img.remove(); sfx('cursor', 0.6, 0); await sleep(RM()?40:250);
+}
+// Kalina's hop banner: returns the roster index of the card that steps in, or null (Back / the round moved on)
+function askHop(bench){ return new Promise(res=>{
+  const host=$('#table') || document.body; document.querySelectorAll('.hopask').forEach(e=>e.remove());
+  const b=document.createElement('div'); b.className='hopask'; b.setAttribute('role','dialog'); b.setAttribute('aria-label','Kalina hops out: who steps in?');
+  b.innerHTML=`<div class="at">Kalina hops out after her attack</div><div class="as">Who steps in?</div><div class="hb">${bench.map(m=>`<button type="button" data-i="${m.i}"><img src="${ART[m.cid]}" alt=""><span>${esc(N(m.cid))}</span><small>${m.hp} / ${CARDS[m.cid].hp} HP</small></button>`).join('')}</div><button type="button" class="hx">Back</button>`;
+  let t=null; const key=e=>{ if (e.key==='Escape'){ e.stopPropagation(); done(null); } };
+  const done=v=>{ clearInterval(t); document.removeEventListener('keydown', key, true); b.remove(); res(v); };
+  b.addEventListener('click', e=>{ e.stopPropagation(); const q=e.target.closest && e.target.closest('button'); if (!q) return; sfx('cursor',0.6,0); done(q.classList.contains('hx') ? null : +q.dataset.i); });
+  document.addEventListener('keydown', key, true);
+  t=setInterval(()=>{ if (!S || S.phase!=='choose' || S.commit[0] || !b.isConnected) done(null); }, 250);
+  host.appendChild(b); sfx('whoosh',0.7,0); const f=b.querySelector('.hb button'); if (f && f.focus) f.focus(); }); }
 const reviveAt = (ev, s, i) => (ev.revive||[]).some(v=>v.s===s && v.i===i);
 const burstOn = (ev, gSide) => { const e=((ev.after&&ev.after[gSide])||[]).find(x=>x[0]==='burst'); return e ? e[1] : 0; };
 function popFor(s, r){   // popup on defender side s for attack r
@@ -2005,9 +2077,13 @@ async function playRound(ev, before){
   // 1. monster changes: show new actives (holograms summon)
   // temporarily display pre-resolution HP/KO
   for (const s of [0,1]) for (const m of S.p[s].roster){ m._hp=m.hp; m._ko=m.ko; m.hp=before[s][m.i]; m.ko=before[s][m.i]<=0; }
+  // Kalina's hop: she is the active card until her strike, then the card she hops to (the view already shows the end state)
+  const finalActive=[S.p[0].active, S.p[1].active]; for (const h of (ev.hop||[])) S.p[h.s].active=h.from;
+  const hopsAt = at => (ev.hop||[]).filter(h=>h.at===at);
   updateField();
   pbEnter(ev);
   if (ev.enter[0]||ev.enter[1]) await sleep(900);
+  for (const d of (ev.dive||[])) await fxDive(d, ev);
   // 2. items
   const it=[0,1].filter(s=>ev.items[s]);
   await Promise.all(it.map(s=>fxItem(s, ev.items[s])));
@@ -2030,6 +2106,7 @@ async function playRound(ev, before){
       if (reviveAt(ev, d, di) && !(ev._revived||[]).includes(d+':'+di)){ await sleep(350); await fxRevive(d, di); ev._revived=(ev._revived||[]).concat(d+':'+di); }
       for (const q of [0,1]) setHP(q, S.p[q].active, q===s && bAmt ? sn[q]+bAmt : sn[q]);
       if (bAmt && ev.res[s] && ev.res[s].d){ await sleep(380); await fxBurst(s, bAmt, ev.res[s].d.cid, sn[s]); }
+      for (const h of hopsAt(k+1)){ await sleep(300); await fxHop(h); }
       if (k<ev.seq.length-1) await sleep(420);
     }
     if (ev.denied!=null){ const d=$(`#slot${ev.denied}_${S.p[ev.denied].active}`); if (d){ d.classList.add('downed'); } await sleep(250); }
@@ -2040,7 +2117,9 @@ async function playRound(ev, before){
     for (const s of [0,1]) passiveBand(1-s, pbs[s].def);
     for (const s of [0,1]){ const i=S.p[s].active; if (reviveAt(ev, s, i)){ await sleep(350); await fxRevive(s, i); ev._revived=(ev._revived||[]).concat(s+':'+i); } }
     for (const g of [0,1]){ const amt=burstOn(ev, g), r=ev.res[1-g]; if (amt && r && r.d){ await sleep(380); await fxBurst(1-g, amt, r.d.cid, null); } }
+    for (const h of hopsAt(null)){ await sleep(300); await fxHop(h); }
   }
+  for (const s of [0,1]) S.p[s].active=finalActive[s];
   // revives off the clash (bench hits: Barrage / Earthquake / Double Strafe / Voracious; Explosion or Entry on Geist)
   for (const v of (ev.revive||[])) if (!(ev._revived||[]).includes(v.s+':'+v.i)){ ev._revived=(ev._revived||[]).concat(v.s+':'+v.i); await fxRevive(v.s, v.i); }
   pbAfter(ev);
@@ -2879,7 +2958,14 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
   commit = async function(s, c, fromRect){
     if (spectator() || s !== 0 || !S) return;
     if (S.commit[0] || S.phase === 'anim' || S.phase === 'ended') return;
-    S.flying = S.flying || [false,false]; if (S.flying[0]) return; S.flying[0] = true;
+    S.flying = S.flying || [false,false]; if (S.flying[0] || UI.hopAsk) return;
+    // Kalina always hops out after her attack: with two allies standing, ask now who steps in (one ally = that one)
+    if (S.phase === 'choose' && c.action && c.action !== 'SWITCH'){ const pl = S.p[0], a = pl.roster[pl.active];
+      if (a && a.cid === 'kalina'){ const bench = pl.roster.filter(q => !q.ko && q.hp > 0 && q.i !== pl.active);
+        if (bench.length === 1) c.hop = bench[0].i;
+        else if (bench.length > 1){ UI.hopAsk = true; let pick = null; try { pick = await askHop(bench); } finally { UI.hopAsk = false; }
+          if (pick == null || !S || S.commit[0] || S.phase !== 'choose') return; c.hop = pick; } } }
+    S.flying[0] = true;
     if (!fromRect){ const sel = $('#hand0 .hcard.sel'); fromRect = sel ? sel.getBoundingClientRect() : handFrom(0); }
     updateField();
     if (c.action){ const hc = document.querySelector(`#hand0 [data-hand="${c.action}"]`); if (hc) hc.style.visibility = 'hidden'; }
@@ -2919,6 +3005,12 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
       await sleep(420); S.reveal.open = true; renderLane(); await sleep(680);
       const rv = S.reveal; S = fromView(m.view, m); S.reveal = rv; const ph = S.phase; S.phase = 'anim';
       updateField(); await sleep(res.kind === 'opening' ? 900 : 850);
+      const ev = res.ev || {};
+      for (const d of (ev.dive || [])){ await fxDive(d, ev); }
+      for (const v of (ev.revive || [])) if (!(ev._revived || []).includes(v.s + ':' + v.i)){ ev._revived = (ev._revived || []).concat(v.s + ':' + v.i); await fxRevive(v.s, v.i); }
+      if ((ev.dive || []).some(d => d.ko)){ sfx('ko', 0.9, 0); await sleep(500); }
+      for (const v of (ev.supply || [])) await fxSupply(v);
+      if (ev.dive || ev.supply){ S = fromView(m.view, m); S.phase = 'anim'; updateField(); }
       S.reveal = null; S.phase = ph; return after(m);
     }
     const sub = (s, c) => c.action === 'SWITCH' ? `→ ${N(P[s].roster[c.target].cid)}` : (ITEMS[c.action] ? ITEMS[c.action].k : '');
@@ -2930,6 +3022,7 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
     const before = S.p.map(pl => pl.roster.map(q => q.hp));
     const rv = S.reveal; S = fromView(m.view, m); const ph = S.phase; S.reveal = rv; S.phase = 'anim'; S.commit = [C[0], C[1]];
     await playRound(res.ev, before);
+    for (const v of (res.ev.supply || [])) await fxSupply(v);
     S.reveal = null; clearBuffs(); S.phase = ph; S.commit = fromView(m.view, m).commit;
     return after(m);
   }
