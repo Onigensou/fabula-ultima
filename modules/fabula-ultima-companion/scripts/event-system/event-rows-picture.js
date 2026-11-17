@@ -459,6 +459,8 @@
         width: 100%;
         height: 100%;
         transform-origin: 50% 50%;
+        will-change: transform;
+        backface-visibility: hidden;
       }
       #${LAYER_ID} .oni-event-picture.native .oni-event-picture-box {
         width: auto;
@@ -589,7 +591,13 @@
     });
   }
 
-  const boxTransform = (p) => `translate(-50%, -50%) rotate(${p.rotation}deg) scale(${p.scale / 100})`;
+  // Position, rotation and scale all live in ONE transform; left/top stay
+  // fixed at 50%. Animating left/top (layout) over a slow 30-40 s push-in
+  // snapped to whole pixels each frame and the picture visibly jittered
+  // (user, 2026-11-18). A transform moves in sub-pixels on its own layer.
+  // The frame fills the viewport, so x/y % of the frame = vw/vh.
+  const boxTransform = (p) =>
+    `translate(calc(-50% + ${p.x - 50}vw), calc(-50% + ${p.y - 50}vh)) rotate(${p.rotation}deg) scale(${p.scale / 100})`;
 
   function makeView(p) {
     const frame = document.createElement("div");
@@ -636,7 +644,7 @@
   }
 
   function setPlace(view, p, ms, easing) {
-    return animateTo(view.box, { left: `${p.x}%`, top: `${p.y}%`, transform: boxTransform(p) }, ms, easing);
+    return animateTo(view.box, { transform: boxTransform(p) }, ms, easing);
   }
 
   function setLook(view, p, ms, easing) {
