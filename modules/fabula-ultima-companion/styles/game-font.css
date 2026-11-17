@@ -26,4 +26,7 @@
 
 :root {
   --oni-text-font: "Pixelify Sans", "Signika", "M PLUS Rounded 1c", system-ui, sans-serif;
+  /* Body ink on parchment boxes: warm brown instead of near-black so the
+     pixel strokes read lighter (user pick 11-17). Names stay dark + bold. */
+  --oni-text-ink: #5b4f40;
 }

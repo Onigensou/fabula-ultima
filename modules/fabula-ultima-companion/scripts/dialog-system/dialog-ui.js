@@ -193,6 +193,7 @@
 .fu-name { font-weight:700; font-size:1.05rem; letter-spacing:.02em; color:#2a1c0f;
   text-shadow:0 1px 0 rgba(255,255,255,.6); margin:12px 16px 6px; }
 .fu-text { font-size:1.05rem; line-height:1.5; min-height:2.7em; margin:0 16px 14px; }
+.fu-bubble:not(.mode-shout):not(.mode-think) .fu-text { color: var(--oni-text-ink, #5b4f40); }
 .fu-hint { font-weight:800; color:#a3231f; }
 .fu-tail { position:absolute; bottom:-16px; left:44px; width:0; height:0;
   border-left:14px solid transparent; border-right:14px solid transparent; border-top:16px solid #e8e0cf;

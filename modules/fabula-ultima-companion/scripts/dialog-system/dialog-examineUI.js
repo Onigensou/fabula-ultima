@@ -218,7 +218,7 @@ Hooks.once("ready", () => {
   mix-blend-mode: multiply; opacity:.6;
 }
 .fft-name { font-weight:700; font-size:1.05rem; margin:12px 16px 6px; }
-.fft-text { font-size:1.05rem; line-height:1.5; margin:0 16px 14px; white-space: pre-wrap; min-height:2.7em; }
+.fft-text { font-size:1.05rem; line-height:1.5; margin:0 16px 14px; white-space: pre-wrap; min-height:2.7em; color: var(--oni-text-ink, #5b4f40); }
 .fft-tail { position:absolute; bottom:-16px; left:44px; width:0; height:0;
   border-left:14px solid transparent; border-right:14px solid transparent; border-top:16px solid #e8e0cf; }
         `;

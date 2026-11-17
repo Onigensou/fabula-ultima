@@ -165,6 +165,7 @@ export async function runJRPGSpeechBubble() {
       .fft-name { font-weight:700; font-size:1.05rem; letter-spacing:.02em; color:#2a1c0f;
                   text-shadow:0 1px 0 rgba(255,255,255,.6); margin:12px 16px 6px; }
       .fft-text { font-size:1.05rem; line-height:1.5; min-height:2.7em; margin:0 16px 14px; }
+      .fft-bubble:not(.mode-shout) .fft-text { color: var(--oni-text-ink, #5b4f40); }
       .fft-tail { position:absolute; bottom:-16px; left:44px; width:0; height:0;
         border-left:14px solid transparent; border-right:14px solid transparent; border-top:16px solid #e8e0cf;
         filter: drop-shadow(0 -2px 0 rgba(0,0,0,.08)); }
