@@ -169,8 +169,8 @@ async function seedCampHako(game, log) {
   const hako = game.actors.get(HAKO_ID);
   if (!hako) { log?.("Hako actor not found; camp tokens skipped."); return; }
   const talk = [text("This", "Don't mind me, I like watching people sleep")];
-  // surface: on the rock above the bedrolls; underground: by the tent, looking over the bedrolls
-  const spots = { surface: { x: 860, y: 400 }, underground: { x: 370, y: 390 } };
+  // both camps: by the tent, looking over the bedrolls (user, 11-17)
+  const spots = { surface: { x: 383, y: 362 }, underground: { x: 370, y: 390 } };
   for (const [where, id] of Object.entries(CAMP_IDS)) {
     const camp = game.scenes.get(id);
     if (!camp) { log?.(`${where} camp not found; skipped.`); continue; }
