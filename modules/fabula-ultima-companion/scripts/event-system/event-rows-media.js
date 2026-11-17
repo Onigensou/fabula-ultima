@@ -104,6 +104,26 @@
     return /\.(webm|mp4|m4v|ogv)(\?.*)?$/i.test(String(src || ""));
   }
 
+  // Play Animation's playback rate for a video: 0.5 = half speed. Still images ignore it.
+  const SPEED_MIN = 0.25;
+  const SPEED_MAX = 4;
+  const speedOf = (raw) => clampNumber(raw, SPEED_MIN, SPEED_MAX, 1);
+
+  /**
+   * How long (real ms) a Play Animation's "wait for completion" waits. A set
+   * duration is real time already; a video's own length is stretched by its
+   * speed (0.8 s at 0.5 = 1.6 s). The 30 s cap is on real time; a held one has
+   * no cap, as before. 0 = no wait.
+   */
+  function animationWaitMs({ durationMs = 0, mediaMs = 0, video = false, hold = false, speed = 1 } = {}) {
+    const fixed = Math.max(0, Number(durationMs) || 0);
+    const ms = fixed > 0 ? fixed
+      : video ? Math.max(0, Number(mediaMs) || 0) / speedOf(speed)
+      : (hold ? 0 : IMAGE_DEFAULT_MS);
+    if (!(ms > 0)) return 0;
+    return hold ? ms : Math.min(ANIMATION_CAP_MS, ms);
+  }
+
   // The name Stop Animation finds a held animation by: the row's own name, or
   // else the file's, compared without case or extension ("Smoke" finds
   // ".../smoke.webm"). "" = no name, which Stop Animation reads as "all".
@@ -811,13 +831,19 @@
     });
   }
 
-  function makeMedia(src, className) {
+  function makeMedia(src, className, speed = 1) {
     const el = document.createElement(isVideo(src) ? "video" : "img");
     el.className = className;
     if (el.tagName === "VIDEO") {
       el.muted = true;
       el.autoplay = true;
       el.playsInline = true;
+      // The default rate is what a (re)load resets playbackRate to, so both are
+      // set before the file; play puts it back if anything changed it.
+      const rate = speedOf(speed);
+      el.defaultPlaybackRate = rate;
+      el.playbackRate = rate;
+      el.addEventListener("play", () => { if (el.playbackRate !== rate) el.playbackRate = rate; });
     }
     el.src = src;
     return el;
@@ -887,12 +913,13 @@
         durationMs: Math.max(0, Logic.toNumber(data.durationMs, 0)),
         hold,
         holdKey: key,
-        mirror: data.mirror === true
+        mirror: data.mirror === true,
+        speed: speedOf(data.speed)
       });
       return;
     }
 
-    const el = makeMedia(src, fullscreen ? "oni-event-screen-media" : "oni-event-world-media");
+    const el = makeMedia(src, fullscreen ? "oni-event-screen-media" : "oni-event-world-media", data.speed);
 
     let ticker = null;
     let stopped = false;
@@ -993,11 +1020,14 @@
       hold: false,
       holdName: "",
       mirrorLeftOf: "",
+      speed: 1,
       wait: true
     },
     summary: (row) => {
       const file = String(row?.src ?? "").split("/").pop();
-      return row?.hold === true ? `${file} · held as "${holdKey(row?.holdName, row?.src)}"` : file;
+      const speed = speedOf(row?.speed);
+      const shown = speed !== 1 ? `${file} · ×${speed}` : file;
+      return row?.hold === true ? `${shown} · held as "${holdKey(row?.holdName, row?.src)}"` : shown;
     },
     mediaOf: (row) => [row?.src],
     execute: async (row, context) => {
@@ -1006,6 +1036,7 @@
 
       const hold = row?.hold === true;
       const durationMs = clampNumber(row?.seconds, 0, ANIMATION_CAP_MS / 1000, 0) * 1000;
+      const speed = speedOf(row?.speed);
 
       Client.run(context?.tileId, KIND_ANIMATION, {
         src,
@@ -1023,15 +1054,17 @@
         spawn: row?.spawn === true,
         durationMs,
         hold,
-        holdKey: holdKey(row?.holdName, src)
+        holdKey: holdKey(row?.holdName, src),
+        speed
       });
 
       // Held: the wait ends on the last frame (no cap), not when it goes;
-      // a held image is there at once.
+      // a held image is there at once. A video's length is stretched by its speed.
       if (row?.wait !== false) {
-        let ms = durationMs;
-        if (ms <= 0) ms = isVideo(src) ? await mediaDurationMs(src, "video") : (hold ? 0 : IMAGE_DEFAULT_MS);
-        if (ms > 0) await flow()?.wait?.(context?.tileId, hold ? ms : Math.min(ANIMATION_CAP_MS, ms));
+        const video = isVideo(src);
+        const mediaMs = durationMs <= 0 && video ? await mediaDurationMs(src, "video") : 0;
+        const ms = animationWaitMs({ durationMs, mediaMs, video, hold, speed });
+        if (ms > 0) await flow()?.wait?.(context?.tileId, ms);
       }
 
       return { ok: true, type: "playAnimation" };
@@ -1080,6 +1113,11 @@
           "Duration (s)",
           kit.numberInput("oni-event-row-anim-seconds", Logic.toNumber(row.seconds, 0) > 0 ? row.seconds : "", { min: 0, max: ANIMATION_CAP_MS / 1000, step: 0.1, placeholder: "auto" }),
           `Empty: a video plays to its end, a still image shows for ${IMAGE_DEFAULT_MS / 1000} s.`
+        ),
+        kit.field(
+          "Speed (×)",
+          kit.numberInput("oni-event-row-anim-speed", speedOf(row.speed), { min: SPEED_MIN, max: SPEED_MAX, step: 0.05 }),
+          "Video playback rate; 0.5 = half speed"
         ),
         kit.field(
           "",
@@ -1133,6 +1171,7 @@
       hold: !!kit.own(rowEl, ".oni-event-row-anim-hold")?.checked,
       holdName: kit.readText(rowEl, ".oni-event-row-anim-hold-name", "").trim(),
       mirrorLeftOf: kit.readText(rowEl, ".oni-event-row-anim-mirror", "").trim(),
+      speed: speedOf(kit.readNumber(rowEl, ".oni-event-row-anim-speed", 1)),
       wait: kit.readWait(rowEl, true)
     })
   });
@@ -1188,6 +1227,9 @@
     installed: true,
     // Plain helper, also for tests: the name Stop Animation finds a hold by.
     holdKey,
+    // Plain helpers, also for tests: Play Animation's speed and its wait.
+    speedOf,
+    animationWaitMs,
     // Also used by the config window's preview button.
     playSound,
     preloadSound: (src) => { loadSound(src).catch(() => {}); },

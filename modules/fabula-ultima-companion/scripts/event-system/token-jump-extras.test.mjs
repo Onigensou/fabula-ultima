@@ -235,6 +235,96 @@ check("tint: ends exact and clamps", RT.mixColor(0x07060c, 0xffffff, 1) === 0xff
   check("jump to: defaults are hop and no dust", jumpTo.defaultData.style === "hop" && jumpTo.defaultData.dust === "none");
 }
 
+// ---------------------------------------------------------------------------
+// Set Token picture (pose): keep the original once, put it back on Restore
+// ---------------------------------------------------------------------------
+{
+  const MOD = "fabula-ultima-companion";
+  // Applies dotted keys the way Foundry does, "-=key" deleting.
+  const apply = (doc, fields) => {
+    for (const [path, value] of Object.entries(fields)) {
+      const parts = path.split(".");
+      let at = doc;
+      for (const p of parts.slice(0, -1)) at = (at[p] ??= {});
+      const last = parts.at(-1);
+      if (last.startsWith("-=")) delete at[last.slice(2)];
+      else at[last] = value;
+    }
+    return doc;
+  };
+  const boss = () => ({ id: "asura", texture: { src: "art/Asura.png", scaleX: 1 }, flags: {} });
+  const P = RT.poseUpdate;
+
+  check("pose: keep does nothing", JSON.stringify(P(boss(), "keep", "x.png")) === "{}");
+  check("pose: change with no file does nothing", JSON.stringify(P(boss(), "set", "  ")) === "{}");
+  check("pose: restore with nothing stored does nothing", JSON.stringify(P(boss(), "restore")) === "{}");
+
+  const d = boss();
+  const first = P(d, "set", " art/Asura_Defeated.png ");
+  apply(d, first);
+  check("pose: change swaps the picture", d.texture.src === "art/Asura_Defeated.png", JSON.stringify(first));
+  check("pose: the first change keeps the original image and the lock as it was",
+    d.flags[MOD].poseOriginal?.src === "art/Asura.png" && d.flags[MOD].poseOriginal?.facingLocked === null, JSON.stringify(d.flags));
+  check("pose: while posed the facing system is told never to turn it", d.flags[MOD].facingLocked === true);
+
+  apply(d, P(d, "set", "art/Asura_Kneel2.png"));
+  check("pose: a second change keeps the FIRST original", d.texture.src === "art/Asura_Kneel2.png" && d.flags[MOD].poseOriginal.src === "art/Asura.png");
+
+  apply(d, P(d, "restore"));
+  check("pose: restore puts the original back", d.texture.src === "art/Asura.png");
+  check("pose: restore clears the stored original and the lock it added",
+    !("poseOriginal" in d.flags[MOD]) && !("facingLocked" in d.flags[MOD]), JSON.stringify(d.flags));
+  check("pose: a second restore does nothing", JSON.stringify(P(d, "restore")) === "{}");
+
+  const locked = boss();
+  locked.flags[MOD] = { facingLocked: true };
+  apply(locked, P(locked, "set", "p.png"));
+  apply(locked, P(locked, "restore"));
+  check("pose: a token marked never turns stays marked after restore", locked.flags[MOD].facingLocked === true && locked.texture.src === "art/Asura.png");
+  const unlocked = boss();
+  unlocked.flags[MOD] = { facingLocked: false };
+  apply(unlocked, P(unlocked, "set", "p.png"));
+  apply(unlocked, P(unlocked, "restore"));
+  check("pose: an explicit false lock comes back as false", unlocked.flags[MOD].facingLocked === false);
+
+  // The row
+  reset();
+  const setToken = registered.get("setToken");
+  check("set token: picture defaults to leave as it is", setToken.defaultData.picture === "keep" && setToken.defaultData.pictureSrc === "");
+  const rak = scene.tokens.get("rak");
+  rak.texture = { src: "art/Rakshasa.png" };
+  rak.flags = {};
+  let r = await setToken.execute({ name: "Rakshasa", visibility: "keep", tint: "keep", picture: "set", pictureSrc: "art/Rak_Defeated.png" }, ctx());
+  const sent = updates[0]?.changes?.[0] ?? {};
+  check("set token: change picture writes the picture and the original in one update",
+    r.ok && r.changed === 1 && updates.length === 1 && sent["texture.src"] === "art/Rak_Defeated.png"
+    && sent[`flags.${MOD}.poseOriginal`]?.src === "art/Rakshasa.png" && sent[`flags.${MOD}.facingLocked`] === true, JSON.stringify(sent));
+
+  reset();
+  const rak2 = scene.tokens.get("rak");
+  rak2.texture = { src: "art/Rak_Defeated.png" };
+  rak2.flags = { [MOD]: { poseOriginal: { src: "art/Rakshasa.png", facingLocked: null }, facingLocked: true } };
+  await setToken.execute({ name: "Rakshasa", visibility: "hide", tint: "keep", picture: "restore" }, ctx());
+  const back = updates[0]?.changes?.[0] ?? {};
+  check("set token: hide and restore go out together", back.hidden === true && back["texture.src"] === "art/Rakshasa.png"
+    && back[`flags.${MOD}.-=poseOriginal`] === null && back[`flags.${MOD}.-=facingLocked`] === null, JSON.stringify(back));
+
+  reset();
+  r = await setToken.execute({ name: "Rakshasa", visibility: "keep", tint: "keep" }, ctx());
+  check("set token: an old row with no picture field writes nothing, as before", r.changed === 0 && updates.length === 0);
+  reset();
+  await setToken.execute({ name: "Rakshasa", visibility: "show", tint: "keep" }, ctx());
+  check("set token: an old show row sends only hidden", JSON.stringify(Object.keys(updates[0]?.changes?.[0] ?? {})) === JSON.stringify(["_id", "hidden"]), JSON.stringify(updates[0]));
+
+  check("set token: summary names the picture",
+    setToken.summary({ name: "Asura", visibility: "keep", picture: "set", pictureSrc: "a/b/Asura_Defeated.png" }) === "Asura, picture Asura_Defeated.png"
+    && setToken.summary({ name: "Asura", visibility: "hide", picture: "restore" }) === "Asura, hide, picture restored");
+  check("set token: a still picture is warmed up; a clip is not",
+    JSON.stringify(setToken.mediaOf({ name: "Asura", picture: "set", pictureSrc: "p.png" })) === '["p.png"]'
+    && setToken.mediaOf({ name: "Asura", picture: "set", pictureSrc: "p.webm" }).length === 0
+    && setToken.mediaOf({ name: "Asura" }).length === 0);
+}
+
 console.log(`\n${pass} passed, ${fail} failed`);
 console.log(fail ? `${fail} FAILED` : "all passed");
 process.exitCode = fail ? 1 : 0;

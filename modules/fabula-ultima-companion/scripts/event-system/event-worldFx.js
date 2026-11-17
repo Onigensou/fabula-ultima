@@ -184,17 +184,24 @@
    *                  no time cap, until stopHeld() names it or the event ends.
    *                  Resolves when the frame is reached, not when it is removed.
    *   holdKey        the name stopHeld() finds it by (RowsMedia.holdKey)
+   *   speed          a video's playback rate (0.5 = half speed, 0.25-4); durationMs
+   *                  stays real time. An image ignores it.
    */
   async function play({
     src, x, y, sourceId,
     width = 0, scale = 1, anchorX = 0.5, anchorY = 0.5,
     sort = SORT.OVER_TOKENS, alpha = 1, tint = null, additive = false, mirror = false,
-    durationMs = 0, flat = 1, hue = 0, spawn = false, hold = false, holdKey = ""
+    durationMs = 0, flat = 1, hue = 0, spawn = false, hold = false, holdKey = "", speed = 1
   } = {}) {
     if (!src || !canvas?.ready || hiddenTab()) return false;
 
     const sceneId = canvas.scene?.id;
     const video = isVideo(src) ? takeVideo(src) : null;
+    const rate = Math.min(4, Math.max(0.25, Number(speed) || 1));
+    // Before it plays; the default rate is what a reload of the element resets to.
+    if (video) {
+      try { video.defaultPlaybackRate = rate; video.playbackRate = rate; } catch (_) {}
+    }
 
     let texture = null;
     try {
@@ -252,7 +259,8 @@
           let a = Math.min(1, e * 1.4);
           const total = video ? (video.duration || 0) : (durationMs || IMAGE_DEFAULT_MS) / 1000;
           const elapsed = video ? video.currentTime : (performance.now() - startedAt) / 1000;
-          const left = total - elapsed;
+          // The clip's time left, in real seconds (a slowed clip fades out as slowly).
+          const left = video ? (total - elapsed) / rate : total - elapsed;
           // A held clip stays at full size: it grows in once and is done.
           if (hold && e >= 1) {
             mesh.scale.set(baseW, baseH);
@@ -343,6 +351,7 @@
         video.addEventListener("ended", hold ? freeze : () => stop(), { once: true });
         video.addEventListener("error", () => stop(), { once: true });
         try { video.currentTime = 0; } catch (_) {}
+        try { if (video.playbackRate !== rate) video.playbackRate = rate; } catch (_) {}
         video.play().catch(() => stop());
       }
 

@@ -35,6 +35,9 @@
  * - Set Facing can turn toward the party or a named token, worked out when the
  *   row runs: one of eight directions, and a left or right mirror for a token
  *   with a single picture (straight up or down still mirrors to that side).
+ * - Picture swaps the token's own image (a defeated boss kneeling) and Restore
+ *   puts it back. The GM writes it, so it stays through reloads and a replay of
+ *   the event until a Restore row runs. See poseUpdate.
  * - The Guilty Gear dust (ggDust) is shared with Jump To.
  *
  * Requires:
@@ -152,6 +155,59 @@
 
   const DEFAULT_COLOR = "#16102a";
   const NO_TINT = "#ffffff";
+
+  // Picture (a pose): the GM swaps the token's own image, so every client and a
+  // reload see it. The first change keeps the image it replaced, and the facing
+  // system's "never turns" mark as it was, in poseOriginal; Restore puts both
+  // back. While posed the token is marked never turns, so walk, standing-direction
+  // art and Set Facing leave the pose alone; it keeps the side it faced.
+  const PICTURE = [
+    ["keep", "Leave as it is"],
+    ["set", "Change picture"],
+    ["restore", "Restore picture"]
+  ];
+  const MODULE_ID = "fabula-ultima-companion";
+  const POSE_ORIGINAL_FLAG = "poseOriginal";
+  const LOCKED_FLAG = "facingLocked";   // sprite-facing-runtime.js LOCKED_FLAG
+
+  /**
+   * The token update fields (dotted keys) that put a picture on one token, or
+   * take it off. doc: a token document (or its plain data). mode: keep, set or
+   * restore. Plain, for the tests. {} when there is nothing to do.
+   */
+  function poseUpdate(doc, mode, src) {
+    const flags = doc?.flags?.[MODULE_ID] ?? {};
+    const original = flags[POSE_ORIGINAL_FLAG];
+    const posed = !!original && typeof original === "object";
+    const base = `flags.${MODULE_ID}`;
+
+    if (mode === "set") {
+      const file = String(src ?? "").trim();
+      if (!file) return {};
+      // Posed already: change the picture, keep the first original.
+      if (posed) return { "texture.src": file };
+      const locked = flags[LOCKED_FLAG];
+      return {
+        "texture.src": file,
+        [`${base}.${POSE_ORIGINAL_FLAG}`]: {
+          src: String(doc?.texture?.src ?? ""),
+          facingLocked: locked === true || locked === false ? locked : null
+        },
+        [`${base}.${LOCKED_FLAG}`]: true
+      };
+    }
+
+    if (mode === "restore") {
+      if (!posed) return {};
+      const out = { [`${base}.-=${POSE_ORIGINAL_FLAG}`]: null };
+      if (String(original.src ?? "").trim()) out["texture.src"] = String(original.src);
+      if (original.facingLocked === true || original.facingLocked === false) out[`${base}.${LOCKED_FLAG}`] = original.facingLocked;
+      else out[`${base}.-=${LOCKED_FLAG}`] = null;
+      return out;
+    }
+
+    return {};
+  }
 
   // Show with a fade: the copy fades in while it rises into place, eased out.
   // Crouch: it goes from a deep squash to a crouch, as Asura behind the rubble.
@@ -437,11 +493,18 @@
     category: "Token",
     defaultData: {
       type: "setToken", name: "", visibility: "show", tint: "keep", color: DEFAULT_COLOR, direction: "up", smoke: false, wait: true,
-      fadeMs: 0, risePx: 0, crouch: false, tintFadeMs: 0
+      fadeMs: 0, risePx: 0, crouch: false, tintFadeMs: 0,
+      picture: "keep", pictureSrc: ""
     },
-    mediaOf: (row) => (row?.visibility === "jump" && row?.smoke === true
-      ? namesIn(row?.name).flatMap(() => [SMOKE.plume.src, SMOKE.kick.src])
-      : []),
+    mediaOf: (row) => [
+      ...(row?.visibility === "jump" && row?.smoke === true
+        ? namesIn(row?.name).flatMap(() => [SMOKE.plume.src, SMOKE.kick.src])
+        : []),
+      // Warm a still picture up; a clip is left to Foundry (the shared pool's copies would go unused).
+      ...(pick(PICTURE, row?.picture) === "set" && !/\.(webm|mp4|m4v|ogv)(\?.*)?$/i.test(String(row?.pictureSrc ?? "").trim())
+        ? [String(row?.pictureSrc ?? "").trim()].filter(Boolean)
+        : [])
+    ],
     summary: (row) => {
       const parts = [String(row?.name ?? "").trim() || "(no token)"];
       const visibility = pick(VISIBILITY, row?.visibility);
@@ -453,6 +516,9 @@
         parts.push(row.tint === "set" ? `tint ${validColor(row.color)}` : "no tint");
         if (visibility !== "jump" && fadeMsOf(row?.tintFadeMs) > 0) parts.push(`tint fade ${fadeMsOf(row.tintFadeMs)} ms`);
       }
+      const picture = pick(PICTURE, row?.picture);
+      if (picture === "set") parts.push(`picture ${String(row?.pictureSrc ?? "").trim().split("/").pop() || "(no file)"}`);
+      if (picture === "restore") parts.push("picture restored");
       return parts.join(", ");
     },
     execute: async (row, context) => {
@@ -472,6 +538,16 @@
       const tint = pick(TINT, row?.tint);
       if (tint !== "keep") change["texture.tint"] = tint === "set" ? validColor(row?.color) : NO_TINT;
 
+      // The picture is each token's own (its own original to keep), and goes in
+      // with the instant part.
+      const picture = pick(PICTURE, row?.picture);
+      if (picture === "set" && !String(row?.pictureSrc ?? "").trim()) {
+        ui.notifications?.warn?.("Event: Set Token's Change picture has no file. That part was skipped.");
+      }
+      const posing = new Map(found.map(t => [t.id, poseUpdate(t, picture, row?.pictureSrc)]));
+      const anyPose = [...posing.values()].some(p => Object.keys(p).length);
+      const withPose = (t, fields) => ({ _id: t.id, ...fields, ...posing.get(t.id) });
+
       if (visibility === "jump") {
         // Only tokens that can be seen jump; the copy needs a drawn sprite.
         Client.run(context?.tileId, KIND_JUMP, {
@@ -479,12 +555,12 @@
           direction: pickDirection(row?.direction),
           smoke: row?.smoke === true
         });
-        await scene.updateEmbeddedDocuments("Token", found.map(t => ({ _id: t.id, hidden: true, ...change })));
+        await scene.updateEmbeddedDocuments("Token", found.map(t => withPose(t, { hidden: true, ...change })));
         if (row?.wait !== false) await window.oni.EventSystem.Flow?.wait?.(context?.tileId, JUMP_TOTAL_MS);
         return { ok: true, type: "setToken", changed: found.length };
       }
 
-      if (!Object.keys(change).length) return { ok: true, type: "setToken", changed: 0 };
+      if (!Object.keys(change).length && !anyPose) return { ok: true, type: "setToken", changed: 0 };
 
       // Fades: every client plays them, then the GM writes what they faded to.
       // An instant part is written first, so a Show and a tint fade together
@@ -500,8 +576,8 @@
         if (visibility === "hide") { later.hidden = true; delete change.hidden; }
       }
 
-      if (Object.keys(change).length) {
-        await scene.updateEmbeddedDocuments("Token", found.map(t => ({ _id: t.id, ...change })));
+      if (Object.keys(change).length || anyPose) {
+        await scene.updateEmbeddedDocuments("Token", found.map(t => withPose(t, change)));
       }
       if (!Object.keys(later).length) return { ok: true, type: "setToken", changed: found.length };
 
@@ -558,12 +634,24 @@
           "Tint fade (ms)",
           kit.numberInput("oni-event-row-token-tint-fade", fadeMsOf(row.tintFadeMs), { min: 0, max: MAX_FADE_MS, step: 10 }),
           "0 = at once. Otherwise the tint blends over this time, then the row goes on: a silhouette cleared over 1200 ms. Not with Jump away."
+        )}</div>`,
+        kit.field(
+          "Picture",
+          `<select class="oni-event-row-token-picture">${kit.options(PICTURE, pick(PICTURE, row.picture))}</select>`,
+          "Stays after the event, and after a reload, until a Restore picture row puts the token's own image back (a second change keeps the first image to go back to). While changed, the token keeps the side it faces and does not walk, turn or wear direction art."
+        ),
+        `<div class="oni-event-row-token-picture-wrap">${kit.field(
+          "Picture file",
+          kit.fileInput("oni-event-row-token-picture-src", row.pictureSrc ?? "", "imagevideo", "Path or URL (png, webm...)"),
+          "Shown in the token's box, as its own image would be. Drawn facing left, like the token's art."
         )}</div>`
       );
 
       const tintEl = body.querySelector(".oni-event-row-token-tint");
       const visibilityEl = body.querySelector(".oni-event-row-token-visibility");
+      const pictureEl = body.querySelector(".oni-event-row-token-picture");
       const sync = () => {
+        body.querySelector(".oni-event-row-token-picture-wrap").hidden = pictureEl.value !== "set";
         body.querySelector(".oni-event-row-token-color-wrap").hidden = tintEl.value !== "set";
         body.querySelector(".oni-event-row-token-tint-fade-wrap").hidden = tintEl.value === "keep" || visibilityEl.value === "jump";
         body.querySelector(".oni-event-row-token-jump-wrap").hidden = visibilityEl.value !== "jump";
@@ -571,11 +659,14 @@
       };
       tintEl.addEventListener("change", sync);
       visibilityEl.addEventListener("change", sync);
+      pictureEl.addEventListener("change", sync);
       sync();
 
       return body;
     },
     collectFields: (rowEl, kit) => ({
+      picture: pick(PICTURE, kit.readText(rowEl, ".oni-event-row-token-picture", "keep")),
+      pictureSrc: kit.readText(rowEl, ".oni-event-row-token-picture-src", "").trim(),
       name: kit.readText(rowEl, ".oni-event-row-token-name", "").trim(),
       visibility: pick(VISIBILITY, kit.readText(rowEl, ".oni-event-row-token-visibility", "keep")),
       tint: pick(TINT, kit.readText(rowEl, ".oni-event-row-token-tint", "keep")),
@@ -874,7 +965,8 @@
     dustPuffs,
     takeHeld,
     towardFacing,
-    mixColor
+    mixColor,
+    poseUpdate
   };
   console.debug(INSTALL_TAG, "Installed.");
 })();

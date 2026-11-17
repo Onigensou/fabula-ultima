@@ -98,5 +98,27 @@ check("Camera Pan two-shot sends the name, the party token and the zoom",
   runs[0]?.data?.mode === "twoShot" && runs[0]?.data?.name === "Rakshasa" && runs[0]?.data?.partyTokenId === "party1" && runs[0]?.data?.zoom === 2.2, JSON.stringify(runs[0]?.data));
 check("Camera Pan two-shot summary", cam.summary({ mode: "twoShot", name: "Rakshasa" }) === 'Two-shot: the party and "Rakshasa"');
 
+// --- Play Animation speed ---------------------------------------------------
+check("speed: defaults to 1, and to 1 when blank or not a number", play.defaultData.speed === 1 && M.speedOf(undefined) === 1 && M.speedOf("") === 1 && M.speedOf("abc") === 1);
+check("speed: held between 0.25 and 4", M.speedOf(0.1) === 0.25 && M.speedOf(9) === 4 && M.speedOf("0.5") === 0.5);
+const W = M.animationWaitMs;
+check("wait: a 0.8 s clip at half speed waits 1.6 s", W({ mediaMs: 800, video: true, speed: 0.5 }) === 1600);
+check("wait: double speed halves it", W({ mediaMs: 800, video: true, speed: 2 }) === 400);
+check("wait: speed 1 is as before", W({ mediaMs: 800, video: true }) === 800);
+check("wait: the 30 s cap is on real time", W({ mediaMs: 20000, video: true, speed: 0.5 }) === 30000);
+check("wait: a held clip has no cap, as before", W({ mediaMs: 20000, video: true, speed: 0.5, hold: true }) === 40000);
+check("wait: a set duration is real time, speed does not stretch it", W({ durationMs: 1000, mediaMs: 800, video: true, speed: 0.5 }) === 1000);
+check("wait: a still image ignores speed", W({ video: false, speed: 0.5 }) === 2000 && W({ video: false, hold: true, speed: 0.5 }) === 0);
+check("wait: unknown clip length = no wait", W({ mediaMs: 0, video: true, speed: 0.5 }) === 0);
+check("summary: shows ×0.5 when not 1", play.summary({ src: "fx/Dust.webm", speed: 0.5 }) === "Dust.webm · ×0.5" && play.summary({ src: "fx/Dust.webm", speed: 1 }) === "Dust.webm");
+check("summary: speed and hold together", play.summary({ src: "fx/Dust.webm", speed: 2, hold: true }) === 'Dust.webm · ×2 · held as "dust"');
+
+runs.length = 0;
+await play.execute({ src: "fx/Dust.webm", where: "screen", speed: 0.5, wait: false }, { tileId: "t1" });
+check("Play Animation sends the speed to every client", runs[0]?.data?.speed === 0.5, JSON.stringify(runs[0]?.data));
+runs.length = 0;
+await play.execute({ src: "fx/Dust.webm", where: "screen", wait: false }, { tileId: "t1" });
+check("an old row without speed sends 1", runs[0]?.data?.speed === 1);
+
 console.log(fail ? `\n${fail} FAILED` : "\nall passed");
 process.exit(fail ? 1 : 0);
