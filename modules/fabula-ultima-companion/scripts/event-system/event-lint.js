@@ -142,6 +142,16 @@
               if (!String(row.src ?? "").trim()) add("warn", "Play Animation with no file.");
               if (row.where === "token" && !String(row.name ?? "").trim()) add("warn", "Play Animation on a named token, with no name.");
               break;
+            case "showPicture": {
+              const P = window.oni.EventSystem.PictureLogic;
+              const src = String(row.src ?? "").trim();
+              if (!src) add("warn", "Show Picture with no picture.");
+              else if (P && !P.normSrc(src)) add("warn", `Show Picture "${src}" is not an image or video file: the row would be skipped.`);
+              break;
+            }
+            case "movePicture":
+              if (["x", "y", "scale", "opacity", "rotation"].every(k => String(row[k] ?? "").trim() === "")) add("warn", "Move Picture with nothing to change.");
+              break;
             case "cameraPan":
               if (row.mode === "token" && !String(row.name ?? "").trim()) add("warn", "Camera Pan to a named token, with no name.");
               else if (row.mode === "token" && !hasToken(scene, row.name)) add("warn", `Camera Pan to "${row.name}", but no token on this scene has that name. The camera would stay put.`);

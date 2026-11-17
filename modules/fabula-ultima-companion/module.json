@@ -349,6 +349,7 @@
     "scripts/event-system/event-rows-flow.js",
     "scripts/event-system/event-rows-camera.js",
     "scripts/event-system/event-rows-media.js",
+    "scripts/event-system/event-rows-picture.js",
     "scripts/event-system/event-rows-choices.js",
     "scripts/event-system/event-rows-check.js",
     "scripts/event-system/event-rows-float.js",
