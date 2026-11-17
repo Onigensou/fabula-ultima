@@ -926,6 +926,7 @@
     removeHoverHandler();
     DP.FastTravel?.exit?.();
     DP.Fog?.destroyAll?.();
+    DP.PlaceBadge?.destroyAll?.();
     DP.HelperMode.deactivate();
     DP.Overlay.clearHover?.();
     DP.ScanMode?.hide();

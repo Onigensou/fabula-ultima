@@ -201,6 +201,7 @@
     "scripts/dungeon-pathing-system/dp-direction.js",
     "scripts/dungeon-pathing-system/dp-overlay.js",
     "scripts/dungeon-pathing-system/dp-fog.js",
+    "scripts/dungeon-pathing-system/dp-place-badge.js",
     "scripts/dungeon-pathing-system/dp-movement.js",
     "scripts/dungeon-pathing-system/dp-sound.js",
     "scripts/dungeon-pathing-system/dp-helper-mode.js",

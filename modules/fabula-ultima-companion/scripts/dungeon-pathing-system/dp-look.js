@@ -148,6 +148,9 @@
     for (const id of ids) { const n = rt.graph.nodeMap.get(id), b = n?.bounds; if (!b) continue;
       if (p.x >= b.left && p.x <= b.right && p.y >= b.top && p.y <= b.bottom) { hit = n; break; } }
     if (!hit || (!game.user?.isGM && DP.Fog?.isHiddenPassage?.(hit.nodeId))) return hide();
+    // A tile with a place badge (dp-place-badge.js): the place name, or ???? before a visit.
+    const place = DP.PlaceBadge?.info?.(hit.nodeId);
+    if (place) return show(hit, place.visited ? place.name : "????", `Location · ${tileTitle(hit)}`);
     show(hit, tileTitle(hit));
   }
   Hooks.on("canvasReady", () => { hide(); const v = canvas?.app?.view; if (v && !v._oniTip) { v.addEventListener("pointermove", onMove, { passive: true }); v._oniTip = true; } });

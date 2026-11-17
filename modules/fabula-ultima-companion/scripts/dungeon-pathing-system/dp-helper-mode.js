@@ -38,7 +38,33 @@
     return nodes.map(n => n.nodeId).sort().join(",");
   }
 
+  // ── Idle nudge: every hand slides right and eases back on a 1.1 s loop ─────
+  // One shared ticker for all hands; it is removed with the container, so no
+  // ticker runs while Helper mode is off. Still under prefers-reduced-motion.
+  const NUDGE_MS = 1100, NUDGE_FRAC = 0.18;   // amplitude = 18% of the hand's size
+  let _hands = [];
+  let _nudgeOn = false;
+  const reduceMotion = () => !!globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  function nudgeTick() {
+    if (_hands.some(s => s.destroyed)) _hands = _hands.filter(s => !s.destroyed);   // canvas torn down under us
+    if (!_hands.length) return stopNudge();
+    const t = (performance.now() % NUDGE_MS) / NUDGE_MS;
+    const k = (1 - Math.cos(t * Math.PI * 2)) / 2;          // 0 → 1 → 0, eased both ways
+    for (const s of _hands) if (!s.destroyed) s.x = s._baseX + s._amp * k;
+  }
+  function startNudge() {
+    if (_nudgeOn || reduceMotion() || !canvas?.app?.ticker || !_hands.length) return;
+    canvas.app.ticker.add(nudgeTick);
+    _nudgeOn = true;
+  }
+  function stopNudge() {
+    if (_nudgeOn) { try { canvas?.app?.ticker?.remove(nudgeTick); } catch {} }
+    _nudgeOn = false;
+  }
+
   function destroyContainer() {
+    stopNudge();
+    _hands = [];
     if (_container) {
       // Remove from parent before destroy — PIXI.destroy() does not guarantee removal,
       // and orphaned containers in canvas.stage.children inflate the sortableChildren sort.
@@ -91,6 +117,7 @@
       sprite.y = node.center.y;
 
       root.addChild(sprite);
+      if (tex) { sprite._baseX = sprite.x; sprite._amp = cfg.SIZE * NUDGE_FRAC; _hands.push(sprite); }
     }
 
     try {
@@ -101,6 +128,7 @@
     }
 
     _container = root;
+    startNudge();
   }
 
   // Simple coloured dot as fallback if the texture fails to load
@@ -129,6 +157,7 @@
     }
     // Keep the helper button in sync regardless of whether it was H or the button
     DP.ScanMode?.syncHelperBtn?.();
+    DP.PlaceBadge?.refresh?.();   // walkable place badges show their names in Helper
   }
 
   function installKeyListener() {

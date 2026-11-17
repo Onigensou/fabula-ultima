@@ -645,6 +645,10 @@
     {
       "key": "2026-11-17-plasma-field-scene-v2",
       "path": "data-migrations/2026-11-17-plasma-field-scene-v2.js"
+    },
+    {
+      "key": "2026-11-17-place-badge",
+      "path": "data-migrations/2026-11-17-place-badge.js"
     }
   ]
 }

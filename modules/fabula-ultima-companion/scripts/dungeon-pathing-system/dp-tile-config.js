@@ -357,6 +357,10 @@
       const ftAutoOn  = (scene && tileDoc) ? (DP.FastTravel?.isAutoLandmark?.(scene, tileDoc) ?? false) : false;
       const ftOpt = (v, label) => `<option value="${v}" ${ftMode === v ? "selected" : ""}>${label}</option>`;
 
+      // Place badge: "" (off) | "on" | "afterVisit" (drawn by dp-place-badge.js)
+      const pbMode = DP.PlaceBadge?.modeOf?.(tileDoc) ?? "";
+      const pbOpt  = (v, label) => `<option value="${v}" ${pbMode === v ? "selected" : ""}>${label}</option>`;
+
       // World-map Travel tile threat — blank = the scene's Threat Level
       const travelThreat = tileDoc?.getFlag?.(MODULE_ID, `${pathingKey}.travelThreat`) ?? "";
       const clearedSwitch = tileDoc?.getFlag?.(MODULE_ID, `${pathingKey}.clearedSwitch`) ?? "";
@@ -532,6 +536,23 @@
           <p class="notes">
             A visited destination appears in Fast Travel. <b>Auto</b>: Camp, Event, Story,
             Final Story, and any tile with a working teleporter (door / exit / warp).
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label>Place badge</label>
+          <div class="form-fields">
+            <select name="flags.${MODULE_ID}.${pathingKey}.placeBadge" data-dtype="String">
+              ${pbOpt("", "Off")}
+              ${pbOpt("on", "On")}
+              ${pbOpt("afterVisit", "After visit")}
+            </select>
+          </div>
+          <p class="notes">
+            Marks this tile as a <b>place</b> the party can come back to: a pin + LOCATION under the tile;
+            in Helper / Scan the place name once visited (???? before). Needs a working teleporter to
+            another scene. <b>After visit</b>: no badge until the party has been there (surprise doors).
+            Event, Story, Final Story and Settlement presets come with <b>On</b>.
           </p>
         </div>
 
