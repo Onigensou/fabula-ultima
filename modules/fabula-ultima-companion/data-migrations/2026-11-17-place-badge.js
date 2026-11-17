@@ -8,10 +8,11 @@
  *     Final Story and Settlement tiles come with "on". Doors and teleporters
  *     get nothing.
  *  2. Existing dungeon tiles that teleport to an exploration map, per the
- *     user-approved audit (2026-11-17). Left OFF on purpose, awaiting the user:
- *     Sealed Cavern's Event -> Nether Bridge, every Overworld node, and Winding
- *     Trail's "Blank Tile" (Story art) -> Maelstrom Confluence. Exit doors back
- *     to an entrance hub stay off.
+ *     user-approved audit and calls (2026-11-17): the Overworld's 7 place
+ *     nodes On, Sealed Cavern's way back to the Nether Bridge After visit,
+ *     Winding Trail's Maelstrom Confluence tile (the current one; the old
+ *     Waterfall Trail spot became the Plasma Field story tile) On. Exit doors
+ *     back to an entrance hub stay off.
  *
  * ONE-TIME and SEED-ONLY: a tile or preset that already has a placeBadge value
  * (someone set it by hand) is left alone.
@@ -37,6 +38,16 @@ const TILES = [
   ["QIUobWQvzsjvZK08", "zFBbLgmEcKr54MGB", "on",         "Lower Trail: Story (expired) -> Thunder Pillar"],
   ["KvNYZ6DkF9IK3U6h", "xZO7bh6UmJKpMmPk", "on",         "Chain Bridges: Story -> Hatchery"],
   ["iQ026ac7nbWz8Mnr", "DbsLHvAlZZCF5mUX", "on",         "Treasury: Final Story -> Treasure Hoard"],
+  // User calls 2026-11-17
+  ["52LLgHZIyAXBrbMq", "7Votn2FymkL4dw9l", "afterVisit", "Sealed Cavern: Event -> Nether Bridge (secret area's way back)"],
+  ["8ZqllaT165aEOEOn", "1pGpqDXOEbRuktpc", "on",         "Winding Trail: Story art (named Blank) -> Maelstrom Confluence (current spot)"],
+  ["ozujmDgZuATRvJXh", "11zDhVTxp5oA1LxM", "on",         "Overworld: Door -> Wyrmwood - Entrance"],
+  ["ozujmDgZuATRvJXh", "9qA6DIADFBc3AeN6", "on",         "Overworld: Door -> Fafnir Castle - Entrance"],
+  ["ozujmDgZuATRvJXh", "ECOhLDxXgUOXMusM", "on",         "Overworld: Settlement -> Eisendrache Capital"],
+  ["ozujmDgZuATRvJXh", "JAzmKs0x0MCBrUm7", "on",         "Overworld: Door -> Ruhig Village"],
+  ["ozujmDgZuATRvJXh", "kdzqDChTijA3ELoT", "on",         "Overworld: Settlement -> Ancient Capital Midgard"],
+  ["ozujmDgZuATRvJXh", "l3fQYBQOI5C5SKLD", "on",         "Overworld: Door -> Valley Entrance"],
+  ["ozujmDgZuATRvJXh", "xy0NAo2VugI9gi0E", "on",         "Overworld: Door -> Sacrificial Altar (Valley exit)"],
 ];
 
 export async function migrate(game, log) {

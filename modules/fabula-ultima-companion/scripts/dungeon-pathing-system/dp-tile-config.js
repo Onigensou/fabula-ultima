@@ -551,7 +551,7 @@
           <p class="notes">
             Marks this tile as a <b>place</b> the party can come back to: a pin + LOCATION under the tile;
             in Helper / Scan the place name once visited (???? before). Needs a working teleporter to
-            another scene. <b>After visit</b>: no badge until the party has been there (surprise doors).
+            another scene. <b>After visit</b>: no badge until the party has gone through this tile (surprise doors).
             Event, Story, Final Story and Settlement presets come with <b>On</b>.
           </p>
         </div>

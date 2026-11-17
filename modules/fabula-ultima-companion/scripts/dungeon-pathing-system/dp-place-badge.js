@@ -16,8 +16,9 @@
 // teleporters carry nothing. The only rule kept in code: a badge needs a working
 // teleporter to ANOTHER scene, because that is where its name comes from.
 //
-// "Visited" = the destination scene was ever activated (sceneVisited) or the
-// party has stepped on this tile. Fog / shroud discs and hidden passages hide
+// "Visited" (name instead of ????) = the destination scene was ever activated
+// (sceneVisited) or the party has stepped on this tile. "After visit" tiles show
+// only once the party has stepped on THIS tile. Fog / shroud discs and hidden passages hide
 // the badge until the tile is revealed.
 //
 // Perf (feedback_dp_perf_pitfalls): one container per badged tile, rebuilt only
@@ -74,7 +75,10 @@
     const dest = destSceneOf(scene, tileDoc);
     if (!dest) return null;
     const visited = isVisited(scene, tileDoc, dest);
-    if (mode === "afterVisit" && !visited) return null;
+    // After visit = the party has gone through THIS tile. Having reached the
+    // place another way doesn't count (Sealed Cavern's way back to the Nether
+    // Bridge stays plain even though the party knows the bridge).
+    if (mode === "afterVisit" && !DP.TileState?.isVisited?.(scene, tileDoc.id)) return null;
 
     const rt = DP.Runtime;
     const near = rt?.currentNodeId === tileId || !!rt?.neighborIds?.has?.(tileId);
