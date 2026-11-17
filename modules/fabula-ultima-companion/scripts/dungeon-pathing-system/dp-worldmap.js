@@ -134,6 +134,7 @@
     if (!scene || !DP.isWorldMap?.(scene)) return;
     const layer = ensureLayer();
     if (!layer) return;
+    layer.visible = !DP.ScanMode?.active;   // Scan shows place names instead (dp-place-badge.js)
     const eff = await effectiveDieFn();
     const TR  = globalThis.TravelRoll;
     // The party sprite stands on its node — a badge there would cover it.
@@ -292,5 +293,8 @@
     } catch (e) { warn("drawing config inject failed", e); }
   });
 
-  DP.WorldMap = { isRouteLocked, isCleared, drawBadges, _internals: { effectiveDieFn, areaAtToken } };
+  // Threat dice and ✓ Cleared stamps step aside while Scan shows place names.
+  function setScanHidden(hidden) { if (_layer && !_layer.destroyed) _layer.visible = !hidden; }
+
+  DP.WorldMap = { isRouteLocked, isCleared, drawBadges, setScanHidden, _internals: { effectiveDieFn, areaAtToken } };
 })();

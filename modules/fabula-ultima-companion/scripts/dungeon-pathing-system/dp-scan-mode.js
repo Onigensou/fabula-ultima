@@ -288,6 +288,7 @@
     if (_scanBtn) _scanBtn.title = "Exit Scan Mode (ESC)";
     DP.Sound?.playScanOn?.();
     DP.PlaceBadge?.refresh?.();   // place badges show their names while scanning
+    DP.WorldMap?.setScanHidden?.(true);
     console.debug(TAG, "Scan mode ON — clamp pan active.");
   }
 
@@ -299,6 +300,7 @@
     if (_scanBtn) _scanBtn.title = "Scan Mode — explore the map";
     DP.Sound?.playScanOff?.();
     DP.PlaceBadge?.refresh?.();
+    DP.WorldMap?.setScanHidden?.(false);
     snapCameraToToken(); // animate back; ticker will then smooth-lock
     console.debug(TAG, "Scan mode OFF — viewport returned to token.");
   }

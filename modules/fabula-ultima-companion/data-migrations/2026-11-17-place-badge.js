@@ -48,7 +48,40 @@ const TILES = [
   ["ozujmDgZuATRvJXh", "kdzqDChTijA3ELoT", "on",         "Overworld: Settlement -> Ancient Capital Midgard"],
   ["ozujmDgZuATRvJXh", "l3fQYBQOI5C5SKLD", "on",         "Overworld: Door -> Valley Entrance"],
   ["ozujmDgZuATRvJXh", "xy0NAo2VugI9gi0E", "on",         "Overworld: Door -> Sacrificial Altar (Valley exit)"],
+  // Waterfall Trail: the Plasma Field (Hako rescue) story tile, set up by 2026-11-17-plasma-field-world
+  ["YR0pYJVokhIgKQj0", "A8FxNTihukxgXCkZ", "on",         "Waterfall Trail: Story -> Plasma Field"],
 ];
+
+// Winding Trail's Maelstrom Confluence tile: the party already played it, so it
+// goes Expired (desaturated Story art, like every played story tile). It was a
+// blank tile given Story art by hand, so it also becomes a real Story tile
+// (name + type), or its tooltip reads "Blank".
+const MAELSTROM = { sceneId: "8ZqllaT165aEOEOn", tileId: "1pGpqDXOEbRuktpc" };
+
+async function expireMaelstrom(game, log) {
+  const scene = game.scenes.get(MAELSTROM.sceneId);
+  const tile = scene?.tiles.get(MAELSTROM.tileId);
+  if (!tile) return "Maelstrom tile not in this world";
+  const TS = globalThis.DungeonPathing?.TileState;
+  if (!TS?.expireTile) return "Maelstrom: TileState not ready, skipped";
+  const notes = [];
+  if (tile.flags?.["monks-active-tiles"]?.name === "Blank Tile") {
+    await tile.update({ "flags.monks-active-tiles.name": "Story Tile" });
+    notes.push("renamed Story Tile");
+  }
+  const st = scene.flags?.[M]?.[ROOT]?.tileStates?.[MAELSTROM.tileId];
+  if (st && (st.initialType === "blank" || st.currentType === "blank")) {
+    await scene.update({
+      [`flags.${M}.${ROOT}.tileStates.${MAELSTROM.tileId}.initialType`]: "story",
+      [`flags.${M}.${ROOT}.tileStates.${MAELSTROM.tileId}.currentType`]: "story",
+    });
+    notes.push("type story");
+  }
+  const r = await TS.expireTile(scene, MAELSTROM.tileId);
+  notes.push(r?.changed ? "expired" : "already expired");
+  log?.(`Maelstrom: ${notes.join(", ")}`);
+  return `Maelstrom ${notes.join(", ")}`;
+}
 
 export async function migrate(game, log) {
   const out = [];
@@ -86,6 +119,7 @@ export async function migrate(game, log) {
     tiles++;
   }
   out.push(`${tiles} tile(s) set, ${kept} already set, ${missing} not in this world`);
+  out.push(await expireMaelstrom(game, log));
 
   return { applied: true, summary: out.join("; ") };
 }
