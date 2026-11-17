@@ -8,6 +8,11 @@
       "actorLink": false
     },
     {
+      "name": "Defeat Shot",
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "actorLink": false
+    },
+    {
       "name": "Statue Shot",
       "actorId": "TnOKgQbmyxFzD6Oe",
       "actorLink": false
@@ -24,6 +29,125 @@
     }
   ],
   "tokensFull": [
+    {
+      "name": "Defeat Shot",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/NPC%20Sprite/4_M_RUSMAN2.gif",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": false,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 0,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "draftDefeated": "claude-2026-11-18-asura-defeated",
+          "draftName": "Defeat Shot",
+          "depthExempt": true
+        }
+      },
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "hidden": true,
+      "_id": "Hdq2OvL1rn2NYXCJ",
+      "x": 848,
+      "y": 640,
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": []
+    },
     {
       "name": "Statue Shot",
       "displayName": 0,
@@ -356,7 +480,7 @@
                           "name": "Asura Spared",
                           "slot": "A",
                           "value": "off",
-                          "id": "P7EHGL7tr5RYBexu"
+                          "id": "wXRg276KESTTWC07"
                         },
                         {
                           "type": "setSwitch",
@@ -364,26 +488,818 @@
                           "name": "Asura Defeated",
                           "slot": "A",
                           "value": "on",
-                          "id": "r5hx2YnxejQjUOza"
+                          "id": "N9LGoFr6YljNVsZ5"
                         },
                         {
-                          "type": "setToken",
-                          "name": "Asura",
-                          "visibility": "hide",
-                          "tint": "keep",
-                          "color": "#16102a",
-                          "direction": "up",
-                          "smoke": false,
+                          "type": "screenEffect",
+                          "effect": "letterboxIn",
+                          "color": "#000000",
+                          "strength": 0.11,
+                          "seconds": 0.5,
+                          "wait": false,
+                          "id": "P7hlbRPSt9PkRZ5a"
+                        },
+                        {
+                          "type": "cameraPan",
+                          "mode": "token",
+                          "dx": 0,
+                          "dy": -200,
+                          "name": "Defeat Shot",
+                          "zoom": 1.6,
+                          "seconds": 0.8,
+                          "motion": "smooth",
                           "wait": true,
-                          "fadeMs": 0,
-                          "risePx": 0,
-                          "crouch": false,
-                          "tintFadeMs": 0,
-                          "id": "1dEpNpkLDfkcZPHZ"
+                          "id": "3KtAJlSjABpYq1rq"
+                        },
+                        {
+                          "type": "wait",
+                          "seconds": 0.4,
+                          "id": "LCzV2AQR4V9V4xD4"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Asura",
+                          "text": "Kuh....! Such splendid display of martial prowess... You are strong indeed...!",
+                          "bubbleMode": "normal",
+                          "textSpeed": "normal",
+                          "id": "DzzhppLjVCC2IYC9",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Asura_Portrait.png"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Asura",
+                          "text": "For one such as I, to be defeated for the third time..!",
+                          "bubbleMode": "normal",
+                          "textSpeed": "normal",
+                          "id": "CRvrszeduFqRAjyV",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Asura_Portrait.png"
+                        },
+                        {
+                          "type": "screenEffect",
+                          "effect": "fadeOut",
+                          "color": "#000000",
+                          "strength": 0,
+                          "seconds": 0.9,
+                          "wait": true,
+                          "id": "K9MZqfw2ghkss2Sv"
+                        },
+                        {
+                          "type": "screenEffect",
+                          "effect": "letterboxOut",
+                          "color": "#000000",
+                          "strength": 0,
+                          "seconds": 0,
+                          "wait": true,
+                          "id": "ae8sCA9782RGDACN"
+                        },
+                        {
+                          "type": "showPicture",
+                          "slot": 1,
+                          "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Asura_Flashback_1.webp",
+                          "fit": "cover",
+                          "x": 50,
+                          "y": 50,
+                          "scale": 100,
+                          "opacity": 100,
+                          "rotation": 0,
+                          "blend": "normal",
+                          "fadeSeconds": 0,
+                          "tint": "memory",
+                          "sepia": 0,
+                          "grayscale": 0,
+                          "brightness": 1,
+                          "saturate": 1,
+                          "vignette": true,
+                          "grain": false,
+                          "keep": false,
+                          "wait": false,
+                          "id": "8o2RUKvaTxqXrvCC"
+                        },
+                        {
+                          "type": "wait",
+                          "seconds": 0.25,
+                          "id": "YerDl5DFOmcfPLEA"
+                        },
+                        {
+                          "type": "screenEffect",
+                          "effect": "fadeIn",
+                          "color": "#000000",
+                          "strength": 0,
+                          "seconds": 1.2,
+                          "wait": true,
+                          "id": "rJywuHn1gmLS5OMY"
+                        },
+                        {
+                          "type": "movePicture",
+                          "slot": 1,
+                          "x": "",
+                          "y": "",
+                          "scale": 106,
+                          "opacity": "",
+                          "rotation": "",
+                          "seconds": 30,
+                          "easing": "linear",
+                          "wait": false,
+                          "id": "1a0jWUmscb64gjBD"
+                        },
+                        {
+                          "type": "playBGM",
+                          "track": "Darkness",
+                          "untilEnd": true,
+                          "id": "o2SFWg1Y7Qr3ANDo"
+                        },
+                        {
+                          "type": "wait",
+                          "seconds": 0.4,
+                          "id": "CN8F1SyUEEMqIOVv"
+                        },
+                        {
+                          "type": "playSound",
+                          "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Thunder7.ogg",
+                          "volume": 0.7,
+                          "wait": false,
+                          "id": "uRKaJIujf3JrhzVn"
+                        },
+                        {
+                          "type": "screenEffect",
+                          "effect": "flash",
+                          "color": "#e8e0ff",
+                          "strength": 0.55,
+                          "seconds": 0.38,
+                          "wait": false,
+                          "id": "Lvm76Dkf5W68enx6"
+                        },
+                        {
+                          "type": "wait",
+                          "seconds": 0.5,
+                          "id": "jXqlBVMS0KiRcyOu"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "???",
+                          "text": "Hmph! Is that all you've got? Pathetic! And you dare call yourself a Demi-God?!",
+                          "bubbleMode": "normal",
+                          "textSpeed": "normal",
+                          "id": "DuZdc89MmWu7ESoW",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Unknown_Dragon_Portrait.png"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "???",
+                          "text": "We shall spare your miserable life. Consider it an act of mercy!",
+                          "bubbleMode": "normal",
+                          "textSpeed": "normal",
+                          "id": "deMzT8eh5EFfesPy",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Unknown_Dragon_Portrait.png"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "???",
+                          "text": "But know this! From this day forth, these mountains belong to us!",
+                          "bubbleMode": "normal",
+                          "textSpeed": "normal",
+                          "id": "aDoSb7ETFP0OwXE3",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Unknown_Dragon_Portrait.png"
+                        },
+                        {
+                          "type": "tintPicture",
+                          "slot": 1,
+                          "tint": "dark",
+                          "sepia": 0,
+                          "grayscale": 0,
+                          "brightness": 1,
+                          "saturate": 1,
+                          "vignette": true,
+                          "grain": false,
+                          "seconds": 2,
+                          "wait": false,
+                          "id": "vXFLPnIJnT3Fq4Av"
+                        },
+                        {
+                          "type": "screenEffect",
+                          "effect": "fadeOut",
+                          "color": "#000000",
+                          "strength": 0,
+                          "seconds": 2,
+                          "wait": true,
+                          "id": "wAnbaqouSZe4GZeX"
+                        },
+                        {
+                          "type": "erasePicture",
+                          "slot": 1,
+                          "fadeSeconds": 0,
+                          "wait": true,
+                          "id": "lDvSQMzGAyAVq1X4"
+                        },
+                        {
+                          "type": "showPicture",
+                          "slot": 2,
+                          "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Asura_Flashback_2.webp",
+                          "fit": "cover",
+                          "x": 50,
+                          "y": 50,
+                          "scale": 100,
+                          "opacity": 100,
+                          "rotation": 0,
+                          "blend": "normal",
+                          "fadeSeconds": 0,
+                          "tint": "memory",
+                          "sepia": 0,
+                          "grayscale": 0,
+                          "brightness": 1,
+                          "saturate": 1,
+                          "vignette": true,
+                          "grain": false,
+                          "keep": false,
+                          "wait": false,
+                          "id": "N9DbyNlfeL38VcSg"
+                        },
+                        {
+                          "type": "wait",
+                          "seconds": 0.25,
+                          "id": "U2KLtJ26ES4juqdV"
+                        },
+                        {
+                          "type": "playSound",
+                          "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Thunder7.ogg",
+                          "volume": 0.45,
+                          "wait": false,
+                          "id": "jJPPN9AwThNOT6Ug"
+                        },
+                        {
+                          "type": "screenEffect",
+                          "effect": "fadeIn",
+                          "color": "#000000",
+                          "strength": 0,
+                          "seconds": 1.4,
+                          "wait": true,
+                          "id": "NH3A0CLh8c9tM3QS"
+                        },
+                        {
+                          "type": "movePicture",
+                          "slot": 2,
+                          "x": 47,
+                          "y": "",
+                          "scale": 106,
+                          "opacity": "",
+                          "rotation": "",
+                          "seconds": 40,
+                          "easing": "linear",
+                          "wait": false,
+                          "id": "cfzEXLihhwfTwt7m"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Fafnir",
+                          "text": "Thy master hath fallen by mine hand. Henceforth, thou shalt serve beneath me, until thy final breath.",
+                          "bubbleMode": "normal",
+                          "textSpeed": "normal",
+                          "id": "gzg2dUsS1uBq5FIS",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Fafnir_Dragon_Portrait.png"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Asura",
+                          "text": "You expect me to serve you...? After what you've done...?!",
+                          "bubbleMode": "normal",
+                          "textSpeed": "normal",
+                          "id": "ToEKP3VnIJCYJViZ",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Asura_Portrait.png"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Asura",
+                          "text": "I would sooner embrace death than endure such humiliation!",
+                          "bubbleMode": "shout",
+                          "textSpeed": "normal",
+                          "id": "AVVK4eSHsQbTp4UM",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Asura_Portrait.png"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Fafnir",
+                          "text": "...Thou wouldst sooner perish than face the shame of defeat? Hmph. What utter folly.",
+                          "bubbleMode": "normal",
+                          "textSpeed": "normal",
+                          "id": "U6VLpKZ93eI8vVpF",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Fafnir_Dragon_Portrait.png"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Fafnir",
+                          "text": "Tell me, Demi-God. Of what worth is thy pride, should it lead thee only to the grave?",
+                          "bubbleMode": "normal",
+                          "textSpeed": "normal",
+                          "id": "KXf7yg58EMTzh60Q",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Fafnir_Dragon_Portrait.png"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Fafnir",
+                          "text": "If thou wouldst call thyself strong, then cast aside such foolish vanity. Employ every means at thy command to vanquish thy foes.",
+                          "bubbleMode": "normal",
+                          "textSpeed": "normal",
+                          "id": "UeduyuM9XeAAkPaU",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Fafnir_Dragon_Portrait.png"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Fafnir",
+                          "text": "Thou seekest vengeance upon me, dost thou not? Heh... Then by all means, cling to that hatred.",
+                          "bubbleMode": "normal",
+                          "textSpeed": "normal",
+                          "id": "hnHuaCBrDcRxUB7r",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Fafnir_Dragon_Portrait.png"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Fafnir",
+                          "text": "Yet look upon thyself. What hope hast thou of besting me, when thou canst scarcely stand before me?",
+                          "bubbleMode": "normal",
+                          "textSpeed": "normal",
+                          "id": "snxT8pVC9gQefNn0",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Fafnir_Dragon_Portrait.png"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Fafnir",
+                          "text": "If thou wouldst have thy revenge, then live. Scheme, deceive, employ whatever means thou deemest necessary. Honour and pride are but fetters worn by fools.",
+                          "bubbleMode": "normal",
+                          "textSpeed": "normal",
+                          "id": "ktnfdZVSKoqgLE1R",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Fafnir_Dragon_Portrait.png"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Fafnir",
+                          "text": "Until thou hast gained the strength to challenge me, thou shalt guard these mountains in my stead.",
+                          "bubbleMode": "normal",
+                          "textSpeed": "normal",
+                          "id": "iv7wBlxl9adMtoLw",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Fafnir_Dragon_Portrait.png"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Fafnir",
+                          "text": "Serve me well, and thou shalt have ample time to sharpen thy claws... and perhaps, one day, turn them against me.",
+                          "bubbleMode": "normal",
+                          "textSpeed": "normal",
+                          "id": "Y0qi4ZoX6U9fOOzQ",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Fafnir_Dragon_Portrait.png"
+                        },
+                        {
+                          "type": "stopBGM",
+                          "track": "Darkness",
+                          "seconds": 1.4,
+                          "wait": false,
+                          "id": "M2A5bN9rxLRVJerB"
+                        },
+                        {
+                          "type": "screenEffect",
+                          "effect": "fadeOut",
+                          "color": "#000000",
+                          "strength": 0,
+                          "seconds": 1.4,
+                          "wait": true,
+                          "id": "sm1nV0t7qqJTlfBX"
+                        },
+                        {
+                          "type": "erasePicture",
+                          "slot": "all",
+                          "fadeSeconds": 0,
+                          "wait": true,
+                          "id": "HPeO0Os7xyJZqRUW"
+                        },
+                        {
+                          "type": "screenEffect",
+                          "effect": "letterboxIn",
+                          "color": "#000000",
+                          "strength": 0.11,
+                          "seconds": 0,
+                          "wait": false,
+                          "id": "GohDeyiStiYJz3Fa"
+                        },
+                        {
+                          "type": "screenEffect",
+                          "effect": "fadeIn",
+                          "color": "#000000",
+                          "strength": 0,
+                          "seconds": 0.6,
+                          "wait": true,
+                          "id": "KCN4FMBVSRquivOM"
+                        },
+                        {
+                          "type": "playSound",
+                          "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Growl.ogg",
+                          "volume": 0.5,
+                          "wait": false,
+                          "id": "lYX7auUzuXby14YL"
+                        },
+                        {
+                          "type": "screenEffect",
+                          "effect": "shake",
+                          "color": "#000000",
+                          "strength": 8,
+                          "seconds": 0.5,
+                          "wait": false,
+                          "id": "tFUtyD98AuEkj560"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Asura",
+                          "text": "GRRR...! DAMN IT ALL! To think I'd be reminded of that day...!",
+                          "bubbleMode": "shout",
+                          "textSpeed": "normal",
+                          "id": "WZZjfgHRfJy4cq3Y",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Asura_Portrait.png"
+                        },
+                        {
+                          "type": "pauseForGM",
+                          "note": "Free narration: the players react to Asura. Roleplay freely, then pick how it ends.",
+                          "noEnd": true,
+                          "choices": [
+                            {
+                              "id": "xivQymqUdufZV0rR",
+                              "label": "Swayed: accepts defeat",
+                              "rows": [
+                                {
+                                  "type": "showText",
+                                  "speaker": "Asura",
+                                  "text": "Honour and pride are but fetters worn by fools... Hah! To think I would finally agree with that wretched serpent...!",
+                                  "bubbleMode": "normal",
+                                  "textSpeed": "normal",
+                                  "id": "dwAC5jTgzvKejrpA",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Asura_Portrait.png"
+                                },
+                                {
+                                  "type": "showText",
+                                  "speaker": "Asura",
+                                  "text": "GWAHAHAHA! Very well! I concede! You have bested me this day!",
+                                  "bubbleMode": "normal",
+                                  "textSpeed": "normal",
+                                  "id": "gyaY5f25PELZXOFx",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Asura_Portrait.png"
+                                },
+                                {
+                                  "type": "showText",
+                                  "speaker": "Asura",
+                                  "text": "But I shall not throw away my life for the sake of wounded pride!",
+                                  "bubbleMode": "normal",
+                                  "textSpeed": "normal",
+                                  "id": "PpZmYTEavx0dDLSV",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Asura_Portrait.png"
+                                },
+                                {
+                                  "type": "playAnimation",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/smoke_anim14.webm",
+                                  "where": "token",
+                                  "name": "Asura",
+                                  "fit": "contain",
+                                  "scalePct": 200,
+                                  "opacity": 1,
+                                  "layer": "front",
+                                  "additive": false,
+                                  "flatPct": 100,
+                                  "hue": 0,
+                                  "spawn": false,
+                                  "seconds": 0,
+                                  "hold": false,
+                                  "holdName": "",
+                                  "mirrorLeftOf": "",
+                                  "speed": 0.5,
+                                  "wait": false,
+                                  "id": "aswBMAKbgyU3xX8O"
+                                },
+                                {
+                                  "type": "playSound",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/SmokeBomb.wav",
+                                  "volume": 0.7,
+                                  "wait": false,
+                                  "id": "SHy1sS5YI10iLlbk"
+                                },
+                                {
+                                  "type": "playSound",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/HitBlowS.ogg",
+                                  "volume": 0.8,
+                                  "wait": false,
+                                  "id": "b1jzaiWPodeuMrzn"
+                                },
+                                {
+                                  "type": "screenEffect",
+                                  "effect": "shake",
+                                  "color": "#000000",
+                                  "strength": 9,
+                                  "seconds": 0.5,
+                                  "wait": false,
+                                  "id": "kBYLjSARfDwJ3GOa"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 0.45,
+                                  "id": "1jbmOEyftANFRrJ8"
+                                },
+                                {
+                                  "type": "setToken",
+                                  "name": "Asura",
+                                  "visibility": "hide",
+                                  "tint": "keep",
+                                  "color": "#16102a",
+                                  "direction": "up",
+                                  "smoke": false,
+                                  "wait": false,
+                                  "fadeMs": 0,
+                                  "risePx": 0,
+                                  "crouch": false,
+                                  "tintFadeMs": 0,
+                                  "picture": "keep",
+                                  "pictureSrc": "",
+                                  "id": "RaixbOkai3pF6Rfd"
+                                },
+                                {
+                                  "type": "showText",
+                                  "speaker": "Asura",
+                                  "text": "Call me a coward if you must! We shall settle this another day! GWAHAHAHA!",
+                                  "bubbleMode": "normal",
+                                  "textSpeed": "normal",
+                                  "id": "unQ6b2ugaY9PuY4F",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Asura_Portrait.png"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 1.2,
+                                  "id": "4e2PdC7j0UGFWOFx"
+                                }
+                              ]
+                            },
+                            {
+                              "id": "um0YTZ4YH2gWhjFn",
+                              "label": "Enraged: vows revenge",
+                              "rows": [
+                                {
+                                  "type": "showText",
+                                  "speaker": "Asura",
+                                  "text": "Honour... Pride... BAH! TO HELL WITH IT ALL!",
+                                  "bubbleMode": "shout",
+                                  "textSpeed": "normal",
+                                  "id": "V3dfKgreXG3j5YUD",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Asura_Portrait.png"
+                                },
+                                {
+                                  "type": "playSound",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Monster4.ogg",
+                                  "volume": 0.8,
+                                  "wait": false,
+                                  "id": "Vrn9PC10j5I7zTBD"
+                                },
+                                {
+                                  "type": "screenEffect",
+                                  "effect": "shake",
+                                  "color": "#000000",
+                                  "strength": 10,
+                                  "seconds": 0.7,
+                                  "wait": false,
+                                  "id": "8i9gfq0DFXQJ6p9D"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 0.5,
+                                  "id": "fJgdeDnrC8N2DLM6"
+                                },
+                                {
+                                  "type": "showText",
+                                  "speaker": "Asura",
+                                  "text": "You dare humiliate me like this?! I WILL NOT FORGET THIS DEFEAT!",
+                                  "bubbleMode": "shout",
+                                  "textSpeed": "normal",
+                                  "id": "cS6AUM4mN2aSp7gt",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Asura_Portrait.png"
+                                },
+                                {
+                                  "type": "screenEffect",
+                                  "effect": "flash",
+                                  "color": "#fff4d8",
+                                  "strength": 0.5,
+                                  "seconds": 0.3,
+                                  "wait": false,
+                                  "id": "kuEuXCAHemvicOfZ"
+                                },
+                                {
+                                  "type": "screenEffect",
+                                  "effect": "shake",
+                                  "color": "#000000",
+                                  "strength": 16,
+                                  "seconds": 0.9,
+                                  "wait": false,
+                                  "id": "KzdK8d5gQei2I3XV"
+                                },
+                                {
+                                  "type": "playSound",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Explosion2.ogg",
+                                  "volume": 0.8,
+                                  "wait": false,
+                                  "id": "3epuSwGtB7T4i9Rn"
+                                },
+                                {
+                                  "type": "playSound",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/Quake.ogg",
+                                  "volume": 0.5,
+                                  "wait": false,
+                                  "id": "xdSoOgFLNwO57ASf"
+                                },
+                                {
+                                  "type": "playSound",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/SmokeBomb.wav",
+                                  "volume": 0.7,
+                                  "wait": false,
+                                  "id": "eNjRdE7GxFkElHb4"
+                                },
+                                {
+                                  "type": "playAnimation",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/smoke_anim14.webm",
+                                  "where": "token",
+                                  "name": "Asura",
+                                  "fit": "contain",
+                                  "scalePct": 200,
+                                  "opacity": 1,
+                                  "layer": "front",
+                                  "additive": false,
+                                  "flatPct": 100,
+                                  "hue": 0,
+                                  "spawn": false,
+                                  "seconds": 0,
+                                  "hold": false,
+                                  "holdName": "",
+                                  "mirrorLeftOf": "",
+                                  "speed": 0.5,
+                                  "wait": false,
+                                  "id": "LPvlfMo4fNb35EpM"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 0.45,
+                                  "id": "PRAXPLzaRKDtdIaQ"
+                                },
+                                {
+                                  "type": "setToken",
+                                  "name": "Asura",
+                                  "visibility": "hide",
+                                  "tint": "keep",
+                                  "color": "#16102a",
+                                  "direction": "up",
+                                  "smoke": false,
+                                  "wait": false,
+                                  "fadeMs": 0,
+                                  "risePx": 0,
+                                  "crouch": false,
+                                  "tintFadeMs": 0,
+                                  "picture": "keep",
+                                  "pictureSrc": "",
+                                  "id": "vXjjBAKf7ZKUSpME"
+                                },
+                                {
+                                  "type": "showText",
+                                  "speaker": "Asura",
+                                  "text": "BUT I REFUSE TO DIE HERE! MARK MY WORDS, WARRIORS!",
+                                  "bubbleMode": "shout",
+                                  "textSpeed": "normal",
+                                  "id": "NTTD9mtn9k1OnNo8",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Asura_Portrait.png"
+                                },
+                                {
+                                  "type": "showText",
+                                  "speaker": "Asura",
+                                  "text": "I SHALL RETURN, AND WHEN I DO, YOU WILL ALL TASTE MY WRATH! GRAAAHAHAHA!",
+                                  "bubbleMode": "shout",
+                                  "textSpeed": "normal",
+                                  "id": "QSOBnZrLU9SannoD",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Asura_Portrait.png"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 1.2,
+                                  "id": "UE3JBziBhljMXiNl"
+                                }
+                              ]
+                            },
+                            {
+                              "id": "0kddRpPpMEFdMg3y",
+                              "label": "Neutral: withdraws",
+                              "rows": [
+                                {
+                                  "type": "showText",
+                                  "speaker": "Asura",
+                                  "text": "GRRR...! Enough! I've had my fill of this humiliation!",
+                                  "bubbleMode": "normal",
+                                  "textSpeed": "normal",
+                                  "id": "clc7WcDd53xzRE6T",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Asura_Portrait.png"
+                                },
+                                {
+                                  "type": "showText",
+                                  "speaker": "Asura",
+                                  "text": "This battle is OVER! Stay out of my way!",
+                                  "bubbleMode": "normal",
+                                  "textSpeed": "normal",
+                                  "id": "rCcf90X8xmQfDxWm",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Asura_Portrait.png"
+                                },
+                                {
+                                  "type": "jumpTo",
+                                  "target": "token",
+                                  "name": "Asura",
+                                  "path": "",
+                                  "arcPct": 100,
+                                  "hopMs": 640,
+                                  "pauseMs": 220,
+                                  "face": true,
+                                  "takeoffSrc": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Wind1.ogg",
+                                  "takeoffVolume": 0.6,
+                                  "landSrc": "",
+                                  "style": "leapOut",
+                                  "dust": "takeoff",
+                                  "id": "qWy8T2yf1SXvyfJX"
+                                },
+                                {
+                                  "type": "setToken",
+                                  "name": "Asura",
+                                  "visibility": "hide",
+                                  "tint": "keep",
+                                  "color": "#16102a",
+                                  "direction": "up",
+                                  "smoke": false,
+                                  "wait": false,
+                                  "fadeMs": 0,
+                                  "risePx": 0,
+                                  "crouch": false,
+                                  "tintFadeMs": 0,
+                                  "picture": "keep",
+                                  "pictureSrc": "",
+                                  "id": "DzDtkq0Kut9tGEP3"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 0.9,
+                                  "id": "Jmb4fGqVYIvDIbd6"
+                                }
+                              ]
+                            }
+                          ],
+                          "id": "6LQ9M2VM7PMUmjsl"
+                        },
+                        {
+                          "type": "screenEffect",
+                          "effect": "letterboxOut",
+                          "color": "#000000",
+                          "strength": 0,
+                          "seconds": 0.5,
+                          "wait": true,
+                          "id": "bXZiK5JwDt7lmqzP"
                         }
                       ],
-                      "defeatRows": [],
-                      "id": "OmBGuKdCSCNyU6AL"
+                      "defeatRows": [
+                        {
+                          "type": "pauseForGM",
+                          "note": "Free narration: the party lost to Asura. Narrate what happens next, then continue.",
+                          "noEnd": true,
+                          "choices": [
+                            {
+                              "id": "VEFScd0YP3vPQ1qe",
+                              "label": "Continue",
+                              "rows": []
+                            }
+                          ],
+                          "id": "eg7CVCDNRnxlUMIJ"
+                        }
+                      ],
+                      "id": "OmBGuKdCSCNyU6AL",
+                      "quietReturn": true
                     }
                   ]
                 },
