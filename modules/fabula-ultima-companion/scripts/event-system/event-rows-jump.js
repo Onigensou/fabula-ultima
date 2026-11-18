@@ -78,7 +78,7 @@
     // A late token update: keep the real token hidden until it is where it landed.
     settleMs: 1500,
     // "Fade out on the last hop": share of the flight before the fade starts.
-    fadeFrom: 0.55
+    fadeFrom: 0.65
   };
 
   const KIND_LEAP = "jump.leapOut";
