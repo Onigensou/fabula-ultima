@@ -201,8 +201,8 @@
               }
               for (const line of lines) {
                 if (/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test(line)) continue;
-                // "party:dx,dy" is where the party stands when the row starts.
-                const rel = line.match(/^party\s*:\s*[+-]?\d+(\.\d+)?\s*,\s*[+-]?\d+(\.\d+)?\s*(?:@\s*(.+))?$/i);
+                // "party:dx,dy" / "self:dx,dy": where the party / the jumper stands when the row starts.
+                const rel = line.match(/^(?:party|self)\s*:\s*[+-]?\d+(\.\d+)?\s*,\s*[+-]?\d+(\.\d+)?\s*(?:@\s*(.+))?$/i);
                 if (rel) {
                   if (rel[3] && !hasToken(scene, rel[3].trim())) add("warn", `Jump To turns "${line}" by the token "${rel[3].trim()}", but no token on this scene has that name.`);
                   continue;

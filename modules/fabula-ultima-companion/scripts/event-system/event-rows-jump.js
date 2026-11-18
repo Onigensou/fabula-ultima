@@ -76,7 +76,9 @@
     // Flight time by hop length, around the row's time per hop (set at 110 px).
     flight: (ms, dist) => ms * Math.min(1.35, Math.max(0.8, dist / 110)),
     // A late token update: keep the real token hidden until it is where it landed.
-    settleMs: 1500
+    settleMs: 1500,
+    // "Fade out on the last hop": share of the flight before the fade starts.
+    fadeFrom: 0.55
   };
 
   const KIND_LEAP = "jump.leapOut";
@@ -166,13 +168,18 @@
   const pathLines = (raw) => (Array.isArray(raw) ? raw : String(raw ?? "").split(/\r?\n/))
     .map(s => String(s).trim()).filter(Boolean);
 
-  // "party:+86,0" -> { dx: 86, dy: 0 }, or null when the line is not one.
+  // "party:+86,0" -> { anchor: "party", dx: 86, dy: 0 }, or null when the line is not one.
   // "party:+86,0@Pit Shot": the same, but dx turns round when the party stands
   // left of the token "Pit Shot" (one path for whichever side they came from).
+  // "self:+10,+210": the same, measured from where the (first) jumper stands
+  // when the row starts, for a token whose spot is not known in advance
+  // (Rakshasa lands beside the party wherever they dodged, then leaps into the pit).
   function parsePartyOffset(line) {
-    const m = String(line).match(/^\s*party\s*:\s*([+-]?\d+(?:\.\d+)?)\s*,\s*([+-]?\d+(?:\.\d+)?)\s*(?:@\s*(.+?))?\s*$/i);
+    const m = String(line).match(/^\s*(party|self)\s*:\s*([+-]?\d+(?:\.\d+)?)\s*,\s*([+-]?\d+(?:\.\d+)?)\s*(?:@\s*(.+?))?\s*$/i);
     if (!m) return null;
-    return m[3] ? { dx: Number(m[1]), dy: Number(m[2]), mirrorRef: m[3].trim() } : { dx: Number(m[1]), dy: Number(m[2]) };
+    const out = { anchor: m[1].toLowerCase(), dx: Number(m[2]), dy: Number(m[3]) };
+    if (m[4]) out.mirrorRef = m[4].trim();
+    return out;
   }
 
   // A point kept inside the scene's own area (not its padding). A scene with no
@@ -186,15 +193,17 @@
     };
   }
 
-  const resolvePath = (scene, lines, party = null) => pathLines(lines).map(line => ({ line, at: resolvePoint(scene, line, party) }));
+  const resolvePath = (scene, lines, party = null, self = null) => pathLines(lines).map(line => ({ line, at: resolvePoint(scene, line, party, self) }));
 
   // A path line as a map point (the centre a token lands on), or null.
-  // party: the party token's document, for "party:dx,dy" lines.
-  function resolvePoint(scene, line, party = null) {
+  // party: the party token's document, for "party:dx,dy" lines; self: the
+  // jumper's own document, for "self:dx,dy" lines.
+  function resolvePoint(scene, line, party = null, self = null) {
     const rel = parsePartyOffset(line);
     if (rel) {
-      if (!party) return null;
-      const c = centerOf(party);
+      const anchor = rel.anchor === "self" ? self : party;
+      if (!anchor) return null;
+      const c = centerOf(anchor);
       let dx = rel.dx;
       if (rel.mirrorRef) {
         const ref = tokensNamed(scene, rel.mirrorRef)[0];
@@ -312,8 +321,11 @@
       ticker.remove(tick);
       if (!sprite.destroyed) sprite.destroy();
       // Show the real token once it stands where the copy landed (or give up waiting).
+      // A fading hop ends hidden: wait for that instead, so it never pops back.
       const reveal = () => { if (!mesh.destroyed) mesh.renderable = true; };
-      const settled = () => Math.hypot(token.center.x - data.to.x, token.center.y - data.to.y) < 2;
+      const settled = data.fadeOut
+        ? () => token.document?.hidden === true
+        : () => Math.hypot(token.center.x - data.to.x, token.center.y - data.to.y) < 2;
       if (settled()) return reveal();
       const giveUpAt = performance.now() + HOP.settleMs;
       const wait = () => {
@@ -360,6 +372,8 @@
           else setLook(standTex, sx * k, sy * k, null);
           sprite.x = mix(from.x, to.x, u);
           sprite.y = mix(from.y, to.y, u) - data.arc * 4 * u * (1 - u);
+          // Fading hop: gone by touchdown, as if it dropped out of sight (into a pit).
+          if (data.fadeOut) sprite.alpha = u <= HOP.fadeFrom ? 1 : Math.max(0, 1 - (u - HOP.fadeFrom) / (1 - HOP.fadeFrom));
           return;
         }
 
@@ -369,6 +383,7 @@
           try { window.oni.TileBob?.dip?.(data.to.x, data.to.y); } catch (_) {}
           if (dustAtLanding(data.dust)) dust(to.x, to.y, heightPx * depthEnd, true, info?.sourceId);
         }
+        if (data.fadeOut) { sprite.alpha = 0; return; }
         const e = Math.sin(Math.min(1, (t - landAt) / HOP.landMs) * Math.PI);
         sprite.position.set(to.x, to.y);
         setLook(standTex, (1 + HOP.land.x * e) * depthEnd, (1 - HOP.land.y * e) * depthEnd, null);
@@ -562,16 +577,19 @@
         takeoffSrc: String(opts.takeoffSrc ?? ""),
         takeoffVolume: clamp(opts.takeoffVolume, 0, 1, 0.6),
         landSrc: String(opts.landSrc ?? ""),
-        dust: pickDust(opts.dust)
+        dust: pickDust(opts.dust),
+        fadeOut: opts.fadeOut === true
       });
     }
 
     const wait = (ms) => (sourceId && flow()?.wait ? flow().wait(sourceId, ms) : new Promise(r => setTimeout(() => r(true), ms)));
     if (await wait(HOP.crouchMs + HOP.holdMs + longest) === false) return false;
+    // A fading hop lands hidden (one update, so it never shows at the landing).
     await scene.updateEmbeddedDocuments("Token", list.map(doc => ({
       _id: doc.id,
       x: to.x - (doc.width * grid) / 2,
-      y: to.y - (doc.height * grid) / 2
+      y: to.y - (doc.height * grid) / 2,
+      ...(opts.fadeOut === true ? { hidden: true } : {})
     })), { animate: false, pan: false, oniJump: true });
     return (await wait(HOP.landMs)) !== false;
   }
@@ -629,21 +647,24 @@
   }
 
   /**
-   * Hops along a whole path. lines: marker names, "x, y" or "party:dx,dy".
-   * opts.party: the party token's document, for "party:" lines; they are all
-   * worked out from where it stands now. Returns { ok, reason, missing }.
+   * Hops along a whole path. lines: marker names, "x, y", "party:dx,dy" or
+   * "self:dx,dy". opts.party: the party token's document, for "party:" lines;
+   * "self:" lines use the first jumper. All are worked out from where they
+   * stand now. opts.fadeOut: the last hop fades out and lands hidden.
+   * Returns { ok, reason, missing }.
    */
   async function jumpPath(docs, lines, opts = {}, sourceId = null) {
     const list = (Array.isArray(docs) ? docs : [docs]).filter(Boolean);
     if (!list.length) return { ok: false, reason: "noToken" };
     const scene = list[0].parent;
-    const points = resolvePath(scene, lines, opts.party ?? null);
+    const points = resolvePath(scene, lines, opts.party ?? null, list[0]);
     const missing = points.filter(p => !p.at).map(p => p.line);
     if (missing.length) return { ok: false, reason: "missingMarker", missing };
 
     const pauseMs = clamp(opts.pauseMs, 0, 5000, 220);
     for (let i = 0; i < points.length; i++) {
-      if (!await hop(list, points[i].at, opts, sourceId)) return { ok: false, reason: "ended" };
+      const hopOpts = { ...opts, fadeOut: opts.fadeOut === true && i === points.length - 1 };
+      if (!await hop(list, points[i].at, hopOpts, sourceId)) return { ok: false, reason: "ended" };
       if (i < points.length - 1 && pauseMs > 0) {
         const go = sourceId && flow()?.wait ? await flow().wait(sourceId, pauseMs) : true;
         if (go === false) return { ok: false, reason: "ended" };
@@ -676,7 +697,7 @@
       type: "jumpTo", target: "party", name: "", path: "",
       arcPct: 100, hopMs: 640, pauseMs: 220, face: true,
       takeoffSrc: DEFAULT_TAKEOFF, takeoffVolume: 0.6, landSrc: "",
-      style: "hop", dust: "none"
+      style: "hop", dust: "none", fadeOut: false
     },
     mediaOf: (row) => {
       const style = pickStyle(row?.style);
@@ -700,7 +721,7 @@
       let text;
       if (style === "leapOut") text = `${who} leaps out of view`;
       else if (style === "dropIn") text = lines.length ? `${who} drops in at ${lines[lines.length - 1]}` : `${who} drops in (no point)`;
-      else text = lines.length ? `${who} → ${lines.join(" → ")}` : `${who} (no path)`;
+      else text = lines.length ? `${who} → ${lines.join(" → ")}${row?.fadeOut === true ? ", fading out" : ""}` : `${who} (no path)`;
       return dustKind === "none" ? text : `${text}, dust ${dustKind === "both" ? "at take-off and landing" : `at ${dustKind === "takeoff" ? "take-off" : "landing"}`}`;
     },
     execute: async (row, context) => {
@@ -722,7 +743,7 @@
 
       let result;
       if (style === "dropIn") {
-        const points = resolvePath(scene, row?.path, opts.party);
+        const points = resolvePath(scene, row?.path, opts.party, docs[0]);
         const last = points[points.length - 1];
         if (!last) result = { ok: false, reason: "noPoint" };
         else if (!last.at) result = { ok: false, reason: "missingMarker", missing: [last.line] };
@@ -753,8 +774,8 @@
         ),
         `<div class="oni-event-row-jump-path-wrap">${kit.field(
           "Path, in order",
-          `<textarea class="oni-event-textarea oni-event-row-jump-path" rows="4" placeholder="One per line: a marker token's name (hidden is fine), x, y, or party:dx,dy">${kit.escapeHTML(pathLines(row.path).join("\n"))}</textarea>`,
-          "One hop per line. Put hidden marker tokens on the stones; the last line is where they land. A line like 845, 562 is a map point. A line like party:+86,0 is where the party stands when the row starts, moved by that many map px (kept inside the scene)."
+          `<textarea class="oni-event-textarea oni-event-row-jump-path" rows="4" placeholder="One per line: a marker token's name (hidden is fine), x, y, party:dx,dy or self:dx,dy">${kit.escapeHTML(pathLines(row.path).join("\n"))}</textarea>`,
+          "One hop per line. Put hidden marker tokens on the stones; the last line is where they land. A line like 845, 562 is a map point. A line like party:+86,0 is where the party stands when the row starts, moved by that many map px (kept inside the scene). self:+10,+210 is the same from where the jumper itself stands."
         )}</div>`,
         kit.field(
           "Dust",
@@ -779,6 +800,11 @@
           kit.field(
             "Face",
             `<label><input type="checkbox" class="oni-event-row-jump-face" ${row.face !== false ? "checked" : ""} /> turn to face each hop</label>`
+          ),
+          kit.field(
+            "Vanish",
+            `<label><input type="checkbox" class="oni-event-row-jump-fade" ${row.fadeOut === true ? "checked" : ""} /> fade out on the last hop, then hide</label>`,
+            "For a jump that leaves the scene downwards, e.g. into a pit: the last hop fades away before touchdown and the token lands hidden."
           )
         ].join("")}</div>`,
         kit.field("Take-off sound", kit.fileInput("oni-event-row-jump-takeoff", row.takeoffSrc ?? "", "audio", "Sound at each take-off (empty: none)")),
@@ -809,6 +835,7 @@
       hopMs: clamp(kit.readNumber(rowEl, ".oni-event-row-jump-ms", 640), 150, 3000, 640),
       pauseMs: clamp(kit.readNumber(rowEl, ".oni-event-row-jump-pause", 220), 0, 5000, 220),
       face: !!kit.own(rowEl, ".oni-event-row-jump-face")?.checked,
+      fadeOut: !!kit.own(rowEl, ".oni-event-row-jump-fade")?.checked,
       takeoffSrc: kit.readText(rowEl, ".oni-event-row-jump-takeoff", "").trim(),
       takeoffVolume: clamp(kit.readNumber(rowEl, ".oni-event-row-jump-volume", 0.6), 0, 1, 0.6),
       landSrc: kit.readText(rowEl, ".oni-event-row-jump-land", "").trim(),
