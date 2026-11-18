@@ -21,7 +21,12 @@
 //
 // `env` (built by mg-boot.js): canvas, overlay, roster, myIdx, isHost, isGM,
 // asset(), bgm, sfxVol(), musicVol(), isActive(), isTyping(), net, firstClear,
-// onResult(), onClose(), showPerf().
+// onResult(), onClose(), showPerf(), playtest.
+//
+// `env.playtest` (null in story runs) = { quick, timeLimit, practice, startStage }:
+// a sandbox run started from the playtest launcher. quick = the short course,
+// timeLimit = replay time limits, practice = false skips the practice yard,
+// startStage 0-2 starts the race at that stage. Results read "Playtest".
 // ============================================================================
 
 export function createPlasmaField(env) {
@@ -39,6 +44,10 @@ export function createPlasmaField(env) {
   let SCALE = 1;
   const baseTf = () => ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0);
   const NET = makeNet();
+  // a playtest run (mg-boot's playtest launcher); null in story runs
+  const PT = env.playtest || null;
+  const QUICK = !!PT?.quick;
+  const START_STAGE = Math.max(0, Math.min(2, Number(PT?.startStage) || 0));
 
   const W = 960, H = 600, SQ = 48, XMIN = 175, XMAX = 785;
   const reduce = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -239,7 +248,7 @@ export function createPlasmaField(env) {
     L = buildLayout(quick);
     const meIdx = env.myIdx;
     G = {
-      mode:"title", t:0, quick, stage:-1, stageT:0, limit: opts.replay ? (quick ? 100000 : 180000) : Infinity, meIdx, replay: !!opts.replay, watchIdx: -1, inputOk: false,
+      mode:"title", t:0, quick, stage:-1, stageT:0, limit: (PT ? !!PT.timeLimit : opts.replay) ? (quick ? 100000 : 180000) : Infinity, meIdx, replay: !!opts.replay, watchIdx: -1, inputOk: false,
       camY: L.START_Y - 120,
       players: NAMES.map((n,i) => {
         const attrs = (opts.attrs && opts.attrs[i]) || ATTRS[n], d = derive(attrs);
@@ -902,12 +911,14 @@ export function createPlasmaField(env) {
     const m = me();
     bar.innerHTML = m.ready ? `<span class="btn" aria-disabled="true">On the starting line. Waiting for: ${waiting.join(", ")}</span>` : `<span class="btn ghost" aria-disabled="true">Walk up onto the starting line when you're ready</span>`;
   }
-  function endPractice(){
-    G.mode = "transition"; G.banner = { txt:"Practice over!", t:0, dur:1400 }; resetField(); closeTutorial(); G.inputOk = true;
-    later(1300, () => fadeTo(() => {
-      G.players.forEach((p,i) => { p.x = L.startMarks[i].x; p.y = L.startMarks[i].y; p.state = "idle"; p.soot = 0; p.stats = newStats(); p.sta = p.d.maxSta; p.winded = false; p.net = []; });
-      G.camY = L.START_Y - 120;
-      if (env.isHost) later(500, () => hostFlow("stage", { s: 0 }));
+  // s = the stage the race opens on (a playtest can start at 2 or 3: runners stand on the pillar plaza before it)
+  function endPractice(s = START_STAGE, fromPractice = true){
+    G.mode = "transition"; if (fromPractice) G.banner = { txt:"Practice over!", t:0, dur:1400 }; resetField(); closeTutorial(); G.inputOk = true;
+    later(fromPractice ? 1300 : 0, () => fadeTo(() => {
+      const marks = s > 0 ? L.marks(s - 1) : L.startMarks;
+      G.players.forEach((p,i) => { p.x = marks[i].x; p.y = marks[i].y; p.state = "idle"; p.soot = 0; p.stats = newStats(); p.sta = p.d.maxSta; p.winded = false; p.net = []; });
+      G.camY = (s > 0 ? marks[0].y + 30 : L.START_Y) - 120;
+      if (env.isHost) later(500, () => hostFlow("stage", { s }));
     }));
   }
   const SHOW_STAGE_CARDS = false;   /* the per-stage rule cards; switched off (the game explains itself), kept for later */
@@ -1024,11 +1035,11 @@ export function createPlasmaField(env) {
     G.mode = "summary"; G.summary = sum;
     const first = !G.replay && env.firstClear;
     const rows = sum.rows.map((r, i) => { const p = G.players[r.i];
-      return `<tr class="${i===0?"top":""}"><td>${r.place}</td><td>${esc(p.name)}${p.me?" (you)":""}${p.cpu?' <span class="ex">CPU</span>':""}<br><span class="ex title">${esc(r.title)}</span></td><td>${r.points}</td><td>${r.dodges}</td><td>${r.shocks}</td><td>${first ? `${COUPONS[i]} Hako Coupons<br><span class="ex">+${FABULA[i]} Fabula Point${FABULA[i]>1?"s":""}</span>` : "Just for fun"}</td></tr>`; }).join("");
+      return `<tr class="${i===0?"top":""}"><td>${r.place}</td><td>${esc(p.name)}${p.me?" (you)":""}${p.cpu?' <span class="ex">CPU</span>':""}<br><span class="ex title">${esc(r.title)}</span></td><td>${r.points}</td><td>${r.dodges}</td><td>${r.shocks}</td><td>${first ? `${COUPONS[i]} Hako Coupons<br><span class="ex">+${FABULA[i]} Fabula Point${FABULA[i]>1?"s":""}</span>` : PT ? "Playtest" : "Just for fun"}</td></tr>`; }).join("");
     const top = G.players[sum.rows[0].i], resc = G.players[sum.rescuer];
-    ov.innerHTML = `<div class="parch card"><div class="eyebrow">Plasma Field Dash · final results</div><h2><b>${esc(top.name)}</b> takes the crown. <b>${esc(resc.name)}</b> pulled Hako free.</h2>
+    ov.innerHTML = `<div class="parch card"><div class="eyebrow">Plasma Field Dash · ${PT ? "playtest results" : "final results"}</div><h2><b>${esc(top.name)}</b> takes the crown. <b>${esc(resc.name)}</b> pulled Hako free.</h2>
       <div class="tw"><table class="res"><tr><th>#</th><th>Player</th><th>Pts</th><th>Dodges</th><th>Shocks</th><th>${first ? "First clear" : "Reward"}</th></tr>${rows}</table></div>
-      <p class="ex">${first ? "Coupons go to the shared pool. A runner already at maximum Fabula Points passes the excess down to the next place." : "Rewards were paid on the first clear. This one is just for fun."}</p>
+      <p class="ex">${first ? "Coupons go to the shared pool. A runner already at maximum Fabula Points passes the excess down to the next place." : PT ? "Playtest run: nothing is saved and no rewards are paid." : "Rewards were paid on the first clear. This one is just for fun."}</p>
       <div class="row">${env.isGM ? '<button class="btn" data-mg="again">Play again</button><button class="btn primary" data-mg="leave">Leave the field</button>' : '<span class="ex">The GM picks what happens next.</span>'}</div></div>`;
     const a = ov.querySelector('[data-mg="again"]'), l = ov.querySelector('[data-mg="leave"]');
     if (a) a.onclick = () => { a.disabled = true; if (env.isHost) hostFlow("again", {}); else NET.send("gmAgain", {}); };
@@ -1044,7 +1055,7 @@ export function createPlasmaField(env) {
       for (const pl of L.pillars) if (!pl.shown && Math.abs(G.camY - pl.y) < 120){ pl.shown = 1; G.bolts.push(bolt(pl.x, pl.y - 310, 360)); sfx.thunder(); G.flash = .25; } }
     else if (T < 11500){ G.camY = topY; if (!I.c){ I.c = 1; G.hako.next = 0; G.speech = { who:"Hako", txt:"Bzzzt! H-hey! Somebody get me out of heeere!", t:0 }; } if (T > 9800 && !I.c2){ I.c2 = 1; G.hako.next = 0; G.flash = .35; } }
     else if (T < 13700){ G.speech = null; G.camY = topY; if (!I.d){ I.d = 1; say("Three stretches of storm lie between you and her. The Lightning Pillars are the only safe ground.", 2100); } }
-    else if (!I.e){ I.e = 1; if (env.isHost) hostFlow("practice", {}); }
+    else if (!I.e){ I.e = 1; if (env.isHost) hostAfterIntro(); }
   }
   function say(txt, dur){ G.text = { txt, t:0, dur }; }
   function fadeTo(cb){ G.fade = { t:0, cb, done:false }; }
@@ -1058,7 +1069,7 @@ export function createPlasmaField(env) {
     if (!env.isGM) return;
     const d = document.createElement("div"); d.className = "corner";
     d.innerHTML = `<button class="btn ghost" data-mg="skip">Skip cutscene</button>`; ov.appendChild(d);
-    d.querySelector("button").onclick = () => { d.remove(); if (env.isHost) hostFlow("practice", {}); else NET.send("gmSkip", {}); };
+    d.querySelector("button").onclick = () => { d.remove(); if (env.isHost) hostAfterIntro(); else NET.send("gmSkip", {}); };
   }
   const TUT_PAGES = [
     { img: env.asset("tut1.jpg"), text: "Reach the end of each stage first. Lightning lands where the <em>orange warnings</em> show." },
@@ -1995,6 +2006,8 @@ export function createPlasmaField(env) {
 
   // ── round flow: the host decides, every screen follows ────────────────────
   function hostFlow(type, data = {}){ if (!env.isHost || dead) return; env.net.send("flow", { type, data }); applyFlow(type, data); }
+  // after the opening (or with none): the practice yard, or a playtest with practice off goes straight to the race
+  function hostAfterIntro(){ if (PT && PT.practice === false) hostFlow("race", { s: START_STAGE }); else hostFlow("practice", {}); }
   function seats(){
     return G.players.map((p, i) => {
       const user = env.roster[i].userId || null;
@@ -2026,6 +2039,7 @@ export function createPlasmaField(env) {
         fadeTo(() => { L.pillars.forEach(p => p.shown = 0); startPractice(); G.camY = L.PB - 200; G.inputOk = false; if (isRunner()) showOverview(); });
         break;
       case "endPractice": endPractice(); break;
+      case "race": clearOv(); G.text = null; G.speech = null; G.endSent = true; music.main(); endPractice(d.s ?? START_STAGE, false); break;
       case "seats": applySeats(d.seats); if (!G.tutOpen) G.inputOk = true; renderPracticeBar(); break;
       case "stage": applySeats(d.seats); G.overSent = false; G.nextSent = null; showStageCard(d.s); break;
       case "finish": { const p = G.players[d.i]; if (p && p.running) finish(p, d.place, d.time); break; }
@@ -2033,7 +2047,7 @@ export function createPlasmaField(env) {
       case "roundOver": roundOver(); break;
       case "finale": G.summarySent = false; startFinale(d.rescuer); break;
       case "summary": showSummary(d); if (env.isHost) env.onResult?.(resultOf(d)); break;
-      case "again": { const sv = G.players.map(p => ({ cpu: p.cpu, user: env.roster[p.idx].userId })); newGame(false, { replay: true }); applySeats(sv); G.camY = L.PB - 200; clearOv(); if (env.isHost) later(300, () => hostFlow("practice", {})); break; }
+      case "again": { const sv = G.players.map(p => ({ cpu: p.cpu, user: env.roster[p.idx].userId })); newGame(QUICK, { replay: true }); applySeats(sv); G.camY = L.PB - 200; clearOv(); if (env.isHost) later(300, () => hostAfterIntro()); break; }
       case "takeover": {
         const p = G.players[d.i]; if (!p || p.cpu) break;
         const wasMe = p.me; p.cpu = true; p.cpuBy = "drop"; p.me = false; p.local = env.isHost; p.bot = p.bot || BOT[p.name] || BOT.Same; p.net = []; p.goalSent = !p.running;
@@ -2073,7 +2087,7 @@ export function createPlasmaField(env) {
       ready: G.players.map(p => !!p.ready), summary: G.mode === "summary" ? G.summary : null, rescuer: G.rescuer?.idx ?? null };
   }
   function applySync(d){
-    newGame(false, { replay: d.replay }); if (d.limit) G.limit = d.limit;
+    newGame(QUICK, { replay: d.replay }); if (d.limit) G.limit = d.limit;
     applySeats(d.seats);
     G.players.forEach((p, i) => { p.stats.points = d.pts[i] || 0; p.stats.places = d.places[i] || []; p.running = d.running[i]; p.finished = d.fin[i]; p.ready = d.ready[i]; });
     G.stage = d.stage; G.stageT = d.stageT; G.inputOk = true;
@@ -2143,7 +2157,7 @@ export function createPlasmaField(env) {
       case "gmNext": hostNext(); return;
       case "gmAgain": if (G.mode === "summary") hostFlow("again", {}); return;
       case "gmLeave": hostFlow("close", {}); return;
-      case "gmSkip": if (G.mode === "intro") hostFlow("practice", {}); return;
+      case "gmSkip": if (G.mode === "intro") hostAfterIntro(); return;
       case "hello":
         if (env.isHost && d?.late && from?.id){
           // a (re)joining party member watches now and runs again from the next round break
@@ -2222,13 +2236,13 @@ export function createPlasmaField(env) {
     async load(){ await loadAll(); },
     // first frame: the host opens with the intro (or straight into practice on a replay); others wait for its word
     begin({ intro = "full", replay = false, late = false } = {}){
-      newGame(false, { replay }); G.camY = L.START_Y - 120;
+      newGame(QUICK, { replay }); G.camY = L.START_Y - 120;
       ready = true; const q = queue; queue = []; for (const [k, d, f] of q) handle(k, d, f);
       raf = requestAnimationFrame(t => { last = t; frame(t); });
       if (late) env.net.send("hello", { seat: env.myIdx, late: true });
       if (env.isHost){
         G.seatSince = env.net.hostNow();
-        if (intro === "full") hostFlow("intro", {}); else hostFlow("practice", {});
+        if (intro === "full") hostFlow("intro", {}); else hostAfterIntro();
       }
     },
     handle,

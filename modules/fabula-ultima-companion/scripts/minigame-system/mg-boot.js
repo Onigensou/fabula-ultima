@@ -23,6 +23,9 @@
 //
 // API: FUCompanion.api.minigame.run({ game, intro, firstClear }) on the
 // primary GM resolves with the result once everyone has left the field.
+// FUCompanion.api.minigame.playtest({ actors, seats, practice, quick, ... })
+// is the sandbox: no story context, nothing written to the world. The GM's
+// "Minigame Playtest" button (token controls) opens a launcher for it.
 // ============================================================================
 
 import { createPlasmaField } from "./plasma-field/pf-game.js";
@@ -124,6 +127,8 @@ function buildOverlay() {
       stage.style.transform = `translate(${x}px, ${y}px) scale(${s})`;
     },
     loaded() { root.querySelector(".fu-mg-loading")?.remove(); },
+    // a small label pinned to the bottom-left of the screen (playtest runs)
+    tag(text) { const t = document.createElement("div"); t.className = "fu-mg-tag"; t.textContent = text; root.appendChild(t); },
     // Closing fades the game to black, then a black curtain holds while the event underneath moves the party
     // and camera, and only then fades away: the scene seems to carry straight on from the game.
     remove() {
@@ -171,7 +176,8 @@ function assignSeats(actors, { requireActive = true } = {}) {
   return seats;
 }
 
-async function buildRoster() {
+// The current party, from the game DB's member_id_1..4.
+async function partyActors() {
   const res = await globalThis.FUCompanion?.api?.getCurrentGameDb?.();
   const props = res?.db?.system?.props ?? {};
   const actors = [];
@@ -180,7 +186,14 @@ async function buildRoster() {
     const actor = id ? game.actors?.get(id) : null;
     if (actor) actors.push(actor);
   }
-  const seatUsers = assignSeats(actors);
+  return actors;
+}
+
+// `actors` = who runs (default: the party). `seatUsers` = the user id per seat, or null for a CPU
+// (default: each player's linked / owned character, as assignSeats decides).
+async function buildRoster({ actors = null, seatUsers = null } = {}) {
+  actors ??= await partyActors();
+  seatUsers ??= assignSeats(actors);
   const out = [];
   for (const [i, actor] of actors.entries()) {
     const p = actor.system?.props ?? {};
@@ -218,7 +231,8 @@ async function openSession(offer, { isHost, late = false, hold = false } = {}) {
   const env = {
     canvas: ui.canvas, overlay: ui.overlay, stageBox: ui.stageBox, place: ui.place,
     roster: offer.roster.map((r) => ({ ...r })), myIdx, userId: game.user.id, hostId: offer.hostId,
-    isHost, isGM: !!game.user.isGM, firstClear: !!offer.firstClear,
+    isHost, isGM: !!game.user.isGM, firstClear: !!offer.firstClear && !offer.playtest,
+    playtest: offer.playtest ? { ...offer.playtest } : null,
     asset: (f) => def.assets + f, bgm: def.bgm,
     sfxVol: () => vol("globalInterfaceVolume", 0.5) * 1.6,
     musicVol: () => vol("globalPlaylistVolume", 0.5),
@@ -229,6 +243,9 @@ async function openSession(offer, { isHost, late = false, hold = false } = {}) {
     maxBackingWidth: () => 2200,
     // which seat a (re)joining user decides for (their linked / owned party character)
     seatFor: (userId) => {
+      // the seat this user started in wins (a playtest can seat anyone anywhere)
+      const own = offer.roster.findIndex((r) => r.userId === userId);
+      if (own >= 0) return own;
       const actors = offer.roster.map((r) => game.actors.get(r.actorId)).filter(Boolean);
       return assignSeats(actors, { requireActive: true }).indexOf(userId);
     },
@@ -252,6 +269,7 @@ async function openSession(offer, { isHost, late = false, hold = false } = {}) {
     return null;
   }
   ui.loaded();
+  if (offer.playtest) ui.tag("Playtest · nothing is saved");
   if (!isHost) send("loaded", { seat: myIdx });
   const begin = () => { S?.instance?.begin({ intro: offer.intro, replay: !!offer.replay, late }); ui.canvas.focus(); };
   if (hold) S.begin = begin; else begin();
@@ -284,6 +302,8 @@ async function finishSession() {
 async function payRewards(s) {
   const def = GAMES[s.gameKey];
   const r = s.result;
+  // a playtest never writes to the world, whatever else the offer says
+  if (s.offer.playtest) return null;
   if (!def?.rewards || r.replay || !s.offer.firstClear) return null;
   const db = (await globalThis.FUCompanion?.api?.getCurrentGameDb?.())?.db ?? null;
   const lines = [];
@@ -366,7 +386,65 @@ async function run({ game: gameKey = "plasma-field", intro = "full", firstClear 
   if (S) closeSession("restart");
   const roster = await buildRoster();
   if (!roster.length) { ui.notifications?.warn?.("No party members found (check the game DB's member_id_1..4)."); return { closed: "no party" }; }
-  const offer = { sid: foundry.utils.randomID(), game: gameKey, roster, intro, replay: !!replay, firstClear: !!firstClear && !replay, hostId: game.user.id };
+  return startOffer({ sid: foundry.utils.randomID(), game: gameKey, roster, intro, replay: !!replay, firstClear: !!firstClear && !replay, hostId: game.user.id });
+}
+
+/**
+ * Play a minigame as a sandbox: no story context, nothing written to the world.
+ * No switches, variables, rewards, chat card or event hold; it runs on any scene.
+ * Primary GM only. Any option left out takes the default below.
+ * @param {object} o
+ * @param {string}   [o.game]        "plasma-field"
+ * @param {string[]} [o.actors]      who runs, by actor name or id, 1-4 (default: the current party)
+ * @param {object}   [o.seats]       { "<user name or id>": "<actor name or id>" }: put a player (a GM too) on a runner.
+ *                                   Seats not named here go to their usual player; "cpu" as the user key is ignored.
+ * @param {boolean}  [o.cpu]         true (default): seats nobody takes are CPUs. false: only named seats get a player,
+ *                                   and the usual linked/owned seating is skipped (every other seat is a CPU)
+ * @param {"full"|"none"} [o.intro]  "none" (default) skips the opening pan
+ * @param {boolean}  [o.practice]    true (default): the practice yard first. false: straight to the race
+ * @param {boolean}  [o.quick]       the short course (default false)
+ * @param {boolean}  [o.timeLimit]   the replay time limit (default false: no limit, the GM can call a round)
+ * @param {number}   [o.startStage]  1, 2 or 3: the stage the race opens on (default 1)
+ * @returns {Promise<object>} the result, as run() (paid is always null)
+ */
+async function playtest({ game: gameKey = "plasma-field", actors = null, seats = null, cpu = true, intro = "none",
+  practice = true, quick = false, timeLimit = false, startStage = 1 } = {}) {
+  if (!isPrimaryGM()) throw new Error("Only the primary GM can start a minigame.");
+  if (!GAMES[gameKey]) throw new Error(`Unknown minigame "${gameKey}".`);
+  const findActor = (v) => { const k = clean(v).replace(/^Actor\./i, ""); return game.actors.get(k) ?? game.actors.find((a) => a.name === k) ?? game.actors.find((a) => clean(a.name).split(/\s+/)[0].toLowerCase() === k.toLowerCase()) ?? null; };
+  const findUser = (v) => { const k = clean(v); return game.users.get(k) ?? game.users.find((u) => u.name === k) ?? game.users.find((u) => u.name.toLowerCase() === k.toLowerCase()) ?? null; };
+  let list;
+  if (actors?.length) {
+    list = actors.map((v) => { const a = findActor(v); if (!a) throw new Error(`Playtest: no actor "${v}".`); return a; });
+  } else list = await partyActors();
+  list = list.filter((a, i) => list.indexOf(a) === i).slice(0, 4);
+  if (!list.length) throw new Error("Playtest: no runners (pass actors, or set the party in the game DB).");
+  // seats: the named ones first, then (with cpu on) each player's usual character
+  const seatUsers = list.map(() => null);
+  for (const [uk, ak] of Object.entries(seats ?? {})) {
+    const u = findUser(uk); if (!u) throw new Error(`Playtest: no user "${uk}".`);
+    if (!u.active) { ui.notifications?.warn?.(`Playtest: ${u.name} isn't connected; their seat is a CPU.`); continue; }
+    const a = findActor(ak), i = a ? list.indexOf(a) : -1;
+    if (i < 0) throw new Error(`Playtest: "${ak}" isn't one of the runners.`);
+    if (seatUsers.includes(u.id)) throw new Error(`Playtest: ${u.name} is seated twice.`);
+    seatUsers[i] = u.id;
+  }
+  if (cpu) {
+    const usual = assignSeats(list);
+    usual.forEach((u, i) => { if (u && !seatUsers[i] && !seatUsers.includes(u)) seatUsers[i] = u; });
+  }
+  if (S) closeSession("restart");
+  const roster = await buildRoster({ actors: list, seatUsers });
+  const st = Math.max(1, Math.min(3, Math.round(Number(startStage) || 1)));
+  console.info(TAG, "playtest:", roster.map((r) => `${r.name}=${r.cpu ? "CPU" : game.users.get(r.userId)?.name}`).join(", "));
+  return startOffer({
+    sid: foundry.utils.randomID(), game: gameKey, roster, intro: intro === "full" ? "full" : "none", replay: false, firstClear: false, hostId: game.user.id,
+    playtest: { quick: !!quick, timeLimit: !!timeLimit, practice: practice !== false, startStage: st - 1 },
+  });
+}
+
+// Send the offer to everyone, open it here as the host, resolve once the field closes.
+async function startOffer(offer) {
   let resolveRun;
   const done = new Promise((resolve) => { resolveRun = resolve; });
   game.socket.emit(CHANNEL, { type: TYPE, payload: { sid: offer.sid, k: "open", d: offer, u: game.user.id } });
@@ -378,7 +456,7 @@ async function run({ game: gameKey = "plasma-field", intro = "full", firstClear 
 
 async function openSessionHostWhenReady(offer, resolveRun) {
   // open the overlay and load the art, but don't begin until the runners have loaded
-  const need = new Set(offer.roster.filter((r) => !r.cpu && r.userId).map((r) => r.userId));
+  const need = new Set(offer.roster.filter((r) => !r.cpu && r.userId && r.userId !== game.user.id).map((r) => r.userId));
   const s = await openSession(offer, { isHost: true, hold: true });
   if (!s) { resolveRun({ closed: "error" }); return null; }
   s.resolve = resolveRun;
@@ -399,6 +477,74 @@ async function openSessionHostWhenReady(offer, resolveRun) {
   return s;
 }
 
+// ── Playtest launcher (GM dialog) ───────────────────────────────────────────
+// Four seats (character + who plays it) and the run options. The last choices
+// are kept in this browser only (localStorage), never in the world.
+const PT_STORE = `${MODULE_ID}.minigamePlaytest`;
+const ptLoad = () => { try { return JSON.parse(localStorage.getItem(PT_STORE) || "null"); } catch { return null; } };
+const ptSave = (v) => { try { localStorage.setItem(PT_STORE, JSON.stringify(v)); } catch {} };
+
+async function openPlaytest() {
+  if (!game.user.isGM) return ui.notifications?.warn?.("Only a GM can start a playtest.");
+  if (!isPrimaryGM()) return ui.notifications?.warn?.("Only the primary GM can start a minigame.");
+  const esc = (v) => foundry.utils.escapeHTML?.(String(v ?? "")) ?? String(v ?? "");
+  const party = await partyActors();
+  const others = game.actors.filter((a) => a.hasPlayerOwner && !party.includes(a)).sort((a, b) => a.name.localeCompare(b.name));
+  const users = game.users.filter((u) => u.active).sort((a, b) => (a.isGM - b.isGM) || a.name.localeCompare(b.name));
+  const usual = assignSeats(party);
+  const last = ptLoad();
+  // defaults: the party with its usual players; a remembered seat list wins when its actors still exist
+  let rows = [0, 1, 2, 3].map((i) => ({ actor: party[i]?.id ?? "", user: usual[i] ?? "" }));
+  if (Array.isArray(last?.rows) && last.rows.some((r) => r.actor && game.actors.get(r.actor))) {
+    rows = last.rows.slice(0, 4).map((r) => ({ actor: game.actors.get(r.actor) ? r.actor : "", user: game.users.get(r.user)?.active ? r.user : "" }));
+    while (rows.length < 4) rows.push({ actor: "", user: "" });
+  }
+  const o = { practice: true, intro: false, quick: false, timeLimit: false, startStage: 1, ...(last?.opts ?? {}) };
+  const actorOpts = (sel) => `<option value="">(empty seat)</option>`
+    + (party.length ? `<optgroup label="Party">${party.map((a) => `<option value="${a.id}" ${a.id === sel ? "selected" : ""}>${esc(a.name)}</option>`).join("")}</optgroup>` : "")
+    + (others.length ? `<optgroup label="Other player characters">${others.map((a) => `<option value="${a.id}" ${a.id === sel ? "selected" : ""}>${esc(a.name)}</option>`).join("")}</optgroup>` : "");
+  const userOpts = (sel) => `<option value="">CPU</option>` + users.map((u) => `<option value="${u.id}" ${u.id === sel ? "selected" : ""}>${esc(u.name)}${u.isGM ? " (GM)" : ""}</option>`).join("");
+  const content = `<form class="fu-mg-pt">
+    <p class="notes">A sandbox run: no switches, rewards or chat card, nothing saved. Everyone connected sees it; empty player slots are CPUs.</p>
+    <table><tr><th>Seat</th><th>Character</th><th>Played by</th></tr>
+      ${rows.map((r, i) => `<tr><td>${i + 1}</td><td><select name="a${i}">${actorOpts(r.actor)}</select></td><td><select name="u${i}">${userOpts(r.user)}</select></td></tr>`).join("")}
+    </table>
+    <div class="form-group"><label>Start at stage</label><select name="startStage">${[1, 2, 3].map((n) => `<option value="${n}" ${n === Number(o.startStage) ? "selected" : ""}>Stage ${n}</option>`).join("")}</select></div>
+    <div class="form-group"><label><input type="checkbox" name="practice" ${o.practice ? "checked" : ""}> Practice yard first (with the rules slides)</label></div>
+    <div class="form-group"><label><input type="checkbox" name="intro" ${o.intro ? "checked" : ""}> Opening camera pan</label></div>
+    <div class="form-group"><label><input type="checkbox" name="quick" ${o.quick ? "checked" : ""}> Quick course (short stages)</label></div>
+    <div class="form-group"><label><input type="checkbox" name="timeLimit" ${o.timeLimit ? "checked" : ""}> Time limit per round (as on replays)</label></div>
+  </form>`;
+  const read = (html) => {
+    const f = (html[0] ?? html).querySelector("form");
+    const rowsOut = [0, 1, 2, 3].map((i) => ({ actor: f[`a${i}`].value, user: f[`u${i}`].value }));
+    const opts = { practice: f.practice.checked, intro: f.intro.checked, quick: f.quick.checked, timeLimit: f.timeLimit.checked, startStage: Number(f.startStage.value) || 1 };
+    return { rows: rowsOut, opts };
+  };
+  new Dialog({
+    title: "Minigame Playtest: Plasma Field Dash",
+    content,
+    buttons: {
+      go: { icon: '<i class="fas fa-play"></i>', label: "Start playtest", callback: async (html) => {
+        const { rows: picked, opts } = read(html);
+        const used = picked.filter((r) => r.actor);
+        if (!used.length) return ui.notifications?.warn?.("Pick at least one character.");
+        const ids = used.map((r) => r.actor);
+        if (new Set(ids).size !== ids.length) return ui.notifications?.warn?.("A character is in two seats.");
+        const us = used.map((r) => r.user).filter(Boolean);
+        if (new Set(us).size !== us.length) return ui.notifications?.warn?.("A player is in two seats.");
+        ptSave({ rows: picked, opts });
+        const seats = Object.fromEntries(used.filter((r) => r.user).map((r) => [r.user, r.actor]));
+        try {
+          await playtest({ actors: ids, seats, cpu: false, intro: opts.intro ? "full" : "none", practice: opts.practice, quick: opts.quick, timeLimit: opts.timeLimit, startStage: opts.startStage });
+        } catch (e) { console.error(TAG, e); ui.notifications?.error?.(e.message); }
+      } },
+      cancel: { icon: '<i class="fas fa-times"></i>', label: "Cancel" },
+    },
+    default: "go",
+  }, { width: 460, classes: ["dialog", "fu-mg-pt-dialog"] }).render(true);
+}
+
 function leave() {
   if (!S) return false;
   if (S.isHost) { send("bye", {}); finishSession(); }
@@ -407,6 +553,14 @@ function leave() {
 }
 
 // ── Boot ────────────────────────────────────────────────────────────────────
+// GM: a "Minigame Playtest" button under the token controls opens the launcher.
+Hooks.on("getSceneControlButtons", (controls) => {
+  if (!game.user?.isGM) return;
+  const tokenLayer = controls.find?.((c) => c.name === "token");
+  if (!tokenLayer) return;
+  tokenLayer.tools.push({ name: "fuMinigamePlaytest", title: "Minigame Playtest", icon: "fas fa-gamepad", button: true, onClick: () => openPlaytest() });
+});
+
 Hooks.once("ready", () => {
   game.socket.on(CHANNEL, onSocket);
   // a client that (re)loads while a minigame runs asks to join; it watches until the next round break
@@ -420,7 +574,7 @@ Hooks.once("ready", () => {
   globalThis.FUCompanion ??= {};
   globalThis.FUCompanion.api ??= {};
   globalThis.FUCompanion.api.minigame = {
-    run, leave, isMinigameScene, sceneModeOf,
+    run, playtest, openPlaytest, leave, isMinigameScene, sceneModeOf,
     games: () => Object.keys(GAMES),
     status: () => (S ? { sid: S.sid, game: S.gameKey, host: S.isHost, rtt: S.clock.rtt(), perf: S.instance?.perf?.(), mode: S.instance?.G?.mode, stage: S.instance?.G?.stage } : null),
     instance: () => S?.instance ?? null,
@@ -452,6 +606,7 @@ const MG_CSS = `
   --ui:"Signika",system-ui,"Segoe UI",sans-serif;color:var(--ink);font-family:var(--ui);color-scheme:dark}
 #fu-mg-root .fu-mg-cv{position:absolute;display:block;outline:none;image-rendering:auto}
 #fu-mg-root .fu-mg-stage{position:absolute;left:0;top:0;width:960px;height:600px;transform-origin:0 0;pointer-events:none}
+#fu-mg-root .fu-mg-tag{position:absolute;left:10px;bottom:8px;z-index:3;pointer-events:none;font:600 11px/1 var(--ui);letter-spacing:.12em;text-transform:uppercase;color:#f6ecd6;background:rgba(155,123,255,.32);border:1px solid rgba(155,123,255,.7);border-radius:4px;padding:4px 7px}
 #fu-mg-root .fu-mg-loading{position:absolute;inset:0;display:grid;place-items:center;font:600 22px var(--ui);color:var(--muted)}
 #fu-mg-root .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
 #fu-mg-root .overlay > *{pointer-events:auto}
