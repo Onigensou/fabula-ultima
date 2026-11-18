@@ -92,7 +92,9 @@ export function createPlasmaField(env) {
     { name:"Plasma Charge", rule:"Lightning still falls, less often.", newRule:"Plasma charges flicker into being all over the field, sometimes right in front of you, and drift. Touch one and you get stamina and a short burst of speed, and every extra charge grabbed while it lasts makes you faster still (use it to drag the strike into someone's path). But a strike locks onto you and follows you for 2 s. Then it stops where it is and lands 0.9 s later. Outrun it, or leave it in someone's path. Grab another while one is following you and it stacks: a bigger strike. Watch the Electro Slimes: they grab charges too (dash into one to bonk it away). Mana Rays glide over the field and every few seconds charge up and discharge around themselves (a ring tightens first; only the discharge hurts), and from the halfway mark an Obsidrax tunnels after whoever is leading: it bursts up in front of them as a wall of obsidian spikes, and lightning that lands near it gets thrown at the leader.", ground:[2000,3000], plasma:true, slimes:true, monsters:false },
     { name:"Monster Gauntlet", rule:"Lightning and plasma, plus the Valley's monsters.", newRule:"Electro Slimes still hop about. On the cliffs: Ampere sprays bubbles that soak you (Wet is slower, and lightning throws you further); Lightning Prism fires staggered beams across the field; One Skizzik picks a runner at random and shadows them along the cliffs: it flashes a lane, then blitzes across in a blur, and a hit throws you clean across to the far edge. Mana Ray glides over the field and pulses a discharge around itself. Kirin gallops ahead of the pack and alternates two attacks, each aimed at a random runner: a huge column of lightning, and a rake of thin columns sweeping across the field with one gap to slip through. Obsidrax tunnels after the leader for the first half, then dives away when a Gigas starts hunting the leader instead: it runs faster than you can, winds up, and body-slams a huge area: anyone caught takes a huge hit. A well-timed dash passes through all of it.", ground:[2600,3600], plasma:true, slimes:true, monsters:true },
   ];
-  const POINTS = [4,3,2,1], COUPONS = [10,8,5,2], FABULA = [4,3,2,1];
+  // Points by place, per stage. The last stage counts double so a runner who fell behind early can still catch up
+  // (a last-last start against a win-win leader ties if they swap places in Stage 3). Ties: fewer shocks wins.
+  const STAGE_POINTS = [[4,3,2,1], [4,3,2,1], [8,6,4,2]], COUPONS = [10,8,5,2], FABULA = [4,3,2,1];
 
   // ---------- layout ----------
   let L;
@@ -943,6 +945,7 @@ export function createPlasmaField(env) {
   function startStage(s){
     clearOv(); G.stage = s; G.mode = "countdown"; G.cd = 2100; G.cdLast = 99; G.placeN = 0; G.stageT = 0; resetField();
     G.groundNext = rnd(900, 1500); G.orbNext = rnd(500, 1200);
+    if (s === 2) toast("Final stage: double points! 8 / 6 / 4 / 2", 3200);   // every screen runs startStage, so a local toast reaches all
     if (s === 1){
       const y0 = L.B[1] - 170;
       if (env.isHost){ const orb = addOrb({ x: 540, y: y0, cx: 540, amp: 0, per: 600, ph: 0, bob: 1, taken:false, born: 9999, life: 30000, lesson:true });
@@ -955,7 +958,7 @@ export function createPlasmaField(env) {
   }
   function finish(p, place, time){
     p.running = false; p.finished = true; G.haz = G.haz.filter(h => !(h.owner === p && h.t < h.follow));
-    G.placeN = Math.max(G.placeN, place); const pts = POINTS[place-1];
+    G.placeN = Math.max(G.placeN, place); const pts = (STAGE_POINTS[G.stage] || STAGE_POINTS[0])[place-1] ?? 0;
     p.stats.points += pts; p.stats.places[G.stage] = { place, pts, time: time ?? G.stageT, timeout:false };
     if (place === 1){ p.stats.wins++; G.banner = { txt: `${p.name} wins Round ${G.stage+1}!`, t:0, dur:1800 }; sfx.fanfare(); }
     const m = L.marks(G.stage); p.mark = G.stage < 2 ? m[p.idx] : m[place-1]; p.state = "auto";
@@ -1089,7 +1092,7 @@ export function createPlasmaField(env) {
     { img: env.asset("tut4.jpg"), text: "Stamina is scarce. Empty it and you're <em>Winded</em>: no running or dashing until it refills to the <em>white mark</em>." },
     { img: env.asset("tut5.jpg"), text: "Every hit costs <em>HP</em>. Run out and you're knocked out: mash <em>← →</em> to get back up." },
     { img: env.asset("tut6.jpg"), text: "Dash into another runner to <em>tackle</em> them aside. Higher MIG hits harder." },
-    { img: env.asset("tut7.jpg"), text: "Three stages, each a round worth <em>4 / 3 / 2 / 1</em> points. The <em>Lightning Pillars</em> between stages are safe." },
+    { img: env.asset("tut7.jpg"), text: "Three stages, each a round worth <em>4 / 3 / 2 / 1</em> points. The last stage counts <em>double</em>: <em>8 / 6 / 4 / 2</em>. The <em>Lightning Pillars</em> between stages are safe." },
   ];
   const SIGIL = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="currentColor" d="M12 4.2 13.7 10.3 19.8 12 13.7 13.7 12 19.8 10.3 13.7 4.2 12 10.3 10.3z"/></svg>';
   function closeTutorial(){ const v = ov.querySelector(".tutv"); if (v){ v.remove(); } G.tutOpen = false; }
