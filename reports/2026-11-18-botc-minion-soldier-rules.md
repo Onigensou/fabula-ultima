@@ -100,7 +100,9 @@ for it, by design.
 ### Who gets tagged (eligible species only)
 
 - **Galvanic Paryashera:** Steam Veil.
-- **Deva:** needs its own pass (Celestial Discipline stacks, openers). Will be listed for review.
+- **Deva:** Enlightenment (Fury ↔ Focus form swap; self, no damage). User approved 2026-11-18.
+  Her stances and forms otherwise come from Celestial Discipline on round parity, so nothing
+  else needs a tag.
 - **Carlbero / Roper:** none. Grab is a damaging Attack and Grappled persists across rounds,
   so Grab → Sap/Bite already works at one action.
 - **Gigas:** none (1 activation already).
@@ -131,3 +133,5 @@ Training Ground.
   - Deva's Enlightenment (Active, self, no damage) is a candidate tag held for the user's call.
     Deva's stances and forms come from her passive on round parity, so one action a round already
     works without tags.
+- 2026-11-18 (onigensou): user approved tagging Deva's Enlightenment `minion_setup`; added to
+  the free-setup migration (same key, not yet run on the real world).

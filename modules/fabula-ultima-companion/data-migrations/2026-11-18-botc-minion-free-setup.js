@@ -10,6 +10,7 @@
  *   1. Tag the setup skills (skill_tags token `minion_setup`). The tag is inert
  *      on the original monster — only a Minion performer reads it.
  *        Galvanic Paryashera — Steam Veil (Hidden → Spiral Drill)
+ *        Deva — Enlightenment (Fury ↔ Focus form swap)
  *      Every copy on an actor of that monster: the world actor, any
  *      "(Reanimated)" clone, and unlinked scene tokens.
  *   2. Birth of the Cruel's "Your Minion acts at the end of your turn" bullet
@@ -20,13 +21,15 @@
 
 export const key = "2026-11-18-botc-minion-free-setup";
 export const description =
-  "Birth of the Cruel: tag Minion setup skills (Galvanic Paryashera's Steam Veil) with `minion_setup`, " +
+  "Birth of the Cruel: tag Minion setup skills (Galvanic Paryashera's Steam Veil, Deva's Enlightenment) with `minion_setup`, " +
   "and add the free-setup sentence to the skill text.";
 
 const TAG = "minion_setup";
 // monster name → skill names that are pure setups for its kit
 const SETUPS = {
   "Galvanic Paryashera": ["Steam Veil"],
+  // User 2026-11-18: Enlightenment swaps Fury ↔ Focus (self, no damage) — a pure setup.
+  "Deva": ["Enlightenment"],
 };
 
 const SKILL_NAME = "Birth of the Cruel";
