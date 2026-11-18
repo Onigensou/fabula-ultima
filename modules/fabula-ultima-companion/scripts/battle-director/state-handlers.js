@@ -8130,6 +8130,15 @@ const Resolve = {
         }
       }
     } catch (e) { warn("RESOLVE: skill_free_action read threw — treating the action as turn-spending", e); }
+    // MINION FREE SETUP — Birth of the Cruel's Minion acts once a round, inside a
+    // free action, so the authored free return above (gated !topIsFreeAction)
+    // never reaches it. A reanimated multi-activation elite whose kit is
+    // setup → payoff (Steam Veil → Spiral Drill) would spend every grant on the
+    // setup. A skill tagged `minion_setup` therefore queues ONE follow-up of the
+    // same grant, run next. Report 2026-11-18-botc-minion-soldier-rules.
+    try {
+      if (topIsFreeAction(director.ctx) && ar?.skillUuid) await queueMinionSetupFollowUp(director, ar);
+    } catch (e) { warn("RESOLVE: minion setup follow-up threw — the grant ends as normal", e); }
     const freeReturn = equipFreeReturn || dominationFreeReturn || authoredFreeReturn;
     if (director.dCombat && !topIsFreeAction(director.ctx) && !freeReturn) {
       director.dCombat.currentTurnResolved = true;
@@ -8938,6 +8947,35 @@ const StandaloneReactionWindow = {
 //
 // See [[free-actions]] for the queue contract + [[continuation-stack]]
 // for the frame shape.
+// Minion free setup (see the call site in RESOLVE). Scope, all required:
+//   - the action is a free action whose grant is not itself a setup follow-up
+//     (cap: one free setup per grant, so no loop even if the AI re-picks it);
+//   - the performer is a reanimated Minion (persistent summon, kind "minion") —
+//     the original monster with its own activations never takes this path;
+//   - the resolved skill carries the plain `minion_setup` skill_tags token.
+export const MINION_SETUP_TAG = "minion_setup";
+export function hasMinionSetupTag(skill) {
+  return String(skill?.system?.props?.skill_tags ?? "")
+    .split(/[\s,]+/).map((t) => t.trim().toLowerCase()).includes(MINION_SETUP_TAG);
+}
+async function queueMinionSetupFollowUp(director, ar) {
+  const req = peekTop(director.ctx)?.extra?.request ?? null;
+  if (!req || req.minionSetupFollowUp === true) return false;
+  const performer = await fromUuid(req.reactorActorUuid).catch(() => null);
+  const f = performer?.flags?.["fabula-ultima-companion"] ?? {};
+  if (f.isPersistentSummon !== true || f.persistentSummonKind !== "minion") return false;
+  const skill = await fromUuid(ar.skillUuid).catch(() => null);
+  if (!hasMinionSetupTag(skill)) return false;
+  const { freeActionQueue } = await import("./free-action-queue.js");
+  freeActionQueue.enqueueFront({
+    ...req,
+    minionSetupFollowUp: true,
+    sourceLabel: `${req.sourceLabel ?? "Minion"} (after ${skill.name})`,
+  });
+  log(`RESOLVE: "${skill.name}" is a Minion setup — ${performer.name} acts again in the same grant`);
+  return true;
+}
+
 const FreeActionWindow = {
   async onEnter(director) {
     const ctx = director.ctx;

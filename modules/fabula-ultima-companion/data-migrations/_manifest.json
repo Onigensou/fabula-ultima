@@ -653,6 +653,16 @@
     {
       "key": "2026-11-17-sealed-cavern-wiring",
       "path": "data-migrations/2026-11-17-sealed-cavern-wiring.js"
+    },
+    {
+      "key": "2026-11-18-botc-minion-soldier-hp",
+      "path": "data-migrations/2026-11-18-botc-minion-soldier-hp.js",
+      "idempotent": true
+    },
+    {
+      "key": "2026-11-18-botc-minion-free-setup",
+      "path": "data-migrations/2026-11-18-botc-minion-free-setup.js",
+      "idempotent": true
     }
   ]
 }
