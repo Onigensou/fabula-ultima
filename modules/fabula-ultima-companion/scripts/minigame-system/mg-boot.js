@@ -282,7 +282,7 @@ async function openSession(offer, { isHost, late = false, hold = false } = {}) {
 function closeSession(why) {
   if (!S) return;
   const s = S; S = null;
-  try { clearInterval(s.perfTid); } catch {}
+  try { clearInterval(s.perfTid); s.perfObs?.disconnect(); } catch {}
   try { s.instance?.destroy(); } catch (e) { console.warn(TAG, e); }
   try { s.clock.stop(); } catch {}
   s.ui.remove();
@@ -380,14 +380,33 @@ function startPerfRecorder(s, myIdx) {
     };
   }
   let devSent = false;
+  // Slow frames (over 100 ms) with what ran during them: Chrome's Long Animation Frames API names the script and
+  // function; other browsers just get the duration (from the game's own frame times, in the window stats).
+  const slow = [];
+  try {
+    if (PerformanceObserver.supportedEntryTypes?.includes("long-animation-frame")) {
+      s.perfObs = new PerformanceObserver((list) => {
+        for (const e of list.getEntries()) {
+          if (e.duration < 100 || slow.length >= 20) continue;
+          const G = s.instance?.G;
+          slow.push({ t: Math.round(s.clock.hostNow() - (performance.now() - e.startTime)), d: Math.round(e.duration),
+            block: Math.round(e.blockingDuration ?? 0), mode: G?.mode ?? null, stage: G?.stage ?? null, hidden: document.hidden ? 1 : 0,
+            scripts: (e.scripts || []).filter((x) => x.duration >= 5).sort((a, b) => b.duration - a.duration).slice(0, 3)
+              .map((x) => `${Math.round(x.duration)}ms ${x.invoker || x.invokerType || ""} ${x.sourceFunctionName || ""}@${String(x.sourceURL || "").split("/").pop()}`.trim()) });
+        }
+      });
+      s.perfObs.observe({ type: "long-animation-frame" });
+    }
+  } catch (e) { console.debug(TAG, "no long-animation-frame observer", e); }
   s.perfTid = setInterval(() => {
     if (S !== s || !s.instance?.perfWindow) return;
     const w = s.instance.perfWindow();
     const rtt = s.clock.lastRtt(), best = s.clock.rtt();
     const sample = { t: Math.round(s.clock.hostNow()), seat: myIdx, hidden: document.hidden ? 1 : 0,
       rtt: rtt == null ? null : Math.round(rtt), rttBest: best == null ? null : Math.round(best), ...w };
-    // the device line goes once, after the canvas has its real size
-    if (!devSent) { devSent = true; sample.dev = deviceInfo(s.ui.canvas); }
+    if (slow.length) sample.slow = slow.splice(0);
+    // the device line goes once, when the window is visible and the canvas has its real size (not the 300x150 default)
+    if (!devSent && !document.hidden && s.ui.canvas.width > 300) { devSent = true; sample.dev = deviceInfo(s.ui.canvas); }
     if (s.isHost) recordPerf(s, game.user.id, sample); else send("perf", sample);
   }, PERF_EVERY_MS);
 }
@@ -466,6 +485,12 @@ function showPerfSummary(log) {
     <td class="${c(r.pingMed, 120, 250)}">${r.pingMed ?? "-"}</td><td class="${c(r.pingMax, 300, 600)}">${r.pingMax ?? "-"}</td>
     <td class="${c(r.gapP95, 90, 160)}">${r.gapP95 ?? "-"}</td><td class="${c(r.gapMax, 300, 800)}">${r.gapMax || "-"}</td>
     <td class="${c(r.stallPct, 3, 10)}">${r.stallPct ?? "-"}</td><td class="${c(r.hiddenS, 0, 10)}">${r.hiddenS}</td><td class="${c(r.errors, 0, 0)}">${r.errors}</td></tr>`).join("");
+  // the slowest frames across everyone, with what ran during them (Chrome only)
+  const slowAll = Object.values(log.users).flatMap((u) => u.samples.flatMap((x) => (x.slow || []).map((f) => ({ ...f, who: u.name }))))
+    .filter((f) => !f.hidden).sort((a, b) => b.d - a.d).slice(0, 10);
+  const phase = (f) => (f.mode === "play" ? `Stage ${f.stage + 1}` : f.mode ?? "?");
+  const slowList = slowAll.length ? `<p><b>Slowest frames</b> (over 100 ms, Chrome players only):</p><ul>${slowAll.map((f) =>
+    `<li>${esc(f.who)} · ${f.d} ms · ${esc(phase(f))} · ${esc(f.scripts?.join(" | ") || "no script: drawing or the browser")}</li>`).join("")}</ul>` : "";
   const devs = Object.values(log.users).map((u) => `<li><b>${esc(u.name)}</b>: ${esc(u.dev?.gpu ?? "GPU unknown")} · screen ${esc(u.dev?.screen)} @${u.dev?.dpr ?? "?"}x · canvas ${esc(u.dev?.canvas)} · ${u.dev?.cores ?? "?"} cores</li>`).join("");
   const content = `<div class="fu-mg-perf">
     <style>.fu-mg-perf table{font-size:11px;border-collapse:collapse;width:100%}.fu-mg-perf th,.fu-mg-perf td{padding:2px 4px;border-bottom:1px solid #8884;text-align:right}
@@ -474,6 +499,7 @@ function showPerfSummary(log) {
     <p class="notes">${esc(log.at.slice(0, 19).replace("T", " "))} · ${esc(log.roster.map((r) => `${r.name}=${r.cpu ? "CPU" : r.user}`).join(", "))} · ended: ${esc(log.end?.why)}</p>
     <table><tr><th>Player</th><th>Phase</th><th>Secs</th><th>FPS</th><th>Worst 2s</th><th>Slow/min</th><th>Frame p95</th><th>Worst frame</th>
       <th>Ping</th><th>Ping max</th><th>Gap p95</th><th>Gap max</th><th>Stall %</th><th>Tab hidden s</th><th>Errors</th></tr>${tr}</table>
+    ${slowList}
     <ul>${devs}</ul>
     <p class="notes">FPS = frames drawn per second. Slow/min = frames over 33 ms (a visible hitch). Ping = round trip to the host (ms).
     Gap = time between another runner's position updates while they move (target 50 ms). Stall % = frames where a moving runner had no fresh position to draw.</p></div>`;

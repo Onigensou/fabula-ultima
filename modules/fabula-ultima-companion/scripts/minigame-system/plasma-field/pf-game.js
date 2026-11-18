@@ -1941,10 +1941,11 @@ export function createPlasmaField(env) {
   function onSnap(o){
     const p = G?.players[o.i]; if (!p || p.local) return;
     NET.snapFrom(o.i);
-    /* recorder: the gap since this runner's last snapshot counts only while it was moving (an idle runner sends 2/s on purpose) */
+    /* recorder: the gap since this runner's last snapshot counts only if it really moved in between (a runner that
+       doesn't change, e.g. walking into a wall, sends only every 500 ms on purpose) */
     { const a = performance.now(), prev = nw.lastSnap.get(o.i);
-      if (prev && MOVING.has(prev.s) && a - prev.at < 10000) nw.snapGap.push(a - prev.at);
-      nw.lastSnap.set(o.i, { at: a, s: o.s }); nw.snapAge.push(env.net.hostNow() - o.t); }
+      if (prev && MOVING.has(prev.s) && (prev.x !== o.x || prev.y !== o.y) && a - prev.at < 10000) nw.snapGap.push(a - prev.at);
+      nw.lastSnap.set(o.i, { at: a, s: o.s, x: o.x, y: o.y }); nw.snapAge.push(env.net.hostNow() - o.t); }
     p.net = p.net || []; p.net.push(o); p.net.sort((a, b) => a.t - b.t); if (p.net.length > 12) p.net.splice(0, p.net.length - 12);
     if (o.pop) p.pop = { txt: o.pop, good: !!o.pg, t: 0 };
     if (o.stats) for (const [k, v] of Object.entries(o.stats)) if (!OWNER_KEYS.has(k)) p.stats[k] = v;
@@ -1961,7 +1962,9 @@ export function createPlasmaField(env) {
   function interpRunner(p, rt){
     const { a, b, k } = bracket(p.net, rt); if (!a) return;
     /* recorder: a moving runner with no newer sample to draw towards = it stalls on screen this frame */
-    { const lastS = p.net[p.net.length - 1]; nw.interp++; if (lastS.t < rt && MOVING.has(lastS.s)) nw.starved++; }
+    { const lastS = p.net[p.net.length - 1], prevS = p.net[p.net.length - 2];
+      const moving = MOVING.has(lastS.s) && (!prevS || prevS.x !== lastS.x || prevS.y !== lastS.y);
+      nw.interp++; if (lastS.t < rt && moving) nw.starved++; }
     p.x = lerp(a.x, b.x, k); p.y = lerp(a.y, b.y, k);
     if (G.mode === "finale" || G.mode === "summary") return;   // the finale script poses everyone itself
     const s = k > .5 ? b : a;
@@ -2238,6 +2241,24 @@ export function createPlasmaField(env) {
     }));
   }
 
+  /* Warm-up before the first frame: a browser unpacks an image (and uploads it to the GPU) the first time it is drawn,
+     which can stall a frame when a monster first appears mid-race. Unpack and draw every image and one frame of every
+     walk clip now, hidden behind the loading screen. Capped at 4 s so a slow clip can't hold up the start. */
+  async function warmUp(){
+    const t0 = performance.now(), list = [...Object.values(imgs)], clips = [];
+    for (const A of Object.values(anims)){ list.push(...Object.values(A.stand), ...Object.values(A.sil)); clips.push(...Object.values(A.walk)); }
+    const pics = [...new Set(list.filter(Boolean))];
+    // the rules slides' pictures (shown in practice) are fetched here too, so a first-time player isn't downloading them mid-slide
+    for (const pg of TUT_PAGES) if (pg.img){ const i = new Image(); i.src = pg.img; pics.push(i); }
+    await Promise.race([Promise.all(pics.map(im => im.decode ? im.decode().catch(() => {}) : null)), new Promise(r => setTimeout(r, 3000))]);
+    await Promise.race([Promise.all([...new Set(clips.filter(Boolean))].map(v => v.readyState >= 2 ? null : new Promise(r => { v.addEventListener("loadeddata", r, { once: true }); v.addEventListener("error", r, { once: true }); }))),
+      new Promise(r => setTimeout(r, Math.max(0, 4000 - (performance.now() - t0))))]);
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    for (const im of [...pics, ...clips]){ if (!im) continue; try { if (im.readyState === undefined || im.readyState >= 2) ctx.drawImage(im, 0, 0, 8, 8); } catch {} }
+    ctx.fillStyle = "#000"; ctx.fillRect(0, 0, 16, 16); ctx.restore();
+    console.debug(TAG, `warm-up: ${pics.length} images, ${clips.length} clips in ${Math.round(performance.now() - t0)} ms`);
+  }
+
   // ── loop ──────────────────────────────────────────────────────────────────
   let raf = 0, last = 0, frameNo = 0, errs = 0;
   const perf = { ms: [], dts: [] };
@@ -2292,7 +2313,7 @@ export function createPlasmaField(env) {
   }
 
   return {
-    async load(){ await loadAll(); },
+    async load(){ await loadAll(); await warmUp(); },
     // first frame: the host opens with the intro (or straight into practice on a replay); others wait for its word
     begin({ intro = "full", replay = false, late = false } = {}){
       newGame(QUICK, { replay }); G.camY = L.START_Y - 120;
