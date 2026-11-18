@@ -68,7 +68,26 @@ while (now < 12*60*1000){
   now += STEP;
   q.sort((a, b) => a.at - b.at);
   while (q.length && q[0].at <= now){ const m = q.shift(); if (m.to.dead) continue; if (m.from.id === "GM") m.to.lastHost = now; m.to.game.handle(m.k, m.d, m.from); }
-  for (const c of clients) if (!c.dead) c.game.debug.step(STEP);
+  for (const c of clients) if (!c.dead && !c.paused) c.game.debug.step(STEP);
+  // AWAY=1: player U0 hides the window 5 s into Stage 2 (its loop stops, messages still arrive), back 6 s later
+  if (process.env.AWAY && humans > 0){ const G = host.game.G, u = clients[1];
+    if (!globalThis.__away && G.mode === "play" && G.stage === 1 && G.stageT > 5000 && !G.players[0].finished){ globalThis.__away = { at: now }; u.game.debug.setAway(true); u.paused = true; }
+    const a = globalThis.__away;
+    if (a && !a.cpuAt && G.players[0].cpu) a.cpuAt = now;
+    if (a && !a.backSent && now - a.at > 6000){ a.backSent = now; u.paused = false; u.game.debug.setAway(false); }
+    if (a?.backSent && !a.backAt && !G.players[0].cpu) a.backAt = now;
+  }
+  // the victory: once the bolt has landed (+1 s), the winner must not still be mid-zap on ANY screen
+  if (host.game.G.mode === "finale"){ for (const c of clients){ const G = c.game.G; if (!c.dead && G.lastZap && G.ft > 4700 && G.rescuer?.state === "shock") (globalThis.__zapStuck ??= new Set()).add(c.name ?? c.env.userId); } }
+  // stamina: once, at the first Stage 1 go, on U0's own runner (perfect dodge cancels Winded; no dodge = Winded after the dash)
+  if (!globalThis.__sta && humans > 0 && host.game.G.mode === "play" && host.game.G.stageT > 300){ const c = clients[1], G = c.game.G, p = G.players[0];
+    globalThis.__sta = {};
+    const dashOnce = (perfect) => { p.state = "idle"; p.dashCd = 0; p.winded = false; p.windPending = false; p.sta = 20; const ref0 = p.stats.refunded || 0;
+      const ok = c.game.debug.tryDash(p, { x: 0, y: -1 }); const mid = { winded: p.winded, pending: !!p.windPending };
+      if (perfect) c.game.debug.perfectFX(p);
+      for (let i = 0; i < 30; i++) c.game.debug.step(16);
+      return { ok, mid, winded: p.winded, sta: Math.round(p.sta), refunded: (p.stats.refunded || 0) - ref0 }; };
+    globalThis.__sta.perfect = dashOnce(true); globalThis.__sta.plain = dashOnce(false); p.winded = false; p.sta = p.d.maxSta; }
   for (const c of clients) (c.modes ??= new Set()).add(c.game.G.mode);
   if (DROP && !dropped && host.game.G.mode === "play" && host.game.G.stage === 1 && host.game.G.stageT > (globalThis.__dropAt ??= 3000 + Math.random()*40000) && clients[1].game.G.players[0].state !== "walk"){ dropped = true; clients[1].dead = true; console.log("-- dropped U0 at", (now/1000).toFixed(1), "s"); }
   if (now - tLast > 20000){ tLast = now; const G = host.game.G; console.log(`t=${(now/1000).toFixed(0)}s mode=${G.mode} stage=${G.stage} stageT=${(G.stageT/1000).toFixed(0)} haz=${G.haz.length} players=${G.players.map(p => `${p.name}:${p.state}${p.cpu ? "(cpu)" : ""}@${Math.round(p.y)}`).join(" ")}`); }
@@ -106,6 +125,14 @@ if (PT) {
   if (host.result?.replay) fail.push("playtest result flagged as a replay");
   if (GM_RUNS) { const p = G.players[humans]; if (!p.me || p.cpu) fail.push("the GM's runner isn't the GM's"); if (!p.stats.places[2]) fail.push("the GM's runner never finished stage 3"); }
 }
+if (globalThis.__zapStuck) fail.push("winner stuck in the zapped pose on: " + [...globalThis.__zapStuck].join(", "));
+{ const s = globalThis.__sta; if (s){ console.log("stamina:", JSON.stringify(s));
+  if (!s.perfect.ok || s.perfect.mid.winded || s.perfect.winded) fail.push("perfect dodge on an emptying dash still left the runner Winded");
+  if (s.plain.ok && s.plain.refunded === 0 && !s.plain.winded) fail.push("an emptying dash without a perfect dodge didn't end Winded"); } }
+if (process.env.AWAY){ const a = globalThis.__away; console.log("away:", JSON.stringify(a && { cpuAfter: a.cpuAt && a.cpuAt - a.at, backAfter: a.backAt && a.backAt - a.backSent }));
+  if (!a) fail.push("away scenario never ran");
+  else { if (!a.cpuAt || a.cpuAt - a.at > 2500) fail.push("hidden runner not taken over by a CPU within 2.5 s");
+         if (!a.backAt || a.backAt - a.backSent > 1500) fail.push("runner not handed back within 1.5 s of coming back"); } }
 // playtest recorder: perfWindow() must read (and reset) cleanly on every screen, and a client must have counted remote-runner frames
 for (const c of clients) {
   if (c.dead) continue;

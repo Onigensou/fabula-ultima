@@ -283,6 +283,10 @@ export function createPlasmaField(env) {
   function onKeyUp(e){ const k = KEYMAP[e.code]; if (k && keys[k]){ keys[k] = false; if (env.isActive()) { e.preventDefault(); e.stopImmediatePropagation(); } } }
   function onBlur(){ keys = {}; }
   addEventListener("keydown", onKeyDown, true); addEventListener("keyup", onKeyUp, true); addEventListener("blur", onBlur);
+  /* minimised / hidden window: the browser stops this screen's game loop, so tell the host (the event still fires while hidden) */
+  function setAway(hidden){ if (dead || env.isHost) return; keys = {}; env.net.send(hidden ? "away" : "back", {}); }
+  function onVisibility(){ setAway(!!document.hidden); }
+  document.addEventListener?.("visibilitychange", onVisibility);
   function cycleWatch(d){ const n = G.players.length; G.watchIdx = ((G.watchIdx < 0 ? 0 : G.watchIdx) + d + n) % n; toast("Watching " + G.players[G.watchIdx].name + " (← → to switch)", 1400); }
   function inputDir(){ return { x:(keys.right?1:0) - (keys.left?1:0), y:(keys.down?1:0) - (keys.up?1:0) }; }
 
@@ -299,7 +303,8 @@ export function createPlasmaField(env) {
   function tryDash(p, dir){
     if (!active(p) || !(p.state === "idle" || p.state === "walk" || p.state === "run") || p.dashCd > 0 || p.winded || p.sta <= 0) return false;
     const n = Math.hypot(dir.x, dir.y); p.dashDir = n ? { x:dir.x/n, y:dir.y/n } : { x:0, y:-1 };
-    spend(p, MOVE.dashCost); p.tackledThisDash = false; p.state = "dash"; p.dashT = MOVE.dashMs; p.inv = p.d.iframe; p.dashCd = MOVE.dashCd; if (p.dashDir.x) p.face = p.dashDir.x > 0 ? 1 : -1;
+    /* a dash that empties the bar: Winded waits until the dash is over, so a perfect dodge (which refunds stamina) can cancel it */
+    if (p.sta <= MOVE.dashCost){ p.sta = 0; p.lastSpend = G.t; p.windPending = true; } else spend(p, MOVE.dashCost); p.tackledThisDash = false; p.state = "dash"; p.dashT = MOVE.dashMs; p.inv = p.d.iframe; p.dashCd = MOVE.dashCd; if (p.dashDir.x) p.face = p.dashDir.x > 0 ? 1 : -1;
     if (Math.abs(p.y - G.camY) < 400) sfx.dash();
     if (p.me) lesson(p, 1);
     return true;
@@ -664,6 +669,7 @@ export function createPlasmaField(env) {
     // purely visual: a well-timed dash through a hit gets a flourish
     p.pop = { txt:"Perfect!", good:true, t:0 };
     p.sta = Math.min(p.d.maxSta, p.sta + MOVE.dashCost*.6); p.stats.refunded = (p.stats.refunded || 0) + 1;   // 60% of the dash back
+    p.windPending = false;   /* the refund means this dash no longer empties the bar: no Winded */
     G.fx.push({ kind:"perfect", p, x:p.x, y:p.y, t:0, life:700, seed:Math.random()*7 });
     if (p.me){ G.perfectT = 420; sfx.perfect(); }
   }
@@ -766,6 +772,8 @@ export function createPlasmaField(env) {
   }
   function stepPlayer(p, dt){
     if (!p.local){ stepRemote(p, dt); return; }
+    /* the dash that emptied the bar is over (or was cut short) without a perfect dodge: now Winded */
+    if (p.windPending && p.state !== "dash"){ p.windPending = false; if (p.sta <= 0) spend(p, 0); }
     if (p.inv > 0) p.inv -= dt; if (p.dashCd > 0) p.dashCd -= dt; if (p.grace > 0) p.grace -= dt; if (p.wet > 0) p.wet -= dt; if (p.boost > 0){ p.boost -= dt; if (p.boost <= 0) p.boostStacks = 0; }
     if (p.pop){ p.pop.t += dt; if (p.pop.t > 1100) p.pop = null; }
     if (p.soot > 0) p.soot = Math.max(0, p.soot - dt/1600);
@@ -994,6 +1002,9 @@ export function createPlasmaField(env) {
       const mx = (p.x + h.x)/2; for (const ox of [-30, 0, 30]) G.bolts.push(bolt(mx + ox, p.y - 10, 700));
       h.zap = 700; p.state = "shock"; p.st = 0; p.noKnock = true; p.charred = true; G.flash = .95; G.shakes = 16; sfx.thunder(1.6);
     }
+    /* the winner's zap ends on EVERY screen: stepPlayer only ends a shock for the runner's own screen, and snapshots don't
+       carry the pose during the finale, so elsewhere the winner stayed mid-zap while Hako was already charred */
+    if (G.lastZap && !p.local && p.state === "shock"){ p.st += dt; if (p.st > 560){ p.state = "idle"; p.noKnock = false; } }
     if (G.lastZap){ p.soot = 1; if (Math.random() < .25) G.puffs.push({ x: h.x + rnd(-16, 16), y: h.y - 120, t:0 }); }
     if (G.lastZap && T > 4300 && !G.eyesPopped){ G.eyesPopped = true; sfx.blink(); }
     if (G.eyesPopped && !G.blinkTimes){ G.blinkTimes = [5100, 5700, 5850, 6650]; }
@@ -1860,7 +1871,7 @@ export function createPlasmaField(env) {
   const GST = { chase: 0, leap: 1, dazed: 2 }, GST_N = ["chase", "leap", "dazed"];
   const OST = { burrow: 0, warn: 1, up: 2 }, OST_N = ["burrow", "warn", "up"];
   const OWNER_KEYS = new Set(["points", "places", "wins", "timeouts"]);   // the host keeps these; owners keep the rest
-  const INTERP_MS = 110, SNAP_MS = 50, WORLD_MS = 100, DROP_MS = 4500;
+  const INTERP_MS = 110, SNAP_MS = 50, WORLD_MS = 100, DROP_MS = 4500, AWAY_MS = 1500;
 
   function makeNet(){
     let seq = 0, snapAcc = 0, worldAcc = 0, helloAcc = 0;
@@ -1887,6 +1898,10 @@ export function createPlasmaField(env) {
         helloAcc += dt; if (helloAcc >= 2000){ helloAcc = 0; env.net.send("hello", { seat: env.myIdx }); }
         if (env.isHost){
           worldAcc += dt; if (worldAcc >= WORLD_MS){ worldAcc = 0; sendWorld(now); }
+          // a player who hid the game window: their runner would stand frozen (and stall a round with no time limit)
+          if (G.away && (isLive() || G.mode === "countdown")) for (const [i, at] of G.away){
+            const p = G.players[i]; if (p && !p.cpu && now - at > AWAY_MS) hostFlow("takeover", { i, away: true });
+          }
           // a runner whose player is GONE (no snapshot and not even the background clock ping) is taken
           // over by a CPU so the race goes on; a player who merely tabbed away keeps their seat
           if (isLive() || G.mode === "countdown") for (const p of G.players){
@@ -2020,7 +2035,8 @@ export function createPlasmaField(env) {
     return G.players.map((p, i) => {
       const user = env.roster[i].userId || null;
       // a dropped player gets their runner back at the next round break, if they are here again
-      const back = p.cpu && user && p.cpuBy === "drop" && NET.heardRecently(user);
+      // (not while their window is still hidden: the background ping alone would hand back a runner nobody can steer)
+      const back = p.cpu && user && p.cpuBy === "drop" && NET.heardRecently(user) && !G.away?.has(i);
       return { user, cpu: back ? false : p.cpu };
     });
   }
@@ -2048,19 +2064,22 @@ export function createPlasmaField(env) {
         break;
       case "endPractice": endPractice(); break;
       case "race": clearOv(); G.text = null; G.speech = null; G.endSent = true; music.main(); endPractice(d.s ?? START_STAGE, false); break;
-      case "seats": applySeats(d.seats); if (!G.tutOpen) G.inputOk = true; renderPracticeBar(); break;
+      case "seats": applySeats(d.seats); if (!G.tutOpen) G.inputOk = true; renderPracticeBar();
+        if (d.back != null && G.players[d.back]) toast(G.players[d.back].me ? "Welcome back: your runner is yours again." : G.players[d.back].name + " is back.", 2500);
+        break;
       case "stage": applySeats(d.seats); G.overSent = false; G.nextSent = null; showStageCard(d.s); break;
       case "finish": { const p = G.players[d.i]; if (p && p.running) finish(p, d.place, d.time); break; }
       case "timeUp": timeUp(d.order); break;
       case "roundOver": roundOver(); break;
       case "finale": G.summarySent = false; startFinale(d.rescuer); break;
       case "summary": showSummary(d); if (env.isHost) env.onResult?.(resultOf(d)); break;
-      case "again": { const sv = G.players.map(p => ({ cpu: p.cpu, user: env.roster[p.idx].userId })); newGame(QUICK, { replay: true }); applySeats(sv); G.camY = L.PB - 200; clearOv(); if (env.isHost) later(300, () => hostAfterIntro()); break; }
+      case "again": { const sv = G.players.map(p => ({ cpu: p.cpu, user: env.roster[p.idx].userId })), away = G.away; newGame(QUICK, { replay: true }); G.away = away; applySeats(sv); G.camY = L.PB - 200; clearOv(); if (env.isHost) later(300, () => hostAfterIntro()); break; }
       case "takeover": {
         const p = G.players[d.i]; if (!p || p.cpu) break;
         const wasMe = p.me; p.cpu = true; p.cpuBy = "drop"; p.me = false; p.local = env.isHost; p.bot = p.bot || BOT[p.name] || BOT.Same; p.net = []; p.goalSent = !p.running;
         if (p.local) adoptRunner(p);
-        if (wasMe){ G.meIdx = -1; toast("Connection hiccup: a CPU runs for you until the next round.", 4000); }
+        if (d.away){ if (wasMe) G.meIdx = -1; toast(wasMe ? "You stepped away: a CPU runs for you until you're back." : p.name + " stepped away: a CPU runs for them.", 3000); }
+        else if (wasMe){ G.meIdx = -1; toast("Connection hiccup: a CPU runs for you until the next round.", 4000); }
         else toast(p.name + " lost connection: a CPU runs for them until the next round.", 3000);
         break;
       }
@@ -2148,6 +2167,17 @@ export function createPlasmaField(env) {
       case "pickup": { if (!env.isHost) return; const o = G.orbs.find(z => z.id === d.id), p = G.players[d.i]; if (o && !o.taken && p && active(p)) pickup(p, o); return; }
       case "bonk": { if (!env.isHost) return; const sl = G.slimes.find(s => s.id === d.id); if (sl && !sl.launch) bonkSlime(sl, { x: d.dx, y: d.dy }); return; }
       case "goal": if (env.isHost) hostGoal(d.i); return;
+      /* a player minimised / hid the game (their loop stops): a CPU takes the runner after AWAY_MS; back = handed back at once */
+      case "away": case "back": {
+        if (!env.isHost || !from?.id) return;
+        const i = env.roster.findIndex(r => r.userId === from.id); if (i < 0) return;
+        G.away ??= new Map();
+        if (k === "away"){ G.away.set(i, env.net.hostNow()); return; }
+        G.away.delete(i);
+        const p = G.players[i];
+        if (p && p.cpu && p.cpuBy === "drop") hostFlow("seats", { seats: seats(), back: i });
+        return;
+      }
       case "ready": { const p = G.players[d.i]; if (p && !p.ready && G.mode === "practice"){ p.ready = true; p.pop = { txt:"Ready!", good:true, t:0 }; renderPracticeBar(); } return; }
       case "tackle": { const q = G.players[d.to]; if (q && q.local && !(q.state === "stagger" && q.st < 300)) tackled(q, d); return; }
       case "credit": { const p = G.players[d.to]; if (p && p.local){ p.stats.plasmaHits++; p.pop = { txt:`Got ${G.players[d.victim]?.name ?? "them"}!`, good:true, t:0 }; lesson(p, 3); } return; }
@@ -2279,6 +2309,7 @@ export function createPlasmaField(env) {
     destroy(){
       dead = true; cancelAnimationFrame(raf); laters.length = 0;
       removeEventListener("keydown", onKeyDown, true); removeEventListener("keyup", onKeyUp, true); removeEventListener("blur", onBlur);
+      document.removeEventListener?.("visibilitychange", onVisibility);
       try { music.kill(); } catch {}
       for (const A of Object.values(anims)) for (const v of Object.values(A.walk)) if (v){ try { v.pause(); v.removeAttribute("src"); v.load(); } catch {} }
       try { ac?.close?.(); } catch {}
@@ -2310,6 +2341,6 @@ export function createPlasmaField(env) {
       return out;
     },
     layout: () => ({ hako: { ...L.hako }, marks: L.marks(2), T2: L.T[2], START_Y: L.START_Y }),
-    debug: { step(dt){ update(dt); drawWorld(); drawHUD(); }, hostFlow, hostCallRound, hostNext, startStage, applySeats, seats },
+    debug: { step(dt){ update(dt); drawWorld(); drawHUD(); }, setAway, tryDash, perfectFX, hostFlow, hostCallRound, hostNext, startStage, applySeats, seats },
   };
 }

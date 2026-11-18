@@ -656,6 +656,7 @@ async function openPlaytest() {
   const userOpts = (sel) => `<option value="">CPU</option>` + users.map((u) => `<option value="${u.id}" ${u.id === sel ? "selected" : ""}>${esc(u.name)}${u.isGM ? " (GM)" : ""}</option>`).join("");
   const content = `<form class="fu-mg-pt">
     <p class="notes">A sandbox run: no switches, rewards or chat card, nothing saved. Everyone connected sees it; empty player slots are CPUs.</p>
+    <p class="notes"><b>Don't minimise this GM window while the game runs:</b> it hosts the race, and the game stops for everyone. Covering it with other windows is fine.</p>
     <table><tr><th>Seat</th><th>Character</th><th>Played by</th></tr>
       ${rows.map((r, i) => `<tr><td>${i + 1}</td><td><select name="a${i}">${actorOpts(r.actor)}</select></td><td><select name="u${i}">${userOpts(r.user)}</select></td></tr>`).join("")}
     </table>
