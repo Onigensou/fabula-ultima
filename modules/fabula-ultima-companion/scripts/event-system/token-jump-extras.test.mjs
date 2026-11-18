@@ -76,8 +76,9 @@ const reset = () => { scene = makeScene(); updates.length = 0; runs.length = 0; 
 // ---------------------------------------------------------------------------
 // Path points
 // ---------------------------------------------------------------------------
-check("party line: signed numbers", JSON.stringify(Jump.parsePartyOffset("party:+86,0")) === JSON.stringify({ dx: 86, dy: 0 }));
-check("party line: spaces, case, negatives and decimals", JSON.stringify(Jump.parsePartyOffset("  Party : -135 , +25.5 ")) === JSON.stringify({ dx: -135, dy: 25.5 }));
+check("party line: signed numbers", JSON.stringify(Jump.parsePartyOffset("party:+86,0")) === JSON.stringify({ anchor: "party", dx: 86, dy: 0 }));
+check("party line: spaces, case, negatives and decimals", JSON.stringify(Jump.parsePartyOffset("  Party : -135 , +25.5 ")) === JSON.stringify({ anchor: "party", dx: -135, dy: 25.5 }));
+check("self line: parsed with its anchor", JSON.stringify(Jump.parsePartyOffset("self:+10,+210")) === JSON.stringify({ anchor: "self", dx: 10, dy: 210 }));
 check("party line: a marker name or a point is not one", Jump.parsePartyOffset("Party Spot") === null && Jump.parsePartyOffset("845, 562") === null);
 check("party line: half a pair is not one", Jump.parsePartyOffset("party:86") === null);
 
@@ -89,6 +90,10 @@ check("party line: Rakshasa's landing beside them", p2?.x === 915 && p2?.y === 4
 const p3 = Jump.resolvePoint(scene, "party:+400,-400", party);
 check("party line: kept inside the scene's area", p3?.x === 1200 && p3?.y === 200, JSON.stringify(p3));
 check("party line: no party token -> null (reported as missing)", Jump.resolvePoint(scene, "party:+86,0", null) === null);
+const rakDoc = scene.tokens.get("rak");     // centre (550, 650)
+const s1 = Jump.resolvePoint(scene, "self:+10,-210", party, rakDoc);
+check("self line: from the jumper's own centre, not the party's", s1?.x === 560 && s1?.y === 440, JSON.stringify(s1));
+check("self line: no jumper -> null", Jump.resolvePoint(scene, "self:+10,+210", party, null) === null);
 check("plain points and markers still work", Jump.resolvePoint(scene, "845, 562")?.x === 845 && Jump.resolvePoint(scene, "land")?.x === 750);
 check("a plain point is not clamped", Jump.resolvePoint(scene, "5000, 10")?.x === 5000);
 check("clamp: a scene with no dimensions leaves the point", JSON.stringify(Jump.clampToScene({}, -5, 9)) === JSON.stringify({ x: -5, y: 9 }));
@@ -223,6 +228,25 @@ check("tint: ends exact and clamps", RT.mixColor(0x07060c, 0xffffff, 1) === 0xff
   const rak2 = scene.tokens.get("rak");
   check("leap out: clients leap, then the token is hidden where it stood", r.ok && leap?.tokenId === "rak" && leap.dust === "takeoff"
     && rak2.hidden === true && rak2.x === 500 && rak2.y === 600);
+
+  // Rakshasa Defeated: from wherever he stands, a hop into the pit that fades and lands hidden.
+  reset();
+  scene.tokens.get("rak").hidden = false;
+  r = await jumpTo.execute({ target: "token", name: "Rakshasa", path: "Land\nself:+10,+210", hopMs: 600, pauseMs: 0, fadeOut: true }, ctx());
+  const hops = runs.filter(x => x.kind === "jump.hop").map(x => x.data);
+  const rak3 = scene.tokens.get("rak");
+  check("vanish: only the last hop fades", r.ok && hops.length === 2 && hops[0].fadeOut === false && hops[1].fadeOut === true, JSON.stringify(hops.map(h => h.fadeOut)));
+  check("vanish: self: is measured from where he stood when the row started (500+50+10, 600+50+210)",
+    hops[1]?.to?.x === 560 && hops[1].to.y === 860, JSON.stringify(hops[1]?.to));
+  check("vanish: the last landing hides him in the same update, the first does not",
+    updates.length === 2 && updates[0].changes[0].hidden === undefined && updates[1].changes[0].hidden === true && rak3.hidden === true,
+    JSON.stringify(updates.map(u => u.changes[0])));
+  reset();
+  scene.tokens.get("rak").hidden = false;
+  r = await jumpTo.execute({ target: "token", name: "Rakshasa", path: "self:+10,+210", hopMs: 600 }, ctx());
+  check("vanish: off by default, the token stays shown", r.ok && scene.tokens.get("rak").hidden === false && runs.find(x => x.kind === "jump.hop")?.data.fadeOut === false);
+  check("jump to: fadeOut defaults to false and shows in the summary", jumpTo.defaultData.fadeOut === false
+    && jumpTo.summary({ target: "token", name: "Rakshasa", path: "self:+10,+210", fadeOut: true }) === "Rakshasa → self:+10,+210, fading out");
 
   check("jump to: summaries", jumpTo.summary({ target: "token", name: "Asura", style: "leapOut" }) === "Asura leaps out of view"
     && jumpTo.summary({ target: "token", name: "Asura", style: "dropIn", path: "Land", dust: "landing" }) === "Asura drops in at Land, dust at landing"
