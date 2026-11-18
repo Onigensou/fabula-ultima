@@ -1875,7 +1875,9 @@ export function createPlasmaField(env) {
       heard(userId){ lastHeard.set(userId, env.net.hostNow()); },
       heardRecently: (userId, ms = 3500) => env.net.hostNow() - (lastHeard.get(userId) ?? -1e9) < ms,
       snapFrom(i){ lastSnapAt.set(i, env.net.hostNow()); },
-      pushWorld(w){ worldBuf.push(w); worldBuf.sort((a, b) => a.t - b.t); while (worldBuf.length > 6) worldBuf.shift(); },
+      pushWorld(w){
+        { const a = performance.now(); if (nw.lastWorld && a - nw.lastWorld < 10000) nw.worldGap.push(a - nw.lastWorld); nw.lastWorld = a; }
+        worldBuf.push(w); worldBuf.sort((a, b) => a.t - b.t); while (worldBuf.length > 6) worldBuf.shift(); },
       tick(dt){
         if (!G) return;
         const now = env.net.hostNow(), rt = now - INTERP_MS;
@@ -1924,6 +1926,10 @@ export function createPlasmaField(env) {
   function onSnap(o){
     const p = G?.players[o.i]; if (!p || p.local) return;
     NET.snapFrom(o.i);
+    /* recorder: the gap since this runner's last snapshot counts only while it was moving (an idle runner sends 2/s on purpose) */
+    { const a = performance.now(), prev = nw.lastSnap.get(o.i);
+      if (prev && MOVING.has(prev.s) && a - prev.at < 10000) nw.snapGap.push(a - prev.at);
+      nw.lastSnap.set(o.i, { at: a, s: o.s }); nw.snapAge.push(env.net.hostNow() - o.t); }
     p.net = p.net || []; p.net.push(o); p.net.sort((a, b) => a.t - b.t); if (p.net.length > 12) p.net.splice(0, p.net.length - 12);
     if (o.pop) p.pop = { txt: o.pop, good: !!o.pg, t: 0 };
     if (o.stats) for (const [k, v] of Object.entries(o.stats)) if (!OWNER_KEYS.has(k)) p.stats[k] = v;
@@ -1939,6 +1945,8 @@ export function createPlasmaField(env) {
   const lerp = (a, b, k) => a + (b - a)*k;
   function interpRunner(p, rt){
     const { a, b, k } = bracket(p.net, rt); if (!a) return;
+    /* recorder: a moving runner with no newer sample to draw towards = it stalls on screen this frame */
+    { const lastS = p.net[p.net.length - 1]; nw.interp++; if (lastS.t < rt && MOVING.has(lastS.s)) nw.starved++; }
     p.x = lerp(a.x, b.x, k); p.y = lerp(a.y, b.y, k);
     if (G.mode === "finale" || G.mode === "summary") return;   // the finale script poses everyone itself
     const s = k > .5 ? b : a;
@@ -2203,6 +2211,25 @@ export function createPlasmaField(env) {
   // ── loop ──────────────────────────────────────────────────────────────────
   let raf = 0, last = 0, frameNo = 0, errs = 0;
   const perf = { ms: [], dts: [] };
+  /* Playtest recorder window (mg-boot reads it every 2 s with perfWindow(), which also resets it).
+     pw = this machine's frames; nw = how smoothly the other runners and the world arrive over the network. */
+  const pw = { ms: [], dts: [] };
+  const MOVING = new Set(["walk", "run", "dash", "auto", "shock", "stagger"]);
+  const nw = { snapGap: [], snapAge: [], worldGap: [], interp: 0, starved: 0, lastSnap: new Map(), lastWorld: 0 };
+  function perfWindow(){
+    const n = pw.dts.length, sum = pw.dts.reduce((a, b) => a + b, 0), r1 = v => Math.round(v*10)/10;
+    const out = {
+      frames: n, ms: Math.round(sum), fps: n ? Math.round(1000*n/(sum || 1)) : 0,
+      frameP95: r1(pct(pw.dts, .95)), frameP99: r1(pct(pw.dts, .99)), frameMax: r1(n ? Math.max(...pw.dts) : 0),
+      long: pw.dts.filter(d => d > 33.4).length, workAvg: r1(n ? pw.ms.reduce((a, b) => a + b, 0)/n : 0), workP95: r1(pct(pw.ms, .95)),
+      snapGapP95: r1(pct(nw.snapGap, .95)), snapGapMax: r1(nw.snapGap.length ? Math.max(...nw.snapGap) : 0), snapAgeMed: r1(pct(nw.snapAge, .5)),
+      worldGapP95: r1(pct(nw.worldGap, .95)), worldGapMax: r1(nw.worldGap.length ? Math.max(...nw.worldGap) : 0),
+      starvedPct: nw.interp ? r1(100*nw.starved/nw.interp) : 0, errors: errs,
+      mode: G?.mode ?? null, stage: G?.stage ?? null,
+    };
+    pw.ms.length = 0; pw.dts.length = 0; nw.snapGap.length = 0; nw.snapAge.length = 0; nw.worldGap.length = 0; nw.interp = 0; nw.starved = 0;
+    return out;
+  }
   function idleVideos(){   // only the walk clips drawn this frame keep decoding
     for (const A of Object.values(anims)) for (const v of Object.values(A.walk)){ if (!v) continue;
       if (v._f !== frameNo && !v.paused) v.pause(); }
@@ -2219,11 +2246,13 @@ export function createPlasmaField(env) {
   function frame(now){
     if (dead) return;
     raf = requestAnimationFrame(frame);
-    const dt = Math.min(50, now - (last || now)); last = now; frameNo++;
+    const rawDt = now - (last || now), dt = Math.min(50, rawDt); last = now; frameNo++;
     const t0 = performance.now();
     try { if (G){ fit(); baseTf(); update(dt); drawWorld(); drawHUD(); idleVideos(); } }
     catch (e){ errs++; if (errs < 6) console.error(TAG, "frame error", e); }
     const ms = performance.now() - t0; perf.ms.push(ms); perf.dts.push(dt); if (perf.ms.length > 240){ perf.ms.shift(); perf.dts.shift(); }
+    /* uncapped frame time (dt is capped at 50 for the physics, which would hide a real hitch); skip absurd gaps (tab hidden) */
+    if (pw.dts.length < 4000 && rawDt > 0 && rawDt < 5000){ pw.ms.push(ms); pw.dts.push(rawDt); }
   }
   function pct(arr, q){ if (!arr.length) return 0; const s = [...arr].sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.floor(s.length*q))]; }
   function perfStats(){ return { frameP95: +pct(perf.dts, .95).toFixed(1), workP95: +pct(perf.ms, .95).toFixed(2), workAvg: +(perf.ms.reduce((a, b) => a + b, 0)/(perf.ms.length || 1)).toFixed(2), errors: errs, fps: +(1000/((perf.dts.reduce((a, b) => a + b, 0)/(perf.dts.length || 1)) || 16.7)).toFixed(0) }; }
@@ -2255,6 +2284,7 @@ export function createPlasmaField(env) {
       try { ac?.close?.(); } catch {}
     },
     perf: perfStats,
+    perfWindow,
     get G(){ return G; }, get L(){ return L; },
     // A still of the course (ground, rocks, crystals, Hako's cradle): no runners, HUD or rain. It is the
     // background of the Foundry scene the arrival and thank-you events play on, so that scene looks like the game.

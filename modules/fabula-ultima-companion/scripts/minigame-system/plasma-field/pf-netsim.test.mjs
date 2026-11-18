@@ -106,5 +106,12 @@ if (PT) {
   if (host.result?.replay) fail.push("playtest result flagged as a replay");
   if (GM_RUNS) { const p = G.players[humans]; if (!p.me || p.cpu) fail.push("the GM's runner isn't the GM's"); if (!p.stats.places[2]) fail.push("the GM's runner never finished stage 3"); }
 }
+// playtest recorder: perfWindow() must read (and reset) cleanly on every screen, and a client must have counted remote-runner frames
+for (const c of clients) {
+  if (c.dead) continue;
+  let w; try { w = c.game.perfWindow(); } catch (e) { fail.push("perfWindow threw: " + e.message); continue; }
+  for (const k of ["frames", "fps", "frameP95", "snapGapP95", "starvedPct", "errors", "mode"]) if (!(k in w)) fail.push("perfWindow missing " + k);
+  if (c.game.perfWindow().starvedPct !== 0) fail.push("perfWindow didn't reset");
+}
 console.log(fail.length ? "FAIL: " + fail.join("; ") : "PASS");
 process.exit(fail.length ? 1 : 0);

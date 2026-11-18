@@ -95,6 +95,7 @@ function makeClock(isHost) {
       offset = samples.reduce((a, b) => (b.rtt < a.rtt ? b : a)).off;
     },
     rtt: () => (samples.length ? Math.min(...samples.map((s) => s.rtt)) : null),
+    lastRtt: () => (samples.length ? samples[samples.length - 1].rtt : null),
     start() {
       if (isHost) return;
       const ping = () => { send("ping", { t0: performance.now() }); n++; pingTid = setTimeout(ping, n < 6 ? 250 : 2000); };
@@ -270,6 +271,7 @@ async function openSession(offer, { isHost, late = false, hold = false } = {}) {
   }
   ui.loaded();
   if (offer.playtest) ui.tag("Playtest · nothing is saved");
+  if (offer.playtest) startPerfRecorder(S, myIdx);
   if (!isHost) send("loaded", { seat: myIdx });
   const begin = () => { S?.instance?.begin({ intro: offer.intro, replay: !!offer.replay, late }); ui.canvas.focus(); };
   if (hold) S.begin = begin; else begin();
@@ -280,10 +282,12 @@ async function openSession(offer, { isHost, late = false, hold = false } = {}) {
 function closeSession(why) {
   if (!S) return;
   const s = S; S = null;
+  try { clearInterval(s.perfTid); } catch {}
   try { s.instance?.destroy(); } catch (e) { console.warn(TAG, e); }
   try { s.clock.stop(); } catch {}
   s.ui.remove();
   resumeBoard();
+  if (s.isHost && s.perfLog) { try { finishPerfLog(s, why); } catch (e) { console.warn(TAG, "perf log", e); } }
   s.resolve?.(s.result ?? { closed: why });
   console.info(TAG, "closed:", why);
 }
@@ -335,6 +339,151 @@ async function payRewards(s) {
   return { coupons, fabula: fpLines };
 }
 
+// ── Playtest performance recorder ───────────────────────────────────────────
+// Playtest runs only. Every client (host included) takes a 2-second sample of
+// its own frame times and network smoothness (the game's perfWindow()) plus its
+// ping, and sends it to the host. The host keeps the whole run in memory and,
+// when the field closes, stores it in THIS browser's localStorage (last 10
+// runs), never in the world, then shows a per-player, per-stage summary.
+const PERF_STORE = `${MODULE_ID}.minigamePerfLogs`;
+const PERF_EVERY_MS = 2000;
+const perfLogsLoad = () => { try { return JSON.parse(localStorage.getItem(PERF_STORE) || "[]"); } catch { return []; } };
+function perfLogsSave(logs) {
+  // localStorage is ~5 MB: drop the oldest runs until it fits
+  for (let keep = logs.length; keep > 0; keep--) {
+    try { localStorage.setItem(PERF_STORE, JSON.stringify(logs.slice(0, keep))); return true; } catch {}
+  }
+  return false;
+}
+
+function deviceInfo(canvasEl) {
+  let gpu = null;
+  try {
+    const gl = document.createElement("canvas").getContext("webgl");
+    const ext = gl?.getExtension("WEBGL_debug_renderer_info");
+    gpu = ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl?.getParameter(gl.RENDERER) ?? null;
+  } catch {}
+  return {
+    ua: navigator.userAgent, gpu, cores: navigator.hardwareConcurrency ?? null, memGB: navigator.deviceMemory ?? null,
+    screen: `${screen.width}x${screen.height}`, window: `${innerWidth}x${innerHeight}`, dpr: devicePixelRatio,
+    canvas: canvasEl ? `${canvasEl.width}x${canvasEl.height}` : null,
+  };
+}
+
+function startPerfRecorder(s, myIdx) {
+  if (s.isHost) {
+    const o = s.offer;
+    s.perfLog = {
+      sid: o.sid, game: o.game, at: new Date().toISOString(), opts: o.playtest,
+      roster: o.roster.map((r) => ({ name: r.name, cpu: !!r.cpu, user: r.userId ? game.users.get(r.userId)?.name ?? r.userId : null })),
+      users: {}, end: null,
+    };
+  }
+  let devSent = false;
+  s.perfTid = setInterval(() => {
+    if (S !== s || !s.instance?.perfWindow) return;
+    const w = s.instance.perfWindow();
+    const rtt = s.clock.lastRtt(), best = s.clock.rtt();
+    const sample = { t: Math.round(s.clock.hostNow()), seat: myIdx, hidden: document.hidden ? 1 : 0,
+      rtt: rtt == null ? null : Math.round(rtt), rttBest: best == null ? null : Math.round(best), ...w };
+    // the device line goes once, after the canvas has its real size
+    if (!devSent) { devSent = true; sample.dev = deviceInfo(s.ui.canvas); }
+    if (s.isHost) recordPerf(s, game.user.id, sample); else send("perf", sample);
+  }, PERF_EVERY_MS);
+}
+
+function recordPerf(s, userId, d) {
+  const log = s.perfLog; if (!log || !d) return;
+  const u = (log.users[userId] ??= { name: game.users.get(userId)?.name ?? userId, host: userId === game.user.id, dev: null, samples: [] });
+  if (d.dev) { u.dev = d.dev; delete d.dev; }
+  if (u.samples.length < 3000) u.samples.push(d);
+}
+
+const phaseOf = (x) => (x.mode === "practice" ? "Practice" : x.mode === "play" && x.stage >= 0 ? `Stage ${x.stage + 1}` : null);
+function med(arr) { if (!arr.length) return null; const a = [...arr].sort((x, y) => x - y); return a[Math.floor(a.length / 2)]; }
+
+// One row per player per phase (practice, stage 1-3), plus an "All racing" row.
+function summarizePerf(log) {
+  const rows = [];
+  for (const u of Object.values(log.users)) {
+    const groups = new Map();
+    for (const x of u.samples) {
+      const ph = phaseOf(x); if (!ph || !x.frames) continue;
+      if (!groups.has(ph)) groups.set(ph, []);
+      groups.get(ph).push(x);
+      if (ph !== "Practice") { if (!groups.has("All racing")) groups.set("All racing", []); groups.get("All racing").push(x); }
+    }
+    // nothing drawn while racing (tab hidden or minimised the whole time): still list them, or they'd silently vanish
+    if (!groups.size) {
+      rows.push({ player: u.name + (u.host ? " (host)" : ""), phase: "No racing frames", secs: 0, fps: null, worstFps: null, slowPerMin: null, frameP95: null, worstFrame: null,
+        pingMed: med(u.samples.map((x) => x.rtt).filter((v) => v != null)), pingMax: null, gapP95: null, gapMax: 0, stallPct: null,
+        hiddenS: u.samples.filter((x) => x.hidden).length * PERF_EVERY_MS / 1000, errors: Math.max(0, ...u.samples.map((x) => x.errors)) });
+    }
+    for (const [phase, xs] of groups) {
+      const frames = xs.reduce((a, x) => a + x.frames, 0), ms = xs.reduce((a, x) => a + (x.ms ?? x.frames * 1000 / (x.fps || 60)), 0);
+      const rtts = xs.map((x) => x.rtt).filter((v) => v != null);
+      rows.push({
+        player: u.name + (u.host ? " (host)" : ""), phase, secs: Math.round(ms / 1000),
+        fps: Math.round(1000 * frames / (ms || 1)), worstFps: Math.min(...xs.map((x) => x.fps)),
+        slowPerMin: +((xs.reduce((a, x) => a + x.long, 0)) / ((ms || 1) / 60000)).toFixed(1),
+        frameP95: med(xs.map((x) => x.frameP95)), worstFrame: Math.max(...xs.map((x) => x.frameMax)),
+        pingMed: med(rtts), pingMax: rtts.length ? Math.max(...rtts) : null,
+        gapP95: med(xs.map((x) => x.snapGapP95).filter(Boolean)), gapMax: Math.max(0, ...xs.map((x) => x.snapGapMax)),
+        stallPct: +(xs.reduce((a, x) => a + x.starvedPct, 0) / xs.length).toFixed(1),
+        hiddenS: xs.filter((x) => x.hidden).length * PERF_EVERY_MS / 1000, errors: Math.max(...xs.map((x) => x.errors)),
+      });
+    }
+  }
+  const order = (p) => (p === "Practice" ? 0 : p === "All racing" ? 9 : Number(p.slice(-1)));
+  return rows.sort((a, b) => a.player.localeCompare(b.player) || order(a.phase) - order(b.phase));
+}
+
+function finishPerfLog(s, why) {
+  const log = s.perfLog; s.perfLog = null;
+  log.end = { at: new Date().toISOString(), why };
+  if (!Object.values(log.users).some((u) => u.samples.length)) return;
+  log.summary = summarizePerf(log);
+  const logs = perfLogsLoad(); logs.unshift(log);
+  if (!perfLogsSave(logs.slice(0, 10))) console.warn(TAG, "perf log too big for localStorage; use the JSON button now");
+  console.info(TAG, "playtest performance:"); console.table(log.summary);
+  showPerfSummary(log);
+}
+
+function downloadPerfLog(log) {
+  const name = `plasma-field-perf-${log.at.replace(/[:.]/g, "-")}.json`;
+  try { saveDataToFile(JSON.stringify(log, null, 1), "application/json", name); }
+  catch (e) { console.warn(TAG, e); }
+}
+
+function showPerfSummary(log) {
+  const esc = (v) => foundry.utils.escapeHTML?.(String(v ?? "")) ?? String(v ?? "");
+  const rows = log.summary ?? summarizePerf(log);
+  // colour: green fine, amber noticeable, red a problem
+  const c = (v, warn, bad, lowIsBad = false) => (v == null ? "" : (lowIsBad ? v < bad : v > bad) ? "bad" : (lowIsBad ? v < warn : v > warn) ? "warn" : "ok");
+  const tr = rows.map((r) => `<tr class="${r.phase === "All racing" ? "all" : ""}"><td>${esc(r.player)}</td><td>${esc(r.phase)}</td><td>${r.secs}</td>
+    <td class="${c(r.fps, 55, 45, true)}">${r.fps ?? "-"}</td><td class="${c(r.worstFps, 50, 35, true)}">${r.worstFps ?? "-"}</td>
+    <td class="${c(r.slowPerMin, 6, 20)}">${r.slowPerMin ?? "-"}</td><td class="${c(r.frameP95, 20, 34)}">${r.frameP95 ?? "-"}</td><td class="${c(r.worstFrame, 100, 250)}">${r.worstFrame ?? "-"}</td>
+    <td class="${c(r.pingMed, 120, 250)}">${r.pingMed ?? "-"}</td><td class="${c(r.pingMax, 300, 600)}">${r.pingMax ?? "-"}</td>
+    <td class="${c(r.gapP95, 90, 160)}">${r.gapP95 ?? "-"}</td><td class="${c(r.gapMax, 300, 800)}">${r.gapMax || "-"}</td>
+    <td class="${c(r.stallPct, 3, 10)}">${r.stallPct ?? "-"}</td><td class="${c(r.hiddenS, 0, 10)}">${r.hiddenS}</td><td class="${c(r.errors, 0, 0)}">${r.errors}</td></tr>`).join("");
+  const devs = Object.values(log.users).map((u) => `<li><b>${esc(u.name)}</b>: ${esc(u.dev?.gpu ?? "GPU unknown")} · screen ${esc(u.dev?.screen)} @${u.dev?.dpr ?? "?"}x · canvas ${esc(u.dev?.canvas)} · ${u.dev?.cores ?? "?"} cores</li>`).join("");
+  const content = `<div class="fu-mg-perf">
+    <style>.fu-mg-perf table{font-size:11px;border-collapse:collapse;width:100%}.fu-mg-perf th,.fu-mg-perf td{padding:2px 4px;border-bottom:1px solid #8884;text-align:right}
+    .fu-mg-perf td:nth-child(-n+2),.fu-mg-perf th:nth-child(-n+2){text-align:left}.fu-mg-perf .ok{color:#2e7d32}.fu-mg-perf .warn{color:#b26a00;font-weight:700}
+    .fu-mg-perf .bad{color:#c62828;font-weight:700}.fu-mg-perf tr.all td{border-top:2px solid #8888;font-weight:600}.fu-mg-perf ul{font-size:11px;margin:6px 0}</style>
+    <p class="notes">${esc(log.at.slice(0, 19).replace("T", " "))} · ${esc(log.roster.map((r) => `${r.name}=${r.cpu ? "CPU" : r.user}`).join(", "))} · ended: ${esc(log.end?.why)}</p>
+    <table><tr><th>Player</th><th>Phase</th><th>Secs</th><th>FPS</th><th>Worst 2s</th><th>Slow/min</th><th>Frame p95</th><th>Worst frame</th>
+      <th>Ping</th><th>Ping max</th><th>Gap p95</th><th>Gap max</th><th>Stall %</th><th>Tab hidden s</th><th>Errors</th></tr>${tr}</table>
+    <ul>${devs}</ul>
+    <p class="notes">FPS = frames drawn per second. Slow/min = frames over 33 ms (a visible hitch). Ping = round trip to the host (ms).
+    Gap = time between another runner's position updates while they move (target 50 ms). Stall % = frames where a moving runner had no fresh position to draw.</p></div>`;
+  new Dialog({
+    title: "Playtest performance: Plasma Field Dash", content,
+    buttons: { json: { icon: '<i class="fas fa-download"></i>', label: "Download JSON", callback: () => downloadPerfLog(log) }, ok: { label: "Close" } },
+    default: "ok",
+  }, { width: 900, resizable: true }).render(true);
+}
+
 // ── Socket ──────────────────────────────────────────────────────────────────
 function onSocket(msg) {
   if (!msg || msg.type !== TYPE) return;
@@ -364,6 +513,7 @@ function onSocket(msg) {
       return;
     case "pong": if (p.d.to === game.user.id) S.clock.pong(p.d); return;
     case "loaded": if (S.isHost) S.loadedFrom.add(p.u); return;
+    case "perf": if (S.isHost && S.perfLog) recordPerf(S, p.u, p.d); return;
     case "bye": if (p.u === S.hostId) closeSession("host closed"); return;
   }
   try { S.instance?.handle(p.k, p.d, from ? { id: from.id, isGM: from.isGM } : { id: p.u, isGM: false }); }
@@ -580,6 +730,10 @@ Hooks.once("ready", () => {
     instance: () => S?.instance ?? null,
     // dev: toggle the frame-time readout in the corner
     perf: (on = true) => { globalThis.FUCompanion.minigamePerf = !!on; return on; },
+    // playtest performance logs kept in this (host) browser, newest first; summary popup / JSON download by index
+    perfLogs: () => perfLogsLoad(),
+    perfSummary: (i = 0) => { const log = perfLogsLoad()[i]; if (log) showPerfSummary(log); return log ? summarizePerf(log) : null; },
+    perfDownload: (i = 0) => { const log = perfLogsLoad()[i]; if (log) downloadPerfLog(log); return !!log; },
   };
   console.debug(TAG, "ready");
 });
