@@ -116,3 +116,18 @@ Training Ground.
 ## Notes
 
 - 2026-11-18 (onigensou): filed before the work starts so you see it on your next pull.
+- 2026-11-18 (onigensou): built on `feat/botc-minion-soldier` and verified on the Staging World
+  running the branch code:
+  - Both GM-boot migrations ran and are in the ledger. BotC copies carry the new formula and both
+    text lines. The existing Gigas Minion went from 400 to **150/150**. Steam Veil is tagged
+    `minion_setup`; Spiral Drill is untouched.
+  - The formula through `buildSkillResolver`/`evaluateFormula` gives Gigas 150 and Galvanic 142.
+    A soldier (Test Target Enemy) keeps its sheet HP.
+  - Real battle (Keren + a Galvanic Minion vs Test Target Enemy): Keren's turn end → BotC grant →
+    Minion autopilot picks **Steam Veil** → `RESOLVE: "Steam Veil" is a Minion setup` → follow-up
+    grant (`enqueueFront`) → autopilot picks **Spiral Drill** (Hidden consumed, 44 dmg) → the grant
+    ends normally. Exactly one follow-up.
+  - Snapshot Runner A/B, `--bench`, main vs branch: **493/493 skill fingerprints identical**.
+  - Deva's Enlightenment (Active, self, no damage) is a candidate tag held for the user's call.
+    Deva's stances and forms come from her passive on round parity, so one action a round already
+    works without tags.
