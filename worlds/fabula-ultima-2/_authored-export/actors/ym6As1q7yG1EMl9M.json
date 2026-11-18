@@ -723,7 +723,6 @@
           "skill_animation_mode": "custom",
           "skill_information": "",
           "skill_range": "Any",
-          "skill_tags": "minion_setup",
           "skill_target": "Self",
           "skill_type": "Active",
           "type_damage": "",
