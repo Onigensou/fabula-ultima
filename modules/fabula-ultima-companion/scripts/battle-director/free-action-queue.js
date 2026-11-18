@@ -59,6 +59,18 @@ export const freeActionQueue = {
     log(`freeActionQueue: enqueued "${request.sourceLabel ?? "?"}" for ${request.reactorActorId} (len ${_queue.length})`);
   },
 
+  // Jump the line: the request runs NEXT, ahead of everything already queued.
+  // For a follow-up that belongs to the action that just resolved (a Minion's
+  // setup → payoff), which must not wait behind another creature's grant.
+  enqueueFront(request) {
+    if (!request?.reactorActorId) {
+      warn("freeActionQueue.enqueueFront: missing reactorActorId", request);
+      return;
+    }
+    _queue.unshift({ ...request, afterReactions: false });
+    log(`freeActionQueue: enqueued "${request.sourceLabel ?? "?"}" at the FRONT for ${request.reactorActorId} (len ${_queue.length})`);
+  },
+
   peek() {
     return _queue[nextIndex()] ?? null;
   },
