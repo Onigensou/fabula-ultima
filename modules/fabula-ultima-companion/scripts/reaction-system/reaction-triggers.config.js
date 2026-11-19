@@ -441,6 +441,20 @@ Hooks.once("ready", () => {
       bucket: "resolution_phase",
       subjectFrom: SUBJECT_PERFORMER,
       filters: ["source"]
+    },
+    {
+      // Soul Tithe (Fragment Eater, 2026-11-19): a Soul Fragment left the field
+      // for any reason but the battle-end sweep — killed by the party, eaten
+      // (consumeFragment), or broken by a boss. Fired by the soul-tithe event
+      // through defeat-reactor's emitBattlefieldObjectTrigger to EVERY combatant.
+      // Subject = the fragment (an object on the enemy side). Payload words:
+      // VAR_FRAGMENT_HP (its HP then; 0 for a kill), VAR_FRAGMENT_MAX_HP,
+      // TRIGGER_AMOUNT (= its Max HP). First consumer: Nox Priest's Soul Siphon.
+      key: "soul_fragment_destroyed",
+      label: "When a Soul Fragment is destroyed (Soul Tithe)",
+      bucket: "resolution_phase",
+      subjectFrom: SUBJECT_PERFORMER,
+      filters: ["source"]
     }
   ];
 

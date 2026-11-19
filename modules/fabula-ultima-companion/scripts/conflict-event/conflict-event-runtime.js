@@ -326,8 +326,11 @@ export async function runConflictEventAction(director, action, request) {
   if (typeof handler !== "function") return false;
   try {
     const ctx = await buildEventCtx(director, active.id);
-    await handler(ctx, request);
-    return true;
+    // An action that returns exactly `false` found nothing to do (Soul Tithe's
+    // consumeFragment with no fragment that has Called): the row applies nothing.
+    // Every older action returns undefined and keeps reading as done.
+    const res = await handler(ctx, request);
+    return res !== false;
   } catch (e) {
     warn(`"${active.id}" action "${action}" threw — the conflict continues without it`, e);
     return false;

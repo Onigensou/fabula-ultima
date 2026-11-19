@@ -686,6 +686,41 @@ async function emitCreatureDefeated(director, actor, payload, firedKeys, batch) 
   }
 }
 
+// A battlefield object's own trigger, to every combatant's reactions. An object
+// raises no creature_defeated (it is not a creature: no on-kill farming), so an
+// event that wants monsters to hear about it names its own trigger. First user:
+// Soul Tithe's `soul_fragment_destroyed` (Fragment Eater, 2026-11-19; the Nox
+// Priest's Soul Siphon). The caller owns the once-only rule; this only fans out.
+//
+// Subject = the object (reaction_source "hostile"/"enemy" etc. key off it; blank
+// or "all" hears every one). `extra` is merged into the payload; each reactor gets
+// its own copy, so a chain writing VAR_* (_chainVars) cannot leak into the next.
+// Observers' automatic rows first, then their prompts, as for creature_defeated.
+export async function emitBattlefieldObjectTrigger(director, { trigger, actor, tokenDoc = null, payload: extra = {} } = {}) {
+  if (!game.user?.isGM || !director || !trigger || !actor) return;
+  const base = {
+    trigger,
+    sourceActorUuid:  actor.uuid,
+    sourceTokenUuid:  tokenDoc?.uuid ?? null,
+    subjectActorUuid: actor.uuid,
+    subjectTokenUuid: tokenDoc?.uuid ?? null,
+    ...extra,
+  };
+  const copy = () => ({ ...base, ...(base._chainVars ? { _chainVars: { ...base._chainVars } } : {}) });
+  try {
+    const { collectReactors, dispatchReactionMenu } = await import("./standalone-reactions.js");
+    const reactors = (await collectReactors(director)).filter((r) => r.actor?.uuid !== actor.uuid);
+    for (const phase of ["forced", "ask"]) {
+      for (const { actor: ra, token } of reactors) {
+        if (!ra || !token || isActorDefeated(ra)) continue;
+        await dispatchReactionMenu({ director, reactor: ra, token, phase, askPassFollows: true, trigger, payload: copy() });
+      }
+    }
+  } catch (e) {
+    warn(`defeat-reactor: ${trigger} dispatch threw for ${actor?.name}`, e);
+  }
+}
+
 // ── KO / Defeated status (survivors kept on the scene at 0 HP) ────────────
 // A visible, reversible marker for creatures that hit 0 HP but are NOT physically
 // removed (PCs, Champions/bosses, persist tokens, and anything when auto-defeat is

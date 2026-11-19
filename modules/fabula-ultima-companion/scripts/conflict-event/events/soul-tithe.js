@@ -146,6 +146,85 @@ export function fragmentName(ownerName) {
   return `${String(ownerName ?? "").trim() || "Someone"}'s Soul Fragment`;
 }
 
+// ── Fragment Eater (2026-11-19, approved by Oni) ────────────────────────────
+//
+// A few monsters EAT a fragment instead of the party destroying it. An eaten
+// fragment pays no refund: what it held stays lost until the battle ends. The
+// player's Soul-Torn AE keeps the whole loss (`soulStolen`, its max_hp change)
+// and records the eaten part next to it (`soulEaten`), which no fragment holds.
+// The invariant becomes: a fragment's Max HP = what its owner has lost − eaten.
+
+/** The reaction trigger every destroyed fragment raises (not the battle-end sweep). */
+export const FRAGMENT_DESTROYED_TRIGGER = "soul_fragment_destroyed";
+
+/** What a player's fragment holds: everything they have lost, less what was eaten. */
+export function heldLoss({ stolen, eaten } = {}) {
+  return Math.max(0, whole(stolen) - Math.max(0, whole(eaten)));
+}
+
+/**
+ * The round-end re-square (reconcileFragments): a standing fragment's Max is set to
+ * what its owner has lost less what was eaten, and its HP moves by the same amount
+ * (at least 1, at most the new Max). Null when nothing changes or nothing is held.
+ */
+export function squareFragment({ hp, max, stolen, eaten } = {}) {
+  const held = heldLoss({ stolen, eaten });
+  const m = whole(max);
+  if (whole(hp) <= 0 || held === m || held <= 0) return null;
+  return { hp: Math.max(1, Math.min(whole(hp) + (held - m), held)), max: held };
+}
+
+/**
+ * A destroyed fragment's refund (returnToOwner + releaseHeld): what comes back, and
+ * what stays on the Soul-Torn AE (the eaten part) until the battle ends.
+ */
+export function refundSplit({ stolen, eaten } = {}) {
+  const keep = Math.min(Math.max(0, whole(eaten)), Math.max(0, whole(stolen)));
+  return { returned: heldLoss({ stolen, eaten }), keep };
+}
+
+/** A fragment can be eaten once it has Called, while it stands and nobody has paid it out. */
+export function fragmentMayBeEaten({ hp, calledRound, returned } = {}) {
+  return whole(hp) > 0 && whole(calledRound) > 0 && returned !== true;
+}
+
+/**
+ * Which fragment an eater takes. `list`: [{ id, hp, calledRound, returned, ownerUuid }].
+ * `pick` "largest" (by current HP) takes from the whole field; "trigger_subject_owner"
+ * only from fragments owned by `ownerUuids` (largest of those). Ties keep field order.
+ * Null when nothing is eligible: the action then fails closed.
+ */
+export function pickFragmentToEat(list, { pick = "largest", ownerUuids = null } = {}) {
+  const byOwner = pick === "trigger_subject_owner";
+  const owners = new Set(ownerUuids ?? []);
+  let best = null;
+  for (const f of list ?? []) {
+    if (!fragmentMayBeEaten(f)) continue;
+    if (byOwner && !owners.has(f.ownerUuid)) continue;
+    if (!best || whole(f.hp) > whole(best.hp)) best = f;
+  }
+  return best;
+}
+
+/**
+ * One eat. Everything the owner has lost becomes eaten (the eaten fragment held all of
+ * it that was not eaten before, and a player has one fragment at most), so it is
+ * idempotent: a re-run after an F5 lands on the same numbers. `consumed` is the
+ * fragment's current HP, the amount an eater's skill reads (Soul Sever).
+ */
+export function eatFragment({ stolen, eaten, fragmentHp } = {}) {
+  return { eaten: Math.max(whole(eaten), whole(stolen)), consumed: Math.max(0, whole(fragmentHp)) };
+}
+
+/**
+ * Soul Ripper's wound, locked at once: how much Max HP the target loses. Nothing from
+ * a KO'd player, and Max HP never below the floor.
+ */
+export function titheWoundAmount({ ownerMax, ownerHp, amount } = {}) {
+  if (whole(ownerHp) <= 0) return 0;
+  return Math.max(0, Math.min(whole(amount), whole(ownerMax) - MAX_HP_FLOOR));
+}
+
 // ── Battlefield queries ─────────────────────────────────────────────────────
 
 const propNum = (actor, key) => whole(actor?.system?.props?.[key]);
@@ -200,6 +279,23 @@ function stolenFrom(actor) {
   return whole(tornAe(actor)?.flags?.[FLAG_NS]?.soulStolen);
 }
 
+/** The eaten part of what `actor` has lost (Fragment Eater): held by no fragment. */
+function eatenFrom(actor) {
+  return whole(tornAe(actor)?.flags?.[FLAG_NS]?.soulEaten);
+}
+
+/** What `actor`'s fragment should hold: the loss less the eaten part. */
+function heldFrom(actor) {
+  return heldLoss({ stolen: stolenFrom(actor), eaten: eatenFrom(actor) });
+}
+
+/** The standing, unpaid fragment of a player (an eaten one waiting for removal is not). */
+function liveFragmentOf(ctx, ownerUuid) {
+  return fragmentCombatants(ctx).find((c) => ownerUuidOf(c) === ownerUuid
+    && propNum(c.actorDoc, "current_hp") > 0
+    && markAe(c.actorDoc)?.flags?.[FLAG_NS]?.soulReturned !== true) ?? null;
+}
+
 // ── Writes ──────────────────────────────────────────────────────────────────
 
 function tornChange(total) {
@@ -242,6 +338,28 @@ async function addStolen(actor, amount) {
 async function clearTorn(actor) {
   const ae = tornAe(actor);
   if (ae) await ae.delete();
+}
+
+/**
+ * A destroyed fragment's refund: give back what it held. With nothing eaten that is
+ * the whole Soul-Torn (the original behaviour); with an eaten part, the AE stays and
+ * keeps exactly that part until the battle ends.
+ */
+async function releaseHeld(actor) {
+  const ae = tornAe(actor);
+  if (!ae) return;
+  const { keep: eaten } = refundSplit({ stolen: stolenFrom(actor), eaten: eatenFrom(actor) });
+  if (eaten <= 0) { await ae.delete(); return; }
+  await ae.update({ changes: [tornChange(eaten)], [`flags.${FLAG_NS}.soulStolen`]: eaten, [`flags.${FLAG_NS}.soulEaten`]: eaten });
+}
+
+/** Book an eat on the owner's ledger. Idempotent (eatFragment), so a re-run is safe. */
+async function bookEaten(actor) {
+  const ae = tornAe(actor);
+  if (!ae) return 0;
+  const { eaten } = eatFragment({ stolen: stolenFrom(actor), eaten: eatenFrom(actor), fragmentHp: 0 });
+  if (eaten !== eatenFrom(actor)) await ae.update({ [`flags.${FLAG_NS}.soulEaten`]: eaten });
+  return eaten;
 }
 
 /**
@@ -390,10 +508,59 @@ async function sweepDestroyed(ctx) {
   for (const c of fragmentCombatants(ctx)) {
     // Refunded already and somehow standing again (healed during its defeat
     // animation): its loss was paid back, so it has nothing left to hold.
-    const refunded = markAe(c.actorDoc)?.flags?.[FLAG_NS]?.soulReturned === true;
+    const f = markAe(c.actorDoc)?.flags?.[FLAG_NS] ?? {};
+    const refunded = f.soulReturned === true;
     if (propNum(c.actorDoc, "current_hp") > 0 && !refunded) continue;
-    await returnToOwner(ctx, c.actorDoc, c.tokenDoc);
+    if (f.soulEatenAt != null) {
+      // Eaten, and an F5 cut the eat short: finish it. No refund, ever.
+      const owner = players(ctx).find((p) => p.actorDoc?.uuid === ownerUuidOf(c));
+      if (owner) await bookEaten(owner.actorDoc);
+      await announceDestroyed(ctx, c.actorDoc, c.tokenDoc, { cause: "eaten", fragmentHp: whole(f.soulEatenHp) });
+    } else {
+      await announceDestroyed(ctx, c.actorDoc, c.tokenDoc, { cause: "destroyed" });
+      await returnToOwner(ctx, c.actorDoc, c.tokenDoc);
+    }
     await removeFragment(ctx, c);
+  }
+}
+
+/**
+ * B1: raise `soul_fragment_destroyed` once for this fragment, to every combatant's
+ * reactions (Soul Siphon). Every way a fragment leaves the field calls it, except the
+ * battle-end and conflict-start sweeps. Once-only through the mark (a rewind restores
+ * the mark from before the kill, so a replayed kill fires again, as it should).
+ * The fragment's token must still be on the scene.
+ */
+async function announceDestroyed(ctx, fragActor, tokenDoc, { cause = "destroyed", fragmentHp = null, causeActor = null } = {}) {
+  try {
+    const mark = markAe(fragActor);
+    if (mark?.flags?.[FLAG_NS]?.soulDestroyedFired === true) return;
+    await mark?.update({ [`flags.${FLAG_NS}.soulDestroyedFired`]: true });
+    const ownerUuid = tokenDoc?.flags?.[FLAG_NS]?.soulFragmentOwner ?? null;
+    const owner = players(ctx).find((p) => p.actorDoc?.uuid === ownerUuid) ?? null;
+    const hp = fragmentHp == null ? Math.max(0, propNum(fragActor, "current_hp")) : whole(fragmentHp);
+    const max = Math.max(0, propNum(fragActor, "max_hp"));
+    const { emitBattlefieldObjectTrigger } = await import("../../battle-director/defeat-reactor.js");
+    await emitBattlefieldObjectTrigger(ctx.director, {
+      trigger: FRAGMENT_DESTROYED_TRIGGER,
+      actor: fragActor,
+      tokenDoc,
+      payload: {
+        cause,
+        causeActorUuid: causeActor?.uuid ?? null,
+        ownerActorUuid: ownerUuid,
+        ownerTokenUuid: owner?.tokenDoc?.uuid ?? null,
+        fragmentHp: hp,
+        fragmentMaxHp: max,
+        // TRIGGER_AMOUNT reads `amount`: the size of the soul it held.
+        amount: max,
+        // VAR_FRAGMENT_HP / VAR_FRAGMENT_MAX_HP in the reaction's formulas.
+        _chainVars: { fragment_hp: hp, fragment_max_hp: max },
+      },
+    });
+    ctx.log(`${fragActor?.name} ${cause} — ${FRAGMENT_DESTROYED_TRIGGER} raised (HP ${hp}/${max})`);
+  } catch (e) {
+    ctx.warn(`${fragActor?.name}: ${FRAGMENT_DESTROYED_TRIGGER} threw — the conflict continues without it`, e);
   }
 }
 
@@ -438,10 +605,11 @@ async function reconcileFragments(ctx) {
       await owner.actorDoc.update({ "system.props.current_hp": ownerMax });
     }
     const max = propNum(c.actorDoc, "max_hp");
-    const lost = stolenFrom(owner.actorDoc);
-    if (lost === max || lost <= 0) continue;
-    ctx.warn(`${c.actorDoc.name} held ${max} but ${owner.actorDoc.name} has lost ${lost}; corrected`);
-    await setFragmentHp(c, Math.max(1, Math.min(hp + (lost - max), lost)), lost);
+    // What the fragment should hold: the loss less what was eaten (Fragment Eater).
+    const sq = squareFragment({ hp, max, stolen: stolenFrom(owner.actorDoc), eaten: eatenFrom(owner.actorDoc) });
+    if (!sq) continue;
+    ctx.warn(`${c.actorDoc.name} held ${max} but ${owner.actorDoc.name} has lost ${sq.max} (not counting eaten); corrected`);
+    await setFragmentHp(c, sq.hp, sq.max);
   }
 }
 
@@ -543,7 +711,7 @@ async function runCallings(ctx, round) {
     if (r.stolen <= 0) continue;
     await addStolen(actor, r.stolen);
     await actor.update({ "system.props.current_hp": r.ownerHp }, { diff: false });
-    await setFragmentHp(c, r.fragmentHp, stolenFrom(actor));
+    await setFragmentHp(c, r.fragmentHp, heldFrom(actor));
     ctx.log(`${c.actorDoc.name} Calls — steals ${r.stolen}, ${actor.name} is ${r.ownerHp}/${r.ownerMax}, fragment ${r.fragmentHp}/${r.fragmentMax}`);
   }
   if (show) await show.done;
@@ -562,10 +730,10 @@ async function runLock(ctx, round) {
 
     // The fragment first: a player must never lose Max HP to something that is not
     // on the field to be destroyed. Spawns stay one at a time.
-    let frag = fragmentCombatants(ctx).find((c) => ownerUuidOf(c) === actor.uuid && propNum(c.actorDoc, "current_hp") > 0) ?? null;
+    let frag = liveFragmentOf(ctx, actor.uuid);
     const isNew = !frag;
     if (isNew) {
-      frag = await spawnFragment(ctx, owner, slot, stolenFrom(actor) + wound, round, { hold: audience });
+      frag = await spawnFragment(ctx, owner, slot, heldFrom(actor) + wound, round, { hold: audience });
       if (!frag) continue;
       spawned = true;
     }
@@ -581,7 +749,7 @@ async function runLock(ctx, round) {
     if (show) await show.at(i, show.T.TITHE.TEAR);
     await addStolen(actor, wound);
     await touchActor(actor);
-    const max = stolenFrom(actor);
+    const max = heldFrom(actor);
     const hp = isNew ? max : Math.min(propNum(frag.actorDoc, "current_hp") + wound, max);
     await setFragmentHp(frag, hp, max);
     ctx.log(`${actor.name} locked — lost ${wound} Max HP, now ${propNum(actor, "current_hp")}/${propNum(actor, "max_hp")}`);
@@ -618,10 +786,13 @@ async function returnToOwner(ctx, fragActor, tokenDoc, firedKeys = null) {
   const mark = markAe(fragActor);
   const f = mark?.flags?.[FLAG_NS] ?? {};
   if (f.soulRefundDone === true) return;
+  // An eaten fragment pays nothing (Fragment Eater); its eat marks it done anyway.
+  if (f.soulEatenAt != null) return;
   const resuming = Number.isFinite(f.soulRefundHp);
   if (!resuming && !tornAe(actor)) return;
 
-  const stolen = stolenFrom(actor);
+  // What the fragment held: an eaten part stays lost until the battle ends.
+  const stolen = heldFrom(actor);
   const nextMax = propNum(actor, "max_hp") + stolen;
   const now = propNum(actor, "current_hp");
   const from = resuming ? f.soulRefundFrom : now;
@@ -638,11 +809,11 @@ async function returnToOwner(ctx, fragActor, tokenDoc, firedKeys = null) {
   // which is Crisis: the status lands and anything listening fires, for someone being
   // healed. HP first takes a player who ends in Crisis out of it and back in again.
   if (endsInCrisis(hp, nextMax)) {
-    await clearTorn(actor);
+    await releaseHeld(actor);
     await actor.update({ "system.props.current_hp": hp }, { diff: false });
   } else {
     await actor.update({ "system.props.current_hp": hp }, { diff: false });
-    await clearTorn(actor);
+    await releaseHeld(actor);
     await touchActor(actor);
   }
   await mark?.update({ [`flags.${FLAG_NS}.soulRefundDone`]: true });
@@ -695,6 +866,9 @@ registerConflictEvent({
     const key = `soul-return:${tokenDoc?.id}`;
     if (firedKeys?.has?.(key)) return;
     firedKeys?.add?.(key);
+    // Fragment Eater B1: every combatant hears it now, while the token still stands
+    // (Soul Siphon's MP lands the moment the fragment dies).
+    await announceDestroyed(ctx, actor, tokenDoc, { cause: "destroyed" });
     // Watched: the Destroyed show plays and the refund lands with its first flamelet.
     // Not awaited: the action's settle goes on, and the removal waits for the show (its
     // defeat style). An F5 before the payment leaves a 0 HP fragment on the field,
@@ -732,6 +906,17 @@ registerConflictEvent({
       const pl = players(ctx);
       const rows = frags.map((c) => ({ c, owner: pl.find((p) => p.actorDoc?.uuid === ownerUuidOf(c)) ?? null }));
       const shown = rows.filter((r) => r.owner?.tokenDoc?.id && r.c.tokenDoc?.id);
+      // B1: each one is a destroyed fragment (not the battle-end sweep).
+      for (const r of rows) {
+        const f = markAe(r.c.actorDoc)?.flags?.[FLAG_NS] ?? {};
+        if (f.soulEatenAt != null) {
+          // An eat an F5 cut short: finish it (no refund; returnToOwner skips it).
+          if (r.owner) await bookEaten(r.owner.actorDoc);
+          await announceDestroyed(ctx, r.c.actorDoc, r.c.tokenDoc, { cause: "eaten", fragmentHp: whole(f.soulEatenHp) });
+          continue;
+        }
+        await announceDestroyed(ctx, r.c.actorDoc, r.c.tokenDoc, { cause: "destroyed" });
+      }
       const show = shown.length && (await watched())
         ? await present(ctx, "destroy", shown.map((r, i) => ({ ownerTokenId: r.owner.tokenDoc.id, fragTokenId: r.c.tokenDoc.id, delay: i * 0.08 })))
         : null;
@@ -751,6 +936,138 @@ registerConflictEvent({
       for (const r of rows) await removeFragment(ctx, r.c);
       ctx.log(`every Soul Fragment destroyed (${rows.length})`);
       await saveNow(ctx);
+    },
+
+    /**
+     * Fragment Eater (B2/B4): a monster eats one Soul Fragment. Effect row:
+     *   { effect_kind: "conflict_event_action", conflict_action: "consumeFragment",
+     *     conflict_pick: "largest" | "trigger_subject_owner", target_ref: ... }
+     * `largest`: the eligible fragment with the most current HP on the field (Devour
+     * Soul, Soul Sever). `trigger_subject_owner`: the fragment of the player(s) that
+     * target_ref names (Beheading: the beheaded player; a KO'd owner is fine). With
+     * conflict_pick blank it is read from target_ref: a fragment token is eaten itself,
+     * a player's is theirs, anything else (self) means largest.
+     * Only a fragment that has Called at least once can be eaten. No refund: the owner's
+     * loss stays, booked as eaten, until the battle ends. Its current HP is left on the
+     * chain as VAR_CONSUMED_FRAGMENT_HP (0 when nothing was eaten, so later rows gate on
+     * `VAR_CONSUMED_FRAGMENT_HP > 0`). Raises soul_fragment_destroyed. Returns false (the
+     * row applies nothing) when no fragment is eligible.
+     */
+    async consumeFragment(ctx, { tokens = [], row = {}, effectCtx = null } = {}) {
+      const setVar = (v) => {
+        if (!effectCtx) return;
+        if (!effectCtx.payload) effectCtx.payload = {};
+        if (!effectCtx.payload._chainVars) effectCtx.payload._chainVars = {};
+        effectCtx.payload._chainVars.consumed_fragment_hp = v;
+      };
+      setVar(0);
+      const tokenActor = (t) => t?.actor ?? t?.document?.actor ?? null;
+      const tokenId = (t) => t?.id ?? t?.document?.id ?? null;
+      const named = new Set((tokens ?? []).map(tokenId).filter(Boolean));
+      let ownerUuids = (tokens ?? []).map((t) => tokenActor(t)?.uuid).filter(Boolean);
+      const frags = fragmentCombatants(ctx);
+      const pl = players(ctx);
+
+      let pick = String(row?.conflict_pick ?? "").trim().toLowerCase();
+      if (pick === "target_owner" || pick === "owner") pick = "trigger_subject_owner";
+      let only = null;
+      if (!pick) {
+        const hit = frags.filter((c) => named.has(c.tokenDoc?.id));
+        if (hit.length) { only = new Set(hit.map((c) => c.tokenDoc.id)); pick = "largest"; }
+        else if (pl.some((p) => ownerUuids.includes(p.actorDoc?.uuid))) pick = "trigger_subject_owner";
+        else pick = "largest";
+      }
+      if (pick === "trigger_subject_owner" && !ownerUuids.length) {
+        // No target_ref tokens: fall back to the trigger's own subject.
+        const p = effectCtx?.payload ?? {};
+        ownerUuids = [p.subjectActorUuid, p.sourceActorUuid, p.targetActorUuid].filter(Boolean);
+      }
+
+      const list = frags
+        .filter((c) => !only || only.has(c.tokenDoc?.id))
+        .map((c) => {
+          const st = fragmentState(c.actorDoc);
+          return { c, id: c.tokenDoc?.id, ownerUuid: ownerUuidOf(c), hp: propNum(c.actorDoc, "current_hp"), calledRound: st.calledRound, returned: st.returned || !markAe(c.actorDoc) };
+        });
+      const chosen = pickFragmentToEat(list, { pick, ownerUuids });
+      if (!chosen) {
+        ctx.log(`consumeFragment (${pick}): no fragment that has Called is there to eat`);
+        return false;
+      }
+
+      const { c, hp } = chosen;
+      const round = Number(ctx.dCombat?.round) || 0;
+      // The mark first: from here no path pays a refund for it, and an F5 before the
+      // removal is finished by the round-end sweep (bookEaten is idempotent).
+      await markAe(c.actorDoc)?.update({
+        [`flags.${FLAG_NS}.soulEatenAt`]: round,
+        [`flags.${FLAG_NS}.soulEatenHp`]: hp,
+        [`flags.${FLAG_NS}.soulReturned`]: true,
+        [`flags.${FLAG_NS}.soulRefundDone`]: true,
+      });
+      const owner = pl.find((p) => p.actorDoc?.uuid === chosen.ownerUuid) ?? null;
+      if (owner) await bookEaten(owner.actorDoc);
+      setVar(hp);
+      await announceDestroyed(ctx, c.actorDoc, c.tokenDoc, {
+        cause: "eaten", fragmentHp: hp, causeActor: effectCtx?.casterActor ?? effectCtx?.reactorActor ?? null,
+      });
+      await removeFragment(ctx, c);
+      ctx.log(`${c.actorDoc?.name} eaten at ${hp} HP — no refund; ${owner?.actorDoc?.name ?? "its owner"} has ${owner ? eatenFrom(owner.actorDoc) : "?"} eaten until the battle ends`);
+      await saveNow(ctx);
+      return true;
+    },
+
+    /**
+     * Soul Ripper (B3): the wound is locked at once. Effect row:
+     *   { effect_kind: "conflict_event_action", conflict_action: "titheWound",
+     *     conflict_amount: "HP_LOST", target_ref: <the player hit> }
+     * Each player target loses that much Max HP now (floor 1; a KO'd player gets no
+     * lock), and it goes into their fragment, spawned if they have none (a new one does
+     * not Call until next round, as at the round end). Not a player: nothing.
+     */
+    async titheWound(ctx, { tokens = [], amount = 0 } = {}) {
+      const want = whole(amount);
+      if (want <= 0) return false;
+      const party = players(ctx);
+      const round = Number(ctx.dCombat?.round) || 0;
+      const audience = await watched();
+      let any = false;
+      let spawned = false;
+      for (const t of tokens ?? []) {
+        const uuid = (t?.actor ?? t?.document?.actor)?.uuid ?? null;
+        const slot = party.findIndex((p) => p.actorDoc?.uuid === uuid);
+        if (slot < 0) continue;
+        const owner = party[slot];
+        const actor = owner.actorDoc;
+        const ownerMax = propNum(actor, "max_hp");
+        const ownerHp = propNum(actor, "current_hp");
+        const wound = titheWoundAmount({ ownerMax, ownerHp, amount: want });
+        if (wound <= 0) continue;
+        // The fragment first, as in the lock: no Max HP lost to nothing on the field.
+        let frag = liveFragmentOf(ctx, actor.uuid);
+        const isNew = !frag;
+        if (isNew) {
+          frag = await spawnFragment(ctx, owner, slot, heldFrom(actor) + wound, round, { hold: audience });
+          if (!frag) continue;
+          spawned = true;
+        }
+        const show = audience ? await present(ctx, "tithe", [{
+          ownerTokenId: owner.tokenDoc?.id, fragTokenId: frag.tokenDoc?.id, merge: !isNew, delay: 0,
+        }]) : null;
+        if (show) await show.at(0, show.T.TITHE.TEAR);
+        await addStolen(actor, wound);
+        // Also the touch: the HUD, the banner and Crisis follow updateActor.
+        await actor.update({ "system.props.current_hp": Math.min(ownerHp, ownerMax - wound) }, { diff: false });
+        const max = heldFrom(actor);
+        const hp = isNew ? max : Math.min(propNum(frag.actorDoc, "current_hp") + wound, max);
+        await setFragmentHp(frag, hp, max);
+        any = true;
+        ctx.log(`${actor.name} torn at once — lost ${wound} Max HP, fragment ${hp}/${max}`);
+        if (show) await show.done;
+      }
+      if (spawned) await refreshRoster(ctx);
+      if (any) await saveNow(ctx);
+      return any;
     },
   },
 
