@@ -1215,5 +1215,25 @@ check("confirm: a new row has a question, Yes and No lists",
   globalThis.FUCompanion.primaryGM = oldPrimary;
 }
 
+// --- Change Scene keeps the screen through the teardown -----------------------
+{
+  const ran = [];
+  Client.addCleanup("tvl", "screen", () => ran.push("screen"), { keepOnTravel: true });
+  Client.addCleanup("tvl", "sprite", () => ran.push("sprite"));
+  Client.addCleanup("other", "screen", () => ran.push("other-screen"), { keepOnTravel: true });
+  Client.run("tvl", Client.KIND_TRAVEL, {});
+  Client.teardownCleanups();
+  check("travel: the travelling event keeps its screen undo, drops the rest; other events clear as before",
+    ran.join(",") === "sprite,other-screen", ran.join(","));
+  Client.teardownCleanups();
+  check("travel: kept only through one teardown", ran.join(",") === "sprite,other-screen,screen", ran.join(","));
+  ran.length = 0;
+  Client.addCleanup("tvl2", "screen", () => ran.push("end"), { keepOnTravel: true });
+  Client.run("tvl2", Client.KIND_TRAVEL, {});
+  Client.teardownCleanups();
+  Client.runCleanups("tvl2");
+  check("travel: the event's own end still lifts the kept screen", ran.join(",") === "end", ran.join(","));
+}
+
 console.log(fail ? `\n${fail} FAILED` : "\nall passed");
 process.exit(fail ? 1 : 0);

@@ -696,7 +696,7 @@
         break;
       case "letterboxIn":
         letterboxIn(clampNumber(data.strength, 0.01, LETTERBOX_MAX_STRENGTH, LETTERBOX_DEFAULT_STRENGTH), ms);
-        Client.addCleanup(info.sourceId, "letterbox", ({ sceneGone } = {}) => letterboxOut(sceneGone ? 0 : END_FADE_MS));
+        Client.addCleanup(info.sourceId, "letterbox", ({ sceneGone } = {}) => letterboxOut(sceneGone ? 0 : END_FADE_MS), { keepOnTravel: true });
         break;
       case "letterboxOut":
         letterboxOut(ms);
@@ -720,7 +720,7 @@
     }
 
     if (effect === "fadeOut" || effect === "tint" || effect === "dim") {
-      Client.addCleanup(info.sourceId, "screen", ({ sceneGone } = {}) => clearScreen(sceneGone ? 0 : END_FADE_MS));
+      Client.addCleanup(info.sourceId, "screen", ({ sceneGone } = {}) => clearScreen(sceneGone ? 0 : END_FADE_MS), { keepOnTravel: true });
     }
   });
 

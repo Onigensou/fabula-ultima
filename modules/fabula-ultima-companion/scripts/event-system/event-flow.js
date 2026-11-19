@@ -352,9 +352,16 @@
   // the party on purpose marks its event as travelling first; it survives the
   // teardown, and once the GM's canvas is on the new scene, arrive() makes it
   // an event of that scene: players there get its lock and its presses again.
-  function travel(sourceId) {
-    const run = state.running.get(String(sourceId || ""));
+  // opts.keepScreen (Change Scene): every client keeps this event's fade, tint and
+  // letterbox through the teardown, so a whiteout still covers the new map as it loads.
+  function travel(sourceId, opts = {}) {
+    const id = String(sourceId || "");
+    const run = state.running.get(id);
     if (run) run.travelling = true;
+    if (opts.keepScreen === true) {
+      const Client = window.oni.EventSystem.Client;
+      Client?.run?.(id, Client.KIND_TRAVEL ?? "event.travel", {});
+    }
   }
 
   async function arrive(sourceId) {

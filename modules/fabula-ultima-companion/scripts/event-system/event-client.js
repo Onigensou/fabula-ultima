@@ -114,11 +114,44 @@
   // Undo on event end
   // ------------------------------------------------------------
   // One undo per key: registering the same key again replaces it.
-  function addCleanup(sourceId, key, fn) {
+  // opts.keepOnTravel: kept through the canvas teardown of a Change Scene
+  // (screen effects: a whiteout must still cover the screen as the new map loads).
+  function addCleanup(sourceId, key, fn, opts = {}) {
     const id = String(sourceId || "");
     if (!id || typeof fn !== "function") return;
     if (!cleanups.has(id)) cleanups.set(id, new Map());
+    if (opts.keepOnTravel === true) fn.keepOnTravel = true;
     cleanups.get(id).set(String(key), fn);
+  }
+
+  // Events moving the party to another scene with their screen kept (Change
+  // Scene). Set on every client just before the move, by the GM (event-flow.js
+  // travel); the next teardown spares those events' keepOnTravel undos once.
+  // If the event never ends (a lost GM), they are run after a minute anyway.
+  const KIND_TRAVEL = "event.travel";
+  const TRAVEL_FAILSAFE_MS = 60000;
+  const travelling = new Set();
+  register(KIND_TRAVEL, (data, info) => { if (info.sourceId) travelling.add(info.sourceId); });
+
+  function teardownCleanups() {
+    for (const id of [...new Set([...cleanups.keys(), ...markers.keys()])]) {
+      if (!travelling.has(id)) { runCleanups(id, { sceneGone: true }); continue; }
+      travelling.delete(id);
+      const mine = cleanups.get(id);
+      const kept = new Map();
+      for (const [key, fn] of mine ?? []) {
+        if (fn.keepOnTravel) { kept.set(key, fn); continue; }
+        try { fn({ sceneGone: true }); } catch (e) { console.warn(INSTALL_TAG, "An event cleanup threw.", e); }
+      }
+      if (kept.size) {
+        cleanups.set(id, kept);
+        setTimeout(() => {
+          const now = cleanups.get(id);
+          if (!now) return;
+          for (const [key, fn] of kept) if (now.get(key) === fn) { now.delete(key); try { fn({ sceneGone: false }); } catch (_) {} }
+        }, TRAVEL_FAILSAFE_MS);
+      } else cleanups.delete(id);
+    }
   }
 
   function removeCleanup(sourceId, key) {
@@ -182,6 +215,8 @@
     addCleanup,
     removeCleanup,
     runCleanups,
+    teardownCleanups,
+    KIND_TRAVEL,
 
     setMarker,
     getMarkers
@@ -203,7 +238,7 @@
   });
 
   Hooks.on("oniEventExecuteDone", ({ sourceId } = {}) => runCleanups(sourceId));
-  Hooks.on("canvasTearDown", () => runAllCleanups({ sceneGone: true }));
+  Hooks.on("canvasTearDown", () => teardownCleanups());
 
   Hooks.once("ready", () => {
     try {

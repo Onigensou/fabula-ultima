@@ -391,7 +391,8 @@
     const actorId = party?.actorId ?? context?.actorId ?? gameState()?.partyActor?.()?.id ?? null;
     const fromId = canvas?.scene?.id ?? null;
 
-    f?.travel?.(id);
+    // The screen as it stands (a whiteout, the letterbox) carries over to the new map.
+    f?.travel?.(id, { keepScreen: true });
     try {
       const TP = globalThis.TeleporterSystem?.api;
       if (row.arrival === "theatre" || !actorId || !TP?.executeCrossSceneTeleport) {
