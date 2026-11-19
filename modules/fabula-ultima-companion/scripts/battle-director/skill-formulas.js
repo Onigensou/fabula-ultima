@@ -1693,6 +1693,17 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         if (subj && actor && subj.uuid === actor.uuid) return 1;
         return 0;
       }
+      // IS_SUMMON / IS_GUEST — 1 when THIS actor (in `target_eligibility` and a
+      // targeting row's `target_filter`, the CANDIDATE) is a summon / a guest.
+      // Lets a move refuse decoys: `IS_SUMMON == 0 && IS_GUEST == 0` (Roo's
+      // Approach victim, Chef's Knife, Kurona's Infectious Bite). Same markers
+      // the summon autopilot reads (isSummonCombatant): token flags isSummon /
+      // isPhantasm / summonedBy, the legacy actor props, and the actor's bdGuest
+      // flag. Side-blind on purpose — an enemy's own summons count too.
+      case "IS_SUMMON":
+        return _isSummonActor(actor) ? 1 : 0;
+      case "IS_GUEST":
+        return foundry.utils.getProperty(actor ?? {}, "flags.fabula-ultima-companion.bdGuest") ? 1 : 0;
       // IS_SOURCE — 1 when THIS actor (in `target_eligibility`, the CANDIDATE) is
       // the payload SOURCE, i.e. the performer. `IS_SOURCE == 0` is RAW "choose
       // ANOTHER creature" (Peacock Dance, Provoke). The eligibility callers
@@ -2924,6 +2935,25 @@ export function buildDamageBonusParts({ actor, weapon, hand = "main", attackGran
 // Used by TARGET_STATUS_COUNT to resolve the trigger's subject during
 // formula evaluation (the formula resolver is sync, so we can't await).
 // Returns null on miss — caller folds to 0.
+// Summon test for IS_SUMMON. An unlinked token's synthetic actor carries its
+// token (`actor.token`); a LINKED summon's flags live on its scene token(s), so
+// those are checked too.
+function _isSummonActor(actor) {
+  if (!actor) return false;
+  const truthy = (v) => v === true || v === "true" || v === 1 || v === "1";
+  const flagged = (td) => {
+    const f = td?.flags?.["fabula-ultima-companion"] ?? {};
+    return !!(f.isSummon || f.isPhantasm || f.summonedBy);
+  };
+  if (flagged(actor.token)) return true;
+  const p = actor.system?.props ?? {};
+  if (truthy(p.isSummon) || truthy(p.isPhantasm)) return true;
+  try {
+    for (const t of actor.getActiveTokens?.(false, true) ?? []) if (flagged(t)) return true;
+  } catch { /* no canvas */ }
+  return false;
+}
+
 function _resolveActorByUuidSync(uuid) {
   try {
     const doc = foundry.utils.fromUuidSync?.(uuid) ?? fromUuidSync?.(uuid);
