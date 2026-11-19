@@ -135,6 +135,35 @@
     glowColor: 0xffd678,
     glowAlpha: 0.55
   };
+  // Sacrificial Altar (2026-11-19, approved mockup): a beam of light falls on the
+  // token first, it spins through its 8 standing directions (slow, then fast, like
+  // an old Pokémon warp pad), then is pulled up with an ease-in ("suck"), stretching,
+  // leaving afterimages; the flash comes as it leaves the top of the screen.
+  const ASCEND = {
+    beamSrc: "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/RPG%20Maker%20MV/117_light_pillar_1.webm",
+    beamLeadMs: 1300,          // beam falls (320 ms reveal), the token lights up, a beat
+    beamRevealMs: 320,
+    beamWidthK: 3.1,           // beam width = token height × this
+    beamLoop: [0.95, 1.55],    // the pillar's steady frames, looped while it rises
+    beamHue: { violet: 228, gold: 0 },
+    spinMs: 2100,
+    spinRate: [2.2, 24, 28],   // steps per second: start, end of the spin-up, during the pull
+    hoverPx: 26,
+    suckHoverMs: 700,          // the hover before the pull when there is no spin
+    suckStretch: { y: 0.38, x: 0.3 },
+    suckFlashAt: 0.84,         // the flash, as a share of the pull
+    trail: 5
+  };
+  const SPIN_ORDER = ["down", "downLeft", "left", "upLeft", "up", "upRight", "right", "downRight"];   // clockwise
+  const hexColor = (s, d) => { const m = /^#?([0-9a-f]{6})$/i.exec(String(s ?? "").trim()); return m ? parseInt(m[1], 16) : d; };
+  const easeInCubic = (t) => t * t * t;
+  // How long a levitate takes before the rise itself, and where the flash falls.
+  function ascendTimes(opts) {
+    const beam = !!opts.beam && opts.beam !== "none";
+    const pre = beam ? ASCEND.beamLeadMs : 0;
+    const hover = opts.spin === true ? clamp(opts.spinMs, 300, 8000, ASCEND.spinMs) : (opts.curve === "suck" ? ASCEND.suckHoverMs : 0);
+    return { pre, hover };
+  }
 
   const DEFAULT_TAKEOFF = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_JUMPLANDA.wav";
 
@@ -719,12 +748,16 @@
     const heightPx = Math.abs(mesh.height);
     const riseMs = Math.max(200, Number(data.riseMs) || LEVITATE.riseMs);
     const risePx = Number.isFinite(Number(data.risePx)) ? Number(data.risePx) : LEVITATE.risePx;
+    const suck = data.curve === "suck";
+    const { pre, hover } = ascendTimes(data);
+    const hoverPx = hover > 0 ? ASCEND.hoverPx : 0;
+    const playSound = (src, vol) => { if (src) window.oni.EventSystem.RowsMedia?.playSound?.(src, vol ?? 0.6); };
 
     const sprite = copyOf(mesh, mesh.texture, "oniEventJumpLevitate");
     sprite.position.set(at.x, at.y);
-    // The glow: an additive gold copy over the sprite, a touch larger.
+    // The glow: an additive copy over the sprite (gold unless the row says), a touch larger.
     const glow = copyOf(mesh, mesh.texture, "oniEventJumpLevitateGlow");
-    glow.tint = LEVITATE.glowColor;
+    glow.tint = hexColor(data.glowColor, LEVITATE.glowColor);
     glow.blendMode = PIXI.BLEND_MODES.ADD;
     glow.sort = sprite.sort + 1;
     glow.alpha = 0;
@@ -733,35 +766,162 @@
     host.addChild(sprite);
     host.addChild(glow);
     mesh.renderable = false;
-    if (data.takeoffSrc) window.oni.EventSystem.RowsMedia?.playSound?.(data.takeoffSrc, data.takeoffVolume ?? 0.6);
     if (dustAtTakeoff(data.dust)) dust(at.x, at.y, heightPx, false, info?.sourceId);
+    // Without a beam or a hover the take-off sound plays now, as before; otherwise at the pull.
+    if (!pre && !hover) playSound(data.takeoffSrc, data.takeoffVolume);
 
-    // Players' cameras ride along with her, aimed a little above her middle.
+    // Afterimages for the pull (suck): additive copies trailing below.
+    const trail = [];
+    if (suck) {
+      for (let i = 0; i < ASCEND.trail; i++) {
+        const g = copyOf(mesh, mesh.texture, "oniEventJumpLevitateTrail");
+        g.blendMode = PIXI.BLEND_MODES.ADD; g.tint = 0xe6dcff; g.alpha = 0; g.sort = sprite.sort - 1; g.position.set(at.x, at.y);
+        host.addChild(g); trail.push(g);
+      }
+    }
+    const ys = [];   // recent sprite y, for the trail
+
+    // The spin: the standing art for each direction, loaded now, used when ready.
+    const spinTex = new Map();
+    let spinFrom = 0;
+    if (data.spin === true) {
+      const sf = globalThis.FUCompanion?.api?.spriteFacing;
+      const dir = sf?.getDirection?.(token) ?? "down";
+      const side = sf?.getFacing?.(token) ?? "left";
+      const startName = dir === "up" || dir === "down" ? dir : (side === "right" ? dir.replace("Left", "Right").replace(/^left$/, "right") : dir);
+      spinFrom = Math.max(0, SPIN_ORDER.indexOf(startName));
+      for (const name of SPIN_ORDER) Promise.resolve(sf?.standFor?.(token, name)).then((r) => { if (r?.texture?.valid) spinTex.set(name, r); }).catch(() => {});
+    }
+    let spinPhase = spinFrom, lastT = 0, shownSpin = null;
+    const showSpin = (name) => {
+      const r = spinTex.get(name);
+      if (!r || shownSpin === name) return;
+      shownSpin = name;
+      const s = heightPx / (r.texture.height || 1), sx = (r.mirror ? -1 : 1) * s;
+      for (const sp of [sprite, ...trail]) { sp.texture = r.texture; sp.scale.set(sx, s); }
+      glow.texture = r.texture; glow.scale.set(sx * 1.06, s * 1.03);
+      baseScale = { x: sx, y: s };
+    };
+    let baseScale = { x: mesh.scale.x, y: mesh.scale.y };
+
+    // The beam: the pillar clip stretched from the top of the view to the feet.
+    const beam = { shaft: null, base: null, video: null, texture: null, alpha: 1, hold: true, filter: null };
+    const beamKind = data.beam && data.beam !== "none" ? (data.beam === "gold" ? "gold" : "violet") : null;
+    if (beamKind) {
+      playSound(data.beamSoundSrc, data.takeoffVolume);
+      (async () => {
+        try {
+          const tex = await loadTexture(data.beamSrc || ASCEND.beamSrc);
+          const src = tex?.baseTexture?.resource?.source;
+          if (done || !(src instanceof HTMLVideoElement) || !game.video?.cloneTexture) return;
+          const clone = await game.video.cloneTexture(src);
+          const video = clone?.baseTexture?.resource?.source;
+          if (done || !video) { try { clone?.destroy(true); } catch (_) {} return; }
+          video.muted = true; video.loop = false;
+          try { video.currentTime = 0; } catch (_) {}
+          video.play().catch(() => {});
+          const bt = clone.baseTexture, W = bt.width, H = bt.height, cut = Math.round(H * 290 / 384);
+          beam.video = video; beam.texture = clone;
+          beam.shaft = new PrimarySpriteMesh({ texture: new PIXI.Texture(bt, new PIXI.Rectangle(0, 0, W, cut)), name: "oniEventJumpBeam" });
+          beam.base = new PrimarySpriteMesh({ texture: new PIXI.Texture(bt, new PIXI.Rectangle(0, cut, W, H - cut)), name: "oniEventJumpBeamBase" });
+          const f = new PIXI.ColorMatrixFilter(); f.hue(ASCEND.beamHue[beamKind], false); if (beamKind === "violet") f.brightness(1.08, true);
+          beam.filter = f;
+          for (const s of [beam.shaft, beam.base]) {
+            s.elevation = 0; s.sortLayer = PrimaryCanvasGroup.SORT_LAYERS.TOKENS; s.sort = sprite.sort - 2;
+            s.blendMode = PIXI.BLEND_MODES.ADD; s.filters = beamKind === "gold" ? null : [f];
+            host.addChild(s);
+          }
+          beam.shaft.anchor.set(0.5, 0); beam.base.anchor.set(0.5, 0);
+          beam.t0 = performance.now();
+        } catch (e) { console.warn(INSTALL_TAG, "Levitate beam failed; rising without it.", e); }
+      })();
+    }
+    const placeBeam = (now) => {
+      if (!beam.shaft || beam.shaft.destroyed) return;
+      const v = beam.video;
+      if (beam.hold && v && v.currentTime > ASCEND.beamLoop[1]) { try { v.currentTime = ASCEND.beamLoop[0]; } catch (_) {} }
+      const W = beam.texture.baseTexture.width, k = (heightPx * ASCEND.beamWidthK) / (W || 1);
+      const scale = canvas.stage.scale.y || 1, scrH = canvas.screenDimensions?.[1] ?? window.innerHeight;
+      const viewTop = canvas.stage.pivot.y - scrH / 2 / scale - 20;
+      const baseTop = at.y - 27 * k;
+      const reveal = Math.min(1, (now - beam.t0) / ASCEND.beamRevealMs), bottom = viewTop + (baseTop - viewTop) * (1 - Math.pow(1 - reveal, 3));
+      beam.shaft.position.set(at.x, viewTop);
+      beam.shaft.scale.set(k, Math.max(0.001, bottom - viewTop) / (beam.shaft.texture.height || 1));
+      beam.base.position.set(at.x, baseTop); beam.base.scale.set(k, k);
+      beam.base.visible = reveal >= 0.95;
+      beam.shaft.alpha = beam.base.alpha = beam.alpha;
+    };
+
+    // Players' cameras ride along, aimed a little above the middle.
     if (data.follow !== false) {
       window.oni.EventSystem.RowsCamera?.followPoint?.(info?.sourceId,
-        () => (sprite.destroyed ? null : { x: sprite.x, y: sprite.y - heightPx * 0.7 }), riseMs + 400);
+        () => (sprite.destroyed ? null : { x: sprite.x, y: sprite.y - heightPx * 0.7 }), pre + hover + riseMs + 400);
     }
 
     const ticker = canvas.app.ticker;
     const startedAt = performance.now();
-    let done = false;
+    let done = false, pulled = false;
     const finish = () => {
       if (done) return;
       done = true;
       ticker.remove(tick);
-      for (const s of [sprite, glow]) if (!s.destroyed) s.destroy();
+      for (const s of [sprite, glow, ...trail]) if (!s.destroyed) s.destroy();
+      // The beam fades out on its own, then lets go of its clip.
+      if (beam.shaft && !beam.shaft.destroyed) {
+        beam.hold = false;
+        const t0 = performance.now();
+        const fade = () => {
+          const u = (performance.now() - t0) / 450;
+          if (u >= 1 || beam.shaft.destroyed) {
+            ticker.remove(fade);
+            for (const s of [beam.shaft, beam.base]) if (s && !s.destroyed) s.destroy();
+            try { beam.video?.pause(); } catch (_) {}
+            try { beam.texture?.destroy(true); } catch (_) {}
+            return;
+          }
+          beam.alpha = 1 - u; placeBeam(performance.now());
+        };
+        ticker.add(fade);
+      } else {
+        try { beam.texture?.destroy(true); } catch (_) {}
+      }
       revealWhen(mesh, () => token.document?.hidden === true);
     };
     const tick = () => {
       try {
         if (sprite.destroyed || !sprite.parent) return finish();
-        const t = performance.now() - startedAt;
+        const now = performance.now(), t = now - startedAt, dt = Math.max(0, (t - lastT) / 1000); lastT = t;
         // Gone the moment the GM hides the token (under the flash), or a little after the rise.
-        if (token.document?.hidden === true || t >= riseMs + 1500) return finish();
-        const u = Math.min(1, t / riseMs);
-        const y = at.y - risePx * easeInOut(u);
+        if (token.document?.hidden === true || t >= pre + hover + riseMs + 1500) return finish();
+        placeBeam(now);
+
+        // the spin: slow, then fast; it keeps going through the pull
+        if (data.spin === true && t >= pre) {
+          const ts = t - pre, rate = ts < hover
+            ? ASCEND.spinRate[0] + (ASCEND.spinRate[1] - ASCEND.spinRate[0]) * easeInCubic(ts / hover)
+            : ASCEND.spinRate[2];
+          spinPhase += dt * rate;
+          showSpin(SPIN_ORDER[Math.floor(spinPhase) % 8]);
+        }
+
+        let y = at.y, e = 0;
+        if (t < pre) y = at.y;
+        else if (t < pre + hover) y = at.y - hoverPx * easeInOut((t - pre) / hover);
+        else {
+          if (!pulled) { pulled = true; if (pre || hover) playSound(data.takeoffSrc, data.takeoffVolume); }
+          const u = Math.min(1, (t - pre - hover) / riseMs);
+          e = suck ? easeInCubic(u) : easeInOut(u);
+          y = at.y - hoverPx - (risePx - hoverPx) * e;
+        }
         sprite.y = y; glow.y = y;
-        glow.alpha = LEVITATE.glowAlpha * Math.min(1, t / 500) * (0.85 + 0.15 * Math.sin(t / 90));
+        if (suck) {
+          const sy = 1 + ASCEND.suckStretch.y * e, sx = 1 - ASCEND.suckStretch.x * e;
+          sprite.scale.set(baseScale.x * sx, baseScale.y * sy);
+          glow.scale.set(baseScale.x * sx * 1.06, baseScale.y * sy * 1.03);
+          ys.unshift(y); if (ys.length > ASCEND.trail * 2) ys.pop();
+          trail.forEach((g, i) => { const ty = ys[(i + 1) * 2]; if (ty === undefined) return; g.y = ty; g.scale.set(sprite.scale.x, sprite.scale.y); g.alpha = 0.35 * e * Math.pow(0.7, i); });
+        }
+        glow.alpha = LEVITATE.glowAlpha * Math.min(1, Math.max(0, t - (pre ? 380 : 0)) / 500) * (0.85 + 0.15 * Math.sin(t / 90));
       } catch (e) {
         console.warn(INSTALL_TAG, "Levitate frame failed; dropping the effect.", e);
         finish();
@@ -909,7 +1069,10 @@
    * Levitate: each visible token in docs floats straight up out of view (players'
    * cameras follow it); near the top a flash (opts.flashColor, "" for none) and the
    * landing sound (opts.landSrc) take it, and it is hidden where it stood.
-   * opts: risePx, riseMs, takeoffSrc, takeoffVolume, landSrc, flashColor, dust.
+   * opts: risePx, riseMs, takeoffSrc, takeoffVolume, landSrc, flashColor, dust,
+   * and (Sacrificial Altar) beam ("violet" | "gold" | "none"), beamSoundSrc, spin,
+   * spinMs, curve ("smooth" | "suck"), glowColor. With a beam or a hover the
+   * take-off sound plays as the pull starts.
    */
   async function levitate(docs, opts = {}, sourceId = null) {
     const list = (Array.isArray(docs) ? docs : [docs]).filter(Boolean);
@@ -917,16 +1080,26 @@
     const scene = list[0].parent;
     const riseMs = clamp(opts.riseMs, 300, 10000, LEVITATE.riseMs);
     const risePx = clamp(opts.risePx, 0, 5000, LEVITATE.risePx);
+    const curve = opts.curve === "suck" ? "suck" : "smooth";
+    const beam = ["violet", "gold"].includes(opts.beam) ? opts.beam : "none";
+    const spin = opts.spin === true;
+    const spinMs = clamp(opts.spinMs, 300, 8000, ASCEND.spinMs);
     for (const doc of list.filter(d => !d.hidden)) {
       Client.run(sourceId, KIND_LEVITATE, {
         tokenId: doc.id, riseMs, risePx,
         follow: opts.follow !== false,
         dust: pickDust(opts.dust),
         takeoffSrc: String(opts.takeoffSrc ?? ""),
-        takeoffVolume: clamp(opts.takeoffVolume, 0, 1, 0.6)
+        takeoffVolume: clamp(opts.takeoffVolume, 0, 1, 0.6),
+        curve, beam, spin, spinMs,
+        beamSoundSrc: String(opts.beamSoundSrc ?? ""),
+        glowColor: String(opts.glowColor ?? "")
       });
     }
-    const lead = Math.min(LEVITATE.flashLeadMs, riseMs);
+    const { pre, hover } = ascendTimes({ beam, spin, spinMs, curve });
+    if (pre + hover > 0 && await pace(sourceId, pre + hover) === false) return false;
+    // A "suck" pull flashes as the token leaves the top of the screen; a smooth rise as before.
+    const lead = curve === "suck" ? Math.round(riseMs * (1 - ASCEND.suckFlashAt)) : Math.min(LEVITATE.flashLeadMs, riseMs);
     if (await pace(sourceId, riseMs - lead) === false) return false;
     const flashColor = String(opts.flashColor ?? "#ffffff").trim();
     if (flashColor) Client.run(sourceId, "screen.effect", { effect: "flash", color: flashColor, durationMs: LEVITATE.flashMs });
@@ -989,11 +1162,13 @@
       arcPct: 100, hopMs: 640, pauseMs: 220, face: true,
       takeoffSrc: DEFAULT_TAKEOFF, takeoffVolume: 0.6, landSrc: "",
       style: "hop", dust: "none", fadeOut: false,
-      risePx: LEVITATE.risePx, riseMs: LEVITATE.riseMs, flashColor: "#ffffff", follow: true
+      risePx: LEVITATE.risePx, riseMs: LEVITATE.riseMs, flashColor: "#ffffff", follow: true,
+      curve: "smooth", beam: "none", beamSoundSrc: "", spin: false, spinMs: ASCEND.spinMs, glowColor: ""
     },
     mediaOf: (row) => {
       const style = pickStyle(row?.style);
       const media = [style !== "dropIn" ? row?.takeoffSrc : "", style !== "leapOut" ? row?.landSrc : ""].filter(Boolean);
+      if (style === "levitate" && ["violet", "gold"].includes(row?.beam)) media.push(ASCEND.beamSrc, ...(row?.beamSoundSrc ? [row.beamSoundSrc] : []));
       if (style === "teleport" || style === "levitate") return media;
       const dustKind = pickDust(row?.dust);
       const rt = rowsToken();
@@ -1013,7 +1188,10 @@
       const dustKind = pickDust(row?.dust);
       let text;
       if (style === "leapOut") text = `${who} leaps out of view`;
-      else if (style === "levitate") text = `${who} levitates up out of view${String(row?.flashColor ?? "#ffffff").trim() ? " into a flash" : ""}`;
+      else if (style === "levitate") {
+        const extra = [["violet", "gold"].includes(row?.beam) ? `in a ${row.beam} beam` : "", row?.spin === true ? "spinning" : "", row?.curve === "suck" ? "pulled up" : ""].filter(Boolean).join(", ");
+        text = `${who} levitates up out of view${extra ? ` (${extra})` : ""}${String(row?.flashColor ?? "#ffffff").trim() ? " into a flash" : ""}`;
+      }
       else if (style === "teleport") text = lines.length ? `${who} teleports → ${lines.join(" → ")}${row?.fadeOut === true ? ", vanishing" : ""}` : `${who} (no path)`;
       else if (style === "dropIn") text = lines.length ? `${who} drops in at ${lines[lines.length - 1]}` : `${who} drops in (no point)`;
       else text = lines.length ? `${who} → ${lines.join(" → ")}${row?.fadeOut === true ? ", fading out" : ""}` : `${who} (no path)`;
@@ -1124,6 +1302,27 @@
           kit.field(
             "Camera",
             `<label><input type="checkbox" class="oni-event-row-jump-follow" ${row.follow !== false ? "checked" : ""} /> players' cameras follow it up</label>`
+          ),
+          kit.field(
+            "Beam",
+            `<select class="oni-event-row-jump-beam">${kit.options([["none", "None"], ["violet", "Violet beam from the sky"], ["gold", "Gold beam from the sky"]], ["violet", "gold"].includes(row.beam) ? row.beam : "none")}</select>`,
+            "A pillar of light falls on the token first (1.3 s), from the top of the screen to its feet, and stays while it rises."
+          ),
+          kit.field("Beam sound", kit.fileInput("oni-event-row-jump-beam-sound", row.beamSoundSrc ?? "", "audio", "Sound as the beam falls (empty: none)")),
+          kit.field(
+            "Spin",
+            `<label><input type="checkbox" class="oni-event-row-jump-spin" ${row.spin === true ? "checked" : ""} /> spin through the 8 standing directions, slow then fast, before the pull</label>
+             ${kit.numberInput("oni-event-row-jump-spin-ms", clamp(row.spinMs, 300, 8000, ASCEND.spinMs), { min: 300, max: 8000, step: 50 })} ms`,
+            "Uses the character's directional standing art (Character sheet sprites); a missing direction borrows the nearest one, as walking does."
+          ),
+          kit.field(
+            "Rise",
+            `<select class="oni-event-row-jump-curve">${kit.options([["smooth", "Smooth (ease in and out)"], ["suck", "Pulled up: hover, then speed up and stretch"]], row.curve === "suck" ? "suck" : "smooth")}</select>`,
+            "Pulled up: the flash comes as the token leaves the top of the screen. With a beam or a spin, the take-off sound plays as the pull starts."
+          ),
+          kit.field(
+            "Glow colour",
+            `<input type="text" class="oni-event-row-jump-glow" value="${kit.escapeHTML(row.glowColor ?? "")}" placeholder="#ffd678 (gold, the default)" />`
           )
         ].join("")}</div>`,
         kit.field("Take-off sound", kit.fileInput("oni-event-row-jump-takeoff", row.takeoffSrc ?? "", "audio", "Sound at each take-off (empty: none)")),
@@ -1164,6 +1363,12 @@
       riseMs: clamp(kit.readNumber(rowEl, ".oni-event-row-jump-rise-ms", LEVITATE.riseMs), 300, 10000, LEVITATE.riseMs),
       flashColor: kit.readText(rowEl, ".oni-event-row-jump-flash", "#ffffff").trim(),
       follow: !!kit.own(rowEl, ".oni-event-row-jump-follow")?.checked,
+      beam: (v => (["violet", "gold"].includes(v) ? v : "none"))(kit.readText(rowEl, ".oni-event-row-jump-beam", "none")),
+      beamSoundSrc: kit.readText(rowEl, ".oni-event-row-jump-beam-sound", "").trim(),
+      spin: !!kit.own(rowEl, ".oni-event-row-jump-spin")?.checked,
+      spinMs: clamp(kit.readNumber(rowEl, ".oni-event-row-jump-spin-ms", ASCEND.spinMs), 300, 8000, ASCEND.spinMs),
+      curve: kit.readText(rowEl, ".oni-event-row-jump-curve", "smooth") === "suck" ? "suck" : "smooth",
+      glowColor: kit.readText(rowEl, ".oni-event-row-jump-glow", "").trim(),
       dust: pickDust(kit.readText(rowEl, ".oni-event-row-jump-dust", "none"))
     })
   });

@@ -287,6 +287,30 @@ check("tint: ends exact and clamps", RT.mixColor(0x07060c, 0xffffff, 1) === 0xff
   r = await jumpTo.execute({ target: "token", name: "Rakshasa", style: "levitate", flashColor: "", riseMs: 300 }, ctx());
   check("levitate: an empty flash colour means no flash", r.ok && !runs.some(x => x.kind === "screen.effect"));
   check("levitate: summary", jumpTo.summary({ target: "token", name: "Deva", style: "levitate" }) === "Deva levitates up out of view into a flash");
+
+  // Sacrificial Altar: beam + spin + pulled up. The GM waits out the beam and the
+  // spin, then flashes as the token leaves the top (84 % into the pull).
+  const waits = [];
+  const realWait = window.oni.EventSystem.Flow.wait;
+  window.oni.EventSystem.Flow.wait = async (id, ms) => { waits.push(ms); return true; };
+  reset();
+  scene.tokens.get("rak").hidden = false;
+  r = await jumpTo.execute({ target: "token", name: "Rakshasa", style: "levitate", riseMs: 1500, risePx: 650, beam: "violet", spin: true, curve: "suck",
+    beamSoundSrc: "saint3.ogg", takeoffSrc: "saint1.ogg", glowColor: "#e1d2ff" }, { ...ctx(), tileId: "tile1" });
+  const asc = runs.find(x => x.kind === "jump.levitate")?.data;
+  check("ascend: the clients get beam, spin, curve, sounds and glow", r.ok && asc?.beam === "violet" && asc.spin === true && asc.spinMs === 2100
+    && asc.curve === "suck" && asc.beamSoundSrc === "saint3.ogg" && asc.takeoffSrc === "saint1.ogg" && asc.glowColor === "#e1d2ff", JSON.stringify(asc));
+  check("ascend: GM waits beam (1300) + spin (2100), then 84 % of the pull, then the rest", waits[0] === 3400 && waits[1] === 1260 && waits[2] === 60 && waits[3] === 180, JSON.stringify(waits));
+  check("ascend: still flashes and hides", runs.some(x => x.kind === "screen.effect") && scene.tokens.get("rak").hidden === true);
+  check("ascend: summary names the extras", jumpTo.summary({ target: "party", style: "levitate", beam: "violet", spin: true, curve: "suck" }) === "the party levitates up out of view (in a violet beam, spinning, pulled up) into a flash");
+  check("ascend: the beam clip is preloaded", jumpTo.mediaOf({ style: "levitate", beam: "gold", beamSoundSrc: "b.ogg" }).some(s => /117_light_pillar_1\.webm$/.test(s)));
+  waits.length = 0; reset();
+  scene.tokens.get("rak").hidden = false;
+  await jumpTo.execute({ target: "token", name: "Rakshasa", style: "levitate", riseMs: 900, risePx: 400 }, { ...ctx(), tileId: "tile1" });
+  check("ascend: a plain levitate paces as before (no pre-wait, flash 550 before the end)", waits[0] === 350 && waits.length === 3, JSON.stringify(waits));
+  const plain = runs.find(x => x.kind === "jump.levitate")?.data;
+  check("ascend: a plain levitate sends no beam or spin", plain?.beam === "none" && plain.spin === false && plain.curve === "smooth");
+  window.oni.EventSystem.Flow.wait = realWait;
 }
 
 // ---------------------------------------------------------------------------
