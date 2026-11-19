@@ -39,4 +39,13 @@
     clearAfterTrigger: false,
     handler:           expire,
   });
+
+  // Event = side content that can be visited again (the Deva junction teleports
+  // into its map on every landing): nothing happens to the tile itself, it never
+  // greys out; its teleporter still fires from turnEnd.
+  DP.TileEventRegistry.register(DP.TILE_TYPES.EVENT, {
+    label:             "Event",
+    clearAfterTrigger: false,
+    handler:           async () => {},
+  });
 })();
