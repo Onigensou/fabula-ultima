@@ -372,8 +372,13 @@
 @keyframes fu-mbox-in  { from { opacity:0 } to { opacity:1 } }
 @keyframes fu-mbox-out { from { opacity:1 } to { opacity:0 } }
 
-/* Think: parchment, italic text. */
+/* Think (inner monologue): the box goes see-through with a dashed edge and italic text, so a
+   thought reads apart from spoken lines. Over a picture it stays dark. */
+.fu-mbox.mode-think { background:rgba(251,243,222,.78); border-style:dashed; box-shadow:none; }
 .fu-mbox.mode-think .fu-mbox-text { font-style:italic; }
+.fu-mbox.mode-think .fu-mbox-name { font-style:italic; opacity:.85; }
+.fu-mbox.mode-think .fu-mbox-portrait { opacity:.8; }
+.fu-mbox.look-over.mode-think { background:rgba(10,8,16,.55); border:1px dashed rgba(220,200,160,.55); }
 
 /* Over a picture: dark and see-through. */
 .fu-mbox.look-over { bottom:3vh; width:min(80vw, 980px); background:rgba(10,8,16,.72); color:#f1ead8;

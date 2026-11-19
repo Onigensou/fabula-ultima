@@ -297,6 +297,11 @@ const hinaOffScene = { ok: true, mode: "name", speakerName: "Hina", token: null,
   const self = await run({ speaker: "Self", showAs: "auto" },
     { ok: true, mode: "self", speakerName: globalThis.oni.EventSystem.Constants.SPECIAL_SPEAKER_SELF, token: null, actor: null }, ctx());
   check("Box: the \"Self\" placeholder of a party with no token prints no name", self.box === true && self.name === "");
+
+  const thought = await run({ speaker: "Hina", showAs: "box", bubbleMode: "think" }, hinaOnScene, partyCtx());
+  check("Box + Think: an inner monologue, the name reads \"Hina (thoughts)\"", thought.box === true && thought.mode === "think" && thought.name === "Hina (thoughts)", thought.name);
+  const thoughtBubble = await run({ speaker: "Hina", bubbleMode: "think" }, hinaOnScene, partyCtx());
+  check("Bubble + Think: the name stays plain", !thoughtBubble.box && thoughtBubble.name === "Hina", thoughtBubble.name);
 }
 
 // ---------------------------------------------------------------------------

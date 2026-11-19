@@ -249,9 +249,12 @@
     // In the box, the "Self" placeholder of a party with no token is not a
     // name worth printing: the name line is left out.
     const placeholderSelf = !token && !actor && speakerResult?.speakerName === C.SPECIAL_SPEAKER_SELF;
-    const speakerName = isBox && placeholderSelf
+    const baseName = isBox && placeholderSelf
       ? ""
       : (speakerResult?.speakerName || C.SPECIAL_SPEAKER_SELF);
+    // Think in the message box = an inner monologue: the name line reads "<Name> (thoughts)".
+    const thinking = isBox && String(row?.bubbleMode ?? row?.mode ?? "") === "think";
+    const speakerName = thinking && baseName && !/\(thoughts\)$/i.test(baseName) ? `${baseName} (thoughts)` : baseName;
 
     return {
       rowId: row.id,
