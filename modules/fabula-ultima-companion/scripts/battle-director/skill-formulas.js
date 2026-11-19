@@ -1703,7 +1703,7 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       case "IS_SUMMON":
         return _isSummonActor(actor) ? 1 : 0;
       case "IS_GUEST":
-        return foundry.utils.getProperty(actor ?? {}, "flags.fabula-ultima-companion.bdGuest") ? 1 : 0;
+        return actor?.flags?.["fabula-ultima-companion"]?.bdGuest ? 1 : 0;
       // IS_SOURCE — 1 when THIS actor (in `target_eligibility`, the CANDIDATE) is
       // the payload SOURCE, i.e. the performer. `IS_SOURCE == 0` is RAW "choose
       // ANOTHER creature" (Peacock Dance, Provoke). The eligibility callers
