@@ -29,6 +29,52 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "BrooApproachClk1",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
+          "changes": [],
+          "description": "<p>How many steps it has taken. On the third, it is close enough.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 0,
+              "chargesMax": 6,
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T213702.523.png",
+          "name": "Approach",
+          "origin": "Actor.kIvWhnszRhsHafWu.Item.0GYDuppAXdGwMER0",
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "roo_clock"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.4"
@@ -57,6 +103,17 @@
           "defense_target_type": "def",
           "description": "<p><em>The Bandit Roo approach you slowly…</em></p><section id=\"secret-zIgfKGc3Xnt5fJxU\" class=\"secret\"><ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.P7eaFojxra2gTRTG\" data-id=\"P7eaFojxra2gTRTG\" data-type=\"JournalEntry\">Trigger</a>&nbsp;<span style=\"text-decoration: underline;\">At the start of an enemy turn</span></p></li></ul><p>Create a 6-section Approach clock, each trigger progress the clock by 1 section, if the clock reaches 6, at the start of this creature next turn, perform 【💥Robbed Blind】</p></section>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_duplicate_mode": "add_charges",
+              "ae_initial_charges": "1",
+              "ae_template_ref": "Approach",
+              "effect_kind": "apply_ae",
+              "effect_label": "ap_tick",
+              "target_ref": "self"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
@@ -74,10 +131,10 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "reaction_damage_amount": "",
-              "reaction_damage_type": "",
-              "reaction_passive_mode": "ask",
-              "reaction_passive_target": "",
+              "condition_formula": "AE_CHARGES_APPROACH < 6",
+              "reaction_effect_ref": "ap_tick",
+              "reaction_isPassive": true,
+              "reaction_passive_mode": "force",
               "reaction_source": "enemy",
               "reaction_trigger": "turn_start"
             }
@@ -88,7 +145,7 @@
           "skill_animation_mode": "default",
           "skill_information": "",
           "skill_range": "Any",
-          "skill_target": "Self",
+          "skill_target": "-",
           "skill_type": "Passive",
           "type_damage": "",
           "use_optional_params": false
@@ -222,6 +279,51 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "BrooLootTaken001",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": null,
+            "systemVersion": null
+          },
+          "changes": [],
+          "description": "<p>The blade is out. There is nothing left here for it.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "charges": 1,
+              "crossScene": false,
+              "lifetimeMode": "persistent_counter"
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/Epic%207/show%20-%202025-07-20T215350.578.png",
+          "name": "Loot Taken",
+          "origin": "Actor.kIvWhnszRhsHafWu.Item.98LqIWG0eOWKhqot",
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": [
+              "roo_marker"
+            ]
+          },
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.4"
@@ -245,33 +347,99 @@
           "check_bonus": "0",
           "class": "NPC",
           "cost": "-",
-          "custom_logic_action": "<p>const TAG = \"[CL-ACTION][ROBBED-BLIND-9999-IF-NO-IP]\";</p><p>const p = __PAYLOAD;</p><p>if (!p) {</p><p>console.warn(TAG, \"Missing __PAYLOAD.\");</p><p>return;</p><p>}</p><p>const targetUuids = Array.isArray(p.targets) ? p.targets : [];</p><p>const firstTargetUuid = targetUuids[0] ?? null;</p><p>if (!firstTargetUuid) {</p><p>console.warn(TAG, \"No target found. Skipping.\");</p><p>return;</p><p>}</p><p>const targetDoc = await fromUuid(firstTargetUuid);</p><p>const targetActor = targetDoc?.actor ?? targetDoc;</p><p>if (!targetActor) {</p><p>console.warn(TAG, \"Could not resolve target actor.\", { firstTargetUuid });</p><p>return;</p><p>}</p><p>const currentIpRaw = targetActor?.system?.props?.current_ip ?? \"0\";</p><p>const currentIp = Math.max(0, parseInt(currentIpRaw, 10) || 0);</p><p>p.advPayload = p.advPayload || {};</p><p>const bonusBefore = Number(p.advPayload.bonus ?? 0) || 0;</p><p>let bonusAdded = 0;</p><p>// If target still has any IP, add no bonus damage.</p><p>// If target has 0 IP, add +9999 bonus damage.</p><p>if (currentIp &lt;= 0) {</p><p>bonusAdded = 9999;</p><p>p.advPayload.bonus = bonusBefore + bonusAdded;</p><p>} else {</p><p>p.advPayload.bonus = bonusBefore;</p><p>}</p><p>p.meta = p.meta || {};</p><p>p.meta.robbedBlindIpCheck = {</p><p>targetName: targetActor?.name ?? \"Unknown Target\",</p><p>targetCurrentIp: currentIp,</p><p>bonusAdded,</p><p>bonusBefore,</p><p>bonusAfter: Number(p.advPayload.bonus ?? 0) || 0</p><p>};</p><p>console.log(TAG, \"APPLIED\", {</p><p>target: targetActor?.name,</p><p>targetCurrentIp: currentIp,</p><p>bonusAdded,</p><p>bonusBefore,</p><p>bonusAfter: p.advPayload.bonus</p><p>});</p>",
-          "custom_logic_resolution": "<p>(async () =&gt; {</p><p>  const TAG = \"[CL-RES][ROBBED-BLIND][ZERO-IP-SELF-VANISH]\";</p><p>  const p = __PAYLOAD;</p><p>  const args = globalThis.__ARGS ?? p?.__confirmArgs ?? {};</p><p>  if (!p) {</p><p>    console.warn(TAG, \"Missing __PAYLOAD.\");</p><p>    return;</p><p>  }</p><p>  const sleep = (ms) =&gt; new Promise(resolve =&gt; setTimeout(resolve, Number(ms) || 0));</p><p>  // ----------------------------------------</p><p>  // 1) Resolve attacker + first target</p><p>  // ----------------------------------------</p><p>  const attackerUuid = p?.meta?.attackerUuid ?? p?.attackerUuid ?? \"\";</p><p>  const attackerResolved = attackerUuid ? await fromUuid(attackerUuid) : null;</p><p>  const attackerActor = attackerResolved?.actor ?? attackerResolved ?? null;</p><p>  const attackerTokenDoc =</p><p>    attackerResolved?.documentName === \"Token\"</p><p>      ? attackerResolved</p><p>      : attackerResolved?.document?.documentName === \"Token\"</p><p>        ? attackerResolved.document</p><p>        : null;</p><p>  const attackerTokenName =</p><p>    attackerTokenDoc?.name ??</p><p>    attackerActor?.name ??</p><p>    \"This creature\";</p><p>  const targetUuids = Array.isArray(p?.targets) ? p.targets : [];</p><p>  const firstTargetUuid = targetUuids[0] ?? null;</p><p>  if (!firstTargetUuid) {</p><p>    console.warn(TAG, \"No target found. Skipping.\");</p><p>    return;</p><p>  }</p><p>  const targetResolved = await fromUuid(firstTargetUuid);</p><p>  const targetActor = targetResolved?.actor ?? targetResolved ?? null;</p><p>  if (!targetActor) {</p><p>    console.warn(TAG, \"Could not resolve target actor.\", { firstTargetUuid });</p><p>    return;</p><p>  }</p><p>  if (!attackerTokenDoc) {</p><p>    console.warn(TAG, \"Could not resolve attacker token document. Skipping self-delete.\", { attackerUuid });</p><p>    return;</p><p>  }</p><p>  // ----------------------------------------</p><p>  // 2) Reduce target IP to 0</p><p>  // ----------------------------------------</p><p>  const ipBefore = Math.max(0, parseInt(targetActor?.system?.props?.current_ip ?? \"0\", 10) || 0);</p><p>  await targetActor.update({ \"system.props.current_ip\": \"0\" });</p><p>  console.log(TAG, \"Target IP reduced to 0.\", {</p><p>    target: targetActor?.name,</p><p>    ipBefore,</p><p>    ipAfter: 0</p><p>  });</p><p>  // ----------------------------------------</p><p>  // 3) Wait 1.5s, then pseudo fade-out + SFX</p><p>  // ----------------------------------------</p><p>  await sleep(1500);</p><p>  const fadeMs = 500;</p><p>  const soundSrc = \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fall.ogg\";</p><p>  const scriptSource = String.raw`</p><p>const { casterToken, params } = ctx;</p><p>if (!casterToken) throw new Error(\"Need casterToken\");</p><p>const fadeMs = Number(params.fadeMs ?? 500);</p><p>const soundSrc = String(params.soundSrc ?? \"\");</p><p>const soundVolume = Number(params.soundVolume ?? 1.0);</p><p>function animateAlpha(obj, fromAlpha, toAlpha, durMs) {</p><p>  return new Promise(resolve =&gt; {</p><p>    const start = performance.now();</p><p>    const ticker = canvas.app.ticker;</p><p>    const update = () =&gt; {</p><p>      const raw = (performance.now() - start) / durMs;</p><p>      const t = Math.min(Math.max(raw, 0), 1);</p><p>      obj.alpha = fromAlpha + (toAlpha - fromAlpha) * t;</p><p>      if (t &gt;= 1) {</p><p>        ticker.remove(update);</p><p>        resolve();</p><p>      }</p><p>    };</p><p>    ticker.add(update);</p><p>  });</p><p>}</p><p>async function createClone(token) {</p><p>  const baseObj = token.mesh ?? token.icon;</p><p>  const texture = baseObj?.texture ?? await loadTexture(token.document.texture.src);</p><p>  const sprite = new PIXI.Sprite(texture);</p><p>  sprite.anchor.set(0.5);</p><p>  sprite.x = token.center.x;</p><p>  sprite.y = token.center.y;</p><p>  sprite.alpha = 1;</p><p>  if (baseObj) {</p><p>    sprite.width = baseObj.width;</p><p>    sprite.height = baseObj.height;</p><p>  }</p><p>  sprite.zIndex = 5000;</p><p>  canvas.stage.sortableChildren = true;</p><p>  canvas.stage.addChild(sprite);</p><p>  canvas.stage.sortChildren();</p><p>  return sprite;</p><p>}</p><p>const baseMesh = casterToken.mesh ?? casterToken.icon;</p><p>let sprite;</p><p>try {</p><p>  sprite = await createClone(casterToken);</p><p>  // Hide the real token locally while the clone fades out</p><p>  if (baseMesh) baseMesh.visible = false;</p><p>  casterToken.visible = false;</p><p>  if (soundSrc) {</p><p>    try {</p><p>      await FAudioHelper.play({</p><p>        src: soundSrc,</p><p>        volume: soundVolume,</p><p>        autoplay: true,</p><p>        loop: false</p><p>      }, false);</p><p>    } catch (err) {</p><p>      console.warn(\"[PSEUDO][ROBBED-BLIND-FADE] Failed to play SFX.\", err);</p><p>    }</p><p>  }</p><p>  await animateAlpha(sprite, 1, 0, fadeMs);</p><p>} finally {</p><p>  if (sprite) {</p><p>    canvas.stage.removeChild(sprite);</p><p>    sprite.destroy(); // no destroy(true)</p><p>  }</p><p>  // Keep the real token hidden; the GM-side script will delete it shortly after.</p><p>  if (baseMesh) baseMesh.visible = false;</p><p>  casterToken.visible = false;</p><p>}</p><p>`;</p><p>  game.ONI?.pseudo?.play?.({</p><p>    scriptId: \"oni.robbedBlind.fadeOutSelf\",</p><p>    scriptSource,</p><p>    casterTokenUuid: attackerTokenDoc.uuid,</p><p>    targetTokenUuids: [],</p><p>    params: {</p><p>      fadeMs,</p><p>      soundSrc,</p><p>      soundVolume: 1.0</p><p>    },</p><p>    meta: {</p><p>      source: \"Robbed Blind\"</p><p>    }</p><p>  });</p><p>  // Give the fade-out a moment to finish before deleting the real token</p><p>  await sleep(fadeMs + 150);</p><p>  // ----------------------------------------</p><p>  // 4) Delete the actual token</p><p>  // ----------------------------------------</p><p>  await attackerTokenDoc.delete();</p><p>  console.log(TAG, \"Attacker token deleted after fade-out.\", {</p><p>    attacker: attackerTokenName,</p><p>    attackerUuid: attackerUuid || attackerTokenDoc.uuid</p><p>  });</p><p>  // ----------------------------------------</p><p>  // 5) Print chat message without token speaker/profile</p><p>  // ----------------------------------------</p><p>  const safeName = foundry.utils.escapeHTML(attackerTokenName);</p><p>  await ChatMessage.create({</p><p>    user: game.user.id,</p><p>    type: CONST.CHAT_MESSAGE_TYPES.OTHER,</p><p>    speaker: {</p><p>      scene: null,</p><p>      actor: null,</p><p>      token: null,</p><p>      alias: \"\\u200B\"</p><p>    },</p><p>    content: `&lt;div class=\"oni-vanish-msg\"&gt;${safeName} disappeared...&lt;/div&gt;`</p><p>  });</p><p>  // ----------------------------------------</p><p>  // 6) Debug marker</p><p>  // ----------------------------------------</p><p>  p.meta = p.meta || {};</p><p>  p.meta.robbedBlindResolution = {</p><p>    targetName: targetActor?.name ?? \"Unknown Target\",</p><p>    targetIpBefore: ipBefore,</p><p>    targetIpAfter: 0,</p><p>    attackerName: attackerTokenName,</p><p>    attackerDeleted: true</p><p>  };</p><p>})();</p>",
+          "custom_logic_action": "",
+          "custom_logic_resolution": "",
           "damage_bonus": "0",
           "defense_target_type": "def",
           "description": "<p>Robb the target of <strong>All IP</strong></p><p>Then, this creature leaves the battle</p>",
           "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "rb_hit, rb_take, rb_mark",
+              "effect_kind": "chain",
+              "effect_label": "rb_rob"
+            },
+            "1": {
+              "$deleted": false,
+              "damage_amount": "9999 * (CUR_IP == 0)",
+              "damage_cause": "damage",
+              "damage_element": "dark",
+              "effect_kind": "deal_damage",
+              "effect_label": "rb_hit",
+              "target_ref": "action_targets"
+            },
+            "2": {
+              "$deleted": false,
+              "consume_amount": "TARGET_CURRENT_IP",
+              "consume_resource": "ip",
+              "effect_kind": "consume_resource",
+              "effect_label": "rb_take",
+              "on_empty": "drain",
+              "target_ref": "action_targets"
+            },
+            "3": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Loot Taken",
+              "effect_kind": "apply_ae",
+              "effect_label": "rb_mark",
+              "target_ref": "self"
+            },
+            "4": {
+              "$deleted": false,
+              "chain_steps": "rb_escaped, rb_run",
+              "effect_kind": "chain",
+              "effect_label": "rb_leave"
+            },
+            "5": {
+              "$deleted": false,
+              "condition_formula": "ALLY_COUNT == 0",
+              "effect_kind": "set_battle_outcome",
+              "effect_label": "rb_escaped",
+              "outcome_value": "escaped"
+            },
+            "6": {
+              "$deleted": false,
+              "effect_kind": "leave_combat",
+              "effect_label": "rb_run",
+              "leave_exit": "run",
+              "target_ref": "self"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": false,
+          "isReaction": true,
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
           "name": "Robbed Blind",
+          "on_activate_effect_ref": "rb_rob",
           "optional_params": {},
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "AE_COUNT_LOOT_TAKEN > 0",
+              "reaction_effect_ref": "rb_leave",
+              "reaction_isPassive": true,
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "turn_end"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
           "skill_animation_mode": "custom",
           "skill_information": "",
           "skill_range": "Any",
-          "skill_target": "One Creature",
+          "skill_target": "One Enemy",
           "skill_type": "Active",
+          "target_eligibility": "IS_SUMMON == 0 && IS_GUEST == 0",
           "type_damage": "Dark",
           "use_optional_params": false
         },
@@ -279,6 +447,177 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "UKzHkmIJcjXZ4GFR"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "BrooKnifeAttack1",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": null,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "BrooOppSpent0001",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "deny_own_crit_opportunity",
+              "mode": 0,
+              "priority": 1,
+              "value": "1"
+            }
+          ],
+          "description": "<p>Chef's Knife already spent this critical success.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "fabula-ultima-companion": {
+              "draftAutomation": "claude-2026-10-23",
+              "hidden": true,
+              "lifetimeMode": "target_turn_end"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1284.gif",
+          "name": "Opportunity Spent",
+          "origin": "Actor.kIvWhnszRhsHafWu.Item.BrooKnifeAttack1",
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": false,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.4"
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Dagger/Icon-Tonberry%2527s_Knife.webp",
+      "name": "Chef's Knife",
+      "ownership": {
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "action_command": "attack",
+          "action_intent": "harmful",
+          "action_keywords": "",
+          "active_effect_config_table": {},
+          "ae_chance_percent": "",
+          "ae_template_ref": "",
+          "animation_damage_timing_offset": "0",
+          "animation_damage_timing_options": "default",
+          "animation_script": "",
+          "check_bonus": "0",
+          "class": "NPC",
+          "cost": "-",
+          "damage_bonus": "7",
+          "defense_target_type": "def",
+          "description": "<ul><li><p>When you score a <strong>Critical Success </strong>with this weapon's 【⚔️Attack】, you may spend your <strong>opportunity </strong>to <strong>reduce the target of this attack to 0 HP</strong>, has no effect on <strong>Champion-Rank </strong>creature</p></li></ul>",
+          "details_roller": "Show",
+          "duration": "Instantaneous",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "chain_steps": "ck_kill, ck_spent",
+              "effect_kind": "chain",
+              "effect_label": "ck_execute"
+            },
+            "1": {
+              "$deleted": false,
+              "consume_amount": "TARGET_CURRENT_HP",
+              "consume_can_defeat": true,
+              "consume_resource": "hp",
+              "effect_kind": "consume_resource",
+              "effect_label": "ck_kill",
+              "on_empty": "drain",
+              "target_ref": "trigger_subject"
+            },
+            "2": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Opportunity Spent",
+              "effect_kind": "apply_ae",
+              "effect_label": "ck_spent",
+              "target_ref": "self"
+            }
+          },
+          "heroic_requirement": "",
+          "id": "${item.id}",
+          "ignore_hr": false,
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/FF%20Brave%20Exvius%20Weapon/Dagger/Icon-Tonberry%2527s_Knife.webp",
+          "isCheck": true,
+          "isFacet": false,
+          "isHeroic": false,
+          "isOffensiveSpell": false,
+          "isReaction": true,
+          "isZeroPower": false,
+          "level": "1",
+          "max_level": "1",
+          "name": "Chef's Knife",
+          "on_activate_effect_ref": "",
+          "optional_params": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "ATTACK_IS_CRIT == 1 && DAMAGE_IS_HP == 1 && TARGET_IS_CHAMPION == 0 && TARGET_CURRENT_HP > 0",
+              "reaction_effect_ref": "ck_execute",
+              "reaction_isPassive": true,
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_source_skill": "Chef's Knife",
+              "reaction_trigger": "creature_deals_damage"
+            }
+          },
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "skill_animation_default": "",
+          "skill_animation_mode": "default",
+          "skill_description": "<ul><li><p>When you score a <strong>Critical Success </strong>with this weapon's 【⚔️Attack】, you may spend your <strong>opportunity </strong>to <strong>reduce the target of this attack to 0 HP</strong>, has no effect on <strong>Champion-Rank </strong>creature</p></li></ul>",
+          "skill_information": "",
+          "skill_range": "Melee",
+          "skill_target": "One Creature",
+          "skill_type": "Attack",
+          "target_eligibility": "",
+          "type_damage": "Dark",
+          "use_optional_params": false,
+          "uuid": "Actor.kIvWhnszRhsHafWu.Item.BrooKnifeAttack1"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "A87i0WJvlVD1w3E7"
       },
       "type": "equippableItem"
     },
@@ -493,6 +832,16 @@
           "defense_target_type": "mdef",
           "description": "<p>On hit, Inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\">Curse</a>&nbsp;to the target</p>",
           "duration": "3 Rounds",
+          "effect_table": {
+            "0": {
+              "$deleted": false,
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Cursed",
+              "effect_kind": "apply_ae",
+              "effect_label": "cu_curse",
+              "target_ref": "hit_action_targets"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": true,
@@ -504,6 +853,7 @@
           "level": "1",
           "max_level": "1",
           "name": "Curse",
+          "on_activate_effect_ref": "cu_curse",
           "optional_params": {},
           "reaction_config_table": {},
           "rolled_atr1": "INS",
@@ -921,10 +1271,40 @@
       "action_pattern_table": {
         "0": {
           "$deleted": false,
+          "action_pattern_condition": "effect_stacks",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Robbed Blind",
+          "action_pattern_priority": "9",
+          "action_pattern_string": "Approach",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "6",
+          "action_pattern_value_2": "0"
+        },
+        "1": {
+          "$deleted": false,
           "action_pattern_condition": "always",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
+          "action_pattern_name": "Chef's Knife",
+          "action_pattern_priority": "5",
+          "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
+          "action_pattern_value_1": "0",
+          "action_pattern_value_2": "100"
+        },
+        "2": {
+          "$deleted": false,
+          "action_pattern_condition": "always",
+          "action_pattern_cooldown": "0",
+          "action_pattern_hp_ceiling": "0",
+          "action_pattern_hp_reserve": "0",
           "action_pattern_name": "Curse",
           "action_pattern_priority": "5",
           "action_pattern_string": "",
+          "action_pattern_target_focus": "auto",
           "action_pattern_value_1": "0",
           "action_pattern_value_2": "100"
         }

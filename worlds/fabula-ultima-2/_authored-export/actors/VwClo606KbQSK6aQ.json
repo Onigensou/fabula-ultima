@@ -321,14 +321,16 @@
               "count": 1,
               "effect_kind": "targeting",
               "effect_label": "ap_victim",
+              "exclude_defeated": true,
               "exclude_self": true,
-              "mode": "random"
+              "mode": "random",
+              "target_filter": "IS_SUMMON == 0 && IS_GUEST == 0"
             },
             "3": {
               "$deleted": false,
               "ae_duplicate_mode": "replace",
               "ae_template_ref": "Marked",
-              "condition_formula": "COMBAT_MAX_AE_CHARGES_MARKED == 0",
+              "condition_formula": "COMBAT_LIVING_MAX_AE_CHARGES_MARKED == 0",
               "effect_kind": "apply_ae",
               "effect_label": "ap_mark",
               "target_ref": "ap_victim"
@@ -366,6 +368,50 @@
               "exclude_self": true,
               "mode": "all",
               "target_filter": "AE_CHARGES_MARKED > 0"
+            },
+            "8": {
+              "$deleted": false,
+              "chain_steps": "ap_unstep, ap_unreach, ap_unmark, ap_mark, ap_tick, ap_slide",
+              "effect_kind": "chain",
+              "effect_label": "ap_restart"
+            },
+            "9": {
+              "$deleted": false,
+              "ae_template_ref": "Approach",
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "ap_unstep",
+              "include_persistent": "true",
+              "target_ref": "self"
+            },
+            "10": {
+              "$deleted": false,
+              "ae_template_ref": "In Melee Range",
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "ap_unreach",
+              "include_persistent": "true",
+              "target_ref": "self"
+            },
+            "11": {
+              "$deleted": false,
+              "allow_empty": true,
+              "candidate_source": "combat",
+              "category": "enemy",
+              "effect_kind": "targeting",
+              "effect_label": "ap_stale",
+              "exclude_self": true,
+              "mode": "all",
+              "target_filter": "AE_CHARGES_MARKED > 0"
+            },
+            "12": {
+              "$deleted": false,
+              "ae_template_ref": "Marked",
+              "count": "all",
+              "effect_kind": "remove_ae",
+              "effect_label": "ap_unmark",
+              "include_persistent": "true",
+              "target_ref": "ap_stale"
             }
           },
           "heroic_requirement": "",
@@ -386,7 +432,7 @@
           "reaction_config_table": {
             "0": {
               "$deleted": false,
-              "condition_formula": "AE_CHARGES_APPROACH < 2",
+              "condition_formula": "AE_CHARGES_APPROACH < 2 && (AE_CHARGES_APPROACH == 0 || COMBAT_LIVING_MAX_AE_CHARGES_MARKED > 0)",
               "reaction_effect_ref": "ap_step",
               "reaction_isPassive": true,
               "reaction_passive_mode": "force",
@@ -395,8 +441,17 @@
             },
             "1": {
               "$deleted": false,
-              "condition_formula": "AE_CHARGES_APPROACH >= 2",
+              "condition_formula": "AE_CHARGES_APPROACH >= 2 && COMBAT_LIVING_MAX_AE_CHARGES_MARKED > 0",
               "reaction_effect_ref": "ap_arrive",
+              "reaction_isPassive": true,
+              "reaction_passive_mode": "force",
+              "reaction_source": "self",
+              "reaction_trigger": "turn_start"
+            },
+            "2": {
+              "$deleted": false,
+              "condition_formula": "AE_CHARGES_APPROACH > 0 && COMBAT_LIVING_MAX_AE_CHARGES_MARKED == 0",
+              "reaction_effect_ref": "ap_restart",
               "reaction_isPassive": true,
               "reaction_passive_mode": "force",
               "reaction_source": "self",
@@ -826,6 +881,7 @@
           "skill_range": "Melee",
           "skill_target": "One Random Creature",
           "skill_type": "Active",
+          "target_eligibility": "IS_SUMMON == 0 && IS_GUEST == 0",
           "type_damage": "",
           "use_optional_params": false,
           "uuid": "Actor.VwClo606KbQSK6aQ.Item.IqytDxaB5BGEtSZZ"

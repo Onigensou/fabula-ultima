@@ -504,6 +504,7 @@
           "skill_range": "Melee",
           "skill_target": "One Creature",
           "skill_type": "Attack",
+          "target_eligibility": "IS_SUMMON == 0 && IS_GUEST == 0",
           "type_damage": "Physical",
           "use_optional_params": false
         },
