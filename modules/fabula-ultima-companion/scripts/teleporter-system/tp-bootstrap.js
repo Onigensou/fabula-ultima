@@ -743,7 +743,22 @@
 
   // ── Core trigger ──────────────────────────────────────────────────────────────
 
-  async function triggerTeleporter(tileDoc, tokenDoc, { applyDpOffset = false, forcedNodeId = null } = {}) {
+  // "Arrive by direction": a dungeon teleporter may carry destinationByFrom, a
+  // landing per neighbouring tile ({ "<from tile id>": <destination> }), so a party
+  // that walked in from the west branch lands at the map's west entry. Anything
+  // else (no entry for that tile, Fast Travel, an old teleporter) uses destination.
+  const lastFromByToken = new Map();
+  Hooks.on("dungeonPathing.tokenMoved", ({ tokenDoc, fromNode } = {}) => {
+    try { if (tokenDoc?.id) lastFromByToken.set(tokenDoc.id, fromNode?.nodeId ?? null); } catch (_) {}
+  });
+  function destinationFor(flags, fromTileId) {
+    const by = flags?.destinationByFrom;
+    const pick = fromTileId && by && typeof by === "object" ? by[fromTileId] : null;
+    return pick && typeof pick === "object" && pick.type ? pick : flags?.destination;
+  }
+  TP.destinationFor = destinationFor;
+
+  async function triggerTeleporter(tileDoc, tokenDoc, { applyDpOffset = false, forcedNodeId = null, destination = null } = {}) {
     if (isOnCooldown(tokenDoc)) {
       console.debug(TAG, "Trigger skipped (cooldown active) for token:", tokenDoc.id);
       return;
@@ -752,19 +767,20 @@
     const flags = getFlags(tileDoc);
     if (!flags?.enabled || isSwitchLocked(flags)) return;
 
-    if (!flags.destination) {
+    const dest = destination ?? flags.destination;
+    if (!dest) {
       ui.notifications?.warn?.("Teleporter tile has no destination configured.");
       return;
     }
 
-    console.debug(TAG, "Trigger | tile:", tileDoc.id, "→", flags.destination,
+    console.debug(TAG, "Trigger | tile:", tileDoc.id, "→", dest,
       "| offset:", applyDpOffset, "| forcedNodeId:", forcedNodeId);
 
     // Dungeon mode: show styled dialog if confirmMode is on.
     // Exploration mode: button click was the confirmation — no dialog shown here.
     const confirmMode = flags.confirmMode !== false && flags.confirmMode !== "false";
     if (confirmMode && getSceneMode() === "dungeon") {
-      const confirmed = await askTeleportConfirm(flags.destination, flags);
+      const confirmed = await askTeleportConfirm(dest, flags);
       if (!confirmed) return;
     }
 
@@ -773,7 +789,7 @@
 
     try {
       const sfxUrl = (typeof flags.sfxUrl === "string" && flags.sfxUrl.trim()) ? flags.sfxUrl.trim() : undefined;
-      await TP.api.teleportToken(tokenDoc, flags.destination, { sfxUrl, applyDpOffset, forcedNodeId });
+      await TP.api.teleportToken(tokenDoc, dest, { sfxUrl, applyDpOffset, forcedNodeId });
     } catch (e) {
       console.error(TAG, "Teleportation failed:", e);
       ui.notifications?.error?.("Teleporter error — see console.");
@@ -814,10 +830,11 @@
       if (!tileDoc || !isTeleporterEnabled(tileDoc)) return;
 
       const flags        = getFlags(tileDoc);
-      const applyDpOffset = flags?.destination?.type === "tile";
-      const forcedNodeId  = flags?.destination?.type === "tile" ? (flags?.destination?.tileId ?? null) : null;
+      const destination  = destinationFor(flags, lastFromByToken.get(tokenDoc?.id) ?? null);
+      const applyDpOffset = destination?.type === "tile";
+      const forcedNodeId  = destination?.type === "tile" ? (destination?.tileId ?? null) : null;
 
-      await triggerTeleporter(tileDoc, tokenDoc, { applyDpOffset, forcedNodeId });
+      await triggerTeleporter(tileDoc, tokenDoc, { applyDpOffset, forcedNodeId, destination });
     } catch (e) {
       console.error(TAG, "dungeonPathing.turnEnd handler error:", e);
     }
