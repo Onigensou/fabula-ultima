@@ -53,7 +53,8 @@ import { buildObjectiveMenuSpec } from "./objectives.js";
 import { pickFromList } from "./list-picker.js";
 import { potionTargetText } from "../polymorph/polymorph-potions.js";
 import { applyAttackRangeGate, applyStudyGuardExclusion, collectForcedIncludeTargets, pinActionKindForSkill, snapshotEligibleTargetsFromDCombat,
-         attackRangeBlockedBy, applyMultiOffensiveGate, applySingleTargetGate, applyAreaGate, targetsKnockedOut } from "./snapshot.js";
+         attackRangeBlockedBy, applyMultiOffensiveGate, applySingleTargetGate, applyAreaGate, targetsKnockedOut,
+         targetsKnockedOutAlly, mergeUndeadRevivePool } from "./snapshot.js";
 
 // Race-cancellation token. Returns { promise, cancel }. The promise
 // resolves with the cancellation reason when cancel() is called.
@@ -1068,6 +1069,10 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
   // lists (eligible.downedAllies / downedEnemies, same pool rule as the TARGET
   // survey), so a player's client — which has no dCombat — gets them too.
   const knockedOut = targetsKnockedOut(skillTargetText);
+  // Revive on Undead (A2): a KO-ally revive also offers LIVING Undead / Zombie'd
+  // creatures on EITHER side (captured from the living lists before the swap).
+  const undeadRevive = (knockedOut && targetsKnockedOutAlly(skillTargetText))
+    ? mergeUndeadRevivePool([], eligible?.allies, eligible?.enemies) : [];
   if (knockedOut) {
     eligible = { allies: eligible?.downedAllies ?? [], enemies: eligible?.downedEnemies ?? [] };
   }
@@ -1082,6 +1087,7 @@ export async function resolveTargetsForSource({ director, snap, actor, eligible,
   let targetList = side === "any"
     ? [...(eligible?.allies ?? []), ...(eligible?.enemies ?? [])]
     : (side === "ally" ? (eligible?.allies ?? []) : (eligible?.enemies ?? []));
+  if (undeadRevive.length) targetList = mergeUndeadRevivePool(targetList, undeadRevive);
   const categoryLabel = (knockedOut ? "knocked-out " : "")
     + (side === "any" ? "creatures" : (side === "ally" ? "allies" : "enemies"));
 

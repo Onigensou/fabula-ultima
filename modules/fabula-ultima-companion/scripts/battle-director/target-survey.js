@@ -89,6 +89,8 @@ import {
   snapshotEligibleTargets,
   snapshotEligibleTargetsFromDCombat,
   targetsKnockedOut,
+  targetsKnockedOutAlly,
+  mergeUndeadRevivePool,
 } from "./snapshot.js";
 import { buildPseudoWeaponFromNpcAttack } from "./actor-shape.js";
 
@@ -539,6 +541,14 @@ export function surveyActionTargets({
     // back to the canvas — a scene-wide guess presented as a battle answer is
     // exactly the failure this module exists to remove.
     return unanswered("no-combat", { category });
+  }
+  // Revive on Undead (A2): a KO-ally revive also reaches LIVING Undead / Zombie'd
+  // creatures on either side — same pool as the compose picker.
+  if (targetsKnockedOutAlly(targetText)) {
+    const living = dCombat?.combatants?.length
+      ? snapshotEligibleTargetsFromDCombat(dCombat, snap, { category: "any", defeated: "exclude" })
+      : snapshotEligibleTargets(combat, snap, { category: "any", defeated: "exclude" });
+    eligible = mergeUndeadRevivePool(eligible, living);
   }
 
   // Order matches the TARGET state's: side → self → action-declared narrowing →

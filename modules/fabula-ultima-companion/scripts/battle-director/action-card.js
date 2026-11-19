@@ -2951,6 +2951,9 @@ export function resultLabelFor(r, { hasDamage = true } = {}) {
     // green number that contradicts what actually happens.
     if (r.vismagusSuppressed) return "NO HEAL · VISMAGUS";
     const amt = Math.max(0, r.grantAmount);
+    // Undead / Zombie heal reversal (A1): the heal lands as damage. Checked
+    // before the FULL test — a full-HP undead still takes the hit.
+    if (r.healReversed) return `UNDEAD · HIT <span class="t-num">${amt}</span>`;
     // Target already at cap → the restore lands nothing. Say so explicitly
     // instead of a green number that contradicts what happens (shields have no
     // cap, so they always show the amount).
@@ -3006,6 +3009,7 @@ export function resultClsFor(r) {
   if (r.damageOverride && Number(r.damageOverride.to) <= 0 && Number(r.damageOverride.from) > 0) return "miss";
   if (typeof r.grantAmount === "number") {
     if (r.vismagusSuppressed) return "miss"; // visually muted — no heal landed
+    if (r.healReversed) return "hit";        // Undead / Zombie: the heal hurts
     if (r.grantResource === "mp")     return "restore-mp";
     if (r.grantResource === "shield") return "shield";
     return "heal";
@@ -6072,6 +6076,7 @@ export function projectActionResultForRender(ar) {
         resourceCur: r.resourceCur ?? null,
         resourceMax: r.resourceMax ?? null,
         vismagusSuppressed: r.vismagusSuppressed ?? null,
+        healReversed: r.healReversed ?? null,
         damageOverride: r.damageOverride
           ? { from: r.damageOverride.from ?? null, to: r.damageOverride.to ?? null }
           : null,

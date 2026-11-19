@@ -796,8 +796,35 @@ function evaluateOneCondition(context, row, options = {}) {
   }
 }
 
+/* Per-row chance gate (action_pattern_chance, A4). Applied AFTER the row's own
+   condition: a row that failed its condition stays failed (no roll); a passing
+   row survives only if rng()*100 < chance. chance >= 100 (blank) never rolls, so
+   legacy rows are untouched. Pure — rng is injectable for tests. */
+export function applyPatternChanceGate(conditionResult, chance, rng = Math.random) {
+  const c = Number.isFinite(Number(chance)) ? Number(chance) : 100;
+  if (!conditionResult?.passed || c >= 100) return conditionResult;
+  const roll = rng() * 100;
+  if (roll < c) {
+    return {
+      ...conditionResult,
+      reason: `${conditionResult.reason ?? ""} Chance ${c}%: rolled ${roll.toFixed(1)} (pass).`.trim(),
+      details: { ...(conditionResult.details ?? {}), chance: c, chanceRoll: Number(roll.toFixed(1)) }
+    };
+  }
+  return {
+    ...conditionResult,
+    passed: false,
+    reason: `${conditionResult.reason ?? ""} Chance ${c}%: rolled ${roll.toFixed(1)} (fail).`.trim(),
+    details: { ...(conditionResult.details ?? {}), chance: c, chanceRoll: Number(roll.toFixed(1)), chanceGated: true }
+  };
+}
+
 function buildEvaluatedRow(context, row, options = {}) {
-  const conditionResult = evaluateOneCondition(context, row, options);
+  const conditionResult = applyPatternChanceGate(
+    evaluateOneCondition(context, row, options),
+    row?.chance ?? 100,
+    typeof options?.rng === "function" ? options.rng : Math.random
+  );
 
   return {
     ...AR.duplicateSafe(row),

@@ -19,6 +19,7 @@ import {
   evaluateFormula, buildSkillResolver, buildDamageBonusParts,
   resolveAccuracyParts, resolveOutgoingDamageParts, resolveRestoreParts, sumRestoreParts, applyGrantAdjust,
   applyCritDamage, resolveIncomingReduction, applyHealReceiving, applyMpReceiving, normalizeDamageType, applyAdjustOp,
+  shouldReverseHeal,
 } from "./skill-formulas.js";
 import { applyAffinityToDamage, readWeaponEfficiency, snapshotTargetForToken, resolvesVsMagicDefense,
          attackerHitRuleInverted } from "./snapshot.js";
@@ -1018,7 +1019,11 @@ async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttack
     // Incoming-restore adjustment (recipient side: Bleed -50% on HP, Wither -50%
     // on MP, Vitality Up +5): mirror applyGrantEffect so the previewed number
     // matches the applied one. Both helpers do fractional-then-flat, clamped at 0.
+    // Undead / Zombie (A1): the heal lands as damage of the caster-side amount
+    // (heal_receiving_* skipped) — grantApply reads this same per-target figure.
+    const healReversed = !vismagusSuppress && shouldReverseHeal(tActor, { resource: canonRes, amount: grantAmount, row: grantRow });
     const recipBase = vismagusSuppress ? 0
+      : healReversed ? grantAmount
       : canonRes === "hp" ? applyHealReceiving(tActor, grantAmount)
       : canonRes === "mp" ? applyMpReceiving(tActor, grantAmount)
       : grantAmount;
@@ -1034,6 +1039,7 @@ async function attachHealEffects({ rows, view, ar, targets, resolver, liveAttack
       // the flat grant row from effects alone.
       resourceCur: cur, resourceMax: max,
       ...(vismagusSuppress ? { vismagusSuppressed: true } : {}),
+      ...(healReversed ? { healReversed: true } : {}),
     };
     // Attach to the target's existing roster row (shares its hit determination);
     // create an auto-hit row only when none exists yet (pure heal — no damage/check).
@@ -1352,6 +1358,7 @@ function flattenRow(r, kind) {
       resourceCur: heal.resourceCur, resourceMax: heal.resourceMax,
       ...(typeof o.hitChance === "number" ? { hitChance: o.hitChance } : {}),
       ...(heal.vismagusSuppressed ? { vismagusSuppressed: true } : {}),
+      ...(heal.healReversed ? { healReversed: true } : {}),
     };
   }
   // Damage row — WHO from target/outcome, WHAT from the primary damage effect.

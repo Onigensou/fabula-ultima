@@ -6,7 +6,7 @@
 import { warn } from "./logger.js";
 import { crisisThreshold } from "./crisis-reactor.js";
 import { getActorKind, getNpcAttackItems } from "./actor-shape.js";
-import { buildSkillResolver, evaluateFormula, isFormulaString, registerBlockedActionReader } from "./skill-formulas.js";
+import { buildSkillResolver, evaluateFormula, isFormulaString, registerBlockedActionReader, isHealReversedActor } from "./skill-formulas.js";
 import { hasIgnoreActionGating, snapshotUltimaBundle } from "./domination.js";
 import { classifyActionIntent } from "./skill-intent.js";
 
@@ -1827,6 +1827,32 @@ export function targetsKnockedOut(text) {
   return /\bKO\b/i.test(String(text ?? ""));
 }
 
+// Revive on Undead (A2, Nox Legion 2026-11-19): a KO-ALLY revive text (Phoenix
+// Feather "One KO Ally") may ALSO aim at a LIVING creature that is Undead or
+// Zombie'd — on either side, a Zombie'd player included — and on such a target the
+// revive defeats it outright (skill-effects setResourceApply). "One KO Creature"
+// (Raise Dead) is not a revive of an ally and is left alone.
+export function targetsKnockedOutAlly(text) {
+  const t = String(text ?? "");
+  return targetsKnockedOut(t) && /\ball(?:y|ies)\b/i.test(t);
+}
+
+// Append the living Undead/Zombie candidates (snapshot `undeadOrZombie`) from the
+// given living lists to a KO pool, deduped by token. Pure — shared by the compose
+// picker and the target survey so the player and the AI see the same pool.
+export function mergeUndeadRevivePool(koPool, ...livingLists) {
+  const out = [...(koPool ?? [])];
+  const seen = new Set(out.map((t) => t?.tokenUuid));
+  for (const list of livingLists) {
+    for (const t of (list ?? [])) {
+      if (!t?.undeadOrZombie || seen.has(t.tokenUuid)) continue;
+      seen.add(t.tokenUuid);
+      out.push(t);
+    }
+  }
+  return out;
+}
+
 export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { category = "any", defeated = "exclude" } = {}) {
   const combatants = dCombat?.combatants ?? [];
   const attackerDisp = attackerSnapshot?.disposition ?? 0;
@@ -1948,6 +1974,8 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
       // Informational only — the melee-vs-Flying RULE travels as a synthesised
       // entry in `targetingBlocks` (see getTargetSideBlocks), not from this flag.
       isFlying: targetIsFlying(actor),
+      // Living Undead / Zombie — a KO-ally revive may also aim here (A2).
+      undeadOrZombie: hp > 0 && isHealReversedActor(actor),
       targetingBlocks: Object.freeze(getTargetSideBlocks(actor).map((b) =>
         Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]), bypass: b.bypass ?? "" })
       )),
@@ -2529,6 +2557,8 @@ export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "
       // Informational only — the melee-vs-Flying RULE travels as a synthesised
       // entry in `targetingBlocks` (see getTargetSideBlocks), not from this flag.
       isFlying: targetIsFlying(actor),
+      // Living Undead / Zombie — a KO-ally revive may also aim here (A2).
+      undeadOrZombie: hp > 0 && isHealReversedActor(actor),
       targetingBlocks: Object.freeze(getTargetSideBlocks(actor).map((b) =>
         Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]), bypass: b.bypass ?? "" })
       )),

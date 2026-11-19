@@ -20,7 +20,7 @@
 import { log, warn } from "./logger.js";
 import { watchGone } from "./player-presence.js";
 import { stageOf } from "./director-camera.js";
-import { shortSkillName, evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, applyHealReceiving, applyMpReceiving, arcanumQuickSummonLock } from "./skill-formulas.js";
+import { shortSkillName, evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, applyHealReceiving, applyMpReceiving, arcanumQuickSummonLock, shouldReverseHeal, isHealReversedActor, rowIgnoresUndead } from "./skill-formulas.js";
 import { pickFromList } from "./list-picker.js";
 import { polymorphItemInPlay } from "../polymorph/polymorph-gates.js";
 // The amount selector lives in its own leaf module so remote-pick can render it
@@ -32,7 +32,7 @@ import { emitLeaveExit } from "./leave-exit-fx.js";
 import { RESOURCE_REGISTRY } from "./resources.js";
 import { findAndConsume, findOnActor as findChargeAEsOnActor, isPersistentCounter } from "./skill-charges.js";
 import { foldChargeSteps, aeRefreshIsNoop } from "./chain-strikes.js";
-import { captureSubjectSnapshot, readPropNum, resolveAffinity, skillDeclaresVersatile, resolvesVsMagicDefense, actorLiveRuleValues, getActionLabelBlockers, getPassiveSuppression, canonActionLabel, GATEABLE_ACTION_LABELS, GATING_EXEMPT_TAG_PREFIX } from "./snapshot.js";
+import { captureSubjectSnapshot, readPropNum, resolveAffinity, skillDeclaresVersatile, resolvesVsMagicDefense, actorLiveRuleValues, getActionLabelBlockers, getPassiveSuppression, canonActionLabel, GATEABLE_ACTION_LABELS, GATING_EXEMPT_TAG_PREFIX, targetsKnockedOutAlly } from "./snapshot.js";
 import { INVENTORY_ACTION_TAG } from "./skill-intent.js";
 import { isActorDefeated, settleRevive } from "./defeat-reactor.js";
 import { computeIncomingDamage, aeOutgoingActionKeywords } from "./damage-ruleset.js";
@@ -6359,6 +6359,85 @@ export function describeGrant(row, ctx = {}) {
   return { resource, targetRef, amount, restoreParts };
 }
 
+// Undead / Zombie heal reversal (A1) — commits a reversed HP heal as DAMAGE through
+// the normal damage write (applyDamageToTarget: shield, Mercy-style clamps, loss
+// VFX, KO via the HP-derived defeat path), then itemizes it on the resource ledger
+// as a damage loss caused by the healer, so damage reactions ("when I take damage",
+// leech/reflect) hear it. Elementless, no affinity/DR ruling: it is the heal's own
+// amount turned around, not an elemental hit. Returns an `applied` entry or null.
+async function applyReversedHealDamage({ actor, token, amount, row, ctx, skipShield = false, logTag = "undead reversal" }) {
+  const dmg = Math.floor(Number(amount) || 0);
+  if (!actor || dmg <= 0) return null;
+  const healerName = ctx.reactorActor?.name || ctx.skill?.name || "Heal";
+  const inheritedSink = Array.isArray(ctx.battleLogSink) ? ctx.battleLogSink : null;
+  const battleLogSink = inheritedSink ?? [];
+  const tokenUuid = token?.uuid ?? token?.document?.uuid ?? null;
+  try {
+    const hpBefore = readPropNum(actor, ["current_hp", "hp"]);
+    const subjectSnapshot = captureSubjectSnapshot(actor);
+    const res = await applyDamageToTarget({
+      target: actor, damage: dmg, affinity: "NE", resource: "hp",
+      targetName: actor.name, tokenUuid,
+      sourceTokenUuid: ctx.reactorToken?.uuid ?? null,
+      logPrefix: `${healerName} (${logTag}):`,
+      logContext: { attackerName: healerName, element: "elementless", sourceType: "effect", sink: battleLogSink },
+      skipShield,
+    });
+    const _director = ctx?.director
+      ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.();
+    if (_director) {
+      const hpAfter = res?.hpAfterHit ?? readPropNum(actor, ["current_hp", "hp"]);
+      const delta = hpAfter - hpBefore;
+      if (delta !== 0) {
+        try {
+          fireResourceChangeTrigger({
+            director: _director, actor, subjectSnapshot, isDamage: true,
+            damageInstance: (!ctx?.isPassive && _director.state === "RESOLVE")
+              ? (_director.ctx?.actionResult?._instanceId ?? null) : null,
+            tokenUuid, resource: "hp",
+            direction: delta < 0 ? "loss" : "recover", amount: Math.abs(delta),
+            cause: "damage", element: "elementless",
+            originLabel: ctx.sourceLabel ?? ctx.skill?.name ?? row.effect_label ?? "Heal",
+            originUuid: ctx.sourceUuid ?? ctx.skill?.uuid ?? null,
+            source: { actorUuid: ctx.reactorActor?.uuid ?? null, tokenUuid: ctx.reactorToken?.uuid ?? null },
+            extra: { healReversed: true },
+          });
+        } catch (e) { warn("skill-effects.grant: reversed-heal ledger emit threw", e); }
+      }
+    }
+    if (!inheritedSink && battleLogSink.length) await appendBattleLog(battleLogSink);
+    log(`skill-effects: ${actor.name} is Undead/Zombie — ${logTag}: ${dmg} HP dealt as damage (row "${row.effect_label}")`);
+    return { actorUuid: actor.uuid, resource: "hp", delta: -(res?.finalValue ?? dmg), healReversed: true };
+  } catch (e) {
+    warn(`skill-effects: ${logTag} failed on ${actor.name}`, e);
+    return null;
+  }
+}
+
+// The target text of the action running this chain — the cast item's own
+// `skill_target`, else (a linked `_skill` inside a consumable) its container's.
+function actionTargetTextOf(ctx) {
+  const item = ctx?.skill ?? null;
+  const own = String(item?.system?.props?.skill_target ?? "").trim();
+  if (own) return own;
+  try {
+    const cid = String(item?.system?.container ?? "").trim();
+    const container = cid ? item?.parent?.items?.get?.(cid) : null;
+    return String(container?.system?.props?.skill_target ?? "").trim();
+  } catch { return ""; }
+}
+
+// Revive on Undead (A2) — a KO-ally revive on a LIVING Undead / Zombie'd creature
+// defeats it outright: its whole current HP as damage, past its Shield, through
+// the normal commit (KO via the HP-derived defeat path, damage reactions fire).
+// No affinity / DR (crush-like). Elites are not immune. A Mercy-style clamp AE on
+// the victim can still hold it at 1 HP — the commit's own rules apply.
+async function applyReviveOnUndead({ actor, token, row, ctx }) {
+  const cur = readPropNum(actor, ["current_hp", "hp"]);
+  if (!(cur > 0)) return null;
+  return applyReversedHealDamage({ actor, token, amount: cur, row, ctx, skipShield: true, logTag: "revive on undead" });
+}
+
 // Sync dispatcher (see consumeResourceRun for why this is NOT async): preview →
 // the heal/grant chip; apply → the async write path's promise.
 function grantRun(row, ctx) {
@@ -6421,6 +6500,18 @@ async function grantApply(row, ctx, { resource, targetRef, amount }) {
     // spell, they can't ALSO recover HP from it. Other targets unaffected.
     if (suppressSelfHpHeal && actor.uuid === ctx.reactorActor?.uuid) {
       log(`skill-effects.grant: Vismagus suppresses caster self-heal on row "${row.effect_label}"`);
+      continue;
+    }
+    // Undead / Zombie heal reversal (A1): a positive HP heal lands as damage of the
+    // caster-side amount (heal_receiving_* not applied). `amount` is the caster-side
+    // figure from describeGrant — the same one the profile previewed as reversed.
+    // On the primary grant the profile's per-target figure wins (it already
+    // skipped heal_receiving for a reversed row, and carries any card mutation).
+    if (shouldReverseHeal(actor, { resource, amount, row })) {
+      const revAmount = (fromProfile && fromProfile.has(token.uuid))
+        ? (Number(fromProfile.get(token.uuid)) || 0) : amount;
+      const rev = await applyReversedHealDamage({ actor, token, amount: revAmount, row, ctx });
+      if (rev) applied.push(rev);
       continue;
     }
     let recipAmount;
@@ -6547,9 +6638,18 @@ async function setResourceApply(row, ctx, { resource, amountFormula, targetRef }
     return { ok: false, kind: "set_resource", reason: targetResult.reason ?? "no-targets", cancelled: !!targetResult.cancelled };
   }
   const applied = [];
+  // Revive on Undead (A2): a KO-ally revive (Phoenix Feather) cast on a LIVING
+  // Undead / Zombie'd creature defeats it outright instead of raising HP.
+  const reviveOnUndead = resource === "hp" && !rowIgnoresUndead(row)
+    && targetsKnockedOutAlly(actionTargetTextOf(ctx));
   for (const token of targetResult.tokens) {
     const actor = token.actor;
     if (!actor) continue;
+    if (reviveOnUndead && readPropNum(actor, ["current_hp", "hp"]) > 0 && isHealReversedActor(actor)) {
+      const rev = await applyReviveOnUndead({ actor, token, row, ctx });
+      if (rev) applied.push(rev);
+      continue;
+    }
     // CASTER_LEVEL — the acting creature's level, as grant/deal_damage expose it.
     // The formula is evaluated with the TARGET as actor (CUR_HP / MAX_HP read the
     // victim), so a caster-bracket amount needs this: Placebo Energy raises

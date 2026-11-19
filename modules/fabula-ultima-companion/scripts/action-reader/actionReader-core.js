@@ -101,7 +101,14 @@ export const ACTION_READER_KEYS = Object.freeze({
   // Optional per-row max HP % (inclusive) a performer may have to pick the row —
   // the mirror of hpReserve: a "only when hurt" ceiling. Row is dropped when the
   // performer's HP% is ABOVE it. Blank / 0 => no ceiling (legacy, never blocks).
-  actionPatternHpCeilingKey: "action_pattern_hp_ceiling"
+  actionPatternHpCeilingKey: "action_pattern_hp_ceiling",
+
+  // Optional per-row chance gate (0-100). After the row's condition passes it
+  // survives only if Math.random()*100 < chance. Blank => 100 (legacy, always).
+  // Lets one row combine a condition with a coin flip (Nox Priest's Revive:
+  // enemy_has_status Zombie + 33%). Read in ReadPatternTable, applied in
+  // EvaluateConditions.
+  actionPatternChanceKey: "action_pattern_chance"
 });
 
 /* Foundry module id (used for effect-charge stack flags + combatant memory). */

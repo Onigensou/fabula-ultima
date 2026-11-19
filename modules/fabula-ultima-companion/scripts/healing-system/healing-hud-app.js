@@ -862,11 +862,17 @@ const HealingHUD = {
       }
       return applied.map((a) => ({ kind: "cleanse-one", casterName: caster, targetName: a.targetName, debuff: a.debuffName, text: `${caster} cures ${a.debuffName} from ${a.targetName}` }));
     }
-    return applied.filter((a) => a.healed > 0).map((a) => ({
+    // Undead / Zombie heal reversal — the heal hurt instead (healing-socket).
+    const reversed = applied.filter((a) => a.reversed > 0).map((a) => ({
+      kind: "heal", casterName: caster, targetName: a.targetName,
+      resource: a.resource, amount: 0, after: a.after, max: a.max,
+      text: `${a.targetName} is Undead: the heal deals ${a.reversed} damage`,
+    }));
+    return reversed.concat(applied.filter((a) => a.healed > 0).map((a) => ({
       kind: "heal", casterName: caster, targetName: a.targetName,
       resource: a.resource, amount: a.healed, after: a.after, max: a.max,
       text: `${caster} restores ${a.healed} ${(HEAL_RESOURCE[a.resource]?.label ?? a.resource)} to ${a.targetName}`,
-    }));
+    })));
   },
 
   _flashCell(idx) {

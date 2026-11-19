@@ -316,6 +316,7 @@ const TRIGGER_TEXT = {
   creature_unleashes_zero_power: { self: "When you unleash Zero Power", other: "When a creature unleashes Zero Power" },
   creature_equips_item: { self: "When you equip an item", other: "When a creature equips an item" },
   creature_unequips_item: { self: "When you unequip an item", other: "When a creature unequips an item" },
+  soul_fragment_destroyed: "When a Soul Fragment is destroyed",
   conflict_start: "At the start of the conflict",
   conflict_end: "At the end of the conflict",
   round_start: "At the start of each round",

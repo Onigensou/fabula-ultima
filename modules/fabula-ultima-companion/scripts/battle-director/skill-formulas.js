@@ -1057,6 +1057,13 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
       // Always >= 0 — the direction lives in the trigger NAME, not the sign — and 0
       // outside the resource-ledger triggers, so a stray gate is inert, not wrong.
       case "TRIGGER_AMOUNT": return Math.max(0, Number(payload?.amount ?? 0) || 0);
+      // Soul Tithe (Fragment Eater, 2026-11-19). FRAGMENT_HP: the destroyed
+      // fragment's HP on a soul_fragment_destroyed reaction (payload.fragmentHp,
+      // set by soul-tithe announceDestroyed). CONSUMED_FRAGMENT_HP: the HP of the
+      // fragment a consumeFragment row ate earlier in THIS chain (Soul Sever's
+      // poison), stashed on the chain-var bag. 0 when absent.
+      case "FRAGMENT_HP": return Number(payload?.fragmentHp) || 0;
+      case "CONSUMED_FRAGMENT_HP": return Number(payload?._chainVars?.consumed_fragment_hp) || 0;
       // Combat state
       case "ROUND": return Math.max(0, Number(round ?? 0) || 0);
       // The fight's stage as a boss rule counts it (boss-rules/boss-rules.js stage()):
@@ -4034,6 +4041,39 @@ export function applyHealReceiving(targetActor, amount) {
   const flat = sumAeChangeKey(targetActor, "heal_receiving_flat_all");
   const scaled = mult === 1 ? base : Math.floor(base * mult);
   return Math.max(0, scaled + flat);
+}
+
+// ── Undead heal reversal (Final Fantasy style, Nox Legion 2026-11-19) ────────
+// A creature whose RULES species is Undead (its own `species` prop, or an AE's
+// `flags.fabula-ultima-companion.species_override` — see speciesOf) or that
+// carries the Zombie status takes an HP HEAL as DAMAGE of the same amount. The
+// reversed amount is the caster-side heal, NOT scaled by heal_receiving_* (those
+// describe healing received; the creature receives none). It is committed through
+// the normal damage write, so it can KO and fires damage reactions.
+//
+// Data opt-out: a grant row with `heal_ignore_undead: true` heals normally (a
+// Wraith's own Devour Soul self-heal). Revives (set_resource) are a separate
+// rule (isReviveTargetUndead / A2), and Soul Tithe fragment refunds write HP
+// directly — neither passes through here.
+export function isHealReversedActor(actor) {
+  if (!actor) return false;
+  if (String(speciesOf(actor)).replace(/_/g, " ").trim().toLowerCase() === "undead") return true;
+  return actorHasNamedStatus(actor, "zombie");
+}
+
+export function rowIgnoresUndead(row) {
+  const v = row?.heal_ignore_undead;
+  return v === true || String(v ?? "").trim().toLowerCase() === "true";
+}
+
+// The single decision both the preview (action-profile) and the apply
+// (grantApply / out-of-combat healing) read. Returns true when a POSITIVE HP
+// restore on `actor` must land as damage instead.
+export function shouldReverseHeal(actor, { resource = "hp", amount = 0, row = null } = {}) {
+  if (String(resource ?? "").toLowerCase() !== "hp") return false;
+  if (!(Number(amount) > 0)) return false;
+  if (rowIgnoresUndead(row)) return false;
+  return isHealReversedActor(actor);
 }
 
 // The MP twin of applyHealReceiving — recipient-side adjustment on a positive MP
