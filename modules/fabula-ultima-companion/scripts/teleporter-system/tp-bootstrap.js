@@ -682,6 +682,16 @@
   // opts.mirror false: no watcher copies (a camp player fishing on their own).
   TP.askYesNo = (text, opts) => showTpPrompt(text, opts);
 
+  // The bare parchment Yes / No box, for the Event System's Confirm row
+  // (event-rows-choices.js "confirm" look), which runs its own answer plumbing.
+  // text: a string or [before, bold name, after].
+  TP.promptBox = {
+    build: (text) => { ensureStyle(); return buildTpPromptEl(text); },
+    reveal: (el, stillCurrent = () => true) => revealTpPrompt(el, stillCurrent),
+    dismiss: (el) => dismissTpPromptEl(el),
+    OUT_MS: TP_PROMPT_OUT_MS
+  };
+
   Hooks.once("ready", () => {
     globalThis.FUCompanion?.api?.MirrorPrompt?.register?.(TP_MIRROR_KIND, {
       show(ctx) {

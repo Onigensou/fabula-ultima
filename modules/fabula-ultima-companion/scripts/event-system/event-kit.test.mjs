@@ -653,6 +653,36 @@ await quiet(async () => {
     ended.aborted === true && said.length === 0 && sent.some(m => m.kind === "choice.close"));
 });
 
+// --- Confirm (Yes / No in the teleporter's box) ---------------------------------
+const confirm = () => ({ type: "confirm", text: "Go to <b>Fafnir Castle - Entrance</b>?", yesRows: [text("went")], noRows: [text("stayed")] });
+await quiet(async () => {
+  said.length = 0; sent.length = 0;
+  const out = await runEvent([confirm(), text("after")], {
+    during: async (sourceId) => {
+      await sleep(10);
+      const open = sent.find(m => m.kind === "choice.open");
+      check("confirm: opens in the teleporter look with Yes / No and no roleplay answer",
+        open?.data.menu.look === "confirm" && open.data.menu.roleplay === false
+        && open.data.menu.options.map(o => o.label).join("/") === "Yes/No" && open.data.menu.prompt === "Go to <b>Fafnir Castle - Entrance</b>?");
+      await ask("p1", { sourceId, op: "pick", index: 0 });
+    }
+  });
+  check("confirm: Yes runs the Yes list, then the event carries on", out.ok && said.join(",") === "went,after", said.join(","));
+
+  said.length = 0;
+  await runEvent([confirm(), text("after")], { during: async (sourceId) => { await sleep(10); await ask("p1", { sourceId, op: "cancel" }); } });
+  check("confirm: Cancel answers No", said.join(",") === "stayed,after", said.join(","));
+
+  said.length = 0;
+  await runEvent([confirm()], { during: async (sourceId) => { await sleep(10); await ask("p2", { sourceId, op: "pick", index: 0 }); await sleep(10); check("confirm: only the main controller answers", said.length === 0); await ask("gm1", { sourceId, op: "resolve", how: "option", optionId: "no" }); } });
+  check("confirm: the GM can answer for them", said.join(",") === "stayed", said.join(","));
+});
+check("confirm: the bold name is split out for the teleporter box",
+  JSON.stringify(ES.RowsChoices.confirmParts("Go to <b>Fafnir Castle - Entrance</b>?")) === JSON.stringify(["Go to ", "Fafnir Castle - Entrance", "?"])
+  && ES.RowsChoices.confirmParts("Leave?") === "Leave?");
+check("confirm: a new row has a question, Yes and No lists",
+  (r => r.text.includes("<b>") && Array.isArray(r.yesRows) && Array.isArray(r.noRows))(EventRegistry.makeDefaultRow("confirm")));
+
 {
   const row = EventRegistry.normalizeRows([{ type: "showChoices", options: [{ label: "only" }, { cancel: true }, { cancel: true }, {}, {}, {}, {}, {}] }])[0];
   check("choices: at most six answers, each with an id and its own list",
