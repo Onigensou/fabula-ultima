@@ -41,6 +41,7 @@ then draws the knife. **Easy to hit, hard to hurt** (re-stat 2026-09-04).
 | 2026-09-04 | DEF/MDEF 16 → 13, EF dagger/sword 150 | "easy to hit, hard to hurt" | user | Mindscape DPR +33% |
 | 2026-09-03 | Kept row 13 although its Imp can strip the Light weapon that answers the Roo | flagged | user | — |
 | 2026-10-31 | AI row "Chef's Knife" picked the loot weapon of the same name, so the knife did nothing in fights; the matcher now prefers the action | found while testing the knife shot | claude | First real run: 9995 to a PC, Knife Drawn, walks out at turn end |
+| 2026-11-19 | Approach victim + Chef's Knife never target a summon or guest (IS_SUMMON/IS_GUEST); victim gone (KO'd, left) → walk restarts on a new victim; the action-list lookup still fell to the loot weapon, fixed | "always avoid summons/guests" | user (rule), claude (restart) | sandbox: knife 40/40 on the Marked PC; KO'd victim → new mark, back to step 1 |
 
 ```json dossier
 {
@@ -69,8 +70,10 @@ then draws the knife. **Easy to hit, hard to hurt** (re-stat 2026-09-04).
       "why": "crush would only give 5000 vs IM; ignore_immunity is what makes the arrival lethal." },
     { "id": "knife-gated-on-arrival", "table": "action_pattern_table", "where": { "action_pattern_name": "Chef's Knife" }, "field": "action_pattern_string", "equals": "In Melee Range",
       "why": "The knife only comes after the three-step walk — the warning." },
-    { "id": "three-steps", "item": "Approach", "table": "reaction_config_table", "where": { "reaction_effect_ref": "ap_step" }, "field": "condition_formula", "equals": "AE_CHARGES_APPROACH < 2",
-      "why": "Step / arrive rows are mutually exclusive on the charge count." }
+    { "id": "three-steps", "item": "Approach", "table": "reaction_config_table", "where": { "reaction_effect_ref": "ap_step" }, "field": "condition_formula", "equals": "AE_CHARGES_APPROACH < 2 && (AE_CHARGES_APPROACH == 0 || COMBAT_LIVING_MAX_AE_CHARGES_MARKED > 0)",
+      "why": "Step / arrive / restart rows are mutually exclusive on the charge count and on whether a living victim is still Marked." },
+    { "id": "victim-never-a-decoy", "item": "Approach", "table": "effect_table", "row": "ap_victim", "field": "target_filter", "equals": "IS_SUMMON == 0 && IS_GUEST == 0",
+      "why": "The walk is a grudge against a player; a summon or guest can't soak it (user, 2026-11-19)." }
   ],
   "blind_spots": [
     "The full three-step Approach into the knife has never run start to finish in a real fight. Chef's Knife + the vanish were seen 2026-10-31 in a sandbox fight with the AI row forced and the Roo placed at reach.",

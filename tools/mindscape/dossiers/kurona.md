@@ -42,6 +42,7 @@ give the party Virus, and only Vaccine cures that.
 | Date | Change | Why | Decided by | Result |
 |---|---|---|---|---|
 | 2026-10-22 | Built: Virus on bite, high initiative, Vaccine-only steal table, Run Away | Universal gimmick monster | user (stats, 50/50 steal split: claude) | live: bite, Virus, Run Away work |
+| 2026-11-19 | Infectious Bite never targets a summon or guest (target_eligibility IS_SUMMON == 0 && IS_GUEST == 0) | the Virus is meant for the party; a decoy must not soak it | user | sandbox: 40/40 bites on the one legal PC; none legal → GM picks |
 | 2026-10-31 | Own group normally, rarely mixed, any map at low chance, rows extra to the budget | Gimmick monster, shouldn't eat encounter budget | user | Valley tables updated |
 | 2026-10-31 | Renamed from Crona to Kurona, name only | A play on words | user | actor and all table rows updated |
 
