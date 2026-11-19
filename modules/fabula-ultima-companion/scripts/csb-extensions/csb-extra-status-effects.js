@@ -31,6 +31,9 @@
     const EXTRA = [
         { id: 'ArmrBreakStatId1', name: 'Armor Break', img: ICON + '07_MNK/rockbreaker.png',       linkedEffectId: 'ArmrBreakAE00001' },
         { id: 'MagcBreakStatId1', name: 'Magic Break', img: ICON + '17_PCT/Role_Actions/Addle.png', linkedEffectId: 'MagcBreakAE00001' },
+        // Added 2026-11-20: Corroded (Nox Viper, −2 DEF a stack; AE seeded by
+        // data-migrations/2026-11-20-nox-legion-author.js).
+        { id: 'CorrodedStatId01', name: 'Corroded',    img: ICON + '14_SMN/bio.png',              linkedEffectId: 'CorrodedAE000001' },
     ];
 
     Hooks.once('setup', () => {

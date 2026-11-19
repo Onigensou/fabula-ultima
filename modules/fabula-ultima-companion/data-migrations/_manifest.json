@@ -663,6 +663,14 @@
       "key": "2026-11-18-botc-minion-free-setup",
       "path": "data-migrations/2026-11-18-botc-minion-free-setup.js",
       "idempotent": true
+    },
+    {
+      "key": "2026-11-20-template-options-soul-fragment-destroyed",
+      "path": "data-migrations/2026-11-20-template-options-soul-fragment-destroyed.js"
+    },
+    {
+      "key": "2026-11-20-nox-legion-author",
+      "path": "data-migrations/2026-11-20-nox-legion-author.js"
     }
   ]
 }
