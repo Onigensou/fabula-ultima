@@ -391,7 +391,7 @@
     title.className = "oni-chip-panel-title";
     title.textContent = roleplaying
       ? "The table is roleplaying. Resolve as:"
-      : `Choice${menu.prompt ? `: ${menu.prompt}` : ""} — answer for them:`;
+      : `Choice${menu.prompt ? `: ${String(menu.prompt).replace(/<\/?b>/gi, "")}` : ""} — answer for them:`;
     wrap.appendChild(title);
 
     const buttons = document.createElement("div");
