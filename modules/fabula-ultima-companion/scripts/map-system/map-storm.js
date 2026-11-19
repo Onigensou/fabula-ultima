@@ -56,8 +56,9 @@ function flashEl() {
 
 function teardown() {
   if (state.tick) { try { canvas.app.ticker.remove(state.tick); } catch { /* */ } state.tick = null; }
-  if (state.layer) { try { state.layer.parent?.removeChild(state.layer); state.layer.destroy({ children: true }); } catch { /* */ } }
-  state.layer = state.gfx = null; state.strikes = []; state.cfg = null;
+  for (const c of [state.layer, state.tint]) { if (c) { try { c.parent?.removeChild(c); c.destroy({ children: true }); } catch { /* */ } } }
+  state.layer = state.gfx = state.tint = null; state.strikes = []; state.cfg = null;
+  try { window.oni?.MapAmbience?.setFlash?.(0); } catch { /* */ }
   document.getElementById(FLASH_ID)?.style.setProperty("opacity", "0");
   try { globalThis.FUCompanion?.api?.walkParallax?.setFlash?.(0); } catch { /* */ }
 }
@@ -76,6 +77,16 @@ function build() {
   state.layer = layer;
   state.gfx = new PIXI.Graphics(); state.gfx.blendMode = PIXI.BLEND_MODES.ADD;
   layer.addChild(state.gfx);
+
+  // The whole map lifts faintly violet on a strike (the mockup's map fill), under everything else here.
+  if (cfg.mapFlash > 0) {
+    const d = canvas.dimensions, t = new PIXI.Graphics();
+    t.beginFill(0xb9a6ff).drawRect(d.sceneX, d.sceneY, d.sceneWidth, d.sceneHeight).endFill();
+    t.blendMode = PIXI.BLEND_MODES.ADD; t.alpha = 0;
+    t.elevation = 0; t.sortLayer = PrimaryCanvasGroup.SORT_LAYERS.TOKENS; t.sort = SORT_BEHIND - 2; t.eventMode = "none";
+    canvas.primary.addChild(t);
+    state.tint = t;
+  }
 
   // The ground's outline cut out of the sky: bolts and their glow stay behind it.
   if (cfg.solid) {
@@ -138,7 +149,7 @@ function tick() {
       if (ms > patternLength(s.pat) + 40) { s.glow?.destroy(); return false; }
       const k = levelAt(s.pat, ms);
       flash = Math.max(flash, k * (s.sheet && cfg.mode === "above" ? 0.55 : 1));
-      s.glow.alpha = (cfg.mode === "below" ? 0.22 : s.sheet ? 0.3 : 0.38) * k;
+      s.glow.alpha = (cfg.mode === "below" ? 0.32 : 0.35) * k;   // the mockup's sky / under-cloud glow
       if (s.bolt && k > 0.01) {
         const line = (pts, w, color, a) => { gfx.lineStyle({ width: w, color, alpha: a, join: "round", cap: "round" }); gfx.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) gfx.lineTo(pts[i][0], pts[i][1]); };
         line(s.bolt.main, 10, 0xb496ff, 0.25 * k);               // outer glow
@@ -150,6 +161,8 @@ function tick() {
     });
 
     try { globalThis.FUCompanion?.api?.walkParallax?.setFlash?.(flash * cfg.mist); } catch { /* */ }
+    try { window.oni?.MapAmbience?.setFlash?.(flash); } catch { /* */ }   // the cloud sea's light
+    if (state.tint && !state.tint.destroyed) state.tint.alpha = flash * cfg.mapFlash;
     const el = cfg.flash > 0 && !reduceMotion() ? flashEl() : null;
     if (el) el.style.opacity = String(flash * cfg.flash);
   } catch (e) {

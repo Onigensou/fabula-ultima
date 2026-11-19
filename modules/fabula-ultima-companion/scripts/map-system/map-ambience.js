@@ -21,6 +21,15 @@
  *                                                    light shafts falling from the map's top
  *                                                    edge at x (w wide there, 2.4 w at the
  *                                                    foot), shimmering and swaying slowly
+ *       clouds: { layers: [{ s, spin, dx, dy, a }], pivot: [x, y], density: 1, flash: 0.7 }
+ *                                                    the Sacrificial Altar mockup's cloud sea,
+ *                                                    ported as is: soft fbm noise sheets (made
+ *                                                    here, 256 px, the mockup's colours) that
+ *                                                    turn round pivot (map px) at spin rad/s and
+ *                                                    drift dx, dy px/s, s = map px per noise px,
+ *                                                    a = alpha; drawn only where the walk-depth
+ *                                                    weight map's green says mist; a lightning
+ *                                                    strike (map-storm.js) lifts them additively
  *       motes:  { count: 60, fromMist: true, ember: 0.2 }
  *                                                    fromMist: the specks rise out of the
  *                                                    walk-parallax mist (the weight map's
@@ -101,7 +110,7 @@ void main() {
 
   const state = { cfg: null, root: null, glowLayer: null, frontLayer: null, wisp: null, glows: [], motes: [], tick: null, t0: performance.now(), last: performance.now(),
     cand: null, spores: [], puffs: [], drips: [], dripGfx: null, puffT: 0, dripT: 0, buildId: 0,
-    clipVideos: [], clipTextures: [], shafts: [], mistCand: null };
+    clipVideos: [], clipTextures: [], shafts: [], mistCand: null, clouds: null, flash: 0 };
   let dotTex = null, glowTex = null, sporeTex = null, puffTex = null, whiteGlowTex = null, shaftTex = null;
   const WEIGHT_DIR = "modules/fabula-ultima-companion/assets/walk-depth";
   const EMBER = 0xffaa64;
@@ -213,6 +222,92 @@ void main() {
     }
   }
 
+  // The mockup's cloud noise (altar.js NOISE): 256 px tileable fbm, 4 octaves, lavender,
+  // alpha from a smoothstep of the noise. Random each load, as in the mockup.
+  let cloudTex = null;
+  function cloudTexture() {
+    if (cloudTex && !cloudTex.baseTexture?.destroyed) return cloudTex;
+    const N = 256, c = document.createElement("canvas"); c.width = c.height = N;
+    const x = c.getContext("2d"), img = x.createImageData(N, N);
+    const lerp = (a, b, t) => a + (b - a) * t, sm = (t) => t * t * (3 - 2 * t);
+    const octs = [4, 8, 16, 32].map((p) => ({ p, L: Array.from({ length: p * p }, Math.random) }));
+    const val = (o, xx, yy) => {
+      const f = o.p / N, gx = xx * f, gy = yy * f, x0 = Math.floor(gx), y0 = Math.floor(gy), tx = sm(gx - x0), ty = sm(gy - y0), P = o.p;
+      const at = (i, j) => o.L[((j % P + P) % P) * P + ((i % P + P) % P)];
+      return lerp(lerp(at(x0, y0), at(x0 + 1, y0), tx), lerp(at(x0, y0 + 1), at(x0 + 1, y0 + 1), tx), ty);
+    };
+    for (let yy = 0; yy < N; yy++) for (let xx = 0; xx < N; xx++) {
+      let v = 0, a = 0.5, tot = 0; for (const o of octs) { v += val(o, xx, yy) * a; tot += a; a *= 0.5; } v /= tot;
+      const k = Math.max(0, Math.min(1, (v - 0.38) / 0.42)), al = k * k * (3 - 2 * k), i = (yy * N + xx) * 4, lift = 0.75 + 0.45 * v;
+      img.data[i] = Math.min(255, 150 * lift); img.data[i + 1] = Math.min(255, 134 * lift); img.data[i + 2] = Math.min(255, 186 * lift); img.data[i + 3] = 255 * al;
+    }
+    x.putImageData(img, 0, 0);
+    cloudTex = PIXI.Texture.from(c);
+    cloudTex.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
+    return cloudTex;
+  }
+
+  // The clouds: two stacks of the same sheets (normal, and additive for a strike), each
+  // masked by the weight map's mist, between the storm's bolts and the glows.
+  function buildClouds(scene, cfg, id) {
+    const key = backdropKey(scene?.background?.src);
+    if (!key) return;
+    const img = new Image();
+    img.onload = () => {
+      if (id !== state.buildId) return;
+      try {
+        const w = img.naturalWidth, h = img.naturalHeight, c = document.createElement("canvas"); c.width = w; c.height = h;
+        const g = c.getContext("2d", { willReadFrequently: true }); g.drawImage(img, 0, 0);
+        const d = g.getImageData(0, 0, w, h);
+        for (let i = 0; i < w * h; i++) { const m = d.data[i * 4 + 1]; d.data[i * 4] = d.data[i * 4 + 1] = d.data[i * 4 + 2] = m; d.data[i * 4 + 3] = 255; }
+        g.putImageData(d, 0, 0);
+        const maskTex = PIXI.Texture.from(c);
+        const dim = canvas.dimensions, tex = cloudTexture();
+        const layers = (Array.isArray(cfg.layers) ? cfg.layers : []).map((L) => ({ s: +L.s || 2, spin: +L.spin || 0, dx: +L.dx || 0, dy: +L.dy || 0, a: Number.isFinite(+L.a) ? +L.a : 0.4 }));
+        const pivot = Array.isArray(cfg.pivot) ? [+cfg.pivot[0], +cfg.pivot[1]] : [dim.sceneWidth / 2, dim.sceneHeight * 0.9];
+        const stack = (add) => {
+          const box = new PIXI.Container();
+          box.elevation = 0; box.sortLayer = PrimaryCanvasGroup.SORT_LAYERS.TOKENS; box.sort = SORT_BEHIND - 0.5; box.eventMode = "none";
+          box.position.set(dim.sceneX, dim.sceneY);
+          const sprites = layers.map((L) => {
+            const t = new PIXI.TilingSprite(tex, dim.sceneWidth, dim.sceneHeight);
+            t.alpha = L.a * (Number(cfg.density) || 1);
+            if (add) t.blendMode = PIXI.BLEND_MODES.ADD;
+            box.addChild(t);
+            return t;
+          });
+          const mask = new PIXI.Sprite(maskTex); mask.width = dim.sceneWidth; mask.height = dim.sceneHeight;
+          box.addChild(mask); box.mask = mask;
+          canvas.primary.addChild(box);
+          return { box, sprites };
+        };
+        state.clouds = { layers, pivot, normal: stack(false), lit: stack(true), flashK: Number.isFinite(+cfg.flash) ? +cfg.flash : 0.7, maskTex };
+        state.clouds.lit.box.alpha = 0;
+        placeClouds((performance.now() - state.t0) / 1000);
+      } catch (e) { console.warn(TAG, "clouds failed", e); }
+    };
+    img.onerror = () => { if (id === state.buildId) console.warn(TAG, `no weight map for ${key}; no clouds`); };
+    img.src = `${WEIGHT_DIR}/${key}.webp`;
+  }
+
+  // The mockup's pattern transform: translate(P) rotate(spin t) translate(-P + drift t) scale(s).
+  function placeClouds(t) {
+    const C = state.clouds; if (!C) return;
+    const still = reduceMotion(), sec = still ? 0 : t;
+    C.layers.forEach((L, i) => {
+      const th = sec * L.spin, cs = Math.cos(th), sn = Math.sin(th);
+      const ex = sec * L.dx - C.pivot[0], ey = sec * L.dy - C.pivot[1];
+      const px = C.pivot[0] + cs * ex - sn * ey, py = C.pivot[1] + sn * ex + cs * ey;
+      for (const st of [C.normal, C.lit]) {
+        const sp = st.sprites[i]; if (!sp || sp.destroyed) continue;
+        sp.tileTransform.position.set(px, py);
+        sp.tileTransform.rotation = th;
+        sp.tileTransform.scale.set(L.s, L.s);
+      }
+    });
+    C.lit.box.alpha = Math.min(1, state.flash * C.flashK);
+  }
+
   // Where the walk-parallax mist is (the weight map's green), for motes that rise out of it.
   function loadMistCandidates(scene, id) {
     const key = backdropKey(scene?.background?.src);
@@ -254,7 +349,9 @@ void main() {
 
   function teardown() {
     if (state.tick) { try { canvas.app.ticker.remove(state.tick); } catch (_) {} state.tick = null; }
-    for (const c of [state.glowLayer, state.frontLayer, state.wisp]) { try { c?.parent?.removeChild(c); c?.destroy({ children: true }); } catch (_) {} }
+    for (const c of [state.glowLayer, state.frontLayer, state.wisp, state.clouds?.normal?.box, state.clouds?.lit?.box]) { try { c?.parent?.removeChild(c); c?.destroy({ children: true }); } catch (_) {} }
+    try { state.clouds?.maskTex?.destroy(true); } catch (_) {}
+    state.clouds = null; state.flash = 0;
     state.glowLayer = state.frontLayer = state.wisp = null;
     for (const v of state.clipVideos) { try { v.pause(); v.removeAttribute("src"); v.load(); } catch (_) {} }
     for (const t of state.clipTextures) { try { t.destroy(true); } catch (_) {} }
@@ -331,6 +428,9 @@ void main() {
       state.glowLayer.addChild(s);
       state.glows.push({ s, x, y, i, tile: bobOffset(x, y), flicker: e.flicker === true, peak: e.alpha });
     });
+
+    // the cloud sea (Sacrificial Altar mockup), still for reduced motion
+    if (cfg.clouds && Array.isArray(cfg.clouds.layers) && cfg.clouds.layers.length) buildClouds(scene, cfg.clouds, state.buildId);
 
     // light shafts from the top edge
     if (cfg.shafts && Array.isArray(cfg.shafts.items)) {
@@ -550,6 +650,8 @@ void main() {
         m.sprite.alpha = (m.ember ? 0.8 : m.sig ? MOTE.sigilAlpha : MOTE.alpha) * fade * tw;
       }
 
+      placeClouds(t);
+
       for (const s of state.shafts) {
         if (s.plane.destroyed) continue;
         const a = still ? s.alpha : s.alpha * (0.5 + 0.5 * (0.5 + 0.5 * Math.sin(t / 2.6 + s.ph)));
@@ -583,6 +685,10 @@ void main() {
     }
   });
 
-  window.oni.MapAmbience = { installed: true, rebuild: build, FLAG };
+  window.oni.MapAmbience = {
+    installed: true, rebuild: build, FLAG,
+    /** A lightning strike's light on the clouds right now, 0..1 (map-storm.js, every frame of a strike). */
+    setFlash: (v) => { state.flash = Math.max(0, Math.min(1.5, Number(v) || 0)); }
+  };
   console.debug(TAG, "Installed. API: window.oni.MapAmbience");
 })();

@@ -29,8 +29,8 @@
 export const DEFAULT_SOUNDS = [1, 3, 5, 7, 9].map((n) => `https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Thunder${n}.ogg`);
 
 const DEFAULTS = Object.freeze({
-  above: { every: [6, 14], flash: 0.16, mist: 0.9, volume: 0.45, rate: [0.82, 1], delay: [300, 1600], sheetDelay: [900, 2200] },
-  below: { every: [7, 16], flash: 0.07, mist: 1.1, volume: 0.22, rate: [0.66, 0.78], delay: [500, 1700], sheetDelay: [500, 1700] }
+  above: { every: [6, 14], flash: 0.16, mist: 0.9, mapFlash: 0.1, volume: 0.45, rate: [0.82, 1], delay: [300, 1600], sheetDelay: [900, 2200] },
+  below: { every: [7, 16], flash: 0.07, mist: 1.1, mapFlash: 0, volume: 0.22, rate: [0.66, 0.78], delay: [500, 1700], sheetDelay: [500, 1700] }
 });
 
 const num = (v, d) => (Number.isFinite(Number(v)) ? Number(v) : d);
@@ -56,6 +56,7 @@ export function readStormConfig(raw) {
     solid: mode === "above" ? solid : null,
     flash: Math.max(0, Math.min(0.6, num(raw.flash, D.flash))),
     mist: Math.max(0, Math.min(1.5, num(raw.mist, D.mist))),
+    mapFlash: Math.max(0, Math.min(0.5, num(raw.mapFlash, D.mapFlash))),
     sounds: Array.isArray(raw.sounds) && raw.sounds.length ? raw.sounds.filter((s) => typeof s === "string" && s) : DEFAULT_SOUNDS,
     volume: Math.max(0, Math.min(1, num(raw.volume, D.volume))),
     rate: D.rate,
