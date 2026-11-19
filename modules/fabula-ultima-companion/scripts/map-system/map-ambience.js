@@ -13,6 +13,18 @@
  *       motes:  { count: 70 }                        specks rising and twinkling round the view
  *       sparks: [{ x, y, rx, ry }]                   some motes rise from these (the living sigils)
  *       glows:  [[x, y, r]]                          soft pulsing glows on painted crystals
+ *               or { x, y, r, color: 0xffb46e, flicker: true, alpha: 0.45 }
+ *                                                    a coloured glow; flicker = a candle's
+ *                                                    fast uneven flicker instead of the pulse
+ *                                                    (Fafnir Castle - Entrance)
+ *       shafts: { items: [[x, w, phase]], length: 820, lean: -150, alpha: 0.1, color: 0xdccdff }
+ *                                                    light shafts falling from the map's top
+ *                                                    edge at x (w wide there, 2.4 w at the
+ *                                                    foot), shimmering and swaying slowly
+ *       motes:  { count: 60, fromMist: true, ember: 0.2 }
+ *                                                    fromMist: the specks rise out of the
+ *                                                    walk-parallax mist (the weight map's
+ *                                                    green), a share of them warm embers
  *       spores: { preset: "gas" | "crystal" | "ember" | "dust", points: [[x, y]] }
  *                                                    rising specks (Underground Decor mockup):
  *                                                    "gas" rise out of the surface mask,
@@ -89,8 +101,18 @@ void main() {
 
   const state = { cfg: null, root: null, glowLayer: null, frontLayer: null, wisp: null, glows: [], motes: [], tick: null, t0: performance.now(), last: performance.now(),
     cand: null, spores: [], puffs: [], drips: [], dripGfx: null, puffT: 0, dripT: 0, buildId: 0,
-    clipVideos: [], clipTextures: [] };
-  let dotTex = null, glowTex = null, sporeTex = null, puffTex = null;
+    clipVideos: [], clipTextures: [], shafts: [], mistCand: null };
+  let dotTex = null, glowTex = null, sporeTex = null, puffTex = null, whiteGlowTex = null, shaftTex = null;
+  const WEIGHT_DIR = "modules/fabula-ultima-companion/assets/walk-depth";
+  const EMBER = 0xffaa64;
+  // A candle's flicker: three uneven sines (Sacrificial Altar mockup, flick()).
+  const flick = (t, ph) => 0.78 + 0.12 * Math.sin(t * 10.3 + ph * 3) + 0.08 * Math.sin(t * 24.4 + ph * 7) + 0.06 * Math.sin(t * 4.3 + ph);
+  // A glow entry, array or object, as one shape.
+  function glowEntry(e) {
+    if (Array.isArray(e)) return { x: +e[0], y: +e[1], r: +e[2] };
+    if (e && typeof e === "object") return { x: +e.x, y: +e.y, r: +e.r, color: Number.isFinite(+e.color) ? +e.color : null, flicker: e.flicker === true, alpha: Number.isFinite(+e.alpha) ? +e.alpha : null };
+    return null;
+  }
 
   // Numbers from the Underground Decor mockup (stepParticles / drawFx).
   const SPORE = {
@@ -175,6 +197,40 @@ void main() {
       g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
       glowTex = PIXI.Texture.from(c);
     }
+    if (!whiteGlowTex) {   // for coloured glows: the tint carries the colour
+      const c = document.createElement("canvas"); c.width = c.height = 128;
+      const g = c.getContext("2d"), gr = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+      gr.addColorStop(0, "rgba(255,255,255,1)"); gr.addColorStop(0.35, "rgba(255,255,255,0.38)"); gr.addColorStop(1, "rgba(255,255,255,0)");
+      g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+      whiteGlowTex = PIXI.Texture.from(c);
+    }
+    if (!shaftTex) {       // a light shaft: bright at the top, gone at the foot
+      const c = document.createElement("canvas"); c.width = 8; c.height = 256;
+      const g = c.getContext("2d"), gr = g.createLinearGradient(0, 0, 0, 256);
+      gr.addColorStop(0, "rgba(255,255,255,1)"); gr.addColorStop(0.6, "rgba(255,255,255,0.62)"); gr.addColorStop(1, "rgba(255,255,255,0)");
+      g.fillStyle = gr; g.fillRect(0, 0, 8, 256);
+      shaftTex = PIXI.Texture.from(c);
+    }
+  }
+
+  // Where the walk-parallax mist is (the weight map's green), for motes that rise out of it.
+  function loadMistCandidates(scene, id) {
+    const key = backdropKey(scene?.background?.src);
+    if (!key) return;
+    const img = new Image();
+    img.onload = () => {
+      if (id !== state.buildId) return;
+      try {
+        const w = img.naturalWidth, h = img.naturalHeight, c = document.createElement("canvas"); c.width = w; c.height = h;
+        const g = c.getContext("2d", { willReadFrequently: true }); g.drawImage(img, 0, 0);
+        const px = g.getImageData(0, 0, w, h).data, d = canvas.dimensions;
+        const kx = d.sceneWidth / w, ky = d.sceneHeight / h, out = [];
+        for (let i = 0; i < w * h; i += 3) if (px[i * 4 + 1] > 0.55 * 255) out.push([d.sceneX + ((i % w) + Math.random()) * kx, d.sceneY + (Math.floor(i / w) + Math.random()) * ky]);
+        state.mistCand = out;
+      } catch (e) { console.warn(TAG, "mist read failed; motes rise anywhere", e); }
+    };
+    img.onerror = () => { if (id === state.buildId) console.warn(TAG, `no weight map for ${key}; motes rise anywhere`); };
+    img.src = `${WEIGHT_DIR}/${key}.webp`;
   }
 
   function readCfg(scene) {
@@ -203,7 +259,7 @@ void main() {
     for (const v of state.clipVideos) { try { v.pause(); v.removeAttribute("src"); v.load(); } catch (_) {} }
     for (const t of state.clipTextures) { try { t.destroy(true); } catch (_) {} }
     state.clipVideos = []; state.clipTextures = [];
-    state.glows = []; state.motes = []; state.cfg = null;
+    state.glows = []; state.motes = []; state.cfg = null; state.shafts = []; state.mistCand = null;
     state.spores = []; state.puffs = []; state.drips = []; state.dripGfx = null; state.cand = null; state.buildId++;
   }
 
@@ -217,6 +273,19 @@ void main() {
   function seedMote(m, anywhere) {
     const v = view(), sparks = state.cfg.sparks ?? [];
     const sig = sparks.length && Math.random() < MOTE.sigilShare ? sparks[Math.floor(Math.random() * sparks.length)] : null;
+    const mc = state.cfg.motes?.fromMist ? state.mistCand : null;
+    let mp = null;
+    if (mc?.length) for (let i = 0; i < 12 && !mp; i++) { const p = mc[(Math.random() * mc.length) | 0]; if (inView(v, p[0], p[1], 120)) mp = p; }
+    if (mp) {
+      // rising out of the cloud: faster, a share of them warm embers (Fafnir Castle - Entrance)
+      m.x = mp[0]; m.y = mp[1]; m.sig = false; m.vy = 45 + Math.random() * 40; m.life = 3 + Math.random() * 2.5;
+      m.max = m.life; m.sz = 0.8 + Math.random() * 1.3; m.sw = 1 + Math.random(); m.ph = Math.random() * Math.PI * 2;
+      m.ember = Math.random() < (Number(state.cfg.motes.ember) || 0);
+      m.sprite.tint = m.ember ? EMBER : MOTE.color;
+      m.sprite.width = m.sprite.height = 2 * m.sz;
+      return;
+    }
+    m.ember = false;
     if (sig) {
       const a = Math.random() * Math.PI * 2, r = Math.sqrt(Math.random());
       m.x = sig.x + Math.cos(a) * sig.rx * 0.8 * r; m.y = sig.y + Math.sin(a) * sig.ry * 0.8 * r;
@@ -253,17 +322,31 @@ void main() {
 
     // glows
     state.glowLayer = layer(SORT_BEHIND);
-    (cfg.glows ?? []).forEach(([x, y, r], i) => {
-      const s = new PIXI.Sprite(glowTex);
+    (cfg.glows ?? []).map(glowEntry).filter((e) => e && Number.isFinite(e.x) && Number.isFinite(e.y) && e.r > 0).forEach((e, i) => {
+      const { x, y, r } = e;
+      const s = new PIXI.Sprite(e.color !== null && e.color !== undefined ? whiteGlowTex : glowTex);
       s.anchor.set(0.5); s.width = s.height = r * 2; s.position.set(x, y);
       s.blendMode = PIXI.BLEND_MODES.ADD;
+      if (e.color !== null && e.color !== undefined) s.tint = e.color;
       state.glowLayer.addChild(s);
-      state.glows.push({ s, x, y, i, tile: bobOffset(x, y) });
+      state.glows.push({ s, x, y, i, tile: bobOffset(x, y), flicker: e.flicker === true, peak: e.alpha });
     });
+
+    // light shafts from the top edge
+    if (cfg.shafts && Array.isArray(cfg.shafts.items)) {
+      const d = canvas.dimensions, sh = cfg.shafts;
+      for (const [x, w, ph] of cfg.shafts.items) {
+        const plane = new PIXI.SimplePlane(shaftTex, 2, 2);
+        plane.blendMode = PIXI.BLEND_MODES.ADD; plane.tint = Number.isFinite(+sh.color) ? +sh.color : 0xdccdff;
+        state.glowLayer.addChild(plane);
+        state.shafts.push({ plane, x: d.sceneX + +x, top: d.sceneY, w: +w || 80, ph: +ph || 0, len: +sh.length || 820, lean: Number.isFinite(+sh.lean) ? +sh.lean : -150, alpha: Number.isFinite(+sh.alpha) ? +sh.alpha : 0.1 });
+      }
+    }
 
     // motes and sparks
     state.frontLayer = layer(SORT_FRONT);
     if (!still && cfg.motes) {
+      if (cfg.motes.fromMist) loadMistCandidates(scene, state.buildId);
       for (let i = 0; i < (Number(cfg.motes.count) || 70); i++) {
         const sprite = new PIXI.Sprite(dotTex);
         sprite.anchor.set(0.5); sprite.blendMode = PIXI.BLEND_MODES.ADD;
@@ -446,8 +529,12 @@ void main() {
       const still = reduceMotion();
 
       for (const g of state.glows) {
-        const a = still ? 0.16 : 0.16 + 0.12 * Math.sin(t * (1.1 + (g.i % 5) * 0.17) + g.i * 1.9);
-        g.s.alpha = a + 0.12;
+        if (g.flicker) {
+          g.s.alpha = (g.peak ?? 0.42) * (still ? 0.85 : flick(t, g.i));
+        } else {
+          const a = still ? 0.16 : 0.16 + 0.12 * Math.sin(t * (1.1 + (g.i % 5) * 0.17) + g.i * 1.9);
+          g.s.alpha = g.peak !== null && g.peak !== undefined ? g.peak * (a + 0.12) / 0.4 : a + 0.12;
+        }
         const tile = g.tile;
         const by = tile?.mesh ? tile.mesh.y - (tile.document.y + tile.document.height / 2) : 0;
         g.s.y = g.y + by;
@@ -460,7 +547,17 @@ void main() {
         if (m.life <= 0) seedMote(m, false);
         const u = m.life / m.max, fade = Math.min(1, u * 3) * Math.min(1, (1 - u) * 4), tw = 0.6 + 0.4 * Math.sin(t * 5 + m.ph * 3);
         m.sprite.position.set(m.x, m.y);
-        m.sprite.alpha = (m.sig ? MOTE.sigilAlpha : MOTE.alpha) * fade * tw;
+        m.sprite.alpha = (m.ember ? 0.8 : m.sig ? MOTE.sigilAlpha : MOTE.alpha) * fade * tw;
+      }
+
+      for (const s of state.shafts) {
+        if (s.plane.destroyed) continue;
+        const a = still ? s.alpha : s.alpha * (0.5 + 0.5 * (0.5 + 0.5 * Math.sin(t / 2.6 + s.ph)));
+        const sway = still ? 0 : Math.sin(t / 5.2 + s.ph) * 18, bx = s.x + s.lean + sway, by = s.top + s.len, w1 = s.w * 2.4;
+        const buf = s.plane.geometry.getBuffer("aVertexPosition");
+        buf.data.set([s.x - s.w / 2, s.top, s.x + s.w / 2, s.top, bx - w1 / 2, by, bx + w1 / 2, by]);
+        buf.update();
+        s.plane.alpha = a * 1.6;
       }
 
       if (!still && state.glowLayer && state.frontLayer) stepUnderground(dt, view());

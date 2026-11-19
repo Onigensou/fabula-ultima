@@ -563,6 +563,7 @@
     "scripts/party-menu/party-menu-button.js",
     "scripts/camp-system/camp-summons-bootstrap.js",
     "scripts/map-system/exploration-parallax.js",
+    "scripts/map-system/map-storm.js",
     "scripts/map-system/map-surface-fx.js",
     "scripts/main.js",
     "scripts/gacha-system/gacha-bootstrap.js",
