@@ -301,8 +301,13 @@ const MONSTERS = [
           rolled_atr1: "INS", rolled_atr2: "WLP", check_bonus: "4", damage_bonus: "43", type_damage: "Dark", defense_target_type: "mdef",
           isCheck: true, isReaction: true,
           description: P(`Deal ${EL.dark}&nbsp;damage to one creature. The wound is torn from its soul at once: its Max HP drops by that much, and the loss goes straight into its Soul Fragment.`),
-          reaction_config_table: table([onOwnHit("Soul Ripper", "sr_tithe", "HP_DEALT > 0")]),
-          effect_table: table([fx({ effect_label: "sr_tithe", effect_kind: "conflict_event_action", conflict_action: "titheWound", conflict_amount: "HP_DEALT", target_ref: "trigger_subject" })]),
+          // ⚠ Not creature_deals_damage: its per-target payload for an NPC ATTACK carries no
+          // finalValue, so HP_DEALT reads 0 there (measured live 2026-11-20). The HP loss
+          // the Wraith inflicts IS the ledger line; Soul Ripper is its only damaging move.
+          reaction_config_table: table([rx({ // On a ledger event reaction_source scopes the VICTIM, reaction_damage_source the cause.
+            reaction_trigger: "creature_lose_resource", reaction_source: "enemy", reaction_damage_source: "self", reaction_resource_filter: "hp",
+            reaction_cause_filter: "damage", condition_formula: "TRIGGER_AMOUNT > 0", reaction_effect_ref: "sr_tithe" })]),
+          effect_table: table([fx({ effect_label: "sr_tithe", effect_kind: "conflict_event_action", conflict_action: "titheWound", conflict_amount: "TRIGGER_AMOUNT", target_ref: "trigger_subject" })]),
         } },
       { donor: "active", list: "active", props: {
           name: "Devour Soul", skill_type: "Active", skill_range: "-", skill_target: "Self", cost: "-", duration: "Instantaneous",
@@ -320,10 +325,12 @@ const MONSTERS = [
         } },
     ],
     ai: [
-      // Only in Crisis (hp_ceiling 50) and only while a fragment stands on its side.
+      // Only in Crisis (hp_ceiling 50) and only while a fragment stands. creature_has_status,
+      // not ally_has_status: fragments are bdObject actors, which the ally/enemy conditions
+      // skip as untargetable (actionReader-core isUntargetableActor) — measured live.
       // Soul Ripper stays inside the window (gap 2) so the 1-round cooldown can bite
       // on the refunded turn ("once per round").
-      ap("Devour Soul", "ally_has_status", 7, { action_pattern_string: "Soul Fragment", action_pattern_hp_ceiling: "50", action_pattern_cooldown: "1" }),
+      ap("Devour Soul", "creature_has_status", 7, { action_pattern_string: "Soul Fragment", action_pattern_hp_ceiling: "50", action_pattern_cooldown: "1" }),
       ap("Soul Ripper", "always", 5),
     ],
   },
@@ -438,10 +445,10 @@ const MONSTERS = [
           name: "Beheading", skill_type: "Passive", isReaction: true,
           description: bullets(`${KW.trigger}&nbsp;the end of each round`)
             + P("A creature whose HP falls below <strong>15%</strong> of its maximum is marked at once. At the end of the round, before the Soul Tithe, this creature beheads the marked creature with the lowest HP: it is knocked out, and its Soul Fragment goes with it. Once per round. The marks fade if this creature falls."),
-          // Pass 1 measures the line against MAX_HP (no "starting HP" word yet; Soul-Torn shrinks it).
+          // Players only (SUBJECT_IS_NPC / IS_NPC == 0): live, a summon was beheaded. Pass 1 measures the line against MAX_HP (no "starting HP" word yet; Soul-Torn shrinks it).
           reaction_config_table: table([
             rx({ reaction_trigger: "creature_lose_resource", reaction_resource_filter: "hp", reaction_effect_ref: "bh_mark",
-              condition_formula: "SUBJECT_IS_ENEMY == 1 && TARGET_CURRENT_HP > 0 && TARGET_CURRENT_HP < floor(TARGET_MAX_HP * 0.15) && TARGET_AE_COUNT_BEHEADING == 0" }),
+              condition_formula: "SUBJECT_IS_ENEMY == 1 && SUBJECT_IS_NPC == 0 && TARGET_CURRENT_HP > 0 && TARGET_CURRENT_HP < floor(TARGET_MAX_HP * 0.15) && TARGET_AE_COUNT_BEHEADING == 0" }),
             rx({ reaction_trigger: "creature_gain_resource", reaction_resource_filter: "hp", reaction_effect_ref: "bh_clear_one",
               condition_formula: "SUBJECT_IS_ENEMY == 1 && TARGET_AE_COUNT_BEHEADING > 0 && TARGET_CURRENT_HP >= floor(TARGET_MAX_HP * 0.15)" }),
             rx({ reaction_trigger: "round_end", reaction_max_per_round: "1", reaction_effect_ref: "bh_round" }),
@@ -452,7 +459,7 @@ const MONSTERS = [
             fx({ effect_label: "bh_clear_one", effect_kind: "remove_ae", ae_template_ref: "Beheading", include_persistent: true, count: "all", target_ref: "trigger_subject" }),
             fx({ effect_label: "bh_round", effect_kind: "chain", chain_steps: "bh_pick,bh_eat,bh_kill,bh_unmark" }),
             fx({ effect_label: "bh_pick", effect_kind: "targeting", candidate_source: "combat", category: "enemy", exclude_self: true, mode: "exact", count: "1",
-              target_sort: "lowest_hp", allow_empty: false, target_filter: "AE_COUNT_BEHEADING > 0 && CUR_HP > 0 && CUR_HP < floor(MAX_HP * 0.15)" }),
+              target_sort: "lowest_hp", allow_empty: false, target_filter: "IS_NPC == 0 && IS_SUMMON == 0 && IS_GUEST == 0 && AE_COUNT_BEHEADING > 0 && CUR_HP > 0 && CUR_HP < floor(MAX_HP * 0.15)" }),
             fx({ effect_label: "bh_eat", effect_kind: "conflict_event_action", conflict_action: "consumeFragment", conflict_pick: "trigger_subject_owner", target_ref: "bh_pick" }),
             fx({ effect_label: "bh_kill", effect_kind: "deal_damage", damage_amount: "CUR_HP", damage_cause: "damage", damage_element: "null",
               damage_ignore_affinity: true, damage_keywords: "crush", damage_resource: "hp", target_ref: "bh_pick" }),
@@ -465,7 +472,7 @@ const MONSTERS = [
         } },
     ],
     ai: [
-      ap("Soul Sever", "ally_has_status", 9, { action_pattern_string: "Soul Fragment" }),
+      ap("Soul Sever", "creature_has_status", 9, { action_pattern_string: "Soul Fragment" }),
       ap("Nox Guillotine", "always", 5, { action_pattern_target_focus: "highest_hp" }),
       ap("Nox Gibbet", "always", 5, { action_pattern_target_focus: "lowest_hp" }),
     ],
