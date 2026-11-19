@@ -22,6 +22,7 @@
 import { log, warn } from "./logger.js";
 import { isBattlefieldObject } from "./battlefield-object.js";
 import { isOutOfPlay } from "./out-of-play.js";
+import { deleteEffectsOnce } from "../shared/ae-delete-once.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 // Canonical Crisis AE template (name "Crisis", marker status). Same source the
@@ -93,13 +94,15 @@ export async function evaluateCrisis(actor) {
     return { changed: true, direction: "applied" };
   }
   if (!inCrisis && existing.length > 0) {
-    await actor.deleteEmbeddedDocuments("ActiveEffect", existing.map((e) => e.id).filter(Boolean));
+    // derived-status's safety net removes the same Crisis on the same HP write;
+    // deleteEffectsOnce lets only one of us send the delete.
+    await deleteEffectsOnce(actor, existing.map((e) => e.id));
     log(`crisis-reactor: removed Crisis from ${actor.name} (hp ${cur} > ${threshold})`);
     return { changed: true, direction: "removed" };
   }
   // Collapse accidental duplicates without reporting a transition.
   if (inCrisis && existing.length > 1) {
-    await actor.deleteEmbeddedDocuments("ActiveEffect", existing.slice(1).map((e) => e.id).filter(Boolean));
+    await deleteEffectsOnce(actor, existing.slice(1).map((e) => e.id));
   }
   return { changed: false, direction: null };
 }
