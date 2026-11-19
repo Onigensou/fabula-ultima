@@ -13,7 +13,8 @@
       "version": "4.8.5"
     },
     "fabula-ultima-companion": {
-      "layoutRef": "a7204eb261df895c"
+      "layoutRef": "a7204eb261df895c",
+      "spriteShadow": true
     }
   },
   "folder": "4gMC1IxdJlF59BSi",
@@ -1167,7 +1168,7 @@
       "rotation": 0,
       "scaleX": 1.84,
       "scaleY": 1.84,
-      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Battle_Idle.webm",
       "tint": "#ffffff"
     },
     "width": 1
@@ -1410,7 +1411,7 @@
       },
       "spear_ef": "100",
       "species": "ELEMENTAL",
-      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Battle_Idle.webm",
       "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Skizzik_Standard.png",
       "steal_percentage_table": {
         "0": {

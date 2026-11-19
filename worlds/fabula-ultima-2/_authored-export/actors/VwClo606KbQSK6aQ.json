@@ -13,7 +13,8 @@
       "version": "4.8.5"
     },
     "fabula-ultima-companion": {
-      "layoutRef": "a90e8fa4f8147c2b"
+      "layoutRef": "a90e8fa4f8147c2b",
+      "spriteShadow": true
     }
   },
   "folder": "334KROpobXWVeG1Z",
@@ -1616,7 +1617,7 @@
       "rotation": 0,
       "scaleX": 0.95,
       "scaleY": 0.95,
-      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Wraith.png",
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Roo_Battle_Idle.webm",
       "tint": "#ffffff"
     },
     "width": 1
@@ -1893,7 +1894,7 @@
       },
       "spear_ef": "100",
       "species": "UNDEAD",
-      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Wraith.png",
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Roo_Battle_Idle.webm",
       "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Wraith.png",
       "steal_percentage_table": {
         "0": {

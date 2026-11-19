@@ -1158,9 +1158,9 @@
       "offsetX": 0,
       "offsetY": 0,
       "rotation": 0,
-      "scaleX": 1.04,
-      "scaleY": 1.04,
-      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Succubus_Standard.png",
+      "scaleX": 1.0516,
+      "scaleY": 1.0516,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Succubus_Battle_Idle.webm",
       "tint": "#ffffff"
     },
     "width": 1
@@ -1437,7 +1437,7 @@
       },
       "spear_ef": "100",
       "species": "DEMON",
-      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Succubus_Standard.png",
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Succubus_Battle_Idle.webm",
       "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Succubus_Standard.png",
       "steal_percentage_table": {
         "0": {

@@ -13,7 +13,8 @@
       "version": "4.8.5"
     },
     "fabula-ultima-companion": {
-      "layoutRef": "a90e8fa4f8147c2b"
+      "layoutRef": "a90e8fa4f8147c2b",
+      "spriteShadow": true
     }
   },
   "folder": "4gMC1IxdJlF59BSi",
@@ -1386,9 +1387,9 @@
       "offsetX": 0,
       "offsetY": 0,
       "rotation": 0,
-      "scaleX": 2.12,
-      "scaleY": 2.12,
-      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mist%20Dragon.png",
+      "scaleX": 2.194,
+      "scaleY": 2.194,
+      "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/MistDragon_Battle_Idle.webm",
       "tint": "#ffffff"
     },
     "width": 1
@@ -1718,7 +1719,7 @@
       },
       "spear_ef": "100",
       "species": "ELEMENTAL",
-      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mist%20Dragon.png",
+      "sprite_battle": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/MistDragon_Battle_Idle.webm",
       "sprite_standard": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mist%20Dragon.png",
       "steal_percentage_table": {
         "0": {
