@@ -23,6 +23,9 @@ then draws the knife. **Easy to hit, hard to hurt** (re-stat 2026-09-04).
   lethal. Then the Roo walks away and leaves the conflict (an "escaped" outcome if it was alone).
 - The three-step walk IS the warning: kill it, or slow it, before it arrives.
   **`condition_slow` is left open on purpose** — delaying the clock is the counterplay.
+- **Who it wants is a secret** (user, 2026-11-19): no tether, marker, name or step counter.
+  The party reads the victim from where the Roo walks (it ends beside them, on their floor
+  row, growing with depth). Marked and the Approach counter carry `flags.hidden`.
 - **IM Physical breaks the "never Immune to Physical" rule on purpose** (Tonberry premise).
   Zarg keeps a Light bow mode (VU light) so he is not locked out; Blanche is.
 - The dagger/sword EF is inert against a plain blade (EF × IM = 0) — it pays only for an
@@ -42,6 +45,7 @@ then draws the knife. **Easy to hit, hard to hurt** (re-stat 2026-09-04).
 | 2026-09-03 | Kept row 13 although its Imp can strip the Light weapon that answers the Roo | flagged | user | — |
 | 2026-10-31 | AI row "Chef's Knife" picked the loot weapon of the same name, so the knife did nothing in fights; the matcher now prefers the action | found while testing the knife shot | claude | First real run: 9995 to a PC, Knife Drawn, walks out at turn end |
 | 2026-11-19 | Approach victim + Chef's Knife never target a summon or guest (IS_SUMMON/IS_GUEST); victim gone (KO'd, left) → walk restarts on a new victim; the action-list lookup still fell to the loot weapon, fixed | "always avoid summons/guests" | user (rule), claude (restart) | sandbox: knife 40/40 on the Marked PC; KO'd victim → new mark, back to step 1 |
+| 2026-11-19 | Approach walk rebuilt: planned on the floor (not token.center, which reports the drawn spot on the 3D stage), ends beside the victim on their row, 4 strides + footsteps; tether/chevron/name removed; Marked + Approach counter hidden; walk no longer undone by the turn cue's return-home | "the walk alone tells the story" | user | sandbox BD fight on FafnirCastle_Battlemap001: 3 turns, drawn size within 1% of the depth factor, Roo on Zarg's row, knife 9999 → escaped |
 
 ```json dossier
 {
@@ -76,7 +80,7 @@ then draws the knife. **Easy to hit, hard to hurt** (re-stat 2026-09-04).
       "why": "The walk is a grudge against a player; a summon or guest can't soak it (user, 2026-11-19)." }
   ],
   "blind_spots": [
-    "The full three-step Approach into the knife has never run start to finish in a real fight. Chef's Knife + the vanish were seen 2026-10-31 in a sandbox fight with the AI row forced and the Roo placed at reach.",
+    "The three-step Approach into the knife ran start to finish in a sandbox BD fight on 2026-11-19 (GM-driven: party turns forced, the knife's random target rolled by the GM). Not yet seen with real players connected.",
     "Mindscape reads Zarg and Blanche at 0 damage actions (model gap) and does not model Approach — sim verdicts on the Roo are meaningless."
   ],
   "open_questions": []
