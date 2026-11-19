@@ -110,6 +110,32 @@
   const LEAP_MS = LEAP.crouchMs + LEAP.launchMs;
   const DROP_MS = DROP.fallMs + DROP.squashMs + DROP.standMs;
 
+  const KIND_TELEPORT = "jump.teleport";
+  const KIND_LEVITATE = "jump.levitate";
+
+  // Teleport, from the Deva Junction mockup (round 4): squeeze into a thin vertical
+  // line of light and fade (170 ms), gone for 140 ms, then un-squeeze at the next
+  // point (210 ms). A gold beam and sparkles mark both ends.
+  const TELE = {
+    outMs: 170,
+    gapMs: 140,
+    inMs: 210,
+    line: { x: 0.04, y: 1.45 },
+    beamMs: 420,
+    beamColor: 0xffe6a0,
+    sparkColor: 0xf6d68c
+  };
+  // Levitate (round 8): straight up, eased in and out, a gold glow; the camera
+  // follows on players' screens; a white flash takes the token near the top.
+  const LEVITATE = {
+    risePx: 1150,
+    riseMs: 2600,
+    flashLeadMs: 550,
+    flashMs: 1100,
+    glowColor: 0xffd678,
+    glowAlpha: 0.55
+  };
+
   const DEFAULT_TAKEOFF = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/SE_JUMPLANDA.wav";
 
   const TARGETS = [
@@ -118,7 +144,9 @@
   ];
   const STYLES = [
     ["hop", "Hop along the path"],
+    ["teleport", "Teleport along the path (squeeze into light)"],
     ["leapOut", "Leap out of view, then hide"],
+    ["levitate", "Levitate up out of view, camera follows, then hide"],
     ["dropIn", "Drop in from above, at the last point"]
   ];
   const DUSTS = [
@@ -547,6 +575,206 @@
   Client.register(KIND_DROP, (data, info) => playDrop(data, info));
 
   // ------------------------------------------------------------
+  // Teleport and levitate, on this client
+  // ------------------------------------------------------------
+  const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+  // A plain additive white quad (beam, spark, glow) among the tokens.
+  function glowQuad(color, sort) {
+    const q = new PrimarySpriteMesh({ texture: PIXI.Texture.WHITE, name: "oniEventJumpLight" });
+    q.anchor.set(0.5, 1);
+    q.tint = color;
+    q.blendMode = PIXI.BLEND_MODES.ADD;
+    q.elevation = 0;
+    q.sortLayer = PrimaryCanvasGroup.SORT_LAYERS.TOKENS;
+    q.sort = sort;
+    return q;
+  }
+
+  // A beam of light standing on (x, y) plus a burst of sparks, fading on its own.
+  function lightBurst(host, x, y, heightPx) {
+    const sort = (window.oni.EventSystem.WorldFx?.SORT?.COPIES ?? 500000) + 1;
+    const beam = glowQuad(TELE.beamColor, sort);
+    beam.position.set(x, y + 6);
+    host.addChild(beam);
+    const sparks = [];
+    for (let i = 0; i < 14; i++) {
+      const s = glowQuad(TELE.sparkColor, sort);
+      const a = Math.random() * Math.PI * 2, sp = 0.6 + Math.random() * 2.2;
+      s.anchor.set(0.5, 0.5);
+      s.position.set(x + Math.cos(a) * 18, y - heightPx * 0.5 + Math.sin(a) * 30);
+      s._v = { x: Math.cos(a) * sp, y: Math.sin(a) * sp - 1.2 };
+      const size = 3 + Math.random() * 4;
+      s.width = size; s.height = size;
+      host.addChild(s);
+      sparks.push(s);
+    }
+    const ticker = canvas.app.ticker;
+    const startedAt = performance.now();
+    const tick = () => {
+      const u = (performance.now() - startedAt) / TELE.beamMs;
+      if (u >= 1 || beam.destroyed) {
+        ticker.remove(tick);
+        for (const q of [beam, ...sparks]) if (!q.destroyed) q.destroy();
+        return;
+      }
+      const a = Math.sin(Math.min(1, u * 1.6) * Math.PI) * 0.85;
+      beam.alpha = Math.max(0, a);
+      beam.width = Math.max(2, 52 * (1 - u * 0.6) * (heightPx / 250));
+      beam.height = heightPx * 1.7;
+      for (const s of sparks) {
+        s.x += s._v.x; s.y += s._v.y; s._v.y += 0.05;
+        s.alpha = Math.max(0, 1 - u);
+      }
+    };
+    ticker.add(tick);
+  }
+
+  function playTeleport(data, info) {
+    if (globalThis.FUCompanion?.api?.vfxSuppressed?.() === true) return;
+    const token = canvas?.tokens?.get(data.tokenId);
+    const mesh = token?.mesh;
+    const host = canvas?.primary;
+    if (!token || !mesh?.texture?.valid || !host) return;
+    rowsToken()?.takeHeld?.(data.tokenId);
+
+    const dx = data.to.x - data.from.x;
+    const dy = data.to.y - data.from.y;
+    if (data.face !== false) {
+      try { facingApi()?.turnTo?.(token, dx, dy); } catch (_) {}
+    }
+    const foot = footOffset(token, mesh);
+    const from = { x: data.from.x + foot.x, y: data.from.y + foot.y };
+    const to = { x: data.to.x + foot.x, y: data.to.y + foot.y };
+    const baseX = mesh.scale.x;
+    const baseY = mesh.scale.y;
+    const f0 = Number(depthApi()?.factorAtY?.(from.y)) || 1;
+    const f1 = Number(depthApi()?.factorAtY?.(to.y)) || 1;
+    const depthEnd = f1 / f0;
+    const heightPx = Math.abs(mesh.height);
+
+    const sprite = copyOf(mesh, mesh.texture, "oniEventJumpTeleport");
+    sprite.position.set(from.x, from.y);
+    host.addChild(sprite);
+    mesh.renderable = false;
+    if (data.takeoffSrc) window.oni.EventSystem.RowsMedia?.playSound?.(data.takeoffSrc, data.takeoffVolume ?? 0.6);
+    lightBurst(host, from.x, from.y, heightPx);
+
+    const ticker = canvas.app.ticker;
+    const startedAt = performance.now();
+    const arriveAt = TELE.outMs + TELE.gapMs;
+    const endAt = arriveAt + TELE.inMs;
+    let arrived = false;
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      ticker.remove(tick);
+      if (!sprite.destroyed) sprite.destroy();
+      revealWhen(mesh, data.fadeOut
+        ? () => token.document?.hidden === true
+        : () => Math.hypot(token.center.x - data.to.x, token.center.y - data.to.y) < 2);
+    };
+    const tick = () => {
+      try {
+        if (sprite.destroyed || !sprite.parent) return finish();
+        const t = performance.now() - startedAt;
+        if (t >= endAt || (data.fadeOut && t >= TELE.outMs)) return finish();
+        if (t < TELE.outMs) {
+          const e = easeIn(t / TELE.outMs);
+          sprite.scale.set(baseX * mix(1, TELE.line.x, e), baseY * mix(1, TELE.line.y, e));
+          sprite.alpha = 1 - e;
+          return;
+        }
+        if (t < arriveAt) { sprite.alpha = 0; return; }
+        if (!arrived) {
+          arrived = true;
+          sprite.position.set(to.x, to.y);
+          const src = data.landSrc || data.takeoffSrc;
+          if (src) window.oni.EventSystem.RowsMedia?.playSound?.(src, data.takeoffVolume ?? 0.6);
+          lightBurst(host, to.x, to.y, heightPx * depthEnd);
+        }
+        const e = easeOut((t - arriveAt) / TELE.inMs);
+        sprite.scale.set(baseX * depthEnd * mix(TELE.line.x, 1, e), baseY * depthEnd * mix(TELE.line.y, 1, e));
+        sprite.alpha = e;
+      } catch (e) {
+        console.warn(INSTALL_TAG, "Teleport frame failed; dropping the effect.", e);
+        finish();
+      }
+    };
+    ticker.add(tick);
+    Client.addCleanup(info?.sourceId, `jump.teleport.${data.tokenId}`, () => { if (!done) finish(); });
+  }
+
+  function playLevitate(data, info) {
+    if (globalThis.FUCompanion?.api?.vfxSuppressed?.() === true) return;
+    const token = canvas?.tokens?.get(data.tokenId);
+    const mesh = token?.mesh;
+    const host = canvas?.primary;
+    if (!token || !mesh?.texture?.valid || !host) return;
+    rowsToken()?.takeHeld?.(data.tokenId);
+
+    const foot = footOffset(token, mesh);
+    const at = { x: token.center.x + foot.x, y: token.center.y + foot.y };
+    const heightPx = Math.abs(mesh.height);
+    const riseMs = Math.max(200, Number(data.riseMs) || LEVITATE.riseMs);
+    const risePx = Number.isFinite(Number(data.risePx)) ? Number(data.risePx) : LEVITATE.risePx;
+
+    const sprite = copyOf(mesh, mesh.texture, "oniEventJumpLevitate");
+    sprite.position.set(at.x, at.y);
+    // The glow: an additive gold copy over the sprite, a touch larger.
+    const glow = copyOf(mesh, mesh.texture, "oniEventJumpLevitateGlow");
+    glow.tint = LEVITATE.glowColor;
+    glow.blendMode = PIXI.BLEND_MODES.ADD;
+    glow.sort = sprite.sort + 1;
+    glow.alpha = 0;
+    glow.position.set(at.x, at.y);
+    glow.scale.set(mesh.scale.x * 1.06, mesh.scale.y * 1.03);
+    host.addChild(sprite);
+    host.addChild(glow);
+    mesh.renderable = false;
+    if (data.takeoffSrc) window.oni.EventSystem.RowsMedia?.playSound?.(data.takeoffSrc, data.takeoffVolume ?? 0.6);
+    if (dustAtTakeoff(data.dust)) dust(at.x, at.y, heightPx, false, info?.sourceId);
+
+    // Players' cameras ride along with her, aimed a little above her middle.
+    if (data.follow !== false) {
+      window.oni.EventSystem.RowsCamera?.followPoint?.(info?.sourceId,
+        () => (sprite.destroyed ? null : { x: sprite.x, y: sprite.y - heightPx * 0.7 }), riseMs + 400);
+    }
+
+    const ticker = canvas.app.ticker;
+    const startedAt = performance.now();
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      ticker.remove(tick);
+      for (const s of [sprite, glow]) if (!s.destroyed) s.destroy();
+      revealWhen(mesh, () => token.document?.hidden === true);
+    };
+    const tick = () => {
+      try {
+        if (sprite.destroyed || !sprite.parent) return finish();
+        const t = performance.now() - startedAt;
+        // Gone the moment the GM hides the token (under the flash), or a little after the rise.
+        if (token.document?.hidden === true || t >= riseMs + 1500) return finish();
+        const u = Math.min(1, t / riseMs);
+        const y = at.y - risePx * easeInOut(u);
+        sprite.y = y; glow.y = y;
+        glow.alpha = LEVITATE.glowAlpha * Math.min(1, t / 500) * (0.85 + 0.15 * Math.sin(t / 90));
+      } catch (e) {
+        console.warn(INSTALL_TAG, "Levitate frame failed; dropping the effect.", e);
+        finish();
+      }
+    };
+    ticker.add(tick);
+    Client.addCleanup(info?.sourceId, `jump.levitate.${data.tokenId}`, () => { if (!done) finish(); });
+  }
+
+  Client.register(KIND_TELEPORT, (data, info) => playTeleport(data, info));
+  Client.register(KIND_LEVITATE, (data, info) => playLevitate(data, info));
+
+  // ------------------------------------------------------------
   // The jump itself (GM side), shared with Run Code
   // ------------------------------------------------------------
   /**
@@ -647,6 +875,68 @@
   }
 
   /**
+   * One teleport of each token in docs to the point `to`, paced on the GM: out
+   * where it stands, in at `to`. opts.fadeOut: it never comes back in, and lands
+   * hidden. Returns false if the event was ended mid-way.
+   */
+  async function teleport(docs, to, opts = {}, sourceId = null) {
+    const list = (Array.isArray(docs) ? docs : [docs]).filter(Boolean);
+    if (!list.length || !to) return true;
+    const scene = list[0].parent;
+    const grid = scene.grid.size;
+    for (const doc of list) {
+      Client.run(sourceId, KIND_TELEPORT, {
+        tokenId: doc.id,
+        from: centerOf(doc), to: { x: to.x, y: to.y },
+        face: opts.face !== false,
+        takeoffSrc: String(opts.takeoffSrc ?? ""),
+        takeoffVolume: clamp(opts.takeoffVolume, 0, 1, 0.6),
+        landSrc: String(opts.landSrc ?? ""),
+        fadeOut: opts.fadeOut === true
+      });
+    }
+    if (await pace(sourceId, TELE.outMs + TELE.gapMs) === false) return false;
+    await scene.updateEmbeddedDocuments("Token", list.map(doc => ({
+      _id: doc.id,
+      x: to.x - (doc.width * grid) / 2,
+      y: to.y - (doc.height * grid) / 2,
+      ...(opts.fadeOut === true ? { hidden: true } : {})
+    })), { animate: false, pan: false, oniJump: true });
+    return opts.fadeOut === true ? true : (await pace(sourceId, TELE.inMs)) !== false;
+  }
+
+  /**
+   * Levitate: each visible token in docs floats straight up out of view (players'
+   * cameras follow it); near the top a flash (opts.flashColor, "" for none) and the
+   * landing sound (opts.landSrc) take it, and it is hidden where it stood.
+   * opts: risePx, riseMs, takeoffSrc, takeoffVolume, landSrc, flashColor, dust.
+   */
+  async function levitate(docs, opts = {}, sourceId = null) {
+    const list = (Array.isArray(docs) ? docs : [docs]).filter(Boolean);
+    if (!list.length) return true;
+    const scene = list[0].parent;
+    const riseMs = clamp(opts.riseMs, 300, 10000, LEVITATE.riseMs);
+    const risePx = clamp(opts.risePx, 0, 5000, LEVITATE.risePx);
+    for (const doc of list.filter(d => !d.hidden)) {
+      Client.run(sourceId, KIND_LEVITATE, {
+        tokenId: doc.id, riseMs, risePx,
+        follow: opts.follow !== false,
+        dust: pickDust(opts.dust),
+        takeoffSrc: String(opts.takeoffSrc ?? ""),
+        takeoffVolume: clamp(opts.takeoffVolume, 0, 1, 0.6)
+      });
+    }
+    const lead = Math.min(LEVITATE.flashLeadMs, riseMs);
+    if (await pace(sourceId, riseMs - lead) === false) return false;
+    const flashColor = String(opts.flashColor ?? "#ffffff").trim();
+    if (flashColor) Client.run(sourceId, "screen.effect", { effect: "flash", color: flashColor, durationMs: LEVITATE.flashMs });
+    if (opts.landSrc) Client.run(sourceId, "sound.play", { src: String(opts.landSrc), volume: clamp(opts.takeoffVolume, 0, 1, 0.6) });
+    if (await pace(sourceId, 60) === false) return false;
+    await scene.updateEmbeddedDocuments("Token", list.map(doc => ({ _id: doc.id, hidden: true })));
+    return (await pace(sourceId, Math.max(0, lead - 60))) !== false;
+  }
+
+  /**
    * Hops along a whole path. lines: marker names, "x, y", "party:dx,dy" or
    * "self:dx,dy". opts.party: the party token's document, for "party:" lines;
    * "self:" lines use the first jumper. All are worked out from where they
@@ -664,7 +954,8 @@
     const pauseMs = clamp(opts.pauseMs, 0, 5000, 220);
     for (let i = 0; i < points.length; i++) {
       const hopOpts = { ...opts, fadeOut: opts.fadeOut === true && i === points.length - 1 };
-      if (!await hop(list, points[i].at, hopOpts, sourceId)) return { ok: false, reason: "ended" };
+      const move = opts.style === "teleport" ? teleport : hop;
+      if (!await move(list, points[i].at, hopOpts, sourceId)) return { ok: false, reason: "ended" };
       if (i < points.length - 1 && pauseMs > 0) {
         const go = sourceId && flow()?.wait ? await flow().wait(sourceId, pauseMs) : true;
         if (go === false) return { ok: false, reason: "ended" };
@@ -682,8 +973,8 @@
   }
 
   window.oni.EventSystem.Jump = {
-    hop, path: jumpPath, leapOut, dropIn, resolvePoint, resolvePath, parsePartyOffset, clampToScene,
-    HOP, LEAP, DROP, LEAP_MS, DROP_MS
+    hop, teleport, levitate, path: jumpPath, leapOut, dropIn, resolvePoint, resolvePath, parsePartyOffset, clampToScene,
+    HOP, LEAP, DROP, TELE, LEVITATE, LEAP_MS, DROP_MS
   };
 
   // ------------------------------------------------------------
@@ -697,11 +988,13 @@
       type: "jumpTo", target: "party", name: "", path: "",
       arcPct: 100, hopMs: 640, pauseMs: 220, face: true,
       takeoffSrc: DEFAULT_TAKEOFF, takeoffVolume: 0.6, landSrc: "",
-      style: "hop", dust: "none", fadeOut: false
+      style: "hop", dust: "none", fadeOut: false,
+      risePx: LEVITATE.risePx, riseMs: LEVITATE.riseMs, flashColor: "#ffffff", follow: true
     },
     mediaOf: (row) => {
       const style = pickStyle(row?.style);
       const media = [style !== "dropIn" ? row?.takeoffSrc : "", style !== "leapOut" ? row?.landSrc : ""].filter(Boolean);
+      if (style === "teleport" || style === "levitate") return media;
       const dustKind = pickDust(row?.dust);
       const rt = rowsToken();
       if (dustKind === "none" || !rt?.dustPuffs) return media;
@@ -720,6 +1013,8 @@
       const dustKind = pickDust(row?.dust);
       let text;
       if (style === "leapOut") text = `${who} leaps out of view`;
+      else if (style === "levitate") text = `${who} levitates up out of view${String(row?.flashColor ?? "#ffffff").trim() ? " into a flash" : ""}`;
+      else if (style === "teleport") text = lines.length ? `${who} teleports → ${lines.join(" → ")}${row?.fadeOut === true ? ", vanishing" : ""}` : `${who} (no path)`;
       else if (style === "dropIn") text = lines.length ? `${who} drops in at ${lines[lines.length - 1]}` : `${who} drops in (no point)`;
       else text = lines.length ? `${who} → ${lines.join(" → ")}${row?.fadeOut === true ? ", fading out" : ""}` : `${who} (no path)`;
       return dustKind === "none" ? text : `${text}, dust ${dustKind === "both" ? "at take-off and landing" : `at ${dustKind === "takeoff" ? "take-off" : "landing"}`}`;
@@ -738,6 +1033,10 @@
 
       if (style === "leapOut") {
         const ok = await leapOut(docs, opts, sourceId);
+        return { ok, type: "jumpTo", reason: ok ? undefined : "ended" };
+      }
+      if (style === "levitate") {
+        const ok = await levitate(docs, opts, sourceId);
         return { ok, type: "jumpTo", reason: ok ? undefined : "ended" };
       }
 
@@ -807,6 +1106,26 @@
             "For a jump that leaves the scene downwards, e.g. into a pit: the last hop fades away before touchdown and the token lands hidden."
           )
         ].join("")}</div>`,
+        `<div class="oni-event-row-jump-levitate-wrap">${[
+          kit.field(
+            "Rise (px)",
+            kit.numberInput("oni-event-row-jump-rise", clamp(row.risePx, 0, 5000, LEVITATE.risePx), { min: 0, max: 5000, step: 10 }),
+            "How far up it floats, in map px."
+          ),
+          kit.field(
+            "Rise time (ms)",
+            kit.numberInput("oni-event-row-jump-rise-ms", clamp(row.riseMs, 300, 10000, LEVITATE.riseMs), { min: 300, max: 10000, step: 50 })
+          ),
+          kit.field(
+            "End flash colour",
+            `<input type="text" class="oni-event-row-jump-flash" value="${kit.escapeHTML(row.flashColor ?? "#ffffff")}" placeholder="#ffffff (empty: no flash)" />`,
+            "A screen flash near the top of the rise takes the token; the landing sound plays with it. Empty: no flash."
+          ),
+          kit.field(
+            "Camera",
+            `<label><input type="checkbox" class="oni-event-row-jump-follow" ${row.follow !== false ? "checked" : ""} /> players' cameras follow it up</label>`
+          )
+        ].join("")}</div>`,
         kit.field("Take-off sound", kit.fileInput("oni-event-row-jump-takeoff", row.takeoffSrc ?? "", "audio", "Sound at each take-off (empty: none)")),
         kit.field(
           "Volume",
@@ -819,8 +1138,9 @@
       const styleEl = body.querySelector(".oni-event-row-jump-style");
       const sync = () => {
         body.querySelector(".oni-event-row-jump-name-wrap").hidden = targetEl.value !== "token";
-        body.querySelector(".oni-event-row-jump-path-wrap").hidden = styleEl.value === "leapOut";
-        body.querySelector(".oni-event-row-jump-hop-wrap").hidden = styleEl.value !== "hop";
+        body.querySelector(".oni-event-row-jump-path-wrap").hidden = styleEl.value === "leapOut" || styleEl.value === "levitate";
+        body.querySelector(".oni-event-row-jump-hop-wrap").hidden = styleEl.value !== "hop" && styleEl.value !== "teleport";
+        body.querySelector(".oni-event-row-jump-levitate-wrap").hidden = styleEl.value !== "levitate";
       };
       targetEl.addEventListener("change", sync);
       styleEl.addEventListener("change", sync);
@@ -840,6 +1160,10 @@
       takeoffVolume: clamp(kit.readNumber(rowEl, ".oni-event-row-jump-volume", 0.6), 0, 1, 0.6),
       landSrc: kit.readText(rowEl, ".oni-event-row-jump-land", "").trim(),
       style: pickStyle(kit.readText(rowEl, ".oni-event-row-jump-style", "hop")),
+      risePx: clamp(kit.readNumber(rowEl, ".oni-event-row-jump-rise", LEVITATE.risePx), 0, 5000, LEVITATE.risePx),
+      riseMs: clamp(kit.readNumber(rowEl, ".oni-event-row-jump-rise-ms", LEVITATE.riseMs), 300, 10000, LEVITATE.riseMs),
+      flashColor: kit.readText(rowEl, ".oni-event-row-jump-flash", "#ffffff").trim(),
+      follow: !!kit.own(rowEl, ".oni-event-row-jump-follow")?.checked,
       dust: pickDust(kit.readText(rowEl, ".oni-event-row-jump-dust", "none"))
     })
   });

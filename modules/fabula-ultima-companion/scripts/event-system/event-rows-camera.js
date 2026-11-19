@@ -409,8 +409,39 @@
   // would freeze the follow camera on the next map.
   Hooks.on("canvasTearDown", () => giveCameraBack({ sceneGone: true }));
 
+  /**
+   * Keep this client's camera on a moving point for ms (an effect's sprite, e.g. a
+   * Jump To Levitate rising out of view). Only on screens that present the event
+   * (the GM keeps their own camera, as with Camera Pan). The camera is taken like a
+   * pan, so the event's end hands it back. getPoint() returns {x, y} or null to stop.
+   */
+  function followPoint(sourceId, getPoint, ms, { ease = 0.2 } = {}) {
+    try {
+      if (!Client.presents?.() || !canvas?.ready) return false;
+      takeCamera(sourceId);
+      stopGlide();
+      const endAt = performance.now() + Math.max(0, Number(ms) || 0);
+      view.ticker = () => {
+        if (!canvas?.ready || !view) return;
+        let p = null;
+        try { p = getPoint(); } catch (_) { p = null; }
+        if (!p || performance.now() > endAt) { stopGlide(); return; }
+        const at = currentView();
+        const shift = visibleShift(at.scale);
+        const tx = p.x + shift.x, ty = p.y + shift.y;
+        applyView({ x: at.x + (tx - at.x) * ease, y: at.y + (ty - at.y) * ease, scale: at.scale });
+      };
+      canvas.app.ticker.add(view.ticker);
+      return true;
+    } catch (e) {
+      console.warn(INSTALL_TAG, "Camera follow failed.", e);
+      return false;
+    }
+  }
+
   window.oni.EventSystem.RowsCamera = {
     installed: true,
+    followPoint,
     // For checks from the console: is an event holding this client's camera?
     isHolding: () => !!view,
     twoShotPoint

@@ -257,6 +257,36 @@ check("tint: ends exact and clamps", RT.mixColor(0x07060c, 0xffffff, 1) === 0xff
   const hopMedia = jumpTo.mediaOf({ style: "hop", dust: "takeoff", takeoffSrc: "a.wav", landSrc: "", path: "x\ny" });
   check("jump to: a hop warms up take-off dust once per hop", hopMedia.length === 7);
   check("jump to: defaults are hop and no dust", jumpTo.defaultData.style === "hop" && jumpTo.defaultData.dust === "none");
+
+  // Deva: teleport hops along the path, the last one vanishing.
+  reset();
+  scene.tokens.get("rak").hidden = false;
+  r = await jumpTo.execute({ target: "token", name: "Rakshasa", style: "teleport", path: "Land\nself:+10,+210", pauseMs: 0, fadeOut: true, takeoffSrc: "t.ogg" }, ctx());
+  const tps = runs.filter(x => x.kind === "jump.teleport").map(x => x.data);
+  check("teleport: one teleport per path line, no hops", r.ok && tps.length === 2 && !runs.some(x => x.kind === "jump.hop"), JSON.stringify(runs.map(x => x.kind)));
+  check("teleport: only the last one vanishes and lands hidden", tps[0].fadeOut === false && tps[1].fadeOut === true
+    && updates.length === 2 && updates[0].changes[0].hidden === undefined && updates[1].changes[0].hidden === true
+    && updates[0].options?.animate === false, JSON.stringify(updates.map(u => u.changes[0])));
+  check("teleport: the sound rides along", tps[0].takeoffSrc === "t.ogg");
+  check("teleport: summary", jumpTo.summary({ target: "token", name: "Deva", style: "teleport", path: "Palm\nFront" }) === "Deva teleports → Palm → Front");
+
+  // Deva leaves: levitate straight up, flash + sound near the top, hidden where she stood.
+  reset();
+  scene.tokens.get("rak").hidden = false;
+  r = await jumpTo.execute({ target: "token", name: "Rakshasa", style: "levitate", path: "", riseMs: 900, risePx: 400, landSrc: "f.ogg" }, ctx());
+  const lev = runs.find(x => x.kind === "jump.levitate")?.data;
+  const flash = runs.find(x => x.kind === "screen.effect")?.data;
+  const snd = runs.find(x => x.kind === "sound.play")?.data;
+  const rak4 = scene.tokens.get("rak");
+  check("levitate: clients float it up with the camera following", r.ok && lev?.riseMs === 900 && lev.risePx === 400 && lev.follow === true);
+  check("levitate: a white flash and the end sound before it hides", flash?.effect === "flash" && flash.color === "#ffffff" && snd?.src === "f.ogg"
+    && runs.findIndex(x => x.kind === "screen.effect") < runs.length);
+  check("levitate: hidden where it stood", rak4.hidden === true && rak4.x === 500 && rak4.y === 600 && updates.length === 1);
+  reset();
+  scene.tokens.get("rak").hidden = false;
+  r = await jumpTo.execute({ target: "token", name: "Rakshasa", style: "levitate", flashColor: "", riseMs: 300 }, ctx());
+  check("levitate: an empty flash colour means no flash", r.ok && !runs.some(x => x.kind === "screen.effect"));
+  check("levitate: summary", jumpTo.summary({ target: "token", name: "Deva", style: "levitate" }) === "Deva levitates up out of view into a flash");
 }
 
 // ---------------------------------------------------------------------------

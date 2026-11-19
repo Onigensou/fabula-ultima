@@ -194,8 +194,8 @@
               break;
             case "jumpTo": {
               const lines = String(row.path ?? "").split(/\r?\n/).map(s => s.trim()).filter(Boolean);
-              // Leap out needs no path: the token goes straight up and hides.
-              if (!lines.length && row.style !== "leapOut") add("warn", "Jump To with no path.");
+              // Leap out and Levitate need no path: the token goes straight up and hides.
+              if (!lines.length && row.style !== "leapOut" && row.style !== "levitate") add("warn", "Jump To with no path.");
               if (row.target === "token" && String(row.name ?? "").trim() && !hasToken(scene, row.name)) {
                 add("warn", `Jump To moves "${String(row.name).trim()}", but no token on this scene has that name.`);
               }
