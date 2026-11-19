@@ -131,7 +131,12 @@
   const KIND_TRAVEL = "event.travel";
   const TRAVEL_FAILSAFE_MS = 60000;
   const travelling = new Set();
-  register(KIND_TRAVEL, (data, info) => { if (info.sourceId) travelling.add(info.sourceId); });
+  register(KIND_TRAVEL, (data, info) => {
+    if (!info.sourceId) return;
+    travelling.add(info.sourceId);
+    // Screen Effect hands its fade colour to the load cover (a whiteout stays white).
+    try { Hooks.callAll("oniEventTravel", { sourceId: info.sourceId }); } catch (_) {}
+  });
 
   function teardownCleanups() {
     for (const id of [...new Set([...cleanups.keys(), ...markers.keys()])]) {
