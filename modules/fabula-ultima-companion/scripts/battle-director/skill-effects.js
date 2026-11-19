@@ -7215,7 +7215,11 @@ async function consumeResourceApply(row, ctx, { resource, targetRef, amount }) {
     if (rowAmount <= 0) continue;
     // IP spends honor the payer's own ip_reduction_value (Deep Pockets), never
     // below 1 — same rule as BD item-create. Per-target so each payer's mod applies.
-    const effAmount = resource === "ip" ? ipReducedAmount(rowAmount, actor) : rowAmount;
+    // A SPEND is a creature debiting itself. IP taken from someone else (Bandit
+    // Roo's Robbed Blind, Hrotti's Avarice) is a theft, not a cost: Deep Pockets
+    // cut a 3-IP rob to 2 and left the victim 1 IP.
+    const isSpend = !ctx?.reactorActor || actor.uuid === ctx.reactorActor.uuid;
+    const effAmount = (resource === "ip" && isSpend) ? ipReducedAmount(rowAmount, actor) : rowAmount;
     const cur = Number(actor.system?.props?.[def.prop] ?? 0) || 0;
     if (cur < effAmount) {
       log(`skill-effects.consume_resource: ${actor.name} has ${cur} ${resource}, needs ${effAmount}; ${onEmpty}`);
