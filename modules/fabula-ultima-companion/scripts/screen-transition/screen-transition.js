@@ -19,6 +19,9 @@
   // IDLE while it was still black, so the next reveal returned early and the
   // screen stayed black until reload.
   let gen = 0;
+  // The next cover's colour, once (window.oni.ScreenTransition.nextCover): an event
+  // that changes scene under a whiteout (Change Scene) keeps it white through the load.
+  let nextColor = null;
 
   // ── Overlay — created eagerly on ready so first transition has no cold cost ──
 
@@ -74,6 +77,8 @@
       return;
     }
     overlay.style.transition    = "none";
+    overlay.style.background    = nextColor || "#000";
+    nextColor = null;
     overlay.style.opacity       = "1";
     overlay.style.pointerEvents = "all";
     forceReflow();   // commit to the GPU before this task continues
@@ -88,6 +93,7 @@
   function blackout() {
     gen++;
     overlay.style.transition    = "none";
+    overlay.style.background    = "#000";
     overlay.style.opacity       = "1";
     overlay.style.pointerEvents = "all";
     forceReflow();
@@ -193,6 +199,12 @@
   }
 
   // ── Boot ─────────────────────────────────────────────────────────────────────
+
+  window.oni = window.oni || {};
+  window.oni.ScreenTransition = {
+    /** The next scene-change cover in this colour instead of black (once). */
+    nextCover(color) { nextColor = typeof color === "string" && color.trim() ? color.trim() : null; },
+  };
 
   Hooks.once("ready", () => {
     overlay = buildOverlay();

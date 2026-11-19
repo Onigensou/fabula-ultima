@@ -681,6 +681,25 @@
     return { texture, mirror };
   }
 
+  // Standing art for a named direction (Levitate's spin). The art is read even
+  // where the walk system is off (an event can spin a token anywhere).
+  const standBySrc = new Map();   // src -> Promise<PIXI.Texture|null>
+  async function standFor(token, name) {
+    const named = NAMED_DIRECTIONS[name];
+    if (!named) return null;
+    const pick = pickSlot(token, "stand", named.dir);
+    if (!pick?.src) return null;
+    if (!standBySrc.has(pick.src)) {
+      standBySrc.set(pick.src, isVideoSrc(pick.src)
+        ? videoFrameTexture(pick.src)
+        : Promise.resolve(loadTexture(pick.src)).then((tex) => (tex?.valid ? tex : null)).catch(() => null));
+    }
+    const texture = await standBySrc.get(pick.src);
+    if (!texture?.valid) { standBySrc.delete(pick.src); return null; }
+    const mirror = !NEVER_MIRRORED.has(pick.slot) && !!named.side && named.side !== drawnFacing(token);
+    return { texture, mirror };
+  }
+
   // Put a texture on the mesh and let Foundry size the mesh to it, the same
   // way it sizes the standing art: fitted to the token's box. Walk art drawn
   // on the same canvas size as the standing sprite therefore shows at the
@@ -1860,6 +1879,11 @@
     // Jump To (event-rows-jump.js): one held frame of the walk art for a hop
     // of dx, dy, so a jump reads as a leap mid-stride, not a walk in the air.
     strideFor(token, dx, dy) { return token ? strideFor(token, dx, dy) : Promise.resolve(null); },
+
+    // Jump To's Levitate spin (event-rows-jump.js): the standing art for a named
+    // direction (up, upRight, right, downRight, down, downLeft, left, upLeft),
+    // with the same fallback a walk uses. Resolves { texture, mirror } or null.
+    standFor(token, name) { return token ? standFor(token, name) : Promise.resolve(null); },
 
     // Testing: play this walk art for the party token on this client,
     // whatever the character sheet says. Pass nothing to clear it.

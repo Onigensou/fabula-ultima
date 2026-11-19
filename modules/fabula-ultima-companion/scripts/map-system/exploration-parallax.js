@@ -37,6 +37,10 @@
 // scene asks for it, so older grey weight maps are untouched.
 // First use: Maelstrom Confluence (Valley_Map015).
 //
+// Lightning: map-ambience.js's storm calls walkParallax.setFlash(k) each frame
+// of a strike; uFlash adds a violet light to mist pixels only (Sacrificial Altar,
+// Fafnir Castle - Entrance).
+//
 // Live tuning: FUCompanion.api.walkParallax.tune({ far: 0.4, near: 0.25, dof: 0.5, churn: 46, speed: 0.14 })
 // (session only; copy the numbers into the scene's flags to keep them).
 // ============================================================================
@@ -84,6 +88,7 @@ uniform float uTime;
 uniform float uChurn;
 uniform float uSpeed;
 uniform vec2 uSize;
+uniform float uFlash;
 float signedW(vec2 uv) { return texture2D(uWeight, clamp(uv, 0.0, 1.0)).r * 2.0 - 1.0; }
 float hash(vec2 q) { return fract(sin(dot(q, vec2(127.1, 311.7))) * 43758.5453); }
 float noise(vec2 q) { vec2 i = floor(q), f = fract(q); vec2 u = f * f * (3.0 - 2.0 * f);
@@ -119,6 +124,8 @@ void main() {
         mist += vec3(0.42, 0.15, 0.58) * smoothstep(0.56, 0.86, n) * 0.2;
       }
       col.rgb = mix(col.rgb, mist, m);
+      // a lightning strike (map-ambience storm) lights the mist only, brightest where it is pale
+      col.rgb += vec3(0.62, 0.52, 1.0) * uFlash * m * (0.25 + luma);
     }
   }
   gl_FragColor = col;
@@ -136,6 +143,7 @@ const state = {
   building: null,
   ticking: false,
   override: {},
+  flash: 0,     // 0..1, set each frame by the map-ambience storm while a strike lights the mist
 };
 
 const num = (v, d) => (v === null || v === undefined || v === "" || !Number.isFinite(Number(v)) ? d : Number(v));
@@ -232,7 +240,7 @@ async function buildMesh() {
     uSampler: bgTex, uBlur: state.blurRT, uWeight: weightTex,
     uCenter: [0.5, 0.5], uFar: cfg.far, uNear: cfg.near, uDof: cfg.dof,
     uMist: mistTex ?? bgTex, uMistOn: mistTex ? 1 : 0, uTime: 0, uChurn: cfg.churn, uSpeed: cfg.speed,
-    uSize: [rect.w, rect.h],
+    uSize: [rect.w, rect.h], uFlash: 0,
   });
   const mesh = new PIXI.Mesh(geom, shader);
   mesh.name = "walkParallax";
@@ -275,6 +283,7 @@ function onTick() {
       un.uTime = (performance.now() - state.t0) / 1000;
       un.uChurn = state.cfg.churn;
       un.uSpeed = state.cfg.speed;
+      un.uFlash = state.flash;
     }
   } catch (e) {
     warn("tick failed; parallax off until the scene is redrawn", e);
@@ -316,5 +325,9 @@ Hooks.once("ready", () => {
     /** Session-only strengths, e.g. tune({ far: 0.25 }); tune({}) clears. */
     tune(o = {}) { state.override = Object.keys(o).length ? { ...state.override, ...o } : {}; refresh(); return state.cfg; },
     status: () => ({ on: !!state.mesh, cfg: state.cfg, defaults: DEFAULTS }),
+    /** How much a lightning strike lights the mist right now (0..1); map-ambience.js storm. */
+    setFlash(v) { state.flash = clamp(Number(v) || 0, 0, 1.5); },
+    /** True when the churning mist is drawn (so a storm can rely on it for its cloud light). */
+    mistOn: () => !!(state.mesh && state.mistTex),
   };
 });

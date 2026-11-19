@@ -570,6 +570,14 @@
     return fills[key];
   }
 
+  // Change Scene under a full fade (a whiteout): the scene-change cover takes the
+  // fade's colour, so the load shows the same white, not a flash of black.
+  Hooks.on("oniEventTravel", () => {
+    const el = fills.fade;
+    if (!el || parseFloat(el.style.opacity || "0") < 0.99) return;
+    window.oni?.ScreenTransition?.nextCover?.(el.style.background || el.style.backgroundColor || "");
+  });
+
   function dropFill(key, ms) {
     const el = fills[key];
     if (!el) return;
@@ -696,7 +704,7 @@
         break;
       case "letterboxIn":
         letterboxIn(clampNumber(data.strength, 0.01, LETTERBOX_MAX_STRENGTH, LETTERBOX_DEFAULT_STRENGTH), ms);
-        Client.addCleanup(info.sourceId, "letterbox", ({ sceneGone } = {}) => letterboxOut(sceneGone ? 0 : END_FADE_MS));
+        Client.addCleanup(info.sourceId, "letterbox", ({ sceneGone } = {}) => letterboxOut(sceneGone ? 0 : END_FADE_MS), { keepOnTravel: true });
         break;
       case "letterboxOut":
         letterboxOut(ms);
@@ -720,7 +728,7 @@
     }
 
     if (effect === "fadeOut" || effect === "tint" || effect === "dim") {
-      Client.addCleanup(info.sourceId, "screen", ({ sceneGone } = {}) => clearScreen(sceneGone ? 0 : END_FADE_MS));
+      Client.addCleanup(info.sourceId, "screen", ({ sceneGone } = {}) => clearScreen(sceneGone ? 0 : END_FADE_MS), { keepOnTravel: true });
     }
   });
 

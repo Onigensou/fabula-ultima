@@ -267,6 +267,10 @@
               if (options.every(o => !o.rows?.length)) add("info", "Show Choices where no answer does anything.");
               break;
             }
+            case "confirm":
+              if (!String(row.text ?? "").replace(/<\/?b>/gi, "").trim()) add("warn", "Confirm with no question.");
+              if (!row.yesRows?.length && !row.noRows?.length) add("info", "Confirm where neither Yes nor No does anything.");
+              break;
             default:
               break;
           }

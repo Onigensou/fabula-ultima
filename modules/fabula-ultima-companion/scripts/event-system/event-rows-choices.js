@@ -209,9 +209,15 @@
   }
 
   function paintHighlight(view) {
-    view.el?.querySelectorAll(".oni-choice-btn").forEach((btn, index) => {
-      btn.classList.toggle("is-picked", index === view.highlight);
-    });
+    const btns = view.btns ?? [...(view.el?.querySelectorAll(".oni-choice-btn") ?? [])];
+    btns.forEach((btn, index) => btn?.classList.toggle("is-picked", index === view.highlight));
+  }
+
+  // "Go to <b>Fafnir Castle - Entrance</b>?" -> ["Go to ", "Fafnir Castle - Entrance", "?"]
+  // (the teleporter box takes one bold name); plain text stays a string.
+  function confirmParts(text) {
+    const m = /^([\s\S]*?)<b>([\s\S]*?)<\/b>([\s\S]*)$/i.exec(String(text ?? ""));
+    return m ? [m[1], m[2], m[3].replace(/<\/?b>/gi, "")] : String(text ?? "");
   }
 
   function move(sourceId, index) {
@@ -246,9 +252,55 @@
       el.remove();
       return;
     }
+    if (view.confirm) {
+      const box = globalThis.TeleporterSystem?.promptBox;
+      if (box) box.dismiss(el); else el.remove();
+      return;
+    }
     el.classList.remove("is-visible");
     el.classList.add("is-leaving");
     setTimeout(() => el.remove(), MENU_OUT_MS + 40);
+  }
+
+  // The Confirm row's look: the teleporter's parchment Yes / No box (tp-bootstrap.js),
+  // driven by this file's answer plumbing. Left / up and right / down move the pick.
+  function openConfirm(sourceId, menu, highlight, interactive, box) {
+    const { el, yesBtn, noBtn } = box.build(confirmParts(menu.prompt));
+    el.classList.toggle("is-watching", !interactive);
+    const waitEl = el.querySelector(".oni-tp-wait");
+    if (waitEl && !interactive) waitEl.textContent = "Waiting for the party's answer…";
+    const btns = [yesBtn, noBtn];
+    btns.forEach((btn, index) => {
+      btn.addEventListener("pointermove", (ev) => { if (ev.movementX || ev.movementY) move(sourceId, index); });
+      btn.addEventListener("click", () => { if (interactive) pick(sourceId, index); });
+    });
+    el.addEventListener("pointerdown", (ev) => ev.stopPropagation());
+    const view = { el, menu, highlight: Number(highlight) || 0, stopInput: null, btns, confirm: true };
+    shown.set(sourceId, view);
+    paintHighlight(view);
+    if (interactive) {
+      const A = window.oni.Input?.ACTIONS ?? {};
+      view.stopInput = window.oni.Input?.listen?.(({ action }) => {
+        if (!shown.has(sourceId)) return false;
+        if (action === A.UP || action === A.DOWN) move(sourceId, view.highlight === 0 ? 1 : 0);
+        else if (action === A.CONFIRM) pick(sourceId, view.highlight);
+        else if (action === A.CANCEL) flow()?.request?.(REQUEST, { sourceId, op: "cancel" });
+        else return false;
+        return true;
+      }) ?? null;
+      // The teleporter box is laid out left / right: the arrow keys follow it.
+      const onKey = (ev) => {
+        if (!shown.has(sourceId) || ev.repeat) return;
+        if (ev.key === "ArrowLeft") move(sourceId, 0);
+        else if (ev.key === "ArrowRight") move(sourceId, 1);
+        else return;
+        ev.preventDefault();
+      };
+      document.addEventListener("keydown", onKey, true);
+      const stop = view.stopInput;
+      view.stopInput = () => { stop?.(); document.removeEventListener("keydown", onKey, true); };
+    }
+    box.reveal(el, () => shown.get(sourceId) === view);
   }
 
   function openMenu(sourceId, menu, highlight) {
@@ -256,6 +308,8 @@
     ensureStyle();
 
     const interactive = flow()?.isLocalUserInteractor?.() ?? true;
+    const box = menu.look === "confirm" ? globalThis.TeleporterSystem?.promptBox : null;
+    if (box) return openConfirm(sourceId, menu, highlight, interactive, box);
 
     const el = document.createElement("div");
     el.id = MENU_ID;
@@ -337,7 +391,7 @@
     title.className = "oni-chip-panel-title";
     title.textContent = roleplaying
       ? "The table is roleplaying. Resolve as:"
-      : `Choice${menu.prompt ? `: ${menu.prompt}` : ""} — answer for them:`;
+      : `Choice${menu.prompt ? `: ${String(menu.prompt).replace(/<\/?b>/gi, "")}` : ""} — answer for them:`;
     wrap.appendChild(title);
 
     const buttons = document.createElement("div");
@@ -673,7 +727,58 @@
     })
   });
 
-  window.oni.EventSystem.RowsChoices = { installed: true, settings, ask };
+  // ------------------------------------------------------------
+  // Confirm: a Yes / No question in the teleporter's own box
+  // (Sacrificial Altar's return trip: "Go to Fafnir Castle - Entrance?").
+  // Same answering as Show Choices: the main controller answers, the GM can
+  // answer for them from the status chip, every screen sees it. No = Cancel.
+  // ------------------------------------------------------------
+  EventRegistry.register({
+    type: "confirm",
+    label: "Confirm (Yes / No)",
+    category: "Dialogue",
+    defaultData: { type: "confirm", text: "Go to <b>somewhere</b>?", yesRows: [], noRows: [] },
+    prepare: (row) => {
+      row.text = String(row.text ?? "");
+      if (!Array.isArray(row.yesRows)) row.yesRows = [];
+      if (!Array.isArray(row.noRows)) row.noRows = [];
+    },
+    childLists: (row) => [{ label: "Yes", rows: row.yesRows }, { label: "No", rows: row.noRows }],
+    summary: (row) => String(row?.text ?? "").replace(/<\/?b>/gi, "").slice(0, 48),
+    execute: async (row, context) => {
+      const sourceId = String(context?.tileId || "");
+      if (!sourceId || !flow()) return { ok: false, reason: "noFlow" };
+      const answer = await ask(sourceId, {
+        prompt: withVariables(row.text),
+        look: "confirm",
+        options: [{ id: "yes", label: "Yes", cancel: false }, { id: "no", label: "No", cancel: true }],
+        roleplay: false
+      });
+      if (answer.kind === "abort") return { ok: true, type: "confirm", aborted: true };
+      const yes = answer.kind === "option" && answer.index === 0;
+      const result = answer.kind === "option" ? await context.runRows(yes ? row.yesRows : row.noRows) : { ok: true };
+      return { ...result, type: "confirm", yes };
+    },
+    buildFields: (row, kit) => {
+      const body = kit.fields(
+        kit.field(
+          "Question",
+          `<input type="text" class="oni-confirm-text oni-grow" value="${kit.escapeHTML(row.text ?? "")}" placeholder="Go to <b>Fafnir Castle - Entrance</b>?" />`,
+          "Shown in the teleporter's Yes / No box. One <b>…</b> part is printed bold (a place name). {var:name} prints a variable. Cancel answers No."
+        )
+      );
+      body.appendChild(kit.subList("yes", "Yes", row.yesRows));
+      body.appendChild(kit.subList("no", "No", row.noRows));
+      return body;
+    },
+    collectFields: (rowEl, kit) => ({
+      text: kit.readText(rowEl, ".oni-confirm-text", "").trim(),
+      yesRows: kit.readSubList(rowEl, "yes"),
+      noRows: kit.readSubList(rowEl, "no")
+    })
+  });
+
+  window.oni.EventSystem.RowsChoices = { installed: true, settings, ask, confirmParts };
 
   console.debug(INSTALL_TAG, "Installed.");
 })();
