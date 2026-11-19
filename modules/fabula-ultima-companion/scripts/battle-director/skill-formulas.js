@@ -1693,6 +1693,17 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         if (subj && actor && subj.uuid === actor.uuid) return 1;
         return 0;
       }
+      // IS_SUMMON / IS_GUEST — 1 when THIS actor (in `target_eligibility` and a
+      // targeting row's `target_filter`, the CANDIDATE) is a summon / a guest.
+      // Lets a move refuse decoys: `IS_SUMMON == 0 && IS_GUEST == 0` (Roo's
+      // Approach victim, Chef's Knife, Kurona's Infectious Bite). Same markers
+      // the summon autopilot reads (isSummonCombatant): token flags isSummon /
+      // isPhantasm / summonedBy, the legacy actor props, and the actor's bdGuest
+      // flag. Side-blind on purpose — an enemy's own summons count too.
+      case "IS_SUMMON":
+        return _isSummonActor(actor) ? 1 : 0;
+      case "IS_GUEST":
+        return actor?.flags?.["fabula-ultima-companion"]?.bdGuest ? 1 : 0;
       // IS_SOURCE — 1 when THIS actor (in `target_eligibility`, the CANDIDATE) is
       // the payload SOURCE, i.e. the performer. `IS_SOURCE == 0` is RAW "choose
       // ANOTHER creature" (Peacock Dance, Provoke). The eligibility callers
@@ -2108,9 +2119,15 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         // director's dCombat.combatants; fall back to `game.combat` for the
         // legacy / non-BD path. DirectorCombatant exposes the live actor as
         // `.actor` / `.actorDoc`; a core Combatant exposes `.actor` / `.token.actor`.
-        if (name.startsWith("COMBAT_MAX_AE_CHARGES_")) {
+        //
+        // COMBAT_LIVING_MAX_AE_CHARGES_<NAME> — the same scan over combatants that
+        // are NOT defeated. Roo's Approach asks "is my victim still here?"; a KO by
+        // damage strips Marked, but a body KO'd by an HP edit keeps it, and the
+        // Roo kept walking toward it. Pyrefly keeps the all-combatant form.
+        const livingOnly = name.startsWith("COMBAT_LIVING_MAX_AE_CHARGES_");
+        if (livingOnly || name.startsWith("COMBAT_MAX_AE_CHARGES_")) {
           const needle = name
-            .slice("COMBAT_MAX_AE_CHARGES_".length)
+            .slice((livingOnly ? "COMBAT_LIVING_MAX_AE_CHARGES_" : "COMBAT_MAX_AE_CHARGES_").length)
             .replace(/_/g, " ")
             .toLowerCase()
             .trim();
@@ -2132,6 +2149,9 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
           for (const c of combatants) {
             const a = c?.actor ?? c?.actorDoc ?? c?.token?.actor ?? null;
             if (!a) continue;
+            // Defeated = HP <= 0 (the defeat domain's one definition), or the
+            // DirectorCombatant's own flag.
+            if (livingOnly && (c?.defeated === true || (Number(a?.system?.props?.current_hp ?? 1) || 0) <= 0)) continue;
             const effects = a?.effects?.contents ?? Array.from(a?.effects ?? []);
             const total = effects
               .filter((e) => !e.disabled && aeNameForNeedle(e?.name) === needle)
@@ -2924,6 +2944,25 @@ export function buildDamageBonusParts({ actor, weapon, hand = "main", attackGran
 // Used by TARGET_STATUS_COUNT to resolve the trigger's subject during
 // formula evaluation (the formula resolver is sync, so we can't await).
 // Returns null on miss — caller folds to 0.
+// Summon test for IS_SUMMON. An unlinked token's synthetic actor carries its
+// token (`actor.token`); a LINKED summon's flags live on its scene token(s), so
+// those are checked too.
+function _isSummonActor(actor) {
+  if (!actor) return false;
+  const truthy = (v) => v === true || v === "true" || v === 1 || v === "1";
+  const flagged = (td) => {
+    const f = td?.flags?.["fabula-ultima-companion"] ?? {};
+    return !!(f.isSummon || f.isPhantasm || f.summonedBy);
+  };
+  if (flagged(actor.token)) return true;
+  const p = actor.system?.props ?? {};
+  if (truthy(p.isSummon) || truthy(p.isPhantasm)) return true;
+  try {
+    for (const t of actor.getActiveTokens?.(false, true) ?? []) if (flagged(t)) return true;
+  } catch { /* no canvas */ }
+  return false;
+}
+
 function _resolveActorByUuidSync(uuid) {
   try {
     const doc = foundry.utils.fromUuidSync?.(uuid) ?? fromUuidSync?.(uuid);

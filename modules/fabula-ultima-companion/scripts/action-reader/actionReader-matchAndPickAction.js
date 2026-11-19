@@ -513,7 +513,20 @@ function makeMatchResult({
 }
 
 function tryMatchViaReferenceName(row, itemIndexes, refIndexes) {
-  const refs = refIndexes.byName.get(row?.actionNameNormalized) ?? [];
+  // The sheet's action lists can hold the same name twice — Roo's Chef's Knife is
+  // in its weapon list (loot) AND its skill list (the Active). Lists come sorted by
+  // key, so the weapon came first and pickActionByName's "an action beats
+  // equipment" rule never got a say: the AI targeted with the weapon's "One
+  // Enemy" and skipped the Active's target_eligibility and Marked pool focus.
+  // Same rule here: references that resolve to an item with a skill_type go first.
+  const refItem = (ref) => {
+    const u = normalizeIdLike(ref?.uuid), i = normalizeIdLike(ref?.id);
+    return (u && itemIndexes.byUuid.get(u)) || (i && itemIndexes.byId.get(i)) || null;
+  };
+  const isAction = (snap) => !!snap && !isPassiveItemSnapshot(snap)
+    && !!AR.normalizeText(snap?.skillType ?? snap?.props?.[AR.keys.skillType]);
+  const allRefs = refIndexes.byName.get(row?.actionNameNormalized) ?? [];
+  const refs = [...allRefs.filter((r) => isAction(refItem(r))), ...allRefs.filter((r) => !isAction(refItem(r)))];
   for (const ref of refs) {
     const refUuid = normalizeIdLike(ref?.uuid);
     const refId = normalizeIdLike(ref?.id);
