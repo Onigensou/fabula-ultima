@@ -98,7 +98,7 @@
             "wellspring_dark": false,
             "wellspring_light": false
           },
-          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Mountain Ascending Path\",\"id\":\"Scene.TYsXMeeVahBSG3VV\"},{\"name\":\"Valley of the Dragon - Waterfall Trail\",\"id\":\"YR0pYJVokhIgKQj0\"},{\"name\":\"Valley of the Dragon - West Ridge\",\"id\":\"QfybShj4gr9Bd2rn\"},{\"name\":\"Valley of the Dragon - East Ridge\",\"id\":\"g8segD1wSQEHY4Jp\"},{\"name\":\"Valley of the Dragon - Summit Trail\",\"id\":\"EtlYqCkE1aTvbwKo\"}]"
+          "sceneNetwork": "[{\"name\":\"Valley of the Dragon Theatre Scene\",\"id\":\"Scene.W5aPNI1FbnYEMESZ\"},{\"name\":\"Valley of the Dragon - Mountain Ascending Path\",\"id\":\"Scene.TYsXMeeVahBSG3VV\"},{\"name\":\"Valley of the Dragon - Waterfall Trail\",\"id\":\"YR0pYJVokhIgKQj0\"},{\"name\":\"Valley of the Dragon - West Ridge\",\"id\":\"QfybShj4gr9Bd2rn\"},{\"name\":\"Valley of the Dragon - East Ridge\",\"id\":\"g8segD1wSQEHY4Jp\"},{\"name\":\"Valley of the Dragon - Summit Trail\",\"id\":\"EtlYqCkE1aTvbwKo\"},{\"name\":\"The Kneeling Colossus\",\"id\":\"JFwf5x809fiLmRF6\"}]"
         },
         "oniDungeon": {
           "threatLevel": "medium",
@@ -235,16 +235,6 @@
               "requiresSwitch": "",
               "label": ""
             },
-            "4gBILjFHdTfry5IK": {
-              "a": "Pgdl6g8vRiQy4QRR",
-              "b": "E2sFI9K2SVbNalbQ",
-              "route": "main",
-              "oneWay": false,
-              "via": [],
-              "off": false,
-              "requiresSwitch": "",
-              "label": ""
-            },
             "TxaknWblIl4FQFOe": {
               "a": "Y3ZuBj3tys5wAlst",
               "b": "lesOqJdhn7cTeApj",
@@ -278,6 +268,16 @@
             "pVDXqbMDKq01Z6fv": {
               "a": "6MGzjbSDLPq0Zfra",
               "b": "mOP1zRce5yvOjgHd",
+              "route": "main",
+              "oneWay": false,
+              "via": [],
+              "off": false,
+              "requiresSwitch": "Deva Defeated",
+              "label": ""
+            },
+            "1DJNQDy7kYMwmNSh": {
+              "a": "6MGzjbSDLPq0Zfra",
+              "b": "E2sFI9K2SVbNalbQ",
               "route": "main",
               "oneWay": false,
               "via": [],
@@ -334,9 +334,9 @@
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
             },
             "6MGzjbSDLPq0Zfra": {
-              "initialType": "skill_check",
-              "currentType": "skill_check",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/SkillCheck_Tile.png"
+              "initialType": "event",
+              "currentType": "event",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Event_Tile.png"
             },
             "mOP1zRce5yvOjgHd": {
               "initialType": "blank",
@@ -484,7 +484,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359033081,
-      "modifiedTime": 1794060317927,
+      "modifiedTime": 1795053435404,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "walls": [
