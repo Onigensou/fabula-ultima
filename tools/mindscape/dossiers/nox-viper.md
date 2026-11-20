@@ -20,6 +20,7 @@ Venom serpent: breaks armour for good and keeps biting whoever it holds.
 - **Poison Fang**: Multi 2, applies Corroded (−2 DEF a stack, max 5, uncleansable, lasts the battle).
 - **Coil**: Grappled on hit; never targets summons or guests (2026-11-20).
 - **Feeding Coil**: a free Fang on the held creature at the start of the Viper's turn and of the held creature's turn; the break check is rolled first.
+- **Counterattack**: even Accuracy Check on a melee attack against it → free Poison Fang back at the attacker (HR 0) (2026-11-21).
 - Grapple splash (attacking the Viper also hits the held ally) is kept on purpose (user).
 
 ## Numbers & targets
@@ -40,6 +41,7 @@ HP 275 (was 140), Init 15. Poison Fang ~52 ×2, Coil ~37, Bile Spew ~42 (pass 2)
 | 2026-11-20 | Pass 4: Light VU → NA, **Ice VU**; HP 275 → 230; study hint "the cold makes it sluggish" | 47% of party damage to the Nox went into the Light weakness (mostly one bow); spread the chart | user (go), claude (element/HP) | re-run pending |
 | 2026-11-20 | Weapon efficiency: Sword 150, Brawling 75 | had none; read off the sprite: a blade cuts the thin hood, fists sink into the coils | user (go), claude (flavour) | re-run pending |
 | 2026-11-20 | Batch Z: all passes so far (incl. Gravis Alta, Resurrection, affinities, weapon efficiency), snapshot runner, 2 runs/encounter, PC-only HP (Keren max 85, Grave Toll) | measure before the push | claude | HVH 2.0 r / 79%; GVG 4.0 r / 61%; Obsidrax-V-Obsidrax 2.0 r / 94%; all finished fights won. User: "quite happy with the overview", shipped v1.0.642 |
+| 2026-11-21 | **Counterattack** (the generic passive: even Accuracy Check on a melee attack against it), countering with a free **Poison Fang** on the attacker alone, HR as 0 | user: more bite for the Viper | user | forced test: fires on an even check (4+4), not on odd (4+5); clean pass (1 run each): HVH 2 r / 94%, GVG 3 r / 63%, Obsidrax-V-Obsidrax 3 r / 42% |
 
 ```json dossier
 {
