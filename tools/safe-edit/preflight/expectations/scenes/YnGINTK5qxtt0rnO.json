@@ -465,7 +465,7 @@
                     {
                       "type": "startBattle",
                       "enemies": "Asura",
-                      "battleMap": "Scene.XHe8LfutYAkPuR5B",
+                      "battleMap": "Scene.qzTgM2eBrM7UjJEq",
                       "bgm": "Awaken",
                       "isBoss": true,
                       "engagement": "normal",

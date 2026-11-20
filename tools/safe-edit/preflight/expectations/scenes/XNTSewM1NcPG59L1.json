@@ -204,7 +204,7 @@
                     {
                       "type": "startBattle",
                       "enemies": "Rakshasa",
-                      "battleMap": "Scene.XHe8LfutYAkPuR5B",
+                      "battleMap": "Scene.BRiO4VtK5UIY5PYW",
                       "bgm": "Awaken",
                       "isBoss": true,
                       "engagement": "normal",
