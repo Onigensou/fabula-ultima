@@ -23,7 +23,7 @@ Fast soul-hound that never stays on one victim; spreads wounds so every player f
 
 ## Numbers & targets
 
-HP 190 (was 120), Init 14. Rending Fangs 20 ×2, Zombie Bite ~32. Design page: https://claude.ai/artifact/YNJFffhKfc9ZM2dc16PiEs
+HP 240 (was 120), Init 14. Rending Fangs ~24 ×2, Zombie Bite ~38 (pass 2). Design page: https://claude.ai/artifact/YNJFffhKfc9ZM2dc16PiEs
 
 ## Decision log
 
@@ -33,6 +33,8 @@ HP 190 (was 120), Init 14. Rending Fangs 20 ×2, Zombie Bite ~32. Design page: h
 | 2026-11-20 | HP 120 → 190 | pace 3-4 rounds for a secret end-game area (113-sim playtest: 2.1 rounds, 90% party HP) | user (pace), claude (numbers) | re-run pending |
 | 2026-11-20 | Zombie Bite players-only (IS_SUMMON == 0 && IS_GUEST == 0) | summons are immune to Zombie; bites were wasted on Fox fire | user | — |
 | 2026-11-20 | Token scale 1.00 → 1.45 | Battler Scale mockup | user | — |
+| 2026-11-20 | Pass 2: HP 190 → 240 (soldiers another ×1.25) | re-run after pass 1 still 2.5 rounds / 84% party HP; elites already at 3.3 rounds | user (go), claude (numbers) | re-run pending |
+| 2026-11-20 | Pass 2: +20% average hit: Rending Fangs HR+13→17, Zombie Bite HR+25→31 | same re-run; target party ends nearer 60-70% | user (go), claude (numbers) | re-run pending |
 
 ```json dossier
 {
@@ -56,7 +58,7 @@ HP 190 (was 120), Init 14. Rending Fangs 20 ×2, Zombie Bite ~32. Design page: h
   "invariants": [],
   "blind_spots": [],
   "open_questions": [
-    "Damage +20% held until the tuned re-run is reviewed (user 2026-11-20)"
+    "Pass 2 (HP + damage) re-run under review"
   ]
 }
 ```

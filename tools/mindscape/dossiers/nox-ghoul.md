@@ -23,7 +23,7 @@ The Legion's foot soldier: moderate, all-round offence that punishes healing and
 
 ## Numbers & targets
 
-HP 240 (was 150), DEF 11, MDEF 9. Poison Blade ~52, Grave Claw ~45 (both +20% flat, rev 33). Design page: https://claude.ai/artifact/YNJFffhKfc9ZM2dc16PiEs
+HP 300 (was 150), DEF 11, MDEF 9. Poison Blade ~62, Grave Claw ~54 (pass 2). Design page: https://claude.ai/artifact/YNJFffhKfc9ZM2dc16PiEs
 
 ## Decision log
 
@@ -32,6 +32,8 @@ HP 240 (was 150), DEF 11, MDEF 9. Poison Blade ~52, Grave Claw ~45 (both +20% fl
 | 2026-11-20 | Built (first wiring pass, v1.0.636) from design page rev 38 | user-designed kit | user | sandbox-verified; 113-sim playtest |
 | 2026-11-20 | HP 150 → 240 | pace 3-4 rounds for a secret end-game area (113-sim playtest: 2.1 rounds, 90% party HP) | user (pace), claude (numbers) | re-run pending |
 | 2026-11-20 | Token scale 0.95 → 1.42 | Battler Scale mockup | user | — |
+| 2026-11-20 | Pass 2: HP 240 → 300 (soldiers another ×1.25) | re-run after pass 1 still 2.5 rounds / 84% party HP; elites already at 3.3 rounds | user (go), claude (numbers) | re-run pending |
+| 2026-11-20 | Pass 2: +20% average hit: Grave Claw HR+38→47, Poison Blade HR+45→55 | same re-run; target party ends nearer 60-70% | user (go), claude (numbers) | re-run pending |
 
 ```json dossier
 {
@@ -50,7 +52,7 @@ HP 240 (was 150), DEF 11, MDEF 9. Poison Blade ~52, Grave Claw ~45 (both +20% fl
   "invariants": [],
   "blind_spots": [],
   "open_questions": [
-    "Damage +20% held until the tuned re-run is reviewed (user 2026-11-20)"
+    "Pass 2 (HP + damage) re-run under review"
   ]
 }
 ```

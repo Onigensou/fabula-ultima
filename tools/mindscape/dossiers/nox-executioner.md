@@ -23,7 +23,7 @@ Elite headsman and the area's tank: one blade for the healthy, one for the dying
 
 ## Numbers & targets
 
-HP 480 (was 320), DEF 15, MDEF 13. Guillotine/Gibbet ~45 (×2 on their condition). Design page: https://claude.ai/artifact/YNJFffhKfc9ZM2dc16PiEs
+HP 480 (was 320), DEF 15, MDEF 13. Guillotine/Gibbet ~54 (pass 2) (×2 on their condition). Design page: https://claude.ai/artifact/YNJFffhKfc9ZM2dc16PiEs
 
 ## Decision log
 
@@ -34,6 +34,7 @@ HP 480 (was 320), DEF 15, MDEF 13. Guillotine/Gibbet ~45 (×2 on their condition
 | 2026-11-20 | Beheading line 15% → 25% | marks happened, but no execution in 113 sims | user | — |
 | 2026-11-20 | Soul Sever AI row waits for "Called" | 3 of 9 playtest Severs found nothing to eat | user | — |
 | 2026-11-20 | Token scale 2.24 → 2.60 | Battler Scale mockup | user | — |
+| 2026-11-20 | Pass 2: +20% average hit: Guillotine/Gibbet HR+37→46 | same re-run; target party ends nearer 60-70% | user (go), claude (numbers) | re-run pending |
 
 ```json dossier
 {
@@ -57,7 +58,7 @@ HP 480 (was 320), DEF 15, MDEF 13. Guillotine/Gibbet ~45 (×2 on their condition
   "invariants": [],
   "blind_spots": [],
   "open_questions": [
-    "Damage +20% held until the tuned re-run is reviewed (user 2026-11-20)"
+    "Pass 2 (HP + damage) re-run under review"
   ]
 }
 ```

@@ -35,6 +35,7 @@ HP 450 (was 300), MP 106, DEF 9, MDEF 14. Design page: https://claude.ai/artifac
 | 2026-11-20 | Revive target_eligibility HAS_STATUS_ZOMBIE == 1 \|\| SPECIES_IS_UNDEAD == 1 | a playtest Revive went to a non-Zombie player and did nothing | user | — |
 | 2026-11-20 | Zombie no longer reaped when the Priest falls | "that's not how debuff work" | user | — |
 | 2026-11-20 | Token scale 1.47 → 2.26 | Battler Scale mockup | user | — |
+| 2026-11-20 | Pass 2: +20% average hit: Nox Tome HR+20→25 (Lux Finis not raised) | same re-run; target party ends nearer 60-70% | user (go), claude (numbers) | re-run pending |
 
 ```json dossier
 {
@@ -63,7 +64,7 @@ HP 450 (was 300), MP 106, DEF 9, MDEF 14. Design page: https://claude.ai/artifac
   "invariants": [],
   "blind_spots": [],
   "open_questions": [
-    "Damage +20% held until the tuned re-run is reviewed (user 2026-11-20)"
+    "Pass 2 (HP + damage) re-run under review"
   ]
 }
 ```

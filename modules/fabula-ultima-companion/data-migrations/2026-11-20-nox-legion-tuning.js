@@ -3,7 +3,8 @@
  * ---------------------------------------------------------------------------
  * Follows 2026-11-20-nox-legion-author. Every change below was approved by the
  * user after the 113-sim playtest (2026-11-20):
- *   1. HP for a 3-4 round pace (secret end-game area): soldiers x1.6, elites x1.5.
+ *   1. HP for a 3-4 round pace (secret end-game area): soldiers x1.6, elites x1.5;
+ *      pass 2 (after the re-run): soldiers another x1.25 and +20% on Nox attack damage.
  *   2. Battler scale batch from the "Sealed Cavern Battler Scale" mockup
  *      (prototype token texture scale; Nox keep their negative scaleX). Roo and
  *      Carlbero are guests that also appear on other maps; the user approved them.
@@ -26,7 +27,18 @@ export const description = "Nox Legion tuning: HP, battler scale, Beheading 25%,
 const M = "fabula-ultima-companion";
 const FLAG = "noxLegion";
 
-const HP = { ghoul: 240, hound: 190, wraith: 210, viper: 220, priest: 450, executioner: 480 };
+// pass 2 (re-run still 2.5 rounds): soldiers another x1.25; elites already on pace (3.3 rounds)
+const HP = { ghoul: 300, hound: 240, wraith: 260, viper: 275, priest: 450, executioner: 480 };
+// pass 2: +20% on the average hit (HR + ~7-8 dice average), absolute values so a re-run is a no-op.
+// Not raised: Lux Finis (user: Finis cycle), Gravis and Soul Sever (HP-based).
+const HR = {
+  ghoul: { "Grave Claw": "47", "Poison Blade": "55" },
+  hound: { "Rending Fangs": "17", "Zombie Bite": "31" },
+  priest: { "Nox Tome": "25" },
+  wraith: { "Soul Ripper": "53" },
+  viper: { "Poison Fang": "44", "Coil": "29", "Bile Spew": "35" },
+  executioner: { "Nox Guillotine": "46", "Nox Gibbet": "46" },
+};
 // token texture scale (magnitude); sign of scaleX is kept as it is in the world
 const SCALE_NOX = { ghoul: 1.42, hound: 1.45, wraith: 1.47, viper: 1.74, priest: 2.26, executioner: 2.60 };
 const SCALE_GUEST = { "Roo": 1.50, "Carlbero": 2.57 };
@@ -120,6 +132,7 @@ export async function migrate(game, log) {
     const p = a.system?.props ?? {};
     if (Number(p.max_hp) !== hp) { await a.update({ "system.props.max_hp": String(hp), "system.props.current_hp": String(hp) }); out.push(`${a.name}: HP ${p.max_hp} -> ${hp}`); }
     await setScale(a, SCALE_NOX[k], out);
+    for (const [skill, hr] of Object.entries(HR[k] ?? {})) await setItemProps(a, skill, { damage_bonus: hr }, out);
   }
   for (const [name, mag] of Object.entries(SCALE_GUEST)) {
     const a = game.actors.find((x) => x.name === name && x.type !== "_template");
