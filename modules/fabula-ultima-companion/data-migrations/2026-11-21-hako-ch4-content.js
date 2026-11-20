@@ -71,7 +71,7 @@ const ID = {
   phoenix: "HkC4FullPhoenix1", phoenixSkill: "HkC4FullPhxSkill",
   zenithPsv: "HkC4ZenithPsv001", scythePsv: "HkC4DScythePsv01", scytheImm: "HkC4DScytheImmAE",
   franticPsv: "HkC4FranticPsv01", kusariPsv: "HkC4KusariPsv001", gothicPsv: "HkC4GothicPsv001",
-  curseCollPsv: "HkC4CurseCollPsv",
+  curseCollPsv: "HkC4CurseCollPsv", ivoryPsv: "HkC4IvoryStatPsv",
 };
 
 // ── Doom countdown (shared by the library AE and Muramasa's variant) ────────
@@ -327,6 +327,19 @@ const OLDER = [
       reaction_config_table: table([
         rcOut({ reaction_passive_mode: "force", reaction_damage_type: "dark", condition_formula: "ACTION_IS_SPELL == 1 && DAMAGE_IS_HP == 1 && TARGET_STATUS_COUNT > 0", reaction_effect_ref: "gl_malediction" }),
         rcOut({ reaction_passive_mode: "force", reaction_damage_type: "poison", condition_formula: "ACTION_IS_SPELL == 1 && DAMAGE_IS_HP == 1 && TARGET_STATUS_COUNT > 0", reaction_effect_ref: "gl_malediction" }),
+      ]) } },
+  // The other half of the 0-MP Dark build (Staff of Stupidity): Curse drains 20% max MP a turn.
+  { name: "Cursed Ivory Statue",
+    passive: { id: ID.ivoryPsv, name: "Cursed Ivory Statue (Passive)",
+      effect_table: table([
+        { effect_kind: "apply_ae", effect_label: "cis_self", ae_template_ref: "Cursed", ae_duplicate_mode: "replace_same_status", target_ref: "self" },
+        { effect_kind: "apply_ae", effect_label: "cis_curse", ae_template_ref: "Cursed", ae_duplicate_mode: "replace_same_status", target_ref: "cause_actor" },
+      ]),
+      reaction_config_table: table([
+        { reaction_trigger: "conflict_start", reaction_passive_mode: "force", reaction_passive_target: "self", reaction_source: "", reaction_effect_ref: "cis_self" },
+        { reaction_trigger: "creature_equips_item", reaction_passive_mode: "force", reaction_passive_target: "self", reaction_source: "", reaction_effect_ref: "cis_self" },
+        { reaction_trigger: "turn_end", reaction_passive_mode: "force", reaction_passive_target: "self", reaction_source: "self", condition_formula: "AE_COUNT_CURSED == 0", reaction_effect_ref: "cis_self" },
+        { reaction_trigger: "creature_lose_resource", reaction_passive_mode: "force", reaction_source: "self", reaction_resource_filter: "hp", reaction_cause_filter: "damage", reaction_effect_ref: "cis_curse" },
       ]) } },
   { name: "Curse Collector",
     passive: { id: ID.curseCollPsv, name: "Curse Collector (Passive)",
