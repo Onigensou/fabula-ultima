@@ -235,14 +235,22 @@
           "description": "<p>This creature has Resistance to <a class=\"content-link\" data-uuid=\"JournalEntry.ZunRGiMDSgAapm5G\" data-id=\"ZunRGiMDSgAapm5G\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\"><strong>Strike Damage</strong></a>.</p>",
           "details_roller": "Show",
           "duration": "-",
-          "effect_table": {},
+          "effect_table": {
+            "0": {
+              "action_ref": "Ethereal",
+              "condition_formula": "",
+              "effect_kind": "play_animation",
+              "effect_label": "et_anim",
+              "target_ref": "trigger_attacker"
+            }
+          },
           "heroic_requirement": "",
           "ignore_hr": false,
           "isCheck": false,
           "isFacet": false,
           "isHeroic": false,
           "isOffensiveSpell": false,
-          "isReaction": false,
+          "isReaction": true,
           "isZeroPower": false,
           "level": "1",
           "max_level": "1",
@@ -251,7 +259,18 @@
           "optional_params": {},
           "post_damage_effect_ref": "",
           "pre_activate_effect_ref": "",
-          "reaction_config_table": {},
+          "reaction_config_table": {
+            "0": {
+              "$deleted": false,
+              "condition_formula": "ATTACK_VS_DEF == 1 && INCOMING_DAMAGE > 0",
+              "reaction_action_intent": "harmful",
+              "reaction_effect_ref": "et_anim",
+              "reaction_passive_mode": "on",
+              "reaction_source": "self",
+              "reaction_source_skill": "",
+              "reaction_trigger": "creature_hit_by_action"
+            }
+          },
           "rolled_atr1": "-",
           "rolled_atr2": "-",
           "skill_animation_default": "",
