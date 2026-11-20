@@ -38,6 +38,7 @@ HP 480 (was 320), DEF 15, MDEF 13. Guillotine/Gibbet ~54 (pass 2) (×2 on their 
 | 2026-11-20 | Pass 3: +25% average hit: Guillotine/Gibbet HR+46→59 (Soul Sever not raised: fragment HP by design) | same rounds, lower party HP (pass 2: 2.9 rounds, 83% party HP) | user (go), claude (numbers) | re-run pending |
 | 2026-11-20 | Engine fix: Soul Sever now classifies harmful (defender reactions can answer it) | was "aid": effect-row damage was not counted | user | re-run pending |
 | 2026-11-20 | Weapon efficiency: Flail 150, Dagger 75 (Bow 50 dropped, user) | had none; read off the sprite: a flail wraps around the shield, small blades slide off plate | user (go), claude (flavour) | re-run pending |
+| 2026-11-20 | Batch Z: all passes so far (incl. Gravis Alta, Resurrection, affinities, weapon efficiency), snapshot runner, 2 runs/encounter, PC-only HP (Keren max 85, Grave Toll) | measure before the push | claude | HEH 3.0 r / 39% (1 run); GEG 3.5 r / 57%; all finished fights won. User: "quite happy with the overview", shipped v1.0.642 |
 
 ```json dossier
 {

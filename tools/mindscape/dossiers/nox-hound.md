@@ -37,6 +37,7 @@ HP 240 (was 120), Init 14. Rending Fangs ~24 ×2, Zombie Bite ~38 (pass 2). Desi
 | 2026-11-20 | Pass 2: +20% average hit: Rending Fangs HR+13→17, Zombie Bite HR+25→31 | same re-run; target party ends nearer 60-70% | user (go), claude (numbers) | re-run pending |
 | 2026-11-20 | Pass 3: +25% average hit: Rending Fangs HR+17→23, Zombie Bite HR+31→41 | same rounds, lower party HP (pass 2: 2.9 rounds, 83% party HP) | user (go), claude (numbers) | re-run pending |
 | 2026-11-20 | Pass 4: Light VU → NA, **Fire VU**; HP 240 → 190; study hint "shies from fire" | 47% of party damage to the Nox went into the Light weakness (mostly one bow); spread the chart | user (go), claude (element/HP) | re-run pending |
+| 2026-11-20 | Batch Z: all passes so far (incl. Gravis Alta, Resurrection, affinities, weapon efficiency), snapshot runner, 2 runs/encounter, PC-only HP (Keren max 85, Grave Toll) | measure before the push | claude | GGHH 3.0 r / 49%; HVH 2.0 r / 79%; HWG 3.0 r / 78%; HPH 3.5 r / 66%; GPH 3.0 r / 30% (1 run); HEH 3.0 r / 39% (1 run); H-Kurona x2-H 2.0 r / 92%; all finished fights won. User: "quite happy with the overview", shipped v1.0.642 |
 
 ```json dossier
 {

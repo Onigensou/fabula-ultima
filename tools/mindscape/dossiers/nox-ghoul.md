@@ -35,6 +35,7 @@ HP 300 (was 150), DEF 11, MDEF 9. Poison Blade ~62, Grave Claw ~54 (pass 2). Des
 | 2026-11-20 | Pass 2: HP 240 → 300 (soldiers another ×1.25) | re-run after pass 1 still 2.5 rounds / 84% party HP; elites already at 3.3 rounds | user (go), claude (numbers) | re-run pending |
 | 2026-11-20 | Pass 2: +20% average hit: Grave Claw HR+38→47, Poison Blade HR+45→55 | same re-run; target party ends nearer 60-70% | user (go), claude (numbers) | re-run pending |
 | 2026-11-20 | Pass 3: +25% average hit: Grave Claw HR+47→61, Poison Blade HR+55→71 | same rounds, lower party HP (pass 2: 2.9 rounds, 83% party HP) | user (go), claude (numbers) | re-run pending |
+| 2026-11-20 | Batch Z: all passes so far (incl. Gravis Alta, Resurrection, affinities, weapon efficiency), snapshot runner, 2 runs/encounter, PC-only HP (Keren max 85, Grave Toll) | measure before the push | claude | GGHH 3.0 r / 49%; GWG 3.0 r / 64%; GVG 4.0 r / 61%; GPH 3.0 r / 30% (1 run); GEG 3.5 r / 57%; G-Roo-G timed out (runner); all finished fights won. User: "quite happy with the overview", shipped v1.0.642 |
 
 ```json dossier
 {

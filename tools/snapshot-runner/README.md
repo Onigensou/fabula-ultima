@@ -289,7 +289,7 @@ the outcome, rounds and PC-only HP; `bin/nox-batch.mjs` runs the 13 Sealed Caver
 
 ```
 node ../snapshot-runner/bin/build-snapshot.mjs --profile nox --snapshot snap-nox
-RUNNER_CODE=<branch> FVTT_GPU=true node ../snapshot-runner/bin/warm.mjs start --snapshot snap-nox --port 30111 --fast
+RUNNER_CODE=<branch> FVTT_GPU=true node ../snapshot-runner/bin/warm.mjs start --snapshot snap-nox --profile nox --port 30111 --fast
 node ../snapshot-runner/bin/nox-batch.mjs --port 30111 --runs 2 [--rows 2,6,9] [--tag X]
 ```
 

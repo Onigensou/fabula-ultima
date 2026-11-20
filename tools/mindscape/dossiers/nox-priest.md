@@ -41,6 +41,7 @@ HP 450 (was 300), MP 106, DEF 9, MDEF 14. Design page: https://claude.ai/artifac
 | 2026-11-20 | Gravis Alta AI cooldown 3 rounds | pass-3 quick test: 2 wipes in 4 Priest fights, Gravis Alta cast 2-3 rounds running fed the Soul Fragments (max HP locked to 1) | user | re-run pending |
 | 2026-11-20 | Gravis Alta cooldown removed again; engine fix: Gravis Alta / Revive / Zombie Plague now classify harmful, so Prophetic Defender / Protect / Illusory Shield can answer them | user: the counterplay belongs to the players | user | re-run pending |
 | 2026-11-20 | Revive renamed **Resurrection** (item, AI row, spell list); same rules | naming, to match the animation pass | user | — |
+| 2026-11-20 | Batch Z: all passes so far (incl. Gravis Alta, Resurrection, affinities, weapon efficiency), snapshot runner, 2 runs/encounter, PC-only HP (Keren max 85, Grave Toll) | measure before the push | claude | HPH 3.5 r / 66%; GPH 3.0 r / 30% (1 run); all finished fights won. User: "quite happy with the overview", shipped v1.0.642 |
 
 ```json dossier
 {

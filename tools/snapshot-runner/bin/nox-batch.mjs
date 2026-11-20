@@ -2,7 +2,7 @@
 //
 //   # once: snapshot + daemon (GPU: software GL takes minutes per round on the Valley map)
 //   node ../snapshot-runner/bin/build-snapshot.mjs --profile nox --snapshot snap-nox
-//   RUNNER_CODE=<branch> FVTT_GPU=true node ../snapshot-runner/bin/warm.mjs start --snapshot snap-nox --port 30111 --fast
+//   RUNNER_CODE=<branch> FVTT_GPU=true node ../snapshot-runner/bin/warm.mjs start --snapshot snap-nox --profile nox --port 30111 --fast
 //   # then, as often as you like (from tools/fvtt-playwright):
 //   node ../snapshot-runner/bin/nox-batch.mjs --port 30111 --runs 2 [--rows 2,6,9] [--tag X] [--out <dir>]
 //
