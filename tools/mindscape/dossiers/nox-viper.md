@@ -36,6 +36,7 @@ HP 275 (was 140), Init 15. Poison Fang ~52 ×2, Coil ~37, Bile Spew ~42 (pass 2)
 | 2026-11-20 | Token scale 1.41 → 1.74 | Battler Scale mockup | user | — |
 | 2026-11-20 | Pass 2: HP 220 → 275 (soldiers another ×1.25) | re-run after pass 1 still 2.5 rounds / 84% party HP; elites already at 3.3 rounds | user (go), claude (numbers) | re-run pending |
 | 2026-11-20 | Pass 2: +20% average hit: Poison Fang HR+35→44, Coil HR+23→29, Bile Spew HR+28→35 | same re-run; target party ends nearer 60-70% | user (go), claude (numbers) | re-run pending |
+| 2026-11-20 | Pass 3: +25% average hit: Poison Fang HR+44→57, Coil HR+29→38, Bile Spew HR+35→46 | same rounds, lower party HP (pass 2: 2.9 rounds, 83% party HP) | user (go), claude (numbers) | re-run pending |
 
 ```json dossier
 {

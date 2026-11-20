@@ -4,7 +4,8 @@
  * Follows 2026-11-20-nox-legion-author. Every change below was approved by the
  * user after the 113-sim playtest (2026-11-20):
  *   1. HP for a 3-4 round pace (secret end-game area): soldiers x1.6, elites x1.5;
- *      pass 2 (after the re-run): soldiers another x1.25 and +20% on Nox attack damage.
+ *      pass 2 (after the re-run): soldiers another x1.25 and +20% on Nox attack damage;
+ *      pass 3: another +25% on Nox attack damage (not Lux Finis / Soul Sever), Gravis -> Gravis Alta (50%).
  *   2. Battler scale batch from the "Sealed Cavern Battler Scale" mockup
  *      (prototype token texture scale; Nox keep their negative scaleX). Roo and
  *      Carlbero are guests that also appear on other maps; the user approved them.
@@ -29,15 +30,16 @@ const FLAG = "noxLegion";
 
 // pass 2 (re-run still 2.5 rounds): soldiers another x1.25; elites already on pace (3.3 rounds)
 const HP = { ghoul: 300, hound: 240, wraith: 260, viper: 275, priest: 450, executioner: 480 };
-// pass 2: +20% on the average hit (HR + ~7-8 dice average), absolute values so a re-run is a no-op.
-// Not raised: Lux Finis (user: Finis cycle), Gravis and Soul Sever (HP-based).
+// pass 2: +20% on the average hit (HR + ~7.5 dice average); pass 3: another +25% (user: lower party HP,
+// same round count). Absolute values so a re-run is a no-op.
+// Not raised: Lux Finis (user), Soul Sever (fragment HP by design). Gravis -> Gravis Alta (50%) below.
 const HR = {
-  ghoul: { "Grave Claw": "47", "Poison Blade": "55" },
-  hound: { "Rending Fangs": "17", "Zombie Bite": "31" },
-  priest: { "Nox Tome": "25" },
-  wraith: { "Soul Ripper": "53" },
-  viper: { "Poison Fang": "44", "Coil": "29", "Bile Spew": "35" },
-  executioner: { "Nox Guillotine": "46", "Nox Gibbet": "46" },
+  ghoul: { "Grave Claw": "61", "Poison Blade": "71" },
+  hound: { "Rending Fangs": "23", "Zombie Bite": "41" },
+  priest: { "Nox Tome": "33" },
+  wraith: { "Soul Ripper": "68" },
+  viper: { "Poison Fang": "57", "Coil": "38", "Bile Spew": "46" },
+  executioner: { "Nox Guillotine": "59", "Nox Gibbet": "59" },
 };
 // token texture scale (magnitude); sign of scaleX is kept as it is in the world
 const SCALE_NOX = { ghoul: 1.42, hound: 1.45, wraith: 1.47, viper: 1.74, priest: 2.26, executioner: 2.60 };
@@ -116,6 +118,23 @@ async function zombieOnVictimTurns(out, log) {
   out.push(`Zombie: counts on the victim's turns (masters ${r.masters}, copies ${r.actorCopies + r.itemCopies + r.tokenCopies}, already ${r.skipped})`);
 }
 
+// pass 3 (user): Gravis -> Gravis Alta, half of current HP instead of a quarter (still never KOs: floor).
+async function gravisAlta(priest, out) {
+  const it = itemNamed(priest, "Gravis") ?? itemNamed(priest, "Gravis Alta");
+  if (!it) { out.push("Priest: no Gravis skill, skipped"); return; }
+  const upd = {};
+  if (it.name !== "Gravis Alta") { upd.name = "Gravis Alta"; upd["system.props.name"] = "Gravis Alta"; }
+  const fx = it.system?.props?.effect_table;
+  if (fx) { const next = mapStrings(fx, (s) => s.replace("floor(CUR_HP * 0.25)", "floor(CUR_HP * 0.5)")); if (JSON.stringify(next) !== JSON.stringify(fx)) upd["system.props.effect_table"] = next; }
+  const d = it.system?.props?.description ?? "";
+  if (/a quarter of its current/.test(d)) upd["system.props.description"] = d.replace("a quarter of its current", "half of its current");
+  if (Object.keys(upd).length) { await it.update(upd); out.push(`Priest: Gravis -> Gravis Alta, 50% of current HP (${Object.keys(upd).length} field(s))`); }
+  const t = priest.system?.props?.action_pattern_table ?? {};
+  const rowUpd = {};
+  for (const [k, row] of Object.entries(t)) if (!row?.$deleted && row?.action_pattern_name === "Gravis") rowUpd[`system.props.action_pattern_table.${k}.action_pattern_name`] = "Gravis Alta";
+  if (Object.keys(rowUpd).length) { await priest.update(rowUpd); out.push("Priest: AI row Gravis -> Gravis Alta"); }
+}
+
 async function nidhoggImmune(out) {
   for (const a of game.actors.filter((x) => /nidhogg/i.test(x.name) && x.type !== "_template")) {
     if (a.flags?.[M]?.reviveKillImmune === true) continue;
@@ -142,6 +161,7 @@ export async function migrate(game, log) {
   const hound = byFlag("hound"); if (hound) await setItemProps(hound, "Zombie Bite", { target_eligibility: PLAYERS_ONLY }, out);
   const viper = byFlag("viper"); if (viper) await setItemProps(viper, "Coil", { target_eligibility: PLAYERS_ONLY }, out);
   const priest = byFlag("priest"); if (priest) await setItemProps(priest, "Revive", { target_eligibility: REVIVE_TARGET }, out);
+  if (priest) await gravisAlta(priest, out);
   const wraith = byFlag("wraith"); if (wraith) await setAiString(wraith, "Devour Soul", "Called", out);
   if (ex) await setAiString(ex, "Soul Sever", "Called", out);
   await zombieOnVictimTurns(out, log);

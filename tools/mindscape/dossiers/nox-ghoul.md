@@ -34,6 +34,7 @@ HP 300 (was 150), DEF 11, MDEF 9. Poison Blade ~62, Grave Claw ~54 (pass 2). Des
 | 2026-11-20 | Token scale 0.95 → 1.42 | Battler Scale mockup | user | — |
 | 2026-11-20 | Pass 2: HP 240 → 300 (soldiers another ×1.25) | re-run after pass 1 still 2.5 rounds / 84% party HP; elites already at 3.3 rounds | user (go), claude (numbers) | re-run pending |
 | 2026-11-20 | Pass 2: +20% average hit: Grave Claw HR+38→47, Poison Blade HR+45→55 | same re-run; target party ends nearer 60-70% | user (go), claude (numbers) | re-run pending |
+| 2026-11-20 | Pass 3: +25% average hit: Grave Claw HR+47→61, Poison Blade HR+55→71 | same rounds, lower party HP (pass 2: 2.9 rounds, 83% party HP) | user (go), claude (numbers) | re-run pending |
 
 ```json dossier
 {

@@ -12,7 +12,7 @@
 
 ## Concept
 
-Elite caster, the cog of the Soul Tithe: every fragment the party destroys refills its MP for Zombie Plague, Gravis and Lux Finis.
+Elite caster, the cog of the Soul Tithe: every fragment the party destroys refills its MP for Zombie Plague, Gravis Alta and Lux Finis.
 
 ## The gimmick
 
@@ -20,7 +20,7 @@ Elite caster, the cog of the Soul Tithe: every fragment the party destroys refil
 - **Zombie Plague**: all enemies, DL13 MIG+WLP or Zombie (Zombie now counts on the victim's turns and outlives the Priest, 2026-11-20).
 - **Lux Finis**: Light, HR+62, at most 2 Zombie'd targets, Opportunity Blind (not +20%).
 - **Revive**: 30 MP, 1 turn in 3, once per battle; kills a Zombie'd or Undead target; can only target one (2026-11-20).
-- **Gravis**: 25% of current HP to all, never kills. **Nox Tome** HR+20 when dry.
+- **Gravis Alta**: 50% of current HP to all, never kills (was Gravis, 25%). **Nox Tome** HR+20 when dry.
 
 ## Numbers & targets
 
@@ -36,6 +36,8 @@ HP 450 (was 300), MP 106, DEF 9, MDEF 14. Design page: https://claude.ai/artifac
 | 2026-11-20 | Zombie no longer reaped when the Priest falls | "that's not how debuff work" | user | — |
 | 2026-11-20 | Token scale 1.47 → 2.26 | Battler Scale mockup | user | — |
 | 2026-11-20 | Pass 2: +20% average hit: Nox Tome HR+20→25 (Lux Finis not raised) | same re-run; target party ends nearer 60-70% | user (go), claude (numbers) | re-run pending |
+| 2026-11-20 | Pass 3: +25% average hit: Nox Tome HR+25→33 (Lux Finis not raised, user) | same rounds, lower party HP (pass 2: 2.9 rounds, 83% party HP) | user (go), claude (numbers) | re-run pending |
+| 2026-11-20 | Gravis → **Gravis Alta**: 50% of current HP (was 25%), still never KOs | same rounds, lower party HP (pass 2: 2.9 rounds, 83% party HP) | user | re-run pending |
 
 ```json dossier
 {
