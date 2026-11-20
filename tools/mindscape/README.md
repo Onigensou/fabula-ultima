@@ -59,6 +59,7 @@ than a source edit. See `specs/rakshasa.json`.
 | `--party` | override the Current Game party |
 | `--expected` | round budget before "unresolved" (default 7) |
 | `--force` | report even when coverage is below the bar |
+| `--world-dir` | read another world (a world folder or its data/), e.g. a test sandbox with a migration applied; its collections are copied first, so it may be open in Foundry |
 | `--verbose, -v` | print every coverage warning |
 | `--tinctures` | `"strength=25,spirit=25,endurance=25"` — paper Tincture Cycle consumables (ruleset Part 6l) |
 | `--tincture-user` / `--tincture-stock` | who carries them (default Blanche) / how many of each per fight (default 3) |

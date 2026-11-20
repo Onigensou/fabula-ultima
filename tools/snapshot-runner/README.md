@@ -282,6 +282,24 @@ Hellhound (ActorDelta id), fake-io drawing ids from Math.random, visual draws in
 seeded stream, and the Field reseed race. Each one showed up as a battle that went
 differently from the lab's.
 
+## Balance batches: Sealed Cavern (`--profile nox`, 2026-11-20)
+
+`checks/nox-fight.js` plays one Nox Legion fight (sim.run, Soul Tithe, Valley_Battlemap004) and returns
+the outcome, rounds and PC-only HP; `bin/nox-batch.mjs` runs the 13 Sealed Cavern groups on a warm runner.
+
+```
+node ../snapshot-runner/bin/build-snapshot.mjs --profile nox --snapshot snap-nox
+RUNNER_CODE=<branch> FVTT_GPU=true node ../snapshot-runner/bin/warm.mjs start --snapshot snap-nox --port 30111 --fast
+node ../snapshot-runner/bin/nox-batch.mjs --port 30111 --runs 2 [--rows 2,6,9] [--tag X]
+```
+
+- **GPU on, and the only drawing client.** In software GL a Valley fight did not finish round 1 in
+  300 s (main thread pegged, script only ~20 s of it); on the GPU a whole fight takes ~35-45 s. The
+  TDR warning in fvtt-playwright/lib/foundry.js still applies: close other Foundry clients first.
+- `RUNNER_CODE=<branch>` serves the module from that git ref, so a branch's data migration applies
+  inside the runner's world. The live world is never touched.
+- The check skips director presentations and turns Battle depth off (both presentation only).
+
 ## Next steps (not built)
 
 - Referee `--full` / the `wide` golden on the runner.

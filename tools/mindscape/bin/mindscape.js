@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 "use strict";
+require("../lib/world-dir").applyWorldDir();   // --world-dir <dir>: read a copy of another world (must load first)
 //
 // Mindscape — offline Monte Carlo balance runs.
 //
