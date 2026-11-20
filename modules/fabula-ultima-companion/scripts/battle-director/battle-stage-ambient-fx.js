@@ -22,6 +22,13 @@
 //        Valley boss arenas mockup; speeds there were per 60 fps frame, here per second)
 // Graphics-drawn kinds (rain splash bubble slime flash) take n: 1 and count
 // their drops with their own key, so they cost no sprites.
+//        cloudsea (2026-11-20, Sealed Cavern): the Sacrificial Altar / Fafnir
+//        Castle Entrance cloud sea (map-ambience.js "clouds") as a battle
+//        effect, recoloured. n: 1. Two halves pivot at { ox, oy }: the left
+//        half turns counter-clockwise and drifts left, the right clockwise and
+//        right, so the gas over the top rolls outward (the painted plume).
+//        Masked to an ellipse { cx, cy, rx, ry } faded out between floor0 and
+//        floor1; speed / alpha / size scale the Castle Entrance layer set.
 // ============================================================================
 
 const rnd = (a, b) => a + Math.random() * (b - a);
@@ -29,7 +36,7 @@ const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 const hex = (s) => (typeof s === "number" ? s : parseInt(String(s).replace("#", ""), 16));
 
 export const AMBIENT_FX_KINDS = Object.freeze(["gust", "puff", "mist", "drip", "bark", "wash", "embers", "dust", "leaves", "flame", "smoke", "torch", "ripple", "shaft", "glint", "flutter", "fogbank", "cloud",
-  "beam", "pulse", "motes", "haze", "rain", "splash", "bubble", "slime", "flash"]);
+  "beam", "pulse", "motes", "haze", "rain", "splash", "bubble", "slime", "flash", "cloudsea"]);
 const FRONT = new Set(["gust", "embers", "dust", "leaves", "fogbank", "flutter", "rain", "flash"]);
 
 function canvasTex(w, h, paint) {
@@ -44,6 +51,49 @@ const radial = (inner, size = 128) => canvasTex(size, size, (g, w) => {
   g.fillStyle = r; g.fillRect(0, 0, w, w);
 });
 
+// ── cloudsea ────────────────────────────────────────────────────────────────
+// map-ambience.js cloudTexture(): 256 px tileable fbm (4 octaves), smoothstep alpha, colour × lift.
+function seaNoise(rgb) {
+  const N = 256, c = document.createElement("canvas"); c.width = c.height = N;
+  const x = c.getContext("2d"), img = x.createImageData(N, N);
+  const lerp = (a, b, t) => a + (b - a) * t, sm = (t) => t * t * (3 - 2 * t);
+  const octs = [4, 8, 16, 32].map((p) => ({ p, L: Array.from({ length: p * p }, Math.random) }));
+  const val = (o, xx, yy) => {
+    const f = o.p / N, gx = xx * f, gy = yy * f, x0 = Math.floor(gx), y0 = Math.floor(gy), tx = sm(gx - x0), ty = sm(gy - y0), P = o.p;
+    const at = (i, j) => o.L[((j % P + P) % P) * P + ((i % P + P) % P)];
+    return lerp(lerp(at(x0, y0), at(x0 + 1, y0), tx), lerp(at(x0, y0 + 1), at(x0 + 1, y0 + 1), tx), ty);
+  };
+  for (let yy = 0; yy < N; yy++) for (let xx = 0; xx < N; xx++) {
+    let v = 0, a = 0.5, tot = 0; for (const o of octs) { v += val(o, xx, yy) * a; tot += a; a *= 0.5; } v /= tot;
+    const k = clamp((v - 0.38) / 0.42, 0, 1), al = k * k * (3 - 2 * k), i = (yy * N + xx) * 4, lift = 0.75 + 0.45 * v;
+    img.data[i] = Math.min(255, rgb[0] * lift); img.data[i + 1] = Math.min(255, rgb[1] * lift); img.data[i + 2] = Math.min(255, rgb[2] * lift); img.data[i + 3] = 255 * al;
+  }
+  x.putImageData(img, 0, 0);
+  const t = PIXI.Texture.from(c); t.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT; return t;
+}
+// The Fafnir Castle Entrance layer set (build-sacrificial-altar.js CASTLE_CLOUDS); each half mirrors spin and dx.
+const SEA_LAYERS = [{ s: 4.4, spin: 0.012, dx: 20, dy: -6, a: 0.6 }, { s: 2.8, spin: -0.018, dx: -24, dy: -2, a: 0.45 }, { s: 1.8, spin: 0.026, dx: 32, dy: -10, a: 0.3 }];
+const SEA_H = 0.5;   // drawn at half the canvas size, like the altar mockup, then scaled ×2
+// Half-size grey mask (RGB = coverage, alpha 255, the way map-ambience feeds sprite masks).
+function seaMask(f, side) {
+  const W = 2560 * SEA_H, H = 1270 * SEA_H, c = document.createElement("canvas"); c.width = W; c.height = H;
+  const x = c.getContext("2d");
+  x.save(); x.translate(f.cx * SEA_H, f.cy * SEA_H); x.scale(1, f.ry / f.rx);
+  const rg = x.createRadialGradient(0, 0, 0, 0, 0, f.rx * SEA_H);
+  rg.addColorStop(0, "#fff"); rg.addColorStop(0.55, "#fff"); rg.addColorStop(1, "rgba(255,255,255,0)");
+  x.fillStyle = rg; x.fillRect(-f.rx * SEA_H, -f.rx * SEA_H, f.rx * 2 * SEA_H, f.rx * 2 * SEA_H); x.restore();
+  x.globalCompositeOperation = "destination-in";
+  const lg = x.createLinearGradient(0, f.floor0 * SEA_H, 0, f.floor1 * SEA_H); lg.addColorStop(0, "#fff"); lg.addColorStop(1, "rgba(255,255,255,0)");
+  x.fillStyle = lg; x.fillRect(0, 0, W, H);
+  const px = f.ox * SEA_H, sg = x.createLinearGradient(px - 60, 0, px + 60, 0);
+  sg.addColorStop(0, side < 0 ? "#fff" : "rgba(255,255,255,0)"); sg.addColorStop(1, side < 0 ? "rgba(255,255,255,0)" : "#fff");
+  x.fillStyle = sg; x.fillRect(0, 0, W, H);
+  const d = x.getImageData(0, 0, W, H);
+  for (let i = 0; i < W * H; i++) { const m = d.data[i * 4 + 3]; d.data[i * 4] = d.data[i * 4 + 1] = d.data[i * 4 + 2] = m; d.data[i * 4 + 3] = 255; }
+  x.globalCompositeOperation = "source-over"; x.putImageData(d, 0, 0);
+  return PIXI.Texture.from(c);
+}
+
 /**
  * @param {object[]} list   ambient.fx from the preset
  * @param {object} o        { back, front: PIXI.Container, pin(x, y) -> {x, y, s} }
@@ -57,6 +107,7 @@ export function createAmbientFx(list, { back, front, pin }) {
     dot: canvasTex(16, 16, (g) => { g.fillStyle = "#fff"; g.beginPath(); g.arc(8, 8, 7.5, 0, Math.PI * 2); g.fill(); }),
   };
   const shaftTex = new Map();
+  const extraTex = [];   // cloudsea noise + masks, destroyed with the rest
   const gfxBack = new PIXI.Graphics(); gfxBack.blendMode = PIXI.BLEND_MODES.ADD; back.addChild(gfxBack);
   const gfxFront = new PIXI.Graphics(); front.addChild(gfxFront);
   const parts = [];
@@ -129,6 +180,22 @@ export function createAmbientFx(list, { back, front, pin }) {
         case "pulse": p.s = [sprite(tex.glow, f.color, SCREEN, L)]; break;
         case "motes": p.s = [sprite(tex.dot, f.color, NORMAL, L)]; break;
         case "haze": p.s = [sprite(tex.mist, f.color, NORMAL, f.low ? front : back)]; break;
+        case "cloudsea": {
+          // One container in half-size canvas px, pivoted on the mask centre so it pins as one plane.
+          const noise = seaNoise(Array.isArray(f.rgb) ? f.rgb : [92, 168, 52]); extraTex.push(noise);
+          const W = 2560 * SEA_H, H = 1270 * SEA_H, box = new PIXI.Container();
+          box.pivot.set(f.cx * SEA_H, f.cy * SEA_H); box.eventMode = "none"; box.visible = false;
+          p.halves = [-1, 1].map((side) => {
+            const half = new PIXI.Container();
+            const sheets = SEA_LAYERS.map((L) => { const t = new PIXI.TilingSprite(noise, W, H); half.addChild(t); return { t, L }; });
+            const mt = seaMask(f, side); extraTex.push(mt);
+            const m = new PIXI.Sprite(mt); half.addChild(m); half.mask = m;
+            box.addChild(half);
+            return { side, sheets };
+          });
+          L.addChild(box); p.box = box; p.s = [];
+          break;
+        }
         case "shaft": {
           const [, , w, h] = p.a, key = `${w}x${h}`;
           if (!shaftTex.has(key)) shaftTex.set(key, canvasTex(256, 256, (g) => {
@@ -248,6 +315,20 @@ export function createAmbientFx(list, { back, front, pin }) {
         case "slime": { const c = hex(f.color ?? "#aaff5a");
           for (const d of p.drops) { const q = pin(d.x, d.y); gfxBack.lineStyle(0); gfxBack.beginFill(c, 0.75 * k); gfxBack.drawEllipse(q.x, q.y, 3 * q.s, 6 * q.s); gfxBack.endFill(); }
           break; }
+        case "cloudsea": {
+          // map-ambience placeClouds(): translate(P) rotate(spin t) translate(-P + drift t) scale(s), per half
+          const sec = t * (f.speed ?? 1), P = [f.ox * SEA_H, f.oy * SEA_H], q = pin(f.cx, f.cy);
+          for (const h of p.halves) for (const { t: sp, L: Ly } of h.sheets) {
+            const spin = Math.abs(Ly.spin) * h.side * (Ly.spin < 0 ? 0.7 : 1), dx = Math.abs(Ly.dx) * h.side * SEA_H, dy = -Math.abs(Ly.dy) * SEA_H;
+            const th = sec * spin, cs = Math.cos(th), sn = Math.sin(th), ex = sec * dx - P[0], ey = sec * dy - P[1];
+            sp.tileTransform.position.set(P[0] + cs * ex - sn * ey, P[1] + sn * ex + cs * ey);
+            sp.tileTransform.rotation = th;
+            sp.tileTransform.scale.set(Ly.s * SEA_H * (f.size ?? 1), Ly.s * SEA_H * (f.size ?? 1));
+            sp.alpha = clamp(Ly.a * (f.alpha ?? 1), 0, 1);
+          }
+          p.box.visible = k > 0.003; p.box.alpha = clamp(k, 0, 1);
+          p.box.position.set(q.x, q.y); p.box.scale.set(q.s / SEA_H, q.s / SEA_H);
+          break; }
         case "flash": { if (p.f1 <= 0) break;   // whole view, not pinned: the flash is the sky lighting up
           gfxFront.lineStyle(0); gfxFront.beginFill(hex(f.color ?? "#d2beff"), (f.alpha ?? 0.22) * p.f1 * k); gfxFront.drawRect(-3000, -3000, 9000, 8000); gfxFront.endFill(); break; }
         case "flutter": {
@@ -264,7 +345,7 @@ export function createAmbientFx(list, { back, front, pin }) {
     step, draw,
     count: () => parts.reduce((n, p) => n + Math.max(1, p.s.length), 0),
     destroy() {
-      for (const t of [...Object.values(tex), ...shaftTex.values()]) { try { t.destroy(true); } catch { /* already gone */ } }
+      for (const t of [...Object.values(tex), ...shaftTex.values(), ...extraTex]) { try { t.destroy(true); } catch { /* already gone */ } }
     },
   };
 }

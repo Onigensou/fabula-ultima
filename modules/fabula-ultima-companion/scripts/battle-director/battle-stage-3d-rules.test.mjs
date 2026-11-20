@@ -391,6 +391,10 @@ function floorPointNearer(f, dzPx, P, ppm) {
     ok(`${key}: ambient stays within the sprite budget (<= 70)`, sprites <= 70, String(sprites));
   }
   ok("Highroad stays vanilla (first battlemap)", !PRESETS.Eisendrache_Battlemap002_v2.ambient);
+  {
+    const fx = PRESETS.Valley_Battlemap004.ambient.fx;
+    ok("Sealed Cavern: churning gas cloud sea first, slime drips gone (rev 2)", fx[0]?.k === "cloudsea" && !fx.some((f) => f.k === "slime"), JSON.stringify(fx.map((f) => f.k)));
+  }
 }
 
 console.log(`\n${pass} passed, ${fail} failed`);
