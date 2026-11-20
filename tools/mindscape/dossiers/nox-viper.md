@@ -38,6 +38,7 @@ HP 275 (was 140), Init 15. Poison Fang ~52 ×2, Coil ~37, Bile Spew ~42 (pass 2)
 | 2026-11-20 | Pass 2: +20% average hit: Poison Fang HR+35→44, Coil HR+23→29, Bile Spew HR+28→35 | same re-run; target party ends nearer 60-70% | user (go), claude (numbers) | re-run pending |
 | 2026-11-20 | Pass 3: +25% average hit: Poison Fang HR+44→57, Coil HR+29→38, Bile Spew HR+35→46 | same rounds, lower party HP (pass 2: 2.9 rounds, 83% party HP) | user (go), claude (numbers) | re-run pending |
 | 2026-11-20 | Pass 4: Light VU → NA, **Ice VU**; HP 275 → 230; study hint "the cold makes it sluggish" | 47% of party damage to the Nox went into the Light weakness (mostly one bow); spread the chart | user (go), claude (element/HP) | re-run pending |
+| 2026-11-20 | Weapon efficiency: Sword 150, Brawling 75 | had none; read off the sprite: a blade cuts the thin hood, fists sink into the coils | user (go), claude (flavour) | re-run pending |
 
 ```json dossier
 {

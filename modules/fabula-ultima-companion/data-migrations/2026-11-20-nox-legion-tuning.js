@@ -6,7 +6,8 @@
  *   1. HP for a 3-4 round pace (secret end-game area): soldiers x1.6, elites x1.5;
  *      pass 2 (after the re-run): soldiers another x1.25 and +20% on Nox attack damage;
  *      pass 3: another +25% on Nox attack damage (not Lux Finis / Soul Sever), Gravis -> Gravis Alta (50%);
- *      pass 4: Hound VU Fire / Viper VU Ice instead of Light, HP 190 / 230.
+ *      pass 4: Hound VU Fire / Viper VU Ice instead of Light, HP 190 / 230; weapon efficiency
+ *      for Viper (sword 150, brawling 75), Wraith (arcane 150, bow 75), Executioner (flail 150, dagger 75).
  *   2. Battler scale batch from the "Sealed Cavern Battler Scale" mockup
  *      (prototype token texture scale; Nox keep their negative scaleX). Roo and
  *      Carlbero are guests that also appear on other maps; the user approved them.
@@ -36,6 +37,12 @@ const HP = { ghoul: 300, hound: 190, wraith: 260, viper: 230, priest: 450, execu
 const AFFINITY = {
   hound: { affinity_6: "VU", affinity_8: "NA" },  // Fire weakness (beasts fear fire)
   viper: { affinity_7: "VU", affinity_8: "NA" },  // Ice weakness (cold-blooded)
+};
+// pass 4 (user): weapon efficiency for the three Nox that had none, read off the sprites.
+const WEAPON_EF = {
+  viper: { sword_ef: "150", brawling_ef: "75" },      // a blade cuts the thin hood; fists sink into coils
+  wraith: { arcane_ef: "150", bow_ef: "75" },         // magic bites a spirit; arrows pass through rags
+  executioner: { flail_ef: "150", dagger_ef: "75" },  // a flail wraps the shield; small blades slide off plate
 };
 const STUDY_HINT = {
   hound: ["It shies from <strong>light</strong>.", "It shies from <strong>fire</strong>."],
@@ -168,6 +175,11 @@ export async function migrate(game, log) {
     const p = a.system?.props ?? {};
     if (Number(p.max_hp) !== hp) { await a.update({ "system.props.max_hp": String(hp), "system.props.current_hp": String(hp) }); out.push(`${a.name}: HP ${p.max_hp} -> ${hp}`); }
     await setScale(a, SCALE_NOX[k], out);
+    if (WEAPON_EF[k]) {
+      const upd = {};
+      for (const [key, v] of Object.entries(WEAPON_EF[k])) if (String(p[key]) !== v) upd[`system.props.${key}`] = v;
+      if (Object.keys(upd).length) { await a.update(upd); out.push(`${a.name}: weapon efficiency ${Object.entries(WEAPON_EF[k]).map(([s, v]) => s.replace("_ef", "") + " " + v).join(", ")}`); }
+    }
     if (AFFINITY[k]) {
       const upd = {};
       for (const [slot, v] of Object.entries(AFFINITY[k])) if (p[slot] !== v) upd[`system.props.${slot}`] = v;

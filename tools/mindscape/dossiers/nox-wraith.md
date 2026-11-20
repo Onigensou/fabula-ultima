@@ -35,6 +35,7 @@ HP 260 (was 130), DEF 9, MDEF 11. Soul Ripper ~60 (pass 2). Design page: https:/
 | 2026-11-20 | Pass 2: HP 210 → 260 (soldiers another ×1.25) | re-run after pass 1 still 2.5 rounds / 84% party HP; elites already at 3.3 rounds | user (go), claude (numbers) | re-run pending |
 | 2026-11-20 | Pass 2: +20% average hit: Soul Ripper HR+43→53 | same re-run; target party ends nearer 60-70% | user (go), claude (numbers) | re-run pending |
 | 2026-11-20 | Pass 3: +25% average hit: Soul Ripper HR+53→68 | same rounds, lower party HP (pass 2: 2.9 rounds, 83% party HP) | user (go), claude (numbers) | re-run pending |
+| 2026-11-20 | Weapon efficiency: Arcane 150, Bow 75 | had none; read off the sprite: magic bites a spirit, arrows pass through the rags | user (go), claude (flavour) | re-run pending |
 
 ```json dossier
 {
