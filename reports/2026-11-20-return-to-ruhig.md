@@ -4,7 +4,8 @@ The rebuilt Ruhig (`Ruhig_Village011`) gets its story: Rume welcomes the party b
 
 ## What you need to do
 - Pull and restart the server (new script files in `module.json`).
-- Nothing else: the scenes and the new actor ship in the world data commit, and save slots 1 and 3 already carry the new tokens and tiles.
+- Nothing else for the world: the scenes and the new actor ship in the world data commit.
+- **Your save slots:** a slot that holds `Ruhig_Village011` would, on Load, delete the new Pomme, door and welcome objects and put back Rume's and Willy's old talk rows. I patched my slot 1 (the only one of mine holding that scene). If one of yours holds it, say so and I'll send the merge (new tokens/tiles in, Rume and Willy token flags updated, nothing else touched). `Ruhig_Village008` isn't saved by slots, and actor flags merge on Load, so Willy keeps his duelist setup.
 
 ## In the game
 | Where | What |
