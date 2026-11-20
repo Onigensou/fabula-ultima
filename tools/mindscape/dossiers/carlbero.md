@@ -44,6 +44,7 @@ grabbing a PC and draining them.
 | 2026-08-31 | Mind Sap drain 10 | breath must be re-earned, not fire every round | claude | — |
 | 2026-09-01 | Retext: study/trait flavour + Breath description | action-text voice | user | — |
 | 2026-10-31 | IM Charm | solo elite rule: a charmed solo monster has its gameplan shut down | user | — |
+| 2026-11-20 | Token scale 2.35 → 2.57 (all maps) | Sealed Cavern Battler Scale mockup (settles the scale question) | user | — |
 
 ```json dossier
 {

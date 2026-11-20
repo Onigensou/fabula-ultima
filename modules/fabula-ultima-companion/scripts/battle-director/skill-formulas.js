@@ -4061,6 +4061,20 @@ export function isHealReversedActor(actor) {
   return actorHasNamedStatus(actor, "zombie");
 }
 
+// Revive-kill immunity (2026-11-20, user: "Nidhogg must not die instantly to
+// revive effects"). An actor flagged `flags.fabula-ultima-companion.reviveKillImmune`
+// is never defeated by a revive cast on it while it lives, even if it is Undead or
+// Zombie'd, and is never offered as a revive target. Healing reversal is untouched.
+export function isReviveKillImmune(actor) {
+  const v = actor?.flags?.["fabula-ultima-companion"]?.reviveKillImmune;
+  return v === true || String(v ?? "").trim().toLowerCase() === "true";
+}
+
+/** A LIVING creature a KO-ally revive would defeat outright (Revive on Undead, A2). */
+export function isReviveKillTarget(actor) {
+  return isHealReversedActor(actor) && !isReviveKillImmune(actor);
+}
+
 export function rowIgnoresUndead(row) {
   const v = row?.heal_ignore_undead;
   return v === true || String(v ?? "").trim().toLowerCase() === "true";

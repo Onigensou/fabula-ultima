@@ -20,7 +20,7 @@
 import { log, warn } from "./logger.js";
 import { watchGone } from "./player-presence.js";
 import { stageOf } from "./director-camera.js";
-import { shortSkillName, evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, applyHealReceiving, applyMpReceiving, arcanumQuickSummonLock, shouldReverseHeal, isHealReversedActor, rowIgnoresUndead } from "./skill-formulas.js";
+import { shortSkillName, evaluateFormula, buildSkillResolver, isFormulaString, resolveRestoreParts, sumRestoreParts, applyGrantAdjust, applyAdjustOp, readAdjustment, applyHealReceiving, applyMpReceiving, arcanumQuickSummonLock, shouldReverseHeal, isHealReversedActor, isReviveKillImmune, rowIgnoresUndead } from "./skill-formulas.js";
 import { pickFromList } from "./list-picker.js";
 import { polymorphItemInPlay } from "../polymorph/polymorph-gates.js";
 // The amount selector lives in its own leaf module so remote-pick can render it
@@ -6646,6 +6646,8 @@ async function setResourceApply(row, ctx, { resource, amountFormula, targetRef }
     const actor = token.actor;
     if (!actor) continue;
     if (reviveOnUndead && readPropNum(actor, ["current_hp", "hp"]) > 0 && isHealReversedActor(actor)) {
+      // A revive-kill-immune creature (Nidhogg) shrugs the revive off: no kill, no HP.
+      if (isReviveKillImmune(actor)) { log(`skill-effects: ${actor.name} is immune to revive kills — revive has no effect`); continue; }
       const rev = await applyReviveOnUndead({ actor, token, row, ctx });
       if (rev) applied.push(rev);
       continue;

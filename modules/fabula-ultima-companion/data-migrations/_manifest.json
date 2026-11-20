@@ -671,6 +671,11 @@
     {
       "key": "2026-11-20-nox-legion-author",
       "path": "data-migrations/2026-11-20-nox-legion-author.js"
+    },
+    {
+      "key": "2026-11-20-nox-legion-tuning",
+      "path": "data-migrations/2026-11-20-nox-legion-tuning.js",
+      "idempotent": true
     }
   ]
 }

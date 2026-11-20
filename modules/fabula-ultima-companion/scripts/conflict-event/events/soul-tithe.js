@@ -395,6 +395,32 @@ function markAeData(round) {
   };
 }
 
+// "Called" marker (Nox Legion tuning, 2026-11-20). A fragment that has Called at
+// least once carries this visible status, so the AI can read what the eaters
+// need (`creature_has_status "Called"` on Devour Soul / Soul Sever) and players
+// can see which fragments a Fragment Eater may take. The source of truth stays
+// `soulCalledRound` on the mark; the marker only mirrors it and never decides.
+export const CALLED_STATUS = "Called";
+
+function calledAeData() {
+  return {
+    name: CALLED_STATUS,
+    img: "icons/svg/eye.svg",
+    transfer: false,
+    disabled: false,
+    changes: [],
+    description: "<p>This Soul Fragment has Called. A Fragment Eater can now take it.</p>",
+    flags: { [FLAG_NS]: { soulCalledMark: true, directorPermanent: true, conflictScoped: true } },
+  };
+}
+
+async function markCalled(actor) {
+  try {
+    if (!actor || actor.effects?.find?.((e) => e?.flags?.[FLAG_NS]?.soulCalledMark === true)) return;
+    await actor.createEmbeddedDocuments("ActiveEffect", [calledAeData()]);
+  } catch (e) { console.warn("[soul-tithe] Called marker failed", e); }
+}
+
 async function spawnFragment(ctx, owner, slot, amount, round, { hold = false } = {}) {
   const template = findFragmentTemplate();
   if (!template) {
@@ -596,6 +622,8 @@ async function reconcileFragments(ctx) {
   for (const c of fragmentCombatants(ctx)) {
     const hp = propNum(c.actorDoc, "current_hp");
     if (hp <= 0) continue;
+    // An F5 between the Calling stamp and its marker leaves the marker missing.
+    if (fragmentState(c.actorDoc).calledRound > 0) await markCalled(c.actorDoc);
     const owner = players(ctx).find((p) => p.actorDoc?.uuid === ownerUuidOf(c));
     if (!owner) continue;
     // Max is written before HP, so an F5 between them leaves the owner above their bar.
@@ -708,6 +736,7 @@ async function runCallings(ctx, round) {
     // The stamp first: an F5 inside these writes cannot steal twice, and
     // reconcileFragments squares the two sides on the re-run.
     await markAe(c.actorDoc)?.update({ [`flags.${FLAG_NS}.soulCalledRound`]: round });
+    await markCalled(c.actorDoc);
     if (r.stolen <= 0) continue;
     await addStolen(actor, r.stolen);
     await actor.update({ "system.props.current_hp": r.ownerHp }, { diff: false });

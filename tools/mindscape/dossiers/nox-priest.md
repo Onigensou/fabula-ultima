@@ -1,0 +1,69 @@
+# Nox Priest
+
+> **Status: draft** — scaffolded from the sheet 2026-11-20. Fill the prose, move
+> the deliberate ones from `candidate_exceptions` into `exceptions` (with a reason), add the
+> invariants the gimmick depends on.
+
+## Identity & role
+
+- Actor `QlhI0YQZ0uqRKTLb`. elite L46, UNDEAD, 1 turn(s), HP 300.
+- Sealed Cavern (Valley_Map010) random encounter: the Nox Legion, Nidhogg's brainwashed servants. Secret end-game area; pace target 3-4 rounds (user 2026-11-20).
+- Area rules (user): every Nox is Undead (VU Light, IM Dark/Poison/Poisoned); healing damages it in full (FF style); a Phoenix Feather or Hope defeats it outright, elites included. Fragment Eater: an eaten Soul Fragment pays no refund until battle end.
+
+## Concept
+
+Elite caster, the cog of the Soul Tithe: every fragment the party destroys refills its MP for Zombie Plague, Gravis and Lux Finis.
+
+## The gimmick
+
+- **Soul Siphon**: +30 MP whenever any Soul Fragment is destroyed.
+- **Zombie Plague**: all enemies, DL13 MIG+WLP or Zombie (Zombie now counts on the victim's turns and outlives the Priest, 2026-11-20).
+- **Lux Finis**: Light, HR+62, at most 2 Zombie'd targets, Opportunity Blind (not +20%).
+- **Revive**: 30 MP, 1 turn in 3, once per battle; kills a Zombie'd or Undead target; can only target one (2026-11-20).
+- **Gravis**: 25% of current HP to all, never kills. **Nox Tome** HR+20 when dry.
+
+## Numbers & targets
+
+HP 450 (was 300), MP 106, DEF 9, MDEF 14. Design page: https://claude.ai/artifact/YNJFffhKfc9ZM2dc16PiEs
+
+## Decision log
+
+| Date | Change | Why | Decided by | Result |
+|---|---|---|---|---|
+| 2026-11-20 | Built (first wiring pass, v1.0.636) from design page rev 38 | user-designed kit | user | sandbox-verified; 113-sim playtest |
+| 2026-11-20 | HP 300 → 450 (elite ×1.5) | pace 3-4 rounds for a secret end-game area (113-sim playtest: 2.1 rounds, 90% party HP) | user (pace), claude (numbers) | re-run pending |
+| 2026-11-20 | Revive target_eligibility HAS_STATUS_ZOMBIE == 1 \|\| SPECIES_IS_UNDEAD == 1 | a playtest Revive went to a non-Zombie player and did nothing | user | — |
+| 2026-11-20 | Zombie no longer reaped when the Priest falls | "that's not how debuff work" | user | — |
+| 2026-11-20 | Token scale 1.47 → 2.26 | Battler Scale mockup | user | — |
+
+```json dossier
+{
+  "monster": "Nox Priest",
+  "actorId": "QlhI0YQZ0uqRKTLb",
+  "status": "draft",
+  "updated": "2026-11-20",
+  "role": "Sealed Cavern (Valley_Map010) random encounter: the Nox Legion, Nidhogg's brainwashed servants. Secret end-game area; pace target 3-4 rounds (user 2026-11-20).",
+  "exceptions": [],
+  "candidate_exceptions": [
+    {
+      "rule": "basic-attack-min",
+      "action": "Nox Tome",
+      "finding": "best basic attack avg 24 < 45"
+    },
+    {
+      "rule": "resisted-min",
+      "action": "Nox Tome",
+      "finding": "resisted hit = 9% of PC HP (< 25%)"
+    },
+    {
+      "rule": "not-simulated",
+      "finding": "not simulated: Soul Siphon: trigger soul_fragment_destroyed; Revive: SPECIES_IS_UNDEAD; Lux Finis: CRIT"
+    }
+  ],
+  "invariants": [],
+  "blind_spots": [],
+  "open_questions": [
+    "Damage +20% held until the tuned re-run is reviewed (user 2026-11-20)"
+  ]
+}
+```

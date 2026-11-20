@@ -46,6 +46,7 @@ then draws the knife. **Easy to hit, hard to hurt** (re-stat 2026-09-04).
 | 2026-10-31 | AI row "Chef's Knife" picked the loot weapon of the same name, so the knife did nothing in fights; the matcher now prefers the action | found while testing the knife shot | claude | First real run: 9995 to a PC, Knife Drawn, walks out at turn end |
 | 2026-11-19 | Approach victim + Chef's Knife never target a summon or guest (IS_SUMMON/IS_GUEST); victim gone (KO'd, left) → walk restarts on a new victim; the action-list lookup still fell to the loot weapon, fixed | "always avoid summons/guests" | user (rule), claude (restart) | sandbox: knife 40/40 on the Marked PC; KO'd victim → new mark, back to step 1 |
 | 2026-11-19 | Approach walk rebuilt: planned on the floor (not token.center, which reports the drawn spot on the 3D stage), ends beside the victim on their row, 4 strides + footsteps; tether/chevron/name removed; Marked + Approach counter hidden; walk no longer undone by the turn cue's return-home | "the walk alone tells the story" | user | sandbox BD fight on FafnirCastle_Battlemap001: 3 turns, drawn size within 1% of the depth factor, Roo on Zarg's row, knife 9999 → escaped |
+| 2026-11-20 | Token scale 0.95 → 1.50 (all maps) | Sealed Cavern Battler Scale mockup, sized against the Nox Legion on the in-game stage | user | — |
 
 ```json dossier
 {

@@ -6,7 +6,7 @@
 import { warn } from "./logger.js";
 import { crisisThreshold } from "./crisis-reactor.js";
 import { getActorKind, getNpcAttackItems } from "./actor-shape.js";
-import { buildSkillResolver, evaluateFormula, isFormulaString, registerBlockedActionReader, isHealReversedActor } from "./skill-formulas.js";
+import { buildSkillResolver, evaluateFormula, isFormulaString, registerBlockedActionReader, isHealReversedActor, isReviveKillTarget } from "./skill-formulas.js";
 import { hasIgnoreActionGating, snapshotUltimaBundle } from "./domination.js";
 import { classifyActionIntent } from "./skill-intent.js";
 
@@ -1975,7 +1975,7 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
       // entry in `targetingBlocks` (see getTargetSideBlocks), not from this flag.
       isFlying: targetIsFlying(actor),
       // Living Undead / Zombie — a KO-ally revive may also aim here (A2).
-      undeadOrZombie: hp > 0 && isHealReversedActor(actor),
+      undeadOrZombie: hp > 0 && isReviveKillTarget(actor),
       targetingBlocks: Object.freeze(getTargetSideBlocks(actor).map((b) =>
         Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]), bypass: b.bypass ?? "" })
       )),
@@ -2558,7 +2558,7 @@ export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "
       // entry in `targetingBlocks` (see getTargetSideBlocks), not from this flag.
       isFlying: targetIsFlying(actor),
       // Living Undead / Zombie — a KO-ally revive may also aim here (A2).
-      undeadOrZombie: hp > 0 && isHealReversedActor(actor),
+      undeadOrZombie: hp > 0 && isReviveKillTarget(actor),
       targetingBlocks: Object.freeze(getTargetSideBlocks(actor).map((b) =>
         Object.freeze({ aeName: b.aeName, ranges: Object.freeze([...b.ranges]), bypass: b.bypass ?? "" })
       )),

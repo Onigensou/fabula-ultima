@@ -68,6 +68,16 @@ check("merge dedupes",
   S.mergeUndeadRevivePool([{ tokenUuid: "T.ghoul", undeadOrZombie: true }], enemies).map((t) => t.tokenUuid), ["T.ghoul"]);
 check("merge with no undead = KO pool",       S.mergeUndeadRevivePool(ko, [{ tokenUuid: "x" }]).length, 1);
 
+// ── revive-kill immunity (Nidhogg) ───────────────────────────────────────────
+const immune = { "fabula-ultima-companion": { reviveKillImmune: true } };
+check("immune flag read",                        F.isReviveKillImmune(actor({ flags: immune })), true);
+check("no flag = not immune",                    F.isReviveKillImmune(actor({})), false);
+check("undead + immune: not a revive-kill target", F.isReviveKillTarget(actor({ species: "UNDEAD", flags: immune })), false);
+check("zombie + immune: not a revive-kill target", F.isReviveKillTarget(actor({ flags: immune, effects: [ae("Zombie")] })), false);
+check("immune still takes heal reversal",        F.isHealReversedActor(actor({ species: "UNDEAD", flags: immune })), true);
+check("undead, no flag: revive-kill target",     F.isReviveKillTarget(actor({ species: "UNDEAD" })), true);
+check("living non-undead: not a target",         F.isReviveKillTarget(actor({ species: "MONSTER", flags: immune })), false);
+
 // ── card label (preview) ─────────────────────────────────────────────────────
 const healRow = { hit: true, grantAmount: 25, grantResource: "hp", resourceCur: 60, resourceMax: 60 };
 check("normal full-HP heal label",   C.resultLabelFor(healRow), "FULL · NO EFFECT");
