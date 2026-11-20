@@ -4,6 +4,7 @@ import {
   gp,
   normActorId,
   isShopActor,
+  tokenSellsHere,
   isTokenHidden,
   ownershipObserver,
   ownershipNone,
@@ -153,7 +154,7 @@ export class ShopOpenBackend {
       if (globalThis.FUCompanion?.api?.Spectator?.isSpectator?.()) return;
       const tok = canvas.tokens?.get(shopTokenId);
       if (!tok?.actor) return;
-      if (!isShopActor(tok.actor)) return;
+      if (!isShopActor(tok.actor) || !tokenSellsHere(tok)) return;
       await this._requestOpenShop(tok.actor.uuid);
     } catch (e) {
       this.err("openShopByTokenId failed:", e);
@@ -257,7 +258,7 @@ export class ShopOpenBackend {
       const partyIds = await this._resolvePartyActorIds(false);
       const tokens = canvas.tokens?.placeables ?? [];
 
-      const shopTokens = tokens.filter(t => t?.actor && !isTokenHidden(t) && isShopActor(t.actor));
+      const shopTokens = tokens.filter(t => t?.actor && !isTokenHidden(t) && isShopActor(t.actor) && tokenSellsHere(t));
       const partyTokens = tokens.filter(t => t?.actor && !isTokenHidden(t) && partyIds.has(t.actor.id));
 
       if (partyTokens.length === 0) {

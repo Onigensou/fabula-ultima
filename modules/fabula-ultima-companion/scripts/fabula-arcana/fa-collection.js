@@ -55,7 +55,9 @@ export async function grantCard(actor, cid) {
 }
 
 // Starter gift (Shipping Plan v1): top a character up to three common (★) cards so they can play.
-const STARTER_POOL = ["pyrefly", "skizzik", "wolf", "salamander", "manaray", "hellhound", "scorpion", "archer", "obsidrax", "gorger", "sylph", "cryo"];
+// Launch-pool commons only (fa-catalog.js): every one is in the bestiary. Aero Gorger and Sylph are future unlocks the
+// party hasn't met, so a gift must never show them (player-safe content).
+const STARTER_POOL = ["pyrefly", "skizzik", "wolf", "salamander", "manaray", "hellhound", "scorpion", "archer", "obsidrax", "cryo"];
 export async function grantStarter(actor, { rng = Math.random } = {}) {
   const owned = ownedCards(actor);
   const commons = owned.filter((cid) => Catalog()?.CARDS?.[cid]?.cost === 1);

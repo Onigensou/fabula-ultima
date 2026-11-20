@@ -3067,6 +3067,7 @@ if (!window.FA_NET_MODE){ formDefaultLoad(); render(); }
     if (spectator()) return { note:'', btns:[leave] };
     if (more) return { note:'', btns:[
       NET.nextSent ? { id:'ob-next', label:`Waiting for ${NET.oppName}…`, go:true, disabled:true } : { id:'ob-next', label:`Next game (Game ${sr.game + 1})`, go:true, act:() => { NET.nextSent = true; send({ t:'next' }); fillEndButtons(); renderPicker(); } }, leave] };
+    if (NET.lobby && NET.lobby.noRematch) return { note:'', btns:[leave] };   // a story event's duel is played once
     const lbl = sr && sr.bestOf > 1 ? 'New series' : 'Rematch';
     const again = R.oppLeft ? { id:'ob-again', label:lbl, go:true, disabled:true }
       : R.me ? { id:'ob-again', label:`Waiting for ${NET.oppName}…`, go:true, disabled:true }

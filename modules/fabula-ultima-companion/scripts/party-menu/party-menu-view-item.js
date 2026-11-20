@@ -6,7 +6,7 @@
 // party; moving follows moveRefusal (party-menu-inventory.js).
 
 import {
-  ITEM_TYPES, ITEM_FILTERS, itemType, sortedInventory, itemSummary, quantityOf, isWorn,
+  ITEM_TYPES, visibleItemFilters, itemType, sortedInventory, itemSummary, quantityOf, isWorn,
   bagsOf, moveRefusal, moveItem, useRefusal, useItem, orbmentOf,
 } from "./party-menu-inventory.js";
 import { esc, safeHtml, play, SND, img, gridStep, portraitStrip, overlayFoot, kbd } from "./party-menu-ui.js";
@@ -115,7 +115,9 @@ export const itemView = {
     const sel = current(ctx);
     const isParty = bag.id === roster.db?.id;
 
-    const tabs = ITEM_FILTERS.map((f) => `
+    const filters = visibleItemFilters();
+    if (!filters.some((f) => f.id === v.filter)) v.filter = "all";
+    const tabs = filters.map((f) => `
       <span class="pm-tab pm-hit ${v.filter === f.id ? "is-on" : ""}" data-action="it-filter" data-id="${f.id}"><i class="fas ${f.icon}"></i>${esc(f.label)}</span>`).join("");
 
     let last = null;
@@ -358,8 +360,8 @@ export const itemView = {
     if (k === "q" || k === "Q" || k === "PageUp") return this.cycleBag(ctx, -1);
     if (k === "e" || k === "E" || k === "PageDown") return this.cycleBag(ctx, 1);
     if (k === "Tab") {
-      const i = ITEM_FILTERS.findIndex((f) => f.id === v.filter);
-      return this.setFilter(ctx, ITEM_FILTERS[(i + (ev.shiftKey ? -1 : 1) + ITEM_FILTERS.length) % ITEM_FILTERS.length].id);
+      const fs = visibleItemFilters(), i = fs.findIndex((f) => f.id === v.filter);
+      return this.setFilter(ctx, fs[(i + (ev.shiftKey ? -1 : 1) + fs.length) % fs.length].id);
     }
     if (k === "Escape") return ctx.back();
     if (k === "o" || k === "O") { _orbPips = !_orbPips; play(SND.ok, 0.45); ctx.render(); return; }
