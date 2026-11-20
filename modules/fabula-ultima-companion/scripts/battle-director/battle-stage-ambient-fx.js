@@ -18,14 +18,19 @@
 //
 // Kinds: gust puff mist drip bark wash embers dust leaves flame smoke torch
 //        ripple shaft glint flutter fogbank cloud
+//        beam pulse motes haze rain splash bubble slime flash   (2026-11-20,
+//        Valley boss arenas mockup; speeds there were per 60 fps frame, here per second)
+// Graphics-drawn kinds (rain splash bubble slime flash) take n: 1 and count
+// their drops with their own key, so they cost no sprites.
 // ============================================================================
 
 const rnd = (a, b) => a + Math.random() * (b - a);
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 const hex = (s) => (typeof s === "number" ? s : parseInt(String(s).replace("#", ""), 16));
 
-export const AMBIENT_FX_KINDS = Object.freeze(["gust", "puff", "mist", "drip", "bark", "wash", "embers", "dust", "leaves", "flame", "smoke", "torch", "ripple", "shaft", "glint", "flutter", "fogbank", "cloud"]);
-const FRONT = new Set(["gust", "embers", "dust", "leaves", "fogbank", "flutter"]);
+export const AMBIENT_FX_KINDS = Object.freeze(["gust", "puff", "mist", "drip", "bark", "wash", "embers", "dust", "leaves", "flame", "smoke", "torch", "ripple", "shaft", "glint", "flutter", "fogbank", "cloud",
+  "beam", "pulse", "motes", "haze", "rain", "splash", "bubble", "slime", "flash"]);
+const FRONT = new Set(["gust", "embers", "dust", "leaves", "fogbank", "flutter", "rain", "flash"]);
 
 function canvasTex(w, h, paint) {
   const c = document.createElement("canvas");
@@ -47,6 +52,9 @@ export function createAmbientFx(list, { back, front, pin }) {
   const tex = {
     glow: radial(0, 128), core: radial(0.15, 64), mist: radial(0, 256),
     leaf: canvasTex(32, 16, (g) => { g.fillStyle = "#fff"; g.beginPath(); g.ellipse(16, 8, 15, 7, 0, 0, Math.PI * 2); g.fill(); }),
+    // beam: full at the top edge, fading to nothing at the bottom (anchor top-centre)
+    beam: canvasTex(32, 256, (g) => { const gr = g.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, "rgba(255,255,255,1)"); gr.addColorStop(1, "rgba(255,255,255,0)"); g.fillStyle = gr; g.fillRect(0, 0, 32, 256); }),
+    dot: canvasTex(16, 16, (g) => { g.fillStyle = "#fff"; g.beginPath(); g.arc(8, 8, 7.5, 0, Math.PI * 2); g.fill(); }),
   };
   const shaftTex = new Map();
   const gfxBack = new PIXI.Graphics(); gfxBack.blendMode = PIXI.BLEND_MODES.ADD; back.addChild(gfxBack);
@@ -85,6 +93,15 @@ export function createAmbientFx(list, { back, front, pin }) {
       case "flutter": { const a = f.at[i % f.at.length]; p.bx = a[0]; p.by = a[1]; p.ph = rnd(0, 6); p.c = hex(f.colors[i % f.colors.length]); break; }
       case "fogbank": p.a = f.at[i % f.at.length]; p.ph = rnd(0, 6.28); p.off = rnd(0, 2560); break;
       case "cloud": p.x = first ? rnd(-600, 2560) : -900; p.y = rnd(400, 1150); p.r = rnd(500, 820); p.v = f.speed * rnd(0.8, 1.2); break;
+      case "beam": case "pulse": p.a = f.at[i % f.at.length]; break;
+      case "motes": { const [x, y, w, h] = f.area; p.x = rnd(x, x + w); p.y = rnd(y, y + h); p.vx = rnd(-9, 9); p.vy = rnd(-7, 3); p.r = rnd(1.5, 3.5); p.ph = rnd(0, 6.28); break; }
+      case "haze": { const [x, y, w, h] = f.area; p.x = rnd(x, x + w); p.y = rnd(y, y + h); p.rx = rnd(160, 320); p.ry = f.low ? rnd(40, 80) : rnd(70, 140);
+        p.vx = rnd(9, 27) * (Math.random() < 0.5 ? -1 : 1); p.vy = f.rise ?? 0; p.ph = rnd(0, 6.28); break; }
+      case "rain": p.drops = Array.from({ length: f.drops ?? 150 }, () => ({ x: rnd(0, 2560), y: rnd(-1270, 1270), v: rnd(960, 1440), l: rnd(26, 46) })); break;
+      case "splash": { const [x, y, w, h] = f.area; p.rips = Array.from({ length: f.count ?? 10 }, () => ({ x: rnd(x, x + w), y: rnd(y, y + h), t: rnd(0, 1) })); break; }
+      case "bubble": { const [x, y, w, h] = f.at; p.bubs = Array.from({ length: f.count ?? 9 }, () => ({ x: rnd(x - w / 2, x + w / 2), y: rnd(y - h / 2, y + h / 2), t: rnd(0, 1), s: rnd(0.4, 0.8) })); break; }
+      case "slime": p.drops = f.xs.map((x) => ({ x, y: rnd(f.y0, f.y1), v: rnd(90, 180), y1: f.y1 + rnd(80, 220) })); break;
+      case "flash": p.f1 = 0; break;
     }
   }
 
@@ -108,6 +125,10 @@ export function createAmbientFx(list, { back, front, pin }) {
         case "glint": p.s = [sprite(tex.core, f.color, ADD, L)]; break;
         case "fogbank": p.s = [0, 1, 2].map(() => sprite(tex.mist, f.color, SCREEN, L)); break;
         case "cloud": p.s = [sprite(tex.mist, 0x000000, NORMAL, L)]; break;
+        case "beam": { const b = sprite(tex.beam, f.color, SCREEN, L); b.anchor.set(0.5, 0); p.s = [b]; break; }
+        case "pulse": p.s = [sprite(tex.glow, f.color, SCREEN, L)]; break;
+        case "motes": p.s = [sprite(tex.dot, f.color, NORMAL, L)]; break;
+        case "haze": p.s = [sprite(tex.mist, f.color, NORMAL, f.low ? front : back)]; break;
         case "shaft": {
           const [, , w, h] = p.a, key = `${w}x${h}`;
           if (!shaftTex.has(key)) shaftTex.set(key, canvasTex(256, 256, (g) => {
@@ -142,6 +163,15 @@ export function createAmbientFx(list, { back, front, pin }) {
         case "embers": case "dust": p.age += dt; p.x += p.vx * dt + Math.sin(t * 1.3 + p.seed) * 6 * dt; p.y += p.vy * dt; if (p.age > p.life) spawn(p, false); break;
         case "leaves": p.y += p.vy * dt; p.x += (p.vx + Math.sin(t * 1.6 + p.ph) * 40) * dt; p.rot += dt * 2.2; if (p.y > 1320 || p.y < -80) spawn(p, false); break;
         case "cloud": p.x += p.v * dt; if (p.x > 3400) spawn(p, false); break;
+        case "motes": { const [x, y, w, h] = f.area; p.x += p.vx * dt; p.y += p.vy * dt;
+          if (p.y < y) p.y = y + h; if (p.y > y + h) p.y = y; if (p.x < x) p.x = x + w; if (p.x > x + w) p.x = x; break; }
+        case "haze": { const [x, y, w, h] = f.area; p.x += p.vx * dt; p.y += p.vy * dt;
+          if (p.x - p.rx > x + w) p.x = x - p.rx; if (p.x + p.rx < x) p.x = x + w + p.rx; if (p.y < y - 40) p.y = y + h; break; }
+        case "rain": for (const d of p.drops) { d.y += d.v * dt; d.x -= d.v * 0.18 * dt; if (d.y > 1270) { d.y = rnd(-200, 0); d.x = rnd(0, 2700); } } break;
+        case "splash": { const [x, y, w, h] = f.area; for (const r of p.rips) { r.t += 0.72 * dt; if (r.t > 1) { r.t = 0; r.x = rnd(x, x + w); r.y = rnd(y, y + h); } } break; }
+        case "bubble": { const [x, y, w, h] = f.at; for (const b of p.bubs) { b.t += 0.6 * dt * b.s; if (b.t > 1) { b.t = 0; b.x = rnd(x - w / 2, x + w / 2); b.y = rnd(y - h / 2, y + h / 2); } } break; }
+        case "slime": for (const d of p.drops) { d.y += d.v * dt; if (d.y > d.y1) { d.y = f.y0; d.v = rnd(90, 180); } } break;
+        case "flash": if (Math.random() < dt / (f.every ?? 7)) p.f1 = 1; if (p.f1 > 0) p.f1 = Math.max(0, p.f1 - 3.6 * dt); break;
       }
     }
   }
@@ -201,6 +231,25 @@ export function createAmbientFx(list, { back, front, pin }) {
             for (let j = 0; j < 2; j++) { const kk = (p.life - 0.35 - j * 0.28) / 1.6; if (kk <= 0 || kk >= 1) continue;
               const rx = (4 + 30 * kk) * q.s * 1.3; gfxBack.lineStyle(1.7 * q.s, 0xbec3ff, 0.42 * (1 - kk) * k); gfxBack.drawEllipse(q.x, q.y, rx, rx * 0.42); } }
           break; }
+        case "beam": { const [x, y, w, h, rot = 0] = p.a; place(s[0], x, y, w, h, (f.alpha ?? 0.1) * (1 + 0.5 * Math.sin(t * 0.7 + x)) * k, rot); break; }
+        case "pulse": { const [x, y, r] = p.a; place(s[0], x, y, r * 2, r * 2, (f.alpha ?? 0.15) * (0.75 + 0.25 * Math.sin(t * 5.3 + x) * Math.sin(t * 2.1 + y)) * k); break; }
+        case "motes": place(s[0], p.x, p.y, p.r * 2, p.r * 2, (0.35 + 0.3 * Math.sin(t * 2 + p.ph)) * k); break;
+        case "haze": place(s[0], p.x, p.y, p.rx * 2, p.ry * 2, f.alpha * (0.7 + 0.3 * Math.sin(t * 0.4 + p.ph)) * k); break;
+        case "rain": { const c = hex(f.color ?? "#cdc3f0");
+          for (const d of p.drops) { const q = pin(d.x, d.y); gfxFront.lineStyle(1.6 * q.s, c, (f.alpha ?? 0.28) * k); gfxFront.moveTo(q.x, q.y); gfxFront.lineTo(q.x + d.l * 0.18 * q.s, q.y - d.l * q.s); }
+          break; }
+        case "splash": { const c = hex(f.color ?? "#d2c8ff");
+          for (const r of p.rips) { const q = pin(r.x, r.y), rr = (6 + r.t * 34) * q.s; gfxBack.lineStyle(2 * q.s, c, 0.35 * (1 - r.t) * k); gfxBack.drawEllipse(q.x, q.y, rr, rr * 0.32); }
+          break; }
+        case "bubble": { const c = hex(f.color ?? "#c8ff78");
+          for (const b of p.bubs) { const q = pin(b.x, b.y - b.t * 10), r = (3 + b.t * 11) * q.s;
+            gfxBack.lineStyle(2 * q.s, c, 0.7 * (1 - b.t) * k); gfxBack.beginFill(c, 0.18 * (1 - b.t) * k); gfxBack.drawEllipse(q.x, q.y, r, r * 0.7); gfxBack.endFill(); }
+          break; }
+        case "slime": { const c = hex(f.color ?? "#aaff5a");
+          for (const d of p.drops) { const q = pin(d.x, d.y); gfxBack.lineStyle(0); gfxBack.beginFill(c, 0.75 * k); gfxBack.drawEllipse(q.x, q.y, 3 * q.s, 6 * q.s); gfxBack.endFill(); }
+          break; }
+        case "flash": { if (p.f1 <= 0) break;   // whole view, not pinned: the flash is the sky lighting up
+          gfxFront.lineStyle(0); gfxFront.beginFill(hex(f.color ?? "#d2beff"), (f.alpha ?? 0.22) * p.f1 * k); gfxFront.drawRect(-3000, -3000, 9000, 8000); gfxFront.endFill(); break; }
         case "flutter": {
           const x = p.bx + Math.sin(t * 0.4 + p.ph) * 140 + Math.sin(t * 1.1 + p.ph) * 40, y = p.by + Math.sin(t * 0.7 + p.ph * 2) * 50, q = pin(x, y);
           const w = (Math.abs(Math.sin(t * 14 + p.ph)) * 7 + 1) * q.s;
