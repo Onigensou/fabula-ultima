@@ -1250,6 +1250,83 @@
       "type": "base"
     },
     {
+      "_id": "CorrodedAE000001",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795136046557,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_defense",
+          "mode": 2,
+          "priority": 20,
+          "value": "-2"
+        }
+      ],
+      "description": "<p>Venom eats the armour: <strong>−2 Defense</strong> for each stack, up to 5 stacks. Lasts until the battle ends and cannot be cleansed.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": null,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "isPredefined": true,
+          "originalId": "CorrodedAE000001",
+          "originalParentId": "XVOWOq9oUmEECGrU",
+          "originalUuid": "Item.XVOWOq9oUmEECGrU.ActiveEffect.CorrodedAE000001"
+        },
+        "dfreds-convenient-effects": {
+          "ceEffectId": "corroded",
+          "isBackup": false,
+          "isConvenient": true,
+          "isDynamic": false,
+          "isTemporary": false,
+          "isViewable": true
+        },
+        "fabula-ultima-companion": {
+          "conflictScoped": true,
+          "crossScene": false,
+          "lifetimeMode": "persistent_counter",
+          "uncleansable": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/14_SMN/bio.png",
+      "name": "Corroded",
+      "origin": null,
+      "sort": 0,
+      "statuses": [
+        "CorrodedStatId01"
+      ],
+      "system": {
+        "tags": [
+          "debuff",
+          "corroded"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
       "_id": "D3F2Clh5RjGtHJDl",
       "_stats": {
         "compendiumSource": null,
@@ -4066,7 +4143,14 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "changes": [],
+      "changes": [
+        {
+          "key": "flags.fabula-ultima-companion.species_override",
+          "mode": 5,
+          "priority": 20,
+          "value": "UNDEAD"
+        }
+      ],
       "description": "<p>Convert <strong>Healing </strong>into <strong>Damage </strong>and gain the <strong>Undead </strong>type</p>",
       "disabled": false,
       "duration": {

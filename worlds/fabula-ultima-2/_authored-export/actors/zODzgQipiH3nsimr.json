@@ -491,7 +491,14 @@
             "systemId": "custom-system-builder",
             "systemVersion": "4.8.5"
           },
-          "changes": [],
+          "changes": [
+            {
+              "key": "flags.fabula-ultima-companion.species_override",
+              "mode": 5,
+              "priority": 20,
+              "value": "UNDEAD"
+            }
+          ],
           "description": "<p>Convert <strong>Healing </strong>into <strong>Damage </strong>and gain the <strong>Undead </strong>type</p>",
           "disabled": false,
           "duration": {

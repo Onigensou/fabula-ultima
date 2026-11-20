@@ -219,7 +219,7 @@
                           "name": "Rakshasa Spared",
                           "slot": "A",
                           "value": "off",
-                          "id": "aYCq2ZnIPEQRkzyv"
+                          "id": "x1NLTVaDe48XLtwV"
                         },
                         {
                           "type": "setSwitch",
@@ -227,26 +227,1211 @@
                           "name": "Rakshasa Defeated",
                           "slot": "A",
                           "value": "on",
-                          "id": "D9hDKJ69mdHV7Vi9"
+                          "id": "iPJpcv8KpgcVQwiZ"
                         },
                         {
-                          "type": "setToken",
+                          "type": "setFacing",
+                          "target": "party",
                           "name": "Rakshasa",
-                          "visibility": "hide",
-                          "tint": "keep",
-                          "color": "#16102a",
-                          "direction": "up",
-                          "smoke": false,
+                          "direction": "towardToken",
+                          "id": "fxGqT5iKiiSQmHdX"
+                        },
+                        {
+                          "type": "setFacing",
+                          "target": "token",
+                          "name": "Rakshasa",
+                          "direction": "towardParty",
+                          "id": "Z5hkJmhmOnVUTiiq"
+                        },
+                        {
+                          "type": "screenEffect",
+                          "effect": "letterboxIn",
+                          "color": "#000000",
+                          "strength": 0.11,
+                          "seconds": 0.6,
+                          "wait": false,
+                          "id": "YHf3IvXP0Q0pzGB9"
+                        },
+                        {
+                          "type": "cameraPan",
+                          "mode": "twoShot",
+                          "dx": 0,
+                          "dy": -200,
+                          "name": "Rakshasa",
+                          "zoom": 2.2,
+                          "seconds": 0.8,
+                          "motion": "smooth",
                           "wait": true,
-                          "fadeMs": 0,
-                          "risePx": 0,
-                          "crouch": false,
-                          "tintFadeMs": 0,
-                          "id": "vN0pSQ2yp9Qhe4zo"
+                          "id": "MeYZnUSIla5BitXl"
+                        },
+                        {
+                          "type": "wait",
+                          "seconds": 1.2,
+                          "id": "chu0quDDiVeYyvpW"
+                        },
+                        {
+                          "type": "playSound",
+                          "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Growl.ogg",
+                          "volume": 0.7,
+                          "wait": false,
+                          "id": "6g3KfCHu11fBTvey"
+                        },
+                        {
+                          "type": "wait",
+                          "seconds": 0.5,
+                          "id": "KsTEvSPa4uJ0EDhC"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Rakshasa",
+                          "text": "GRRRR...!",
+                          "bubbleMode": "normal",
+                          "textSpeed": "slow",
+                          "id": "u2yPgh0RLUuZFjkk",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Portrait.png"
+                        },
+                        {
+                          "type": "cameraPan",
+                          "mode": "token",
+                          "dx": 0,
+                          "dy": -200,
+                          "name": "Rakshasa",
+                          "zoom": 3,
+                          "seconds": 1.5,
+                          "motion": "smooth",
+                          "wait": false,
+                          "id": "2i3avS9whWF8NyqX"
+                        },
+                        {
+                          "type": "showEmote",
+                          "target": "token",
+                          "name": "Rakshasa",
+                          "emote": "Ang",
+                          "side": "auto",
+                          "seconds": 1.8,
+                          "wait": false,
+                          "id": "Eem2bJT2AuIO7OXC"
+                        },
+                        {
+                          "type": "wait",
+                          "seconds": 0.5,
+                          "id": "Y7pvdcsLIHWUY1U0"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Rakshasa",
+                          "text": "How could a mere mortal be so strong...?!",
+                          "bubbleMode": "normal",
+                          "textSpeed": "slow",
+                          "id": "jq4qtHJAIs8rDbVi",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Portrait.png"
+                        },
+                        {
+                          "type": "wait",
+                          "seconds": 0.5,
+                          "id": "MWIaLwQ8fAxr7Gfv"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Rakshasa",
+                          "text": "Lord Fafnir... you have doomed me...!",
+                          "bubbleMode": "normal",
+                          "textSpeed": "slow",
+                          "id": "YLmTvhQ9RG9UPXmW",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Portrait.png"
+                        },
+                        {
+                          "type": "playSound",
+                          "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/BGS/Quake.ogg",
+                          "volume": 0.35,
+                          "wait": false,
+                          "id": "bB0NWnNY9JeymyhV"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Rakshasa",
+                          "text": "You... You promised I would never go hungry again...!",
+                          "bubbleMode": "normal",
+                          "textSpeed": "slow",
+                          "id": "TtJsm7gcZCjG5G37",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Portrait.png"
+                        },
+                        {
+                          "type": "wait",
+                          "seconds": 0.8,
+                          "id": "fv4Uw91XUrvK0ylk"
+                        },
+                        {
+                          "type": "playSound",
+                          "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Thunder7.ogg",
+                          "volume": 0.3,
+                          "wait": false,
+                          "id": "FgeV08yZ5E8m3hJR"
+                        },
+                        {
+                          "type": "screenEffect",
+                          "effect": "fadeOut",
+                          "color": "#000000",
+                          "strength": 0,
+                          "seconds": 0.8,
+                          "wait": true,
+                          "id": "HwUpCmCsqEs79laH"
+                        },
+                        {
+                          "type": "screenEffect",
+                          "effect": "letterboxOut",
+                          "color": "#000000",
+                          "strength": 0,
+                          "seconds": 0,
+                          "wait": true,
+                          "id": "xQbtKi3xAnu1Oa7B"
+                        },
+                        {
+                          "type": "showPicture",
+                          "slot": 1,
+                          "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Flashback_1.webp",
+                          "fit": "cover",
+                          "x": 50,
+                          "y": 50,
+                          "scale": 100,
+                          "opacity": 100,
+                          "rotation": 0,
+                          "blend": "normal",
+                          "fadeSeconds": 0,
+                          "tint": "memory",
+                          "sepia": 0,
+                          "grayscale": 0,
+                          "brightness": 1,
+                          "saturate": 1,
+                          "vignette": true,
+                          "grain": false,
+                          "keep": false,
+                          "wait": false,
+                          "id": "qgyuhJGAtzDKFPZA"
+                        },
+                        {
+                          "type": "wait",
+                          "seconds": 0.25,
+                          "id": "SvKTqtTDpXCLDTWi"
+                        },
+                        {
+                          "type": "playBGM",
+                          "track": "Darkness",
+                          "untilEnd": true,
+                          "id": "6cZMbWqgoztCWw3w"
+                        },
+                        {
+                          "type": "screenEffect",
+                          "effect": "fadeIn",
+                          "color": "#000000",
+                          "strength": 0,
+                          "seconds": 1.2,
+                          "wait": true,
+                          "id": "nWwS4H9JvQls4JVa"
+                        },
+                        {
+                          "type": "movePicture",
+                          "slot": 1,
+                          "x": 48,
+                          "y": 52,
+                          "scale": 105,
+                          "opacity": "",
+                          "rotation": "",
+                          "seconds": 45,
+                          "easing": "linear",
+                          "wait": false,
+                          "id": "jNVknwkFdiO42Na8"
+                        },
+                        {
+                          "type": "wait",
+                          "seconds": 0.6,
+                          "id": "0tiuyLfFZX2XV1lf"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Fafnir",
+                          "text": "Rakshasa... Thou art naught but a gluttonous swine, forever wallowing in thine own insatiable hunger.",
+                          "bubbleMode": "normal",
+                          "textSpeed": "normal",
+                          "id": "lXrgr7gEId4vOR7k",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Fafnir_Dragon_Portrait.png"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Fafnir",
+                          "text": "Yet that bottomless stomach of thine... may prove most useful to me.",
+                          "bubbleMode": "normal",
+                          "textSpeed": "normal",
+                          "id": "PfdKneSIeSxHgo0r",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Fafnir_Dragon_Portrait.png"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Fafnir",
+                          "text": "Those who dare trespass upon these mountains... and those for whom I have no further use...",
+                          "bubbleMode": "normal",
+                          "textSpeed": "normal",
+                          "id": "TonzEjr7DxaXy5Dk",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Fafnir_Dragon_Portrait.png"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Fafnir",
+                          "text": "Thou mayst devour them to thy heart's content.",
+                          "bubbleMode": "normal",
+                          "textSpeed": "normal",
+                          "id": "FTx9TfSzplDq2O2u",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Fafnir_Dragon_Portrait.png"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Rakshasa",
+                          "text": "...Eat...? As many... as I want...?",
+                          "bubbleMode": "normal",
+                          "textSpeed": "slow",
+                          "id": "zgeyleMD57ASAMJV",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Portrait.png"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Fafnir",
+                          "text": "Indeed. Serve me faithfully, and I shall grant thee a feast to last a thousand years.",
+                          "bubbleMode": "normal",
+                          "textSpeed": "normal",
+                          "id": "OnIgpjQP6B6JSVb2",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Fafnir_Dragon_Portrait.png"
+                        },
+                        {
+                          "type": "tintPicture",
+                          "slot": 1,
+                          "tint": "custom",
+                          "sepia": 0.45,
+                          "grayscale": 0.15,
+                          "brightness": 0.72,
+                          "saturate": 1,
+                          "vignette": true,
+                          "grain": false,
+                          "seconds": 1.5,
+                          "wait": false,
+                          "id": "1tJ29refwSnHvXdY"
+                        },
+                        {
+                          "type": "playSound",
+                          "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Thunder7.ogg",
+                          "volume": 0.25,
+                          "wait": false,
+                          "id": "WA7ubS7JyXiCjQNn"
+                        },
+                        {
+                          "type": "wait",
+                          "seconds": 0.9,
+                          "id": "TDCoHgTgbojCOlZg"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Fafnir",
+                          "text": "Heh heh heh... What finer fate could there be for such a ravenous beast?",
+                          "bubbleMode": "normal",
+                          "textSpeed": "normal",
+                          "id": "nAP7kqntYgC9PWDP",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Fafnir_Dragon_Portrait.png"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Fafnir",
+                          "text": "Thou shalt guard my mountains... and I shall see that thy belly is never empty.",
+                          "bubbleMode": "normal",
+                          "textSpeed": "normal",
+                          "id": "oIVFntd8UvCJr5HK",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Fafnir_Dragon_Portrait.png"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Rakshasa",
+                          "text": "Food... for a thousand years...",
+                          "bubbleMode": "normal",
+                          "textSpeed": "slow",
+                          "id": "VcpiR6Ro3why7Csu",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Portrait.png"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Rakshasa",
+                          "text": "Lord Fafnir... I will obey...",
+                          "bubbleMode": "normal",
+                          "textSpeed": "slow",
+                          "id": "L2wkpT0qZqcflils",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Portrait.png"
+                        },
+                        {
+                          "type": "wait",
+                          "seconds": 0.6,
+                          "id": "vwpZC2UA6edCKa7E"
+                        },
+                        {
+                          "type": "stopBGM",
+                          "track": "Darkness",
+                          "seconds": 0.8,
+                          "wait": false,
+                          "id": "tFpR72Gq3I4YNaWs"
+                        },
+                        {
+                          "type": "screenEffect",
+                          "effect": "fadeOut",
+                          "color": "#000000",
+                          "strength": 0,
+                          "seconds": 0.7,
+                          "wait": true,
+                          "id": "tggslji32b7j5HsJ"
+                        },
+                        {
+                          "type": "erasePicture",
+                          "slot": "all",
+                          "fadeSeconds": 0,
+                          "wait": true,
+                          "id": "J9R85PlSYOp9HMsz"
+                        },
+                        {
+                          "type": "screenEffect",
+                          "effect": "letterboxIn",
+                          "color": "#000000",
+                          "strength": 0.11,
+                          "seconds": 0,
+                          "wait": false,
+                          "id": "KWlTMaRJFCAB06if"
+                        },
+                        {
+                          "type": "setFacing",
+                          "target": "party",
+                          "name": "Rakshasa",
+                          "direction": "towardToken",
+                          "id": "ps9EOgOXcbM2Yazm"
+                        },
+                        {
+                          "type": "setFacing",
+                          "target": "token",
+                          "name": "Rakshasa",
+                          "direction": "towardParty",
+                          "id": "ch1fCxI43guZo03T"
+                        },
+                        {
+                          "type": "cameraPan",
+                          "mode": "twoShot",
+                          "dx": 0,
+                          "dy": -200,
+                          "name": "Rakshasa",
+                          "zoom": 2.2,
+                          "seconds": 0,
+                          "motion": "smooth",
+                          "wait": true,
+                          "id": "8oDJpNOfyTV6BvTR"
+                        },
+                        {
+                          "type": "screenEffect",
+                          "effect": "fadeIn",
+                          "color": "#000000",
+                          "strength": 0,
+                          "seconds": 0.7,
+                          "wait": true,
+                          "id": "6leEWnuzrWGO1ZJT"
+                        },
+                        {
+                          "type": "cameraPan",
+                          "mode": "token",
+                          "dx": 0,
+                          "dy": -200,
+                          "name": "Rakshasa",
+                          "zoom": 2.5,
+                          "seconds": 1.6,
+                          "motion": "smooth",
+                          "wait": false,
+                          "id": "NHlej9J0kOu6cHpN"
+                        },
+                        {
+                          "type": "wait",
+                          "seconds": 0.7,
+                          "id": "mRBrDzMvHqpgnvFr"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Rakshasa",
+                          "text": "GRRR...! But now... what am I supposed to eat...?!",
+                          "bubbleMode": "normal",
+                          "textSpeed": "slow",
+                          "id": "gmU3wB2plknMKan2",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Portrait.png"
+                        },
+                        {
+                          "type": "wait",
+                          "seconds": 0.5,
+                          "id": "z2UgBx5hnZbJyWE5"
+                        },
+                        {
+                          "type": "showEmote",
+                          "target": "token",
+                          "name": "Rakshasa",
+                          "emote": "Ang",
+                          "side": "auto",
+                          "seconds": 1.6,
+                          "wait": false,
+                          "id": "snpWVGBKGiSvKJtq"
+                        },
+                        {
+                          "type": "playSound",
+                          "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Monster2.ogg",
+                          "volume": 0.6,
+                          "wait": false,
+                          "id": "jPdlSuS3R1bSZI9t"
+                        },
+                        {
+                          "type": "screenEffect",
+                          "effect": "shake",
+                          "color": "#000000",
+                          "strength": 8,
+                          "seconds": 0.3,
+                          "wait": false,
+                          "id": "W2wCpF7SCFnRCK4R"
+                        },
+                        {
+                          "type": "showText",
+                          "speaker": "Rakshasa",
+                          "text": "You... YOU ruined everything!!",
+                          "bubbleMode": "shout",
+                          "textSpeed": "normal",
+                          "id": "2VDd7NMHkkm6F5Zc",
+                          "showAs": "box",
+                          "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Portrait.png"
+                        },
+                        {
+                          "type": "cameraPan",
+                          "mode": "twoShot",
+                          "dx": 0,
+                          "dy": -200,
+                          "name": "Rakshasa",
+                          "zoom": 2.2,
+                          "seconds": 0.8,
+                          "motion": "smooth",
+                          "wait": true,
+                          "id": "EnTsCHla9ZRPCSSY"
+                        },
+                        {
+                          "type": "showChoices",
+                          "prompt": "",
+                          "options": [
+                            {
+                              "id": "PGwkFLBt6RNHGmm4",
+                              "label": "Threatened",
+                              "cancel": false,
+                              "rows": [
+                                {
+                                  "type": "showEmote",
+                                  "target": "token",
+                                  "name": "Rakshasa",
+                                  "emote": "Ang",
+                                  "side": "auto",
+                                  "seconds": 1.6,
+                                  "wait": false,
+                                  "id": "grirnA19QSm5shDy"
+                                },
+                                {
+                                  "type": "playSound",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Growl.ogg",
+                                  "volume": 0.7,
+                                  "wait": false,
+                                  "id": "fzeei17xcCc84ygW"
+                                },
+                                {
+                                  "type": "screenEffect",
+                                  "effect": "shake",
+                                  "color": "#000000",
+                                  "strength": 6,
+                                  "seconds": 0.2,
+                                  "wait": false,
+                                  "id": "KnK9387BeQygJdFD"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 0.5,
+                                  "id": "Ybuy2pN48iuyLdv4"
+                                },
+                                {
+                                  "type": "showText",
+                                  "speaker": "Rakshasa",
+                                  "text": "GRRR! Do not look down upon me, mortals!!",
+                                  "bubbleMode": "shout",
+                                  "textSpeed": "normal",
+                                  "id": "LvxPMLwYjnXNw13i",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Portrait.png"
+                                },
+                                {
+                                  "type": "showText",
+                                  "speaker": "Rakshasa",
+                                  "text": "I am Rakshasa... DEMI-GOD OF THIS PIT!!",
+                                  "bubbleMode": "shout",
+                                  "textSpeed": "normal",
+                                  "id": "kWB4qgiOI6V2iFQk",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Portrait.png"
+                                }
+                              ]
+                            },
+                            {
+                              "id": "O6WBBxV1xHBk6vwf",
+                              "label": "Mercy",
+                              "cancel": false,
+                              "rows": [
+                                {
+                                  "type": "showEmote",
+                                  "target": "token",
+                                  "name": "Rakshasa",
+                                  "emote": "Que",
+                                  "side": "auto",
+                                  "seconds": 1.8,
+                                  "wait": false,
+                                  "id": "tNdbr7IMUJZ0u6Ro"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 0.6,
+                                  "id": "H8AYCXGEJwE42Sew"
+                                },
+                                {
+                                  "type": "showText",
+                                  "speaker": "Rakshasa",
+                                  "text": "GRRR...! You think I need your pity...?!",
+                                  "bubbleMode": "shout",
+                                  "textSpeed": "normal",
+                                  "id": "nSfshFdYRqC0x9ns",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Portrait.png"
+                                },
+                                {
+                                  "type": "showText",
+                                  "speaker": "Rakshasa",
+                                  "text": "I am no helpless prey...!",
+                                  "bubbleMode": "normal",
+                                  "textSpeed": "slow",
+                                  "id": "4HevDUtgIA0FxfWU",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Portrait.png"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 0.5,
+                                  "id": "XubTM7tOaUXby249"
+                                }
+                              ]
+                            }
+                          ],
+                          "roleplay": true,
+                          "roleplayLabel": "Do Something Else...",
+                          "id": "7bD0wvYC8g8ShznD"
+                        },
+                        {
+                          "type": "pauseForGM",
+                          "note": "Free narration: the party answers Rakshasa. Roleplay freely, then Continue.",
+                          "noEnd": true,
+                          "choices": [
+                            {
+                              "id": "2UUVPScqaiMm09HM",
+                              "label": "Continue",
+                              "rows": []
+                            }
+                          ],
+                          "id": "pd37lRJfiKO85AYd"
+                        },
+                        {
+                          "type": "cameraPan",
+                          "mode": "twoShot",
+                          "dx": 0,
+                          "dy": -200,
+                          "name": "Rakshasa",
+                          "zoom": 2.2,
+                          "seconds": 0.7,
+                          "motion": "smooth",
+                          "wait": true,
+                          "id": "SpVqSz3KKfEBkUGC"
+                        },
+                        {
+                          "type": "pauseForGM",
+                          "note": "How does he leave? Pick the ending that fits what the table did (Neutral if unsure).",
+                          "noEnd": true,
+                          "choices": [
+                            {
+                              "id": "9GDBK7O3ZCC2AVP8",
+                              "label": "Swayed: reluctant retreat",
+                              "rows": [
+                                {
+                                  "type": "showText",
+                                  "speaker": "Rakshasa",
+                                  "text": "Grrr... I... I don't understand...",
+                                  "bubbleMode": "normal",
+                                  "textSpeed": "slow",
+                                  "id": "sn7hjy4Lx3MzpXNo",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Portrait.png"
+                                },
+                                {
+                                  "type": "showText",
+                                  "speaker": "Rakshasa",
+                                  "text": "But... perhaps there is other food...",
+                                  "bubbleMode": "normal",
+                                  "textSpeed": "slow",
+                                  "id": "KlImOqvfwHao1bt5",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Portrait.png"
+                                },
+                                {
+                                  "type": "showText",
+                                  "speaker": "Rakshasa",
+                                  "text": "I will go... FOR NOW!!",
+                                  "bubbleMode": "shout",
+                                  "textSpeed": "normal",
+                                  "id": "NknlTLodPdu7b9Vt",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Portrait.png"
+                                },
+                                {
+                                  "type": "setFacing",
+                                  "target": "token",
+                                  "name": "Rakshasa",
+                                  "direction": "down",
+                                  "id": "FRc5nKtxi27QEfOg"
+                                },
+                                {
+                                  "type": "cameraPan",
+                                  "mode": "offset",
+                                  "dx": 0,
+                                  "dy": 60,
+                                  "name": "",
+                                  "zoom": 1.9,
+                                  "seconds": 1.1,
+                                  "motion": "smooth",
+                                  "wait": true,
+                                  "id": "3AialsfcERC8W5YN"
+                                },
+                                {
+                                  "type": "playSound",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Earth2.ogg",
+                                  "volume": 0.4,
+                                  "wait": false,
+                                  "id": "IaJYs9eKDkaBPhQx"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 1,
+                                  "id": "13g9iLQQnjQHh3uq"
+                                },
+                                {
+                                  "type": "jumpTo",
+                                  "target": "token",
+                                  "name": "Rakshasa",
+                                  "path": "self:+10,+210",
+                                  "arcPct": 60,
+                                  "hopMs": 650,
+                                  "pauseMs": 0,
+                                  "face": false,
+                                  "takeoffSrc": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Wind1.ogg",
+                                  "takeoffVolume": 0.7,
+                                  "landSrc": "",
+                                  "style": "hop",
+                                  "dust": "takeoff",
+                                  "fadeOut": true,
+                                  "id": "xlvOHMnTQXrKZjg0"
+                                },
+                                {
+                                  "type": "cameraPan",
+                                  "mode": "offset",
+                                  "dx": 0,
+                                  "dy": 120,
+                                  "name": "",
+                                  "zoom": 0,
+                                  "seconds": 0.7,
+                                  "motion": "smooth",
+                                  "wait": false,
+                                  "id": "DYZ1eOHNdtZfXlnD"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 0.5,
+                                  "id": "704Knbk2l0dCCxBO"
+                                },
+                                {
+                                  "type": "playSound",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fall.ogg",
+                                  "volume": 0.45,
+                                  "wait": false,
+                                  "id": "nA5YzgAZZZ9pZ2Li"
+                                },
+                                {
+                                  "type": "playSound",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Collapse1.ogg",
+                                  "volume": 0.3,
+                                  "wait": false,
+                                  "id": "tCFAJpaMrQ5O8v13"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 1.5,
+                                  "id": "bgCyojFwdXuMpiJS"
+                                },
+                                {
+                                  "type": "cameraPan",
+                                  "mode": "twoShot",
+                                  "dx": 0,
+                                  "dy": -200,
+                                  "name": "",
+                                  "zoom": 2.2,
+                                  "seconds": 0.9,
+                                  "motion": "smooth",
+                                  "wait": true,
+                                  "id": "WmH2zZijTlorKI9i"
+                                },
+                                {
+                                  "type": "setSwitch",
+                                  "scope": "story",
+                                  "name": "Rakshasa Outcome Swayed",
+                                  "slot": "A",
+                                  "value": "on",
+                                  "id": "zNc2iZKfMN8CJZ2y"
+                                }
+                              ]
+                            },
+                            {
+                              "id": "IPptLhxIxyRxoA4Y",
+                              "label": "Enraged: vows revenge",
+                              "rows": [
+                                {
+                                  "type": "showText",
+                                  "speaker": "Rakshasa",
+                                  "text": "GRAAAAH!! CURSE YOU ALL!!",
+                                  "bubbleMode": "shout",
+                                  "textSpeed": "normal",
+                                  "id": "yAodLDP1tkKIl7Nd",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Portrait.png"
+                                },
+                                {
+                                  "type": "playSound",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Monster4.ogg",
+                                  "volume": 0.9,
+                                  "wait": false,
+                                  "id": "GAWOoqe1JfmYjGTP"
+                                },
+                                {
+                                  "type": "screenEffect",
+                                  "effect": "shake",
+                                  "color": "#000000",
+                                  "strength": 16,
+                                  "seconds": 0.6,
+                                  "wait": false,
+                                  "id": "rm5XSIzXsP5EhAea"
+                                },
+                                {
+                                  "type": "screenEffect",
+                                  "effect": "flash",
+                                  "color": "#b9a3ff",
+                                  "strength": 0,
+                                  "seconds": 0.25,
+                                  "wait": false,
+                                  "id": "LAkue4QvPMqYXTYS"
+                                },
+                                {
+                                  "type": "playSound",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Thunder7.ogg",
+                                  "volume": 0.5,
+                                  "wait": false,
+                                  "id": "Xrq9IIx4ndXhkq3X"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 0.4,
+                                  "id": "sUZe8mmcXFJ8IkJE"
+                                },
+                                {
+                                  "type": "showText",
+                                  "speaker": "Rakshasa",
+                                  "text": "I WILL DEVOUR YOU NEXT TIME!!",
+                                  "bubbleMode": "shout",
+                                  "textSpeed": "normal",
+                                  "id": "93E9Ty4cjXA0l8c1",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Portrait.png"
+                                },
+                                {
+                                  "type": "playSound",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Explosion2.ogg",
+                                  "volume": 0.8,
+                                  "wait": false,
+                                  "id": "N3oteWYgqH0uUR0g"
+                                },
+                                {
+                                  "type": "playSound",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Crash.ogg",
+                                  "volume": 0.5,
+                                  "wait": false,
+                                  "id": "UrVfaim5hIDYO0AU"
+                                },
+                                {
+                                  "type": "screenEffect",
+                                  "effect": "shake",
+                                  "color": "#000000",
+                                  "strength": 18,
+                                  "seconds": 0.5,
+                                  "wait": false,
+                                  "id": "SBYSVRVjq4GYiQ8N"
+                                },
+                                {
+                                  "type": "playAnimation",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/smoke_anim14.webm",
+                                  "where": "token",
+                                  "name": "Rakshasa",
+                                  "fit": "contain",
+                                  "scalePct": 200,
+                                  "opacity": 1,
+                                  "layer": "front",
+                                  "additive": false,
+                                  "flatPct": 100,
+                                  "hue": 0,
+                                  "spawn": false,
+                                  "seconds": 0,
+                                  "hold": false,
+                                  "holdName": "",
+                                  "mirrorLeftOf": "",
+                                  "speed": 0.6,
+                                  "wait": false,
+                                  "id": "74FWj12yiEkEAMZf"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 0.45,
+                                  "id": "cI82KUda2JM1DvdQ"
+                                },
+                                {
+                                  "type": "jumpTo",
+                                  "target": "token",
+                                  "name": "Rakshasa",
+                                  "path": "",
+                                  "arcPct": 100,
+                                  "hopMs": 640,
+                                  "pauseMs": 220,
+                                  "face": true,
+                                  "takeoffSrc": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Wind1.ogg",
+                                  "takeoffVolume": 0.8,
+                                  "landSrc": "",
+                                  "style": "leapOut",
+                                  "dust": "takeoff",
+                                  "fadeOut": false,
+                                  "id": "zRnZ7eA2T8ikH5aP"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 0.5,
+                                  "id": "PIK8FR7SW4aEMDbv"
+                                },
+                                {
+                                  "type": "screenEffect",
+                                  "effect": "flash",
+                                  "color": "#b9a3ff",
+                                  "strength": 0,
+                                  "seconds": 0.25,
+                                  "wait": false,
+                                  "id": "o2jS3cLqG8FlrmXv"
+                                },
+                                {
+                                  "type": "playSound",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Thunder7.ogg",
+                                  "volume": 0.5,
+                                  "wait": false,
+                                  "id": "xVm4m3uUDDyT1K6o"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 0.9,
+                                  "id": "eJ1veO3FaHyUHkyI"
+                                },
+                                {
+                                  "type": "setSwitch",
+                                  "scope": "story",
+                                  "name": "Rakshasa Outcome Enraged",
+                                  "slot": "A",
+                                  "value": "on",
+                                  "id": "lmvyq6KLCTIbS4Vj"
+                                }
+                              ]
+                            },
+                            {
+                              "id": "ksyK2j7dUgybgHpj",
+                              "label": "Fearful: flees Fafnir",
+                              "rows": [
+                                {
+                                  "type": "showEmote",
+                                  "target": "token",
+                                  "name": "Rakshasa",
+                                  "emote": "Sweat",
+                                  "side": "auto",
+                                  "seconds": 2.2,
+                                  "wait": false,
+                                  "id": "a5eYvztba9Boodw7"
+                                },
+                                {
+                                  "type": "playSound",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Growl.ogg",
+                                  "volume": 0.35,
+                                  "wait": false,
+                                  "id": "CHhCRNNreeWp8JKk"
+                                },
+                                {
+                                  "type": "showText",
+                                  "speaker": "Rakshasa",
+                                  "text": "Lord Fafnir... she will be angry...!",
+                                  "bubbleMode": "normal",
+                                  "textSpeed": "slow",
+                                  "id": "T0KQ6JEkpbKB3baG",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Portrait.png"
+                                },
+                                {
+                                  "type": "showText",
+                                  "speaker": "Rakshasa",
+                                  "text": "No... No, no...! I must go!!",
+                                  "bubbleMode": "shout",
+                                  "textSpeed": "normal",
+                                  "id": "smgib7oiCgRfs6OV",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Portrait.png"
+                                },
+                                {
+                                  "type": "setFacing",
+                                  "target": "token",
+                                  "name": "Rakshasa",
+                                  "direction": "up",
+                                  "id": "JjNxe72jpBBuxqc3"
+                                },
+                                {
+                                  "type": "playSound",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Thunder7.ogg",
+                                  "volume": 0.35,
+                                  "wait": false,
+                                  "id": "c4NzqeogBDYw5AKK"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 0.9,
+                                  "id": "cy8BQcRRRajxWlNk"
+                                },
+                                {
+                                  "type": "setFacing",
+                                  "target": "token",
+                                  "name": "Rakshasa",
+                                  "direction": "down",
+                                  "id": "MNDethI9FcGwYSzI"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 0.15,
+                                  "id": "BackB3bZBmRbu6o8"
+                                },
+                                {
+                                  "type": "playSound",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Collapse1.ogg",
+                                  "volume": 0.6,
+                                  "wait": false,
+                                  "id": "RaQhDWvDG6vQBnTO"
+                                },
+                                {
+                                  "type": "screenEffect",
+                                  "effect": "shake",
+                                  "color": "#000000",
+                                  "strength": 12,
+                                  "seconds": 0.4,
+                                  "wait": false,
+                                  "id": "NIATPTnX3vFmMj4U"
+                                },
+                                {
+                                  "type": "playAnimation",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Animation/Guilty%20Gear%20Strive/webm/smoke_anim14.webm",
+                                  "where": "token",
+                                  "name": "Rakshasa",
+                                  "fit": "contain",
+                                  "scalePct": 180,
+                                  "opacity": 1,
+                                  "layer": "front",
+                                  "additive": false,
+                                  "flatPct": 100,
+                                  "hue": 0,
+                                  "spawn": false,
+                                  "seconds": 0,
+                                  "hold": false,
+                                  "holdName": "",
+                                  "mirrorLeftOf": "",
+                                  "speed": 0.7,
+                                  "wait": false,
+                                  "id": "4xR7WXTeYBbbhJhV"
+                                },
+                                {
+                                  "type": "jumpTo",
+                                  "target": "token",
+                                  "name": "Rakshasa",
+                                  "path": "self:+20,+220",
+                                  "arcPct": 40,
+                                  "hopMs": 600,
+                                  "pauseMs": 0,
+                                  "face": false,
+                                  "takeoffSrc": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Crash.ogg",
+                                  "takeoffVolume": 0.7,
+                                  "landSrc": "",
+                                  "style": "hop",
+                                  "dust": "takeoff",
+                                  "fadeOut": true,
+                                  "id": "3j2VmIwumrdRJ2Gc"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 0.5,
+                                  "id": "flRagCJUYOZKVryv"
+                                },
+                                {
+                                  "type": "playSound",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fall.ogg",
+                                  "volume": 0.4,
+                                  "wait": false,
+                                  "id": "cgIzrECN0y46mxyf"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 1.5,
+                                  "id": "wI7y4aygSdQrKEwZ"
+                                },
+                                {
+                                  "type": "setSwitch",
+                                  "scope": "story",
+                                  "name": "Rakshasa Outcome Fearful",
+                                  "slot": "A",
+                                  "value": "on",
+                                  "id": "38FMVGHpmGU5JaE8"
+                                }
+                              ]
+                            },
+                            {
+                              "id": "2lfSeJ7EGSs3caBE",
+                              "label": "Neutral: withdraws",
+                              "rows": [
+                                {
+                                  "type": "showText",
+                                  "speaker": "Rakshasa",
+                                  "text": "Grrrr... Enough...!",
+                                  "bubbleMode": "normal",
+                                  "textSpeed": "slow",
+                                  "id": "0p0FkiKRnCt9Wg2e",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Portrait.png"
+                                },
+                                {
+                                  "type": "showText",
+                                  "speaker": "Rakshasa",
+                                  "text": "I am leaving... Don't follow me...!",
+                                  "bubbleMode": "normal",
+                                  "textSpeed": "slow",
+                                  "id": "DgWDCUvDudxubmtN",
+                                  "showAs": "box",
+                                  "portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/CG/Rakshasa_Portrait.png"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 0.7,
+                                  "id": "eJhh45SrtE1tAc0S"
+                                },
+                                {
+                                  "type": "jumpTo",
+                                  "target": "token",
+                                  "name": "Rakshasa",
+                                  "path": "self:-40,+200",
+                                  "arcPct": 70,
+                                  "hopMs": 620,
+                                  "pauseMs": 0,
+                                  "face": false,
+                                  "takeoffSrc": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Wind1.ogg",
+                                  "takeoffVolume": 0.7,
+                                  "landSrc": "",
+                                  "style": "hop",
+                                  "dust": "takeoff",
+                                  "fadeOut": true,
+                                  "id": "S6qaWeFt76z0UIKM"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 0.6,
+                                  "id": "e5q93rzgleHqbOMv"
+                                },
+                                {
+                                  "type": "playSound",
+                                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Fall.ogg",
+                                  "volume": 0.4,
+                                  "wait": false,
+                                  "id": "szi97aSOj80hKogA"
+                                },
+                                {
+                                  "type": "wait",
+                                  "seconds": 1,
+                                  "id": "z2o518veONqhCluP"
+                                },
+                                {
+                                  "type": "setSwitch",
+                                  "scope": "story",
+                                  "name": "Rakshasa Outcome Neutral",
+                                  "slot": "A",
+                                  "value": "on",
+                                  "id": "TTWOw9JaFWYtG3eD"
+                                }
+                              ]
+                            }
+                          ],
+                          "id": "UrbmLDUyW2yyJZEm"
+                        },
+                        {
+                          "type": "screenEffect",
+                          "effect": "letterboxOut",
+                          "color": "#000000",
+                          "strength": 0,
+                          "seconds": 0.5,
+                          "wait": true,
+                          "id": "6wR1jZXR7KM3wwsG"
                         }
                       ],
-                      "defeatRows": [],
-                      "id": "lE4P0RO5RfPAL1HY"
+                      "defeatRows": [
+                        {
+                          "type": "pauseForGM",
+                          "note": "Free narration: the party lost to Rakshasa. Narrate what happens next, then continue.",
+                          "noEnd": true,
+                          "choices": [
+                            {
+                              "id": "kDvBg3t9OXiStYPX",
+                              "label": "Continue",
+                              "rows": []
+                            }
+                          ],
+                          "id": "9qzXDDKKp6b8gD4y"
+                        }
+                      ],
+                      "id": "lE4P0RO5RfPAL1HY",
+                      "quietReturn": true
                     }
                   ]
                 },
@@ -453,7 +1638,7 @@
           "threatLevel": "medium",
           "encounterTable": "RollTable.Oijx8ksubxq9pc1R",
           "enemiesTable": "RollTable.0LEghOv3aJyZVyVs",
-          "battleMap": "Scene.XHe8LfutYAkPuR5B",
+          "battleMap": "Scene.BRiO4VtK5UIY5PYW",
           "battleBGM": "DRG_Battle",
           "bossBGM": "DRG_Boss",
           "event": {
@@ -583,7 +1768,7 @@
       "systemId": "custom-system-builder",
       "systemVersion": "4.8.5",
       "createdTime": 1791359059497,
-      "modifiedTime": 1794834655948,
+      "modifiedTime": 1795136089244,
       "lastModifiedBy": "JQGNzKpDPHJmcUIW"
     },
     "regions": [

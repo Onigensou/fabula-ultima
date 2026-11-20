@@ -1,0 +1,183 @@
+{
+  "_id": "0A3wLpJzOfCWJdwx",
+  "_stats": {
+    "compendiumSource": null,
+    "coreVersion": "12.343",
+    "createdTime": 1795136048229,
+    "duplicateSource": null,
+    "systemId": "custom-system-builder",
+    "systemVersion": "4.8.5"
+  },
+  "description": "",
+  "displayRoll": true,
+  "flags": {
+    "better-rolltables": {
+      "table-type": null
+    },
+    "fabula-ultima-companion": {
+      "noxLegion": "enemies"
+    }
+  },
+  "folder": "AF1TjOn1OTJNHrkx",
+  "formula": "1d10",
+  "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Monster_Icon.png",
+  "name": "Valley of the Dragon Sealed Cavern - Enemies",
+  "ownership": {
+    "JQGNzKpDPHJmcUIW": 3,
+    "default": 0
+  },
+  "replacement": true,
+  "results": [
+    {
+      "_id": "6iyhQbnytu5BEi0D",
+      "documentCollection": "Actor",
+      "documentId": "CzQhpNYeo3ZI0TzH",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/NoxWraith_Standard.png",
+      "range": [
+        4,
+        4
+      ],
+      "text": "Nox Wraith",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "7DXMQ39CjIOjJAW1",
+      "documentCollection": "Actor",
+      "documentId": "B4qRdBIxFN6dZ6MT",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Carlbero_Standard.png",
+      "range": [
+        10,
+        10
+      ],
+      "text": "Carlbero",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "GKFNHNhS9tUfAMbr",
+      "documentCollection": "Actor",
+      "documentId": "QlhI0YQZ0uqRKTLb",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/NoxPriest_Standard.png",
+      "range": [
+        3,
+        3
+      ],
+      "text": "Nox Priest",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "HhHwWToAmIE4Z3Y5",
+      "documentCollection": "Actor",
+      "documentId": "HiIGOwMq8q57TeUh",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/NoxGhoul_Standard.png",
+      "range": [
+        1,
+        1
+      ],
+      "text": "Nox Ghoul",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "iTDAUCa7BG22AIh3",
+      "documentCollection": "Actor",
+      "documentId": "gXSRiFqgfMZkQnXr",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/NoxViper_Standard.png",
+      "range": [
+        5,
+        5
+      ],
+      "text": "Nox Viper",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "MoIolrKP5dK8azgy",
+      "documentCollection": "Actor",
+      "documentId": "VwClo606KbQSK6aQ",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Wraith.png",
+      "range": [
+        9,
+        9
+      ],
+      "text": "Roo",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "NYzjvO7tURlpUUuP",
+      "documentCollection": "Actor",
+      "documentId": "RFnNMvI0AtMQpwuP",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/NoxHound_Standard.png",
+      "range": [
+        2,
+        2
+      ],
+      "text": "Nox Hound",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "pJbVUQYWDkOCK7ph",
+      "documentCollection": "Actor",
+      "documentId": "lCrB0iEWzPkNrzry",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/NoxExecutioner_Standard.png",
+      "range": [
+        6,
+        6
+      ],
+      "text": "Nox Executioner",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "XjAkIORSOIlw9NhM",
+      "documentCollection": "Actor",
+      "documentId": "vmYeN1WWIF5TSjjF",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Vampire%20Bat_Standard.png",
+      "range": [
+        7,
+        7
+      ],
+      "text": "Kurona",
+      "type": "document",
+      "weight": 1
+    },
+    {
+      "_id": "zFjv56OObmi59k3g",
+      "documentCollection": "Actor",
+      "documentId": "x8TBsDZaRgoSo5no",
+      "drawn": false,
+      "flags": {},
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Obsidrax_Standard.png",
+      "range": [
+        8,
+        8
+      ],
+      "text": "Obsidrax",
+      "type": "document",
+      "weight": 1
+    }
+  ],
+  "sort": 0
+}
