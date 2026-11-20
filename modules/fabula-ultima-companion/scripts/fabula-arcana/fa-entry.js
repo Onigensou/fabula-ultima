@@ -21,8 +21,8 @@ const hidden = (t) => t?.document?.hidden === true;
 const centerOf = (token, ov = null) => ({ x: (ov?.x ?? token?.document?.x ?? token?.x ?? 0) + (token?.w ?? 0) / 2, y: (ov?.y ?? token?.document?.y ?? token?.y ?? 0) + (token?.h ?? 0) / 2 });
 
 // ------------------------------------------------------------------ who plays from this client
-async function controller() { try { return (await globalThis.FUCompanion?.api?.MovementControl?.getCurrentControllerUser?.()) ?? null; } catch { return null; } }
-async function partyMemberIds() {
+export async function controller() { try { return (await globalThis.FUCompanion?.api?.MovementControl?.getCurrentControllerUser?.()) ?? null; } catch { return null; } }
+export async function partyMemberIds() {
   const ids = new Set();
   const rtm = cameraRuntime();
   if (rtm?.state?.partyMemberIds?.size) for (const id of rtm.state.partyMemberIds) ids.add(id);
