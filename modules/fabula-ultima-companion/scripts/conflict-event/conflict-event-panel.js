@@ -7,7 +7,8 @@
 //               Battle Start plate — only when conflict-event-intro.js says so
 //               (first time per dungeon trip, or a Champion battle).
 //   tutorial    I or a click dims the screen and shows the event's rules in the
-//               middle, one page per rule, each with a shot of it happening.
+//               middle, one page per rule, each with a shot of it happening
+//               (the shared System Tutorial card, system-tutorial-panel.js).
 //   pulse       the emblem swells once when the event does something
 //               (pulseConflictEventEmblem, called by the event's own FX code).
 //
@@ -24,8 +25,8 @@
 import { getConflictEvent } from "./conflict-event-registry.js";
 import { resolveConflictEventId } from "./conflict-event-binding.js";
 import { normalizeTrip, stepTrip, decideIntro, isChampionActor } from "./conflict-event-intro.js";
-import { playSfx, preloadSfx } from "../battle-director/director-sfx.js";
-import { hudScale } from "../battle-director/director-player-hud.js";
+import { preloadSfx } from "../battle-director/director-sfx.js";
+import { openTutorialPanel, closeTutorialPanel, preloadTutorialImages } from "../system-tutorial/system-tutorial-panel.js";
 
 const NS = "fabula-ultima-companion";
 const TAG = "[FU][ConflictEventPanel]";
@@ -50,7 +51,6 @@ const PLACE_EVERY_MS = 400;     // the emblem follows the dice / desk while show
 const HIDDEN_HOLD_MS = 30000;   // a hidden tab keeps the label this long for its return
 
 const ROOT_ID = "fu-cep-emblem";
-const VEIL_ID = "fu-cep-veil";
 const STYLE_ID = "fu-cep-style";
 
 const SIGIL = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path fill="currentColor" d="M12 4.2 13.7 10.3 19.8 12 13.7 13.7 12 19.8 10.3 13.7 4.2 12 10.3 10.3z"/></svg>';
@@ -62,17 +62,13 @@ const S = {
   plate: null,       // { sceneId, eventId } from the last Battle Start plate on this client
   sawLive: false,    // the director state for that battle has been seen (so its absence = battle over)
   open: false,
-  page: 0,
   placeTimer: null,
   labelTimer: null,
   lastPulse: 0,
-  decoded: new Map(),
   hooksOn: false,
 };
 
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c]));
-/** Page text: plain text, with **bold** marking the words to highlight. */
-const markup = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, "<em>$1</em>");
 const reducedMotion = () => { try { return matchMedia("(prefers-reduced-motion: reduce)").matches; } catch { return false; } };
 
 // ── Settings + keybinding (init) ────────────────────────────────────────────
@@ -240,7 +236,7 @@ function showEmblem(id, event) {
   place();
   globalThis.oni?.HudDock?.registerRight?.("conflict-emblem", { order: 10, size: 46, present: () => !!document.getElementById(ROOT_ID) });
   S.placeTimer = setInterval(place, PLACE_EVERY_MS);
-  preloadPages();
+  preloadTutorialImages(S.ruling?.pages);
   log(`emblem up — ${id}`);
 }
 
@@ -296,109 +292,20 @@ export function pulseConflictEventEmblem() {
 
 // ── Tutorial screen ─────────────────────────────────────────────────────────
 
-function preloadPages() {
-  for (const p of S.ruling?.pages ?? []) {
-    if (!p.image || S.decoded.has(p.image)) continue;
-    const im = new Image();
-    im.src = p.image;
-    S.decoded.set(p.image, im.decode().catch(() => {}));
-  }
-}
-
+/** The rules card is the shared System Tutorial card (system-tutorial-panel.js). */
 function openTutorial() {
   if (!S.ruling || S.open) return;
-  preloadPages();
-  S.open = true;
-  S.page = 0;
-  const pages = S.ruling.pages;
-  const veil = document.createElement("div");
-  veil.id = VEIL_ID;
-  veil.style.setProperty("--accent", S.ruling.color);
-  veil.innerHTML = `<div class="tut" role="dialog" aria-label="${esc(S.name)}" style="transform:scale(${hudScale().toFixed(3)})">
-    <div class="t-head"><span class="t-sigil">${SIGIL}</span><div><small>Conflict Event</small><b>${esc(S.name)}</b></div></div>
-    <div class="t-shot">${pages[0].image ? `<img src="${esc(pages[0].image)}" alt="">` : ""}</div>
-    <p class="t-text">${markup(pages[0].text)}</p>
-    <div class="t-foot">
-      <button type="button" data-prev disabled><kbd>◀</kbd>Back</button>
-      <span class="dots">${pages.map((_, i) => `<i class="${i === 0 ? "on" : ""}">◆</i>`).join("")}</span>
-      <button type="button" data-next><kbd>Z</kbd><span class="t-next">${pages.length > 1 ? "Next" : "Done"}</span></button>
-      <button type="button" data-close><kbd>X</kbd>Close</button>
-    </div></div>`;
-  veil.addEventListener("click", (ev) => {
-    if (ev.target.closest("[data-close]")) return closeTutorial();
-    if (ev.target.closest("[data-next]")) return flip(1);
-    if (ev.target.closest("[data-prev]")) return flip(-1);
-    if (ev.target === veil) closeTutorial();
+  const ok = openTutorialPanel({
+    kicker: "Conflict Event", title: S.name, accent: S.ruling.color, pages: S.ruling.pages, closeKeys: ["KeyI"],
+    onClose: () => { S.open = false; document.getElementById(ROOT_ID)?.setAttribute("aria-expanded", "false"); },
   });
-  veil.addEventListener("contextmenu", (ev) => { ev.preventDefault(); closeTutorial(); });
-  document.body.appendChild(veil);
+  if (!ok) return;
+  S.open = true;
   document.getElementById(ROOT_ID)?.setAttribute("aria-expanded", "true");
-  window.addEventListener("keydown", onKey, true);
-  playSfx(SFX.open, SFX.volume);
 }
 
 function closeTutorial({ silent = false } = {}) {
-  if (!S.open && !document.getElementById(VEIL_ID)) return;
-  S.open = false;
-  window.removeEventListener("keydown", onKey, true);
-  const veil = document.getElementById(VEIL_ID);
-  document.getElementById(ROOT_ID)?.setAttribute("aria-expanded", "false");
-  if (!veil) return;
-  if (silent || reducedMotion()) { veil.remove(); return; }
-  veil.classList.add("leaving");
-  setTimeout(() => veil.remove(), 180);
-}
-
-/** A page turn updates the open card in place, so nothing replays or flickers. */
-async function flip(d) {
-  const pages = S.ruling?.pages ?? [];
-  const next = S.page + d;
-  if (next >= pages.length) return closeTutorial();
-  if (next < 0) return;
-  S.page = next;
-  playSfx(SFX.nav, SFX.volume);
-  const veil = document.getElementById(VEIL_ID);
-  const box = veil?.querySelector(".t-shot");
-  const text = veil?.querySelector(".t-text");
-  if (!box || !text) return;
-  const p = pages[next];
-  if (p.image) await S.decoded.get(p.image);
-  if (S.page !== next || !S.open) return;   // turned again while this one decoded
-  box.style.setProperty("--dx", `${d * 36}px`);
-  box.querySelectorAll("img").forEach((old) => {
-    old.classList.remove("in");
-    old.classList.add("out");
-    old.addEventListener("animationend", () => old.remove(), { once: true });
-    setTimeout(() => old.remove(), 600);
-  });
-  if (p.image) {
-    const img = document.createElement("img");
-    img.alt = "";
-    img.src = p.image;
-    img.className = "in";
-    box.appendChild(img);
-  }
-  text.classList.add("swap");
-  setTimeout(() => { if (S.page === next) { text.innerHTML = markup(p.text); text.classList.remove("swap"); } }, 160);
-  veil.querySelectorAll(".dots i").forEach((dot, i) => dot.classList.toggle("on", i === next));
-  veil.querySelector("[data-prev]").disabled = next === 0;
-  veil.querySelector(".t-next").textContent = next < pages.length - 1 ? "Next" : "Done";
-}
-
-// One key, one meaning, consumed here so the turn menu underneath never sees it.
-function onKey(ev) {
-  if (!S.open) return;
-  if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
-  if (ev.target?.closest?.("input, textarea, select, [contenteditable='true']")) return;
-  const act = {
-    KeyI: closeTutorial, Escape: closeTutorial, KeyX: closeTutorial,
-    KeyZ: () => flip(1), Enter: () => flip(1), ArrowRight: () => flip(1), KeyD: () => flip(1),
-    ArrowLeft: () => flip(-1), KeyA: () => flip(-1),
-  }[ev.code];
-  if (!act) return;
-  ev.preventDefault();
-  ev.stopImmediatePropagation();
-  if (!ev.repeat) act();
+  if (S.open) closeTutorialPanel({ silent, reason: "closed" });
 }
 
 // ── Boot ────────────────────────────────────────────────────────────────────
@@ -463,40 +370,8 @@ function ensureStyle() {
 #${ROOT_ID}.unfurl .hint { width: 340px; flex-wrap: wrap; white-space: normal; }
 #${ROOT_ID}.unfurl .hint .line { display: block; order: 3; }
 
-#${VEIL_ID} { position: fixed; inset: 0; z-index: 9000; background: rgba(8,6,4,.74); display: grid; place-items: center; animation: fu-cep-veil 200ms ease-out; --accent: #b3261e; }
-#${VEIL_ID}.leaving { opacity: 0; transition: opacity 160ms ease-in; }
-@keyframes fu-cep-veil { from { opacity: 0; } to { opacity: 1; } }
-#${VEIL_ID} .tut { width: 720px; color: #3a3228; background: linear-gradient(180deg, #f6f1e6, #ebe3d0); border: 2px solid #7a6a55; border-radius: 10px;
-  box-shadow: 0 0 0 1px rgba(213,182,122,.6) inset, 0 18px 44px rgba(0,0,0,.6); overflow: hidden; font-family: "Signika", sans-serif; }
-#${VEIL_ID} .tut > * { animation: fu-cep-rise 260ms cubic-bezier(.2,.8,.3,1) both; }
-@keyframes fu-cep-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-#${VEIL_ID} .t-head { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: linear-gradient(180deg, #2b241b, #1f1a14); color: #f6ecd6; }
-#${VEIL_ID} .t-sigil { width: 26px; height: 26px; color: var(--accent); flex: none; filter: drop-shadow(0 0 3px rgba(255,255,255,.25)); }
-#${VEIL_ID} .t-sigil svg { width: 100%; height: 100%; display: block; }
-#${VEIL_ID} .t-head small { display: block; font: 600 11px/1.2 "Signika", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #d5b67a; }
-#${VEIL_ID} .t-head b { font: 600 24px/1.15 "Cinzel", Georgia, serif; letter-spacing: .02em; }
-#${VEIL_ID} .t-shot { margin: 16px 40px 0; position: relative; border: 2px solid #7a6a55; border-radius: 6px; overflow: hidden; background: #000;
-  box-shadow: 0 0 0 1px rgba(213,182,122,.8), 0 4px 10px rgba(0,0,0,.3); aspect-ratio: 16 / 9; }
-#${VEIL_ID} .t-shot img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; }
-#${VEIL_ID} .t-shot img.in { animation: fu-cep-shot-in 360ms cubic-bezier(.22,.8,.3,1) both; }
-#${VEIL_ID} .t-shot img.out { animation: fu-cep-shot-out 360ms ease both; }
-@keyframes fu-cep-shot-in { from { opacity: 0; transform: translateX(var(--dx, 36px)); } to { opacity: 1; transform: none; } }
-@keyframes fu-cep-shot-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateX(calc(var(--dx, 36px) * -0.6)); } }
-#${VEIL_ID} .t-text { margin: 14px 40px 0; min-height: 3.1em; font: 400 21px/1.42 "Signika", sans-serif; text-wrap: pretty; transition: opacity 160ms ease, transform 160ms ease; }
-#${VEIL_ID} .t-text.swap { opacity: 0; transform: translateY(4px); }
-#${VEIL_ID} .t-text em { font-style: normal; font-weight: 600; color: #7d4f12; }
-#${VEIL_ID} .t-foot { display: flex; align-items: center; gap: 14px; margin-top: 14px; padding: 10px 16px; border-top: 1px solid rgba(122,106,85,.45);
-  background: rgba(213,182,122,.18); font: 500 14px/1 "Signika", sans-serif; color: #6d6152; }
-#${VEIL_ID} .t-foot .dots { flex: 1; display: flex; gap: 7px; justify-content: center; font-size: 12px; color: #9c7a3a; }
-#${VEIL_ID} .t-foot .dots i { font-style: normal; opacity: .35; transition: opacity 200ms ease; }
-#${VEIL_ID} .t-foot .dots i.on { opacity: 1; }
-#${VEIL_ID} .t-foot kbd { font: 600 12px/1 "Signika", sans-serif; color: #f6ecd6; background: #1f1a14; border-radius: 3px; padding: 4px 7px; }
-#${VEIL_ID} .t-foot button { all: unset; cursor: pointer; display: flex; align-items: center; gap: 6px; color: #6d6152; }
-#${VEIL_ID} .t-foot button:hover { color: #3a3228; }
-#${VEIL_ID} .t-foot button[disabled] { opacity: .3; cursor: default; }
 @media (prefers-reduced-motion: reduce) {
-  #${VEIL_ID}, #${VEIL_ID} .tut > *, #${VEIL_ID} .t-shot img.in, #${VEIL_ID} .t-shot img.out, #${ROOT_ID}.fire::after, #${ROOT_ID}.fire .gem { animation: none; }
-  #${VEIL_ID} .t-text { transition: none; }
+  #${ROOT_ID}.fire::after, #${ROOT_ID}.fire .gem { animation: none; }
 }`;
   document.head.appendChild(st);
 }
