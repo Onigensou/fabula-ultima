@@ -39,12 +39,14 @@ HP 240 (was 120), Init 14. Rending Fangs ~24 ×2, Zombie Bite ~38 (pass 2). Desi
 | 2026-11-20 | Pass 4: Light VU → NA, **Fire VU**; HP 240 → 190; study hint "shies from fire" | 47% of party damage to the Nox went into the Light weakness (mostly one bow); spread the chart | user (go), claude (element/HP) | re-run pending |
 | 2026-11-20 | Batch Z: all passes so far (incl. Gravis Alta, Resurrection, affinities, weapon efficiency), snapshot runner, 2 runs/encounter, PC-only HP (Keren max 85, Grave Toll) | measure before the push | claude | GGHH 3.0 r / 49%; HVH 2.0 r / 79%; HWG 3.0 r / 78%; HPH 3.5 r / 66%; GPH 3.0 r / 30% (1 run); HEH 3.0 r / 39% (1 run); H-Kurona x2-H 2.0 r / 92%; all finished fights won. User: "quite happy with the overview", shipped v1.0.642 |
 
+| 2026-11-21 | **Zombie Bite → vs MDEF, accuracy +8 → +6** (Rending Fangs stays vs DEF) | design rule: every monster mixes DEF and MDEF attacks; at +8 vs MDEF it would hit 92% on average, user picked +6. Exact hit math (Hina/Keren/Blanche/Zarg): before (DEF +8) 99/99/54/90 %, after (MDEF +6) 78/84/71/97 %, average 85 → 83%. The Zombie rider is HIT_MARGIN >= 0 (= on a hit), unaffected | user | batch M (2 runs/row): GGHH 3.0 r / 61%; HVH 2.0 r / 83%; HWG 3.0 r / 86%; HPH 3.0 r / 53%; GPH 4.5 r / 39%; HEH 3.5 r / 51%; H-Kurona x2-H 2.0 r / 94%; all won |
+
 ```json dossier
 {
   "monster": "Nox Hound",
   "actorId": "RFnNMvI0AtMQpwuP",
   "status": "draft",
-  "updated": "2026-11-20",
+  "updated": "2026-11-21",
   "role": "Sealed Cavern (Valley_Map010) random encounter: the Nox Legion, Nidhogg's brainwashed servants. Secret end-game area; pace target 3-4 rounds (user 2026-11-20).",
   "exceptions": [],
   "candidate_exceptions": [

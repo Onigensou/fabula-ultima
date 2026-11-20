@@ -38,12 +38,14 @@ HP 260 (was 130), DEF 9, MDEF 11. Soul Ripper ~60 (pass 2). Design page: https:/
 | 2026-11-20 | Weapon efficiency: Arcane 150, Bow 75 | had none; read off the sprite: magic bites a spirit, arrows pass through the rags | user (go), claude (flavour) | re-run pending |
 | 2026-11-20 | Batch Z: all passes so far (incl. Gravis Alta, Resurrection, affinities, weapon efficiency), snapshot runner, 2 runs/encounter, PC-only HP (Keren max 85, Grave Toll) | measure before the push | claude | GWG 3.0 r / 64%; HWG 3.0 r / 78%; all finished fights won. User: "quite happy with the overview", shipped v1.0.642 |
 
+| 2026-11-21 | Stays **MDEF-only** (Soul Ripper is its only check) | deliberate exception to the mixed-defense rule: a niche monster the players can shut out with MDEF once they catch on | user | — |
+
 ```json dossier
 {
   "monster": "Nox Wraith",
   "actorId": "CzQhpNYeo3ZI0TzH",
   "status": "draft",
-  "updated": "2026-11-20",
+  "updated": "2026-11-21",
   "role": "Sealed Cavern (Valley_Map010) random encounter: the Nox Legion, Nidhogg's brainwashed servants. Secret end-game area; pace target 3-4 rounds (user 2026-11-20).",
   "exceptions": [],
   "candidate_exceptions": [
