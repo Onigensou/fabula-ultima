@@ -464,7 +464,12 @@ function onTick() {
     const lift = liftFor(t);
     if (lift !== s.fudLift) applyLift(s, lift);
   }
-  for (const c of _clones) c.tick();
+  // One bad clone shadow must never throw out of the canvas ticker: PIXI does not catch
+  // listener errors, and a throw there stops the ticker for the rest of the session
+  // (every tween and animation then stalls). Seen 2026-11-21 in the snapshot runner.
+  for (const c of _clones) {
+    try { c.tick(); } catch (e) { if (!c.reported) { c.reported = true; console.warn("[sprite-shadow] clone shadow tick failed, detaching", e); } try { c.detach?.(); } catch (_) {} _clones.delete(c); }
+  }
 }
 
 /**
@@ -493,7 +498,8 @@ export function attachClone(spr, token, { track } = {}) {
       try { if (!sh.destroyed) sh.destroy({ texture: false, baseTexture: false }); } catch (_) {}
     };
     const entry = { tick() {
-      if (spr.destroyed || sh.destroyed) { detach(); return; }
+      // A shadow whose baked texture is gone (destroyed render texture) cannot be sized.
+      if (spr.destroyed || sh.destroyed || !sh.texture?.orig || sh.texture.baseTexture?.destroyed) { detach(); return; }
       const parent = spr.parent;
       if (!parent) { sh.visible = false; return; }
       // Keep the shadow immediately below the clone in its parent.
@@ -518,6 +524,7 @@ export function attachClone(spr, token, { track } = {}) {
       const srcVisible = !!(srcMesh && !srcMesh.destroyed && srcMesh.renderable && srcMesh.visible && token.visible);
       sh.visible = spr.visible && spr.renderable && !srcVisible;
     } };
+    entry.detach = detach;
     _clones.add(entry);
     spr.once?.("destroyed", detach);
     if (typeof track === "function") track(detach);
