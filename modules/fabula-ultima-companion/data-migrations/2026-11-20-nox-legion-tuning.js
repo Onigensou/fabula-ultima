@@ -5,7 +5,8 @@
  * user after the 113-sim playtest (2026-11-20):
  *   1. HP for a 3-4 round pace (secret end-game area): soldiers x1.6, elites x1.5;
  *      pass 2 (after the re-run): soldiers another x1.25 and +20% on Nox attack damage;
- *      pass 3: another +25% on Nox attack damage (not Lux Finis / Soul Sever), Gravis -> Gravis Alta (50%).
+ *      pass 3: another +25% on Nox attack damage (not Lux Finis / Soul Sever), Gravis -> Gravis Alta (50%);
+ *      pass 4: Hound VU Fire / Viper VU Ice instead of Light, HP 190 / 230.
  *   2. Battler scale batch from the "Sealed Cavern Battler Scale" mockup
  *      (prototype token texture scale; Nox keep their negative scaleX). Roo and
  *      Carlbero are guests that also appear on other maps; the user approved them.
@@ -29,7 +30,17 @@ const M = "fabula-ultima-companion";
 const FLAG = "noxLegion";
 
 // pass 2 (re-run still 2.5 rounds): soldiers another x1.25; elites already on pace (3.3 rounds)
-const HP = { ghoul: 300, hound: 240, wraith: 260, viper: 275, priest: 450, executioner: 480 };
+// pass 4: Hound / Viper lose the Light weakness (47% of party damage went into it), HP down to compensate.
+const HP = { ghoul: 300, hound: 190, wraith: 260, viper: 230, priest: 450, executioner: 480 };
+// affinity_1..9 = physical air bolt dark earth fire ice light poison
+const AFFINITY = {
+  hound: { affinity_6: "VU", affinity_8: "NA" },  // Fire weakness (beasts fear fire)
+  viper: { affinity_7: "VU", affinity_8: "NA" },  // Ice weakness (cold-blooded)
+};
+const STUDY_HINT = {
+  hound: ["It shies from <strong>light</strong>.", "It shies from <strong>fire</strong>."],
+  viper: ["It recoils from <strong>light</strong>.", "The <strong>cold</strong> makes it sluggish."],
+};
 // pass 2: +20% on the average hit (HR + ~7.5 dice average); pass 3: another +25% (user: lower party HP,
 // same round count). Absolute values so a re-run is a no-op.
 // Not raised: Lux Finis (user), Soul Sever (fragment HP by design). Gravis -> Gravis Alta (50%) below.
@@ -134,10 +145,11 @@ async function gravisAlta(priest, out) {
   for (const [k, row] of Object.entries(t)) {
     if (row?.$deleted || !/^Gravis( Alta)?$/.test(row?.action_pattern_name ?? "")) continue;
     if (row.action_pattern_name !== "Gravis Alta") rowUpd[`system.props.action_pattern_table.${k}.action_pattern_name`] = "Gravis Alta";
-    // user 2026-11-20: at most once every 3 rounds (pass 3 wipes: cast 2-3 rounds running)
-    if (String(row.action_pattern_cooldown ?? "") !== "3") rowUpd[`system.props.action_pattern_table.${k}.action_pattern_cooldown`] = "3";
+    // No cooldown (user 2026-11-20): Gravis Alta is now answerable by defender
+    // reactions (Prophetic Defender etc.), so the counterplay is the players'.
+    if (String(row.action_pattern_cooldown ?? "0") !== "0") rowUpd[`system.props.action_pattern_table.${k}.action_pattern_cooldown`] = "0";
   }
-  if (Object.keys(rowUpd).length) { await priest.update(rowUpd); out.push("Priest: AI row Gravis Alta (name / cooldown 3)"); }
+  if (Object.keys(rowUpd).length) { await priest.update(rowUpd); out.push("Priest: AI row Gravis Alta (name / no cooldown)"); }
 }
 
 async function nidhoggImmune(out) {
@@ -156,6 +168,13 @@ export async function migrate(game, log) {
     const p = a.system?.props ?? {};
     if (Number(p.max_hp) !== hp) { await a.update({ "system.props.max_hp": String(hp), "system.props.current_hp": String(hp) }); out.push(`${a.name}: HP ${p.max_hp} -> ${hp}`); }
     await setScale(a, SCALE_NOX[k], out);
+    if (AFFINITY[k]) {
+      const upd = {};
+      for (const [slot, v] of Object.entries(AFFINITY[k])) if (p[slot] !== v) upd[`system.props.${slot}`] = v;
+      const [from, to] = STUDY_HINT[k] ?? [];
+      if (from && String(p.study_text ?? "").includes(from)) upd["system.props.study_text"] = p.study_text.replace(from, to);
+      if (Object.keys(upd).length) { await a.update(upd); out.push(`${a.name}: affinity ${Object.entries(AFFINITY[k]).map(([s, v]) => s + "=" + v).join(" ")}`); }
+    }
     for (const [skill, hr] of Object.entries(HR[k] ?? {})) await setItemProps(a, skill, { damage_bonus: hr }, out);
   }
   for (const [name, mag] of Object.entries(SCALE_GUEST)) {

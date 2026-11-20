@@ -36,6 +36,7 @@ HP 480 (was 320), DEF 15, MDEF 13. Guillotine/Gibbet ~54 (pass 2) (×2 on their 
 | 2026-11-20 | Token scale 2.24 → 2.60 | Battler Scale mockup | user | — |
 | 2026-11-20 | Pass 2: +20% average hit: Guillotine/Gibbet HR+37→46 | same re-run; target party ends nearer 60-70% | user (go), claude (numbers) | re-run pending |
 | 2026-11-20 | Pass 3: +25% average hit: Guillotine/Gibbet HR+46→59 (Soul Sever not raised: fragment HP by design) | same rounds, lower party HP (pass 2: 2.9 rounds, 83% party HP) | user (go), claude (numbers) | re-run pending |
+| 2026-11-20 | Engine fix: Soul Sever now classifies harmful (defender reactions can answer it) | was "aid": effect-row damage was not counted | user | re-run pending |
 
 ```json dossier
 {
