@@ -31,6 +31,7 @@ import { registerDevTool } from "./dev-tools-menu.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { decidePlayerAction } from "./sim/player-brain.js";
 import { freeActions } from "./free-actions.js";
+import { isWeightedWeapon, weightedActorKey, weightedBlockReason } from "./weighted-rules.js";
 
 // ── ActionReader pipeline (direct ESM import — same singleton the world macro
 //    drives through the module API). We run every stage EXCEPT AnnounceResult:
@@ -340,6 +341,21 @@ async function runActionReader({ token, combat, combatant, activationIndex, dire
         return !!item && labelPermits(grant.allow, commandForItem(item));
       });
       log(`autopilot: free-action consult kept ${ctx.patternRows.length}/${before} pattern row(s) the grant permits (${[...grant.allow].join("/")})`);
+    }
+    // Weighted keyword — an Attack row whose weapon already took its one attack
+    // this turn, or that this grant would swing without HR, drops out BEFORE the
+    // weighted pick (same reasoning as the grant filter above: answer with what
+    // is legal rather than draw an attack the TARGET gate would bounce).
+    if (Array.isArray(ctx.patternRows)) {
+      const items = ActionReaderCore.getActorItems(ctx.performer?.actor);
+      const who = { tokenUuid: token?.document?.uuid ?? null, actorId: ctx.performer?.actor?.id ?? null };
+      ctx.patternRows = ctx.patternRows.filter((row) => {
+        const want = ActionReaderCore.normalizeText(row?.actionName ?? "");
+        const item = items.find((i) => ActionReaderCore.normalizeText(i?.name ?? "") === want);
+        const why = item ? weightedItemBlock(item, who, director, grant) : null;
+        if (why) log(`autopilot: dropped "${item.name}" — ${why}`);
+        return !why;
+      });
     }
     await evaluateActionReaderConditions(ctx);
     await matchAndPickActionReaderAction(ctx, grant ? { recordMemory: false } : undefined);
@@ -832,10 +848,35 @@ function pickNamedGrantItem(actor, refs, allow, ctx, snap) {
 
 // The actor's basic NPC attack item (first of snap.npcAttackItems), resolved to a
 // live doc. null for actors with no NPC attack (casters, PC-shaped guests).
-async function resolveFirstNpcAttackItem(snap) {
+// Skips an attack the Weighted keyword forbids right now (see weightedItemBlock).
+async function resolveFirstNpcAttackItem(snap, { director = null, grant = null } = {}) {
   const list = Array.isArray(snap?.npcAttackItems) ? snap.npcAttackItems : [];
-  if (!list.length) return null;
-  try { return await fromUuid(list[0].uuid); } catch { return null; }
+  for (const entry of list) {
+    let item = null;
+    try { item = await fromUuid(entry.uuid); } catch { item = null; }
+    if (!item) continue;
+    const why = weightedItemBlock(item, snap, director, grant);
+    if (why) { log(`autopilot: basic attack "${item.name}" skipped — ${why}`); continue; }
+    return item;
+  }
+  return null;
+}
+
+// Weighted keyword (journal ljKBtlzPVvhhmdHW) for an NPC Attack item — the item
+// IS the weapon (its pseudo-weapon keeps the item uuid + action_keywords), so
+// read it the way the TARGET gate will. Returns the reason, or null when legal.
+// `who` = { tokenUuid, actorId } of the creature; `grant` = the free-action
+// grant (hrAsZero / chain) or null on a normal turn.
+function weightedItemBlock(item, who, director, grant) {
+  try {
+    if (commandForItem(item) !== "Attack") return null;
+    const w = { uuid: item?.uuid ?? null, name: item?.name ?? "", actionKeywords: String(item?.system?.props?.action_keywords ?? "") };
+    if (!isWeightedWeapon(w)) return null;
+    return weightedBlockReason({
+      weapons: [w], grant,
+      usedKeys: director?.dCombat?.weightedWeaponsUsedThisTurn?.(weightedActorKey(who)) ?? [],
+    });
+  } catch (e) { warn("autopilot: weightedItemBlock threw", e); return null; }
 }
 
 // A grant that names exactly ONE action type has already answered "which kind?",
@@ -910,7 +951,7 @@ async function tryPatternedGrantPick(director, snap, actor, allow, grant) {
     log(`autopilot: ${snap.name} has no authored pattern but is an automated summon — trying a synthesized one`);
   }
 
-  const patterned = await decideViaActionReader(director, snap, { grant: { allow } });
+  const patterned = await decideViaActionReader(director, snap, { grant: { allow, hrAsZero: grant?.hrAsZero === true, chain: grant?.chain === true } });
   const cmd = patterned?.command ?? patterned?.bundle?.command ?? null;
   if (patterned && cmd && labelPermits(allow, cmd)) {
     log(`autopilot: free-action grant "${grant?.sourceLabel ?? "?"}" for ${snap.name} resolved from its Action Pattern → ${cmd}`);
@@ -977,7 +1018,7 @@ async function decideFreeActionBundle(director, snap, grant) {
       if (patterned) return patterned;
     }
 
-    if (!item && labelPermits(allow, "Attack")) item = await resolveFirstNpcAttackItem(snap);
+    if (!item && labelPermits(allow, "Attack")) item = await resolveFirstNpcAttackItem(snap, { director, grant });
 
     // An UNAMBIGUOUS grant can still land here with nothing resolved — "Skill" on
     // a creature that has no Attack item, say — so the pattern gets its chance
@@ -999,6 +1040,13 @@ async function decideFreeActionBundle(director, snap, grant) {
     if ((snap?.blockedActions ?? []).some((b) => b?.label === command)) {
       log(`autopilot: free-action pick ${command} "${item.name}" is action-gated — manual fallback`);
       return null;
+    }
+    {
+      const why = weightedItemBlock(item, snap, director, grant);
+      if (why) {
+        log(`autopilot: free-action pick ${command} "${item.name}" refused — ${why} — manual fallback`);
+        return null;
+      }
     }
 
     // Targets: a locked target wins; otherwise ActionReader targeting on the item.

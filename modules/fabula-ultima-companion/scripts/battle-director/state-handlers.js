@@ -52,6 +52,7 @@ import { parseSkillCost, resolveCost, checkAffordable, debitCost, affordableTarg
 // resolveDamageElementOverride) moved to action-profile.js (single-source COMPUTE).
 import { evaluateFormula, buildSkillResolver } from "./skill-formulas.js";
 import { freeActions } from "./free-actions.js";
+import { isWeightedWeapon, weaponKey, weightedActorKey, weightedBlockReason, weightedModeBlock, modeDropsHighRoll } from "./weighted-rules.js";
 import { isActorDefeated } from "./defeat-reactor.js";
 import { makeChainContext, resolveTargetRef } from "./skill-targeting.js";
 // skill-effects is routed through the hot-reload registry so edits to it take
@@ -1360,6 +1361,12 @@ async function resolveAction(director, ar, opts = {}) {
     // for half), which are misses, so filter to real hits. Bumped here, AFTER
     // this action's bonuses were computed, so the tally a bonus reads is "hits
     // that landed before this attack" — see hitsOnTargetThisTurn.
+    // Weighted keyword — this attack used up the weapon's one attack this turn.
+    // Recorded on RESOLVE (a cancelled card never swung), hit or miss alike.
+    if (director.dCombat?.addWeightedAttack && isWeightedWeapon(ar.weapon)) {
+      director.dCombat.addWeightedAttack(weightedActorKey(ar.attacker), weaponKey(ar.weapon));
+      log(`RESOLVE: ${ar.attacker?.name ?? "?"} used Weighted ${ar.weapon?.name ?? "weapon"}'s one attack this turn`);
+    }
     if (director.dCombat && ar.attacker?.actorId) {
       for (const r of hits) {
         if (!(r.hit && r.tokenUuid)) continue;
@@ -2978,6 +2985,9 @@ const TurnStart = {
     // Champion Gloves / Hot Pants — the per-target landed-hit tally is also
     // turn-scoped, so HITS_ON_TARGET_THIS_TURN never carries across turns.
     if (director.dCombat && snap?.actorId) director.dCombat.resetHitsOnTargets(snap.actorId);
+    // Weighted — "one attack per turn" starts fresh (the tally's turn stamp also
+    // expires it on any turn change; this clears the acting creature eagerly).
+    director.dCombat?.resetWeightedAttacks?.(weightedActorKey(snap));
     // Label describes what the GM lands at on rewind: this combatant's
     // DECLARE menu (TURN_START re-auto-picks the saved id and routes
     // through to DECLARE). Subtitle records the situational context.
@@ -4840,6 +4850,13 @@ const Target = {
               melee: attackRangeBlockedBy(liveActorForBlock, "Melee"),
               ranged: attackRangeBlockedBy(liveActorForBlock, "Ranged"),
             },
+            // Weighted keyword rows — disabled + stamped (the gate below enforces).
+            modeBlock: (value) => weightedModeBlock(value, {
+              mainWeapon: attacker.weapon, offWeapon: attacker.offWeapon,
+              multiAttack: attacker.multiAttack ?? null, virtualAttacks,
+              grant: attacker?.actorId ? (freeActions.get(attacker.actorId) ?? null) : null,
+              usedKeys: director.dCombat?.weightedWeaponsUsedThisTurn?.(weightedActorKey(attacker)) ?? [],
+            }),
           });
           if (!picked) {
             director.enqueue({ type: INTENTS.TARGET_BACK });
@@ -4880,6 +4897,33 @@ const Target = {
       director.ctx.totalPasses = weaponsUsed.length;
       director.ctx.passIndex = 0;
       } // end PC weapon-mode branch
+
+      // Weighted keyword (journal ljKBtlzPVvhhmdHW) — the authoritative gate.
+      // "One attack per turn with this weapon" and "no attacks without HR with
+      // this weapon": judged once, on first entry, against EVERY weapon this
+      // attack will swing (a multi-pass mode is refused up front, not halfway).
+      // The picker already shows these rows disabled + stamped; this catches the
+      // pre-composed / auto-selected / NPC / free-attack paths that skip it.
+      // The free-action grant is still pending here (COMPUTE consumes it), so
+      // its hrAsZero / chain flags are read straight off the registry.
+      {
+        let wReason = null;
+        try {
+          wReason = weightedBlockReason({
+            weapons: director.ctx.weaponsUsed ?? [],
+            dropsHr: modeDropsHighRoll(director.ctx.attackMode, attacker?.multiAttack),
+            grant: attacker?.actorId ? (freeActions.get(attacker.actorId) ?? null) : null,
+            usedKeys: director.dCombat?.weightedWeaponsUsedThisTurn?.(weightedActorKey(attacker)) ?? [],
+          });
+        } catch (e) { warn("TARGET Attack: Weighted gate threw — allowing the attack", e); }
+        if (wReason) {
+          const wName = (director.ctx.weaponsUsed ?? []).find((w) => isWeightedWeapon(w))?.name ?? "this weapon";
+          warn(`TARGET Attack: ${attacker?.name ?? "?"} refused — ${wReason} (${wName}, mode=${director.ctx.attackMode})`);
+          ui.notifications?.warn(`${wReason} — ${attacker?.name ?? "This creature"} can't attack with ${wName} now.`);
+          director.enqueue({ type: INTENTS.TARGET_BACK });
+          return;
+        }
+      }
     }
 
     // Both first-entry and multi-pass re-entry: resolve targets via the
