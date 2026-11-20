@@ -76,7 +76,7 @@
 // `ok && available === 0` — never `available < 1`.
 
 import { log, warn } from "./logger.js";
-import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
+import { buildSkillResolver, evaluateFormula, isHealReversedActor } from "./skill-formulas.js";
 import { classifyActionIntent } from "./skill-intent.js";
 import { affordableTargetCount, mpCapTargetCount } from "./skill-cost.js";
 import {
@@ -671,6 +671,32 @@ function bdParticipantRoster(director) {
 // token-id list and a plain function. No director type reaches ActionReader.
 const PROVIDER_KEY = "battleContext";
 
+// Does this action restore HP to its targets? A healing damage type, or an HP
+// grant row aimed at the targets (Remedy: grant hp 50 on action_targets). Grants
+// to the caster's own side-channel (self, own summons…) don't count.
+const HEAL_TYPES = new Set(["healing", "heal", "hp_heal", "hp", "recovery"]);
+const CASTER_SIDE_REFS = new Set(["self", "own_summons", "own_phantasms", "own_persistent_summons", "own_minions", "own_numen", "last_summoned", "field"]);
+export function restoresHp(action) {
+  const p = action?.system?.props ?? null;
+  if (!p) return false;
+  if (HEAL_TYPES.has(String(p.type_damage ?? "").trim().toLowerCase())) return true;
+  const table = p.effect_table ?? p.reaction_effect_table ?? null;
+  if (!table || typeof table !== "object") return false;
+  return Object.values(table).some((r) => r && !r.$deleted
+    && r.effect_kind === "grant"
+    && String(r.grant_resource ?? "").trim().toLowerCase() === "hp"
+    && !CASTER_SIDE_REFS.has(String(r.target_ref ?? "").trim().toLowerCase()));
+}
+
+// Drop survey entries whose creature a heal would hurt. Unresolvable entries stay.
+export function withoutHealReversed(eligible, resolveActor = (uuid) => globalThis.fromUuidSync?.(uuid) ?? null) {
+  return (eligible ?? []).filter((e) => {
+    let actor = null;
+    try { actor = e?.actorUuid ? resolveActor(e.actorUuid) : null; } catch { actor = null; }
+    return !(actor && isHealReversedActor(actor));
+  });
+}
+
 // Published on the module API, which is where ActionReader already looks for
 // everything else, so it stays a lookup rather than an import.
 export function registerBattleTargetingProvider() {
@@ -718,6 +744,13 @@ export function registerBattleTargetingProvider() {
         skillTargetText: opts.skillTargetText ?? null,
         excludeSelf:     Boolean(opts.excludeSelf),
         creatureMeans:   "enemy",
+        // AI only (user 2026-11-20): an HP heal never goes to a creature it would
+        // HURT (Zombie / Undead — healing is reversed on them). Kalina's Remedy
+        // kept landing on Zombie'd players as 50 damage. With nobody else left the
+        // pool is empty, so the row is not feasible and the AI moves on. The
+        // player's own picker does not come through here: a player may still heal
+        // an Undead on purpose — that is the counterplay.
+        postFilter:      restoresHp(action) ? withoutHealReversed : null,
       });
     },
   };
