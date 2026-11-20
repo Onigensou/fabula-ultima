@@ -19,7 +19,7 @@ Elite caster, the cog of the Soul Tithe: every fragment the party destroys refil
 - **Soul Siphon**: +30 MP whenever any Soul Fragment is destroyed.
 - **Zombie Plague**: all enemies, DL13 MIG+WLP or Zombie (Zombie now counts on the victim's turns and outlives the Priest, 2026-11-20).
 - **Lux Finis**: Light, HR+62, at most 2 Zombie'd targets, Opportunity Blind (not +20%).
-- **Revive**: 30 MP, 1 turn in 3, once per battle; kills a Zombie'd or Undead target; can only target one (2026-11-20).
+- **Resurrection** (was Revive): 30 MP, 1 turn in 3, once per battle; kills a Zombie'd or Undead target; can only target one (2026-11-20).
 - **Gravis Alta**: 50% of current HP to all, never kills (was Gravis, 25%). **Nox Tome** HR+20 when dry.
 
 ## Numbers & targets
@@ -40,6 +40,7 @@ HP 450 (was 300), MP 106, DEF 9, MDEF 14. Design page: https://claude.ai/artifac
 | 2026-11-20 | Gravis → **Gravis Alta**: 50% of current HP (was 25%), still never KOs | same rounds, lower party HP (pass 2: 2.9 rounds, 83% party HP) | user | re-run pending |
 | 2026-11-20 | Gravis Alta AI cooldown 3 rounds | pass-3 quick test: 2 wipes in 4 Priest fights, Gravis Alta cast 2-3 rounds running fed the Soul Fragments (max HP locked to 1) | user | re-run pending |
 | 2026-11-20 | Gravis Alta cooldown removed again; engine fix: Gravis Alta / Revive / Zombie Plague now classify harmful, so Prophetic Defender / Protect / Illusory Shield can answer them | user: the counterplay belongs to the players | user | re-run pending |
+| 2026-11-20 | Revive renamed **Resurrection** (item, AI row, spell list); same rules | naming, to match the animation pass | user | — |
 
 ```json dossier
 {

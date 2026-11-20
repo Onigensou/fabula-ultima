@@ -25,7 +25,7 @@
  */
 
 export const key = "2026-11-20-nox-legion-tuning";
-export const description = "Nox Legion tuning: HP, battler scale, Beheading 25%, Zombie on victim turns, players-only Coil/Zombie Bite, Revive targets, Called-aware eaters, Nidhogg revive-kill immunity.";
+export const description = "Nox Legion tuning: HP, battler scale, Beheading 25%, Zombie on victim turns, players-only Coil/Zombie Bite, Revive (now Resurrection) targets, Called-aware eaters, Nidhogg revive-kill immunity.";
 
 const M = "fabula-ultima-companion";
 const FLAG = "noxLegion";
@@ -159,6 +159,18 @@ async function gravisAlta(priest, out) {
   if (Object.keys(rowUpd).length) { await priest.update(rowUpd); out.push("Priest: AI row Gravis Alta (name / no cooldown)"); }
 }
 
+// user 2026-11-20: the Priest's Revive is renamed Resurrection (item, sheet name, AI row, spell list entry).
+async function resurrection(priest, out) {
+  const it = itemNamed(priest, "Revive");
+  if (it) { await it.update({ name: "Resurrection", "system.props.name": "Resurrection" }); out.push("Priest: Revive -> Resurrection"); }
+  const upd = {};
+  for (const [k, row] of Object.entries(priest.system?.props?.action_pattern_table ?? {}))
+    if (!row?.$deleted && row?.action_pattern_name === "Revive") upd[`system.props.action_pattern_table.${k}.action_pattern_name`] = "Resurrection";
+  for (const [k, row] of Object.entries(priest.system?.props?.normal_spell_list ?? {}))
+    if (row?.name === "Revive") upd[`system.props.normal_spell_list.${k}.name`] = "Resurrection";
+  if (Object.keys(upd).length) { await priest.update(upd); out.push(`Priest: Resurrection AI row / spell list (${Object.keys(upd).length} field(s))`); }
+}
+
 async function nidhoggImmune(out) {
   for (const a of game.actors.filter((x) => /nidhogg/i.test(x.name) && x.type !== "_template")) {
     if (a.flags?.[M]?.reviveKillImmune === true) continue;
@@ -196,7 +208,9 @@ export async function migrate(game, log) {
   const ex = byFlag("executioner"); if (ex) await beheading25(ex, out);
   const hound = byFlag("hound"); if (hound) await setItemProps(hound, "Zombie Bite", { target_eligibility: PLAYERS_ONLY }, out);
   const viper = byFlag("viper"); if (viper) await setItemProps(viper, "Coil", { target_eligibility: PLAYERS_ONLY }, out);
-  const priest = byFlag("priest"); if (priest) await setItemProps(priest, "Revive", { target_eligibility: REVIVE_TARGET }, out);
+  const priest = byFlag("priest");
+  if (priest) await resurrection(priest, out);
+  if (priest) await setItemProps(priest, "Resurrection", { target_eligibility: REVIVE_TARGET }, out);
   if (priest) await gravisAlta(priest, out);
   const wraith = byFlag("wraith"); if (wraith) await setAiString(wraith, "Devour Soul", "Called", out);
   if (ex) await setAiString(ex, "Soul Sever", "Called", out);
