@@ -20,6 +20,7 @@
  *   7. Devour Soul / Soul Sever AI rows wait for a fragment that has Called (the
  *      Soul Tithe now marks it with a visible "Called" status).
  *   8. Nidhogg (both actors) is immune to revive kills (`reviveKillImmune`).
+ *   9. pass 5: the Viper gets Counterattack (the generic passive), countering with Poison Fang.
  *
  * Idempotent: every step writes only what differs from the target value.
  */
@@ -171,6 +172,33 @@ async function resurrection(priest, out) {
   if (Object.keys(upd).length) { await priest.update(upd); out.push(`Priest: Resurrection AI row / spell list (${Object.keys(upd).length} field(s))`); }
 }
 
+// pass 5 (user 2026-11-21): the Viper carries the game's generic Counterattack (even Accuracy
+// Check on a melee attack against it), but it bites back with Poison Fang instead of a basic
+// attack. A copy of the world item; the free_action presets the skill by name (action_ref),
+// target_ref keeps it on the attacker alone, free_hr_as_zero stays (HR counts as 0).
+const COUNTER_WORLD_ID = "IEFFYKz9pycXYl7G";
+const COUNTER_DESC = "<p>After an enemy hits or misses you with a <strong>melee attack</strong>, if the Result of their Accuracy Check was an <strong>even number</strong>, you bite back with a free <strong>Poison Fang</strong> against that enemy (after their attack has been fully resolved). It must have <strong>that enemy as its only target</strong>; treat your <strong>High Roll (HR)</strong> as 0 when calculating damage dealt by this attack</p>";
+async function viperCounterattack(viper, out) {
+  let it = viper.items.find((i) => i.flags?.[M]?.noxViperCounter) ?? itemNamed(viper, "Counterattack");
+  if (!it) {
+    const src = game.items.get(COUNTER_WORLD_ID) ?? game.items.find((i) => i.name === "Counterattack" && i.system?.props?.skill_type === "Passive");
+    if (!src) { out.push("Viper: no world Counterattack item, skipped"); return; }
+    const data = src.toObject();
+    delete data._id;
+    data.flags = { ...(data.flags ?? {}), core: { ...(data.flags?.core ?? {}), sourceId: src.uuid }, [M]: { ...(data.flags?.[M] ?? {}), noxViperCounter: true } };
+    [it] = await viper.createEmbeddedDocuments("Item", [data]);
+    out.push("Viper: + Counterattack");
+  }
+  const upd = {};
+  for (const [k, row] of Object.entries(it.system?.props?.effect_table ?? {})) {
+    if (row?.$deleted || row?.effect_kind !== "free_action") continue;
+    if (row.action_ref !== "Poison Fang") upd[`system.props.effect_table.${k}.action_ref`] = "Poison Fang";
+  }
+  if (it.system?.props?.description !== COUNTER_DESC) upd["system.props.description"] = COUNTER_DESC;
+  if (!it.flags?.[M]?.noxViperCounter) upd[`flags.${M}.noxViperCounter`] = true;
+  if (Object.keys(upd).length) { await it.update(upd); out.push("Viper: Counterattack bites with Poison Fang"); }
+}
+
 async function nidhoggImmune(out) {
   for (const a of game.actors.filter((x) => /nidhogg/i.test(x.name) && x.type !== "_template")) {
     if (a.flags?.[M]?.reviveKillImmune === true) continue;
@@ -208,6 +236,7 @@ export async function migrate(game, log) {
   const ex = byFlag("executioner"); if (ex) await beheading25(ex, out);
   const hound = byFlag("hound"); if (hound) await setItemProps(hound, "Zombie Bite", { target_eligibility: PLAYERS_ONLY }, out);
   const viper = byFlag("viper"); if (viper) await setItemProps(viper, "Coil", { target_eligibility: PLAYERS_ONLY }, out);
+  if (viper) await viperCounterattack(viper, out);
   const priest = byFlag("priest");
   if (priest) await resurrection(priest, out);
   if (priest) await setItemProps(priest, "Resurrection", { target_eligibility: REVIVE_TARGET }, out);
