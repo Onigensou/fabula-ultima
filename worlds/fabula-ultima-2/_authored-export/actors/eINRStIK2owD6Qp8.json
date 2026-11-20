@@ -33,6 +33,21 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "faDuelist": {
+        "bestOf": 1,
+        "diff": "casual",
+        "prize": null,
+        "quote": "H-hehe... Let's see what your monsters can do!",
+        "requiresSwitch": "Fabula Arcana Unlocked",
+        "style": null,
+        "teams": [
+          [
+            "wolf",
+            "salamander",
+            "manaray"
+          ]
+        ]
+      },
       "idleAnimation": {
         "bounce": false,
         "float": false
