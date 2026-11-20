@@ -121,6 +121,28 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "We're feeding half the city from this kitchen now. Take a bread roll on your way out.",
+              "bubbleMode": "normal",
+              "id": "o9PkXD1cIqvxIwRm"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"We're feeding half the city from this kitchen now. Take a bread roll on your way out.\",\n    \"bubbleMode\": \"normal\",\n    \"id\": \"o9PkXD1cIqvxIwRm\"\n  }\n]",
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Eisendrache Destroyed",
+            "want": "on"
+          },
+          "draftEisRuined": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",
@@ -237,6 +259,28 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "More onions! We need more onions!",
+              "bubbleMode": "normal",
+              "id": "ttYJolmc7fo2cZYS"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"More onions! We need more onions!\",\n    \"bubbleMode\": \"normal\",\n    \"id\": \"ttYJolmc7fo2cZYS\"\n  }\n]",
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Eisendrache Destroyed",
+            "want": "on"
+          },
+          "draftEisRuined": true
         }
       },
       "actorId": "LlRVGhSD3bQJpiiV",
@@ -353,6 +397,28 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "The Princess used to sneak in here for honey cakes. …I keep baking them anyway.",
+              "bubbleMode": "normal",
+              "id": "5XIOLxlUiI5GWj48"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"The Princess used to sneak in here for honey cakes. …I keep baking them anyway.\",\n    \"bubbleMode\": \"normal\",\n    \"id\": \"5XIOLxlUiI5GWj48\"\n  }\n]",
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Eisendrache Destroyed",
+            "want": "on"
+          },
+          "draftEisRuined": true
         }
       },
       "actorId": "hi5RUPDq2y0zQD89",

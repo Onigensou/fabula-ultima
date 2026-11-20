@@ -111,6 +111,28 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "Zzz… no… not the sky…",
+              "bubbleMode": "normal",
+              "id": "PnLu5JkICgmWjzfH"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"Zzz… no… not the sky…\",\n    \"bubbleMode\": \"normal\",\n    \"id\": \"PnLu5JkICgmWjzfH\"\n  }\n]",
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Eisendrache Destroyed",
+            "want": "on"
+          },
+          "draftEisRuined": true
         }
       },
       "actorId": "28iyCfrvPwtHUzNp",

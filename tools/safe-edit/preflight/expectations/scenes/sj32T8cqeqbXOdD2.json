@@ -111,6 +111,28 @@
         "hex-size-support": {
           "hideBorder": true,
           "hideFill": true
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "Please go. I'm not ready for visitors.",
+              "bubbleMode": "normal",
+              "id": "Eh5onlDQTR1x4Kvv"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"Please go. I'm not ready for visitors.\",\n    \"bubbleMode\": \"normal\",\n    \"id\": \"Eh5onlDQTR1x4Kvv\"\n  }\n]",
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Eisendrache Destroyed",
+            "want": "on"
+          },
+          "draftEisRuined": true
         }
       },
       "actorId": "LlRVGhSD3bQJpiiV",

@@ -140,12 +140,12 @@
         "fabula-ultima-companion": {
           "storyGate": {
             "shownWhen": "King Summon",
-            "hiddenWhen": ""
+            "hiddenWhen": "Rescue Hilde"
           }
         }
       },
       "actorId": "wqfGUTRInZUS2MNY",
-      "hidden": false,
+      "hidden": true,
       "sort": 2,
       "_id": "5xQEw6eoxWd7qKMs",
       "x": 228,
@@ -264,6 +264,28 @@
             "shownWhen": "King Summon",
             "hiddenWhen": ""
           }
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "The castle stands. While we breathe, it will stay standing.",
+              "bubbleMode": "normal",
+              "id": "cLVmz3rOjPNsh25E"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"The castle stands. While we breathe, it will stay standing.\",\n    \"bubbleMode\": \"normal\",\n    \"id\": \"cLVmz3rOjPNsh25E\"\n  }\n]",
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Eisendrache Destroyed",
+            "want": "on"
+          },
+          "draftEisRuined": true
         }
       },
       "actorId": "N4hYREOor4xOIaT1",
@@ -386,6 +408,28 @@
             "shownWhen": "King Summon",
             "hiddenWhen": ""
           }
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "eventRows": [
+            {
+              "type": "showText",
+              "speaker": "This",
+              "text": "Every knight who can still lift a sword is on watch.",
+              "bubbleMode": "normal",
+              "id": "lff5L65CyIAjVFwP"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"Every knight who can still lift a sword is on watch.\",\n    \"bubbleMode\": \"normal\",\n    \"id\": \"lff5L65CyIAjVFwP\"\n  }\n]",
+          "startMode": "button",
+          "onceOnly": false,
+          "lockMovement": true,
+          "availableWhen": {
+            "kind": "switch",
+            "name": "Eisendrache Destroyed",
+            "want": "on"
+          },
+          "draftEisRuined": true
         }
       },
       "actorId": "N4hYREOor4xOIaT1",
