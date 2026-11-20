@@ -373,6 +373,40 @@ async function updateOlder(out) {
   }
 }
 
+// ── 3b. Weighted keyword in data (engine enforcement: feat/weighted-keyword) ─
+// Weapons whose text says Weighted get `weighted` in action_keywords (world
+// master + every actor copy). Titanic Shield ("your equipped weapon gains
+// Weighted") gets an equip-transfer effect read by snapshot.js.
+const WEIGHTED_WEAPONS = ["Death Scythe", "Reaper Scythe", "Giant Club", "Morning Star", "Minotaurus Axe", "Golem Fist", "Mountain Cleaver", "Gae Bolg"];
+const TITANIC_SHIELD = "W5nXmJFH3rBBTxr4";
+const TITANIC_AE = "HkC4TitanicWgtAE";
+
+const withWeighted = (kw) => {
+  const list = String(kw ?? "").split(/[,\s]+/).map((s) => s.trim()).filter(Boolean);
+  if (list.some((s) => s.toLowerCase() === "weighted")) return null;
+  return [...list, "weighted"].join(", ");
+};
+
+async function authorWeighted(out) {
+  for (const name of WEIGHTED_WEAPONS) {
+    const docs = [worldItem(name), ...game.actors.contents.flatMap((a) => a.items.filter((i) => i.name === name && !i.system?.container))].filter(Boolean);
+    let n = 0;
+    for (const d of docs) {
+      const next = withWeighted(d.system.props.action_keywords);
+      if (next === null) continue;
+      await d.update({ "system.props.action_keywords": next });
+      n++;
+    }
+    out.push(`~ ${name}: weighted (${n} doc${n === 1 ? "" : "s"})`);
+  }
+  const shield = game.items.get(TITANIC_SHIELD);
+  if (shield && !shield.effects.get(TITANIC_AE)) {
+    await shield.createEmbeddedDocuments("ActiveEffect", [{ _id: TITANIC_AE, name: "Titanic Shield: Weighted", transfer: true, disabled: false,
+      changes: [{ key: "grant_weapon_keywords", mode: 2, priority: 20, value: "weighted" }], flags: { [M]: { [FLAG]: "titanic-weighted" } } }], { keepId: true });
+    out.push("~ Titanic Shield: grants Weighted to the equipped weapon");
+  }
+}
+
 // ── 4. Hako restock ─────────────────────────────────────────────────────────
 // [name, price, qty]
 const ROSTER = [
@@ -435,6 +469,7 @@ export async function migrate(game, log = () => {}) {
   await authorShields(out);
   await authorPhoenix(out);
   await updateOlder(out);
+  await authorWeighted(out);
   await restockHako(out);
   for (const l of out) log(l);
   return { applied: true, summary: out.join(" | ") };
