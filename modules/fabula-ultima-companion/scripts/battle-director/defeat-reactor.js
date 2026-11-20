@@ -50,6 +50,7 @@ import { releaseGrappleOnDown } from "./grapple-hold.js";
 import { KNOCKOUT_TRIGGER, holdsKnockoutRevive, markReviveTried, clearReviveTried, isKnockoutReviveEffect } from "./knockout-revive.js";
 import { bossRuleOwnsFall } from "./boss-rules/boss-rules.js";
 import { isOutOfPlay } from "./out-of-play.js";
+import { createRemovalGate } from "./defeat-removal-gate.js";
 
 // Property paths — kept identical to the legacy auto-defeat hook.
 const PATH_DB_OPTION = "system.props.option_autoDefeat";
@@ -340,6 +341,10 @@ const _removing = new Set();
 // Defeats scheduled by the reactor during a settle pass, awaited at the pass
 // end (drainPendingDefeats) so several deaths from one action overlap.
 const _pending = [];
+// Their token deletes wait for the pass to finish writing (defeat-removal-gate.js):
+// a rider that hits the dying creature after the kill (Muleta's Bleed) must land
+// before the token goes, or the server answers "Token ... does not exist!".
+const _removalGate = createRemovalGate();
 
 function tokenExists(tokenUuid) {
   try { return !!fromUuidSync(tokenUuid); } catch { return false; }
@@ -393,7 +398,7 @@ async function playDefeatFor(tokenDoc, actor, payload, { finisher = false, direc
 }
 
 // Run the death animation then remove the combatant + token via the director.
-async function performDefeat(director, tokenDoc, actor, payload = null, { delayMs = 0 } = {}) {
+async function performDefeat(director, tokenDoc, actor, payload = null, { delayMs = 0, removalGate = null } = {}) {
   if (!game.user?.isGM) return;            // director removal is GM-only
   const tokenUuid = tokenDoc?.uuid;
   if (!tokenUuid) return;
@@ -459,6 +464,11 @@ async function performDefeat(director, tokenDoc, actor, payload = null, { delayM
       await own.playing;
     }
     _defeatPlaying.delete(tokenUuid);
+    // A deferred defeat: the rest of its settle pass may still be writing to this
+    // creature (an on-hit rider). The token goes once that pass is done.
+    if (removalGate && !(await _removalGate.wait(removalGate))) {
+      warn(`defeat-reactor: ${name} — settle pass never released its removals; removing anyway`);
+    }
     // Back up before the removal landed (a heal later in the same action)?
     // Then it stays: show it again instead of deleting it.
     if (!isActorDefeated(actor)) {
@@ -475,6 +485,7 @@ async function performDefeat(director, tokenDoc, actor, payload = null, { delayM
   } catch (e) {
     warn("defeat-reactor: performDefeat threw — removing without animation", e);
     _defeatPlaying.delete(tokenUuid);
+    if (removalGate) await _removalGate.wait(removalGate);
     try { await remove(); } catch (e2) { warn("defeat-reactor: fallback remove threw", e2); }
   } finally {
     _removing.delete(tokenUuid);
@@ -501,6 +512,8 @@ export async function playDefeatOutsideBattle(tokenDoc) {
  */
 export async function drainPendingDefeats() {
   while (_pending.length) {
+    // The pass has finished its reactions: the removals it held may delete now.
+    _removalGate.release();
     const batch = _pending.splice(0);
     await Promise.allSettled(batch);
   }
@@ -575,7 +588,7 @@ async function evaluateDefeat(director, actor, payload, { defer = false } = {}) 
     return true;
   }
   const delayMs = Math.min(_pending.length, STAGGER_MAX_STEPS) * STAGGER_MS;
-  _pending.push(performDefeat(director, tokenDoc, actor, payload, { delayMs }));
+  _pending.push(performDefeat(director, tokenDoc, actor, payload, { delayMs, removalGate: _removalGate.current() }));
   return true;
 }
 
