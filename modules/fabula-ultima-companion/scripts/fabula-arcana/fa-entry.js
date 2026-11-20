@@ -2,12 +2,13 @@
 // THE WAYS IN (proximity buttons on the shared overhead row — window.oni.Interact, like Shop / Craft):
 //   Card Duel  an NPC whose actor has flags.<mod>.faDuelist (set with FUCompanion.api.fabulaArcana.setDuelist).
 //              Optional story gate: faDuelist.requiresSwitch = "<switch name>" (window.oni.GameState).
+//              Card Duel and Challenge both need the game unlocked first (fa-const UNLOCK_SWITCH; the GM always can).
 //              Who plays: walk map → the Main Controller's party member; camp → each player's own member.
 //   Challenge  camp scenes only: another player's character near yours. They get an Accept / Decline prompt.
 //   Watch      anyone not playing, near a dueling character (or the NPC they challenged): opens the read-only board.
 // While a duel runs, a small cards icon floats over both duelists on every client.
 
-import { TAG, MODULE_ID, FLAG_DUELIST, gp, isCampScene, cameraRuntime, hostGM } from "./fa-const.js";
+import { TAG, MODULE_ID, FLAG_DUELIST, gp, isCampScene, cameraRuntime, hostGM, faUnlocked } from "./fa-const.js";
 import { send } from "./fa-net.js";
 import { status, playUi } from "./fa-client.js";
 import { showChallengeSetup } from "./fa-invite-ui.js";
@@ -178,10 +179,11 @@ async function scan() {
     const camp = isCampScene(canvas.scene);
     const mine = camp && !game.user.isGM ? [cameraRuntime()?.getFollowToken?.()].filter((t) => t?.actor) : tokens.filter((t) => party.has(t.actor.id));
     const busy = !!myDuel();
+    const unlocked = faUnlocked();
     const npcMap = new Map(), pvpMap = new Map(), watchMap = new Map();
 
     // NPC duelists
-    if (!busy && (await canChallengeNpc())) {
+    if (!busy && unlocked && (await canChallengeNpc())) {
       for (const t of tokens) {
         const cfg = duelistOf(t.actor); if (!cfg || !storyOpen(cfg)) continue;
         if (activeDuelOf(t.actor.id)) continue;
@@ -189,7 +191,7 @@ async function scan() {
       }
     }
     // Camp: another player's character
-    if (camp && !busy && !game.user.isGM) {
+    if (camp && !busy && unlocked && !game.user.isGM) {
       const me = mine[0];
       for (const t of tokens) {
         if (!me || t.id === me.id || !party.has(t.actor.id) || t.actor.isOwner) continue;

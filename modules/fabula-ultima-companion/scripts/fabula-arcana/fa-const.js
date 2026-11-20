@@ -20,6 +20,15 @@ export const GEAR_TEMPLATE = "ZoiV53VaLzeRsEps";   // CSB "_Item Template" (ever
 export const Engine = () => globalThis.FabulaArcana?.Engine ?? null;
 export const Catalog = () => globalThis.FabulaArcana?.Catalog ?? null;
 
+// Story unlock (Return to Ruhig, Willy's First Duel): until this GameState switch is ON, players can't reach the card
+// game at all: no Card Duel / Challenge buttons, no card drops, no Cards tab. The GM is never locked out, and the
+// event's own Card Duel row (event-rows-card-duel.js) works with it OFF, since that duel is the way in.
+export const UNLOCK_SWITCH = "Fabula Arcana Unlocked";
+export function faUnlocked({ gmBypass = true } = {}) {
+  if (gmBypass && game.user?.isGM) return true;
+  try { return !!window.oni?.GameState?.getSwitch?.(UNLOCK_SWITCH); } catch { return false; }
+}
+
 export const gp = (obj, path, fb) => { try { return foundry.utils.getProperty(obj, path) ?? fb; } catch { return fb; } };
 export const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
 export const isCampScene = (scene) => scene?.flags?.[MODULE_ID]?.oniFabula?.general?.sceneMode === "camp";

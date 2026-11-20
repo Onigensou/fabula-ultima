@@ -6,7 +6,7 @@
 // Which card an enemy drops: actor flag faCardDrop (a card id, or false for none), else its art file
 // matches the card's bestiary art, else its name matches. Pity counts live on each character: flags.<mod>.faPity.
 
-import { MODULE_ID, TAG, Catalog, artUrl, artFiles, EL_COLOR, gp } from "./fa-const.js";
+import { MODULE_ID, TAG, Catalog, artUrl, artFiles, EL_COLOR, gp, faUnlocked } from "./fa-const.js";
 import { ownedCards, grantCard } from "./fa-collection.js";
 import { decideDrops, matchCard } from "./fa-drops-core.js";
 
@@ -28,6 +28,7 @@ export function cardForEnemy(actor, token = null) {
  */
 export async function rollCardDrops(enemies, recipients, { rng = Math.random } = {}) {
   const C = Catalog()?.CARDS; if (!C) return [];
+  if (!faUnlocked({ gmBypass: false })) return [];   // no drops (and no pity counting) before the party has met the game
   const list = [];
   for (const e of enemies ?? []) { const cid = cardForEnemy(e.actor, e.token); if (cid) list.push({ cid, rank: e.rank ?? gp(e.actor, "system.props.npc_rank", "soldier") }); }
   if (!list.length || !recipients?.length) return [];

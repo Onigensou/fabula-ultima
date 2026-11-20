@@ -20,6 +20,7 @@
 
 import { registerHandler, request, installNet, isActingGM } from "../advancement/advancement-net.js";
 import { canUseCommand } from "./party-menu-access.js";
+import { faUnlocked } from "../fabula-arcana/fa-const.js";
 import { gatherHealingActions } from "../healing-system/healing-actions.js";
 import { isPolymorphPotion, findFormActor } from "../polymorph/polymorph-potions.js";
 import {
@@ -72,6 +73,11 @@ export const ITEM_FILTERS = [
   { id: "key", label: "Key", icon: "fa-key" },
   { id: "card", label: "Cards", icon: "fa-diamond" },
 ];
+
+/** The filter chips this client shows: Cards stays hidden until Fabula Arcana is unlocked (the GM always sees it). */
+export function visibleItemFilters() {
+  return faUnlocked() ? ITEM_FILTERS : ITEM_FILTERS.filter((f) => f.id !== "card");
+}
 
 export function itemType(item) {
   const t = str(item?.system?.props?.item_type).toLowerCase();
