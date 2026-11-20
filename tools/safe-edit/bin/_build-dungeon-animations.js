@@ -39,6 +39,7 @@ const AS = require(path.join(ANIM_LIB, "lib", "asura-signatures.js"));
 const PS = require(path.join(ANIM_LIB, "lib", "passive-pxfx-signatures.js"));
 const { encode, validate } = require(path.join(ANIM_LIB, "lib", "encode.js"));
 const { LEGACY_REGISTRY } = require(path.join(ANIM_LIB, "lib", "legacy-boss-registry.js"));
+const { NOX_REGISTRY } = require(path.join(ANIM_LIB, "lib", "nox-registry.js"));
 
 /* ── Palette ─────────────────────────────────────────────────────────────── */
 
@@ -808,6 +809,8 @@ const REGISTRY = {
 };
 // Legacy boss animation pass (2026-11-16): seven bosses, see lib/legacy-boss-registry.js.
 Object.assign(REGISTRY, LEGACY_REGISTRY);
+// Nox Legion (Sealed Cavern) action animations (2026-11-20): six monsters, see lib/nox-registry.js.
+Object.assign(REGISTRY, NOX_REGISTRY);
 
 /* ── Runner ──────────────────────────────────────────────────────────────── */
 
@@ -889,7 +892,8 @@ async function main() {
         continue;
       }
       r.warnings.forEach((w) => console.warn(`  ! ${entry.actorName} / ${itemName}: ${w}`));
-      jobs.push({ actorId, actorName: entry.actorName, itemName, stored: encode(src), mode: "gen", len: src.length, timing: meta?.timing ?? null, preload: meta?.preload ?? null });
+      // gen.optional: the item may not exist under this name (a rename in flight, e.g. Gravis / Gravis Alta) -> skip quietly
+      jobs.push({ actorId, actorName: entry.actorName, itemName, stored: encode(src), mode: "gen", len: src.length, timing: meta?.timing ?? null, preload: meta?.preload ?? null, optional: !!gen.optional });
     }
   }
 
@@ -934,6 +938,7 @@ async function main() {
     }
     for (const j of jobs) {
       const hit = index.get(j.actorId)?.get(j.itemName);
+      if (!hit && j.optional) { console.log(`  - ${j.actorName.padEnd(16)} ${j.itemName} (not on actor under this name, optional: skipped)`); continue; }
       if (!hit) { console.error(`✗ ${j.actorName} / ${j.itemName}: item not found on actor`); missing++; continue; }
       const [key, doc] = hit;
       doc.system = doc.system || {};
