@@ -110,6 +110,21 @@ function announceAllyDeciding(director, rowKey, carrierUuid, fromUserId, on) {
   } catch (e) { warn("announceAllyDeciding: broadcast threw", e); }
 }
 
+// Tell the other players that this reaction's owner is holding its card in a
+// drag (on) or let go (off). Display only: their reaction hand makes the ally's
+// small card glow in the owner's colour (reaction-hand.js). Relayed by the host
+// because players only talk to the host.
+function announceAllyHolding(director, rowKey, carrierUuid, fromUserId, on) {
+  const targetUserIds = cardAudience().filter((u) => u.active && !u.isGM && u.id !== fromUserId).map((u) => u.id);
+  if (!targetUserIds.length) return;
+  try {
+    director?.intentChannel?.broadcastMenuOpen({
+      targetUserIds,
+      menuSpec: { kind: "action-card-pill-hold", combatId: director.combatId, rowKey, carrierUuid, on: !!on },
+    });
+  } catch (e) { warn("announceAllyHolding: broadcast threw", e); }
+}
+
 // An online owner first, else the owner who is away. A card must still name an
 // away owner: with no owner on a pill it gates Confirm with nobody to answer it
 // and nobody to wait for (Keren's Illusory Shield, 2026-10-31).
@@ -1340,7 +1355,7 @@ export function ensureStyles() {
     :is(body.fud-rx-hand .fud-bf-card .fud-bf-reaction-pill, .fud-bf-card .fud-bf-reaction-pill[data-gmd-rx], .fud-bf-card .fud-bf-reaction-pill:not(:has([data-fud-reaction-action="apply"]))):is(.is-skipped, .is-unavailable, .is-moot, [data-fud-reaction-moot="1"]) { display: none !important; }
     /* No reaction in effect and none to answer here: no Reactions box at all. */
     .fud-bf-card .fud-bf-reactions-row:not(:has(.fud-bf-reaction-pill:is(.is-applied, .is-auto):not(.is-skipped, .is-unavailable, .is-moot, [data-fud-reaction-moot="1"]))):not(:has(.fud-bf-reaction-pill:not([data-gmd-rx]) [data-fud-reaction-action="apply"])),
-    body.fud-rx-hand .fud-bf-card .fud-bf-reactions-row:not(:has(.fud-bf-reaction-pill:is(.is-applied, .is-auto):not(.is-skipped, .is-unavailable, .is-moot, [data-fud-reaction-moot="1"]))) { display: none !important; }
+    body.fud-rx-hand .fud-bf-card .fud-bf-reactions-row:not(.rxh-preview):not(:has(.fud-bf-reaction-pill:is(.is-applied, .is-auto):not(.is-skipped, .is-unavailable, .is-moot, [data-fud-reaction-moot="1"]))) { display: none !important; }
 
     /* ── Auto-confirm veto strip (Summon Autopilot) ─────────────────────────
        Sits directly above the button row: a thin draining bar plus a one-line
@@ -9785,6 +9800,7 @@ export async function postActionCard({ director, kind, payload }) {
     let confirmAwait = null;
     let cancelAwait = null;
     let reactionAwait = null;
+    let holdAwait = null;
     let invokeAwait = null;
     let editAwait = null;
     let hudOpenAwait = null;
@@ -9794,6 +9810,7 @@ export async function postActionCard({ director, kind, payload }) {
       try { confirmAwait?.abort?.("postActionCard-finish"); } catch {}
       try { cancelAwait?.abort?.("postActionCard-finish"); } catch {}
       try { reactionAwait?.abort?.("postActionCard-finish"); } catch {}
+      try { holdAwait?.abort?.("postActionCard-finish"); } catch {}
       try { invokeAwait?.abort?.("postActionCard-finish"); } catch {}
       try { editAwait?.abort?.("postActionCard-finish"); } catch {}
       try { hudOpenAwait?.abort?.("postActionCard-finish"); } catch {}
@@ -10092,6 +10109,27 @@ export async function postActionCard({ director, kind, payload }) {
           });
         };
         armReactionAwait();
+
+        // Reaction-hold relay — a player picked up (or let go of) one of their
+        // reaction cards in a drag. Display only: pass it on to the other
+        // players so the ally's small card glows; the card itself is untouched.
+        const armHoldAwait = () => {
+          if (resolved) return;
+          if (initialPending === 0) return;
+          holdAwait = director.intentChannel.awaitIntent(INTENTS.REACTION_HOLD, { timeoutMs: AWAIT_MS });
+          holdAwait.then((intent) => {
+            const body = intent?.body ?? {};
+            const fromUid = intent?.fromUserId ?? null;
+            if (fromUid && fromUid !== game.user?.id) {
+              announceAllyHolding(director, String(body.rowKey ?? ""), String(body.carrierUuid ?? ""), fromUid, !!body.on);
+            }
+            armHoldAwait();
+          }).catch((e) => {
+            if (expired(e)) { armHoldAwait(); return; }
+            if (!resolved) log(`postActionCard: REACTION_HOLD await aborted (${e?.message})`);
+          });
+        };
+        armHoldAwait();
 
         // Invoke-choice loop — re-arm after each pick so the player can use
         // both Trait and Bond if their actor supports full invoke.
@@ -10571,6 +10609,10 @@ export async function postActionCard({ director, kind, payload }) {
         if (!pill) return;
         const rowKey = pill.dataset.fudReactionKey ?? "";
         const carrier = pill.dataset.fudReactionCarrier ?? "";
+        // A drag's hold signal is a player's display-only message (reaction hand);
+        // it must never fall through to Skip below.
+        const holdAct = reactionBtn.dataset.fudReactionAction;
+        if (holdAct === "hold" || holdAct === "unhold") return;
         const decision = reactionBtn.dataset.fudReactionAction === "apply" ? "apply" : "skip";
         recordPillDecision(rowKey, carrier, decision);
         return;
@@ -11572,6 +11614,20 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
       { pendingCount: menuSpec.pendingCount ?? 0, gm: !!menuSpec.gm });
   });
 
+  // "Holding" — another player is holding one of their reaction cards in a drag
+  // (reaction-hand.js), or let go. Display only: the reaction hand makes their
+  // small card glow. Its own kind ON PURPOSE: an "action-card-pill-update" with a
+  // decision a client doesn't know falls through to "skip" above.
+  const offPillHold = channel.onMenuOpen((menuSpec) => {
+    if (!menuSpec || menuSpec.kind !== "action-card-pill-hold") return;
+    const pillEl = document.getElementById(MIRROR_ROOT_ID)?.querySelector(
+      `.fud-bf-reaction-pill[data-fud-reaction-key="${CSS.escape(String(menuSpec.rowKey ?? ""))}"][data-fud-reaction-carrier="${CSS.escape(String(menuSpec.carrierUuid ?? ""))}"]`
+    );
+    if (!pillEl) return;
+    if (menuSpec.on && !pillEl.classList.contains("is-resolved")) pillEl.dataset.fudReactionHolding = "1";
+    else delete pillEl.dataset.fudReactionHolding;
+  });
+
   // Card body re-render handler — propagates a GM-side full-body rebuild
   // (Potion Rain heal-spread, future result mutations) to the local mirror so
   // the headline + per-target rows update together. Header/pills/buttons are
@@ -11821,6 +11877,20 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
         channel.emit({
           type: INTENTS.REACTION_CHOICE,
           body: { rowKey: pill.dataset.fudReactionKey ?? "", carrierUuid: pill.dataset.fudReactionCarrier ?? "", decision: "reopen" },
+          combatId: menuSpec.combatId,
+        });
+        return;
+      }
+      // Holding the card in a drag, or letting go (the reaction hand; no visible
+      // button carries this either). Display only, so other players see the
+      // ally's card glow. MUST return here: below, anything that isn't "apply"
+      // is treated as an optimistic Skip.
+      const holdAct = reactionBtn.dataset.fudReactionAction;
+      if (holdAct === "hold" || holdAct === "unhold") {
+        if (!isOwner) return;
+        channel.emit({
+          type: INTENTS.REACTION_HOLD,
+          body: { rowKey: pill.dataset.fudReactionKey ?? "", carrierUuid: pill.dataset.fudReactionCarrier ?? "", on: holdAct === "hold" },
           combatId: menuSpec.combatId,
         });
         return;
@@ -12362,6 +12432,7 @@ export function registerPlayerActionCardHandler(channel, isActiveDirector = () =
     try { offClose?.(); } catch {}
     try { offConfirmAck?.(); } catch {}
     try { offPillUpdate?.(); } catch {}
+    try { offPillHold?.(); } catch {}
     try { offPillsAppend?.(); } catch {}
     try { offTargetMutation?.(); } catch {}
     try { offBodyUpdate?.(); } catch {}

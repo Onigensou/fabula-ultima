@@ -88,6 +88,15 @@ export const INTENTS = Object.freeze({
   // historically been single-reactor (caster = reactor).
   REACTION_CHOICE: "REACTION_CHOICE",
 
+  // External — sent by a player client while they hold one of their reaction
+  // cards in a drag (reaction-hand.js / reaction-drag.js), and again when they
+  // let go. Body: { rowKey, carrierUuid, on }. Display only: the host relays it
+  // to the other players as a "holding" pill-update so the ally's small card
+  // glows; nothing is decided. A separate type ON PURPOSE: the REACTION_CHOICE
+  // handlers map any decision they don't know to "skip". An older host has no
+  // awaiter for this, so it falls to director.dispatch and is dropped.
+  REACTION_HOLD: "REACTION_HOLD",
+
   // External — sent by a player client to return the result of a secondary
   // picker (target selection / option-menu) the GM routed to them mid-
   // reaction. Body: { requestId, value }. Resolved by a GM-side awaitIntent
