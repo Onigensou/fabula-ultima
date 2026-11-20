@@ -197,6 +197,10 @@ function masked(V, key) {
   c.fillStyle = gr; c.fillRect(0, 0, w, h); c.globalCompositeOperation = 'source-over';
   return MCAN;
 }
+// Black-background clips (pixelfx light layers, Guilty Gear, JB2A) drawn additive onto the timeline's transparent overlay
+// leave opaque black boxes: the luma-to-alpha SVG filter turns black into transparent (same fix as the Executioner kit / legacy port).
+const LUMA_FILTER = (() => { const id = 'oni-luma-alpha'; try { if (!document.getElementById(id)) { const ns = 'http://www.w3.org/2000/svg'; const svg = document.createElementNS(ns, 'svg'); svg.setAttribute('width', '0'); svg.setAttribute('height', '0'); svg.style.position = 'absolute'; svg.style.pointerEvents = 'none'; const f = document.createElementNS(ns, 'filter'); f.setAttribute('id', id); f.setAttribute('color-interpolation-filters', 'sRGB'); const cm = document.createElementNS(ns, 'feColorMatrix'); cm.setAttribute('type', 'matrix'); cm.setAttribute('values', '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 0'); f.appendChild(cm); svg.appendChild(f); document.body.appendChild(svg); } } catch (e) {} return 'url(#' + id + ')'; })();
+const LUMA_KEY = (key) => /_light$/.test(key) || /^(gg_|jb_)/.test(key);
 // o: scale, filter, blend, z (mockup DOM z), sy, opacity, loop, hold (ms on screen), fadeAt + fadeMs (mockup .stop(ms))
 function fx(key, at, pt, o) {
   o = o || {}; const def = CL[key]; if (!def) return null;
@@ -209,7 +213,8 @@ function fx(key, at, pt, o) {
     const V = c.frame(!!o.loop); if (!V) return;
     let a = op; if (o.fadeAt != null && at + e > o.fadeAt) a *= 1 - X.sine(clamp01((at + e - o.fadeAt) / (o.fadeMs || 300))); if (a <= 0) return;
     S.world.push({ z, draw: (g) => { const F = masked(V, key); g.save(); g.translate(pt.x, pt.y); if (sy !== 1) g.scale(1, sy); g.globalAlpha = a;
-      if (o.blend) g.globalCompositeOperation = o.blend; if (o.filter) g.filter = o.filter;
+      if (LUMA_KEY(key) || o.blend === 'screen') { g.globalCompositeOperation = 'lighter'; g.filter = (o.filter ? o.filter + ' ' : '') + LUMA_FILTER; }
+      else { if (o.blend) g.globalCompositeOperation = o.blend; if (o.filter) g.filter = o.filter; }
       g.drawImage(F, -def.ax * w, -def.ay * h, w, h); g.restore(); } });
   });
   return { at, dur };

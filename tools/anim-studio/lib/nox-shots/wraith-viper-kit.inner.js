@@ -189,7 +189,11 @@ function fly(at, from, to, o) {
   return at + ms;
 }
 // ── clips: size = source px * scale * the library factor (pixelfx / MV .55); LIVE scales by depth itself, the takeover by s ──
-const fx = (key, at, pt, scale, s, o) => { const c = CL[key]; if (!c) return null; return m.clip(key, at, Object.assign({ x: pt.x, y: pt.y, w: c.w * scale * (c.k || 0.55) * KP * (LIVE ? 1 : (s || 1)), z: 26 }, o || {})); };
+// Black-background clips (pixelfx light layers, Guilty Gear, JB2A) drawn additive onto the timeline's transparent overlay
+// leave opaque black boxes: the luma-to-alpha SVG filter turns black into transparent (same fix as the Executioner kit / legacy port).
+const LUMA_FILTER = (() => { const id = 'oni-luma-alpha'; try { if (!document.getElementById(id)) { const ns = 'http://www.w3.org/2000/svg'; const svg = document.createElementNS(ns, 'svg'); svg.setAttribute('width', '0'); svg.setAttribute('height', '0'); svg.style.position = 'absolute'; svg.style.pointerEvents = 'none'; const f = document.createElementNS(ns, 'filter'); f.setAttribute('id', id); f.setAttribute('color-interpolation-filters', 'sRGB'); const cm = document.createElementNS(ns, 'feColorMatrix'); cm.setAttribute('type', 'matrix'); cm.setAttribute('values', '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 0'); f.appendChild(cm); svg.appendChild(f); document.body.appendChild(svg); } } catch (e) {} return 'url(#' + id + ')'; })();
+const LUMA_KEY = (key) => /_light$/.test(key) || /^(gg_|jb_)/.test(key);
+const fx = (key, at, pt, scale, s, o) => { const c = CL[key]; if (!c) return null; o = Object.assign({}, o || {}); if (LUMA_KEY(key) || o.add || c.add) { o.add = true; o.filter = (o.filter ? o.filter + ' ' : '') + LUMA_FILTER; } return m.clip(key, at, Object.assign({ x: pt.x, y: pt.y, w: c.w * scale * (c.k || 0.55) * KP * (LIVE ? 1 : (s || 1)), z: 26 }, o)); };
 // mockup pxClip: back layer under the battlers, front over them, light over that (additive)
 const px = (name, at, pt, scale, s, o) => { o = o || {}; const base = Object.assign({}, o); delete base.z; delete base.zl; delete base.back;
   if (o.back !== false && CL[name + '_back']) fx(name + '_back', at, pt, scale, s, Object.assign({}, base, { z: 3 }));

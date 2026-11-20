@@ -185,7 +185,11 @@ const jawSnap = (at, pt, o) => { o = o || {}; const s = (o.s || 1) * KP, rgb = o
 // pixelfx (mockup pxClip): back under the battlers, front over, light
 // over with additive blend (the mockup used screen). o.under = the whole pixelfx stack under the battlers.
 const clipW = (key, scale) => (CL[key] ? CL[key].w * scale * CL[key].k * KP : 0);
-const fx = (key, at, pt, scale, o) => { if (!CL[key]) return null; return m.clip(key, at, Object.assign({ x: pt.x, y: pt.y, w: clipW(key, scale), z: 26 }, o || {})); };
+// Black-background clips (pixelfx light layers, Guilty Gear, JB2A) drawn additive onto the timeline's transparent overlay
+// leave opaque black boxes: the luma-to-alpha SVG filter turns black into transparent (same fix as the Executioner kit / legacy port).
+const LUMA_FILTER = (() => { const id = 'oni-luma-alpha'; try { if (!document.getElementById(id)) { const ns = 'http://www.w3.org/2000/svg'; const svg = document.createElementNS(ns, 'svg'); svg.setAttribute('width', '0'); svg.setAttribute('height', '0'); svg.style.position = 'absolute'; svg.style.pointerEvents = 'none'; const f = document.createElementNS(ns, 'filter'); f.setAttribute('id', id); f.setAttribute('color-interpolation-filters', 'sRGB'); const cm = document.createElementNS(ns, 'feColorMatrix'); cm.setAttribute('type', 'matrix'); cm.setAttribute('values', '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 0'); f.appendChild(cm); svg.appendChild(f); document.body.appendChild(svg); } } catch (e) {} return 'url(#' + id + ')'; })();
+const LUMA_KEY = (key) => /_light$/.test(key) || /^(gg_|jb_)/.test(key);
+const fx = (key, at, pt, scale, o) => { if (!CL[key]) return null; o = Object.assign({}, o || {}); if (LUMA_KEY(key) || o.add) { o.add = true; o.filter = (o.filter ? o.filter + ' ' : '') + LUMA_FILTER; } return m.clip(key, at, Object.assign({ x: pt.x, y: pt.y, w: clipW(key, scale), z: 26 }, o)); };
 const pxfx = (name, at, pt, scale, o) => { o = o || {}; const z = o.under ? [3, 4.6, 4.7] : [3, 26, 27];
   const base = { flip: !!o.flip, loop: !!o.loop }; if (o.hold != null) base.hold = o.hold; if (o.alpha) base.alpha = o.alpha;
   fx(name + '_back', at, pt, scale, Object.assign({ z: z[0] }, base));
