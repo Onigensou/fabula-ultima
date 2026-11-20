@@ -7832,7 +7832,10 @@ async function applyApplyAeEffect(row, ctx) {
     //        (see the clamp sites below).
     // Only fires when the prop EXISTS — non-status template ids like
     // "fud-bodyguard" have no matching prop so they pass through.
-    const conditionAffinity = getConditionAffinityFor(actor, { statuses: template.statuses, name: template.name });
+    // `ignore_condition_immunity: true` on the row skips this gate entirely: a
+    // curse that "nothing can block" (Muramasa's self-Doom vs an Omamori wearer).
+    const ignoreImmunity = row.ignore_condition_immunity === true || String(row.ignore_condition_immunity ?? "").toLowerCase() === "true";
+    const conditionAffinity = ignoreImmunity ? null : getConditionAffinityFor(actor, { statuses: template.statuses, name: template.name });
     if (conditionAffinity === "IM") {
       log(`skill-effects.apply_ae: ${actor.name} immune to "${template.name}" (condition_<slug>=IM)`);
       fireStatusImmuneVfx({ tokenUuid: token?.document?.uuid ?? token?.uuid ?? null, statusName: template.name });

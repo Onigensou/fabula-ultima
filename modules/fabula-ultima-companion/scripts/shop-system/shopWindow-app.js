@@ -40,6 +40,9 @@ const SHOP_CATEGORIES = [
   { key: "consumable", emoji: "🧪",  label: "Consumable" },
   { key: "recipe",     emoji: "📖",  label: "Recipe"     },
   { key: "material",   emoji: "🪵",  label: "Material"   },
+  // Key items a shop sells are fishing tackle today (Hako's rods, item_type "key").
+  // The tab only shows when the shop stocks one, like every other category.
+  { key: "key",        emoji: "🎣",  label: "Tackle"     },
 ];
 
 const _openWindows = new Map(); // actorUuid -> Dialog
@@ -708,6 +711,9 @@ export class ShopWindowApp {
     const tabs = SHOP_CATEGORIES.map(c => {
       const items   = itemsByCategory[c.key] ?? [];
       const isEmpty = items.length === 0;
+      // The Tackle tab is shop-specific: hide it instead of greying it out, so
+      // shops without key items keep their usual seven tabs.
+      if (c.key === "key" && isEmpty) return "";
       const hasNew  = items.some(it => newItemIds.has(it.uuid));
       const badge   = hasNew ? `<span class="fu-tab-new-badge">New!</span>` : "";
       return `<div class="fu-shop-tab${activeTab === c.key ? " active" : ""}${isEmpty ? " fu-tab-empty" : ""}"
