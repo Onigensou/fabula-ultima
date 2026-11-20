@@ -15,6 +15,9 @@
 //                   Shown only while shownWhen is ON (the Opening Ceremony
 //                   crowd), hidden once hiddenWhen is ON (a festival guest
 //                   after the city burns). Both set: needs both.
+//   Story tile      the same shownWhen / hiddenWhen on a tile (Geist's letter
+//                   in Ruhig: shown once Geist Rescued, gone once it's read).
+//                   A tile with openedBy uses that instead.
 //
 // Tiles, walls and tokens are scene data, so one client has to write them: the primary
 // GM reconciles every gated document against the switches, whichever scene it
@@ -49,8 +52,8 @@
     const tiles = [], walls = [];
     for (const tile of scene?.tiles ?? []) {
       const name = openedBy(tile);
-      if (!name) continue;
-      const hidden = isOn(name) === true;
+      const hidden = name ? isOn(name) === true : tokenHidden(tile, isOn);
+      if (hidden === null) continue;
       if (!!tile.hidden !== hidden) tiles.push({ _id: tile.id ?? tile._id, hidden });
     }
     for (const wall of scene?.walls ?? []) {
