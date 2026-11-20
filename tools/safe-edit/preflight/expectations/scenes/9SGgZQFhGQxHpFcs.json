@@ -13,12 +13,22 @@
       "actorLink": true
     },
     {
+      "name": "Pomme",
+      "actorId": "GYN4hOxyq1dEafse",
+      "actorLink": true
+    },
+    {
       "name": "Canis",
       "actorId": "odJ9ogVtqWLRU5C0",
       "actorLink": true
     },
     {
       "name": "Old Villager",
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "actorLink": false
+    },
+    {
+      "name": "Ruhig Field Shot",
       "actorId": "TnOKgQbmyxFzD6Oe",
       "actorLink": false
     },
@@ -34,6 +44,16 @@
     },
     {
       "name": "Builder",
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "actorLink": false
+    },
+    {
+      "name": "Ruhig House Shot",
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "actorLink": false
+    },
+    {
+      "name": "Ruhig Path Shot",
       "actorId": "TnOKgQbmyxFzD6Oe",
       "actorLink": false
     }
@@ -144,26 +164,101 @@
         },
         "fabula-ultima-companion": {
           "draftTokens": "claude-2026-10-13",
-          "draftName": "Rume"
+          "draftName": "Rume",
+          "noShopButton": true
         },
         "oni-event-system": {
           "isEventTile": true,
           "proximityPx": 75,
           "eventRows": [
             {
-              "id": "u3sQua2BfU9DBjMD",
-              "type": "showText",
-              "speaker": "This",
-              "text": "Most of the villagers evacuated to the next town."
+              "type": "setVariable",
+              "name": "Ruhig Rume Line",
+              "op": "random",
+              "value": 1,
+              "max": 3,
+              "id": "nXhh0bafD9i4kpvd"
             },
             {
-              "id": "aFkiJhSHxhDuTiUR",
-              "type": "showText",
-              "speaker": "This",
-              "text": "Someone has to rebuild this place, so I'm doing it."
+              "type": "condition",
+              "condition": {
+                "kind": "variable",
+                "name": "Ruhig Rume Line",
+                "op": "=",
+                "value": 1
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": false,
+              "thenRows": [
+                {
+                  "type": "showText",
+                  "text": "The inn goes up first. Even I refuse to sleep on rubble.",
+                  "bubbleMode": "normal",
+                  "textSpeed": "normal",
+                  "id": "4Ap020BbUoXTbhsm",
+                  "showAs": "box",
+                  "portrait": "",
+                  "speaker": "This"
+                }
+              ],
+              "elseRows": [],
+              "id": "bfJ3Sn27nW9c9Bde"
+            },
+            {
+              "type": "condition",
+              "condition": {
+                "kind": "variable",
+                "name": "Ruhig Rume Line",
+                "op": "=",
+                "value": 2
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": false,
+              "thenRows": [
+                {
+                  "type": "showText",
+                  "text": "Grapes, not apples. Ruhig's vineyards will grow again, mark my words.",
+                  "bubbleMode": "normal",
+                  "textSpeed": "normal",
+                  "id": "ZvQVayLjoCHmOBn6",
+                  "showAs": "box",
+                  "portrait": "",
+                  "speaker": "This"
+                }
+              ],
+              "elseRows": [],
+              "id": "pKe2rCylGzzFW9Za"
+            },
+            {
+              "type": "condition",
+              "condition": {
+                "kind": "variable",
+                "name": "Ruhig Rume Line",
+                "op": "=",
+                "value": 3
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": false,
+              "thenRows": [
+                {
+                  "type": "showText",
+                  "text": "That patient of mine still hasn't thanked me. How very rude.",
+                  "bubbleMode": "normal",
+                  "textSpeed": "normal",
+                  "id": "lhQFHMVZDq6Yt388",
+                  "showAs": "box",
+                  "portrait": "",
+                  "speaker": "This"
+                }
+              ],
+              "elseRows": [],
+              "id": "Nxd6tVm5y0r4lzsf"
             }
           ],
-          "eventRowsJsonPreview": "[\n  {\n    \"id\": \"u3sQua2BfU9DBjMD\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"Most of the villagers evacuated to the next town.\"\n  },\n  {\n    \"id\": \"aFkiJhSHxhDuTiUR\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"Someone has to rebuild this place, so I'm doing it.\"\n  }\n]"
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"setVariable\",\n    \"name\": \"Ruhig Rume Line\",\n    \"op\": \"random\",\n    \"value\": 1,\n    \"max\": 3,\n    \"id\": \"nXhh0bafD9i4kpvd\"\n  },\n  {\n    \"type\": \"condition\",\n    \"condition\": {\n      \"kind\": \"variable\",\n      \"name\": \"Ruhig Rume Line\",\n      \"op\": \"=\",\n      \"value\": 1\n    },\n    \"moreConditions\": [],\n    \"combine\": \"all\",\n    \"hasElse\": false,\n    \"thenRows\": [\n      {\n        \"type\": \"showText\",\n        \"text\": \"The inn goes up first. Even I refuse to sleep on rubble.\",\n        \"bubbleMode\": \"normal\",\n        \"textSpeed\": \"normal\",\n        \"id\": \"4Ap020BbUoXTbhsm\",\n        \"showAs\": \"box\",\n        \"portrait\": \"\",\n        \"speaker\": \"This\"\n      }\n    ],\n    \"elseRows\": [],\n    \"id\": \"bfJ3Sn27nW9c9Bde\"\n  },\n  {\n    \"type\": \"condition\",\n    \"condition\": {\n      \"kind\": \"variable\",\n      \"name\": \"Ruhig Rume Line\",\n      \"op\": \"=\",\n      \"value\": 2\n    },\n    \"moreConditions\": [],\n    \"combine\": \"all\",\n    \"hasElse\": false,\n    \"thenRows\": [\n      {\n        \"type\": \"showText\",\n        \"text\": \"Grapes, not apples. Ruhig's vineyards will grow again, mark my words.\",\n        \"bubbleMode\": \"normal\",\n        \"textSpeed\": \"normal\",\n        \"id\": \"ZvQVayLjoCHmOBn6\",\n        \"showAs\": \"box\",\n        \"portrait\": \"\",\n        \"speaker\": \"This\"\n      }\n    ],\n    \"elseRows\": [],\n    \"id\": \"pKe2rCylGzzFW9Za\"\n  },\n  {\n    \"type\": \"condition\",\n    \"condition\": {\n      \"kind\": \"variable\",\n      \"name\": \"Ruhig Rume Line\",\n      \"op\": \"=\",\n      \"value\": 3\n    },\n    \"moreConditions\": [],\n    \"combine\": \"all\",\n    \"hasElse\": false,\n    \"thenRows\": [\n      {\n        \"type\": \"showText\",\n        \"text\": \"That patient of mine still hasn't thanked me. How very rude.\",\n        \"bubbleMode\": \"normal\",\n        \"textSpeed\": \"normal\",\n        \"id\": \"lhQFHMVZDq6Yt388\",\n        \"showAs\": \"box\",\n        \"portrait\": \"\",\n        \"speaker\": \"This\"\n      }\n    ],\n    \"elseRows\": [],\n    \"id\": \"Nxd6tVm5y0r4lzsf\"\n  }\n]"
         }
       },
       "actorId": "bCY4VbmO7SXDe7Tb",
@@ -320,6 +415,125 @@
         "O3tJqGEjWn3XNRWb"
       ],
       "_id": "FN1n0zX9PQUnmLrP"
+    },
+    {
+      "name": "Ruhig Field Shot",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "icons/svg/target.svg",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": true,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 0,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "draftRuhig": "claude-2026-11-20-ruhig",
+          "draftName": "Ruhig Field Shot",
+          "depthExempt": true
+        }
+      },
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "hidden": true,
+      "x": 1090,
+      "y": 440,
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": [],
+      "_id": "JW7plc80MXXeSjuM"
     },
     {
       "name": "Worker",
@@ -721,6 +935,326 @@
       "_id": "RuyswM7T2jYh8vdT"
     },
     {
+      "name": "Pomme",
+      "displayName": 30,
+      "actorLink": true,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/NPCs/Pomme_Standard_NoShadow.png",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": true,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 1,
+      "displayBars": 50,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "draftRuhig": "claude-2026-11-20-ruhig",
+          "draftName": "Pomme",
+          "noShopButton": false
+        },
+        "oni-event-system": {
+          "isEventTile": true,
+          "proximityPx": 75,
+          "eventRows": [
+            {
+              "type": "condition",
+              "condition": {
+                "kind": "self",
+                "slot": "A",
+                "want": "off"
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": true,
+              "thenRows": [
+                {
+                  "type": "showEmote",
+                  "target": "source",
+                  "name": "",
+                  "emote": "Love",
+                  "side": "auto",
+                  "seconds": 1.6,
+                  "wait": false,
+                  "id": "KZApc0u7qfnNVBVT"
+                },
+                {
+                  "type": "showText",
+                  "text": "Hiya~! Pomme's here to help! Rume wrote she was rebuilding the whole village, so I packed up my shop and ran right over!",
+                  "bubbleMode": "normal",
+                  "textSpeed": "normal",
+                  "id": "kbpAufvuyDKT0oVw",
+                  "showAs": "box",
+                  "portrait": "",
+                  "speaker": "This"
+                },
+                {
+                  "type": "showText",
+                  "text": "An apple a day keeps the rubble away~!",
+                  "bubbleMode": "normal",
+                  "textSpeed": "normal",
+                  "id": "O33vy7iwbrEi5QqV",
+                  "showAs": "box",
+                  "portrait": "",
+                  "speaker": "This"
+                },
+                {
+                  "type": "showEmote",
+                  "target": "token",
+                  "name": "Rume",
+                  "emote": "Ang",
+                  "side": "auto",
+                  "seconds": 1.6,
+                  "wait": false,
+                  "id": "JVoiTCFhLc1TaSyh"
+                },
+                {
+                  "type": "setFacing",
+                  "target": "token",
+                  "name": "Rume",
+                  "direction": "downLeft",
+                  "id": "3pOD30WWtq47R8G4"
+                },
+                {
+                  "type": "showText",
+                  "text": "Pomme! Stop feeding my workers apples! Ruhig runs on grapes!",
+                  "bubbleMode": "shout",
+                  "textSpeed": "normal",
+                  "id": "KYygYWaPng3SdDDp",
+                  "showAs": "box",
+                  "portrait": "",
+                  "speaker": "Rume"
+                },
+                {
+                  "type": "showEmote",
+                  "target": "source",
+                  "name": "",
+                  "emote": "Goo",
+                  "side": "auto",
+                  "seconds": 1.6,
+                  "wait": false,
+                  "id": "lChJmZx597IJIgJn"
+                },
+                {
+                  "type": "showText",
+                  "text": "Apples are the fruit of everywhere!",
+                  "bubbleMode": "normal",
+                  "textSpeed": "normal",
+                  "id": "0kEJGUKoPAN6j1uJ",
+                  "showAs": "box",
+                  "portrait": "",
+                  "speaker": "This"
+                },
+                {
+                  "type": "setFacing",
+                  "target": "token",
+                  "name": "Rume",
+                  "direction": "left",
+                  "id": "HgkARJsJwAUnUCQe"
+                },
+                {
+                  "type": "setSwitch",
+                  "scope": "self",
+                  "name": "",
+                  "slot": "A",
+                  "value": "on",
+                  "id": "S2SjPXUixNghZf0P"
+                }
+              ],
+              "elseRows": [
+                {
+                  "type": "setVariable",
+                  "name": "Ruhig Pomme Line",
+                  "op": "random",
+                  "value": 1,
+                  "max": 3,
+                  "id": "i1cqSiFJukzbd0h9"
+                },
+                {
+                  "type": "condition",
+                  "condition": {
+                    "kind": "variable",
+                    "name": "Ruhig Pomme Line",
+                    "op": "=",
+                    "value": 1
+                  },
+                  "moreConditions": [],
+                  "combine": "all",
+                  "hasElse": false,
+                  "thenRows": [
+                    {
+                      "type": "showText",
+                      "text": "Want an apple? It's on the house! ...Well, on the cart. The house is still being built.",
+                      "bubbleMode": "normal",
+                      "textSpeed": "normal",
+                      "id": "ZuO8sx7C1Yy0sDI6",
+                      "showAs": "box",
+                      "portrait": "",
+                      "speaker": "This"
+                    }
+                  ],
+                  "elseRows": [],
+                  "id": "UF4qwNbVuTFWW7LH"
+                },
+                {
+                  "type": "condition",
+                  "condition": {
+                    "kind": "variable",
+                    "name": "Ruhig Pomme Line",
+                    "op": "=",
+                    "value": 2
+                  },
+                  "moreConditions": [],
+                  "combine": "all",
+                  "hasElse": false,
+                  "thenRows": [
+                    {
+                      "type": "showText",
+                      "text": "Rume pretends she hates apples, but I saw her eat one yesterday~!",
+                      "bubbleMode": "normal",
+                      "textSpeed": "normal",
+                      "id": "D9HMKXyGVa2PLYyK",
+                      "showAs": "box",
+                      "portrait": "",
+                      "speaker": "This"
+                    }
+                  ],
+                  "elseRows": [],
+                  "id": "SYhF8O5f6q8AQiXV"
+                },
+                {
+                  "type": "condition",
+                  "condition": {
+                    "kind": "variable",
+                    "name": "Ruhig Pomme Line",
+                    "op": "=",
+                    "value": 3
+                  },
+                  "moreConditions": [],
+                  "combine": "all",
+                  "hasElse": false,
+                  "thenRows": [
+                    {
+                      "type": "showText",
+                      "text": "Rume's out in her vineyard, so Pomme's minding the shop! Grape juice for her fans, apple juice for everyone with taste~!",
+                      "bubbleMode": "normal",
+                      "textSpeed": "normal",
+                      "id": "CvwOcwS7iAeQ89Dl",
+                      "showAs": "box",
+                      "portrait": "",
+                      "speaker": "This"
+                    }
+                  ],
+                  "elseRows": [],
+                  "id": "b5uIVncFB8vtFg4b"
+                }
+              ],
+              "id": "w2wT2nxPqRwqB6ob"
+            }
+          ],
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"condition\",\n    \"condition\": {\n      \"kind\": \"self\",\n      \"slot\": \"A\",\n      \"want\": \"off\"\n    },\n    \"moreConditions\": [],\n    \"combine\": \"all\",\n    \"hasElse\": true,\n    \"thenRows\": [\n      {\n        \"type\": \"showEmote\",\n        \"target\": \"source\",\n        \"name\": \"\",\n        \"emote\": \"Love\",\n        \"side\": \"auto\",\n        \"seconds\": 1.6,\n        \"wait\": false,\n        \"id\": \"KZApc0u7qfnNVBVT\"\n      },\n      {\n        \"type\": \"showText\",\n        \"text\": \"Hiya~! Pomme's here to help! Rume wrote she was rebuilding the whole village, so I packed up my shop and ran right over!\",\n        \"bubbleMode\": \"normal\",\n        \"textSpeed\": \"normal\",\n        \"id\": \"kbpAufvuyDKT0oVw\",\n        \"showAs\": \"box\",\n        \"portrait\": \"\",\n        \"speaker\": \"This\"\n      },\n      {\n        \"type\": \"showText\",\n        \"text\": \"An apple a day keeps the rubble away~!\",\n        \"bubbleMode\": \"normal\",\n        \"textSpeed\": \"normal\",\n        \"id\": \"O33vy7iwbrEi5QqV\",\n        \"showAs\": \"box\",\n        \"portrait\": \"\",\n        \"speaker\": \"This\"\n      },\n      {\n        \"type\": \"showEmote\",\n        \"target\": \"token\",\n        \"name\": \"Rume\",\n        \"emote\": \"Ang\",\n        \"side\": \"auto\",\n        \"seconds\": 1.6,\n        \"wait\": false,\n        \"id\": \"JVoiTCFhLc1TaSyh\"\n      },\n      {\n        \"type\": \"setFacing\",\n        \"target\": \"token\",\n        \"name\": \"Rume\",\n        \"direction\": \"downLeft\",\n        \"id\": \"3pOD30WWtq47R8G4\"\n      },\n      {\n        \"type\": \"showText\",\n        \"text\": \"Pomme! Stop feeding my workers apples! Ruhig runs on grapes!\",\n        \"bubbleMode\": \"shout\",\n        \"textSpeed\": \"normal\",\n        \"id\": \"KYygYWaPng3SdDDp\",\n        \"showAs\": \"box\",\n        \"portrait\": \"\",\n        \"speaker\": \"Rume\"\n      },\n      {\n        \"type\": \"showEmote\",\n        \"target\": \"source\",\n        \"name\": \"\",\n        \"emote\": \"Goo\",\n        \"side\": \"auto\",\n        \"seconds\": 1.6,\n        \"wait\": false,\n        \"id\": \"lChJmZx597IJIgJn\"\n      },\n      {\n        \"type\": \"showText\",\n        \"text\": \"Apples are the fruit of everywhere!\",\n        \"bubbleMode\": \"normal\",\n        \"textSpeed\": \"normal\",\n        \"id\": \"0kEJGUKoPAN6j1uJ\",\n        \"showAs\": \"box\",\n        \"portrait\": \"\",\n        \"speaker\": \"This\"\n      },\n      {\n        \"type\": \"setFacing\",\n        \"target\": \"token\",\n        \"name\": \"Rume\",\n        \"direction\": \"left\",\n        \"id\": \"HgkARJsJwAUnUCQe\"\n      },\n      {\n        \"type\": \"setSwitch\",\n        \"scope\": \"self\",\n        \"name\": \"\",\n        \"slot\": \"A\",\n        \"value\": \"on\",\n        \"id\": \"S2SjPXUixNghZf0P\"\n      }\n    ],\n    \"elseRows\": [\n      {\n        \"type\": \"setVariable\",\n        \"name\": \"Ruhig Pomme Line\",\n        \"op\": \"random\",\n        \"value\": 1,\n        \"max\": 3,\n        \"id\": \"i1cqSiFJukzbd0h9\"\n      },\n      {\n        \"type\": \"condition\",\n        \"condition\": {\n          \"kind\": \"variable\",\n          \"name\": \"Ruhig Pomme Line\",\n          \"op\": \"=\",\n          \"value\": 1\n        },\n        \"moreConditions\": [],\n        \"combine\": \"all\",\n        \"hasElse\": false,\n        \"thenRows\": [\n          {\n            \"type\": \"showText\",\n            \"text\": \"Want an apple? It's on the house! ...Well, on the cart. The house is still being built.\",\n            \"bubbleMode\": \"normal\",\n            \"textSpeed\": \"normal\",\n            \"id\": \"ZuO8sx7C1Yy0sDI6\",\n            \"showAs\": \"box\",\n            \"portrait\": \"\",\n            \"speaker\": \"This\"\n          }\n        ],\n        \"elseRows\": [],\n        \"id\": \"UF4qwNbVuTFWW7LH\"\n      },\n      {\n        \"type\": \"condition\",\n        \"condition\": {\n          \"kind\": \"variable\",\n          \"name\": \"Ruhig Pomme Line\",\n          \"op\": \"=\",\n          \"value\": 2\n        },\n        \"moreConditions\": [],\n        \"combine\": \"all\",\n        \"hasElse\": false,\n        \"thenRows\": [\n          {\n            \"type\": \"showText\",\n            \"text\": \"Rume pretends she hates apples, but I saw her eat one yesterday~!\",\n            \"bubbleMode\": \"normal\",\n            \"textSpeed\": \"normal\",\n            \"id\": \"D9HMKXyGVa2PLYyK\",\n            \"showAs\": \"box\",\n            \"portrait\": \"\",\n            \"speaker\": \"This\"\n          }\n        ],\n        \"elseRows\": [],\n        \"id\": \"SYhF8O5f6q8AQiXV\"\n      },\n      {\n        \"type\": \"condition\",\n        \"condition\": {\n          \"kind\": \"variable\",\n          \"name\": \"Ruhig Pomme Line\",\n          \"op\": \"=\",\n          \"value\": 3\n        },\n        \"moreConditions\": [],\n        \"combine\": \"all\",\n        \"hasElse\": false,\n        \"thenRows\": [\n          {\n            \"type\": \"showText\",\n            \"text\": \"Rume's out in her vineyard, so Pomme's minding the shop! Grape juice for her fans, apple juice for everyone with taste~!\",\n            \"bubbleMode\": \"normal\",\n            \"textSpeed\": \"normal\",\n            \"id\": \"CvwOcwS7iAeQ89Dl\",\n            \"showAs\": \"box\",\n            \"portrait\": \"\",\n            \"speaker\": \"This\"\n          }\n        ],\n        \"elseRows\": [],\n        \"id\": \"b5uIVncFB8vtFg4b\"\n      }\n    ],\n    \"id\": \"w2wT2nxPqRwqB6ob\"\n  }\n]"
+        }
+      },
+      "actorId": "GYN4hOxyq1dEafse",
+      "hidden": false,
+      "x": 955,
+      "y": 670,
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": [],
+      "_id": "SZkbrc5gbI3rKXKO"
+    },
+    {
       "name": "Builder",
       "displayName": 30,
       "actorLink": false,
@@ -852,6 +1386,244 @@
         "fEJOIQo9RPeGLTa5"
       ],
       "_id": "VmkX9dqKvNPGyiaw"
+    },
+    {
+      "name": "Ruhig House Shot",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "icons/svg/target.svg",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": true,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 0,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "draftRuhig": "claude-2026-11-20-ruhig",
+          "draftName": "Ruhig House Shot",
+          "depthExempt": true
+        }
+      },
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "hidden": true,
+      "x": 830,
+      "y": 770,
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": [],
+      "_id": "XLMh8ejLj61pEI3A"
+    },
+    {
+      "name": "Ruhig Path Shot",
+      "displayName": 0,
+      "actorLink": false,
+      "appendNumber": false,
+      "prependAdjective": false,
+      "width": 1,
+      "height": 1,
+      "texture": {
+        "src": "icons/svg/target.svg",
+        "anchorX": 0.5,
+        "anchorY": 0.5,
+        "offsetX": 0,
+        "offsetY": 0,
+        "fit": "contain",
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotation": 0,
+        "tint": "#ffffff",
+        "alphaThreshold": 0.75
+      },
+      "hexagonalShape": 0,
+      "lockRotation": true,
+      "rotation": 0,
+      "alpha": 1,
+      "disposition": 0,
+      "displayBars": 0,
+      "bar1": {
+        "attribute": null
+      },
+      "bar2": {
+        "attribute": null
+      },
+      "light": {
+        "negative": false,
+        "priority": 0,
+        "alpha": 0.5,
+        "angle": 360,
+        "bright": 0,
+        "color": null,
+        "coloration": 1,
+        "dim": 0,
+        "attenuation": 0.5,
+        "luminosity": 0.5,
+        "saturation": 0,
+        "contrast": 0,
+        "shadows": 0,
+        "animation": {
+          "type": null,
+          "speed": 5,
+          "intensity": 5,
+          "reverse": false
+        },
+        "darkness": {
+          "min": 0,
+          "max": 1
+        }
+      },
+      "sight": {
+        "enabled": false,
+        "range": 0,
+        "angle": 360,
+        "visionMode": "basic",
+        "color": null,
+        "attenuation": 0.1,
+        "brightness": 0,
+        "saturation": 0,
+        "contrast": 0
+      },
+      "detectionModes": [],
+      "occludable": {
+        "radius": 0
+      },
+      "ring": {
+        "enabled": false,
+        "colors": {
+          "ring": null,
+          "background": null
+        },
+        "effects": 0,
+        "subject": {
+          "scale": 1,
+          "texture": null
+        }
+      },
+      "flags": {
+        "barbrawl": {
+          "resourceBars": {}
+        },
+        "wall-height": {
+          "tokenHeight": 0
+        },
+        "token-z": {
+          "zIndex": 0
+        },
+        "token-variants": {
+          "randomImgDefault": "",
+          "disableHUDButton": false
+        },
+        "hex-size-support": {
+          "hideBorder": true,
+          "hideFill": true
+        },
+        "fabula-ultima-companion": {
+          "draftRuhig": "claude-2026-11-20-ruhig",
+          "draftName": "Ruhig Path Shot",
+          "depthExempt": true
+        }
+      },
+      "actorId": "TnOKgQbmyxFzD6Oe",
+      "hidden": true,
+      "x": 830,
+      "y": 670,
+      "elevation": 0,
+      "sort": 0,
+      "locked": false,
+      "_regions": [],
+      "_id": "ZRHQssZi4flzVXKN"
     },
     {
       "name": "Willy",
@@ -1050,13 +1822,734 @@
           "proximityPx": 75,
           "eventRows": [
             {
-              "id": "pkFSafd6vZQjtGD2",
-              "type": "showText",
-              "speaker": "This",
-              "text": "M-my artifacts... a-all buried under there..."
+              "type": "condition",
+              "condition": {
+                "kind": "switch",
+                "name": "Fabula Arcana Unlocked",
+                "want": "on"
+              },
+              "moreConditions": [],
+              "combine": "all",
+              "hasElse": true,
+              "thenRows": [
+                {
+                  "type": "showText",
+                  "speaker": "This",
+                  "text": "M-my artifacts... a-all buried under there...",
+                  "bubbleMode": "normal",
+                  "textSpeed": "normal",
+                  "id": "1tHtcW8h5cBcljuF",
+                  "showAs": "box",
+                  "portrait": ""
+                }
+              ],
+              "elseRows": [
+                {
+                  "type": "setFacing",
+                  "target": "source",
+                  "name": "",
+                  "direction": "towardParty",
+                  "id": "LR5AYvquY2dCevmm"
+                },
+                {
+                  "type": "condition",
+                  "condition": {
+                    "kind": "self",
+                    "slot": "A",
+                    "want": "off"
+                  },
+                  "moreConditions": [],
+                  "combine": "all",
+                  "hasElse": true,
+                  "thenRows": [
+                    {
+                      "type": "showEmote",
+                      "target": "source",
+                      "name": "",
+                      "emote": "Sweat",
+                      "side": "auto",
+                      "seconds": 1.6,
+                      "wait": false,
+                      "id": "GlmoVW1TRcZMnZB6"
+                    },
+                    {
+                      "type": "showText",
+                      "text": "O-oh! Hello there! W-welcome!",
+                      "bubbleMode": "normal",
+                      "textSpeed": "normal",
+                      "id": "HroW7eUpK383hYW6",
+                      "showAs": "box",
+                      "portrait": "",
+                      "speaker": "This"
+                    },
+                    {
+                      "type": "showEmote",
+                      "target": "source",
+                      "name": "",
+                      "emote": "Hmm",
+                      "side": "auto",
+                      "seconds": 1.6,
+                      "wait": false,
+                      "id": "Oj1Mh3ydUdrDFOXq"
+                    },
+                    {
+                      "type": "showText",
+                      "text": "Have you heard of Fabula Arcana? It's a card game that's all the rage in the city!",
+                      "bubbleMode": "normal",
+                      "textSpeed": "normal",
+                      "id": "VexU5wmMToyazo42",
+                      "showAs": "box",
+                      "portrait": "",
+                      "speaker": "This"
+                    },
+                    {
+                      "type": "showText",
+                      "text": "I-I thought... maybe it could help cheer everyone up around here.",
+                      "bubbleMode": "normal",
+                      "textSpeed": "normal",
+                      "id": "ya4BePDJ1tUnYczM",
+                      "showAs": "box",
+                      "portrait": "",
+                      "speaker": "This"
+                    },
+                    {
+                      "type": "showEmote",
+                      "target": "source",
+                      "name": "",
+                      "emote": "Heh",
+                      "side": "auto",
+                      "seconds": 1.6,
+                      "wait": false,
+                      "id": "uohX39jjwU09xw3z"
+                    },
+                    {
+                      "type": "showText",
+                      "text": "A little friendly competition might take our minds off the rebuilding, y'know?",
+                      "bubbleMode": "normal",
+                      "textSpeed": "normal",
+                      "id": "PrYEelpQSIx5CUgr",
+                      "showAs": "box",
+                      "portrait": "",
+                      "speaker": "This"
+                    },
+                    {
+                      "type": "showEmote",
+                      "target": "source",
+                      "name": "",
+                      "emote": "Exc",
+                      "side": "auto",
+                      "seconds": 1.6,
+                      "wait": false,
+                      "id": "pvjtkBjAVPBXkand"
+                    },
+                    {
+                      "type": "showText",
+                      "text": "S-so! Would you like to try a duel with me?!",
+                      "bubbleMode": "normal",
+                      "textSpeed": "normal",
+                      "id": "jBqOMsAfC67z5h6A",
+                      "showAs": "box",
+                      "portrait": "",
+                      "speaker": "This"
+                    },
+                    {
+                      "type": "setSwitch",
+                      "scope": "self",
+                      "name": "",
+                      "slot": "A",
+                      "value": "on",
+                      "id": "2kS4VCAQdztFSYvg"
+                    }
+                  ],
+                  "elseRows": [
+                    {
+                      "type": "showEmote",
+                      "target": "source",
+                      "name": "",
+                      "emote": "Heh",
+                      "side": "auto",
+                      "seconds": 1.6,
+                      "wait": false,
+                      "id": "rbnw6MspKZ05xSZW"
+                    },
+                    {
+                      "type": "showText",
+                      "text": "O-oh, you're back! Have you given Fabula Arcana any thought?",
+                      "bubbleMode": "normal",
+                      "textSpeed": "normal",
+                      "id": "QOsqv1BIkQQYglwJ",
+                      "showAs": "box",
+                      "portrait": "",
+                      "speaker": "This"
+                    },
+                    {
+                      "type": "showEmote",
+                      "target": "source",
+                      "name": "",
+                      "emote": "Exc",
+                      "side": "auto",
+                      "seconds": 1.6,
+                      "wait": false,
+                      "id": "Xk2UXcfBSLXNx6Yi"
+                    },
+                    {
+                      "type": "showText",
+                      "text": "W-wanna try a quick duel?",
+                      "bubbleMode": "normal",
+                      "textSpeed": "normal",
+                      "id": "EUdtUDrwkqvGMkAj",
+                      "showAs": "box",
+                      "portrait": "",
+                      "speaker": "This"
+                    }
+                  ],
+                  "id": "oMMKSwFOKEx0rFEE"
+                },
+                {
+                  "type": "loop",
+                  "rows": [
+                    {
+                      "type": "showChoices",
+                      "prompt": "",
+                      "options": [
+                        {
+                          "id": "7i8XwvaR2DNopvKr",
+                          "label": "Duel!",
+                          "cancel": false,
+                          "rows": [
+                            {
+                              "type": "breakLoop",
+                              "id": "KXrC03RZdvnBkPYO"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "HRKUUu4c76xtfhq5",
+                          "label": "Not now",
+                          "cancel": true,
+                          "rows": [
+                            {
+                              "type": "showEmote",
+                              "target": "source",
+                              "name": "",
+                              "emote": "Sweat",
+                              "side": "auto",
+                              "seconds": 1.6,
+                              "wait": false,
+                              "id": "CQa54jIVzTAEVqjG"
+                            },
+                            {
+                              "type": "showText",
+                              "text": "Ah... O-okay! Maybe another time, then...",
+                              "bubbleMode": "normal",
+                              "textSpeed": "normal",
+                              "id": "JsxgwwisQY1JUSlx",
+                              "showAs": "box",
+                              "portrait": "",
+                              "speaker": "This"
+                            },
+                            {
+                              "type": "endEvent",
+                              "id": "8EUaVT72qvYjxKwM"
+                            }
+                          ]
+                        }
+                      ],
+                      "roleplay": true,
+                      "roleplayLabel": "Ask Willy about the game...",
+                      "id": "yHF9DBqeWTVR2tdM"
+                    }
+                  ],
+                  "id": "O0fyh0OKp5H5GRfT"
+                },
+                {
+                  "type": "showEmote",
+                  "target": "source",
+                  "name": "",
+                  "emote": "Love",
+                  "side": "auto",
+                  "seconds": 1.6,
+                  "wait": false,
+                  "id": "QClb1TIm0r9U1tdD"
+                },
+                {
+                  "type": "showText",
+                  "text": "R-really?! Oh, this is going to be great!",
+                  "bubbleMode": "normal",
+                  "textSpeed": "normal",
+                  "id": "a23MektRwf9mu5xm",
+                  "showAs": "box",
+                  "portrait": "",
+                  "speaker": "This"
+                },
+                {
+                  "type": "showEmote",
+                  "target": "source",
+                  "name": "",
+                  "emote": "Exc",
+                  "side": "auto",
+                  "seconds": 1.6,
+                  "wait": false,
+                  "id": "86JyFZfWb2LPZa7D"
+                },
+                {
+                  "type": "showText",
+                  "text": "D-don't worry! I'll show you how to play!",
+                  "bubbleMode": "normal",
+                  "textSpeed": "normal",
+                  "id": "rkTkH8ICaesB3hSD",
+                  "showAs": "box",
+                  "portrait": "",
+                  "speaker": "This"
+                },
+                {
+                  "type": "showTutorial",
+                  "tutorial": "fabula-arcana",
+                  "wait": true,
+                  "id": "AlCS4l4Pt6mDIIAe"
+                },
+                {
+                  "type": "showEmote",
+                  "target": "source",
+                  "name": "",
+                  "emote": "Exc",
+                  "side": "auto",
+                  "seconds": 1.6,
+                  "wait": false,
+                  "id": "0uV9TgNJI9z8WS3S"
+                },
+                {
+                  "type": "showText",
+                  "text": "And that's the basics! P-pretty neat, right?",
+                  "bubbleMode": "normal",
+                  "textSpeed": "normal",
+                  "id": "Oh0zrgtnAbq95GIi",
+                  "showAs": "box",
+                  "portrait": "",
+                  "speaker": "This"
+                },
+                {
+                  "type": "showEmote",
+                  "target": "source",
+                  "name": "",
+                  "emote": "Heh",
+                  "side": "auto",
+                  "seconds": 1.6,
+                  "wait": false,
+                  "id": "tKwX9r0gfgRVb4nW"
+                },
+                {
+                  "type": "setFacing",
+                  "target": "source",
+                  "name": "",
+                  "direction": "left",
+                  "id": "fJBtCjNMIlZT2Yxn"
+                },
+                {
+                  "type": "wait",
+                  "seconds": 0.5,
+                  "id": "rzblSKLQRaQgPjIf"
+                },
+                {
+                  "type": "setFacing",
+                  "target": "source",
+                  "name": "",
+                  "direction": "towardParty",
+                  "id": "Y1BZV1lP5c4tG80F"
+                },
+                {
+                  "type": "showText",
+                  "text": "Here! I put together some starter cards for you!",
+                  "bubbleMode": "normal",
+                  "textSpeed": "normal",
+                  "id": "eYKsyiVb9PrnE2yn",
+                  "showAs": "box",
+                  "portrait": "",
+                  "speaker": "This"
+                },
+                {
+                  "type": "runCode",
+                  "code": "await FUCompanion.api.fabulaArcana.grantStarterToParty();",
+                  "id": "Kz2IFzmkWlTasPXC"
+                },
+                {
+                  "type": "playSound",
+                  "src": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Item3.ogg",
+                  "volume": 0.5,
+                  "wait": false,
+                  "id": "Am7iXerJMQKFQToX"
+                },
+                {
+                  "type": "screenEffect",
+                  "effect": "dim",
+                  "color": "#000000",
+                  "strength": 0.35,
+                  "seconds": 0.4,
+                  "wait": false,
+                  "id": "ARw4Ir49O8zO08iz"
+                },
+                {
+                  "type": "floatingText",
+                  "text": "Each party member received a Fabula Arcana Starter Set!",
+                  "place": "mc",
+                  "name": "",
+                  "nudgeX": 0,
+                  "nudgeY": 0,
+                  "startFresh": false,
+                  "autoSeconds": 0,
+                  "id": "580MtnP7t7LA0r17"
+                },
+                {
+                  "type": "screenEffect",
+                  "effect": "untint",
+                  "color": "#000000",
+                  "strength": 0,
+                  "seconds": 0.4,
+                  "wait": false,
+                  "id": "g9VUuQeXCZ9hXm9p"
+                },
+                {
+                  "type": "showEmote",
+                  "target": "source",
+                  "name": "",
+                  "emote": "Goo",
+                  "side": "auto",
+                  "seconds": 1.6,
+                  "wait": false,
+                  "id": "kcIbinDnS8YnEvHF"
+                },
+                {
+                  "type": "showText",
+                  "text": "Hehe... Nothing beats your very first deck!",
+                  "bubbleMode": "normal",
+                  "textSpeed": "normal",
+                  "id": "EVQy0vrpcYiTI9sV",
+                  "showAs": "box",
+                  "portrait": "",
+                  "speaker": "This"
+                },
+                {
+                  "type": "showEmote",
+                  "target": "source",
+                  "name": "",
+                  "emote": "Exc",
+                  "side": "auto",
+                  "seconds": 1.6,
+                  "wait": false,
+                  "id": "cwDnpLSXldaRfDIW"
+                },
+                {
+                  "type": "showText",
+                  "text": "Now then! L-let's put those cards to the test!",
+                  "bubbleMode": "normal",
+                  "textSpeed": "normal",
+                  "id": "YBXvWSp2fxOV1TTF",
+                  "showAs": "box",
+                  "portrait": "",
+                  "speaker": "This"
+                },
+                {
+                  "type": "cardDuel",
+                  "npc": "",
+                  "team": "wolf, salamander, manaray",
+                  "diff": "casual",
+                  "style": "",
+                  "bestOf": 1,
+                  "quote": "H-hehe... Let's see what your monsters can do!",
+                  "variable": "Willy Duel Result",
+                  "id": "biC5oufaxG1N6WcM"
+                },
+                {
+                  "type": "condition",
+                  "condition": {
+                    "kind": "variable",
+                    "name": "Willy Duel Result",
+                    "op": "=",
+                    "value": 0
+                  },
+                  "moreConditions": [],
+                  "combine": "all",
+                  "hasElse": false,
+                  "thenRows": [
+                    {
+                      "type": "endEvent",
+                      "id": "KaH7CS4sxbowRCg6"
+                    }
+                  ],
+                  "elseRows": [],
+                  "id": "fOeTgOqKz8KSqcfo"
+                },
+                {
+                  "type": "condition",
+                  "condition": {
+                    "kind": "variable",
+                    "name": "Willy Duel Result",
+                    "op": "=",
+                    "value": 1
+                  },
+                  "moreConditions": [],
+                  "combine": "all",
+                  "hasElse": false,
+                  "thenRows": [
+                    {
+                      "type": "showEmote",
+                      "target": "source",
+                      "name": "",
+                      "emote": "Omg",
+                      "side": "auto",
+                      "seconds": 1.6,
+                      "wait": false,
+                      "id": "CX9YC2ldFatZQiAP"
+                    },
+                    {
+                      "type": "showText",
+                      "text": "W-whoa!! You beat me already?!",
+                      "bubbleMode": "normal",
+                      "textSpeed": "normal",
+                      "id": "7vrrFbNocpAPe2IK",
+                      "showAs": "box",
+                      "portrait": "",
+                      "speaker": "This"
+                    },
+                    {
+                      "type": "showEmote",
+                      "target": "source",
+                      "name": "",
+                      "emote": "Love",
+                      "side": "auto",
+                      "seconds": 1.6,
+                      "wait": false,
+                      "id": "YUwse1Dm6piFY2YG"
+                    },
+                    {
+                      "type": "showText",
+                      "text": "That was amazing! Y-you've got a real knack for this!",
+                      "bubbleMode": "normal",
+                      "textSpeed": "normal",
+                      "id": "hay4m1yTdwEDPB17",
+                      "showAs": "box",
+                      "portrait": "",
+                      "speaker": "This"
+                    },
+                    {
+                      "type": "showText",
+                      "text": "You know, there are duelists all over the world looking for challengers!",
+                      "bubbleMode": "normal",
+                      "textSpeed": "normal",
+                      "id": "oz1sQ7v7bzHMgplw",
+                      "showAs": "box",
+                      "portrait": "",
+                      "speaker": "This"
+                    },
+                    {
+                      "type": "showEmote",
+                      "target": "source",
+                      "name": "",
+                      "emote": "Exc",
+                      "side": "auto",
+                      "seconds": 1.6,
+                      "wait": false,
+                      "id": "sejy37DSIwFiSbBL"
+                    },
+                    {
+                      "type": "showText",
+                      "text": "I-if you spot one, try asking for a duel! You might even win some new cards!",
+                      "bubbleMode": "normal",
+                      "textSpeed": "normal",
+                      "id": "faUfEFmQ0r2zC5Gq",
+                      "showAs": "box",
+                      "portrait": "",
+                      "speaker": "This"
+                    }
+                  ],
+                  "elseRows": [],
+                  "id": "RtznXvcrC4EjbLPB"
+                },
+                {
+                  "type": "condition",
+                  "condition": {
+                    "kind": "variable",
+                    "name": "Willy Duel Result",
+                    "op": "=",
+                    "value": 2
+                  },
+                  "moreConditions": [],
+                  "combine": "all",
+                  "hasElse": false,
+                  "thenRows": [
+                    {
+                      "type": "showEmote",
+                      "target": "source",
+                      "name": "",
+                      "emote": "Sweat",
+                      "side": "auto",
+                      "seconds": 1.6,
+                      "wait": false,
+                      "id": "rUrj6gU2vAmMoU3A"
+                    },
+                    {
+                      "type": "showText",
+                      "text": "A-ah! S-sorry! I got a little carried away...",
+                      "bubbleMode": "normal",
+                      "textSpeed": "normal",
+                      "id": "fEmBw30JCBEoQtbC",
+                      "showAs": "box",
+                      "portrait": "",
+                      "speaker": "This"
+                    },
+                    {
+                      "type": "showEmote",
+                      "target": "source",
+                      "name": "",
+                      "emote": "Heh",
+                      "side": "auto",
+                      "seconds": 1.6,
+                      "wait": false,
+                      "id": "WEYjct3HfHeHWaUe"
+                    },
+                    {
+                      "type": "showText",
+                      "text": "B-but don't worry! Everyone loses their first few matches!",
+                      "bubbleMode": "normal",
+                      "textSpeed": "normal",
+                      "id": "YxRf8B8Ue5Dfdvi5",
+                      "showAs": "box",
+                      "portrait": "",
+                      "speaker": "This"
+                    },
+                    {
+                      "type": "showText",
+                      "text": "There are duelists all over the world, you know!",
+                      "bubbleMode": "normal",
+                      "textSpeed": "normal",
+                      "id": "BJ1Tsw7QUNveaU2u",
+                      "showAs": "box",
+                      "portrait": "",
+                      "speaker": "This"
+                    },
+                    {
+                      "type": "showEmote",
+                      "target": "source",
+                      "name": "",
+                      "emote": "Exc",
+                      "side": "auto",
+                      "seconds": 1.6,
+                      "wait": false,
+                      "id": "N7N2KbNyOZtmhZEL"
+                    },
+                    {
+                      "type": "showText",
+                      "text": "Try challenging them sometime! You might pick up some new cards along the way!",
+                      "bubbleMode": "normal",
+                      "textSpeed": "normal",
+                      "id": "CLG1MDluJhwQyse8",
+                      "showAs": "box",
+                      "portrait": "",
+                      "speaker": "This"
+                    }
+                  ],
+                  "elseRows": [],
+                  "id": "TjGoohbQqQvE9Kv8"
+                },
+                {
+                  "type": "condition",
+                  "condition": {
+                    "kind": "variable",
+                    "name": "Willy Duel Result",
+                    "op": "=",
+                    "value": 3
+                  },
+                  "moreConditions": [],
+                  "combine": "all",
+                  "hasElse": false,
+                  "thenRows": [
+                    {
+                      "type": "showEmote",
+                      "target": "source",
+                      "name": "",
+                      "emote": "Omg",
+                      "side": "auto",
+                      "seconds": 1.6,
+                      "wait": false,
+                      "id": "23BdnxvJSANg56Fz"
+                    },
+                    {
+                      "type": "showText",
+                      "text": "A d-draw?! Wow, that was close!",
+                      "bubbleMode": "normal",
+                      "textSpeed": "normal",
+                      "id": "giBKyeWlk9klET00",
+                      "showAs": "box",
+                      "portrait": "",
+                      "speaker": "This"
+                    },
+                    {
+                      "type": "showEmote",
+                      "target": "source",
+                      "name": "",
+                      "emote": "Heh",
+                      "side": "auto",
+                      "seconds": 1.6,
+                      "wait": false,
+                      "id": "f5yEIXyfDFDLaQ3U"
+                    },
+                    {
+                      "type": "showText",
+                      "text": "Hehe... I think you're getting the hang of it!",
+                      "bubbleMode": "normal",
+                      "textSpeed": "normal",
+                      "id": "PMycjWCcHs7AcvTg",
+                      "showAs": "box",
+                      "portrait": "",
+                      "speaker": "This"
+                    },
+                    {
+                      "type": "showText",
+                      "text": "There are duelists all over the world looking for challengers!",
+                      "bubbleMode": "normal",
+                      "textSpeed": "normal",
+                      "id": "lNnT2d32KE2Bs90M",
+                      "showAs": "box",
+                      "portrait": "",
+                      "speaker": "This"
+                    },
+                    {
+                      "type": "showEmote",
+                      "target": "source",
+                      "name": "",
+                      "emote": "Exc",
+                      "side": "auto",
+                      "seconds": 1.6,
+                      "wait": false,
+                      "id": "WyYd4UWoVy6stUun"
+                    },
+                    {
+                      "type": "showText",
+                      "text": "If you find one, why not ask for a duel? You might win some new cards!",
+                      "bubbleMode": "normal",
+                      "textSpeed": "normal",
+                      "id": "B3xoabVvCRyB2dII",
+                      "showAs": "box",
+                      "portrait": "",
+                      "speaker": "This"
+                    }
+                  ],
+                  "elseRows": [],
+                  "id": "P2MqplNSLTYEW81B"
+                },
+                {
+                  "type": "setSwitch",
+                  "scope": "story",
+                  "name": "Fabula Arcana Unlocked",
+                  "slot": "A",
+                  "value": "on",
+                  "id": "uGPVrdpSXGiDuWWt"
+                }
+              ],
+              "id": "WJcC8d518nMUPd6j"
             }
           ],
-          "eventRowsJsonPreview": "[\n  {\n    \"id\": \"pkFSafd6vZQjtGD2\",\n    \"type\": \"showText\",\n    \"speaker\": \"This\",\n    \"text\": \"M-my artifacts... a-all buried under there...\"\n  }\n]"
+          "eventRowsJsonPreview": "[\n  {\n    \"type\": \"condition\",\n    \"condition\": {\n      \"kind\": \"switch\",\n      \"name\": \"Fabula Arcana Unlocked\",\n      \"want\": \"on\"\n    },\n    \"moreConditions\": [],\n    \"combine\": \"all\",\n    \"hasElse\": true,\n    \"thenRows\": [\n      {\n        \"type\": \"showText\",\n        \"speaker\": \"This\",\n        \"text\": \"M-my artifacts... a-all buried under there...\",\n        \"bubbleMode\": \"normal\",\n        \"textSpeed\": \"normal\",\n        \"id\": \"1tHtcW8h5cBcljuF\",\n        \"showAs\": \"box\",\n        \"portrait\": \"\"\n      }\n    ],\n    \"elseRows\": [\n      {\n        \"type\": \"setFacing\",\n        \"target\": \"source\",\n        \"name\": \"\",\n        \"direction\": \"towardParty\",\n        \"id\": \"LR5AYvquY2dCevmm\"\n      },\n      {\n        \"type\": \"condition\",\n        \"condition\": {\n          \"kind\": \"self\",\n          \"slot\": \"A\",\n          \"want\": \"off\"\n        },\n        \"moreConditions\": [],\n        \"combine\": \"all\",\n        \"hasElse\": true,\n        \"thenRows\": [\n          {\n            \"type\": \"showEmote\",\n            \"target\": \"source\",\n            \"name\": \"\",\n            \"emote\": \"Sweat\",\n            \"side\": \"auto\",\n            \"seconds\": 1.6,\n            \"wait\": false,\n            \"id\": \"GlmoVW1TRcZMnZB6\"\n          },\n          {\n            \"type\": \"showText\",\n            \"text\": \"O-oh! Hello there! W-welcome!\",\n            \"bubbleMode\": \"normal\",\n            \"textSpeed\": \"normal\",\n            \"id\": \"HroW7eUpK383hYW6\",\n            \"showAs\": \"box\",\n            \"portrait\": \"\",\n            \"speaker\": \"This\"\n          },\n          {\n            \"type\": \"showEmote\",\n            \"target\": \"source\",\n            \"name\": \"\",\n            \"emote\": \"Hmm\",\n            \"side\": \"auto\",\n            \"seconds\": 1.6,\n            \"wait\": false,\n            \"id\": \"Oj1Mh3ydUdrDFOXq\"\n          },\n          {\n            \"type\": \"showText\",\n            \"text\": \"Have you heard of Fabula Arcana? It's a card game that's all the rage in the city!\",\n            \"bubbleMode\": \"normal\",\n            \"textSpeed\": \"normal\",\n            \"id\": \"VexU5wmMToyazo42\",\n            \"showAs\": \"box\",\n            \"portrait\": \"\",\n            \"speaker\": \"This\"\n          },\n          {\n            \"type\": \"showText\",\n            \"text\": \"I-I thought... maybe it could help cheer everyone up around here.\",\n            \"bubbleMode\": \"normal\",\n            \"textSpeed\": \"normal\",\n            \"id\": \"ya4BePDJ1tUnYczM\",\n            \"showAs\": \"box\",\n            \"portrait\": \"\",\n            \"speaker\": \"This\"\n          },\n          {\n            \"type\": \"showEmote\",\n            \"target\": \"source\",\n            \"name\": \"\",\n            \"emote\": \"Heh\",\n            \"side\": \"auto\",\n            \"seconds\": 1.6,\n            \"wait\": false,\n            \"id\": \"uohX39jjwU09xw3z\"\n          },\n          {\n            \"type\": \"showText\",\n            \"text\": \"A little friendly competition might take our minds off the rebuilding, y'know?\",\n            \"bubbleMode\": \"normal\",\n            \"textSpeed\": \"normal\",\n            \"id\": \"PrYEelpQSIx5CUgr\",\n            \"showAs\": \"box\",\n            \"portrait\": \"\",\n            \"speaker\": \"This\"\n          },\n          {\n            \"type\": \"showEmote\",\n            \"target\": \"source\",\n            \"name\": \"\",\n            \"emote\": \"Exc\",\n            \"side\": \"auto\",\n            \"seconds\": 1.6,\n            \"wait\": false,\n            \"id\": \"pvjtkBjAVPBXkand\"\n          },\n          {\n            \"type\": \"showText\",\n            \"text\": \"S-so! Would you like to try a duel with me?!\",\n            \"bubbleMode\": \"normal\",\n            \"textSpeed\": \"normal\",\n            \"id\": \"jBqOMsAfC67z5h6A\",\n            \"showAs\": \"box\",\n            \"portrait\": \"\",\n            \"speaker\": \"This\"\n          },\n          {\n            \"type\": \"setSwitch\",\n            \"scope\": \"self\",\n            \"name\": \"\",\n            \"slot\": \"A\",\n            \"value\": \"on\",\n            \"id\": \"2kS4VCAQdztFSYvg\"\n          }\n        ],\n        \"elseRows\": [\n          {\n            \"type\": \"showEmote\",\n            \"target\": \"source\",\n            \"name\": \"\",\n            \"emote\": \"Heh\",\n            \"side\": \"auto\",\n            \"seconds\": 1.6,\n            \"wait\": false,\n            \"id\": \"rbnw6MspKZ05xSZW\"\n          },\n          {\n            \"type\": \"showText\",\n            \"text\": \"O-oh, you're back! Have you given Fabula Arcana any thought?\",\n            \"bubbleMode\": \"normal\",\n            \"textSpeed\": \"normal\",\n            \"id\": \"QOsqv1BIkQQYglwJ\",\n            \"showAs\": \"box\",\n            \"portrait\": \"\",\n            \"speaker\": \"This\"\n          },\n          {\n            \"type\": \"showEmote\",\n            \"target\": \"source\",\n            \"name\": \"\",\n            \"emote\": \"Exc\",\n            \"side\": \"auto\",\n            \"seconds\": 1.6,\n            \"wait\": false,\n            \"id\": \"Xk2UXcfBSLXNx6Yi\"\n          },\n          {\n            \"type\": \"showText\",\n            \"text\": \"W-wanna try a quick duel?\",\n            \"bubbleMode\": \"normal\",\n            \"textSpeed\": \"normal\",\n            \"id\": \"EUdtUDrwkqvGMkAj\",\n            \"showAs\": \"box\",\n            \"portrait\": \"\",\n            \"speaker\": \"This\"\n          }\n        ],\n        \"id\": \"oMMKSwFOKEx0rFEE\"\n      },\n      {\n        \"type\": \"loop\",\n        \"rows\": [\n          {\n            \"type\": \"showChoices\",\n            \"prompt\": \"\",\n            \"options\": [\n              {\n                \"id\": \"7i8XwvaR2DNopvKr\",\n                \"label\": \"Duel!\",\n                \"cancel\": false,\n                \"rows\": [\n                  {\n                    \"type\": \"breakLoop\",\n                    \"id\": \"KXrC03RZdvnBkPYO\"\n                  }\n                ]\n              },\n              {\n                \"id\": \"HRKUUu4c76xtfhq5\",\n                \"label\": \"Not now\",\n                \"cancel\": true,\n                \"rows\": [\n                  {\n                    \"type\": \"showEmote\",\n                    \"target\": \"source\",\n                    \"name\": \"\",\n                    \"emote\": \"Sweat\",\n                    \"side\": \"auto\",\n                    \"seconds\": 1.6,\n                    \"wait\": false,\n                    \"id\": \"CQa54jIVzTAEVqjG\"\n                  },\n                  {\n                    \"type\": \"showText\",\n                    \"text\": \"Ah... O-okay! Maybe another time, then...\",\n                    \"bubbleMode\": \"normal\",\n                    \"textSpeed\": \"normal\",\n                    \"id\": \"JsxgwwisQY1JUSlx\",\n                    \"showAs\": \"box\",\n                    \"portrait\": \"\",\n                    \"speaker\": \"This\"\n                  },\n                  {\n                    \"type\": \"endEvent\",\n                    \"id\": \"8EUaVT72qvYjxKwM\"\n                  }\n                ]\n              }\n            ],\n            \"roleplay\": true,\n            \"roleplayLabel\": \"Ask Willy about the game...\",\n            \"id\": \"yHF9DBqeWTVR2tdM\"\n          }\n        ],\n        \"id\": \"O0fyh0OKp5H5GRfT\"\n      },\n      {\n        \"type\": \"showEmote\",\n        \"target\": \"source\",\n        \"name\": \"\",\n        \"emote\": \"Love\",\n        \"side\": \"auto\",\n        \"seconds\": 1.6,\n        \"wait\": false,\n        \"id\": \"QClb1TIm0r9U1tdD\"\n      },\n      {\n        \"type\": \"showText\",\n        \"text\": \"R-really?! Oh, this is going to be great!\",\n        \"bubbleMode\": \"normal\",\n        \"textSpeed\": \"normal\",\n        \"id\": \"a23MektRwf9mu5xm\",\n        \"showAs\": \"box\",\n        \"portrait\": \"\",\n        \"speaker\": \"This\"\n      },\n      {\n        \"type\": \"showEmote\",\n        \"target\": \"source\",\n        \"name\": \"\",\n        \"emote\": \"Exc\",\n        \"side\": \"auto\",\n        \"seconds\": 1.6,\n        \"wait\": false,\n        \"id\": \"86JyFZfWb2LPZa7D\"\n      },\n      {\n        \"type\": \"showText\",\n        \"text\": \"D-don't worry! I'll show you how to play!\",\n        \"bubbleMode\": \"normal\",\n        \"textSpeed\": \"normal\",\n        \"id\": \"rkTkH8ICaesB3hSD\",\n        \"showAs\": \"box\",\n        \"portrait\": \"\",\n        \"speaker\": \"This\"\n      },\n      {\n        \"type\": \"showTutorial\",\n        \"tutorial\": \"fabula-arcana\",\n        \"wait\": true,\n        \"id\": \"AlCS4l4Pt6mDIIAe\"\n      },\n      {\n        \"type\": \"showEmote\",\n        \"target\": \"source\",\n        \"name\": \"\",\n        \"emote\": \"Exc\",\n        \"side\": \"auto\",\n        \"seconds\": 1.6,\n        \"wait\": false,\n        \"id\": \"0uV9TgNJI9z8WS3S\"\n      },\n      {\n        \"type\": \"showText\",\n        \"text\": \"And that's the basics! P-pretty neat, right?\",\n        \"bubbleMode\": \"normal\",\n        \"textSpeed\": \"normal\",\n        \"id\": \"Oh0zrgtnAbq95GIi\",\n        \"showAs\": \"box\",\n        \"portrait\": \"\",\n        \"speaker\": \"This\"\n      },\n      {\n        \"type\": \"showEmote\",\n        \"target\": \"source\",\n        \"name\": \"\",\n        \"emote\": \"Heh\",\n        \"side\": \"auto\",\n        \"seconds\": 1.6,\n        \"wait\": false,\n        \"id\": \"tKwX9r0gfgRVb4nW\"\n      },\n      {\n        \"type\": \"setFacing\",\n        \"target\": \"source\",\n        \"name\": \"\",\n        \"direction\": \"left\",\n        \"id\": \"fJBtCjNMIlZT2Yxn\"\n      },\n      {\n        \"type\": \"wait\",\n        \"seconds\": 0.5,\n        \"id\": \"rzblSKLQRaQgPjIf\"\n      },\n      {\n        \"type\": \"setFacing\",\n        \"target\": \"source\",\n        \"name\": \"\",\n        \"direction\": \"towardParty\",\n        \"id\": \"Y1BZV1lP5c4tG80F\"\n      },\n      {\n        \"type\": \"showText\",\n        \"text\": \"Here! I put together some starter cards for you!\",\n        \"bubbleMode\": \"normal\",\n        \"textSpeed\": \"normal\",\n        \"id\": \"eYKsyiVb9PrnE2yn\",\n        \"showAs\": \"box\",\n        \"portrait\": \"\",\n        \"speaker\": \"This\"\n      },\n      {\n        \"type\": \"runCode\",\n        \"code\": \"await FUCompanion.api.fabulaArcana.grantStarterToParty();\",\n        \"id\": \"Kz2IFzmkWlTasPXC\"\n      },\n      {\n        \"type\": \"playSound\",\n        \"src\": \"https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/Soundboard/Item3.ogg\",\n        \"volume\": 0.5,\n        \"wait\": false,\n        \"id\": \"Am7iXerJMQKFQToX\"\n      },\n      {\n        \"type\": \"screenEffect\",\n        \"effect\": \"dim\",\n        \"color\": \"#000000\",\n        \"strength\": 0.35,\n        \"seconds\": 0.4,\n        \"wait\": false,\n        \"id\": \"ARw4Ir49O8zO08iz\"\n      },\n      {\n        \"type\": \"floatingText\",\n        \"text\": \"Each party member received a Fabula Arcana Starter Set!\",\n        \"place\": \"mc\",\n        \"name\": \"\",\n        \"nudgeX\": 0,\n        \"nudgeY\": 0,\n        \"startFresh\": false,\n        \"autoSeconds\": 0,\n        \"id\": \"580MtnP7t7LA0r17\"\n      },\n      {\n        \"type\": \"screenEffect\",\n        \"effect\": \"untint\",\n        \"color\": \"#000000\",\n        \"strength\": 0,\n        \"seconds\": 0.4,\n        \"wait\": false,\n        \"id\": \"g9VUuQeXCZ9hXm9p\"\n      },\n      {\n        \"type\": \"showEmote\",\n        \"target\": \"source\",\n        \"name\": \"\",\n        \"emote\": \"Goo\",\n        \"side\": \"auto\",\n        \"seconds\": 1.6,\n        \"wait\": false,\n        \"id\": \"kcIbinDnS8YnEvHF\"\n      },\n      {\n        \"type\": \"showText\",\n        \"text\": \"Hehe... Nothing beats your very first deck!\",\n        \"bubbleMode\": \"normal\",\n        \"textSpeed\": \"normal\",\n        \"id\": \"EVQy0vrpcYiTI9sV\",\n        \"showAs\": \"box\",\n        \"portrait\": \"\",\n        \"speaker\": \"This\"\n      },\n      {\n        \"type\": \"showEmote\",\n        \"target\": \"source\",\n        \"name\": \"\",\n        \"emote\": \"Exc\",\n        \"side\": \"auto\",\n        \"seconds\": 1.6,\n        \"wait\": false,\n        \"id\": \"cwDnpLSXldaRfDIW\"\n      },\n      {\n        \"type\": \"showText\",\n        \"text\": \"Now then! L-let's put those cards to the test!\",\n        \"bubbleMode\": \"normal\",\n        \"textSpeed\": \"normal\",\n        \"id\": \"YBXvWSp2fxOV1TTF\",\n        \"showAs\": \"box\",\n        \"portrait\": \"\",\n        \"speaker\": \"This\"\n      },\n      {\n        \"type\": \"cardDuel\",\n        \"npc\": \"\",\n        \"team\": \"wolf, salamander, manaray\",\n        \"diff\": \"casual\",\n        \"style\": \"\",\n        \"bestOf\": 1,\n        \"quote\": \"H-hehe... Let's see what your monsters can do!\",\n        \"variable\": \"Willy Duel Result\",\n        \"id\": \"biC5oufaxG1N6WcM\"\n      },\n      {\n        \"type\": \"condition\",\n        \"condition\": {\n          \"kind\": \"variable\",\n          \"name\": \"Willy Duel Result\",\n          \"op\": \"=\",\n          \"value\": 0\n        },\n        \"moreConditions\": [],\n        \"combine\": \"all\",\n        \"hasElse\": false,\n        \"thenRows\": [\n          {\n            \"type\": \"endEvent\",\n            \"id\": \"KaH7CS4sxbowRCg6\"\n          }\n        ],\n        \"elseRows\": [],\n        \"id\": \"fOeTgOqKz8KSqcfo\"\n      },\n      {\n        \"type\": \"condition\",\n        \"condition\": {\n          \"kind\": \"variable\",\n          \"name\": \"Willy Duel Result\",\n          \"op\": \"=\",\n          \"value\": 1\n        },\n        \"moreConditions\": [],\n        \"combine\": \"all\",\n        \"hasElse\": false,\n        \"thenRows\": [\n          {\n            \"type\": \"showEmote\",\n            \"target\": \"source\",\n            \"name\": \"\",\n            \"emote\": \"Omg\",\n            \"side\": \"auto\",\n            \"seconds\": 1.6,\n            \"wait\": false,\n            \"id\": \"CX9YC2ldFatZQiAP\"\n          },\n          {\n            \"type\": \"showText\",\n            \"text\": \"W-whoa!! You beat me already?!\",\n            \"bubbleMode\": \"normal\",\n            \"textSpeed\": \"normal\",\n            \"id\": \"7vrrFbNocpAPe2IK\",\n            \"showAs\": \"box\",\n            \"portrait\": \"\",\n            \"speaker\": \"This\"\n          },\n          {\n            \"type\": \"showEmote\",\n            \"target\": \"source\",\n            \"name\": \"\",\n            \"emote\": \"Love\",\n            \"side\": \"auto\",\n            \"seconds\": 1.6,\n            \"wait\": false,\n            \"id\": \"YUwse1Dm6piFY2YG\"\n          },\n          {\n            \"type\": \"showText\",\n            \"text\": \"That was amazing! Y-you've got a real knack for this!\",\n            \"bubbleMode\": \"normal\",\n            \"textSpeed\": \"normal\",\n            \"id\": \"hay4m1yTdwEDPB17\",\n            \"showAs\": \"box\",\n            \"portrait\": \"\",\n            \"speaker\": \"This\"\n          },\n          {\n            \"type\": \"showText\",\n            \"text\": \"You know, there are duelists all over the world looking for challengers!\",\n            \"bubbleMode\": \"normal\",\n            \"textSpeed\": \"normal\",\n            \"id\": \"oz1sQ7v7bzHMgplw\",\n            \"showAs\": \"box\",\n            \"portrait\": \"\",\n            \"speaker\": \"This\"\n          },\n          {\n            \"type\": \"showEmote\",\n            \"target\": \"source\",\n            \"name\": \"\",\n            \"emote\": \"Exc\",\n            \"side\": \"auto\",\n            \"seconds\": 1.6,\n            \"wait\": false,\n            \"id\": \"sejy37DSIwFiSbBL\"\n          },\n          {\n            \"type\": \"showText\",\n            \"text\": \"I-if you spot one, try asking for a duel! You might even win some new cards!\",\n            \"bubbleMode\": \"normal\",\n            \"textSpeed\": \"normal\",\n            \"id\": \"faUfEFmQ0r2zC5Gq\",\n            \"showAs\": \"box\",\n            \"portrait\": \"\",\n            \"speaker\": \"This\"\n          }\n        ],\n        \"elseRows\": [],\n        \"id\": \"RtznXvcrC4EjbLPB\"\n      },\n      {\n        \"type\": \"condition\",\n        \"condition\": {\n          \"kind\": \"variable\",\n          \"name\": \"Willy Duel Result\",\n          \"op\": \"=\",\n          \"value\": 2\n        },\n        \"moreConditions\": [],\n        \"combine\": \"all\",\n        \"hasElse\": false,\n        \"thenRows\": [\n          {\n            \"type\": \"showEmote\",\n            \"target\": \"source\",\n            \"name\": \"\",\n            \"emote\": \"Sweat\",\n            \"side\": \"auto\",\n            \"seconds\": 1.6,\n            \"wait\": false,\n            \"id\": \"rUrj6gU2vAmMoU3A\"\n          },\n          {\n            \"type\": \"showText\",\n            \"text\": \"A-ah! S-sorry! I got a little carried away...\",\n            \"bubbleMode\": \"normal\",\n            \"textSpeed\": \"normal\",\n            \"id\": \"fEmBw30JCBEoQtbC\",\n            \"showAs\": \"box\",\n            \"portrait\": \"\",\n            \"speaker\": \"This\"\n          },\n          {\n            \"type\": \"showEmote\",\n            \"target\": \"source\",\n            \"name\": \"\",\n            \"emote\": \"Heh\",\n            \"side\": \"auto\",\n            \"seconds\": 1.6,\n            \"wait\": false,\n            \"id\": \"WEYjct3HfHeHWaUe\"\n          },\n          {\n            \"type\": \"showText\",\n            \"text\": \"B-but don't worry! Everyone loses their first few matches!\",\n            \"bubbleMode\": \"normal\",\n            \"textSpeed\": \"normal\",\n            \"id\": \"YxRf8B8Ue5Dfdvi5\",\n            \"showAs\": \"box\",\n            \"portrait\": \"\",\n            \"speaker\": \"This\"\n          },\n          {\n            \"type\": \"showText\",\n            \"text\": \"There are duelists all over the world, you know!\",\n            \"bubbleMode\": \"normal\",\n            \"textSpeed\": \"normal\",\n            \"id\": \"BJ1Tsw7QUNveaU2u\",\n            \"showAs\": \"box\",\n            \"portrait\": \"\",\n            \"speaker\": \"This\"\n          },\n          {\n            \"type\": \"showEmote\",\n            \"target\": \"source\",\n            \"name\": \"\",\n            \"emote\": \"Exc\",\n            \"side\": \"auto\",\n            \"seconds\": 1.6,\n            \"wait\": false,\n            \"id\": \"N7N2KbNyOZtmhZEL\"\n          },\n          {\n            \"type\": \"showText\",\n            \"text\": \"Try challenging them sometime! You might pick up some new cards along the way!\",\n            \"bubbleMode\": \"normal\",\n            \"textSpeed\": \"normal\",\n            \"id\": \"CLG1MDluJhwQyse8\",\n            \"showAs\": \"box\",\n            \"portrait\": \"\",\n            \"speaker\": \"This\"\n          }\n        ],\n        \"elseRows\": [],\n        \"id\": \"TjGoohbQqQvE9Kv8\"\n      },\n      {\n        \"type\": \"condition\",\n        \"condition\": {\n          \"kind\": \"variable\",\n          \"name\": \"Willy Duel Result\",\n          \"op\": \"=\",\n          \"value\": 3\n        },\n        \"moreConditions\": [],\n        \"combine\": \"all\",\n        \"hasElse\": false,\n        \"thenRows\": [\n          {\n            \"type\": \"showEmote\",\n            \"target\": \"source\",\n            \"name\": \"\",\n            \"emote\": \"Omg\",\n            \"side\": \"auto\",\n            \"seconds\": 1.6,\n            \"wait\": false,\n            \"id\": \"23BdnxvJSANg56Fz\"\n          },\n          {\n            \"type\": \"showText\",\n            \"text\": \"A d-draw?! Wow, that was close!\",\n            \"bubbleMode\": \"normal\",\n            \"textSpeed\": \"normal\",\n            \"id\": \"giBKyeWlk9klET00\",\n            \"showAs\": \"box\",\n            \"portrait\": \"\",\n            \"speaker\": \"This\"\n          },\n          {\n            \"type\": \"showEmote\",\n            \"target\": \"source\",\n            \"name\": \"\",\n            \"emote\": \"Heh\",\n            \"side\": \"auto\",\n            \"seconds\": 1.6,\n            \"wait\": false,\n            \"id\": \"f5yEIXyfDFDLaQ3U\"\n          },\n          {\n            \"type\": \"showText\",\n            \"text\": \"Hehe... I think you're getting the hang of it!\",\n            \"bubbleMode\": \"normal\",\n            \"textSpeed\": \"normal\",\n            \"id\": \"PMycjWCcHs7AcvTg\",\n            \"showAs\": \"box\",\n            \"portrait\": \"\",\n            \"speaker\": \"This\"\n          },\n          {\n            \"type\": \"showText\",\n            \"text\": \"There are duelists all over the world looking for challengers!\",\n            \"bubbleMode\": \"normal\",\n            \"textSpeed\": \"normal\",\n            \"id\": \"lNnT2d32KE2Bs90M\",\n            \"showAs\": \"box\",\n            \"portrait\": \"\",\n            \"speaker\": \"This\"\n          },\n          {\n            \"type\": \"showEmote\",\n            \"target\": \"source\",\n            \"name\": \"\",\n            \"emote\": \"Exc\",\n            \"side\": \"auto\",\n            \"seconds\": 1.6,\n            \"wait\": false,\n            \"id\": \"WyYd4UWoVy6stUun\"\n          },\n          {\n            \"type\": \"showText\",\n            \"text\": \"If you find one, why not ask for a duel? You might win some new cards!\",\n            \"bubbleMode\": \"normal\",\n            \"textSpeed\": \"normal\",\n            \"id\": \"B3xoabVvCRyB2dII\",\n            \"showAs\": \"box\",\n            \"portrait\": \"\",\n            \"speaker\": \"This\"\n          }\n        ],\n        \"elseRows\": [],\n        \"id\": \"P2MqplNSLTYEW81B\"\n      },\n      {\n        \"type\": \"setSwitch\",\n        \"scope\": \"story\",\n        \"name\": \"Fabula Arcana Unlocked\",\n        \"slot\": \"A\",\n        \"value\": \"on\",\n        \"id\": \"uGPVrdpSXGiDuWWt\"\n      }\n    ],\n    \"id\": \"WJcC8d518nMUPd6j\"\n  }\n]"
         }
       },
       "actorId": "eINRStIK2owD6Qp8",
@@ -1073,7 +2566,7 @@
     }
   ],
   "notes": [],
-  "tileCount": 2,
+  "tileCount": 4,
   "full": {
     "folder": "oXoLCnRRoVwg6GJw",
     "name": "Ruhig_Village011",
