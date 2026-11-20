@@ -708,7 +708,9 @@ function setPassShown(show) {
 function goAway(c) {
   c.away = true;
   hideDescription(c.el, { now: true });
-  if (!c.el.classList.contains("is-incoming") && deckReady()) deckReturn(c.el).catch(() => {});
+  // A dropped card still parked over the action card goes into the deck from there.
+  if (c.parked) returnParkedToDeck(c);
+  else if (!c.el.classList.contains("is-incoming") && deckReady()) deckReturn(c.el).catch(() => {});
   c.el.classList.add("is-away");
   layoutHand();
 }
@@ -724,12 +726,14 @@ function leave(c, how = "back") {
   const el = c.el;
   // A dropped card's copy is parked over the action card: it plays from there.
   const parked = how === "play" && c.parked?.isConnected ? c.parked : null;
-  if (!parked) unpark(c, { now: true });
+  // Not played (the card closed, a GM verdict): a parked copy goes into the deck from where it is.
+  const sentParked = !parked && !!c.parked;
+  if (sentParked) returnParkedToDeck(c);
   const drop = () => { el.remove(); parked?.remove(); c.parked = null; if (hand.cards.get(key) === c) hand.cards.delete(key); };
   if (c.away || el.classList.contains("is-incoming") || !el.isConnected) drop();
   else if (deckReady()) {
     if (how === "play") { hidePreview({ now: true, keepRow: true }); deckPlay(parked ?? el, { carrierUuid: c.carrierUuid, pill: pillFor(key) }).catch(() => {}).finally(drop); }
-    else { deckReturn(el).catch(() => {}); drop(); }
+    else { if (!sentParked) deckReturn(el).catch(() => {}); drop(); }
   } else {
     if (how === "play") glowActionCard(null);
     el.classList.add("is-leaving");
@@ -846,6 +850,20 @@ function unpark(c, { now = false } = {}) {
   hidePreview();
   if (now) discardGhost(g, c.el);
   else sendHome(g, c.el).catch(() => {});
+}
+
+// The reaction no longer applies (moot, skipped, the card closed) while its copy is
+// parked over the action card: that copy flies into the deck from where it is.
+function returnParkedToDeck(c) {
+  const g = c.parked;
+  c.parked = null;
+  hidePreview();
+  c.el.classList.remove("rxdg-source");
+  const face = g?.isConnected ? g.querySelector(".rxh-card") : null;
+  if (!face || !deckReady()) { discardGhost(g, c.el); return; }
+  // deckReturn measures the face before its first await, so hiding the copy now is safe.
+  deckReturn(face).catch(() => {}).finally(() => g.remove());
+  g.style.visibility = "hidden";
 }
 
 function dropAllGhosts() {
