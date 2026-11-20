@@ -14,7 +14,9 @@
 //                                      (card-mutations / incoming-damage paths both expand a chain to its one adjust_damage)
 //   Executioner · Beheading            bh_round [bh_pick, bh_eat, bh_kill, bh_unmark] -> [bh_pick, bh_anim, bh_eat, bh_kill, bh_unmark]
 //                                      (the KO lands at the slash's contact frame = the shot's gate; the fragment is still up)
-// Not wired: Wraith · Ethereal (a stat passive with no trigger rows: nothing can play it; script written anyway).
+//   Wraith · Ethereal                  a stat passive (Strike RS via its AE) with no rows -> + et_anim + a creature_hit_by_action
+//                                      reaction (self, ATTACK_VS_DEF == 1 && INCOMING_DAMAGE > 0) -> et_anim. Cue only: the halving
+//                                      stays on the AE. Needs defenseResolved on the hit_by_action payload (state-handlers §7c-bis).
 //
 // The scripts themselves are written by _build-dungeon-animations.js (--only "Nox <Monster>"). Idempotent.
 // Run from tools/safe-edit. --apply to write; default is dry-run. GAME MUST BE CLOSED.
@@ -22,7 +24,7 @@ const { openCollection } = require("../lib/db");
 const { snapshotCollection } = require("../lib/backup");
 
 const APPLY = process.argv.includes("--apply");
-const GHOUL = "HiIGOwMq8q57TeUh", HOUND = "RFnNMvI0AtMQpwuP", PRIEST = "QlhI0YQZ0uqRKTLb", VIPER = "gXSRiFqgfMZkQnXr", EXEC = "lCrB0iEWzPkNrzry";
+const WRAITH = "CzQhpNYeo3ZI0TzH", GHOUL = "HiIGOwMq8q57TeUh", HOUND = "RFnNMvI0AtMQpwuP", PRIEST = "QlhI0YQZ0uqRKTLb", VIPER = "gXSRiFqgfMZkQnXr", EXEC = "lCrB0iEWzPkNrzry";
 const ik = (a, i) => `!actors.items!${a}.${i}`;
 const rowsOf = (t) => Object.entries(t ?? {}).filter(([, r]) => r && !r.$deleted);
 const byLabel = (t, label) => rowsOf(t).find(([, r]) => r.effect_label === label);
@@ -50,6 +52,16 @@ function insertStep(doc, notes, { chain, after, anim, actionRef, targetRef }) {
   if (!st.includes(anim)) { const i = st.indexOf(after); if (i < 0) throw new Error(`${nm}: ${chain} has no ${after}`); st.splice(i + 1, 0, anim); eff[ch[0]] = { ...ch[1], chain_steps: st.join(", ") }; notes.push(`${nm}: ${chain} = ${eff[ch[0]].chain_steps}`); }
 }
 
+// a play_animation row + one reaction row pointing straight at it (an item that had no trigger rows at all)
+function addCue(doc, notes, { anim, actionRef, targetRef, reaction }) {
+  const p = doc.system.props; const nm = doc.name;
+  const eff = p.effect_table = { ...(p.effect_table ?? {}) };
+  if (!byLabel(eff, anim)) { eff[nextKey(eff)] = { effect_kind: "play_animation", effect_label: anim, action_ref: actionRef, target_ref: targetRef, condition_formula: "" }; notes.push(`${nm}: + ${anim} (play_animation "${actionRef}", targets ${targetRef})`); }
+  const rc = p.reaction_config_table = { ...(p.reaction_config_table ?? {}) };
+  if (!rowsOf(rc).some(([, r]) => r.reaction_effect_ref === anim)) { rc[nextKey(rc)] = { $deleted: false, ...reaction, reaction_effect_ref: anim }; notes.push(`${nm}: + reaction ${reaction.reaction_trigger} if ${reaction.condition_formula} -> ${anim}`); }
+  if (p.isReaction !== true) { p.isReaction = true; notes.push(`${nm}: isReaction = true`); }
+}
+
 const JOBS = [
   [GHOUL, "Counter when enemy Healed", (d, n) => wrapReaction(d, n, { effect: "ch_counter", anim: "ch_anim", chain: "ch_chain", actionRef: "Counter when enemy Healed", targetRef: "trigger_subject" })],
   [HOUND, "On the Hunt", (d, n) => wrapReaction(d, n, { effect: "oth_hunt", anim: "oth_anim", chain: "oth_chain", actionRef: "On the Hunt", targetRef: "trigger_subject" })],
@@ -58,6 +70,9 @@ const JOBS = [
     wrapReaction(d, n, { effect: "fc_victim", anim: "fc_vanim", chain: "fc_vchain", actionRef: "Feeding Coil", targetRef: "trigger_subject" }); }],
   [VIPER, "Bile Spew", (d, n) => insertStep(d, n, { chain: "bs_chain", after: "bs_save", anim: "bs_fail_anim", actionRef: "Bile Spew#armorbreak", targetRef: "save_failed_targets" })],
   [EXEC, "Parry", (d, n) => wrapReaction(d, n, { effect: "py_half", anim: "py_anim", chain: "py_chain", actionRef: "Parry", targetRef: "trigger_actor" })],
+  [WRAITH, "Ethereal", (d, n) => addCue(d, n, { anim: "et_anim", actionRef: "Ethereal", targetRef: "trigger_attacker", reaction: {
+    reaction_trigger: "creature_hit_by_action", reaction_source: "self", reaction_action_intent: "harmful", reaction_passive_mode: "on",
+    reaction_source_skill: "", condition_formula: "ATTACK_VS_DEF == 1 && INCOMING_DAMAGE > 0" } })],
   [EXEC, "Beheading", (d, n) => insertStep(d, n, { chain: "bh_round", after: "bh_pick", anim: "bh_anim", actionRef: "Beheading", targetRef: "bh_pick" })],
 ];
 

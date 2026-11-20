@@ -1633,6 +1633,17 @@ async function resolveAction(director, ar, opts = {}) {
           sourceSkillName:   skill?.name ?? ar.skillName ?? ar.weapon?.name ?? null,
           actionKind:        ar.kind ?? null,
           actionCanMiss:     !!ar.canMiss,
+          // Which Defense the hit resolved against, "def" (strike) | "mdef"
+          // (magic) | null (no Check). Same derivation as CONFIRM's actionBase.
+          // payloadForPassives doesn't carry it, so ATTACK_VS_DEF / _MDEF read
+          // 0 here and a Defense-gated "when hit" row never fired. Nox Wraith
+          // Ethereal's cue gates on ATTACK_VS_DEF == 1 (it resists Strike).
+          defenseResolved:   ar.canMiss
+            ? (resolvesVsMagicDefense({
+                defenseTargetType: ar.defenseTargetType,
+                isSpell: String(ar.skillType ?? "").toLowerCase() === "spell",
+              }) ? "mdef" : "def")
+            : null,
           incomingDamage:    Math.max(0, Number(r.damage ?? 0) || 0),
           // ATTACK_CHECK_RESULT reads `checkTotal` SPECIFICALLY — not `total`
           // or `accuracyTotal`. Absent it folds to 0, and an "even Accuracy
