@@ -66,7 +66,7 @@ import { htmlToCardText } from "./drawer-views.js";
 import { shortSkillName } from "./skill-formulas.js";
 import { deckDeal, deckReturn, deckPlay, deckSetHand, deckSetAllyHand } from "./reaction-deck.js";
 import { flyComet, preloadLandingCue } from "./reaction-landing.js";
-import { makeDraggable, sendHome, discardGhost, abortDrag, isDragging, preloadDragCues, handCardHome, handCardScale } from "./reaction-drag.js";
+import { makeDraggable, sendHome, discardGhost, abortDrag, isDragging, isTucked, preloadDragCues, handCardHome, handCardScale } from "./reaction-drag.js";
 
 const MIRROR_ROOT_ID = "fud-bf-mirror-root";
 const STYLE_ID = "fud-rxh-style";
@@ -708,8 +708,9 @@ function setPassShown(show) {
 function goAway(c) {
   c.away = true;
   hideDescription(c.el, { now: true });
-  // A dropped card still parked over the action card goes into the deck from there.
-  if (c.parked) returnParkedToDeck(c);
+  // A dropped card still parked over the action card goes into the deck from there
+  // (one waiting in its slot as a badge: the badge goes, the hand card goes to the deck).
+  if (c.parked && returnParkedToDeck(c)) { /* flying from where it was parked */ }
   else if (!c.el.classList.contains("is-incoming") && deckReady()) deckReturn(c.el).catch(() => {});
   c.el.classList.add("is-away");
   layoutHand();
@@ -724,15 +725,20 @@ function leave(c, how = "back") {
   hideDescription(c.el, { now: true });
   const key = c.el.dataset.key;
   const el = c.el;
-  // A dropped card's copy is parked over the action card: it plays from there.
+  // A dropped card's copy is parked over the action card: it plays from there. One
+  // tucked into its slot (the see-through badge) lands right there, no flight.
   const parked = how === "play" && c.parked?.isConnected ? c.parked : null;
+  const inPlace = !!parked && isTucked(parked);
   // Not played (the card closed, a GM verdict): a parked copy goes into the deck from where it is.
-  const sentParked = !parked && !!c.parked;
-  if (sentParked) returnParkedToDeck(c);
+  const sentParked = !parked && !!c.parked && returnParkedToDeck(c);
   const drop = () => { el.remove(); parked?.remove(); c.parked = null; if (hand.cards.get(key) === c) hand.cards.delete(key); };
   if (c.away || el.classList.contains("is-incoming") || !el.isConnected) drop();
   else if (deckReady()) {
-    if (how === "play") { hidePreview({ now: true, keepRow: true }); deckPlay(parked ?? el, { carrierUuid: c.carrierUuid, pill: pillFor(key) }).catch(() => {}).finally(drop); }
+    if (how === "play") {
+      // In place, the landing takes the slot and the box over itself (takeOverPreview).
+      if (inPlace) releasePreview(); else hidePreview({ now: true, keepRow: true });
+      deckPlay(inPlace ? el : (parked ?? el), { carrierUuid: c.carrierUuid, pill: pillFor(key), inPlace }).catch(() => {}).finally(drop);
+    }
     else { if (!sentParked) deckReturn(el).catch(() => {}); drop(); }
   } else {
     if (how === "play") glowActionCard(null);
@@ -837,6 +843,16 @@ function dragHooks(key, el) {
       schedule();
       return true;
     },
+    // Accepted: the card tucks into the slot, which shows it as a see-through blinking badge.
+    parkAt: () => {
+      const slot = preview.slot?.isConnected ? preview.slot : null;
+      const r = slot?.getBoundingClientRect();
+      if (!r?.width) return null;
+      const icon = el.querySelector(".emb img");
+      slot.classList.add("is-pending");
+      if (icon?.src) { const img = document.createElement("img"); img.src = icon.src; img.alt = ""; slot.replaceChildren(img); }
+      return { rect: r, iconEl: icon };
+    },
     onMiss: () => { sendHold(key, false); hidePreview(); },
   };
 }
@@ -854,16 +870,20 @@ function unpark(c, { now = false } = {}) {
 
 // The reaction no longer applies (moot, skipped, the card closed) while its copy is
 // parked over the action card: that copy flies into the deck from where it is.
+// Tucked into its slot instead: the badge goes and the copy with it; returns false
+// so the caller sends the hand card into the deck the usual way. True = handled.
 function returnParkedToDeck(c) {
   const g = c.parked;
   c.parked = null;
   hidePreview();
   c.el.classList.remove("rxdg-source");
+  if (isTucked(g)) { discardGhost(g, c.el); return false; }
   const face = g?.isConnected ? g.querySelector(".rxh-card") : null;
-  if (!face || !deckReady()) { discardGhost(g, c.el); return; }
+  if (!face || !deckReady()) { discardGhost(g, c.el); return true; }
   // deckReturn measures the face before its first await, so hiding the copy now is safe.
   deckReturn(face).catch(() => {}).finally(() => g.remove());
   g.style.visibility = "hidden";
+  return true;
 }
 
 function dropAllGhosts() {
@@ -906,6 +926,8 @@ function showPreview(key) {
     a.finished.then(() => { row.style.overflow = ""; }, () => { row.style.overflow = ""; });
   }
 }
+// Forget the preview without touching it: a landing in place is taking it over.
+function releasePreview() { preview.slot = null; preview.row = null; preview.opened = false; }
 function hidePreview({ now = false, keepRow = false } = {}) {
   preview.slot?.remove();
   preview.slot = null;
@@ -1399,6 +1421,12 @@ const CSS_TEXT = `
 @keyframes rxhSlotPulse { from { background: rgba(255,255,255,.12); } to { background: rgba(255,255,255,.45); } }
 .fud-bf-card .rxh-slot-preview { flex: 0 0 auto; width: 32px; height: 32px; box-sizing: border-box; border-radius: 7px;
   outline: 2px dashed #e2c27e; outline-offset: -2px; animation: rxhSlotPulse 700ms ease-in-out infinite alternate; }
+/* Dropped: your card waits in its slot as a see-through badge that blinks until the host confirms. */
+@keyframes rxhSlotIn { from { opacity: 0; scale: .6; } }
+@keyframes rxhSlotWait { from { opacity: .3; } to { opacity: .75; } }
+.fud-bf-card .rxh-slot-preview.is-pending { animation: none; background: rgba(255,255,255,.14); overflow: hidden; }
+.fud-bf-card .rxh-slot-preview.is-pending img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 6px; pointer-events: none;
+  opacity: .75; animation: rxhSlotIn 150ms ease-out 110ms backwards, rxhSlotWait 650ms ease-in-out 260ms infinite alternate; }
 @keyframes rxhMiniUp { from { translate: 0 72px; } 70% { translate: 0 -4px; } to { translate: 0 0; } }
 @keyframes rxhMiniDown { to { translate: 0 72px; } }
 .rxh-mini.is-dealt { animation: rxhMiniUp 340ms cubic-bezier(.2,.9,.3,1) var(--d, 0ms) backwards; }
@@ -1418,6 +1446,7 @@ const CSS_TEXT = `
   .rxh-mini:hover, .rxh-mini.is-busy, .rxh-mini.is-busy:hover, .rxh-mini.is-holding, .rxh-mini.is-holding:hover { translate: none; }
   .rxh-mini.is-holding { animation: none; box-shadow: 0 0 0 2px var(--rxh-tint, #e2c27e), 0 0 14px 4px var(--rxh-tint, #e2c27e); }
   .fud-bf-card .rxh-slot-preview { animation: none; background: rgba(255,255,255,.3); }
+  .fud-bf-card .rxh-slot-preview.is-pending img { animation: none; opacity: .55; }
   .rxh-mytag, .rxh-tag { transform: none !important; }
   .dhud-unit.is-open .rxh-clip { transform: none; }
 }

@@ -1,8 +1,9 @@
 // Reaction landing — a reaction card turning into its skill icon and flying into
 // the action card's Reactions box.
 //
-// Used for your own card (reaction-deck.js deckPlay; a card you dragged flies from
-// where you dropped it), for an ally's reaction (reaction-hand.js syncAllies: a
+// Used for your own card (reaction-deck.js deckPlay; a card you dragged is already
+// waiting in its slot as a see-through badge and lands right there, landInPlace),
+// for an ally's reaction (reaction-hand.js syncAllies: a
 // particle comet in their user colour, flyComet), and for a reaction firing by itself
 // (reaction-deck.js autoPlay). A reaction with no slot on an action card (a
 // standalone window, or a card that doesn't list it) lands on your portrait card.
@@ -265,6 +266,34 @@ export async function flyToReactionBox({ el, iconEl, pill, power = 1, collapseMs
     return true;
   } catch (e) {
     console.warn(TAG, "flight failed", e);
+    return true;
+  } finally {
+    pill.classList.remove("rxh-arriving");
+  }
+}
+
+/**
+ * No flight: a card you dragged has been waiting in its slot as a see-through
+ * badge (reaction-hand.js, `.rxh-slot-preview.is-pending`). On confirm the real
+ * icon takes that spot and gets the same hit as a flight's landing. Same calling
+ * rule as flyToReactionBox: in the frame the pill turned Applied. Returns false
+ * if it couldn't (the caller flies instead).
+ */
+export async function landInPlace({ pill, power = 1 } = {}) {
+  if (!pill?.isConnected) return false;
+  const row = pill.closest(".fud-bf-reactions-row");
+  if (!row) return false;
+  ensureStyles();
+  const alreadyShown = pill.classList.contains("is-auto");
+  if (!alreadyShown) pill.classList.add("rxh-arriving");
+  const rm = reducedMotion();
+  try {
+    await sleep(bookLanding(0));
+    takeOverPreview(row, false);
+    if (pill.isConnected) land(pill, row, { power, dir: rm ? null : { x: 0, y: 1 }, moves: !rm, tone: toneOfPill(pill) });
+    return true;
+  } catch (e) {
+    console.warn(TAG, "landing failed", e);
     return true;
   } finally {
     pill.classList.remove("rxh-arriving");

@@ -9,22 +9,24 @@ Mockup the host approved: claude.ai/artifact/PRoeSXjL8cuiA8be4VEQ6K (forked from
 
 ## What players see
 - **Your own cards (Card mode, on an action card):** press and move 7 px and the card comes off the hand (Fabula Arcana's drag, ported). Click still works exactly as before.
-  - Over the action card it gets a dashed, then solid, outline. The Reactions box opens with a dashed empty slot, and the held card leans toward it.
-  - Dropped on target, it's the same Use as a click. The dragged copy parks there at 70% while the reaction's decision runs. When the host finalises it, your existing flight starts from the parked copy instead of the hand.
-  - A miss, a cancelled pick or a refusal slides it home with Book1 (`Sound/Soundboard/Book1.ogg`). If it goes moot or is skipped while parked, it flies into the deck from where it is.
+  - Over the action card it gets a dashed, then solid, outline. The Reactions box opens with a dashed empty slot, and the held card leans a little toward it (magnet 0.12; the host tried 0 / 0.12 / 0.35 live and picked this).
+  - Dropped on target, it's the same Use as a click. The card shrinks onto its icon inside the slot and stays there as a see-through, blinking badge while the reaction's decision runs (a target pick, the host). Nothing covers the action card's text while you pick a target.
+  - When the host finalises it, the badge lands right there: the real icon takes the spot and gets your usual hit and sound, with no flight. The hand card goes to its pile as before.
+  - A miss, a cancelled pick or a refusal grows the card back out of the slot and slides it home with Book1 (`Sound/Soundboard/Book1.ogg`). If it goes moot or is skipped while waiting, the badge goes and the hand card goes into the deck the usual way.
 - **Standalone windows** (conflict, round or turn start, e.g. High Speed) stay click-only. There's no action card to drop on.
 - **Allies:** while an ally holds a card, their small card lifts and slowly glows brighter and dimmer in their Foundry user colour. Nothing else shows on the board, so a long think or three allies at once stays clean.
   - When the host confirms an ally's reaction, your small-card flight is replaced by a particle comet in their colour, from their panel to the slot (520 ms, `bookLanding` spacing).
 
 ## What changed in code
-- **New `reaction-drag.js`:** the drag engine: the 7 px slop, the held copy drawn in its own fixed layer (`#rxdg-layer`, z 121), tilt, magnet, park, `sendHome`. It only moves things. The caller decides everything through hooks.
+- **New `reaction-drag.js`:** the drag engine: the 7 px slop, the held copy drawn in its own fixed layer (`#rxdg-layer`, z 121), tilt, magnet, tuck (into the slot, via the `parkAt` hook; parks at 70% only if there's no slot), `sendHome`. It only moves things. The caller decides everything through hooks.
 - **`reaction-hand.js`:**
-  - `makeCard` attaches the drag. `dragHooks` turns a drop into `clickPill(apply)` + `hold(c)`. `c.parked` holds the parked copy.
-  - `leave("play")` hands it to `deckPlay`. The revert branch in `syncHand` calls `unpark`. `goAway` and `leave("back")` call `returnParkedToDeck`.
+  - `makeCard` attaches the drag. `dragHooks` turns a drop into `clickPill(apply)` + `hold(c)`, and `parkAt` marks the slot `.is-pending` with the card's icon (the badge). `c.parked` holds the tucked copy.
+  - `leave("play")` calls `deckPlay(el, { inPlace: true })` for a tucked card. The revert branch in `syncHand` calls `unpark`. `goAway` and `leave("back")` call `returnParkedToDeck`.
   - The preview slot (`showPreview` / `hidePreview`) adds `.rxh-preview` to the Reactions row and a `.rxh-slot-preview` placeholder. It isn't a pill class, so `readPills` ignores it.
   - `syncAllies` toggles `.is-holding` from the pill's `data-fud-reaction-holding` and calls `flyComet` for an applied ally reaction.
 - **`reaction-landing.js`:**
   - `flyComet` (new), same contract as `flyToReactionBox`.
+  - `landInPlace` (new): no flight, the pill takes the badge's spot and gets `land()`'s hit. Booked through `bookLanding` like the flights. `reaction-deck.js` `deckPlay` takes `inPlace` to use it.
   - `takeOverPreview` lets a landing take over a box the preview already opened, so it doesn't open twice.
 - **`action-card.js` + `intents.js`:**
   - New `INTENTS.REACTION_HOLD` (player → host).
@@ -42,14 +44,15 @@ So the hold signal never travels as a reaction choice or a `pill-update`. Both c
 `reaction-drag.test.mjs` checks this from the source. It fails if a refactor moves the guard below a Skip fallback, or if "holding" ever goes out as a `pill-update` decision.
 
 ## Checked
-- `reaction-drag.test.mjs` 7/7 (geometry, drop zone, comet colours, the Skip-trap guards). `reaction-tone.test.mjs` 19/19.
+- `reaction-drag.test.mjs` 9/9 (geometry, the tuck lands the icon on the slot, magnet value, drop zone, comet colours, the Skip-trap guards). `reaction-tone.test.mjs` 19/19.
 - Sandbox copy of the world: GM plus three real player clients (Hina, Keren, Blanche), Nox Hounds in ambush, Card mode.
   - Blanche held Protect: Hina's and Keren's screens showed her small card glowing in her colour. She let go off target: it went home, the glow cleared, no pill changed.
-  - Hina dropped Protect: it parked, the box opened with the slot, the target picker opened, she picked Zarg. The flight started from the parked copy. On Keren's screen Hina's small card left.
+  - Hina dropped Protect: the box opened with the slot, the target picker opened, she picked Zarg, and it played. On Keren's screen Hina's small card left.
+  - After the badge change: Blanche dropped Protect, it tucked into the slot as the badge and landed there on confirm, the card went to SPENT. Hina dropped Prophetic Defender with its choice held back: the badge waited in the slot, then the revert grew the card back home, host and client both undecided again.
   - Blanche dropped Protect: on Keren's screen her comet went out and the impact came 0.53 s later. No errors.
-  - A parked card going moot flew into the deck (this was a bug, fixed in `134d4594`). A held-back apply plus a revert slid the parked card home.
+  - A dropped card going moot went into the deck (this was a bug, fixed in `134d4594`).
   - Click-to-use unchanged. A standalone window's card can't be dragged. Reduced motion: no comet, the badge fades in.
 - Not seen live: two ally comets confirmed within 0.5 s of each other. `flyComet` books its landing through the same `bookLanding` as your flights.
 
 ## Notes
-- The parked copy sits over the action card's lower half while a target picker is open. It doesn't cover the board. If players find it in the way, sliding it beside the card is the agreed fallback.
+- The first build parked the dropped card over the action card's lower half while a target picker was open, which made the card look frozen. The host asked for the see-through badge in the slot instead, and that's what shipped.

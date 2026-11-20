@@ -63,6 +63,20 @@ ok("a press only becomes a drag after Fabula Arcana's 7 px", () => {
   assert.equal(DRAG_SLOP, 7);
 });
 
+ok("the magnet is the 'Light' strength the host picked live", () => {
+  assert.equal(_geom.MAGNET, 0.12);
+});
+
+ok("a dropped card tucks with its icon exactly on the slot, at the slot's size", () => {
+  const rect = { left: 610, top: 712, width: 32, height: 32 };
+  const ic = { x: 26, y: 30, w: 30 }, L = { x: 52, y: 90 };
+  const s = rect.width / ic.w;
+  const t = xf(_geom.tuckT(rect, ic, L, s), L, 0, s);
+  const c = world(t, ic), edge = world(t, { x: ic.x + ic.w / 2, y: ic.y });
+  near(c.x, rect.left + 16, "icon centre x"); near(c.y, rect.top + 16, "icon centre y");
+  near(edge.x - c.x, rect.width / 2, "icon half-width = slot half-width");
+});
+
 ok("the comet runs white → light → the player's colour → a dark rim", () => {
   const r = cometRamp("#62c4ff");
   assert.equal(r.length, 4);

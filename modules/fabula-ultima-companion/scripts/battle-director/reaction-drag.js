@@ -6,14 +6,18 @@
 // threshold, the tilt with your speed, the dashed / solid drop outlines, the
 // 220 ms slide home on a miss. What you hold is the whole card (user's call,
 // 2026-11-20): 108% over your hand, 90% once it leaves it, and over the action
-// card it leans toward the empty slot that opens there (the magnet) at 72%.
+// card it leans a little toward the empty slot that opens there (the magnet,
+// "Light" = 0.12 of the way) at 72%.
 //
 // The card in your hand can't leave its clip box, so you drag a COPY drawn above
 // everything (the "ghost"); the hand card stays behind, faded, holding its place.
-// Dropped on target, the ghost does not snap back: it PARKS where you let go
-// (70%, glowing) while the reaction's own decision runs, and the flight to the
-// Reactions box starts from there when the host confirms (reaction-hand.js hands
-// the parked ghost to deckPlay). A cancel or refusal slides it home.
+// Dropped on target, the ghost does not snap back: it TUCKS into the empty slot
+// in the Reactions box, shrinking onto its own icon and fading, and the caller
+// shows a see-through blinking badge there while the reaction's decision runs (a
+// target pick, the host). Nothing is left covering the action card. When the host
+// confirms, the badge lands where it is; a cancel or refusal grows the card back
+// out of the slot and slides it home (user's call, 2026-11-21, after the live
+// test). With no slot to tuck into it parks where it was let go (70%, glowing).
 //
 // This module only moves the card. Everything it means is decided by its caller
 // through the hooks below, so the pills stay the single source of truth.
@@ -31,13 +35,14 @@ const SCALE_HAND = 1.08;       // over your hand
 const SCALE_BOARD = 0.9;       // off it, so it doesn't hide the board
 const SCALE_OVER = 0.72;       // over the action card with the magnet on
 const SCALE_PARK = 0.7;        // parked, waiting for the host
-const MAGNET = 0.35;           // how far the held card leans toward the slot
+const MAGNET = 0.12;           // how far the held card leans toward the slot (user picked "Light" live, 2026-11-21)
 const ZONE_PAD = 24;           // px of give around the action card
 const TILT_MAX = 14;           // degrees
 const TILT_K = 0.02;           // degrees per px/s of horizontal speed (FA: ×1.2 per event)
 const FOLLOW = 26, SIZE_EASE = 14, TILT_EASE = 18;   // per-second smoothing rates
 const HOME_MS = 220;           // the slide home (FA snap-back)
 const PARK_MS = 160;
+const TUCK_MS = 240;           // dropped: the card folds onto its icon in the slot
 
 const SOUND = "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Sound/";
 // Levels match the battle UI mix (reaction-landing.js LANDING_CUE): Cursor_Decide1
@@ -79,7 +84,9 @@ const homeT = (home, L, k) => ({ x: home.x - L.x + k * L.x, y: home.y - L.y + k 
  *   onOver(over)          the pointer entered / left the drop target
  *   slotCentre()          where the empty slot is, for the magnet (or null)
  *   onDrop(ghost)         let go on target: return true to accept (the ghost is
- *                         now parked and belongs to the caller), false to send it home
+ *                         now tucked or parked and belongs to the caller), false to send it home
+ *   parkAt()              after an accepted drop: { rect, iconEl } — the slot to tuck
+ *                         into and the hand card's icon to shrink onto — or null to park
  *   onMiss()              let go anywhere else; the card is on its way home
  * Returns a function that detaches it.
  */
@@ -213,7 +220,12 @@ async function end(cancelled) {
   if (d.over && !cancelled) {
     try { accepted = !!d.hooks.onDrop?.(d.wrap); } catch (e) { console.warn(TAG, "onDrop threw", e); }
   }
-  if (accepted) { park(d); return; }
+  if (accepted) {
+    let at = null;
+    try { at = d.hooks.parkAt?.() ?? null; } catch (e) { console.warn(TAG, "parkAt threw", e); }
+    if (!tuck(d, at)) park(d);
+    return;
+  }
   try { d.hooks.onMiss?.(); } catch (e) { console.warn(TAG, "onMiss threw", e); }
   await sendHome(d.wrap, d.el, { home: d.hooks.home?.() ?? d.home, k: d.hooks.scale?.() || d.k, L: d.L });
 }
@@ -230,8 +242,38 @@ function park(d) {
   w.style.transform = to;
 }
 
+// Tucked: the card shrinks onto its icon over the slot and fades as it gets there.
+// It stays (invisible) at that spot, so a cancel can grow it back out from there.
+function tuck(d, at) {
+  const rect = at?.rect;
+  if (!rect || !(rect.width > 0)) return false;
+  const w = d.wrap;
+  const er = d.el.getBoundingClientRect(), ir = at.iconEl?.getBoundingClientRect?.();
+  const ke = er.width / (d.el.offsetWidth || er.width) || 1;
+  const ic = ir && ir.width > 0
+    ? { x: (ir.left - er.left + ir.width / 2) / ke, y: (ir.top - er.top + ir.height / 2) / ke, w: ir.width / ke }
+    : { x: d.w / 2, y: d.h / 2, w: d.w };
+  const s = rect.width / ic.w;
+  const to = xf(tuckT(rect, ic, d.L, s), d.L, 0, s);
+  w.classList.add("rxdg-tucked");
+  w._rxdg = { el: d.el, L: d.L, w: d.w, h: d.h };
+  if (!d.rm) {
+    w.animate([{ transform: w.style.transform, opacity: 1 }, { opacity: 1, offset: 0.45 }, { transform: to, opacity: 0 }],
+      { duration: TUCK_MS, easing: "cubic-bezier(.5,0,.2,1)" });
+  }
+  w.style.transform = to;
+  w.style.opacity = "0";
+  return true;
+}
+/** T that puts the card's local point ic (its icon centre) on the centre of rect at scale s. */
+const tuckT = (rect, ic, L, s) => ({
+  x: rect.left + rect.width / 2 - L.x - s * (ic.x - L.x),
+  y: rect.top + rect.height / 2 - L.y - s * (ic.y - L.y),
+});
+export const isTucked = (wrap) => !!wrap?.classList?.contains("rxdg-tucked");
+
 /**
- * Slide a ghost (held or parked) back into its hand card's place, then remove it
+ * Slide a ghost (held, parked or tucked) back into its hand card's place, then remove it
  * and show the hand card again. Plays Book1. Safe to call on a ghost that is gone.
  */
 export async function sendHome(wrap, el, { home = null, k = null, L = null } = {}) {
@@ -244,7 +286,10 @@ export async function sendHome(wrap, el, { home = null, k = null, L = null } = {
   try {
     if (h && el?.isConnected && !reducedMotion()) {
       const to = xf(homeT(h, LL, kk), LL, 0, kk);
-      await wrap.animate([{ transform: wrap.style.transform }, { transform: to }], { duration: HOME_MS, easing: "cubic-bezier(.3,.8,.3,1)", fill: "forwards" }).finished.catch(() => {});
+      // A tucked card grows back out of the slot: visible again within the first third.
+      const from = isTucked(wrap) ? [{ transform: wrap.style.transform, opacity: 0 }, { opacity: 1, offset: 0.3 }] : [{ transform: wrap.style.transform }];
+      wrap.style.opacity = "";
+      await wrap.animate([...from, { transform: to, opacity: 1 }], { duration: HOME_MS, easing: "cubic-bezier(.3,.8,.3,1)", fill: "forwards" }).finished.catch(() => {});
     }
   } finally {
     wrap.remove();
@@ -285,7 +330,7 @@ function homeOf(el) {
 }
 export { homeOf as handCardHome, scaleOf as handCardScale };
 // For reaction-drag.test.mjs (bare Node): the pure geometry.
-export const _geom = Object.freeze({ xf, homeT, inZone, DRAG_SLOP, ZONE_PAD });
+export const _geom = Object.freeze({ xf, homeT, tuckT, inZone, DRAG_SLOP, ZONE_PAD, MAGNET });
 
 function ensureStyles() {
   if (document.getElementById(STYLE_ID)) return;
