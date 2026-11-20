@@ -21,6 +21,9 @@
  *      Soul Tithe now marks it with a visible "Called" status).
  *   8. Nidhogg (both actors) is immune to revive kills (`reviveKillImmune`).
  *   9. pass 5: the Viper gets Counterattack (the generic passive), countering with Poison Fang.
+ *  10. pass 6 (2026-11-21): every monster mixes DEF and MDEF attacks so one defense can't lock
+ *      it out: Ghoul Poison Blade and Hound Zombie Bite go vs MDEF, Zombie Bite accuracy +8 -> +6.
+ *      The Wraith stays MDEF-only on purpose (niche monster).
  *
  * Idempotent: every step writes only what differs from the target value.
  */
@@ -237,6 +240,9 @@ export async function migrate(game, log) {
   const hound = byFlag("hound"); if (hound) await setItemProps(hound, "Zombie Bite", { target_eligibility: PLAYERS_ONLY }, out);
   const viper = byFlag("viper"); if (viper) await setItemProps(viper, "Coil", { target_eligibility: PLAYERS_ONLY }, out);
   if (viper) await viperCounterattack(viper, out);
+  // pass 6: mixed defense targets (no single-DEF lockout), Zombie Bite +8 -> +6
+  const ghoul = byFlag("ghoul"); if (ghoul) await setItemProps(ghoul, "Poison Blade", { defense_target_type: "mdef" }, out);
+  if (hound) await setItemProps(hound, "Zombie Bite", { defense_target_type: "mdef", check_bonus: "6" }, out);
   const priest = byFlag("priest");
   if (priest) await resurrection(priest, out);
   if (priest) await setItemProps(priest, "Resurrection", { target_eligibility: REVIVE_TARGET }, out);
