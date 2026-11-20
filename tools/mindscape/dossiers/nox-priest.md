@@ -38,6 +38,7 @@ HP 450 (was 300), MP 106, DEF 9, MDEF 14. Design page: https://claude.ai/artifac
 | 2026-11-20 | Pass 2: +20% average hit: Nox Tome HR+20→25 (Lux Finis not raised) | same re-run; target party ends nearer 60-70% | user (go), claude (numbers) | re-run pending |
 | 2026-11-20 | Pass 3: +25% average hit: Nox Tome HR+25→33 (Lux Finis not raised, user) | same rounds, lower party HP (pass 2: 2.9 rounds, 83% party HP) | user (go), claude (numbers) | re-run pending |
 | 2026-11-20 | Gravis → **Gravis Alta**: 50% of current HP (was 25%), still never KOs | same rounds, lower party HP (pass 2: 2.9 rounds, 83% party HP) | user | re-run pending |
+| 2026-11-20 | Gravis Alta AI cooldown 3 rounds | pass-3 quick test: 2 wipes in 4 Priest fights, Gravis Alta cast 2-3 rounds running fed the Soul Fragments (max HP locked to 1) | user | re-run pending |
 
 ```json dossier
 {

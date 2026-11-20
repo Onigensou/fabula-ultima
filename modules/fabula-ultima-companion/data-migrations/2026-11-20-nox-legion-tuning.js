@@ -131,8 +131,13 @@ async function gravisAlta(priest, out) {
   if (Object.keys(upd).length) { await it.update(upd); out.push(`Priest: Gravis -> Gravis Alta, 50% of current HP (${Object.keys(upd).length} field(s))`); }
   const t = priest.system?.props?.action_pattern_table ?? {};
   const rowUpd = {};
-  for (const [k, row] of Object.entries(t)) if (!row?.$deleted && row?.action_pattern_name === "Gravis") rowUpd[`system.props.action_pattern_table.${k}.action_pattern_name`] = "Gravis Alta";
-  if (Object.keys(rowUpd).length) { await priest.update(rowUpd); out.push("Priest: AI row Gravis -> Gravis Alta"); }
+  for (const [k, row] of Object.entries(t)) {
+    if (row?.$deleted || !/^Gravis( Alta)?$/.test(row?.action_pattern_name ?? "")) continue;
+    if (row.action_pattern_name !== "Gravis Alta") rowUpd[`system.props.action_pattern_table.${k}.action_pattern_name`] = "Gravis Alta";
+    // user 2026-11-20: at most once every 3 rounds (pass 3 wipes: cast 2-3 rounds running)
+    if (String(row.action_pattern_cooldown ?? "") !== "3") rowUpd[`system.props.action_pattern_table.${k}.action_pattern_cooldown`] = "3";
+  }
+  if (Object.keys(rowUpd).length) { await priest.update(rowUpd); out.push("Priest: AI row Gravis Alta (name / cooldown 3)"); }
 }
 
 async function nidhoggImmune(out) {
