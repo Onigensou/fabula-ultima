@@ -9,6 +9,7 @@ import { getActorKind, getNpcAttackItems } from "./actor-shape.js";
 import { buildSkillResolver, evaluateFormula, isFormulaString, registerBlockedActionReader, isHealReversedActor, isReviveKillTarget } from "./skill-formulas.js";
 import { hasIgnoreActionGating, snapshotUltimaBundle } from "./domination.js";
 import { classifyActionIntent } from "./skill-intent.js";
+import { weightedActorKey } from "./weighted-rules.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -369,6 +370,11 @@ export function resolveAttackerWeapon(actor, { which = "main" } = {}) {
     // mechanical action keyword like Pierce (Windpiercer) — no bespoke per-quality
     // boolean; a future benign weapon is just action_keywords:"benign".
     actionKeywords: String(weaponItem?.system?.props?.action_keywords ?? ""),
+    // Weighted granted by the wielder's kit rather than the weapon itself
+    // (Titanic Shield: "Your equipped weapon gain Weighted") — see
+    // actorGrantedWeaponKeywords. The weapon's own `weighted` keyword is read
+    // straight off actionKeywords by weighted-rules.isWeightedWeapon.
+    weighted: actorGrantedWeaponKeywords(actor).includes("weighted"),
     // Explicit defense target for this weapon's Attacks ("def" | "mdef"). A weapon
     // that "deals Magic Damage" (Arc Wand) sets `defense_target_type: "mdef"` so its
     // Attack resolves vs Magic Defense; blank falls back to the kind default
@@ -793,6 +799,7 @@ export function snapshotDirectorCombatant(dc) {
       // isDominating. Drives the boss-only "Ultima" Octopath page.
       ...snapshotUltimaBundle(actor),
       ...buildWeaponBundle(actor),
+      weightedUsed: snapshotWeightedUsed(tokenDoc.uuid ?? actor.id),
     });
   } catch (e) {
     warn("snapshotDirectorCombatant threw", e);
@@ -1217,6 +1224,7 @@ export function resolveVersatileWeapons(actor) {
         skillTarget: String(p.skill_target ?? "").trim(),
         descriptionHtml: String(p.description ?? ""),
         actionKeywords: String(p.action_keywords ?? ""),
+        weighted: actorGrantedWeaponKeywords(actor).includes("weighted"),
         defenseTargetType: String(p.defense_target_type ?? "").trim().toLowerCase(),
       }));
     }
@@ -1632,7 +1640,49 @@ export function refreshTurnSnapshot(snap, actor) {
     attributes: snapshotAttributes(actor),
     fumbleThreshold: readPropNum(actor, ["fumble_threshold"], 1),
     ...buildWeaponBundle(actor),
+    // Weighted weapons already swung this turn (free attacks re-enter DECLARE,
+    // which calls this, so the picker sees the attack that just resolved).
+    weightedUsed: snapshotWeightedUsed(weightedActorKey(snap)),
   });
+}
+
+// Weighted keyword — weapon keys this creature has already attacked with this
+// turn, read off the GM's live DirectorCombat (the tally lives there). Frozen
+// array so it survives the IntentChannel hop to a player's compose menu; empty
+// off-GM / outside a Director battle (the GM TARGET gate is the enforcement).
+function snapshotWeightedUsed(creatureKey) {
+  try {
+    const dc = globalThis.__fudActiveDCombat ?? null;
+    return Object.freeze([...(dc?.weightedWeaponsUsedThisTurn?.(creatureKey) ?? [])]);
+  } catch (e) {
+    warn("snapshotWeightedUsed threw", e);
+    return Object.freeze([]);
+  }
+}
+
+// Keywords the bearer's kit grants to its equipped WEAPONS — the AE change
+// `{ key: "grant_weapon_keywords", value: "weighted" }` (comma list). Titanic
+// Shield: "Your equipped weapon gain Weighted". A pure change-row marker the
+// engine reads itself (like disable_attack_range); a GEAR carrier is dormant
+// unless equipped (gearCarrierDormant). Lower-cased, deduped.
+export function actorGrantedWeaponKeywords(actor) {
+  const out = new Set();
+  try {
+    const effs = actor?.appliedEffects ?? actor?.effects?.contents ?? actor?.effects ?? [];
+    for (const ae of effs) {
+      if (ae?.disabled) continue;
+      if (gearCarrierDormant(ae)) continue;
+      for (const ch of (ae.changes ?? [])) {
+        const k = String(ch?.key ?? "").replace(/^system\.props\./, "");
+        if (k !== "grant_weapon_keywords") continue;
+        for (const kw of String(ch.value ?? "").split(/[,\n]+/)) {
+          const t = kw.trim().toLowerCase();
+          if (t) out.add(t);
+        }
+      }
+    }
+  } catch (e) { warn("actorGrantedWeaponKeywords threw", e); }
+  return [...out];
 }
 
 // AE-driven target exclusion. Walks the chooser's active effects, collects

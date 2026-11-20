@@ -318,6 +318,40 @@ export class DirectorCombat {
     // Read via HITS_ON_TARGET_THIS_TURN. Distinct from HIT_COUNT, which counts
     // targets struck by the CURRENT action only.
     this.hitsOnTargets = new Map();
+
+    // Weighted keyword — which Weighted weapons each creature has already
+    // attacked with during the CURRENT turn ("one attack per turn with this
+    // weapon"). creatureKey (token uuid, see weighted-rules.weightedActorKey) →
+    // { stamp, keys:Set<weaponKey> }. The stamp is round + acting combatant, so
+    // the tally empties itself on ANY turn change (a Counterattack on an enemy's
+    // turn is its own turn); TURN_START also clears the acting creature.
+    // In-memory, not serialized — same trade-off as hitsOnTargets.
+    this.weightedAttacks = new Map();
+  }
+
+  // ── Weighted keyword per-turn tally ──
+  _weightedTurnStamp() {
+    return `${this.round ?? 0}:${this.currentCombatantId ?? ""}`;
+  }
+
+  // Record that `creatureKey` attacked with the Weighted weapon `weaponKey` this turn.
+  addWeightedAttack(creatureKey, weaponKey) {
+    if (!creatureKey || !weaponKey) return;
+    const stamp = this._weightedTurnStamp();
+    let e = this.weightedAttacks.get(creatureKey);
+    if (!e || e.stamp !== stamp) { e = { stamp, keys: new Set() }; this.weightedAttacks.set(creatureKey, e); }
+    e.keys.add(weaponKey);
+  }
+
+  // Weighted weapon keys `creatureKey` has already swung THIS turn (array, never null).
+  weightedWeaponsUsedThisTurn(creatureKey) {
+    const e = creatureKey ? this.weightedAttacks.get(creatureKey) : null;
+    if (!e || e.stamp !== this._weightedTurnStamp()) return [];
+    return [...e.keys];
+  }
+
+  resetWeightedAttacks(creatureKey) {
+    if (creatureKey) this.weightedAttacks.delete(creatureKey);
   }
 
   // Record that `studierActorId` has Studied the token `targetTokenUuid` this

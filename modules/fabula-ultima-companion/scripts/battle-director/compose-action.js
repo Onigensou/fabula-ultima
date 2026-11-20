@@ -47,6 +47,7 @@ import { classifyActionIntent } from "./skill-intent.js";
 import { buildSkillResolver, evaluateFormula } from "./skill-formulas.js";
 import { resolveTargetPlan } from "./target-survey.js";
 import { freeActions } from "./free-actions.js";
+import { weightedModeBlock, weightedAttackCommandBlock } from "./weighted-rules.js";
 import { getNpcAttackItems } from "./actor-shape.js";
 import { buildUltimaMenuSpec } from "./domination.js";
 import { buildObjectiveMenuSpec } from "./objectives.js";
@@ -203,6 +204,18 @@ async function composeActionChain({
     const objectiveDisabled = objectiveSpec.buttonDisabledReason
       ? [{ label: "Objective", reason: objectiveSpec.buttonDisabledReason }]
       : [];
+    // Weighted keyword: when every weapon option is out (its one attack this
+    // turn is spent, or this free attack drops HR), grey the Attack blade with
+    // the reason instead of opening a picker of struck rows. PCs only — an NPC
+    // snapshot carries no weapons (its attack items are gated per row).
+    let weightedDisabled = [];
+    try {
+      const wReason = snap?.actorKind === "npc" ? null : weightedAttackCommandBlock({
+        mainWeapon: snap?.weapon ?? null, offWeapon: snap?.offWeapon ?? null,
+        virtualAttacks: snap?.virtualAttacks ?? [], grant, usedKeys: snap?.weightedUsed ?? [],
+      });
+      if (wReason) weightedDisabled = [{ label: "Attack", reason: wReason }];
+    } catch (e) { warn("composeAction: Weighted command gate threw", e); }
     // Commands with nothing to spend them on are greyed with the reason, so
     // the player doesn't find out only after the picker opens. Skipped inside a
     // free action (its grant can make a cast free or narrow the list).
@@ -220,7 +233,7 @@ async function composeActionChain({
       // exempt skills and the GM DECLARE backstop admits only those.
       disabledLabels: [
         ...(snap?.blockedActions ?? []).filter((b) => !(snap?.gatingExemptions ?? []).some((e) => e?.label === b?.label)),
-        ...ultimaDisabled, ...objectiveDisabled,
+        ...ultimaDisabled, ...objectiveDisabled, ...weightedDisabled,
       ],
       showUltima: !!ultimaSpec,
     });
@@ -585,6 +598,12 @@ async function composeAttack({ director, snap, token, eligible, cancelSentinel, 
         melee: attackRangeBlockedBy(token?.actor ?? null, "Melee"),
         ranged: attackRangeBlockedBy(token?.actor ?? null, "Ranged"),
       },
+      // Weighted keyword — a row whose swing breaks "one attack per turn" or
+      // "no attacks without HR" is shown disabled + stamped (GM TARGET enforces).
+      modeBlock: (value) => weightedModeBlock(value, {
+        mainWeapon: grantMain, offWeapon: grantOff, multiAttack: snap.multiAttack ?? null,
+        virtualAttacks, grant, usedKeys: snap.weightedUsed ?? [],
+      }),
       // Forward the cancel sentinel so the picker overlay tears
       // itself down if the race resolves against us.
       externalCancel: cancelSentinel,
