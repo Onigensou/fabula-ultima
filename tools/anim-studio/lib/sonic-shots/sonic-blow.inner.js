@@ -32,7 +32,7 @@ const C = {
 };
 // timeline trace for the mockup diff (tools/snapshot-runner/checks: globalThis.__SB_TRACE = [] before the action)
 const T0W = { v: null };
-const TR = (at, ev) => once(at, () => { try { const a = globalThis.__SB_TRACE; if (!Array.isArray(a)) return; const now = performance.now(); if (T0W.v == null) T0W.v = now - at; a.push(Object.assign({ atMs: Math.round((now - T0W.v) * 10) / 10, plannedMs: at }, ev)); } catch (e) {} });
+const TR = (at, ev) => once(at, () => { try { const a = globalThis.__SB_TRACE; if (!Array.isArray(a)) return; const now = performance.now(); if (T0W.v == null) T0W.v = now - at; a.push(Object.assign({ atMs: Math.round((now - T0W.v) * 10) / 10, plannedMs: at, wall: Math.round(now) }, ev)); } catch (e) {} });
 const SFX = (at, key, v) => { S_(at, key, v); TR(at, { type: 'sfx', key, vol: v }); };
 const FX = (key, at, pt, scale, o) => { TR(at, { type: 'clip', key, scale, rate: (o && o.rate) || 1, filter: (o && o.filter) || '' }); return fx(key, at, pt, scale, o); };
 TR(0, { type: 'beat', name: 'Dash in' });

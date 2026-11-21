@@ -81,6 +81,10 @@ async function sonicRun(label, card, strikes) {
   await giveWeapon(zarg, "3ZV5drjroWrvXqkw");
   globalThis.__FU_CHAIN_FORCED_DICE__ = strikes;
   globalThis.__SB_TRACE = [];
+  // frame gaps + long tasks (perf), wall-clock ms like the trace's wall field
+  const perf = { gaps: [], long: [] }; let lastF = performance.now(), rafOn = true;
+  const rafLoop = (t) => { if (!rafOn) return; if (t - lastF > 50) perf.gaps.push({ at: Math.round(lastF), ms: Math.round(t - lastF) }); lastF = t; requestAnimationFrame(rafLoop); }; requestAnimationFrame(rafLoop);
+  let po = null; try { po = new PerformanceObserver((l) => { for (const e of l.getEntries()) perf.long.push({ at: Math.round(e.startTime), ms: Math.round(e.duration), name: e.name, attr: (e.attribution || []).map((x) => x.containerSrc || x.containerName || x.name).join("|") }); }); po.observe({ type: "longtask", buffered: false }); } catch (e) { perf.err = e.message; }
   // reference shots (O.shots): the board view + the timeline overlay, at fixed beats of the trace
   const shots = {}; let shotIv = null;
   if (O.shots) {
@@ -101,8 +105,9 @@ async function sonicRun(label, card, strikes) {
   console.error = origErr; window.removeEventListener("error", onErr);
   await wait(2500); if (shotIv) clearInterval(shotIv);
   const trace = globalThis.__SB_TRACE; globalThis.__SB_TRACE = null;
+  rafOn = false; try { po?.disconnect(); } catch {}
   const seen = w.stop();
-  out.scenarios[label] = { err, simOk: !!r, sonic: seen.ars.filter((a) => a.weapon?.name === "Sonic Blow"), otherAttacks: seen.ars.filter((a) => a.by?.startsWith("Zarg") && a.weapon?.name !== "Sonic Blow").length, opportunity: seen.opp, mpWrites: seen.mp, numbers: seen.nums, trace, shots, errors: errs.filter((x) => !/ReactionConfigLint/.test(x)).slice(0, 40), logs: [...logs], warns: [...warns] };
+  out.scenarios[label] = { err, simOk: !!r, sonic: seen.ars.filter((a) => a.weapon?.name === "Sonic Blow"), otherAttacks: seen.ars.filter((a) => a.by?.startsWith("Zarg") && a.weapon?.name !== "Sonic Blow").length, opportunity: seen.opp, mpWrites: seen.mp, numbers: seen.nums, trace, perf, shots, errors: errs.filter((x) => !/ReactionConfigLint/.test(x)).slice(0, 40), logs: [...logs], warns: [...warns] };
 }
 // a plain Attack with a forced card roll (arm the dice when the directive declares it)
 async function attackRun(label, actorName, weaponId, faces, { rounds = 1, setup = null, forceReactions = null } = {}) {
