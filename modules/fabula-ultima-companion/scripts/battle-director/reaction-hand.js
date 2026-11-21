@@ -329,6 +329,7 @@ const TRIGGER_TEXT = {
   creature_status_triggered: { self: "When one of your statuses triggers", other: "When a creature's status triggers" },
   creature_unleashes_zero_power: { self: "When you unleash Zero Power", other: "When a creature unleashes Zero Power" },
   creature_equips_item: { self: "When you equip an item", other: "When a creature equips an item" },
+  creature_transforms_weapon: { self: "When you transform your weapon", other: "When a creature transforms its weapon" },
   creature_unequips_item: { self: "When you unequip an item", other: "When a creature unequips an item" },
   soul_fragment_destroyed: "When a Soul Fragment is destroyed",
   conflict_start: "At the start of the conflict",
