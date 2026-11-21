@@ -113,6 +113,23 @@ const FIRE = "255,140,50", STEEL = "170,210,255", GOLD = "255,214,120";
 // five different cuts (lean deg, clip rot deg, slide px, slash-sheet angle deg); a 6th strike reuses the first
 const CUTS = [{ lean: 16, rot: 0, dx: 0, sw: -24 }, { lean: -12, rot: 180, dx: -14, sw: 158 }, { lean: 22, rot: -35, dx: 10, sw: -62 }, { lean: -8, rot: 35, dx: -6, sw: 30 }, { lean: 18, rot: 90, dx: 8, sw: 96 }];
 const ABORT = new Error("timed-strike-cinematic aborted");
+const FOLLOW_HOLD = "timed-strike-cinematic";
+// Black-background clips (pixelfx light layers, Guilty Gear) drawn additive onto the timeline's
+// transparent overlay would leave opaque black boxes: a luma-to-alpha SVG filter turns black
+// into transparent (the same filter the Nox / legacy shot kits use, id "oni-luma-alpha").
+const LUMA_ID = "oni-luma-alpha";
+function lumaFilter() {
+  try {
+    if (!document.getElementById(LUMA_ID)) {
+      const ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg");
+      svg.setAttribute("width", "0"); svg.setAttribute("height", "0"); svg.style.position = "absolute"; svg.style.pointerEvents = "none";
+      const f = document.createElementNS(ns, "filter"); f.setAttribute("id", LUMA_ID); f.setAttribute("color-interpolation-filters", "sRGB");
+      const cm = document.createElementNS(ns, "feColorMatrix"); cm.setAttribute("type", "matrix"); cm.setAttribute("values", "1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 0");
+      f.appendChild(cm); svg.appendChild(f); document.body.appendChild(svg);
+    }
+  } catch (_) {}
+  return `url(#${LUMA_ID})`;
+}
 const glow = (c, x, y, r, rgb, a) => { if (!(r > 0)) return; const g = c.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, `rgba(${rgb},${a})`); g.addColorStop(1, `rgba(${rgb},0)`); c.fillStyle = g; c.beginPath(); c.arc(x, y, r, 0, 7); c.fill(); };
 // the approved tapered-blade slash (reference_slash_vfx_tapered_blade): straight polygon, head races, tail follows
 function bladePoly(c, ax, ay, bx, by, w) {
@@ -191,6 +208,7 @@ class Cine {
 
     // the camera is ours for the run (the 3D camera mode eases to neutral meanwhile)
     this.resumeCam = suspendCamera();
+    try { globalThis.__ONI_MOVEMENT_CONTROL_CAMERA_RUNTIME__?.holdCamera?.(FOLLOW_HOLD); this.followHeld = true; } catch (_) {}
     this.camOwned = true;
     try {
       const S3 = globalThis.__ONI_BATTLE_STAGE_3D__;
@@ -483,7 +501,8 @@ class Cine {
     const hold = { stopAt: null, ms: 300 };
     const flipX = flip !== (this.fl < 0);   // a wielder facing right mirrors the cut
     const rr = (this.fl < 0 ? -rot : rot) * Math.PI / 180;
-    const c = this.m.clip(key, this.tNow, { x: pt.x, y: pt.y, w, rot: rr, flip: flipX, add, filter: filter || undefined, rate, z, depth: false,
+    const f = add ? [filter, lumaFilter()].filter(Boolean).join(" ") : filter;   // additive = black-background art
+    const c = this.m.clip(key, this.tNow, { x: pt.x, y: pt.y, w, rot: rr, flip: flipX, add, filter: f || undefined, rate, z, depth: false,
       alpha: () => (hold.stopAt == null ? 1 : Math.max(0, 1 - (performance.now() - hold.stopAt) / hold.ms)) });
     const tr = this.T[this.T.length - 1];
     if (c && !c.taking) c.take();   // its copy now (a pushed-live track has no lead time)
@@ -617,6 +636,7 @@ class Cine {
     } catch (_) {}
     try { this.oni?.dispose?.(); } catch (_) {}
     if (this.resumeCam) { try { this.resumeCam(); } catch (_) {} this.resumeCam = null; }
+    if (this.followHeld) { try { globalThis.__ONI_MOVEMENT_CONTROL_CAMERA_RUNTIME__?.releaseCamera?.(FOLLOW_HOLD); } catch (_) {} this.followHeld = false; }
     this.camOwned = false;
     runs.delete(this.id);
     const st = canvas?.stage;
@@ -661,4 +681,4 @@ Hooks.on("fu-battle-phase", () => {
 // test seam
 globalThis.FUCompanion ??= {};
 globalThis.FUCompanion.api ??= {};
-globalThis.FUCompanion.api.timedStrikeCinematic = { CINE, CINE_CLIPS, CINE_SFX, runs: () => [...runs.keys()], abortAll: () => { for (const c of [...runs.values()]) c.abort("api"); } };
+globalThis.FUCompanion.api.timedStrikeCinematic = { CINE, CINE_CLIPS, CINE_SFX, runs: () => [...runs.keys()], run: (id) => runs.get(id) ?? null, abortAll: () => { for (const c of [...runs.values()]) c.abort("api"); } };
