@@ -20,7 +20,7 @@
       "check_mod_mig": 0,
       "check_mod_wlp": 0,
       "damage_dealt_mult_all": 1,
-      "damage_dealt_mult_attack": 1,
+      "damage_dealt_mult_attack": 0.25,
       "damage_dealt_mult_skill": 1,
       "damage_dealt_mult_spell": 1,
       "damage_taken_increased_air": 0,
@@ -33,6 +33,7 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "fabulaVillain": "never",
       "hakoCh4": "restocked-v1",
       "idleAnimation": {
         "bounce": false,
@@ -282,7 +283,7 @@
             }
           ],
           "description": "",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -350,7 +351,7 @@
             }
           ],
           "description": "",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -1045,7 +1046,7 @@
           "item_cost": "800",
           "item_def_bonus": "0",
           "item_mdef_bonus": "0",
-          "item_quantity": "3",
+          "item_quantity": 2,
           "item_rarity": "Rare",
           "item_type": "consumable",
           "mimic_ef": "100",
@@ -1068,235 +1069,6 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "GSggw21CziniktM7"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "6sUE9c6uGf9G8XV2",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1795239933543,
-        "duplicateSource": "Item.QvUsAoeaebjrKAHi",
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "effects": [
-        {
-          "_id": "kjSQmVUqS8U8YPnI",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [
-            {
-              "key": "condition_slow",
-              "mode": 5,
-              "priority": 20,
-              "value": "aeAffinityFloor(\"IM\")"
-            },
-            {
-              "key": "condition_dazed",
-              "mode": 5,
-              "priority": 20,
-              "value": "aeAffinityFloor(\"IM\")"
-            },
-            {
-              "key": "condition_weak",
-              "mode": 5,
-              "priority": 20,
-              "value": "aeAffinityFloor(\"IM\")"
-            },
-            {
-              "key": "condition_shaken",
-              "mode": 5,
-              "priority": 20,
-              "value": "aeAffinityFloor(\"IM\")"
-            },
-            {
-              "key": "condition_enraged",
-              "mode": 5,
-              "priority": 20,
-              "value": "aeAffinityFloor(\"IM\")"
-            },
-            {
-              "key": "condition_poisoned",
-              "mode": 5,
-              "priority": 20,
-              "value": "aeAffinityFloor(\"IM\")"
-            }
-          ],
-          "description": "",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": 298800,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "kjSQmVUqS8U8YPnI",
-              "originalParentId": "lFAG6dMR89JX4H9h",
-              "originalUuid": "Item.lFAG6dMR89JX4H9h.ActiveEffect.kjSQmVUqS8U8YPnI"
-            },
-            "statuscounter": {
-              "config": {
-                "dataSource": "flags.statuscounter.value",
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
-          "name": "Multigroa Skin Gloves",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": []
-          },
-          "tint": "#ffffff",
-          "transfer": true,
-          "type": "base"
-        }
-      ],
-      "flags": {
-        "custom-system-builder": {
-          "version": "3.2.4"
-        },
-        "fucompanion": {
-          "itemMigratorBackup": {
-            "detectedType": "accessory",
-            "fromTemplate": "r0yZpLPAK9VXhM2p",
-            "itemId": "QvUsAoeaebjrKAHi",
-            "itemName": "Amethyst Pendant",
-            "pickedOldProps": {
-              "cost": "350",
-              "def_bonus": "",
-              "defense": "0",
-              "defense_include_dex": false,
-              "initiative": "0",
-              "magic_defense": "0",
-              "magic_defense_include_ins": false,
-              "mdef_bonus": ""
-            },
-            "ts": 1769647435106
-          }
-        }
-      },
-      "folder": "5uQIy5BCy7UEVfcT",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Soft_Gloves.webp",
-      "name": "Multigroa Skin Gloves",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 4100000,
-      "system": {
-        "container": null,
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check": "Check",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li>You are immune to all <strong>Basic Status Effects</strong>.</li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flavor_text": "<p><em>Fashioned from a rare hide that rejects corruption, these gloves ward the body from lingering afflictions.</em></p>",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "id": "lFAG6dMR89JX4H9h",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Soft_Gloves.webp",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "2000",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Uncommon",
-          "item_type": "accessory",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Multigroa Skin Gloves",
-          "optional_params": {},
-          "plant_ef": "100",
-          "refine_count": "0",
-          "refine_level": "0",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "uuid": "Item.lFAG6dMR89JX4H9h",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "KoC4PHdQrp7r4rM9"
       },
       "type": "equippableItem"
     },
@@ -1640,7 +1412,7 @@
             }
           ],
           "description": "",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -1898,209 +1670,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "D00d73wrNn3ccV0g",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1795239929834,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.6.4"
-        },
-        "fucompanion": {
-          "itemMigratorBackup": {
-            "detectedType": "weapon",
-            "fromTemplate": "gIRU9XGqYeMBwBN9",
-            "itemId": "sLUFIsIYIAmmO0lI",
-            "itemName": "Aenigma of Adaptation",
-            "pickedOldProps": {
-              "cost": "0",
-              "martial": false
-            },
-            "ts": 1769647435090
-          }
-        }
-      },
-      "folder": "QGuy8DVLgrvQqs1c",
-      "img": "https://img.altema.jp/valkyrieconnect/sobi/ico/1816.jpg",
-      "name": "Aenigma of Adaptation",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3
-      },
-      "sort": 2450000,
-      "system": {
-        "container": null,
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "9",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li><p>When you get hit by an <strong>attack,</strong> <strong>skill</strong> or <strong>spell</strong>, if the triggering action has <strong>keywords</strong>, choose one of that keyword. This weapon gain the chosen keyword until its next attack or until you've chosen a new keyword.</p></li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "Two-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "3000",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Rare",
-          "item_type": "weapon",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Aenigma of Adaptation",
-          "optional_params": {},
-          "plant_ef": "100",
-          "reptilian_ef": "100",
-          "rolled_atr1": "INS",
-          "rolled_atr2": "WLP",
-          "set_name": "",
-          "skill_target": "One Enemy",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Air",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Ranged"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "sLUFIsIYIAmmO0lI"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "DO9VSNKo3sK63WAq",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1795239935437,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        },
-        "fabula-ultima-companion": {
-          "fishingRod": {
-            "attr": "ins",
-            "color": "#4f8fe0"
-          }
-        }
-      },
-      "folder": "FishTackleFolder",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Fishing%20Rod/Scepter_of_the_Snow_Angler_King.png",
-      "name": "Seer's Rod",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li><p>While fishing, your <strong>INS</strong> counts as one die size higher: a taller catch bar.</p></li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flavor_text": "",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Fishing%20Rod/Scepter_of_the_Snow_Angler_King.png",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": true,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": true,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "1500",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Uncommon",
-          "item_type": "key",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Seer's Rod",
-          "optional_params": {},
-          "plant_ef": "100",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "T5NyBaTQauMIui6n"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "DtEwMlB68NvGXzdH",
       "_stats": {
         "compendiumSource": null,
@@ -2332,104 +1901,6 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "HkC4MuramasaPsv1"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "Du1q5iXEZ9kqW798",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1795239935167,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        },
-        "fabula-ultima-companion": {
-          "fishingRod": {
-            "attr": "mig",
-            "color": "#e08a3a"
-          }
-        }
-      },
-      "folder": "FishTackleFolder",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Fishing%20Rod/Flowhorn_Flounderfinder.png",
-      "name": "Ironwood Rod",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li><p>While fishing, your <strong>MIG</strong> counts as one die size higher: the bar rises faster and the catch meter fills faster.</p></li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flavor_text": "",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Fishing%20Rod/Flowhorn_Flounderfinder.png",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": true,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": true,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "1500",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Uncommon",
-          "item_type": "key",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Ironwood Rod",
-          "optional_params": {},
-          "plant_ef": "100",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "T5NyBaTQauMIui6n"
       },
       "type": "equippableItem"
     },
@@ -3484,7 +2955,7 @@
             }
           ],
           "description": "<p>Gain extra Zenit after <strong>conflicts</strong></p>",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -3649,104 +3120,6 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "fGhpK2MXDb6Z16eN"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "Jehn3ThdmRKaUaWO",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1795239935611,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        },
-        "fabula-ultima-companion": {
-          "fishingRod": {
-            "attr": "wlp",
-            "color": "#8a5fc0"
-          }
-        }
-      },
-      "folder": "FishTackleFolder",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Fishing%20Rod/Narukawa_Ukai.png",
-      "name": "Stillwater Rod",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul><li><p>While fishing, your <strong>WLP</strong> counts as one die size higher: more reel time and a stronger pull toward rare fish.</p></li></ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flavor_text": "",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Fishing%20Rod/Narukawa_Ukai.png",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": true,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": true,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "1500",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Uncommon",
-          "item_type": "key",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Stillwater Rod",
-          "optional_params": {},
-          "plant_ef": "100",
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "T5NyBaTQauMIui6n"
       },
       "type": "equippableItem"
     },
@@ -4116,7 +3489,7 @@
             }
           ],
           "description": "",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -4184,7 +3557,7 @@
             }
           ],
           "description": "",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -5289,7 +4662,7 @@
             }
           ],
           "description": "",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -5582,104 +4955,6 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "oGop1MLCHPzdpdR5"
-      },
-      "type": "equippableItem"
-    },
-    {
-      "_id": "OtvJfFc1XG4CiuTP",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1795239934378,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/mirror.png",
-      "name": "Magic Mirror (Passive)",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "container": "vsCoN9QiMPYWWj6P",
-        "props": {
-          "cost": "",
-          "description": "<ul>\n<li>You may use this item immediately when you are targeted by a spell, <strong>Negate</strong> the spell and <strong>Reflect&nbsp;</strong>it back to the caster.</li>\n<li>You may only hold 1 copy of this item in your inventory.</li>\n</ul>",
-          "effect_table": {
-            "0": {
-              "chain_steps": "mirror_redirect, mirror_spend",
-              "effect_kind": "chain",
-              "effect_label": "mirror_reflect"
-            },
-            "1": {
-              "auto_confirm_when_obvious": true,
-              "auto_target": "skip",
-              "candidate_source": "trigger_attacker",
-              "count": "1",
-              "effect_kind": "targeting",
-              "effect_label": "mirror_caster",
-              "iteration_mode": "together",
-              "mode": "exact",
-              "skip_when_passive": true
-            },
-            "2": {
-              "destination_ref": "mirror_caster",
-              "effect_kind": "redirect_target",
-              "effect_label": "mirror_redirect",
-              "rebuild_card": true,
-              "target_ref": "mirror_me"
-            },
-            "3": {
-              "consume_item_name": "Magic Mirror",
-              "effect_kind": "consume_item",
-              "effect_label": "mirror_spend"
-            },
-            "4": {
-              "auto_confirm_when_obvious": true,
-              "auto_target": "skip",
-              "candidate_source": "self",
-              "count": "1",
-              "effect_kind": "targeting",
-              "effect_label": "mirror_me",
-              "iteration_mode": "together",
-              "mode": "exact",
-              "skip_when_passive": true
-            }
-          },
-          "id": "DzPCCPnqF7PioX20",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/mirror.png",
-          "isCheck": false,
-          "isReaction": true,
-          "name": "Magic Mirror (Passive)",
-          "on_activate_effect_ref": "",
-          "reaction_config_table": {
-            "0": {
-              "condition_formula": "ACTION_IS_SPELL == 1",
-              "reaction_action_intent": "harmful",
-              "reaction_effect_ref": "mirror_reflect",
-              "reaction_passive_mode": "ask",
-              "reaction_source": "self",
-              "reaction_trigger": "creature_targeted_by_action"
-            }
-          },
-          "skill_description": "<ul>\n<li>You may use this item immediately when you are targeted by a spell, <strong>Negate</strong> the spell and <strong>Reflect&nbsp;</strong>it back to the caster.</li>\n<li>You may only hold 1 copy of this item in your inventory.</li>\n</ul>",
-          "skill_target": "Self",
-          "skill_type": "Passive",
-          "type_damage": "",
-          "uuid": "Item.DzPCCPnqF7PioX20"
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2125250754,
-        "unique": false,
-        "uniqueId": "DzPCCPnqF7PioX20"
       },
       "type": "equippableItem"
     },
@@ -6319,7 +5594,7 @@
           },
           "changes": [],
           "description": "",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -7243,133 +6518,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "vsCoN9QiMPYWWj6P",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1795239934252,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "3.2.4"
-        },
-        "fabula-ultima-companion": {
-          "carryLimit": 1
-        }
-      },
-      "folder": "VzpCG9mySsd9sQSL",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/mirror.png",
-      "name": "Magic Mirror",
-      "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
-        "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
-      },
-      "sort": 4800000,
-      "system": {
-        "container": null,
-        "props": {
-          "active_effect_config_table": {},
-          "aquatic_ef": "100",
-          "automaton_ef": "100",
-          "avian_ef": "100",
-          "beast_ef": "100",
-          "category": "Arcane",
-          "celestial_ef": "100",
-          "check_bonus": "0",
-          "construct_ef": "100",
-          "damage_bonus": "0",
-          "demiHuman_ef": "100",
-          "demon_ef": "100",
-          "description": "<ul>\n<li>You may use this item immediately when you are targeted by a spell, <strong>Negate</strong> the spell and <strong>Reflect&nbsp;</strong>it back to the caster.</li>\n<li>You may only hold 1 copy of this item in your inventory.</li>\n</ul>",
-          "dragon_ef": "100",
-          "elemental_ef": "100",
-          "enforcer_ef": "100",
-          "fey_ef": "100",
-          "flora_ef": "100",
-          "fungus_ef": "100",
-          "golem_ef": "100",
-          "gorger_ef": "100",
-          "hand_slots": "One-handed",
-          "human_ef": "100",
-          "humanoid_ef": "100",
-          "insect_ef": "100",
-          "ip_cost": "",
-          "isEquipped": false,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isReaction": true,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_baseDef": "0",
-          "item_baseMdef": "0",
-          "item_cost": "1000",
-          "item_def_bonus": "0",
-          "item_mdef_bonus": "0",
-          "item_quantity": "1",
-          "item_rarity": "Rare",
-          "item_skill_passive": {
-            "DzPCCPnqF7PioX20": {
-              "skill_description": "<ul>\n<li>You may use this item immediately when you are targeted by a spell, <strong>Negate</strong> the spell and <strong>Reflect&nbsp;</strong>it back to the caster.</li>\n<li>You may only hold 1 copy of this item in your inventory.</li>\n</ul>"
-            }
-          },
-          "item_type": "consumable",
-          "mimic_ef": "100",
-          "monster_ef": "100",
-          "name": "Magic Mirror",
-          "optional_params": {},
-          "plant_ef": "100",
-          "related_item_list": {
-            "DzPCCPnqF7PioX20": {
-              "related_item_description": "<ul>\n<li>You may use this item immediately when you are targeted by a spell, <strong>Negate</strong> the spell and <strong>Reflect&nbsp;</strong>it back to the caster.</li>\n<li>You may only hold 1 copy of this item in your inventory.</li>\n</ul>"
-            }
-          },
-          "reptilian_ef": "100",
-          "rolled_atr1": "DEX",
-          "rolled_atr2": "DEX",
-          "set_name": "",
-          "soldier_ef": "100",
-          "spirit_ef": "100",
-          "type_damage": "Physical",
-          "undead_ef": "100",
-          "vehicle_ef": "100",
-          "weapon_range": "Melee"
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "1bAmygPgkEEVuGph"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "y5PDljiab6aJQSPh",
       "_stats": {
         "compendiumSource": null,
@@ -7399,7 +6547,7 @@
             }
           ],
           "description": "",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -7767,7 +6915,7 @@
     "JQGNzKpDPHJmcUIW": 2,
     "WQGFvLStTZeWGpak": 2,
     "default": 2,
-    "iLeUVmwqnze8ulOI": 2,
+    "iLeUVmwqnze8ulOI": 0,
     "nSGZ1sz1rdKao0kz": 0,
     "yL2PQxh3R9ddt0te": 0
   },
@@ -8106,6 +7254,18 @@
           "name": "Bamboo Copter",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.2kgR8UacCNfM6dIN"
         },
+        "6sUE9c6uGf9G8XV2": {
+          "accessory_bonusdef": 0,
+          "accessory_bonusmdef": 0,
+          "accessory_buy": "",
+          "accessory_cost": 2000,
+          "accessory_description": "<ul><li>You are immune to all <strong>Basic Status Effects</strong>.</li></ul>",
+          "accessory_quantity": 1,
+          "accessory_set": false,
+          "id": "${item.id}",
+          "name": "Multigroa Skin Gloves",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.6sUE9c6uGf9G8XV2"
+        },
         "6uriyBa4shhCfqzD": {
           "accessory_bonusdef": 0,
           "accessory_bonusmdef": 0,
@@ -8190,6 +7350,18 @@
           "name": "Brief Respite",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.IrKN92jRRxDzdYzm"
         },
+        "JAvLqsR4vcIw2KZC": {
+          "accessory_bonusdef": 0,
+          "accessory_bonusmdef": 0,
+          "accessory_buy": "",
+          "accessory_cost": 2600,
+          "accessory_description": "<ul><li><p><strong>+100% Zenit Gain</strong></p></li></ul>",
+          "accessory_quantity": 1,
+          "accessory_set": false,
+          "id": "${item.id}",
+          "name": "Lucky Egg",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.JAvLqsR4vcIw2KZC"
+        },
         "JQvzk9hDpLILpTVO": {
           "accessory_bonusdef": 0,
           "accessory_bonusmdef": 0,
@@ -8238,6 +7410,18 @@
           "name": "Bamboo Copter",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.NSroFUhwOiCZsAqy"
         },
+        "OKMSFokdCqpF7iJF": {
+          "accessory_bonusdef": 0,
+          "accessory_bonusmdef": 0,
+          "accessory_buy": "",
+          "accessory_cost": 2000,
+          "accessory_description": "<ul><li>Whenever you increase a spells total MP cost with the【📜Cataclysm】skill, you may <strong>reduce </strong>the <strong>increased MP usage </strong>by 50%</li></ul>",
+          "accessory_quantity": 1,
+          "accessory_set": false,
+          "id": "${item.id}",
+          "name": "Witch Hat",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.OKMSFokdCqpF7iJF"
+        },
         "PMxrhqZDiu4RoaW5": {
           "accessory_bonusdef": 0,
           "accessory_bonusmdef": 0,
@@ -8261,6 +7445,30 @@
           "id": "${item.id}",
           "name": "Cursed Ivory Statue",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.QyMtKxwtHno6bR9r"
+        },
+        "Ricm2XTEOFsUUmLO": {
+          "accessory_bonusdef": 0,
+          "accessory_bonusmdef": 0,
+          "accessory_buy": "",
+          "accessory_cost": 2200,
+          "accessory_description": "<ul>\n<li>When you recieved damage, reduce it to&nbsp;<strong>0,&nbsp;</strong>record the amount of damage reduced as&nbsp;<strong>Delayed Damage stack</strong></li>\n<li>At the end of this round, Consume all <strong>Delayed Damage stack&nbsp;</strong>and you lose HP equal to the amount of stack consume.</li>\n</ul>",
+          "accessory_quantity": 1,
+          "accessory_set": false,
+          "id": "${item.id}",
+          "name": "Rewinder",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.Ricm2XTEOFsUUmLO"
+        },
+        "Z4mYkx5ZIhyNoi0o": {
+          "accessory_bonusdef": 0,
+          "accessory_bonusmdef": 0,
+          "accessory_buy": "",
+          "accessory_cost": 2800,
+          "accessory_description": "<ul><li><p>Whenever you deals damage to an <strong>ally, </strong>You gain <strong>Zero Power </strong>equal to the 【<strong>Damage Dealt divided by 10</strong>】<em>(Round Up)</em></p></li></ul>",
+          "accessory_quantity": 1,
+          "accessory_set": false,
+          "id": "${item.id}",
+          "name": "Little Devil",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.Z4mYkx5ZIhyNoi0o"
         },
         "Z9xvmZb42i4W9uy4": {
           "accessory_bonusdef": 0,
@@ -8382,6 +7590,18 @@
           "name": "Alpha Regalia",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.lCc6xIrCaRBqyhaT"
         },
+        "lO2Kxj5P5zZR2NJu": {
+          "accessory_bonusdef": 0,
+          "accessory_bonusmdef": 0,
+          "accessory_buy": "",
+          "accessory_cost": 3000,
+          "accessory_description": "<ul><li><p>You are always inflicts with <a class=\"content-link\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\">Curse</a></p></li><li><p>Whenever you are <strong>hit </strong>by an action, inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\">Curse</a>&nbsp;to the attacking creature</p></li></ul>",
+          "accessory_quantity": 1,
+          "accessory_set": false,
+          "id": "${item.id}",
+          "name": "Cursed Ivory Statue",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.lO2Kxj5P5zZR2NJu"
+        },
         "nofUy5CPfPrvbKp3": {
           "accessory_bonusdef": 0,
           "accessory_bonusmdef": 0,
@@ -8502,6 +7722,21 @@
           "set_name": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.2bpkyQeHry5IsNgL"
         },
+        "E0SW4DBtM1iXl0Xn": {
+          "armor_bonusdef": 0,
+          "armor_bonusmdef": 1,
+          "armor_buy": "",
+          "armor_cost": 2500,
+          "armor_def": 0,
+          "armor_description": "<ul><li><p>Your attack with&nbsp;<strong>Flail&nbsp;</strong>weapon gain +5 damage and inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\">Charm</a> to the target</p></li></ul>",
+          "armor_martial": "",
+          "armor_mdef": 0,
+          "armor_quantity": 1,
+          "id": "${item.id}",
+          "name": "Dominatrix Leotard",
+          "set_name": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.E0SW4DBtM1iXl0Xn"
+        },
         "Gyk5N3J6GwSBm7Wa": {
           "armor_bonusdef": 1,
           "armor_bonusmdef": 2,
@@ -8546,6 +7781,21 @@
           "name": "Curse Collector",
           "set_name": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.OHpfq3cznsoVXLh8"
+        },
+        "QYgfQWTYSUh8ZF6L": {
+          "armor_bonusdef": 0,
+          "armor_bonusmdef": 2,
+          "armor_buy": "",
+          "armor_cost": 2500,
+          "armor_def": 0,
+          "armor_description": "<ul><li><p>Your offensive spells that deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a> or <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\">Poison</a> damage deal <strong>5 bonus damage</strong> for each status effect on the target (up to <strong>15</strong>).</p></li></ul>",
+          "armor_martial": "",
+          "armor_mdef": 0,
+          "armor_quantity": 1,
+          "id": "${item.id}",
+          "name": "Gothic Lolita Dress",
+          "set_name": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.QYgfQWTYSUh8ZF6L"
         },
         "RPVkuP92rqrGZLZh": {
           "armor_bonusdef": 0,
@@ -8622,6 +7872,21 @@
           "set_name": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.bzvyltvj3xVS78Ot"
         },
+        "iRFEXJW4d3rHF0G4": {
+          "armor_bonusdef": 0,
+          "armor_bonusmdef": 0,
+          "armor_buy": "",
+          "armor_cost": 3500,
+          "armor_def": 11,
+          "armor_description": "<ul><li><p>Your <strong>attack</strong>, <strong>spell</strong> and <strong>skill</strong> deals bonus damage equal to <strong>【3 x the number of negative status effects affecting you】</strong></p></li></ul>",
+          "armor_martial": "♦️",
+          "armor_mdef": 13,
+          "armor_quantity": 1,
+          "id": "${item.id}",
+          "name": "Curse Collector",
+          "set_name": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.iRFEXJW4d3rHF0G4"
+        },
         "jX6qJWsLhEB4K6iL": {
           "armor_bonusdef": 1,
           "armor_bonusmdef": 2,
@@ -8682,6 +7947,21 @@
           "set_name": "Spirit of Vengeance",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.t6RfSKRWDh3BsWyB"
         },
+        "vJgk8VL4vXqJTHPz": {
+          "armor_bonusdef": "",
+          "armor_bonusmdef": "",
+          "armor_buy": "",
+          "armor_cost": 2500,
+          "armor_def": 0,
+          "armor_description": "<p>When you perform an <strong>Equipment </strong>action,&nbsp;you may <strong>transform</strong> into any of following armor.</p>\n<table style=\"width: 100%; height: 102px;\" border=\"1\"><colgroup><col style=\"width: 37.1069%;\"><col style=\"width: 33.3333%;\"><col style=\"width: 29.5597%;\"></colgroup>\n<tbody>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\"><strong>ARMOR</strong></td>\n<td style=\"height: 17px;\"><strong>DEFENSE</strong></td>\n<td style=\"height: 17px;\"><strong>M.DEFENSE</strong></td>\n</tr>\n<tr>\n<td><strong>Formless</strong></td>\n<td><strong>DEX size</strong></td>\n<td><strong>INS size</strong></td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\" colspan=\"3\">At the start of your turn, you may <strong>transform</strong> into&nbsp;<strong>Steel Form&nbsp;</strong>or&nbsp;<strong>Mana Form&nbsp;</strong>for free.</td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\"><strong>Steel Form</strong></td>\n<td style=\"height: 17px;\"><strong>16</strong></td>\n<td style=\"height: 17px;\"><strong>INS size</strong></td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\" colspan=\"3\">Receives 10 extra damage when hit by <strong>Spell</strong>.</td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\"><strong>Mana Form</strong></td>\n<td style=\"height: 17px;\"><strong>DEX size</strong></td>\n<td style=\"height: 17px;\"><strong>16</strong></td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\" colspan=\"3\">Receives 10 extra damage when hit by&nbsp;<strong>Attack</strong>.</td>\n</tr>\n</tbody>\n</table>",
+          "armor_martial": "",
+          "armor_mdef": 0,
+          "armor_quantity": 1,
+          "id": "${item.id}",
+          "name": "Biker Suit",
+          "set_name": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.vJgk8VL4vXqJTHPz"
+        },
         "xMMr0G3f1G0PIDOx": {
           "armor_bonusdef": 1,
           "armor_bonusmdef": 2,
@@ -8699,6 +7979,24 @@
         }
       },
       "shop_consumable_list": {
+        "05FIPnvF9ZFIqqy2": {
+          "consumable_buy": "",
+          "consumable_cost": 300,
+          "consumable_descriptions": "<ul><li><p>Turn target <strong>adjacent</strong> <strong>tile</strong> into a <strong>Random Battle Tile</strong>.</p></li><li><p>Dungeon only. Doesn't use a step or end the turn.</p></li></ul>",
+          "consumable_quantity": 3,
+          "id": "${item.id}",
+          "name": "Terrarium: Random Battle",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.05FIPnvF9ZFIqqy2"
+        },
+        "1IzUqd2dCtuzOUMr": {
+          "consumable_buy": "",
+          "consumable_cost": 300,
+          "consumable_descriptions": "<ul><li><p>Turn target <strong>adjacent</strong> <strong>tile</strong> into a <strong>Blank Tile</strong>.</p></li><li><p>Dungeon only. Doesn't use a step or end the turn.</p></li></ul>",
+          "consumable_quantity": 3,
+          "id": "${item.id}",
+          "name": "Terrarium: Blank",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.1IzUqd2dCtuzOUMr"
+        },
         "4HyIOtrnY60boGxB": {
           "consumable_buy": "",
           "consumable_cost": 1,
@@ -8707,6 +8005,15 @@
           "id": "${item.id}",
           "name": "Remedy",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.4HyIOtrnY60boGxB"
+        },
+        "53tC4ghQLMKdHtsj": {
+          "consumable_buy": "",
+          "consumable_cost": 800,
+          "consumable_descriptions": "<ul><li><p>Turn target <strong>adjacent</strong> <strong>tile</strong> into a <strong>Camp Tile</strong>.</p></li><li><p>Dungeon only. Doesn't use a step or end the turn.</p></li></ul>",
+          "consumable_quantity": 3,
+          "id": "${item.id}",
+          "name": "Terrarium: Camp",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.53tC4ghQLMKdHtsj"
         },
         "83MCg7ideKxStmop": {
           "consumable_buy": "",
@@ -8734,6 +8041,15 @@
           "id": "${item.id}",
           "name": "Polymorph Potion: Bandit",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.Amcbpmv2ehsSOozh"
+        },
+        "G9vPmgpXtXsOzHYv": {
+          "consumable_buy": "",
+          "consumable_cost": 1000,
+          "consumable_descriptions": "<ul><li><p>Cures <strong>Virus</strong> on one creature.</p></li></ul>",
+          "consumable_quantity": 5,
+          "id": "${item.id}",
+          "name": "Vaccine",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.G9vPmgpXtXsOzHYv"
         },
         "GD27sVzIDa5iFxOd": {
           "consumable_buy": "",
@@ -8770,6 +8086,33 @@
           "id": "${item.id}",
           "name": "Mega-Remedy",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.LVwLI7slKbPofiP4"
+        },
+        "M79Lyq41roVPVDpJ": {
+          "consumable_buy": "",
+          "consumable_cost": 400,
+          "consumable_descriptions": "<ul><li><p>Turn target <strong>adjacent</strong> <strong>tile</strong> into a <strong>Gathering Tile</strong>.</p></li><li><p>Dungeon only. Doesn't use a step or end the turn.</p></li></ul>",
+          "consumable_quantity": 3,
+          "id": "${item.id}",
+          "name": "Terrarium: Gathering",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.M79Lyq41roVPVDpJ"
+        },
+        "NcOCVjsOiUoGO3og": {
+          "consumable_buy": "",
+          "consumable_cost": 2000,
+          "consumable_descriptions": "<ul><li><p>Revive one <strong>KO</strong> ally and restore their HP to <strong>full</strong>.</p></li></ul>",
+          "consumable_quantity": 3,
+          "id": "${item.id}",
+          "name": "Full Phoenix",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.NcOCVjsOiUoGO3og"
+        },
+        "ToKdm6Z4voTi4fZ6": {
+          "consumable_buy": "",
+          "consumable_cost": 500,
+          "consumable_descriptions": "<ul><li><p>Turn target <strong>adjacent</strong> <strong>tile</strong> into a <strong>Healing Tile</strong>.</p></li><li><p>Dungeon only. Doesn't use a step or end the turn.</p></li></ul>",
+          "consumable_quantity": 3,
+          "id": "${item.id}",
+          "name": "Terrarium: Healing",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.ToKdm6Z4voTi4fZ6"
         },
         "ZLw5wPXO9jJOG1xb": {
           "consumable_buy": "",
@@ -8834,6 +8177,15 @@
           "name": "5-Star Exchange Ticket",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.t4O5n2pWNuDxGuZF"
         },
+        "vsCoN9QiMPYWWj6P": {
+          "consumable_buy": "",
+          "consumable_cost": 1000,
+          "consumable_descriptions": "<ul>\n<li>You may use this item immediately when you are targeted by a spell, <strong>Negate</strong> the spell and <strong>Reflect&nbsp;</strong>it back to the caster.</li>\n<li>You may only hold 1 copy of this item in your inventory.</li>\n</ul>",
+          "consumable_quantity": 1,
+          "id": "${item.id}",
+          "name": "Magic Mirror",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.vsCoN9QiMPYWWj6P"
+        },
         "x2lfDxjopOrwPKIA": {
           "consumable_buy": "",
           "consumable_cost": 200,
@@ -8849,6 +8201,19 @@
       "shop_name": "🏷️Hako's Wonderous Item Shack",
       "shop_portrait": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Character/Hako/HakoProfile.png",
       "shop_shield_list": {
+        "1Bop3IUREYhy9cu3": {
+          "id": "${item.id}",
+          "name": "Stalwart Shield",
+          "shield_bonusdef": 0,
+          "shield_bonusmdef": 0,
+          "shield_buy": "",
+          "shield_cost": 2500,
+          "shield_description": "<ul><li><p>You begin each conflict with <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a> equal to <strong>【5 + half your level】</strong>.</p></li></ul>",
+          "shield_martial": "♦️",
+          "shield_quantity": 1,
+          "shield_set": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.1Bop3IUREYhy9cu3"
+        },
         "2FOvgqW2Ah45CAtp": {
           "id": "${item.id}",
           "name": "Shield of Egis",
@@ -8966,6 +8331,19 @@
           "shield_set": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.hhl54YclG9zGf7qx"
         },
+        "kXimXBmmzUmatqak": {
+          "id": "${item.id}",
+          "name": "Mirror Shield",
+          "shield_bonusdef": 0,
+          "shield_bonusmdef": 2,
+          "shield_buy": "",
+          "shield_cost": 2800,
+          "shield_description": "<ul><li><p>Once per conflict, when a creature targets you with an offensive spell, you may negate the spell and reflect it back to the caster.</p></li></ul>",
+          "shield_martial": "",
+          "shield_quantity": 1,
+          "shield_set": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.kXimXBmmzUmatqak"
+        },
         "oDVo37h0x4X8LkRl": {
           "id": "${item.id}",
           "name": "Avalon",
@@ -9037,6 +8415,20 @@
           "weapon_range": "Melee",
           "weapon_set": ""
         },
+        "7wVTJkTCGsktRo1k": {
+          "id": "${item.id}",
+          "name": "Zenith Blade",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.7wVTJkTCGsktRo1k",
+          "weapon_buy": "",
+          "weapon_category": "Sword",
+          "weapon_cost": 3000,
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "",
+          "weapon_quality": "<p><ul><li><p>Attacks with this weapon deal <strong>50%</strong> more damage if you are not in <strong>Crisis</strong></p></li></ul></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Melee",
+          "weapon_set": ""
+        },
         "8hfLwGR8Nu5veqqD": {
           "id": "${item.id}",
           "name": "Blazing Sword",
@@ -9047,6 +8439,20 @@
           "weapon_hand": "Two-handed",
           "weapon_martial": "",
           "weapon_quality": "<p><ul><li><p>When you <strong>hit </strong>a target with this weapon, if they are inflicted with <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.MSRXG4jUMPFpM9sN\" data-id=\"MSRXG4jUMPFpM9sN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Burn</span></strong></a><strong><span style=\"text-decoration: underline;\">, </span></strong></span></span>you may have it recovers from burn, if you do, this attack deal <strong>5 bonus damage</strong> and deal damage to creatures <strong>adjacent </strong>to the target. <em>(No additional attack roll needed)</em></p></li><li><p>You may perform the skill 【💥<strong>@UUID[Item.A5Uc2KRktPiTg2h8]{Blazing Impact}</strong>】</p></li></ul></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Melee",
+          "weapon_set": ""
+        },
+        "BAOXvP5mJfGKSQX4": {
+          "id": "${item.id}",
+          "name": "Kusarigama",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.BAOXvP5mJfGKSQX4",
+          "weapon_buy": "",
+          "weapon_category": "Flail",
+          "weapon_cost": 2200,
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "",
+          "weapon_quality": "<p><ul><li><p>Each target hit by this weapon suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\">Slow</a>,&nbsp;</strong>if they are already&nbsp;<strong>Slow</strong>, they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\">Bleed</a>&nbsp;instead.</p></li></ul></p>",
           "weapon_quantity": 1,
           "weapon_range": "Melee",
           "weapon_set": ""
@@ -9063,6 +8469,20 @@
           "weapon_quality": "<p><ul><li><p>No Quality.</p></li></ul></p>",
           "weapon_quantity": 1,
           "weapon_range": "Melee",
+          "weapon_set": ""
+        },
+        "D00d73wrNn3ccV0g": {
+          "id": "${item.id}",
+          "name": "Aenigma of Adaptation",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.D00d73wrNn3ccV0g",
+          "weapon_buy": "",
+          "weapon_category": "Arcane",
+          "weapon_cost": 3000,
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "",
+          "weapon_quality": "<p><ul><li><p>When you get hit by an <strong>attack,</strong> <strong>skill</strong> or <strong>spell</strong>, if the triggering action has <strong>keywords</strong>, choose one of that keyword. This weapon gain the chosen keyword until its next attack or until you've chosen a new keyword.</p></li></ul></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Ranged",
           "weapon_set": ""
         },
         "F0Z8WJH6zDaO5EPt": {
@@ -9120,6 +8540,20 @@
           "weapon_quantity": 1,
           "weapon_range": "Melee",
           "weapon_set": "Talechaser"
+        },
+        "SmphlpFrfp2qc9dZ": {
+          "id": "${item.id}",
+          "name": "Frantic Nail",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.SmphlpFrfp2qc9dZ",
+          "weapon_buy": "",
+          "weapon_category": "Dagger",
+          "weapon_cost": 2450,
+          "weapon_hand": "One-handed",
+          "weapon_martial": "",
+          "weapon_quality": "<p><ul><li><p>Each target hit by this weapon suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\">Enraged</a>,&nbsp;</strong>if they already suffers <a class=\"content-link\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\">Enraged</a>, they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.vf421bQSPCjLAvBW\" data-id=\"vf421bQSPCjLAvBW\" data-type=\"JournalEntry\">Panic</a>&nbsp;instead.</p></li></ul></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Melee",
+          "weapon_set": ""
         },
         "TFlkSWMWp59Nqh9h": {
           "id": "${item.id}",
@@ -9205,6 +8639,34 @@
           "weapon_range": "Melee",
           "weapon_set": "<Set Name>"
         },
+        "bDlywgmEsGHUUAY9": {
+          "id": "${item.id}",
+          "name": "Death Scythe",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.bDlywgmEsGHUUAY9",
+          "weapon_buy": "",
+          "weapon_category": "Heavy",
+          "weapon_cost": 2000,
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "",
+          "weapon_quality": "<p><ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.ljKBtlzPVvhhmdHW\" data-id=\"ljKBtlzPVvhhmdHW\" data-type=\"JournalEntry\">Weighted</a></p></li><li><p>When you deal damage with this weapon, inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a> to the target, if the target is already afflicted with <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a>, reduce its duration by 1 instead.</p></li><li><p>You are immune to <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a></p></li></ul></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Melee",
+          "weapon_set": ""
+        },
+        "baPeKHXBbWvkRv2F": {
+          "id": "${item.id}",
+          "name": "Muramasa",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.baPeKHXBbWvkRv2F",
+          "weapon_buy": "",
+          "weapon_category": "Sword",
+          "weapon_cost": 3800,
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "♦️",
+          "weapon_quality": "<p><ul><li><p>Attacks with this weapon hit harder the lower the target's HP is.</p></li><li><p>When you equip this weapon, or have it equipped at the start of a conflict, you suffer <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a>. When you reduce a creature to 0 HP, set your <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a> duration to <strong>3</strong>.</p></li><li><p>While this weapon is equipped, nothing can cleanse or prevent your <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a>. Unequipping this weapon does not remove it.</p></li></ul></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Melee",
+          "weapon_set": ""
+        },
         "c5UMCKLMcRC47hq0": {
           "id": "${item.id}",
           "name": "Excalibur?",
@@ -9261,6 +8723,20 @@
           "weapon_range": "Ranged",
           "weapon_set": ""
         },
+        "kViMMmHc53C7FVIR": {
+          "id": "${item.id}",
+          "name": "Black Mage Wand",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.kViMMmHc53C7FVIR",
+          "weapon_buy": "",
+          "weapon_category": "Arcane",
+          "weapon_cost": 3500,
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "",
+          "weapon_quality": "<p><ul><li><p>This weapon deals <a class=\"content-link\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" data-id=\"XYQUsuXPU0CQjEYa\" data-type=\"JournalEntry\">Magic Damage</a></p></li><li><p>When you <strong>hit </strong>a creature with this weapon, you may cast an <strong>Offensive Spell </strong>as a <strong>Free Action </strong>this spell must include the creature as its <strong>only </strong>target.</p></li></ul></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Ranged",
+          "weapon_set": ""
+        },
         "ldRfTyFXn5iOJwOl": {
           "id": "${item.id}",
           "name": "Lightning Rod",
@@ -9274,6 +8750,34 @@
           "weapon_quantity": 1,
           "weapon_range": "Melee",
           "weapon_set": "Monster of Frankensteiner"
+        },
+        "nBrvK58NcYnaNJ2z": {
+          "id": "${item.id}",
+          "name": "Lionheart",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.nBrvK58NcYnaNJ2z",
+          "weapon_buy": "",
+          "weapon_category": "Sword",
+          "weapon_cost": 3000,
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "♦️",
+          "weapon_quality": "<p><p><strong>Form I · Sword</strong></p><p><em><strong>Two-handed • Melee • Martial</strong></em></p><p><em><strong>Accuracy: 【MIG】+【WLP】 • Damage: 【HR + 10】<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a></strong></em></p><ul><li><p>You may use the skill 【⚔<strong>@UUID[Item.LhRzRenzokuken01]{Renzokuken}</strong>】.</p></li></ul><hr contenteditable=\"false\"><p><strong>Form II · Gun</strong></p><p><em><strong>Two-handed • Ranged • Martial</strong></em></p><p><em><strong>Accuracy: 【DEX】+【INS】+ 1 • Damage: 【HR + 5】<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a></strong></em></p><ul><li><p>When this weapon transforms into Gun form, gain <strong>1 Cartridge</strong> (max <strong>1</strong>) and <strong>15</strong> <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a>.</p></li></ul><hr contenteditable=\"false\"><ul><li><p>Once per turn, before your action, you may transform this weapon for free.</p></li><li><p>You begin each conflict with <strong>1 Cartridge</strong> if this weapon is in Gun form, or with <strong>0</strong> otherwise. Your Cartridges are lost when the conflict ends.</p></li></ul></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Melee",
+          "weapon_set": ""
+        },
+        "oihNHedO9tzkRLgk": {
+          "id": "${item.id}",
+          "name": "Tommy Gun",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.oihNHedO9tzkRLgk",
+          "weapon_buy": "",
+          "weapon_category": "Firearm",
+          "weapon_cost": 2500,
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "♦️",
+          "weapon_quality": "<p><ul><li><p>Attacks with this weapon gain <a class=\"content-link\" data-uuid=\"JournalEntry.ChnStrikeKeyw0rd\" data-id=\"ChnStrikeKeyw0rd\" data-type=\"JournalEntry\">Chain</a> <strong>5</strong> Volley: five shots, each against a random creature among your targets.</p></li><li><p>Each shot rolls its own accuracy and deals <strong>a quarter</strong> of the damage; damage bonuses are shared across the shots.</p></li></ul></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Ranged",
+          "weapon_set": ""
         },
         "pIdrm4ADwSDmNQME": {
           "id": "${item.id}",
@@ -9400,21 +8904,68 @@
           "weapon_quantity": 1,
           "weapon_range": "Ranged",
           "weapon_set": ""
+        },
+        "y5PDljiab6aJQSPh": {
+          "id": "${item.id}",
+          "name": "Staff of Stupidity",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.y5PDljiab6aJQSPh",
+          "weapon_buy": "",
+          "weapon_category": "Arcane",
+          "weapon_cost": 2800,
+          "weapon_hand": "Two-handed",
+          "weapon_martial": "",
+          "weapon_quality": "<p><ul><li><p>While this weapon is equipped, your base Insight die becomes <strong>d6</strong>.</p></li><li><p>While you have <strong>0 MP</strong>, attacks with this weapon deal <strong>8 bonus damage</strong>.</p></li><li><p>You may cast the spell 【⚡<strong>@UUID[Item.HkC4WitsEndSpel1]{Wit's End}</strong>】</p></li></ul></p>",
+          "weapon_quantity": 1,
+          "weapon_range": "Ranged",
+          "weapon_set": ""
         }
       },
       "showMacro": false,
       "spear_ef": "100",
       "species": "HUMANOID",
+      "sprite_attack": "",
       "sprite_battle": "",
+      "sprite_cast": "",
+      "sprite_crisis": "",
+      "sprite_fly": "",
+      "sprite_guard": "",
+      "sprite_hurt": "",
+      "sprite_ko": "",
+      "sprite_leap": "",
+      "sprite_onsen": "",
+      "sprite_sit": "",
+      "sprite_sleep": "",
       "sprite_standard": "",
+      "sprite_walk": "",
       "steal_percentage_table": {},
       "stealable_loot": {
+        "05FIPnvF9ZFIqqy2": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>Turn target <strong>adjacent</strong> <strong>tile</strong> into a <strong>Random Battle Tile</strong>.</p></li><li><p>Dungeon only. Doesn't use a step or end the turn.</p></li></ul>",
+          "name": "Terrarium: Random Battle",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.05FIPnvF9ZFIqqy2"
+        },
         "0JLPt2eZjJdVXW0q": {
           "id": "${item.id}",
           "loot_description": "<ul><li>As long as your have this weapon equipped, treat your <strong>【WLP】</strong>die as a <strong>D12</strong>.</li><li>+1 to Skill checks that use <strong>【WLP】</strong></li><li><p>You are immune to <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.mINm5XmNcnbSzgrN\" data-id=\"mINm5XmNcnbSzgrN\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Despair</span></strong></a></span><strong>, </strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.SNK1IJTKfxjAy2NS\" data-id=\"SNK1IJTKfxjAy2NS\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bane</span></strong></a></span><strong>, </strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Frightened</span></strong></a></span><strong>, </strong><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.KYehgac3Pw1fKC9S\" data-id=\"KYehgac3Pw1fKC9S\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Weak</span></strong></a></span><strong> </strong>and <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.ImFKpNNGjstom7Q9\" data-id=\"ImFKpNNGjstom7Q9\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Shaken</span></strong></a></span>.</p></li></ul>",
           "name": "Myth of Sisyphus",
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.0JLPt2eZjJdVXW0q"
+        },
+        "1Bop3IUREYhy9cu3": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>You begin each conflict with <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a> equal to <strong>【5 + half your level】</strong>.</p></li></ul>",
+          "name": "Stalwart Shield",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.1Bop3IUREYhy9cu3"
+        },
+        "1IzUqd2dCtuzOUMr": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>Turn target <strong>adjacent</strong> <strong>tile</strong> into a <strong>Blank Tile</strong>.</p></li><li><p>Dungeon only. Doesn't use a step or end the turn.</p></li></ul>",
+          "name": "Terrarium: Blank",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.1IzUqd2dCtuzOUMr"
         },
         "1tLgAKjA9M49J5OJ": {
           "id": "${item.id}",
@@ -9451,6 +9002,13 @@
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.3cnqLWqSdV8YxBSH"
         },
+        "3jLLRKlkIvRY5ULj": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>While fishing, your <strong>DEX</strong> counts as one die size higher: a more nimble bar and a slower cast gauge.</p></li></ul>",
+          "name": "Swiftline Rod",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.3jLLRKlkIvRY5ULj"
+        },
         "4bBB2tcydcki1QHr": {
           "id": "${item.id}",
           "loot_description": "<ul>\n    <li>&nbsp;You are <strong>immune</strong> to all <strong>Basic status effects.</strong></li>\n    <li>\n        <p>You may perform the skill 【💥<strong> Judgement Sword </strong>】</p>\n    </li>\n</ul>\n<hr>\n<details>\n    <summary><strong>💥 Judgement Sword</strong></summary>\n    <p><strong>Cost: 6 Zero Power</strong></p>\n    <p><strong>Target: One Creature</strong></p>\n    <p><strong>Duration: Instantaneous</strong></p>\n    <p>Deals <strong>100 Light</strong> damage to target creature, this damage ignore <strong>immunity</strong> and cannot be <strong>reduced</strong> or <strong>negated</strong></p>\n    <p></p>\n</details>",
@@ -9465,6 +9023,13 @@
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.4pljMIVuyOsTP75b"
         },
+        "53tC4ghQLMKdHtsj": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>Turn target <strong>adjacent</strong> <strong>tile</strong> into a <strong>Camp Tile</strong>.</p></li><li><p>Dungeon only. Doesn't use a step or end the turn.</p></li></ul>",
+          "name": "Terrarium: Camp",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.53tC4ghQLMKdHtsj"
+        },
         "5pZrwswltGCOBfSc": {
           "id": "${item.id}",
           "loot_description": "<ul>\n<li>When you hit one or more creatures with this weapon, you may recover <strong>10</strong> Mind Points.</li>\n</ul>",
@@ -9472,12 +9037,26 @@
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.5pZrwswltGCOBfSc"
         },
+        "6sUE9c6uGf9G8XV2": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li>You are immune to all <strong>Basic Status Effects</strong>.</li></ul>",
+          "name": "Multigroa Skin Gloves",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.6sUE9c6uGf9G8XV2"
+        },
         "6uriyBa4shhCfqzD": {
           "id": "${item.id}",
           "loot_description": "<ul><li><p>You are always inflicts with <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Curse</span></strong></a></span></p></li><li><p>Whenever you are <strong>hit </strong>by an action, inflicts <span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Curse</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span>to the attacking creature</p></li></ul>",
           "name": "Cursed Ivory Statue",
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.6uriyBa4shhCfqzD"
+        },
+        "7wVTJkTCGsktRo1k": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>Attacks with this weapon deal <strong>50%</strong> more damage if you are not in <strong>Crisis</strong></p></li></ul>",
+          "name": "Zenith Blade",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.7wVTJkTCGsktRo1k"
         },
         "83MCg7ideKxStmop": {
           "id": "${item.id}",
@@ -9535,6 +9114,48 @@
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.Amcbpmv2ehsSOozh"
         },
+        "BAOXvP5mJfGKSQX4": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>Each target hit by this weapon suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.HHmYmj7xffQMqtzT\" data-id=\"HHmYmj7xffQMqtzT\" data-type=\"JournalEntry\">Slow</a>,&nbsp;</strong>if they are already&nbsp;<strong>Slow</strong>, they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.GePNxftPupElcCWp\" data-id=\"GePNxftPupElcCWp\" data-type=\"JournalEntry\">Bleed</a>&nbsp;instead.</p></li></ul>",
+          "name": "Kusarigama",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.BAOXvP5mJfGKSQX4"
+        },
+        "D00d73wrNn3ccV0g": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>When you get hit by an <strong>attack,</strong> <strong>skill</strong> or <strong>spell</strong>, if the triggering action has <strong>keywords</strong>, choose one of that keyword. This weapon gain the chosen keyword until its next attack or until you've chosen a new keyword.</p></li></ul>",
+          "name": "Aenigma of Adaptation",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.D00d73wrNn3ccV0g"
+        },
+        "DO9VSNKo3sK63WAq": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>While fishing, your <strong>INS</strong> counts as one die size higher: a taller catch bar.</p></li></ul>",
+          "name": "Seer's Rod",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.DO9VSNKo3sK63WAq"
+        },
+        "Du1q5iXEZ9kqW798": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>While fishing, your <strong>MIG</strong> counts as one die size higher: the bar rises faster and the catch meter fills faster.</p></li></ul>",
+          "name": "Ironwood Rod",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.Du1q5iXEZ9kqW798"
+        },
+        "E0SW4DBtM1iXl0Xn": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>Your attack with&nbsp;<strong>Flail&nbsp;</strong>weapon gain +5 damage and inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\">Charm</a> to the target</p></li></ul>",
+          "name": "Dominatrix Leotard",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.E0SW4DBtM1iXl0Xn"
+        },
+        "G9vPmgpXtXsOzHYv": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>Cures <strong>Virus</strong> on one creature.</p></li></ul>",
+          "name": "Vaccine",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.G9vPmgpXtXsOzHYv"
+        },
         "GD27sVzIDa5iFxOd": {
           "id": "${item.id}",
           "loot_description": "<ul><li><p>Transform into the <strong>Hunger </strong>until the end of the scene</p></li></ul>",
@@ -9570,12 +9191,26 @@
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.IrKN92jRRxDzdYzm"
         },
+        "JAvLqsR4vcIw2KZC": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p><strong>+100% Zenit Gain</strong></p></li></ul>",
+          "name": "Lucky Egg",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.JAvLqsR4vcIw2KZC"
+        },
         "JZ6RuG5v5isEnimU": {
           "id": "${item.id}",
           "loot_description": "<ul>\n<li>You may score a <strong>Critical Success&nbsp;</strong>even when your roll is lower than 6</li>\n<li>When you roll a <strong>Fumble,&nbsp;</strong>You may choose to reroll <strong>once.</strong></li>\n</ul>",
           "name": "Gambler's Dice",
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.JZ6RuG5v5isEnimU"
+        },
+        "Jehn3ThdmRKaUaWO": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>While fishing, your <strong>WLP</strong> counts as one die size higher: more reel time and a stronger pull toward rare fish.</p></li></ul>",
+          "name": "Stillwater Rod",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.Jehn3ThdmRKaUaWO"
         },
         "K7ouFNu9tWlNiv6n": {
           "id": "${item.id}",
@@ -9605,12 +9240,26 @@
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.LVwLI7slKbPofiP4"
         },
+        "M79Lyq41roVPVDpJ": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>Turn target <strong>adjacent</strong> <strong>tile</strong> into a <strong>Gathering Tile</strong>.</p></li><li><p>Dungeon only. Doesn't use a step or end the turn.</p></li></ul>",
+          "name": "Terrarium: Gathering",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.M79Lyq41roVPVDpJ"
+        },
         "M7AxOdritvdtrOfe": {
           "id": "${item.id}",
           "loot_description": "<ul><li><p>This weapon deals <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-type=\"JournalEntry\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(61, 166, 255) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Magic Damage</span></strong></a></span></span></p></li><li><p>You may cast the spell 【✨<strong> Raise Dead </strong>】</p><hr></li></ul>",
           "name": "Staff of the Necromancer",
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.M7AxOdritvdtrOfe"
+        },
+        "NcOCVjsOiUoGO3og": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>Revive one <strong>KO</strong> ally and restore their HP to <strong>full</strong>.</p></li></ul>",
+          "name": "Full Phoenix",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.NcOCVjsOiUoGO3og"
         },
         "OHpfq3cznsoVXLh8": {
           "id": "${item.id}",
@@ -9619,12 +9268,26 @@
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.OHpfq3cznsoVXLh8"
         },
+        "OKMSFokdCqpF7iJF": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li>Whenever you increase a spells total MP cost with the【📜Cataclysm】skill, you may <strong>reduce </strong>the <strong>increased MP usage </strong>by 50%</li></ul>",
+          "name": "Witch Hat",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.OKMSFokdCqpF7iJF"
+        },
         "PMxrhqZDiu4RoaW5": {
           "id": "${item.id}",
           "loot_description": "<ul><li>As long as you have this accessory equipped, increase your <strong>maximum Hit Points</strong> and <strong>maximum Mind Points</strong> by 2 for each different <strong>Class</strong> you have.</li></ul>",
           "name": "Ring of Onions",
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.PMxrhqZDiu4RoaW5"
+        },
+        "QYgfQWTYSUh8ZF6L": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>Your offensive spells that deal <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a> or <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\">Poison</a> damage deal <strong>5 bonus damage</strong> for each status effect on the target (up to <strong>15</strong>).</p></li></ul>",
+          "name": "Gothic Lolita Dress",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.QYgfQWTYSUh8ZF6L"
         },
         "RTy3zGYeDkqECh2j": {
           "id": "${item.id}",
@@ -9633,6 +9296,13 @@
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.RTy3zGYeDkqECh2j"
         },
+        "Ricm2XTEOFsUUmLO": {
+          "id": "${item.id}",
+          "loot_description": "<ul>\n<li>When you recieved damage, reduce it to&nbsp;<strong>0,&nbsp;</strong>record the amount of damage reduced as&nbsp;<strong>Delayed Damage stack</strong></li>\n<li>At the end of this round, Consume all <strong>Delayed Damage stack&nbsp;</strong>and you lose HP equal to the amount of stack consume.</li>\n</ul>",
+          "name": "Rewinder",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.Ricm2XTEOFsUUmLO"
+        },
         "SHR82jGN2l8Rc2dG": {
           "id": "${item.id}",
           "loot_description": "<ul>\n    <li>\n        <p>You may cast the spell 【<strong>✨ Blink </strong>】</p>\n    </li>\n</ul>",
@@ -9640,12 +9310,26 @@
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.SHR82jGN2l8Rc2dG"
         },
+        "SmphlpFrfp2qc9dZ": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>Each target hit by this weapon suffers <strong><a class=\"content-link\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\">Enraged</a>,&nbsp;</strong>if they already suffers <a class=\"content-link\" data-uuid=\"JournalEntry.XkuOy0BFvKJTewGS\" data-id=\"XkuOy0BFvKJTewGS\" data-type=\"JournalEntry\">Enraged</a>, they suffers <a class=\"content-link\" data-uuid=\"JournalEntry.vf421bQSPCjLAvBW\" data-id=\"vf421bQSPCjLAvBW\" data-type=\"JournalEntry\">Panic</a>&nbsp;instead.</p></li></ul>",
+          "name": "Frantic Nail",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.SmphlpFrfp2qc9dZ"
+        },
         "TFlkSWMWp59Nqh9h": {
           "id": "${item.id}",
           "loot_description": "<p>When the creature equipping this weapon receives <strong>Fire </strong>damage, they receives following benefits <strong>until the end of round</strong>:</p><ul><li><p>You may considers this weapon as <strong>Arcane</strong> weapon for the purpose of performing <strong>attacks</strong>, <strong>spells</strong> or <strong>skills</strong>.</p></li><li><p>Your attack deals <strong>5</strong> extra damage.</p></li></ul>",
           "name": "Heat HANDS Replica",
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.TFlkSWMWp59Nqh9h"
+        },
+        "ToKdm6Z4voTi4fZ6": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>Turn target <strong>adjacent</strong> <strong>tile</strong> into a <strong>Healing Tile</strong>.</p></li><li><p>Dungeon only. Doesn't use a step or end the turn.</p></li></ul>",
+          "name": "Terrarium: Healing",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.ToKdm6Z4voTi4fZ6"
         },
         "V2XYsxq14nKWZxk6": {
           "id": "${item.id}",
@@ -9681,6 +9365,13 @@
           "name": "Psychic Dagger",
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.YBFhNsKLmy1QlkQ8"
+        },
+        "Z4mYkx5ZIhyNoi0o": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>Whenever you deals damage to an <strong>ally, </strong>You gain <strong>Zero Power </strong>equal to the 【<strong>Damage Dealt divided by 10</strong>】<em>(Round Up)</em></p></li></ul>",
+          "name": "Little Devil",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.Z4mYkx5ZIhyNoi0o"
         },
         "Z9CiRD66EIn21B92": {
           "id": "${item.id}",
@@ -9731,12 +9422,26 @@
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.b37lT3uZOorwV3Fb"
         },
+        "bDlywgmEsGHUUAY9": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.ljKBtlzPVvhhmdHW\" data-id=\"ljKBtlzPVvhhmdHW\" data-type=\"JournalEntry\">Weighted</a></p></li><li><p>When you deal damage with this weapon, inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a> to the target, if the target is already afflicted with <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a>, reduce its duration by 1 instead.</p></li><li><p>You are immune to <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a></p></li></ul>",
+          "name": "Death Scythe",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.bDlywgmEsGHUUAY9"
+        },
         "bRQomGnYf2xsGtHA": {
           "id": "${item.id}",
           "loot_description": "<ul><li><p>You gain 【<strong>Protect】</strong> Skill.</p></li><li><p>When you regain <strong>HP</strong>, you may choose another creature, you and that creature regain half of that amount instead. <em>(rounded up)</em></p></li></ul>",
           "name": "The Selfless",
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.bRQomGnYf2xsGtHA"
+        },
+        "baPeKHXBbWvkRv2F": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>Attacks with this weapon hit harder the lower the target's HP is.</p></li><li><p>When you equip this weapon, or have it equipped at the start of a conflict, you suffer <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a>. When you reduce a creature to 0 HP, set your <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a> duration to <strong>3</strong>.</p></li><li><p>While this weapon is equipped, nothing can cleanse or prevent your <a class=\"content-link\" data-uuid=\"JournalEntry.Do0VLf6wW9uCSLwD\" data-id=\"Do0VLf6wW9uCSLwD\" data-type=\"JournalEntry\">Doom</a>. Unequipping this weapon does not remove it.</p></li></ul>",
+          "name": "Muramasa",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.baPeKHXBbWvkRv2F"
         },
         "bjIqXMa4sAZbSqr1": {
           "id": "${item.id}",
@@ -9801,6 +9506,13 @@
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.hhl54YclG9zGf7qx"
         },
+        "iRFEXJW4d3rHF0G4": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>Your <strong>attack</strong>, <strong>spell</strong> and <strong>skill</strong> deals bonus damage equal to <strong>【3 x the number of negative status effects affecting you】</strong></p></li></ul>",
+          "name": "Curse Collector",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.iRFEXJW4d3rHF0G4"
+        },
         "iZ2tjY9nLgHxJGic": {
           "id": "${item.id}",
           "loot_description": "<ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.YojfVwJv8ABa45c6\" data-id=\"YojfVwJv8ABa45c6\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Exploit</span></strong></a></span></span></p></li><li><p>When you score a <strong>Critical Success </strong>with this weapon, inflicts <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.MziQo5K1cu829GIU\" data-id=\"MziQo5K1cu829GIU\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Break</span></strong></a><strong><span style=\"text-decoration: underline;\">&nbsp;</span></strong></span></span>to the target for <strong>1 Round.</strong></p></li></ul>",
@@ -9822,6 +9534,20 @@
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.k7EiQufhCIQVIxyx"
         },
+        "kViMMmHc53C7FVIR": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>This weapon deals <a class=\"content-link\" data-uuid=\"JournalEntry.XYQUsuXPU0CQjEYa\" data-id=\"XYQUsuXPU0CQjEYa\" data-type=\"JournalEntry\">Magic Damage</a></p></li><li><p>When you <strong>hit </strong>a creature with this weapon, you may cast an <strong>Offensive Spell </strong>as a <strong>Free Action </strong>this spell must include the creature as its <strong>only </strong>target.</p></li></ul>",
+          "name": "Black Mage Wand",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.kViMMmHc53C7FVIR"
+        },
+        "kXimXBmmzUmatqak": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>Once per conflict, when a creature targets you with an offensive spell, you may negate the spell and reflect it back to the caster.</p></li></ul>",
+          "name": "Mirror Shield",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.kXimXBmmzUmatqak"
+        },
         "l7kMJfPCrp9mfxsL": {
           "id": "${item.id}",
           "loot_description": "<ul><li>When someone other than you uses a&nbsp;<strong>Consumable&nbsp;</strong>item, you copy that item and use it immediately without paying any&nbsp;<strong>IP. </strong>This effect trigger <strong>once </strong>per round</li></ul>",
@@ -9835,6 +9561,13 @@
           "name": "Alpha Regalia",
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.lCc6xIrCaRBqyhaT"
+        },
+        "lO2Kxj5P5zZR2NJu": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>You are always inflicts with <a class=\"content-link\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\">Curse</a></p></li><li><p>Whenever you are <strong>hit </strong>by an action, inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\">Curse</a>&nbsp;to the attacking creature</p></li></ul>",
+          "name": "Cursed Ivory Statue",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.lO2Kxj5P5zZR2NJu"
         },
         "ldRfTyFXn5iOJwOl": {
           "id": "${item.id}",
@@ -9857,6 +9590,13 @@
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.mSqhjefLPKGzHt9s"
         },
+        "nBrvK58NcYnaNJ2z": {
+          "id": "${item.id}",
+          "loot_description": "<p><strong>Form I · Sword</strong></p><p><em><strong>Two-handed • Melee • Martial</strong></em></p><p><em><strong>Accuracy: 【MIG】+【WLP】 • Damage: 【HR + 10】<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a></strong></em></p><ul><li><p>You may use the skill 【⚔<strong>@UUID[Item.LhRzRenzokuken01]{Renzokuken}</strong>】.</p></li></ul><hr contenteditable=\"false\"><p><strong>Form II · Gun</strong></p><p><em><strong>Two-handed • Ranged • Martial</strong></em></p><p><em><strong>Accuracy: 【DEX】+【INS】+ 1 • Damage: 【HR + 5】<a class=\"content-link\" data-uuid=\"Item.XpKZuGo3VmT0TlTu\" data-id=\"XpKZuGo3VmT0TlTu\" data-type=\"Item\">Physical</a></strong></em></p><ul><li><p>When this weapon transforms into Gun form, gain <strong>1 Cartridge</strong> (max <strong>1</strong>) and <strong>15</strong> <a class=\"content-link\" data-uuid=\"JournalEntry.wrw2ENSwzCBjztvt\" data-id=\"wrw2ENSwzCBjztvt\" data-type=\"JournalEntry\">Shield</a>.</p></li></ul><hr contenteditable=\"false\"><ul><li><p>Once per turn, before your action, you may transform this weapon for free.</p></li><li><p>You begin each conflict with <strong>1 Cartridge</strong> if this weapon is in Gun form, or with <strong>0</strong> otherwise. Your Cartridges are lost when the conflict ends.</p></li></ul>",
+          "name": "Lionheart",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.nBrvK58NcYnaNJ2z"
+        },
         "nofUy5CPfPrvbKp3": {
           "id": "${item.id}",
           "loot_description": "<ul><li><p>You gain <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Flying</span></strong></a></span></span>, You lose this Flying until the end of the scene when you take<span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.5XAuMMbDPlLzhJLw\" data-id=\"5XAuMMbDPlLzhJLw\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(155, 89, 182) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(215, 169, 255) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Bolt</span></strong></a></span></span><strong> </strong>damage</p></li></ul>",
@@ -9877,6 +9617,13 @@
           "name": "Avalon",
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.oDVo37h0x4X8LkRl"
+        },
+        "oihNHedO9tzkRLgk": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>Attacks with this weapon gain <a class=\"content-link\" data-uuid=\"JournalEntry.ChnStrikeKeyw0rd\" data-id=\"ChnStrikeKeyw0rd\" data-type=\"JournalEntry\">Chain</a> <strong>5</strong> Volley: five shots, each against a random creature among your targets.</p></li><li><p>Each shot rolls its own accuracy and deals <strong>a quarter</strong> of the damage; damage bonuses are shared across the shots.</p></li></ul>",
+          "name": "Tommy Gun",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.oihNHedO9tzkRLgk"
         },
         "pIdrm4ADwSDmNQME": {
           "id": "${item.id}",
@@ -9941,12 +9688,26 @@
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.txMRFkA7TJ3FZBL2"
         },
+        "vJgk8VL4vXqJTHPz": {
+          "id": "${item.id}",
+          "loot_description": "<p>When you perform an <strong>Equipment </strong>action,&nbsp;you may <strong>transform</strong> into any of following armor.</p>\n<table style=\"width: 100%; height: 102px;\" border=\"1\"><colgroup><col style=\"width: 37.1069%;\"><col style=\"width: 33.3333%;\"><col style=\"width: 29.5597%;\"></colgroup>\n<tbody>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\"><strong>ARMOR</strong></td>\n<td style=\"height: 17px;\"><strong>DEFENSE</strong></td>\n<td style=\"height: 17px;\"><strong>M.DEFENSE</strong></td>\n</tr>\n<tr>\n<td><strong>Formless</strong></td>\n<td><strong>DEX size</strong></td>\n<td><strong>INS size</strong></td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\" colspan=\"3\">At the start of your turn, you may <strong>transform</strong> into&nbsp;<strong>Steel Form&nbsp;</strong>or&nbsp;<strong>Mana Form&nbsp;</strong>for free.</td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\"><strong>Steel Form</strong></td>\n<td style=\"height: 17px;\"><strong>16</strong></td>\n<td style=\"height: 17px;\"><strong>INS size</strong></td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\" colspan=\"3\">Receives 10 extra damage when hit by <strong>Spell</strong>.</td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\"><strong>Mana Form</strong></td>\n<td style=\"height: 17px;\"><strong>DEX size</strong></td>\n<td style=\"height: 17px;\"><strong>16</strong></td>\n</tr>\n<tr style=\"height: 17px;\">\n<td style=\"height: 17px;\" colspan=\"3\">Receives 10 extra damage when hit by&nbsp;<strong>Attack</strong>.</td>\n</tr>\n</tbody>\n</table>",
+          "name": "Biker Suit",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.vJgk8VL4vXqJTHPz"
+        },
         "vWu4SxbltWBudDYh": {
           "id": "${item.id}",
           "loot_description": "<ul>\n<li>When you cast the <strong>Gamble</strong> spell, if you have the <strong>Lucky Seven</strong> Skill, you can use it to replace one of the dice you have rolled. This counts as the use of <strong>Lucky Seven</strong> for the scene.</li>\n</ul>",
           "name": "RNGenerator",
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.vWu4SxbltWBudDYh"
+        },
+        "vsCoN9QiMPYWWj6P": {
+          "id": "${item.id}",
+          "loot_description": "<ul>\n<li>You may use this item immediately when you are targeted by a spell, <strong>Negate</strong> the spell and <strong>Reflect&nbsp;</strong>it back to the caster.</li>\n<li>You may only hold 1 copy of this item in your inventory.</li>\n</ul>",
+          "name": "Magic Mirror",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.vsCoN9QiMPYWWj6P"
         },
         "wKogg4SVIY63cqLh": {
           "id": "${item.id}",
@@ -9976,6 +9737,13 @@
           "roll": "",
           "uuid": "Actor.srAH3OHOoK0tvFih.Item.xwadCL7duTaCPxAW"
         },
+        "y5PDljiab6aJQSPh": {
+          "id": "${item.id}",
+          "loot_description": "<ul><li><p>While this weapon is equipped, your base Insight die becomes <strong>d6</strong>.</p></li><li><p>While you have <strong>0 MP</strong>, attacks with this weapon deal <strong>8 bonus damage</strong>.</p></li><li><p>You may cast the spell 【⚡<strong>@UUID[Item.HkC4WitsEndSpel1]{Wit's End}</strong>】</p></li></ul>",
+          "name": "Staff of Stupidity",
+          "roll": "",
+          "uuid": "Actor.srAH3OHOoK0tvFih.Item.y5PDljiab6aJQSPh"
+        },
         "yrTbCX8rUSurlPg3": {
           "id": "${item.id}",
           "loot_description": "<ul><li><p>You may use the 【<strong>Objective</strong>】action to activate any <strong>Support </strong>skill equipped by your ally as a <strong>Free Action. </strong>Once you use this ability, it cannot be used again until the end of the next round.</p></li></ul>",
@@ -10004,7 +9772,7 @@
       "uuid": "Actor.srAH3OHOoK0tvFih",
       "wlp_base": "8",
       "wlp_current": 8,
-      "zenit": 10600,
+      "zenit": 21930,
       "zenit_reward_max": "0",
       "zenit_reward_min": "0",
       "zero_power_value": "0"

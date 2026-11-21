@@ -334,9 +334,9 @@
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
             },
             "6MGzjbSDLPq0Zfra": {
-              "initialType": "event",
-              "currentType": "event",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Event_Tile.png"
+              "initialType": "story",
+              "currentType": "story",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Story_Tile.png"
             },
             "mOP1zRce5yvOjgHd": {
               "initialType": "blank",

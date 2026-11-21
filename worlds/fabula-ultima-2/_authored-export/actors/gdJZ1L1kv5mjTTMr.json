@@ -10,150 +10,6 @@
   },
   "effects": [
     {
-      "_id": "1e7wpgjZa6Gga1qo",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1794078173356,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "max_hp",
-          "mode": 2,
-          "priority": null,
-          "value": "30"
-        }
-      ],
-      "description": "<p>A massive pot of deep-simmered bone broth, shared from a single ladle passed hand to hand. Everyone who eats gains <strong>+30 Maximum HP</strong> until the next rest.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "1e7wpgjZa6Gga1qo",
-          "originalParentId": "gdJZ1L1kv5mjTTMr",
-          "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.ActiveEffect.1e7wpgjZa6Gga1qo"
-        },
-        "fabula-ultima-companion": {
-          "campRestCharges": 0,
-          "cookingDish": {
-            "dishId": "H45kwofTyj8J4OVf",
-            "family": "umami",
-            "instant": {},
-            "tier": 3
-          },
-          "foodBuff": true
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/consumables/food/bowl-stew-brown.webp",
-      "name": "Giant's Bone Broth",
-      "origin": "Item.H45kwofTyj8J4OVf",
-      "sort": 0,
-      "statuses": [
-        "permanent"
-      ],
-      "system": {
-        "tags": [
-          "food"
-        ]
-      },
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
-      "_id": "Gbvv7S4ysL5kPO4r",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1794072709639,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "changes": [
-        {
-          "key": "bonus_hp",
-          "mode": 2,
-          "priority": 20,
-          "value": "-45"
-        },
-        {
-          "key": "bonus_mp",
-          "mode": 2,
-          "priority": 20,
-          "value": "-45"
-        }
-      ],
-      "description": "<p><em>Grave Toll:</em> the price of reanimation — your maximum HP and MP are reduced by the reanimated creature's Level for as long as the Minion endures. Restored when the Minion is destroyed.</p>",
-      "disabled": false,
-      "duration": {
-        "combat": null,
-        "rounds": null,
-        "seconds": null,
-        "startRound": null,
-        "startTime": 298800,
-        "startTurn": null,
-        "turns": null
-      },
-      "flags": {
-        "custom-system-builder": {
-          "isFromTemplate": false,
-          "originalId": "Gbvv7S4ysL5kPO4r",
-          "originalParentId": "gdJZ1L1kv5mjTTMr",
-          "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.ActiveEffect.Gbvv7S4ysL5kPO4r"
-        },
-        "fabula-ultima-companion": {
-          "bdGraveToll": true,
-          "directorAppliedBy": {
-            "appliedAtRound": 3,
-            "effectLabel": "botc_toll",
-            "reactorActorUuid": "Actor.gdJZ1L1kv5mjTTMr",
-            "reactorTokenUuid": "Scene.JKhl4GMekbmkKBXw.Token.w8m3nbSQITn4WZn3",
-            "skillUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fjrhRNjINs8xk7Lp"
-          },
-          "directorPermanent": true,
-          "tags": []
-        },
-        "statuscounter": {
-          "config": {
-            "multiplyEffect": true,
-            "type": "default"
-          },
-          "value": 1,
-          "visible": false
-        }
-      },
-      "img": "icons/magic/death/skull-humanoid-crown-white.webp",
-      "name": "Grave Toll",
-      "origin": "Actor.gdJZ1L1kv5mjTTMr.Item.fjrhRNjINs8xk7Lp",
-      "sort": 0,
-      "statuses": [],
-      "system": {},
-      "tint": "#ffffff",
-      "transfer": false,
-      "type": "base"
-    },
-    {
       "_id": "j4NL8XnAvfky8WSx",
       "_stats": {
         "compendiumSource": null,
@@ -184,7 +40,7 @@
         },
         "fabula-ultima-companion": {
           "chargeKey": "bodyguard_fatigue",
-          "charges": 4,
+          "charges": 9,
           "chargesMax": 10,
           "crossScene": true,
           "directorPermanent": true,
@@ -249,6 +105,150 @@
       "tint": "#ffffff",
       "transfer": false,
       "type": "base"
+    },
+    {
+      "_id": "MvzbZf8klSeDbHUj",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795285456725,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "affinity_3",
+          "mode": 0,
+          "priority": 1,
+          "value": "RS"
+        }
+      ],
+      "description": "<p><em>Tempest manta sliced thin and salted. It still crackles faintly on the tongue.</em></p><p>Grants <strong>Resistance to Bolt damage</strong> until the next rest.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "MvzbZf8klSeDbHUj",
+          "originalParentId": "gdJZ1L1kv5mjTTMr",
+          "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.ActiveEffect.MvzbZf8klSeDbHUj"
+        },
+        "fabula-ultima-companion": {
+          "campRestCharges": 0,
+          "cookingDish": {
+            "dishId": "Un1qD1shMantaSas",
+            "family": "recipe",
+            "instant": {},
+            "tier": 0
+          },
+          "foodBuff": true
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/consumables/food/plate-fish-bowl-bones-brown.webp",
+      "name": "Manta Sashimi",
+      "origin": "Item.Un1qD1shMantaSas",
+      "sort": 0,
+      "statuses": [
+        "permanent"
+      ],
+      "system": {
+        "tags": [
+          "food"
+        ]
+      },
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
+    },
+    {
+      "_id": "Sl7NXB7vzCYPpdGa",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795283262765,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "changes": [
+        {
+          "key": "bonus_hp",
+          "mode": 2,
+          "priority": 20,
+          "value": "-45"
+        },
+        {
+          "key": "bonus_mp",
+          "mode": 2,
+          "priority": 20,
+          "value": "-45"
+        }
+      ],
+      "description": "<p><em>Grave Toll:</em> the price of reanimation — your maximum HP and MP are reduced by the reanimated creature's Level for as long as the Minion endures. Restored when the Minion is destroyed.</p>",
+      "disabled": false,
+      "duration": {
+        "combat": null,
+        "rounds": null,
+        "seconds": null,
+        "startRound": null,
+        "startTime": 298800,
+        "startTurn": null,
+        "turns": null
+      },
+      "flags": {
+        "custom-system-builder": {
+          "isFromTemplate": false,
+          "originalId": "Sl7NXB7vzCYPpdGa",
+          "originalParentId": "gdJZ1L1kv5mjTTMr",
+          "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.ActiveEffect.Sl7NXB7vzCYPpdGa"
+        },
+        "fabula-ultima-companion": {
+          "bdGraveToll": true,
+          "directorAppliedBy": {
+            "appliedAtRound": 2,
+            "effectLabel": "botc_toll",
+            "reactorActorUuid": "Actor.gdJZ1L1kv5mjTTMr",
+            "reactorTokenUuid": "Scene.XHe8LfutYAkPuR5B.Token.iNSBd9dIO7NueH6d",
+            "skillUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.fjrhRNjINs8xk7Lp"
+          },
+          "directorPermanent": true,
+          "tags": []
+        },
+        "statuscounter": {
+          "config": {
+            "multiplyEffect": true,
+            "type": "default"
+          },
+          "value": 1,
+          "visible": false
+        }
+      },
+      "img": "icons/magic/death/skull-humanoid-crown-white.webp",
+      "name": "Grave Toll",
+      "origin": "Actor.gdJZ1L1kv5mjTTMr.Item.fjrhRNjINs8xk7Lp",
+      "sort": 0,
+      "statuses": [],
+      "system": {},
+      "tint": "#ffffff",
+      "transfer": false,
+      "type": "base"
     }
   ],
   "flags": {
@@ -284,6 +284,13 @@
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
       "entranceStyle": "foxfire",
+      "faPity": {
+        "kirin": 1
+      },
+      "fishCaught": [
+        "Magnificent Mahi-mahi",
+        "Flame Salmon"
+      ],
       "iconFocus": {
         "x": 48,
         "y": 10,
@@ -479,7 +486,7 @@
           "human_ef": "100",
           "humanoid_ef": "100",
           "insect_ef": "100",
-          "isEquipped": true,
+          "isEquipped": false,
           "isKey": false,
           "isMartial": false,
           "isModule": false,
@@ -531,6 +538,102 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "YNRwUI8yD6PLZo5U"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "0yuzyhVGpx7GDMEI",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795273394226,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "carryLimit": 1,
+          "faCard": {
+            "cid": "archer"
+          }
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/BanditArcher_Standard.png",
+      "name": "Bandit Archer Card",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><strong>Bandit Archer</strong> · Physical · ★ · Striker</p><p>ATK 3 · HP 8 · DEF 1 · SPD 2</p><p><strong>Double Strafe:</strong> Whenever it attacks, it also deals 1 damage to a random benched enemy (ignores DEF, items and elements).</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/BanditArcher_Standard.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": true,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "0",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "card",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Bandit Archer Card",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": null,
+        "unique": false
       },
       "type": "equippableItem"
     },
@@ -1524,62 +1627,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "81siYePxCHHdVz3J",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1794074019168,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": "36rowiHAcXnIPsKK",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Ingredient/turnip_gph.webp",
-      "name": "Turnip",
-      "ownership": {
-        "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "container": null,
-        "props": {
-          "active_effect_config_table": {},
-          "description": "<p><em>A stout root, peppery and bitter at the skin. Field rations for a hundred generations of soldiers who had nothing better.</em></p>",
-          "effect_table": {},
-          "ingredient_taste": "bitter",
-          "ingredient_taste2": "",
-          "ip_cost": "0",
-          "isEquipped": false,
-          "isIngredient": true,
-          "isKey": false,
-          "isMartial": false,
-          "isModule": false,
-          "isRelatedItem": false,
-          "isSet": false,
-          "isUnique": false,
-          "item_cost": "15",
-          "item_quantity": 1,
-          "item_rarity": "Common",
-          "item_type": "material",
-          "name": "Turnip",
-          "optional_params": {},
-          "recipe_dish_uuid": "",
-          "recipe_kind": ""
-        },
-        "template": "ZoiV53VaLzeRsEps",
-        "templateSystemUniqueVersion": 3202566307,
-        "unique": false,
-        "uniqueId": "FoodTurnip000001"
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "8FD1odJvyVnJRXGC",
       "_stats": {
         "compendiumSource": null,
@@ -1650,6 +1697,102 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "JjSTIYwTgVE0FgmU"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "8mQ7dXVJ8SaJdb3a",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795273394387,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "carryLimit": 1,
+          "faCard": {
+            "cid": "hellhound"
+          }
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Hellhound_Standard.png",
+      "name": "Hellhound Card",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><strong>Hellhound</strong> · Dark · ★ · Hunter</p><p>ATK 4 · HP 8 · DEF 0 · SPD 3</p><p><strong>On the Hunt:</strong> +1 ATK against a monster at half its max HP or less.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Hellhound_Standard.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": true,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "0",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "card",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Hellhound Card",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": null,
+        "unique": false
       },
       "type": "equippableItem"
     },
@@ -1956,6 +2099,58 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "zUM6QfiO2ifMv7zH"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "awZe3q40DuEUBmdc",
+      "_stats": {
+        "compendiumSource": "Item.4qw6XEVHQmERzZ8y",
+        "coreVersion": "12.343",
+        "createdTime": 1795286457509,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/fleche.png",
+      "name": "Spellblade Rhapsody",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Spell Fencer",
+          "cost": "2 Resonance",
+          "damage_bonus": "0",
+          "description": "<p>Spend <strong>2 Resonance, </strong>During this turn, you may perform both the <strong>【Attack】</strong>action and <strong>【Spell】</strong>action, the spell you cast this way must be an <strong>Offensive Spell </strong>and must have the mind point cost of equal to or less than <strong>【SL x 10】</strong></p>",
+          "duration": "Turn",
+          "isCheck": false,
+          "isHeroic": false,
+          "level": 1,
+          "max_level": "3",
+          "name": "Spellblade Rhapsody",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "self",
+          "skill_type": "Active",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "4qw6XEVHQmERzZ8y"
       },
       "type": "equippableItem"
     },
@@ -3527,6 +3722,128 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "4EFrj1IezXhe0zNT"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "DOjHrnEyscNgGVjz",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795281976726,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "36rowiHAcXnIPsKK",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Genshin/Item_Black_Bronze_Horn.webp",
+      "name": "Mystic Horn",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><em>A horn capable of storing a vast amount of magical energy.</em></p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "qwLfGN1ahEvnV4Tg",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/Genshin/Item_Black_Bronze_Horn.webp",
+          "ingredient_taste": "bitter",
+          "ingredient_taste2": "",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isIngredient": true,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "400",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "material",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Mystic Horn",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "<Set Name>",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.qwLfGN1ahEvnV4Tg",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "qwLfGN1ahEvnV4Tg"
       },
       "type": "equippableItem"
     },
@@ -5263,7 +5580,7 @@
           },
           "changes": [],
           "description": "",
-          "disabled": true,
+          "disabled": false,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -5392,7 +5709,7 @@
           "ingredient_taste2": "",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": false,
+          "isEquipped": true,
           "isIngredient": false,
           "isKey": false,
           "isMartial": false,
@@ -7209,6 +7526,63 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
+      "effects": [
+        {
+          "_id": "GUKeIpQ2RLBtnxXw",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": 1795283470963,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "can_target_flying_with",
+              "mode": 5,
+              "priority": 20,
+              "value": "dagger"
+            }
+          ],
+          "description": "<p><em>Psychokinesis:</em> melee attacks with arcane or sword weapons may target Flying creatures.</p>",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "GUKeIpQ2RLBtnxXw",
+              "originalParentId": "KuNQ4oa6VGPATBaT",
+              "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.KuNQ4oa6VGPATBaT.ActiveEffect.GUKeIpQ2RLBtnxXw"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/01_PLD/flash.png",
+          "name": "Blade Adept",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.6.4"
@@ -7408,77 +7782,17 @@
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
-      "effects": [
-        {
-          "_id": "8KJ7nqAB9tp7yjOr",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": 1793459093433,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [
-            {
-              "key": "condition_slow",
-              "mode": 5,
-              "priority": null,
-              "value": "IM"
-            }
-          ],
-          "description": "",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "8KJ7nqAB9tp7yjOr",
-              "originalParentId": "Ld4P1df4SK5zvtq6",
-              "originalUuid": "Actor.gdJZ1L1kv5mjTTMr.Item.Ld4P1df4SK5zvtq6.ActiveEffect.8KJ7nqAB9tp7yjOr"
-            },
-            "fabula-ultima-companion": {
-              "orbment": true
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "icons/svg/upgrade.svg",
-          "name": "Antistatus Slow (Orbment)",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": [
-              "orbment"
-            ]
-          },
-          "tint": "#ffffff",
-          "transfer": true,
-          "type": "base"
-        }
-      ],
       "flags": {
         "custom-system-builder": {
           "version": "4.8.5"
         },
         "fabula-ultima-companion": {
           "orbment": {
-            "baseProps": [],
+            "baseProps": [
+              {
+                "key": "defense_target_type"
+              }
+            ],
             "linkGroup": [
               "Ld4P1df4SK5zvtq6"
             ],
@@ -7490,8 +7804,8 @@
                 "value": 5
               },
               {
-                "id": "antistatus",
-                "param": "slow",
+                "id": "magical",
+                "param": null,
                 "source": "roll",
                 "value": null
               }
@@ -7502,7 +7816,7 @@
       },
       "folder": "ft3358qUh5ZDldYQ",
       "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1139.gif",
-      "name": "+6 Psychic Dagger",
+      "name": "+7 Psychic Dagger",
       "ownership": {
         "JQGNzKpDPHJmcUIW": 3,
         "default": 3
@@ -7519,7 +7833,8 @@
           "celestial_ef": "100",
           "check_bonus": "0",
           "construct_ef": "100",
-          "damage_bonus": 11,
+          "damage_bonus": 12,
+          "defense_target_type": "mdef",
           "demiHuman_ef": "100",
           "demon_ef": "100",
           "description": "<ul><li><p>This weapon gain bonus <strong>Accuracy</strong> equal to <strong>【1 x</strong> <strong>the number of filled sections in your Brainwave Clock</strong>】</p></li><li><p>This weapon deals bonus damage equal to <strong>【2 x</strong> <strong>the number of filled sections in your Brainwave Clock</strong>】</p></li></ul>",
@@ -7545,7 +7860,7 @@
           "humanoid_ef": "100",
           "insect_ef": "100",
           "ip_cost": "",
-          "isEquipped": true,
+          "isEquipped": false,
           "isIngredient": false,
           "isKey": false,
           "isMartial": false,
@@ -7587,8 +7902,8 @@
               "reaction_trigger": "creature_will_deal_damage"
             }
           },
-          "refine_count": 21,
-          "refine_level": 6,
+          "refine_count": 23,
+          "refine_level": 7,
           "related_item_list": {
             "aRgR0Hn1ejPNmzqB": {
               "id": "${item.id}",
@@ -7614,6 +7929,102 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "3PPbTNuD6rPBkICm"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "luzmSbv6NbViFkG7",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795273394045,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "carryLimit": 1,
+          "faCard": {
+            "cid": "manaray"
+          }
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mana%20Ray_Standard.png",
+      "name": "Mana Ray Card",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><strong>Mana Ray</strong> · Bolt · ★ · Punisher</p><p>ATK 3 · HP 9 · DEF 0 · SPD 3</p><p><strong>Mana Catcher:</strong> +1 ATK in a round the opponent plays an item.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Mana%20Ray_Standard.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": true,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "0",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "card",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Mana Ray Card",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": null,
+        "unique": false
       },
       "type": "equippableItem"
     },
@@ -7878,6 +8289,58 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "xOIJH5IfGbZTH6Tu"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Mq7zmlGO5qVogo03",
+      "_stats": {
+        "compendiumSource": "Item.dDT8OrIPHFQuyfQp",
+        "coreVersion": "12.343",
+        "createdTime": 1795286456836,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/15_RDM/acceleration.png",
+      "name": "Spellweave",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "check_bonus": "0",
+          "class": "Spell Fencer",
+          "cost": "",
+          "damage_bonus": "0",
+          "description": "<p>When you cast an <strong>Offensive Spell, </strong>if you perform the 【Attack】action <em>(excluding Free Attack)  </em>during your previous turn, Gain 1 <strong>Resonance.</strong></p><p>When you cast an <strong>Offensive Spell, </strong>you may spend up to <strong>【SL】Resonance, </strong>For each Resonance you spent this way, increase the spell's <strong>Magic Check </strong>by 1 .</p><p>You may have up to <strong>【SL + 1】</strong>Resonance and you lose all Resonance at the end of each scene</p>",
+          "duration": "",
+          "isCheck": false,
+          "isHeroic": false,
+          "level": 2,
+          "max_level": "5",
+          "name": "Spellweave",
+          "optional_params": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_target": "",
+          "skill_type": "Passive",
+          "type_damage": "",
+          "use_optional_params": false
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "dDT8OrIPHFQuyfQp"
       },
       "type": "equippableItem"
     },
@@ -8255,6 +8718,235 @@
       "type": "equippableItem"
     },
     {
+      "_id": "nsdm6ITaBYR30A7M",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795278155411,
+        "duplicateSource": "Item.QvUsAoeaebjrKAHi",
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "kjSQmVUqS8U8YPnI",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "condition_slow",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_dazed",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_weak",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_shaken",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_enraged",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            },
+            {
+              "key": "condition_poisoned",
+              "mode": 5,
+              "priority": 20,
+              "value": "aeAffinityFloor(\"IM\")"
+            }
+          ],
+          "description": "",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "kjSQmVUqS8U8YPnI",
+              "originalParentId": "lFAG6dMR89JX4H9h",
+              "originalUuid": "Item.lFAG6dMR89JX4H9h.ActiveEffect.kjSQmVUqS8U8YPnI"
+            },
+            "statuscounter": {
+              "config": {
+                "dataSource": "flags.statuscounter.value",
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/gdev.png",
+          "name": "Multigroa Skin Gloves",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "accessory",
+            "fromTemplate": "r0yZpLPAK9VXhM2p",
+            "itemId": "QvUsAoeaebjrKAHi",
+            "itemName": "Amethyst Pendant",
+            "pickedOldProps": {
+              "cost": "350",
+              "def_bonus": "",
+              "defense": "0",
+              "defense_include_dex": false,
+              "initiative": "0",
+              "magic_defense": "0",
+              "magic_defense_include_ins": false,
+              "mdef_bonus": ""
+            },
+            "ts": 1769647435106
+          }
+        }
+      },
+      "folder": "5uQIy5BCy7UEVfcT",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Soft_Gloves.webp",
+      "name": "Multigroa Skin Gloves",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 4100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li>You are immune to all <strong>Basic Status Effects</strong>.</li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "<p><em>Fashioned from a rare hide that rejects corruption, these gloves ward the body from lingering afflictions.</em></p>",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "lFAG6dMR89JX4H9h",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Accessories/Ys/Soft_Gloves.webp",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "2000",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Multigroa Skin Gloves",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.lFAG6dMR89JX4H9h",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "KoC4PHdQrp7r4rM9"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "OoQjrz63C5m8OOoc",
       "_stats": {
         "compendiumSource": "Item.ewCSpkXC8Awo7b0k",
@@ -8454,6 +9146,104 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "JWzdHF8l1m2ZcdQw"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "rAZyH2u5OctPe4x5",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795278542298,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "fishingRod": {
+            "attr": "mig",
+            "color": "#e08a3a"
+          }
+        }
+      },
+      "folder": "FishTackleFolder",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Fishing%20Rod/Flowhorn_Flounderfinder.png",
+      "name": "Ironwood Rod",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>While fishing, your <strong>MIG</strong> counts as one die size higher: the bar rises faster and the catch meter fills faster.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Fishing%20Rod/Flowhorn_Flounderfinder.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": true,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": true,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "1500",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "key",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Ironwood Rod",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "T5NyBaTQauMIui6n"
       },
       "type": "equippableItem"
     },
@@ -8799,7 +9589,7 @@
           },
           "changes": [],
           "description": "",
-          "disabled": false,
+          "disabled": true,
           "duration": {
             "combat": null,
             "rounds": null,
@@ -8970,11 +9760,11 @@
       "type": "equippableItem"
     },
     {
-      "_id": "wiBOnpinZtmHsT6a",
+      "_id": "UjfmKCcJY2boMcDc",
       "_stats": {
         "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1794074019322,
+        "createdTime": 1795281976804,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
@@ -8985,11 +9775,34 @@
         }
       },
       "folder": "36rowiHAcXnIPsKK",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Starshroom.webp",
-      "name": "Moonshroom",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/909.gif",
+      "name": "Jellopy",
       "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
         "JQGNzKpDPHJmcUIW": 3,
-        "default": 0
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
       },
       "sort": 0,
       "system": {
@@ -9008,7 +9821,7 @@
           "damage_bonus": "0",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "A luminescent fungus that grows only under moonlight. Rich, earthy, deeply savoury.",
+          "description": "<p>A small crystallization created by some monsters.</p>",
           "dragon_ef": "100",
           "effect_table": {},
           "elemental_ef": "100",
@@ -9021,12 +9834,12 @@
           "hand_slots": "One-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "7OvlYY62jp1Br152",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Food/Genshin/Item_Starshroom.webp",
-          "ingredient_taste": "umami",
+          "id": "L1ki1clOnOhpl7wN",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Material/RO/909.gif",
+          "ingredient_taste": "sweet",
           "ingredient_taste2": "",
           "insect_ef": "100",
-          "ip_cost": "0",
+          "ip_cost": "",
           "isEquipped": false,
           "isIngredient": true,
           "isKey": false,
@@ -9037,15 +9850,15 @@
           "isUnique": false,
           "item_baseDef": "0",
           "item_baseMdef": "0",
-          "item_cost": "0",
+          "item_cost": "3",
           "item_def_bonus": "0",
           "item_mdef_bonus": "0",
           "item_quantity": 1,
-          "item_rarity": "Uncommon",
+          "item_rarity": "Common",
           "item_type": "material",
           "mimic_ef": "100",
           "monster_ef": "100",
-          "name": "Moonshroom",
+          "name": "Jellopy",
           "optional_params": {},
           "plant_ef": "100",
           "reaction_config_table": {},
@@ -9062,14 +9875,14 @@
           "spirit_ef": "100",
           "type_damage": "Physical",
           "undead_ef": "100",
-          "uuid": "Item.7OvlYY62jp1Br152",
+          "uuid": "Item.L1ki1clOnOhpl7wN",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
-        "uniqueId": "7OvlYY62jp1Br152"
+        "uniqueId": "L1ki1clOnOhpl7wN"
       },
       "type": "equippableItem"
     },
@@ -9137,6 +9950,102 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "bbEv9kibtZscX9eJ"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "X64vqIvmVblbHW9X",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795273837522,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "carryLimit": 1,
+          "faCard": {
+            "cid": "keren"
+          }
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Keren.png",
+      "name": "Keren Card",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><strong>Keren</strong> · Fire · ★★★ · Striker</p><p>ATK 1 · HP 12 · DEF 0 · SPD 3</p><p><strong>Fox Fire:</strong> +2 ATK for every card KO&#39;d in this match, yours or the opponent&#39;s (max +6). It counts while she waits on the bench.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Arcana/Character%20Cards/Keren.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": true,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "0",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Rare",
+          "item_type": "card",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Keren Card",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": null,
+        "unique": false
       },
       "type": "equippableItem"
     },
@@ -9856,14 +10765,14 @@
   "system": {
     "activeConditionalModifierGroups": [],
     "props": {
-      "accessory2_details": "<ul>\n<li>Gain +2 bonus to any <strong>【DEX】</strong>check that related to Stealth or sneaking.</li>\n</ul>",
-      "accessory2_name": "Sneaker",
+      "accessory2_details": "<ul><li><p>At the start of your turn, you recovers <strong>5 HP</strong></p></li></ul>",
+      "accessory2_name": "Ring of Regeneration",
       "accessory_details": "<ul>\n<li>Lower the chance of being targeted by attacks.</li>\n<li>Gain +1 to Skill Checks that require <strong>【DEX】</strong></li>\n</ul>",
       "accessory_name": "Cat Ears",
       "activation": 1,
       "affinity_1": "NA",
       "affinity_2": "NA",
-      "affinity_3": "NA",
+      "affinity_3": "RS",
       "affinity_4": "NA",
       "affinity_5": "NA",
       "affinity_6": "RS",
@@ -9949,6 +10858,12 @@
           "benefit": "mp",
           "class_name": "Necromancer",
           "level": "10"
+        },
+        "5": {
+          "$deleted": false,
+          "benefit": "hp",
+          "class_name": "Spell Fencer",
+          "level": 3
         }
       },
       "clock_adoration": "0",
@@ -9984,7 +10899,7 @@
       "condition_poisoned": "",
       "condition_shaken": "",
       "condition_silence": "",
-      "condition_slow": "IM",
+      "condition_slow": "",
       "condition_stagger": "",
       "condition_suppress": "",
       "condition_turbulence": "",
@@ -10078,9 +10993,9 @@
       "critical_damage_bonus": 0,
       "critical_damage_multiplier": 1,
       "critical_dice_range": 0,
-      "current_hp": "85",
+      "current_hp": "57",
       "current_ip": "8",
-      "current_mp": "70",
+      "current_mp": "72",
       "curse_status": 0,
       "cut_in_critical": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Cut-in/Keren_Cut-in002.png",
       "cut_in_fumble": "",
@@ -10134,10 +11049,10 @@
       "emotion_4_2": "loyalty",
       "emotion_4_3": "affection",
       "emotion_5_1": "admiration",
-      "emotion_5_2": "",
+      "emotion_5_2": "loyalty",
       "emotion_5_3": "affection",
       "emotion_6_1": "admiration",
-      "emotion_6_2": "",
+      "emotion_6_2": "loyalty",
       "emotion_6_3": "affection",
       "emotion_temp_1": "",
       "emotion_temp_2": "",
@@ -10146,8 +11061,8 @@
       "enraged_status": 0,
       "entropism": false,
       "envenomed_status": 0,
-      "exp_meter": "9.23",
-      "experience": "9.23",
+      "exp_meter": "3.81",
+      "experience": "3.81",
       "experience_ui": "0",
       "extra_damage_mod_air": 0,
       "extra_damage_mod_all": 0,
@@ -10173,7 +11088,7 @@
       "extra_damage_mod_spell": 0,
       "extra_damage_mod_sword": 0,
       "extra_damage_mod_thrown": 0,
-      "fabula_point": "0",
+      "fabula_point": "4",
       "fatigue_status": 0,
       "firearm_ef": "100",
       "flail_ef": "100",
@@ -10387,6 +11302,13 @@
           "roll": "",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.n49Ryfd0JlJyIpAJ"
         },
+        "nsdm6ITaBYR30A7M": {
+          "acess_description": "<ul><li>You are immune to all <strong>Basic Status Effects</strong>.</li></ul>",
+          "id": "${item.id}",
+          "name": "Multigroa Skin Gloves",
+          "roll": "",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.nsdm6ITaBYR30A7M"
+        },
         "z6mOPSuVVWNMvLfK": {
           "acess_description": "<ul>\n    <li>\n        <p>You are <strong>immune </strong>to <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.x6ByoJnflDAuVn9r\" data-id=\"x6ByoJnflDAuVn9r\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Charm</span></strong></a></span></span></p>\n    </li>\n    <li>\n        <p>You may cast the spell 【<strong>✨ Charm </strong>】</p>\n        <hr>\n    </li>\n</ul>\n<details>\n    <summary><strong>✨ Charm</strong></summary>\n    <p><strong>Cost:</strong> 15 MP</p>\n    <p><strong>Target:</strong> One Creature</p>\n    <p><strong>Duration:</strong> Instantaneous</p>\n    <p>Inflicts @UUID[JournalEntry.x6ByoJnflDAuVn9r]{Charm} on target creature for 1 Round, have 50% success rate</p>\n</details>",
           "id": "${item.id}",
@@ -10403,9 +11325,16 @@
           "name": "Ornament Dagger",
           "roll": "",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.alJIkZKIha6tZRiL"
+        },
+        "rAZyH2u5OctPe4x5": {
+          "id": "${item.id}",
+          "key_description": "<ul><li><p>While fishing, your <strong>MIG</strong> counts as one die size higher: the bar rises faster and the catch meter fills faster.</p></li></ul>",
+          "name": "Ironwood Rod",
+          "roll": "",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.rAZyH2u5OctPe4x5"
         }
       },
-      "level": "45",
+      "level": "47",
       "lifesteal_percentage": 0,
       "lifesteal_value": 0,
       "magic_defense": 13,
@@ -10418,6 +11347,13 @@
       "manadrain_percentage": 0,
       "manadrain_value": 0,
       "material_list": {
+        "1GuX2exmItZaMP7r": {
+          "id": "${item.id}",
+          "key_description": "<p><em>Runs warm to the touch, its flesh already the colour of coals. Needs almost no fire to cook.</em></p>",
+          "name": "Flame Salmon",
+          "roll": "",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.1GuX2exmItZaMP7r"
+        },
         "2dFj4PqZ98zfinr5": {
           "id": "${item.id}",
           "key_description": "<p><em>A Fur of a beast-type monster, it's the core material for making winter garments</em></p>",
@@ -10467,6 +11403,13 @@
           "roll": "",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.8RNjrxaNsGiiVbPU"
         },
+        "DOjHrnEyscNgGVjz": {
+          "id": "${item.id}",
+          "key_description": "<p><em>A horn capable of storing a vast amount of magical energy.</em></p>",
+          "name": "Mystic Horn",
+          "roll": "",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.DOjHrnEyscNgGVjz"
+        },
         "FXVgHBYwPV3hTonM": {
           "id": "${item.id}",
           "key_description": "The dried peel of a starfruit — intensely tart, prized by travelling chefs.",
@@ -10501,6 +11444,13 @@
           "name": "Charred Bone",
           "roll": "",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.ODJDn7QixISxmC0Y"
+        },
+        "UjfmKCcJY2boMcDc": {
+          "id": "${item.id}",
+          "key_description": "<p>A small crystallization created by some monsters.</p>",
+          "name": "Jellopy",
+          "roll": "",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.UjfmKCcJY2boMcDc"
         },
         "eiDBF9ItmrzqciKH": {
           "id": "${item.id}",
@@ -10544,6 +11494,13 @@
           "roll": "",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.xi7gKIguMDg3aAU3"
         },
+        "yB2H9k2LqKfDNb1a": {
+          "id": "${item.id}",
+          "key_description": "<p><em>Blazes gold and green as it breaches, then dulls the moment it is landed. Worth the sight alone.</em></p>",
+          "name": "Magnificent Mahi-mahi",
+          "roll": "",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.yB2H9k2LqKfDNb1a"
+        },
         "ySL1PCPzqmDYEaMn": {
           "id": "${item.id}",
           "key_description": "<p><em>Bone blackened and brittle from searing flame, still faintly warm and carrying the acrid scent of cinders.</em></p>",
@@ -10552,9 +11509,9 @@
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.ySL1PCPzqmDYEaMn"
         }
       },
-      "max_hp": 85,
+      "max_hp": 62,
       "max_ip": 8,
-      "max_mp": 70,
+      "max_mp": 72,
       "memories_list": {
         "0": {
           "$deleted": false,
@@ -11077,6 +12034,18 @@
           "roll": "",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.LwbHBK0twVXmekz0"
         },
+        "Mq7zmlGO5qVogo03": {
+          "active_class": "Spell Fencer",
+          "active_cost": "",
+          "active_description": "<p>When you cast an <strong>Offensive Spell, </strong>if you perform the 【Attack】action <em>(excluding Free Attack)  </em>during your previous turn, Gain 1 <strong>Resonance.</strong></p><p>When you cast an <strong>Offensive Spell, </strong>you may spend up to <strong>【SL】Resonance, </strong>For each Resonance you spent this way, increase the spell's <strong>Magic Check </strong>by 1 .</p><p>You may have up to <strong>【SL + 1】</strong>Resonance and you lose all Resonance at the end of each scene</p>",
+          "active_duration": "",
+          "active_level": 2,
+          "active_target": "",
+          "id": "${item.id}",
+          "name": "Spellweave",
+          "roll": "",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.Mq7zmlGO5qVogo03"
+        },
         "N9eKFmdC30lHByXQ": {
           "active_class": "",
           "active_cost": "",
@@ -11149,6 +12118,18 @@
           "roll": "",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.aBoK1AS1nb27Wwye"
         },
+        "awZe3q40DuEUBmdc": {
+          "active_class": "Spell Fencer",
+          "active_cost": "2 Resonance",
+          "active_description": "<p>Spend <strong>2 Resonance, </strong>During this turn, you may perform both the <strong>【Attack】</strong>action and <strong>【Spell】</strong>action, the spell you cast this way must be an <strong>Offensive Spell </strong>and must have the mind point cost of equal to or less than <strong>【SL x 10】</strong></p>",
+          "active_duration": "Turn",
+          "active_level": 1,
+          "active_target": "self",
+          "id": "${item.id}",
+          "name": "Spellblade Rhapsody",
+          "roll": "",
+          "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.awZe3q40DuEUBmdc"
+        },
         "bvCt8498k3KLePDd": {
           "active_class": "Illusionist",
           "active_cost": "-",
@@ -11212,7 +12193,7 @@
         "fjrhRNjINs8xk7Lp": {
           "active_class": "Necromancer",
           "active_cost": "",
-          "active_description": "<p>When a non-Villain NPC you can see that belongs to the <strong>beast</strong>, <strong>humanoid</strong>, <strong>monster</strong>, or <strong>plant</strong> Species dies, you may spend <strong>2 Grave Points</strong> and <strong>reduce your maximum HP and MP</strong> by an amount equal to that NPC’s <strong>level</strong>. If you do, their corpse becomes a <strong>Minion</strong> who obeys your telepathic commands:</p>\n<ul>\n  <li>Its Species becomes <strong>undead</strong> and it receives all undead rules. The new Affinities to \n    <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a>, \n    <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\">Light</a>, and \n    <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\">Poison</a> damage overwrite any preexisting Affinity, but the original Species’ rules are otherwise maintained.</li>\n  <li>Its <strong>Rank</strong> becomes <strong>soldier</strong>; if the original creature was an <strong>elite</strong> or <strong>champion</strong>, its <strong>maximum HP</strong> is halved (<strong>Skills are maintained</strong>). <em>(Homebrew: by the printed text the GM reduces both HP and MP.)</em></li>\n  <li>The newly created Minion is a completely new creature and has <strong>full HP</strong>, <strong>full MP</strong>, and <strong>no status effects</strong>.</li>\n  <li>Your Minion acts at the <strong>end of your turn</strong>: it performs a <strong>free action</strong> — one Attack or Skill of its own — chosen and driven automatically. It holds <strong>no turn of its own</strong> in the initiative order, so the GM does <strong>not</strong> count it as an additional Player Character when designing a conflict. <em>(Homebrew: by the printed text the Minion takes its own turn and does count as an extra PC.)</em></li>\n  <li>When you <strong>rest</strong>, your Minion also gains the full benefits of resting.</li>\n  <li>If your Minion is reduced to <strong>0 HP</strong>, if you are <strong>more than 1 travel day</strong> away from it, or if you <strong>die</strong> or <strong>fall unconscious</strong>, your Minion is immediately <strong>destroyed</strong>.</li>\n  <li>You may also destroy your Minion <strong>at any time</strong>; if you want to create a new Minion, you must first destroy the current one.</li>\n  <li>If your Minion is destroyed, your <strong>maximum HP and MP</strong> scores <strong>return to normal</strong>.</li>\n</ul>\n",
+          "active_description": "<p>When a non-Villain NPC you can see that belongs to the <strong>beast</strong>, <strong>humanoid</strong>, <strong>monster</strong>, or <strong>plant</strong> Species dies, you may spend <strong>2 Grave Points</strong> and <strong>reduce your maximum HP and MP</strong> by an amount equal to that NPC’s <strong>level</strong>. If you do, their corpse becomes a <strong>Minion</strong> who obeys your telepathic commands:</p>\n<ul>\n  <li>Its Species becomes <strong>undead</strong> and it receives all undead rules. The new Affinities to \n    <a class=\"content-link\" data-uuid=\"Item.vKU8UYT6DBhgOjtE\" data-id=\"vKU8UYT6DBhgOjtE\" data-type=\"Item\">Dark</a>, \n    <a class=\"content-link\" data-uuid=\"Item.IQaK3IzvfFp4I1xB\" data-id=\"IQaK3IzvfFp4I1xB\" data-type=\"Item\">Light</a>, and \n    <a class=\"content-link\" data-uuid=\"Item.tDcCWc67Ary9nVxe\" data-id=\"tDcCWc67Ary9nVxe\" data-type=\"Item\">Poison</a> damage overwrite any preexisting Affinity, but the original Species’ rules are otherwise maintained.</li>\n  <li>Its <strong>Rank</strong> becomes <strong>soldier</strong>; if the original creature was an <strong>elite</strong> or <strong>champion</strong>, its <strong>maximum HP</strong> becomes a soldier's: <strong>【twice its level + five times its base Might die】</strong> (<strong>Skills are maintained</strong>). Its MP is unchanged.</li>\n  <li>The newly created Minion is a completely new creature and has <strong>full HP</strong>, <strong>full MP</strong>, and <strong>no status effects</strong>.</li>\n  <li>Your Minion acts at the <strong>end of your turn</strong>: it performs a <strong>free action</strong> — one Attack or Skill of its own — chosen and driven automatically. If that action only readies its next move (a stance, hiding, a charge), it acts <strong>once more</strong> right after. It holds <strong>no turn of its own</strong> in the initiative order, so the GM does <strong>not</strong> count it as an additional Player Character when designing a conflict. <em>(Homebrew: by the printed text the Minion takes its own turn and does count as an extra PC.)</em></li>\n  <li>When you <strong>rest</strong>, your Minion also gains the full benefits of resting.</li>\n  <li>If your Minion is reduced to <strong>0 HP</strong>, if you are <strong>more than 1 travel day</strong> away from it, or if you <strong>die</strong> or <strong>fall unconscious</strong>, your Minion is immediately <strong>destroyed</strong>.</li>\n  <li>You may also destroy your Minion <strong>at any time</strong>; if you want to create a new Minion, you must first destroy the current one.</li>\n  <li>If your Minion is destroyed, your <strong>maximum HP and MP</strong> scores <strong>return to normal</strong>.</li>\n</ul>\n",
           "active_duration": "",
           "active_level": 1,
           "active_target": "",
@@ -11404,7 +12385,7 @@
       },
       "skill_class_filter": "",
       "skill_hideEffect": false,
-      "skill_point": "0",
+      "skill_point": 0,
       "skill_point_bonus": "0",
       "skill_type_filter": "All",
       "slow_status": 0,
@@ -11523,7 +12504,7 @@
         },
         "Ld4P1df4SK5zvtq6": {
           "id": "${item.id}",
-          "name": "+6 Psychic Dagger",
+          "name": "+7 Psychic Dagger",
           "quantity": "",
           "roll": "",
           "type": "Dagger",
@@ -11672,7 +12653,7 @@
           "roll": "",
           "type": "Dagger",
           "uuid": "Actor.gdJZ1L1kv5mjTTMr.Item.uI0i1X49uHdSDHUQ",
-          "weapon_description": "<p><ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\">Combo</a><strong><span style=\"text-decoration: underline;\">&nbsp;3</span></strong></p></li><li><p>Attack with this weapon do not include <strong>High Roll</strong></p></li></ul></p>",
+          "weapon_description": "<p><ul><li><p><span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"JournalEntry.noUOPxPoZq65yYxV\" data-id=\"noUOPxPoZq65yYxV\" data-type=\"JournalEntry\" data-tooltip=\"Journal Entry\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(25, 24, 19); font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Combo</span></strong></a></span></span><strong>&nbsp;3</strong></p></li><li><p>Attacks with this weapon don't add your <strong>High Roll</strong> to their damage.</p></li></ul></p>",
           "weapon_hand": "One-handed",
           "weapon_martial": "",
           "weapon_range": "Melee"
@@ -11707,7 +12688,7 @@
       "wlp_base": "10",
       "wlp_current": 10,
       "your_class_name": "",
-      "zenit": "8886",
+      "zenit": "4239",
       "zero_label": "Zero Power",
       "zero_power_description": "<p>Shatter all phantom. Deal damage to all enemy equal to <strong>【(shattered phantom x 20) + 20】</strong> <span style=\"text-decoration: underline;\"><span style=\"font-family: Signika, sans-serif\"><a class=\"content-link\" draggable=\"true\" data-link=\"\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\" data-tooltip=\"Equippable Item Item\" aria-describedby=\"tooltip\" style=\"box-sizing: border-box; user-select: text; scrollbar-width: thin; scrollbar-color: rgb(93, 20, 43) rgba(0, 0, 0, 0); cursor: pointer; --content-link-background: rgba(0, 0, 0, 0.1); background-image: none !important; background-position: initial !important; background-size: initial !important; background-repeat: initial !important; background-attachment: initial !important; background-origin: initial !important; background-clip: initial !important; background-color: rgb(102, 102, 102); padding: 0px !important; border: none !important; border-radius: 2px; white-space: nowrap; word-break: break-all; color: rgb(226, 88, 34) !important; font-weight: bold; text-decoration: underline; display: inline-flex; align-items: center; position: relative; top: 2px; text-shadow: rgb(255, 174, 0) 0px 0px 4px; font-family: Signika, sans-serif; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;\"><strong><span style=\"text-decoration: underline;\">Fire</span></strong></a></span></span> damage.</p>",
       "zero_power_macro": "",

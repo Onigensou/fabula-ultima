@@ -239,9 +239,9 @@
               "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Gusty_Tile.png"
             },
             "Jwkfe2EXHOln5z7B": {
-              "initialType": "blank",
-              "currentType": "blank",
-              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Blank_Tile.png"
+              "initialType": "gusty",
+              "currentType": "gusty",
+              "initialTexture": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Fabula%20Ultima/Dungeon%20Tile/Special%20Tile/Gusty_Tile.png"
             },
             "UMKcoQ0UyLVItNsS": {
               "initialType": "skill_check",

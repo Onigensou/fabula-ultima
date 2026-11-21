@@ -15,6 +15,12 @@
     "fabula-ultima-companion": {
       "affinity_class_magic": "NA",
       "affinity_class_strike": "NA",
+      "battleGrade": {
+        "bag": [],
+        "last": null,
+        "sessionId": "K93Z0p6aTVXKcWaj",
+        "slots": 0
+      },
       "check_mod_dex": 0,
       "check_mod_ins": 0,
       "check_mod_mig": 0,
@@ -33,12 +39,47 @@
       "damage_taken_increased_physical": 0,
       "damage_taken_increased_poison": 0,
       "damage_taken_mult": 1,
+      "gacha": {
+        "migrated": true,
+        "pity": {
+          "ZE2BWLTbKDOb2IZG": {
+            "five": 6,
+            "four": 0
+          }
+        }
+      },
       "idleAnimation": {
         "bounce": false,
         "float": false
       },
       "layoutRef": "3eec23e704b6a760",
-      "opp_lucky": 0
+      "opp_lucky": 0,
+      "skillCheckLog": [
+        {
+          "at": "2026-11-21T14:27:21.413Z",
+          "exp": 1,
+          "freeform": true,
+          "mapId": "8ZqllaT165aEOEOn",
+          "mapName": "Valley of the Dragon - Winding Trail",
+          "presetId": null,
+          "result": null,
+          "theatreId": "W5aPNI1FbnYEMESZ",
+          "tileId": "fNDYg1TelH42okIR",
+          "title": "Custom Event"
+        },
+        {
+          "at": "2026-11-21T17:33:43.892Z",
+          "exp": 1,
+          "freeform": true,
+          "mapId": "YR0pYJVokhIgKQj0",
+          "mapName": "Valley of the Dragon - Waterfall Trail",
+          "presetId": null,
+          "result": null,
+          "theatreId": "TYsXMeeVahBSG3VV",
+          "tileId": "YwGx2mGVNCUSXZnT",
+          "title": "Custom Event"
+        }
+      ]
     },
     "theatre": {
       "settings": {
@@ -54,6 +95,102 @@
   "folder": "oVRjRmlshSvb68gK",
   "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Campaign/The%20Legend%20of%20Dragonslayer/Image/Overworld%20Tokens/Hina%20Party/Hina_Standard.png",
   "items": [
+    {
+      "_id": "0B9KJuQTrutZ23V0",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277824040,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "m7vRdBdrUDuHFhIE",
+      "img": "icons/weapons/crossbows/crossbow-purple.webp",
+      "name": "Crossbow",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Bow",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "8",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>No Quality.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "yG7ujzMR25OgfqcL",
+          "img": "icons/weapons/crossbows/crossbow-purple.webp",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "150",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Crossbow",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "set_description": "",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.yG7ujzMR25OgfqcL",
+          "vehicle_ef": "100",
+          "weapon_range": "Ranged"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "yG7ujzMR25OgfqcL"
+      },
+      "type": "equippableItem"
+    },
     {
       "_id": "0IsvHozA1y8Lfl9p",
       "_stats": {
@@ -391,6 +528,274 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "VKB7qLNF1XBdN7yX"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "11xp0WOEn0lEvArH",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277610696,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "9G7GfCYAFNV1ojkx",
+            "itemName": "Beast Tamer",
+            "pickedOldProps": {
+              "cost": "1000",
+              "martial": false
+            },
+            "ts": 1769647435245
+          }
+        }
+      },
+      "folder": "SytaFVloXb4Fnryp",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1971.gif",
+      "name": "Beast Tamer",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 400000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Flail",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "8",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Cz6U0ps98sYN8jMH\" data-id=\"Cz6U0ps98sYN8jMH\" data-type=\"JournalEntry\">Conquer</a><strong><span style=\"text-decoration: underline;\">&nbsp;5 </span></strong>inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\">Frightened</a>&nbsp;on the target if the target belong to the <strong>Beast</strong> species</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "1000",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "VMMFIPkPQe0y8VUt": {
+              "skill_description": "<p>Equipped passive: Conquer 5 — when you beat a Beast creature's Defense by 5 or more with this weapon, it suffers <a class=\"content-link\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\">Frightened</a>.</p>"
+            }
+          },
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Beast Tamer",
+          "optional_params": {},
+          "plant_ef": "100",
+          "related_item_list": {
+            "VMMFIPkPQe0y8VUt": {
+              "related_item_description": "<p>Equipped passive: Conquer 5 — when you beat a Beast creature's Defense by 5 or more with this weapon, it suffers <a class=\"content-link\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\">Frightened</a>.</p>"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "9G7GfCYAFNV1ojkx"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "1YIaRJMUHslvYih2",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277456527,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "HRKMErxra6n5K4yp",
+            "itemName": "Viper Bone",
+            "pickedOldProps": {
+              "cost": "1200",
+              "martial": false
+            },
+            "ts": 1769647042078
+          }
+        }
+      },
+      "folder": "uiQQtrd8zEyqhHsr",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Knife.gif",
+      "name": "Viper Bone",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 1700000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Dagger",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "1",
+          "construct_ef": "100",
+          "damage_bonus": "8",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul>\n<li>Attacks with this weapon deal <strong>5</strong> extra damage as long as it’s not your turn.</li>\n</ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "HRKMErxra6n5K4yp",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Knife.gif",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "1200",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Viper Bone",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Poison",
+          "undead_ef": "100",
+          "uuid": "Item.HRKMErxra6n5K4yp",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "HRKMErxra6n5K4yp"
       },
       "type": "equippableItem"
     },
@@ -1095,6 +1500,117 @@
       "type": "equippableItem"
     },
     {
+      "_id": "37HapoT97cu7mHkd",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277943694,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "2qY1KhC6cpihpdZY",
+            "itemName": "Silver Knives",
+            "pickedOldProps": {
+              "cost": "800",
+              "martial": false
+            },
+            "ts": 1769647436470
+          }
+        }
+      },
+      "folder": "knSkFyfOf3QJv6Fg",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1228.gif",
+      "name": "Silver Knives",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 300000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Thrown",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "4",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li>When you reduce a hostile creature to 0 HP, gain 1 IP</li><li>Deals 5 extra damage to <strong>Undeads</strong>.</li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "2qY1KhC6cpihpdZY",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1228.gif",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": true,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "800",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Rare",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Silver Knives",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_description": "<p><strong>【Set Bonus】</strong></p><ul><li><p><strong>2 Piece</strong></p><ul><li><p>When a <strong>potion</strong> or <strong>magisphere</strong> created with your Inventory Points restores<br>Mind Points, it restores 5 extra Mind Points.</p><hr></li></ul><p><strong>3 Piece</strong></p><ul><li><p>When a <strong>potion</strong> or <strong>magisphere</strong> created with your Inventory Points restores<br>Mind Points, it restores 5 extra Mind Points.</p></li></ul></li></ul>",
+          "set_name": "Lovely Retainer",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Light",
+          "undead_ef": "100",
+          "uuid": "Item.2qY1KhC6cpihpdZY",
+          "vehicle_ef": "100",
+          "weapon_range": "Ranged"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": true,
+        "uniqueId": "2qY1KhC6cpihpdZY"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "4ASHq5KXQhpibVeO",
       "_stats": {
         "compendiumSource": null,
@@ -1302,6 +1818,83 @@
       "type": "equippableItem"
     },
     {
+      "_id": "4G0ppa6Wz1pQPpGM",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277823163,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1971.gif",
+      "name": "Beast Tamer (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "V3J0CEH5PlvnV57A",
+        "props": {
+          "description": "<p>Equipped passive: Conquer 5 — when you beat a Beast creature's Defense by 5 or more with this weapon, it suffers <a class=\"content-link\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\">Frightened</a>.</p>",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Frightened",
+              "effect_kind": "apply_ae",
+              "effect_label": "btamer_fright",
+              "target_ref": "trigger_subject"
+            }
+          },
+          "isReaction": true,
+          "max_level": "1",
+          "name": "Beast Tamer (Passive)",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "HIT_MARGIN >= 5 && TARGET_SPECIES_IS_BEAST == 1 && DAMAGE_IS_HP == 1",
+              "reaction_action_intent": "",
+              "reaction_action_kind": "",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_source": "",
+              "reaction_effect_ref": "btamer_fright",
+              "reaction_max_per_round": "",
+              "reaction_max_scope": "",
+              "reaction_origin_filter": "",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "on",
+              "reaction_passive_target": "",
+              "reaction_requires_weapon_used": true,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_deals_damage",
+              "requires_skill": ""
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_type": "Passive"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "VMMFIPkPQe0y8VUt"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "5hvxauKmmsfLAdnl",
       "_stats": {
         "compendiumSource": null,
@@ -1362,6 +1955,265 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "wzcDK3lCWXGYqok6"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "5i9b0UyMoUCxvtHn",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277609756,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dress.png",
+      "name": "Maid Uniform (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "bjBM70s5cWdokAYA",
+        "props": {
+          "description": "<p>Equipped passive: when a potion or magisphere created with your Inventory Points restores Mind Points, it restores 5 extra.</p>",
+          "effect_table": {
+            "0": {
+              "effect_kind": "adjust_grant",
+              "effect_label": "maid_mp",
+              "grant_amount": "5",
+              "grant_operation": "add",
+              "grant_resource": "mp",
+              "grant_round": "up",
+              "grant_scope": "per_action"
+            }
+          },
+          "isReaction": true,
+          "max_level": "1",
+          "name": "Maid Uniform (Passive)",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "SKILL_HAS_TAG_POTION == 1 || SKILL_HAS_TAG_MAGISPHERE == 1",
+              "reaction_action_intent": "",
+              "reaction_action_kind": "",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_source": "",
+              "reaction_effect_ref": "maid_mp",
+              "reaction_max_per_round": "",
+              "reaction_max_scope": "",
+              "reaction_origin_filter": "",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "on",
+              "reaction_passive_target": "",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_uses_item",
+              "requires_skill": ""
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_type": "Passive"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "c4JpYv2ubs2WhclV"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "5k7JRbtR6dbszqY4",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277455984,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "86vqr6Rr1MGBCXrX",
+      "img": "icons/weapons/daggers/dagger-black.webp",
+      "name": "Steel Dagger",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Dagger",
+          "celestial_ef": "100",
+          "check_bonus": "1",
+          "construct_ef": "100",
+          "damage_bonus": "4",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>No Quality.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "150",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Steel Dagger",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "set_description": "",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "ZXaslUkB4sJRWJn3"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "7BOgMIL1YssDKGJ5",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277611976,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "86vqr6Rr1MGBCXrX",
+      "img": "icons/weapons/daggers/dagger-black.webp",
+      "name": "Steel Dagger",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Dagger",
+          "celestial_ef": "100",
+          "check_bonus": "1",
+          "construct_ef": "100",
+          "damage_bonus": "4",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>No Quality.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "150",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Steel Dagger",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "set_description": "",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "ZXaslUkB4sJRWJn3"
       },
       "type": "equippableItem"
     },
@@ -1559,6 +2411,104 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "zUM6QfiO2ifMv7zH"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "9h6WhOG788S4bBR7",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277824224,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "i6SE4i8347AZxcJe",
+      "img": "icons/weapons/swords/sword-guard-blue.webp",
+      "name": "Bronze Sword",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Sword",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "1",
+          "construct_ef": "100",
+          "damage_bonus": "6",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>No Quality.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "UiSlNZmem32fro7z",
+          "img": "icons/weapons/swords/sword-guard-blue.webp",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": true,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "200",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Bronze Sword",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "set_description": "",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.UiSlNZmem32fro7z",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "UiSlNZmem32fro7z"
       },
       "type": "equippableItem"
     },
@@ -2038,6 +2988,490 @@
         },
         "template": "j0F5Msw5RZ8aIB3j",
         "templateSystemUniqueVersion": 2125250754,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "bjBM70s5cWdokAYA",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277609438,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "RL9bmb78Zpxw35p7",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "base_defense",
+              "mode": 4,
+              "priority": 1,
+              "value": "${isEquipped ? (isMartial ? (item_baseDef * 1) : 0) : 0}$"
+            },
+            {
+              "key": "bonus_defense",
+              "mode": 2,
+              "priority": 2,
+              "value": "${isEquipped ? (isMartial ? 0 : (item_def_bonus * 1)) : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "RL9bmb78Zpxw35p7",
+              "originalParentId": "I8wXcpGE6TGCM87B",
+              "originalUuid": "Item.I8wXcpGE6TGCM87B.ActiveEffect.RL9bmb78Zpxw35p7"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-def-up",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUp.webp",
+          "name": "Armor DEF",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        },
+        {
+          "_id": "u8ySbw9BkBXE8CUe",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "base_magic_defense",
+              "mode": 4,
+              "priority": 1,
+              "value": "${isEquipped ? (isMartial ? (item_baseMdef * 1) : 0) : 0}$"
+            },
+            {
+              "key": "bonus_magic_defense",
+              "mode": 2,
+              "priority": 2,
+              "value": "${isEquipped ? (isMartial ? 0 : (item_mdef_bonus * 1)) : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": true,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "core": {
+              "overlay": false
+            },
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "u8ySbw9BkBXE8CUe",
+              "originalParentId": "I8wXcpGE6TGCM87B",
+              "originalUuid": "Item.I8wXcpGE6TGCM87B.ActiveEffect.u8ySbw9BkBXE8CUe"
+            },
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-mdef-up",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Buff%20Icon/Granblue%20Fantasy/Status_DefenseUpStack.webp",
+          "name": "Armor MDEF",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {
+            "tags": []
+          },
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        },
+        "fabula-ultima-companion": {
+          "armorDefMdefAeMassPatchBackup_v1": {
+            "createdAt": 1777705756057,
+            "effects": [
+              {
+                "changes": [
+                  {
+                    "key": "defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+                  },
+                  {
+                    "key": "defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+                  }
+                ],
+                "id": "RL9bmb78Zpxw35p7",
+                "name": "Armor DEF"
+              },
+              {
+                "changes": [
+                  {
+                    "key": "magic_defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+                  },
+                  {
+                    "key": "magic_defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+                  }
+                ],
+                "id": "u8ySbw9BkBXE8CUe",
+                "name": "Armor MDEF"
+              }
+            ],
+            "itemName": "Maid Uniform",
+            "itemUuid": "Item.I8wXcpGE6TGCM87B",
+            "parentName": "",
+            "parentType": "World"
+          },
+          "defMdefHelperKeyPatchBackup_v1": {
+            "createdAt": 1777708465951,
+            "effects": [
+              {
+                "changes": [
+                  {
+                    "key": "defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_def_bonus) : 0}$"
+                  },
+                  {
+                    "key": "defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseDef : 0) : 0}$"
+                  }
+                ],
+                "id": "RL9bmb78Zpxw35p7",
+                "name": "Armor DEF"
+              },
+              {
+                "changes": [
+                  {
+                    "key": "magic_defense",
+                    "mode": 2,
+                    "priority": 1,
+                    "value": "${isEquipped ? (isMartial ? 0 : item_mdef_bonus) : 0}$"
+                  },
+                  {
+                    "key": "magic_defense",
+                    "mode": 4,
+                    "priority": 2,
+                    "value": "${isEquipped ? (isMartial ? item_baseMdef : 0) : 0}$"
+                  }
+                ],
+                "id": "u8ySbw9BkBXE8CUe",
+                "name": "Armor MDEF"
+              }
+            ],
+            "itemId": "I8wXcpGE6TGCM87B",
+            "itemName": "Maid Uniform",
+            "itemType": "armor",
+            "itemUuid": "Item.I8wXcpGE6TGCM87B",
+            "owner": {
+              "actor": "",
+              "actorUuid": "",
+              "source": "World Item"
+            }
+          }
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "armor",
+            "fromTemplate": "5Z0gKtN5R51ebJOa",
+            "itemId": "I8wXcpGE6TGCM87B",
+            "itemName": "Maid Uniform",
+            "pickedOldProps": {
+              "cost": "800",
+              "def_bonus": "+1",
+              "defense": "0",
+              "defense_include_dex": true,
+              "initiative": "-2",
+              "magic_defense": "0",
+              "magic_defense_include_ins": true,
+              "martial": false,
+              "mdef_bonus": "+2",
+              "shield": false
+            },
+            "ts": 1769647435965
+          }
+        }
+      },
+      "folder": "knSkFyfOf3QJv6Fg",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dress.png",
+      "name": "Maid Uniform",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 200000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>When a <strong>potion</strong> or <strong>magisphere</strong> created with your Inventory Points restores<br>Mind Points, it restores 5 extra Mind Points</p><hr></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "I8wXcpGE6TGCM87B",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/dress.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": true,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "800",
+          "item_def_bonus": "+1",
+          "item_mdef_bonus": "+2",
+          "item_quantity": 1,
+          "item_rarity": "Rare",
+          "item_type": "armor",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Maid Uniform",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_description": "<p><strong>【Set Bonus】</strong></p><p><strong>2 Piece</strong></p><ul><li><p>When a <strong>potion</strong> or <strong>magisphere</strong> created with your Inventory Points restores<br>Mind Points, it restores 5 extra Mind Points.</p><hr></li></ul><p><strong>3 Piece</strong></p><ul><li><p>When a <strong>potion</strong> or <strong>magisphere</strong> created with your Inventory Points restores<br>Mind Points, it restores 5 extra Mind Points.</p></li></ul>",
+          "set_name": "Lovely Retainer",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.I8wXcpGE6TGCM87B",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "I8wXcpGE6TGCM87B"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "BMeFXBqu0Qj9j3m3",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795273396116,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "carryLimit": 1,
+          "faCard": {
+            "cid": "archer"
+          }
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/BanditArcher_Standard.png",
+      "name": "Bandit Archer Card",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><strong>Bandit Archer</strong> · Physical · ★ · Striker</p><p>ATK 3 · HP 8 · DEF 1 · SPD 2</p><p><strong>Double Strafe:</strong> Whenever it attacks, it also deals 1 damage to a random benched enemy (ignores DEF, items and elements).</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/BanditArcher_Standard.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": true,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "0",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "card",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Bandit Archer Card",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": null,
         "unique": false
       },
       "type": "equippableItem"
@@ -2748,7 +4182,7 @@
           "item_cost": "25",
           "item_def_bonus": "0",
           "item_mdef_bonus": "0",
-          "item_quantity": 2,
+          "item_quantity": 3,
           "item_rarity": "Common",
           "item_skill_active": {
             "amTrA25vqjsDFc9Y": {
@@ -3612,6 +5046,98 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "lBseodHWvi4UfGnw"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "e7Ntfl6hO1zvzVFn",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277611388,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "1FOcwV6lQYuv1PRt",
+      "img": "icons/weapons/staves/staff-ornate-orb-steel-red.webp",
+      "name": "Staff",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "6",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>&nbsp;No Quality.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "150",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Staff",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "WLP",
+          "rolled_atr2": "WLP",
+          "set_description": "",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "23dQXPmLWKFjpwNt"
       },
       "type": "equippableItem"
     },
@@ -4587,6 +6113,102 @@
       "type": "equippableItem"
     },
     {
+      "_id": "GIgfCIaprW96Zvx2",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795273396412,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "carryLimit": 1,
+          "faCard": {
+            "cid": "wolf"
+          }
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Wolf_Standard.png",
+      "name": "Wolf Card",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><strong>Wolf</strong> · Physical · ★ · Combo</p><p>ATK 3 · HP 10 · DEF 0 · SPD 2</p><p><strong>Howl:</strong> When it Passes, its attack this round gets +1 ATK.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Wolf_Standard.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": true,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "0",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "card",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Wolf Card",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": null,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "goV9gV4SZ232oKZ4",
       "_stats": {
         "compendiumSource": null,
@@ -4665,7 +6287,7 @@
           "item_cost": "25",
           "item_def_bonus": "0",
           "item_mdef_bonus": "0",
-          "item_quantity": "1",
+          "item_quantity": 2,
           "item_rarity": "Common",
           "item_skill_active": {
             "bx8p5ji8rhvbMVPv": {
@@ -4714,6 +6336,207 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "pJGT7NB0fQhri3Ji"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "GQo7FnEdaJv0ICsM",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795273396682,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        },
+        "fabula-ultima-companion": {
+          "carryLimit": 1,
+          "faCard": {
+            "cid": "salamander"
+          }
+        }
+      },
+      "folder": null,
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Salamander_Standard.png",
+      "name": "Salamander Card",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<p><strong>Salamander</strong> · Fire · ★ · Guardian</p><p>ATK 3 · HP 10 · DEF 1 · SPD 2</p><p><strong>Pyrophagy:</strong> The first Fire attack that would damage it deals 2 less. Once per match.</p><p><em>A Fabula Arcana card. Play it in a card duel at camp or against a challenger.</em></p>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Beastiary/Salamander_Standard.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": true,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "0",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": "1",
+          "item_rarity": "Common",
+          "item_type": "card",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Salamander Card",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": null,
+        "unique": false
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "h6ylKkrxgA6kBVGy",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277943827,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1228.gif",
+      "name": "Silver Knives (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "37HapoT97cu7mHkd",
+        "props": {
+          "description": "<p>Equipped passive: Deals 5 extra damage to Undead. When you reduce a hostile creature to 0 HP, gain 1 IP.</p>",
+          "effect_table": {
+            "0": {
+              "damage_amount": "5",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "sknives_undead"
+            },
+            "1": {
+              "effect_kind": "grant",
+              "effect_label": "sknives_ip",
+              "grant_amount": "1",
+              "grant_resource": "ip",
+              "target_ref": "self"
+            }
+          },
+          "isReaction": true,
+          "max_level": "1",
+          "name": "Silver Knives (Passive)",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "TARGET_SPECIES_IS_UNDEAD == 1 && DAMAGE_IS_HP == 1",
+              "reaction_action_intent": "",
+              "reaction_action_kind": "",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_source": "",
+              "reaction_effect_ref": "sknives_undead",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "on",
+              "reaction_passive_target": "",
+              "reaction_requires_weapon_used": true,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_will_deal_damage",
+              "requires_skill": ""
+            },
+            "1": {
+              "condition_formula": "CAUSE_IS_SELF == 1",
+              "reaction_action_intent": "",
+              "reaction_action_kind": "",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_source": "",
+              "reaction_effect_ref": "sknives_ip",
+              "reaction_max_per_round": "",
+              "reaction_origin_filter": "",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "on",
+              "reaction_passive_target": "",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "enemy",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_defeated",
+              "requires_skill": ""
+            }
+          },
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "skill_type": "Passive"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false
       },
       "type": "equippableItem"
     },
@@ -6022,6 +7845,199 @@
       "type": "equippableItem"
     },
     {
+      "_id": "jdySOoGzeSWAQWbk",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277825020,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "effects": [
+        {
+          "_id": "A3tbe7frEpNpkjIX",
+          "_stats": {
+            "compendiumSource": null,
+            "coreVersion": "12.343",
+            "createdTime": null,
+            "duplicateSource": null,
+            "systemId": "custom-system-builder",
+            "systemVersion": "4.8.5"
+          },
+          "changes": [
+            {
+              "key": "flags.fabula-ultima-companion.skill_level_bonus_frenetic_footwork",
+              "mode": 2,
+              "priority": 20,
+              "value": "${isEquipped ? 2 : 0}$"
+            }
+          ],
+          "description": "",
+          "disabled": false,
+          "duration": {
+            "combat": null,
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": 298800,
+            "startTurn": null,
+            "turns": null
+          },
+          "flags": {
+            "custom-system-builder": {
+              "isFromTemplate": false,
+              "originalId": "A3tbe7frEpNpkjIX",
+              "originalParentId": "cG0hXOFNc0NftvbM",
+              "originalUuid": "Item.cG0hXOFNc0NftvbM.ActiveEffect.A3tbe7frEpNpkjIX"
+            },
+            "statuscounter": {
+              "config": {
+                "multiplyEffect": true,
+                "type": "default"
+              },
+              "value": 1,
+              "visible": false
+            }
+          },
+          "img": null,
+          "name": "Frenetic Footwork SL +2",
+          "origin": null,
+          "sort": 0,
+          "statuses": [],
+          "system": {},
+          "tint": "#ffffff",
+          "transfer": true,
+          "type": "base"
+        }
+      ],
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "accessory",
+            "fromTemplate": "r0yZpLPAK9VXhM2p",
+            "itemId": "cG0hXOFNc0NftvbM",
+            "itemName": "Happy Feet",
+            "pickedOldProps": {
+              "cost": "500",
+              "def_bonus": "",
+              "defense": "0",
+              "defense_include_dex": false,
+              "initiative": "1",
+              "magic_defense": "0",
+              "magic_defense_include_ins": false,
+              "mdef_bonus": ""
+            },
+            "ts": 1769647435700
+          }
+        }
+      },
+      "folder": "5uQIy5BCy7UEVfcT",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Footgear/2409.gif",
+      "name": "Happy Feet",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 1900000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p><strong>【Frenetic Footwork】SL+2</strong></p></li><li><p>You gain +1 to Checks that involve Dancing</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "cG0hXOFNc0NftvbM",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Footgear/2409.gif",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "500",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Happy Feet",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.cG0hXOFNc0NftvbM",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "cG0hXOFNc0NftvbM"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "JHpQYYXUNM3BHFmr",
       "_stats": {
         "compendiumSource": "Item.Hwc20u1gKTj1foQz",
@@ -6477,6 +8493,175 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "zUM6QfiO2ifMv7zH"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "Ka54eyuQFCEMsSc2",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277611199,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "XjOlnbs8rEtHfoR9",
+      "img": "icons/weapons/fist/claw-leather-black.webp",
+      "name": "Iron Knuckle",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 300000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Brawling",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "6",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>No Quality.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "150",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Iron Knuckle",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "set_description": "",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "IeFD9JN0BkcUuOw7"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "kgcTqSwOjFHRAtIB",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277610332,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pokemon/toxic-orb.png",
+      "name": "Toxic Orb (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "uKYOi4k0k39176MA",
+        "props": {
+          "description": "<p>Equipped passive: When you are hit by a Melee Attack, the attacker suffers <a class=\"content-link\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\">Envenomed</a>.</p>",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Envenomed",
+              "effect_kind": "apply_ae",
+              "effect_label": "torb_venom",
+              "target_ref": "trigger_attacker"
+            }
+          },
+          "isReaction": true,
+          "max_level": "1",
+          "name": "Toxic Orb (Passive)",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "ATTACK_IS_MELEE == 1",
+              "reaction_action_intent": "",
+              "reaction_action_kind": "Attack",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_source": "",
+              "reaction_effect_ref": "torb_venom",
+              "reaction_max_per_round": "",
+              "reaction_max_scope": "",
+              "reaction_origin_filter": "",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "on",
+              "reaction_passive_target": "",
+              "reaction_requires_weapon_used": false,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_hit_by_action",
+              "requires_skill": ""
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_type": "Passive"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "RoK94mEVE3pGNRDb"
       },
       "type": "equippableItem"
     },
@@ -7815,220 +10000,6 @@
       "type": "equippableItem"
     },
     {
-      "_id": "ozQ4YJCvDSGB1EBU",
-      "_stats": {
-        "compendiumSource": null,
-        "coreVersion": "12.343",
-        "createdTime": 1786217474180,
-        "duplicateSource": null,
-        "systemId": "custom-system-builder",
-        "systemVersion": "4.8.5"
-      },
-      "effects": [
-        {
-          "_id": "kRTxvw5Y0Arugt5r",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": 1786217475068,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [],
-          "description": "",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "kRTxvw5Y0Arugt5r",
-              "originalParentId": "ozQ4YJCvDSGB1EBU",
-              "originalUuid": "Actor.t6E3CQ0pGxwLgXrn.Item.ozQ4YJCvDSGB1EBU.ActiveEffect.kRTxvw5Y0Arugt5r"
-            },
-            "fabula-ultima-companion": {
-              "lifetimeMode": "persistent_counter"
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
-          "name": "Icarus Grounded",
-          "origin": null,
-          "sort": 0,
-          "statuses": [],
-          "system": {
-            "tags": [
-              "icarus-flying-spent"
-            ]
-          },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        },
-        {
-          "_id": "UPlyslcARePzFe6k",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": 1786217474482,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [],
-          "description": "",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "UPlyslcARePzFe6k",
-              "originalParentId": "ozQ4YJCvDSGB1EBU",
-              "originalUuid": "Actor.t6E3CQ0pGxwLgXrn.Item.ozQ4YJCvDSGB1EBU.ActiveEffect.UPlyslcARePzFe6k"
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
-          "name": "Flying",
-          "origin": null,
-          "sort": 0,
-          "statuses": [
-            "CVxHWmDb0gQsob1q"
-          ],
-          "system": {
-            "tags": [
-              "icarus-flying"
-            ]
-          },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        }
-      ],
-      "flags": {
-        "custom-system-builder": {
-          "version": "4.8.5"
-        }
-      },
-      "folder": null,
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
-      "name": "Icarus Wing (gear skill)",
-      "ownership": {
-        "WQGFvLStTZeWGpak": 3,
-        "default": 0
-      },
-      "sort": 0,
-      "system": {
-        "container": "QcFLkPkYOROiqpLz",
-        "props": {
-          "description": "<p>Gain <strong>Flying</strong>. You lose this effect when you take <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage.</p>",
-          "details_roller": "Show",
-          "effect_table": {
-            "0": {
-              "ae_duplicate_mode": "replace_same_status",
-              "ae_template_ref": "Actor.t6E3CQ0pGxwLgXrn.Item.ozQ4YJCvDSGB1EBU.ActiveEffect.UPlyslcARePzFe6k",
-              "effect_kind": "apply_ae",
-              "effect_label": "gs_grant",
-              "target_ref": "self"
-            },
-            "1": {
-              "count": "all",
-              "effect_kind": "remove_tagged_ae",
-              "effect_label": "gs_drop",
-              "filter_tag": "icarus-flying",
-              "target_ref": "self"
-            },
-            "2": {
-              "chain_steps": "gs_drop,gs_mark",
-              "effect_kind": "chain",
-              "effect_label": "gs_spend"
-            },
-            "3": {
-              "ae_duplicate_mode": "replace",
-              "ae_template_ref": "Actor.t6E3CQ0pGxwLgXrn.Item.ozQ4YJCvDSGB1EBU.ActiveEffect.kRTxvw5Y0Arugt5r",
-              "effect_kind": "apply_ae",
-              "effect_label": "gs_mark",
-              "target_ref": "self"
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
-          "isReaction": true,
-          "name": "Icarus Wing (gear skill)",
-          "reaction_config_table": {
-            "0": {
-              "condition_formula": "HAS_STATUS_ICARUS_GROUNDED == 0",
-              "reaction_effect_ref": "gs_grant",
-              "reaction_passive_mode": "force",
-              "reaction_passive_target": "self",
-              "reaction_source": "",
-              "reaction_trigger": "conflict_start"
-            },
-            "1": {
-              "condition_formula": "HAS_STATUS_ICARUS_GROUNDED == 0",
-              "reaction_effect_ref": "gs_grant",
-              "reaction_passive_mode": "force",
-              "reaction_passive_target": "self",
-              "reaction_source": "",
-              "reaction_trigger": "creature_equips_item"
-            },
-            "2": {
-              "reaction_effect_ref": "gs_drop",
-              "reaction_passive_mode": "force",
-              "reaction_passive_target": "self",
-              "reaction_source": "",
-              "reaction_trigger": "creature_unequips_item"
-            },
-            "3": {
-              "condition_formula": "TRIGGER_DAMAGE_IS_FIRE == 1",
-              "reaction_cause_filter": "damage",
-              "reaction_effect_ref": "gs_spend",
-              "reaction_passive_mode": "force",
-              "reaction_passive_target": "self",
-              "reaction_resource_filter": "hp",
-              "reaction_source": "self",
-              "reaction_trigger": "creature_lose_resource"
-            }
-          },
-          "skill_target": "Self",
-          "skill_type": "Passive"
-        },
-        "template": "j0F5Msw5RZ8aIB3j",
-        "templateSystemUniqueVersion": 2125250754,
-        "unique": false
-      },
-      "type": "equippableItem"
-    },
-    {
       "_id": "P4rafgBSVz3IuBL7",
       "_stats": {
         "compendiumSource": null,
@@ -8666,18 +10637,18 @@
       "type": "equippableItem"
     },
     {
-      "_id": "QcFLkPkYOROiqpLz",
+      "_id": "PvpZGxUFPZBk7By6",
       "_stats": {
-        "compendiumSource": "Item.KtD7PgidI510dvHa",
+        "compendiumSource": null,
         "coreVersion": "12.343",
-        "createdTime": 1784391022479,
+        "createdTime": 1795277455146,
         "duplicateSource": null,
         "systemId": "custom-system-builder",
         "systemVersion": "4.8.5"
       },
       "effects": [
         {
-          "_id": "nfyTB7h842rjR4BU",
+          "_id": "R3ZxZZdXr75SGTSh",
           "_stats": {
             "compendiumSource": null,
             "coreVersion": "12.343",
@@ -8687,66 +10658,7 @@
             "systemVersion": "4.8.5"
           },
           "changes": [],
-          "description": "",
-          "disabled": false,
-          "duration": {
-            "combat": null,
-            "rounds": null,
-            "seconds": null,
-            "startRound": null,
-            "startTime": null,
-            "startTurn": null,
-            "turns": null
-          },
-          "flags": {
-            "custom-system-builder": {
-              "isFromTemplate": false,
-              "originalId": "nfyTB7h842rjR4BU",
-              "originalParentId": "2rMxW49Y5ZoD5jiY",
-              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.2rMxW49Y5ZoD5jiY.ActiveEffect.nfyTB7h842rjR4BU"
-            },
-            "fabula-ultima-companion": {
-              "tags": [
-                "buff"
-              ]
-            },
-            "statuscounter": {
-              "config": {
-                "multiplyEffect": true,
-                "type": "default"
-              },
-              "value": 1,
-              "visible": false
-            }
-          },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
-          "name": "Flying",
-          "origin": null,
-          "sort": 0,
-          "statuses": [
-            "CVxHWmDb0gQsob1q"
-          ],
-          "system": {
-            "tags": [
-              "icarus-flying"
-            ]
-          },
-          "tint": "#ffffff",
-          "transfer": false,
-          "type": "base"
-        },
-        {
-          "_id": "Z4n4fsHHfLGvldLf",
-          "_stats": {
-            "compendiumSource": null,
-            "coreVersion": "12.343",
-            "createdTime": null,
-            "duplicateSource": null,
-            "systemId": "custom-system-builder",
-            "systemVersion": "4.8.5"
-          },
-          "changes": [],
-          "description": "",
+          "description": "<p>Losing <strong>MP </strong>at the start of your turn</p>",
           "disabled": true,
           "duration": {
             "combat": null,
@@ -8760,11 +10672,56 @@
           "flags": {
             "custom-system-builder": {
               "isFromTemplate": false,
-              "originalId": "Z4n4fsHHfLGvldLf",
-              "originalParentId": "2rMxW49Y5ZoD5jiY",
-              "originalUuid": "Actor.dafTLBUscCDNgq8H.Item.2rMxW49Y5ZoD5jiY.ActiveEffect.Z4n4fsHHfLGvldLf"
+              "isPredefined": true,
+              "originalId": "R3ZxZZdXr75SGTSh",
+              "originalParentId": "BIbreDnYgqPYJy6s",
+              "originalUuid": "Item.BIbreDnYgqPYJy6s.ActiveEffect.R3ZxZZdXr75SGTSh"
             },
-            "fabula-ultima-companion": {},
+            "dfreds-convenient-effects": {
+              "ceEffectId": "ce-cursed",
+              "isBackup": false,
+              "isConvenient": true,
+              "isDynamic": false,
+              "isTemporary": false,
+              "isViewable": true
+            },
+            "effectmacro": {
+              "onTurnStart": {
+                "script": "// === Curse MP-Drain v1 (Effect Macro → On Combat Turn Starting) ============\n// Drains % Max MP using your Advance Damage macro, *without* UI targeting.\n//\n// • Default: 20% of max MP\n// • Champion rank (NPC): 10%\n// • PCs / no rank field: 20%\n// • Value type: \"mp\", Weapon type: \"none_ef\" (neutral), Element can be anything (not used for MP SFX)\n//\n// Requires: AdvanceDamage supports headless targets via __PAYLOAD.targetIds.\n// ===========================================================================\n\n(async () => {\n  const ADV_DMG_MACRO_NAME = \"AdvanceDamage\"; // rename if your macro differs\n\n  // --- Only act on the owner’s actual turn ---------------------------------\n  if (!actor || !game.combat) return;\n  const isOwnersTurn = game.combat?.combatant?.actor?.id === actor.id;\n  if (!isOwnersTurn) return;\n\n  // --- Resolve the correct token id for this actor on this turn ------------\n  function pickTokenIdForActor(a) {\n    const ct = game.combat?.combatant;\n    if (ct?.actor?.id === a.id && ct.token?.id) return ct.token.id;\n    if (token?.id) return token.id;\n    const t = a.getActiveTokens()?.[0];\n    return t?.id ?? t?.document?.id ?? null;\n  }\n  const tokenId = pickTokenIdForActor(actor);\n  if (!tokenId) return ui.notifications.warn(\"[Curse] No active token for effect owner.\");\n\n  // --- Determine % by NPC Rank (Champion halves it) ------------------------\n  // NPC sheet has system.props.npc_rank with options including \"cha\" (Champion).\n  const props = actor.system?.props ?? {};\n  const rank  = String(props.npc_rank ?? \"\").toLowerCase(); // e.g., \"cha\"\n  const percent = (rank === \"cha\") ? 10 : 20;  // PCs / missing field → 20%\n\n  // --- Build headless payload for AdvanceDamage ----------------------------\n  const payload = {\n    baseValue: String(percent),    // just the number, no '%' sign\n    valueType: \"mp\",               // drain MP\n    targetAffinity: \"percentMax\",  // % of target's max MP\n    elementType: \"dark\",           // thematic; MP SFX is driven by valueType anyway\n    weaponType: \"none_ef\",\n    ignoreDamageReduction: true,   // MP isn’t reduced by armor; set false if you prefer\n    ignoreShield: true,            // shields shouldn’t block MP drain\n\n    // Context strings for your logs/cards\n    attackerName: \"Curse\",\n    attackRange: \"DOT\",\n    sourceType : \"Effect: Curse\",\n\n    // Headless targets (prevents Foundry crosshair flashing)\n    targetIds: [tokenId]\n  };\n\n  const ADV = game.macros.getName(ADV_DMG_MACRO_NAME);\n  if (!ADV) return ui.notifications.error(`[Curse] Macro \"${ADV_DMG_MACRO_NAME}\" not found.`);\n\n  await ADV.execute({ __AUTO: true, __PAYLOAD: payload });\n})();\n"
+              }
+            },
+            "fabula-ultima-companion": {
+              "chargeKey": "cursed",
+              "charges": 3,
+              "lifetimeMode": "on_activation",
+              "reactionConfig": {
+                "effect_table": {
+                  "0": {
+                    "consume_amount": "ceil(MAX_MP * (0.2 - RANK_IS_CHAMPION * 0.1))",
+                    "consume_resource": "mp",
+                    "damage_amount": "ceil(MAX_MP * (0.2 - RANK_IS_CHAMPION * 0.1))",
+                    "damage_resource": "mp",
+                    "effect_kind": "deal_damage",
+                    "effect_label": "curse_mp_drain",
+                    "emit_status": "Cursed",
+                    "emit_trigger": "creature_status_triggered",
+                    "grant_amount": "0 - ceil(MAX_MP * (0.2 - RANK_IS_CHAMPION * 0.1))",
+                    "grant_resource": "mp",
+                    "on_empty": "skip",
+                    "target_ref": "self"
+                  }
+                },
+                "reaction_config_table": {
+                  "0": {
+                    "reaction_effect_ref": "curse_mp_drain",
+                    "reaction_passive_mode": "force",
+                    "reaction_passive_target": "self",
+                    "reaction_source": "self",
+                    "reaction_trigger": "turn_start"
+                  }
+                }
+              }
+            },
             "statuscounter": {
               "config": {
                 "multiplyEffect": true,
@@ -8774,12 +10731,18 @@
               "visible": false
             }
           },
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
-          "name": "Icarus Wing",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Skill%20Icon/FFXIVIcons%20Battle(PvE)/BLU/doom.png",
+          "name": "Cursed",
           "origin": null,
           "sort": 0,
-          "statuses": [],
-          "system": {},
+          "statuses": [
+            "3YZNX2X5rHYtL4L5"
+          ],
+          "system": {
+            "tags": [
+              "debuff"
+            ]
+          },
           "tint": "#ffffff",
           "transfer": true,
           "type": "base"
@@ -8787,88 +10750,58 @@
       ],
       "flags": {
         "custom-system-builder": {
-          "version": "3.2.4"
+          "version": "4.6.4"
         },
         "fucompanion": {
           "itemMigratorBackup": {
-            "detectedType": "accessory",
-            "fromTemplate": "r0yZpLPAK9VXhM2p",
-            "itemId": "KtD7PgidI510dvHa",
-            "itemName": "Icarus Wing",
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "BIbreDnYgqPYJy6s",
+            "itemName": "Gravedigger Shovel",
             "pickedOldProps": {
-              "cost": "900",
-              "def_bonus": "",
-              "defense": "0",
-              "defense_include_dex": false,
-              "initiative": "0",
-              "magic_defense": "0",
-              "magic_defense_include_ins": false,
-              "mdef_bonus": ""
+              "cost": "1000",
+              "martial": false
             },
-            "ts": 1769647435805
+            "ts": 1769647435675
           }
         }
       },
-      "folder": "ft3358qUh5ZDldYQ",
-      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
-      "name": "Icarus Wing",
+      "folder": "xMVY94FXuACmcFkd",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/6381.gif",
+      "name": "Gravedigger Shovel",
       "ownership": {
-        "2vy7wrEUqBy0kzsU": 3,
-        "6DmgigM5jq76r0Gd": 3,
-        "7hKw8KGsimboeDif": 3,
-        "9sFgrDy4MvAgoCmQ": 3,
-        "Am7qxPOavfKeDGPd": 3,
         "JQGNzKpDPHJmcUIW": 3,
-        "JvF9tXvr7aaiS06m": 3,
-        "KD5d0efqHETPpIux": 3,
-        "LT3Z8EnRdMVk5ncQ": 3,
-        "MwTL6zXFCEpVBTpI": 3,
-        "NozW36XIGEGx7oVH": 3,
-        "NpGkA7uxaarkPiwS": 3,
-        "ULBTZPjtza939Mvy": 3,
-        "WQGFvLStTZeWGpak": 3,
-        "default": 3,
-        "eGu3tuw7HwJd2bpx": 3,
-        "iLeUVmwqnze8ulOI": 3,
-        "mE5aEkDlrQJIYyhG": 3,
-        "nSGZ1sz1rdKao0kz": 3,
-        "nXC7OD7u5Zw5UDDU": 3,
-        "t41knaXNbgCEygM5": 3,
-        "tz9BP9MKfNGf2P3n": 3,
-        "wNzPmItLYCKE1I8t": 3,
-        "yL2PQxh3R9ddt0te": 3,
-        "yUfwoVmEPVdFG3AY": 3
+        "default": 3
       },
-      "sort": 7500000,
+      "sort": 0,
       "system": {
+        "container": null,
         "props": {
           "active_effect_config_table": {},
           "aquatic_ef": "100",
           "automaton_ef": "100",
           "avian_ef": "100",
           "beast_ef": "100",
-          "category": "Arcane",
+          "category": "Sword",
           "celestial_ef": "100",
-          "check": "Check",
           "check_bonus": "0",
           "construct_ef": "100",
-          "damage_bonus": "0",
+          "damage_bonus": "7",
           "demiHuman_ef": "100",
           "demon_ef": "100",
-          "description": "<ul><li><p>Gain <a class=\"content-link\" data-uuid=\"JournalEntry.q6keqwDWUsEgSWDw\" data-id=\"q6keqwDWUsEgSWDw\" data-type=\"JournalEntry\">Flying</a>, You loses this effect when you take&nbsp;<a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a>&nbsp;damage</p></li></ul>",
+          "description": "<ul><li><p>You are always <a class=\"content-link\" data-uuid=\"JournalEntry.V8mKI3BdXusfSBLq\" data-id=\"V8mKI3BdXusfSBLq\" data-type=\"JournalEntry\">Curse</a></p></li><li><p>You gain +2 to all Checks that involve <strong>Digging</strong></p></li><li><p>When you hit an <strong>Undead </strong>or <strong>Earth-Attribute </strong>creature with this weapon, You gain <strong>【The target's level / 10】</strong>IP and <strong>【50 - 200】</strong>zenit, You may trigger this effect once per creature</p></li></ul>",
           "dragon_ef": "100",
           "elemental_ef": "100",
           "enforcer_ef": "100",
           "fey_ef": "100",
+          "flavor_text": "<p><em>One man's trash is another man's treasure</em></p>",
           "flora_ef": "100",
           "fungus_ef": "100",
           "golem_ef": "100",
           "gorger_ef": "100",
-          "hand_slots": "One-handed",
+          "hand_slots": "Two-handed",
           "human_ef": "100",
           "humanoid_ef": "100",
-          "id": "KtD7PgidI510dvHa",
-          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/wing.png",
           "insect_ef": "100",
           "ip_cost": "",
           "isEquipped": false,
@@ -8880,53 +10813,83 @@
           "isUnique": false,
           "item_baseDef": "0",
           "item_baseMdef": "0",
-          "item_cost": "900",
+          "item_cost": "1000",
           "item_def_bonus": "0",
           "item_mdef_bonus": "0",
           "item_quantity": 1,
-          "item_rarity": "Uncommon",
-          "item_skill_passive": {
-            "ozQ4YJCvDSGB1EBU": {
-              "id": "${item.id}",
-              "name": "Icarus Wing (gear skill)",
-              "skill_cost": "",
-              "skill_description": "<p>Gain <strong>Flying</strong>. You lose this effect when you take <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage.</p>",
-              "skill_maxLevel": "",
-              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.ozQ4YJCvDSGB1EBU"
-            }
-          },
-          "item_type": "accessory",
+          "item_rarity": "Common",
+          "item_type": "weapon",
           "mimic_ef": "100",
           "monster_ef": "100",
-          "name": "Icarus Wing",
+          "name": "Gravedigger Shovel",
           "optional_params": {},
           "plant_ef": "100",
-          "refine_count": "0",
-          "refine_level": "0",
-          "related_item_list": {
-            "ozQ4YJCvDSGB1EBU": {
-              "id": "${item.id}",
-              "name": "Icarus Wing (gear skill)",
-              "related_item_description": "<p>Gain <strong>Flying</strong>. You lose this effect when you take <a class=\"content-link\" data-uuid=\"Item.0sFCVCoM6FRrQP2f\" data-id=\"0sFCVCoM6FRrQP2f\" data-type=\"Item\">Fire</a> damage.</p>",
-              "uuid": "Actor.t6E3CQ0pGxwLgXrn.Item.ozQ4YJCvDSGB1EBU"
-            }
-          },
           "reptilian_ef": "100",
           "rolled_atr1": "DEX",
           "rolled_atr2": "DEX",
           "set_name": "",
+          "skill_target": "One Enemy",
           "soldier_ef": "100",
           "spirit_ef": "100",
-          "type_damage": "Physical",
+          "type_damage": "Earth",
           "undead_ef": "100",
-          "uuid": "Item.KtD7PgidI510dvHa",
           "vehicle_ef": "100",
           "weapon_range": "Melee"
         },
         "template": "ZoiV53VaLzeRsEps",
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
-        "uniqueId": "KtD7PgidI510dvHa"
+        "uniqueId": "BIbreDnYgqPYJy6s"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "QCzfA9CZNotlLPM7",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277825301,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Footgear/2409.gif",
+      "name": "Happy Feet (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "jdySOoGzeSWAQWbk",
+        "props": {
+          "description": "<p>Equipped passive: +1 to Checks involving Dancing.</p>",
+          "effect_table": {
+            "0": {
+              "check_buff_action": "dancing",
+              "check_buff_amount": "1",
+              "effect_kind": "check_buff",
+              "effect_label": "hfeet_dance"
+            }
+          },
+          "max_level": "1",
+          "name": "Happy Feet (Passive)",
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_type": "Passive"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "crwsyuWDzJppRFoh"
       },
       "type": "equippableItem"
     },
@@ -9215,6 +11178,175 @@
       "type": "equippableItem"
     },
     {
+      "_id": "RlT6Ud88EbQti56f",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277611562,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "7NbxPryD0Bd70KPW",
+      "img": "icons/weapons/guns/gun-pistol-flintlock.webp",
+      "name": "Pistol",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Firearm",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "8",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>No Quality.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "250",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Pistol",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "set_description": "",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Ranged"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "b9Xv1EnFJFiD0bS9"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "RSPrCUWhrfhaJ09V",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277456726,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Knife.gif",
+      "name": "Viper Bone (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "1YIaRJMUHslvYih2",
+        "props": {
+          "description": "<p>Equipped passive: attacks with this weapon deal 5 extra damage while it is not your turn.</p>",
+          "effect_table": {
+            "0": {
+              "damage_amount": "5",
+              "damage_operation": "add",
+              "damage_stage": "outgoing",
+              "effect_kind": "adjust_damage",
+              "effect_label": "viper_offturn"
+            }
+          },
+          "isReaction": true,
+          "max_level": "1",
+          "name": "Viper Bone (Passive)",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "IS_MY_TURN == 0",
+              "reaction_action_intent": "",
+              "reaction_action_kind": "",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_source": "",
+              "reaction_effect_ref": "viper_offturn",
+              "reaction_max_per_round": "",
+              "reaction_max_scope": "",
+              "reaction_origin_filter": "",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "on",
+              "reaction_passive_target": "",
+              "reaction_requires_weapon_used": true,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_will_deal_damage",
+              "requires_skill": ""
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_type": "Passive"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "47Y2qMXAidOuKU75"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "rsQehCmVCCnx0J3G",
       "_stats": {
         "compendiumSource": null,
@@ -9448,6 +11580,278 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "2flmzfFbo1y8MCq5"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "rUf7lHnPkoINcfRY",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277455638,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.4.2"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "5CjAC78JMmlcO744",
+            "itemName": "Rocket Punch",
+            "pickedOldProps": {
+              "cost": "800",
+              "martial": true
+            },
+            "ts": 1769647436261
+          }
+        }
+      },
+      "folder": "AW77WJGta3x8x3dy",
+      "img": "icons/equipment/hand/gauntelet-tooled-blue.webp",
+      "name": "Rocket Punch",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 1750000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Brawling",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "11",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>You may perform <strong>Range Attack </strong>with this weapon</p></li><li><p>When you attack with this weapon, you may <strong>unequip</strong> it, if you do, you may perform the <strong>【Equipment】</strong>action as a <strong>Free Action</strong></p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": true,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "800",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Rocket Punch",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "5CjAC78JMmlcO744"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "RWSrz0D8hTonRych",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277455311,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/6381.gif",
+      "name": "Gravedigger Shovel (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "PvpZGxUFPZBk7By6",
+        "props": {
+          "description": "<p>Equipped passive: +2 to Checks involving Digging. You are always Cursed.</p>",
+          "effect_table": {
+            "0": {
+              "check_buff_action": "digging",
+              "check_buff_amount": "2",
+              "effect_kind": "check_buff",
+              "effect_label": "shovel_dig"
+            }
+          },
+          "max_level": "1",
+          "name": "Gravedigger Shovel (Passive)",
+          "reaction_config_table": {},
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_type": "Passive"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "2PBZPjsE6sXmG0DE"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "RXl4G7uiVAgNsAP4",
+      "_stats": {
+        "compendiumSource": "Item.23dQXPmLWKFjpwNt",
+        "coreVersion": "12.343",
+        "createdTime": 1795277822800,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.23dQXPmLWKFjpwNt"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "1FOcwV6lQYuv1PRt",
+      "img": "icons/sundries/books/book-embossed-gold-green.webp",
+      "name": "Tome",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "6",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>&nbsp;No Quality.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "150",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Tome",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "set_description": "",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "X9SaWakWp1Tl8xPA"
       },
       "type": "equippableItem"
     },
@@ -9766,6 +12170,379 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "m7lvj7mR2ec7Kt0h"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "sVxQpyZgbbxIGNzT",
+      "_stats": {
+        "compendiumSource": "Item.23dQXPmLWKFjpwNt",
+        "coreVersion": "12.343",
+        "createdTime": 1795277454824,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "core": {
+          "sourceId": "Item.23dQXPmLWKFjpwNt"
+        },
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "1FOcwV6lQYuv1PRt",
+      "img": "icons/sundries/books/book-embossed-gold-green.webp",
+      "name": "Tome",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 0,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "6",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>&nbsp;No Quality.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "150",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Tome",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "INS",
+          "rolled_atr2": "INS",
+          "set_description": "",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "X9SaWakWp1Tl8xPA"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "tamH5ZEZpa0GC0XV",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277454979,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "1FOcwV6lQYuv1PRt",
+      "img": "icons/weapons/staves/staff-ornate-orb-steel-red.webp",
+      "name": "Staff",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "6",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>&nbsp;No Quality.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "150",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 2,
+          "item_rarity": "Common",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Staff",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "WLP",
+          "rolled_atr2": "WLP",
+          "set_description": "",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "23dQXPmLWKFjpwNt"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "tcWZ9MgZkNASsdLB",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277455466,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "m7vRdBdrUDuHFhIE",
+      "img": "icons/weapons/crossbows/crossbow-purple.webp",
+      "name": "Crossbow",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Bow",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "8",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>No Quality.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "Two-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "yG7ujzMR25OgfqcL",
+          "img": "icons/weapons/crossbows/crossbow-purple.webp",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "150",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Crossbow",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "set_description": "",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.yG7ujzMR25OgfqcL",
+          "vehicle_ef": "100",
+          "weapon_range": "Ranged"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "yG7ujzMR25OgfqcL"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "tOqTLICHW1Nl3BLk",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277823356,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "eRO7SiTYBFPbHaaY",
+      "img": "icons/weapons/thrown/shuriken-blue.webp",
+      "name": "Shuriken",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 200000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Thrown",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "4",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>No Quality.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "150",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Shuriken",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "set_description": "",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Ranged"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "tJiWXfzVWVwf6WKJ"
       },
       "type": "equippableItem"
     },
@@ -10112,6 +12889,384 @@
         "templateSystemUniqueVersion": 2125250754,
         "unique": false,
         "uniqueId": "uFoFmcWMN4tVtaeA"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "uKYOi4k0k39176MA",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277610138,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "accessory",
+            "fromTemplate": "r0yZpLPAK9VXhM2p",
+            "itemId": "Xl16aahsbiCGM6oW",
+            "itemName": "Toxic Orb",
+            "pickedOldProps": {
+              "cost": "1000",
+              "def_bonus": "",
+              "defense": "0",
+              "defense_include_dex": false,
+              "initiative": "0",
+              "magic_defense": "0",
+              "magic_defense_include_ins": false,
+              "mdef_bonus": ""
+            },
+            "ts": 1769647436582
+          }
+        }
+      },
+      "folder": "5uQIy5BCy7UEVfcT",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pokemon/toxic-orb.png",
+      "name": "Toxic Orb",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 3300000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Arcane",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "0",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>When you are hit by a <strong>Melee Attack, </strong>inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\">Envenomed</a>&nbsp;on the attacker</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flavor_text": "<p><em>This orb once belong to a very toxic person, they was so toxic that they were shunned by those around them</em></p>",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "Xl16aahsbiCGM6oW",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Pokemon/toxic-orb.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "1000",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "RoK94mEVE3pGNRDb": {
+              "skill_description": "<p>Equipped passive: When you are hit by a Melee Attack, the attacker suffers <a class=\"content-link\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\">Envenomed</a>.</p>"
+            }
+          },
+          "item_type": "accessory",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Toxic Orb",
+          "optional_params": {},
+          "plant_ef": "100",
+          "refine_count": "0",
+          "refine_level": "0",
+          "related_item_list": {
+            "RoK94mEVE3pGNRDb": {
+              "related_item_description": "<p>Equipped passive: When you are hit by a Melee Attack, the attacker suffers <a class=\"content-link\" data-uuid=\"JournalEntry.XRlyg27yLgoQUOXZ\" data-id=\"XRlyg27yLgoQUOXZ\" data-type=\"JournalEntry\">Envenomed</a>.</p>"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.Xl16aahsbiCGM6oW",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": true,
+        "uniqueId": "Xl16aahsbiCGM6oW"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "V3J0CEH5PlvnV57A",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277822972,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.6.4"
+        },
+        "fucompanion": {
+          "itemMigratorBackup": {
+            "detectedType": "weapon",
+            "fromTemplate": "gIRU9XGqYeMBwBN9",
+            "itemId": "9G7GfCYAFNV1ojkx",
+            "itemName": "Beast Tamer",
+            "pickedOldProps": {
+              "cost": "1000",
+              "martial": false
+            },
+            "ts": 1769647435245
+          }
+        }
+      },
+      "folder": "SytaFVloXb4Fnryp",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1971.gif",
+      "name": "Beast Tamer",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 400000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Flail",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "8",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p><a class=\"content-link\" data-uuid=\"JournalEntry.Cz6U0ps98sYN8jMH\" data-id=\"Cz6U0ps98sYN8jMH\" data-type=\"JournalEntry\">Conquer</a><strong><span style=\"text-decoration: underline;\">&nbsp;5 </span></strong>inflicts <a class=\"content-link\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\">Frightened</a>&nbsp;on the target if the target belong to the <strong>Beast</strong> species</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "1000",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_skill_passive": {
+            "VMMFIPkPQe0y8VUt": {
+              "skill_description": "<p>Equipped passive: Conquer 5 — when you beat a Beast creature's Defense by 5 or more with this weapon, it suffers <a class=\"content-link\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\">Frightened</a>.</p>"
+            }
+          },
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Beast Tamer",
+          "optional_params": {},
+          "plant_ef": "100",
+          "related_item_list": {
+            "VMMFIPkPQe0y8VUt": {
+              "related_item_description": "<p>Equipped passive: Conquer 5 — when you beat a Beast creature's Defense by 5 or more with this weapon, it suffers <a class=\"content-link\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\">Frightened</a>.</p>"
+            }
+          },
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "DEX",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "9G7GfCYAFNV1ojkx"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "V4wYZ6uPlBQka4VT",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277609970,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "Au1WXrPW7OvRxpvk",
+      "img": "icons/weapons/polearms/glaive-simple.webp",
+      "name": "Light Spear",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Spear",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "8",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>No Quality.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "200",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Light Spear",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "set_description": "",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "lwiRyGVkk7Y9NruJ"
       },
       "type": "equippableItem"
     },
@@ -10698,7 +13853,7 @@
           "item_cost": "25",
           "item_def_bonus": "0",
           "item_mdef_bonus": "0",
-          "item_quantity": 1,
+          "item_quantity": 2,
           "item_rarity": "Common",
           "item_skill_active": {
             "LzSawvHFNBA5CdEa": {
@@ -11380,6 +14535,173 @@
       "type": "equippableItem"
     },
     {
+      "_id": "wdpuIx1xlXgosbYr",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277824748,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "86vqr6Rr1MGBCXrX",
+      "img": "icons/weapons/daggers/dagger-black.webp",
+      "name": "Steel Dagger",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 100000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Dagger",
+          "celestial_ef": "100",
+          "check_bonus": "1",
+          "construct_ef": "100",
+          "damage_bonus": "4",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>No Quality.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "150",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Steel Dagger",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "set_description": "",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "ZXaslUkB4sJRWJn3"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "WxoYe7vMKGDnOaSy",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277611018,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "4.8.5"
+        }
+      },
+      "folder": "ft3358qUh5ZDldYQ",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/Weapon/1971.gif",
+      "name": "Beast Tamer (Passive)",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 0
+      },
+      "sort": 0,
+      "system": {
+        "container": "11xp0WOEn0lEvArH",
+        "props": {
+          "description": "<p>Equipped passive: Conquer 5 — when you beat a Beast creature's Defense by 5 or more with this weapon, it suffers <a class=\"content-link\" data-uuid=\"JournalEntry.TOF8epes1eGHwx5J\" data-id=\"TOF8epes1eGHwx5J\" data-type=\"JournalEntry\">Frightened</a>.</p>",
+          "effect_table": {
+            "0": {
+              "ae_duplicate_mode": "replace",
+              "ae_template_ref": "Frightened",
+              "effect_kind": "apply_ae",
+              "effect_label": "btamer_fright",
+              "target_ref": "trigger_subject"
+            }
+          },
+          "isReaction": true,
+          "max_level": "1",
+          "name": "Beast Tamer (Passive)",
+          "reaction_config_table": {
+            "0": {
+              "condition_formula": "HIT_MARGIN >= 5 && TARGET_SPECIES_IS_BEAST == 1 && DAMAGE_IS_HP == 1",
+              "reaction_action_intent": "",
+              "reaction_action_kind": "",
+              "reaction_action_target": "",
+              "reaction_cause_filter": "",
+              "reaction_damage_source": "",
+              "reaction_effect_ref": "btamer_fright",
+              "reaction_max_per_round": "",
+              "reaction_max_scope": "",
+              "reaction_origin_filter": "",
+              "reaction_ownership": "",
+              "reaction_passive_mode": "on",
+              "reaction_passive_target": "",
+              "reaction_requires_weapon_used": true,
+              "reaction_resource_filter": "",
+              "reaction_responder": "",
+              "reaction_source": "self",
+              "reaction_source_skill": "",
+              "reaction_status_filter": "",
+              "reaction_subject_kind": "",
+              "reaction_trigger": "creature_deals_damage",
+              "requires_skill": ""
+            }
+          },
+          "rolled_atr1": "-",
+          "rolled_atr2": "-",
+          "skill_type": "Passive"
+        },
+        "template": "j0F5Msw5RZ8aIB3j",
+        "templateSystemUniqueVersion": 2125250754,
+        "unique": false,
+        "uniqueId": "VMMFIPkPQe0y8VUt"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "xKB174OGzyfeque1",
       "_stats": {
         "compendiumSource": null,
@@ -11505,6 +14827,124 @@
         "templateSystemUniqueVersion": 3202566307,
         "unique": false,
         "uniqueId": "vifu2MB7Q9daEa8I"
+      },
+      "type": "equippableItem"
+    },
+    {
+      "_id": "ymFZqKQHm9XXHnuu",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277611726,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "AW77WJGta3x8x3dy",
+      "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
+      "name": "Nekode",
+      "ownership": {
+        "2vy7wrEUqBy0kzsU": 3,
+        "6DmgigM5jq76r0Gd": 3,
+        "7hKw8KGsimboeDif": 3,
+        "9sFgrDy4MvAgoCmQ": 3,
+        "Am7qxPOavfKeDGPd": 3,
+        "JQGNzKpDPHJmcUIW": 3,
+        "JvF9tXvr7aaiS06m": 3,
+        "KD5d0efqHETPpIux": 3,
+        "LT3Z8EnRdMVk5ncQ": 3,
+        "MwTL6zXFCEpVBTpI": 3,
+        "NozW36XIGEGx7oVH": 3,
+        "NpGkA7uxaarkPiwS": 3,
+        "ULBTZPjtza939Mvy": 3,
+        "WQGFvLStTZeWGpak": 3,
+        "default": 3,
+        "eGu3tuw7HwJd2bpx": 3,
+        "iLeUVmwqnze8ulOI": 3,
+        "mE5aEkDlrQJIYyhG": 3,
+        "nSGZ1sz1rdKao0kz": 3,
+        "nXC7OD7u5Zw5UDDU": 3,
+        "t41knaXNbgCEygM5": 3,
+        "tz9BP9MKfNGf2P3n": 3,
+        "wNzPmItLYCKE1I8t": 3,
+        "yL2PQxh3R9ddt0te": 3,
+        "yUfwoVmEPVdFG3AY": 3
+      },
+      "sort": 1400000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Brawling",
+          "celestial_ef": "100",
+          "check": "Check",
+          "check_bonus": "1",
+          "construct_ef": "100",
+          "damage_bonus": "6",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>No Quality</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "id": "1ebDiGGj6CbtftRI",
+          "img": "https://assets.forge-vtt.com/610d918102e7ac281373ffcb/Item%20Icon/glove.png",
+          "insect_ef": "100",
+          "ip_cost": "",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isRelatedItem": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "250",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Uncommon",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Nekode",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "MIG",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "uuid": "Item.1ebDiGGj6CbtftRI",
+          "vehicle_ef": "100",
+          "weapon_range": "Melee"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "1ebDiGGj6CbtftRI"
       },
       "type": "equippableItem"
     },
@@ -11697,6 +15137,96 @@
       "type": "equippableItem"
     },
     {
+      "_id": "zjC94AonwZt3bYgV",
+      "_stats": {
+        "compendiumSource": null,
+        "coreVersion": "12.343",
+        "createdTime": 1795277610500,
+        "duplicateSource": null,
+        "systemId": "custom-system-builder",
+        "systemVersion": "4.8.5"
+      },
+      "flags": {
+        "custom-system-builder": {
+          "version": "3.2.4"
+        }
+      },
+      "folder": "eRO7SiTYBFPbHaaY",
+      "img": "icons/weapons/thrown/shuriken-blue.webp",
+      "name": "Shuriken",
+      "ownership": {
+        "JQGNzKpDPHJmcUIW": 3,
+        "default": 3
+      },
+      "sort": 200000,
+      "system": {
+        "container": null,
+        "props": {
+          "active_effect_config_table": {},
+          "aquatic_ef": "100",
+          "automaton_ef": "100",
+          "avian_ef": "100",
+          "beast_ef": "100",
+          "category": "Thrown",
+          "celestial_ef": "100",
+          "check_bonus": "0",
+          "construct_ef": "100",
+          "damage_bonus": "4",
+          "demiHuman_ef": "100",
+          "demon_ef": "100",
+          "description": "<ul><li><p>No Quality.</p></li></ul>",
+          "dragon_ef": "100",
+          "elemental_ef": "100",
+          "enforcer_ef": "100",
+          "fey_ef": "100",
+          "flora_ef": "100",
+          "fungus_ef": "100",
+          "golem_ef": "100",
+          "gorger_ef": "100",
+          "hand_slots": "One-handed",
+          "human_ef": "100",
+          "humanoid_ef": "100",
+          "insect_ef": "100",
+          "isEquipped": false,
+          "isKey": false,
+          "isMartial": false,
+          "isModule": false,
+          "isSet": false,
+          "isUnique": false,
+          "item_baseDef": "0",
+          "item_baseMdef": "0",
+          "item_cost": "150",
+          "item_def_bonus": "0",
+          "item_mdef_bonus": "0",
+          "item_quantity": 1,
+          "item_rarity": "Common",
+          "item_type": "weapon",
+          "mimic_ef": "100",
+          "monster_ef": "100",
+          "name": "Shuriken",
+          "optional_params": {},
+          "plant_ef": "100",
+          "reptilian_ef": "100",
+          "rolled_atr1": "DEX",
+          "rolled_atr2": "INS",
+          "set_description": "",
+          "set_name": "",
+          "skill_target": "One Enemy",
+          "soldier_ef": "100",
+          "spirit_ef": "100",
+          "type_damage": "Physical",
+          "undead_ef": "100",
+          "vehicle_ef": "100",
+          "weapon_range": "Ranged"
+        },
+        "template": "ZoiV53VaLzeRsEps",
+        "templateSystemUniqueVersion": 3202566307,
+        "unique": false,
+        "uniqueId": "tJiWXfzVWVwf6WKJ"
+      },
+      "type": "equippableItem"
+    },
+    {
       "_id": "zo95XuaxFO7dOAaS",
       "_stats": {
         "compendiumSource": null,
@@ -11783,7 +15313,7 @@
           "item_cost": "200",
           "item_def_bonus": "0",
           "item_mdef_bonus": "0",
-          "item_quantity": "1",
+          "item_quantity": 0,
           "item_rarity": "Rare",
           "item_type": "consumable",
           "mimic_ef": "100",
@@ -12848,7 +16378,7 @@
       "party_member_4": "",
       "party_update_macro": "Update",
       "poison_tile_percentage": "0",
-      "random_battle_percentage": "44",
+      "random_battle_percentage": "55",
       "random_battle_tile_percentage": "60",
       "recipe_list": {
         "32IdnR3tifOIbDCD": {
@@ -13477,7 +17007,7 @@
         }
       },
       "weapon_tile_percentage": "1",
-      "zenit": 7848,
+      "zenit": 6919,
       "zenit_global_multiplier": "1"
     },
     "statusEffects": {},
