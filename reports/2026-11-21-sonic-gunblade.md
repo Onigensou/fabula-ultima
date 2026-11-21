@@ -185,7 +185,7 @@ Setup: same sandbox (real Foundry server :30152, copy of the real world, code at
   - The volley still resolved (`Chain 8: 2 / MISS / MISS / 2 / …`, applied 4) and the battle went on to the next action at once. No stall.
   - With other viewers connected the GM never skips (by design, in director-animation.js): the script runs and players see it, and only the GM's own render speed matters.
 - **Heads-up, not a blocker:** the per-strike yields scale with how busy the host's main thread is. At the measured real-host load (~30 FPS, see host perf notes) that is roughly 10 yields × 7 strikes × ≤33 ms ≈ ≤2.3 s worst case, well inside 35 s.
-- **Harness note:** the canvas-off flag in my untracked sandbox REPL did not take effect. Runner results are unaffected; the snapshot runner sets canvas off correctly.
+- **Harness note:** the canvas-off flag in my untracked sandbox REPL did not take effect (the canvas loaded and rendered in software). Checked only for the sandbox REPL, not for the snapshot runner, which was fast throughout.
 
 ### B. +10 flat bonus (36 instead of 66): not reproducible, so a harness race, not an engine bug
 - Snapshot runner, `--code ea92a618`, Blanche +10 melee AE:
