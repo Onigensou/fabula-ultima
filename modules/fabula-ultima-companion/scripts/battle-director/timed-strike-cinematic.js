@@ -325,7 +325,7 @@ class Cine {
       CD.x = lerp(CD.x, g.x, k); CD.y = lerp(CD.y, g.y, k); CD.r = lerp(CD.r, g.r, k); CD.z = Math.exp(lerp(Math.log(CD.z), Math.log(g.z), k));
       CD.punch *= Math.exp(-dt / 120);
     }
-    if (this.homing) return;   // camHome drives the view itself
+    if (this.camHoming) return;   // camHome drives the view itself
     this.writeCamera({ x: CD.x, y: CD.y, z: CD.z * (1 + CD.punch), r: CD.r });
   }
   // roll = CSS rotation of the board and the overlay, with the scale that keeps the view covered;
@@ -355,7 +355,7 @@ class Cine {
     const CD = this.CD; CD.follow = null; CD.punch = 0;
     const st = canvas.stage, from = { x: st.pivot.x, y: st.pivot.y, s: st.scale.x, r: CD.r };
     const to = restViewFor(canvas.scene);
-    this.homing = true;
+    this.camHoming = true;
     await this.tween(ms, EASE.sine, (t) => {
       const r = lerp(from.r, 0, t);
       this.applyView({ x: lerp(from.x, to.x, t), y: lerp(from.y, to.y, t), scale: Math.exp(lerp(Math.log(from.s), Math.log(to.scale), t)) });
