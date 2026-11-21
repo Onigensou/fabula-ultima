@@ -108,3 +108,52 @@ Runner, base `8a41eb0e` vs branch, same forced dice:
   - Lucky Mallet's Crush and Arcana Avant's ignore_absorption are keyword ops folded at the card either way.
   - Visible effect for players: the passive cards now appear.
 - **Data/text mismatch, not touched:** Gae Bolg's text says "200% damage", its row multiplies ×3.
+
+## Round 3 (11-22): rebased check, real-server first boot, player client
+On the rebased branch (`e4bce690` = origin/main `8fdffb7b` + this branch).
+
+### 1. Runner check against the rebased code
+Headless, canvas off, `--code e4bce690`; all scenarios as in round 2:
+- Sonic Blow:
+  - 8/8 → Perfect +29, total 87;
+  - 5/8 with a crit (3★), no Perfect;
+  - all crits → +37 Perfect;
+  - no Opportunity in any run;
+  - MP −30.
+- Gunblade: odd 23 Fire, even 13, crit 24 Fire (with the Inner Wellspring removed). Firearm profile: DEX/INS, Ranged, HR+5. Transform after the action, once per round.
+- Edge cases: Resistant 24, Vulnerable 72, Perfect kill 30 → 0.
+- One flaky case: the +10 flat bonus did not apply in one combined run (36). It gave 66 when run alone in round 2.
+  - The action card's COMPUTE still saw the bonus (the "Volley: bonuses shared" part is present).
+  - The strikes did not: the test AE on the actor's prop seems to be lost before CONFIRM.
+  - Looks like a harness artifact, but not confirmed.
+
+### 2. Real V12 server first boot (sandbox, real world copy, branch code)
+- Setup: own sandbox dataPath + headless Foundry server on :30152, per the sandbox-test notes.
+  - Copy of the current real world `fabula-ultima-2` (data, packs, assets, cutscene-data, world.json; 57 MB).
+  - `Data/modules/*` as junctions to the real modules, except `fabula-ultima-companion` → this worktree; `systems` junctioned.
+  - The Staging World could not be used: its `Data` is a junction to the real `Data/`, so it serves whatever module code is checked out there.
+- GM joined headless with the console attached before join (`tools/fvtt-playwright/scripts/sandbox-boot-log.mjs`, 12,013 lines kept).
+- Boot console:
+  - `1 migration(s) to run: [2026-11-21-sonic-gunblade]`
+  - `- Sonic Katar: old 'Sonic Blow (Attacks)' effect` (MRNqlSDgr9sHwLUh deleted)
+  - `- Sonic Blow: old marker effect` (R6nXJ0cWiEaXA3RX deleted)
+  - `… complete — 1 ran, 0 failed, 178 total`
+- 0 page errors, no error lines during the migration. Ledger on the second boot: 179 entries.
+
+### 3. Player client (same sandbox; GM headless, the player Blumairwen = Keren on a visible GPU client)
+Driven through the real UI: `scripts/sandbox-repl.mjs`.
+- **Sonic Blow from the player's own menu:**
+  - Steps: Skill → "⚔️ Sonic Blow 30 MP" (listed as an item-granted skill) → target picker → Psychokinesis die-swap prompt → the action card's Confirm on the player client.
+  - GM log: `DECLARE: winner=remote, command=Skill` → `TARGET — command: Attack` → `pseudo-weapon "Sonic Blow"` → `Chain 8 (volley): MISS / 3 / MISS / MISS / MISS / MISS / 4★ / MISS`, applied 7.
+  - MP 72 → 42. No Opportunity despite the crit.
+  - Problem: ANIMATION ended by its state timeout (~33 s) instead of the gate. The GM here ran headless with the canvas off, so the GM-side cinematic most likely never ran. Not seen in the runner's canvas-on GPU runs; needs a real GM look.
+- **Before-action transform through the real Equipment card:**
+  - Equipment → TRANSFORM row "Main-hand form · Gunblade" → Firearm chip → "Free Action — won't end your turn" → Done.
+  - GM log: `CONFIRM equipment economy: FREE (return to menu)`, form 1, transformFreeUsedRound = 1, back to the Octopath.
+  - The Attack menu then showed "Gunblade · Physical · Ranged · DEX + INS · HR + 5"; dice DEX d8 + INS d12; applied 20.
+- **Turn-end ask after a before-action transform:** not offered (`WEAPON_TRANSFORM_FREE == 1 → 0`), so one transform per round holds across both paths.
+- **Turn-end ask on the player client (round 2, no transform before):** "Gunblade: Transform · When at the end of your turn · Target Self · Cost Free" appeared on the player's reaction hand. Clicking it used it: `transform_weapon: Keren's Gunblade → Sword (changed)`, form 0, stamp round 2.
+- Evidence shots: `spec/player-client/` (skill-menu, sonic-blow-targets, equipment-card-firearm-chip, firearm-attack-dex-ins).
+- Small UI note: in the Skill menu the left preview card kept showing "Birth of the Cruel: Dismiss" after Sonic Blow was selected. Probably stale preview from the programmatic row click; not checked with a mouse.
+
+Teardown: sandbox server stopped, junctions removed (0 reparse points left), sandbox folder deleted, browsers closed.
