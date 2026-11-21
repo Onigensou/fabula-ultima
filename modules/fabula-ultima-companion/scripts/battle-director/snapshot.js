@@ -4,6 +4,7 @@
 // view rather than racing with live document mutations.
 
 import { warn } from "./logger.js";
+import { isPermanentSoulFragment } from "./battlefield-object.js";
 import { crisisThreshold } from "./crisis-reactor.js";
 import { getActorKind, getNpcAttackItems } from "./actor-shape.js";
 import { buildSkillResolver, evaluateFormula, isFormulaString, registerBlockedActionReader, isHealReversedActor, isReviveKillTarget } from "./skill-formulas.js";
@@ -1920,6 +1921,71 @@ export function hasUnconditionalTargetBlock(actor) {
   return false;
 }
 
+// OPPONENT-ONLY block — `cannot_be_targeted_by: "opponent"` (Nox Servant). The
+// token is NOT `any`, so hasUnconditionalTargetBlock ignores it and ALLY pools
+// still list the holder. It is performer-RELATIVE, so it needs the performer:
+// "cannot be targeted by an action whose performer is an opponent of the holder".
+//   - same actor (uuid)                      -> not blocked (self carve-out)
+//   - natural side "enemy" (opposite signed dispositions), OR the performer's
+//     allegiance overrides (Charm/Domination) reclassify the holder as "enemy"
+//     -> blocked. Neutral (disposition 0 on either side) is not an opponent.
+//   - holder has the block but performer unknown -> BLOCKED (fail closed, logged).
+// opts: { attackerDisp, targetDisp, attackerTokenUuid, targetTokenUuid }.
+// Mirrors (zero-import) must keep in step: visible-token-picker.js, and the B3 set.
+export function opponentBlockTokenPresent(actor) {
+  for (const b of getTargetSideBlocks(actor)) {
+    if (b?.ranges?.has?.("opponent")) return true;
+  }
+  return false;
+}
+
+function _dispositionOfActor(actor, dCombat = null) {
+  try {
+    // Placed token first (the director's dCombat roster, then game.combat, then a live token);
+    // the PROTOTYPE is only the last resort. Unknown stays null => callers fail closed.
+    let d = null;
+    try {
+      const dc = dCombat ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()?.dCombat;
+      const c = dc?.combatants?.find?.((x) => x.actorDoc === actor || (actor?.uuid && x.actorDoc?.uuid === actor.uuid));
+      d = c?.tokenDoc?.disposition ?? null;
+    } catch { d = null; }
+    if (d == null) d = globalThis.game?.combat?.combatants?.find?.((c) => c.actor === actor)?.token?.disposition;
+    if (d == null) {
+      const t = actor?.getActiveTokens?.(true, true)?.[0];
+      d = t?.document?.disposition ?? t?.disposition;
+    }
+    if (d == null) d = actor?.prototypeToken?.disposition;
+    const n = d == null ? NaN : Number(d);
+    return Number.isFinite(n) ? n : null;
+  } catch { return null; }
+}
+
+export function isTargetBlockedFor(targetActor, performerActor, opts = {}) {
+  // Same predicate for two holders: a Nox Servant (`opponent` block token) and a Servant's PERMANENT
+  // Soul Fragment (party-only: the party side may not target it; Nidhogg's side still can, so Soul
+  // Devour keeps working). The fragment is a -1 token, so "opponent of the holder" = the party.
+  if (!targetActor || !(opponentBlockTokenPresent(targetActor) || isPermanentSoulFragment(targetActor))) return false;
+  if (!performerActor) {
+    warn("isTargetBlockedFor: opponent block / permanent fragment present but performer unknown; refusing (fail closed)", targetActor?.name);
+    return true;
+  }
+  if (performerActor === targetActor || (performerActor.uuid && performerActor.uuid === targetActor.uuid)) return false;
+  const aD = opts.attackerDisp ?? _dispositionOfActor(performerActor, opts.dCombat ?? null);
+  const tD = opts.targetDisp ?? _dispositionOfActor(targetActor, opts.dCombat ?? null);
+  const aN = Number(aD), tN = Number(tD);
+  const known = aD != null && tD != null && Number.isFinite(aN) && Number.isFinite(tN);
+  const natural = !known ? "unknown"
+    : (aN === 0 || tN === 0) ? "neutral"
+    : (aN === tN ? "ally" : "enemy");
+  const eff = applyAllegianceOverride(natural, opts.targetTokenUuid ?? null, targetActor.uuid ?? null, getAllegianceOverrides(performerActor));
+  if (natural === "enemy" || eff === "enemy") return true;
+  if (natural === "unknown" && eff === "unknown") {
+    warn("isTargetBlockedFor: dispositions unknown; refusing (fail closed)", targetActor?.name);
+    return true;
+  }
+  return false;
+}
+
 // The AE name behind the block. NOT yet wired into the picker: blocked creatures
 // are dropped from the pool outright rather than pushed to `excluded`, so no
 // greyed row is produced for them (unlike cannot_target_uuids, which does
@@ -2014,6 +2080,8 @@ export function snapshotEligibleTargetsFromDCombat(dCombat, attackerSnapshot, { 
     // any Self-targeted skill it is ever given. Mirrors the isSelf carve-out in
     // ActionReader's countSceneTargetsForRelation.
     if (c.id !== attackerSnapshot?.combatantId && hasUnconditionalTargetBlock(actor)) continue;
+    if (c.id !== attackerSnapshot?.combatantId
+      && isTargetBlockedFor(actor, attackerActor, { attackerDisp: attackerSnapshot?.disposition, targetDisp: c.disposition ?? token.disposition ?? 0, targetTokenUuid: token.uuid, dCombat })) continue;
     const disp = c.disposition ?? token.disposition ?? 0;
     const hp = readPropNum(actor, ["current_hp", "hp"]);
     // Downed creatures belong to a KO pool only (see targetsKnockedOut).
@@ -2607,6 +2675,8 @@ export function snapshotEligibleTargets(combat, attackerSnapshot, { category = "
     // any Self-targeted skill it is ever given. Mirrors the isSelf carve-out in
     // ActionReader's countSceneTargetsForRelation.
     if (c.id !== attackerSnapshot?.combatantId && hasUnconditionalTargetBlock(actor)) continue;
+    if (c.id !== attackerSnapshot?.combatantId
+      && isTargetBlockedFor(actor, attackerActor, { attackerDisp: attackerSnapshot?.disposition, targetDisp: token.disposition, targetTokenUuid: token.uuid })) continue;
     const disp = token.disposition;
     const hp = readPropNum(actor, ["current_hp", "hp"]);
     // Downed creatures belong to a KO pool only (see targetsKnockedOut).

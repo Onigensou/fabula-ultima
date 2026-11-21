@@ -93,6 +93,10 @@ import { initSoulFx } from "../conflict-event/soul-fx/soul-fx-runtime.js";
 import { initSealingCrystal } from "../sealing-crystal/crystal-runtime.js";
 import { initHudCurtain } from "../shared/hud-curtain.js";
 import { initNidhoggFall } from "../sealing-crystal/nidhogg-fall-show.js";
+import { initNidhoggReturn } from "../sealing-crystal/nidhogg-return-show.js";
+// Battle openings (a boss that owns the battle start): the runtime + Nidhogg's style (registers itself on import).
+import { initBattleOpening } from "./battle-opening.js";
+import { initNidhoggAwakening } from "../sealing-crystal/nidhogg-awakening-show.js";
 import { initOutOfPlayRender } from "./out-of-play-render.js";
 // Boss rules register themselves on import (boss-rules/boss-rules.js reads them at its seams).
 import { initBossCycle } from "./boss-rules/boss-cycle.js";
@@ -2095,6 +2099,10 @@ Hooks.once("ready", () => {
   // Nidhogg's fall -> his crystal (the show, every client) and the out-of-play drawing (any boss may use it).
   try { initNidhoggFall(); }
   catch (e) { warn("initNidhoggFall on ready threw", e); }
+  try { initNidhoggReturn(); }
+  catch (e) { warn("initNidhoggReturn on ready threw", e); }
+  try { initBattleOpening(); initNidhoggAwakening(); }
+  catch (e) { warn("initBattleOpening on ready threw", e); }
   try { initOutOfPlayRender(); }
   catch (e) { warn("initOutOfPlayRender on ready threw", e); }
   try { initBossCycle(); }

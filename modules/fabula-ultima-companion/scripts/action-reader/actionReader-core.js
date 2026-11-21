@@ -14,6 +14,68 @@
  *   Hooks.once("ready", () => registerActionReaderCore("your-module-id"));
  * ========================================================================== */
 
+// <<nox-opponent-mirror:begin>>
+// Zero-import MIRROR of isTargetBlockedFor (battle-director/snapshot.js): "target holds
+// cannot_be_targeted_by:opponent and the performer is an opponent by NATURAL side or by the
+// performer's allegiance override (Charm), or a Servant's permanent Soul Fragment vs the party.
+// Neutral (0) is not an opponent; performer or
+// dispositions unknown => blocked (fail closed). Drift-tested by
+// shared/target-block-drift.test.mjs; keep in step with snapshot.js.
+function _noxOpponentBlockedFor(target, performer, opts = {}) {
+  const live = (a) => (a?.appliedEffects ? Array.from(a.appliedEffects) : (a?.effects?.contents ?? Array.from(a?.effects ?? [])));
+  let has = false;
+  for (const ae of live(target)) {
+    if (ae?.disabled) continue;
+    for (const ch of (ae?.changes ?? [])) {
+      if (ch?.key !== "cannot_be_targeted_by") continue;
+      if (String(ch.value ?? "").trim().toLowerCase().split(/[\s,]+/).includes("opponent")) has = true;
+    }
+  }
+  // A Servant's PERMANENT Soul Fragment (snapshot.js isPermanentSoulFragment): same predicate.
+  if (!has) {
+    for (const ae of (Array.isArray(target?.effects) ? target.effects : Array.from(target?.effects?.contents ?? target?.effects ?? []))) {
+      const fl = ae?.flags?.["fabula-ultima-companion"];
+      if (fl?.soulFragmentMark === true && fl?.soulPermanent === true) { has = true; break; }
+    }
+  }
+  if (!has) return false;
+  if (!performer) return true;
+  if (performer === target || (performer.uuid && performer.uuid === target.uuid)) return false;
+  const aD = opts.performerDisp, tD = opts.targetDisp;
+  const aN = Number(aD), tN = Number(tD);
+  const known = aD != null && tD != null && Number.isFinite(aN) && Number.isFinite(tN);
+  const natural = !known ? "unknown" : (aN === 0 || tN === 0) ? "neutral" : (aN === tN ? "ally" : "enemy");
+  let eff = natural;
+  let gated = false;
+  for (const ae of live(performer)) {
+    if (ae?.disabled) continue;
+    for (const ch of (ae?.changes ?? [])) {
+      if (ch?.key !== "ignore_action_gating") continue;
+      const v = String(ch.value ?? "").trim();
+      if (v && v !== "0" && v.toLowerCase() !== "false") gated = true;
+    }
+  }
+  if (!gated) {
+    const tokenUuid = opts.targetTokenUuid ?? null, actorUuid = target.uuid ?? null;
+    outer: for (const ae of live(performer)) {
+      if (ae?.disabled) continue;
+      for (const ch of (ae?.changes ?? [])) {
+        if (ch?.key !== "allegiance_override") continue;
+        const raw = String(ch.value ?? "").trim();
+        const i = raw.indexOf(":");
+        if (i <= 0) continue;
+        const to0 = raw.slice(0, i).trim().toLowerCase();
+        const to = raw.slice(i + 1).trim().toLowerCase();
+        if (!to0 || (to !== "ally" && to !== "enemy")) continue;
+        if (to0 === natural || to0 === tokenUuid || to0 === actorUuid) { eff = to; break outer; }
+      }
+    }
+  }
+  if (natural === "enemy" || eff === "enemy") return true;
+  return natural === "unknown" && eff === "unknown";
+}
+// <<nox-opponent-mirror:end>>
+
 export const ACTION_READER_SYSTEM_NAME = "ActionReader";
 export const ACTION_READER_VERSION = "1.0.0";
 
@@ -632,6 +694,32 @@ export const ActionReaderCore = {
     return false;
   },
 
+  /* `cannot_be_targeted_by: "opponent"` (Nox Servant) for THIS performer. Opponent = opposite
+     RAW token dispositions (not getTokenDisposition: it bumps friendly+player to 2) OR the
+     performer's Charm override. Mirror of snapshot.js isTargetBlockedFor, drift-tested. A
+     missing performer is blocked (fail closed) when the holder carries the block. */
+  isOpponentBlockedFor(actor, tokenLike, performerActor, performerTokenLike) {
+    const raw = (t, a) => {
+      const td = this.getTokenDocument(t);
+      // Placed token first (given token, the director's roster, a live token); the PROTOTYPE last.
+      let d = td?.disposition;
+      if (d == null) {
+        try {
+          const dc = globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()?.dCombat;
+          d = dc?.combatants?.find?.((x) => x.actorDoc === a || (a?.uuid && x.actorDoc?.uuid === a.uuid))?.tokenDoc?.disposition;
+          if (d == null) { const lt = a?.getActiveTokens?.(true, true)?.[0]; d = lt?.document?.disposition ?? lt?.disposition; }
+        } catch (_) { d = null; }
+      }
+      if (d == null) d = a?.prototypeToken?.disposition;
+      return d ?? null;
+    };
+    return _noxOpponentBlockedFor(actor, performerActor, {
+      performerDisp: raw(performerTokenLike, performerActor),
+      targetDisp: raw(tokenLike, actor),
+      targetTokenUuid: this.getTokenDocument(tokenLike)?.uuid ?? null
+    });
+  },
+
   isUntargetableToken(tokenLike) {
     return this.isUntargetableActor(this.getTokenActor(tokenLike));
   },
@@ -815,6 +903,8 @@ export const ActionReaderCore = {
       // would make relation "self" count 0, and feasibility would silently drop
       // any Self-targeted skill a guest ever gets.
       if (!isSelf && this.isUntargetableActor(actor)) continue;
+      // Opponent-only block (Nox Servant): not a body this performer can ever reach.
+      if (!isSelf && this.isOpponentBlockedFor(actor, tokenDoc, performerActor, performerTokenDoc)) continue;
       const rel = this.relationToPerformer(this.getTokenDisposition(tokenDoc), performerDisposition);
 
       switch (relation) {

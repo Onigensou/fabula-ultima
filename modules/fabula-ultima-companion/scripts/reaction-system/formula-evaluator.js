@@ -57,6 +57,68 @@ function _isUntargetable(a) {
   return false;
 }
 
+// <<nox-opponent-mirror:begin>>
+// Zero-import MIRROR of isTargetBlockedFor (battle-director/snapshot.js): "target holds
+// cannot_be_targeted_by:opponent and the performer is an opponent by NATURAL side or by the
+// performer's allegiance override (Charm), or a Servant's permanent Soul Fragment vs the party.
+// Neutral (0) is not an opponent; performer or
+// dispositions unknown => blocked (fail closed). Drift-tested by
+// shared/target-block-drift.test.mjs; keep in step with snapshot.js.
+function _noxOpponentBlockedFor(target, performer, opts = {}) {
+  const live = (a) => (a?.appliedEffects ? Array.from(a.appliedEffects) : (a?.effects?.contents ?? Array.from(a?.effects ?? [])));
+  let has = false;
+  for (const ae of live(target)) {
+    if (ae?.disabled) continue;
+    for (const ch of (ae?.changes ?? [])) {
+      if (ch?.key !== "cannot_be_targeted_by") continue;
+      if (String(ch.value ?? "").trim().toLowerCase().split(/[\s,]+/).includes("opponent")) has = true;
+    }
+  }
+  // A Servant's PERMANENT Soul Fragment (snapshot.js isPermanentSoulFragment): same predicate.
+  if (!has) {
+    for (const ae of (Array.isArray(target?.effects) ? target.effects : Array.from(target?.effects?.contents ?? target?.effects ?? []))) {
+      const fl = ae?.flags?.["fabula-ultima-companion"];
+      if (fl?.soulFragmentMark === true && fl?.soulPermanent === true) { has = true; break; }
+    }
+  }
+  if (!has) return false;
+  if (!performer) return true;
+  if (performer === target || (performer.uuid && performer.uuid === target.uuid)) return false;
+  const aD = opts.performerDisp, tD = opts.targetDisp;
+  const aN = Number(aD), tN = Number(tD);
+  const known = aD != null && tD != null && Number.isFinite(aN) && Number.isFinite(tN);
+  const natural = !known ? "unknown" : (aN === 0 || tN === 0) ? "neutral" : (aN === tN ? "ally" : "enemy");
+  let eff = natural;
+  let gated = false;
+  for (const ae of live(performer)) {
+    if (ae?.disabled) continue;
+    for (const ch of (ae?.changes ?? [])) {
+      if (ch?.key !== "ignore_action_gating") continue;
+      const v = String(ch.value ?? "").trim();
+      if (v && v !== "0" && v.toLowerCase() !== "false") gated = true;
+    }
+  }
+  if (!gated) {
+    const tokenUuid = opts.targetTokenUuid ?? null, actorUuid = target.uuid ?? null;
+    outer: for (const ae of live(performer)) {
+      if (ae?.disabled) continue;
+      for (const ch of (ae?.changes ?? [])) {
+        if (ch?.key !== "allegiance_override") continue;
+        const raw = String(ch.value ?? "").trim();
+        const i = raw.indexOf(":");
+        if (i <= 0) continue;
+        const to0 = raw.slice(0, i).trim().toLowerCase();
+        const to = raw.slice(i + 1).trim().toLowerCase();
+        if (!to0 || (to !== "ally" && to !== "enemy")) continue;
+        if (to0 === natural || to0 === tokenUuid || to0 === actorUuid) { eff = to; break outer; }
+      }
+    }
+  }
+  if (natural === "enemy" || eff === "enemy") return true;
+  return natural === "unknown" && eff === "unknown";
+}
+// <<nox-opponent-mirror:end>>
+
 Hooks.once("ready", () => {
   const KEY = "oni.ReactionFormula";
   if (window[KEY]) {
@@ -368,6 +430,7 @@ Hooks.once("ready", () => {
       reactorToken?.document?.disposition
       ?? reactorToken?.disposition
       ?? combat?.combatants?.find?.((c) => c.actor === reactorActor)?.token?.disposition
+      ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()?.dCombat?.combatants?.find?.((c) => c.actorDoc === reactorActor)?.tokenDoc?.disposition
       ?? reactorActor?.prototypeToken?.disposition
     );
     if (!Number.isFinite(myDisp) || myDisp === 0) return 0;
@@ -376,6 +439,7 @@ Hooks.once("ready", () => {
     const consider = (a, disp) => {
       if (!a || a === reactorActor || seen.has(a)) return;
       if (_isUntargetable(a)) return; // untargetable by anything — never counted
+      if (_noxOpponentBlockedFor(a, reactorActor, { performerDisp: myDisp, targetDisp: disp })) return; // Nox Servant
       const d = Number(disp);
       if (!Number.isFinite(d) || d * myDisp >= 0) return; // not an enemy
       seen.add(a); n++;
@@ -400,6 +464,7 @@ Hooks.once("ready", () => {
       reactorToken?.document?.disposition
       ?? reactorToken?.disposition
       ?? combat?.combatants?.find?.((c) => c.actor === reactorActor)?.token?.disposition
+      ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()?.dCombat?.combatants?.find?.((c) => c.actorDoc === reactorActor)?.tokenDoc?.disposition
       ?? reactorActor?.prototypeToken?.disposition
     );
     if (!Number.isFinite(myDisp) || myDisp === 0) return false;
@@ -418,6 +483,7 @@ Hooks.once("ready", () => {
     const consider = (a, disp) => {
       if (!a || a === reactorActor || seen.has(a)) return false;
       if (_isUntargetable(a)) return false; // untargetable by anything — never counted
+      if (_noxOpponentBlockedFor(a, reactorActor, { performerDisp: myDisp, targetDisp: disp })) return false; // Charmed reactor
       const d = Number(disp);
       if (!Number.isFinite(d) || d * myDisp <= 0) return false; // ally = same-sign
       seen.add(a);

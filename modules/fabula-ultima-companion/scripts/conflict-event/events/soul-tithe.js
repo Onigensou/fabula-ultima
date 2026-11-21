@@ -49,6 +49,7 @@
 // ============================================================================
 
 import { registerConflictEvent } from "../conflict-event-registry.js";
+import { isPermanentSoulFragment } from "../../battle-director/battlefield-object.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -127,6 +128,29 @@ export function lockWound({ ownerMax, ownerHp } = {}) {
   const hp = whole(ownerHp);
   if (hp <= 0) return 0;
   return Math.max(0, whole(ownerMax) - Math.max(hp, MAX_HP_FLOOR));
+}
+
+/**
+ * The Nox Servant's tear: every Max HP but the floor. Current HP is clamped to the
+ * new Max (a direct write, so the Servant's HP floor never has to block it).
+ */
+export function servantTear({ ownerMax, ownerHp } = {}) {
+  const max = Math.max(0, whole(ownerMax));
+  const stolen = callingSteal({ fragmentHp: max, ownerMax: max });
+  const nextMax = max - stolen;
+  return { stolen, ownerMax: nextMax, ownerHp: Math.min(Math.max(0, whole(ownerHp)), nextMax) };
+}
+
+/**
+ * What the Servant step does for one Servant. Pure, so the decision table is testable.
+ * "keep" = a permanent fragment already stands; "mark" = a standing ordinary fragment
+ * becomes permanent (the normal lock may still add a wound); "tear" = none stands, tear
+ * all but the floor; "wait" = KO'd (unless `tearDown`) or nothing left to tear.
+ */
+export function servantStep({ hasFragment, fragmentPermanent, ownerMax, ownerHp, tearDown = false } = {}) {
+  if (whole(ownerHp) <= 0 && !tearDown) return "wait";
+  if (hasFragment) return fragmentPermanent ? "keep" : "mark";
+  return servantTear({ ownerMax, ownerHp }).stolen > 0 ? "tear" : "wait";
 }
 
 /** The owner's HP once their fragment is destroyed. A KO'd owner stays down. */
@@ -252,6 +276,47 @@ function players(ctx) {
   });
 }
 
+/**
+ * Who a `noxServant` request names: the token ids of `tokens`, and, when the trigger
+ * subject had no token uuid (so `tokens` is empty), the subject's actor uuid from the
+ * firing payload.
+ */
+export function noxSubjectKeys(request = {}) {
+  const ids = new Set((request.tokens ?? []).map((t) => t?.id ?? t?.document?.id).filter(Boolean));
+  const actorUuids = new Set();
+  if (!ids.size) {
+    const u = request.effectCtx?.payload?.subjectActorUuid ?? request.effectCtx?.subjectActorUuid ?? null;
+    if (u) actorUuids.add(u);
+  }
+  return { ids, actorUuids };
+}
+
+const ZP_PROP = "system.props.zero_power_value";
+const ZP_HARD_CAP = 6;   // resources.js RESOURCE_REGISTRY.zero_power.hardMax
+
+/** The next Zero Power value after `n` gains, clamped to the hard cap (never lowers a total above it). */
+export function nextNoxZeroPower(current, n) {
+  const cur = Number(current) || 0;
+  return Math.max(cur, Math.min(ZP_HARD_CAP, cur + (Number(n) || 0)));
+}
+
+/** +n Zero Power on the reactor (Nidhogg), GM only. Returns the written value, or null. */
+export async function grantNoxZeroPower(actor, n, ctx = {}) {
+  try {
+    if (!actor || !(n > 0) || !globalThis.game?.user?.isGM) return null;
+    const cur = Number(actor.system?.props?.zero_power_value) || 0;
+    const next = nextNoxZeroPower(cur, n);
+    if (next === cur) return null;
+    await actor.update({ [ZP_PROP]: next });
+    return next;
+  } catch (e) { ctx.warn?.("noxServant: Zero Power grant failed", e); return null; }
+}
+
+/** A combatant-level Servant test from an actor-level predicate. */
+function servantOf(isServant) {
+  return (owner) => { try { return !!isServant(owner?.actorDoc); } catch { return false; } };
+}
+
 function fragmentCombatants(ctx) {
   return (ctx.dCombat?.combatants ?? []).filter((c) => isFragmentActor(c?.actorDoc));
 }
@@ -375,7 +440,7 @@ async function setFragmentHp(c, hp, max) {
   await c.actorDoc.update({ "system.props.max_hp": max, "system.props.current_hp": hp });
 }
 
-function markAeData(round) {
+function markAeData(round, { permanent = false } = {}) {
   return {
     name: "Soul Fragment",
     img: TORN_ICON,
@@ -388,6 +453,7 @@ function markAeData(round) {
         soulSpawnRound: round,
         soulCalledRound: 0,
         soulReturned: false,
+        ...(permanent ? { soulPermanent: true } : {}),
         directorPermanent: true,
         conflictScoped: true,
       },
@@ -421,7 +487,7 @@ async function markCalled(actor) {
   } catch (e) { console.warn("[soul-tithe] Called marker failed", e); }
 }
 
-async function spawnFragment(ctx, owner, slot, amount, round, { hold = false } = {}) {
+async function spawnFragment(ctx, owner, slot, amount, round, { hold = false, permanent = false } = {}) {
   const template = findFragmentTemplate();
   if (!template) {
     ctx.warn(`no world actor is flagged conflictObject "${FRAGMENT_OBJECT_ID}" — ${owner.actorDoc?.name} gets no fragment`);
@@ -481,7 +547,7 @@ async function spawnFragment(ctx, owner, slot, amount, round, { hold = false } =
     ...(ownerSprite ? { "system.props.sprite_battle": ownerSprite, "system.props.sprite_standard": ownerSprite } : {}),
     [`flags.${FLAG_NS}.defeatStyle`]: FRAGMENT_DEFEAT_STYLE,
   });
-  await tokenDoc.actor.createEmbeddedDocuments("ActiveEffect", [markAeData(round)]);
+  await tokenDoc.actor.createEmbeddedDocuments("ActiveEffect", [markAeData(round, { permanent })]);
   const c = ctx.dCombat.addCombatant({ tokenDoc, actorDoc: tokenDoc.actor, side: "enemy", disposition: -1 });
   c.turnsPerRound = 0;
   c.turnsRemaining = 0;
@@ -746,27 +812,68 @@ async function runCallings(ctx, round) {
   if (show) await show.done;
 }
 
-async function runLock(ctx, round) {
+let servantPredicateOverride = null;
+/** Test / wiring seam: fn(actor) -> boolean. Null restores the nox-servant.js lookup. */
+export function setServantPredicate(fn) { servantPredicateOverride = typeof fn === "function" ? fn : null; }
+
+/**
+ * Who is a Nox Servant. nox-servant.js is written by another slice, so it is loaded by
+ * a variable specifier (no static dependency) and a missing module reads as "nobody",
+ * which keeps this whole branch dark until it lands.
+ */
+async function servantPredicate() {
+  if (servantPredicateOverride) return servantPredicateOverride;
+  try {
+    const path = "../../battle-director/nox-servant.js";
+    const m = await import(path);
+    if (typeof m.isNoxServant === "function") return m.isNoxServant;
+  } catch { /* not built yet: ships dark */ }
+  return () => false;
+}
+
+/**
+ * The lock. `only` narrows it to some players (a skill that tithes the creatures it
+ * hit, the `lock` action below); the round-end beat locks everyone. A player keeps
+ * their party slot either way, so their fragment stands in the same place.
+ */
+async function runLock(ctx, round, { only = null, servant = null, tearDown = false } = {}) {
   const party = players(ctx);
   const audience = await watched();
   const locks = [];
   let spawned = false;
   for (let slot = 0; slot < party.length; slot++) {
     const owner = party[slot];
+    if (only && !only(owner)) continue;
     const actor = owner.actorDoc;
-    const wound = lockWound({ ownerMax: propNum(actor, "max_hp"), ownerHp: propNum(actor, "current_hp") });
+    const ownerMax = propNum(actor, "max_hp");
+    const ownerHp = propNum(actor, "current_hp");
+    let frag = liveFragmentOf(ctx, actor.uuid);
+    let wound = lockWound({ ownerMax, ownerHp });
+    let clampHp = null;
+    let permanent = false;
+    if (servant?.(owner)) {
+      const step = servantStep({ hasFragment: !!frag, fragmentPermanent: !!frag && isPermanentSoulFragment(frag.actorDoc), ownerMax, ownerHp, tearDown });
+      if (step === "wait") continue;
+      if (step === "mark") await markAe(frag.actorDoc)?.update({ [`flags.${FLAG_NS}.soulPermanent`]: true });
+      if (step === "tear") {
+        // Not the ordinary wound: every Max HP but the floor, into a permanent fragment.
+        const t = servantTear({ ownerMax, ownerHp });
+        wound = t.stolen;
+        clampHp = t.ownerHp;
+        permanent = true;
+      }
+    }
     if (wound <= 0) continue;
 
     // The fragment first: a player must never lose Max HP to something that is not
     // on the field to be destroyed. Spawns stay one at a time.
-    let frag = liveFragmentOf(ctx, actor.uuid);
     const isNew = !frag;
     if (isNew) {
-      frag = await spawnFragment(ctx, owner, slot, heldFrom(actor) + wound, round, { hold: audience });
+      frag = await spawnFragment(ctx, owner, slot, heldFrom(actor) + wound, round, { hold: audience, permanent });
       if (!frag) continue;
       spawned = true;
     }
-    locks.push({ owner, actor, wound, frag, isNew });
+    locks.push({ owner, actor, wound, frag, isNew, clampHp });
   }
   // The show: every tear a beat after the last, in party order, and each player's
   // loss written at their own tear, so the bar drops with the soul leaving.
@@ -774,9 +881,11 @@ async function runLock(ctx, round) {
     ownerTokenId: l.owner.tokenDoc?.id, fragTokenId: l.frag.tokenDoc?.id, merge: !l.isNew, delay: i * SHOW_STAGGER_S,
   }))) : null;
   for (let i = 0; i < locks.length; i++) {
-    const { actor, wound, frag, isNew } = locks[i];
+    const { actor, wound, frag, isNew, clampHp } = locks[i];
     if (show) await show.at(i, show.T.TITHE.TEAR);
     await addStolen(actor, wound);
+    // The Servant tear is not "Max down to current HP", so HP needs its own clamp.
+    if (clampHp != null) await actor.update({ "system.props.current_hp": clampHp }, { diff: false });
     await touchActor(actor);
     const max = heldFrom(actor);
     const hp = isNew ? max : Math.min(propNum(frag.actorDoc, "current_hp") + wound, max);
@@ -802,7 +911,7 @@ function endsInCrisis(hp, nextMax) {
  * moved since: anything that has happened to them in between stands, so it can neither
  * heal them twice nor raise someone who has since been KO'd.
  */
-async function returnToOwner(ctx, fragActor, tokenDoc, firedKeys = null) {
+async function returnToOwner(ctx, fragActor, tokenDoc, firedKeys = null, { refund = REFUND.FULL } = {}) {
   const key = `soul-return:${tokenDoc?.id}`;
   if (firedKeys?.has?.(key)) return;
   firedKeys?.add?.(key);
@@ -825,7 +934,10 @@ async function returnToOwner(ctx, fragActor, tokenDoc, firedKeys = null) {
   const nextMax = propNum(actor, "max_hp") + stolen;
   const now = propNum(actor, "current_hp");
   const from = resuming ? f.soulRefundFrom : now;
-  const target = resuming ? f.soulRefundHp : returnedHp({ ownerHp: now, ownerMax: nextMax, stolen });
+  // max_only: the Max HP comes back and current HP stays where it is.
+  const target = resuming ? f.soulRefundHp
+    : refund === REFUND.MAX_ONLY ? now
+    : returnedHp({ ownerHp: now, ownerMax: nextMax, stolen });
   const hp = now === from ? target : now;
   await mark?.update({
     [`flags.${FLAG_NS}.soulReturned`]: true,
@@ -846,7 +958,80 @@ async function returnToOwner(ctx, fragActor, tokenDoc, firedKeys = null) {
     await touchActor(actor);
   }
   await mark?.update({ [`flags.${FLAG_NS}.soulRefundDone`]: true });
-  ctx.log(`${fragActor?.name} destroyed — ${actor.name} recovers ${stolen}, now ${hp}/${propNum(actor, "max_hp")}`);
+  ctx.log(`${fragActor?.name} destroyed (${refund}) — ${actor.name} recovers ${stolen} Max HP, now ${hp}/${propNum(actor, "max_hp")}`);
+}
+
+/** How a destroyed fragment pays its owner back. */
+export const REFUND = Object.freeze({
+  /** The stolen Max HP and the same amount of current HP (the ordinary destroy). */
+  FULL: "full",
+  /** The stolen Max HP only; current HP stays where it is (Nidhogg's Soul Devour). */
+  MAX_ONLY: "max_only",
+});
+
+/**
+ * What a `destroy` request asks for, pure: the refund mode (null = unknown, refuse) and
+ * whether the Destroyed show plays. `show=none` (option or arg) skips the show only; the
+ * refund is the same and is paid at once. Anything else keeps the show.
+ */
+export function planDestroy({ options = {}, refund = null, show = null } = {}) {
+  const raw = refund ?? options?.refund ?? REFUND.FULL;
+  const showRaw = String(show ?? options?.show ?? "").trim().toLowerCase();
+  return { raw, mode: refundMode(raw), show: showRaw !== "none" };
+}
+
+function refundMode(raw) {
+  const v = String(raw ?? "").trim().toLowerCase();
+  return Object.values(REFUND).includes(v) ? v : null;
+}
+
+/**
+ * Destroy these fragment combatants now: each owner is paid back by `refund`, with
+ * the Destroyed show's first flamelet when anyone watches and at once when nobody
+ * does, then every fragment leaves the field. Resolves once every refund is paid
+ * and every fragment is gone (the show is ~2.4 s).
+ *
+ * The fragment never goes through 0 HP, so onObjectDestroyed (which always pays
+ * in full) is not involved; the mark's soulRefundDone stops any other path paying
+ * the same fragment twice.
+ */
+async function destroyFragments(ctx, frags, { refund = REFUND.FULL, show: playShow = true } = {}) {
+  if (!frags.length) return;
+  const pl = players(ctx);
+  const rows = frags.map((c) => ({ c, owner: pl.find((p) => p.actorDoc?.uuid === ownerUuidOf(c)) ?? null }));
+  const shown = rows.filter((r) => r.owner?.tokenDoc?.id && r.c.tokenDoc?.id);
+  // B1: each one is a destroyed fragment (not the battle-end sweep). Raised before the
+  // show and the refund, while every token still stands (destroyAllFragments + destroy).
+  for (const r of rows) {
+    const f = markAe(r.c.actorDoc)?.flags?.[FLAG_NS] ?? {};
+    if (f.soulEatenAt != null) {
+      // An eat an F5 cut short: finish it (no refund; returnToOwner skips it).
+      if (r.owner) await bookEaten(r.owner.actorDoc);
+      await announceDestroyed(ctx, r.c.actorDoc, r.c.tokenDoc, { cause: "eaten", fragmentHp: whole(f.soulEatenHp) });
+      continue;
+    }
+    await announceDestroyed(ctx, r.c.actorDoc, r.c.tokenDoc, { cause: "destroyed" });
+  }
+  // show=none: no show is requested (so none is broadcast and no flamelet event exists),
+  // `when` below is already resolved, and the refund is paid right here, once, by the GM.
+  const show = playShow && shown.length && (await watched())
+    ? await present(ctx, "destroy", shown.map((r, i) => ({ ownerTokenId: r.owner.tokenDoc.id, fragTokenId: r.c.tokenDoc.id, delay: i * 0.08 })))
+    : null;
+  // Pay from the LIVE token and actor (an unlinked token's actor is rebuilt on every update).
+  const pay = (c) => {
+    const td = c.tokenDoc, live = td?.parent?.tokens?.get?.(td.id) ?? null;
+    return live?.actor ? returnToOwner(ctx, live.actor, live, null, { refund }) : null;
+  };
+  const paid = rows.map((r) => {
+    const i = shown.indexOf(r);
+    const when = show && i >= 0 ? show.at(i, show.T.DESTROY.FIRST) : Promise.resolve();
+    return when.then(() => pay(r.c)).catch((e) => ctx.warn(`${r.c.actorDoc?.name}: the refund threw`, e));
+  });
+  await Promise.all(paid);
+  // Off the field before the fall's black (a slow local draw must not keep them standing in it).
+  if (show) await Promise.race([show.done.catch(() => {}), wait((show.T.DESTROY.END + shown.length * 0.08 + 0.3) * 1000)]);
+  for (const r of rows) await removeFragment(ctx, r.c);
+  await saveNow(ctx);
 }
 
 // ── The event ───────────────────────────────────────────────────────────────
@@ -885,7 +1070,9 @@ registerConflictEvent({
     await sweepDestroyed(ctx);
     await reconcileFragments(ctx);
     await runCallings(ctx, round);
-    await runLock(ctx, round);
+    // After the Callings, before the normal lock: a Servant with no standing fragment (devoured,
+    // or killed by a hazard) is re-torn to Max 1, permanent. Pausing while Nidhogg is down is the caller's.
+    await runLock(ctx, round, { servant: servantOf(await servantPredicate()) });
     await saveNow(ctx);
   },
 
@@ -923,6 +1110,74 @@ registerConflictEvent({
 
   actions: {
     /**
+     * The lock, now, on the given creatures: what the round-end beat does to a wounded
+     * player, run mid-round (Nidhogg's Call of the Master, a `conflict_event_action`
+     * row aimed at the creatures it hit, after the damage lands). Each wounded player
+     * among `tokens` has their Max HP dropped to their current HP and turns Soul-Torn,
+     * and the loss goes into their fragment, spawned if they have none, with the
+     * Tithe show. Anyone else in the list (a guest, a summon, an enemy, a KO'd or
+     * unwounded player) is left alone, exactly as at round end.
+     *
+     * A fragment spawned here is stamped with this round, so it first Calls at the end
+     * of the NEXT round (the "it does not Call the round it appears" rule). This
+     * round's own end-beat finds the player already locked and takes nothing more
+     * unless they are hurt again.
+     */
+    async lock(ctx, { tokens } = {}) {
+      const dc = ctx.dCombat;
+      if (!dc || dc.ended) return;
+      const ids = new Set((tokens ?? []).map((t) => t?.id ?? t?.document?.id).filter(Boolean));
+      if (!ids.size) return;
+      // A fragment an F5 left off the roster is still this player's fragment: take it
+      // back first, or the lock would spawn a second one beside it.
+      await adoptStrayFragments(ctx);
+      await runLock(ctx, Number(dc.round) || 0, { only: (owner) => ids.has(owner.tokenDoc?.id), servant: servantOf(await servantPredicate()) });
+      await saveNow(ctx);
+    },
+
+    /**
+     * A player becomes a Nox Servant (conflict_event_action `noxServant`, aimed at the
+     * trigger subject): the fragment step, THEN makeNoxServant (nox-servant.js: status,
+     * HP to the fresh Max, revive). Fragment step per player: one already standing is
+     * kept and made permanent; none -> every Max HP but 1 is torn into a permanent
+     * fragment now (works on a KO'd owner: they are revived after). Anyone who is not a
+     * party player in this conflict is left alone.
+     */
+    async noxServant(ctx, request = {}) {
+      const dc = ctx.dCombat;
+      // Returning false = "nothing was converted": the conflict_event_action step turns it
+      // into ok:false, so the chain stops before Zero Power is paid.
+      if (!dc || dc.ended) return false;
+      const { ids, actorUuids } = noxSubjectKeys(request);
+      if (!ids.size && !actorUuids.size) return false;
+      const mine = (owner) => ids.has(owner.tokenDoc?.id) || actorUuids.has(owner.actorDoc?.uuid);
+      if (!players(ctx).some(mine)) return false;
+      await adoptStrayFragments(ctx);
+      await sweepDestroyed(ctx);
+      await runLock(ctx, Number(dc.round) || 0, { only: mine, servant: () => true, tearDown: true });
+      let make = null;
+      try {
+        const path = "../../battle-director/nox-servant.js";
+        make = (await import(path)).makeNoxServant;
+      } catch (e) { ctx.warn("noxServant: nox-servant.js not available, fragment step done but no Servant status", e); }
+      let converted = 0;
+      if (typeof make === "function") {
+        for (const owner of players(ctx).filter(mine)) {
+          try {
+            const r = await make(owner.actorDoc, ctx);
+            if (r?.ok) converted += 1;
+            else ctx.warn(`noxServant: makeNoxServant failed for ${owner.actorDoc?.name}: ${r?.reason ?? "unknown"}`);
+          } catch (e) { ctx.warn(`noxServant: makeNoxServant threw for ${owner.actorDoc?.name}`, e); }
+        }
+      }
+      await saveNow(ctx);
+      // Nidhogg's Zero Trigger pays +1 Zero Power per player really converted (only here, so an
+      // absent event / a refused conversion leaves it untouched).
+      if (converted > 0) await grantNoxZeroPower(request.effectCtx?.reactorActor ?? null, converted, ctx);
+      return converted > 0;
+    },
+
+    /**
      * Every fragment destroyed at once — a boss's hold on the souls breaking (Nidhogg's
      * fall: his Boss Cycle's onDown, boss-rules/boss-cycle.js; design doc §2b). The ordinary destroy:
      * each owner gets the stolen Max HP back plus the same HP, with the Destroyed show's
@@ -930,41 +1185,42 @@ registerConflictEvent({
      * refund is paid and every fragment is off the field (the show is ~2.4 s).
      */
     async destroyAllFragments(ctx) {
-      const frags = fragmentCombatants(ctx);
+      // A Nox Servant's permanent fragment survives the fall (only conflict end removes it).
+      const all = fragmentCombatants(ctx);
+      const frags = all.filter((c) => !isPermanentSoulFragment(c.actorDoc));
+      if (all.length > frags.length) ctx.log(`${all.length - frags.length} permanent Soul Fragment(s) kept`);
       if (!frags.length) return;
-      const pl = players(ctx);
-      const rows = frags.map((c) => ({ c, owner: pl.find((p) => p.actorDoc?.uuid === ownerUuidOf(c)) ?? null }));
-      const shown = rows.filter((r) => r.owner?.tokenDoc?.id && r.c.tokenDoc?.id);
-      // B1: each one is a destroyed fragment (not the battle-end sweep).
-      for (const r of rows) {
-        const f = markAe(r.c.actorDoc)?.flags?.[FLAG_NS] ?? {};
-        if (f.soulEatenAt != null) {
-          // An eat an F5 cut short: finish it (no refund; returnToOwner skips it).
-          if (r.owner) await bookEaten(r.owner.actorDoc);
-          await announceDestroyed(ctx, r.c.actorDoc, r.c.tokenDoc, { cause: "eaten", fragmentHp: whole(f.soulEatenHp) });
-          continue;
-        }
-        await announceDestroyed(ctx, r.c.actorDoc, r.c.tokenDoc, { cause: "destroyed" });
-      }
-      const show = shown.length && (await watched())
-        ? await present(ctx, "destroy", shown.map((r, i) => ({ ownerTokenId: r.owner.tokenDoc.id, fragTokenId: r.c.tokenDoc.id, delay: i * 0.08 })))
-        : null;
-      // Pay from the LIVE token and actor (an unlinked token's actor is rebuilt on every update).
-      const pay = (c) => {
-        const td = c.tokenDoc, live = td?.parent?.tokens?.get?.(td.id) ?? null;
-        return live?.actor ? returnToOwner(ctx, live.actor, live, null) : null;
-      };
-      const paid = rows.map((r) => {
-        const i = shown.indexOf(r);
-        const when = show && i >= 0 ? show.at(i, show.T.DESTROY.FIRST) : Promise.resolve();
-        return when.then(() => pay(r.c)).catch((e) => ctx.warn(`${r.c.actorDoc?.name}: the refund threw`, e));
-      });
-      await Promise.all(paid);
-      // Off the field before the fall's black (a slow local draw must not keep them standing in it).
-      if (show) await Promise.race([show.done.catch(() => {}), wait((show.T.DESTROY.END + shown.length * 0.08 + 0.3) * 1000)]);
-      for (const r of rows) await removeFragment(ctx, r.c);
-      ctx.log(`every Soul Fragment destroyed (${rows.length})`);
-      await saveNow(ctx);
+      await destroyFragments(ctx, frags, { refund: REFUND.FULL });
+      ctx.log(`every Soul Fragment destroyed (${frags.length})`);
+    },
+
+    /**
+     * The given fragments destroyed now, by a skill (a `conflict_event_action` row
+     * "destroy", "destroy refund=<mode>" or "... show=none", aimed at the fragments it targets).
+     * Anything in `tokens` that is not a standing fragment is left alone.
+     * `options.refund` (or `refund`): "full" (default) — the ordinary destroy, Max HP
+     * plus the same current HP; "max_only" — the Max HP comes back and the owner is no
+     * longer Soul-Torn by it, but current HP is not raised (Nidhogg's Soul Devour).
+     * An unknown mode refuses the whole action rather than guess.
+     * `options.show` = "none": no Destroyed show (a skill's own animation owns the
+     * visuals); the refund is paid at once instead of on the show's first flamelet.
+     *
+     * A skill that reads the fragment (its Max HP) must read it in an EARLIER chain
+     * step: once this resolves the fragment is off the field.
+     */
+    async destroy(ctx, { tokens, options = {}, refund = null, show = null } = {}) {
+      const dc = ctx.dCombat;
+      if (!dc || dc.ended) return;
+      const { raw, mode, show: playShow } = planDestroy({ options, refund, show });
+      if (!mode) { ctx.warn(`destroy: unknown refund "${raw}" — nothing destroyed`); return; }
+      const ids = new Set((tokens ?? []).map((t) => t?.id ?? t?.document?.id).filter(Boolean));
+      if (!ids.size) return;
+      // A fragment an F5 left off the roster is still a fragment on the field.
+      await adoptStrayFragments(ctx);
+      const frags = fragmentCombatants(ctx).filter((c) => ids.has(c.tokenDoc?.id) && markAe(c.actorDoc));
+      if (!frags.length) { ctx.log("destroy: no standing Soul Fragment among the targets"); return; }
+      await destroyFragments(ctx, frags, { refund: mode, show: playShow });
+      ctx.log(`${frags.length} Soul Fragment(s) destroyed (${mode}${playShow ? "" : ", no show"})`);
     },
 
     /**

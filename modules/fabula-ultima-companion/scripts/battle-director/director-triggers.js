@@ -145,6 +145,11 @@ export const DIRECTOR_NATIVE_TRIGGERS = new Set([
   // KO'd creature ITSELF, after the KO status lands, only while it holds such a
   // row (knockout-revive.js). Side wipe and Soldier/Elite removal wait for it.
   "creature_knocked_out",
+  // Stays down — fired by the defeat reactor for a creature still at 0 HP after
+  // the KO and every immediate revive (onlooker heal, Auto-Life). Subject = the
+  // downed creature; OBSERVERS only (its own rows never answer it). The side wipe
+  // waits for it (stays-down.js). First consumer: Nidhogg's Zero Trigger: Nox Servant.
+  "creature_stays_down",
   // Standalone phase triggers — fire outside any action card and don't
   // manipulate an active action's values. Examples per RAW: High Speed
   // ("at the start of a conflict, you may spend 10 MP and..."),
@@ -327,6 +332,7 @@ export const TRIGGER_PHASE = Object.freeze({
   // Defeat (post-commit, subject = the defeated creature; observer-aware).
   "creature_defeated":          "post-resolve",
   "creature_knocked_out":       "post-resolve",
+  "creature_stays_down":        "post-resolve",
   // Legacy-bridged triggers — all post-resolve by RAW shape.
   "creature_performs_check":      "post-resolve",
   "creature_fumbles_check":       "post-resolve",

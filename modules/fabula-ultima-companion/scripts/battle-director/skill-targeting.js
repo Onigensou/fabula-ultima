@@ -29,9 +29,11 @@
 //   self              — reactor only
 
 import { log, warn } from "./logger.js";
+import { isNoxServant } from "./nox-servant.js";
+import { classifyActionIntent } from "./skill-intent.js";
 import { requestTargeting as requestBdTargetPicker } from "./target-picker.js";
 import { isGrappled, tokensGrappledBy } from "./grappled.js";
-import { getAllegianceOverrides, applyAllegianceOverride, hasUnconditionalTargetBlock, getTargetSideBlocks } from "./snapshot.js";
+import { getAllegianceOverrides, applyAllegianceOverride, hasUnconditionalTargetBlock, getTargetSideBlocks, isTargetBlockedFor } from "./snapshot.js";
 
 // Reserved strings that expand to inline targeting rows. Authoring sugar
 // — saves a row from the effect_table for the most common case.
@@ -789,7 +791,50 @@ function isOwnPerformedAction(ctx) {
   return sameSkill && !!actorId && (actorId === String(ctx.reactorActor?.id ?? ""));
 }
 
+// Direct-reference sources hand back creatures the action ALREADY names, bypassing the
+// combat-pool block. A Nox Servant "cannot be harmed": drop it from these when the performer is
+// its opponent (the `opponent` block) or the action is harmful (same classification as
+// target-insert-guard.actionIsHarmful: stamped intent, else the skill's classified intent,
+// else Attack / hasDamage). Ally SUPPORT onto a Servant is untouched. Fail closed on a throw.
+const DIRECT_REF_SOURCES = new Set(["action_targets", "hit_action_targets", "trigger_actor", "trigger_attacker",
+  "trigger_subject", "cause_actor", "ae_applier", "grappled_by_self"]);
+
+function ctxActionIsHarmful(ctx) {
+  const p = ctx?.payload ?? {};
+  const intent = String(p.actionIntent ?? "").trim().toLowerCase();
+  if (intent) return intent === "harmful";
+  const ar = ctx?.director?.ctx?.actionResult ?? null;
+  if (ar && (ar.actionIntent || ar.kind || ar.hasDamage != null)) {
+    const i = String(ar.actionIntent ?? "").trim().toLowerCase();
+    if (i) return i === "harmful";
+    if (String(ar.kind ?? "") === "Attack" || ar.hasDamage) return true;
+  }
+  try { if (ctx?.skill) return String(classifyActionIntent(ctx.skill) ?? "").toLowerCase() === "harmful"; } catch (_) { return true; }
+  return false;
+}
+
+export function dropNoxServantsFromDirectRef(tokens, ctx) {
+  const list = Array.isArray(tokens) ? tokens : [];
+  if (!list.length) return list;
+  let performer = null, harmful = false;
+  try { performer = performerActorOfCtx(ctx); harmful = ctxActionIsHarmful(ctx); } catch (_) { harmful = true; }
+  return list.filter((td) => {
+    try {
+      const actor = td?.actor ?? null;
+      if (!isNoxServant(actor)) return true;
+      const blocked = harmful || isTargetBlockedFor(actor, performer, { targetTokenUuid: td?.uuid, targetDisp: td?.disposition, dCombat: ctx?.dCombat ?? null });
+      if (blocked) log(`targeting: direct-ref dropped Nox Servant ${actor?.name ?? td?.uuid} (opponent / harmful action)`);
+      return !blocked;
+    } catch (_) { return false; }
+  });
+}
+
 async function buildCandidatePool(source, ctx) {
+  const pool = await buildCandidatePoolRaw(source, ctx);
+  return DIRECT_REF_SOURCES.has(source) ? dropNoxServantsFromDirectRef(pool, ctx) : pool;
+}
+
+async function buildCandidatePoolRaw(source, ctx) {
   // Kind-scoped persistent-summon refs, resolved by PREFIX so a new summon type
   // needs no registry entry per kind:
   //   own_persistent_summons_<kind>  -> the persisted world Actor (works out of
@@ -1161,16 +1206,46 @@ function collectGrappledBySelf(ctx) {
 // of every pool built here. This is how a Guest becomes untargetable — via the
 // shared targeting primitive rather than a bespoke flag check. Such a creature
 // still ACTS; its own action resolves ITS targets, which stay in the pool.
-function isUntargetableTokenDoc(td) {
-  return hasUnconditionalTargetBlock(td?.actor ?? null);
+function isUntargetableTokenDoc(td, performerActor = null) {
+  if (hasUnconditionalTargetBlock(td?.actor ?? null)) return true;
+  // `opponent` block (Nox Servant): relative to the PERFORMER. No performer in ctx
+  // => isTargetBlockedFor refuses (fail closed) for a holder of the block only.
+  return isTargetBlockedFor(td?.actor ?? null, performerActor, { targetTokenUuid: td?.uuid, targetDisp: td?.disposition });
+}
+
+// The acting creature's actor for this ctx (the action's performer), best effort.
+function performerActorOfCtx(ctx) {
+  // The REACTOR is the one whose effect is picking (a party heal reacting to a monster's attack
+  // must not inherit the monster as performer); payload attacker is the fallback.
+  if (ctx?.reactorActor || ctx?.reactorToken?.actor) return ctx.reactorActor ?? ctx.reactorToken.actor;
+  const p = ctx?.payload;
+  const tokUuid = p?.attackerTokenUuid ?? p?.sourceTokenUuid ?? null;
+  const actUuid = p?.attackerActorUuid ?? p?.sourceActorUuid ?? null;
+  try {
+    if (p?.attackerActor?.uuid) return p.attackerActor;
+    if (tokUuid) { const t = globalThis.fromUuidSync?.(tokUuid); if (t?.actor) return t.actor; }
+    if (actUuid) { const a = globalThis.fromUuidSync?.(actUuid); if (a) return a; }
+  } catch {}
+  return ctx?.reactorActor ?? ctx?.reactorToken?.actor ?? null;
 }
 
 function collectCombatTokens(ctx) {
+  const tokens = collectCombatTokensRaw(ctx);
+  // A destination / extra-target picker for a HARMFUL action never lists a Nox Servant
+  // (card-mutations stamps payload._harmfulInsertion): the insert guard would refuse the pick anyway.
+  if (ctx?.payload?._harmfulInsertion) {
+    return tokens.filter((td) => { try { return !isNoxServant(td?.actor ?? null); } catch (_) { return false; } });
+  }
+  return tokens;
+}
+
+function collectCombatTokensRaw(ctx) {
+  const performer = performerActorOfCtx(ctx);
   // Use dCombat as the authoritative combat list (director-native);
   // each combatant carries .tokenDoc.
   const dc = ctx.dCombat;
   if (dc?.combatants?.length) {
-    return dc.combatants.map((c) => c.tokenDoc).filter(Boolean).filter((td) => !isUntargetableTokenDoc(td));
+    return dc.combatants.map((c) => c.tokenDoc).filter(Boolean).filter((td) => !isUntargetableTokenDoc(td, performer));
   }
   // Fallback to game.combat (manual-attach path, rare in director mode).
   const fc = game.combat;
@@ -1178,7 +1253,7 @@ function collectCombatTokens(ctx) {
     const out = [];
     for (const c of fc.combatants) {
       const t = c.token;
-      if (t && !isUntargetableTokenDoc(t)) out.push(t);
+      if (t && !isUntargetableTokenDoc(t, performer)) out.push(t);
     }
     return out;
   }
@@ -1186,7 +1261,7 @@ function collectCombatTokens(ctx) {
   // card-mutation redirect picker) would otherwise see zero combatants when
   // game.combat is also null — which is the normal BD case (director runs on
   // its own dCombat). Mirrors the enemyActorsOf canvas fallback in skill-formulas.
-  return (globalThis.canvas?.tokens?.placeables ?? []).map((t) => t.document).filter(Boolean).filter((td) => !isUntargetableTokenDoc(td));
+  return (globalThis.canvas?.tokens?.placeables ?? []).map((t) => t.document).filter(Boolean).filter((td) => !isUntargetableTokenDoc(td, performer));
 }
 
 async function uuidsToTokens(uuids) {

@@ -46,6 +46,25 @@ const READY_CAP = 25000;
 // "ending" phase: this share of the whole glass sequence (from the cut until the last piece has
 // passed the lens). Callers start what follows the transition here (user ruling: 95%).
 const ENDING_AT = 0.95;
+// A battle opening's crack-out (o.crackOut) never holds the overlay longer than this (design ms).
+//
+// CRACK_OUT_CONTRACT — what a battle opening style's crackOut(ctx) gets and must do (battle-opening-styles.js):
+//   Called on EVERY client at the moment the glass would break (the battle scene is drawn behind the frozen frame).
+//   ctx.layer        an empty full-window <div> inside the shatter overlay, ABOVE the frozen frame, its cracks and
+//                    their glow: draw here (canvas / DOM / CSS). The overlay is removed after the promise settles.
+//   ctx.W / H / DPR  window size (CSS px) and the device pixel ratio the overlay canvases use
+//   ctx.impact       {x, y} where the crack started (CSS px)
+//   ctx.cracks       the crack lines as segments [{a:{x,y}, b:{x,y}, d0, d1 (distance of a / b from the impact),
+//                    w0, w1 (stroke widths), kind ("main" | "ray" | ...), radial}], CSS px: where smoke can leak from
+//   ctx.strokes      the same cracks as whole polylines, as buildGeometry made them: [{kind ("main" | "ring" | "hair" |
+//                    "ray"), pts: [{x, y}], width: [per point]}], CSS px (Nidhogg's leak walks them: crack-out-leak.js)
+//   ctx.frozen       the frozen field frame (<canvas>, DPR scale); ctx.cracksCanvas / ctx.glowCanvas the crack ink
+//                    and its breathing glow (fade them if the effect wants); ctx.dim the 40 % dim over the frame
+//   ctx.speed        the debug time scale (CONFIG.fuShatter.speed; 2 = half speed)
+//   ctx.torn()       true once the shatter has moved on (the cap below passed): stop drawing
+//   RESOLVE once the screen is fully black (beats 1-2 of the opening are over). A throw / a hang past the cap still
+//   ends on black: the opening's cover goes up the moment this returns.
+const CRACK_OUT_CAP = 15000;
 
 // ── look ────────────────────────────────────────────────────────────────────
 // hi = colour of the light caught by a broken edge; line = the crack itself
@@ -1209,6 +1228,8 @@ export const isShatterRunning = () => !!running;
  * @param {string}   [o.style]     crack colour: ink | glass | gold | crimson.
  * @param {number}   [o.speed]     time scale for inspection (2 = half speed).
  * @param {number}   [o.zIndex]
+ * @param {Function} [o.crackOut]  () => crackOut(ctx) | null, asked at the moment the glass would break: a
+ *                                 function replaces the break (see CRACK_OUT_CONTRACT); phases crackout, ending, done.
  * @param {Function} [o.onPhase]   (name) => void: impact, hold, cut, hang, speedup, ending, done
  *                                 (skip instead of the rest when there is nothing to freeze).
  * @returns {Promise<any>} load()'s result, once the glass has cleared.
@@ -1463,6 +1484,35 @@ async function runShatter(o) {
     let isReady = !o.ready;
     const readyP = o.ready ? Promise.resolve(typeof o.ready === "function" ? o.ready(loadResult) : o.ready).catch((e) => console.warn(TAG, "ready rejected", e)).then(() => { isReady = true; }) : Promise.resolve();
     await frame();   // a fresh frame of the battle scene before the glass opens on it
+
+    // ── CRACK-OUT (a battle opening style): the glass does NOT break. The style's crack-out plays over the
+    //    cracked frame, in a layer of its own above it, and resolves once the screen is black; the overlay then goes
+    //    (the style's own black cover is up by then: battle-director/battle-opening.js). See CRACK_OUT_CONTRACT. ──
+    const crackOut = typeof o.crackOut === "function" ? o.crackOut() : null;
+    if (typeof crackOut === "function") {
+      onPhase("crackout"); mark("crackout");
+      try { Hooks.callAll("fuc:shatterBreak"); } catch { /* listeners' */ }
+      const layer = document.createElement("div");
+      layer.className = "fsh-layer fsh-crackout";
+      els.shaker.appendChild(layer);
+      let torn = false;
+      const ctx = Object.freeze({
+        layer, W, H, DPR, speed: S,
+        impact: Object.freeze({ x: geo.I.x, y: geo.I.y }),
+        cracks: segs.map((sg) => Object.freeze({ a: { x: sg.p.x, y: sg.p.y }, b: { x: sg.q.x, y: sg.q.y }, d0: sg.d0, d1: sg.d1, w0: sg.w0, w1: sg.w1, kind: sg.kind, radial: sg.cls === "radial" })),
+        strokes: geo.strokes.map((s) => Object.freeze({ kind: s.kind, pts: s.pts.map((p) => ({ x: p.x, y: p.y })), width: s.width.slice() })),
+        frozen: els.snapC, cracksCanvas: els.cracksC, glowCanvas: els.glowC, dim: els.dim,
+        torn: () => torn,
+      });
+      try { await raceTimeout(Promise.resolve().then(() => crackOut(ctx)), T(CRACK_OUT_CAP)); }
+      catch (e) { console.warn(TAG, "crack-out threw; ending on black", e); }
+      torn = true;
+      onPhase("ending");
+      mark("done");
+      stats.crackOut = true;
+      lastShatterStats = stats;
+      return loadError ? Promise.reject(loadError) : loadResult;
+    }
 
     // ── HARD CUT → SHATTER ──
     onPhase("cut"); mark("cut");

@@ -555,7 +555,7 @@ export async function run({
   let result = null;
 
   try {
-    SimMode.begin({ pace, reactions, expectedRounds, maxRounds, forceReactions });
+    SimMode.begin({ pace, reactions, expectedRounds, maxRounds, forceReactions, enemyZp });
     // Skill-under-test directives: resolve each caster to { name, uuid } so the
     // hands-free hook can match it on the field (PC clones carry a " [SIM]" suffix,
     // which the matcher strips). Registered AFTER begin() clears prior state.

@@ -1002,6 +1002,23 @@ export function buildOni(ctx, env) {
     };
   }
 
+  // ── Creature rig (creature-rig/rig-api.js) ──────────────────────────────
+  // oni.rig.play(token, "roar", opts) -> { done, peak, cancel } / roar / rest / release / isRigged.
+  // LOCAL: this script already runs on every client. Reached through the global, not an import, so a rig
+  // that fails to load can never stop animation scripts loading. A roar outlives the script; a rest the
+  // script made is released on dispose(). A token with no rig resolves { ok: false, reason: "no-rig" }.
+  let _rigRun = null;
+  const rigRun = () => (_rigRun ??= globalThis.FUCompanion?.api?.creatureRig?.forScript?.(track) ?? null);
+  const NO_RIG = () => ({ ok: false, reason: "no-rig" });
+  const rig = {
+    play: (token, name, opts) => rigRun()?.play(token, name, opts) ?? { done: Promise.resolve(NO_RIG()), peak: Promise.resolve(false), cancel() {} },
+    roar: (token, opts) => rig.play(token, "roar", opts),
+    rest: (token, ms) => rigRun()?.rest(token, ms) ?? Promise.resolve(NO_RIG()),
+    release: (token, ms) => rigRun()?.release(token, ms) ?? Promise.resolve(NO_RIG()),
+    isRigged: (token) => !!rigRun()?.isRigged(token),
+    timing: (name, opts) => rigRun()?.timing(name, opts) ?? null,
+  };
+
   const api = {
     // the mockup engine: timed tracks over one per-frame state, painted on a
     // screen overlay with the real camera driven underneath (oni-timeline.js)
@@ -1016,6 +1033,8 @@ export function buildOni(ctx, env) {
     screen, screenLive, layer,
     // tokens
     cloneToken, hideToken, jump,
+    // a 3D creature rig's motions (Nidhogg's roar): oni.rig.roar(token)
+    rig,
     // perspective: where/how big a body at a 2D floor point is drawn; keep a 2D-animated copy on it
     depthAt, depthFollow,
     // textures / media

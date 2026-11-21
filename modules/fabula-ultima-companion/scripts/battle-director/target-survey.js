@@ -76,7 +76,7 @@
 // `ok && available === 0` — never `available < 1`.
 
 import { log, warn } from "./logger.js";
-import { buildSkillResolver, evaluateFormula, isHealReversedActor } from "./skill-formulas.js";
+import { buildSkillResolver, evaluateFormula, evaluateSkillAvailability, isHealReversedActor } from "./skill-formulas.js";
 import { classifyActionIntent } from "./skill-intent.js";
 import { affordableTargetCount, mpCapTargetCount } from "./skill-cost.js";
 import {
@@ -93,6 +93,8 @@ import {
   mergeUndeadRevivePool,
 } from "./snapshot.js";
 import { buildPseudoWeaponFromNpcAttack } from "./actor-shape.js";
+import { applyNoxMassiveGate } from "./massive-keyword.js";
+import { isNoxServant } from "./nox-servant.js";
 
 // ── skill_target text parsing ────────────────────────────────────────────────
 
@@ -576,6 +578,9 @@ export function surveyActionTargets({
   eligible = applySingleTargetGate(eligible, { isAttack: !!weapon, skill: action, skillTargetText: targetText });
   // Evasion: the same shape, for `cannot_be_targeted_by: "area"`.
   eligible = applyAreaGate(eligible, { isAttack: !!weapon, skill: action, skillTargetText: targetText });
+  // Nox Servant: never a target of ANY Massive action (skill / weapon keyword; an
+  // AE-granted Massive is only visible at CONFIRM, which strips it there).
+  eligible = applyNoxMassiveGate(eligible, { action, weapon, isNoxServant, actorOf: (e) => eligibleActor(e, dCombat) });
   if (postFilter) {
     // Fail CLOSED. A narrowing rule that throws must not resolve to "everyone is
     // targetable" — that is the permissive answer for an exclusion, and it would
@@ -753,6 +758,29 @@ export function registerBattleTargetingProvider() {
         // an Undead on purpose — that is the counterplay.
         postFilter:      restoresHp(action) ? withoutHealReversed : null,
       });
+    },
+
+    /* "Does this action's own sheet offer it right now?" — its
+       `availability_formula`, read exactly as the player's skill picker reads it
+       (evaluateSkillAvailability). Without this an AI-run creature would pick an
+       action its own gate refuses: a second Numen, or Call of the Master with a
+       Soul Fragment already standing. Returns { available, reason }. */
+    actionAvailable(action, opts = {}) {
+      return evaluateSkillAvailability({ actor: opts.performerActor ?? null, skill: action ?? null });
+    },
+
+    /* The `formula` action-pattern condition: a skill formula evaluated against
+       the performer with the pattern's injected var (ACTIVATION_NO). The round
+       is the running director's dCombat round (core combat stays at 0 in a
+       Battle Director fight), so the built-in ROUND is the real one.
+       Unparseable = 0, so the row fails closed. */
+    evaluatePatternFormula(formula, opts = {}) {
+      const round = Number(activeDirector()?.dCombat?.round ?? opts.round) || 0;
+      const resolver = buildSkillResolver({
+        actor: opts.performerActor ?? null, payload: null, skill: null,
+        round, vars: opts.vars ?? null,
+      });
+      return evaluateFormula(String(formula ?? ""), resolver, 0);
     },
   };
   return api[PROVIDER_KEY];

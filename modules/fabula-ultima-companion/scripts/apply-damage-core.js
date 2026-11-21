@@ -656,7 +656,8 @@
         }
         postShield = shield;
         postHP     = Math.max(startHP - remaining, 0);
-        const floor = Math.max(0, _num(hpFloor));
+        // Caller floor (traps) and any live `hp_floor` AE (Nox Servant) both apply.
+        const floor = Math.max(0, _num(hpFloor), _num(globalThis.FUCompanionHpFloor?.actorHpFloor?.(targetActor)));
         if (floor > 0 && startHP > 0 && postHP < floor) postHP = Math.min(startHP, floor);
         if (!dryRun) await targetActor.update({
           "system.props.shield_value": postShield,

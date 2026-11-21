@@ -30,13 +30,19 @@ const MODULE_ID = "fabula-ultima-companion";
 const MSG = "FU_HUD_CURTAIN";
 const STYLE_ID = "fud-hud-curtain-style";
 const BODY_CLASS = "fud-hud-curtain";
-const VAR = "--fud-hud-curtain";
 const DEFAULT_MAX_S = 120;
 
 /** The battle HUD's roots (the crystal death's list, plus the turn bar and the Take Turn picker). */
 const SELECTORS = new Set([
   "#fud-gm-desk", "[id^='dhud-root-']", "[id^='dhud-plate-']", "#fu-dir-round-layer", "[id^='fud-octopath-']", "[id^='fud-pickturn-']",
   "#fu-npc-strip-root", "#fu-status-cue-root", "#fu-status-pop-root", "#fu-inspect-root", ".fud-crystal-count", ".fud-soul-hp",
+  // (2026-11-16, Nidhogg's return stills: left on screen through the full black) the conflict event's "+" emblem at the
+  // right edge (conflict-event-panel.js) and the dominance crest's gems over a token (domination-crest.js)
+  "#fu-cep-emblem", ".fud-dom-crest",
+  // the spectator's "<name> taking action…" pill over a token (reaction-indicator.js)
+  ".fud-react-indicator",
+  // Alter the Story's hold bar (alter-story/as-ui.js): when idle its bottom edge still peeks ~5 px over the top centre, and its toast nub
+  "#as-layer .as-holdbar", "#as-layer .as-toast",
 ]);
 
 const clamp01 = (v) => (v <= 0 ? 0 : v >= 1 ? 1 : v);
@@ -100,29 +106,48 @@ const _curtain = makeCurtain();
 // apply(), and setHudLevel() applies every frame: a 1.5 s hold piled up 15-21 frames and 64-151 timers — data-0b's
 // leak audit, 2026-11-12.)
 let _raf = 0, _timer = 0, _lastFrame = 0, _applied = null;
+// the curtain's stylesheet: its text (rebuilt when a selector is added), its <style>, its one rule and the opacity written into it
+let _cssFor = -1, _cssText = "", _styleEl = null, _rule = null, _ruleV = null;
 
 function css() {
-  const sel = [...SELECTORS].join(", ");
-  return `body.${BODY_CLASS} :is(${sel}) { opacity: var(${VAR}, 1) !important; pointer-events: none !important; }`;
+  if (_cssFor !== SELECTORS.size) {   // SELECTORS only grows: its size is its version
+    _cssFor = SELECTORS.size;
+    _cssText = `body.${BODY_CLASS} :is(${[...SELECTORS].join(", ")}) { opacity: 1 !important; pointer-events: none !important; }`;
+  }
+  return _cssText;
 }
 function ensureStyle() {
   if (typeof document === "undefined") return;
   let st = document.getElementById(STYLE_ID);
   if (!st) { st = document.createElement("style"); st.id = STYLE_ID; document.head.appendChild(st); }
   const text = css();
-  if (st.textContent !== text) st.textContent = text;
+  if (st !== _styleEl || st.textContent !== text) {
+    if (st.textContent !== text) st.textContent = text;
+    _styleEl = st; _rule = st.sheet?.cssRules?.[0] ?? null; _ruleV = null;
+  }
+}
+/**
+ * The hidden HUD's opacity, written straight into the curtain's own rule. (It was a custom property on <body> that the
+ * rule read: every change of it restyled the whole page, ~5 ms a frame on a 16k-element battle page, against ~1 ms for
+ * a rule edit — the crystal death's hitch pass, 2026-11-16, tools/staging-world/crystal-death-perf.mjs BENCH=1.)
+ */
+function setOpacity(v) {
+  if (!_rule || _ruleV === v) return;
+  _rule.style.setProperty("opacity", v, "important");
+  _ruleV = v;
 }
 /** Put the current level on the page; returns it. */
 function render() {
   const lv = _curtain.level();
   if (typeof document === "undefined") return lv;
   if (_curtain.size === 0 || lv >= 0.999) {
-    if (_applied !== null) { document.body.classList.remove(BODY_CLASS); document.body.style.removeProperty(VAR); _applied = null; }
+    if (_applied !== null) { document.body.classList.remove(BODY_CLASS); _applied = null; }
   } else {
     ensureStyle();
-    if (_applied === null) document.body.classList.add(BODY_CLASS);
     const v = lv.toFixed(3);
-    if (_applied !== v) { document.body.style.setProperty(VAR, v); _applied = v; }
+    setOpacity(v);
+    if (_applied === null) document.body.classList.add(BODY_CLASS);
+    _applied = v;
   }
   return lv;
 }
@@ -189,7 +214,10 @@ export function releaseHud({ reason = null, broadcast = false } = {}) {
 export function registerHudSelector(sel) {
   if (!sel || SELECTORS.has(sel)) return;
   SELECTORS.add(String(sel));
-  if (typeof document !== "undefined" && document.getElementById(STYLE_ID)) ensureStyle();
+  if (typeof document !== "undefined" && document.getElementById(STYLE_ID)) {
+    ensureStyle();                          // re-parsed: the rule is new, so put the level back on it now (no flash)
+    if (_applied !== null) setOpacity(_applied);
+  }
 }
 export const hudCurtainStatus = () => ({ level: +_curtain.level().toFixed(3), holds: _curtain.list(), selectors: [...SELECTORS] });
 

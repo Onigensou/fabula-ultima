@@ -15025,7 +15025,32 @@
         "id": "UfL16aNJqFM6Zw55",
         "name": "🌟 Nidhogg, Dragon King",
         "type": "character",
-        "items": [],
+        "items": [
+          {
+            "id": "FXI0FkJZdecsuoma",
+            "name": "Call of the Master"
+          },
+          {
+            "id": "YrE6d5qP1KI7d9Zr",
+            "name": "Claw"
+          },
+          {
+            "id": "jySNvluZNVA4v9ee",
+            "name": "Soul Devour"
+          },
+          {
+            "id": "b2rXFpq4TjJQ4ub9",
+            "name": "Soul Master"
+          },
+          {
+            "id": "fHPY0kZb37N089Wk",
+            "name": "Tail Stab"
+          },
+          {
+            "id": "whVYUQsml3QWatCY",
+            "name": "Wailing Breath"
+          }
+        ],
         "effects": 0
       },
       {

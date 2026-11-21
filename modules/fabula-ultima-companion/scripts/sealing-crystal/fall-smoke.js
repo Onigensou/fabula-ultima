@@ -19,7 +19,7 @@
 // edge) and settles into the void. The engulf's texture is ONE frame-sized field
 // in two octaves, the second rotated, so it never repeats (the user, 2026-11-11).
 // The body is drawn here at effect resolution from the first frame on.
-// Scrubbable: at(T) re-simulates from 0 for an earlier time.
+// Scrubbable: at(T) re-simulates from 0 for an earlier time. Simulated at SIM_HZ (60; the mockup's 30 until 2026-11-16).
 // ============================================================================
 
 import { Rng, mix, hex, clamp, noise2, tileNoise, TAU, WHITE } from "../battle-director/pixel-entrance/pixelfx/core/index.js";
@@ -37,6 +37,13 @@ export const FALL = Object.freeze({
 });
 export const FRONTS = Object.freeze(["core", "wounds", "crown"]);
 
+/** The smoke's simulation rate (puffs, sparks, grit, the front's billows). */
+export const SIM_HZ = 60;
+/** One body smoke seed per SEED_STEP x SEED_STEP body pixels (5 in the mockup; 7 since 2026-11-16, the fall 60 fps pass:
+ * half the puffs, the same cover, as each seed swells to 14-30 px anyway: the slowest band 25 % faster, stills alike at
+ * play size). A/B: the fall spec's seedStep (nidhogg-fall-show.js: __FU_FALL_SEED_STEP__ = 5). */
+export const SEED_STEP = 7;
+const SIM_DT = 1 / SIM_HZ;
 const hash = (x, y, s) => { const h = Math.sin(x * 127.1 + y * 311.7 + s * 74.7) * 43758.5453; return h - Math.floor(h); };
 const easeIO = (u) => 0.5 - 0.5 * Math.cos(Math.PI * clamp(u));
 
@@ -45,7 +52,8 @@ const easeIO = (u) => 0.5 - 0.5 * Math.cos(Math.PI * clamp(u));
  * top-left), k (effect px per sprite px), mirror, seed }) -> { draw(p, T, P, frontMode), drawRest(p), at, core,
  * centre, count }
  */
-export function makeFallSmoke(W, H, { img, x0, y0, k, mirror = true, seed = 7 }) {
+export function makeFallSmoke(W, H, { img, x0, y0, k, mirror = true, seed = 7, seedStep = SEED_STEP }) {
+  const SS = Math.max(2, Math.round(seedStep) || SEED_STEP), PR0 = 3.2 * SS / 5;
   // ---- the body, one cell per effect pixel (nearest sample of the sprite)
   const BW = Math.ceil(img.width * k), BH = Math.ceil(img.height * k), grid = new Int32Array(BW * BH).fill(-1), cells = [];
   for (let ey = 0; ey < BH; ey++) for (let ex = 0; ex < BW; ex++) {
@@ -86,6 +94,19 @@ export function makeFallSmoke(W, H, { img, x0, y0, k, mirror = true, seed = 7 })
     keyed.set(mode, keys);
     return keys;
   }
+  // the cells in the order the front takes them (by key; a NaN key, never ">= f", first): a step walks on from where the
+  // last stopped instead of testing every cell of the body (2 ms a frame per painter at the engulf: fall 60 fps pass,
+  // 2026-11-17). The cells a step takes are those not yet gone with key < f: always the next run of this order, since
+  // only that test sets gone; they are then taken in body order, as the loop over every cell took them (the Rng calls
+  // in the same order), so the same smoke.
+  const ordered = new Map();
+  function orderFor(mode) {
+    if (ordered.has(mode)) return ordered.get(mode);
+    const keys = keysFor(mode), kv = (i) => (Number.isNaN(keys[i]) ? -Infinity : keys[i]);
+    const ord = Int32Array.from(cells.keys()).sort((a, b) => kv(a) - kv(b) || a - b);
+    ordered.set(mode, ord);
+    return ord;
+  }
   // each released pixel's direction: away from where the front came from
   const fromOf = (mode, c) => {
     if (mode === "crown") return { x: c.x - centre.x, y: -20 };
@@ -111,26 +132,36 @@ export function makeFallSmoke(W, H, { img, x0, y0, k, mirror = true, seed = 7 })
     } }
   const frontR = (T, P) => R0 + (RMAX - R0) * Math.pow(clamp((T - P.engulfFrom) / (P.engulfTo - P.engulfFrom)), 1.35);
   const wob = (an, T) => 1 + 0.13 * noise2(1.6 * Math.cos(an) + T * 0.35, 1.6 * Math.sin(an) - T * 0.2, seed + 3) + 0.05 * noise2(5 * Math.cos(an), 5 * Math.sin(an) + T, seed + 4);
+  // wob is 1 +- 0.18 (noise2 is in [-1, 1]): a test against r * wob that comes out the same at 0.8 and at 1.2 needs no
+  // wob (two noises, a cos, a sin and an atan2 a puff), and the same answer (fall 60 fps pass, 2026-11-17)
+  const WOB_LO = 0.8, WOB_HI = 1.2;
 
   // ---- simulation
+  // stepped at SIM_HZ (60 since 2026-11-16, the fall 60 fps pass; the mockup stepped at 30, so the puffs only moved 30
+  // times a second however fast the frames were painted: a 60 fps fall needs them to move 60 times). The flicker of
+  // the char and the charge (drawBody's fr) stays on 30 frames a second, as designed.
   let sim = null, simMode = null;
-  const reset = (mode) => { for (const c of cells) c.gone = false; sim = { T: 0, R: new Rng(seed), puffs: [], sparks: [], grit: [], frontAcc: 0, mode }; simMode = mode; };
+  const reset = (mode) => { for (const c of cells) c.gone = false; sim = { T: 0, R: new Rng(seed), puffs: [], sparks: [], grit: [], frontAcc: 0, mode, taken: 0 }; simMode = mode; };
   const fOf = (T, P) => -0.08 + 1.18 * easeIO((T - P.front) / (P.frontEnd - P.front));
 
   function step(dt, P) {
     const s = sim, R = s.R, T = (s.T += dt), keys = keysFor(s.mode);
     if (T >= P.front) {
-      const f = fOf(T, P);
-      for (let i = 0; i < cells.length; i++) {
-        const c = cells[i];
-        if (c.gone || keys[i] >= f) continue;
+      const f = fOf(T, P), ord = orderFor(s.mode);
+      let e = s.taken;
+      while (e < ord.length && !(keys[ord[e]] >= f)) e++;
+      const go = e > s.taken ? ord.slice(s.taken, e).sort() : null;
+      s.taken = e;
+      if (go) for (let gi = 0; gi < go.length; gi++) {
+        const c = cells[go[gi]];
         c.gone = true;
         const dir = fromOf(s.mode, c), dl = Math.hypot(dir.x, dir.y) || 1;
-        // one smoke seed per 5 x 5 cells; it starts three cells big, so the body's cover goes over into the smoke
-        if (c.ex % 5 === 0 && c.ey % 5 === 0) {
+        // one smoke seed per SS x SS cells; it starts big enough to cover them (3.2 px at 5 x 5), so the body's cover
+        // goes over into the smoke
+        if (c.ex % SS === 0 && c.ey % SS === 0) {
           const sp = R.range(60, 170), big = R.chance(0.2);
           s.puffs.push({ x: c.x, y: c.y, vx: (dir.x / dl) * sp + R.range(-14, 14), vy: (dir.y / dl) * sp * 0.75 + R.range(-14, 8), age: 0, life: R.range(2.0, 3.2),
-            r0: 3.2, r1: big ? R.range(22, 30) : R.range(14, 22), a: 1, b: R.range(0.3, 0.7), warm: c.glow ? 1 : 0.5, ph: R.range(0, 100), drag: R.range(2.0, 2.8), front: false });
+            r0: PR0, r1: big ? R.range(22, 30) : R.range(14, 22), a: 1, b: R.range(0.3, 0.7), warm: c.glow ? 1 : 0.5, ph: R.range(0, 100), drag: R.range(2.0, 2.8), front: false });
         } else if (R.chance(c.glow ? 0.08 : 0.012)) {
           s.sparks.push({ x: c.x, y: c.y, vx: (dir.x / dl) * R.range(30, 90) + R.range(-10, 10), vy: (dir.y / dl) * R.range(20, 60) - R.range(20, 50), age: 0, life: R.range(0.5, 1.2) });
         } else if (c.y > bottom - 60 && R.chance(0.02)) {
@@ -152,15 +183,23 @@ export function makeFallSmoke(W, H, { img, x0, y0, k, mirror = true, seed = 7 })
         s.puffs.push({ x, y, vx: Math.cos(an) * sp, vy: Math.sin(an) * sp * 0.72 - R.range(0, 8), age: 0, life: R.range(1.0, 1.6), r0: r1 * 0.55, r1, a: 1, b: R.range(0.45, 0.85), warm: 0, ph: R.range(0, 100), front: true, drag: 0.6 });
       }
     }
-    for (let i = s.puffs.length - 1; i >= 0; i--) {
-      const q = s.puffs[i];
-      if ((q.age += dt) >= q.life) { s.puffs.splice(i, 1); continue; }
-      if (T >= P.engulfFrom) { const dx = q.x - centre.x, dy = (q.y - centre.y) / 0.72; if (Math.hypot(dx, dy) < r * 0.93 * wob(Math.atan2(dy, dx), T) * 0.7 - 20) { s.puffs.splice(i, 1); continue; } }
+    // (kept in place in their order, not spliced out one by one: each puff's step is its own, so the same puffs)
+    const PF = s.puffs;
+    let kept = 0;
+    for (let i = 0; i < PF.length; i++) {
+      const q = PF[i];
+      if ((q.age += dt) >= q.life) continue;
+      if (T >= P.engulfFrom) {
+        const dx = q.x - centre.x, dy = (q.y - centre.y) / 0.72, hd = Math.hypot(dx, dy), rk = r * 0.93;
+        if (hd < rk * WOB_LO * 0.7 - 20 || (hd < rk * WOB_HI * 0.7 - 20 && hd < rk * wob(Math.atan2(dy, dx), T) * 0.7 - 20)) continue;
+      }
       // thrown out, braked hard, then lifting once it has swelled (a body's smoke is warm)
       q.vx -= q.vx * q.drag * dt; q.vy -= q.vy * q.drag * dt;
       if (!q.front) q.vy -= 10 * (1 - Math.exp(-q.age / 0.9)) * dt;
       q.x += q.vx * dt; q.y += q.vy * dt;
+      PF[kept++] = q;
     }
+    PF.length = kept;
     for (const list of [s.sparks, s.grit]) for (let i = list.length - 1; i >= 0; i--) {
       const q = list[i]; if ((q.age += dt) >= q.life) { list.splice(i, 1); continue; }
       if (list === s.grit) { q.vy += 260 * dt; q.x += q.vx * dt; q.y = Math.min(q.floor, q.y + q.vy * dt); }
@@ -169,7 +208,7 @@ export function makeFallSmoke(W, H, { img, x0, y0, k, mirror = true, seed = 7 })
   }
   function at(T, P, mode) {
     if (!sim || mode !== simMode || T < sim.T - 1e-6) reset(mode);
-    while (sim.T + 1 / 30 <= T + 1e-6) step(1 / 30, P);
+    while (sim.T + SIM_DT <= T + 1e-6) step(SIM_DT, P);
   }
 
   // ---- drawing
@@ -180,9 +219,11 @@ export function makeFallSmoke(W, H, { img, x0, y0, k, mirror = true, seed = 7 })
     const f = T != null && T >= P.front ? fOf(T, P) : -1;
     // the shudder: grows through the charge, one or two pixels, stops at the flash
     const sh = T != null && T < P.flash ? Math.round((0.6 + 2.2 * charge) * (fr % 2 ? 1 : -1) * (T < 0.5 ? Math.max(charge, 1 - T / 0.5) : 1)) : 0;
+    // a painter of a band paints only its rows: the cells off them (a row of margin, for any rounding) put nothing
+    const ylo = p.oy - 1, yhi = p.oy + p.h;
     for (let i = 0; i < cells.length; i++) {
       const c = cells[i];
-      if (c.gone) continue;
+      if (c.gone || c.y < ylo || c.y > yhi) continue;
       let col = c.c;
       if (white) col = c.edge ? SOUL[6] : WHITE;
       else if (f > -1) {
@@ -222,16 +263,23 @@ export function makeFallSmoke(W, H, { img, x0, y0, k, mirror = true, seed = 7 })
     // the engulfed area
     if (T >= P.engulfFrom) {
       const r = frontR(T, P) * 0.93, C = p.C, WB = new Float32Array(NA + 1);
-      for (let j = 0; j <= NA; j++) WB[j] = r * wob((j / NA) * TAU - Math.PI, T);
+      let E = 0;
+      for (let j = 0; j <= NA; j++) { WB[j] = r * wob((j / NA) * TAU - Math.PI, T); if (WB[j] > E) E = WB[j]; }
       const tex = 1 - settle, ox = Math.floor(T * 3), oy = Math.floor(T * 9), T1 = SMOKE[1] | 0xff000000, T2 = SMOKE[2] | 0xff000000, T3 = SMOKE[3] | 0xff000000;
-      for (let y = 0; y < H; y++) {
-        const row = Math.min(FH - 1, y + oy) * FW + MX;
-        for (let x = 0; x < W; x++) {
+      // only the box that can be engulfed (smoke perf, pixel-identical): DIST >= |dx| and >= |dy|, so outside the front's
+      // widest reach E (+2 px, far more than DIST's float32 rounding) every pixel is skipped below anyway; and only the
+      // rows of this painter's frame (a band of the whole frame: fall-painter.js)
+      const xa = Math.max(0, Math.floor(centre.x - E - 2)), xb = Math.min(W - 1, Math.ceil(centre.x + E + 2));
+      const ya = Math.max(p.oy, Math.floor(centre.y - 0.72 * E - 2)), yb = Math.min(H - 1, p.oy + p.h - 1, Math.ceil(centre.y + 0.72 * E + 2));
+      if (xa <= xb && ya <= yb) p.markC?.(xa, ya, xb, yb);
+      for (let y = ya; y <= yb; y++) {
+        const row = Math.min(FH - 1, y + oy) * FW + MX, ci = (y - p.oy) * W;
+        for (let x = xa; x <= xb; x++) {
           const i = y * W + x, e = WB[ANG[i]];
           if (DIST[i] >= e) continue;
           let c = 0xff000000;
           if (tex > 0) { const n = FIELD[row + Math.max(-MX, x - ox)] * tex * (0.55 + 0.45 * DIST[i] / e); c = n > 0.62 ? T3 : n > 0.5 ? T2 : n > 0.4 ? T1 : c; }
-          C[i] = c;
+          C[ci + x] = c;
         }
       }
     }
@@ -255,12 +303,16 @@ export function makeFallSmoke(W, H, { img, x0, y0, k, mirror = true, seed = 7 })
         const a = q.a * (kk < 0.6 ? 1 : 1 - (kk - 0.6) / 0.4);
         if (a < 0.02 || q.x + r < 0 || q.y + r < 0 || q.x - r > W || q.y - r > H) continue;
         let deep = 1;
-        if (rf) { const dx = q.x - centre.x, dy = (q.y - centre.y) / 0.72, d = Math.hypot(dx, dy) / (rf * wob(Math.atan2(dy, dx), T)); deep = 0.35 + 0.65 * clamp((d - 0.72) / 0.28); }
+        if (rf) {
+          const dx = q.x - centre.x, dy = (q.y - centre.y) / 0.72, hd = Math.hypot(dx, dy);
+          // d = hd / (rf wob): past 1 the clamp is 1, under 0.72 it is 0, wherever wob is in [0.8, 1.2]
+          deep = 0.35 + 0.65 * (hd >= rf * WOB_HI ? 1 : hd <= rf * WOB_LO * 0.72 ? 0 : clamp((hd / (rf * wob(Math.atan2(dy, dx), T)) - 0.72) / 0.28));
+        }
         // born black like the char it came from, brightening to its own tone as it swells
         const born = clamp(q.age / 0.35);
         list.push({ x: q.x, y: q.y, r, a, b: q.b * (0.25 + 0.75 * born) * (1 - 0.5 * kk) * deep, k: kk, ph: q.ph, age: q.age, w: q.warm * Math.exp(-q.age * 2.2) });
       }
-      cloud(p, list, RS, RL, { dens: 4, max: 1, lit: 1.4, steps: true });
+      cloud(p, list, RS, RL, { dens: 4, max: 1, lit: 1.4, steps: true, frameH: H });
     }
     // soul sparks and grit, over the smoke
     for (const q of sim.sparks) { const a = 1 - q.age / q.life, c = q.age < 0.05 ? WHITE : q.age < 0.2 ? SOUL[7] : SOUL[a > 0.5 ? 6 : 5]; p.put(Math.floor(q.x), Math.floor(q.y), c, a); p.add(Math.floor(q.x), Math.floor(q.y), SOUL[5], 0.5 * a); }

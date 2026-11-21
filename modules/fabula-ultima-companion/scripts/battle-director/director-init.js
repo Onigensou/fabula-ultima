@@ -56,11 +56,14 @@ import {
 } from "./party-entrance-styles.js";
 import { playPartyEntranceLocal, preparePartyEntrance } from "./party-entrance-fx.js";
 import { applyOpeningShotLocal, swingBackOpeningShot } from "./battle-opening-shot.js";
+import { pickBattleOpening } from "./battle-opening-styles.js";
+import { presentBattleOpening } from "./battle-opening.js";
 import { SimMode } from "./sim/sim-mode.js";
 import { resolveGuestRoster, ensureGuestPassive } from "../guest-roster/guest-roster-core.js";
 import { planEnemies, planEnemyJoin, planParty, placeSupport, REF_W, REF_H, GIANT_H } from "./formation.js";
 import { isNpcActor } from "./status-classifier.js";
-import { resolvePreset, buildCamera, buildProjector, floorDepth } from "./battle-stage-3d-rules.js";
+import { resolvePreset, buildCamera, buildProjector, floorDepth, battlerScaleAt } from "./battle-stage-3d-rules.js";
+import { readBattleStand, applyBattleStand, BASE_SPOT_FLAG } from "./battle-stand.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const FLAG_NS = MODULE_ID;
@@ -817,6 +820,25 @@ function hideStockBars(td) {
   return td;
 }
 
+// An actor's own nudge to its formation spot (flags.<ns>.battleStand, see
+// battle-stand.js): further back on the floor, scaled up by what the depth
+// scale takes away there so it is drawn the size it was. Null = none.
+function battleStandFor(actor, scene, centre, heightCells, gridSize, anchorY = 0.5) {
+  const stand = readBattleStand(actor?.flags?.[FLAG_NS]?.battleStand);
+  if (!stand) return null;
+  const s = stageOf(scene);
+  let factorAt = null;
+  try {
+    const cfg = resolvePreset(scene?.background?.src);
+    if (cfg && cfg.strength > 0) {
+      const cam = buildCamera(cfg, s, gridSize);
+      const P = cfg.stage3d ? buildProjector(cfg, cam, s) : null;
+      factorAt = (y) => battlerScaleAt(y, cam, P);
+    }
+  } catch (e) { warn("battleStand: no depth curve for this scene (position only)", e); }
+  return applyBattleStand({ centre, stand, k: { x: s.w / REF_W, y: s.h / REF_H }, feetBelow: (heightCells * gridSize) / 2, factorAt, anchorY });
+}
+
 async function spawnTokensHidden({ scene, layout, disposition }) {
   if (!layout?.length) return [];
   const tokensData = [];
@@ -847,15 +869,27 @@ async function spawnTokensHidden({ scene, layout, disposition }) {
     const width = (td.width ?? 1);
     const height = (td.height ?? 1);
     const gridSize = scene.grid?.size ?? 100;
+    let pos = item.pos;
+    const anchorY = Number.isFinite(Number(td.texture?.anchorY)) ? Number(td.texture.anchorY) : 0.5;
+    const stand = battleStandFor(actor, scene, pos, height, gridSize, anchorY);
+    const baseSpot = stand ? { x: Math.round(pos.x), y: Math.round(pos.y) } : null;
+    if (stand) {
+      pos = stand.centre;
+      if (stand.sizeK !== 1) {
+        const k = stand.sizeK;
+        td.texture = { ...(td.texture ?? {}), scaleX: (Number(td.texture?.scaleX) || 1) * k, scaleY: (Number(td.texture?.scaleY) || 1) * k, anchorY: stand.anchorY };
+      }
+      log(`battleStand: ${actor.name} at (${Math.round(pos.x)}, ${Math.round(pos.y)}), size x${stand.sizeK.toFixed(4)}, anchorY ${stand.anchorY.toFixed(4)}`);
+    }
     // Layout positions are token CENTERS — convert to top-left for Foundry
-    td.x = Math.round(item.pos.x - (width * gridSize) / 2);
-    td.y = Math.round(item.pos.y - (height * gridSize) / 2);
+    td.x = Math.round(pos.x - (width * gridSize) / 2);
+    td.y = Math.round(pos.y - (height * gridSize) / 2);
     td.actorId = actor.id;
     td.actorLink = shouldLinkSpawnedToken(actor, disposition, proto); // PCs + persistent summons linked, other NPCs unlinked
     td.disposition = disposition;
     td.hidden = false;
     td.alpha = 0; // start invisible — entrance animation fades in
-    td.flags = { ...(td.flags ?? {}), [FLAG_NS]: { ...(td.flags?.[FLAG_NS] ?? {}), [FLAG_DIRECTOR_SPAWNED]: true } };
+    td.flags = { ...(td.flags ?? {}), [FLAG_NS]: { ...(td.flags?.[FLAG_NS] ?? {}), [FLAG_DIRECTOR_SPAWNED]: true, ...(baseSpot ? { [BASE_SPOT_FLAG]: baseSpot } : {}) } };
     hideStockBars(td);
     tokensData.push(td);
   }
@@ -1103,6 +1137,14 @@ export function initDirectorEntrance() {
 // the real tokens never flash in mid-run on any client. No-ops gracefully if
 // the tokens aren't on this client's active scene (e.g. a player who hasn't
 // followed to the battle scene yet — they get the persisted alpha later).
+// A creature with a 3D rig (creature-rig/rig-api.js) plays its rig's entrance beat — Nidhogg roars — the
+// moment its token shows. LOCAL (the entrance already runs on every client) and never awaited, so no
+// entrance gets longer. Reached through the global so a rig that fails to load cannot touch the entrance.
+// The rig API plays it once per token, so a style that falls back to a fade cannot roar twice.
+function rigEntranceBeat(tokenId) {
+  try { globalThis.FUCompanion?.api?.creatureRig?.entrance?.(tokenId)?.catch?.(() => {}); } catch {}
+}
+
 async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [], partyOutcomes = {} } = {}) {
   const FADE_MS = 600;
   const PER_TOKEN_STAGGER_MS = 90;
@@ -1124,6 +1166,8 @@ async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [], party
       await wait(delay);
       const placeable = getP(id);
       if (!placeable) { resolve(); return; }
+      // the roar's breath-in plays under the fade, so its jaw snap lands just after he is fully in
+      rigEntranceBeat(id);
       const start = performance.now();
       function tick(now) {
         const t = Math.min(1, (now - start) / FADE_MS);
@@ -1278,6 +1322,7 @@ async function playEntranceLocal({ partyTokenIds = [], enemyTokenIds = [], party
       if (!placeable.destroyed) {
         try { placeable.alpha = 1; } catch {}
         try { if (placeable.mesh) placeable.mesh.alpha = 1; } catch {}
+        rigEntranceBeat(id);   // landed and revealed: roar
       }
     } catch (e) {
       warn(`entrance: "${styleKey}" descent failed for ${id} — falling back to fade`, e);
@@ -1353,6 +1398,7 @@ async function playJoinOne({ tokenId, style }) {
   if (p && !p.destroyed) {
     try { p.alpha = 1; } catch {}
     try { if (p.mesh) p.mesh.alpha = 1; } catch {}
+    rigEntranceBeat(tokenId);
   }
 }
 
@@ -1812,18 +1858,47 @@ async function runDirectorInitInner(payload) {
     catch (e) { warn("settleRestFraming threw (continuing)", e); }
   }
 
+  // ── 8.55. A battle opening style (battle-opening-styles.js): an enemy whose
+  // actor names one (flags.<ns>.battleOpening, e.g. Nidhogg's
+  // "nidhogg-awakening") owns the whole start from here: the shatter's break
+  // becomes the style's crack-out, and its show replaces the opening shot, the
+  // beat and every entrance (the party fade in at its end). No claim = the
+  // usual start below, untouched.
+  let openingClaim = null;
+  if (!lean) {
+    try { openingClaim = pickBattleOpening(enemyTokens.map((t) => ({ id: t.id, flags: t.actor?.flags ?? null }))); }
+    catch (e) { warn("battle opening: pick threw (usual start)", e); openingClaim = null; }
+    if (openingClaim) log(`Battle opening claimed: "${openingClaim.key}" by ${openingClaim.bossId}`);
+  }
+
   // ── 8.6. Opening shot (3D camera scenes): every client frames the party,
   // lined up across the screen, while its view is still covered; the party
   // enter in it and the camera swings back before the enemies (see
   // battle-opening-shot.js). Nothing happens where there is no 3D camera.
-  if (!lean) {
+  if (!lean && !openingClaim) {
     const opening = { sceneId: battleScene.id, partyTokenIds: partyTokens.map((t) => t.id) };
     try { _entranceSocket?.executeForOthers?.(ACTION_OPENING, opening); }
     catch (e) { warn("opening shot: broadcast failed", e); }
     await applyOpeningShotLocal(opening);
   }
 
-  if (shatter) {
+  // The claimed opening starts on every client (it waits there for its
+  // crack-out, or puts its black cover up at once on the classic curtain).
+  let openingRun = null;
+  if (openingClaim) {
+    openingRun = presentBattleOpening({
+      key: openingClaim.key, sceneId: battleScene.id, bossTokenId: openingClaim.bossId,
+      partyTokenIds: partyTokens.map((t) => t.id), enemyTokenIds: enemyTokens.map((t) => t.id),
+      crackOut: !!shatter,
+    });
+    if (!openingRun) warn(`battle opening "${openingClaim.key}" could not start (usual start)`);
+  }
+
+  if (shatter && openingRun) {
+    // the glass does NOT break: the style's crack-out plays over it on every
+    // client and ends on black (the show follows from there)
+    try { shatter?.release({ crackOut: openingClaim.key }); } catch (e) { warn("shatter release threw", e); }
+  } else if (shatter) {
     // the glass breaks and flies past the camera on every client; the beat
     // below starts as the GM's glass is finishing (the last pieces are still
     // passing the lens)
@@ -1835,7 +1910,7 @@ async function runDirectorInitInner(payload) {
   // A held beat on the empty stage between the transition and the entrance,
   // so the arena registers before anyone arrives (user ask 2026-10-31; was
   // 0 ms after the glass, 150 ms after the curtain).
-  if (!lean) await wait(ENTRANCE_BEAT_MS);
+  if (!lean && !openingRun) await wait(ENTRANCE_BEAT_MS);
 
   // ── 10. Entrance animation (party run-in from the right, staggered
   // top→bottom; enemies fade in). In lean mode there's no curtain to reveal
@@ -1854,6 +1929,17 @@ async function runDirectorInitInner(payload) {
           "Token", ids.map((id) => ({ _id: id, alpha: 1 })), { animate: false });
       }
     } catch (e) { warn("lean: persist token alpha failed", e); }
+  } else if (openingRun) {
+    // The opening's show IS the entrance (no dash, no styled entrances, no
+    // entrance roar): wait until its camera is back at the battle position and
+    // the party has faded in on this client (bounded inside), then persist the
+    // durable alpha:1 exactly as the entrance tail does.
+    await openingRun.arrived;
+    try {
+      const ids = [...partyTokens, ...enemyTokens].map((t) => t.id);
+      if (ids.length) await battleScene.updateEmbeddedDocuments("Token", ids.map((id) => ({ _id: id, alpha: 1 })), { animate: false });
+    } catch (e) { warn("battle opening: persist token alpha failed", e); }
+    log("Battle opening: arrived; the usual start goes on");
   } else {
     await playEntranceAnimation({ partyTokens, enemyTokens });
   }

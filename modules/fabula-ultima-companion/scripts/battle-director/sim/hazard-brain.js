@@ -44,6 +44,7 @@
 // ignoring the mechanic, not to play it perfectly.
 
 import { SimMode } from "./sim-mode.js";
+import { isPermanentSoulFragment } from "../battlefield-object.js";
 
 /** The AE's authored name — must match lightning-storm.js's ROD_AE_NAME. */
 export const ROD_RE = /^lightning rod$/i;
@@ -195,7 +196,9 @@ export function rodDisplacementTarget(api) {
  * closest to dying only through the sort being stable; nothing here needs more.
  */
 export function soulFragmentTarget(api) {
-  const fragments = (api.foes?.() ?? []).filter((f) => f.actorDoc?.flags?.["fabula-ultima-companion"]?.conflictObject === "soul-fragment");
+  const fragments = (api.foes?.() ?? []).filter((f) => f.actorDoc?.flags?.["fabula-ultima-companion"]?.conflictObject === "soul-fragment"
+    // a Servant's permanent fragment is untargetable by the party (the sim party brain is the party)
+    && !isPermanentSoulFragment(f.actorDoc));
   if (!fragments.length) return null;
   const hp = (f) => Number(f.actorDoc?.system?.props?.current_hp) || 0;
   return fragments.slice().sort((a, b) => hp(b) - hp(a))[0];

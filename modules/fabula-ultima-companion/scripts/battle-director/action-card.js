@@ -42,7 +42,7 @@ import { toggleKeywordTooltip, dismissKeywordTooltip } from "./keyword-tooltip.j
 import { isAutoFireReactionMode } from "./reaction-modes.js";
 import { chainProfile, reactionTone } from "./passive-card-ui/passive-card-classify.js";
 import { getRuntimeSkillView } from "./skill-recipes.js";
-import { resolvesVsMagicDefense, freezeActionResult, hasUnconditionalTargetBlock } from "./snapshot.js";
+import { resolvesVsMagicDefense, freezeActionResult, hasUnconditionalTargetBlock, isTargetBlockedFor } from "./snapshot.js";
 import { mergeGmOverride, normalizeGmOverride, describeGmEditors, isGmEditableRow,
          summarizeGmOverride, isGmOverrideEmpty, GM_DIE_SIZES,
          GM_DAMAGE_TYPES, GM_WEAPON_TYPES, gmReactionKey, isGmEditableReaction,
@@ -52,6 +52,7 @@ import { SimMode } from "./sim/sim-mode.js";
 import { decideReactions, bestElementForCard } from "./sim/reaction-brain.js";
 import { simInvoke } from "./sim/invoke-brain.js";
 import { hotUrl } from "./hot-reload.js";
+import { isMassiveJoinRowKey } from "./massive-keyword.js";
 
 // Resolve which active player client decides for the given actor doc. Returns
 // userId or null. Delegates to the shared Spectator helper so a spectator
@@ -3967,7 +3968,7 @@ export function applyCardTargetMutationDelta(rootEl, delta) {
   // and put back if the mark lifts. The lock is recounted from the pills after.
   if (Array.isArray(delta.gmDroppedReactions) || Array.isArray(delta.staleReactions)) {
     const mootReason = new Map();
-    for (const c of delta.gmDroppedReactions ?? []) mootReason.set(`${c?.rowKey ?? ""}:${c?.carrierUuid ?? ""}`, "Target removed");
+    for (const c of delta.gmDroppedReactions ?? []) mootReason.set(`${c?.rowKey ?? ""}:${c?.carrierUuid ?? ""}`, c?.dropReason || "Target removed");
     for (const c of delta.staleReactions ?? []) {
       const k = `${c?.rowKey ?? ""}:${c?.carrierUuid ?? ""}`;
       if (!mootReason.has(k)) mootReason.set(k, String(c?.reason || "No longer applies"));
@@ -6272,6 +6273,7 @@ function gmAddableTargets(perTargetResults, attackerTokenUuid = null) {
       const m = String(anyTarget).match(/^Scene\.([^.]+)\./);
       return m?.[1] ?? canvas?.scene?.id ?? null;
     })();
+    const attackerActorForBlock = (() => { try { return attackerTokenUuid ? (globalThis.fromUuidSync?.(attackerTokenUuid)?.actor ?? null) : null; } catch { return null; } })();
     const rows = (canvas?.tokens?.placeables ?? [])
       .map((t) => t?.document)
       .filter((d) => d?.uuid && d?.actor && !taken.has(d.uuid))
@@ -6285,6 +6287,9 @@ function gmAddableTargets(perTargetResults, attackerTokenUuid = null) {
       // the engine honours this contract, and a hand-added target that no
       // automatic path could ever produce is a rule bypass, not a correction.
       .filter((d) => !hasUnconditionalTargetBlock(d.actor))
+      // `opponent` block (Nox Servant): same rule, relative to the performer. Unknown performer
+      // => blocked (fail closed) for a holder of the block.
+      .filter((d) => !isTargetBlockedFor(d.actor, attackerActorForBlock, { targetTokenUuid: d.uuid, targetDisp: d.disposition }))
       .map((d) => ({
         tokenUuid: d.uuid,
         name: d.name ?? d.actor?.name ?? "?",
@@ -8540,6 +8545,38 @@ export async function postActionCard({ director, kind, payload }) {
       }
       return { subjectActorUuid: picked, subjectTokenUuid: tokenUuid };
     }
+    // Massive "cannot be Negated" for mid-card injected reactions: same filter the
+    // CONFIRM offer applies (card-mutations.dropNegatesForMassive), on a minimal ar.
+    async function dropMassiveNegatesFrom(added) {
+      try {
+        const base = director?.ctx?.actionResult ?? payload;
+        const cm = await import(hotUrl("./card-mutations.js"));
+        await cm.dropNegatesForMassive({
+          kind,
+          skillUuid: base?.skillUuid ?? payload?.skillUuid ?? null,
+          attackerActorRef: base?.attackerActorRef ?? payload?.attackerActorRef
+            ?? payload?.attackerActor?.uuid ?? payload?.attackerActorUuid ?? null,
+          attacker: base?.attacker ?? payload?.attacker ?? null,
+          weapon: base?.weapon ?? payload?.weapon ?? null,
+        }, added);
+      } catch (e) { warn("dropMassiveNegatesFrom threw", e); }
+    }
+    // Nox Servant: never offer a Protect / join whose new target would be a blocked Servant.
+    async function dropBlockedInsertionsFrom(added) {
+      try {
+        const base = director?.ctx?.actionResult ?? payload;
+        const g = await import(hotUrl("./target-insert-guard.js"));
+        await g.dropBlockedInsertions({
+          kind,
+          skillUuid: base?.skillUuid ?? payload?.skillUuid ?? null,
+          actionIntent: base?.actionIntent ?? payload?.actionIntent ?? null,
+          hasDamage: base?.hasDamage ?? payload?.hasDamage ?? false,
+          attackerActorRef: base?.attackerActorRef ?? payload?.attackerActorRef
+            ?? payload?.attackerActor?.uuid ?? payload?.attackerActorUuid ?? null,
+          attacker: base?.attacker ?? payload?.attacker ?? null,
+        }, added);
+      } catch (e) { warn("dropBlockedInsertionsFrom threw", e); }
+    }
     async function injectCascadeReactions() {
       try {
         const rd = await import(hotUrl("./reaction-derive.js"));
@@ -8571,6 +8608,8 @@ export async function postActionCard({ director, kind, payload }) {
           },
         });
         const { added } = rd.diffCandidates(cardReactions, derived);
+        await dropMassiveNegatesFrom(added);
+        await dropBlockedInsertionsFrom(added);
         if (!added.length) return;
         const cascadeAttackerUuid = payload?.attackerActor?.uuid ?? payload?.attackerActorUuid ?? null;
         for (const c of added) {
@@ -8671,6 +8710,9 @@ export async function postActionCard({ director, kind, payload }) {
           const subAct = p.payloadAtFire?.subjectActorUuid ?? null;
           if ((subTok && !targetTok.has(subTok)) || (!subTok && subAct && !targetAct.has(subAct))) reason = "No longer targeted";
         }
+        // A Massive join card whose player is already on the action (the GM added
+        // them, or another path did) has nothing left to do.
+        if (!reason && isMassiveJoinRowKey(p.rowKey) && p.reactorActorUuid && targetAct.has(p.reactorActorUuid)) reason = "Already a target";
         // 2. nothing left to add
         if (!reason && p._addTarget && kind === "Attack") {
           const spare = (director?.ctx?.eligibleTargets ?? []).filter((e) => e?.tokenUuid && !targetTok.has(e.tokenUuid));
@@ -8803,6 +8845,8 @@ export async function postActionCard({ director, kind, payload }) {
           deps: { findPassiveCandidates: se.findPassiveCandidates },
         });
         const { added } = rd.diffCandidates(cardReactions, derived);
+        await dropMassiveNegatesFrom(added);
+        await dropBlockedInsertionsFrom(added);
         if (!added.length) return;
         for (const c of added) {
           // Per-pill owner (see initial enrichment) — these are reactions of
@@ -9431,6 +9475,7 @@ export async function postActionCard({ director, kind, payload }) {
               rowKey: c?.rowKey ?? null,
               carrierUuid: c?.carrierUuid ?? null,
               carrierName: c?.carrierName ?? null,
+              dropReason: c?.dropReason ?? null,
             })),
             // Which PANELS carry a hand-set value, so the accuracy and damage
             // fieldsets can be railed like an edited target row.

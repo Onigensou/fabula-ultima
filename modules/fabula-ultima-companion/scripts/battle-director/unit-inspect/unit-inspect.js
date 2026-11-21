@@ -260,7 +260,7 @@ function footing(token, { plain = false } = {}) {
   const seam = plain ? null : globalThis.__ONI_BATTLE_STAGE_3D__;
   const mesh = token.mesh, mb = seam?.drawnMeshBounds?.(token) ?? mesh.getBounds(), k = hudScale();
   let st = null;
-  try { st = standingOf(mesh.texture); } catch { /* texture not ready */ }
+  try { st = standingOf(globalThis.__ONI_CREATURE_RIG__?.paintedTexture?.(token) ?? mesh.texture); } catch { /* texture not ready */ }   // painted art, not a creature rig's live canvas
   let cx, fy, rawW;
   if (!st) {
     cx = mb.x + mb.width / 2; fy = mb.y + mb.height - 6; rawW = mb.width * 0.9;
@@ -350,7 +350,7 @@ function drawLoop() {
   const mesh = token.mesh;
   const b = globalThis.__ONI_BATTLE_STAGE_3D__?.drawnMeshBounds?.(token) ?? mesh.getBounds();
   const { sprite, ctx } = S.els;
-  const tex = mesh.texture;
+  const tex = globalThis.__ONI_CREATURE_RIG__?.paintedTexture?.(token) ?? mesh.texture;   // painted art, not a creature rig's live canvas
   const src = tex?.baseTexture?.resource?.source ?? null;
   const fr = tex?.frame;
   if (src && fr && fr.width > 0) {

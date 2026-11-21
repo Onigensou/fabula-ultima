@@ -40,6 +40,7 @@
 import { log, warn } from "./logger.js";
 import { isOutOfPlay } from "./out-of-play.js";
 import { speedTierOf as actorSpeedTier, PHASE_ORDER, tierName } from "./speed-phase.js";
+import { bossHoldsSideWipe } from "./boss-rules/boss-rules.js";
 
 // Base activation count from actor (Champions/Elites can have >1; PCs default 1).
 // Mirrors the legacy `readDesiredActivations` in `Battle Initiator`.
@@ -962,7 +963,9 @@ export class DirectorCombat {
       // effectively over. The director detects side-wipe elsewhere; here we
       // just signal. Decided on a dry read of the next-round counters so the
       // reset itself can stay deferred.
-      if (!this.combatants.some((c) => this._nextRoundTurns(c).remaining > 0)) {
+      // A boss rule holding the party's wipe (Nidhogg: every PC down in a Crystal
+      // Round waits for his return) keeps the rounds passing instead.
+      if (!this.combatants.some((c) => this._nextRoundTurns(c).remaining > 0) && !bossHoldsSideWipe({ dCombat: this }, "party")) {
         warn("nextTurn: round wrapped but no eligible combatants remain — ending");
         this.end();
         this._notifyTurnActions();

@@ -418,6 +418,17 @@ Hooks.once("ready", () => {
       filters: ["source"]
     },
     {
+      // A fall that stuck: fired by the defeat reactor after the KO and every
+      // immediate revive (an onlooker's heal, Auto-Life), while the creature is
+      // still at 0 HP. Subject = the downed creature; onlookers only. The side
+      // wipe waits for it (battle-director/stays-down.js). Nox Servant.
+      key: "creature_stays_down",
+      label: "When a creature is reduced to 0 HP and not revived",
+      bucket: "resolution_phase",
+      subjectFrom: SUBJECT_STATE_CHANGED,
+      filters: ["source"]
+    },
+    {
       key: "creature_unleashes_zero_power",
       label: "When a creature unleashes Zero Power",
       bucket: "resolution_phase",
@@ -481,7 +492,7 @@ Hooks.once("ready", () => {
       "creature_recovers_hp", "creature_recovers_mp", "creature_lose_mp",
       "creature_takes_damage", "creature_deals_damage", "creature_will_deal_damage",
       "creature_shield_break", "creature_enter_crisis", "creature_exit_crisis",
-      "creature_defeated", "creature_knocked_out"
+      "creature_defeated", "creature_knocked_out", "creature_stays_down"
     ],
     // "which status changed" — status filter. Crisis enter/exit are status
     // changes too (Crisis is an AE), so a "when Crisis lands" row can scope by name.

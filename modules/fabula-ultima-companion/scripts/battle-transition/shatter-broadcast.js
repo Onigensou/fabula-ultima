@@ -16,6 +16,9 @@
 //   sh.release();             // every client: break the glass
 //   await sh.done;            // GM's own glass has cleared
 //
+//   sh.release({ crackOut: "<battle opening style>" })   // every client: the glass does NOT break; the style's
+//                             // crack-out plays over it and ends on black (battle-director/battle-opening.js)
+//
 // Transport: socketlib, the module's shared socket (same pattern as
 // director-sfx.js). Classic black-curtain path stays in director-init.js for
 // when the world setting picks it, the window is hidden, or lean mode.
@@ -24,6 +27,7 @@
 import { playShatterTransition, resolveShatterCast, preloadShatterCast, shatterDebugSpeed } from "./shatter-transition.js";
 import { playSfx, preloadSfx } from "../battle-director/director-sfx.js";
 import { BATTLE_TRANSITION_SFX_URL, BATTLE_CRACK_SFX_URL } from "../battle-director/director-vfx.js";
+import { crackOutRunner } from "../battle-director/battle-opening.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const TAG = "[FU Shatter]";
@@ -71,8 +75,10 @@ function waitForScene(sceneId, timeoutMs = SCENE_WAIT_MS) {
 function startLocal({ id, sceneId, cast }) {
   let release;
   const released = new Promise((r) => { release = r; });
+  // a battle opening's crack-out replaces the break (set by the GM's release; null = the glass breaks)
+  let crackOut = null;
   const timer = setTimeout(() => { console.warn(TAG, "no release from the GM; clearing the glass"); release(); }, RELEASE_WAIT_MS);
-  sessions.set(id, { release: () => { clearTimeout(timer); release(); } });
+  sessions.set(id, { release: (opts = {}) => { clearTimeout(timer); if (opts?.crackOut) crackOut = crackOutRunner(opts.crackOut); release(); } });
   let frozenOk, endingOk;
   const frozen = new Promise((r) => { frozenOk = r; });
   const ending = new Promise((r) => { endingOk = r; });
@@ -80,12 +86,13 @@ function startLocal({ id, sceneId, cast }) {
   // keep the cues so the battle still announces itself
   if (globalThis.FUCompanion?.api?.vfxSuppressed?.()) {
     frozenOk(false); cue("crack");
-    const done = released.then(() => cue("shatter")).finally(() => { sessions.delete(id); endingOk(); });
+    const done = released.then(() => { if (!crackOut) cue("shatter"); }).finally(() => { sessions.delete(id); endingOk(); });
     return { frozen, ending, done };
   }
   const done = playShatterTransition({
     load: () => Promise.all([waitForScene(sceneId), released]),
     cast,
+    crackOut: () => crackOut,
     onPhase: (n) => {
       if (n === "impact") cue("crack");
       if (n === "cut" || n === "skip") cue("shatter");
@@ -120,11 +127,13 @@ export function beginBattleShatter({ battleScene, payload } = {}) {
   catch (e) { console.warn(TAG, "broadcast start failed", e); }
   const local = startLocal({ id, sceneId, cast });
   let released = false;
-  const release = () => {
+  // opts.crackOut: a battle opening style's name; every client plays its crack-out instead of the break
+  const release = (opts = {}) => {
     if (released) return; released = true;
     gmReleases.delete(id);
-    try { _socket?.executeForOthers?.(ACTION_RELEASE, { id }); } catch (e) { console.warn(TAG, "broadcast release failed", e); }
-    sessions.get(id)?.release();
+    const crackOut = typeof opts?.crackOut === "string" ? opts.crackOut : null;
+    try { _socket?.executeForOthers?.(ACTION_RELEASE, { id, crackOut }); } catch (e) { console.warn(TAG, "broadcast release failed", e); }
+    sessions.get(id)?.release({ crackOut });
   };
   gmReleases.set(id, release);
   // the director waits on `ending` before the entrance: never longer than the glass needs (~2.5 s)
@@ -158,7 +167,7 @@ export function initShatterBroadcast() {
     } else {
       _socket = socketlib.registerModule(MODULE_ID);
       _socket.register(ACTION_START, (data = {}) => { if (data.id && !sessions.has(data.id)) startLocal(data); });
-      _socket.register(ACTION_RELEASE, ({ id } = {}) => sessions.get(id)?.release());
+      _socket.register(ACTION_RELEASE, ({ id, crackOut = null } = {}) => sessions.get(id)?.release({ crackOut }));
     }
   } catch (e) { console.warn(TAG, "socket init failed", e); }
   // Warm the transition's cues and the party's cut-in art now, at boot, so the first battle of the

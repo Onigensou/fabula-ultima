@@ -72,6 +72,7 @@
 // ============================================================================
 
 import { tokenCastsSpriteShadow, tokenPaintedShadow, baseActorOf } from "./sprite-shadow-config.js";
+import { paintedTexture as rigPaintedTexture } from "../creature-rig/rig-host.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 const FLAG_PATH = `flags.${MODULE_ID}.spriteShadow`;
@@ -383,7 +384,7 @@ export function syncToken(token) {
     if (!wantsShadow(token)) { removeShadow(token.id); return; }
     const paintedUrl = tokenPaintedShadow(token);
     if (paintedUrl) { syncPainted(token, paintedUrl); return; }
-    const mesh = token.mesh, tex = mesh.texture;
+    const mesh = token.mesh, tex = rigPaintedTexture(token) ?? mesh.texture;   // a 3D creature rig: bake from the painting
     const g = bodyGeometry(tex);
     if (!g) { removeShadow(token.id); retryLater(token); return; }
     _retry.delete(token.id);

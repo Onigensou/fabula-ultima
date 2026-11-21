@@ -13,8 +13,9 @@ import {
   floorDisparityAt, floorToWorld, worldToCanvas, parallaxUniforms, shiftUV,
   buildProjector, restPxPerMetre, rigCamera, liveBattler, projectNearFoot, stageModeFor,
   reliefDepth, reliefPoint, floorDepth, projectLive, paintedLive, paintedParallax, floorPoint3, placedCamera,
-  battlerDrawScale, orbitPath,
+  battlerDrawScale, orbitPath, mirrorUnit, edgeFold, EDGE_FOLD, RELIEF_EXTENT, reliefGrid, screenRayCanvas,
 } from "./battle-stage-3d-rules.js";
+import { readFileSync } from "node:fs";
 
 let pass = 0, fail = 0;
 const ok = (label, cond, extra = "") => {
@@ -395,6 +396,56 @@ function floorPointNearer(f, dzPx, P, ppm) {
     const fx = PRESETS.Valley_Battlemap004.ambient.fx;
     ok("Sealed Cavern: churning gas cloud sea first, slime drips gone (rev 2)", fx[0]?.k === "cloudsea" && !fx.some((f) => f.k === "slime"), JSON.stringify(fx.map((f) => f.k)));
   }
+}
+
+// ── Past the painting's edge (2026-11-19: the battle opening's 35-degree reveal saw streaks, a flat wedge, the void) ──
+{
+  near("mirrorUnit: inside unchanged", mirrorUnit(0.3), 0.3);
+  near("mirrorUnit: folds back past 1", mirrorUnit(1.2), 0.8, 1e-9);
+  near("mirrorUnit: folds back past 0", mirrorUnit(-0.3), 0.3, 1e-9);
+  near("mirrorUnit: two widths out comes round again", mirrorUnit(2.4), 0.4, 1e-9);
+  const [tl, th] = EDGE_FOLD.y;
+  ok("edgeFold: continuous at both edges (no seam)", Math.abs(edgeFold(-1e-6, tl, th)) < 1e-5 && Math.abs(edgeFold(1 + 1e-6, tl, th) - 1) < 1e-5);
+  ok("edgeFold: above the top it stays inside the top band (never the floor in the sky)", [-0.05, -0.3, -0.7, -1.2, -2.5].every((v) => { const f = edgeFold(v, tl, th); return f >= 0 && f <= tl + 1e-9; }));
+  ok("edgeFold: below the bottom it stays inside the bottom band", [1.05, 1.3, 1.9].every((v) => { const f = edgeFold(v, tl, th); return f >= 1 - th - 1e-9 && f <= 1; }));
+  ok("edgeFold: across, the whole painting mirrors", Math.abs(edgeFold(-0.6, ...EDGE_FOLD.x) - 0.6) < 1e-9 && Math.abs(edgeFold(1.6, ...EDGE_FOLD.x) - 0.4) < 1e-9);
+  // the shader folds with the same numbers
+  const camSrc = readFileSync(new URL("./battle-stage-3d-camera.js", import.meta.url), "utf8");
+  ok("the shader's fold uses EDGE_FOLD's bands", camSrc.includes(`m.y = ${tl.toFixed(2)} * (1.0 - abs(mod(uv.y / ${tl.toFixed(2)}`) && camSrc.includes(`m.y = 1.0 - ${th.toFixed(2)} * (1.0 - abs(mod((uv.y - 1.0) / ${th.toFixed(2)}`));
+
+  // The Great Seal, as measured in game (Staging World 2026-11-19): scene rect 2560 x 1270, rest view on a 1920 x 1080
+  // window, and the battle opening's reveal (a placed shot, camera yaw 35 degrees on the boss's face side).
+  const cfg = resolvePreset("https://x/Valley_Battlemap003.webp"), cam = buildCamera(cfg, V2_STAGE, 110), P = buildProjector(cfg, cam, V2_STAGE);
+  const rect = { x: 0, y: 0, w: 2560, h: 1270 }, rest = { x: 1280, y: 635, scale: 1920 / 1682 };
+  const win = { x: rest.x - 960 / rest.scale, y: rest.y - 540 / rest.scale, w: 1920 / rest.scale, h: 1080 / rest.scale };
+  const shot = { stand: 1, standX: 2300.70, standY: 1840.11, eye: 3.727, lookX: 744.5, lookY: 669.0, lookH: 1.668, lens: 0.6879, faceX: 744.5, faceY: 669.0 };
+  const rig = rigCamera({ view: rest, rest, shot, sway: false }, P, cfg);
+  near("the reveal rig is the 35-degree camera", rig.yaw, 35, 0.05);
+  const inside = (q, e) => !!q && q.x >= rect.x - rect.w * e.left && q.x <= rect.x + rect.w * (1 + e.right) && q.y >= rect.y - rect.h * e.top && q.y <= rect.y + rect.h * (1 + e.bottom);
+  const pts = []; for (let i = 0; i <= 4; i++) for (let j = 0; j <= 4; j++) pts.push({ x: win.x + (i / 4) * win.w, y: win.y + (j / 4) * win.h });
+  const hits = pts.map((q) => screenRayCanvas(rig, q, P));
+  ok("every ray of the reveal's window meets the scenery shell", hits.every(Boolean));
+  ok("the reveal looks past the painting (the case this is for)", hits.some((h) => !inside(h, { left: 0, right: 0, top: 0, bottom: 0 })));
+  ok("the OLD relief extent did not cover it (the void / flat wedge the user saw)", !hits.every((h) => inside(h, { left: 0.8, right: 0.8, top: 0.3, bottom: 0.6 })));
+  ok("RELIEF_EXTENT covers the whole window", hits.every((h) => inside(h, RELIEF_EXTENT)));
+  // and the orbit camera's named swings at the rest view
+  for (const [name, sh] of [["left", { yaw: 18, tilt: 3, push: 0.9 }], ["right", { yaw: -18, tilt: 3, push: 0.9 }]]) {
+    const r2 = rigCamera({ view: rest, rest, shot: sh, sway: false }, P, cfg);
+    ok(`orbit "${name}": window covered`, pts.every((q) => inside(screenRayCanvas(r2, q, P), RELIEF_EXTENT)));
+  }
+  // the grid reaches that far, and past the painting it continues the painting's own (folded) depth
+  const depthAt = (u, v) => 0.2 + 0.5 * u + 0.3 * v * v;
+  const G = reliefGrid(P, rect, depthAt);
+  ok("reliefGrid spans RELIEF_EXTENT", Math.abs(G.xs[0] - (rect.x - rect.w * RELIEF_EXTENT.left)) < 1e-6 && Math.abs(G.xs.at(-1) - (rect.x + rect.w * (1 + RELIEF_EXTENT.right))) < 1e-6
+    && Math.abs(G.ys[0] - (rect.y - rect.h * RELIEF_EXTENT.top)) < 1e-6 && Math.abs(G.ys.at(-1) - (rect.y + rect.h * (1 + RELIEF_EXTENT.bottom))) < 1e-6);
+  ok("reliefGrid fits a 16-bit index (one draw)", G.nx * G.ny <= 65535 && G.pos.length === G.nx * G.ny * 3);
+  const vert = (i, j) => { const k = (j * G.nx + i) * 3; return { X: G.pos[k], Y: G.pos[k + 1], Z: G.pos[k + 2] }; };
+  const j0 = G.ys.findIndex((y) => y >= rect.y + rect.h * 0.1), iOut = G.xs.findIndex((x) => x >= rect.x - rect.w * 0.3);
+  const yRow = G.ys[j0];
+  const want = reliefPoint({ x: G.xs[iOut], y: yRow }, reliefDepth(yRow, depthAt(edgeFold((G.xs[iOut] - rect.x) / rect.w), (yRow - rect.y) / rect.h), P), P);
+  const got = vert(iOut, j0);
+  const uOut = (G.xs[iOut] - rect.x) / rect.w;
+  ok("past the left edge the relief reads the mirrored depth (continues the scenery's shape)", Math.abs(got.Z - want.Z) < 1e-3 * Math.abs(want.Z) && Math.abs(got.X - want.X) < 1e-3 * Math.max(1, Math.abs(want.X)) && Math.abs(edgeFold(uOut) + uOut) < 1e-9 && uOut < 0, `got ${JSON.stringify(got)} want ${JSON.stringify(want)} u ${uOut}`);
 }
 
 console.log(`\n${pass} passed, ${fail} failed`);

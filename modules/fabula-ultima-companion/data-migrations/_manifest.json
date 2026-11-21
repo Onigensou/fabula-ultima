@@ -702,6 +702,10 @@
       "path": "data-migrations/2026-11-21-lionheart.js"
     },
     {
+      "key": "2026-11-21-template-options-stays-down",
+      "path": "data-migrations/2026-11-21-template-options-stays-down.js"
+    },
+    {
       "key": "2026-11-21-hako-ch4-leftovers",
       "path": "data-migrations/2026-11-21-hako-ch4-leftovers.js"
     },

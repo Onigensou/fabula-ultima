@@ -319,6 +319,11 @@ export async function conflictEventReactor(director, cfg, extra) {
  * that action, which is a legal state: a Fulgimite's Resonance on a scene with no
  * Crystal event has nothing to do.
  */
+/** True when the active event offers `action` (false: no event in play / no such action). */
+export function conflictEventOffersAction(director, action) {
+  return typeof activeConflictEvent(director)?.event?.actions?.[action] === "function";
+}
+
 export async function runConflictEventAction(director, action, request) {
   if (!game.user?.isGM) return false;
   const active = activeConflictEvent(director);
@@ -326,9 +331,10 @@ export async function runConflictEventAction(director, action, request) {
   if (typeof handler !== "function") return false;
   try {
     const ctx = await buildEventCtx(director, active.id);
-    // An action that returns exactly `false` found nothing to do (Soul Tithe's
-    // consumeFragment with no fragment that has Called): the row applies nothing.
-    // Every older action returns undefined and keeps reading as done.
+    // An action that returns exactly `false` found nothing to do / did not do its job
+    // (Soul Tithe's consumeFragment with no fragment that has Called; Nox Servant with
+    // nobody converted): the row applies nothing. Every older action returns undefined
+    // and keeps reading as done.
     const res = await handler(ctx, request);
     return res !== false;
   } catch (e) {

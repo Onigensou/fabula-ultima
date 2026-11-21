@@ -160,9 +160,111 @@ every item, effect and table dropped and every Fafnir value reset.
 - Token: 1.5 × 1.5 grid, scale 5 (Fafnir's), linked, hostile, auto sprite shadow on. Visible size 824 × 802 scene px =
   Fafnir's width, taller than Fafnir (618), about 4.7× a PC (~170 px); the crystal is ~3× a PC.
 
-### 4c. Kit — NOT STARTED
+### 4c. Kit — USER-LED (2026-11-19)
 
-Ideas that lean on the fight's systems (ideas only):
+**Ruled 2026-11-19:** the user gives the moves **one at a time**; nothing is authored from a draft. Dropped: **no
+Devour**, and **no extra move unlocked per crack stage** (the draft's King's Roar / Soul Harvest / 5th-turn set). The
+moves the user hands over are recorded here as they come.
+
+Moves (in the order given):
+
+1. **Call of the Master** (given 2026-11-19). Skill Action. Accuracy MIG + WLP + 10. Damage HR + 20 Poison.
+   Overflow. Each HIT target has Soul Tithe activated on it right after the damage lands. Visual: he roars and a
+   wave of green energy spreads across the field; targets that are hit turn green as the Soul Tithe animation is
+   applied to them. AI: only on his first turn of each round, and only when no player's Soul Fragment is in the
+   battle. Targets: All Enemy. Ruled 2026-11-19: vs **M.DEF**, **Range**; the fragment rule is **AI-only** (the GM's
+   manual pick is never greyed out).
+2. **Soul Master** (given 2026-11-19). Passive. A creature hit by Nidhogg's attack (whatever damage it takes, even
+   none) loses its Poison resistance / immunity / absorption until the end of the round. Ruled: "attack" = any of his
+   offensive actions that HITS (Call of the Master counts); the strip applies to his LATER attacks only, not to the
+   attack that caused it. A Poison vulnerability is kept (reading). Ruled 2026-11-19: the strip **ends when he
+   falls** (it does not carry into the Crystal Round, unlike other round effects).
+3. **Claw** (given 2026-11-19). Attack. Accuracy MIG + DEX + 7. Damage HR + 40. Up to 2 enemies, Multi (2). Bleed.
+4. **Tail Stab** (given 2026-11-19). Attack. Accuracy MIG + INS + 5. One enemy. Damage HR + 30. Applies Grappled
+   when the accuracy beats the target's defense by 5 or more (the existing keyword for this).
+   Both vs **DEF**, **Melee** (ruled 2026-11-19).
+
+5. **Soul Devour** (given 2026-11-19). Skill. Target: one Soul Fragment. Destroys it and restores MP equal to
+   **twice the fragment's Max HP**. A fragment destroyed this way does **not heal** its owner: ruled 2026-11-19 the
+   owner gets their **Max HP back** (no longer Soul-Torn by it) but **no current HP**. AI: only when his MP is
+   below 100, at most once per round, targeting the fragment with the highest Max HP.
+
+6. **Wailing Breath** (given 2026-11-19). Spell. Cost 200 MP. Always hits. 300 Poison damage. 1 target.
+   **Massive**: the damage is divided equally among the targets; an untargeted player can choose to join as an
+   extra target by playing the reaction card put in their hand. AI: when his MP is **300 or more** and no
+   turn-locked move (e.g. Call of the Master on his first turn) applies. (His Max MP is 400, placeholder.)
+   Visual: he opens his mouth as soul gathers there; at the peak a thin beam shoots almost instantly across the
+   screen to the party, then swells into a massive beam nearly the screen's height for 3 s, then dies down leaving a
+   trail of burn and soul flame. Camera: pan toward him during the charge, then quickly to the party on release.
+   Revision (2026-11-20): the thin beam **holds longer as a feint/setup**, then the massive beam slams in as the
+   payoff; the beam **ends in an explosion** bigger than the beam, with the camera **zooming out** to show it.
+   Camera during the thin hold: a very slow drift toward the thin beam's end; when the massive beam hits, a move
+   the opposite way to strengthen the impact.
+
+7. **Zero Trigger: Nox Servant** (given 2026-11-20). He gains **1 Zero Power Clock section** when a player's HP is
+   reduced to 0 and they are **not** saved by an effect that immediately revives them. That player is then revived
+   with the status **Nox Servant**, and their Soul Fragment is **permanently** placed on the battlefield.
+   **Nox Servant** (status): the creature can NOT be targeted by any action by an opponent and cannot take part in a
+   Massive action. Ruled 2026-11-20:
+   - Revived at **full HP** (current Max HP, which Soul Tithe may still reduce).
+   - The Servant **acts normally** (own turns, can attack him, help allies; allies can still target them).
+   - Lasts the **rest of the battle** (through his falls and Crystal Rounds); the fragment stays too.
+   - The permanent fragment follows every normal fragment rule: the owner stays **Soul-Torn**, it **still doubles**
+     each round, it **counts for his AI rules** (CotM's "no fragment" gate, Soul Devour's pick). "Cannot be
+     targeted" = by the party; **Soul Devour can still devour it**. When devoured, it **returns at the end of that
+     round**: torn again from the Servant, taking **all their Max HP but 1**.
+   - No fragment at the moment of the fall (none active, or devoured): **tear one now**, all Max HP but 1.
+   - A Nox Servant **can't drop to 0 HP** (floored at 1); the trigger fires once per player.
+   - Opponents can't harm them (can't target them); the HP floor of 1 still holds against EVERY other source.
+   - Allies **can** target them with support actions (MP refill, heals, buffs).
+   - A Nox Servant **cannot redirect** a harmful action onto themselves (Protect, cover, intercept or any similar skill): no route may make them a target of an opponent's action.
+   - The **Zero Power** itself (what fires when the clock fills) is given later as its own move; gauge 6 = placeholder.
+   - Ruled 2026-11-21: **player characters only** (Guests such as Kalina, summons and phantasms fall normally).
+   - Not while he is **fallen** (Crystal Round): a player at 0 HP then is a normal KO. But when the **dragon form
+     returns**, every player still at 0 HP becomes a Nox Servant at that moment (one clock section each).
+   - The party **can't be wiped** while he stands (every fall turns into a Servant): intended; the Zero Power is the threat.
+   - Ruled 2026-11-21: if **every** player is down during a Crystal Round (none a Servant yet), the battle is **not**
+     lost: the wipe is held until the dragon returns, which converts them all to Servants (and so fires the Oath).
+     The side-wipe check must wait for the Nox Servant step before ending the battle.
+   - "Opponent" for the targeting block: blocked if the attacker is an opponent by the Servant's natural side **or**
+     by a charmed/dominated side.
+   - Also kept out of an **ally's** Massive action (no join card, not a target). Lead calls: a Protect-type option is
+     hidden for a Servant (no charge spent on a refused redirect); an ally Massive action whose only target is a
+     Servant is cancelled with a notice; a devoured fragment's re-tear waits while he is down (Soul Tithe's round end
+     is paused then).
+   - Confirmed 2026-11-21: a Servant whose fragment is torn now sits at **Max HP 1 / HP 1** (in Crisis) for the rest
+     of the battle, back to that at each round end after a Soul Devour; an existing fragment is kept as is (no extra
+     tear). Permanent fragments get no special look for now (badge hook soul-fragment-badge.js:104, deferred).
+   - Ruled 2026-11-21: a Servant can never take **any** harmful action onto themselves (Protect / cover / redirect /
+     splash), an ally's included.
+
+8. **Zero Trigger: Oath of Servitude** (given 2026-11-21). At 4 Zero Power (all 4 players fell and became Nox
+   Servants), the battle enters the **Crystal Round until the end of the battle**. The Crystal gains half of the
+   dragon's leftover HP. At the end of each round Nidhogg gains 1 Zero Power Clock; at 6 Zero Power he activates the
+   Zero Power **Dragon King's Ascension**. Ruled 2026-11-21:
+   - Fires the moment **every player character in the battle is a Nox Servant**, whatever the party size (4 players =
+     exactly 4 Zero Power).
+   - The **round-end +1** runs only AFTER Oath has fired (4 -> 5 -> 6: about two rounds to break the Crystal).
+   - Crystal HP: **current AND max** both rise by floor(dragon's remaining HP / 2) (may exceed its old max).
+   - The dragon form never returns. **Breaking the Crystal wins** the battle as usual.
+   - Ruled 2026-11-21: the Crystal's **cracks never close** (the crack stage only goes up, even though HP/Max rise).
+   - If converting the players still at 0 HP at a **dragon return** makes everyone a Servant: play the return,
+     convert them, then the Oath fall straight after (that round is cut).
+   - Lead calls: v1 reuses the ordinary fall show for the Oath; Nidhogg ends at HP 0 (so a Crystal break can win);
+     Ascension is gated on the Oath state, not on Zero Power alone; Zero Power resets at conflict start.
+9. **Zero Power: Dragon King's Ascension** (given 2026-11-21). "The heroes succumb to the power of the dragon king.
+   Now their soul is bound to their servitude, for eternity." The players **immediately lose the battle**.
+   (Fires at 6 Zero Power; cut-in / defeat presentation not specified yet.)
+
+   Claw and Tail Stab are his **fallback moves**: used when no other move can be used (by the AI's rules or for lack
+   of resources). Moves without a specific visual from the user get a simple animation; all of them get SFX.
+
+   Animations APPROVED 2026-11-19 (reviewed as videos with sound): Call of the Master v2 (wave launched from his
+   mouth on the roar, ~2.3× faster, hit stun; claude.ai/artifact/QM5uhaYeHgBi8xsDEoJxbR), Claw + Tail Stab
+   (claude.ai/artifact/DNtHcknLb45VxUEdeJrPJV; recoloured to green glow + a slight flame leftover). Sources:
+   `tools/anim-studio/lib/nidhogg-shots/`, builder `lib/nidhogg-signatures.js`; recorder `tools/anim-studio/bin/record-motion.mjs`.
+
+Earlier ideas (superseded by the ruling above, kept for the record):
 
 - **Devour.** Nidhogg eats a Soul Fragment to heal or power up. Makes fragments a
   target for both sides.
@@ -407,6 +509,131 @@ max(0, beat − peak). Files are Forge `Sound/` (`Soundboard_X.ogg` in the mocku
 | HUD returns | (none) | — | | |
 The picks also live in the artifact db (`picks/current`, ArtifactData get). Mockup engine: `fx/sfx-track.js`.
 
+## 8c. Nidhogg's return (Crystal Round → him) — mockup v21 RULED (2026-11-15), BUILT (2026-11-16, uncommitted)
+
+Mockup: `tools/nidhogg-return-mockup/` (v21, local, gitignored; rulings in its `HANDOFF.md`). Port plan and the
+per-package record (WP1–WP7, every number measured): `tools/nidhogg-return-mockup/PORT-PLAN.md`.
+
+**What it does on screen.** It plays at the ROUND_START after the last Crystal Round (`boss-cycle.js` `returnBoss`), on
+every client, the HUD hidden throughout. *Phase 1:* the dark closes in on the crystal from the tips of its beams, then the
+glass, then the core, which stays at full light; the front never stops, it only slows, slowest just before the core is
+gone. Then one star of light where the core was (arms up/down, longer left/right) that dims, cools to a dark green pixel
+and wavers as it goes out, to pure black (no floor glow, no trace). *Phase 2:* a pause of black while the camera pushes in
+on where his face will be; his eyes, mouth and claws come up out of the dark together (glow + two halos), a wind-up
+(brighter, a rumble shake), then he ROARS: rings of light from his mouth, a hard camera pull-back past the battle
+framing, and the roar blows the black off the arena as 3D smoke (thrown out from his mouth on screen; his face clear
+first). *His look:* the screen darkens toward its edges (the party stays lit), his eye and mouth burn up and throb twice,
+and his eye bursts into flame. Then he is handed back to his own token with no pop, and the battle goes on.
+
+**Timeline** (default plan: `len` 3.6, `pause` 2; `nidhogg-return.js` `returnPlan`, s from the start):
+| t (s) | beat |
+|---|---|
+| 0–0.3 | HUD fades out |
+| 0–3.6 | the dark closes in (glass by 0.93, only the core by 2.10); the star is born in the last 0.45 s of the core |
+| 3.6 | **`hidden`**: the core is gone (rules: the crystal goes out of play); the star at full strength, then only weakens |
+| 6.2 | black; the camera starts its push-in (2.0x on his head at 0.42 W by 8.6, creeping to 2.12x) |
+| 8.2 | his glowing parts come up together (2.2 s), breathe, wind-up from 10.8 (rumble 1.6 px) |
+| 11.35 | **`reveal`** = the roar (rules: full HP / MP, in play, the cycle's next phase): rings (7, every 0.13 s), shake 7 px, the smoke; the camera pulls back to 0.92x in 0.5 s, on the battle framing by 12.85 |
+| 12.95 / 13.17 | his look (up 0.4, hold 1.0, down 0.8) / the eye's burst (220 flames) |
+| 14.12 | the last of the smoke is gone (`clear` = roar + the smoke's doneAt) |
+| 15.25–15.75 | HUD back; **`end`**: the show hands him back, the battle goes on |
+
+**Files** (`scripts/sealing-crystal/` unless noted). Pure (Node-tested): `nidhogg-return.js` (the clock: plan, state per
+second, beats, `lateStartAt`), `return-close.js` (phase 1 close-in + the star), `return-smoke.js` (the 3D smoke field +
+`returnVeil`), `return-painter.js` (the smoke painter, layers back/front/veil), `return-stage.js` (the mockup frame laid
+on the battle framing and on his drawn sprite, glow parts, rings), `return-look.js` (camera view, his look, eye burst,
+the floor fit to the 3D camera). Shared: `smoke-cloud.js` (v17 cloudFast; the fall renders identically),
+`crystal-painter.js` / `crystal-runtime.js` (the close-in pass on the crystal), `crystal-worker.js` /
+`crystal-host-lib.js` (painter `"return"`, Worker lanes), `arena-void.js` (`holdArenaLit`), `shared/hud-curtain.js`.
+Show: `nidhogg-return-show.js` (every client: the show container above the backdrop and under every battler, Worker
+smoke + GPU veil, glow / rings / look, camera claim, late join, the GM's `presentNidhoggReturn` broadcast; registered as
+Boss Cycle transition `"nidhogg-return"`). Rules: `battle-director/boss-rules/boss-cycle.js` `returnBoss` (no show =
+the old instant swap; F5 before the reveal replays from the start, after it nothing replays). Data: Nidhogg's
+`bossCycle.transition.return = "nidhogg-return"` (`_author-nidhogg-crystal.mjs`). Tests: `nidhogg-return`,
+`return-close`, `return-smoke`, `return-stage`, `return-look` `.test.mjs`, `boss-cycle.test.mjs`.
+
+**Multiplayer.** Each client plays its own show on the GM's beats. The GM's broadcast carries an id and the GM's start
+(server time); a client that gets it late starts at that second. A client whose canvas becomes ready mid-return
+(joined, reloaded, redrawn) asks the GM, who answers with the same spec; it lands on that second's phase, HUD level,
+crystal, smoke and camera (driving the push-in if it is still on, else straight onto the rest view). A canvas torn
+down mid-drive leaves the scene's remembered view on the rest view and lets go of the 3D camera claim and the fence.
+Nothing is written to the world. The GM's own show runs on the GM's clock (the one its rules wait on); players use
+Foundry's server time, so on a CPU-starved client they can sit a fraction of a second off the GM (measured 0.5–0.65 s
+with two software-GL clients on one machine: the GM's own server-time estimate moved 0.65 s during one show).
+
+**HUD.** The show holds the HUD curtain (`shared/hud-curtain.js`) for its whole length. Found still on screen through
+the black in the WP5 stills and added to the curtain's list (2026-11-16): the conflict event's "+" emblem
+(`#fu-cep-emblem`), the dominance crest's gems over a token (`.fud-dom-crest`), a spectator's "taking action…" pill
+(`.fud-react-indicator`), and Alter the Story's hold bar + toast nub (`#as-layer .as-holdbar`, `.as-toast`: the gold
+bar at the top; when idle its edge peeks ~5 px over the top centre all the time, an Alter Story bug of its own). Left
+visible on purpose: Foundry's own sidebar / hotbar / chat (core UI; hiding them mid-session is not ours to do).
+
+**Switches.** `globalThis.__FU_RETURN_PRE_WP6__ = true` (before a play): paint as before WP6 (one Worker, CPU veil,
+whole-frame rings) for A/B on a real GPU. Rig globals: `__FU_NIDHOGG_RETURN__` (`play(spec, { clock, startAt })` on this
+client only, `present(spec)` GM broadcast without rules, `rejoin()`, `live()`, `status()`, `shows()`, `plan(o)`); plan
+options `{ len, pause, doneAt, burstN }`. Rigs (`tools/staging-world/`): `nidhogg-return-show.mjs` (stills on a stepped
+clock; `STAGE`, `PRE=1`, `DEPTH=off`, `GRID=1`), `nidhogg-return-perf.mjs` (cost), `nidhogg-return-mp.mjs` (`PART=gm`
+late start + teardown, `PART=player` GM vs player stills + broadcast, `PART=late` ask + reload), `nidhogg-crystal-mode.mjs`
+(the whole cycle through the director); `tools/snapshot-runner/checks/fx-leak.js` workload `return`.
+
+**Sound — RULED (the user's picks in the mockup's audition, v23, 2026-11-16; BUILT, uncommitted).** Mostly silence:
+every other moment (glass, star, core gone, light out, the black, eyes rising, wind-up, smoke, throbs, HUD) was set to
+No sound on purpose. `nidhogg-return.js` `returnSfx(P)` / `returnBed(P)`, played by the show on every client with the
+shared cue rule (start = beat − peak):
+
+| Moment | Beat (default plan) | File (peak s) | Vol |
+|---|---|---|---|
+| the dark closes in on the crystal (BED: fade in 0.8, loops, fade out 1.2) | 0.02 → gone 3.6 | BGS/Darkness.ogg | 0.45 |
+| he roars | pierce 11.35 | Soundboard/Monster4.ogg (0.15) | 0.75 |
+| his look | look 12.95 | Soundboard/Darkness3.ogg (0.15) | 0.45 |
+| his eye bursts into flame | burst 13.17 | Soundboard/Fire1.ogg (0.35) | 0.55 |
+
+Verified on the Staging World (full canvas, real GPU): bed 0.04 → 3.60, roar fired at 11.20, look 12.80, burst 12.84
+(= beat − peak). A late client skips what it jumped past (and starts no bed after 0.5 s).
+
+**Open.** Ruled for the next session (2026-11-16): a SHORTER variant for repeat returns (the full one stays for the
+first), flat 2D zoom with Battle depth Off (it plays; not tuned). Not
+measured: frame rate and the shader veil on a real GPU (software GL only so far). The smoke over his lower body sits
+6–18 px off his sprite under the 3D camera, and near-floor drift reaches ~9 px at the screen edges (an affine fit;
+a mesh warp would close it). His tail touches the left screen edge from the roar on (his token's spot). Stills-only
+review: motion (smoke slide, the camera's feel) has not been judged by the user in game. The whole cycle (return →
+second fall → death) is verified through the director on `FVTT_CANVAS=low` only (38/38, 2026-11-16); on `full` under
+software GL the first turn alone takes ~6 min, so it needs a GPU run with the user present.
+
+## 8d. The battle opening — RULED (2026-11-19), the user's direction verbatim in beats
+
+Replaces the usual battle start for this fight only (built as a general "battle opening" style, keyed on the boss).
+
+1. **The usual screen crack** (the shatter transition), but the screen does NOT break: **black smoke starts leaking out
+   of several points along the crack lines** until the screen is black.
+2. In the black, **a glimpse of both his eyes flashes**, their shapes briefly seen (drawn eye shapes, not the sprite),
+   then back to black.
+3. **4 s later: a close-up of one of his claws**, the camera panning slowly.
+4. **Then a similar close-up of a wing**, flipped horizontally for variety; the wing **expands slightly** for movement.
+5. **Black again**, then **his roar dispels the smoke**, showing him **full body**, the camera at **35°** to show him
+   from the front.
+6. **1 s after the roar ends**, the camera moves back to the battle position; the HUD shows and the start continues as
+   usual (BATTLE START banner).
+7. **No party / guest entrance animations.** They fade in as the camera arrives at the battle position after the roar.
+
+Plan (2026-11-19): beats 1–2 (new pixel effects) are mocked up first; beats 3–7 (real 3D camera + live rig) are built
+in game and reviewed as captures from the Staging World.
+
+**Built 2026-11-19 (uncommitted):** general `battleOpening` actor flag + registry (`battle-director/battle-opening-styles.js`,
+runtime `battle-opening.js`); shatter `crackOut` option (the glass doesn't break; contract `CRACK_OUT_CONTRACT` in
+`shatter-transition.js`); Nidhogg's style `nidhogg-awakening` (`sealing-crystal/nidhogg-awakening*.js`, seam for beats 1–2
+`nidhogg-crack-out.js`, a placeholder until the mockup is ported); return show `spec.opening` mode; rig motion `wingSpread`;
+rig fix (a mirrored token turned the wrong way with the camera). Show clock: claw 4.0 s, wing 7.6, black 11.2, roar 12.3,
+snap + reveal 13.4 (camera yaw 35°), roar ends 16.1, camera back 17.1–18.9, party fade-in 18.9, BATTLE START ~19.8.
+Mockup of beats 1–2: claude.ai/artifact/Kz6JCkr7gcXnJx2g9y6Tey (v3). Staging rig `tools/staging-world/nidhogg-opening.mjs`.
+
+**Battle standing spot — RULED (2026-11-19):** during battle his face sits at the vertical centre of the screen
+area left above the HUD. Done by moving his spot further back on the floor and scaling him up so he looks the same
+size as before. Ruled 2026-11-20: the crystal does **not** follow this offset — it keeps the old spot.
+Also ruled 2026-11-20: opening beats 1–2 use the mockup v3 defaults (port it); Wailing Breath's card shows the total in
+the headline and each share in the rows (as built); Massive divides among every actual target slot; Soul Devour gets
+its own "eat the soul" animation.
+
 ## 9. Open questions (for the user)
 
 1. Nidhogg's kit theme (§4c). HP / MP set to a 1500 / 400 placeholder.
@@ -488,7 +715,7 @@ on the generic boss-rule seams (`boss-rules.js`). Nidhogg's settings (written by
 `tools/fvtt-playwright/scripts/_author-nidhogg-crystal.mjs`):
 `{ core: <Nidhogg crystal id>, exposeRounds: 1, cutRound, carryRoundEffects, holdConflictEvent, clearStatusesOnDown,
 onDown: { conflictEventAction: "destroyAllFragments" }, returnHp/Mp: "full", roundLabel: "Crystal Round",
-transition: { first: "nidhogg-fall-first", repeat: "nidhogg-fall-repeat", return: null }, stage: "core-hp-quarters",
+transition: { first: "nidhogg-fall-first", repeat: "nidhogg-fall-repeat", return: "nidhogg-return" (§8c) }, stage: "core-hp-quarters",
 voidWhileExposed: true }`.
 - Named pieces (`boss-cycle-styles.js`): transitions (a show + its beats `down` / `hidden` / `reveal`; Nidhogg's fall
   registers both variants in `nidhogg-fall-show.js`; `return` plugs in the same way) and stage readers.

@@ -5,6 +5,8 @@
 // ============================================================================
 
 import { makeCrystal, crystalMesh } from "./crystal-render.js";
+import { closeTables, closeIn } from "./return-close.js";
+import { DstTrack } from "./box-frame.js";
 
 /**
  * The effect frame every crystal is painted into, in effect px. The crystal's
@@ -20,21 +22,33 @@ export const DEATH_FRAME = Object.freeze({ W: 1120, H: 1120, CX: 560, FLOOR: 720
 /** The look the user chose (mockup defaults, 2026-11-10): seed 68, glass 95 %, soul shows 40 %, rage 180 %, rays Strong, soul green, 12 s turn. */
 export const LOOK = Object.freeze({ seed: 68, glass: 0.95, flameSee: 0.4, rage: 1.8, rays: 2, rayColor: "green", rayMotion: "still", glow: true, turn: 12 });
 
-export function makeCrystalPainter({ W = FRAME.W, H = FRAME.H, CX = FRAME.CX, FLOOR = FRAME.FLOOR, seed = LOOK.seed } = {}) {
-  const cr = makeCrystal(W, H), mesh = crystalMesh(seed), n = W * H;
+export function makeCrystalPainter({ W = FRAME.W, H = FRAME.H, CX = FRAME.CX, FLOOR = FRAME.FLOOR, seed = LOOK.seed, band = null } = {}) {
+  // band [y0, y1): only those rows painted (crystal-render.js makeCrystal); the buffers are still the whole frame's,
+  // their rects inside the band (the death painted by several painters at once: crystal-death-show.js)
+  band = Array.isArray(band) ? [Math.max(0, band[0] | 0), Math.min(H, band[1] | 0)] : null;
+  const cr = makeCrystal(W, H, band), mesh = crystalMesh(seed), n = W * H;
+  let tab = null;   // Nidhogg's return: the close-in's per-pixel tables, built the first time it is asked for
+  // (crystal death 60 fps pass, 2026-11-17, pixel-identical) premultiplied only over the box the frame was drawn in
+  // (makeCrystal box()) and the handed-back buffer's last rect: box-frame.js DstTrack, as the fall's painters
+  const out = { c: new DstTrack(W, H), l: new DstTrack(W, H) };
   return {
-    W, H, mesh,
+    W, H, mesh, band,
     /**
      * Paint the crystal at time t (s) with state st, into the handed-back
      * buffers when given (else new ones). Returns the two buffers + the cost.
+     * st.close = { front } (Nidhogg's return, phase 1: return-close.js): the
+     * dark closes in on what was painted, front in crystal heights from the heart.
      */
     draw({ t, st, color, light }) {
       const t0 = (globalThis.performance ?? Date).now();
       const f = cr.draw(t, { cx: CX, floorY: FLOOR, ...LOOK, ...st, mesh });
-      const c = color && color.byteLength === n * 4 ? new Uint32Array(color) : new Uint32Array(n);
-      const l = light && light.byteLength === n * 4 ? new Uint32Array(light) : new Uint32Array(n);
-      const cRect = premultiply(f.color, c, W, H), lRect = premultiply(f.light, l, W, H);
-      return { color: c.buffer, light: l.buffer, cRect, lRect, ms: (globalThis.performance ?? Date).now() - t0 };
+      const front = Number(st?.close?.front);
+      const box = cr.box();
+      if (Number.isFinite(front)) closeIn(f.color, f.light, (tab ??= closeTables({ W, H, CX, FLOOR, mesh })), front, box);
+      let c, l;
+      try { c = out.c.out(color, f.color, box); l = out.l.out(light, f.light, box); }
+      catch (e) { out.c.lost(); out.l.lost(); throw e; }
+      return { color: c.u32.buffer, light: l.u32.buffer, cRect: c.rect, lRect: l.rect, ms: (globalThis.performance ?? Date).now() - t0 };
     },
   };
 }

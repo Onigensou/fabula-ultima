@@ -36,14 +36,14 @@ import { shouldRender } from "../battle-director/presentation-clock.js";
 import { getClientOption } from "../shared/client-options.js";
 import { FRAME } from "./crystal-painter.js";
 import { channel, channelMode, placeAfter, holdShadow, bufferSprite, takeFrame } from "./crystal-host-lib.js";
-import { CrystalDeathShow } from "./crystal-death-show.js";
+import { CrystalDeathShow, prepareCrystalDeath } from "./crystal-death-show.js";
 import { registerExternalDefeat } from "../battle-director/defeat-fx.js";
 import { preloadSfx } from "../battle-director/director-sfx.js";
 import { DEATH_SFX_URLS } from "./crystal-death-sfx.js";
 import { isOutOfPlay } from "../battle-director/out-of-play.js";
 import { voidUp, initArenaVoid } from "./arena-void.js";
 import { SOUL_UP_FX } from "./nidhogg-fall.js";
-import { crackStage } from "./crack-stage.js";
+import { crackStage, crackFloorOf } from "./crack-stage.js";
 
 const MODULE_ID = "fabula-ultima-companion";
 export const CRYSTAL_FLAG = "sealingCrystal";
@@ -54,6 +54,9 @@ const pxNow = () => PX_AT_110 * ((canvas.grid?.size || 110) / 110);
 const LOCAL_HZ = 15;
 
 let FX_HZ = 60;
+// S3 floor cache: bumped when any Boss Cycle state AE changes; a host re-reads crackFloorOf only then (not per frame)
+let _floorEpoch = 0;
+const bumpFloor = (ae) => { if (ae?.flags?.[MODULE_ID]?.bossCycleState !== undefined) _floorEpoch++; };
 let _frozen = false;   // rigs: stop asking for frames (the last one stays)
 function applyRateOption() {
   const v = Number(getClientOption("fxFrameRate"));
@@ -80,10 +83,11 @@ class CrystalHost {
   constructor(token) {
     this.token = token; this.id = `c${++_uid}:${token.id}`;
     this.ready = false; this.inflight = false; this.seq = 0; this.frames = 0; this.shown = false;
-    this.lastTick = -1; this.spare = { color: null, light: null };
+    this.nextDue = -Infinity; this.missed = false; this.lastSt = null; this.spare = { color: null, light: null };
     this.stage = null; this.stageT = -1e9; this.hitT = null; this.hitSide = 1; this.lastHp = null;
     this.override = null;       // rigs: { stage }
-    this.showFn = null;         // a show's hold (holdCrystal): (nowMs) -> null (hidden) | { alpha, reveal, opaque, sweep, flameK, scale, hitAge, debris }
+    this.floorAt = -1; this.floorActor = null; this.floorVal = 0;   // #floor's cache (the Oath's stage floor)
+    this.showFn = null;         // a show's hold (holdCrystal): (nowMs) -> null (hidden) | { alpha, reveal, opaque, sweep, flameK, scale, hitAge, debris, close, flameSee }
     this.cost = new Float32Array(240); this.costAt = 0; this.costN = 0;
     this.recv = new Float32Array(240); this.recvAt = 0; this.recvN = 0;   // main thread: taking a frame in (copy + flag)
     this.deathT = null;
@@ -110,6 +114,9 @@ class CrystalHost {
     this.spare = { color: m.color, light: m.light };
     this.recv[this.recvAt] = performance.now() - r0; this.recvAt = (this.recvAt + 1) % this.recv.length; if (this.recvN < this.recv.length) this.recvN++;
     this.shown = true; this.frames++;
+    // a tick went by while it was painted: the next frame now, not at the next tick (crystal death 60 fps pass,
+    // 2026-11-17; as nidhogg-fall-show.js Layer)
+    if (this.missed && this.lastSt && !_frozen && !this.dying) { this.missed = false; this.#ask(performance.now(), this.lastSt, true); }
     this.cost[this.costAt] = m.ms ?? 0; this.costAt = (this.costAt + 1) % this.cost.length; if (this.costN < this.cost.length) this.costN++;
   }
   /** Every display frame: hide the mesh, ride the feet, take the state, ask for the next frame on a tick. */
@@ -133,38 +140,78 @@ class CrystalHost {
     this.root.visible = vis && this.shown && !this.dying;
     this.root.alpha = show ? Math.min(1, show.alpha) : token.document?.hidden ? 0.5 : 1;
     this.#readState(now);
-    if (!vis || !this.ready || this.inflight || _frozen || this.dying) return;
+    if (!vis || !this.ready || _frozen || this.dying) { this.lastSt = null; return; }
     const hz = channelMode() === "local" ? LOCAL_HZ : FX_HZ, tick = Math.floor((now / 1000) * hz);
-    if (tick === this.lastTick) return;
-    this.lastTick = tick;
-    this.inflight = true;
     const st = { stage: this.stage, stageT: this.stageT, hitT: this.hitT, hitSide: this.hitSide, deathT: this.deathT, floorClip: this.deathT == null && !voidUp() };
     if (show) {
       st.reveal = show.reveal ?? 1; st.opaque = show.opaque ?? 0; st.sweep = show.sweep ?? null; st.flameK = show.flameK ?? 1;
+      // Nidhogg's return: the dark closing in (crystal-painter st.close), and how much of the soul shows through
+      if (show.close) st.close = { front: show.close.front };
+      if (show.flameSee != null) st.flameSee = show.flameSee;
       if (show.debris === false) st.debris = false;
       if (show.hitAge != null) { st.hitT = tick / hz - show.hitAge; st.hitSide = 1; }
     }
+    this.lastSt = st;
+    this.#ask(now, st);
+  }
+  /**
+   * Ask for the frame at now (one in flight), once every 1 / hz s on a running due time with a few ms of slack (a "new
+   * floor(now * hz)" rule skips asks when the display's ticks straddle its lines); a tick that finds one in flight
+   * marks it missed, and the next is asked as soon as that one is in (late). Painted at its hz grid's time, as before.
+   */
+  #ask(now, st, late = false) {
+    if (!this.ready) return;
+    const hz = channelMode() === "local" ? LOCAL_HZ : FX_HZ, period = 1000 / hz, slack = Math.min(4, period / 4);
+    if (!late && now + slack < this.nextDue) return;
+    if (this.inflight) { this.missed = true; return; }
+    this.nextDue = Math.max(this.nextDue + period, now + period - slack);
+    this.inflight = true; this.missed = false;
     const { color, light } = this.spare;
     this.spare = { color: null, light: null };
-    channel().draw(this.id, ++this.seq, tick / hz, st, color, light);
+    channel().draw(this.id, ++this.seq, Math.floor((now / 1000) * hz) / hz, st, color, light);
   }
   #readState(now) {
     const s = now / 1000, { hp, max } = hpOf(this.token);
-    const stage = this.override?.stage ?? crackStage(hp, max);
-    if (this.stage == null) this.stage = stage;                 // as it is when first seen: no reveal
+    // the cracks never close: the Oath's recorded stage is a floor (persisted on the core's state AE, so a fresh client reads it)
+    const stage = this.override?.stage ?? Math.max(crackStage(hp, max), this.#floor());
+    if (this.stage == null) { this.stage = stage; if (stage >= 3) this.#prepareDeath(); }   // as it is when first seen: no reveal
     else if (stage !== this.stage) {
       if (stage > this.stage) { this.stageT = s; this.#hit(s); }
       this.stage = stage;
+      if (stage >= 3) this.#prepareDeath();
     }
     if (Number.isFinite(hp)) {
       if (this.lastHp != null && hp < this.lastHp && this.stageT !== s) this.#hit(s);
       this.lastHp = hp;
     }
   }
+  #floor() {
+    const actor = this.token?.actor ?? null;
+    if (this.floorAt !== _floorEpoch || this.floorActor !== actor) { this.floorVal = crackFloorOf(actor); this.floorAt = _floorEpoch; this.floorActor = actor; }
+    return this.floorVal;
+  }
   #hit(s) { this.hitT = s; this.hitSide = Math.random() < 0.5 ? -1 : 1; }
+  /**
+   * Its last crack stage: warm the death's painters now (crystal-death-show.js prepareCrystalDeath), a moment after
+   * the stage's own burst; released when it dies (the death's painters keep the lanes) or the host goes.
+   */
+  #prepareDeath() {
+    if (this.deathPrep || this.prepTimer || this.destroyed) return;
+    this.prepTimer = setTimeout(() => {
+      this.prepTimer = null;
+      if (this.destroyed || this.dying) return;
+      try { this.deathPrep = prepareCrystalDeath(undefined); } catch (e) { warn("sealing-crystal: the death's rehearsal could not start", e); }
+    }, 2500);
+  }
+  releaseDeathPrep() {
+    clearTimeout(this.prepTimer); this.prepTimer = null;
+    try { this.deathPrep?.(); } catch { /* gone */ }
+    this.deathPrep = null;
+  }
   hit() { this.#hit(performance.now() / 1000); }
   destroy() {
     this.destroyed = true;
+    this.releaseDeathPrep();
     channel().drop(this.id);
     try { this.root.parent?.removeChild(this.root); this.root.destroy({ children: true, texture: true, baseTexture: true }); } catch { /* gone */ }
     const token = this.token;
@@ -186,7 +233,8 @@ class CrystalHost {
 
 /**
  * A show takes this crystal over (every client plays its own show): fn(nowMs) -> null (hidden) or its state
- * { alpha, reveal, opaque, sweep, flameK, scale, hitAge, debris }. Returns the release; the crystal then follows its
+ * { alpha, reveal, opaque, sweep, flameK, scale, hitAge, debris, close: { front } (the return's dark closing in,
+ * return-close.js), flameSee (the soul through the glass, LOOK's 0.4 by default) }. Returns the release; the crystal then follows its
  * token again (out of play = hidden). A crystal whose token is not drawn yet is held once it is.
  */
 const _pendingHolds = new Map();   // tokenId -> fn (the token was not drawn yet)
@@ -228,12 +276,15 @@ export function playCrystalDeath(token, opts = {}) {
   try {
     show = new CrystalDeathShow({ token, stage: Math.max(3, host?.stage ?? 3), stageT: host?.stageT ?? -1e9, px: pxNow(), clock: opts.clock ?? null, ending: opts.ending === "black" ? "black" : "clear" });
   } catch (e) { warn("sealing-crystal: the death could not start", e); return Promise.resolve(); }
-  if (host) host.dying = true;
+  if (host) { host.dying = true; host.releaseDeathPrep(); }
   _shows.set(token.id, show);
   show.ended.then(() => { if (_shows.get(token.id) === show) _shows.delete(token.id); });
   startTicker();
   return show.done;
 }
+
+/** A crystal's death show playing on this client (not finished). */
+export const crystalDeathsPlaying = () => [..._shows.values()].some((sh) => !sh.finished);
 
 /**
  * Let go of the ending's black on this client (and, from the GM, on every client): it fades back to whatever is under
@@ -309,6 +360,9 @@ export function initSealingCrystal() {
   Hooks.on("createToken", (doc) => { if (isCrystalDoc(doc)) later(); });
   Hooks.on("updateToken", (doc, ch) => { if (isCrystalDoc(doc) || ch?.flags?.[MODULE_ID]?.[CRYSTAL_FLAG] !== undefined) later(); });
   Hooks.on("deleteToken", (doc) => { const h = _hosts.get(doc?.id); if (h) { h.destroy(); _hosts.delete(doc.id); } });
+  Hooks.on("createActiveEffect", bumpFloor);
+  Hooks.on("updateActiveEffect", bumpFloor);
+  Hooks.on("deleteActiveEffect", bumpFloor);
   globalThis.__FU_SEALING_CRYSTAL__ = {
     status: () => ({ mode: channelMode(), fxHz: FX_HZ, crystals: [..._hosts.values()].map((h) => h.status()), deaths: [..._shows.values()].map((s) => s.status()) }),
     /** Play the death on THIS client (no director): resolves when the white has cleared (opts.ending "black": when black). */
@@ -321,6 +375,8 @@ export function initSealingCrystal() {
     hit: (tokenId) => _hosts.get(tokenId)?.hit(),
     setStage: (tokenId, stage) => { const h = _hosts.get(tokenId); if (h) h.override = stage == null ? null : { stage: clamp(Math.round(stage), 0, 3) }; },
     sync: () => syncCrystals(),
+    /** Rigs: a fresh host for a token (as play gets one when the token is made again: a 2nd death in one page). */
+    __rehost: (tokenId) => { const h = _hosts.get(tokenId); if (h) { h.destroy(); _hosts.delete(tokenId); } syncCrystals(); return _hosts.has(tokenId); },
     /** Rigs: the crystal frame rate (Hz; null = the client option again), the death's timeline on / off, cost meters reset. */
     setRate: (hz) => { if (Number(hz) > 0) FX_HZ = Number(hz); else applyRateOption(); return FX_HZ; },
     setDeath: (tokenId, on = true) => { const h = _hosts.get(tokenId); if (h) h.deathT = on ? performance.now() / 1000 : null; },

@@ -264,7 +264,7 @@ function meshGeometry(token) {
 
 // The token's own art: the very element its mesh plays (an image or a video).
 function tokenArt(token) {
-  const src = token.mesh?.texture?.baseTexture?.resource?.source ?? null;
+  const src = (globalThis.__ONI_CREATURE_RIG__?.paintedTexture?.(token) ?? token.mesh?.texture)?.baseTexture?.resource?.source ?? null;   // painted art, not a creature rig's live canvas
   if (!src) return null;
   const video = typeof HTMLVideoElement !== "undefined" && src instanceof HTMLVideoElement;
   const w = video ? src.videoWidth : (src.naturalWidth ?? src.width);

@@ -63,6 +63,7 @@ import { makeChainContext, resolveTargetRef } from "./skill-targeting.js";
 // `const { fn } = SE()` would re-freeze the binding and defeat the point.
 import * as _seStatic from "./skill-effects.js";
 import { registerHotModule, hotUrl } from "./hot-reload.js";
+import { hasMassive, selectMassiveJoiners, buildMassiveJoinCandidate, stripNoxServantsFromMassiveCopy } from "./massive-keyword.js";
 const SE = registerHotModule(
   "battle-director/skill-effects.js",
   (t) => import(`./skill-effects.js?cb=${t}`),
@@ -112,12 +113,13 @@ async function getSkillEffectsExtras() {
   return _seExtraModule;
 }
 import { getRuntimeSkillView, getRuntimeActionView } from "./skill-recipes.js";
-import { computeActionProfile, projectProfileToActionResult, resolveChosenChainRows } from "./action-profile.js";
+import { computeActionProfile, projectProfileToActionResult, resolveChosenChainRows, actionKeywordsForActionResult } from "./action-profile.js";
 import { classifyActionIntent, resolveActionTags, INVENTORY_ACTION_TAG } from "./skill-intent.js";
 import { isAutopilotEnabled, isAiControlledTurn, isAiControlledCombatant, autopilotPickCombatant, autopilotDecideAction } from "./enemy-autopilot.js";
 import { isSummonAutopilotEnabled, isAutomatedSummon, isAutomatedSummonTurn, summonVetoMs, isGuestActor } from "./summon-autopilot.js";
 import { isBattlefieldObject } from "./battlefield-object.js";
 import { holdsKnockoutRevive } from "./knockout-revive.js";
+import { holdsStaysDown } from "./stays-down.js";
 import { resolveAnimationSpec, playDirectorAnimation, prestageAnimation } from "./director-animation.js";
 import { chainSpecFor, drawChainTargets, pinProvokerStrike, narrowToTargets, buildChainPlan, chainTargetOf, chainHitsView, chainMissesOf, chainCombinedLine, chainCombinedMissOf } from "./chain-plan.js";
 import { volleyShotContext } from "./chain-strikes.js";
@@ -127,7 +129,7 @@ import { emitBattlerPose } from "./battler-pose.js";
 import { actionPose } from "./battler-pose-rules.js";
 import { witnessNpcAbility, witnessFiredCandidate, witnessAffinityHits } from "./encyclopedia-witness.js";
 import { SimMode } from "./sim/sim-mode.js";
-import { runBossPendingBeat, runBossConflictStart, runBossRoundBoundary, bossRoundEndTrigger, bossSkipsRoundEndSweep, bossHoldsConflictEvent } from "./boss-rules/boss-rules.js";
+import { runBossPendingBeat, runBossConflictStart, runBossRoundBoundary, bossRoundEndTrigger, bossSkipsRoundEndSweep, bossHoldsConflictEvent, bossHoldsSideWipe } from "./boss-rules/boss-rules.js";
 
 // Install a director-scoped watcher that releases Guard / Covered AEs
 // when their associated actor drops to 0 HP. RAW Core p.70:
@@ -268,8 +270,13 @@ function sideIsWiped(dc, side) {
   if (!members.length) return true;
   // A downed creature that still holds an untried Auto-Life / Reraise has not
   // lost yet: the defeat reactor raises it, or marks the revive tried and calls
-  // this again (knockout-revive.js).
-  return members.every((c) => c.isDefeatedLive() && !holdsKnockoutRevive(c.actorDoc));
+  // this again (knockout-revive.js). Likewise one an onlooker's creature_stays_down
+  // row may still raise (Nox Servant): held until its defeat reactor settles the
+  // fall, which re-runs this (stays-down.js). And a boss rule may hold the whole
+  // side (Nidhogg: every PC down in a Crystal Round waits for his return, which
+  // binds them; boss-rules.js holdsSideWipe).
+  return members.every((c) => c.isDefeatedLive() && !holdsKnockoutRevive(c.actorDoc) && !holdsStaysDown(dc, c))
+    && !bossHoldsSideWipe({ dCombat: dc }, side);
 }
 
 // End dCombat when EITHER side is wiped, so the FSM routes to BATTLE_ENDING on
@@ -2366,6 +2373,9 @@ const RoundStart = {
     if (director.dCombat?.pendingRoundWrap) {
       try { director.ctx.bossRoundLabel = (await runBossRoundBoundary(director))?.label ?? null; }
       catch (e) { warn("ROUND_START: boss-rule round boundary threw", e); }
+      // The boundary ended the battle (Nidhogg's Ascension; a return that found
+      // the party wiped): nothing of the next round runs.
+      if (routeEndedCombat(director, "ROUND_START")) return;
     }
     // Deferred wrap: the last TURN_END of the previous round only MARKED the
     // wrap (so the round-end phase — round_end reactions, Late Actor free
@@ -5866,7 +5876,7 @@ async function quickConfirmAction(director, skill, ar, attackerActor) {
 
 const Confirm = {
   async onEnter(director) {
-    const ar = director.ctx.actionResult;
+    let ar = director.ctx.actionResult;   // `let`: the Massive Servant backstop re-freezes a stripped copy
     if (!ar) {
       warn("CONFIRM with no actionResult");
       director.enqueue({ type: INTENTS.ABORT });
@@ -6906,6 +6916,85 @@ const Confirm = {
             }
           }
         }
+
+        // Massive keyword (massive-keyword.js): each player character on the
+        // targets' side who is NOT targeted is dealt a "Join" card. Playing it is
+        // an add_target on themselves (card-mutations add_target phase); the
+        // per-target re-derive then divides the damage over the new count. Built
+        // from the keyword alone — the skill authors no reaction rows. Once per
+        // action (not per target), one candidate per joiner with its own rowKey.
+        // Keyword set from the SAME sources the damage division reads (a Massive
+        // weapon Attack or an AE-granted Massive deals cards too).
+        let _massive = false;
+        try { _massive = hasMassive(await actionKeywordsForActionResult(ar)); }
+        catch (e) { warn("CONFIRM: Massive keyword read threw", e); }
+        if (_massive) {
+          try {
+            const { isSummonCombatant } = await import("./summon-autopilot.js");
+            const { isNoxServant } = await import("./nox-servant.js");
+            // Nox Servant: never a Massive target (original or joined). Backstop for
+            // AE-granted Massive the picker could not see; cancel if nothing is left.
+            const _noxOfTarget = (t) => {
+              const c = (combatants ?? []).find((x) => (t?.tokenUuid && (x.tokenDoc?.uuid ?? x.tokenUuid) === t.tokenUuid)
+                || (t?.actorUuid && (x.actorDoc?.uuid ?? x.actorUuid) === t.actorUuid));
+              return isNoxServant(c?.actorDoc ?? null);
+            };
+            const _strip = stripNoxServantsFromMassiveCopy(ar, _noxOfTarget);   // ar is frozen: copy, not mutate
+            if (_strip.removed.length) {
+              if (_strip.remaining) {
+                ar = freezeActionResult(_strip.ar);
+                director.ctx.actionResult = ar;
+              }
+              log(`CONFIRM: Massive — Nox Servant removed from targets: ${_strip.removed.join(", ")}`);
+              ui.notifications?.warn(`A Nox Servant cannot take part in a Massive action (${_strip.removed.join(", ")} removed).`);
+              if (!_strip.remaining) {
+                // Nothing was posted yet (the card is dealt later in onEnter): ABORT here leaves no card.
+                ui.notifications?.warn("Massive action cancelled: its only target was a Nox Servant.");
+                director.enqueue({ type: INTENTS.ABORT, body: { reason: "massive-only-nox" } });
+                return;
+              }
+            }
+            const joiners = selectMassiveJoiners({
+              combatants, targets: ar.targets ?? [], attackerActorUuid, isSummonCombatant, isNoxServant,
+            });
+            const joinPayload = {
+              ...actionBase,
+              sourceActorUuid: attackerActorUuid,
+              subjectActorUuid: null,
+              subjectTokenUuid: null,
+              targetTokenUuids: (ar.targets ?? []).map((t) => t.tokenUuid),
+              attackerActorUuid,
+              attackerTokenUuid: ar.attacker?.tokenUuid ?? null,
+              actionIntent: effectiveIntent,
+              actionKind: ar.kind,
+              actionName: ar.skillName ?? ar.kind,
+              sourceSkillName: ar.skillName ?? null,
+            };
+            for (const c of joiners) {
+              const reactor = c.actorDoc;
+              // Carrier = the acting skill, or the weapon for an Attack (its name and
+              // icon on the card; the join rows themselves are built in).
+              const carrier = actionItem ?? (ar.weapon ? { uuid: ar.weapon.uuid ?? null, name: ar.weapon.name ?? ar.kind, img: ar.weapon.img ?? null } : null);
+              const cand = buildMassiveJoinCandidate({ skill: carrier, reactorActor: reactor });
+              const dedup = `${cand.rowKey}::${cand.carrierUuid}::${reactor.uuid}`;
+              if (seenKeys.has(dedup)) continue;
+              seenKeys.add(dedup);
+              log(`CONFIRM: Massive join card dealt — ${reactor.name} may join ${carrier?.name ?? ar.kind}`);
+              addCardReactions("creature_targeted_by_action", [{
+                ...cand,
+                reactorActorUuid: reactor.uuid,
+                reactorActorName: reactor.name,
+                reactorActorImg:  reactor.img ?? cand.carrierImg,
+                reactorIsPlayer:  !!reactor.hasPlayerOwner,
+                subjectActorUuid: null,
+                subjectTokenUuid: null,
+                payloadAtFire: joinPayload,
+              }]);
+            }
+          } catch (e) {
+            warn("CONFIRM: Massive join card injection threw", e);
+          }
+        }
       } catch (e) {
         warn("CONFIRM: creature_targeted_by_action dispatch threw", e);
       }
@@ -6955,6 +7044,14 @@ const Confirm = {
         warn("CONFIRM: creature_guards findPassiveCandidates threw", e);
       }
     }
+
+    // Massive "cannot be Negated": drop any reaction that would negate this
+    // action before it is offered (card-mutations Phase 0 also refuses it).
+    try {
+      const { dropNegatesForMassive } = await import(hotUrl("./card-mutations.js"));
+      await dropNegatesForMassive(ar, cardReactions);
+      await (await import(hotUrl("./target-insert-guard.js"))).dropBlockedInsertions(ar, cardReactions);
+    } catch (e) { warn("CONFIRM: Massive negate filter threw", e); }
 
     // Pre-card splice for FORCE add_target reactions (the Grappled shared-space
     // splash — a grappler's "Grappling" AE adds its grappled victim(s) when the
@@ -7604,7 +7701,12 @@ const Confirm = {
           costOverride = r.costOverride ?? null;
           if (Array.isArray(r.acceptedAfterGm)) acceptedAfterGm = r.acceptedAfterGm;
           if (r.gmDroppedReactions?.length) {
-            log(`CONFIRM: ${r.gmDroppedReactions.length} accepted reaction(s) dropped by a GM target removal`);
+            {
+            const massiveN = r.gmDroppedReactions.filter((d) => d?.dropReason).length;
+            const gmN = r.gmDroppedReactions.length - massiveN;
+            if (gmN) log(`CONFIRM: ${gmN} accepted reaction(s) dropped by a GM target removal`);
+            if (massiveN) log(`CONFIRM: ${massiveN} negate reaction(s) refused — Massive: cannot be negated`);
+          }
           }
           if (r.mutationsApplied > 0 || negated) {
             log(`CONFIRM: target-set mutation — ${r.mutationsApplied} applied${negated ? "; NEGATED" : ""}`);
@@ -8693,12 +8795,16 @@ const RoundEnd = {
     // the standalone reaction window so round_end-triggered reactions
     // see a clean slate.
     // (A boss rule that cut the round keeps them: "until the end of the round"
-    // effects carry over into the next one — Nidhogg's fall, ruling 2026-11-12.)
-    if (!bossSkipsRoundEndSweep(director)) try {
+    // effects carry over into the next one — Nidhogg's fall, ruling 2026-11-12 —
+    // except those flagged `endsOnCutRound`, which end with the cut round: Soul
+    // Master's strip, ruling 2026-11-19. shared/round-end-sweep.js.)
+    const cutRound = bossSkipsRoundEndSweep(director);
+    try {
       // Pass the combatants' TOKEN actors — unlinked NPC bearers (e.g. a boss's
       // Domination State) carry their AEs on the token-synthetic actor, which
       // the sweep's world-actor walk can't see.
       const swept = await SE().tickDirectorAEsAtRoundEnd({
+        cutRound,
         extraActors: (director.dCombat?.combatants ?? [])
           .map((c) => c.actorDoc ?? c.tokenDoc?.actor ?? null)
           .filter(Boolean),

@@ -346,6 +346,28 @@ function evalNode(node, resolver) {
   }
 }
 
+// A skill's own board-state gate: top-level `availability_formula`, evaluated
+// against the caster (Numen's "OWN_NUMEN_COUNT == 0"). The ONE reading of it,
+// shared by the player's skill picker and the enemy AI (ActionReader asks
+// through the battle provider in target-survey.js), so the two can never
+// disagree about whether an action is on offer. Empty formula = available; an
+// unparseable one fails OPEN (evaluateFormula's fallback 1), as the picker
+// always has. Returns { available, reason }.
+export function evaluateSkillAvailability({ actor = null, skill = null } = {}) {
+  const p = skill?.system?.props ?? {};
+  const formula = String(p.availability_formula ?? "").trim();
+  if (!formula) return { available: true, reason: null };
+  try {
+    const resolver = buildSkillResolver({ actor, payload: null, skill, round: 0 });
+    if (!evaluateFormula(formula, resolver, 1)) {
+      return { available: false, reason: String(p.availability_reason ?? "").trim() || "Unavailable" };
+    }
+  } catch (e) {
+    warn("skill-formulas: availability_formula threw — treated as available", e);
+  }
+  return { available: true, reason: null };
+}
+
 // Public API — evaluate a formula string with a resolver function.
 // Resolver gets called for every identifier reference; returns
 // number | null. Null is treated as "unresolvable" and folds to 0.
@@ -459,6 +481,52 @@ function wellspringAvailable(elem, actor = null) {
 function fieldActor() {
   try { return globalThis.FUCompanion?.api?.field?.getActor?.() ?? null; } catch { return null; }
 }
+
+// CONFLICT_OBJECT_COUNT_<ID>. The UNION of every place a conflict object can
+// stand, deduped by token: the director's dCombat roster (a Battle Director fight
+// often leaves `game.combat` empty — see COMBAT_MAX_AE_CHARGES_), core combat, and
+// the battle scene's tokens. The scene matters on its own: a fragment an F5 left
+// on the field but off the roster (Soul Tithe adopts it back only at its next
+// lock or round end) still stands there, and must still count.
+const _normConflictObjectId = (s) => String(s ?? "").toLowerCase().replace(/[\s_-]+/g, "-").trim();
+
+// Whether `actor` is a conflict object of kind `rawId` (TARGET_IS_CONFLICT_OBJECT_<ID>).
+function isConflictObjectOf(actor, rawId) {
+  try {
+    const want = _normConflictObjectId(rawId);
+    return !!want && _normConflictObjectId(actor?.flags?.["fabula-ultima-companion"]?.conflictObject) === want;
+  } catch { return false; }
+}
+
+function conflictObjectCount(rawId) {
+  try {
+    const norm = _normConflictObjectId;
+    const want = norm(rawId);
+    if (!want) return 0;
+    const byToken = new Map();
+    const add = (key, actor) => { if (actor && !byToken.has(key)) byToken.set(key, actor); };
+    let dc = null;
+    try {
+      dc = globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()?.dCombat ?? null;
+      const list = dc?.combatants ? (Array.isArray(dc.combatants) ? dc.combatants : Object.values(dc.combatants)) : [];
+      for (const c of list) {
+        const actor = c?.actorDoc ?? c?.actor ?? null;
+        add(c?.tokenDoc?.id ?? c?.tokenId ?? actor?.uuid, actor);
+      }
+    } catch (_) { /* no director */ }
+    for (const c of (globalThis.game?.combat?.combatants ?? [])) add(c?.tokenId ?? c?.actor?.uuid, c?.actor);
+    const scene = dc?.scene ?? globalThis.canvas?.scene ?? globalThis.game?.scenes?.active ?? null;
+    for (const t of (scene?.tokens ?? [])) add(t.id, t.actor);
+    let n = 0;
+    for (const a of byToken.values()) {
+      if (norm(a.flags?.["fabula-ultima-companion"]?.conflictObject) !== want) continue;
+      if (!(Number(a.system?.props?.current_hp) > 0)) continue;
+      n++;
+    }
+    return n;
+  } catch { return 0; }
+}
+
 
 // 1 if any creature on the scene matches `needle` by SPECIES or NPC RANK, else 0.
 // Prefers the active combat's combatants (a battle), else the active/viewed scene's
@@ -1158,6 +1226,7 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
           const a = _resolveActorByUuidSync(String(ref));
           if (!a || a === actor || a.uuid === actor.uuid) continue;
           if (_isUntargetable(a)) continue;          // guest is inert — never a foe
+          if (_noxOpponentBlockedFor(a, actor, { performerDisp: myDisp, targetDisp: _combatDisposition(a) })) continue; // Nox Servant
           const d = Number(_combatDisposition(a));
           if (!Number.isFinite(d)) continue;
           if (d * myDisp < 0) return 1;            // opposing sign => enemy
@@ -1215,6 +1284,22 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         if (!subjectUuid) return 0;
         const subject = _resolveActorByUuidSync(subjectUuid);
         return subject ? (Number(subject?.system?.props?.max_hp ?? 0) || 0) : 0;
+      }
+      // Total Max HP of the ACTION's targets (payload.targets, the token list every
+      // chain step of the action sees). TARGET_MAX_HP needs a per-target subject,
+      // which an on_activate chain does not have; this reads the whole list, so a
+      // one-target skill gets that target's Max HP. Read LIVE: a chain step that
+      // runs after the target is removed reads 0, so put it before that step
+      // (Soul Devour: "restore MP equal to twice its Max HP", then destroy it).
+      // Each token counts once. 0 when no target list is threaded.
+      case "ACTION_TARGETS_MAX_HP": {
+        const list = Array.isArray(payload?.targets) ? payload.targets : [];
+        let sum = 0;
+        for (const ref of new Set(list.map((r) => String(r ?? "")).filter(Boolean))) {
+          const a = _resolveActorByUuidSync(ref);
+          sum += a ? (Number(a?.system?.props?.max_hp ?? 0) || 0) : 0;
+        }
+        return sum;
       }
       // HP at or below which the trigger's subject is in Crisis: the same number
       // the Crisis reactor applies its AE from (Vital Strike's "would enter Crisis").
@@ -2411,6 +2496,28 @@ export function buildSkillResolver({ actor = null, payload = null, skill = null,
         if (name.startsWith("CREATURE_") && name.endsWith("_PRESENT")) {
           return creaturePresentOnScene(name.slice("CREATURE_".length, name.length - "_PRESENT".length));
         }
+        // Dynamic CONFLICT_OBJECT_COUNT_<ID> — how many conflict objects of one kind
+        // still stand in this battle, whichever side they are on: roster combatants
+        // AND scene tokens (unioned, so an F5 stray off the roster still counts) whose
+        // actor carries `flags.<ns>.conflictObject === "<id>"` with HP above 0.
+        // <ID> is the object id with `-` written as `_`, case-insensitive:
+        // CONFLICT_OBJECT_COUNT_SOUL_FRAGMENT ("soul-fragment", Soul Tithe),
+        // CONFLICT_OBJECT_COUNT_LIGHTNING_CRYSTAL. Board state, so it reads the same
+        // for every creature.
+        if (name.startsWith("CONFLICT_OBJECT_COUNT_")) {
+          return conflictObjectCount(name.slice("CONFLICT_OBJECT_COUNT_".length));
+        }
+        // Dynamic TARGET_IS_CONFLICT_OBJECT_<ID> — 1 when the trigger SUBJECT
+        // (payload.subjectActorUuid; in a `target_eligibility` that is the candidate)
+        // is a conflict object of that kind, else 0. Same <ID> grammar as
+        // CONFLICT_OBJECT_COUNT_. Soul Devour: "TARGET_IS_CONFLICT_OBJECT_SOUL_FRAGMENT
+        // == 1". ActionReader widens a monster's pool to battlefield objects only for
+        // an action whose target_eligibility names this (or TARGET_COUNTDOWN).
+        if (name.startsWith("TARGET_IS_CONFLICT_OBJECT_")) {
+          const subjectUuid = String(payload?.subjectActorUuid ?? "").trim();
+          const subject = subjectUuid ? _resolveActorByUuidSync(subjectUuid) : null;
+          return isConflictObjectOf(subject, name.slice("TARGET_IS_CONFLICT_OBJECT_".length)) ? 1 : 0;
+        }
         // Dynamic ATTACKER_SPECIES_IS_<X> / ATTACKER_RANK_IS_<X> — the same two
         // questions as TARGET_SPECIES_IS_ / RANK_IS_ below, asked about the
         // creature ACTING ON the reactor instead of the one being acted on.
@@ -3185,13 +3292,20 @@ function countStatusDebuffs(actor) {
 // Identity = a RAW status id if present, else the AE's first status id, else
 // its normalized name (so custom debuffs like Burn/Frightened dedupe too).
 function _combatDisposition(actor) {
-  const combat = globalThis.game?.combat;
-  let d = combat?.combatants?.find?.((c) => c.actor === actor)?.token?.disposition;
-  if (d == null) d = actor?.prototypeToken?.disposition;
+  // Order: the director's own combat roster (placed token; game.combat is null in the Battle
+  // Director), game.combat, a placed token, and only then the PROTOTYPE (the template default).
+  let d = null;
+  try {
+    const dc = globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.()?.dCombat;
+    const c = dc?.combatants?.find?.((x) => x.actorDoc === actor || (actor?.uuid && x.actorDoc?.uuid === actor.uuid));
+    d = c?.tokenDoc?.disposition ?? null;
+  } catch {}
+  if (d == null) d = globalThis.game?.combat?.combatants?.find?.((c) => c.actor === actor)?.token?.disposition;
   if (d == null) {
     try { const t = actor?.getActiveTokens?.(true, true)?.[0]; d = t?.document?.disposition ?? t?.disposition; } catch {}
   }
-  const n = Number(d);
+  if (d == null) d = actor?.prototypeToken?.disposition;
+  const n = d == null ? NaN : Number(d);
   return Number.isFinite(n) ? n : null;
 }
 
@@ -3278,6 +3392,68 @@ function bondPresentOnScene(actor, emotion) {
   return 0;
 }
 
+// <<nox-opponent-mirror:begin>>
+// Zero-import MIRROR of isTargetBlockedFor (battle-director/snapshot.js): "target holds
+// cannot_be_targeted_by:opponent and the performer is an opponent by NATURAL side or by the
+// performer's allegiance override (Charm), or a Servant's permanent Soul Fragment vs the party.
+// Neutral (0) is not an opponent; performer or
+// dispositions unknown => blocked (fail closed). Drift-tested by
+// shared/target-block-drift.test.mjs; keep in step with snapshot.js.
+function _noxOpponentBlockedFor(target, performer, opts = {}) {
+  const live = (a) => (a?.appliedEffects ? Array.from(a.appliedEffects) : (a?.effects?.contents ?? Array.from(a?.effects ?? [])));
+  let has = false;
+  for (const ae of live(target)) {
+    if (ae?.disabled) continue;
+    for (const ch of (ae?.changes ?? [])) {
+      if (ch?.key !== "cannot_be_targeted_by") continue;
+      if (String(ch.value ?? "").trim().toLowerCase().split(/[\s,]+/).includes("opponent")) has = true;
+    }
+  }
+  // A Servant's PERMANENT Soul Fragment (snapshot.js isPermanentSoulFragment): same predicate.
+  if (!has) {
+    for (const ae of (Array.isArray(target?.effects) ? target.effects : Array.from(target?.effects?.contents ?? target?.effects ?? []))) {
+      const fl = ae?.flags?.["fabula-ultima-companion"];
+      if (fl?.soulFragmentMark === true && fl?.soulPermanent === true) { has = true; break; }
+    }
+  }
+  if (!has) return false;
+  if (!performer) return true;
+  if (performer === target || (performer.uuid && performer.uuid === target.uuid)) return false;
+  const aD = opts.performerDisp, tD = opts.targetDisp;
+  const aN = Number(aD), tN = Number(tD);
+  const known = aD != null && tD != null && Number.isFinite(aN) && Number.isFinite(tN);
+  const natural = !known ? "unknown" : (aN === 0 || tN === 0) ? "neutral" : (aN === tN ? "ally" : "enemy");
+  let eff = natural;
+  let gated = false;
+  for (const ae of live(performer)) {
+    if (ae?.disabled) continue;
+    for (const ch of (ae?.changes ?? [])) {
+      if (ch?.key !== "ignore_action_gating") continue;
+      const v = String(ch.value ?? "").trim();
+      if (v && v !== "0" && v.toLowerCase() !== "false") gated = true;
+    }
+  }
+  if (!gated) {
+    const tokenUuid = opts.targetTokenUuid ?? null, actorUuid = target.uuid ?? null;
+    outer: for (const ae of live(performer)) {
+      if (ae?.disabled) continue;
+      for (const ch of (ae?.changes ?? [])) {
+        if (ch?.key !== "allegiance_override") continue;
+        const raw = String(ch.value ?? "").trim();
+        const i = raw.indexOf(":");
+        if (i <= 0) continue;
+        const to0 = raw.slice(0, i).trim().toLowerCase();
+        const to = raw.slice(i + 1).trim().toLowerCase();
+        if (!to0 || (to !== "ally" && to !== "enemy")) continue;
+        if (to0 === natural || to0 === tokenUuid || to0 === actorUuid) { eff = to; break outer; }
+      }
+    }
+  }
+  if (natural === "enemy" || eff === "enemy") return true;
+  return natural === "unknown" && eff === "unknown";
+}
+// <<nox-opponent-mirror:end>>
+
 // Enemy actors relative to `actor` (opposite disposition sign). Prefers the
 // Foundry combat roster, but FALLS BACK to canvas tokens — the Battle Director
 // runs on its own `dCombat` and often leaves `game.combat` null, so a combat-
@@ -3313,6 +3489,7 @@ function enemyActorsOf(actor) {
   const consider = (a, disp) => {
     if (!a || a === actor || seen.has(a)) return;
     if (_isUntargetable(a)) return; // guest is inert — never counted
+    if (_noxOpponentBlockedFor(a, actor, { performerDisp: myDisp, targetDisp: disp })) return; // Nox Servant: opponent-only block
     const d = Number(disp);
     if (!Number.isFinite(d) || d * myDisp >= 0) return; // not an enemy
     seen.add(a);
@@ -3446,6 +3623,7 @@ function allyActorsOf(actor) {
   const consider = (a, disp) => {
     if (!a || a === actor || seen.has(a)) return;
     if (_isUntargetable(a)) return; // guest is inert — never counted
+    if (_noxOpponentBlockedFor(a, actor, { performerDisp: myDisp, targetDisp: disp })) return; // Charmed performer: Servant reads as a foe
     const d = Number(disp);
     if (!Number.isFinite(d) || d * myDisp <= 0) return; // ally = strict same-sign
     seen.add(a);
@@ -3553,6 +3731,7 @@ function myFocusInCrisis(actor, payload) {
     // Same exclusion its siblings enemyActorsOf / allyActorsOf already apply:
     // a creature nothing can target is not a focus you could heal.
     if (_isUntargetable(a)) return false;
+    if (_noxOpponentBlockedFor(a, actor, { performerDisp: myDisp, targetDisp: disp })) return false;
     const d = Number(disp);
     // ally/neutral: not an enemy (same rule as enemyActorsOf, inverted)
     const isAlly = myDisp == null || !Number.isFinite(d) || d * myDisp >= 0;

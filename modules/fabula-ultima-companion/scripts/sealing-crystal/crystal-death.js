@@ -16,6 +16,7 @@
 // drawn on its own, as the rest of the crystal is.
 import { clamp, Rng, TAU, WHITE, hex, flare } from "../battle-director/pixel-entrance/pixelfx/core/index.js";
 import { firePuff, ember } from "../battle-director/pixel-entrance/pixelfx/fx/fire/_lib.js";
+import { DIRECT, CLIP } from "./box-frame.js";
 
 export const DEATH = {
   spin: 2.0,
@@ -194,7 +195,7 @@ function hull2(pts) {
 function fillConvex(W, H, pts, fn) {
   let y0 = Infinity, y1 = -Infinity;
   for (const q of pts) { if (q[1] < y0) y0 = q[1]; if (q[1] > y1) y1 = q[1]; }
-  const ya = Math.max(0, Math.ceil(y0 - 0.5)), yb = Math.min(H - 1, Math.floor(y1 - 0.5)), n = pts.length;
+  const ya = Math.max(0, CLIP.lo, Math.ceil(y0 - 0.5)), yb = Math.min(H - 1, CLIP.hi, Math.floor(y1 - 0.5)), n = pts.length;
   for (let y = ya; y <= yb; y++) {
     const py = y + 0.5;
     let xl = Infinity, xr = -Infinity;
@@ -207,14 +208,16 @@ function fillConvex(W, H, pts, fn) {
       }
     }
     const xa = Math.max(0, Math.ceil(xl - 0.5)), xb = Math.min(W - 1, Math.floor(xr - 0.5));
+    if (xb >= xa) DIRECT.mark(xa, y, xb, y);
     for (let x = xa; x <= xb; x++) fn(x, y);
   }
 }
 function seg(x0, y0, x1, y1, fn) {
   x0 = Math.round(x0); y0 = Math.round(y0); x1 = Math.round(x1); y1 = Math.round(y1);
+  DIRECT.mark(Math.min(x0, x1), Math.min(y0, y1), Math.max(x0, x1), Math.max(y0, y1));
   const dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
   let err = dx + dy, n = 0;
-  for (;;) { fn(x0, y0, n++); if (x0 === x1 && y0 === y1) break; const e2 = 2 * err; if (e2 >= dy) { err += dy; x0 += sx; } if (e2 <= dx) { err += dx; y0 += sy; } }
+  for (;;) { if (y0 >= CLIP.lo && y0 <= CLIP.hi) fn(x0, y0, n); n++; if (x0 === x1 && y0 === y1) break; const e2 = 2 * err; if (e2 >= dy) { err += dy; x0 += sx; } if (e2 <= dx) { err += dx; y0 += sy; } }
 }
 
 /** A thin convex slab cut from the crystal's surface polygon `poly` (object space), its outer face on the surface. */
@@ -357,9 +360,9 @@ export function drawShatter(p, C, W, H, D, S, fX, fY, SZ, K, FH, fillPoly) {
     if (f > m.life || m.cut > clamp((m.life - f) / (m.life * 0.5))) continue;
     const e = (1 - Math.exp(-m.kd * f)) / m.kd, dv = view(m.d), c0 = view(m.c), go = m.sp * SZ * e;
     const x = Math.round(S.cx + c0[0] + dv[0] * go + sway(m.ph) + SZ * 2 * Math.sin(f * 2.1 + m.ph)), y = Math.round(S.cy + c0[1] + dv[1] * go - lift(m.g));
-    if (x < 0 || y < 0 || x >= W || y >= H) continue;
+    if (x < 0 || y < 0 || x >= W || y >= H || y < CLIP.lo || y > CLIP.hi) continue;
     const tw = Math.sin(f * 13 + m.ph * 7);
-    C[y * W + x] = f < 0.12 ? WHITE : tw > 0.88 ? K(7) : tw > 0.2 ? K(5) : K(3);
+    C[y * W + x] = f < 0.12 ? WHITE : tw > 0.88 ? K(7) : tw > 0.2 ? K(5) : K(3); DIRECT.px(x, y);
   }
 
   if (S.impact) impact(p, f, f0, S, FR, fX, fY, SZ, FH, 1);
@@ -446,7 +449,7 @@ function drawPiece(p, C, W, H, L, f, K, FH, fillPoly, put, soulTint) {
   for (const F of faces)
     if (F.front && F.k === 0 && F.spec > 0.95 && F.spec <= 0.985 && s.size > 5) {
       const x = Math.round(F.cx), y = Math.round(F.cy);
-      for (const [dx, dy, c] of [[0, 0, WHITE], [1, 0, K(7)], [-1, 0, K(7)], [0, 1, K(6)], [0, -1, K(6)]]) { const X = x + dx, Y = y + dy; if (X >= 0 && Y >= 0 && X < W && Y < H) C[Y * W + X] = c; }
+      for (const [dx, dy, c] of [[0, 0, WHITE], [1, 0, K(7)], [-1, 0, K(7)], [0, 1, K(6)], [0, -1, K(6)]]) { const X = x + dx, Y = y + dy; if (X >= 0 && Y >= 0 && X < W && Y < H && Y >= CLIP.lo && Y <= CLIP.hi) { C[Y * W + X] = c; DIRECT.px(X, Y); } }
     }
   if (s.size > 14 && gk > 0.05) p.glow(bx, by, s.size * 0.6, FH[4], 0.22 * gk * L.fade);
 }

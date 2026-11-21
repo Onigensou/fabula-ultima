@@ -107,7 +107,12 @@ const CONDITION_ALIASES = Object.freeze({
 
   activation: "activation",
   "activation no.": "activation",
-  "activation no": "activation"
+  "activation no": "activation",
+
+  // A skill formula in the row's String column, evaluated against the performer
+  // (the director's resolver, through the battle provider). Lets one row AND
+  // several facts: "ACTIVATION_NO == 1 && CONFLICT_OBJECT_COUNT_SOUL_FRAGMENT == 0".
+  formula: "formula"
 });
 
 function getModuleApiContainer(moduleId) {
@@ -161,8 +166,21 @@ function getConditionLabel(conditionKey) {
     case "effect_stacks": return "Effect Stacks";
     case "random": return "Random %";
     case "activation": return "Activation No.";
+    case "formula": return "Formula";
     default: return AR.titleCase(conditionKey.replace(/_/g, " "));
   }
+}
+
+/**
+ * Every canonical condition key the evaluator understands, as dropdown options
+ * ({ key, value }). The NPC sheet's `action_pattern_condition` select must offer
+ * each of them, or CSB re-stamps an authored row to "always" the first time the
+ * sheet is opened. csb-extensions/csb-pattern-condition-options.js widens that
+ * select to this list when a sheet renders (no document is written).
+ */
+export function patternConditionOptions() {
+  const keys = [...new Set(Object.values(CONDITION_ALIASES))];
+  return keys.map((key) => ({ key, value: getConditionLabel(key) }));
 }
 
 // action_pattern_chance → a number in [0, 100]. Blank / non-numeric = 100 (the

@@ -107,7 +107,7 @@ function meshGeometry(token) {
   return { x0: token.center.x - w / 2, y0: token.center.y - h / 2, w, h, flip: (mesh.scale?.x ?? 1) < 0 ? -1 : 1 };
 }
 function tokenArt(token) {
-  const src = token.mesh?.texture?.baseTexture?.resource?.source ?? null;
+  const src = (globalThis.__ONI_CREATURE_RIG__?.paintedTexture?.(token) ?? token.mesh?.texture)?.baseTexture?.resource?.source ?? null;   // painted art, not a creature rig's live canvas
   if (!src) return null;
   const video = typeof HTMLVideoElement !== "undefined" && src instanceof HTMLVideoElement;
   const w = video ? src.videoWidth : (src.naturalWidth ?? src.width), h = video ? src.videoHeight : (src.naturalHeight ?? src.height);
@@ -213,7 +213,7 @@ function captureArt(token, dens, fragment) {
   return { ...a, geo };
 }
 /** The token's silhouette in field space (effect px of where it is drawn now, un-floated). */
-function fieldSil(token, D, fragment) {
+export function fieldSil(token, D, fragment) {
   const m = mapOf(token)?.m ?? 1, dens = D * m;
   const a = captureArt(token, dens, fragment);
   if (!a) return null;
@@ -567,6 +567,64 @@ function syncFires() {
   if (_fires.size) startTicker();
 }
 function dropAllFires() { for (const f of _fires.values()) f.destroy(); _fires.clear(); }
+
+/** Longest an animation may hold a fragment's idle fire off; the restore always runs by then. */
+export const SUPPRESS_MAX_MS = 8000;
+
+/**
+ * Switch one fire off and return a restore function. By default the token stays visible;
+ * `hideMesh: true` also hides the token mesh (the per-frame applyMesh does it every frame, so it
+ * survives a token refreshState) and makes isHeld(tokenId) true, which hides the HP badge.
+ * The returned function also has `.hideMesh(bool)` to change that while held.
+ * Overlapping calls on one fire share one override (hidden if any holder asks for it); the fire
+ * goes back to the override that was there before the FIRST call once the LAST holder has
+ * restored or timed out. A newer show's own override (one that replaced ours) is left alone.
+ * Idempotent; a timer restores each call after `maxMs` so it can never stay stuck. Null fire: a no-op.
+ */
+export function suppressFire(fire, { maxMs = SUPPRESS_MAX_MS, hideMesh = false } = {}) {
+  if (!fire) return () => {};
+  let s = fire._supp;
+  if (!s || fire.override !== s.ov) {
+    // first holder, or a foreign show replaced our override: a fresh session over what is there now
+    s = fire._supp = { holders: new Set(), prev: fire.override ?? null, ov: { k: 0, flare: 0, bright: 0, hideMesh: false, suppressed: true } };
+    fire.override = s.ov;
+  }
+  const holder = { hide: !!hideMesh };
+  const sync = () => {
+    let any = false;
+    for (const h of s.holders) any = any || h.hide;
+    if (s.ov.hideMesh !== any) { s.ov.hideMesh = any; fire.dirty = true; }
+  };
+  s.holders.add(holder);
+  sync();
+  fire.dirty = true;
+  let done = false, timer = null;
+  const restore = () => {
+    if (done) return;
+    done = true;
+    if (timer) clearTimeout(timer);
+    s.holders.delete(holder);
+    if (fire.override !== s.ov) return;       // a newer show owns it now
+    sync();
+    if (!s.holders.size) {
+      fire.override = s.prev; fire.dirty = true;
+      if (fire._supp === s) fire._supp = null;
+    }
+  };
+  restore.hideMesh = (on) => { if (done) return; holder.hide = !!on; if (fire.override === s.ov) sync(); };
+  timer = setTimeout(restore, Math.max(0, Number(maxMs) || 0));
+  timer?.unref?.();
+  return restore;
+}
+
+/**
+ * An animation's hook: this fragment token's idle soul fire off for its duration.
+ * `opts`: { maxMs, hideMesh } as suppressFire. Returns the restore function (call it when the animation ends). A token that is not
+ * a fragment (no fire on this client) gets a harmless no-op.
+ */
+export function suppressFragmentFire(tokenId, opts) {
+  return suppressFire(_fires.get(tokenId) ?? null, opts);
+}
 
 /* ── A show: one or more effects in one field container ─────────────────── */
 

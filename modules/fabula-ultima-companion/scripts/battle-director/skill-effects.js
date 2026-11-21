@@ -48,9 +48,12 @@ import { INTENTS } from "./intents.js";
 import { NAME as CODE_BACKED_NAME } from "../shared/code-backed-content.js";
 import { potionRainHalves } from "../healing-system/potion-rain.js";
 import { boundSummonRef } from "../shared/summon-bindings.js";
+import { isRoundEndSwept } from "../shared/round-end-sweep.js";
 import { companionOf, isCompanionKind, announceCompanionRefused } from "../shared/companion-rule.js";
 import { classifyEffect, isStatusTier } from "./status-classifier.js";
 import { hotUrl } from "./hot-reload.js";
+import { isMassiveJoinRowKey } from "./massive-keyword.js";
+import { actorHpFloor, floorHp } from "../shared/hp-floor.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -829,7 +832,7 @@ export async function applyDamageToTarget({
     }
 
     // Overflow → HP, via the reaction AEs (Mercy clamp etc.).
-    const { newHp, dealtDamage, consumedAeIds, fired, followUp } = await resolveDamageReactions({
+    const { newHp: _reactedHp, dealtDamage, consumedAeIds, fired, followUp } = await resolveDamageReactions({
       target, curHp, rawDamage: toHp,
       // "elementless" is the log's display default, not an element.
       element: (_vfxElement && _vfxElement !== "elementless") ? _vfxElement : null,
@@ -838,6 +841,8 @@ export async function applyDamageToTarget({
         : null,
       actionHit,
     });
+    // `hp_floor` AE (Nox Servant): report the post-floor HP the preUpdateActor clamp will write.
+    const newHp = floorHp(_reactedHp, { curHp, maxHp, floor: actorHpFloor(target) });
     const update = { "system.props.current_hp": newHp };
     if (absorbed > 0) update["system.props.shield_value"] = newShield;
     await target.update(update);
@@ -2544,6 +2549,9 @@ function isStatusClockTick(carrier, cfg, rowKey) {
 
 export async function firePreAcceptedCandidate({ director, casterActor, candidate, payload, remotePrompt = null }) {
   if (!candidate?.ref) return { ok: false, reason: "no-ref" };
+  // A built-in card-mutation reaction (the Massive join card, massive-keyword.js)
+  // did all it does at the card-mutation phase; it has no chain to fire here.
+  if (isMassiveJoinRowKey(candidate.rowKey)) return { ok: true, reason: "card-mutation-only" };
   const { makeChainContext } = await import("./skill-targeting.js");
   // Token resolution. The first two lookups are ACTIVE-SCENE ONLY — `placeables`
   // is the current canvas, and Actor#getActiveTokens is documented as "in the
@@ -3479,7 +3487,11 @@ export async function firePassiveTriggers({ director, casterActor, trigger, payl
 // the token-synthetic actor, not the world actor (the Domination State
 // "outlives the round" bug). Callers with a live combat pass the combatants'
 // token actors via `extraActors`; both pools are swept, deduped by uuid.
-export async function tickDirectorAEsAtRoundEnd({ extraActors = [] } = {}) {
+//
+// `cutRound: true` — a boss rule cut the round and carries round effects over
+// (Boss Cycle carryRoundEffects): only AEs flagged `endsOnCutRound` are swept,
+// the rest carry into the next round. See shared/round-end-sweep.js.
+export async function tickDirectorAEsAtRoundEnd({ extraActors = [], cutRound = false } = {}) {
   const pool = new Map();   // actorUuid -> actor doc (world + token-synthetic)
   for (const a of game.actors ?? []) if (a?.uuid) pool.set(a.uuid, a);
   for (const a of extraActors) if (a?.uuid && !pool.has(a.uuid)) pool.set(a.uuid, a);
@@ -3488,9 +3500,7 @@ export async function tickDirectorAEsAtRoundEnd({ extraActors = [] } = {}) {
   await Promise.all(Array.from(pool.values()).map(async (actor) => {
     const ids = [];
     for (const eff of actor.effects ?? []) {
-      const stamp = eff.flags?.[FLAG_NS]?.directorAppliedBy;
-      if (!stamp) continue;
-      if (String(stamp.lifetimeMode ?? "").toLowerCase() !== "round_end") continue;
+      if (!isRoundEndSwept(eff, { cutRound })) continue;
       ids.push(eff.id);
       names.push(eff.name);
     }
@@ -5302,12 +5312,27 @@ async function conflictEventModifier(ctx, kind, statusName) {
 //     conflict_amount: "-2",                // number or formula, read by the action
 //     target_ref: "action_targets" }
 //
+// The action name may be followed by `key=value` options, which reach the action
+// as `request.options`: "destroy refund=max_only" asks Soul Tithe to destroy the
+// targeted fragments with only their Max HP returned (Nidhogg's Soul Devour). A
+// bare name sends `options: {}`, so every existing row reads as before.
+//
 // The event owns the state (a Crystal's countdown lives on its AE), so a skill
 // never writes it directly. It waits for any cinematic an earlier row of the same
 // chain left running: `reveal` removes the very token that cinematic is playing on.
+export function parseConflictActionText(text) {
+  const [name = "", ...rest] = String(text ?? "").trim().split(/\s+/);
+  const options = {};
+  for (const part of rest) {
+    const at = part.indexOf("=");
+    if (at > 0) options[part.slice(0, at).trim()] = part.slice(at + 1).trim();
+  }
+  return { action: name, options };
+}
+
 async function applyConflictEventActionEffect(row, ctx) {
   if (ctx?.captureMode || ctx?.mode === "preview") return { ok: true, kind: "conflict_event_action", skipped: true };
-  const action = String(row.conflict_action ?? "").trim();
+  const { action, options } = parseConflictActionText(row.conflict_action);
   if (!action) return { ok: false, kind: "conflict_event_action", reason: "no-action" };
   if (Array.isArray(ctx.pendingAnimations) && ctx.pendingAnimations.length) {
     await Promise.allSettled(ctx.pendingAnimations);
@@ -5320,9 +5345,13 @@ async function applyConflictEventActionEffect(row, ctx) {
     amount = Number(evaluateFormula(rawAmount, buildSkillResolver({ actor: ctx.reactorActor ?? null, payload: ctx.payload ?? null, skill: ctx.skill ?? null, round: ctx.dCombat?.round ?? 0 }), 0)) || 0;
   }
   const director = ctx.director ?? globalThis.FUCompanion?.api?.experimental?.battleDirector?.getActiveDirector?.() ?? null;
-  const { runConflictEventAction } = await import("../conflict-event/conflict-event-runtime.js");
-  const done = await runConflictEventAction(director, action, { tokens: tr?.tokens ?? [], amount, row, effectCtx: ctx });
-  return { ok: true, kind: "conflict_event_action", applied: done ? [action] : [] };
+  const { runConflictEventAction, conflictEventOffersAction } = await import("../conflict-event/conflict-event-runtime.js");
+  // No event in play / no such action is a legal state (a chain such as Crystal Disguise runs on):
+  // ok:true, skipped. Only a handler that RAN and reported failure (false / threw) stops the chain.
+  if (!conflictEventOffersAction(director, action)) return { ok: true, kind: "conflict_event_action", skipped: true, applied: [] };
+  const done = await runConflictEventAction(director, action, { tokens: tr?.tokens ?? [], amount, options, row, effectCtx: ctx });
+  if (!done) return { ok: false, kind: "conflict_event_action", reason: "action-not-run", applied: [] };
+  return { ok: true, kind: "conflict_event_action", applied: [action] };
 }
 
 // Data-only kinds (adjust_damage / redirect_target / adjust_accuracy) return ok

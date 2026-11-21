@@ -749,7 +749,7 @@
     // the standing art back, then take the new (or reloaded) walk.
     if (shown) hideWalkArt(w);
 
-    const idleTexture = mesh.texture;
+    const idleTexture = globalThis.__ONI_CREATURE_RIG__?.paintedTexture?.(token) ?? mesh.texture;   // never keep a creature rig's live canvas (it is destroyed with the rig)
     const art = loadWalkArt(src, idleTexture);
     if (!art.ready || art.failed) return;
 
@@ -887,7 +887,7 @@
       return;
     }
 
-    const idleTexture = token.mesh.texture;
+    const idleTexture = globalThis.__ONI_CREATURE_RIG__?.paintedTexture?.(token) ?? token.mesh.texture;   // never keep a creature rig's live canvas
     const art = loadWalkArt(pick.src, idleTexture);
     const ownSrc = cleanString(token.document?.texture?.src);
     w.standShown = { tokenId: token.id, src: pick.src, slot: pick.slot, art, idleTexture, ownSrc };

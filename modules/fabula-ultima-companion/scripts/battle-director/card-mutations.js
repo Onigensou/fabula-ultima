@@ -41,12 +41,14 @@ import { log, warn } from "./logger.js";
 import { resolveTargetRef as resolveBdTargetRef, makeChainContext as makeBdChainContext } from "./skill-targeting.js";
 import { deriveCheck, decideHit, checkHitChance } from "./check.js";
 import { resolvesVsMagicDefense } from "./snapshot.js";
+import { canInsertTarget, actionIsHarmful } from "./target-insert-guard.js";
 import { applyKeywordAffinity } from "./damage-ruleset.js";
 import {
   composeGmRoll, gmDamageInput, composeGmDefenseOverrides, gmHitOverrideMap,
   applyGmDamageOverrides, recomputeHitTokenUuids, gmOverrideDeltaRows, isGmOverrideEmpty,
   applyGmTargetRemovals, gmTargetsToAdd, dropGmRemovedReactions,
 } from "./gm-card-override.js";
+import { massiveJoinTables, isMassiveJoinRowKey, rowsHaveNegate, rowsHaveBlockableNegate, phase0NegateVerdict, hasMassive } from "./massive-keyword.js";
 
 const FLAG_NS = "fabula-ultima-companion";
 
@@ -54,6 +56,9 @@ const FLAG_NS = "fabula-ultima-companion";
 // `carrierKind: "item"` → item.system.props.effect_table.
 // `carrierKind: "ae"`   → ae.flags[FLAG_NS].reactionConfig.effect_table.
 async function readEffectTableForCandidate(cand) {
+  // Built-in rows (the Massive join card) live in code, not on the carrier.
+  const builtin = massiveJoinTables(cand?.rowKey);
+  if (builtin) return builtin.effect_table;
   if (!cand?.carrierUuid) return null;
   try {
     const doc = await fromUuid(cand.carrierUuid);
@@ -456,6 +461,7 @@ async function pickRedirectSubjects({ cand, row, reactor, reactorTok, ctx }) {
 //
 // Returns "applied" | "cancelled" (player aborted a picker) | "failed".
 async function applyRedirectTargetMutation(ctx, cand, row) {
+  cand._insertRefused = false;   // set by the insert guard below; read by applyCardMutations (moves it out of the accepted set)
   const reactorUuid = cand.reactorActorUuid;
   if (!reactorUuid) { warn(`redirect: missing reactor on candidate`); return "failed"; }
   const reactor = await fromUuid(reactorUuid);
@@ -503,6 +509,8 @@ async function applyRedirectTargetMutation(ctx, cand, row) {
           sourceActorUuid: ctx.ar?.attackerActorRef ?? null,
           sourceTokenUuid: ctx.ar?.attacker?.tokenUuid ?? null,
           attackerTokenUuid: ctx.ar?.attacker?.tokenUuid ?? null,
+          // Destination pickers must not LIST a Nox Servant for a harmful action (skill-targeting).
+          _harmfulInsertion: actionIsHarmful(ctx.ar),
         },
         isPassive: false,   // a real choice — prompt when ambiguous
         remotePrompt: pickRouteFor(cand, ctx),
@@ -532,6 +540,10 @@ async function applyRedirectTargetMutation(ctx, cand, row) {
     }
     if (!destActor || !destTokDoc) { warn(`redirect: destination actor/token unresolved`); return "failed"; }
   }
+
+  // Insert guard: an untargetable creature (cannot_be_targeted_by: any) can't be swapped in.
+  { const g = canInsertTarget(destActor, ctx.ar, { tokenUuid: destTokDoc?.uuid });
+    if (!g.ok) { cand.dropReason = g.reason; cand._insertRefused = true; cand.pickedDestActorUuid = null; warn(`redirect: refused — ${g.reason}`); return "failed"; } }
 
   // ── SWAP each source slot → destination ──
   // Re-derive the destination's row ONCE through buildPerTarget (its defense/
@@ -586,6 +598,7 @@ async function applyRedirectTargetMutation(ctx, cand, row) {
 //          target_ref: <threatened ally>, destination_ref: <own_summons phantasm> }
 // Returns "applied" | "cancelled" (player aborted a picker) | "failed".
 async function applyShieldRedirectMutation(ctx, cand, row) {
+  cand._insertRefused = false;
   const reactorUuid = cand.reactorActorUuid;
   if (!reactorUuid) { warn("shield_redirect: missing reactor on candidate"); return "failed"; }
   const reactor = await fromUuid(reactorUuid);
@@ -651,6 +664,9 @@ async function applyShieldRedirectMutation(ctx, cand, row) {
     log(`shield_redirect: ${phantActor.name} already in the target set — skipping`);
     return "failed";
   }
+
+  { const g = canInsertTarget(phantActor, ctx.ar, { tokenUuid: phantTokDoc?.uuid });
+    if (!g.ok) { cand.dropReason = g.reason; cand._insertRefused = true; warn(`shield_redirect: refused — ${g.reason}`); return "failed"; } }
 
   // remaining PV = the phantasm's current HP.
   const pv = Math.max(0, Number(phantActor?.system?.props?.current_hp ?? 0));
@@ -1627,6 +1643,7 @@ async function applyAdjustGrantMutation(ctx, cand, row) {
 // `_addTarget` and excluded from the card-mutation `applied` list, so they
 // never reach here. This path handles TARGET-side add_target only.
 async function applyAddTargetMutation(ctx, cand, row, effectTable) {
+  cand._insertRefused = false;
   const reactorUuid = cand.reactorActorUuid;
   if (!reactorUuid) { warn("add_target: missing reactor on candidate"); return "failed"; }
   const reactor = await fromUuid(reactorUuid);
@@ -1660,7 +1677,7 @@ async function applyAddTargetMutation(ctx, cand, row, effectTable) {
     reactorToken: reactorTok,
     skill: carrier,
     runtimeEffectTable: effectTable ?? null,
-    payload: { attackerActorUuid, attackerTokenUuid },
+    payload: { attackerActorUuid, attackerTokenUuid, _harmfulInsertion: actionIsHarmful(ctx.ar) },
     isPassive: true,
     remotePrompt: pickRouteFor(cand, ctx),
   });
@@ -1682,12 +1699,15 @@ async function applyAddTargetMutation(ctx, cand, row, effectTable) {
     if (!victim) continue;
     // Dedup — skip a victim already in the target list (incl. the original).
     if (ctx.targets.some((t) => t?.tokenUuid === tok.uuid || t?.actorUuid === victim.uuid)) continue;
+    { const g = canInsertTarget(victim, ctx.ar, { tokenUuid: tok.uuid });
+      if (!g.ok) { cand.dropReason = g.reason; cand._insertRefused = true; warn(`add_target: refused — ${g.reason}`); continue; } }
     // Re-derive the splashed victim's row through buildPerTarget (full pipeline);
     // fall back to the legacy clone if the profile can't be rebuilt.
     const victimSnap = snapshotTargetForToken(tok);
     const per = (victimSnap && await rederiveTargetRow(ctx.ar, victimSnap))
       ?? recomputePerTargetForRedirect({ ar: ctx.ar, reactor: victim, reactorTok: tok, applyAffinityToDamage });
-    const addedVia = { via: cand.carrierName ?? "Grappling", reactorName: reactor.name };
+    const addedVia = { via: cand.carrierName ?? "Grappling", reactorName: reactor.name,
+      ...(isMassiveJoinRowKey(cand.rowKey) ? { massive: true } : {}) };
     per.addedVia = addedVia;
     ctx.targets.push({
       ...(victimSnap ?? {
@@ -1700,6 +1720,7 @@ async function applyAddTargetMutation(ctx, cand, row, effectTable) {
     added += 1;
     log(`add_target: +${victim.name} splashed in (via ${cand.carrierName ?? "Grappling"})`);
   }
+  if (added) cand._insertRefused = false;   // partial success still spends: only an all-refused add_target leaves
   return added ? "applied" : "failed";
 }
 
@@ -1793,6 +1814,29 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
   // Taken off here so the candidate objects never ride out with the result.
   const unplaced = mut.unplacedDefenderMutations ?? [];
   delete mut.unplacedDefenderMutations;
+  // A negate Massive refused at Phase 0: move that candidate OUT of the accepted set
+  // (the gmReactionCut pattern) so RESOLVE neither fires the rest of its chain nor
+  // consumes its AE (consume_self); the card marks it moot via gmDroppedReactions.
+  const massiveRefused = mut.massiveRefused ?? [];
+  delete mut.massiveRefused;
+  // Same for an insertion the guard refused (blocked Servant): its dropReason is already stamped.
+  const insertRefused = mut.insertRefused ?? [];
+  delete mut.insertRefused;
+  if (insertRefused.length) {
+    const gone = new Set(insertRefused);
+    gmReactionCut.kept = gmReactionCut.kept.filter((c) => !gone.has(c));
+    gmReactionCut.dropped = [...gmReactionCut.dropped, ...insertRefused];
+    accepted = gmReactionCut.kept;
+  }
+  if (massiveRefused.length) {
+    const gone = new Set(massiveRefused);
+    gmReactionCut.kept = gmReactionCut.kept.filter((c) => !gone.has(c));
+    for (const c of massiveRefused) if (c && typeof c === "object") c.dropReason = "Massive: cannot be negated";
+    gmReactionCut.dropped = [...gmReactionCut.dropped, ...massiveRefused];
+    // Keep the working set in step so the refused candidate never reaches
+    // refreshReactionSubjects / recomputeActionProfile below.
+    accepted = gmReactionCut.kept;
+  }
   let mutatedTargets = mut.targets;
   let perTargetResults = mut.perTargetResults;
   if (mut.negated) {
@@ -1873,6 +1917,7 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
   // is re-soaked, instead of the recompute clobbering the reduction.
   let damageOverrides = overridesOf(mut.perTargetResults, "damageOverride");
   let hitTokenUuids = null;
+  let massiveRederived = false;   // the full per-target re-derive adopted (Massive fail-safe below)
   // The recomputed action-level (headline) damage. When a mutation changed the roll
   // (check_reroll), the COMPUTE-time payload.damage has the STALE HR baked into
   // finalIfHit — the card must show THIS instead, sourced from the same recompute as
@@ -1979,11 +2024,31 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
     if (Array.isArray(delta?.perTargetResults) && delta.perTargetResults.length) {
       perTargetResults = delta.perTargetResults;
       hitTokenUuids = delta.hitTokenUuids ?? null;
+      massiveRederived = true;
     }
     // Forward the recomputed headline damage (new HR + reactions + element folded
     // in by projectProfileToActionResult). The card uses it when the roll changed.
     recomputedDamage = delta?.damage ?? null;
   } catch (e) { warn("applyTargetSetMutation: recompute threw", e); }
+  // Massive fails SAFE: only the full re-derive divides the damage over the grown
+  // target set (an added row is derived alone, as if it were the only target). If
+  // that re-derive did not land, a joiner would take the undivided damage and the
+  // original targets keep their old share — more damage than the action deals.
+  // Drop the joiners instead: the action stays exactly as it was before the join.
+  if (!massiveRederived && (mutatedTargets ?? []).some((t) => t?.addedVia?.massive)) {
+    const gone = new Set((mutatedTargets ?? []).filter((t) => t?.addedVia?.massive).map((t) => t.tokenUuid));
+    warn(`applyTargetSetMutation: Massive re-derive failed — ${gone.size} joiner(s) dropped so no target takes undivided damage`);
+    mutatedTargets = mutatedTargets.filter((t) => !gone.has(t?.tokenUuid));
+    perTargetResults = (perTargetResults ?? []).filter((r) => !gone.has(r?.tokenUuid));
+    if (Array.isArray(hitTokenUuids)) hitTokenUuids = hitTokenUuids.filter((u) => !gone.has(u));
+    // The join decisions go too: CONFIRM stamps `acceptedAfterGm` onto acceptedCardReactions
+    // (the pill's "Applied" readout), and the card marks `gmDroppedReactions` pills moot.
+    const joins = gmReactionCut.kept.filter((c) => isMassiveJoinRowKey(c?.rowKey));
+    if (joins.length) {
+      gmReactionCut.kept = gmReactionCut.kept.filter((c) => !isMassiveJoinRowKey(c?.rowKey));
+      gmReactionCut.dropped = [...gmReactionCut.dropped, ...joins];
+    }
+  }
   // Illusory Shield PV-split — applied AFTER the recompute because it depends on
   // the recomputed phantasm damage (its affinity/DR). Caps each interposing
   // phantasm at its remaining PV, spills the overflow to the defended creature,
@@ -2118,6 +2183,36 @@ export async function applyTargetSetMutation({ ar, accepted, costOnlyAccepted = 
 // performer-side candidate anyway (they gate on `reactorActorUuid`, which a
 // self-reaction doesn't have) — so the preview and the commit compose the SAME
 // surcharge from the same rows.
+// Massive "cannot be Negated" — shared by the OFFER and APPLY points.
+async function actionIsMassive(ar) {
+  try {
+    const { actionKeywordsForActionResult } = await import("./action-profile.js");
+    return hasMassive(await actionKeywordsForActionResult(ar));
+  } catch (e) { warn("card-mutations: Massive keyword read threw", e); return false; }
+}
+
+// OFFER side: remove from `cardReactions` (in place) every candidate whose
+// UNCONDITIONAL chain (no menu descended) holds a negate_action row, when the
+// action is Massive. A negate behind a menu option keeps the card — its other
+// options stay playable; Phase 0 below refuses the negate if that option is
+// picked. Returns the dropped candidates.
+export async function dropNegatesForMassive(ar, cardReactions) {
+  const dropped = [];
+  if (!Array.isArray(cardReactions) || !cardReactions.length) return dropped;
+  if (!(await actionIsMassive(ar))) return dropped;
+  for (let i = cardReactions.length - 1; i >= 0; i--) {
+    const cand = cardReactions[i];
+    const effectTable = await readEffectTableForCandidate(cand);
+    if (!effectTable) continue;
+    if (rowsHaveBlockableNegate(expandEffectChain(effectTable, cand.ref))) {
+      dropped.unshift(cand);
+      cardReactions.splice(i, 1);
+      log(`card-mutations: massive: cannot be negated — ${cand.carrierName ?? cand.carrierUuid} not offered`);
+    }
+  }
+  return dropped;
+}
+
 export async function applyAcceptedCardMutations(arSnapshot, acceptedCardReactions, remotePrompt = null, costOnlyAccepted = null) {
   const targets = Array.isArray(arSnapshot.targets) ? [...arSnapshot.targets] : [];
   const perTargets = Array.isArray(arSnapshot.perTargetResults) ? [...arSnapshot.perTargetResults] : [];
@@ -2150,6 +2245,8 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedCardReactio
   // override for the card UI. RESOLVE honors `ar.negated` to skip the outcome +
   // effect/reaction firing. Short-circuits the other phases (they're moot).
   let negated = false;
+  let massiveAction = null;   // lazy: only read once a negate_action row shows up
+  const massiveRefused = [];  // candidates whose negate Massive blocked (moved out of the accepted set)
   for (const cand of acceptedCardReactions ?? []) {
     const effectTable = await readEffectTableForCandidate(cand);
     if (!effectTable) continue;
@@ -2157,10 +2254,23 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedCardReactio
     // option negates (Pressure's "Lose the effect"). With no picks this is
     // exactly expandEffectChain — no menu is descended.
     const rows = expandEffectChainWithPicks(effectTable, cand.ref, cand.chosenMenuPicks);
-    if (rows.some((r) => String(r.effect_kind ?? "").trim().toLowerCase() === "negate_action")) {
+    if (rowsHaveNegate(rows)) massiveAction ??= await actionIsMassive(arSnapshot);
+    const verdict = phase0NegateVerdict(massiveAction, rows);
+    if (verdict === "refused") {
+      // Defence in depth: Massive attacks cannot be Negated.
+      log(`card-mutations: massive: cannot be negated — ignoring negate_action from ${cand.carrierName ?? cand.carrierUuid}`);
+      massiveRefused.push(cand);
+      continue;
+    }
+    if (verdict === "negate") {
       negated = true;
       break;
     }
+  }
+  if (massiveRefused.length) {
+    // Out of the accepted set for the rest of this pass too (its cost/chain rows must not apply).
+    const gone = new Set(massiveRefused);
+    acceptedCardReactions = (acceptedCardReactions ?? []).filter((c) => !gone.has(c));
   }
   if (negated) {
     ctx.negated = true;
@@ -2176,6 +2286,7 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedCardReactio
       accuracyOverride: null,
       negated: true,
       checkAdjusters: [],
+      massiveRefused,
     };
   }
 
@@ -2205,6 +2316,18 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedCardReactio
     }
     if (cancelled) break;
   }
+  // An insertion the guard refused (a blocked Servant picked as destination / added victim): move the
+  // candidate OUT of the accepted set, like massiveRefused, so no cost / charge / consume is spent and
+  // the rest of its chain never fires. (add_target's own phase runs later; handled after it.)
+  const insertRefused = [];
+  const dropInsertRefused = () => {
+    const bad = (acceptedCardReactions ?? []).filter((c) => c && c._insertRefused === true);
+    if (!bad.length) return;
+    for (const c of bad) { insertRefused.push(c); log(`card-mutations: insertion refused — ${c.carrierName ?? c.carrierUuid}: ${c.dropReason ?? ""}`); }
+    const gone = new Set(bad);
+    acceptedCardReactions = (acceptedCardReactions ?? []).filter((c) => !gone.has(c));
+  };
+  dropInsertRefused();
 
   // Phase 2: adjust_accuracy. Action-level — overrides the roll total and
   // recomputes hit/miss for every target. Runs AFTER redirect so it recomputes
@@ -2342,6 +2465,7 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedCardReactio
   // creature_targeted_by_action) is the only producer today; Barrage's
   // attacker-side add_target is tagged `_addTarget` and excluded upstream.
   mutationsApplied += await runAddTargetPhase(ctx, acceptedCardReactions);
+  dropInsertRefused();
 
   // Phase 3b: a defender change whose creature arrived with the Phase 3 splash
   // lands on its new row now. Anything still without a row waits for the GM's
@@ -2362,6 +2486,9 @@ export async function applyAcceptedCardMutations(arSnapshot, acceptedCardReactio
     // Defender changes still without a row — candidate + effect row pairs, for
     // applyTargetSetMutation only (it takes them off before returning).
     unplacedDefenderMutations: stillUnplaced,
+    // Candidates whose negate Massive blocked — applyTargetSetMutation takes them off.
+    massiveRefused,
+    insertRefused,
     accuracyOverride: ctx.accuracyOverride ?? null,
     grantOverride: ctx.grantOverride ?? null,
     costOverride: ctx.costOverride ?? null,
@@ -2478,3 +2605,7 @@ export function buildCheckAdjustedEvents({ ar, finalPerTargets, finalRoll, accur
     scope: "target", targetActorUuid,
   }));
 }
+
+// Nox B5: read-only access for target-insert-guard.dropBlockedInsertions (lazy import, no cycle).
+export const readCandidateEffectTable = readEffectTableForCandidate;
+export const expandCandidateEffectChain = expandEffectChain;
